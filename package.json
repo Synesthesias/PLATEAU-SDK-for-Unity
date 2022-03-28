@@ -1,0 +1,10 @@
+{
+    "name": "com.synesthesias.plateau-unity-sdk",
+    "version": "1.0.0",
+    "displayName": "Plateau Unity SDK",
+    "description": "PLATEAUのUnity向けSDKです。",
+    "unity": "2020.3",
+    "author":{
+        "name": "Synesthesias Inc."
+    }
+}
