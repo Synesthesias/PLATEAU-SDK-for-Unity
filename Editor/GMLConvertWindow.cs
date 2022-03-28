@@ -1,4 +1,3 @@
-using System;
 using System.IO;
 using LibPLATEAU.NET;
 using UnityEditor;
@@ -31,23 +30,26 @@ namespace PlateauUnitySDK.Editor {
         }
 
         private void OnGUI() {
-            if (GUILayout.Button("1. Select GML File")) {
+            EditorUtil.Heading1("1. Select GML File");
+            if (GUILayout.Button("Select File")) {
                 ButtonSelectGMLFilePushed();
             }
             GUILayout.Label("GML file path:");
             GUILayout.TextArea($"{this.gmlFilePath}");
             
             Space();
+            EditorUtil.Heading1("2. Select Destination Directory");
             
-            if (GUILayout.Button("2. Select Destination Directory.")) {
+            if (GUILayout.Button("Select Directory")) {
                 ButtonSelectDestinationDirectory();
             }
             GUILayout.Label("Destination path:");
             GUILayout.TextArea($"{this.destinationDir}");
 
             Space();
+            EditorUtil.Heading1("3. Enter obj file name");
 
-            GUILayout.Label("3. Enter Exported obj file name:");
+            GUILayout.Label("obj file name:");
             using (new EditorGUILayout.HorizontalScope()) {
                 this.exportObjFileName = GUILayout.TextArea(this.exportObjFileName);
                 EditorGUILayout.LabelField(".obj", GUILayout.MaxWidth(50));
@@ -55,8 +57,9 @@ namespace PlateauUnitySDK.Editor {
             
             
             Space();
+            EditorUtil.Heading1("4. Convert");
             
-            if (GUILayout.Button("4. Convert")) {
+            if (GUILayout.Button("Convert")) {
                 ButtonConvert();
             }
         }
@@ -81,7 +84,9 @@ namespace PlateauUnitySDK.Editor {
             var cityModel = CityGml.Load(this.gmlFilePath, parserParams);
             string objPath = Path.Combine(this.destinationDir, $"{this.exportObjFileName}.obj");
             var objWriter = new ObjWriter();
+            objWriter.SetValidReferencePoint(cityModel);
             objWriter.Write(objPath, cityModel, this.gmlFilePath);
+            AssetDatabase.Refresh();
         }
 
         private void Space() {
