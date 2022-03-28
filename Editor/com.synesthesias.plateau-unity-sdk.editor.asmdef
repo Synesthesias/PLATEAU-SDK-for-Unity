@@ -1,0 +1,14 @@
+{
+    "name": "com.synesthesias.plateau-unity-sdk.editor",
+    "rootNamespace": "PlateauUnitySDK",
+    "references": [],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
