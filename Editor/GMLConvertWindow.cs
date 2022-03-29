@@ -79,12 +79,15 @@ namespace PlateauUnitySDK.Editor {
 
         private void ButtonConvert() {
             var parserParams = new CitygmlParserParams() {
-                Optimize = 1
+                Optimize = 0
             };
             var cityModel = CityGml.Load(this.gmlFilePath, parserParams);
             string objPath = Path.Combine(this.destinationDir, $"{this.exportObjFileName}.obj");
             var objWriter = new ObjWriter();
+            // TODO objWriterの設定はUIから変更できるようにする
             objWriter.SetValidReferencePoint(cityModel);
+            objWriter.SetMergeMeshFlg(true);
+            objWriter.SetDestAxes(AxesConversion.RUF);
             objWriter.Write(objPath, cityModel, this.gmlFilePath);
             AssetDatabase.Refresh();
         }
