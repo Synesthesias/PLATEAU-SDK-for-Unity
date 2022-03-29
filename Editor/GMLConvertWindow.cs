@@ -7,7 +7,7 @@ using UnityEngine;
 namespace PlateauUnitySDK.Editor {
     public class GMLConvertWindow : EditorWindow {
         private string gmlFilePath = "";
-        private string destinationDir = "";
+        private string destinationFilePath = "";
         private string exportObjFileName = "exported";
         private const float spaceWidth = 20f;
         
@@ -21,7 +21,7 @@ namespace PlateauUnitySDK.Editor {
         /// <summary> 初期化処理のうち、Unityの仕様で Init に書けない部分をここに書きます。 </summary>
         private void OnEnable() {
             DefaultPathIfEmpty(ref this.gmlFilePath);
-            DefaultPathIfEmpty(ref this.destinationDir);
+            DefaultPathIfEmpty(ref this.destinationFilePath);
         }
 
         private static void DefaultPathIfEmpty(ref string path) {
@@ -39,24 +39,15 @@ namespace PlateauUnitySDK.Editor {
             GUILayout.TextArea($"{this.gmlFilePath}");
             
             Space();
-            EditorUtil.Heading1("2. Select Destination Directory");
+            EditorUtil.Heading1("2. Select Obj File Destination");
             
-            if (GUILayout.Button("Select Directory")) {
-                ButtonSelectDestinationDirectory();
+            if (GUILayout.Button("Select Destination")) {
+                ButtonSelectDestination();
             }
-            GUILayout.Label("Destination path:");
-            GUILayout.TextArea($"{this.destinationDir}");
+            GUILayout.Label("Destination obj file path:");
+            GUILayout.TextArea($"{this.destinationFilePath}");
 
-            Space();
-            EditorUtil.Heading1("3. Enter obj file name");
 
-            GUILayout.Label("obj file name:");
-            using (new EditorGUILayout.HorizontalScope()) {
-                this.exportObjFileName = GUILayout.TextArea(this.exportObjFileName);
-                EditorGUILayout.LabelField(".obj", GUILayout.MaxWidth(50));
-            }
-            
-            
             Space();
             EditorUtil.Heading1("4. Convert");
             
@@ -72,18 +63,21 @@ namespace PlateauUnitySDK.Editor {
             this.gmlFilePath = path;
         }
         
-        private void ButtonSelectDestinationDirectory() {
-            string path = EditorUtility.OpenFolderPanel("Select Destination Directory", this.destinationDir, "Dest");
+        private void ButtonSelectDestination() {
+            string path = EditorUtility.SaveFilePanel(
+                "Select Destination",
+                Path.GetDirectoryName(this.gmlFilePath),
+                "exported", "obj"
+                );
             if (string.IsNullOrEmpty(path)) return;
-            this.destinationDir = path;
+            this.destinationFilePath = path;
         }
 
         private void ButtonConvert() {
-            string objPath = Path.Combine(this.destinationDir, $"{this.exportObjFileName}.obj");
             // TODO objWriterの設定はUIから変更できるようにする
 
             var gmlToObjConverter = new GmlToObjConverter(0, true, AxesConversion.RUF);
-            bool result = gmlToObjConverter.Convert(this.gmlFilePath, objPath);
+            bool result = gmlToObjConverter.Convert(this.gmlFilePath, this.destinationFilePath);
             EditorUtility.DisplayDialog(
                 "Convert Result",
                 result ? "Convert Complete!" : "Convert Failed...\nSee console log for detail.",
