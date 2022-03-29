@@ -5,11 +5,17 @@ using UnityEditor;
 using UnityEngine;
 
 namespace PlateauUnitySDK.Editor {
+    
+    /// <summary>
+    /// gmlファイルを読んでobjファイルに変換して出力する機能を持ったウィンドウです。
+    /// </summary>
     public class GMLConvertWindow : EditorWindow {
         private string gmlFilePath = "";
         private string destinationFilePath = "";
-        private string exportObjFileName = "exported";
         private const float spaceWidth = 20f;
+        private int optimizeLevel = 1;
+        private bool mergeMeshFlg = true;
+        private AxesConversion axesConversion = AxesConversion.RUF;
         
         /// <summary> ウィンドウを表示します。 </summary>
         [MenuItem("Plateau/GML Converter Window")]
@@ -24,12 +30,17 @@ namespace PlateauUnitySDK.Editor {
             DefaultPathIfEmpty(ref this.destinationFilePath);
         }
 
+        /// <summary>
+        /// パスのデフォルト値は、ファイル選択画面で最初に表示されるディレクトリに影響します。
+        /// Assetsフォルダを起点にしたほうが操作性が良さそうなので、そのようにデフォルト値を設定します。
+        /// </summary>
         private static void DefaultPathIfEmpty(ref string path) {
             if (string.IsNullOrEmpty(path)) {
-                path = Application.dataPath;
+                path = Application.dataPath; // Assetsフォルダ
             }
         }
 
+        /// <summary> GUI表示のメインメソッドです。 </summary>
         private void OnGUI() {
             EditorUtil.Heading1("1. Select GML File");
             if (GUILayout.Button("Select File")) {
@@ -47,6 +58,12 @@ namespace PlateauUnitySDK.Editor {
             GUILayout.Label("Destination obj file path:");
             GUILayout.TextArea($"{this.destinationFilePath}");
 
+            Space();
+            EditorUtil.Heading1("3. Configure");
+            this.optimizeLevel = EditorGUILayout.IntField("Optimize level", this.optimizeLevel);
+            this.mergeMeshFlg = EditorGUILayout.Toggle("Merge Mesh", this.mergeMeshFlg);
+            this.axesConversion = (AxesConversion)EditorGUILayout.EnumPopup("Axes Conversion", this.axesConversion);
+
 
             Space();
             EditorUtil.Heading1("4. Convert");
@@ -57,12 +74,14 @@ namespace PlateauUnitySDK.Editor {
         }
         
 
+        /// <summary> ボタン押下時に呼ばれます。gmlファイルを選択するウィンドウを出します。 </summary>
         private void ButtonSelectGMLFilePushed() {
             string path = EditorUtility.OpenFilePanel("Select GML File", this.gmlFilePath, "gml");
             if (string.IsNullOrEmpty(path)) return;
             this.gmlFilePath = path;
         }
         
+        /// <summary> ボタン押下時に呼ばれます。objファイルの出力先を選択するウィンドウを出します。 </summary>
         private void ButtonSelectDestination() {
             string path = EditorUtility.SaveFilePanel(
                 "Select Destination",
@@ -73,10 +92,9 @@ namespace PlateauUnitySDK.Editor {
             this.destinationFilePath = path;
         }
 
+        /// <summary> ボタン押下時に呼ばれます。gmlからobjに変換し、結果を表示します。 </summary>
         private void ButtonConvert() {
-            // TODO objWriterの設定はUIから変更できるようにする
-
-            var gmlToObjConverter = new GmlToObjConverter(0, true, AxesConversion.RUF);
+            var gmlToObjConverter = new GmlToObjConverter(this.optimizeLevel, this.mergeMeshFlg, this.axesConversion);
             bool result = gmlToObjConverter.Convert(this.gmlFilePath, this.destinationFilePath);
             EditorUtility.DisplayDialog(
                 "Convert Result",
@@ -88,7 +106,8 @@ namespace PlateauUnitySDK.Editor {
             
         }
 
-        private void Space() {
+        /// <summary> 空白を表示します。 </summary>
+        private static void Space() {
             EditorGUILayout.Space(spaceWidth);
         }
     }
