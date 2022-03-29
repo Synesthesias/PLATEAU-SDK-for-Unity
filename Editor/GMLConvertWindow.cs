@@ -1,5 +1,6 @@
 using System.IO;
 using LibPLATEAU.NET;
+using PlateauUnitySDK.Runtime;
 using UnityEditor;
 using UnityEngine;
 
@@ -78,18 +79,19 @@ namespace PlateauUnitySDK.Editor {
         }
 
         private void ButtonConvert() {
-            var parserParams = new CitygmlParserParams() {
-                Optimize = 0
-            };
-            var cityModel = CityGml.Load(this.gmlFilePath, parserParams);
             string objPath = Path.Combine(this.destinationDir, $"{this.exportObjFileName}.obj");
-            var objWriter = new ObjWriter();
             // TODO objWriterの設定はUIから変更できるようにする
-            objWriter.SetValidReferencePoint(cityModel);
-            objWriter.SetMergeMeshFlg(true);
-            objWriter.SetDestAxes(AxesConversion.RUF);
-            objWriter.Write(objPath, cityModel, this.gmlFilePath);
-            AssetDatabase.Refresh();
+
+            var gmlToObjConverter = new GmlToObjConverter(0, true, AxesConversion.RUF);
+            bool result = gmlToObjConverter.Convert(this.gmlFilePath, objPath);
+            EditorUtility.DisplayDialog(
+                "Convert Result",
+                result ? "Convert Complete!" : "Convert Failed...\nSee console log for detail.",
+                "OK");
+            if (result) {
+                AssetDatabase.Refresh();
+            }
+            
         }
 
         private void Space() {
