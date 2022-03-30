@@ -16,6 +16,7 @@ namespace PlateauUnitySDK.Editor {
         private int optimizeLevel = 1;
         private bool mergeMeshFlg = true;
         private AxesConversion axesConversion = AxesConversion.RUF;
+        private Vector2 scrollPosition;
         
         /// <summary> ウィンドウを表示します。 </summary>
         [MenuItem("Plateau/GML Converter Window")]
@@ -42,35 +43,48 @@ namespace PlateauUnitySDK.Editor {
 
         /// <summary> GUI表示のメインメソッドです。 </summary>
         private void OnGUI() {
-            EditorUtil.Heading1("1. Select GML File");
-            if (GUILayout.Button("Select File")) {
-                ButtonSelectGMLFilePushed();
+            this.scrollPosition = EditorGUILayout.BeginScrollView(this.scrollPosition);
+            
+            PlateauEditorStyle.Heading1("1. Select GML File");
+            using (new EditorGUILayout.VerticalScope(PlateauEditorStyle.BoxStyle)) {
+                if (PlateauEditorStyle.MainButton("Select File")) {
+                    ButtonSelectGMLFilePushed();
+                }
+                GUILayout.Label("GML file path:");
+                GUILayout.TextArea($"{this.gmlFilePath}");
             }
-            GUILayout.Label("GML file path:");
-            GUILayout.TextArea($"{this.gmlFilePath}");
+            
             
             Space();
-            EditorUtil.Heading1("2. Select Obj File Destination");
-            
-            if (GUILayout.Button("Select Destination")) {
-                ButtonSelectDestination();
+            PlateauEditorStyle.Heading1("2. Select Obj File Destination");
+            using (new EditorGUILayout.VerticalScope(PlateauEditorStyle.BoxStyle)) {
+                if (PlateauEditorStyle.MainButton("Select Destination")) {
+                    ButtonSelectDestination();
+                }
+                GUILayout.Label("Destination obj file path:");
+                GUILayout.TextArea($"{this.destinationFilePath}");
             }
-            GUILayout.Label("Destination obj file path:");
-            GUILayout.TextArea($"{this.destinationFilePath}");
-
-            Space();
-            EditorUtil.Heading1("3. Configure");
-            this.optimizeLevel = EditorGUILayout.IntField("Optimize level", this.optimizeLevel);
-            this.mergeMeshFlg = EditorGUILayout.Toggle("Merge Mesh", this.mergeMeshFlg);
-            this.axesConversion = (AxesConversion)EditorGUILayout.EnumPopup("Axes Conversion", this.axesConversion);
 
 
             Space();
-            EditorUtil.Heading1("4. Convert");
-            
-            if (GUILayout.Button("Convert")) {
-                ButtonConvert();
+            PlateauEditorStyle.Heading1("3. Configure");
+            using (new EditorGUILayout.VerticalScope(PlateauEditorStyle.BoxStyle)) {
+                this.optimizeLevel = EditorGUILayout.IntField("Optimize level", this.optimizeLevel);
+                this.mergeMeshFlg = EditorGUILayout.Toggle("Merge Mesh", this.mergeMeshFlg);
+                this.axesConversion = (AxesConversion)EditorGUILayout.EnumPopup("Axes Conversion", this.axesConversion);
             }
+            
+            Space();
+            
+            PlateauEditorStyle.Heading1("4. Convert");
+            using (new EditorGUILayout.VerticalScope(PlateauEditorStyle.BoxStyle)) {
+                if (PlateauEditorStyle.MainButton("Convert")) {
+                    ButtonConvert();
+                }
+            }
+            
+            EditorGUILayout.EndScrollView();
+            
         }
         
 
