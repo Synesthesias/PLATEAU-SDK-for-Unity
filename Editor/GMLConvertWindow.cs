@@ -13,7 +13,7 @@ namespace PlateauUnitySDK.Editor {
         private string gmlFilePath = "";
         private string destinationFilePath = "";
         private const float spaceWidth = 20f;
-        private int optimizeLevel = 1;
+        private bool optimizeFlg = true;
         private bool mergeMeshFlg = true;
         private AxesConversion axesConversion = AxesConversion.RUF;
         private Vector2 scrollPosition;
@@ -69,7 +69,7 @@ namespace PlateauUnitySDK.Editor {
             Space();
             PlateauEditorStyle.Heading1("3. Configure");
             using (new EditorGUILayout.VerticalScope(PlateauEditorStyle.BoxStyle)) {
-                this.optimizeLevel = EditorGUILayout.IntField("Optimize level", this.optimizeLevel);
+                this.optimizeFlg = EditorGUILayout.Toggle("Optimize level", this.optimizeFlg);
                 this.mergeMeshFlg = EditorGUILayout.Toggle("Merge Mesh", this.mergeMeshFlg);
                 this.axesConversion = (AxesConversion)EditorGUILayout.EnumPopup("Axes Conversion", this.axesConversion);
             }
@@ -108,7 +108,7 @@ namespace PlateauUnitySDK.Editor {
 
         /// <summary> ボタン押下時に呼ばれます。gmlからobjに変換し、結果を表示します。 </summary>
         private void ButtonConvert() {
-            var gmlToObjConverter = new GmlToObjConverter(this.optimizeLevel, this.mergeMeshFlg, this.axesConversion);
+            var gmlToObjConverter = new GmlToObjConverter(this.optimizeFlg, this.mergeMeshFlg, this.axesConversion);
             bool result = gmlToObjConverter.Convert(this.gmlFilePath, this.destinationFilePath);
             EditorUtility.DisplayDialog(
                 "Convert Result",
