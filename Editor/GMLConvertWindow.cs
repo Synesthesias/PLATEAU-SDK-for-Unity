@@ -47,7 +47,7 @@ namespace PlateauUnitySDK.Editor {
             
             PlateauEditorStyle.Heading1("1. Select GML File");
             using (new EditorGUILayout.VerticalScope(PlateauEditorStyle.BoxStyle)) {
-                if (PlateauEditorStyle.MainButton("Select File")) {
+                if (PlateauEditorStyle.MainButton("Select gml File")) {
                     ButtonSelectGMLFilePushed();
                 }
                 GUILayout.Label("GML file path:");
@@ -58,7 +58,7 @@ namespace PlateauUnitySDK.Editor {
             Space();
             PlateauEditorStyle.Heading1("2. Select Obj File Destination");
             using (new EditorGUILayout.VerticalScope(PlateauEditorStyle.BoxStyle)) {
-                if (PlateauEditorStyle.MainButton("Select Destination")) {
+                if (PlateauEditorStyle.MainButton("Select obj Destination")) {
                     ButtonSelectDestination();
                 }
                 GUILayout.Label("Destination obj file path:");
@@ -69,7 +69,7 @@ namespace PlateauUnitySDK.Editor {
             Space();
             PlateauEditorStyle.Heading1("3. Configure");
             using (new EditorGUILayout.VerticalScope(PlateauEditorStyle.BoxStyle)) {
-                this.optimizeFlg = EditorGUILayout.Toggle("Optimize level", this.optimizeFlg);
+                this.optimizeFlg = EditorGUILayout.Toggle("Optimize", this.optimizeFlg);
                 this.mergeMeshFlg = EditorGUILayout.Toggle("Merge Mesh", this.mergeMeshFlg);
                 this.axesConversion = (AxesConversion)EditorGUILayout.EnumPopup("Axes Conversion", this.axesConversion);
             }
