@@ -4,6 +4,9 @@
     "displayName": "Plateau Unity SDK",
     "description": "PLATEAUのUnity向けSDKです。",
     "unity": "2020.3",
+    "dependencies": {
+        "com.unity.formats.fbx" : "4.1.2"
+    },
     "author":{
         "name": "Synesthesias Inc."
     }
