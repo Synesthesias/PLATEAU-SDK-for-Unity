@@ -7,23 +7,25 @@ namespace PlateauUnitySDK.Runtime {
     /// <summary>
     /// gmlファイルをobjファイルにコンバートします。
     /// </summary>
-    public class GmlToObjConverter {
+    public class GmlToObjConverter : IFileConverter {
         /// <summary> ObjWriter は変換処理をC++のDLLに委譲します。 </summary>
-        private ObjWriter objWriter = new ObjWriter();
+        private readonly ObjWriter objWriter = new ObjWriter();
         private CitygmlParserParams gmlParserParams;
         private bool mergeMeshFlg;
         private AxesConversion axesConversion;
+
+        
 
         /// <summary>
         /// コンバートの設定を引数で渡します。
         /// </summary>
         /// <param name="optimizeFlg">trueのとき最適化します。</param>
-        /// <param name="mergeMeshFlg">trueのとき、メッシュをマージしてオブジェクト数を削減します。</param>
-        /// <param name="axesConversion">座標軸の向きです。Unityの場合は通常RUFです。</param>
-        public GmlToObjConverter(bool optimizeFlg, bool mergeMeshFlg, AxesConversion axesConversion) {
+        /// <param name="mergeMeshFlgArg">trueのとき、メッシュをマージしてオブジェクト数を削減します。</param>
+        /// <param name="axesConversionArg">座標軸の向きです。Unityの場合は通常RUFです。</param>
+        public void SetConfig(bool optimizeFlg, bool mergeMeshFlgArg, AxesConversion axesConversionArg) {
             this.gmlParserParams.Optimize = optimizeFlg ? 1 : 0;
-            this.mergeMeshFlg = mergeMeshFlg;
-            this.axesConversion = axesConversion;
+            this.mergeMeshFlg = mergeMeshFlgArg;
+            this.axesConversion = axesConversionArg;
         }
 
         /// <summary>

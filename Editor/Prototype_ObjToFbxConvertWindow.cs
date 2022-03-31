@@ -21,7 +21,7 @@ namespace PlateauUnitySDK.Editor {
         private Vector2 scrollPosition;
         
         /// <summary> ウィンドウを表示します。 </summary>
-        [MenuItem("Plateau/Obj to Fbx Convert Window")]
+        [MenuItem("Plateau/Prototye Obj to Fbx Convert Window")]
         private static void Init() {
             var window = GetWindow<Prototype_ObjToFbxConvertWindow>("Obj to Fbx Convert Window");
             window.Show();
