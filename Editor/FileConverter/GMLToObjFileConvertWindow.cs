@@ -1,34 +1,32 @@
-using System.IO;
 using LibPLATEAU.NET;
-using PlateauUnitySDK.Runtime;
 using UnityEditor;
 using UnityEngine;
 
-namespace PlateauUnitySDK.Editor {
+namespace PlateauUnitySDK.Editor.FileConverter {
     
     /// <summary>
     /// gmlファイルを読んでobjファイルに変換して出力する機能を持ったウィンドウです。
     /// </summary>
-    public class GMLConvertWindow : EditorWindow {
-        private FileConvertEditorWindowUtil windowUtil = new FileConvertEditorWindowUtil();
-        private GmlToObjConverter converter;
+    public class GMLToObjFileConvertWindow : EditorWindow {
+        private readonly ConvertFileSelectorGUI fileSelectorGUI = new ConvertFileSelectorGUI();
+        private GmlToObjFileConverter fileConverter;
         private bool optimizeFlg = true;
         private bool mergeMeshFlg = true;
         private AxesConversion axesConversion = AxesConversion.RUF;
         private Vector2 scrollPosition;
         
         /// <summary> ウィンドウを表示します。 </summary>
-        [MenuItem("Plateau/GML Converter Window")]
+        [MenuItem("Plateau/GML to OBJ File Converter Window")]
         private static void Init() {
-            var window = GetWindow<GMLConvertWindow>("GML Convert Window");
+            var window = GetWindow<GMLToObjFileConvertWindow>("GML Convert Window");
             window.Show();
-            window.converter = new GmlToObjConverter();
-            window.converter.SetConfig(window.optimizeFlg, window.mergeMeshFlg, window.axesConversion);
+            window.fileConverter = new GmlToObjFileConverter();
+            window.fileConverter.SetConfig(window.optimizeFlg, window.mergeMeshFlg, window.axesConversion);
         }
 
         /// <summary> 初期化処理のうち、Unityの仕様で Init に書けない部分をここに書きます。 </summary>
         private void OnEnable() {
-            this.windowUtil.OnEnable();
+            this.fileSelectorGUI.OnEnable();
         }
 
         
@@ -40,8 +38,8 @@ namespace PlateauUnitySDK.Editor {
             PlateauEditorStyle.Heading1("File Convert Window : GML to OBJ");
             EditorGUILayout.Space(15f);
             
-            this.windowUtil.PrintSourceFileSelectMenu("gml");
-            this.windowUtil.PrintDestinationFileSelectMenu("obj");
+            this.fileSelectorGUI.SourceFileSelectMenu("gml");
+            this.fileSelectorGUI.DestinationFileSelectMenu("obj");
 
             
             PlateauEditorStyle.Heading1("3. Configure");
@@ -51,12 +49,12 @@ namespace PlateauUnitySDK.Editor {
                 this.mergeMeshFlg = EditorGUILayout.Toggle("Merge Mesh", this.mergeMeshFlg);
                 this.axesConversion = (AxesConversion)EditorGUILayout.EnumPopup("Axes Conversion", this.axesConversion);
                 if (EditorGUI.EndChangeCheck()) {
-                    this.converter.SetConfig(this.optimizeFlg, this.mergeMeshFlg, this.axesConversion);
+                    this.fileConverter.SetConfig(this.optimizeFlg, this.mergeMeshFlg, this.axesConversion);
                 }
             }
-            FileConvertEditorWindowUtil.Space();
+            ConvertFileSelectorGUI.Space();
 
-            this.windowUtil.PrintConvertButton(converter);
+            this.fileSelectorGUI.PrintConvertButton(this.fileConverter);
             
             EditorGUILayout.EndScrollView();
             

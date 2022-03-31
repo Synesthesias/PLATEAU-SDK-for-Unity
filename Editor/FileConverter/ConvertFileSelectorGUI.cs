@@ -1,16 +1,17 @@
 using System.IO;
-using PlateauUnitySDK.Runtime;
 using UnityEditor;
 using UnityEngine;
 
-namespace PlateauUnitySDK.Editor {
+namespace PlateauUnitySDK.Editor.FileConverter {
     
     /// <summary>
-    /// ファイルを受け取り、変換してファイルを出力するEditorWindowについて、共通機能をまとめたクラスです。
+    /// ファイルを受け取り、変換してファイルを出力する各EditorWindowのうち、共通機能をまとめたクラスです。
+    /// 次の機能とGUIの描画を提供します:
+    /// ・変換元ファイルの選択　・変換後ファイルのパスの選択　・変換ボタン
     /// </summary>
-    public class FileConvertEditorWindowUtil {
-        public string sourceFilePath;
-        public string destinationFilePath;
+    public class ConvertFileSelectorGUI {
+        private string sourceFilePath;
+        private string destinationFilePath;
         private const float spaceWidth = 20f;
 
         /// <summary> 初期化処理のうち、Unityの仕様で Init に書けない部分をここに書きます。 </summary>
@@ -22,7 +23,7 @@ namespace PlateauUnitySDK.Editor {
         /// <summary>
         /// 変換元ファイルを選択するGUIを表示します。
         /// </summary>
-        public void PrintSourceFileSelectMenu(string srcFileExtension) {
+        public void SourceFileSelectMenu(string srcFileExtension) {
             PlateauEditorStyle.Heading1($"1. Select {srcFileExtension} File");
             using (new EditorGUILayout.VerticalScope(PlateauEditorStyle.BoxStyle)) {
                 if (PlateauEditorStyle.MainButton($"Select {srcFileExtension} File")) {
@@ -37,7 +38,7 @@ namespace PlateauUnitySDK.Editor {
         /// <summary>
         /// 変換後ファイルのパスを選択するGUIを表示します。
         /// </summary>
-        public void PrintDestinationFileSelectMenu(string dstFileExtension) {
+        public void DestinationFileSelectMenu(string dstFileExtension) {
             PlateauEditorStyle.Heading1($"2. Select {dstFileExtension} File Destination");
             using (new EditorGUILayout.VerticalScope(PlateauEditorStyle.BoxStyle)) {
                 if (PlateauEditorStyle.MainButton($"Select {dstFileExtension} Destination")) {

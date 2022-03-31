@@ -1,4 +1,4 @@
-﻿namespace PlateauUnitySDK.Runtime {
+﻿namespace PlateauUnitySDK.Editor.FileConverter {
     
     /// <summary>
     /// ファイル変換機能のインターフェイスです。

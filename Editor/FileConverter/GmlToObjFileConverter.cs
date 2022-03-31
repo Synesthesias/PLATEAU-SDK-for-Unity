@@ -3,11 +3,11 @@ using System.IO;
 using LibPLATEAU.NET;
 using UnityEngine;
 
-namespace PlateauUnitySDK.Runtime {
+namespace PlateauUnitySDK.Editor.FileConverter {
     /// <summary>
     /// gmlファイルをobjファイルにコンバートします。
     /// </summary>
-    public class GmlToObjConverter : IFileConverter {
+    public class GmlToObjFileConverter : IFileConverter {
         /// <summary> ObjWriter は変換処理をC++のDLLに委譲します。 </summary>
         private readonly ObjWriter objWriter = new ObjWriter();
         private CitygmlParserParams gmlParserParams;
@@ -43,7 +43,7 @@ namespace PlateauUnitySDK.Runtime {
                 return false;
             }
             try {
-                var cityModel = CityGml.Load(gmlFilePath, gmlParserParams);
+                var cityModel = CityGml.Load(gmlFilePath, this.gmlParserParams);
                 this.objWriter.SetValidReferencePoint(cityModel);
                 this.objWriter.SetMergeMeshFlg(this.mergeMeshFlg);
                 this.objWriter.SetDestAxes(this.axesConversion);

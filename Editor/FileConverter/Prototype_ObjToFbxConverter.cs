@@ -9,7 +9,7 @@ using Object = UnityEngine.Object;
 
 // 仮実装、あとで消す
 
-namespace PlateauUnitySDK.Editor {
+namespace PlateauUnitySDK.Editor.FileConverter {
     public class Prototype_ObjToFbxConverter {
         public void ConvertFile() {
             var objMesh = AssetDatabase.LoadAssetAtPath<Object>("Assets/GitIgnored/exported.obj");

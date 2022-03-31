@@ -1,12 +1,11 @@
 using System.IO;
 using LibPLATEAU.NET;
-using PlateauUnitySDK.Runtime;
 using UnityEditor;
 using UnityEngine;
 
 // 仮実装、あとで消す
 
-namespace PlateauUnitySDK.Editor {
+namespace PlateauUnitySDK.Editor.FileConverter {
     
     /// <summary>
     /// objファイルを読んでfbxファイルに変換して出力する機能を持ったウィンドウです。
@@ -110,7 +109,7 @@ namespace PlateauUnitySDK.Editor {
 
         /// <summary> ボタン押下時に呼ばれます。gmlからobjに変換し、結果を表示します。 </summary>
         private void ButtonConvert() {
-            // var gmlToObjConverter = new GmlToObjConverter(this.optimizeFlg, this.mergeMeshFlg, this.axesConversion);
+            // var gmlToObjConverter = new GmlToObjFileConverter(this.optimizeFlg, this.mergeMeshFlg, this.axesConversion);
             // bool result = gmlToObjConverter.Convert(this.objFilePath, this.destinationFilePath);
             // EditorUtility.DisplayDialog(
             //     "Convert Result",
