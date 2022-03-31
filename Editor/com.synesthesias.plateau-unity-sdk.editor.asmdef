@@ -1,8 +1,9 @@
 {
     "name": "com.synesthesias.plateau-unity-sdk.editor",
-    "rootNamespace": "PlateauUnitySDK.Editor",
+    "rootNamespace": "PlateauUnitySDK",
     "references": [
-        "GUID:2f611b55791fe6e49aafec04e8adcb97"
+        "GUID:2f611b55791fe6e49aafec04e8adcb97",
+        "GUID:0f9e8f73c69964f1e8176f9a0b86f9b2"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
