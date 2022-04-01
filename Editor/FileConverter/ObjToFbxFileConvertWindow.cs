@@ -15,7 +15,7 @@ namespace PlateauUnitySDK.Editor.FileConverter {
         /// <summary> ウィンドウを表示します。 </summary>
         [MenuItem("Plateau/OBJ to FBX File Converter Window")]
         private static void Init() {
-            var window = GetWindow<ObjToFbxFileConvertWindow>("GML Convert Window");
+            var window = GetWindow<ObjToFbxFileConvertWindow>("Obj to Fbx Convert Window");
             window.Show();
             window.fileConverter = new ObjToFbxFileConverter();
             window.fileConverter.SetConfig();

@@ -1,5 +1,4 @@
 using System;
-using System.IO;
 using LibPLATEAU.NET;
 using UnityEngine;
 
@@ -33,15 +32,9 @@ namespace PlateauUnitySDK.Editor.FileConverter {
         /// 成功時はtrue,失敗時はfalseを返します。
         /// </summary>
         public bool Convert(string gmlFilePath, string exportObjFilePath) {
-            if (!File.Exists(gmlFilePath)) {
-                Debug.LogError($"gml file is not found in the path:\n{gmlFilePath}");
-                return false;
-            }
-            string extension = Path.GetExtension(gmlFilePath).ToLower();
-            if (extension != ".gml") {
-                Debug.LogError($"The file extension should be '.gml', but actual is {extension}");
-                return false;
-            }
+            if (!FilePathValidator.IsValidInputFilePath(gmlFilePath, "gml")) return false;
+            if (!FilePathValidator.IsValidOutputFilePath(exportObjFilePath, "obj")) return false;
+
             try {
                 var cityModel = CityGml.Load(gmlFilePath, this.gmlParserParams);
                 this.objWriter.SetValidReferencePoint(cityModel);
