@@ -37,7 +37,7 @@ namespace PlateauUnitySDK.Editor.FileConverter {
             
             PlateauEditorStyle.Heading1("File Convert Window : GML to OBJ");
             EditorGUILayout.Space(15f);
-            
+            EditorGUILayout.LabelField("Assetsフォルダ外のファイルも指定できます。");
             this.fileSelectorGUI.SourceFileSelectMenu("gml");
             this.fileSelectorGUI.DestinationFileSelectMenu("obj");
 

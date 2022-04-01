@@ -18,49 +18,20 @@ namespace PlateauUnitySDK.Editor.FileConverter {
         }
         
         public bool Convert(string srcFilePath, string dstFilePath) {
-            // TODO srcFilePath の拡張子が obj でない場合のエラーハンドリング (gmlも同様)
+            if (!FilePathValidator.IsValidInputFilePath(srcFilePath, "obj", true)) return false;
+            if (!FilePathValidator.IsValidOutputFilePath(dstFilePath, "fbx")) return false;
             
-            // UnityWebRequest request = UnityWebRequest.Get("file://" + srcFilePath);
-            // request.SendWebRequest();
-            // int loopCount = 0;
-            // while (!request.isDone) {
-            //     Thread.Sleep(50);
-            //     if (++loopCount > 100) {
-            //         request.Abort();
-            //         Debug.LogError("Loading obj file is timed out.");
-            //         return false;
-            //     }
-            // }
-            // if (request.result != UnityWebRequest.Result.Success) {
-            //     Debug.LogError($"Loading obj file resulted {request.result}");
-            //     return false;
-            // }
-            //
-            // request.downloadHandler.data
 
-            // TODO このロジック、パスにUnityのAssetsより前にAssetsフォルダがあったら機能しない、警告もある
-            int assetsPathStart = srcFilePath.IndexOf("Assets");
-            string srcAssetPath = srcFilePath.Substring(assetsPathStart, srcFilePath.Length - assetsPathStart);
+            string srcAssetPath = FilePathValidator.FullPathToAssetsPath(srcFilePath);
             Debug.Log(srcAssetPath);
             var objMesh = AssetDatabase.LoadAssetAtPath<Object>(srcAssetPath);
-            string exportPath = Path.Combine(Application.dataPath, "GitIgnored/exportedFbx.fbx");
+            string exportPath = dstFilePath;
 
             // ASCIIかBinaryか変更するにはProjectSettingsから行えるはずだが行えない？
             // ModelExporter.ExportObject(exportPath, objMesh);
             // TODO 設定を反映
             ExportBinaryFBX(exportPath, objMesh);
             return true;
-
-            // 参考: https://docs.unity3d.com/Packages/com.unity.formats.fbx@4.1/api/index.html
-            //
-            // using (FbxManager fbxManager = FbxManager.Create()) {
-            //     fbxManager.SetIOSettings(FbxIOSettings.Create(fbxManager, Globals.IOSROOT));
-            //     using (FbxExporter exporter = FbxExporter.Create(fbxManager, "ObjToFbxExporter")) {
-            //         bool status = exporter.Initialize(exportPath, -1, fbxManager.GetIOSettings());
-            //         
-            //     }
-            //     
-            // }
 
         }
         

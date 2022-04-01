@@ -32,7 +32,7 @@ namespace PlateauUnitySDK.Editor.FileConverter {
         /// 成功時はtrue,失敗時はfalseを返します。
         /// </summary>
         public bool Convert(string gmlFilePath, string exportObjFilePath) {
-            if (!FilePathValidator.IsValidInputFilePath(gmlFilePath, "gml")) return false;
+            if (!FilePathValidator.IsValidInputFilePath(gmlFilePath, "gml", false)) return false;
             if (!FilePathValidator.IsValidOutputFilePath(exportObjFilePath, "obj")) return false;
 
             try {

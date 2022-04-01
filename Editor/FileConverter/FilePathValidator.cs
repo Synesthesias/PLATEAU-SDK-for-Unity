@@ -8,14 +8,19 @@ namespace PlateauUnitySDK.Editor.FileConverter {
     /// ファイルパスが正しいかどうか検証します。
     /// </summary>
     public static class FilePathValidator {
-
         /// <summary>
         /// 入力ファイル用のパスとして正しければtrue,不適切であればfalseを返します。
         /// </summary>
-        public static bool IsValidInputFilePath(string filePath, string expectedExtension) {
+        /// <param name="filePath">入力ファイルのパスです。</param>
+        /// <param name="expectedExtension">入力ファイルとして想定される拡張子です。</param>
+        /// <param name="shouldFileInAssetsFolder">ファイルがUnityプロジェクトのAssetsフォルダ内にあるべきならtrue、他の場所でも良いならfalseを指定します。</param>
+        public static bool IsValidInputFilePath(string filePath, string expectedExtension, bool shouldFileInAssetsFolder) {
             try {
                 CheckFileExist(filePath);
                 CheckExtension(filePath, expectedExtension);
+                if (shouldFileInAssetsFolder) {
+                    CheckSubDirectoryOfAssets(filePath);
+                }
             }
             catch (Exception e) {
                 Debug.LogError($"Input {expectedExtension} file path is invalid:\n{e}");
@@ -68,6 +73,30 @@ namespace PlateauUnitySDK.Editor.FileConverter {
             throw new IOException(
                 $"The file extension should be '{expectedExtension}', but actual is '{actualExtension}'"
                 );
+        }
+
+        /// <summary>
+        /// ファイルパスがUnityプロジェクトのAssetsフォルダ内であるかチェックします。
+        /// そうでない場合は例外を投げます。
+        /// </summary>
+        private static void CheckSubDirectoryOfAssets(string filePath) {
+            string fullPath = Path.GetFullPath(filePath);
+            string assetsPath = Path.GetFullPath(Application.dataPath) + Path.DirectorySeparatorChar;
+            Debug.Log($"fullPath: {fullPath}, assetsPath: {assetsPath}  [path]");
+            if (fullPath.StartsWith(assetsPath)) return;
+            throw new IOException($"File must exist in Assets folder, but the path is outside Assets folder.");
+        }
+
+        /// <summary>
+        /// フルパスをAssetsフォルダからのパスに変換します。
+        /// パスがAssetsフォルダ内を指すことが前提です。
+        /// </summary>
+        public static string FullPathToAssetsPath(string filePath) {
+            CheckSubDirectoryOfAssets(filePath);
+            string fullPath = Path.GetFullPath(filePath);
+            string dataPath = Path.GetFullPath(Application.dataPath);
+            string assetsPath = "Assets/" + fullPath.Replace(dataPath, "");
+            return assetsPath;
         }
     }
 }
