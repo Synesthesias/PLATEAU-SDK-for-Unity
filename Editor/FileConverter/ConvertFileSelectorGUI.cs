@@ -24,7 +24,7 @@ namespace PlateauUnitySDK.Editor.FileConverter {
         /// 変換元ファイルを選択するGUIを表示します。
         /// </summary>
         public void SourceFileSelectMenu(string srcFileExtension) {
-            PlateauEditorStyle.Heading1($"1. Select {srcFileExtension} File");
+            PlateauEditorStyle.Heading1($"2. Select {srcFileExtension} File");
             using (PlateauEditorStyle.VerticalScope()) {
                 if (PlateauEditorStyle.MainButton($"Select {srcFileExtension} File")) {
                     ButtonSelectGMLFilePushed(srcFileExtension);
@@ -39,7 +39,7 @@ namespace PlateauUnitySDK.Editor.FileConverter {
         /// 変換後ファイルのパスを選択するGUIを表示します。
         /// </summary>
         public void DestinationFileSelectMenu(string dstFileExtension) {
-            PlateauEditorStyle.Heading1($"2. Select {dstFileExtension} File Destination");
+            PlateauEditorStyle.Heading1($"3. Select {dstFileExtension} File Destination");
             using (PlateauEditorStyle.VerticalScope()) {
                 if (PlateauEditorStyle.MainButton($"Select {dstFileExtension} Destination")) {
                     ButtonSelectDestinationPushed(dstFileExtension);
@@ -55,7 +55,7 @@ namespace PlateauUnitySDK.Editor.FileConverter {
         /// ボタンが押された時、引数の converter.Convert メソッドが実行されます。
         /// </summary>
         public void PrintConvertButton(IFileConverter converter) {
-            PlateauEditorStyle.Heading1("4. Convert");
+            PlateauEditorStyle.Heading1("5. Convert");
             using (PlateauEditorStyle.VerticalScope()) {
                 if (PlateauEditorStyle.MainButton("Convert")) {
                     ButtonConvertPushed(converter);

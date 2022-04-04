@@ -5,45 +5,35 @@ using UnityEngine;
 namespace PlateauUnitySDK.Editor.FileConverter {
     
     /// <summary>
-    /// gmlファイルを読んでobjファイルに変換して出力する機能を持ったウィンドウです。
+    /// gmlファイルを読んでobjファイルに変換して出力する機能を持ったウィンドウのタブです。
     /// </summary>
-    public class GmlToObjFileConvertWindow : EditorWindow {
+    public class GmlToObjFileConvertTab : IEditorWindowContents {
         private readonly ConvertFileSelectorGUI fileSelectorGUI = new ConvertFileSelectorGUI();
-        private GmlToObjFileConverter fileConverter;
+        private readonly GmlToObjFileConverter fileConverter;
         private bool optimizeFlg = true;
         private bool mergeMeshFlg = true;
         private AxesConversion axesConversion = AxesConversion.RUF;
         private Vector2 scrollPosition;
         
-        /// <summary> ウィンドウを表示します。 </summary>
-        [MenuItem("Plateau/GML to OBJ File Converter Window")]
-        private static void Init() {
-            var window = GetWindow<GmlToObjFileConvertWindow>("GML Convert Window");
-            window.Show();
-            window.fileConverter = new GmlToObjFileConverter();
-            window.fileConverter.SetConfig(window.optimizeFlg, window.mergeMeshFlg, window.axesConversion);
-        }
-
-        /// <summary> 初期化処理のうち、Unityの仕様で Init に書けない部分をここに書きます。 </summary>
-        private void OnEnable() {
+        /// <summary>初期化処理です。</summary>
+        public GmlToObjFileConvertTab() {
+            this.fileConverter = new GmlToObjFileConverter();
+            this.fileConverter.SetConfig(this.optimizeFlg, this.mergeMeshFlg, this.axesConversion);
             this.fileSelectorGUI.OnEnable();
         }
 
-        
 
         /// <summary> GUI表示のメインメソッドです。 </summary>
-        private void OnGUI() {
+        public void DrawGUI() {
             this.scrollPosition = EditorGUILayout.BeginScrollView(this.scrollPosition);
             
             // ファイルの入出力指定のGUIを fileSelectorGUI に委譲して描画します。
-            PlateauEditorStyle.Heading1("File Convert Window : GML to OBJ");
-            EditorGUILayout.Space(15f);
             EditorGUILayout.LabelField("Assetsフォルダ外のファイルも指定できます。");
             this.fileSelectorGUI.SourceFileSelectMenu("gml");
             this.fileSelectorGUI.DestinationFileSelectMenu("obj");
 
            // 変換に関する設定をするGUIです。 
-            PlateauEditorStyle.Heading1("3. Configure");
+            PlateauEditorStyle.Heading1("4. Configure");
             using (PlateauEditorStyle.VerticalScope()) {
                 EditorGUI.BeginChangeCheck();
                 this.optimizeFlg = EditorGUILayout.Toggle("Optimize", this.optimizeFlg);
