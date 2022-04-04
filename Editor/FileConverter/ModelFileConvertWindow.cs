@@ -11,8 +11,9 @@ namespace PlateauUnitySDK.Editor.FileConverter {
         private bool isInitialized;
 
         [MenuItem("Plateau/Model File Converter Window")]
-        private static void Show() {
+        private static void Open() {
             var window = GetWindow<ModelFileConvertWindow>("Model File Converter");
+            window.Show();
             window.Init();
         }
 
@@ -25,20 +26,12 @@ namespace PlateauUnitySDK.Editor.FileConverter {
         }
 
         private void OnGUI() {
-            if(!this.isInitialized) Init();
+            if(!this.isInitialized || this.tabContents == null) Init();
             PlateauEditorStyle.Heading1("1. Choose Convert Type");
-            using (PlateauEditorStyle.VerticalScope()) {
-                using (new EditorGUILayout.HorizontalScope()) {
-                    this.tabIndex = GUILayout.Toolbar(
-                        this.tabIndex,
-                        new[] {"GML to OBJ", "OBJ to FBX"},
-                        "LargeButton",
-                        GUI.ToolbarButtonSize.Fixed
-                    );
-                }
-            }
-
-            this.tabContents[this.tabIndex].DrawGUI();
+            
+            this.tabIndex = PlateauEditorStyle.Tabs(this.tabIndex, "GML to OBJ", "OBJ to FBX");
+            var tabContent = this.tabContents[this.tabIndex];
+            tabContent.DrawGUI();
         }
     }
 }

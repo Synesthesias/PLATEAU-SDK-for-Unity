@@ -39,7 +39,7 @@ namespace PlateauUnitySDK.Editor
         /// <summary>
         /// GUIのコンテンツをまとめるのに利用できるboxです。
         /// </summary>
-        public static GUIStyle BoxStyle {
+        private static GUIStyle BoxStyle {
             get {
                 GUIStyle style = new GUIStyle(GUI.skin.box) {
                     padding = new RectOffset(8, 8, 8, 8),
@@ -48,7 +48,25 @@ namespace PlateauUnitySDK.Editor
                 return style;
             }
         }
-        
+
+        /// <summary>
+        /// タブ形式で複数のボタンから選ぶGUIを表示し、選択されたタブのインデックスを返します。
+        /// 引数には現在のタブのインデックスと、paramsで各タブの表示名を与えます。
+        /// </summary>
+        public static int Tabs(int currentTabIndex, params string[] tabNames) {
+            int newTabIndex;
+            using (VerticalScope()) {
+                using (new EditorGUILayout.HorizontalScope()) {
+                    newTabIndex = GUILayout.Toolbar(
+                        currentTabIndex,
+                        tabNames,
+                        "LargeButton",
+                        GUI.ToolbarButtonSize.Fixed
+                    );
+                }
+            }
+            return newTabIndex;
+        }
 
         /// <summary> 色指定でボタンを描画します。 </summary>
         private static bool DrawButton(string text, Color buttonColorTint) {
