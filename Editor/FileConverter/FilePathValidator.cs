@@ -82,7 +82,6 @@ namespace PlateauUnitySDK.Editor.FileConverter {
         private static void CheckSubDirectoryOfAssets(string filePath) {
             string fullPath = Path.GetFullPath(filePath);
             string assetsPath = Path.GetFullPath(Application.dataPath) + Path.DirectorySeparatorChar;
-            Debug.Log($"fullPath: {fullPath}, assetsPath: {assetsPath}  [path]");
             if (fullPath.StartsWith(assetsPath)) return;
             throw new IOException($"File must exist in Assets folder, but the path is outside Assets folder.");
         }

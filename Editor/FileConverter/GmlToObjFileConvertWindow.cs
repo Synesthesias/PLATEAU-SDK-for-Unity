@@ -35,13 +35,14 @@ namespace PlateauUnitySDK.Editor.FileConverter {
         private void OnGUI() {
             this.scrollPosition = EditorGUILayout.BeginScrollView(this.scrollPosition);
             
+            // ファイルの入出力指定のGUIを fileSelectorGUI に委譲して描画します。
             PlateauEditorStyle.Heading1("File Convert Window : GML to OBJ");
             EditorGUILayout.Space(15f);
             EditorGUILayout.LabelField("Assetsフォルダ外のファイルも指定できます。");
             this.fileSelectorGUI.SourceFileSelectMenu("gml");
             this.fileSelectorGUI.DestinationFileSelectMenu("obj");
 
-            
+           // 変換に関する設定をするGUIです。 
             PlateauEditorStyle.Heading1("3. Configure");
             using (new EditorGUILayout.VerticalScope(PlateauEditorStyle.BoxStyle)) {
                 EditorGUI.BeginChangeCheck();
@@ -54,6 +55,7 @@ namespace PlateauUnitySDK.Editor.FileConverter {
             }
             ConvertFileSelectorGUI.Space();
 
+            // 変換ボタンです。
             this.fileSelectorGUI.PrintConvertButton(this.fileConverter);
             
             EditorGUILayout.EndScrollView();

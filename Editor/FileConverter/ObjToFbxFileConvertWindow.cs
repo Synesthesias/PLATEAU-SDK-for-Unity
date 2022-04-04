@@ -32,7 +32,8 @@ namespace PlateauUnitySDK.Editor.FileConverter {
         /// <summary> GUI表示のメインメソッドです。 </summary>
         private void OnGUI() {
             this.scrollPosition = EditorGUILayout.BeginScrollView(this.scrollPosition);
-            
+           
+            // ファイルの入出力指定のGUIを fileSelectorGUI に委譲して描画します。
             PlateauEditorStyle.Heading1("File Convert Window : OBJ to FBX");
             EditorGUILayout.Space(15f);
             EditorGUILayout.LabelField("入力objファイルはAssetsフォルダ内のファイルのみ指定できますが、");
@@ -40,7 +41,7 @@ namespace PlateauUnitySDK.Editor.FileConverter {
             this.fileSelectorGUI.SourceFileSelectMenu("obj");
             this.fileSelectorGUI.DestinationFileSelectMenu("fbx");
 
-            
+            // fbxファイル特有の設定をするGUIです。
             PlateauEditorStyle.Heading1("3. Configure");
             using (new EditorGUILayout.VerticalScope(PlateauEditorStyle.BoxStyle)) {
                 EditorGUI.BeginChangeCheck();
@@ -51,6 +52,7 @@ namespace PlateauUnitySDK.Editor.FileConverter {
             }
             ConvertFileSelectorGUI.Space();
 
+            // 変換ボタンです。
             this.fileSelectorGUI.PrintConvertButton(this.fileConverter);
             
             EditorGUILayout.EndScrollView();

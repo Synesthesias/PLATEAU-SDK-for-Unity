@@ -15,31 +15,40 @@ namespace PlateauUnitySDK.Editor.FileConverter {
     public class ObjToFbxFileConverter : IFileConverter {
         private FbxFormat fbxFormat = FbxFormat.Binary;
 
+        /// <summary>
+        /// Fbxのフォーマットには Binary と Ascii があります。
+        /// Binaryは ファイルサイズが小さく、多くのソフトウェアで利用できます。
+        /// Asciiは Blenderで非対応(v2.93時点)となりますが、ファイルの中身を文字列として編集したい場合には有効です。
+        /// </summary>
         public enum FbxFormat {
             Binary,
             Ascii
         }
 
+        /// <summary>
+        /// 出力するfbxファイルに関する設定をします。
+        /// </summary>
         public void SetConfig(FbxFormat nextFbxFormat) {
             this.fbxFormat = nextFbxFormat;
         }
 
+        /// <summary>
+        /// objファイルを読み込みfbxファイルを出力します。
+        /// </summary>
         public bool Convert(string srcFilePath, string dstFilePath) {
             if (!FilePathValidator.IsValidInputFilePath(srcFilePath, "obj", true)) return false;
             if (!FilePathValidator.IsValidOutputFilePath(dstFilePath, "fbx")) return false;
 
 
             string srcAssetPath = FilePathValidator.FullPathToAssetsPath(srcFilePath);
-            Debug.Log(srcAssetPath);
             var objMesh = AssetDatabase.LoadAssetAtPath<Object>(srcAssetPath);
-            string exportPath = dstFilePath;
 
             switch (this.fbxFormat) {
                 case FbxFormat.Binary:
-                    ExportBinaryFBX(exportPath, objMesh);
+                    ExportBinaryFBX(dstFilePath, objMesh);
                     break;
                 case FbxFormat.Ascii:
-                    ExportAsciiFBX(exportPath, objMesh);
+                    ExportAsciiFBX(dstFilePath, objMesh);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -52,7 +61,7 @@ namespace PlateauUnitySDK.Editor.FileConverter {
         /// </summary>
         private void ExportAsciiFBX(string exportPath, Object objMesh) {
             // ModelExporterのデフォルト設定が Asciiフォーマットなので、
-            // 普通に下のメソッドを実行すれば AsciiフォーマットのFBXファイルができます。
+            // 普通に下記のメソッドを実行すれば AsciiフォーマットのFBXファイルができます。
             ModelExporter.ExportObject(exportPath, objMesh);
         }
 
