@@ -54,6 +54,8 @@ namespace PlateauUnitySDK.Editor
         /// 引数には現在のタブのインデックスと、paramsで各タブの表示名を与えます。
         /// </summary>
         public static int Tabs(int currentTabIndex, params string[] tabNames) {
+            var prevColor = GUI.backgroundColor;
+            GUI.backgroundColor = mainButtonColorTint;
             int newTabIndex;
             using (VerticalScope()) {
                 using (new EditorGUILayout.HorizontalScope()) {
@@ -64,7 +66,9 @@ namespace PlateauUnitySDK.Editor
                         GUI.ToolbarButtonSize.Fixed
                     );
                 }
+                EditorGUILayout.LabelField($"Selected : {tabNames[newTabIndex]}");
             }
+            GUI.backgroundColor = prevColor;
             return newTabIndex;
         }
 
@@ -81,12 +85,5 @@ namespace PlateauUnitySDK.Editor
             return isButtonPushed;
         }
         
-        private static Texture2D GenerateColoredTexture(Color color) {
-            var tex = new Texture2D(1, 1);
-            tex.SetPixel(0, 0, color);
-            tex.Apply();
-            return tex;
-        }
-
     }
 }

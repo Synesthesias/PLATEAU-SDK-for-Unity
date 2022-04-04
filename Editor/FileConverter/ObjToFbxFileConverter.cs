@@ -1,5 +1,4 @@
 using System;
-using System.IO;
 using System.Linq;
 using System.Reflection;
 using UnityEditor;
@@ -116,7 +115,7 @@ namespace PlateauUnitySDK.Editor.FileConverter {
                 LogAbort();
                 return;
             }
-            exportObjectMethod.Invoke(null, new object[] {filePath, singleObject, optionsInstance});
+            exportObjectMethod.Invoke(null, new [] {filePath, singleObject, optionsInstance});
         }
 
         /// <summary> "Aborting." というメッセージでエラーログを出します。</summary>
