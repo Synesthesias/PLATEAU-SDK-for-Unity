@@ -1,3 +1,4 @@
+using UnityEditor;
 using UnityEngine;
 
 namespace PlateauUnitySDK.Editor
@@ -28,6 +29,16 @@ namespace PlateauUnitySDK.Editor
             return isButtonPushed;
         }
 
+        /// <summary>
+        /// IDisposable な VerticalScope を作り、中のGUIコンテンツを BoxStyle で囲みます。
+        /// </summary>
+        public static EditorGUILayout.VerticalScope VerticalScope() {
+            return new EditorGUILayout.VerticalScope(BoxStyle);
+        }
+
+        /// <summary>
+        /// GUIのコンテンツをまとめるのに利用できるboxです。
+        /// </summary>
         public static GUIStyle BoxStyle {
             get {
                 GUIStyle style = new GUIStyle(GUI.skin.box) {
@@ -37,6 +48,7 @@ namespace PlateauUnitySDK.Editor
                 return style;
             }
         }
+        
 
         /// <summary> 色指定でボタンを描画します。 </summary>
         private static bool DrawButton(string text, Color buttonColorTint) {

@@ -36,14 +36,17 @@ namespace PlateauUnitySDK.Editor.FileConverter {
             // ファイルの入出力指定のGUIを fileSelectorGUI に委譲して描画します。
             PlateauEditorStyle.Heading1("File Convert Window : OBJ to FBX");
             EditorGUILayout.Space(15f);
-            EditorGUILayout.LabelField("入力objファイルはAssetsフォルダ内のファイルのみ指定できますが、");
-            EditorGUILayout.LabelField("出力fbxファイルはAssetsフォルダの外でも指定できます。");
+
+            using (PlateauEditorStyle.VerticalScope()) {
+                EditorGUILayout.LabelField("入力objファイルはAssetsフォルダ内のファイルのみ指定できますが、");
+                EditorGUILayout.LabelField("出力fbxファイルはAssetsフォルダの外でも指定できます。");
+            }
             this.fileSelectorGUI.SourceFileSelectMenu("obj");
             this.fileSelectorGUI.DestinationFileSelectMenu("fbx");
 
             // fbxファイル特有の設定をするGUIです。
             PlateauEditorStyle.Heading1("3. Configure");
-            using (new EditorGUILayout.VerticalScope(PlateauEditorStyle.BoxStyle)) {
+            using (PlateauEditorStyle.VerticalScope()) {
                 EditorGUI.BeginChangeCheck();
                 this.fbxFormat = (FbxFormat)EditorGUILayout.EnumPopup("FBX Format",this.fbxFormat);
                 if (EditorGUI.EndChangeCheck()) {

@@ -25,7 +25,7 @@ namespace PlateauUnitySDK.Editor.FileConverter {
         /// </summary>
         public void SourceFileSelectMenu(string srcFileExtension) {
             PlateauEditorStyle.Heading1($"1. Select {srcFileExtension} File");
-            using (new EditorGUILayout.VerticalScope(PlateauEditorStyle.BoxStyle)) {
+            using (PlateauEditorStyle.VerticalScope()) {
                 if (PlateauEditorStyle.MainButton($"Select {srcFileExtension} File")) {
                     ButtonSelectGMLFilePushed(srcFileExtension);
                 }
@@ -40,7 +40,7 @@ namespace PlateauUnitySDK.Editor.FileConverter {
         /// </summary>
         public void DestinationFileSelectMenu(string dstFileExtension) {
             PlateauEditorStyle.Heading1($"2. Select {dstFileExtension} File Destination");
-            using (new EditorGUILayout.VerticalScope(PlateauEditorStyle.BoxStyle)) {
+            using (PlateauEditorStyle.VerticalScope()) {
                 if (PlateauEditorStyle.MainButton($"Select {dstFileExtension} Destination")) {
                     ButtonSelectDestinationPushed(dstFileExtension);
                 }
@@ -56,7 +56,7 @@ namespace PlateauUnitySDK.Editor.FileConverter {
         /// </summary>
         public void PrintConvertButton(IFileConverter converter) {
             PlateauEditorStyle.Heading1("4. Convert");
-            using (new EditorGUILayout.VerticalScope(PlateauEditorStyle.BoxStyle)) {
+            using (PlateauEditorStyle.VerticalScope()) {
                 if (PlateauEditorStyle.MainButton("Convert")) {
                     ButtonConvertPushed(converter);
                 }

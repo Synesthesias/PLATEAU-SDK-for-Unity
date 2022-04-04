@@ -44,7 +44,7 @@ namespace PlateauUnitySDK.Editor.FileConverter {
 
            // 変換に関する設定をするGUIです。 
             PlateauEditorStyle.Heading1("3. Configure");
-            using (new EditorGUILayout.VerticalScope(PlateauEditorStyle.BoxStyle)) {
+            using (PlateauEditorStyle.VerticalScope()) {
                 EditorGUI.BeginChangeCheck();
                 this.optimizeFlg = EditorGUILayout.Toggle("Optimize", this.optimizeFlg);
                 this.mergeMeshFlg = EditorGUILayout.Toggle("Merge Mesh", this.mergeMeshFlg);
