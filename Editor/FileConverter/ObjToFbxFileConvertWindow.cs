@@ -1,6 +1,6 @@
-using LibPLATEAU.NET;
 using UnityEditor;
 using UnityEngine;
+using static PlateauUnitySDK.Editor.FileConverter.ObjToFbxFileConverter;
 
 namespace PlateauUnitySDK.Editor.FileConverter {
     
@@ -11,6 +11,7 @@ namespace PlateauUnitySDK.Editor.FileConverter {
         private readonly ConvertFileSelectorGUI fileSelectorGUI = new ConvertFileSelectorGUI();
         private ObjToFbxFileConverter fileConverter;
         private Vector2 scrollPosition;
+        private FbxFormat fbxFormat;
         
         /// <summary> ウィンドウを表示します。 </summary>
         [MenuItem("Plateau/OBJ to FBX File Converter Window")]
@@ -18,7 +19,7 @@ namespace PlateauUnitySDK.Editor.FileConverter {
             var window = GetWindow<ObjToFbxFileConvertWindow>("Obj to Fbx Convert Window");
             window.Show();
             window.fileConverter = new ObjToFbxFileConverter();
-            window.fileConverter.SetConfig();
+            window.fileConverter.SetConfig(window.fbxFormat);
         }
 
         /// <summary> 初期化処理のうち、Unityの仕様で Init に書けない部分をここに書きます。 </summary>
@@ -43,9 +44,9 @@ namespace PlateauUnitySDK.Editor.FileConverter {
             PlateauEditorStyle.Heading1("3. Configure");
             using (new EditorGUILayout.VerticalScope(PlateauEditorStyle.BoxStyle)) {
                 EditorGUI.BeginChangeCheck();
-                // TODO ここに設定を記載
+                this.fbxFormat = (FbxFormat)EditorGUILayout.EnumPopup("FBX Format",this.fbxFormat);
                 if (EditorGUI.EndChangeCheck()) {
-                    this.fileConverter.SetConfig();
+                    this.fileConverter.SetConfig(this.fbxFormat);
                 }
             }
             ConvertFileSelectorGUI.Space();

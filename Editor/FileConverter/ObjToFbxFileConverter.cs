@@ -7,54 +7,112 @@ using UnityEditor.Formats.Fbx.Exporter;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-// 仮実装、あとで消す
 
 namespace PlateauUnitySDK.Editor.FileConverter {
+    /// <summary>
+    /// Objファイルをfbxファイルに変換します。
+    /// </summary>
     public class ObjToFbxFileConverter : IFileConverter {
+        private FbxFormat fbxFormat = FbxFormat.Binary;
 
-
-        public void SetConfig() {
-            // TODO
+        public enum FbxFormat {
+            Binary,
+            Ascii
         }
-        
+
+        public void SetConfig(FbxFormat nextFbxFormat) {
+            this.fbxFormat = nextFbxFormat;
+        }
+
         public bool Convert(string srcFilePath, string dstFilePath) {
             if (!FilePathValidator.IsValidInputFilePath(srcFilePath, "obj", true)) return false;
             if (!FilePathValidator.IsValidOutputFilePath(dstFilePath, "fbx")) return false;
-            
+
 
             string srcAssetPath = FilePathValidator.FullPathToAssetsPath(srcFilePath);
             Debug.Log(srcAssetPath);
             var objMesh = AssetDatabase.LoadAssetAtPath<Object>(srcAssetPath);
             string exportPath = dstFilePath;
 
-            // ASCIIかBinaryか変更するにはProjectSettingsから行えるはずだが行えない？
-            // ModelExporter.ExportObject(exportPath, objMesh);
-            // TODO 設定を反映
-            ExportBinaryFBX(exportPath, objMesh);
+            switch (this.fbxFormat) {
+                case FbxFormat.Binary:
+                    ExportBinaryFBX(exportPath, objMesh);
+                    break;
+                case FbxFormat.Ascii:
+                    ExportAsciiFBX(exportPath, objMesh);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
             return true;
-
         }
-        
-        
-        // 参考 : https://forum.unity.com/threads/fbx-exporter-binary-export-doesnt-work-via-editor-scripting.1114222/#post-7277590
-        private static void ExportBinaryFBX (string filePath, UnityEngine.Object singleObject)
-        {
-            // Find relevant internal types in Unity.Formats.Fbx.Editor assembly
-            Type[] types = AppDomain.CurrentDomain.GetAssemblies().First(x => x.FullName == "Unity.Formats.Fbx.Editor, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null").GetTypes();
+
+        /// <summary>
+        /// AsciiフォーマットのFBXを出力します。
+        /// </summary>
+        private void ExportAsciiFBX(string exportPath, Object objMesh) {
+            // ModelExporterのデフォルト設定が Asciiフォーマットなので、
+            // 普通に下のメソッドを実行すれば AsciiフォーマットのFBXファイルができます。
+            ModelExporter.ExportObject(exportPath, objMesh);
+        }
+
+
+        /// <summary>
+        /// BinaryフォーマットのFBXを出力します。 
+        /// </summary>
+        private static void ExportBinaryFBX(string filePath, Object singleObject) {
+            // Unityの FBX Exporter の機能を利用し、 ExportModelSetting.cs 中の
+            // ExportOptionsSettingsSerializeBase クラスを使って FBXのフォーマットをBinaryに設定したいところです。
+            // しかし残念ながらそのクラスは internal であり直接設定を操作することができません。
+            // そこで次善の策として C# のリフレクション機能を使って internal のメソッドを呼び出すことで
+            // FBXフォーマットをバイナリに設定してファイル出力します。
+            // 参考 : https://forum.unity.com/threads/fbx-exporter-binary-export-doesnt-work-via-editor-scripting.1114221/#post-7277590
+
+            // Unity.Formats.Fbx.Editor のアセンブリから関連する型を取得します。
+            Type[] types = AppDomain.CurrentDomain.GetAssemblies().First(x =>
+                    x.FullName == "Unity.Formats.Fbx.Editor, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+                )
+                .GetTypes();
             Type optionsInterfaceType = types.First(x => x.Name == "IExportOptions");
             Type optionsType = types.First(x => x.Name == "ExportOptionsSettingsSerializeBase");
- 
-            // Instantiate a settings object instance
-            MethodInfo optionsProperty = typeof(ModelExporter).GetProperty("DefaultOptions", BindingFlags.Static | BindingFlags.NonPublic).GetGetMethod(true);
+
+            // 設定用オブジェクトをインスタンス化します。
+            var propertyInfo =
+                typeof(ModelExporter).GetProperty("DefaultOptions", BindingFlags.Static | BindingFlags.NonPublic);
+            if (propertyInfo == null) {
+                LogAbort();
+                return;
+            }
+            MethodInfo optionsProperty = propertyInfo.GetGetMethod(true);
             object optionsInstance = optionsProperty.Invoke(null, null);
- 
-            // Change the export setting from ASCII to binary
-            FieldInfo exportFormatField = optionsType.GetField("exportFormat", BindingFlags.Instance | BindingFlags.NonPublic);
+
+            // エクスポート設定をASCIIからBinaryに変更します。
+            FieldInfo exportFormatField =
+                optionsType.GetField("exportFormat", BindingFlags.Instance | BindingFlags.NonPublic);
+            if (exportFormatField == null) {
+                LogAbort();
+                return;
+            }
             exportFormatField.SetValue(optionsInstance, 1);
- 
-            // Invoke the ExportObject method with the settings param
-            MethodInfo exportObjectMethod = typeof(ModelExporter).GetMethod("ExportObject", BindingFlags.Static | BindingFlags.NonPublic, Type.DefaultBinder, new Type[] { typeof(string), typeof(UnityEngine.Object), optionsInterfaceType }, null);
-            exportObjectMethod.Invoke(null, new object[] { filePath, singleObject, optionsInstance });
+
+            // 設定を指定しつつfbxファイルをエクスポートします。
+            MethodInfo exportObjectMethod = typeof(ModelExporter).GetMethod(
+                "ExportObject",
+                BindingFlags.Static | BindingFlags.NonPublic,
+                Type.DefaultBinder,
+                new[] {typeof(string), typeof(Object), optionsInterfaceType}, 
+                null
+            );
+            if (exportObjectMethod == null) {
+                LogAbort();
+                return;
+            }
+            exportObjectMethod.Invoke(null, new object[] {filePath, singleObject, optionsInstance});
+        }
+
+        /// <summary> "Aborting." というメッセージでエラーログを出します。</summary>
+        private static void LogAbort() {
+            Debug.LogError($"Exporting fbx failed. Aborting.");
         }
         
     }
