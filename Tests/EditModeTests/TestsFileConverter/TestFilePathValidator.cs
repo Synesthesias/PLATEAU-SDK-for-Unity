@@ -1,7 +1,9 @@
 using System.Collections;
+using System.IO;
 using NUnit.Framework;
 using UnityEngine.TestTools;
 using PlateauUnitySDK.Editor.FileConverter;
+using UnityEditor.VersionControl;
 
 namespace PlateauUnitySDK.Tests.EditModeTests.TestsFileConverter {
     
@@ -33,6 +35,15 @@ namespace PlateauUnitySDK.Tests.EditModeTests.TestsFileConverter {
             
             // Assetsフォルダの設定を戻します。
             FilePathValidator.TestOnly_SetUnityProjectDataPath(prevDataPath);
+        }
+
+
+        [Test] // Assetsフォルダ以下は未対応なので例外を出すことを確認します。
+        public void Test_FullPathToAssetsPath_Error() {
+            Assert.That(()=> {
+                    FilePathValidator.FullPathToAssetsPath("C:\\dummy\\OutsideAssets\\a.fbx");
+                },
+                Throws.TypeOf<IOException>());
         }
     }
 }
