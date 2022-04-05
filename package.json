@@ -5,7 +5,8 @@
     "description": "PLATEAUのUnity向けSDKです。",
     "unity": "2020.3",
     "dependencies": {
-        "com.unity.formats.fbx" : "4.1.2"
+        "com.unity.formats.fbx" : "4.1.2",
+        "com.unity.test-framework" : "1.1.31"
     },
     "author":{
         "name": "Synesthesias Inc."
