@@ -1,6 +1,6 @@
 {
     "name": "com.synesthesias.plateau-unity-sdk.tests.play-mode-tests",
-    "rootNamespace": "PlateauSDK.Tests",
+    "rootNamespace": "PlateauSDK",
     "references": [
         "UnityEngine.TestRunner"
     ],

@@ -1,9 +1,10 @@
 {
     "name": "com.synesthesias.plateau-unity-sdk.tests.edit-mode-tests",
-    "rootNamespace": "PlateauUnitySDK.Tests",
+    "rootNamespace": "PlateauUnitySDK",
     "references": [
         "UnityEngine.TestRunner",
-        "UnityEditor.TestRunner"
+        "UnityEditor.TestRunner",
+        "com.synesthesias.plateau-unity-sdk.editor"
     ],
     "includePlatforms": [
         "Editor"

@@ -1,5 +1,7 @@
 using System;
 using System.IO;
+using System.Runtime.Remoting.Messaging;
+using UnityEditor;
 using UnityEngine;
 
 namespace PlateauUnitySDK.Editor.FileConverter {
@@ -8,6 +10,8 @@ namespace PlateauUnitySDK.Editor.FileConverter {
     /// ファイルパスが正しいかどうか検証します。
     /// </summary>
     public static class FilePathValidator {
+        private static string unityProjectDataPath = Application.dataPath;
+        
         /// <summary>
         /// 入力ファイル用のパスとして正しければtrue,不適切であればfalseを返します。
         /// </summary>
@@ -81,7 +85,7 @@ namespace PlateauUnitySDK.Editor.FileConverter {
         /// </summary>
         private static void CheckSubDirectoryOfAssets(string filePath) {
             string fullPath = Path.GetFullPath(filePath);
-            string assetsPath = Path.GetFullPath(Application.dataPath) + Path.DirectorySeparatorChar;
+            string assetsPath = Path.GetFullPath(unityProjectDataPath) + Path.DirectorySeparatorChar;
             if (fullPath.StartsWith(assetsPath)) return;
             throw new IOException($"File must exist in Assets folder, but the path is outside Assets folder.");
         }
@@ -92,10 +96,23 @@ namespace PlateauUnitySDK.Editor.FileConverter {
         /// </summary>
         public static string FullPathToAssetsPath(string filePath) {
             CheckSubDirectoryOfAssets(filePath);
+            // Debug.Log($"filePath = {filePath}");
             string fullPath = Path.GetFullPath(filePath);
-            string dataPath = Path.GetFullPath(Application.dataPath);
-            string assetsPath = "Assets/" + fullPath.Replace(dataPath, "");
+            string dataPath = Path.GetFullPath(unityProjectDataPath);
+            string assetsPath = "Assets" + fullPath.Replace(dataPath, "");
+            #if UNITY_STANDALONE_WIN
+            assetsPath = assetsPath.Replace('\\', '/');
+            #endif
+            Debug.Log($"assetsPath = {assetsPath}");
             return assetsPath;
         }
+
+        /// <summary> テストでのみ利用してください。Assetsフォルダのパスを変える扱いにします。 </summary>
+        public static void TestOnly_SetUnityProjectDataPath(string path) {
+            unityProjectDataPath = path;
+        }
+
+        /// <summary> テスト専用です。 </summary>
+        public static string TestOnly_GetUnityProjectDataPath() => unityProjectDataPath;
     }
 }
