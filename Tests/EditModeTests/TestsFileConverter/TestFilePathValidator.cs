@@ -8,6 +8,62 @@ using UnityEditor.VersionControl;
 namespace PlateauUnitySDK.Tests.EditModeTests.TestsFileConverter {
     
     public class TestFilePathValidator {
+
+        /// <summary>
+        /// 入力ファイル用のパスとして正しいかどうかを判定できるか確認します。
+        /// </summary>
+        
+        // 実在するファイルが与えられたときのテストケース
+        #if UNITY_STANDALONE_WIN
+        // このコードを動かしているWindows PCであればおそらく存在するであろうファイルのパスを例にとり、存在するファイルが与えられたときに有効判定が出ることをチェックします。
+        [TestCase("C:\\Program Files\\Unity\\Hub\\Editor\\2020.3.32f1\\Editor\\Unity.exe", "exe", true)]
+        // 拡張子が合わないときに false になることもチェックします。
+        [TestCase("C:\\Program Files\\Unity\\Hub\\Editor\\2020.3.32f1\\Editor\\Unity.exe", "wrongExtension", false)]
+        
+        // Windows以外のOSをお使いの方は、お手数ですがここに次のような記述を追加してください:
+        // #elif そのOS固有のキーワード
+        // [TestCase("そのOSの利用者はみんな持っているであろうファイルのパス.何かの拡張子", "何かの拡張子", true]
+        // [TestCase("同上.何かの拡張子", "合わない拡張子", false]
+        #else
+        このコードは処理されないはずです
+        #endif
+        
+        // 実在しないファイルが与えられたときのテストケース
+        [TestCase("/NotFound/Dummy/Missing.fbx", "fbx", false)]
+        public void Test_IsValidInputFilePath(string filePath, string extension, bool expected) {
+            LogAssert.ignoreFailingMessages = true;
+            Assert.AreEqual(FilePathValidator.IsValidInputFilePath(filePath, extension, false), expected);
+        }
+        
+        
+        
+        /// <summary>
+        /// 出力ファイル用のパスとして正しいかどうかを判定できるか確認します。
+        /// </summary>
+        
+        // 実在するファイルが与えられたときのテストケース
+        #if UNITY_STANDALONE_WIN
+        // このコードを動かしているWindows PCであればおそらく存在するであろうフォルダを例にとり、存在するフォルダが与えられたときに有効判定が出ることをチェックします。
+        [TestCase("C:\\Program Files\\User_wants_to_save_here.fbx", "fbx", true)]
+        // 拡張子が合わないときに false になることもチェックします。
+        [TestCase("C:\\Program Files\\User_wants_to_save_here.fbx", "wrongExtension", false)]
+        
+        // Windows以外のOSをお使いの方は、お手数ですがここに次のような記述を追加してください:
+        // #elif そのOS固有のキーワード
+        // [TestCase("そのOSの利用者はみんな持っているであろうフォルダのパス/foo.何かの拡張子", "何かの拡張子", true]
+        // [TestCase("同上/foo.何かの拡張子", "合わない拡張子", false]
+        #else
+        このコードは処理されないはずです
+        #endif
+        
+        // 実在しないファイルが与えられたときのテストケース
+        [TestCase("/NotFound/Dummy/Missing.fbx", "fbx", false)]
+        public void Test_IsValidOutputFilePath(string filePath, string extension, bool expected) {
+            LogAssert.ignoreFailingMessages = true;
+            Assert.AreEqual(FilePathValidator.IsValidOutputFilePath(filePath, extension), expected);
+        }
+        
+        
         
         /// <summary>
         /// フルパスから Assets で始まるパスへの変換ができることを確認します。
