@@ -18,6 +18,8 @@ namespace PlateauUnitySDK.Tests.EditModeTests.TestsFileConverter {
         [TestCase("/home/linuxUser/DummyUnityProjects/Assets", "/home/linuxUser/DummyUnityProjects/Assets/foobar.obj", "Assets/foobar.obj")]
         // 紛らわしい名前への対応をチェックします。
         [TestCase("Assets/Assets", "Assets/Assets/Assets/Assets", "Assets/Assets/Assets")]
+        // 日本語名、絵文字、スペースへの対応をチェックします。
+        [TestCase("C:/日本語話者の プロジェクト♪🎶/Assets", "C:/日本語話者の プロジェクト♪🎶/Assets/♪ 🎶.wav", "Assets/♪ 🎶.wav" )]
         
         public void Test_FullPathToAssetsPath_Normal(string assetsDir, string fullPath, string expectedAssetsPath) {
             // 後でAssetsフォルダのパス設定を戻すために覚えておきます。

@@ -103,7 +103,7 @@ namespace PlateauUnitySDK.Editor.FileConverter {
             #if UNITY_STANDALONE_WIN
             assetsPath = assetsPath.Replace('\\', '/');
             #endif
-            Debug.Log($"assetsPath = {assetsPath}");
+            // Debug.Log($"assetsPath = {assetsPath}");
             return assetsPath;
         }
 
