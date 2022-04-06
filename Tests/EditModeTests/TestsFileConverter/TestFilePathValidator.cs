@@ -4,6 +4,7 @@ using System.Reflection;
 using NUnit.Framework;
 using UnityEngine.TestTools;
 using PlateauUnitySDK.Editor.FileConverter;
+using PlateauUnitySDK.Tests.TestUtils;
 using UnityEngine;
 
 namespace PlateauUnitySDK.Tests.EditModeTests.TestsFileConverter {
@@ -73,16 +74,16 @@ namespace PlateauUnitySDK.Tests.EditModeTests.TestsFileConverter {
         
         public void Test_FullPathToAssetsPath_Normal(string assetsDir, string fullPath, string expectedAssetsPath) {
             // 後でAssetsフォルダのパス設定を戻すために覚えておきます。
-            string prevDataPath = GetPrivateStaticFieldVal<string>(typeof(FilePathValidator), "unityProjectDataPath");
+            string prevDataPath = ReflectionUtil.GetPrivateStaticFieldVal<string>(typeof(FilePathValidator), "unityProjectDataPath");
             
             // Assetsフォルダがこのような場所にあると仮定します。
-            SetPrivateStaticFieldVal(assetsDir, typeof(FilePathValidator), "unityProjectDataPath");
+            ReflectionUtil.SetPrivateStaticFieldVal(assetsDir, typeof(FilePathValidator), "unityProjectDataPath");
             
             // テストケースをチェックします。 
             Assert.AreEqual(expectedAssetsPath, FilePathValidator.FullPathToAssetsPath(fullPath));
             
             // Assetsフォルダの設定を戻します。
-            SetPrivateStaticFieldVal(prevDataPath, typeof(FilePathValidator), "unityProjectDataPath");
+            ReflectionUtil.SetPrivateStaticFieldVal(prevDataPath, typeof(FilePathValidator), "unityProjectDataPath");
         }
 
         // フルパスからアセットパス変換で、Assetsフォルダの外が指定されたときに例外を出すことを確認します。
@@ -95,26 +96,6 @@ namespace PlateauUnitySDK.Tests.EditModeTests.TestsFileConverter {
         }
 
 
-        private static void SetPrivateStaticFieldVal<TField>(TField newFieldValue, Type targetType, string fieldName) {
-            var fieldInfo = GetPrivateStaticFieldInfo(targetType, fieldName); 
-            if (fieldInfo == null) {
-                Debug.LogError($"Reflection failed. Field '{fieldName}' is not found.");
-                return;
-            }
-            fieldInfo.SetValue(null, newFieldValue);
-        }
-
-        private static TField GetPrivateStaticFieldVal<TField>(Type targetType, string fieldName) {
-            var fieldInfo = GetPrivateStaticFieldInfo(targetType, fieldName);
-            if (fieldInfo == null) {
-                Debug.LogError($"Reflection failed. Field '{fieldName}' is not found.");
-                return default;
-            }
-            return (TField)fieldInfo.GetValue(null);
-        }
-
-        private static FieldInfo GetPrivateStaticFieldInfo(Type targetType, string fieldName) {
-            return targetType.GetField(fieldName, BindingFlags.Static | BindingFlags.NonPublic);
-        }
+        
     }
 }

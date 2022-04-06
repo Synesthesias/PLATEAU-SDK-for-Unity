@@ -9,6 +9,7 @@ namespace PlateauUnitySDK.Editor.FileConverter {
     /// ファイルパスが正しいかどうか検証します。
     /// </summary>
     public static class FilePathValidator {
+        // この値はテストのときのみ変更されるのでreadonlyにしないでください。
         private static string unityProjectDataPath = Application.dataPath;
         
         /// <summary>
@@ -95,7 +96,6 @@ namespace PlateauUnitySDK.Editor.FileConverter {
         /// </summary>
         public static string FullPathToAssetsPath(string filePath) {
             CheckSubDirectoryOfAssets(filePath);
-            // Debug.Log($"filePath = {filePath}");
             string fullPath = Path.GetFullPath(filePath);
             string dataPath = Path.GetFullPath(unityProjectDataPath);
             string assetsPath = "Assets" + fullPath.Replace(dataPath, "");

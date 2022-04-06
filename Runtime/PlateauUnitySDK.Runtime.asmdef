@@ -1,5 +1,5 @@
 {
-    "name": "com.synesthesias.plateau-unity-sdk.runtime",
+    "name": "PlateauUnitySDK.Runtime",
     "rootNamespace": "PlateauUnitySDK.Runtime",
     "references": [],
     "includePlatforms": [],
