@@ -106,12 +106,5 @@ namespace PlateauUnitySDK.Editor.FileConverter {
             return assetsPath;
         }
 
-        /// <summary> テストでのみ利用してください。Assetsフォルダのパスを変える扱いにします。 </summary>
-        public static void TestOnly_SetUnityProjectDataPath(string path) {
-            unityProjectDataPath = path;
-        }
-
-        /// <summary> テスト専用です。 </summary>
-        public static string TestOnly_GetUnityProjectDataPath() => unityProjectDataPath;
     }
 }
