@@ -5,6 +5,7 @@ namespace PlateauUnitySDK.Editor.EditorWindowCommon
 {
     /// <summary>
     /// マウスホイールでスクロール可能な <see cref="IEditorWindowContents"/> です。
+    /// <see cref="DrawScrollable"/> をサブクラスで実装することでコンテンツを指定します。
     /// </summary>
     public abstract class ScrollableEditorWindowContents : IEditorWindowContents
     {

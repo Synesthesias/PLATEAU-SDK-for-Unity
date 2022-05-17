@@ -29,6 +29,7 @@ namespace PlateauUnitySDK.Editor.FileConverter
             }
             catch (Exception)
             {
+                Debug.LogError("Input file path is invalid.");
                 return false;
             }
 
@@ -47,6 +48,7 @@ namespace PlateauUnitySDK.Editor.FileConverter
             }
             catch (Exception)
             {
+                Debug.LogError("Output file path is invalid.");
                 return false;
             }
 

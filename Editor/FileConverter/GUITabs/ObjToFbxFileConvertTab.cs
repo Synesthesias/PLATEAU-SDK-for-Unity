@@ -27,13 +27,13 @@ namespace PlateauUnitySDK.Editor.FileConverter.GUITabs
         /// <summary> GUI表示のメインメソッドです。 </summary>
         public override void DrawScrollable()
         {
-            // ファイルの入出力指定のGUIを fileSelectorGUI に委譲して描画します。
             using (PlateauEditorStyle.VerticalScope())
             {
                 EditorGUILayout.LabelField("入力objファイルはAssetsフォルダ内のファイルのみ指定できますが、");
                 EditorGUILayout.LabelField("出力fbxファイルはAssetsフォルダの外でも指定できます。");
             }
 
+            // ファイルの入出力指定のGUIを fileSelectorGUI に委譲して描画します。
             this.fileSelectorGUI.SourceFileSelectMenu("obj");
             this.fileSelectorGUI.DestinationFileSelectMenu("fbx");
 
