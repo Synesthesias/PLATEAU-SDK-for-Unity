@@ -1,4 +1,4 @@
-using LibPLATEAU.NET;
+using LibPLATEAU.NET.CityGML;
 using UnityEditor;
 using UnityEngine;
 

@@ -1,6 +1,5 @@
 using System;
 using System.IO;
-using UnityEditor;
 using UnityEngine;
 
 namespace PlateauUnitySDK.Editor.FileConverter {
@@ -26,8 +25,7 @@ namespace PlateauUnitySDK.Editor.FileConverter {
                     CheckSubDirectoryOfAssets(filePath);
                 }
             }
-            catch (Exception e) {
-                Debug.LogError($"Input {expectedExtension} file path is invalid:\n{e}");
+            catch (Exception) {
                 return false;
             }
             return true;
@@ -41,8 +39,7 @@ namespace PlateauUnitySDK.Editor.FileConverter {
                 CheckDirectoryExist(filePath);
                 CheckExtension(filePath, expectedExtension);
             }
-            catch (Exception e) {
-                Debug.LogError($"Output {expectedExtension} file path is invalid:\n{e}");
+            catch (Exception) {
                 return false;
             }
             return true;

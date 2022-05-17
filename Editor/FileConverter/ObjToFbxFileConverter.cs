@@ -17,7 +17,7 @@ namespace PlateauUnitySDK.Editor.FileConverter {
         /// <summary>
         /// Fbxのフォーマットには Binary と Ascii があります。
         /// Binaryは ファイルサイズが小さく、多くのソフトウェアで利用できます。
-        /// Asciiは Blenderで非対応(v2.93時点)となりますが、ファイルの中身を文字列として編集したい場合には有効です。
+        /// Asciiは Blenderで非対応(v2.93時点)となりますが、ファイルの中身を文字列として編集したいという特殊な場合に利用できます。
         /// </summary>
         public enum FbxFormat {
             Binary,

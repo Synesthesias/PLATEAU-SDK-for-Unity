@@ -9,6 +9,7 @@ namespace PlateauUnitySDK.Editor.FileConverter {
     /// </summary>
     public class ModelFileConvertWindow : EditorWindow {
         private IEditorWindowContents[] tabContents;
+        private string[] tabNames;
         private int tabIndex;
         private bool isInitialized;
 
@@ -19,11 +20,18 @@ namespace PlateauUnitySDK.Editor.FileConverter {
             window.Init();
         }
 
-        private void Init() {
+        private void Init()
+        {
             // タブごとのGUIの内容をここで指定します。
-            this.tabContents = new IEditorWindowContents[] {
+            this.tabContents = new IEditorWindowContents[]
+            {
                 new GmlToObjFileConvertTab(),
+                new GmlToIdTableConvertTab(),
                 new ObjToFbxFileConvertTab()
+            };
+            this.tabNames = new []
+            {
+                "GML to OBJ", "GML to ID Table", "OBJ to FBX"
             };
             this.isInitialized = true;
         }
@@ -36,7 +44,7 @@ namespace PlateauUnitySDK.Editor.FileConverter {
             PlateauEditorStyle.Heading1("1. Choose Convert Type");
             
             // タブ形式のボタンで変換のファイル形式を選びます。
-            this.tabIndex = PlateauEditorStyle.Tabs(this.tabIndex, "GML to OBJ", "OBJ to FBX");
+            this.tabIndex = PlateauEditorStyle.Tabs(this.tabIndex, this.tabNames);
             
             // 選ばれたタブの内容を描画します。描画は tabContents の要素に委譲します。
             var tabContent = this.tabContents[this.tabIndex];

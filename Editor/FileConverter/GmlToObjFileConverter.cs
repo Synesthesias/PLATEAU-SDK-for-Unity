@@ -1,5 +1,5 @@
 using System;
-using LibPLATEAU.NET;
+using LibPLATEAU.NET.CityGML;
 using UnityEngine;
 
 namespace PlateauUnitySDK.Editor.FileConverter {
@@ -22,7 +22,7 @@ namespace PlateauUnitySDK.Editor.FileConverter {
         /// <param name="mergeMeshFlgArg">trueのとき、メッシュをマージしてオブジェクト数を削減します。</param>
         /// <param name="axesConversionArg">座標軸の向きです。Unityの場合は通常RUFです。</param>
         public void SetConfig(bool optimizeFlg, bool mergeMeshFlgArg, AxesConversion axesConversionArg) {
-            this.gmlParserParams.Optimize = optimizeFlg ? 1 : 0;
+            this.gmlParserParams.Optimize = optimizeFlg;
             this.mergeMeshFlg = mergeMeshFlgArg;
             this.axesConversion = axesConversionArg;
         }
