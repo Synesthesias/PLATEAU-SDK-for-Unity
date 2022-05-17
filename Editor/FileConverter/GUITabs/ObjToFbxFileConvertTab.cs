@@ -9,47 +9,33 @@ namespace PlateauUnitySDK.Editor.FileConverter.GUITabs
     /// <summary>
     /// gmlファイルを読んでobjファイルに変換して出力する機能を持ったウィンドウのタブです。
     /// </summary>
-    public class ObjToFbxFileConvertTab : ScrollableEditorWindowContents
+    public class ObjToFbxFileConvertTab : ConvertTabBase
     {
-        private readonly ConvertFileSelectorGUI fileSelectorGUI = new ConvertFileSelectorGUI();
         private readonly ObjToFbxFileConverter fileConverter;
         private FbxFormat fbxFormat;
+
+        protected override string SourceFileExtension => "obj";
+        protected override string DestFileExtension => "fbx";
+        protected override IFileConverter FileConverter => this.fileConverter;
 
         /// <summary>初期化処理です。</summary>
         public ObjToFbxFileConvertTab()
         {
             this.fileConverter = new ObjToFbxFileConverter();
             this.fileConverter.SetConfig(this.fbxFormat);
-            this.fileSelectorGUI.OnEnable();
         }
 
-
-        /// <summary> GUI表示のメインメソッドです。 </summary>
-        public override void DrawScrollable()
+        public override void HeaderInfoGUI()
         {
-            using (PlateauEditorStyle.VerticalScope())
-            {
-                EditorGUILayout.LabelField("入力objファイルはAssetsフォルダ内のファイルのみ指定できますが、");
-                EditorGUILayout.LabelField("出力fbxファイルはAssetsフォルダの外でも指定できます。");
-            }
+            EditorGUILayout.LabelField("入力objファイルはAssetsフォルダ内のファイルのみ指定できますが、");
+            EditorGUILayout.LabelField("出力fbxファイルはAssetsフォルダの外でも指定できます。");
+        }
 
-            // ファイルの入出力指定のGUIを fileSelectorGUI に委譲して描画します。
-            this.fileSelectorGUI.SourceFileSelectMenu("obj");
-            this.fileSelectorGUI.DestinationFileSelectMenu("fbx");
-
-            // fbxファイル特有の設定をするGUIです。
-            PlateauEditorStyle.Heading1("4. Configure");
-            using (PlateauEditorStyle.VerticalScope())
-            {
-                EditorGUI.BeginChangeCheck();
-                this.fbxFormat = (FbxFormat)EditorGUILayout.EnumPopup("FBX Format", this.fbxFormat);
-                if (EditorGUI.EndChangeCheck()) this.fileConverter.SetConfig(this.fbxFormat);
-            }
-
-            ConvertFileSelectorGUI.Space();
-
-            // 変換ボタンです。
-            this.fileSelectorGUI.PrintConvertButton(this.fileConverter);
+        public override void ConfigureGUI()
+        {
+            EditorGUI.BeginChangeCheck();
+            this.fbxFormat = (FbxFormat)EditorGUILayout.EnumPopup("FBX Format", this.fbxFormat);
+            if (EditorGUI.EndChangeCheck()) this.fileConverter.SetConfig(this.fbxFormat);
         }
     }
 }

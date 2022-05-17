@@ -25,7 +25,7 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
         /// <param name="axesConversionArg">座標軸の向きです。Unityの場合は通常RUFです。</param>
         public void SetConfig(bool optimizeFlg, bool mergeMeshFlgArg, AxesConversion axesConversionArg)
         {
-            this.gmlParserParams.Optimize = optimizeFlg;
+            this.gmlParserParams = new CitygmlParserParams(optimizeFlg);
             this.mergeMeshFlg = mergeMeshFlgArg;
             this.axesConversion = axesConversionArg;
         }
@@ -38,7 +38,6 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
         {
             if (!FilePathValidator.IsValidInputFilePath(gmlFilePath, "gml", false)) return false;
             if (!FilePathValidator.IsValidOutputFilePath(exportObjFilePath, "obj")) return false;
-
             try
             {
                 var cityModel = CityGml.Load(gmlFilePath, this.gmlParserParams);

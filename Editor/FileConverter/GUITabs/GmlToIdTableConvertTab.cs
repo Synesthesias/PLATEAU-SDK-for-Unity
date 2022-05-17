@@ -1,14 +1,24 @@
 ﻿using PlateauUnitySDK.Editor.EditorWindowCommon;
+using PlateauUnitySDK.Editor.FileConverter.Converters;
 
 namespace PlateauUnitySDK.Editor.FileConverter.GUITabs
 {
-    public class GmlToIdTableConvertTab : ScrollableEditorWindowContents
+    public class GmlToIdTableConvertTab : ConvertTabBase
     {
-        private readonly ConvertFileSelectorGUI fileSelectorGUI = new ConvertFileSelectorGUI();
+        // TODO 未実装
+        protected override string SourceFileExtension { get; }
+        protected override string DestFileExtension { get; }
+        protected override IFileConverter FileConverter { get; }
+        
 
-        public override void DrawScrollable()
+        public override void HeaderInfoGUI()
         {
-            // TODO 実装中
+            
+        }
+
+        public override void ConfigureGUI()
+        {
+            
         }
     }
 }
