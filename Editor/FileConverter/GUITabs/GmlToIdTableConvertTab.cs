@@ -1,4 +1,4 @@
-﻿namespace PlateauUnitySDK.Editor.FileConverter
+﻿namespace PlateauUnitySDK.Editor.FileConverter.GUITabs
 {
     public class GmlToIdTableConvertTab : IEditorWindowContents
     {
