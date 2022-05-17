@@ -1,3 +1,4 @@
+using PlateauUnitySDK.Editor.EditorWindowCommon;
 using PlateauUnitySDK.Editor.FileConverter.Converters;
 using UnityEditor;
 using UnityEngine;
@@ -8,11 +9,10 @@ namespace PlateauUnitySDK.Editor.FileConverter.GUITabs
     /// <summary>
     /// gmlファイルを読んでobjファイルに変換して出力する機能を持ったウィンドウのタブです。
     /// </summary>
-    public class ObjToFbxFileConvertTab : IEditorWindowContents
+    public class ObjToFbxFileConvertTab : ScrollableEditorWindowContents
     {
         private readonly ConvertFileSelectorGUI fileSelectorGUI = new ConvertFileSelectorGUI();
         private readonly ObjToFbxFileConverter fileConverter;
-        private Vector2 scrollPosition;
         private FbxFormat fbxFormat;
 
         /// <summary>初期化処理です。</summary>
@@ -25,10 +25,8 @@ namespace PlateauUnitySDK.Editor.FileConverter.GUITabs
 
 
         /// <summary> GUI表示のメインメソッドです。 </summary>
-        public void DrawGUI()
+        public override void DrawScrollable()
         {
-            this.scrollPosition = EditorGUILayout.BeginScrollView(this.scrollPosition);
-
             // ファイルの入出力指定のGUIを fileSelectorGUI に委譲して描画します。
             using (PlateauEditorStyle.VerticalScope())
             {
@@ -52,8 +50,6 @@ namespace PlateauUnitySDK.Editor.FileConverter.GUITabs
 
             // 変換ボタンです。
             this.fileSelectorGUI.PrintConvertButton(this.fileConverter);
-
-            EditorGUILayout.EndScrollView();
         }
     }
 }

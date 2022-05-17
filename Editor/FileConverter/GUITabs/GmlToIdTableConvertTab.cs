@@ -1,10 +1,12 @@
-﻿namespace PlateauUnitySDK.Editor.FileConverter.GUITabs
+﻿using PlateauUnitySDK.Editor.EditorWindowCommon;
+
+namespace PlateauUnitySDK.Editor.FileConverter.GUITabs
 {
-    public class GmlToIdTableConvertTab : IEditorWindowContents
+    public class GmlToIdTableConvertTab : ScrollableEditorWindowContents
     {
         private readonly ConvertFileSelectorGUI fileSelectorGUI = new ConvertFileSelectorGUI();
 
-        public void DrawGUI()
+        public override void DrawScrollable()
         {
             // TODO 実装中
         }
