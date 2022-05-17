@@ -6,16 +6,19 @@ namespace PlateauUnitySDK.Editor
     /// <summary>
     /// PlateauのUnityエディターのスタイルです。
     /// </summary>
-    public static class PlateauEditorStyle {
+    public static class PlateauEditorStyle
+    {
         private static readonly Color mainButtonColorTint = new Color(140f / 255f, 235f / 255f, 255f / 255f);
-        
+
         /// <summary> 見出し1のスタイルで文字を表示します。 </summary>
-        public static void Heading1(string text) {
+        public static void Heading1(string text)
+        {
             GUILayout.Box(text, styleHeading1);
         }
 
         /// <summary> 見出し1のスタイルです。 </summary>
-        private static readonly GUIStyle styleHeading1 = new GUIStyle("ShurikenModuleTitle") {
+        private static readonly GUIStyle styleHeading1 = new GUIStyle("ShurikenModuleTitle")
+        {
             fontSize = 14,
             fontStyle = FontStyle.Bold,
             fixedHeight = 28,
@@ -24,24 +27,29 @@ namespace PlateauUnitySDK.Editor
         };
 
         /// <summary> ボタンのスタイルです。押されたときにtrueを返します。 </summary>
-        public static bool MainButton(string text) {
-            bool isButtonPushed = DrawButton(text, mainButtonColorTint);
+        public static bool MainButton(string text)
+        {
+            var isButtonPushed = DrawButton(text, mainButtonColorTint);
             return isButtonPushed;
         }
 
         /// <summary>
         /// IDisposable な VerticalScope を作り、中のGUIコンテンツを BoxStyle で囲みます。
         /// </summary>
-        public static EditorGUILayout.VerticalScope VerticalScope() {
+        public static EditorGUILayout.VerticalScope VerticalScope()
+        {
             return new EditorGUILayout.VerticalScope(BoxStyle);
         }
 
         /// <summary>
         /// GUIのコンテンツをまとめるのに利用できるboxです。
         /// </summary>
-        private static GUIStyle BoxStyle {
-            get {
-                GUIStyle style = new GUIStyle(GUI.skin.box) {
+        private static GUIStyle BoxStyle
+        {
+            get
+            {
+                var style = new GUIStyle(GUI.skin.box)
+                {
                     padding = new RectOffset(8, 8, 8, 8),
                     margin = new RectOffset(8, 8, 8, 8)
                 };
@@ -53,12 +61,15 @@ namespace PlateauUnitySDK.Editor
         /// タブ形式で複数のボタンから選ぶGUIを表示し、選択されたタブのインデックスを返します。
         /// 引数には現在のタブのインデックスと、paramsで各タブの表示名を与えます。
         /// </summary>
-        public static int Tabs(int currentTabIndex, params string[] tabNames) {
+        public static int Tabs(int currentTabIndex, params string[] tabNames)
+        {
             var prevColor = GUI.backgroundColor;
             GUI.backgroundColor = mainButtonColorTint;
             int newTabIndex;
-            using (VerticalScope()) {
-                using (new EditorGUILayout.HorizontalScope()) {
+            using (VerticalScope())
+            {
+                using (new EditorGUILayout.HorizontalScope())
+                {
                     newTabIndex = GUILayout.Toolbar(
                         currentTabIndex,
                         tabNames,
@@ -66,24 +77,27 @@ namespace PlateauUnitySDK.Editor
                         GUI.ToolbarButtonSize.Fixed
                     );
                 }
+
                 EditorGUILayout.LabelField($"Selected : {tabNames[newTabIndex]}");
             }
+
             GUI.backgroundColor = prevColor;
             return newTabIndex;
         }
 
         /// <summary> 色指定でボタンを描画します。 </summary>
-        private static bool DrawButton(string text, Color buttonColorTint) {
+        private static bool DrawButton(string text, Color buttonColorTint)
+        {
             var prevColor = GUI.backgroundColor;
             GUI.backgroundColor = buttonColorTint;
-            var style = new GUIStyle(GUI.skin.button) {
+            var style = new GUIStyle(GUI.skin.button)
+            {
                 margin = new RectOffset(20, 20, 5, 5),
                 padding = new RectOffset(10, 10, 10, 10)
             };
-            bool isButtonPushed = GUILayout.Button(text, style);
+            var isButtonPushed = GUILayout.Button(text, style);
             GUI.backgroundColor = prevColor;
             return isButtonPushed;
         }
-        
     }
 }

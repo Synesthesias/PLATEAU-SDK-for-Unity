@@ -1,20 +1,23 @@
 using UnityEditor;
 
-namespace PlateauUnitySDK.Editor.FileConverter {
+namespace PlateauUnitySDK.Editor.FileConverter
+{
     /// <summary>
     /// 3Dモデルのファイル形式を変換するEditorWindowです。
     /// 変換できる形式は次の2つです。
     /// ・GMLからOBJに
     /// ・OBJからFBXに
     /// </summary>
-    public class ModelFileConvertWindow : EditorWindow {
+    public class ModelFileConvertWindow : EditorWindow
+    {
         private IEditorWindowContents[] tabContents;
         private string[] tabNames;
         private int tabIndex;
         private bool isInitialized;
 
         [MenuItem("Plateau/Model File Converter Window")]
-        private static void Open() {
+        private static void Open()
+        {
             var window = GetWindow<ModelFileConvertWindow>("Model File Converter");
             window.Show();
             window.Init();
@@ -29,7 +32,7 @@ namespace PlateauUnitySDK.Editor.FileConverter {
                 new GmlToIdTableConvertTab(),
                 new ObjToFbxFileConvertTab()
             };
-            this.tabNames = new []
+            this.tabNames = new[]
             {
                 "GML to OBJ", "GML to ID Table", "OBJ to FBX"
             };
@@ -39,13 +42,14 @@ namespace PlateauUnitySDK.Editor.FileConverter {
         /// <summary>
         /// GUI描画のメインメソッドです。
         /// </summary>
-        private void OnGUI() {
-            if(!this.isInitialized || this.tabContents == null) Init();
+        private void OnGUI()
+        {
+            if (!this.isInitialized || this.tabContents == null) Init();
             PlateauEditorStyle.Heading1("1. Choose Convert Type");
-            
+
             // タブ形式のボタンで変換のファイル形式を選びます。
             this.tabIndex = PlateauEditorStyle.Tabs(this.tabIndex, this.tabNames);
-            
+
             // 選ばれたタブの内容を描画します。描画は tabContents の要素に委譲します。
             var tabContent = this.tabContents[this.tabIndex];
             tabContent.DrawGUI();
