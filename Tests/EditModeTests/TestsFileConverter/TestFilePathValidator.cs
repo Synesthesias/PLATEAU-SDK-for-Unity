@@ -6,6 +6,7 @@ using PlateauUnitySDK.Tests.TestUtils;
 
 namespace PlateauUnitySDK.Tests.EditModeTests.TestsFileConverter {
     
+    [TestFixture]
     public class TestFilePathValidator {
 
         /// <summary>
@@ -82,10 +83,9 @@ namespace PlateauUnitySDK.Tests.EditModeTests.TestsFileConverter {
             // Assetsフォルダの設定を戻します。
             ReflectionUtil.SetPrivateStaticFieldVal(prevDataPath, typeof(FilePathValidator), "unityProjectDataPath");
         }
-
-        // フルパスからアセットパス変換で、Assetsフォルダの外が指定されたときに例外を出すことを確認します。
+        
         [Test] 
-        public void Test_FullPathToAssetsPath_Error() {
+        public void FullPathToAssetsPath_Returns_Error_When_Outside_Assets_Folder() {
             Assert.That(()=> {
                     FilePathValidator.FullPathToAssetsPath("C:\\dummy\\OutsideAssets\\a.fbx");
                 },

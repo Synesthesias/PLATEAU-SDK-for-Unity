@@ -46,9 +46,9 @@ namespace PlateauUnitySDK.Editor.FileConverter
                 CheckDirectoryExist(filePath);
                 CheckExtension(filePath, expectedExtension);
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                Debug.LogError("Output file path is invalid.");
+                Debug.LogError($"Output file path is invalid.\n{e.Message}");
                 return false;
             }
 
