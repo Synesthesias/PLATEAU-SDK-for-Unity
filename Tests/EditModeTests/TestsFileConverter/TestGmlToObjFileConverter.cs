@@ -31,7 +31,8 @@ namespace PlateauUnitySDK.Tests.EditModeTests.TestsFileConverter
         [TearDown]
         public void TearDown()
         {
-            // TODO ここで消そうとすると他のプロセスが使っているためエラー
+            // TODO ここで消そうとすると他のプロセスが使っているためエラー。
+            // .mat も .obj も使用中らしい。
             // DeleteAllInDirectory(temporaryFolderPath);
         }
         
@@ -42,7 +43,6 @@ namespace PlateauUnitySDK.Tests.EditModeTests.TestsFileConverter
             var converter = new GmlToObjFileConverter();
             converter.Convert(testGmlFilePath, outputFilePath);
             Assert.IsTrue(File.Exists(outputFilePath));
-            // DeleteAllInDirectory(temporaryFolderPath);
         }
 
         public static void DeleteAllInDirectory(string dirPath)
