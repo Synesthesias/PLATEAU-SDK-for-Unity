@@ -9,7 +9,7 @@ namespace PlateauUnitySDK.Editor.FileConverter.GUITabs
     /// ある拡張子からある拡張子への変換を行うGUIを提供します。
     /// <see cref="ModelFileConvertWindow"/> によって保持されます。
     /// </summary>
-    public abstract class ConvertTabBase : ScrollableEditorWindowContents
+    public abstract class BaseConvertTab : ScrollableEditorWindowContents
     {
         
         // 変換元、変換先、Converter をサブクラスで指定します。
@@ -20,7 +20,7 @@ namespace PlateauUnitySDK.Editor.FileConverter.GUITabs
         private string sourceFilePath;
         private string destinationFilePath;
 
-        protected ConvertTabBase()
+        protected BaseConvertTab()
         {
             ConvertFileSelectorGUIUtil.SetDefaultPath(ref this.sourceFilePath, ref this.destinationFilePath);
         }

@@ -6,7 +6,7 @@ namespace PlateauUnitySDK.Editor.FileConverter.GUITabs
     /// <summary>
     /// Gmlファイルを読んで <see cref="Runtime.SemanticsLoader.IdToGmlFileTable"/> を出力するGUIを提供します。
     /// </summary>
-    public class GmlToIdFileTableConvertTab : ConvertTabBase
+    public class GmlToIdFileTableConvertTab : BaseConvertTab
     {
         private readonly GmlToIdFileTableConverter converter = new GmlToIdFileTableConverter();
 

@@ -9,7 +9,7 @@ namespace PlateauUnitySDK.Editor.FileConverter.GUITabs
     /// <summary>
     /// gmlファイルを読んでobjファイルに変換して出力する機能を持ったウィンドウのタブです。
     /// </summary>
-    public class GmlToObjFileConvertTab : ConvertTabBase
+    public class GmlToObjFileConvertTab : BaseConvertTab
     {
         private bool optimizeFlg = true;
         private bool mergeMeshFlg = true;
