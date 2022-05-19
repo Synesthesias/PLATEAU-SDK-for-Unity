@@ -14,17 +14,17 @@ namespace PlateauUnitySDK.Editor.FileConverter.GUITabs
         
         // 変換元、変換先、Converter をサブクラスで指定します。
         protected abstract string SourceFileExtension { get; }
-        protected abstract string DestFileExtension { get; }
+        public abstract string DestFileExtension { get; }
         protected abstract IFileConverter FileConverter { get; }
-        
-        private string sourceFilePath;
-        private string destinationFilePath;
+
+        public string SourceFilePath;
+        public string DestFilePath;
 
         protected BaseConvertTab()
         {
             string defaultPath = ConvertFileSelectorGUIUtil.DefaultPath();
-            this.sourceFilePath = defaultPath;
-            this.destinationFilePath = defaultPath;
+            this.SourceFilePath = defaultPath;
+            this.DestFilePath = defaultPath;
         }
 
         protected override void DrawScrollable()
@@ -34,13 +34,13 @@ namespace PlateauUnitySDK.Editor.FileConverter.GUITabs
                 HeaderInfoGUI();
             }
             ConvertFileSelectorGUIUtil.FileSelectGUI(
-                ref this.sourceFilePath,
+                ref this.SourceFilePath,
                 SourceFileExtension,
                 ConvertFileSelectorGUIUtil.FilePanelType.Open,
                 $"Select {SourceFileExtension} File"
             );
             ConvertFileSelectorGUIUtil.FileSelectGUI(
-                ref this.destinationFilePath,
+                ref this.DestFilePath,
                 DestFileExtension,
                 ConvertFileSelectorGUIUtil.FilePanelType.Save,
                 $"Select {DestFileExtension} Export Path"
@@ -56,13 +56,13 @@ namespace PlateauUnitySDK.Editor.FileConverter.GUITabs
                 }
             }
             ConvertFileSelectorGUIUtil.Space();
-            ConvertFileSelectorGUIUtil.PrintConvertButton(FileConverter, this.sourceFilePath, this.destinationFilePath);
+            ConvertFileSelectorGUIUtil.PrintConvertButton(FileConverter, this.SourceFilePath, this.DestFilePath);
         }
 
         /// <summary>
         /// ウィンドウの上のほうに書いておきたい注意書きがあれば実装します。
         /// </summary>
-        protected abstract void HeaderInfoGUI();
+        public abstract void HeaderInfoGUI();
 
         /// <summary>
         /// ファイル変換の設定に関するGUIを実装します。

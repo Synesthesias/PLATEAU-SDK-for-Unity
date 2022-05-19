@@ -29,13 +29,14 @@ namespace PlateauUnitySDK.Editor.FileConverter
             // タブごとのGUIの内容をここで指定します。
             this.tabContents = new IEditorWindowContents[]
             {
+                new GmlToObjAndIdTableConvertTab(),
                 new GmlToObjFileConvertTab(),
                 new GmlToIdFileTableConvertTab(),
                 new ObjToFbxFileConvertTab()
             };
             this.tabNames = new[]
             {
-                "GML to OBJ", "GML to ID->File Table", "OBJ to FBX"
+                "GML to OBJ & IDFileTable ", "GML to OBJ", "GML to IDFileTable", "OBJ to FBX"
             };
             this.isInitialized = true;
         }

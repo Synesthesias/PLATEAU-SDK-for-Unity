@@ -17,7 +17,7 @@ namespace PlateauUnitySDK.Editor.FileConverter.GUITabs
         private GmlToObjFileConverter fileConverter;
 
         protected override string SourceFileExtension => "gml";
-        protected override string DestFileExtension => "obj";
+        public override string DestFileExtension => "obj";
         protected override IFileConverter FileConverter => this.fileConverter;
 
         /// <summary>初期化処理です。</summary>
@@ -27,7 +27,7 @@ namespace PlateauUnitySDK.Editor.FileConverter.GUITabs
             this.fileConverter.SetConfig(this.optimizeFlg, this.mergeMeshFlg, this.axesConversion);
         }
 
-        protected override void HeaderInfoGUI()
+        public override void HeaderInfoGUI()
         {
             EditorGUILayout.LabelField("Assetsフォルダ外のファイルも指定できます。");
         }

@@ -13,7 +13,7 @@ namespace PlateauUnitySDK.Editor.FileConverter.GUITabs
         private FbxFormat fbxFormat;
 
         protected override string SourceFileExtension => "obj";
-        protected override string DestFileExtension => "fbx";
+        public override string DestFileExtension => "fbx";
         protected override IFileConverter FileConverter => this.fileConverter;
 
         /// <summary>初期化処理です。</summary>
@@ -23,7 +23,7 @@ namespace PlateauUnitySDK.Editor.FileConverter.GUITabs
             this.fileConverter.SetConfig(this.fbxFormat);
         }
 
-        protected override void HeaderInfoGUI()
+        public override void HeaderInfoGUI()
         {
             EditorGUILayout.LabelField("入力objファイルはAssetsフォルダ内のファイルのみ指定できますが、");
             EditorGUILayout.LabelField("出力fbxファイルはAssetsフォルダの外でも指定できます。");

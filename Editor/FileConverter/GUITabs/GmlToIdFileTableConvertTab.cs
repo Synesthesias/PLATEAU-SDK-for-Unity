@@ -14,11 +14,11 @@ namespace PlateauUnitySDK.Editor.FileConverter.GUITabs
 
         private bool doTessellate;
         protected override string SourceFileExtension => "gml";
-        protected override string DestFileExtension => "asset";
+        public override string DestFileExtension => "asset";
         protected override IFileConverter FileConverter => this.converter;
-        
 
-        protected override void HeaderInfoGUI()
+
+        public override void HeaderInfoGUI()
         {
             
         }
