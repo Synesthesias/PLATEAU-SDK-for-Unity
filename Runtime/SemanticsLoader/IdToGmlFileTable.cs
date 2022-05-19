@@ -5,7 +5,6 @@ using UnityEngine.Serialization;
 
 namespace PlateauUnitySDK.Runtime.SemanticsLoader
 {
-    // TODO 実装中
     public class IdToGmlFileTable : ScriptableObject, ISerializationCallbackReceiver//, IDictionary<string, string>
     {
         private Dictionary<string, string> dictionary = new Dictionary<string, string>();

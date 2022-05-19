@@ -1,0 +1,68 @@
+﻿# Unityプロジェクトの自動テストを行います。
+# 参考: https://game.ci/docs/github/test-runner
+
+# 今のところ unity-ci の test-runner は Windowsに未対応なので
+# Linuxでのみテストを行います。
+# Windowsは手動でテストしてください。
+
+name: Test Unity Project
+
+on: push
+
+jobs:
+  testAllModes:
+    name: Test in ${{ matrix.os }} in ${{ matrix.testMode }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      
+      matrix:
+        projectPath:
+          - .
+        
+        os:
+          - ubuntu-latest
+          #- windows-latest
+        
+        testMode:
+          - playmode
+          - editmode
+        
+        include:
+          # 各OSに対応する dockerImage を指定します。
+          # dockerImage の値は 下のサイトに記載のDocker一覧から取得可能なものを指定します。
+          # https://hub.docker.com/r/unityci/editor/tags
+          - os: ubuntu-latest
+            dockerImage: 'unityci/editor:ubuntu-2020.3.32f1-base-1.0.1'
+          #- os: windows-latest
+          #  dockerImage: 'unityci/editor:windows-2020.3.32f1-base-1.0.1'
+    steps:
+      
+      - uses: actions/checkout@v2
+        with:
+          lfs: true
+      
+      - uses: actions/cache@v2
+        with:
+          path: ${{ matrix.projectPath }}/Library
+          key: Library-${{ matrix.projectPath }}
+          restore-keys: |
+            Library-
+      
+      - uses: game-ci/unity-test-runner@v2
+        id: tests
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+        with:
+          customImage: ${{ matrix.dockerImage }}
+          projectPath: ${{ matrix.projectPath }}
+          testMode: ${{ matrix.testMode }}
+          artifactsPath: ${{ matrix.testMode }}-artifacts
+          githubToken: ${{ secrets.GITHUB_TOKEN }}
+          checkName: ${{ matrix.testMode }} Test Results
+      
+      - uses: actions/upload-artifact@v2
+        if: always()
+        with:
+          name: Test results for ${{ matrix.testMode }}
+          path: ${{ steps.tests.outputs.artifactsPath }}

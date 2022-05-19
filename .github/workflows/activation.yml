@@ -1,0 +1,33 @@
+﻿# Unityの自動テストを github actions で行うにあたって、
+# テスト用マシンでUnityライセンスを認証するためのワークフローです。
+# 認証はマシンごとに1回行えば以降は不要です。
+
+# 認証の方法:
+# ・このワークフローを実行すると alf ファイルがダウンロードできるようになります。
+# ・次のサイトに alf ファイルをアップロードします。 https://license.unity3d.com/manual
+# ・ulf ファイルをダウンロードできます。
+# ・githubのリポジトリサイトを開き、Settings > Secrets に次の秘密情報を登録します。
+#     UNITY_LICENSE : ulfファイルの中身のコピー
+
+# 参考:
+# ・英語マニュアル　https://game.ci/docs/github/activation
+# ・日本語Qiita　https://qiita.com/makihiro_dev/items/fda3fa840f5311d2b3d5
+
+name: Acquire activation file
+on:
+  workflow_dispatch: {}
+jobs:
+  activation:
+    name: Request manual activation file 🔑
+    runs-on: ubuntu-latest
+    steps:
+      # Request manual activation file
+      - name: Request manual activation file
+        id: getManualLicenseFile
+        uses: game-ci/unity-request-activation-file@v2
+      # Upload artifact (Unity_v20XX.X.XXXX.alf)
+      - name: Expose as artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ steps.getManualLicenseFile.outputs.filePath }}
+          path: ${{ steps.getManualLicenseFile.outputs.filePath }}
