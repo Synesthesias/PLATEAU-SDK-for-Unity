@@ -1,4 +1,5 @@
 ﻿using PlateauUnitySDK.Editor.EditorWindowCommon;
+using UnityEditor;
 
 namespace PlateauUnitySDK.Editor.FileConverter.GUITabs
 {
@@ -48,6 +49,20 @@ namespace PlateauUnitySDK.Editor.FileConverter.GUITabs
                     ConvertFileSelectorGUIUtil.FilePanelType.Save,
                     $"Select {tab.DestFileExtension} export path"
                 );
+            }
+
+            foreach (var tab in tabs)
+            {
+                PlateauEditorStyle.Heading1($"Configure {tab.DestFileExtension}");
+                using (PlateauEditorStyle.VerticalScope())
+                {
+                    EditorGUI.BeginChangeCheck();
+                    tab.ConfigureGUI();
+                    if (EditorGUI.EndChangeCheck())
+                    {
+                        tab.OnConfigureGUIChanged();
+                    }
+                }
             }
             
             

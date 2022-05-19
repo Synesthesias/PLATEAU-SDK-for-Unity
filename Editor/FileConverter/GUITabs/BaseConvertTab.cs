@@ -67,11 +67,11 @@ namespace PlateauUnitySDK.Editor.FileConverter.GUITabs
         /// <summary>
         /// ファイル変換の設定に関するGUIを実装します。
         /// </summary>
-        protected abstract void ConfigureGUI();
+        public abstract void ConfigureGUI();
 
         /// <summary>
         /// <see cref="ConfigureGUI"/> の値に変更があったときの処理を実装します。
         /// </summary>
-        protected abstract void OnConfigureGUIChanged();
+        public abstract void OnConfigureGUIChanged();
     }
 }

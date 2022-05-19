@@ -32,14 +32,14 @@ namespace PlateauUnitySDK.Editor.FileConverter.GUITabs
             EditorGUILayout.LabelField("Assetsフォルダ外のファイルも指定できます。");
         }
 
-        protected override void ConfigureGUI()
+        public override void ConfigureGUI()
         {
             this.optimizeFlg = EditorGUILayout.Toggle("Optimize", this.optimizeFlg);
             this.mergeMeshFlg = EditorGUILayout.Toggle("Merge Mesh", this.mergeMeshFlg);
             this.axesConversion = (AxesConversion)EditorGUILayout.EnumPopup("Axes Conversion", this.axesConversion);
         }
 
-        protected override void OnConfigureGUIChanged()
+        public override void OnConfigureGUIChanged()
         {
             this.fileConverter.SetConfig(this.optimizeFlg, this.mergeMeshFlg, this.axesConversion);
         }

@@ -23,13 +23,13 @@ namespace PlateauUnitySDK.Editor.FileConverter.GUITabs
             
         }
 
-        protected override void ConfigureGUI()
+        public override void ConfigureGUI()
         {
             this.doOptimize = EditorGUILayout.Toggle("Optimize", this.doOptimize);
             this.doTessellate = EditorGUILayout.Toggle("Tessellate", this.doTessellate);
         }
 
-        protected override void OnConfigureGUIChanged()
+        public override void OnConfigureGUIChanged()
         {
             this.converter.SetConfig(this.doOptimize, this.doTessellate);
         }

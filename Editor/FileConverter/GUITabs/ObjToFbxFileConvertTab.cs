@@ -29,12 +29,12 @@ namespace PlateauUnitySDK.Editor.FileConverter.GUITabs
             EditorGUILayout.LabelField("出力fbxファイルはAssetsフォルダの外でも指定できます。");
         }
 
-        protected override void ConfigureGUI()
+        public override void ConfigureGUI()
         {
             this.fbxFormat = (FbxFormat)EditorGUILayout.EnumPopup("FBX Format", this.fbxFormat);
         }
 
-        protected override void OnConfigureGUIChanged()
+        public override void OnConfigureGUIChanged()
         {
             this.fileConverter.SetConfig(this.fbxFormat);
         }
