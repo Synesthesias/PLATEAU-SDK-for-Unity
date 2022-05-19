@@ -31,14 +31,13 @@ namespace PlateauUnitySDK.Editor.FileConverter.GUITabs
             {
                 HeaderInfoGUI();
             }
-            // ConvertFileSelectorGUIUtil.SourceFileSelectMenu(SourceFileExtension, ref this.sourceFilePath);
-            ConvertFileSelectorGUIUtil.FileSelectMenu(
+            ConvertFileSelectorGUIUtil.FileSelectGUI(
                 ref this.sourceFilePath,
                 SourceFileExtension,
                 ConvertFileSelectorGUIUtil.FilePanelType.Open,
                 $"Select {SourceFileExtension} File"
             );
-            ConvertFileSelectorGUIUtil.FileSelectMenu(
+            ConvertFileSelectorGUIUtil.FileSelectGUI(
                 ref this.destinationFilePath,
                 DestFileExtension,
                 ConvertFileSelectorGUIUtil.FilePanelType.Save,
