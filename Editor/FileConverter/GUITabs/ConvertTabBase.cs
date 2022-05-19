@@ -11,16 +11,18 @@ namespace PlateauUnitySDK.Editor.FileConverter.GUITabs
     /// </summary>
     public abstract class ConvertTabBase : ScrollableEditorWindowContents
     {
-        private readonly ConvertFileSelectorGUIUtil fileSelectorGUIUtil = new ConvertFileSelectorGUIUtil();
         
         // 変換元、変換先、Converter をサブクラスで指定します。
         protected abstract string SourceFileExtension { get; }
         protected abstract string DestFileExtension { get; }
         protected abstract IFileConverter FileConverter { get; }
+        
+        private string sourceFilePath;
+        private string destinationFilePath;
 
         protected ConvertTabBase()
         {
-            this.fileSelectorGUIUtil.OnEnable();
+            ConvertFileSelectorGUIUtil.SetDefaultPath(ref this.sourceFilePath, ref this.destinationFilePath);
         }
 
         protected override void DrawScrollable()
@@ -29,8 +31,8 @@ namespace PlateauUnitySDK.Editor.FileConverter.GUITabs
             {
                 HeaderInfoGUI();
             }
-            this.fileSelectorGUIUtil.SourceFileSelectMenu(SourceFileExtension);
-            this.fileSelectorGUIUtil.DestinationFileSelectMenu(DestFileExtension);
+            ConvertFileSelectorGUIUtil.SourceFileSelectMenu(SourceFileExtension, ref this.sourceFilePath);
+            ConvertFileSelectorGUIUtil.DestinationFileSelectMenu(ref this.destinationFilePath, DestFileExtension);
             PlateauEditorStyle.Heading1("4. Configure");
             using (PlateauEditorStyle.VerticalScope())
             {
@@ -42,7 +44,7 @@ namespace PlateauUnitySDK.Editor.FileConverter.GUITabs
                 }
             }
             ConvertFileSelectorGUIUtil.Space();
-            this.fileSelectorGUIUtil.PrintConvertButton(FileConverter);
+            ConvertFileSelectorGUIUtil.PrintConvertButton(FileConverter, this.sourceFilePath, this.destinationFilePath);
         }
 
         /// <summary>
