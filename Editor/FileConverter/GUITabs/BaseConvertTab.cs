@@ -56,7 +56,8 @@ namespace PlateauUnitySDK.Editor.FileConverter.GUITabs
                 }
             }
             ConvertFileSelectorGUIUtil.Space();
-            ConvertFileSelectorGUIUtil.PrintConvertButton(FileConverter, this.SourceFilePath, this.DestFilePath);
+            ConvertFileSelectorGUIUtil.PrintConvertButton(FileConverter,
+                () => FileConverter.Convert(this.SourceFilePath, this.DestFilePath));
         }
 
         /// <summary>

@@ -61,19 +61,19 @@ namespace PlateauUnitySDK.Editor.FileConverter.GUITabs
         /// 変換ボタンを表示します。
         /// ボタンが押された時、引数の converter.Convert メソッドが実行されます。
         /// </summary>
-        public static void PrintConvertButton(IFileConverter converter, string srcFilePath, string dstFilePath)
+        public static void PrintConvertButton(IFileConverter converter, Func<bool> convertFunc)
         {
             PlateauEditorStyle.Heading1("Convert");
             using (PlateauEditorStyle.VerticalScope())
             {
-                if (PlateauEditorStyle.MainButton("Convert")) ButtonConvertPushed(converter, srcFilePath, dstFilePath);
+                if (PlateauEditorStyle.MainButton("Convert")) ButtonConvertPushed(convertFunc);
             }
         }
 
         /// <summary> ボタン押下時に呼ばれます。引数の converter に変換を委譲し、結果を表示します。 </summary>
-        private static void ButtonConvertPushed(IFileConverter converter, string sourceFilePath, string destinationFilePath)
+        private static void ButtonConvertPushed(Func<bool> convertFunc)
         {
-            var result = converter.Convert(sourceFilePath, destinationFilePath);
+            var result = convertFunc();
             EditorUtility.DisplayDialog(
                 "Convert Result",
                 result ? "Convert Complete!" : "Convert Failed...\nSee console log for detail.",
