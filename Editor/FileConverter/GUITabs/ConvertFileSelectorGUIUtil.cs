@@ -14,12 +14,10 @@ namespace PlateauUnitySDK.Editor.FileConverter.GUITabs
     public static class ConvertFileSelectorGUIUtil
     {
         private const float spaceWidth = 20f;
-
-        /// <summary> 初期化処理のうち、Unityの仕様で Init に書けない部分をここに書きます。 </summary>
-        public static void SetDefaultPath(ref string sourceFilePath, ref string destinationFilePath)
+        
+        public static string DefaultPath()
         {
-            DefaultPathIfEmpty(ref sourceFilePath);
-            DefaultPathIfEmpty(ref destinationFilePath);
+            return Application.dataPath;
         }
         
         public enum FilePanelType{Open, Save}
@@ -70,15 +68,6 @@ namespace PlateauUnitySDK.Editor.FileConverter.GUITabs
             {
                 if (PlateauEditorStyle.MainButton("Convert")) ButtonConvertPushed(converter, srcFilePath, dstFilePath);
             }
-        }
-
-        /// <summary>
-        /// パスのデフォルト値は、ファイル選択画面で最初に表示されるディレクトリに影響します。
-        /// Assetsフォルダを起点にしたほうが操作性が良さそうなので、そのようにデフォルト値を設定します。
-        /// </summary>
-        private static void DefaultPathIfEmpty(ref string path)
-        {
-            if (string.IsNullOrEmpty(path)) path = Application.dataPath; // Assetsフォルダ
         }
 
         /// <summary> ボタン押下時に呼ばれます。引数の converter に変換を委譲し、結果を表示します。 </summary>

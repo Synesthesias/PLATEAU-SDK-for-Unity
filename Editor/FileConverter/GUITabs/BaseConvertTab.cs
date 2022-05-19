@@ -22,7 +22,9 @@ namespace PlateauUnitySDK.Editor.FileConverter.GUITabs
 
         protected BaseConvertTab()
         {
-            ConvertFileSelectorGUIUtil.SetDefaultPath(ref this.sourceFilePath, ref this.destinationFilePath);
+            string defaultPath = ConvertFileSelectorGUIUtil.DefaultPath();
+            this.sourceFilePath = defaultPath;
+            this.destinationFilePath = defaultPath;
         }
 
         protected override void DrawScrollable()
