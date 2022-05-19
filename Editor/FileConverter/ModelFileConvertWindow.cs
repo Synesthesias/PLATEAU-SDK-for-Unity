@@ -31,12 +31,12 @@ namespace PlateauUnitySDK.Editor.FileConverter
             this.tabContents = new IEditorWindowContents[]
             {
                 new GmlToObjFileConvertTab(),
-                new GmlToIdTableConvertTab(),
+                new GmlToIdFileTableConvertTab(),
                 new ObjToFbxFileConvertTab()
             };
             this.tabNames = new[]
             {
-                "GML to OBJ", "GML to ID Table", "OBJ to FBX"
+                "GML to OBJ", "GML to ID->File Table", "OBJ to FBX"
             };
             this.isInitialized = true;
         }

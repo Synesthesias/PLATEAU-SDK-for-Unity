@@ -33,9 +33,12 @@ namespace PlateauUnitySDK.Editor.FileConverter.GUITabs
 
         public override void ConfigureGUI()
         {
-            EditorGUI.BeginChangeCheck();
             this.fbxFormat = (FbxFormat)EditorGUILayout.EnumPopup("FBX Format", this.fbxFormat);
-            if (EditorGUI.EndChangeCheck()) this.fileConverter.SetConfig(this.fbxFormat);
+        }
+
+        public override void OnConfigureGUIChanged()
+        {
+            this.fileConverter.SetConfig(this.fbxFormat);
         }
     }
 }

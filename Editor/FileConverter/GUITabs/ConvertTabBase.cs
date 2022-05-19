@@ -1,5 +1,6 @@
 ﻿using PlateauUnitySDK.Editor.EditorWindowCommon;
 using PlateauUnitySDK.Editor.FileConverter.Converters;
+using UnityEditor;
 
 namespace PlateauUnitySDK.Editor.FileConverter.GUITabs
 {
@@ -32,7 +33,12 @@ namespace PlateauUnitySDK.Editor.FileConverter.GUITabs
             PlateauEditorStyle.Heading1("4. Configure");
             using (PlateauEditorStyle.VerticalScope())
             {
-                ConfigureGUI();   
+                EditorGUI.BeginChangeCheck();
+                ConfigureGUI();
+                if (EditorGUI.EndChangeCheck())
+                {
+                    OnConfigureGUIChanged();
+                }
             }
             ConvertFileSelectorGUIUtil.Space();
             this.fileSelectorGUIUtil.PrintConvertButton(FileConverter);
@@ -44,5 +50,10 @@ namespace PlateauUnitySDK.Editor.FileConverter.GUITabs
         /// ファイル変換の設定に関するGUIをサブクラスで実装します。
         /// </summary>
         public abstract void ConfigureGUI();
+
+        /// <summary>
+        /// <see cref="ConfigureGUI"/> の値に変更があったときの処理を実装します。
+        /// </summary>
+        public abstract void OnConfigureGUIChanged();
     }
 }

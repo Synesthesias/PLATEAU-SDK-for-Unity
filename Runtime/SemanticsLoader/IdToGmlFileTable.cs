@@ -5,12 +5,12 @@ using UnityEngine.Serialization;
 
 namespace PlateauUnitySDK.Runtime.SemanticsLoader
 {
-    // 実装中
-    public class IdToGmlFileName : ScriptableObject, ISerializationCallbackReceiver
+    // TODO 実装中
+    public class IdToGmlFileTable : ScriptableObject, ISerializationCallbackReceiver//, IDictionary<string, string>
     {
-        private Dictionary<string, string> dictionary;
-        [SerializeField] private List<string> keys;
-        [SerializeField] private List<string> values;
+        private Dictionary<string, string> dictionary = new Dictionary<string, string>();
+        [SerializeField] private List<string> keys = new List<string>();
+        [SerializeField] private List<string> values = new List<string>();
 
 
         public void OnBeforeSerialize()
@@ -32,7 +32,18 @@ namespace PlateauUnitySDK.Runtime.SemanticsLoader
             {
                 this.dictionary.Add(this.keys[i], this.values[i]);
             }
-
         }
+
+        public void Add(string id, string gmlFileName)
+        {
+            Add(new KeyValuePair<string, string>(id, gmlFileName));    
+        }
+
+        public void Add(KeyValuePair<string, string> item)
+        {
+            this.dictionary.Add(item.Key, item.Value);
+        }
+
+        public bool ContainsKey(string key) => this.dictionary.ContainsKey(key);
     }
 }

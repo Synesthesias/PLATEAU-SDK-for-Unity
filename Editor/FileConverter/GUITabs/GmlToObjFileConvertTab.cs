@@ -34,12 +34,14 @@ namespace PlateauUnitySDK.Editor.FileConverter.GUITabs
 
         public override void ConfigureGUI()
         {
-            EditorGUI.BeginChangeCheck();
             this.optimizeFlg = EditorGUILayout.Toggle("Optimize", this.optimizeFlg);
             this.mergeMeshFlg = EditorGUILayout.Toggle("Merge Mesh", this.mergeMeshFlg);
             this.axesConversion = (AxesConversion)EditorGUILayout.EnumPopup("Axes Conversion", this.axesConversion);
-            if (EditorGUI.EndChangeCheck())
-                this.fileConverter.SetConfig(this.optimizeFlg, this.mergeMeshFlg, this.axesConversion);
+        }
+
+        public override void OnConfigureGUIChanged()
+        {
+            this.fileConverter.SetConfig(this.optimizeFlg, this.mergeMeshFlg, this.axesConversion);
         }
     }
 }
