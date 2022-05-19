@@ -6,7 +6,9 @@ namespace PlateauUnitySDK.Editor.FileConverter.GUITabs
     // TODO BaseConvertTab.cs と共通する箇所が多いのでまとめられるか検討
     public class GmlToObjAndIdTableConvertTab : ScrollableEditorWindowContents
     {
-        
+        // Gml -> Obj の変換タブと
+        // Gml -> IdFileTable の変換タブの機能を
+        // 混ぜ合わせて両方を一度に出力するGUIを作ります。
         private BaseConvertTab[] tabs = new BaseConvertTab[]
         {
             new GmlToObjFileConvertTab(),
@@ -65,8 +67,18 @@ namespace PlateauUnitySDK.Editor.FileConverter.GUITabs
                 }
             }
             
-            
+            ConvertFileSelectorGUIUtil.PrintConvertButton(Convert);
+        }
 
+        private bool Convert()
+        {
+            bool isSuccess = true;
+            foreach (var tab in tabs)
+            {
+                isSuccess &= tab.FileConverter.Convert(tab.SourceFilePath, tab.DestFilePath);
+            }
+
+            return isSuccess;
         }
     }
 }

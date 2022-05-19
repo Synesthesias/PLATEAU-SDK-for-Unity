@@ -15,7 +15,7 @@ namespace PlateauUnitySDK.Editor.FileConverter.GUITabs
         // 変換元、変換先、Converter をサブクラスで指定します。
         protected abstract string SourceFileExtension { get; }
         public abstract string DestFileExtension { get; }
-        protected abstract IFileConverter FileConverter { get; }
+        public abstract IFileConverter FileConverter { get; }
 
         public string SourceFilePath;
         public string DestFilePath;
@@ -56,8 +56,8 @@ namespace PlateauUnitySDK.Editor.FileConverter.GUITabs
                 }
             }
             ConvertFileSelectorGUIUtil.Space();
-            ConvertFileSelectorGUIUtil.PrintConvertButton(FileConverter,
-                () => FileConverter.Convert(this.SourceFilePath, this.DestFilePath));
+            ConvertFileSelectorGUIUtil.PrintConvertButton(() =>
+                FileConverter.Convert(this.SourceFilePath, this.DestFilePath));
         }
 
         /// <summary>

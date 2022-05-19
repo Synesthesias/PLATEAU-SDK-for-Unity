@@ -14,7 +14,7 @@ namespace PlateauUnitySDK.Editor.FileConverter.GUITabs
 
         protected override string SourceFileExtension => "obj";
         public override string DestFileExtension => "fbx";
-        protected override IFileConverter FileConverter => this.fileConverter;
+        public override IFileConverter FileConverter => this.fileConverter;
 
         /// <summary>初期化処理です。</summary>
         public ObjToFbxFileConvertTab()

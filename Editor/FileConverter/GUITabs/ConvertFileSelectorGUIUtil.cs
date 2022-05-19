@@ -61,7 +61,7 @@ namespace PlateauUnitySDK.Editor.FileConverter.GUITabs
         /// 変換ボタンを表示します。
         /// ボタンが押された時、引数の converter.Convert メソッドが実行されます。
         /// </summary>
-        public static void PrintConvertButton(IFileConverter converter, Func<bool> convertFunc)
+        public static void PrintConvertButton(Func<bool> convertFunc)
         {
             PlateauEditorStyle.Heading1("Convert");
             using (PlateauEditorStyle.VerticalScope())
