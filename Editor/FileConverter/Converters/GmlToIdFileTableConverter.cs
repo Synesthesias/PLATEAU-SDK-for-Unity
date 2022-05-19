@@ -9,7 +9,7 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
 {
     public class GmlToIdFileTableConverter : IFileConverter
     {
-        private CitygmlParserParams parserParams = new CitygmlParserParams();
+        private CitygmlParserParams parserParams;
 
         public bool Convert(string srcGmlPath, string dstTableFullPath)
         {
@@ -19,7 +19,7 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
             var cityObjectIds = cityModel.RootCityObjects
                 .SelectMany(co => co.CityObjectDescendantsDFS)
                 .Select(co => co.ID);
-            var table = LoadOrCreateIdGmlTable(srcGmlPath, dstTableFullPath);
+            var table = LoadOrCreateIdGmlTable(dstTableFullPath);
             string gmlFileName = Path.GetFileNameWithoutExtension(srcGmlPath);
             foreach (string id in cityObjectIds)
             {
@@ -41,11 +41,11 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
             {
                 return false;
             }
-            // TODO ouputPathがAssetsフォルダ内かどうかチェックする
+            // TODO outputPathがAssetsフォルダ内かどうかチェックする
             return true;
         }
 
-        private static IdToGmlFileTable LoadOrCreateIdGmlTable(string srcGmlPath, string dstTableFullPath)
+        private static IdToGmlFileTable LoadOrCreateIdGmlTable(string dstTableFullPath)
         {
             
             

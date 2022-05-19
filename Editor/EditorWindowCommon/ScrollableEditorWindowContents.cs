@@ -17,6 +17,6 @@ namespace PlateauUnitySDK.Editor.EditorWindowCommon
             EditorGUILayout.EndScrollView();
         }
 
-        public abstract void DrawScrollable();
+        protected abstract void DrawScrollable();
     }
 }

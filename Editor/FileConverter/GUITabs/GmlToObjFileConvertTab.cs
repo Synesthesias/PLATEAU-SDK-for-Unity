@@ -27,19 +27,19 @@ namespace PlateauUnitySDK.Editor.FileConverter.GUITabs
             this.fileConverter.SetConfig(this.optimizeFlg, this.mergeMeshFlg, this.axesConversion);
         }
 
-        public override void HeaderInfoGUI()
+        protected override void HeaderInfoGUI()
         {
             EditorGUILayout.LabelField("Assetsフォルダ外のファイルも指定できます。");
         }
 
-        public override void ConfigureGUI()
+        protected override void ConfigureGUI()
         {
             this.optimizeFlg = EditorGUILayout.Toggle("Optimize", this.optimizeFlg);
             this.mergeMeshFlg = EditorGUILayout.Toggle("Merge Mesh", this.mergeMeshFlg);
             this.axesConversion = (AxesConversion)EditorGUILayout.EnumPopup("Axes Conversion", this.axesConversion);
         }
 
-        public override void OnConfigureGUIChanged()
+        protected override void OnConfigureGUIChanged()
         {
             this.fileConverter.SetConfig(this.optimizeFlg, this.mergeMeshFlg, this.axesConversion);
         }

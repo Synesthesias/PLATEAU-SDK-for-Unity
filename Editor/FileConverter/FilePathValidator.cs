@@ -10,6 +10,7 @@ namespace PlateauUnitySDK.Editor.FileConverter
     public static class FilePathValidator
     {
         // この値はテストのときのみ変更されるのでreadonlyにしないでください。
+        // ReSharper disable once FieldCanBeMadeReadOnly.Local
         private static string unityProjectDataPath = Application.dataPath;
 
         /// <summary>

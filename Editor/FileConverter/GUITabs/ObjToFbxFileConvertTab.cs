@@ -1,7 +1,5 @@
-using PlateauUnitySDK.Editor.EditorWindowCommon;
 using PlateauUnitySDK.Editor.FileConverter.Converters;
 using UnityEditor;
-using UnityEngine;
 using static PlateauUnitySDK.Editor.FileConverter.Converters.ObjToFbxFileConverter;
 
 namespace PlateauUnitySDK.Editor.FileConverter.GUITabs
@@ -25,18 +23,18 @@ namespace PlateauUnitySDK.Editor.FileConverter.GUITabs
             this.fileConverter.SetConfig(this.fbxFormat);
         }
 
-        public override void HeaderInfoGUI()
+        protected override void HeaderInfoGUI()
         {
             EditorGUILayout.LabelField("入力objファイルはAssetsフォルダ内のファイルのみ指定できますが、");
             EditorGUILayout.LabelField("出力fbxファイルはAssetsフォルダの外でも指定できます。");
         }
 
-        public override void ConfigureGUI()
+        protected override void ConfigureGUI()
         {
             this.fbxFormat = (FbxFormat)EditorGUILayout.EnumPopup("FBX Format", this.fbxFormat);
         }
 
-        public override void OnConfigureGUIChanged()
+        protected override void OnConfigureGUIChanged()
         {
             this.fileConverter.SetConfig(this.fbxFormat);
         }
