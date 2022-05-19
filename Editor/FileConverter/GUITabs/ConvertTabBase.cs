@@ -31,8 +31,19 @@ namespace PlateauUnitySDK.Editor.FileConverter.GUITabs
             {
                 HeaderInfoGUI();
             }
-            ConvertFileSelectorGUIUtil.SourceFileSelectMenu(SourceFileExtension, ref this.sourceFilePath);
-            ConvertFileSelectorGUIUtil.DestinationFileSelectMenu(ref this.destinationFilePath, DestFileExtension);
+            // ConvertFileSelectorGUIUtil.SourceFileSelectMenu(SourceFileExtension, ref this.sourceFilePath);
+            ConvertFileSelectorGUIUtil.FileSelectMenu(
+                ref this.sourceFilePath,
+                SourceFileExtension,
+                ConvertFileSelectorGUIUtil.FilePanelType.Open,
+                $"Select {SourceFileExtension} File"
+            );
+            ConvertFileSelectorGUIUtil.FileSelectMenu(
+                ref this.destinationFilePath,
+                DestFileExtension,
+                ConvertFileSelectorGUIUtil.FilePanelType.Save,
+                $"Select {DestFileExtension} Export Path"
+            );
             PlateauEditorStyle.Heading1("4. Configure");
             using (PlateauEditorStyle.VerticalScope())
             {
