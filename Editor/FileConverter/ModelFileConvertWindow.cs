@@ -5,10 +5,9 @@ using UnityEditor;
 namespace PlateauUnitySDK.Editor.FileConverter
 {
     /// <summary>
-    /// 3Dモデルのファイル形式を変換するEditorWindowです。
-    /// 変換できる形式は次の2つです。
-    /// ・GMLからOBJに
-    /// ・OBJからFBXに
+    /// ファイルの変換を行うEditorWindowです。
+    /// 変換の形式ごとのタブが用意されたウィンドウを表示します。
+    /// 具体的な処理を各タブのクラスに委譲します。
     /// </summary>
     public class ModelFileConvertWindow : EditorWindow
     {

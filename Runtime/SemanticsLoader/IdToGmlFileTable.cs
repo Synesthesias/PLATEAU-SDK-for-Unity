@@ -1,17 +1,23 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace PlateauUnitySDK.Runtime.SemanticsLoader
 {
+    /// <summary>
+    /// <see cref="LibPLATEAU.NET.CityGML.CityObject"/> のIDから、対応するGMLのファイル名を検索できる辞書データを格納した
+    /// <see cref="ScriptableObject"/> です。
+    /// </summary>
     public class IdToGmlFileTable : ScriptableObject, ISerializationCallbackReceiver//, IDictionary<string, string>
     {
         private Dictionary<string, string> dictionary = new Dictionary<string, string>();
+        // Unityの仕様上、シリアライズするときは List 形式で行い、 デシリアライズするときは Dictionary 形式に直します。
         [SerializeField] private List<string> keys = new List<string>();
         [SerializeField] private List<string> values = new List<string>();
 
-
+        /// <summary>
+        /// シリアライズするときに List形式に直します。
+        /// </summary>
         public void OnBeforeSerialize()
         {
             this.keys.Clear();
@@ -23,6 +29,9 @@ namespace PlateauUnitySDK.Runtime.SemanticsLoader
             }
         }
 
+        /// <summary>
+        /// デシリアライズするときに List から Dictionary 形式に直します。
+        /// </summary>
         public void OnAfterDeserialize()
         {
             this.dictionary = new Dictionary<string, string>();

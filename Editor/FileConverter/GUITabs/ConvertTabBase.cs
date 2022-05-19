@@ -7,6 +7,7 @@ namespace PlateauUnitySDK.Editor.FileConverter.GUITabs
     /// <summary>
     /// ファイル変換ウィンドウのタブの基底クラスです。
     /// ある拡張子からある拡張子への変換を行うGUIを提供します。
+    /// <see cref="ModelFileConvertWindow"/> によって保持されます。
     /// </summary>
     public abstract class ConvertTabBase : ScrollableEditorWindowContents
     {
@@ -44,10 +45,13 @@ namespace PlateauUnitySDK.Editor.FileConverter.GUITabs
             this.fileSelectorGUIUtil.PrintConvertButton(FileConverter);
         }
 
+        /// <summary>
+        /// ウィンドウの上のほうに書いておきたい注意書きがあれば実装します。
+        /// </summary>
         protected abstract void HeaderInfoGUI();
 
         /// <summary>
-        /// ファイル変換の設定に関するGUIをサブクラスで実装します。
+        /// ファイル変換の設定に関するGUIを実装します。
         /// </summary>
         protected abstract void ConfigureGUI();
 

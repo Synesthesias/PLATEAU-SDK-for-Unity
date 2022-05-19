@@ -3,6 +3,9 @@ using UnityEditor;
 
 namespace PlateauUnitySDK.Editor.FileConverter.GUITabs
 {
+    /// <summary>
+    /// Gmlファイルを読んで <see cref="Runtime.SemanticsLoader.IdToGmlFileTable"/> を出力するGUIを提供します。
+    /// </summary>
     public class GmlToIdFileTableConvertTab : ConvertTabBase
     {
         private readonly GmlToIdFileTableConverter converter = new GmlToIdFileTableConverter();
