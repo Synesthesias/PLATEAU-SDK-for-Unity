@@ -45,7 +45,7 @@ namespace PlateauUnitySDK.Editor.FileConverter.GUITabs
                 ConvertFileSelectorGUIUtil.FilePanelType.Save,
                 $"Select {DestFileExtension} Export Path"
             );
-            PlateauEditorStyle.Heading1("4. Configure");
+            PlateauEditorStyle.Heading1("Configure");
             using (PlateauEditorStyle.VerticalScope())
             {
                 EditorGUI.BeginChangeCheck();

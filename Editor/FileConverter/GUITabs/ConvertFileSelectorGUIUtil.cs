@@ -63,7 +63,7 @@ namespace PlateauUnitySDK.Editor.FileConverter.GUITabs
         /// </summary>
         public static void PrintConvertButton(IFileConverter converter, string srcFilePath, string dstFilePath)
         {
-            PlateauEditorStyle.Heading1("5. Convert");
+            PlateauEditorStyle.Heading1("Convert");
             using (PlateauEditorStyle.VerticalScope())
             {
                 if (PlateauEditorStyle.MainButton("Convert")) ButtonConvertPushed(converter, srcFilePath, dstFilePath);
