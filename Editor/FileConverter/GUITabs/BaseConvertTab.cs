@@ -39,12 +39,7 @@ namespace PlateauUnitySDK.Editor.FileConverter.GUITabs
                 ConvertFileSelectorGUIUtil.FilePanelType.Open,
                 $"Select {SourceFileExtension} File"
             );
-            ConvertFileSelectorGUIUtil.FileSelectGUI(
-                ref this.DestFilePath,
-                DestFileExtension,
-                ConvertFileSelectorGUIUtil.FilePanelType.Save,
-                $"Select {DestFileExtension} Export Path"
-            );
+            DstFileSelectGUI();
             PlateauEditorStyle.Heading1("Configure");
             using (PlateauEditorStyle.VerticalScope())
             {
@@ -56,14 +51,26 @@ namespace PlateauUnitySDK.Editor.FileConverter.GUITabs
                 }
             }
             ConvertFileSelectorGUIUtil.Space();
-            ConvertFileSelectorGUIUtil.PrintConvertButton(() =>
-                FileConverter.Convert(this.SourceFilePath, this.DestFilePath));
+            ConvertFileSelectorGUIUtil.PrintConvertButton(Convert);
         }
 
         /// <summary>
         /// ウィンドウの上のほうに書いておきたい注意書きがあれば実装します。
         /// </summary>
         public abstract void HeaderInfoGUI();
+
+        /// <summary>
+        /// 変換先ファイルを選択するGUIを表示します。
+        /// </summary>
+        protected virtual void DstFileSelectGUI()
+        {
+            ConvertFileSelectorGUIUtil.FileSelectGUI(
+                ref this.DestFilePath,
+                DestFileExtension,
+                ConvertFileSelectorGUIUtil.FilePanelType.Save,
+                $"Select {DestFileExtension} Export Path"
+            );
+        }
 
         /// <summary>
         /// ファイル変換の設定に関するGUIを実装します。
@@ -74,5 +81,13 @@ namespace PlateauUnitySDK.Editor.FileConverter.GUITabs
         /// <see cref="ConfigureGUI"/> の値に変更があったときの処理を実装します。
         /// </summary>
         public abstract void OnConfigureGUIChanged();
+
+        /// <summary>
+        /// 変換し、成否をboolで返します。
+        /// </summary>
+        protected virtual bool Convert()
+        {
+            return FileConverter.Convert(this.SourceFilePath, this.DestFilePath);
+        }
     }
 }

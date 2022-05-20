@@ -1,5 +1,10 @@
-﻿using PlateauUnitySDK.Editor.FileConverter.Converters;
+﻿using System;
+using System.IO;
+using PlateauUnitySDK.Editor.FileConverter.Converters;
+using PlateauUnitySDK.Runtime.SemanticsLoader;
 using UnityEditor;
+using UnityEngine;
+using UnityEngine.Animations;
 
 namespace PlateauUnitySDK.Editor.FileConverter.GUITabs
 {
@@ -16,11 +21,50 @@ namespace PlateauUnitySDK.Editor.FileConverter.GUITabs
         protected override string SourceFileExtension => "gml";
         public override string DestFileExtension => "asset";
         public override IFileConverter FileConverter => this.converter;
-
+        private static string projectPath = Path.GetDirectoryName(Application.dataPath);
+        private int dstTabIndex = 0;
+        private IdToGmlFileTable existingTable;
+        private string existingTablePath;
 
         public override void HeaderInfoGUI()
         {
             
+        }
+
+        protected override void DstFileSelectGUI()
+        {
+            // 対象ファイルの選択方法は、新ファイルか既存ファイルかの2パターンあります。
+            // 前者は基底クラスと同じ処理で、後者をオーバーライドして実装しています。
+            
+            // 選択タブ
+            EditorGUILayout.LabelField("Write ID->FileName Table to:");
+            this.dstTabIndex =
+                PlateauEditorStyle.Tabs(
+                    this.dstTabIndex,
+                    "New File", "Existing File"
+                );
+            // タブにより対象ファイル選択
+            switch (this.dstTabIndex)
+            {
+                case 0:
+                    // New File のとき、基底クラスの保存先選択GUIを表示します。
+                    base.DstFileSelectGUI();
+                    break;
+                case 1:
+                    // Existing File のとき、既存のファイル選択GUIを表示します。
+                    this.existingTable = (IdToGmlFileTable)EditorGUILayout.ObjectField(
+                        "IdFileTable:",
+                        this.existingTable,
+                        typeof(IdToGmlFileTable),
+                        false
+                        );
+                    this.existingTablePath = 
+                        Path.Combine(projectPath, AssetDatabase.GetAssetPath(this.existingTable));
+                    GUILayout.TextArea(this.existingTablePath);
+                    break;
+                default:
+                    throw new Exception("Unknown Tab Index.");
+            }
         }
 
         public override void ConfigureGUI()
@@ -32,6 +76,24 @@ namespace PlateauUnitySDK.Editor.FileConverter.GUITabs
         public override void OnConfigureGUIChanged()
         {
             this.converter.SetConfig(this.doOptimize, this.doTessellate);
+        }
+
+        protected override bool Convert()
+        {
+            // 変換方法のタブによって Convert に渡すパスが違うので、
+            // オーバーライドして場合分けでパスを指定します。
+            // TODO 数値指定は分かりにくいのでenum形式にする
+            switch (this.dstTabIndex)
+            {
+                case 0:
+                    // New File の挙動は基底クラスと同じです。
+                    return base.Convert();
+                case 1:
+                    // Existing File のときは対象パスが変わります。
+                    return FileConverter.Convert(this.SourceFilePath, this.existingTablePath);
+                default:
+                    throw new Exception("Unknown Tab Index.");
+            }
         }
     }
 }
