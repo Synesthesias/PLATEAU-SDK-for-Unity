@@ -47,11 +47,11 @@ namespace PlateauUnitySDK.Editor.FileConverter.GUITabs
             }
             foreach (var tab in tabs)
             {
+                HeaderDrawer.Draw($"gml to {tab.DestFileExtension}");
+                HeaderDrawer.IncrementDepth();
                 tab.DstFileSelectGUI();
-            }
-            foreach (var tab in tabs)
-            {
                 tab.ConfigureGUIOuter();
+                HeaderDrawer.DecrementDepth();
             }
             ConvertFileSelectorGUIUtil.PrintConvertButton(Convert);
         }

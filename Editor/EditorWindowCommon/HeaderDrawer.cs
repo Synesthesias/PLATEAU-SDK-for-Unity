@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Text;
 using UnityEditor;
+using UnityEngine;
 using UnityEngine.PlayerLoop;
 
 namespace PlateauUnitySDK.Editor.EditorWindowCommon
@@ -15,10 +17,11 @@ namespace PlateauUnitySDK.Editor.EditorWindowCommon
     public static class HeaderDrawer
     {
         /// <summary> 例えば現在の見出し番号が 2-1-1. であれば、このリストは {2,1,1} になります。 </summary>
-        private static List<int> currentHeaderNum = new List<int>();
+        private static List<int> currentHeaderNum;
 
         static HeaderDrawer()
         {
+            currentHeaderNum = new List<int>();
             Reset();
         }
 
@@ -26,25 +29,35 @@ namespace PlateauUnitySDK.Editor.EditorWindowCommon
         {
             // 最初の見出し番号 {1} にします。
             currentHeaderNum.Clear();
-            IncrementDepth();
+            IncrementDepth(false);
         }
 
         public static int Depth => currentHeaderNum.Count;
 
-        public static void IncrementDepth()
+        public static void IncrementDepth(bool doGoPrev = true)
         {
+            if(doGoPrev) Prev();
             currentHeaderNum.Add(1);
         }
 
-        public static void DecrementDepth(bool doGoNext)
+        public static void DecrementDepth(bool doGoNext = true)
         {
-            currentHeaderNum.RemoveAt(Depth-1);
+            if(Depth > 0) currentHeaderNum.RemoveAt(Depth-1);
             if (doGoNext) Next();
         }
 
         public static void Next()
         {
             currentHeaderNum[Depth - 1]++;
+        }
+
+        public static void Prev()
+        {
+            // Debug.Log($"depth = {Depth}");
+            int index = Math.Max(0, Depth - 1);
+            // Debug.Log($"index= {index}");
+            int num = Math.Max(1, currentHeaderNum[index] - 1);
+            currentHeaderNum[index] = num;
         }
 
         public static string HeaderNumToString()

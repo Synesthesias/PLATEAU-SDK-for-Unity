@@ -38,6 +38,9 @@ namespace PlateauUnitySDK.Editor.FileConverter.GUITabs
             // 前者は基底クラスと同じ処理で、後者をオーバーライドして実装しています。
             
             // 選択タブ
+            HeaderDrawer.Draw("Select ID->File Table Path");
+            HeaderDrawer.IncrementDepth();
+            HeaderDrawer.Draw("Select Target File Type");
             EditorGUILayout.LabelField("Write ID->FileName Table to:");
             this.dstTabIndex =
                 PlateauEditorStyle.Tabs(
@@ -52,6 +55,7 @@ namespace PlateauUnitySDK.Editor.FileConverter.GUITabs
                     base.DstFileSelectGUI();
                     break;
                 case 1:
+                    HeaderDrawer.Draw("Select Existing File");
                     // Existing File のとき、既存のファイル選択GUIを表示します。
                     this.existingTable = (IdToGmlFileTable)EditorGUILayout.ObjectField(
                         "IdFileTable:",
@@ -66,6 +70,7 @@ namespace PlateauUnitySDK.Editor.FileConverter.GUITabs
                 default:
                     throw new Exception("Unknown Tab Index.");
             }
+            HeaderDrawer.DecrementDepth();
         }
 
         public override void ConfigureGUI()
