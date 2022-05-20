@@ -17,7 +17,7 @@ namespace PlateauUnitySDK.Editor.FileConverter
         private bool isInitialized;
 
         [MenuItem("Plateau/Model File Converter Window")]
-        private static void Open()
+        public static void Open()
         {
             var window = GetWindow<ModelFileConvertWindow>("Model File Converter");
             window.Show();
