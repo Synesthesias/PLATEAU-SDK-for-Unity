@@ -1,28 +1,35 @@
-﻿using NUnit.Framework;
+﻿using System.Collections;
+using NUnit.Framework;
 using PlateauUnitySDK.Editor.FileConverter;
 using UnityEditor;
+using UnityEditor.VersionControl;
+using UnityEngine.TestTools;
 
 namespace PlateauUnitySDK.Tests.EditModeTests.TestsFileConverter
 {
     [TestFixture]
     public class TestModelFileConvertWindow
     {
+        private ModelFileConvertWindow window;
+        
         [SetUp]
         public void SetUp()
         {
             ModelFileConvertWindow.Open();
+            this.window = EditorWindow.GetWindow<ModelFileConvertWindow>();
         }
         
         [TearDown]
         public void TearDown()
         {
-            EditorWindow.GetWindow<ModelFileConvertWindow>().Close();
+            this.window.Close();
         }
         
-        [Test]
-        public void Show_Window_Without_Error()
+        [UnityTest]
+        public IEnumerator Can_Paint_Window_Of_Initial_State()
         {
-            // SetUpが正常に行われれば良しとします
+            this.window.Repaint();
+            yield break;
         }
     }
 }
