@@ -73,7 +73,7 @@ namespace PlateauUnitySDK.Editor.FileConverter.GUITabs
         /// </summary>
         public void ConfigureGUIOuter()
         {
-            PlateauEditorStyle.Heading1($"Configure {DestFileExtension}");
+            HeaderDrawer.Draw($"Configure {DestFileExtension}");
             using (PlateauEditorStyle.VerticalScope())
             {
                 EditorGUI.BeginChangeCheck();

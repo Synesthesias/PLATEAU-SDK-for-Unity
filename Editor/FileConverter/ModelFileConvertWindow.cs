@@ -47,7 +47,8 @@ namespace PlateauUnitySDK.Editor.FileConverter
         private void OnGUI()
         {
             if (!this.isInitialized || this.tabContents == null) Init();
-            PlateauEditorStyle.Heading1("Choose Convert Type");
+            HeaderDrawer.Reset();
+            HeaderDrawer.Draw("Choose Convert Type");
 
             // タブ形式のボタンで変換のファイル形式を選びます。
             this.tabIndex = PlateauEditorStyle.Tabs(this.tabIndex, this.tabNames);

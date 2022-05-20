@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using PlateauUnitySDK.Editor.EditorWindowCommon;
 using PlateauUnitySDK.Editor.FileConverter.Converters;
 using UnityEditor;
 using UnityEngine;
@@ -27,7 +28,7 @@ namespace PlateauUnitySDK.Editor.FileConverter.GUITabs
         /// </summary>
         public static void FileSelectGUI(ref string filePath, string extension, FilePanelType panelType, string description)
         {
-            PlateauEditorStyle.Heading1(description);
+            HeaderDrawer.Draw(description);
             using (PlateauEditorStyle.VerticalScope())
             {
                 if (PlateauEditorStyle.MainButton(description))
@@ -63,7 +64,7 @@ namespace PlateauUnitySDK.Editor.FileConverter.GUITabs
         /// </summary>
         public static void PrintConvertButton(Func<bool> convertFunc)
         {
-            PlateauEditorStyle.Heading1("Convert");
+            HeaderDrawer.Draw("Convert");
             using (PlateauEditorStyle.VerticalScope())
             {
                 if (PlateauEditorStyle.MainButton("Convert")) ButtonConvertPushed(convertFunc);
