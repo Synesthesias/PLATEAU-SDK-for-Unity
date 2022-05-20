@@ -31,7 +31,7 @@ namespace PlateauUnitySDK.Editor.FileConverter.GUITabs
             
         }
 
-        protected override void DstFileSelectGUI()
+        public override void DstFileSelectGUI()
         {
             // 対象ファイルの選択方法は、新ファイルか既存ファイルかの2パターンあります。
             // 前者は基底クラスと同じ処理で、後者をオーバーライドして実装しています。

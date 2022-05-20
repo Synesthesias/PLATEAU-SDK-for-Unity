@@ -33,23 +33,9 @@ namespace PlateauUnitySDK.Editor.FileConverter.GUITabs
             {
                 HeaderInfoGUI();
             }
-            ConvertFileSelectorGUIUtil.FileSelectGUI(
-                ref this.SourceFilePath,
-                SourceFileExtension,
-                ConvertFileSelectorGUIUtil.FilePanelType.Open,
-                $"Select {SourceFileExtension} File"
-            );
+            SrcFileSelectGUI();
             DstFileSelectGUI();
-            PlateauEditorStyle.Heading1("Configure");
-            using (PlateauEditorStyle.VerticalScope())
-            {
-                EditorGUI.BeginChangeCheck();
-                ConfigureGUI();
-                if (EditorGUI.EndChangeCheck())
-                {
-                    OnConfigureGUIChanged();
-                }
-            }
+            ConfigureGUIOuter();
             ConvertFileSelectorGUIUtil.Space();
             ConvertFileSelectorGUIUtil.PrintConvertButton(Convert);
         }
@@ -59,10 +45,20 @@ namespace PlateauUnitySDK.Editor.FileConverter.GUITabs
         /// </summary>
         public abstract void HeaderInfoGUI();
 
+        public virtual void SrcFileSelectGUI()
+        {
+            ConvertFileSelectorGUIUtil.FileSelectGUI(
+                ref this.SourceFilePath,
+                SourceFileExtension,
+                ConvertFileSelectorGUIUtil.FilePanelType.Open,
+                $"Select {SourceFileExtension} File"
+            );
+        }
+
         /// <summary>
         /// 変換先ファイルを選択するGUIを表示します。
         /// </summary>
-        protected virtual void DstFileSelectGUI()
+        public virtual void DstFileSelectGUI()
         {
             ConvertFileSelectorGUIUtil.FileSelectGUI(
                 ref this.DestFilePath,
@@ -70,6 +66,23 @@ namespace PlateauUnitySDK.Editor.FileConverter.GUITabs
                 ConvertFileSelectorGUIUtil.FilePanelType.Save,
                 $"Select {DestFileExtension} Export Path"
             );
+        }
+
+        /// <summary>
+        /// <see cref="ConfigureGUI"/> と <see cref="OnConfigureGUIChanged"/> を呼びます。
+        /// </summary>
+        public void ConfigureGUIOuter()
+        {
+            PlateauEditorStyle.Heading1($"Configure {DestFileExtension}");
+            using (PlateauEditorStyle.VerticalScope())
+            {
+                EditorGUI.BeginChangeCheck();
+                ConfigureGUI();
+                if (EditorGUI.EndChangeCheck())
+                {
+                    OnConfigureGUIChanged();
+                }
+            }
         }
 
         /// <summary>

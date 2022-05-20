@@ -4,11 +4,13 @@ using UnityEditor;
 namespace PlateauUnitySDK.Editor.FileConverter.GUITabs
 {
     // TODO BaseConvertTab.cs と共通する箇所が多いのでまとめられるか検討
+    /// <summary>
+    /// Gml -> Obj の変換タブと
+    /// Gml -> IdFileTable の変換タブの機能を
+    /// 混ぜ合わせて両方を一度に出力するGUIを作ります。
+    /// </summary>
     public class GmlToObjAndIdTableConvertTab : ScrollableEditorWindowContents
     {
-        // Gml -> Obj の変換タブと
-        // Gml -> IdFileTable の変換タブの機能を
-        // 混ぜ合わせて両方を一度に出力するGUIを作ります。
         private BaseConvertTab[] tabs = new BaseConvertTab[]
         {
             new GmlToObjFileConvertTab(),
@@ -32,6 +34,7 @@ namespace PlateauUnitySDK.Editor.FileConverter.GUITabs
                     tab.HeaderInfoGUI();
                 }    
             }
+
             ConvertFileSelectorGUIUtil.FileSelectGUI(
                 ref this.sourceFilePath,
                 SourceFileExtension,
@@ -42,31 +45,14 @@ namespace PlateauUnitySDK.Editor.FileConverter.GUITabs
             {
                 tab.SourceFilePath = this.sourceFilePath;
             }
-
             foreach (var tab in tabs)
             {
-                ConvertFileSelectorGUIUtil.FileSelectGUI(
-                    ref tab.DestFilePath,
-                    tab.DestFileExtension,
-                    ConvertFileSelectorGUIUtil.FilePanelType.Save,
-                    $"Select {tab.DestFileExtension} export path"
-                );
+                tab.DstFileSelectGUI();
             }
-
             foreach (var tab in tabs)
             {
-                PlateauEditorStyle.Heading1($"Configure {tab.DestFileExtension}");
-                using (PlateauEditorStyle.VerticalScope())
-                {
-                    EditorGUI.BeginChangeCheck();
-                    tab.ConfigureGUI();
-                    if (EditorGUI.EndChangeCheck())
-                    {
-                        tab.OnConfigureGUIChanged();
-                    }
-                }
+                tab.ConfigureGUIOuter();
             }
-            
             ConvertFileSelectorGUIUtil.PrintConvertButton(Convert);
         }
 
