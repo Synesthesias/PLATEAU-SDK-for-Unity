@@ -16,14 +16,44 @@ namespace PlateauUnitySDK.Editor.EditorWindowCommon
             GUILayout.Box(text, styleHeading1);
         }
 
+        /// <summary> 見出し2のスタイルで文字を表示します。 </summary>
+        public static void Heading2(string text)
+        {
+            GUILayout.Box(text, styleHeading2);
+        }
+        
+        /// <summary> 見出し3のスタイルで文字を表示します。 </summary>
+        public static void Heading3(string text)
+        {
+            GUILayout.Box(text, styleHeading3);
+        }
+
         /// <summary> 見出し1のスタイルです。 </summary>
         private static readonly GUIStyle styleHeading1 = new GUIStyle("ShurikenModuleTitle")
         {
-            fontSize = 14,
+            fontSize = 15,
             fontStyle = FontStyle.Bold,
-            fixedHeight = 28,
+            fixedHeight = 30,
             contentOffset = new Vector2(4f, -4f),
             margin = new RectOffset(3, 2, 4, 4)
+        };
+        
+        /// <summary> 見出し2のスタイルです。 </summary>
+        private static readonly GUIStyle styleHeading2 = new GUIStyle("ShurikenModuleTitle")
+        {
+            fontSize = 13,
+            fixedHeight = 25,
+            contentOffset = new Vector2(4f, -4f),
+            margin = new RectOffset(15, 12, 4, 4)
+        };
+        
+        /// <summary> 見出し3のスタイルです。 </summary>
+        private static readonly GUIStyle styleHeading3 = new GUIStyle("ShurikenModuleTitle")
+        {
+            fontSize = 12,
+            fixedHeight = 22,
+            contentOffset = new Vector2(4f, -4f),
+            margin = new RectOffset(27, 12, 4, 4)
         };
 
         /// <summary> ボタンのスタイルです。押されたときにtrueを返します。 </summary>
@@ -53,6 +83,7 @@ namespace PlateauUnitySDK.Editor.EditorWindowCommon
                     padding = new RectOffset(8, 8, 8, 8),
                     margin = new RectOffset(8, 8, 8, 8)
                 };
+                
                 return style;
             }
         }

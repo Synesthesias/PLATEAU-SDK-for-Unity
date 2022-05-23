@@ -8,7 +8,7 @@ namespace PlateauUnitySDK.Runtime.SemanticsLoader
     /// <see cref="LibPLATEAU.NET.CityGML.CityObject"/> のIDから、対応するGMLのファイル名を検索できる辞書データを格納した
     /// <see cref="ScriptableObject"/> です。
     /// </summary>
-    public class IdToGmlFileTable : ScriptableObject, ISerializationCallbackReceiver//, IDictionary<string, string>
+    public class IdToFileTable : ScriptableObject, ISerializationCallbackReceiver//, IDictionary<string, string>
     {
         private Dictionary<string, string> dictionary = new Dictionary<string, string>();
         // Unityの仕様上、シリアライズするときは List 形式で行い、 デシリアライズするときは Dictionary 形式に直します。
@@ -53,5 +53,15 @@ namespace PlateauUnitySDK.Runtime.SemanticsLoader
         }
 
         public bool ContainsKey(string key) => this.dictionary.ContainsKey(key);
+        public bool TryGetValue(string key, out string value)
+        {
+            return this.dictionary.TryGetValue(key, out value);
+        }
+
+        public string this[string key]
+        {
+            get => this.dictionary[key];
+            set => value = this.dictionary[key];
+        }
     }
 }

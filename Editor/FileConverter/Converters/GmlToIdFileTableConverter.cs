@@ -45,7 +45,7 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
             return true;
         }
 
-        private static IdToGmlFileTable LoadOrCreateIdGmlTable(string dstTableFullPath)
+        private static IdToFileTable LoadOrCreateIdGmlTable(string dstTableFullPath)
         {
             
             
@@ -53,11 +53,11 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
             if (!File.Exists(dstTableFullPath))
             {
                 Debug.Log("creating file");
-                var instance = ScriptableObject.CreateInstance<IdToGmlFileTable>();
+                var instance = ScriptableObject.CreateInstance<IdToFileTable>();
                 AssetDatabase.CreateAsset(instance, dstAssetPath);
                 AssetDatabase.SaveAssets();
             }
-            return AssetDatabase.LoadAssetAtPath<IdToGmlFileTable>(dstAssetPath);
+            return AssetDatabase.LoadAssetAtPath<IdToFileTable>(dstAssetPath);
         }
 
         public void SetConfig(bool doOptimize, bool doTessellate)

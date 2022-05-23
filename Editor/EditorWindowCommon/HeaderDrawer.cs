@@ -53,9 +53,7 @@ namespace PlateauUnitySDK.Editor.EditorWindowCommon
 
         public static void Prev()
         {
-            // Debug.Log($"depth = {Depth}");
             int index = Math.Max(0, Depth - 1);
-            // Debug.Log($"index= {index}");
             int num = Math.Max(1, currentHeaderNum[index] - 1);
             currentHeaderNum[index] = num;
         }
@@ -79,14 +77,22 @@ namespace PlateauUnitySDK.Editor.EditorWindowCommon
         /// </summary>
         public static void Draw(string text)
         {
+            string headerText = $"{HeaderNumToString()} {text}";
             if (Depth == 1)
             {
-                PlateauEditorStyle.Heading1($"{HeaderNumToString()} {text}");
+                PlateauEditorStyle.Heading1(headerText);
             }
-            // TODO Depth = 2 専用のヘッダースタイルも作りたい
+            else if (Depth == 2)
+            {
+                PlateauEditorStyle.Heading2(headerText);
+            }
+            else if (Depth == 3)
+            {
+                PlateauEditorStyle.Heading3(headerText);
+            }
             else
             {
-                EditorGUILayout.LabelField($"{HeaderNumToString()} {text}");
+                EditorGUILayout.LabelField(headerText);
             }
             Next();
         }
