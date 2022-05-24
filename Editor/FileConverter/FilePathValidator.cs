@@ -99,7 +99,7 @@ namespace PlateauUnitySDK.Editor.FileConverter
             var fullPath = Path.GetFullPath(filePath);
             var assetsPath = Path.GetFullPath(unityProjectDataPath) + Path.DirectorySeparatorChar;
             if (fullPath.StartsWith(assetsPath)) return;
-            throw new IOException($"File must exist in Assets folder, but the path is outside Assets folder.");
+            throw new IOException($"File must exist in Assets folder, but the path is outside Assets folder.\nfullPath = {fullPath}, assetsPath = {assetsPath}");
         }
 
         /// <summary>
