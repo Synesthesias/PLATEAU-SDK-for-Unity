@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gml:Dictionary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/profiles/SimpleDictionary/1.0.0/gmlSimpleDictionaryProfile.xsd" gml:id="BuildingInstallation_function">
+	<gml:name>BuildingInstallation_function</gml:name>
+<gml:dictionaryEntry><gml:Definition gml:id="id1"><gml:description>バルコニー</gml:description><gml:name>1000</gml:name>
+  </gml:Definition>
+ </gml:dictionaryEntry>
+<gml:dictionaryEntry><gml:Definition gml:id="id2"><gml:description>温室</gml:description><gml:name>1010</gml:name>
+  </gml:Definition>
+ </gml:dictionaryEntry>
+<gml:dictionaryEntry><gml:Definition gml:id="id3"><gml:description>アーケード</gml:description><gml:name>1020</gml:name>
+  </gml:Definition>
+ </gml:dictionaryEntry>
+<gml:dictionaryEntry><gml:Definition gml:id="id4"><gml:description>煙突（建築物の一部としての）</gml:description><gml:name>1030</gml:name>
+  </gml:Definition>
+ </gml:dictionaryEntry>
+<gml:dictionaryEntry><gml:Definition gml:id="id5"><gml:description>塔（建築物の一部としての）</gml:description><gml:name>1040</gml:name>
+  </gml:Definition>
+ </gml:dictionaryEntry>
+<gml:dictionaryEntry><gml:Definition gml:id="id6"><gml:description>柱・円柱</gml:description><gml:name>1050</gml:name>
+  </gml:Definition>
+ </gml:dictionaryEntry>
+<gml:dictionaryEntry><gml:Definition gml:id="id7"><gml:description>階段</gml:description><gml:name>1060</gml:name>
+  </gml:Definition>
+ </gml:dictionaryEntry>
+<gml:dictionaryEntry><gml:Definition gml:id="id8"><gml:description>その他</gml:description><gml:name>1070</gml:name>
+  </gml:Definition>
+ </gml:dictionaryEntry>
+</gml:Dictionary>
