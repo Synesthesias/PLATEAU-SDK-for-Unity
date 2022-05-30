@@ -62,7 +62,9 @@ namespace PlateauUnitySDK.Tests.EditModeTests.TestsFileConverter {
         /// </summary>
         
         // Windowsのパス表記への対応をチェックします。
+        #if UNITY_STANDALONE_WIN
         [TestCase("C:/DummyUnityProjects/Assets", "C:\\DummyUnityProjects\\Assets\\FooBar\\FooBarModelFile.fbx", "Assets/FooBar/FooBarModelFile.fbx")]
+        #endif
         // Linuxのパス表記への対応をチェックします。
         [TestCase("/home/linuxUser/DummyUnityProjects/Assets", "/home/linuxUser/DummyUnityProjects/Assets/foobar.obj", "Assets/foobar.obj")]
         // 紛らわしい名前への対応をチェックします。

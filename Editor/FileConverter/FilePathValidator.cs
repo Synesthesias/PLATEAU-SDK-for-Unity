@@ -30,7 +30,7 @@ namespace PlateauUnitySDK.Editor.FileConverter
             }
             catch (Exception)
             {
-                Debug.LogError("Input file path is invalid.");
+                Debug.LogError($"Input file path is invalid. filePath = {filePath}");
                 return false;
             }
 
@@ -104,7 +104,7 @@ namespace PlateauUnitySDK.Editor.FileConverter
 
         /// <summary>
         /// フルパスをAssetsフォルダからのパスに変換します。
-        /// パスがAssetsフォルダ内を指すことが前提です。
+        /// パスがAssetsフォルダ内を指すことが前提であり、そうでない場合は <see cref="IOException"/> を投げます。
         /// </summary>
         public static string FullPathToAssetsPath(string filePath)
         {
