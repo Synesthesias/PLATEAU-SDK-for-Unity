@@ -20,7 +20,9 @@ namespace PlateauUnitySDK.Tests.EditModeTests.TestsFileConverter {
         // 拡張子が合わないときに false になることもチェックします。
         [TestCase("C:\\Windows\\System32\\input.dll", "wrongExtension", false)]
         #else
-        [Ignore("Windows以外での実行には対応していないテストです")]
+        // Linuxで上と同様のことをテストします。
+        [TestCase("/etc/issue.net", "net", true)]
+        [TestCase("/etc/issue.net", "wrongExtension", false)]
         #endif
         
         // 実在しないファイルが与えられたときのテストケース
@@ -44,7 +46,9 @@ namespace PlateauUnitySDK.Tests.EditModeTests.TestsFileConverter {
         // 拡張子が合わないときに false になることもチェックします。
         [TestCase("C:\\Program Files\\User_wants_to_save_here.fbx", "wrongExtension", false)]
         #else
-        [Ignore("Windows以外での実行には対応していないテストです")]
+        // Linuxで上と同様のことをテストします。
+        [TestCase("/etc/User_wants_to_save_here.fbx", "fbx", true)]
+        [TestCase("/etc/User_wants_to_save_here.fbx", "wrongExtension", false)]
         #endif
         
         // 実在しないファイルが与えられたときのテストケース
