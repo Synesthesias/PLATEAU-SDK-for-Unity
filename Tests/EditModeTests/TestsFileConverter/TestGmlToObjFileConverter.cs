@@ -35,6 +35,7 @@ namespace PlateauUnitySDK.Tests.EditModeTests.TestsFileConverter
             var outputFilePath = Path.Combine(DirectoryUtil.TestCacheTempFolderPath, "exported.obj");
             var converter = new GmlToObjFileConverter();
             converter.Convert(testGmlFilePath, outputFilePath);
+            // 変換後、objファイルがあればとりあえず良しとします。
             Assert.IsTrue(File.Exists(outputFilePath));
         }
     }

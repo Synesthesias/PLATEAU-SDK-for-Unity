@@ -28,6 +28,8 @@ namespace PlateauUnitySDK.Tests.EditModeTests.TestsFileConverter
         [UnityTest]
         public IEnumerator Can_Paint_Window_Of_Initial_State()
         {
+            // TODO ウィンドウの機能は何もテストできていませんが、
+            // とりあえず初期画面がエラーなく表示できたらまあ良しとしています。
             this.window.Repaint();
             yield break;
         }

@@ -39,6 +39,7 @@ namespace PlateauUnitySDK.Tests.EditModeTests.TestsFileConverter
         [TearDown]
         public void TearDown()
         {
+            // テスト用の一時フォルダを消します。
             Directory.Delete(temporaryAssetPath, true);
             File.Delete(temporaryAssetPath + ".meta");
             AssetDatabase.Refresh();
@@ -47,6 +48,7 @@ namespace PlateauUnitySDK.Tests.EditModeTests.TestsFileConverter
         [Test]
         public void Convert_Generates_Fbx_File()
         {
+            // 変換後、fbxファイルが存在すれば良しとします。
             var converter = new ObjToFbxFileConverter();
             converter.Convert(testObjFilePath, destFbxFilePath);
             Assert.IsTrue(File.Exists(destFbxFilePath));
