@@ -12,13 +12,11 @@ namespace PlateauUnitySDK.Tests.EditModeTests.TestsFileConverter
     [TestFixture]
     public class TestGmlToObjFileConverter
     {
-        private static readonly string testGmlFilePath =
-            Path.Combine(DirectoryUtil.TestDataFolderPath, "53392642_bldg_6697_op2.gml");
-        
+
         [SetUp]
         public void SetUp()
         {
-            DirectoryUtil.SetUpCacheTempFolder();         
+            DirectoryUtil.SetUpTempCacheFolder();         
         }
 
         [TearDown]
@@ -32,11 +30,12 @@ namespace PlateauUnitySDK.Tests.EditModeTests.TestsFileConverter
         [Test]
         public void Convert_Generates_Obj_File()
         {
-            var outputFilePath = Path.Combine(DirectoryUtil.TestCacheTempFolderPath, "exported.obj");
+            var outputFilePath = Path.Combine(DirectoryUtil.TempCacheFolderPath, "exported.obj");
             var converter = new GmlToObjFileConverter();
-            converter.Convert(testGmlFilePath, outputFilePath);
+            converter.Convert(DirectoryUtil.TestGmlFilePath, outputFilePath);
             // 変換後、objファイルがあればとりあえず良しとします。
             Assert.IsTrue(File.Exists(outputFilePath));
         }
+        
     }
 }
