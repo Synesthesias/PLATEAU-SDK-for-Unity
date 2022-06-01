@@ -35,24 +35,19 @@ namespace PlateauUnitySDK.Runtime.SemanticsLoader
             // TODO 今は StreamingAssets フォルダから読み込んでいますが、今後は拡張する必要があります。
             if (this.fileToCityModelCache.TryGetValue(gmlFileName, out CityModel cityModel))
             {
-                return FindCityObjectById(cityModel, cityObjectId);
+                return GetCityObjectById(cityModel, cityObjectId);
             }
             string foundGmlPath = Directory.EnumerateFiles(Application.streamingAssetsPath, gmlFileName + ".gml",
                 SearchOption.AllDirectories).First();
             foundGmlPath = Path.GetFullPath(foundGmlPath); // Windowsでパスの区切り記号が '/' と '\' で混在するのを統一します。
-            // Debug.Log($"Loading {foundGmlPath}");
             var loadedModel = CityGml.Load(foundGmlPath, new CitygmlParserParams(true, false));
-            // Debug.Log("Load complete.");
             this.fileToCityModelCache[gmlFileName] = loadedModel;
-            return FindCityObjectById(loadedModel, cityObjectId);
+            return GetCityObjectById(loadedModel, cityObjectId);
         }
 
-        // TODO 全探索で効率が悪いので良い方法を作ります
-        private static CityObject FindCityObjectById(CityModel model, string id)
+        private static CityObject GetCityObjectById(CityModel model, string id)
         {
-            return model.RootCityObjects
-                .SelectMany(co => co.CityObjectDescendantsDFS)
-                .First(co => co.ID == id);
+            return model.GetCityObjectById(id);
         }
     }
 }
