@@ -13,7 +13,7 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
         private readonly ObjWriter objWriter = new ObjWriter();
 
         private CitygmlParserParams gmlParserParams;
-        private bool mergeMeshFlg;
+        private MeshGranularity meshGranularity;
         private AxesConversion axesConversion;
 
 
@@ -21,12 +21,12 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
         /// コンバートの設定を引数で渡します。
         /// </summary>
         /// <param name="optimizeFlg">trueのとき最適化します。</param>
-        /// <param name="mergeMeshFlgArg">trueのとき、メッシュをマージしてオブジェクト数を削減します。</param>
+        /// <param name="meshGranularityArg">メッシュのオブジェクト分けの粒度です。</param>
         /// <param name="axesConversionArg">座標軸の向きです。Unityの場合は通常RUFです。</param>
-        public void SetConfig(bool optimizeFlg, bool mergeMeshFlgArg, AxesConversion axesConversionArg)
+        public void SetConfig(bool optimizeFlg, MeshGranularity meshGranularityArg, AxesConversion axesConversionArg)
         {
             this.gmlParserParams = new CitygmlParserParams(optimizeFlg);
-            this.mergeMeshFlg = mergeMeshFlgArg;
+            this.meshGranularity = meshGranularityArg;
             this.axesConversion = axesConversionArg;
         }
 
@@ -42,7 +42,7 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
             {
                 var cityModel = CityGml.Load(gmlFilePath, this.gmlParserParams);
                 this.objWriter.SetValidReferencePoint(cityModel);
-                this.objWriter.SetMergeMeshFlg(this.mergeMeshFlg);
+                this.objWriter.SetMeshGranularity(this.meshGranularity);
                 this.objWriter.SetDestAxes(this.axesConversion);
                 this.objWriter.Write(exportObjFilePath, cityModel, gmlFilePath);
             }

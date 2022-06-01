@@ -12,7 +12,7 @@ namespace PlateauUnitySDK.Editor.FileConverter.GUITabs
     public class GmlToObjFileConvertTab : BaseConvertTab
     {
         private bool optimizeFlg = true;
-        private bool mergeMeshFlg = true;
+        private MeshGranularity meshGranularity = MeshGranularity.PerPrimaryFeatureObject;
         private AxesConversion axesConversion = AxesConversion.RUF;
         private GmlToObjFileConverter fileConverter;
 
@@ -24,7 +24,7 @@ namespace PlateauUnitySDK.Editor.FileConverter.GUITabs
         public GmlToObjFileConvertTab()
         {
             this.fileConverter = new GmlToObjFileConverter();
-            this.fileConverter.SetConfig(this.optimizeFlg, this.mergeMeshFlg, this.axesConversion);
+            this.fileConverter.SetConfig(this.optimizeFlg, this.meshGranularity, this.axesConversion);
         }
 
         public override void HeaderInfoGUI()
@@ -35,13 +35,13 @@ namespace PlateauUnitySDK.Editor.FileConverter.GUITabs
         public override void ConfigureGUI()
         {
             this.optimizeFlg = EditorGUILayout.Toggle("Optimize", this.optimizeFlg);
-            this.mergeMeshFlg = EditorGUILayout.Toggle("Merge Mesh", this.mergeMeshFlg);
+            this.meshGranularity = (MeshGranularity)EditorGUILayout.EnumPopup("メッシュのオブジェクト分けの粒度", this.meshGranularity);
             this.axesConversion = (AxesConversion)EditorGUILayout.EnumPopup("Axes Conversion", this.axesConversion);
         }
 
         public override void OnConfigureGUIChanged()
         {
-            this.fileConverter.SetConfig(this.optimizeFlg, this.mergeMeshFlg, this.axesConversion);
+            this.fileConverter.SetConfig(this.optimizeFlg, this.meshGranularity, this.axesConversion);
         }
     }
 }
