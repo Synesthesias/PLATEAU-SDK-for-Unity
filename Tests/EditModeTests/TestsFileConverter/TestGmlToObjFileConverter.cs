@@ -35,19 +35,23 @@ namespace PlateauUnitySDK.Tests.EditModeTests.TestsFileConverter
         public void Convert_Generates_Obj_File()
         {
             string outputFilePath = Path.Combine(DirectoryUtil.TempAssetFolderPath, "test_convert_generates_obj_file.obj");
-            var converter = new GmlToObjFileConverter();
-            converter.Convert(DirectoryUtil.TestGmlFilePath, outputFilePath);
+            using (var converter = new GmlToObjFileConverter())
+            {
+                converter.Convert(DirectoryUtil.TestGmlFilePath, outputFilePath);
+            }
             // 変換後、objファイルがあればとりあえず良しとします。
             Assert.IsTrue(File.Exists(outputFilePath));
-        }
+            }
 
         [Test]
         public void If_MeshGranularity_Is_PerCityModelArea_Then_Child_Obj_Count_Is_One()
         {
             string outputFilePath = Path.Combine(DirectoryUtil.TempAssetFolderPath, "test_meshgranularity_is_percitymodelarea.obj");
-            var converter = new GmlToObjFileConverter();
-            converter.SetConfig(MeshGranularity.PerCityModelArea);
-            converter.Convert(DirectoryUtil.TestGmlFilePath, outputFilePath);
+            using (var converter = new GmlToObjFileConverter())
+            {
+                converter.SetConfig(MeshGranularity.PerCityModelArea);
+                converter.Convert(DirectoryUtil.TestGmlFilePath, outputFilePath);
+            }
             AssetDatabase.Refresh();
             var go = AssetDatabase.LoadAssetAtPath<GameObject>(FilePathValidator.FullPathToAssetsPath(outputFilePath));
             int childCount = go.transform.childCount;

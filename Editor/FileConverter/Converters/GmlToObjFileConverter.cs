@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using LibPLATEAU.NET.CityGML;
 using UnityEngine;
 
@@ -7,7 +8,7 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
     /// <summary>
     /// gmlファイルをobjファイルにコンバートします。
     /// </summary>
-    public class GmlToObjFileConverter : IFileConverter
+    public class GmlToObjFileConverter : IFileConverter, IDisposable
     {
         /// <summary> ObjWriter は変換処理をC++のDLLに委譲します。 </summary>
         private readonly ObjWriter objWriter = new ObjWriter();
@@ -15,6 +16,8 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
         private CitygmlParserParams gmlParserParams;
         private MeshGranularity meshGranularity;
         private AxesConversion axesConversion;
+
+        private int disposed;
 
 
         /// <summary>
@@ -54,6 +57,21 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
             }
 
             return true;
+        }
+        
+        public void Dispose()
+        {
+            if (Interlocked.Exchange(ref this.disposed, 1) == 0)
+            {
+                this.objWriter.Dispose();
+            }
+
+            GC.SuppressFinalize(this);
+        }
+
+        ~GmlToObjFileConverter()
+        {
+            Dispose();
         }
     }
 }

@@ -60,9 +60,10 @@ namespace PlateauUnitySDK.Tests.TestUtils
         {
             string assetPath = FilePathValidator.FullPathToAssetsPath(TempAssetFolderPath);
             bool result = AssetDatabase.DeleteAsset(assetPath);
+
             if (!result)
             {
-                Debug.LogWarning($"{nameof(DirectoryUtil)} : {nameof(DeleteTempAssetFolder)} : Could not delete TempAssetFolder. Path = {assetPath}");
+                Debug.LogError($"{nameof(DirectoryUtil)} : {nameof(DeleteTempAssetFolder)} : Could not delete TempAssetFolder. Path = {assetPath}");
             }
             AssetDatabase.Refresh();
             return result;
