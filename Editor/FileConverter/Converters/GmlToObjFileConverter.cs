@@ -20,10 +20,11 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
         /// <summary>
         /// コンバートの設定を引数で渡します。
         /// </summary>
-        /// <param name="optimizeFlg">trueのとき最適化します。</param>
         /// <param name="meshGranularityArg">メッシュのオブジェクト分けの粒度です。</param>
         /// <param name="axesConversionArg">座標軸の向きです。Unityの場合は通常RUFです。</param>
-        public void SetConfig(bool optimizeFlg, MeshGranularity meshGranularityArg, AxesConversion axesConversionArg)
+        /// <param name="optimizeFlg">trueのとき最適化します。</param>
+        public void SetConfig(MeshGranularity meshGranularityArg, AxesConversion axesConversionArg = AxesConversion.RUF,
+            bool optimizeFlg = true)
         {
             this.gmlParserParams = new CitygmlParserParams(optimizeFlg);
             this.meshGranularity = meshGranularityArg;

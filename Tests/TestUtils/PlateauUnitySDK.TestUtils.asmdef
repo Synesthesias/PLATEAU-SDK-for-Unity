@@ -3,7 +3,8 @@
     "rootNamespace": "PlateauUnitySDK",
     "references": [
         "UnityEngine.TestRunner",
-        "UnityEditor.TestRunner"
+        "UnityEditor.TestRunner",
+        "PlateauUnitySDK.Editor"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

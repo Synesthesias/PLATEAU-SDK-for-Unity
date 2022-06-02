@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using PlateauUnitySDK.Editor.FileConverter;
 using UnityEditor;
 using UnityEngine;
 
@@ -38,14 +39,38 @@ namespace PlateauUnitySDK.Tests.TestUtils
 
         public static void SetUpTempAssetFolder()
         {
-            SetUpEmptyDir(TempAssetFolderPath);
+            string assetPath = FilePathValidator.FullPathToAssetsPath(TempAssetFolderPath);
+            bool doDirExists = false;
+            if (Directory.Exists(TempAssetFolderPath))
+            {
+                doDirExists = !DeleteTempAssetFolder();
+            }
+
+            if (!doDirExists)
+            {
+                string parent = Directory.GetParent(assetPath)?.ToString();
+                string folderName = Path.GetFileName(assetPath);
+                AssetDatabase.CreateFolder(parent, folderName);
+            }
+            
+            AssetDatabase.Refresh();
         }
 
-        public static void DeleteTempAssetFolder()
+        public static bool DeleteTempAssetFolder()
         {
-            DeleteAllInDir(TempAssetFolderPath);
-            File.Delete(TempAssetFolderPath + ".meta");
+            string assetPath = FilePathValidator.FullPathToAssetsPath(TempAssetFolderPath);
+            bool result = AssetDatabase.DeleteAsset(assetPath);
+            if (!result)
+            {
+                Debug.LogWarning($"{nameof(DirectoryUtil)} : {nameof(DeleteTempAssetFolder)} : Could not delete TempAssetFolder. Path = {assetPath}");
+            }
             AssetDatabase.Refresh();
+            return result;
+        }
+
+        public static void DeleteTempCacheFolder()
+        {
+            DeleteAllInDir(TempCacheFolderPath);
         }
 
         public static void CopyFileToTempAssetFolder(string srcFilePath, string destFileName)

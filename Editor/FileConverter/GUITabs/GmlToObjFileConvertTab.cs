@@ -24,7 +24,7 @@ namespace PlateauUnitySDK.Editor.FileConverter.GUITabs
         public GmlToObjFileConvertTab()
         {
             this.fileConverter = new GmlToObjFileConverter();
-            this.fileConverter.SetConfig(this.optimizeFlg, this.meshGranularity, this.axesConversion);
+            this.fileConverter.SetConfig(this.meshGranularity, this.axesConversion, this.optimizeFlg);
         }
 
         public override void HeaderInfoGUI()
@@ -41,7 +41,7 @@ namespace PlateauUnitySDK.Editor.FileConverter.GUITabs
 
         public override void OnConfigureGUIChanged()
         {
-            this.fileConverter.SetConfig(this.optimizeFlg, this.meshGranularity, this.axesConversion);
+            this.fileConverter.SetConfig(this.meshGranularity, this.axesConversion, this.optimizeFlg);
         }
     }
 }
