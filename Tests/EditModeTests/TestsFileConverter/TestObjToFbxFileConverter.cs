@@ -27,6 +27,7 @@ namespace PlateauUnitySDK.Tests.EditModeTests.TestsFileConverter
             // objファイルのコンバートは変換元がAssetsフォルダの中にないと動かないので、
             // テストデータを Assets/TemporaryUnitTest フォルダにコピーします。
             DirectoryUtil.SetUpTempAssetFolder();
+            DirectoryUtil.SetUpTempCacheFolder();
             DirectoryUtil.CopyFileToTempAssetFolder(objFileCopySrc, testObjFileName);
         }
 

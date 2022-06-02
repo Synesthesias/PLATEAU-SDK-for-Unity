@@ -6,7 +6,8 @@ using UnityEngine;
 namespace PlateauUnitySDK.Editor.FileConverter.Converters
 {
     /// <summary>
-    /// gmlファイルをobjファイルにコンバートします。
+    /// gmlファイルをobjファイルに変換します。
+    /// 変換後は <see cref="Dispose"/> を呼ぶか、usingステートメントを使ってobjファイルを解放してください。
     /// </summary>
     public class GmlToObjFileConverter : IFileConverter, IDisposable
     {
@@ -59,6 +60,9 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
             return true;
         }
         
+        /// <summary>
+        /// 変換後の obj ファイルを開放したい時に呼びます。
+        /// </summary>
         public void Dispose()
         {
             if (Interlocked.Exchange(ref this.disposed, 1) == 0)

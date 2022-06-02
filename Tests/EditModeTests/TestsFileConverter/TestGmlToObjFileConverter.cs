@@ -21,20 +21,20 @@ namespace PlateauUnitySDK.Tests.EditModeTests.TestsFileConverter
         public void SetUp()
         {
             DirectoryUtil.SetUpTempAssetFolder();
-            // DirectoryUtil.SetUpTempCacheFolder();
+            DirectoryUtil.SetUpTempCacheFolder();
         }
 
         [TearDown]
         public void TearDown()
         {
             DirectoryUtil.DeleteTempAssetFolder();
-            // DirectoryUtil.DeleteTempCacheFolder();
+            DirectoryUtil.DeleteTempCacheFolder();
         }
         
         [Test]
         public void Convert_Generates_Obj_File()
         {
-            string outputFilePath = Path.Combine(DirectoryUtil.TempAssetFolderPath, "test_convert_generates_obj_file.obj");
+            string outputFilePath = Path.Combine(DirectoryUtil.TempCacheFolderPath, "test_convert_generates_obj_file.obj");
             using (var converter = new GmlToObjFileConverter())
             {
                 converter.Convert(DirectoryUtil.TestGmlFilePath, outputFilePath);
