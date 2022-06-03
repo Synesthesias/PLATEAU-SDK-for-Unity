@@ -53,6 +53,10 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
             if (!FilePathValidator.IsValidOutputFilePath(exportObjFilePath, "obj")) return false;
             try
             {
+                // DLL側の実装の都合上、ここではパス区切りはスラッシュとします。 
+                gmlFilePath = gmlFilePath.Replace('\\', '/');
+                exportObjFilePath = exportObjFilePath.Replace('\\', '/');
+                
                 var cityModel = CityGml.Load(gmlFilePath, this.gmlParserParams);
                 Debug.Log($"Num of RootCityObjs = {cityModel.RootCityObjects.Count}");
                 this.objWriter.SetValidReferencePoint(cityModel);
