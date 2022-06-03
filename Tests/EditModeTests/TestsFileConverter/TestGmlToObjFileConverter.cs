@@ -1,5 +1,7 @@
 using System;
 using System.IO;
+using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using LibPLATEAU.NET.CityGML;
 using NUnit.Framework;
@@ -27,8 +29,9 @@ namespace PlateauUnitySDK.Tests.EditModeTests.TestsFileConverter
         [TearDown]
         public void TearDown()
         {
-            DirectoryUtil.DeleteTempAssetFolder();
-            DirectoryUtil.DeleteTempCacheFolder();
+            // TODO コメントアウトを外す
+            // DirectoryUtil.DeleteTempAssetFolder();
+            // DirectoryUtil.DeleteTempCacheFolder();
         }
         
         [Test]
@@ -44,19 +47,74 @@ namespace PlateauUnitySDK.Tests.EditModeTests.TestsFileConverter
             }
 
         [Test]
-        public void If_MeshGranularity_Is_PerCityModelArea_Then_Child_Obj_Count_Is_One()
+        public void If_MeshGranularity_Is_PerCityModelArea_Then_Mesh_Count_Is_One()
         {
-            string outputFilePath = Path.Combine(DirectoryUtil.TempAssetFolderPath, "test_meshgranularity_is_percitymodelarea.obj");
+            var meshes = ConvertAndRead(MeshGranularity.PerCityModelArea);
+            int count = meshes.Length;
+            Debug.Log($"Count : {count}");
+            Assert.AreEqual(1, count);
+        }
+        
+        [Test]
+        public void If_MeshGranularity_Is_PerPrimaryFeatureObject()
+        {
+            var meshes = ConvertAndRead(MeshGranularity.PerPrimaryFeatureObject);
+            int count = meshes.Length; // TODO この数値が1になるのはおかしい
+            Debug.Log($"mesh count : {count}");
+            for (int i = 0; i < count; i++)
+            {
+                var mesh = meshes[i];
+                Debug.Log(mesh.name);
+                Assert.IsTrue(mesh.name.Contains("BLD"));
+            }
+        }
+        
+        [Test]
+        public void If_MeshGranularity_Is_PerAtomicFeatureObject()
+        {
+            var meshes = ConvertAndRead(MeshGranularity.PerAtomicFeatureObject);
+            int count = meshes.Length;
+            Debug.Log($"count : {count}"); // TODO この数値が1になるのはおかしい
+            foreach (var mesh in meshes)
+            {
+                Debug.Log($"mesh : {mesh.name}");
+            }
+            // TODO
+        }
+
+        private static Mesh[] ConvertAndRead(MeshGranularity meshGranularity)
+        {
+            string inputFilePath = DirectoryUtil.TestGmlFilePath;
+            string outputFilePath = Path.Combine(DirectoryUtil.TempAssetFolderPath, "exported.obj");
             using (var converter = new GmlToObjFileConverter())
             {
-                converter.SetConfig(MeshGranularity.PerCityModelArea);
-                converter.Convert(DirectoryUtil.TestGmlFilePath, outputFilePath);
+                converter.SetConfig(meshGranularity, AxesConversion.RUF, true);
+                Debug.Log($"Converting {inputFilePath}");
+                bool result = converter.Convert(inputFilePath, outputFilePath);
+                Assert.IsTrue(result);
             }
+            // AssetDatabase.ImportAsset(FilePathValidator.FullPathToAssetsPath(outputFilePath));
             AssetDatabase.Refresh();
-            var go = AssetDatabase.LoadAssetAtPath<GameObject>(FilePathValidator.FullPathToAssetsPath(outputFilePath));
-            int childCount = go.transform.childCount;
-            Debug.Log($"MeshGranularity.PerCityModelArea : Child GameObj Count : {childCount}");
-            Assert.AreEqual(1, childCount);
+
+            foreach (var foundObj in AssetDatabase.LoadAllAssetsAtPath(
+                         FilePathValidator.FullPathToAssetsPath(outputFilePath)))
+            {
+                Debug.Log($"type = {foundObj.GetType()}, name = {foundObj.name}");
+            }
+            // var fbxConverter = new ObjToFbxFileConverter();
+            // fbxConverter.Convert(FilePathValidator.FullPathToAssetsPath(outputFilePath), outputFilePath + ".fbx");
+
+            // var meshes = AssetDatabase.LoadAllAssetsAtPath(FilePathValidator.FullPathToAssetsPath(outputFilePath))
+            //     .OfType<Mesh>()
+            //     .ToArray();
+
+            var obj = AssetDatabase.LoadAssetAtPath<GameObject>(FilePathValidator.FullPathToAssetsPath(outputFilePath));
+            var meshes = obj.GetComponentsInChildren<MeshFilter>().Select(mf => mf.sharedMesh).ToArray();
+            foreach (var m in meshes)
+            {
+                Debug.Log($"mesh name: {m.name}");
+            }
+            return meshes;
         }
         
     }

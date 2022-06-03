@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.InteropServices;
 using System.Threading;
 using LibPLATEAU.NET.CityGML;
 using UnityEngine;
@@ -12,13 +13,20 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
     public class GmlToObjFileConverter : IFileConverter, IDisposable
     {
         /// <summary> ObjWriter は変換処理をC++のDLLに委譲します。 </summary>
-        private readonly ObjWriter objWriter = new ObjWriter();
+        private readonly ObjWriter objWriter;
 
         private CitygmlParserParams gmlParserParams;
         private MeshGranularity meshGranularity;
         private AxesConversion axesConversion;
+        private static readonly LogCallbackFuncType logCallback = (ptr) => Debug.Log(Marshal.PtrToStringAnsi(ptr));
 
         private int disposed;
+
+        public GmlToObjFileConverter()
+        {
+            this.objWriter = new ObjWriter();
+            this.objWriter.SetLogCallback(logCallback);
+        }
 
 
         /// <summary>
@@ -30,7 +38,7 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
         public void SetConfig(MeshGranularity meshGranularityArg, AxesConversion axesConversionArg = AxesConversion.RUF,
             bool optimizeFlg = true)
         {
-            this.gmlParserParams = new CitygmlParserParams(optimizeFlg);
+            this.gmlParserParams.Optimize = optimizeFlg;
             this.meshGranularity = meshGranularityArg;
             this.axesConversion = axesConversionArg;
         }
@@ -46,6 +54,7 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
             try
             {
                 var cityModel = CityGml.Load(gmlFilePath, this.gmlParserParams);
+                Debug.Log($"Num of RootCityObjs = {cityModel.RootCityObjects.Count}");
                 this.objWriter.SetValidReferencePoint(cityModel);
                 this.objWriter.SetMeshGranularity(this.meshGranularity);
                 this.objWriter.SetDestAxes(this.axesConversion);
