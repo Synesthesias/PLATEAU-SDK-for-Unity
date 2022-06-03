@@ -26,6 +26,7 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
         {
             this.objWriter = new ObjWriter();
             this.objWriter.SetLogCallback(logCallback);
+            this.gmlParserParams = new CitygmlParserParams(true, true);
         }
 
 
