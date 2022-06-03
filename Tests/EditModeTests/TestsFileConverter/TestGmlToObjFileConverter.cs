@@ -29,9 +29,8 @@ namespace PlateauUnitySDK.Tests.EditModeTests.TestsFileConverter
         [TearDown]
         public void TearDown()
         {
-            // TODO コメントアウトを外す
-            // DirectoryUtil.DeleteTempAssetFolder();
-            // DirectoryUtil.DeleteTempCacheFolder();
+            DirectoryUtil.DeleteTempAssetFolder();
+            DirectoryUtil.DeleteTempCacheFolder();
         }
         
         [Test]
@@ -56,30 +55,35 @@ namespace PlateauUnitySDK.Tests.EditModeTests.TestsFileConverter
         }
         
         [Test]
-        public void If_MeshGranularity_Is_PerPrimaryFeatureObject()
+        public void If_MeshGranularity_Is_PerPrimaryFeatureObject_Then_Multiple_BLD_Are_Exported()
         {
             var meshes = ConvertAndRead(MeshGranularity.PerPrimaryFeatureObject);
-            int count = meshes.Length; // TODO この数値が1になるのはおかしい
+            int count = meshes.Length;
             Debug.Log($"mesh count : {count}");
+            Assert.Greater(count, 1);
             for (int i = 0; i < count; i++)
             {
                 var mesh = meshes[i];
-                Debug.Log(mesh.name);
                 Assert.IsTrue(mesh.name.Contains("BLD"));
             }
         }
         
         [Test]
-        public void If_MeshGranularity_Is_PerAtomicFeatureObject()
+        public void If_MeshGranularity_Is_PerAtomicFeatureObject_Then_Multiple_Walls_Are_Exported()
         {
             var meshes = ConvertAndRead(MeshGranularity.PerAtomicFeatureObject);
             int count = meshes.Length;
-            Debug.Log($"count : {count}"); // TODO この数値が1になるのはおかしい
+            Debug.Log($"count : {count}");
+            Assert.Greater(count, 1);
+            int wallCount = 0;
             foreach (var mesh in meshes)
             {
-                Debug.Log($"mesh : {mesh.name}");
+                if (mesh.name.Contains("wall"))
+                {
+                    wallCount++;
+                }
             }
-            // TODO
+            Assert.Greater(wallCount, 1);
         }
 
         private static Mesh[] ConvertAndRead(MeshGranularity meshGranularity)
@@ -89,31 +93,13 @@ namespace PlateauUnitySDK.Tests.EditModeTests.TestsFileConverter
             using (var converter = new GmlToObjFileConverter())
             {
                 converter.SetConfig(meshGranularity, AxesConversion.RUF, true);
-                Debug.Log($"Converting {inputFilePath}");
                 bool result = converter.Convert(inputFilePath, outputFilePath);
                 Assert.IsTrue(result);
             }
-            // AssetDatabase.ImportAsset(FilePathValidator.FullPathToAssetsPath(outputFilePath));
             AssetDatabase.Refresh();
-
-            foreach (var foundObj in AssetDatabase.LoadAllAssetsAtPath(
-                         FilePathValidator.FullPathToAssetsPath(outputFilePath)))
-            {
-                Debug.Log($"type = {foundObj.GetType()}, name = {foundObj.name}");
-            }
-            // var fbxConverter = new ObjToFbxFileConverter();
-            // fbxConverter.Convert(FilePathValidator.FullPathToAssetsPath(outputFilePath), outputFilePath + ".fbx");
-
-            // var meshes = AssetDatabase.LoadAllAssetsAtPath(FilePathValidator.FullPathToAssetsPath(outputFilePath))
-            //     .OfType<Mesh>()
-            //     .ToArray();
 
             var obj = AssetDatabase.LoadAssetAtPath<GameObject>(FilePathValidator.FullPathToAssetsPath(outputFilePath));
             var meshes = obj.GetComponentsInChildren<MeshFilter>().Select(mf => mf.sharedMesh).ToArray();
-            foreach (var m in meshes)
-            {
-                Debug.Log($"mesh name: {m.name}");
-            }
             return meshes;
         }
         

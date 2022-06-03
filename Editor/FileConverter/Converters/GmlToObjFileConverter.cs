@@ -39,6 +39,7 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
             bool optimizeFlg = true)
         {
             this.gmlParserParams.Optimize = optimizeFlg;
+            this.gmlParserParams.Tessellate = true; // true でないと、頂点の代わりに LinearRing が生成されてしまい 3Dモデルには不適になります。
             this.meshGranularity = meshGranularityArg;
             this.axesConversion = axesConversionArg;
         }
@@ -58,7 +59,6 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
                 exportObjFilePath = exportObjFilePath.Replace('\\', '/');
                 
                 var cityModel = CityGml.Load(gmlFilePath, this.gmlParserParams);
-                Debug.Log($"Num of RootCityObjs = {cityModel.RootCityObjects.Count}");
                 this.objWriter.SetValidReferencePoint(cityModel);
                 this.objWriter.SetMeshGranularity(this.meshGranularity);
                 this.objWriter.SetDestAxes(this.axesConversion);
