@@ -1,4 +1,6 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
 using PlateauUnitySDK.Editor.EditorWindowCommon;
@@ -8,6 +10,9 @@ using UnityEngine;
 namespace PlateauUnitySDK.Editor.FileConverter.GUIContents
 {
 
+    /// <summary>
+    /// udxフォルダ内から変換対象を選択するGUIを提供します。
+    /// </summary>
     public class GmlSelectorGUI : IEditorWindowContents
     {
         private string udxFolderPath;
@@ -45,8 +50,8 @@ namespace PlateauUnitySDK.Editor.FileConverter.GUIContents
             HeaderDrawer.IncrementDepth();
             HeaderDrawer.Draw("含める地域");
             var areaIds = gmlSearcher.AreaIds;
-            int count = areaIds.Length;
-            for (int i = 0; i < count; i++)
+            int areaCount = areaIds.Length;
+            for (int i = 0; i < areaCount; i++)
             {
                 this.areaIdCheckboxes[i] = EditorGUILayout.Toggle(areaIds[i], this.areaIdCheckboxes[i]);
             }
@@ -63,6 +68,14 @@ namespace PlateauUnitySDK.Editor.FileConverter.GUIContents
                     for (int i = 0; i < this.areaIdCheckboxes.Length; i++) this.areaIdCheckboxes[i] = false;
                 }
             }
+            HeaderDrawer.Draw("対象gmlファイル");
+            var gmlFiles = new List<string>();
+            for (int i = 0; i < areaCount; i++)
+            {
+                if (!this.areaIdCheckboxes[i]) continue;
+                gmlFiles.AddRange(gmlSearcher.GetGmlFilePathsForAreaId(areaIds[i], false));
+            }
+            EditorGUILayout.TextArea(String.Join("\n", gmlFiles));
             HeaderDrawer.DecrementDepth();
         }
 

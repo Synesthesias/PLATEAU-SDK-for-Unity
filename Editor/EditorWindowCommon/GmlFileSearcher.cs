@@ -12,14 +12,20 @@ namespace PlateauUnitySDK.Editor.EditorWindowCommon
     /// 
     /// 前提:
     /// ・ディレクトリ構造が udx/(地物型)/(複数のgmlファイル) になっていることを前提とします。
-    /// ・gmlファイル名は ファイル名は [地域メッシュコード]_[地物型]_[CRS]_[オプション].gml です。
+    /// ・gmlファイル名は [地域メッシュコード]_[地物型]_[CRS]_[オプション].gml です。
     /// 　詳しくは国交省仕様書 Ver2 の 324ページを参照してください。
     /// </summary>
     public class GmlFileSearcher
     {
 
-        /// <summary> 地域メッシュコードからファイル名リストへの辞書です。 </summary>
+        /// <summary>
+        /// 地域メッシュコードからファイルリストへの辞書です。
+        /// ここでいうファイルリストとは <see cref="udxFolderPath"/> からの相対パスのリストです。
+        /// 例: {53394525 => {bldg\53394525_bldg_6697_2_op.gml  brid\53394525_brid_6697_op.gml }}
+        /// </summary>
         private Dictionary<string, List<string>> fileTable;
+
+        private string udxFolderPath = "";
 
         /// <summary> インスタンス化と同時にパスを指定して検索します。 </summary>
         public GmlFileSearcher(string udxFolderPath)
@@ -36,17 +42,19 @@ namespace PlateauUnitySDK.Editor.EditorWindowCommon
         /// <summary>
         /// 地域メッシュコードからgmlファイルリストを検索する辞書を構築します。
         /// </summary>
-        public void GenerateFileDictionary(string udxFolderPath)
+        public void GenerateFileDictionary(string udxFolderPathArg)
         {
-            if (!IsPathUdx(udxFolderPath))
+            if (!IsPathUdx(udxFolderPathArg))
             {
-                throw new IOException($"Path needs to address udx folder. path: {udxFolderPath}");
+                throw new IOException($"Path needs to address udx folder. path: {udxFolderPathArg}");
             }
+
+            this.udxFolderPath = udxFolderPathArg;
 
             this.fileTable = new Dictionary<string, List<string>>();
 
             // パス: udx/(地物型)
-            foreach (var dirPath in Directory.EnumerateDirectories(Path.GetFullPath(udxFolderPath)))
+            foreach (var dirPath in Directory.EnumerateDirectories(Path.GetFullPath(udxFolderPathArg)))
             {
                 // パス: udx/(地物型)/(各gmlファイル)
                 foreach (var filePath in Directory.EnumerateFiles(dirPath))
@@ -54,7 +62,7 @@ namespace PlateauUnitySDK.Editor.EditorWindowCommon
                     if (Path.GetExtension(filePath) != ".gml") continue;
                     string fileName = Path.GetFileName(filePath);
                     string areaId = fileName.Split('_').First();
-                    FileTableAdd(areaId, fileName);
+                    FileTableAdd(areaId, filePath);
                 }
             }
         }
@@ -94,14 +102,55 @@ namespace PlateauUnitySDK.Editor.EditorWindowCommon
             }
         }
 
-        private void FileTableAdd(string areaId, string fileName)
+        /// <summary>
+        /// 指定した <paramref name="areaId"/>(地域メッシュコード) に属する gmlファイルのパスのリストを返します。
+        /// <paramref name="doAbsolutePath"/> が true ならば絶対パス、 false なら udxFolderPath からの相対パスを返します。
+        /// </summary>
+        public IEnumerable<string> GetGmlFilePathsForAreaId(string areaId, bool doAbsolutePath)
         {
+            if (!this.fileTable.ContainsKey(areaId))
+            {
+                throw new KeyNotFoundException($"Area id is not found in the file table. area id = {areaId}");
+            }
+
+            var pathList = this.fileTable[areaId];
+            if (doAbsolutePath)
+            {
+                return pathList
+                    .Select(relativePath => Path.Combine(this.udxFolderPath, relativePath))
+                    .Select(Path.GetFullPath);
+            }
+            return pathList.ToArray();
+
+        }
+
+        private void FileTableAdd(string areaId, string filePath)
+        {
+            string relativePath = GetRelativePath(filePath, this.udxFolderPath);
             if (this.fileTable.ContainsKey(areaId))
             {
-                this.fileTable[areaId].Add(fileName);
+                this.fileTable[areaId].Add(relativePath);
                 return;
             }
-            this.fileTable.Add(areaId, new List<string>{fileName});
+            this.fileTable.Add(areaId, new List<string>{relativePath});
+        }
+
+        private static string GetRelativePath(string targetPath, string basePath)
+        {
+            targetPath = Path.GetFullPath(targetPath);
+            basePath = Path.GetFullPath(basePath);
+            if (!targetPath.StartsWith(basePath))
+            {
+                throw new Exception("targetPath is not subdirectory of basePath.");
+            }
+
+            string relativePath = targetPath.Substring(basePath.Length, targetPath.Length - basePath.Length);
+            if (relativePath.StartsWith("/") || relativePath.StartsWith("\\"))
+            {
+                relativePath = relativePath.Substring(1, relativePath.Length - 1);
+            }
+
+            return relativePath;
         }
     }
 }

@@ -15,6 +15,7 @@ namespace PlateauUnitySDK.Tests.EditModeTests.TestsEditorWindowCommon
             string[] areaIds = searcher.AreaIds;
             Assert.Contains("53394525", areaIds);
             Assert.Contains("533925", areaIds);
+            Debug.Log(searcher);
         }
     }
 }
