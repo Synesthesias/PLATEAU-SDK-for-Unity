@@ -36,7 +36,7 @@ namespace PlateauUnitySDK.Editor.FileConverter
             };
             this.tabNames = new[]
             {
-                "GML to OBJ & IDFileTable ", "GML to OBJ", "GML to IDFileTable", "OBJ to FBX"
+                "GML → OBJ & IDFileTable ", "GML → OBJ", "GML → IDFileTable", "OBJ → FBX"
             };
             this.isInitialized = true;
         }

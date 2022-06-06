@@ -34,9 +34,9 @@ namespace PlateauUnitySDK.Editor.FileConverter.GUITabs
 
         public override void ConfigureGUI()
         {
-            this.optimizeFlg = EditorGUILayout.Toggle("Optimize", this.optimizeFlg);
+            this.optimizeFlg = EditorGUILayout.Toggle("最適化", this.optimizeFlg);
             this.meshGranularity = (MeshGranularity)EditorGUILayout.EnumPopup("メッシュのオブジェクト分けの粒度", this.meshGranularity);
-            this.axesConversion = (AxesConversion)EditorGUILayout.EnumPopup("Axes Conversion", this.axesConversion);
+            this.axesConversion = (AxesConversion)EditorGUILayout.EnumPopup("座標軸変換", this.axesConversion);
         }
 
         public override void OnConfigureGUIChanged()
