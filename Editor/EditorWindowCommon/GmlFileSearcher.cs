@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -20,17 +21,24 @@ namespace PlateauUnitySDK.Editor.EditorWindowCommon
         /// <summary> 地域メッシュコードからファイル名リストへの辞書です。 </summary>
         private Dictionary<string, List<string>> fileTable;
 
+        /// <summary> インスタンス化と同時にパスを指定して検索します。 </summary>
         public GmlFileSearcher(string udxFolderPath)
         {
             GenerateFileDictionary(udxFolderPath);
         }
 
+        /// <summary> パスを指定せずにインスタンス化する場合、あとで <see cref="GenerateFileDictionary"/> を実行する必要があります。 </summary>
+        public GmlFileSearcher()
+        {
+            
+        }
+
         /// <summary>
         /// 地域メッシュコードからgmlファイルリストを検索する辞書を構築します。
         /// </summary>
-        private void GenerateFileDictionary(string udxFolderPath)
+        public void GenerateFileDictionary(string udxFolderPath)
         {
-            if (Path.GetFileName(udxFolderPath) != "udx")
+            if (!IsPathUdx(udxFolderPath))
             {
                 throw new IOException($"Path needs to address udx folder. path: {udxFolderPath}");
             }
@@ -51,6 +59,11 @@ namespace PlateauUnitySDK.Editor.EditorWindowCommon
             }
         }
 
+        public static bool IsPathUdx(string path)
+        {
+            return Path.GetFileName(path) == "udx";
+        }
+
         public override string ToString()
         {
             var sb = new StringBuilder();
@@ -69,7 +82,17 @@ namespace PlateauUnitySDK.Editor.EditorWindowCommon
         }
         
         /// <summary> udx フォルダに含まれる地域メッシュコードを配列で返します。 </summary>
-        public string[] AreaIds => this.fileTable.Keys.ToArray();
+        public string[] AreaIds
+        {
+            get
+            {
+                if (this.fileTable == null)
+                {
+                    throw new Exception("fileTable is null.");
+                }
+                return this.fileTable.Keys.ToArray();
+            }
+        }
 
         private void FileTableAdd(string areaId, string fileName)
         {
