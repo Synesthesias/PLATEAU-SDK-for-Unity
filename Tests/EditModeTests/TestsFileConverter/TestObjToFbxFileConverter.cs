@@ -13,7 +13,7 @@ namespace PlateauUnitySDK.Tests.EditModeTests.TestsFileConverter
         private static readonly string testObjFileName = "53392642_bldg_6697_op2_obj.obj";
 
         private static readonly string objFileCopySrc =
-            Path.Combine(DirectoryUtil.TestDataFolderPath, testObjFileName);
+            Path.Combine(DirectoryUtil.TestDataSimplePath, testObjFileName);
 
         private static readonly string testObjFilePath =
             Path.Combine(DirectoryUtil.TempAssetFolderPath, testObjFileName);

@@ -39,7 +39,7 @@ namespace PlateauUnitySDK.Tests.EditModeTests.TestsFileConverter
             string outputFilePath = Path.Combine(DirectoryUtil.TempCacheFolderPath, "test_convert_generates_obj_file.obj");
             using (var converter = new GmlToObjFileConverter())
             {
-                converter.Convert(DirectoryUtil.TestGmlFilePath, outputFilePath);
+                converter.Convert(DirectoryUtil.TestSimpleGmlFilePath, outputFilePath);
             }
             // 変換後、objファイルがあればとりあえず良しとします。
             Assert.IsTrue(File.Exists(outputFilePath));
@@ -88,7 +88,7 @@ namespace PlateauUnitySDK.Tests.EditModeTests.TestsFileConverter
 
         private static Mesh[] ConvertAndRead(MeshGranularity meshGranularity)
         {
-            string inputFilePath = DirectoryUtil.TestGmlFilePath;
+            string inputFilePath = DirectoryUtil.TestSimpleGmlFilePath;
             string outputFilePath = Path.Combine(DirectoryUtil.TempAssetFolderPath, "exported.obj");
             using (var converter = new GmlToObjFileConverter())
             {

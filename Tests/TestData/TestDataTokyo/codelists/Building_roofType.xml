@@ -1,0 +1,120 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<gml:Dictionary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/profiles/SimpleDictionary/1.0.0/gmlSimpleDictionaryProfile.xsd" gml:id="Building_roofType">
+<gml:name>Building_roofType</gml:name>
+<gml:dictionaryEntry><gml:Definition gml:id="id1">
+<gml:description>切妻屋根</gml:description>
+<gml:name>1</gml:name>
+</gml:Definition></gml:dictionaryEntry>
+<gml:dictionaryEntry><gml:Definition gml:id="id2">
+<gml:description>寄棟屋根</gml:description>
+<gml:name>2</gml:name>
+</gml:Definition></gml:dictionaryEntry>
+<gml:dictionaryEntry><gml:Definition gml:id="id3">
+<gml:description>方形屋根</gml:description>
+<gml:name>3</gml:name>
+</gml:Definition></gml:dictionaryEntry>
+<gml:dictionaryEntry><gml:Definition gml:id="id4">
+<gml:description>陸屋根</gml:description>
+<gml:name>4</gml:name>
+</gml:Definition></gml:dictionaryEntry>
+<gml:dictionaryEntry><gml:Definition gml:id="id5">
+<gml:description>片流れ屋根</gml:description>
+<gml:name>5</gml:name>
+</gml:Definition></gml:dictionaryEntry>
+<gml:dictionaryEntry><gml:Definition gml:id="id6">
+<gml:description>袴腰屋根/半切妻屋根</gml:description>
+<gml:name>6</gml:name>
+</gml:Definition></gml:dictionaryEntry>
+<gml:dictionaryEntry><gml:Definition gml:id="id7">
+<gml:description>入母屋屋根</gml:description>
+<gml:name>7</gml:name>
+</gml:Definition></gml:dictionaryEntry>
+<gml:dictionaryEntry><gml:Definition gml:id="id8">
+<gml:description>錣（しころ）屋根</gml:description>
+<gml:name>8</gml:name>
+</gml:Definition></gml:dictionaryEntry>
+<gml:dictionaryEntry><gml:Definition gml:id="id9">
+<gml:description>マンサード屋根</gml:description>
+<gml:name>9</gml:name>
+</gml:Definition></gml:dictionaryEntry>
+<gml:dictionaryEntry><gml:Definition gml:id="id10">
+<gml:description>越屋根</gml:description>
+<gml:name>10</gml:name>
+</gml:Definition></gml:dictionaryEntry>
+<gml:dictionaryEntry><gml:Definition gml:id="id11">
+<gml:description>招き屋根</gml:description>
+<gml:name>11</gml:name>
+</gml:Definition></gml:dictionaryEntry>
+<gml:dictionaryEntry><gml:Definition gml:id="id12">
+<gml:description>差し掛け屋根</gml:description>
+<gml:name>12</gml:name>
+</gml:Definition></gml:dictionaryEntry>
+<gml:dictionaryEntry><gml:Definition gml:id="id13">
+<gml:description>バタフライ屋根</gml:description>
+<gml:name>13</gml:name>
+</gml:Definition></gml:dictionaryEntry>
+<gml:dictionaryEntry><gml:Definition gml:id="id14">
+<gml:description>鋸屋根</gml:description>
+<gml:name>14</gml:name>
+</gml:Definition></gml:dictionaryEntry>
+<gml:dictionaryEntry><gml:Definition gml:id="id15">
+<gml:description>六柱屋根</gml:description>
+<gml:name>15</gml:name>
+</gml:Definition></gml:dictionaryEntry>
+<gml:dictionaryEntry><gml:Definition gml:id="id16">
+<gml:description>八柱屋根</gml:description>
+<gml:name>16</gml:name>
+</gml:Definition></gml:dictionaryEntry>
+<gml:dictionaryEntry><gml:Definition gml:id="id17">
+<gml:description>M型屋根</gml:description>
+<gml:name>17</gml:name>
+</gml:Definition></gml:dictionaryEntry>
+<gml:dictionaryEntry><gml:Definition gml:id="id18">
+<gml:description>下屋付招き屋根</gml:description>
+<gml:name>18</gml:name>
+</gml:Definition></gml:dictionaryEntry>
+<gml:dictionaryEntry><gml:Definition gml:id="id19">
+<gml:description>棟違い屋根</gml:description>
+<gml:name>19</gml:name>
+</gml:Definition></gml:dictionaryEntry>
+<gml:dictionaryEntry><gml:Definition gml:id="id20">
+<gml:description>乗り越し屋根</gml:description>
+<gml:name>20</gml:name>
+</gml:Definition></gml:dictionaryEntry>
+<gml:dictionaryEntry><gml:Definition gml:id="id21">
+<gml:description>腰折れ屋根</gml:description>
+<gml:name>21</gml:name>
+</gml:Definition></gml:dictionaryEntry>
+<gml:dictionaryEntry><gml:Definition gml:id="id22">
+<gml:description>隅切屋根</gml:description>
+<gml:name>22</gml:name>
+</gml:Definition></gml:dictionaryEntry>
+<gml:dictionaryEntry><gml:Definition gml:id="id23">
+<gml:description>アーチ屋根</gml:description>
+<gml:name>23</gml:name>
+</gml:Definition></gml:dictionaryEntry>
+<gml:dictionaryEntry><gml:Definition gml:id="id24">
+<gml:description>ドーム屋根</gml:description>
+<gml:name>24</gml:name>
+</gml:Definition></gml:dictionaryEntry>
+<gml:dictionaryEntry><gml:Definition gml:id="id25">
+<gml:description>シェル屋根</gml:description>
+<gml:name>25</gml:name>
+</gml:Definition></gml:dictionaryEntry>
+<gml:dictionaryEntry><gml:Definition gml:id="id26">
+<gml:description>カテナリー屋根</gml:description>
+<gml:name>26</gml:name>
+</gml:Definition></gml:dictionaryEntry>
+<gml:dictionaryEntry><gml:Definition gml:id="id27">
+<gml:description>膜構造</gml:description>
+<gml:name>27</gml:name>
+</gml:Definition></gml:dictionaryEntry>
+<gml:dictionaryEntry><gml:Definition gml:id="id28">
+<gml:description>その他</gml:description>
+<gml:name>28</gml:name>
+</gml:Definition></gml:dictionaryEntry>
+<gml:dictionaryEntry><gml:Definition gml:id="id29">
+<gml:description>不明</gml:description>
+<gml:name>9020</gml:name>
+</gml:Definition></gml:dictionaryEntry>
+</gml:Dictionary>
