@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using PlateauUnitySDK.Editor.FileConverter.Converters;
-using UnityEngine;
 
 namespace PlateauUnitySDK.Editor.EditorWindowCommon
 {

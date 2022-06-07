@@ -14,6 +14,9 @@ namespace PlateauUnitySDK.Editor.CityModelImportWindow
         private UdxFolderSelectorGUI udxFolderSelectorGUI;
         private bool isInitialized;
         private Vector2 scrollPosition;
+        private GmlSelectorGUI gmlSelectorGUI;
+        private readonly GmlFileSearcher gmlFileSearcher = new GmlFileSearcher();
+        private CityModelExportPathSelectorGUI cityModelExportPathSelectorGUI;
         
         [MenuItem("Plateau/都市モデルインポート")]
         public static void Open()
@@ -25,7 +28,9 @@ namespace PlateauUnitySDK.Editor.CityModelImportWindow
 
         private void Init()
         {
-            this.udxFolderSelectorGUI = new UdxFolderSelectorGUI();
+            this.udxFolderSelectorGUI = new UdxFolderSelectorGUI(OnUdxPathChanged);
+            this.gmlSelectorGUI = new GmlSelectorGUI(this.gmlFileSearcher);
+            this.cityModelExportPathSelectorGUI = new CityModelExportPathSelectorGUI();
             this.isInitialized = true;
         }
 
@@ -34,8 +39,23 @@ namespace PlateauUnitySDK.Editor.CityModelImportWindow
             if (!this.isInitialized) Init();
             HeaderDrawer.Reset();
             this.scrollPosition = EditorGUILayout.BeginScrollView(this.scrollPosition);
-            this.udxFolderSelectorGUI.DrawGUI();
+            string udxFolderPath = this.udxFolderSelectorGUI.Draw();
+            if (GmlFileSearcher.IsPathUdx(udxFolderPath))
+            {
+                var gmlFiles = this.gmlSelectorGUI.Draw();
+                this.cityModelExportPathSelectorGUI.Draw(gmlFiles, udxFolderPath);
+            }
+            else
+            {
+                EditorGUILayout.HelpBox("udxフォルダが選択されていません。", MessageType.Error);
+            }
             EditorGUILayout.EndScrollView();
+        }
+
+        private void OnUdxPathChanged(string path)
+        {
+            this.gmlFileSearcher.GenerateFileDictionary(path);
+            this.gmlSelectorGUI.OnUdxPathChanged();
         }
     }
 }

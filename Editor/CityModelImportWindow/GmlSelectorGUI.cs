@@ -26,7 +26,7 @@ namespace PlateauUnitySDK.Editor.CityModelImportWindow
         /// 変換対象とする gmlファイルを選択するGUIを表示し、
         /// その結果を gmlファイルの相対パスのリストで返します。
         /// </summary>
-        public List<string> Select()
+        public List<string> Draw()
         {
             HeaderDrawer.IncrementDepth();
             HeaderDrawer.Draw("含める地域");

@@ -1,10 +1,5 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using PlateauUnitySDK.Editor.EditorWindowCommon;
-using PlateauUnitySDK.Editor.FileConverter.Converters;
 using UnityEditor;
 using UnityEngine;
 
@@ -14,21 +9,20 @@ namespace PlateauUnitySDK.Editor.CityModelImportWindow
     /// <summary>
     /// udxフォルダを選択するGUIを提供します。
     /// </summary>
-    public class UdxFolderSelectorGUI : IEditorWindowContents
+    public class UdxFolderSelectorGUI
     {
         private string udxFolderPath;
-        private readonly GmlFileSearcher gmlFileSearcher = new GmlFileSearcher();
+        private event Action<string> OnUdxPathChanged;
 
-        private readonly GmlSelectorGUI gmlSelectorGUI;
-        private readonly CityModelExportPathSelectorGUI cityModelExportPathSelectorGUI;
-
-        public UdxFolderSelectorGUI()
+        public UdxFolderSelectorGUI(Action<string> onUdxPathChanged)
         {
-            this.gmlSelectorGUI = new GmlSelectorGUI(this.gmlFileSearcher);
-            this.cityModelExportPathSelectorGUI = new CityModelExportPathSelectorGUI();
+            OnUdxPathChanged += onUdxPathChanged;
         }
 
-        public void DrawGUI()
+        /// <summary>
+        /// udxフォルダを選択するGUIを表示し、選択されたフォルダのパスを返します。
+        /// </summary>
+        public string Draw()
         {
             HeaderDrawer.Draw("取得データ選択");
             using (new EditorGUILayout.HorizontalScope())
@@ -39,30 +33,14 @@ namespace PlateauUnitySDK.Editor.CityModelImportWindow
                     string selectedPath = EditorUtility.OpenFolderPanel("udxフォルダ選択", Application.dataPath, "udx");
                     if (!string.IsNullOrEmpty(selectedPath))
                     {
-                        OnUdxPathChanged(selectedPath);
+                        this.udxFolderPath = selectedPath;
+                        OnUdxPathChanged?.Invoke(selectedPath);
                     }
                 }
             }
 
-            if (GmlFileSearcher.IsPathUdx(this.udxFolderPath))
-            {
-                var gmlFiles = this.gmlSelectorGUI.Select();
-                this.cityModelExportPathSelectorGUI.DrawGUI(gmlFiles, this.udxFolderPath);
-            }
-            else
-            {
-                EditorGUILayout.HelpBox("udxフォルダが選択されていません。", MessageType.Error);
-            }
+            return this.udxFolderPath;
         }
 
-
-
-        private void OnUdxPathChanged(string selectedPath)
-        {
-            this.udxFolderPath = selectedPath;
-            this.gmlFileSearcher.GenerateFileDictionary(selectedPath);
-            this.gmlSelectorGUI.OnUdxPathChanged();
-        }
-        
     }
 }

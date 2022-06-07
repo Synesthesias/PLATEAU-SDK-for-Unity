@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using Codice.Client.Common;
 using static PlateauUnitySDK.Editor.FileConverter.Converters.GmlType;
 
 namespace PlateauUnitySDK.Editor.FileConverter.Converters
