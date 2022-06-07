@@ -10,24 +10,23 @@ namespace PlateauUnitySDK.Editor.CityModelImportWindow
     public class CityModelExportPathSelectorGUI
     {
         private string exportFolderPath;
-        private UdxConverter udxConverter = new UdxConverter();
         
-        public void Draw(List<string> gmlFiles, string udxFolderPath)
+        /// <summary>
+        /// 出力先フォルダ選択GUIを表示し、選択されたパスを返します。
+        /// </summary>
+        public string Draw(List<string> gmlFiles, string udxFolderPath)
         {
             HeaderDrawer.Draw("出力先選択");
             using (new EditorGUILayout.HorizontalScope())
-            {
-                exportFolderPath = EditorGUILayout.TextField("出力先フォルダ", exportFolderPath);
+            { 
+                this.exportFolderPath = EditorGUILayout.TextField("出力先フォルダ", this.exportFolderPath);
                 if (PlateauEditorStyle.MainButton("参照..."))
                 {
-                    exportFolderPath = EditorUtility.SaveFolderPanel("保存先選択", Application.dataPath, "PlateauData");
+                    this.exportFolderPath = EditorUtility.SaveFolderPanel("保存先選択", Application.dataPath, "PlateauData");
                 }
             }
-            HeaderDrawer.Draw("出力");
-            if (PlateauEditorStyle.MainButton("出力"))
-            {
-                this.udxConverter.Convert(gmlFiles, udxFolderPath, exportFolderPath);
-            }
+
+            return this.exportFolderPath;
         }
     }
 }

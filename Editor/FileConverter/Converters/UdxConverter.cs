@@ -20,6 +20,6 @@ public class UdxConverter
             objConverter.Convert(gmlFullPath, objPath);
             idTableConverter.Convert(gmlFullPath, idTablePath);
         }
-        AssetDatabase.Refresh();
+        AssetDatabase.ImportAsset(FilePathValidator.FullPathToAssetsPath(exportFolderPath));
     }
 }

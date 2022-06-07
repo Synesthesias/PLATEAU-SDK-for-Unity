@@ -1,4 +1,5 @@
 ﻿using PlateauUnitySDK.Editor.EditorWindowCommon;
+using PlateauUnitySDK.Editor.FileConverter.Converters;
 using UnityEditor;
 using UnityEngine;
 
@@ -11,11 +12,12 @@ namespace PlateauUnitySDK.Editor.CityModelImportWindow
     /// </summary>
     public class CityModelImportWindow : EditorWindow
     {
-        private UdxFolderSelectorGUI udxFolderSelectorGUI;
         private bool isInitialized;
         private Vector2 scrollPosition;
+        private GmlFileSearcher gmlFileSearcher = new GmlFileSearcher();
+        private UdxConverter udxConverter;
         private GmlSelectorGUI gmlSelectorGUI;
-        private readonly GmlFileSearcher gmlFileSearcher = new GmlFileSearcher();
+        private UdxFolderSelectorGUI udxFolderSelectorGUI;
         private CityModelExportPathSelectorGUI cityModelExportPathSelectorGUI;
         
         [MenuItem("Plateau/都市モデルインポート")]
@@ -31,6 +33,8 @@ namespace PlateauUnitySDK.Editor.CityModelImportWindow
             this.udxFolderSelectorGUI = new UdxFolderSelectorGUI(OnUdxPathChanged);
             this.gmlSelectorGUI = new GmlSelectorGUI(this.gmlFileSearcher);
             this.cityModelExportPathSelectorGUI = new CityModelExportPathSelectorGUI();
+            this.gmlFileSearcher = new GmlFileSearcher();
+            this.udxConverter = new UdxConverter();
             this.isInitialized = true;
         }
 
@@ -39,11 +43,19 @@ namespace PlateauUnitySDK.Editor.CityModelImportWindow
             if (!this.isInitialized) Init();
             HeaderDrawer.Reset();
             this.scrollPosition = EditorGUILayout.BeginScrollView(this.scrollPosition);
+            
+            // udxフォルダの選択GUIを表示します。
             string udxFolderPath = this.udxFolderSelectorGUI.Draw();
             if (GmlFileSearcher.IsPathUdx(udxFolderPath))
             {
+                // udxフォルダが選択されているなら、設定と出力のGUIを表示します。
                 var gmlFiles = this.gmlSelectorGUI.Draw();
-                this.cityModelExportPathSelectorGUI.Draw(gmlFiles, udxFolderPath);
+                var exportFolderPath = this.cityModelExportPathSelectorGUI.Draw(gmlFiles, udxFolderPath);
+                HeaderDrawer.Draw("出力");
+                if (PlateauEditorStyle.MainButton("出力"))
+                {
+                    this.udxConverter.Convert(gmlFiles, udxFolderPath, exportFolderPath);
+                }
             }
             else
             {
