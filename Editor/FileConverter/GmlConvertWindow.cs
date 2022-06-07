@@ -2,6 +2,7 @@
 using PlateauUnitySDK.Editor.EditorWindowCommon;
 using PlateauUnitySDK.Editor.FileConverter.GUIContents;
 using UnityEditor;
+using UnityEngine;
 
 namespace PlateauUnitySDK.Editor.FileConverter
 {
@@ -10,6 +11,7 @@ namespace PlateauUnitySDK.Editor.FileConverter
     {
         private GmlSelectorGUI gmlSelectorGUI;
         private bool isInitialized;
+        private Vector2 scrollPosition;
         
         [MenuItem("Plateau/都市モデルインポート")]
         public static void Open()
@@ -29,7 +31,9 @@ namespace PlateauUnitySDK.Editor.FileConverter
         {
             if (!this.isInitialized) Init();
             HeaderDrawer.Reset();
+            this.scrollPosition = EditorGUILayout.BeginScrollView(this.scrollPosition);
             this.gmlSelectorGUI.DrawGUI();
+            EditorGUILayout.EndScrollView();
         }
     }
 }
