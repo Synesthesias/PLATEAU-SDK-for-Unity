@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
 using PlateauUnitySDK.Editor.EditorWindowCommon;
+using PlateauUnitySDK.Editor.FileConverter.Converters;
 using UnityEditor;
 using UnityEngine;
 
@@ -18,6 +19,7 @@ namespace PlateauUnitySDK.Editor.FileConverter.GUIContents
         private string udxFolderPath;
         private GmlFileSearcher gmlFileSearcher = new GmlFileSearcher();
         private bool[] areaIdCheckboxes;
+        private GmlTypeTarget gmlTypeTarget = new GmlTypeTarget();
 
         public void DrawGUI()
         {
@@ -68,15 +70,50 @@ namespace PlateauUnitySDK.Editor.FileConverter.GUIContents
                     for (int i = 0; i < this.areaIdCheckboxes.Length; i++) this.areaIdCheckboxes[i] = false;
                 }
             }
+            
+            HeaderDrawer.Draw("含める地物");
+            var typeDict = this.gmlTypeTarget.TargetDict;
+            foreach (var gmlType in typeDict.Keys.ToArray())
+            {
+                typeDict[gmlType] = EditorGUILayout.Toggle(GmlTypeConvert.ToDisplay(gmlType), typeDict[gmlType]);
+            }
+
+            using (new EditorGUILayout.HorizontalScope())
+            {
+                if (PlateauEditorStyle.MainButton("すべて選択"))
+                {
+                    this.gmlTypeTarget.SetAll(true);
+                }
+
+                if (PlateauEditorStyle.MainButton("すべて除外"))
+                {
+                    this.gmlTypeTarget.SetAll(false);
+                }
+            }
+
+
             HeaderDrawer.Draw("対象gmlファイル");
+            var gmlFiles = ListTargetGmlFiles(this.gmlFileSearcher, areaIds, this.areaIdCheckboxes);
+            EditorGUILayout.TextArea(String.Join("\n", gmlFiles));
+            HeaderDrawer.DecrementDepth();
+        }
+
+        private List<string> ListTargetGmlFiles(GmlFileSearcher gmlSearcher, string[] areaIds, bool[] areaCheckboxes)
+        {
+            if (areaIds.Length != areaCheckboxes.Length)
+            {
+                throw new ArgumentException("areaId.Length does not match areaCheckboxes.Length.");
+            }
+
+            int areaCount = areaIds.Length;
             var gmlFiles = new List<string>();
             for (int i = 0; i < areaCount; i++)
             {
-                if (!this.areaIdCheckboxes[i]) continue;
-                gmlFiles.AddRange(gmlSearcher.GetGmlFilePathsForAreaId(areaIds[i], false));
+                if (!areaCheckboxes[i]) continue;
+                gmlFiles.AddRange(gmlSearcher.GetGmlFilePathsForAreaIdAndType(areaIds[i], this.gmlTypeTarget, false));
             }
-            EditorGUILayout.TextArea(String.Join("\n", gmlFiles));
-            HeaderDrawer.DecrementDepth();
+
+            return gmlFiles;
         }
 
         private void OnUdxPathChanged(string selectedPath)

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using PlateauUnitySDK.Editor.FileConverter.Converters;
 using UnityEngine;
 
 namespace PlateauUnitySDK.Editor.EditorWindowCommon
@@ -121,7 +122,38 @@ namespace PlateauUnitySDK.Editor.EditorWindowCommon
                     .Select(Path.GetFullPath);
             }
             return pathList.ToArray();
+        }
+        
+        // TODO 2つの検索条件を同時に見るのではなく、1つずつ作って組み合わせる形式にしたほうが汎用性がありそう
+        /// <summary>
+        /// gmlファイルのうち、<paramref name="areaId"/> が指定したものであり、かつ
+        /// <see cref="GmlType"/> が <paramref name="typeTarget"/> で示されるタイプの1つであるものを返します。
+        /// </summary>
+        public IEnumerable<string> GetGmlFilePathsForAreaIdAndType(string areaId, GmlTypeTarget typeTarget,
+            bool doAbsolutePath)
+        {
+            var found = new List<string>();
+            var gmlsInArea = GetGmlFilePathsForAreaId(areaId, doAbsolutePath);
+            foreach (var gml in gmlsInArea)
+            {
+                if (typeTarget.IsTypeTarget(GetGmlTypeFromPath(gml)))
+                {
+                    found.Add(gml);
+                }
+            }
 
+            return found;
+        }
+
+        /// <summary>
+        /// gmlの親フォルダ名が <see cref="GmlType"/> の接頭辞になっていることを前提とし、
+        /// 親フォルダ名に対応する <see cref="GmlType"/> を返します。
+        /// </summary>
+        private static GmlType GetGmlTypeFromPath(string gmlPath)
+        {
+            string parentPath = Directory.GetParent(gmlPath)?.ToString();
+            string parentFolder = Path.GetFileName(parentPath);
+            return GmlTypeConvert.FromPrefix(parentFolder);
         }
 
         private void FileTableAdd(string areaId, string filePath)
