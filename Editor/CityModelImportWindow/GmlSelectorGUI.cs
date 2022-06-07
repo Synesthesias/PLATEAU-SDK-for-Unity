@@ -8,7 +8,7 @@ using UnityEditor;
 namespace PlateauUnitySDK.Editor.CityModelImportWindow
 {
 
-    public class GmlSelectorGUI : IEditorWindowContents
+    public class GmlSelectorGUI
     {
         private bool[] areaIdCheckboxes;
         private GmlTypeTarget gmlTypeTarget = new GmlTypeTarget();
@@ -22,7 +22,11 @@ namespace PlateauUnitySDK.Editor.CityModelImportWindow
             this.gmlFileSearcher = gmlFileSearcher;
         }
         
-        public void DrawGUI()
+        /// <summary>
+        /// 変換対象とする gmlファイルを選択するGUIを表示し、
+        /// その結果を gmlファイルの相対パスのリストで返します。
+        /// </summary>
+        public List<string> Select()
         {
             HeaderDrawer.IncrementDepth();
             HeaderDrawer.Draw("含める地域");
@@ -70,6 +74,7 @@ namespace PlateauUnitySDK.Editor.CityModelImportWindow
             this.gmlFiles = ListTargetGmlFiles(this.gmlFileSearcher, areaIds, this.areaIdCheckboxes, this.gmlTypeTarget);
             EditorGUILayout.TextArea(String.Join("\n", this.gmlFiles));
             HeaderDrawer.DecrementDepth();
+            return this.gmlFiles;
         }
 
         public void OnUdxPathChanged()

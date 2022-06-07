@@ -18,13 +18,14 @@ namespace PlateauUnitySDK.Editor.CityModelImportWindow
     {
         private string udxFolderPath;
         private readonly GmlFileSearcher gmlFileSearcher = new GmlFileSearcher();
-        
-        private string exportFolderPath;
-        private GmlSelectorGUI gmlSelectorGUI;
+
+        private readonly GmlSelectorGUI gmlSelectorGUI;
+        private readonly CityModelExportPathSelectorGUI cityModelExportPathSelectorGUI;
 
         public UdxFolderSelectorGUI()
         {
             this.gmlSelectorGUI = new GmlSelectorGUI(this.gmlFileSearcher);
+            this.cityModelExportPathSelectorGUI = new CityModelExportPathSelectorGUI();
         }
 
         public void DrawGUI()
@@ -45,8 +46,8 @@ namespace PlateauUnitySDK.Editor.CityModelImportWindow
 
             if (GmlFileSearcher.IsPathUdx(this.udxFolderPath))
             {
-                this.gmlSelectorGUI.DrawGUI();
-                DrawExportPathSelectorGUI(this.gmlSelectorGUI.GmlFiles, ref this.exportFolderPath, this.udxFolderPath);
+                var gmlFiles = this.gmlSelectorGUI.Select();
+                this.cityModelExportPathSelectorGUI.DrawGUI(gmlFiles, this.udxFolderPath);
             }
             else
             {
@@ -54,27 +55,7 @@ namespace PlateauUnitySDK.Editor.CityModelImportWindow
             }
         }
 
-        
 
-        private static void DrawExportPathSelectorGUI(IEnumerable<string> gmlFiles, ref string exportFolderPath, string udxFolderPath)
-        {
-            HeaderDrawer.Draw("出力先選択");
-            using (new EditorGUILayout.HorizontalScope())
-            {
-                exportFolderPath = EditorGUILayout.TextField("出力先フォルダ", exportFolderPath);
-                if (PlateauEditorStyle.MainButton("参照..."))
-                {
-                    exportFolderPath = EditorUtility.SaveFolderPanel("保存先選択", Application.dataPath, "PlateauData");
-                }
-            }
-            HeaderDrawer.Draw("出力");
-            if (PlateauEditorStyle.MainButton("出力"))
-            {
-                OnExportButtonPushed(gmlFiles, udxFolderPath, exportFolderPath);
-            }
-        }
-
-        
 
         private void OnUdxPathChanged(string selectedPath)
         {
@@ -82,21 +63,6 @@ namespace PlateauUnitySDK.Editor.CityModelImportWindow
             this.gmlFileSearcher.GenerateFileDictionary(selectedPath);
             this.gmlSelectorGUI.OnUdxPathChanged();
         }
-
-        private static void OnExportButtonPushed(IEnumerable<string> gmlFiles, string udxFolderPath, string exportFolderPath)
-        {
-            foreach (var gmlRelativePath in gmlFiles)
-            {
-                // TODO Configを設定できるようにする
-                string gmlFullPath = Path.GetFullPath(Path.Combine(udxFolderPath, gmlRelativePath));
-                string gmlFileName = Path.GetFileNameWithoutExtension(gmlRelativePath);
-                string objPath = Path.Combine(exportFolderPath, gmlFileName + ".obj");
-                string idTablePath = Path.Combine(exportFolderPath, "idToFileTable.asset");
-                var objConverter = new GmlToObjFileConverter();
-                var idTableConverter = new GmlToIdFileTableConverter();
-                objConverter.Convert(gmlFullPath, objPath);
-                idTableConverter.Convert(gmlFullPath, idTablePath);
-            }
-        }
+        
     }
 }

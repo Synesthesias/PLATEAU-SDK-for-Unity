@@ -16,7 +16,7 @@ namespace PlateauUnitySDK.Editor.FileConverter
         private int tabIndex;
         private bool isInitialized;
 
-        [MenuItem("Plateau/1ファイル変換")]
+        [MenuItem("Plateau/単品ファイル変換")]
         public static void Open()
         {
             var window = GetWindow<ModelFileConvertWindow>("Model File Converter");
