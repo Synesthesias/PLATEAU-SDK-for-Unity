@@ -1,7 +1,6 @@
 ﻿using PlateauUnitySDK.Editor.EditorWindowCommon;
-using UnityEditor;
 
-namespace PlateauUnitySDK.Editor.FileConverter.GUITabs
+namespace PlateauUnitySDK.Editor.FileConverter.GUIContents
 {
     // TODO BaseConvertTab.cs と共通する箇所が多いのでまとめられるか検討
     /// <summary>
@@ -29,7 +28,7 @@ namespace PlateauUnitySDK.Editor.FileConverter.GUITabs
         {
             using (PlateauEditorStyle.VerticalScope())
             {
-                foreach (var tab in tabs)
+                foreach (var tab in this.tabs)
                 {
                     tab.HeaderInfoGUI();
                 }    
@@ -41,11 +40,11 @@ namespace PlateauUnitySDK.Editor.FileConverter.GUITabs
                 ConvertFileSelectorGUIUtil.FilePanelType.Open,
                 $"Select {SourceFileExtension} File"
             );
-            foreach (var tab in tabs)
+            foreach (var tab in this.tabs)
             {
                 tab.SourceFilePath = this.sourceFilePath;
             }
-            foreach (var tab in tabs)
+            foreach (var tab in this.tabs)
             {
                 HeaderDrawer.Draw($"gml to {tab.DestFileExtension}");
                 HeaderDrawer.IncrementDepth();
@@ -59,7 +58,7 @@ namespace PlateauUnitySDK.Editor.FileConverter.GUITabs
         private bool Convert()
         {
             bool isSuccess = true;
-            foreach (var tab in tabs)
+            foreach (var tab in this.tabs)
             {
                 isSuccess &= tab.FileConverter.Convert(tab.SourceFilePath, tab.DestFilePath);
             }

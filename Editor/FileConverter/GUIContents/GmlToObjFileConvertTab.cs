@@ -1,11 +1,8 @@
 using LibPLATEAU.NET.CityGML;
-using PlateauUnitySDK.Editor.EditorWindowCommon;
 using PlateauUnitySDK.Editor.FileConverter.Converters;
-using PlateauUnitySDK.Editor.FileConverter.GUIContents;
 using UnityEditor;
-using UnityEngine;
 
-namespace PlateauUnitySDK.Editor.FileConverter.GUITabs
+namespace PlateauUnitySDK.Editor.FileConverter.GUIContents
 {
     /// <summary>
     /// gmlファイルを読んでobjファイルに変換して出力する機能を持ったウィンドウのタブです。

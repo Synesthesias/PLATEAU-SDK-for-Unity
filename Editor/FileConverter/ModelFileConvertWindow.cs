@@ -1,5 +1,5 @@
 using PlateauUnitySDK.Editor.EditorWindowCommon;
-using PlateauUnitySDK.Editor.FileConverter.GUITabs;
+using PlateauUnitySDK.Editor.FileConverter.GUIContents;
 using UnityEditor;
 
 namespace PlateauUnitySDK.Editor.FileConverter
@@ -16,7 +16,7 @@ namespace PlateauUnitySDK.Editor.FileConverter
         private int tabIndex;
         private bool isInitialized;
 
-        [MenuItem("Plateau/Model File Converter Window")]
+        [MenuItem("Plateau/1ファイル変換")]
         public static void Open()
         {
             var window = GetWindow<ModelFileConvertWindow>("Model File Converter");

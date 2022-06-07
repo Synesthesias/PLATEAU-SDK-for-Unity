@@ -1,11 +1,10 @@
 using System;
 using System.IO;
 using PlateauUnitySDK.Editor.EditorWindowCommon;
-using PlateauUnitySDK.Editor.FileConverter.Converters;
 using UnityEditor;
 using UnityEngine;
 
-namespace PlateauUnitySDK.Editor.FileConverter.GUITabs
+namespace PlateauUnitySDK.Editor.FileConverter.GUIContents
 {
     /// <summary>
     /// ファイルを受け取り、変換してファイルを出力する各EditorWindowのうち、共通機能をまとめたクラスです。

@@ -2,7 +2,7 @@
 using PlateauUnitySDK.Editor.FileConverter.Converters;
 using UnityEditor;
 
-namespace PlateauUnitySDK.Editor.FileConverter.GUITabs
+namespace PlateauUnitySDK.Editor.FileConverter.GUIContents
 {
     /// <summary>
     /// ファイル変換ウィンドウのタブの基底クラスです。

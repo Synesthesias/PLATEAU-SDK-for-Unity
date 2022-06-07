@@ -1,29 +1,31 @@
-﻿using PlasticPipe.PlasticProtocol.Messages;
-using PlateauUnitySDK.Editor.EditorWindowCommon;
-using PlateauUnitySDK.Editor.FileConverter.GUIContents;
+﻿using PlateauUnitySDK.Editor.EditorWindowCommon;
 using UnityEditor;
 using UnityEngine;
 
-namespace PlateauUnitySDK.Editor.FileConverter
+namespace PlateauUnitySDK.Editor.CityModelImportWindow
 {
 
-    public class GmlConvertWindow : EditorWindow
+    /// <summary>
+    /// 都市モデルをインポートするウィンドウです。
+    /// udxフォルダを指定し、条件に合うgmlファイルを一括で変換するGUIを提供します。
+    /// </summary>
+    public class CityModelImportWindow : EditorWindow
     {
-        private GmlSelectorGUI gmlSelectorGUI;
+        private UdxFolderSelectorGUI udxFolderSelectorGUI;
         private bool isInitialized;
         private Vector2 scrollPosition;
         
         [MenuItem("Plateau/都市モデルインポート")]
         public static void Open()
         {
-            var window = GetWindow<GmlConvertWindow>("都市モデルインポート");
+            var window = GetWindow<CityModelImportWindow>("都市モデルインポート");
             window.Show();
             window.Init();
         }
 
         private void Init()
         {
-            this.gmlSelectorGUI = new GmlSelectorGUI();
+            this.udxFolderSelectorGUI = new UdxFolderSelectorGUI();
             this.isInitialized = true;
         }
 
@@ -32,7 +34,7 @@ namespace PlateauUnitySDK.Editor.FileConverter
             if (!this.isInitialized) Init();
             HeaderDrawer.Reset();
             this.scrollPosition = EditorGUILayout.BeginScrollView(this.scrollPosition);
-            this.gmlSelectorGUI.DrawGUI();
+            this.udxFolderSelectorGUI.DrawGUI();
             EditorGUILayout.EndScrollView();
         }
     }

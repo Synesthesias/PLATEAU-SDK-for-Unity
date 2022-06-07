@@ -5,9 +5,8 @@ using PlateauUnitySDK.Editor.FileConverter.Converters;
 using PlateauUnitySDK.Runtime.SemanticsLoader;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.Animations;
 
-namespace PlateauUnitySDK.Editor.FileConverter.GUITabs
+namespace PlateauUnitySDK.Editor.FileConverter.GUIContents
 {
     /// <summary>
     /// Gmlファイルを読んで <see cref="IdToFileTable"/> を出力するGUIを提供します。

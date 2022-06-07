@@ -1,22 +1,19 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using NUnit.Framework;
 using PlateauUnitySDK.Editor.EditorWindowCommon;
 using PlateauUnitySDK.Editor.FileConverter.Converters;
-using PlateauUnitySDK.Editor.FileConverter.GUITabs;
 using UnityEditor;
 using UnityEngine;
 
-namespace PlateauUnitySDK.Editor.FileConverter.GUIContents
+namespace PlateauUnitySDK.Editor.CityModelImportWindow
 {
 
     /// <summary>
-    /// udxフォルダ内から変換対象を選択するGUIを提供します。
+    /// udxフォルダを選択するGUIを提供します。
     /// </summary>
-    public class GmlSelectorGUI : IEditorWindowContents
+    public class UdxFolderSelectorGUI : IEditorWindowContents
     {
         private string udxFolderPath;
         private GmlFileSearcher gmlFileSearcher = new GmlFileSearcher();
@@ -44,7 +41,7 @@ namespace PlateauUnitySDK.Editor.FileConverter.GUIContents
             if (GmlFileSearcher.IsPathUdx(this.udxFolderPath))
             {
                 DrawGmlTargetSelectorGUI(this.gmlFileSearcher);
-                DrawExportPathSelectorGUI();
+                DrawExportPathSelectorGUI(this.gmlFiles, this.exportFolderPath, this.udxFolderPath);
             }
             else
             {
@@ -98,30 +95,30 @@ namespace PlateauUnitySDK.Editor.FileConverter.GUIContents
 
 
             HeaderDrawer.Draw("対象gmlファイル");
-            this.gmlFiles = ListTargetGmlFiles(this.gmlFileSearcher, areaIds, this.areaIdCheckboxes);
-            EditorGUILayout.TextArea(String.Join("\n", gmlFiles));
+            this.gmlFiles = ListTargetGmlFiles(this.gmlFileSearcher, areaIds, this.areaIdCheckboxes, this.gmlTypeTarget);
+            EditorGUILayout.TextArea(String.Join("\n", this.gmlFiles));
             HeaderDrawer.DecrementDepth();
         }
 
-        private void DrawExportPathSelectorGUI()
+        private static void DrawExportPathSelectorGUI(List<string> gmlFiles, string exportFolderPath, string udxFolderPath)
         {
             HeaderDrawer.Draw("出力先選択");
             using (new EditorGUILayout.HorizontalScope())
             {
-                this.exportFolderPath = EditorGUILayout.TextField("出力先フォルダ", this.exportFolderPath);
+                exportFolderPath = EditorGUILayout.TextField("出力先フォルダ", exportFolderPath);
                 if (PlateauEditorStyle.MainButton("参照..."))
                 {
-                    this.exportFolderPath = EditorUtility.SaveFolderPanel("保存先選択", Application.dataPath, "PlateauData");
+                    exportFolderPath = EditorUtility.SaveFolderPanel("保存先選択", Application.dataPath, "PlateauData");
                 }
             }
             HeaderDrawer.Draw("出力");
             if (PlateauEditorStyle.MainButton("出力"))
             {
-                OnExportButtonPushed();
+                OnExportButtonPushed(gmlFiles, udxFolderPath, exportFolderPath);
             }
         }
 
-        private List<string> ListTargetGmlFiles(GmlFileSearcher gmlSearcher, string[] areaIds, bool[] areaCheckboxes)
+        private static List<string> ListTargetGmlFiles(GmlFileSearcher gmlSearcher, string[] areaIds, bool[] areaCheckboxes, GmlTypeTarget gmlTypeTarget)
         {
             if (areaIds.Length != areaCheckboxes.Length)
             {
@@ -133,7 +130,7 @@ namespace PlateauUnitySDK.Editor.FileConverter.GUIContents
             for (int i = 0; i < areaCount; i++)
             {
                 if (!areaCheckboxes[i]) continue;
-                gmlFiles.AddRange(gmlSearcher.GetGmlFilePathsForAreaIdAndType(areaIds[i], this.gmlTypeTarget, false));
+                gmlFiles.AddRange(gmlSearcher.GetGmlFilePathsForAreaIdAndType(areaIds[i], gmlTypeTarget, false));
             }
 
             return gmlFiles;
@@ -146,15 +143,15 @@ namespace PlateauUnitySDK.Editor.FileConverter.GUIContents
             this.areaIdCheckboxes = Enumerable.Repeat(true, this.gmlFileSearcher.AreaIds.Length).ToArray();
         }
 
-        private void OnExportButtonPushed()
+        private static void OnExportButtonPushed(IEnumerable<string> gmlFiles, string udxFolderPath, string exportFolderPath)
         {
-            foreach (var gmlRelativePath in this.gmlFiles)
+            foreach (var gmlRelativePath in gmlFiles)
             {
                 // TODO Configを設定できるようにする
-                string gmlFullPath = Path.GetFullPath(Path.Combine(this.udxFolderPath, gmlRelativePath));
+                string gmlFullPath = Path.GetFullPath(Path.Combine(udxFolderPath, gmlRelativePath));
                 string gmlFileName = Path.GetFileNameWithoutExtension(gmlRelativePath);
-                string objPath = Path.Combine(this.exportFolderPath, gmlFileName + ".obj");
-                string idTablePath = Path.Combine(this.exportFolderPath, "idToFileTable.asset");
+                string objPath = Path.Combine(exportFolderPath, gmlFileName + ".obj");
+                string idTablePath = Path.Combine(exportFolderPath, "idToFileTable.asset");
                 var objConverter = new GmlToObjFileConverter();
                 var idTableConverter = new GmlToIdFileTableConverter();
                 objConverter.Convert(gmlFullPath, objPath);

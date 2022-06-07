@@ -2,7 +2,7 @@ using PlateauUnitySDK.Editor.FileConverter.Converters;
 using UnityEditor;
 using static PlateauUnitySDK.Editor.FileConverter.Converters.ObjToFbxFileConverter;
 
-namespace PlateauUnitySDK.Editor.FileConverter.GUITabs
+namespace PlateauUnitySDK.Editor.FileConverter.GUIContents
 {
     /// <summary>
     /// gmlファイルを読んでobjファイルに変換して出力する機能を持ったウィンドウのタブです。
