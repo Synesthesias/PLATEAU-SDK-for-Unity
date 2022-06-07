@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -16,11 +17,15 @@ namespace PlateauUnitySDK.Editor.CityModelImportWindow
     public class UdxFolderSelectorGUI : IEditorWindowContents
     {
         private string udxFolderPath;
-        private GmlFileSearcher gmlFileSearcher = new GmlFileSearcher();
-        private bool[] areaIdCheckboxes;
-        private GmlTypeTarget gmlTypeTarget = new GmlTypeTarget();
+        private readonly GmlFileSearcher gmlFileSearcher = new GmlFileSearcher();
+        
         private string exportFolderPath;
-        private List<string> gmlFiles;
+        private GmlSelectorGUI gmlSelectorGUI;
+
+        public UdxFolderSelectorGUI()
+        {
+            this.gmlSelectorGUI = new GmlSelectorGUI(this.gmlFileSearcher);
+        }
 
         public void DrawGUI()
         {
@@ -40,8 +45,8 @@ namespace PlateauUnitySDK.Editor.CityModelImportWindow
 
             if (GmlFileSearcher.IsPathUdx(this.udxFolderPath))
             {
-                DrawGmlTargetSelectorGUI(this.gmlFileSearcher);
-                DrawExportPathSelectorGUI(this.gmlFiles, this.exportFolderPath, this.udxFolderPath);
+                this.gmlSelectorGUI.DrawGUI();
+                DrawExportPathSelectorGUI(this.gmlSelectorGUI.GmlFiles, ref this.exportFolderPath, this.udxFolderPath);
             }
             else
             {
@@ -49,58 +54,9 @@ namespace PlateauUnitySDK.Editor.CityModelImportWindow
             }
         }
 
-        private void DrawGmlTargetSelectorGUI(GmlFileSearcher gmlSearcher)
-        {
-            HeaderDrawer.IncrementDepth();
-            HeaderDrawer.Draw("含める地域");
-            var areaIds = gmlSearcher.AreaIds;
-            int areaCount = areaIds.Length;
-            for (int i = 0; i < areaCount; i++)
-            {
-                this.areaIdCheckboxes[i] = EditorGUILayout.Toggle(areaIds[i], this.areaIdCheckboxes[i]);
-            }
+        
 
-            using (new EditorGUILayout.HorizontalScope())
-            {
-                if (PlateauEditorStyle.MainButton("すべて選択"))
-                {
-                    for (int i = 0; i < this.areaIdCheckboxes.Length; i++) this.areaIdCheckboxes[i] = true;
-                }
-
-                if (PlateauEditorStyle.MainButton("すべて除外"))
-                {
-                    for (int i = 0; i < this.areaIdCheckboxes.Length; i++) this.areaIdCheckboxes[i] = false;
-                }
-            }
-            
-            HeaderDrawer.Draw("含める地物");
-            var typeDict = this.gmlTypeTarget.TargetDict;
-            foreach (var gmlType in typeDict.Keys.ToArray())
-            {
-                typeDict[gmlType] = EditorGUILayout.Toggle(GmlTypeConvert.ToDisplay(gmlType), typeDict[gmlType]);
-            }
-
-            using (new EditorGUILayout.HorizontalScope())
-            {
-                if (PlateauEditorStyle.MainButton("すべて選択"))
-                {
-                    this.gmlTypeTarget.SetAll(true);
-                }
-
-                if (PlateauEditorStyle.MainButton("すべて除外"))
-                {
-                    this.gmlTypeTarget.SetAll(false);
-                }
-            }
-
-
-            HeaderDrawer.Draw("対象gmlファイル");
-            this.gmlFiles = ListTargetGmlFiles(this.gmlFileSearcher, areaIds, this.areaIdCheckboxes, this.gmlTypeTarget);
-            EditorGUILayout.TextArea(String.Join("\n", this.gmlFiles));
-            HeaderDrawer.DecrementDepth();
-        }
-
-        private static void DrawExportPathSelectorGUI(List<string> gmlFiles, string exportFolderPath, string udxFolderPath)
+        private static void DrawExportPathSelectorGUI(IEnumerable<string> gmlFiles, ref string exportFolderPath, string udxFolderPath)
         {
             HeaderDrawer.Draw("出力先選択");
             using (new EditorGUILayout.HorizontalScope())
@@ -118,29 +74,13 @@ namespace PlateauUnitySDK.Editor.CityModelImportWindow
             }
         }
 
-        private static List<string> ListTargetGmlFiles(GmlFileSearcher gmlSearcher, string[] areaIds, bool[] areaCheckboxes, GmlTypeTarget gmlTypeTarget)
-        {
-            if (areaIds.Length != areaCheckboxes.Length)
-            {
-                throw new ArgumentException("areaId.Length does not match areaCheckboxes.Length.");
-            }
-
-            int areaCount = areaIds.Length;
-            var gmlFiles = new List<string>();
-            for (int i = 0; i < areaCount; i++)
-            {
-                if (!areaCheckboxes[i]) continue;
-                gmlFiles.AddRange(gmlSearcher.GetGmlFilePathsForAreaIdAndType(areaIds[i], gmlTypeTarget, false));
-            }
-
-            return gmlFiles;
-        }
+        
 
         private void OnUdxPathChanged(string selectedPath)
         {
             this.udxFolderPath = selectedPath;
             this.gmlFileSearcher.GenerateFileDictionary(selectedPath);
-            this.areaIdCheckboxes = Enumerable.Repeat(true, this.gmlFileSearcher.AreaIds.Length).ToArray();
+            this.gmlSelectorGUI.OnUdxPathChanged();
         }
 
         private static void OnExportButtonPushed(IEnumerable<string> gmlFiles, string udxFolderPath, string exportFolderPath)
