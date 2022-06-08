@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using PlateauUnitySDK.Editor.FileConverter.Converters;
 
-namespace PlateauUnitySDK.Editor.EditorWindowCommon
+namespace PlateauUnitySDK.Editor.CityModelImportWindow
 {
     /// <summary>
     /// udxフォルダ内のgmlファイルを検索します。
@@ -61,6 +61,7 @@ namespace PlateauUnitySDK.Editor.EditorWindowCommon
                 {
                     if (Path.GetExtension(filePath) != ".gml") continue;
                     string fileName = Path.GetFileName(filePath);
+                    // ファイル名の最初の '_' までが地域IDであると仮定します。
                     string areaId = fileName.Split('_').First();
                     FileTableAdd(areaId, filePath);
                 }
@@ -123,7 +124,6 @@ namespace PlateauUnitySDK.Editor.EditorWindowCommon
             return pathList.ToArray();
         }
         
-        // TODO 2つの検索条件を同時に見るのではなく、1つずつ作って組み合わせる形式にしたほうが汎用性がありそう
         /// <summary>
         /// gmlファイルのうち、<paramref name="areaId"/> が指定したものであり、かつ
         /// <see cref="GmlType"/> が <paramref name="typeTarget"/> で示されるタイプの1つであるものを返します。
