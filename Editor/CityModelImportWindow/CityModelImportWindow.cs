@@ -14,11 +14,15 @@ namespace PlateauUnitySDK.Editor.CityModelImportWindow
     {
         private bool isInitialized;
         private Vector2 scrollPosition;
+        
+        // 機能を提供するクラス
         private GmlFileSearcher gmlFileSearcher = new GmlFileSearcher();
-        private UdxConverter udxConverter;
+        private MultiGmlConverter multiGmlConverter;
+        
+        // GUI描画を委譲するクラス
         private GmlSelectorGUI gmlSelectorGUI;
-        private UdxFolderSelectorGUI udxFolderSelectorGUI;
-        private CityModelExportPathSelectorGUI cityModelExportPathSelectorGUI;
+        private InputFolderSelectorGUI inputFolderSelectorGUI;
+        private ExportFolderPathSelectorGUI exportFolderPathSelectorGUI;
         
         [MenuItem("Plateau/都市モデルインポート")]
         public static void Open()
@@ -30,11 +34,11 @@ namespace PlateauUnitySDK.Editor.CityModelImportWindow
 
         private void Init()
         {
-            this.udxFolderSelectorGUI = new UdxFolderSelectorGUI(OnUdxPathChanged);
-            this.gmlSelectorGUI = new GmlSelectorGUI(this.gmlFileSearcher);
-            this.cityModelExportPathSelectorGUI = new CityModelExportPathSelectorGUI();
+            this.inputFolderSelectorGUI = new InputFolderSelectorGUI(OnUdxPathChanged);
+            this.gmlSelectorGUI = new GmlSelectorGUI();
+            this.exportFolderPathSelectorGUI = new ExportFolderPathSelectorGUI();
             this.gmlFileSearcher = new GmlFileSearcher();
-            this.udxConverter = new UdxConverter();
+            this.multiGmlConverter = new MultiGmlConverter();
             this.isInitialized = true;
         }
 
@@ -45,16 +49,16 @@ namespace PlateauUnitySDK.Editor.CityModelImportWindow
             this.scrollPosition = EditorGUILayout.BeginScrollView(this.scrollPosition);
             
             // udxフォルダの選択GUIを表示します。
-            string udxFolderPath = this.udxFolderSelectorGUI.Draw();
+            string udxFolderPath = this.inputFolderSelectorGUI.Draw("udxフォルダ選択");
             if (GmlFileSearcher.IsPathUdx(udxFolderPath))
             {
                 // udxフォルダが選択されているなら、設定と出力のGUIを表示します。
-                var gmlFiles = this.gmlSelectorGUI.Draw();
-                var exportFolderPath = this.cityModelExportPathSelectorGUI.Draw(gmlFiles, udxFolderPath);
+                var gmlFiles = this.gmlSelectorGUI.Draw(this.gmlFileSearcher);
+                var exportFolderPath = this.exportFolderPathSelectorGUI.Draw();
                 HeaderDrawer.Draw("出力");
                 if (PlateauEditorStyle.MainButton("出力"))
                 {
-                    this.udxConverter.Convert(gmlFiles, udxFolderPath, exportFolderPath);
+                    this.multiGmlConverter.Convert(gmlFiles, udxFolderPath, exportFolderPath);
                 }
             }
             else
@@ -64,10 +68,13 @@ namespace PlateauUnitySDK.Editor.CityModelImportWindow
             EditorGUILayout.EndScrollView();
         }
 
+        /// <summary>
+        /// udxフォルダパス選択GUIで、新しいパスが指定されたときに呼ばれます。
+        /// </summary>
         private void OnUdxPathChanged(string path)
         {
             this.gmlFileSearcher.GenerateFileDictionary(path);
-            this.gmlSelectorGUI.OnUdxPathChanged();
+            this.gmlSelectorGUI.OnUdxPathChanged(this.gmlFileSearcher);
         }
     }
 }

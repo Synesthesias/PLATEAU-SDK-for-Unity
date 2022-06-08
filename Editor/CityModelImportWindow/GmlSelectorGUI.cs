@@ -8,29 +8,26 @@ using UnityEditor;
 namespace PlateauUnitySDK.Editor.CityModelImportWindow
 {
 
+    /// <summary>
+    /// フォルダ内の gml ファイルのうち、どれを対象とするかを
+    /// 条件によって絞り込む GUI を提供します。
+    /// </summary>
     public class GmlSelectorGUI
     {
         private bool[] areaIdCheckboxes;
         private GmlTypeTarget gmlTypeTarget = new GmlTypeTarget();
         private List<string> gmlFiles;
-        private GmlFileSearcher gmlFileSearcher;
 
-        public IEnumerable<string> GmlFiles => this.gmlFiles;
 
-        public GmlSelectorGUI(GmlFileSearcher gmlFileSearcher)
-        {
-            this.gmlFileSearcher = gmlFileSearcher;
-        }
-        
         /// <summary>
         /// 変換対象とする gmlファイルを選択するGUIを表示し、
         /// その結果を gmlファイルの相対パスのリストで返します。
         /// </summary>
-        public List<string> Draw()
+        public List<string> Draw(GmlFileSearcher gmlFileSearcher)
         {
             HeaderDrawer.IncrementDepth();
             HeaderDrawer.Draw("含める地域");
-            var areaIds = this.gmlFileSearcher.AreaIds;
+            var areaIds = gmlFileSearcher.AreaIds;
             int areaCount = areaIds.Length;
             for (int i = 0; i < areaCount; i++)
             {
@@ -71,15 +68,15 @@ namespace PlateauUnitySDK.Editor.CityModelImportWindow
             }
 
             HeaderDrawer.Draw("対象gmlファイル");
-            this.gmlFiles = ListTargetGmlFiles(this.gmlFileSearcher, areaIds, this.areaIdCheckboxes, this.gmlTypeTarget);
+            this.gmlFiles = ListTargetGmlFiles(gmlFileSearcher, areaIds, this.areaIdCheckboxes, this.gmlTypeTarget);
             EditorGUILayout.TextArea(String.Join("\n", this.gmlFiles));
             HeaderDrawer.DecrementDepth();
             return this.gmlFiles;
         }
 
-        public void OnUdxPathChanged()
+        public void OnUdxPathChanged(GmlFileSearcher gmlFileSearcher)
         {
-            this.areaIdCheckboxes = Enumerable.Repeat(true, this.gmlFileSearcher.AreaIds.Length).ToArray();
+            this.areaIdCheckboxes = Enumerable.Repeat(true, gmlFileSearcher.AreaIds.Length).ToArray();
         }
 
         
