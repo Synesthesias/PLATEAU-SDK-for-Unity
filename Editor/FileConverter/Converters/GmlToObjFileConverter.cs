@@ -8,7 +8,9 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
 {
     /// <summary>
     /// gmlファイルをobjファイルに変換します。
-    /// 変換後は <see cref="Dispose"/> を呼ぶか、usingステートメントを使ってobjファイルを解放してください。
+    /// 使い方は <see cref="SetConfig"/> してから <see cref="Convert"/> を呼んで <see cref="Dispose"/> します。
+    /// <see cref="Dispose"/> を忘れると、変換後もファイルが使用中となり外部から変更できなくなります。
+    /// usingステートメントを使うことで暗黙的に <see cref="Dispose"/> を呼ぶことができます。
     /// </summary>
     public class GmlToObjFileConverter : IFileConverter, IDisposable
     {
@@ -67,7 +69,7 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
             }
             catch (Exception e)
             {
-                Debug.LogError($"gml convert is failed.\n{e}");
+                Debug.LogError($"Gml convert is failed.\ngml path = {gmlFilePath}\n{e}");
                 return false;
             }
 

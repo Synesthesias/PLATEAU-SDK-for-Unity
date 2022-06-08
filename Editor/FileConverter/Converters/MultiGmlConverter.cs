@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using UnityEditor;
+using UnityEngine;
 
 namespace PlateauUnitySDK.Editor.FileConverter.Converters
 {
@@ -18,6 +19,8 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
         /// <param name="exportFolderFullPath">出力先のフォルダの絶対パスです。</param>
         public void Convert(IEnumerable<string> gmlRelativePaths, string baseFolderPath, string exportFolderFullPath)
         {
+            int failureCount = 0;
+            int loopCount = 0;
             foreach (var gmlRelativePath in gmlRelativePaths)
             {
                 // TODO Configを設定できるようにする
@@ -25,13 +28,28 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
                 string gmlFileName = Path.GetFileNameWithoutExtension(gmlRelativePath);
                 string objPath = Path.Combine(exportFolderFullPath, gmlFileName + ".obj");
                 string idTablePath = Path.Combine(exportFolderFullPath, "idToFileTable.asset");
-                var objConverter = new GmlToObjFileConverter();
+                bool isObjSucceed;
+                using (var objConverter = new GmlToObjFileConverter())
+                {
+                    isObjSucceed = objConverter.Convert(gmlFullPath, objPath);
+                }
                 var idTableConverter = new GmlToIdFileTableConverter();
-                objConverter.Convert(gmlFullPath, objPath);
-                idTableConverter.Convert(gmlFullPath, idTablePath);
+                bool isTableSucceed = idTableConverter.Convert(gmlFullPath, idTablePath);
+                if (!(isObjSucceed && isTableSucceed))
+                {
+                    failureCount++;
+                }
+                loopCount++;
             }
-
             AssetDatabase.ImportAsset(FilePathValidator.FullPathToAssetsPath(exportFolderFullPath));
+            if (failureCount == 0)
+            {
+                Debug.Log($"Convert Success. {loopCount} gml files are converted.");
+            }
+            else
+            {
+                Debug.LogError($"Convert end with error. {failureCount} of {loopCount} gml files are not converted.");
+            }
         }
     }
 }
