@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using LibPLATEAU.NET.CityGML;
 using PlateauUnitySDK.Runtime.SemanticsLoader;
+using PlateauUnitySDK.Runtime.Util;
 using UnityEditor;
 using UnityEngine;
 
@@ -18,7 +19,7 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
 
             try
             {
-                var cityModel = CityGml.Load(srcGmlPath, this.parserParams);
+                var cityModel = CityGml.Load(srcGmlPath, this.parserParams, DllLogCallback.UnityLogCallbacks);
                 var cityObjectIds = cityModel.RootCityObjects
                     .SelectMany(co => co.CityObjectDescendantsDFS)
                     .Select(co => co.ID);

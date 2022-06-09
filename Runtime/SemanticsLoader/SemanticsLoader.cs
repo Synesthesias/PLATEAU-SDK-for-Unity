@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using LibPLATEAU.NET.CityGML;
+using PlateauUnitySDK.Runtime.Util;
 using UnityEngine;
 
 namespace PlateauUnitySDK.Runtime.SemanticsLoader
@@ -40,7 +41,7 @@ namespace PlateauUnitySDK.Runtime.SemanticsLoader
             string foundGmlPath = Directory.EnumerateFiles(Application.streamingAssetsPath, gmlFileName + ".gml",
                 SearchOption.AllDirectories).First();
             foundGmlPath = Path.GetFullPath(foundGmlPath); // Windowsでパスの区切り記号が '/' と '\' で混在するのを統一します。
-            var loadedModel = CityGml.Load(foundGmlPath, new CitygmlParserParams(true, false));
+            var loadedModel = CityGml.Load(foundGmlPath, new CitygmlParserParams(true, false), DllLogCallback.UnityLogCallbacks);
             this.fileToCityModelCache[gmlFileName] = loadedModel;
             return GetCityObjectById(loadedModel, cityObjectId);
         }

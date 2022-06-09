@@ -23,6 +23,7 @@ namespace PlateauUnitySDK.Editor.CityModelImportWindow
         private GmlSelectorGUI gmlSelectorGUI;
         private InputFolderSelectorGUI inputFolderSelectorGUI;
         private ExportFolderPathSelectorGUI exportFolderPathSelectorGUI;
+        private CityModelImportConfigGUI cityModelImportConfigGUI;
         
         [MenuItem("Plateau/都市モデルインポート")]
         public static void Open()
@@ -39,6 +40,7 @@ namespace PlateauUnitySDK.Editor.CityModelImportWindow
             this.exportFolderPathSelectorGUI = new ExportFolderPathSelectorGUI();
             this.gmlFileSearcher = new GmlFileSearcher();
             this.multiGmlConverter = new MultiGmlConverter();
+            this.cityModelImportConfigGUI = new CityModelImportConfigGUI();
             this.isInitialized = true;
         }
 
@@ -55,10 +57,11 @@ namespace PlateauUnitySDK.Editor.CityModelImportWindow
                 // udxフォルダが選択されているなら、設定と出力のGUIを表示します。
                 var gmlFiles = this.gmlSelectorGUI.Draw(this.gmlFileSearcher);
                 var exportFolderPath = this.exportFolderPathSelectorGUI.Draw();
+                var config = this.cityModelImportConfigGUI.Draw();
                 HeaderDrawer.Draw("出力");
                 if (PlateauEditorStyle.MainButton("出力"))
                 {
-                    this.multiGmlConverter.Convert(gmlFiles, udxFolderPath, exportFolderPath);
+                    this.multiGmlConverter.Convert(gmlFiles, udxFolderPath, exportFolderPath, config);
                 }
             }
             else

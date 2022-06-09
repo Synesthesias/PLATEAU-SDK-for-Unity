@@ -1,6 +1,5 @@
 using System;
 using System.IO;
-using System.Runtime.InteropServices;
 using System.Threading;
 using LibPLATEAU.NET.CityGML;
 using PlateauUnitySDK.Runtime.Util;
@@ -22,14 +21,17 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
         private CitygmlParserParams gmlParserParams;
         private MeshGranularity meshGranularity;
         private AxesConversion axesConversion;
+        private DllLogLevel logLevel;
 
         private int disposed;
 
-        public GmlToObjFileConverter()
+        public GmlToObjFileConverter(DllLogLevel logLevel = DllLogLevel.Error)
         {
             this.objWriter = new ObjWriter();
-            this.objWriter.GetDllLogger().SetLogCallbacks(
-                DllLogCallback.LogError, DllLogCallback.LogWarn, DllLogCallback.LogInfo);
+            var logger = this.objWriter.GetDllLogger();
+            logger.SetLogCallbacks(DllLogCallback.UnityLogCallbacks);
+            logger.SetLogLevel(logLevel);
+            this.logLevel = logLevel;
             this.gmlParserParams = new CitygmlParserParams(true, true);
         }
 
@@ -63,7 +65,7 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
                 gmlFilePath = gmlFilePath.Replace('\\', '/');
                 exportObjFilePath = exportObjFilePath.Replace('\\', '/');
 
-                var cityModel = CityGml.Load(gmlFilePath, this.gmlParserParams);
+                var cityModel = CityGml.Load(gmlFilePath, this.gmlParserParams, DllLogCallback.UnityLogCallbacks, this.logLevel);
                 this.objWriter.SetValidReferencePoint(cityModel);
                 this.objWriter.SetMeshGranularity(this.meshGranularity);
                 this.objWriter.SetDestAxes(this.axesConversion);

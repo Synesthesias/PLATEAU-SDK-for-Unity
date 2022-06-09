@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using PlateauUnitySDK.Editor.CityModelImportWindow;
 using UnityEditor;
 using UnityEngine;
 
@@ -17,10 +18,11 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
         /// <param name="gmlRelativePaths">gmlファイルの相対パスのリストです。</param>
         /// <param name="baseFolderPath"><paramref name="gmlRelativePaths"/>の相対パスの基準となるパスです。</param>
         /// <param name="exportFolderFullPath">出力先のフォルダの絶対パスです。</param>
-        public void Convert(IEnumerable<string> gmlRelativePaths, string baseFolderPath, string exportFolderFullPath)
+        public void Convert(IEnumerable<string> gmlRelativePaths, string baseFolderPath, string exportFolderFullPath, CityModelImportConfig config)
         {
             int failureCount = 0;
             int loopCount = 0;
+            // TODO obj変換とIdToTable変換で CityGml.Loadがダブってるので時間が2倍かかってる
             foreach (var gmlRelativePath in gmlRelativePaths)
             {
                 // TODO Configを設定できるようにする
@@ -29,7 +31,7 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
                 string objPath = Path.Combine(exportFolderFullPath, gmlFileName + ".obj");
                 string idTablePath = Path.Combine(exportFolderFullPath, "idToFileTable.asset");
                 bool isObjSucceed;
-                using (var objConverter = new GmlToObjFileConverter())
+                using (var objConverter = new GmlToObjFileConverter(config.LogLevel))
                 {
                     isObjSucceed = objConverter.Convert(gmlFullPath, objPath);
                 }
