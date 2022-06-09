@@ -37,8 +37,8 @@
 				</gml:MultiSurface>
 			</luse:lod1MultiSurface>
 			<uro:areaInSquareMeter uom="m2">182.489624996</uro:areaInSquareMeter>
-			<uro:prefecture codeSpace="../codelists/Common_prefecture.xml">13</uro:prefecture>
-			<uro:city codeSpace="../codelists/Common_localPublicAuthorities.xml">13111</uro:city>
+			<uro:prefecture codeSpace="../../codelists/Common_prefecture.xml">13</uro:prefecture>
+			<uro:city codeSpace="../../codelists/Common_localPublicAuthorities.xml">13111</uro:city>
 			<uro:surveyYear>2016</uro:surveyYear>
 		</luse:LandUse>
 	</core:cityObjectMember>
@@ -73,8 +73,8 @@
 				</gml:MultiSurface>
 			</luse:lod1MultiSurface>
 			<uro:areaInSquareMeter uom="m2">98.072325001</uro:areaInSquareMeter>
-			<uro:prefecture codeSpace="../codelists/Common_prefecture.xml">13</uro:prefecture>
-			<uro:city codeSpace="../codelists/Common_localPublicAuthorities.xml">13111</uro:city>
+			<uro:prefecture codeSpace="../../codelists/Common_prefecture.xml">13</uro:prefecture>
+			<uro:city codeSpace="../../codelists/Common_localPublicAuthorities.xml">13111</uro:city>
 			<uro:surveyYear>2016</uro:surveyYear>
 		</luse:LandUse>
 	</core:cityObjectMember>
@@ -109,8 +109,8 @@
 				</gml:MultiSurface>
 			</luse:lod1MultiSurface>
 			<uro:areaInSquareMeter uom="m2">80.499825003</uro:areaInSquareMeter>
-			<uro:prefecture codeSpace="../codelists/Common_prefecture.xml">13</uro:prefecture>
-			<uro:city codeSpace="../codelists/Common_localPublicAuthorities.xml">13111</uro:city>
+			<uro:prefecture codeSpace="../../codelists/Common_prefecture.xml">13</uro:prefecture>
+			<uro:city codeSpace="../../codelists/Common_localPublicAuthorities.xml">13111</uro:city>
 			<uro:surveyYear>2016</uro:surveyYear>
 		</luse:LandUse>
 	</core:cityObjectMember>
