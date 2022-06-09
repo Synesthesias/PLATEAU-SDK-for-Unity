@@ -1,7 +1,9 @@
 using System;
+using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading;
 using LibPLATEAU.NET.CityGML;
+using PlateauUnitySDK.Runtime.Util;
 using UnityEngine;
 
 namespace PlateauUnitySDK.Editor.FileConverter.Converters
@@ -20,14 +22,14 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
         private CitygmlParserParams gmlParserParams;
         private MeshGranularity meshGranularity;
         private AxesConversion axesConversion;
-        private static readonly LogCallbackFuncType logCallback = (ptr) => Debug.Log(Marshal.PtrToStringAnsi(ptr));
 
         private int disposed;
 
         public GmlToObjFileConverter()
         {
             this.objWriter = new ObjWriter();
-            this.objWriter.SetLogCallback(logCallback);
+            this.objWriter.GetDllLogger().SetLogCallbacks(
+                DllLogCallback.LogError, DllLogCallback.LogWarn, DllLogCallback.LogInfo);
             this.gmlParserParams = new CitygmlParserParams(true, true);
         }
 
@@ -60,16 +62,20 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
                 // DLL側の実装の都合上、ここではパス区切りはスラッシュとします。 
                 gmlFilePath = gmlFilePath.Replace('\\', '/');
                 exportObjFilePath = exportObjFilePath.Replace('\\', '/');
-                
+
                 var cityModel = CityGml.Load(gmlFilePath, this.gmlParserParams);
                 this.objWriter.SetValidReferencePoint(cityModel);
                 this.objWriter.SetMeshGranularity(this.meshGranularity);
                 this.objWriter.SetDestAxes(this.axesConversion);
                 this.objWriter.Write(exportObjFilePath, cityModel, gmlFilePath);
             }
+            catch (FileLoadException e)
+            {
+                Debug.LogError($"Failed to load gml file.\n gml path = {gmlFilePath}\n{e}");
+            }
             catch (Exception e)
             {
-                Debug.LogError($"Gml convert is failed.\ngml path = {gmlFilePath}\n{e}");
+                Debug.LogError($"Gml to obj convert is Failed.\ngml path = {gmlFilePath}\n{e}");
                 return false;
             }
 

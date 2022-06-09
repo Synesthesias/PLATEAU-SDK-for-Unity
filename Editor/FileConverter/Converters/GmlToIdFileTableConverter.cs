@@ -33,10 +33,14 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
                 EditorUtility.SetDirty(table);
                 AssetDatabase.SaveAssets();
                 return true;
+            }catch (FileLoadException e)
+            {
+                Debug.LogError($"Failed to load gml file.\n gml path = {srcGmlPath}\n{e}");
+                return false;
             }
             catch (Exception e)
             {
-                Debug.LogError($"Error generating IdToFile Table.\ngml path = {srcGmlPath}");
+                Debug.LogError($"Error generating IdToFile Table.\ngml path = {srcGmlPath}\n{e}");
                 return false;
             }
         }
