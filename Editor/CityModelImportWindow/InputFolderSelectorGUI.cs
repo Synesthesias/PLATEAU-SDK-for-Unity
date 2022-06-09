@@ -26,17 +26,32 @@ namespace PlateauUnitySDK.Editor.CityModelImportWindow
         public string Draw(string title)
         {
             HeaderDrawer.Draw(title);
+            bool isPathChanged = false;
             using (new EditorGUILayout.HorizontalScope())
             {
-                this.folderPath = EditorGUILayout.TextField("入力フォルダ", this.folderPath);
+                using (var check = new EditorGUI.ChangeCheckScope())
+                {
+                    this.folderPath = EditorGUILayout.TextField("入力フォルダ", this.folderPath);
+                    if (check.changed)
+                    {
+                        isPathChanged = true;
+                    }
+                }
+
                 if (PlateauEditorStyle.MainButton("参照..."))
                 {
                     string selectedPath = EditorUtility.OpenFolderPanel(title, Application.dataPath, "udx");
                     if (!string.IsNullOrEmpty(selectedPath))
                     {
                         this.folderPath = selectedPath;
-                        OnPathChanged?.Invoke(selectedPath);
+                        isPathChanged = true;
+                        GUI.FocusControl(null); // テキストエリアからフォーカスを外さないと変数の変更が見た目に反映されないため
                     }
+                }
+
+                if (isPathChanged)
+                {
+                    OnPathChanged?.Invoke(this.folderPath);
                 }
             }
 

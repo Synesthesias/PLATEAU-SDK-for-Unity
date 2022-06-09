@@ -32,11 +32,40 @@ namespace PlateauUnitySDK.Tests.TestUtils {
                 return;
             }
             fieldInfo.SetValue(null, newFieldValue);
-            return;
         }
 
-        private static FieldInfo GetPrivateStaticFieldInfo(Type targetType, string fieldName) {
+
+        /// <summary>
+        /// privateフィールドの値を取得します。
+        /// 型 <paramref name="targetType"/> である <paramref name="targetObj"/>の
+        /// フィールド <paramref name="fieldName"/> の値を取得します。
+        /// </summary>
+        public static TField GetPrivateFieldVal<TField>(Type targetType, object targetObj, string fieldName)
+        {
+            FieldInfo info = GetPrivateFieldInfo(targetType, fieldName);
+            return (TField)info.GetValue(targetObj);
+        }
+
+        /// <summary>
+        /// privateフィールドの値を更新します。(非static)
+        /// 型 <paramref name="targetType"/> である <see cref="targetObj"/> の
+        /// フィールド <paramref name="fieldName"/> の値を <paramref name="newFieldValue"/> にします。
+        /// </summary>
+        public static void SetPrivateFieldVal<TField>(Type targetType, object targetObj, string fieldName, TField newFieldValue)
+        {
+            FieldInfo info = GetPrivateFieldInfo(targetType, fieldName);
+            info.SetValue(targetObj, newFieldValue);
+        }
+
+        private static FieldInfo GetPrivateStaticFieldInfo(Type targetType, string fieldName)
+        {
             return targetType.GetField(fieldName, BindingFlags.Static | BindingFlags.NonPublic);
+        }
+
+        private static FieldInfo GetPrivateFieldInfo(Type targetType, string fieldName)
+        {
+            return targetType.GetField(fieldName,
+                BindingFlags.SetField | BindingFlags.NonPublic | BindingFlags.Instance);
         }
     }
 }

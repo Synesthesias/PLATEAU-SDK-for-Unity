@@ -30,13 +30,13 @@ namespace PlateauUnitySDK.Editor.CityModelImportWindow
         /// <summary> インスタンス化と同時にパスを指定して検索します。 </summary>
         public GmlFileSearcher(string udxFolderPath)
         {
+            if (!IsPathUdx(udxFolderPath)) return;
             GenerateFileDictionary(udxFolderPath);
         }
 
         /// <summary> パスを指定せずにインスタンス化する場合、あとで <see cref="GenerateFileDictionary"/> を実行する必要があります。 </summary>
         public GmlFileSearcher()
         {
-            
         }
 
         /// <summary>
@@ -70,7 +70,9 @@ namespace PlateauUnitySDK.Editor.CityModelImportWindow
 
         public static bool IsPathUdx(string path)
         {
-            return Path.GetFileName(path) == "udx";
+            bool ret = Path.GetFileName(path) == "udx";
+            ret &= Directory.Exists(path); 
+            return ret;
         }
 
         public override string ToString()

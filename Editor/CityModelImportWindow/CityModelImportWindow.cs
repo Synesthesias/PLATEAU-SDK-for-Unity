@@ -76,6 +76,7 @@ namespace PlateauUnitySDK.Editor.CityModelImportWindow
         /// </summary>
         private void OnUdxPathChanged(string path)
         {
+            if (!GmlFileSearcher.IsPathUdx(path)) return;
             this.gmlFileSearcher.GenerateFileDictionary(path);
             this.gmlSelectorGUI.OnUdxPathChanged(this.gmlFileSearcher);
         }
