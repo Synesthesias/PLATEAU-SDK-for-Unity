@@ -3,6 +3,7 @@ using System.IO;
 using System.Threading;
 using LibPLATEAU.NET.CityGML;
 using PlateauUnitySDK.Runtime.Util;
+using UnityEditor;
 using UnityEngine;
 
 namespace PlateauUnitySDK.Editor.FileConverter.Converters
@@ -95,8 +96,26 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
                 {
                     cityModel = CityGml.Load(gmlFilePath, this.gmlParserParams, DllLogCallback.UnityLogCallbacks, this.logLevel);
                 }
+                
+                // 出力先が Assets フォルダ内 かつ すでに同名ファイルが存在する場合、古いファイルを消します。
+                // そうしないと上書きによって obj のメッシュ名が変わっても Unity に反映されないことがあるためです。
+                if (FilePathValidator.IsSubDirectoryOfAssets(exportObjFilePath))
+                {
+                    string assetPath = FilePathValidator.FullPathToAssetsPath(exportObjFilePath);
+                    AssetDatabase.DeleteAsset(assetPath);
+                    AssetDatabase.Refresh();
+                }
+                
                 this.objWriter.SetValidReferencePoint(cityModel);
                 this.objWriter.Write(exportObjFilePath, cityModel, gmlFilePath);
+                
+                // 出力先が Assets フォルダ内なら、それをUnityに反映させます。
+                if (FilePathValidator.IsSubDirectoryOfAssets(exportObjFilePath))
+                {
+                    string assetPath = FilePathValidator.FullPathToAssetsPath(exportObjFilePath);
+                    AssetDatabase.ImportAsset(assetPath);
+                    AssetDatabase.Refresh();
+                }
             }
             catch (FileLoadException e)
             {
