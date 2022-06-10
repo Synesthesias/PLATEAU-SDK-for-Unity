@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Codice.CM.Client.Differences;
 using LibPLATEAU.NET.CityGML;
 using PlateauUnitySDK.Runtime.CityMapMetaData;
 using PlateauUnitySDK.Runtime.Util;
