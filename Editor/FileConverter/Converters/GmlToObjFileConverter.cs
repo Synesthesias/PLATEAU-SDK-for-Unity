@@ -44,12 +44,13 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
         /// <param name="axesConversion">座標軸の向きです。Unityの場合は通常RUFです。</param>
         /// <param name="optimizeFlg">trueのとき最適化します。</param>
         public void SetConfig(MeshGranularity meshGranularity, AxesConversion axesConversion = AxesConversion.RUF,
-            bool optimizeFlg = true)
+            bool optimizeFlg = true, DllLogLevel logLevel = DllLogLevel.Error)
         {
             this.gmlParserParams.Optimize = optimizeFlg;
             this.gmlParserParams.Tessellate = true; // true でないと、頂点の代わりに LinearRing が生成されてしまい 3Dモデルには不適になります。
             this.objWriter.SetMeshGranularity(meshGranularity);
             this.objWriter.SetDestAxes(axesConversion);
+            this.objWriter.GetDllLogger().SetLogLevel(logLevel);
         }
 
         /// <summary>
