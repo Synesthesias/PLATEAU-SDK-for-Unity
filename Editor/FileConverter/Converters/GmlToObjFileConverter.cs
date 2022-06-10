@@ -14,9 +14,6 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
     /// 使い方は <see cref="SetConfig"/> してから <see cref="Convert"/> を呼んで <see cref="Dispose"/> します。
     /// <see cref="Dispose"/> を忘れると、変換後もファイルが使用中となり外部から変更できなくなります。
     /// usingステートメントを使うことで暗黙的に <see cref="Dispose"/> を呼ぶことができます。
-    ///
-    /// 変換後のobjファイルパスが Assets フォルダ内である場合に限り、変換時に次の機能が働きます:
-    /// 3Dメッシュの数を確認して数が 0 であればそのobjファイルを削除し変換失敗とします。
     /// </summary>
     public class GmlToObjFileConverter : IFileConverter, IDisposable
     {
@@ -124,6 +121,7 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
                 
                 // 変換後、3Dメッシュが1つもなければ、ファイルを削除して変換失敗とします。
                 // ただし、このチェックは出力パスが Assets フォルダ内である時のみ機能します。
+                // TODO この処理は C#側ではなく C++側で実装したい
                 if (FilePathValidator.IsSubDirectoryOfAssets(exportObjFilePath))
                 {
                     string assetPath = FilePathValidator.FullPathToAssetsPath(exportObjFilePath);
