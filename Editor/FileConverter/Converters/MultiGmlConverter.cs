@@ -28,18 +28,18 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
             foreach (var gmlRelativePath in gmlRelativePaths)
             {
                 loopCount++;
-                // TODO Configを設定できるようにする
-                CitygmlParserParams parserParams = new CitygmlParserParams(true, true);
-                
+
                 string gmlFullPath = Path.GetFullPath(Path.Combine(baseFolderPath, gmlRelativePath));
                 string gmlFileName = Path.GetFileNameWithoutExtension(gmlRelativePath);
                 string objPath = Path.Combine(exportFolderFullPath, gmlFileName + ".obj");
                 string idTablePath = Path.Combine(exportFolderFullPath, "idToFileTable.asset");
-                
+
                 // gmlをロードします。
                 CityModel cityModel;
                 try
                 {
+                    // 設定の parserParams.tessellate は true にしないとポリゴンにならない部分があるので true で固定します。
+                    CitygmlParserParams parserParams = new CitygmlParserParams(config.OptimizeFlg, true);
                     cityModel = CityGml.Load(gmlFullPath, parserParams, DllLogCallback.UnityLogCallbacks, config.LogLevel);
                 }
                 catch (Exception e)
@@ -52,6 +52,8 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
                 // objに変換します。
                 using (var objConverter = new GmlToObjFileConverter(config.LogLevel))
                 {
+                    // 設定の AxesConversion は Unity では RUF なのでそれで固定します。
+                    objConverter.SetConfig(config.MeshGranularity, AxesConversion.RUF);
                     bool isObjSucceed = objConverter.ConvertWithoutLoad(cityModel, gmlFullPath, objPath);
                     if (!isObjSucceed)
                     {
