@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Codice.CM.Client.Differences;
 using LibPLATEAU.NET.CityGML;
 using PlateauUnitySDK.Runtime.CityMapMetaData;
 using PlateauUnitySDK.Runtime.Util;
@@ -22,7 +23,7 @@ namespace PlateauUnitySDK.Runtime.SemanticsLoader
                 var mapInfos = Resources.LoadAll<CityMapInfo>("");
                 if (mapInfos.Length == 0)
                 {
-                    throw new FileNotFoundException("IdToFileTable is not found.");
+                    throw new FileNotFoundException($"{nameof(CityMapInfo)} is not found.");
                 }
 
                 this.cityMapInfo = mapInfos[0];
@@ -31,7 +32,7 @@ namespace PlateauUnitySDK.Runtime.SemanticsLoader
             string gmlFileName; // 拡張子を含みません
             if( !this.cityMapInfo.TryGetValueFromGmlTable(cityObjectId, out gmlFileName))
             {
-                throw new KeyNotFoundException($"cityObjectId {cityObjectId} is not found in idToFileTable.");
+                throw new KeyNotFoundException($"cityObjectId {cityObjectId} is not found in {nameof(CityMapInfo)}.");
             }
             // 名前が gmlFileName である gmlファイルを検索します。
             // TODO 今は StreamingAssets フォルダから読み込んでいますが、今後は拡張する必要があります。

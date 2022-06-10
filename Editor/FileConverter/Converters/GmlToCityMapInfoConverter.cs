@@ -15,7 +15,7 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
         private CitygmlParserParams parserParams;
 
         /// <summary>
-        /// gmlファイルをロードして IdToFileTable に書き込みます。
+        /// gmlファイルをロードして CityMapInfo に書き込みます。
         /// </summary>
         public bool Convert(string srcGmlPath, string dstTableFullPath)
         {
@@ -37,7 +37,7 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
         }
 
         /// <summary>
-        /// IdFileTable に変換します。
+        /// <see cref="CityMapInfo"/> に変換します。
         /// 引数の <paramref name="cityModel"/> が null の場合、<see cref="CityModel"/> を新たにロードして変換します。
         /// <paramref name="cityModel"/> が nullでない場合、ロードを省略してそのモデルを変換します。
         /// </summary>
@@ -69,7 +69,7 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
             }
             catch (Exception e)
             {
-                Debug.LogError($"Error generating IdToFile Table.\ngml path = {srcGmlPath}\n{e}");
+                Debug.LogError($"Error generating {nameof(CityMapInfo)}.\ngml path = {srcGmlPath}\n{e}");
                 return false;
             }
         }

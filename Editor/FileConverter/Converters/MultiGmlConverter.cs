@@ -6,12 +6,13 @@ using PlateauUnitySDK.Editor.CityModelImportWindow;
 using PlateauUnitySDK.Runtime.Util;
 using UnityEditor;
 using UnityEngine;
+using PlateauUnitySDK.Runtime.CityMapMetaData;
 
 namespace PlateauUnitySDK.Editor.FileConverter.Converters
 {
 
     /// <summary>
-    /// 複数のgmlファイルから、複数のobj および 1つの idToFileテーブルを生成します。
+    /// 複数のgmlファイルから、複数のobj および 1つの <see cref="CityMapInfo"/>テーブルを生成します。
     /// </summary>
     public class MultiGmlConverter
     {
@@ -32,7 +33,8 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
                 string gmlFullPath = Path.GetFullPath(Path.Combine(baseFolderPath, gmlRelativePath));
                 string gmlFileName = Path.GetFileNameWithoutExtension(gmlRelativePath);
                 string objPath = Path.Combine(exportFolderFullPath, gmlFileName + ".obj");
-                string idTablePath = Path.Combine(exportFolderFullPath, "idToFileTable.asset");
+                // TODO ファイル名は変更できるようにしたい
+                string idTablePath = Path.Combine(exportFolderFullPath, "CityMapInfo.asset");
 
                 // gmlをロードします。
                 CityModel cityModel;

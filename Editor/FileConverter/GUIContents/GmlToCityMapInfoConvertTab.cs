@@ -10,9 +10,9 @@ using UnityEngine;
 namespace PlateauUnitySDK.Editor.FileConverter.GUIContents
 {
     /// <summary>
-    /// Gmlファイルを読んで <see cref="IdToGmlTable"/> を出力するGUIを提供します。
+    /// Gmlファイルを読んで <see cref="CityMapInfo"/> を出力するGUIを提供します。
     /// </summary>
-    public class GmlToIdFileTableConvertTab : BaseConvertTab
+    public class GmlToCityMapInfoConvertTab : BaseConvertTab
     {
         private readonly GmlToCityMapInfoConverter converter = new GmlToCityMapInfoConverter();
 
@@ -58,7 +58,7 @@ namespace PlateauUnitySDK.Editor.FileConverter.GUIContents
                     HeaderDrawer.Draw("Select Existing File");
                     // Existing File のとき、既存のファイル選択GUIを表示します。
                     this.existingMapInfo = (CityMapInfo)EditorGUILayout.ObjectField(
-                        "IdFileTable:",
+                        $"{nameof(CityMapInfo)}:",
                         this.existingMapInfo,
                         typeof(IdToGmlTable),
                         false
