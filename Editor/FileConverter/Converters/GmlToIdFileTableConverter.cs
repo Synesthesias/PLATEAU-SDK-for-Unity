@@ -13,13 +13,40 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
     {
         private CitygmlParserParams parserParams;
 
+        /// <summary>
+        /// gmlファイルをロードして IdToFileTable に書き込みます。
+        /// </summary>
         public bool Convert(string srcGmlPath, string dstTableFullPath)
+        {
+            return ConvertInner(srcGmlPath, dstTableFullPath, null);
+        }
+
+        /// <summary>
+        /// ロードを省略し、ロード済みの cityModel をもとに変換します。
+        /// </summary>
+        public bool ConvertWithoutLoad(CityModel cityModel, string srcGmlPath, string dstTableFullPath)
+        {
+            if (cityModel == null)
+            {
+                Debug.LogError("cityModel is null.");
+                return false;
+            }
+
+            return ConvertInner(srcGmlPath, dstTableFullPath, cityModel);
+        }
+
+        /// <summary>
+        /// IdFileTable に変換します。
+        /// 引数の <paramref name="cityModel"/> が null の場合、<see cref="CityModel"/> を新たにロードして変換します。
+        /// <paramref name="cityModel"/> が nullでない場合、ロードを省略してそのモデルを変換します。
+        /// </summary>
+        public bool ConvertInner(string srcGmlPath, string dstTableFullPath, CityModel cityModel)
         {
             if (!IsPathValid(srcGmlPath, dstTableFullPath)) return false;
 
             try
             {
-                var cityModel = CityGml.Load(srcGmlPath, this.parserParams, DllLogCallback.UnityLogCallbacks);
+                cityModel ??= CityGml.Load(srcGmlPath, this.parserParams, DllLogCallback.UnityLogCallbacks);
                 var cityObjectIds = cityModel.RootCityObjects
                     .SelectMany(co => co.CityObjectDescendantsDFS)
                     .Select(co => co.ID);

@@ -1,6 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using LibPLATEAU.NET.CityGML;
 using PlateauUnitySDK.Editor.CityModelImportWindow;
+using PlateauUnitySDK.Runtime.Util;
 using UnityEditor;
 using UnityEngine;
 
@@ -22,28 +25,52 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
         {
             int failureCount = 0;
             int loopCount = 0;
-            // TODO obj変換とIdToTable変換で CityGml.Loadがダブってるので時間が2倍かかってる
             foreach (var gmlRelativePath in gmlRelativePaths)
             {
+                loopCount++;
                 // TODO Configを設定できるようにする
+                CitygmlParserParams parserParams = new CitygmlParserParams(true, true);
+                
                 string gmlFullPath = Path.GetFullPath(Path.Combine(baseFolderPath, gmlRelativePath));
                 string gmlFileName = Path.GetFileNameWithoutExtension(gmlRelativePath);
                 string objPath = Path.Combine(exportFolderFullPath, gmlFileName + ".obj");
                 string idTablePath = Path.Combine(exportFolderFullPath, "idToFileTable.asset");
-                bool isObjSucceed;
+                
+                // gmlをロードします。
+                CityModel cityModel;
+                try
+                {
+                    cityModel = CityGml.Load(gmlFullPath, parserParams, DllLogCallback.UnityLogCallbacks, config.LogLevel);
+                }
+                catch (Exception e)
+                {
+                    Debug.LogError($"Loading gml failed.\ngml path = {gmlFullPath}\n{e}");
+                    failureCount++;
+                    continue;
+                }
+                
+                // objに変換します。
                 using (var objConverter = new GmlToObjFileConverter(config.LogLevel))
                 {
-                    isObjSucceed = objConverter.Convert(gmlFullPath, objPath);
+                    bool isObjSucceed = objConverter.ConvertWithoutLoad(cityModel, gmlFullPath, objPath);
+                    if (!isObjSucceed)
+                    {
+                        failureCount++;
+                        continue;
+                    }
                 }
+                
+                // idTableを生成します。
                 var idTableConverter = new GmlToIdFileTableConverter();
-                bool isTableSucceed = idTableConverter.Convert(gmlFullPath, idTablePath);
-                if (!(isObjSucceed && isTableSucceed))
+                bool isTableSucceed = idTableConverter.ConvertWithoutLoad(cityModel, gmlFullPath, idTablePath);
+                if (!isTableSucceed)
                 {
                     failureCount++;
+                    continue;
                 }
-                loopCount++;
             }
             AssetDatabase.ImportAsset(FilePathValidator.FullPathToAssetsPath(exportFolderFullPath));
+            AssetDatabase.Refresh();
             if (failureCount == 0)
             {
                 Debug.Log($"Convert Success. {loopCount} gml files are converted.");
