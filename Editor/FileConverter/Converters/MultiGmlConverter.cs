@@ -63,7 +63,7 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
                 }
                 
                 // idTableを生成します。
-                var idTableConverter = new GmlToIdFileTableConverter();
+                var idTableConverter = new GmlToCityMapInfoConverter();
                 bool isTableSucceed = idTableConverter.ConvertWithoutLoad(cityModel, gmlFullPath, idTablePath);
                 if (!isTableSucceed)
                 {

@@ -2,7 +2,7 @@
 using System.IO;
 using System.Linq;
 using LibPLATEAU.NET.CityGML;
-using PlateauUnitySDK.Runtime.CityMapInfo;
+using PlateauUnitySDK.Runtime.CityMapMetaData;
 using PlateauUnitySDK.Runtime.SemanticsLoader;
 using PlateauUnitySDK.Runtime.Util;
 using UnityEditor;
@@ -10,7 +10,7 @@ using UnityEngine;
 
 namespace PlateauUnitySDK.Editor.FileConverter.Converters
 {
-    public class GmlToIdFileTableConverter : IFileConverter
+    public class GmlToCityMapInfoConverter : IFileConverter
     {
         private CitygmlParserParams parserParams;
 
@@ -51,15 +51,15 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
                 var cityObjectIds = cityModel.RootCityObjects
                     .SelectMany(co => co.CityObjectDescendantsDFS)
                     .Select(co => co.ID);
-                var table = LoadOrCreateIdGmlTable(dstTableFullPath);
+                var mapInfo = LoadOrCreateCityMapInfo(dstTableFullPath);
                 string gmlFileName = Path.GetFileNameWithoutExtension(srcGmlPath);
                 foreach (string id in cityObjectIds)
                 {
-                    if (table.ContainsKey(id)) continue;
-                    table.Add(id, gmlFileName);
+                    if (mapInfo.DoGmlTableContainsKey(id)) continue;
+                    mapInfo.AddToGmlTable(id, gmlFileName);
                 }
 
-                EditorUtility.SetDirty(table);
+                EditorUtility.SetDirty(mapInfo);
                 AssetDatabase.SaveAssets();
                 return true;
             }catch (FileLoadException e)
@@ -88,19 +88,18 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
             return true;
         }
 
-        private static IdToGmlTable LoadOrCreateIdGmlTable(string dstTableFullPath)
+        private static CityMapInfo LoadOrCreateCityMapInfo(string dstMapInfoFullPath)
         {
             
             
-            string dstAssetPath = FilePathValidator.FullPathToAssetsPath(dstTableFullPath);
-            if (!File.Exists(dstTableFullPath))
+            string dstAssetPath = FilePathValidator.FullPathToAssetsPath(dstMapInfoFullPath);
+            if (!File.Exists(dstMapInfoFullPath))
             {
-                Debug.Log("creating file");
-                var instance = ScriptableObject.CreateInstance<IdToGmlTable>();
+                var instance = ScriptableObject.CreateInstance<CityMapInfo>();
                 AssetDatabase.CreateAsset(instance, dstAssetPath);
                 AssetDatabase.SaveAssets();
             }
-            return AssetDatabase.LoadAssetAtPath<IdToGmlTable>(dstAssetPath);
+            return AssetDatabase.LoadAssetAtPath<CityMapInfo>(dstAssetPath);
         }
 
         public void SetConfig(bool doOptimize, bool doTessellate)

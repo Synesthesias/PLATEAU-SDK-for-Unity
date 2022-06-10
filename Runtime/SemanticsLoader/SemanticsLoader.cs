@@ -2,7 +2,7 @@
 using System.IO;
 using System.Linq;
 using LibPLATEAU.NET.CityGML;
-using PlateauUnitySDK.Runtime.CityMapInfo;
+using PlateauUnitySDK.Runtime.CityMapMetaData;
 using PlateauUnitySDK.Runtime.Util;
 using UnityEngine;
 
@@ -10,26 +10,26 @@ namespace PlateauUnitySDK.Runtime.SemanticsLoader
 {
     public class SemanticsLoader
     {
-        private IdToGmlTable idToGmlTable;
+        private CityMapInfo cityMapInfo;
         private Dictionary<string, CityModel> fileToCityModelCache = new Dictionary<string, CityModel>();
 
         public CityObject Load(string cityObjectId)
         {
-            if (this.idToGmlTable == null)
+            if (this.cityMapInfo == null)
             {
                 // テーブルファイルを読み込みます。
                 // TODO 今はResourcesファイルから読み込んでいますが、動的読み込みに対応するにあたっては拡張する必要があります。
-                var tables = Resources.LoadAll<IdToGmlTable>("");
-                if (tables.Length == 0)
+                var mapInfos = Resources.LoadAll<CityMapInfo>("");
+                if (mapInfos.Length == 0)
                 {
                     throw new FileNotFoundException("IdToFileTable is not found.");
                 }
 
-                this.idToGmlTable = tables[0];
+                this.cityMapInfo = mapInfos[0];
             }
             // テーブルから cityObjectId に対応する gmlFileName を検索します。
             string gmlFileName; // 拡張子を含みません
-            if( !this.idToGmlTable.TryGetValue(cityObjectId, out gmlFileName))
+            if( !this.cityMapInfo.TryGetValueFromGmlTable(cityObjectId, out gmlFileName))
             {
                 throw new KeyNotFoundException($"cityObjectId {cityObjectId} is not found in idToFileTable.");
             }

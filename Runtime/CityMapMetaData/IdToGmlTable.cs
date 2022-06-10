@@ -2,13 +2,13 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace PlateauUnitySDK.Runtime.CityMapInfo
+namespace PlateauUnitySDK.Runtime.CityMapMetaData
 {
     /// <summary>
-    /// <see cref="LibPLATEAU.NET.CityGML.CityObject"/> のIDから、対応するGMLのファイル名を検索できる辞書データを格納した
-    /// <see cref="ScriptableObject"/> です。
+    /// <see cref="LibPLATEAU.NET.CityGML.CityObject"/> のIDから、対応するGMLのファイル名を検索できる辞書データです。
     /// </summary>
-    public class IdToGmlTable : ScriptableObject, ISerializationCallbackReceiver//, IDictionary<string, string>
+    [Serializable]
+    public class IdToGmlTable :  ISerializationCallbackReceiver//, IDictionary<string, string>
     {
         private Dictionary<string, string> dictionary = new Dictionary<string, string>();
         // Unityの仕様上、シリアライズするときは List 形式で行い、 デシリアライズするときは Dictionary 形式に直します。
