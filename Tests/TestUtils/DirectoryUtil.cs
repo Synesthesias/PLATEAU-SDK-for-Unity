@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using PlateauUnitySDK.Editor.FileConverter;
 using UnityEditor;
 using UnityEngine;
 
@@ -24,8 +25,12 @@ namespace PlateauUnitySDK.Tests.TestUtils
         public static string TempAssetFolderPath => Path.Combine(Application.dataPath, "UnitTestTemporary");
         /// <summary> テストデータが入っている Package 内のフォルダです。 </summary>
         public static string TestDataFolderPath => Path.GetFullPath("Packages/PlateauUnitySDK/Tests/TestData");
+
+        public static string TestDataSimplePath => Path.Combine(TestDataFolderPath, "TestDataSimpleGml/udx/bldg");
         /// <summary> テストデータとして利用できるgmlパスです。 </summary>
-        public static string TestGmlFilePath => Path.Combine(TestDataFolderPath, "53392642_bldg_6697_op2.gml");
+        public static string TestSimpleGmlFilePath => Path.Combine(TestDataSimplePath, "53392642_bldg_6697_op2.gml");
+
+        public static string TestTokyoUdxPath => Path.Combine(TestDataFolderPath, "TestDataTokyo/udx");
 
         /// <summary>
         /// Unityのキャッシュ用ディレクトリにテスト用フォルダを作ります。
@@ -36,16 +41,52 @@ namespace PlateauUnitySDK.Tests.TestUtils
             SetUpEmptyDir(TempCacheFolderPath);
         }
 
+        /// <summary>
+        /// Unityの Assets 内にテスト用フォルダを作ります。
+        /// その中身を空にします。
+        /// </summary>
         public static void SetUpTempAssetFolder()
         {
-            SetUpEmptyDir(TempAssetFolderPath);
+            string assetPath = FilePathValidator.FullPathToAssetsPath(TempAssetFolderPath);
+            bool doDirExists = false;
+            if (Directory.Exists(TempAssetFolderPath))
+            {
+                doDirExists = !DeleteTempAssetFolder();
+            }
+
+            if (!doDirExists)
+            {
+                string parent = Directory.GetParent(assetPath)?.ToString();
+                string folderName = Path.GetFileName(assetPath);
+                AssetDatabase.CreateFolder(parent, folderName);
+            }
+            
+            AssetDatabase.Refresh();
         }
 
-        public static void DeleteTempAssetFolder()
+        /// <summary>
+        /// Assets 内のテスト用フォルダを削除します。
+        /// 削除の成否を bool で返します。
+        /// </summary>
+        public static bool DeleteTempAssetFolder()
         {
-            DeleteAllInDir(TempAssetFolderPath);
-            File.Delete(TempAssetFolderPath + ".meta");
+            string assetPath = FilePathValidator.FullPathToAssetsPath(TempAssetFolderPath);
+            bool result = AssetDatabase.DeleteAsset(assetPath);
+
+            if (!result)
+            {
+                Debug.LogError($"{nameof(DirectoryUtil)} : {nameof(DeleteTempAssetFolder)} : Could not delete TempAssetFolder. Path = {assetPath}");
+            }
             AssetDatabase.Refresh();
+            return result;
+        }
+
+        /// <summary>
+        /// Unityキャッシュフォルダ内のテスト用ディレクトリを削除します。
+        /// </summary>
+        public static void DeleteTempCacheFolder()
+        {
+            DeleteAllInDir(TempCacheFolderPath);
         }
 
         public static void CopyFileToTempAssetFolder(string srcFilePath, string destFileName)

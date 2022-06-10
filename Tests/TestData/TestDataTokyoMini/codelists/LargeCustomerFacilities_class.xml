@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gml:Dictionary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/profiles/SimpleDictionary/1.0.0/gmlSimpleDictionaryProfile.xsd" gml:id="LargeCustomerFacilities_class">
+	<gml:name>LargeCustomerFacilities_class</gml:name>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id1">
+			<gml:description>大規模小売店舗（食品スーパー）</gml:description>
+			<gml:name>1</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id2">
+			<gml:description>大規模小売店舗（百貨店・スーパー・ショッピングセンター・寄合百貨店・小売市場）</gml:description>
+			<gml:name>2</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id3">
+			<gml:description>大規模小売店舗（ホームセンター・専門店（家具・家電・書籍等））</gml:description>
+			<gml:name>3</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id4">
+			<gml:description>大規模小売店舗（その他）</gml:description>
+			<gml:name>4</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id5">
+			<gml:description>大規模集客施設（床面積１万㎡超の店舗、映画館、アミューズメント施設、展示場等）</gml:description>
+			<gml:name>5</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+</gml:Dictionary>

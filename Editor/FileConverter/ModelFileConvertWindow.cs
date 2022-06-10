@@ -1,5 +1,5 @@
 using PlateauUnitySDK.Editor.EditorWindowCommon;
-using PlateauUnitySDK.Editor.FileConverter.GUITabs;
+using PlateauUnitySDK.Editor.FileConverter.GUIContents;
 using UnityEditor;
 
 namespace PlateauUnitySDK.Editor.FileConverter
@@ -16,7 +16,7 @@ namespace PlateauUnitySDK.Editor.FileConverter
         private int tabIndex;
         private bool isInitialized;
 
-        [MenuItem("Plateau/Model File Converter Window")]
+        [MenuItem("Plateau/単品ファイル変換")]
         public static void Open()
         {
             var window = GetWindow<ModelFileConvertWindow>("Model File Converter");
@@ -36,7 +36,7 @@ namespace PlateauUnitySDK.Editor.FileConverter
             };
             this.tabNames = new[]
             {
-                "GML to OBJ & IDFileTable ", "GML to OBJ", "GML to IDFileTable", "OBJ to FBX"
+                "GML → OBJ & IDFileTable ", "GML → OBJ", "GML → IDFileTable", "OBJ → FBX"
             };
             this.isInitialized = true;
         }

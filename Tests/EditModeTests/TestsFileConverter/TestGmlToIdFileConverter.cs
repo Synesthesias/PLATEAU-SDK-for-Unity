@@ -25,7 +25,7 @@ namespace PlateauUnitySDK.Tests.EditModeTests.TestsFileConverter
         {
             var outputFilePath = Path.Combine(DirectoryUtil.TempAssetFolderPath, "table.asset");
             var converter = new GmlToIdFileTableConverter();
-            converter.Convert(DirectoryUtil.TestGmlFilePath, outputFilePath);
+            converter.Convert(DirectoryUtil.TestSimpleGmlFilePath, outputFilePath);
             // 変換後、ファイルがあれば良しとします。
             Assert.IsTrue(File.Exists(outputFilePath));
         }

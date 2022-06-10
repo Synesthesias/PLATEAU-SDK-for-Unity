@@ -1,58 +1,145 @@
 using System;
+using System.IO;
+using System.Threading;
 using LibPLATEAU.NET.CityGML;
+using PlateauUnitySDK.Runtime.Util;
 using UnityEngine;
 
 namespace PlateauUnitySDK.Editor.FileConverter.Converters
 {
     /// <summary>
-    /// gmlファイルをobjファイルにコンバートします。
+    /// gmlファイルをobjファイルに変換します。
+    /// 使い方は <see cref="SetConfig"/> してから <see cref="Convert"/> を呼んで <see cref="Dispose"/> します。
+    /// <see cref="Dispose"/> を忘れると、変換後もファイルが使用中となり外部から変更できなくなります。
+    /// usingステートメントを使うことで暗黙的に <see cref="Dispose"/> を呼ぶことができます。
     /// </summary>
-    public class GmlToObjFileConverter : IFileConverter
+    public class GmlToObjFileConverter : IFileConverter, IDisposable
     {
         /// <summary> ObjWriter は変換処理をC++のDLLに委譲します。 </summary>
-        private readonly ObjWriter objWriter = new ObjWriter();
+        private readonly ObjWriter objWriter;
 
         private CitygmlParserParams gmlParserParams;
-        private bool mergeMeshFlg;
-        private AxesConversion axesConversion;
+        // private MeshGranularity meshGranularity;
+        // private AxesConversion axesConversion;
+        private DllLogLevel logLevel;
+
+        private int disposed;
+
+        public GmlToObjFileConverter(DllLogLevel logLevel = DllLogLevel.Error)
+        {
+            this.objWriter = new ObjWriter();
+            var logger = this.objWriter.GetDllLogger();
+            logger.SetLogCallbacks(DllLogCallback.UnityLogCallbacks);
+            logger.SetLogLevel(logLevel);
+            this.logLevel = logLevel;
+            this.gmlParserParams = new CitygmlParserParams(true, true);
+        }
 
 
         /// <summary>
         /// コンバートの設定を引数で渡します。
         /// </summary>
+        /// <param name="meshGranularity">メッシュのオブジェクト分けの粒度です。</param>
+        /// <param name="axesConversion">座標軸の向きです。Unityの場合は通常RUFです。</param>
         /// <param name="optimizeFlg">trueのとき最適化します。</param>
-        /// <param name="mergeMeshFlgArg">trueのとき、メッシュをマージしてオブジェクト数を削減します。</param>
-        /// <param name="axesConversionArg">座標軸の向きです。Unityの場合は通常RUFです。</param>
-        public void SetConfig(bool optimizeFlg, bool mergeMeshFlgArg, AxesConversion axesConversionArg)
+        public void SetConfig(MeshGranularity meshGranularity, AxesConversion axesConversion = AxesConversion.RUF,
+            bool optimizeFlg = true)
         {
-            this.gmlParserParams = new CitygmlParserParams(optimizeFlg);
-            this.mergeMeshFlg = mergeMeshFlgArg;
-            this.axesConversion = axesConversionArg;
+            this.gmlParserParams.Optimize = optimizeFlg;
+            this.gmlParserParams.Tessellate = true; // true でないと、頂点の代わりに LinearRing が生成されてしまい 3Dモデルには不適になります。
+            this.objWriter.SetMeshGranularity(meshGranularity);
+            this.objWriter.SetDestAxes(axesConversion);
         }
 
         /// <summary>
-        /// gmlファイルを変換しobjファイルを出力します。
+        /// gmlファイルをロードし、変換してobjファイルを出力します。
         /// 成功時はtrue,失敗時はfalseを返します。
         /// </summary>
         public bool Convert(string gmlFilePath, string exportObjFilePath)
         {
-            if (!FilePathValidator.IsValidInputFilePath(gmlFilePath, "gml", false)) return false;
-            if (!FilePathValidator.IsValidOutputFilePath(exportObjFilePath, "obj")) return false;
+            return ConvertInner(gmlFilePath, exportObjFilePath, null);
+        }
+
+        /// <summary>
+        /// gmlファイルのロードを省略し、代わりにロード済みの cityModel を使って変換します。
+        /// 成否を bool で返します。
+        /// <see cref="SetConfig"/> による設定で <see cref="gmlParserParams"/> はロード後は変更できませんが、
+        /// meshGranularity, axesConversion の設定は反映されます。
+        /// </summary>
+        public bool ConvertWithoutLoad(CityModel cityModel, string gmlFilePath, string exportObjFilePath)
+        {
+            if (cityModel == null)
+            {
+                Debug.LogError("cityModel is null.");
+                return false;
+            }
+
+            return ConvertInner(gmlFilePath, exportObjFilePath, cityModel);
+        }
+        
+        /// <summary>
+        /// 変換のインナーメソッドです。
+        /// 引数の <paramref name="cityModel"/> が null なら gmlファイルをロードして変換します。
+        /// null でない <paramref name="cityModel"/> が渡されたら、ロードを省略してそのモデルを変換します。
+        /// 成否をboolで返します。
+        /// </summary>
+        private bool ConvertInner(string gmlFilePath, string exportObjFilePath, CityModel cityModel)
+        {
+            if (!IsPathValid(gmlFilePath, exportObjFilePath)) return false;
             try
             {
-                var cityModel = CityGml.Load(gmlFilePath, this.gmlParserParams);
+                SlashPath(ref gmlFilePath);
+                SlashPath(ref exportObjFilePath);
+
+                if (cityModel == null)
+                {
+                    cityModel = CityGml.Load(gmlFilePath, this.gmlParserParams, DllLogCallback.UnityLogCallbacks, this.logLevel);
+                }
                 this.objWriter.SetValidReferencePoint(cityModel);
-                this.objWriter.SetMergeMeshFlg(this.mergeMeshFlg);
-                this.objWriter.SetDestAxes(this.axesConversion);
                 this.objWriter.Write(exportObjFilePath, cityModel, gmlFilePath);
+            }
+            catch (FileLoadException e)
+            {
+                Debug.LogError($"Failed to load gml file.\n gml path = {gmlFilePath}\n{e}");
             }
             catch (Exception e)
             {
-                Debug.LogError($"gml convert is failed.\n{e}");
+                Debug.LogError($"Gml to obj convert is Failed.\ngml path = {gmlFilePath}\n{e}");
                 return false;
             }
 
             return true;
+        }
+
+        private static bool IsPathValid(string gmlFilePath, string exportObjFilePath)
+        {
+            if (!FilePathValidator.IsValidInputFilePath(gmlFilePath, "gml", false)) return false;
+            if (!FilePathValidator.IsValidOutputFilePath(exportObjFilePath, "obj")) return false;
+            return true;
+        }
+
+        /// <summary> objWriterに渡すパスの区切り文字は '/' である必要があるので '/' にします。 </summary>
+        private static void SlashPath(ref string path)
+        {
+            path = path.Replace('\\', '/');
+        }
+        
+        /// <summary>
+        /// 変換後の obj ファイルを開放したい時に呼びます。
+        /// </summary>
+        public void Dispose()
+        {
+            if (Interlocked.Exchange(ref this.disposed, 1) == 0)
+            {
+                this.objWriter.Dispose();
+            }
+
+            GC.SuppressFinalize(this);
+        }
+
+        ~GmlToObjFileConverter()
+        {
+            Dispose();
         }
     }
 }

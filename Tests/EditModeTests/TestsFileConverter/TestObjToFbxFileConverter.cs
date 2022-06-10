@@ -13,7 +13,7 @@ namespace PlateauUnitySDK.Tests.EditModeTests.TestsFileConverter
         private static readonly string testObjFileName = "53392642_bldg_6697_op2_obj.obj";
 
         private static readonly string objFileCopySrc =
-            Path.Combine(DirectoryUtil.TestDataFolderPath, testObjFileName);
+            Path.Combine(DirectoryUtil.TestDataSimplePath, testObjFileName);
 
         private static readonly string testObjFilePath =
             Path.Combine(DirectoryUtil.TempAssetFolderPath, testObjFileName);
@@ -27,6 +27,7 @@ namespace PlateauUnitySDK.Tests.EditModeTests.TestsFileConverter
             // objファイルのコンバートは変換元がAssetsフォルダの中にないと動かないので、
             // テストデータを Assets/TemporaryUnitTest フォルダにコピーします。
             DirectoryUtil.SetUpTempAssetFolder();
+            DirectoryUtil.SetUpTempCacheFolder();
             DirectoryUtil.CopyFileToTempAssetFolder(objFileCopySrc, testObjFileName);
         }
 
