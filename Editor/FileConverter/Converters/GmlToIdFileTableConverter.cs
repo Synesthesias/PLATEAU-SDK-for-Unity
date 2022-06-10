@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using LibPLATEAU.NET.CityGML;
+using PlateauUnitySDK.Runtime.CityMapInfo;
 using PlateauUnitySDK.Runtime.SemanticsLoader;
 using PlateauUnitySDK.Runtime.Util;
 using UnityEditor;
@@ -87,7 +88,7 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
             return true;
         }
 
-        private static IdToFileTable LoadOrCreateIdGmlTable(string dstTableFullPath)
+        private static IdToGmlTable LoadOrCreateIdGmlTable(string dstTableFullPath)
         {
             
             
@@ -95,11 +96,11 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
             if (!File.Exists(dstTableFullPath))
             {
                 Debug.Log("creating file");
-                var instance = ScriptableObject.CreateInstance<IdToFileTable>();
+                var instance = ScriptableObject.CreateInstance<IdToGmlTable>();
                 AssetDatabase.CreateAsset(instance, dstAssetPath);
                 AssetDatabase.SaveAssets();
             }
-            return AssetDatabase.LoadAssetAtPath<IdToFileTable>(dstAssetPath);
+            return AssetDatabase.LoadAssetAtPath<IdToGmlTable>(dstAssetPath);
         }
 
         public void SetConfig(bool doOptimize, bool doTessellate)

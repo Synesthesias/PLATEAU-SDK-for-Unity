@@ -127,6 +127,7 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
                 if (FilePathValidator.IsSubDirectoryOfAssets(exportObjFilePath))
                 {
                     string assetPath = FilePathValidator.FullPathToAssetsPath(exportObjFilePath);
+                    // AssetDatabase は Unityプロジェクトの外のパスでは動かないので、不本意ながら「Assetsフォルダ内にあるときのみチェック」という条件ができてしまいます。
                     var assets = AssetDatabase.LoadAllAssetsAtPath(assetPath);
                     if (!assets.OfType<Mesh>().Any())
                     {

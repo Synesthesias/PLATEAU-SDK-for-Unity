@@ -2,6 +2,7 @@
 using System.IO;
 using PlateauUnitySDK.Editor.EditorWindowCommon;
 using PlateauUnitySDK.Editor.FileConverter.Converters;
+using PlateauUnitySDK.Runtime.CityMapInfo;
 using PlateauUnitySDK.Runtime.SemanticsLoader;
 using UnityEditor;
 using UnityEngine;
@@ -9,7 +10,7 @@ using UnityEngine;
 namespace PlateauUnitySDK.Editor.FileConverter.GUIContents
 {
     /// <summary>
-    /// Gmlファイルを読んで <see cref="IdToFileTable"/> を出力するGUIを提供します。
+    /// Gmlファイルを読んで <see cref="IdToGmlTable"/> を出力するGUIを提供します。
     /// </summary>
     public class GmlToIdFileTableConvertTab : BaseConvertTab
     {
@@ -23,7 +24,7 @@ namespace PlateauUnitySDK.Editor.FileConverter.GUIContents
         public override IFileConverter FileConverter => this.converter;
         private static string projectPath = Path.GetDirectoryName(Application.dataPath);
         private int dstTabIndex = 0;
-        private IdToFileTable existingTable;
+        private IdToGmlTable existingTable;
         private string existingTablePath;
 
         public override void HeaderInfoGUI()
@@ -56,10 +57,10 @@ namespace PlateauUnitySDK.Editor.FileConverter.GUIContents
                 case 1:
                     HeaderDrawer.Draw("Select Existing File");
                     // Existing File のとき、既存のファイル選択GUIを表示します。
-                    this.existingTable = (IdToFileTable)EditorGUILayout.ObjectField(
+                    this.existingTable = (IdToGmlTable)EditorGUILayout.ObjectField(
                         "IdFileTable:",
                         this.existingTable,
-                        typeof(IdToFileTable),
+                        typeof(IdToGmlTable),
                         false
                         );
                     this.existingTablePath = 
