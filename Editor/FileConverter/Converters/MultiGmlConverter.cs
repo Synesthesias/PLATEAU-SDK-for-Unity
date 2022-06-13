@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using LibPLATEAU.NET.CityGML;
 using PlateauUnitySDK.Editor.CityModelImportWindow;
@@ -7,6 +8,7 @@ using PlateauUnitySDK.Runtime.Util;
 using UnityEditor;
 using UnityEngine;
 using PlateauUnitySDK.Runtime.CityMapMetaData;
+using Debug = UnityEngine.Debug;
 
 namespace PlateauUnitySDK.Editor.FileConverter.Converters
 {
@@ -26,6 +28,7 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
         {
             int failureCount = 0;
             int loopCount = 0;
+            Vector3 referencePoint = Vector3.negativeInfinity;
             foreach (var gmlRelativePath in gmlRelativePaths)
             {
                 loopCount++;
@@ -52,11 +55,23 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
                 }
                 
                 // objに変換します。
-                using (var objConverter = new GmlToObjFileConverter(config.LogLevel))
+                using (var objConverter = new GmlToObjFileConverter())
                 {
-                    // 設定の AxesConversion は Unity では RUF なのでそれで固定します。
-                    objConverter.SetConfig(config.MeshGranularity, AxesConversion.RUF);
+                    var converterConf = new GmlToObjFileConverterConfig();
+                    converterConf.MeshGranularity = config.MeshGranularity;
+                    converterConf.LogLevel = config.LogLevel;
+                    objConverter.Config = converterConf;
+                    if (referencePoint != Vector3.negativeInfinity)
+                    {
+                        objConverter.ReferencePoint = referencePoint;
+                    }
                     bool isObjSucceed = objConverter.ConvertWithoutLoad(cityModel, gmlFullPath, objPath);
+                    Debug.Log(objConverter.ReferencePoint.ToString());
+                    // referencePoint は最初の変換時の座標にすべて合わせます。
+                    if (loopCount == 1)
+                    {
+                        referencePoint = objConverter.ReferencePoint;
+                    }
                     if (!isObjSucceed)
                     {
                         failureCount++;

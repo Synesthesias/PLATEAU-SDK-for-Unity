@@ -92,7 +92,11 @@ namespace PlateauUnitySDK.Tests.EditModeTests.TestsFileConverter
             string outputFilePath = Path.Combine(DirectoryUtil.TempAssetFolderPath, "exported.obj");
             using (var converter = new GmlToObjFileConverter())
             {
-                converter.SetConfig(meshGranularity, AxesConversion.RUF, true);
+                var conf = converter.Config;
+                conf.MeshGranularity = meshGranularity;
+                conf.AxesConversion = AxesConversion.RUF;
+                conf.OptimizeFlag = true;
+                converter.Config = conf;
                 bool result = converter.Convert(inputFilePath, outputFilePath);
                 Assert.IsTrue(result);
             }

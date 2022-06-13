@@ -20,37 +20,43 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
         /// <summary> ObjWriter は変換処理をC++のDLLに委譲します。 </summary>
         private readonly ObjWriter objWriter;
 
+        private GmlToObjFileConverterConfig config;
         private CitygmlParserParams gmlParserParams;
-        private DllLogLevel logLevel;
 
         private int disposed;
 
-        public GmlToObjFileConverter(DllLogLevel logLevel = DllLogLevel.Error)
+        public GmlToObjFileConverter()
         {
             this.objWriter = new ObjWriter();
-            var logger = this.objWriter.GetDllLogger();
-            logger.SetLogCallbacks(DllLogCallback.UnityLogCallbacks);
-            logger.SetLogLevel(logLevel);
-            this.logLevel = logLevel;
+            this.config = new GmlToObjFileConverterConfig();
+            // var logger = this.objWriter.GetDllLogger();
+            // logger.SetLogCallbacks(DllLogCallback.UnityLogCallbacks);
+            // logger.SetLogLevel(logLevel);
+            // this.logLevel = logLevel;
             this.gmlParserParams = new CitygmlParserParams(true, true);
+            ApplyConfig(this.config, ref this.gmlParserParams);
         }
 
-
-        /// <summary>
-        /// コンバートの設定を引数で渡します。
-        /// </summary>
-        /// <param name="meshGranularity">メッシュのオブジェクト分けの粒度です。</param>
-        /// <param name="axesConversion">座標軸の向きです。Unityの場合は通常RUFです。</param>
-        /// <param name="optimizeFlg">trueのとき最適化します。</param>
-        /// <param name="logLevelArg">これ未満のレベルのログは表示しません。</param>
-        public void SetConfig(MeshGranularity meshGranularity, AxesConversion axesConversion = AxesConversion.RUF,
-            bool optimizeFlg = true, DllLogLevel logLevelArg = DllLogLevel.Error)
+        private void ApplyConfig(GmlToObjFileConverterConfig conf, ref CitygmlParserParams parserParams)
         {
-            this.gmlParserParams.Optimize = optimizeFlg;
-            this.gmlParserParams.Tessellate = true; // true でないと、頂点の代わりに LinearRing が生成されてしまい 3Dモデルには不適になります。
-            this.objWriter.SetMeshGranularity(meshGranularity);
-            this.objWriter.SetDestAxes(axesConversion);
-            this.objWriter.GetDllLogger().SetLogLevel(logLevelArg);
+            this.objWriter.SetMeshGranularity(conf.MeshGranularity);
+            var logger = this.objWriter.GetDllLogger();
+            logger.SetLogCallbacks(DllLogCallback.UnityLogCallbacks);
+            logger.SetLogLevel(conf.LogLevel);
+            parserParams.Optimize = conf.OptimizeFlag;
+            parserParams.Tessellate = true; // true でないと、頂点の代わりに LinearRing が生成されてしまい 3Dモデルには不適になります。
+            this.objWriter.SetDestAxes(conf.AxesConversion);
+        }
+        
+        /// <summary> コンバートの設定です。setで設定を変えます。 </summary>
+        public GmlToObjFileConverterConfig Config
+        {
+            set
+            {
+                this.config = value;
+                ApplyConfig(value, ref this.gmlParserParams);
+            }
+            get => this.config;
         }
 
         /// <summary>
@@ -78,14 +84,14 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
 
             return ConvertInner(gmlFilePath, exportObjFilePath, cityModel);
         }
-        
+
         /// <summary>
         /// 変換のインナーメソッドです。
         /// 引数の <paramref name="cityModel"/> が null なら gmlファイルをロードして変換します。
-        /// null でない <paramref name="cityModel"/> が渡されたら、ロードを省略してそのモデルを変換します。
+        /// null でなければ、ファイルロードを省略して代わりに渡された <see cref="CityModel"/> を変換します。
         /// 成否をboolで返します。
         /// </summary>
-        private bool ConvertInner(string gmlFilePath, string exportObjFilePath, CityModel cityModel)
+        private bool ConvertInner(string gmlFilePath, string exportObjFilePath, CityModel cityModel) 
         {
             if (!IsPathValid(gmlFilePath, exportObjFilePath)) return false;
             try
@@ -95,7 +101,7 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
 
                 if (cityModel == null)
                 {
-                    cityModel = CityGml.Load(gmlFilePath, this.gmlParserParams, DllLogCallback.UnityLogCallbacks, this.logLevel);
+                    cityModel = CityGml.Load(gmlFilePath, this.gmlParserParams, DllLogCallback.UnityLogCallbacks, this.config.LogLevel);
                 }
                 
                 // 出力先が Assets フォルダ内 かつ すでに同名ファイルが存在する場合、古いファイルを消します。
@@ -107,8 +113,20 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
                     AssetDatabase.Refresh();
                 }
                 
+                // ReferencePointを設定します。
+                if (this.config.DoAutoSetReferencePoint)
+                {
+                    this.objWriter.SetValidReferencePoint(cityModel);
+                }
+                else
+                {
+                    var referencePoint = this.config.ManualReferencePoint;
+                    if (referencePoint == null)
+                        throw new Exception($"{nameof(this.config.ManualReferencePoint)} is null.");
+                    this.objWriter.ReferencePoint = VectorConverter.ToPlateauVector(referencePoint.Value);
+                }
+                
                 // 変換してファイルに書き込みます。
-                this.objWriter.SetValidReferencePoint(cityModel);
                 this.objWriter.Write(exportObjFilePath, cityModel, gmlFilePath);
 
                 // 出力先が Assets フォルダ内なら、それをUnityに反映させます。
@@ -153,6 +171,12 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
             if (!FilePathValidator.IsValidInputFilePath(gmlFilePath, "gml", false)) return false;
             if (!FilePathValidator.IsValidOutputFilePath(exportObjFilePath, "obj")) return false;
             return true;
+        }
+
+        public Vector3 ReferencePoint
+        {
+            get { return VectorConverter.ToUnityVector(this.objWriter.ReferencePoint); }
+            set { }
         }
 
         /// <summary> objWriterに渡すパスの区切り文字は '/' である必要があるので '/' にします。 </summary>

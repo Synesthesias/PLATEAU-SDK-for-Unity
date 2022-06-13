@@ -14,6 +14,7 @@ namespace PlateauUnitySDK.Editor.FileConverter.GUIContents
         private AxesConversion axesConversion = AxesConversion.RUF;
         private DllLogLevel logLevel = DllLogLevel.Error;
         private GmlToObjFileConverter fileConverter;
+        private GmlToObjFileConverterConfig converterConf;
 
         protected override string SourceFileExtension => "gml";
         public override string DestFileExtension => "obj";
@@ -23,7 +24,20 @@ namespace PlateauUnitySDK.Editor.FileConverter.GUIContents
         public GmlToObjFileConvertTab()
         {
             this.fileConverter = new GmlToObjFileConverter();
-            this.fileConverter.SetConfig(this.meshGranularity, this.axesConversion, this.optimizeFlg);
+            this.converterConf = new GmlToObjFileConverterConfig();
+            ApplyGUIToConfig();
+        }
+
+        /// <summary>
+        /// GUI上での設定を <see cref="GmlToObjFileConverter"/> に反映させます。
+        /// </summary>
+        private void ApplyGUIToConfig()
+        {
+            this.converterConf.MeshGranularity = this.meshGranularity;
+            this.converterConf.AxesConversion = this.axesConversion;
+            this.converterConf.OptimizeFlag = this.optimizeFlg;
+            this.converterConf.LogLevel = this.logLevel;
+            this.fileConverter.Config = this.converterConf;
         }
 
         public override void HeaderInfoGUI()
@@ -41,7 +55,7 @@ namespace PlateauUnitySDK.Editor.FileConverter.GUIContents
 
         public override void OnConfigureGUIChanged()
         {
-            this.fileConverter.SetConfig(this.meshGranularity, this.axesConversion, this.optimizeFlg, this.logLevel);
+            ApplyGUIToConfig();
         }
     }
 }
