@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using LibPLATEAU.NET.CityGML;
 using PlateauUnitySDK.Editor.CityModelImportWindow;
@@ -8,7 +7,6 @@ using PlateauUnitySDK.Runtime.Util;
 using UnityEditor;
 using UnityEngine;
 using PlateauUnitySDK.Runtime.CityMapMetaData;
-using UnityEngine.Analytics;
 using Debug = UnityEngine.Debug;
 
 namespace PlateauUnitySDK.Editor.FileConverter.Converters
@@ -31,7 +29,7 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
         /// <param name="config">変換設定です。</param>
         public void Convert(IEnumerable<string> gmlRelativePaths, string baseFolderPath, string exportFolderFullPath, CityModelImportConfig config)
         {
-            int failureCount = 0;
+            int successCount = 0;
             int loopCount = 0;
             Vector3? referencePoint = null;
             foreach (var gmlRelativePath in gmlRelativePaths)
@@ -39,36 +37,35 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
                 loopCount++;
 
                 string gmlFullPath = Path.GetFullPath(Path.Combine(baseFolderPath, gmlRelativePath));
-                string gmlFileName = Path.GetFileNameWithoutExtension(gmlRelativePath);
-                string objPath = Path.Combine(exportFolderFullPath, gmlFileName + ".obj");
-                // TODO ファイル名は変更できるようにしたい
-                string mapInfoPath = Path.Combine(exportFolderFullPath, "CityMapInfo.asset");
 
                 // gmlをロードします。
+                string gmlFileName = Path.GetFileNameWithoutExtension(gmlRelativePath);
+                string objPath = Path.Combine(exportFolderFullPath, gmlFileName + ".obj");
                 if (!TryLoadCityGml(out var cityModel, gmlFullPath, config))
                 {
-                    failureCount++;
                     continue;
                 }
 
                 // objに変換します。
                 if (!TryConvertToObj(cityModel, ref referencePoint, config, gmlFullPath, objPath))
                 {
-                    failureCount++;
                     continue;
                 }
-                
-                
+
                 // CityMapInfo を生成します。
-                if (!TryGenerateCityMapInfo(cityModel, gmlFullPath, mapInfoPath, referencePoint))
+                // TODO ファイル名は変更できるようにしたい
+                string mapInfoPath = Path.Combine(exportFolderFullPath, "CityMapInfo.asset");
+                if (!TryGenerateCityMapInfo(out var cityMapInfo, cityModel, gmlFullPath, mapInfoPath, referencePoint))
                 {
-                    failureCount++;
                     continue;
                 }
-                
+                LastConvertedCityMapInfo = cityMapInfo;
+
+                successCount++;
             }
             AssetDatabase.ImportAsset(FilePathValidator.FullPathToAssetsPath(exportFolderFullPath));
             AssetDatabase.Refresh();
+            int failureCount = loopCount - successCount;
             if (failureCount == 0)
             {
                 Debug.Log($"Convert Success. {loopCount} gml files are converted.");
@@ -80,7 +77,7 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
         }
 
         
-        private bool TryLoadCityGml(out CityModel cityModel, string gmlFullPath, CityModelImportConfig config)
+        private static bool TryLoadCityGml(out CityModel cityModel, string gmlFullPath, CityModelImportConfig config)
         {
             try
             {
@@ -128,8 +125,10 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
             }
         }
 
-        private bool TryGenerateCityMapInfo(CityModel cityModel, string gmlFullPath, string mapInfoPath, Vector3? referencePoint)
+        private static bool TryGenerateCityMapInfo(out CityMapInfo cityMapInfo, CityModel cityModel, string gmlFullPath,
+            string mapInfoPath, Vector3? referencePoint)
         {
+            cityMapInfo = null;
             if (referencePoint == null)
             {
                 Debug.LogError($"{nameof(referencePoint)} is null.");
@@ -143,7 +142,7 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
             {
                 return false;
             }
-            LastConvertedCityMapInfo = cityMapInfoConverter.LastConvertedCityMapInfo;
+            cityMapInfo = cityMapInfoConverter.LastConvertedCityMapInfo;
             return true;
         }
     }
