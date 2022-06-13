@@ -8,6 +8,7 @@ using PlateauUnitySDK.Runtime.Util;
 using UnityEditor;
 using UnityEngine;
 using PlateauUnitySDK.Runtime.CityMapMetaData;
+using UnityEngine.Experimental.GlobalIllumination;
 using Debug = UnityEngine.Debug;
 
 namespace PlateauUnitySDK.Editor.FileConverter.Converters
@@ -28,7 +29,7 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
         {
             int failureCount = 0;
             int loopCount = 0;
-            Vector3 referencePoint = Vector3.negativeInfinity;
+            Vector3? referencePoint = null;
             foreach (var gmlRelativePath in gmlRelativePaths)
             {
                 loopCount++;
@@ -57,21 +58,34 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
                 // objに変換します。
                 using (var objConverter = new GmlToObjFileConverter())
                 {
+                    // configを作成します。
                     var converterConf = new GmlToObjFileConverterConfig();
                     converterConf.MeshGranularity = config.MeshGranularity;
                     converterConf.LogLevel = config.LogLevel;
+                    converterConf.DoAutoSetReferencePoint = false;
+                    
+                    // Reference Pointは最初のものに合わせます。
+                    if (referencePoint == null)
+                    {
+                        referencePoint = objConverter.SetValidReferencePoint(cityModel);
+                        converterConf.ManualReferencePoint = referencePoint;
+                    }
+                    else
+                    {
+                        converterConf.ManualReferencePoint = referencePoint.Value;
+                    }
+
                     objConverter.Config = converterConf;
-                    if (referencePoint != Vector3.negativeInfinity)
-                    {
-                        objConverter.ReferencePoint = referencePoint;
-                    }
+                    
+                    
                     bool isObjSucceed = objConverter.ConvertWithoutLoad(cityModel, gmlFullPath, objPath);
-                    Debug.Log(objConverter.ReferencePoint.ToString());
+                    
+                    //TODO デバッグ用　あとで消す
+                    var point = objConverter.Config.ManualReferencePoint.Value;
+                    Debug.Log($"{point.x}, {point.y}, {point.z}");
+                    
+                    
                     // referencePoint は最初の変換時の座標にすべて合わせます。
-                    if (loopCount == 1)
-                    {
-                        referencePoint = objConverter.ReferencePoint;
-                    }
                     if (!isObjSucceed)
                     {
                         failureCount++;

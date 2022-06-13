@@ -173,16 +173,24 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
             return true;
         }
 
-        public Vector3 ReferencePoint
-        {
-            get { return VectorConverter.ToUnityVector(this.objWriter.ReferencePoint); }
-            set { }
-        }
 
         /// <summary> objWriterに渡すパスの区切り文字は '/' である必要があるので '/' にします。 </summary>
         private static void SlashPath(ref string path)
         {
             path = path.Replace('\\', '/');
+        }
+
+        /// <summary>
+        /// <paramref name="cityModel"/> に適する ReferencePointを計算し、
+        /// その座標を変換の基準点として設定し、その座標を返します。
+        /// </summary>
+        public Vector3 SetValidReferencePoint(CityModel cityModel)
+        {
+            this.objWriter.SetValidReferencePoint(cityModel);
+            var plateauCoord = this.objWriter.ReferencePoint;
+            var coord = VectorConverter.ToUnityVector(plateauCoord);
+            this.config.ManualReferencePoint = coord;
+            return coord;
         }
         
         /// <summary>
