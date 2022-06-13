@@ -13,6 +13,7 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
     public class GmlToCityMapInfoConverter : IFileConverter
     {
         private GmlToCityMapInfoConverterConfig config;
+        public CityMapInfo LastConvertedCityMapInfo { get; set; } = null;
 
         public GmlToCityMapInfoConverter()
         {
@@ -68,7 +69,7 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
                 
                 // 追加情報を書き込みます。
                 mapInfo.ReferencePoint = this.config.ReferencePoint;
-                
+                LastConvertedCityMapInfo = mapInfo;
                 EditorUtility.SetDirty(mapInfo);
                 AssetDatabase.SaveAssets();
                 return true;

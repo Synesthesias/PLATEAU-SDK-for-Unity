@@ -29,10 +29,6 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
         {
             this.objWriter = new ObjWriter();
             this.config = new GmlToObjFileConverterConfig();
-            // var logger = this.objWriter.GetDllLogger();
-            // logger.SetLogCallbacks(DllLogCallback.UnityLogCallbacks);
-            // logger.SetLogLevel(logLevel);
-            // this.logLevel = logLevel;
             this.gmlParserParams = new CitygmlParserParams(true, true);
             ApplyConfig(this.config, ref this.gmlParserParams);
         }

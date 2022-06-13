@@ -19,6 +19,9 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
     /// </summary>
     public class MultiGmlConverter
     {
+        /// <summary> このインスタンスが最後に出力した <see cref="CityMapInfo"/> です。 </summary>
+        public CityMapInfo LastConvertedCityMapInfo { get; set; }
+        
         /// <summary>
         /// 複数のgmlファイルを変換します。
         /// </summary>
@@ -79,7 +82,6 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
                     
                     bool isObjSucceed = objConverter.ConvertWithoutLoad(cityModel, gmlFullPath, objPath);
 
-                    // referencePoint は最初の変換時の座標にすべて合わせます。
                     if (!isObjSucceed)
                     {
                         failureCount++;
@@ -97,6 +99,8 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
                     failureCount++;
                     continue;
                 }
+
+                LastConvertedCityMapInfo = cityMapInfoConverter.LastConvertedCityMapInfo;
             }
             AssetDatabase.ImportAsset(FilePathValidator.FullPathToAssetsPath(exportFolderFullPath));
             AssetDatabase.Refresh();
