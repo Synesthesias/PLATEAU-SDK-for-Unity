@@ -55,7 +55,7 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
                 // CityMapInfo を生成します。
                 // TODO ファイル名は変更できるようにしたい
                 string mapInfoPath = Path.Combine(exportFolderFullPath, "CityMapInfo.asset");
-                if (!TryGenerateCityMapInfo(out var cityMapInfo, cityModel, gmlFullPath, mapInfoPath, referencePoint))
+                if (!TryGenerateCityMapInfo(out var cityMapInfo, cityModel, gmlFullPath, mapInfoPath, referencePoint, config))
                 {
                     continue;
                 }
@@ -126,7 +126,7 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
         }
 
         private static bool TryGenerateCityMapInfo(out CityMapInfo cityMapInfo, CityModel cityModel, string gmlFullPath,
-            string mapInfoPath, Vector3? referencePoint)
+            string mapInfoPath, Vector3? referencePoint, CityModelImportConfig importConf)
         {
             cityMapInfo = null;
             if (referencePoint == null)
@@ -134,15 +134,17 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
                 Debug.LogError($"{nameof(referencePoint)} is null.");
                 return false;
             }
-            var cityMapInfoConverter = new GmlToCityMapInfoConverter();
-            var cityMapConf = cityMapInfoConverter.Config;
-            cityMapConf.ReferencePoint = referencePoint.Value;
-            bool isSucceed = cityMapInfoConverter.ConvertWithoutLoad(cityModel, gmlFullPath, mapInfoPath);
+            var converter = new GmlToCityMapInfoConverter();
+            var infoConf = converter.Config;
+            infoConf.ReferencePoint = referencePoint.Value;
+            infoConf.MeshGranularity = importConf.MeshGranularity;
+            converter.Config = infoConf;
+            bool isSucceed = converter.ConvertWithoutLoad(cityModel, gmlFullPath, mapInfoPath);
             if (!isSucceed)
             {
                 return false;
             }
-            cityMapInfo = cityMapInfoConverter.LastConvertedCityMapInfo;
+            cityMapInfo = converter.LastConvertedCityMapInfo;
             return true;
         }
     }
