@@ -77,14 +77,8 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
 
                     objConverter.Config = converterConf;
                     
-                    
                     bool isObjSucceed = objConverter.ConvertWithoutLoad(cityModel, gmlFullPath, objPath);
-                    
-                    //TODO デバッグ用　あとで消す
-                    var point = objConverter.Config.ManualReferencePoint.Value;
-                    Debug.Log($"{point.x}, {point.y}, {point.z}");
-                    
-                    
+
                     // referencePoint は最初の変換時の座標にすべて合わせます。
                     if (!isObjSucceed)
                     {
@@ -93,10 +87,12 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
                     }
                 }
                 
-                // idTableを生成します。
-                var idTableConverter = new GmlToCityMapInfoConverter();
-                bool isTableSucceed = idTableConverter.ConvertWithoutLoad(cityModel, gmlFullPath, idTablePath);
-                if (!isTableSucceed)
+                // CityMapInfo を生成します。
+                var cityMapInfoConverter = new GmlToCityMapInfoConverter();
+                var cityMapConf = cityMapInfoConverter.Config;
+                cityMapConf.ReferencePoint = referencePoint.Value;
+                bool isMapInfoConvertSucceed = cityMapInfoConverter.ConvertWithoutLoad(cityModel, gmlFullPath, idTablePath);
+                if (!isMapInfoConvertSucceed)
                 {
                     failureCount++;
                     continue;

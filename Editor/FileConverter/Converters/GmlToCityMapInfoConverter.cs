@@ -12,7 +12,12 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
 {
     public class GmlToCityMapInfoConverter : IFileConverter
     {
-        private CitygmlParserParams parserParams;
+        private GmlToCityMapInfoConverterConfig config;
+
+        public GmlToCityMapInfoConverter()
+        {
+            this.config = new GmlToCityMapInfoConverterConfig();
+        }
 
         /// <summary>
         /// gmlファイルをロードして CityMapInfo に書き込みます。
@@ -47,7 +52,9 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
 
             try
             {
-                cityModel ??= CityGml.Load(srcGmlPath, this.parserParams, DllLogCallback.UnityLogCallbacks);
+                cityModel ??= CityGml.Load(srcGmlPath, this.config.ParserParams, DllLogCallback.UnityLogCallbacks);
+                
+                // IdToGmlTable を作成します。
                 var cityObjectIds = cityModel.RootCityObjects
                     .SelectMany(co => co.CityObjectDescendantsDFS)
                     .Select(co => co.ID);
@@ -58,7 +65,10 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
                     if (mapInfo.DoGmlTableContainsKey(id)) continue;
                     mapInfo.AddToGmlTable(id, gmlFileName);
                 }
-
+                
+                // 追加情報を書き込みます。
+                mapInfo.ReferencePoint = this.config.ReferencePoint;
+                
                 EditorUtility.SetDirty(mapInfo);
                 AssetDatabase.SaveAssets();
                 return true;
@@ -101,11 +111,12 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
             }
             return AssetDatabase.LoadAssetAtPath<CityMapInfo>(dstAssetPath);
         }
+        
 
-        public void SetConfig(bool doOptimize, bool doTessellate)
+        public GmlToCityMapInfoConverterConfig Config
         {
-            this.parserParams.Optimize = doOptimize;
-            this.parserParams.Tessellate = doTessellate;
+            set => this.config = value;
+            get => this.config;
         }
     }
 }

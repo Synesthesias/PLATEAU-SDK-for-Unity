@@ -81,7 +81,10 @@ namespace PlateauUnitySDK.Editor.FileConverter.GUIContents
 
         public override void OnConfigureGUIChanged()
         {
-            this.converter.SetConfig(this.doOptimize, this.doTessellate);
+            var conf = this.converter.Config;
+            conf.ParserParams.Optimize = this.doOptimize;
+            conf.ParserParams.Tessellate = this.doTessellate;
+            this.converter.Config = conf;
         }
 
         protected override bool Convert()
