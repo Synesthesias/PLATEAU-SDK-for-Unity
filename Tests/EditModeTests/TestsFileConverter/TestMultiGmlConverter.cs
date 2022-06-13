@@ -85,6 +85,23 @@ namespace PlateauUnitySDK.Tests.EditModeTests.TestsFileConverter
             // 値1と値2は同一であることを期待します。
             Assert.AreEqual(firstGmlReferencePoint, recordedReferencePoint);
         }
+
+        [Test]
+        public void MeshGranularity_Is_Written_To_CityMapInfo()
+        {
+            var config = new CityModelImportConfig();
+            // 値1: 変換時の MeshGranularity の設定
+            var granularityOnConvert = MeshGranularity.PerAtomicFeatureObject;
+            config.MeshGranularity = granularityOnConvert;
+            this.converter.Convert(testGmlRelativePaths, testUdxPath, testOutputDir, config);
+            var mapInfo = this.converter.LastConvertedCityMapInfo;
+
+            // 値2: CityMapInfo に書き込まれた MeshGranularity の値
+            var granularityOnMapInfo = mapInfo.MeshGranularity;
+            
+            // 値1と値2が同一であることを期待します。
+            Assert.AreEqual(granularityOnConvert, granularityOnMapInfo);
+        }
         
     }
 }
