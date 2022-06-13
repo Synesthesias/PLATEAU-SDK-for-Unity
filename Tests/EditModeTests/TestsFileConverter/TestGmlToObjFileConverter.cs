@@ -1,15 +1,11 @@
-using System;
 using System.IO;
 using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using LibPLATEAU.NET.CityGML;
 using NUnit.Framework;
 using PlateauUnitySDK.Editor.FileConverter;
 using PlateauUnitySDK.Editor.FileConverter.Converters;
 using PlateauUnitySDK.Tests.TestUtils;
 using UnityEditor;
-using UnityEditor.VersionControl;
 using UnityEngine;
 
 namespace PlateauUnitySDK.Tests.EditModeTests.TestsFileConverter

@@ -3,7 +3,6 @@ using System.IO;
 using System.Linq;
 using LibPLATEAU.NET.CityGML;
 using PlateauUnitySDK.Runtime.CityMapMetaData;
-using PlateauUnitySDK.Runtime.SemanticsLoader;
 using PlateauUnitySDK.Runtime.Util;
 using UnityEditor;
 using UnityEngine;
@@ -13,7 +12,7 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
     public class GmlToCityMapInfoConverter : IFileConverter
     {
         private GmlToCityMapInfoConverterConfig config;
-        public CityMapInfo LastConvertedCityMapInfo { get; set; } = null;
+        public CityMapInfo LastConvertedCityMapInfo { get; set; }
 
         public GmlToCityMapInfoConverter()
         {

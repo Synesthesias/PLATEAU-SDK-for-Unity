@@ -2,7 +2,6 @@
 using NUnit.Framework;
 using PlateauUnitySDK.Editor.FileConverter;
 using UnityEditor;
-using UnityEditor.VersionControl;
 using UnityEngine.TestTools;
 
 namespace PlateauUnitySDK.Tests.EditModeTests.TestsFileConverter

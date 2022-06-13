@@ -11,7 +11,7 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
 {
     /// <summary>
     /// gmlファイルをobjファイルに変換します。
-    /// 使い方は <see cref="SetConfig"/> してから <see cref="Convert"/> を呼んで <see cref="Dispose"/> します。
+    /// 使い方は <see cref="Config"/> をセットしてから <see cref="Convert"/> を呼んで <see cref="Dispose"/> します。
     /// <see cref="Dispose"/> を忘れると、変換後もファイルが使用中となり外部から変更できなくなります。
     /// usingステートメントを使うことで暗黙的に <see cref="Dispose"/> を呼ぶことができます。
     /// </summary>
@@ -29,7 +29,7 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
         {
             this.objWriter = new ObjWriter();
             this.config = new GmlToObjFileConverterConfig();
-            this.gmlParserParams = new CitygmlParserParams(true, true);
+            this.gmlParserParams = new CitygmlParserParams();
             ApplyConfig(this.config, ref this.gmlParserParams);
         }
 
@@ -67,7 +67,7 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
         /// <summary>
         /// gmlファイルのロードを省略し、代わりにロード済みの cityModel を使って変換します。
         /// 成否を bool で返します。
-        /// <see cref="SetConfig"/> による設定で <see cref="gmlParserParams"/> はロード後は変更できませんが、
+        /// 設定で <see cref="gmlParserParams"/> はロード後は変更できませんが、
         /// meshGranularity, axesConversion の設定は反映されます。
         /// </summary>
         public bool ConvertWithoutLoad(CityModel cityModel, string gmlFilePath, string exportObjFilePath)

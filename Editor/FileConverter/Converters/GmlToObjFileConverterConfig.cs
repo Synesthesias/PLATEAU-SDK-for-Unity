@@ -1,5 +1,4 @@
 ﻿using LibPLATEAU.NET.CityGML;
-using PlateauUnitySDK.Runtime.Util;
 using UnityEngine;
 
 namespace PlateauUnitySDK.Editor.FileConverter.Converters

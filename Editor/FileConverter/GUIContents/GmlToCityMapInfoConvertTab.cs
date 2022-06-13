@@ -3,7 +3,6 @@ using System.IO;
 using PlateauUnitySDK.Editor.EditorWindowCommon;
 using PlateauUnitySDK.Editor.FileConverter.Converters;
 using PlateauUnitySDK.Runtime.CityMapMetaData;
-using PlateauUnitySDK.Runtime.SemanticsLoader;
 using UnityEditor;
 using UnityEngine;
 
@@ -23,7 +22,7 @@ namespace PlateauUnitySDK.Editor.FileConverter.GUIContents
         public override string DestFileExtension => "asset";
         public override IFileConverter FileConverter => this.converter;
         private static string projectPath = Path.GetDirectoryName(Application.dataPath);
-        private int dstTabIndex = 0;
+        private int dstTabIndex;
         private CityMapInfo existingMapInfo;
         private string existingMapInfoPath;
 

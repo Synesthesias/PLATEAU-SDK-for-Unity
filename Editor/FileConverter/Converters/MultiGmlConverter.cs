@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using LibPLATEAU.NET.CityGML;
 using PlateauUnitySDK.Editor.CityModelImportWindow;
@@ -8,7 +7,6 @@ using PlateauUnitySDK.Runtime.Util;
 using UnityEditor;
 using UnityEngine;
 using PlateauUnitySDK.Runtime.CityMapMetaData;
-using UnityEngine.Experimental.GlobalIllumination;
 using Debug = UnityEngine.Debug;
 
 namespace PlateauUnitySDK.Editor.FileConverter.Converters
@@ -28,6 +26,7 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
         /// <param name="gmlRelativePaths">gmlファイルの相対パスのリストです。</param>
         /// <param name="baseFolderPath"><paramref name="gmlRelativePaths"/>の相対パスの基準となるパスです。</param>
         /// <param name="exportFolderFullPath">出力先のフォルダの絶対パスです。</param>
+        /// <param name="config">変換設定です。</param>
         public void Convert(IEnumerable<string> gmlRelativePaths, string baseFolderPath, string exportFolderFullPath, CityModelImportConfig config)
         {
             int failureCount = 0;
@@ -48,7 +47,7 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
                 try
                 {
                     // 設定の parserParams.tessellate は true にしないとポリゴンにならない部分があるので true で固定します。
-                    CitygmlParserParams parserParams = new CitygmlParserParams(config.OptimizeFlg, true);
+                    CitygmlParserParams parserParams = new CitygmlParserParams(config.OptimizeFlg);
                     cityModel = CityGml.Load(gmlFullPath, parserParams, DllLogCallback.UnityLogCallbacks, config.LogLevel);
                 }
                 catch (Exception e)

@@ -21,7 +21,7 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
             this.TargetDict =
                 Enum.GetValues(typeof(GmlType))
                     .OfType<GmlType>()
-                    .ToDictionary(t => t, t => true);
+                    .ToDictionary(t => t, _ => true);
         }
 
         public bool IsTypeTarget(GmlType t)

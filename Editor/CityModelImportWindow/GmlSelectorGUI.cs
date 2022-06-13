@@ -4,7 +4,6 @@ using System.Linq;
 using PlateauUnitySDK.Editor.EditorWindowCommon;
 using PlateauUnitySDK.Editor.FileConverter.Converters;
 using UnityEditor;
-using UnityEngine;
 
 namespace PlateauUnitySDK.Editor.CityModelImportWindow
 {
