@@ -16,8 +16,9 @@ namespace PlateauUnitySDK.Editor.CityModelImportWindow
     {
         // private bool[] areaIdCheckboxes;
         // private GmlTypeTarget gmlTypeTarget = new GmlTypeTarget();
-        private GmlSelectorConfig config;
+        private GmlSelectorConfig config = new GmlSelectorConfig();
         private List<string> gmlFiles;
+        private bool isInitialized;
 
 
         /// <summary>
@@ -26,11 +27,11 @@ namespace PlateauUnitySDK.Editor.CityModelImportWindow
         /// </summary>
         public List<string> Draw(GmlFileSearcher gmlFileSearcher)
         {
+            if(!this.isInitialized) OnUdxPathChanged(gmlFileSearcher);
             HeaderDrawer.IncrementDepth();
             HeaderDrawer.Draw("含める地域");
             this.config.areaIds = gmlFileSearcher.AreaIds;
             int areaCount = this.config.areaIds.Length;
-            this.config.isAreaIdTarget = new bool[areaCount];
             for (int i = 0; i < areaCount; i++)
             {
                 this.config.isAreaIdTarget[i] = EditorGUILayout.Toggle(this.config.areaIds[i], this.config.isAreaIdTarget[i]);
@@ -78,7 +79,9 @@ namespace PlateauUnitySDK.Editor.CityModelImportWindow
 
         public void OnUdxPathChanged(GmlFileSearcher gmlFileSearcher)
         {
-            this.config.isAreaIdTarget = Enumerable.Repeat(true, gmlFileSearcher.AreaIds.Length).ToArray();
+            int areaCount = gmlFileSearcher.AreaIds.Length;
+            this.config.isAreaIdTarget = Enumerable.Repeat(true, areaCount ).ToArray();
+            this.isInitialized = true;
         }
 
         

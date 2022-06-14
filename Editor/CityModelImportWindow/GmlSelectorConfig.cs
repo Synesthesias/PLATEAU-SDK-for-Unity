@@ -1,20 +1,29 @@
 ﻿using System;
 using PlateauUnitySDK.Editor.FileConverter.Converters;
 
-namespace PlateauUnitySDK.Editor.CityModelImportWindow;
-
-[Serializable]
-public class GmlSelectorConfig
+namespace PlateauUnitySDK.Editor.CityModelImportWindow
 {
-    public string[] areaIds = {};
-    public bool[] isAreaIdTarget = {};
-    public GmlTypeTarget gmlTypeTarget = new GmlTypeTarget();
 
-    public void SetAllAreaId(bool isTarget)
+    /// <summary>
+    /// <see cref="GmlSelectorGUI"/> の設定部分です。
+    /// </summary>
+    [Serializable]
+    public class GmlSelectorConfig
     {
-        for (int i = 0; i < this.isAreaIdTarget.Length; i++)
+        /// <summary> 見つかったエリアIDの一覧です。 </summary>
+        public string[] areaIds = { };
+
+        /// <summary> <see cref="areaIds"/> の i番目を変換対象とするかどうかです。 </summary>
+        public bool[] isAreaIdTarget = { };
+
+        public GmlTypeTarget gmlTypeTarget = new GmlTypeTarget();
+
+        public void SetAllAreaId(bool isTarget)
         {
-            this.isAreaIdTarget[i] = isTarget;
+            for (int i = 0; i < this.isAreaIdTarget.Length; i++)
+            {
+                this.isAreaIdTarget[i] = isTarget;
+            }
         }
     }
 }
