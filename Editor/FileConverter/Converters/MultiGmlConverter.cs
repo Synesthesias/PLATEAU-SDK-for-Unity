@@ -138,6 +138,7 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
             var infoConf = converter.Config;
             infoConf.ReferencePoint = referencePoint.Value;
             infoConf.MeshGranularity = importConf.MeshGranularity;
+            infoConf.DoClearOldMapInfo = true;
             converter.Config = infoConf;
             bool isSucceed = converter.ConvertWithoutLoad(cityModel, gmlFullPath, mapInfoPath);
             if (!isSucceed)

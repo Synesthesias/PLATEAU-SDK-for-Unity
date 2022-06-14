@@ -17,6 +17,9 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
 
         /// <summary> obj変換時の MeshGranularityが何であったかを記録します。 </summary>
         public MeshGranularity MeshGranularity;
+
+        /// <summary> 変換時すでに CityMapInfo ファイルが存在する場合、trueならば中身のデータを消して作り直し、falseならば以前のファイルに追記します。 </summary>
+        public bool DoClearOldMapInfo;
         
 
         public GmlToCityMapInfoConverterConfig()
@@ -24,6 +27,7 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
             this.ParserParams = new CitygmlParserParams();
             this.ReferencePoint = Vector3.zero;
             this.MeshGranularity = MeshGranularity.PerPrimaryFeatureObject;
+            this.DoClearOldMapInfo = false;
         }
     }
 }

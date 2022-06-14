@@ -58,7 +58,7 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
                 var cityObjectIds = cityModel.RootCityObjects
                     .SelectMany(co => co.CityObjectDescendantsDFS)
                     .Select(co => co.ID);
-                var mapInfo = LoadOrCreateCityMapInfo(dstTableFullPath);
+                var mapInfo = LoadOrCreateCityMapInfo(dstTableFullPath, this.config.DoClearOldMapInfo);
                 string gmlFileName = Path.GetFileNameWithoutExtension(srcGmlPath);
                 foreach (string id in cityObjectIds)
                 {
@@ -99,18 +99,30 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
             return true;
         }
 
-        private static CityMapInfo LoadOrCreateCityMapInfo(string dstMapInfoFullPath)
+        /// <summary>
+        /// 指定パスの <see cref="CityMapInfo"/> をロードします。
+        /// ファイルが存在しない場合、新しく作成します。
+        /// ファイルが存在する場合、<paramref name="doClearOldMapInfo"/> が false ならばそれをロードします。
+        /// true ならば中身のデータを消してからロードします。
+        /// </summary>
+        private static CityMapInfo LoadOrCreateCityMapInfo(string dstMapInfoFullPath, bool doClearOldMapInfo)
         {
             
             
             string dstAssetPath = FilePathValidator.FullPathToAssetsPath(dstMapInfoFullPath);
-            if (!File.Exists(dstMapInfoFullPath))
+            bool doFileExists = File.Exists(dstMapInfoFullPath);
+            if (!doFileExists)
             {
                 var instance = ScriptableObject.CreateInstance<CityMapInfo>();
                 AssetDatabase.CreateAsset(instance, dstAssetPath);
                 AssetDatabase.SaveAssets();
             }
-            return AssetDatabase.LoadAssetAtPath<CityMapInfo>(dstAssetPath);
+            var loadedMapInfo = AssetDatabase.LoadAssetAtPath<CityMapInfo>(dstAssetPath);
+            if (doClearOldMapInfo)
+            {
+                loadedMapInfo.ClearData();
+            }
+            return loadedMapInfo;
         }
         
 
