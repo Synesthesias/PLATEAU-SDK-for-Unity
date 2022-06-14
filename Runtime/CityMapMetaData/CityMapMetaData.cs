@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace PlateauUnitySDK.Runtime.CityMapMetaData
 {
-    public class CityMapInfo : ScriptableObject
+    public class CityMapMetaData : ScriptableObject
     {
         // TODO 未実装
         public IdToGmlTable idToGmlTable = new IdToGmlTable(); 

@@ -64,6 +64,8 @@ namespace PlateauUnitySDK.Runtime.CityMapMetaData
             set => value = this.dictionary[key];
         }
 
+        public ICollection<string> Keys => this.dictionary.Keys;
+
         public void Clear()
         {
             this.dictionary.Clear();

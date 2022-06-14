@@ -7,7 +7,7 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
     /// <summary>
     /// <see cref="GmlToObjFileConverter"/> の設定を保持します。
     /// </summary>
-    public class GmlToCityMapInfoConverterConfig
+    public class CityMapMetaDataGeneratorConfig
     {
         /// <summary> gmlロード時に使う設定です。 </summary>
         public CitygmlParserParams ParserParams;
@@ -22,7 +22,7 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
         public bool DoClearOldMapInfo;
         
 
-        public GmlToCityMapInfoConverterConfig()
+        public CityMapMetaDataGeneratorConfig()
         {
             this.ParserParams = new CitygmlParserParams();
             this.ReferencePoint = Vector3.zero;

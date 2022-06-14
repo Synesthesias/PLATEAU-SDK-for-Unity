@@ -13,12 +13,12 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
 {
 
     /// <summary>
-    /// 複数のgmlファイルから、複数のobj および 1つの <see cref="CityMapInfo"/>テーブルを生成します。
+    /// 複数のgmlファイルから、複数のobj および 1つの <see cref="CityMapMetaData"/>テーブルを生成します。
     /// </summary>
     public class MultiGmlConverter
     {
-        /// <summary> このインスタンスが最後に出力した <see cref="CityMapInfo"/> です。 </summary>
-        public CityMapInfo LastConvertedCityMapInfo { get; set; }
+        /// <summary> このインスタンスが最後に出力した <see cref="CityMapMetaData"/> です。 </summary>
+        public CityMapMetaData LastConvertedCityMapMetaData { get; set; }
         
         /// <summary>
         /// 複数のgmlファイルを変換します。
@@ -54,12 +54,14 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
 
                 // CityMapInfo を生成します。
                 // TODO ファイル名は変更できるようにしたい
-                string mapInfoPath = Path.Combine(exportFolderFullPath, "CityMapInfo.asset");
-                if (!TryGenerateCityMapInfo(out var cityMapInfo, cityModel, gmlFullPath, mapInfoPath, referencePoint, config))
+                string dstMetaDataFullPath = Path.Combine(exportFolderFullPath, "CityMapMetaData.asset");
+                string dstMetaDataAssetPath = FilePathValidator.FullPathToAssetsPath(dstMetaDataFullPath);
+                string objAssetPath = FilePathValidator.FullPathToAssetsPath(objPath);
+                if (!TryGenerateMetaData(out var cityMapInfo, gmlFileName, dstMetaDataAssetPath, objAssetPath, loopCount==1, referencePoint, config))
                 {
                     continue;
                 }
-                LastConvertedCityMapInfo = cityMapInfo;
+                LastConvertedCityMapMetaData = cityMapInfo;
 
                 successCount++;
             }
@@ -125,27 +127,27 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
             }
         }
 
-        private static bool TryGenerateCityMapInfo(out CityMapInfo cityMapInfo, CityModel cityModel, string gmlFullPath,
-            string mapInfoPath, Vector3? referencePoint, CityModelImportConfig importConf)
+        private static bool TryGenerateMetaData(out CityMapMetaData cityMapMetaData, string gmlFileName,
+            string dstMetaDataAssetPath, string meshAssetPath, bool isFirstFile, Vector3? referencePoint, CityModelImportConfig importConf)
         {
-            cityMapInfo = null;
+            cityMapMetaData = null;
             if (referencePoint == null)
             {
                 Debug.LogError($"{nameof(referencePoint)} is null.");
                 return false;
             }
-            var converter = new GmlToCityMapInfoConverter();
-            var infoConf = converter.Config;
-            infoConf.ReferencePoint = referencePoint.Value;
-            infoConf.MeshGranularity = importConf.MeshGranularity;
-            infoConf.DoClearOldMapInfo = true;
-            converter.Config = infoConf;
-            bool isSucceed = converter.ConvertWithoutLoad(cityModel, gmlFullPath, mapInfoPath);
+            var metaGen = new CityMapMetaDataGenerator();
+            var metaGenConfig = metaGen.Config;
+            metaGenConfig.ReferencePoint = referencePoint.Value;
+            metaGenConfig.MeshGranularity = importConf.MeshGranularity;
+            metaGenConfig.DoClearOldMapInfo = true;
+            metaGen.Config = metaGenConfig;
+            bool isSucceed = metaGen.Generate(meshAssetPath, dstMetaDataAssetPath, gmlFileName, isFirstFile);
             if (!isSucceed)
             {
                 return false;
             }
-            cityMapInfo = converter.LastConvertedCityMapInfo;
+            cityMapMetaData = metaGen.LastConvertedCityMapMetaData;
             return true;
         }
     }

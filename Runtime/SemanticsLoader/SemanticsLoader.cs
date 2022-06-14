@@ -10,28 +10,28 @@ namespace PlateauUnitySDK.Runtime.SemanticsLoader
 {
     public class SemanticsLoader
     {
-        private CityMapInfo cityMapInfo;
+        private CityMapMetaData.CityMapMetaData cityMapMetaData;
         private Dictionary<string, CityModel> fileToCityModelCache = new Dictionary<string, CityModel>();
 
         public CityObject Load(string cityObjectId)
         {
-            if (this.cityMapInfo == null)
+            if (this.cityMapMetaData == null)
             {
                 // テーブルファイルを読み込みます。
                 // TODO 今はResourcesファイルから読み込んでいますが、動的読み込みに対応するにあたっては拡張する必要があります。
-                var mapInfos = Resources.LoadAll<CityMapInfo>("");
+                var mapInfos = Resources.LoadAll<CityMapMetaData.CityMapMetaData>("");
                 if (mapInfos.Length == 0)
                 {
-                    throw new FileNotFoundException($"{nameof(CityMapInfo)} is not found.");
+                    throw new FileNotFoundException($"{nameof(CityMapMetaData.CityMapMetaData)} is not found.");
                 }
 
-                this.cityMapInfo = mapInfos[0];
+                this.cityMapMetaData = mapInfos[0];
             }
             // テーブルから cityObjectId に対応する gmlFileName を検索します。
             string gmlFileName; // 拡張子を含みません
-            if( !this.cityMapInfo.TryGetValueFromGmlTable(cityObjectId, out gmlFileName))
+            if( !this.cityMapMetaData.TryGetValueFromGmlTable(cityObjectId, out gmlFileName))
             {
-                throw new KeyNotFoundException($"cityObjectId {cityObjectId} is not found in {nameof(CityMapInfo)}.");
+                throw new KeyNotFoundException($"cityObjectId {cityObjectId} is not found in {nameof(CityMapMetaData.CityMapMetaData)}.");
             }
             // 名前が gmlFileName である gmlファイルを検索します。
             // TODO 今は StreamingAssets フォルダから読み込んでいますが、今後は拡張する必要があります。

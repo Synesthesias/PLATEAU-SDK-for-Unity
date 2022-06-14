@@ -9,14 +9,21 @@ using UnityEngine;
 
 namespace PlateauUnitySDK.Editor.FileConverter.Converters
 {
+    /// <summary>
+    /// 注意: これは旧式です。新しい版 <see cref="CityMapMetaDataGenerator"/> を利用してください。
+    /// この古い版は CityModel から idToGmlFileTable を生成します。
+    /// しかし、実際は変換時のオブジェクト分けの粒度に合わせた Tableを生成すべきなので、
+    /// 新しい版ではメッシュから idToGmlFileTable を作成します。 
+    /// </summary>
+    [Obsolete]
     public class GmlToCityMapInfoConverter : IFileConverter
     {
-        private GmlToCityMapInfoConverterConfig config;
-        public CityMapInfo LastConvertedCityMapInfo { get; set; }
+        private CityMapMetaDataGeneratorConfig config;
+        public CityMapMetaData LastConvertedCityMapMetaData { get; set; }
 
         public GmlToCityMapInfoConverter()
         {
-            this.config = new GmlToCityMapInfoConverterConfig();
+            this.config = new CityMapMetaDataGeneratorConfig();
         }
 
         /// <summary>
@@ -42,7 +49,7 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
         }
 
         /// <summary>
-        /// <see cref="CityMapInfo"/> に変換します。
+        /// <see cref="CityMapMetaData"/> に変換します。
         /// 引数の <paramref name="cityModel"/> が null の場合、<see cref="CityModel"/> を新たにロードして変換します。
         /// <paramref name="cityModel"/> が nullでない場合、ロードを省略してそのモデルを変換します。
         /// </summary>
@@ -58,7 +65,7 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
                 var cityObjectIds = cityModel.RootCityObjects
                     .SelectMany(co => co.CityObjectDescendantsDFS)
                     .Select(co => co.ID);
-                var mapInfo = LoadOrCreateCityMapInfo(dstTableFullPath, this.config.DoClearOldMapInfo);
+                var mapInfo = LoadOrCreateMetaData(dstTableFullPath, this.config.DoClearOldMapInfo);
                 string gmlFileName = Path.GetFileNameWithoutExtension(srcGmlPath);
                 foreach (string id in cityObjectIds)
                 {
@@ -69,7 +76,7 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
                 // 追加情報を書き込みます。
                 mapInfo.ReferencePoint = this.config.ReferencePoint;
                 mapInfo.MeshGranularity = this.config.MeshGranularity;
-                LastConvertedCityMapInfo = mapInfo;
+                LastConvertedCityMapMetaData = mapInfo;
                 EditorUtility.SetDirty(mapInfo);
                 AssetDatabase.SaveAssets();
                 return true;
@@ -80,7 +87,7 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
             }
             catch (Exception e)
             {
-                Debug.LogError($"Error generating {nameof(CityMapInfo)}.\ngml path = {srcGmlPath}\n{e}");
+                Debug.LogError($"Error generating {nameof(CityMapMetaData)}.\ngml path = {srcGmlPath}\n{e}");
                 return false;
             }
         }
@@ -99,37 +106,34 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
             return true;
         }
 
+
+        public CityMapMetaDataGeneratorConfig Config
+        {
+            set => this.config = value;
+            get => this.config;
+        }
+        
         /// <summary>
-        /// 指定パスの <see cref="CityMapInfo"/> をロードします。
+        /// 指定パスの <see cref="CityMapMetaData"/> をロードします。
         /// ファイルが存在しない場合、新しく作成します。
         /// ファイルが存在する場合、<paramref name="doClearOldMapInfo"/> が false ならばそれをロードします。
         /// true ならば中身のデータを消してからロードします。
         /// </summary>
-        private static CityMapInfo LoadOrCreateCityMapInfo(string dstMapInfoFullPath, bool doClearOldMapInfo)
+        private static CityMapMetaData LoadOrCreateMetaData(string dstAssetPath, bool doClearOldMapInfo)
         {
-            
-            
-            string dstAssetPath = FilePathValidator.FullPathToAssetsPath(dstMapInfoFullPath);
-            bool doFileExists = File.Exists(dstMapInfoFullPath);
+            bool doFileExists = File.Exists(dstAssetPath);
             if (!doFileExists)
             {
-                var instance = ScriptableObject.CreateInstance<CityMapInfo>();
+                var instance = ScriptableObject.CreateInstance<CityMapMetaData>();
                 AssetDatabase.CreateAsset(instance, dstAssetPath);
                 AssetDatabase.SaveAssets();
             }
-            var loadedMapInfo = AssetDatabase.LoadAssetAtPath<CityMapInfo>(dstAssetPath);
+            var loadedMetaData = AssetDatabase.LoadAssetAtPath<CityMapMetaData>(dstAssetPath);
             if (doClearOldMapInfo)
             {
-                loadedMapInfo.ClearData();
+                loadedMetaData.ClearData();
             }
-            return loadedMapInfo;
-        }
-        
-
-        public GmlToCityMapInfoConverterConfig Config
-        {
-            set => this.config = value;
-            get => this.config;
+            return loadedMetaData;
         }
     }
 }

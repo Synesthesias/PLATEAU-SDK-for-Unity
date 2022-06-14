@@ -9,7 +9,7 @@ using UnityEngine;
 namespace PlateauUnitySDK.Editor.FileConverter.GUIContents
 {
     /// <summary>
-    /// Gmlファイルを読んで <see cref="CityMapInfo"/> を出力するGUIを提供します。
+    /// Gmlファイルを読んで <see cref="CityMapMetaData"/> を出力するGUIを提供します。
     /// </summary>
     public class GmlToCityMapInfoConvertTab : BaseConvertTab
     {
@@ -23,7 +23,7 @@ namespace PlateauUnitySDK.Editor.FileConverter.GUIContents
         public override IFileConverter FileConverter => this.converter;
         private static string projectPath = Path.GetDirectoryName(Application.dataPath);
         private int dstTabIndex;
-        private CityMapInfo existingMapInfo;
+        private CityMapMetaData existingMapMetaData;
         private string existingMapInfoPath;
 
         public override void HeaderInfoGUI()
@@ -56,14 +56,14 @@ namespace PlateauUnitySDK.Editor.FileConverter.GUIContents
                 case 1:
                     HeaderDrawer.Draw("Select Existing File");
                     // Existing File のとき、既存のファイル選択GUIを表示します。
-                    this.existingMapInfo = (CityMapInfo)EditorGUILayout.ObjectField(
-                        $"{nameof(CityMapInfo)}:",
-                        this.existingMapInfo,
+                    this.existingMapMetaData = (CityMapMetaData)EditorGUILayout.ObjectField(
+                        $"{nameof(CityMapMetaData)}:",
+                        this.existingMapMetaData,
                         typeof(IdToGmlTable),
                         false
                         );
                     this.existingMapInfoPath = 
-                        Path.Combine(projectPath, AssetDatabase.GetAssetPath(this.existingMapInfo));
+                        Path.Combine(projectPath, AssetDatabase.GetAssetPath(this.existingMapMetaData));
                     GUILayout.TextArea(this.existingMapInfoPath);
                     break;
                 default:
