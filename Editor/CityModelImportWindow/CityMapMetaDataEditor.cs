@@ -1,8 +1,6 @@
 ﻿using PlateauUnitySDK.Editor.EditorWindowCommon;
-using PlateauUnitySDK.Editor.FileConverter.Converters;
 using PlateauUnitySDK.Runtime.CityMapMetaData;
 using UnityEditor;
-using UnityEngine;
 
 namespace PlateauUnitySDK.Editor.CityModelImportWindow
 {

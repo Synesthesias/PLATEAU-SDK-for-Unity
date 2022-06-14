@@ -5,8 +5,7 @@ using UnityEngine;
 namespace PlateauUnitySDK.Runtime.CityMapMetaData
 {
     /// <summary>
-    /// <see cref="CityModelImportWindow"/> のGUIによって入力される設定であり、
-    /// 変換時に利用されます。
+    /// 複数gmlファイルの変換時に利用されます。
     /// </summary>
     [Serializable]
     public class CityModelImportConfig

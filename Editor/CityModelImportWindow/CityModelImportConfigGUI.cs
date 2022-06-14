@@ -1,12 +1,8 @@
-﻿using System.Diagnostics;
-using LibPLATEAU.NET.CityGML;
+﻿using LibPLATEAU.NET.CityGML;
 using PlateauUnitySDK.Editor.EditorWindowCommon;
 using PlateauUnitySDK.Editor.FileConverter.Converters;
 using PlateauUnitySDK.Runtime.CityMapMetaData;
 using UnityEditor;
-using PlateauUnitySDK.Editor.FileConverter.Converters;
-using UnityEngine;
-using Debug = UnityEngine.Debug;
 
 namespace PlateauUnitySDK.Editor.CityModelImportWindow
 {
@@ -18,11 +14,11 @@ namespace PlateauUnitySDK.Editor.CityModelImportWindow
     /// </summary>
     public class CityModelImportConfigGUI
     {
-        private InputFolderSelectorGUI inputFolderSelectorGUI;
-        private GmlSelectorGUI gmlSelectorGUI;
-        private GmlFileSearcher gmlFileSearcher;
-        private ExportFolderPathSelectorGUI exportFolderPathSelectorGUI;
-        private MultiGmlConverter multiGmlConverter;
+        private readonly InputFolderSelectorGUI inputFolderSelectorGUI;
+        private readonly GmlSelectorGUI gmlSelectorGUI;
+        private readonly GmlFileSearcher gmlFileSearcher;
+        private readonly ExportFolderPathSelectorGUI exportFolderPathSelectorGUI;
+        private readonly MultiGmlConverter multiGmlConverter;
         public CityModelImportConfig Config { get; set; } = new CityModelImportConfig();
 
         public CityModelImportConfigGUI()

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using LibPLATEAU.NET.CityGML;
-using PlateauUnitySDK.Editor.CityModelImportWindow;
 using PlateauUnitySDK.Runtime.Util;
 using UnityEditor;
 using UnityEngine;
