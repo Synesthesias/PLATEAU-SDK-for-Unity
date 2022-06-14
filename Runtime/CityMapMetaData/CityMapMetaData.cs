@@ -1,4 +1,5 @@
 ﻿using LibPLATEAU.NET.CityGML;
+using PlateauUnitySDK.Editor.CityModelImportWindow;
 using UnityEngine;
 
 namespace PlateauUnitySDK.Runtime.CityMapMetaData
@@ -6,11 +7,9 @@ namespace PlateauUnitySDK.Runtime.CityMapMetaData
     public class CityMapMetaData : ScriptableObject
     {
         // TODO 未実装
-        public IdToGmlTable idToGmlTable = new IdToGmlTable(); 
-        public Vector3 ReferencePoint;
-        public int MaxLod;
-        public MeshGranularity MeshGranularity;
-        public string[] MeshPaths;
+        public IdToGmlTable idToGmlTable = new IdToGmlTable();
+        public CityModelImportConfig cityModelImportConfig = new CityModelImportConfig();
+        public string[] meshPaths;
         
         public bool DoGmlTableContainsKey(string cityObjId)
         {
@@ -30,10 +29,10 @@ namespace PlateauUnitySDK.Runtime.CityMapMetaData
         public void ClearData()
         {
             this.idToGmlTable?.Clear();
-            ReferencePoint = Vector3.zero;
-            MaxLod = 0;
-            this.MeshGranularity = MeshGranularity.PerPrimaryFeatureObject;
-            this.MeshPaths = new string[]{};
+            cityModelImportConfig.referencePoint = Vector3.zero;
+            // MaxLod = 0;
+            cityModelImportConfig.meshGranularity = MeshGranularity.PerPrimaryFeatureObject;
+            this.meshPaths = new string[]{};
         }
     }
 }

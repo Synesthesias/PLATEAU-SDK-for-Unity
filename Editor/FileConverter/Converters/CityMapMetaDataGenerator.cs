@@ -40,8 +40,7 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
                 }
                 
                 // 追加情報を書き込みます。
-                metaData.ReferencePoint = Config.ReferencePoint;
-                metaData.MeshGranularity = Config.MeshGranularity;
+                metaData.cityModelImportConfig = Config.CityModelImportConfig;
 
                 // ファイルに保存します。
                 LastConvertedCityMapMetaData = metaData;

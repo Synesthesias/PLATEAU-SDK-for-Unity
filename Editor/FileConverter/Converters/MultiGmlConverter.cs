@@ -57,7 +57,9 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
                 string dstMetaDataFullPath = Path.Combine(exportFolderFullPath, "CityMapMetaData.asset");
                 string dstMetaDataAssetPath = FilePathValidator.FullPathToAssetsPath(dstMetaDataFullPath);
                 string objAssetPath = FilePathValidator.FullPathToAssetsPath(objPath);
-                if (!TryGenerateMetaData(out var cityMapInfo, gmlFileName, dstMetaDataAssetPath, objAssetPath, loopCount==1, referencePoint, config))
+                if (!referencePoint.HasValue) throw new Exception($"{nameof(referencePoint)} is null.");
+                config.referencePoint = referencePoint.Value;
+                if (!TryGenerateMetaData(out var cityMapInfo, gmlFileName, dstMetaDataAssetPath, objAssetPath, loopCount==1, config))
                 {
                     continue;
                 }
@@ -84,8 +86,8 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
             try
             {
                 // 設定の parserParams.tessellate は true にしないとポリゴンにならない部分があるので true で固定します。
-                CitygmlParserParams parserParams = new CitygmlParserParams(config.OptimizeFlg);
-                cityModel = CityGml.Load(gmlFullPath, parserParams, DllLogCallback.UnityLogCallbacks, config.LogLevel);
+                CitygmlParserParams parserParams = new CitygmlParserParams(config.optimizeFlag);
+                cityModel = CityGml.Load(gmlFullPath, parserParams, DllLogCallback.UnityLogCallbacks, config.logLevel);
             }
             catch (Exception e)
             {
@@ -104,8 +106,8 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
             {
                 // configを作成します。
                 var converterConf = new GmlToObjFileConverterConfig();
-                converterConf.MeshGranularity = config.MeshGranularity;
-                converterConf.LogLevel = config.LogLevel;
+                converterConf.MeshGranularity = config.meshGranularity;
+                converterConf.LogLevel = config.logLevel;
                 converterConf.DoAutoSetReferencePoint = false;
                     
                 // Reference Pointは最初のものに合わせます。
@@ -128,18 +130,12 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
         }
 
         private static bool TryGenerateMetaData(out CityMapMetaData cityMapMetaData, string gmlFileName,
-            string dstMetaDataAssetPath, string meshAssetPath, bool isFirstFile, Vector3? referencePoint, CityModelImportConfig importConf)
+            string dstMetaDataAssetPath, string meshAssetPath, bool isFirstFile, CityModelImportConfig importConf)
         {
             cityMapMetaData = null;
-            if (referencePoint == null)
-            {
-                Debug.LogError($"{nameof(referencePoint)} is null.");
-                return false;
-            }
             var metaGen = new CityMapMetaDataGenerator();
             var metaGenConfig = metaGen.Config;
-            metaGenConfig.ReferencePoint = referencePoint.Value;
-            metaGenConfig.MeshGranularity = importConf.MeshGranularity;
+            metaGenConfig.CityModelImportConfig = importConf;
             metaGenConfig.DoClearOldMapInfo = true;
             metaGen.Config = metaGenConfig;
             bool isSucceed = metaGen.Generate(meshAssetPath, dstMetaDataAssetPath, gmlFileName, isFirstFile);

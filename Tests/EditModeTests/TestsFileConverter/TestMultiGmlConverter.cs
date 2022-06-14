@@ -83,7 +83,7 @@ namespace PlateauUnitySDK.Tests.EditModeTests.TestsFileConverter
             
             // 値1 : CityMapInfo に記録された Reference Point を取得します。
             var mapInfo = this.converter.LastConvertedCityMapMetaData;
-            var recordedReferencePoint = mapInfo.ReferencePoint;
+            var recordedReferencePoint = mapInfo.cityModelImportConfig.referencePoint;
 
             // 値2 : GmlToObjFileConverter にかけたときの Reference Point を取得します。
             string gmlFilePath = Path.Combine(testUdxPathTokyo, testGmlRelativePathsTokyo[0]);
@@ -104,12 +104,12 @@ namespace PlateauUnitySDK.Tests.EditModeTests.TestsFileConverter
             var config = new CityModelImportConfig();
             // 値1: 変換時の MeshGranularity の設定
             var granularityOnConvert = MeshGranularity.PerAtomicFeatureObject;
-            config.MeshGranularity = granularityOnConvert;
+            config.meshGranularity = granularityOnConvert;
             this.converter.Convert(testGmlRelativePathsTokyo, testUdxPathTokyo, testOutputDir, config);
             var mapInfo = this.converter.LastConvertedCityMapMetaData;
 
             // 値2: CityMapInfo に書き込まれた MeshGranularity の値
-            var granularityOnMapInfo = mapInfo.MeshGranularity;
+            var granularityOnMapInfo = mapInfo.cityModelImportConfig.meshGranularity;
             
             // 値1と値2が同一であることを期待します。
             Assert.AreEqual(granularityOnConvert, granularityOnMapInfo);
@@ -121,7 +121,7 @@ namespace PlateauUnitySDK.Tests.EditModeTests.TestsFileConverter
             bool DoContainAtomic(CityMapMetaData info) => info.idToGmlTable.Keys.Any(id => id.StartsWith("wall"));
 
             var config = new CityModelImportConfig();
-            config.MeshGranularity = MeshGranularity.PerAtomicFeatureObject;
+            config.meshGranularity = MeshGranularity.PerAtomicFeatureObject;
             this.converter.Convert(testGmlRelativePathsSimple, testUdxPathSimple, testOutputDir, config);
             var mapInfo = this.converter.LastConvertedCityMapMetaData;
             foreach (var key in mapInfo.idToGmlTable.Keys)
@@ -130,7 +130,7 @@ namespace PlateauUnitySDK.Tests.EditModeTests.TestsFileConverter
             }
             Assert.IsTrue(DoContainAtomic(mapInfo), "1回目の変換は最小地物を含むことを確認");
 
-            config.MeshGranularity = MeshGranularity.PerPrimaryFeatureObject;
+            config.meshGranularity = MeshGranularity.PerPrimaryFeatureObject;
             this.converter.Convert(testGmlRelativePathsTokyo, testUdxPathTokyo, testOutputDir, config);
             mapInfo = this.converter.LastConvertedCityMapMetaData;
             bool doContainBuilding = mapInfo.idToGmlTable.Keys.Any(id => id.StartsWith("BLD"));

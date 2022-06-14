@@ -74,8 +74,8 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
                 }
                 
                 // 追加情報を書き込みます。
-                mapInfo.ReferencePoint = this.config.ReferencePoint;
-                mapInfo.MeshGranularity = this.config.MeshGranularity;
+                // mapInfo.ReferencePoint = this.config.ReferencePoint;
+                // mapInfo.MeshGranularity = this.config.MeshGranularity;
                 LastConvertedCityMapMetaData = mapInfo;
                 EditorUtility.SetDirty(mapInfo);
                 AssetDatabase.SaveAssets();

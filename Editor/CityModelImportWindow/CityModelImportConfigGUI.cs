@@ -15,9 +15,9 @@ namespace PlateauUnitySDK.Editor.CityModelImportWindow
         public CityModelImportConfig Draw()
         {
             HeaderDrawer.Draw("変換設定");
-            this.config.OptimizeFlg = EditorGUILayout.Toggle("最適化", this.config.OptimizeFlg);
-            this.config.MeshGranularity = (MeshGranularity)EditorGUILayout.EnumPopup("メッシュのオブジェクト分けの粒度", this.config.MeshGranularity);
-            this.config.LogLevel = (DllLogLevel)EditorGUILayout.EnumPopup("(開発者向け)ログの詳細度", this.config.LogLevel);
+            this.config.optimizeFlag = EditorGUILayout.Toggle("最適化", this.config.optimizeFlag);
+            this.config.meshGranularity = (MeshGranularity)EditorGUILayout.EnumPopup("メッシュのオブジェクト分けの粒度", this.config.meshGranularity);
+            this.config.logLevel = (DllLogLevel)EditorGUILayout.EnumPopup("(開発者向け)ログの詳細度", this.config.logLevel);
             return this.config;
         }
     }
