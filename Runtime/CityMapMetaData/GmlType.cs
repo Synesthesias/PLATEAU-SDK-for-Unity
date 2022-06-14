@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using static PlateauUnitySDK.Editor.FileConverter.Converters.GmlType;
+using static PlateauUnitySDK.Runtime.CityMapMetaData.GmlType;
 
-namespace PlateauUnitySDK.Editor.FileConverter.Converters
+namespace PlateauUnitySDK.Runtime.CityMapMetaData
 {
 
     public enum GmlType

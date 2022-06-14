@@ -10,6 +10,7 @@ namespace PlateauUnitySDK.Runtime.CityMapMetaData
     [Serializable]
     public class CityModelImportConfig
     {
+        public GmlSelectorConfig gmlSelectorConfig = new GmlSelectorConfig();
         public string sourceUdxFolderPath = "";
         public string exportFolderPath = "";
         public bool optimizeFlag = true;

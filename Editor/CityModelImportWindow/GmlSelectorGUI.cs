@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using PlateauUnitySDK.Editor.EditorWindowCommon;
 using PlateauUnitySDK.Editor.FileConverter.Converters;
+using PlateauUnitySDK.Runtime.CityMapMetaData;
 using UnityEditor;
 
 namespace PlateauUnitySDK.Editor.CityModelImportWindow
@@ -16,42 +17,46 @@ namespace PlateauUnitySDK.Editor.CityModelImportWindow
     {
         // private bool[] areaIdCheckboxes;
         // private GmlTypeTarget gmlTypeTarget = new GmlTypeTarget();
-        private GmlSelectorConfig config = new GmlSelectorConfig();
         private List<string> gmlFiles;
         private bool isInitialized;
 
+        public GmlSelectorConfig Config { get; set; } = new GmlSelectorConfig();
 
         /// <summary>
         /// 変換対象とする gmlファイルを選択するGUIを表示し、
         /// その結果を gmlファイルの相対パスのリストで返します。
         /// </summary>
-        public List<string> Draw(GmlFileSearcher gmlFileSearcher)
+        public List<string> Draw(GmlFileSearcher gmlFileSearcher, out GmlSelectorConfig outGmlSelectorConfig)
         {
-            if(!this.isInitialized) OnUdxPathChanged(gmlFileSearcher);
+            if(!this.isInitialized) Initialize(gmlFileSearcher);
             HeaderDrawer.IncrementDepth();
             HeaderDrawer.Draw("含める地域");
-            this.config.areaIds = gmlFileSearcher.AreaIds;
-            int areaCount = this.config.areaIds.Length;
+            Config.areaIds = gmlFileSearcher.AreaIds;
+            int areaCount = Config.areaIds.Length;
+            if (Config.isAreaIdTarget.Length != areaCount)
+            {
+                Initialize(gmlFileSearcher);
+            }
             for (int i = 0; i < areaCount; i++)
             {
-                this.config.isAreaIdTarget[i] = EditorGUILayout.Toggle(this.config.areaIds[i], this.config.isAreaIdTarget[i]);
+                Config.isAreaIdTarget[i] = EditorGUILayout.Toggle(Config.areaIds[i], Config.isAreaIdTarget[i]);
             }
 
             using (new EditorGUILayout.HorizontalScope())
             {
                 if (PlateauEditorStyle.MainButton("すべて選択"))
                 {
-                    this.config.SetAllAreaId(true);
+                    Config.SetAllAreaId(true);
                 }
 
                 if (PlateauEditorStyle.MainButton("すべて除外"))
                 {
-                    this.config.SetAllAreaId(false);
+                    Config.SetAllAreaId(false);
                 }
             }
             
             HeaderDrawer.Draw("含める地物");
-            var typeDict = this.config.gmlTypeTarget.TargetDict;
+            var typeDict = Config.gmlTypeTarget.TargetDict;
             foreach (var gmlType in typeDict.Keys.ToArray())
             {
                 typeDict[gmlType] = EditorGUILayout.Toggle(GmlTypeConvert.ToDisplay(gmlType), typeDict[gmlType]);
@@ -61,26 +66,34 @@ namespace PlateauUnitySDK.Editor.CityModelImportWindow
             {
                 if (PlateauEditorStyle.MainButton("すべて選択"))
                 {
-                    this.config.gmlTypeTarget.SetAll(true);
+                    Config.gmlTypeTarget.SetAll(true);
                 }
 
                 if (PlateauEditorStyle.MainButton("すべて除外"))
                 {
-                    this.config.gmlTypeTarget.SetAll(false);
+                    Config.gmlTypeTarget.SetAll(false);
                 }
             }
 
             HeaderDrawer.Draw("対象gmlファイル");
-            this.gmlFiles = ListTargetGmlFiles(gmlFileSearcher, this.config.areaIds, this.config.isAreaIdTarget, this.config.gmlTypeTarget);
+            this.gmlFiles = ListTargetGmlFiles(gmlFileSearcher, this.Config.areaIds, this.Config.isAreaIdTarget, this.Config.gmlTypeTarget);
             EditorGUILayout.TextArea(String.Join("\n", this.gmlFiles));
+            
             HeaderDrawer.DecrementDepth();
+            outGmlSelectorConfig = Config;
+            
             return this.gmlFiles;
         }
 
         public void OnUdxPathChanged(GmlFileSearcher gmlFileSearcher)
         {
+            Initialize(gmlFileSearcher);
+        }
+
+        public void Initialize(GmlFileSearcher gmlFileSearcher)
+        {
             int areaCount = gmlFileSearcher.AreaIds.Length;
-            this.config.isAreaIdTarget = Enumerable.Repeat(true, areaCount ).ToArray();
+            Config.isAreaIdTarget = Enumerable.Repeat(true, areaCount ).ToArray();
             this.isInitialized = true;
         }
 

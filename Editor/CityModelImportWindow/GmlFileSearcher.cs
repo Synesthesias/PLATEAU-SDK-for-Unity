@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using PlateauUnitySDK.Editor.FileConverter.Converters;
+using PlateauUnitySDK.Runtime.CityMapMetaData;
 
 namespace PlateauUnitySDK.Editor.CityModelImportWindow
 {

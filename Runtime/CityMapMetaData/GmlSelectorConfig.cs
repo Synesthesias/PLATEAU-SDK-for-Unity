@@ -1,7 +1,6 @@
 ﻿using System;
-using PlateauUnitySDK.Editor.FileConverter.Converters;
 
-namespace PlateauUnitySDK.Editor.CityModelImportWindow
+namespace PlateauUnitySDK.Runtime.CityMapMetaData
 {
 
     /// <summary>

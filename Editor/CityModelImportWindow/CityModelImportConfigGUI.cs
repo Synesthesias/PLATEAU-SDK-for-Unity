@@ -38,7 +38,9 @@ namespace PlateauUnitySDK.Editor.CityModelImportWindow
             if (GmlFileSearcher.IsPathUdx(sourcePath))
             {
                 // udxフォルダが選択されているなら、設定と出力のGUIを表示します。
-                var gmlFiles = this.gmlSelectorGUI.Draw(this.gmlFileSearcher);
+                this.gmlSelectorGUI.Config = Config.gmlSelectorConfig;
+                var gmlFiles = this.gmlSelectorGUI.Draw(this.gmlFileSearcher, out var gmlSelectorConfig);
+                Config.gmlSelectorConfig = gmlSelectorConfig;
                 Config.exportFolderPath = this.exportFolderPathSelectorGUI.Draw(Config.exportFolderPath);
                 HeaderDrawer.Draw("変換設定");
                 Config.optimizeFlag = EditorGUILayout.Toggle("最適化", Config.optimizeFlag);
