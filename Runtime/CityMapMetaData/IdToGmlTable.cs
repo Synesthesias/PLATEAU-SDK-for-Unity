@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using PlateauUnitySDK.Runtime.Util;
 using UnityEngine;
 
 namespace PlateauUnitySDK.Runtime.CityMapMetaData
@@ -20,13 +21,7 @@ namespace PlateauUnitySDK.Runtime.CityMapMetaData
         /// </summary>
         public void OnBeforeSerialize()
         {
-            this.keys.Clear();
-            this.values.Clear();
-            foreach (var pair in this.dictionary)
-            {
-                this.keys.Add(pair.Key);
-                this.values.Add(pair.Value);
-            }
+            DictionarySerializer.OnBeforeSerialize(this.dictionary, this.keys, this.values);
         }
 
         /// <summary>
@@ -34,12 +29,7 @@ namespace PlateauUnitySDK.Runtime.CityMapMetaData
         /// </summary>
         public void OnAfterDeserialize()
         {
-            this.dictionary = new Dictionary<string, string>();
-            int cnt = Math.Min(this.keys.Count, this.values.Count);
-            for (int i = 0; i < cnt; i++)
-            {
-                this.dictionary.Add(this.keys[i], this.values[i]);
-            }
+            this.dictionary = DictionarySerializer.OnAfterSerialize(this.keys, this.values);
         }
 
         public void Add(string id, string gmlFileName)
