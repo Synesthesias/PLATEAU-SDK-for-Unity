@@ -1,5 +1,4 @@
 ﻿using LibPLATEAU.NET.CityGML;
-using PlateauUnitySDK.Editor.CityModelImportWindow;
 using UnityEngine;
 
 namespace PlateauUnitySDK.Runtime.CityMapMetaData

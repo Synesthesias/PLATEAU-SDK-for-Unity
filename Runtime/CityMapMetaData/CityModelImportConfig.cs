@@ -2,7 +2,7 @@
 using LibPLATEAU.NET.CityGML;
 using UnityEngine;
 
-namespace PlateauUnitySDK.Editor.CityModelImportWindow
+namespace PlateauUnitySDK.Runtime.CityMapMetaData
 {
     /// <summary>
     /// <see cref="CityModelImportWindow"/> のGUIによって入力される設定であり、

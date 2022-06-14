@@ -70,5 +70,11 @@ namespace PlateauUnitySDK.Runtime.CityMapMetaData
         {
             this.dictionary.Clear();
         }
+
+        public int Count => this.dictionary.Count;
+        public IEnumerator<KeyValuePair<string, string>> GetEnumerator()
+        {
+            return this.dictionary.GetEnumerator();
+        }
     }
 }

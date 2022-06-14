@@ -1,5 +1,6 @@
 ﻿using LibPLATEAU.NET.CityGML;
 using PlateauUnitySDK.Editor.EditorWindowCommon;
+using PlateauUnitySDK.Runtime.CityMapMetaData;
 using UnityEditor;
 
 namespace PlateauUnitySDK.Editor.CityModelImportWindow
@@ -10,15 +11,14 @@ namespace PlateauUnitySDK.Editor.CityModelImportWindow
     /// </summary>
     public class CityModelImportConfigGUI
     {
-        private CityModelImportConfig config = new CityModelImportConfig();
+        public CityModelImportConfig Config { get; set; } = new CityModelImportConfig();
 
         public CityModelImportConfig Draw()
         {
-            HeaderDrawer.Draw("変換設定");
-            this.config.optimizeFlag = EditorGUILayout.Toggle("最適化", this.config.optimizeFlag);
-            this.config.meshGranularity = (MeshGranularity)EditorGUILayout.EnumPopup("メッシュのオブジェクト分けの粒度", this.config.meshGranularity);
-            this.config.logLevel = (DllLogLevel)EditorGUILayout.EnumPopup("(開発者向け)ログの詳細度", this.config.logLevel);
-            return this.config;
+            this.Config.optimizeFlag = EditorGUILayout.Toggle("最適化", Config.optimizeFlag);
+            this.Config.meshGranularity = (MeshGranularity)EditorGUILayout.EnumPopup("メッシュのオブジェクト分けの粒度", Config.meshGranularity);
+            this.Config.logLevel = (DllLogLevel)EditorGUILayout.EnumPopup("(開発者向け)ログの詳細度", this.Config.logLevel);
+            return this.Config;
         }
     }
 }
