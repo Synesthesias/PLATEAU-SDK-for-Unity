@@ -56,9 +56,9 @@ namespace PlateauUnitySDK.Editor.CityModelImportWindow
             // base.OnInspectorGUI();
         }
 
-        private void OnConvertButtonPushed(CityModelImportConfig importConfig)
-        {
-            var window = CityModelImportWindow.OpenWithConfig(importConfig);
-        }
+        // private void OnConvertButtonPushed(CityModelImportConfig importConfig)
+        // {
+        //     var window = CityModelImportWindow.OpenWithConfig(importConfig);
+        // }
     }
 }

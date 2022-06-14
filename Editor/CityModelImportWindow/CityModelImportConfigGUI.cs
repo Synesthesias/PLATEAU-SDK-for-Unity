@@ -4,6 +4,7 @@ using PlateauUnitySDK.Editor.EditorWindowCommon;
 using PlateauUnitySDK.Editor.FileConverter.Converters;
 using PlateauUnitySDK.Runtime.CityMapMetaData;
 using UnityEditor;
+using PlateauUnitySDK.Editor.FileConverter.Converters;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
 
@@ -11,7 +12,9 @@ namespace PlateauUnitySDK.Editor.CityModelImportWindow
 {
 
     /// <summary>
-    /// <see cref="CityModelImportWindow"/> の一部分で、変換の設定をするGUIを提供します。
+    /// udxフォルダを指定し、条件に合うgmlファイルを一括で変換するGUIを提供します。
+    /// <see cref="CityModelImportWindow"/> の一部分で、この設定は <see cref="MultiGmlConverter"/> に渡されます。
+    /// <see cref="CityMapMetaDataEditor"/> でも利用します。
     /// </summary>
     public class CityModelImportConfigGUI
     {
