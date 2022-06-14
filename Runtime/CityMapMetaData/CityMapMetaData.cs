@@ -9,7 +9,7 @@ namespace PlateauUnitySDK.Runtime.CityMapMetaData
         // TODO 未実装
         public IdToGmlTable idToGmlTable = new IdToGmlTable();
         public CityModelImportConfig cityModelImportConfig = new CityModelImportConfig();
-        public string[] meshPaths;
+        public string importSourcePath;
         
         public bool DoGmlTableContainsKey(string cityObjId)
         {
@@ -32,7 +32,7 @@ namespace PlateauUnitySDK.Runtime.CityMapMetaData
             cityModelImportConfig.referencePoint = Vector3.zero;
             // MaxLod = 0;
             cityModelImportConfig.meshGranularity = MeshGranularity.PerPrimaryFeatureObject;
-            this.meshPaths = new string[]{};
+            this.importSourcePath = "";
         }
     }
 }

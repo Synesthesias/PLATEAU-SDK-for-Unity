@@ -22,7 +22,7 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
             Config = new CityMapMetaDataGeneratorConfig();
         }
 
-        public bool Generate(string meshAssetPath, string dstMetaDataAssetPath, string gmlFileName, bool doClearOldMapInfo)
+        public bool Generate(string meshAssetPath, string dstMetaDataAssetPath, string gmlFileName, string udxFullPath, bool doClearOldMapInfo)
         {
             try
             {
@@ -41,6 +41,14 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
                 
                 // 追加情報を書き込みます。
                 metaData.cityModelImportConfig = Config.CityModelImportConfig;
+                if (FilePathValidator.IsSubDirectoryOfAssets(udxFullPath))
+                {
+                    metaData.importSourcePath = FilePathValidator.FullPathToAssetsPath(udxFullPath);
+                }
+                else
+                {
+                    metaData.importSourcePath = udxFullPath;
+                }
 
                 // ファイルに保存します。
                 LastConvertedCityMapMetaData = metaData;
