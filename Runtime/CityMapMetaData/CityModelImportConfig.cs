@@ -11,6 +11,8 @@ namespace PlateauUnitySDK.Runtime.CityMapMetaData
     [Serializable]
     public class CityModelImportConfig
     {
+        public string sourceUdxFolderPath = "";
+        public string exportFolderPath = "";
         public bool optimizeFlag = true;
         public MeshGranularity meshGranularity = MeshGranularity.PerPrimaryFeatureObject;
         public Vector3 referencePoint = Vector3.zero;

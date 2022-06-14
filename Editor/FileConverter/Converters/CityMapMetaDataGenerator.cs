@@ -40,16 +40,20 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
                 }
                 
                 // 追加情報を書き込みます。
-                metaData.cityModelImportConfig = Config.CityModelImportConfig;
-                metaData.exportFolderPath = FilePathValidator.FullPathToAssetsPath(exportFolderFullPath);
+                var importConf = Config.CityModelImportConfig;
+                importConf.sourceUdxFolderPath = FilePathValidator.FullPathToAssetsPath(exportFolderFullPath);
                 if (FilePathValidator.IsSubDirectoryOfAssets(udxFullPath))
                 {
-                    metaData.importSourcePath = FilePathValidator.FullPathToAssetsPath(udxFullPath);
+                    importConf.sourceUdxFolderPath = FilePathValidator.FullPathToAssetsPath(udxFullPath);
                 }
                 else
                 {
-                    metaData.importSourcePath = udxFullPath;
+                    importConf.sourceUdxFolderPath = udxFullPath;
                 }
+
+                importConf.exportFolderPath = FilePathValidator.FullPathToAssetsPath(exportFolderFullPath);
+                metaData.cityModelImportConfig = importConf;
+                
 
                 // ファイルに保存します。
                 LastConvertedCityMapMetaData = metaData;

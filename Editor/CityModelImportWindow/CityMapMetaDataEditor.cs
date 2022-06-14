@@ -6,13 +6,17 @@ using UnityEngine;
 
 namespace PlateauUnitySDK.Editor.CityModelImportWindow
 {
+    /// <summary>
+    /// <see cref="CityMapMetaData"/> のインスペクタでの表示を行います。
+    /// </summary>
     [CustomEditor(typeof(CityMapMetaData))]
     public class CityMapMetaDataEditor : UnityEditor.Editor
     {
-        private bool foldOut = false;
+        private bool foldOutIdGmlTable;
         private CityModelImportConfigGUI importConfigGUI = new CityModelImportConfigGUI();
         public override void OnInspectorGUI()
         {
+            HeaderDrawer.Reset();
             var metaData = target as CityMapMetaData;
             if (metaData == null)
             {
@@ -20,8 +24,9 @@ namespace PlateauUnitySDK.Editor.CityModelImportWindow
                 return;
             }
             
-            this.foldOut = EditorGUILayout.Foldout(this.foldOut, "IDとGMLファイルの紐付け");
-            if (this.foldOut)
+            HeaderDrawer.Draw("IDとGMLファイルの情報");
+            this.foldOutIdGmlTable = EditorGUILayout.Foldout(this.foldOutIdGmlTable, "IDとGMLファイルの紐付け");
+            if (this.foldOutIdGmlTable)
             {
                 foreach (var pair in metaData.idToGmlTable)
                 {
@@ -31,23 +36,23 @@ namespace PlateauUnitySDK.Editor.CityModelImportWindow
             }
 
             EditorGUILayout.Space(10);
+            
+            HeaderDrawer.Draw("変換時情報");
+            HeaderDrawer.IncrementDepth();
+            
+            this.importConfigGUI.Config = metaData.cityModelImportConfig;
             var importConfig = this.importConfigGUI.Draw();
-
-            EditorGUILayout.Space(10);
-            EditorGUILayout.LabelField("変換元");
-            EditorGUILayout.TextArea(metaData.importSourcePath);
-            EditorGUILayout.Space(10);
-            EditorGUILayout.LabelField("変換先");
-            EditorGUILayout.TextArea(metaData.exportFolderPath);
-            if (PlateauEditorStyle.MainButton("再変換"))
-            {
-                OnConvertButtonPushed(importConfig, metaData.importSourcePath, metaData.exportFolderPath);
-            }
+            
+            // if (PlateauEditorStyle.MainButton("再変換"))
+            // {
+                // OnConvertButtonPushed(importConfig);
+            // }
+            // base.OnInspectorGUI();
         }
 
-        private void OnConvertButtonPushed(CityModelImportConfig importConfig, string sourceUdxFolderPath, string exportFolderPath)
+        private void OnConvertButtonPushed(CityModelImportConfig importConfig)
         {
-            var window = CityModelImportWindow.OpenWithConfig(importConfig, sourceUdxFolderPath, exportFolderPath);
+            var window = CityModelImportWindow.OpenWithConfig(importConfig);
         }
     }
 }

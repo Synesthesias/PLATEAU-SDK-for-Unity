@@ -18,8 +18,12 @@ namespace PlateauUnitySDK.Editor.CityModelImportWindow
         {
             set
             {
+                bool isChanged = this.folderPath != value;
                 this.folderPath = value;
-                OnPathChanged?.Invoke(this.folderPath);
+                if (isChanged)
+                {
+                    OnPathChanged?.Invoke(this.folderPath);
+                }
             }
         }
 
