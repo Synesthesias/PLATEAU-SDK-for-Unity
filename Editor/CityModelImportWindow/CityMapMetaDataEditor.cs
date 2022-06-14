@@ -36,15 +36,18 @@ namespace PlateauUnitySDK.Editor.CityModelImportWindow
             EditorGUILayout.Space(10);
             EditorGUILayout.LabelField("変換元");
             EditorGUILayout.TextArea(metaData.importSourcePath);
+            EditorGUILayout.Space(10);
+            EditorGUILayout.LabelField("変換先");
+            EditorGUILayout.TextArea(metaData.exportFolderPath);
             if (PlateauEditorStyle.MainButton("再変換"))
             {
-                OnConvertButtonPushed(importConfig, metaData.importSourcePath);
+                OnConvertButtonPushed(importConfig, metaData.importSourcePath, metaData.exportFolderPath);
             }
         }
 
-        private void OnConvertButtonPushed(CityModelImportConfig importConfig, string sourceUdxFolderPath)
+        private void OnConvertButtonPushed(CityModelImportConfig importConfig, string sourceUdxFolderPath, string exportFolderPath)
         {
-            var window = CityModelImportWindow.OpenWithConfig(importConfig, sourceUdxFolderPath);
+            var window = CityModelImportWindow.OpenWithConfig(importConfig, sourceUdxFolderPath, exportFolderPath);
         }
     }
 }

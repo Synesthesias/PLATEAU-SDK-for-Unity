@@ -34,12 +34,13 @@ namespace PlateauUnitySDK.Editor.CityModelImportWindow
             window.Init();
         }
 
-        public static CityModelImportWindow OpenWithConfig(CityModelImportConfig importConfig, string sourceUdxFolderPath)
+        public static CityModelImportWindow OpenWithConfig(CityModelImportConfig importConfig, string sourceUdxFolderPath, string exportFolderPath)
         {
             Open();
             var window = GetWindow<CityModelImportWindow>();
             window.cityModelImportConfigGUI.Config = importConfig;
             window.inputFolderSelectorGUI.FolderPath = sourceUdxFolderPath;
+            window.exportFolderPathSelectorGUI.ExportFolderPath = exportFolderPath;
             return window;
         }
 

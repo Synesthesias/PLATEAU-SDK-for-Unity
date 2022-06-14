@@ -11,7 +11,12 @@ namespace PlateauUnitySDK.Editor.CityModelImportWindow
     public class ExportFolderPathSelectorGUI
     {
         private string exportFolderPath;
-        
+
+        public string ExportFolderPath
+        {
+            set => this.exportFolderPath = value;
+        }
+
         /// <summary>
         /// GUIを表示し、選択されたパスを返します。
         /// </summary>

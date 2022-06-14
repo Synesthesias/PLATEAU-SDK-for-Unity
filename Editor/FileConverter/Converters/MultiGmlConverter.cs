@@ -59,7 +59,7 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
                 string objAssetPath = FilePathValidator.FullPathToAssetsPath(objPath);
                 if (!referencePoint.HasValue) throw new Exception($"{nameof(referencePoint)} is null.");
                 config.referencePoint = referencePoint.Value;
-                if (!TryGenerateMetaData(out var cityMapInfo, gmlFileName, dstMetaDataAssetPath, objAssetPath, baseFolderPath, loopCount==1, config))
+                if (!TryGenerateMetaData(out var cityMapInfo, gmlFileName, dstMetaDataAssetPath, objAssetPath, baseFolderPath, exportFolderFullPath, loopCount==1, config))
                 {
                     continue;
                 }
@@ -130,7 +130,7 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
         }
 
         private static bool TryGenerateMetaData(out CityMapMetaData cityMapMetaData, string gmlFileName,
-            string dstMetaDataAssetPath, string meshAssetPath,string udxFullPath, bool isFirstFile, CityModelImportConfig importConf)
+            string dstMetaDataAssetPath, string meshAssetPath,string udxFullPath, string exportFolderFullPath, bool isFirstFile, CityModelImportConfig importConf)
         {
             cityMapMetaData = null;
             var metaGen = new CityMapMetaDataGenerator();
@@ -138,7 +138,7 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
             metaGenConfig.CityModelImportConfig = importConf;
             metaGenConfig.DoClearOldMapInfo = true;
             metaGen.Config = metaGenConfig;
-            bool isSucceed = metaGen.Generate(meshAssetPath, dstMetaDataAssetPath, gmlFileName, udxFullPath, isFirstFile);
+            bool isSucceed = metaGen.Generate(meshAssetPath, dstMetaDataAssetPath, gmlFileName, udxFullPath, exportFolderFullPath, isFirstFile);
             if (!isSucceed)
             {
                 return false;
