@@ -58,7 +58,7 @@ namespace PlateauUnitySDK.Editor.CityModelImportWindow
                 HeaderDrawer.Draw("出力");
                 if (PlateauEditorStyle.MainButton("出力"))
                 {
-                    this.multiGmlConverter.Convert(gmlFiles, config.sourceUdxFolderPath, config.exportFolderPath, config);
+                    this.multiGmlConverter.Convert(gmlFiles, config);
                 }
             }
             else

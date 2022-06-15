@@ -57,7 +57,9 @@ namespace PlateauUnitySDK.Tests.EditModeTests.TestsFileConverter
         {
             // 2つのGMLファイルを変換します。
             var config = new CityModelImportConfig();
-            this.converter.Convert(testGmlRelativePathsTokyo, testUdxPathTokyo, testOutputDir, config);
+            config.sourceUdxFolderPath = testUdxPathTokyo;
+            config.exportFolderPath = testOutputDir;
+            this.converter.Convert(testGmlRelativePathsTokyo, config);
             // 変換後、出力されたファイルの数を数えます。
             int objCount = 0;
             int assetCount = 0;
@@ -82,7 +84,9 @@ namespace PlateauUnitySDK.Tests.EditModeTests.TestsFileConverter
         {
             // 2つのGMLファイルを変換します。
             var config = new CityModelImportConfig();
-            this.converter.Convert(testGmlRelativePathsTokyo, testUdxPathTokyo, testOutputDir, config);
+            config.sourceUdxFolderPath = testUdxPathTokyo;
+            config.exportFolderPath = testOutputDir;
+            this.converter.Convert(testGmlRelativePathsTokyo, config);
             
             // 値1 : CityMapInfo に記録された Reference Point を取得します。
             var mapInfo = this.converter.LastConvertedCityMapMetaData;
@@ -108,7 +112,9 @@ namespace PlateauUnitySDK.Tests.EditModeTests.TestsFileConverter
             // 値1: 変換時の MeshGranularity の設定
             var granularityOnConvert = MeshGranularity.PerAtomicFeatureObject;
             config.meshGranularity = granularityOnConvert;
-            this.converter.Convert(testGmlRelativePathsTokyo, testUdxPathTokyo, testOutputDir, config);
+            config.sourceUdxFolderPath = testUdxPathTokyo;
+            config.exportFolderPath = testOutputDir;
+            this.converter.Convert(testGmlRelativePathsTokyo, config);
 
             // 値2: CityMapInfo に書き込まれた MeshGranularity の値
             string metaDataPath =
@@ -128,7 +134,9 @@ namespace PlateauUnitySDK.Tests.EditModeTests.TestsFileConverter
 
             var config = new CityModelImportConfig();
             config.meshGranularity = MeshGranularity.PerAtomicFeatureObject;
-            this.converter.Convert(testGmlRelativePathsSimple, testUdxPathSimple, testOutputDir, config);
+            config.sourceUdxFolderPath = testUdxPathSimple;
+            config.exportFolderPath = testOutputDir;
+            this.converter.Convert(testGmlRelativePathsSimple, config);
             var mapInfo = this.converter.LastConvertedCityMapMetaData;
             foreach (var key in mapInfo.idToGmlTable.Keys)
             {
@@ -137,7 +145,9 @@ namespace PlateauUnitySDK.Tests.EditModeTests.TestsFileConverter
             Assert.IsTrue(DoContainAtomic(mapInfo), "1回目の変換は最小地物を含むことを確認");
 
             config.meshGranularity = MeshGranularity.PerPrimaryFeatureObject;
-            this.converter.Convert(testGmlRelativePathsTokyo, testUdxPathTokyo, testOutputDir, config);
+            config.sourceUdxFolderPath = testUdxPathTokyo;
+            config.exportFolderPath = testOutputDir;
+            this.converter.Convert(testGmlRelativePathsTokyo, config);
             mapInfo = this.converter.LastConvertedCityMapMetaData;
             bool doContainBuilding = mapInfo.idToGmlTable.Keys.Any(id => id.StartsWith("BLD"));
             Assert.IsFalse(DoContainAtomic(mapInfo), "2回目の変換は最小地物を含まないことを確認");

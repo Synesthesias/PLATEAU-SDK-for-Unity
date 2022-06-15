@@ -8,9 +8,7 @@ namespace PlateauUnitySDK.Runtime.CityMapMetaData
         // TODO 未実装
         public IdToGmlTable idToGmlTable = new IdToGmlTable();
         public CityModelImportConfig cityModelImportConfig = new CityModelImportConfig();
-        // public string importSourcePath;
-        // public string exportFolderPath;
-        
+
         public bool DoGmlTableContainsKey(string cityObjId)
         {
             return this.idToGmlTable.ContainsKey(cityObjId);
@@ -30,10 +28,7 @@ namespace PlateauUnitySDK.Runtime.CityMapMetaData
         {
             this.idToGmlTable?.Clear();
             cityModelImportConfig.referencePoint = Vector3.zero;
-            // MaxLod = 0;
             cityModelImportConfig.meshGranularity = MeshGranularity.PerPrimaryFeatureObject;
-            // this.importSourcePath = "";
-            // this.exportFolderPath = "";
         }
     }
 }

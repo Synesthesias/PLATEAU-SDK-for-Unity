@@ -26,8 +26,7 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
         /// <param name="baseFolderPath"><paramref name="gmlRelativePaths"/>の相対パスの基準となるパスです。</param>
         /// <param name="exportFolderFullPath">出力先のフォルダの絶対パスです。</param>
         /// <param name="config">変換設定です。</param>
-        // TODO 引数が冗長。パスも含めて config 1つで良いはず
-        public void Convert(IEnumerable<string> gmlRelativePaths, string baseFolderPath, string exportFolderFullPath, CityModelImportConfig config)
+        public void Convert(IEnumerable<string> gmlRelativePaths, CityModelImportConfig config)
         {
             int successCount = 0;
             int loopCount = 0;
@@ -36,11 +35,11 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
             {
                 loopCount++;
 
-                string gmlFullPath = Path.GetFullPath(Path.Combine(baseFolderPath, gmlRelativePath));
+                string gmlFullPath = Path.GetFullPath(Path.Combine(config.sourceUdxFolderPath, gmlRelativePath));
 
                 // gmlをロードします。
                 string gmlFileName = Path.GetFileNameWithoutExtension(gmlRelativePath);
-                string objPath = Path.Combine(exportFolderFullPath, gmlFileName + ".obj");
+                string objPath = Path.Combine(config.exportFolderPath, gmlFileName + ".obj");
                 if (!TryLoadCityGml(out var cityModel, gmlFullPath, config))
                 {
                     continue;
@@ -54,12 +53,12 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
 
                 // CityMapMetaData を生成します。
                 // TODO ファイル名は変更できるようにしたい
-                string dstMetaDataFullPath = Path.Combine(exportFolderFullPath, "CityMapMetaData.asset");
+                string dstMetaDataFullPath = Path.Combine(config.exportFolderPath, "CityMapMetaData.asset");
                 string dstMetaDataAssetPath = FilePathValidator.FullPathToAssetsPath(dstMetaDataFullPath);
                 string objAssetPath = FilePathValidator.FullPathToAssetsPath(objPath);
                 if (!referencePoint.HasValue) throw new Exception($"{nameof(referencePoint)} is null.");
                 config.referencePoint = referencePoint.Value;
-                if (!TryGenerateMetaData(out var cityMapInfo, gmlFileName, dstMetaDataAssetPath, objAssetPath, baseFolderPath, exportFolderFullPath, loopCount==1, config))
+                if (!TryGenerateMetaData(out var cityMapInfo, gmlFileName, objAssetPath, loopCount==1, config))
                 {
                     continue;
                 }
@@ -67,7 +66,7 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
 
                 successCount++;
             }
-            AssetDatabase.ImportAsset(FilePathValidator.FullPathToAssetsPath(exportFolderFullPath));
+            AssetDatabase.ImportAsset(FilePathValidator.FullPathToAssetsPath(config.exportFolderPath));
             AssetDatabase.Refresh();
             int failureCount = loopCount - successCount;
             if (failureCount == 0)
@@ -130,15 +129,17 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
         }
 
         private static bool TryGenerateMetaData(out CityMapMetaData cityMapMetaData, string gmlFileName,
-            string dstMetaDataAssetPath, string meshAssetPath,string udxFullPath, string exportFolderFullPath, bool isFirstFile, CityModelImportConfig importConf)
+            string dstMeshAssetPath, bool isFirstFile, CityModelImportConfig importConf)
         {
             cityMapMetaData = null;
             var metaGen = new CityMapMetaDataGenerator();
-            var metaGenConfig = metaGen.Config;
-            metaGenConfig.CityModelImportConfig = importConf;
-            metaGenConfig.DoClearOldMapInfo = true;
-            metaGen.Config = metaGenConfig;
-            bool isSucceed = metaGen.Generate(meshAssetPath, dstMetaDataAssetPath, gmlFileName, udxFullPath, exportFolderFullPath, isFirstFile);
+            var metaGenConfig = new CityMapMetaDataGeneratorConfig
+            {
+                CityModelImportConfig = importConf,
+                DoClearOldMapInfo = isFirstFile,
+                ParserParams = new CitygmlParserParams(),
+            };
+            bool isSucceed = metaGen.Generate(metaGenConfig, dstMeshAssetPath , gmlFileName);
             if (!isSucceed)
             {
                 return false;
