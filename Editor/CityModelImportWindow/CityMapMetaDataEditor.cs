@@ -42,9 +42,8 @@ namespace PlateauUnitySDK.Editor.CityModelImportWindow
             this.foldOutReconvert = EditorGUILayout.Foldout(this.foldOutReconvert, "再変換");
             if (this.foldOutReconvert)
             {
-                this.importConfigGUI.Config = metaData.cityModelImportConfig;
-                var importConfig = this.importConfigGUI.Draw();
-            
+                this.importConfigGUI.Draw(metaData.cityModelImportConfig);
+
                 // if (PlateauEditorStyle.MainButton("再変換"))
                 // {
                 // OnConvertButtonPushed(importConfig);

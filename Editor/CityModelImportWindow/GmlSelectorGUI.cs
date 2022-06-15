@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using PlateauUnitySDK.Editor.EditorWindowCommon;
-using PlateauUnitySDK.Editor.FileConverter.Converters;
 using PlateauUnitySDK.Runtime.CityMapMetaData;
 using UnityEditor;
 
@@ -88,7 +87,7 @@ namespace PlateauUnitySDK.Editor.CityModelImportWindow
             this.isInitialized = false;
         }
 
-        public void Initialize(GmlFileSearcher gmlFileSearcher, GmlSelectorConfig config)
+        private void Initialize(GmlFileSearcher gmlFileSearcher, GmlSelectorConfig config)
         {
             int areaCount = gmlFileSearcher.AreaIds.Length;
             config.isAreaIdTarget = Enumerable.Repeat(true, areaCount ).ToArray();

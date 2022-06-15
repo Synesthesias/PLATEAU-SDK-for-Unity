@@ -1,4 +1,5 @@
 ﻿using PlateauUnitySDK.Editor.EditorWindowCommon;
+using PlateauUnitySDK.Runtime.CityMapMetaData;
 using UnityEditor;
 using UnityEngine;
 
@@ -15,6 +16,7 @@ namespace PlateauUnitySDK.Editor.CityModelImportWindow
         private Vector2 scrollPosition;
         
         private CityModelImportConfigGUI cityModelImportConfigGUI;
+        private CityModelImportConfig importConfig;
 
         [MenuItem("Plateau/都市モデルインポート")]
         public static void Open()
@@ -28,6 +30,7 @@ namespace PlateauUnitySDK.Editor.CityModelImportWindow
         private void Init()
         {
             this.cityModelImportConfigGUI = new CityModelImportConfigGUI();
+            this.importConfig = new CityModelImportConfig();
             this.isInitialized = true;
         }
 
@@ -36,7 +39,7 @@ namespace PlateauUnitySDK.Editor.CityModelImportWindow
             if (!this.isInitialized) Init();
             HeaderDrawer.Reset();
             this.scrollPosition = EditorGUILayout.BeginScrollView(this.scrollPosition);
-            this.cityModelImportConfigGUI.Draw();
+            this.cityModelImportConfigGUI.Draw(this.importConfig);
             EditorGUILayout.EndScrollView();
         }
     }

@@ -21,7 +21,7 @@ namespace PlateauUnitySDK.Editor.CityModelImportWindow
         private readonly MultiGmlConverter multiGmlConverter;
         
         /// <summary> <see cref="MultiGmlConverter"/> に渡す設定です。</summary>
-        public CityModelImportConfig Config { get; set; } = new CityModelImportConfig();
+        // public CityModelImportConfig Config { get; set; } = new CityModelImportConfig();
 
         public CityModelImportConfigGUI()
         {
@@ -32,32 +32,39 @@ namespace PlateauUnitySDK.Editor.CityModelImportWindow
             this.multiGmlConverter = new MultiGmlConverter();
         }
 
-        public CityModelImportConfig Draw()
+        public void Draw(CityModelImportConfig config)
         {
-            this.udxFolderSelectorGUI.FolderPath = Config.sourceUdxFolderPath;
+            // udxフォルダ選択
+            this.udxFolderSelectorGUI.FolderPath = config.sourceUdxFolderPath;
             string sourcePath = this.udxFolderSelectorGUI.Draw("udxフォルダ選択");
-            Config.sourceUdxFolderPath = sourcePath;
+            config.sourceUdxFolderPath = sourcePath;
+            
+            // udxフォルダが選択されているなら、設定と出力のGUIを表示
             if (GmlFileSearcher.IsPathUdx(sourcePath))
             {
-                // udxフォルダが選択されているなら、設定と出力のGUIを表示します。
-                var gmlFiles = this.gmlSelectorGUI.Draw(this.gmlFileSearcher, ref Config.gmlSelectorConfig);
-                Config.exportFolderPath = this.exportFolderPathSelectorGUI.Draw(Config.exportFolderPath);
+                // 変換対象の絞り込み
+                var gmlFiles = this.gmlSelectorGUI.Draw(this.gmlFileSearcher, ref config.gmlSelectorConfig);
+                
+                // 変換先パス設定
+                config.exportFolderPath = this.exportFolderPathSelectorGUI.Draw(config.exportFolderPath);
+                
+                // 変換設定
                 HeaderDrawer.Draw("変換設定");
-                Config.optimizeFlag = EditorGUILayout.Toggle("最適化", Config.optimizeFlag);
-                Config.meshGranularity = (MeshGranularity)EditorGUILayout.EnumPopup("メッシュのオブジェクト分けの粒度", Config.meshGranularity);
-                Config.logLevel = (DllLogLevel)EditorGUILayout.EnumPopup("(開発者向け)ログの詳細度", Config.logLevel);
+                config.optimizeFlag = EditorGUILayout.Toggle("最適化", config.optimizeFlag);
+                config.meshGranularity = (MeshGranularity)EditorGUILayout.EnumPopup("メッシュのオブジェクト分けの粒度", config.meshGranularity);
+                config.logLevel = (DllLogLevel)EditorGUILayout.EnumPopup("(開発者向け)ログの詳細度", config.logLevel);
+                
+                // 出力
                 HeaderDrawer.Draw("出力");
                 if (PlateauEditorStyle.MainButton("出力"))
                 {
-                    this.multiGmlConverter.Convert(gmlFiles, Config.sourceUdxFolderPath, Config.exportFolderPath, Config);
+                    this.multiGmlConverter.Convert(gmlFiles, config.sourceUdxFolderPath, config.exportFolderPath, config);
                 }
             }
             else
             {
                 EditorGUILayout.HelpBox("udxフォルダが選択されていません。", MessageType.Error);
             }
-            
-            return Config;
         }
         
         /// <summary>
