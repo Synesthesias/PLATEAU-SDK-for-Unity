@@ -46,7 +46,7 @@ namespace PlateauUnitySDK.Editor.CityModelImportWindow
                 
             }
             
-            base.OnInspectorGUI();
+            // base.OnInspectorGUI();
         }
     }
 }

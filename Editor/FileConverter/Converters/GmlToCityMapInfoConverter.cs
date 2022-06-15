@@ -65,7 +65,7 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
                 var cityObjectIds = cityModel.RootCityObjects
                     .SelectMany(co => co.CityObjectDescendantsDFS)
                     .Select(co => co.ID);
-                var mapInfo = LoadOrCreateMetaData(dstTableFullPath, this.config.DoClearOldMapInfo);
+                var mapInfo = LoadOrCreateMetaData(dstTableFullPath, this.config.DoClearIdToGmlTable);
                 string gmlFileName = Path.GetFileNameWithoutExtension(srcGmlPath);
                 foreach (string id in cityObjectIds)
                 {
@@ -131,7 +131,7 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
             var loadedMetaData = AssetDatabase.LoadAssetAtPath<CityMapMetaData>(dstAssetPath);
             if (doClearOldMapInfo)
             {
-                loadedMetaData.ClearData();
+                loadedMetaData.DoClearIdToGmlTable();
             }
             return loadedMetaData;
         }

@@ -45,7 +45,7 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
                 {
                     continue;
                 }
-
+                
                 // objに変換します。
                 if (!TryConvertToObj(cityModel, ref referencePoint, config, gmlFullPath, objPath))
                 {
@@ -64,6 +64,7 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
 
                 successCount++;
             }
+            
             AssetDatabase.ImportAsset(FilePathValidator.FullPathToAssetsPath(config.exportFolderPath));
             AssetDatabase.Refresh();
             int failureCount = loopCount - successCount;
@@ -134,11 +135,12 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
             var metaGenConfig = new CityMapMetaDataGeneratorConfig
             {
                 CityModelImportConfig = importConf,
-                DoClearOldMapInfo = isFirstFile,
+                DoClearIdToGmlTable = isFirstFile,
                 ParserParams = new CitygmlParserParams(),
             };
-
+            
             bool isSucceed = metaGen.Generate(metaGenConfig, dstMeshAssetPath , gmlFileName);
+            
             if (!isSucceed)
             {
                 return false;

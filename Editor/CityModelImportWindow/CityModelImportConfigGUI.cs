@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Linq;
 using LibPLATEAU.NET.CityGML;
 using PlateauUnitySDK.Editor.EditorWindowCommon;
@@ -6,6 +7,7 @@ using PlateauUnitySDK.Editor.FileConverter.Converters;
 using PlateauUnitySDK.Runtime.CityMapMetaData;
 using UnityEditor;
 using UnityEngine;
+using Debug = UnityEngine.Debug;
 
 namespace PlateauUnitySDK.Editor.CityModelImportWindow
 {
@@ -56,7 +58,7 @@ namespace PlateauUnitySDK.Editor.CityModelImportWindow
                 config.optimizeFlag = EditorGUILayout.Toggle("最適化", config.optimizeFlag);
                 config.meshGranularity = (MeshGranularity)EditorGUILayout.EnumPopup("メッシュのオブジェクト分けの粒度", config.meshGranularity);
                 config.logLevel = (DllLogLevel)EditorGUILayout.EnumPopup("(開発者向け)ログの詳細度", config.logLevel);
-                
+
                 // 出力
                 HeaderDrawer.Draw("出力");
                 if (PlateauEditorStyle.MainButton("出力"))

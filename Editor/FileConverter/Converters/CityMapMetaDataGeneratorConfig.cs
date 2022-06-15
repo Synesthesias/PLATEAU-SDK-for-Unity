@@ -15,15 +15,15 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
         /// <summary> obj変換時の ReferencePoint が何であったかを記録します。 </summary>
         public CityModelImportConfig CityModelImportConfig;
 
-        /// <summary> 変換時すでに CityMapInfo ファイルが存在する場合、trueならば中身のデータを消して作り直し、falseならば以前のファイルに追記します。 </summary>
-        public bool DoClearOldMapInfo;
+        /// <summary> 変換時すでに CityMapInfo ファイルが存在する場合、trueならば idToGmlTable 消して作り直し、falseならば以前のデータに追加します。 </summary>
+        public bool DoClearIdToGmlTable;
         
 
         public CityMapMetaDataGeneratorConfig()
         {
             this.ParserParams = new CitygmlParserParams();
             this.CityModelImportConfig = new CityModelImportConfig();
-            this.DoClearOldMapInfo = false;
+            this.DoClearIdToGmlTable = false;
         }
     }
 }

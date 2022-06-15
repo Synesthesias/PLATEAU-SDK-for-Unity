@@ -24,11 +24,9 @@ namespace PlateauUnitySDK.Runtime.CityMapMetaData
             return this.idToGmlTable.TryGetValue(cityObjId, out gmlFileName);
         }
 
-        public void ClearData()
+        public void DoClearIdToGmlTable()
         {
             this.idToGmlTable?.Clear();
-            cityModelImportConfig.referencePoint = Vector3.zero;
-            cityModelImportConfig.meshGranularity = MeshGranularity.PerPrimaryFeatureObject;
         }
     }
 }

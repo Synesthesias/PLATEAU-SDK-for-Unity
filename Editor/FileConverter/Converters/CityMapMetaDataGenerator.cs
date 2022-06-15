@@ -31,7 +31,7 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
                 string udxFullPath = config.CityModelImportConfig.sourceUdxFolderPath;
                 string dstMetaDataAssetPath =
                     Path.Combine(FilePathValidator.FullPathToAssetsPath(exportFolderFullPath), "CityMapMetaData.asset");
-                var metaData = LoadOrCreateMetaData(dstMetaDataAssetPath, config.DoClearOldMapInfo);
+                var metaData = LoadOrCreateMetaData(dstMetaDataAssetPath, config.DoClearIdToGmlTable);
                 var assets = AssetDatabase.LoadAllAssetsAtPath(meshAssetPath);
                 
                 // 各メッシュの名前とgmlファイル名を紐付けます。
@@ -54,14 +54,15 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
                 {
                     importConf.sourceUdxFolderPath = udxFullPath;
                 }
-
+                
                 importConf.exportFolderPath = FilePathValidator.FullPathToAssetsPath(exportFolderFullPath);
                 metaData.cityModelImportConfig = importConf;
-
+                
                 // ファイルに保存します。
                 LastConvertedCityMapMetaData = metaData;
                 EditorUtility.SetDirty(metaData);
                 AssetDatabase.SaveAssets();
+                
                 return true;
             }
             catch (Exception e)
@@ -74,10 +75,10 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
         /// <summary>
         /// 指定パスの <see cref="CityMapMetaData"/> をロードします。
         /// ファイルが存在しない場合、新しく作成します。
-        /// ファイルが存在する場合、<paramref name="doClearOldMapInfo"/> が false ならばそれをロードします。
-        /// true ならば中身のデータを消してからロードします。
+        /// ファイルが存在する場合、それをロードします。
+        /// ロード時、<paramref name="doClearIdToGmlTable"/> がtrueなら idToGmlTable を消去します。
         /// </summary>
-        private static CityMapMetaData LoadOrCreateMetaData(string dstFullPath, bool doClearOldMapInfo)
+        private static CityMapMetaData LoadOrCreateMetaData(string dstFullPath, bool doClearIdToGmlTable)
         {
             bool doFileExists = File.Exists(dstFullPath);
             string dstAssetPath = FilePathValidator.FullPathToAssetsPath(dstFullPath);
@@ -88,9 +89,9 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
                 AssetDatabase.SaveAssets();
             }
             var loadedMetaData = AssetDatabase.LoadAssetAtPath<CityMapMetaData>(dstAssetPath);
-            if (doClearOldMapInfo)
+            if (doClearIdToGmlTable)
             {
-                loadedMetaData.ClearData();
+                loadedMetaData.DoClearIdToGmlTable();
             }
             return loadedMetaData;
         }
