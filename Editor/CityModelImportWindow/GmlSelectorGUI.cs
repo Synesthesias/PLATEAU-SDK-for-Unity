@@ -90,7 +90,10 @@ namespace PlateauUnitySDK.Editor.CityModelImportWindow
         private void Initialize(GmlFileSearcher gmlFileSearcher, GmlSelectorConfig config)
         {
             int areaCount = gmlFileSearcher.AreaIds.Length;
-            config.isAreaIdTarget = Enumerable.Repeat(true, areaCount ).ToArray();
+            if (config.isAreaIdTarget.Length != areaCount)
+            {
+                config.isAreaIdTarget = Enumerable.Repeat(true, areaCount ).ToArray();
+            }
             this.isInitialized = true;
         }
 

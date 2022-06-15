@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using LibPLATEAU.NET.CityGML;
 using PlateauUnitySDK.Runtime.Util;
 using UnityEditor;
@@ -52,9 +53,6 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
                 }
 
                 // CityMapMetaData を生成します。
-                // TODO ファイル名は変更できるようにしたい
-                string dstMetaDataFullPath = Path.Combine(config.exportFolderPath, "CityMapMetaData.asset");
-                string dstMetaDataAssetPath = FilePathValidator.FullPathToAssetsPath(dstMetaDataFullPath);
                 string objAssetPath = FilePathValidator.FullPathToAssetsPath(objPath);
                 if (!referencePoint.HasValue) throw new Exception($"{nameof(referencePoint)} is null.");
                 config.referencePoint = referencePoint.Value;
@@ -99,16 +97,16 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
             return true;
         }
 
-        private static bool TryConvertToObj(CityModel cityModel, ref Vector3? referencePoint, CityModelImportConfig config, string gmlFullPath, string objPath)
+        private static bool TryConvertToObj(CityModel cityModel, ref Vector3? referencePoint, CityModelImportConfig importConfig, string gmlFullPath, string objPath)
         {
             using (var objConverter = new GmlToObjFileConverter())
             {
                 // configを作成します。
                 var converterConf = new GmlToObjFileConverterConfig();
-                converterConf.MeshGranularity = config.meshGranularity;
-                converterConf.LogLevel = config.logLevel;
+                converterConf.MeshGranularity = importConfig.meshGranularity;
+                converterConf.LogLevel = importConfig.logLevel;
                 converterConf.DoAutoSetReferencePoint = false;
-                    
+
                 // Reference Pointは最初のものに合わせます。
                 if (referencePoint == null)
                 {
@@ -121,7 +119,7 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
                 }
 
                 objConverter.Config = converterConf;
-                    
+
                 bool isSuccess = objConverter.ConvertWithoutLoad(cityModel, gmlFullPath, objPath);
 
                 return isSuccess;
@@ -139,6 +137,7 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
                 DoClearOldMapInfo = isFirstFile,
                 ParserParams = new CitygmlParserParams(),
             };
+
             bool isSucceed = metaGen.Generate(metaGenConfig, dstMeshAssetPath , gmlFileName);
             if (!isSucceed)
             {

@@ -57,7 +57,6 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
 
                 importConf.exportFolderPath = FilePathValidator.FullPathToAssetsPath(exportFolderFullPath);
                 metaData.cityModelImportConfig = importConf;
-                
 
                 // ファイルに保存します。
                 LastConvertedCityMapMetaData = metaData;
