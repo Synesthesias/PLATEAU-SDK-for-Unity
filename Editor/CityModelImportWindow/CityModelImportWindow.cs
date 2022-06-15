@@ -23,14 +23,7 @@ namespace PlateauUnitySDK.Editor.CityModelImportWindow
             window.Show();
             window.Init();
         }
-
-        // public static CityModelImportWindow OpenWithConfig(CityModelImportConfig importConfig)
-        // {
-        //     Open();
-        //     var window = GetWindow<CityModelImportWindow>();
-        //     window.cityModelImportConfigGUI.Config = importConfig;
-        //     return window;
-        // }
+        
 
         private void Init()
         {

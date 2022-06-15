@@ -5,10 +5,13 @@ using System.Linq;
 using LibPLATEAU.NET.CityGML;
 using NUnit.Framework;
 using PlateauUnitySDK.Editor.CityModelImportWindow;
+using PlateauUnitySDK.Editor.FileConverter;
 using PlateauUnitySDK.Editor.FileConverter.Converters;
 using PlateauUnitySDK.Runtime.CityMapMetaData;
 using PlateauUnitySDK.Runtime.Util;
 using PlateauUnitySDK.Tests.TestUtils;
+using UnityEditor;
+using UnityEditor.VersionControl;
 using UnityEngine;
 
 namespace PlateauUnitySDK.Tests.EditModeTests.TestsFileConverter
@@ -99,20 +102,23 @@ namespace PlateauUnitySDK.Tests.EditModeTests.TestsFileConverter
         }
 
         [Test]
-        public void MeshGranularity_Is_Written_To_CityMapInfo()
+        public void MeshGranularity_Is_Written_To_MetaData()
         {
             var config = new CityModelImportConfig();
             // 値1: 変換時の MeshGranularity の設定
             var granularityOnConvert = MeshGranularity.PerAtomicFeatureObject;
             config.meshGranularity = granularityOnConvert;
             this.converter.Convert(testGmlRelativePathsTokyo, testUdxPathTokyo, testOutputDir, config);
-            var mapInfo = this.converter.LastConvertedCityMapMetaData;
 
             // 値2: CityMapInfo に書き込まれた MeshGranularity の値
-            var granularityOnMapInfo = mapInfo.cityModelImportConfig.meshGranularity;
+            string metaDataPath =
+                Path.Combine(FilePathValidator.FullPathToAssetsPath(testOutputDir), "CityMapMetaData.asset");
+            var loadedMetaData = AssetDatabase.LoadAssetAtPath<CityMapMetaData>(metaDataPath);
+            Assert.NotNull(loadedMetaData, "メタデータをロードできる");
+            var granularityOnMapInfo = loadedMetaData.cityModelImportConfig.meshGranularity;
             
             // 値1と値2が同一であることを期待します。
-            Assert.AreEqual(granularityOnConvert, granularityOnMapInfo);
+            Assert.AreEqual(granularityOnConvert, granularityOnMapInfo, "変換時の粒度設定がメタデータに記録されている");
         }
 
         [Test]

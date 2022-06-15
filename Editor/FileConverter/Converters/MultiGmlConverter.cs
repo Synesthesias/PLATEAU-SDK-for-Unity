@@ -26,6 +26,7 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
         /// <param name="baseFolderPath"><paramref name="gmlRelativePaths"/>の相対パスの基準となるパスです。</param>
         /// <param name="exportFolderFullPath">出力先のフォルダの絶対パスです。</param>
         /// <param name="config">変換設定です。</param>
+        // TODO 引数が冗長。パスも含めて config 1つで良いはず
         public void Convert(IEnumerable<string> gmlRelativePaths, string baseFolderPath, string exportFolderFullPath, CityModelImportConfig config)
         {
             int successCount = 0;
@@ -51,7 +52,7 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
                     continue;
                 }
 
-                // CityMapInfo を生成します。
+                // CityMapMetaData を生成します。
                 // TODO ファイル名は変更できるようにしたい
                 string dstMetaDataFullPath = Path.Combine(exportFolderFullPath, "CityMapMetaData.asset");
                 string dstMetaDataAssetPath = FilePathValidator.FullPathToAssetsPath(dstMetaDataFullPath);
