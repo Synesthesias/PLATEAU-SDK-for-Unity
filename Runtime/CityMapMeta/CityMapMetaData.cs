@@ -1,7 +1,6 @@
-﻿using LibPLATEAU.NET.CityGML;
-using UnityEngine;
+﻿using UnityEngine;
 
-namespace PlateauUnitySDK.Runtime.CityMapMetaData
+namespace PlateauUnitySDK.Runtime.CityMapMeta
 {
     public class CityMapMetaData : ScriptableObject
     {

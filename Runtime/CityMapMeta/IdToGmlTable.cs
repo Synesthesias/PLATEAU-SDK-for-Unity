@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using PlateauUnitySDK.Runtime.Util;
 using UnityEngine;
 
-namespace PlateauUnitySDK.Runtime.CityMapMetaData
+namespace PlateauUnitySDK.Runtime.CityMapMeta
 {
     /// <summary>
     /// <see cref="LibPLATEAU.NET.CityGML.CityObject"/> のIDから、対応するGMLのファイル名を検索できる辞書データです。

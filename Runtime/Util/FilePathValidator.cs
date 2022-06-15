@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using UnityEngine;
 
-namespace PlateauUnitySDK.Editor.FileConverter
+namespace PlateauUnitySDK.Runtime.Util
 {
     /// <summary>
     /// ファイルパスが正しいかどうか検証します。
@@ -105,6 +105,13 @@ namespace PlateauUnitySDK.Editor.FileConverter
             var fullPath = Path.GetFullPath(filePath);
             var assetsPath = Path.GetFullPath(unityProjectDataPath) + Path.DirectorySeparatorChar;
             return fullPath.StartsWith(assetsPath);
+        }
+
+        public static bool IsSubDirectory(string subPath, string dir)
+        {
+            string subFull = Path.GetFullPath(subPath);
+            string dirFull = Path.GetFullPath(dir);
+            return subFull.StartsWith(dirFull);
         }
 
         /// <summary>

@@ -4,7 +4,7 @@ using System.Linq;
 using PlateauUnitySDK.Runtime.Util;
 using UnityEngine;
 
-namespace PlateauUnitySDK.Runtime.CityMapMetaData
+namespace PlateauUnitySDK.Runtime.CityMapMeta
 {
 
     /// <summary>

@@ -1,5 +1,5 @@
 ﻿using LibPLATEAU.NET.CityGML;
-using PlateauUnitySDK.Runtime.CityMapMetaData;
+using PlateauUnitySDK.Runtime.CityMapMeta;
 
 namespace PlateauUnitySDK.Editor.FileConverter.Converters
 {

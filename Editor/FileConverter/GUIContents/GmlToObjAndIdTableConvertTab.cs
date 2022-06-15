@@ -1,5 +1,5 @@
 ﻿using PlateauUnitySDK.Editor.EditorWindowCommon;
-using PlateauUnitySDK.Runtime.CityMapMetaData;
+using PlateauUnitySDK.Runtime.CityMapMeta;
 
 namespace PlateauUnitySDK.Editor.FileConverter.GUIContents
 {

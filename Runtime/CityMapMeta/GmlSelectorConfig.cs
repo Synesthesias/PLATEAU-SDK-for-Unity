@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace PlateauUnitySDK.Runtime.CityMapMetaData
+namespace PlateauUnitySDK.Runtime.CityMapMeta
 {
 
     /// <summary>

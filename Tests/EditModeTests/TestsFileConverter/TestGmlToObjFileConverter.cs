@@ -4,6 +4,7 @@ using LibPLATEAU.NET.CityGML;
 using NUnit.Framework;
 using PlateauUnitySDK.Editor.FileConverter;
 using PlateauUnitySDK.Editor.FileConverter.Converters;
+using PlateauUnitySDK.Runtime.Util;
 using PlateauUnitySDK.Tests.TestUtils;
 using UnityEditor;
 using UnityEngine;

@@ -1,7 +1,8 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using PlateauUnitySDK.Runtime.CityMapMetaData;
+using PlateauUnitySDK.Runtime.CityMapMeta;
+using PlateauUnitySDK.Runtime.Util;
 using UnityEditor;
 using UnityEngine;
 using Debug = UnityEngine.Debug;

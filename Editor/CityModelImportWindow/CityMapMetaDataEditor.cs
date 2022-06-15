@@ -1,5 +1,5 @@
 ﻿using PlateauUnitySDK.Editor.EditorWindowCommon;
-using PlateauUnitySDK.Runtime.CityMapMetaData;
+using PlateauUnitySDK.Runtime.CityMapMeta;
 using UnityEditor;
 
 namespace PlateauUnitySDK.Editor.CityModelImportWindow
