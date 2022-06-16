@@ -1,15 +1,12 @@
-using System;
 using System.IO;
 using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using LibPLATEAU.NET.CityGML;
 using NUnit.Framework;
 using PlateauUnitySDK.Editor.FileConverter;
 using PlateauUnitySDK.Editor.FileConverter.Converters;
+using PlateauUnitySDK.Runtime.Util;
 using PlateauUnitySDK.Tests.TestUtils;
 using UnityEditor;
-using UnityEditor.VersionControl;
 using UnityEngine;
 
 namespace PlateauUnitySDK.Tests.EditModeTests.TestsFileConverter
@@ -92,7 +89,11 @@ namespace PlateauUnitySDK.Tests.EditModeTests.TestsFileConverter
             string outputFilePath = Path.Combine(DirectoryUtil.TempAssetFolderPath, "exported.obj");
             using (var converter = new GmlToObjFileConverter())
             {
-                converter.SetConfig(meshGranularity, AxesConversion.RUF, true);
+                var conf = converter.Config;
+                conf.MeshGranularity = meshGranularity;
+                conf.AxesConversion = AxesConversion.RUF;
+                conf.OptimizeFlag = true;
+                converter.Config = conf;
                 bool result = converter.Convert(inputFilePath, outputFilePath);
                 Assert.IsTrue(result);
             }

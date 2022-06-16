@@ -13,6 +13,20 @@ namespace PlateauUnitySDK.Editor.CityModelImportWindow
     public class InputFolderSelectorGUI
     {
         private string folderPath;
+
+        public string FolderPath
+        {
+            set
+            {
+                bool isChanged = this.folderPath != value;
+                this.folderPath = value;
+                if (isChanged)
+                {
+                    OnPathChanged?.Invoke(this.folderPath);
+                }
+            }
+        }
+
         private event Action<string> OnPathChanged;
 
         public InputFolderSelectorGUI(Action<string> onPathChanged)

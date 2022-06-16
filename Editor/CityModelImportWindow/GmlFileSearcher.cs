@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using PlateauUnitySDK.Editor.FileConverter.Converters;
+using PlateauUnitySDK.Runtime.CityMapMeta;
 
 namespace PlateauUnitySDK.Editor.CityModelImportWindow
 {
@@ -26,6 +27,10 @@ namespace PlateauUnitySDK.Editor.CityModelImportWindow
         private Dictionary<string, List<string>> fileTable;
 
         private string udxFolderPath = "";
+        // public string UdxFolderPath
+        // {
+        //     set => this.udxFolderPath = value;
+        // }
 
         /// <summary> インスタンス化と同時にパスを指定して検索します。 </summary>
         public GmlFileSearcher(string udxFolderPath)

@@ -10,24 +10,29 @@ namespace PlateauUnitySDK.Editor.CityModelImportWindow
     /// </summary>
     public class ExportFolderPathSelectorGUI
     {
-        private string exportFolderPath;
-        
+        // private string exportFolderPath;
+
+        // public string ExportFolderPath
+        // {
+        //     set => this.exportFolderPath = value;
+        // }
+
         /// <summary>
         /// GUIを表示し、選択されたパスを返します。
         /// </summary>
-        public string Draw()
+        public string Draw(string currentExportPath)
         {
             HeaderDrawer.Draw("出力先選択");
             using (new EditorGUILayout.HorizontalScope())
             { 
-                this.exportFolderPath = EditorGUILayout.TextField("出力先フォルダ", this.exportFolderPath);
+                currentExportPath = EditorGUILayout.TextField("出力先フォルダ", currentExportPath);
                 if (PlateauEditorStyle.MainButton("参照..."))
                 {
-                    this.exportFolderPath = EditorUtility.SaveFolderPanel("保存先選択", Application.dataPath, "PlateauData");
+                    currentExportPath = EditorUtility.SaveFolderPanel("保存先選択", Application.dataPath, "PlateauData");
                 }
             }
 
-            return this.exportFolderPath;
+            return currentExportPath;
         }
     }
 }

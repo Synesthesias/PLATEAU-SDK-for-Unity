@@ -1,10 +1,7 @@
 ﻿using System.Collections;
-using System.IO;
 using NUnit.Framework;
 using PlateauUnitySDK.Editor.CityModelImportWindow;
-using PlateauUnitySDK.Tests.TestUtils;
 using UnityEditor;
-using UnityEngine;
 using UnityEngine.TestTools;
 
 namespace PlateauUnitySDK.Tests.EditModeTests.TestCityModelImportWindow
@@ -14,8 +11,8 @@ namespace PlateauUnitySDK.Tests.EditModeTests.TestCityModelImportWindow
     {
         private CityModelImportWindow window;
 
-        private static string testUdxPath = Path.GetFullPath(Path.Combine(Application.dataPath,
-            "../Packages/PlateauUnitySDK/Tests/TestData/TestDataTokyoMini/udx"));
+        // private static string testUdxPath = Path.GetFullPath(Path.Combine(Application.dataPath,
+        //     "../Packages/PlateauUnitySDK/Tests/TestData/TestDataTokyoMini/udx"));
 
         [UnitySetUp]
         public IEnumerator SetUp()

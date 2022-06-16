@@ -4,7 +4,8 @@
     "references": [
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner",
-        "PlateauUnitySDK.Editor"
+        "PlateauUnitySDK.Editor",
+        "PlateauUnitySDK.Runtime"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

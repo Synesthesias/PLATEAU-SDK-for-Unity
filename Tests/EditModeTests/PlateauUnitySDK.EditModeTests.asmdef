@@ -5,7 +5,8 @@
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner",
         "PlateauUnitySDK.TestUtils",
-        "PlateauUnitySDK.Editor"
+        "PlateauUnitySDK.Editor",
+        "PlateauUnitySDK.Runtime"
     ],
     "includePlatforms": [
         "Editor"
