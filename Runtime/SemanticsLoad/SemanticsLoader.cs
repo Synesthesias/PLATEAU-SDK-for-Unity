@@ -42,7 +42,7 @@ namespace PlateauUnitySDK.Runtime.SemanticsLoad
             
             string udxPath = cityMapMetaData.cityModelImportConfig.sourceUdxFolderPath;
             // udxフォルダは StreamingAssets フォルダにあることを前提とします。
-            if (!FilePathValidator.IsSubDirectory(udxPath, Application.streamingAssetsPath))
+            if (!PathUtil.IsSubDirectory(udxPath, Application.streamingAssetsPath))
             {
                 throw new IOException(
                     $"Could not find gml file, because udx path is not in StreamingAssets folder.\nudxPath = {udxPath}");

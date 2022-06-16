@@ -31,7 +31,7 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
                 string exportFolderFullPath = config.CityModelImportConfig.exportFolderPath;
                 string udxFullPath = config.CityModelImportConfig.sourceUdxFolderPath;
                 string dstMetaDataAssetPath =
-                    Path.Combine(FilePathValidator.FullPathToAssetsPath(exportFolderFullPath), "CityMapMetaData.asset");
+                    Path.Combine(PathUtil.FullPathToAssetsPath(exportFolderFullPath), "CityMapMetaData.asset");
                 var metaData = LoadOrCreateMetaData(dstMetaDataAssetPath, config.DoClearIdToGmlTable);
                 var assets = AssetDatabase.LoadAllAssetsAtPath(meshAssetPath);
                 
@@ -46,17 +46,17 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
                 
                 // 追加情報を書き込みます。
                 var importConf = config.CityModelImportConfig;
-                importConf.sourceUdxFolderPath = FilePathValidator.FullPathToAssetsPath(exportFolderFullPath);
-                if (FilePathValidator.IsSubDirectoryOfAssets(udxFullPath))
+                importConf.sourceUdxFolderPath = PathUtil.FullPathToAssetsPath(exportFolderFullPath);
+                if (PathUtil.IsSubDirectoryOfAssets(udxFullPath))
                 {
-                    importConf.sourceUdxFolderPath = FilePathValidator.FullPathToAssetsPath(udxFullPath);
+                    importConf.sourceUdxFolderPath = PathUtil.FullPathToAssetsPath(udxFullPath);
                 }
                 else
                 {
                     importConf.sourceUdxFolderPath = udxFullPath;
                 }
                 
-                importConf.exportFolderPath = FilePathValidator.FullPathToAssetsPath(exportFolderFullPath);
+                importConf.exportFolderPath = PathUtil.FullPathToAssetsPath(exportFolderFullPath);
                 metaData.cityModelImportConfig = importConf;
                 
                 // ファイルに保存します。
@@ -82,7 +82,7 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
         private static CityMapMetaData LoadOrCreateMetaData(string dstFullPath, bool doClearIdToGmlTable)
         {
             bool doFileExists = File.Exists(dstFullPath);
-            string dstAssetPath = FilePathValidator.FullPathToAssetsPath(dstFullPath);
+            string dstAssetPath = PathUtil.FullPathToAssetsPath(dstFullPath);
             if (!doFileExists)
             {
                 var instance = ScriptableObject.CreateInstance<CityMapMetaData>();

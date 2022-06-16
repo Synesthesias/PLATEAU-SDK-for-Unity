@@ -17,18 +17,19 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
     /// </summary>
     public class MultiGmlConverter
     {
+        private static string DefaultImportDstPath = Application.streamingAssetsPath;
         /// <summary> このインスタンスが最後に出力した <see cref="CityMapMetaData"/> です。 </summary>
-        public CityMapMetaData LastConvertedCityMapMetaData { get; set; }
+        public CityMapMetaData LastConvertedCityMapMetaData { get; private set; }
         
         /// <summary>
         /// 複数のgmlファイルを変換します。
         /// </summary>
         /// <param name="gmlRelativePaths">gmlファイルの相対パスのリストです。</param>
-        /// <param name="baseFolderPath"><paramref name="gmlRelativePaths"/>の相対パスの基準となるパスです。</param>
-        /// <param name="exportFolderFullPath">出力先のフォルダの絶対パスです。</param>
         /// <param name="config">変換設定です。</param>
         public void Convert(IEnumerable<string> gmlRelativePaths, CityModelImportConfig config)
         {
+            CopySrcFolderToStreamingAssets(config);
+            
             int successCount = 0;
             int loopCount = 0;
             Vector3? referencePoint = null;
@@ -53,7 +54,7 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
                 }
 
                 // CityMapMetaData を生成します。
-                string objAssetPath = FilePathValidator.FullPathToAssetsPath(objPath);
+                string objAssetPath = PathUtil.FullPathToAssetsPath(objPath);
                 if (!referencePoint.HasValue) throw new Exception($"{nameof(referencePoint)} is null.");
                 config.referencePoint = referencePoint.Value;
                 if (!TryGenerateMetaData(out var cityMapInfo, gmlFileName, objAssetPath, loopCount==1, config))
@@ -65,7 +66,7 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
                 successCount++;
             }
             
-            AssetDatabase.ImportAsset(FilePathValidator.FullPathToAssetsPath(config.exportFolderPath));
+            AssetDatabase.ImportAsset(PathUtil.FullPathToAssetsPath(config.exportFolderPath));
             AssetDatabase.Refresh();
             int failureCount = loopCount - successCount;
             if (failureCount == 0)
@@ -78,7 +79,20 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
             }
         }
 
-        
+        /// <summary>
+        /// 変換元を StreamingAssets内のデフォルトパスにコピーします。
+        /// すでに StreamingAssets 内にある場合は何もしません。
+        /// </summary>
+        private void CopySrcFolderToStreamingAssets(CityModelImportConfig config)
+        {
+            string prevSrc = Path.GetFullPath(Path.Combine(config.sourceUdxFolderPath, "../"));
+            bool isInStreamingAssets =
+                PathUtil.IsSubDirectory(prevSrc, Application.streamingAssetsPath);
+            if (isInStreamingAssets) return;
+            
+        }
+
+
         private static bool TryLoadCityGml(out CityModel cityModel, string gmlFullPath, CityModelImportConfig config)
         {
             try

@@ -94,11 +94,11 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
 
         private static bool IsPathValid(string srcGmlPath, string dstTableFullPath)
         {
-            if (!FilePathValidator.IsValidInputFilePath(srcGmlPath, "gml", false))
+            if (!PathUtil.IsValidInputFilePath(srcGmlPath, "gml", false))
             {
                 return false;
             }
-            if(!FilePathValidator.IsValidOutputFilePath(dstTableFullPath, "asset"))
+            if(!PathUtil.IsValidOutputFilePath(dstTableFullPath, "asset"))
             {
                 return false;
             }

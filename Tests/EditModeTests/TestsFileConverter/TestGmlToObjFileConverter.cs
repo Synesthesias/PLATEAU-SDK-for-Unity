@@ -99,7 +99,7 @@ namespace PlateauUnitySDK.Tests.EditModeTests.TestsFileConverter
             }
             AssetDatabase.Refresh();
 
-            var obj = AssetDatabase.LoadAssetAtPath<GameObject>(FilePathValidator.FullPathToAssetsPath(outputFilePath));
+            var obj = AssetDatabase.LoadAssetAtPath<GameObject>(PathUtil.FullPathToAssetsPath(outputFilePath));
             var meshes = obj.GetComponentsInChildren<MeshFilter>().Select(mf => mf.sharedMesh).ToArray();
             return meshes;
         }

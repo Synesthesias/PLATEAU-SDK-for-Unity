@@ -118,7 +118,7 @@ namespace PlateauUnitySDK.Tests.EditModeTests.TestsFileConverter
 
             // 値2: CityMapInfo に書き込まれた MeshGranularity の値
             string metaDataPath =
-                Path.Combine(FilePathValidator.FullPathToAssetsPath(testOutputDir), "CityMapMetaData.asset");
+                Path.Combine(PathUtil.FullPathToAssetsPath(testOutputDir), "CityMapMetaData.asset");
             var loadedMetaData = AssetDatabase.LoadAssetAtPath<CityMapMetaData>(metaDataPath);
             Assert.NotNull(loadedMetaData, "メタデータをロードできる");
             var granularityOnMapInfo = loadedMetaData.cityModelImportConfig.meshGranularity;

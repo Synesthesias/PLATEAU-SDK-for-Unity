@@ -4,7 +4,6 @@ namespace PlateauUnitySDK.Runtime.CityMapMeta
 {
     public class CityMapMetaData : ScriptableObject
     {
-        // TODO 未実装
         public IdToGmlTable idToGmlTable = new IdToGmlTable();
         public CityModelImportConfig cityModelImportConfig = new CityModelImportConfig();
 

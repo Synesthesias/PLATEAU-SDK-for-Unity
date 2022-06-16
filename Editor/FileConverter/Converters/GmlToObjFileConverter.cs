@@ -102,9 +102,9 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
                 
                 // 出力先が Assets フォルダ内 かつ すでに同名ファイルが存在する場合、古いファイルを消します。
                 // そうしないと上書きによって obj のメッシュ名が変わっても Unity に反映されないことがあるためです。
-                if (FilePathValidator.IsSubDirectoryOfAssets(exportObjFilePath))
+                if (PathUtil.IsSubDirectoryOfAssets(exportObjFilePath))
                 {
-                    string assetPath = FilePathValidator.FullPathToAssetsPath(exportObjFilePath);
+                    string assetPath = PathUtil.FullPathToAssetsPath(exportObjFilePath);
                     AssetDatabase.DeleteAsset(assetPath);
                     AssetDatabase.Refresh();
                 }
@@ -126,9 +126,9 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
                 this.objWriter.Write(exportObjFilePath, cityModel, gmlFilePath);
 
                 // 出力先が Assets フォルダ内なら、それをUnityに反映させます。
-                if (FilePathValidator.IsSubDirectoryOfAssets(exportObjFilePath))
+                if (PathUtil.IsSubDirectoryOfAssets(exportObjFilePath))
                 {
-                    string assetPath = FilePathValidator.FullPathToAssetsPath(exportObjFilePath);
+                    string assetPath = PathUtil.FullPathToAssetsPath(exportObjFilePath);
                     AssetDatabase.ImportAsset(assetPath);
                     AssetDatabase.Refresh();
                 }
@@ -136,9 +136,9 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
                 // 変換後、3Dメッシュが1つもなければ、ファイルを削除して変換失敗とします。
                 // ただし、このチェックは出力パスが Assets フォルダ内である時のみ機能します。
                 // TODO この処理は C#側ではなく C++側で実装したい
-                if (FilePathValidator.IsSubDirectoryOfAssets(exportObjFilePath))
+                if (PathUtil.IsSubDirectoryOfAssets(exportObjFilePath))
                 {
-                    string assetPath = FilePathValidator.FullPathToAssetsPath(exportObjFilePath);
+                    string assetPath = PathUtil.FullPathToAssetsPath(exportObjFilePath);
                     // AssetDatabase は Unityプロジェクトの外のパスでは動かないので、不本意ながら「Assetsフォルダ内にあるときのみチェック」という条件ができてしまいます。
                     var assets = AssetDatabase.LoadAllAssetsAtPath(assetPath);
                     if (!assets.OfType<Mesh>().Any())
@@ -164,8 +164,8 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
 
         private static bool IsPathValid(string gmlFilePath, string exportObjFilePath)
         {
-            if (!FilePathValidator.IsValidInputFilePath(gmlFilePath, "gml", false)) return false;
-            if (!FilePathValidator.IsValidOutputFilePath(exportObjFilePath, "obj")) return false;
+            if (!PathUtil.IsValidInputFilePath(gmlFilePath, "gml", false)) return false;
+            if (!PathUtil.IsValidOutputFilePath(exportObjFilePath, "obj")) return false;
             return true;
         }
 

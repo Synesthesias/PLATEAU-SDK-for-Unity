@@ -41,11 +41,11 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
         /// </summary>
         public bool Convert(string srcFilePath, string dstFilePath)
         {
-            if (!FilePathValidator.IsValidInputFilePath(srcFilePath, "obj", true)) return false;
-            if (!FilePathValidator.IsValidOutputFilePath(dstFilePath, "fbx")) return false;
+            if (!PathUtil.IsValidInputFilePath(srcFilePath, "obj", true)) return false;
+            if (!PathUtil.IsValidOutputFilePath(dstFilePath, "fbx")) return false;
 
 
-            var srcAssetPath = FilePathValidator.FullPathToAssetsPath(srcFilePath);
+            var srcAssetPath = PathUtil.FullPathToAssetsPath(srcFilePath);
             var objMesh = AssetDatabase.LoadAssetAtPath<Object>(srcAssetPath);
 
             switch (this.fbxFormat)

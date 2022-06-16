@@ -8,13 +8,13 @@ using PlateauUnitySDK.Tests.TestUtils;
 namespace PlateauUnitySDK.Tests.EditModeTests.TestsFileConverter {
     
     [TestFixture]
-    public class TestFilePathValidator {
+    public class TestPathUtil {
         
         
         [TestCaseSource(nameof(testIsValidInputFilePath))]
         public bool Test_IsValidInputFilePath(string filePath, string extension) {
             LogAssert.ignoreFailingMessages = true;
-            bool result = FilePathValidator.IsValidInputFilePath(filePath, extension, false);
+            bool result = PathUtil.IsValidInputFilePath(filePath, extension, false);
             return result;
         }
 
@@ -54,7 +54,7 @@ namespace PlateauUnitySDK.Tests.EditModeTests.TestsFileConverter {
         [TestCaseSource(nameof(testIsValidOutputPath))]
         public bool Test_IsValidOutputFilePath(string filePath, string extension) {
             LogAssert.ignoreFailingMessages = true;
-            bool result = FilePathValidator.IsValidOutputFilePath(filePath, extension);
+            bool result = PathUtil.IsValidOutputFilePath(filePath, extension);
             return result;
         }
 
@@ -94,16 +94,16 @@ namespace PlateauUnitySDK.Tests.EditModeTests.TestsFileConverter {
         [TestCaseSource(nameof(testFullPathToAssetsPathNormal))]
         public string Test_FullPathToAssetsPath_Normal(string assetsDir, string fullPath) {
             // 後でAssetsフォルダのパス設定を戻すために覚えておきます。
-            string prevDataPath = ReflectionUtil.GetPrivateStaticFieldVal<string>(typeof(FilePathValidator), "unityProjectDataPath");
+            string prevDataPath = ReflectionUtil.GetPrivateStaticFieldVal<string>(typeof(PathUtil), "unityProjectDataPath");
             
             // Assetsフォルダが引数のパスにあると仮定します。
-            ReflectionUtil.SetPrivateStaticFieldVal(assetsDir, typeof(FilePathValidator), "unityProjectDataPath");
+            ReflectionUtil.SetPrivateStaticFieldVal(assetsDir, typeof(PathUtil), "unityProjectDataPath");
             
             // テスト対象コードを実行します。 
-            string result = FilePathValidator.FullPathToAssetsPath(fullPath);
+            string result = PathUtil.FullPathToAssetsPath(fullPath);
             
             // Assetsフォルダの設定を戻します。
-            ReflectionUtil.SetPrivateStaticFieldVal(prevDataPath, typeof(FilePathValidator), "unityProjectDataPath");
+            ReflectionUtil.SetPrivateStaticFieldVal(prevDataPath, typeof(PathUtil), "unityProjectDataPath");
             return result;
         }
 
@@ -135,7 +135,7 @@ namespace PlateauUnitySDK.Tests.EditModeTests.TestsFileConverter {
         [Test] 
         public void FullPathToAssetsPath_Returns_Error_When_Outside_Assets_Folder() {
             Assert.That(()=> {
-                    FilePathValidator.FullPathToAssetsPath("C:\\dummy\\OutsideAssets\\a.fbx");
+                    PathUtil.FullPathToAssetsPath("C:\\dummy\\OutsideAssets\\a.fbx");
                 },
                 Throws.TypeOf<IOException>());
         }
