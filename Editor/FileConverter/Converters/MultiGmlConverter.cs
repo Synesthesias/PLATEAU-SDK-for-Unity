@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Codice.Client.Common;
 using LibPLATEAU.NET.CityGML;
 using PlateauUnitySDK.Runtime.CityMapMeta;
 using PlateauUnitySDK.Runtime.Util;
@@ -17,12 +18,14 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
     /// </summary>
     public class MultiGmlConverter
     {
-        private static string DefaultImportDstPath = Application.streamingAssetsPath;
+        private static readonly string defaultImportDstPath = Path.Combine(Application.streamingAssetsPath, "PLATEAU");
         /// <summary> このインスタンスが最後に出力した <see cref="CityMapMetaData"/> です。 </summary>
         public CityMapMetaData LastConvertedCityMapMetaData { get; private set; }
         
         /// <summary>
         /// 複数のgmlファイルを変換します。
+        /// 変換元が StreamingAssets の配下にない場合、StreamingAssets配下である <see cref="defaultImportDstPath"/> にコピーした上で
+        /// 変換元をコピー先に変更します。
         /// </summary>
         /// <param name="gmlRelativePaths">gmlファイルの相対パスのリストです。</param>
         /// <param name="config">変換設定です。</param>
@@ -81,15 +84,18 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
 
         /// <summary>
         /// 変換元を StreamingAssets内のデフォルトパスにコピーします。
-        /// すでに StreamingAssets 内にある場合は何もしません。
+        /// 変換元がすでに StreamingAssets 内にある場合は何もしません。
+        /// <paramref name="config"/> の変換元をコピー先のパスに設定し直します。
         /// </summary>
-        private void CopySrcFolderToStreamingAssets(CityModelImportConfig config)
+        private static void CopySrcFolderToStreamingAssets(CityModelImportConfig config)
         {
             string prevSrc = Path.GetFullPath(Path.Combine(config.sourceUdxFolderPath, "../"));
             bool isInStreamingAssets =
                 PathUtil.IsSubDirectory(prevSrc, Application.streamingAssetsPath);
             if (isInStreamingAssets) return;
-            
+            string nextSrc = defaultImportDstPath;
+            PathUtil.CloneDirectory(prevSrc, nextSrc);
+            config.sourceUdxFolderPath = Path.Combine(nextSrc, "udx");
         }
 
 

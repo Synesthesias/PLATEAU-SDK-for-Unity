@@ -39,17 +39,26 @@ namespace PlateauUnitySDK.Tests.EditModeTests.TestsFileConverter
             "bldg/53392642_bldg_6697_op2.gml"
         };
 
+        private static readonly string testDefaultDstPath = Path.Combine(DirectoryUtil.TempAssetFolderPath, "PLATEAU");
+
+        private string prevDefaultDstPath;
+
         [SetUp]
         public void SetUp()
         {
             this.converter = new MultiGmlConverter();
             DirectoryUtil.SetUpTempAssetFolder();
+            
+            // テスト用に一時的に MultiGmlConverter のデフォルト出力先を変更します。
+            this.prevDefaultDstPath = ReflectionUtil.GetPrivateStaticFieldVal<string>(typeof(MultiGmlConverter), "defaultImportDstPath");
+            ReflectionUtil.SetPrivateStaticFieldVal<string>(testDefaultDstPath, typeof(MultiGmlConverter), "defaultImportDstPath");
         }
 
         [TearDown]
         public void TearDown()
         {
             DirectoryUtil.DeleteTempAssetFolder();
+            ReflectionUtil.SetPrivateStaticFieldVal(this.prevDefaultDstPath, typeof(MultiGmlConverter), "defaultImportDstPath");
         }
 
         [Test]

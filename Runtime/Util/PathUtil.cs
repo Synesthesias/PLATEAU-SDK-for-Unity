@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using UnityEditor;
 using UnityEngine;
 
 namespace PlateauUnitySDK.Runtime.Util
@@ -129,6 +130,53 @@ namespace PlateauUnitySDK.Runtime.Util
 #endif
             // Debug.Log($"assetsPath = {assetsPath}");
             return assetsPath;
+        }
+
+        /// <summary>
+        /// ディレクトリとファイルを再帰的にコピーします。
+        /// コピー先は dest/(srcのフォルダ名) になります。
+        /// </summary>
+        public static void CloneDirectory(string src, string dest)
+        {
+            string srcDirPath = Path.GetDirectoryName(src);
+            if (srcDirPath == null)
+            {
+                throw new IOException("parent dir of src is not found.");
+            }
+            string srcDirName = Path.GetFileName(srcDirPath);
+            dest = Path.Combine(dest, srcDirName);
+            Debug.Log($"dest={dest}, src={src} srcDirName={srcDirName}");
+            if (!Directory.Exists(src))
+            {
+                throw new IOException($"Src directory is not found.\nsrc = {src}");
+            }
+
+            if (!Directory.Exists(dest))
+            {
+                Directory.CreateDirectory(dest);
+            }
+            CloneDirectoryRecursive(src, dest);
+            AssetDatabase.ImportAsset(dest);
+            AssetDatabase.Refresh();
+        }
+        
+        private static void CloneDirectoryRecursive(string src, string dest)
+        {
+            foreach (var directory in Directory.GetDirectories(src))
+            {
+                string dirName = Path.GetFileName(directory);
+                string childDir = Path.Combine(dest, dirName);
+                if (!Directory.Exists(childDir))
+                {
+                    Directory.CreateDirectory(childDir);
+                }
+                CloneDirectoryRecursive(directory, childDir);
+            }
+
+            foreach (var file in Directory.GetFiles(src))
+            {
+                File.Copy(file, Path.Combine(dest, Path.GetFileName(file)), true);
+            }
         }
     }
 }
