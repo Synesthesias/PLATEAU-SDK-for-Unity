@@ -9,6 +9,7 @@ using PlateauUnitySDK.Runtime.Util;
 using UnityEditor;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
+using Object = UnityEngine.Object;
 
 namespace PlateauUnitySDK.Editor.FileConverter.Converters
 {
@@ -31,7 +32,7 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
         /// <param name="config">変換設定です。</param>
         public void Convert(IEnumerable<string> gmlRelativePaths, CityModelImportConfig config)
         {
-            CopySrcFolderToStreamingAssets(config);
+            CopySrcFolderToStreamingAssets(config, out string srcFolderName);
             
             int successCount = 0;
             int loopCount = 0;
@@ -64,8 +65,11 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
                 {
                     continue;
                 }
-                LastConvertedCityMapMetaData = cityMapInfo;
 
+                // シーンに配置します。
+                PlaceToScene(objAssetPath, srcFolderName);
+                
+                LastConvertedCityMapMetaData = cityMapInfo;
                 successCount++;
             }
             
@@ -87,10 +91,10 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
         /// 変換元がすでに StreamingAssets 内にある場合は何もしません。
         /// <paramref name="config"/> の変換元をコピー先のパスに設定し直します。
         /// </summary>
-        private static void CopySrcFolderToStreamingAssets(CityModelImportConfig config)
+        private static void CopySrcFolderToStreamingAssets(CityModelImportConfig config, out string srcFolderName)
         {
             string prevSrc = Path.GetFullPath(Path.Combine(config.sourceUdxFolderPath, "../"));
-            string srcFolderName = Path.GetFileName(Path.GetDirectoryName(prevSrc));
+            srcFolderName = Path.GetFileName(Path.GetDirectoryName(prevSrc));
             if (IsInStreamingAssets(prevSrc)) return;
             
             string nextSrc = PlateauPath.StreamingGmlFolder;
@@ -183,6 +187,42 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
             }
             cityMapMetaData = metaGen.LastConvertedCityMapMetaData;
             return true;
+        }
+
+        private static void PlaceToScene(string objAssetPath, string srcFolderName)
+        {
+            // 親を配置
+            var parent = GameObject.Find(srcFolderName);
+            if (parent == null)
+            {
+                parent = new GameObject(srcFolderName);
+            }
+
+            var assetObj = AssetDatabase.LoadAssetAtPath<GameObject>(objAssetPath);
+            
+            // 古い同名の GameObject を削除
+            var oldObj = FindRecursive(parent.transform, assetObj.name);
+            if (oldObj != null)
+            {
+                Object.Destroy(oldObj);
+            }
+                
+            // 変換後モデルの配置
+            var placedObj = (GameObject)PrefabUtility.InstantiatePrefab(assetObj);
+            placedObj.name = assetObj.name;
+            placedObj.transform.parent = parent.transform;
+        }
+
+        private static Transform FindRecursive(Transform target, string name)
+        {
+            if (target.name == name) return target;
+            foreach (Transform child in target)
+            {
+                Transform found = FindRecursive(child, name);
+                if (found != null) return found;
+            }
+
+            return null;
         }
     }
 }
