@@ -91,13 +91,16 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
         {
             string prevSrc = Path.GetFullPath(Path.Combine(config.sourceUdxFolderPath, "../"));
             string srcFolderName = Path.GetFileName(Path.GetDirectoryName(prevSrc));
-            bool isInStreamingAssets =
-                PathUtil.IsSubDirectory(prevSrc, Application.streamingAssetsPath);
-            if (isInStreamingAssets) return;
+            if (IsInStreamingAssets(prevSrc)) return;
             
             string nextSrc = PlateauPath.StreamingGmlFolder;
             PathUtil.CloneDirectory(prevSrc, nextSrc);
             config.sourceUdxFolderPath = Path.Combine(nextSrc, $"{srcFolderName}/udx");
+        }
+
+        public static bool IsInStreamingAssets(string path)
+        {
+            return PathUtil.IsSubDirectory(path, Application.streamingAssetsPath);
         }
 
 

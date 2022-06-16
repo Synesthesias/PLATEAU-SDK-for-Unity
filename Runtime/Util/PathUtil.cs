@@ -111,6 +111,7 @@ namespace PlateauUnitySDK.Runtime.Util
 
         public static bool IsSubDirectory(string subPath, string dir)
         {
+            if (string.IsNullOrEmpty(subPath) || string.IsNullOrEmpty(dir)) return false;
             string subFull = Path.GetFullPath(subPath);
             string dirFull = Path.GetFullPath(dir);
             return subFull.StartsWith(dirFull);

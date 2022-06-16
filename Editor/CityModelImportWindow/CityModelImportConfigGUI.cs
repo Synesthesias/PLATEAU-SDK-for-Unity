@@ -5,6 +5,7 @@ using LibPLATEAU.NET.CityGML;
 using PlateauUnitySDK.Editor.EditorWindowCommon;
 using PlateauUnitySDK.Editor.FileConverter.Converters;
 using PlateauUnitySDK.Runtime.CityMapMeta;
+using PlateauUnitySDK.Runtime.Util;
 using UnityEditor;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
@@ -43,10 +44,16 @@ namespace PlateauUnitySDK.Editor.CityModelImportWindow
             this.udxFolderSelectorGUI.FolderPath = config.sourceUdxFolderPath;
             string sourcePath = this.udxFolderSelectorGUI.Draw("udxフォルダ選択");
             config.sourceUdxFolderPath = sourcePath;
-            
+
             // udxフォルダが選択されているなら、設定と出力のGUIを表示
             if (GmlFileSearcher.IsPathUdx(sourcePath))
             {
+                // 案内
+                if (!MultiGmlConverter.IsInStreamingAssets(sourcePath))
+                {
+                    EditorGUILayout.HelpBox($"入力フォルダは {PathUtil.FullPathToAssetsPath(PlateauPath.StreamingGmlFolder)} にコピーされます。", MessageType.Info);
+                }
+                
                 // 変換対象の絞り込み
                 var gmlFiles = this.gmlSelectorGUI.Draw(this.gmlFileSearcher, ref config.gmlSelectorConfig);
                 
