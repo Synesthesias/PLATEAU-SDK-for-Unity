@@ -18,7 +18,7 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
     /// </summary>
     public class MultiGmlConverter
     {
-        private static readonly string defaultImportDstPath = Path.Combine(Application.streamingAssetsPath, "PLATEAU");
+        
         /// <summary> このインスタンスが最後に出力した <see cref="CityMapMetaData"/> です。 </summary>
         public CityMapMetaData LastConvertedCityMapMetaData { get; private set; }
         
@@ -90,12 +90,14 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
         private static void CopySrcFolderToStreamingAssets(CityModelImportConfig config)
         {
             string prevSrc = Path.GetFullPath(Path.Combine(config.sourceUdxFolderPath, "../"));
+            string srcFolderName = Path.GetFileName(Path.GetDirectoryName(prevSrc));
             bool isInStreamingAssets =
                 PathUtil.IsSubDirectory(prevSrc, Application.streamingAssetsPath);
             if (isInStreamingAssets) return;
-            string nextSrc = defaultImportDstPath;
+            
+            string nextSrc = PlateauPath.StreamingGmlFolder;
             PathUtil.CloneDirectory(prevSrc, nextSrc);
-            config.sourceUdxFolderPath = Path.Combine(nextSrc, "udx");
+            config.sourceUdxFolderPath = Path.Combine(nextSrc, $"{srcFolderName}/udx");
         }
 
 
@@ -103,9 +105,20 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
         {
             try
             {
+                if (!File.Exists(gmlFullPath))
+                {
+                    throw new FileNotFoundException($"Gml file is not found.\ngmlPath = {gmlFullPath}");
+                }
+
                 // 設定の parserParams.tessellate は true にしないとポリゴンにならない部分があるので true で固定します。
                 CitygmlParserParams parserParams = new CitygmlParserParams(config.optimizeFlag);
                 cityModel = CityGml.Load(gmlFullPath, parserParams, DllLogCallback.UnityLogCallbacks, config.logLevel);
+            }
+            catch (FileNotFoundException e)
+            {
+                Debug.LogError($"{e}");
+                cityModel = null;
+                return false;
             }
             catch (Exception e)
             {

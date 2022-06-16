@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
@@ -155,7 +156,7 @@ namespace PlateauUnitySDK.Runtime.Util
                 Directory.CreateDirectory(dest);
             }
             CloneDirectoryRecursive(src, dest);
-            AssetDatabase.ImportAsset(dest);
+            // AssetDatabase.ImportAsset(FullPathToAssetsPath(dest));
             AssetDatabase.Refresh();
         }
         
@@ -174,7 +175,9 @@ namespace PlateauUnitySDK.Runtime.Util
 
             foreach (var file in Directory.GetFiles(src))
             {
-                File.Copy(file, Path.Combine(dest, Path.GetFileName(file)), true);
+                if (Path.GetExtension(file) == ".meta") continue;
+                string dstFile = Path.Combine(dest, Path.GetFileName(file));
+                File.Copy(file, dstFile, true);
             }
         }
     }
