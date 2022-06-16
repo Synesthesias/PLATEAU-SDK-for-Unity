@@ -134,7 +134,7 @@ namespace PlateauUnitySDK.Runtime.Util
 
         /// <summary>
         /// ディレクトリとファイルを再帰的にコピーします。
-        /// コピー先は dest/(srcのフォルダ名) になります。
+        /// コピー先は (dest)/(srcのフォルダ名) になります。
         /// </summary>
         public static void CloneDirectory(string src, string dest)
         {
@@ -145,7 +145,6 @@ namespace PlateauUnitySDK.Runtime.Util
             }
             string srcDirName = Path.GetFileName(srcDirPath);
             dest = Path.Combine(dest, srcDirName);
-            Debug.Log($"dest={dest}, src={src} srcDirName={srcDirName}");
             if (!Directory.Exists(src))
             {
                 throw new IOException($"Src directory is not found.\nsrc = {src}");
