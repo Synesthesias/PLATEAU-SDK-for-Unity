@@ -213,9 +213,9 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
             var oldObj = FindRecursive(parent.transform, assetObj.name);
             if (oldObj != null)
             {
-                Object.Destroy(oldObj);
+                Object.DestroyImmediate(oldObj.gameObject);
             }
-                
+
             // 変換後モデルの配置
             var placedObj = (GameObject)PrefabUtility.InstantiatePrefab(assetObj);
             placedObj.name = assetObj.name;
