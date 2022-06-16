@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using Codice.Client.Common;
 using LibPLATEAU.NET.CityGML;
+using PlateauUnitySDK.Runtime.Behaviour;
 using PlateauUnitySDK.Runtime.CityMapMeta;
 using PlateauUnitySDK.Runtime.Util;
 using UnityEditor;
@@ -61,15 +62,15 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
                 string objAssetPath = PathUtil.FullPathToAssetsPath(objPath);
                 if (!referencePoint.HasValue) throw new Exception($"{nameof(referencePoint)} is null.");
                 config.referencePoint = referencePoint.Value;
-                if (!TryGenerateMetaData(out var cityMapInfo, gmlFileName, objAssetPath, loopCount==1, config))
+                if (!TryGenerateMetaData(out var cityMapMetaData, gmlFileName, objAssetPath, loopCount==1, config))
                 {
                     continue;
                 }
 
                 // シーンに配置します。
-                PlaceToScene(objAssetPath, srcFolderName);
+                PlaceToScene(objAssetPath, srcFolderName, cityMapMetaData);
                 
-                LastConvertedCityMapMetaData = cityMapInfo;
+                LastConvertedCityMapMetaData = cityMapMetaData;
                 successCount++;
             }
             
@@ -189,7 +190,7 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
             return true;
         }
 
-        private static void PlaceToScene(string objAssetPath, string srcFolderName)
+        private static void PlaceToScene(string objAssetPath, string srcFolderName, CityMapMetaData metaData)
         {
             // 親を配置
             var parent = GameObject.Find(srcFolderName);
@@ -197,6 +198,14 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
             {
                 parent = new GameObject(srcFolderName);
             }
+            
+            // 親に CityMapBehaviour をアタッチ
+            var cityMapBehaviour = parent.GetComponent<CityMapBehaviour>();
+            if ( cityMapBehaviour == null)
+            {
+                cityMapBehaviour = parent.AddComponent<CityMapBehaviour>();
+            }
+            cityMapBehaviour.CityMapMetaData = metaData;
 
             var assetObj = AssetDatabase.LoadAssetAtPath<GameObject>(objAssetPath);
             
