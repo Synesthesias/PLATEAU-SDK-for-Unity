@@ -37,9 +37,17 @@ namespace PlateauUnitySDK.Editor.CityImport
         /// <param name="config">変換設定です。</param>
         public void Import(string[] gmlRelativePaths, CityImporterConfig config)
         {
-            // 元フォルダを StreamingAssets にコピーします。 
-            CopySrcFolderToStreamingAssets(config, out string srcFolderName, gmlRelativePaths);
-            
+            // 元フォルダを StreamingAssets/PLATEAU にコピーします。すでに StreamingAssets内にある場合を除きます。 
+            string prevSourceUdxPath = config.sourceUdxFolderPath;
+            string rootGmlFolderName = CopyGmls.UdxPathToGmlRootFolderName(prevSourceUdxPath);
+            if (!IsInStreamingAssets(prevSourceUdxPath))
+            {
+                string copyDest = PlateauPath.StreamingGmlFolder;
+                CopyGmls.SelectCopy(config.sourceUdxFolderPath, copyDest, gmlRelativePaths);
+                // configの変換元パスをコピー先に再設定します。
+                config.sourceUdxFolderPath = Path.Combine(copyDest, $"{rootGmlFolderName}/udx");
+            }
+
             // gmlファイルごとのループを始めます。
             int successCount = 0;
             int loopCount = 0;
@@ -74,7 +82,7 @@ namespace PlateauUnitySDK.Editor.CityImport
                 }
 
                 // シーンに配置します。
-                PlaceToScene(objAssetPath, srcFolderName, cityMapMetaData);
+                PlaceToScene(objAssetPath, rootGmlFolderName, cityMapMetaData);
                 
                 LastConvertedCityMetaData = cityMapMetaData;
                 successCount++;
@@ -93,86 +101,6 @@ namespace PlateauUnitySDK.Editor.CityImport
             {
                 Debug.LogError($"Convert end with error. {failureCount} of {loopCount} gml files are not converted.");
             }
-        }
-
-        /// <summary>
-        /// 変換元を StreamingAssets内のデフォルトパスにコピーします。
-        /// 変換元がすでに StreamingAssets 内にある場合は何もしません。
-        /// <paramref name="config"/> の変換元をコピー先のパスに設定し直します。
-        /// </summary>
-        private static void CopySrcFolderToStreamingAssets(CityImporterConfig config, out string srcFolderName, string[] gmlRelativePaths)
-        {
-            string prevSrc = Path.GetFullPath(Path.Combine(config.sourceUdxFolderPath, "../"));
-            srcFolderName = Path.GetFileName(Path.GetDirectoryName(prevSrc));
-            if (IsInStreamingAssets(prevSrc)) return;
-            if (srcFolderName == null) throw new FileNotFoundException($"{nameof(srcFolderName)} is null.");
-            
-            
-            string nextSrc = PlateauPath.StreamingGmlFolder;
-            
-            // コピー先のルートフォルダを作成します。
-            // 例: Tokyoをコピーする場合のパスの例を以下に示します。
-            //     Assets/StreamingAssets/PLATEAU/Tokyo　フォルダを作ります。
-            string dstRootFolder = Path.Combine(nextSrc, srcFolderName);
-            if (!Directory.Exists(dstRootFolder))
-            {
-                AssetDatabase.CreateFolder(nextSrc, srcFolderName);
-            }
-            
-            // codelists をコピーします。
-            // 例: Assets/StreamingAssets/PLATEAU/Tokyo/codelists/****.xml をコピーにより作成します。
-            const string codelistsFolderName = "codelists";
-            PathUtil.CloneDirectory(Path.Combine(prevSrc, codelistsFolderName), dstRootFolder);
-            
-            // udxフォルダを作ります。
-            // 例: Assets/StreamingAssets/PLATEAU/Tokyo/udx　ができます。
-            const string udxFolderName = "udx";
-            string dstUdxFolder = Path.Combine(dstRootFolder, udxFolderName);
-            if (!Directory.Exists(dstUdxFolder))
-            {
-                AssetDatabase.CreateFolder(PathUtil.FullPathToAssetsPath(dstRootFolder), udxFolderName);
-            }
-            
-            // udxフォルダのうち対象のgmlファイルをコピーします。
-            foreach (string gml in gmlRelativePaths)
-            {
-                GmlFileNameParser.Parse(gml, out int _, out string objTypeStr, out int _, out string _);
-                // 地物タイプのディレクトリを作ります。
-                // 例: gml のタイプが bldg なら、
-                //     Assets/StreamingAssets/PLATEAU/Tokyo/udx/bldg　ができます。
-                string dstObjTypeFolder = Path.Combine(dstUdxFolder, objTypeStr);
-                if (!Directory.Exists(dstObjTypeFolder))
-                {
-                    AssetDatabase.CreateFolder(PathUtil.FullPathToAssetsPath(dstUdxFolder), objTypeStr);
-                }
-                
-                // gmlファイルをコピーします。
-                // 例: Assets/StreamingAssets/PLATEAU/Tokyo/bldg/1234.gml　ができます。
-                string gmlName = Path.GetFileName(gml);
-                string srcObjTypeFolder = Path.Combine(prevSrc, "udx", objTypeStr);
-                File.Copy(Path.Combine(srcObjTypeFolder, gmlName), Path.Combine(dstObjTypeFolder, gmlName), true);
-                
-                // gmlファイルに関連するフォルダをコピーします。
-                // gmlの名称からオプションと拡張子を除いた文字列がフォルダ名に含まれていれば、コピー対象のディレクトリとみなします。
-                // 例: Assets/StreamingAssets/PLATEAU/Tokyo/bldg/1234_appearance/texture_number.jpg　などがコピーされます。 
-                string gmlIdentity = GmlFileNameParser.NameWithoutOption(gml);
-                foreach (var srcDir in Directory.GetDirectories(srcObjTypeFolder))
-                {
-                    string srcDirName = new DirectoryInfo(srcDir).Name;
-                    if (srcDirName.Contains(gmlIdentity))
-                    {
-                        PathUtil.CloneDirectory(srcDir, dstObjTypeFolder);
-                    }
-                }
-            }
-            
-            // configの変換元パスを再設定します。
-            config.sourceUdxFolderPath = Path.Combine(nextSrc, $"{srcFolderName}/udx");
-        }
-
-        public static bool IsInStreamingAssets(string path)
-        {
-            return PathUtil.IsSubDirectory(path, Application.streamingAssetsPath);
         }
 
 
@@ -314,6 +242,11 @@ namespace PlateauUnitySDK.Editor.CityImport
             }
 
             return null;
+        }
+        
+        public static bool IsInStreamingAssets(string path)
+        {
+            return PathUtil.IsSubDirectory(path, Application.streamingAssetsPath);
         }
     }
 }
