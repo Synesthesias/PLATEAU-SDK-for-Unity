@@ -13,6 +13,7 @@ namespace PlateauUnitySDK.Editor.SingleFileConvert
     /// </summary>
     internal class GmlToCityMetaDataConvertTab : BaseConvertTab
     {
+        // TODO 古い GmlToCityMetaDataConverter を使っています。
         private readonly GmlToCityMetaDataConverter converter = new GmlToCityMetaDataConverter();
 
         private bool doOptimize = true;
@@ -72,13 +73,13 @@ namespace PlateauUnitySDK.Editor.SingleFileConvert
             HeaderDrawer.DecrementDepth();
         }
 
-        public override void ConfigureGUI()
+        protected override void ConfigureGUI()
         {
             this.doOptimize = EditorGUILayout.Toggle("Optimize", this.doOptimize);
             this.doTessellate = EditorGUILayout.Toggle("Tessellate", this.doTessellate);
         }
 
-        public override void OnConfigureGUIChanged()
+        protected override void OnConfigureGUIChanged()
         {
             var conf = this.converter.Config;
             conf.ParserParams.Optimize = this.doOptimize;

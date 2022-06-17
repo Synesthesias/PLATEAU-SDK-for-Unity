@@ -19,7 +19,7 @@ namespace PlateauUnitySDK.Editor.Converters
     internal class GmlToCityMetaDataConverter : IFileConverter
     {
         private CityMapMetaDataGeneratorConfig config;
-        public CityMetaData LastConvertedCityMetaData { get; set; }
+        // public CityMetaData LastConvertedCityMetaData { get; set; }
 
         public GmlToCityMetaDataConverter()
         {
@@ -74,9 +74,7 @@ namespace PlateauUnitySDK.Editor.Converters
                 }
                 
                 // 追加情報を書き込みます。
-                // mapInfo.ReferencePoint = this.config.ReferencePoint;
-                // mapInfo.MeshGranularity = this.config.MeshGranularity;
-                LastConvertedCityMetaData = mapInfo;
+                // LastConvertedCityMetaData = mapInfo;
                 EditorUtility.SetDirty(mapInfo);
                 AssetDatabase.SaveAssets();
                 return true;

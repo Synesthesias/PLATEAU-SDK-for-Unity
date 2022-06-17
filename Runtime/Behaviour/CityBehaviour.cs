@@ -8,7 +8,7 @@ namespace PlateauUnitySDK.Runtime.Behaviour
     public class CityBehaviour : MonoBehaviour
     {
         [SerializeField] private CityMetaData cityMetaData;
-        private SemanticsLoader loader = new SemanticsLoader();
+        private readonly SemanticsLoader loader = new SemanticsLoader();
 
         public CityMetaData CityMetaData
         {

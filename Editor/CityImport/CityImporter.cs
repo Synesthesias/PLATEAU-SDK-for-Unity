@@ -27,7 +27,7 @@ namespace PlateauUnitySDK.Editor.CityImport
         
         /// <summary>
         /// 複数のgmlファイルを変換します。
-        /// 変換元が StreamingAssets の配下にない場合、StreamingAssets配下である <see cref="defaultImportDstPath"/> にコピーした上で
+        /// 変換元が StreamingAssets の配下にない場合、StreamingAssets配下である <see cref="PlateauPath.StreamingGmlFolder"/> にコピーした上で
         /// 変換元をコピー先に変更します。
         /// </summary>
         /// <param name="gmlRelativePaths">gmlファイルの相対パスのリストです。</param>

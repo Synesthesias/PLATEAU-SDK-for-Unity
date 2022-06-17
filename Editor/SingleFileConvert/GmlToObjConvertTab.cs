@@ -13,8 +13,8 @@ namespace PlateauUnitySDK.Editor.SingleFileConvert
         private MeshGranularity meshGranularity = MeshGranularity.PerPrimaryFeatureObject;
         private AxesConversion axesConversion = AxesConversion.RUF;
         private DllLogLevel logLevel = DllLogLevel.Error;
-        private GmlToObjConverter converter;
-        private GmlToObjConverterConfig converterConf;
+        private readonly GmlToObjConverter converter;
+        private readonly GmlToObjConverterConfig converterConf;
 
         protected override string SourceFileExtension => "gml";
         public override string DestFileExtension => "obj";
@@ -45,7 +45,7 @@ namespace PlateauUnitySDK.Editor.SingleFileConvert
             EditorGUILayout.LabelField("Assetsフォルダ外のファイルも指定できます。");
         }
 
-        public override void ConfigureGUI()
+        protected override void ConfigureGUI()
         {
             this.optimizeFlg = EditorGUILayout.Toggle("最適化", this.optimizeFlg);
             this.meshGranularity = (MeshGranularity)EditorGUILayout.EnumPopup("メッシュのオブジェクト分けの粒度", this.meshGranularity);
@@ -53,7 +53,7 @@ namespace PlateauUnitySDK.Editor.SingleFileConvert
             this.logLevel = (DllLogLevel)EditorGUILayout.EnumPopup("(開発者向け)ログ詳細度", this.logLevel);
         }
 
-        public override void OnConfigureGUIChanged()
+        protected override void OnConfigureGUIChanged()
         {
             ApplyGUIToConfig();
         }

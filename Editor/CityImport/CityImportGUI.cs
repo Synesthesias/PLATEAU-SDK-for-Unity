@@ -12,7 +12,7 @@ namespace PlateauUnitySDK.Editor.CityImport
     /// <see cref="CityImportWindow"/> および <see cref="CityMetaDataEditor"/> によって利用されます。
     /// この設定は <see cref="CityImporter"/> に渡されます。
     /// </summary>
-    internal class CityImportConfigGUI
+    internal class CityImportGUI
     {
         private readonly InputFolderSelectorGUI udxFolderSelectorGUI;
         private readonly GmlSearcherGUI gmlSearcherGUI;
@@ -20,9 +20,7 @@ namespace PlateauUnitySDK.Editor.CityImport
         private readonly ExportFolderSelectorGUI exportFolderSelectorGUI;
         private readonly CityImporter cityImporter;
         
-        /// <summary> <see cref="CityImporter"/> に渡す設定です。</summary>
-
-        public CityImportConfigGUI()
+        public CityImportGUI()
         {
             this.udxFolderSelectorGUI = new InputFolderSelectorGUI(OnUdxPathChanged);
             this.gmlSearcherGUI = new GmlSearcherGUI();
@@ -48,7 +46,7 @@ namespace PlateauUnitySDK.Editor.CityImport
                 }
                 
                 // 変換対象の絞り込み
-                var gmlFiles = this.gmlSearcherGUI.Draw(this.gmlSearcher, ref config.gmlSelectorConfig);
+                var gmlFiles = this.gmlSearcherGUI.Draw(this.gmlSearcher, ref config.gmlSearcherConfig);
                 
                 // 変換先パス設定
                 config.exportFolderPath = this.exportFolderSelectorGUI.Draw(config.exportFolderPath);

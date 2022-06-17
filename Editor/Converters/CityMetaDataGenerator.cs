@@ -15,7 +15,7 @@ namespace PlateauUnitySDK.Editor.Converters
     /// </summary>
     internal class CityMetaDataGenerator
     {
-        public CityMetaData LastConvertedCityMetaData { get; set; }
+        public CityMetaData LastConvertedCityMetaData { get; private set; }
 
         public bool Generate(CityMapMetaDataGeneratorConfig config, string meshAssetPath, string gmlFileName)
         {

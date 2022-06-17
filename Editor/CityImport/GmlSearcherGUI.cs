@@ -23,7 +23,7 @@ namespace PlateauUnitySDK.Editor.CityImport
         /// その結果を gmlファイルの相対パスのリストで返します。
         /// その際にユーザーが選択した設定内容は引数 <paramref name="config"/> に格納されます。
         /// </summary>
-        public List<string> Draw(GmlSearcher gmlSearcher, ref GmlSelectorConfig config)
+        public List<string> Draw(GmlSearcher gmlSearcher, ref GmlSearcherConfig config)
         {
             if(!this.isInitialized) Initialize(gmlSearcher, config);
             HeaderDrawer.IncrementDepth();
@@ -86,7 +86,7 @@ namespace PlateauUnitySDK.Editor.CityImport
             this.isInitialized = false;
         }
 
-        private void Initialize(GmlSearcher gmlSearcher, GmlSelectorConfig config)
+        private void Initialize(GmlSearcher gmlSearcher, GmlSearcherConfig config)
         {
             int areaCount = gmlSearcher.AreaIds.Length;
             if (config.isAreaIdTarget.Length != areaCount)

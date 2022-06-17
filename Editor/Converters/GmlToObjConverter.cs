@@ -95,10 +95,7 @@ namespace PlateauUnitySDK.Editor.Converters
                 SlashPath(ref gmlFilePath);
                 SlashPath(ref exportObjFilePath);
 
-                if (cityModel == null)
-                {
-                    cityModel = CityGml.Load(gmlFilePath, this.gmlParserParams, DllLogCallback.UnityLogCallbacks, this.config.LogLevel);
-                }
+                cityModel ??= CityGml.Load(gmlFilePath, this.gmlParserParams, DllLogCallback.UnityLogCallbacks, this.config.LogLevel);
                 
                 // 出力先が Assets フォルダ内 かつ すでに同名ファイルが存在する場合、古いファイルを消します。
                 // そうしないと上書きによって obj のメッシュ名が変わっても Unity に反映されないことがあるためです。

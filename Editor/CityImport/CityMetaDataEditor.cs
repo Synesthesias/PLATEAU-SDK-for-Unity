@@ -12,7 +12,7 @@ namespace PlateauUnitySDK.Editor.CityImport
     {
         private bool foldOutIdGmlTable;
         private bool foldOutReconvert;
-        private CityImportConfigGUI importConfigGUI = new CityImportConfigGUI();
+        private readonly CityImportGUI importGUI = new CityImportGUI();
         public override void OnInspectorGUI()
         {
             HeaderDrawer.Reset();
@@ -42,7 +42,7 @@ namespace PlateauUnitySDK.Editor.CityImport
             this.foldOutReconvert = EditorGUILayout.Foldout(this.foldOutReconvert, "再変換");
             if (this.foldOutReconvert)
             {
-                this.importConfigGUI.Draw(metaData.cityImporterConfig);
+                this.importGUI.Draw(metaData.cityImporterConfig);
                 
             }
             

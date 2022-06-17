@@ -11,7 +11,7 @@ namespace PlateauUnitySDK.Editor.SingleFileConvert
     /// </summary>
     internal class GmlToObjAndIdTableConvertTab : ScrollableEditorWindowContents
     {
-        private BaseConvertTab[] tabs = new BaseConvertTab[]
+        private readonly BaseConvertTab[] tabs = new BaseConvertTab[]
         {
             new GmlToObjConvertTab(),
             new GmlToCityMetaDataConvertTab()

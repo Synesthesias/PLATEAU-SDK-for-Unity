@@ -52,7 +52,7 @@ namespace PlateauUnitySDK.Runtime.CityMeta
         public string this[string key]
         {
             get => this.dictionary[key];
-            set => value = this.dictionary[key];
+            set => this.dictionary[key] = value;
         }
 
         public ICollection<string> Keys => this.dictionary.Keys;

@@ -24,8 +24,7 @@ namespace PlateauUnitySDK.Runtime.SemanticsLoad
             }
             
             // テーブルから cityObjectId に対応する gmlFileName を検索します。
-            string gmlFileName; // 拡張子を含みません
-            if( !cityMetaData.TryGetValueFromGmlTable(cityObjectId, out gmlFileName))
+            if( !cityMetaData.TryGetValueFromGmlTable(cityObjectId, out var gmlFileName))
             {
                 throw new KeyNotFoundException($"cityObjectId {cityObjectId} is not found in {nameof(CityMetaData)}.");
             }
@@ -46,13 +45,13 @@ namespace PlateauUnitySDK.Runtime.SemanticsLoad
                 throw new IOException(
                     $"Could not find gml file, because udx path is not in StreamingAssets folder.\nudxPath = {udxPath}");
             }
-            string gmlPath = SearchGmlPath(udxPath, gmlFileName);
+            string gmlPath = SearchGmlPath(gmlFileName);
             var loadedModel = CityGml.Load(gmlPath, new CitygmlParserParams(true, false), DllLogCallback.UnityLogCallbacks);
             this.fileToCityModelCache[gmlFileName] = loadedModel;
             return GetCityObjectById(loadedModel, cityObjectId);
         }
 
-        private static string SearchGmlPath(string directoryPath, string gmlFileNameWithoutExtension)
+        private static string SearchGmlPath(string gmlFileNameWithoutExtension)
         {
             string foundGmlPath = Directory.EnumerateFiles(Application.streamingAssetsPath, gmlFileNameWithoutExtension + ".gml",
                 SearchOption.AllDirectories).First();

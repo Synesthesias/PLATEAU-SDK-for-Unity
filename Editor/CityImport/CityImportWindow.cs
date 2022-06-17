@@ -8,14 +8,14 @@ namespace PlateauUnitySDK.Editor.CityImport
 
     /// <summary>
     /// 都市モデルをインポートするウィンドウです。
-    /// 表示は <see cref="CityImportConfigGUI"/> に委譲します。
+    /// 表示は <see cref="CityImportGUI"/> に委譲します。
     /// </summary>
-    public class CityImportWindow : EditorWindow
+    internal class CityImportWindow : EditorWindow
     {
         private bool isInitialized;
         private Vector2 scrollPosition;
         
-        private CityImportConfigGUI cityImportConfigGUI;
+        private CityImportGUI cityImportGUI;
         private CityImporterConfig importerConfig;
 
         [MenuItem("Plateau/都市モデルインポート")]
@@ -29,7 +29,7 @@ namespace PlateauUnitySDK.Editor.CityImport
 
         private void Init()
         {
-            this.cityImportConfigGUI = new CityImportConfigGUI();
+            this.cityImportGUI = new CityImportGUI();
             this.importerConfig = new CityImporterConfig();
             this.isInitialized = true;
         }
@@ -39,7 +39,7 @@ namespace PlateauUnitySDK.Editor.CityImport
             if (!this.isInitialized) Init();
             HeaderDrawer.Reset();
             this.scrollPosition = EditorGUILayout.BeginScrollView(this.scrollPosition);
-            this.cityImportConfigGUI.Draw(this.importerConfig);
+            this.cityImportGUI.Draw(this.importerConfig);
             EditorGUILayout.EndScrollView();
         }
     }

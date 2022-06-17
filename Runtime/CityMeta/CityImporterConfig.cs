@@ -10,7 +10,7 @@ namespace PlateauUnitySDK.Runtime.CityMeta
     [Serializable]
     public class CityImporterConfig
     {
-        public GmlSelectorConfig gmlSelectorConfig = new GmlSelectorConfig();
+        public GmlSearcherConfig gmlSearcherConfig = new GmlSearcherConfig();
         public string sourceUdxFolderPath = "";
         public string exportFolderPath = "";
         public bool optimizeFlag = true;

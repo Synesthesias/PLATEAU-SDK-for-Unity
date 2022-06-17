@@ -45,7 +45,7 @@ namespace PlateauUnitySDK.Editor.SingleFileConvert
         /// </summary>
         public abstract void HeaderInfoGUI();
 
-        public virtual void SrcFileSelectGUI()
+        protected virtual void SrcFileSelectGUI()
         {
             ConvertFileSelectorGUIUtil.FileSelectGUI(
                 ref this.SourceFilePath,
@@ -88,12 +88,12 @@ namespace PlateauUnitySDK.Editor.SingleFileConvert
         /// <summary>
         /// ファイル変換の設定に関するGUIを実装します。
         /// </summary>
-        public abstract void ConfigureGUI();
+        protected abstract void ConfigureGUI();
 
         /// <summary>
         /// <see cref="ConfigureGUI"/> の値に変更があったときの処理を実装します。
         /// </summary>
-        public abstract void OnConfigureGUIChanged();
+        protected abstract void OnConfigureGUIChanged();
 
         /// <summary>
         /// 変換し、成否をboolで返します。

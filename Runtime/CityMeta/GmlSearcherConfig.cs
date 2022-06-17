@@ -4,10 +4,10 @@ namespace PlateauUnitySDK.Runtime.CityMeta
 {
 
     /// <summary>
-    /// <see cref="GmlSelectorGUI"/> の設定部分です。
+    /// GmlSearcher の設定部分です。
     /// </summary>
     [Serializable]
-    public class GmlSelectorConfig
+    public class GmlSearcherConfig
     {
         /// <summary> 見つかったエリアIDの一覧です。 </summary>
         public string[] areaIds = { };

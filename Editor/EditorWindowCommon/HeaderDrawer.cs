@@ -14,7 +14,7 @@ namespace PlateauUnitySDK.Editor.EditorWindowCommon
     internal static class HeaderDrawer
     {
         /// <summary> 例えば現在の見出し番号が 2-1-1. であれば、このリストは {2,1,1} になります。 </summary>
-        private static List<int> currentHeaderNum;
+        private static readonly List<int> currentHeaderNum;
 
         static HeaderDrawer()
         {
@@ -29,7 +29,7 @@ namespace PlateauUnitySDK.Editor.EditorWindowCommon
             IncrementDepth(false);
         }
 
-        public static int Depth => currentHeaderNum.Count;
+        private static int Depth => currentHeaderNum.Count;
 
         public static void IncrementDepth(bool doGoPrev = true)
         {
@@ -43,19 +43,19 @@ namespace PlateauUnitySDK.Editor.EditorWindowCommon
             if (doGoNext) Next();
         }
 
-        public static void Next()
+        private static void Next()
         {
             currentHeaderNum[Depth - 1]++;
         }
 
-        public static void Prev()
+        private static void Prev()
         {
             int index = Math.Max(0, Depth - 1);
             int num = Math.Max(1, currentHeaderNum[index] - 1);
             currentHeaderNum[index] = num;
         }
 
-        public static string HeaderNumToString()
+        private static string HeaderNumToString()
         {
             var sb = new StringBuilder();
             for (int i = 0; i < Depth; i++)
