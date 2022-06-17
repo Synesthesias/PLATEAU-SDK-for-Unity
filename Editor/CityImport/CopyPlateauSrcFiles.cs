@@ -22,6 +22,19 @@ namespace PlateauUnitySDK.Editor.CityImport
             string gmlRootFolderName = Path.GetFileName(Path.GetDirectoryName(srcUdxPath));
             if (gmlRootFolderName == null) throw new FileNotFoundException($"{nameof(gmlRootFolderName)} is null.");
 
+            // copyDest が存在しない場合、パスの最後のフォルダを自動で作ります。
+            // 例: copyDest が         Assets/StreamingAssets/PLATEAU であり、
+            //    実際に存在するフォルダは Assets/StreamingAssets/        までである場合、PLATEAU を新たに作ります。
+            // TODO StreamingAssetsも存在しない場合は動かない。　足りない部分は複数フォルダであっても作成できるようにするべき。
+            if (!Directory.Exists(copyDest))
+            {
+                var destParentDirInfo = Directory.GetParent(copyDest);
+                var destParentPath = destParentDirInfo == null ? "" : destParentDirInfo.FullName;
+                string destParent = PathUtil.FullPathToAssetsPath(destParentPath);
+                string destFolderName = new DirectoryInfo(copyDest).Name;
+                AssetDatabase.CreateFolder(destParent, destFolderName);
+            }
+
             // コピー先のルートフォルダを作成します。
             // 例: Tokyoをコピーする場合のパスの例を以下に示します。
             //     Assets/StreamingAssets/PLATEAU/Tokyo　フォルダを作ります。
