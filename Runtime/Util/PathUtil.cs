@@ -9,7 +9,7 @@ namespace PlateauUnitySDK.Runtime.Util
     /// <summary>
     /// ファイルパスが正しいかどうか検証します。
     /// </summary>
-    public static class PathUtil
+    internal static class PathUtil
     {
         // この値はテストのときのみ変更されるのでreadonlyにしないでください。
         // ReSharper disable once FieldCanBeMadeReadOnly.Local

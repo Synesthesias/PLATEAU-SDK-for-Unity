@@ -10,7 +10,7 @@ namespace PlateauUnitySDK.Runtime.Util
     /// Unityの機能では通常では Dictionary はシリアライズできませんが、
     /// ISerializationCallbackReceiver を実装してシリアライズ時に List に変換し、デシリアライズ時に Dictionary に戻すことで Dictionary の保存が可能です。
     /// </summary>
-    public static class DictionarySerializer
+    internal static class DictionarySerializer
     {
         /// <summary>
         /// シリアライズするときに List形式に直します。

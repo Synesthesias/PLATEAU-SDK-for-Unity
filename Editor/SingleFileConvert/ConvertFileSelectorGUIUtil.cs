@@ -11,7 +11,7 @@ namespace PlateauUnitySDK.Editor.SingleFileConvert
     /// 次の機能とGUIの描画を提供します:
     /// ・変換元ファイルの選択　・変換後ファイルのパスの選択　・変換ボタン
     /// </summary>
-    public static class ConvertFileSelectorGUIUtil
+    internal static class ConvertFileSelectorGUIUtil
     {
         private const float spaceWidth = 20f;
         

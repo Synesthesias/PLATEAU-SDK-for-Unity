@@ -10,7 +10,7 @@ namespace PlateauUnitySDK.Editor.CityImport
     /// 入力フォルダのパスを選択するGUIを提供します。
     /// 新しいパスが選択されたとき、 <see cref="OnPathChanged"/> が呼ばれます。
     /// </summary>
-    public class InputFolderSelectorGUI
+    internal class InputFolderSelectorGUI
     {
         private string folderPath;
 

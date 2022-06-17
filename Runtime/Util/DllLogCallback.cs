@@ -9,7 +9,7 @@ namespace PlateauUnitySDK.Runtime.Util
     /// ネイティブDLL内のログをコールバックで受け取るためのメソッドです。
     /// ログを Unity の Debug.Log に転送します。
     /// </summary>
-    public static class DllLogCallback
+    internal static class DllLogCallback
     {
         // エラー、警告、情報　それぞれのコールバックです。
         private static readonly LogCallbackFuncType logError = (messagePtr) => Debug.LogError(PtrToStr(messagePtr));

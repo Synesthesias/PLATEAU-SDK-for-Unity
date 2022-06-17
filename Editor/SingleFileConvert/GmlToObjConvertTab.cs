@@ -7,7 +7,7 @@ namespace PlateauUnitySDK.Editor.SingleFileConvert
     /// <summary>
     /// gmlファイルを読んでobjファイルに変換して出力する機能を持ったウィンドウのタブです。
     /// </summary>
-    public class GmlToObjConvertTab : BaseConvertTab
+    internal class GmlToObjConvertTab : BaseConvertTab
     {
         private bool optimizeFlg = true;
         private MeshGranularity meshGranularity = MeshGranularity.PerPrimaryFeatureObject;

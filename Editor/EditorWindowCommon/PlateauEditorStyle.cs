@@ -6,7 +6,7 @@ namespace PlateauUnitySDK.Editor.EditorWindowCommon
     /// <summary>
     /// PlateauのUnityエディターのスタイルです。
     /// </summary>
-    public static class PlateauEditorStyle
+    internal static class PlateauEditorStyle
     {
         private static readonly Color mainButtonColorTint = new Color(140f / 255f, 235f / 255f, 255f / 255f);
 

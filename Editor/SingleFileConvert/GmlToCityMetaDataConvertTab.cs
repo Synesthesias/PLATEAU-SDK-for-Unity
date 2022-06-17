@@ -11,7 +11,7 @@ namespace PlateauUnitySDK.Editor.SingleFileConvert
     /// <summary>
     /// Gmlファイルを読んで <see cref="CityMetaData"/> を出力するGUIを提供します。
     /// </summary>
-    public class GmlToCityMetaDataConvertTab : BaseConvertTab
+    internal class GmlToCityMetaDataConvertTab : BaseConvertTab
     {
         private readonly GmlToCityMetaDataConverter converter = new GmlToCityMetaDataConverter();
 

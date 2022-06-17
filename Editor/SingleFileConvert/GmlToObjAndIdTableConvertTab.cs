@@ -9,7 +9,7 @@ namespace PlateauUnitySDK.Editor.SingleFileConvert
     /// Gml -> <see cref="CityMetaData"/> の変換タブの機能を
     /// 混ぜ合わせて両方を一度に出力するGUIを作ります。
     /// </summary>
-    public class GmlToObjAndIdTableConvertTab : ScrollableEditorWindowContents
+    internal class GmlToObjAndIdTableConvertTab : ScrollableEditorWindowContents
     {
         private BaseConvertTab[] tabs = new BaseConvertTab[]
         {

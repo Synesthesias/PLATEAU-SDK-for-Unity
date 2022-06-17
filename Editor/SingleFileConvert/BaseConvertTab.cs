@@ -9,7 +9,7 @@ namespace PlateauUnitySDK.Editor.SingleFileConvert
     /// ある拡張子からある拡張子への変換を行うGUIを提供します。
     /// <see cref="SingleFileConvertWindow"/> によって保持されます。
     /// </summary>
-    public abstract class BaseConvertTab : ScrollableEditorWindowContents
+    internal abstract class BaseConvertTab : ScrollableEditorWindowContents
     {
         
         // 変換元、変換先、Converter をサブクラスで指定します。

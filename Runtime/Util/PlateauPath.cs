@@ -6,7 +6,7 @@ namespace PlateauUnitySDK.Runtime.Util
     /// <summary>
     /// Plateau が利用するパスです。
     /// </summary>
-    public static class PlateauPath
+    internal static class PlateauPath
     {
         /// <summary>
         /// gmlをインポートする時、インポート元のgmlはデフォルトではこのパスにコピーされます。

@@ -15,7 +15,7 @@ namespace PlateauUnitySDK.Editor.CityImport
     /// ・gmlファイル名は [地域メッシュコード]_[地物型]_[CRS]_[オプション].gml です。
     /// 　詳しくは国交省仕様書 Ver2 の 324ページを参照してください。
     /// </summary>
-    public class GmlSearcher
+    internal class GmlSearcher
     {
 
         /// <summary>
@@ -113,7 +113,7 @@ namespace PlateauUnitySDK.Editor.CityImport
         /// 指定した <paramref name="areaId"/>(地域メッシュコード) に属する gmlファイルのパスのリストを返します。
         /// <paramref name="doAbsolutePath"/> が true ならば絶対パス、 false なら udxFolderPath からの相対パスを返します。
         /// </summary>
-        public IEnumerable<string> GetGmlFilePathsForAreaId(string areaId, bool doAbsolutePath)
+        private IEnumerable<string> GetGmlFilePathsForAreaId(string areaId, bool doAbsolutePath)
         {
             if (!this.fileTable.ContainsKey(areaId))
             {

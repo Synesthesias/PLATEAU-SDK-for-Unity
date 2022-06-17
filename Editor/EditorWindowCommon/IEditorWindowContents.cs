@@ -4,7 +4,7 @@ namespace PlateauUnitySDK.Editor.EditorWindowCommon
     /// EditorWindow に描画するコンテンツのインターフェイスです。
     /// DrawGUI()で描画します。 
     /// </summary>
-    public interface IEditorWindowContents
+    internal interface IEditorWindowContents
     {
         /// <summary>
         /// EditorWindow用のコンテンツを描画します。

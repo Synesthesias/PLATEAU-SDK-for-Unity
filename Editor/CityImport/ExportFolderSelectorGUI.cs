@@ -8,7 +8,7 @@ namespace PlateauUnitySDK.Editor.CityImport
     /// <summary>
     /// 出力先フォルダ選択GUIを表示します。
     /// </summary>
-    public class ExportFolderSelectorGUI
+    internal class ExportFolderSelectorGUI
     {
 
         /// <summary>

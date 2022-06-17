@@ -3,7 +3,7 @@
     /// <summary>
     /// ファイル変換機能のインターフェイスです。
     /// </summary>
-    public interface IFileConverter
+    internal interface IFileConverter
     {
         /// <summary>
         /// srcFilePathのファイルを変換し、dstFilePathに出力します。

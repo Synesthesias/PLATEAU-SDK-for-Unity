@@ -22,7 +22,7 @@ namespace PlateauUnitySDK.Editor.CityImport
         
         /// <summary> <see cref="CityImporter"/> に渡す設定です。</summary>
 
-        internal CityImportConfigGUI()
+        public CityImportConfigGUI()
         {
             this.udxFolderSelectorGUI = new InputFolderSelectorGUI(OnUdxPathChanged);
             this.gmlSearcherGUI = new GmlSearcherGUI();
@@ -31,7 +31,7 @@ namespace PlateauUnitySDK.Editor.CityImport
             this.cityImporter = new CityImporter();
         }
 
-        internal void Draw(CityImporterConfig config)
+        public void Draw(CityImporterConfig config)
         {
             // udxフォルダ選択
             this.udxFolderSelectorGUI.FolderPath = config.sourceUdxFolderPath;

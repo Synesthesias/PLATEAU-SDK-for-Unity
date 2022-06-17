@@ -12,7 +12,7 @@ namespace PlateauUnitySDK.Editor.CityImport
     /// フォルダ内の gml ファイルのうち、どれを対象とするかを
     /// 条件によって絞り込む GUI を提供します。
     /// </summary>
-    public class GmlSearcherGUI
+    internal class GmlSearcherGUI
     {
         private List<string> gmlFiles;
         private bool isInitialized;

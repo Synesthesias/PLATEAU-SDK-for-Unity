@@ -7,7 +7,7 @@ namespace PlateauUnitySDK.Editor.SingleFileConvert
     /// <summary>
     /// gmlファイルを読んでobjファイルに変換して出力する機能を持ったウィンドウのタブです。
     /// </summary>
-    public class ObjToFbxConvertTab : BaseConvertTab
+    internal class ObjToFbxConvertTab : BaseConvertTab
     {
         private readonly ObjToFbxConverter converter;
         private FbxFormat fbxFormat;

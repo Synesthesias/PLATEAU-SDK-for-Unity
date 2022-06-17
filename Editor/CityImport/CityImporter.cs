@@ -23,7 +23,7 @@ namespace PlateauUnitySDK.Editor.CityImport
     {
         
         /// <summary> このインスタンスが最後に出力した <see cref="CityMetaData"/> です。 </summary>
-        internal CityMetaData LastConvertedCityMetaData { get; private set; }
+        public CityMetaData LastConvertedCityMetaData { get; private set; }
         
         /// <summary>
         /// 複数のgmlファイルを変換します。
@@ -32,7 +32,7 @@ namespace PlateauUnitySDK.Editor.CityImport
         /// </summary>
         /// <param name="gmlRelativePaths">gmlファイルの相対パスのリストです。</param>
         /// <param name="config">変換設定です。</param>
-        internal void Import(IEnumerable<string> gmlRelativePaths, CityImporterConfig config)
+        public void Import(IEnumerable<string> gmlRelativePaths, CityImporterConfig config)
         {
             CopySrcFolderToStreamingAssets(config, out string srcFolderName);
             
@@ -104,7 +104,7 @@ namespace PlateauUnitySDK.Editor.CityImport
             config.sourceUdxFolderPath = Path.Combine(nextSrc, $"{srcFolderName}/udx");
         }
 
-        internal static bool IsInStreamingAssets(string path)
+        public static bool IsInStreamingAssets(string path)
         {
             return PathUtil.IsSubDirectory(path, Application.streamingAssetsPath);
         }

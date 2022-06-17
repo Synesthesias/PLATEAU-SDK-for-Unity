@@ -7,7 +7,7 @@ namespace PlateauUnitySDK.Editor.Converters
     /// <summary>
     /// <see cref="GmlToObjConverter"/> の設定を保持します。
     /// </summary>
-    public class CityMapMetaDataGeneratorConfig
+    internal class CityMapMetaDataGeneratorConfig
     {
         /// <summary> gmlロード時に使う設定です。 </summary>
         public CitygmlParserParams ParserParams;

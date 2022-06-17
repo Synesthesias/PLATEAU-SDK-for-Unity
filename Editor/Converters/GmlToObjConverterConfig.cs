@@ -7,7 +7,7 @@ namespace PlateauUnitySDK.Editor.Converters
     /// <summary>
     /// <see cref="GmlToObjConverter"/> の設定を保持するクラスです。
     /// </summary>
-    public class GmlToObjConverterConfig
+    internal class GmlToObjConverterConfig
     {
         /// <summary> メッシュのオブジェクト分けの細かさです。 </summary>
         public MeshGranularity MeshGranularity;
