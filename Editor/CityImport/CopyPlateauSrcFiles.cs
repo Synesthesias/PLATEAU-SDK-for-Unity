@@ -5,11 +5,14 @@ using UnityEditor;
 namespace PlateauUnitySDK.Editor.CityImport
 {
 
-    internal static class CopyGmls
+    /// <summary>
+    /// Plateauの元データをコピーします。
+    /// </summary>
+    internal static class CopyPlateauSrcFiles
     {
 
         /// <summary>
-        /// gmlファイル群のうち、 <paramref name="gmlRelativePaths"/> のリストにある gmlファイルとそれに関連するもののみをコピーします。
+        /// Plateau元データのうち、 <paramref name="gmlRelativePaths"/> のリストにある gmlファイルとそれに関連するもののみをコピーします。
         /// 変換先 <paramref name="copyDest"/> は Assets フォルダ内であることが前提です。
         /// </summary>
         public static void SelectCopy(string sourceUdxPath, string copyDest,

@@ -39,11 +39,11 @@ namespace PlateauUnitySDK.Editor.CityImport
         {
             // 元フォルダを StreamingAssets/PLATEAU にコピーします。すでに StreamingAssets内にある場合を除きます。 
             string prevSourceUdxPath = config.sourceUdxFolderPath;
-            string rootGmlFolderName = CopyGmls.UdxPathToGmlRootFolderName(prevSourceUdxPath);
+            string rootGmlFolderName = CopyPlateauSrcFiles.UdxPathToGmlRootFolderName(prevSourceUdxPath);
             if (!IsInStreamingAssets(prevSourceUdxPath))
             {
                 string copyDest = PlateauPath.StreamingGmlFolder;
-                CopyGmls.SelectCopy(config.sourceUdxFolderPath, copyDest, gmlRelativePaths);
+                CopyPlateauSrcFiles.SelectCopy(config.sourceUdxFolderPath, copyDest, gmlRelativePaths);
                 // configの変換元パスをコピー先に再設定します。
                 config.sourceUdxFolderPath = Path.Combine(copyDest, $"{rootGmlFolderName}/udx");
             }
