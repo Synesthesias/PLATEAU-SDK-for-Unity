@@ -61,7 +61,7 @@ namespace PlateauUnitySDK.Editor.CityImport
                 HeaderDrawer.Draw("出力");
                 if (PlateauEditorStyle.MainButton("出力"))
                 {
-                    this.cityImporter.Import(gmlFiles, config);
+                    this.cityImporter.Import(gmlFiles.ToArray(), config);
                 }
             }
             else

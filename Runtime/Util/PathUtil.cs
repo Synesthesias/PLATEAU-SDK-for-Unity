@@ -138,13 +138,8 @@ namespace PlateauUnitySDK.Runtime.Util
         /// Unity Editor 専用メソッドです。
         /// ディレクトリとファイルを再帰的にコピーします。
         /// コピー先は (dest)/(srcのフォルダ名) になります。
-        ///
-        /// コピー対象を絞り込む機能として、引数に <paramref name="targetNames"/> を指定できます。
-        /// 絞り込みをしない場合は null を指定します。
-        /// コピーしようとするファイルまたはディレクトリの名称が、
-        /// 配列 <paramref name="targetNames"/> のいずれかを含む（string.Containsの関係） 
         /// </summary>
-        public static void CloneDirectory(string src, string dest, string[] targetNames)
+        public static void CloneDirectory(string src, string dest)
         {
             string srcDirPath = Path.GetDirectoryName(src);
             if (srcDirPath == null)
@@ -162,31 +157,24 @@ namespace PlateauUnitySDK.Runtime.Util
             {
                 Directory.CreateDirectory(dest);
             }
-            CloneDirectoryRecursive(src, dest, targetNames);
+            CloneDirectoryRecursive(src, dest);
             // AssetDatabase.ImportAsset(FullPathToAssetsPath(dest));
             AssetDatabase.Refresh();
         }
         #endif
         
-        private static void CloneDirectoryRecursive(string src, string dest, string[] targetNames)
+        private static void CloneDirectoryRecursive(string src, string dest)
         {
             // 各子ディレクトリのコピー
             foreach (var directory in Directory.GetDirectories(src))
             {
                 string dirName = Path.GetFileName(directory);
-                
-                // targetNames に含まれるかチェック
-                if (targetNames != null)
-                {
-                    if (!IsStringArrContainsName(dirName, targetNames)) continue;
-                }
-                
                 string childDir = Path.Combine(dest, dirName);
                 if (!Directory.Exists(childDir))
                 {
                     Directory.CreateDirectory(childDir);
                 }
-                CloneDirectoryRecursive(directory, childDir, targetNames);
+                CloneDirectoryRecursive(directory, childDir);
             }
 
             // 各ファイルのコピー
@@ -194,19 +182,12 @@ namespace PlateauUnitySDK.Runtime.Util
             {
                 if (Path.GetExtension(file) == ".meta") continue;
                 string fileName = Path.GetFileName(file);
-                
-                // targetNamesに含まれるかチェック
-                if (targetNames != null)
-                {
-                    if (!IsStringArrContainsName(fileName, targetNames)) continue;
-                }
-                
                 string dstFile = Path.Combine(dest, fileName);
                 File.Copy(file, dstFile, true);
             }
         }
 
-        private static bool IsStringArrContainsName(string name, string[] array)
+        public static bool IsStringArrContainsName(string name, string[] array)
         {
             bool isInArray = false;
             foreach (var str in array)

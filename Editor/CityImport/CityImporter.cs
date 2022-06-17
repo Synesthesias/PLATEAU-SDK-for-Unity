@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using LibPLATEAU.NET.CityGML;
 using PlateauUnitySDK.Editor.Converters;
 using PlateauUnitySDK.Runtime.Behaviour;
@@ -32,10 +33,10 @@ namespace PlateauUnitySDK.Editor.CityImport
         /// </summary>
         /// <param name="gmlRelativePaths">gmlファイルの相対パスのリストです。</param>
         /// <param name="config">変換設定です。</param>
-        public void Import(IEnumerable<string> gmlRelativePaths, CityImporterConfig config)
+        public void Import(string[] gmlRelativePaths, CityImporterConfig config)
         {
             // 元フォルダを StreamingAssets にコピーします。 
-            CopySrcFolderToStreamingAssets(config, out string srcFolderName);
+            CopySrcFolderToStreamingAssets(config, out string srcFolderName, gmlRelativePaths);
             
             // gmlファイルごとのループを始めます。
             int successCount = 0;
@@ -96,7 +97,7 @@ namespace PlateauUnitySDK.Editor.CityImport
         /// 変換元がすでに StreamingAssets 内にある場合は何もしません。
         /// <paramref name="config"/> の変換元をコピー先のパスに設定し直します。
         /// </summary>
-        private static void CopySrcFolderToStreamingAssets(CityImporterConfig config, out string srcFolderName)
+        private static void CopySrcFolderToStreamingAssets(CityImporterConfig config, out string srcFolderName, string[] gmlRelativePaths)
         {
             string prevSrc = Path.GetFullPath(Path.Combine(config.sourceUdxFolderPath, "../"));
             srcFolderName = Path.GetFileName(Path.GetDirectoryName(prevSrc));
@@ -126,7 +127,31 @@ namespace PlateauUnitySDK.Editor.CityImport
             }
             
             // udxフォルダのうち対象のgmlファイルをコピーします。
-            
+            foreach (string gml in gmlRelativePaths)
+            {
+                GmlFileNameParser.Parse(gml, out int _, out string objTypeStr, out int _, out string _);
+                // 地物タイプのディレクトリを作ります。
+                string dstObjTypeFolder = dstUdxFolder + objTypeStr;
+                if (!Directory.Exists(dstObjTypeFolder))
+                {
+                    AssetDatabase.CreateFolder(dstUdxFolder, objTypeStr);
+                }
+                // gmlファイルをコピーします。
+                string gmlName = gml + ".gml";
+                string srcObjTypeFolder = Path.Combine(prevSrc, "udx", objTypeStr);
+                File.Copy(Path.Combine(srcObjTypeFolder, gmlName), Path.Combine(dstObjTypeFolder, gmlName), true);
+                // gmlファイルに関連するフォルダをコピーします。
+                // gmlの名称からオプションと拡張子を除いた文字列がフォルダ名に含まれていれば、コピー対象のディレクトリとみなします。
+                string gmlIdentity = GmlFileNameParser.NameWithoutOption(gml);
+                foreach (var dir in Directory.GetDirectories(srcObjTypeFolder))
+                {
+                    string srcDirName = new DirectoryInfo(dir).Name;
+                    if (srcDirName.Contains(gmlIdentity))
+                    {
+                        PathUtil.CloneDirectory(srcDirName, dstObjTypeFolder);
+                    }
+                }
+            }
             
             // configの変換元パスを再設定します。
             config.sourceUdxFolderPath = Path.Combine(nextSrc, $"{srcFolderName}/udx");
