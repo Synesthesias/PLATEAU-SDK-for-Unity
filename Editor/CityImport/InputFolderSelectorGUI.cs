@@ -3,7 +3,7 @@ using PlateauUnitySDK.Editor.EditorWindowCommon;
 using UnityEditor;
 using UnityEngine;
 
-namespace PlateauUnitySDK.Editor.CityModelImportWindow
+namespace PlateauUnitySDK.Editor.CityImport
 {
 
     /// <summary>

@@ -15,25 +15,25 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
     /// <see cref="Dispose"/> を忘れると、変換後もファイルが使用中となり外部から変更できなくなります。
     /// usingステートメントを使うことで暗黙的に <see cref="Dispose"/> を呼ぶことができます。
     /// </summary>
-    public class GmlToObjFileConverter : IFileConverter, IDisposable
+    public class GmlToObjConverter : IFileConverter, IDisposable
     {
         /// <summary> ObjWriter は変換処理をC++のDLLに委譲します。 </summary>
         private readonly ObjWriter objWriter;
 
-        private GmlToObjFileConverterConfig config;
+        private GmlToObjConverterConfig config;
         private CitygmlParserParams gmlParserParams;
 
         private int disposed;
 
-        public GmlToObjFileConverter()
+        public GmlToObjConverter()
         {
             this.objWriter = new ObjWriter();
-            this.config = new GmlToObjFileConverterConfig();
+            this.config = new GmlToObjConverterConfig();
             this.gmlParserParams = new CitygmlParserParams();
             ApplyConfig(this.config, ref this.gmlParserParams);
         }
 
-        private void ApplyConfig(GmlToObjFileConverterConfig conf, ref CitygmlParserParams parserParams)
+        private void ApplyConfig(GmlToObjConverterConfig conf, ref CitygmlParserParams parserParams)
         {
             this.objWriter.SetMeshGranularity(conf.MeshGranularity);
             var logger = this.objWriter.GetDllLogger();
@@ -45,7 +45,7 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
         }
         
         /// <summary> コンバートの設定です。setで設定を変えます。 </summary>
-        public GmlToObjFileConverterConfig Config
+        public GmlToObjConverterConfig Config
         {
             set
             {
@@ -202,7 +202,7 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
             GC.SuppressFinalize(this);
         }
 
-        ~GmlToObjFileConverter()
+        ~GmlToObjConverter()
         {
             Dispose();
         }

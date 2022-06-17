@@ -3,10 +3,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using PlateauUnitySDK.Editor.FileConverter.Converters;
-using PlateauUnitySDK.Runtime.CityMapMeta;
+using PlateauUnitySDK.Runtime.CityMeta;
 
-namespace PlateauUnitySDK.Editor.CityModelImportWindow
+namespace PlateauUnitySDK.Editor.CityImport
 {
     /// <summary>
     /// udxフォルダ内のgmlファイルを検索します。
@@ -16,7 +15,7 @@ namespace PlateauUnitySDK.Editor.CityModelImportWindow
     /// ・gmlファイル名は [地域メッシュコード]_[地物型]_[CRS]_[オプション].gml です。
     /// 　詳しくは国交省仕様書 Ver2 の 324ページを参照してください。
     /// </summary>
-    public class GmlFileSearcher
+    public class GmlSearcher
     {
 
         /// <summary>
@@ -33,14 +32,14 @@ namespace PlateauUnitySDK.Editor.CityModelImportWindow
         // }
 
         /// <summary> インスタンス化と同時にパスを指定して検索します。 </summary>
-        public GmlFileSearcher(string udxFolderPath)
+        public GmlSearcher(string udxFolderPath)
         {
             if (!IsPathUdx(udxFolderPath)) return;
             GenerateFileDictionary(udxFolderPath);
         }
 
         /// <summary> パスを指定せずにインスタンス化する場合、あとで <see cref="GenerateFileDictionary"/> を実行する必要があります。 </summary>
-        public GmlFileSearcher()
+        public GmlSearcher()
         {
         }
 

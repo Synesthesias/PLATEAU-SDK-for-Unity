@@ -2,18 +2,18 @@
 using System.IO;
 using PlateauUnitySDK.Editor.EditorWindowCommon;
 using PlateauUnitySDK.Editor.FileConverter.Converters;
-using PlateauUnitySDK.Runtime.CityMapMeta;
+using PlateauUnitySDK.Runtime.CityMeta;
 using UnityEditor;
 using UnityEngine;
 
 namespace PlateauUnitySDK.Editor.FileConverter.GUIContents
 {
     /// <summary>
-    /// Gmlファイルを読んで <see cref="CityMapMetaData"/> を出力するGUIを提供します。
+    /// Gmlファイルを読んで <see cref="CityMetaData"/> を出力するGUIを提供します。
     /// </summary>
-    public class GmlToCityMapInfoConvertTab : BaseConvertTab
+    public class GmlToCityMetaDataConvertTab : BaseConvertTab
     {
-        private readonly GmlToCityMapInfoConverter converter = new GmlToCityMapInfoConverter();
+        private readonly GmlToCityMetaDataConverter converter = new GmlToCityMetaDataConverter();
 
         private bool doOptimize = true;
 
@@ -23,7 +23,7 @@ namespace PlateauUnitySDK.Editor.FileConverter.GUIContents
         public override IFileConverter FileConverter => this.converter;
         private static string projectPath = Path.GetDirectoryName(Application.dataPath);
         private int dstTabIndex;
-        private CityMapMetaData existingMapMetaData;
+        private CityMetaData existingMetaData;
         private string existingMapInfoPath;
 
         public override void HeaderInfoGUI()
@@ -56,14 +56,14 @@ namespace PlateauUnitySDK.Editor.FileConverter.GUIContents
                 case 1:
                     HeaderDrawer.Draw("Select Existing File");
                     // Existing File のとき、既存のファイル選択GUIを表示します。
-                    this.existingMapMetaData = (CityMapMetaData)EditorGUILayout.ObjectField(
-                        $"{nameof(CityMapMetaData)}:",
-                        this.existingMapMetaData,
+                    this.existingMetaData = (CityMetaData)EditorGUILayout.ObjectField(
+                        $"{nameof(CityMetaData)}:",
+                        this.existingMetaData,
                         typeof(IdToGmlTable),
                         false
                         );
                     this.existingMapInfoPath = 
-                        Path.Combine(projectPath, AssetDatabase.GetAssetPath(this.existingMapMetaData));
+                        Path.Combine(projectPath, AssetDatabase.GetAssetPath(this.existingMetaData));
                     GUILayout.TextArea(this.existingMapInfoPath);
                     break;
                 default:

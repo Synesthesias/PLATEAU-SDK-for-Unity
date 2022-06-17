@@ -27,7 +27,7 @@ namespace PlateauUnitySDK.Tests.EditModeTests.TestsFileConverter
         {
             var outputFilePath = Path.Combine(DirectoryUtil.TempAssetFolderPath, "table.asset");
             outputFilePath = PathUtil.FullPathToAssetsPath(outputFilePath);
-            var converter = new GmlToCityMapInfoConverter();
+            var converter = new GmlToCityMetaDataConverter();
             converter.Convert(DirectoryUtil.TestSimpleGmlFilePath, outputFilePath);
             // 変換後、ファイルがあれば良しとします。
             Assert.IsTrue(File.Exists(outputFilePath));

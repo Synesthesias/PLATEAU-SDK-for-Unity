@@ -30,9 +30,9 @@ namespace PlateauUnitySDK.Editor.FileConverter
             this.tabContents = new IEditorWindowContents[]
             {
                 new GmlToObjAndIdTableConvertTab(),
-                new GmlToObjFileConvertTab(),
-                new GmlToCityMapInfoConvertTab(),
-                new ObjToFbxFileConvertTab()
+                new GmlToObjConvertTab(),
+                new GmlToCityMetaDataConvertTab(),
+                new ObjToFbxConvertTab()
             };
             this.tabNames = new[]
             {

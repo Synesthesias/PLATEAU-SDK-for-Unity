@@ -4,10 +4,9 @@ using System.IO;
 using System.Linq;
 using LibPLATEAU.NET.CityGML;
 using NUnit.Framework;
-using PlateauUnitySDK.Editor.CityModelImportWindow;
 using PlateauUnitySDK.Editor.FileConverter;
 using PlateauUnitySDK.Editor.FileConverter.Converters;
-using PlateauUnitySDK.Runtime.CityMapMeta;
+using PlateauUnitySDK.Runtime.CityMeta;
 using PlateauUnitySDK.Runtime.Util;
 using PlateauUnitySDK.Tests.TestUtils;
 using UnityEditor;
@@ -19,7 +18,7 @@ namespace PlateauUnitySDK.Tests.EditModeTests.TestsFileConverter
     [TestFixture]
     public class TestMultiGmlConverter
     {
-        private MultiGmlConverter converter;
+        private CityImporter converter;
         private static readonly string testUdxPathTokyo = Path.GetFullPath(Path.Combine(Application.dataPath,
             "../Packages/PlateauUnitySDK/Tests/TestData/TestDataTokyoMini/udx"));
 
@@ -46,7 +45,7 @@ namespace PlateauUnitySDK.Tests.EditModeTests.TestsFileConverter
         [SetUp]
         public void SetUp()
         {
-            this.converter = new MultiGmlConverter();
+            this.converter = new CityImporter();
             DirectoryUtil.SetUpTempAssetFolder();
             
             // テスト用に一時的に MultiGmlConverter のデフォルト出力先を変更します。
@@ -68,7 +67,7 @@ namespace PlateauUnitySDK.Tests.EditModeTests.TestsFileConverter
             var config = new CityModelImportConfig();
             config.sourceUdxFolderPath = testUdxPathTokyo;
             config.exportFolderPath = testOutputDir;
-            this.converter.Convert(testGmlRelativePathsTokyo, config);
+            this.converter.Import(testGmlRelativePathsTokyo, config);
             // 変換後、出力されたファイルの数を数えます。
             int objCount = 0;
             int assetCount = 0;
@@ -95,10 +94,10 @@ namespace PlateauUnitySDK.Tests.EditModeTests.TestsFileConverter
             var config = new CityModelImportConfig();
             config.sourceUdxFolderPath = testUdxPathTokyo;
             config.exportFolderPath = testOutputDir;
-            this.converter.Convert(testGmlRelativePathsTokyo, config);
+            this.converter.Import(testGmlRelativePathsTokyo, config);
             
             // 値1 : CityMapInfo に記録された Reference Point を取得します。
-            var mapInfo = this.converter.LastConvertedCityMapMetaData;
+            var mapInfo = this.converter.LastConvertedCityMetaData;
             var recordedReferencePoint = mapInfo.cityModelImportConfig.referencePoint;
 
             // 値2 : GmlToObjFileConverter にかけたときの Reference Point を取得します。
@@ -107,7 +106,7 @@ namespace PlateauUnitySDK.Tests.EditModeTests.TestsFileConverter
                 gmlFilePath,
                 new CitygmlParserParams(),
                 DllLogCallback.UnityLogCallbacks);
-            var objConverter = new GmlToObjFileConverter();
+            var objConverter = new GmlToObjConverter();
             var firstGmlReferencePoint = objConverter.SetValidReferencePoint(cityModel);
             
             // 値1と値2は同一であることを期待します。
@@ -123,12 +122,12 @@ namespace PlateauUnitySDK.Tests.EditModeTests.TestsFileConverter
             config.meshGranularity = granularityOnConvert;
             config.sourceUdxFolderPath = testUdxPathTokyo;
             config.exportFolderPath = testOutputDir;
-            this.converter.Convert(testGmlRelativePathsTokyo, config);
+            this.converter.Import(testGmlRelativePathsTokyo, config);
 
             // 値2: CityMapInfo に書き込まれた MeshGranularity の値
             string metaDataPath =
                 Path.Combine(PathUtil.FullPathToAssetsPath(testOutputDir), "CityMapMetaData.asset");
-            var loadedMetaData = AssetDatabase.LoadAssetAtPath<CityMapMetaData>(metaDataPath);
+            var loadedMetaData = AssetDatabase.LoadAssetAtPath<CityMetaData>(metaDataPath);
             Assert.NotNull(loadedMetaData, "メタデータをロードできる");
             var granularityOnMapInfo = loadedMetaData.cityModelImportConfig.meshGranularity;
             
@@ -139,14 +138,14 @@ namespace PlateauUnitySDK.Tests.EditModeTests.TestsFileConverter
         [Test]
         public void When_CityMapInfo_Is_Already_Exist_Then_Clear_Its_Data_Before_Convert()
         {
-            bool DoContainAtomic(CityMapMetaData info) => info.idToGmlTable.Keys.Any(id => id.StartsWith("wall"));
+            bool DoContainAtomic(CityMetaData info) => info.idToGmlTable.Keys.Any(id => id.StartsWith("wall"));
 
             var config = new CityModelImportConfig();
             config.meshGranularity = MeshGranularity.PerAtomicFeatureObject;
             config.sourceUdxFolderPath = testUdxPathSimple;
             config.exportFolderPath = testOutputDir;
-            this.converter.Convert(testGmlRelativePathsSimple, config);
-            var mapInfo = this.converter.LastConvertedCityMapMetaData;
+            this.converter.Import(testGmlRelativePathsSimple, config);
+            var mapInfo = this.converter.LastConvertedCityMetaData;
             foreach (var key in mapInfo.idToGmlTable.Keys)
             {
                 Console.Write(key);
@@ -156,8 +155,8 @@ namespace PlateauUnitySDK.Tests.EditModeTests.TestsFileConverter
             config.meshGranularity = MeshGranularity.PerPrimaryFeatureObject;
             config.sourceUdxFolderPath = testUdxPathTokyo;
             config.exportFolderPath = testOutputDir;
-            this.converter.Convert(testGmlRelativePathsTokyo, config);
-            mapInfo = this.converter.LastConvertedCityMapMetaData;
+            this.converter.Import(testGmlRelativePathsTokyo, config);
+            mapInfo = this.converter.LastConvertedCityMetaData;
             bool doContainBuilding = mapInfo.idToGmlTable.Keys.Any(id => id.StartsWith("BLD"));
             Assert.IsFalse(DoContainAtomic(mapInfo), "2回目の変換は最小地物を含まないことを確認");
             Assert.IsTrue(doContainBuilding, "2回目の変換は主要地物を含むことを確認");

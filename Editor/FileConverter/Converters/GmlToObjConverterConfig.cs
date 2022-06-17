@@ -5,9 +5,9 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
 {
 
     /// <summary>
-    /// <see cref="GmlToObjFileConverter"/> の設定を保持するクラスです。
+    /// <see cref="GmlToObjConverter"/> の設定を保持するクラスです。
     /// </summary>
-    public class GmlToObjFileConverterConfig
+    public class GmlToObjConverterConfig
     {
         /// <summary> メッシュのオブジェクト分けの細かさです。 </summary>
         public MeshGranularity MeshGranularity;
@@ -31,7 +31,7 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
         public AxesConversion AxesConversion;
 
 
-        public GmlToObjFileConverterConfig(
+        public GmlToObjConverterConfig(
             MeshGranularity meshGranularity = MeshGranularity.PerPrimaryFeatureObject,
             bool doAutoSetReferencePoint = true,
             Vector3? manualReferencePoint = null,

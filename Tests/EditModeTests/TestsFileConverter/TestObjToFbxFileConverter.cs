@@ -40,7 +40,7 @@ namespace PlateauUnitySDK.Tests.EditModeTests.TestsFileConverter
         public void Convert_Generates_Fbx_File()
         {
             // 変換後、fbxファイルが存在すれば良しとします。
-            var converter = new ObjToFbxFileConverter();
+            var converter = new ObjToFbxConverter();
             converter.Convert(testObjFilePath, destFbxFilePath);
             Assert.IsTrue(File.Exists(destFbxFilePath));
         }

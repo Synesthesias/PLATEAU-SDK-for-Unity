@@ -1,8 +1,8 @@
 ﻿using UnityEngine;
 
-namespace PlateauUnitySDK.Runtime.CityMapMeta
+namespace PlateauUnitySDK.Runtime.CityMeta
 {
-    public class CityMapMetaData : ScriptableObject
+    public class CityMetaData : ScriptableObject
     {
         public IdToGmlTable idToGmlTable = new IdToGmlTable();
         public CityModelImportConfig cityModelImportConfig = new CityModelImportConfig();

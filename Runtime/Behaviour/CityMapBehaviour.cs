@@ -1,5 +1,5 @@
 ﻿using LibPLATEAU.NET.CityGML;
-using PlateauUnitySDK.Runtime.CityMapMeta;
+using PlateauUnitySDK.Runtime.CityMeta;
 using PlateauUnitySDK.Runtime.SemanticsLoad;
 using UnityEngine;
 
@@ -7,18 +7,18 @@ namespace PlateauUnitySDK.Runtime.Behaviour
 {
     public class CityMapBehaviour : MonoBehaviour
     {
-        [SerializeField] private CityMapMetaData cityMapMetaData;
+        [SerializeField] private CityMetaData cityMetaData;
         private SemanticsLoader loader = new SemanticsLoader();
 
-        public CityMapMetaData CityMapMetaData
+        public CityMetaData CityMetaData
         {
-            get => this.cityMapMetaData;
-            set => this.cityMapMetaData = value;
+            get => this.cityMetaData;
+            set => this.cityMetaData = value;
         }
 
         public CityObject LoadSemantics(string gameObjName)
         {
-            return this.loader.Load(gameObjName, this.cityMapMetaData);
+            return this.loader.Load(gameObjName, this.cityMetaData);
         }
     }
 }

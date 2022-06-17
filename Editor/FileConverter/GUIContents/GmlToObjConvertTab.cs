@@ -7,29 +7,29 @@ namespace PlateauUnitySDK.Editor.FileConverter.GUIContents
     /// <summary>
     /// gmlファイルを読んでobjファイルに変換して出力する機能を持ったウィンドウのタブです。
     /// </summary>
-    public class GmlToObjFileConvertTab : BaseConvertTab
+    public class GmlToObjConvertTab : BaseConvertTab
     {
         private bool optimizeFlg = true;
         private MeshGranularity meshGranularity = MeshGranularity.PerPrimaryFeatureObject;
         private AxesConversion axesConversion = AxesConversion.RUF;
         private DllLogLevel logLevel = DllLogLevel.Error;
-        private GmlToObjFileConverter fileConverter;
-        private GmlToObjFileConverterConfig converterConf;
+        private GmlToObjConverter converter;
+        private GmlToObjConverterConfig converterConf;
 
         protected override string SourceFileExtension => "gml";
         public override string DestFileExtension => "obj";
-        public override IFileConverter FileConverter => this.fileConverter;
+        public override IFileConverter FileConverter => this.converter;
 
         /// <summary>初期化処理です。</summary>
-        public GmlToObjFileConvertTab()
+        public GmlToObjConvertTab()
         {
-            this.fileConverter = new GmlToObjFileConverter();
-            this.converterConf = new GmlToObjFileConverterConfig();
+            this.converter = new GmlToObjConverter();
+            this.converterConf = new GmlToObjConverterConfig();
             ApplyGUIToConfig();
         }
 
         /// <summary>
-        /// GUI上での設定を <see cref="GmlToObjFileConverter"/> に反映させます。
+        /// GUI上での設定を <see cref="GmlToObjConverter"/> に反映させます。
         /// </summary>
         private void ApplyGUIToConfig()
         {
@@ -37,7 +37,7 @@ namespace PlateauUnitySDK.Editor.FileConverter.GUIContents
             this.converterConf.AxesConversion = this.axesConversion;
             this.converterConf.OptimizeFlag = this.optimizeFlg;
             this.converterConf.LogLevel = this.logLevel;
-            this.fileConverter.Config = this.converterConf;
+            this.converter.Config = this.converterConf;
         }
 
         public override void HeaderInfoGUI()

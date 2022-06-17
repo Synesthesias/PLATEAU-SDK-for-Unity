@@ -2,20 +2,14 @@
 using UnityEditor;
 using UnityEngine;
 
-namespace PlateauUnitySDK.Editor.CityModelImportWindow
+namespace PlateauUnitySDK.Editor.CityImport
 {
 
     /// <summary>
     /// 出力先フォルダ選択GUIを表示します。
     /// </summary>
-    public class ExportFolderPathSelectorGUI
+    public class ExportFolderSelectorGUI
     {
-        // private string exportFolderPath;
-
-        // public string ExportFolderPath
-        // {
-        //     set => this.exportFolderPath = value;
-        // }
 
         /// <summary>
         /// GUIを表示し、選択されたパスを返します。

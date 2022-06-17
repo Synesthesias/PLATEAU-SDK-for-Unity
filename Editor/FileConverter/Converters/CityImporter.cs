@@ -5,7 +5,7 @@ using System.Linq;
 using Codice.Client.Common;
 using LibPLATEAU.NET.CityGML;
 using PlateauUnitySDK.Runtime.Behaviour;
-using PlateauUnitySDK.Runtime.CityMapMeta;
+using PlateauUnitySDK.Runtime.CityMeta;
 using PlateauUnitySDK.Runtime.Util;
 using UnityEditor;
 using UnityEngine;
@@ -16,13 +16,15 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
 {
 
     /// <summary>
-    /// 複数のgmlファイルから、複数のobj および 1つの <see cref="CityMapMetaData"/>テーブルを生成します。
+    /// 都市モデルをインポートします。
+    /// 複数のgmlファイルから、複数のobj および 1つの <see cref="CityMetaData"/>テーブルを生成します。
+    /// モデルを現在のシーンに配置します。
     /// </summary>
-    public class MultiGmlConverter
+    public class CityImporter
     {
         
-        /// <summary> このインスタンスが最後に出力した <see cref="CityMapMetaData"/> です。 </summary>
-        public CityMapMetaData LastConvertedCityMapMetaData { get; private set; }
+        /// <summary> このインスタンスが最後に出力した <see cref="CityMetaData"/> です。 </summary>
+        public CityMetaData LastConvertedCityMetaData { get; private set; }
         
         /// <summary>
         /// 複数のgmlファイルを変換します。
@@ -31,7 +33,7 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
         /// </summary>
         /// <param name="gmlRelativePaths">gmlファイルの相対パスのリストです。</param>
         /// <param name="config">変換設定です。</param>
-        public void Convert(IEnumerable<string> gmlRelativePaths, CityModelImportConfig config)
+        public void Import(IEnumerable<string> gmlRelativePaths, CityModelImportConfig config)
         {
             CopySrcFolderToStreamingAssets(config, out string srcFolderName);
             
@@ -70,7 +72,7 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
                 // シーンに配置します。
                 PlaceToScene(objAssetPath, srcFolderName, cityMapMetaData);
                 
-                LastConvertedCityMapMetaData = cityMapMetaData;
+                LastConvertedCityMetaData = cityMapMetaData;
                 successCount++;
             }
             
@@ -141,10 +143,10 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
 
         private static bool TryConvertToObj(CityModel cityModel, ref Vector3? referencePoint, CityModelImportConfig importConfig, string gmlFullPath, string objPath)
         {
-            using (var objConverter = new GmlToObjFileConverter())
+            using (var objConverter = new GmlToObjConverter())
             {
                 // configを作成します。
-                var converterConf = new GmlToObjFileConverterConfig();
+                var converterConf = new GmlToObjConverterConfig();
                 converterConf.MeshGranularity = importConfig.meshGranularity;
                 converterConf.LogLevel = importConfig.logLevel;
                 converterConf.DoAutoSetReferencePoint = false;
@@ -168,11 +170,11 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
             }
         }
 
-        private static bool TryGenerateMetaData(out CityMapMetaData cityMapMetaData, string gmlFileName,
+        private static bool TryGenerateMetaData(out CityMetaData cityMetaData, string gmlFileName,
             string dstMeshAssetPath, bool isFirstFile, CityModelImportConfig importConf)
         {
-            cityMapMetaData = null;
-            var metaGen = new CityMapMetaDataGenerator();
+            cityMetaData = null;
+            var metaGen = new CityMetaDataGenerator();
             var metaGenConfig = new CityMapMetaDataGeneratorConfig
             {
                 CityModelImportConfig = importConf,
@@ -186,11 +188,11 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
             {
                 return false;
             }
-            cityMapMetaData = metaGen.LastConvertedCityMapMetaData;
+            cityMetaData = metaGen.LastConvertedCityMetaData;
             return true;
         }
 
-        private static void PlaceToScene(string objAssetPath, string srcFolderName, CityMapMetaData metaData)
+        private static void PlaceToScene(string objAssetPath, string srcFolderName, CityMetaData metaData)
         {
             // 親を配置
             var parent = GameObject.Find(srcFolderName);
@@ -205,7 +207,7 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
             {
                 cityMapBehaviour = parent.AddComponent<CityMapBehaviour>();
             }
-            cityMapBehaviour.CityMapMetaData = metaData;
+            cityMapBehaviour.CityMetaData = metaData;
 
             var assetObj = AssetDatabase.LoadAssetAtPath<GameObject>(objAssetPath);
             

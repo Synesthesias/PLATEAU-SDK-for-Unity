@@ -2,7 +2,7 @@
 using LibPLATEAU.NET.CityGML;
 using UnityEngine;
 
-namespace PlateauUnitySDK.Runtime.CityMapMeta
+namespace PlateauUnitySDK.Runtime.CityMeta
 {
     /// <summary>
     /// 複数gmlファイルの変換時に利用されます。

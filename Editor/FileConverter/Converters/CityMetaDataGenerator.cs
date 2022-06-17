@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using PlateauUnitySDK.Runtime.CityMapMeta;
+using PlateauUnitySDK.Runtime.CityMeta;
 using PlateauUnitySDK.Runtime.Util;
 using UnityEditor;
 using UnityEngine;
@@ -10,18 +10,12 @@ using Debug = UnityEngine.Debug;
 namespace PlateauUnitySDK.Editor.FileConverter.Converters
 {
     /// <summary>
-    /// <see cref="CityMapMetaData"/> を生成します。
-    /// 古い版である <see cref="GmlToCityMapInfoConverter"/> の置き換えとなるクラスです。
+    /// <see cref="CityMetaData"/> を生成します。
+    /// 古い版である <see cref="GmlToCityMetaDataConverter"/> の置き換えとなるクラスです。
     /// </summary>
-    public class CityMapMetaDataGenerator
+    public class CityMetaDataGenerator
     {
-        public CityMapMetaData LastConvertedCityMapMetaData { get; set; }
-        // public CityMapMetaDataGeneratorConfig Config { get; set; }
-
-        // public CityMapMetaDataGenerator()
-        // {
-            // Config = new CityMapMetaDataGeneratorConfig();
-        // }
+        public CityMetaData LastConvertedCityMetaData { get; set; }
 
         public bool Generate(CityMapMetaDataGeneratorConfig config, string meshAssetPath, string gmlFileName)
         {
@@ -60,7 +54,7 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
                 metaData.cityModelImportConfig = importConf;
                 
                 // ファイルに保存します。
-                LastConvertedCityMapMetaData = metaData;
+                LastConvertedCityMetaData = metaData;
                 EditorUtility.SetDirty(metaData);
                 AssetDatabase.SaveAssets();
                 
@@ -68,28 +62,28 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
             }
             catch (Exception e)
             {
-                Debug.LogError($"Error generating {nameof(CityMapMetaData)}.\n{e}");
+                Debug.LogError($"Error generating {nameof(CityMetaData)}.\n{e}");
                 return false;
             }
         }
         
         /// <summary>
-        /// 指定パスの <see cref="CityMapMetaData"/> をロードします。
+        /// 指定パスの <see cref="CityMetaData"/> をロードします。
         /// ファイルが存在しない場合、新しく作成します。
         /// ファイルが存在する場合、それをロードします。
         /// ロード時、<paramref name="doClearIdToGmlTable"/> がtrueなら idToGmlTable を消去します。
         /// </summary>
-        private static CityMapMetaData LoadOrCreateMetaData(string dstFullPath, bool doClearIdToGmlTable)
+        private static CityMetaData LoadOrCreateMetaData(string dstFullPath, bool doClearIdToGmlTable)
         {
             bool doFileExists = File.Exists(dstFullPath);
             string dstAssetPath = PathUtil.FullPathToAssetsPath(dstFullPath);
             if (!doFileExists)
             {
-                var instance = ScriptableObject.CreateInstance<CityMapMetaData>();
+                var instance = ScriptableObject.CreateInstance<CityMetaData>();
                 AssetDatabase.CreateAsset(instance, dstAssetPath);
                 AssetDatabase.SaveAssets();
             }
-            var loadedMetaData = AssetDatabase.LoadAssetAtPath<CityMapMetaData>(dstAssetPath);
+            var loadedMetaData = AssetDatabase.LoadAssetAtPath<CityMetaData>(dstAssetPath);
             if (doClearIdToGmlTable)
             {
                 loadedMetaData.DoClearIdToGmlTable();

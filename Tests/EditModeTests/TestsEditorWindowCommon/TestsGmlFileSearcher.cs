@@ -1,5 +1,5 @@
 ﻿using NUnit.Framework;
-using PlateauUnitySDK.Editor.CityModelImportWindow;
+using PlateauUnitySDK.Editor.CityImport;
 using PlateauUnitySDK.Tests.TestUtils;
 using UnityEngine;
 
@@ -11,7 +11,7 @@ namespace PlateauUnitySDK.Tests.EditModeTests.TestsEditorWindowCommon
         [Test]
         public void AreaIds_Returns_File_AreaIds()
         {
-            var searcher = new GmlFileSearcher(DirectoryUtil.TestTokyoUdxPath);
+            var searcher = new GmlSearcher(DirectoryUtil.TestTokyoUdxPath);
             string[] areaIds = searcher.AreaIds;
             Assert.Contains("53394525", areaIds);
             Assert.Contains("533925", areaIds);

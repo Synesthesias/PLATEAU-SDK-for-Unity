@@ -1,26 +1,26 @@
 using PlateauUnitySDK.Editor.FileConverter.Converters;
 using UnityEditor;
-using static PlateauUnitySDK.Editor.FileConverter.Converters.ObjToFbxFileConverter;
+using static PlateauUnitySDK.Editor.FileConverter.Converters.ObjToFbxConverter;
 
 namespace PlateauUnitySDK.Editor.FileConverter.GUIContents
 {
     /// <summary>
     /// gmlファイルを読んでobjファイルに変換して出力する機能を持ったウィンドウのタブです。
     /// </summary>
-    public class ObjToFbxFileConvertTab : BaseConvertTab
+    public class ObjToFbxConvertTab : BaseConvertTab
     {
-        private readonly ObjToFbxFileConverter fileConverter;
+        private readonly ObjToFbxConverter converter;
         private FbxFormat fbxFormat;
 
         protected override string SourceFileExtension => "obj";
         public override string DestFileExtension => "fbx";
-        public override IFileConverter FileConverter => this.fileConverter;
+        public override IFileConverter FileConverter => this.converter;
 
         /// <summary>初期化処理です。</summary>
-        public ObjToFbxFileConvertTab()
+        public ObjToFbxConvertTab()
         {
-            this.fileConverter = new ObjToFbxFileConverter();
-            this.fileConverter.SetConfig(this.fbxFormat);
+            this.converter = new ObjToFbxConverter();
+            this.converter.SetConfig(this.fbxFormat);
         }
 
         public override void HeaderInfoGUI()
@@ -36,7 +36,7 @@ namespace PlateauUnitySDK.Editor.FileConverter.GUIContents
 
         public override void OnConfigureGUIChanged()
         {
-            this.fileConverter.SetConfig(this.fbxFormat);
+            this.converter.SetConfig(this.fbxFormat);
         }
     }
 }

@@ -1,11 +1,11 @@
 ﻿using LibPLATEAU.NET.CityGML;
-using PlateauUnitySDK.Runtime.CityMapMeta;
+using PlateauUnitySDK.Runtime.CityMeta;
 
 namespace PlateauUnitySDK.Editor.FileConverter.Converters
 {
 
     /// <summary>
-    /// <see cref="GmlToObjFileConverter"/> の設定を保持します。
+    /// <see cref="GmlToObjConverter"/> の設定を保持します。
     /// </summary>
     public class CityMapMetaDataGeneratorConfig
     {

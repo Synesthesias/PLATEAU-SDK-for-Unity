@@ -1,22 +1,22 @@
 ﻿using PlateauUnitySDK.Editor.EditorWindowCommon;
-using PlateauUnitySDK.Runtime.CityMapMeta;
+using PlateauUnitySDK.Runtime.CityMeta;
 using UnityEditor;
 
-namespace PlateauUnitySDK.Editor.CityModelImportWindow
+namespace PlateauUnitySDK.Editor.CityImport
 {
     /// <summary>
-    /// <see cref="CityMapMetaData"/> のインスペクタでの表示を行います。
+    /// <see cref="CityMetaData"/> のインスペクタでの表示を行います。
     /// </summary>
-    [CustomEditor(typeof(CityMapMetaData))]
-    public class CityMapMetaDataEditor : UnityEditor.Editor
+    [CustomEditor(typeof(CityMetaData))]
+    public class CityMetaDataEditor : UnityEditor.Editor
     {
         private bool foldOutIdGmlTable;
         private bool foldOutReconvert;
-        private CityModelImportConfigGUI importConfigGUI = new CityModelImportConfigGUI();
+        private CityImportConfigGUI importConfigGUI = new CityImportConfigGUI();
         public override void OnInspectorGUI()
         {
             HeaderDrawer.Reset();
-            var metaData = target as CityMapMetaData;
+            var metaData = target as CityMetaData;
             if (metaData == null)
             {
                 EditorGUILayout.HelpBox($"{nameof(metaData)} が null です。", MessageType.Error);

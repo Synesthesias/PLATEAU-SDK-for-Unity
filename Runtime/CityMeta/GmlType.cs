@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using static PlateauUnitySDK.Runtime.CityMapMeta.GmlType;
+using static PlateauUnitySDK.Runtime.CityMeta.GmlType;
 
-namespace PlateauUnitySDK.Runtime.CityMapMeta
+namespace PlateauUnitySDK.Runtime.CityMeta
 {
 
     public enum GmlType

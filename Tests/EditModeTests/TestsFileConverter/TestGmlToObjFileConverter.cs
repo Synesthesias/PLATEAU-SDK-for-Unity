@@ -34,7 +34,7 @@ namespace PlateauUnitySDK.Tests.EditModeTests.TestsFileConverter
         public void Convert_Generates_Obj_File()
         {
             string outputFilePath = Path.Combine(DirectoryUtil.TempCacheFolderPath, "test_convert_generates_obj_file.obj");
-            using (var converter = new GmlToObjFileConverter())
+            using (var converter = new GmlToObjConverter())
             {
                 converter.Convert(DirectoryUtil.TestSimpleGmlFilePath, outputFilePath);
             }
@@ -87,7 +87,7 @@ namespace PlateauUnitySDK.Tests.EditModeTests.TestsFileConverter
         {
             string inputFilePath = DirectoryUtil.TestSimpleGmlFilePath;
             string outputFilePath = Path.Combine(DirectoryUtil.TempAssetFolderPath, "exported.obj");
-            using (var converter = new GmlToObjFileConverter())
+            using (var converter = new GmlToObjConverter())
             {
                 var conf = converter.Config;
                 conf.MeshGranularity = meshGranularity;

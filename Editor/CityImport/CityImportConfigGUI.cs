@@ -1,41 +1,36 @@
-﻿using System;
-using System.Diagnostics;
-using System.Linq;
-using LibPLATEAU.NET.CityGML;
+﻿using LibPLATEAU.NET.CityGML;
 using PlateauUnitySDK.Editor.EditorWindowCommon;
 using PlateauUnitySDK.Editor.FileConverter.Converters;
-using PlateauUnitySDK.Runtime.CityMapMeta;
+using PlateauUnitySDK.Runtime.CityMeta;
 using PlateauUnitySDK.Runtime.Util;
 using UnityEditor;
-using UnityEngine;
-using Debug = UnityEngine.Debug;
 
-namespace PlateauUnitySDK.Editor.CityModelImportWindow
+namespace PlateauUnitySDK.Editor.CityImport
 {
 
     /// <summary>
     /// udxフォルダを指定し、条件に合うgmlファイルを一括で変換するGUIを提供します。
-    /// <see cref="CityModelImportWindow"/> および <see cref="CityMapMetaDataEditor"/> によって利用されます。
-    /// この設定は <see cref="MultiGmlConverter"/> に渡されます。
+    /// <see cref="CityImportWindow"/> および <see cref="CityMetaDataEditor"/> によって利用されます。
+    /// この設定は <see cref="CityImporter"/> に渡されます。
     /// </summary>
-    public class CityModelImportConfigGUI
+    public class CityImportConfigGUI
     {
         private readonly InputFolderSelectorGUI udxFolderSelectorGUI;
-        private readonly GmlSelectorGUI gmlSelectorGUI;
-        private readonly GmlFileSearcher gmlFileSearcher;
-        private readonly ExportFolderPathSelectorGUI exportFolderPathSelectorGUI;
-        private readonly MultiGmlConverter multiGmlConverter;
+        private readonly GmlSearcherGUI gmlSearcherGUI;
+        private readonly GmlSearcher gmlSearcher;
+        private readonly ExportFolderSelectorGUI exportFolderSelectorGUI;
+        private readonly CityImporter cityImporter;
         
-        /// <summary> <see cref="MultiGmlConverter"/> に渡す設定です。</summary>
+        /// <summary> <see cref="CityImporter"/> に渡す設定です。</summary>
         // public CityModelImportConfig Config { get; set; } = new CityModelImportConfig();
 
-        public CityModelImportConfigGUI()
+        public CityImportConfigGUI()
         {
             this.udxFolderSelectorGUI = new InputFolderSelectorGUI(OnUdxPathChanged);
-            this.gmlSelectorGUI = new GmlSelectorGUI();
-            this.gmlFileSearcher = new GmlFileSearcher();
-            this.exportFolderPathSelectorGUI = new ExportFolderPathSelectorGUI();
-            this.multiGmlConverter = new MultiGmlConverter();
+            this.gmlSearcherGUI = new GmlSearcherGUI();
+            this.gmlSearcher = new GmlSearcher();
+            this.exportFolderSelectorGUI = new ExportFolderSelectorGUI();
+            this.cityImporter = new CityImporter();
         }
 
         public void Draw(CityModelImportConfig config)
@@ -46,19 +41,19 @@ namespace PlateauUnitySDK.Editor.CityModelImportWindow
             config.sourceUdxFolderPath = sourcePath;
 
             // udxフォルダが選択されているなら、設定と出力のGUIを表示
-            if (GmlFileSearcher.IsPathUdx(sourcePath))
+            if (GmlSearcher.IsPathUdx(sourcePath))
             {
                 // 案内
-                if (!MultiGmlConverter.IsInStreamingAssets(sourcePath))
+                if (!CityImporter.IsInStreamingAssets(sourcePath))
                 {
                     EditorGUILayout.HelpBox($"入力フォルダは {PathUtil.FullPathToAssetsPath(PlateauPath.StreamingGmlFolder)} にコピーされます。", MessageType.Info);
                 }
                 
                 // 変換対象の絞り込み
-                var gmlFiles = this.gmlSelectorGUI.Draw(this.gmlFileSearcher, ref config.gmlSelectorConfig);
+                var gmlFiles = this.gmlSearcherGUI.Draw(this.gmlSearcher, ref config.gmlSelectorConfig);
                 
                 // 変換先パス設定
-                config.exportFolderPath = this.exportFolderPathSelectorGUI.Draw(config.exportFolderPath);
+                config.exportFolderPath = this.exportFolderSelectorGUI.Draw(config.exportFolderPath);
                 
                 // 変換設定
                 HeaderDrawer.Draw("変換設定");
@@ -70,7 +65,7 @@ namespace PlateauUnitySDK.Editor.CityModelImportWindow
                 HeaderDrawer.Draw("出力");
                 if (PlateauEditorStyle.MainButton("出力"))
                 {
-                    this.multiGmlConverter.Convert(gmlFiles, config);
+                    this.cityImporter.Import(gmlFiles, config);
                 }
             }
             else
@@ -84,9 +79,9 @@ namespace PlateauUnitySDK.Editor.CityModelImportWindow
         /// </summary>
         private void OnUdxPathChanged(string path)
         {
-            if (!GmlFileSearcher.IsPathUdx(path)) return;
-            this.gmlFileSearcher.GenerateFileDictionary(path);
-            this.gmlSelectorGUI.OnUdxPathChanged();
+            if (!GmlSearcher.IsPathUdx(path)) return;
+            this.gmlSearcher.GenerateFileDictionary(path);
+            this.gmlSearcherGUI.OnUdxPathChanged();
         }
     }
 }

@@ -1,20 +1,20 @@
 ﻿using PlateauUnitySDK.Editor.EditorWindowCommon;
-using PlateauUnitySDK.Runtime.CityMapMeta;
+using PlateauUnitySDK.Runtime.CityMeta;
 
 namespace PlateauUnitySDK.Editor.FileConverter.GUIContents
 {
     // TODO BaseConvertTab.cs と共通する箇所が多いのでまとめられるか検討
     /// <summary>
     /// Gml -> Obj の変換タブと
-    /// Gml -> <see cref="CityMapMetaData"/> の変換タブの機能を
+    /// Gml -> <see cref="CityMetaData"/> の変換タブの機能を
     /// 混ぜ合わせて両方を一度に出力するGUIを作ります。
     /// </summary>
     public class GmlToObjAndIdTableConvertTab : ScrollableEditorWindowContents
     {
         private BaseConvertTab[] tabs = new BaseConvertTab[]
         {
-            new GmlToObjFileConvertTab(),
-            new GmlToCityMapInfoConvertTab()
+            new GmlToObjConvertTab(),
+            new GmlToCityMetaDataConvertTab()
         };
 
         private string SourceFileExtension => "gml";

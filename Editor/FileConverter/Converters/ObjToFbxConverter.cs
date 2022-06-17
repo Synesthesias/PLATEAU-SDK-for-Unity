@@ -13,7 +13,7 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
     /// <summary>
     /// Objファイルをfbxファイルに変換します。
     /// </summary>
-    public class ObjToFbxFileConverter : IFileConverter
+    public class ObjToFbxConverter : IFileConverter
     {
         private FbxFormat fbxFormat = FbxFormat.Binary;
 
