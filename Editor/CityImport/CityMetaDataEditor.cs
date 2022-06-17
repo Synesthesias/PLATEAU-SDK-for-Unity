@@ -8,7 +8,7 @@ namespace PlateauUnitySDK.Editor.CityImport
     /// <see cref="CityMetaData"/> のインスペクタでの表示を行います。
     /// </summary>
     [CustomEditor(typeof(CityMetaData))]
-    public class CityMetaDataEditor : UnityEditor.Editor
+    internal class CityMetaDataEditor : UnityEditor.Editor
     {
         private bool foldOutIdGmlTable;
         private bool foldOutReconvert;

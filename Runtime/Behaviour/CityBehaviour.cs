@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace PlateauUnitySDK.Runtime.Behaviour
 {
-    public class CityMapBehaviour : MonoBehaviour
+    public class CityBehaviour : MonoBehaviour
     {
         [SerializeField] private CityMetaData cityMetaData;
         private SemanticsLoader loader = new SemanticsLoader();

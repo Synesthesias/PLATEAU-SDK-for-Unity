@@ -19,11 +19,11 @@ namespace PlateauUnitySDK.Editor.CityImport
     /// 複数のgmlファイルから、複数のobj および 1つの <see cref="CityMetaData"/>テーブルを生成します。
     /// モデルを現在のシーンに配置します。
     /// </summary>
-    public class CityImporter
+    internal class CityImporter
     {
         
         /// <summary> このインスタンスが最後に出力した <see cref="CityMetaData"/> です。 </summary>
-        public CityMetaData LastConvertedCityMetaData { get; private set; }
+        internal CityMetaData LastConvertedCityMetaData { get; private set; }
         
         /// <summary>
         /// 複数のgmlファイルを変換します。
@@ -32,7 +32,7 @@ namespace PlateauUnitySDK.Editor.CityImport
         /// </summary>
         /// <param name="gmlRelativePaths">gmlファイルの相対パスのリストです。</param>
         /// <param name="config">変換設定です。</param>
-        public void Import(IEnumerable<string> gmlRelativePaths, CityImporterConfig config)
+        internal void Import(IEnumerable<string> gmlRelativePaths, CityImporterConfig config)
         {
             CopySrcFolderToStreamingAssets(config, out string srcFolderName);
             
@@ -104,7 +104,7 @@ namespace PlateauUnitySDK.Editor.CityImport
             config.sourceUdxFolderPath = Path.Combine(nextSrc, $"{srcFolderName}/udx");
         }
 
-        public static bool IsInStreamingAssets(string path)
+        internal static bool IsInStreamingAssets(string path)
         {
             return PathUtil.IsSubDirectory(path, Application.streamingAssetsPath);
         }
@@ -201,10 +201,10 @@ namespace PlateauUnitySDK.Editor.CityImport
             }
             
             // 親に CityMapBehaviour をアタッチ
-            var cityMapBehaviour = parent.GetComponent<CityMapBehaviour>();
+            var cityMapBehaviour = parent.GetComponent<CityBehaviour>();
             if ( cityMapBehaviour == null)
             {
-                cityMapBehaviour = parent.AddComponent<CityMapBehaviour>();
+                cityMapBehaviour = parent.AddComponent<CityBehaviour>();
             }
             cityMapBehaviour.CityMetaData = metaData;
 
