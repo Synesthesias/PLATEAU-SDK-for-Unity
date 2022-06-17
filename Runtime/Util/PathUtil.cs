@@ -137,10 +137,14 @@ namespace PlateauUnitySDK.Runtime.Util
         /// <summary>
         /// Unity Editor 専用メソッドです。
         /// ディレクトリとファイルを再帰的にコピーします。
+        /// <paramref name="src"/> はディレクトリのパスです。
         /// コピー先は (dest)/(srcのフォルダ名) になります。
         /// </summary>
         public static void CloneDirectory(string src, string dest)
         {
+            // src がディレクトリのパスであると認識されるためには、末尾がパスのセパレーターである必要があります。
+            if(!(src.EndsWith("/") || src.EndsWith("\\") )) src = string.Concat(src, "/");
+            
             string srcDirPath = Path.GetDirectoryName(src);
             if (srcDirPath == null)
             {

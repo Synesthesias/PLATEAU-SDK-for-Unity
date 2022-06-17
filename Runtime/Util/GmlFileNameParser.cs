@@ -1,5 +1,7 @@
 ﻿using System;
+using System.IO;
 using System.Text;
+using UnityEngine;
 
 namespace PlateauUnitySDK.Runtime.Util
 {
@@ -14,11 +16,13 @@ namespace PlateauUnitySDK.Runtime.Util
     /// </summary>
     internal static class GmlFileNameParser
     {
+        /// <summary>
+        /// gmlのファイル名から情報を取り出します。
+        /// </summary>
         public static void Parse(string gmlFileName, out int meshCode, out string objTypeStr, out int crs, out string option)
         {
-            // 末尾に .gml があれば取り除きます。
-            gmlFileName = RemoveGmlExtension(gmlFileName);
-
+            gmlFileName = Preprocess(gmlFileName);
+            
             string[] tokens = gmlFileName.Split('_');
             meshCode = int.Parse(tokens[0]);
             objTypeStr = tokens[1];
@@ -28,9 +32,20 @@ namespace PlateauUnitySDK.Runtime.Util
         
         public static string NameWithoutOption(string gmlFileName)
         {
-            gmlFileName = RemoveGmlExtension(gmlFileName);
+            gmlFileName = Preprocess(gmlFileName);
             string[] tokens = gmlFileName.Split('_');
             return $"{tokens[0]}_{tokens[1]}_{tokens[2]}";
+        }
+
+        /// <summary>
+        /// このクラスでファイル名を受け取る時の前処理です。
+        /// </summary>
+        private static string Preprocess(string fileName)
+        {
+            // fileName に "フォルダ名/" が含まれていれば、それを削除してファイル名のみにします。
+            fileName = Path.GetFileName(fileName);
+            // 末尾に .gml が含まれていれば、それを削除します。
+            return RemoveGmlExtension(fileName);
         }
 
         private static string RemoveGmlExtension(string fileName)

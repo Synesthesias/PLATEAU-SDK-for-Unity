@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using LibPLATEAU.NET.CityGML;
 using PlateauUnitySDK.Editor.Converters;
 using PlateauUnitySDK.Runtime.Behaviour;
@@ -116,14 +114,14 @@ namespace PlateauUnitySDK.Editor.CityImport
             
             // codelists をコピーします。
             const string codelistsFolderName = "codelists";
-            PathUtil.CloneDirectory(Path.Combine(prevSrc, codelistsFolderName), nextSrc);
+            PathUtil.CloneDirectory(Path.Combine(prevSrc, codelistsFolderName), dstRootFolder);
             
             // udxフォルダを作ります。
             const string udxFolderName = "udx";
             string dstUdxFolder = Path.Combine(dstRootFolder, udxFolderName);
             if (!Directory.Exists(dstUdxFolder))
             {
-                AssetDatabase.CreateFolder(dstRootFolder, udxFolderName);
+                AssetDatabase.CreateFolder(PathUtil.FullPathToAssetsPath(dstRootFolder), udxFolderName);
             }
             
             // udxフォルダのうち対象のgmlファイルをコピーします。
@@ -131,24 +129,24 @@ namespace PlateauUnitySDK.Editor.CityImport
             {
                 GmlFileNameParser.Parse(gml, out int _, out string objTypeStr, out int _, out string _);
                 // 地物タイプのディレクトリを作ります。
-                string dstObjTypeFolder = dstUdxFolder + objTypeStr;
+                string dstObjTypeFolder = Path.Combine(dstUdxFolder, objTypeStr);
                 if (!Directory.Exists(dstObjTypeFolder))
                 {
-                    AssetDatabase.CreateFolder(dstUdxFolder, objTypeStr);
+                    AssetDatabase.CreateFolder(PathUtil.FullPathToAssetsPath(dstUdxFolder), objTypeStr);
                 }
                 // gmlファイルをコピーします。
-                string gmlName = gml + ".gml";
+                string gmlName = Path.GetFileName(gml);
                 string srcObjTypeFolder = Path.Combine(prevSrc, "udx", objTypeStr);
                 File.Copy(Path.Combine(srcObjTypeFolder, gmlName), Path.Combine(dstObjTypeFolder, gmlName), true);
                 // gmlファイルに関連するフォルダをコピーします。
                 // gmlの名称からオプションと拡張子を除いた文字列がフォルダ名に含まれていれば、コピー対象のディレクトリとみなします。
                 string gmlIdentity = GmlFileNameParser.NameWithoutOption(gml);
-                foreach (var dir in Directory.GetDirectories(srcObjTypeFolder))
+                foreach (var srcDir in Directory.GetDirectories(srcObjTypeFolder))
                 {
-                    string srcDirName = new DirectoryInfo(dir).Name;
+                    string srcDirName = new DirectoryInfo(srcDir).Name;
                     if (srcDirName.Contains(gmlIdentity))
                     {
-                        PathUtil.CloneDirectory(srcDirName, dstObjTypeFolder);
+                        PathUtil.CloneDirectory(srcDir, dstObjTypeFolder);
                     }
                 }
             }
