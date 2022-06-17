@@ -22,12 +22,6 @@ namespace PlateauUnitySDK.Editor.CityImport
             string gmlRootFolderName = Path.GetFileName(Path.GetDirectoryName(srcUdxPath));
             if (gmlRootFolderName == null) throw new FileNotFoundException($"{nameof(gmlRootFolderName)} is null.");
 
-            // copyDest が存在しない場合、パスの最後のフォルダを自動で作ります。
-            // 例: copyDest が         Assets/StreamingAssets/PLATEAU であり、
-            //    実際に存在するフォルダは Assets/StreamingAssets/        までである場合、PLATEAU を新たに作ります。
-            // TODO StreamingAssetsも存在しない場合は動かない。　足りない部分は複数フォルダであっても作成できるようにするべき。
-            Mkdir(copyDest);
-
             // コピー先のルートフォルダを作成します。
             // 例: Tokyoをコピーする場合のパスの例を以下に示します。
             //     Assets/StreamingAssets/PLATEAU/Tokyo　フォルダを作ります。
@@ -80,14 +74,25 @@ namespace PlateauUnitySDK.Editor.CityImport
         /// <paramref name="fullPath"/> にフォルダを作ります。
         /// すでにある場合は何もしません。
         /// <paramref name="fullPath"/> は Assets フォルダ内を指すことを前提とします。
+        /// パスの途中のフォルダが存在しないなら、それも合わせて作ります。
         /// </summary>
         private static void Mkdir(string fullPath)
         {
+            // すでにフォルダが存在するなら何もしません。
             if (Directory.Exists(fullPath)) return;
+            
             string assetPath = PathUtil.FullPathToAssetsPath(fullPath);
             string newDirName = new DirectoryInfo(assetPath).Name;
             var parentDirInfo = new DirectoryInfo(fullPath).Parent;
             string parentDirFullPath = parentDirInfo == null ? "" : parentDirInfo.FullName;
+            
+            // 指定パスの親ディレクトリも存在しなければ、パスを親へさかのぼり、親のあるパスから再帰的にフォルダを作ります。
+            if (parentDirFullPath != "" && !Directory.Exists(parentDirFullPath))
+            {
+                Mkdir(parentDirFullPath);
+            }
+            
+            // フォルダを作ります。
             string parentDirAssetPath = PathUtil.FullPathToAssetsPath(parentDirFullPath);
             AssetDatabase.CreateFolder(parentDirAssetPath, newDirName);
         }
