@@ -26,23 +26,13 @@ namespace PlateauUnitySDK.Editor.CityImport
             // 例: copyDest が         Assets/StreamingAssets/PLATEAU であり、
             //    実際に存在するフォルダは Assets/StreamingAssets/        までである場合、PLATEAU を新たに作ります。
             // TODO StreamingAssetsも存在しない場合は動かない。　足りない部分は複数フォルダであっても作成できるようにするべき。
-            if (!Directory.Exists(copyDest))
-            {
-                var destParentDirInfo = Directory.GetParent(copyDest);
-                var destParentPath = destParentDirInfo == null ? "" : destParentDirInfo.FullName;
-                string destParent = PathUtil.FullPathToAssetsPath(destParentPath);
-                string destFolderName = new DirectoryInfo(copyDest).Name;
-                AssetDatabase.CreateFolder(destParent, destFolderName);
-            }
+            Mkdir(copyDest);
 
             // コピー先のルートフォルダを作成します。
             // 例: Tokyoをコピーする場合のパスの例を以下に示します。
             //     Assets/StreamingAssets/PLATEAU/Tokyo　フォルダを作ります。
             string dstRootFolder = Path.Combine(copyDest, gmlRootFolderName);
-            if (!Directory.Exists(dstRootFolder))
-            {
-                AssetDatabase.CreateFolder(copyDest, gmlRootFolderName);
-            }
+            Mkdir(dstRootFolder);
 
             // codelists をコピーします。
             // 例: Assets/StreamingAssets/PLATEAU/Tokyo/codelists/****.xml をコピーにより作成します。
@@ -53,10 +43,7 @@ namespace PlateauUnitySDK.Editor.CityImport
             // 例: Assets/StreamingAssets/PLATEAU/Tokyo/udx　ができます。
             const string udxFolderName = "udx";
             string dstUdxFolder = Path.Combine(dstRootFolder, udxFolderName);
-            if (!Directory.Exists(dstUdxFolder))
-            {
-                AssetDatabase.CreateFolder(PathUtil.FullPathToAssetsPath(dstRootFolder), udxFolderName);
-            }
+            Mkdir(dstUdxFolder);
 
             // udxフォルダのうち対象のgmlファイルをコピーします。
             foreach (string gml in gmlRelativePaths)
@@ -66,10 +53,7 @@ namespace PlateauUnitySDK.Editor.CityImport
                 // 例: gml のタイプが bldg なら、
                 //     Assets/StreamingAssets/PLATEAU/Tokyo/udx/bldg　ができます。
                 string dstObjTypeFolder = Path.Combine(dstUdxFolder, objTypeStr);
-                if (!Directory.Exists(dstObjTypeFolder))
-                {
-                    AssetDatabase.CreateFolder(PathUtil.FullPathToAssetsPath(dstUdxFolder), objTypeStr);
-                }
+                Mkdir(dstObjTypeFolder);
 
                 // gmlファイルをコピーします。
                 // 例: Assets/StreamingAssets/PLATEAU/Tokyo/bldg/1234.gml　ができます。
@@ -90,6 +74,22 @@ namespace PlateauUnitySDK.Editor.CityImport
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// <paramref name="fullPath"/> にフォルダを作ります。
+        /// すでにある場合は何もしません。
+        /// <paramref name="fullPath"/> は Assets フォルダ内を指すことを前提とします。
+        /// </summary>
+        private static void Mkdir(string fullPath)
+        {
+            if (Directory.Exists(fullPath)) return;
+            string assetPath = PathUtil.FullPathToAssetsPath(fullPath);
+            string newDirName = new DirectoryInfo(assetPath).Name;
+            var parentDirInfo = new DirectoryInfo(fullPath).Parent;
+            string parentDirFullPath = parentDirInfo == null ? "" : parentDirInfo.FullName;
+            string parentDirAssetPath = PathUtil.FullPathToAssetsPath(parentDirFullPath);
+            AssetDatabase.CreateFolder(parentDirAssetPath, newDirName);
         }
         
         private static string UdxPathToGmlRootPath(string udxPath)

@@ -63,14 +63,14 @@ namespace PlateauUnitySDK.Editor.CityImport
                 string objPath = Path.Combine(config.exportFolderPath, gmlFileName + ".obj");
                 if (!TryLoadCityGml(out var cityModel, gmlFullPath, config))
                 {
-                    cityModel.Dispose();
+                    cityModel?.Dispose();
                     continue;
                 }
                 
                 // objに変換します。
                 if (!TryConvertToObj(cityModel, ref referencePoint, config, gmlFullPath, objPath))
                 {
-                    cityModel.Dispose();
+                    cityModel?.Dispose();
                     continue;
                 }
 
@@ -80,10 +80,10 @@ namespace PlateauUnitySDK.Editor.CityImport
                 config.referencePoint = referencePoint.Value;
                 if (!TryGenerateMetaData(out var cityMapMetaData, gmlFileName, objAssetPath, loopCount==1, config))
                 {
-                    cityModel.Dispose();
+                    cityModel?.Dispose();
                     continue;
                 }
-                cityModel.Dispose();
+                cityModel?.Dispose();
 
                 // シーンに配置します。
                 PlaceToScene(objAssetPath, rootGmlFolderName, cityMapMetaData);
@@ -114,6 +114,7 @@ namespace PlateauUnitySDK.Editor.CityImport
         /// </summary>
         private static bool TryLoadCityGml(out CityModel cityModel, string gmlFullPath, CityImporterConfig config)
         {
+            cityModel = null;
             try
             {
                 if (!File.Exists(gmlFullPath))
@@ -128,13 +129,12 @@ namespace PlateauUnitySDK.Editor.CityImport
             catch (FileNotFoundException e)
             {
                 Debug.LogError($"{e}");
-                cityModel = null;
                 return false;
             }
             catch (Exception e)
             {
                 Debug.LogError($"Loading gml failed.\ngml path = {gmlFullPath}\n{e}");
-                cityModel = null;
+                cityModel?.Dispose();
                 return false;
                 
             }
