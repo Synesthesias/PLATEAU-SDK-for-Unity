@@ -42,7 +42,7 @@ namespace PlateauUnitySDK.Editor.CityImport
             this.foldOutReconvert = EditorGUILayout.Foldout(this.foldOutReconvert, "再変換");
             if (this.foldOutReconvert)
             {
-                this.importConfigGUI.Draw(metaData.cityModelImportConfig);
+                this.importConfigGUI.Draw(metaData.cityImporterConfig);
                 
             }
             

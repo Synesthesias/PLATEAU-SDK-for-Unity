@@ -12,7 +12,7 @@ using UnityEngine;
 namespace PlateauUnitySDK.Tests.EditModeTests.TestsFileConverter
 {
     [TestFixture]
-    public class TestGmlToObjFileConverter
+    public class TestGmlToObjConverter
     {
         
 

@@ -8,7 +8,7 @@ namespace PlateauUnitySDK.Runtime.CityMeta
     /// 複数gmlファイルの変換時に利用されます。
     /// </summary>
     [Serializable]
-    public class CityModelImportConfig
+    public class CityImporterConfig
     {
         public GmlSelectorConfig gmlSelectorConfig = new GmlSelectorConfig();
         public string sourceUdxFolderPath = "";

@@ -33,7 +33,7 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
         /// </summary>
         /// <param name="gmlRelativePaths">gmlファイルの相対パスのリストです。</param>
         /// <param name="config">変換設定です。</param>
-        public void Import(IEnumerable<string> gmlRelativePaths, CityModelImportConfig config)
+        public void Import(IEnumerable<string> gmlRelativePaths, CityImporterConfig config)
         {
             CopySrcFolderToStreamingAssets(config, out string srcFolderName);
             
@@ -94,7 +94,7 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
         /// 変換元がすでに StreamingAssets 内にある場合は何もしません。
         /// <paramref name="config"/> の変換元をコピー先のパスに設定し直します。
         /// </summary>
-        private static void CopySrcFolderToStreamingAssets(CityModelImportConfig config, out string srcFolderName)
+        private static void CopySrcFolderToStreamingAssets(CityImporterConfig config, out string srcFolderName)
         {
             string prevSrc = Path.GetFullPath(Path.Combine(config.sourceUdxFolderPath, "../"));
             srcFolderName = Path.GetFileName(Path.GetDirectoryName(prevSrc));
@@ -111,7 +111,7 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
         }
 
 
-        private static bool TryLoadCityGml(out CityModel cityModel, string gmlFullPath, CityModelImportConfig config)
+        private static bool TryLoadCityGml(out CityModel cityModel, string gmlFullPath, CityImporterConfig config)
         {
             try
             {
@@ -141,14 +141,14 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
             return true;
         }
 
-        private static bool TryConvertToObj(CityModel cityModel, ref Vector3? referencePoint, CityModelImportConfig importConfig, string gmlFullPath, string objPath)
+        private static bool TryConvertToObj(CityModel cityModel, ref Vector3? referencePoint, CityImporterConfig importerConfig, string gmlFullPath, string objPath)
         {
             using (var objConverter = new GmlToObjConverter())
             {
                 // configを作成します。
                 var converterConf = new GmlToObjConverterConfig();
-                converterConf.MeshGranularity = importConfig.meshGranularity;
-                converterConf.LogLevel = importConfig.logLevel;
+                converterConf.MeshGranularity = importerConfig.meshGranularity;
+                converterConf.LogLevel = importerConfig.logLevel;
                 converterConf.DoAutoSetReferencePoint = false;
 
                 // Reference Pointは最初のものに合わせます。
@@ -171,13 +171,13 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
         }
 
         private static bool TryGenerateMetaData(out CityMetaData cityMetaData, string gmlFileName,
-            string dstMeshAssetPath, bool isFirstFile, CityModelImportConfig importConf)
+            string dstMeshAssetPath, bool isFirstFile, CityImporterConfig importerConf)
         {
             cityMetaData = null;
             var metaGen = new CityMetaDataGenerator();
             var metaGenConfig = new CityMapMetaDataGeneratorConfig
             {
-                CityModelImportConfig = importConf,
+                CityImporterConfig = importerConf,
                 DoClearIdToGmlTable = isFirstFile,
                 ParserParams = new CitygmlParserParams(),
             };

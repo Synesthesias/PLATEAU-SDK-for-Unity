@@ -3,6 +3,9 @@ using UnityEngine;
 
 namespace PlateauUnitySDK.Runtime.Util
 {
+    /// <summary>
+    /// PlateauのネイティブDLLで扱う Vector と Unity の Vector を変換します。
+    /// </summary>
     public static class VectorConverter
     {
         public static Vector3 ToUnityVector(PlateauVector3d plateau3d)

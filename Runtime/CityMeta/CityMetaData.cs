@@ -5,7 +5,7 @@ namespace PlateauUnitySDK.Runtime.CityMeta
     public class CityMetaData : ScriptableObject
     {
         public IdToGmlTable idToGmlTable = new IdToGmlTable();
-        public CityModelImportConfig cityModelImportConfig = new CityModelImportConfig();
+        public CityImporterConfig cityImporterConfig = new CityImporterConfig();
 
         public bool DoGmlTableContainsKey(string cityObjId)
         {

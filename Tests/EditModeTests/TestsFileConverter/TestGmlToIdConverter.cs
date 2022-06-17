@@ -8,7 +8,7 @@ using PlateauUnitySDK.Tests.TestUtils;
 namespace PlateauUnitySDK.Tests.EditModeTests.TestsFileConverter
 {
     [TestFixture]
-    public class TestGmlToIdFileConverter
+    public class TestGmlToIdConverter
     {
         [SetUp]
         public void SetUp()

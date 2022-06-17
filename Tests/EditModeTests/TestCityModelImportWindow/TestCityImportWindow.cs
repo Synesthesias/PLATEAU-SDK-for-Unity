@@ -10,9 +10,7 @@ namespace PlateauUnitySDK.Tests.EditModeTests.TestCityModelImportWindow
     public class TestCityModelImportWindow
     {
         private CityImportWindow window;
-
-        // private static string testUdxPath = Path.GetFullPath(Path.Combine(Application.dataPath,
-        //     "../Packages/PlateauUnitySDK/Tests/TestData/TestDataTokyoMini/udx"));
+        
 
         [UnitySetUp]
         public IEnumerator SetUp()

@@ -22,8 +22,8 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
             try
             {
                 // ロードします。
-                string exportFolderFullPath = config.CityModelImportConfig.exportFolderPath;
-                string udxFullPath = config.CityModelImportConfig.sourceUdxFolderPath;
+                string exportFolderFullPath = config.CityImporterConfig.exportFolderPath;
+                string udxFullPath = config.CityImporterConfig.sourceUdxFolderPath;
                 string dstMetaDataAssetPath =
                     Path.Combine(PathUtil.FullPathToAssetsPath(exportFolderFullPath), "CityMapMetaData.asset");
                 var metaData = LoadOrCreateMetaData(dstMetaDataAssetPath, config.DoClearIdToGmlTable);
@@ -39,7 +39,7 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
                 }
                 
                 // 追加情報を書き込みます。
-                var importConf = config.CityModelImportConfig;
+                var importConf = config.CityImporterConfig;
                 importConf.sourceUdxFolderPath = PathUtil.FullPathToAssetsPath(exportFolderFullPath);
                 if (PathUtil.IsSubDirectoryOfAssets(udxFullPath))
                 {
@@ -51,7 +51,7 @@ namespace PlateauUnitySDK.Editor.FileConverter.Converters
                 }
                 
                 importConf.exportFolderPath = PathUtil.FullPathToAssetsPath(exportFolderFullPath);
-                metaData.cityModelImportConfig = importConf;
+                metaData.cityImporterConfig = importConf;
                 
                 // ファイルに保存します。
                 LastConvertedCityMetaData = metaData;

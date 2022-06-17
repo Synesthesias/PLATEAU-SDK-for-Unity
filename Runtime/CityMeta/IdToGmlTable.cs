@@ -2,11 +2,12 @@ using System;
 using System.Collections.Generic;
 using PlateauUnitySDK.Runtime.Util;
 using UnityEngine;
+using LibPLATEAU.NET.CityGML;
 
 namespace PlateauUnitySDK.Runtime.CityMeta
 {
     /// <summary>
-    /// <see cref="LibPLATEAU.NET.CityGML.CityObject"/> のIDから、対応するGMLのファイル名を検索できる辞書データです。
+    /// <see cref="CityObject"/> のIDから、対応するGMLのファイル名を検索できる辞書データです。
     /// </summary>
     [Serializable]
     public class IdToGmlTable :  ISerializationCallbackReceiver//, IDictionary<string, string> // TODO IDictionary に対応したほうが便利

@@ -33,7 +33,7 @@ namespace PlateauUnitySDK.Editor.CityImport
             this.cityImporter = new CityImporter();
         }
 
-        public void Draw(CityModelImportConfig config)
+        public void Draw(CityImporterConfig config)
         {
             // udxフォルダ選択
             this.udxFolderSelectorGUI.FolderPath = config.sourceUdxFolderPath;

@@ -5,6 +5,11 @@ using UnityEngine;
 
 namespace PlateauUnitySDK.Runtime.Util
 {
+    /// <summary>
+    /// Dictionary をシリアライズするための機能を提供します。
+    /// Unityの機能では通常では Dictionary はシリアライズできませんが、
+    /// ISerializationCallbackReceiver を実装してシリアライズ時に List に変換し、デシリアライズ時に Dictionary に戻すことで Dictionary の保存が可能です。
+    /// </summary>
     public static class DictionarySerializer
     {
         /// <summary>

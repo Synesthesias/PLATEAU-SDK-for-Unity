@@ -16,7 +16,7 @@ using UnityEngine;
 namespace PlateauUnitySDK.Tests.EditModeTests.TestsFileConverter
 {
     [TestFixture]
-    public class TestMultiGmlConverter
+    public class TestCityImporter
     {
         private CityImporter converter;
         private static readonly string testUdxPathTokyo = Path.GetFullPath(Path.Combine(Application.dataPath,
@@ -64,7 +64,7 @@ namespace PlateauUnitySDK.Tests.EditModeTests.TestsFileConverter
         public void When_Inputs_Are_2_Gmls_Then_Outputs_Are_2_Objs_And_1_IdTable()
         {
             // 2つのGMLファイルを変換します。
-            var config = new CityModelImportConfig();
+            var config = new CityImporterConfig();
             config.sourceUdxFolderPath = testUdxPathTokyo;
             config.exportFolderPath = testOutputDir;
             this.converter.Import(testGmlRelativePathsTokyo, config);
@@ -91,14 +91,14 @@ namespace PlateauUnitySDK.Tests.EditModeTests.TestsFileConverter
         public void ReferencePoint_Is_Set_To_First_ReferencePoint()
         {
             // 2つのGMLファイルを変換します。
-            var config = new CityModelImportConfig();
+            var config = new CityImporterConfig();
             config.sourceUdxFolderPath = testUdxPathTokyo;
             config.exportFolderPath = testOutputDir;
             this.converter.Import(testGmlRelativePathsTokyo, config);
             
             // 値1 : CityMapInfo に記録された Reference Point を取得します。
             var mapInfo = this.converter.LastConvertedCityMetaData;
-            var recordedReferencePoint = mapInfo.cityModelImportConfig.referencePoint;
+            var recordedReferencePoint = mapInfo.cityImporterConfig.referencePoint;
 
             // 値2 : GmlToObjFileConverter にかけたときの Reference Point を取得します。
             string gmlFilePath = Path.Combine(testUdxPathTokyo, testGmlRelativePathsTokyo[0]);
@@ -116,7 +116,7 @@ namespace PlateauUnitySDK.Tests.EditModeTests.TestsFileConverter
         [Test]
         public void MeshGranularity_Is_Written_To_MetaData()
         {
-            var config = new CityModelImportConfig();
+            var config = new CityImporterConfig();
             // 値1: 変換時の MeshGranularity の設定
             var granularityOnConvert = MeshGranularity.PerAtomicFeatureObject;
             config.meshGranularity = granularityOnConvert;
@@ -129,7 +129,7 @@ namespace PlateauUnitySDK.Tests.EditModeTests.TestsFileConverter
                 Path.Combine(PathUtil.FullPathToAssetsPath(testOutputDir), "CityMapMetaData.asset");
             var loadedMetaData = AssetDatabase.LoadAssetAtPath<CityMetaData>(metaDataPath);
             Assert.NotNull(loadedMetaData, "メタデータをロードできる");
-            var granularityOnMapInfo = loadedMetaData.cityModelImportConfig.meshGranularity;
+            var granularityOnMapInfo = loadedMetaData.cityImporterConfig.meshGranularity;
             
             // 値1と値2が同一であることを期待します。
             Assert.AreEqual(granularityOnConvert, granularityOnMapInfo, "変換時の粒度設定がメタデータに記録されている");
@@ -140,7 +140,7 @@ namespace PlateauUnitySDK.Tests.EditModeTests.TestsFileConverter
         {
             bool DoContainAtomic(CityMetaData info) => info.idToGmlTable.Keys.Any(id => id.StartsWith("wall"));
 
-            var config = new CityModelImportConfig();
+            var config = new CityImporterConfig();
             config.meshGranularity = MeshGranularity.PerAtomicFeatureObject;
             config.sourceUdxFolderPath = testUdxPathSimple;
             config.exportFolderPath = testOutputDir;

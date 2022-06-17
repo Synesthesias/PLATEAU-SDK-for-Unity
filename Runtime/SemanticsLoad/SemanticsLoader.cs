@@ -14,7 +14,6 @@ namespace PlateauUnitySDK.Runtime.SemanticsLoad
     /// </summary>
     public class SemanticsLoader
     {
-        // private CityMapMetaData cityMapMetaData;
         private readonly Dictionary<string, CityModel> fileToCityModelCache = new Dictionary<string, CityModel>();
 
         public CityObject Load(string cityObjectId, CityMetaData cityMetaData)
@@ -40,7 +39,7 @@ namespace PlateauUnitySDK.Runtime.SemanticsLoad
                 return GetCityObjectById(cityModel, cityObjectId);
             }
             
-            string udxPath = cityMetaData.cityModelImportConfig.sourceUdxFolderPath;
+            string udxPath = cityMetaData.cityImporterConfig.sourceUdxFolderPath;
             // udxフォルダは StreamingAssets フォルダにあることを前提とします。
             if (!PathUtil.IsSubDirectory(udxPath, Application.streamingAssetsPath))
             {

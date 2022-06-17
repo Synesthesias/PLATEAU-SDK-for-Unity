@@ -6,7 +6,7 @@ using PlateauUnitySDK.Tests.TestUtils;
 namespace PlateauUnitySDK.Tests.EditModeTests.TestsFileConverter
 {
     [TestFixture]
-    public class TestObjToFbxFileConverter
+    public class TestObjToFbxConverter
     {
 
         private static readonly string testObjFileName = "53392642_bldg_6697_op2_obj.obj";
