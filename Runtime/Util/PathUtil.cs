@@ -134,7 +134,9 @@ namespace PlateauUnitySDK.Runtime.Util
             return assetsPath;
         }
 
+        #if UNITY_EDITOR
         /// <summary>
+        /// Unity Editor 専用メソッドです。
         /// ディレクトリとファイルを再帰的にコピーします。
         /// コピー先は (dest)/(srcのフォルダ名) になります。
         /// </summary>
@@ -160,6 +162,7 @@ namespace PlateauUnitySDK.Runtime.Util
             // AssetDatabase.ImportAsset(FullPathToAssetsPath(dest));
             AssetDatabase.Refresh();
         }
+        #endif
         
         private static void CloneDirectoryRecursive(string src, string dest)
         {

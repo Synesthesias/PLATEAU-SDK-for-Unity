@@ -1,5 +1,4 @@
-﻿using Codice.Utils;
-using LibPLATEAU.NET.CityGML;
+﻿using LibPLATEAU.NET.CityGML;
 using PlateauUnitySDK.Runtime.CityMapMeta;
 using PlateauUnitySDK.Runtime.SemanticsLoad;
 using UnityEngine;
