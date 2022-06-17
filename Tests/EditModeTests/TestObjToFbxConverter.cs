@@ -3,7 +3,7 @@ using NUnit.Framework;
 using PlateauUnitySDK.Editor.Converters;
 using PlateauUnitySDK.Tests.TestUtils;
 
-namespace PlateauUnitySDK.Tests.EditModeTests.TestsFileConverter
+namespace PlateauUnitySDK.Tests.EditModeTests
 {
     [TestFixture]
     public class TestObjToFbxConverter

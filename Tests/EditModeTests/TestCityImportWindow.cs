@@ -4,7 +4,7 @@ using PlateauUnitySDK.Editor.CityImport;
 using UnityEditor;
 using UnityEngine.TestTools;
 
-namespace PlateauUnitySDK.Tests.EditModeTests.TestCityModelImportWindow
+namespace PlateauUnitySDK.Tests.EditModeTests
 {
     [TestFixture]
     public class TestCityModelImportWindow

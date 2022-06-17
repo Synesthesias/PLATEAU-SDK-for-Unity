@@ -4,7 +4,7 @@ using PlateauUnitySDK.Editor.SingleFileConvert;
 using UnityEditor;
 using UnityEngine.TestTools;
 
-namespace PlateauUnitySDK.Tests.EditModeTests.TestsFileConverter
+namespace PlateauUnitySDK.Tests.EditModeTests
 {
     [TestFixture]
     public class TestModelFileConvertWindow

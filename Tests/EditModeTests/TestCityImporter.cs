@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using LibPLATEAU.NET.CityGML;
@@ -10,10 +9,9 @@ using PlateauUnitySDK.Runtime.CityMeta;
 using PlateauUnitySDK.Runtime.Util;
 using PlateauUnitySDK.Tests.TestUtils;
 using UnityEditor;
-using UnityEditor.VersionControl;
 using UnityEngine;
 
-namespace PlateauUnitySDK.Tests.EditModeTests.TestsFileConverter
+namespace PlateauUnitySDK.Tests.EditModeTests
 {
     [TestFixture]
     public class TestCityImporter
@@ -64,9 +62,11 @@ namespace PlateauUnitySDK.Tests.EditModeTests.TestsFileConverter
         public void When_Inputs_Are_2_Gmls_Then_Outputs_Are_2_Objs_And_1_IdTable()
         {
             // 2つのGMLファイルを変換します。
-            var config = new CityImporterConfig();
-            config.sourceUdxFolderPath = testUdxPathTokyo;
-            config.exportFolderPath = testOutputDir;
+            var config = new CityImporterConfig
+            {
+                sourceUdxFolderPath = testUdxPathTokyo,
+                exportFolderPath = testOutputDir
+            };
             this.converter.Import(testGmlRelativePathsTokyo, config);
             // 変換後、出力されたファイルの数を数えます。
             int objCount = 0;
@@ -91,9 +91,11 @@ namespace PlateauUnitySDK.Tests.EditModeTests.TestsFileConverter
         public void ReferencePoint_Is_Set_To_First_ReferencePoint()
         {
             // 2つのGMLファイルを変換します。
-            var config = new CityImporterConfig();
-            config.sourceUdxFolderPath = testUdxPathTokyo;
-            config.exportFolderPath = testOutputDir;
+            var config = new CityImporterConfig
+            {
+                sourceUdxFolderPath = testUdxPathTokyo,
+                exportFolderPath = testOutputDir
+            };
             this.converter.Import(testGmlRelativePathsTokyo, config);
             
             // 値1 : CityMapInfo に記録された Reference Point を取得します。
@@ -140,10 +142,12 @@ namespace PlateauUnitySDK.Tests.EditModeTests.TestsFileConverter
         {
             bool DoContainAtomic(CityMetaData info) => info.idToGmlTable.Keys.Any(id => id.StartsWith("wall"));
 
-            var config = new CityImporterConfig();
-            config.meshGranularity = MeshGranularity.PerAtomicFeatureObject;
-            config.sourceUdxFolderPath = testUdxPathSimple;
-            config.exportFolderPath = testOutputDir;
+            var config = new CityImporterConfig
+            {
+                meshGranularity = MeshGranularity.PerAtomicFeatureObject,
+                sourceUdxFolderPath = testUdxPathSimple,
+                exportFolderPath = testOutputDir
+            };
             this.converter.Import(testGmlRelativePathsSimple, config);
             var mapInfo = this.converter.LastConvertedCityMetaData;
             foreach (var key in mapInfo.idToGmlTable.Keys)

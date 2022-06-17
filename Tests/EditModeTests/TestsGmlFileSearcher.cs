@@ -3,7 +3,7 @@ using PlateauUnitySDK.Editor.CityImport;
 using PlateauUnitySDK.Tests.TestUtils;
 using UnityEngine;
 
-namespace PlateauUnitySDK.Tests.EditModeTests.TestsEditorWindowCommon
+namespace PlateauUnitySDK.Tests.EditModeTests
 {
     [TestFixture]
     public class TestsGmlFileSearcher

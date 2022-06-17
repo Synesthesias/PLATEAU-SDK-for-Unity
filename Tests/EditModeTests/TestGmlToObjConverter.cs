@@ -8,7 +8,7 @@ using PlateauUnitySDK.Tests.TestUtils;
 using UnityEditor;
 using UnityEngine;
 
-namespace PlateauUnitySDK.Tests.EditModeTests.TestsFileConverter
+namespace PlateauUnitySDK.Tests.EditModeTests
 {
     [TestFixture]
     public class TestGmlToObjConverter

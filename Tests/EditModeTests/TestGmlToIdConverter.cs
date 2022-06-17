@@ -4,7 +4,7 @@ using PlateauUnitySDK.Editor.Converters;
 using PlateauUnitySDK.Runtime.Util;
 using PlateauUnitySDK.Tests.TestUtils;
 
-namespace PlateauUnitySDK.Tests.EditModeTests.TestsFileConverter
+namespace PlateauUnitySDK.Tests.EditModeTests
 {
     [TestFixture]
     public class TestGmlToIdConverter
