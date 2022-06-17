@@ -1,7 +1,6 @@
 using System.IO;
 using NUnit.Framework;
 using UnityEngine.TestTools;
-using PlateauUnitySDK.Editor.FileConverter;
 using PlateauUnitySDK.Runtime.Util;
 using PlateauUnitySDK.Tests.TestUtils;
 

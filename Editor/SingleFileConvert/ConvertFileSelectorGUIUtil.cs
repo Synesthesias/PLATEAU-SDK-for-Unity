@@ -4,7 +4,7 @@ using PlateauUnitySDK.Editor.EditorWindowCommon;
 using UnityEditor;
 using UnityEngine;
 
-namespace PlateauUnitySDK.Editor.FileConverter.GUIContents
+namespace PlateauUnitySDK.Editor.SingleFileConvert
 {
     /// <summary>
     /// ファイルを受け取り、変換してファイルを出力する各EditorWindowのうち、共通機能をまとめたクラスです。

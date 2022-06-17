@@ -1,7 +1,7 @@
 ﻿using LibPLATEAU.NET.CityGML;
 using UnityEngine;
 
-namespace PlateauUnitySDK.Editor.FileConverter.Converters
+namespace PlateauUnitySDK.Editor.Converters
 {
 
     /// <summary>

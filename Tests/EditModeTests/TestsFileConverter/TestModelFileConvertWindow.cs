@@ -1,6 +1,6 @@
 ﻿using System.Collections;
 using NUnit.Framework;
-using PlateauUnitySDK.Editor.FileConverter;
+using PlateauUnitySDK.Editor.SingleFileConvert;
 using UnityEditor;
 using UnityEngine.TestTools;
 
@@ -9,13 +9,13 @@ namespace PlateauUnitySDK.Tests.EditModeTests.TestsFileConverter
     [TestFixture]
     public class TestModelFileConvertWindow
     {
-        private ModelFileConvertWindow window;
+        private SingleFileConvertWindow window;
         
         [SetUp]
         public void SetUp()
         {
-            ModelFileConvertWindow.Open();
-            this.window = EditorWindow.GetWindow<ModelFileConvertWindow>();
+            SingleFileConvertWindow.Open();
+            this.window = EditorWindow.GetWindow<SingleFileConvertWindow>();
         }
         
         [TearDown]

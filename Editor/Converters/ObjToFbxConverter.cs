@@ -8,7 +8,7 @@ using UnityEngine;
 using Object = UnityEngine.Object;
 
 
-namespace PlateauUnitySDK.Editor.FileConverter.Converters
+namespace PlateauUnitySDK.Editor.Converters
 {
     /// <summary>
     /// Objファイルをfbxファイルに変換します。

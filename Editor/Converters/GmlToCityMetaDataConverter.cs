@@ -7,7 +7,7 @@ using PlateauUnitySDK.Runtime.Util;
 using UnityEditor;
 using UnityEngine;
 
-namespace PlateauUnitySDK.Editor.FileConverter.Converters
+namespace PlateauUnitySDK.Editor.Converters
 {
     /// <summary>
     /// 注意: これは旧式です。新しい版 <see cref="CityMetaDataGenerator"/> を利用してください。

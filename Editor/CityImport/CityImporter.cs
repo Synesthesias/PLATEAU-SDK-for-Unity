@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using Codice.Client.Common;
 using LibPLATEAU.NET.CityGML;
+using PlateauUnitySDK.Editor.Converters;
 using PlateauUnitySDK.Runtime.Behaviour;
 using PlateauUnitySDK.Runtime.CityMeta;
 using PlateauUnitySDK.Runtime.Util;
@@ -12,7 +11,7 @@ using UnityEngine;
 using Debug = UnityEngine.Debug;
 using Object = UnityEngine.Object;
 
-namespace PlateauUnitySDK.Editor.FileConverter.Converters
+namespace PlateauUnitySDK.Editor.CityImport
 {
 
     /// <summary>

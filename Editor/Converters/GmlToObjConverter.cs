@@ -7,7 +7,7 @@ using PlateauUnitySDK.Runtime.Util;
 using UnityEditor;
 using UnityEngine;
 
-namespace PlateauUnitySDK.Editor.FileConverter.Converters
+namespace PlateauUnitySDK.Editor.Converters
 {
     /// <summary>
     /// gmlファイルをobjファイルに変換します。

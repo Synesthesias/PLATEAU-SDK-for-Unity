@@ -1,15 +1,14 @@
 using PlateauUnitySDK.Editor.EditorWindowCommon;
-using PlateauUnitySDK.Editor.FileConverter.GUIContents;
 using UnityEditor;
 
-namespace PlateauUnitySDK.Editor.FileConverter
+namespace PlateauUnitySDK.Editor.SingleFileConvert
 {
     /// <summary>
-    /// ファイルの変換を行うEditorWindowです。
+    /// ファイル単品の変換を行うEditorWindowです。
     /// 変換の形式ごとのタブが用意されたウィンドウを表示します。
     /// 具体的な処理を各タブのクラスに委譲します。
     /// </summary>
-    public class ModelFileConvertWindow : EditorWindow
+    public class SingleFileConvertWindow : EditorWindow
     {
         private IEditorWindowContents[] tabContents;
         private string[] tabNames;
@@ -19,7 +18,7 @@ namespace PlateauUnitySDK.Editor.FileConverter
         [MenuItem("Plateau/単品ファイル変換")]
         public static void Open()
         {
-            var window = GetWindow<ModelFileConvertWindow>("Model File Converter");
+            var window = GetWindow<SingleFileConvertWindow>("Model File Converter");
             window.Show();
             window.Init();
         }

@@ -1,13 +1,13 @@
-﻿using PlateauUnitySDK.Editor.EditorWindowCommon;
-using PlateauUnitySDK.Editor.FileConverter.Converters;
+﻿using PlateauUnitySDK.Editor.Converters;
+using PlateauUnitySDK.Editor.EditorWindowCommon;
 using UnityEditor;
 
-namespace PlateauUnitySDK.Editor.FileConverter.GUIContents
+namespace PlateauUnitySDK.Editor.SingleFileConvert
 {
     /// <summary>
     /// ファイル変換ウィンドウのタブの基底クラスです。
     /// ある拡張子からある拡張子への変換を行うGUIを提供します。
-    /// <see cref="ModelFileConvertWindow"/> によって保持されます。
+    /// <see cref="SingleFileConvertWindow"/> によって保持されます。
     /// </summary>
     public abstract class BaseConvertTab : ScrollableEditorWindowContents
     {

@@ -1,6 +1,6 @@
 ﻿using System.IO;
 using NUnit.Framework;
-using PlateauUnitySDK.Editor.FileConverter.Converters;
+using PlateauUnitySDK.Editor.Converters;
 using PlateauUnitySDK.Tests.TestUtils;
 
 namespace PlateauUnitySDK.Tests.EditModeTests.TestsFileConverter

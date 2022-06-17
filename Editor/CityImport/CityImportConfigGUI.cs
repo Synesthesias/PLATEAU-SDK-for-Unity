@@ -1,6 +1,5 @@
 ﻿using LibPLATEAU.NET.CityGML;
 using PlateauUnitySDK.Editor.EditorWindowCommon;
-using PlateauUnitySDK.Editor.FileConverter.Converters;
 using PlateauUnitySDK.Runtime.CityMeta;
 using PlateauUnitySDK.Runtime.Util;
 using UnityEditor;

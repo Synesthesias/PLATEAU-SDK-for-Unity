@@ -1,7 +1,7 @@
 ﻿using PlateauUnitySDK.Editor.EditorWindowCommon;
 using PlateauUnitySDK.Runtime.CityMeta;
 
-namespace PlateauUnitySDK.Editor.FileConverter.GUIContents
+namespace PlateauUnitySDK.Editor.SingleFileConvert
 {
     // TODO BaseConvertTab.cs と共通する箇所が多いのでまとめられるか検討
     /// <summary>
