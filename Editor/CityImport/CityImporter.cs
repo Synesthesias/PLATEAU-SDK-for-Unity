@@ -25,11 +25,15 @@ namespace PlateauUnitySDK.Editor.CityImport
         public CityMetaData LastConvertedCityMetaData { get; private set; }
         
         /// <summary>
-        /// 複数のgmlファイルを変換します。
-        /// 変換元が StreamingAssets の配下にない場合、StreamingAssets配下である <see cref="PlateauPath.StreamingGmlFolder"/> にコピーした上で
-        /// 変換元をコピー先に変更します。
+        /// gmlデータ群をインポートします。
+        /// 以下の作業をいっぺんに行います。
+        /// ・利用するファイルを StreamingAssets 内にコピーします（すでに同フォルダ内にある場合は除きます）。コピー先を変換元として設定します。
+        /// ・objファイルに変換します。
+        /// ・メタデータを保存します。
+        /// ・変換後モデルをシーンに配置します。
+        /// コピーおよび変換されるのは <paramref name="gmlRelativePaths"/> のリストにある gmlファイルに関連するデータのみです。
         /// </summary>
-        /// <param name="gmlRelativePaths">gmlファイルの相対パスのリストです。</param>
+        /// <param name="gmlRelativePaths">gmlファイルの相対パスのリストです。パスの起点は udx フォルダです。</param>
         /// <param name="config">変換設定です。</param>
         public void Import(string[] gmlRelativePaths, CityImporterConfig config)
         {
@@ -77,6 +81,7 @@ namespace PlateauUnitySDK.Editor.CityImport
             }
             // gmlファイルごとのループ　ここまで
             
+            // 後処理
             AssetDatabase.ImportAsset(PathUtil.FullPathToAssetsPath(config.exportFolderPath));
             AssetDatabase.Refresh();
             int failureCount = loopCount - successCount;
@@ -106,6 +111,8 @@ namespace PlateauUnitySDK.Editor.CityImport
             string nextSrc = PlateauPath.StreamingGmlFolder;
             
             // コピー先のルートフォルダを作成します。
+            // 例: Tokyoをコピーする場合のパスの例を以下に示します。
+            //     Assets/StreamingAssets/PLATEAU/Tokyo　フォルダを作ります。
             string dstRootFolder = Path.Combine(nextSrc, srcFolderName);
             if (!Directory.Exists(dstRootFolder))
             {
@@ -113,10 +120,12 @@ namespace PlateauUnitySDK.Editor.CityImport
             }
             
             // codelists をコピーします。
+            // 例: Assets/StreamingAssets/PLATEAU/Tokyo/codelists/****.xml をコピーにより作成します。
             const string codelistsFolderName = "codelists";
             PathUtil.CloneDirectory(Path.Combine(prevSrc, codelistsFolderName), dstRootFolder);
             
             // udxフォルダを作ります。
+            // 例: Assets/StreamingAssets/PLATEAU/Tokyo/udx　ができます。
             const string udxFolderName = "udx";
             string dstUdxFolder = Path.Combine(dstRootFolder, udxFolderName);
             if (!Directory.Exists(dstUdxFolder))
@@ -129,17 +138,23 @@ namespace PlateauUnitySDK.Editor.CityImport
             {
                 GmlFileNameParser.Parse(gml, out int _, out string objTypeStr, out int _, out string _);
                 // 地物タイプのディレクトリを作ります。
+                // 例: gml のタイプが bldg なら、
+                //     Assets/StreamingAssets/PLATEAU/Tokyo/udx/bldg　ができます。
                 string dstObjTypeFolder = Path.Combine(dstUdxFolder, objTypeStr);
                 if (!Directory.Exists(dstObjTypeFolder))
                 {
                     AssetDatabase.CreateFolder(PathUtil.FullPathToAssetsPath(dstUdxFolder), objTypeStr);
                 }
+                
                 // gmlファイルをコピーします。
+                // 例: Assets/StreamingAssets/PLATEAU/Tokyo/bldg/1234.gml　ができます。
                 string gmlName = Path.GetFileName(gml);
                 string srcObjTypeFolder = Path.Combine(prevSrc, "udx", objTypeStr);
                 File.Copy(Path.Combine(srcObjTypeFolder, gmlName), Path.Combine(dstObjTypeFolder, gmlName), true);
+                
                 // gmlファイルに関連するフォルダをコピーします。
                 // gmlの名称からオプションと拡張子を除いた文字列がフォルダ名に含まれていれば、コピー対象のディレクトリとみなします。
+                // 例: Assets/StreamingAssets/PLATEAU/Tokyo/bldg/1234_appearance/texture_number.jpg　などがコピーされます。 
                 string gmlIdentity = GmlFileNameParser.NameWithoutOption(gml);
                 foreach (var srcDir in Directory.GetDirectories(srcObjTypeFolder))
                 {
@@ -161,6 +176,10 @@ namespace PlateauUnitySDK.Editor.CityImport
         }
 
 
+        /// <summary>
+        /// Gmlファイルをロードします。
+        /// 成否を bool で返します。
+        /// </summary>
         private static bool TryLoadCityGml(out CityModel cityModel, string gmlFullPath, CityImporterConfig config)
         {
             try
@@ -191,6 +210,10 @@ namespace PlateauUnitySDK.Editor.CityImport
             return true;
         }
 
+        /// <summary>
+        /// <see cref="CityModel"/> を obj形式の3Dモデルに変換します。
+        /// 成否を bool で返します。
+        /// </summary>
         private static bool TryConvertToObj(CityModel cityModel, ref Vector3? referencePoint, CityImporterConfig importerConfig, string gmlFullPath, string objPath)
         {
             using (var objConverter = new GmlToObjConverter())
@@ -220,6 +243,10 @@ namespace PlateauUnitySDK.Editor.CityImport
             }
         }
 
+        /// <summary>
+        /// 変換に関する情報をメタデータに保存します。
+        /// 成否を bool で返します。
+        /// </summary>
         private static bool TryGenerateMetaData(out CityMetaData cityMetaData, string gmlFileName,
             string dstMeshAssetPath, bool isFirstFile, CityImporterConfig importerConf)
         {
@@ -242,6 +269,9 @@ namespace PlateauUnitySDK.Editor.CityImport
             return true;
         }
 
+        /// <summary>
+        /// 変換後の3Dモデルをシーンに配置します。
+        /// </summary>
         private static void PlaceToScene(string objAssetPath, string srcFolderName, CityMetaData metaData)
         {
             // 親を配置
