@@ -63,12 +63,14 @@ namespace PlateauUnitySDK.Editor.CityImport
                 string objPath = Path.Combine(config.exportFolderPath, gmlFileName + ".obj");
                 if (!TryLoadCityGml(out var cityModel, gmlFullPath, config))
                 {
+                    cityModel.Dispose();
                     continue;
                 }
                 
                 // objに変換します。
                 if (!TryConvertToObj(cityModel, ref referencePoint, config, gmlFullPath, objPath))
                 {
+                    cityModel.Dispose();
                     continue;
                 }
 
@@ -78,8 +80,10 @@ namespace PlateauUnitySDK.Editor.CityImport
                 config.referencePoint = referencePoint.Value;
                 if (!TryGenerateMetaData(out var cityMapMetaData, gmlFileName, objAssetPath, loopCount==1, config))
                 {
+                    cityModel.Dispose();
                     continue;
                 }
+                cityModel.Dispose();
 
                 // シーンに配置します。
                 PlaceToScene(objAssetPath, rootGmlFolderName, cityMapMetaData);
