@@ -8,9 +8,10 @@ namespace PlateauUnitySDK.Runtime.CityMeta
 {
     /// <summary>
     /// <see cref="CityObject"/> のIDから、対応するGMLのファイル名を検索できる辞書データです。
+    /// <see cref="CityMetaData"/> によって保持されます。
     /// </summary>
     [Serializable]
-    public class IdToGmlTable :  ISerializationCallbackReceiver//, IDictionary<string, string> // TODO IDictionary に対応したほうが便利
+    public class IdToGmlTable :  ISerializationCallbackReceiver//, IDictionary<string, string> // TODO IDictionary に対応したほうが便利だけどまだやってない
     {
         private Dictionary<string, string> dictionary = new Dictionary<string, string>();
         // Unityの仕様上、シリアライズするときは List 形式で行い、 デシリアライズするときは Dictionary 形式に直します。

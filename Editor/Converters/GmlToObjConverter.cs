@@ -15,7 +15,7 @@ namespace PlateauUnitySDK.Editor.Converters
     /// <see cref="Dispose"/> を忘れると、変換後もファイルが使用中となり外部から変更できなくなります。
     /// usingステートメントを使うことで暗黙的に <see cref="Dispose"/> を呼ぶことができます。
     /// </summary>
-    internal class GmlToObjConverter : IFileConverter, IDisposable
+    internal class GmlToObjConverter : ISingleFileConverter, IDisposable
     {
         /// <summary> ObjWriter は変換処理をC++のDLLに委譲します。 </summary>
         private readonly ObjWriter objWriter;

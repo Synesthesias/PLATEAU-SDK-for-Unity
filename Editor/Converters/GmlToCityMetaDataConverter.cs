@@ -16,7 +16,7 @@ namespace PlateauUnitySDK.Editor.Converters
     /// 新しい版ではメッシュから idToGmlFileTable を作成します。 
     /// </summary>
     [Obsolete]
-    internal class GmlToCityMetaDataConverter : IFileConverter
+    internal class GmlToCityMetaDataConverter : ISingleFileConverter
     {
         private CityMapMetaDataGeneratorConfig config;
         // public CityMetaData LastConvertedCityMetaData { get; set; }

@@ -5,6 +5,10 @@ using static PlateauUnitySDK.Runtime.CityMeta.GmlType;
 namespace PlateauUnitySDK.Runtime.CityMeta
 {
 
+    /// <summary>
+    /// 地物タイプです。
+    /// gml元データのファイル構造における udx/(地物タイプ) の(地物タイプ)に対応します。
+    /// </summary>
     public enum GmlType
     {
         Building,
@@ -15,8 +19,14 @@ namespace PlateauUnitySDK.Runtime.CityMeta
         Etc
     }
 
+    /// <summary>
+    /// <see cref="GmlType"/> の Enum 型、 接頭辞（フォルダ名）、ディスプレイ文字列　を変換します。
+    /// </summary>
     public static class GmlTypeConvert
     {
+        /// <summary>
+        /// 接頭辞は主にフォルダ名に使われます。Enum型と接頭辞の対応辞書です。
+        /// </summary>
         private static readonly Dictionary<GmlType, string> prefixDict = new Dictionary<GmlType, string>()
         {
             { Building, "bldg" },
@@ -26,6 +36,9 @@ namespace PlateauUnitySDK.Runtime.CityMeta
             { DigitalElevationModel, "dem" }
         };
 
+        /// <summary>
+        /// ディスプレイ文字列は GUI で利用されます。Enum型とその分かりやすい単語の対応辞書です。
+        /// </summary>
         private static readonly Dictionary<GmlType, string> displayDict = new Dictionary<GmlType, string>()
         {
             { Building, "建築物" },

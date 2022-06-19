@@ -18,7 +18,7 @@ namespace PlateauUnitySDK.Editor.SingleFileConvert
 
         protected override string SourceFileExtension => "gml";
         public override string DestFileExtension => "obj";
-        public override IFileConverter FileConverter => this.converter;
+        public override ISingleFileConverter SingleFileConverter => this.converter;
 
         /// <summary>初期化処理です。</summary>
         public GmlToObjConvertTab()

@@ -1,9 +1,9 @@
 ﻿namespace PlateauUnitySDK.Editor.Converters
 {
     /// <summary>
-    /// ファイル変換機能のインターフェイスです。
+    /// 単品ファイル変換機能のインターフェイスです。
     /// </summary>
-    internal interface IFileConverter
+    internal interface ISingleFileConverter
     {
         /// <summary>
         /// srcFilePathのファイルを変換し、dstFilePathに出力します。

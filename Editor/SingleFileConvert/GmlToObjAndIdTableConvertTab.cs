@@ -61,7 +61,7 @@ namespace PlateauUnitySDK.Editor.SingleFileConvert
             bool isSuccess = true;
             foreach (var tab in this.tabs)
             {
-                isSuccess &= tab.FileConverter.Convert(tab.SourceFilePath, tab.DestFilePath);
+                isSuccess &= tab.SingleFileConverter.Convert(tab.SourceFilePath, tab.DestFilePath);
             }
 
             return isSuccess;

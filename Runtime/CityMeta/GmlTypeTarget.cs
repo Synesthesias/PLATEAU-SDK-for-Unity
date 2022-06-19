@@ -11,6 +11,9 @@ namespace PlateauUnitySDK.Runtime.CityMeta
     /// gmlファイル群は地物オブジェクトのタイプ別にフォルダ分けで格納されていますが、
     /// そのうちのどのタイプ（フォルダ）を変換ターゲットとするかを決めます。
     /// 例: udx/bldg下のgmlは対象にするが、udx/veg下のgmlは対象にしない、など。
+    ///
+    /// 他クラスとの関係は <see cref="CityImporterConfig"/> -> 保持 -> <see cref="GmlSearcherConfig"/> -> 保持 -> <see cref="GmlTypeTarget"/>
+    /// という関係なので、<see cref="CityImporterConfig"/> の注意事項に基づいてこのクラスには Serializable属性が付いている必要があります。
     /// </summary>
     [Serializable]
     public class GmlTypeTarget : ISerializationCallbackReceiver

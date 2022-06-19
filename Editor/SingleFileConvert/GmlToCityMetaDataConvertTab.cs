@@ -21,7 +21,7 @@ namespace PlateauUnitySDK.Editor.SingleFileConvert
         private bool doTessellate;
         protected override string SourceFileExtension => "gml";
         public override string DestFileExtension => "asset";
-        public override IFileConverter FileConverter => this.converter;
+        public override ISingleFileConverter SingleFileConverter => this.converter;
         private static string projectPath = Path.GetDirectoryName(Application.dataPath);
         private int dstTabIndex;
         private CityMetaData existingMetaData;
@@ -99,7 +99,7 @@ namespace PlateauUnitySDK.Editor.SingleFileConvert
                     return base.Convert();
                 case 1:
                     // Existing File のときは対象パスが変わります。
-                    return FileConverter.Convert(this.SourceFilePath, this.existingMapInfoPath);
+                    return SingleFileConverter.Convert(this.SourceFilePath, this.existingMapInfoPath);
                 default:
                     throw new Exception("Unknown Tab Index.");
             }

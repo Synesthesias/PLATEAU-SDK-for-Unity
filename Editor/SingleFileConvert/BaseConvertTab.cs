@@ -15,7 +15,7 @@ namespace PlateauUnitySDK.Editor.SingleFileConvert
         // 変換元、変換先、Converter をサブクラスで指定します。
         protected abstract string SourceFileExtension { get; }
         public abstract string DestFileExtension { get; }
-        public abstract IFileConverter FileConverter { get; }
+        public abstract ISingleFileConverter SingleFileConverter { get; }
 
         public string SourceFilePath;
         public string DestFilePath;
@@ -100,7 +100,7 @@ namespace PlateauUnitySDK.Editor.SingleFileConvert
         /// </summary>
         protected virtual bool Convert()
         {
-            return FileConverter.Convert(this.SourceFilePath, this.DestFilePath);
+            return SingleFileConverter.Convert(this.SourceFilePath, this.DestFilePath);
         }
     }
 }

@@ -11,8 +11,8 @@ namespace PlateauUnitySDK.Editor.Converters
 {
     /// <summary>
     /// <see cref="CityMetaData"/> を生成します。
-    /// 古い版である <see cref="GmlToCityMetaDataConverter"/> の置き換えとなるクラスです。
     /// </summary>
+    // 古い版である <see cref="GmlToCityMetaDataConverter"/> の置き換えとなるクラスです。
     internal class CityMetaDataGenerator
     {
         public CityMetaData LastConvertedCityMetaData { get; private set; }

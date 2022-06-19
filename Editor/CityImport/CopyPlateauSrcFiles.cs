@@ -8,6 +8,7 @@ namespace PlateauUnitySDK.Editor.CityImport
 
     /// <summary>
     /// Plateauの元データをコピーします。
+    /// インポート時に <see cref="CityImporter"/> が利用します。
     /// </summary>
     internal static class CopyPlateauSrcFiles
     {
