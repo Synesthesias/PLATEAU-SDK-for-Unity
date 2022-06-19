@@ -10,17 +10,17 @@ namespace PlateauUnitySDK.Editor.CityImport
 {
     /// <summary>
     /// udxフォルダ内のgmlファイルを検索します。
+    /// 地域IDや地物タイプの条件に合致する gml をファイルシステムから検索します。
     /// 
     /// 前提:
     /// ・ディレクトリ構造が udx/(地物型)/(複数のgmlファイル) になっていることを前提とします。
-    /// ・gmlファイル名は [地域メッシュコード]_[地物型]_[CRS]_[オプション].gml です。
     /// 　詳しくは国交省仕様書 Ver2 の 324ページを参照してください。
     /// </summary>
     internal class GmlSearcher
     {
 
         /// <summary>
-        /// 地域メッシュコードからファイルリストへの辞書です。
+        /// 地域メッシュコード（地域ID）からファイルリストへの辞書です。
         /// ここでいうファイルリストとは <see cref="udxFolderPath"/> からの相対パスのリストです。
         /// 例: {53394525 => {bldg\53394525_bldg_6697_2_op.gml  brid\53394525_brid_6697_op.gml }}
         /// </summary>
@@ -154,7 +154,7 @@ namespace PlateauUnitySDK.Editor.CityImport
         {
             string parentPath = Directory.GetParent(gmlPath)?.ToString();
             string parentFolder = Path.GetFileName(parentPath);
-            return GmlTypeConvert.FromPrefix(parentFolder);
+            return GmlTypeConvert.ToEnum(parentFolder);
         }
 
         private void FileTableAdd(int areaId, string filePath)

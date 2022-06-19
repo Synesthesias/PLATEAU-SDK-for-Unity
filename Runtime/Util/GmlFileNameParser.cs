@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Text;
+using PlateauUnitySDK.Runtime.CityMeta;
 using UnityEngine;
 
 namespace PlateauUnitySDK.Runtime.Util
@@ -19,13 +20,14 @@ namespace PlateauUnitySDK.Runtime.Util
         /// <summary>
         /// gmlのファイル名から情報を取り出します。
         /// </summary>
-        public static void Parse(string gmlFileName, out int areaId, out string objTypeStr, out int crs, out string option)
+        public static void Parse(string gmlFileName, out int areaId, out GmlType gmlType, out int crs, out string option)
         {
             gmlFileName = Preprocess(gmlFileName);
             
             string[] tokens = gmlFileName.Split('_');
             areaId = int.Parse(tokens[0]);
-            objTypeStr = tokens[1];
+            string objTypeStr = tokens[1];
+            gmlType = GmlTypeConvert.ToEnum(objTypeStr);
             crs = int.Parse(tokens[2]);
             option = tokens.Length >= 4 ? tokens[3] : null;
         }

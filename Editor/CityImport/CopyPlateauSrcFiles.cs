@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using PlateauUnitySDK.Runtime.CityMeta;
 using PlateauUnitySDK.Runtime.Util;
 using UnityEditor;
 
@@ -43,17 +44,17 @@ namespace PlateauUnitySDK.Editor.CityImport
             // udxフォルダのうち対象のgmlファイルをコピーします。
             foreach (string gml in gmlRelativePaths)
             {
-                GmlFileNameParser.Parse(gml, out int _, out string objTypeStr, out int _, out string _);
+                GmlFileNameParser.Parse(gml, out int _, out GmlType gmlType, out int _, out string _);
                 // 地物タイプのディレクトリを作ります。
                 // 例: gml のタイプが bldg なら、
                 //     Assets/StreamingAssets/PLATEAU/Tokyo/udx/bldg　ができます。
-                string dstObjTypeFolder = Path.Combine(dstUdxFolder, objTypeStr);
+                string dstObjTypeFolder = Path.Combine(dstUdxFolder, gmlType.ToPrefix());
                 Mkdir(dstObjTypeFolder);
 
                 // gmlファイルをコピーします。
                 // 例: Assets/StreamingAssets/PLATEAU/Tokyo/bldg/1234.gml　ができます。
                 string gmlName = Path.GetFileName(gml);
-                string srcObjTypeFolder = Path.Combine(srcUdxPath, "udx", objTypeStr);
+                string srcObjTypeFolder = Path.Combine(srcUdxPath, "udx", gmlType.ToPrefix());
                 File.Copy(Path.Combine(srcObjTypeFolder, gmlName), Path.Combine(dstObjTypeFolder, gmlName), true);
 
                 // gmlファイルに関連するフォルダをコピーします。

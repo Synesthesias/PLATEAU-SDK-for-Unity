@@ -37,11 +37,11 @@ namespace PlateauUnitySDK.Runtime.CityMeta
         };
         
         /// <summary>
-        /// <see cref="GmlType"/> を接頭辞に変換します。
+        /// <see cref="GmlType"/> を接頭辞に変換する拡張メソッドです。
         /// 接頭辞はフォルダ名などに使われます。
         /// ただし、<see cref="GmlType.Etc"/> は接頭辞がないので例外を投げます。
         /// </summary>
-        public static string ToPrefix(GmlType t)
+        public static string ToPrefix(this GmlType t)
         {
             if (t == Etc)
             {
@@ -60,7 +60,7 @@ namespace PlateauUnitySDK.Runtime.CityMeta
         /// 接頭辞から <see cref="GmlType"/> を返します。
         /// 辞書にない接頭辞の場合は <see cref="GmlType.Etc"/> を返します。
         /// </summary>
-        public static GmlType FromPrefix(string prefix)
+        public static GmlType ToEnum(string prefix)
         {
             foreach (var pair in prefixDict)
             {
