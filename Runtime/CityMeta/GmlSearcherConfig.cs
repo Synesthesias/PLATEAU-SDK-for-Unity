@@ -5,7 +5,7 @@ namespace PlateauUnitySDK.Runtime.CityMeta
 
     /// <summary>
     /// GmlSearcher の設定です。
-    /// これは <see cref="CityImporterConfig"/> によって保持されるので、そちらの注意事項もご覧ください。
+    /// このクラスは <see cref="CityImporterConfig"/> によって保持されるので、そちらの注意事項もご覧ください。
     /// </summary>
     [Serializable]
     public class GmlSearcherConfig

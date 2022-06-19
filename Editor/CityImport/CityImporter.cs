@@ -29,11 +29,6 @@ namespace PlateauUnitySDK.Editor.CityImport
         
         /// <summary>
         /// gmlデータ群をインポートします。
-        /// 以下の作業をいっぺんに行います。
-        /// ・利用するファイルを StreamingAssets 内にコピーします（すでに同フォルダ内にある場合は除きます）。コピー先を変換元として設定します。
-        /// ・objファイルに変換します。
-        /// ・メタデータを保存します。
-        /// ・変換後モデルをシーンに配置します。
         /// コピーおよび変換されるのは <paramref name="gmlRelativePaths"/> のリストにある gmlファイルに関連するデータのみです。
         /// </summary>
         /// <param name="gmlRelativePaths">gmlファイルの相対パスのリストです。パスの起点は udx フォルダです。</param>
