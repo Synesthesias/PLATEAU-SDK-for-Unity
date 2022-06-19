@@ -162,7 +162,6 @@ namespace PlateauUnitySDK.Runtime.Util
                 Directory.CreateDirectory(dest);
             }
             CloneDirectoryRecursive(src, dest);
-            // AssetDatabase.ImportAsset(FullPathToAssetsPath(dest));
             AssetDatabase.Refresh();
         }
         #endif

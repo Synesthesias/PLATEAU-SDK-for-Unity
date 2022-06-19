@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using PlateauUnitySDK.Runtime.CityMeta;
+using PlateauUnitySDK.Runtime.Util;
 
 namespace PlateauUnitySDK.Editor.CityImport
 {
@@ -23,13 +24,9 @@ namespace PlateauUnitySDK.Editor.CityImport
         /// ここでいうファイルリストとは <see cref="udxFolderPath"/> からの相対パスのリストです。
         /// 例: {53394525 => {bldg\53394525_bldg_6697_2_op.gml  brid\53394525_brid_6697_op.gml }}
         /// </summary>
-        private Dictionary<string, List<string>> fileTable;
+        private Dictionary<int, List<string>> fileTable;
 
         private string udxFolderPath = "";
-        // public string UdxFolderPath
-        // {
-        //     set => this.udxFolderPath = value;
-        // }
 
         /// <summary> インスタンス化と同時にパスを指定して検索します。 </summary>
         public GmlSearcher(string udxFolderPath)
@@ -55,7 +52,7 @@ namespace PlateauUnitySDK.Editor.CityImport
 
             this.udxFolderPath = udxFolderPathArg;
 
-            this.fileTable = new Dictionary<string, List<string>>();
+            this.fileTable = new Dictionary<int, List<string>>();
 
             // パス: udx/(地物型)
             foreach (var dirPath in Directory.EnumerateDirectories(Path.GetFullPath(udxFolderPathArg)))
@@ -65,8 +62,7 @@ namespace PlateauUnitySDK.Editor.CityImport
                 {
                     if (Path.GetExtension(filePath) != ".gml") continue;
                     string fileName = Path.GetFileName(filePath);
-                    // ファイル名の最初の '_' までが地域IDであると仮定します。
-                    string areaId = fileName.Split('_').First();
+                    GmlFileNameParser.Parse(fileName, out int areaId, out var _, out var _, out var _);
                     FileTableAdd(areaId, filePath);
                 }
             }
@@ -97,7 +93,7 @@ namespace PlateauUnitySDK.Editor.CityImport
         }
         
         /// <summary> udx フォルダに含まれる地域メッシュコードを配列で返します。 </summary>
-        public string[] AreaIds
+        public int[] AreaIds
         {
             get
             {
@@ -113,7 +109,7 @@ namespace PlateauUnitySDK.Editor.CityImport
         /// 指定した <paramref name="areaId"/>(地域メッシュコード) に属する gmlファイルのパスのリストを返します。
         /// <paramref name="doAbsolutePath"/> が true ならば絶対パス、 false なら udxFolderPath からの相対パスを返します。
         /// </summary>
-        private IEnumerable<string> GetGmlFilePathsForAreaId(string areaId, bool doAbsolutePath)
+        private IEnumerable<string> GetGmlFilePathsForAreaId(int areaId, bool doAbsolutePath)
         {
             if (!this.fileTable.ContainsKey(areaId))
             {
@@ -134,7 +130,7 @@ namespace PlateauUnitySDK.Editor.CityImport
         /// gmlファイルのうち、<paramref name="areaId"/> が指定したものであり、かつ
         /// <see cref="GmlType"/> が <paramref name="typeTarget"/> で示されるタイプの1つであるものを返します。
         /// </summary>
-        public IEnumerable<string> GetGmlFilePathsForAreaIdAndType(string areaId, GmlTypeTarget typeTarget,
+        public IEnumerable<string> GetGmlFilePathsForAreaIdAndType(int areaId, GmlTypeTarget typeTarget,
             bool doAbsolutePath)
         {
             var found = new List<string>();
@@ -161,7 +157,7 @@ namespace PlateauUnitySDK.Editor.CityImport
             return GmlTypeConvert.FromPrefix(parentFolder);
         }
 
-        private void FileTableAdd(string areaId, string filePath)
+        private void FileTableAdd(int areaId, string filePath)
         {
             string relativePath = GetRelativePath(filePath, this.udxFolderPath);
             if (this.fileTable.ContainsKey(areaId))

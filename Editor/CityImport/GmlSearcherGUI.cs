@@ -36,7 +36,7 @@ namespace PlateauUnitySDK.Editor.CityImport
             }
             for (int i = 0; i < areaCount; i++)
             {
-                config.isAreaIdTarget[i] = EditorGUILayout.Toggle(config.areaIds[i], config.isAreaIdTarget[i]);
+                config.isAreaIdTarget[i] = EditorGUILayout.Toggle(config.areaIds[i].ToString(), config.isAreaIdTarget[i]);
             }
 
             using (new EditorGUILayout.HorizontalScope())
@@ -97,7 +97,7 @@ namespace PlateauUnitySDK.Editor.CityImport
         }
 
         
-        private static List<string> ListTargetGmlFiles(GmlSearcher gmlSearcher, string[] areaIds, bool[] areaCheckboxes, GmlTypeTarget gmlTypeTarget)
+        private static List<string> ListTargetGmlFiles(GmlSearcher gmlSearcher, int[] areaIds, bool[] areaCheckboxes, GmlTypeTarget gmlTypeTarget)
         {
             if (areaIds.Length != areaCheckboxes.Length)
             {

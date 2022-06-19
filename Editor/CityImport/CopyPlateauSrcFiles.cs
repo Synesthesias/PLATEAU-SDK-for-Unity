@@ -35,6 +35,7 @@ namespace PlateauUnitySDK.Editor.CityImport
 
             // udxフォルダを作ります。
             // 例: Assets/StreamingAssets/PLATEAU/Tokyo/udx　ができます。
+            // TODO ここの Mkdir は不要では？
             const string udxFolderName = "udx";
             string dstUdxFolder = Path.Combine(dstRootFolder, udxFolderName);
             Mkdir(dstUdxFolder);

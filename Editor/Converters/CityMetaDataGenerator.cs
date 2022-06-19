@@ -38,7 +38,7 @@ namespace PlateauUnitySDK.Editor.Converters
                     metaData.AddToGmlTable(id, gmlFileName);    
                 }
                 
-                // 追加情報を書き込みます。
+                // 変換時の設定を書き込みます。
                 var importConf = config.CityImporterConfig;
                 importConf.sourceUdxFolderPath = PathUtil.FullPathToAssetsPath(exportFolderFullPath);
                 if (PathUtil.IsSubDirectoryOfAssets(udxFullPath))

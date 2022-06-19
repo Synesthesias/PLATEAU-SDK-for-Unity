@@ -8,9 +8,12 @@ namespace PlateauUnitySDK.Editor.CityImport
 {
 
     /// <summary>
-    /// udxフォルダを指定し、条件に合うgmlファイルを一括で変換するGUIを提供します。
-    /// <see cref="CityImportWindow"/> および <see cref="CityMetaDataEditor"/> によって利用されます。
-    /// この設定は <see cref="CityImporter"/> に渡されます。
+    /// Plateau元データをインポートするためのGUIです。
+    /// ユーザーが選択したインポート設定を <see cref="CityImporter"/> に渡して実行することでインポートが行われます。
+    /// ユーザーが行う設定項目には、gmlファイル群を地物タイプや地域IDで絞り込む機能を含みます。
+    ///
+    /// このクラスを利用するクラスは、
+    /// <see cref="CityImportWindow"/> および <see cref="CityMetaDataEditor"/> です。
     /// </summary>
     internal class CityImportGUI
     {

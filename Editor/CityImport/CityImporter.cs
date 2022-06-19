@@ -15,8 +15,11 @@ namespace PlateauUnitySDK.Editor.CityImport
 
     /// <summary>
     /// 都市モデルをインポートします。
-    /// 複数のgmlファイルから、複数のobj および 1つの <see cref="CityMetaData"/>テーブルを生成します。
-    /// モデルを現在のシーンに配置します。
+    /// ここでいうインポートとは、次の複数の処理をまとめたものを指します:
+    /// ・Plateau元データを StreamingAssets/PLATEAU 内にコピーします。GUI設定で選んだ一部のみをコピーすることもできます。
+    ///   テクスチャなど関連するフォルダがあればそれもコピーします。
+    /// ・Plateau元データから、複数のobj および 1つの <see cref="CityMetaData"/> を作成します。
+    /// ・変換したモデルを現在のシーンに配置します。
     /// </summary>
     internal class CityImporter
     {

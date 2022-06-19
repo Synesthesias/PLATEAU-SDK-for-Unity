@@ -12,9 +12,9 @@ namespace PlateauUnitySDK.Tests.EditModeTests
         public void AreaIds_Returns_File_AreaIds()
         {
             var searcher = new GmlSearcher(DirectoryUtil.TestTokyoUdxPath);
-            string[] areaIds = searcher.AreaIds;
-            Assert.Contains("53394525", areaIds);
-            Assert.Contains("533925", areaIds);
+            var areaIds = searcher.AreaIds;
+            Assert.Contains(53394525, areaIds);
+            Assert.Contains(533925, areaIds);
             Debug.Log(searcher);
         }
     }

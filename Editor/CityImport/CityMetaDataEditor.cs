@@ -6,6 +6,10 @@ namespace PlateauUnitySDK.Editor.CityImport
 {
     /// <summary>
     /// <see cref="CityMetaData"/> のインスペクタでの表示を行います。
+    /// 役割は2つあります。
+    /// ・<see cref="CityMetaData"/> が保持する情報を（必要なら）インスペクタに表示すること。
+    /// ・<see cref="CityMetaData"/> はインポート時の設定を覚えているので、その設定で「再変換」画面をインスペクタに表示すること。
+    /// 　再変換の画面では、ユーザーが設定を変えることが可能であること。この機能によりユーザーが「前回から少しだけ設定を変えて変換」する操作をする上で便利になること。
     /// </summary>
     [CustomEditor(typeof(CityMetaData))]
     internal class CityMetaDataEditor : UnityEditor.Editor
