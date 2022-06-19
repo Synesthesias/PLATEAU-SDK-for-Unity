@@ -1,5 +1,4 @@
 ﻿using System.IO;
-using PlateauUnitySDK.Editor.FileConverter;
 using PlateauUnitySDK.Runtime.Util;
 using UnityEditor;
 using UnityEngine;
@@ -48,7 +47,7 @@ namespace PlateauUnitySDK.Tests.TestUtils
         /// </summary>
         public static void SetUpTempAssetFolder()
         {
-            string assetPath = FilePathValidator.FullPathToAssetsPath(TempAssetFolderPath);
+            string assetPath = PathUtil.FullPathToAssetsPath(TempAssetFolderPath);
             bool doDirExists = false;
             if (Directory.Exists(TempAssetFolderPath))
             {
@@ -71,7 +70,7 @@ namespace PlateauUnitySDK.Tests.TestUtils
         /// </summary>
         public static bool DeleteTempAssetFolder()
         {
-            string assetPath = FilePathValidator.FullPathToAssetsPath(TempAssetFolderPath);
+            string assetPath = PathUtil.FullPathToAssetsPath(TempAssetFolderPath);
             bool result = AssetDatabase.DeleteAsset(assetPath);
 
             if (!result)

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using LibPLATEAU.NET.CityGML;
-using PlateauUnitySDK.Runtime.CityMapMeta;
+using PlateauUnitySDK.Runtime.CityMeta;
 using PlateauUnitySDK.Runtime.Util;
 using UnityEngine;
 
@@ -14,21 +14,19 @@ namespace PlateauUnitySDK.Runtime.SemanticsLoad
     /// </summary>
     public class SemanticsLoader
     {
-        // private CityMapMetaData cityMapMetaData;
         private readonly Dictionary<string, CityModel> fileToCityModelCache = new Dictionary<string, CityModel>();
 
-        public CityObject Load(string cityObjectId, CityMapMetaData cityMapMetaData)
+        public CityObject Load(string cityObjectId, CityMetaData cityMetaData)
         {
-            if (cityMapMetaData == null)
+            if (cityMetaData == null)
             {
-                throw new ArgumentNullException($"{nameof(cityMapMetaData)}");
+                throw new ArgumentNullException($"{nameof(cityMetaData)}");
             }
             
             // テーブルから cityObjectId に対応する gmlFileName を検索します。
-            string gmlFileName; // 拡張子を含みません
-            if( !cityMapMetaData.TryGetValueFromGmlTable(cityObjectId, out gmlFileName))
+            if( !cityMetaData.TryGetValueFromGmlTable(cityObjectId, out var gmlFileName))
             {
-                throw new KeyNotFoundException($"cityObjectId {cityObjectId} is not found in {nameof(CityMapMetaData)}.");
+                throw new KeyNotFoundException($"cityObjectId {cityObjectId} is not found in {nameof(CityMetaData)}.");
             }
             
             // 名前が gmlFileName である gmlファイルを検索します。
@@ -40,20 +38,20 @@ namespace PlateauUnitySDK.Runtime.SemanticsLoad
                 return GetCityObjectById(cityModel, cityObjectId);
             }
             
-            string udxPath = cityMapMetaData.cityModelImportConfig.sourceUdxFolderPath;
+            string udxPath = cityMetaData.cityImporterConfig.sourceUdxFolderPath;
             // udxフォルダは StreamingAssets フォルダにあることを前提とします。
-            if (!FilePathValidator.IsSubDirectory(udxPath, Application.streamingAssetsPath))
+            if (!PathUtil.IsSubDirectory(udxPath, Application.streamingAssetsPath))
             {
                 throw new IOException(
                     $"Could not find gml file, because udx path is not in StreamingAssets folder.\nudxPath = {udxPath}");
             }
-            string gmlPath = SearchGmlPath(udxPath, gmlFileName);
+            string gmlPath = SearchGmlPath(gmlFileName);
             var loadedModel = CityGml.Load(gmlPath, new CitygmlParserParams(true, false), DllLogCallback.UnityLogCallbacks);
             this.fileToCityModelCache[gmlFileName] = loadedModel;
             return GetCityObjectById(loadedModel, cityObjectId);
         }
 
-        private static string SearchGmlPath(string directoryPath, string gmlFileNameWithoutExtension)
+        private static string SearchGmlPath(string gmlFileNameWithoutExtension)
         {
             string foundGmlPath = Directory.EnumerateFiles(Application.streamingAssetsPath, gmlFileNameWithoutExtension + ".gml",
                 SearchOption.AllDirectories).First();
