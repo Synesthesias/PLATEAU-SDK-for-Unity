@@ -129,22 +129,6 @@ namespace PlateauUnitySDK.Editor.Converters
                     AssetDatabase.ImportAsset(assetPath);
                     AssetDatabase.Refresh();
                 }
-                
-                // 変換後、3Dメッシュが1つもなければ、ファイルを削除して変換失敗とします。
-                // ただし、このチェックは出力パスが Assets フォルダ内である時のみ機能します。
-                // TODO この処理は C#側ではなく C++側で実装したい
-                if (PathUtil.IsSubDirectoryOfAssets(exportObjFilePath))
-                {
-                    string assetPath = PathUtil.FullPathToAssetsPath(exportObjFilePath);
-                    // AssetDatabase は Unityプロジェクトの外のパスでは動かないので、不本意ながら「Assetsフォルダ内にあるときのみチェック」という条件ができてしまいます。
-                    var assets = AssetDatabase.LoadAllAssetsAtPath(assetPath);
-                    if (!assets.OfType<Mesh>().Any())
-                    {
-                        Debug.LogError($"No mesh found. Deleting output obj file.\ngml path = {gmlFilePath}");
-                        AssetDatabase.DeleteAsset(assetPath);
-                        return false;
-                    }
-                }
             }
             catch (FileLoadException e)
             {
