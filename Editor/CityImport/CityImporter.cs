@@ -49,10 +49,12 @@ namespace PlateauUnitySDK.Editor.CityImport
             // gmlファイルごとのループを始めます。
             int successCount = 0;
             int loopCount = 0;
+            int numGml = gmlRelativePaths.Length;
             Vector3? referencePoint = null;
             foreach (var gmlRelativePath in gmlRelativePaths)
             {
                 loopCount++;
+                ProgressBar($"gml変換中 : [{loopCount}/{numGml}] {gmlRelativePath}", loopCount, numGml );
 
                 string gmlFullPath = Path.GetFullPath(Path.Combine(config.sourceUdxFolderPath, gmlRelativePath));
 
@@ -103,6 +105,7 @@ namespace PlateauUnitySDK.Editor.CityImport
             {
                 Debug.LogError($"Convert end with error. {failureCount} of {loopCount} gml files are not converted.");
             }
+            EditorUtility.ClearProgressBar();
         }
 
 
@@ -249,6 +252,11 @@ namespace PlateauUnitySDK.Editor.CityImport
         public static bool IsInStreamingAssets(string path)
         {
             return PathUtil.IsSubDirectory(path, Application.streamingAssetsPath);
+        }
+
+        private static void ProgressBar(string info, int currentCount, int maxCount)
+        {
+            EditorUtility.DisplayProgressBar("gmlファイル変換中", info, ((float)currentCount)/maxCount);
         }
     }
 }
