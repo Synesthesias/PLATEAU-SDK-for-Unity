@@ -25,7 +25,7 @@ namespace PlateauUnitySDK.Runtime.Util
             gmlFileName = Preprocess(gmlFileName);
             
             areaId = GetAreaId(gmlFileName);
-            gmlType = GetGmlType(gmlFileName);
+            gmlType = GetGmlTypeEnum(gmlFileName);
             string[] tokens = gmlFileName.Split('_');
             crs = int.Parse(tokens[2]);
             option = tokens.Length >= 4 ? tokens[3] : null;
@@ -38,12 +38,17 @@ namespace PlateauUnitySDK.Runtime.Util
             return int.Parse(gmlFileName.Split('_')[0]);
         }
 
-        /// <summary> gmlファイル名から地物タイプを取得します。 </summary>
-        public static GmlType GetGmlType(string gmlFileName)
+        /// <summary> gmlファイル名から地物タイプを取得します。Enum型なので未知の接頭辞には対応できず Etc が返ります。 </summary>
+        public static GmlType GetGmlTypeEnum(string gmlFileName)
+        {
+            return GmlTypeConvert.ToEnum(GetGmlTypeStr(gmlFileName));
+        }
+
+        /// <summary> gmlファイル名から地物タイプを取得します。文字列型なので未知の接頭辞でも反映されます。 </summary>
+        public static string GetGmlTypeStr(string gmlFileName)
         {
             gmlFileName = Preprocess(gmlFileName);
-            string objTypeStr = gmlFileName.Split('_')[1];
-            return GmlTypeConvert.ToEnum(objTypeStr);
+            return gmlFileName.Split('_')[1];
         }
         
         /// <summary> gmlファイル名からオプションと拡張子を除いて返します。 </summary>
