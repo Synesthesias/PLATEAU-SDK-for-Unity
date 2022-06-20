@@ -24,14 +24,29 @@ namespace PlateauUnitySDK.Runtime.Util
         {
             gmlFileName = Preprocess(gmlFileName);
             
+            areaId = GetAreaId(gmlFileName);
+            gmlType = GetGmlType(gmlFileName);
             string[] tokens = gmlFileName.Split('_');
-            areaId = int.Parse(tokens[0]);
-            string objTypeStr = tokens[1];
-            gmlType = GmlTypeConvert.ToEnum(objTypeStr);
             crs = int.Parse(tokens[2]);
             option = tokens.Length >= 4 ? tokens[3] : null;
         }
+
+        /// <summary> gmlファイル名から地域ID（メッシュコード）を取得します。 </summary>
+        public static int GetAreaId(string gmlFileName)
+        {
+            gmlFileName = Preprocess(gmlFileName);
+            return int.Parse(gmlFileName.Split('_')[0]);
+        }
+
+        /// <summary> gmlファイル名から地物タイプを取得します。 </summary>
+        public static GmlType GetGmlType(string gmlFileName)
+        {
+            gmlFileName = Preprocess(gmlFileName);
+            string objTypeStr = gmlFileName.Split('_')[1];
+            return GmlTypeConvert.ToEnum(objTypeStr);
+        }
         
+        /// <summary> gmlファイル名からオプションと拡張子を除いて返します。 </summary>
         public static string NameWithoutOption(string gmlFileName)
         {
             gmlFileName = Preprocess(gmlFileName);

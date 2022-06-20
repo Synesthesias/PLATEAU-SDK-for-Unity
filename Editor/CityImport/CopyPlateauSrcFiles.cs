@@ -35,17 +35,14 @@ namespace PlateauUnitySDK.Editor.CityImport
             const string codelistsFolderName = "codelists";
             PathUtil.CloneDirectory(Path.Combine(srcUdxPath, codelistsFolderName), dstRootFolder);
 
-            // udxフォルダを作ります。
-            // 例: Assets/StreamingAssets/PLATEAU/Tokyo/udx　ができます。
-            // FIXME: ここの Mkdir は不要では？
-            const string udxFolderName = "udx";
-            string dstUdxFolder = Path.Combine(dstRootFolder, udxFolderName);
-            Mkdir(dstUdxFolder);
+            // udxのパスです。
+            // 例: Assets/StreamingAssets/PLATEAU/Tokyo/udx
+            string dstUdxFolder = Path.Combine(dstRootFolder, "udx");
 
             // udxフォルダのうち対象のgmlファイルをコピーします。
             foreach (string gml in gmlRelativePaths)
             {
-                GmlFileNameParser.Parse(gml, out int _, out GmlType gmlType, out int _, out string _);
+                GmlType gmlType = GmlFileNameParser.GetGmlType(gml);
                 // 地物タイプのディレクトリを作ります。
                 // 例: gml のタイプが bldg なら、
                 //     Assets/StreamingAssets/PLATEAU/Tokyo/udx/bldg　ができます。
