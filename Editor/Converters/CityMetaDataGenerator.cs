@@ -16,8 +16,20 @@ namespace PlateauUnitySDK.Editor.Converters
     internal class CityMetaDataGenerator
     {
         public CityMetaData LastConvertedCityMetaData { get; private set; }
+        public const string MetaDataFileName = "CityMapMetaData.asset";
 
-        public bool Generate(CityMapMetaDataGeneratorConfig config, string meshAssetPath, string gmlFileName)
+        /// <summary>
+        /// <see cref="CityMetaData"/> を生成します。
+        /// gml元データのインポート時に利用されることを想定しています。
+        ///
+        /// <paramref name="metaData"/> が null のとき、既存のメタデータをファイルからロード、なければ新規作成した上でそのメタデータの情報を書き換えます。
+        /// <paramref name="metaData"/> が null でないとき、そのメモリ上のメタデータに対して情報を書き換えます。
+        /// <paramref name="doSaveFile"/> が false のとき、ファイルには保存せずメモリ内でのみ変更が保持されます。
+        /// これを false にする動機は、シリアライズするタイミングを手動でコントロールすることでシリアライズ回数を減らし、高速化することです。
+        /// </summary>
+        public bool Generate(
+            CityMapMetaDataGeneratorConfig config, string meshAssetPath, string gmlFileName,
+            CityMetaData metaData = null, bool doSaveFile = true)
         {
             try
             {
@@ -25,8 +37,11 @@ namespace PlateauUnitySDK.Editor.Converters
                 string exportFolderFullPath = config.CityImporterConfig.exportFolderPath;
                 string udxFullPath = config.CityImporterConfig.sourceUdxFolderPath;
                 string dstMetaDataAssetPath =
-                    Path.Combine(PathUtil.FullPathToAssetsPath(exportFolderFullPath), "CityMapMetaData.asset");
-                var metaData = LoadOrCreateMetaData(dstMetaDataAssetPath, config.DoClearIdToGmlTable);
+                    Path.Combine(PathUtil.FullPathToAssetsPath(exportFolderFullPath), MetaDataFileName);
+                if (metaData == null)
+                {
+                    metaData = LoadOrCreateMetaData(dstMetaDataAssetPath, config.DoClearIdToGmlTable);
+                }
                 var assets = AssetDatabase.LoadAllAssetsAtPath(meshAssetPath);
                 
                 // 各メッシュの名前とgmlファイル名を紐付けます。
@@ -53,11 +68,14 @@ namespace PlateauUnitySDK.Editor.Converters
                 importConf.exportFolderPath = PathUtil.FullPathToAssetsPath(exportFolderFullPath);
                 metaData.cityImporterConfig = importConf;
                 
-                // ファイルに保存します。
                 LastConvertedCityMetaData = metaData;
-                EditorUtility.SetDirty(metaData);
-                AssetDatabase.SaveAssets();
-                
+                // ファイルに保存します。
+                if (doSaveFile)
+                {
+                    EditorUtility.SetDirty(metaData);
+                    AssetDatabase.SaveAssets();
+                }
+
                 return true;
             }
             catch (Exception e)
@@ -73,7 +91,7 @@ namespace PlateauUnitySDK.Editor.Converters
         /// ファイルが存在する場合、それをロードします。
         /// ロード時、<paramref name="doClearIdToGmlTable"/> がtrueなら idToGmlTable を消去します。
         /// </summary>
-        private static CityMetaData LoadOrCreateMetaData(string dstFullPath, bool doClearIdToGmlTable)
+        public static CityMetaData LoadOrCreateMetaData(string dstFullPath, bool doClearIdToGmlTable)
         {
             bool doFileExists = File.Exists(dstFullPath);
             string dstAssetPath = PathUtil.FullPathToAssetsPath(dstFullPath);
