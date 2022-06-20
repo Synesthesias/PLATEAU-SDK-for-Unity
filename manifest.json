@@ -1,0 +1,357 @@
+{
+  "sitemap": {
+    "fileOptions": {
+      "api/*": {
+        "baseUrl": "https://Synesthesias.github.io/PlateauUnitySDK/",
+        "changefreq": "daily"
+      }
+    },
+    "baseUrl": "https://Synesthesias.github.io/PlateauUnitySDK/",
+    "changefreq": "weekly"
+  },
+  "homepages": [],
+  "source_base_path": "D:/a/PlateauUnitySDK/PlateauUnitySDK/Documentation~",
+  "xrefmap": "xrefmap.yml",
+  "files": [
+    {
+      "type": "Resource",
+      "output": {
+        "resource": {
+          "relative_path": "index.json"
+        }
+      },
+      "is_incremental": false
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/PlateauUnitySDK.Editor.SingleFileConvert.SingleFileConvertWindow.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PlateauUnitySDK.Editor.SingleFileConvert.SingleFileConvertWindow.html",
+          "hash": "gkE8h6QdB7K2qhfl/OTdSjaVWpwy03yaDFgoTSVgryA="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/PlateauUnitySDK.Editor.SingleFileConvert.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PlateauUnitySDK.Editor.SingleFileConvert.html",
+          "hash": "gLoV+nTOM36GGo/uaJ1lIbg9rQNRp4ugC/3hmgFSS04="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/PlateauUnitySDK.Runtime.Behaviour.CityBehaviour.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PlateauUnitySDK.Runtime.Behaviour.CityBehaviour.html",
+          "hash": "IC2pmGGvQfHu6gyVqK+PWbXB4s2eowc6FswImuZNuUo="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/PlateauUnitySDK.Runtime.Behaviour.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PlateauUnitySDK.Runtime.Behaviour.html",
+          "hash": "ebIqbTsvdSLD5FtNoo2Idf03o71irZBT8/p4JVOZ8uo="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/PlateauUnitySDK.Runtime.CityMeta.CityImporterConfig.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PlateauUnitySDK.Runtime.CityMeta.CityImporterConfig.html",
+          "hash": "k2vl2m7Ag2a39Bz0jPIj+w12SjB+HurUfoQcQ57bmDY="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/PlateauUnitySDK.Runtime.CityMeta.CityMetaData.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PlateauUnitySDK.Runtime.CityMeta.CityMetaData.html",
+          "hash": "4FGZhG/HFokxUuJObE+tno2Yehvm11fcHnoOXhuCFeo="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/PlateauUnitySDK.Runtime.CityMeta.GmlSearcherConfig.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PlateauUnitySDK.Runtime.CityMeta.GmlSearcherConfig.html",
+          "hash": "+n55JQvpWrhWVvDmfP5JqbqQ5Kz/FkGrXzsJGbBHYOQ="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/PlateauUnitySDK.Runtime.CityMeta.GmlType.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PlateauUnitySDK.Runtime.CityMeta.GmlType.html",
+          "hash": "fpVgyKlh/m9abJE2N03n9eRk8aQxoMK87As0FNV0S/A="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/PlateauUnitySDK.Runtime.CityMeta.GmlTypeConvert.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PlateauUnitySDK.Runtime.CityMeta.GmlTypeConvert.html",
+          "hash": "WIwN7NeAkG1IFmJ3pOE9RHSaZVwEbhUI9fYejPjZT0w="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/PlateauUnitySDK.Runtime.CityMeta.GmlTypeTarget.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PlateauUnitySDK.Runtime.CityMeta.GmlTypeTarget.html",
+          "hash": "Tov0Zx7Fo281zsCrz8QzsPMxlwllAFqwJEaD0Eo8KFo="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/PlateauUnitySDK.Runtime.CityMeta.IdToGmlTable.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PlateauUnitySDK.Runtime.CityMeta.IdToGmlTable.html",
+          "hash": "dCypfqcNDgf4rJmYIar/BVrbWH+XVOqtBJcKs2VEnrU="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/PlateauUnitySDK.Runtime.CityMeta.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PlateauUnitySDK.Runtime.CityMeta.html",
+          "hash": "VyL2dr8ZgOEQqcYFf1hHSEeQdkAnSbBGzSNdXaVQatQ="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/PlateauUnitySDK.Runtime.SemanticsLoad.SemanticsLoader.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PlateauUnitySDK.Runtime.SemanticsLoad.SemanticsLoader.html",
+          "hash": "qftbmukYII9jw/ZGp1DFx6gAMCSHzLQDm/Th4/cKIeg="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/PlateauUnitySDK.Runtime.SemanticsLoad.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PlateauUnitySDK.Runtime.SemanticsLoad.html",
+          "hash": "NBbgvYoGT7c+FW3YMnALkmZmoF7INHroOv9r6unOivw="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Toc",
+      "source_relative_path": "api/toc.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/toc.html",
+          "hash": "P6KG0jWJFSOXxTepqPdhTWNvjlFTGja4DMk1U/0uF7U="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "index.md",
+      "output": {
+        ".html": {
+          "relative_path": "index.html",
+          "hash": "5iDJNeJo9cXjA5oVOp+ltBhGt/WH2ppaSOx/kDI4ZiI="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "manual/AccessMetadata.md",
+      "output": {
+        ".html": {
+          "relative_path": "manual/AccessMetadata.html",
+          "hash": "H8ApBBgHifD0iqRX853g1CnynkhQnIeOpAcXCrjI3iY="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "manual/ImportCityModels.md",
+      "output": {
+        ".html": {
+          "relative_path": "manual/ImportCityModels.html",
+          "hash": "Awtp1YlPL3ofOtwAu9OZdWMTwNFG0rraV5XXUR0Z2PY="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "manual/Installation.md",
+      "output": {
+        ".html": {
+          "relative_path": "manual/Installation.html",
+          "hash": "p+XdFPh+K0IPT3rs/jOv9Cg5lKGjkOdeBqahYsnzWNI="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "manual/Tutorial.md",
+      "output": {
+        ".html": {
+          "relative_path": "manual/Tutorial.html",
+          "hash": "16Cf1jJ6ficVUfBsyY2BDS0puTn9VKA2kvvQikIaBAs="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Toc",
+      "source_relative_path": "manual/toc.yml",
+      "output": {
+        ".html": {
+          "relative_path": "manual/toc.html",
+          "hash": "IYS6juckvwQ5r3794AryWRZX/Hoy6ctRemPSYkV4ahY="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/index/citymodel.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/index/citymodel.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Toc",
+      "source_relative_path": "toc.yml",
+      "output": {
+        ".html": {
+          "relative_path": "toc.html",
+          "hash": "pyJ706QzEzh3kKDQZ0EmH1ZhxxYEmDMtnToFxK4p3PU="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    }
+  ],
+  "incremental_info": [
+    {
+      "status": {
+        "can_incremental": false,
+        "details": "Cannot build incrementally because last build info is missing.",
+        "incrementalPhase": "build",
+        "total_file_count": 0,
+        "skipped_file_count": 0,
+        "full_build_reason_code": "NoAvailableBuildCache"
+      },
+      "processors": {
+        "ConceptualDocumentProcessor": {
+          "can_incremental": false,
+          "incrementalPhase": "build",
+          "total_file_count": 5,
+          "skipped_file_count": 0
+        },
+        "ManagedReferenceDocumentProcessor": {
+          "can_incremental": false,
+          "incrementalPhase": "build",
+          "total_file_count": 14,
+          "skipped_file_count": 0
+        },
+        "ResourceDocumentProcessor": {
+          "can_incremental": false,
+          "details": "Processor ResourceDocumentProcessor cannot support incremental build because the processor doesn't implement ISupportIncrementalDocumentProcessor interface.",
+          "incrementalPhase": "build",
+          "total_file_count": 0,
+          "skipped_file_count": 0
+        },
+        "TocDocumentProcessor": {
+          "can_incremental": false,
+          "details": "Processor TocDocumentProcessor cannot support incremental build because the processor doesn't implement ISupportIncrementalDocumentProcessor interface.",
+          "incrementalPhase": "build",
+          "total_file_count": 0,
+          "skipped_file_count": 0
+        }
+      }
+    },
+    {
+      "status": {
+        "can_incremental": false,
+        "details": "Cannot support incremental post processing, the reason is: should not trace intermediate info.",
+        "incrementalPhase": "postProcessing",
+        "total_file_count": 0,
+        "skipped_file_count": 0
+      },
+      "processors": {}
+    }
+  ],
+  "version_info": {},
+  "groups": [
+    {
+      "xrefmap": "xrefmap.yml"
+    }
+  ]
+}

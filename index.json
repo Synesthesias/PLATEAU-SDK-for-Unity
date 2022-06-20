@@ -1,0 +1,97 @@
+{
+  "api/PlateauUnitySDK.Editor.SingleFileConvert.html": {
+    "href": "api/PlateauUnitySDK.Editor.SingleFileConvert.html",
+    "title": "Namespace PlateauUnitySDK.Editor.SingleFileConvert | PLATEAU SDK for Unity",
+    "keywords": "Namespace PlateauUnitySDK.Editor.SingleFileConvert Classes SingleFileConvertWindow ファイル単品の変換を行うEditorWindowです。 変換の形式ごとのタブが用意されたウィンドウを表示します。 具体的な処理を各タブのクラスに委譲します。"
+  },
+  "api/PlateauUnitySDK.Editor.SingleFileConvert.SingleFileConvertWindow.html": {
+    "href": "api/PlateauUnitySDK.Editor.SingleFileConvert.SingleFileConvertWindow.html",
+    "title": "Class SingleFileConvertWindow | PLATEAU SDK for Unity",
+    "keywords": "Class SingleFileConvertWindow ファイル単品の変換を行うEditorWindowです。 変換の形式ごとのタブが用意されたウィンドウを表示します。 具体的な処理を各タブのクラスに委譲します。 Inheritance Object SingleFileConvertWindow Namespace : PlateauUnitySDK.Editor.SingleFileConvert Assembly : cs.temp.dll.dll Syntax public class SingleFileConvertWindow : EditorWindow Methods Open() Declaration public static void Open()"
+  },
+  "api/PlateauUnitySDK.Runtime.Behaviour.CityBehaviour.html": {
+    "href": "api/PlateauUnitySDK.Runtime.Behaviour.CityBehaviour.html",
+    "title": "Class CityBehaviour | PLATEAU SDK for Unity",
+    "keywords": "Class CityBehaviour Inheritance Object CityBehaviour Namespace : PlateauUnitySDK.Runtime.Behaviour Assembly : cs.temp.dll.dll Syntax public class CityBehaviour : MonoBehaviour Properties CityMetaData Declaration public CityMetaData CityMetaData { get; set; } Property Value Type Description CityMetaData Methods LoadSemantics(String) Declaration public CityObject LoadSemantics(string gameObjName) Parameters Type Name Description String gameObjName Returns Type Description CityObject"
+  },
+  "api/PlateauUnitySDK.Runtime.Behaviour.html": {
+    "href": "api/PlateauUnitySDK.Runtime.Behaviour.html",
+    "title": "Namespace PlateauUnitySDK.Runtime.Behaviour | PLATEAU SDK for Unity",
+    "keywords": "Namespace PlateauUnitySDK.Runtime.Behaviour Classes CityBehaviour"
+  },
+  "api/PlateauUnitySDK.Runtime.CityMeta.CityImporterConfig.html": {
+    "href": "api/PlateauUnitySDK.Runtime.CityMeta.CityImporterConfig.html",
+    "title": "Class CityImporterConfig | PLATEAU SDK for Unity",
+    "keywords": "Class CityImporterConfig Plateau元データをインポートする時の設定です。 Inheritance Object CityImporterConfig Inherited Members Object.ToString() Object.Equals(Object) Object.Equals(Object, Object) Object.ReferenceEquals(Object, Object) Object.GetHashCode() Object.GetType() Object.MemberwiseClone() Namespace : PlateauUnitySDK.Runtime.CityMeta Assembly : cs.temp.dll.dll Syntax public class CityImporterConfig Fields exportFolderPath Declaration public string exportFolderPath Field Value Type Description String gmlSearcherConfig Declaration public GmlSearcherConfig gmlSearcherConfig Field Value Type Description GmlSearcherConfig logLevel Declaration public DllLogLevel logLevel Field Value Type Description DllLogLevel meshGranularity Declaration public MeshGranularity meshGranularity Field Value Type Description MeshGranularity optimizeFlag Declaration public bool optimizeFlag Field Value Type Description Boolean referencePoint Declaration public Vector3 referencePoint Field Value Type Description Vector3 sourceUdxFolderPath Declaration public string sourceUdxFolderPath Field Value Type Description String"
+  },
+  "api/PlateauUnitySDK.Runtime.CityMeta.CityMetaData.html": {
+    "href": "api/PlateauUnitySDK.Runtime.CityMeta.CityMetaData.html",
+    "title": "Class CityMetaData | PLATEAU SDK for Unity",
+    "keywords": "Class CityMetaData Plateau元データのインポート時に ScriptableObject として保存されるメタデータです。 ・PlateauオブジェクトのIDから、対応する gml ファイルを検索する辞書である idToGmlTable を保持します。 この情報の用途は、Unityシーン内のオブジェクトから対応する gml をロードして Plateau の情報を取得する処理の起点となります。 ・インポート時の設定を保持します。 これにより、この ScriptableObject をプロジェクトビューから選択したときに「再変換」画面を出すことができます。 Inheritance Object CityMetaData Namespace : PlateauUnitySDK.Runtime.CityMeta Assembly : cs.temp.dll.dll Syntax public class CityMetaData : ScriptableObject Fields cityImporterConfig Declaration public CityImporterConfig cityImporterConfig Field Value Type Description CityImporterConfig idToGmlTable Declaration public IdToGmlTable idToGmlTable Field Value Type Description IdToGmlTable Methods AddToGmlTable(String, String) Declaration public void AddToGmlTable(string cityObjId, string gmlName) Parameters Type Name Description String cityObjId String gmlName DoClearIdToGmlTable() Declaration public void DoClearIdToGmlTable() DoGmlTableContainsKey(String) Declaration public bool DoGmlTableContainsKey(string cityObjId) Parameters Type Name Description String cityObjId Returns Type Description Boolean TryGetValueFromGmlTable(String, out String) Declaration public bool TryGetValueFromGmlTable(string cityObjId, out string gmlFileName) Parameters Type Name Description String cityObjId String gmlFileName Returns Type Description Boolean"
+  },
+  "api/PlateauUnitySDK.Runtime.CityMeta.GmlSearcherConfig.html": {
+    "href": "api/PlateauUnitySDK.Runtime.CityMeta.GmlSearcherConfig.html",
+    "title": "Class GmlSearcherConfig | PLATEAU SDK for Unity",
+    "keywords": "Class GmlSearcherConfig GmlSearcher の設定です。 このクラスは CityImporterConfig によって保持されるので、そちらの注意事項もご覧ください。 Inheritance Object GmlSearcherConfig Inherited Members Object.ToString() Object.Equals(Object) Object.Equals(Object, Object) Object.ReferenceEquals(Object, Object) Object.GetHashCode() Object.GetType() Object.MemberwiseClone() Namespace : PlateauUnitySDK.Runtime.CityMeta Assembly : cs.temp.dll.dll Syntax public class GmlSearcherConfig Fields areaIds 見つかったエリアIDの一覧です。 Declaration public int[] areaIds Field Value Type Description Int32 [] gmlTypeTarget Declaration public GmlTypeTarget gmlTypeTarget Field Value Type Description GmlTypeTarget isAreaIdTarget areaIds の i番目を変換対象とするかどうかです。 Declaration public bool[] isAreaIdTarget Field Value Type Description Boolean [] Methods SetAllAreaId(Boolean) 引数が true のとき、すべてのエリアを対象とします。 false のとき、すべてのエリアを除外します。 Declaration public void SetAllAreaId(bool isTarget) Parameters Type Name Description Boolean isTarget"
+  },
+  "api/PlateauUnitySDK.Runtime.CityMeta.GmlType.html": {
+    "href": "api/PlateauUnitySDK.Runtime.CityMeta.GmlType.html",
+    "title": "Enum GmlType | PLATEAU SDK for Unity",
+    "keywords": "Enum GmlType 地物タイプです。 gml元データのファイル構造における udx/(地物タイプ) の(地物タイプ)に対応します。 Namespace : PlateauUnitySDK.Runtime.CityMeta Assembly : cs.temp.dll.dll Syntax public enum GmlType Fields Name Description Building CityFurniture DigitalElevationModel Etc Transport Vegetation"
+  },
+  "api/PlateauUnitySDK.Runtime.CityMeta.GmlTypeConvert.html": {
+    "href": "api/PlateauUnitySDK.Runtime.CityMeta.GmlTypeConvert.html",
+    "title": "Class GmlTypeConvert | PLATEAU SDK for Unity",
+    "keywords": "Class GmlTypeConvert GmlType の Enum 型、 接頭辞（フォルダ名）、ディスプレイ文字列 を変換します。 Inheritance Object GmlTypeConvert Inherited Members Object.ToString() Object.Equals(Object) Object.Equals(Object, Object) Object.ReferenceEquals(Object, Object) Object.GetHashCode() Object.GetType() Object.MemberwiseClone() Namespace : PlateauUnitySDK.Runtime.CityMeta Assembly : cs.temp.dll.dll Syntax public static class GmlTypeConvert Methods ToDisplay(GmlType) GmlType を人間にとって分かりやすい文字に変換します。 Declaration public static string ToDisplay(GmlType t) Parameters Type Name Description GmlType t Returns Type Description String ToEnum(String) 接頭辞から GmlType を返します。 辞書にない接頭辞の場合は Etc を返します。 Declaration public static GmlType ToEnum(string prefix) Parameters Type Name Description String prefix Returns Type Description GmlType ToPrefix(GmlType) GmlType を接頭辞に変換する拡張メソッドです。 接頭辞はフォルダ名などに使われます。 ただし、 Etc は接頭辞がないので例外を投げます。 Declaration public static string ToPrefix(this GmlType t) Parameters Type Name Description GmlType t Returns Type Description String"
+  },
+  "api/PlateauUnitySDK.Runtime.CityMeta.GmlTypeTarget.html": {
+    "href": "api/PlateauUnitySDK.Runtime.CityMeta.GmlTypeTarget.html",
+    "title": "Class GmlTypeTarget | PLATEAU SDK for Unity",
+    "keywords": "Class GmlTypeTarget gmlファイル群は地物オブジェクトのタイプ別にフォルダ分けで格納されていますが、 そのうちのどのタイプ（フォルダ）を変換ターゲットとするかを決めます。 例: udx/bldg下のgmlは対象にするが、udx/veg下のgmlは対象にしない、など。 他クラスとの関係は CityImporterConfig -> 保持 -> GmlSearcherConfig -> 保持 -> GmlTypeTarget という関係なので、 CityImporterConfig の注意事項に基づいてこのクラスには Serializable属性が付いている必要があります。 Inheritance Object GmlTypeTarget Namespace : PlateauUnitySDK.Runtime.CityMeta Assembly : cs.temp.dll.dll Syntax public class GmlTypeTarget : ISerializationCallbackReceiver Constructors GmlTypeTarget() Declaration public GmlTypeTarget() Properties TargetDict GmlTypeごとに、変換対象とするかどうかの辞書です。 Declaration public Dictionary<GmlType, bool> TargetDict { get; set; } Property Value Type Description Dictionary < GmlType , Boolean > Methods IsTypeTarget(GmlType) Declaration public bool IsTypeTarget(GmlType t) Parameters Type Name Description GmlType t Returns Type Description Boolean OnAfterDeserialize() デシリアライズするときに List から Dictionary 形式に直します。 Declaration public void OnAfterDeserialize() OnBeforeSerialize() シリアライズするときに List形式に直します。 Declaration public void OnBeforeSerialize() SetAll(Boolean) すべて true または すべて false にします。 Declaration public void SetAll(bool val) Parameters Type Name Description Boolean val"
+  },
+  "api/PlateauUnitySDK.Runtime.CityMeta.html": {
+    "href": "api/PlateauUnitySDK.Runtime.CityMeta.html",
+    "title": "Namespace PlateauUnitySDK.Runtime.CityMeta | PLATEAU SDK for Unity",
+    "keywords": "Namespace PlateauUnitySDK.Runtime.CityMeta Classes CityImporterConfig Plateau元データをインポートする時の設定です。 CityMetaData Plateau元データのインポート時に ScriptableObject として保存されるメタデータです。 ・PlateauオブジェクトのIDから、対応する gml ファイルを検索する辞書である idToGmlTable を保持します。 この情報の用途は、Unityシーン内のオブジェクトから対応する gml をロードして Plateau の情報を取得する処理の起点となります。 ・インポート時の設定を保持します。 これにより、この ScriptableObject をプロジェクトビューから選択したときに「再変換」画面を出すことができます。 GmlSearcherConfig GmlSearcher の設定です。 このクラスは CityImporterConfig によって保持されるので、そちらの注意事項もご覧ください。 GmlTypeConvert GmlType の Enum 型、 接頭辞（フォルダ名）、ディスプレイ文字列 を変換します。 GmlTypeTarget gmlファイル群は地物オブジェクトのタイプ別にフォルダ分けで格納されていますが、 そのうちのどのタイプ（フォルダ）を変換ターゲットとするかを決めます。 例: udx/bldg下のgmlは対象にするが、udx/veg下のgmlは対象にしない、など。 他クラスとの関係は CityImporterConfig -> 保持 -> GmlSearcherConfig -> 保持 -> GmlTypeTarget という関係なので、 CityImporterConfig の注意事項に基づいてこのクラスには Serializable属性が付いている必要があります。 IdToGmlTable のIDから、対応するGMLのファイル名を検索できる辞書データです。 CityMetaData によって保持されます。 Enums GmlType 地物タイプです。 gml元データのファイル構造における udx/(地物タイプ) の(地物タイプ)に対応します。"
+  },
+  "api/PlateauUnitySDK.Runtime.CityMeta.IdToGmlTable.html": {
+    "href": "api/PlateauUnitySDK.Runtime.CityMeta.IdToGmlTable.html",
+    "title": "Class IdToGmlTable | PLATEAU SDK for Unity",
+    "keywords": "Class IdToGmlTable のIDから、対応するGMLのファイル名を検索できる辞書データです。 CityMetaData によって保持されます。 Inheritance Object IdToGmlTable Namespace : PlateauUnitySDK.Runtime.CityMeta Assembly : cs.temp.dll.dll Syntax public class IdToGmlTable : ISerializationCallbackReceiver Properties Count Declaration public int Count { get; } Property Value Type Description Int32 Item[String] Declaration public string this[string key] { get; set; } Parameters Type Name Description String key Property Value Type Description String Keys Declaration public ICollection<string> Keys { get; } Property Value Type Description ICollection < String > Methods Add(KeyValuePair<String, String>) Declaration public void Add(KeyValuePair<string, string> item) Parameters Type Name Description KeyValuePair < String , String > item Add(String, String) Declaration public void Add(string id, string gmlFileName) Parameters Type Name Description String id String gmlFileName Clear() Declaration public void Clear() ContainsKey(String) Declaration public bool ContainsKey(string key) Parameters Type Name Description String key Returns Type Description Boolean GetEnumerator() Declaration public IEnumerator<KeyValuePair<string, string>> GetEnumerator() Returns Type Description IEnumerator < KeyValuePair < String , String >> OnAfterDeserialize() デシリアライズするときに List から Dictionary 形式に直します。 Declaration public void OnAfterDeserialize() OnBeforeSerialize() シリアライズするときに List形式に直します。 Declaration public void OnBeforeSerialize() TryGetValue(String, out String) Declaration public bool TryGetValue(string key, out string value) Parameters Type Name Description String key String value Returns Type Description Boolean"
+  },
+  "api/PlateauUnitySDK.Runtime.SemanticsLoad.html": {
+    "href": "api/PlateauUnitySDK.Runtime.SemanticsLoad.html",
+    "title": "Namespace PlateauUnitySDK.Runtime.SemanticsLoad | PLATEAU SDK for Unity",
+    "keywords": "Namespace PlateauUnitySDK.Runtime.SemanticsLoad Classes SemanticsLoader Unityのランタイムでゲームオブジェクト名から を取得します。"
+  },
+  "api/PlateauUnitySDK.Runtime.SemanticsLoad.SemanticsLoader.html": {
+    "href": "api/PlateauUnitySDK.Runtime.SemanticsLoad.SemanticsLoader.html",
+    "title": "Class SemanticsLoader | PLATEAU SDK for Unity",
+    "keywords": "Class SemanticsLoader Unityのランタイムでゲームオブジェクト名から を取得します。 Inheritance Object SemanticsLoader Inherited Members Object.ToString() Object.Equals(Object) Object.Equals(Object, Object) Object.ReferenceEquals(Object, Object) Object.GetHashCode() Object.GetType() Object.MemberwiseClone() Namespace : PlateauUnitySDK.Runtime.SemanticsLoad Assembly : cs.temp.dll.dll Syntax public class SemanticsLoader Methods Load(String, CityMetaData) Declaration public CityObject Load(string cityObjectId, CityMetaData cityMetaData) Parameters Type Name Description String cityObjectId CityMetaData cityMetaData Returns Type Description CityObject"
+  },
+  "index.html": {
+    "href": "index.html",
+    "title": "PLATEAU SDK for Unity | PLATEAU SDK for Unity",
+    "keywords": "PLATEAU SDK for Unity このパッケージには、 PLATEAU の3D都市モデルデータを利用するためのAPI、サンプルが含まれます。PLATEAU SDK for Unityを利用することで、実世界を舞台にしたゲームの開発や、PLATEAUの豊富なデータを活用したシミュレーションを簡単に行うことができます。"
+  },
+  "manual/AccessMetadata.html": {
+    "href": "manual/AccessMetadata.html",
+    "title": "メタデータへのアクセス | PLATEAU SDK for Unity",
+    "keywords": "メタデータへのアクセス"
+  },
+  "manual/ImportCityModels.html": {
+    "href": "manual/ImportCityModels.html",
+    "title": "インストール | PLATEAU SDK for Unity",
+    "keywords": "インストール"
+  },
+  "manual/Installation.html": {
+    "href": "manual/Installation.html",
+    "title": "インストール | PLATEAU SDK for Unity",
+    "keywords": "インストール"
+  },
+  "manual/Tutorial.html": {
+    "href": "manual/Tutorial.html",
+    "title": "チュートリアル | PLATEAU SDK for Unity",
+    "keywords": "チュートリアル"
+  }
+}
