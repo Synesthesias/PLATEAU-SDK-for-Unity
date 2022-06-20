@@ -30,10 +30,11 @@ namespace PlateauUnitySDK.Editor.CityImport
         /// <summary>
         /// gmlデータ群をインポートします。
         /// コピーおよび変換されるのは <paramref name="gmlRelativePaths"/> のリストにある gmlファイルに関連するデータのみです。
+        /// 変換に成功したgmlファイルの数を返します。
         /// </summary>
         /// <param name="gmlRelativePaths">gmlファイルの相対パスのリストです。パスの起点は udx フォルダです。</param>
         /// <param name="config">変換設定です。</param>
-        public void Import(string[] gmlRelativePaths, CityImporterConfig config)
+        public int Import(string[] gmlRelativePaths, CityImporterConfig config)
         {
             // 元フォルダを StreamingAssets/PLATEAU にコピーします。すでに StreamingAssets内にある場合を除きます。 
             string prevSourceUdxPath = config.sourceUdxFolderPath;
@@ -111,6 +112,7 @@ namespace PlateauUnitySDK.Editor.CityImport
                 Debug.LogError($"Convert end with error. {failureCount} of {loopCount} gml files are not converted.");
             }
             EditorUtility.ClearProgressBar();
+            return successCount;
         }
 
 
