@@ -30,10 +30,11 @@ namespace PlateauUnitySDK.Editor.CityImport
         /// <summary>
         /// gmlデータ群をインポートします。
         /// コピーおよび変換されるのは <paramref name="gmlRelativePaths"/> のリストにある gmlファイルに関連するデータのみです。
+        /// 変換に成功したgmlファイルの数を返します。
         /// </summary>
         /// <param name="gmlRelativePaths">gmlファイルの相対パスのリストです。パスの起点は udx フォルダです。</param>
         /// <param name="config">変換設定です。</param>
-        public void Import(string[] gmlRelativePaths, CityImporterConfig config)
+        public int Import(string[] gmlRelativePaths, CityImporterConfig config)
         {
             // 元フォルダを StreamingAssets/PLATEAU にコピーします。すでに StreamingAssets内にある場合を除きます。 
             string prevSourceUdxPath = config.sourceUdxFolderPath;
@@ -45,14 +46,19 @@ namespace PlateauUnitySDK.Editor.CityImport
                 // configの変換元パスをコピー先に再設定します。
                 config.sourceUdxFolderPath = Path.Combine(copyDest, $"{rootGmlFolderName}/udx");
             }
+            
+            string destMetaDataPath = Path.Combine(PathUtil.FullPathToAssetsPath(config.exportFolderPath), CityMetaDataGenerator.MetaDataFileName);
+            var metaData = CityMetaDataGenerator.LoadOrCreateMetaData(destMetaDataPath, true);
 
             // gmlファイルごとのループを始めます。
             int successCount = 0;
             int loopCount = 0;
+            int numGml = gmlRelativePaths.Length;
             Vector3? referencePoint = null;
             foreach (var gmlRelativePath in gmlRelativePaths)
             {
                 loopCount++;
+                ProgressBar($"gml変換中 : [{loopCount}/{numGml}] {gmlRelativePath}", loopCount, numGml );
 
                 string gmlFullPath = Path.GetFullPath(Path.Combine(config.sourceUdxFolderPath, gmlRelativePath));
 
@@ -76,7 +82,7 @@ namespace PlateauUnitySDK.Editor.CityImport
                 string objAssetPath = PathUtil.FullPathToAssetsPath(objPath);
                 if (!referencePoint.HasValue) throw new Exception($"{nameof(referencePoint)} is null.");
                 config.referencePoint = referencePoint.Value;
-                if (!TryGenerateMetaData(out var cityMapMetaData, gmlFileName, objAssetPath, loopCount==1, config))
+                if (!TryGenerateMetaData(metaData, gmlFileName, objAssetPath, config))
                 {
                     cityModel?.Dispose();
                     continue;
@@ -84,15 +90,17 @@ namespace PlateauUnitySDK.Editor.CityImport
                 cityModel?.Dispose();
 
                 // シーンに配置します。
-                PlaceToScene(objAssetPath, rootGmlFolderName, cityMapMetaData);
+                PlaceToScene(objAssetPath, rootGmlFolderName, metaData);
                 
-                LastConvertedCityMetaData = cityMapMetaData;
+                LastConvertedCityMetaData = metaData;
                 successCount++;
             }
             // gmlファイルごとのループ　ここまで
             
             // 後処理
+            EditorUtility.SetDirty(metaData);
             AssetDatabase.ImportAsset(PathUtil.FullPathToAssetsPath(config.exportFolderPath));
+            AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
             int failureCount = loopCount - successCount;
             if (failureCount == 0)
@@ -103,6 +111,8 @@ namespace PlateauUnitySDK.Editor.CityImport
             {
                 Debug.LogError($"Convert end with error. {failureCount} of {loopCount} gml files are not converted.");
             }
+            EditorUtility.ClearProgressBar();
+            return successCount;
         }
 
 
@@ -174,28 +184,28 @@ namespace PlateauUnitySDK.Editor.CityImport
         }
 
         /// <summary>
-        /// 変換に関する情報をメタデータに保存します。
+        /// 変換に関する情報をメタデータに記録します。
         /// 成否を bool で返します。
+        /// 高速化の都合上、シリアライズの回数を削減するため、このメソッドではメタデータはファイルに保存されず、メモリ内でのみ変更が保持されます。
+        /// ファイルの保存はインポートの終了時に別途行われることが前提です。
         /// </summary>
-        private static bool TryGenerateMetaData(out CityMetaData cityMetaData, string gmlFileName,
-            string dstMeshAssetPath, bool isFirstFile, CityImporterConfig importerConf)
+        private static bool TryGenerateMetaData(CityMetaData cityMetaData, string gmlFileName,
+            string dstMeshAssetPath, CityImporterConfig importerConf)
         {
-            cityMetaData = null;
             var metaGen = new CityMetaDataGenerator();
             var metaGenConfig = new CityMapMetaDataGeneratorConfig
             {
                 CityImporterConfig = importerConf,
-                DoClearIdToGmlTable = isFirstFile,
+                DoClearIdToGmlTable = false, // 新規ではなく上書き。gmlファイルごとに情報を追記していくため。
                 ParserParams = new CitygmlParserParams(),
             };
             
-            bool isSucceed = metaGen.Generate(metaGenConfig, dstMeshAssetPath , gmlFileName);
+            bool isSucceed = metaGen.Generate(metaGenConfig, dstMeshAssetPath , gmlFileName, cityMetaData, doSaveFile: false);
             
             if (!isSucceed)
             {
                 return false;
             }
-            cityMetaData = metaGen.LastConvertedCityMetaData;
             return true;
         }
 
@@ -249,6 +259,11 @@ namespace PlateauUnitySDK.Editor.CityImport
         public static bool IsInStreamingAssets(string path)
         {
             return PathUtil.IsSubDirectory(path, Application.streamingAssetsPath);
+        }
+
+        private static void ProgressBar(string info, int currentCount, int maxCount)
+        {
+            EditorUtility.DisplayProgressBar("gmlファイル変換中", info, ((float)currentCount)/maxCount);
         }
     }
 }

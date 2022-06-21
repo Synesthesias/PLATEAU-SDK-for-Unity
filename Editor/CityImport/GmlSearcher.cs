@@ -62,7 +62,7 @@ namespace PlateauUnitySDK.Editor.CityImport
                 {
                     if (Path.GetExtension(filePath) != ".gml") continue;
                     string fileName = Path.GetFileName(filePath);
-                    GmlFileNameParser.Parse(fileName, out int areaId, out _, out _, out _);
+                    int areaId = GmlFileNameParser.GetAreaId(fileName);
                     FileTableAdd(areaId, filePath);
                 }
             }

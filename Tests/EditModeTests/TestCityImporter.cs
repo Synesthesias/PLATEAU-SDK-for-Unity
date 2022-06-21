@@ -16,7 +16,7 @@ namespace PlateauUnitySDK.Tests.EditModeTests
     [TestFixture]
     public class TestCityImporter
     {
-        private CityImporter converter;
+        private CityImporter importer;
         private static readonly string testUdxPathTokyo = Path.GetFullPath(Path.Combine(Application.dataPath,
             "../Packages/PlateauUnitySDK/Tests/TestData/TestDataTokyoMini/udx"));
 
@@ -43,7 +43,7 @@ namespace PlateauUnitySDK.Tests.EditModeTests
         [SetUp]
         public void SetUp()
         {
-            this.converter = new CityImporter();
+            this.importer = new CityImporter();
             DirectoryUtil.SetUpTempAssetFolder();
             
             // テスト用に一時的に MultiGmlConverter のデフォルト出力先を変更します。
@@ -67,7 +67,7 @@ namespace PlateauUnitySDK.Tests.EditModeTests
                 sourceUdxFolderPath = testUdxPathTokyo,
                 exportFolderPath = testOutputDir
             };
-            this.converter.Import(testGmlRelativePathsTokyo, config);
+            this.importer.Import(testGmlRelativePathsTokyo, config);
             // 変換後、出力されたファイルの数を数えます。
             int objCount = 0;
             int assetCount = 0;
@@ -96,10 +96,10 @@ namespace PlateauUnitySDK.Tests.EditModeTests
                 sourceUdxFolderPath = testUdxPathTokyo,
                 exportFolderPath = testOutputDir
             };
-            this.converter.Import(testGmlRelativePathsTokyo, config);
+            this.importer.Import(testGmlRelativePathsTokyo, config);
             
             // 値1 : CityMapInfo に記録された Reference Point を取得します。
-            var mapInfo = this.converter.LastConvertedCityMetaData;
+            var mapInfo = this.importer.LastConvertedCityMetaData;
             var recordedReferencePoint = mapInfo.cityImporterConfig.referencePoint;
 
             // 値2 : GmlToObjFileConverter にかけたときの Reference Point を取得します。
@@ -124,7 +124,7 @@ namespace PlateauUnitySDK.Tests.EditModeTests
             config.meshGranularity = granularityOnConvert;
             config.sourceUdxFolderPath = testUdxPathTokyo;
             config.exportFolderPath = testOutputDir;
-            this.converter.Import(testGmlRelativePathsTokyo, config);
+            this.importer.Import(testGmlRelativePathsTokyo, config);
 
             // 値2: CityMapInfo に書き込まれた MeshGranularity の値
             string metaDataPath =
@@ -148,8 +148,8 @@ namespace PlateauUnitySDK.Tests.EditModeTests
                 sourceUdxFolderPath = testUdxPathSimple,
                 exportFolderPath = testOutputDir
             };
-            this.converter.Import(testGmlRelativePathsSimple, config);
-            var mapInfo = this.converter.LastConvertedCityMetaData;
+            this.importer.Import(testGmlRelativePathsSimple, config);
+            var mapInfo = this.importer.LastConvertedCityMetaData;
             foreach (var key in mapInfo.idToGmlTable.Keys)
             {
                 Console.Write(key);
@@ -159,11 +159,24 @@ namespace PlateauUnitySDK.Tests.EditModeTests
             config.meshGranularity = MeshGranularity.PerPrimaryFeatureObject;
             config.sourceUdxFolderPath = testUdxPathTokyo;
             config.exportFolderPath = testOutputDir;
-            this.converter.Import(testGmlRelativePathsTokyo, config);
-            mapInfo = this.converter.LastConvertedCityMetaData;
+            this.importer.Import(testGmlRelativePathsTokyo, config);
+            mapInfo = this.importer.LastConvertedCityMetaData;
             bool doContainBuilding = mapInfo.idToGmlTable.Keys.Any(id => id.StartsWith("BLD"));
             Assert.IsFalse(DoContainAtomic(mapInfo), "2回目の変換は最小地物を含まないことを確認");
             Assert.IsTrue(doContainBuilding, "2回目の変換は主要地物を含むことを確認");
+        }
+
+        [Test]
+        public void Importing_Mini_Tokyo_Ends_With_Success()
+        {
+            var config = new CityImporterConfig
+            {
+                meshGranularity = MeshGranularity.PerPrimaryFeatureObject,
+                sourceUdxFolderPath = testUdxPathTokyo,
+                exportFolderPath = testOutputDir
+            };
+            int numSuccess = this.importer.Import(testGmlRelativePathsTokyo, config);
+            Assert.AreEqual(2, numSuccess);
         }
         
     }
