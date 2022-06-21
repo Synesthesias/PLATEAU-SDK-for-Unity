@@ -5,9 +5,9 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>&#12452;&#12531;&#12473;&#12488;&#12540;&#12523; | PLATEAU SDK for Unity </title>
+    <title>&#37117;&#24066;&#12514;&#12487;&#12523;&#12398;&#12452;&#12531;&#12509;&#12540;&#12488; | PLATEAU SDK for Unity </title>
     <meta name="viewport" content="width=device-width">
-    <meta name="title" content="&#12452;&#12531;&#12473;&#12488;&#12540;&#12523; | PLATEAU SDK for Unity ">
+    <meta name="title" content="&#37117;&#24066;&#12514;&#12487;&#12523;&#12398;&#12452;&#12531;&#12509;&#12540;&#12488; | PLATEAU SDK for Unity ">
     <meta name="generator" content="docfx 2.59.2.0">
     
     <link rel="shortcut icon" href="../favicon.ico">
@@ -77,8 +77,81 @@
         <div class="article row grid-right">
           <div class="col-md-10">
             <article class="content wrap" id="_content" data-uid="">
-<h1 id="インストール">インストール</h1>
+<h1 id="都市モデルのインポート">都市モデルのインポート</h1>
 
+<p>このページでは、都市データをUnityプロジェクトにインポートする手順を説明します。</p>
+<h2 id="準備">準備</h2>
+<ul>
+<li>都市データを用意します。<br>これは国土交通省のPLATEAUのWebサイトからダウンロードできます。  </li>
+<li>PlateauSDK を導入したUnityプロジェクトを用意します。<br>SDKの導入方法は <a href="Installation.html">インストール</a> を参照してください。</li>
+</ul>
+<h2 id="インポート手順">インポート手順</h2>
+<h3 id="インポート元の選択">インポート元の選択</h3>
+<ul>
+<li>Unityのメニューバーから <code>Plateau → 都市モデルインポート</code> を選択します。<br>するとインポートウィンドウが表示されます。</li>
+<li><code>参照</code>ボタンから都市データを選択します。<br>都市データの中に<code>udx</code>という名称のフォルダがあるので、それを選択します。</li>
+</ul>
+<div class="NOTE"><h5>Note</h5><p>udx と同じディレクトリに codelists という名称のフォルダがあります。こちらもインポート時に必要です。</p>
+</div>
+<h3 id="インポート対象の絞り込み">インポート対象の絞り込み</h3>
+<ul>
+<li>インポートする対象を選択します。<br>地域IDと地物タイプのチェックボックスで対象を絞り込むことができます。</li>
+</ul>
+<h3 id="出力先の選択">出力先の選択</h3>
+<ul>
+<li>出力先はUnityプロジェクトのAssetsフォルダの内部である必要があります。<br>ここで選択したフォルダに、 gml ファイルを変換した 3Dモデル(.obj形式)ファイル および メタデータが出力されます。</li>
+</ul>
+<div class="NOTE"><h5>Note</h5><p>  ここで選択したフォルダとは別に、インポート元となる都市データも合わせてUnityプロジェクト内にコピーされます。<br>  こちらのコピー先は、上の設定に関わらず <code>Assets/StreamingAssets/PLATEAU</code> になります。<br>  こうする意図は、Unityアプリケーションの実行中にgmlファイルのデータを取得する目的で、gmlファイルを StreamingAssetsフォルダに配置する必要があるためです。<br>  なお、インポート対象として選択したものに関連するもののみがコピーされます。</p>
+</div>
+<h3 id="変換設定">変換設定</h3>
+<ul>
+<li><strong>最適化</strong><ul>
+<li>通常ONで大丈夫です。  </li>
+<li>// TODO 最適化で何が変わるのかよく分かっていません。利用ライブラリに「最適化」の項目があったので選択式にしてみましたが、大きな差がるようには見えません。</li>
+</ul>
+</li>
+<li><strong>メッシュのオブジェクト分けの粒度</strong><ul>
+<li><strong>PerPrimaryFeatureObject</strong><ul>
+<li>建物ごとにデータを取得できるようにしたい場合はデフォルト設定であるこちらを選択します。</li>
+</ul>
+</li>
+<li><strong>PerAtomicFeatureObject</strong><ul>
+<li>屋根、壁単位など非常に細かくオブジェクトを分けたい特段の事情がある場合はを選択します。  </li>
+</ul>
+</li>
+<li><strong>PerCityModelArea</strong><ul>
+<li>軽量化の都合でオブジェクト数を削減したい場合は、建物ごとのデータは取得できなくなりますが、こちらを選択することで1つのgml内のオブジェクトがすべて結合されて出力されます。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="インポートの実行と確認">インポートの実行と確認</h3>
+<ul>
+<li><code>出力</code>ボタンを押してインポートを実行します。</li>
+<li>出力結果を確認します。<ul>
+<li>3Dモデルファイル(.obj形式)が出力先に配置されます。</li>
+<li>変換したモデルがUnityのシーンに自動で配置されます。</li>
+<li>変換元ファイルが <code>Assets/StreamingAssets/PLATEAU</code> にコピーされています。</li>
+<li>メタデータが出力先に配置されます。</li>
+</ul>
+</li>
+</ul>
+<div class="NOTE"><h5>Note</h5><p>メタデータを選択すると再変換の画面がインスペクタに表示されます。<br>メタデータはインポート時の設定を覚えているので、「設定を少し変えて再変換」する操作が便利にできるようになっています。</p>
+</div>
+<h3 id="エラーログの確認">エラーログの確認</h3>
+<p>ロードに失敗したgmlファイルがある場合、Unityのコンソールにエラーログが出力されます。<br>そのような場合でも、一部のgmlファイルのロードが成功していれば、そのgmlに関しては正常にインポートされています。<br>複数のエラーログが出力されるので、その見方をこの項で説明します。</p>
+<ul>
+<li>失敗・成功の件数を確認するには<ul>
+<li>複数あるエラーログのうち、最後のものを確認すると次のメッセージがあります。<br><code>Convert end with error. (失敗件数) of (全体件数) gml files are not converted.</code><br>これにより失敗件数が分かります。また、残りのgmlファイルは正常にインポートできたことが分かります。</li>
+</ul>
+</li>
+<li>どのgmlファイルでなぜ失敗したのか確認するには<ul>
+<li>次のエラーメッセージで、どのgmlファイルで失敗したかを確認できます。<br><code>Loading gml failed. gml path =(gmlファイルの場所)</code> または<br><code>Gml to obj convert is Failed. gml path =(gmlファイルの場所)</code>  </li>
+<li>上記のエラーログの直前のエラーは、通常そのgmlファイルのロードに失敗した理由を示します。</li>
+</ul>
+</li>
+</ul>
 </article>
           </div>
           
