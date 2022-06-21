@@ -8,7 +8,7 @@ namespace PlateauUnitySDK.Editor.SingleFileConvert
     /// 変換の形式ごとのタブが用意されたウィンドウを表示します。
     /// 具体的な処理を各タブのクラスに委譲します。
     /// </summary>
-    public class SingleFileConvertWindow : EditorWindow
+    internal class SingleFileConvertWindow : EditorWindow
     {
         private IEditorWindowContents[] tabContents;
         private string[] tabNames;
