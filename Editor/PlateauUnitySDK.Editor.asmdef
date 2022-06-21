@@ -3,7 +3,8 @@
     "rootNamespace": "PlateauUnitySDK",
     "references": [
         "PlateauUnitySDK.Runtime",
-        "Unity.Formats.Fbx.Editor"
+        "Unity.Formats.Fbx.Editor",
+        "libplateau"
     ],
     "includePlatforms": [
         "Editor"

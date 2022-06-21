@@ -1,7 +1,9 @@
 {
     "name": "PlateauUnitySDK.Runtime",
     "rootNamespace": "PlateauUnitySDK.Runtime",
-    "references": [],
+    "references": [
+        "libplateau"
+    ],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
