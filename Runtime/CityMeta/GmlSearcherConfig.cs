@@ -5,8 +5,12 @@ namespace PlateauUnitySDK.Runtime.CityMeta
 
     /// <summary>
     /// GmlSearcher の設定です。
-    /// このクラスは <see cref="CityImporterConfig"/> によって保持されるので、そちらの注意事項もご覧ください。
+    /// 対象gmlファイル選択において、地域IDと地物タイプの絞り込み設定を保持します。
     /// </summary>
+    
+    // 注意事項:
+    // このクラスは CityImporterConfig によって保持されるので、そちらの注意事項もご覧ください。
+    
     [Serializable]
     public class GmlSearcherConfig
     {
@@ -16,6 +20,7 @@ namespace PlateauUnitySDK.Runtime.CityMeta
         /// <summary> <see cref="areaIds"/> の i番目を変換対象とするかどうかです。 </summary>
         public bool[] isAreaIdTarget = { };
 
+        /// <summary> 地物タイプの絞り込み情報です。 </summary>
         public GmlTypeTarget gmlTypeTarget = new GmlTypeTarget();
 
         
@@ -23,7 +28,7 @@ namespace PlateauUnitySDK.Runtime.CityMeta
         /// 引数が true のとき、すべてのエリアを対象とします。
         /// 　　　 false のとき、すべてのエリアを除外します。
         /// </summary>
-        public void SetAllAreaId(bool isTarget)
+        internal void SetAllAreaId(bool isTarget)
         {
             for (int i = 0; i < this.isAreaIdTarget.Length; i++)
             {

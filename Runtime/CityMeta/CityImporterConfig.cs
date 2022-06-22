@@ -23,12 +23,25 @@ namespace PlateauUnitySDK.Runtime.CityMeta
     [Serializable]
     public class CityImporterConfig
     {
+        /// <summary> インポート時の対象gmlファイルの絞り込みの設定 </summary>
         public GmlSearcherConfig gmlSearcherConfig = new GmlSearcherConfig();
+        
+        /// <summary> インポート元ファイルのパスです。通常 StreamingAssets内を指します。 </summary>
         public string sourceUdxFolderPath = "";
+        
+        /// <summary> インポートの出力先 </summary>
         public string exportFolderPath = "";
+        
+        /// <summary> インポート時に最適化するかどうか </summary>
         public bool optimizeFlag = true;
+        
+        /// <summary> オブジェクト分けの粒度 </summary>
         public MeshGranularity meshGranularity = MeshGranularity.PerPrimaryFeatureObject;
+        
+        /// <summary> メッシュ変換の基準座標 </summary>
         public Vector3 referencePoint = Vector3.zero;
+        
+        /// <summary> インポート時のログレベル </summary>
         public DllLogLevel logLevel = DllLogLevel.Error;
     }
 }

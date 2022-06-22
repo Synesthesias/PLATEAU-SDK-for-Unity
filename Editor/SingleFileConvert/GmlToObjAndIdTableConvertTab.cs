@@ -3,7 +3,6 @@ using PlateauUnitySDK.Runtime.CityMeta;
 
 namespace PlateauUnitySDK.Editor.SingleFileConvert
 {
-    // TODO BaseConvertTab.cs と共通する箇所が多いのでまとめられるか検討
     /// <summary>
     /// Gml -> Obj の変換タブと
     /// Gml -> <see cref="CityMetaData"/> の変換タブの機能を
