@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using LibPLATEAU.NET.CityGML;
-using PlateauUnitySDK.Runtime.CityMeta;
-using PlateauUnitySDK.Runtime.Util;
+using PLATEAU.Runtime.CityMeta;
+using PLATEAU.Runtime.Util;
 using UnityEngine;
 
-namespace PlateauUnitySDK.Runtime.SemanticsLoad
+namespace PLATEAU.Runtime.SemanticsLoad
 {
     /// <summary>
     /// Unityのランタイムでゲームオブジェクト名から <see cref="CityObject"/> を取得します。

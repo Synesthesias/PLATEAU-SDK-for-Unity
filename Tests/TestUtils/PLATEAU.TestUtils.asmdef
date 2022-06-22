@@ -1,9 +1,11 @@
 {
-    "name": "PlateauUnitySDK.PlayModeTests",
-    "rootNamespace": "PlateauUnitySDK",
+    "name": "PLATEAU.TestUtils",
+    "rootNamespace": "PLATEAU",
     "references": [
         "UnityEngine.TestRunner",
-        "PlateauUnitySDK.TestUtils"
+        "UnityEditor.TestRunner",
+        "PLATEAU.Editor",
+        "PLATEAU.Runtime"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

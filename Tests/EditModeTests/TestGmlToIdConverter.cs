@@ -1,10 +1,10 @@
 ﻿using System.IO;
 using NUnit.Framework;
-using PlateauUnitySDK.Editor.Converters;
-using PlateauUnitySDK.Runtime.Util;
-using PlateauUnitySDK.Tests.TestUtils;
+using PLATEAU.Editor.Converters;
+using PLATEAU.Runtime.Util;
+using PLATEAU.Tests.TestUtils;
 
-namespace PlateauUnitySDK.Tests.EditModeTests
+namespace PLATEAU.Tests.EditModeTests
 {
     [TestFixture]
     public class TestGmlToIdConverter

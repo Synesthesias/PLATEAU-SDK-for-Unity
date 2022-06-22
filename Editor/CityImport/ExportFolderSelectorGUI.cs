@@ -1,8 +1,8 @@
-﻿using PlateauUnitySDK.Editor.EditorWindowCommon;
+﻿using PLATEAU.Editor.EditorWindowCommon;
 using UnityEditor;
 using UnityEngine;
 
-namespace PlateauUnitySDK.Editor.CityImport
+namespace PLATEAU.Editor.CityImport
 {
 
     /// <summary>

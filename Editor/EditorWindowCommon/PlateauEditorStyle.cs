@@ -1,7 +1,7 @@
 using UnityEditor;
 using UnityEngine;
 
-namespace PlateauUnitySDK.Editor.EditorWindowCommon
+namespace PLATEAU.Editor.EditorWindowCommon
 {
     /// <summary>
     /// PlateauのUnityエディターのスタイルです。

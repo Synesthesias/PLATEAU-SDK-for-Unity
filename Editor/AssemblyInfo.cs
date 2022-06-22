@@ -3,4 +3,4 @@
 // このアセンブリの設定です。
 
 // internal をテストから利用できるようにします。
-[assembly: InternalsVisibleTo("PlateauUnitySDK.EditModeTests")]
+[assembly: InternalsVisibleTo("PLATEAU.EditModeTests")]

@@ -1,10 +1,7 @@
-﻿using System;
-using System.IO;
-using System.Text;
-using PlateauUnitySDK.Runtime.CityMeta;
-using UnityEngine;
+﻿using System.IO;
+using PLATEAU.Runtime.CityMeta;
 
-namespace PlateauUnitySDK.Runtime.Util
+namespace PLATEAU.Runtime.Util
 {
     /// <summary>
     /// gmlファイルのファイル名は

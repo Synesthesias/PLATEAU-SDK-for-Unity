@@ -1,7 +1,7 @@
 ﻿using LibPLATEAU.NET.CityGML;
 using UnityEngine;
 
-namespace PlateauUnitySDK.Runtime.Util
+namespace PLATEAU.Runtime.Util
 {
     /// <summary>
     /// PlateauのネイティブDLLで扱う Vector と Unity の Vector を変換します。

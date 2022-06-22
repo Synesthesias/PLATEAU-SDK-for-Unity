@@ -2,7 +2,7 @@
 using LibPLATEAU.NET.CityGML;
 using UnityEngine;
 
-namespace PlateauUnitySDK.Runtime.CityMeta
+namespace PLATEAU.Runtime.CityMeta
 {
     /// <summary>
     /// Plateau元データをインポートする時の設定です。

@@ -1,10 +1,10 @@
 using System.IO;
 using NUnit.Framework;
-using PlateauUnitySDK.Runtime.Util;
-using PlateauUnitySDK.Tests.TestUtils;
+using PLATEAU.Runtime.Util;
+using PLATEAU.Tests.TestUtils;
 using UnityEngine.TestTools;
 
-namespace PlateauUnitySDK.Tests.EditModeTests {
+namespace PLATEAU.Tests.EditModeTests {
     
     [TestFixture]
     public class TestPathUtil {

@@ -1,8 +1,8 @@
-﻿using PlateauUnitySDK.Editor.EditorWindowCommon;
-using PlateauUnitySDK.Runtime.CityMeta;
+﻿using PLATEAU.Editor.EditorWindowCommon;
+using PLATEAU.Runtime.CityMeta;
 using UnityEditor;
 
-namespace PlateauUnitySDK.Editor.CityImport
+namespace PLATEAU.Editor.CityImport
 {
     /// <summary>
     /// <see cref="CityMetaData"/> のインスペクタでの表示を行います。

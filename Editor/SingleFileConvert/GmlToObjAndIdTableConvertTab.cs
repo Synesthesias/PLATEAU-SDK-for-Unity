@@ -1,7 +1,7 @@
-﻿using PlateauUnitySDK.Editor.EditorWindowCommon;
-using PlateauUnitySDK.Runtime.CityMeta;
+﻿using PLATEAU.Editor.EditorWindowCommon;
+using PLATEAU.Runtime.CityMeta;
 
-namespace PlateauUnitySDK.Editor.SingleFileConvert
+namespace PLATEAU.Editor.SingleFileConvert
 {
     /// <summary>
     /// Gml -> Obj の変換タブと

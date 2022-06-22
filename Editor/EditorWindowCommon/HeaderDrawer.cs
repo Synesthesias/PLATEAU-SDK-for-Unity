@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEditor;
 
-namespace PlateauUnitySDK.Editor.EditorWindowCommon
+namespace PLATEAU.Editor.EditorWindowCommon
 {
     /// <summary>
     /// 見出しを表示しつつ、その見出し番号 (例: 2-1-1.)を管理します。

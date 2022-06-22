@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using static PlateauUnitySDK.Runtime.CityMeta.GmlType;
+using static PLATEAU.Runtime.CityMeta.GmlType;
 
-namespace PlateauUnitySDK.Runtime.CityMeta
+namespace PLATEAU.Runtime.CityMeta
 {
 
     /// <summary>

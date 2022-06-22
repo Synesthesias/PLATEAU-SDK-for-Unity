@@ -1,10 +1,10 @@
 ﻿using LibPLATEAU.NET.CityGML;
-using PlateauUnitySDK.Editor.EditorWindowCommon;
-using PlateauUnitySDK.Runtime.CityMeta;
-using PlateauUnitySDK.Runtime.Util;
+using PLATEAU.Editor.EditorWindowCommon;
+using PLATEAU.Runtime.CityMeta;
+using PLATEAU.Runtime.Util;
 using UnityEditor;
 
-namespace PlateauUnitySDK.Editor.CityImport
+namespace PLATEAU.Editor.CityImport
 {
 
     /// <summary>

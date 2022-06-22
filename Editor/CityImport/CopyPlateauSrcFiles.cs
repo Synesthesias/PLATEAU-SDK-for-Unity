@@ -1,10 +1,8 @@
 ﻿using System.IO;
-using PlateauUnitySDK.Runtime.CityMeta;
-using PlateauUnitySDK.Runtime.Util;
+using PLATEAU.Runtime.Util;
 using UnityEditor;
-using UnityEngine;
 
-namespace PlateauUnitySDK.Editor.CityImport
+namespace PLATEAU.Editor.CityImport
 {
 
     /// <summary>

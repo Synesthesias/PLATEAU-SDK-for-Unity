@@ -1,14 +1,14 @@
 using System;
 using System.Linq;
 using System.Reflection;
-using PlateauUnitySDK.Runtime.Util;
+using PLATEAU.Runtime.Util;
 using UnityEditor;
 using UnityEditor.Formats.Fbx.Exporter;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
 
-namespace PlateauUnitySDK.Editor.Converters
+namespace PLATEAU.Editor.Converters
 {
     /// <summary>
     /// Objファイルをfbxファイルに変換します。

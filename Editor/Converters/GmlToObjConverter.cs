@@ -1,13 +1,12 @@
 using System;
 using System.IO;
-using System.Linq;
 using System.Threading;
 using LibPLATEAU.NET.CityGML;
-using PlateauUnitySDK.Runtime.Util;
+using PLATEAU.Runtime.Util;
 using UnityEditor;
 using UnityEngine;
 
-namespace PlateauUnitySDK.Editor.Converters
+namespace PLATEAU.Editor.Converters
 {
     /// <summary>
     /// gmlファイルをobjファイルに変換します。

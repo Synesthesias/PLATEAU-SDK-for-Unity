@@ -1,16 +1,16 @@
 ﻿using System;
 using System.IO;
 using LibPLATEAU.NET.CityGML;
-using PlateauUnitySDK.Editor.Converters;
-using PlateauUnitySDK.Runtime.Behaviour;
-using PlateauUnitySDK.Runtime.CityMeta;
-using PlateauUnitySDK.Runtime.Util;
+using PLATEAU.Editor.Converters;
+using PLATEAU.Runtime.Behaviour;
+using PLATEAU.Runtime.CityMeta;
+using PLATEAU.Runtime.Util;
 using UnityEditor;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
 using Object = UnityEngine.Object;
 
-namespace PlateauUnitySDK.Editor.CityImport
+namespace PLATEAU.Editor.CityImport
 {
 
     /// <summary>

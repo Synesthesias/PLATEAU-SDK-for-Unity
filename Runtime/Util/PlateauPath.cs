@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using UnityEngine;
 
-namespace PlateauUnitySDK.Runtime.Util
+namespace PLATEAU.Runtime.Util
 {
     /// <summary>
     /// Plateau が利用するパスです。

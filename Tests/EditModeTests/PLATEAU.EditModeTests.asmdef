@@ -1,12 +1,12 @@
 {
-    "name": "PlateauUnitySDK.EditModeTests",
-    "rootNamespace": "PlateauUnitySDK",
+    "name": "PLATEAU.EditModeTests",
+    "rootNamespace": "PLATEAU",
     "references": [
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner",
-        "PlateauUnitySDK.TestUtils",
-        "PlateauUnitySDK.Editor",
-        "PlateauUnitySDK.Runtime",
+        "PLATEAU.TestUtils",
+        "PLATEAU.Editor",
+        "PLATEAU.Runtime",
         "libplateau"
     ],
     "includePlatforms": [

@@ -1,9 +1,9 @@
 ﻿using LibPLATEAU.NET.CityGML;
-using PlateauUnitySDK.Runtime.CityMeta;
-using PlateauUnitySDK.Runtime.SemanticsLoad;
+using PLATEAU.Runtime.CityMeta;
+using PLATEAU.Runtime.SemanticsLoad;
 using UnityEngine;
 
-namespace PlateauUnitySDK.Runtime.Behaviour
+namespace PLATEAU.Runtime.Behaviour
 {
     /// <summary>
     /// ゲームオブジェクトの名称からPlateauの <see cref="CityObject"/> を返す MonoBehaviour です。

@@ -3,22 +3,21 @@ using System.IO;
 using System.Linq;
 using LibPLATEAU.NET.CityGML;
 using NUnit.Framework;
-using PlateauUnitySDK.Editor.CityImport;
-using PlateauUnitySDK.Editor.Converters;
-using PlateauUnitySDK.Runtime.CityMeta;
-using PlateauUnitySDK.Runtime.Util;
-using PlateauUnitySDK.Tests.TestUtils;
+using PLATEAU.Editor.CityImport;
+using PLATEAU.Editor.Converters;
+using PLATEAU.Runtime.CityMeta;
+using PLATEAU.Runtime.Util;
+using PLATEAU.Tests.TestUtils;
 using UnityEditor;
 using UnityEngine;
 
-namespace PlateauUnitySDK.Tests.EditModeTests
+namespace PLATEAU.Tests.EditModeTests
 {
     [TestFixture]
     public class TestCityImporter
     {
         private CityImporter importer;
-        private static readonly string testUdxPathTokyo = Path.GetFullPath(Path.Combine(Application.dataPath,
-            "../Packages/PlateauUnitySDK/Tests/TestData/TestDataTokyoMini/udx"));
+        private static readonly string testUdxPathTokyo = DirectoryUtil.TestTokyoMiniUdxPath;
 
         private static readonly string testOutputDir = DirectoryUtil.TempAssetFolderPath;
 
@@ -28,8 +27,7 @@ namespace PlateauUnitySDK.Tests.EditModeTests
             "dem/533925_dem_6697_op.gml"
         };
 
-        private static readonly string testUdxPathSimple = Path.GetFullPath(Path.Combine(Application.dataPath,
-            "../Packages/PlateauUnitySDK/Tests/TestData/TestDataSimpleGml/udx"));
+        private static readonly string testUdxPathSimple = DirectoryUtil.TestDataSimpleUdxPath;
 
         private static readonly string[] testGmlRelativePathsSimple =
         {

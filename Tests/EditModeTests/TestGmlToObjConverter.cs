@@ -2,13 +2,13 @@ using System.IO;
 using System.Linq;
 using LibPLATEAU.NET.CityGML;
 using NUnit.Framework;
-using PlateauUnitySDK.Editor.Converters;
-using PlateauUnitySDK.Runtime.Util;
-using PlateauUnitySDK.Tests.TestUtils;
+using PLATEAU.Editor.Converters;
+using PLATEAU.Runtime.Util;
+using PLATEAU.Tests.TestUtils;
 using UnityEditor;
 using UnityEngine;
 
-namespace PlateauUnitySDK.Tests.EditModeTests
+namespace PLATEAU.Tests.EditModeTests
 {
     [TestFixture]
     public class TestGmlToObjConverter

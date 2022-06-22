@@ -1,9 +1,9 @@
 ﻿using NUnit.Framework;
-using PlateauUnitySDK.Editor.CityImport;
-using PlateauUnitySDK.Tests.TestUtils;
+using PLATEAU.Editor.CityImport;
+using PLATEAU.Tests.TestUtils;
 using UnityEngine;
 
-namespace PlateauUnitySDK.Tests.EditModeTests
+namespace PLATEAU.Tests.EditModeTests
 {
     [TestFixture]
     public class TestsGmlFileSearcher

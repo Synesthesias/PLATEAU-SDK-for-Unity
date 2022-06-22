@@ -1,12 +1,12 @@
 ﻿using System;
 using System.IO;
-using PlateauUnitySDK.Editor.Converters;
-using PlateauUnitySDK.Editor.EditorWindowCommon;
-using PlateauUnitySDK.Runtime.CityMeta;
+using PLATEAU.Editor.Converters;
+using PLATEAU.Editor.EditorWindowCommon;
+using PLATEAU.Runtime.CityMeta;
 using UnityEditor;
 using UnityEngine;
 
-namespace PlateauUnitySDK.Editor.SingleFileConvert
+namespace PLATEAU.Editor.SingleFileConvert
 {
     /// <summary>
     /// Gmlファイルを読んで <see cref="CityMetaData"/> を出力するGUIを提供します。

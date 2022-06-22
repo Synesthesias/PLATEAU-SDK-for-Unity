@@ -1,14 +1,10 @@
 {
-    "name": "PlateauUnitySDK.Editor",
-    "rootNamespace": "PlateauUnitySDK",
+    "name": "PLATEAU.Runtime",
+    "rootNamespace": "PLATEAU.Runtime",
     "references": [
-        "PlateauUnitySDK.Runtime",
-        "Unity.Formats.Fbx.Editor",
         "libplateau"
     ],
-    "includePlatforms": [
-        "Editor"
-    ],
+    "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,

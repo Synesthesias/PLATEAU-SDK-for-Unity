@@ -2,12 +2,12 @@
 using System.IO;
 using System.Linq;
 using LibPLATEAU.NET.CityGML;
-using PlateauUnitySDK.Runtime.CityMeta;
-using PlateauUnitySDK.Runtime.Util;
+using PLATEAU.Runtime.CityMeta;
+using PLATEAU.Runtime.Util;
 using UnityEditor;
 using UnityEngine;
 
-namespace PlateauUnitySDK.Editor.Converters
+namespace PLATEAU.Editor.Converters
 {
     /// <summary>
     /// 注意: これは旧式です。新しい版 <see cref="CityMetaDataGenerator"/> を利用してください。

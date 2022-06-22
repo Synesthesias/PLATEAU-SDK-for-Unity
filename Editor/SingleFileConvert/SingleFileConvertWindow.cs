@@ -1,7 +1,7 @@
-using PlateauUnitySDK.Editor.EditorWindowCommon;
+using PLATEAU.Editor.EditorWindowCommon;
 using UnityEditor;
 
-namespace PlateauUnitySDK.Editor.SingleFileConvert
+namespace PLATEAU.Editor.SingleFileConvert
 {
     /// <summary>
     /// ファイル単品の変換を行うEditorWindowです。

@@ -1,7 +1,7 @@
 ﻿using LibPLATEAU.NET.CityGML;
-using PlateauUnitySDK.Runtime.CityMeta;
+using PLATEAU.Runtime.CityMeta;
 
-namespace PlateauUnitySDK.Editor.Converters
+namespace PLATEAU.Editor.Converters
 {
 
     /// <summary>

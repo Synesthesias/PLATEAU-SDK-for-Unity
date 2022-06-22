@@ -1,4 +1,4 @@
-﻿namespace PlateauUnitySDK.Editor.Converters
+﻿namespace PLATEAU.Editor.Converters
 {
     /// <summary>
     /// 単品ファイル変換機能のインターフェイスです。
