@@ -2,8 +2,8 @@
 using System.IO;
 using System.Linq;
 using LibPLATEAU.NET.CityGML;
-using PLATEAU.Runtime.CityMeta;
-using PLATEAU.Runtime.Util;
+using PLATEAU.CityMeta;
+using PLATEAU.Util;
 using UnityEditor;
 using UnityEngine;
 

@@ -1,5 +1,5 @@
 ﻿using PLATEAU.Editor.EditorWindowCommon;
-using PLATEAU.Runtime.CityMeta;
+using PLATEAU.CityMeta;
 using UnityEditor;
 using UnityEngine;
 

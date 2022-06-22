@@ -3,7 +3,7 @@ using System.IO;
 using UnityEditor;
 using UnityEngine;
 
-namespace PLATEAU.Runtime.Util
+namespace PLATEAU.Util
 {
     /// <summary>
     /// ファイルパスが正しいかどうか検証します。

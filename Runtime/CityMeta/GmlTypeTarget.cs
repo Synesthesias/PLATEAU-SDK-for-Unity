@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using PLATEAU.Runtime.Util;
+using PLATEAU.Util;
 using UnityEngine;
 
-namespace PLATEAU.Runtime.CityMeta
+namespace PLATEAU.CityMeta
 {
 
     /// <summary>

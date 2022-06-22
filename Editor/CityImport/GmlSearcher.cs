@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using PLATEAU.Runtime.CityMeta;
-using PLATEAU.Runtime.Util;
+using PLATEAU.CityMeta;
+using PLATEAU.Util;
 
 namespace PLATEAU.Editor.CityImport
 {

@@ -1,7 +1,7 @@
 ﻿using LibPLATEAU.NET.CityGML;
 using PLATEAU.Editor.EditorWindowCommon;
-using PLATEAU.Runtime.CityMeta;
-using PLATEAU.Runtime.Util;
+using PLATEAU.CityMeta;
+using PLATEAU.Util;
 using UnityEditor;
 
 namespace PLATEAU.Editor.CityImport

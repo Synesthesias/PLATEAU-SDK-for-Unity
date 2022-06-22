@@ -1,6 +1,6 @@
 using System.IO;
 using NUnit.Framework;
-using PLATEAU.Runtime.Util;
+using PLATEAU.Util;
 using PLATEAU.Tests.TestUtils;
 using UnityEngine.TestTools;
 

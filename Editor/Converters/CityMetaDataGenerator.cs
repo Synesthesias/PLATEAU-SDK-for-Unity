@@ -1,8 +1,8 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using PLATEAU.Runtime.CityMeta;
-using PLATEAU.Runtime.Util;
+using PLATEAU.CityMeta;
+using PLATEAU.Util;
 using UnityEditor;
 using UnityEngine;
 using Debug = UnityEngine.Debug;

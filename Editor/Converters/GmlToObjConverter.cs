@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using System.Threading;
 using LibPLATEAU.NET.CityGML;
-using PLATEAU.Runtime.Util;
+using PLATEAU.Util;
 using UnityEditor;
 using UnityEngine;
 

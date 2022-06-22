@@ -3,7 +3,7 @@ using System.Linq;
 using LibPLATEAU.NET.CityGML;
 using NUnit.Framework;
 using PLATEAU.Editor.Converters;
-using PLATEAU.Runtime.Util;
+using PLATEAU.Util;
 using PLATEAU.Tests.TestUtils;
 using UnityEditor;
 using UnityEngine;

@@ -2,9 +2,9 @@
     "name": "PLATEAU.Editor",
     "rootNamespace": "PLATEAU",
     "references": [
-        "PLATEAU.Runtime",
         "Unity.Formats.Fbx.Editor",
-        "libplateau"
+        "libplateau",
+        "PLATEAU"
     ],
     "includePlatforms": [
         "Editor"

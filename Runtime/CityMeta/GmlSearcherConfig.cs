@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace PLATEAU.Runtime.CityMeta
+namespace PLATEAU.CityMeta
 {
 
     /// <summary>

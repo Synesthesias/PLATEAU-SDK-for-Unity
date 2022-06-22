@@ -1,5 +1,5 @@
 ﻿using LibPLATEAU.NET.CityGML;
-using PLATEAU.Runtime.CityMeta;
+using PLATEAU.CityMeta;
 
 namespace PLATEAU.Editor.Converters
 {

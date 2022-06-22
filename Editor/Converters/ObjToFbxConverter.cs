@@ -1,7 +1,7 @@
 using System;
 using System.Linq;
 using System.Reflection;
-using PLATEAU.Runtime.Util;
+using PLATEAU.Util;
 using UnityEditor;
 using UnityEditor.Formats.Fbx.Exporter;
 using UnityEngine;

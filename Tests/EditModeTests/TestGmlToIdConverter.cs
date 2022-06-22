@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using NUnit.Framework;
 using PLATEAU.Editor.Converters;
-using PLATEAU.Runtime.Util;
+using PLATEAU.Util;
 using PLATEAU.Tests.TestUtils;
 
 namespace PLATEAU.Tests.EditModeTests

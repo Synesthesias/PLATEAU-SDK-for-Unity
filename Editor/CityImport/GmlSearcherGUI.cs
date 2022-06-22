@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using PLATEAU.Editor.EditorWindowCommon;
-using PLATEAU.Runtime.CityMeta;
+using PLATEAU.CityMeta;
 using UnityEditor;
 
 namespace PLATEAU.Editor.CityImport

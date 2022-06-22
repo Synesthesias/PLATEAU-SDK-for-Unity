@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace PLATEAU.Runtime.CityMeta
+namespace PLATEAU.CityMeta
 {
     /// <summary>
     /// Plateau元データのインポート時に ScriptableObject として保存されるメタデータです。<br/>

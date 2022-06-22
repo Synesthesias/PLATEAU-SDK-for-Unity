@@ -2,9 +2,9 @@
 using System.IO;
 using LibPLATEAU.NET.CityGML;
 using PLATEAU.Editor.Converters;
-using PLATEAU.Runtime.Behaviour;
-using PLATEAU.Runtime.CityMeta;
-using PLATEAU.Runtime.Util;
+using PLATEAU.Behaviour;
+using PLATEAU.CityMeta;
+using PLATEAU.Util;
 using UnityEditor;
 using UnityEngine;
 using Debug = UnityEngine.Debug;

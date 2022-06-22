@@ -1,6 +1,6 @@
 {
-    "name": "PLATEAU.Runtime",
-    "rootNamespace": "PLATEAU.Runtime",
+    "name": "PLATEAU",
+    "rootNamespace": "PLATEAU",
     "references": [
         "libplateau"
     ],

@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
 using LibPLATEAU.NET.CityGML;
-using PLATEAU.Runtime.Util;
+using PLATEAU.Util;
 using UnityEngine;
 
-namespace PLATEAU.Runtime.CityMeta
+namespace PLATEAU.CityMeta
 {
     /// <summary>
     /// <see cref="CityObject"/> のIDから、対応するGMLのファイル名を検索できる辞書データです。
