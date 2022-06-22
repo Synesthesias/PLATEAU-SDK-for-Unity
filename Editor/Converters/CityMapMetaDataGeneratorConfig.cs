@@ -1,4 +1,4 @@
-﻿using LibPLATEAU.NET.CityGML;
+﻿using PLATEAU.CityGML;
 using PLATEAU.CityMeta;
 
 namespace PLATEAU.Editor.Converters

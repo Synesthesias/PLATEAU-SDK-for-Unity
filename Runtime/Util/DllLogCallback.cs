@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Runtime.InteropServices;
-using LibPLATEAU.NET.CityGML;
+using PLATEAU.CityGML;
 using UnityEngine;
 
 namespace PLATEAU.Util

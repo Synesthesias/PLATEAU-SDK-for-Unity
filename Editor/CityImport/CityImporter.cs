@@ -1,6 +1,6 @@
 ﻿using System;
 using System.IO;
-using LibPLATEAU.NET.CityGML;
+using PLATEAU.CityGML;
 using PLATEAU.Editor.Converters;
 using PLATEAU.Behaviour;
 using PLATEAU.CityMeta;

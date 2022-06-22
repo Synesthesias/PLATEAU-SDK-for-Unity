@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using LibPLATEAU.NET.CityGML;
+using PLATEAU.CityGML;
 using PLATEAU.CityMeta;
 using PLATEAU.Util;
 using UnityEngine;
