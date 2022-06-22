@@ -8,13 +8,17 @@ namespace PLATEAU.CityMeta
 {
 
     /// <summary>
-    /// gmlファイル群は地物オブジェクトのタイプ別にフォルダ分けで格納されていますが、
-    /// そのうちのどのタイプ（フォルダ）を変換ターゲットとするかを決めます。
-    /// 例: udx/bldg下のgmlは対象にするが、udx/veg下のgmlは対象にしない、など。
-    ///
-    /// 他クラスとの関係は <see cref="CityImporterConfig"/> -> 保持 -> <see cref="GmlSearcherConfig"/> -> 保持 -> <see cref="GmlTypeTarget"/>
-    /// という関係なので、<see cref="CityImporterConfig"/> の注意事項に基づいてこのクラスには Serializable属性が付いている必要があります。
+    /// <para>
+    /// 街モデルのインポート時、インポート対象を 地物タイプ と 地域ID で絞り込むことができますが、
+    /// そのうち 地物タイプ での絞り込み設定を保持するのがこのクラスの役割です。</para>
+    /// <para>
+    /// 例: udx/bldg 下のgmlは対象にするが、udx/veg 下のgmlは対象にしない、など。</para>
     /// </summary>
+    
+    // 補足:
+    // 他クラスとの関係は CityImporterConfig -> 保持 -> GmlSearcherConfig -> 保持 -> GmlTypeTarget
+    // という関係なので、 CityImporterConfig の注意事項に基づいてこのクラスには Serializable属性が付いている必要があります。
+    
     [Serializable]
     public class GmlTypeTarget : ISerializationCallbackReceiver
     {
@@ -34,6 +38,11 @@ namespace PLATEAU.CityMeta
                     .ToDictionary(t => t, _ => true);
         }
 
+        /// <summary>
+        /// 与えられたタイプが変換対象かどうかを返します。
+        /// </summary>
+        /// <param name="t">対象タイプ</param>
+        /// <returns>変換対象かどうか</returns>
         public bool IsTypeTarget(GmlType t)
         {
             return TargetDict[t];
