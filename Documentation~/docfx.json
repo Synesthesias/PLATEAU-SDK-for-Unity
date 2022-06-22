@@ -15,7 +15,7 @@
                     ]
                 }
             ],
-            "globalNamespaceId": "PlateauUnitySDK",
+            "globalNamespaceId": "PLATEAU",
             "dest": "api"
         }
     ],

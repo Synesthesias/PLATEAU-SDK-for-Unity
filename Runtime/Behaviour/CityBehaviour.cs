@@ -6,8 +6,8 @@ using UnityEngine;
 namespace PLATEAU.Behaviour
 {
     /// <summary>
-    /// ゲームオブジェクトの名称からPlateauの <see cref="CityObject"/> を返す MonoBehaviour です。
-    /// 実行には <see cref="CityMetaData"/> を保持する必要があります。
+    /// ゲームオブジェクトの名称からPlateauの <see cref="CityGML.CityObject"/> を返す MonoBehaviour です。
+    /// 実行には <see cref="CityMeta.CityMetaData"/> を保持する必要があります。
     /// </summary>
     public class CityBehaviour : MonoBehaviour
     {
@@ -21,10 +21,10 @@ namespace PLATEAU.Behaviour
         }
 
         /// <summary>
-        /// ゲームオブジェクト名 → <see cref="CityObject"/>
+        /// ゲームオブジェクト名 → <see cref="CityGML.CityObject"/>
         /// </summary>
         /// <param name="gameObjName">ゲームオブジェクト名</param>
-        /// <returns>引数に対応する<see cref="CityObject"/></returns>
+        /// <returns>引数に対応する<see cref="CityGML.CityObject"/></returns>
         public CityObject LoadSemantics(string gameObjName)
         {
             return this.loader.Load(gameObjName, this.cityMetaData);
