@@ -21,7 +21,7 @@ namespace PLATEAU.CityMeta
         /// <summary>
         /// シリアライズするときに List形式に直します。
         /// </summary>
-        public void OnBeforeSerialize()
+        void ISerializationCallbackReceiver.OnBeforeSerialize()
         {
             DictionarySerializer.OnBeforeSerialize(this.dictionary, this.keys, this.values);
         }
@@ -29,7 +29,7 @@ namespace PLATEAU.CityMeta
         /// <summary>
         /// デシリアライズするときに List から Dictionary 形式に直します。
         /// </summary>
-        public void OnAfterDeserialize()
+        void ISerializationCallbackReceiver.OnAfterDeserialize()
         {
             this.dictionary = DictionarySerializer.OnAfterSerialize(this.keys, this.values);
         }
