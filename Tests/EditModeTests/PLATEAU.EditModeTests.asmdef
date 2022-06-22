@@ -7,7 +7,7 @@
         "PLATEAU.TestUtils",
         "PLATEAU.Editor",
         "libplateau",
-        "PLATEAU"
+        "PLATEAU.Runtime"
     ],
     "includePlatforms": [
         "Editor"

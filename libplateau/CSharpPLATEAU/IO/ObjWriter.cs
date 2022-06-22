@@ -1,10 +1,9 @@
 ﻿using System;
-using System.Diagnostics;
-using System.Runtime.InteropServices;
 using System.Threading;
+using PLATEAU.CityGML;
 using PLATEAU.CityGML.Util;
 
-namespace PLATEAU.CityGML
+namespace PLATEAU.IO
 {
     /// <summary>
     /// The <see cref="ObjWriter"/> class exports .obj file from .gml.
