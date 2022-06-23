@@ -82,20 +82,20 @@ namespace PLATEAU.Editor.CityImport
                         }
                     }
                 }
-            }
+
+                using (new EditorGUILayout.HorizontalScope())
+                {
+                    if (PlateauEditorStyle.MiniButton("すべて選択"))
+                    {
+                        config.gmlTypeTarget.SetAllTarget(true);
+                    }
+
+                    if (PlateauEditorStyle.MiniButton("すべて除外"))
+                    {
+                        config.gmlTypeTarget.SetAllTarget(false);
+                    }
+                }
             
-
-            using (new EditorGUILayout.HorizontalScope())
-            {
-                if (PlateauEditorStyle.MiniButton("すべて選択"))
-                {
-                    config.gmlTypeTarget.SetAllTarget(true);
-                }
-
-                if (PlateauEditorStyle.MiniButton("すべて除外"))
-                {
-                    config.gmlTypeTarget.SetAllTarget(false);
-                }
             }
 
             HeaderDrawer.Draw("対象gmlファイル");

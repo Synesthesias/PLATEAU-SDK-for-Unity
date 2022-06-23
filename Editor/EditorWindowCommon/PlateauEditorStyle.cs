@@ -92,18 +92,25 @@ namespace PLATEAU.Editor.EditorWindowCommon
         }
 
         /// <summary>
-        /// IDisposable な VerticalScope を作り、中のGUIコンテンツを BoxStyle で囲みます。
+        /// IDisposable な VerticalScope を作り、中のGUIコンテンツを Box で囲みます。
+        /// Box の位置には <see cref="HeaderDrawer"/> の見出しの深さがインデントとして反映されます。
         /// </summary>
-        public static EditorGUILayout.VerticalScope VerticalScopeLevel1()
+        public static EditorGUILayout.VerticalScope VerticalScopeLevel1(bool useHeaderDepth = true)
         {
-            return new EditorGUILayout.VerticalScope(ContentStyleLevel1);
+            return new EditorGUILayout.VerticalScope(ContentStyleLevel1(useHeaderDepth));
         }
 
+        /// <summary>
+        /// 中のGUIコンテンツをグレーの Box で囲みます。
+        /// </summary>
         public static EditorGUILayout.VerticalScope VerticalScopeLevel2()
         {
             return new EditorGUILayout.VerticalScope(ContentStyleLevel2);
         }
 
+        /// <summary>
+        /// 中のGUIコンテンツを青の Box で囲みます。
+        /// </summary>
         public static EditorGUILayout.VerticalScope VerticalScopeLevel3()
         {
             return new EditorGUILayout.VerticalScope(ContentStyleLevel3);
@@ -112,18 +119,16 @@ namespace PLATEAU.Editor.EditorWindowCommon
         /// <summary>
         /// GUIのコンテンツをまとめるのに利用できます。
         /// </summary>
-        private static GUIStyle ContentStyleLevel1
+        private static GUIStyle ContentStyleLevel1(bool useHeaderDepth = true)
         {
-            get
+            int marginLeft = useHeaderDepth ? HeaderDrawer.Depth * 12 : 12;
+            var style = new GUIStyle
             {
-                var style = new GUIStyle
-                {
-                    padding = new RectOffset(8, 8, 8, 8),
-                    margin = new RectOffset(HeaderDrawer.Depth * 12, 8, 8, 8)
-                };
+                padding = new RectOffset(8, 8, 8, 8),
+                margin = new RectOffset(marginLeft, 8, 8, 8)
+            };
                 
-                return style;
-            }
+            return style;
         }
 
         public static GUIStyle ContentStyleLevel2
@@ -147,7 +152,7 @@ namespace PLATEAU.Editor.EditorWindowCommon
         /// </summary>
         private static GUIStyle ContentStyleLevel3 {
             get {
-                GUIStyle style = new GUIStyle(ContentStyleLevel1);
+                GUIStyle style = new GUIStyle(ContentStyleLevel1(false));
                 string colorCode = EditorGUIUtility.isProSkin ? cyanBackgroundDark : cyanBackgroundLight;
                 style.normal.background = ColoredBackground(colorCode);
                 style.padding.top = style.padding.bottom = 10;
