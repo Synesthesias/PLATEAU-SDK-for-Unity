@@ -9,7 +9,7 @@ namespace PLATEAU.CityMeta
     /// 地物タイプです。
     /// gml元データのファイル構造における udx/(地物タイプ) の(地物タイプ)に対応します。
     /// </summary>
-    public enum GmlType
+    internal enum GmlType
     {
         /// <summary> 建築物 </summary>
         Building,
@@ -28,7 +28,7 @@ namespace PLATEAU.CityMeta
     /// <summary>
     /// <see cref="GmlType"/> の Enum 型、 接頭辞（フォルダ名）、ディスプレイ文字列　を変換します。
     /// </summary>
-    public static class GmlTypeConvert
+    internal static class GmlTypeConvert
     {
         /// <summary>
         /// 接頭辞は主にフォルダ名に使われます。Enum型と接頭辞の対応辞書です。

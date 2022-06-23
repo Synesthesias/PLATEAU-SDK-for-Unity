@@ -7,12 +7,12 @@ using PLATEAU.CityMeta;
 using PLATEAU.Util;
 using UnityEngine;
 
-namespace PLATEAU.SemanticsLoad
+namespace PLATEAU.Behaviour
 {
     /// <summary>
-    /// Unityのランタイムでゲームオブジェクト名から <see cref="CityObject"/> を取得します。
+    /// Unityのランタイムでゲームオブジェクト名から <see cref="CityGML.CityObject"/> を取得します。
     /// </summary>
-    public class SemanticsLoader
+    internal class SemanticsLoader
     {
         private readonly Dictionary<string, CityModel> fileToCityModelCache = new Dictionary<string, CityModel>();
 

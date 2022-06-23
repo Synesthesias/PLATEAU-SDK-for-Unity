@@ -9,7 +9,6 @@ using PLATEAU.CityMeta;
 using PLATEAU.Util;
 using PLATEAU.Tests.TestUtils;
 using UnityEditor;
-using UnityEngine;
 
 namespace PLATEAU.Tests.EditModeTests
 {
