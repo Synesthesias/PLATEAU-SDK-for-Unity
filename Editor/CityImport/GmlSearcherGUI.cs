@@ -99,9 +99,13 @@ namespace PLATEAU.Editor.CityImport
             }
 
             HeaderDrawer.Draw("対象gmlファイル");
-            this.gmlFiles = ListTargetGmlFiles(gmlSearcher, config.areaIds, config.isAreaIdTarget, config.gmlTypeTarget);
-            EditorGUILayout.TextArea(String.Join("\n", this.gmlFiles));
-            
+            using (PlateauEditorStyle.VerticalScopeLevel1())
+            {
+                this.gmlFiles = ListTargetGmlFiles(gmlSearcher, config.areaIds, config.isAreaIdTarget,
+                    config.gmlTypeTarget);
+                EditorGUILayout.TextArea(String.Join("\n", this.gmlFiles));
+            }
+
             HeaderDrawer.DecrementDepth();
 
             return this.gmlFiles;

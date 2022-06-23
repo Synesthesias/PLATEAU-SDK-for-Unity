@@ -17,12 +17,16 @@ namespace PLATEAU.Editor.CityImport
         public string Draw(string currentExportPath)
         {
             HeaderDrawer.Draw("出力先選択");
-            using (new EditorGUILayout.HorizontalScope())
+            using (PlateauEditorStyle.VerticalScopeLevel1())
             { 
                 currentExportPath = EditorGUILayout.TextField("出力先フォルダ", currentExportPath);
                 if (PlateauEditorStyle.MiniButton("参照..."))
                 {
-                    currentExportPath = EditorUtility.SaveFolderPanel("保存先選択", Application.dataPath, "PlateauData");
+                    string selectedPath = EditorUtility.SaveFolderPanel("保存先選択", Application.dataPath, "PlateauData");
+                    if (!string.IsNullOrEmpty(selectedPath))
+                    {
+                        currentExportPath = selectedPath;
+                    }
                 }
             }
 

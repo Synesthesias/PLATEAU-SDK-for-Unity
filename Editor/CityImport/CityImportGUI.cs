@@ -56,15 +56,22 @@ namespace PLATEAU.Editor.CityImport
                 
                 // 変換設定
                 HeaderDrawer.Draw("変換設定");
-                config.optimizeFlag = EditorGUILayout.Toggle("最適化", config.optimizeFlag);
-                config.meshGranularity = (MeshGranularity)EditorGUILayout.EnumPopup("メッシュのオブジェクト分けの粒度", config.meshGranularity);
-                config.logLevel = (DllLogLevel)EditorGUILayout.EnumPopup("(開発者向け)ログの詳細度", config.logLevel);
+                using (PlateauEditorStyle.VerticalScopeLevel1())
+                {
+                    config.optimizeFlag = EditorGUILayout.Toggle("最適化", config.optimizeFlag);
+                    config.meshGranularity =
+                        (MeshGranularity)EditorGUILayout.EnumPopup("メッシュのオブジェクト分けの粒度", config.meshGranularity);
+                    config.logLevel = (DllLogLevel)EditorGUILayout.EnumPopup("(開発者向け)ログの詳細度", config.logLevel);
+                }
 
                 // 出力
                 HeaderDrawer.Draw("出力");
-                if (PlateauEditorStyle.MainButton("出力"))
+                using (PlateauEditorStyle.VerticalScopeLevel1())
                 {
-                    this.cityImporter.Import(gmlFiles.ToArray(), config);
+                    if (PlateauEditorStyle.MainButton("出力"))
+                    {
+                        this.cityImporter.Import(gmlFiles.ToArray(), config);
+                    }
                 }
             }
             else

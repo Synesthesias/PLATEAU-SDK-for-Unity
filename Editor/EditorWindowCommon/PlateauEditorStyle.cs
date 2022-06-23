@@ -96,39 +96,58 @@ namespace PLATEAU.Editor.EditorWindowCommon
         /// </summary>
         public static EditorGUILayout.VerticalScope VerticalScopeLevel1()
         {
-            return new EditorGUILayout.VerticalScope(BoxStyleLevel1);
+            return new EditorGUILayout.VerticalScope(ContentStyleLevel1);
         }
 
         public static EditorGUILayout.VerticalScope VerticalScopeLevel2()
         {
-            return new EditorGUILayout.VerticalScope(BoxStyleLevel2);
+            return new EditorGUILayout.VerticalScope(ContentStyleLevel2);
+        }
+
+        public static EditorGUILayout.VerticalScope VerticalScopeLevel3()
+        {
+            return new EditorGUILayout.VerticalScope(ContentStyleLevel3);
         }
 
         /// <summary>
-        /// GUIのコンテンツをまとめるのに利用できるboxです。
+        /// GUIのコンテンツをまとめるのに利用できます。
         /// </summary>
-        private static GUIStyle BoxStyleLevel1
+        private static GUIStyle ContentStyleLevel1
+        {
+            get
+            {
+                var style = new GUIStyle
+                {
+                    padding = new RectOffset(8, 8, 8, 8),
+                    margin = new RectOffset(HeaderDrawer.Depth * 12, 8, 8, 8)
+                };
+                
+                return style;
+            }
+        }
+
+        public static GUIStyle ContentStyleLevel2
         {
             get
             {
                 var style = new GUIStyle(GUI.skin.box)
                 {
                     padding = new RectOffset(8, 8, 8, 8),
-                    margin = new RectOffset(32, 8, 8, 8)
+                    margin = new RectOffset(16, 8, 8, 8)
                 };
-                
+
                 return style;
             }
         }
         
         /// <summary>
-        /// box入れ子の2段目のスタイルです。
+        /// ContentStyle入れ子の3段目のスタイルです。
         /// 青っぽい色に寄せた背景色のBoxStyleを返します。
         /// エディタのテーマが Dark か Light かに応じて異なる色を返します。
         /// </summary>
-        private static GUIStyle BoxStyleLevel2 {
+        private static GUIStyle ContentStyleLevel3 {
             get {
-                GUIStyle style = new GUIStyle(BoxStyleLevel1);
+                GUIStyle style = new GUIStyle(ContentStyleLevel1);
                 string colorCode = EditorGUIUtility.isProSkin ? cyanBackgroundDark : cyanBackgroundLight;
                 style.normal.background = ColoredBackground(colorCode);
                 style.padding.top = style.padding.bottom = 10;

@@ -29,7 +29,7 @@ namespace PLATEAU.Editor.EditorWindowCommon
             IncrementDepth(false);
         }
 
-        private static int Depth => currentHeaderNum.Count;
+        public static int Depth => currentHeaderNum.Count;
 
         public static void IncrementDepth(bool doGoPrev = true)
         {
