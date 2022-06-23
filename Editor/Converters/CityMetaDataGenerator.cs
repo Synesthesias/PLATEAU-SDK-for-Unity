@@ -104,7 +104,7 @@ namespace PLATEAU.Editor.Converters
             var loadedMetaData = AssetDatabase.LoadAssetAtPath<CityMetaData>(dstAssetPath);
             if (doClearIdToGmlTable)
             {
-                loadedMetaData.DoClearIdToGmlTable();
+                loadedMetaData.ClearIdToGmlTable();
             }
             return loadedMetaData;
         }

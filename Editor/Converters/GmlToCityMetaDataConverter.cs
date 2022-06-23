@@ -129,7 +129,7 @@ namespace PLATEAU.Editor.Converters
             var loadedMetaData = AssetDatabase.LoadAssetAtPath<CityMetaData>(dstAssetPath);
             if (doClearOldMapInfo)
             {
-                loadedMetaData.DoClearIdToGmlTable();
+                loadedMetaData.ClearIdToGmlTable();
             }
             return loadedMetaData;
         }

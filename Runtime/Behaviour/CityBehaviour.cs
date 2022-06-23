@@ -14,6 +14,7 @@ namespace PLATEAU.Behaviour
         [SerializeField] private CityMetaData cityMetaData;
         private readonly SemanticsLoader loader = new SemanticsLoader();
 
+        /// <summary> ゲームオブジェクトとgmlファイルを対応付けるために必要な <see cref="CityMeta.CityMetaData"/> です。 </summary>
         public CityMetaData CityMetaData
         {
             get => this.cityMetaData;
