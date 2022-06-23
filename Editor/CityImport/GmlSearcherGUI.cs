@@ -4,6 +4,7 @@ using System.Linq;
 using PLATEAU.Editor.EditorWindowCommon;
 using PLATEAU.CityMeta;
 using UnityEditor;
+using UnityEngine;
 
 namespace PLATEAU.Editor.CityImport
 {
@@ -52,18 +53,28 @@ namespace PLATEAU.Editor.CityImport
                 }
             }
             
+            // 地物タイプごとの設定です。
             HeaderDrawer.Draw("含める地物");
             var typeConfDict = config.gmlTypeTarget.GmlTypeConfigs;
             foreach (var gmlType in typeConfDict.Keys.ToArray())
             {
-                var typeConf = typeConfDict[gmlType];
-                typeConf.isTarget = EditorGUILayout.Toggle(GmlTypeConvert.ToDisplay(gmlType), typeConf.isTarget);
-                
-                EditorGUILayout.MinMaxSlider("LOD", ref typeConf.SliderMinLod, ref typeConf.SliderMaxLod, 0f, 4f);
-                typeConf.minLod = (int)Math.Round(typeConf.SliderMinLod);
-                typeConf.maxLod = (int)Math.Round(typeConf.SliderMaxLod);
-                EditorGUILayout.LabelField($"最小LOD: {typeConf.minLod}, 最大LOD: {typeConf.maxLod}");
-
+                EditorGUILayout.LabelField(GmlTypeConvert.ToDisplay(gmlType));
+                using (PlateauEditorStyle.VerticalScope())
+                {
+                    var typeConf = typeConfDict[gmlType];
+                    typeConf.isTarget = EditorGUILayout.Toggle("変換対象", typeConf.isTarget);
+                    using (new EditorGUI.DisabledScope(!typeConf.isTarget))
+                    {
+                        EditorGUILayout.MinMaxSlider("LOD", ref typeConf.SliderMinLod, ref typeConf.SliderMaxLod, 0f, 4f);
+                        // Min <= Max となるようにスワップ
+                        if (typeConf.SliderMinLod > typeConf.SliderMaxLod)
+                            (typeConf.SliderMinLod, typeConf.SliderMaxLod) =
+                                (typeConf.SliderMaxLod, typeConf.SliderMinLod);
+                        typeConf.minLod = (int)Math.Round(typeConf.SliderMinLod);
+                        typeConf.maxLod = (int)Math.Round(typeConf.SliderMaxLod);
+                        EditorGUILayout.LabelField($"最小LOD: {typeConf.minLod}, 最大LOD: {typeConf.maxLod}");
+                    }
+                }
             }
 
             using (new EditorGUILayout.HorizontalScope())
