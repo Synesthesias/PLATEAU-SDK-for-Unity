@@ -20,7 +20,7 @@ namespace PLATEAU.CityMeta
     // という関係なので、 CityImporterConfig の注意事項に基づいてこのクラスには Serializable属性が付いている必要があります。
     
     [Serializable]
-    public class GmlTypeTarget : ISerializationCallbackReceiver
+    internal class GmlTypeTarget : ISerializationCallbackReceiver
     {
         /// <summary> GmlTypeごとに、変換対象とするかどうかの辞書です。 </summary>
         public Dictionary<GmlType, bool> TargetDict { get; set; }
@@ -41,8 +41,6 @@ namespace PLATEAU.CityMeta
         /// <summary>
         /// 与えられたタイプが変換対象かどうかを返します。
         /// </summary>
-        /// <param name="t">対象タイプ</param>
-        /// <returns>変換対象かどうか</returns>
         public bool IsTypeTarget(GmlType t)
         {
             return TargetDict[t];

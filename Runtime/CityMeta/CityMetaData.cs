@@ -14,16 +14,16 @@ namespace PLATEAU.CityMeta
     public class CityMetaData : ScriptableObject
     {
         /// <value>都市オブジェクトのIDから、それに対応する gmlファイル名を検索できる辞書です。</value>
-        public IdToGmlTable idToGmlTable = new IdToGmlTable();
+        [SerializeField] internal IdToGmlTable idToGmlTable = new IdToGmlTable();
         /// <value>インポート時の設定です。</value>
-        public CityImporterConfig cityImporterConfig = new CityImporterConfig();
+        [SerializeField] internal CityImporterConfig cityImporterConfig = new CityImporterConfig();
 
         /// <summary>
         /// 辞書 <see cref="idToGmlTable"/> の中に引数をキーとするものがあるかどうか返します。
         /// </summary>
         /// <param name="cityObjId">キー(都市オブジェクトID)</param>
         /// <returns>あればtrue, なければfalse</returns>
-        public bool DoGmlTableContainsKey(string cityObjId)
+        internal bool DoGmlTableContainsKey(string cityObjId)
         {
             return this.idToGmlTable.ContainsKey(cityObjId);
         }
@@ -31,26 +31,22 @@ namespace PLATEAU.CityMeta
         /// <summary>
         /// <see cref="idToGmlTable"/> に項目を追加します。
         /// </summary>
-        /// <param name="cityObjId">キー(都市オブジェクトID)</param>
-        /// <param name="gmlName">値(gmlファイル名)</param>
-        public void AddToGmlTable(string cityObjId, string gmlName)
+        internal void AddToGmlTable(string cityObjId, string gmlName)
         {
             this.idToGmlTable.Add(cityObjId, gmlName);
         }
 
         /// <summary>
         /// 都市オブジェクトのIDから、それに対応するgmlファイル名の取得を試みます。
+        /// 取得できたかどうかを bool で返し、取得内容を out引数で返します。
         /// </summary>
-        /// <param name="cityObjId">都市オブジェクトID</param>
-        /// <param name="gmlFileName">出力用: gmlファイル名</param>
-        /// <returns>取得できたらtrue, なければfalse</returns>
-        public bool TryGetValueFromGmlTable(string cityObjId, out string gmlFileName)
+        internal bool TryGetValueFromGmlTable(string cityObjId, out string gmlFileName)
         {
             return this.idToGmlTable.TryGetValue(cityObjId, out gmlFileName);
         }
 
         /// <summary> <see cref="idToGmlTable"/> のデータを削除します。 </summary>
-        public void ClearIdToGmlTable()
+        internal void ClearIdToGmlTable()
         {
             this.idToGmlTable?.Clear();
         }

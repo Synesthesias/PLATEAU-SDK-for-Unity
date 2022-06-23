@@ -12,7 +12,7 @@ namespace PLATEAU.CityMeta
     // このクラスは CityImporterConfig によって保持されるので、そちらの注意事項もご覧ください。
     
     [Serializable]
-    public class GmlSearcherConfig
+    internal class GmlSearcherConfig
     {
         /// <summary> 見つかったエリアIDの一覧です。 </summary>
         public int[] areaIds = { };
