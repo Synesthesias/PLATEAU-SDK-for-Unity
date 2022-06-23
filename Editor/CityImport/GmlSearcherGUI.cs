@@ -53,22 +53,29 @@ namespace PLATEAU.Editor.CityImport
             }
             
             HeaderDrawer.Draw("含める地物");
-            var typeDict = config.gmlTypeTarget.TargetDict;
-            foreach (var gmlType in typeDict.Keys.ToArray())
+            var typeConfDict = config.gmlTypeTarget.GmlTypeConfigs;
+            foreach (var gmlType in typeConfDict.Keys.ToArray())
             {
-                typeDict[gmlType] = EditorGUILayout.Toggle(GmlTypeConvert.ToDisplay(gmlType), typeDict[gmlType]);
+                var typeConf = typeConfDict[gmlType];
+                typeConf.isTarget = EditorGUILayout.Toggle(GmlTypeConvert.ToDisplay(gmlType), typeConf.isTarget);
+                
+                EditorGUILayout.MinMaxSlider("LOD", ref typeConf.SliderMinLod, ref typeConf.SliderMaxLod, 0f, 4f);
+                typeConf.minLod = (int)Math.Round(typeConf.SliderMinLod);
+                typeConf.maxLod = (int)Math.Round(typeConf.SliderMaxLod);
+                EditorGUILayout.LabelField($"最小LOD: {typeConf.minLod}, 最大LOD: {typeConf.maxLod}");
+
             }
 
             using (new EditorGUILayout.HorizontalScope())
             {
                 if (PlateauEditorStyle.MainButton("すべて選択"))
                 {
-                    config.gmlTypeTarget.SetAll(true);
+                    config.gmlTypeTarget.SetAllTarget(true);
                 }
 
                 if (PlateauEditorStyle.MainButton("すべて除外"))
                 {
-                    config.gmlTypeTarget.SetAll(false);
+                    config.gmlTypeTarget.SetAllTarget(false);
                 }
             }
 

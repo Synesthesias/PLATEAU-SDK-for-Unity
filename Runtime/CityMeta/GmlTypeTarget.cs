@@ -16,26 +16,26 @@ namespace PLATEAU.CityMeta
     /// </summary>
     
     // 補足:
-    // 他クラスとの関係は CityImporterConfig -> 保持 -> GmlSearcherConfig -> 保持 -> GmlTypeTarget
+    // 他クラスとの関係は CityImporterConfig -> 保持 -> GmlSearcherConfig -> 保持 -> GmlTypeTarget -> 保持 -> ImportGmlTypeConfig
     // という関係なので、 CityImporterConfig の注意事項に基づいてこのクラスには Serializable属性が付いている必要があります。
     
     [Serializable]
     internal class GmlTypeTarget : ISerializationCallbackReceiver
     {
-        /// <summary> GmlTypeごとに、変換対象とするかどうかの辞書です。 </summary>
-        public Dictionary<GmlType, bool> TargetDict { get; set; }
+        /// <summary> GmlTypeごとの設定の辞書です。 </summary>
+        public Dictionary<GmlType, ImportGmlTypeConfig> GmlTypeConfigs { get; set; }
 
         // シリアライズ時に Dictionary を List形式にします。
         [SerializeField] private List<GmlType> keys = new List<GmlType>();
-        [SerializeField] private List<bool> values = new List<bool>();
+        [SerializeField] private List<ImportGmlTypeConfig> values = new List<ImportGmlTypeConfig>();
 
         public GmlTypeTarget()
         {
-            // 各タイプ true で初期化します。
-            TargetDict =
+            // 各タイプごとに ImportGmlTypeConfig を初期化します。
+            GmlTypeConfigs =
                 Enum.GetValues(typeof(GmlType))
                     .OfType<GmlType>()
-                    .ToDictionary(t => t, _ => true);
+                    .ToDictionary(t => t, _ => new ImportGmlTypeConfig());
         }
 
         /// <summary>
@@ -43,15 +43,15 @@ namespace PLATEAU.CityMeta
         /// </summary>
         public bool IsTypeTarget(GmlType t)
         {
-            return TargetDict[t];
+            return GmlTypeConfigs[t].isTarget;
         }
 
-        /// <summary> すべて true または すべて false にします。 </summary>
-        public void SetAll(bool val)
+        /// <summary> 地物タイプを変換対象とするかについて、すべて true または すべて false にします。 </summary>
+        public void SetAllTarget(bool val)
         {
-            foreach (var key in TargetDict.Keys.ToArray())
+            foreach (var key in GmlTypeConfigs.Keys.ToArray())
             {
-                TargetDict[key] = val;
+                GmlTypeConfigs[key].isTarget = val;
             }
         }
 
@@ -60,7 +60,7 @@ namespace PLATEAU.CityMeta
         /// </summary>
         void ISerializationCallbackReceiver.OnBeforeSerialize()
         {
-            DictionarySerializer.OnBeforeSerialize(TargetDict, this.keys, this.values);
+            DictionarySerializer.OnBeforeSerialize(GmlTypeConfigs, this.keys, this.values);
         }
 
 
@@ -69,7 +69,7 @@ namespace PLATEAU.CityMeta
         /// </summary>
         void ISerializationCallbackReceiver.OnAfterDeserialize()
         {
-            TargetDict = DictionarySerializer.OnAfterSerialize(this.keys, this.values);
+            GmlTypeConfigs = DictionarySerializer.OnAfterSerialize(this.keys, this.values);
         }
         
     }
