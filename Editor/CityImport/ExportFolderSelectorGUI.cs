@@ -20,7 +20,7 @@ namespace PLATEAU.Editor.CityImport
             using (new EditorGUILayout.HorizontalScope())
             { 
                 currentExportPath = EditorGUILayout.TextField("出力先フォルダ", currentExportPath);
-                if (PlateauEditorStyle.MainButton("参照..."))
+                if (PlateauEditorStyle.MiniButton("参照..."))
                 {
                     currentExportPath = EditorUtility.SaveFolderPanel("保存先選択", Application.dataPath, "PlateauData");
                 }

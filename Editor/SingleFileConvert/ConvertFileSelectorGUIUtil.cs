@@ -28,7 +28,7 @@ namespace PLATEAU.Editor.SingleFileConvert
         public static void FileSelectGUI(ref string filePath, string extension, FilePanelType panelType, string description)
         {
             HeaderDrawer.Draw(description);
-            using (PlateauEditorStyle.VerticalScope())
+            using (PlateauEditorStyle.VerticalScopeLevel1())
             {
                 if (PlateauEditorStyle.MainButton(description))
                 {
@@ -64,7 +64,7 @@ namespace PLATEAU.Editor.SingleFileConvert
         public static void PrintConvertButton(Func<bool> convertFunc)
         {
             HeaderDrawer.Draw("Convert");
-            using (PlateauEditorStyle.VerticalScope())
+            using (PlateauEditorStyle.VerticalScopeLevel1())
             {
                 if (PlateauEditorStyle.MainButton("Convert")) ButtonConvertPushed(convertFunc);
             }

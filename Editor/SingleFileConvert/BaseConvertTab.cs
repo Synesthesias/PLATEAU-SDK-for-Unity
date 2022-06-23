@@ -29,7 +29,7 @@ namespace PLATEAU.Editor.SingleFileConvert
 
         protected override void DrawScrollable()
         {
-            using (PlateauEditorStyle.VerticalScope())
+            using (PlateauEditorStyle.VerticalScopeLevel1())
             {
                 HeaderInfoGUI();
             }
@@ -74,7 +74,7 @@ namespace PLATEAU.Editor.SingleFileConvert
         public void ConfigureGUIOuter()
         {
             HeaderDrawer.Draw($"Configure {DestFileExtension}");
-            using (PlateauEditorStyle.VerticalScope())
+            using (PlateauEditorStyle.VerticalScopeLevel1())
             {
                 EditorGUI.BeginChangeCheck();
                 ConfigureGUI();

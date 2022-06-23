@@ -26,7 +26,7 @@ namespace PLATEAU.Editor.SingleFileConvert
         
         protected override void DrawScrollable()
         {
-            using (PlateauEditorStyle.VerticalScope())
+            using (PlateauEditorStyle.VerticalScopeLevel1())
             {
                 foreach (var tab in this.tabs)
                 {

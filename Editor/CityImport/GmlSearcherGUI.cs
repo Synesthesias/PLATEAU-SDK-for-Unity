@@ -29,62 +29,70 @@ namespace PLATEAU.Editor.CityImport
             if(!this.isInitialized) Initialize(gmlSearcher, config);
             HeaderDrawer.IncrementDepth();
             HeaderDrawer.Draw("含める地域");
-            config.areaIds = gmlSearcher.AreaIds;
-            int areaCount = config.areaIds.Length;
-            if (config.isAreaIdTarget.Length != areaCount)
+            using (PlateauEditorStyle.VerticalScopeLevel1())
             {
-                Initialize(gmlSearcher, config);
-            }
-            for (int i = 0; i < areaCount; i++)
-            {
-                config.isAreaIdTarget[i] = EditorGUILayout.Toggle(config.areaIds[i].ToString(), config.isAreaIdTarget[i]);
-            }
-
-            using (new EditorGUILayout.HorizontalScope())
-            {
-                if (PlateauEditorStyle.MainButton("すべて選択"))
+                config.areaIds = gmlSearcher.AreaIds;
+                int areaCount = config.areaIds.Length;
+                if (config.isAreaIdTarget.Length != areaCount)
                 {
-                    config.SetAllAreaId(true);
+                    Initialize(gmlSearcher, config);
+                }
+                for (int i = 0; i < areaCount; i++)
+                {
+                    config.isAreaIdTarget[i] = EditorGUILayout.Toggle(config.areaIds[i].ToString(), config.isAreaIdTarget[i]);
                 }
 
-                if (PlateauEditorStyle.MainButton("すべて除外"))
+                using (new EditorGUILayout.HorizontalScope())
                 {
-                    config.SetAllAreaId(false);
-                }
-            }
-            
-            // 地物タイプごとの設定です。
-            HeaderDrawer.Draw("含める地物");
-            var typeConfDict = config.gmlTypeTarget.GmlTypeConfigs;
-            foreach (var gmlType in typeConfDict.Keys.ToArray())
-            {
-                EditorGUILayout.LabelField(GmlTypeConvert.ToDisplay(gmlType));
-                using (PlateauEditorStyle.VerticalScope())
-                {
-                    var typeConf = typeConfDict[gmlType];
-                    typeConf.isTarget = EditorGUILayout.Toggle("変換対象", typeConf.isTarget);
-                    using (new EditorGUI.DisabledScope(!typeConf.isTarget))
+                    if (PlateauEditorStyle.MiniButton("すべて選択"))
                     {
-                        EditorGUILayout.MinMaxSlider("LOD", ref typeConf.SliderMinLod, ref typeConf.SliderMaxLod, 0f, 4f);
-                        // Min <= Max となるようにスワップ
-                        if (typeConf.SliderMinLod > typeConf.SliderMaxLod)
-                            (typeConf.SliderMinLod, typeConf.SliderMaxLod) =
-                                (typeConf.SliderMaxLod, typeConf.SliderMinLod);
-                        typeConf.minLod = (int)Math.Round(typeConf.SliderMinLod);
-                        typeConf.maxLod = (int)Math.Round(typeConf.SliderMaxLod);
-                        EditorGUILayout.LabelField($"最小LOD: {typeConf.minLod}, 最大LOD: {typeConf.maxLod}");
+                        config.SetAllAreaId(true);
+                    }
+
+                    if (PlateauEditorStyle.MiniButton("すべて除外"))
+                    {
+                        config.SetAllAreaId(false);
                     }
                 }
             }
+            
+            
+            // 地物タイプごとの設定です。
+            HeaderDrawer.Draw("含める地物");
+            using (PlateauEditorStyle.VerticalScopeLevel1())
+            {
+                var typeConfDict = config.gmlTypeTarget.GmlTypeConfigs;
+                foreach (var gmlType in typeConfDict.Keys.ToArray())
+                {
+                    EditorGUILayout.LabelField(GmlTypeConvert.ToDisplay(gmlType));
+                    using (PlateauEditorStyle.VerticalScopeLevel2())
+                    {
+                        var typeConf = typeConfDict[gmlType];
+                        typeConf.isTarget = EditorGUILayout.Toggle("変換対象", typeConf.isTarget);
+                        using (new EditorGUI.DisabledScope(!typeConf.isTarget))
+                        {
+                            EditorGUILayout.MinMaxSlider("LOD", ref typeConf.SliderMinLod, ref typeConf.SliderMaxLod, 0f, 4f);
+                            // Min <= Max となるようにスワップ
+                            if (typeConf.SliderMinLod > typeConf.SliderMaxLod)
+                                (typeConf.SliderMinLod, typeConf.SliderMaxLod) =
+                                    (typeConf.SliderMaxLod, typeConf.SliderMinLod);
+                            typeConf.minLod = (int)Math.Round(typeConf.SliderMinLod);
+                            typeConf.maxLod = (int)Math.Round(typeConf.SliderMaxLod);
+                            EditorGUILayout.LabelField($"最小LOD: {typeConf.minLod}, 最大LOD: {typeConf.maxLod}");
+                        }
+                    }
+                }
+            }
+            
 
             using (new EditorGUILayout.HorizontalScope())
             {
-                if (PlateauEditorStyle.MainButton("すべて選択"))
+                if (PlateauEditorStyle.MiniButton("すべて選択"))
                 {
                     config.gmlTypeTarget.SetAllTarget(true);
                 }
 
-                if (PlateauEditorStyle.MainButton("すべて除外"))
+                if (PlateauEditorStyle.MiniButton("すべて除外"))
                 {
                     config.gmlTypeTarget.SetAllTarget(false);
                 }

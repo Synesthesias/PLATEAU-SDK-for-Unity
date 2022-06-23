@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
@@ -9,6 +10,9 @@ namespace PLATEAU.Editor.EditorWindowCommon
     internal static class PlateauEditorStyle
     {
         private static readonly Color mainButtonColorTint = new Color(140f / 255f, 235f / 255f, 255f / 255f);
+        private const string cyanBackgroundDark = "#292e30";
+        private const string cyanBackgroundLight = "#abc4c9";
+        private static readonly Dictionary<string, Texture2D> cachedTexture = new Dictionary<string, Texture2D>();
 
         /// <summary> 見出し1のスタイルで文字を表示します。 </summary>
         public static void Heading1(string text)
@@ -59,31 +63,76 @@ namespace PLATEAU.Editor.EditorWindowCommon
         /// <summary> ボタンのスタイルです。押されたときにtrueを返します。 </summary>
         public static bool MainButton(string text)
         {
-            var isButtonPushed = DrawButton(text, mainButtonColorTint);
+            var isButtonPushed = DrawButton(text, mainButtonColorTint, new GUIStyle(GUI.skin.button)
+            {
+                margin = new RectOffset(20, 20, 5, 5),
+                padding = new RectOffset(10, 10, 10, 10)
+            });
+            return isButtonPushed;
+        }
+        
+        public static bool MiniButton(string text)
+        {
+            bool isButtonPushed = DrawButton(text, mainButtonColorTint, new GUIStyle(GUI.skin.button)
+            {
+                margin = new RectOffset(10, 10, 5, 5),
+                padding = new RectOffset(5, 5, 3, 3)
+            });
+            return isButtonPushed;
+        }
+        
+        /// <summary> 色指定でボタンを描画します。 </summary>
+        private static bool DrawButton(string text, Color buttonColorTint, GUIStyle style)
+        {
+            var prevColor = GUI.backgroundColor;
+            GUI.backgroundColor = buttonColorTint;
+            var isButtonPushed = GUILayout.Button(text, style);
+            GUI.backgroundColor = prevColor;
             return isButtonPushed;
         }
 
         /// <summary>
         /// IDisposable な VerticalScope を作り、中のGUIコンテンツを BoxStyle で囲みます。
         /// </summary>
-        public static EditorGUILayout.VerticalScope VerticalScope()
+        public static EditorGUILayout.VerticalScope VerticalScopeLevel1()
         {
-            return new EditorGUILayout.VerticalScope(BoxStyle);
+            return new EditorGUILayout.VerticalScope(BoxStyleLevel1);
+        }
+
+        public static EditorGUILayout.VerticalScope VerticalScopeLevel2()
+        {
+            return new EditorGUILayout.VerticalScope(BoxStyleLevel2);
         }
 
         /// <summary>
         /// GUIのコンテンツをまとめるのに利用できるboxです。
         /// </summary>
-        private static GUIStyle BoxStyle
+        private static GUIStyle BoxStyleLevel1
         {
             get
             {
                 var style = new GUIStyle(GUI.skin.box)
                 {
                     padding = new RectOffset(8, 8, 8, 8),
-                    margin = new RectOffset(8, 8, 8, 8)
+                    margin = new RectOffset(32, 8, 8, 8)
                 };
                 
+                return style;
+            }
+        }
+        
+        /// <summary>
+        /// box入れ子の2段目のスタイルです。
+        /// 青っぽい色に寄せた背景色のBoxStyleを返します。
+        /// エディタのテーマが Dark か Light かに応じて異なる色を返します。
+        /// </summary>
+        private static GUIStyle BoxStyleLevel2 {
+            get {
+                GUIStyle style = new GUIStyle(BoxStyleLevel1);
+                string colorCode = EditorGUIUtility.isProSkin ? cyanBackgroundDark : cyanBackgroundLight;
+                style.normal.background = ColoredBackground(colorCode);
+                style.padding.top = style.padding.bottom = 10;
+                style.margin.left = 16;
                 return style;
             }
         }
@@ -97,7 +146,7 @@ namespace PLATEAU.Editor.EditorWindowCommon
             var prevColor = GUI.backgroundColor;
             GUI.backgroundColor = mainButtonColorTint;
             int newTabIndex;
-            using (VerticalScope())
+            using (VerticalScopeLevel1())
             {
                 using (new EditorGUILayout.HorizontalScope())
                 {
@@ -115,20 +164,23 @@ namespace PLATEAU.Editor.EditorWindowCommon
             GUI.backgroundColor = prevColor;
             return newTabIndex;
         }
-
-        /// <summary> 色指定でボタンを描画します。 </summary>
-        private static bool DrawButton(string text, Color buttonColorTint)
-        {
-            var prevColor = GUI.backgroundColor;
-            GUI.backgroundColor = buttonColorTint;
-            var style = new GUIStyle(GUI.skin.button)
-            {
-                margin = new RectOffset(20, 20, 5, 5),
-                padding = new RectOffset(10, 10, 10, 10)
-            };
-            var isButtonPushed = GUILayout.Button(text, style);
-            GUI.backgroundColor = prevColor;
-            return isButtonPushed;
+        
+        
+        /// <summary>
+        /// 背景用に単色のテクスチャを作ります。
+        /// </summary>
+        private static Texture2D ColoredBackground(string colorCode) {
+            // 作ったテクスチャはなるべく使い回します。
+            // 毎フレーム Texture を new していると エラー「Resource ID out of range」が出るためです。 
+            if (cachedTexture.ContainsKey(colorCode)) {
+                return cachedTexture[colorCode];
+            }
+            Texture2D tex = new Texture2D(1, 1);
+            ColorUtility.TryParseHtmlString(colorCode, out Color col);
+            tex.SetPixel(0, 0, col);
+            tex.Apply();
+            cachedTexture.Add(colorCode, tex);
+            return tex;
         }
     }
 }
