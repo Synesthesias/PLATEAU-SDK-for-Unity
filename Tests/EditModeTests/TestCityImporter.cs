@@ -194,6 +194,52 @@ namespace PLATEAU.Tests.EditModeTests
             int numSuccess = this.importer.Import(testGmlRelativePathsTokyo, config);
             Assert.AreEqual(2, numSuccess);
         }
+
+        [Test]
+        public void When_Lod_Is_2_to_2_Then_Only_Lod2_Objs_Are_Generated()
+        {
+            var config = new CityImporterConfig
+            {
+                meshGranularity = MeshGranularity.PerCityModelArea,
+                sourceUdxFolderPath = testUdxPathSimple,
+                exportFolderPath = testOutputDir
+            };
+            var typeConfigs = config.gmlSearcherConfig.gmlTypeTarget.GmlTypeConfigs;
+            typeConfigs[GmlType.Building].minLod = 2;
+            typeConfigs[GmlType.Building].maxLod = 2;
+            
+            this.importer.Import(testGmlRelativePathsSimple, config);
+
+            string gmlId = "53392642_bldg_6697_op2";
+            bool lod2Exists = File.Exists(Path.Combine(testOutputDir, $"LOD2_{gmlId}.obj"));
+            bool lod1Exists = File.Exists(Path.Combine(testOutputDir, $"LOD1_{gmlId}.obj"));
+            Assert.IsTrue(lod2Exists);
+            Assert.IsFalse(lod1Exists);
+        }
+        
+        [Test]
+        public void When_Lod_Is_0_to_1_Then_Only_2_Objs_Are_Generated()
+        {
+            var config = new CityImporterConfig
+            {
+                meshGranularity = MeshGranularity.PerCityModelArea,
+                sourceUdxFolderPath = testUdxPathSimple,
+                exportFolderPath = testOutputDir
+            };
+            var typeConfigs = config.gmlSearcherConfig.gmlTypeTarget.GmlTypeConfigs;
+            typeConfigs[GmlType.Building].minLod = 0;
+            typeConfigs[GmlType.Building].maxLod = 1;
+            
+            this.importer.Import(testGmlRelativePathsSimple, config);
+
+            string gmlId = "53392642_bldg_6697_op2";
+            bool lod2Exists = File.Exists(Path.Combine(testOutputDir, $"LOD2_{gmlId}.obj"));
+            bool lod1Exists = File.Exists(Path.Combine(testOutputDir, $"LOD1_{gmlId}.obj"));
+            bool lod0Exists = File.Exists(Path.Combine(testOutputDir, $"LOD0_{gmlId}.obj"));
+            Assert.IsFalse(lod2Exists);
+            Assert.IsTrue(lod1Exists);
+            Assert.IsTrue(lod0Exists);
+        }
         
     }
 }
