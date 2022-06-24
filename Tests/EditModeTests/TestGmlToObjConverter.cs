@@ -33,13 +33,13 @@ namespace PLATEAU.Tests.EditModeTests
         [Test]
         public void Convert_Generates_Obj_File()
         {
-            string outputFilePath = Path.Combine(DirectoryUtil.TempCacheFolderPath, "LOD0_53392642_bldg_6697_op2.obj");
+            string outputDirectory = DirectoryUtil.TempCacheFolderPath;
             using (var converter = new GmlToObjConverter())
             {
-                converter.Convert(DirectoryUtil.TestSimpleGmlFilePath, outputFilePath);
+                converter.Convert(DirectoryUtil.TestSimpleGmlFilePath, outputDirectory);
             }
             // 変換後、objファイルがあればとりあえず良しとします。
-            Assert.IsTrue(File.Exists(outputFilePath));
+            Assert.IsTrue(File.Exists(Path.Combine(outputDirectory, "LOD0_53392642_bldg_6697_op2.obj")));
             }
 
         [Test]
@@ -86,7 +86,7 @@ namespace PLATEAU.Tests.EditModeTests
         private static Mesh[] ConvertAndRead(MeshGranularity meshGranularity, int lod)
         {
             string inputFilePath = DirectoryUtil.TestSimpleGmlFilePath;
-            string outputFilePath = Path.Combine(DirectoryUtil.TempAssetFolderPath, $"LOD{lod}_{Path.GetFileNameWithoutExtension(inputFilePath)}.obj");
+            string outputDirectory = DirectoryUtil.TempAssetFolderPath;
             using (var converter = new GmlToObjConverter())
             {
                 var conf = converter.Config;
@@ -94,11 +94,11 @@ namespace PLATEAU.Tests.EditModeTests
                 conf.AxesConversion = AxesConversion.RUF;
                 conf.OptimizeFlag = true;
                 converter.Config = conf;
-                bool result = converter.Convert(inputFilePath, outputFilePath);
+                bool result = converter.Convert(inputFilePath, outputDirectory);
                 Assert.IsTrue(result);
             }
             AssetDatabase.Refresh();
-
+            string outputFilePath = Path.Combine(outputDirectory, $"LOD{lod}_{Path.GetFileNameWithoutExtension(inputFilePath)}.obj");
             var obj = AssetDatabase.LoadAssetAtPath<GameObject>(PathUtil.FullPathToAssetsPath(outputFilePath));
             var meshes = obj.GetComponentsInChildren<MeshFilter>().Select(mf => mf.sharedMesh).ToArray();
             return meshes;

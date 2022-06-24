@@ -64,9 +64,11 @@ namespace PLATEAU.Editor.Converters
         /// gmlファイルをロードし、変換してobjファイルを出力します。
         /// 成功時はtrue,失敗時はfalseを返します。
         /// </summary>
+        //TODO exportObjFilePath は本来は ファイルパスではなくディレクトリのパスであるべき（いちおうファイルパスでも動くけど、名前は変えられない仕様）
         public bool Convert(string gmlFilePath, string exportObjFilePath)
         {
-            return ConvertInner(gmlFilePath, exportObjFilePath, null);
+            // TODO dummy引数を消す
+            return ConvertInner(gmlFilePath, exportObjFilePath, null, "");
         }
 
         /// <summary>
@@ -75,7 +77,8 @@ namespace PLATEAU.Editor.Converters
         /// 設定で <see cref="gmlParserParams"/> はロード後は変更できませんが、
         /// meshGranularity, axesConversion の設定は反映されます。
         /// </summary>
-        public bool ConvertWithoutLoad(CityModel cityModel, string gmlFilePath, string exportObjFilePath)
+        // TODO dummy引数を消す
+        public bool ConvertWithoutLoad(CityModel cityModel, string gmlFilePath, string objDestDirectory, string dummy)
         {
             if (cityModel == null)
             {
@@ -83,7 +86,7 @@ namespace PLATEAU.Editor.Converters
                 return false;
             }
 
-            return ConvertInner(gmlFilePath, exportObjFilePath, cityModel);
+            return ConvertInner(gmlFilePath, objDestDirectory, cityModel, dummy);
         }
 
         /// <summary>
@@ -92,18 +95,18 @@ namespace PLATEAU.Editor.Converters
         /// null でなければ、ファイルロードを省略して代わりに渡された <see cref="CityModel"/> を変換します。
         /// 成否をboolで返します。
         /// </summary>
-        // TODO exportObjFilePath はファイルパスではなくディレクトリであるべき
-        private bool ConvertInner(string gmlFilePath, string exportObjFilePath, CityModel cityModel) 
+        // TODO dummy引数を消す
+        private bool ConvertInner(string gmlFilePath, string exportDirectory, CityModel cityModel, string dummy) 
         {
-            if (!IsPathValid(gmlFilePath, exportObjFilePath)) return false;
+            if (!IsPathValid(gmlFilePath, exportDirectory)) return false;
             try
             {
                 SlashPath(ref gmlFilePath);
-                SlashPath(ref exportObjFilePath);
+                SlashPath(ref exportDirectory);
+                if (!exportDirectory.EndsWith("/")) exportDirectory += "/";
 
                 cityModel ??= CityGml.Load(gmlFilePath, this.gmlParserParams, DllLogCallback.UnityLogCallbacks, this.config.LogLevel);
-
-                string exportDirectory = new DirectoryInfo(exportObjFilePath).Parent.FullName;
+                
                 string[] objFullPaths = new string[4];
                 // TODO ここはやっつけ。生成するLODの種類に合わせるべき。
                 for (int lod = 0; lod <= 3; lod++)
@@ -114,7 +117,7 @@ namespace PLATEAU.Editor.Converters
 
                 // 出力先が Assets フォルダ内 かつ すでに同名ファイルが存在する場合、古いファイルを消します。
                 // そうしないと上書きによって obj のメッシュ名が変わっても Unity に反映されないことがあるためです。
-                if (PathUtil.IsSubDirectoryOfAssets(exportObjFilePath))
+                if (PathUtil.IsSubDirectoryOfAssets(exportDirectory))
                 {
                     foreach (var objFullPath in objFullPaths)
                     {
@@ -139,13 +142,12 @@ namespace PLATEAU.Editor.Converters
                 }
                 
                 // 変換してファイルに書き込みます。
-                // TODO ここはファイルのパスではなくディレクトリのパスにするのが正しい　
-                this.meshConverter.Convert(exportObjFilePath, gmlFilePath, cityModel, this.dllLogger);
+                this.meshConverter.Convert(exportDirectory, gmlFilePath, cityModel, this.dllLogger);
                 
                 Debug.Log($"ConvertLatLon = {this.meshConverter.Options.ConvertLatLon}");
 
                 // 出力先が Assets フォルダ内なら、それをUnityに反映させます。
-                if (PathUtil.IsSubDirectoryOfAssets(exportObjFilePath))
+                if (PathUtil.IsSubDirectoryOfAssets(exportDirectory))
                 {
                     foreach (string objFullPath in objFullPaths)
                     {
@@ -169,10 +171,10 @@ namespace PLATEAU.Editor.Converters
             return true;
         }
 
-        private static bool IsPathValid(string gmlFilePath, string exportObjFilePath)
+        private static bool IsPathValid(string gmlFilePath, string exportDirectoryPath)
         {
             if (!PathUtil.IsValidInputFilePath(gmlFilePath, "gml", false)) return false;
-            if (!PathUtil.IsValidOutputFilePath(exportObjFilePath, "obj")) return false;
+            if (!Directory.Exists(exportDirectoryPath)) return false;
             return true;
         }
 
