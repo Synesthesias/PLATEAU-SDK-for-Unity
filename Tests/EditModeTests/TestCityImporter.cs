@@ -11,6 +11,8 @@ using PLATEAU.IO;
 using PLATEAU.Util;
 using PLATEAU.Tests.TestUtils;
 using UnityEditor;
+using UnityEngine;
+using Object = System.Object;
 
 namespace PLATEAU.Tests.EditModeTests
 {
@@ -240,6 +242,30 @@ namespace PLATEAU.Tests.EditModeTests
             Assert.IsTrue(lod1Exists);
             Assert.IsTrue(lod0Exists);
         }
-        
+
+        [Test]
+        public void Converted_Objs_Are_Placed_In_Current_Scene()
+        {
+            var config = new CityImporterConfig
+            {
+                meshGranularity = MeshGranularity.PerCityModelArea,
+                sourceUdxFolderPath = testUdxPathSimple,
+                exportFolderPath = testOutputDir
+            };
+            var typeConfigs = config.gmlSearcherConfig.gmlTypeTarget.GmlTypeConfigs;
+            typeConfigs[GmlType.Building].minLod = 0;
+            typeConfigs[GmlType.Building].maxLod = 1;
+            
+            this.importer.Import(testGmlRelativePathsSimple, config);
+
+            string gmlId = "53392642_bldg_6697_op2";
+            bool lod0Exists = GameObject.Find($"LOD0_{gmlId}");
+            bool lod1Exists = GameObject.Find($"LOD1_{gmlId}");
+            bool lod2Exists = GameObject.Find($"LOD2_{gmlId}");
+            Assert.IsTrue(lod0Exists);
+            Assert.IsTrue(lod1Exists);
+            Assert.IsFalse(lod2Exists);
+        }
+
     }
 }
