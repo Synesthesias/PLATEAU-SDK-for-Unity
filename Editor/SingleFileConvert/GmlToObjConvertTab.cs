@@ -1,5 +1,7 @@
 using PLATEAU.CityGML;
 using PLATEAU.Editor.Converters;
+using PLATEAU.Interop;
+using PLATEAU.IO;
 using UnityEditor;
 
 namespace PLATEAU.Editor.SingleFileConvert

@@ -1,7 +1,10 @@
 using System;
 using System.IO;
+using System.Linq;
 using System.Threading;
+using Codice.Client.Common;
 using PLATEAU.CityGML;
+using PLATEAU.Interop;
 using PLATEAU.Util;
 using PLATEAU.IO;
 using UnityEditor;
@@ -17,17 +20,18 @@ namespace PLATEAU.Editor.Converters
     /// </summary>
     internal class GmlToObjConverter : ISingleFileConverter, IDisposable
     {
-        /// <summary> ObjWriter は変換処理をC++のDLLに委譲します。 </summary>
-        private readonly ObjWriter objWriter;
+        /// <summary> meshConverter は変換処理をC++のDLLに委譲します。 </summary>
+        private readonly MeshConverter meshConverter;
 
         private GmlToObjConverterConfig config;
         private CitygmlParserParams gmlParserParams;
+        private DllLogger dllLogger;
 
         private int disposed;
 
         public GmlToObjConverter()
         {
-            this.objWriter = new ObjWriter();
+            this.meshConverter = new MeshConverter();
             this.config = new GmlToObjConverterConfig();
             this.gmlParserParams = new CitygmlParserParams();
             ApplyConfig(this.config, ref this.gmlParserParams);
@@ -35,13 +39,13 @@ namespace PLATEAU.Editor.Converters
 
         private void ApplyConfig(GmlToObjConverterConfig conf, ref CitygmlParserParams parserParams)
         {
-            this.objWriter.SetMeshGranularity(conf.MeshGranularity);
-            var logger = this.objWriter.GetDllLogger();
+            var logger = new DllLogger();
             logger.SetLogCallbacks(DllLogCallback.UnityLogCallbacks);
             logger.SetLogLevel(conf.LogLevel);
+            this.dllLogger = logger;
             parserParams.Optimize = conf.OptimizeFlag;
             parserParams.Tessellate = true; // true でないと、頂点の代わりに LinearRing が生成されてしまい 3Dモデルには不適になります。
-            this.objWriter.SetDestAxes(conf.AxesConversion);
+            this.meshConverter.Options = conf.DllConvertOption;
         }
         
         /// <summary> コンバートの設定です。setで設定を変えます。 </summary>
@@ -87,6 +91,7 @@ namespace PLATEAU.Editor.Converters
         /// null でなければ、ファイルロードを省略して代わりに渡された <see cref="CityModel"/> を変換します。
         /// 成否をboolで返します。
         /// </summary>
+        // TODO exportObjFilePath はファイルパスではなくディレクトリであるべき
         private bool ConvertInner(string gmlFilePath, string exportObjFilePath, CityModel cityModel) 
         {
             if (!IsPathValid(gmlFilePath, exportObjFilePath)) return false;
@@ -96,38 +101,55 @@ namespace PLATEAU.Editor.Converters
                 SlashPath(ref exportObjFilePath);
 
                 cityModel ??= CityGml.Load(gmlFilePath, this.gmlParserParams, DllLogCallback.UnityLogCallbacks, this.config.LogLevel);
+
+                string exportDirectory = new DirectoryInfo(exportObjFilePath).Parent.FullName;
+                string[] assetPaths = new string[4];
+                // TODO ここはやっつけ。生成するLODの種類に合わせるべき。
+                for (int lod = 0; lod <= 3; lod++)
+                {
+                    assetPaths[lod] = Path.Combine(exportDirectory,
+                        $"LOD{lod}_{Path.GetFileNameWithoutExtension(gmlFilePath)}.obj");
+                }
+                assetPaths = assetPaths.Select(PathUtil.FullPathToAssetsPath).ToArray();
                 
                 // 出力先が Assets フォルダ内 かつ すでに同名ファイルが存在する場合、古いファイルを消します。
                 // そうしないと上書きによって obj のメッシュ名が変わっても Unity に反映されないことがあるためです。
                 if (PathUtil.IsSubDirectoryOfAssets(exportObjFilePath))
                 {
-                    string assetPath = PathUtil.FullPathToAssetsPath(exportObjFilePath);
-                    AssetDatabase.DeleteAsset(assetPath);
-                    AssetDatabase.Refresh();
+                    foreach (var assetPath in assetPaths)
+                    {
+                        AssetDatabase.DeleteAsset(assetPath);
+                        AssetDatabase.Refresh();
+                    }
                 }
                 
                 // ReferencePointを設定します。
                 if (this.config.DoAutoSetReferencePoint)
                 {
-                    this.objWriter.SetValidReferencePoint(cityModel);
+                    this.meshConverter.Options.SetValidReferencePoint(cityModel);
+                    this.meshConverter.Options.ReferencePoint = this.meshConverter.Options.ReferencePoint;
                 }
                 else
                 {
                     var referencePoint = this.config.ManualReferencePoint;
                     if (referencePoint == null)
                         throw new Exception($"{nameof(this.config.ManualReferencePoint)} is null.");
-                    this.objWriter.ReferencePoint = VectorConverter.ToPlateauVector(referencePoint.Value);
+                    this.meshConverter.Options.ReferencePoint = VectorConverter.ToPlateauVector(referencePoint.Value);
                 }
                 
                 // 変換してファイルに書き込みます。
-                this.objWriter.Write(exportObjFilePath, cityModel, gmlFilePath);
+                // TODO ここはファイルのパスではなくディレクトリのパスにするのが正しい　
+                this.meshConverter.Convert(exportObjFilePath, gmlFilePath, cityModel, this.dllLogger);
 
                 // 出力先が Assets フォルダ内なら、それをUnityに反映させます。
                 if (PathUtil.IsSubDirectoryOfAssets(exportObjFilePath))
                 {
-                    string assetPath = PathUtil.FullPathToAssetsPath(exportObjFilePath);
-                    AssetDatabase.ImportAsset(assetPath);
-                    AssetDatabase.Refresh();
+                    foreach (string assetPath in assetPaths)
+                    {
+                        AssetDatabase.ImportAsset(assetPath);
+                        AssetDatabase.Refresh();
+                    }
+                    
                 }
             }
             catch (FileLoadException e)
@@ -163,8 +185,8 @@ namespace PLATEAU.Editor.Converters
         /// </summary>
         public Vector3 SetValidReferencePoint(CityModel cityModel)
         {
-            this.objWriter.SetValidReferencePoint(cityModel);
-            var plateauCoord = this.objWriter.ReferencePoint;
+            this.meshConverter.Options.SetValidReferencePoint(cityModel);
+            var plateauCoord = this.meshConverter.Options.ReferencePoint;
             var coord = VectorConverter.ToUnityVector(plateauCoord);
             this.config.ManualReferencePoint = coord;
             return coord;
@@ -177,7 +199,7 @@ namespace PLATEAU.Editor.Converters
         {
             if (Interlocked.Exchange(ref this.disposed, 1) == 0)
             {
-                this.objWriter.Dispose();
+                this.meshConverter.Dispose();
             }
 
             GC.SuppressFinalize(this);

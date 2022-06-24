@@ -1,7 +1,7 @@
 ﻿
 using System;
 using System.IO;
-using PLATEAU.CityGML.Util;
+using PLATEAU.Interop;
 
 namespace PLATEAU.CityGML
 {

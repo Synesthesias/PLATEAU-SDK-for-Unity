@@ -43,16 +43,24 @@ namespace PLATEAU.Editor.Converters
                     metaData = LoadOrCreateMetaData(dstMetaDataAssetPath, config.DoClearIdToGmlTable);
                 }
                 var assets = AssetDatabase.LoadAllAssetsAtPath(meshAssetPath);
+                if (assets == null || assets.Length <= 0)
+                {
+                    Debug.LogWarning($"Failed to load mesh asset.\nmeshAssetPath = {meshAssetPath}");
+                    // TODO ここがtrueなのは仮。ちゃんとLODごとにできたら false にして失敗通知すべき。
+                    return true;
+                }
                 
                 // 各メッシュの名前とgmlファイル名を紐付けます。
-                var meshes = assets.OfType<Mesh>();
+                var meshes = assets.OfType<Mesh>().ToArray();
+                Debug.Log($"mesh count = {meshes.Length}");
                 foreach (var mesh in meshes)
                 {
                     string id = mesh.name;
                     if (metaData.DoGmlTableContainsKey(id)) continue;
-                    metaData.AddToGmlTable(id, gmlFileName);    
+                    metaData.AddToGmlTable(id, gmlFileName);
+                    Debug.Log($"adding gmlTable. ({id},{gmlFileName})");
                 }
-                
+
                 // 変換時の設定を書き込みます。
                 var importConf = config.CityImporterConfig;
                 importConf.sourceUdxFolderPath = PathUtil.FullPathToAssetsPath(exportFolderFullPath);

@@ -1,9 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
-using PLATEAU.CityGML.Util;
+using PLATEAU.Interop;
 
 namespace PLATEAU.CityGML
 {
+    public enum GeometryType : ulong
+    {
+        GT_Unknown = 1ul << 0,
+        GT_Roof = 1ul << 1,
+        GT_Wall = 1ul << 2,
+        GT_Ground = 1ul << 3,
+        GT_Closure = 1ul << 4,
+        GT_Floor = 1ul << 5,
+        GT_InteriorWall = 1ul << 6,
+        GT_Ceiling = 1ul << 7,
+        GT_OuterCeiling = 1ul << 8,
+        GT_OuterFloor = 1ul << 9,
+        GT_Tin = 1ul << 10,
+    }
+
     /// <summary>
     /// 建築物の形状と見た目の情報を保持します。
     /// <see cref="CityObject"/> が<see cref="Geometry"/>を保持します。

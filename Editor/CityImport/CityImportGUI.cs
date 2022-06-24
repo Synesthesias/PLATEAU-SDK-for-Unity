@@ -1,6 +1,8 @@
 ﻿using PLATEAU.CityGML;
 using PLATEAU.Editor.EditorWindowCommon;
 using PLATEAU.CityMeta;
+using PLATEAU.Interop;
+using PLATEAU.IO;
 using PLATEAU.Util;
 using UnityEditor;
 

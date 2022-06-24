@@ -1,5 +1,5 @@
 ﻿using System;
-using PLATEAU.CityGML.Util;
+using PLATEAU.Interop;
 
 
 namespace PLATEAU.CityGML

@@ -1,5 +1,6 @@
 ﻿using PLATEAU.CityGML;
 using PLATEAU.CityMeta;
+using PLATEAU.Interop;
 
 namespace PLATEAU.Editor.Converters
 {

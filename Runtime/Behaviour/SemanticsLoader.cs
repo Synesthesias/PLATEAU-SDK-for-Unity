@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using PLATEAU.CityGML;
 using PLATEAU.CityMeta;
+using PLATEAU.Interop;
 using PLATEAU.Util;
 using UnityEngine;
 

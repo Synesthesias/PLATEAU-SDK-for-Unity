@@ -6,7 +6,8 @@ namespace PLATEAU.Util
     /// 都市オブジェクトである GameObject の名称をパースします。
     /// 
     /// 名称は例えば LOD1_abc123 のように、 (LOD)_(PlateauObjectId) という書式になっていることを前提とし、
-    /// 名称から LOD, ID を取得します。 
+    /// 名称から LOD, ID を取得します。
+    /// 逆にLOD, ID から名称を構築するメソッドもあります。
     /// </summary>
 
     internal static class GameObjNameParser
@@ -42,6 +43,14 @@ namespace PLATEAU.Util
             if (underScoreIndex < 0 || underScoreIndex >= objName.Length-1) return false;
             id = objName.Substring(underScoreIndex + 1);
             return true;
+        }
+
+        /// <summary>
+        /// LOD, id から ゲームオブジェクト名を構築します。
+        /// </summary>
+        public static string ComposeGameObjName(int lod, string id)
+        {
+            return $"LOD{lod}_{id}";
         }
     }
 }

@@ -1,8 +1,16 @@
 ﻿using System;
-using PLATEAU.CityGML.Util;
+using PLATEAU.Interop;
 
 namespace PLATEAU.CityGML
 {
+    public enum TextureWrapMode
+    {
+        WM_None,
+        WM_Wrap,        // 繰り返し
+        WM_Mirror,      // ミラーの繰り返し
+        WM_Clamp,       // the texture is clamped to its edges
+        WM_Border       // the resulting color is specified by the borderColor element (RGBA)
+    }
 
     /// <summary>
     /// テクスチャ情報です。

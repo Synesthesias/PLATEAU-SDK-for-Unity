@@ -1,9 +1,11 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using PLATEAU.CityGML;
 using PLATEAU.Editor.Converters;
 using PLATEAU.Behaviour;
 using PLATEAU.CityMeta;
+using PLATEAU.Interop;
 using PLATEAU.Util;
 using UnityEditor;
 using UnityEngine;
@@ -64,7 +66,7 @@ namespace PLATEAU.Editor.CityImport
 
                 // gmlをロードします。
                 string gmlFileName = Path.GetFileNameWithoutExtension(gmlRelativePath);
-                string objPath = Path.Combine(config.exportFolderPath, gmlFileName + ".obj");
+                string exportObjPath = Path.Combine(config.exportFolderPath, gmlFileName + ".obj");
                 if (!TryLoadCityGml(out var cityModel, gmlFullPath, config))
                 {
                     cityModel?.Dispose();
@@ -72,25 +74,40 @@ namespace PLATEAU.Editor.CityImport
                 }
                 
                 // objに変換します。
-                if (!TryConvertToObj(cityModel, ref referencePoint, config, gmlFullPath, objPath))
+                // TODO ここの objPath は正しくはディレクトリ名を渡せるようにするべき
+                if (!TryConvertToObj(cityModel, ref referencePoint, config, gmlFullPath, exportObjPath))
                 {
+                    // 出力されるモデルがなければ、ここで終了します。
                     cityModel?.Dispose();
                     continue;
                 }
 
-                // CityMapMetaData を生成します。
-                string objAssetPath = PathUtil.FullPathToAssetsPath(objPath);
-                if (!referencePoint.HasValue) throw new Exception($"{nameof(referencePoint)} is null.");
-                config.referencePoint = referencePoint.Value;
-                if (!TryGenerateMetaData(metaData, gmlFileName, objAssetPath, config))
+                // 1つのgmlから 0個以上の .obj ファイルが生成されます。
+                // .obj ファイルごとのループを始めます。
+                var objNames = config.gmlSearcherConfig.gmlTypeTarget.ObjFileNamesForGml(gmlFileName);
+                var objPaths = objNames.Select(n => Path.Combine(config.exportFolderPath, n));
+                foreach(string objPath in objPaths)
                 {
-                    cityModel?.Dispose();
-                    continue;
+                    // CityMapMetaData を生成します。
+                    string objAssetPath = PathUtil.FullPathToAssetsPath(objPath) + ".obj";
+                    if (!referencePoint.HasValue) throw new Exception($"{nameof(referencePoint)} is null.");
+                    config.referencePoint = referencePoint.Value;
+                    Debug.Log($"Generating MetaData. objAssetPath = {objAssetPath}");
+                    if (!TryGenerateMetaData(metaData, gmlFileName, objAssetPath, config))
+                    {
+                        Debug.LogError($"Failed to generate meta data.\nobjPath = {objPath}");
+                        cityModel?.Dispose();
+                        continue;
+                    }
+                    
+                    // シーンに配置します。
+                    PlaceToScene(objAssetPath, rootGmlFolderName, metaData);
                 }
+                
+                
                 cityModel?.Dispose();
 
-                // シーンに配置します。
-                PlaceToScene(objAssetPath, rootGmlFolderName, metaData);
+                
                 
                 LastConvertedCityMetaData = metaData;
                 successCount++;
@@ -154,6 +171,7 @@ namespace PLATEAU.Editor.CityImport
         /// <see cref="CityModel"/> を obj形式の3Dモデルに変換します。
         /// 成否を bool で返します。
         /// </summary>
+        // TODO ここで渡される objPath は実際はファイルパスではなくディレクトリパスであるべき
         private static bool TryConvertToObj(CityModel cityModel, ref Vector3? referencePoint, CityImporterConfig importerConfig, string gmlFullPath, string objPath)
         {
             using (var objConverter = new GmlToObjConverter())
@@ -163,6 +181,10 @@ namespace PLATEAU.Editor.CityImport
                 converterConf.MeshGranularity = importerConfig.meshGranularity;
                 converterConf.LogLevel = importerConfig.logLevel;
                 converterConf.DoAutoSetReferencePoint = false;
+                var gmlType = GmlFileNameParser.GetGmlTypeEnum(gmlFullPath);
+                (int minLod, int maxLod) = importerConfig.gmlSearcherConfig.gmlTypeTarget.GetMinMaxLodForType(gmlType);
+                converterConf.MinLod = minLod;
+                converterConf.MaxLod = maxLod;
 
                 // Reference Pointは最初のものに合わせます。
                 if (referencePoint == null)
@@ -230,6 +252,12 @@ namespace PLATEAU.Editor.CityImport
             cityMapBehaviour.CityMetaData = metaData;
 
             var assetObj = AssetDatabase.LoadAssetAtPath<GameObject>(objAssetPath);
+            if (assetObj == null)
+            {
+                // TODO Errorのほうがいい（ユニットテストが通るなら）
+                Debug.LogWarning($"Failed to load '.obj' file.\nobjAssetPath = {objAssetPath}");
+                return;
+            }
             
             // 古い同名の GameObject を削除
             var oldObj = FindRecursive(parent.transform, assetObj.name);

@@ -6,6 +6,8 @@ using NUnit.Framework;
 using PLATEAU.Editor.CityImport;
 using PLATEAU.Editor.Converters;
 using PLATEAU.CityMeta;
+using PLATEAU.Interop;
+using PLATEAU.IO;
 using PLATEAU.Util;
 using PLATEAU.Tests.TestUtils;
 using UnityEditor;
@@ -56,7 +58,7 @@ namespace PLATEAU.Tests.EditModeTests
         }
 
         [Test]
-        public void When_Inputs_Are_2_Gmls_Then_Outputs_Are_2_Objs_And_1_IdTable()
+        public void When_Inputs_Are_2_Gmls_Then_Outputs_Are_Multiple_Objs_And_1_IdTable()
         {
             // 2つのGMLファイルを変換します。
             var config = new CityImporterConfig
@@ -64,6 +66,12 @@ namespace PLATEAU.Tests.EditModeTests
                 sourceUdxFolderPath = testUdxPathTokyo,
                 exportFolderPath = testOutputDir
             };
+            var typeConfigs = config.gmlSearcherConfig.gmlTypeTarget.GmlTypeConfigs;
+            typeConfigs[GmlType.Building].minLod = 0;
+            typeConfigs[GmlType.Building].maxLod = 2;
+            typeConfigs[GmlType.DigitalElevationModel].minLod = 1;
+            typeConfigs[GmlType.DigitalElevationModel].maxLod = 1;
+            
             this.importer.Import(testGmlRelativePathsTokyo, config);
             // 変換後、出力されたファイルの数を数えます。
             int objCount = 0;
@@ -80,7 +88,7 @@ namespace PLATEAU.Tests.EditModeTests
                     assetCount++;
                 }
             }
-            Assert.AreEqual(2, objCount);
+            Assert.AreEqual(4, objCount);
             Assert.AreEqual(1, assetCount);
         }
 
@@ -121,6 +129,12 @@ namespace PLATEAU.Tests.EditModeTests
             config.meshGranularity = granularityOnConvert;
             config.sourceUdxFolderPath = testUdxPathTokyo;
             config.exportFolderPath = testOutputDir;
+            var typeConfigs = config.gmlSearcherConfig.gmlTypeTarget.GmlTypeConfigs;
+            typeConfigs[GmlType.Building].minLod = 0;
+            typeConfigs[GmlType.Building].maxLod = 2;
+            typeConfigs[GmlType.DigitalElevationModel].minLod = 1;
+            typeConfigs[GmlType.DigitalElevationModel].maxLod = 1;
+            
             this.importer.Import(testGmlRelativePathsTokyo, config);
 
             // 値2: CityMapInfo に書き込まれた MeshGranularity の値
@@ -137,14 +151,17 @@ namespace PLATEAU.Tests.EditModeTests
         [Test]
         public void When_CityMapInfo_Is_Already_Exist_Then_Clear_Its_Data_Before_Convert()
         {
-            bool DoContainAtomic(CityMetaData info) => info.idToGmlTable.Keys.Any(id => id.StartsWith("wall"));
+            bool DoContainAtomic(CityMetaData info) => info.idToGmlTable.Keys.Any(id => id.Contains("_wall_"));
 
             var config = new CityImporterConfig
             {
                 meshGranularity = MeshGranularity.PerAtomicFeatureObject,
                 sourceUdxFolderPath = testUdxPathSimple,
-                exportFolderPath = testOutputDir
+                exportFolderPath = testOutputDir,
             };
+            var buildingConf = config.gmlSearcherConfig.gmlTypeTarget.GmlTypeConfigs[GmlType.Building];
+            buildingConf.minLod = 2;
+            buildingConf.maxLod = 2;
             this.importer.Import(testGmlRelativePathsSimple, config);
             var mapInfo = this.importer.LastConvertedCityMetaData;
             foreach (var key in mapInfo.idToGmlTable.Keys)
@@ -156,9 +173,11 @@ namespace PLATEAU.Tests.EditModeTests
             config.meshGranularity = MeshGranularity.PerPrimaryFeatureObject;
             config.sourceUdxFolderPath = testUdxPathTokyo;
             config.exportFolderPath = testOutputDir;
+            buildingConf.minLod = 0;
+            buildingConf.maxLod = 0;
             this.importer.Import(testGmlRelativePathsTokyo, config);
             mapInfo = this.importer.LastConvertedCityMetaData;
-            bool doContainBuilding = mapInfo.idToGmlTable.Keys.Any(id => id.StartsWith("BLD"));
+            bool doContainBuilding = mapInfo.idToGmlTable.Keys.Any(id => id.Contains("_BLD_"));
             Assert.IsFalse(DoContainAtomic(mapInfo), "2回目の変換は最小地物を含まないことを確認");
             Assert.IsTrue(doContainBuilding, "2回目の変換は主要地物を含むことを確認");
         }

@@ -3,13 +3,30 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using PLATEAU.CityGML.Util;
+using PLATEAU.Interop;
 
 // key と value のペアに短縮名を付けます。
 using AttrPair = System.Collections.Generic.KeyValuePair<string, PLATEAU.CityGML.AttributeValue>;
 
 namespace PLATEAU.CityGML
 {
+    /// <summary>
+    /// 属性の値の想定形式です。
+    /// 形式が String, Double, Integer, Data, Uri, Measure である場合、内部的にはデータは string です。
+    /// AttributeSet である場合、内部的にはデータは <see cref="AttributesMap"/> への参照です。
+    /// </summary>
+    public enum AttributeType
+    {
+        String,
+        Double,
+        Integer,
+        Data,
+        Uri,
+        Measure,
+        AttributeSet
+    }
+
+
     /// <summary>
     /// 属性の辞書です。
     /// <see cref="IReadOnlyDictionary{TKey,TValue}"/> を実装します。
