@@ -33,7 +33,7 @@ namespace PLATEAU.Tests.EditModeTests
         [Test]
         public void Convert_Generates_Obj_File()
         {
-            string outputFilePath = Path.Combine(DirectoryUtil.TempCacheFolderPath, "test_convert_generates_obj_file.obj");
+            string outputFilePath = Path.Combine(DirectoryUtil.TempCacheFolderPath, "LOD0_53392642_bldg_6697_op2.obj");
             using (var converter = new GmlToObjConverter())
             {
                 converter.Convert(DirectoryUtil.TestSimpleGmlFilePath, outputFilePath);
@@ -45,7 +45,7 @@ namespace PLATEAU.Tests.EditModeTests
         [Test]
         public void If_MeshGranularity_Is_PerCityModelArea_Then_Mesh_Count_Is_One()
         {
-            var meshes = ConvertAndRead(MeshGranularity.PerCityModelArea);
+            var meshes = ConvertAndRead(MeshGranularity.PerCityModelArea, 2);
             int count = meshes.Length;
             Debug.Log($"Count : {count}");
             Assert.AreEqual(1, count);
@@ -54,7 +54,7 @@ namespace PLATEAU.Tests.EditModeTests
         [Test]
         public void If_MeshGranularity_Is_PerPrimaryFeatureObject_Then_Multiple_BLD_Are_Exported()
         {
-            var meshes = ConvertAndRead(MeshGranularity.PerPrimaryFeatureObject);
+            var meshes = ConvertAndRead(MeshGranularity.PerPrimaryFeatureObject, 2);
             int count = meshes.Length;
             Debug.Log($"mesh count : {count}");
             Assert.Greater(count, 1);
@@ -68,7 +68,7 @@ namespace PLATEAU.Tests.EditModeTests
         [Test]
         public void If_MeshGranularity_Is_PerAtomicFeatureObject_Then_Multiple_Walls_Are_Exported()
         {
-            var meshes = ConvertAndRead(MeshGranularity.PerAtomicFeatureObject);
+            var meshes = ConvertAndRead(MeshGranularity.PerAtomicFeatureObject, 2);
             int count = meshes.Length;
             Debug.Log($"count : {count}");
             Assert.Greater(count, 1);
@@ -83,10 +83,10 @@ namespace PLATEAU.Tests.EditModeTests
             Assert.Greater(wallCount, 1);
         }
 
-        private static Mesh[] ConvertAndRead(MeshGranularity meshGranularity)
+        private static Mesh[] ConvertAndRead(MeshGranularity meshGranularity, int lod)
         {
             string inputFilePath = DirectoryUtil.TestSimpleGmlFilePath;
-            string outputFilePath = Path.Combine(DirectoryUtil.TempAssetFolderPath, "exported.obj");
+            string outputFilePath = Path.Combine(DirectoryUtil.TempAssetFolderPath, $"LOD{lod}_{Path.GetFileNameWithoutExtension(inputFilePath)}.obj");
             using (var converter = new GmlToObjConverter())
             {
                 var conf = converter.Config;

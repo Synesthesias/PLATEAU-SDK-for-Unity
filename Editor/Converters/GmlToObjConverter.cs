@@ -103,21 +103,21 @@ namespace PLATEAU.Editor.Converters
                 cityModel ??= CityGml.Load(gmlFilePath, this.gmlParserParams, DllLogCallback.UnityLogCallbacks, this.config.LogLevel);
 
                 string exportDirectory = new DirectoryInfo(exportObjFilePath).Parent.FullName;
-                string[] assetPaths = new string[4];
+                string[] objFullPaths = new string[4];
                 // TODO ここはやっつけ。生成するLODの種類に合わせるべき。
                 for (int lod = 0; lod <= 3; lod++)
                 {
-                    assetPaths[lod] = Path.Combine(exportDirectory,
+                    objFullPaths[lod] = Path.Combine(exportDirectory,
                         $"LOD{lod}_{Path.GetFileNameWithoutExtension(gmlFilePath)}.obj");
                 }
-                assetPaths = assetPaths.Select(PathUtil.FullPathToAssetsPath).ToArray();
-                
+
                 // 出力先が Assets フォルダ内 かつ すでに同名ファイルが存在する場合、古いファイルを消します。
                 // そうしないと上書きによって obj のメッシュ名が変わっても Unity に反映されないことがあるためです。
                 if (PathUtil.IsSubDirectoryOfAssets(exportObjFilePath))
                 {
-                    foreach (var assetPath in assetPaths)
+                    foreach (var objFullPath in objFullPaths)
                     {
+                        string assetPath = PathUtil.FullPathToAssetsPath(objFullPath);
                         AssetDatabase.DeleteAsset(assetPath);
                         AssetDatabase.Refresh();
                     }
@@ -144,8 +144,9 @@ namespace PLATEAU.Editor.Converters
                 // 出力先が Assets フォルダ内なら、それをUnityに反映させます。
                 if (PathUtil.IsSubDirectoryOfAssets(exportObjFilePath))
                 {
-                    foreach (string assetPath in assetPaths)
+                    foreach (string objFullPath in objFullPaths)
                     {
+                        string assetPath = PathUtil.FullPathToAssetsPath(objFullPath);
                         AssetDatabase.ImportAsset(assetPath);
                         AssetDatabase.Refresh();
                     }
