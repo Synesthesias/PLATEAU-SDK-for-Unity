@@ -76,9 +76,9 @@ namespace PLATEAU.Interop
         public MeshGranularity MeshGranularity;
         public uint MinLOD;
         public uint MaxLOD;
-        public bool ExportLowerLOD;
-        public bool ExportAppearance;
-        public bool ConvertLatLon;
+        [MarshalAs(UnmanagedType.U1)] public bool ExportLowerLOD;
+        [MarshalAs(UnmanagedType.U1)] public bool ExportAppearance;
+        [MarshalAs(UnmanagedType.U1)] public bool ConvertLatLon;
     }
 
     public enum APIResult

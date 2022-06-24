@@ -99,6 +99,5 @@ namespace PLATEAU.IO
             APIResult result = NativeMethods.plateau_mesh_converter_set_options(this.handle, this.options.Data);
             DLLUtil.CheckDllError(result);
         }
-        
     }
 }

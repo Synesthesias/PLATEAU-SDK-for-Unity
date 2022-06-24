@@ -66,16 +66,15 @@ namespace PLATEAU.Editor.Converters
             AxesConversion axesConversion = AxesConversion.RUF
         )
         {
-            // this.MeshGranularity = meshGranularity;
             this.DoAutoSetReferencePoint = doAutoSetReferencePoint;
             this.ManualReferencePoint = manualReferencePoint;
             this.LogLevel = logLevel;
             this.OptimizeFlag = optimizeFlag;
-            // this.AxesConversion = axesConversion;
             this.DllConvertOption = new MeshConvertOptions()
             {
                 MeshAxes = axesConversion,
-                MeshGranularity = meshGranularity
+                MeshGranularity = meshGranularity,
+                ConvertLatLon = true
             };
         }
     }

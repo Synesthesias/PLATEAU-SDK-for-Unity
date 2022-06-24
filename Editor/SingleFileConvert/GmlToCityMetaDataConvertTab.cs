@@ -91,7 +91,6 @@ namespace PLATEAU.Editor.SingleFileConvert
         {
             // 変換方法のタブによって Convert に渡すパスが違うので、
             // オーバーライドして場合分けでパスを指定します。
-            // TODO 数値指定は分かりにくいのでenum形式にする
             switch (this.dstTabIndex)
             {
                 case 0:

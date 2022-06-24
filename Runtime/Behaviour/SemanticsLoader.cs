@@ -31,7 +31,7 @@ namespace PLATEAU.Behaviour
             }
             
             // 名前が gmlFileName である gmlファイルを検索します。
-            // TODO 今は StreamingAssets フォルダから読み込んでいますが、今後は拡張する必要があります。
+            // gmlファイルは StreamingAssets フォルダ内にあることを前提とします（そうでないと実行時に読めないので）。
             
             // キャッシュにあればそれを返します。
             if (this.fileToCityModelCache.TryGetValue(gmlFileName, out CityModel cityModel))

@@ -45,6 +45,7 @@ namespace PLATEAU.Editor.Converters
             this.dllLogger = logger;
             parserParams.Optimize = conf.OptimizeFlag;
             parserParams.Tessellate = true; // true でないと、頂点の代わりに LinearRing が生成されてしまい 3Dモデルには不適になります。
+            Debug.Log($"applyconfig: latlon: {conf.DllConvertOption.ConvertLatLon}");
             this.meshConverter.Options = conf.DllConvertOption;
         }
         
@@ -140,6 +141,8 @@ namespace PLATEAU.Editor.Converters
                 // 変換してファイルに書き込みます。
                 // TODO ここはファイルのパスではなくディレクトリのパスにするのが正しい　
                 this.meshConverter.Convert(exportObjFilePath, gmlFilePath, cityModel, this.dllLogger);
+                
+                Debug.Log($"ConvertLatLon = {this.meshConverter.Options.ConvertLatLon}");
 
                 // 出力先が Assets フォルダ内なら、それをUnityに反映させます。
                 if (PathUtil.IsSubDirectoryOfAssets(exportObjFilePath))
