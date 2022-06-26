@@ -40,7 +40,7 @@ namespace PLATEAU.Editor.CityImport
             // 元フォルダを StreamingAssets/PLATEAU にコピーします。すでに StreamingAssets内にある場合を除きます。 
             // 設定のインポート元パスをコピー後のパスに変更します。
             var sourcePath = config.sourcePath;
-            config.sourcePath.udxFullPath = CopyImportSrcToStreamingAssets(config.sourcePath, sourcePath.RootDirName, gmlRelativePaths);
+            sourcePath.udxFullPath = CopyImportSrcToStreamingAssets(sourcePath, gmlRelativePaths);
             
             string destMetaDataPath = Path.Combine(PathUtil.FullPathToAssetsPath(config.exportFolderPath), CityMetaDataGenerator.MetaDataFileName);
             var metaData = CityMetaDataGenerator.LoadOrCreateMetaData(destMetaDataPath, true);
@@ -55,10 +55,9 @@ namespace PLATEAU.Editor.CityImport
                 loopCount++;
                 ProgressBar($"gml変換中 : [{loopCount}/{numGml}] {gmlRelativePath}", loopCount, numGml );
 
-                string gmlFullPath = Path.GetFullPath(Path.Combine(config.sourcePath.udxFullPath, gmlRelativePath));
+                string gmlFullPath = sourcePath.RelativeToFullPath(gmlRelativePath);
 
                 // gmlをロードします。
-                string gmlFileName = Path.GetFileNameWithoutExtension(gmlRelativePath);
                 if (!TryLoadCityGml(out var cityModel, gmlFullPath, config))
                 {
                     cityModel?.Dispose();
@@ -75,6 +74,7 @@ namespace PLATEAU.Editor.CityImport
 
                 // 1つのgmlから 0個以上の .obj ファイルが生成されます。
                 // .obj ファイルごとのループを始めます。
+                string gmlFileName = Path.GetFileNameWithoutExtension(gmlRelativePath);
                 var objNames = config.gmlSearcherConfig.gmlTypeTarget.ObjFileNamesForGml(gmlFileName);
                 var objPaths = objNames.Select(n => Path.Combine(config.exportFolderPath, n));
                 foreach(string objPath in objPaths)
@@ -157,14 +157,14 @@ namespace PLATEAU.Editor.CityImport
             return true;
         }
 
-        private string CopyImportSrcToStreamingAssets(PlateauSourcePath sourcePath, string rootGmlFolderName, string[] gmlRelativePaths)
+        private string CopyImportSrcToStreamingAssets(PlateauSourcePath sourcePath, string[] gmlRelativePaths)
         {
             string newUdxPath = sourcePath.udxFullPath;
             if (!IsInStreamingAssets(sourcePath.udxFullPath))
             {
                 string copyDest = PlateauUnityPath.StreamingGmlFolder;
                 CopyPlateauSrcFiles.SelectCopy(sourcePath, copyDest, gmlRelativePaths);
-                newUdxPath = Path.Combine(copyDest, $"{rootGmlFolderName}/udx");
+                newUdxPath = Path.Combine(copyDest, $"{sourcePath.RootDirName}/udx");
             }
 
             return newUdxPath;

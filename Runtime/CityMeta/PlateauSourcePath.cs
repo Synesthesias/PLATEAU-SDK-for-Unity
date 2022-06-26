@@ -39,5 +39,13 @@ namespace PLATEAU.CityMeta
         /// 元データのRoot (= udxの親) フォルダのパスです。
         /// </summary>
         public string RootFullPath => Path.GetFullPath(Path.Combine(this.udxFullPath, "../"));
+
+        /// <summary>
+        /// udxフォルダからの相対パスを受け取り、そのフルパスを返します。
+        /// </summary>
+        public string RelativeToFullPath(string relativePathFromUdx)
+        {
+            return Path.GetFullPath(Path.Combine(this.udxFullPath, relativePathFromUdx));
+        }
     }
 }
