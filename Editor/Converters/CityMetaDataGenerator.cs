@@ -52,13 +52,11 @@ namespace PLATEAU.Editor.Converters
                 
                 // 各メッシュの名前とgmlファイル名を紐付けます。
                 var meshes = assets.OfType<Mesh>().ToArray();
-                Debug.Log($"mesh count = {meshes.Length}");
                 foreach (var mesh in meshes)
                 {
                     string id = mesh.name;
                     if (metaData.DoGmlTableContainsKey(id)) continue;
                     metaData.AddToGmlTable(id, gmlFileName);
-                    Debug.Log($"adding gmlTable. ({id},{gmlFileName})");
                 }
 
                 // 変換時の設定を書き込みます。
