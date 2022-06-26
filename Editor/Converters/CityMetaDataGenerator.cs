@@ -14,7 +14,6 @@ namespace PLATEAU.Editor.Converters
     /// </summary>
     internal class CityMetaDataGenerator
     {
-        public CityMetaData LastConvertedCityMetaData { get; private set; }
         public const string MetaDataFileName = "CityMapMetaData.asset";
 
         /// <summary>
@@ -66,7 +65,6 @@ namespace PLATEAU.Editor.Converters
                 importConf.exportFolderPath = PathUtil.FullPathToAssetsPath(exportFolderFullPath);
                 metaData.cityImporterConfig = importConf;
                 
-                LastConvertedCityMetaData = metaData;
                 // ファイルに保存します。
                 if (doSaveFile)
                 {
