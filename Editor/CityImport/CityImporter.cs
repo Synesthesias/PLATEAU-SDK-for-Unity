@@ -25,10 +25,7 @@ namespace PLATEAU.Editor.CityImport
     /// </summary>
     internal class CityImporter
     {
-        
-        /// <summary> このインスタンスが最後に出力した <see cref="CityMetaData"/> です。 </summary>
-        // public CityMetaData LastConvertedCityMetaData { get; private set; }
-        
+
         /// <summary>
         /// gmlデータ群をインポートします。
         /// コピーおよび変換されるのは <paramref name="gmlRelativePaths"/> のリストにある gmlファイルに関連するデータのみです。
@@ -41,15 +38,8 @@ namespace PLATEAU.Editor.CityImport
         {
             convertedMetaData = null;
             // 元フォルダを StreamingAssets/PLATEAU にコピーします。すでに StreamingAssets内にある場合を除きます。 
-            string prevSourceUdxPath = config.sourceUdxFolderPath;
-            string rootGmlFolderName = CopyPlateauSrcFiles.UdxPathToGmlRootFolderName(prevSourceUdxPath);
-            if (!IsInStreamingAssets(prevSourceUdxPath))
-            {
-                string copyDest = PlateauPath.StreamingGmlFolder;
-                CopyPlateauSrcFiles.SelectCopy(config.sourceUdxFolderPath, copyDest, gmlRelativePaths);
-                // configの変換元パスをコピー先に再設定します。
-                config.sourceUdxFolderPath = Path.Combine(copyDest, $"{rootGmlFolderName}/udx");
-            }
+            string rootGmlFolderName = CopyPlateauSrcFiles.UdxPathToGmlRootFolderName(config.sourceUdxFolderPath);
+            config.sourceUdxFolderPath = CopyImportSrcToStreamingAssets(config.sourceUdxFolderPath, rootGmlFolderName, gmlRelativePaths);
             
             string destMetaDataPath = Path.Combine(PathUtil.FullPathToAssetsPath(config.exportFolderPath), CityMetaDataGenerator.MetaDataFileName);
             var metaData = CityMetaDataGenerator.LoadOrCreateMetaData(destMetaDataPath, true);
@@ -166,6 +156,20 @@ namespace PLATEAU.Editor.CityImport
             }
 
             return true;
+        }
+
+        private string CopyImportSrcToStreamingAssets(string prevSourceUdxPath, string rootGmlFolderName, string[] gmlRelativePaths)
+        {
+            string newUdxPath = prevSourceUdxPath;
+            if (!IsInStreamingAssets(prevSourceUdxPath))
+            {
+                string copyDest = PlateauPath.StreamingGmlFolder;
+                CopyPlateauSrcFiles.SelectCopy(prevSourceUdxPath, copyDest, gmlRelativePaths);
+                // configの変換元パスをコピー先に再設定します。
+                newUdxPath = Path.Combine(copyDest, $"{rootGmlFolderName}/udx");
+            }
+
+            return newUdxPath;
         }
 
         /// <summary>
