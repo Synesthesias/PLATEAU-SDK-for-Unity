@@ -38,8 +38,8 @@ namespace PLATEAU.Editor.CityImport
         {
             convertedMetaData = null;
             // 元フォルダを StreamingAssets/PLATEAU にコピーします。すでに StreamingAssets内にある場合を除きます。 
-            string rootGmlFolderName = CopyPlateauSrcFiles.UdxPathToGmlRootFolderName(config.sourceUdxFolderPath);
-            config.sourceUdxFolderPath = CopyImportSrcToStreamingAssets(config.sourceUdxFolderPath, rootGmlFolderName, gmlRelativePaths);
+            string rootGmlFolderName = CopyPlateauSrcFiles.UdxPathToGmlRootFolderName(config.sourcePath.udxFullPath);
+            config.sourcePath.udxFullPath = CopyImportSrcToStreamingAssets(config.sourcePath.udxFullPath, rootGmlFolderName, gmlRelativePaths);
             
             string destMetaDataPath = Path.Combine(PathUtil.FullPathToAssetsPath(config.exportFolderPath), CityMetaDataGenerator.MetaDataFileName);
             var metaData = CityMetaDataGenerator.LoadOrCreateMetaData(destMetaDataPath, true);
@@ -54,7 +54,7 @@ namespace PLATEAU.Editor.CityImport
                 loopCount++;
                 ProgressBar($"gml変換中 : [{loopCount}/{numGml}] {gmlRelativePath}", loopCount, numGml );
 
-                string gmlFullPath = Path.GetFullPath(Path.Combine(config.sourceUdxFolderPath, gmlRelativePath));
+                string gmlFullPath = Path.GetFullPath(Path.Combine(config.sourcePath.udxFullPath, gmlRelativePath));
 
                 // gmlをロードします。
                 string gmlFileName = Path.GetFileNameWithoutExtension(gmlRelativePath);

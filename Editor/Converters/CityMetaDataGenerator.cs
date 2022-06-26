@@ -34,7 +34,7 @@ namespace PLATEAU.Editor.Converters
             {
                 // ロードします。
                 string exportFolderFullPath = config.CityImporterConfig.exportFolderPath;
-                string udxFullPath = config.CityImporterConfig.sourceUdxFolderPath;
+                string udxFullPath = config.CityImporterConfig.sourcePath.udxFullPath;
                 string dstMetaDataAssetPath =
                     Path.Combine(PathUtil.FullPathToAssetsPath(exportFolderFullPath), MetaDataFileName);
                 if (metaData == null)
@@ -60,14 +60,14 @@ namespace PLATEAU.Editor.Converters
 
                 // 変換時の設定を書き込みます。
                 var importConf = config.CityImporterConfig;
-                importConf.sourceUdxFolderPath = PathUtil.FullPathToAssetsPath(exportFolderFullPath);
+                importConf.sourcePath.udxFullPath = PathUtil.FullPathToAssetsPath(exportFolderFullPath);
                 if (PathUtil.IsSubDirectoryOfAssets(udxFullPath))
                 {
-                    importConf.sourceUdxFolderPath = PathUtil.FullPathToAssetsPath(udxFullPath);
+                    importConf.sourcePath.udxFullPath = PathUtil.FullPathToAssetsPath(udxFullPath);
                 }
                 else
                 {
-                    importConf.sourceUdxFolderPath = udxFullPath;
+                    importConf.sourcePath.udxFullPath = udxFullPath;
                 }
                 
                 importConf.exportFolderPath = PathUtil.FullPathToAssetsPath(exportFolderFullPath);

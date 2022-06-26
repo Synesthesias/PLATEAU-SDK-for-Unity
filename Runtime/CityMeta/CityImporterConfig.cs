@@ -29,7 +29,7 @@ namespace PLATEAU.CityMeta
         public GmlSearcherConfig gmlSearcherConfig = new GmlSearcherConfig();
         
         /// <value> インポート元ファイルのパスです。通常 StreamingAssets内を指します。 </value>
-        public string sourceUdxFolderPath = "";
+        public PlateauSourcePath sourcePath = new PlateauSourcePath("");
         
         /// <value> インポートの出力先 </value>
         public string exportFolderPath = "";
