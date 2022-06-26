@@ -200,10 +200,7 @@ namespace PLATEAU.Tests.EditModeTests
             var config = new CityImporterConfig
             {
                 meshGranularity = meshGranularity,
-                sourcePath =
-                {
-                    udxPath =  testUdxPath
-                },
+                UdxPathBeforeImport = testUdxPath,
                 exportFolderPath = testOutputDir
             };
             var typeConfigs = config.gmlSearcherConfig.gmlTypeTarget.GmlTypeConfigs;

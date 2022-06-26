@@ -36,9 +36,9 @@ namespace PLATEAU.Editor.CityImport
         public void Draw(CityImporterConfig config)
         {
             // udxフォルダ選択
-            this.udxFolderSelectorGUI.FolderPath = config.sourcePath.udxPath;
+            this.udxFolderSelectorGUI.FolderPath = config.UdxPathBeforeImport;
             string sourcePath = this.udxFolderSelectorGUI.Draw("udxフォルダ選択");
-            config.sourcePath.udxPath = sourcePath;
+            config.UdxPathBeforeImport = sourcePath;
 
             // udxフォルダが選択されているなら、設定と出力のGUIを表示
             if (GmlSearcher.IsPathUdx(sourcePath))

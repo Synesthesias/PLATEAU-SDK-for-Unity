@@ -25,25 +25,28 @@ namespace PLATEAU.CityMeta
     [Serializable]
     internal class CityImporterConfig
     {
-        /// <value> インポート時の対象gmlファイルの絞り込みの設定 </value>
+        /// <summary> インポート時の対象gmlファイルの絞り込みの設定 </summary>
         public GmlSearcherConfig gmlSearcherConfig = new GmlSearcherConfig();
         
-        /// <value> インポート元ファイルのパスです。通常 StreamingAssets内を指します。 </value>
+        /// <summary> インポート元ファイルのパス（コピー後）です。通常 StreamingAssets内を指します。 </summary>
         public PlateauSourcePath sourcePath = new PlateauSourcePath("");
+
+        /// <summary> インポート元ファイルのパス（コピー前）です。 Assetsフォルダ外を指すこともあります。 </summary>
+        [NonSerialized] public string UdxPathBeforeImport;
         
-        /// <value> インポートの出力先 </value>
+        /// <summary> インポートの出力先 </summary>
         public string exportFolderPath = "";
         
-        /// <value> インポート時に最適化するかどうか </value>
+        /// <summary> インポート時に最適化するかどうか </summary>
         public bool optimizeFlag = true;
         
-        /// <value> オブジェクト分けの粒度 </value>
+        /// <summary> オブジェクト分けの粒度 </summary>
         public MeshGranularity meshGranularity = MeshGranularity.PerPrimaryFeatureObject;
         
-        /// <value> メッシュ変換の基準座標 </value>
+        /// <summary> メッシュ変換の基準座標 </summary>
         public Vector3 referencePoint = Vector3.zero;
         
-        /// <value> インポート時のログレベル </value>
+        /// <summary> インポート時のログレベル </summary>
         public DllLogLevel logLevel = DllLogLevel.Error;
     }
 }

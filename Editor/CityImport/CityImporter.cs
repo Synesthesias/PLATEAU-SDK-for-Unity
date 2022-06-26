@@ -40,7 +40,7 @@ namespace PLATEAU.Editor.CityImport
             // 元フォルダを StreamingAssets/PLATEAU にコピーします。すでに StreamingAssets内にある場合を除きます。 
             // 設定のインポート元パスをコピー後のパスに変更します。
             var sourcePath = config.sourcePath;
-            sourcePath.udxPath = CopyImportSrcToStreamingAssets(sourcePath, gmlRelativePaths);
+            sourcePath.FullUdxPath = CopyImportSrcToStreamingAssets(config.UdxPathBeforeImport, gmlRelativePaths);
             
             string destMetaDataPath = Path.Combine(PathUtil.FullPathToAssetsPath(config.exportFolderPath), CityMetaDataGenerator.MetaDataFileName);
             var metaData = CityMetaDataGenerator.LoadOrCreateMetaData(destMetaDataPath, true);
@@ -91,7 +91,7 @@ namespace PLATEAU.Editor.CityImport
                     }
                     
                     // シーンに配置します。
-                    PlaceToScene(objAssetPath, sourcePath.RootDirName, metaData);
+                    PlaceToScene(objAssetPath, PlateauSourcePath.RootDirName(sourcePath.udxAssetPath), metaData);
                 }
                 
                 
@@ -157,17 +157,17 @@ namespace PLATEAU.Editor.CityImport
             return true;
         }
 
-        private string CopyImportSrcToStreamingAssets(PlateauSourcePath sourcePath, string[] gmlRelativePaths)
+        private string CopyImportSrcToStreamingAssets(string udxPathBeforeImport, string[] gmlRelativePaths)
         {
-            string newUdxPath = sourcePath.udxPath;
-            if (!IsInStreamingAssets(sourcePath.udxPath))
+            string newUdxFullPath = udxPathBeforeImport; // デフォルト値
+            if (!IsInStreamingAssets(udxPathBeforeImport))
             {
                 string copyDest = PlateauUnityPath.StreamingGmlFolder;
-                CopyPlateauSrcFiles.SelectCopy(sourcePath, copyDest, gmlRelativePaths);
-                newUdxPath = Path.Combine(copyDest, $"{sourcePath.RootDirName}/udx");
+                CopyPlateauSrcFiles.SelectCopy(udxPathBeforeImport, copyDest, gmlRelativePaths);
+                newUdxFullPath = Path.Combine(copyDest, $"{PlateauSourcePath.RootDirName(udxPathBeforeImport)}/udx");
             }
 
-            return newUdxPath;
+            return newUdxFullPath;
         }
 
         /// <summary>
