@@ -1,5 +1,4 @@
-﻿using PLATEAU.CityGML;
-using PLATEAU.Editor.EditorWindowCommon;
+﻿using PLATEAU.Editor.EditorWindowCommon;
 using PLATEAU.CityMeta;
 using PLATEAU.Interop;
 using PLATEAU.IO;
@@ -72,7 +71,7 @@ namespace PLATEAU.Editor.CityImport
                 {
                     if (PlateauEditorStyle.MainButton("出力"))
                     {
-                        this.cityImporter.Import(gmlFiles.ToArray(), config);
+                        this.cityImporter.Import(gmlFiles.ToArray(), config, out _);
                     }
                 }
             }

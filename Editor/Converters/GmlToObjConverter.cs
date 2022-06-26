@@ -1,8 +1,6 @@
 using System;
 using System.IO;
-using System.Linq;
 using System.Threading;
-using Codice.Client.Common;
 using PLATEAU.CityGML;
 using PLATEAU.Interop;
 using PLATEAU.Util;

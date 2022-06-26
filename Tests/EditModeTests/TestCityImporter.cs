@@ -63,7 +63,7 @@ namespace PLATEAU.Tests.EditModeTests
         public void When_Inputs_Are_2_Gmls_Then_Outputs_Are_Multiple_Objs_And_1_IdTable()
         {
 
-            Import(testUdxPathTokyo, testGmlRelativePathsTokyo, MeshGranularity.PerCityModelArea, 0, 2, 1, 1);
+            Import(testUdxPathTokyo, testGmlRelativePathsTokyo, MeshGranularity.PerCityModelArea, out _, 0, 2, 1, 1);
             
             // 変換後、出力されたファイルの数を数えます。
             int objCount = 0;
@@ -88,10 +88,9 @@ namespace PLATEAU.Tests.EditModeTests
         public void ReferencePoint_Is_Set_To_First_ReferencePoint()
         {
             // 2つのGMLファイルを変換します。
-            Import(testUdxPathTokyo, testGmlRelativePathsTokyo, MeshGranularity.PerPrimaryFeatureObject, 0, 0);
+            Import(testUdxPathTokyo, testGmlRelativePathsTokyo, MeshGranularity.PerPrimaryFeatureObject, out var mapInfo, 0, 0);
             
             // 値1 : CityMapInfo に記録された Reference Point を取得します。
-            var mapInfo = this.importer.LastConvertedCityMetaData;
             var recordedReferencePoint = mapInfo.cityImporterConfig.referencePoint;
 
             // 値2 : GmlToObjFileConverter にかけたときの Reference Point を取得します。
@@ -112,7 +111,7 @@ namespace PLATEAU.Tests.EditModeTests
         {
             // 値1: 変換時の MeshGranularity の設定
             var granularityOnConvert = MeshGranularity.PerAtomicFeatureObject;
-            Import(testUdxPathTokyo, testGmlRelativePathsTokyo, granularityOnConvert, 0, 2, 1, 1);
+            Import(testUdxPathTokyo, testGmlRelativePathsTokyo, granularityOnConvert, out _, 0, 2, 1, 1);
 
             // 値2: CityMapInfo に書き込まれた MeshGranularity の値
             string metaDataPath =
@@ -130,20 +129,18 @@ namespace PLATEAU.Tests.EditModeTests
         {
             bool DoContainAtomic(CityMetaData info) => info.idToGmlTable.Keys.Any(id => id.Contains("_wall_"));
 
-            Import(testUdxPathSimple, testGmlRelativePathsSimple, MeshGranularity.PerAtomicFeatureObject, 2, 2);
+            Import(testUdxPathSimple, testGmlRelativePathsSimple, MeshGranularity.PerAtomicFeatureObject, out var mapInfo,  2, 2);
             
-            var mapInfo = this.importer.LastConvertedCityMetaData;
             foreach (var key in mapInfo.idToGmlTable.Keys)
             {
                 Console.Write(key);
             }
             Assert.IsTrue(DoContainAtomic(mapInfo), "1回目の変換は最小地物を含むことを確認");
 
-            Import(testUdxPathSimple, testGmlRelativePathsSimple, MeshGranularity.PerPrimaryFeatureObject, 0, 0);
+            Import(testUdxPathSimple, testGmlRelativePathsSimple, MeshGranularity.PerPrimaryFeatureObject, out var mapInfo2, 0, 0);
             
-            mapInfo = this.importer.LastConvertedCityMetaData;
-            bool doContainBuilding = mapInfo.idToGmlTable.Keys.Any(id => id.Contains("_BLD_"));
-            Assert.IsFalse(DoContainAtomic(mapInfo), "2回目の変換は最小地物を含まないことを確認");
+            bool doContainBuilding = mapInfo2.idToGmlTable.Keys.Any(id => id.Contains("_BLD_"));
+            Assert.IsFalse(DoContainAtomic(mapInfo2), "2回目の変換は最小地物を含まないことを確認");
             Assert.IsTrue(doContainBuilding, "2回目の変換は主要地物を含むことを確認");
         }
 
@@ -151,7 +148,7 @@ namespace PLATEAU.Tests.EditModeTests
         public void Importing_Mini_Tokyo_Ends_With_Success()
         {
             int numSuccess = Import(testUdxPathTokyo, testGmlRelativePathsTokyo,
-                MeshGranularity.PerPrimaryFeatureObject, 1, 1, 1, 1);
+                MeshGranularity.PerPrimaryFeatureObject, out _, 1, 1, 1, 1);
 
             Assert.AreEqual(2, numSuccess);
         }
@@ -160,7 +157,7 @@ namespace PLATEAU.Tests.EditModeTests
         public void When_Lod_Is_2_to_2_Then_Only_Lod2_Objs_Are_Generated()
         {
 
-            Import(testUdxPathSimple, testGmlRelativePathsSimple, MeshGranularity.PerCityModelArea, 2, 2);
+            Import(testUdxPathSimple, testGmlRelativePathsSimple, MeshGranularity.PerCityModelArea, out _, 2, 2);
 
             string gmlId = "53392642_bldg_6697_op2";
             bool lod2Exists = File.Exists(Path.Combine(testOutputDir, $"LOD2_{gmlId}.obj"));
@@ -173,7 +170,7 @@ namespace PLATEAU.Tests.EditModeTests
         public void When_Lod_Is_0_to_1_Then_Only_2_Objs_Are_Generated()
         {
 
-            Import(testUdxPathSimple, testGmlRelativePathsSimple, MeshGranularity.PerCityModelArea, 0, 1);
+            Import(testUdxPathSimple, testGmlRelativePathsSimple, MeshGranularity.PerCityModelArea, out _,  0, 1);
 
             string gmlId = "53392642_bldg_6697_op2";
             bool lod2Exists = File.Exists(Path.Combine(testOutputDir, $"LOD2_{gmlId}.obj"));
@@ -187,7 +184,7 @@ namespace PLATEAU.Tests.EditModeTests
         [Test]
         public void Converted_Objs_Are_Placed_In_Current_Scene()
         {
-            Import(testUdxPathSimple, testGmlRelativePathsSimple, MeshGranularity.PerCityModelArea, 0, 1);
+            Import(testUdxPathSimple, testGmlRelativePathsSimple, MeshGranularity.PerCityModelArea, out _, 0, 1);
 
             string gmlId = "53392642_bldg_6697_op2";
             bool lod0Exists = GameObject.Find($"LOD0_{gmlId}");
@@ -198,7 +195,7 @@ namespace PLATEAU.Tests.EditModeTests
             Assert.IsFalse(lod2Exists);
         }
 
-        private int Import(string testUdxPath, string[] gmlRelativePaths, MeshGranularity meshGranularity, int minLodBuilding, int maxLodBuilding, int minLodDem = 0, int maxLodDem = 0)
+        private int Import(string testUdxPath, string[] gmlRelativePaths, MeshGranularity meshGranularity, out CityMetaData metaData, int minLodBuilding, int maxLodBuilding, int minLodDem = 0, int maxLodDem = 0)
         {
             var config = new CityImporterConfig
             {
@@ -212,7 +209,7 @@ namespace PLATEAU.Tests.EditModeTests
             typeConfigs[GmlType.DigitalElevationModel].minLod = minLodDem;
             typeConfigs[GmlType.DigitalElevationModel].maxLod = maxLodDem;
             
-            int numSuccess = this.importer.Import(gmlRelativePaths, config);
+            int numSuccess = this.importer.Import(gmlRelativePaths, config, out metaData);
             return numSuccess;
         }
 

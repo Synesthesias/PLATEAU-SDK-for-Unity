@@ -27,7 +27,7 @@ namespace PLATEAU.Editor.CityImport
     {
         
         /// <summary> このインスタンスが最後に出力した <see cref="CityMetaData"/> です。 </summary>
-        public CityMetaData LastConvertedCityMetaData { get; private set; }
+        // public CityMetaData LastConvertedCityMetaData { get; private set; }
         
         /// <summary>
         /// gmlデータ群をインポートします。
@@ -36,8 +36,10 @@ namespace PLATEAU.Editor.CityImport
         /// </summary>
         /// <param name="gmlRelativePaths">gmlファイルの相対パスのリストです。パスの起点は udx フォルダです。</param>
         /// <param name="config">変換設定です。</param>
-        public int Import(string[] gmlRelativePaths, CityImporterConfig config)
+        /// <param name="convertedMetaData">インポートによって生成されたメタデータです。</param>
+        public int Import(string[] gmlRelativePaths, CityImporterConfig config, out CityMetaData convertedMetaData)
         {
+            convertedMetaData = null;
             // 元フォルダを StreamingAssets/PLATEAU にコピーします。すでに StreamingAssets内にある場合を除きます。 
             string prevSourceUdxPath = config.sourceUdxFolderPath;
             string rootGmlFolderName = CopyPlateauSrcFiles.UdxPathToGmlRootFolderName(prevSourceUdxPath);
@@ -108,7 +110,7 @@ namespace PLATEAU.Editor.CityImport
 
                 
                 
-                LastConvertedCityMetaData = metaData;
+                convertedMetaData = metaData;
                 successCount++;
             }
             // gmlファイルごとのループ　ここまで
@@ -175,10 +177,12 @@ namespace PLATEAU.Editor.CityImport
             using (var objConverter = new GmlToObjConverter())
             {
                 // configを作成します。
-                var converterConf = new GmlToObjConverterConfig();
-                converterConf.MeshGranularity = importerConfig.meshGranularity;
-                converterConf.LogLevel = importerConfig.logLevel;
-                converterConf.DoAutoSetReferencePoint = false;
+                var converterConf = new GmlToObjConverterConfig
+                {
+                    MeshGranularity = importerConfig.meshGranularity,
+                    LogLevel = importerConfig.logLevel,
+                    DoAutoSetReferencePoint = false
+                };
                 var gmlType = GmlFileNameParser.GetGmlTypeEnum(gmlFullPath);
                 (int minLod, int maxLod) = importerConfig.gmlSearcherConfig.gmlTypeTarget.GetMinMaxLodForType(gmlType);
                 converterConf.MinLod = minLod;
