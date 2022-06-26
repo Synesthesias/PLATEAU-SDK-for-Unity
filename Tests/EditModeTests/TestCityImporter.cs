@@ -48,15 +48,15 @@ namespace PLATEAU.Tests.EditModeTests
             DirectoryUtil.SetUpTempAssetFolder();
             
             // テスト用に一時的に MultiGmlConverter のデフォルト出力先を変更します。
-            this.prevDefaultDstPath = PlateauPath.StreamingGmlFolder;
-            PlateauPath.TestOnly_SetStreamingGmlFolder(testDefaultDstPath);
+            this.prevDefaultDstPath = PlateauUnityPath.StreamingGmlFolder;
+            PlateauUnityPath.TestOnly_SetStreamingGmlFolder(testDefaultDstPath);
         }
 
         [TearDown]
         public void TearDown()
         {
             DirectoryUtil.DeleteTempAssetFolder();
-            PlateauPath.TestOnly_SetStreamingGmlFolder(this.prevDefaultDstPath);
+            PlateauUnityPath.TestOnly_SetStreamingGmlFolder(this.prevDefaultDstPath);
         }
 
         [Test]

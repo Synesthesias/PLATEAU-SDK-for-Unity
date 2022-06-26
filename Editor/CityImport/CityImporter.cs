@@ -58,7 +58,6 @@ namespace PLATEAU.Editor.CityImport
 
                 // gmlをロードします。
                 string gmlFileName = Path.GetFileNameWithoutExtension(gmlRelativePath);
-                // string exportObjPath = Path.Combine(config.exportFolderPath, gmlFileName + ".obj");
                 if (!TryLoadCityGml(out var cityModel, gmlFullPath, config))
                 {
                     cityModel?.Dispose();
@@ -83,7 +82,6 @@ namespace PLATEAU.Editor.CityImport
                     string objAssetPath = PathUtil.FullPathToAssetsPath(objPath) + ".obj";
                     if (!referencePoint.HasValue) throw new Exception($"{nameof(referencePoint)} is null.");
                     config.referencePoint = referencePoint.Value;
-                    Debug.Log($"Generating MetaData. objAssetPath = {objAssetPath}");
                     if (!TryGenerateMetaData(metaData, gmlFileName, objAssetPath, config))
                     {
                         Debug.LogError($"Failed to generate meta data.\nobjPath = {objPath}");
@@ -163,7 +161,7 @@ namespace PLATEAU.Editor.CityImport
             string newUdxPath = prevSourceUdxPath;
             if (!IsInStreamingAssets(prevSourceUdxPath))
             {
-                string copyDest = PlateauPath.StreamingGmlFolder;
+                string copyDest = PlateauUnityPath.StreamingGmlFolder;
                 CopyPlateauSrcFiles.SelectCopy(prevSourceUdxPath, copyDest, gmlRelativePaths);
                 // configの変換元パスをコピー先に再設定します。
                 newUdxPath = Path.Combine(copyDest, $"{rootGmlFolderName}/udx");

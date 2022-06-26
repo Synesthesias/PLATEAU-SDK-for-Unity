@@ -4,9 +4,9 @@ using UnityEngine;
 namespace PLATEAU.Util
 {
     /// <summary>
-    /// Plateau が利用するパスです。
+    /// PlateauUnitySDK が利用するパスです。
     /// </summary>
-    internal static class PlateauPath
+    internal static class PlateauUnityPath
     {
         /// <summary>
         /// gmlをインポートする時、インポート元のgmlはデフォルトではこのパスにコピーされます。

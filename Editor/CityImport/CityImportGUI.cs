@@ -46,7 +46,7 @@ namespace PLATEAU.Editor.CityImport
                 // 案内
                 if (!CityImporter.IsInStreamingAssets(sourcePath))
                 {
-                    EditorGUILayout.HelpBox($"入力フォルダは {PathUtil.FullPathToAssetsPath(PlateauPath.StreamingGmlFolder)} にコピーされます。", MessageType.Info);
+                    EditorGUILayout.HelpBox($"入力フォルダは {PathUtil.FullPathToAssetsPath(PlateauUnityPath.StreamingGmlFolder)} にコピーされます。", MessageType.Info);
                 }
                 
                 // 変換対象の絞り込み
