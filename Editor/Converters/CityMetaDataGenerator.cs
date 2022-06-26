@@ -34,12 +34,18 @@ namespace PLATEAU.Editor.Converters
             {
                 // ロードします。
                 string exportFolderFullPath = config.CityImporterConfig.exportFolderPath;
-                string udxFullPath = config.CityImporterConfig.sourcePath.udxFullPath;
+                string udxFullPath = config.CityImporterConfig.sourcePath.udxPath;
                 string dstMetaDataAssetPath =
                     Path.Combine(PathUtil.FullPathToAssetsPath(exportFolderFullPath), MetaDataFileName);
                 if (metaData == null)
                 {
                     metaData = LoadOrCreateMetaData(dstMetaDataAssetPath, config.DoClearIdToGmlTable);
+                }
+
+                if (!PathUtil.IsSubDirectoryOfAssets(udxFullPath))
+                {
+                    Debug.LogError($"MetaData generate Failed. udx path is not in asset folder.\n{nameof(udxFullPath)} = {udxFullPath}");
+                    return false;
                 }
                 var assets = AssetDatabase.LoadAllAssetsAtPath(meshAssetPath);
                 if (assets == null || assets.Length <= 0)
@@ -60,16 +66,8 @@ namespace PLATEAU.Editor.Converters
 
                 // 変換時の設定を書き込みます。
                 var importConf = config.CityImporterConfig;
-                importConf.sourcePath.udxFullPath = PathUtil.FullPathToAssetsPath(exportFolderFullPath);
-                if (PathUtil.IsSubDirectoryOfAssets(udxFullPath))
-                {
-                    importConf.sourcePath.udxFullPath = PathUtil.FullPathToAssetsPath(udxFullPath);
-                }
-                else
-                {
-                    importConf.sourcePath.udxFullPath = udxFullPath;
-                }
-                
+                importConf.sourcePath.udxPath = PathUtil.FullPathToAssetsPath(udxFullPath);
+
                 importConf.exportFolderPath = PathUtil.FullPathToAssetsPath(exportFolderFullPath);
                 metaData.cityImporterConfig = importConf;
                 

@@ -202,7 +202,7 @@ namespace PLATEAU.Tests.EditModeTests
                 meshGranularity = meshGranularity,
                 sourcePath =
                 {
-                    udxFullPath =  testUdxPath
+                    udxPath =  testUdxPath
                 },
                 exportFolderPath = testOutputDir
             };

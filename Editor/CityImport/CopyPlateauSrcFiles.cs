@@ -57,7 +57,7 @@ namespace PLATEAU.Editor.CityImport
                 // gmlファイルをコピーします。
                 // 例: Assets/StreamingAssets/PLATEAU/Tokyo/bldg/1234.gml　ができます。
                 string gmlName = Path.GetFileName(gml);
-                string srcObjTypeFolder = Path.Combine(sourcePath.udxFullPath, gmlType);
+                string srcObjTypeFolder = Path.Combine(sourcePath.udxPath, gmlType);
                 File.Copy(Path.Combine(srcObjTypeFolder, gmlName), Path.Combine(dstObjTypeFolder, gmlName), true);
 
                 // gmlファイルに関連するフォルダをコピーします。

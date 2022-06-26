@@ -15,11 +15,11 @@ namespace PLATEAU.CityMeta
         /// <summary>
         /// Plateau元データのパスの記録です。
         /// </summary>
-        public string udxFullPath;
+        public string udxPath;
 
-        public PlateauSourcePath(string udxFullPath)
+        public PlateauSourcePath(string udxPath)
         {
-            this.udxFullPath = udxFullPath;
+            this.udxPath = udxPath;
         }
         
         /// <summary>
@@ -38,14 +38,14 @@ namespace PLATEAU.CityMeta
         /// <summary>
         /// 元データのRoot (= udxの親) フォルダのパスです。
         /// </summary>
-        public string RootFullPath => Path.GetFullPath(Path.Combine(this.udxFullPath, "../"));
+        public string RootFullPath => Path.GetFullPath(Path.Combine(this.udxPath, "../"));
 
         /// <summary>
         /// udxフォルダからの相対パスを受け取り、そのフルパスを返します。
         /// </summary>
         public string RelativeToFullPath(string relativePathFromUdx)
         {
-            return Path.GetFullPath(Path.Combine(this.udxFullPath, relativePathFromUdx));
+            return Path.GetFullPath(Path.Combine(this.udxPath, relativePathFromUdx));
         }
     }
 }

@@ -40,7 +40,7 @@ namespace PLATEAU.Editor.CityImport
             // 元フォルダを StreamingAssets/PLATEAU にコピーします。すでに StreamingAssets内にある場合を除きます。 
             // 設定のインポート元パスをコピー後のパスに変更します。
             var sourcePath = config.sourcePath;
-            sourcePath.udxFullPath = CopyImportSrcToStreamingAssets(sourcePath, gmlRelativePaths);
+            sourcePath.udxPath = CopyImportSrcToStreamingAssets(sourcePath, gmlRelativePaths);
             
             string destMetaDataPath = Path.Combine(PathUtil.FullPathToAssetsPath(config.exportFolderPath), CityMetaDataGenerator.MetaDataFileName);
             var metaData = CityMetaDataGenerator.LoadOrCreateMetaData(destMetaDataPath, true);
@@ -159,8 +159,8 @@ namespace PLATEAU.Editor.CityImport
 
         private string CopyImportSrcToStreamingAssets(PlateauSourcePath sourcePath, string[] gmlRelativePaths)
         {
-            string newUdxPath = sourcePath.udxFullPath;
-            if (!IsInStreamingAssets(sourcePath.udxFullPath))
+            string newUdxPath = sourcePath.udxPath;
+            if (!IsInStreamingAssets(sourcePath.udxPath))
             {
                 string copyDest = PlateauUnityPath.StreamingGmlFolder;
                 CopyPlateauSrcFiles.SelectCopy(sourcePath, copyDest, gmlRelativePaths);
