@@ -33,16 +33,15 @@ namespace PLATEAU.Editor.CityImport
         /// </summary>
         /// <param name="gmlRelativePaths">gmlファイルの相対パスのリストです。パスの起点は udx フォルダです。</param>
         /// <param name="config">変換設定です。</param>
-        /// <param name="convertedMetaData">インポートによって生成されたメタデータです。</param>
-        public int Import(string[] gmlRelativePaths, CityImporterConfig config, out CityMetaData convertedMetaData)
+        /// <param name="metaData">インポートによって生成されたメタデータです。</param>
+        public int Import(string[] gmlRelativePaths, CityImporterConfig config, out CityMetaData metaData)
         {
-            convertedMetaData = null;
             // 元フォルダを StreamingAssets/PLATEAU にコピーします。すでに StreamingAssets内にある場合を除きます。 
             // 設定のインポート元パスをコピー後のパスに変更します。
             var sourcePathConf = config.sourcePath;
             sourcePathConf.FullUdxPath = CopyImportSrcToStreamingAssets(config.UdxPathBeforeImport, gmlRelativePaths);
             
-            var metaData = CityMetaDataGenerator.LoadOrCreateMetaData(config.importDestPath.MetaDataAssetPath, true);
+            metaData = CityMetaDataGenerator.LoadOrCreateMetaData(config.importDestPath.MetaDataAssetPath, true);
 
             // gmlファイルごとのループを始めます。
             int successCount = 0;
@@ -96,10 +95,6 @@ namespace PLATEAU.Editor.CityImport
                 
                 
                 cityModel?.Dispose();
-
-                
-                
-                convertedMetaData = metaData;
                 successCount++;
             }
             // gmlファイルごとのループ　ここまで
