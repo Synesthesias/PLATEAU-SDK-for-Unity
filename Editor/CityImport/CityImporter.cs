@@ -91,7 +91,7 @@ namespace PLATEAU.Editor.CityImport
                     }
                     
                     // シーンに配置します。
-                    PlaceToScene(objAssetPath, PlateauSourcePath.RootDirName(sourcePathConf.udxAssetPath), metaData);
+                    CityMeshPlacerToScene.Place(objAssetPath, PlateauSourcePath.RootDirName(sourcePathConf.udxAssetPath), metaData);
                 }
                 
                 
@@ -234,59 +234,7 @@ namespace PLATEAU.Editor.CityImport
             }
             return true;
         }
-
-        /// <summary>
-        /// 変換後の3Dモデルをシーンに配置します。
-        /// </summary>
-        private static void PlaceToScene(string objAssetPath, string srcFolderName, CityMetaData metaData)
-        {
-            // 親を配置
-            var parent = GameObject.Find(srcFolderName);
-            if (parent == null)
-            {
-                parent = new GameObject(srcFolderName);
-            }
-            
-            // 親に CityMapBehaviour をアタッチ
-            var cityMapBehaviour = parent.GetComponent<CityBehaviour>();
-            if ( cityMapBehaviour == null)
-            {
-                cityMapBehaviour = parent.AddComponent<CityBehaviour>();
-            }
-            cityMapBehaviour.CityMetaData = metaData;
-
-            var assetObj = AssetDatabase.LoadAssetAtPath<GameObject>(objAssetPath);
-            if (assetObj == null)
-            {
-                // TODO Errorのほうがいい（ユニットテストが通るなら）
-                Debug.LogWarning($"Failed to load '.obj' file.\nobjAssetPath = {objAssetPath}");
-                return;
-            }
-            
-            // 古い同名の GameObject を削除
-            var oldObj = FindRecursive(parent.transform, assetObj.name);
-            if (oldObj != null)
-            {
-                Object.DestroyImmediate(oldObj.gameObject);
-            }
-
-            // 変換後モデルの配置
-            var placedObj = (GameObject)PrefabUtility.InstantiatePrefab(assetObj);
-            placedObj.name = assetObj.name;
-            placedObj.transform.parent = parent.transform;
-        }
-
-        private static Transform FindRecursive(Transform target, string name)
-        {
-            if (target.name == name) return target;
-            foreach (Transform child in target)
-            {
-                Transform found = FindRecursive(child, name);
-                if (found != null) return found;
-            }
-
-            return null;
-        }
+        
         
         public static bool IsInStreamingAssets(string path)
         {
