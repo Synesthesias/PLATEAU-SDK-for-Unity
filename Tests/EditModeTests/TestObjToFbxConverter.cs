@@ -39,10 +39,10 @@ namespace PLATEAU.Tests.EditModeTests
         [Test]
         public void Convert_Generates_Fbx_File()
         {
-            // 変換後、fbxファイルが存在すれば良しとします。
             var converter = new ObjToFbxConverter();
             converter.Convert(testObjFilePath, destFbxFilePath);
-            Assert.IsTrue(File.Exists(destFbxFilePath));
+            Assert.IsTrue(File.Exists(destFbxFilePath), "変換後、fbxファイルが存在する");
+            // fbxファイルの中身まではチェック未実装です。
         }
     }
 }

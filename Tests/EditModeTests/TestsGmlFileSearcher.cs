@@ -13,7 +13,7 @@ namespace PLATEAU.Tests.EditModeTests
         {
             var searcher = new GmlSearcher(DirectoryUtil.TestTokyoUdxPath);
             var areaIds = searcher.AreaIds;
-            Assert.Contains(53394525, areaIds);
+            Assert.Contains(53394525, areaIds, "地域IDを検索して返す");
             Assert.Contains(533925, areaIds);
             Debug.Log(searcher);
         }

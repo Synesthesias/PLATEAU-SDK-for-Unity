@@ -132,11 +132,15 @@ namespace PLATEAU.Tests.EditModeTests {
         };
         
         [Test] 
-        public void FullPathToAssetsPath_Returns_Error_When_Outside_Assets_Folder() {
-            Assert.That(()=> {
+        public void FullPathToAssetsPath_Returns_Error_When_Outside_Assets_Folder()
+        {
+            Assert.That(() =>
+                {
                     PathUtil.FullPathToAssetsPath("C:\\dummy\\OutsideAssets\\a.fbx");
                 },
-                Throws.TypeOf<IOException>());
+                Throws.TypeOf<IOException>(),
+                $"Assetsフォルダの外のパスが {nameof(PathUtil.FullPathToAssetsPath)} に渡されたとき、例外を出す"
+            );
         }
 
 

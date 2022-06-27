@@ -34,7 +34,6 @@ namespace PLATEAU.Tests.EditModeTests
         public (string, bool) Test_TryGetId(string gameObjName)
         {
             bool succeed = GameObjNameParser.TryGetId(gameObjName, out string id);
-            // Debug.Log($"id = {id}, succeed = {succeed}");
             return (id, succeed);
         }
 

@@ -176,9 +176,9 @@ namespace PLATEAU.Tests.EditModeTests
             bool lod2Exists = File.Exists(Path.Combine(testOutputDir, $"LOD2_{gmlId}.obj"));
             bool lod1Exists = File.Exists(Path.Combine(testOutputDir, $"LOD1_{gmlId}.obj"));
             bool lod0Exists = File.Exists(Path.Combine(testOutputDir, $"LOD0_{gmlId}.obj"));
-            Assert.IsFalse(lod2Exists);
-            Assert.IsTrue(lod1Exists);
-            Assert.IsTrue(lod0Exists);
+            Assert.IsFalse(lod2Exists, "LOD範囲外は生成されない");
+            Assert.IsTrue(lod1Exists, "LOD範囲内は生成される");
+            Assert.IsTrue(lod0Exists, "LOD範囲内は生成される");
         }
 
         [Test]
@@ -190,9 +190,9 @@ namespace PLATEAU.Tests.EditModeTests
             bool lod0Exists = GameObject.Find($"LOD0_{gmlId}");
             bool lod1Exists = GameObject.Find($"LOD1_{gmlId}");
             bool lod2Exists = GameObject.Find($"LOD2_{gmlId}");
-            Assert.IsTrue(lod0Exists);
-            Assert.IsTrue(lod1Exists);
-            Assert.IsFalse(lod2Exists);
+            Assert.IsTrue(lod0Exists, "LOD範囲内は配置される");
+            Assert.IsTrue(lod1Exists, "LOD範囲内は配置される");
+            Assert.IsFalse(lod2Exists, "LOD範囲内は配置されない");
         }
 
         [Test]

@@ -38,8 +38,9 @@ namespace PLATEAU.Tests.EditModeTests
             {
                 converter.Convert(DirectoryUtil.TestSimpleGmlFilePath, outputDirectory);
             }
-            // 変換後、objファイルがあればとりあえず良しとします。
-            Assert.IsTrue(File.Exists(Path.Combine(outputDirectory, "LOD0_53392642_bldg_6697_op2.obj")));
+            bool fileExists = File.Exists(Path.Combine(outputDirectory, "LOD0_53392642_bldg_6697_op2.obj"));
+            Assert.IsTrue(fileExists, "変換後、objファイルが存在する");
+            // objファイルの中身まではチェック未実装です。
             }
 
         [Test]
@@ -48,7 +49,7 @@ namespace PLATEAU.Tests.EditModeTests
             var meshes = ConvertAndRead(MeshGranularity.PerCityModelArea, 2);
             int count = meshes.Length;
             Debug.Log($"Count : {count}");
-            Assert.AreEqual(1, count);
+            Assert.AreEqual(1, count, "メッシュを結合する設定のとき、オブジェクト数は1である");
         }
         
         [Test]
@@ -57,11 +58,11 @@ namespace PLATEAU.Tests.EditModeTests
             var meshes = ConvertAndRead(MeshGranularity.PerPrimaryFeatureObject, 2);
             int count = meshes.Length;
             Debug.Log($"mesh count : {count}");
-            Assert.Greater(count, 1);
+            Assert.Greater(count, 1, "粒度が主要地物のとき、2つ以上のメッシュが生成される");
             for (int i = 0; i < count; i++)
             {
                 var mesh = meshes[i];
-                Assert.IsTrue(mesh.name.Contains("BLD"));
+                Assert.IsTrue(mesh.name.Contains("BLD"), "粒度が主要地物のとき、各メッシュ名が BLD を含む（BLDは建物を意味する）");
             }
         }
         
@@ -71,7 +72,7 @@ namespace PLATEAU.Tests.EditModeTests
             var meshes = ConvertAndRead(MeshGranularity.PerAtomicFeatureObject, 2);
             int count = meshes.Length;
             Debug.Log($"count : {count}");
-            Assert.Greater(count, 1);
+            Assert.Greater(count, 1, "粒度が最小地物のとき、2つ以上のメッシュが生成される");
             int wallCount = 0;
             foreach (var mesh in meshes)
             {
@@ -80,7 +81,7 @@ namespace PLATEAU.Tests.EditModeTests
                     wallCount++;
                 }
             }
-            Assert.Greater(wallCount, 1);
+            Assert.Greater(wallCount, 1, "粒度が最小地物のとき、生成されるメッシュのうち2つ以上は wall という名前を含む");
         }
 
         private static Mesh[] ConvertAndRead(MeshGranularity meshGranularity, int lod)
@@ -95,7 +96,7 @@ namespace PLATEAU.Tests.EditModeTests
                 conf.OptimizeFlag = true;
                 converter.Config = conf;
                 bool result = converter.Convert(inputFilePath, outputDirectory);
-                Assert.IsTrue(result);
+                Assert.IsTrue(result, "objへの変換が成功する");
             }
             AssetDatabase.Refresh();
             string outputFilePath = Path.Combine(outputDirectory, $"LOD{lod}_{Path.GetFileNameWithoutExtension(inputFilePath)}.obj");
