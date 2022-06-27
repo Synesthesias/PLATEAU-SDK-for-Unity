@@ -31,7 +31,7 @@ namespace PLATEAU.CityMeta
         /// <summary> インポート元ファイルのパス（コピー後）です。通常 StreamingAssets内を指します。 パスは Assets から始まります。 </summary>
         public PlateauSourcePath sourcePath = new PlateauSourcePath("");
 
-        /// <summary> インポート元ファイルのパス（コピー前）です。 Assetsフォルダ外を指すこともあります。フルパスです。 </summary>
+        /// <summary> これはファイルには記録されません。 インポート元ファイルのパス（コピー前）です。 Assetsフォルダ外を指すこともあります。フルパスです。 </summary>
         [NonSerialized] public string UdxPathBeforeImport;
         
         /// <summary> インポートの出力先 </summary>

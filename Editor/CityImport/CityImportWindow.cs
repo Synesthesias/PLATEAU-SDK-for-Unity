@@ -29,8 +29,8 @@ namespace PLATEAU.Editor.CityImport
 
         private void Init()
         {
-            this.cityImportGUI = new CityImportGUI();
             this.importerConfig = new CityImporterConfig();
+            this.cityImportGUI = new CityImportGUI(this.importerConfig);
             this.isInitialized = true;
         }
 

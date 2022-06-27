@@ -16,7 +16,7 @@ namespace PLATEAU.Editor.CityImport
     {
         private bool foldOutIdGmlTable;
         private bool foldOutReconvert;
-        private readonly CityImportGUI importGUI = new CityImportGUI();
+        private CityImportGUI importGUI;
         public override void OnInspectorGUI()
         {
             HeaderDrawer.Reset();
@@ -26,6 +26,8 @@ namespace PLATEAU.Editor.CityImport
                 EditorGUILayout.HelpBox($"{nameof(metaData)} が null です。", MessageType.Error);
                 return;
             }
+
+            this.importGUI ??= new CityImportGUI(metaData.cityImporterConfig); // 初期化
             
             HeaderDrawer.Draw("IDとGMLファイルの情報");
             using (PlateauEditorStyle.VerticalScopeLevel1())

@@ -24,13 +24,22 @@ namespace PLATEAU.Editor.CityImport
         private readonly ExportFolderSelectorGUI exportFolderSelectorGUI;
         private readonly CityImporter cityImporter;
         
-        public CityImportGUI()
+        public CityImportGUI(CityImporterConfig config)
         {
             this.udxFolderSelectorGUI = new InputFolderSelectorGUI(OnUdxPathChanged);
             this.gmlSearcherGUI = new GmlSearcherGUI();
             this.gmlSearcher = new GmlSearcher();
             this.exportFolderSelectorGUI = new ExportFolderSelectorGUI();
             this.cityImporter = new CityImporter();
+            
+            // 記録されたインポート元パスを復元し、GUI画面の初期値に代入します。
+            string loadedUdxPath = config.sourcePath.udxAssetPath;
+            string initialUdxPath = loadedUdxPath;
+            if (initialUdxPath.Replace('\\', '/').StartsWith("Assets/"))
+            {
+                initialUdxPath = PathUtil.AssetsPathToFullPath(initialUdxPath);
+            }
+            config.UdxPathBeforeImport = initialUdxPath;
         }
 
         public void Draw(CityImporterConfig config)
