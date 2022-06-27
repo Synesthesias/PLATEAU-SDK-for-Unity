@@ -37,7 +37,7 @@ namespace PLATEAU.Tests.EditModeTests
             "bldg/53392642_bldg_6697_op2.gml"
         };
 
-        private static readonly string testDefaultDstPath = Path.Combine(DirectoryUtil.TempAssetFolderPath, "PLATEAU");
+        private static readonly string testDefaultCopyDestPath = Path.Combine(DirectoryUtil.TempAssetFolderPath, "PLATEAU");
 
         private string prevDefaultDstPath;
 
@@ -49,7 +49,7 @@ namespace PLATEAU.Tests.EditModeTests
             
             // テスト用に一時的に MultiGmlConverter のデフォルト出力先を変更します。
             this.prevDefaultDstPath = PlateauUnityPath.StreamingGmlFolder;
-            PlateauUnityPath.TestOnly_SetStreamingGmlFolder(testDefaultDstPath);
+            PlateauUnityPath.TestOnly_SetStreamingGmlFolder(testDefaultCopyDestPath);
         }
 
         [TearDown]
@@ -193,6 +193,16 @@ namespace PLATEAU.Tests.EditModeTests
             Assert.IsTrue(lod0Exists);
             Assert.IsTrue(lod1Exists);
             Assert.IsFalse(lod2Exists);
+        }
+
+        [Test]
+        public void SrcPath_Of_MetaData_Is_Set_To_Post_Copy_Path()
+        {
+            Import(testUdxPathSimple, testGmlRelativePathsSimple, MeshGranularity.PerCityModelArea, out var metaData, 0,
+                0);
+            string expectedPath = Path.Combine(testDefaultCopyDestPath, "udx").Replace('\\', '/');
+            string actualPath = metaData.cityImporterConfig.sourcePath.FullUdxPath.Replace('\\', '/');
+            Assert.AreEqual( expectedPath, actualPath);
         }
 
         private int Import(string testUdxPath, string[] gmlRelativePaths, MeshGranularity meshGranularity, out CityMetaData metaData, int minLodBuilding, int maxLodBuilding, int minLodDem = 0, int maxLodDem = 0)
