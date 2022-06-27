@@ -53,7 +53,7 @@ namespace PLATEAU.Editor.CityImport
                 loopCount++;
                 ProgressBar($"gml変換中 : [{loopCount}/{numGml}] {gmlRelativePath}", loopCount, numGml );
 
-                string gmlFullPath = sourcePathConf.RelativeToFullPath(gmlRelativePath);
+                string gmlFullPath = sourcePathConf.UdxRelativeToFullPath(gmlRelativePath);
 
                 // gmlをロードします。
                 if (!TryLoadCityGml(out var cityModel, gmlFullPath, config))
@@ -161,7 +161,6 @@ namespace PLATEAU.Editor.CityImport
                 CopyPlateauSrcFiles.SelectCopy(udxPathBeforeImport, copyDest, gmlRelativePaths);
                 newUdxFullPath = Path.Combine(copyDest, $"{PlateauSourcePath.RootDirName(udxPathBeforeImport)}/udx");
             }
-
             return newUdxFullPath;
         }
 

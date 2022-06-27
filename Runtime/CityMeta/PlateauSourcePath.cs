@@ -51,7 +51,7 @@ namespace PLATEAU.CityMeta
         /// <summary>
         /// udxフォルダからの相対パスを受け取り、そのフルパスを返します。
         /// </summary>
-        public string RelativeToFullPath(string relativePathFromUdx)
+        public string UdxRelativeToFullPath(string relativePathFromUdx)
         {
             return Path.GetFullPath(Path.Combine(this.udxAssetPath, relativePathFromUdx));
         }
@@ -62,7 +62,7 @@ namespace PLATEAU.CityMeta
         /// </summary>
         public string FullUdxPath
         {
-            get => Path.GetFullPath(Path.Combine(Application.dataPath, this.udxAssetPath));
+            get => Path.GetFullPath(Path.Combine(Application.dataPath, "../", this.udxAssetPath));
             set => this.udxAssetPath = PathUtil.FullPathToAssetsPath(value);
         }
     }

@@ -200,9 +200,15 @@ namespace PLATEAU.Tests.EditModeTests
         {
             Import(testUdxPathSimple, testGmlRelativePathsSimple, MeshGranularity.PerCityModelArea, out var metaData, 0,
                 0);
-            string expectedPath = Path.Combine(testDefaultCopyDestPath, "udx").Replace('\\', '/');
-            string actualPath = metaData.cityImporterConfig.sourcePath.FullUdxPath.Replace('\\', '/');
-            Assert.AreEqual( expectedPath, actualPath);
+            string expectedUdxPath = Path.Combine(testDefaultCopyDestPath, "TestDataSimpleGml", "udx").Replace('\\', '/');
+            string actualUdxPath = metaData.cityImporterConfig.sourcePath.FullUdxPath.Replace('\\', '/');
+            Assert.AreEqual( expectedUdxPath, actualUdxPath, "メモリ上のメタデータの sourcePath がコピー後を指している" );
+
+            var metaDataPath = metaData.cityImporterConfig.importDestPath.MetaDataAssetPath;
+            var loadedMetaData = AssetDatabase.LoadAssetAtPath<CityMetaData>(metaDataPath);
+            Assert.NotNull(loadedMetaData, "生成後のメタデータをロードできる");
+            var loadedSrcPath = loadedMetaData.cityImporterConfig.sourcePath.FullUdxPath.Replace('\\', '/');
+            Assert.AreEqual(expectedUdxPath, loadedSrcPath, "保存されたメタデータの sourcePath がコピー後を指している");
         }
 
         private int Import(string testUdxPath, string[] gmlRelativePaths, MeshGranularity meshGranularity, out CityMetaData metaData, int minLodBuilding, int maxLodBuilding, int minLodDem = 0, int maxLodDem = 0)
