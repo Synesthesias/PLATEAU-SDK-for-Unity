@@ -101,12 +101,15 @@ namespace PLATEAU.Editor.Converters
 
                 cityModel ??= CityGml.Load(gmlFilePath, this.gmlParserParams, DllLogCallback.UnityLogCallbacks, this.config.LogLevel);
                 
-                string[] objFullPaths = new string[4];
-                // TODO ここはやっつけ。生成するLODの種類に合わせるべき。
-                for (int lod = 0; lod <= 3; lod++)
+                // 生成する obj のパスのリスト
+                int minLod = this.config.MinLod;
+                int maxLod = this.config.MaxLod;
+                if (maxLod < minLod) (minLod, maxLod) = (maxLod, minLod);
+                string[] objFullPaths = new string[maxLod - minLod + 1];
+                for (int l = minLod; l <= maxLod; l++)
                 {
-                    objFullPaths[lod] = Path.Combine(exportDirFullPath,
-                        $"LOD{lod}_{Path.GetFileNameWithoutExtension(gmlFilePath)}.obj");
+                    objFullPaths[l-minLod] = Path.Combine(exportDirFullPath,
+                        $"LOD{l}_{Path.GetFileNameWithoutExtension(gmlFilePath)}.obj");
                 }
 
                 // 出力先が Assets フォルダ内 かつ すでに同名ファイルが存在する場合、古いファイルを消します。
