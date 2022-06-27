@@ -32,8 +32,9 @@ namespace PLATEAU.Editor.Converters
             try
             {
                 // ロードします。
-                var importDestPath = config.CityImporterConfig.importDestPath;
-                string udxAssetPath = config.CityImporterConfig.sourcePath.udxAssetPath;
+                var importConf = config.CityImporterConfig;
+                var importDestPath = importConf.importDestPath;
+                string udxAssetPath = importConf.sourcePath.udxAssetPath;
                 if (metaData == null)
                 {
                     metaData = LoadOrCreateMetaData(importDestPath.MetaDataAssetPath, config.DoClearIdToGmlTable);
@@ -57,7 +58,6 @@ namespace PLATEAU.Editor.Converters
                 }
 
                 // 変換時の設定を書き込みます。
-                var importConf = config.CityImporterConfig;
                 importConf.sourcePath.udxAssetPath = udxAssetPath;
 
                 importConf.importDestPath.dirAssetPath = importDestPath.dirAssetPath;

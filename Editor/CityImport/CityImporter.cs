@@ -70,8 +70,12 @@ namespace PLATEAU.Editor.CityImport
                     cityModel?.Dispose();
                     continue;
                 }
+                
+                // 基準座標は最初のものに合わせます。
+                if (!referencePoint.HasValue) throw new Exception($"{nameof(referencePoint)} is null.");
+                config.referencePoint = referencePoint.Value;
 
-                // 1つのgmlから 0個以上の .obj ファイルが生成されます。
+                // 1つのgmlから LODごとに 0個以上の .obj ファイルが生成されます。
                 // .obj ファイルごとのループを始めます。
                 string gmlFileName = Path.GetFileNameWithoutExtension(gmlRelativePath);
                 var objNames = config.gmlSearcherConfig.gmlTypeTarget.ObjFileNamesForGml(gmlFileName);
@@ -79,8 +83,6 @@ namespace PLATEAU.Editor.CityImport
                 foreach(string objAssetPath in objAssetPaths)
                 {
                     // CityMapMetaData を生成します。
-                    if (!referencePoint.HasValue) throw new Exception($"{nameof(referencePoint)} is null.");
-                    config.referencePoint = referencePoint.Value;
                     if (!TryGenerateMetaData(metaData, gmlFileName, objAssetPath, config))
                     {
                         Debug.LogError($"Failed to generate meta data.\nobjAssetPath = {objAssetPath}");
