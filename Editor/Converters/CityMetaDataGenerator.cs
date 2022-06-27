@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using Codice.Client.GameUI.Update;
 using PLATEAU.CityMeta;
 using PLATEAU.Util;
 using UnityEditor;
@@ -14,7 +15,6 @@ namespace PLATEAU.Editor.Converters
     /// </summary>
     internal class CityMetaDataGenerator
     {
-        public const string MetaDataFileName = "CityMapMetaData.asset";
 
         /// <summary>
         /// <see cref="CityMetaData"/> を生成します。
@@ -34,11 +34,9 @@ namespace PLATEAU.Editor.Converters
                 // ロードします。
                 var importDestPath = config.CityImporterConfig.importDestPath;
                 string udxAssetPath = config.CityImporterConfig.sourcePath.udxAssetPath;
-                string dstMetaDataAssetPath =
-                    Path.Combine(PathUtil.FullPathToAssetsPath(importDestPath.DirFullPath), MetaDataFileName);
                 if (metaData == null)
                 {
-                    metaData = LoadOrCreateMetaData(dstMetaDataAssetPath, config.DoClearIdToGmlTable);
+                    metaData = LoadOrCreateMetaData(importDestPath.MetaDataAssetPath, config.DoClearIdToGmlTable);
                 }
                 
                 var assets = AssetDatabase.LoadAllAssetsAtPath(meshAssetPath);
@@ -87,10 +85,9 @@ namespace PLATEAU.Editor.Converters
         /// ファイルが存在する場合、それをロードします。
         /// ロード時、<paramref name="doClearIdToGmlTable"/> がtrueなら idToGmlTable を消去します。
         /// </summary>
-        public static CityMetaData LoadOrCreateMetaData(string dstFullPath, bool doClearIdToGmlTable)
+        public static CityMetaData LoadOrCreateMetaData(string dstAssetPath, bool doClearIdToGmlTable)
         {
-            bool doFileExists = File.Exists(dstFullPath);
-            string dstAssetPath = PathUtil.FullPathToAssetsPath(dstFullPath);
+            bool doFileExists = File.Exists(PathUtil.AssetsPathToFullPath(dstAssetPath));
             if (!doFileExists)
             {
                 var instance = ScriptableObject.CreateInstance<CityMetaData>();

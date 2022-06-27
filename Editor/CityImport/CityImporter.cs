@@ -39,11 +39,10 @@ namespace PLATEAU.Editor.CityImport
             convertedMetaData = null;
             // 元フォルダを StreamingAssets/PLATEAU にコピーします。すでに StreamingAssets内にある場合を除きます。 
             // 設定のインポート元パスをコピー後のパスに変更します。
-            var sourcePath = config.sourcePath;
-            sourcePath.FullUdxPath = CopyImportSrcToStreamingAssets(config.UdxPathBeforeImport, gmlRelativePaths);
+            var sourcePathConf = config.sourcePath;
+            sourcePathConf.FullUdxPath = CopyImportSrcToStreamingAssets(config.UdxPathBeforeImport, gmlRelativePaths);
             
-            string destMetaDataPath = Path.Combine(config.importDestPath.dirAssetPath, CityMetaDataGenerator.MetaDataFileName);
-            var metaData = CityMetaDataGenerator.LoadOrCreateMetaData(destMetaDataPath, true);
+            var metaData = CityMetaDataGenerator.LoadOrCreateMetaData(config.importDestPath.MetaDataAssetPath, true);
 
             // gmlファイルごとのループを始めます。
             int successCount = 0;
@@ -55,7 +54,7 @@ namespace PLATEAU.Editor.CityImport
                 loopCount++;
                 ProgressBar($"gml変換中 : [{loopCount}/{numGml}] {gmlRelativePath}", loopCount, numGml );
 
-                string gmlFullPath = sourcePath.RelativeToFullPath(gmlRelativePath);
+                string gmlFullPath = sourcePathConf.RelativeToFullPath(gmlRelativePath);
 
                 // gmlをロードします。
                 if (!TryLoadCityGml(out var cityModel, gmlFullPath, config))
@@ -90,7 +89,7 @@ namespace PLATEAU.Editor.CityImport
                     }
                     
                     // シーンに配置します。
-                    PlaceToScene(objAssetPath, PlateauSourcePath.RootDirName(sourcePath.udxAssetPath), metaData);
+                    PlaceToScene(objAssetPath, PlateauSourcePath.RootDirName(sourcePathConf.udxAssetPath), metaData);
                 }
                 
                 
