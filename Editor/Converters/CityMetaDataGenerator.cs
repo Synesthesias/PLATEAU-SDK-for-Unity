@@ -32,10 +32,10 @@ namespace PLATEAU.Editor.Converters
             try
             {
                 // ロードします。
-                string exportFolderFullPath = config.CityImporterConfig.exportFolderPath;
+                var importDestPath = config.CityImporterConfig.importDestPath;
                 string udxAssetPath = config.CityImporterConfig.sourcePath.udxAssetPath;
                 string dstMetaDataAssetPath =
-                    Path.Combine(PathUtil.FullPathToAssetsPath(exportFolderFullPath), MetaDataFileName);
+                    Path.Combine(PathUtil.FullPathToAssetsPath(importDestPath.DirFullPath), MetaDataFileName);
                 if (metaData == null)
                 {
                     metaData = LoadOrCreateMetaData(dstMetaDataAssetPath, config.DoClearIdToGmlTable);
@@ -62,7 +62,7 @@ namespace PLATEAU.Editor.Converters
                 var importConf = config.CityImporterConfig;
                 importConf.sourcePath.udxAssetPath = udxAssetPath;
 
-                importConf.exportFolderPath = PathUtil.FullPathToAssetsPath(exportFolderFullPath);
+                importConf.importDestPath.dirAssetPath = importDestPath.dirAssetPath;
                 metaData.cityImporterConfig = importConf;
                 
                 // ファイルに保存します。

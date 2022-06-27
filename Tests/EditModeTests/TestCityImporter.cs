@@ -201,7 +201,10 @@ namespace PLATEAU.Tests.EditModeTests
             {
                 meshGranularity = meshGranularity,
                 UdxPathBeforeImport = testUdxPath,
-                exportFolderPath = testOutputDir
+                importDestPath =
+                {
+                    dirAssetPath = PathUtil.FullPathToAssetsPath(testOutputDir)
+                }
             };
             var typeConfigs = config.gmlSearcherConfig.gmlTypeTarget.GmlTypeConfigs;
             typeConfigs[GmlType.Building].minLod = minLodBuilding;

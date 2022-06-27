@@ -35,7 +35,7 @@ namespace PLATEAU.CityMeta
         [NonSerialized] public string UdxPathBeforeImport;
         
         /// <summary> インポートの出力先 </summary>
-        public string exportFolderPath = "";
+        public ImportDestPath importDestPath = new ImportDestPath();
         
         /// <summary> インポート時に最適化するかどうか </summary>
         public bool optimizeFlag = true;

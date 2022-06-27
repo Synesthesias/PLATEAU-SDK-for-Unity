@@ -42,7 +42,7 @@ namespace PLATEAU.Editor.CityImport
             var sourcePath = config.sourcePath;
             sourcePath.FullUdxPath = CopyImportSrcToStreamingAssets(config.UdxPathBeforeImport, gmlRelativePaths);
             
-            string destMetaDataPath = Path.Combine(PathUtil.FullPathToAssetsPath(config.exportFolderPath), CityMetaDataGenerator.MetaDataFileName);
+            string destMetaDataPath = Path.Combine(config.importDestPath.dirAssetPath, CityMetaDataGenerator.MetaDataFileName);
             var metaData = CityMetaDataGenerator.LoadOrCreateMetaData(destMetaDataPath, true);
 
             // gmlファイルごとのループを始めます。
@@ -65,7 +65,7 @@ namespace PLATEAU.Editor.CityImport
                 }
                 
                 // objに変換します。
-                if (!TryConvertToObj(cityModel, ref referencePoint, config, gmlFullPath, config.exportFolderPath))
+                if (!TryConvertToObj(cityModel, ref referencePoint, config, gmlFullPath, config.importDestPath.DirFullPath))
                 {
                     // 出力されるモデルがなければ、ここで終了します。
                     cityModel?.Dispose();
@@ -76,16 +76,15 @@ namespace PLATEAU.Editor.CityImport
                 // .obj ファイルごとのループを始めます。
                 string gmlFileName = Path.GetFileNameWithoutExtension(gmlRelativePath);
                 var objNames = config.gmlSearcherConfig.gmlTypeTarget.ObjFileNamesForGml(gmlFileName);
-                var objPaths = objNames.Select(n => Path.Combine(config.exportFolderPath, n));
-                foreach(string objPath in objPaths)
+                var objAssetPaths = objNames.Select(name => Path.Combine(config.importDestPath.dirAssetPath, name + ".obj"));
+                foreach(string objAssetPath in objAssetPaths)
                 {
                     // CityMapMetaData を生成します。
-                    string objAssetPath = PathUtil.FullPathToAssetsPath(objPath) + ".obj";
                     if (!referencePoint.HasValue) throw new Exception($"{nameof(referencePoint)} is null.");
                     config.referencePoint = referencePoint.Value;
                     if (!TryGenerateMetaData(metaData, gmlFileName, objAssetPath, config))
                     {
-                        Debug.LogError($"Failed to generate meta data.\nobjPath = {objPath}");
+                        Debug.LogError($"Failed to generate meta data.\nobjAssetPath = {objAssetPath}");
                         cityModel?.Dispose();
                         continue;
                     }
@@ -106,7 +105,7 @@ namespace PLATEAU.Editor.CityImport
             
             // 後処理
             EditorUtility.SetDirty(metaData);
-            AssetDatabase.ImportAsset(PathUtil.FullPathToAssetsPath(config.exportFolderPath));
+            AssetDatabase.ImportAsset(config.importDestPath.dirAssetPath);
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
             int failureCount = loopCount - successCount;
@@ -174,7 +173,7 @@ namespace PLATEAU.Editor.CityImport
         /// <see cref="CityModel"/> を obj形式の3Dモデルに変換します。
         /// 成否を bool で返します。
         /// </summary>
-        private static bool TryConvertToObj(CityModel cityModel, ref Vector3? referencePoint, CityImporterConfig importerConfig, string gmlFullPath, string objDestDirectory)
+        private static bool TryConvertToObj(CityModel cityModel, ref Vector3? referencePoint, CityImporterConfig importerConfig, string gmlFullPath, string objDestDirFullPath)
         {
             using (var objConverter = new GmlToObjConverter())
             {
@@ -203,7 +202,7 @@ namespace PLATEAU.Editor.CityImport
 
                 objConverter.Config = converterConf;
 
-                bool isSuccess = objConverter.ConvertWithoutLoad(cityModel, gmlFullPath, objDestDirectory);
+                bool isSuccess = objConverter.ConvertWithoutLoad(cityModel, gmlFullPath, objDestDirFullPath);
 
                 return isSuccess;
             }

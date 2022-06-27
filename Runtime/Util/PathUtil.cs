@@ -129,8 +129,15 @@ namespace PLATEAU.Util
 #if UNITY_STANDALONE_WIN
             assetsPath = assetsPath.Replace('\\', '/');
 #endif
-            // Debug.Log($"assetsPath = {assetsPath}");
             return assetsPath;
+        }
+
+        /// <summary>
+        /// Assets/ から始まるパスを受け取り、フルパスを返します。
+        /// </summary>
+        public static string AssetsPathToFullPath(string assetsPath)
+        {
+            return Path.GetFullPath(Path.Combine(Application.dataPath, "../", assetsPath));
         }
 
         #if UNITY_EDITOR

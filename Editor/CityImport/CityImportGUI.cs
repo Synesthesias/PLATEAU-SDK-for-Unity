@@ -53,7 +53,7 @@ namespace PLATEAU.Editor.CityImport
                 var gmlFiles = this.gmlSearcherGUI.Draw(this.gmlSearcher, ref config.gmlSearcherConfig);
                 
                 // 変換先パス設定
-                config.exportFolderPath = this.exportFolderSelectorGUI.Draw(config.exportFolderPath);
+                config.importDestPath.dirAssetPath = this.exportFolderSelectorGUI.Draw(config.importDestPath.dirAssetPath);
                 
                 // 変換設定
                 HeaderDrawer.Draw("変換設定");

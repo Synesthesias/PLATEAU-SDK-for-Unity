@@ -73,7 +73,7 @@ namespace PLATEAU.Editor.Converters
         /// 設定で <see cref="gmlParserParams"/> はロード後は変更できませんが、
         /// meshGranularity, axesConversion の設定は反映されます。
         /// </summary>
-        public bool ConvertWithoutLoad(CityModel cityModel, string gmlFilePath, string objDestDirectory)
+        public bool ConvertWithoutLoad(CityModel cityModel, string gmlFilePath, string objDestDirFullPath)
         {
             if (cityModel == null)
             {
@@ -81,7 +81,7 @@ namespace PLATEAU.Editor.Converters
                 return false;
             }
 
-            return ConvertInner(gmlFilePath, objDestDirectory, cityModel);
+            return ConvertInner(gmlFilePath, objDestDirFullPath, cityModel);
         }
 
         /// <summary>
@@ -90,14 +90,14 @@ namespace PLATEAU.Editor.Converters
         /// null でなければ、ファイルロードを省略して代わりに渡された <see cref="CityModel"/> を変換します。
         /// 成否をboolで返します。
         /// </summary>
-        private bool ConvertInner(string gmlFilePath, string exportDirectory, CityModel cityModel) 
+        private bool ConvertInner(string gmlFilePath, string exportDirFullPath, CityModel cityModel) 
         {
-            if (!IsPathValid(gmlFilePath, exportDirectory)) return false;
+            if (!IsPathValid(gmlFilePath, exportDirFullPath)) return false;
             try
             {
                 SlashPath(ref gmlFilePath);
-                SlashPath(ref exportDirectory);
-                if (!exportDirectory.EndsWith("/")) exportDirectory += "/";
+                SlashPath(ref exportDirFullPath);
+                if (!exportDirFullPath.EndsWith("/")) exportDirFullPath += "/";
 
                 cityModel ??= CityGml.Load(gmlFilePath, this.gmlParserParams, DllLogCallback.UnityLogCallbacks, this.config.LogLevel);
                 
@@ -105,13 +105,13 @@ namespace PLATEAU.Editor.Converters
                 // TODO ここはやっつけ。生成するLODの種類に合わせるべき。
                 for (int lod = 0; lod <= 3; lod++)
                 {
-                    objFullPaths[lod] = Path.Combine(exportDirectory,
+                    objFullPaths[lod] = Path.Combine(exportDirFullPath,
                         $"LOD{lod}_{Path.GetFileNameWithoutExtension(gmlFilePath)}.obj");
                 }
 
                 // 出力先が Assets フォルダ内 かつ すでに同名ファイルが存在する場合、古いファイルを消します。
                 // そうしないと上書きによって obj のメッシュ名が変わっても Unity に反映されないことがあるためです。
-                if (PathUtil.IsSubDirectoryOfAssets(exportDirectory))
+                if (PathUtil.IsSubDirectoryOfAssets(exportDirFullPath))
                 {
                     foreach (var objFullPath in objFullPaths)
                     {
@@ -136,10 +136,10 @@ namespace PLATEAU.Editor.Converters
                 }
                 
                 // 変換してファイルに書き込みます。
-                this.meshConverter.Convert(exportDirectory, gmlFilePath, cityModel, this.dllLogger);
+                this.meshConverter.Convert(exportDirFullPath, gmlFilePath, cityModel, this.dllLogger);
                 
                 // 出力先が Assets フォルダ内なら、それをUnityに反映させます。
-                if (PathUtil.IsSubDirectoryOfAssets(exportDirectory))
+                if (PathUtil.IsSubDirectoryOfAssets(exportDirFullPath))
                 {
                     foreach (string objFullPath in objFullPaths)
                     {
