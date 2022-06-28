@@ -40,7 +40,7 @@ namespace PLATEAU.Tests.EditModeTests
             "bldg/53392642_bldg_6697_op2.gml"
         };
 
-        private static readonly string simpleGmlId = "53392642_bldg_6697_op2";
+        
 
         private static readonly string testDefaultCopyDestPath = Path.Combine(DirectoryUtil.TempAssetFolderPath, "PLATEAU");
 
@@ -203,38 +203,7 @@ namespace PLATEAU.Tests.EditModeTests
             var loadedSrcPath = loadedMetaData.cityImporterConfig.sourcePath.FullUdxPath.Replace('\\', '/');
             Assert.AreEqual(expectedUdxPath, loadedSrcPath, "保存されたメタデータの sourcePath がコピー後を指している");
         }
-
-        [Test]
-        public void Test_PlaceMethod_PlaceSelectedLodOrMax()
-        {
-            CheckSimpleObjPlacedToScene(PlaceMethod.PlaceSelectedLodOrMax, 0, 1, -1,
-                new Dictionary<int, bool>
-                {
-                    { 0, false }, { 1, true }
-                }
-            );
-        }
         
-
-        [Test]
-        public void Test_PlaceMethod_DoNotPlace()
-        {
-            CheckSimpleObjPlacedToScene(PlaceMethod.DoNotPlace, 0, 1, 1,
-                new Dictionary<int, bool>
-                {
-                    {0, false}, {1, false}
-                });
-        }
-        
-        [Test]
-        public void Test_PlaceMethod_MaxLod()
-        {
-            CheckSimpleObjPlacedToScene(PlaceMethod.PlaceMaxLod, 0, 1, 0,
-                new Dictionary<int, bool>
-                {
-                    { 0, false }, { 1, true }
-                });
-        }
 
         private int Import(string testUdxPath, string[] gmlRelativePaths, MeshGranularity meshGranularity, out CityMetaData metaData,
             int minLodBuilding, int maxLodBuilding, int minLodDem = 0, int maxLodDem = 0,
@@ -261,30 +230,8 @@ namespace PLATEAU.Tests.EditModeTests
             int numSuccess = this.importer.Import(gmlRelativePaths, config, out metaData);
             return numSuccess;
         }
-        
-        private void CheckSimpleObjPlacedToScene(PlaceMethod placeMethod, int minLodBuilding, int maxLodBuilding, int selectedLod,
-            Dictionary<int, bool> lodPlacedDict)
-        {
-            Import(testUdxPathSimple, testGmlRelativePathsSimple, MeshGranularity.PerCityModelArea, out _,
-                minLodBuilding, maxLodBuilding, 0, 0, selectedLod, placeMethod);
-            AssertGameObjPlaced(simpleGmlId, lodPlacedDict);
-        }
 
-        /// <summary>
-        /// 辞書 (LOD番号 => そのLODがシーン中配置されるべきか) を受け取り、
-        /// その辞書の通りになっているかを Assert します。
-        /// </summary>
-        private void AssertGameObjPlaced(string gmlId, Dictionary<int, bool> lodPlacedDict)
-        {
-            foreach (var lodPlaced in lodPlacedDict)
-            {
-                int lod = lodPlaced.Key;
-                bool shouldExist = lodPlaced.Value;
-                bool doExists = GameObject.Find($"LOD{lod}_{gmlId}") != null;
-                string message = shouldExist ? "存在する" : "存在しない";
-                Assert.AreEqual(shouldExist, doExists, $"LOD{lod} がシーン中に {message}");
-            }
-        }
+        
 
     }
 }
