@@ -1,5 +1,4 @@
-﻿using Codice.Client.Common;
-using PLATEAU.Editor.EditorWindowCommon;
+﻿using PLATEAU.Editor.EditorWindowCommon;
 using PLATEAU.Util;
 using UnityEditor;
 using UnityEngine;

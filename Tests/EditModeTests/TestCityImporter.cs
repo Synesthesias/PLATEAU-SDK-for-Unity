@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using PLATEAU.CityGML;
@@ -12,9 +11,7 @@ using PLATEAU.IO;
 using PLATEAU.Util;
 using PLATEAU.Tests.TestUtils;
 using UnityEditor;
-using UnityEngine;
 using UnityEngine.TestTools;
-using Object = System.Object;
 using static PLATEAU.CityMeta.ScenePlacementConfig;
 
 namespace PLATEAU.Tests.EditModeTests

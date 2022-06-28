@@ -1,6 +1,5 @@
 using System.IO;
 using System.Linq;
-using PLATEAU.CityGML;
 using NUnit.Framework;
 using PLATEAU.Editor.Converters;
 using PLATEAU.IO;

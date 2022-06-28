@@ -77,7 +77,7 @@ namespace PLATEAU.Tests.EditModeTests
         [Test]
         public void Test_PlaceMethod_PlaceSelectedLodOrDoNotPlace()
         {
-            var allObjs = GameObject.FindObjectsOfType<GameObject>();
+            var allObjs = Object.FindObjectsOfType<GameObject>();
             foreach (var obj in allObjs)
             {
                 Debug.Log(obj.name);
@@ -116,7 +116,7 @@ namespace PLATEAU.Tests.EditModeTests
         private void CheckSimpleObjPlacedToScene(PlaceMethod placeMethod, int minLodBuilding, int maxLodBuilding, int selectedLod,
             Dictionary<int, bool> lodPlacedDict)
         {
-            Import(testUdxPathSimple, testGmlRelativePathsSimple, MeshGranularity.PerCityModelArea, out _,
+            Import(testUdxPathSimple, testGmlRelativePathsSimple, MeshGranularity.PerCityModelArea,
                 minLodBuilding, maxLodBuilding, selectedLod, placeMethod);
             AssertGameObjPlaced(simpleGmlId, lodPlacedDict);
         }
@@ -137,7 +137,7 @@ namespace PLATEAU.Tests.EditModeTests
             }
         }
         
-        private void Import(string testUdxPath, string[] gmlRelativePaths, MeshGranularity meshGranularity, out CityMetaData metaData,
+        private void Import(string testUdxPath, string[] gmlRelativePaths, MeshGranularity meshGranularity,
             int minLodBuilding, int maxLodBuilding,
             int selectedLod, PlaceMethod buildingPlaceMethod)
         {
@@ -157,7 +157,7 @@ namespace PLATEAU.Tests.EditModeTests
             placeTypeConfigs[GmlType.Building].placeMethod = buildingPlaceMethod;
             placeTypeConfigs[GmlType.Building].selectedLod = selectedLod;
             
-            this.importer.Import(gmlRelativePaths, config, out metaData);
+            this.importer.Import(gmlRelativePaths, config, out _);
         }
     }
 }

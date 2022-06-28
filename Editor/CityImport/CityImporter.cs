@@ -1,19 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using Codice.Client.Common;
 using PLATEAU.CityGML;
 using PLATEAU.Editor.Converters;
-using PLATEAU.Behaviour;
 using PLATEAU.CityMeta;
 using PLATEAU.Interop;
 using PLATEAU.Util;
 using UnityEditor;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
-using Object = UnityEngine.Object;
 
 namespace PLATEAU.Editor.CityImport
 {
@@ -113,8 +109,6 @@ namespace PLATEAU.Editor.CityImport
                     if (!TryGenerateMetaData(metaData, gmlFileName, objAssetPath, config))
                     {
                         Debug.LogError($"Failed to generate meta data.\nobjAssetPath = {objAssetPath}");
-                        cityModel?.Dispose();
-                        continue;
                     }
                 }
                 
