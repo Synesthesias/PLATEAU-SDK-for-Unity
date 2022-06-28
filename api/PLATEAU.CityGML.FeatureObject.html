@@ -5,10 +5,10 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>Class CityImporterConfig
+    <title>Class FeatureObject
    | PLATEAU SDK for Unity </title>
     <meta name="viewport" content="width=device-width">
-    <meta name="title" content="Class CityImporterConfig
+    <meta name="title" content="Class FeatureObject
    | PLATEAU SDK for Unity ">
     <meta name="generator" content="docfx 2.59.2.0">
     
@@ -78,21 +78,33 @@
         </div>
         <div class="article row grid-right">
           <div class="col-md-10">
-            <article class="content wrap" id="_content" data-uid="PlateauUnitySDK.Runtime.CityMeta.CityImporterConfig">
+            <article class="content wrap" id="_content" data-uid="PLATEAU.CityGML.FeatureObject">
   
   
-  <h1 id="PlateauUnitySDK_Runtime_CityMeta_CityImporterConfig" data-uid="PlateauUnitySDK.Runtime.CityMeta.CityImporterConfig" class="text-break">Class CityImporterConfig
+  <h1 id="PLATEAU_CityGML_FeatureObject" data-uid="PLATEAU.CityGML.FeatureObject" class="text-break">Class FeatureObject
   </h1>
-  <div class="markdown level0 summary"><p>Plateau元データをインポートする時の設定です。</p>
+  <div class="markdown level0 summary"><p>CityGMLにおける全ての地物オブジェクトのベースクラスです。
+<a class="xref" href="PLATEAU.CityGML.FeatureObject.html#PLATEAU_CityGML_FeatureObject_Envelope">Envelope</a> (オブジェクトの存在範囲を2点の座標で示したもの)を持ちます。</p>
 </div>
   <div class="markdown level0 conceptual"></div>
   <div class="inheritance">
     <h5>Inheritance</h5>
     <div class="level0"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></div>
-    <div class="level1"><span class="xref">CityImporterConfig</span></div>
+    <div class="level1"><a class="xref" href="PLATEAU.CityGML.Object.html">Object</a></div>
+    <div class="level2"><span class="xref">FeatureObject</span></div>
+      <div class="level3"><a class="xref" href="PLATEAU.CityGML.CityObject.html">CityObject</a></div>
   </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
+    <div>
+      <a class="xref" href="PLATEAU.CityGML.Object.html#PLATEAU_CityGML_Object_Handle">Object.Handle</a>
+    </div>
+    <div>
+      <a class="xref" href="PLATEAU.CityGML.Object.html#PLATEAU_CityGML_Object_ID">Object.ID</a>
+    </div>
+    <div>
+      <a class="xref" href="PLATEAU.CityGML.Object.html#PLATEAU_CityGML_Object_AttributesMap">Object.AttributesMap</a>
+    </div>
     <div>
       <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.tostring#system-object-tostring">Object.ToString()</a>
     </div>
@@ -115,24 +127,26 @@
       <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.memberwiseclone#system-object-memberwiseclone">Object.MemberwiseClone()</a>
     </div>
   </div>
-  <h6><strong>Namespace</strong>: <a class="xref" href="PlateauUnitySDK.Runtime.CityMeta.html">PlateauUnitySDK.Runtime.CityMeta</a></h6>
+  <h6><strong>Namespace</strong>: <a class="xref" href="PLATEAU.CityGML.html">PLATEAU.CityGML</a></h6>
   <h6><strong>Assembly</strong>: cs.temp.dll.dll</h6>
-  <h5 id="PlateauUnitySDK_Runtime_CityMeta_CityImporterConfig_syntax">Syntax</h5>
+  <h5 id="PLATEAU_CityGML_FeatureObject_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public class CityImporterConfig</code></pre>
+    <pre><code class="lang-csharp hljs">public class FeatureObject : Object</code></pre>
   </div>
-  <h3 id="fields">Fields
+  <h3 id="properties">Properties
   </h3>
   
   
-  <h4 id="PlateauUnitySDK_Runtime_CityMeta_CityImporterConfig_exportFolderPath" data-uid="PlateauUnitySDK.Runtime.CityMeta.CityImporterConfig.exportFolderPath">exportFolderPath</h4>
-  <div class="markdown level1 summary"></div>
+  <a id="PLATEAU_CityGML_FeatureObject_Envelope_" data-uid="PLATEAU.CityGML.FeatureObject.Envelope*"></a>
+  <h4 id="PLATEAU_CityGML_FeatureObject_Envelope" data-uid="PLATEAU.CityGML.FeatureObject.Envelope">Envelope</h4>
+  <div class="markdown level1 summary"><p>建築物の範囲を double[6] で返します。</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public string exportFolderPath</code></pre>
+    <pre><code class="lang-csharp hljs">public double[] Envelope { get; }</code></pre>
   </div>
-  <h5 class="fieldValue">Field Value</h5>
+  <h5 class="propertyValue">Property Value</h5>
   <table class="table table-bordered table-striped table-condensed">
     <thead>
       <tr>
@@ -142,151 +156,63 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a></td>
-        <td></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.double">Double</a>[]</td>
+        <td><p>戻り値 double[6] の配列の中身は座標 { lower_x, lower_y, lower_z, upper_x, upper_y, upper_z } です。</p>
+</td>
       </tr>
     </tbody>
   </table>
+  <h3 id="methods">Methods
+  </h3>
   
   
-  <h4 id="PlateauUnitySDK_Runtime_CityMeta_CityImporterConfig_gmlSearcherConfig" data-uid="PlateauUnitySDK.Runtime.CityMeta.CityImporterConfig.gmlSearcherConfig">gmlSearcherConfig</h4>
-  <div class="markdown level1 summary"></div>
+  <a id="PLATEAU_CityGML_FeatureObject_SetEnvelope_" data-uid="PLATEAU.CityGML.FeatureObject.SetEnvelope*"></a>
+  <h4 id="PLATEAU_CityGML_FeatureObject_SetEnvelope_System_Double_System_Double_System_Double_System_Double_System_Double_System_Double_" data-uid="PLATEAU.CityGML.FeatureObject.SetEnvelope(System.Double,System.Double,System.Double,System.Double,System.Double,System.Double)">SetEnvelope(Double, Double, Double, Double, Double, Double)</h4>
+  <div class="markdown level1 summary"><p>建物の範囲を設定します。</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public GmlSearcherConfig gmlSearcherConfig</code></pre>
+    <pre><code class="lang-csharp hljs">public void SetEnvelope(double lowerX, double lowerY, double lowerZ, double upperX, double upperY, double upperZ)</code></pre>
   </div>
-  <h5 class="fieldValue">Field Value</h5>
+  <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
     <thead>
       <tr>
         <th>Type</th>
+        <th>Name</th>
         <th>Description</th>
       </tr>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="PlateauUnitySDK.Runtime.CityMeta.GmlSearcherConfig.html">GmlSearcherConfig</a></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.double">Double</a></td>
+        <td><span class="parametername">lowerX</span></td>
         <td></td>
       </tr>
-    </tbody>
-  </table>
-  
-  
-  <h4 id="PlateauUnitySDK_Runtime_CityMeta_CityImporterConfig_logLevel" data-uid="PlateauUnitySDK.Runtime.CityMeta.CityImporterConfig.logLevel">logLevel</h4>
-  <div class="markdown level1 summary"></div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public DllLogLevel logLevel</code></pre>
-  </div>
-  <h5 class="fieldValue">Field Value</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
       <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="xref">DllLogLevel</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.double">Double</a></td>
+        <td><span class="parametername">lowerY</span></td>
         <td></td>
       </tr>
-    </tbody>
-  </table>
-  
-  
-  <h4 id="PlateauUnitySDK_Runtime_CityMeta_CityImporterConfig_meshGranularity" data-uid="PlateauUnitySDK.Runtime.CityMeta.CityImporterConfig.meshGranularity">meshGranularity</h4>
-  <div class="markdown level1 summary"></div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public MeshGranularity meshGranularity</code></pre>
-  </div>
-  <h5 class="fieldValue">Field Value</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
       <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="xref">MeshGranularity</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.double">Double</a></td>
+        <td><span class="parametername">lowerZ</span></td>
         <td></td>
       </tr>
-    </tbody>
-  </table>
-  
-  
-  <h4 id="PlateauUnitySDK_Runtime_CityMeta_CityImporterConfig_optimizeFlag" data-uid="PlateauUnitySDK.Runtime.CityMeta.CityImporterConfig.optimizeFlag">optimizeFlag</h4>
-  <div class="markdown level1 summary"></div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public bool optimizeFlag</code></pre>
-  </div>
-  <h5 class="fieldValue">Field Value</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
       <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.double">Double</a></td>
+        <td><span class="parametername">upperX</span></td>
         <td></td>
       </tr>
-    </tbody>
-  </table>
-  
-  
-  <h4 id="PlateauUnitySDK_Runtime_CityMeta_CityImporterConfig_referencePoint" data-uid="PlateauUnitySDK.Runtime.CityMeta.CityImporterConfig.referencePoint">referencePoint</h4>
-  <div class="markdown level1 summary"></div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public Vector3 referencePoint</code></pre>
-  </div>
-  <h5 class="fieldValue">Field Value</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
       <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="xref">Vector3</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.double">Double</a></td>
+        <td><span class="parametername">upperY</span></td>
         <td></td>
       </tr>
-    </tbody>
-  </table>
-  
-  
-  <h4 id="PlateauUnitySDK_Runtime_CityMeta_CityImporterConfig_sourceUdxFolderPath" data-uid="PlateauUnitySDK.Runtime.CityMeta.CityImporterConfig.sourceUdxFolderPath">sourceUdxFolderPath</h4>
-  <div class="markdown level1 summary"></div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public string sourceUdxFolderPath</code></pre>
-  </div>
-  <h5 class="fieldValue">Field Value</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
       <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.double">Double</a></td>
+        <td><span class="parametername">upperZ</span></td>
         <td></td>
       </tr>
     </tbody>

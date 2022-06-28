@@ -5,10 +5,10 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>Class SingleFileConvertWindow
+    <title>Namespace PLATEAU.CityMeta
    | PLATEAU SDK for Unity </title>
     <meta name="viewport" content="width=device-width">
-    <meta name="title" content="Class SingleFileConvertWindow
+    <meta name="title" content="Namespace PLATEAU.CityMeta
    | PLATEAU SDK for Unity ">
     <meta name="generator" content="docfx 2.59.2.0">
     
@@ -78,39 +78,23 @@
         </div>
         <div class="article row grid-right">
           <div class="col-md-10">
-            <article class="content wrap" id="_content" data-uid="PlateauUnitySDK.Editor.SingleFileConvert.SingleFileConvertWindow">
+            <article class="content wrap" id="_content" data-uid="PLATEAU.CityMeta">
   
-  
-  <h1 id="PlateauUnitySDK_Editor_SingleFileConvert_SingleFileConvertWindow" data-uid="PlateauUnitySDK.Editor.SingleFileConvert.SingleFileConvertWindow" class="text-break">Class SingleFileConvertWindow
+  <h1 id="PLATEAU_CityMeta" data-uid="PLATEAU.CityMeta" class="text-break">Namespace PLATEAU.CityMeta
   </h1>
-  <div class="markdown level0 summary"><p>ファイル単品の変換を行うEditorWindowです。
-変換の形式ごとのタブが用意されたウィンドウを表示します。
-具体的な処理を各タブのクラスに委譲します。</p>
-</div>
+  <div class="markdown level0 summary"></div>
   <div class="markdown level0 conceptual"></div>
-  <div class="inheritance">
-    <h5>Inheritance</h5>
-    <div class="level0"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></div>
-    <div class="level1"><span class="xref">SingleFileConvertWindow</span></div>
-  </div>
-  <h6><strong>Namespace</strong>: <a class="xref" href="PlateauUnitySDK.Editor.SingleFileConvert.html">PlateauUnitySDK.Editor.SingleFileConvert</a></h6>
-  <h6><strong>Assembly</strong>: cs.temp.dll.dll</h6>
-  <h5 id="PlateauUnitySDK_Editor_SingleFileConvert_SingleFileConvertWindow_syntax">Syntax</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public class SingleFileConvertWindow : EditorWindow</code></pre>
-  </div>
-  <h3 id="methods">Methods
+  <div class="markdown level0 remarks"></div>
+    <h3 id="classes">Classes
   </h3>
-  
-  
-  <a id="PlateauUnitySDK_Editor_SingleFileConvert_SingleFileConvertWindow_Open_" data-uid="PlateauUnitySDK.Editor.SingleFileConvert.SingleFileConvertWindow.Open*"></a>
-  <h4 id="PlateauUnitySDK_Editor_SingleFileConvert_SingleFileConvertWindow_Open" data-uid="PlateauUnitySDK.Editor.SingleFileConvert.SingleFileConvertWindow.Open">Open()</h4>
-  <div class="markdown level1 summary"></div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static void Open()</code></pre>
-  </div>
+      <h4><a class="xref" href="PLATEAU.CityMeta.CityMetaData.html">CityMetaData</a></h4>
+      <section><p><p>
+Plateau元データのインポート時に ScriptableObject として保存されるメタデータです。</p>
+・PlateauオブジェクトのIDから、対応する gml ファイルを検索する辞書である <span class="xref">PLATEAU.CityMeta.CityMetaData.idToGmlTable</span> を保持します。
+  この情報の用途は、Unityシーン内のオブジェクトから対応する gml をロードして Plateau の情報を取得する処理の起点となります。<br>
+・インポート時の設定を保持します。
+  これにより、この ScriptableObject をプロジェクトビューから選択したときに「再変換」画面を出すことができます。</p>
+</section>
 </article>
           </div>
           

@@ -5,10 +5,10 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>Class CityMetaData
+    <title>Class Address
    | PLATEAU SDK for Unity </title>
     <meta name="viewport" content="width=device-width">
-    <meta name="title" content="Class CityMetaData
+    <meta name="title" content="Class Address
    | PLATEAU SDK for Unity ">
     <meta name="generator" content="docfx 2.59.2.0">
     
@@ -78,198 +78,167 @@
         </div>
         <div class="article row grid-right">
           <div class="col-md-10">
-            <article class="content wrap" id="_content" data-uid="PlateauUnitySDK.Runtime.CityMeta.CityMetaData">
+            <article class="content wrap" id="_content" data-uid="PLATEAU.CityGML.Address">
   
   
-  <h1 id="PlateauUnitySDK_Runtime_CityMeta_CityMetaData" data-uid="PlateauUnitySDK.Runtime.CityMeta.CityMetaData" class="text-break">Class CityMetaData
+  <h1 id="PLATEAU_CityGML_Address" data-uid="PLATEAU.CityGML.Address" class="text-break">Class Address
   </h1>
-  <div class="markdown level0 summary"><p>Plateau元データのインポート時に ScriptableObject として保存されるメタデータです。
-・PlateauオブジェクトのIDから、対応する gml ファイルを検索する辞書である <a class="xref" href="PlateauUnitySDK.Runtime.CityMeta.CityMetaData.html#PlateauUnitySDK_Runtime_CityMeta_CityMetaData_idToGmlTable">idToGmlTable</a> を保持します。
-この情報の用途は、Unityシーン内のオブジェクトから対応する gml をロードして Plateau の情報を取得する処理の起点となります。
-・インポート時の設定を保持します。
-これにより、この ScriptableObject をプロジェクトビューから選択したときに「再変換」画面を出すことができます。</p>
+  <div class="markdown level0 summary"><p>住所情報を保持します。
+<a class="xref" href="PLATEAU.CityGML.CityObject.html">CityObject</a> が <a class="xref" href="PLATEAU.CityGML.Address.html">Address</a> を保持します。</p>
 </div>
   <div class="markdown level0 conceptual"></div>
   <div class="inheritance">
     <h5>Inheritance</h5>
     <div class="level0"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></div>
-    <div class="level1"><span class="xref">CityMetaData</span></div>
+    <div class="level1"><span class="xref">Address</span></div>
   </div>
-  <h6><strong>Namespace</strong>: <a class="xref" href="PlateauUnitySDK.Runtime.CityMeta.html">PlateauUnitySDK.Runtime.CityMeta</a></h6>
+  <div class="inheritedMembers">
+    <h5>Inherited Members</h5>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.tostring#system-object-tostring">Object.ToString()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)">Object.Equals(Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)">Object.Equals(Object, Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.referenceequals#system-object-referenceequals(system-object-system-object)">Object.ReferenceEquals(Object, Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gethashcode#system-object-gethashcode">Object.GetHashCode()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gettype#system-object-gettype">Object.GetType()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.memberwiseclone#system-object-memberwiseclone">Object.MemberwiseClone()</a>
+    </div>
+  </div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="PLATEAU.CityGML.html">PLATEAU.CityGML</a></h6>
   <h6><strong>Assembly</strong>: cs.temp.dll.dll</h6>
-  <h5 id="PlateauUnitySDK_Runtime_CityMeta_CityMetaData_syntax">Syntax</h5>
+  <h5 id="PLATEAU_CityGML_Address_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public class CityMetaData : ScriptableObject</code></pre>
+    <pre><code class="lang-csharp hljs">public class Address</code></pre>
   </div>
-  <h3 id="fields">Fields
+  <h3 id="constructors">Constructors
   </h3>
   
   
-  <h4 id="PlateauUnitySDK_Runtime_CityMeta_CityMetaData_cityImporterConfig" data-uid="PlateauUnitySDK.Runtime.CityMeta.CityMetaData.cityImporterConfig">cityImporterConfig</h4>
+  <a id="PLATEAU_CityGML_Address__ctor_" data-uid="PLATEAU.CityGML.Address.#ctor*"></a>
+  <h4 id="PLATEAU_CityGML_Address__ctor_IntPtr_" data-uid="PLATEAU.CityGML.Address.#ctor(IntPtr)">Address(IntPtr)</h4>
   <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public CityImporterConfig cityImporterConfig</code></pre>
+    <pre><code class="lang-csharp hljs">public Address(IntPtr handle)</code></pre>
   </div>
-  <h5 class="fieldValue">Field Value</h5>
+  <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
     <thead>
       <tr>
         <th>Type</th>
+        <th>Name</th>
         <th>Description</th>
       </tr>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="PlateauUnitySDK.Runtime.CityMeta.CityImporterConfig.html">CityImporterConfig</a></td>
+        <td><span class="xref">IntPtr</span></td>
+        <td><span class="parametername">handle</span></td>
         <td></td>
       </tr>
     </tbody>
   </table>
-  
-  
-  <h4 id="PlateauUnitySDK_Runtime_CityMeta_CityMetaData_idToGmlTable" data-uid="PlateauUnitySDK.Runtime.CityMeta.CityMetaData.idToGmlTable">idToGmlTable</h4>
-  <div class="markdown level1 summary"></div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public IdToGmlTable idToGmlTable</code></pre>
-  </div>
-  <h5 class="fieldValue">Field Value</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="PlateauUnitySDK.Runtime.CityMeta.IdToGmlTable.html">IdToGmlTable</a></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  <h3 id="methods">Methods
+  <h3 id="properties">Properties
   </h3>
   
   
-  <a id="PlateauUnitySDK_Runtime_CityMeta_CityMetaData_AddToGmlTable_" data-uid="PlateauUnitySDK.Runtime.CityMeta.CityMetaData.AddToGmlTable*"></a>
-  <h4 id="PlateauUnitySDK_Runtime_CityMeta_CityMetaData_AddToGmlTable_System_String_System_String_" data-uid="PlateauUnitySDK.Runtime.CityMeta.CityMetaData.AddToGmlTable(System.String,System.String)">AddToGmlTable(String, String)</h4>
+  <a id="PLATEAU_CityGML_Address_Country_" data-uid="PLATEAU.CityGML.Address.Country*"></a>
+  <h4 id="PLATEAU_CityGML_Address_Country" data-uid="PLATEAU.CityGML.Address.Country">Country</h4>
   <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public void AddToGmlTable(string cityObjId, string gmlName)</code></pre>
+    <pre><code class="lang-csharp hljs">public string Country { get; }</code></pre>
   </div>
-  <h5 class="parameters">Parameters</h5>
+  <h5 class="propertyValue">Property Value</h5>
   <table class="table table-bordered table-striped table-condensed">
     <thead>
       <tr>
         <th>Type</th>
-        <th>Name</th>
         <th>Description</th>
       </tr>
     </thead>
     <tbody>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a></td>
-        <td><span class="parametername">cityObjId</span></td>
-        <td></td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a></td>
-        <td><span class="parametername">gmlName</span></td>
         <td></td>
       </tr>
     </tbody>
   </table>
   
   
-  <a id="PlateauUnitySDK_Runtime_CityMeta_CityMetaData_DoClearIdToGmlTable_" data-uid="PlateauUnitySDK.Runtime.CityMeta.CityMetaData.DoClearIdToGmlTable*"></a>
-  <h4 id="PlateauUnitySDK_Runtime_CityMeta_CityMetaData_DoClearIdToGmlTable" data-uid="PlateauUnitySDK.Runtime.CityMeta.CityMetaData.DoClearIdToGmlTable">DoClearIdToGmlTable()</h4>
+  <a id="PLATEAU_CityGML_Address_Locality_" data-uid="PLATEAU.CityGML.Address.Locality*"></a>
+  <h4 id="PLATEAU_CityGML_Address_Locality" data-uid="PLATEAU.CityGML.Address.Locality">Locality</h4>
   <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public void DoClearIdToGmlTable()</code></pre>
+    <pre><code class="lang-csharp hljs">public string Locality { get; }</code></pre>
   </div>
-  
-  
-  <a id="PlateauUnitySDK_Runtime_CityMeta_CityMetaData_DoGmlTableContainsKey_" data-uid="PlateauUnitySDK.Runtime.CityMeta.CityMetaData.DoGmlTableContainsKey*"></a>
-  <h4 id="PlateauUnitySDK_Runtime_CityMeta_CityMetaData_DoGmlTableContainsKey_System_String_" data-uid="PlateauUnitySDK.Runtime.CityMeta.CityMetaData.DoGmlTableContainsKey(System.String)">DoGmlTableContainsKey(String)</h4>
-  <div class="markdown level1 summary"></div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public bool DoGmlTableContainsKey(string cityObjId)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
+  <h5 class="propertyValue">Property Value</h5>
   <table class="table table-bordered table-striped table-condensed">
     <thead>
       <tr>
         <th>Type</th>
-        <th>Name</th>
         <th>Description</th>
       </tr>
     </thead>
     <tbody>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a></td>
-        <td><span class="parametername">cityObjId</span></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
         <td></td>
       </tr>
     </tbody>
   </table>
   
   
-  <a id="PlateauUnitySDK_Runtime_CityMeta_CityMetaData_TryGetValueFromGmlTable_" data-uid="PlateauUnitySDK.Runtime.CityMeta.CityMetaData.TryGetValueFromGmlTable*"></a>
-  <h4 id="PlateauUnitySDK_Runtime_CityMeta_CityMetaData_TryGetValueFromGmlTable_System_String_System_String__" data-uid="PlateauUnitySDK.Runtime.CityMeta.CityMetaData.TryGetValueFromGmlTable(System.String,System.String@)">TryGetValueFromGmlTable(String, out String)</h4>
+  <a id="PLATEAU_CityGML_Address_PostalCode_" data-uid="PLATEAU.CityGML.Address.PostalCode*"></a>
+  <h4 id="PLATEAU_CityGML_Address_PostalCode" data-uid="PLATEAU.CityGML.Address.PostalCode">PostalCode</h4>
   <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public bool TryGetValueFromGmlTable(string cityObjId, out string gmlFileName)</code></pre>
+    <pre><code class="lang-csharp hljs">public string PostalCode { get; }</code></pre>
   </div>
-  <h5 class="parameters">Parameters</h5>
+  <h5 class="propertyValue">Property Value</h5>
   <table class="table table-bordered table-striped table-condensed">
     <thead>
       <tr>
         <th>Type</th>
-        <th>Name</th>
         <th>Description</th>
       </tr>
     </thead>
     <tbody>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a></td>
-        <td><span class="parametername">cityObjId</span></td>
-        <td></td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a></td>
-        <td><span class="parametername">gmlFileName</span></td>
         <td></td>
       </tr>
     </tbody>
   </table>
-  <h5 class="returns">Returns</h5>
+  
+  
+  <a id="PLATEAU_CityGML_Address_ThoroughFareName_" data-uid="PLATEAU.CityGML.Address.ThoroughFareName*"></a>
+  <h4 id="PLATEAU_CityGML_Address_ThoroughFareName" data-uid="PLATEAU.CityGML.Address.ThoroughFareName">ThoroughFareName</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public string ThoroughFareName { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
   <table class="table table-bordered table-striped table-condensed">
     <thead>
       <tr>
@@ -279,7 +248,32 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
+  <a id="PLATEAU_CityGML_Address_ThoroughFareNumber_" data-uid="PLATEAU.CityGML.Address.ThoroughFareNumber*"></a>
+  <h4 id="PLATEAU_CityGML_Address_ThoroughFareNumber" data-uid="PLATEAU.CityGML.Address.ThoroughFareNumber">ThoroughFareNumber</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public string ThoroughFareNumber { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a></td>
         <td></td>
       </tr>
     </tbody>

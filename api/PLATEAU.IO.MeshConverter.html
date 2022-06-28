@@ -5,10 +5,10 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>Class GmlTypeTarget
+    <title>Class MeshConverter
    | PLATEAU SDK for Unity </title>
     <meta name="viewport" content="width=device-width">
-    <meta name="title" content="Class GmlTypeTarget
+    <meta name="title" content="Class MeshConverter
    | PLATEAU SDK for Unity ">
     <meta name="generator" content="docfx 2.59.2.0">
     
@@ -78,53 +78,50 @@
         </div>
         <div class="article row grid-right">
           <div class="col-md-10">
-            <article class="content wrap" id="_content" data-uid="PlateauUnitySDK.Runtime.CityMeta.GmlTypeTarget">
+            <article class="content wrap" id="_content" data-uid="PLATEAU.IO.MeshConverter">
   
   
-  <h1 id="PlateauUnitySDK_Runtime_CityMeta_GmlTypeTarget" data-uid="PlateauUnitySDK.Runtime.CityMeta.GmlTypeTarget" class="text-break">Class GmlTypeTarget
+  <h1 id="PLATEAU_IO_MeshConverter" data-uid="PLATEAU.IO.MeshConverter" class="text-break">Class MeshConverter
   </h1>
-  <div class="markdown level0 summary"><p>gmlファイル群は地物オブジェクトのタイプ別にフォルダ分けで格納されていますが、
-そのうちのどのタイプ（フォルダ）を変換ターゲットとするかを決めます。
-例: udx/bldg下のgmlは対象にするが、udx/veg下のgmlは対象にしない、など。</p>
-<p>他クラスとの関係は <a class="xref" href="PlateauUnitySDK.Runtime.CityMeta.CityImporterConfig.html">CityImporterConfig</a> -&gt; 保持 -&gt; <a class="xref" href="PlateauUnitySDK.Runtime.CityMeta.GmlSearcherConfig.html">GmlSearcherConfig</a> -&gt; 保持 -&gt; <a class="xref" href="PlateauUnitySDK.Runtime.CityMeta.GmlTypeTarget.html">GmlTypeTarget</a>
-という関係なので、<a class="xref" href="PlateauUnitySDK.Runtime.CityMeta.CityImporterConfig.html">CityImporterConfig</a> の注意事項に基づいてこのクラスには Serializable属性が付いている必要があります。</p>
+  <div class="markdown level0 summary"><p>GMLファイルをメッシュファイルに変換する機能を提供します。</p>
 </div>
   <div class="markdown level0 conceptual"></div>
   <div class="inheritance">
     <h5>Inheritance</h5>
     <div class="level0"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></div>
-    <div class="level1"><span class="xref">GmlTypeTarget</span></div>
+    <div class="level1"><span class="xref">MeshConverter</span></div>
   </div>
-  <h6><strong>Namespace</strong>: <a class="xref" href="PlateauUnitySDK.Runtime.CityMeta.html">PlateauUnitySDK.Runtime.CityMeta</a></h6>
+  <h6><strong>Namespace</strong>: <a class="xref" href="PLATEAU.IO.html">PLATEAU.IO</a></h6>
   <h6><strong>Assembly</strong>: cs.temp.dll.dll</h6>
-  <h5 id="PlateauUnitySDK_Runtime_CityMeta_GmlTypeTarget_syntax">Syntax</h5>
+  <h5 id="PLATEAU_IO_MeshConverter_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public class GmlTypeTarget : ISerializationCallbackReceiver</code></pre>
+    <pre><code class="lang-csharp hljs">public class MeshConverter : IDisposable</code></pre>
   </div>
   <h3 id="constructors">Constructors
   </h3>
   
   
-  <a id="PlateauUnitySDK_Runtime_CityMeta_GmlTypeTarget__ctor_" data-uid="PlateauUnitySDK.Runtime.CityMeta.GmlTypeTarget.#ctor*"></a>
-  <h4 id="PlateauUnitySDK_Runtime_CityMeta_GmlTypeTarget__ctor" data-uid="PlateauUnitySDK.Runtime.CityMeta.GmlTypeTarget.#ctor">GmlTypeTarget()</h4>
-  <div class="markdown level1 summary"></div>
+  <a id="PLATEAU_IO_MeshConverter__ctor_" data-uid="PLATEAU.IO.MeshConverter.#ctor*"></a>
+  <h4 id="PLATEAU_IO_MeshConverter__ctor" data-uid="PLATEAU.IO.MeshConverter.#ctor">MeshConverter()</h4>
+  <div class="markdown level1 summary"><p><a class="xref" href="PLATEAU.IO.MeshConverter.html">MeshConverter</a>クラスのインスタンスを初期化します。</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public GmlTypeTarget()</code></pre>
+    <pre><code class="lang-csharp hljs">public MeshConverter()</code></pre>
   </div>
   <h3 id="properties">Properties
   </h3>
   
   
-  <a id="PlateauUnitySDK_Runtime_CityMeta_GmlTypeTarget_TargetDict_" data-uid="PlateauUnitySDK.Runtime.CityMeta.GmlTypeTarget.TargetDict*"></a>
-  <h4 id="PlateauUnitySDK_Runtime_CityMeta_GmlTypeTarget_TargetDict" data-uid="PlateauUnitySDK.Runtime.CityMeta.GmlTypeTarget.TargetDict">TargetDict</h4>
-  <div class="markdown level1 summary"><p>GmlTypeごとに、変換対象とするかどうかの辞書です。 </p>
+  <a id="PLATEAU_IO_MeshConverter_Handle_" data-uid="PLATEAU.IO.MeshConverter.Handle*"></a>
+  <h4 id="PLATEAU_IO_MeshConverter_Handle" data-uid="PLATEAU.IO.MeshConverter.Handle">Handle</h4>
+  <div class="markdown level1 summary"><p>セーフハンドルを取得します。</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public Dictionary&lt;GmlType, bool&gt; TargetDict { get; set; }</code></pre>
+    <pre><code class="lang-csharp hljs">public IntPtr Handle { get; }</code></pre>
   </div>
   <h5 class="propertyValue">Property Value</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -136,7 +133,33 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">Dictionary</span>&lt;<a class="xref" href="PlateauUnitySDK.Runtime.CityMeta.GmlType.html">GmlType</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a>&gt;</td>
+        <td><span class="xref">IntPtr</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
+  <a id="PLATEAU_IO_MeshConverter_Options_" data-uid="PLATEAU.IO.MeshConverter.Options*"></a>
+  <h4 id="PLATEAU_IO_MeshConverter_Options" data-uid="PLATEAU.IO.MeshConverter.Options">Options</h4>
+  <div class="markdown level1 summary"><p>メッシュ変換オプションを取得または設定します。</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public MeshConvertOptions Options { get; set; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="PLATEAU.IO.MeshConvertOptions.html">MeshConvertOptions</a></td>
         <td></td>
       </tr>
     </tbody>
@@ -145,96 +168,78 @@
   </h3>
   
   
-  <a id="PlateauUnitySDK_Runtime_CityMeta_GmlTypeTarget_IsTypeTarget_" data-uid="PlateauUnitySDK.Runtime.CityMeta.GmlTypeTarget.IsTypeTarget*"></a>
-  <h4 id="PlateauUnitySDK_Runtime_CityMeta_GmlTypeTarget_IsTypeTarget_PlateauUnitySDK_Runtime_CityMeta_GmlType_" data-uid="PlateauUnitySDK.Runtime.CityMeta.GmlTypeTarget.IsTypeTarget(PlateauUnitySDK.Runtime.CityMeta.GmlType)">IsTypeTarget(GmlType)</h4>
+  <a id="PLATEAU_IO_MeshConverter_Convert_" data-uid="PLATEAU.IO.MeshConverter.Convert*"></a>
+  <h4 id="PLATEAU_IO_MeshConverter_Convert_System_String_System_String_CityModel_DllLogger_" data-uid="PLATEAU.IO.MeshConverter.Convert(System.String,System.String,CityModel,DllLogger)">Convert(String, String, CityModel, DllLogger)</h4>
+  <div class="markdown level1 summary"><p>GMLファイルをメッシュファイルに変換します。<br></p>
+<p>変換後のメッシュファイル(OBJもしくはglTF)は<code data-dev-comment-type="paramref" class="paramref">destinationDirectory</code>に<em>LOD{LODの値}_{gmlファイル名}.{拡張子}</em>という名前で格納され、
+.gmlから参照されるテクスチャファイル一式は<code data-dev-comment-type="paramref" class="paramref">destinationDirectory</code>にコピーされます。<br>
+<code data-dev-comment-type="paramref" class="paramref">cityModel</code>は以下を満たしている必要があります。<br></p>
+<ul>
+<li><see cref="!:CitygmlParserParams.Tessellate"></see>オプションがtrueでパースされていること<br></li>
+<li><code data-dev-comment-type="paramref" class="paramref">gmlPath</code>がパースされた都市モデルであること</li>
+</ul>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void Convert(string destinationDirectory, string gmlPath, CityModel cityModel = null, DllLogger logger = null)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a></td>
+        <td><span class="parametername">destinationDirectory</span></td>
+        <td><p>出力先ディレクトリ</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a></td>
+        <td><span class="parametername">gmlPath</span></td>
+        <td><p>入力GMLファイル</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">CityModel</span></td>
+        <td><span class="parametername">cityModel</span></td>
+        <td><p><code data-dev-comment-type="paramref" class="paramref">gmlPath</code>がパースされた都市モデル。nullの場合は内部でパースされます。</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">DllLogger</span></td>
+        <td><span class="parametername">logger</span></td>
+        <td><p>内部ログ受け取り用の<see cref="!:DllLogger"></see>インスタンス</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
+  <a id="PLATEAU_IO_MeshConverter_Dispose_" data-uid="PLATEAU.IO.MeshConverter.Dispose*"></a>
+  <h4 id="PLATEAU_IO_MeshConverter_Dispose" data-uid="PLATEAU.IO.MeshConverter.Dispose">Dispose()</h4>
   <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public bool IsTypeTarget(GmlType t)</code></pre>
+    <pre><code class="lang-csharp hljs">public void Dispose()</code></pre>
   </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="PlateauUnitySDK.Runtime.CityMeta.GmlType.html">GmlType</a></td>
-        <td><span class="parametername">t</span></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
   
   
-  <a id="PlateauUnitySDK_Runtime_CityMeta_GmlTypeTarget_OnAfterDeserialize_" data-uid="PlateauUnitySDK.Runtime.CityMeta.GmlTypeTarget.OnAfterDeserialize*"></a>
-  <h4 id="PlateauUnitySDK_Runtime_CityMeta_GmlTypeTarget_OnAfterDeserialize" data-uid="PlateauUnitySDK.Runtime.CityMeta.GmlTypeTarget.OnAfterDeserialize">OnAfterDeserialize()</h4>
-  <div class="markdown level1 summary"><p>デシリアライズするときに List から Dictionary 形式に直します。</p>
-</div>
+  <a id="PLATEAU_IO_MeshConverter_Finalize_" data-uid="PLATEAU.IO.MeshConverter.Finalize*"></a>
+  <h4 id="PLATEAU_IO_MeshConverter_Finalize" data-uid="PLATEAU.IO.MeshConverter.Finalize">Finalize()</h4>
+  <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public void OnAfterDeserialize()</code></pre>
+    <pre><code class="lang-csharp hljs">protected void Finalize()</code></pre>
   </div>
-  
-  
-  <a id="PlateauUnitySDK_Runtime_CityMeta_GmlTypeTarget_OnBeforeSerialize_" data-uid="PlateauUnitySDK.Runtime.CityMeta.GmlTypeTarget.OnBeforeSerialize*"></a>
-  <h4 id="PlateauUnitySDK_Runtime_CityMeta_GmlTypeTarget_OnBeforeSerialize" data-uid="PlateauUnitySDK.Runtime.CityMeta.GmlTypeTarget.OnBeforeSerialize">OnBeforeSerialize()</h4>
-  <div class="markdown level1 summary"><p>シリアライズするときに List形式に直します。</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public void OnBeforeSerialize()</code></pre>
-  </div>
-  
-  
-  <a id="PlateauUnitySDK_Runtime_CityMeta_GmlTypeTarget_SetAll_" data-uid="PlateauUnitySDK.Runtime.CityMeta.GmlTypeTarget.SetAll*"></a>
-  <h4 id="PlateauUnitySDK_Runtime_CityMeta_GmlTypeTarget_SetAll_System_Boolean_" data-uid="PlateauUnitySDK.Runtime.CityMeta.GmlTypeTarget.SetAll(System.Boolean)">SetAll(Boolean)</h4>
-  <div class="markdown level1 summary"><p>すべて true または すべて false にします。 </p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public void SetAll(bool val)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
-        <td><span class="parametername">val</span></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
 </article>
           </div>
           

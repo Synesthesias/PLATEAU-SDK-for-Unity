@@ -5,10 +5,10 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>Class GmlSearcherConfig
+    <title>Class Texture
    | PLATEAU SDK for Unity </title>
     <meta name="viewport" content="width=device-width">
-    <meta name="title" content="Class GmlSearcherConfig
+    <meta name="title" content="Class Texture
    | PLATEAU SDK for Unity ">
     <meta name="generator" content="docfx 2.59.2.0">
     
@@ -78,22 +78,43 @@
         </div>
         <div class="article row grid-right">
           <div class="col-md-10">
-            <article class="content wrap" id="_content" data-uid="PlateauUnitySDK.Runtime.CityMeta.GmlSearcherConfig">
+            <article class="content wrap" id="_content" data-uid="PLATEAU.CityGML.Texture">
   
   
-  <h1 id="PlateauUnitySDK_Runtime_CityMeta_GmlSearcherConfig" data-uid="PlateauUnitySDK.Runtime.CityMeta.GmlSearcherConfig" class="text-break">Class GmlSearcherConfig
+  <h1 id="PLATEAU_CityGML_Texture" data-uid="PLATEAU.CityGML.Texture" class="text-break">Class Texture
   </h1>
-  <div class="markdown level0 summary"><p>GmlSearcher の設定です。
-このクラスは <a class="xref" href="PlateauUnitySDK.Runtime.CityMeta.CityImporterConfig.html">CityImporterConfig</a> によって保持されるので、そちらの注意事項もご覧ください。</p>
+  <div class="markdown level0 summary"><p>テクスチャ情報です。
+<a class="xref" href="PLATEAU.CityGML.Texture.html#PLATEAU_CityGML_Texture_Url">Url</a> と <a class="xref" href="PLATEAU.CityGML.TextureWrapMode.html">TextureWrapMode</a> を保持します。
+<a class="xref" href="PLATEAU.CityGML.TextureTargetDefinition.html">TextureTargetDefinition</a> によって保持されます。</p>
 </div>
   <div class="markdown level0 conceptual"></div>
   <div class="inheritance">
     <h5>Inheritance</h5>
     <div class="level0"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></div>
-    <div class="level1"><span class="xref">GmlSearcherConfig</span></div>
+    <div class="level1"><a class="xref" href="PLATEAU.CityGML.Object.html">Object</a></div>
+    <div class="level2"><a class="xref" href="PLATEAU.CityGML.Appearance.html">Appearance</a></div>
+    <div class="level3"><span class="xref">Texture</span></div>
   </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
+    <div>
+      <a class="xref" href="PLATEAU.CityGML.Appearance.html#PLATEAU_CityGML_Appearance_Type">Appearance.Type</a>
+    </div>
+    <div>
+      <a class="xref" href="PLATEAU.CityGML.Appearance.html#PLATEAU_CityGML_Appearance_IsFront">Appearance.IsFront</a>
+    </div>
+    <div>
+      <a class="xref" href="PLATEAU.CityGML.Appearance.html#PLATEAU_CityGML_Appearance_Themes">Appearance.Themes</a>
+    </div>
+    <div>
+      <a class="xref" href="PLATEAU.CityGML.Object.html#PLATEAU_CityGML_Object_Handle">Object.Handle</a>
+    </div>
+    <div>
+      <a class="xref" href="PLATEAU.CityGML.Object.html#PLATEAU_CityGML_Object_ID">Object.ID</a>
+    </div>
+    <div>
+      <a class="xref" href="PLATEAU.CityGML.Object.html#PLATEAU_CityGML_Object_AttributesMap">Object.AttributesMap</a>
+    </div>
     <div>
       <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.tostring#system-object-tostring">Object.ToString()</a>
     </div>
@@ -116,25 +137,26 @@
       <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.memberwiseclone#system-object-memberwiseclone">Object.MemberwiseClone()</a>
     </div>
   </div>
-  <h6><strong>Namespace</strong>: <a class="xref" href="PlateauUnitySDK.Runtime.CityMeta.html">PlateauUnitySDK.Runtime.CityMeta</a></h6>
+  <h6><strong>Namespace</strong>: <a class="xref" href="PLATEAU.CityGML.html">PLATEAU.CityGML</a></h6>
   <h6><strong>Assembly</strong>: cs.temp.dll.dll</h6>
-  <h5 id="PlateauUnitySDK_Runtime_CityMeta_GmlSearcherConfig_syntax">Syntax</h5>
+  <h5 id="PLATEAU_CityGML_Texture_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public class GmlSearcherConfig</code></pre>
+    <pre><code class="lang-csharp hljs">public class Texture : Appearance</code></pre>
   </div>
-  <h3 id="fields">Fields
+  <h3 id="properties">Properties
   </h3>
   
   
-  <h4 id="PlateauUnitySDK_Runtime_CityMeta_GmlSearcherConfig_areaIds" data-uid="PlateauUnitySDK.Runtime.CityMeta.GmlSearcherConfig.areaIds">areaIds</h4>
-  <div class="markdown level1 summary"><p>見つかったエリアIDの一覧です。 </p>
+  <a id="PLATEAU_CityGML_Texture_Url_" data-uid="PLATEAU.CityGML.Texture.Url*"></a>
+  <h4 id="PLATEAU_CityGML_Texture_Url" data-uid="PLATEAU.CityGML.Texture.Url">Url</h4>
+  <div class="markdown level1 summary"><p>テクスチャのURLを返します。 </p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public int[] areaIds</code></pre>
+    <pre><code class="lang-csharp hljs">public string Url { get; }</code></pre>
   </div>
-  <h5 class="fieldValue">Field Value</h5>
+  <h5 class="propertyValue">Property Value</h5>
   <table class="table table-bordered table-striped table-condensed">
     <thead>
       <tr>
@@ -144,21 +166,22 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a>[]</td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a></td>
         <td></td>
       </tr>
     </tbody>
   </table>
   
   
-  <h4 id="PlateauUnitySDK_Runtime_CityMeta_GmlSearcherConfig_gmlTypeTarget" data-uid="PlateauUnitySDK.Runtime.CityMeta.GmlSearcherConfig.gmlTypeTarget">gmlTypeTarget</h4>
+  <a id="PLATEAU_CityGML_Texture_WrapMode_" data-uid="PLATEAU.CityGML.Texture.WrapMode*"></a>
+  <h4 id="PLATEAU_CityGML_Texture_WrapMode" data-uid="PLATEAU.CityGML.Texture.WrapMode">WrapMode</h4>
   <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public GmlTypeTarget gmlTypeTarget</code></pre>
+    <pre><code class="lang-csharp hljs">public TextureWrapMode WrapMode { get; }</code></pre>
   </div>
-  <h5 class="fieldValue">Field Value</h5>
+  <h5 class="propertyValue">Property Value</h5>
   <table class="table table-bordered table-striped table-condensed">
     <thead>
       <tr>
@@ -168,63 +191,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="PlateauUnitySDK.Runtime.CityMeta.GmlTypeTarget.html">GmlTypeTarget</a></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  
-  
-  <h4 id="PlateauUnitySDK_Runtime_CityMeta_GmlSearcherConfig_isAreaIdTarget" data-uid="PlateauUnitySDK.Runtime.CityMeta.GmlSearcherConfig.isAreaIdTarget">isAreaIdTarget</h4>
-  <div class="markdown level1 summary"><p><a class="xref" href="PlateauUnitySDK.Runtime.CityMeta.GmlSearcherConfig.html#PlateauUnitySDK_Runtime_CityMeta_GmlSearcherConfig_areaIds">areaIds</a> の i番目を変換対象とするかどうかです。 </p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public bool[] isAreaIdTarget</code></pre>
-  </div>
-  <h5 class="fieldValue">Field Value</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a>[]</td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  <h3 id="methods">Methods
-  </h3>
-  
-  
-  <a id="PlateauUnitySDK_Runtime_CityMeta_GmlSearcherConfig_SetAllAreaId_" data-uid="PlateauUnitySDK.Runtime.CityMeta.GmlSearcherConfig.SetAllAreaId*"></a>
-  <h4 id="PlateauUnitySDK_Runtime_CityMeta_GmlSearcherConfig_SetAllAreaId_System_Boolean_" data-uid="PlateauUnitySDK.Runtime.CityMeta.GmlSearcherConfig.SetAllAreaId(System.Boolean)">SetAllAreaId(Boolean)</h4>
-  <div class="markdown level1 summary"><p>引数が true のとき、すべてのエリアを対象とします。
-false のとき、すべてのエリアを除外します。</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public void SetAllAreaId(bool isTarget)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
-        <td><span class="parametername">isTarget</span></td>
+        <td><a class="xref" href="PLATEAU.CityGML.TextureWrapMode.html">TextureWrapMode</a></td>
         <td></td>
       </tr>
     </tbody>

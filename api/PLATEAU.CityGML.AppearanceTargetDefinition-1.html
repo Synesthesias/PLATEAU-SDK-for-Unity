@@ -5,10 +5,10 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>Class GmlTypeConvert
+    <title>Class AppearanceTargetDefinition&lt;T&gt;
    | PLATEAU SDK for Unity </title>
     <meta name="viewport" content="width=device-width">
-    <meta name="title" content="Class GmlTypeConvert
+    <meta name="title" content="Class AppearanceTargetDefinition&lt;T&gt;
    | PLATEAU SDK for Unity ">
     <meta name="generator" content="docfx 2.59.2.0">
     
@@ -78,21 +78,36 @@
         </div>
         <div class="article row grid-right">
           <div class="col-md-10">
-            <article class="content wrap" id="_content" data-uid="PlateauUnitySDK.Runtime.CityMeta.GmlTypeConvert">
+            <article class="content wrap" id="_content" data-uid="PLATEAU.CityGML.AppearanceTargetDefinition`1">
   
   
-  <h1 id="PlateauUnitySDK_Runtime_CityMeta_GmlTypeConvert" data-uid="PlateauUnitySDK.Runtime.CityMeta.GmlTypeConvert" class="text-break">Class GmlTypeConvert
+  <h1 id="PLATEAU_CityGML_AppearanceTargetDefinition_1" data-uid="PLATEAU.CityGML.AppearanceTargetDefinition`1" class="text-break">Class AppearanceTargetDefinition&lt;T&gt;
   </h1>
-  <div class="markdown level0 summary"><p><a class="xref" href="PlateauUnitySDK.Runtime.CityMeta.GmlType.html">GmlType</a> の Enum 型、 接頭辞（フォルダ名）、ディスプレイ文字列　を変換します。</p>
+  <div class="markdown level0 summary"><p><a class="xref" href="PLATEAU.CityGML.TextureTargetDefinition.html">TextureTargetDefinition</a> , <a class="xref" href="PLATEAU.CityGML.MaterialTargetDefinition.html">MaterialTargetDefinition</a> の基底クラスです。
+<a class="xref" href="PLATEAU.CityGML.AppearanceTargetDefinition-1.html#PLATEAU_CityGML_AppearanceTargetDefinition_1_TargetID">TargetID</a> , <a class="xref" href="PLATEAU.CityGML.AppearanceTargetDefinition-1.html#PLATEAU_CityGML_AppearanceTargetDefinition_1_Appearance">Appearance</a> を保持します。
+<a class="xref" href="PLATEAU.CityGML.AppearanceTargetDefinition-1.html#PLATEAU_CityGML_AppearanceTargetDefinition_1_Appearance">Appearance</a> は <a class="xref" href="PLATEAU.CityGML.TextureTargetDefinition.html">TextureTargetDefinition</a> ならば <a class="xref" href="PLATEAU.CityGML.Texture.html">Texture</a> 型、
+<a class="xref" href="PLATEAU.CityGML.MaterialTargetDefinition.html">MaterialTargetDefinition</a> ならば <a class="xref" href="PLATEAU.CityGML.Material.html">Material</a> 型です。</p>
 </div>
   <div class="markdown level0 conceptual"></div>
   <div class="inheritance">
     <h5>Inheritance</h5>
     <div class="level0"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></div>
-    <div class="level1"><span class="xref">GmlTypeConvert</span></div>
+    <div class="level1"><a class="xref" href="PLATEAU.CityGML.Object.html">Object</a></div>
+    <div class="level2"><span class="xref">AppearanceTargetDefinition&lt;T&gt;</span></div>
+      <div class="level3"><a class="xref" href="PLATEAU.CityGML.MaterialTargetDefinition.html">MaterialTargetDefinition</a></div>
+      <div class="level3"><a class="xref" href="PLATEAU.CityGML.TextureTargetDefinition.html">TextureTargetDefinition</a></div>
   </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
+    <div>
+      <a class="xref" href="PLATEAU.CityGML.Object.html#PLATEAU_CityGML_Object_Handle">Object.Handle</a>
+    </div>
+    <div>
+      <a class="xref" href="PLATEAU.CityGML.Object.html#PLATEAU_CityGML_Object_ID">Object.ID</a>
+    </div>
+    <div>
+      <a class="xref" href="PLATEAU.CityGML.Object.html#PLATEAU_CityGML_Object_AttributesMap">Object.AttributesMap</a>
+    </div>
     <div>
       <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.tostring#system-object-tostring">Object.ToString()</a>
     </div>
@@ -115,43 +130,40 @@
       <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.memberwiseclone#system-object-memberwiseclone">Object.MemberwiseClone()</a>
     </div>
   </div>
-  <h6><strong>Namespace</strong>: <a class="xref" href="PlateauUnitySDK.Runtime.CityMeta.html">PlateauUnitySDK.Runtime.CityMeta</a></h6>
+  <h6><strong>Namespace</strong>: <a class="xref" href="PLATEAU.CityGML.html">PLATEAU.CityGML</a></h6>
   <h6><strong>Assembly</strong>: cs.temp.dll.dll</h6>
-  <h5 id="PlateauUnitySDK_Runtime_CityMeta_GmlTypeConvert_syntax">Syntax</h5>
+  <h5 id="PLATEAU_CityGML_AppearanceTargetDefinition_1_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static class GmlTypeConvert</code></pre>
+    <pre><code class="lang-csharp hljs">public class AppearanceTargetDefinition&lt;T&gt; : Object where T : Appearance</code></pre>
   </div>
-  <h3 id="methods">Methods
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="properties">Properties
   </h3>
   
   
-  <a id="PlateauUnitySDK_Runtime_CityMeta_GmlTypeConvert_ToDisplay_" data-uid="PlateauUnitySDK.Runtime.CityMeta.GmlTypeConvert.ToDisplay*"></a>
-  <h4 id="PlateauUnitySDK_Runtime_CityMeta_GmlTypeConvert_ToDisplay_PlateauUnitySDK_Runtime_CityMeta_GmlType_" data-uid="PlateauUnitySDK.Runtime.CityMeta.GmlTypeConvert.ToDisplay(PlateauUnitySDK.Runtime.CityMeta.GmlType)">ToDisplay(GmlType)</h4>
-  <div class="markdown level1 summary"><p><a class="xref" href="PlateauUnitySDK.Runtime.CityMeta.GmlType.html">GmlType</a> を人間にとって分かりやすい文字に変換します。</p>
-</div>
+  <a id="PLATEAU_CityGML_AppearanceTargetDefinition_1_Appearance_" data-uid="PLATEAU.CityGML.AppearanceTargetDefinition`1.Appearance*"></a>
+  <h4 id="PLATEAU_CityGML_AppearanceTargetDefinition_1_Appearance" data-uid="PLATEAU.CityGML.AppearanceTargetDefinition`1.Appearance">Appearance</h4>
+  <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static string ToDisplay(GmlType t)</code></pre>
+    <pre><code class="lang-csharp hljs">public T Appearance { get; }</code></pre>
   </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="PlateauUnitySDK.Runtime.CityMeta.GmlType.html">GmlType</a></td>
-        <td><span class="parametername">t</span></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
+  <h5 class="propertyValue">Property Value</h5>
   <table class="table table-bordered table-striped table-condensed">
     <thead>
       <tr>
@@ -161,86 +173,22 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a></td>
+        <td><span class="xref">T</span></td>
         <td></td>
       </tr>
     </tbody>
   </table>
   
   
-  <a id="PlateauUnitySDK_Runtime_CityMeta_GmlTypeConvert_ToEnum_" data-uid="PlateauUnitySDK.Runtime.CityMeta.GmlTypeConvert.ToEnum*"></a>
-  <h4 id="PlateauUnitySDK_Runtime_CityMeta_GmlTypeConvert_ToEnum_System_String_" data-uid="PlateauUnitySDK.Runtime.CityMeta.GmlTypeConvert.ToEnum(System.String)">ToEnum(String)</h4>
-  <div class="markdown level1 summary"><p>接頭辞から <a class="xref" href="PlateauUnitySDK.Runtime.CityMeta.GmlType.html">GmlType</a> を返します。
-辞書にない接頭辞の場合は <a class="xref" href="PlateauUnitySDK.Runtime.CityMeta.GmlType.html#PlateauUnitySDK_Runtime_CityMeta_GmlType_Etc">Etc</a> を返します。</p>
-</div>
+  <a id="PLATEAU_CityGML_AppearanceTargetDefinition_1_TargetID_" data-uid="PLATEAU.CityGML.AppearanceTargetDefinition`1.TargetID*"></a>
+  <h4 id="PLATEAU_CityGML_AppearanceTargetDefinition_1_TargetID" data-uid="PLATEAU.CityGML.AppearanceTargetDefinition`1.TargetID">TargetID</h4>
+  <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static GmlType ToEnum(string prefix)</code></pre>
+    <pre><code class="lang-csharp hljs">public string TargetID { get; }</code></pre>
   </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a></td>
-        <td><span class="parametername">prefix</span></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="PlateauUnitySDK.Runtime.CityMeta.GmlType.html">GmlType</a></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  
-  
-  <a id="PlateauUnitySDK_Runtime_CityMeta_GmlTypeConvert_ToPrefix_" data-uid="PlateauUnitySDK.Runtime.CityMeta.GmlTypeConvert.ToPrefix*"></a>
-  <h4 id="PlateauUnitySDK_Runtime_CityMeta_GmlTypeConvert_ToPrefix_PlateauUnitySDK_Runtime_CityMeta_GmlType_" data-uid="PlateauUnitySDK.Runtime.CityMeta.GmlTypeConvert.ToPrefix(PlateauUnitySDK.Runtime.CityMeta.GmlType)">ToPrefix(GmlType)</h4>
-  <div class="markdown level1 summary"><p><a class="xref" href="PlateauUnitySDK.Runtime.CityMeta.GmlType.html">GmlType</a> を接頭辞に変換する拡張メソッドです。
-接頭辞はフォルダ名などに使われます。
-ただし、<a class="xref" href="PlateauUnitySDK.Runtime.CityMeta.GmlType.html#PlateauUnitySDK_Runtime_CityMeta_GmlType_Etc">Etc</a> は接頭辞がないので例外を投げます。</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static string ToPrefix(this GmlType t)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="PlateauUnitySDK.Runtime.CityMeta.GmlType.html">GmlType</a></td>
-        <td><span class="parametername">t</span></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
+  <h5 class="propertyValue">Property Value</h5>
   <table class="table table-bordered table-striped table-condensed">
     <thead>
       <tr>

@@ -5,10 +5,10 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>Class CityBehaviour
+    <title>Class Object
    | PLATEAU SDK for Unity </title>
     <meta name="viewport" content="width=device-width">
-    <meta name="title" content="Class CityBehaviour
+    <meta name="title" content="Class Object
    | PLATEAU SDK for Unity ">
     <meta name="generator" content="docfx 2.59.2.0">
     
@@ -78,35 +78,68 @@
         </div>
         <div class="article row grid-right">
           <div class="col-md-10">
-            <article class="content wrap" id="_content" data-uid="PlateauUnitySDK.Runtime.Behaviour.CityBehaviour">
+            <article class="content wrap" id="_content" data-uid="PLATEAU.CityGML.Object">
   
   
-  <h1 id="PlateauUnitySDK_Runtime_Behaviour_CityBehaviour" data-uid="PlateauUnitySDK.Runtime.Behaviour.CityBehaviour" class="text-break">Class CityBehaviour
+  <h1 id="PLATEAU_CityGML_Object" data-uid="PLATEAU.CityGML.Object" class="text-break">Class Object
   </h1>
-  <div class="markdown level0 summary"></div>
+  <div class="markdown level0 summary"><p>CityGMLにおける全てのオブジェクトのベースクラスです。
+ユニークIDと0個以上の属性ペアを持ち、属性ペアはすべて <a class="xref" href="PLATEAU.CityGML.AttributesMap.html">AttributesMap</a> に格納されています。</p>
+</div>
   <div class="markdown level0 conceptual"></div>
   <div class="inheritance">
     <h5>Inheritance</h5>
     <div class="level0"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></div>
-    <div class="level1"><span class="xref">CityBehaviour</span></div>
+    <div class="level1"><span class="xref">Object</span></div>
+      <div class="level2"><a class="xref" href="PLATEAU.CityGML.Appearance.html">Appearance</a></div>
+      <div class="level2"><a class="xref" href="PLATEAU.CityGML.AppearanceTarget.html">AppearanceTarget</a></div>
+      <div class="level2"><a class="xref" href="PLATEAU.CityGML.AppearanceTargetDefinition-1.html">AppearanceTargetDefinition&lt;T&gt;</a></div>
+      <div class="level2"><a class="xref" href="PLATEAU.CityGML.FeatureObject.html">FeatureObject</a></div>
+      <div class="level2"><a class="xref" href="PLATEAU.CityGML.LinearRing.html">LinearRing</a></div>
+      <div class="level2"><a class="xref" href="PLATEAU.CityGML.TextureCoordinates.html">TextureCoordinates</a></div>
   </div>
-  <h6><strong>Namespace</strong>: <a class="xref" href="PlateauUnitySDK.Runtime.Behaviour.html">PlateauUnitySDK.Runtime.Behaviour</a></h6>
+  <div class="inheritedMembers">
+    <h5>Inherited Members</h5>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.tostring#system-object-tostring">Object.ToString()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)">Object.Equals(Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)">Object.Equals(Object, Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.referenceequals#system-object-referenceequals(system-object-system-object)">Object.ReferenceEquals(Object, Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gethashcode#system-object-gethashcode">Object.GetHashCode()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gettype#system-object-gettype">Object.GetType()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.memberwiseclone#system-object-memberwiseclone">Object.MemberwiseClone()</a>
+    </div>
+  </div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="PLATEAU.CityGML.html">PLATEAU.CityGML</a></h6>
   <h6><strong>Assembly</strong>: cs.temp.dll.dll</h6>
-  <h5 id="PlateauUnitySDK_Runtime_Behaviour_CityBehaviour_syntax">Syntax</h5>
+  <h5 id="PLATEAU_CityGML_Object_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public class CityBehaviour : MonoBehaviour</code></pre>
+    <pre><code class="lang-csharp hljs">public class Object</code></pre>
   </div>
   <h3 id="properties">Properties
   </h3>
   
   
-  <a id="PlateauUnitySDK_Runtime_Behaviour_CityBehaviour_CityMetaData_" data-uid="PlateauUnitySDK.Runtime.Behaviour.CityBehaviour.CityMetaData*"></a>
-  <h4 id="PlateauUnitySDK_Runtime_Behaviour_CityBehaviour_CityMetaData" data-uid="PlateauUnitySDK.Runtime.Behaviour.CityBehaviour.CityMetaData">CityMetaData</h4>
-  <div class="markdown level1 summary"></div>
+  <a id="PLATEAU_CityGML_Object_AttributesMap_" data-uid="PLATEAU.CityGML.Object.AttributesMap*"></a>
+  <h4 id="PLATEAU_CityGML_Object_AttributesMap" data-uid="PLATEAU.CityGML.Object.AttributesMap">AttributesMap</h4>
+  <div class="markdown level1 summary"><p>属性の辞書を取得します。 </p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public CityMetaData CityMetaData { get; set; }</code></pre>
+    <pre><code class="lang-csharp hljs">public AttributesMap AttributesMap { get; }</code></pre>
   </div>
   <h5 class="propertyValue">Property Value</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -118,51 +151,60 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">CityMetaData</span></td>
-        <td></td>
+        <td><a class="xref" href="PLATEAU.CityGML.AttributesMap.html">AttributesMap</a></td>
+        <td><p><a class="xref" href="PLATEAU.CityGML.AttributesMap.html">AttributesMap</a> 型で返します。</p>
+</td>
       </tr>
     </tbody>
   </table>
-  <h3 id="methods">Methods
-  </h3>
   
   
-  <a id="PlateauUnitySDK_Runtime_Behaviour_CityBehaviour_LoadSemantics_" data-uid="PlateauUnitySDK.Runtime.Behaviour.CityBehaviour.LoadSemantics*"></a>
-  <h4 id="PlateauUnitySDK_Runtime_Behaviour_CityBehaviour_LoadSemantics_System_String_" data-uid="PlateauUnitySDK.Runtime.Behaviour.CityBehaviour.LoadSemantics(System.String)">LoadSemantics(String)</h4>
-  <div class="markdown level1 summary"></div>
+  <a id="PLATEAU_CityGML_Object_Handle_" data-uid="PLATEAU.CityGML.Object.Handle*"></a>
+  <h4 id="PLATEAU_CityGML_Object_Handle" data-uid="PLATEAU.CityGML.Object.Handle">Handle</h4>
+  <div class="markdown level1 summary"><p>セーフハンドルを取得します。</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public CityObject LoadSemantics(string gameObjName)</code></pre>
+    <pre><code class="lang-csharp hljs">public IntPtr Handle { get; }</code></pre>
   </div>
-  <h5 class="parameters">Parameters</h5>
+  <h5 class="propertyValue">Property Value</h5>
   <table class="table table-bordered table-striped table-condensed">
     <thead>
       <tr>
         <th>Type</th>
-        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">IntPtr</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
+  <a id="PLATEAU_CityGML_Object_ID_" data-uid="PLATEAU.CityGML.Object.ID*"></a>
+  <h4 id="PLATEAU_CityGML_Object_ID" data-uid="PLATEAU.CityGML.Object.ID">ID</h4>
+  <div class="markdown level1 summary"><p>オブジェクトのユニークIDを取得します。</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public string ID { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
         <th>Description</th>
       </tr>
     </thead>
     <tbody>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a></td>
-        <td><span class="parametername">gameObjName</span></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="xref">CityObject</span></td>
         <td></td>
       </tr>
     </tbody>
