@@ -40,7 +40,6 @@ namespace PLATEAU.Editor.CityImport
         public string Draw(string title)
         {
             HeaderDrawer.Draw(title);
-            // bool isPathChanged = false;
             using (PlateauEditorStyle.VerticalScopeLevel1())
             {
                 EditorGUILayout.LabelField("入力フォルダ");

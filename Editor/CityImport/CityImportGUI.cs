@@ -73,7 +73,7 @@ namespace PLATEAU.Editor.CityImport
                 {
                     config.optimizeFlag = EditorGUILayout.Toggle("最適化", config.optimizeFlag);
                     config.meshGranularity =
-                        (MeshGranularity)EditorGUILayout.EnumPopup("メッシュのオブジェクト分けの粒度", config.meshGranularity);
+                        (MeshGranularity)EditorGUILayout.EnumPopup("オブジェクト分けの粒度", config.meshGranularity);
                     config.logLevel = (DllLogLevel)EditorGUILayout.EnumPopup("(開発者向け)ログの詳細度", config.logLevel);
                 }
                 

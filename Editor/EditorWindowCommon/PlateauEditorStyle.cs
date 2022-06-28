@@ -84,8 +84,10 @@ namespace PLATEAU.Editor.EditorWindowCommon
         /// <summary> 複数行のラベルを表示します。 </summary>
         public static void MultiLineLabel(string text)
         {
-            GUIStyle style = EditorStyles.label;
-            style.wordWrap = true;
+            GUIStyle style = new GUIStyle(EditorStyles.label)
+            {
+                wordWrap = true
+            };
             EditorGUILayout.LabelField(text, style);
         }
 
