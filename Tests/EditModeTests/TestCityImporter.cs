@@ -12,6 +12,7 @@ using PLATEAU.Util;
 using PLATEAU.Tests.TestUtils;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.TestTools;
 using Object = System.Object;
 
 namespace PLATEAU.Tests.EditModeTests
@@ -87,8 +88,10 @@ namespace PLATEAU.Tests.EditModeTests
         [Test]
         public void ReferencePoint_Is_Set_To_First_ReferencePoint()
         {
+            LogAssert.ignoreFailingMessages = true;
             // 2つのGMLファイルを変換します。
             Import(testUdxPathTokyo, testGmlRelativePathsTokyo, MeshGranularity.PerPrimaryFeatureObject, out var mapInfo, 0, 0);
+            LogAssert.ignoreFailingMessages = false;
             
             // 値1 : CityMapInfo に記録された Reference Point を取得します。
             var recordedReferencePoint = mapInfo.cityImporterConfig.referencePoint;
@@ -182,20 +185,6 @@ namespace PLATEAU.Tests.EditModeTests
         }
 
         [Test]
-        public void Converted_Objs_Are_Placed_In_Current_Scene()
-        {
-            Import(testUdxPathSimple, testGmlRelativePathsSimple, MeshGranularity.PerCityModelArea, out _, 0, 1);
-
-            string gmlId = "53392642_bldg_6697_op2";
-            bool lod0Exists = GameObject.Find($"LOD0_{gmlId}");
-            bool lod1Exists = GameObject.Find($"LOD1_{gmlId}");
-            bool lod2Exists = GameObject.Find($"LOD2_{gmlId}");
-            Assert.IsTrue(lod0Exists, "LOD範囲内は配置される");
-            Assert.IsTrue(lod1Exists, "LOD範囲内は配置される");
-            Assert.IsFalse(lod2Exists, "LOD範囲内は配置されない");
-        }
-
-        [Test]
         public void SrcPath_Of_MetaData_Is_Set_To_Post_Copy_Path()
         {
             Import(testUdxPathSimple, testGmlRelativePathsSimple, MeshGranularity.PerCityModelArea, out var metaData, 0,
@@ -211,7 +200,52 @@ namespace PLATEAU.Tests.EditModeTests
             Assert.AreEqual(expectedUdxPath, loadedSrcPath, "保存されたメタデータの sourcePath がコピー後を指している");
         }
 
-        private int Import(string testUdxPath, string[] gmlRelativePaths, MeshGranularity meshGranularity, out CityMetaData metaData, int minLodBuilding, int maxLodBuilding, int minLodDem = 0, int maxLodDem = 0)
+        [Test]
+        public void Test_PlaceMethod_PlaceSelectedLodOrMax()
+        {
+            Import(testUdxPathSimple, testGmlRelativePathsSimple, MeshGranularity.PerCityModelArea, out _, 0, 2, 0, 0,
+                selectedLod: -1, ScenePlacementConfig.PlaceMethod.PlaceSelectedLodOrMax);
+
+            string gmlId = "53392642_bldg_6697_op2";
+            bool lod0Exists = GameObject.Find($"LOD0_{gmlId}");
+            bool lod1Exists = GameObject.Find($"LOD1_{gmlId}");
+            bool lod2Exists = GameObject.Find($"LOD2_{gmlId}");
+            Assert.IsFalse(lod0Exists, "LOD0は配置されない");
+            Assert.IsFalse(lod1Exists, "LOD1は配置されない");
+            Assert.IsTrue(lod2Exists, "ある中で最大のものが配置される");
+        }
+
+        [Test]
+        public void Test_PlaceMethod_DoNotPlace()
+        {
+            Import(testUdxPathSimple, testGmlRelativePathsSimple, MeshGranularity.PerCityModelArea, out _, 1, 3, 0, 0,
+                selectedLod: 3, ScenePlacementConfig.PlaceMethod.DoNotPlace);
+            string gmlId = "53392642_bldg_6697_op2";
+            bool lod1Exists = GameObject.Find($"LOD1_{gmlId}");
+            bool lod2Exists = GameObject.Find($"LOD2_{gmlId}");
+            bool lod3Exists = GameObject.Find($"LOD3_{gmlId}");
+            Assert.IsFalse(lod1Exists, "LOD1は配置されない");
+            Assert.IsFalse(lod2Exists, "LOD2は配置されない");
+            Assert.IsFalse(lod3Exists, "LOD3は配置されない");
+        }
+        
+        [Test]
+        public void Test_PlaceMethod_MaxLod()
+        {
+            Import(testUdxPathSimple, testGmlRelativePathsSimple, MeshGranularity.PerCityModelArea, out _, 0, 2, 0, 0,
+                selectedLod: 0, ScenePlacementConfig.PlaceMethod.PlaceMaxLod);
+            string gmlId = "53392642_bldg_6697_op2";
+            bool lod1Exists = GameObject.Find($"LOD1_{gmlId}");
+            bool lod2Exists = GameObject.Find($"LOD2_{gmlId}");
+            bool lod3Exists = GameObject.Find($"LOD3_{gmlId}");
+            Assert.IsFalse(lod1Exists, "LOD1は配置されない");
+            Assert.IsTrue(lod2Exists, "LOD2は配置される");
+            Assert.IsFalse(lod3Exists, "LOD3は配置されない");
+        }
+
+        private int Import(string testUdxPath, string[] gmlRelativePaths, MeshGranularity meshGranularity, out CityMetaData metaData,
+            int minLodBuilding, int maxLodBuilding, int minLodDem = 0, int maxLodDem = 0,
+            int selectedLod = 0, ScenePlacementConfig.PlaceMethod buildingPlaceMethod = ScenePlacementConfig.PlaceMethod.PlaceSelectedLodOrMax)
         {
             var config = new CityImporterConfig
             {
@@ -220,13 +254,17 @@ namespace PLATEAU.Tests.EditModeTests
                 importDestPath =
                 {
                     dirAssetPath = PathUtil.FullPathToAssetsPath(testOutputDir)
-                }
+                },
             };
             var typeConfigs = config.gmlSearcherConfig.gmlTypeTarget.GmlTypeConfigs;
             typeConfigs[GmlType.Building].minLod = minLodBuilding;
             typeConfigs[GmlType.Building].maxLod = maxLodBuilding;
             typeConfigs[GmlType.DigitalElevationModel].minLod = minLodDem;
             typeConfigs[GmlType.DigitalElevationModel].maxLod = maxLodDem;
+            var placeTypeConfigs = config.scenePlacementConfig.perTypeConfigs;
+            placeTypeConfigs[GmlType.Building].placeMethod = buildingPlaceMethod;
+            placeTypeConfigs[GmlType.Building].selectedLod = selectedLod;
+            
             
             int numSuccess = this.importer.Import(gmlRelativePaths, config, out metaData);
             return numSuccess;

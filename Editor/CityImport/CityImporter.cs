@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using Codice.Client.Common;
 using PLATEAU.CityGML;
 using PLATEAU.Editor.Converters;
 using PLATEAU.Behaviour;
@@ -70,13 +73,38 @@ namespace PLATEAU.Editor.CityImport
                     continue;
                 }
                 
+                // 変換した結果、どのLODのobjが生成されたかを調べます。
+                // var generatedObjLods = new List<int>();
+                // var generatedObjAssetPaths = new List<string>();
+                var generatedObjs = new List<ObjInfo>();
+                string gmlFileName = Path.GetFileNameWithoutExtension(gmlRelativePath);
+                var gmlType = GmlFileNameParser.GetGmlTypeEnum(gmlFileName);
+                (int minLod, int maxLod) = config.gmlSearcherConfig.gmlTypeTarget.GetMinMaxLodForType(gmlType);
+                if (minLod > maxLod) (minLod, maxLod) = (maxLod, minLod);
+                for (int l = minLod; l <= maxLod; l++)
+                {
+                    string objFullPath = Path.Combine(config.importDestPath.DirFullPath, $"LOD{l}_{gmlFileName}.obj");
+                    // Debug.Log($"**objFullPath = {objFullPath}");
+                    if (File.Exists(objFullPath))
+                    {
+                        string objAssetsPath = PathUtil.FullPathToAssetsPath(objFullPath);
+                        generatedObjs.Add(new ObjInfo(objAssetsPath, l));
+                    }
+                }
+                if (generatedObjs.Count <= 0)
+                {
+                    Debug.LogError($"No 3d models are found for the lod in the gml file.\ngml file = {gmlFullPath}");
+                    cityModel?.Dispose();
+                    continue;
+                }
+                
                 // 基準座標は最初のものに合わせます。
                 if (!referencePoint.HasValue) throw new Exception($"{nameof(referencePoint)} is null.");
                 config.referencePoint = referencePoint.Value;
 
                 // 1つのgmlから LODごとに 0個以上の .obj ファイルが生成されます。
                 // .obj ファイルごとのループを始めます。
-                string gmlFileName = Path.GetFileNameWithoutExtension(gmlRelativePath);
+                
                 var objNames = config.gmlSearcherConfig.gmlTypeTarget.ObjFileNamesForGml(gmlFileName);
                 var objAssetPaths = objNames.Select(name => Path.Combine(config.importDestPath.dirAssetPath, name + ".obj"));
                 foreach(string objAssetPath in objAssetPaths)
@@ -88,10 +116,13 @@ namespace PLATEAU.Editor.CityImport
                         cityModel?.Dispose();
                         continue;
                     }
-                    
-                    // シーンに配置します。
-                    CityMeshPlacerToScene.Place(objAssetPath, PlateauSourcePath.RootDirName(sourcePathConf.udxAssetPath), metaData);
                 }
+                
+                // シーンに配置します。
+                string parentGameObjName = PlateauSourcePath.RootDirName(sourcePathConf.udxAssetPath);
+                CityMeshPlacerToScene.Place(
+                    config.scenePlacementConfig, generatedObjs, parentGameObjName, metaData, gmlType
+                );
                 
                 
                 cityModel?.Dispose();

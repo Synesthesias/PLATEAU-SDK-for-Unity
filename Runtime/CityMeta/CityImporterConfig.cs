@@ -36,6 +36,9 @@ namespace PLATEAU.CityMeta
         
         /// <summary> インポートの出力先 </summary>
         public ImportDestPath importDestPath = new ImportDestPath();
+
+        /// <summary> インポートした物をシーンに配置する設定 </summary>
+        public ScenePlacementConfig scenePlacementConfig = new ScenePlacementConfig();
         
         /// <summary> インポート時に最適化するかどうか </summary>
         public bool optimizeFlag = true;

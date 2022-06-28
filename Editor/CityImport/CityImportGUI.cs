@@ -21,6 +21,7 @@ namespace PLATEAU.Editor.CityImport
         private readonly InputFolderSelectorGUI udxFolderSelectorGUI;
         private readonly GmlSearcherGUI gmlSearcherGUI;
         private readonly GmlSearcher gmlSearcher;
+        private readonly ScenePlacementGUI scenePlacementGUI;
         private readonly ExportFolderSelectorGUI exportFolderSelectorGUI;
         private readonly CityImporter cityImporter;
         
@@ -29,6 +30,7 @@ namespace PLATEAU.Editor.CityImport
             this.udxFolderSelectorGUI = new InputFolderSelectorGUI(OnUdxPathChanged);
             this.gmlSearcherGUI = new GmlSearcherGUI();
             this.gmlSearcher = new GmlSearcher();
+            this.scenePlacementGUI = new ScenePlacementGUI();
             this.exportFolderSelectorGUI = new ExportFolderSelectorGUI();
             this.cityImporter = new CityImporter();
             
@@ -73,6 +75,10 @@ namespace PLATEAU.Editor.CityImport
                         (MeshGranularity)EditorGUILayout.EnumPopup("メッシュのオブジェクト分けの粒度", config.meshGranularity);
                     config.logLevel = (DllLogLevel)EditorGUILayout.EnumPopup("(開発者向け)ログの詳細度", config.logLevel);
                 }
+                
+                // 配置設定
+                HeaderDrawer.Draw("シーン配置設定");
+                this.scenePlacementGUI.Draw(config.scenePlacementConfig);
 
                 // 出力
                 HeaderDrawer.Draw("出力");

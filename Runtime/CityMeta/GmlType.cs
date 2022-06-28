@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using static PLATEAU.CityMeta.GmlType;
 
 namespace PLATEAU.CityMeta
@@ -109,6 +110,18 @@ namespace PLATEAU.CityMeta
             }
 
             throw new ArgumentOutOfRangeException($"{nameof(t)}", "Unknown Type.");
+        }
+
+        /// <summary>
+        /// key   が 各 <see cref="GmlType"/> であり、
+        /// value が new T() である
+        /// 辞書を構築して返します。
+        /// </summary>
+        public static Dictionary<GmlType, T> ComposeTypeDict<T>() where T : new()
+        {
+            return Enum.GetValues(typeof(GmlType))
+                .OfType<GmlType>()
+                .ToDictionary(t => t, _ => new T());
         }
 
     }

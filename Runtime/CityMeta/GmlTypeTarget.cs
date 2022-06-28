@@ -32,10 +32,7 @@ namespace PLATEAU.CityMeta
         public GmlTypeTarget()
         {
             // 各タイプごとに ImportGmlTypeConfig を初期化します。
-            GmlTypeConfigs =
-                Enum.GetValues(typeof(GmlType))
-                    .OfType<GmlType>()
-                    .ToDictionary(t => t, _ => new ImportGmlTypeConfig());
+            GmlTypeConfigs = GmlTypeConvert.ComposeTypeDict<ImportGmlTypeConfig>();
         }
 
         /// <summary>
@@ -85,18 +82,14 @@ namespace PLATEAU.CityMeta
             return (min, max);
         }
 
-        /// <summary>
-        /// シリアライズするときに List形式に直します。
-        /// </summary>
+        /// <summary> シリアライズするときに List形式に直します。 </summary>
         void ISerializationCallbackReceiver.OnBeforeSerialize()
         {
             DictionarySerializer.OnBeforeSerialize(GmlTypeConfigs, this.keys, this.values);
         }
 
 
-        /// <summary>
-        /// デシリアライズするときに List から Dictionary 形式に直します。
-        /// </summary>
+        /// <summary> デシリアライズするときに List から Dictionary 形式に直します。 </summary>
         void ISerializationCallbackReceiver.OnAfterDeserialize()
         {
             GmlTypeConfigs = DictionarySerializer.OnAfterSerialize(this.keys, this.values);
