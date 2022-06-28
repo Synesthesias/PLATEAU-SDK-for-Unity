@@ -82,17 +82,15 @@ namespace PLATEAU.Editor.CityImport
                 HeaderDrawer.Draw("シーン配置設定");
                 this.scenePlacementGUI.Draw(config.scenePlacementConfig);
 
-                // 出力
+                // 出力ボタン
                 HeaderDrawer.Draw("出力");
                 using (PlateauEditorStyle.VerticalScopeLevel1())
                 {
-                    bool importReady = true;
-                    string dirFullPath = config.importDestPath?.DirFullPath;
-                    if (string.IsNullOrEmpty(dirFullPath) ||
-                        !Directory.Exists(dirFullPath))
+                    // 出力できない状況なら、エラーメッセージを表示してボタンを無効化します。
+                    bool importReady = IsImportReady(config, out string message);
+                    if (!string.IsNullOrEmpty(message))
                     {
-                        importReady = false;
-                        EditorGUILayout.HelpBox("出力先を指定してください。", MessageType.Error);
+                        EditorGUILayout.HelpBox(message, MessageType.Error);
                     }
 
                     using (new EditorGUI.DisabledScope(!importReady))
@@ -118,6 +116,24 @@ namespace PLATEAU.Editor.CityImport
             if (!GmlSearcher.IsPathUdx(path)) return;
             this.gmlSearcher.GenerateFileDictionary(path);
             this.gmlSearcherGUI.OnUdxPathChanged();
+        }
+
+        private bool IsImportReady(CityImporterConfig config, out string message)
+        {
+            message = "";
+            string dirFullPath = config.importDestPath?.DirFullPath;
+            if (string.IsNullOrEmpty(dirFullPath))
+            {
+                message = "出力先を指定してください。";
+                return false;
+            }
+            if (!Directory.Exists(dirFullPath))
+            {
+                message = "出力先として指定されたフォルダが存在しません。";
+                return false;
+            }
+
+            return true;
         }
     }
 }
