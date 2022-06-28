@@ -34,7 +34,6 @@ namespace PLATEAU.Editor.CityImport
                         EditorUtility.DisplayDialog("エラー", "出力先は Assets フォルダ内である必要があります。", "OK");
                         return "";
                     }
-
                     if (!string.IsNullOrEmpty(selectedFullPath))
                     {
                         exportAssetPath = PathUtil.FullPathToAssetsPath(selectedFullPath);

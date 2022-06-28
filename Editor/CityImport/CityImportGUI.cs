@@ -5,6 +5,7 @@ using PLATEAU.Interop;
 using PLATEAU.IO;
 using PLATEAU.Util;
 using UnityEditor;
+using UnityEngine;
 
 namespace PLATEAU.Editor.CityImport
 {
@@ -120,13 +121,13 @@ namespace PLATEAU.Editor.CityImport
         private bool IsImportReady(CityImporterConfig config, out string message)
         {
             message = "";
-            string dirFullPath = config.importDestPath?.DirFullPath;
-            if (string.IsNullOrEmpty(dirFullPath))
+            var dirPath = config.importDestPath;
+            if (string.IsNullOrEmpty(dirPath?.dirAssetPath))
             {
                 message = "出力先を指定してください。";
                 return false;
             }
-            if (!Directory.Exists(dirFullPath))
+            if (!Directory.Exists(dirPath.DirFullPath))
             {
                 message = "出力先として指定されたフォルダが存在しません。";
                 return false;
