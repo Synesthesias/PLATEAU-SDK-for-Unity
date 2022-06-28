@@ -1,9 +1,11 @@
-﻿using PLATEAU.Editor.EditorWindowCommon;
+﻿using System.IO;
+using PLATEAU.Editor.EditorWindowCommon;
 using PLATEAU.CityMeta;
 using PLATEAU.Interop;
 using PLATEAU.IO;
 using PLATEAU.Util;
 using UnityEditor;
+using UnityEngine;
 
 namespace PLATEAU.Editor.CityImport
 {
@@ -84,9 +86,21 @@ namespace PLATEAU.Editor.CityImport
                 HeaderDrawer.Draw("出力");
                 using (PlateauEditorStyle.VerticalScopeLevel1())
                 {
-                    if (PlateauEditorStyle.MainButton("出力"))
+                    bool importReady = true;
+                    string dirFullPath = config.importDestPath?.DirFullPath;
+                    if (string.IsNullOrEmpty(dirFullPath) ||
+                        !Directory.Exists(dirFullPath))
                     {
-                        this.cityImporter.Import(gmlFiles.ToArray(), config, out _);
+                        importReady = false;
+                        EditorGUILayout.HelpBox("出力先を指定してください。", MessageType.Error);
+                    }
+
+                    using (new EditorGUI.DisabledScope(!importReady))
+                    {
+                        if (PlateauEditorStyle.MainButton("出力"))
+                        {
+                            this.cityImporter.Import(gmlFiles.ToArray(), config, out _);
+                        }
                     }
                 }
             }

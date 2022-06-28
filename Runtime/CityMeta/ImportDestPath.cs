@@ -11,8 +11,15 @@ namespace PLATEAU.CityMeta
         
         public string dirAssetPath;
 
-        public string DirFullPath => PathUtil.FullPathToAssetsPath(this.dirAssetPath);
-        
+        public string DirFullPath
+        {
+            get
+            {
+                if (this.dirAssetPath == null) return "";
+                return PathUtil.AssetsPathToFullPath(this.dirAssetPath);
+            }
+        }
+
         public string MetaDataAssetPath => Path.Combine(this.dirAssetPath, MetaDataFileName);
     }
 }
