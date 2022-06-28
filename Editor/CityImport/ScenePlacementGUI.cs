@@ -18,7 +18,7 @@ namespace PLATEAU.Editor.CityImport
                 foreach (var gmlType in gmlTypes)
                 {
                     EditorGUILayout.LabelField(GmlTypeConvert.ToDisplay(gmlType));
-                    using (PlateauEditorStyle.VerticalScopeLevel1())
+                    using (PlateauEditorStyle.VerticalScopeLevel2())
                     {
                         var typeConf = placementConf.PerTypeConfigs[gmlType];
                         DrawPerTypeConfGUI(typeConf); 
