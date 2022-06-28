@@ -80,6 +80,23 @@ namespace PLATEAU.Editor.EditorWindowCommon
             });
             return isButtonPushed;
         }
+
+        /// <summary> 複数行のラベルを表示します。 </summary>
+        public static void MultiLineLabel(string text)
+        {
+            GUIStyle style = EditorStyles.label;
+            style.wordWrap = true;
+            EditorGUILayout.LabelField(text, style);
+        }
+
+        /// <summary> 複数行のラベルを表示して Box で囲みます。 </summary>
+        public static void MultiLineLabelWithBox(string text)
+        {
+            using (VerticalScopeLevel2())
+            {
+                MultiLineLabel(text);
+            }
+        }
         
         /// <summary> 色指定でボタンを描画します。 </summary>
         private static bool DrawButton(string text, Color buttonColorTint, GUIStyle style)

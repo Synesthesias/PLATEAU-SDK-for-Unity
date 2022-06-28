@@ -63,7 +63,7 @@ namespace PLATEAU.Editor.CityImport
 
                 // gmlファイルに関連するフォルダをコピーします。
                 // gmlの名称からオプションと拡張子を除いた文字列がフォルダ名に含まれていれば、コピー対象のディレクトリとみなします。
-                // 例: Assets/StreamingAssets/PLATEAU/Tokyo/bldg/1234_appearance/texture_number.jpg　などがコピーされます。 
+                // 例: Assets/StreamingAssets/PLATEAU/Tokyo/bldg/1234_appearance に含まれる各テクスチャなどがコピーされます。 
                 string gmlIdentity = GmlFileNameParser.NameWithoutOption(gml);
                 foreach (var srcDir in Directory.GetDirectories(srcObjTypeFolder))
                 {
