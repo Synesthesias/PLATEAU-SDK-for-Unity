@@ -1,6 +1,8 @@
-﻿using PLATEAU.Editor.EditorWindowCommon;
+﻿using System.Text;
+using PLATEAU.Editor.EditorWindowCommon;
 using PLATEAU.CityMeta;
 using UnityEditor;
+using UnityEngine;
 
 namespace PLATEAU.Editor.CityImport
 {
@@ -17,6 +19,7 @@ namespace PLATEAU.Editor.CityImport
         private bool foldOutIdGmlTable;
         private bool foldOutReconvert;
         private CityImportGUI importGUI;
+        private Vector2 scrollPosOfIdGmlTable;
         public override void OnInspectorGUI()
         {
             HeaderDrawer.Reset();
@@ -37,11 +40,12 @@ namespace PLATEAU.Editor.CityImport
                 {
                     using (PlateauEditorStyle.VerticalScopeLevel1(false))
                     {
+                        var sb = new StringBuilder();
                         foreach (var pair in metaData.idToGmlTable)
                         {
-                            var str = $"{pair.Key}\n=> {pair.Value}";
-                            EditorGUILayout.TextArea(str);
+                            sb.Append($"{pair.Key}\n=> {pair.Value}\n\n");
                         }
+                        this.scrollPosOfIdGmlTable = PlateauEditorStyle.ScrollableMultiLineLabel(sb.ToString(), 300, this.scrollPosOfIdGmlTable);
                     }
                 }
             }
