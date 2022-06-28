@@ -1,10 +1,10 @@
 ﻿using System.Collections;
 using NUnit.Framework;
-using PlateauUnitySDK.Editor.CityImport;
+using PLATEAU.Editor.CityImport;
 using UnityEditor;
 using UnityEngine.TestTools;
 
-namespace PlateauUnitySDK.Tests.EditModeTests
+namespace PLATEAU.Tests.EditModeTests
 {
     [TestFixture]
     public class TestCityModelImportWindow

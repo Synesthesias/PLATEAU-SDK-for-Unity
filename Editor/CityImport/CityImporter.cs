@@ -1,16 +1,18 @@
 ﻿using System;
 using System.IO;
-using LibPLATEAU.NET.CityGML;
-using PlateauUnitySDK.Editor.Converters;
-using PlateauUnitySDK.Runtime.Behaviour;
-using PlateauUnitySDK.Runtime.CityMeta;
-using PlateauUnitySDK.Runtime.Util;
+using System.Linq;
+using PLATEAU.CityGML;
+using PLATEAU.Editor.Converters;
+using PLATEAU.Behaviour;
+using PLATEAU.CityMeta;
+using PLATEAU.Interop;
+using PLATEAU.Util;
 using UnityEditor;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
 using Object = UnityEngine.Object;
 
-namespace PlateauUnitySDK.Editor.CityImport
+namespace PLATEAU.Editor.CityImport
 {
 
     /// <summary>
@@ -23,10 +25,7 @@ namespace PlateauUnitySDK.Editor.CityImport
     /// </summary>
     internal class CityImporter
     {
-        
-        /// <summary> このインスタンスが最後に出力した <see cref="CityMetaData"/> です。 </summary>
-        public CityMetaData LastConvertedCityMetaData { get; private set; }
-        
+
         /// <summary>
         /// gmlデータ群をインポートします。
         /// コピーおよび変換されるのは <paramref name="gmlRelativePaths"/> のリストにある gmlファイルに関連するデータのみです。
@@ -34,21 +33,15 @@ namespace PlateauUnitySDK.Editor.CityImport
         /// </summary>
         /// <param name="gmlRelativePaths">gmlファイルの相対パスのリストです。パスの起点は udx フォルダです。</param>
         /// <param name="config">変換設定です。</param>
-        public int Import(string[] gmlRelativePaths, CityImporterConfig config)
+        /// <param name="metaData">インポートによって生成されたメタデータです。</param>
+        public int Import(string[] gmlRelativePaths, CityImporterConfig config, out CityMetaData metaData)
         {
             // 元フォルダを StreamingAssets/PLATEAU にコピーします。すでに StreamingAssets内にある場合を除きます。 
-            string prevSourceUdxPath = config.sourceUdxFolderPath;
-            string rootGmlFolderName = CopyPlateauSrcFiles.UdxPathToGmlRootFolderName(prevSourceUdxPath);
-            if (!IsInStreamingAssets(prevSourceUdxPath))
-            {
-                string copyDest = PlateauPath.StreamingGmlFolder;
-                CopyPlateauSrcFiles.SelectCopy(config.sourceUdxFolderPath, copyDest, gmlRelativePaths);
-                // configの変換元パスをコピー先に再設定します。
-                config.sourceUdxFolderPath = Path.Combine(copyDest, $"{rootGmlFolderName}/udx");
-            }
+            // 設定のインポート元パスをコピー後のパスに変更します。
+            var sourcePathConf = config.sourcePath;
+            sourcePathConf.FullUdxPath = CopyImportSrcToStreamingAssets(config.UdxPathBeforeImport, gmlRelativePaths);
             
-            string destMetaDataPath = Path.Combine(PathUtil.FullPathToAssetsPath(config.exportFolderPath), CityMetaDataGenerator.MetaDataFileName);
-            var metaData = CityMetaDataGenerator.LoadOrCreateMetaData(destMetaDataPath, true);
+            metaData = CityMetaDataGenerator.LoadOrCreateMetaData(config.importDestPath.MetaDataAssetPath, true);
 
             // gmlファイルごとのループを始めます。
             int successCount = 0;
@@ -60,11 +53,9 @@ namespace PlateauUnitySDK.Editor.CityImport
                 loopCount++;
                 ProgressBar($"gml変換中 : [{loopCount}/{numGml}] {gmlRelativePath}", loopCount, numGml );
 
-                string gmlFullPath = Path.GetFullPath(Path.Combine(config.sourceUdxFolderPath, gmlRelativePath));
+                string gmlFullPath = sourcePathConf.UdxRelativeToFullPath(gmlRelativePath);
 
                 // gmlをロードします。
-                string gmlFileName = Path.GetFileNameWithoutExtension(gmlRelativePath);
-                string objPath = Path.Combine(config.exportFolderPath, gmlFileName + ".obj");
                 if (!TryLoadCityGml(out var cityModel, gmlFullPath, config))
                 {
                     cityModel?.Dispose();
@@ -72,34 +63,45 @@ namespace PlateauUnitySDK.Editor.CityImport
                 }
                 
                 // objに変換します。
-                if (!TryConvertToObj(cityModel, ref referencePoint, config, gmlFullPath, objPath))
+                if (!TryConvertToObj(cityModel, ref referencePoint, config, gmlFullPath, config.importDestPath.DirFullPath))
                 {
+                    // 出力されるモデルがなければ、ここで終了します。
                     cityModel?.Dispose();
                     continue;
                 }
-
-                // CityMapMetaData を生成します。
-                string objAssetPath = PathUtil.FullPathToAssetsPath(objPath);
+                
+                // 基準座標は最初のものに合わせます。
                 if (!referencePoint.HasValue) throw new Exception($"{nameof(referencePoint)} is null.");
                 config.referencePoint = referencePoint.Value;
-                if (!TryGenerateMetaData(metaData, gmlFileName, objAssetPath, config))
-                {
-                    cityModel?.Dispose();
-                    continue;
-                }
-                cityModel?.Dispose();
 
-                // シーンに配置します。
-                PlaceToScene(objAssetPath, rootGmlFolderName, metaData);
+                // 1つのgmlから LODごとに 0個以上の .obj ファイルが生成されます。
+                // .obj ファイルごとのループを始めます。
+                string gmlFileName = Path.GetFileNameWithoutExtension(gmlRelativePath);
+                var objNames = config.gmlSearcherConfig.gmlTypeTarget.ObjFileNamesForGml(gmlFileName);
+                var objAssetPaths = objNames.Select(name => Path.Combine(config.importDestPath.dirAssetPath, name + ".obj"));
+                foreach(string objAssetPath in objAssetPaths)
+                {
+                    // CityMapMetaData を生成します。
+                    if (!TryGenerateMetaData(metaData, gmlFileName, objAssetPath, config))
+                    {
+                        Debug.LogError($"Failed to generate meta data.\nobjAssetPath = {objAssetPath}");
+                        cityModel?.Dispose();
+                        continue;
+                    }
+                    
+                    // シーンに配置します。
+                    CityMeshPlacerToScene.Place(objAssetPath, PlateauSourcePath.RootDirName(sourcePathConf.udxAssetPath), metaData);
+                }
                 
-                LastConvertedCityMetaData = metaData;
+                
+                cityModel?.Dispose();
                 successCount++;
             }
             // gmlファイルごとのループ　ここまで
             
             // 後処理
             EditorUtility.SetDirty(metaData);
-            AssetDatabase.ImportAsset(PathUtil.FullPathToAssetsPath(config.exportFolderPath));
+            AssetDatabase.ImportAsset(config.importDestPath.dirAssetPath);
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
             int failureCount = loopCount - successCount;
@@ -150,19 +152,37 @@ namespace PlateauUnitySDK.Editor.CityImport
             return true;
         }
 
+        private string CopyImportSrcToStreamingAssets(string udxPathBeforeImport, string[] gmlRelativePaths)
+        {
+            string newUdxFullPath = udxPathBeforeImport; // デフォルト値
+            if (!IsInStreamingAssets(udxPathBeforeImport))
+            {
+                string copyDest = PlateauUnityPath.StreamingGmlFolder;
+                CopyPlateauSrcFiles.SelectCopy(udxPathBeforeImport, copyDest, gmlRelativePaths);
+                newUdxFullPath = Path.Combine(copyDest, $"{PlateauSourcePath.RootDirName(udxPathBeforeImport)}/udx");
+            }
+            return newUdxFullPath;
+        }
+
         /// <summary>
         /// <see cref="CityModel"/> を obj形式の3Dモデルに変換します。
         /// 成否を bool で返します。
         /// </summary>
-        private static bool TryConvertToObj(CityModel cityModel, ref Vector3? referencePoint, CityImporterConfig importerConfig, string gmlFullPath, string objPath)
+        private static bool TryConvertToObj(CityModel cityModel, ref Vector3? referencePoint, CityImporterConfig importerConfig, string gmlFullPath, string objDestDirFullPath)
         {
             using (var objConverter = new GmlToObjConverter())
             {
                 // configを作成します。
-                var converterConf = new GmlToObjConverterConfig();
-                converterConf.MeshGranularity = importerConfig.meshGranularity;
-                converterConf.LogLevel = importerConfig.logLevel;
-                converterConf.DoAutoSetReferencePoint = false;
+                var converterConf = new GmlToObjConverterConfig
+                {
+                    MeshGranularity = importerConfig.meshGranularity,
+                    LogLevel = importerConfig.logLevel,
+                    DoAutoSetReferencePoint = false
+                };
+                var gmlType = GmlFileNameParser.GetGmlTypeEnum(gmlFullPath);
+                (int minLod, int maxLod) = importerConfig.gmlSearcherConfig.gmlTypeTarget.GetMinMaxLodForType(gmlType);
+                converterConf.MinLod = minLod;
+                converterConf.MaxLod = maxLod;
 
                 // Reference Pointは最初のものに合わせます。
                 if (referencePoint == null)
@@ -177,7 +197,7 @@ namespace PlateauUnitySDK.Editor.CityImport
 
                 objConverter.Config = converterConf;
 
-                bool isSuccess = objConverter.ConvertWithoutLoad(cityModel, gmlFullPath, objPath);
+                bool isSuccess = objConverter.ConvertWithoutLoad(cityModel, gmlFullPath, objDestDirFullPath);
 
                 return isSuccess;
             }
@@ -208,53 +228,7 @@ namespace PlateauUnitySDK.Editor.CityImport
             }
             return true;
         }
-
-        /// <summary>
-        /// 変換後の3Dモデルをシーンに配置します。
-        /// </summary>
-        private static void PlaceToScene(string objAssetPath, string srcFolderName, CityMetaData metaData)
-        {
-            // 親を配置
-            var parent = GameObject.Find(srcFolderName);
-            if (parent == null)
-            {
-                parent = new GameObject(srcFolderName);
-            }
-            
-            // 親に CityMapBehaviour をアタッチ
-            var cityMapBehaviour = parent.GetComponent<CityBehaviour>();
-            if ( cityMapBehaviour == null)
-            {
-                cityMapBehaviour = parent.AddComponent<CityBehaviour>();
-            }
-            cityMapBehaviour.CityMetaData = metaData;
-
-            var assetObj = AssetDatabase.LoadAssetAtPath<GameObject>(objAssetPath);
-            
-            // 古い同名の GameObject を削除
-            var oldObj = FindRecursive(parent.transform, assetObj.name);
-            if (oldObj != null)
-            {
-                Object.DestroyImmediate(oldObj.gameObject);
-            }
-
-            // 変換後モデルの配置
-            var placedObj = (GameObject)PrefabUtility.InstantiatePrefab(assetObj);
-            placedObj.name = assetObj.name;
-            placedObj.transform.parent = parent.transform;
-        }
-
-        private static Transform FindRecursive(Transform target, string name)
-        {
-            if (target.name == name) return target;
-            foreach (Transform child in target)
-            {
-                Transform found = FindRecursive(child, name);
-                if (found != null) return found;
-            }
-
-            return null;
-        }
+        
         
         public static bool IsInStreamingAssets(string path)
         {

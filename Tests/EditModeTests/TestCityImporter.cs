@@ -1,24 +1,26 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using LibPLATEAU.NET.CityGML;
+using PLATEAU.CityGML;
 using NUnit.Framework;
-using PlateauUnitySDK.Editor.CityImport;
-using PlateauUnitySDK.Editor.Converters;
-using PlateauUnitySDK.Runtime.CityMeta;
-using PlateauUnitySDK.Runtime.Util;
-using PlateauUnitySDK.Tests.TestUtils;
+using PLATEAU.Editor.CityImport;
+using PLATEAU.Editor.Converters;
+using PLATEAU.CityMeta;
+using PLATEAU.Interop;
+using PLATEAU.IO;
+using PLATEAU.Util;
+using PLATEAU.Tests.TestUtils;
 using UnityEditor;
 using UnityEngine;
+using Object = System.Object;
 
-namespace PlateauUnitySDK.Tests.EditModeTests
+namespace PLATEAU.Tests.EditModeTests
 {
     [TestFixture]
     public class TestCityImporter
     {
         private CityImporter importer;
-        private static readonly string testUdxPathTokyo = Path.GetFullPath(Path.Combine(Application.dataPath,
-            "../Packages/PlateauUnitySDK/Tests/TestData/TestDataTokyoMini/udx"));
+        private static readonly string testUdxPathTokyo = DirectoryUtil.TestTokyoMiniUdxPath;
 
         private static readonly string testOutputDir = DirectoryUtil.TempAssetFolderPath;
 
@@ -28,15 +30,14 @@ namespace PlateauUnitySDK.Tests.EditModeTests
             "dem/533925_dem_6697_op.gml"
         };
 
-        private static readonly string testUdxPathSimple = Path.GetFullPath(Path.Combine(Application.dataPath,
-            "../Packages/PlateauUnitySDK/Tests/TestData/TestDataSimpleGml/udx"));
+        private static readonly string testUdxPathSimple = DirectoryUtil.TestDataSimpleUdxPath;
 
         private static readonly string[] testGmlRelativePathsSimple =
         {
             "bldg/53392642_bldg_6697_op2.gml"
         };
 
-        private static readonly string testDefaultDstPath = Path.Combine(DirectoryUtil.TempAssetFolderPath, "PLATEAU");
+        private static readonly string testDefaultCopyDestPath = Path.Combine(DirectoryUtil.TempAssetFolderPath, "PLATEAU");
 
         private string prevDefaultDstPath;
 
@@ -47,27 +48,23 @@ namespace PlateauUnitySDK.Tests.EditModeTests
             DirectoryUtil.SetUpTempAssetFolder();
             
             // テスト用に一時的に MultiGmlConverter のデフォルト出力先を変更します。
-            this.prevDefaultDstPath = PlateauPath.StreamingGmlFolder;
-            PlateauPath.TestOnly_SetStreamingGmlFolder(testDefaultDstPath);
+            this.prevDefaultDstPath = PlateauUnityPath.StreamingGmlFolder;
+            PlateauUnityPath.TestOnly_SetStreamingGmlFolder(testDefaultCopyDestPath);
         }
 
         [TearDown]
         public void TearDown()
         {
             DirectoryUtil.DeleteTempAssetFolder();
-            PlateauPath.TestOnly_SetStreamingGmlFolder(this.prevDefaultDstPath);
+            PlateauUnityPath.TestOnly_SetStreamingGmlFolder(this.prevDefaultDstPath);
         }
 
         [Test]
-        public void When_Inputs_Are_2_Gmls_Then_Outputs_Are_2_Objs_And_1_IdTable()
+        public void When_Inputs_Are_2_Gmls_Then_Outputs_Are_Multiple_Objs_And_1_IdTable()
         {
-            // 2つのGMLファイルを変換します。
-            var config = new CityImporterConfig
-            {
-                sourceUdxFolderPath = testUdxPathTokyo,
-                exportFolderPath = testOutputDir
-            };
-            this.importer.Import(testGmlRelativePathsTokyo, config);
+
+            Import(testUdxPathTokyo, testGmlRelativePathsTokyo, MeshGranularity.PerCityModelArea, out _, 0, 2, 1, 1);
+            
             // 変換後、出力されたファイルの数を数えます。
             int objCount = 0;
             int assetCount = 0;
@@ -83,7 +80,7 @@ namespace PlateauUnitySDK.Tests.EditModeTests
                     assetCount++;
                 }
             }
-            Assert.AreEqual(2, objCount);
+            Assert.AreEqual(4, objCount);
             Assert.AreEqual(1, assetCount);
         }
 
@@ -91,15 +88,9 @@ namespace PlateauUnitySDK.Tests.EditModeTests
         public void ReferencePoint_Is_Set_To_First_ReferencePoint()
         {
             // 2つのGMLファイルを変換します。
-            var config = new CityImporterConfig
-            {
-                sourceUdxFolderPath = testUdxPathTokyo,
-                exportFolderPath = testOutputDir
-            };
-            this.importer.Import(testGmlRelativePathsTokyo, config);
+            Import(testUdxPathTokyo, testGmlRelativePathsTokyo, MeshGranularity.PerPrimaryFeatureObject, out var mapInfo, 0, 0);
             
             // 値1 : CityMapInfo に記録された Reference Point を取得します。
-            var mapInfo = this.importer.LastConvertedCityMetaData;
             var recordedReferencePoint = mapInfo.cityImporterConfig.referencePoint;
 
             // 値2 : GmlToObjFileConverter にかけたときの Reference Point を取得します。
@@ -118,13 +109,9 @@ namespace PlateauUnitySDK.Tests.EditModeTests
         [Test]
         public void MeshGranularity_Is_Written_To_MetaData()
         {
-            var config = new CityImporterConfig();
             // 値1: 変換時の MeshGranularity の設定
             var granularityOnConvert = MeshGranularity.PerAtomicFeatureObject;
-            config.meshGranularity = granularityOnConvert;
-            config.sourceUdxFolderPath = testUdxPathTokyo;
-            config.exportFolderPath = testOutputDir;
-            this.importer.Import(testGmlRelativePathsTokyo, config);
+            Import(testUdxPathTokyo, testGmlRelativePathsTokyo, granularityOnConvert, out _, 0, 2, 1, 1);
 
             // 値2: CityMapInfo に書き込まれた MeshGranularity の値
             string metaDataPath =
@@ -140,44 +127,110 @@ namespace PlateauUnitySDK.Tests.EditModeTests
         [Test]
         public void When_CityMapInfo_Is_Already_Exist_Then_Clear_Its_Data_Before_Convert()
         {
-            bool DoContainAtomic(CityMetaData info) => info.idToGmlTable.Keys.Any(id => id.StartsWith("wall"));
+            bool DoContainAtomic(CityMetaData info) => info.idToGmlTable.Keys.Any(id => id.Contains("_wall_"));
 
-            var config = new CityImporterConfig
-            {
-                meshGranularity = MeshGranularity.PerAtomicFeatureObject,
-                sourceUdxFolderPath = testUdxPathSimple,
-                exportFolderPath = testOutputDir
-            };
-            this.importer.Import(testGmlRelativePathsSimple, config);
-            var mapInfo = this.importer.LastConvertedCityMetaData;
+            Import(testUdxPathSimple, testGmlRelativePathsSimple, MeshGranularity.PerAtomicFeatureObject, out var mapInfo,  2, 2);
+            
             foreach (var key in mapInfo.idToGmlTable.Keys)
             {
                 Console.Write(key);
             }
             Assert.IsTrue(DoContainAtomic(mapInfo), "1回目の変換は最小地物を含むことを確認");
 
-            config.meshGranularity = MeshGranularity.PerPrimaryFeatureObject;
-            config.sourceUdxFolderPath = testUdxPathTokyo;
-            config.exportFolderPath = testOutputDir;
-            this.importer.Import(testGmlRelativePathsTokyo, config);
-            mapInfo = this.importer.LastConvertedCityMetaData;
-            bool doContainBuilding = mapInfo.idToGmlTable.Keys.Any(id => id.StartsWith("BLD"));
-            Assert.IsFalse(DoContainAtomic(mapInfo), "2回目の変換は最小地物を含まないことを確認");
+            Import(testUdxPathSimple, testGmlRelativePathsSimple, MeshGranularity.PerPrimaryFeatureObject, out var mapInfo2, 0, 0);
+            
+            bool doContainBuilding = mapInfo2.idToGmlTable.Keys.Any(id => id.Contains("_BLD_"));
+            Assert.IsFalse(DoContainAtomic(mapInfo2), "2回目の変換は最小地物を含まないことを確認");
             Assert.IsTrue(doContainBuilding, "2回目の変換は主要地物を含むことを確認");
         }
 
         [Test]
         public void Importing_Mini_Tokyo_Ends_With_Success()
         {
-            var config = new CityImporterConfig
-            {
-                meshGranularity = MeshGranularity.PerPrimaryFeatureObject,
-                sourceUdxFolderPath = testUdxPathTokyo,
-                exportFolderPath = testOutputDir
-            };
-            int numSuccess = this.importer.Import(testGmlRelativePathsTokyo, config);
+            int numSuccess = Import(testUdxPathTokyo, testGmlRelativePathsTokyo,
+                MeshGranularity.PerPrimaryFeatureObject, out _, 1, 1, 1, 1);
+
             Assert.AreEqual(2, numSuccess);
         }
+
+        [Test]
+        public void When_Lod_Is_2_to_2_Then_Only_Lod2_Objs_Are_Generated()
+        {
+
+            Import(testUdxPathSimple, testGmlRelativePathsSimple, MeshGranularity.PerCityModelArea, out _, 2, 2);
+
+            string gmlId = "53392642_bldg_6697_op2";
+            bool lod2Exists = File.Exists(Path.Combine(testOutputDir, $"LOD2_{gmlId}.obj"));
+            bool lod1Exists = File.Exists(Path.Combine(testOutputDir, $"LOD1_{gmlId}.obj"));
+            Assert.IsTrue(lod2Exists);
+            Assert.IsFalse(lod1Exists);
+        }
         
+        [Test]
+        public void When_Lod_Is_0_to_1_Then_Only_2_Objs_Are_Generated()
+        {
+
+            Import(testUdxPathSimple, testGmlRelativePathsSimple, MeshGranularity.PerCityModelArea, out _,  0, 1);
+
+            string gmlId = "53392642_bldg_6697_op2";
+            bool lod2Exists = File.Exists(Path.Combine(testOutputDir, $"LOD2_{gmlId}.obj"));
+            bool lod1Exists = File.Exists(Path.Combine(testOutputDir, $"LOD1_{gmlId}.obj"));
+            bool lod0Exists = File.Exists(Path.Combine(testOutputDir, $"LOD0_{gmlId}.obj"));
+            Assert.IsFalse(lod2Exists, "LOD範囲外は生成されない");
+            Assert.IsTrue(lod1Exists, "LOD範囲内は生成される");
+            Assert.IsTrue(lod0Exists, "LOD範囲内は生成される");
+        }
+
+        [Test]
+        public void Converted_Objs_Are_Placed_In_Current_Scene()
+        {
+            Import(testUdxPathSimple, testGmlRelativePathsSimple, MeshGranularity.PerCityModelArea, out _, 0, 1);
+
+            string gmlId = "53392642_bldg_6697_op2";
+            bool lod0Exists = GameObject.Find($"LOD0_{gmlId}");
+            bool lod1Exists = GameObject.Find($"LOD1_{gmlId}");
+            bool lod2Exists = GameObject.Find($"LOD2_{gmlId}");
+            Assert.IsTrue(lod0Exists, "LOD範囲内は配置される");
+            Assert.IsTrue(lod1Exists, "LOD範囲内は配置される");
+            Assert.IsFalse(lod2Exists, "LOD範囲内は配置されない");
+        }
+
+        [Test]
+        public void SrcPath_Of_MetaData_Is_Set_To_Post_Copy_Path()
+        {
+            Import(testUdxPathSimple, testGmlRelativePathsSimple, MeshGranularity.PerCityModelArea, out var metaData, 0,
+                0);
+            string expectedUdxPath = Path.Combine(testDefaultCopyDestPath, "TestDataSimpleGml", "udx").Replace('\\', '/');
+            string actualUdxPath = metaData.cityImporterConfig.sourcePath.FullUdxPath.Replace('\\', '/');
+            Assert.AreEqual( expectedUdxPath, actualUdxPath, "メモリ上のメタデータの sourcePath がコピー後を指している" );
+
+            var metaDataPath = metaData.cityImporterConfig.importDestPath.MetaDataAssetPath;
+            var loadedMetaData = AssetDatabase.LoadAssetAtPath<CityMetaData>(metaDataPath);
+            Assert.NotNull(loadedMetaData, "生成後のメタデータをロードできる");
+            var loadedSrcPath = loadedMetaData.cityImporterConfig.sourcePath.FullUdxPath.Replace('\\', '/');
+            Assert.AreEqual(expectedUdxPath, loadedSrcPath, "保存されたメタデータの sourcePath がコピー後を指している");
+        }
+
+        private int Import(string testUdxPath, string[] gmlRelativePaths, MeshGranularity meshGranularity, out CityMetaData metaData, int minLodBuilding, int maxLodBuilding, int minLodDem = 0, int maxLodDem = 0)
+        {
+            var config = new CityImporterConfig
+            {
+                meshGranularity = meshGranularity,
+                UdxPathBeforeImport = testUdxPath,
+                importDestPath =
+                {
+                    dirAssetPath = PathUtil.FullPathToAssetsPath(testOutputDir)
+                }
+            };
+            var typeConfigs = config.gmlSearcherConfig.gmlTypeTarget.GmlTypeConfigs;
+            typeConfigs[GmlType.Building].minLod = minLodBuilding;
+            typeConfigs[GmlType.Building].maxLod = maxLodBuilding;
+            typeConfigs[GmlType.DigitalElevationModel].minLod = minLodDem;
+            typeConfigs[GmlType.DigitalElevationModel].maxLod = maxLodDem;
+            
+            int numSuccess = this.importer.Import(gmlRelativePaths, config, out metaData);
+            return numSuccess;
+        }
+
     }
 }

@@ -1,10 +1,10 @@
 using System.IO;
 using NUnit.Framework;
-using PlateauUnitySDK.Runtime.Util;
-using PlateauUnitySDK.Tests.TestUtils;
+using PLATEAU.Util;
+using PLATEAU.Tests.TestUtils;
 using UnityEngine.TestTools;
 
-namespace PlateauUnitySDK.Tests.EditModeTests {
+namespace PLATEAU.Tests.EditModeTests {
     
     [TestFixture]
     public class TestPathUtil {
@@ -132,11 +132,15 @@ namespace PlateauUnitySDK.Tests.EditModeTests {
         };
         
         [Test] 
-        public void FullPathToAssetsPath_Returns_Error_When_Outside_Assets_Folder() {
-            Assert.That(()=> {
+        public void FullPathToAssetsPath_Returns_Error_When_Outside_Assets_Folder()
+        {
+            Assert.That(() =>
+                {
                     PathUtil.FullPathToAssetsPath("C:\\dummy\\OutsideAssets\\a.fbx");
                 },
-                Throws.TypeOf<IOException>());
+                Throws.TypeOf<IOException>(),
+                $"Assetsフォルダの外のパスが {nameof(PathUtil.FullPathToAssetsPath)} に渡されたとき、例外を出す"
+            );
         }
 
 

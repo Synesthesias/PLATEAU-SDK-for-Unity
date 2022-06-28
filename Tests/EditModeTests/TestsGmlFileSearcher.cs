@@ -1,9 +1,9 @@
 ﻿using NUnit.Framework;
-using PlateauUnitySDK.Editor.CityImport;
-using PlateauUnitySDK.Tests.TestUtils;
+using PLATEAU.Editor.CityImport;
+using PLATEAU.Tests.TestUtils;
 using UnityEngine;
 
-namespace PlateauUnitySDK.Tests.EditModeTests
+namespace PLATEAU.Tests.EditModeTests
 {
     [TestFixture]
     public class TestsGmlFileSearcher
@@ -13,7 +13,7 @@ namespace PlateauUnitySDK.Tests.EditModeTests
         {
             var searcher = new GmlSearcher(DirectoryUtil.TestTokyoUdxPath);
             var areaIds = searcher.AreaIds;
-            Assert.Contains(53394525, areaIds);
+            Assert.Contains(53394525, areaIds, "地域IDを検索して返す");
             Assert.Contains(533925, areaIds);
             Debug.Log(searcher);
         }

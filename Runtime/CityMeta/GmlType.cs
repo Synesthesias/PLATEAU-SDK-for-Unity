@@ -1,28 +1,34 @@
 ﻿using System;
 using System.Collections.Generic;
-using static PlateauUnitySDK.Runtime.CityMeta.GmlType;
+using static PLATEAU.CityMeta.GmlType;
 
-namespace PlateauUnitySDK.Runtime.CityMeta
+namespace PLATEAU.CityMeta
 {
 
     /// <summary>
     /// 地物タイプです。
     /// gml元データのファイル構造における udx/(地物タイプ) の(地物タイプ)に対応します。
     /// </summary>
-    public enum GmlType
+    internal enum GmlType
     {
+        /// <summary> 建築物 </summary>
         Building,
+        /// <summary> 道路 </summary>
         Transport,
+        /// <summary> 植生 </summary>
         Vegetation,
+        /// <summary> 都市設備 </summary>
         CityFurniture,
+        /// <summary> 起伏（地形情報） </summary>
         DigitalElevationModel,
+        /// <summary> その他 </summary>
         Etc
     }
 
     /// <summary>
     /// <see cref="GmlType"/> の Enum 型、 接頭辞（フォルダ名）、ディスプレイ文字列　を変換します。
     /// </summary>
-    public static class GmlTypeConvert
+    internal static class GmlTypeConvert
     {
         /// <summary>
         /// 接頭辞は主にフォルダ名に使われます。Enum型と接頭辞の対応辞書です。
@@ -54,6 +60,8 @@ namespace PlateauUnitySDK.Runtime.CityMeta
         /// 接頭辞はフォルダ名などに使われます。
         /// ただし、<see cref="GmlType.Etc"/> は接頭辞がないので例外を投げます。
         /// </summary>
+        /// <param name="t">地物タイプ Enum型</param>
+        /// <returns>地物タイプ string型(接頭辞)</returns>
         public static string ToPrefix(this GmlType t)
         {
             if (t == Etc)
@@ -73,6 +81,8 @@ namespace PlateauUnitySDK.Runtime.CityMeta
         /// 接頭辞から <see cref="GmlType"/> を返します。
         /// 辞書にない接頭辞の場合は <see cref="GmlType.Etc"/> を返します。
         /// </summary>
+        /// <param name="prefix">地物タイプ string型(接頭辞)</param>
+        /// <returns>地物タイプ Enum型</returns>
         public static GmlType ToEnum(string prefix)
         {
             foreach (var pair in prefixDict)
@@ -89,6 +99,8 @@ namespace PlateauUnitySDK.Runtime.CityMeta
         /// <summary>
         /// <see cref="GmlType"/> を人間にとって分かりやすい文字に変換します。
         /// </summary>
+        /// <param name="t">地物タイプ Enum型</param>
+        /// <returns>説明形式の文字</returns>
         public static string ToDisplay(GmlType t)
         {
             if (displayDict.TryGetValue(t, out string display))

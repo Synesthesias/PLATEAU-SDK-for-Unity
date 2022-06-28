@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using PlateauUnitySDK.Editor.EditorWindowCommon;
-using PlateauUnitySDK.Runtime.CityMeta;
+using PLATEAU.Editor.EditorWindowCommon;
+using PLATEAU.CityMeta;
 using UnityEditor;
 
-namespace PlateauUnitySDK.Editor.CityImport
+namespace PLATEAU.Editor.CityImport
 {
 
     /// <summary>
@@ -28,54 +28,83 @@ namespace PlateauUnitySDK.Editor.CityImport
             if(!this.isInitialized) Initialize(gmlSearcher, config);
             HeaderDrawer.IncrementDepth();
             HeaderDrawer.Draw("含める地域");
-            config.areaIds = gmlSearcher.AreaIds;
-            int areaCount = config.areaIds.Length;
-            if (config.isAreaIdTarget.Length != areaCount)
+            using (PlateauEditorStyle.VerticalScopeLevel1())
             {
-                Initialize(gmlSearcher, config);
-            }
-            for (int i = 0; i < areaCount; i++)
-            {
-                config.isAreaIdTarget[i] = EditorGUILayout.Toggle(config.areaIds[i].ToString(), config.isAreaIdTarget[i]);
-            }
-
-            using (new EditorGUILayout.HorizontalScope())
-            {
-                if (PlateauEditorStyle.MainButton("すべて選択"))
+                config.areaIds = gmlSearcher.AreaIds;
+                int areaCount = config.areaIds.Length;
+                if (config.isAreaIdTarget.Length != areaCount)
                 {
-                    config.SetAllAreaId(true);
+                    Initialize(gmlSearcher, config);
+                }
+                for (int i = 0; i < areaCount; i++)
+                {
+                    config.isAreaIdTarget[i] = EditorGUILayout.Toggle(config.areaIds[i].ToString(), config.isAreaIdTarget[i]);
                 }
 
-                if (PlateauEditorStyle.MainButton("すべて除外"))
+                using (new EditorGUILayout.HorizontalScope())
                 {
-                    config.SetAllAreaId(false);
+                    if (PlateauEditorStyle.MiniButton("すべて選択"))
+                    {
+                        config.SetAllAreaId(true);
+                    }
+
+                    if (PlateauEditorStyle.MiniButton("すべて除外"))
+                    {
+                        config.SetAllAreaId(false);
+                    }
                 }
             }
             
+            
+            // 地物タイプごとの設定です。
             HeaderDrawer.Draw("含める地物");
-            var typeDict = config.gmlTypeTarget.TargetDict;
-            foreach (var gmlType in typeDict.Keys.ToArray())
+            using (PlateauEditorStyle.VerticalScopeLevel1())
             {
-                typeDict[gmlType] = EditorGUILayout.Toggle(GmlTypeConvert.ToDisplay(gmlType), typeDict[gmlType]);
-            }
-
-            using (new EditorGUILayout.HorizontalScope())
-            {
-                if (PlateauEditorStyle.MainButton("すべて選択"))
+                var typeConfDict = config.gmlTypeTarget.GmlTypeConfigs;
+                foreach (var gmlType in typeConfDict.Keys.ToArray())
                 {
-                    config.gmlTypeTarget.SetAll(true);
+                    EditorGUILayout.LabelField(GmlTypeConvert.ToDisplay(gmlType));
+                    using (PlateauEditorStyle.VerticalScopeLevel2())
+                    {
+                        var typeConf = typeConfDict[gmlType];
+                        typeConf.isTarget = EditorGUILayout.Toggle("変換対象", typeConf.isTarget);
+                        using (new EditorGUI.DisabledScope(!typeConf.isTarget))
+                        {
+                            EditorGUILayout.MinMaxSlider("LOD", ref typeConf.SliderMinLod, ref typeConf.SliderMaxLod, 0f, 4f);
+                            // Min <= Max となるようにスワップ
+                            if (typeConf.SliderMinLod > typeConf.SliderMaxLod)
+                                (typeConf.SliderMinLod, typeConf.SliderMaxLod) =
+                                    (typeConf.SliderMaxLod, typeConf.SliderMinLod);
+                            typeConf.minLod = (int)Math.Round(typeConf.SliderMinLod);
+                            typeConf.maxLod = (int)Math.Round(typeConf.SliderMaxLod);
+                            EditorGUILayout.LabelField($"最小LOD: {typeConf.minLod}, 最大LOD: {typeConf.maxLod}");
+                        }
+                    }
                 }
 
-                if (PlateauEditorStyle.MainButton("すべて除外"))
+                using (new EditorGUILayout.HorizontalScope())
                 {
-                    config.gmlTypeTarget.SetAll(false);
+                    if (PlateauEditorStyle.MiniButton("すべて選択"))
+                    {
+                        config.gmlTypeTarget.SetAllTarget(true);
+                    }
+
+                    if (PlateauEditorStyle.MiniButton("すべて除外"))
+                    {
+                        config.gmlTypeTarget.SetAllTarget(false);
+                    }
                 }
+            
             }
 
             HeaderDrawer.Draw("対象gmlファイル");
-            this.gmlFiles = ListTargetGmlFiles(gmlSearcher, config.areaIds, config.isAreaIdTarget, config.gmlTypeTarget);
-            EditorGUILayout.TextArea(String.Join("\n", this.gmlFiles));
-            
+            using (PlateauEditorStyle.VerticalScopeLevel1())
+            {
+                this.gmlFiles = ListTargetGmlFiles(gmlSearcher, config.areaIds, config.isAreaIdTarget,
+                    config.gmlTypeTarget);
+                EditorGUILayout.TextArea(String.Join("\n", this.gmlFiles));
+            }
+
             HeaderDrawer.DecrementDepth();
 
             return this.gmlFiles;

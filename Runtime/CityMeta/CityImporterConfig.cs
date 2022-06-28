@@ -1,8 +1,10 @@
 ﻿using System;
-using LibPLATEAU.NET.CityGML;
+using PLATEAU.CityGML;
+using PLATEAU.Interop;
+using PLATEAU.IO;
 using UnityEngine;
 
-namespace PlateauUnitySDK.Runtime.CityMeta
+namespace PLATEAU.CityMeta
 {
     /// <summary>
     /// Plateau元データをインポートする時の設定です。
@@ -21,14 +23,30 @@ namespace PlateauUnitySDK.Runtime.CityMeta
     // これはこのクラスが保持するメンバ変数のクラス、例えば <see cref="GmlSearcherConfig"/> も同様です。
     
     [Serializable]
-    public class CityImporterConfig
+    internal class CityImporterConfig
     {
+        /// <summary> インポート時の対象gmlファイルの絞り込みの設定 </summary>
         public GmlSearcherConfig gmlSearcherConfig = new GmlSearcherConfig();
-        public string sourceUdxFolderPath = "";
-        public string exportFolderPath = "";
+        
+        /// <summary> インポート元ファイルのパス（コピー後）です。通常 StreamingAssets内を指します。 パスは Assets から始まります。 </summary>
+        public PlateauSourcePath sourcePath = new PlateauSourcePath("");
+
+        /// <summary> これはファイルには記録されません。 インポート元ファイルのパス（コピー前）です。 Assetsフォルダ外を指すこともあります。フルパスです。 </summary>
+        [NonSerialized] public string UdxPathBeforeImport;
+        
+        /// <summary> インポートの出力先 </summary>
+        public ImportDestPath importDestPath = new ImportDestPath();
+        
+        /// <summary> インポート時に最適化するかどうか </summary>
         public bool optimizeFlag = true;
+        
+        /// <summary> オブジェクト分けの粒度 </summary>
         public MeshGranularity meshGranularity = MeshGranularity.PerPrimaryFeatureObject;
+        
+        /// <summary> メッシュ変換の基準座標 </summary>
         public Vector3 referencePoint = Vector3.zero;
+        
+        /// <summary> インポート時のログレベル </summary>
         public DllLogLevel logLevel = DllLogLevel.Error;
     }
 }

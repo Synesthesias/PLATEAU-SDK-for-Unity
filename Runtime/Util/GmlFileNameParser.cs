@@ -1,10 +1,7 @@
-﻿using System;
-using System.IO;
-using System.Text;
-using PlateauUnitySDK.Runtime.CityMeta;
-using UnityEngine;
+﻿using System.IO;
+using PLATEAU.CityMeta;
 
-namespace PlateauUnitySDK.Runtime.Util
+namespace PLATEAU.Util
 {
     /// <summary>
     /// gmlファイルのファイル名は
@@ -22,7 +19,7 @@ namespace PlateauUnitySDK.Runtime.Util
         /// </summary>
         public static void Parse(string gmlFileName, out int areaId, out GmlType gmlType, out int crs, out string option)
         {
-            gmlFileName = Preprocess(gmlFileName);
+            gmlFileName = FileNameWithoutExtension(gmlFileName);
             
             areaId = GetAreaId(gmlFileName);
             gmlType = GetGmlTypeEnum(gmlFileName);
@@ -34,7 +31,7 @@ namespace PlateauUnitySDK.Runtime.Util
         /// <summary> gmlファイル名から地域ID（メッシュコード）を取得します。 </summary>
         public static int GetAreaId(string gmlFileName)
         {
-            gmlFileName = Preprocess(gmlFileName);
+            gmlFileName = FileNameWithoutExtension(gmlFileName);
             return int.Parse(gmlFileName.Split('_')[0]);
         }
 
@@ -47,14 +44,14 @@ namespace PlateauUnitySDK.Runtime.Util
         /// <summary> gmlファイル名から地物タイプを取得します。文字列型なので未知の接頭辞でも反映されます。 </summary>
         public static string GetGmlTypeStr(string gmlFileName)
         {
-            gmlFileName = Preprocess(gmlFileName);
+            gmlFileName = FileNameWithoutExtension(gmlFileName);
             return gmlFileName.Split('_')[1];
         }
         
         /// <summary> gmlファイル名からオプションと拡張子を除いて返します。 </summary>
         public static string NameWithoutOption(string gmlFileName)
         {
-            gmlFileName = Preprocess(gmlFileName);
+            gmlFileName = FileNameWithoutExtension(gmlFileName);
             string[] tokens = gmlFileName.Split('_');
             return $"{tokens[0]}_{tokens[1]}_{tokens[2]}";
         }
@@ -62,7 +59,7 @@ namespace PlateauUnitySDK.Runtime.Util
         /// <summary>
         /// このクラスでファイル名を受け取る時の前処理です。
         /// </summary>
-        private static string Preprocess(string fileName)
+        public static string FileNameWithoutExtension(string fileName)
         {
             // fileName に "フォルダ名/" が含まれていれば、それを削除してファイル名のみにします。
             fileName = Path.GetFileName(fileName);

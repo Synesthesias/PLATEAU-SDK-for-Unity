@@ -1,14 +1,15 @@
 using System.IO;
 using System.Linq;
-using LibPLATEAU.NET.CityGML;
+using PLATEAU.CityGML;
 using NUnit.Framework;
-using PlateauUnitySDK.Editor.Converters;
-using PlateauUnitySDK.Runtime.Util;
-using PlateauUnitySDK.Tests.TestUtils;
+using PLATEAU.Editor.Converters;
+using PLATEAU.IO;
+using PLATEAU.Util;
+using PLATEAU.Tests.TestUtils;
 using UnityEditor;
 using UnityEngine;
 
-namespace PlateauUnitySDK.Tests.EditModeTests
+namespace PLATEAU.Tests.EditModeTests
 {
     [TestFixture]
     public class TestGmlToObjConverter
@@ -32,45 +33,46 @@ namespace PlateauUnitySDK.Tests.EditModeTests
         [Test]
         public void Convert_Generates_Obj_File()
         {
-            string outputFilePath = Path.Combine(DirectoryUtil.TempCacheFolderPath, "test_convert_generates_obj_file.obj");
+            string outputDirectory = DirectoryUtil.TempCacheFolderPath;
             using (var converter = new GmlToObjConverter())
             {
-                converter.Convert(DirectoryUtil.TestSimpleGmlFilePath, outputFilePath);
+                converter.Convert(DirectoryUtil.TestSimpleGmlFilePath, outputDirectory);
             }
-            // 変換後、objファイルがあればとりあえず良しとします。
-            Assert.IsTrue(File.Exists(outputFilePath));
+            bool fileExists = File.Exists(Path.Combine(outputDirectory, "LOD0_53392642_bldg_6697_op2.obj"));
+            Assert.IsTrue(fileExists, "変換後、objファイルが存在する");
+            // objファイルの中身まではチェック未実装です。
             }
 
         [Test]
         public void If_MeshGranularity_Is_PerCityModelArea_Then_Mesh_Count_Is_One()
         {
-            var meshes = ConvertAndRead(MeshGranularity.PerCityModelArea);
+            var meshes = ConvertAndRead(MeshGranularity.PerCityModelArea, 2);
             int count = meshes.Length;
             Debug.Log($"Count : {count}");
-            Assert.AreEqual(1, count);
+            Assert.AreEqual(1, count, "メッシュを結合する設定のとき、オブジェクト数は1である");
         }
         
         [Test]
         public void If_MeshGranularity_Is_PerPrimaryFeatureObject_Then_Multiple_BLD_Are_Exported()
         {
-            var meshes = ConvertAndRead(MeshGranularity.PerPrimaryFeatureObject);
+            var meshes = ConvertAndRead(MeshGranularity.PerPrimaryFeatureObject, 2);
             int count = meshes.Length;
             Debug.Log($"mesh count : {count}");
-            Assert.Greater(count, 1);
+            Assert.Greater(count, 1, "粒度が主要地物のとき、2つ以上のメッシュが生成される");
             for (int i = 0; i < count; i++)
             {
                 var mesh = meshes[i];
-                Assert.IsTrue(mesh.name.Contains("BLD"));
+                Assert.IsTrue(mesh.name.Contains("BLD"), "粒度が主要地物のとき、各メッシュ名が BLD を含む（BLDは建物を意味する）");
             }
         }
         
         [Test]
         public void If_MeshGranularity_Is_PerAtomicFeatureObject_Then_Multiple_Walls_Are_Exported()
         {
-            var meshes = ConvertAndRead(MeshGranularity.PerAtomicFeatureObject);
+            var meshes = ConvertAndRead(MeshGranularity.PerAtomicFeatureObject, 2);
             int count = meshes.Length;
             Debug.Log($"count : {count}");
-            Assert.Greater(count, 1);
+            Assert.Greater(count, 1, "粒度が最小地物のとき、2つ以上のメッシュが生成される");
             int wallCount = 0;
             foreach (var mesh in meshes)
             {
@@ -79,13 +81,13 @@ namespace PlateauUnitySDK.Tests.EditModeTests
                     wallCount++;
                 }
             }
-            Assert.Greater(wallCount, 1);
+            Assert.Greater(wallCount, 1, "粒度が最小地物のとき、生成されるメッシュのうち2つ以上は wall という名前を含む");
         }
 
-        private static Mesh[] ConvertAndRead(MeshGranularity meshGranularity)
+        private static Mesh[] ConvertAndRead(MeshGranularity meshGranularity, int lod)
         {
             string inputFilePath = DirectoryUtil.TestSimpleGmlFilePath;
-            string outputFilePath = Path.Combine(DirectoryUtil.TempAssetFolderPath, "exported.obj");
+            string outputDirectory = DirectoryUtil.TempAssetFolderPath;
             using (var converter = new GmlToObjConverter())
             {
                 var conf = converter.Config;
@@ -93,11 +95,11 @@ namespace PlateauUnitySDK.Tests.EditModeTests
                 conf.AxesConversion = AxesConversion.RUF;
                 conf.OptimizeFlag = true;
                 converter.Config = conf;
-                bool result = converter.Convert(inputFilePath, outputFilePath);
-                Assert.IsTrue(result);
+                bool result = converter.Convert(inputFilePath, outputDirectory);
+                Assert.IsTrue(result, "objへの変換が成功する");
             }
             AssetDatabase.Refresh();
-
+            string outputFilePath = Path.Combine(outputDirectory, $"LOD{lod}_{Path.GetFileNameWithoutExtension(inputFilePath)}.obj");
             var obj = AssetDatabase.LoadAssetAtPath<GameObject>(PathUtil.FullPathToAssetsPath(outputFilePath));
             var meshes = obj.GetComponentsInChildren<MeshFilter>().Select(mf => mf.sharedMesh).ToArray();
             return meshes;

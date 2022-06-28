@@ -1,8 +1,10 @@
-﻿using PlateauUnitySDK.Editor.EditorWindowCommon;
+﻿using Codice.Client.Common;
+using PLATEAU.Editor.EditorWindowCommon;
+using PLATEAU.Util;
 using UnityEditor;
 using UnityEngine;
 
-namespace PlateauUnitySDK.Editor.CityImport
+namespace PLATEAU.Editor.CityImport
 {
 
     /// <summary>
@@ -13,20 +15,32 @@ namespace PlateauUnitySDK.Editor.CityImport
 
         /// <summary>
         /// GUIを表示し、選択されたパスを返します。
+        /// パスは Assets パスとなります。
         /// </summary>
-        public string Draw(string currentExportPath)
+        public string Draw(string exportAssetPath)
         {
             HeaderDrawer.Draw("出力先選択");
-            using (new EditorGUILayout.HorizontalScope())
-            { 
-                currentExportPath = EditorGUILayout.TextField("出力先フォルダ", currentExportPath);
-                if (PlateauEditorStyle.MainButton("参照..."))
+            using (PlateauEditorStyle.VerticalScopeLevel1())
+            {
+                exportAssetPath = EditorGUILayout.TextField("出力先フォルダ", exportAssetPath);
+                if (PlateauEditorStyle.MiniButton("参照..."))
                 {
-                    currentExportPath = EditorUtility.SaveFolderPanel("保存先選択", Application.dataPath, "PlateauData");
+                    string selectedFullPath =
+                        EditorUtility.SaveFolderPanel("保存先選択", Application.dataPath, "PlateauData");
+                    if (!PathUtil.IsSubDirectoryOfAssets(selectedFullPath))
+                    {
+                        EditorGUILayout.HelpBox("出力先は Assets フォルダ内である必要があります。", MessageType.Error);
+                        return "";
+                    }
+
+                    if (!string.IsNullOrEmpty(selectedFullPath))
+                    {
+                        exportAssetPath = PathUtil.FullPathToAssetsPath(selectedFullPath);
+                    }
                 }
             }
 
-            return currentExportPath;
+            return exportAssetPath;
         }
     }
 }

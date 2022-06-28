@@ -1,0 +1,21 @@
+{
+    "name": "PLATEAU.PlayModeTests",
+    "rootNamespace": "PLATEAU",
+    "references": [
+        "UnityEngine.TestRunner",
+        "PLATEAU.TestUtils"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "nunit.framework.dll"
+    ],
+    "autoReferenced": false,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

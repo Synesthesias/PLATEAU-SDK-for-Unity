@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using PlateauUnitySDK.Runtime.CityMeta;
-using PlateauUnitySDK.Runtime.Util;
+using PLATEAU.CityMeta;
+using PLATEAU.Util;
 
-namespace PlateauUnitySDK.Editor.CityImport
+namespace PLATEAU.Editor.CityImport
 {
     /// <summary>
     /// udxフォルダ内のgmlファイルを検索します。

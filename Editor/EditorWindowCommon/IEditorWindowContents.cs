@@ -1,4 +1,4 @@
-namespace PlateauUnitySDK.Editor.EditorWindowCommon
+namespace PLATEAU.Editor.EditorWindowCommon
 {
     /// <summary>
     /// EditorWindow に描画するコンテンツのインターフェイスです。

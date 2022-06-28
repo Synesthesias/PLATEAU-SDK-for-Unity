@@ -1,17 +1,17 @@
 using System;
 using System.Collections.Generic;
-using PlateauUnitySDK.Runtime.Util;
+using PLATEAU.CityGML;
+using PLATEAU.Util;
 using UnityEngine;
-using LibPLATEAU.NET.CityGML;
 
-namespace PlateauUnitySDK.Runtime.CityMeta
+namespace PLATEAU.CityMeta
 {
     /// <summary>
     /// <see cref="CityObject"/> のIDから、対応するGMLのファイル名を検索できる辞書データです。
     /// <see cref="CityMetaData"/> によって保持されます。
     /// </summary>
     [Serializable]
-    public class IdToGmlTable :  ISerializationCallbackReceiver//, IDictionary<string, string> // TODO IDictionary に対応したほうが便利だけどまだやってない
+    internal class IdToGmlTable :  ISerializationCallbackReceiver//, IDictionary<string, string> // TODO IDictionary に対応したほうが便利だけどまだやってない
     {
         private Dictionary<string, string> dictionary = new Dictionary<string, string>();
         // Unityの仕様上、シリアライズするときは List 形式で行い、 デシリアライズするときは Dictionary 形式に直します。
@@ -21,7 +21,7 @@ namespace PlateauUnitySDK.Runtime.CityMeta
         /// <summary>
         /// シリアライズするときに List形式に直します。
         /// </summary>
-        public void OnBeforeSerialize()
+        void ISerializationCallbackReceiver.OnBeforeSerialize()
         {
             DictionarySerializer.OnBeforeSerialize(this.dictionary, this.keys, this.values);
         }
@@ -29,7 +29,7 @@ namespace PlateauUnitySDK.Runtime.CityMeta
         /// <summary>
         /// デシリアライズするときに List から Dictionary 形式に直します。
         /// </summary>
-        public void OnAfterDeserialize()
+        void ISerializationCallbackReceiver.OnAfterDeserialize()
         {
             this.dictionary = DictionarySerializer.OnAfterSerialize(this.keys, this.values);
         }

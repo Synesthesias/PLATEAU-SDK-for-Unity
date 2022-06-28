@@ -7,14 +7,15 @@
                     "files": [
                         ".docs/__dummy.cs",
                         "Editor/**/*.cs",
-                        "Runtime/**/*.cs"
+                        "Runtime/**/*.cs",
+                        "libplateau/**/*.cs"
                     ],
                     "exclude": [
                         "Plugins/**"
                     ]
                 }
             ],
-            "globalNamespaceId": "PlateauUnitySDK",
+            "globalNamespaceId": "PLATEAU",
             "dest": "api"
         }
     ],

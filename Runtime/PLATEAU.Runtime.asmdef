@@ -1,0 +1,16 @@
+{
+    "name": "PLATEAU.Runtime",
+    "rootNamespace": "PLATEAU",
+    "references": [
+        "libplateau"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

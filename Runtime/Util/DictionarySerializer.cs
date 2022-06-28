@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace PlateauUnitySDK.Runtime.Util
+namespace PLATEAU.Util
 {
     /// <summary>
     /// Dictionary をシリアライズするための機能を提供します。

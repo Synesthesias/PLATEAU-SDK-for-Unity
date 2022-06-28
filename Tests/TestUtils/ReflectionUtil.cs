@@ -2,7 +2,7 @@ using System;
 using System.Reflection;
 using UnityEngine;
 
-namespace PlateauUnitySDK.Tests.TestUtils {
+namespace PLATEAU.Tests.TestUtils {
     
     /// <summary>
     /// テストのとき public でない対象をテストするために、

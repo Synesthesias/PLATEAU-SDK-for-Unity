@@ -1,8 +1,8 @@
-﻿using PlateauUnitySDK.Editor.EditorWindowCommon;
-using PlateauUnitySDK.Runtime.CityMeta;
+﻿using PLATEAU.Editor.EditorWindowCommon;
+using PLATEAU.CityMeta;
 using UnityEditor;
 
-namespace PlateauUnitySDK.Editor.CityImport
+namespace PLATEAU.Editor.CityImport
 {
     /// <summary>
     /// <see cref="CityMetaData"/> のインスペクタでの表示を行います。
@@ -16,7 +16,7 @@ namespace PlateauUnitySDK.Editor.CityImport
     {
         private bool foldOutIdGmlTable;
         private bool foldOutReconvert;
-        private readonly CityImportGUI importGUI = new CityImportGUI();
+        private CityImportGUI importGUI;
         public override void OnInspectorGUI()
         {
             HeaderDrawer.Reset();
@@ -26,15 +26,23 @@ namespace PlateauUnitySDK.Editor.CityImport
                 EditorGUILayout.HelpBox($"{nameof(metaData)} が null です。", MessageType.Error);
                 return;
             }
+
+            this.importGUI ??= new CityImportGUI(metaData.cityImporterConfig); // 初期化
             
             HeaderDrawer.Draw("IDとGMLファイルの情報");
-            this.foldOutIdGmlTable = EditorGUILayout.Foldout(this.foldOutIdGmlTable, "IDとGMLファイルの紐付け");
-            if (this.foldOutIdGmlTable)
+            using (PlateauEditorStyle.VerticalScopeLevel1())
             {
-                foreach (var pair in metaData.idToGmlTable)
+                this.foldOutIdGmlTable = EditorGUILayout.Foldout(this.foldOutIdGmlTable, "IDとGMLファイルの紐付け");
+                if (this.foldOutIdGmlTable)
                 {
-                    var str = $"{pair.Key}\n=> {pair.Value}";
-                    EditorGUILayout.TextArea(str);
+                    using (PlateauEditorStyle.VerticalScopeLevel1(false))
+                    {
+                        foreach (var pair in metaData.idToGmlTable)
+                        {
+                            var str = $"{pair.Key}\n=> {pair.Value}";
+                            EditorGUILayout.TextArea(str);
+                        }
+                    }
                 }
             }
 
@@ -42,13 +50,16 @@ namespace PlateauUnitySDK.Editor.CityImport
             
             HeaderDrawer.Draw("再変換画面");
             HeaderDrawer.IncrementDepth();
-
-            this.foldOutReconvert = EditorGUILayout.Foldout(this.foldOutReconvert, "再変換");
-            if (this.foldOutReconvert)
+            using (PlateauEditorStyle.VerticalScopeLevel1())
             {
-                this.importGUI.Draw(metaData.cityImporterConfig);
+                this.foldOutReconvert = EditorGUILayout.Foldout(this.foldOutReconvert, "再変換");
+                if (this.foldOutReconvert)
+                {
+                    this.importGUI.Draw(metaData.cityImporterConfig);
                 
+                }
             }
+            
             
             // base.OnInspectorGUI();
         }

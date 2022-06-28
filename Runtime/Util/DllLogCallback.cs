@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Runtime.InteropServices;
-using LibPLATEAU.NET.CityGML;
+using PLATEAU.CityGML;
+using PLATEAU.Interop;
 using UnityEngine;
 
-namespace PlateauUnitySDK.Runtime.Util
+namespace PLATEAU.Util
 {
     /// <summary>
     /// ネイティブDLL内のログをコールバックで受け取るためのメソッドです。

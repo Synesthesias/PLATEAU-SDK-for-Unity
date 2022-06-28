@@ -1,9 +1,9 @@
-﻿using PlateauUnitySDK.Editor.EditorWindowCommon;
-using PlateauUnitySDK.Runtime.CityMeta;
+﻿using PLATEAU.Editor.EditorWindowCommon;
+using PLATEAU.CityMeta;
 using UnityEditor;
 using UnityEngine;
 
-namespace PlateauUnitySDK.Editor.CityImport
+namespace PLATEAU.Editor.CityImport
 {
 
     /// <summary>
@@ -29,8 +29,8 @@ namespace PlateauUnitySDK.Editor.CityImport
 
         private void Init()
         {
-            this.cityImportGUI = new CityImportGUI();
             this.importerConfig = new CityImporterConfig();
+            this.cityImportGUI = new CityImportGUI(this.importerConfig);
             this.isInitialized = true;
         }
 

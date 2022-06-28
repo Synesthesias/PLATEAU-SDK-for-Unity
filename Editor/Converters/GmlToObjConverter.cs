@@ -1,13 +1,14 @@
 using System;
 using System.IO;
-using System.Linq;
 using System.Threading;
-using LibPLATEAU.NET.CityGML;
-using PlateauUnitySDK.Runtime.Util;
+using PLATEAU.CityGML;
+using PLATEAU.Interop;
+using PLATEAU.Util;
+using PLATEAU.IO;
 using UnityEditor;
 using UnityEngine;
 
-namespace PlateauUnitySDK.Editor.Converters
+namespace PLATEAU.Editor.Converters
 {
     /// <summary>
     /// gmlファイルをobjファイルに変換します。
@@ -15,19 +16,20 @@ namespace PlateauUnitySDK.Editor.Converters
     /// <see cref="Dispose"/> を忘れると、変換後もファイルが使用中となり外部から変更できなくなります。
     /// usingステートメントを使うことで暗黙的に <see cref="Dispose"/> を呼ぶことができます。
     /// </summary>
-    internal class GmlToObjConverter : ISingleFileConverter, IDisposable
+    internal class GmlToObjConverter : IDisposable
     {
-        /// <summary> ObjWriter は変換処理をC++のDLLに委譲します。 </summary>
-        private readonly ObjWriter objWriter;
+        /// <summary> meshConverter は変換処理をC++のDLLに委譲します。 </summary>
+        private readonly MeshConverter meshConverter;
 
         private GmlToObjConverterConfig config;
         private CitygmlParserParams gmlParserParams;
+        private DllLogger dllLogger;
 
         private int disposed;
 
         public GmlToObjConverter()
         {
-            this.objWriter = new ObjWriter();
+            this.meshConverter = new MeshConverter();
             this.config = new GmlToObjConverterConfig();
             this.gmlParserParams = new CitygmlParserParams();
             ApplyConfig(this.config, ref this.gmlParserParams);
@@ -35,13 +37,13 @@ namespace PlateauUnitySDK.Editor.Converters
 
         private void ApplyConfig(GmlToObjConverterConfig conf, ref CitygmlParserParams parserParams)
         {
-            this.objWriter.SetMeshGranularity(conf.MeshGranularity);
-            var logger = this.objWriter.GetDllLogger();
+            var logger = new DllLogger();
             logger.SetLogCallbacks(DllLogCallback.UnityLogCallbacks);
             logger.SetLogLevel(conf.LogLevel);
+            this.dllLogger = logger;
             parserParams.Optimize = conf.OptimizeFlag;
             parserParams.Tessellate = true; // true でないと、頂点の代わりに LinearRing が生成されてしまい 3Dモデルには不適になります。
-            this.objWriter.SetDestAxes(conf.AxesConversion);
+            this.meshConverter.Options = conf.DllConvertOption;
         }
         
         /// <summary> コンバートの設定です。setで設定を変えます。 </summary>
@@ -59,6 +61,7 @@ namespace PlateauUnitySDK.Editor.Converters
         /// gmlファイルをロードし、変換してobjファイルを出力します。
         /// 成功時はtrue,失敗時はfalseを返します。
         /// </summary>
+        //TODO exportObjFilePath は本来は ファイルパスではなくディレクトリのパスであるべき（いちおうファイルパスでも動くけど、名前は変えられない仕様）
         public bool Convert(string gmlFilePath, string exportObjFilePath)
         {
             return ConvertInner(gmlFilePath, exportObjFilePath, null);
@@ -70,7 +73,7 @@ namespace PlateauUnitySDK.Editor.Converters
         /// 設定で <see cref="gmlParserParams"/> はロード後は変更できませんが、
         /// meshGranularity, axesConversion の設定は反映されます。
         /// </summary>
-        public bool ConvertWithoutLoad(CityModel cityModel, string gmlFilePath, string exportObjFilePath)
+        public bool ConvertWithoutLoad(CityModel cityModel, string gmlFilePath, string objDestDirFullPath)
         {
             if (cityModel == null)
             {
@@ -78,7 +81,7 @@ namespace PlateauUnitySDK.Editor.Converters
                 return false;
             }
 
-            return ConvertInner(gmlFilePath, exportObjFilePath, cityModel);
+            return ConvertInner(gmlFilePath, objDestDirFullPath, cityModel);
         }
 
         /// <summary>
@@ -87,47 +90,67 @@ namespace PlateauUnitySDK.Editor.Converters
         /// null でなければ、ファイルロードを省略して代わりに渡された <see cref="CityModel"/> を変換します。
         /// 成否をboolで返します。
         /// </summary>
-        private bool ConvertInner(string gmlFilePath, string exportObjFilePath, CityModel cityModel) 
+        private bool ConvertInner(string gmlFilePath, string exportDirFullPath, CityModel cityModel) 
         {
-            if (!IsPathValid(gmlFilePath, exportObjFilePath)) return false;
+            if (!IsPathValid(gmlFilePath, exportDirFullPath)) return false;
             try
             {
                 SlashPath(ref gmlFilePath);
-                SlashPath(ref exportObjFilePath);
+                SlashPath(ref exportDirFullPath);
+                if (!exportDirFullPath.EndsWith("/")) exportDirFullPath += "/";
 
                 cityModel ??= CityGml.Load(gmlFilePath, this.gmlParserParams, DllLogCallback.UnityLogCallbacks, this.config.LogLevel);
                 
+                // 生成する obj のパスのリスト
+                int minLod = this.config.MinLod;
+                int maxLod = this.config.MaxLod;
+                if (maxLod < minLod) (minLod, maxLod) = (maxLod, minLod);
+                string[] objFullPaths = new string[maxLod - minLod + 1];
+                for (int l = minLod; l <= maxLod; l++)
+                {
+                    objFullPaths[l-minLod] = Path.Combine(exportDirFullPath,
+                        $"LOD{l}_{Path.GetFileNameWithoutExtension(gmlFilePath)}.obj");
+                }
+
                 // 出力先が Assets フォルダ内 かつ すでに同名ファイルが存在する場合、古いファイルを消します。
                 // そうしないと上書きによって obj のメッシュ名が変わっても Unity に反映されないことがあるためです。
-                if (PathUtil.IsSubDirectoryOfAssets(exportObjFilePath))
+                if (PathUtil.IsSubDirectoryOfAssets(exportDirFullPath))
                 {
-                    string assetPath = PathUtil.FullPathToAssetsPath(exportObjFilePath);
-                    AssetDatabase.DeleteAsset(assetPath);
-                    AssetDatabase.Refresh();
+                    foreach (var objFullPath in objFullPaths)
+                    {
+                        string assetPath = PathUtil.FullPathToAssetsPath(objFullPath);
+                        AssetDatabase.DeleteAsset(assetPath);
+                        AssetDatabase.Refresh();
+                    }
                 }
                 
                 // ReferencePointを設定します。
                 if (this.config.DoAutoSetReferencePoint)
                 {
-                    this.objWriter.SetValidReferencePoint(cityModel);
+                    this.meshConverter.Options.SetValidReferencePoint(cityModel);
+                    this.meshConverter.Options.ReferencePoint = this.meshConverter.Options.ReferencePoint;
                 }
                 else
                 {
                     var referencePoint = this.config.ManualReferencePoint;
                     if (referencePoint == null)
                         throw new Exception($"{nameof(this.config.ManualReferencePoint)} is null.");
-                    this.objWriter.ReferencePoint = VectorConverter.ToPlateauVector(referencePoint.Value);
+                    this.meshConverter.Options.ReferencePoint = VectorConverter.ToPlateauVector(referencePoint.Value);
                 }
                 
                 // 変換してファイルに書き込みます。
-                this.objWriter.Write(exportObjFilePath, cityModel, gmlFilePath);
-
+                this.meshConverter.Convert(exportDirFullPath, gmlFilePath, cityModel, this.dllLogger);
+                
                 // 出力先が Assets フォルダ内なら、それをUnityに反映させます。
-                if (PathUtil.IsSubDirectoryOfAssets(exportObjFilePath))
+                if (PathUtil.IsSubDirectoryOfAssets(exportDirFullPath))
                 {
-                    string assetPath = PathUtil.FullPathToAssetsPath(exportObjFilePath);
-                    AssetDatabase.ImportAsset(assetPath);
-                    AssetDatabase.Refresh();
+                    foreach (string objFullPath in objFullPaths)
+                    {
+                        string assetPath = PathUtil.FullPathToAssetsPath(objFullPath);
+                        AssetDatabase.ImportAsset(assetPath);
+                        AssetDatabase.Refresh();
+                    }
+                    
                 }
             }
             catch (FileLoadException e)
@@ -143,10 +166,10 @@ namespace PlateauUnitySDK.Editor.Converters
             return true;
         }
 
-        private static bool IsPathValid(string gmlFilePath, string exportObjFilePath)
+        private static bool IsPathValid(string gmlFilePath, string exportDirectoryPath)
         {
             if (!PathUtil.IsValidInputFilePath(gmlFilePath, "gml", false)) return false;
-            if (!PathUtil.IsValidOutputFilePath(exportObjFilePath, "obj")) return false;
+            if (!Directory.Exists(exportDirectoryPath)) return false;
             return true;
         }
 
@@ -163,8 +186,8 @@ namespace PlateauUnitySDK.Editor.Converters
         /// </summary>
         public Vector3 SetValidReferencePoint(CityModel cityModel)
         {
-            this.objWriter.SetValidReferencePoint(cityModel);
-            var plateauCoord = this.objWriter.ReferencePoint;
+            this.meshConverter.Options.SetValidReferencePoint(cityModel);
+            var plateauCoord = this.meshConverter.Options.ReferencePoint;
             var coord = VectorConverter.ToUnityVector(plateauCoord);
             this.config.ManualReferencePoint = coord;
             return coord;
@@ -177,7 +200,7 @@ namespace PlateauUnitySDK.Editor.Converters
         {
             if (Interlocked.Exchange(ref this.disposed, 1) == 0)
             {
-                this.objWriter.Dispose();
+                this.meshConverter.Dispose();
             }
 
             GC.SuppressFinalize(this);

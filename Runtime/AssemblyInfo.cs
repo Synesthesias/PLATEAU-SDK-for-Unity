@@ -3,8 +3,8 @@
 // このアセンブリの設定です。
 
 // internal を Editor から利用できるようにします。
-[assembly: InternalsVisibleTo("PlateauUnitySDK.Editor")]
+[assembly: InternalsVisibleTo("PLATEAU.Editor")]
 
 // internal をテストから利用できるようにします。
-[assembly: InternalsVisibleTo("PlateauUnitySDK.EditModeTests")]
-[assembly: InternalsVisibleTo("PlateauUnitySDK.TestUtils")]
+[assembly: InternalsVisibleTo("PLATEAU.EditModeTests")]
+[assembly: InternalsVisibleTo("PLATEAU.TestUtils")]

@@ -1,9 +1,9 @@
 ﻿using System;
-using PlateauUnitySDK.Editor.EditorWindowCommon;
+using PLATEAU.Editor.EditorWindowCommon;
 using UnityEditor;
 using UnityEngine;
 
-namespace PlateauUnitySDK.Editor.CityImport
+namespace PLATEAU.Editor.CityImport
 {
 
     /// <summary>
@@ -41,33 +41,37 @@ namespace PlateauUnitySDK.Editor.CityImport
         {
             HeaderDrawer.Draw(title);
             bool isPathChanged = false;
-            using (new EditorGUILayout.HorizontalScope())
+            using (PlateauEditorStyle.VerticalScopeLevel1())
             {
-                using (var check = new EditorGUI.ChangeCheckScope())
+                using (new EditorGUILayout.HorizontalScope())
                 {
-                    this.folderPath = EditorGUILayout.TextField("入力フォルダ", this.folderPath);
-                    if (check.changed)
+                    using (var check = new EditorGUI.ChangeCheckScope())
                     {
-                        isPathChanged = true;
+                        this.folderPath = EditorGUILayout.TextField("入力フォルダ", this.folderPath);
+                        if (check.changed)
+                        {
+                            isPathChanged = true;
+                        }
                     }
-                }
 
-                if (PlateauEditorStyle.MainButton("参照..."))
-                {
-                    string selectedPath = EditorUtility.OpenFolderPanel(title, Application.dataPath, "udx");
-                    if (!string.IsNullOrEmpty(selectedPath))
+                    if (PlateauEditorStyle.MiniButton("参照..."))
                     {
-                        this.folderPath = selectedPath;
-                        isPathChanged = true;
-                        GUI.FocusControl(null); // テキストエリアからフォーカスを外さないと変数の変更が見た目に反映されないため
+                        string selectedPath = EditorUtility.OpenFolderPanel(title, Application.dataPath, "udx");
+                        if (!string.IsNullOrEmpty(selectedPath))
+                        {
+                            this.folderPath = selectedPath;
+                            isPathChanged = true;
+                            GUI.FocusControl(null); // テキストエリアからフォーカスを外さないと変数の変更が見た目に反映されないため
+                        }
                     }
-                }
 
-                if (isPathChanged)
-                {
-                    OnPathChanged?.Invoke(this.folderPath);
+                    if (isPathChanged)
+                    {
+                        OnPathChanged?.Invoke(this.folderPath);
+                    }
                 }
             }
+            
 
             return this.folderPath;
         }

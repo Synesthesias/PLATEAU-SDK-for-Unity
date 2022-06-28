@@ -1,9 +1,9 @@
 ﻿using System.IO;
 using NUnit.Framework;
-using PlateauUnitySDK.Editor.Converters;
-using PlateauUnitySDK.Tests.TestUtils;
+using PLATEAU.Editor.Converters;
+using PLATEAU.Tests.TestUtils;
 
-namespace PlateauUnitySDK.Tests.EditModeTests
+namespace PLATEAU.Tests.EditModeTests
 {
     [TestFixture]
     public class TestObjToFbxConverter
@@ -39,10 +39,10 @@ namespace PlateauUnitySDK.Tests.EditModeTests
         [Test]
         public void Convert_Generates_Fbx_File()
         {
-            // 変換後、fbxファイルが存在すれば良しとします。
             var converter = new ObjToFbxConverter();
             converter.Convert(testObjFilePath, destFbxFilePath);
-            Assert.IsTrue(File.Exists(destFbxFilePath));
+            Assert.IsTrue(File.Exists(destFbxFilePath), "変換後、fbxファイルが存在する");
+            // fbxファイルの中身まではチェック未実装です。
         }
     }
 }
