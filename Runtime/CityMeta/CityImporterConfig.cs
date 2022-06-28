@@ -1,5 +1,4 @@
 ﻿using System;
-using PLATEAU.CityGML;
 using PLATEAU.Interop;
 using PLATEAU.IO;
 using UnityEngine;

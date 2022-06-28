@@ -14,14 +14,14 @@ namespace PLATEAU.Editor.CityImport
         {
             using (PlateauEditorStyle.VerticalScopeLevel1())
             {
-                var gmlTypes = placementConf.perTypeConfigs.Keys;
+                var gmlTypes = placementConf.PerTypeConfigs.Keys;
                 foreach (var gmlType in gmlTypes)
                 {
                     EditorGUILayout.LabelField(GmlTypeConvert.ToDisplay(gmlType));
                     using (PlateauEditorStyle.VerticalScopeLevel1())
                     {
-                        var typeConf = placementConf.perTypeConfigs[gmlType];
-                        DrawPerTypeConfGUI(gmlType, typeConf); 
+                        var typeConf = placementConf.PerTypeConfigs[gmlType];
+                        DrawPerTypeConfGUI(typeConf); 
                     }
                                
                 }
@@ -29,7 +29,7 @@ namespace PLATEAU.Editor.CityImport
             
         }
 
-        private void DrawPerTypeConfGUI(GmlType gmlType, ScenePlacementConfigPerType typeConf)
+        private void DrawPerTypeConfGUI(ScenePlacementConfigPerType typeConf)
         {
             var placeMethod = typeConf.placeMethod;
             placeMethod = (ScenePlacementConfig.PlaceMethod)

@@ -106,7 +106,7 @@ namespace PLATEAU.Editor.CityImport
 
         private static void ProgressBar(string info, int currentCount, int maxCount)
         {
-            EditorUtility.DisplayProgressBar("コピー中", info, ((float)currentCount)/((float)maxCount));
+            EditorUtility.DisplayProgressBar("コピー中", info, currentCount/((float)maxCount));
         }
         
     }

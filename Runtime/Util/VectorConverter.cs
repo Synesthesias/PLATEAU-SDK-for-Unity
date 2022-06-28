@@ -1,5 +1,4 @@
-﻿using PLATEAU.CityGML;
-using PLATEAU.Interop;
+﻿using PLATEAU.Interop;
 using UnityEngine;
 
 namespace PLATEAU.Util

@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using PLATEAU.Util;
-using UnityEditor.SearchService;
 using UnityEngine;
 
 namespace PLATEAU.CityMeta
@@ -10,7 +8,7 @@ namespace PLATEAU.CityMeta
     [Serializable]
     internal class ScenePlacementConfig : ISerializationCallbackReceiver
     {
-        public Dictionary<GmlType, ScenePlacementConfigPerType> perTypeConfigs;
+        public Dictionary<GmlType, ScenePlacementConfigPerType> PerTypeConfigs;
         
         // シリアライズ時に Dictionary を List形式にします。
         [SerializeField] private List<GmlType> keys = new List<GmlType>();
@@ -35,19 +33,19 @@ namespace PLATEAU.CityMeta
         public ScenePlacementConfig()
         {
             // 各タイプごとの設定を初期化します。
-            this.perTypeConfigs = GmlTypeConvert.ComposeTypeDict<ScenePlacementConfigPerType>();
+            this.PerTypeConfigs = GmlTypeConvert.ComposeTypeDict<ScenePlacementConfigPerType>();
         }
 
         /// <summary> シリアライズするときに List形式に直します。 </summary>
         void ISerializationCallbackReceiver.OnBeforeSerialize()
         {
-            DictionarySerializer.OnBeforeSerialize(this.perTypeConfigs, this.keys, this.values);
+            DictionarySerializer.OnBeforeSerialize(this.PerTypeConfigs, this.keys, this.values);
         }
 
         /// <summary> デシリアライズするときに List から Dictionary 形式に直します。 </summary>
         void ISerializationCallbackReceiver.OnAfterDeserialize()
         {
-            this.perTypeConfigs = DictionarySerializer.OnAfterSerialize(this.keys, this.values);
+            this.PerTypeConfigs = DictionarySerializer.OnAfterSerialize(this.keys, this.values);
         }
 
         /// <summary>

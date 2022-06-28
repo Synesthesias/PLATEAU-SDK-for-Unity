@@ -16,7 +16,7 @@ namespace PLATEAU.Editor.CityImport
     internal static class CityMeshPlacerToScene
     {
         /// <summary>
-        /// <paramref name="objAssetPath"/> の3Dモデルをロードし、
+        /// <paramref name="generatedObjs"/> の3Dモデルをロードし、
         /// <paramref name="parentGameObjName"/> の子オブジェクトとしてシーンに配置します。
         /// 親ゲームオブジェクトには <see cref="CityBehaviour"/> をアタッチし、与えられた<see cref="CityMetaData"/> をリンクします。
         /// </summary>
@@ -24,7 +24,7 @@ namespace PLATEAU.Editor.CityImport
         {
             // 設定に基づいてシーンに配置すべき obj ファイルを決めます。
             var objsToPlace = new List<ObjInfo>();
-            var typeConf = placementConf.perTypeConfigs[gmlType];
+            var typeConf = placementConf.PerTypeConfigs[gmlType];
             int selectedLod = typeConf.selectedLod;
             switch (typeConf.placeMethod)
             {

@@ -220,7 +220,7 @@ namespace PLATEAU.Tests.EditModeTests
             typeConfigs[GmlType.Building].maxLod = maxLodBuilding;
             typeConfigs[GmlType.DigitalElevationModel].minLod = minLodDem;
             typeConfigs[GmlType.DigitalElevationModel].maxLod = maxLodDem;
-            var placeTypeConfigs = config.scenePlacementConfig.perTypeConfigs;
+            var placeTypeConfigs = config.scenePlacementConfig.PerTypeConfigs;
             placeTypeConfigs[GmlType.Building].placeMethod = buildingPlaceMethod;
             placeTypeConfigs[GmlType.Building].selectedLod = selectedLod;
             

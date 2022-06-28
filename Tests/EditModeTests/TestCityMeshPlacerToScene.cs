@@ -153,7 +153,7 @@ namespace PLATEAU.Tests.EditModeTests
             var typeConfigs = config.gmlSearcherConfig.gmlTypeTarget.GmlTypeConfigs;
             typeConfigs[GmlType.Building].minLod = minLodBuilding;
             typeConfigs[GmlType.Building].maxLod = maxLodBuilding;
-            var placeTypeConfigs = config.scenePlacementConfig.perTypeConfigs;
+            var placeTypeConfigs = config.scenePlacementConfig.PerTypeConfigs;
             placeTypeConfigs[GmlType.Building].placeMethod = buildingPlaceMethod;
             placeTypeConfigs[GmlType.Building].selectedLod = selectedLod;
             

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Runtime.InteropServices;
-using PLATEAU.CityGML;
 using PLATEAU.Interop;
 using UnityEngine;
 
