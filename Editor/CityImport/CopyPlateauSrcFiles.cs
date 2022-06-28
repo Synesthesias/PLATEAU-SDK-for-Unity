@@ -40,7 +40,7 @@ namespace PLATEAU.Editor.CityImport
 
             // udxのパスです。
             // 例: Assets/StreamingAssets/PLATEAU/Tokyo/udx
-            string dstUdxFolder = Path.Combine(dest.RootDirFullPath(), "udx");
+            // string dstUdxFolder = Path.Combine(dest.RootDirFullPath(), "udx");
 
             // udxフォルダのうち対象のgmlファイルをコピーします。
             int loopCnt = 0;
@@ -52,7 +52,7 @@ namespace PLATEAU.Editor.CityImport
                 // 地物タイプのディレクトリを作ります。
                 // 例: gml のタイプが bldg なら、
                 //     Assets/StreamingAssets/PLATEAU/Tokyo/udx/bldg　ができます。
-                string dstObjTypeFolder = Path.Combine(dstUdxFolder, gmlType);
+                string dstObjTypeFolder = dest.GmlTypeDirFullPath(gmlType);
                 Mkdir(dstObjTypeFolder);
 
                 // gmlファイルをコピーします。

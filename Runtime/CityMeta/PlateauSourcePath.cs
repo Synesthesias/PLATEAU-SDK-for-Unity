@@ -61,6 +61,14 @@ namespace PLATEAU.CityMeta
         }
 
         /// <summary>
+        /// 地物タイプのフォルダパスを返します。
+        /// </summary>
+        public string GmlTypeDirFullPath(string gmlTypePrefix)
+        {
+            return Path.GetFullPath(Path.Combine(FullUdxPath, gmlTypePrefix));
+        }
+
+        /// <summary>
         /// パスは内部的には Assets/ から始まるパスで記録されますが、
         /// フルパスでget,setしたいときはこのプロパティを使います。
         /// </summary>
