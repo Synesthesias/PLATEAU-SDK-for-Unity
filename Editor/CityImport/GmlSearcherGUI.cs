@@ -4,6 +4,7 @@ using System.Linq;
 using PLATEAU.Editor.EditorWindowCommon;
 using PLATEAU.CityMeta;
 using UnityEditor;
+using UnityEngine;
 
 namespace PLATEAU.Editor.CityImport
 {
@@ -16,6 +17,7 @@ namespace PLATEAU.Editor.CityImport
     {
         private List<string> gmlFiles;
         private bool isInitialized;
+        private Vector2 scrollPosForGmlList;
 
 
         /// <summary>
@@ -102,9 +104,9 @@ namespace PLATEAU.Editor.CityImport
             {
                 this.gmlFiles = ListTargetGmlFiles(gmlSearcher, config.areaIds, config.isAreaIdTarget,
                     config.gmlTypeTarget);
-                EditorGUILayout.TextArea(String.Join("\n", this.gmlFiles));
+                this.scrollPosForGmlList = PlateauEditorStyle.ScrollableMultiLineLabel(String.Join("\n", this.gmlFiles), 150, this.scrollPosForGmlList);
             }
-
+            
             HeaderDrawer.DecrementDepth();
 
             return this.gmlFiles;
