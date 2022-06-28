@@ -15,6 +15,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.TestTools;
 using Object = System.Object;
+using static PLATEAU.CityMeta.ScenePlacementConfig;
 
 namespace PLATEAU.Tests.EditModeTests
 {
@@ -38,6 +39,8 @@ namespace PLATEAU.Tests.EditModeTests
         {
             "bldg/53392642_bldg_6697_op2.gml"
         };
+
+        private static readonly string simpleGmlId = "53392642_bldg_6697_op2";
 
         private static readonly string testDefaultCopyDestPath = Path.Combine(DirectoryUtil.TempAssetFolderPath, "PLATEAU");
 
@@ -204,44 +207,38 @@ namespace PLATEAU.Tests.EditModeTests
         [Test]
         public void Test_PlaceMethod_PlaceSelectedLodOrMax()
         {
-            Import(testUdxPathSimple, testGmlRelativePathsSimple, MeshGranularity.PerCityModelArea, out _, 0, 2, 0, 0,
-                selectedLod: -1, ScenePlacementConfig.PlaceMethod.PlaceSelectedLodOrMax);
-
-            string gmlId = "53392642_bldg_6697_op2";
-            // ある中で最大のものが配置される
-            AssertGameObjPlaced(gmlId, new Dictionary<int, bool>
-            {
-                {0, false}, {1, false}, {2, true}
-            });
+            CheckSimpleObjPlacedToScene(PlaceMethod.PlaceSelectedLodOrMax, 0, 1, -1,
+                new Dictionary<int, bool>
+                {
+                    { 0, false }, { 1, true }
+                }
+            );
         }
+        
 
         [Test]
         public void Test_PlaceMethod_DoNotPlace()
         {
-            Import(testUdxPathSimple, testGmlRelativePathsSimple, MeshGranularity.PerCityModelArea, out _, 1, 3, 0, 0,
-                selectedLod: 3, ScenePlacementConfig.PlaceMethod.DoNotPlace);
-            string gmlId = "53392642_bldg_6697_op2";
-            AssertGameObjPlaced(gmlId, new Dictionary<int, bool>
-            {
-                {0, false}, {1, false}, {2, false}, {3, false}
-            });
+            CheckSimpleObjPlacedToScene(PlaceMethod.DoNotPlace, 0, 1, 1,
+                new Dictionary<int, bool>
+                {
+                    {0, false}, {1, false}
+                });
         }
         
         [Test]
         public void Test_PlaceMethod_MaxLod()
         {
-            Import(testUdxPathSimple, testGmlRelativePathsSimple, MeshGranularity.PerCityModelArea, out _, 0, 2, 0, 0,
-                selectedLod: 0, ScenePlacementConfig.PlaceMethod.PlaceMaxLod);
-            string gmlId = "53392642_bldg_6697_op2";
-            AssertGameObjPlaced(gmlId, new Dictionary<int, bool>
-            {
-                {1, false}, {2, true}, {3, false}
-            });
+            CheckSimpleObjPlacedToScene(PlaceMethod.PlaceMaxLod, 0, 1, 0,
+                new Dictionary<int, bool>
+                {
+                    { 0, false }, { 1, true }
+                });
         }
 
         private int Import(string testUdxPath, string[] gmlRelativePaths, MeshGranularity meshGranularity, out CityMetaData metaData,
             int minLodBuilding, int maxLodBuilding, int minLodDem = 0, int maxLodDem = 0,
-            int selectedLod = 0, ScenePlacementConfig.PlaceMethod buildingPlaceMethod = ScenePlacementConfig.PlaceMethod.PlaceSelectedLodOrMax)
+            int selectedLod = 0, PlaceMethod buildingPlaceMethod = PlaceMethod.PlaceSelectedLodOrMax)
         {
             var config = new CityImporterConfig
             {
@@ -261,11 +258,16 @@ namespace PLATEAU.Tests.EditModeTests
             placeTypeConfigs[GmlType.Building].placeMethod = buildingPlaceMethod;
             placeTypeConfigs[GmlType.Building].selectedLod = selectedLod;
             
-            Debug.Log($"placementMethod = {config.scenePlacementConfig.perTypeConfigs[GmlType.Building].placeMethod}");
-            
-            
             int numSuccess = this.importer.Import(gmlRelativePaths, config, out metaData);
             return numSuccess;
+        }
+        
+        private void CheckSimpleObjPlacedToScene(PlaceMethod placeMethod, int minLodBuilding, int maxLodBuilding, int selectedLod,
+            Dictionary<int, bool> lodPlacedDict)
+        {
+            Import(testUdxPathSimple, testGmlRelativePathsSimple, MeshGranularity.PerCityModelArea, out _,
+                minLodBuilding, maxLodBuilding, 0, 0, selectedLod, placeMethod);
+            AssertGameObjPlaced(simpleGmlId, lodPlacedDict);
         }
 
         /// <summary>
