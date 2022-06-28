@@ -49,6 +49,16 @@ namespace PLATEAU.CityMeta
         {
             this.perTypeConfigs = DictionarySerializer.OnAfterSerialize(this.keys, this.values);
         }
+
+        /// <summary>
+        /// 設定の <see cref="ScenePlacementConfigPerType.selectedLod"/> を使うかどうかは
+        /// <see cref="PlaceMethod"/> に依るので、使うかどうかを返します。
+        /// </summary>
+        public static bool DoUseSelectedLod(PlaceMethod method)
+        {
+            return method == PlaceMethod.PlaceSelectedLodOrMax ||
+                   method == PlaceMethod.PlaceSelectedLodOrDoNotPlace;
+        }
     }
 
     [Serializable]
