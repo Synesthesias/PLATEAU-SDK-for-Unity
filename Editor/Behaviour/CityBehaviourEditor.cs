@@ -17,6 +17,8 @@ namespace PLATEAU.Editor.Behaviour
             HeaderDrawer.Reset();
             base.OnInspectorGUI();
             
+            EditorGUILayout.Space(15);
+            
             HeaderDrawer.Draw("3Dモデルをシーンに再配置");
             using (PlateauEditorStyle.VerticalScopeLevel1())
             {
@@ -27,13 +29,12 @@ namespace PLATEAU.Editor.Behaviour
                 if (this.foldOutObjPlaceGUI)
                 {
                     this.scenePlacementGUI.Draw(placeConfig);
-                }
-
-                if (PlateauEditorStyle.MainButton("シーンにモデルを再配置"))
-                {
-                    var availableObjs = importConfig.generatedObjFiles;
-                    string rootDirName = importConfig.rootDirName;
-                    CityMeshPlacerToScene.Place(placeConfig, availableObjs, rootDirName, metaData);
+                    if (PlateauEditorStyle.MainButton("シーンにモデルを再配置"))
+                    {
+                        var availableObjs = importConfig.generatedObjFiles;
+                        string rootDirName = importConfig.rootDirName;
+                        CityMeshPlacerToScene.Place(placeConfig, availableObjs, rootDirName, metaData);
+                    }
                 }
             }
 
