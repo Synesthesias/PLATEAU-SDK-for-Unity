@@ -62,26 +62,13 @@ namespace PLATEAU.Editor.CityImport
             HeaderDrawer.Draw("含める地物");
             using (PlateauEditorStyle.VerticalScopeLevel1())
             {
-                var typeConfDict = config.gmlTypeTarget.GmlTypeConfigs;
+                var typeConfDict = config.gmlTypeTarget.IsTypeTargetDict;
                 foreach (var gmlType in typeConfDict.Keys.ToArray())
                 {
-                    EditorGUILayout.LabelField(GmlTypeConvert.ToDisplay(gmlType));
-                    using (PlateauEditorStyle.VerticalScopeLevel2())
-                    {
-                        var typeConf = typeConfDict[gmlType];
-                        typeConf.isTarget = EditorGUILayout.Toggle("変換対象", typeConf.isTarget);
-                        // using (new EditorGUI.DisabledScope(!typeConf.isTarget))
-                        // {
-                        //     EditorGUILayout.MinMaxSlider("LOD", ref typeConf.SliderMinLod, ref typeConf.SliderMaxLod, 0f, 4f);
-                        //     // Min <= Max となるようにスワップ
-                        //     if (typeConf.SliderMinLod > typeConf.SliderMaxLod)
-                        //         (typeConf.SliderMinLod, typeConf.SliderMaxLod) =
-                        //             (typeConf.SliderMaxLod, typeConf.SliderMinLod);
-                        //     typeConf.minLod = (int)Math.Round(typeConf.SliderMinLod);
-                        //     typeConf.maxLod = (int)Math.Round(typeConf.SliderMaxLod);
-                        //     EditorGUILayout.LabelField($"最小LOD: {typeConf.minLod}, 最大LOD: {typeConf.maxLod}");
-                        // }
-                    }
+                    string typeText = gmlType.ToDisplay();
+                    var isTypeTarget = typeConfDict[gmlType];
+                    isTypeTarget = EditorGUILayout.Toggle(typeText, isTypeTarget);
+                    typeConfDict[gmlType] = isTypeTarget;
                 }
 
                 using (new EditorGUILayout.HorizontalScope())

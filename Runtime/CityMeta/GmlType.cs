@@ -123,6 +123,16 @@ namespace PLATEAU.CityMeta
                 .OfType<GmlType>()
                 .ToDictionary(t => t, _ => new T());
         }
+        
+        /// <summary>
+        /// <see cref="ComposeTypeDict{T}()"/> の初期値を指定する版です。
+        /// </summary>
+        public static Dictionary<GmlType, T> ComposeTypeDict<T>(T initialVal)
+        {
+            return Enum.GetValues(typeof(GmlType))
+                .OfType<GmlType>()
+                .ToDictionary(t => t, _ => initialVal);
+        }
 
     }
 }

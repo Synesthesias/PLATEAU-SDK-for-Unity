@@ -16,23 +16,23 @@ namespace PLATEAU.CityMeta
     /// </summary>
     
     // 補足:
-    // 他クラスとの関係は CityImporterConfig -> 保持 -> GmlSearcherConfig -> 保持 -> GmlTypeTarget -> 保持 -> ImportGmlTypeConfig
+    // 他クラスとの関係は CityImporterConfig -> 保持 -> GmlSearcherConfig -> 保持 -> GmlTypeTarget
     // という関係なので、 CityImporterConfig の注意事項に基づいてこのクラスには Serializable属性が付いている必要があります。
     
     [Serializable]
     internal class GmlTypeTarget : ISerializationCallbackReceiver
     {
         /// <summary> GmlTypeごとの設定の辞書です。 </summary>
-        public Dictionary<GmlType, ImportGmlTypeConfig> GmlTypeConfigs { get; set; }
+        public Dictionary<GmlType, bool> IsTypeTargetDict { get; set; }
 
         // シリアライズ時に Dictionary を List形式にします。
         [SerializeField] private List<GmlType> keys = new List<GmlType>();
-        [SerializeField] private List<ImportGmlTypeConfig> values = new List<ImportGmlTypeConfig>();
+        [SerializeField] private List<bool> values = new List<bool>();
 
         public GmlTypeTarget()
         {
             // 各タイプごとに ImportGmlTypeConfig を初期化します。
-            GmlTypeConfigs = GmlTypeConvert.ComposeTypeDict<ImportGmlTypeConfig>();
+            IsTypeTargetDict = GmlTypeConvert.ComposeTypeDict<bool>(true);
         }
 
         /// <summary>
@@ -40,29 +40,29 @@ namespace PLATEAU.CityMeta
         /// </summary>
         public bool IsTypeTarget(GmlType t)
         {
-            return GmlTypeConfigs[t].isTarget;
+            return IsTypeTargetDict[t];
         }
 
         /// <summary> 地物タイプを変換対象とするかについて、すべて true または すべて false にします。 </summary>
         public void SetAllTarget(bool val)
         {
-            foreach (var key in GmlTypeConfigs.Keys.ToArray())
+            foreach (var key in IsTypeTargetDict.Keys.ToArray())
             {
-                GmlTypeConfigs[key].isTarget = val;
+                IsTypeTargetDict[key] = val;
             }
         }
 
         /// <summary> シリアライズするときに List形式に直します。 </summary>
         void ISerializationCallbackReceiver.OnBeforeSerialize()
         {
-            DictionarySerializer.OnBeforeSerialize(GmlTypeConfigs, this.keys, this.values);
+            DictionarySerializer.OnBeforeSerialize(IsTypeTargetDict, this.keys, this.values);
         }
 
 
         /// <summary> デシリアライズするときに List から Dictionary 形式に直します。 </summary>
         void ISerializationCallbackReceiver.OnAfterDeserialize()
         {
-            GmlTypeConfigs = DictionarySerializer.OnAfterSerialize(this.keys, this.values);
+            IsTypeTargetDict = DictionarySerializer.OnAfterSerialize(this.keys, this.values);
         }
         
     }
