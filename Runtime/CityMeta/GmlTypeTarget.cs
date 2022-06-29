@@ -52,36 +52,6 @@ namespace PLATEAU.CityMeta
             }
         }
 
-        /// <summary>
-        /// 現在の <see cref="GmlTypeTarget"/> の設定において、
-        /// 指定のgmlファイルから何という名前の .obj ファイルが生成されるかを配列で返します。
-        /// 例えば、abc.gml という名前のgmlファイルからは、LOD設定によって
-        /// LOD0_abc.obj, LOD1_abc.obj などの0個以上の .obj ファイルが生成されます。
-        /// </summary>
-        public string[] ObjFileNamesForGml(string gmlFile)
-        {
-            string gmlFileWithoutExtension = GmlFileNameParser.FileNameWithoutExtension(gmlFile);
-            var gmlType = GmlFileNameParser.GetGmlTypeEnum(gmlFile);
-            var typeConf = GmlTypeConfigs[gmlType];
-            int min = typeConf.minLod;
-            int max = typeConf.maxLod;
-            if (min > max) throw new Exception("Error. min > max.");
-            var objFileNames = new List<string>();
-            for (int i = min; i <= max; i++)
-            {
-                objFileNames.Add($"LOD{i}_{gmlFileWithoutExtension}");
-            }
-
-            return objFileNames.ToArray();
-        }
-
-        public (int min, int max) GetMinMaxLodForType(GmlType t)
-        {
-            int min = GmlTypeConfigs[t].minLod;
-            int max = GmlTypeConfigs[t].maxLod;
-            return (min, max);
-        }
-
         /// <summary> シリアライズするときに List形式に直します。 </summary>
         void ISerializationCallbackReceiver.OnBeforeSerialize()
         {

@@ -11,6 +11,7 @@ using PLATEAU.IO;
 using PLATEAU.Util;
 using PLATEAU.Tests.TestUtils;
 using UnityEditor;
+using UnityEngine;
 using UnityEngine.TestTools;
 using static PLATEAU.CityMeta.ScenePlacementConfig;
 
@@ -215,14 +216,14 @@ namespace PLATEAU.Tests.EditModeTests
                     dirAssetPath = PathUtil.FullPathToAssetsPath(testOutputDir)
                 },
             };
-            var typeConfigs = config.gmlSearcherConfig.gmlTypeTarget.GmlTypeConfigs;
-            typeConfigs[GmlType.Building].minLod = minLodBuilding;
-            typeConfigs[GmlType.Building].maxLod = maxLodBuilding;
-            typeConfigs[GmlType.DigitalElevationModel].minLod = minLodDem;
-            typeConfigs[GmlType.DigitalElevationModel].maxLod = maxLodDem;
+            var typeLodDict = config.objConvertLodConfig.TypeLodDict;
+            typeLodDict[GmlType.Building].SetMinMax(minLodBuilding, maxLodBuilding);
+            typeLodDict[GmlType.DigitalElevationModel].SetMinMax(minLodDem, maxLodDem);
             var placeTypeConfigs = config.scenePlacementConfig.PerTypeConfigs;
             placeTypeConfigs[GmlType.Building].placeMethod = buildingPlaceMethod;
             placeTypeConfigs[GmlType.Building].selectedLod = selectedLod;
+            
+            Debug.Log($"minLodBuilding = {minLodBuilding}, Dict[Building].Min={typeLodDict[GmlType.Building].Min}");
             
             int numSuccess = this.importer.Import(gmlRelativePaths, config, out metaData);
             return numSuccess;

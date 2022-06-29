@@ -16,31 +16,20 @@ namespace PLATEAU.CityMeta
 
         public MinMax(T min, T max)
         {
-            this.min = min;
-            this.max = max;
+            SetMinMax(min, max);
+        }
+
+        public void SetMinMax(T minArg, T maxArg)
+        {
+            this.min = minArg;
+            this.max = maxArg;
             SwapIfReversed();
         }
 
-        public T Min
-        {
-            get => this.min;
-            set
-            {
-                this.min = value;
-                SwapIfReversed();
-            }
-        }
+        public T Min => this.min;
 
-        public T Max
-        {
-            get => this.max;
-            set
-            {
-                this.max = value;
-                SwapIfReversed();
-            }
-        }
-        
+        public T Max => this.max;
+
         /// <summary>
         /// min と max が逆転している場合はスワップします。
         /// フェイルセーフとして実装しています。

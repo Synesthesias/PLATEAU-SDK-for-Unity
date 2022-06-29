@@ -150,9 +150,8 @@ namespace PLATEAU.Tests.EditModeTests
                     dirAssetPath = PathUtil.FullPathToAssetsPath(testOutputDir)
                 },
             };
-            var typeConfigs = config.gmlSearcherConfig.gmlTypeTarget.GmlTypeConfigs;
-            typeConfigs[GmlType.Building].minLod = minLodBuilding;
-            typeConfigs[GmlType.Building].maxLod = maxLodBuilding;
+            var typeLodDict = config.objConvertLodConfig.TypeLodDict;
+            typeLodDict[GmlType.Building].SetMinMax(minLodBuilding, maxLodBuilding);
             var placeTypeConfigs = config.scenePlacementConfig.PerTypeConfigs;
             placeTypeConfigs[GmlType.Building].placeMethod = buildingPlaceMethod;
             placeTypeConfigs[GmlType.Building].selectedLod = selectedLod;

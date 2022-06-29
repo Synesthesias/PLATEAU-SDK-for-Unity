@@ -83,7 +83,7 @@ namespace PLATEAU.Editor.CityImport
                         (MeshGranularity)EditorGUILayout.EnumPopup("オブジェクト分けの粒度", config.meshGranularity);
                     config.logLevel = (DllLogLevel)EditorGUILayout.EnumPopup("(開発者向け)ログの詳細度", config.logLevel);
                 }
-                HeaderDrawer.Draw("LOD設定");
+                HeaderDrawer.Draw("LOD設定（3Dモデル変換）");
                 using (PlateauEditorStyle.VerticalScopeLevel1())
                 {
                     this.objConvertLodGUI.Draw(this.objConvertLodConfig);

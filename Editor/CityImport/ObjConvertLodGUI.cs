@@ -22,9 +22,8 @@ namespace PLATEAU.Editor.CityImport
                         var sliderMinMax = lodConf.TypeLodSliderDict[gmlType];
                         (float sliderMin, float sliderMax) = (sliderMinMax.Min, sliderMinMax.Max);
                         EditorGUILayout.MinMaxSlider(ref sliderMin, ref sliderMax, 0f, 3f);
-                        typeLodRange.Min = (int)Math.Round(sliderMin);
-                        typeLodRange.Max = (int)Math.Round(sliderMax);
-                        (sliderMinMax.Min, sliderMinMax.Max) = (sliderMin, sliderMax);
+                        typeLodRange.SetMinMax((int)Math.Round(sliderMin), (int)Math.Round(sliderMax));
+                        sliderMinMax.SetMinMax(sliderMin, sliderMax);
                         EditorGUILayout.LabelField($"最小LOD: {typeLodRange.Min}, 最大LOD: {typeLodRange.Max}");
                     }
                     

@@ -75,7 +75,7 @@ namespace PLATEAU.Editor.CityImport
                 var generatedObjs = new List<ObjInfo>();
                 string gmlFileName = Path.GetFileNameWithoutExtension(gmlRelativePath);
                 var gmlType = GmlFileNameParser.GetGmlTypeEnum(gmlFileName);
-                (int minLod, int maxLod) = config.gmlSearcherConfig.gmlTypeTarget.GetMinMaxLodForType(gmlType);
+                (int minLod, int maxLod) = config.objConvertLodConfig.GetMinMaxLodForType(gmlType);
                 if (minLod > maxLod) (minLod, maxLod) = (maxLod, minLod);
                 for (int l = minLod; l <= maxLod; l++)
                 {
@@ -101,7 +101,7 @@ namespace PLATEAU.Editor.CityImport
                 // 1つのgmlから LODごとに 0個以上の .obj ファイルが生成されます。
                 // .obj ファイルごとのループを始めます。
                 
-                var objNames = config.gmlSearcherConfig.gmlTypeTarget.ObjFileNamesForGml(gmlFileName);
+                var objNames = config.objConvertLodConfig.ObjFileNamesForGml(gmlFileName);
                 var objAssetPaths = objNames.Select(name => Path.Combine(config.importDestPath.dirAssetPath, name + ".obj"));
                 foreach(string objAssetPath in objAssetPaths)
                 {
@@ -205,7 +205,7 @@ namespace PLATEAU.Editor.CityImport
                     DoAutoSetReferencePoint = false
                 };
                 var gmlType = GmlFileNameParser.GetGmlTypeEnum(gmlFullPath);
-                (int minLod, int maxLod) = importerConfig.gmlSearcherConfig.gmlTypeTarget.GetMinMaxLodForType(gmlType);
+                (int minLod, int maxLod) = importerConfig.objConvertLodConfig.GetMinMaxLodForType(gmlType);
                 converterConf.MinLod = minLod;
                 converterConf.MaxLod = maxLod;
 

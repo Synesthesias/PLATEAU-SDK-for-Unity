@@ -38,6 +38,8 @@ namespace PLATEAU.CityMeta
 
         /// <summary> インポートした物をシーンに配置する設定 </summary>
         public ScenePlacementConfig scenePlacementConfig = new ScenePlacementConfig();
+
+        public ObjConvertLodConfig objConvertLodConfig = new ObjConvertLodConfig();
         
         /// <summary> インポート時に最適化するかどうか </summary>
         public bool optimizeFlag = true;
