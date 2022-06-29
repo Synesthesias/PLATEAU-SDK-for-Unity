@@ -89,13 +89,9 @@ namespace PLATEAU.Editor.CityImport
                 }
             }
 
-            // foreach (var obj in objsToPlace)
-            // {
-            //     Debug.Log(obj.assetsPath);
-            // }
 
             // 配置すべきものがないなら、ここでメソッド終了
-            if (objsToPlace.Count <= 0) return;
+            // if (objsToPlace.Count <= 0) return;
             
             // 親を配置
             var parent = GameObject.Find(parentGameObjName);
@@ -104,14 +100,16 @@ namespace PLATEAU.Editor.CityImport
                 parent = new GameObject(parentGameObjName);
             }
             
-            // 親に CityBehaviour をアタッチしてメタデータをリンク
+            // 親に CityBehaviour をアタッチしてメタデータをリンクします。
             var cityBehaviour = parent.GetComponent<CityBehaviour>();
             if ( cityBehaviour == null)
             {
                 cityBehaviour = parent.AddComponent<CityBehaviour>();
             }
             cityBehaviour.CityMetaData = metaData;
-
+            
+            // 親に古い子が付いているなら、子を全削除します。
+            DestroyAllChild(parent.transform);
             
             // 配置するobjごとのループ
             foreach (var placingObj in objsToPlace)
@@ -123,13 +121,6 @@ namespace PLATEAU.Editor.CityImport
                     Debug.LogWarning($"Failed to load '.obj' file.\nobjAssetPath = {placingObj.assetsPath}");
                     return;
                 }
-            
-                // 古い同名の GameObject を削除
-                var oldObj = FindRecursive(parent.transform, assetObj.name);
-                if (oldObj != null)
-                {
-                    Object.DestroyImmediate(oldObj.gameObject);
-                }
 
                 // 変換後モデルの配置
                 var placedObj = (GameObject)PrefabUtility.InstantiatePrefab(assetObj);
@@ -138,8 +129,23 @@ namespace PLATEAU.Editor.CityImport
             }
             
         }
-        
-        
+
+        private static void DestroyAllChild(Transform trans)
+        {
+            int numChild = trans.childCount;
+            List<GameObject> objsToRemove = new List<GameObject>(); 
+            for (int i = 0; i < numChild; i++)
+            {
+                objsToRemove.Add(trans.GetChild(i).gameObject);
+            }
+
+            foreach (var obj in objsToRemove)
+            {
+                Object.DestroyImmediate(obj);
+            }
+        }
+
+
         private static Transform FindRecursive(Transform target, string name)
         {
             if (target.name == name) return target;

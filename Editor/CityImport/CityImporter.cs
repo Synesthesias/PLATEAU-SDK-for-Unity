@@ -82,7 +82,6 @@ namespace PLATEAU.Editor.CityImport
                 for (int l = minLod; l <= maxLod; l++)
                 {
                     string objFullPath = Path.Combine(config.importDestPath.DirFullPath, $"LOD{l}_{gmlFileName}.obj");
-                    // Debug.Log($"**objFullPath = {objFullPath}");
                     if (File.Exists(objFullPath))
                     {
                         string objAssetsPath = PathUtil.FullPathToAssetsPath(objFullPath);
@@ -127,6 +126,7 @@ namespace PLATEAU.Editor.CityImport
                 config.scenePlacementConfig, generatedObjs, parentGameObjName, metaData
             );
             config.generatedObjFiles = generatedObjs;
+            config.rootDirName = parentGameObjName;
             
             // 後処理
             EditorUtility.SetDirty(metaData);

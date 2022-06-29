@@ -32,7 +32,8 @@ namespace PLATEAU.Editor.Behaviour
                 if (PlateauEditorStyle.MainButton("シーンにモデルを再配置"))
                 {
                     var availableObjs = importConfig.generatedObjFiles;
-                    CityMeshPlacerToScene.Place(placeConfig, availableObjs, "TODO", metaData);
+                    string rootDirName = importConfig.rootDirName;
+                    CityMeshPlacerToScene.Place(placeConfig, availableObjs, rootDirName, metaData);
                 }
             }
 

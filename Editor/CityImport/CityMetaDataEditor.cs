@@ -57,15 +57,17 @@ namespace PLATEAU.Editor.CityImport
                 this.foldOutOtherData = EditorGUILayout.Foldout(this.foldOutOtherData, "その他の情報");
                 if (this.foldOutOtherData)
                 {
-                    var refPoint = metaData.cityImporterConfig.referencePoint;
+                    var cityConfig = metaData.cityImporterConfig;
+                    var refPoint = cityConfig.referencePoint;
                     EditorGUILayout.LabelField($"基準点: ( {refPoint.x} , {refPoint.y} , {refPoint.z} )");
+                    EditorGUILayout.LabelField($"インポート元ルートフォルダ名: {cityConfig.rootDirName}");
                 
                     EditorGUILayout.Space(10);
                     
                     // objファイルの情報を表示します。
                     EditorGUILayout.LabelField("3Dモデルのファイルパス");
                     var objSb = new StringBuilder();
-                    foreach (var objInfo in metaData.cityImporterConfig.generatedObjFiles)
+                    foreach (var objInfo in cityConfig.generatedObjFiles)
                     {
                         objSb.Append($"{objInfo}\n");
                     }

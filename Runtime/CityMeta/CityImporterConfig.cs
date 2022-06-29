@@ -53,6 +53,11 @@ namespace PLATEAU.CityMeta
 
         /// <summary> インポートによって生成された objファイル情報のリスト </summary>
         public List<ObjInfo> generatedObjFiles = new List<ObjInfo>();
+
+        /// <summary>
+        /// インポート元のルートディレクトリの名前
+        /// </summary>
+        public string rootDirName = "";
         
         /// <summary> インポート時のログレベル </summary>
         public DllLogLevel logLevel = DllLogLevel.Error;
