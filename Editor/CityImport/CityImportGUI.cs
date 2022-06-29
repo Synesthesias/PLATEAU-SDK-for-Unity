@@ -23,6 +23,8 @@ namespace PLATEAU.Editor.CityImport
         private readonly InputFolderSelectorGUI udxFolderSelectorGUI;
         private readonly GmlSearcherGUI gmlSearcherGUI;
         private readonly GmlSearcher gmlSearcher;
+        private readonly ObjConvertLodConfig objConvertLodConfig;
+        private readonly ObjConvertLodGUI objConvertLodGUI;
         private readonly ScenePlacementGUI scenePlacementGUI;
         private readonly ExportFolderSelectorGUI exportFolderSelectorGUI;
         private readonly CityImporter cityImporter;
@@ -32,6 +34,8 @@ namespace PLATEAU.Editor.CityImport
             this.udxFolderSelectorGUI = new InputFolderSelectorGUI(OnUdxPathChanged);
             this.gmlSearcherGUI = new GmlSearcherGUI();
             this.gmlSearcher = new GmlSearcher();
+            this.objConvertLodConfig = new ObjConvertLodConfig();
+            this.objConvertLodGUI = new ObjConvertLodGUI();
             this.scenePlacementGUI = new ScenePlacementGUI();
             this.exportFolderSelectorGUI = new ExportFolderSelectorGUI();
             this.cityImporter = new CityImporter();
@@ -70,6 +74,8 @@ namespace PLATEAU.Editor.CityImport
                 
                 // 変換設定
                 HeaderDrawer.Draw("変換設定");
+                HeaderDrawer.IncrementDepth();
+                HeaderDrawer.Draw("基本変換設定");
                 using (PlateauEditorStyle.VerticalScopeLevel1())
                 {
                     config.optimizeFlag = EditorGUILayout.Toggle("最適化", config.optimizeFlag);
@@ -77,6 +83,12 @@ namespace PLATEAU.Editor.CityImport
                         (MeshGranularity)EditorGUILayout.EnumPopup("オブジェクト分けの粒度", config.meshGranularity);
                     config.logLevel = (DllLogLevel)EditorGUILayout.EnumPopup("(開発者向け)ログの詳細度", config.logLevel);
                 }
+                HeaderDrawer.Draw("LOD設定");
+                using (PlateauEditorStyle.VerticalScopeLevel1())
+                {
+                    this.objConvertLodGUI.Draw(this.objConvertLodConfig);
+                }
+                HeaderDrawer.DecrementDepth();
                 
                 // 配置設定
                 HeaderDrawer.Draw("シーン配置設定");

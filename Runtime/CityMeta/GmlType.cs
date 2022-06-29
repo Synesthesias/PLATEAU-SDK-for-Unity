@@ -102,7 +102,7 @@ namespace PLATEAU.CityMeta
         /// </summary>
         /// <param name="t">地物タイプ Enum型</param>
         /// <returns>説明形式の文字</returns>
-        public static string ToDisplay(GmlType t)
+        public static string ToDisplay(this GmlType t)
         {
             if (displayDict.TryGetValue(t, out string display))
             {
