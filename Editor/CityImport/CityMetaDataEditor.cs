@@ -18,6 +18,7 @@ namespace PLATEAU.Editor.CityImport
     {
         private bool foldOutIdGmlTable;
         private bool foldOutReconvert;
+        private bool foldOutOtherData;
         private CityImportGUI importGUI;
         private Vector2 scrollPosOfIdGmlTable;
         public override void OnInspectorGUI()
@@ -31,40 +32,52 @@ namespace PLATEAU.Editor.CityImport
             }
 
             this.importGUI ??= new CityImportGUI(metaData.cityImporterConfig); // 初期化
-            
-            HeaderDrawer.Draw("IDとGMLファイルの情報");
-            using (PlateauEditorStyle.VerticalScopeLevel1())
-            {
-                this.foldOutIdGmlTable = EditorGUILayout.Foldout(this.foldOutIdGmlTable, "IDとGMLファイルの紐付け");
-                if (this.foldOutIdGmlTable)
-                {
-                    using (PlateauEditorStyle.VerticalScopeLevel1(false))
-                    {
-                        var sb = new StringBuilder();
-                        foreach (var pair in metaData.idToGmlTable)
-                        {
-                            sb.Append($"{pair.Key}\n=> {pair.Value}\n\n");
-                        }
-                        this.scrollPosOfIdGmlTable = PlateauEditorStyle.ScrollableMultiLineLabel(sb.ToString(), 300, this.scrollPosOfIdGmlTable);
-                    }
-                }
-            }
 
             EditorGUILayout.Space(10);
             
             HeaderDrawer.Draw("再変換画面");
-            HeaderDrawer.IncrementDepth();
             using (PlateauEditorStyle.VerticalScopeLevel1())
             {
+                HeaderDrawer.IncrementDepth();
                 this.foldOutReconvert = EditorGUILayout.Foldout(this.foldOutReconvert, "再変換");
                 if (this.foldOutReconvert)
                 {
                     this.importGUI.Draw(metaData.cityImporterConfig);
                 
                 }
+                HeaderDrawer.DecrementDepth();
             }
             
+            EditorGUILayout.Space(10);
             
+            HeaderDrawer.Draw("その他の情報");
+            using (PlateauEditorStyle.VerticalScopeLevel1())
+            {
+                this.foldOutOtherData = EditorGUILayout.Foldout(this.foldOutOtherData, "その他の情報");
+                if (this.foldOutOtherData)
+                {
+                    var refPoint = metaData.cityImporterConfig.referencePoint;
+                    EditorGUILayout.LabelField($"基準点: ( {refPoint.x} , {refPoint.y} , {refPoint.z} )");
+                
+                    EditorGUILayout.Space(10);
+                
+                    this.foldOutIdGmlTable = EditorGUILayout.Foldout(this.foldOutIdGmlTable, "IDとGMLファイルの紐付け");
+                    if (this.foldOutIdGmlTable)
+                    {
+                        using (PlateauEditorStyle.VerticalScopeLevel1(false))
+                        {
+                            var sb = new StringBuilder();
+                            foreach (var pair in metaData.idToGmlTable)
+                            {
+                                sb.Append($"{pair.Key}\n=> {pair.Value}\n\n");
+                            }
+                            this.scrollPosOfIdGmlTable = PlateauEditorStyle.ScrollableMultiLineLabel(sb.ToString(), 300, this.scrollPosOfIdGmlTable);
+                        }
+                    }
+                }
+            }
+
+
             // base.OnInspectorGUI();
         }
     }
