@@ -47,6 +47,7 @@ namespace PLATEAU.Editor.CityImport
             int loopCount = 0;
             int numGml = gmlRelativePaths.Length;
             Vector3? referencePoint = null;
+            var generatedObjs = new List<ObjInfo>();
             foreach (var gmlRelativePath in gmlRelativePaths)
             {
                 loopCount++;
@@ -72,11 +73,12 @@ namespace PLATEAU.Editor.CityImport
                 // 変換した結果、どのLODのobjが生成されたかを調べます。
                 // var generatedObjLods = new List<int>();
                 // var generatedObjAssetPaths = new List<string>();
-                var generatedObjs = new List<FileLodInfo>();
+                
                 string gmlFileName = Path.GetFileNameWithoutExtension(gmlRelativePath);
                 var gmlType = GmlFileNameParser.GetGmlTypeEnum(gmlFileName);
                 (int minLod, int maxLod) = config.objConvertLodConfig.GetMinMaxLodForType(gmlType);
                 if (minLod > maxLod) (minLod, maxLod) = (maxLod, minLod);
+                int lodCountForThisGml = 0;
                 for (int l = minLod; l <= maxLod; l++)
                 {
                     string objFullPath = Path.Combine(config.importDestPath.DirFullPath, $"LOD{l}_{gmlFileName}.obj");
@@ -84,10 +86,11 @@ namespace PLATEAU.Editor.CityImport
                     if (File.Exists(objFullPath))
                     {
                         string objAssetsPath = PathUtil.FullPathToAssetsPath(objFullPath);
-                        generatedObjs.Add(new FileLodInfo(objAssetsPath, l));
+                        generatedObjs.Add(new ObjInfo(objAssetsPath, l, gmlType));
+                        lodCountForThisGml++;
                     }
                 }
-                if (generatedObjs.Count <= 0)
+                if (lodCountForThisGml <= 0)
                 {
                     Debug.LogError($"No 3d models are found for the lod in the gml file.\ngml file = {gmlFullPath}");
                     cityModel?.Dispose();
@@ -112,17 +115,18 @@ namespace PLATEAU.Editor.CityImport
                     }
                 }
                 
-                // シーンに配置します。
-                string parentGameObjName = PlateauSourcePath.RootDirName(sourcePathConf.udxAssetPath);
-                CityMeshPlacerToScene.Place(
-                    config.scenePlacementConfig, generatedObjs, parentGameObjName, metaData, gmlType
-                );
-                config.generatedObjFiles = generatedObjs;
                 
                 cityModel?.Dispose();
                 successCount++;
             }
             // gmlファイルごとのループ　ここまで
+            
+            // シーンに配置します。
+            string parentGameObjName = PlateauSourcePath.RootDirName(sourcePathConf.udxAssetPath);
+            CityMeshPlacerToScene.Place(
+                config.scenePlacementConfig, generatedObjs, parentGameObjName, metaData
+            );
+            config.generatedObjFiles = generatedObjs;
             
             // 後処理
             EditorUtility.SetDirty(metaData);

@@ -52,7 +52,7 @@ namespace PLATEAU.CityMeta
         public Vector3 referencePoint = Vector3.zero;
 
         /// <summary> インポートによって生成された objファイル情報のリスト </summary>
-        public List<FileLodInfo> generatedObjFiles = new List<FileLodInfo>();
+        public List<ObjInfo> generatedObjFiles = new List<ObjInfo>();
         
         /// <summary> インポート時のログレベル </summary>
         public DllLogLevel logLevel = DllLogLevel.Error;

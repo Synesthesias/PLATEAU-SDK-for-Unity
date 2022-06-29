@@ -20,68 +20,80 @@ namespace PLATEAU.Editor.CityImport
         /// <paramref name="parentGameObjName"/> の子オブジェクトとしてシーンに配置します。
         /// 親ゲームオブジェクトには <see cref="CityBehaviour"/> をアタッチし、与えられた<see cref="CityMetaData"/> をリンクします。
         /// </summary>
-        public static void Place(ScenePlacementConfig placementConf, List<FileLodInfo> availableObjs, string parentGameObjName, CityMetaData metaData, GmlType gmlType)
+        public static void Place(ScenePlacementConfig placementConf, List<ObjInfo> availableObjs, string parentGameObjName, CityMetaData metaData)
         {
             // 設定に基づいてシーンに配置すべき obj ファイルを決めます。
-            var objsToPlace = new List<FileLodInfo>();
-            var typeConf = placementConf.PerTypeConfigs[gmlType];
-            int selectedLod = typeConf.selectedLod;
-            switch (typeConf.placeMethod)
+            var objsToPlace = new List<ObjInfo>();
+            var allGmlTypes = Enum.GetValues(typeof(GmlType)).OfType<GmlType>();
+            
+            // 設定は gmlType ごとに行われるので、 gmlType ごとにループして シーンに配置すべきモデル( objsToPlace )を決めます。
+            foreach (var gmlType in allGmlTypes)
             {
-                case PlaceMethod.PlaceAllLod:
+                var typeConf = placementConf.PerTypeConfigs[gmlType];
+                int selectedLod = typeConf.selectedLod;
+                var availableObjsOfType = availableObjs.Where(obj => obj.gmlType == gmlType).ToArray();
+                switch (typeConf.placeMethod)
                 {
-                    foreach (var obj in availableObjs)
+                    case PlaceMethod.PlaceAllLod:
                     {
-                        objsToPlace.Add(new FileLodInfo(obj));
-                    }
-                    break;
-                }
-                case PlaceMethod.PlaceMaxLod:
-                {
-                    var maxLod = availableObjs.Max(obj => obj.Lod);
-                    var maxLodObj = availableObjs.Find(obj => obj.Lod == maxLod);
-                    objsToPlace = new List<FileLodInfo> { maxLodObj };
-                    break;
-                }
-                case PlaceMethod.PlaceMinLod:
-                {
-                    var minLod = availableObjs.Min(obj => obj.Lod);
-                    var minLodObj = availableObjs.Find(obj => obj.Lod == minLod);
-                    objsToPlace = new List<FileLodInfo> { minLodObj };
-                    break;
-                }
-                case PlaceMethod.PlaceSelectedLodOrDoNotPlace:
-                {
-                    var found = availableObjs.Find(obj => obj.Lod == selectedLod);
-                    if (found == null)
-                    {
-                        objsToPlace.Clear();
+                        foreach (var obj in availableObjsOfType)
+                        {
+                            objsToPlace.Add(new ObjInfo(obj));
+                        }
+
                         break;
                     }
-
-                    objsToPlace = new List<FileLodInfo> { found };
-                    break;
-                }
-                case PlaceMethod.PlaceSelectedLodOrMax:
-                {
-                    var found = availableObjs.Find(obj => obj.Lod == selectedLod);
-                    if (found == null)
+                    case PlaceMethod.PlaceMaxLod:
                     {
-                        var maxLod = availableObjs.Max(obj => obj.Lod);
-                        var maxLodObj = availableObjs.Find(obj => obj.Lod == maxLod);
-                        objsToPlace = new List<FileLodInfo> { maxLodObj };
+                        var maxLod = availableObjsOfType.Max(obj => obj.lod);
+                        var maxLodObj = availableObjsOfType.First(obj => obj.lod == maxLod);
+                        objsToPlace.Add(maxLodObj);
+                        break;
                     }
-                    break;
+                    case PlaceMethod.PlaceMinLod:
+                    {
+                        var minLod = availableObjsOfType.Min(obj => obj.lod);
+                        var minLodObj = availableObjsOfType.First(obj => obj.lod == minLod);
+                        objsToPlace.Add(minLodObj);
+                        break;
+                    }
+                    case PlaceMethod.PlaceSelectedLodOrDoNotPlace:
+                    {
+                        var found = availableObjsOfType.FirstOrDefault(obj => obj.lod == selectedLod);
+                        if (found == null)
+                        {
+                            break;
+                        }
+
+                        objsToPlace.Add(found);
+                        break;
+                    }
+                    case PlaceMethod.PlaceSelectedLodOrMax:
+                    {
+                        var found = availableObjsOfType.FirstOrDefault(obj => obj.lod == selectedLod);
+                        if (found == null)
+                        {
+                            var maxLod = availableObjsOfType.Max(obj => obj.lod);
+                            var maxLodObj = availableObjsOfType.First(obj => obj.lod == maxLod);
+                            objsToPlace.Add(maxLodObj);
+                        }
+
+                        break;
+                    }
+                    case PlaceMethod.DoNotPlace:
+                    {
+                        break;
+                    }
+                    default:
+                        throw new ArgumentOutOfRangeException();
                 }
-                case PlaceMethod.DoNotPlace:
-                {
-                    objsToPlace.Clear();
-                    break;
-                }
-                default:
-                    throw new ArgumentOutOfRangeException();
             }
-            
+
+            // foreach (var obj in objsToPlace)
+            // {
+            //     Debug.Log(obj.assetsPath);
+            // }
+
             // 配置すべきものがないなら、ここでメソッド終了
             if (objsToPlace.Count <= 0) return;
             
@@ -104,11 +116,11 @@ namespace PLATEAU.Editor.CityImport
             // 配置するobjごとのループ
             foreach (var placingObj in objsToPlace)
             {
-                var assetObj = AssetDatabase.LoadAssetAtPath<GameObject>(placingObj.AssetsPath);
+                var assetObj = AssetDatabase.LoadAssetAtPath<GameObject>(placingObj.assetsPath);
                 if (assetObj == null)
                 {
                     // TODO Errorのほうがいい（ユニットテストが通るなら）
-                    Debug.LogWarning($"Failed to load '.obj' file.\nobjAssetPath = {placingObj.AssetsPath}");
+                    Debug.LogWarning($"Failed to load '.obj' file.\nobjAssetPath = {placingObj.assetsPath}");
                     return;
                 }
             
