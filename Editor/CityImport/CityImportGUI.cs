@@ -23,7 +23,7 @@ namespace PLATEAU.Editor.CityImport
         private readonly InputFolderSelectorGUI udxFolderSelectorGUI;
         private readonly GmlSearcherGUI gmlSearcherGUI;
         private readonly GmlSearcher gmlSearcher;
-        private readonly ObjConvertLodConfig objConvertLodConfig;
+        // private readonly ObjConvertLodConfig objConvertLodConfig;
         private readonly ObjConvertLodGUI objConvertLodGUI;
         private readonly ScenePlacementGUI scenePlacementGUI;
         private readonly ExportFolderSelectorGUI exportFolderSelectorGUI;
@@ -34,7 +34,7 @@ namespace PLATEAU.Editor.CityImport
             this.udxFolderSelectorGUI = new InputFolderSelectorGUI(OnUdxPathChanged);
             this.gmlSearcherGUI = new GmlSearcherGUI();
             this.gmlSearcher = new GmlSearcher();
-            this.objConvertLodConfig = new ObjConvertLodConfig();
+            // this.objConvertLodConfig = new ObjConvertLodConfig();
             this.objConvertLodGUI = new ObjConvertLodGUI();
             this.scenePlacementGUI = new ScenePlacementGUI();
             this.exportFolderSelectorGUI = new ExportFolderSelectorGUI();
@@ -86,7 +86,7 @@ namespace PLATEAU.Editor.CityImport
                 HeaderDrawer.Draw("LOD設定（3Dモデル変換）");
                 using (PlateauEditorStyle.VerticalScopeLevel1())
                 {
-                    this.objConvertLodGUI.Draw(this.objConvertLodConfig);
+                    this.objConvertLodGUI.Draw(config.objConvertLodConfig);
                 }
                 HeaderDrawer.DecrementDepth();
                 
