@@ -72,7 +72,7 @@ namespace PLATEAU.Editor.CityImport
                 // 変換した結果、どのLODのobjが生成されたかを調べます。
                 // var generatedObjLods = new List<int>();
                 // var generatedObjAssetPaths = new List<string>();
-                var generatedObjs = new List<ObjInfo>();
+                var generatedObjs = new List<FileLodInfo>();
                 string gmlFileName = Path.GetFileNameWithoutExtension(gmlRelativePath);
                 var gmlType = GmlFileNameParser.GetGmlTypeEnum(gmlFileName);
                 (int minLod, int maxLod) = config.objConvertLodConfig.GetMinMaxLodForType(gmlType);
@@ -84,7 +84,7 @@ namespace PLATEAU.Editor.CityImport
                     if (File.Exists(objFullPath))
                     {
                         string objAssetsPath = PathUtil.FullPathToAssetsPath(objFullPath);
-                        generatedObjs.Add(new ObjInfo(objAssetsPath, l));
+                        generatedObjs.Add(new FileLodInfo(objAssetsPath, l));
                     }
                 }
                 if (generatedObjs.Count <= 0)
@@ -117,7 +117,7 @@ namespace PLATEAU.Editor.CityImport
                 CityMeshPlacerToScene.Place(
                     config.scenePlacementConfig, generatedObjs, parentGameObjName, metaData, gmlType
                 );
-                
+                config.generatedObjFiles = generatedObjs;
                 
                 cityModel?.Dispose();
                 successCount++;

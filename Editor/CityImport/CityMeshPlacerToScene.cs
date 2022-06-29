@@ -16,60 +16,60 @@ namespace PLATEAU.Editor.CityImport
     internal static class CityMeshPlacerToScene
     {
         /// <summary>
-        /// <paramref name="generatedObjs"/> の3Dモデルをロードし、
+        /// <paramref name="availableObjs"/> の3Dモデルをロードし、
         /// <paramref name="parentGameObjName"/> の子オブジェクトとしてシーンに配置します。
         /// 親ゲームオブジェクトには <see cref="CityBehaviour"/> をアタッチし、与えられた<see cref="CityMetaData"/> をリンクします。
         /// </summary>
-        public static void Place(ScenePlacementConfig placementConf, List<ObjInfo> generatedObjs, string parentGameObjName, CityMetaData metaData, GmlType gmlType)
+        public static void Place(ScenePlacementConfig placementConf, List<FileLodInfo> availableObjs, string parentGameObjName, CityMetaData metaData, GmlType gmlType)
         {
             // 設定に基づいてシーンに配置すべき obj ファイルを決めます。
-            var objsToPlace = new List<ObjInfo>();
+            var objsToPlace = new List<FileLodInfo>();
             var typeConf = placementConf.PerTypeConfigs[gmlType];
             int selectedLod = typeConf.selectedLod;
             switch (typeConf.placeMethod)
             {
                 case PlaceMethod.PlaceAllLod:
                 {
-                    foreach (var obj in generatedObjs)
+                    foreach (var obj in availableObjs)
                     {
-                        objsToPlace.Add(new ObjInfo(obj));
+                        objsToPlace.Add(new FileLodInfo(obj));
                     }
                     break;
                 }
                 case PlaceMethod.PlaceMaxLod:
                 {
-                    var maxLod = generatedObjs.Max(obj => obj.Lod);
-                    var maxLodObj = generatedObjs.Find(obj => obj.Lod == maxLod);
-                    objsToPlace = new List<ObjInfo> { maxLodObj };
+                    var maxLod = availableObjs.Max(obj => obj.Lod);
+                    var maxLodObj = availableObjs.Find(obj => obj.Lod == maxLod);
+                    objsToPlace = new List<FileLodInfo> { maxLodObj };
                     break;
                 }
                 case PlaceMethod.PlaceMinLod:
                 {
-                    var minLod = generatedObjs.Min(obj => obj.Lod);
-                    var minLodObj = generatedObjs.Find(obj => obj.Lod == minLod);
-                    objsToPlace = new List<ObjInfo> { minLodObj };
+                    var minLod = availableObjs.Min(obj => obj.Lod);
+                    var minLodObj = availableObjs.Find(obj => obj.Lod == minLod);
+                    objsToPlace = new List<FileLodInfo> { minLodObj };
                     break;
                 }
                 case PlaceMethod.PlaceSelectedLodOrDoNotPlace:
                 {
-                    var found = generatedObjs.Find(obj => obj.Lod == selectedLod);
+                    var found = availableObjs.Find(obj => obj.Lod == selectedLod);
                     if (found == null)
                     {
                         objsToPlace.Clear();
                         break;
                     }
 
-                    objsToPlace = new List<ObjInfo> { found };
+                    objsToPlace = new List<FileLodInfo> { found };
                     break;
                 }
                 case PlaceMethod.PlaceSelectedLodOrMax:
                 {
-                    var found = generatedObjs.Find(obj => obj.Lod == selectedLod);
+                    var found = availableObjs.Find(obj => obj.Lod == selectedLod);
                     if (found == null)
                     {
-                        var maxLod = generatedObjs.Max(obj => obj.Lod);
-                        var maxLodObj = generatedObjs.Find(obj => obj.Lod == maxLod);
-                        objsToPlace = new List<ObjInfo> { maxLodObj };
+                        var maxLod = availableObjs.Max(obj => obj.Lod);
+                        var maxLodObj = availableObjs.Find(obj => obj.Lod == maxLod);
+                        objsToPlace = new List<FileLodInfo> { maxLodObj };
                     }
                     break;
                 }

@@ -5,6 +5,13 @@ using UnityEngine;
 
 namespace PLATEAU.CityMeta
 {
+    /// <summary>
+    /// 3Dモデルをロードして現在のシーンに配置する設定です。
+    /// 
+    /// 目的は以下の2つです。
+    /// ・モデル配置時に ScenePlacementGUI からユーザー選択の設定を受け取り、 CityMeshPlacerToScene に渡すこと
+    /// ・インポート時の設定を保存する目的で SerializeField を保持すること。 
+    /// </summary>
     [Serializable]
     internal class ScenePlacementConfig : ISerializationCallbackReceiver
     {

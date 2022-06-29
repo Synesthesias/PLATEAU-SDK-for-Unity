@@ -21,6 +21,7 @@ namespace PLATEAU.Editor.CityImport
         private bool foldOutOtherData;
         private CityImportGUI importGUI;
         private Vector2 scrollPosOfIdGmlTable;
+        private Vector2 scrollPosOfObjInfo;
         public override void OnInspectorGUI()
         {
             HeaderDrawer.Reset();
@@ -60,7 +61,19 @@ namespace PLATEAU.Editor.CityImport
                     EditorGUILayout.LabelField($"基準点: ( {refPoint.x} , {refPoint.y} , {refPoint.z} )");
                 
                     EditorGUILayout.Space(10);
+                    
+                    // objファイルの情報を表示します。
+                    EditorGUILayout.LabelField("3Dモデルのファイルパス");
+                    var objSb = new StringBuilder();
+                    foreach (var objInfo in metaData.cityImporterConfig.generatedObjFiles)
+                    {
+                        objSb.Append($"{objInfo}\n");
+                    }
+                    this.scrollPosOfObjInfo =
+                        PlateauEditorStyle.ScrollableMultiLineLabel(objSb.ToString(), 300, this.scrollPosOfObjInfo);
+                    
                 
+                    // IDとGMLの紐付け情報を表示します。
                     this.foldOutIdGmlTable = EditorGUILayout.Foldout(this.foldOutIdGmlTable, "IDとGMLファイルの紐付け");
                     if (this.foldOutIdGmlTable)
                     {

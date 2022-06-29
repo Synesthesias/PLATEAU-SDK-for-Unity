@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using PLATEAU.Interop;
 using PLATEAU.IO;
 using UnityEngine;
@@ -49,6 +50,9 @@ namespace PLATEAU.CityMeta
         
         /// <summary> メッシュ変換の基準座標 </summary>
         public Vector3 referencePoint = Vector3.zero;
+
+        /// <summary> インポートによって生成された objファイル情報のリスト </summary>
+        public List<FileLodInfo> generatedObjFiles = new List<FileLodInfo>();
         
         /// <summary> インポート時のログレベル </summary>
         public DllLogLevel logLevel = DllLogLevel.Error;
