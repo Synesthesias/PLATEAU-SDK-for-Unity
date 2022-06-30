@@ -87,9 +87,19 @@ namespace PLATEAU.Editor.CityImport
                         string objAssetsPath = PathUtil.FullPathToAssetsPath(objFullPath);
                         generatedObjs.Add(new ObjInfo(objAssetsPath, l, gmlType));
                         lodCountForThisGml++;
-                        AssetDatabase.ImportAsset(importDest.dirAssetPath);
                         
-                        // TODO string matPath = Path.getobjAssetsPath
+                        // mtlファイルが存在すればインポートします。
+                        string mtlAssetsPath = PathUtil.RemoveExtension(objAssetsPath) + ".mtl";
+                        if (File.Exists(PathUtil.AssetsPathToFullPath(mtlAssetsPath)))
+                        {
+                            AssetDatabase.ImportAsset(mtlAssetsPath);
+                            // AssetDatabase.Refresh();
+                            Debug.Log($"importing mtl : {mtlAssetsPath}");
+                        }
+                        
+                        // objファイルをインポートします。
+                        AssetDatabase.ImportAsset(objAssetsPath);
+                        // AssetDatabase.Refresh();
                     }
                 }
                 if (lodCountForThisGml <= 0)
