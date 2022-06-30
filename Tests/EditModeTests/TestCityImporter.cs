@@ -192,13 +192,14 @@ namespace PLATEAU.Tests.EditModeTests
             Import(testUdxPathSimple, testGmlRelativePathsSimple, MeshGranularity.PerCityModelArea, out var metaData, 0,
                 0);
             string expectedUdxPath = Path.Combine(testDefaultCopyDestPath, "TestDataSimpleGml", "udx").Replace('\\', '/');
-            string actualUdxPath = metaData.cityImporterConfig.sourcePath.FullUdxPath.Replace('\\', '/');
+            string fullUdxPath = metaData.cityImporterConfig.sourcePath.FullUdxPath;
+            string actualUdxPath = fullUdxPath.Replace('\\', '/');
             Assert.AreEqual( expectedUdxPath, actualUdxPath, "メモリ上のメタデータの sourcePath がコピー後を指している" );
 
             var metaDataPath = metaData.cityImporterConfig.importDestPath.MetaDataAssetPath;
             var loadedMetaData = AssetDatabase.LoadAssetAtPath<CityMetaData>(metaDataPath);
             Assert.NotNull(loadedMetaData, "生成後のメタデータをロードできる");
-            var loadedSrcPath = loadedMetaData.cityImporterConfig.sourcePath.FullUdxPath.Replace('\\', '/');
+            var loadedSrcPath = fullUdxPath.Replace('\\', '/');
             Assert.AreEqual(expectedUdxPath, loadedSrcPath, "保存されたメタデータの sourcePath がコピー後を指している");
         }
         

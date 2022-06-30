@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 
 namespace PLATEAU.CityMeta
 {
@@ -34,6 +35,12 @@ namespace PLATEAU.CityMeta
             {
                 this.isAreaIdTarget[i] = isTarget;
             }
+        }
+        
+        /// <summary> 地物タイプを変換対象とするかについて、すべて true または すべて false にします。 </summary>
+        public void SetAllTypeTarget(bool val)
+        {
+            this.gmlTypeTarget.SetAllTarget(val);
         }
     }
 }

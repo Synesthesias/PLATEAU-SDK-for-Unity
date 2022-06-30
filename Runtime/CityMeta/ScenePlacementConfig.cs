@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using PLATEAU.Util;
 using UnityEngine;
+using static PLATEAU.CityMeta.ScenePlacementConfig;
 
 namespace PLATEAU.CityMeta
 {
@@ -54,22 +55,26 @@ namespace PLATEAU.CityMeta
         {
             this.PerTypeConfigs = DictionarySerializer.OnAfterSerialize(this.keys, this.values);
         }
-
-        /// <summary>
-        /// 設定の <see cref="ScenePlacementConfigPerType.selectedLod"/> を使うかどうかは
-        /// <see cref="PlaceMethod"/> に依るので、使うかどうかを返します。
-        /// </summary>
-        public static bool DoUseSelectedLod(PlaceMethod method)
-        {
-            return method == PlaceMethod.PlaceSelectedLodOrMax ||
-                   method == PlaceMethod.PlaceSelectedLodOrDoNotPlace;
-        }
+        
     }
 
     [Serializable]
     internal class ScenePlacementConfigPerType
     {
-        public ScenePlacementConfig.PlaceMethod placeMethod;
+        public PlaceMethod placeMethod;
         public int selectedLod;
+    }
+
+    internal static class PlaceMethodExtension
+    {
+        /// <summary>
+        /// 設定項目で <see cref="ScenePlacementConfigPerType.selectedLod"/> を使うかどうかは
+        /// <see cref="ScenePlacementConfig.PlaceMethod"/> に依るので、使うかどうかを返します。
+        /// </summary>
+        public static bool DoUseSelectedLod(this PlaceMethod method)
+        {
+            return method == PlaceMethod.PlaceSelectedLodOrMax ||
+                   method == PlaceMethod.PlaceSelectedLodOrDoNotPlace;
+        }
     }
 }

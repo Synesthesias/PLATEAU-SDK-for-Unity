@@ -19,6 +19,11 @@ namespace PLATEAU.CityMeta
             SetMinMax(min, max);
         }
 
+        /// <summary>
+        /// min と max を設定します。
+        /// 必ず両方同時に設定する仕様にしています。
+        /// なぜなら片方ずつだと <see cref="SwapIfReversed"/> が発動して意図しない挙動になるためです。
+        /// </summary>
         public void SetMinMax(T minArg, T maxArg)
         {
             this.min = minArg;

@@ -35,7 +35,7 @@ namespace PLATEAU.Editor.CityImport
             placeMethod = (ScenePlacementConfig.PlaceMethod)
                 EditorGUILayout.EnumPopup("シーン配置方法", placeMethod);
             typeConf.placeMethod = placeMethod;
-            if (ScenePlacementConfig.DoUseSelectedLod(placeMethod))
+            if (placeMethod.DoUseSelectedLod())
             {
                 typeConf.selectedLod = EditorGUILayout.IntSlider("配置LOD", typeConf.selectedLod, 0, 3);
             }

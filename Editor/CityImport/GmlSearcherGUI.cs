@@ -23,36 +23,36 @@ namespace PLATEAU.Editor.CityImport
         /// <summary>
         /// 変換対象とする gmlファイルを条件設定で絞り込むGUIを表示し、
         /// その結果を gmlファイルの相対パスのリストで返します。
-        /// その際にユーザーが選択した設定内容は引数 <paramref name="config"/> に格納されます。
+        /// その際にユーザーが選択した設定内容は引数 <paramref name="searcherConfig"/> に格納されます。
         /// </summary>
-        public List<string> Draw(GmlSearcher gmlSearcher, ref GmlSearcherConfig config)
+        public List<string> Draw(GmlSearcher gmlSearcher, ref GmlSearcherConfig searcherConfig)
         {
-            if(!this.isInitialized) Initialize(gmlSearcher, config);
+            if(!this.isInitialized) Initialize(gmlSearcher, searcherConfig);
             HeaderDrawer.IncrementDepth();
             HeaderDrawer.Draw("含める地域");
             using (PlateauEditorStyle.VerticalScopeLevel1())
             {
-                config.areaIds = gmlSearcher.AreaIds;
-                int areaCount = config.areaIds.Length;
-                if (config.isAreaIdTarget.Length != areaCount)
+                searcherConfig.areaIds = gmlSearcher.AreaIds;
+                int areaCount = searcherConfig.areaIds.Length;
+                if (searcherConfig.isAreaIdTarget.Length != areaCount)
                 {
-                    Initialize(gmlSearcher, config);
+                    Initialize(gmlSearcher, searcherConfig);
                 }
                 for (int i = 0; i < areaCount; i++)
                 {
-                    config.isAreaIdTarget[i] = EditorGUILayout.Toggle(config.areaIds[i].ToString(), config.isAreaIdTarget[i]);
+                    searcherConfig.isAreaIdTarget[i] = EditorGUILayout.Toggle(searcherConfig.areaIds[i].ToString(), searcherConfig.isAreaIdTarget[i]);
                 }
 
                 using (new EditorGUILayout.HorizontalScope())
                 {
                     if (PlateauEditorStyle.MiniButton("すべて選択"))
                     {
-                        config.SetAllAreaId(true);
+                        searcherConfig.SetAllAreaId(true);
                     }
 
                     if (PlateauEditorStyle.MiniButton("すべて除外"))
                     {
-                        config.SetAllAreaId(false);
+                        searcherConfig.SetAllAreaId(false);
                     }
                 }
             }
@@ -62,7 +62,7 @@ namespace PLATEAU.Editor.CityImport
             HeaderDrawer.Draw("含める地物");
             using (PlateauEditorStyle.VerticalScopeLevel1())
             {
-                var typeConfDict = config.gmlTypeTarget.IsTypeTargetDict;
+                var typeConfDict = searcherConfig.gmlTypeTarget.IsTypeTargetDict;
                 foreach (var gmlType in typeConfDict.Keys.ToArray())
                 {
                     string typeText = gmlType.ToDisplay();
@@ -75,12 +75,12 @@ namespace PLATEAU.Editor.CityImport
                 {
                     if (PlateauEditorStyle.MiniButton("すべて選択"))
                     {
-                        config.gmlTypeTarget.SetAllTarget(true);
+                        searcherConfig.SetAllTypeTarget(true);
                     }
 
                     if (PlateauEditorStyle.MiniButton("すべて除外"))
                     {
-                        config.gmlTypeTarget.SetAllTarget(false);
+                        searcherConfig.SetAllTypeTarget(false);
                     }
                 }
             
@@ -89,8 +89,8 @@ namespace PLATEAU.Editor.CityImport
             HeaderDrawer.Draw("対象gmlファイル");
             using (PlateauEditorStyle.VerticalScopeLevel1())
             {
-                this.gmlFiles = ListTargetGmlFiles(gmlSearcher, config.areaIds, config.isAreaIdTarget,
-                    config.gmlTypeTarget);
+                this.gmlFiles = ListTargetGmlFiles(gmlSearcher, searcherConfig.areaIds, searcherConfig.isAreaIdTarget,
+                    searcherConfig.gmlTypeTarget);
                 this.scrollPosForGmlList = PlateauEditorStyle.ScrollableMultiLineLabel(String.Join("\n", this.gmlFiles), 150, this.scrollPosForGmlList);
             }
             

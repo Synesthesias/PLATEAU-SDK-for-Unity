@@ -39,8 +39,8 @@ namespace PLATEAU.Editor.CityImport
             // 設定のインポート元パスをコピー後のパスに変更します。
             var sourcePathConf = config.sourcePath;
             sourcePathConf.FullUdxPath = CopyImportSrcToStreamingAssets(config.UdxPathBeforeImport, gmlRelativePaths);
-            
-            metaData = CityMetaDataGenerator.LoadOrCreateMetaData(config.importDestPath.MetaDataAssetPath, true);
+            var importDest = config.importDestPath;
+            metaData = CityMetaDataGenerator.LoadOrCreateMetaData(importDest.MetaDataAssetPath, true);
 
             // gmlファイルごとのループを始めます。
             int successCount = 0;
@@ -63,7 +63,7 @@ namespace PLATEAU.Editor.CityImport
                 }
                 
                 // objに変換します。
-                if (!TryConvertToObj(cityModel, ref referencePoint, config, gmlFullPath, config.importDestPath.DirFullPath))
+                if (!TryConvertToObj(cityModel, ref referencePoint, config, gmlFullPath, importDest.DirFullPath))
                 {
                     // 出力されるモデルがなければ、ここで終了します。
                     cityModel?.Dispose();
@@ -71,17 +71,15 @@ namespace PLATEAU.Editor.CityImport
                 }
                 
                 // 変換した結果、どのLODのobjが生成されたかを調べます。
-                // var generatedObjLods = new List<int>();
-                // var generatedObjAssetPaths = new List<string>();
-                
+
                 string gmlFileName = Path.GetFileNameWithoutExtension(gmlRelativePath);
                 var gmlType = GmlFileNameParser.GetGmlTypeEnum(gmlFileName);
-                (int minLod, int maxLod) = config.objConvertLodConfig.GetMinMaxLodForType(gmlType);
-                if (minLod > maxLod) (minLod, maxLod) = (maxLod, minLod);
+                var objConvertLodConf = config.objConvertLodConfig;
+                (int minLod, int maxLod) = objConvertLodConf.GetMinMaxLodForType(gmlType);
                 int lodCountForThisGml = 0;
                 for (int l = minLod; l <= maxLod; l++)
                 {
-                    string objFullPath = Path.Combine(config.importDestPath.DirFullPath, $"LOD{l}_{gmlFileName}.obj");
+                    string objFullPath = Path.Combine(importDest.DirFullPath, $"LOD{l}_{gmlFileName}.obj");
                     if (File.Exists(objFullPath))
                     {
                         string objAssetsPath = PathUtil.FullPathToAssetsPath(objFullPath);
@@ -103,8 +101,8 @@ namespace PLATEAU.Editor.CityImport
                 // 1つのgmlから LODごとに 0個以上の .obj ファイルが生成されます。
                 // .obj ファイルごとのループを始めます。
                 
-                var objNames = config.objConvertLodConfig.ObjFileNamesForGml(gmlFileName);
-                var objAssetPaths = objNames.Select(name => Path.Combine(config.importDestPath.dirAssetPath, name + ".obj"));
+                var objNames = objConvertLodConf.ObjFileNamesForGml(gmlFileName);
+                var objAssetPaths = objNames.Select(name => Path.Combine(importDest.dirAssetPath, name + ".obj"));
                 foreach(string objAssetPath in objAssetPaths)
                 {
                     // CityMapMetaData を生成します。
@@ -130,7 +128,7 @@ namespace PLATEAU.Editor.CityImport
             
             // 後処理
             EditorUtility.SetDirty(metaData);
-            AssetDatabase.ImportAsset(config.importDestPath.dirAssetPath);
+            AssetDatabase.ImportAsset(importDest.dirAssetPath);
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
             int failureCount = loopCount - successCount;
