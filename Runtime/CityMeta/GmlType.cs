@@ -22,7 +22,7 @@ namespace PLATEAU.CityMeta
         CityFurniture,
         /// <summary> 起伏（地形情報） </summary>
         DigitalElevationModel,
-        /// <summary> その他 </summary>
+        /// <summary> その他（都市計画決定情報、土地利用(luse, land use)、災害リスク） </summary>
         Etc
     }
 
@@ -34,7 +34,7 @@ namespace PLATEAU.CityMeta
         /// <summary>
         /// 接頭辞は主にフォルダ名に使われます。Enum型と接頭辞の対応辞書です。
         /// </summary>
-        private static readonly Dictionary<GmlType, string> prefixDict = new Dictionary<GmlType, string>()
+        private static readonly IReadOnlyDictionary<GmlType, string> prefixDict = new Dictionary<GmlType, string>
         {
             { Building, "bldg" },
             { Transport, "trans" },
@@ -46,7 +46,7 @@ namespace PLATEAU.CityMeta
         /// <summary>
         /// ディスプレイ文字列は GUI で利用されます。Enum型とその分かりやすい単語の対応辞書です。
         /// </summary>
-        private static readonly Dictionary<GmlType, string> displayDict = new Dictionary<GmlType, string>()
+        private static readonly IReadOnlyDictionary<GmlType, string> displayDict = new Dictionary<GmlType, string>
         {
             { Building, "建築物" },
             { Transport, "道路" },
@@ -54,6 +54,24 @@ namespace PLATEAU.CityMeta
             { CityFurniture, "都市設備" },
             { DigitalElevationModel, "起伏(地形情報)" },
             { Etc, "その他" }
+        };
+
+        /// <summary>
+        /// 地物タイプごとに、存在しうるLODの範囲が仕様書で定められています。その範囲の辞書です。
+        /// 国交省仕様書 Ver2 の 5ページ目を参照してください。
+        /// <see href="https://www.mlit.go.jp/plateau/file/libraries/doc/plateau_doc_0001_ver02.pdf"/>
+        /// </summary>
+        private static readonly IReadOnlyDictionary<GmlType, ReadOnlyMinMax<int>> lodRangeDict = new Dictionary<GmlType, ReadOnlyMinMax<int>>
+        {
+            { Building, new ReadOnlyMinMax<int>(0,3) },
+            { Transport, new ReadOnlyMinMax<int>(1,3) },
+            { Vegetation, new ReadOnlyMinMax<int>(1,3) },
+            { CityFurniture, new ReadOnlyMinMax<int>(1,3) },
+            { DigitalElevationModel, new ReadOnlyMinMax<int>(1,3) },
+            
+            // 国交省仕様書 v2 の5ページによると、「その他」に属する 都市計画決定情報、土地利用、災害リスク のLODはすべて 1 です。
+            // しかし実際のデータを見ると他のLODも含まれているため、Etc は全LODを想定します。
+            { Etc, new ReadOnlyMinMax<int>(0,3) }
         };
         
         /// <summary>
@@ -110,6 +128,14 @@ namespace PLATEAU.CityMeta
             }
 
             throw new ArgumentOutOfRangeException($"{nameof(t)}", "Unknown Type.");
+        }
+
+        /// <summary>
+        /// その地物タイプについて、仕様上存在しうるLODの範囲を返します。
+        /// </summary>
+        public static ReadOnlyMinMax<int> PossibleLodRange(this GmlType t)
+        {
+            return lodRangeDict[t];
         }
 
         /// <summary>

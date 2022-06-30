@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using PLATEAU.Util;
+using UnityEditor;
 using UnityEngine;
 
 namespace PLATEAU.CityMeta
@@ -34,6 +35,29 @@ namespace PLATEAU.CityMeta
                     pair => pair.Key,
                     pair => new MinMax<float>(pair.Value.Min, pair.Value.Max)
                 );
+        }
+
+        public void ClampLodRangeToPossibleVal()
+        {
+            foreach (var pair in this.TypeLodDict)
+            {
+                var type = pair.Key;
+                var possibleMinMax = type.PossibleLodRange();
+                var lodVal = pair.Value;
+                int min = Math.Max(lodVal.Min, possibleMinMax.Min);
+                int max = Math.Min(lodVal.Max, possibleMinMax.Max);
+                lodVal.SetMinMax(min, max);
+            }
+
+            foreach (var pair in this.TypeLodSliderDict)
+            {
+                var type = pair.Key;
+                var possibleMinMax = type.PossibleLodRange();
+                var sliderVal = pair.Value;
+                float min = Math.Max(sliderVal.Min, possibleMinMax.Min);
+                float max = Math.Min(sliderVal.Max, possibleMinMax.Max);
+                sliderVal.SetMinMax(min, max);
+            }
         }
         
         /// <summary>

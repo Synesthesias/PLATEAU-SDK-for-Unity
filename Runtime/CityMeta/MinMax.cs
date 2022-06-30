@@ -48,4 +48,20 @@ namespace PLATEAU.CityMeta
             }
         }
     }
+
+    /// <summary>
+    /// <see cref="MinMax{T}"/> の値を readonly にしたバージョンです。 
+    /// </summary>
+    internal class ReadOnlyMinMax<T> where T : IComparable
+    {
+        private readonly MinMax<T> minMax;
+
+        public ReadOnlyMinMax(T min, T max)
+        {
+            minMax = new MinMax<T>(min, max);
+        }
+
+        public T Min => this.minMax.Min;
+        public T Max => this.minMax.Max;
+    }
 }
