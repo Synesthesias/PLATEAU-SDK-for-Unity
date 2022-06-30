@@ -145,6 +145,7 @@ namespace PLATEAU.Tests.EditModeTests
             {
                 meshGranularity = meshGranularity,
                 UdxPathBeforeImport = testUdxPath,
+                exportAppearance = false,
                 importDestPath =
                 {
                     dirAssetPath = PathUtil.FullPathToAssetsPath(testOutputDir)

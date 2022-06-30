@@ -54,15 +54,22 @@ namespace PLATEAU.Editor.Converters
             set => this.DllConvertOption.MaxLOD = (uint)value;
         }
 
+        public bool ExportAppearance
+        {
+            get => this.DllConvertOption.ExportAppearance;
+            set => this.DllConvertOption.ExportAppearance = value;
+        }
+
 
         // TODO 次の設定を含めるようにする。　ReferencePoint, MinLOD, MaxLOD, ExportLowerLOD
         public GmlToObjConverterConfig(
+            bool exportAppearance = true,
             MeshGranularity meshGranularity = MeshGranularity.PerPrimaryFeatureObject,
             bool doAutoSetReferencePoint = true,
             Vector3? manualReferencePoint = null,
             DllLogLevel logLevel = DllLogLevel.Error,
             bool optimizeFlag = true,
-            AxesConversion axesConversion = AxesConversion.RUF
+            AxesConversion axesConversion = AxesConversion.WUN
         )
         {
             this.DoAutoSetReferencePoint = doAutoSetReferencePoint;
@@ -73,7 +80,7 @@ namespace PLATEAU.Editor.Converters
             {
                 MeshAxes = axesConversion,
                 MeshGranularity = meshGranularity,
-                ConvertLatLon = true
+                ExportAppearance = exportAppearance
             };
         }
     }

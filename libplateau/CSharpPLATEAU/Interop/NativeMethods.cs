@@ -78,7 +78,7 @@ namespace PLATEAU.Interop
         public uint MaxLOD;
         [MarshalAs(UnmanagedType.U1)] public bool ExportLowerLOD;
         [MarshalAs(UnmanagedType.U1)] public bool ExportAppearance;
-        [MarshalAs(UnmanagedType.U1)] public bool ConvertLatLon;
+        public float UnitScale;
     }
 
     public enum APIResult

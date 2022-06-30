@@ -204,7 +204,8 @@ namespace PLATEAU.Editor.CityImport
                 {
                     MeshGranularity = importerConfig.meshGranularity,
                     LogLevel = importerConfig.logLevel,
-                    DoAutoSetReferencePoint = false
+                    DoAutoSetReferencePoint = false,
+                    ExportAppearance = true
                 };
                 var gmlType = GmlFileNameParser.GetGmlTypeEnum(gmlFullPath);
                 (int minLod, int maxLod) = importerConfig.objConvertLodConfig.GetMinMaxLodForType(gmlType);

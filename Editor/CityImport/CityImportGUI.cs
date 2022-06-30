@@ -5,7 +5,6 @@ using PLATEAU.Interop;
 using PLATEAU.IO;
 using PLATEAU.Util;
 using UnityEditor;
-using UnityEngine;
 
 namespace PLATEAU.Editor.CityImport
 {
@@ -34,7 +33,6 @@ namespace PLATEAU.Editor.CityImport
             this.udxFolderSelectorGUI = new InputFolderSelectorGUI(OnUdxPathChanged);
             this.gmlSearcherGUI = new GmlSearcherGUI();
             this.gmlSearcher = new GmlSearcher();
-            // this.objConvertLodConfig = new ObjConvertLodConfig();
             this.objConvertLodGUI = new ObjConvertLodGUI();
             this.scenePlacementGUI = new ScenePlacementGUI();
             this.exportFolderSelectorGUI = new ExportFolderSelectorGUI();
@@ -73,11 +71,12 @@ namespace PLATEAU.Editor.CityImport
                 config.importDestPath.dirAssetPath = this.exportFolderSelectorGUI.Draw(config.importDestPath.dirAssetPath);
                 
                 // 変換設定
-                HeaderDrawer.Draw("変換設定");
+                HeaderDrawer.Draw("3Dモデル 変換設定");
                 HeaderDrawer.IncrementDepth();
                 HeaderDrawer.Draw("基本変換設定");
                 using (PlateauEditorStyle.VerticalScopeLevel1())
                 {
+                    config.exportAppearance = EditorGUILayout.Toggle("テクスチャを含める", config.exportAppearance);
                     config.optimizeFlag = EditorGUILayout.Toggle("最適化", config.optimizeFlag);
                     config.meshGranularity =
                         (MeshGranularity)EditorGUILayout.EnumPopup("オブジェクト分けの粒度", config.meshGranularity);
@@ -109,6 +108,7 @@ namespace PLATEAU.Editor.CityImport
                     {
                         if (PlateauEditorStyle.MainButton("出力"))
                         {
+                            // インポート開始します。
                             this.cityImporter.Import(gmlFiles.ToArray(), config, out _);
                         }
                     }

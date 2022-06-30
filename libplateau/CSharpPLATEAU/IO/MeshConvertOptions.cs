@@ -4,16 +4,25 @@ using PLATEAU.Interop;
 namespace PLATEAU.IO
 {
     /// <summary>
-    /// 変換座標系<br/>
     /// 各列挙子について、3つのアルファベットはXYZ軸がどの方角、方向になるかを表しています。<br/>
     /// N,S,E,Wはそれぞれ北,南,東,西<br/>
-    /// U,D,L,R,F,Bはそれぞれ上,下,左,右,前,後<br/>
+    /// U,Dはそれぞれ上,下<br/>
     /// に対応します。<br/>
     /// </summary>
     public enum AxesConversion
     {
-        WNU,
-        RUF
+        /// <summary>
+        /// PLATEAUでの座標系
+        /// </summary>
+        ENU,
+        /// <summary>
+        /// Unityでの座標系
+        /// </summary>
+        WUN,
+        /// <summary>
+        /// Unreal Engineでの座標系
+        /// </summary>
+        NWU
     }
 
     /// <summary>
@@ -107,12 +116,12 @@ namespace PLATEAU.IO
         }
 
         /// <summary>
-        /// 緯度経度からメートルへの変換を行うかどうかを指定します。
+        /// メートル法基準での単位の倍率を指定します。
         /// </summary>
-        public bool ConvertLatLon
+        public float UnitScale
         {
-            get => this.data.ConvertLatLon;
-            set => this.data.ConvertLatLon = value;
+            get => this.data.UnitScale;
+            set => this.data.UnitScale = value;
         }
 
         internal MeshConvertOptionsData Data => this.data;

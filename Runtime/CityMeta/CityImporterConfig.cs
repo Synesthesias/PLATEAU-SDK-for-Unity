@@ -41,6 +41,9 @@ namespace PLATEAU.CityMeta
         public ScenePlacementConfig scenePlacementConfig = new ScenePlacementConfig();
 
         public ObjConvertLodConfig objConvertLodConfig = new ObjConvertLodConfig();
+
+        /// <summary> obj変換時にテクスチャを含めるかどうか </summary>
+        public bool exportAppearance = true;
         
         /// <summary> インポート時に最適化するかどうか </summary>
         public bool optimizeFlag = true;

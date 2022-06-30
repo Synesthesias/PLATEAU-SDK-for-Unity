@@ -91,8 +91,9 @@ namespace PLATEAU.Tests.EditModeTests
             {
                 var conf = converter.Config;
                 conf.MeshGranularity = meshGranularity;
-                conf.AxesConversion = AxesConversion.RUF;
+                conf.AxesConversion = AxesConversion.WUN;
                 conf.OptimizeFlag = true;
+                conf.ExportAppearance = false;
                 converter.Config = conf;
                 bool result = converter.Convert(inputFilePath, outputDirectory);
                 Assert.IsTrue(result, "objへの変換が成功する");
