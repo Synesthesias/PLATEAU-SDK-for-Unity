@@ -33,7 +33,7 @@ namespace PLATEAU.Editor.CityImport
         {
             var placeMethod = typeConf.placeMethod;
             placeMethod = (ScenePlacementConfig.PlaceMethod)
-                EditorGUILayout.EnumPopup("シーン配置方法", placeMethod);
+                EditorGUILayout.Popup("シーン配置方法", (int)placeMethod, new []{"全LODを配置","最大LODを配置", "最小LODを配置", "選択LODを配置、なければ配置しない", "選択LODを配置、なければ最大LODを配置", "配置しない"});
             typeConf.placeMethod = placeMethod;
             if (placeMethod.DoUseSelectedLod())
             {

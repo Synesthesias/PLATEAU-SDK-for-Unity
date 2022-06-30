@@ -77,8 +77,10 @@ namespace PLATEAU.Editor.CityImport
                 {
                     config.exportAppearance = EditorGUILayout.Toggle("テクスチャを含める", config.exportAppearance);
                     config.optimizeFlag = EditorGUILayout.Toggle("最適化", config.optimizeFlag);
-                    config.meshGranularity =
-                        (MeshGranularity)EditorGUILayout.EnumPopup("オブジェクト分けの粒度", config.meshGranularity);
+                    // config.meshGranularity =
+                    //     (MeshGranularity)EditorGUILayout.EnumPopup("オブジェクト分けの粒度", config.meshGranularity);
+                    config.meshGranularity = (MeshGranularity)EditorGUILayout.Popup("オブジェクト分けの粒度", (int)config.meshGranularity,
+                        new string[] { "最小地物単位", "主要地物単位", "都市モデル地域単位" });
                     config.logLevel = (DllLogLevel)EditorGUILayout.EnumPopup("(開発者向け)ログの詳細度", config.logLevel);
                 }
                 HeaderDrawer.Draw("LOD設定（3Dモデル変換）");
