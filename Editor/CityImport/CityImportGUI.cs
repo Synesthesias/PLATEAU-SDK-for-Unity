@@ -22,7 +22,6 @@ namespace PLATEAU.Editor.CityImport
         private readonly InputFolderSelectorGUI udxFolderSelectorGUI;
         private readonly GmlSearcherGUI gmlSearcherGUI;
         private readonly GmlSearcher gmlSearcher;
-        // private readonly ObjConvertLodConfig objConvertLodConfig;
         private readonly ObjConvertLodGUI objConvertLodGUI;
         private readonly ScenePlacementGUI scenePlacementGUI;
         private readonly ExportFolderSelectorGUI exportFolderSelectorGUI;

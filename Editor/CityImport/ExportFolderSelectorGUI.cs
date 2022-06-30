@@ -22,8 +22,7 @@ namespace PLATEAU.Editor.CityImport
             using (PlateauEditorStyle.VerticalScopeLevel1())
             {
                 EditorGUILayout.LabelField("出力先フォルダ");
-                string displayExportPath = string.IsNullOrEmpty(exportAssetPath) ? "未選択" : exportAssetPath;
-                PlateauEditorStyle.MultiLineLabelWithBox(displayExportPath);
+                
                 if (PlateauEditorStyle.MiniButton("参照..."))
                 {
                     // ボタン押下時
@@ -39,6 +38,9 @@ namespace PLATEAU.Editor.CityImport
                         exportAssetPath = PathUtil.FullPathToAssetsPath(selectedFullPath);
                     }
                 }
+                
+                string displayExportPath = string.IsNullOrEmpty(exportAssetPath) ? "未選択" : exportAssetPath;
+                PlateauEditorStyle.MultiLineLabelWithBox(displayExportPath);
             }
 
             return exportAssetPath;

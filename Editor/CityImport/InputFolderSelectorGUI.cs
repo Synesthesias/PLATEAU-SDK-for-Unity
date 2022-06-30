@@ -43,10 +43,8 @@ namespace PLATEAU.Editor.CityImport
             using (PlateauEditorStyle.VerticalScopeLevel1())
             {
                 EditorGUILayout.LabelField("入力フォルダ");
-                string displayFolderPath = string.IsNullOrEmpty(this.folderPath) ? "未選択" : this.folderPath;
-                PlateauEditorStyle.MultiLineLabelWithBox(displayFolderPath);
-
-                    if (PlateauEditorStyle.MiniButton("参照..."))
+                
+                if (PlateauEditorStyle.MiniButton("参照..."))
                 {
                     string selectedPath = EditorUtility.OpenFolderPanel(title, Application.dataPath, "udx");
                     if (!string.IsNullOrEmpty(selectedPath))
@@ -55,6 +53,9 @@ namespace PLATEAU.Editor.CityImport
                         OnPathChanged?.Invoke(this.folderPath);
                     }
                 }
+                
+                string displayFolderPath = string.IsNullOrEmpty(this.folderPath) ? "未選択" : this.folderPath;
+                PlateauEditorStyle.MultiLineLabelWithBox(displayFolderPath);
             }
 
 

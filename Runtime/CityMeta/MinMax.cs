@@ -31,6 +31,11 @@ namespace PLATEAU.CityMeta
             SwapIfReversed();
         }
 
+        public void SetMinMax(MinMax<T> minmax)
+        {
+            SetMinMax(minmax.Min, minmax.Max);
+        }
+
         public T Min => this.min;
 
         public T Max => this.max;
@@ -63,5 +68,7 @@ namespace PLATEAU.CityMeta
 
         public T Min => this.minMax.Min;
         public T Max => this.minMax.Max;
+
+        public MinMax<T> ToWritable => new MinMax<T>(Min, Max);
     }
 }

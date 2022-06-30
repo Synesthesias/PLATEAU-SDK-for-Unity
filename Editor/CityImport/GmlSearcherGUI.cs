@@ -32,17 +32,7 @@ namespace PLATEAU.Editor.CityImport
             HeaderDrawer.Draw("含める地域");
             using (PlateauEditorStyle.VerticalScopeLevel1())
             {
-                searcherConfig.areaIds = gmlSearcher.AreaIds;
-                int areaCount = searcherConfig.areaIds.Length;
-                if (searcherConfig.isAreaIdTarget.Length != areaCount)
-                {
-                    Initialize(gmlSearcher, searcherConfig);
-                }
-                for (int i = 0; i < areaCount; i++)
-                {
-                    searcherConfig.isAreaIdTarget[i] = EditorGUILayout.Toggle(searcherConfig.areaIds[i].ToString(), searcherConfig.isAreaIdTarget[i]);
-                }
-
+                
                 using (new EditorGUILayout.HorizontalScope())
                 {
                     if (PlateauEditorStyle.MiniButton("すべて選択"))
@@ -55,6 +45,17 @@ namespace PLATEAU.Editor.CityImport
                         searcherConfig.SetAllAreaId(false);
                     }
                 }
+                
+                searcherConfig.areaIds = gmlSearcher.AreaIds;
+                int areaCount = searcherConfig.areaIds.Length;
+                if (searcherConfig.isAreaIdTarget.Length != areaCount)
+                {
+                    Initialize(gmlSearcher, searcherConfig);
+                }
+                for (int i = 0; i < areaCount; i++)
+                {
+                    searcherConfig.isAreaIdTarget[i] = EditorGUILayout.Toggle(searcherConfig.areaIds[i].ToString(), searcherConfig.isAreaIdTarget[i]);
+                }
             }
             
             
@@ -62,15 +63,6 @@ namespace PLATEAU.Editor.CityImport
             HeaderDrawer.Draw("含める地物");
             using (PlateauEditorStyle.VerticalScopeLevel1())
             {
-                var typeConfDict = searcherConfig.gmlTypeTarget.IsTypeTargetDict;
-                foreach (var gmlType in typeConfDict.Keys.ToArray())
-                {
-                    string typeText = gmlType.ToDisplay();
-                    var isTypeTarget = typeConfDict[gmlType];
-                    isTypeTarget = EditorGUILayout.Toggle(typeText, isTypeTarget);
-                    typeConfDict[gmlType] = isTypeTarget;
-                }
-
                 using (new EditorGUILayout.HorizontalScope())
                 {
                     if (PlateauEditorStyle.MiniButton("すべて選択"))
@@ -83,7 +75,16 @@ namespace PLATEAU.Editor.CityImport
                         searcherConfig.SetAllTypeTarget(false);
                     }
                 }
-            
+                
+                var typeConfDict = searcherConfig.gmlTypeTarget.IsTypeTargetDict;
+                foreach (var gmlType in typeConfDict.Keys.ToArray())
+                {
+                    string typeText = gmlType.ToDisplay();
+                    var isTypeTarget = typeConfDict[gmlType];
+                    isTypeTarget = EditorGUILayout.Toggle(typeText, isTypeTarget);
+                    typeConfDict[gmlType] = isTypeTarget;
+                }
+
             }
 
             HeaderDrawer.Draw("対象gmlファイル");

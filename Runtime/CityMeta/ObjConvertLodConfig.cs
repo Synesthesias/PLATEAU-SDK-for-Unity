@@ -93,37 +93,39 @@ namespace PLATEAU.CityMeta
             return (min, max);
         }
 
-        /// <summary> 各タイプのLOD範囲を、仕様上ありうる範囲すべてに設定します。 </summary>
-        public void SetToAllRange()
+        private void SetLodRange(Func<GmlType, MinMax<int>> gmlTypeToLodRangeFunc)
         {
             foreach (var type in this.TypeLodDict.Keys)
             {
-                var possibleLod = type.PossibleLodRange();
-                this.TypeLodDict[type].SetMinMax(possibleLod.Min, possibleLod.Max);
+                this.TypeLodDict[type].SetMinMax(gmlTypeToLodRangeFunc(type));
             }
             LodToSliderVal();
+        }
+
+        /// <summary> 各タイプのLOD範囲を、仕様上ありうる範囲すべてに設定します。 </summary>
+        public void SetToAllRange()
+        {
+            SetLodRange(type => type.PossibleLodRange().ToWritable);
         }
         
         /// <summary> 各タイプのLOD範囲を、仕様上の最小LODのみに設定します。 </summary>
         public void SetToOnlyMin()
         {
-            foreach (var type in this.TypeLodDict.Keys)
+            SetLodRange(type =>
             {
-                var possibleLod = type.PossibleLodRange();
-                this.TypeLodDict[type].SetMinMax(possibleLod.Min, possibleLod.Min);
-            }
-            LodToSliderVal();
+                int min = type.PossibleLodRange().Min;
+                return new MinMax<int>(min, min);
+            });
         }
 
         /// <summary> 各タイプのLOD範囲を、仕様上の最大LODのみに設定します。 </summary>
         public void SetToOnlyMax()
         {
-            foreach (var type in this.TypeLodDict.Keys)
+            SetLodRange(type =>
             {
-                var possibleLod = type.PossibleLodRange();
-                this.TypeLodDict[type].SetMinMax(possibleLod.Max, possibleLod.Max);
-            }
-            LodToSliderVal();
+                int max = type.PossibleLodRange().Max;
+                return new MinMax<int>(max, max);
+            });
         }
         
         /// <summary> シリアライズするときに List形式に直します。 </summary>
