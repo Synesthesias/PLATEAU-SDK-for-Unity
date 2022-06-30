@@ -17,11 +17,11 @@ namespace PLATEAU.Editor.CityImport
                 var gmlTypes = placementConf.PerTypeConfigs.Keys;
                 foreach (var gmlType in gmlTypes)
                 {
-                    EditorGUILayout.LabelField(GmlTypeConvert.ToDisplay(gmlType));
+                    EditorGUILayout.LabelField(gmlType.ToDisplay());
                     using (PlateauEditorStyle.VerticalScopeLevel2())
                     {
                         var typeConf = placementConf.PerTypeConfigs[gmlType];
-                        DrawPerTypeConfGUI(typeConf); 
+                        DrawPerTypeConfGUI(typeConf, gmlType); 
                     }
                                
                 }
@@ -29,7 +29,7 @@ namespace PLATEAU.Editor.CityImport
             
         }
 
-        private void DrawPerTypeConfGUI(ScenePlacementConfigPerType typeConf)
+        private void DrawPerTypeConfGUI(ScenePlacementConfigPerType typeConf, GmlType gmlType)
         {
             var placeMethod = typeConf.placeMethod;
             placeMethod = (ScenePlacementConfig.PlaceMethod)
@@ -37,7 +37,8 @@ namespace PLATEAU.Editor.CityImport
             typeConf.placeMethod = placeMethod;
             if (placeMethod.DoUseSelectedLod())
             {
-                typeConf.selectedLod = EditorGUILayout.IntSlider("配置LOD", typeConf.selectedLod, 0, 3);
+                var possibleLodRange = gmlType.PossibleLodRange();
+                typeConf.selectedLod = EditorGUILayout.IntSlider("配置LOD", typeConf.selectedLod, possibleLodRange.Min, possibleLodRange.Max);
             }
         }
     }
