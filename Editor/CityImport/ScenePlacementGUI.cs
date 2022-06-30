@@ -1,6 +1,7 @@
 ﻿using PLATEAU.CityMeta;
 using PLATEAU.Editor.EditorWindowCommon;
 using UnityEditor;
+using UnityEngine;
 
 namespace PLATEAU.Editor.CityImport
 {
@@ -12,6 +13,7 @@ namespace PLATEAU.Editor.CityImport
     {
         public void Draw(ScenePlacementConfig placementConf)
         {
+            string[] enumDisplay = ScenePlacementConfig.PlaceMethodDisplay;
             using (PlateauEditorStyle.VerticalScopeLevel1())
             {
                 var gmlTypes = placementConf.PerTypeConfigs.Keys;
@@ -33,7 +35,7 @@ namespace PLATEAU.Editor.CityImport
         {
             var placeMethod = typeConf.placeMethod;
             placeMethod = (ScenePlacementConfig.PlaceMethod)
-                EditorGUILayout.Popup("シーン配置方法", (int)placeMethod, new []{"全LODを配置","最大LODを配置", "最小LODを配置", "選択LODを配置、なければ配置しない", "選択LODを配置、なければ最大LODを配置", "配置しない"});
+                EditorGUILayout.Popup("シーン配置方法", (int)placeMethod, ScenePlacementConfig.PlaceMethodDisplay);
             typeConf.placeMethod = placeMethod;
             if (placeMethod.DoUseSelectedLod())
             {

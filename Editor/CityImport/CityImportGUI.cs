@@ -47,12 +47,12 @@ namespace PLATEAU.Editor.CityImport
             config.UdxPathBeforeImport = initialUdxPath;
         }
 
-        public void Draw(CityImporterConfig config)
+        public void Draw(CityImporterConfig importConfig)
         {
             // udxフォルダ選択
-            this.udxFolderSelectorGUI.FolderPath = config.UdxPathBeforeImport;
+            this.udxFolderSelectorGUI.FolderPath = importConfig.UdxPathBeforeImport;
             string sourcePath = this.udxFolderSelectorGUI.Draw("udxフォルダ選択");
-            config.UdxPathBeforeImport = sourcePath;
+            importConfig.UdxPathBeforeImport = sourcePath;
 
             // udxフォルダが選択されているなら、設定と出力のGUIを表示
             if (GmlSearcher.IsPathUdx(sourcePath))
@@ -64,10 +64,10 @@ namespace PLATEAU.Editor.CityImport
                 }
                 
                 // 変換対象の絞り込み
-                var gmlFiles = this.gmlSearcherGUI.Draw(this.gmlSearcher, ref config.gmlSearcherConfig);
+                var gmlFiles = this.gmlSearcherGUI.Draw(this.gmlSearcher, ref importConfig.gmlSearcherConfig);
                 
                 // 変換先パス設定
-                config.importDestPath.dirAssetPath = this.exportFolderSelectorGUI.Draw(config.importDestPath.dirAssetPath);
+                importConfig.importDestPath.dirAssetPath = this.exportFolderSelectorGUI.Draw(importConfig.importDestPath.dirAssetPath);
                 
                 // 変換設定
                 HeaderDrawer.Draw("3Dモデル 変換設定");
@@ -75,31 +75,29 @@ namespace PLATEAU.Editor.CityImport
                 HeaderDrawer.Draw("基本変換設定");
                 using (PlateauEditorStyle.VerticalScopeLevel1())
                 {
-                    config.exportAppearance = EditorGUILayout.Toggle("テクスチャを含める", config.exportAppearance);
-                    config.optimizeFlag = EditorGUILayout.Toggle("最適化", config.optimizeFlag);
-                    // config.meshGranularity =
-                    //     (MeshGranularity)EditorGUILayout.EnumPopup("オブジェクト分けの粒度", config.meshGranularity);
-                    config.meshGranularity = (MeshGranularity)EditorGUILayout.Popup("オブジェクト分けの粒度", (int)config.meshGranularity,
+                    importConfig.exportAppearance = EditorGUILayout.Toggle("テクスチャを含める", importConfig.exportAppearance);
+                    importConfig.optimizeFlag = EditorGUILayout.Toggle("最適化", importConfig.optimizeFlag);
+                    importConfig.meshGranularity = (MeshGranularity)EditorGUILayout.Popup("オブジェクト分けの粒度", (int)importConfig.meshGranularity,
                         new string[] { "最小地物単位", "主要地物単位", "都市モデル地域単位" });
-                    config.logLevel = (DllLogLevel)EditorGUILayout.EnumPopup("(開発者向け)ログの詳細度", config.logLevel);
+                    importConfig.logLevel = (DllLogLevel)EditorGUILayout.EnumPopup("(開発者向け)ログの詳細度", importConfig.logLevel);
                 }
                 HeaderDrawer.Draw("LOD設定（3Dモデル変換）");
                 using (PlateauEditorStyle.VerticalScopeLevel1())
                 {
-                    this.objConvertLodGUI.Draw(config.objConvertLodConfig);
+                    this.objConvertLodGUI.Draw(importConfig.objConvertLodConfig);
                 }
                 HeaderDrawer.DecrementDepth();
                 
                 // 配置設定
                 HeaderDrawer.Draw("シーン配置設定");
-                this.scenePlacementGUI.Draw(config.scenePlacementConfig);
+                this.scenePlacementGUI.Draw(importConfig.scenePlacementConfig);
 
                 // 出力ボタン
                 HeaderDrawer.Draw("出力");
                 using (PlateauEditorStyle.VerticalScopeLevel1())
                 {
                     // 出力できない状況なら、エラーメッセージを表示してボタンを無効化します。
-                    bool importReady = IsImportReady(config, out string message);
+                    bool importReady = IsImportReady(importConfig, out string message);
                     if (!string.IsNullOrEmpty(message))
                     {
                         EditorGUILayout.HelpBox(message, MessageType.Error);
@@ -110,7 +108,7 @@ namespace PLATEAU.Editor.CityImport
                         if (PlateauEditorStyle.MainButton("出力"))
                         {
                             // インポート開始します。
-                            this.cityImporter.Import(gmlFiles.ToArray(), config, out _);
+                            this.cityImporter.Import(gmlFiles.ToArray(), importConfig, out _);
                         }
                     }
                 }

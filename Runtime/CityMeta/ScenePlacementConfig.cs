@@ -38,6 +38,11 @@ namespace PLATEAU.CityMeta
             DoNotPlace
         }
 
+        public static readonly string[] PlaceMethodDisplay = new string[]
+        {
+            "全LODを配置", "最大LODを配置", "最小LODを配置", "選択LODを配置、なければ配置しない", "選択LODを配置、なければ最大LODを配置", "配置しない"
+        };
+
         public ScenePlacementConfig()
         {
             // 各タイプごとの設定を初期化します。

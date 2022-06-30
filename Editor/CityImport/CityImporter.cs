@@ -33,15 +33,15 @@ namespace PLATEAU.Editor.CityImport
         /// 変換に成功したgmlファイルの数を返します。
         /// </summary>
         /// <param name="gmlRelativePaths">gmlファイルの相対パスのリストです。パスの起点は udx フォルダです。</param>
-        /// <param name="config">変換設定です。</param>
+        /// <param name="importConfig">変換設定です。</param>
         /// <param name="metaData">インポートによって生成されたメタデータです。</param>
-        public int Import(string[] gmlRelativePaths, CityImporterConfig config, out CityMetaData metaData)
+        public int Import(string[] gmlRelativePaths, CityImporterConfig importConfig, out CityMetaData metaData)
         {
             // 元フォルダを StreamingAssets/PLATEAU にコピーします。すでに StreamingAssets内にある場合を除きます。 
             // 設定のインポート元パスをコピー後のパスに変更します。
-            var sourcePathConf = config.sourcePath;
-            sourcePathConf.FullUdxPath = CopyImportSrcToStreamingAssets(config.UdxPathBeforeImport, gmlRelativePaths);
-            var importDest = config.importDestPath;
+            var sourcePathConf = importConfig.sourcePath;
+            sourcePathConf.FullUdxPath = CopyImportSrcToStreamingAssets(importConfig.UdxPathBeforeImport, gmlRelativePaths);
+            var importDest = importConfig.importDestPath;
             metaData = CityMetaDataGenerator.LoadOrCreateMetaData(importDest.MetaDataAssetPath, true);
 
             // gmlファイルごとのループを始めます。
@@ -58,14 +58,14 @@ namespace PLATEAU.Editor.CityImport
                 string gmlFullPath = sourcePathConf.UdxRelativeToFullPath(gmlRelativePath);
 
                 // gmlをロードします。
-                if (!TryLoadCityGml(out var cityModel, gmlFullPath, config))
+                if (!TryLoadCityGml(out var cityModel, gmlFullPath, importConfig))
                 {
                     cityModel?.Dispose();
                     continue;
                 }
                 
                 // objに変換します。
-                if (!TryConvertToObj(cityModel, ref referencePoint, config, gmlFullPath, importDest.DirFullPath))
+                if (!TryConvertToObj(cityModel, ref referencePoint, importConfig, gmlFullPath, importDest.DirFullPath))
                 {
                     // 出力されるモデルがなければ、ここで終了します。
                     cityModel?.Dispose();
@@ -76,7 +76,7 @@ namespace PLATEAU.Editor.CityImport
 
                 string gmlFileName = Path.GetFileNameWithoutExtension(gmlRelativePath);
                 var gmlType = GmlFileNameParser.GetGmlTypeEnum(gmlFileName);
-                var objConvertLodConf = config.objConvertLodConfig;
+                var objConvertLodConf = importConfig.objConvertLodConfig;
                 (int minLod, int maxLod) = objConvertLodConf.GetMinMaxLodForType(gmlType);
                 int lodCountForThisGml = 0;
                 for (int l = minLod; l <= maxLod; l++)
@@ -99,7 +99,7 @@ namespace PLATEAU.Editor.CityImport
                 
                 // 基準座標は最初のものに合わせます。
                 if (!referencePoint.HasValue) throw new Exception($"{nameof(referencePoint)} is null.");
-                config.referencePoint = referencePoint.Value;
+                importConfig.referencePoint = referencePoint.Value;
 
                 // 1つのgmlから LODごとに 0個以上の .obj ファイルが生成されます。
                 // .obj ファイルごとのループを始めます。
@@ -109,7 +109,7 @@ namespace PLATEAU.Editor.CityImport
                 foreach(string objAssetPath in objAssetPaths)
                 {
                     // CityMapMetaData を生成します。
-                    if (!TryGenerateMetaData(metaData, gmlFileName, objAssetPath, config))
+                    if (!TryGenerateMetaData(metaData, gmlFileName, objAssetPath, importConfig))
                     {
                         Debug.LogError($"Failed to generate meta data.\nobjAssetPath = {objAssetPath}");
                     }
@@ -124,10 +124,10 @@ namespace PLATEAU.Editor.CityImport
             // シーンに配置します。
             string rootDirName = PlateauSourcePath.RootDirName(sourcePathConf.udxAssetPath);
             CityMeshPlacerToScene.Place(
-                config.scenePlacementConfig, generatedObjs, rootDirName, metaData
+                importConfig.scenePlacementConfig, generatedObjs, rootDirName, metaData
             );
-            config.generatedObjFiles = generatedObjs;
-            config.rootDirName = rootDirName;
+            importConfig.generatedObjFiles = generatedObjs;
+            importConfig.rootDirName = rootDirName;
             
             // 後処理
             EditorUtility.SetDirty(metaData);
@@ -207,7 +207,7 @@ namespace PLATEAU.Editor.CityImport
                     MeshGranularity = importerConfig.meshGranularity,
                     LogLevel = importerConfig.logLevel,
                     DoAutoSetReferencePoint = false,
-                    ExportAppearance = true
+                    ExportAppearance = importerConfig.exportAppearance
                 };
                 var gmlType = GmlFileNameParser.GetGmlTypeEnum(gmlFullPath);
                 (int minLod, int maxLod) = importerConfig.objConvertLodConfig.GetMinMaxLodForType(gmlType);
