@@ -2,16 +2,44 @@
 using PLATEAU.CityMeta;
 using PLATEAU.Editor.EditorWindowCommon;
 using UnityEditor;
+using UnityEngine;
 
 namespace PLATEAU.Editor.CityImport
 {
+    /// <summary>
+    /// gmlファイルから objファイルへの変換に関して、地物タイプごとに対象のLOD範囲を設定するGUIです。
+    /// <see cref="CityImportGUI"/> によって利用されます。
+    /// </summary>
     internal class ObjConvertLodGUI
     {
+        /// <summary>
+        /// obj変換のLOD設定のGUI描画し、ユーザーのGUI操作に応じて引数である <see cref="ObjConvertLodConfig"/> の中身を書き換えます。
+        /// </summary>
         public void Draw(ObjConvertLodConfig lodConf)
         {
             using (PlateauEditorStyle.VerticalScopeLevel1())
             {
+                using (new GUILayout.HorizontalScope())
+                {
+                    if (PlateauEditorStyle.MiniButton("　全選択　"))
+                    {
+                        lodConf.SetToAllRange();
+                    }
+
+                    if (PlateauEditorStyle.MiniButton("最小値のみ"))
+                    {
+                        lodConf.SetToOnlyMin();
+                    }
+
+                    if (PlateauEditorStyle.MiniButton("最大値のみ"))
+                    {
+                        lodConf.SetToOnlyMax();
+                    }
+                }
+
                 var gmlTypes = lodConf.TypeLodDict.Keys;
+
+                // 地物タイプごとのループ
                 foreach (var gmlType in gmlTypes)
                 {
                     string typeText = gmlType.ToDisplay();

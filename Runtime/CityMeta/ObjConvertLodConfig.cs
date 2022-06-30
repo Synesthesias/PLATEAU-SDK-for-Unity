@@ -37,6 +37,9 @@ namespace PLATEAU.CityMeta
                 );
         }
 
+        /// <summary>
+        /// LOD設定が、仕様上ありえる範囲を超えている場合は、ありえる範囲まで設定範囲を縮めます。
+        /// </summary>
         public void ClampLodRangeToPossibleVal()
         {
             foreach (var pair in this.TypeLodDict)
@@ -88,6 +91,39 @@ namespace PLATEAU.CityMeta
             int min = this.TypeLodDict[t].Min;
             int max = this.TypeLodDict[t].Max;
             return (min, max);
+        }
+
+        /// <summary> 各タイプのLOD範囲を、仕様上ありうる範囲すべてに設定します。 </summary>
+        public void SetToAllRange()
+        {
+            foreach (var type in this.TypeLodDict.Keys)
+            {
+                var possibleLod = type.PossibleLodRange();
+                this.TypeLodDict[type].SetMinMax(possibleLod.Min, possibleLod.Max);
+            }
+            LodToSliderVal();
+        }
+        
+        /// <summary> 各タイプのLOD範囲を、仕様上の最小LODのみに設定します。 </summary>
+        public void SetToOnlyMin()
+        {
+            foreach (var type in this.TypeLodDict.Keys)
+            {
+                var possibleLod = type.PossibleLodRange();
+                this.TypeLodDict[type].SetMinMax(possibleLod.Min, possibleLod.Min);
+            }
+            LodToSliderVal();
+        }
+
+        /// <summary> 各タイプのLOD範囲を、仕様上の最大LODのみに設定します。 </summary>
+        public void SetToOnlyMax()
+        {
+            foreach (var type in this.TypeLodDict.Keys)
+            {
+                var possibleLod = type.PossibleLodRange();
+                this.TypeLodDict[type].SetMinMax(possibleLod.Max, possibleLod.Max);
+            }
+            LodToSliderVal();
         }
         
         /// <summary> シリアライズするときに List形式に直します。 </summary>
