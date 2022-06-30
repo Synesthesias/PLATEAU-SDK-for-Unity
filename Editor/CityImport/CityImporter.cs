@@ -86,8 +86,10 @@ namespace PLATEAU.Editor.CityImport
                     {
                         string objAssetsPath = PathUtil.FullPathToAssetsPath(objFullPath);
                         generatedObjs.Add(new ObjInfo(objAssetsPath, l, gmlType));
-                        AssetDatabase.ImportAsset(importDest.dirAssetPath);
                         lodCountForThisGml++;
+                        AssetDatabase.ImportAsset(importDest.dirAssetPath);
+                        
+                        // TODO string matPath = Path.getobjAssetsPath
                     }
                 }
                 if (lodCountForThisGml <= 0)

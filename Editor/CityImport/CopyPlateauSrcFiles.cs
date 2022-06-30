@@ -2,6 +2,7 @@
 using PLATEAU.CityMeta;
 using PLATEAU.Util;
 using UnityEditor;
+using UnityEngine;
 
 namespace PLATEAU.Editor.CityImport
 {
@@ -37,6 +38,7 @@ namespace PLATEAU.Editor.CityImport
             ProgressBar("コピー中 : codelists", 0, numGml);
             const string codelistsFolderName = "codelists";
             PathUtil.CloneDirectory(Path.Combine(PlateauSourcePath.RootDirFullPath(udxPathBeforeImport), codelistsFolderName), dest.RootDirFullPath());
+            
 
             // udxのパスです。
             // 例: Assets/StreamingAssets/PLATEAU/Tokyo/udx
@@ -74,6 +76,8 @@ namespace PLATEAU.Editor.CityImport
                     }
                 }
             }
+            AssetDatabase.ImportAsset(dest.RootDirAssetsPath());
+            Debug.Log($"Imported Asset at {dest.RootDirAssetsPath()}");
             EditorUtility.ClearProgressBar();
         }
 

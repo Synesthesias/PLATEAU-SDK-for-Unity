@@ -85,5 +85,10 @@ namespace PLATEAU.CityMeta
         {
             return PlateauSourcePath.RootDirFullPath(source.udxAssetPath);
         }
+
+        public static string RootDirAssetsPath(this PlateauSourcePath source)
+        {
+            return PathUtil.FullPathToAssetsPath(Path.GetFullPath(Path.Combine(source.udxAssetPath, "../")));
+        }
     }
 }
