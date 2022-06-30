@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using PLATEAU.CityGML;
@@ -10,6 +11,7 @@ using PLATEAU.Util;
 using UnityEditor;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
+using Object = UnityEngine.Object;
 
 namespace PLATEAU.Editor.CityImport
 {
@@ -70,7 +72,7 @@ namespace PLATEAU.Editor.CityImport
                     continue;
                 }
                 
-                // 変換した結果、どのLODのobjが生成されたかを調べます。
+                // 変換した結果、どのLODのobjが生成されたかを調べてインポートします。
 
                 string gmlFileName = Path.GetFileNameWithoutExtension(gmlRelativePath);
                 var gmlType = GmlFileNameParser.GetGmlTypeEnum(gmlFileName);
@@ -84,6 +86,7 @@ namespace PLATEAU.Editor.CityImport
                     {
                         string objAssetsPath = PathUtil.FullPathToAssetsPath(objFullPath);
                         generatedObjs.Add(new ObjInfo(objAssetsPath, l, gmlType));
+                        AssetDatabase.ImportAsset(importDest.dirAssetPath);
                         lodCountForThisGml++;
                     }
                 }
@@ -119,16 +122,15 @@ namespace PLATEAU.Editor.CityImport
             // gmlファイルごとのループ　ここまで
             
             // シーンに配置します。
-            string parentGameObjName = PlateauSourcePath.RootDirName(sourcePathConf.udxAssetPath);
+            string rootDirName = PlateauSourcePath.RootDirName(sourcePathConf.udxAssetPath);
             CityMeshPlacerToScene.Place(
-                config.scenePlacementConfig, generatedObjs, parentGameObjName, metaData
+                config.scenePlacementConfig, generatedObjs, rootDirName, metaData
             );
             config.generatedObjFiles = generatedObjs;
-            config.rootDirName = parentGameObjName;
+            config.rootDirName = rootDirName;
             
             // 後処理
             EditorUtility.SetDirty(metaData);
-            AssetDatabase.ImportAsset(importDest.dirAssetPath);
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
             int failureCount = loopCount - successCount;

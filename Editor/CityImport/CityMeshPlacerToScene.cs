@@ -89,10 +89,6 @@ namespace PLATEAU.Editor.CityImport
                 }
             }
 
-
-            // 配置すべきものがないなら、ここでメソッド終了
-            // if (objsToPlace.Count <= 0) return;
-            
             // 親を配置
             var parent = GameObject.Find(parentGameObjName);
             if (parent == null)
@@ -117,8 +113,7 @@ namespace PLATEAU.Editor.CityImport
                 var assetObj = AssetDatabase.LoadAssetAtPath<GameObject>(placingObj.assetsPath);
                 if (assetObj == null)
                 {
-                    // TODO Errorのほうがいい（ユニットテストが通るなら）
-                    Debug.LogWarning($"Failed to load '.obj' file.\nobjAssetPath = {placingObj.assetsPath}");
+                    Debug.LogError($"Failed to load '.obj' file.\nobjAssetPath = {placingObj.assetsPath}");
                     return;
                 }
 
@@ -127,7 +122,6 @@ namespace PLATEAU.Editor.CityImport
                 placedObj.name = assetObj.name;
                 placedObj.transform.parent = parent.transform;
             }
-            
         }
 
         private static void DestroyAllChild(Transform trans)
@@ -143,19 +137,6 @@ namespace PLATEAU.Editor.CityImport
             {
                 Object.DestroyImmediate(obj);
             }
-        }
-
-
-        private static Transform FindRecursive(Transform target, string name)
-        {
-            if (target.name == name) return target;
-            foreach (Transform child in target)
-            {
-                Transform found = FindRecursive(child, name);
-                if (found != null) return found;
-            }
-
-            return null;
         }
     }
 }
