@@ -135,11 +135,14 @@ namespace PLATEAU.Tests.EditModeTests
         public void When_CityMapInfo_Is_Already_Exist_Then_Clear_Its_Data_Before_Convert()
         {
             bool DoContainAtomic(CityMetaData info) => info.idToGmlTable.Keys.Any(id => id.Contains("_wall_"));
-            var simplePaths = ImportPathForTests.Simple;
-            var config = ImportConfigFactoryForTests.MinimumConfig(simplePaths.SrcUdxFullPath, simplePaths.OutputDirAssetsPath);
-            config.meshGranularity = MeshGranularity.PerAtomicFeatureObject;
-            config.SetConvertLods(2, 2);
-            this.importer.Import(simplePaths.GmlRelativePaths, config, out var metaData);
+
+            TestImporter.Import(ImportPathForTests.Simple, out var metaData,
+                config =>
+                {
+                    config.SetConvertLods(2, 2);
+                    config.meshGranularity = MeshGranularity.PerAtomicFeatureObject;
+                });
+            
             
             foreach (var key in metaData.idToGmlTable.Keys)
             {
@@ -147,11 +150,17 @@ namespace PLATEAU.Tests.EditModeTests
             }
             Assert.IsTrue(DoContainAtomic(metaData), "1回目の変換は最小地物を含むことを確認");
 
-            config.meshGranularity = MeshGranularity.PerPrimaryFeatureObject;
-            this.importer.Import(simplePaths.GmlRelativePaths, config, out var metaData2);
+            // 2回目のインポート
+            TestImporter.Import(ImportPathForTests.Simple, out metaData,
+                config =>
+                {
+                    config.SetConvertLods(2, 2);
+                    config.meshGranularity = MeshGranularity.PerPrimaryFeatureObject;
+                });
             
-            bool doContainBuilding = metaData2.idToGmlTable.Keys.Any(id => id.Contains("_BLD_"));
-            Assert.IsFalse(DoContainAtomic(metaData2), "2回目の変換は最小地物を含まないことを確認");
+            // 1回目の値は2回目のインポートでクリアされていることを確認
+            bool doContainBuilding = metaData.idToGmlTable.Keys.Any(id => id.Contains("_BLD_"));
+            Assert.IsFalse(DoContainAtomic(metaData), "2回目の変換は最小地物を含まないことを確認");
             Assert.IsTrue(doContainBuilding, "2回目の変換は主要地物を含むことを確認");
         }
 
@@ -196,9 +205,7 @@ namespace PLATEAU.Tests.EditModeTests
         [Test]
         public void SrcPath_Of_MetaData_Is_Set_To_Post_Copy_Path()
         {
-            var simplePaths = ImportPathForTests.Simple;
-            var config = ImportConfigFactoryForTests.MinimumConfig(simplePaths.SrcUdxFullPath, simplePaths.OutputDirAssetsPath);
-            this.importer.Import(simplePaths.GmlRelativePaths, config, out var metaData);
+            TestImporter.Import(ImportPathForTests.Simple, out var metaData, _ => { });
             
             string expectedUdxPath = Path.Combine(testDefaultCopyDestPath, "TestDataSimpleGml", "udx").Replace('\\', '/');
             string fullUdxPath = metaData.cityImportConfig.sourcePath.FullUdxPath;
