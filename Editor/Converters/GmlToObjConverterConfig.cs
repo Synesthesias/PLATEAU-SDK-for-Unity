@@ -8,10 +8,11 @@ namespace PLATEAU.Editor.Converters
     /// <summary>
     /// <see cref="GmlToObjConverter"/> の設定を保持するクラスです。
     /// </summary>
+    
     internal class GmlToObjConverterConfig
     {
         /// <summary> C++側の変換器に渡すオプションです。 </summary>
-        public MeshConvertOptions DllConvertOption = new MeshConvertOptions();
+        public MeshConvertOptions DllConvertOption { get; } = new MeshConvertOptions();
 
         /// <summary>
         /// true の場合、変換の座標の基準点を自動で設定します。
@@ -59,7 +60,6 @@ namespace PLATEAU.Editor.Converters
         }
 
 
-        // TODO 次の設定を含めるようにする？　ReferencePoint, MinLOD, MaxLOD, ExportLowerLOD
         public GmlToObjConverterConfig(
             bool exportAppearance = true,
             MeshGranularity meshGranularity = MeshGranularity.PerPrimaryFeatureObject,
