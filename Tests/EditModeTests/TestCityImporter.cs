@@ -20,25 +20,12 @@ namespace PLATEAU.Tests.EditModeTests
     public class TestCityImporter
     {
         private CityImporter importer;
-        private static readonly string testUdxPathTokyo = DirectoryUtil.TestTokyoMiniUdxPath;
+        // private static readonly string testUdxPathTokyo = DirectoryUtil.TestTokyoMiniUdxPath;
 
         private static readonly string testOutputDir = DirectoryUtil.TempAssetFolderPath;
         private static readonly string testOutputDirAssetsPath = PathUtil.FullPathToAssetsPath(DirectoryUtil.TempAssetFolderPath);
 
-        private static readonly string[] testGmlRelativePathsTokyo =
-        {
-            "bldg/53394525_bldg_6697_2_op.gml",
-            "dem/533925_dem_6697_op.gml"
-        };
 
-        private static readonly string testUdxPathSimple = DirectoryUtil.TestDataSimpleUdxPath;
-
-        private static readonly string[] testGmlRelativePathsSimple =
-        {
-            "bldg/53392642_bldg_6697_op2.gml"
-        };
-
-        
 
         private static readonly string testDefaultCopyDestPath = Path.Combine(DirectoryUtil.TempAssetFolderPath, "PLATEAU");
 
@@ -66,13 +53,14 @@ namespace PLATEAU.Tests.EditModeTests
         [Test]
         public void When_Inputs_Are_2_Gmls_Then_Outputs_Are_Multiple_Objs_And_1_IdTable()
         {
-            var config = ImportConfigFactoryForTests.MinimumConfig(testUdxPathTokyo, testOutputDirAssetsPath);
+            var tokyoPaths = ImportPathForTests.Tokyo2;
+            var config = ImportConfigFactoryForTests.MinimumConfig(tokyoPaths.SrcUdxFullPath, tokyoPaths.OutputDirAssetsPath);
             config.SetConvertLods(new Dictionary<GmlType, MinMax<int>>
             {
                 { GmlType.Building, new MinMax<int>(0, 2) },
                 { GmlType.DigitalElevationModel, new MinMax<int>(1, 1) }
             });
-            this.importer.Import(testGmlRelativePathsTokyo, config, out _);
+            this.importer.Import(tokyoPaths.GmlRelativePaths, config, out _);
             
             
             // 変換後、出力されたファイルの数を数えます。
@@ -98,9 +86,10 @@ namespace PLATEAU.Tests.EditModeTests
         public void ReferencePoint_Is_Set_To_First_ReferencePoint()
         {
             LogAssert.ignoreFailingMessages = true;
-            // 2つのGMLファイルを変換します。
-            var config = ImportConfigFactoryForTests.MinimumConfig(testUdxPathTokyo, testOutputDirAssetsPath);
-            this.importer.Import(testGmlRelativePathsTokyo, config, out var metaData);
+            // 2つのGMLファイルを変換対象とします。
+            var tokyoPaths = ImportPathForTests.Tokyo2;
+            var config = ImportConfigFactoryForTests.MinimumConfig(tokyoPaths.SrcUdxFullPath, tokyoPaths.OutputDirAssetsPath);
+            this.importer.Import(tokyoPaths.GmlRelativePaths, config, out var metaData);
             
             
             LogAssert.ignoreFailingMessages = false;
@@ -109,7 +98,7 @@ namespace PLATEAU.Tests.EditModeTests
             var recordedReferencePoint = metaData.cityImportConfig.referencePoint;
 
             // 値2 : GmlToObjFileConverter にかけたときの Reference Point を取得します。
-            string gmlFilePath = Path.Combine(testUdxPathTokyo, testGmlRelativePathsTokyo[0]);
+            string gmlFilePath = Path.Combine(tokyoPaths.SrcUdxFullPath, tokyoPaths.GmlRelativePaths[0]);
             var cityModel = CityGml.Load(
                 gmlFilePath,
                 new CitygmlParserParams(),
@@ -125,10 +114,11 @@ namespace PLATEAU.Tests.EditModeTests
         public void MeshGranularity_Is_Written_To_MetaData()
         {
             // 値1: 変換時の MeshGranularity の設定
+            var tokyoPaths = ImportPathForTests.Tokyo2;
             var granularityOnConvert = MeshGranularity.PerAtomicFeatureObject;
-            var config = ImportConfigFactoryForTests.MinimumConfig(testUdxPathTokyo, testOutputDirAssetsPath);
+            var config = ImportConfigFactoryForTests.MinimumConfig(tokyoPaths.SrcUdxFullPath, tokyoPaths.OutputDirAssetsPath);
             config.meshGranularity = granularityOnConvert;
-            this.importer.Import(testGmlRelativePathsTokyo, config, out _);
+            this.importer.Import(tokyoPaths.GmlRelativePaths, config, out _);
 
             // 値2: CityMapInfo に書き込まれた MeshGranularity の値
             string metaDataPath =
@@ -145,11 +135,11 @@ namespace PLATEAU.Tests.EditModeTests
         public void When_CityMapInfo_Is_Already_Exist_Then_Clear_Its_Data_Before_Convert()
         {
             bool DoContainAtomic(CityMetaData info) => info.idToGmlTable.Keys.Any(id => id.Contains("_wall_"));
-
-            var config = ImportConfigFactoryForTests.MinimumConfig(testUdxPathSimple, testOutputDirAssetsPath);
+            var simplePaths = ImportPathForTests.Simple;
+            var config = ImportConfigFactoryForTests.MinimumConfig(simplePaths.SrcUdxFullPath, simplePaths.OutputDirAssetsPath);
             config.meshGranularity = MeshGranularity.PerAtomicFeatureObject;
             config.SetConvertLods(2, 2);
-            this.importer.Import(testGmlRelativePathsSimple, config, out var metaData);
+            this.importer.Import(simplePaths.GmlRelativePaths, config, out var metaData);
             
             foreach (var key in metaData.idToGmlTable.Keys)
             {
@@ -158,7 +148,7 @@ namespace PLATEAU.Tests.EditModeTests
             Assert.IsTrue(DoContainAtomic(metaData), "1回目の変換は最小地物を含むことを確認");
 
             config.meshGranularity = MeshGranularity.PerPrimaryFeatureObject;
-            this.importer.Import(testGmlRelativePathsSimple, config, out var metaData2);
+            this.importer.Import(simplePaths.GmlRelativePaths, config, out var metaData2);
             
             bool doContainBuilding = metaData2.idToGmlTable.Keys.Any(id => id.Contains("_BLD_"));
             Assert.IsFalse(DoContainAtomic(metaData2), "2回目の変換は最小地物を含まないことを確認");
@@ -168,9 +158,9 @@ namespace PLATEAU.Tests.EditModeTests
         [Test]
         public void Importing_Mini_Tokyo_Ends_With_Success()
         {
-
-            var config = ImportConfigFactoryForTests.MinimumConfig(testUdxPathTokyo, testOutputDirAssetsPath);
-            int numSuccess = this.importer.Import(testGmlRelativePathsTokyo, config, out _);
+            var tokyoPaths = ImportPathForTests.Tokyo2;
+            var config = ImportConfigFactoryForTests.MinimumConfig(tokyoPaths.SrcUdxFullPath, tokyoPaths.OutputDirAssetsPath);
+            int numSuccess = this.importer.Import(tokyoPaths.GmlRelativePaths, config, out _);
 
             Assert.AreEqual(2, numSuccess);
         }
@@ -178,9 +168,10 @@ namespace PLATEAU.Tests.EditModeTests
         [Test]
         public void When_Lod_Is_2_to_2_Then_Only_Lod2_Objs_Are_Generated()
         {
-            var config = ImportConfigFactoryForTests.MinimumConfig(testUdxPathSimple, testOutputDirAssetsPath);
+            var simplePaths = ImportPathForTests.Simple;
+            var config = ImportConfigFactoryForTests.MinimumConfig(simplePaths.SrcUdxFullPath, simplePaths.OutputDirAssetsPath);
             config.SetConvertLods(2, 2);
-            this.importer.Import(testGmlRelativePathsSimple, config, out _);
+            this.importer.Import(simplePaths.GmlRelativePaths, config, out _);
 
             string gmlId = "53392642_bldg_6697_op2";
             bool lod2Exists = File.Exists(Path.Combine(testOutputDir, $"LOD2_{gmlId}.obj"));
@@ -192,10 +183,10 @@ namespace PLATEAU.Tests.EditModeTests
         [Test]
         public void When_Lod_Is_0_to_1_Then_Only_2_Objs_Are_Generated()
         {
-
-            var config = ImportConfigFactoryForTests.MinimumConfig(testUdxPathSimple, testOutputDirAssetsPath);
+            var simplePaths = ImportPathForTests.Simple;
+            var config = ImportConfigFactoryForTests.MinimumConfig(simplePaths.SrcUdxFullPath, simplePaths.OutputDirAssetsPath);
             config.SetConvertLods(0, 1);
-            this.importer.Import(testGmlRelativePathsSimple, config, out _);
+            this.importer.Import(simplePaths.GmlRelativePaths, config, out _);
             
             string gmlId = "53392642_bldg_6697_op2";
             bool lod2Exists = File.Exists(Path.Combine(testOutputDir, $"LOD2_{gmlId}.obj"));
@@ -209,8 +200,9 @@ namespace PLATEAU.Tests.EditModeTests
         [Test]
         public void SrcPath_Of_MetaData_Is_Set_To_Post_Copy_Path()
         {
-            var config = ImportConfigFactoryForTests.MinimumConfig(testUdxPathSimple, testOutputDirAssetsPath);
-            this.importer.Import(testGmlRelativePathsSimple, config, out var metaData);
+            var simplePaths = ImportPathForTests.Simple;
+            var config = ImportConfigFactoryForTests.MinimumConfig(simplePaths.SrcUdxFullPath, simplePaths.OutputDirAssetsPath);
+            this.importer.Import(simplePaths.GmlRelativePaths, config, out var metaData);
             
             string expectedUdxPath = Path.Combine(testDefaultCopyDestPath, "TestDataSimpleGml", "udx").Replace('\\', '/');
             string fullUdxPath = metaData.cityImportConfig.sourcePath.FullUdxPath;

@@ -38,6 +38,9 @@ namespace PLATEAU.Tests.TestUtils
             return conf;
         }
         
+        /// <summary>
+        /// objファイル変換において、辞書によってLOD範囲を指定します。
+        /// </summary>
         public static CityImportConfig SetConvertLods(this CityImportConfig conf, Dictionary<GmlType, MinMax<int>> argDict)
         {
             var lodDict = conf.objConvertTypesConfig.TypeLodDict;
@@ -50,6 +53,9 @@ namespace PLATEAU.Tests.TestUtils
             return conf;
         }
 
+        /// <summary>
+        /// objファイル変換において、各タイプ一括で <paramref name="minLod"/>, <paramref name="maxLod"/> を指定します。
+        /// </summary>
         public static CityImportConfig SetConvertLods(this CityImportConfig conf, int minLod, int maxLod)
         {
             conf.objConvertTypesConfig.SetLodRangeByFunc(_ => new MinMax<int>(minLod, maxLod));
