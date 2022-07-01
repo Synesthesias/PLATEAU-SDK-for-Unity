@@ -65,18 +65,22 @@ namespace PLATEAU.Tests.EditModeTests
         }
 
         [Test]
-        public void Test_PlaceMethod_PlaceSelectedLodOrDoNotPlace()
+        public void Test_PlaceMethod_PlaceSelectedLodOrDoNotPlace_Of_DoNotPlace_Part()
         {
-            var allObjs = Object.FindObjectsOfType<GameObject>();
-            foreach (var obj in allObjs)
-            {
-                Debug.Log(obj.name);
-            }
-            
             CheckSimpleObjPlacedToScene(PlaceMethod.PlaceSelectedLodOrDoNotPlace, 0, 1, -1,
                 new Dictionary<int, bool>
                 {
                     { 0, false }, { 1, false }
+                }
+            );
+        }
+
+        [Test]
+        public void Test_PlaceMethod_PlaceSelectedLodOrDoNotPlace_Of_SelectedLod_Part()
+        {
+            CheckSimpleObjPlacedToScene(PlaceMethod.PlaceSelectedLodOrDoNotPlace, 0, 1, 0, new Dictionary<int, bool>
+                {
+                    { 0, true }, { 1, false }
                 }
             );
         }
