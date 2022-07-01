@@ -135,16 +135,8 @@ namespace PLATEAU.Tests.EditModeTests
             int minLodBuilding, int maxLodBuilding,
             int selectedLod, PlaceMethod buildingPlaceMethod)
         {
-            var config = new CityImporterConfig
-            {
-                meshGranularity = meshGranularity,
-                UdxPathBeforeImport = testUdxPath,
-                exportAppearance = false,
-                importDestPath =
-                {
-                    dirAssetPath = PathUtil.FullPathToAssetsPath(testOutputDir)
-                },
-            };
+            var config = ImportUtil.MinimumConfig(testUdxPath, PathUtil.FullPathToAssetsPath(testOutputDir));
+            config.meshGranularity = meshGranularity;
             var typeConf = config.objConvertTypesConfig;
             var typeLodDict = typeConf.TypeLodDict;
             typeLodDict[GmlType.Building].SetMinMax(minLodBuilding, maxLodBuilding);
