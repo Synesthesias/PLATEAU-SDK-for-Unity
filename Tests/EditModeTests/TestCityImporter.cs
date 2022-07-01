@@ -72,7 +72,6 @@ namespace PLATEAU.Tests.EditModeTests
                 { GmlType.Building, new MinMax<int>(0, 2) },
                 { GmlType.DigitalElevationModel, new MinMax<int>(1, 1) }
             });
-            config.objConvertTypesConfig.SetExportLowerLodForAllTypes(true);
             this.importer.Import(testGmlRelativePathsTokyo, config, out _);
             
             
@@ -185,8 +184,10 @@ namespace PLATEAU.Tests.EditModeTests
         public void When_Lod_Is_0_to_1_Then_Only_2_Objs_Are_Generated()
         {
 
-            Import(testUdxPathSimple, testGmlRelativePathsSimple, MeshGranularity.PerCityModelArea, out _,  0, 1);
-
+            var config = ImportUtil.MinimumConfig(testUdxPathSimple, PathUtil.FullPathToAssetsPath(testOutputDir));
+            config.SetConvertLods(0, 1);
+            this.importer.Import(testGmlRelativePathsSimple, config, out _);
+            
             string gmlId = "53392642_bldg_6697_op2";
             bool lod2Exists = File.Exists(Path.Combine(testOutputDir, $"LOD2_{gmlId}.obj"));
             bool lod1Exists = File.Exists(Path.Combine(testOutputDir, $"LOD1_{gmlId}.obj"));
@@ -199,8 +200,9 @@ namespace PLATEAU.Tests.EditModeTests
         [Test]
         public void SrcPath_Of_MetaData_Is_Set_To_Post_Copy_Path()
         {
-            Import(testUdxPathSimple, testGmlRelativePathsSimple, MeshGranularity.PerCityModelArea, out var metaData, 0,
-                0);
+            var config = ImportUtil.MinimumConfig(testUdxPathSimple, PathUtil.FullPathToAssetsPath(testOutputDir));
+            this.importer.Import(testGmlRelativePathsSimple, config, out var metaData);
+            
             string expectedUdxPath = Path.Combine(testDefaultCopyDestPath, "TestDataSimpleGml", "udx").Replace('\\', '/');
             string fullUdxPath = metaData.cityImporterConfig.sourcePath.FullUdxPath;
             string actualUdxPath = fullUdxPath.Replace('\\', '/');
@@ -215,8 +217,7 @@ namespace PLATEAU.Tests.EditModeTests
         
 
         private void Import(string testUdxPath, string[] gmlRelativePaths, MeshGranularity meshGranularity, out CityMetaData metaData,
-            int minLodBuilding, int maxLodBuilding,
-            int selectedLod = 0, PlaceMethod buildingPlaceMethod = PlaceMethod.PlaceSelectedLodOrMax)
+            int minLodBuilding, int maxLodBuilding)
         {
             var config = ImportUtil.MinimumConfig(testUdxPath, PathUtil.FullPathToAssetsPath(testOutputDir));
             config.meshGranularity = meshGranularity;
@@ -225,10 +226,7 @@ namespace PLATEAU.Tests.EditModeTests
             typeLodDict[GmlType.Building].SetMinMax(minLodBuilding, maxLodBuilding);
             var typeLodModeDict = typeConf.TypeExportLowerLodDict;
             typeLodModeDict[GmlType.Building] = true;
-            var placeTypeConfigs = config.scenePlacementConfig.PerTypeConfigs;
-            placeTypeConfigs[GmlType.Building].placeMethod = buildingPlaceMethod;
-            placeTypeConfigs[GmlType.Building].selectedLod = selectedLod;
-            
+
             Debug.Log($"minLodBuilding = {minLodBuilding}, Dict[Building].Min={typeLodDict[GmlType.Building].Min}");
             
             this.importer.Import(gmlRelativePaths, config, out metaData);

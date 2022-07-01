@@ -29,7 +29,7 @@ namespace PLATEAU.Tests.TestUtils
             // タイプ別 3Dモデル変換設定
             var convertTypeConf = conf.objConvertTypesConfig;
             convertTypeConf.SetLodRangeToOnlyMin();
-            convertTypeConf.SetExportLowerLodForAllTypes(false);
+            convertTypeConf.SetExportLowerLodForAllTypes(true);
             // タイプ別 シーン配置設定
             var placeTypeConf = conf.scenePlacementConfig;
             placeTypeConf.SetPlaceMethodForAllTypes(ScenePlacementConfig.PlaceMethod.DoNotPlace);
