@@ -50,13 +50,6 @@ namespace PLATEAU.Editor.CityImport
                         objsToPlace.Add(maxLodObj);
                         break;
                     }
-                    case PlaceMethod.PlaceMinLod:
-                    {
-                        var minLod = availableObjsOfType.Min(obj => obj.lod);
-                        var minLodObj = availableObjsOfType.First(obj => obj.lod == minLod);
-                        objsToPlace.Add(minLodObj);
-                        break;
-                    }
                     case PlaceMethod.PlaceSelectedLodOrDoNotPlace:
                     {
                         var found = availableObjsOfType.FirstOrDefault(obj => obj.lod == selectedLod);
@@ -71,13 +64,14 @@ namespace PLATEAU.Editor.CityImport
                     case PlaceMethod.PlaceSelectedLodOrMax:
                     {
                         var found = availableObjsOfType.FirstOrDefault(obj => obj.lod == selectedLod);
-                        if (found == null)
+                        if (found != null)
                         {
-                            var maxLod = availableObjsOfType.Max(obj => obj.lod);
-                            var maxLodObj = availableObjsOfType.First(obj => obj.lod == maxLod);
-                            objsToPlace.Add(maxLodObj);
+                            objsToPlace.Add(found);
+                            break;
                         }
-
+                        var maxLod = availableObjsOfType.Max(obj => obj.lod);
+                        var maxLodObj = availableObjsOfType.First(obj => obj.lod == maxLod);
+                        objsToPlace.Add(maxLodObj);
                         break;
                     }
                     case PlaceMethod.DoNotPlace:

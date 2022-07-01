@@ -65,16 +65,6 @@ namespace PLATEAU.Tests.EditModeTests
         }
 
         [Test]
-        public void Test_PlaceMinLod()
-        {
-            CheckSimpleObjPlacedToScene(PlaceMethod.PlaceMinLod, 0, 1, 1,
-                new Dictionary<int, bool>
-                {
-                    { 0, true }, { 1, false }
-                });
-        }
-        
-        [Test]
         public void Test_PlaceMethod_PlaceSelectedLodOrDoNotPlace()
         {
             var allObjs = Object.FindObjectsOfType<GameObject>();

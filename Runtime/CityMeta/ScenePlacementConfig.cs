@@ -28,8 +28,6 @@ namespace PLATEAU.CityMeta
             PlaceAllLod,
             /// <summary> 変換したLODのうち最大のものをシーンに配置します。 </summary>
             PlaceMaxLod,
-            /// <summary> 変換したLODのうち最小のものをシーンに配置します。 </summary>
-            PlaceMinLod,
             /// <summary> 選択したLODを配置します。そのLODが見つからなければ配置しません。 </summary>
             PlaceSelectedLodOrDoNotPlace,
             /// <summary> 選択したLODを配置します。そのLODが見つからなければ、見つかる中で最大のLODを配置します。 </summary>
@@ -40,7 +38,7 @@ namespace PLATEAU.CityMeta
 
         public static readonly string[] PlaceMethodDisplay = new string[]
         {
-            "全LODを配置", "最大LODを配置", "最小LODを配置", "選択LODを配置、なければ配置しない", "選択LODを配置、なければ最大LODを配置", "配置しない"
+            "全LODを配置", "最大LODを配置", "選択LODを配置、なければ配置しない", "選択LODを配置、なければ最大LODを配置", "配置しない"
         };
 
         public ScenePlacementConfig()
