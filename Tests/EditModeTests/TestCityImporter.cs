@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using PLATEAU.CityGML;
@@ -65,8 +66,15 @@ namespace PLATEAU.Tests.EditModeTests
         [Test]
         public void When_Inputs_Are_2_Gmls_Then_Outputs_Are_Multiple_Objs_And_1_IdTable()
         {
-
-            Import(testUdxPathTokyo, testGmlRelativePathsTokyo, MeshGranularity.PerCityModelArea, out _, 0, 2, 1, 1);
+            var config = ImportUtil.MinimumConfig(testUdxPathTokyo, PathUtil.FullPathToAssetsPath(testOutputDir));
+            config.SetConvertLods(new Dictionary<GmlType, MinMax<int>>
+            {
+                { GmlType.Building, new MinMax<int>(0, 2) },
+                { GmlType.DigitalElevationModel, new MinMax<int>(1, 1) }
+            });
+            config.objConvertTypesConfig.SetExportLowerLodForAllTypes(true);
+            this.importer.Import(testGmlRelativePathsTokyo, config, out _);
+            
             
             // 変換後、出力されたファイルの数を数えます。
             int objCount = 0;
@@ -116,7 +124,7 @@ namespace PLATEAU.Tests.EditModeTests
         {
             // 値1: 変換時の MeshGranularity の設定
             var granularityOnConvert = MeshGranularity.PerAtomicFeatureObject;
-            Import(testUdxPathTokyo, testGmlRelativePathsTokyo, granularityOnConvert, out _, 0, 2, 1, 1);
+            Import(testUdxPathTokyo, testGmlRelativePathsTokyo, granularityOnConvert, out _, 0, 2);
 
             // 値2: CityMapInfo に書き込まれた MeshGranularity の値
             string metaDataPath =
@@ -152,8 +160,15 @@ namespace PLATEAU.Tests.EditModeTests
         [Test]
         public void Importing_Mini_Tokyo_Ends_With_Success()
         {
-            int numSuccess = Import(testUdxPathTokyo, testGmlRelativePathsTokyo,
-                MeshGranularity.PerPrimaryFeatureObject, out _, 1, 1, 1, 1);
+
+            var config = ImportUtil.MinimumConfig(testUdxPathTokyo, PathUtil.FullPathToAssetsPath(testOutputDir));
+            config.SetConvertLods(new Dictionary<GmlType, MinMax<int>>
+            {
+                { GmlType.Building, new MinMax<int>(1, 1) },
+                { GmlType.DigitalElevationModel, new MinMax<int>(1, 1) }
+            });
+            config.objConvertTypesConfig.SetExportLowerLodForAllTypes(true);
+            int numSuccess = this.importer.Import(testGmlRelativePathsTokyo, config, out _);
 
             Assert.AreEqual(2, numSuccess);
         }
@@ -204,8 +219,8 @@ namespace PLATEAU.Tests.EditModeTests
         }
         
 
-        private int Import(string testUdxPath, string[] gmlRelativePaths, MeshGranularity meshGranularity, out CityMetaData metaData,
-            int minLodBuilding, int maxLodBuilding, int minLodDem = 0, int maxLodDem = 0,
+        private void Import(string testUdxPath, string[] gmlRelativePaths, MeshGranularity meshGranularity, out CityMetaData metaData,
+            int minLodBuilding, int maxLodBuilding,
             int selectedLod = 0, PlaceMethod buildingPlaceMethod = PlaceMethod.PlaceSelectedLodOrMax)
         {
             var config = ImportUtil.MinimumConfig(testUdxPath, PathUtil.FullPathToAssetsPath(testOutputDir));
@@ -213,7 +228,6 @@ namespace PLATEAU.Tests.EditModeTests
             var typeConf = config.objConvertTypesConfig;
             var typeLodDict = typeConf.TypeLodDict;
             typeLodDict[GmlType.Building].SetMinMax(minLodBuilding, maxLodBuilding);
-            typeLodDict[GmlType.DigitalElevationModel].SetMinMax(minLodDem, maxLodDem);
             var typeLodModeDict = typeConf.TypeExportLowerLodDict;
             typeLodModeDict[GmlType.Building] = true;
             var placeTypeConfigs = config.scenePlacementConfig.PerTypeConfigs;
@@ -222,8 +236,7 @@ namespace PLATEAU.Tests.EditModeTests
             
             Debug.Log($"minLodBuilding = {minLodBuilding}, Dict[Building].Min={typeLodDict[GmlType.Building].Min}");
             
-            int numSuccess = this.importer.Import(gmlRelativePaths, config, out metaData);
-            return numSuccess;
+            this.importer.Import(gmlRelativePaths, config, out metaData);
         }
 
         
