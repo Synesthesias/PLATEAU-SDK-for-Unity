@@ -230,8 +230,7 @@ namespace PLATEAU.Editor.CityImport
                     manualReferencePoint = referencePoint.Value;
                 }
                 
-                // configを作成します。
-                // TODO こんなふうにデータをコピーするなら、始めから GmlToObjConverterConfig を保持して直接代入していったほうが良いのでは？
+                // 変換設定を作成します。この設定は gml 1つに対する変換に関して利用されます。
                 var converterConf = new GmlToObjConverterConfig(
                     exportAppearance:        importerConfig.exportAppearance,
                     meshGranularity:         importerConfig.meshGranularity,
