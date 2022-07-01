@@ -76,7 +76,6 @@ namespace PLATEAU.Editor.CityImport
                 using (PlateauEditorStyle.VerticalScopeLevel1())
                 {
                     importConfig.exportAppearance = EditorGUILayout.Toggle("テクスチャを含める", importConfig.exportAppearance);
-                    importConfig.optimizeFlag = EditorGUILayout.Toggle("最適化", importConfig.optimizeFlag);
                     importConfig.meshGranularity = (MeshGranularity)EditorGUILayout.Popup("オブジェクト分けの粒度", (int)importConfig.meshGranularity,
                         new string[] { "最小地物単位", "主要地物単位", "都市モデル地域単位" });
                     importConfig.logLevel = (DllLogLevel)EditorGUILayout.EnumPopup("(開発者向け)ログの詳細度", importConfig.logLevel);

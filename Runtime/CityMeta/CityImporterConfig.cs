@@ -44,10 +44,7 @@ namespace PLATEAU.CityMeta
 
         /// <summary> obj変換時にテクスチャを含めるかどうか </summary>
         public bool exportAppearance = true;
-        
-        /// <summary> インポート時に最適化するかどうか </summary>
-        public bool optimizeFlag = true;
-        
+
         /// <summary> オブジェクト分けの粒度 </summary>
         public MeshGranularity meshGranularity = MeshGranularity.PerPrimaryFeatureObject;
         
