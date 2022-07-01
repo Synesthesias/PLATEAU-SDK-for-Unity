@@ -11,7 +11,7 @@ namespace PLATEAU.Editor.Converters
     internal class GmlToObjConverterConfig
     {
         /// <summary> C++側の変換器に渡すオプションです。 </summary>
-        public MeshConvertOptions DllConvertOption;
+        public MeshConvertOptions DllConvertOption = new MeshConvertOptions();
 
         /// <summary>
         /// true の場合、変換の座標の基準点を自動で設定します。
@@ -27,19 +27,17 @@ namespace PLATEAU.Editor.Converters
         /// <summary> 取得するログの細かさです。 </summary>
         public DllLogLevel LogLevel;
 
-        /// <summary> 最適化をするかどうかです。 </summary>
-        public bool OptimizeFlag;
 
+        public bool ExportAppearance
+        {
+            get => this.DllConvertOption.ExportAppearance;
+            set => this.DllConvertOption.ExportAppearance = value;
+        }
+        
         public MeshGranularity MeshGranularity
         {
             get => this.DllConvertOption.MeshGranularity;
             set => this.DllConvertOption.MeshGranularity = value;
-        }
-
-        public AxesConversion AxesConversion
-        {
-            get => this.DllConvertOption.MeshAxes;
-            set => this.DllConvertOption.MeshAxes = value;
         }
 
         public int MinLod
@@ -54,12 +52,6 @@ namespace PLATEAU.Editor.Converters
             set => this.DllConvertOption.MaxLOD = (uint)value;
         }
 
-        public bool ExportAppearance
-        {
-            get => this.DllConvertOption.ExportAppearance;
-            set => this.DllConvertOption.ExportAppearance = value;
-        }
-
         public bool ExportLowerLod
         {
             get => this.DllConvertOption.ExportLowerLOD;
@@ -71,23 +63,22 @@ namespace PLATEAU.Editor.Converters
         public GmlToObjConverterConfig(
             bool exportAppearance = true,
             MeshGranularity meshGranularity = MeshGranularity.PerPrimaryFeatureObject,
+            int minLod = 0,
+            int maxLod = 3,
+            bool exportLowerLod = true,
             bool doAutoSetReferencePoint = true,
             Vector3? manualReferencePoint = null,
-            DllLogLevel logLevel = DllLogLevel.Error,
-            bool optimizeFlag = true,
-            AxesConversion axesConversion = AxesConversion.WUN
+            DllLogLevel logLevel = DllLogLevel.Error
         )
         {
+            ExportAppearance = exportAppearance;
+            MeshGranularity = meshGranularity;
+            MinLod = minLod;
+            MaxLod = maxLod;
+            ExportLowerLod = exportLowerLod;
             this.DoAutoSetReferencePoint = doAutoSetReferencePoint;
             this.ManualReferencePoint = manualReferencePoint;
             this.LogLevel = logLevel;
-            this.OptimizeFlag = optimizeFlag;
-            this.DllConvertOption = new MeshConvertOptions()
-            {
-                MeshAxes = axesConversion,
-                MeshGranularity = meshGranularity,
-                ExportAppearance = exportAppearance
-            };
         }
     }
 }

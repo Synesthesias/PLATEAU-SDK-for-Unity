@@ -41,7 +41,8 @@ namespace PLATEAU.Editor.Converters
             logger.SetLogCallbacks(DllLogCallback.UnityLogCallbacks);
             logger.SetLogLevel(conf.LogLevel);
             this.dllLogger = logger;
-            parserParams.Optimize = conf.OptimizeFlag;
+            // TODO parserParams の2つの値が強制的に true になるのは分かりにくい。もっといいインターフェイスがあるはず。
+            parserParams.Optimize = true; // Unityでは基本的に Optimize は全部 true で良いです。
             parserParams.Tessellate = true; // true でないと、頂点の代わりに LinearRing が生成されてしまい 3Dモデルには不適になります。
             this.meshConverter.Options = conf.DllConvertOption;
         }

@@ -214,32 +214,35 @@ namespace PLATEAU.Editor.CityImport
         {
             using (var objConverter = new GmlToObjConverter())
             {
-                // configを作成します。
-                var converterConf = new GmlToObjConverterConfig
-                {
-                    MeshGranularity = importerConfig.meshGranularity,
-                    LogLevel = importerConfig.logLevel,
-                    DoAutoSetReferencePoint = false,
-                    ExportAppearance = importerConfig.exportAppearance
-                };
+                
+                // configの値を作ります。
                 var gmlType = GmlFileNameParser.GetGmlTypeEnum(gmlFullPath);
                 (int minLod, int maxLod) = importerConfig.objConvertTypesConfig.GetMinMaxLodForType(gmlType);
-                // TODO ここは上のブラケットの中に含めた方が分かりやすいかも
-                converterConf.MinLod = minLod;
-                converterConf.MaxLod = maxLod;
-                converterConf.ExportLowerLod = importerConfig.objConvertTypesConfig.TypeExportLowerLodDict[gmlType];
-
+                Vector3? manualReferencePoint;
                 // Reference Pointは最初のものに合わせます。
                 if (referencePoint == null)
                 {
                     referencePoint = objConverter.SetValidReferencePoint(cityModel);
-                    converterConf.ManualReferencePoint = referencePoint;
+                    manualReferencePoint = referencePoint;
                 }
                 else
                 {
-                    converterConf.ManualReferencePoint = referencePoint.Value;
+                    manualReferencePoint = referencePoint.Value;
                 }
-
+                
+                // configを作成します。
+                // TODO こんなふうにデータをコピーするなら、始めから GmlToObjConverterConfig を保持して直接代入していったほうが良いのでは？
+                var converterConf = new GmlToObjConverterConfig(
+                    exportAppearance:        importerConfig.exportAppearance,
+                    meshGranularity:         importerConfig.meshGranularity,
+                    minLod:                  minLod,
+                    maxLod:                  maxLod,
+                    exportLowerLod:          importerConfig.objConvertTypesConfig.TypeExportLowerLodDict[gmlType],
+                    doAutoSetReferencePoint: false,
+                    manualReferencePoint:    manualReferencePoint,
+                    logLevel:               importerConfig.logLevel
+                );
+                
                 objConverter.Config = converterConf;
 
                 bool isSuccess = objConverter.ConvertWithoutLoad(cityModel, gmlFullPath, objDestDirFullPath);

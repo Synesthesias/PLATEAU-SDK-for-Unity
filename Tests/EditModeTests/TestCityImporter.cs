@@ -212,15 +212,18 @@ namespace PLATEAU.Tests.EditModeTests
             {
                 meshGranularity = meshGranularity,
                 UdxPathBeforeImport = testUdxPath,
-                exportAppearance = false, 
+                exportAppearance = false,
                 importDestPath =
                 {
                     dirAssetPath = PathUtil.FullPathToAssetsPath(testOutputDir)
                 },
             };
-            var typeLodDict = config.objConvertTypesConfig.TypeLodDict;
+            var typeConf = config.objConvertTypesConfig;
+            var typeLodDict = typeConf.TypeLodDict;
             typeLodDict[GmlType.Building].SetMinMax(minLodBuilding, maxLodBuilding);
             typeLodDict[GmlType.DigitalElevationModel].SetMinMax(minLodDem, maxLodDem);
+            var typeLodModeDict = typeConf.TypeExportLowerLodDict;
+            typeLodModeDict[GmlType.Building] = true;
             var placeTypeConfigs = config.scenePlacementConfig.PerTypeConfigs;
             placeTypeConfigs[GmlType.Building].placeMethod = buildingPlaceMethod;
             placeTypeConfigs[GmlType.Building].selectedLod = selectedLod;

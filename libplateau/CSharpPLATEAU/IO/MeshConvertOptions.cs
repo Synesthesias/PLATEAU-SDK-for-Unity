@@ -129,6 +129,7 @@ namespace PLATEAU.IO
         public MeshConvertOptions()
         {
             this.data = NativeMethods.plateau_create_mesh_convert_options();
+            MeshAxes = AxesConversion.WUN; // Unityでは必ず WNU
         }
 
         internal MeshConvertOptions(MeshConvertOptionsData data)
