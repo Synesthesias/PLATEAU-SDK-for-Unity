@@ -19,8 +19,6 @@ namespace PLATEAU.Tests.EditModeTests
     [TestFixture]
     public class TestCityImporter
     {
-        private CityImporter importer;
-        // private static readonly string testUdxPathTokyo = DirectoryUtil.TestTokyoMiniUdxPath;
 
         private static readonly string testOutputDir = DirectoryUtil.TempAssetFolderPath;
         private static readonly string testOutputDirAssetsPath = PathUtil.FullPathToAssetsPath(DirectoryUtil.TempAssetFolderPath);
@@ -34,8 +32,6 @@ namespace PLATEAU.Tests.EditModeTests
         [SetUp]
         public void SetUp()
         {
-            this.importer = new CityImporter();
-            this.importer = new CityImporter();
             DirectoryUtil.SetUpTempAssetFolder();
             
             // テスト用に一時的に MultiGmlConverter のデフォルト出力先を変更します。
@@ -53,14 +49,16 @@ namespace PLATEAU.Tests.EditModeTests
         [Test]
         public void When_Inputs_Are_2_Gmls_Then_Outputs_Are_Multiple_Objs_And_1_IdTable()
         {
-            var tokyoPaths = ImportPathForTests.Tokyo2;
-            var config = ImportConfigFactoryForTests.MinimumConfig(tokyoPaths.SrcUdxFullPath, tokyoPaths.OutputDirAssetsPath);
-            config.SetConvertLods(new Dictionary<GmlType, MinMax<int>>
-            {
-                { GmlType.Building, new MinMax<int>(0, 2) },
-                { GmlType.DigitalElevationModel, new MinMax<int>(1, 1) }
-            });
-            this.importer.Import(tokyoPaths.GmlRelativePaths, config, out _);
+
+            TestImporter.Import(ImportPathForTests.Tokyo2, out _,
+                config =>
+                {
+                    config.SetConvertLods(new Dictionary<GmlType, MinMax<int>>
+                    {
+                        { GmlType.Building, new MinMax<int>(0, 2) },
+                        { GmlType.DigitalElevationModel, new MinMax<int>(1, 1) }
+                    });
+                });
             
             
             // 変換後、出力されたファイルの数を数えます。
@@ -88,10 +86,8 @@ namespace PLATEAU.Tests.EditModeTests
             LogAssert.ignoreFailingMessages = true;
             // 2つのGMLファイルを変換対象とします。
             var tokyoPaths = ImportPathForTests.Tokyo2;
-            var config = ImportConfigFactoryForTests.MinimumConfig(tokyoPaths.SrcUdxFullPath, tokyoPaths.OutputDirAssetsPath);
-            this.importer.Import(tokyoPaths.GmlRelativePaths, config, out var metaData);
-            
-            
+            TestImporter.Import(tokyoPaths, out var metaData, _ => { });
+
             LogAssert.ignoreFailingMessages = false;
             
             // 値1 : CityMapInfo に記録された Reference Point を取得します。
@@ -114,11 +110,13 @@ namespace PLATEAU.Tests.EditModeTests
         public void MeshGranularity_Is_Written_To_MetaData()
         {
             // 値1: 変換時の MeshGranularity の設定
-            var tokyoPaths = ImportPathForTests.Tokyo2;
             var granularityOnConvert = MeshGranularity.PerAtomicFeatureObject;
-            var config = ImportConfigFactoryForTests.MinimumConfig(tokyoPaths.SrcUdxFullPath, tokyoPaths.OutputDirAssetsPath);
-            config.meshGranularity = granularityOnConvert;
-            this.importer.Import(tokyoPaths.GmlRelativePaths, config, out _);
+
+            TestImporter.Import(ImportPathForTests.Tokyo2, out _,
+                config =>
+                {
+                    config.meshGranularity = granularityOnConvert;
+                });
 
             // 値2: CityMapInfo に書き込まれた MeshGranularity の値
             string metaDataPath =
