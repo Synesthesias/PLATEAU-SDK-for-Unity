@@ -37,7 +37,7 @@ namespace PLATEAU.Tests.TestUtils
             
             return conf;
         }
-
+        
         public static CityImporterConfig SetConvertLods(this CityImporterConfig conf, Dictionary<GmlType, MinMax<int>> argDict)
         {
             var lodDict = conf.objConvertTypesConfig.TypeLodDict;
@@ -47,6 +47,12 @@ namespace PLATEAU.Tests.TestUtils
                 lodDict[type] = argLodRange;
             }
 
+            return conf;
+        }
+
+        public static CityImporterConfig SetConvertLods(this CityImporterConfig conf, int minLod, int maxLod)
+        {
+            conf.objConvertTypesConfig.SetLodRangeByFunc(_ => new MinMax<int>(minLod, maxLod));
             return conf;
         }
     }

@@ -162,12 +162,6 @@ namespace PLATEAU.Tests.EditModeTests
         {
 
             var config = ImportUtil.MinimumConfig(testUdxPathTokyo, PathUtil.FullPathToAssetsPath(testOutputDir));
-            config.SetConvertLods(new Dictionary<GmlType, MinMax<int>>
-            {
-                { GmlType.Building, new MinMax<int>(1, 1) },
-                { GmlType.DigitalElevationModel, new MinMax<int>(1, 1) }
-            });
-            config.objConvertTypesConfig.SetExportLowerLodForAllTypes(true);
             int numSuccess = this.importer.Import(testGmlRelativePathsTokyo, config, out _);
 
             Assert.AreEqual(2, numSuccess);
@@ -176,8 +170,9 @@ namespace PLATEAU.Tests.EditModeTests
         [Test]
         public void When_Lod_Is_2_to_2_Then_Only_Lod2_Objs_Are_Generated()
         {
-
-            Import(testUdxPathSimple, testGmlRelativePathsSimple, MeshGranularity.PerCityModelArea, out _, 2, 2);
+            var config = ImportUtil.MinimumConfig(testUdxPathSimple, PathUtil.FullPathToAssetsPath(testOutputDir));
+            config.SetConvertLods(2, 2);
+            this.importer.Import(testGmlRelativePathsSimple, config, out _);
 
             string gmlId = "53392642_bldg_6697_op2";
             bool lod2Exists = File.Exists(Path.Combine(testOutputDir, $"LOD2_{gmlId}.obj"));

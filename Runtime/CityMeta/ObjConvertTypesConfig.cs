@@ -102,7 +102,7 @@ namespace PLATEAU.CityMeta
             return (min, max);
         }
 
-        private void SetLodRange(Func<GmlType, MinMax<int>> gmlTypeToLodRangeFunc)
+        public void SetLodRangeByFunc(Func<GmlType, MinMax<int>> gmlTypeToLodRangeFunc)
         {
             foreach (var type in this.TypeLodDict.Keys)
             {
@@ -114,13 +114,13 @@ namespace PLATEAU.CityMeta
         /// <summary> 各タイプのLOD範囲を、仕様上ありうる範囲すべてに設定します。 </summary>
         public void SetLodRangeToAllRange()
         {
-            SetLodRange(type => type.PossibleLodRange().ToWritable);
+            SetLodRangeByFunc(type => type.PossibleLodRange().ToWritable);
         }
         
         /// <summary> 各タイプのLOD範囲を、仕様上の最小LODのみに設定します。 </summary>
         public void SetLodRangeToOnlyMin()
         {
-            SetLodRange(type =>
+            SetLodRangeByFunc(type =>
             {
                 int min = type.PossibleLodRange().Min;
                 return new MinMax<int>(min, min);
@@ -130,13 +130,13 @@ namespace PLATEAU.CityMeta
         /// <summary> 各タイプのLOD範囲を、仕様上の最大LODのみに設定します。 </summary>
         public void SetLodRangeToOnlyMax()
         {
-            SetLodRange(type =>
+            SetLodRangeByFunc(type =>
             {
                 int max = type.PossibleLodRange().Max;
                 return new MinMax<int>(max, max);
             });
         }
-
+        
         // TODO このメソッドを使って、 ExportLowerLod のGUIで一括選択ボタンを置いた方が便利そう
         public void SetExportLowerLodForAllTypes(bool exportLower)
         {
