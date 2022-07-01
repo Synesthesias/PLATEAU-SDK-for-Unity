@@ -32,7 +32,7 @@ namespace PLATEAU.Editor.CityImport
                 return;
             }
 
-            this.importGUI ??= new CityImportGUI(metaData.cityImporterConfig); // 初期化
+            this.importGUI ??= new CityImportGUI(metaData.cityImportConfig); // 初期化
 
             EditorGUILayout.Space(10);
             
@@ -43,7 +43,7 @@ namespace PLATEAU.Editor.CityImport
                 this.foldOutReconvert = EditorGUILayout.Foldout(this.foldOutReconvert, "再変換");
                 if (this.foldOutReconvert)
                 {
-                    this.importGUI.Draw(metaData.cityImporterConfig);
+                    this.importGUI.Draw(metaData.cityImportConfig);
                 
                 }
                 HeaderDrawer.DecrementDepth();
@@ -57,7 +57,7 @@ namespace PLATEAU.Editor.CityImport
                 this.foldOutOtherData = EditorGUILayout.Foldout(this.foldOutOtherData, "その他の情報");
                 if (this.foldOutOtherData)
                 {
-                    var cityConfig = metaData.cityImporterConfig;
+                    var cityConfig = metaData.cityImportConfig;
                     var refPoint = cityConfig.referencePoint;
                     EditorGUILayout.LabelField($"基準点: ( {refPoint.x} , {refPoint.y} , {refPoint.z} )");
                     EditorGUILayout.LabelField($"インポート元ルートフォルダ名: {cityConfig.rootDirName}");

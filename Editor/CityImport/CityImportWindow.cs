@@ -16,7 +16,7 @@ namespace PLATEAU.Editor.CityImport
         private Vector2 scrollPosition;
         
         private CityImportGUI cityImportGUI;
-        private CityImporterConfig importerConfig;
+        private CityImportConfig importConfig;
 
         [MenuItem("Plateau/都市モデルインポート")]
         public static void Open()
@@ -29,9 +29,9 @@ namespace PLATEAU.Editor.CityImport
 
         private void Init()
         {
-            this.importerConfig = new CityImporterConfig();
-            this.cityImportGUI = new CityImportGUI(this.importerConfig);
-            this.importerConfig.objConvertTypesConfig.SetLodRangeToAllRange(); // 初期値
+            this.importConfig = new CityImportConfig();
+            this.cityImportGUI = new CityImportGUI(this.importConfig);
+            this.importConfig.objConvertTypesConfig.SetLodRangeToAllRange(); // 初期値
             this.isInitialized = true;
         }
 
@@ -40,7 +40,7 @@ namespace PLATEAU.Editor.CityImport
             if (!this.isInitialized) Init();
             HeaderDrawer.Reset();
             this.scrollPosition = EditorGUILayout.BeginScrollView(this.scrollPosition);
-            this.cityImportGUI.Draw(this.importerConfig);
+            this.cityImportGUI.Draw(this.importConfig);
             EditorGUILayout.EndScrollView();
         }
     }

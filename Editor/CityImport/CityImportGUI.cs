@@ -27,7 +27,7 @@ namespace PLATEAU.Editor.CityImport
         private readonly ExportFolderSelectorGUI exportFolderSelectorGUI;
         private readonly CityImporter cityImporter;
         
-        public CityImportGUI(CityImporterConfig config)
+        public CityImportGUI(CityImportConfig config)
         {
             this.udxFolderSelectorGUI = new InputFolderSelectorGUI(OnUdxPathChanged);
             this.gmlSearcherGUI = new GmlSearcherGUI();
@@ -47,7 +47,7 @@ namespace PLATEAU.Editor.CityImport
             config.UdxPathBeforeImport = initialUdxPath;
         }
 
-        public void Draw(CityImporterConfig importConfig)
+        public void Draw(CityImportConfig importConfig)
         {
             // udxフォルダ選択
             this.udxFolderSelectorGUI.FolderPath = importConfig.UdxPathBeforeImport;
@@ -128,7 +128,7 @@ namespace PLATEAU.Editor.CityImport
             this.gmlSearcherGUI.OnUdxPathChanged();
         }
 
-        private bool IsImportReady(CityImporterConfig config, out string message)
+        private bool IsImportReady(CityImportConfig config, out string message)
         {
             message = "";
             var dirPath = config.importDestPath;

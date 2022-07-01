@@ -23,6 +23,7 @@ namespace PLATEAU.Tests.EditModeTests
         private static readonly string testUdxPathTokyo = DirectoryUtil.TestTokyoMiniUdxPath;
 
         private static readonly string testOutputDir = DirectoryUtil.TempAssetFolderPath;
+        private static readonly string testOutputDirAssetsPath = PathUtil.FullPathToAssetsPath(DirectoryUtil.TempAssetFolderPath);
 
         private static readonly string[] testGmlRelativePathsTokyo =
         {
@@ -65,7 +66,7 @@ namespace PLATEAU.Tests.EditModeTests
         [Test]
         public void When_Inputs_Are_2_Gmls_Then_Outputs_Are_Multiple_Objs_And_1_IdTable()
         {
-            var config = ImportUtil.MinimumConfig(testUdxPathTokyo, PathUtil.FullPathToAssetsPath(testOutputDir));
+            var config = ImportConfigFactoryForTests.MinimumConfig(testUdxPathTokyo, testOutputDirAssetsPath);
             config.SetConvertLods(new Dictionary<GmlType, MinMax<int>>
             {
                 { GmlType.Building, new MinMax<int>(0, 2) },
@@ -98,14 +99,14 @@ namespace PLATEAU.Tests.EditModeTests
         {
             LogAssert.ignoreFailingMessages = true;
             // 2つのGMLファイルを変換します。
-            var config = ImportUtil.MinimumConfig(testUdxPathTokyo, PathUtil.FullPathToAssetsPath(testOutputDir));
+            var config = ImportConfigFactoryForTests.MinimumConfig(testUdxPathTokyo, testOutputDirAssetsPath);
             this.importer.Import(testGmlRelativePathsTokyo, config, out var metaData);
             
             
             LogAssert.ignoreFailingMessages = false;
             
             // 値1 : CityMapInfo に記録された Reference Point を取得します。
-            var recordedReferencePoint = metaData.cityImporterConfig.referencePoint;
+            var recordedReferencePoint = metaData.cityImportConfig.referencePoint;
 
             // 値2 : GmlToObjFileConverter にかけたときの Reference Point を取得します。
             string gmlFilePath = Path.Combine(testUdxPathTokyo, testGmlRelativePathsTokyo[0]);
@@ -125,16 +126,16 @@ namespace PLATEAU.Tests.EditModeTests
         {
             // 値1: 変換時の MeshGranularity の設定
             var granularityOnConvert = MeshGranularity.PerAtomicFeatureObject;
-            var config = ImportUtil.MinimumConfig(testUdxPathTokyo, PathUtil.FullPathToAssetsPath(testOutputDir));
+            var config = ImportConfigFactoryForTests.MinimumConfig(testUdxPathTokyo, testOutputDirAssetsPath);
             config.meshGranularity = granularityOnConvert;
             this.importer.Import(testGmlRelativePathsTokyo, config, out _);
 
             // 値2: CityMapInfo に書き込まれた MeshGranularity の値
             string metaDataPath =
-                Path.Combine(PathUtil.FullPathToAssetsPath(testOutputDir), "CityMapMetaData.asset");
+                Path.Combine(testOutputDirAssetsPath, "CityMapMetaData.asset");
             var loadedMetaData = AssetDatabase.LoadAssetAtPath<CityMetaData>(metaDataPath);
             Assert.NotNull(loadedMetaData, "メタデータをロードできる");
-            var granularityOnMapInfo = loadedMetaData.cityImporterConfig.meshGranularity;
+            var granularityOnMapInfo = loadedMetaData.cityImportConfig.meshGranularity;
             
             // 値1と値2が同一であることを期待します。
             Assert.AreEqual(granularityOnConvert, granularityOnMapInfo, "変換時の粒度設定がメタデータに記録されている");
@@ -145,7 +146,7 @@ namespace PLATEAU.Tests.EditModeTests
         {
             bool DoContainAtomic(CityMetaData info) => info.idToGmlTable.Keys.Any(id => id.Contains("_wall_"));
 
-            var config = ImportUtil.MinimumConfig(testUdxPathSimple, PathUtil.FullPathToAssetsPath(testOutputDir));
+            var config = ImportConfigFactoryForTests.MinimumConfig(testUdxPathSimple, testOutputDirAssetsPath);
             config.meshGranularity = MeshGranularity.PerAtomicFeatureObject;
             config.SetConvertLods(2, 2);
             this.importer.Import(testGmlRelativePathsSimple, config, out var metaData);
@@ -168,7 +169,7 @@ namespace PLATEAU.Tests.EditModeTests
         public void Importing_Mini_Tokyo_Ends_With_Success()
         {
 
-            var config = ImportUtil.MinimumConfig(testUdxPathTokyo, PathUtil.FullPathToAssetsPath(testOutputDir));
+            var config = ImportConfigFactoryForTests.MinimumConfig(testUdxPathTokyo, testOutputDirAssetsPath);
             int numSuccess = this.importer.Import(testGmlRelativePathsTokyo, config, out _);
 
             Assert.AreEqual(2, numSuccess);
@@ -177,7 +178,7 @@ namespace PLATEAU.Tests.EditModeTests
         [Test]
         public void When_Lod_Is_2_to_2_Then_Only_Lod2_Objs_Are_Generated()
         {
-            var config = ImportUtil.MinimumConfig(testUdxPathSimple, PathUtil.FullPathToAssetsPath(testOutputDir));
+            var config = ImportConfigFactoryForTests.MinimumConfig(testUdxPathSimple, testOutputDirAssetsPath);
             config.SetConvertLods(2, 2);
             this.importer.Import(testGmlRelativePathsSimple, config, out _);
 
@@ -192,7 +193,7 @@ namespace PLATEAU.Tests.EditModeTests
         public void When_Lod_Is_0_to_1_Then_Only_2_Objs_Are_Generated()
         {
 
-            var config = ImportUtil.MinimumConfig(testUdxPathSimple, PathUtil.FullPathToAssetsPath(testOutputDir));
+            var config = ImportConfigFactoryForTests.MinimumConfig(testUdxPathSimple, testOutputDirAssetsPath);
             config.SetConvertLods(0, 1);
             this.importer.Import(testGmlRelativePathsSimple, config, out _);
             
@@ -208,15 +209,15 @@ namespace PLATEAU.Tests.EditModeTests
         [Test]
         public void SrcPath_Of_MetaData_Is_Set_To_Post_Copy_Path()
         {
-            var config = ImportUtil.MinimumConfig(testUdxPathSimple, PathUtil.FullPathToAssetsPath(testOutputDir));
+            var config = ImportConfigFactoryForTests.MinimumConfig(testUdxPathSimple, testOutputDirAssetsPath);
             this.importer.Import(testGmlRelativePathsSimple, config, out var metaData);
             
             string expectedUdxPath = Path.Combine(testDefaultCopyDestPath, "TestDataSimpleGml", "udx").Replace('\\', '/');
-            string fullUdxPath = metaData.cityImporterConfig.sourcePath.FullUdxPath;
+            string fullUdxPath = metaData.cityImportConfig.sourcePath.FullUdxPath;
             string actualUdxPath = fullUdxPath.Replace('\\', '/');
             Assert.AreEqual( expectedUdxPath, actualUdxPath, "メモリ上のメタデータの sourcePath がコピー後を指している" );
 
-            var metaDataPath = metaData.cityImporterConfig.importDestPath.MetaDataAssetPath;
+            var metaDataPath = metaData.cityImportConfig.importDestPath.MetaDataAssetPath;
             var loadedMetaData = AssetDatabase.LoadAssetAtPath<CityMetaData>(metaDataPath);
             Assert.NotNull(loadedMetaData, "生成後のメタデータをロードできる");
             var loadedSrcPath = fullUdxPath.Replace('\\', '/');

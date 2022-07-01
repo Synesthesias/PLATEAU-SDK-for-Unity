@@ -23,7 +23,7 @@ namespace PLATEAU.CityMeta
     // これはこのクラスが保持するメンバ変数のクラス、例えば <see cref="GmlSearcherConfig"/> も同様です。
     
     [Serializable]
-    internal class CityImporterConfig
+    internal class CityImportConfig
     {
         /// <summary> インポート時の対象gmlファイルの絞り込みの設定 </summary>
         public GmlSearcherConfig gmlSearcherConfig = new GmlSearcherConfig();

@@ -35,7 +35,7 @@ namespace PLATEAU.Editor.CityImport
         /// <param name="gmlRelativePaths">gmlファイルの相対パスのリストです。パスの起点は udx フォルダです。</param>
         /// <param name="importConfig">変換設定です。</param>
         /// <param name="metaData">インポートによって生成されたメタデータです。</param>
-        public int Import(string[] gmlRelativePaths, CityImporterConfig importConfig, out CityMetaData metaData)
+        public int Import(string[] gmlRelativePaths, CityImportConfig importConfig, out CityMetaData metaData)
         {
             // 元フォルダを StreamingAssets/PLATEAU にコピーします。すでに StreamingAssets内にある場合を除きます。 
             // 設定のインポート元パスをコピー後のパスに変更します。
@@ -163,7 +163,7 @@ namespace PLATEAU.Editor.CityImport
         /// Gmlファイルをロードします。
         /// 成否を bool で返します。
         /// </summary>
-        private static bool TryLoadCityGml(out CityModel cityModel, string gmlFullPath, CityImporterConfig config)
+        private static bool TryLoadCityGml(out CityModel cityModel, string gmlFullPath, CityImportConfig config)
         {
             cityModel = null;
             try
@@ -210,14 +210,14 @@ namespace PLATEAU.Editor.CityImport
         /// <see cref="CityModel"/> を obj形式の3Dモデルに変換します。
         /// 成否を bool で返します。
         /// </summary>
-        private static bool TryConvertToObj(CityModel cityModel, ref Vector3? referencePoint, CityImporterConfig importerConfig, string gmlFullPath, string objDestDirFullPath)
+        private static bool TryConvertToObj(CityModel cityModel, ref Vector3? referencePoint, CityImportConfig importConfig, string gmlFullPath, string objDestDirFullPath)
         {
             using (var objConverter = new GmlToObjConverter())
             {
                 
                 // configの値を作ります。
                 var gmlType = GmlFileNameParser.GetGmlTypeEnum(gmlFullPath);
-                (int minLod, int maxLod) = importerConfig.objConvertTypesConfig.GetMinMaxLodForType(gmlType);
+                (int minLod, int maxLod) = importConfig.objConvertTypesConfig.GetMinMaxLodForType(gmlType);
                 Vector3? manualReferencePoint;
                 // Reference Pointは最初のものに合わせます。
                 if (referencePoint == null)
@@ -232,14 +232,14 @@ namespace PLATEAU.Editor.CityImport
                 
                 // 変換設定を作成します。この設定は gml 1つに対する変換に関して利用されます。
                 var converterConf = new GmlToObjConverterConfig(
-                    exportAppearance:        importerConfig.exportAppearance,
-                    meshGranularity:         importerConfig.meshGranularity,
+                    exportAppearance:        importConfig.exportAppearance,
+                    meshGranularity:         importConfig.meshGranularity,
                     minLod:                  minLod,
                     maxLod:                  maxLod,
-                    exportLowerLod:          importerConfig.objConvertTypesConfig.TypeExportLowerLodDict[gmlType],
+                    exportLowerLod:          importConfig.objConvertTypesConfig.TypeExportLowerLodDict[gmlType],
                     doAutoSetReferencePoint: false,
                     manualReferencePoint:    manualReferencePoint,
-                    logLevel:               importerConfig.logLevel
+                    logLevel:               importConfig.logLevel
                 );
                 
                 objConverter.Config = converterConf;
@@ -257,12 +257,12 @@ namespace PLATEAU.Editor.CityImport
         /// ファイルの保存はインポートの終了時に別途行われることが前提です。
         /// </summary>
         private static bool TryGenerateMetaData(CityMetaData cityMetaData, string gmlFileName,
-            string dstMeshAssetPath, CityImporterConfig importerConf)
+            string dstMeshAssetPath, CityImportConfig importConf)
         {
             var metaGen = new CityMetaDataGenerator();
             var metaGenConfig = new CityMapMetaDataGeneratorConfig
             {
-                CityImporterConfig = importerConf,
+                CityImportConfig = importConf,
                 DoClearIdToGmlTable = false, // 新規ではなく上書き。gmlファイルごとに情報を追記していくため。
                 ParserParams = new CitygmlParserParams(),
             };

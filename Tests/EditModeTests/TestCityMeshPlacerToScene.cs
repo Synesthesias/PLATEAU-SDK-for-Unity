@@ -135,7 +135,7 @@ namespace PLATEAU.Tests.EditModeTests
             int minLodBuilding, int maxLodBuilding,
             int selectedLod, PlaceMethod buildingPlaceMethod)
         {
-            var config = ImportUtil.MinimumConfig(testUdxPath, PathUtil.FullPathToAssetsPath(testOutputDir));
+            var config = ImportConfigFactoryForTests.MinimumConfig(testUdxPath, PathUtil.FullPathToAssetsPath(testOutputDir));
             config.meshGranularity = meshGranularity;
             var typeConf = config.objConvertTypesConfig;
             var typeLodDict = typeConf.TypeLodDict;

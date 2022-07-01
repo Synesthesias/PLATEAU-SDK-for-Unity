@@ -31,7 +31,7 @@ namespace PLATEAU.Editor.Converters
             try
             {
                 // ロードします。
-                var importConf = config.CityImporterConfig;
+                var importConf = config.CityImportConfig;
                 var importDestPath = importConf.importDestPath;
                 string udxAssetPath = importConf.sourcePath.udxAssetPath;
                 if (metaData == null)
@@ -60,7 +60,7 @@ namespace PLATEAU.Editor.Converters
                 importConf.sourcePath.udxAssetPath = udxAssetPath;
 
                 importConf.importDestPath.dirAssetPath = importDestPath.dirAssetPath;
-                metaData.cityImporterConfig = importConf;
+                metaData.cityImportConfig = importConf;
                 
                 // ファイルに保存します。
                 if (doSaveFile)

@@ -16,7 +16,7 @@ namespace PLATEAU.CityMeta
         /// <value>都市オブジェクトのIDから、それに対応する gmlファイル名を検索できる辞書です。</value>
         [SerializeField] internal IdToGmlTable idToGmlTable = new IdToGmlTable();
         /// <value>インポート時の設定です。</value>
-        [SerializeField] internal CityImporterConfig cityImporterConfig = new CityImporterConfig();
+        [SerializeField] internal CityImportConfig cityImportConfig = new CityImportConfig();
 
         /// <summary>
         /// 辞書 <see cref="idToGmlTable"/> の中に引数をキーとするものがあるかどうか返します。
