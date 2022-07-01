@@ -22,7 +22,7 @@ namespace PLATEAU.Editor.CityImport
         private readonly InputFolderSelectorGUI udxFolderSelectorGUI;
         private readonly GmlSearcherGUI gmlSearcherGUI;
         private readonly GmlSearcher gmlSearcher;
-        private readonly ObjConvertLodGUI objConvertLodGUI;
+        private readonly ObjConvertTypesGUI objConvertTypesGUI;
         private readonly ScenePlacementGUI scenePlacementGUI;
         private readonly ExportFolderSelectorGUI exportFolderSelectorGUI;
         private readonly CityImporter cityImporter;
@@ -32,7 +32,7 @@ namespace PLATEAU.Editor.CityImport
             this.udxFolderSelectorGUI = new InputFolderSelectorGUI(OnUdxPathChanged);
             this.gmlSearcherGUI = new GmlSearcherGUI();
             this.gmlSearcher = new GmlSearcher();
-            this.objConvertLodGUI = new ObjConvertLodGUI();
+            this.objConvertTypesGUI = new ObjConvertTypesGUI();
             this.scenePlacementGUI = new ScenePlacementGUI();
             this.exportFolderSelectorGUI = new ExportFolderSelectorGUI();
             this.cityImporter = new CityImporter();
@@ -80,10 +80,10 @@ namespace PLATEAU.Editor.CityImport
                         new string[] { "最小地物単位", "主要地物単位", "都市モデル地域単位" });
                     importConfig.logLevel = (DllLogLevel)EditorGUILayout.EnumPopup("(開発者向け)ログの詳細度", importConfig.logLevel);
                 }
-                HeaderDrawer.Draw("LOD設定（3Dモデル変換）");
+                HeaderDrawer.Draw("地物タイプ別設定（3Dモデル変換）");
                 using (PlateauEditorStyle.VerticalScopeLevel1())
                 {
-                    this.objConvertLodGUI.Draw(importConfig.objConvertLodConfig);
+                    this.objConvertTypesGUI.Draw(importConfig.objConvertTypesConfig);
                 }
                 HeaderDrawer.DecrementDepth();
                 

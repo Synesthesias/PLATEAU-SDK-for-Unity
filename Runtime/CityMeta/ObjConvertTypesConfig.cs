@@ -7,24 +7,33 @@ using UnityEngine;
 
 namespace PLATEAU.CityMeta
 {
+    /// <summary>
+    /// インポート時の Objファイル変換について、地物タイプ別の変換設定を保持するクラスです。
+    /// 具体的には 地物タイプ別 LOD 範囲設定、　地物タイプ別 (LOD範囲内複数 or 最大LODのみ) 出力選択設定です。
+    /// 設定は辞書形式で、 <see cref="GmlType"/> => 値 の形式で保持します。
+    /// </summary>
     [Serializable]
-    internal class ObjConvertLodConfig : ISerializationCallbackReceiver
+    internal class ObjConvertTypesConfig : ISerializationCallbackReceiver
     {
         public Dictionary<GmlType, MinMax<int>> TypeLodDict;
+        public Dictionary<GmlType, bool> TypeExportLowerLodDict;
 
         /// <summary> GUIでスライダーの値を一時的保持するためのメンバ </summary>
         [NonSerialized] public Dictionary<GmlType, MinMax<float>> TypeLodSliderDict = new Dictionary<GmlType, MinMax<float>>();
 
         // シリアライズ時に Dictionary を List形式にします。
-        [SerializeField] private List<GmlType> keys = new List<GmlType>();
-        [SerializeField] private List<MinMax<int>> values = new List<MinMax<int>>();
+        [SerializeField] private List<GmlType> keysLod = new List<GmlType>();
+        [SerializeField] private List<MinMax<int>> valuesLod = new List<MinMax<int>>();
+        [SerializeField] private List<GmlType> keysExportLower = new List<GmlType>();
+        [SerializeField] private List<bool> valuesExportLower = new List<bool>();
 
 
-        public ObjConvertLodConfig()
+        public ObjConvertTypesConfig()
         {
             // 各タイプごとの設定を初期化します。
             this.TypeLodDict = GmlTypeConvert.ComposeTypeDict<MinMax<int>>();
             LodToSliderVal();
+            this.TypeExportLowerLodDict = GmlTypeConvert.ComposeTypeDict<bool>();
         }
 
         /// <summary> Lod設定の値をGUIスライダー用値に反映させます。 </summary>
@@ -131,13 +140,16 @@ namespace PLATEAU.CityMeta
         /// <summary> シリアライズするときに List形式に直します。 </summary>
         void ISerializationCallbackReceiver.OnBeforeSerialize()
         {
-            DictionarySerializer.OnBeforeSerialize(this.TypeLodDict, this.keys, this.values);
+            DictionarySerializer.OnBeforeSerialize(this.TypeLodDict, this.keysLod, this.valuesLod);
+            DictionarySerializer.OnBeforeSerialize(this.TypeExportLowerLodDict, this.keysExportLower, this.valuesExportLower);
         }
 
         /// <summary> デシリアライズするときに List から Dictionary 形式に直します。 </summary>
         void ISerializationCallbackReceiver.OnAfterDeserialize()
         {
-            this.TypeLodDict = DictionarySerializer.OnAfterSerialize(this.keys, this.values);
+            this.TypeLodDict = DictionarySerializer.OnAfterSerialize(this.keysLod, this.valuesLod);
+            this.TypeExportLowerLodDict =
+                DictionarySerializer.OnAfterSerialize(this.keysExportLower, this.valuesExportLower);
             LodToSliderVal();
         }
     }

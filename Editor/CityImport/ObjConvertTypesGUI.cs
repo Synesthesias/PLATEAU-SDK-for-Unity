@@ -10,34 +10,35 @@ namespace PLATEAU.Editor.CityImport
     /// gmlファイルから objファイルへの変換に関して、地物タイプごとに対象のLOD範囲を設定するGUIです。
     /// <see cref="CityImportGUI"/> によって利用されます。
     /// </summary>
-    internal class ObjConvertLodGUI
+    internal class ObjConvertTypesGUI
     {
         /// <summary>
-        /// obj変換のLOD設定のGUI描画し、ユーザーのGUI操作に応じて引数である <see cref="ObjConvertLodConfig"/> の中身を書き換えます。
+        /// obj変換のLOD設定のGUI描画し、ユーザーのGUI操作に応じて引数である <see cref="ObjConvertTypesConfig"/> の中身を書き換えます。
         /// </summary>
-        public void Draw(ObjConvertLodConfig lodConf)
+        public void Draw(ObjConvertTypesConfig typesConf)
         {
             using (PlateauEditorStyle.VerticalScopeLevel1())
             {
+                EditorGUILayout.LabelField("LOD一括選択");
                 using (new GUILayout.HorizontalScope())
                 {
                     if (PlateauEditorStyle.MiniButton("　全選択　"))
                     {
-                        lodConf.SetToAllRange();
+                        typesConf.SetToAllRange();
                     }
 
                     if (PlateauEditorStyle.MiniButton("最小値のみ"))
                     {
-                        lodConf.SetToOnlyMin();
+                        typesConf.SetToOnlyMin();
                     }
 
                     if (PlateauEditorStyle.MiniButton("最大値のみ"))
                     {
-                        lodConf.SetToOnlyMax();
+                        typesConf.SetToOnlyMax();
                     }
                 }
 
-                var gmlTypes = lodConf.TypeLodDict.Keys;
+                var gmlTypes = typesConf.TypeLodDict.Keys;
 
                 // 地物タイプごとのループ
                 foreach (var gmlType in gmlTypes)
@@ -46,9 +47,16 @@ namespace PLATEAU.Editor.CityImport
                     EditorGUILayout.LabelField(typeText);
                     using (PlateauEditorStyle.VerticalScopeLevel2())
                     {
-                        lodConf.ClampLodRangeToPossibleVal();
-                        var typeLodRange = lodConf.TypeLodDict[gmlType];
-                        var sliderMinMax = lodConf.TypeLodSliderDict[gmlType];
+                        // LOD対象選択 複数 / 最大のみ
+                        var typeExportLower = typesConf.TypeExportLowerLodDict[gmlType];
+                        typeExportLower = Convert.ToBoolean(EditorGUILayout.Popup("出力モード",
+                            Convert.ToInt32(typeExportLower), new string[] { "選択中最大LODのみ", "全LOD" }));
+                        typesConf.TypeExportLowerLodDict[gmlType] = typeExportLower;
+                        
+                        // LOD範囲選択
+                        typesConf.ClampLodRangeToPossibleVal();
+                        var typeLodRange = typesConf.TypeLodDict[gmlType];
+                        var sliderMinMax = typesConf.TypeLodSliderDict[gmlType];
                         (float valueMin, float valueMax) = (sliderMinMax.Min, sliderMinMax.Max);
                         var availableRange = gmlType.PossibleLodRange();
                         EditorGUILayout.MinMaxSlider(ref valueMin, ref valueMax, availableRange.Min, availableRange.Max);

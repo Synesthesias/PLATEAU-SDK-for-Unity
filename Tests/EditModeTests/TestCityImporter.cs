@@ -218,7 +218,7 @@ namespace PLATEAU.Tests.EditModeTests
                     dirAssetPath = PathUtil.FullPathToAssetsPath(testOutputDir)
                 },
             };
-            var typeLodDict = config.objConvertLodConfig.TypeLodDict;
+            var typeLodDict = config.objConvertTypesConfig.TypeLodDict;
             typeLodDict[GmlType.Building].SetMinMax(minLodBuilding, maxLodBuilding);
             typeLodDict[GmlType.DigitalElevationModel].SetMinMax(minLodDem, maxLodDem);
             var placeTypeConfigs = config.scenePlacementConfig.PerTypeConfigs;

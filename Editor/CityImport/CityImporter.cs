@@ -76,7 +76,7 @@ namespace PLATEAU.Editor.CityImport
 
                 string gmlFileName = Path.GetFileNameWithoutExtension(gmlRelativePath);
                 var gmlType = GmlFileNameParser.GetGmlTypeEnum(gmlFileName);
-                var objConvertLodConf = importConfig.objConvertLodConfig;
+                var objConvertLodConf = importConfig.objConvertTypesConfig;
                 (int minLod, int maxLod) = objConvertLodConf.GetMinMaxLodForType(gmlType);
                 int lodCountForThisGml = 0;
                 for (int l = minLod; l <= maxLod; l++)
@@ -223,9 +223,11 @@ namespace PLATEAU.Editor.CityImport
                     ExportAppearance = importerConfig.exportAppearance
                 };
                 var gmlType = GmlFileNameParser.GetGmlTypeEnum(gmlFullPath);
-                (int minLod, int maxLod) = importerConfig.objConvertLodConfig.GetMinMaxLodForType(gmlType);
+                (int minLod, int maxLod) = importerConfig.objConvertTypesConfig.GetMinMaxLodForType(gmlType);
+                // TODO ここは上のブラケットの中に含めた方が分かりやすいかも
                 converterConf.MinLod = minLod;
                 converterConf.MaxLod = maxLod;
+                converterConf.ExportLowerLod = importerConfig.objConvertTypesConfig.TypeExportLowerLodDict[gmlType];
 
                 // Reference Pointは最初のものに合わせます。
                 if (referencePoint == null)

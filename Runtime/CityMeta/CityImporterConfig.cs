@@ -40,7 +40,7 @@ namespace PLATEAU.CityMeta
         /// <summary> インポートした物をシーンに配置する設定 </summary>
         public ScenePlacementConfig scenePlacementConfig = new ScenePlacementConfig();
 
-        public ObjConvertLodConfig objConvertLodConfig = new ObjConvertLodConfig();
+        public ObjConvertTypesConfig objConvertTypesConfig = new ObjConvertTypesConfig();
 
         /// <summary> obj変換時にテクスチャを含めるかどうか </summary>
         public bool exportAppearance = true;

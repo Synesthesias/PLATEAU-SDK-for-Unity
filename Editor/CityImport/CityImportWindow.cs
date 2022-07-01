@@ -31,7 +31,7 @@ namespace PLATEAU.Editor.CityImport
         {
             this.importerConfig = new CityImporterConfig();
             this.cityImportGUI = new CityImportGUI(this.importerConfig);
-            this.importerConfig.objConvertLodConfig.SetToAllRange(); // 初期値
+            this.importerConfig.objConvertTypesConfig.SetToAllRange(); // 初期値
             this.isInitialized = true;
         }
 

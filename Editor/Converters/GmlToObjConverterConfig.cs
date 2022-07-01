@@ -60,8 +60,14 @@ namespace PLATEAU.Editor.Converters
             set => this.DllConvertOption.ExportAppearance = value;
         }
 
+        public bool ExportLowerLod
+        {
+            get => this.DllConvertOption.ExportLowerLOD;
+            set => this.DllConvertOption.ExportLowerLOD = value;
+        }
 
-        // TODO 次の設定を含めるようにする。　ReferencePoint, MinLOD, MaxLOD, ExportLowerLOD
+
+        // TODO 次の設定を含めるようにする？　ReferencePoint, MinLOD, MaxLOD, ExportLowerLOD
         public GmlToObjConverterConfig(
             bool exportAppearance = true,
             MeshGranularity meshGranularity = MeshGranularity.PerPrimaryFeatureObject,
