@@ -12,9 +12,7 @@ using PLATEAU.IO;
 using PLATEAU.Util;
 using PLATEAU.Tests.TestUtils;
 using UnityEditor;
-using UnityEngine;
 using UnityEngine.TestTools;
-using static PLATEAU.CityMeta.ScenePlacementConfig;
 
 namespace PLATEAU.Tests.EditModeTests
 {
@@ -48,6 +46,7 @@ namespace PLATEAU.Tests.EditModeTests
         [SetUp]
         public void SetUp()
         {
+            this.importer = new CityImporter();
             this.importer = new CityImporter();
             DirectoryUtil.SetUpTempAssetFolder();
             
@@ -99,11 +98,14 @@ namespace PLATEAU.Tests.EditModeTests
         {
             LogAssert.ignoreFailingMessages = true;
             // 2つのGMLファイルを変換します。
-            Import(testUdxPathTokyo, testGmlRelativePathsTokyo, MeshGranularity.PerPrimaryFeatureObject, out var mapInfo, 0, 0);
+            var config = ImportUtil.MinimumConfig(testUdxPathTokyo, PathUtil.FullPathToAssetsPath(testOutputDir));
+            this.importer.Import(testGmlRelativePathsTokyo, config, out var metaData);
+            
+            
             LogAssert.ignoreFailingMessages = false;
             
             // 値1 : CityMapInfo に記録された Reference Point を取得します。
-            var recordedReferencePoint = mapInfo.cityImporterConfig.referencePoint;
+            var recordedReferencePoint = metaData.cityImporterConfig.referencePoint;
 
             // 値2 : GmlToObjFileConverter にかけたときの Reference Point を取得します。
             string gmlFilePath = Path.Combine(testUdxPathTokyo, testGmlRelativePathsTokyo[0]);
@@ -123,7 +125,9 @@ namespace PLATEAU.Tests.EditModeTests
         {
             // 値1: 変換時の MeshGranularity の設定
             var granularityOnConvert = MeshGranularity.PerAtomicFeatureObject;
-            Import(testUdxPathTokyo, testGmlRelativePathsTokyo, granularityOnConvert, out _, 0, 2);
+            var config = ImportUtil.MinimumConfig(testUdxPathTokyo, PathUtil.FullPathToAssetsPath(testOutputDir));
+            config.meshGranularity = granularityOnConvert;
+            this.importer.Import(testGmlRelativePathsTokyo, config, out _);
 
             // 値2: CityMapInfo に書き込まれた MeshGranularity の値
             string metaDataPath =
@@ -141,18 +145,22 @@ namespace PLATEAU.Tests.EditModeTests
         {
             bool DoContainAtomic(CityMetaData info) => info.idToGmlTable.Keys.Any(id => id.Contains("_wall_"));
 
-            Import(testUdxPathSimple, testGmlRelativePathsSimple, MeshGranularity.PerAtomicFeatureObject, out var mapInfo,  2, 2);
+            var config = ImportUtil.MinimumConfig(testUdxPathSimple, PathUtil.FullPathToAssetsPath(testOutputDir));
+            config.meshGranularity = MeshGranularity.PerAtomicFeatureObject;
+            config.SetConvertLods(2, 2);
+            this.importer.Import(testGmlRelativePathsSimple, config, out var metaData);
             
-            foreach (var key in mapInfo.idToGmlTable.Keys)
+            foreach (var key in metaData.idToGmlTable.Keys)
             {
                 Console.Write(key);
             }
-            Assert.IsTrue(DoContainAtomic(mapInfo), "1回目の変換は最小地物を含むことを確認");
+            Assert.IsTrue(DoContainAtomic(metaData), "1回目の変換は最小地物を含むことを確認");
 
-            Import(testUdxPathSimple, testGmlRelativePathsSimple, MeshGranularity.PerPrimaryFeatureObject, out var mapInfo2, 0, 0);
+            config.meshGranularity = MeshGranularity.PerPrimaryFeatureObject;
+            this.importer.Import(testGmlRelativePathsSimple, config, out var metaData2);
             
-            bool doContainBuilding = mapInfo2.idToGmlTable.Keys.Any(id => id.Contains("_BLD_"));
-            Assert.IsFalse(DoContainAtomic(mapInfo2), "2回目の変換は最小地物を含まないことを確認");
+            bool doContainBuilding = metaData2.idToGmlTable.Keys.Any(id => id.Contains("_BLD_"));
+            Assert.IsFalse(DoContainAtomic(metaData2), "2回目の変換は最小地物を含まないことを確認");
             Assert.IsTrue(doContainBuilding, "2回目の変換は主要地物を含むことを確認");
         }
 
@@ -214,25 +222,5 @@ namespace PLATEAU.Tests.EditModeTests
             var loadedSrcPath = fullUdxPath.Replace('\\', '/');
             Assert.AreEqual(expectedUdxPath, loadedSrcPath, "保存されたメタデータの sourcePath がコピー後を指している");
         }
-        
-
-        private void Import(string testUdxPath, string[] gmlRelativePaths, MeshGranularity meshGranularity, out CityMetaData metaData,
-            int minLodBuilding, int maxLodBuilding)
-        {
-            var config = ImportUtil.MinimumConfig(testUdxPath, PathUtil.FullPathToAssetsPath(testOutputDir));
-            config.meshGranularity = meshGranularity;
-            var typeConf = config.objConvertTypesConfig;
-            var typeLodDict = typeConf.TypeLodDict;
-            typeLodDict[GmlType.Building].SetMinMax(minLodBuilding, maxLodBuilding);
-            var typeLodModeDict = typeConf.TypeExportLowerLodDict;
-            typeLodModeDict[GmlType.Building] = true;
-
-            Debug.Log($"minLodBuilding = {minLodBuilding}, Dict[Building].Min={typeLodDict[GmlType.Building].Min}");
-            
-            this.importer.Import(gmlRelativePaths, config, out metaData);
-        }
-
-        
-
     }
 }
