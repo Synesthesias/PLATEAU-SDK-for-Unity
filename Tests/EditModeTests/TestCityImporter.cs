@@ -156,22 +156,18 @@ namespace PLATEAU.Tests.EditModeTests
         }
 
         [Test]
-        public void Importing_Mini_Tokyo_Ends_With_Success()
+        public void Import_Returns_Num_Of_Success()
         {
-            var tokyoPaths = ImportPathForTests.Tokyo2;
-            var config = ImportConfigFactoryForTests.MinimumConfig(tokyoPaths.SrcUdxFullPath, tokyoPaths.OutputDirAssetsPath);
-            int numSuccess = this.importer.Import(tokyoPaths.GmlRelativePaths, config, out _);
-
+            int numSuccess = TestImporter.Import(ImportPathForTests.Tokyo2, out _, _ => { });
             Assert.AreEqual(2, numSuccess);
         }
 
         [Test]
         public void When_Lod_Is_2_to_2_Then_Only_Lod2_Objs_Are_Generated()
         {
-            var simplePaths = ImportPathForTests.Simple;
-            var config = ImportConfigFactoryForTests.MinimumConfig(simplePaths.SrcUdxFullPath, simplePaths.OutputDirAssetsPath);
-            config.SetConvertLods(2, 2);
-            this.importer.Import(simplePaths.GmlRelativePaths, config, out _);
+            TestImporter.Import(ImportPathForTests.Simple, out _,
+                conf => conf.SetConvertLods(2, 2) 
+            );
 
             string gmlId = "53392642_bldg_6697_op2";
             bool lod2Exists = File.Exists(Path.Combine(testOutputDir, $"LOD2_{gmlId}.obj"));
@@ -183,10 +179,10 @@ namespace PLATEAU.Tests.EditModeTests
         [Test]
         public void When_Lod_Is_0_to_1_Then_Only_2_Objs_Are_Generated()
         {
-            var simplePaths = ImportPathForTests.Simple;
-            var config = ImportConfigFactoryForTests.MinimumConfig(simplePaths.SrcUdxFullPath, simplePaths.OutputDirAssetsPath);
-            config.SetConvertLods(0, 1);
-            this.importer.Import(simplePaths.GmlRelativePaths, config, out _);
+
+            TestImporter.Import(ImportPathForTests.Simple, out _,
+                conf => conf.SetConvertLods(0, 1) 
+            );
             
             string gmlId = "53392642_bldg_6697_op2";
             bool lod2Exists = File.Exists(Path.Combine(testOutputDir, $"LOD2_{gmlId}.obj"));
