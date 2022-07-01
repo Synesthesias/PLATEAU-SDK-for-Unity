@@ -32,6 +32,7 @@ namespace PLATEAU.Editor.CityImport
                 var typeConf = placementConf.PerTypeConfigs[gmlType];
                 int selectedLod = typeConf.selectedLod;
                 var availableObjsOfType = availableObjs.Where(obj => obj.gmlType == gmlType).ToArray();
+                if (availableObjsOfType.Length <= 0) continue;
                 switch (typeConf.placeMethod)
                 {
                     case PlaceMethod.PlaceAllLod:

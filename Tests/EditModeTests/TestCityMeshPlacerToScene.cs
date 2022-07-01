@@ -107,11 +107,20 @@ namespace PLATEAU.Tests.EditModeTests
                 });
         }
 
-        private void CheckSimpleObjPlacedToScene(PlaceMethod placeMethod, int minLodBuilding, int maxLodBuilding, int selectedLod,
+        private void CheckSimpleObjPlacedToScene(PlaceMethod placeMethod, int minLod, int maxLod, int selectedLod,
             Dictionary<int, bool> lodPlacedDict)
         {
-            Import(testUdxPathSimple, testGmlRelativePathsSimple, MeshGranularity.PerCityModelArea,
-                minLodBuilding, maxLodBuilding, selectedLod, placeMethod);
+            // Import(testUdxPathSimple, testGmlRelativePathsSimple, MeshGranularity.PerCityModelArea,
+            // minLodBuilding, maxLodBuilding, selectedLod, placeMethod);
+            TestImporter.Import(ImportPathForTests.Simple, out _,
+                config =>
+                {
+                    config.SetConvertLods(minLod, maxLod);
+                    var placeConf = config.scenePlacementConfig;
+                    placeConf.SetSelectedLodForAllTypes(selectedLod);
+                    placeConf.SetPlaceMethodForAllTypes(placeMethod);
+                });
+                
             AssertGameObjPlaced(simpleGmlId, lodPlacedDict);
         }
         
@@ -131,21 +140,21 @@ namespace PLATEAU.Tests.EditModeTests
             }
         }
         
-        private void Import(string testUdxPath, string[] gmlRelativePaths, MeshGranularity meshGranularity,
-            int minLodBuilding, int maxLodBuilding,
-            int selectedLod, PlaceMethod buildingPlaceMethod)
-        {
-            var config = ImportConfigFactoryForTests.MinimumConfig(testUdxPath, PathUtil.FullPathToAssetsPath(testOutputDir));
-            config.meshGranularity = meshGranularity;
-            var typeConf = config.objConvertTypesConfig;
-            var typeLodDict = typeConf.TypeLodDict;
-            typeLodDict[GmlType.Building].SetMinMax(minLodBuilding, maxLodBuilding);
-            typeConf.TypeExportLowerLodDict[GmlType.Building] = true;
-            var placeTypeConfigs = config.scenePlacementConfig.PerTypeConfigs;
-            placeTypeConfigs[GmlType.Building].placeMethod = buildingPlaceMethod;
-            placeTypeConfigs[GmlType.Building].selectedLod = selectedLod;
-            
-            this.importer.Import(gmlRelativePaths, config, out _);
-        }
+        // private void Import(string testUdxPath, string[] gmlRelativePaths, MeshGranularity meshGranularity,
+        //     int minLodBuilding, int maxLodBuilding,
+        //     int selectedLod, PlaceMethod buildingPlaceMethod)
+        // {
+        //     var config = ImportConfigFactoryForTests.MinimumConfig(testUdxPath, PathUtil.FullPathToAssetsPath(testOutputDir));
+        //     config.meshGranularity = meshGranularity;
+        //     var typeConf = config.objConvertTypesConfig;
+        //     var typeLodDict = typeConf.TypeLodDict;
+        //     typeLodDict[GmlType.Building].SetMinMax(minLodBuilding, maxLodBuilding);
+        //     typeConf.TypeExportLowerLodDict[GmlType.Building] = true;
+        //     var placeTypeConfigs = config.scenePlacementConfig.PerTypeConfigs;
+        //     placeTypeConfigs[GmlType.Building].placeMethod = buildingPlaceMethod;
+        //     placeTypeConfigs[GmlType.Building].selectedLod = selectedLod;
+        //     
+        //     this.importer.Import(gmlRelativePaths, config, out _);
+        // }
     }
 }
