@@ -5,7 +5,8 @@
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner",
         "PLATEAU.Editor",
-        "PLATEAU.Runtime"
+        "PLATEAU.Runtime",
+        "libplateau"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

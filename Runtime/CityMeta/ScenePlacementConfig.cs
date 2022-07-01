@@ -47,6 +47,26 @@ namespace PLATEAU.CityMeta
             this.PerTypeConfigs = GmlTypeConvert.ComposeTypeDict<ScenePlacementConfigPerType>();
         }
 
+        // TODO このメソッドを使って一括設定のGUIを作ると便利かも？
+        public void SetPlaceMethodForAllTypes(PlaceMethod placeMethod)
+        {
+            var dict = this.PerTypeConfigs;
+            foreach (var type in dict.Keys)
+            {
+                dict[type].placeMethod = placeMethod;
+            }
+        }
+
+        // TODO このメソッドを使って一括設定のGUIを作ると便利かも？
+        public void SetSelectedLodForAllTypes(int lod)
+        {
+            var dict = this.PerTypeConfigs;
+            foreach (var type in dict.Keys)
+            {
+                dict[type].selectedLod = lod;
+            }
+        }
+
         /// <summary> シリアライズするときに List形式に直します。 </summary>
         void ISerializationCallbackReceiver.OnBeforeSerialize()
         {
@@ -61,6 +81,9 @@ namespace PLATEAU.CityMeta
         
     }
 
+    /// <summary>
+    /// <see cref="ScenePlacementConfig"/> の 1タイプあたりの設定項目です。
+    /// </summary>
     [Serializable]
     internal class ScenePlacementConfigPerType
     {

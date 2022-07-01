@@ -112,13 +112,13 @@ namespace PLATEAU.CityMeta
         }
 
         /// <summary> 各タイプのLOD範囲を、仕様上ありうる範囲すべてに設定します。 </summary>
-        public void SetToAllRange()
+        public void SetLodRangeToAllRange()
         {
             SetLodRange(type => type.PossibleLodRange().ToWritable);
         }
         
         /// <summary> 各タイプのLOD範囲を、仕様上の最小LODのみに設定します。 </summary>
-        public void SetToOnlyMin()
+        public void SetLodRangeToOnlyMin()
         {
             SetLodRange(type =>
             {
@@ -128,13 +128,23 @@ namespace PLATEAU.CityMeta
         }
 
         /// <summary> 各タイプのLOD範囲を、仕様上の最大LODのみに設定します。 </summary>
-        public void SetToOnlyMax()
+        public void SetLodRangeToOnlyMax()
         {
             SetLodRange(type =>
             {
                 int max = type.PossibleLodRange().Max;
                 return new MinMax<int>(max, max);
             });
+        }
+
+        // TODO このメソッドを使って、 ExportLowerLod のGUIで一括選択ボタンを置いた方が便利そう
+        public void SetExportLowerLodForAllTypes(bool exportLower)
+        {
+            var dict = this.TypeExportLowerLodDict;
+            foreach (var type in dict.Keys.ToArray())
+            {
+                dict[type] = exportLower;
+            }
         }
         
         /// <summary> シリアライズするときに List形式に直します。 </summary>

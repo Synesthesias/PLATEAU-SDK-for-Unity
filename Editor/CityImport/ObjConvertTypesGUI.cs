@@ -24,17 +24,17 @@ namespace PLATEAU.Editor.CityImport
                 {
                     if (PlateauEditorStyle.MiniButton("　全選択　"))
                     {
-                        typesConf.SetToAllRange();
+                        typesConf.SetLodRangeToAllRange();
                     }
 
                     if (PlateauEditorStyle.MiniButton("最小値のみ"))
                     {
-                        typesConf.SetToOnlyMin();
+                        typesConf.SetLodRangeToOnlyMin();
                     }
 
                     if (PlateauEditorStyle.MiniButton("最大値のみ"))
                     {
-                        typesConf.SetToOnlyMax();
+                        typesConf.SetLodRangeToOnlyMax();
                     }
                 }
 
