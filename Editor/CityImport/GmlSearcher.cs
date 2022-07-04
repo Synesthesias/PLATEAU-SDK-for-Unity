@@ -150,6 +150,26 @@ namespace PLATEAU.Editor.CityImport
         }
 
         /// <summary>
+        /// 与えられた <paramref name="areaIds"/> のリストの中に、どのような <see cref="GmlType"/> が含まれているかを返します。
+        /// 戻り値は辞書形式で、 key(各 GmlType ) に対して value は存在すれば true, しなければ false になります。
+        /// </summary>
+        public Dictionary<GmlType, bool> ExistingTypesForAreaIds(IEnumerable<int> areaIds)
+        {
+            var typeExistingDict = GmlTypeConvert.ComposeTypeDict<bool>(false);
+            foreach (int areaId in areaIds)
+            {
+                List<string> gmlPaths = this.fileTable[areaId];
+                foreach (string gmlPath in gmlPaths)
+                {
+                    var type = GmlFileNameParser.GetGmlTypeEnum(gmlPath);
+                    typeExistingDict[type] = true;
+                }
+            }
+
+            return typeExistingDict;
+        }
+
+        /// <summary>
         /// gmlの親フォルダ名が <see cref="GmlType"/> の接頭辞になっていることを前提とし、
         /// 親フォルダ名に対応する <see cref="GmlType"/> を返します。
         /// </summary>

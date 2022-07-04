@@ -32,7 +32,7 @@ namespace PLATEAU.Editor.CityImport
             HeaderDrawer.Draw("含める地域");
             using (PlateauEditorStyle.VerticalScopeLevel1())
             {
-                
+                // 一括選択ボタンを表示します。
                 using (new EditorGUILayout.HorizontalScope())
                 {
                     if (PlateauEditorStyle.MiniButton("すべて選択"))
@@ -52,11 +52,15 @@ namespace PLATEAU.Editor.CityImport
                 {
                     Initialize(gmlSearcher, searcherConfig);
                 }
+                // 地域IDごとに対象とするかを設定するGUIを表示します。
                 for (int i = 0; i < areaCount; i++)
                 {
                     searcherConfig.isAreaIdTarget[i] = EditorGUILayout.Toggle(searcherConfig.areaIds[i].ToString(), searcherConfig.isAreaIdTarget[i]);
                 }
             }
+
+            // 選択した地域に存在しない地物タイプは、GUI上で無効にしたいのでそのための辞書を構築します。
+            var typeExistingDict = gmlSearcher.ExistingTypesForAreaIds(searcherConfig.TargetAreaIds());
             
             
             // 地物タイプごとの設定です。
@@ -77,12 +81,25 @@ namespace PLATEAU.Editor.CityImport
                 }
                 
                 var typeConfDict = searcherConfig.gmlTypeTarget.IsTypeTargetDict;
+                // 地物タイプごとのチェックマークです。
                 foreach (var gmlType in typeConfDict.Keys.ToArray())
                 {
-                    string typeText = gmlType.ToDisplay();
-                    var isTypeTarget = typeConfDict[gmlType];
-                    isTypeTarget = EditorGUILayout.Toggle(typeText, isTypeTarget);
-                    typeConfDict[gmlType] = isTypeTarget;
+                    bool isTypeExist = typeExistingDict[gmlType];
+                    using (new EditorGUI.DisabledScope(!isTypeExist))
+                    {
+                        string typeText = gmlType.ToDisplay();
+                        var isTypeTarget = typeConfDict[gmlType];
+                        if (isTypeExist)
+                        {
+                            isTypeTarget = EditorGUILayout.Toggle(typeText, isTypeTarget);
+                        }
+                        else
+                        {
+                            EditorGUILayout.Toggle(typeText, false);
+                        }
+                        
+                        typeConfDict[gmlType] = isTypeTarget;
+                    }
                 }
 
             }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace PLATEAU.CityMeta
@@ -42,5 +43,22 @@ namespace PLATEAU.CityMeta
         {
             this.gmlTypeTarget.SetAllTarget(val);
         }
+
+        /// <summary>
+        /// ターゲットとなる AreaId をリストで返します。
+        /// </summary>
+        public List<int> TargetAreaIds()
+        {
+            var targetIds = new List<int>();
+            for (int i = 0; i < this.areaIds.Length; i++)
+            {
+                if (this.isAreaIdTarget[i])
+                {
+                    targetIds.Add(this.areaIds[i]);
+                }
+            }
+
+            return targetIds;
+        } 
     }
 }
