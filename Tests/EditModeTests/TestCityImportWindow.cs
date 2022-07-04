@@ -16,7 +16,7 @@ namespace PLATEAU.Tests.EditModeTests
         public IEnumerator SetUp()
         {
             CityImportWindow.Open();
-            this.window = EditorWindow.GetWindow<CityImportWindow>("都市モデルインポート");
+            this.window = EditorWindow.GetWindow<CityImportWindow>("都市モデルをインポート");
             this.window.Repaint();
             yield return null;
         }

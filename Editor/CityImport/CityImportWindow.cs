@@ -18,10 +18,10 @@ namespace PLATEAU.Editor.CityImport
         private CityImportGUI cityImportGUI;
         private CityImportConfig importConfig;
 
-        [MenuItem("Plateau/都市モデルインポート")]
+        [MenuItem("PLATEAU/都市モデルをインポート")]
         public static void Open()
         {
-            var window = GetWindow<CityImportWindow>("都市モデルインポート");
+            var window = GetWindow<CityImportWindow>("都市モデルをインポート");
             window.Show();
             window.Init();
         }
