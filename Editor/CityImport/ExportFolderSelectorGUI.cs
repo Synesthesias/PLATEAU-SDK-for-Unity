@@ -1,5 +1,4 @@
-﻿using Codice.Client.Common;
-using PLATEAU.Editor.EditorWindowCommon;
+﻿using PLATEAU.Editor.EditorWindowCommon;
 using PLATEAU.Util;
 using UnityEditor;
 using UnityEngine;
@@ -22,22 +21,26 @@ namespace PLATEAU.Editor.CityImport
             HeaderDrawer.Draw("出力先選択");
             using (PlateauEditorStyle.VerticalScopeLevel1())
             {
-                exportAssetPath = EditorGUILayout.TextField("出力先フォルダ", exportAssetPath);
+                EditorGUILayout.LabelField("出力先フォルダ");
+                
                 if (PlateauEditorStyle.MiniButton("参照..."))
                 {
+                    // ボタン押下時
                     string selectedFullPath =
                         EditorUtility.SaveFolderPanel("保存先選択", Application.dataPath, "PlateauData");
                     if (!PathUtil.IsSubDirectoryOfAssets(selectedFullPath))
                     {
-                        EditorGUILayout.HelpBox("出力先は Assets フォルダ内である必要があります。", MessageType.Error);
+                        EditorUtility.DisplayDialog("エラー", "出力先は Assets フォルダ内である必要があります。", "OK");
                         return "";
                     }
-
                     if (!string.IsNullOrEmpty(selectedFullPath))
                     {
                         exportAssetPath = PathUtil.FullPathToAssetsPath(selectedFullPath);
                     }
                 }
+                
+                string displayExportPath = string.IsNullOrEmpty(exportAssetPath) ? "未選択" : exportAssetPath;
+                PlateauEditorStyle.MultiLineLabelWithBox(displayExportPath);
             }
 
             return exportAssetPath;

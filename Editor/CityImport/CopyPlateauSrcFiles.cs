@@ -2,6 +2,7 @@
 using PLATEAU.CityMeta;
 using PLATEAU.Util;
 using UnityEditor;
+using UnityEngine;
 
 namespace PLATEAU.Editor.CityImport
 {
@@ -22,24 +23,26 @@ namespace PLATEAU.Editor.CityImport
         {
             int numGml = gmlRelativePaths.Length;
             ProgressBar("コピー中", 0, numGml);
+            
             string rootDirName = PlateauSourcePath.RootDirName(udxPathBeforeImport);
             if (rootDirName == null) throw new FileNotFoundException($"{nameof(rootDirName)} is null.");
+            var dest = new PlateauSourcePath(Path.Combine(copyDest, rootDirName, "udx/"));
 
             // コピー先のルートフォルダを作成します。
             // 例: Tokyoをコピーする場合のパスの例を以下に示します。
             //     Assets/StreamingAssets/PLATEAU/Tokyo　フォルダを作ります。
-            string dstRootFolder = Path.Combine(copyDest, rootDirName);
-            Mkdir(dstRootFolder);
+            Mkdir(dest.RootDirFullPath());
 
             // codelists をコピーします。
             // 例: Assets/StreamingAssets/PLATEAU/Tokyo/codelists/****.xml をコピーにより作成します。
             ProgressBar("コピー中 : codelists", 0, numGml);
             const string codelistsFolderName = "codelists";
-            PathUtil.CloneDirectory(Path.Combine(PlateauSourcePath.RootFullPath(udxPathBeforeImport), codelistsFolderName), dstRootFolder);
+            PathUtil.CloneDirectory(Path.Combine(PlateauSourcePath.RootDirFullPath(udxPathBeforeImport), codelistsFolderName), dest.RootDirFullPath());
+            
 
             // udxのパスです。
             // 例: Assets/StreamingAssets/PLATEAU/Tokyo/udx
-            string dstUdxFolder = Path.Combine(dstRootFolder, "udx");
+            // string dstUdxFolder = Path.Combine(dest.RootDirFullPath(), "udx");
 
             // udxフォルダのうち対象のgmlファイルをコピーします。
             int loopCnt = 0;
@@ -51,7 +54,7 @@ namespace PLATEAU.Editor.CityImport
                 // 地物タイプのディレクトリを作ります。
                 // 例: gml のタイプが bldg なら、
                 //     Assets/StreamingAssets/PLATEAU/Tokyo/udx/bldg　ができます。
-                string dstObjTypeFolder = Path.Combine(dstUdxFolder, gmlType);
+                string dstObjTypeFolder = dest.GmlTypeDirFullPath(gmlType);
                 Mkdir(dstObjTypeFolder);
 
                 // gmlファイルをコピーします。
@@ -62,7 +65,7 @@ namespace PLATEAU.Editor.CityImport
 
                 // gmlファイルに関連するフォルダをコピーします。
                 // gmlの名称からオプションと拡張子を除いた文字列がフォルダ名に含まれていれば、コピー対象のディレクトリとみなします。
-                // 例: Assets/StreamingAssets/PLATEAU/Tokyo/bldg/1234_appearance/texture_number.jpg　などがコピーされます。 
+                // 例: Assets/StreamingAssets/PLATEAU/Tokyo/bldg/1234_appearance に含まれる各テクスチャなどがコピーされます。 
                 string gmlIdentity = GmlFileNameParser.NameWithoutOption(gml);
                 foreach (var srcDir in Directory.GetDirectories(srcObjTypeFolder))
                 {
@@ -73,6 +76,8 @@ namespace PLATEAU.Editor.CityImport
                     }
                 }
             }
+            AssetDatabase.ImportAsset(dest.RootDirAssetsPath());
+            Debug.Log($"Imported Asset at {dest.RootDirAssetsPath()}");
             EditorUtility.ClearProgressBar();
         }
 
@@ -106,7 +111,7 @@ namespace PLATEAU.Editor.CityImport
 
         private static void ProgressBar(string info, int currentCount, int maxCount)
         {
-            EditorUtility.DisplayProgressBar("コピー中", info, ((float)currentCount)/((float)maxCount));
+            EditorUtility.DisplayProgressBar("コピー中", info, currentCount/((float)maxCount));
         }
         
     }

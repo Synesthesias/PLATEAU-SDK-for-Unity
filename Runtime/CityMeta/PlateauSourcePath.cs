@@ -22,6 +22,9 @@ namespace PLATEAU.CityMeta
         
         
 
+        /// <summary>
+        /// udxパスで初期化します。
+        /// </summary>
         public PlateauSourcePath(string udxAssetPath)
         {
             this.udxAssetPath = udxAssetPath;
@@ -34,7 +37,7 @@ namespace PLATEAU.CityMeta
         /// </summary>
         public static string RootDirName(string udxPath)
         {
-            string root = RootFullPath(udxPath);
+            string root = RootDirFullPath(udxPath);
             return Path.GetFileName(Path.GetDirectoryName(root));
         }
 
@@ -42,10 +45,11 @@ namespace PLATEAU.CityMeta
         /// 元データのRoot (= udxの親) フォルダのパスです。
         /// udxPathは Assetパスでもフルパスでも動作します。
         /// </summary>
-        public static string RootFullPath(string udxPath)
+        public static string RootDirFullPath(string udxPath)
         {
             return Path.GetFullPath(Path.Combine(udxPath, "../"));
         }
+        
         
 
         /// <summary>
@@ -57,6 +61,14 @@ namespace PLATEAU.CityMeta
         }
 
         /// <summary>
+        /// 地物タイプのフォルダパスを返します。
+        /// </summary>
+        public string GmlTypeDirFullPath(string gmlTypePrefix)
+        {
+            return Path.GetFullPath(Path.Combine(FullUdxPath, gmlTypePrefix));
+        }
+
+        /// <summary>
         /// パスは内部的には Assets/ から始まるパスで記録されますが、
         /// フルパスでget,setしたいときはこのプロパティを使います。
         /// </summary>
@@ -64,6 +76,19 @@ namespace PLATEAU.CityMeta
         {
             get => Path.GetFullPath(Path.Combine(Application.dataPath, "../", this.udxAssetPath));
             set => this.udxAssetPath = PathUtil.FullPathToAssetsPath(value);
+        }
+    }
+
+    internal static class PlateauSourcePathExtension
+    {
+        public static string RootDirFullPath(this PlateauSourcePath source)
+        {
+            return PlateauSourcePath.RootDirFullPath(source.udxAssetPath);
+        }
+
+        public static string RootDirAssetsPath(this PlateauSourcePath source)
+        {
+            return PathUtil.FullPathToAssetsPath(Path.GetFullPath(Path.Combine(source.udxAssetPath, "../")));
         }
     }
 }

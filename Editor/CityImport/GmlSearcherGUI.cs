@@ -4,6 +4,7 @@ using System.Linq;
 using PLATEAU.Editor.EditorWindowCommon;
 using PLATEAU.CityMeta;
 using UnityEditor;
+using UnityEngine;
 
 namespace PLATEAU.Editor.CityImport
 {
@@ -16,42 +17,44 @@ namespace PLATEAU.Editor.CityImport
     {
         private List<string> gmlFiles;
         private bool isInitialized;
+        private Vector2 scrollPosForGmlList;
 
 
         /// <summary>
         /// 変換対象とする gmlファイルを条件設定で絞り込むGUIを表示し、
         /// その結果を gmlファイルの相対パスのリストで返します。
-        /// その際にユーザーが選択した設定内容は引数 <paramref name="config"/> に格納されます。
+        /// その際にユーザーが選択した設定内容は引数 <paramref name="searcherConfig"/> に格納されます。
         /// </summary>
-        public List<string> Draw(GmlSearcher gmlSearcher, ref GmlSearcherConfig config)
+        public List<string> Draw(GmlSearcher gmlSearcher, ref GmlSearcherConfig searcherConfig)
         {
-            if(!this.isInitialized) Initialize(gmlSearcher, config);
+            if(!this.isInitialized) Initialize(gmlSearcher, searcherConfig);
             HeaderDrawer.IncrementDepth();
             HeaderDrawer.Draw("含める地域");
             using (PlateauEditorStyle.VerticalScopeLevel1())
             {
-                config.areaIds = gmlSearcher.AreaIds;
-                int areaCount = config.areaIds.Length;
-                if (config.isAreaIdTarget.Length != areaCount)
-                {
-                    Initialize(gmlSearcher, config);
-                }
-                for (int i = 0; i < areaCount; i++)
-                {
-                    config.isAreaIdTarget[i] = EditorGUILayout.Toggle(config.areaIds[i].ToString(), config.isAreaIdTarget[i]);
-                }
-
+                
                 using (new EditorGUILayout.HorizontalScope())
                 {
                     if (PlateauEditorStyle.MiniButton("すべて選択"))
                     {
-                        config.SetAllAreaId(true);
+                        searcherConfig.SetAllAreaId(true);
                     }
 
                     if (PlateauEditorStyle.MiniButton("すべて除外"))
                     {
-                        config.SetAllAreaId(false);
+                        searcherConfig.SetAllAreaId(false);
                     }
+                }
+                
+                searcherConfig.areaIds = gmlSearcher.AreaIds;
+                int areaCount = searcherConfig.areaIds.Length;
+                if (searcherConfig.isAreaIdTarget.Length != areaCount)
+                {
+                    Initialize(gmlSearcher, searcherConfig);
+                }
+                for (int i = 0; i < areaCount; i++)
+                {
+                    searcherConfig.isAreaIdTarget[i] = EditorGUILayout.Toggle(searcherConfig.areaIds[i].ToString(), searcherConfig.isAreaIdTarget[i]);
                 }
             }
             
@@ -60,51 +63,38 @@ namespace PLATEAU.Editor.CityImport
             HeaderDrawer.Draw("含める地物");
             using (PlateauEditorStyle.VerticalScopeLevel1())
             {
-                var typeConfDict = config.gmlTypeTarget.GmlTypeConfigs;
-                foreach (var gmlType in typeConfDict.Keys.ToArray())
-                {
-                    EditorGUILayout.LabelField(GmlTypeConvert.ToDisplay(gmlType));
-                    using (PlateauEditorStyle.VerticalScopeLevel2())
-                    {
-                        var typeConf = typeConfDict[gmlType];
-                        typeConf.isTarget = EditorGUILayout.Toggle("変換対象", typeConf.isTarget);
-                        using (new EditorGUI.DisabledScope(!typeConf.isTarget))
-                        {
-                            EditorGUILayout.MinMaxSlider("LOD", ref typeConf.SliderMinLod, ref typeConf.SliderMaxLod, 0f, 4f);
-                            // Min <= Max となるようにスワップ
-                            if (typeConf.SliderMinLod > typeConf.SliderMaxLod)
-                                (typeConf.SliderMinLod, typeConf.SliderMaxLod) =
-                                    (typeConf.SliderMaxLod, typeConf.SliderMinLod);
-                            typeConf.minLod = (int)Math.Round(typeConf.SliderMinLod);
-                            typeConf.maxLod = (int)Math.Round(typeConf.SliderMaxLod);
-                            EditorGUILayout.LabelField($"最小LOD: {typeConf.minLod}, 最大LOD: {typeConf.maxLod}");
-                        }
-                    }
-                }
-
                 using (new EditorGUILayout.HorizontalScope())
                 {
                     if (PlateauEditorStyle.MiniButton("すべて選択"))
                     {
-                        config.gmlTypeTarget.SetAllTarget(true);
+                        searcherConfig.SetAllTypeTarget(true);
                     }
 
                     if (PlateauEditorStyle.MiniButton("すべて除外"))
                     {
-                        config.gmlTypeTarget.SetAllTarget(false);
+                        searcherConfig.SetAllTypeTarget(false);
                     }
                 }
-            
+                
+                var typeConfDict = searcherConfig.gmlTypeTarget.IsTypeTargetDict;
+                foreach (var gmlType in typeConfDict.Keys.ToArray())
+                {
+                    string typeText = gmlType.ToDisplay();
+                    var isTypeTarget = typeConfDict[gmlType];
+                    isTypeTarget = EditorGUILayout.Toggle(typeText, isTypeTarget);
+                    typeConfDict[gmlType] = isTypeTarget;
+                }
+
             }
 
             HeaderDrawer.Draw("対象gmlファイル");
             using (PlateauEditorStyle.VerticalScopeLevel1())
             {
-                this.gmlFiles = ListTargetGmlFiles(gmlSearcher, config.areaIds, config.isAreaIdTarget,
-                    config.gmlTypeTarget);
-                EditorGUILayout.TextArea(String.Join("\n", this.gmlFiles));
+                this.gmlFiles = ListTargetGmlFiles(gmlSearcher, searcherConfig.areaIds, searcherConfig.isAreaIdTarget,
+                    searcherConfig.gmlTypeTarget);
+                this.scrollPosForGmlList = PlateauEditorStyle.ScrollableMultiLineLabel(String.Join("\n", this.gmlFiles), 150, this.scrollPosForGmlList);
             }
-
+            
             HeaderDrawer.DecrementDepth();
 
             return this.gmlFiles;

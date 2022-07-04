@@ -60,7 +60,7 @@ namespace PLATEAU.Interop
         [MarshalAs(UnmanagedType.U1)]
         public bool Tessellate;
 
-        public CitygmlParserParams(bool optimize = true, bool tessellate = true)
+        public CitygmlParserParams(bool optimize, bool tessellate = true)
         {
             this.Optimize = optimize;
             this.Tessellate = tessellate;
@@ -78,7 +78,7 @@ namespace PLATEAU.Interop
         public uint MaxLOD;
         [MarshalAs(UnmanagedType.U1)] public bool ExportLowerLOD;
         [MarshalAs(UnmanagedType.U1)] public bool ExportAppearance;
-        [MarshalAs(UnmanagedType.U1)] public bool ConvertLatLon;
+        public float UnitScale;
     }
 
     public enum APIResult

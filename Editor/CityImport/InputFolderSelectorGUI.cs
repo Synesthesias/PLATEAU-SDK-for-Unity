@@ -40,38 +40,24 @@ namespace PLATEAU.Editor.CityImport
         public string Draw(string title)
         {
             HeaderDrawer.Draw(title);
-            bool isPathChanged = false;
             using (PlateauEditorStyle.VerticalScopeLevel1())
             {
-                using (new EditorGUILayout.HorizontalScope())
+                EditorGUILayout.LabelField("入力フォルダ");
+                
+                if (PlateauEditorStyle.MiniButton("参照..."))
                 {
-                    using (var check = new EditorGUI.ChangeCheckScope())
+                    string selectedPath = EditorUtility.OpenFolderPanel(title, Application.dataPath, "udx");
+                    if (!string.IsNullOrEmpty(selectedPath))
                     {
-                        this.folderPath = EditorGUILayout.TextField("入力フォルダ", this.folderPath);
-                        if (check.changed)
-                        {
-                            isPathChanged = true;
-                        }
-                    }
-
-                    if (PlateauEditorStyle.MiniButton("参照..."))
-                    {
-                        string selectedPath = EditorUtility.OpenFolderPanel(title, Application.dataPath, "udx");
-                        if (!string.IsNullOrEmpty(selectedPath))
-                        {
-                            this.folderPath = selectedPath;
-                            isPathChanged = true;
-                            GUI.FocusControl(null); // テキストエリアからフォーカスを外さないと変数の変更が見た目に反映されないため
-                        }
-                    }
-
-                    if (isPathChanged)
-                    {
+                        this.folderPath = selectedPath;
                         OnPathChanged?.Invoke(this.folderPath);
                     }
                 }
+                
+                string displayFolderPath = string.IsNullOrEmpty(this.folderPath) ? "未選択" : this.folderPath;
+                PlateauEditorStyle.MultiLineLabelWithBox(displayFolderPath);
             }
-            
+
 
             return this.folderPath;
         }

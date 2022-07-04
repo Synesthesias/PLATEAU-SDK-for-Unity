@@ -1,6 +1,5 @@
 ﻿using NUnit.Framework;
 using PLATEAU.Util;
-using UnityEngine;
 
 namespace PLATEAU.Tests.EditModeTests
 {

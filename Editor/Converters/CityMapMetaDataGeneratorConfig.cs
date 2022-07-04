@@ -13,7 +13,7 @@ namespace PLATEAU.Editor.Converters
         public CitygmlParserParams ParserParams;
 
         /// <summary> obj変換時の ReferencePoint が何であったかを記録します。 </summary>
-        public CityImporterConfig CityImporterConfig;
+        public CityImportConfig CityImportConfig;
 
         /// <summary> 変換時すでに CityMapInfo ファイルが存在する場合、trueならば idToGmlTable 消して作り直し、falseならば以前のデータに追加します。 </summary>
         public bool DoClearIdToGmlTable;
@@ -22,7 +22,7 @@ namespace PLATEAU.Editor.Converters
         public CityMapMetaDataGeneratorConfig()
         {
             this.ParserParams = new CitygmlParserParams();
-            this.CityImporterConfig = new CityImporterConfig();
+            this.CityImportConfig = new CityImportConfig();
             this.DoClearIdToGmlTable = false;
         }
     }

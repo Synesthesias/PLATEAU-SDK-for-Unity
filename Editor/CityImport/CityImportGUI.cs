@@ -1,4 +1,5 @@
-﻿using PLATEAU.Editor.EditorWindowCommon;
+﻿using System.IO;
+using PLATEAU.Editor.EditorWindowCommon;
 using PLATEAU.CityMeta;
 using PLATEAU.Interop;
 using PLATEAU.IO;
@@ -21,14 +22,18 @@ namespace PLATEAU.Editor.CityImport
         private readonly InputFolderSelectorGUI udxFolderSelectorGUI;
         private readonly GmlSearcherGUI gmlSearcherGUI;
         private readonly GmlSearcher gmlSearcher;
+        private readonly ObjConvertTypesGUI objConvertTypesGUI;
+        private readonly ScenePlacementGUI scenePlacementGUI;
         private readonly ExportFolderSelectorGUI exportFolderSelectorGUI;
         private readonly CityImporter cityImporter;
         
-        public CityImportGUI(CityImporterConfig config)
+        public CityImportGUI(CityImportConfig config)
         {
             this.udxFolderSelectorGUI = new InputFolderSelectorGUI(OnUdxPathChanged);
             this.gmlSearcherGUI = new GmlSearcherGUI();
             this.gmlSearcher = new GmlSearcher();
+            this.objConvertTypesGUI = new ObjConvertTypesGUI();
+            this.scenePlacementGUI = new ScenePlacementGUI();
             this.exportFolderSelectorGUI = new ExportFolderSelectorGUI();
             this.cityImporter = new CityImporter();
             
@@ -42,12 +47,12 @@ namespace PLATEAU.Editor.CityImport
             config.UdxPathBeforeImport = initialUdxPath;
         }
 
-        public void Draw(CityImporterConfig config)
+        public void Draw(CityImportConfig importConfig)
         {
             // udxフォルダ選択
-            this.udxFolderSelectorGUI.FolderPath = config.UdxPathBeforeImport;
+            this.udxFolderSelectorGUI.FolderPath = importConfig.UdxPathBeforeImport;
             string sourcePath = this.udxFolderSelectorGUI.Draw("udxフォルダ選択");
-            config.UdxPathBeforeImport = sourcePath;
+            importConfig.UdxPathBeforeImport = sourcePath;
 
             // udxフォルダが選択されているなら、設定と出力のGUIを表示
             if (GmlSearcher.IsPathUdx(sourcePath))
@@ -59,28 +64,51 @@ namespace PLATEAU.Editor.CityImport
                 }
                 
                 // 変換対象の絞り込み
-                var gmlFiles = this.gmlSearcherGUI.Draw(this.gmlSearcher, ref config.gmlSearcherConfig);
+                var gmlFiles = this.gmlSearcherGUI.Draw(this.gmlSearcher, ref importConfig.gmlSearcherConfig);
                 
                 // 変換先パス設定
-                config.importDestPath.dirAssetPath = this.exportFolderSelectorGUI.Draw(config.importDestPath.dirAssetPath);
+                importConfig.importDestPath.dirAssetPath = this.exportFolderSelectorGUI.Draw(importConfig.importDestPath.dirAssetPath);
                 
                 // 変換設定
-                HeaderDrawer.Draw("変換設定");
+                HeaderDrawer.Draw("3Dモデル 変換設定");
+                HeaderDrawer.IncrementDepth();
+                HeaderDrawer.Draw("基本変換設定");
                 using (PlateauEditorStyle.VerticalScopeLevel1())
                 {
-                    config.optimizeFlag = EditorGUILayout.Toggle("最適化", config.optimizeFlag);
-                    config.meshGranularity =
-                        (MeshGranularity)EditorGUILayout.EnumPopup("メッシュのオブジェクト分けの粒度", config.meshGranularity);
-                    config.logLevel = (DllLogLevel)EditorGUILayout.EnumPopup("(開発者向け)ログの詳細度", config.logLevel);
+                    importConfig.exportAppearance = EditorGUILayout.Toggle("テクスチャを含める", importConfig.exportAppearance);
+                    importConfig.meshGranularity = (MeshGranularity)EditorGUILayout.Popup("オブジェクト分けの粒度", (int)importConfig.meshGranularity,
+                        new string[] { "最小地物単位", "主要地物単位", "都市モデル地域単位" });
+                    importConfig.logLevel = (DllLogLevel)EditorGUILayout.EnumPopup("(開発者向け)ログの詳細度", importConfig.logLevel);
                 }
+                HeaderDrawer.Draw("地物タイプ別設定（3Dモデル変換）");
+                using (PlateauEditorStyle.VerticalScopeLevel1())
+                {
+                    this.objConvertTypesGUI.Draw(importConfig.objConvertTypesConfig);
+                }
+                HeaderDrawer.DecrementDepth();
+                
+                // 配置設定
+                HeaderDrawer.Draw("シーン配置設定");
+                this.scenePlacementGUI.Draw(importConfig.scenePlacementConfig);
 
-                // 出力
+                // 出力ボタン
                 HeaderDrawer.Draw("出力");
                 using (PlateauEditorStyle.VerticalScopeLevel1())
                 {
-                    if (PlateauEditorStyle.MainButton("出力"))
+                    // 出力できない状況なら、エラーメッセージを表示してボタンを無効化します。
+                    bool importReady = IsImportReady(importConfig, out string message);
+                    if (!string.IsNullOrEmpty(message))
                     {
-                        this.cityImporter.Import(gmlFiles.ToArray(), config, out _);
+                        EditorGUILayout.HelpBox(message, MessageType.Error);
+                    }
+
+                    using (new EditorGUI.DisabledScope(!importReady))
+                    {
+                        if (PlateauEditorStyle.MainButton("出力"))
+                        {
+                            // インポート開始します。
+                            this.cityImporter.Import(gmlFiles.ToArray(), importConfig, out _);
+                        }
                     }
                 }
             }
@@ -98,6 +126,24 @@ namespace PLATEAU.Editor.CityImport
             if (!GmlSearcher.IsPathUdx(path)) return;
             this.gmlSearcher.GenerateFileDictionary(path);
             this.gmlSearcherGUI.OnUdxPathChanged();
+        }
+
+        private bool IsImportReady(CityImportConfig config, out string message)
+        {
+            message = "";
+            var dirPath = config.importDestPath;
+            if (string.IsNullOrEmpty(dirPath?.dirAssetPath))
+            {
+                message = "出力先を指定してください。";
+                return false;
+            }
+            if (!Directory.Exists(dirPath.DirFullPath))
+            {
+                message = "出力先として指定されたフォルダが存在しません。";
+                return false;
+            }
+
+            return true;
         }
     }
 }

@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
@@ -79,6 +81,55 @@ namespace PLATEAU.Editor.EditorWindowCommon
                 padding = new RectOffset(5, 5, 3, 3)
             });
             return isButtonPushed;
+        }
+
+        /// <summary> 複数行のラベルを表示します。 </summary>
+        public static void MultiLineLabel(string text)
+        {
+            GUIStyle style = new GUIStyle(EditorStyles.label)
+            {
+                wordWrap = true
+            };
+            EditorGUILayout.LabelField(text, style);
+        }
+
+        /// <summary> 複数行のラベルを表示して Box で囲みます。 </summary>
+        public static void MultiLineLabelWithBox(string text)
+        {
+            using (VerticalScopeLevel2())
+            {
+                MultiLineLabel(text);
+            }
+        }
+
+        public static Vector2 ScrollableMultiLineLabel(string text, float maxHeight, Vector2 scrollPos)
+        {
+            int lineCount = text.Count(c => c.Equals('\n')) + 1;
+            maxHeight = Math.Min(maxHeight, lineCount * 15);
+            
+            // ScrollView の内側のスタイル
+            GUIStyle labelStyle = new GUIStyle(EditorStyles.label)
+            {
+                wordWrap = true
+            };
+            
+            // ScrollView の外側のスタイル
+            var boxStyle = ContentStyleLevel2;
+            boxStyle.padding.bottom = 4;
+            boxStyle.margin.bottom = 4;
+            boxStyle.fixedHeight = maxHeight + labelStyle.padding.top + labelStyle.padding.bottom + labelStyle.margin.top + labelStyle.margin.bottom + boxStyle.padding.top + boxStyle.padding.bottom;
+            
+            using (new EditorGUILayout.VerticalScope(boxStyle))
+            {
+                using (var scrollView = new EditorGUILayout.ScrollViewScope(scrollPos))
+                {
+                    scrollPos = scrollView.scrollPosition;
+                    
+                    EditorGUILayout.LabelField(text, labelStyle);
+                }
+            }
+
+            return scrollPos;
         }
         
         /// <summary> 色指定でボタンを描画します。 </summary>

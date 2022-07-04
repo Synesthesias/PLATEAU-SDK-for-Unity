@@ -211,5 +211,12 @@ namespace PLATEAU.Util
 
             return isInArray;
         }
+
+        public static string RemoveExtension(string path)
+        {
+            int lastPeriod = path.LastIndexOf('.');
+            if (lastPeriod < 0) throw new ArgumentException("path does not contain period.");
+            return path.Substring(0, lastPeriod);
+        }
     }
 }
