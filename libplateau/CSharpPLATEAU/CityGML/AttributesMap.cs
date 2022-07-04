@@ -146,11 +146,47 @@ namespace PLATEAU.CityGML
         /// </summary>
         public override string ToString()
         {
+            return ToStringRecursive(0);
+        }
+
+        private string ToStringRecursive(int depth)
+        {
             var sb = new StringBuilder();
+            
+            Indent(sb, depth);
+            
             sb.Append("[ ");
-            sb.Append(String.Join(", ", Keys.Select(key => $"{{ ({this[key].Type}) {key} , {this[key].AsString} }}")));
-            sb.Append(" ]");
+            foreach (var key in Keys)
+            {
+                // タイプと key を出力します。、
+                var type = this[key].Type;
+                sb.Append($"{{ ({type}) {key} , ");
+                // value を出力します。value が AttributeSet ならその中身を文字にします。
+                string valueStr;
+                if (type == AttributeType.AttributeSet)
+                {
+                    valueStr = "\n" + this[key].AsAttrSet.ToStringRecursive(depth+1);
+                }
+                else
+                {
+                    valueStr = this[key].AsString;
+                }
+
+                sb.Append(valueStr + "}\n");
+                Indent(sb, depth);
+            }
+
+            sb.Append("\n");
+            sb.Append("]");
             return sb.ToString();
+        }
+        
+        private void Indent(StringBuilder sb, int depth)
+        {
+            for (int i = 0; i < depth; i++)
+            {
+                sb.Append("    ");
+            }
         }
 
         IEnumerator IEnumerable.GetEnumerator()
