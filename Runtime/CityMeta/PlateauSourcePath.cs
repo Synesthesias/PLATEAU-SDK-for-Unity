@@ -18,16 +18,16 @@ namespace PLATEAU.CityMeta
         /// Plateau元データのパスの記録です。
         /// パスは Assets/ から始まります。
         /// </summary>
-        public string udxAssetPath;
+        public string rootDirAssetPath;
         
         
 
         /// <summary>
         /// udxパスで初期化します。
         /// </summary>
-        public PlateauSourcePath(string udxAssetPath)
+        public PlateauSourcePath(string rootDirAssetPath, string dummy) // TODO dummy引数を消す
         {
-            this.udxAssetPath = udxAssetPath;
+            this.rootDirAssetPath = rootDirAssetPath;
         }
         
 
@@ -35,19 +35,24 @@ namespace PLATEAU.CityMeta
         /// 元データのRoot (= udxの親) フォルダの名前です。
         /// udxPath は Assetパスでもフルパスでも動作します。
         /// </summary>
-        public static string RootDirName(string udxPath)
+        public static string RootDirName(string rootPath, string dummy) // TODO dummyを消す
         {
-            string root = RootDirFullPath(udxPath);
+            string root = GetRootDirFullPath(rootPath, "");
             return Path.GetFileName(Path.GetDirectoryName(root));
         }
 
         /// <summary>
         /// 元データのRoot (= udxの親) フォルダのパスです。
-        /// udxPathは Assetパスでもフルパスでも動作します。
+        /// rootPath Assetパスでもフルパスでも動作します。
         /// </summary>
-        public static string RootDirFullPath(string udxPath)
+        public static string GetRootDirFullPath(string rootPath, string dummy) // TODO dummyを消す
         {
-            return Path.GetFullPath(Path.Combine(udxPath, "../"));
+            return Path.GetFullPath(rootPath);
+        }
+
+        public void SetRootDirFullPath(string rootDirFullPath)
+        {
+            this.rootDirAssetPath = PathUtil.FullPathToAssetsPath(rootDirFullPath);
         }
         
         
@@ -57,7 +62,12 @@ namespace PLATEAU.CityMeta
         /// </summary>
         public string UdxRelativeToFullPath(string relativePathFromUdx)
         {
-            return Path.GetFullPath(Path.Combine(this.udxAssetPath, relativePathFromUdx));
+            return Path.GetFullPath(Path.Combine(UdxAssetsPath(), relativePathFromUdx));
+        }
+
+        public string UdxAssetsPath()
+        {
+            return Path.Combine(this.rootDirAssetPath, "udx");
         }
 
         /// <summary>
@@ -74,8 +84,8 @@ namespace PLATEAU.CityMeta
         /// </summary>
         public string FullUdxPath
         {
-            get => Path.GetFullPath(Path.Combine(Application.dataPath, "../", this.udxAssetPath));
-            set => this.udxAssetPath = PathUtil.FullPathToAssetsPath(value);
+            get => Path.GetFullPath(Path.Combine(Application.dataPath, "../", UdxAssetsPath()));
+            // set => this.udxAssetPath = PathUtil.FullPathToAssetsPath(value);
         }
     }
 
@@ -83,12 +93,12 @@ namespace PLATEAU.CityMeta
     {
         public static string RootDirFullPath(this PlateauSourcePath source)
         {
-            return PlateauSourcePath.RootDirFullPath(source.udxAssetPath);
+            return PlateauSourcePath.GetRootDirFullPath(source.rootDirAssetPath, "");
         }
 
-        public static string RootDirAssetsPath(this PlateauSourcePath source)
-        {
-            return PathUtil.FullPathToAssetsPath(Path.GetFullPath(Path.Combine(source.udxAssetPath, "../")));
-        }
+        // public static string RootDirAssetsPath(this PlateauSourcePath source)
+        // {
+        //     return PathUtil.FullPathToAssetsPath(Path.GetFullPath(source.rootAssetPath));
+        // }
     }
 }

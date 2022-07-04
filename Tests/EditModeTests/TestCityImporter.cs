@@ -94,7 +94,7 @@ namespace PLATEAU.Tests.EditModeTests
             var recordedReferencePoint = metaData.cityImportConfig.referencePoint;
 
             // 値2 : GmlToObjFileConverter にかけたときの Reference Point を取得します。
-            string gmlFilePath = Path.Combine(tokyoPaths.SrcUdxFullPath, tokyoPaths.GmlRelativePaths[0]);
+            string gmlFilePath = Path.Combine(tokyoPaths.SrcRootFullPath, "udx", tokyoPaths.GmlRelativePaths[0]);
             var cityModel = CityGml.Load(
                 gmlFilePath,
                 new CitygmlParserParams(),

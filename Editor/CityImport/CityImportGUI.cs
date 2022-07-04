@@ -19,7 +19,7 @@ namespace PLATEAU.Editor.CityImport
     /// </summary>
     internal class CityImportGUI
     {
-        private readonly InputFolderSelectorGUI udxFolderSelectorGUI;
+        private readonly InputFolderSelectorGUI importFolderSelectorGUI;
         private readonly GmlSearcherGUI gmlSearcherGUI;
         private readonly GmlSearcher gmlSearcher;
         private readonly ObjConvertTypesGUI objConvertTypesGUI;
@@ -29,7 +29,7 @@ namespace PLATEAU.Editor.CityImport
         
         public CityImportGUI(CityImportConfig config)
         {
-            this.udxFolderSelectorGUI = new InputFolderSelectorGUI(OnUdxPathChanged);
+            this.importFolderSelectorGUI = new InputFolderSelectorGUI(OnImportSrcPathChanged);
             this.gmlSearcherGUI = new GmlSearcherGUI();
             this.gmlSearcher = new GmlSearcher();
             this.objConvertTypesGUI = new ObjConvertTypesGUI();
@@ -38,24 +38,24 @@ namespace PLATEAU.Editor.CityImport
             this.cityImporter = new CityImporter();
             
             // 記録されたインポート元パスを復元し、GUI画面の初期値に代入します。
-            string loadedUdxPath = config.sourcePath.udxAssetPath;
-            string initialUdxPath = loadedUdxPath;
-            if (initialUdxPath.Replace('\\', '/').StartsWith("Assets/"))
+            string loadedSrcRootPath = config.sourcePath.rootDirAssetPath;
+            string initialSrcRootPath = loadedSrcRootPath;
+            if (initialSrcRootPath.Replace('\\', '/').StartsWith("Assets/"))
             {
-                initialUdxPath = PathUtil.AssetsPathToFullPath(initialUdxPath);
+                initialSrcRootPath = PathUtil.AssetsPathToFullPath(initialSrcRootPath);
             }
-            config.UdxPathBeforeImport = initialUdxPath;
+            config.srcRootPathBeforeImport = initialSrcRootPath;
         }
 
         public void Draw(CityImportConfig importConfig)
         {
-            // udxフォルダ選択
-            this.udxFolderSelectorGUI.FolderPath = importConfig.UdxPathBeforeImport;
-            string sourcePath = this.udxFolderSelectorGUI.Draw("udxフォルダ選択");
-            importConfig.UdxPathBeforeImport = sourcePath;
+            // インポート元フォルダ選択
+            this.importFolderSelectorGUI.FolderPath = importConfig.srcRootPathBeforeImport;
+            string sourcePath = this.importFolderSelectorGUI.Draw("インポート元フォルダ選択");
+            importConfig.srcRootPathBeforeImport = sourcePath;
 
             // udxフォルダが選択されているなら、設定と出力のGUIを表示
-            if (GmlSearcher.IsPathUdx(sourcePath))
+            if (GmlSearcher.IsPathPlateauRoot(sourcePath))
             {
                 // 案内
                 if (!CityImporter.IsInStreamingAssets(sourcePath))
@@ -114,17 +114,17 @@ namespace PLATEAU.Editor.CityImport
             }
             else
             {
-                EditorGUILayout.HelpBox("udxフォルダが選択されていません。", MessageType.Error);
+                EditorGUILayout.HelpBox("Plateauフォルダが選択されていません。（直下に udx という名前のフォルダを含むフォルダを選択してください。）", MessageType.Error);
             }
         }
         
         /// <summary>
         /// udxフォルダパス選択GUIで、新しいパスが指定されたときに呼ばれます。
         /// </summary>
-        private void OnUdxPathChanged(string path)
+        private void OnImportSrcPathChanged(string path)
         {
-            if (!GmlSearcher.IsPathUdx(path)) return;
-            this.gmlSearcher.GenerateFileDictionary(path);
+            if (!GmlSearcher.IsPathPlateauRoot(path)) return;
+            this.gmlSearcher.GenerateFileDictionary(path, "");
             this.gmlSearcherGUI.OnUdxPathChanged();
         }
 

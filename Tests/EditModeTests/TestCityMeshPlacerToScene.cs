@@ -14,11 +14,11 @@ namespace PLATEAU.Tests.EditModeTests
     public class TestCityMeshPlacerToScene
     {
         private static readonly string simpleGmlId = "53392642_bldg_6697_op2";
-        private static readonly string testUdxPathSimple = DirectoryUtil.TestDataSimpleUdxPath;
-        private static readonly string[] testGmlRelativePathsSimple =
-        {
-            "bldg/53392642_bldg_6697_op2.gml"
-        };
+        // private static readonly string testSrcPathSimple = DirectoryUtil.TestDataSimpleSrcPath;
+        // private static readonly string[] testGmlRelativePathsSimple =
+        // {
+        //     "bldg/53392642_bldg_6697_op2.gml"
+        // };
         private static readonly string testOutputDir = DirectoryUtil.TempAssetFolderPath;
         private CityImporter importer;
         private string prevDefaultDstPath;

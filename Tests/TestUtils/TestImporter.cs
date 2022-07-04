@@ -18,7 +18,7 @@ namespace PLATEAU.Tests.TestUtils
         /// <returns></returns>
         public static int Import(ImportPathForTests pathSet, out CityMetaData metaData, Action<CityImportConfig> additionalConfigFunc)
         {
-            var config = ImportConfigFactoryForTests.MinimumConfig(pathSet.SrcUdxFullPath, pathSet.OutputDirAssetsPath);
+            var config = ImportConfigFactoryForTests.MinimumConfig(pathSet.SrcRootFullPath, pathSet.OutputDirAssetsPath);
             additionalConfigFunc?.Invoke(config);
             int successCount = new CityImporter().Import(pathSet.GmlRelativePaths, config, out metaData);
             return successCount;

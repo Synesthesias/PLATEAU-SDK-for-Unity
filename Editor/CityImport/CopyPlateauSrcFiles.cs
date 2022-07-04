@@ -18,15 +18,15 @@ namespace PLATEAU.Editor.CityImport
         /// Plateau元データのうち、 <paramref name="gmlRelativePaths"/> のリストにある gmlファイルとそれに関連するもののみをコピーします。
         /// 変換先 <paramref name="copyDest"/> は Assets フォルダ内であることが前提です。
         /// </summary>
-        public static void SelectCopy(string udxPathBeforeImport, string copyDest,
+        public static void SelectCopy(string srcRootPathBeforeImport, string copyDest,
             string[] gmlRelativePaths)
         {
             int numGml = gmlRelativePaths.Length;
             ProgressBar("コピー中", 0, numGml);
             
-            string rootDirName = PlateauSourcePath.RootDirName(udxPathBeforeImport);
+            string rootDirName = PlateauSourcePath.RootDirName(srcRootPathBeforeImport, "");
             if (rootDirName == null) throw new FileNotFoundException($"{nameof(rootDirName)} is null.");
-            var dest = new PlateauSourcePath(Path.Combine(copyDest, rootDirName, "udx/"));
+            var dest = new PlateauSourcePath(Path.Combine(copyDest, rootDirName), "");
 
             // コピー先のルートフォルダを作成します。
             // 例: Tokyoをコピーする場合のパスの例を以下に示します。
@@ -37,7 +37,7 @@ namespace PLATEAU.Editor.CityImport
             // 例: Assets/StreamingAssets/PLATEAU/Tokyo/codelists/****.xml をコピーにより作成します。
             ProgressBar("コピー中 : codelists", 0, numGml);
             const string codelistsFolderName = "codelists";
-            PathUtil.CloneDirectory(Path.Combine(PlateauSourcePath.RootDirFullPath(udxPathBeforeImport), codelistsFolderName), dest.RootDirFullPath());
+            PathUtil.CloneDirectory(Path.Combine(PlateauSourcePath.GetRootDirFullPath(srcRootPathBeforeImport, ""), codelistsFolderName), dest.RootDirFullPath());
             
 
             // udxのパスです。
@@ -60,7 +60,7 @@ namespace PLATEAU.Editor.CityImport
                 // gmlファイルをコピーします。
                 // 例: Assets/StreamingAssets/PLATEAU/Tokyo/bldg/1234.gml　ができます。
                 string gmlName = Path.GetFileName(gml);
-                string srcObjTypeFolder = Path.Combine(udxPathBeforeImport, gmlType);
+                string srcObjTypeFolder = Path.Combine(srcRootPathBeforeImport, "udx", gmlType);
                 File.Copy(Path.Combine(srcObjTypeFolder, gmlName), Path.Combine(dstObjTypeFolder, gmlName), true);
 
                 // gmlファイルに関連するフォルダをコピーします。
@@ -76,8 +76,8 @@ namespace PLATEAU.Editor.CityImport
                     }
                 }
             }
-            AssetDatabase.ImportAsset(dest.RootDirAssetsPath());
-            Debug.Log($"Imported Asset at {dest.RootDirAssetsPath()}");
+            AssetDatabase.ImportAsset(dest.rootDirAssetPath);
+            Debug.Log($"Imported Asset at {dest.rootDirAssetPath}");
             EditorUtility.ClearProgressBar();
         }
 

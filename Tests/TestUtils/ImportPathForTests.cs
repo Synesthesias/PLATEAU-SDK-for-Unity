@@ -13,7 +13,7 @@ namespace PLATEAU.Tests.TestUtils
         /// </summary>
         public static readonly ImportPathForTests Simple =
             new ImportPathForTests(
-                DirectoryUtil.TestDataSimpleUdxPath,
+                DirectoryUtil.TestDataSimpleSrcPath,
                 new[] { "bldg/53392642_bldg_6697_op2.gml" },
                 PathUtil.FullPathToAssetsPath(DirectoryUtil.TempAssetFolderPath)
             );
@@ -24,7 +24,7 @@ namespace PLATEAU.Tests.TestUtils
         /// </summary>
         public static readonly ImportPathForTests Tokyo2 =
             new ImportPathForTests(
-                DirectoryUtil.TestTokyoMiniUdxPath,
+                DirectoryUtil.TestTokyoMiniSrcPath,
                 new[]
                 {
                     "bldg/53394525_bldg_6697_2_op.gml",
@@ -34,13 +34,13 @@ namespace PLATEAU.Tests.TestUtils
             );
 
 
-        public readonly string SrcUdxFullPath;
+        public readonly string SrcRootFullPath;
         public readonly string[] GmlRelativePaths;
         public readonly string OutputDirAssetsPath;
 
-        public ImportPathForTests(string srcUdxFullPath, string[] gmlRelativePaths, string outputDirAssetsPath)
+        public ImportPathForTests(string srcRootFullPath, string[] gmlRelativePaths, string outputDirAssetsPath)
         {
-            this.SrcUdxFullPath = srcUdxFullPath;
+            this.SrcRootFullPath = srcRootFullPath;
             this.GmlRelativePaths = gmlRelativePaths;
             this.OutputDirAssetsPath = outputDirAssetsPath;
         }

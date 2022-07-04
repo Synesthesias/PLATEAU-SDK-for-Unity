@@ -26,13 +26,13 @@ namespace PLATEAU.Editor.CityImport
         /// </summary>
         private Dictionary<int, List<string>> fileTable;
 
-        private string udxFolderPath = "";
+        private string srcRootFolderPath = "";
 
         /// <summary> インスタンス化と同時にパスを指定して検索します。 </summary>
-        public GmlSearcher(string udxFolderPath)
+        public GmlSearcher(string srcRootFolderPath, string dummy) // TODO dummy削除
         {
-            if (!IsPathUdx(udxFolderPath)) return;
-            GenerateFileDictionary(udxFolderPath);
+            if (!IsPathPlateauRoot(srcRootFolderPath)) return;
+            GenerateFileDictionary(srcRootFolderPath, "");
         }
 
         /// <summary> パスを指定せずにインスタンス化する場合、あとで <see cref="GenerateFileDictionary"/> を実行する必要があります。 </summary>
@@ -43,19 +43,19 @@ namespace PLATEAU.Editor.CityImport
         /// <summary>
         /// 地域メッシュコードからgmlファイルリストを検索する辞書を構築します。
         /// </summary>
-        public void GenerateFileDictionary(string udxFolderPathArg)
+        public void GenerateFileDictionary(string plateauSrcRootPathArg, string dummy) // TODO dummy削除
         {
-            if (!IsPathUdx(udxFolderPathArg))
+            if (!IsPathPlateauRoot(plateauSrcRootPathArg))
             {
-                throw new IOException($"Path needs to address udx folder. path: {udxFolderPathArg}");
+                throw new IOException($"Path needs to address plateau folder. path: {plateauSrcRootPathArg}");
             }
 
-            this.udxFolderPath = udxFolderPathArg;
+            this.srcRootFolderPath = plateauSrcRootPathArg;
 
             this.fileTable = new Dictionary<int, List<string>>();
 
             // パス: udx/(地物型)
-            foreach (var dirPath in Directory.EnumerateDirectories(Path.GetFullPath(udxFolderPathArg)))
+            foreach (var dirPath in Directory.EnumerateDirectories(Path.GetFullPath(Path.Combine(plateauSrcRootPathArg, "udx"))))
             {
                 // パス: udx/(地物型)/(各gmlファイル)
                 foreach (var filePath in Directory.EnumerateFiles(dirPath))
@@ -68,11 +68,14 @@ namespace PLATEAU.Editor.CityImport
             }
         }
 
-        public static bool IsPathUdx(string path)
+        /// <summary>
+        /// 与えられたパスが Plateau元データのRootフォルダ かどうか判別します。
+        /// Root直下に udx という名前のフォルダがあればOKとみなします。
+        /// </summary>
+        public static bool IsPathPlateauRoot(string path)
         {
-            bool ret = Path.GetFileName(path) == "udx";
-            ret &= Directory.Exists(path); 
-            return ret;
+            string udxPath = Path.Combine(path, "udx");
+            return Directory.Exists(udxPath);
         }
 
         public override string ToString()
@@ -120,7 +123,7 @@ namespace PLATEAU.Editor.CityImport
             if (doAbsolutePath)
             {
                 return pathList
-                    .Select(relativePath => Path.Combine(this.udxFolderPath, relativePath))
+                    .Select(relativePath => Path.Combine(this.srcRootFolderPath, "udx",  relativePath))
                     .Select(Path.GetFullPath);
             }
             return pathList.ToArray();
@@ -159,7 +162,7 @@ namespace PLATEAU.Editor.CityImport
 
         private void FileTableAdd(int areaId, string filePath)
         {
-            string relativePath = GetRelativePath(filePath, this.udxFolderPath);
+            string relativePath = GetRelativePath(filePath, Path.Combine(this.srcRootFolderPath, "udx"));
             if (this.fileTable.ContainsKey(areaId))
             {
                 this.fileTable[areaId].Add(relativePath);

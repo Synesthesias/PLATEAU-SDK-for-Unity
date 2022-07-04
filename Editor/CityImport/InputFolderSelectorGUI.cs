@@ -46,7 +46,7 @@ namespace PLATEAU.Editor.CityImport
                 
                 if (PlateauEditorStyle.MiniButton("参照..."))
                 {
-                    string selectedPath = EditorUtility.OpenFolderPanel(title, Application.dataPath, "udx");
+                    string selectedPath = EditorUtility.OpenFolderPanel(title, Application.dataPath, "");
                     if (!string.IsNullOrEmpty(selectedPath))
                     {
                         this.folderPath = selectedPath;

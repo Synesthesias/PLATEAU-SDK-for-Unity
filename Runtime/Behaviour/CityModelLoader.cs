@@ -48,7 +48,7 @@ namespace PLATEAU.Behaviour
                 return GetCityObjectById(cityModel, cityObjId);
             }
             
-            string udxPath = cityMetaData.cityImportConfig.sourcePath.udxAssetPath;
+            string udxPath = cityMetaData.cityImportConfig.sourcePath.UdxAssetsPath();
             // udxフォルダは StreamingAssets フォルダにあることを前提とします。
             if (!PathUtil.IsSubDirectory(udxPath, Application.streamingAssetsPath))
             {
