@@ -2179,18 +2179,24 @@ references:
   commentId: T:PLATEAU.IO.AxesConversion
   fullName: PLATEAU.IO.AxesConversion
   nameWithType: AxesConversion
-- uid: PLATEAU.IO.AxesConversion.RUF
-  name: RUF
-  href: api/PLATEAU.IO.AxesConversion.html#PLATEAU_IO_AxesConversion_RUF
-  commentId: F:PLATEAU.IO.AxesConversion.RUF
-  fullName: PLATEAU.IO.AxesConversion.RUF
-  nameWithType: AxesConversion.RUF
-- uid: PLATEAU.IO.AxesConversion.WNU
-  name: WNU
-  href: api/PLATEAU.IO.AxesConversion.html#PLATEAU_IO_AxesConversion_WNU
-  commentId: F:PLATEAU.IO.AxesConversion.WNU
-  fullName: PLATEAU.IO.AxesConversion.WNU
-  nameWithType: AxesConversion.WNU
+- uid: PLATEAU.IO.AxesConversion.ENU
+  name: ENU
+  href: api/PLATEAU.IO.AxesConversion.html#PLATEAU_IO_AxesConversion_ENU
+  commentId: F:PLATEAU.IO.AxesConversion.ENU
+  fullName: PLATEAU.IO.AxesConversion.ENU
+  nameWithType: AxesConversion.ENU
+- uid: PLATEAU.IO.AxesConversion.NWU
+  name: NWU
+  href: api/PLATEAU.IO.AxesConversion.html#PLATEAU_IO_AxesConversion_NWU
+  commentId: F:PLATEAU.IO.AxesConversion.NWU
+  fullName: PLATEAU.IO.AxesConversion.NWU
+  nameWithType: AxesConversion.NWU
+- uid: PLATEAU.IO.AxesConversion.WUN
+  name: WUN
+  href: api/PLATEAU.IO.AxesConversion.html#PLATEAU_IO_AxesConversion_WUN
+  commentId: F:PLATEAU.IO.AxesConversion.WUN
+  fullName: PLATEAU.IO.AxesConversion.WUN
+  nameWithType: AxesConversion.WUN
 - uid: PLATEAU.IO.MeshConverter
   name: MeshConverter
   href: api/PLATEAU.IO.MeshConverter.html
@@ -2294,19 +2300,6 @@ references:
   isSpec: "True"
   fullName: PLATEAU.IO.MeshConvertOptions.MeshConvertOptions
   nameWithType: MeshConvertOptions.MeshConvertOptions
-- uid: PLATEAU.IO.MeshConvertOptions.ConvertLatLon
-  name: ConvertLatLon
-  href: api/PLATEAU.IO.MeshConvertOptions.html#PLATEAU_IO_MeshConvertOptions_ConvertLatLon
-  commentId: P:PLATEAU.IO.MeshConvertOptions.ConvertLatLon
-  fullName: PLATEAU.IO.MeshConvertOptions.ConvertLatLon
-  nameWithType: MeshConvertOptions.ConvertLatLon
-- uid: PLATEAU.IO.MeshConvertOptions.ConvertLatLon*
-  name: ConvertLatLon
-  href: api/PLATEAU.IO.MeshConvertOptions.html#PLATEAU_IO_MeshConvertOptions_ConvertLatLon_
-  commentId: Overload:PLATEAU.IO.MeshConvertOptions.ConvertLatLon
-  isSpec: "True"
-  fullName: PLATEAU.IO.MeshConvertOptions.ConvertLatLon
-  nameWithType: MeshConvertOptions.ConvertLatLon
 - uid: PLATEAU.IO.MeshConvertOptions.ExportAppearance
   name: ExportAppearance
   href: api/PLATEAU.IO.MeshConvertOptions.html#PLATEAU_IO_MeshConvertOptions_ExportAppearance
@@ -2411,6 +2404,19 @@ references:
   isSpec: "True"
   fullName: PLATEAU.IO.MeshConvertOptions.SetValidReferencePoint
   nameWithType: MeshConvertOptions.SetValidReferencePoint
+- uid: PLATEAU.IO.MeshConvertOptions.UnitScale
+  name: UnitScale
+  href: api/PLATEAU.IO.MeshConvertOptions.html#PLATEAU_IO_MeshConvertOptions_UnitScale
+  commentId: P:PLATEAU.IO.MeshConvertOptions.UnitScale
+  fullName: PLATEAU.IO.MeshConvertOptions.UnitScale
+  nameWithType: MeshConvertOptions.UnitScale
+- uid: PLATEAU.IO.MeshConvertOptions.UnitScale*
+  name: UnitScale
+  href: api/PLATEAU.IO.MeshConvertOptions.html#PLATEAU_IO_MeshConvertOptions_UnitScale_
+  commentId: Overload:PLATEAU.IO.MeshConvertOptions.UnitScale
+  isSpec: "True"
+  fullName: PLATEAU.IO.MeshConvertOptions.UnitScale
+  nameWithType: MeshConvertOptions.UnitScale
 - uid: PLATEAU.IO.MeshGranularity
   name: MeshGranularity
   href: api/PLATEAU.IO.MeshGranularity.html
