@@ -84,7 +84,7 @@ namespace PLATEAU.Editor.CityImport
                 HeaderDrawer.Draw("地物タイプ別設定（3Dモデル変換）");
                 using (PlateauEditorStyle.VerticalScopeLevel1())
                 {
-                    this.objConvertTypesGUI.Draw(importConfig.objConvertTypesConfig);
+                    this.objConvertTypesGUI.Draw(importConfig.objConvertTypesConfig, importConfig.gmlSearcherConfig);
                 }
                 HeaderDrawer.DecrementDepth();
                 

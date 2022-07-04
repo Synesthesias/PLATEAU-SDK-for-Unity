@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Xml;
 using PLATEAU.CityMeta;
 using PLATEAU.Editor.EditorWindowCommon;
 using UnityEditor;
@@ -15,7 +16,7 @@ namespace PLATEAU.Editor.CityImport
         /// <summary>
         /// obj変換のLOD設定のGUI描画し、ユーザーのGUI操作に応じて引数である <see cref="ObjConvertTypesConfig"/> の中身を書き換えます。
         /// </summary>
-        public void Draw(ObjConvertTypesConfig typesConf)
+        public void Draw(ObjConvertTypesConfig typesConf, GmlSearcherConfig gmlSearcherConfig)
         {
             using (PlateauEditorStyle.VerticalScopeLevel1())
             {
@@ -43,6 +44,9 @@ namespace PLATEAU.Editor.CityImport
                 // 地物タイプごとのループ
                 foreach (var gmlType in gmlTypes)
                 {
+                    bool isTypeTarget = gmlSearcherConfig.gmlTypeTarget.IsTypeTarget(gmlType);
+                    if (!isTypeTarget) continue;
+                    
                     string typeText = gmlType.ToDisplay();
                     EditorGUILayout.LabelField(typeText);
                     using (PlateauEditorStyle.VerticalScopeLevel2())
