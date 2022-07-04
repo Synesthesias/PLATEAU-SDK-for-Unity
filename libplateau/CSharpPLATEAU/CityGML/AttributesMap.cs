@@ -160,7 +160,7 @@ namespace PLATEAU.CityGML
             {
                 // タイプと key を出力します。、
                 var type = this[key].Type;
-                sb.Append($"{{ ({type}) {key} , ");
+                sb.Append($"{{ ({type}) {key} => ");
                 // value を出力します。value が AttributeSet ならその中身を文字にします。
                 string valueStr;
                 if (type == AttributeType.AttributeSet)
@@ -172,7 +172,7 @@ namespace PLATEAU.CityGML
                     valueStr = this[key].AsString;
                 }
 
-                sb.Append(valueStr + "}\n");
+                sb.Append(valueStr + " }\n");
                 Indent(sb, depth);
             }
 
