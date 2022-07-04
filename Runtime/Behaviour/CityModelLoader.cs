@@ -13,11 +13,11 @@ namespace PLATEAU.Behaviour
     /// <summary>
     /// Unityのランタイムでゲームオブジェクト名から <see cref="CityGML.CityObject"/> を取得します。
     /// </summary>
-    internal class SemanticsLoader
+    internal class CityModelLoader
     {
         private readonly Dictionary<string, CityModel> fileToCityModelCache = new Dictionary<string, CityModel>();
 
-        public CityObject Load(string cityObjectId, CityMetaData cityMetaData)
+        public CityObject Load(string gameObjName, CityMetaData cityMetaData)
         {
             if (cityMetaData == null)
             {
@@ -25,9 +25,18 @@ namespace PLATEAU.Behaviour
             }
             
             // テーブルから cityObjectId に対応する gmlFileName を検索します。
-            if( !cityMetaData.TryGetValueFromGmlTable(cityObjectId, out var gmlFileName))
+            if( !cityMetaData.TryGetValueFromGmlTable(gameObjName, out var gmlFileName))
             {
-                throw new KeyNotFoundException($"cityObjectId {cityObjectId} is not found in {nameof(CityMetaData)}.");
+                throw new KeyNotFoundException($"cityObjectId {gameObjName} is not found in {nameof(CityMetaData)}.");
+            }
+            
+            
+            // gameObjName から cityObjId を取得します。
+            bool succeed = GameObjNameParser.TryGetId(gameObjName, out string cityObjId);
+            if (!succeed)
+            {
+                Debug.LogError($"{nameof(gameObjName)} is invalid formatted.");
+                return null;
             }
             
             // 名前が gmlFileName である gmlファイルを検索します。
@@ -36,7 +45,7 @@ namespace PLATEAU.Behaviour
             // キャッシュにあればそれを返します。
             if (this.fileToCityModelCache.TryGetValue(gmlFileName, out CityModel cityModel))
             {
-                return GetCityObjectById(cityModel, cityObjectId);
+                return GetCityObjectById(cityModel, cityObjId);
             }
             
             string udxPath = cityMetaData.cityImportConfig.sourcePath.udxAssetPath;
@@ -49,7 +58,8 @@ namespace PLATEAU.Behaviour
             string gmlPath = SearchGmlPath(gmlFileName);
             var loadedModel = CityGml.Load(gmlPath, new CitygmlParserParams(true, false), DllLogCallback.UnityLogCallbacks);
             this.fileToCityModelCache[gmlFileName] = loadedModel;
-            return GetCityObjectById(loadedModel, cityObjectId);
+            
+            return GetCityObjectById(loadedModel, cityObjId);
         }
 
         private static string SearchGmlPath(string gmlFileNameWithoutExtension)

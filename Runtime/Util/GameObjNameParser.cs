@@ -38,6 +38,7 @@ namespace PLATEAU.Util
         /// </summary>
         public static bool TryGetId(string objName, out string id)
         {
+            // オブジェクト名から先頭の LOD(num)_ を取り除いた部分がIDです。 
             id = "";
             int underScoreIndex = objName.IndexOf("_", StringComparison.Ordinal);
             if (underScoreIndex < 0 || underScoreIndex >= objName.Length-1) return false;
