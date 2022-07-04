@@ -37,6 +37,10 @@ namespace PLATEAU.CityMeta
         /// </summary>
         public static string RootDirName(string rootPath, string dummy) // TODO dummyを消す
         {
+            if (!(rootPath.EndsWith("/") || rootPath.EndsWith("\\")))
+            {
+                rootPath += "/";
+            }
             string root = GetRootDirFullPath(rootPath, "");
             return Path.GetFileName(Path.GetDirectoryName(root));
         }

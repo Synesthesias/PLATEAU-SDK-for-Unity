@@ -44,15 +44,15 @@ namespace PLATEAU.Editor.CityImport
             {
                 initialSrcRootPath = PathUtil.AssetsPathToFullPath(initialSrcRootPath);
             }
-            config.srcRootPathBeforeImport = initialSrcRootPath;
+            config.SrcRootPathBeforeImport = initialSrcRootPath;
         }
 
         public void Draw(CityImportConfig importConfig)
         {
             // インポート元フォルダ選択
-            this.importFolderSelectorGUI.FolderPath = importConfig.srcRootPathBeforeImport;
+            this.importFolderSelectorGUI.FolderPath = importConfig.SrcRootPathBeforeImport;
             string sourcePath = this.importFolderSelectorGUI.Draw("インポート元フォルダ選択");
-            importConfig.srcRootPathBeforeImport = sourcePath;
+            importConfig.SrcRootPathBeforeImport = sourcePath;
 
             // udxフォルダが選択されているなら、設定と出力のGUIを表示
             if (GmlSearcher.IsPathPlateauRoot(sourcePath))

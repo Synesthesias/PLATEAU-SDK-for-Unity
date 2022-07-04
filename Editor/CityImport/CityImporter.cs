@@ -40,10 +40,9 @@ namespace PLATEAU.Editor.CityImport
             // 元フォルダを StreamingAssets/PLATEAU にコピーします。すでに StreamingAssets内にある場合を除きます。 
             // 設定のインポート元パスをコピー後のパスに変更します。
             var sourcePathConf = importConfig.sourcePath;
-            sourcePathConf.SetRootDirFullPath(CopyImportSrcToStreamingAssets(importConfig.srcRootPathBeforeImport, gmlRelativePaths));
+            sourcePathConf.SetRootDirFullPath(CopyImportSrcToStreamingAssets(importConfig.SrcRootPathBeforeImport, gmlRelativePaths));
             var importDest = importConfig.importDestPath;
             metaData = CityMetaDataGenerator.LoadOrCreateMetaData(importDest.MetaDataAssetPath, true);
-
             // gmlファイルごとのループを始めます。
             int successCount = 0;
             int loopCount = 0;
@@ -94,7 +93,7 @@ namespace PLATEAU.Editor.CityImport
                         {
                             AssetDatabase.ImportAsset(mtlAssetsPath);
                             // AssetDatabase.Refresh();
-                            Debug.Log($"importing mtl : {mtlAssetsPath}");
+                            // Debug.Log($"importing mtl : {mtlAssetsPath}");
                         }
                         
                         // objファイルをインポートします。

@@ -32,7 +32,7 @@ namespace PLATEAU.CityMeta
         public PlateauSourcePath sourcePath = new PlateauSourcePath("", "");
 
         /// <summary> これはファイルには記録されません。 インポート元ファイルのパス（コピー前）です。 Assetsフォルダ外を指すこともあります。フルパスです。 </summary>
-        [NonSerialized] public string srcRootPathBeforeImport;
+        [NonSerialized] public string SrcRootPathBeforeImport;
         
         /// <summary> インポートの出力先 </summary>
         public ImportDestPath importDestPath = new ImportDestPath();

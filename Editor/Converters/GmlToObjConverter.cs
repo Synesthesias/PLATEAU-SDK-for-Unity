@@ -93,7 +93,6 @@ namespace PLATEAU.Editor.Converters
         /// </summary>
         private bool ConvertInner(string gmlFilePath, string exportDirFullPath, CityModel cityModel) 
         {
-            Debug.Log($"ExportAppearance = {this.config.DllConvertOption.ExportAppearance}, gmlFilePath = {gmlFilePath}");
             if (!IsPathValid(gmlFilePath, exportDirFullPath)) return false;
             try
             {

@@ -20,7 +20,7 @@ namespace PLATEAU.Tests.TestUtils
             {
                 exportAppearance = false,
                 meshGranularity = MeshGranularity.PerCityModelArea,
-                srcRootPathBeforeImport = srcFullPathBeforeImport,
+                SrcRootPathBeforeImport = srcFullPathBeforeImport,
                 importDestPath =
                 {
                     dirAssetPath = outputDirAssetsPath
