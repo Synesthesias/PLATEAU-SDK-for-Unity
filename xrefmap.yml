@@ -26,19 +26,19 @@ references:
   isSpec: "True"
   fullName: PLATEAU.Behaviour.CityBehaviour.CityMetaData
   nameWithType: CityBehaviour.CityMetaData
-- uid: PLATEAU.Behaviour.CityBehaviour.LoadSemantics(System.String)
-  name: LoadSemantics(String)
-  href: api/PLATEAU.Behaviour.CityBehaviour.html#PLATEAU_Behaviour_CityBehaviour_LoadSemantics_System_String_
-  commentId: M:PLATEAU.Behaviour.CityBehaviour.LoadSemantics(System.String)
-  fullName: PLATEAU.Behaviour.CityBehaviour.LoadSemantics(System.String)
-  nameWithType: CityBehaviour.LoadSemantics(String)
-- uid: PLATEAU.Behaviour.CityBehaviour.LoadSemantics*
-  name: LoadSemantics
-  href: api/PLATEAU.Behaviour.CityBehaviour.html#PLATEAU_Behaviour_CityBehaviour_LoadSemantics_
-  commentId: Overload:PLATEAU.Behaviour.CityBehaviour.LoadSemantics
+- uid: PLATEAU.Behaviour.CityBehaviour.LoadCityObject(System.String)
+  name: LoadCityObject(String)
+  href: api/PLATEAU.Behaviour.CityBehaviour.html#PLATEAU_Behaviour_CityBehaviour_LoadCityObject_System_String_
+  commentId: M:PLATEAU.Behaviour.CityBehaviour.LoadCityObject(System.String)
+  fullName: PLATEAU.Behaviour.CityBehaviour.LoadCityObject(System.String)
+  nameWithType: CityBehaviour.LoadCityObject(String)
+- uid: PLATEAU.Behaviour.CityBehaviour.LoadCityObject*
+  name: LoadCityObject
+  href: api/PLATEAU.Behaviour.CityBehaviour.html#PLATEAU_Behaviour_CityBehaviour_LoadCityObject_
+  commentId: Overload:PLATEAU.Behaviour.CityBehaviour.LoadCityObject
   isSpec: "True"
-  fullName: PLATEAU.Behaviour.CityBehaviour.LoadSemantics
-  nameWithType: CityBehaviour.LoadSemantics
+  fullName: PLATEAU.Behaviour.CityBehaviour.LoadCityObject
+  nameWithType: CityBehaviour.LoadCityObject
 - uid: PLATEAU.CityGML
   name: PLATEAU.CityGML
   href: api/PLATEAU.CityGML.html
