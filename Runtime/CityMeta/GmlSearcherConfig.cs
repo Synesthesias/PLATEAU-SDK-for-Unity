@@ -24,7 +24,6 @@ namespace PLATEAU.CityMeta
 
         /// <summary> 地物タイプの絞り込み情報です。 </summary>
         public GmlTypeTarget gmlTypeTarget = new GmlTypeTarget();
-
         
         /// <summary>
         /// 引数が true のとき、すべてのエリアを対象とします。

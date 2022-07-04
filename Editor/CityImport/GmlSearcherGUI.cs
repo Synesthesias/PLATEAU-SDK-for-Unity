@@ -89,15 +89,8 @@ namespace PLATEAU.Editor.CityImport
                     {
                         string typeText = gmlType.ToDisplay();
                         var isTypeTarget = typeConfDict[gmlType];
-                        if (isTypeExist)
-                        {
-                            isTypeTarget = EditorGUILayout.Toggle(typeText, isTypeTarget);
-                        }
-                        else
-                        {
-                            EditorGUILayout.Toggle(typeText, false);
-                        }
-                        
+                        isTypeTarget = EditorGUILayout.Toggle(typeText, isTypeTarget && isTypeExist);
+
                         typeConfDict[gmlType] = isTypeTarget;
                     }
                 }
