@@ -8,5 +8,5 @@
     href: Tutorial.md
   - name: 都市モデルのインポート
     href: ImportCityModels.md
-  - name: メタデータへのアクセス
-    href: AccessMetadata.md
+  - name: 都市情報へのアクセス
+    href: AccessCityObject.md
