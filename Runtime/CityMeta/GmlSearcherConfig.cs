@@ -20,10 +20,8 @@ namespace PLATEAU.CityMeta
         /// <summary> 見つかったエリアIDの一覧です。 </summary>
         [SerializeField] private int[] areaIds = { };
 
-        public IReadOnlyList<int> AreaIds => this.areaIds;
-
         /// <summary> <see cref="areaIds"/> の i番目を変換対象とするかどうかです。 </summary>
-        public bool[] isAreaIdTarget = { };
+        [SerializeField] private bool[] isAreaIdTarget = { };
 
         /// <summary> 地物タイプの絞り込み情報です。 </summary>
         [SerializeField] private GmlTypeTarget gmlTypeTarget = new GmlTypeTarget();
@@ -78,9 +76,23 @@ namespace PLATEAU.CityMeta
             this.gmlTypeTarget.SetIsTypeTarget(t, isTarget);
         }
 
+        public IReadOnlyList<int> AreaIds => this.areaIds;
+        
         public void SetAreaIds(int[] areaIdsArg)
         {
             this.areaIds = areaIdsArg;
+        }
+
+        public IReadOnlyList<bool> IsAreaIdTarget => this.isAreaIdTarget;
+
+        public void SetIsAreaIdTarget(int index, bool isTarget)
+        {
+            this.isAreaIdTarget[index] = isTarget;
+        }
+
+        public void ResetIsAreaIdTarget(int areaCount)
+        {
+            this.isAreaIdTarget = Enumerable.Repeat(true, areaCount ).ToArray();
         }
     }
 }
