@@ -80,18 +80,16 @@ namespace PLATEAU.Editor.CityImport
                     }
                 }
                 
-                var typeConfDict = searcherConfig.gmlTypeTarget.IsTypeTargetDict;
                 // 地物タイプごとのチェックマークです。
-                foreach (var gmlType in typeConfDict.Keys.ToArray())
+                foreach (var gmlType in searcherConfig.AllGmlTypes())
                 {
                     bool isTypeExist = typeExistingDict[gmlType];
                     using (new EditorGUI.DisabledScope(!isTypeExist))
                     {
                         string typeText = gmlType.ToDisplay();
-                        var isTypeTarget = typeConfDict[gmlType];
+                        var isTypeTarget = searcherConfig.GetIsTypeTarget(gmlType);
                         isTypeTarget = EditorGUILayout.Toggle(typeText, isTypeTarget && isTypeExist);
-
-                        typeConfDict[gmlType] = isTypeTarget;
+                        searcherConfig.SetIsTypeTarget(gmlType, isTypeTarget);
                     }
                 }
 
@@ -101,7 +99,7 @@ namespace PLATEAU.Editor.CityImport
             using (PlateauEditorStyle.VerticalScopeLevel1())
             {
                 this.gmlFiles = ListTargetGmlFiles(gmlSearcher, searcherConfig.areaIds, searcherConfig.isAreaIdTarget,
-                    searcherConfig.gmlTypeTarget);
+                    searcherConfig);
                 this.scrollPosForGmlList = PlateauEditorStyle.ScrollableMultiLineLabel(String.Join("\n", this.gmlFiles), 150, this.scrollPosForGmlList);
             }
             
@@ -126,7 +124,7 @@ namespace PLATEAU.Editor.CityImport
         }
 
         
-        private static List<string> ListTargetGmlFiles(GmlSearcher gmlSearcher, int[] areaIds, bool[] areaCheckboxes, GmlTypeTarget gmlTypeTarget)
+        private static List<string> ListTargetGmlFiles(GmlSearcher gmlSearcher, int[] areaIds, bool[] areaCheckboxes, GmlSearcherConfig searcherConfig)
         {
             if (areaIds.Length != areaCheckboxes.Length)
             {
@@ -138,7 +136,7 @@ namespace PLATEAU.Editor.CityImport
             for (int i = 0; i < areaCount; i++)
             {
                 if (!areaCheckboxes[i]) continue;
-                gmlFiles.AddRange(gmlSearcher.GetGmlFilePathsForAreaIdAndType(areaIds[i], gmlTypeTarget, false));
+                gmlFiles.AddRange(gmlSearcher.GetGmlFilePathsForAreaIdAndType(areaIds[i], searcherConfig, false));
             }
 
             return gmlFiles;

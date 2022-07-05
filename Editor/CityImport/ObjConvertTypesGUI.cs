@@ -44,7 +44,7 @@ namespace PLATEAU.Editor.CityImport
                 // 地物タイプごとのループ
                 foreach (var gmlType in gmlTypes)
                 {
-                    bool isTypeTarget = gmlSearcherConfig.gmlTypeTarget.IsTypeTarget(gmlType);
+                    bool isTypeTarget = gmlSearcherConfig.GetIsTypeTarget(gmlType);
                     if (!isTypeTarget) continue;
                     
                     string typeText = gmlType.ToDisplay();

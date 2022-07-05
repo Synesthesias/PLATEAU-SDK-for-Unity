@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 
 namespace PLATEAU.CityMeta
 {
@@ -23,7 +24,7 @@ namespace PLATEAU.CityMeta
         public bool[] isAreaIdTarget = { };
 
         /// <summary> 地物タイプの絞り込み情報です。 </summary>
-        public GmlTypeTarget gmlTypeTarget = new GmlTypeTarget();
+        [SerializeField] private GmlTypeTarget gmlTypeTarget = new GmlTypeTarget();
         
         /// <summary>
         /// 引数が true のとき、すべてのエリアを対象とします。
@@ -58,6 +59,21 @@ namespace PLATEAU.CityMeta
             }
 
             return targetIds;
-        } 
+        }
+
+        public bool GetIsTypeTarget(GmlType t)
+        {
+            return this.gmlTypeTarget.IsTypeTarget(t);
+        }
+
+        public GmlType[] AllGmlTypes()
+        {
+            return this.gmlTypeTarget.Keys;
+        }
+
+        public void SetIsTypeTarget(GmlType t, bool isTarget)
+        {
+            this.gmlTypeTarget.SetIsTypeTarget(t, isTarget);
+        }
     }
 }

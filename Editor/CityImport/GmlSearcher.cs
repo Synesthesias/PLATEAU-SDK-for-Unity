@@ -131,16 +131,16 @@ namespace PLATEAU.Editor.CityImport
         
         /// <summary>
         /// gmlファイルのうち、<paramref name="areaId"/> が指定したものであり、かつ
-        /// <see cref="GmlType"/> が <paramref name="typeTarget"/> で示されるタイプの1つであるものを返します。
+        /// <see cref="GmlType"/> が <paramref name="searcherConfig"/> で対象とするタイプリストに含まれるものを0個以上返します。
         /// </summary>
-        public IEnumerable<string> GetGmlFilePathsForAreaIdAndType(int areaId, GmlTypeTarget typeTarget,
+        public IEnumerable<string> GetGmlFilePathsForAreaIdAndType(int areaId, GmlSearcherConfig searcherConfig,
             bool doAbsolutePath)
         {
             var found = new List<string>();
             var gmlsInArea = GetGmlFilePathsForAreaId(areaId, doAbsolutePath);
             foreach (var gml in gmlsInArea)
             {
-                if (typeTarget.IsTypeTarget(GetGmlTypeFromPath(gml)))
+                if (searcherConfig.GetIsTypeTarget(GetGmlTypeFromPath(gml)))
                 {
                     found.Add(gml);
                 }
