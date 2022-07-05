@@ -51,7 +51,7 @@ namespace PLATEAU.Editor.CityImport
                     EditorGUILayout.LabelField(typeText);
                     using (PlateauEditorStyle.VerticalScopeLevel2())
                     {
-                        // LOD対象選択 複数 / 最大のみ
+                        // LOD対象選択 全LOD / 最大のみ
                         var typeExportLower = typesConf.TypeExportLowerLodDict[gmlType];
                         typeExportLower = Convert.ToBoolean(EditorGUILayout.Popup("出力モード",
                             Convert.ToInt32(typeExportLower), new string[] { "選択中最大LODのみ", "全LOD" }));

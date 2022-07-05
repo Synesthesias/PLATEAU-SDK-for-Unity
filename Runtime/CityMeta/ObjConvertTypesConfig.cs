@@ -11,12 +11,13 @@ namespace PLATEAU.CityMeta
     /// インポート時の Objファイル変換について、地物タイプ別の変換設定を保持するクラスです。
     /// 具体的には 地物タイプ別 LOD 範囲設定、　地物タイプ別 (LOD範囲内複数 or 最大LODのみ) 出力選択設定です。
     /// 設定は辞書形式で、 <see cref="GmlType"/> => 値 の形式で保持します。
+    /// <see cref="CityImportConfig"/> がこのクラスを保持します。
     /// </summary>
     [Serializable]
     internal class ObjConvertTypesConfig : ISerializationCallbackReceiver
     {
-        public Dictionary<GmlType, MinMax<int>> TypeLodDict;
-        public Dictionary<GmlType, bool> TypeExportLowerLodDict;
+        public Dictionary<GmlType, MinMax<int>> TypeLodDict = GmlTypeConvert.ComposeTypeDict<MinMax<int>>();
+        public Dictionary<GmlType, bool> TypeExportLowerLodDict = GmlTypeConvert.ComposeTypeDict<bool>(true);
 
         /// <summary> GUIでスライダーの値を一時的保持するためのメンバ </summary>
         [NonSerialized] public Dictionary<GmlType, MinMax<float>> TypeLodSliderDict = new Dictionary<GmlType, MinMax<float>>();
@@ -30,10 +31,7 @@ namespace PLATEAU.CityMeta
 
         public ObjConvertTypesConfig()
         {
-            // 各タイプごとの設定を初期化します。
-            this.TypeLodDict = GmlTypeConvert.ComposeTypeDict<MinMax<int>>();
             LodToSliderVal();
-            this.TypeExportLowerLodDict = GmlTypeConvert.ComposeTypeDict<bool>();
         }
 
         /// <summary> Lod設定の値をGUIスライダー用値に反映させます。 </summary>
