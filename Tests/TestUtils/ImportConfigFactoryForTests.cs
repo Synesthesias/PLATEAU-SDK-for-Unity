@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using PLATEAU.CityMeta;
 using PLATEAU.IO;
-using UnityEngine;
 
 namespace PLATEAU.Tests.TestUtils
 {

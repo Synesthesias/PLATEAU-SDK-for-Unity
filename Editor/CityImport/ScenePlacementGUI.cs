@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using PLATEAU.CityMeta;
+﻿using PLATEAU.CityMeta;
 using PLATEAU.Editor.EditorWindowCommon;
 using UnityEditor;
 
@@ -30,7 +28,7 @@ namespace PLATEAU.Editor.CityImport
                     using (PlateauEditorStyle.VerticalScopeLevel2())
                     {
                         var typeConf = placementConfig.GetPerTypeConfig(gmlType);
-                        DrawPerTypeConfGUI(typeConf, gmlType, possibleLodRange); 
+                        DrawPerTypeConfGUI(typeConf, possibleLodRange); 
                     }
                                
                 }
@@ -47,7 +45,7 @@ namespace PLATEAU.Editor.CityImport
         /// <summary>
         /// タイプ別のシーン配置設定GUIです。
         /// </summary>
-        private void DrawPerTypeConfGUI(ScenePlacementConfigPerType typeConf, GmlType gmlType, MinMax<int> possibleLodRange)
+        private void DrawPerTypeConfGUI(ScenePlacementConfigPerType typeConf, MinMax<int> possibleLodRange)
         {
             var placeMethod = typeConf.placeMethod;
             placeMethod = (ScenePlacementConfig.PlaceMethod)

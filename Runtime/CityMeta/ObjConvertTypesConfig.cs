@@ -16,7 +16,7 @@ namespace PLATEAU.CityMeta
     internal class ObjConvertTypesConfig : ISerializationCallbackReceiver
     {
         public Dictionary<GmlType, MinMax<int>> TypeLodDict = GmlTypeConvert.ComposeTypeDict<MinMax<int>>();
-        public Dictionary<GmlType, bool> TypeExportLowerLodDict = GmlTypeConvert.ComposeTypeDict<bool>(true);
+        public Dictionary<GmlType, bool> TypeExportLowerLodDict = GmlTypeConvert.ComposeTypeDict(true);
 
         /// <summary> GUIでスライダーの値を一時的保持するためのメンバ </summary>
         [NonSerialized] public Dictionary<GmlType, MinMax<float>> TypeLodSliderDict = new Dictionary<GmlType, MinMax<float>>();

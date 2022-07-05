@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.IO;
+﻿using System.IO;
 using NUnit.Framework;
 using PLATEAU.Behaviour;
 using PLATEAU.CityMeta;
@@ -7,7 +6,6 @@ using PLATEAU.IO;
 using PLATEAU.Tests.TestUtils;
 using PLATEAU.Util;
 using UnityEngine;
-using UnityEngine.TestTools;
 
 namespace PLATEAU.Tests.PlayModeTests
 {

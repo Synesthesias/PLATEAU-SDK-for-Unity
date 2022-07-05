@@ -21,7 +21,7 @@ namespace PLATEAU.Editor.CityImport
 
         /// <summary>
         /// 地域メッシュコード（地域ID）からファイルリストへの辞書です。
-        /// ここでいうファイルリストとは <see cref="udxFolderPath"/> からの相対パスのリストです。
+        /// ここでいうファイルリストとは (<see cref="srcRootFolderPath"/>)/udx からの相対パスのリストです。
         /// 例: {53394525 => {bldg\53394525_bldg_6697_2_op.gml  brid\53394525_brid_6697_op.gml }}
         /// </summary>
         private Dictionary<int, List<string>> fileTable;
@@ -155,7 +155,7 @@ namespace PLATEAU.Editor.CityImport
         /// </summary>
         public Dictionary<GmlType, bool> ExistingTypesForAreaIds(IEnumerable<int> areaIds)
         {
-            var typeExistingDict = GmlTypeConvert.ComposeTypeDict<bool>(false);
+            var typeExistingDict = GmlTypeConvert.ComposeTypeDict(false);
             foreach (int areaId in areaIds)
             {
                 List<string> gmlPaths = this.fileTable[areaId];

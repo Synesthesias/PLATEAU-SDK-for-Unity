@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using PLATEAU.CityGML;
 using NUnit.Framework;
-using PLATEAU.Editor.CityImport;
 using PLATEAU.Editor.Converters;
 using PLATEAU.CityMeta;
 using PLATEAU.Interop;

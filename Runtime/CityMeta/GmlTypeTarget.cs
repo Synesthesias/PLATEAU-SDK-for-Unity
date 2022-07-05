@@ -32,7 +32,7 @@ namespace PLATEAU.CityMeta
         public GmlTypeTarget()
         {
             // 各タイプごとに ImportGmlTypeConfig を初期化します。
-            IsTypeTargetDict = GmlTypeConvert.ComposeTypeDict<bool>(true);
+            IsTypeTargetDict = GmlTypeConvert.ComposeTypeDict(true);
         }
 
         /// <summary>

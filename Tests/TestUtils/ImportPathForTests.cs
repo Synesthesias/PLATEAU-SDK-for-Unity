@@ -1,5 +1,4 @@
 ﻿using PLATEAU.Util;
-using UnityEditor;
 
 namespace PLATEAU.Tests.TestUtils
 {
