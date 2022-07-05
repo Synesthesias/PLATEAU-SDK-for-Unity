@@ -20,7 +20,7 @@ namespace PLATEAU.Editor.CityImport
                 var placementConfig = importConfig.scenePlacementConfig;
                 var gmlTypes = placementConfig.AllGmlTypes();
                 var availableObjs = importConfig.generatedObjFiles;
-                var typeLodDict = AvailableLodInObjs(availableObjs);
+                var typeLodDict = ObjInfo.AvailableLodInObjs(availableObjs);
                 foreach (var gmlType in gmlTypes)
                 {
                     var possibleLodRange = typeLodDict[gmlType];
@@ -84,35 +84,6 @@ namespace PLATEAU.Editor.CityImport
             }
         }
 
-        /// <summary>
-        /// インポート時に生成された objファイルのリストを受け取り、
-        /// Gmlタイプ別にどの範囲のLODが存在するかを辞書形式で返します。
-        /// </summary>
-        /// <returns>
-        /// <see cref="GmlType"/> を key として、存在するLODの範囲を value とします。
-        /// <see cref="GmlType"/> に対応する objファイルが存在しない場合は、そのタイプの value は null となります。
-        /// </returns>
-        private static Dictionary<GmlType, MinMax<int>> AvailableLodInObjs(IReadOnlyList<ObjInfo> objInfoList)
-        {
-            var typeLodDict = GmlTypeConvert.ComposeTypeDict<MinMax<int>>(null);
-            foreach (var objInfo in objInfoList)
-            {
-                int objLod = objInfo.lod;
-                GmlType objType = objInfo.gmlType;
-                MinMax<int> dictLods = typeLodDict[objType];
-                if (dictLods == null)
-                {
-                    typeLodDict[objType] = new MinMax<int>(objLod, objLod);
-                }
-                else
-                {
-                    int minLod = Math.Min(dictLods.Min, objLod);
-                    int maxLod = Math.Max(dictLods.Max, objLod);
-                    typeLodDict[objType].SetMinMax(minLod, maxLod);
-                }
-            }
-
-            return typeLodDict;
-        }
+        
     }
 }
