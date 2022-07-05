@@ -29,7 +29,7 @@ namespace PLATEAU.CityMeta
         public GmlSearcherConfig gmlSearcherConfig = new GmlSearcherConfig();
         
         /// <summary> インポート元ファイルのパス（コピー後）です。通常 StreamingAssets内を指します。 パスは Assets から始まります。 </summary>
-        public PlateauSourcePath sourcePath = new PlateauSourcePath("", "");
+        public PlateauSourcePath sourcePath = new PlateauSourcePath("");
 
         /// <summary> これはファイルには記録されません。 インポート元ファイルのパス（コピー前）です。 Assetsフォルダ外を指すこともあります。フルパスです。 </summary>
         [NonSerialized] public string SrcRootPathBeforeImport;

@@ -24,9 +24,9 @@ namespace PLATEAU.Editor.CityImport
             int numGml = gmlRelativePaths.Length;
             ProgressBar("コピー中", 0, numGml);
             
-            string rootDirName = PlateauSourcePath.RootDirName(srcRootPathBeforeImport, "");
+            string rootDirName = PlateauSourcePath.RootDirName(srcRootPathBeforeImport);
             if (rootDirName == null) throw new FileNotFoundException($"{nameof(rootDirName)} is null.");
-            var dest = new PlateauSourcePath(Path.Combine(copyDest, rootDirName), "");
+            var dest = new PlateauSourcePath(Path.Combine(copyDest, rootDirName));
 
             // コピー先のルートフォルダを作成します。
             // 例: Tokyoをコピーする場合のパスの例を以下に示します。
@@ -37,7 +37,7 @@ namespace PLATEAU.Editor.CityImport
             // 例: Assets/StreamingAssets/PLATEAU/Tokyo/codelists/****.xml をコピーにより作成します。
             ProgressBar("コピー中 : codelists", 0, numGml);
             const string codelistsFolderName = "codelists";
-            PathUtil.CloneDirectory(Path.Combine(PlateauSourcePath.GetRootDirFullPath(srcRootPathBeforeImport, ""), codelistsFolderName), dest.RootDirFullPath());
+            PathUtil.CloneDirectory(Path.Combine(PlateauSourcePath.GetRootDirFullPath(srcRootPathBeforeImport), codelistsFolderName), dest.RootDirFullPath());
             
 
             // udxのパスです。

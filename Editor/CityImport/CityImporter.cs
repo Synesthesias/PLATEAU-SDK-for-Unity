@@ -133,7 +133,7 @@ namespace PLATEAU.Editor.CityImport
             // gmlファイルごとのループ　ここまで
             
             // シーンに配置します。
-            string rootDirName = PlateauSourcePath.RootDirName(sourcePathConf.rootDirAssetPath, "");
+            string rootDirName = PlateauSourcePath.RootDirName(sourcePathConf.rootDirAssetPath);
             CityMeshPlacerToScene.Place(
                 importConfig.scenePlacementConfig, generatedObjs, rootDirName, metaData
             );
@@ -200,7 +200,7 @@ namespace PLATEAU.Editor.CityImport
             {
                 string copyDest = PlateauUnityPath.StreamingGmlFolder;
                 CopyPlateauSrcFiles.SelectCopy(srcRootPathBeforeImport, copyDest, gmlRelativePaths);
-                newRootFullPath = Path.Combine(copyDest, $"{PlateauSourcePath.RootDirName(srcRootPathBeforeImport, "")}");
+                newRootFullPath = Path.Combine(copyDest, $"{PlateauSourcePath.RootDirName(srcRootPathBeforeImport)}");
             }
             return newRootFullPath;
         }

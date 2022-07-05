@@ -25,7 +25,7 @@ namespace PLATEAU.CityMeta
         /// <summary>
         /// udxパスで初期化します。
         /// </summary>
-        public PlateauSourcePath(string rootDirAssetPath, string dummy) // TODO dummy引数を消す
+        public PlateauSourcePath(string rootDirAssetPath)
         {
             this.rootDirAssetPath = rootDirAssetPath;
         }
@@ -35,13 +35,13 @@ namespace PLATEAU.CityMeta
         /// 元データのRoot (= udxの親) フォルダの名前です。
         /// udxPath は Assetパスでもフルパスでも動作します。
         /// </summary>
-        public static string RootDirName(string rootPath, string dummy) // TODO dummyを消す
+        public static string RootDirName(string rootPath)
         {
             if (!(rootPath.EndsWith("/") || rootPath.EndsWith("\\")))
             {
                 rootPath += "/";
             }
-            string root = GetRootDirFullPath(rootPath, "");
+            string root = GetRootDirFullPath(rootPath);
             return Path.GetFileName(Path.GetDirectoryName(root));
         }
 
@@ -49,7 +49,7 @@ namespace PLATEAU.CityMeta
         /// 元データのRoot (= udxの親) フォルダのパスです。
         /// rootPath Assetパスでもフルパスでも動作します。
         /// </summary>
-        public static string GetRootDirFullPath(string rootPath, string dummy) // TODO dummyを消す
+        public static string GetRootDirFullPath(string rootPath)
         {
             return Path.GetFullPath(rootPath);
         }
@@ -97,7 +97,7 @@ namespace PLATEAU.CityMeta
     {
         public static string RootDirFullPath(this PlateauSourcePath source)
         {
-            return PlateauSourcePath.GetRootDirFullPath(source.rootDirAssetPath, "");
+            return PlateauSourcePath.GetRootDirFullPath(source.rootDirAssetPath);
         }
 
         // public static string RootDirAssetsPath(this PlateauSourcePath source)
