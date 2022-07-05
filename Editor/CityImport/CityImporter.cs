@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using PLATEAU.CityGML;
@@ -11,7 +10,6 @@ using PLATEAU.Util;
 using UnityEditor;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
-using Object = UnityEngine.Object;
 
 namespace PLATEAU.Editor.CityImport
 {
@@ -40,10 +38,13 @@ namespace PLATEAU.Editor.CityImport
             // 元フォルダを StreamingAssets/PLATEAU にコピーします。すでに StreamingAssets内にある場合を除きます。 
             // 設定のインポート元パスをコピー後のパスに変更します。
             var sourcePathConf = importConfig.sourcePath;
-            sourcePathConf.FullUdxPath = CopyImportSrcToStreamingAssets(importConfig.UdxPathBeforeImport, gmlRelativePaths);
+            sourcePathConf.SetRootDirFullPath(CopyImportSrcToStreamingAssets(importConfig.SrcRootPathBeforeImport, gmlRelativePaths));
+            Debug.Log("srcRoot configured.");
             var importDest = importConfig.importDestPath;
             metaData = CityMetaDataGenerator.LoadOrCreateMetaData(importDest.MetaDataAssetPath, true);
-
+            
+            Debug.Log("metadata created or loaded.");
+            
             // gmlファイルごとのループを始めます。
             int successCount = 0;
             int loopCount = 0;
@@ -94,7 +95,7 @@ namespace PLATEAU.Editor.CityImport
                         {
                             AssetDatabase.ImportAsset(mtlAssetsPath);
                             // AssetDatabase.Refresh();
-                            Debug.Log($"importing mtl : {mtlAssetsPath}");
+                            // Debug.Log($"importing mtl : {mtlAssetsPath}");
                         }
                         
                         // objファイルをインポートします。
@@ -117,7 +118,7 @@ namespace PLATEAU.Editor.CityImport
                 // .obj ファイルごとのループを始めます。
                 
                 var objNames = objConvertLodConf.ObjFileNamesForGml(gmlFileName);
-                var objAssetPaths = objNames.Select(name => Path.Combine(importDest.dirAssetPath, name + ".obj"));
+                var objAssetPaths = objNames.Select(name => Path.Combine(importDest.DirAssetsPath, name + ".obj"));
                 foreach(string objAssetPath in objAssetPaths)
                 {
                     // CityMapMetaData を生成します。
@@ -134,7 +135,7 @@ namespace PLATEAU.Editor.CityImport
             // gmlファイルごとのループ　ここまで
             
             // シーンに配置します。
-            string rootDirName = PlateauSourcePath.RootDirName(sourcePathConf.udxAssetPath);
+            string rootDirName = PlateauSourcePath.RootDirName(sourcePathConf.RootDirAssetPath);
             CityMeshPlacerToScene.Place(
                 importConfig.scenePlacementConfig, generatedObjs, rootDirName, metaData
             );
@@ -194,16 +195,16 @@ namespace PLATEAU.Editor.CityImport
             return true;
         }
 
-        private string CopyImportSrcToStreamingAssets(string udxPathBeforeImport, string[] gmlRelativePaths)
+        private string CopyImportSrcToStreamingAssets(string srcRootPathBeforeImport, string[] gmlRelativePaths)
         {
-            string newUdxFullPath = udxPathBeforeImport; // デフォルト値
-            if (!IsInStreamingAssets(udxPathBeforeImport))
+            string newRootFullPath = srcRootPathBeforeImport; // デフォルト値
+            if (!IsInStreamingAssets(srcRootPathBeforeImport))
             {
                 string copyDest = PlateauUnityPath.StreamingGmlFolder;
-                CopyPlateauSrcFiles.SelectCopy(udxPathBeforeImport, copyDest, gmlRelativePaths);
-                newUdxFullPath = Path.Combine(copyDest, $"{PlateauSourcePath.RootDirName(udxPathBeforeImport)}/udx");
+                CopyPlateauSrcFiles.SelectCopy(srcRootPathBeforeImport, copyDest, gmlRelativePaths);
+                newRootFullPath = Path.Combine(copyDest, $"{PlateauSourcePath.RootDirName(srcRootPathBeforeImport)}");
             }
-            return newUdxFullPath;
+            return newRootFullPath;
         }
 
         /// <summary>

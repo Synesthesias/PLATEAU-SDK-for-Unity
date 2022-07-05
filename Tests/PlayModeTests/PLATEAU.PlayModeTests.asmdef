@@ -3,7 +3,9 @@
     "rootNamespace": "PLATEAU",
     "references": [
         "UnityEngine.TestRunner",
-        "PLATEAU.TestUtils"
+        "PLATEAU.TestUtils",
+        "PLATEAU.Runtime",
+        "libplateau"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

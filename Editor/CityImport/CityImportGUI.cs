@@ -19,43 +19,43 @@ namespace PLATEAU.Editor.CityImport
     /// </summary>
     internal class CityImportGUI
     {
-        private readonly InputFolderSelectorGUI udxFolderSelectorGUI;
+        private readonly InputFolderSelectorGUI importFolderSelectorGUI;
         private readonly GmlSearcherGUI gmlSearcherGUI;
         private readonly GmlSearcher gmlSearcher;
         private readonly ObjConvertTypesGUI objConvertTypesGUI;
-        private readonly ScenePlacementGUI scenePlacementGUI;
+        // private readonly ScenePlacementGUI scenePlacementGUI;
         private readonly ExportFolderSelectorGUI exportFolderSelectorGUI;
         private readonly CityImporter cityImporter;
         
         public CityImportGUI(CityImportConfig config)
         {
-            this.udxFolderSelectorGUI = new InputFolderSelectorGUI(OnUdxPathChanged);
+            this.importFolderSelectorGUI = new InputFolderSelectorGUI(OnImportSrcPathChanged);
             this.gmlSearcherGUI = new GmlSearcherGUI();
             this.gmlSearcher = new GmlSearcher();
             this.objConvertTypesGUI = new ObjConvertTypesGUI();
-            this.scenePlacementGUI = new ScenePlacementGUI();
+            // this.scenePlacementGUI = new ScenePlacementGUI();
             this.exportFolderSelectorGUI = new ExportFolderSelectorGUI();
             this.cityImporter = new CityImporter();
             
             // 記録されたインポート元パスを復元し、GUI画面の初期値に代入します。
-            string loadedUdxPath = config.sourcePath.udxAssetPath;
-            string initialUdxPath = loadedUdxPath;
-            if (initialUdxPath.Replace('\\', '/').StartsWith("Assets/"))
+            string loadedSrcRootPath = config.sourcePath.RootDirAssetPath;
+            string initialSrcRootPath = loadedSrcRootPath;
+            if (initialSrcRootPath.Replace('\\', '/').StartsWith("Assets/"))
             {
-                initialUdxPath = PathUtil.AssetsPathToFullPath(initialUdxPath);
+                initialSrcRootPath = PathUtil.AssetsPathToFullPath(initialSrcRootPath);
             }
-            config.UdxPathBeforeImport = initialUdxPath;
+            config.SrcRootPathBeforeImport = initialSrcRootPath;
         }
 
         public void Draw(CityImportConfig importConfig)
         {
-            // udxフォルダ選択
-            this.udxFolderSelectorGUI.FolderPath = importConfig.UdxPathBeforeImport;
-            string sourcePath = this.udxFolderSelectorGUI.Draw("udxフォルダ選択");
-            importConfig.UdxPathBeforeImport = sourcePath;
+            // インポート元フォルダ選択
+            this.importFolderSelectorGUI.FolderPath = importConfig.SrcRootPathBeforeImport;
+            string sourcePath = this.importFolderSelectorGUI.Draw("インポート元フォルダ選択");
+            importConfig.SrcRootPathBeforeImport = sourcePath;
 
             // udxフォルダが選択されているなら、設定と出力のGUIを表示
-            if (GmlSearcher.IsPathUdx(sourcePath))
+            if (GmlSearcher.IsPathPlateauRoot(sourcePath))
             {
                 // 案内
                 if (!CityImporter.IsInStreamingAssets(sourcePath))
@@ -65,31 +65,32 @@ namespace PLATEAU.Editor.CityImport
                 
                 // 変換対象の絞り込み
                 var gmlFiles = this.gmlSearcherGUI.Draw(this.gmlSearcher, ref importConfig.gmlSearcherConfig);
-                
-                // 変換先パス設定
-                importConfig.importDestPath.dirAssetPath = this.exportFolderSelectorGUI.Draw(importConfig.importDestPath.dirAssetPath);
-                
+
                 // 変換設定
-                HeaderDrawer.Draw("3Dモデル 変換設定");
+                HeaderDrawer.Draw("メッシュ設定");
                 HeaderDrawer.IncrementDepth();
-                HeaderDrawer.Draw("基本変換設定");
+                HeaderDrawer.Draw("基本メッシュ設定");
                 using (PlateauEditorStyle.VerticalScopeLevel1())
                 {
                     importConfig.exportAppearance = EditorGUILayout.Toggle("テクスチャを含める", importConfig.exportAppearance);
-                    importConfig.meshGranularity = (MeshGranularity)EditorGUILayout.Popup("オブジェクト分けの粒度", (int)importConfig.meshGranularity,
-                        new string[] { "最小地物単位", "主要地物単位", "都市モデル地域単位" });
+                    importConfig.meshGranularity = (MeshGranularity)EditorGUILayout.Popup("メッシュ結合単位", (int)importConfig.meshGranularity,
+                        new [] { "最小地物単位", "主要地物単位", "都市モデル地域単位" });
                     importConfig.logLevel = (DllLogLevel)EditorGUILayout.EnumPopup("(開発者向け)ログの詳細度", importConfig.logLevel);
                 }
-                HeaderDrawer.Draw("地物タイプ別設定（3Dモデル変換）");
+                HeaderDrawer.Draw("地物タイプ別 メッシュ設定");
                 using (PlateauEditorStyle.VerticalScopeLevel1())
                 {
-                    this.objConvertTypesGUI.Draw(importConfig.objConvertTypesConfig);
+                    this.objConvertTypesGUI.Draw(importConfig.objConvertTypesConfig, importConfig.gmlSearcherConfig);
                 }
+                
+                // 変換先パス設定
+                importConfig.importDestPath.DirAssetsPath = this.exportFolderSelectorGUI.Draw(importConfig.importDestPath.DirAssetsPath);
+                
                 HeaderDrawer.DecrementDepth();
                 
                 // 配置設定
-                HeaderDrawer.Draw("シーン配置設定");
-                this.scenePlacementGUI.Draw(importConfig.scenePlacementConfig);
+                // HeaderDrawer.Draw("シーン配置設定");
+                // this.scenePlacementGUI.Draw(importConfig.scenePlacementConfig);
 
                 // 出力ボタン
                 HeaderDrawer.Draw("出力");
@@ -114,16 +115,16 @@ namespace PLATEAU.Editor.CityImport
             }
             else
             {
-                EditorGUILayout.HelpBox("udxフォルダが選択されていません。", MessageType.Error);
+                EditorGUILayout.HelpBox("Plateauフォルダが選択されていません。（直下に udx という名前のフォルダを含むフォルダを選択してください。）", MessageType.Error);
             }
         }
         
         /// <summary>
         /// udxフォルダパス選択GUIで、新しいパスが指定されたときに呼ばれます。
         /// </summary>
-        private void OnUdxPathChanged(string path)
+        private void OnImportSrcPathChanged(string path)
         {
-            if (!GmlSearcher.IsPathUdx(path)) return;
+            if (!GmlSearcher.IsPathPlateauRoot(path)) return;
             this.gmlSearcher.GenerateFileDictionary(path);
             this.gmlSearcherGUI.OnUdxPathChanged();
         }
@@ -132,7 +133,7 @@ namespace PLATEAU.Editor.CityImport
         {
             message = "";
             var dirPath = config.importDestPath;
-            if (string.IsNullOrEmpty(dirPath?.dirAssetPath))
+            if (string.IsNullOrEmpty(dirPath?.DirAssetsPath))
             {
                 message = "出力先を指定してください。";
                 return false;

@@ -23,7 +23,7 @@ namespace PLATEAU.CityMeta
     internal class GmlTypeTarget : ISerializationCallbackReceiver
     {
         /// <summary> GmlTypeごとの設定の辞書です。 </summary>
-        public Dictionary<GmlType, bool> IsTypeTargetDict { get; set; }
+        private Dictionary<GmlType, bool> IsTypeTargetDict { get; set; }
 
         // シリアライズ時に Dictionary を List形式にします。
         [SerializeField] private List<GmlType> keys = new List<GmlType>();
@@ -32,7 +32,7 @@ namespace PLATEAU.CityMeta
         public GmlTypeTarget()
         {
             // 各タイプごとに ImportGmlTypeConfig を初期化します。
-            IsTypeTargetDict = GmlTypeConvert.ComposeTypeDict<bool>(true);
+            IsTypeTargetDict = GmlTypeConvert.ComposeTypeDict(true);
         }
 
         /// <summary>
@@ -42,6 +42,16 @@ namespace PLATEAU.CityMeta
         {
             return IsTypeTargetDict[t];
         }
+
+        /// <summary>
+        /// 地物タイプ <paramref name="t"/> を対象とするかどうかセットします。
+        /// </summary>
+        public void SetIsTypeTarget(GmlType t, bool isTarget)
+        {
+            IsTypeTargetDict[t] = isTarget;
+        }
+
+        public GmlType[] Keys => IsTypeTargetDict.Keys.ToArray();
 
         /// <summary> 地物タイプを変換対象とするかについて、すべて true または すべて false にします。 </summary>
         public void SetAllTarget(bool val)

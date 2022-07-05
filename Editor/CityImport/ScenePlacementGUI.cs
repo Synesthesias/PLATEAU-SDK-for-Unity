@@ -1,7 +1,6 @@
 ﻿using PLATEAU.CityMeta;
 using PLATEAU.Editor.EditorWindowCommon;
 using UnityEditor;
-using UnityEngine;
 
 namespace PLATEAU.Editor.CityImport
 {
@@ -11,27 +10,42 @@ namespace PLATEAU.Editor.CityImport
     /// </summary>
     internal class ScenePlacementGUI
     {
-        public void Draw(ScenePlacementConfig placementConf)
+        public void Draw(CityMetaData metaData)
         {
-            string[] enumDisplay = ScenePlacementConfig.PlaceMethodDisplay;
             using (PlateauEditorStyle.VerticalScopeLevel1())
             {
-                var gmlTypes = placementConf.PerTypeConfigs.Keys;
+                var importConfig = metaData.cityImportConfig;
+                var placementConfig = importConfig.scenePlacementConfig;
+                var gmlTypes = placementConfig.AllGmlTypes();
+                var availableObjs = importConfig.generatedObjFiles;
+                var typeLodDict = ObjInfo.AvailableLodInObjs(availableObjs);
                 foreach (var gmlType in gmlTypes)
                 {
+                    var possibleLodRange = typeLodDict[gmlType];
+                    if (possibleLodRange == null) continue; // その地物タイプが存在しない時
+                    
                     EditorGUILayout.LabelField(gmlType.ToDisplay());
                     using (PlateauEditorStyle.VerticalScopeLevel2())
                     {
-                        var typeConf = placementConf.PerTypeConfigs[gmlType];
-                        DrawPerTypeConfGUI(typeConf, gmlType); 
+                        var typeConf = placementConfig.GetPerTypeConfig(gmlType);
+                        DrawPerTypeConfGUI(typeConf, possibleLodRange); 
                     }
                                
+                }
+                if (PlateauEditorStyle.MainButton("シーンにモデルを再配置"))
+                {
+                    // 再配置
+                    string rootDirName = importConfig.rootDirName;
+                    CityMeshPlacerToScene.Place(placementConfig, availableObjs, rootDirName, metaData);
                 }
             }
             
         }
 
-        private void DrawPerTypeConfGUI(ScenePlacementConfigPerType typeConf, GmlType gmlType)
+        /// <summary>
+        /// タイプ別のシーン配置設定GUIです。
+        /// </summary>
+        private void DrawPerTypeConfGUI(ScenePlacementConfigPerType typeConf, MinMax<int> possibleLodRange)
         {
             var placeMethod = typeConf.placeMethod;
             placeMethod = (ScenePlacementConfig.PlaceMethod)
@@ -39,9 +53,35 @@ namespace PLATEAU.Editor.CityImport
             typeConf.placeMethod = placeMethod;
             if (placeMethod.DoUseSelectedLod())
             {
-                var possibleLodRange = gmlType.PossibleLodRange();
-                typeConf.selectedLod = EditorGUILayout.IntSlider("配置LOD", typeConf.selectedLod, possibleLodRange.Min, possibleLodRange.Max);
+                int minLod = possibleLodRange.Min;
+                int maxLod = possibleLodRange.Max;
+                using (new EditorGUILayout.HorizontalScope())
+                {
+                    EditorGUILayout.LabelField($"存在するLOD");
+                    EditorGUILayout.LabelField($"最小 {minLod} , 最大 {maxLod}");
+                }
+                
+                int rangeDiff = maxLod - minLod;
+                if (rangeDiff >= 1)
+                {
+                    // LODが複数存在するなら、スライダーによる選択GUIを表示します。
+                    typeConf.selectedLod = EditorGUILayout.IntSlider("配置LOD選択", typeConf.selectedLod, minLod, maxLod);
+                }
+                else
+                {
+                    using (new EditorGUILayout.HorizontalScope())
+                    {
+                        // 存在するobjファイルのLODが1つのみであれば、その値を表示します。
+                        typeConf.selectedLod = maxLod;
+                        EditorGUILayout.LabelField($"配置LOD");
+                        EditorGUILayout.LabelField($"{typeConf.selectedLod}");
+                    }
+                    
+                }
+               
             }
         }
+
+        
     }
 }

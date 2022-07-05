@@ -26,13 +26,13 @@ namespace PLATEAU.Tests.TestUtils
         /// <summary> テストデータが入っている Package 内のフォルダです。 </summary>
         public static string TestDataFolderPath => Path.GetFullPath("Packages/PlateauUnitySDK/Tests/TestData");
 
-        public static string TestDataSimpleUdxPath => Path.Combine(TestDataFolderPath, "TestDataSimpleGml/udx");
+        public static string TestDataSimpleSrcPath => Path.Combine(TestDataFolderPath, "TestDataSimpleGml");
         public static string TestDataSimplePath => Path.Combine(TestDataFolderPath, "TestDataSimpleGml/udx/bldg");
         /// <summary> テストデータとして利用できるgmlパスです。 </summary>
         public static string TestSimpleGmlFilePath => Path.Combine(TestDataSimplePath, "53392642_bldg_6697_op2.gml");
 
-        public static string TestTokyoUdxPath => Path.Combine(TestDataFolderPath, "TestDataTokyo/udx");
-        public static string TestTokyoMiniUdxPath => Path.Combine(TestDataFolderPath, "TestDataTokyoMini/udx");
+        public static string TestTokyoSrcPath => Path.Combine(TestDataFolderPath, "TestDataTokyo");
+        public static string TestTokyoMiniSrcPath => Path.Combine(TestDataFolderPath, "TestDataTokyoMini");
 
         /// <summary>
         /// Unityのキャッシュ用ディレクトリにテスト用フォルダを作ります。

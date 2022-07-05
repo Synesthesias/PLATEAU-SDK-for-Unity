@@ -1,9 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using NUnit.Framework;
-using PLATEAU.CityMeta;
-using PLATEAU.Editor.CityImport;
-using PLATEAU.IO;
 using PLATEAU.Tests.TestUtils;
 using PLATEAU.Util;
 using UnityEngine;
@@ -14,13 +11,6 @@ namespace PLATEAU.Tests.EditModeTests
     public class TestCityMeshPlacerToScene
     {
         private static readonly string simpleGmlId = "53392642_bldg_6697_op2";
-        private static readonly string testUdxPathSimple = DirectoryUtil.TestDataSimpleUdxPath;
-        private static readonly string[] testGmlRelativePathsSimple =
-        {
-            "bldg/53392642_bldg_6697_op2.gml"
-        };
-        private static readonly string testOutputDir = DirectoryUtil.TempAssetFolderPath;
-        private CityImporter importer;
         private string prevDefaultDstPath;
         private static readonly string testDefaultCopyDestPath = Path.Combine(DirectoryUtil.TempAssetFolderPath, "PLATEAU");
         
@@ -28,7 +18,6 @@ namespace PLATEAU.Tests.EditModeTests
         [SetUp]
         public void SetUp()
         {
-            this.importer = new CityImporter();
             DirectoryUtil.SetUpTempAssetFolder();
             
             // テスト用に一時的に MultiGmlConverter のデフォルト出力先を変更します。

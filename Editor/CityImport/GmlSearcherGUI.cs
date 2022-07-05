@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using PLATEAU.Editor.EditorWindowCommon;
 using PLATEAU.CityMeta;
 using UnityEditor;
@@ -32,7 +31,7 @@ namespace PLATEAU.Editor.CityImport
             HeaderDrawer.Draw("含める地域");
             using (PlateauEditorStyle.VerticalScopeLevel1())
             {
-                
+                // 一括選択ボタンを表示します。
                 using (new EditorGUILayout.HorizontalScope())
                 {
                     if (PlateauEditorStyle.MiniButton("すべて選択"))
@@ -46,17 +45,22 @@ namespace PLATEAU.Editor.CityImport
                     }
                 }
                 
-                searcherConfig.areaIds = gmlSearcher.AreaIds;
-                int areaCount = searcherConfig.areaIds.Length;
-                if (searcherConfig.isAreaIdTarget.Length != areaCount)
+                searcherConfig.SetAreaIds(gmlSearcher.AreaIds);
+                int areaCount = searcherConfig.AreaIds.Count;
+                if (searcherConfig.IsAreaIdTarget.Count != areaCount)
                 {
                     Initialize(gmlSearcher, searcherConfig);
                 }
+                // 地域IDごとに対象とするかを設定するGUIを表示します。
                 for (int i = 0; i < areaCount; i++)
                 {
-                    searcherConfig.isAreaIdTarget[i] = EditorGUILayout.Toggle(searcherConfig.areaIds[i].ToString(), searcherConfig.isAreaIdTarget[i]);
+                    searcherConfig.SetIsAreaIdTarget(i,
+                        EditorGUILayout.Toggle(searcherConfig.AreaIds[i].ToString(), searcherConfig.IsAreaIdTarget[i]));
                 }
             }
+
+            // 選択した地域に存在しない地物タイプは、GUI上で無効にしたいのでそのための辞書を構築します。
+            var typeExistingDict = gmlSearcher.ExistingTypesForAreaIds(searcherConfig.TargetAreaIds());
             
             
             // 地物タイプごとの設定です。
@@ -76,13 +80,17 @@ namespace PLATEAU.Editor.CityImport
                     }
                 }
                 
-                var typeConfDict = searcherConfig.gmlTypeTarget.IsTypeTargetDict;
-                foreach (var gmlType in typeConfDict.Keys.ToArray())
+                // 地物タイプごとのチェックマークです。
+                foreach (var gmlType in searcherConfig.AllGmlTypes())
                 {
-                    string typeText = gmlType.ToDisplay();
-                    var isTypeTarget = typeConfDict[gmlType];
-                    isTypeTarget = EditorGUILayout.Toggle(typeText, isTypeTarget);
-                    typeConfDict[gmlType] = isTypeTarget;
+                    bool isTypeExist = typeExistingDict[gmlType];
+                    using (new EditorGUI.DisabledScope(!isTypeExist))
+                    {
+                        string typeText = gmlType.ToDisplay();
+                        var isTypeTarget = searcherConfig.GetIsTypeTarget(gmlType);
+                        isTypeTarget = EditorGUILayout.Toggle(typeText, isTypeTarget && isTypeExist);
+                        searcherConfig.SetIsTypeTarget(gmlType, isTypeTarget);
+                    }
                 }
 
             }
@@ -90,8 +98,8 @@ namespace PLATEAU.Editor.CityImport
             HeaderDrawer.Draw("対象gmlファイル");
             using (PlateauEditorStyle.VerticalScopeLevel1())
             {
-                this.gmlFiles = ListTargetGmlFiles(gmlSearcher, searcherConfig.areaIds, searcherConfig.isAreaIdTarget,
-                    searcherConfig.gmlTypeTarget);
+                this.gmlFiles = ListTargetGmlFiles(gmlSearcher, searcherConfig.AreaIds, searcherConfig.IsAreaIdTarget,
+                    searcherConfig);
                 this.scrollPosForGmlList = PlateauEditorStyle.ScrollableMultiLineLabel(String.Join("\n", this.gmlFiles), 150, this.scrollPosForGmlList);
             }
             
@@ -108,27 +116,27 @@ namespace PLATEAU.Editor.CityImport
         private void Initialize(GmlSearcher gmlSearcher, GmlSearcherConfig config)
         {
             int areaCount = gmlSearcher.AreaIds.Length;
-            if (config.isAreaIdTarget.Length != areaCount)
+            if (config.IsAreaIdTarget.Count != areaCount)
             {
-                config.isAreaIdTarget = Enumerable.Repeat(true, areaCount ).ToArray();
+                config.ResetIsAreaIdTarget(areaCount);
             }
             this.isInitialized = true;
         }
 
         
-        private static List<string> ListTargetGmlFiles(GmlSearcher gmlSearcher, int[] areaIds, bool[] areaCheckboxes, GmlTypeTarget gmlTypeTarget)
+        private static List<string> ListTargetGmlFiles(GmlSearcher gmlSearcher, IReadOnlyList<int> areaIds, IReadOnlyList<bool> areaCheckboxes, GmlSearcherConfig searcherConfig)
         {
-            if (areaIds.Length != areaCheckboxes.Length)
+            if (areaIds.Count != areaCheckboxes.Count)
             {
                 throw new ArgumentException("areaId.Length does not match areaCheckboxes.Length.");
             }
 
-            int areaCount = areaIds.Length;
+            int areaCount = areaIds.Count;
             var gmlFiles = new List<string>();
             for (int i = 0; i < areaCount; i++)
             {
                 if (!areaCheckboxes[i]) continue;
-                gmlFiles.AddRange(gmlSearcher.GetGmlFilePathsForAreaIdAndType(areaIds[i], gmlTypeTarget, false));
+                gmlFiles.AddRange(gmlSearcher.GetGmlFilePathsForAreaIdAndType(areaIds[i], searcherConfig, false));
             }
 
             return gmlFiles;

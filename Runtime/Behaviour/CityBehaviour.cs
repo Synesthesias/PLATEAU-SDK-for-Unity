@@ -1,6 +1,5 @@
 ﻿using PLATEAU.CityGML;
 using PLATEAU.CityMeta;
-using PLATEAU.Util;
 using UnityEngine;
 
 namespace PLATEAU.Behaviour

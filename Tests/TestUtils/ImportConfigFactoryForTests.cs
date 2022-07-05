@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using PLATEAU.CityMeta;
 using PLATEAU.IO;
-using UnityEngine;
 
 namespace PLATEAU.Tests.TestUtils
 {
@@ -14,16 +13,16 @@ namespace PLATEAU.Tests.TestUtils
         /// <summary>
         /// PLATEAUインポート設定でなるべくシンプルなものを作って返します。
         /// </summary>
-        public static CityImportConfig MinimumConfig(string udxFullPathBeforeImport, string outputDirAssetsPath)
+        public static CityImportConfig MinimumConfig(string srcFullPathBeforeImport, string outputDirAssetsPath)
         {
             var conf = new CityImportConfig
             {
                 exportAppearance = false,
                 meshGranularity = MeshGranularity.PerCityModelArea,
-                UdxPathBeforeImport = udxFullPathBeforeImport,
+                SrcRootPathBeforeImport = srcFullPathBeforeImport,
                 importDestPath =
                 {
-                    dirAssetPath = outputDirAssetsPath
+                    DirAssetsPath = outputDirAssetsPath
                 }
             };
             // タイプ別 3Dモデル変換設定

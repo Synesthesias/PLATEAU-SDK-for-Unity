@@ -15,7 +15,7 @@ namespace PLATEAU.Editor.CityImport
         /// <summary>
         /// obj変換のLOD設定のGUI描画し、ユーザーのGUI操作に応じて引数である <see cref="ObjConvertTypesConfig"/> の中身を書き換えます。
         /// </summary>
-        public void Draw(ObjConvertTypesConfig typesConf)
+        public void Draw(ObjConvertTypesConfig typesConf, GmlSearcherConfig gmlSearcherConfig)
         {
             using (PlateauEditorStyle.VerticalScopeLevel1())
             {
@@ -43,14 +43,17 @@ namespace PLATEAU.Editor.CityImport
                 // 地物タイプごとのループ
                 foreach (var gmlType in gmlTypes)
                 {
+                    bool isTypeTarget = gmlSearcherConfig.GetIsTypeTarget(gmlType);
+                    if (!isTypeTarget) continue;
+                    
                     string typeText = gmlType.ToDisplay();
                     EditorGUILayout.LabelField(typeText);
                     using (PlateauEditorStyle.VerticalScopeLevel2())
                     {
-                        // LOD対象選択 複数 / 最大のみ
+                        // LOD対象選択 全LOD / 最大のみ
                         var typeExportLower = typesConf.TypeExportLowerLodDict[gmlType];
                         typeExportLower = Convert.ToBoolean(EditorGUILayout.Popup("出力モード",
-                            Convert.ToInt32(typeExportLower), new string[] { "選択中最大LODのみ", "全LOD" }));
+                            Convert.ToInt32(typeExportLower), new [] { "選択中最大LODのみ", "全LOD" }));
                         typesConf.TypeExportLowerLodDict[gmlType] = typeExportLower;
                         
                         // LOD範囲選択

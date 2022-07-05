@@ -21,18 +21,18 @@ namespace PLATEAU.Editor.CityImport
 
         /// <summary>
         /// 地域メッシュコード（地域ID）からファイルリストへの辞書です。
-        /// ここでいうファイルリストとは <see cref="udxFolderPath"/> からの相対パスのリストです。
+        /// ここでいうファイルリストとは (<see cref="srcRootFolderPath"/>)/udx からの相対パスのリストです。
         /// 例: {53394525 => {bldg\53394525_bldg_6697_2_op.gml  brid\53394525_brid_6697_op.gml }}
         /// </summary>
         private Dictionary<int, List<string>> fileTable;
 
-        private string udxFolderPath = "";
+        private string srcRootFolderPath = "";
 
         /// <summary> インスタンス化と同時にパスを指定して検索します。 </summary>
-        public GmlSearcher(string udxFolderPath)
+        public GmlSearcher(string srcRootFolderPath)
         {
-            if (!IsPathUdx(udxFolderPath)) return;
-            GenerateFileDictionary(udxFolderPath);
+            if (!IsPathPlateauRoot(srcRootFolderPath)) return;
+            GenerateFileDictionary(srcRootFolderPath);
         }
 
         /// <summary> パスを指定せずにインスタンス化する場合、あとで <see cref="GenerateFileDictionary"/> を実行する必要があります。 </summary>
@@ -43,19 +43,19 @@ namespace PLATEAU.Editor.CityImport
         /// <summary>
         /// 地域メッシュコードからgmlファイルリストを検索する辞書を構築します。
         /// </summary>
-        public void GenerateFileDictionary(string udxFolderPathArg)
+        public void GenerateFileDictionary(string plateauSrcRootPathArg)
         {
-            if (!IsPathUdx(udxFolderPathArg))
+            if (!IsPathPlateauRoot(plateauSrcRootPathArg))
             {
-                throw new IOException($"Path needs to address udx folder. path: {udxFolderPathArg}");
+                throw new IOException($"Path needs to address plateau folder. path: {plateauSrcRootPathArg}");
             }
 
-            this.udxFolderPath = udxFolderPathArg;
+            this.srcRootFolderPath = plateauSrcRootPathArg;
 
             this.fileTable = new Dictionary<int, List<string>>();
 
             // パス: udx/(地物型)
-            foreach (var dirPath in Directory.EnumerateDirectories(Path.GetFullPath(udxFolderPathArg)))
+            foreach (var dirPath in Directory.EnumerateDirectories(Path.GetFullPath(Path.Combine(plateauSrcRootPathArg, "udx"))))
             {
                 // パス: udx/(地物型)/(各gmlファイル)
                 foreach (var filePath in Directory.EnumerateFiles(dirPath))
@@ -68,11 +68,14 @@ namespace PLATEAU.Editor.CityImport
             }
         }
 
-        public static bool IsPathUdx(string path)
+        /// <summary>
+        /// 与えられたパスが Plateau元データのRootフォルダ かどうか判別します。
+        /// Root直下に udx という名前のフォルダがあればOKとみなします。
+        /// </summary>
+        public static bool IsPathPlateauRoot(string path)
         {
-            bool ret = Path.GetFileName(path) == "udx";
-            ret &= Directory.Exists(path); 
-            return ret;
+            string udxPath = Path.Combine(path, "udx");
+            return Directory.Exists(udxPath);
         }
 
         public override string ToString()
@@ -120,7 +123,7 @@ namespace PLATEAU.Editor.CityImport
             if (doAbsolutePath)
             {
                 return pathList
-                    .Select(relativePath => Path.Combine(this.udxFolderPath, relativePath))
+                    .Select(relativePath => Path.Combine(this.srcRootFolderPath, "udx",  relativePath))
                     .Select(Path.GetFullPath);
             }
             return pathList.ToArray();
@@ -128,22 +131,42 @@ namespace PLATEAU.Editor.CityImport
         
         /// <summary>
         /// gmlファイルのうち、<paramref name="areaId"/> が指定したものであり、かつ
-        /// <see cref="GmlType"/> が <paramref name="typeTarget"/> で示されるタイプの1つであるものを返します。
+        /// <see cref="GmlType"/> が <paramref name="searcherConfig"/> で対象とするタイプリストに含まれるものを0個以上返します。
         /// </summary>
-        public IEnumerable<string> GetGmlFilePathsForAreaIdAndType(int areaId, GmlTypeTarget typeTarget,
+        public IEnumerable<string> GetGmlFilePathsForAreaIdAndType(int areaId, GmlSearcherConfig searcherConfig,
             bool doAbsolutePath)
         {
             var found = new List<string>();
             var gmlsInArea = GetGmlFilePathsForAreaId(areaId, doAbsolutePath);
             foreach (var gml in gmlsInArea)
             {
-                if (typeTarget.IsTypeTarget(GetGmlTypeFromPath(gml)))
+                if (searcherConfig.GetIsTypeTarget(GetGmlTypeFromPath(gml)))
                 {
                     found.Add(gml);
                 }
             }
 
             return found;
+        }
+
+        /// <summary>
+        /// 与えられた <paramref name="areaIds"/> のリストの中に、どのような <see cref="GmlType"/> が含まれているかを返します。
+        /// 戻り値は辞書形式で、 key(各 GmlType ) に対して value は存在すれば true, しなければ false になります。
+        /// </summary>
+        public Dictionary<GmlType, bool> ExistingTypesForAreaIds(IEnumerable<int> areaIds)
+        {
+            var typeExistingDict = GmlTypeConvert.ComposeTypeDict(false);
+            foreach (int areaId in areaIds)
+            {
+                List<string> gmlPaths = this.fileTable[areaId];
+                foreach (string gmlPath in gmlPaths)
+                {
+                    var type = GmlFileNameParser.GetGmlTypeEnum(gmlPath);
+                    typeExistingDict[type] = true;
+                }
+            }
+
+            return typeExistingDict;
         }
 
         /// <summary>
@@ -159,7 +182,7 @@ namespace PLATEAU.Editor.CityImport
 
         private void FileTableAdd(int areaId, string filePath)
         {
-            string relativePath = GetRelativePath(filePath, this.udxFolderPath);
+            string relativePath = GetRelativePath(filePath, Path.Combine(this.srcRootFolderPath, "udx"));
             if (this.fileTable.ContainsKey(areaId))
             {
                 this.fileTable[areaId].Add(relativePath);

@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using PLATEAU.CityGML;
 using NUnit.Framework;
-using PLATEAU.Editor.CityImport;
 using PLATEAU.Editor.Converters;
 using PLATEAU.CityMeta;
 using PLATEAU.Interop;
@@ -94,7 +93,7 @@ namespace PLATEAU.Tests.EditModeTests
             var recordedReferencePoint = metaData.cityImportConfig.referencePoint;
 
             // 値2 : GmlToObjFileConverter にかけたときの Reference Point を取得します。
-            string gmlFilePath = Path.Combine(tokyoPaths.SrcUdxFullPath, tokyoPaths.GmlRelativePaths[0]);
+            string gmlFilePath = Path.Combine(tokyoPaths.SrcRootFullPath, "udx", tokyoPaths.GmlRelativePaths[0]);
             var cityModel = CityGml.Load(
                 gmlFilePath,
                 new CitygmlParserParams(),
@@ -205,16 +204,16 @@ namespace PLATEAU.Tests.EditModeTests
         {
             TestImporter.Import(ImportPathForTests.Simple, out var metaData, _ => { });
             
-            string expectedUdxPath = Path.Combine(testDefaultCopyDestPath, "TestDataSimpleGml", "udx").Replace('\\', '/');
-            string fullUdxPath = metaData.cityImportConfig.sourcePath.FullUdxPath;
-            string actualUdxPath = fullUdxPath.Replace('\\', '/');
-            Assert.AreEqual( expectedUdxPath, actualUdxPath, "メモリ上のメタデータの sourcePath がコピー後を指している" );
+            string expectedSrcPath = Path.Combine(testDefaultCopyDestPath, "TestDataSimpleGml").Replace('\\', '/');
+            string fullRootPath = metaData.cityImportConfig.sourcePath.RootDirFullPath();
+            string actualRootPath = fullRootPath.Replace('\\', '/');
+            Assert.AreEqual( expectedSrcPath, actualRootPath, "メモリ上のメタデータの sourcePath がコピー後を指している" );
 
             var metaDataPath = metaData.cityImportConfig.importDestPath.MetaDataAssetPath;
             var loadedMetaData = AssetDatabase.LoadAssetAtPath<CityMetaData>(metaDataPath);
             Assert.NotNull(loadedMetaData, "生成後のメタデータをロードできる");
-            var loadedSrcPath = fullUdxPath.Replace('\\', '/');
-            Assert.AreEqual(expectedUdxPath, loadedSrcPath, "保存されたメタデータの sourcePath がコピー後を指している");
+            var loadedSrcPath = fullRootPath.Replace('\\', '/');
+            Assert.AreEqual(expectedSrcPath, loadedSrcPath, "保存されたメタデータの sourcePath がコピー後を指している");
         }
     }
 }

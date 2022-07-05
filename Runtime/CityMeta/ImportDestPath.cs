@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using PLATEAU.Util;
+using UnityEngine;
 
 namespace PLATEAU.CityMeta
 {
@@ -9,17 +10,23 @@ namespace PLATEAU.CityMeta
     {
         public const string MetaDataFileName = "CityMapMetaData.asset";
         
-        public string dirAssetPath;
+        [SerializeField] private string dirAssetsPath;
+
+        public string DirAssetsPath
+        {
+            get => this.dirAssetsPath;
+            set => this.dirAssetsPath = value;
+        }
 
         public string DirFullPath
         {
             get
             {
-                if (this.dirAssetPath == null) return "";
-                return PathUtil.AssetsPathToFullPath(this.dirAssetPath);
+                if (this.dirAssetsPath == null) return "";
+                return PathUtil.AssetsPathToFullPath(this.dirAssetsPath);
             }
         }
 
-        public string MetaDataAssetPath => Path.Combine(this.dirAssetPath, MetaDataFileName);
+        public string MetaDataAssetPath => Path.Combine(this.dirAssetsPath, MetaDataFileName);
     }
 }
