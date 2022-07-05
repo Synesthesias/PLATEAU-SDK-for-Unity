@@ -62,7 +62,7 @@ namespace PLATEAU.Editor.CityImport
                 if (this.foldOutReplace)
                 {
                     HeaderDrawer.IncrementDepth();
-                    this.scenePlacementGUI.Draw(metaData.cityImportConfig, metaData);
+                    this.scenePlacementGUI.Draw(metaData);
                     HeaderDrawer.DecrementDepth();
                 }
             }

@@ -23,11 +23,10 @@ namespace PLATEAU.Editor.Behaviour
             using (PlateauEditorStyle.VerticalScopeLevel1())
             {
                 var metaData = cityBehaviour.CityMetaData;
-                var importConfig = metaData.cityImportConfig;
                 this.foldOutObjPlaceGUI = EditorGUILayout.Foldout(this.foldOutObjPlaceGUI, "再配置画面");
                 if (this.foldOutObjPlaceGUI)
                 {
-                    this.scenePlacementGUI.Draw(importConfig, metaData);
+                    this.scenePlacementGUI.Draw(metaData);
                 }
             }
 
