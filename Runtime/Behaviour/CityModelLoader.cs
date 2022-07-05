@@ -48,12 +48,13 @@ namespace PLATEAU.Behaviour
                 return GetCityObjectById(cityModel, cityObjId);
             }
             
-            string udxPath = cityMetaData.cityImportConfig.sourcePath.UdxAssetsPath();
+            string udxFullPath = cityMetaData.cityImportConfig.sourcePath.UdxFullPath();
             // udxフォルダは StreamingAssets フォルダにあることを前提とします。
-            if (!PathUtil.IsSubDirectory(udxPath, Application.streamingAssetsPath))
+            if (!PathUtil.IsSubDirectory(udxFullPath, PlateauUnityPath.StreamingFolder))
             {
+                Debug.Log($"udxFullPath = {udxFullPath}\nstreamingFolder = {PlateauUnityPath.StreamingGmlFolder}");
                 throw new IOException(
-                    $"Could not find gml file, because udx path is not in StreamingAssets folder.\nudxPath = {udxPath}");
+                    $"Could not find gml file, because udx path is not in StreamingAssets folder.\nudxFullPath = {udxFullPath}");
             }
             string gmlPath = SearchGmlPath(gmlFileName);
             var loadedModel = CityGml.Load(gmlPath, new CitygmlParserParams(true, false), DllLogCallback.UnityLogCallbacks);

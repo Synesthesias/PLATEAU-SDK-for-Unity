@@ -79,6 +79,11 @@ namespace PLATEAU.CityMeta
             return Path.Combine(this.rootDirAssetPath, "udx");
         }
 
+        public string UdxFullPath()
+        {
+            return Path.GetFullPath(Path.Combine(Application.dataPath, "../", UdxAssetsPath()));
+        }
+
         /// <summary>
         /// 地物タイプのフォルダパスを返します。
         /// </summary>

@@ -16,6 +16,8 @@ namespace PLATEAU.Util
         /// </summary>
         public static string StreamingGmlFolder { get; private set; } = Path.Combine(Application.streamingAssetsPath, "PLATEAU");
 
+        public static string StreamingFolder => Path.Combine(StreamingGmlFolder, "../");
+        
         public static void TestOnly_SetStreamingGmlFolder(string path)
         {
             StreamingGmlFolder = path;

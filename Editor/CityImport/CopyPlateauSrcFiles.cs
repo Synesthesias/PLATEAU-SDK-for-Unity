@@ -25,7 +25,7 @@ namespace PLATEAU.Editor.CityImport
             
             string rootDirName = PlateauSourcePath.RootDirName(srcRootPathBeforeImport);
             if (rootDirName == null) throw new FileNotFoundException($"{nameof(rootDirName)} is null.");
-            var dest = new PlateauSourcePath(Path.Combine(copyDest, rootDirName));
+            var dest = new PlateauSourcePath(PathUtil.FullPathToAssetsPath(Path.Combine(copyDest, rootDirName)));
 
             // コピー先のルートフォルダを作成します。
             // 例: Tokyoをコピーする場合のパスの例を以下に示します。

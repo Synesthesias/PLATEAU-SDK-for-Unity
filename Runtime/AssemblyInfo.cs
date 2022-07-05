@@ -7,4 +7,5 @@
 
 // internal をテストから利用できるようにします。
 [assembly: InternalsVisibleTo("PLATEAU.EditModeTests")]
+[assembly: InternalsVisibleTo("PLATEAU.PlayModeTests")]
 [assembly: InternalsVisibleTo("PLATEAU.TestUtils")]
