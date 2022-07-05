@@ -116,7 +116,7 @@ namespace PLATEAU.Editor.CityImport
                 // .obj ファイルごとのループを始めます。
                 
                 var objNames = objConvertLodConf.ObjFileNamesForGml(gmlFileName);
-                var objAssetPaths = objNames.Select(name => Path.Combine(importDest.dirAssetPath, name + ".obj"));
+                var objAssetPaths = objNames.Select(name => Path.Combine(importDest.DirAssetsPath, name + ".obj"));
                 foreach(string objAssetPath in objAssetPaths)
                 {
                     // CityMapMetaData を生成します。

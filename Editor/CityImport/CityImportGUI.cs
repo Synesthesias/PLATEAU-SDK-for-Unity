@@ -85,7 +85,7 @@ namespace PLATEAU.Editor.CityImport
                 }
                 
                 // 変換先パス設定
-                importConfig.importDestPath.dirAssetPath = this.exportFolderSelectorGUI.Draw(importConfig.importDestPath.dirAssetPath);
+                importConfig.importDestPath.DirAssetsPath = this.exportFolderSelectorGUI.Draw(importConfig.importDestPath.DirAssetsPath);
                 
                 HeaderDrawer.DecrementDepth();
                 
@@ -134,7 +134,7 @@ namespace PLATEAU.Editor.CityImport
         {
             message = "";
             var dirPath = config.importDestPath;
-            if (string.IsNullOrEmpty(dirPath?.dirAssetPath))
+            if (string.IsNullOrEmpty(dirPath?.DirAssetsPath))
             {
                 message = "出力先を指定してください。";
                 return false;

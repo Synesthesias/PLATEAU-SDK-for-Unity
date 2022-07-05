@@ -23,7 +23,7 @@ namespace PLATEAU.Tests.TestUtils
                 SrcRootPathBeforeImport = srcFullPathBeforeImport,
                 importDestPath =
                 {
-                    dirAssetPath = outputDirAssetsPath
+                    DirAssetsPath = outputDirAssetsPath
                 }
             };
             // タイプ別 3Dモデル変換設定

@@ -59,7 +59,7 @@ namespace PLATEAU.Editor.Converters
                 // 変換時の設定を書き込みます。
                 importConf.sourcePath.RootDirAssetPath = srcRootAssetsPath;
 
-                importConf.importDestPath.dirAssetPath = importDestPath.dirAssetPath;
+                importConf.importDestPath.DirAssetsPath = importDestPath.DirAssetsPath;
                 metaData.cityImportConfig = importConf;
                 
                 // ファイルに保存します。
