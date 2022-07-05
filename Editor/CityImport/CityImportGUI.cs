@@ -66,26 +66,27 @@ namespace PLATEAU.Editor.CityImport
                 
                 // 変換対象の絞り込み
                 var gmlFiles = this.gmlSearcherGUI.Draw(this.gmlSearcher, ref importConfig.gmlSearcherConfig);
-                
-                // 変換先パス設定
-                importConfig.importDestPath.dirAssetPath = this.exportFolderSelectorGUI.Draw(importConfig.importDestPath.dirAssetPath);
-                
+
                 // 変換設定
-                HeaderDrawer.Draw("3Dモデル 変換設定");
+                HeaderDrawer.Draw("メッシュ設定");
                 HeaderDrawer.IncrementDepth();
-                HeaderDrawer.Draw("基本変換設定");
+                HeaderDrawer.Draw("基本メッシュ設定");
                 using (PlateauEditorStyle.VerticalScopeLevel1())
                 {
                     importConfig.exportAppearance = EditorGUILayout.Toggle("テクスチャを含める", importConfig.exportAppearance);
-                    importConfig.meshGranularity = (MeshGranularity)EditorGUILayout.Popup("オブジェクト分けの粒度", (int)importConfig.meshGranularity,
+                    importConfig.meshGranularity = (MeshGranularity)EditorGUILayout.Popup("メッシュ結合単位", (int)importConfig.meshGranularity,
                         new string[] { "最小地物単位", "主要地物単位", "都市モデル地域単位" });
                     importConfig.logLevel = (DllLogLevel)EditorGUILayout.EnumPopup("(開発者向け)ログの詳細度", importConfig.logLevel);
                 }
-                HeaderDrawer.Draw("地物タイプ別設定（3Dモデル変換）");
+                HeaderDrawer.Draw("地物タイプ別 メッシュ設定");
                 using (PlateauEditorStyle.VerticalScopeLevel1())
                 {
                     this.objConvertTypesGUI.Draw(importConfig.objConvertTypesConfig, importConfig.gmlSearcherConfig);
                 }
+                
+                // 変換先パス設定
+                importConfig.importDestPath.dirAssetPath = this.exportFolderSelectorGUI.Draw(importConfig.importDestPath.dirAssetPath);
+                
                 HeaderDrawer.DecrementDepth();
                 
                 // 配置設定
@@ -125,7 +126,7 @@ namespace PLATEAU.Editor.CityImport
         private void OnImportSrcPathChanged(string path)
         {
             if (!GmlSearcher.IsPathPlateauRoot(path)) return;
-            this.gmlSearcher.GenerateFileDictionary(path, "");
+            this.gmlSearcher.GenerateFileDictionary(path);
             this.gmlSearcherGUI.OnUdxPathChanged();
         }
 

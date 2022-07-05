@@ -29,25 +29,44 @@ namespace PLATEAU.Editor.EditorWindowCommon
             IncrementDepth(false);
         }
 
+        /// <summary>
+        /// 見出しの深さです。
+        /// 例 : 現在の見出し番号が 5-6-7-8. であれば、 Depth は 4 です。
+        /// </summary>
         public static int Depth => currentHeaderNum.Count;
 
+        /// <summary>
+        /// 見出し番号を深くします。
+        /// 例 : 現在の見出し番号が 2. であれば、 2-1. にします。 
+        /// </summary>
         public static void IncrementDepth(bool doGoPrev = true)
         {
             if(doGoPrev) Prev();
             currentHeaderNum.Add(1);
         }
 
+        /// <summary>
+        /// 見出し番号を浅くします。
+        /// 例 : 現在の見出し番号が 1-1-1. であれば、 1-2. にします。
+        /// </summary>
         public static void DecrementDepth(bool doGoNext = true)
         {
             if(Depth > 0) currentHeaderNum.RemoveAt(Depth-1);
             if (doGoNext) Next();
         }
 
+        /// <summary>
+        /// 次の見出し番号にします。
+        /// 例 : 現在の見出し番号が 1-1. であれば、 1-2. にします。
+        /// </summary>
         private static void Next()
         {
             currentHeaderNum[Depth - 1]++;
         }
 
+        /// <summary>
+        /// 前の見出し番号にします。
+        /// </summary>
         private static void Prev()
         {
             int index = Math.Max(0, Depth - 1);
@@ -70,7 +89,7 @@ namespace PLATEAU.Editor.EditorWindowCommon
 
         /// <summary>
         /// 現在の見出し番号の深さに応じた見出しを表示します。
-        /// また見出し番号を進めます。
+        /// その後、見出し番号を進めます。
         /// </summary>
         public static void Draw(string text)
         {

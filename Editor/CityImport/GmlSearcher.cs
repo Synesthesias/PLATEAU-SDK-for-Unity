@@ -29,10 +29,10 @@ namespace PLATEAU.Editor.CityImport
         private string srcRootFolderPath = "";
 
         /// <summary> インスタンス化と同時にパスを指定して検索します。 </summary>
-        public GmlSearcher(string srcRootFolderPath, string dummy) // TODO dummy削除
+        public GmlSearcher(string srcRootFolderPath)
         {
             if (!IsPathPlateauRoot(srcRootFolderPath)) return;
-            GenerateFileDictionary(srcRootFolderPath, "");
+            GenerateFileDictionary(srcRootFolderPath);
         }
 
         /// <summary> パスを指定せずにインスタンス化する場合、あとで <see cref="GenerateFileDictionary"/> を実行する必要があります。 </summary>
@@ -43,7 +43,7 @@ namespace PLATEAU.Editor.CityImport
         /// <summary>
         /// 地域メッシュコードからgmlファイルリストを検索する辞書を構築します。
         /// </summary>
-        public void GenerateFileDictionary(string plateauSrcRootPathArg, string dummy) // TODO dummy削除
+        public void GenerateFileDictionary(string plateauSrcRootPathArg)
         {
             if (!IsPathPlateauRoot(plateauSrcRootPathArg))
             {
