@@ -24,17 +24,10 @@ namespace PLATEAU.Editor.Behaviour
             {
                 var metaData = cityBehaviour.CityMetaData;
                 var importConfig = metaData.cityImportConfig;
-                var placeConfig = importConfig.scenePlacementConfig;
                 this.foldOutObjPlaceGUI = EditorGUILayout.Foldout(this.foldOutObjPlaceGUI, "再配置画面");
                 if (this.foldOutObjPlaceGUI)
                 {
-                    this.scenePlacementGUI.Draw(placeConfig);
-                    if (PlateauEditorStyle.MainButton("シーンにモデルを再配置"))
-                    {
-                        var availableObjs = importConfig.generatedObjFiles;
-                        string rootDirName = importConfig.rootDirName;
-                        CityMeshPlacerToScene.Place(placeConfig, availableObjs, rootDirName, metaData);
-                    }
+                    this.scenePlacementGUI.Draw(importConfig, metaData);
                 }
             }
 

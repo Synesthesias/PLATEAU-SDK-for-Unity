@@ -10,21 +10,27 @@ namespace PLATEAU.Editor.CityImport
     /// </summary>
     internal class ScenePlacementGUI
     {
-        public void Draw(ScenePlacementConfig placementConf)
+        public void Draw(CityImportConfig importConfig, CityMetaData metaData)
         {
-            // string[] enumDisplay = ScenePlacementConfig.PlaceMethodDisplay;
             using (PlateauEditorStyle.VerticalScopeLevel1())
             {
-                var gmlTypes = placementConf.AllGmlTypes();
+                var placementConfig = importConfig.scenePlacementConfig;
+                var gmlTypes = placementConfig.AllGmlTypes();
                 foreach (var gmlType in gmlTypes)
                 {
                     EditorGUILayout.LabelField(gmlType.ToDisplay());
                     using (PlateauEditorStyle.VerticalScopeLevel2())
                     {
-                        var typeConf = placementConf.GetPerTypeConfig(gmlType);
+                        var typeConf = placementConfig.GetPerTypeConfig(gmlType);
                         DrawPerTypeConfGUI(typeConf, gmlType); 
                     }
                                
+                }
+                if (PlateauEditorStyle.MainButton("シーンにモデルを再配置"))
+                {
+                    var availableObjs = importConfig.generatedObjFiles;
+                    string rootDirName = importConfig.rootDirName;
+                    CityMeshPlacerToScene.Place(placementConfig, availableObjs, rootDirName, metaData);
                 }
             }
             

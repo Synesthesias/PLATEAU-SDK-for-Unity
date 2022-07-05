@@ -18,8 +18,10 @@ namespace PLATEAU.Editor.CityImport
     {
         private bool foldOutIdGmlTable;
         private bool foldOutReconvert;
+        private bool foldOutReplace;
         private bool foldOutOtherData;
         private CityImportGUI importGUI;
+        private ScenePlacementGUI scenePlacementGUI;
         private Vector2 scrollPosOfIdGmlTable;
         private Vector2 scrollPosOfObjInfo;
         public override void OnInspectorGUI()
@@ -32,7 +34,9 @@ namespace PLATEAU.Editor.CityImport
                 return;
             }
 
-            this.importGUI ??= new CityImportGUI(metaData.cityImportConfig); // 初期化
+            // 初期化
+            this.importGUI ??= new CityImportGUI(metaData.cityImportConfig);
+            this.scenePlacementGUI ??= new ScenePlacementGUI();
 
             EditorGUILayout.Space(10);
             
@@ -50,6 +54,18 @@ namespace PLATEAU.Editor.CityImport
             }
             
             EditorGUILayout.Space(10);
+            
+            HeaderDrawer.Draw("シーン配置");
+            using (PlateauEditorStyle.VerticalScopeLevel1())
+            {
+                this.foldOutReplace = EditorGUILayout.Foldout(this.foldOutReplace, "シーンへ再配置");
+                if (this.foldOutReplace)
+                {
+                    HeaderDrawer.IncrementDepth();
+                    this.scenePlacementGUI.Draw(metaData.cityImportConfig, metaData);
+                    HeaderDrawer.DecrementDepth();
+                }
+            }
             
             HeaderDrawer.Draw("その他の情報");
             using (PlateauEditorStyle.VerticalScopeLevel1())

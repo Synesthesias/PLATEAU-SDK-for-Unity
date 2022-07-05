@@ -98,7 +98,7 @@ namespace PLATEAU.CityMeta
     [Serializable]
     internal class ScenePlacementConfigPerType
     {
-        public PlaceMethod placeMethod;
+        public PlaceMethod placeMethod = PlaceMethod.PlaceMaxLod;
         public int selectedLod;
     }
 

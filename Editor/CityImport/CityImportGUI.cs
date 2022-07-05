@@ -23,7 +23,7 @@ namespace PLATEAU.Editor.CityImport
         private readonly GmlSearcherGUI gmlSearcherGUI;
         private readonly GmlSearcher gmlSearcher;
         private readonly ObjConvertTypesGUI objConvertTypesGUI;
-        private readonly ScenePlacementGUI scenePlacementGUI;
+        // private readonly ScenePlacementGUI scenePlacementGUI;
         private readonly ExportFolderSelectorGUI exportFolderSelectorGUI;
         private readonly CityImporter cityImporter;
         
@@ -33,7 +33,7 @@ namespace PLATEAU.Editor.CityImport
             this.gmlSearcherGUI = new GmlSearcherGUI();
             this.gmlSearcher = new GmlSearcher();
             this.objConvertTypesGUI = new ObjConvertTypesGUI();
-            this.scenePlacementGUI = new ScenePlacementGUI();
+            // this.scenePlacementGUI = new ScenePlacementGUI();
             this.exportFolderSelectorGUI = new ExportFolderSelectorGUI();
             this.cityImporter = new CityImporter();
             
@@ -89,8 +89,8 @@ namespace PLATEAU.Editor.CityImport
                 HeaderDrawer.DecrementDepth();
                 
                 // 配置設定
-                HeaderDrawer.Draw("シーン配置設定");
-                this.scenePlacementGUI.Draw(importConfig.scenePlacementConfig);
+                // HeaderDrawer.Draw("シーン配置設定");
+                // this.scenePlacementGUI.Draw(importConfig.scenePlacementConfig);
 
                 // 出力ボタン
                 HeaderDrawer.Draw("出力");
