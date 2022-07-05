@@ -29,7 +29,7 @@ namespace PLATEAU.Editor.CityImport
             // 設定は gmlType ごとに行われるので、 gmlType ごとにループして シーンに配置すべきモデル( objsToPlace )を決めます。
             foreach (var gmlType in allGmlTypes)
             {
-                var typeConf = placementConf.PerTypeConfigs[gmlType];
+                var typeConf = placementConf.GetPerTypeConfig(gmlType);
                 int selectedLod = typeConf.selectedLod;
                 var availableObjsOfType = availableObjs.Where(obj => obj.gmlType == gmlType).ToArray();
                 if (availableObjsOfType.Length <= 0) continue;

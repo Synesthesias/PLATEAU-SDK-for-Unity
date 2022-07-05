@@ -1,7 +1,6 @@
 ﻿using PLATEAU.CityMeta;
 using PLATEAU.Editor.EditorWindowCommon;
 using UnityEditor;
-using UnityEngine;
 
 namespace PLATEAU.Editor.CityImport
 {
@@ -13,16 +12,16 @@ namespace PLATEAU.Editor.CityImport
     {
         public void Draw(ScenePlacementConfig placementConf)
         {
-            string[] enumDisplay = ScenePlacementConfig.PlaceMethodDisplay;
+            // string[] enumDisplay = ScenePlacementConfig.PlaceMethodDisplay;
             using (PlateauEditorStyle.VerticalScopeLevel1())
             {
-                var gmlTypes = placementConf.PerTypeConfigs.Keys;
+                var gmlTypes = placementConf.AllGmlTypes();
                 foreach (var gmlType in gmlTypes)
                 {
                     EditorGUILayout.LabelField(gmlType.ToDisplay());
                     using (PlateauEditorStyle.VerticalScopeLevel2())
                     {
-                        var typeConf = placementConf.PerTypeConfigs[gmlType];
+                        var typeConf = placementConf.GetPerTypeConfig(gmlType);
                         DrawPerTypeConfGUI(typeConf, gmlType); 
                     }
                                

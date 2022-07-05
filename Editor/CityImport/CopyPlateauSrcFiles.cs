@@ -2,7 +2,6 @@
 using PLATEAU.CityMeta;
 using PLATEAU.Util;
 using UnityEditor;
-using UnityEngine;
 
 namespace PLATEAU.Editor.CityImport
 {

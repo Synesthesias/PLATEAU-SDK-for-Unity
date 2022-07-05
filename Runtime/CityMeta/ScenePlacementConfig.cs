@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.CompilerServices;
 using PLATEAU.Util;
 using UnityEngine;
 using static PLATEAU.CityMeta.ScenePlacementConfig;
@@ -16,7 +18,7 @@ namespace PLATEAU.CityMeta
     [Serializable]
     internal class ScenePlacementConfig : ISerializationCallbackReceiver
     {
-        public Dictionary<GmlType, ScenePlacementConfigPerType> PerTypeConfigs;
+        private Dictionary<GmlType, ScenePlacementConfigPerType> PerTypeConfigs;
         
         // シリアライズ時に Dictionary を List形式にします。
         [SerializeField] private List<GmlType> keys = new List<GmlType>();
@@ -65,6 +67,16 @@ namespace PLATEAU.CityMeta
             {
                 dict[type].selectedLod = lod;
             }
+        }
+
+        public ScenePlacementConfigPerType GetPerTypeConfig(GmlType type)
+        {
+            return this.PerTypeConfigs[type];
+        }
+
+        public IReadOnlyList<GmlType> AllGmlTypes()
+        {
+            return this.PerTypeConfigs.Keys.ToArray();
         }
 
         /// <summary> シリアライズするときに List形式に直します。 </summary>
