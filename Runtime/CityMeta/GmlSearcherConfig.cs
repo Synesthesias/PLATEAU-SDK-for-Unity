@@ -18,7 +18,9 @@ namespace PLATEAU.CityMeta
     internal class GmlSearcherConfig
     {
         /// <summary> 見つかったエリアIDの一覧です。 </summary>
-        public int[] areaIds = { };
+        [SerializeField] private int[] areaIds = { };
+
+        public IReadOnlyList<int> AreaIds => this.areaIds;
 
         /// <summary> <see cref="areaIds"/> の i番目を変換対象とするかどうかです。 </summary>
         public bool[] isAreaIdTarget = { };
@@ -74,6 +76,11 @@ namespace PLATEAU.CityMeta
         public void SetIsTypeTarget(GmlType t, bool isTarget)
         {
             this.gmlTypeTarget.SetIsTypeTarget(t, isTarget);
+        }
+
+        public void SetAreaIds(int[] areaIdsArg)
+        {
+            this.areaIds = areaIdsArg;
         }
     }
 }

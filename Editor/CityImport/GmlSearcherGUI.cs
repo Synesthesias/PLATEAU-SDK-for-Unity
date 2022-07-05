@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using PLATEAU.Editor.EditorWindowCommon;
 using PLATEAU.CityMeta;
@@ -46,8 +47,8 @@ namespace PLATEAU.Editor.CityImport
                     }
                 }
                 
-                searcherConfig.areaIds = gmlSearcher.AreaIds;
-                int areaCount = searcherConfig.areaIds.Length;
+                searcherConfig.SetAreaIds(gmlSearcher.AreaIds);
+                int areaCount = searcherConfig.AreaIds.Count;
                 if (searcherConfig.isAreaIdTarget.Length != areaCount)
                 {
                     Initialize(gmlSearcher, searcherConfig);
@@ -55,7 +56,7 @@ namespace PLATEAU.Editor.CityImport
                 // 地域IDごとに対象とするかを設定するGUIを表示します。
                 for (int i = 0; i < areaCount; i++)
                 {
-                    searcherConfig.isAreaIdTarget[i] = EditorGUILayout.Toggle(searcherConfig.areaIds[i].ToString(), searcherConfig.isAreaIdTarget[i]);
+                    searcherConfig.isAreaIdTarget[i] = EditorGUILayout.Toggle(searcherConfig.AreaIds[i].ToString(), searcherConfig.isAreaIdTarget[i]);
                 }
             }
 
@@ -98,7 +99,7 @@ namespace PLATEAU.Editor.CityImport
             HeaderDrawer.Draw("対象gmlファイル");
             using (PlateauEditorStyle.VerticalScopeLevel1())
             {
-                this.gmlFiles = ListTargetGmlFiles(gmlSearcher, searcherConfig.areaIds, searcherConfig.isAreaIdTarget,
+                this.gmlFiles = ListTargetGmlFiles(gmlSearcher, searcherConfig.AreaIds, searcherConfig.isAreaIdTarget,
                     searcherConfig);
                 this.scrollPosForGmlList = PlateauEditorStyle.ScrollableMultiLineLabel(String.Join("\n", this.gmlFiles), 150, this.scrollPosForGmlList);
             }
@@ -124,14 +125,14 @@ namespace PLATEAU.Editor.CityImport
         }
 
         
-        private static List<string> ListTargetGmlFiles(GmlSearcher gmlSearcher, int[] areaIds, bool[] areaCheckboxes, GmlSearcherConfig searcherConfig)
+        private static List<string> ListTargetGmlFiles(GmlSearcher gmlSearcher, IReadOnlyList<int> areaIds, bool[] areaCheckboxes, GmlSearcherConfig searcherConfig)
         {
-            if (areaIds.Length != areaCheckboxes.Length)
+            if (areaIds.Count != areaCheckboxes.Length)
             {
                 throw new ArgumentException("areaId.Length does not match areaCheckboxes.Length.");
             }
 
-            int areaCount = areaIds.Length;
+            int areaCount = areaIds.Count;
             var gmlFiles = new List<string>();
             for (int i = 0; i < areaCount; i++)
             {
