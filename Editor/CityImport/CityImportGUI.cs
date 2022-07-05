@@ -39,7 +39,7 @@ namespace PLATEAU.Editor.CityImport
             this.cityImporter = new CityImporter();
             
             // 記録されたインポート元パスを復元し、GUI画面の初期値に代入します。
-            string loadedSrcRootPath = config.sourcePath.rootDirAssetPath;
+            string loadedSrcRootPath = config.sourcePath.RootDirAssetPath;
             string initialSrcRootPath = loadedSrcRootPath;
             if (initialSrcRootPath.Replace('\\', '/').StartsWith("Assets/"))
             {

@@ -18,9 +18,14 @@ namespace PLATEAU.CityMeta
         /// Plateau元データのパスの記録です。
         /// パスは Assets/ から始まります。
         /// </summary>
-        public string rootDirAssetPath;
-        
-        
+        [SerializeField] private string rootDirAssetPath;
+
+        public string RootDirAssetPath
+        {
+            get => this.rootDirAssetPath;
+            set => this.rootDirAssetPath = value;
+        }
+
 
         /// <summary>
         /// udxパスで初期化します。
@@ -97,7 +102,7 @@ namespace PLATEAU.CityMeta
     {
         public static string RootDirFullPath(this PlateauSourcePath source)
         {
-            return PlateauSourcePath.GetRootDirFullPath(source.rootDirAssetPath);
+            return PlateauSourcePath.GetRootDirFullPath(source.RootDirAssetPath);
         }
 
         // public static string RootDirAssetsPath(this PlateauSourcePath source)

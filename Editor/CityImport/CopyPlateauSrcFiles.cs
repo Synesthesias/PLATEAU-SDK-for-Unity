@@ -76,7 +76,7 @@ namespace PLATEAU.Editor.CityImport
                     }
                 }
             }
-            AssetDatabase.ImportAsset(dest.rootDirAssetPath);
+            AssetDatabase.ImportAsset(dest.RootDirAssetPath);
             EditorUtility.ClearProgressBar();
         }
 

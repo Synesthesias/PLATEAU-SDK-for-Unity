@@ -33,7 +33,7 @@ namespace PLATEAU.Editor.Converters
                 // ロードします。
                 var importConf = config.CityImportConfig;
                 var importDestPath = importConf.importDestPath;
-                string srcRootAssetsPath = importConf.sourcePath.rootDirAssetPath;
+                string srcRootAssetsPath = importConf.sourcePath.RootDirAssetPath;
                 if (metaData == null)
                 {
                     metaData = LoadOrCreateMetaData(importDestPath.MetaDataAssetPath, config.DoClearIdToGmlTable);
@@ -57,7 +57,7 @@ namespace PLATEAU.Editor.Converters
                 }
 
                 // 変換時の設定を書き込みます。
-                importConf.sourcePath.rootDirAssetPath = srcRootAssetsPath;
+                importConf.sourcePath.RootDirAssetPath = srcRootAssetsPath;
 
                 importConf.importDestPath.dirAssetPath = importDestPath.dirAssetPath;
                 metaData.cityImportConfig = importConf;
