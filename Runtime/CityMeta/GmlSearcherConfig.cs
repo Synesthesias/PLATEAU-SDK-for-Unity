@@ -22,6 +22,8 @@ namespace PLATEAU.CityMeta
         
         /// <summary> <see cref="areaIds"/> の i番目を変換対象とするかどうかです。 </summary>
         [SerializeField] private bool[] isAreaIdTarget = { };
+        
+        private AreaTree areaIdTree;
 
         /// <summary> 地物タイプの絞り込み情報です。 </summary>
         [SerializeField] private GmlTypeTarget gmlTypeTarget = new GmlTypeTarget();
@@ -81,6 +83,7 @@ namespace PLATEAU.CityMeta
         public void SetAreaIds(int[] areaIdsArg)
         {
             this.areaIds = areaIdsArg;
+            GenerateAreaTree(areaIdsArg);
         }
 
         public IReadOnlyList<bool> IsAreaIdTarget => this.isAreaIdTarget;
@@ -93,6 +96,26 @@ namespace PLATEAU.CityMeta
         public void ResetIsAreaIdTarget(int areaCount)
         {
             this.isAreaIdTarget = Enumerable.Repeat(true, areaCount ).ToArray();
+        }
+        
+        public void GenerateAreaTree(int[] areaIdArray)
+        {
+            List<Area> areas = new List<Area>();
+            foreach (int areaId in areaIdArray)
+            {
+                areas.Add(new Area(areaId));
+            }
+            this.areaIdTree = new AreaTree(areas);
+        }
+
+        public IEnumerable<(int depth, Area area)> IterateAreaTree()
+        {
+            
+            var areasIter = this.areaIdTree.IterateDfs();
+            foreach (var iter in areasIter)
+            {
+                yield return iter;
+            }
         }
     }
 }

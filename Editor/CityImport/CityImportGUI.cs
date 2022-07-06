@@ -130,7 +130,7 @@ namespace PLATEAU.Editor.CityImport
                 this.gmlSearcher = new GmlSearcher(path);
             }
             this.gmlSearcher.GenerateFileDictionary(path);
-            this.gmlSearcher.GenerateAreaTree();
+            // this.gmlSearcher.GenerateAreaTree();
             this.gmlSearcherGUI.OnUdxPathChanged();
         }
 
@@ -151,5 +151,7 @@ namespace PLATEAU.Editor.CityImport
 
             return true;
         }
+        
+        
     }
 }

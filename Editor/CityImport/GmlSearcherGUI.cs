@@ -59,7 +59,7 @@ namespace PLATEAU.Editor.CityImport
                 // }
                 // if (!this.isInitialized) Initialize(gmlSearcher, searcherConfig);
                 
-                foreach (var iter in gmlSearcher.IterateAreaTree())
+                foreach (var iter in searcherConfig.IterateAreaTree())
                 {
                     var area = iter.area;
                     int indent = iter.depth - 1;
