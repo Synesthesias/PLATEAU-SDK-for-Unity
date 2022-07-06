@@ -112,7 +112,7 @@ namespace PLATEAU.Editor.CityImport
 
         private void Initialize(GmlSearcher gmlSearcher, GmlSearcherConfig config)
         {
-            config.GenerateAreaTree(gmlSearcher.AreaIds);
+            config.GenerateAreaTreeIfNull(gmlSearcher.AreaIds);
             
             this.isInitialized = true;
         }

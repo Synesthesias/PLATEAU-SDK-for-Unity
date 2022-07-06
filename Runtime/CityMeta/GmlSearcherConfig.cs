@@ -17,12 +17,12 @@ namespace PLATEAU.CityMeta
     internal class GmlSearcherConfig
     {
 
-        [SerializeField] private AreaTree areaIdTree;
+        [SerializeField] private AreaTree areaTree;
 
         /// <summary> 地物タイプの絞り込み情報です。 </summary>
         [SerializeField] private GmlTypeTarget gmlTypeTarget = new GmlTypeTarget();
 
-        public AreaTree AreaTree => this.areaIdTree;
+        public AreaTree AreaTree => this.areaTree;
         /// <summary>
         /// 引数が true のとき、すべてのエリアを対象とします。
         /// 　　　 false のとき、すべてのエリアを除外します。
@@ -78,23 +78,25 @@ namespace PLATEAU.CityMeta
 
         public void SetIsAreaIdTarget(int areaId, bool isTarget)
         {
-            this.areaIdTree.SetAreaIdTarget(areaId, isTarget);
+            this.areaTree.SetAreaIdTarget(areaId, isTarget);
         }
 
-        public void GenerateAreaTree(int[] areaIdArray)
+        public void GenerateAreaTreeIfNull(int[] areaIdArray)
         {
+            if (this.areaTree != null) return;
             List<Area> areas = new List<Area>();
             foreach (int areaId in areaIdArray)
             {
                 areas.Add(new Area(areaId));
             }
-            this.areaIdTree = new AreaTree(areas);
+            this.areaTree = new AreaTree();
+            this.areaTree.Generate(areas);
         }
 
         public IEnumerable<(int depth, Area area)> IterateAreaTree()
         {
             
-            var areasIter = this.areaIdTree.IterateDfs();
+            var areasIter = this.areaTree.IterateDfs();
             foreach (var iter in areasIter)
             {
                 yield return iter;

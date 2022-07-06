@@ -39,11 +39,9 @@ namespace PLATEAU.Editor.CityImport
             // 設定のインポート元パスをコピー後のパスに変更します。
             var sourcePathConf = importConfig.sourcePath;
             sourcePathConf.SetRootDirFullPath(CopyImportSrcToStreamingAssets(importConfig.SrcRootPathBeforeImport, gmlRelativePaths));
-            Debug.Log("srcRoot configured.");
             var importDest = importConfig.importDestPath;
             metaData = CityMetaDataGenerator.LoadOrCreateMetaData(importDest.MetaDataAssetPath, true);
             
-            Debug.Log("metadata created or loaded.");
             
             // gmlファイルごとのループを始めます。
             int successCount = 0;
