@@ -46,16 +46,27 @@ namespace PLATEAU.Editor.CityImport
                 }
                 
                 searcherConfig.SetAreaIds(gmlSearcher.AreaIds);
-                int areaCount = searcherConfig.AreaIds.Count;
-                if (searcherConfig.IsAreaIdTarget.Count != areaCount)
-                {
-                    Initialize(gmlSearcher, searcherConfig);
-                }
+                // int areaCount = searcherConfig.AreaIds.Count;
+                // if (searcherConfig.IsAreaIdTarget.Count != areaCount)
+                // {
+                //     Initialize(gmlSearcher, searcherConfig);
+                // }
                 // 地域IDごとに対象とするかを設定するGUIを表示します。
-                for (int i = 0; i < areaCount; i++)
+                // for (int i = 0; i < areaCount; i++)
+                // {
+                //     searcherConfig.SetIsAreaIdTarget(i,
+                //         EditorGUILayout.Toggle(searcherConfig.AreaIds[i].ToString(), searcherConfig.IsAreaIdTarget[i]));
+                // }
+                // if (!this.isInitialized) Initialize(gmlSearcher, searcherConfig);
+                
+                foreach (var iter in gmlSearcher.IterateAreaTree())
                 {
-                    searcherConfig.SetIsAreaIdTarget(i,
-                        EditorGUILayout.Toggle(searcherConfig.AreaIds[i].ToString(), searcherConfig.IsAreaIdTarget[i]));
+                    var area = iter.area;
+                    int indent = iter.depth - 1;
+                    var style = (GUIStyle)"toggle";
+                    EditorGUI.indentLevel += indent;
+                    area.IsTarget = EditorGUILayout.Toggle(area.Id.ToString(), area.IsTarget, style);
+                    EditorGUI.indentLevel -= indent;
                 }
             }
 
@@ -120,6 +131,7 @@ namespace PLATEAU.Editor.CityImport
             {
                 config.ResetIsAreaIdTarget(areaCount);
             }
+            
             this.isInitialized = true;
         }
 

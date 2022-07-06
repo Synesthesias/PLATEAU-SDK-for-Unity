@@ -21,7 +21,7 @@ namespace PLATEAU.Editor.CityImport
     {
         private readonly InputFolderSelectorGUI importFolderSelectorGUI;
         private readonly GmlSearcherGUI gmlSearcherGUI;
-        private readonly GmlSearcher gmlSearcher;
+        private GmlSearcher gmlSearcher;
         private readonly ObjConvertTypesGUI objConvertTypesGUI;
         // private readonly ScenePlacementGUI scenePlacementGUI;
         private readonly ExportFolderSelectorGUI exportFolderSelectorGUI;
@@ -31,7 +31,7 @@ namespace PLATEAU.Editor.CityImport
         {
             this.importFolderSelectorGUI = new InputFolderSelectorGUI(OnImportSrcPathChanged);
             this.gmlSearcherGUI = new GmlSearcherGUI();
-            this.gmlSearcher = new GmlSearcher();
+            // this.gmlSearcher = new GmlSearcher();
             this.objConvertTypesGUI = new ObjConvertTypesGUI();
             // this.scenePlacementGUI = new ScenePlacementGUI();
             this.exportFolderSelectorGUI = new ExportFolderSelectorGUI();
@@ -125,7 +125,12 @@ namespace PLATEAU.Editor.CityImport
         private void OnImportSrcPathChanged(string path)
         {
             if (!GmlSearcher.IsPathPlateauRoot(path)) return;
+            if (this.gmlSearcher == null)
+            {
+                this.gmlSearcher = new GmlSearcher(path);
+            }
             this.gmlSearcher.GenerateFileDictionary(path);
+            this.gmlSearcher.GenerateAreaTree();
             this.gmlSearcherGUI.OnUdxPathChanged();
         }
 

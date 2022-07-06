@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using PLATEAU.CityMeta;
 using PLATEAU.Util;
+using UnityEngine;
 
 namespace PLATEAU.Editor.CityImport
 {
@@ -26,6 +28,8 @@ namespace PLATEAU.Editor.CityImport
         /// </summary>
         private Dictionary<int, List<string>> fileTable;
 
+        private AreaTree areaIdTree;
+
         private string srcRootFolderPath = "";
 
         /// <summary> インスタンス化と同時にパスを指定して検索します。 </summary>
@@ -33,11 +37,28 @@ namespace PLATEAU.Editor.CityImport
         {
             if (!IsPathPlateauRoot(srcRootFolderPath)) return;
             GenerateFileDictionary(srcRootFolderPath);
+            GenerateAreaTree();
         }
 
-        /// <summary> パスを指定せずにインスタンス化する場合、あとで <see cref="GenerateFileDictionary"/> を実行する必要があります。 </summary>
-        public GmlSearcher()
+        public void GenerateAreaTree()
         {
+            var areaIds = this.fileTable.Keys.ToArray();
+            List<Area> areas = new List<Area>();
+            foreach (int areaId in areaIds)
+            {
+                areas.Add(new Area(areaId));
+            }
+            this.areaIdTree = new AreaTree(areas);
+        }
+
+        public IEnumerable<(int depth, Area area)> IterateAreaTree()
+        {
+            
+            var areasIter = this.areaIdTree.IterateDfs();
+            foreach (var iter in areasIter)
+            {
+                yield return iter;
+            }
         }
 
         /// <summary>

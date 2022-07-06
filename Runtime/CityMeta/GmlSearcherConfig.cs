@@ -19,7 +19,7 @@ namespace PLATEAU.CityMeta
     {
         /// <summary> 見つかったエリアIDの一覧です。 </summary>
         [SerializeField] private int[] areaIds = { };
-
+        
         /// <summary> <see cref="areaIds"/> の i番目を変換対象とするかどうかです。 </summary>
         [SerializeField] private bool[] isAreaIdTarget = { };
 

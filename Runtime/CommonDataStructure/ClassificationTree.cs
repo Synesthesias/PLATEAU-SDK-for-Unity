@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 namespace PLATEAU.CommonDataStructure
@@ -21,37 +22,70 @@ namespace PLATEAU.CommonDataStructure
     /// }
     /// ここに "2-2.川崎市" を追加すると、必ずその順番は 2-1. のあとになります。
     /// </summary>
-    internal class ClassificationTree<TKey, TValue> where TKey : IComparable<TKey>
+    internal class ClassificationTree<TKey, TValue>
+        where TKey : IComparable<TKey>
     {
-        private TValue value;
-        private readonly SortedDictionary<TKey, ClassificationTree<TKey, TValue>> children = new SortedDictionary<TKey, ClassificationTree<TKey, TValue>>();
+    private TValue value;
 
-        public ClassificationTree(TValue value)
+    private readonly SortedDictionary<TKey, ClassificationTree<TKey, TValue>> children =
+        new SortedDictionary<TKey, ClassificationTree<TKey, TValue>>();
+
+    public ClassificationTree(TValue value)
+    {
+        this.value = value;
+    }
+
+    public void AddChild(TKey key, TValue val)
+    {
+        this.children.Add(key, new ClassificationTree<TKey, TValue>(val));
+    }
+
+    /// <summary>
+    /// 子に <paramref name="key"/> を含むかどうかをboolで返します。
+    /// 再帰的には処理しません。
+    /// </summary>
+    public bool ContainsInChildren(TKey key)
+    {
+        return this.children.ContainsKey(key);
+    }
+
+    public ClassificationTree<TKey, TValue> GetChild(TKey childKey)
+    {
+        return this.children[childKey];
+    }
+
+    // private IEnumerator<T> Children => this.children.GetEnumerator();
+
+    /// <summary>
+    /// 深さ優先探索 (DFS) で木をイテレートします。
+    /// </summary>
+    public IEnumerable<(int depth, TValue value)> IterateDfs()
+    {
+        var values = IterateDfsRecursive(this, 1);
+        foreach (var val in values)
         {
-            this.value = value;
+            yield return val;
+        }
+    }
+
+    private IEnumerable<(int depth, TValue value)> IterateDfsRecursive(ClassificationTree<TKey, TValue> node, int depth)
+    {
+        if (node == null)
+        {
+            throw new ArgumentNullException($"{nameof(node)}");
         }
 
-        public void AddChild(TKey key, TValue val)
+        yield return (depth, node.value);
+        foreach (var child in node.children)
         {
-            this.children.Add(key, new ClassificationTree<TKey, TValue>(val));
+            var childNode = child.Value;
+            var childRecursive = IterateDfsRecursive(childNode, depth+1);
+            foreach (var c in childRecursive)
+            {
+                yield return c;
+            }
         }
-
-        /// <summary>
-        /// 子に <paramref name="key"/> を含むかどうかをboolで返します。
-        /// 再帰的には処理しません。
-        /// </summary>
-        public bool ContainsInChildren(TKey key)
-        {
-            return this.children.ContainsKey(key);
-        }
-
-        public ClassificationTree<TKey, TValue> GetChild(TKey childKey)
-        {
-            return this.children[childKey];
-        }
-
-        // private IEnumerator<T> Children => this.children.GetEnumerator();
-
+    }
 
     }
 }
