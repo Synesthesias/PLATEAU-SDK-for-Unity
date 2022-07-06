@@ -17,7 +17,7 @@ namespace PLATEAU.CityMeta
     internal class GmlSearcherConfig
     {
 
-        private AreaTree areaIdTree;
+        [SerializeField] private AreaTree areaIdTree;
 
         /// <summary> 地物タイプの絞り込み情報です。 </summary>
         [SerializeField] private GmlTypeTarget gmlTypeTarget = new GmlTypeTarget();

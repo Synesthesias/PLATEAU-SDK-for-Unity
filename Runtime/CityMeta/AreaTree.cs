@@ -1,9 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using PLATEAU.CommonDataStructure;
 
 namespace PLATEAU.CityMeta
 {
+    [Serializable]
     internal class AreaTree
     {
         private ClassificationTree<int, Area> rootNode;
@@ -22,19 +24,25 @@ namespace PLATEAU.CityMeta
         public AreaTree(IEnumerable<Area> areas)
         {
             var root = new ClassificationTree<int ,Area>(new Area(-1));
-            foreach (var areaId in areas)
+            foreach (var area in areas)
             {
-                int secondKey = areaId.SecondSectionId();
+                int secondKey = area.SecondSectionId();
+                // 木の深さ 2 の部分に追加します。
                 if (!root.ContainsInChildren(secondKey))
                 {
                     root.AddChild(secondKey, new Area(secondKey));
                 }
-
+                // 深さ 3 に相当するIDがなければ終了します。
+                if (area.ThirdSectionId() < 0)
+                {
+                    continue;
+                }
+                // 深さ 3 の部分にノードを追加します。
                 var secondNode = root.GetChild(secondKey);
-                int thirdKey = areaId.Id;
+                int thirdKey = area.Id;
                 if (!secondNode.ContainsInChildren(thirdKey))
                 {
-                    secondNode.AddChild(thirdKey, areaId);
+                    secondNode.AddChild(thirdKey, area);
                 }
             }
 

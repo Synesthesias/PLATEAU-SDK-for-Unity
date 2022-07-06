@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.Design;
-using UnityEditor.Experimental.GraphView;
-using UnityEngine;
 
 namespace PLATEAU.CommonDataStructure
 {
@@ -25,7 +22,7 @@ namespace PLATEAU.CommonDataStructure
     internal class ClassificationTree<TKey, TValue>
         where TKey : IComparable<TKey>
     {
-    private TValue value;
+    private readonly TValue value;
 
     private readonly SortedDictionary<TKey, ClassificationTree<TKey, TValue>> children =
         new SortedDictionary<TKey, ClassificationTree<TKey, TValue>>();
