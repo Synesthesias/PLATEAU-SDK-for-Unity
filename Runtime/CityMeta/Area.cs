@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using PLATEAU.CommonDataStructure;
 using PLATEAU.Util;
 using UnityEngine;
-using UnityEngine.Animations;
-// using AreaTree = PLATEAU.CommonDataStructure.ClassificationTree<int, PLATEAU.CityMeta.Area>;
 
 namespace PLATEAU.CityMeta
 {

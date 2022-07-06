@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using PLATEAU.CityMeta;
 using PLATEAU.Util;
-using UnityEngine;
 
 namespace PLATEAU.Editor.CityImport
 {
@@ -35,7 +33,6 @@ namespace PLATEAU.Editor.CityImport
         {
             if (!IsPathPlateauRoot(srcRootFolderPath)) return;
             GenerateFileDictionary(srcRootFolderPath);
-            // GenerateAreaTree();
         }
         
 

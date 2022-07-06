@@ -44,31 +44,14 @@ namespace PLATEAU.Editor.CityImport
                         searcherConfig.SetAllAreaId(false);
                     }
                 }
-                
-                
-                // int areaCount = searcherConfig.AreaIds.Count;
-                // if (searcherConfig.IsAreaIdTarget.Count != areaCount)
-                // {
-                //     Initialize(gmlSearcher, searcherConfig);
-                // }
-                
-                
-                
-                // for (int i = 0; i < areaCount; i++)
-                // {
-                //     searcherConfig.SetIsAreaIdTarget(i,
-                //         EditorGUILayout.Toggle(searcherConfig.AreaIds[i].ToString(), searcherConfig.IsAreaIdTarget[i]));
-                // }
-                // if (!this.isInitialized) Initialize(gmlSearcher, searcherConfig);
-                
+
                 // 地域IDごとに対象とするかを設定するGUIを表示します。
                 foreach (var iter in searcherConfig.IterateAreaTree())
                 {
                     var area = iter.area;
                     int indent = iter.depth - 1;
-                    var style = (GUIStyle)"toggle";
                     EditorGUI.indentLevel += indent;
-                    area.IsTarget = EditorGUILayout.Toggle(area.Id.ToString(), area.IsTarget, style);
+                    area.IsTarget = EditorGUILayout.Toggle(area.Id.ToString(), area.IsTarget);
                     EditorGUI.indentLevel -= indent;
                 }
             }
@@ -129,11 +112,6 @@ namespace PLATEAU.Editor.CityImport
 
         private void Initialize(GmlSearcher gmlSearcher, GmlSearcherConfig config)
         {
-            // int areaCount = gmlSearcher.AreaIds.Length;
-            // if (config.IsAreaIdTarget.Count != areaCount)
-            // {
-            //     config.ResetIsAreaIdTarget(areaCount);
-            // }
             config.GenerateAreaTree(gmlSearcher.AreaIds);
             
             this.isInitialized = true;
@@ -142,18 +120,7 @@ namespace PLATEAU.Editor.CityImport
         
         private static List<string> ListTargetGmlFiles(GmlSearcher gmlSearcher, AreaTree areaTree, GmlSearcherConfig searcherConfig)
         {
-            // if (areaIds.Count != areaCheckboxes.Count)
-            // {
-            //     throw new ArgumentException("areaId.Length does not match areaCheckboxes.Length.");
-            // }
-
-            // int areaCount = areaIds.Count;
             var gmlFiles = new List<string>();
-            // for (int i = 0; i < areaCount; i++)
-            // {
-            //     if (!areaCheckboxes[i]) continue;
-            //     gmlFiles.AddRange(gmlSearcher.GetGmlFilePathsForAreaIdAndType(areaIds[i], searcherConfig, false));
-            // }
 
             var areas = areaTree.IterateDfs();
             foreach (var tuple in areas)

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 namespace PLATEAU.CityMeta
@@ -17,12 +16,7 @@ namespace PLATEAU.CityMeta
     [Serializable]
     internal class GmlSearcherConfig
     {
-        /// <summary> 見つかったエリアIDの一覧です。 </summary>
-        // [SerializeField] private int[] areaIds = { };
-        
-        /// <summary> <see cref="areaIds"/> の i番目を変換対象とするかどうかです。 </summary>
-        // [SerializeField] private bool[] isAreaIdTarget = { };
-        
+
         private AreaTree areaIdTree;
 
         /// <summary> 地物タイプの絞り込み情報です。 </summary>
@@ -82,25 +76,11 @@ namespace PLATEAU.CityMeta
             this.gmlTypeTarget.SetIsTypeTarget(t, isTarget);
         }
 
-        // public IReadOnlyList<int> AreaIds => this.areaIds;
-        
-        // public void SetAreaIds(int[] areaIdsArg)
-        // {
-        //     GenerateAreaTree(areaIdsArg);
-        // }
-
-        // public IReadOnlyList<bool> IsAreaIdTarget => this.isAreaIdTarget;
-
         public void SetIsAreaIdTarget(int areaId, bool isTarget)
         {
             this.areaIdTree.SetAreaIdTarget(areaId, isTarget);
         }
 
-        // public void ResetIsAreaIdTarget(int areaCount)
-        // {
-        //     this.isAreaIdTarget = Enumerable.Repeat(true, areaCount ).ToArray();
-        // }
-        
         public void GenerateAreaTree(int[] areaIdArray)
         {
             List<Area> areas = new List<Area>();
