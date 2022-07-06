@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using PLATEAU.CommonDataStructure;
 using static PLATEAU.CityMeta.GmlType;
 
 namespace PLATEAU.CityMeta

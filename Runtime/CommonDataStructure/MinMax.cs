@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace PLATEAU.CityMeta
+namespace PLATEAU.CommonDataStructure
 {
     [Serializable]
     internal class MinMax<T> where T : IComparable
@@ -63,7 +63,7 @@ namespace PLATEAU.CityMeta
 
         public ReadOnlyMinMax(T min, T max)
         {
-            minMax = new MinMax<T>(min, max);
+            this.minMax = new MinMax<T>(min, max);
         }
 
         public T Min => this.minMax.Min;

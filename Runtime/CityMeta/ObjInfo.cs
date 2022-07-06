@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using PLATEAU.CommonDataStructure;
 
 namespace PLATEAU.CityMeta
 {

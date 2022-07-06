@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using PLATEAU.CityMeta;
+using PLATEAU.CommonDataStructure;
 using PLATEAU.IO;
 
 namespace PLATEAU.Tests.TestUtils
