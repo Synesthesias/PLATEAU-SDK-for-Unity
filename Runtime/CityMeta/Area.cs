@@ -41,8 +41,12 @@ namespace PLATEAU.CityMeta
         }
 
         /// <summary> 第2地域区画 (1辺10km)の番号、すなわちIDの最初の6桁です。 </summary>
-        public int SecondSectionId => DigitsUtil.PickFirstDigits(Id, numDigitsOfSecondSection);
+        public int SecondSectionId() => SecondSectionId(Id); 
 
+        public static int SecondSectionId(int id)
+        {
+            return DigitsUtil.PickFirstDigits(id, numDigitsOfSecondSection);
+        }
 
         public int CompareTo(Area other)
         {

@@ -35,6 +35,8 @@ namespace PLATEAU.CommonDataStructure
         this.value = value;
     }
 
+    public TValue Value => this.value;
+
     public void AddChild(TKey key, TValue val)
     {
         this.children.Add(key, new ClassificationTree<TKey, TValue>(val));
@@ -59,7 +61,7 @@ namespace PLATEAU.CommonDataStructure
     /// <summary>
     /// 深さ優先探索 (DFS) で木をイテレートします。
     /// </summary>
-    public IEnumerable<(int depth, TValue value)> IterateDfs()
+    public IEnumerable<(int depth, TValue value)> IterateDfsWithDepth()
     {
         var values = IterateDfsRecursive(this, 1);
         foreach (var val in values)
@@ -67,7 +69,7 @@ namespace PLATEAU.CommonDataStructure
             yield return val;
         }
     }
-
+    
     private IEnumerable<(int depth, TValue value)> IterateDfsRecursive(ClassificationTree<TKey, TValue> node, int depth)
     {
         if (node == null)

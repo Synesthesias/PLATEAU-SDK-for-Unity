@@ -45,13 +45,15 @@ namespace PLATEAU.Editor.CityImport
                     }
                 }
                 
-                searcherConfig.SetAreaIds(gmlSearcher.AreaIds);
+                
                 // int areaCount = searcherConfig.AreaIds.Count;
                 // if (searcherConfig.IsAreaIdTarget.Count != areaCount)
                 // {
                 //     Initialize(gmlSearcher, searcherConfig);
                 // }
-                // 地域IDごとに対象とするかを設定するGUIを表示します。
+                
+                
+                
                 // for (int i = 0; i < areaCount; i++)
                 // {
                 //     searcherConfig.SetIsAreaIdTarget(i,
@@ -59,6 +61,7 @@ namespace PLATEAU.Editor.CityImport
                 // }
                 // if (!this.isInitialized) Initialize(gmlSearcher, searcherConfig);
                 
+                // 地域IDごとに対象とするかを設定するGUIを表示します。
                 foreach (var iter in searcherConfig.IterateAreaTree())
                 {
                     var area = iter.area;
@@ -71,7 +74,7 @@ namespace PLATEAU.Editor.CityImport
             }
 
             // 選択した地域に存在しない地物タイプは、GUI上で無効にしたいのでそのための辞書を構築します。
-            var typeExistingDict = gmlSearcher.ExistingTypesForAreaIds(searcherConfig.TargetAreaIds());
+            var typeExistingDict = gmlSearcher.ExistingTypesForAreaIds(searcherConfig.GetTargetAreaIds());
             
             
             // 地物タイプごとの設定です。
@@ -109,7 +112,7 @@ namespace PLATEAU.Editor.CityImport
             HeaderDrawer.Draw("対象gmlファイル");
             using (PlateauEditorStyle.VerticalScopeLevel1())
             {
-                this.gmlFiles = ListTargetGmlFiles(gmlSearcher, searcherConfig.AreaIds, searcherConfig.IsAreaIdTarget,
+                this.gmlFiles = ListTargetGmlFiles(gmlSearcher, searcherConfig.AreaTree,
                     searcherConfig);
                 this.scrollPosForGmlList = PlateauEditorStyle.ScrollableMultiLineLabel(String.Join("\n", this.gmlFiles), 150, this.scrollPosForGmlList);
             }
@@ -126,29 +129,38 @@ namespace PLATEAU.Editor.CityImport
 
         private void Initialize(GmlSearcher gmlSearcher, GmlSearcherConfig config)
         {
-            int areaCount = gmlSearcher.AreaIds.Length;
-            if (config.IsAreaIdTarget.Count != areaCount)
-            {
-                config.ResetIsAreaIdTarget(areaCount);
-            }
+            // int areaCount = gmlSearcher.AreaIds.Length;
+            // if (config.IsAreaIdTarget.Count != areaCount)
+            // {
+            //     config.ResetIsAreaIdTarget(areaCount);
+            // }
+            config.GenerateAreaTree(gmlSearcher.AreaIds);
             
             this.isInitialized = true;
         }
 
         
-        private static List<string> ListTargetGmlFiles(GmlSearcher gmlSearcher, IReadOnlyList<int> areaIds, IReadOnlyList<bool> areaCheckboxes, GmlSearcherConfig searcherConfig)
+        private static List<string> ListTargetGmlFiles(GmlSearcher gmlSearcher, AreaTree areaTree, GmlSearcherConfig searcherConfig)
         {
-            if (areaIds.Count != areaCheckboxes.Count)
-            {
-                throw new ArgumentException("areaId.Length does not match areaCheckboxes.Length.");
-            }
+            // if (areaIds.Count != areaCheckboxes.Count)
+            // {
+            //     throw new ArgumentException("areaId.Length does not match areaCheckboxes.Length.");
+            // }
 
-            int areaCount = areaIds.Count;
+            // int areaCount = areaIds.Count;
             var gmlFiles = new List<string>();
-            for (int i = 0; i < areaCount; i++)
+            // for (int i = 0; i < areaCount; i++)
+            // {
+            //     if (!areaCheckboxes[i]) continue;
+            //     gmlFiles.AddRange(gmlSearcher.GetGmlFilePathsForAreaIdAndType(areaIds[i], searcherConfig, false));
+            // }
+
+            var areas = areaTree.IterateDfs();
+            foreach (var tuple in areas)
             {
-                if (!areaCheckboxes[i]) continue;
-                gmlFiles.AddRange(gmlSearcher.GetGmlFilePathsForAreaIdAndType(areaIds[i], searcherConfig, false));
+                var area = tuple.area;
+                if (!area.IsTarget) continue;
+                gmlFiles.AddRange(gmlSearcher.GetGmlFilePathsForAreaIdAndType(area.Id, searcherConfig, false));
             }
 
             return gmlFiles;

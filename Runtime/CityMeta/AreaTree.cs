@@ -24,7 +24,7 @@ namespace PLATEAU.CityMeta
             var root = new ClassificationTree<int ,Area>(new Area(-1));
             foreach (var areaId in areas)
             {
-                int secondKey = areaId.SecondSectionId;
+                int secondKey = areaId.SecondSectionId();
                 if (!root.ContainsInChildren(secondKey))
                 {
                     root.AddChild(secondKey, new Area(secondKey));
@@ -43,9 +43,18 @@ namespace PLATEAU.CityMeta
 
         public IEnumerable<(int depth, Area area)> IterateDfs()
         {
-            var iter = this.rootNode.IterateDfs();
+            var iter = this.rootNode.IterateDfsWithDepth();
             // 木のルートノードは便宜上 id=-1 としただけの無意味な値なのでスキップします。
             return iter.Skip(1);
+        }
+
+        public void SetAreaIdTarget(int areaId, bool isTarget)
+        {
+            int secondId = Area.SecondSectionId(areaId);
+            var secondNode = this.rootNode.GetChild(secondId);
+            secondNode.Value.IsTarget = isTarget;
+            var thirdNode = secondNode.GetChild(areaId);
+            thirdNode.Value.IsTarget = isTarget;
         }
     }
 }
