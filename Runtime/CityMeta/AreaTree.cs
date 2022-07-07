@@ -102,6 +102,7 @@ namespace PLATEAU.CityMeta
 
         void ISerializationCallbackReceiver.OnBeforeSerialize()
         {
+            if (this.rootNode == null) return;
             this.serializedAreas = new List<Area>();
             foreach (var tuple in this.rootNode.IterateDfsWithDepth())
             {
