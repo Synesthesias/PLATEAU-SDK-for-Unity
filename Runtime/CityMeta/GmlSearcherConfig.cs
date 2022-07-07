@@ -82,9 +82,9 @@ namespace PLATEAU.CityMeta
             this.areaTree.SetAreaIdTarget(areaId, isTarget);
         }
 
-        public void GenerateAreaTreeIfNull(int[] areaIdArray)
+        public void GenerateAreaTree(int[] areaIdArray, bool ignoreIfTreeExists)
         {
-            if (this.areaTree != null) return;
+            if (ignoreIfTreeExists && this.areaTree != null) return;
             List<Area> areas = new List<Area>();
             foreach (int areaId in areaIdArray)
             {

@@ -72,14 +72,9 @@ namespace PLATEAU.CityMeta
             return this.id.CompareTo(other.id);
         }
 
-        public string ToString()
+        public override string ToString()
         {
-            if (ThirdSectionId() < 0)
-            {
-                return Id.ToString();
-            }
-
-            return $"{SecondSectionId()}-{ThirdSectionId()}";
+            return Id.ToString();
         }
         
         private static int IntPow(int x, uint pow)

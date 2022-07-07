@@ -13,6 +13,8 @@ namespace PLATEAU.Editor.CityImport
     internal class InputFolderSelectorGUI
     {
         private string folderPath;
+        
+        public enum PathChangeMethod{SetterProperty, Dialogue}
 
         public string FolderPath
         {
@@ -22,14 +24,14 @@ namespace PLATEAU.Editor.CityImport
                 this.folderPath = value;
                 if (isChanged)
                 {
-                    OnPathChanged?.Invoke(this.folderPath);
+                    OnPathChanged?.Invoke(this.folderPath, PathChangeMethod.SetterProperty);
                 }
             }
         }
 
-        private event Action<string> OnPathChanged;
+        private event Action<string, PathChangeMethod> OnPathChanged;
 
-        public InputFolderSelectorGUI(Action<string> onPathChanged)
+        public InputFolderSelectorGUI(Action<string, PathChangeMethod> onPathChanged)
         {
             OnPathChanged += onPathChanged;
         }
@@ -50,7 +52,7 @@ namespace PLATEAU.Editor.CityImport
                     if (!string.IsNullOrEmpty(selectedPath))
                     {
                         this.folderPath = selectedPath;
-                        OnPathChanged?.Invoke(this.folderPath);
+                        OnPathChanged?.Invoke(this.folderPath, PathChangeMethod.Dialogue);
                     }
                 }
                 

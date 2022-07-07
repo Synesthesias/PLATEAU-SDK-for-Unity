@@ -16,6 +16,7 @@ namespace PLATEAU.Editor.CityImport
     {
         private List<string> gmlFiles;
         private bool isInitialized;
+        private bool shouldOverwriteMetadata;
         private Vector2 scrollPosForGmlList;
 
         private const int indentWidth = 30; // 経験的にこの数値だとGUIの見た目が整います。
@@ -141,14 +142,22 @@ namespace PLATEAU.Editor.CityImport
             return this.gmlFiles;
         }
 
-        public void OnUdxPathChanged()
+        public void OnUdxPathChanged(InputFolderSelectorGUI.PathChangeMethod changeMethod)
         {
             this.isInitialized = false;
+            // 入力パスの変更について、ユーザーがフォルダ選択ダイアログで選択し直した場合、
+            // メタデータに記録された地域選択は古いものになるので再設定します。
+            // 
+            if (changeMethod == InputFolderSelectorGUI.PathChangeMethod.Dialogue)
+            {
+                this.shouldOverwriteMetadata = true;
+            }
+            
         }
 
         private void Initialize(GmlSearcher gmlSearcher, GmlSearcherConfig config)
         {
-            config.GenerateAreaTreeIfNull(gmlSearcher.AreaIds);
+            config.GenerateAreaTree(gmlSearcher.AreaIds, ignoreIfTreeExists: !this.shouldOverwriteMetadata);
             
             this.isInitialized = true;
         }

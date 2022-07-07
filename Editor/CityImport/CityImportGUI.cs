@@ -120,14 +120,14 @@ namespace PLATEAU.Editor.CityImport
         /// <summary>
         /// udxフォルダパス選択GUIで、新しいパスが指定されたときに呼ばれます。
         /// </summary>
-        private void OnImportSrcPathChanged(string path)
+        private void OnImportSrcPathChanged(string path, InputFolderSelectorGUI.PathChangeMethod changeMethod)
         {
             if (!GmlSearcher.IsPathPlateauRoot(path)) return;
             this.gmlSearcher ??= new GmlSearcher(path);
-            this.gmlSearcherGUI ??= new GmlSearcherGUI();
+            this.gmlSearcherGUI ??= new GmlSearcherGUI(); // TODO これは readonly の使い回しでよさそう
             
             this.gmlSearcher.GenerateFileDictionary(path);
-            this.gmlSearcherGUI.OnUdxPathChanged();
+            this.gmlSearcherGUI.OnUdxPathChanged(changeMethod);
         }
 
         private bool IsImportReady(CityImportConfig config, out string message)

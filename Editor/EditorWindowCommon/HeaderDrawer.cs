@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using UnityEditor;
+using UnityEngine;
 
 namespace PLATEAU.Editor.EditorWindowCommon
 {
@@ -51,7 +52,7 @@ namespace PLATEAU.Editor.EditorWindowCommon
         /// </summary>
         public static void DecrementDepth(bool doGoNext = true)
         {
-            if(Depth > 0) currentHeaderNum.RemoveAt(Depth-1);
+            if(Depth >= 2) currentHeaderNum.RemoveAt(Depth-1);
             if (doGoNext) Next();
         }
 
