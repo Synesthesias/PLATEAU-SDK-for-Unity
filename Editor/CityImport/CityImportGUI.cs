@@ -31,9 +31,7 @@ namespace PLATEAU.Editor.CityImport
         {
             this.importFolderSelectorGUI = new InputFolderSelectorGUI(OnImportSrcPathChanged);
             this.gmlSearcherGUI = new GmlSearcherGUI();
-            // this.gmlSearcher = new GmlSearcher();
             this.objConvertTypesGUI = new ObjConvertTypesGUI();
-            // this.scenePlacementGUI = new ScenePlacementGUI();
             this.exportFolderSelectorGUI = new ExportFolderSelectorGUI();
             this.cityImporter = new CityImporter();
             
@@ -88,10 +86,6 @@ namespace PLATEAU.Editor.CityImport
                 
                 HeaderDrawer.DecrementDepth();
                 
-                // 配置設定
-                // HeaderDrawer.Draw("シーン配置設定");
-                // this.scenePlacementGUI.Draw(importConfig.scenePlacementConfig);
-
                 // 出力ボタン
                 HeaderDrawer.Draw("出力");
                 using (PlateauEditorStyle.VerticalScopeLevel1())
@@ -130,7 +124,6 @@ namespace PLATEAU.Editor.CityImport
                 this.gmlSearcher = new GmlSearcher(path);
             }
             this.gmlSearcher.GenerateFileDictionary(path);
-            // this.gmlSearcher.GenerateAreaTree();
             this.gmlSearcherGUI.OnUdxPathChanged();
         }
 
