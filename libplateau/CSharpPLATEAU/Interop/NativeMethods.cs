@@ -163,6 +163,19 @@ namespace PLATEAU.Interop
             [In] IntPtr cityModel,
             out int outCount);
 
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_city_model_get_all_city_object_count_of_type(
+            [In] IntPtr cityModel,
+            out int count,
+            CityObjectType type);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_city_model_get_all_city_objects_of_type(
+            [In] IntPtr cityModel,
+            [In, Out] IntPtr[] cityObjects,
+            CityObjectType type,
+            int count);
+
         [DllImport(DllName, CharSet = CharSet.Ansi)]
         internal static extern APIResult plateau_city_model_get_city_object_by_id(
             [In] IntPtr handle,

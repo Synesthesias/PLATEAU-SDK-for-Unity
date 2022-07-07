@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using PLATEAU.CommonDataStructure;
 using UnityEngine;
 
 namespace PLATEAU.CityMeta
@@ -17,27 +17,26 @@ namespace PLATEAU.CityMeta
     [Serializable]
     internal class GmlSearcherConfig
     {
-        /// <summary> 見つかったエリアIDの一覧です。 </summary>
-        [SerializeField] private int[] areaIds = { };
 
-        /// <summary> <see cref="areaIds"/> の i番目を変換対象とするかどうかです。 </summary>
-        [SerializeField] private bool[] isAreaIdTarget = { };
+        [SerializeField] private AreaTree areaTree;
 
         /// <summary> 地物タイプの絞り込み情報です。 </summary>
         [SerializeField] private GmlTypeTarget gmlTypeTarget = new GmlTypeTarget();
-        
+
+        public AreaTree AreaTree => this.areaTree;
         /// <summary>
         /// 引数が true のとき、すべてのエリアを対象とします。
         /// 　　　 false のとき、すべてのエリアを除外します。
         /// </summary>
         internal void SetAllAreaId(bool isTarget)
         {
-            for (int i = 0; i < this.isAreaIdTarget.Length; i++)
+            var nodes = IterateAreaTree();
+            foreach (var tuple in nodes)
             {
-                this.isAreaIdTarget[i] = isTarget;
+                tuple.node.Value.IsTarget = isTarget;
             }
         }
-        
+
         /// <summary> 地物タイプを変換対象とするかについて、すべて true または すべて false にします。 </summary>
         public void SetAllTypeTarget(bool val)
         {
@@ -47,14 +46,16 @@ namespace PLATEAU.CityMeta
         /// <summary>
         /// ターゲットとなる AreaId をリストで返します。
         /// </summary>
-        public List<int> TargetAreaIds()
+        public List<int> GetTargetAreaIds()
         {
             var targetIds = new List<int>();
-            for (int i = 0; i < this.areaIds.Length; i++)
+            var nodes = IterateAreaTree();
+            foreach (var tuple in nodes)
             {
-                if (this.isAreaIdTarget[i])
-                {
-                    targetIds.Add(this.areaIds[i]);
+                var area = tuple.node.Value;
+                if (area.IsTarget)
+                {  
+                    targetIds.Add(area.Id);
                 }
             }
 
@@ -76,23 +77,31 @@ namespace PLATEAU.CityMeta
             this.gmlTypeTarget.SetIsTypeTarget(t, isTarget);
         }
 
-        public IReadOnlyList<int> AreaIds => this.areaIds;
-        
-        public void SetAreaIds(int[] areaIdsArg)
+        public void SetIsAreaIdTarget(int areaId, bool isTarget)
         {
-            this.areaIds = areaIdsArg;
+            this.areaTree.SetAreaIdTarget(areaId, isTarget);
         }
 
-        public IReadOnlyList<bool> IsAreaIdTarget => this.isAreaIdTarget;
-
-        public void SetIsAreaIdTarget(int index, bool isTarget)
+        public void GenerateAreaTree(int[] areaIdArray, bool ignoreIfTreeExists)
         {
-            this.isAreaIdTarget[index] = isTarget;
+            if (ignoreIfTreeExists && this.areaTree != null) return;
+            List<Area> areas = new List<Area>();
+            foreach (int areaId in areaIdArray)
+            {
+                areas.Add(new Area(areaId));
+            }
+            this.areaTree = new AreaTree();
+            this.areaTree.Generate(areas);
         }
 
-        public void ResetIsAreaIdTarget(int areaCount)
+        public IEnumerable<(int depth, ClassificationTree<int, Area> node)> IterateAreaTree()
         {
-            this.isAreaIdTarget = Enumerable.Repeat(true, areaCount ).ToArray();
+            
+            var areasIter = this.areaTree.IterateDfs();
+            foreach (var iter in areasIter)
+            {
+                yield return iter;
+            }
         }
     }
 }

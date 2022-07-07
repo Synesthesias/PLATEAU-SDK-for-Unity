@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using Codice.CM.Common;
 using PLATEAU.Editor.EditorWindowCommon;
 using PLATEAU.CityMeta;
 using PLATEAU.Interop;
@@ -19,9 +20,10 @@ namespace PLATEAU.Editor.CityImport
     /// </summary>
     internal class CityImportGUI
     {
+        private readonly CityImportConfig cityImportConfig;
         private readonly InputFolderSelectorGUI importFolderSelectorGUI;
-        private readonly GmlSearcherGUI gmlSearcherGUI;
-        private readonly GmlSearcher gmlSearcher;
+        private GmlSearcherGUI gmlSearcherGUI;
+        private GmlSearcher gmlSearcher;
         private readonly ObjConvertTypesGUI objConvertTypesGUI;
         // private readonly ScenePlacementGUI scenePlacementGUI;
         private readonly ExportFolderSelectorGUI exportFolderSelectorGUI;
@@ -29,11 +31,10 @@ namespace PLATEAU.Editor.CityImport
         
         public CityImportGUI(CityImportConfig config)
         {
+            this.cityImportConfig = config;
             this.importFolderSelectorGUI = new InputFolderSelectorGUI(OnImportSrcPathChanged);
-            this.gmlSearcherGUI = new GmlSearcherGUI();
-            this.gmlSearcher = new GmlSearcher();
+            // this.gmlSearcherGUI = new GmlSearcherGUI();
             this.objConvertTypesGUI = new ObjConvertTypesGUI();
-            // this.scenePlacementGUI = new ScenePlacementGUI();
             this.exportFolderSelectorGUI = new ExportFolderSelectorGUI();
             this.cityImporter = new CityImporter();
             
@@ -47,8 +48,9 @@ namespace PLATEAU.Editor.CityImport
             config.SrcRootPathBeforeImport = initialSrcRootPath;
         }
 
-        public void Draw(CityImportConfig importConfig)
+        public void Draw()
         {
+            var importConfig = this.cityImportConfig;
             // インポート元フォルダ選択
             this.importFolderSelectorGUI.FolderPath = importConfig.SrcRootPathBeforeImport;
             string sourcePath = this.importFolderSelectorGUI.Draw("インポート元フォルダ選択");
@@ -88,10 +90,6 @@ namespace PLATEAU.Editor.CityImport
                 
                 HeaderDrawer.DecrementDepth();
                 
-                // 配置設定
-                // HeaderDrawer.Draw("シーン配置設定");
-                // this.scenePlacementGUI.Draw(importConfig.scenePlacementConfig);
-
                 // 出力ボタン
                 HeaderDrawer.Draw("出力");
                 using (PlateauEditorStyle.VerticalScopeLevel1())
@@ -122,11 +120,14 @@ namespace PLATEAU.Editor.CityImport
         /// <summary>
         /// udxフォルダパス選択GUIで、新しいパスが指定されたときに呼ばれます。
         /// </summary>
-        private void OnImportSrcPathChanged(string path)
+        private void OnImportSrcPathChanged(string path, InputFolderSelectorGUI.PathChangeMethod changeMethod)
         {
             if (!GmlSearcher.IsPathPlateauRoot(path)) return;
+            this.gmlSearcher ??= new GmlSearcher(path);
+            this.gmlSearcherGUI ??= new GmlSearcherGUI(); // TODO これは readonly の使い回しでよさそう
+            
             this.gmlSearcher.GenerateFileDictionary(path);
-            this.gmlSearcherGUI.OnUdxPathChanged();
+            this.gmlSearcherGUI.OnUdxPathChanged(changeMethod);
         }
 
         private bool IsImportReady(CityImportConfig config, out string message)
@@ -146,5 +147,7 @@ namespace PLATEAU.Editor.CityImport
 
             return true;
         }
+        
+        
     }
 }

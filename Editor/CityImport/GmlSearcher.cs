@@ -34,11 +34,7 @@ namespace PLATEAU.Editor.CityImport
             if (!IsPathPlateauRoot(srcRootFolderPath)) return;
             GenerateFileDictionary(srcRootFolderPath);
         }
-
-        /// <summary> パスを指定せずにインスタンス化する場合、あとで <see cref="GenerateFileDictionary"/> を実行する必要があります。 </summary>
-        public GmlSearcher()
-        {
-        }
+        
 
         /// <summary>
         /// 地域メッシュコードからgmlファイルリストを検索する辞書を構築します。
@@ -116,7 +112,8 @@ namespace PLATEAU.Editor.CityImport
         {
             if (!this.fileTable.ContainsKey(areaId))
             {
-                throw new KeyNotFoundException($"Area id is not found in the file table. area id = {areaId}");
+                // AreaTree の木構造の都合で生成された 第2地域区画のIDのノードは、実際には存在しないことがあるので空を返します。
+                return new string[]{};
             }
 
             var pathList = this.fileTable[areaId];
@@ -158,6 +155,11 @@ namespace PLATEAU.Editor.CityImport
             var typeExistingDict = GmlTypeConvert.ComposeTypeDict(false);
             foreach (int areaId in areaIds)
             {
+                if (!this.fileTable.ContainsKey(areaId))
+                {
+                    // AreaTree の木構造の都合で生成された 第2地域区画のIDのノードは、実際には存在しないことがあるので無視します。
+                    continue;
+                }
                 List<string> gmlPaths = this.fileTable[areaId];
                 foreach (string gmlPath in gmlPaths)
                 {

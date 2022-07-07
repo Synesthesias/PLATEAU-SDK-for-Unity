@@ -6,6 +6,7 @@ using PLATEAU.CityGML;
 using NUnit.Framework;
 using PLATEAU.Editor.Converters;
 using PLATEAU.CityMeta;
+using PLATEAU.CommonDataStructure;
 using PLATEAU.Interop;
 using PLATEAU.IO;
 using PLATEAU.Util;
