@@ -12,7 +12,7 @@ namespace PLATEAU.Editor.CityImport
     /// </summary>
     internal class CityImportWindow : EditorWindow
     {
-        private bool isInitialized;
+        // private bool isInitialized;
         private Vector2 scrollPosition;
         
         private CityImportGUI cityImportGUI;
@@ -30,14 +30,14 @@ namespace PLATEAU.Editor.CityImport
         private void Init()
         {
             var importConfig = new CityImportConfig();
-            this.cityImportGUI = new CityImportGUI(importConfig);
             importConfig.objConvertTypesConfig.SetLodRangeToAllRange(); // 初期値
-            this.isInitialized = true;
+            this.cityImportGUI = new CityImportGUI(importConfig);
+            // this.isInitialized = true;
         }
 
         private void OnGUI()
         {
-            if (!this.isInitialized) Init();
+            // if (!this.isInitialized) Init();
             HeaderDrawer.Reset();
             this.scrollPosition = EditorGUILayout.BeginScrollView(this.scrollPosition);
             this.cityImportGUI.Draw();

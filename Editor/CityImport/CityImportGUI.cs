@@ -19,7 +19,7 @@ namespace PLATEAU.Editor.CityImport
     /// </summary>
     internal class CityImportGUI
     {
-        private CityImportConfig cityImportConfig;
+        private readonly CityImportConfig cityImportConfig;
         private readonly InputFolderSelectorGUI importFolderSelectorGUI;
         private readonly GmlSearcherGUI gmlSearcherGUI;
         private GmlSearcher gmlSearcher;
