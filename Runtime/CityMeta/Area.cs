@@ -55,12 +55,13 @@ namespace PLATEAU.CityMeta
         /// </summary>
         public static int ThirdSectionId(int id)
         {
-            if (DigitsUtil.NumDigits(id) <= numDigitsOfSecondSection)
+            int numDigits = DigitsUtil.NumDigits(id);
+            if (numDigits <= numDigitsOfSecondSection)
             {
                 return -1;
             }
             // idから 第2次地域区画の桁を取り除き、右側に残った桁を求めます。
-            int mod = IntPow(10, numDigitsOfSecondSection);
+            int mod = IntPow(10, (uint)numDigits - numDigitsOfSecondSection);
             return id % mod;
         }
         
@@ -69,6 +70,16 @@ namespace PLATEAU.CityMeta
         public int CompareTo(Area other)
         {
             return this.id.CompareTo(other.id);
+        }
+
+        public string ToString()
+        {
+            if (ThirdSectionId() < 0)
+            {
+                return Id.ToString();
+            }
+
+            return $"{SecondSectionId()}-{ThirdSectionId()}";
         }
         
         private static int IntPow(int x, uint pow)

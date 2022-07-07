@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using PLATEAU.CommonDataStructure;
 using UnityEngine;
 
 namespace PLATEAU.CityMeta
@@ -29,10 +30,10 @@ namespace PLATEAU.CityMeta
         /// </summary>
         internal void SetAllAreaId(bool isTarget)
         {
-            var areas = IterateAreaTree();
-            foreach (var tuple in areas)
+            var nodes = IterateAreaTree();
+            foreach (var tuple in nodes)
             {
-                tuple.area.IsTarget = isTarget;
+                tuple.node.Value.IsTarget = isTarget;
             }
         }
 
@@ -48,10 +49,10 @@ namespace PLATEAU.CityMeta
         public List<int> GetTargetAreaIds()
         {
             var targetIds = new List<int>();
-            var areas = IterateAreaTree();
-            foreach (var tuple in areas)
+            var nodes = IterateAreaTree();
+            foreach (var tuple in nodes)
             {
-                var area = tuple.area;
+                var area = tuple.node.Value;
                 if (area.IsTarget)
                 {  
                     targetIds.Add(area.Id);
@@ -93,7 +94,7 @@ namespace PLATEAU.CityMeta
             this.areaTree.Generate(areas);
         }
 
-        public IEnumerable<(int depth, Area area)> IterateAreaTree()
+        public IEnumerable<(int depth, ClassificationTree<int, Area> node)> IterateAreaTree()
         {
             
             var areasIter = this.areaTree.IterateDfs();

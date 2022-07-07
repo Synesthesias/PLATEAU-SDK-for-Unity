@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using Palmmedia.ReportGenerator.Core.Parser.Analysis;
+using UnityEngine.Animations;
 
 namespace PLATEAU.CommonDataStructure
 {
@@ -19,24 +21,27 @@ namespace PLATEAU.CommonDataStructure
     /// }
     /// ここに "2-2.川崎市" を追加すると、必ずその順番は 2-1. のあとになります。
     /// </summary>
-    internal class ClassificationTree<TKey, TValue>
+    internal class ClassificationTree<TKey, TVal>
         where TKey : IComparable<TKey>
     {
-    private readonly TValue value;
+    private readonly TVal value;
 
-    private readonly SortedDictionary<TKey, ClassificationTree<TKey, TValue>> children =
-        new SortedDictionary<TKey, ClassificationTree<TKey, TValue>>();
+    private readonly SortedDictionary<TKey, ClassificationTree<TKey, TVal>> children =
+        new SortedDictionary<TKey, ClassificationTree<TKey, TVal>>();
+    
+    public ClassificationTree<TKey, TVal> Parent { get; }
 
-    public ClassificationTree(TValue value)
+    public ClassificationTree(TVal value, ClassificationTree<TKey, TVal> parent)
     {
         this.value = value;
+        Parent = parent;
     }
 
-    public TValue Value => this.value;
+    public TVal Value => this.value;
 
-    public void AddChild(TKey key, TValue val)
+    public void AddChild(TKey key, TVal val)
     {
-        this.children.Add(key, new ClassificationTree<TKey, TValue>(val));
+        this.children.Add(key, new ClassificationTree<TKey, TVal>(val, this));
     }
 
     /// <summary>
@@ -48,17 +53,18 @@ namespace PLATEAU.CommonDataStructure
         return this.children.ContainsKey(key);
     }
 
-    public ClassificationTree<TKey, TValue> GetChild(TKey childKey)
+    public ClassificationTree<TKey, TVal> GetChild(TKey childKey)
     {
         return this.children[childKey];
     }
+    
 
     // private IEnumerator<T> Children => this.children.GetEnumerator();
 
     /// <summary>
     /// 深さ優先探索 (DFS) で木をイテレートします。
     /// </summary>
-    public IEnumerable<(int depth, TValue value)> IterateDfsWithDepth()
+    public IEnumerable<(int depth, ClassificationTree<TKey, TVal> node)> IterateDfsWithDepth()
     {
         var values = IterateDfsRecursive(this, 1);
         foreach (var val in values)
@@ -67,14 +73,14 @@ namespace PLATEAU.CommonDataStructure
         }
     }
     
-    private IEnumerable<(int depth, TValue value)> IterateDfsRecursive(ClassificationTree<TKey, TValue> node, int depth)
+    private IEnumerable<(int depth, ClassificationTree<TKey, TVal> node)> IterateDfsRecursive(ClassificationTree<TKey, TVal> node, int depth)
     {
         if (node == null)
         {
             throw new ArgumentNullException($"{nameof(node)}");
         }
 
-        yield return (depth, node.value);
+        yield return (depth, node);
         foreach (var child in node.children)
         {
             var childNode = child.Value;

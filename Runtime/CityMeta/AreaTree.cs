@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Codice.CM.Common;
 using PLATEAU.CommonDataStructure;
 using UnityEngine;
 
@@ -32,7 +31,7 @@ namespace PLATEAU.CityMeta
         /// </summary>
         public void Generate(IEnumerable<Area> areas)
         {
-            var root = new ClassificationTree<int ,Area>(new Area(-1));
+            var root = new ClassificationTree<int ,Area>(new Area(-1), null);
             foreach (var area in areas)
             {
                 int secondKey = area.SecondSectionId();
@@ -59,7 +58,7 @@ namespace PLATEAU.CityMeta
             this.rootNode = root;
         }
 
-        public IEnumerable<(int depth, Area area)> IterateDfs()
+        public IEnumerable<(int depth, ClassificationTree<int, Area> node)> IterateDfs()
         {
             var iter = this.rootNode.IterateDfsWithDepth();
             // 木のルートノードは便宜上 id=-1 としただけの無意味な値なのでスキップします。
@@ -80,7 +79,7 @@ namespace PLATEAU.CityMeta
             this.serializedAreas = new List<Area>();
             foreach (var tuple in this.rootNode.IterateDfsWithDepth())
             {
-                var area = tuple.value;
+                var area = tuple.node.Value;
                 this.serializedAreas.Add(area);
             }
         }

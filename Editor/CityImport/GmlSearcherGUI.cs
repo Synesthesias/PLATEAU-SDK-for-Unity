@@ -46,12 +46,14 @@ namespace PLATEAU.Editor.CityImport
                 }
 
                 // 地域IDごとに対象とするかを設定するGUIを表示します。
-                foreach (var iter in searcherConfig.IterateAreaTree())
+                foreach (var tuple in searcherConfig.IterateAreaTree())
                 {
-                    var area = iter.area;
-                    int indent = iter.depth - 1;
+                    var node = tuple.node;
+                    var area = node.Value;
+                    int depth = tuple.depth;
+                    int indent = depth - 1;
                     EditorGUI.indentLevel += indent;
-                    area.IsTarget = EditorGUILayout.Toggle(area.Id.ToString(), area.IsTarget);
+                    area.IsTarget = EditorGUILayout.Toggle(area.ToString(), area.IsTarget);
                     EditorGUI.indentLevel -= indent;
                 }
             }
@@ -122,10 +124,10 @@ namespace PLATEAU.Editor.CityImport
         {
             var gmlFiles = new List<string>();
 
-            var areas = areaTree.IterateDfs();
-            foreach (var tuple in areas)
+            var nodes = areaTree.IterateDfs();
+            foreach (var tuple in nodes)
             {
-                var area = tuple.area;
+                var area = tuple.node.Value;
                 if (!area.IsTarget) continue;
                 gmlFiles.AddRange(gmlSearcher.GetGmlFilePathsForAreaIdAndType(area.Id, searcherConfig, false));
             }
