@@ -24,6 +24,7 @@ namespace PLATEAU.CityMeta
         // シリアライズする時に List型に変換されて保存されます。
         // デシリアライズする時にここから復元します。
         [SerializeField] private List<Area> serializedAreas;
+        private const int rootAreaId = -1;
         
 
         /// <summary>
@@ -31,7 +32,7 @@ namespace PLATEAU.CityMeta
         /// </summary>
         public void Generate(IEnumerable<Area> areas)
         {
-            var root = new ClassificationTree<int ,Area>(new Area(-1), null);
+            var root = new ClassificationTree<int ,Area>(new Area(rootAreaId), null);
             foreach (var area in areas)
             {
                 int secondKey = area.SecondSectionId();
@@ -74,7 +75,18 @@ namespace PLATEAU.CityMeta
             thirdNode.Value.IsTarget = isTarget;
         }
 
-        public void OnBeforeSerialize()
+        /// <summary>
+        /// 親となる地域ノードが存在するかどうかをboolで返します。
+        /// </summary>
+        public static bool IsTopLevelArea(ClassificationTree<int, Area> node)
+        {
+            // 木のルートノードは、便宜上 id=-1 が設定されただけの仮ノードです。
+            // 親が仮ノードであれば、地域としてはトップレベルであるとみなします。
+            var parentArea = node.Parent?.Value;
+            return parentArea == null || parentArea.Id == rootAreaId;
+        }
+
+        void ISerializationCallbackReceiver.OnBeforeSerialize()
         {
             this.serializedAreas = new List<Area>();
             foreach (var tuple in this.rootNode.IterateDfsWithDepth())
@@ -84,7 +96,7 @@ namespace PLATEAU.CityMeta
             }
         }
 
-        public void OnAfterDeserialize()
+        void ISerializationCallbackReceiver.OnAfterDeserialize()
         {
             Generate(this.serializedAreas.Where(area => area.Id >= 0));
         }

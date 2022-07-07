@@ -31,6 +31,10 @@ namespace PLATEAU.CommonDataStructure
     
     public ClassificationTree<TKey, TVal> Parent { get; }
 
+    /// <summary>
+    /// ノードを作ります。
+    /// ルートノードの場合は <paramref name="parent"/> は null にしてください。
+    /// </summary>
     public ClassificationTree(TVal value, ClassificationTree<TKey, TVal> parent)
     {
         this.value = value;

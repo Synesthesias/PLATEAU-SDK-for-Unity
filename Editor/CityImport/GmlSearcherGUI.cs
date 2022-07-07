@@ -52,9 +52,14 @@ namespace PLATEAU.Editor.CityImport
                     var area = node.Value;
                     int depth = tuple.depth;
                     int indent = depth - 1;
-                    EditorGUI.indentLevel += indent;
-                    area.IsTarget = EditorGUILayout.Toggle(area.ToString(), area.IsTarget);
-                    EditorGUI.indentLevel -= indent;
+                    var parentArea = node.Parent.Value;
+                    // ルートノードであるか、親の地域にチェックが入っている場合のみ表示します。
+                    if (AreaTree.IsTopLevelArea(node) || parentArea.IsTarget)
+                    {
+                        EditorGUI.indentLevel += indent;
+                        area.IsTarget = EditorGUILayout.Toggle(area.ToString(), area.IsTarget);
+                        EditorGUI.indentLevel -= indent;
+                    }
                 }
             }
 
