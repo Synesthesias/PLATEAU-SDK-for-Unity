@@ -52,7 +52,7 @@
   "api/PLATEAU.CityGML.CityModel.html": {
     "href": "api/PLATEAU.CityGML.CityModel.html",
     "title": "Class CityModel | PLATEAU SDK for Unity",
-    "keywords": "Class CityModel GMLファイルをパースして得られる街のモデルです。 0個以上の CityObject を保持します。 Inheritance Object CityModel Namespace : PLATEAU.CityGML Assembly : cs.temp.dll.dll Syntax public sealed class CityModel : IDisposable Properties Handle セーフハンドルを取得します。 Declaration public IntPtr Handle { get; } Property Value Type Description IntPtr RootCityObjects CityModel のトップレベルにある CityObject の一覧を返します。 Declaration public ReadOnlyCollection<CityObject> RootCityObjects { get; } Property Value Type Description ReadOnlyCollection < CityObject > Methods Dispose() Declaration public void Dispose() Finalize() Declaration protected void Finalize() GetCityObjectById(String) idから CityObject を返します。 該当idのものがない場合は を投げます。 Declaration public CityObject GetCityObjectById(string id) Parameters Type Name Description String id Returns Type Description CityObject"
+    "keywords": "Class CityModel GMLファイルをパースして得られる街のモデルです。 0個以上の CityObject を保持します。 Inheritance Object CityModel Namespace : PLATEAU.CityGML Assembly : cs.temp.dll.dll Syntax public sealed class CityModel : IDisposable Properties Handle セーフハンドルを取得します。 Declaration public IntPtr Handle { get; } Property Value Type Description IntPtr RootCityObjects CityModel のトップレベルにある CityObject の一覧を返します。 Declaration public ReadOnlyCollection<CityObject> RootCityObjects { get; } Property Value Type Description ReadOnlyCollection < CityObject > Methods Dispose() Declaration public void Dispose() Finalize() Declaration protected void Finalize() GetCityObjectById(String) idから CityObject を返します。 該当idのものがない場合は を投げます。 Declaration public CityObject GetCityObjectById(string id) Parameters Type Name Description String id Returns Type Description CityObject GetCityObjectsByType(CityObjectType) CityModel の type タイプの全ての CityObject を返します。 Declaration public CityObject[] GetCityObjectsByType(CityObjectType type) Parameters Type Name Description CityObjectType type 取得したい都市オブジェクトのタイプ Returns Type Description CityObject [] type タイプの全ての CityObject"
   },
   "api/PLATEAU.CityGML.CityObject.html": {
     "href": "api/PLATEAU.CityGML.CityObject.html",
@@ -192,7 +192,7 @@
   "api/PLATEAU.IO.html": {
     "href": "api/PLATEAU.IO.html",
     "title": "Namespace PLATEAU.IO | PLATEAU SDK for Unity",
-    "keywords": "Namespace PLATEAU.IO Classes MeshConverter GMLファイルをメッシュファイルに変換する機能を提供します。 MeshConvertOptions 都市モデルからメッシュへ変換するためのオプションです。 Enums AxesConversion 各列挙子について、3つのアルファベットはXYZ軸がどの方角、方向になるかを表しています。 N,S,E,Wはそれぞれ北,南,東,西 U,Dはそれぞれ上,下 に対応します。 MeshGranularity メッシュの結合単位"
+    "keywords": "Namespace PLATEAU.IO Classes MeshConverter GMLファイルをメッシュファイルに変換する機能を提供します。 MeshConvertOptions 都市モデルからメッシュへ変換するためのオプションです。 PrimaryCityObjectTypes 都市モデル内の地物について「主要である」かどうかを判断するための静的メソッドを提供します。 LOD2,3の細分化された地物ではない地物は全て「主要である」とみなされます。 Enums AxesConversion 各列挙子について、3つのアルファベットはXYZ軸がどの方角、方向になるかを表しています。 N,S,E,Wはそれぞれ北,南,東,西 U,Dはそれぞれ上,下 に対応します。 MeshGranularity メッシュの結合単位"
   },
   "api/PLATEAU.IO.MeshConverter.html": {
     "href": "api/PLATEAU.IO.MeshConverter.html",
@@ -208,6 +208,11 @@
     "href": "api/PLATEAU.IO.MeshGranularity.html",
     "title": "Enum MeshGranularity | PLATEAU SDK for Unity",
     "keywords": "Enum MeshGranularity メッシュの結合単位 Namespace : PLATEAU.IO Assembly : cs.temp.dll.dll Syntax public enum MeshGranularity Fields Name Description PerAtomicFeatureObject 最小地物単位(LOD2, LOD3の各部品) PerCityModelArea 都市モデル地域単位(GMLファイル内のすべてを結合) PerPrimaryFeatureObject 主要地物単位(建築物、道路等)"
+  },
+  "api/PLATEAU.IO.PrimaryCityObjectTypes.html": {
+    "href": "api/PLATEAU.IO.PrimaryCityObjectTypes.html",
+    "title": "Class PrimaryCityObjectTypes | PLATEAU SDK for Unity",
+    "keywords": "Class PrimaryCityObjectTypes 都市モデル内の地物について「主要である」かどうかを判断するための静的メソッドを提供します。 LOD2,3の細分化された地物ではない地物は全て「主要である」とみなされます。 Inheritance Object PrimaryCityObjectTypes Inherited Members Object.ToString() Object.Equals(Object) Object.Equals(Object, Object) Object.ReferenceEquals(Object, Object) Object.GetHashCode() Object.GetType() Object.MemberwiseClone() Namespace : PLATEAU.IO Assembly : cs.temp.dll.dll Syntax public static class PrimaryCityObjectTypes Fields PrimaryTypeMask 主要な都市オブジェクトタイプのマスク Declaration public const CityObjectType PrimaryTypeMask = null Field Value Type Description CityObjectType Methods IsPrimary(CityObjectType) 都市オブジェクトタイプが主要であるかどうかを取得します。 Declaration public static bool IsPrimary(CityObjectType type) Parameters Type Name Description CityObjectType type 都市オブジェクトタイプ Returns Type Description Boolean 主要である場合true, そうでなければfalse"
   },
   "index.html": {
     "href": "index.html",

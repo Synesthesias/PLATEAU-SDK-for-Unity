@@ -645,6 +645,19 @@ references:
   isSpec: "True"
   fullName: PLATEAU.CityGML.CityModel.GetCityObjectById
   nameWithType: CityModel.GetCityObjectById
+- uid: PLATEAU.CityGML.CityModel.GetCityObjectsByType(PLATEAU.CityGML.CityObjectType)
+  name: GetCityObjectsByType(CityObjectType)
+  href: api/PLATEAU.CityGML.CityModel.html#PLATEAU_CityGML_CityModel_GetCityObjectsByType_PLATEAU_CityGML_CityObjectType_
+  commentId: M:PLATEAU.CityGML.CityModel.GetCityObjectsByType(PLATEAU.CityGML.CityObjectType)
+  fullName: PLATEAU.CityGML.CityModel.GetCityObjectsByType(PLATEAU.CityGML.CityObjectType)
+  nameWithType: CityModel.GetCityObjectsByType(CityObjectType)
+- uid: PLATEAU.CityGML.CityModel.GetCityObjectsByType*
+  name: GetCityObjectsByType
+  href: api/PLATEAU.CityGML.CityModel.html#PLATEAU_CityGML_CityModel_GetCityObjectsByType_
+  commentId: Overload:PLATEAU.CityGML.CityModel.GetCityObjectsByType
+  isSpec: "True"
+  fullName: PLATEAU.CityGML.CityModel.GetCityObjectsByType
+  nameWithType: CityModel.GetCityObjectsByType
 - uid: PLATEAU.CityGML.CityModel.Handle
   name: Handle
   href: api/PLATEAU.CityGML.CityModel.html#PLATEAU_CityGML_CityModel_Handle
@@ -2441,3 +2454,28 @@ references:
   commentId: F:PLATEAU.IO.MeshGranularity.PerPrimaryFeatureObject
   fullName: PLATEAU.IO.MeshGranularity.PerPrimaryFeatureObject
   nameWithType: MeshGranularity.PerPrimaryFeatureObject
+- uid: PLATEAU.IO.PrimaryCityObjectTypes
+  name: PrimaryCityObjectTypes
+  href: api/PLATEAU.IO.PrimaryCityObjectTypes.html
+  commentId: T:PLATEAU.IO.PrimaryCityObjectTypes
+  fullName: PLATEAU.IO.PrimaryCityObjectTypes
+  nameWithType: PrimaryCityObjectTypes
+- uid: PLATEAU.IO.PrimaryCityObjectTypes.IsPrimary(CityObjectType)
+  name: IsPrimary(CityObjectType)
+  href: api/PLATEAU.IO.PrimaryCityObjectTypes.html#PLATEAU_IO_PrimaryCityObjectTypes_IsPrimary_CityObjectType_
+  commentId: M:PLATEAU.IO.PrimaryCityObjectTypes.IsPrimary(CityObjectType)
+  fullName: PLATEAU.IO.PrimaryCityObjectTypes.IsPrimary(CityObjectType)
+  nameWithType: PrimaryCityObjectTypes.IsPrimary(CityObjectType)
+- uid: PLATEAU.IO.PrimaryCityObjectTypes.IsPrimary*
+  name: IsPrimary
+  href: api/PLATEAU.IO.PrimaryCityObjectTypes.html#PLATEAU_IO_PrimaryCityObjectTypes_IsPrimary_
+  commentId: Overload:PLATEAU.IO.PrimaryCityObjectTypes.IsPrimary
+  isSpec: "True"
+  fullName: PLATEAU.IO.PrimaryCityObjectTypes.IsPrimary
+  nameWithType: PrimaryCityObjectTypes.IsPrimary
+- uid: PLATEAU.IO.PrimaryCityObjectTypes.PrimaryTypeMask
+  name: PrimaryTypeMask
+  href: api/PLATEAU.IO.PrimaryCityObjectTypes.html#PLATEAU_IO_PrimaryCityObjectTypes_PrimaryTypeMask
+  commentId: F:PLATEAU.IO.PrimaryCityObjectTypes.PrimaryTypeMask
+  fullName: PLATEAU.IO.PrimaryCityObjectTypes.PrimaryTypeMask
+  nameWithType: PrimaryCityObjectTypes.PrimaryTypeMask

@@ -5,10 +5,10 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>Class Object
+    <title>Class PrimaryCityObjectTypes
    | PLATEAU SDK for Unity </title>
     <meta name="viewport" content="width=device-width">
-    <meta name="title" content="Class Object
+    <meta name="title" content="Class PrimaryCityObjectTypes
    | PLATEAU SDK for Unity ">
     <meta name="generator" content="docfx 2.59.3.0">
     
@@ -78,25 +78,19 @@
         </div>
         <div class="article row grid-right">
           <div class="col-md-10">
-            <article class="content wrap" id="_content" data-uid="PLATEAU.CityGML.Object">
+            <article class="content wrap" id="_content" data-uid="PLATEAU.IO.PrimaryCityObjectTypes">
   
   
-  <h1 id="PLATEAU_CityGML_Object" data-uid="PLATEAU.CityGML.Object" class="text-break">Class Object
+  <h1 id="PLATEAU_IO_PrimaryCityObjectTypes" data-uid="PLATEAU.IO.PrimaryCityObjectTypes" class="text-break">Class PrimaryCityObjectTypes
   </h1>
-  <div class="markdown level0 summary"><p>CityGMLにおける全てのオブジェクトのベースクラスです。
-ユニークIDと0個以上の属性ペアを持ち、属性ペアはすべて <a class="xref" href="PLATEAU.CityGML.AttributesMap.html">AttributesMap</a> に格納されています。</p>
+  <div class="markdown level0 summary"><p>都市モデル内の地物について「主要である」かどうかを判断するための静的メソッドを提供します。
+LOD2,3の細分化された地物ではない地物は全て「主要である」とみなされます。</p>
 </div>
   <div class="markdown level0 conceptual"></div>
   <div class="inheritance">
     <h5>Inheritance</h5>
     <div class="level0"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></div>
-    <div class="level1"><span class="xref">Object</span></div>
-      <div class="level2"><a class="xref" href="PLATEAU.CityGML.Appearance.html">Appearance</a></div>
-      <div class="level2"><a class="xref" href="PLATEAU.CityGML.AppearanceTarget.html">AppearanceTarget</a></div>
-      <div class="level2"><a class="xref" href="PLATEAU.CityGML.AppearanceTargetDefinition-1.html">AppearanceTargetDefinition&lt;T&gt;</a></div>
-      <div class="level2"><a class="xref" href="PLATEAU.CityGML.FeatureObject.html">FeatureObject</a></div>
-      <div class="level2"><a class="xref" href="PLATEAU.CityGML.LinearRing.html">LinearRing</a></div>
-      <div class="level2"><a class="xref" href="PLATEAU.CityGML.TextureCoordinates.html">TextureCoordinates</a></div>
+    <div class="level1"><span class="xref">PrimaryCityObjectTypes</span></div>
   </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
@@ -122,26 +116,25 @@
       <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.memberwiseclone#system-object-memberwiseclone">Object.MemberwiseClone()</a>
     </div>
   </div>
-  <h6><strong>Namespace</strong>: <a class="xref" href="PLATEAU.CityGML.html">PLATEAU.CityGML</a></h6>
+  <h6><strong>Namespace</strong>: <a class="xref" href="PLATEAU.IO.html">PLATEAU.IO</a></h6>
   <h6><strong>Assembly</strong>: cs.temp.dll.dll</h6>
-  <h5 id="PLATEAU_CityGML_Object_syntax">Syntax</h5>
+  <h5 id="PLATEAU_IO_PrimaryCityObjectTypes_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public class Object</code></pre>
+    <pre><code class="lang-csharp hljs">public static class PrimaryCityObjectTypes</code></pre>
   </div>
-  <h3 id="properties">Properties
+  <h3 id="fields">Fields
   </h3>
   
   
-  <a id="PLATEAU_CityGML_Object_AttributesMap_" data-uid="PLATEAU.CityGML.Object.AttributesMap*"></a>
-  <h4 id="PLATEAU_CityGML_Object_AttributesMap" data-uid="PLATEAU.CityGML.Object.AttributesMap">AttributesMap</h4>
-  <div class="markdown level1 summary"><p>属性の辞書を取得します。 </p>
+  <h4 id="PLATEAU_IO_PrimaryCityObjectTypes_PrimaryTypeMask" data-uid="PLATEAU.IO.PrimaryCityObjectTypes.PrimaryTypeMask">PrimaryTypeMask</h4>
+  <div class="markdown level1 summary"><p>主要な都市オブジェクトタイプのマスク</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public AttributesMap AttributesMap { get; }</code></pre>
+    <pre><code class="lang-csharp hljs">public const CityObjectType PrimaryTypeMask = null</code></pre>
   </div>
-  <h5 class="propertyValue">Property Value</h5>
+  <h5 class="fieldValue">Field Value</h5>
   <table class="table table-bordered table-striped table-condensed">
     <thead>
       <tr>
@@ -151,24 +144,43 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="PLATEAU.CityGML.AttributesMap.html">AttributesMap</a></td>
-        <td><p><a class="xref" href="PLATEAU.CityGML.AttributesMap.html">AttributesMap</a> 型で返します。</p>
+        <td><span class="xref">CityObjectType</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="methods">Methods
+  </h3>
+  
+  
+  <a id="PLATEAU_IO_PrimaryCityObjectTypes_IsPrimary_" data-uid="PLATEAU.IO.PrimaryCityObjectTypes.IsPrimary*"></a>
+  <h4 id="PLATEAU_IO_PrimaryCityObjectTypes_IsPrimary_CityObjectType_" data-uid="PLATEAU.IO.PrimaryCityObjectTypes.IsPrimary(CityObjectType)">IsPrimary(CityObjectType)</h4>
+  <div class="markdown level1 summary"><p>都市オブジェクトタイプが主要であるかどうかを取得します。</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static bool IsPrimary(CityObjectType type)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">CityObjectType</span></td>
+        <td><span class="parametername">type</span></td>
+        <td><p>都市オブジェクトタイプ</p>
 </td>
       </tr>
     </tbody>
   </table>
-  
-  
-  <a id="PLATEAU_CityGML_Object_Handle_" data-uid="PLATEAU.CityGML.Object.Handle*"></a>
-  <h4 id="PLATEAU_CityGML_Object_Handle" data-uid="PLATEAU.CityGML.Object.Handle">Handle</h4>
-  <div class="markdown level1 summary"><p>セーフハンドルを取得します。</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public IntPtr Handle { get; }</code></pre>
-  </div>
-  <h5 class="propertyValue">Property Value</h5>
+  <h5 class="returns">Returns</h5>
   <table class="table table-bordered table-striped table-condensed">
     <thead>
       <tr>
@@ -178,34 +190,9 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">IntPtr</span></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  
-  
-  <a id="PLATEAU_CityGML_Object_ID_" data-uid="PLATEAU.CityGML.Object.ID*"></a>
-  <h4 id="PLATEAU_CityGML_Object_ID" data-uid="PLATEAU.CityGML.Object.ID">ID</h4>
-  <div class="markdown level1 summary"><p>オブジェクトのユニークIDを取得します。</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public string ID { get; }</code></pre>
-  </div>
-  <h5 class="propertyValue">Property Value</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a></td>
-        <td></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><p>主要である場合true, そうでなければfalse</p>
+</td>
       </tr>
     </tbody>
   </table>
