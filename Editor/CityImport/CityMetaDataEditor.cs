@@ -47,7 +47,7 @@ namespace PLATEAU.Editor.CityImport
                 this.foldOutReconvert = EditorGUILayout.Foldout(this.foldOutReconvert, "再変換");
                 if (this.foldOutReconvert)
                 {
-                    this.importGUI.Draw(metaData.cityImportConfig);
+                    this.importGUI.Draw();
                 
                 }
                 HeaderDrawer.DecrementDepth();

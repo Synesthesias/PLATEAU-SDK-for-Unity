@@ -19,6 +19,7 @@ namespace PLATEAU.Editor.CityImport
     /// </summary>
     internal class CityImportGUI
     {
+        private CityImportConfig cityImportConfig;
         private readonly InputFolderSelectorGUI importFolderSelectorGUI;
         private readonly GmlSearcherGUI gmlSearcherGUI;
         private GmlSearcher gmlSearcher;
@@ -29,6 +30,7 @@ namespace PLATEAU.Editor.CityImport
         
         public CityImportGUI(CityImportConfig config)
         {
+            this.cityImportConfig = config;
             this.importFolderSelectorGUI = new InputFolderSelectorGUI(OnImportSrcPathChanged);
             this.gmlSearcherGUI = new GmlSearcherGUI();
             this.objConvertTypesGUI = new ObjConvertTypesGUI();
@@ -45,8 +47,9 @@ namespace PLATEAU.Editor.CityImport
             config.SrcRootPathBeforeImport = initialSrcRootPath;
         }
 
-        public void Draw(CityImportConfig importConfig)
+        public void Draw()
         {
+            var importConfig = this.cityImportConfig;
             // インポート元フォルダ選択
             this.importFolderSelectorGUI.FolderPath = importConfig.SrcRootPathBeforeImport;
             string sourcePath = this.importFolderSelectorGUI.Draw("インポート元フォルダ選択");
