@@ -18,6 +18,8 @@ namespace PLATEAU.Editor.CityImport
         private bool isInitialized;
         private Vector2 scrollPosForGmlList;
 
+        private const int indentWidth = 30; // 経験的にこの数値だとGUIの見た目が整います。
+
 
         /// <summary>
         /// 変換対象とする gmlファイルを条件設定で絞り込むGUIを表示し、
@@ -53,17 +55,39 @@ namespace PLATEAU.Editor.CityImport
                     int depth = tuple.depth;
                     int indent = depth - 1;
                     var parentArea = node.Parent.Value;
-                    // ルートノードであるか、親の地域にチェックが入っている場合のみ表示します。
+                    // 親のチェックが外れている場合は表示しません。
                     if (AreaTree.IsTopLevelArea(node) || parentArea.IsTarget)
                     {
                         EditorGUI.indentLevel += indent;
                         area.IsTarget = EditorGUILayout.Toggle(area.ToString(), area.IsTarget);
-                        EditorGUI.indentLevel -= indent;
-                        // チェックが外れているなら、子の地域もチェックを外します。
-                        if (!area.IsTarget)
+                        // 子があるなら、子の一括選択ボタンを表示します。
+                        if (area.IsTarget && node.HasAnyChild())
                         {
-                            AreaTree.SetIsTargetRecursive(node, false);
+                            using (new EditorGUILayout.HorizontalScope())
+                            {
+                                GUILayout.Space(EditorGUI.indentLevel * indentWidth);
+                                var buttonStyle = new GUIStyle(GUI.skin.button)
+                                {
+                                    fixedWidth = 60
+                                };
+                                if (GUILayout.Button("地域選択", buttonStyle))
+                                {
+                                    AreaTree.SetIsTargetRecursive(node, true);
+                                }
+
+                                if (GUILayout.Button("地域除外", buttonStyle))
+                                {
+                                    AreaTree.SetIsTargetRecursive(node, false);
+                                    area.IsTarget = true; // 上の行で 子だけでなく自身まで false になってしまうのを戻します
+                                }
+                            }
                         }
+                        EditorGUI.indentLevel -= indent;
+                    }
+                    // チェックが外れているなら、子の地域もチェックを外します。
+                    if (!area.IsTarget)
+                    {
+                        AreaTree.SetIsTargetRecursive(node, false);
                     }
                 }
             }

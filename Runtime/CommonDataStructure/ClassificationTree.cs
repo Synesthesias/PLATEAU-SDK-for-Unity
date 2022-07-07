@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace PLATEAU.CommonDataStructure
 {
@@ -53,6 +54,11 @@ namespace PLATEAU.CommonDataStructure
     public bool ContainsInChildren(TKey key)
     {
         return this.children.ContainsKey(key);
+    }
+
+    public bool HasAnyChild()
+    {
+        return this.children.Any();
     }
 
     public ClassificationTree<TKey, TVal> GetChild(TKey childKey)
