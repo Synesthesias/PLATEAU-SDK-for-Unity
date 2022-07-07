@@ -47,32 +47,27 @@ namespace PLATEAU.Editor.CityImport
         {
             HeaderDrawer.Draw(title);
             bool isButtonPressed = false;
-            // var folderSelectTasks = new List<Task>();
             using (PlateauEditorStyle.VerticalScopeLevel1())
             {
                 EditorGUILayout.LabelField("入力フォルダ");
                 
                 if (PlateauEditorStyle.MiniButton("参照..."))
                 {
-                    // folderSelectTasks.Add(FolderSelectDialogue());
                     isButtonPressed = true;
                 }
             }
 
-            // フォルダ選択ダイアログの処理をここで行います。
-            // 本当なら Task は使わずに、普通に上の if(ボタン押下){} の中に処理を書きたいところですが、
-            // Unityのバグで、 VerticalScope 内で時間のかかる処理をするとエラーメッセージが出てしまいます。
-            // そこで VerticalScope の外に処理を持ってくるために
-            // foreach(Task task in folderSelectTasks) task.RunSynchronously();
+            // この処理は本来ならば上記の if(ボタン押下){} の中に移動して良さそうですが、
+            // Unityのバグで VerticaScope 内で時間のかかる処理をするとエラーメッセージが出るので
+            // VerticalScope の外に移動しています。
+            // 参考 : https://qiita.com/kumaS-kumachan/items/8d669e56feaf6e47adf1
             if (isButtonPressed)
             {
                 string selectedPath = EditorUtility.OpenFolderPanel("フォルダ選択", Application.dataPath, "");
-                Debug.Log($"selectedPath : {selectedPath}");
                 if (!string.IsNullOrEmpty(selectedPath))
                 {
                     this.folderPath = selectedPath;
                     OnPathChanged?.Invoke(this.folderPath, PathChangeMethod.Dialogue);
-                    Debug.Log($"folderPath = {this.folderPath}");
                 }
             }
 

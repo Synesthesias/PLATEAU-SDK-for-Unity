@@ -41,18 +41,21 @@ namespace PLATEAU.Editor.CityImport
             EditorGUILayout.Space(10);
             
             HeaderDrawer.Draw("再変換画面");
-            using (PlateauEditorStyle.VerticalScopeLevel1())
-            {
-                HeaderDrawer.IncrementDepth();
-                this.foldOutReconvert = EditorGUILayout.Foldout(this.foldOutReconvert, "再変換");
-                if (this.foldOutReconvert)
-                {
-                    this.importGUI.Draw();
-                
-                }
-                HeaderDrawer.DecrementDepth();
-            }
             
+            HeaderDrawer.IncrementDepth();
+            
+            // 本当はこの部分を using (PlateauEditorStyle.VerticalScopeLevel1()) で囲って
+            // インデントを整えたいところですが、
+            // Unityのバグで VerticalScope 内でフォルダ選択ダイアログを開くなどの時間のかかる処理をすると
+            // エラーメッセージが出てしまうので囲っていません。
+            this.foldOutReconvert = EditorGUILayout.Foldout(this.foldOutReconvert, "再変換");
+            if (this.foldOutReconvert)
+            {
+                this.importGUI.Draw();
+            
+            }
+            HeaderDrawer.DecrementDepth();
+
             EditorGUILayout.Space(10);
             
             HeaderDrawer.Draw("シーン配置");
