@@ -4,6 +4,7 @@ using PLATEAU.Interop;
 
 namespace PLATEAU.CityGML
 {
+    [Flags]
     public enum CityObjectType : ulong
     {
         COT_GenericCityObject = 1ul,

@@ -13,7 +13,7 @@ namespace PLATEAU.CityGML
     public sealed class CityModel : IDisposable
     {
         private int disposed;
-        private CityObject[] rootCityObjects;　// get されるまでは null なので null許容型とします。
+        private CityObject[] rootCityObjects;
 
         /// <summary>
         /// セーフハンドルを取得します。
@@ -45,6 +45,31 @@ namespace PLATEAU.CityGML
 
                 return Array.AsReadOnly(this.rootCityObjects);
             }
+        }
+
+        /// <summary>
+        /// <see cref="CityModel"/>の<paramref name="type"/>タイプの全ての<see cref="CityObject"/>を返します。
+        /// </summary>
+        /// <param name="type">取得したい都市オブジェクトのタイプ</param>
+        /// <returns><paramref name="type"/>タイプの全ての<see cref="CityObject"/></returns>
+        public CityObject[] GetCityObjectsByType(CityObjectType type)
+        {
+            var result = NativeMethods.plateau_city_model_get_all_city_object_count_of_type(
+                Handle, out int count, type);
+            DLLUtil.CheckDllError(result);
+
+            var cityObjectHandles = new IntPtr[count];
+            result = NativeMethods.plateau_city_model_get_all_city_objects_of_type(
+                Handle, cityObjectHandles, type, count);
+            DLLUtil.CheckDllError(result);
+
+            var cityObjects = new CityObject[count];
+            for (int i = 0; i < count; i++)
+            {
+                cityObjects[i] = new CityObject(cityObjectHandles[i]);
+            }
+
+            return cityObjects;
         }
 
         /// <summary>
