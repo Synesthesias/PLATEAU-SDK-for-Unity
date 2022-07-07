@@ -35,6 +35,7 @@ namespace PLATEAU.CityMeta
             get => this.isTarget;
             set => this.isTarget = value;
         }
+        
 
         /// <summary> 第2地域区画 (1辺10km)の番号、すなわちIDの最初の6桁です。 </summary>
         public int SecondSectionId() => SecondSectionId(Id); 
@@ -64,7 +65,6 @@ namespace PLATEAU.CityMeta
             int mod = IntPow(10, (uint)numDigits - numDigitsOfSecondSection);
             return id % mod;
         }
-        
         
 
         public int CompareTo(Area other)

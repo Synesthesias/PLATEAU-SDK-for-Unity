@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using PLATEAU.CommonDataStructure;
 using UnityEngine;
 
@@ -84,6 +85,19 @@ namespace PLATEAU.CityMeta
             // 親が仮ノードであれば、地域としてはトップレベルであるとみなします。
             var parentArea = node.Parent?.Value;
             return parentArea == null || parentArea.Id == rootAreaId;
+        }
+
+        /// <summary>
+        /// 指定のノードと、その子のノードの IsTarget を再帰的に設定します。
+        /// </summary>
+        public static void SetIsTargetRecursive(ClassificationTree<int, Area> node, bool isTarget)
+        {
+            var enumerable = ClassificationTree<int, Area>.IterateDfsRecursive(node, 0);
+            foreach (var tuple in enumerable)
+            {
+                var area = tuple.node.Value;
+                area.IsTarget = isTarget;
+            }
         }
 
         void ISerializationCallbackReceiver.OnBeforeSerialize()

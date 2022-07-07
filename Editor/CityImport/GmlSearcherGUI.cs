@@ -59,6 +59,11 @@ namespace PLATEAU.Editor.CityImport
                         EditorGUI.indentLevel += indent;
                         area.IsTarget = EditorGUILayout.Toggle(area.ToString(), area.IsTarget);
                         EditorGUI.indentLevel -= indent;
+                        // チェックが外れているなら、子の地域もチェックを外します。
+                        if (!area.IsTarget)
+                        {
+                            AreaTree.SetIsTargetRecursive(node, false);
+                        }
                     }
                 }
             }

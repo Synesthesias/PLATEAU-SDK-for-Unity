@@ -63,10 +63,9 @@ namespace PLATEAU.CommonDataStructure
     }
     
 
-    // private IEnumerator<T> Children => this.children.GetEnumerator();
 
     /// <summary>
-    /// 深さ優先探索 (DFS) で木をイテレートします。
+    /// 深さ優先探索 (DFS) で木の全体をイテレートします。
     /// </summary>
     public IEnumerable<(int depth, ClassificationTree<TKey, TVal> node)> IterateDfsWithDepth()
     {
@@ -77,7 +76,11 @@ namespace PLATEAU.CommonDataStructure
         }
     }
     
-    private IEnumerable<(int depth, ClassificationTree<TKey, TVal> node)> IterateDfsRecursive(ClassificationTree<TKey, TVal> node, int depth)
+    
+    /// <summary>
+    /// 深さ優先探索 (DFS) で、指定のノード以下をイテレートします。
+    /// </summary>
+    public static IEnumerable<(int depth, ClassificationTree<TKey, TVal> node)> IterateDfsRecursive(ClassificationTree<TKey, TVal> node, int depth)
     {
         if (node == null)
         {
