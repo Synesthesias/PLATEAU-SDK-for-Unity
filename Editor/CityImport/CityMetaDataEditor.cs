@@ -20,10 +20,12 @@ namespace PLATEAU.Editor.CityImport
         private bool foldOutReconvert;
         private bool foldOutReplace;
         private bool foldOutOtherData;
+        private bool foldOutGmlPaths;
         private CityImportGUI importGUI;
         private ScenePlacementGUI scenePlacementGUI;
         private Vector2 scrollPosOfIdGmlTable;
         private Vector2 scrollPosOfObjInfo;
+        private Vector2 scrollPosOfGmlPaths;
         public override void OnInspectorGUI()
         {
             HeaderDrawer.Reset();
@@ -81,6 +83,23 @@ namespace PLATEAU.Editor.CityImport
                     EditorGUILayout.LabelField($"基準点: ( {refPoint.x} , {refPoint.y} , {refPoint.z} )");
                     EditorGUILayout.LabelField($"インポート元ルートフォルダ名: {cityConfig.rootDirName}");
                 
+                    EditorGUILayout.Space(10);
+                    
+                    
+                    // FIXME 下と似たような処理なので共通化できそう
+                    this.foldOutGmlPaths = EditorGUILayout.Foldout(this.foldOutGmlPaths, "gmlファイルパス");
+                    if (this.foldOutGmlPaths)
+                    {
+                        var gmlSb = new StringBuilder();
+                        foreach (var gmlPath in metaData.gmlRelativePaths)
+                        {
+                            gmlSb.Append(gmlPath + "\n");
+                        }
+
+                        this.scrollPosOfGmlPaths =
+                            PlateauEditorStyle.ScrollableMultiLineLabel(gmlSb.ToString(), 300, this.scrollPosOfGmlPaths);
+                    }
+
                     EditorGUILayout.Space(10);
                     
                     // objファイルの情報を表示します。

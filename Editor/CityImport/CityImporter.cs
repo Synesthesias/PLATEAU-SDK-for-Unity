@@ -41,7 +41,8 @@ namespace PLATEAU.Editor.CityImport
             sourcePathConf.SetRootDirFullPath(CopyImportSrcToStreamingAssets(importConfig.SrcRootPathBeforeImport, gmlRelativePaths));
             var importDest = importConfig.importDestPath;
             metaData = CityMetaDataGenerator.LoadOrCreateMetaData(importDest.MetaDataAssetPath, true);
-            
+
+            metaData.gmlRelativePaths = gmlRelativePaths;
             
             // gmlファイルごとのループを始めます。
             int successCount = 0;

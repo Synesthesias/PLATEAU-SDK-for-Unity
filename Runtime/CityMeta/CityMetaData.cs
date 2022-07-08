@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 namespace PLATEAU.CityMeta
 {
@@ -17,6 +18,8 @@ namespace PLATEAU.CityMeta
         [SerializeField] internal IdToGmlTable idToGmlTable = new IdToGmlTable();
         /// <value>インポート時の設定です。</value>
         [SerializeField] internal CityImportConfig cityImportConfig = new CityImportConfig();
+
+        [SerializeField] internal string[] gmlRelativePaths = {};
 
         /// <summary>
         /// 辞書 <see cref="idToGmlTable"/> の中に引数をキーとするものがあるかどうか返します。
