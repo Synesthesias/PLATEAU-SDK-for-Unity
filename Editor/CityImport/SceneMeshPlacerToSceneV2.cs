@@ -1,4 +1,5 @@
-﻿using PLATEAU.CityMeta;
+﻿using PLATEAU.CityGML;
+using PLATEAU.CityMeta;
 
 namespace PLATEAU.Editor.CityImport
 {
@@ -6,7 +7,12 @@ namespace PLATEAU.Editor.CityImport
     {
         public static void Place(CityMetaData metaData)
         {
-            
+            string[] gmlRelativePaths = metaData.gmlRelativePaths;
+            foreach (var gmlRelativePath in gmlRelativePaths)
+            {
+                string gmlFullPath = metaData.cityImportConfig.sourcePath.UdxRelativeToFullPath(gmlRelativePath);
+                // TODO ここに続きを書く
+            }
         }
     }
 }

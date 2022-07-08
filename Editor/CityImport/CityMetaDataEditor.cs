@@ -86,7 +86,7 @@ namespace PLATEAU.Editor.CityImport
                     EditorGUILayout.Space(10);
                     
                     
-                    // FIXME 下と似たような処理なので共通化できそう
+                    // TODO 以下の foldOut は要らない
                     this.foldOutGmlPaths = EditorGUILayout.Foldout(this.foldOutGmlPaths, "gmlファイルパス");
                     if (this.foldOutGmlPaths)
                     {
