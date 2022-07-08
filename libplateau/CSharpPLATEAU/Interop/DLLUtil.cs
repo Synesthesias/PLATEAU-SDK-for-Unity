@@ -22,6 +22,8 @@ namespace PLATEAU.Interop
         internal delegate APIResult StrPtrLengthArrayDelegate(IntPtr handle, IntPtr[] strPointers, int[] strLengths);
         internal delegate APIResult StrValueArrayGetDelegate(IntPtr handle, IntPtr strPtrArrayPtr);
 
+        internal delegate APIResult StrValueGetDelegate(IntPtr handle, IntPtr strPtr);
+
         /// <summary>
         /// DLLから文字列のポインタの配列を受け取り、各ポインタから文字列を読んで string[] で返します。
         /// 次の2つの <see cref="NativeMethods"/> を引数で受け取り利用します。
@@ -65,6 +67,27 @@ namespace PLATEAU.Interop
             var ret = PtrToStringArray(strPtrArrayPtr, cnt, strSizes);
             FreePtrArray(strPtrArrayPtr, cnt);
             return ret;
+        }
+
+        /// <summary>
+        /// DLLから文字列のコピーを受け取ります。
+        /// </summary>
+        /// <param name="handle">対象オブジェクトのポインタです。</param>
+        /// <param name="strSizeGetter">文字列のバイト数を受け取るための NativeMethod です。</param>
+        /// <param name="strGetter">文字列のコピーを受け取るための NativeMethod です。</param>
+        internal static string GetNativeStringByValue(
+            IntPtr handle,
+            GetterDelegate<int> strSizeGetter,
+            StrValueGetDelegate strGetter)
+        {
+            var result = strSizeGetter(handle, out int strSize);
+            CheckDllError(result);
+            IntPtr strPtr = Marshal.AllocCoTaskMem(strSize);
+            var result2 = strGetter(handle, strPtr);
+            CheckDllError(result2);
+            string str = ReadUtf8Str(strPtr, strSize - 1);
+            Marshal.FreeCoTaskMem(strPtr);
+            return str;
         }
         
         // 下の3つのメソッドは、 DLL側で一時的に生成した「文字列の配列」の完全なコピーが欲しいという状況で利用できます。
