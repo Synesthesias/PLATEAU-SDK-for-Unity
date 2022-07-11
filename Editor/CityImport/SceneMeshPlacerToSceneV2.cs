@@ -8,6 +8,7 @@ using PLATEAU.IO;
 using PLATEAU.Util;
 using UnityEditor;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace PLATEAU.Editor.CityImport
 {
@@ -16,36 +17,100 @@ namespace PLATEAU.Editor.CityImport
         public static void Place(ScenePlacementConfig placeConfig, CityMetaData metaData)
         {
             string[] gmlRelativePaths = metaData.gmlRelativePaths;
-            // gmlファイルごとのループ
+            // ループ 1段目 : gmlファイルごと
             foreach (var gmlRelativePath in gmlRelativePaths)
             {
                 string gmlFullPath = metaData.cityImportConfig.sourcePath.UdxRelativeToFullPath(gmlRelativePath);
-                // tessellate を false にすることで、3Dモデルができない代わりにパースが高速になります。
+                // tessellate を false にすることで、3Dモデルができない代わりにパースが高速になります。3Dモデルはインポート時のものを使います。
                 var gmlParserParams = new CitygmlParserParams(true, false);
                 var cityModel = CityGml.Load(gmlFullPath, gmlParserParams, DllLogCallback.UnityLogCallbacks, DllLogLevel.Error);
                 var primaryCityObjs = cityModel.GetCityObjectsByType(PrimaryCityObjectTypes.PrimaryTypeMask);
                 var gmlType = GmlFileNameParser.GetGmlTypeEnum(gmlRelativePath);
                 int targetLod = metaData.cityImportConfig.scenePlacementConfig.GetPerTypeConfig(gmlType).selectedLod;
-                // 主要地物ごとのループ
+                
+                // シーンへの配置先として、親GameObjectを作ります。
+                string rootDirName = metaData.cityImportConfig.rootDirName;
+                var parentGameObj = GameObject.Find(rootDirName);
+                if (parentGameObj == null)
+                {
+                    parentGameObj = new GameObject(rootDirName);
+                }
+                
+                // ループ 2段目 : 主要地物ごと
                 foreach (var primaryCityObj in primaryCityObjs)
                 {
-                    // 対応する3Dモデルを探します。
-                    // var foundObj = SearchObj(objin)
+                    // 対応する3Dモデルファイルを探します。
+                    var objInfos = metaData.cityImportConfig.generatedObjFiles;
+                    string targetObjName = $"LOD{targetLod}_{GmlFileNameParser.FileNameWithoutExtension(gmlRelativePath)}"; // TODO ハードコード
+                    var foundObj = SearchObjFile(objInfos, targetObjName);
+                    if (foundObj == null)
+                    {
+                        Debug.LogError($"3d model file is not found.\ntargetObjName = {targetObjName}");
+                        continue;
+                    }
+
+                    string targetMeshName = MeshName(targetLod, primaryCityObj.ID);
+                    var primaryGameObj = PlaceToScene(foundObj, targetMeshName, parentGameObj.transform);
+                    if (primaryGameObj == null)
+                    {
+                        continue;
+                    }
+
+                    // LOD <= 1 の場合 : 主要地物を配置すれば完了となります。主要でない地物の配置をスキップします。
+                    if (targetLod <= 1) continue;
                     
-                }
-            }
+                    // LOD >= 2 の場合 : 子の CityObject をそれぞれ配置します。
+                    var childCityObjs = primaryCityObj.CityObjectDescendantsDFS;
+                    
+                    // ループ 3段目 : 主要地物の子ごと
+                    foreach (var childCityObj in childCityObjs)
+                    {
+                        // TODO 主要でないタイプは配置をスキップする機能を実装
+                        // TODO 配置タイプをマスクする機能を実装
+                        string childMeshName = MeshName(targetLod, childCityObj.ID);
+                        PlaceToScene(foundObj, childMeshName, primaryGameObj.transform);
+                    } // ループ 3段目 ここまで
+                    // TODO targetLod のジオメトリがなく、選択LODが無い場合に出力する設定の場合、下のLODを検索する機能を実装
+
+                } // ループ 2段目 ここまで (主要地物ごと) 
+            }// ループ 1段目 ここまで (gmlファイルごと)
         }
 
-        public static ObjInfo SearchObj(List<ObjInfo> objInfos, int lod, string gmlName)
+        private static string MeshName(int lod, string cityObjId)
+        {
+            return $"LOD{lod}_{cityObjId}";
+        }
+
+        private static GameObject PlaceToScene(ObjInfo objInfo, string meshName, Transform parentTransform)
+        {
+            // 3Dモデルファイル内で、対応するメッシュを探します。
+            var meshes = AssetDatabase.LoadAllAssetsAtPath(objInfo.assetsPath).OfType<Mesh>().ToArray();
+            
+            var mesh = SearchMesh(meshes, meshName);
+            if (mesh == null)
+            {
+                Debug.LogError($"mesh is not found.\nmeshName = {meshName}");
+                return null;
+            }
+                    
+            // メッシュをシーンに配置します。
+            GameObject meshGameObj = new GameObject(mesh.name, typeof(MeshFilter), typeof(MeshRenderer));
+            meshGameObj.GetComponent<MeshFilter>().sharedMesh = mesh;
+            meshGameObj.transform.parent = parentTransform;
+            return meshGameObj;
+        }
+
+        private static ObjInfo SearchObjFile(List<ObjInfo> objInfos, string objFileName)
         {
             var foundObj = objInfos
-                .Where(info => info.lod == lod)
-                .First(info => Path.GetFileName(info.assetsPath).Contains(gmlName));
+                .FirstOrDefault(info => Path.GetFileName(info.assetsPath) == objFileName);
             return foundObj;
         }
-        // public static Mesh SearchMesh(List<ObjInfo> objInfos, int lod, string gmlName, string cityObjId)
-        // {
-        //     
-        // }
+        
+        public static Mesh SearchMesh(ICollection<Mesh> meshes, string meshName)
+        {
+            var foundMesh = meshes.FirstOrDefault(mesh => mesh.name == meshName);
+            return foundMesh;
+        }
     }
 }
