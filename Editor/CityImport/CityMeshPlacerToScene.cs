@@ -13,6 +13,7 @@ namespace PLATEAU.Editor.CityImport
     /// <summary>
     /// インポートされた都市の3Dモデルファイルをロードし、シーンに配置します。
     /// </summary>
+    [Obsolete]
     internal static class CityMeshPlacerToScene
     {
         /// <summary>

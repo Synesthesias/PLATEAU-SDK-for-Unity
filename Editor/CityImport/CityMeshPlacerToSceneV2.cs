@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using PLATEAU.Behaviour;
 using PLATEAU.CityGML;
 using PLATEAU.CityMeta;
 using PLATEAU.Interop;
@@ -12,7 +13,7 @@ using Object = UnityEngine.Object;
 
 namespace PLATEAU.Editor.CityImport
 {
-    internal static class SceneMeshPlacerToSceneV2
+    internal static class CityMeshPlacerToSceneV2
     {
         public static void Place(ScenePlacementConfig placeConfig, CityMetaData metaData)
         {
@@ -24,9 +25,19 @@ namespace PLATEAU.Editor.CityImport
                 // tessellate を false にすることで、3Dモデルができない代わりにパースが高速になります。3Dモデルはインポート時のものを使います。
                 var gmlParserParams = new CitygmlParserParams(true, false);
                 var cityModel = CityGml.Load(gmlFullPath, gmlParserParams, DllLogCallback.UnityLogCallbacks, DllLogLevel.Error);
+                if (cityModel == null)
+                {
+                    Debug.LogError($"failed to load city model.\ngmlFullPath = {gmlFullPath}");
+                    continue;
+                }
+                // Debug.Log("first cityObj id = " + cityModel.RootCityObjects[0].ID);
+                
                 var primaryCityObjs = cityModel.GetCityObjectsByType(PrimaryCityObjectTypes.PrimaryTypeMask);
+                // var primaryCityObjs = cityModel.GetCityObjectsByType(CityObjectType.COT_All);
+                
                 var gmlType = GmlFileNameParser.GetGmlTypeEnum(gmlRelativePath);
                 int targetLod = metaData.cityImportConfig.scenePlacementConfig.GetPerTypeConfig(gmlType).selectedLod;
+                targetLod = 2; // TODO 仮
                 
                 // シーンへの配置先として、親GameObjectを作ります。
                 string rootDirName = metaData.cityImportConfig.rootDirName;
@@ -36,12 +47,20 @@ namespace PLATEAU.Editor.CityImport
                     parentGameObj = new GameObject(rootDirName);
                 }
                 
+                // 親に CityBehaviour をアタッチしてメタデータをリンクします。
+                var cityBehaviour = parentGameObj.GetComponent<CityBehaviour>();
+                if ( cityBehaviour == null)
+                {
+                    cityBehaviour = parentGameObj.AddComponent<CityBehaviour>();
+                }
+                cityBehaviour.CityMetaData = metaData;
+                
                 // ループ 2段目 : 主要地物ごと
                 foreach (var primaryCityObj in primaryCityObjs)
                 {
                     // 対応する3Dモデルファイルを探します。
                     var objInfos = metaData.cityImportConfig.generatedObjFiles;
-                    string targetObjName = $"LOD{targetLod}_{GmlFileNameParser.FileNameWithoutExtension(gmlRelativePath)}"; // TODO ハードコード
+                    string targetObjName = $"LOD{targetLod}_{GmlFileNameParser.FileNameWithoutExtension(gmlRelativePath)}.obj"; // TODO ハードコード
                     var foundObj = SearchObjFile(objInfos, targetObjName);
                     if (foundObj == null)
                     {

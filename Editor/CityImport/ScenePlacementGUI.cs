@@ -36,9 +36,10 @@ namespace PLATEAU.Editor.CityImport
                 if (PlateauEditorStyle.MainButton("シーンにモデルを再配置"))
                 {
                     // 再配置
-                    string rootDirName = importConfig.rootDirName;
-                    CityMeshPlacerToScene.Place(placementConfig, availableObjs, rootDirName, metaData);
+                    // CityMeshPlacerToScene.Place(placementConfig, availableObjs, rootDirName, metaData);
+                    CityMeshPlacerToSceneV2.Place(placementConfig, metaData);
                 }
+                
             }
             
         }
