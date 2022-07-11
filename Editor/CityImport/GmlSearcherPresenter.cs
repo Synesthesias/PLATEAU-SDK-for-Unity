@@ -1,24 +1,29 @@
 ﻿using System.Collections.Generic;
 using Codice.CM.Common;
 using PLATEAU.CityMeta;
+using UnityEngine;
 
 namespace PLATEAU.Editor.CityImport
 {
     /// <summary>
-    /// GmlSearcher の Model, View, Config を結びつけ、各インスタンスに指示を出します。
+    /// GmlSearcher の Model, View, Config を結びつけ、設定GUIの描画と適用を行います。
     /// </summary>
+    ///
+    /// 補足:
+    /// GmlSearcher は設定項目がやや複雑なので、 Model, View, Presenter, Config のクラスに分かれています。
     internal class GmlSearcherPresenter
     {
         private GmlSearcherConfig config;
         private GmlSearcherView view = new GmlSearcherView();
         private GmlSearcherModel model;
         private bool isInitialized;
+        private bool shouldOverwriteMetadata;
 
 
         private void Initialize(CityImportConfig importConfig)
         {
             this.config = importConfig.gmlSearcherConfig;
-            this.config.GenerateAreaTree(this.model.AreaIds, ignoreIfTreeExists: !this.view.ShouldOverwriteMetadata);
+            this.config.GenerateAreaTree(this.model.AreaIds, !this.shouldOverwriteMetadata);
             this.isInitialized = true;
         }
 
@@ -40,9 +45,11 @@ namespace PLATEAU.Editor.CityImport
             if (!GmlSearcherModel.IsPathPlateauRoot(path)) return;
             this.model ??= new GmlSearcherModel(path);
             this.view ??= new GmlSearcherView(); // TODO これは readonly の使い回しでよさそう
-            
             this.model.GenerateFileDictionary(path);
-            this.view.OnUdxPathChanged(changeMethod);
+            
+            // 次の描画時に初期化処理をやり直します。
+            this.shouldOverwriteMetadata = changeMethod == InputFolderSelectorGUI.PathChangeMethod.Dialogue;
+            this.isInitialized = false;
         }
     }
 }

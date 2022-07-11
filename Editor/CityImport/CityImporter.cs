@@ -133,14 +133,13 @@ namespace PLATEAU.Editor.CityImport
             }
             // gmlファイルごとのループ　ここまで
             
+            importConfig.generatedObjFiles = generatedObjs;
+            
             // シーンに配置します。
-            string rootDirName = PlateauSourcePath.RootDirName(sourcePathConf.RootDirAssetPath);
+            importConfig.rootDirName = PlateauSourcePath.RootDirName(sourcePathConf.RootDirAssetPath);
             CityMeshPlacerToSceneV2.Place(
                 importConfig.scenePlacementConfig, metaData
-                // importConfig.scenePlacementConfig, generatedObjs, rootDirName, metaData
             );
-            importConfig.generatedObjFiles = generatedObjs;
-            importConfig.rootDirName = rootDirName;
             
             // 後処理
             EditorUtility.SetDirty(metaData);

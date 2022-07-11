@@ -15,12 +15,11 @@ namespace PLATEAU.Editor.CityImport
     internal class GmlSearcherView
     {
         private List<string> gmlFiles;
-        private bool isInitialized;
-        private bool shouldOverwriteMetadata;
+        // private bool shouldOverwriteMetadata;
         private Vector2 scrollPosForGmlList;
 
         private const int indentWidth = 30; // 経験的にこの数値だとGUIの見た目が整います。
-        public bool ShouldOverwriteMetadata => this.shouldOverwriteMetadata;
+        // public bool ShouldOverwriteMetadata => this.shouldOverwriteMetadata;
 
 
         /// <summary>
@@ -140,19 +139,6 @@ namespace PLATEAU.Editor.CityImport
             HeaderDrawer.DecrementDepth();
 
             return this.gmlFiles;
-        }
-
-        public void OnUdxPathChanged(InputFolderSelectorGUI.PathChangeMethod changeMethod)
-        {
-            this.isInitialized = false;
-            // 入力パスの変更について、ユーザーがフォルダ選択ダイアログで選択し直した場合、
-            // メタデータに記録された地域選択は古いものになるので再設定します。
-            // 
-            if (changeMethod == InputFolderSelectorGUI.PathChangeMethod.Dialogue)
-            {
-                this.shouldOverwriteMetadata = true;
-            }
-            
         }
 
 
