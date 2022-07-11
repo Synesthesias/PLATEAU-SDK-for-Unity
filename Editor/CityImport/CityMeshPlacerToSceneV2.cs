@@ -55,21 +55,22 @@ namespace PLATEAU.Editor.CityImport
                 }
                 cityBehaviour.CityMetaData = metaData;
                 
+                // 対応する3Dモデルファイルを探します。
+                var objInfos = metaData.cityImportConfig.generatedObjFiles;
+                string targetObjName = $"LOD{targetLod}_{GmlFileNameParser.FileNameWithoutExtension(gmlRelativePath)}.obj"; // TODO ハードコード
+                var foundObj = SearchObjFile(objInfos, targetObjName);
+                if (foundObj == null)
+                {
+                    Debug.LogError($"3d model file is not found.\ntargetObjName = {targetObjName}");
+                    continue;
+                }
+                
                 // ループ 2段目 : 主要地物ごと
                 foreach (var primaryCityObj in primaryCityObjs)
                 {
-                    // 対応する3Dモデルファイルを探します。
-                    var objInfos = metaData.cityImportConfig.generatedObjFiles;
-                    string targetObjName = $"LOD{targetLod}_{GmlFileNameParser.FileNameWithoutExtension(gmlRelativePath)}.obj"; // TODO ハードコード
-                    var foundObj = SearchObjFile(objInfos, targetObjName);
-                    if (foundObj == null)
-                    {
-                        Debug.LogError($"3d model file is not found.\ntargetObjName = {targetObjName}");
-                        continue;
-                    }
 
-                    string targetMeshName = MeshName(targetLod, primaryCityObj.ID);
-                    var primaryGameObj = PlaceToScene(foundObj, targetMeshName, parentGameObj.transform);
+                    string targetGameObjName = GameObjName(targetLod, primaryCityObj.ID);
+                    var primaryGameObj = PlaceToScene(foundObj, targetGameObjName, parentGameObj.transform);
                     if (primaryGameObj == null)
                     {
                         continue;
@@ -86,8 +87,8 @@ namespace PLATEAU.Editor.CityImport
                     {
                         // TODO 主要でないタイプは配置をスキップする機能を実装
                         // TODO 配置タイプをマスクする機能を実装
-                        string childMeshName = MeshName(targetLod, childCityObj.ID);
-                        PlaceToScene(foundObj, childMeshName, primaryGameObj.transform);
+                        string childGameObjName = GameObjName(targetLod, childCityObj.ID);
+                        PlaceToScene(foundObj, childGameObjName, primaryGameObj.transform);
                     } // ループ 3段目 ここまで
                     // TODO targetLod のジオメトリがなく、選択LODが無い場合に出力する設定の場合、下のLODを検索する機能を実装
 
@@ -95,28 +96,30 @@ namespace PLATEAU.Editor.CityImport
             }// ループ 1段目 ここまで (gmlファイルごと)
         }
 
-        private static string MeshName(int lod, string cityObjId)
+        private static string GameObjName(int lod, string cityObjId)
         {
             return $"LOD{lod}_{cityObjId}";
         }
 
-        private static GameObject PlaceToScene(ObjInfo objInfo, string meshName, Transform parentTransform)
+        private static GameObject PlaceToScene(ObjInfo objInfo, string objName, Transform parentTransform)
         {
             // 3Dモデルファイル内で、対応するメッシュを探します。
-            var meshes = AssetDatabase.LoadAllAssetsAtPath(objInfo.assetsPath).OfType<Mesh>().ToArray();
+            var gameObjs = AssetDatabase.LoadAllAssetsAtPath(objInfo.assetsPath).OfType<GameObject>().ToArray();
             
-            var mesh = SearchMesh(meshes, meshName);
-            if (mesh == null)
+            var gameObj = SearchGameObjectAsset(gameObjs, objName);
+            if (gameObj == null)
             {
-                Debug.LogError($"mesh is not found.\nmeshName = {meshName}");
+                Debug.LogError($"GameObject in asset is not found.\nobjName = {objName}");
                 return null;
             }
                     
             // メッシュをシーンに配置します。
-            GameObject meshGameObj = new GameObject(mesh.name, typeof(MeshFilter), typeof(MeshRenderer));
-            meshGameObj.GetComponent<MeshFilter>().sharedMesh = mesh;
-            meshGameObj.transform.parent = parentTransform;
-            return meshGameObj;
+            // GameObject meshGameObj = new GameObject(gameObj.name, typeof(MeshFilter), typeof(MeshRenderer));
+            // meshGameObj.GetComponent<MeshFilter>().sharedMesh = g;
+            var newGameObj = Object.Instantiate(gameObj, parentTransform, true);
+            newGameObj.name = newGameObj.name.Replace("(Clone)", "");
+            // var newGameObj = (GameObject)PrefabUtility.InstantiatePrefab(gameObj, parentTransform);
+            return newGameObj;
         }
 
         private static ObjInfo SearchObjFile(List<ObjInfo> objInfos, string objFileName)
@@ -126,10 +129,10 @@ namespace PLATEAU.Editor.CityImport
             return foundObj;
         }
         
-        public static Mesh SearchMesh(ICollection<Mesh> meshes, string meshName)
+        public static GameObject SearchGameObjectAsset(ICollection<GameObject> gameObjs, string gameObjName)
         {
-            var foundMesh = meshes.FirstOrDefault(mesh => mesh.name == meshName);
-            return foundMesh;
+            var foundGo = gameObjs.FirstOrDefault(go => go.name == gameObjName);
+            return foundGo;
         }
     }
 }
