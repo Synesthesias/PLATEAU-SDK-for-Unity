@@ -21,11 +21,8 @@ namespace PLATEAU.Editor.CityImport
     {
         private readonly CityImportConfig cityImportConfig;
         private readonly InputFolderSelectorGUI importFolderSelectorGUI;
-        // private GmlSearcherView gmlSearcherView;
-        // private GmlSearcher gmlSearcher;
         private readonly GmlSearcherPresenter gmlSearcherPresenter = new GmlSearcherPresenter();
         private readonly ObjConvertTypesGUI objConvertTypesGUI;
-        // private readonly ScenePlacementGUI scenePlacementGUI;
         private readonly ExportFolderSelectorGUI exportFolderSelectorGUI;
         private readonly CityImporter cityImporter;
         
@@ -33,7 +30,6 @@ namespace PLATEAU.Editor.CityImport
         {
             this.cityImportConfig = config;
             this.importFolderSelectorGUI = new InputFolderSelectorGUI(OnImportSrcPathChanged);
-            // this.gmlSearcherGUI = new GmlSearcherGUI();
             this.objConvertTypesGUI = new ObjConvertTypesGUI();
             this.exportFolderSelectorGUI = new ExportFolderSelectorGUI();
             this.cityImporter = new CityImporter();

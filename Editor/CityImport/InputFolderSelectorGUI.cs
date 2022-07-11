@@ -76,26 +76,6 @@ namespace PLATEAU.Editor.CityImport
 
             return this.folderPath;
         }
-
-        private Task FolderSelectDialogue()
-        {
-            return new Task(() =>
-            {
-                string selectedPath = EditorUtility.OpenFolderPanel("フォルダ選択", Application.dataPath, "");
-                Debug.Log($"selectedPath : {selectedPath}");
-                if (!string.IsNullOrEmpty(selectedPath))
-                {
-                    this.folderPath = selectedPath;
-                    OnPathChanged?.Invoke(this.folderPath, PathChangeMethod.Dialogue);
-                    Debug.Log($"folderPath = {this.folderPath}");
-                }
-            });
-            
-
-            // await Task.Delay(100);
-        }
         
-        
-
     }
 }
