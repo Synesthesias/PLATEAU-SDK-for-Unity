@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Codice.CM.Common.Serialization;
+using PlasticGui.Gluon.WorkspaceWindow.Views.IncomingChanges;
 using PLATEAU.Behaviour;
 using PLATEAU.CityGML;
 using PLATEAU.CityMeta;
@@ -39,6 +41,7 @@ namespace PLATEAU.Editor.CityImport
                 int targetLod = metaData.cityImportConfig.scenePlacementConfig.GetPerTypeConfig(gmlType).selectedLod;
                 targetLod = 2; // TODO 仮
                 
+                
                 // シーンへの配置先として、親GameObjectを作ります。
                 string rootDirName = metaData.cityImportConfig.rootDirName;
                 var parentGameObj = GameObject.Find(rootDirName);
@@ -57,42 +60,65 @@ namespace PLATEAU.Editor.CityImport
                 
                 // 対応する3Dモデルファイルを探します。
                 var objInfos = metaData.cityImportConfig.generatedObjFiles;
-                string targetObjName = $"LOD{targetLod}_{GmlFileNameParser.FileNameWithoutExtension(gmlRelativePath)}.obj"; // TODO ハードコード
-                var foundObj = SearchObjFile(objInfos, targetObjName);
-                if (foundObj == null)
-                {
-                    Debug.LogError($"3d model file is not found.\ntargetObjName = {targetObjName}");
-                    continue;
-                }
-                
-                // ループ 2段目 : 主要地物ごと
-                foreach (var primaryCityObj in primaryCityObjs)
-                {
 
-                    string targetGameObjName = GameObjName(targetLod, primaryCityObj.ID);
-                    var primaryGameObj = PlaceToScene(foundObj, targetGameObjName, parentGameObj.transform);
-                    if (primaryGameObj == null)
+                for (int currentLod = 0; currentLod <= targetLod; currentLod++) // TODO currentLod を 0からではなくタイプ別最小値から始める
+                {
+                    string targetObjName = $"LOD{currentLod}_{GmlFileNameParser.FileNameWithoutExtension(gmlRelativePath)}.obj"; // TODO ハードコード
+                    var foundObj = SearchObjFile(objInfos, targetObjName);
+                    if (foundObj == null)
                     {
                         continue;
                     }
-
-                    // LOD <= 1 の場合 : 主要地物を配置すれば完了となります。主要でない地物の配置をスキップします。
-                    if (targetLod <= 1) continue;
-                    
-                    // LOD >= 2 の場合 : 子の CityObject をそれぞれ配置します。
-                    var childCityObjs = primaryCityObj.CityObjectDescendantsDFS;
-                    
-                    // ループ 3段目 : 主要地物の子ごと
-                    foreach (var childCityObj in childCityObjs)
+                
+                    // ループ 3段目 : 主要地物ごと
+                    foreach (var primaryCityObj in primaryCityObjs)
                     {
-                        // TODO 主要でないタイプは配置をスキップする機能を実装
-                        // TODO 配置タイプをマスクする機能を実装
-                        string childGameObjName = GameObjName(targetLod, childCityObj.ID);
-                        PlaceToScene(foundObj, childGameObjName, primaryGameObj.transform);
-                    } // ループ 3段目 ここまで
-                    // TODO targetLod のジオメトリがなく、選択LODが無い場合に出力する設定の場合、下のLODを検索する機能を実装
 
-                } // ループ 2段目 ここまで (主要地物ごと) 
+                        // この LOD で 主要地物が存在するなら、それを配置します。
+                        string primaryGameObjName = GameObjName(currentLod, primaryCityObj.ID);
+                        var primaryGameObj = PlaceToScene(foundObj, primaryGameObjName, parentGameObj.transform);
+
+                        // この LOD で 主要地物が存在しないなら、シーンに配置済みの低いLODを検索します。
+                        if (primaryGameObj == null)
+                        {
+                            for (int primaryCurrentLod = currentLod; primaryCurrentLod >= 0; primaryCurrentLod--)
+                            {
+                                string primaryLowerLodName = GameObjName(primaryCurrentLod, primaryCityObj.ID);
+                                var primaryLowerLodTrans = FindRecursive(parentGameObj.transform, primaryLowerLodName);
+                                if (primaryLowerLodTrans != null)
+                                {
+                                    primaryGameObj = primaryLowerLodTrans.gameObject;
+                                    break;
+                                }
+                            }
+                        }
+
+                        // 検索してもまだ主要地物が存在しないなら、この主要地物はスキップします。
+                        if (primaryGameObj == null)
+                        {
+                            Debug.LogError($"Primary game obj is not found.\ntargetGameObjName = {primaryGameObjName}");
+                            continue;
+                        }
+
+                        // LOD <= 1 の場合 : 主要地物を配置すれば完了となります。主要でない地物の配置をスキップします。
+                        if (currentLod <= 1 ) continue;
+                    
+                        // LOD >= 2 の場合 : 子の CityObject をそれぞれ配置します。
+                        var childCityObjs = primaryCityObj.CityObjectDescendantsDFS;
+                    
+                        // ループ 4段目 : 主要地物の子ごと
+                        foreach (var childCityObj in childCityObjs)
+                        {
+                            Debug.Log(childCityObj.ID);
+                            // TODO 主要でないタイプは配置をスキップする機能を実装
+                            // TODO 配置タイプをマスクする機能を実装
+                            string childGameObjName = GameObjName(currentLod, childCityObj.ID);
+                            var placedChild = PlaceToScene(foundObj, childGameObjName, primaryGameObj.transform);
+                        } // ループ 4段目 ここまで
+
+                    } // ループ 3段目 ここまで (主要地物ごと) 
+                }
+                
             }// ループ 1段目 ここまで (gmlファイルごと)
         }
 
@@ -109,8 +135,14 @@ namespace PLATEAU.Editor.CityImport
             var gameObj = SearchGameObjectAsset(gameObjs, objName);
             if (gameObj == null)
             {
-                Debug.LogError($"GameObject in asset is not found.\nobjName = {objName}");
                 return null;
+            }
+            
+            // すでに同名のものがある場合は削除します。
+            var oldObj = parentTransform.Find(objName);
+            if (oldObj != null)
+            {
+                Object.DestroyImmediate(oldObj.gameObject);
             }
                     
             // メッシュをシーンに配置します。
@@ -133,6 +165,22 @@ namespace PLATEAU.Editor.CityImport
         {
             var foundGo = gameObjs.FirstOrDefault(go => go.name == gameObjName);
             return foundGo;
+        }
+        
+        
+        private static Transform FindRecursive(Transform parent, string searchName)
+        {
+            if (parent.name == searchName) return parent;
+            foreach (Transform child in parent)
+            {
+                var found = FindRecursive(child, searchName);
+                if (found != null)
+                {
+                    return found;
+                }
+            }
+
+            return null;
         }
     }
 }
