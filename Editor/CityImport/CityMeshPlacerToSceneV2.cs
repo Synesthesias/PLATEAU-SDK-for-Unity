@@ -17,7 +17,16 @@ namespace PLATEAU.Editor.CityImport
     {
         public static void Place(ScenePlacementConfig placeConfig, CityMetaData metaData)
         {
+            // Plateau元データのルートフォルダと同名の ルートGame Objectを作ります。 
+            string rootDirName = metaData.cityImportConfig.rootDirName;
+            var rootGameObj = GameObjectUtil.AssureGameObject(rootDirName);
+            
+            // ルートGameObjectに CityBehaviour をアタッチしてメタデータをリンクします。
+            var cityBehaviour = GameObjectUtil.AssureComponent<CityBehaviour>(rootGameObj);
+            cityBehaviour.CityMetaData = metaData;
+            
             string[] gmlRelativePaths = metaData.gmlRelativePaths;
+            
             // ループ 1段目 : gmlファイルごと
             foreach (var gmlRelativePath in gmlRelativePaths)
             {
@@ -31,20 +40,16 @@ namespace PLATEAU.Editor.CityImport
                     continue;
                 }
                 
+                // gmlファイル名と同名のGameObjectをルート直下に作ります。
+                var gmlGameObj =
+                    GameObjectUtil.AssureGameObject(GmlFileNameParser.FileNameWithoutExtension(gmlRelativePath));
+                gmlGameObj.transform.parent = rootGameObj.transform;
+
                 var primaryCityObjs = cityModel.GetCityObjectsByType(PrimaryCityObjectTypes.PrimaryTypeMask);
                 
                 var gmlType = GmlFileNameParser.GetGmlTypeEnum(gmlRelativePath);
                 int targetLod = metaData.cityImportConfig.scenePlacementConfig.GetPerTypeConfig(gmlType).selectedLod;
                 targetLod = 2; // TODO 仮
-                
-                
-                // シーンへの配置先として、親GameObjectを作ります。
-                string rootDirName = metaData.cityImportConfig.rootDirName;
-                var parentGameObj = GameObjectUtil.AssureGameObject(rootDirName);
-                
-                // 親に CityBehaviour をアタッチしてメタデータをリンクします。
-                var cityBehaviour = GameObjectUtil.AssureComponent<CityBehaviour>(parentGameObj);
-                cityBehaviour.CityMetaData = metaData;
                 
                 // 対応する3Dモデルファイルを探します。
                 var objInfos = metaData.cityImportConfig.generatedObjFiles;
@@ -64,13 +69,13 @@ namespace PLATEAU.Editor.CityImport
 
                         // この LOD で 主要地物が存在するなら、それを配置します。
                         string primaryGameObjName = GameObjNameParser.ComposeName(currentLod, primaryCityObj.ID);
-                        var primaryGameObj = PlaceToScene(foundObj, primaryGameObjName, parentGameObj.transform);
+                        var primaryGameObj = PlaceToScene(foundObj, primaryGameObjName, gmlGameObj.transform);
 
                         // この LOD で 主要地物が存在しないなら、シーンに配置済みの低いLODを検索します。
                         if (primaryGameObj == null)
                         {
                             primaryGameObj =
-                                SearchCityObjInScene(primaryCityObj.ID, currentLod, parentGameObj.transform);
+                                SearchCityObjInScene(primaryCityObj.ID, currentLod, gmlGameObj.transform);
                         }
 
                         // 検索してもまだ主要地物が存在しないなら、この主要地物はスキップします。
