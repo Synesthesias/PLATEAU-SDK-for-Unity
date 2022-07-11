@@ -12,7 +12,7 @@ namespace PLATEAU.Editor.CityImport
     /// udxフォルダ内の gml ファイルのうち、どれを対象とするかを
     /// 条件によって絞り込む GUI を提供します。
     /// </summary>
-    internal class GmlSearcherGUI
+    internal class GmlSearcherView
     {
         private List<string> gmlFiles;
         private bool isInitialized;
@@ -20,6 +20,7 @@ namespace PLATEAU.Editor.CityImport
         private Vector2 scrollPosForGmlList;
 
         private const int indentWidth = 30; // 経験的にこの数値だとGUIの見た目が整います。
+        public bool ShouldOverwriteMetadata => this.shouldOverwriteMetadata;
 
 
         /// <summary>
@@ -27,9 +28,8 @@ namespace PLATEAU.Editor.CityImport
         /// その結果を gmlファイルの相対パスのリストで返します。
         /// その際にユーザーが選択した設定内容は引数 <paramref name="searcherConfig"/> に格納されます。
         /// </summary>
-        public List<string> Draw(GmlSearcher gmlSearcher, ref GmlSearcherConfig searcherConfig)
+        public List<string> Draw(GmlSearcherModel gmlSearcher, ref GmlSearcherConfig searcherConfig)
         {
-            if(!this.isInitialized) Initialize(gmlSearcher, searcherConfig);
             HeaderDrawer.IncrementDepth();
             HeaderDrawer.Draw("含める地域");
             using (PlateauEditorStyle.VerticalScopeLevel1())
@@ -155,15 +155,8 @@ namespace PLATEAU.Editor.CityImport
             
         }
 
-        private void Initialize(GmlSearcher gmlSearcher, GmlSearcherConfig config)
-        {
-            config.GenerateAreaTree(gmlSearcher.AreaIds, ignoreIfTreeExists: !this.shouldOverwriteMetadata);
-            
-            this.isInitialized = true;
-        }
 
-        
-        private static List<string> ListTargetGmlFiles(GmlSearcher gmlSearcher, AreaTree areaTree, GmlSearcherConfig searcherConfig)
+        private static List<string> ListTargetGmlFiles(GmlSearcherModel gmlSearcherModel, AreaTree areaTree, GmlSearcherConfig searcherConfig)
         {
             var gmlFiles = new List<string>();
 
@@ -172,7 +165,7 @@ namespace PLATEAU.Editor.CityImport
             {
                 var area = tuple.node.Value;
                 if (!area.IsTarget) continue;
-                gmlFiles.AddRange(gmlSearcher.GetGmlFilePathsForAreaIdAndType(area.Id, searcherConfig, false));
+                gmlFiles.AddRange(gmlSearcherModel.GetGmlFilePathsForAreaIdAndType(area.Id, searcherConfig, false));
             }
 
             return gmlFiles;

@@ -21,8 +21,9 @@ namespace PLATEAU.Editor.CityImport
     {
         private readonly CityImportConfig cityImportConfig;
         private readonly InputFolderSelectorGUI importFolderSelectorGUI;
-        private GmlSearcherGUI gmlSearcherGUI;
-        private GmlSearcher gmlSearcher;
+        // private GmlSearcherView gmlSearcherView;
+        // private GmlSearcher gmlSearcher;
+        private readonly GmlSearcherPresenter gmlSearcherPresenter = new GmlSearcherPresenter();
         private readonly ObjConvertTypesGUI objConvertTypesGUI;
         // private readonly ScenePlacementGUI scenePlacementGUI;
         private readonly ExportFolderSelectorGUI exportFolderSelectorGUI;
@@ -56,7 +57,7 @@ namespace PLATEAU.Editor.CityImport
             importConfig.SrcRootPathBeforeImport = sourcePath;
 
             // udxフォルダが選択されているなら、設定と出力のGUIを表示
-            if (GmlSearcher.IsPathPlateauRoot(sourcePath))
+            if (GmlSearcherModel.IsPathPlateauRoot(sourcePath))
             {
                 // 案内
                 if (!CityImporter.IsInStreamingAssets(sourcePath))
@@ -65,7 +66,7 @@ namespace PLATEAU.Editor.CityImport
                 }
                 
                 // 変換対象の絞り込み
-                var gmlFiles = this.gmlSearcherGUI.Draw(this.gmlSearcher, ref importConfig.gmlSearcherConfig);
+                var gmlFiles = this.gmlSearcherPresenter.Draw(importConfig);
 
                 // 変換設定
                 HeaderDrawer.Draw("メッシュ設定");
@@ -121,12 +122,7 @@ namespace PLATEAU.Editor.CityImport
         /// </summary>
         private void OnImportSrcPathChanged(string path, InputFolderSelectorGUI.PathChangeMethod changeMethod)
         {
-            if (!GmlSearcher.IsPathPlateauRoot(path)) return;
-            this.gmlSearcher ??= new GmlSearcher(path);
-            this.gmlSearcherGUI ??= new GmlSearcherGUI(); // TODO これは readonly の使い回しでよさそう
-            
-            this.gmlSearcher.GenerateFileDictionary(path);
-            this.gmlSearcherGUI.OnUdxPathChanged(changeMethod);
+            this.gmlSearcherPresenter.OnImportSrcPathChanged(path, changeMethod);
         }
 
         private bool IsImportReady(CityImportConfig config, out string message)

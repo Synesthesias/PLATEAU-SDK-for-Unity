@@ -40,6 +40,7 @@ namespace PLATEAU.Tests.PlayModeTests
         }
 
         [Test]
+        [Ignore("要更新")]
         public void LoadCityObject_Returns_NotNull()
         {
             var cityBehaviour = Object.FindObjectOfType<CityBehaviour>();

@@ -8,6 +8,7 @@ using static PLATEAU.CityMeta.ScenePlacementConfig;
 
 namespace PLATEAU.Tests.EditModeTests
 {
+    [Ignore("古い機能のテストなので無視しています。新バージョンCityMeshPlacerToSceneV2向けのテストを新たに作る必要があります。")]
     public class TestCityMeshPlacerToScene
     {
         private static readonly string simpleGmlId = "53392642_bldg_6697_op2";

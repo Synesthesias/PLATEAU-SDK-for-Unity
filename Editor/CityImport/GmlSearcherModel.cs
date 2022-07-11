@@ -16,7 +16,7 @@ namespace PLATEAU.Editor.CityImport
     /// ・ディレクトリ構造が udx/(地物型)/(複数のgmlファイル) になっていることを前提とします。
     /// 　詳しくは国交省仕様書 Ver2 の 324ページを参照してください。
     /// </summary>
-    internal class GmlSearcher
+    internal class GmlSearcherModel
     {
 
         /// <summary>
@@ -29,7 +29,7 @@ namespace PLATEAU.Editor.CityImport
         private string srcRootFolderPath = "";
 
         /// <summary> インスタンス化と同時にパスを指定して検索します。 </summary>
-        public GmlSearcher(string srcRootFolderPath)
+        public GmlSearcherModel(string srcRootFolderPath)
         {
             if (!IsPathPlateauRoot(srcRootFolderPath)) return;
             GenerateFileDictionary(srcRootFolderPath);
