@@ -32,10 +32,8 @@ namespace PLATEAU.Editor.CityImport
                     Debug.LogError($"failed to load city model.\ngmlFullPath = {gmlFullPath}");
                     continue;
                 }
-                // Debug.Log("first cityObj id = " + cityModel.RootCityObjects[0].ID);
                 
                 var primaryCityObjs = cityModel.GetCityObjectsByType(PrimaryCityObjectTypes.PrimaryTypeMask);
-                // var primaryCityObjs = cityModel.GetCityObjectsByType(CityObjectType.COT_All);
                 
                 var gmlType = GmlFileNameParser.GetGmlTypeEnum(gmlRelativePath);
                 int targetLod = metaData.cityImportConfig.scenePlacementConfig.GetPerTypeConfig(gmlType).selectedLod;
@@ -44,18 +42,10 @@ namespace PLATEAU.Editor.CityImport
                 
                 // シーンへの配置先として、親GameObjectを作ります。
                 string rootDirName = metaData.cityImportConfig.rootDirName;
-                var parentGameObj = GameObject.Find(rootDirName);
-                if (parentGameObj == null)
-                {
-                    parentGameObj = new GameObject(rootDirName);
-                }
+                var parentGameObj = GameObjectUtil.AssureGameObject(rootDirName);
                 
                 // 親に CityBehaviour をアタッチしてメタデータをリンクします。
-                var cityBehaviour = parentGameObj.GetComponent<CityBehaviour>();
-                if ( cityBehaviour == null)
-                {
-                    cityBehaviour = parentGameObj.AddComponent<CityBehaviour>();
-                }
+                var cityBehaviour = GameObjectUtil.AssureComponent<CityBehaviour>(parentGameObj);
                 cityBehaviour.CityMetaData = metaData;
                 
                 // 対応する3Dモデルファイルを探します。
@@ -75,7 +65,7 @@ namespace PLATEAU.Editor.CityImport
                     {
 
                         // この LOD で 主要地物が存在するなら、それを配置します。
-                        string primaryGameObjName = GameObjName(currentLod, primaryCityObj.ID);
+                        string primaryGameObjName = GameObjNameParser.ComposeName(currentLod, primaryCityObj.ID);
                         var primaryGameObj = PlaceToScene(foundObj, primaryGameObjName, parentGameObj.transform);
 
                         // この LOD で 主要地物が存在しないなら、シーンに配置済みの低いLODを検索します。
@@ -83,8 +73,8 @@ namespace PLATEAU.Editor.CityImport
                         {
                             for (int primaryCurrentLod = currentLod; primaryCurrentLod >= 0; primaryCurrentLod--)
                             {
-                                string primaryLowerLodName = GameObjName(primaryCurrentLod, primaryCityObj.ID);
-                                var primaryLowerLodTrans = FindRecursive(parentGameObj.transform, primaryLowerLodName);
+                                string primaryLowerLodName = GameObjNameParser.ComposeName(primaryCurrentLod, primaryCityObj.ID);
+                                var primaryLowerLodTrans = GameObjectUtil.FindRecursive(parentGameObj.transform, primaryLowerLodName);
                                 if (primaryLowerLodTrans != null)
                                 {
                                     primaryGameObj = primaryLowerLodTrans.gameObject;
@@ -106,15 +96,8 @@ namespace PLATEAU.Editor.CityImport
                         // LOD >= 2 の場合 : 子の CityObject をそれぞれ配置します。
                         var childCityObjs = primaryCityObj.CityObjectDescendantsDFS;
                     
-                        // ループ 4段目 : 主要地物の子ごと
-                        foreach (var childCityObj in childCityObjs)
-                        {
-                            Debug.Log(childCityObj.ID);
-                            // TODO 主要でないタイプは配置をスキップする機能を実装
-                            // TODO 配置タイプをマスクする機能を実装
-                            string childGameObjName = GameObjName(currentLod, childCityObj.ID);
-                            var placedChild = PlaceToScene(foundObj, childGameObjName, primaryGameObj.transform);
-                        } // ループ 4段目 ここまで
+                        // 主要地物の子をすべて配置します。
+                        PlaceCityObjs(foundObj, childCityObjs.ToArray(), primaryGameObj.transform);
 
                     } // ループ 3段目 ここまで (主要地物ごと) 
                 }
@@ -122,9 +105,16 @@ namespace PLATEAU.Editor.CityImport
             }// ループ 1段目 ここまで (gmlファイルごと)
         }
 
-        private static string GameObjName(int lod, string cityObjId)
+        /// <summary>
+        /// PlaceToSceneの複数版です。
+        /// </summary>
+        private static void PlaceCityObjs(ObjInfo objInfo, ICollection<CityObject> cityObjs, Transform parent)
         {
-            return $"LOD{lod}_{cityObjId}";
+            foreach (var cityObj in cityObjs)
+            {
+                string gameObjName = GameObjNameParser.ComposeName(objInfo.lod, cityObj.ID);
+                PlaceToScene(objInfo, gameObjName, parent);
+            }
         }
 
         private static GameObject PlaceToScene(ObjInfo objInfo, string objName, Transform parentTransform)
@@ -139,18 +129,11 @@ namespace PLATEAU.Editor.CityImport
             }
             
             // すでに同名のものがある場合は削除します。
-            var oldObj = parentTransform.Find(objName);
-            if (oldObj != null)
-            {
-                Object.DestroyImmediate(oldObj.gameObject);
-            }
+            GameObjectUtil.DestroyChildOf(parentTransform, objName);
                     
             // メッシュをシーンに配置します。
-            // GameObject meshGameObj = new GameObject(gameObj.name, typeof(MeshFilter), typeof(MeshRenderer));
-            // meshGameObj.GetComponent<MeshFilter>().sharedMesh = g;
             var newGameObj = Object.Instantiate(gameObj, parentTransform, true);
             newGameObj.name = newGameObj.name.Replace("(Clone)", "");
-            // var newGameObj = (GameObject)PrefabUtility.InstantiatePrefab(gameObj, parentTransform);
             return newGameObj;
         }
 
@@ -161,26 +144,13 @@ namespace PLATEAU.Editor.CityImport
             return foundObj;
         }
         
-        public static GameObject SearchGameObjectAsset(ICollection<GameObject> gameObjs, string gameObjName)
+        private static GameObject SearchGameObjectAsset(ICollection<GameObject> gameObjs, string gameObjName)
         {
             var foundGo = gameObjs.FirstOrDefault(go => go.name == gameObjName);
             return foundGo;
         }
         
         
-        private static Transform FindRecursive(Transform parent, string searchName)
-        {
-            if (parent.name == searchName) return parent;
-            foreach (Transform child in parent)
-            {
-                var found = FindRecursive(child, searchName);
-                if (found != null)
-                {
-                    return found;
-                }
-            }
-
-            return null;
-        }
+        
     }
 }
