@@ -1,8 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Codice.CM.Common.Serialization;
-using PlasticGui.Gluon.WorkspaceWindow.Views.IncomingChanges;
 using PLATEAU.Behaviour;
 using PLATEAU.CityGML;
 using PLATEAU.CityMeta;
@@ -54,7 +52,7 @@ namespace PLATEAU.Editor.CityImport
                 for (int currentLod = 0; currentLod <= targetLod; currentLod++) // TODO currentLod を 0からではなくタイプ別最小値から始める
                 {
                     string targetObjName = $"LOD{currentLod}_{GmlFileNameParser.FileNameWithoutExtension(gmlRelativePath)}.obj"; // TODO ハードコード
-                    var foundObj = SearchObjFile(objInfos, targetObjName);
+                    var foundObj = objInfos.FirstOrDefault(info => Path.GetFileName(info.assetsPath) == targetObjName);
                     if (foundObj == null)
                     {
                         continue;
@@ -71,16 +69,8 @@ namespace PLATEAU.Editor.CityImport
                         // この LOD で 主要地物が存在しないなら、シーンに配置済みの低いLODを検索します。
                         if (primaryGameObj == null)
                         {
-                            for (int primaryCurrentLod = currentLod; primaryCurrentLod >= 0; primaryCurrentLod--)
-                            {
-                                string primaryLowerLodName = GameObjNameParser.ComposeName(primaryCurrentLod, primaryCityObj.ID);
-                                var primaryLowerLodTrans = GameObjectUtil.FindRecursive(parentGameObj.transform, primaryLowerLodName);
-                                if (primaryLowerLodTrans != null)
-                                {
-                                    primaryGameObj = primaryLowerLodTrans.gameObject;
-                                    break;
-                                }
-                            }
+                            primaryGameObj =
+                                SearchCityObjInScene(primaryCityObj.ID, currentLod, parentGameObj.transform);
                         }
 
                         // 検索してもまだ主要地物が存在しないなら、この主要地物はスキップします。
@@ -106,6 +96,29 @@ namespace PLATEAU.Editor.CityImport
         }
 
         /// <summary>
+        /// シーン中の <see cref="CityObject"/> を検索します。
+        /// 検索範囲は <paramref name="parentTransform"/> の子（再帰的）です。
+        /// LODが <paramref name="startLod"/> のものから検索し、なければ それより低いLODを検索します。
+        /// それでも見つからなければ null を返します。
+        /// </summary>
+        private static GameObject SearchCityObjInScene(string cityObjId, int startLod, Transform parentTransform)
+        {
+            GameObject foundGameObj = null;
+            for (int searchingLod = startLod; searchingLod >= 0; searchingLod--)
+            {
+                string gameObjName = GameObjNameParser.ComposeName(searchingLod, cityObjId);
+                var trans = GameObjectUtil.FindRecursive(parentTransform, gameObjName);
+                if (trans != null)
+                {
+                    foundGameObj = trans.gameObject;
+                    break;
+                }
+            }
+
+            return foundGameObj;
+        }
+
+        /// <summary>
         /// PlaceToSceneの複数版です。
         /// </summary>
         private static void PlaceCityObjs(ObjInfo objInfo, ICollection<CityObject> cityObjs, Transform parent)
@@ -122,7 +135,7 @@ namespace PLATEAU.Editor.CityImport
             // 3Dモデルファイル内で、対応するメッシュを探します。
             var gameObjs = AssetDatabase.LoadAllAssetsAtPath(objInfo.assetsPath).OfType<GameObject>().ToArray();
             
-            var gameObj = SearchGameObjectAsset(gameObjs, objName);
+            var gameObj =  gameObjs.FirstOrDefault(go => go.name == objName);
             if (gameObj == null)
             {
                 return null;
@@ -136,21 +149,7 @@ namespace PLATEAU.Editor.CityImport
             newGameObj.name = newGameObj.name.Replace("(Clone)", "");
             return newGameObj;
         }
+        
 
-        private static ObjInfo SearchObjFile(List<ObjInfo> objInfos, string objFileName)
-        {
-            var foundObj = objInfos
-                .FirstOrDefault(info => Path.GetFileName(info.assetsPath) == objFileName);
-            return foundObj;
-        }
-        
-        private static GameObject SearchGameObjectAsset(ICollection<GameObject> gameObjs, string gameObjName)
-        {
-            var foundGo = gameObjs.FirstOrDefault(go => go.name == gameObjName);
-            return foundGo;
-        }
-        
-        
-        
     }
 }

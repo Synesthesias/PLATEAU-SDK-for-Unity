@@ -1,5 +1,4 @@
 ﻿using System.IO;
-using Codice.CM.Common;
 using PLATEAU.Editor.EditorWindowCommon;
 using PLATEAU.CityMeta;
 using PLATEAU.Interop;
