@@ -8,9 +8,6 @@ namespace PLATEAU.Editor.CityImport
     /// <summary>
     /// GmlSearcher の Model, View, Config を結びつけ、設定GUIの描画と適用を行います。
     /// </summary>
-    ///
-    /// 補足:
-    /// GmlSearcher は設定項目がやや複雑なので、 Model, View, Presenter, Config のクラスに分かれています。
     internal class GmlSearcherPresenter
     {
         private GmlSearcherConfig config;

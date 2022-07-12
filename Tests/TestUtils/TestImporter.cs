@@ -20,7 +20,7 @@ namespace PLATEAU.Tests.TestUtils
         {
             var config = ImportConfigFactoryForTests.MinimumConfig(pathSet.SrcRootFullPath, pathSet.OutputDirAssetsPath);
             additionalConfigFunc?.Invoke(config);
-            int successCount = new CityImporter().Import(pathSet.GmlRelativePaths, config, out metaData);
+            int successCount = new CityImporterModel().Import(pathSet.GmlRelativePaths, config, out metaData);
             return successCount;
         }
     }

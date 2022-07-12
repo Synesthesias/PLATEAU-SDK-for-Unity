@@ -11,42 +11,31 @@ namespace PLATEAU.Editor.CityImport
 
     /// <summary>
     /// Plateau元データをインポートするためのGUIです。
-    /// ユーザーが選択したインポート設定を <see cref="CityImporter"/> に渡して実行することでインポートが行われます。
+    /// ユーザーが選択したインポート設定を <see cref="CityImporterModel"/> に渡して実行することでインポートが行われます。
     /// ユーザーが行う設定項目には、gmlファイル群を地物タイプや地域IDで絞り込む機能を含みます。
     ///
     /// このクラスを利用するクラスは、
     /// <see cref="CityImportWindow"/> および <see cref="CityMetaDataEditor"/> です。
     /// </summary>
-    internal class CityImportGUI
+    internal class CityImporterView
     {
-        private readonly CityImportConfig cityImportConfig;
+        // private readonly CityImportConfig cityImportConfig;
         private readonly InputFolderSelectorGUI importFolderSelectorGUI;
         private readonly GmlSearcherPresenter gmlSearcherPresenter = new GmlSearcherPresenter();
         private readonly ObjConvertTypesGUI objConvertTypesGUI;
         private readonly ExportFolderSelectorGUI exportFolderSelectorGUI;
-        private readonly CityImporter cityImporter;
+        // private readonly CityImporterModel cityImporterModel;
         
-        public CityImportGUI(CityImportConfig config)
+        public CityImporterView()
         {
-            this.cityImportConfig = config;
             this.importFolderSelectorGUI = new InputFolderSelectorGUI(OnImportSrcPathChanged);
             this.objConvertTypesGUI = new ObjConvertTypesGUI();
             this.exportFolderSelectorGUI = new ExportFolderSelectorGUI();
-            this.cityImporter = new CityImporter();
-            
-            // 記録されたインポート元パスを復元し、GUI画面の初期値に代入します。
-            string loadedSrcRootPath = config.sourcePath.RootDirAssetPath;
-            string initialSrcRootPath = loadedSrcRootPath;
-            if (initialSrcRootPath.Replace('\\', '/').StartsWith("Assets/"))
-            {
-                initialSrcRootPath = PathUtil.AssetsPathToFullPath(initialSrcRootPath);
-            }
-            config.SrcRootPathBeforeImport = initialSrcRootPath;
+            // this.cityImporterModel = new CityImporterModel();
         }
 
-        public void Draw()
+        public void Draw(CityImporterPresenter presenter, CityImportConfig importConfig)
         {
-            var importConfig = this.cityImportConfig;
             // インポート元フォルダ選択
             this.importFolderSelectorGUI.FolderPath = importConfig.SrcRootPathBeforeImport;
             string sourcePath = this.importFolderSelectorGUI.Draw("インポート元フォルダ選択");
@@ -56,7 +45,7 @@ namespace PLATEAU.Editor.CityImport
             if (GmlSearcherModel.IsPathPlateauRoot(sourcePath))
             {
                 // 案内
-                if (!CityImporter.IsInStreamingAssets(sourcePath))
+                if (!CityImporterModel.IsInStreamingAssets(sourcePath))
                 {
                     EditorGUILayout.HelpBox($"入力フォルダは {PathUtil.FullPathToAssetsPath(PlateauUnityPath.StreamingGmlFolder)} にコピーされます。", MessageType.Info);
                 }
@@ -102,7 +91,8 @@ namespace PLATEAU.Editor.CityImport
                         if (PlateauEditorStyle.MainButton("出力"))
                         {
                             // インポート開始します。
-                            this.cityImporter.Import(gmlFiles.ToArray(), importConfig, out _);
+                            // this.cityImporterModel.Import(gmlFiles.ToArray(), importConfig, out _);
+                            presenter.Import(gmlFiles.ToArray());
                         }
                     }
                 }

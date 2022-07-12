@@ -8,7 +8,7 @@ namespace PLATEAU.Editor.CityImport
 {
     /// <summary>
     /// gmlファイルから objファイルへの変換に関して、地物タイプごとに対象のLOD範囲を設定するGUIです。
-    /// <see cref="CityImportGUI"/> によって利用されます。
+    /// <see cref="CityImporterView"/> によって利用されます。
     /// </summary>
     internal class ObjConvertTypesGUI
     {

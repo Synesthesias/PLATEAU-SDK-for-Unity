@@ -8,7 +8,7 @@ namespace PLATEAU.Editor.CityImport
 
     /// <summary>
     /// Plateauの元データをコピーします。
-    /// インポート時に <see cref="CityImporter"/> が利用します。
+    /// インポート時に <see cref="CityImporterModel"/> が利用します。
     /// </summary>
     internal static class CopyPlateauSrcFiles
     {

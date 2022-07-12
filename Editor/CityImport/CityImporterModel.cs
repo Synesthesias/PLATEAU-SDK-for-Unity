@@ -22,7 +22,7 @@ namespace PLATEAU.Editor.CityImport
     /// ・Plateau元データから、複数のobj および 1つの <see cref="CityMetaData"/> を作成します。
     /// ・変換したモデルを現在のシーンに配置します。
     /// </summary>
-    internal class CityImporter
+    internal class CityImporterModel
     {
 
         /// <summary>

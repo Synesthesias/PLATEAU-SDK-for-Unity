@@ -7,7 +7,7 @@ namespace PLATEAU.Editor.CityImport
 {
     /// <summary>
     /// インポートした objファイルをシーンに配置することに関する設定GUIを描画します。
-    /// <see cref="CityImportGUI"/> がこのクラスを保持します。
+    /// <see cref="CityImporterView"/> がこのクラスを保持します。
     /// </summary>
     internal class ScenePlacementGUI
     {
