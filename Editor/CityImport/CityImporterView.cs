@@ -24,14 +24,12 @@ namespace PLATEAU.Editor.CityImport
         private readonly GmlSearcherPresenter gmlSearcherPresenter = new GmlSearcherPresenter();
         private readonly ObjConvertTypesGUI objConvertTypesGUI;
         private readonly ExportFolderSelectorGUI exportFolderSelectorGUI;
-        // private readonly CityImporterModel cityImporterModel;
         
         public CityImporterView()
         {
             this.importFolderSelectorGUI = new InputFolderSelectorGUI(OnImportSrcPathChanged);
             this.objConvertTypesGUI = new ObjConvertTypesGUI();
             this.exportFolderSelectorGUI = new ExportFolderSelectorGUI();
-            // this.cityImporterModel = new CityImporterModel();
         }
 
         public void Draw(CityImporterPresenter presenter, CityImportConfig importConfig)

@@ -30,15 +30,8 @@ namespace PLATEAU.Editor.CityImport
             // ループ 1段目 : gmlファイルごと
             foreach (var gmlRelativePath in gmlRelativePaths)
             {
-                string gmlFullPath = metaData.cityImportConfig.sourcePath.UdxRelativeToFullPath(gmlRelativePath);
-                // tessellate を false にすることで、3Dモデルができない代わりにパースが高速になります。3Dモデルはインポート時のものを使います。
-                var gmlParserParams = new CitygmlParserParams(true, false);
-                var cityModel = CityGml.Load(gmlFullPath, gmlParserParams, DllLogCallback.UnityLogCallbacks, DllLogLevel.Error);
-                if (cityModel == null)
-                {
-                    Debug.LogError($"failed to load city model.\ngmlFullPath = {gmlFullPath}");
-                    continue;
-                }
+                var cityModel = ParseGml(metaData, gmlRelativePath);
+                if (cityModel == null) continue;
                 
                 // gmlファイル名と同名のGameObjectをルート直下に作ります。
                 var gmlGameObj =
@@ -51,17 +44,13 @@ namespace PLATEAU.Editor.CityImport
                 int targetLod = metaData.cityImportConfig.scenePlacementConfig.GetPerTypeConfig(gmlType).selectedLod;
                 targetLod = 2; // TODO 仮
                 
-                // 対応する3Dモデルファイルを探します。
-                var objInfos = metaData.cityImportConfig.generatedObjFiles;
 
+                // ループ 2段目 : LODごと
                 for (int currentLod = 0; currentLod <= targetLod; currentLod++) // TODO currentLod を 0からではなくタイプ別最小値から始める
                 {
-                    string targetObjName = $"LOD{currentLod}_{GmlFileNameParser.FileNameWithoutExtension(gmlRelativePath)}.obj"; // TODO ハードコード
-                    var foundObj = objInfos.FirstOrDefault(info => Path.GetFileName(info.assetsPath) == targetObjName);
-                    if (foundObj == null)
-                    {
-                        continue;
-                    }
+                    // 対応する3Dモデルファイルを探します。
+                    var foundObj = FindObjFile(metaData, currentLod, gmlRelativePath);
+                    if (foundObj == null) continue;
                 
                     // ループ 3段目 : 主要地物ごと
                     foreach (var primaryCityObj in primaryCityObjs)
@@ -100,6 +89,29 @@ namespace PLATEAU.Editor.CityImport
             }// ループ 1段目 ここまで (gmlファイルごと)
         }
 
+        private static CityModel ParseGml(CityMetaData metadata, string gmlRelativePath)
+        {
+            string gmlFullPath = metadata.cityImportConfig.sourcePath.UdxRelativeToFullPath(gmlRelativePath);
+            // tessellate を false にすることで、3Dモデルができない代わりにパースが高速になります。3Dモデルはインポート時のものを使います。
+            var gmlParserParams = new CitygmlParserParams(true, false);
+            var cityModel = CityGml.Load(gmlFullPath, gmlParserParams, DllLogCallback.UnityLogCallbacks);
+            if (cityModel == null)
+            {
+                Debug.LogError($"failed to load city model.\ngmlFullPath = {gmlFullPath}");
+            }
+            return cityModel;
+        }
+
+        /// <summary>
+        /// LOD, gml に対応する3Dモデルファイルを探します。
+        /// </summary>
+        private static ObjInfo FindObjFile(CityMetaData metaData, int lod, string gmlRelativePath)
+        {
+            var objInfos = metaData.cityImportConfig.generatedObjFiles;
+            string targetObjName = $"LOD{lod}_{GmlFileNameParser.FileNameWithoutExtension(gmlRelativePath)}.obj"; // TODO ハードコード
+            return objInfos.FirstOrDefault(info => Path.GetFileName(info.assetsPath) == targetObjName);
+        }
+
         /// <summary>
         /// シーン中の <see cref="CityObject"/> を検索します。
         /// 検索範囲は <paramref name="parentTransform"/> の子（再帰的）です。
@@ -124,7 +136,7 @@ namespace PLATEAU.Editor.CityImport
         }
 
         /// <summary>
-        /// PlaceToSceneの複数版です。
+        /// <see cref="PlaceToScene"/> の複数版です。
         /// </summary>
         private static void PlaceCityObjs(ObjInfo objInfo, ICollection<CityObject> cityObjs, Transform parent)
         {
@@ -135,6 +147,11 @@ namespace PLATEAU.Editor.CityImport
             }
         }
 
+        /// <summary>
+        /// <paramref name="objInfo"/> の3Dモデルのうち、名前が <paramref name="objName"/> であるものを探します。
+        /// あればシーンに配置して、それを返します。
+        /// なければ null を返します。
+        /// </summary>
         private static GameObject PlaceToScene(ObjInfo objInfo, string objName, Transform parentTransform)
         {
             // 3Dモデルファイル内で、対応するメッシュを探します。
