@@ -5,6 +5,7 @@ using System.Linq;
 using PLATEAU.Behaviour;
 using PLATEAU.CityGML;
 using PLATEAU.CityMeta;
+using PLATEAU.CommonDataStructure;
 using PLATEAU.Interop;
 using PLATEAU.IO;
 using PLATEAU.Util;
@@ -54,22 +55,8 @@ namespace PLATEAU.Editor.CityImport
 
             // 3Dモデルファイルへの変換でのLOD範囲
             var lodRange = metadata.cityImportConfig.objConvertTypesConfig.TypeLodDict[gmlType];
-
-            // LODを数値指定する設定なら、その指定LODを最大LODとします。
-            if (placeMethod.DoUseSelectedLod())
-            {
-                int selectedLod = placeConfig.GetPerTypeConfig(gmlType).selectedLod;
-                int min = lodRange.Min;
-                int max = selectedLod;
-                lodRange.SetMinMax(min, max);
-            }
-
-            // 1つのLODのみを探索する設定なら、範囲を1つに狭めます。
-            if (placeMethod.DoSearchOnlyOneLod())
-            {
-                int max = lodRange.Max;
-                lodRange.SetMinMax(max, max);
-            }
+            int selectedLod = placeConfig.GetPerTypeConfig(gmlType).selectedLod;
+            lodRange = PlaceLodRange(lodRange, placeMethod, selectedLod);
 
             var primaryCityObjs = cityModel.GetCityObjectsByType(PrimaryCityObjectTypes.PrimaryTypeMask);
 
@@ -133,6 +120,29 @@ namespace PLATEAU.Editor.CityImport
             } // ループ ここまで (主要地物ごと) 
 
             return anyModelExist;
+        }
+
+        private static MinMax<int> PlaceLodRange(MinMax<int> availableObjLodRange,
+            CityMeshPlacerConfig.PlaceMethod placeMethod, int selectedLod)
+        {
+            var placeRange = new MinMax<int>(availableObjLodRange);
+            // LODを数値指定する設定なら、その指定LODを最大LODとします。
+            if (placeMethod.DoUseSelectedLod())
+            {
+                
+                int min = placeRange.Min;
+                int max = Math.Min(selectedLod, placeRange.Max);
+                placeRange.SetMinMax(min, max);
+            }
+
+            // 1つのLODのみを探索する設定なら、範囲を1つに狭めます。
+            if (placeMethod.DoSearchOnlyOneLod())
+            {
+                int max = placeRange.Max;
+                placeRange.SetMinMax(max, max);
+            }
+
+            return placeRange;
         }
 
         private static CityModel ParseGml(CityMetadata metadata, string gmlRelativePath)
