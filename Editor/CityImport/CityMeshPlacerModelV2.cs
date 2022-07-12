@@ -28,104 +28,111 @@ namespace PLATEAU.Editor.CityImport
             
             string[] gmlRelativePaths = metadata.gmlRelativePaths;
             
-            // ループ 1段目 : gmlファイルごと
+            // ループ : gmlファイルごと
             foreach (var gmlRelativePath in gmlRelativePaths)
             {
-                var cityModel = ParseGml(metadata, gmlRelativePath);
-                if (cityModel == null) continue;
-                
-                // var placeConfig = metaData.cityImportConfig.scenePlacementConfig;
-                var gmlType = GmlFileNameParser.GetGmlTypeEnum(gmlRelativePath);
-                var placeMethod = placeConfig.GetPerTypeConfig(gmlType).placeMethod;
-                
-                if (placeMethod == CityMeshPlacerConfig.PlaceMethod.DoNotPlace) continue;
-                
-                // gmlファイル名と同名のGameObjectをルート直下に作ります。
-                var gmlGameObj =
-                    GameObjectUtil.AssureGameObject(GmlFileNameParser.FileNameWithoutExtension(gmlRelativePath));
-                gmlGameObj.transform.parent = rootGameObj.transform;
+                PlaceGmlModel(metadata, gmlRelativePath, placeConfig, rootGameObj.transform);
+            }
+        }
 
-                var primaryCityObjs = cityModel.GetCityObjectsByType(PrimaryCityObjectTypes.PrimaryTypeMask);
+        private static void PlaceGmlModel(CityMetadata metadata, string gmlRelativePath,
+            CityMeshPlacerConfig placeConfig, Transform parentTrans)
+        {
+            var cityModel = ParseGml(metadata, gmlRelativePath);
+            if (cityModel == null) return;
 
+            var gmlType = GmlFileNameParser.GetGmlTypeEnum(gmlRelativePath);
+            var placeMethod = placeConfig.GetPerTypeConfig(gmlType).placeMethod;
+
+            if (placeMethod == CityMeshPlacerConfig.PlaceMethod.DoNotPlace) return;
+
+            // gmlファイル名と同名のGameObjectをルート直下に作ります。
+            var gmlGameObj =
+                GameObjectUtil.AssureGameObject(GmlFileNameParser.FileNameWithoutExtension(gmlRelativePath));
+            gmlGameObj.transform.parent = parentTrans;
+
+
+            // 3Dモデルファイルへの変換でのLOD範囲
+            var lodRange = metadata.cityImportConfig.objConvertTypesConfig.TypeLodDict[gmlType];
+
+            // LODを数値指定する設定なら、その指定LODを最大LODとします。
+            if (placeMethod.DoUseSelectedLod())
+            {
+                int selectedLod = placeConfig.GetPerTypeConfig(gmlType).selectedLod;
+                int min = lodRange.Min;
+                int max = selectedLod;
+                lodRange.SetMinMax(min, max);
+            }
+
+            // 1つのLODのみを探索する設定なら、範囲を1つに狭めます。
+            if (placeMethod.DoSearchOnlyOneLod())
+            {
+                int max = lodRange.Max;
+                lodRange.SetMinMax(max, max);
+            }
+
+            var primaryCityObjs = cityModel.GetCityObjectsByType(PrimaryCityObjectTypes.PrimaryTypeMask);
+
+            // ループ : LODごと
+            for (int currentLod = lodRange.Max; currentLod >= lodRange.Min; currentLod--)
+            {
+                bool anyModelExist = PlaceGmlModelOfLod(currentLod, gmlRelativePath, metadata, primaryCityObjs, gmlGameObj.transform);
                 
-                // 3Dモデルファイルへの変換でのLOD範囲
-                var lodRange = metadata.cityImportConfig.objConvertTypesConfig.TypeLodDict[gmlType];
-
-                // LODを数値指定する設定なら、その指定LODを最大LODとします。
-                if (placeMethod.DoUseSelectedLod())
+                if (anyModelExist && !placeMethod.DoesAllowMultipleLodPlaced())
                 {
-                    int selectedLod = placeConfig.GetPerTypeConfig(gmlType).selectedLod;
-                    int min = lodRange.Min;
-                    // int max = Math.Min(lodRange.Max, selectedLod);
-                    int max = selectedLod;
-                    lodRange.SetMinMax(min, max);
+                    // 今のLODですでにモデルが配置されており、かつ複数LODを同時に配置しない設定ならば、
+                    // これ以下のLODの配置はスキップします。
+                    break;
+                }
+            }
+        }
+
+        private static bool PlaceGmlModelOfLod(int lod, string gmlRelativePath, CityMetadata metadata, IReadOnlyCollection<CityObject> primaryCityObjs, Transform parentTrans)
+        {
+            // 対応する3Dモデルファイルを探します。
+            var foundObj = FindObjFile(metadata, lod, gmlRelativePath);
+            if (foundObj == null) return false;
+
+            bool anyModelExist = false;
+
+            // ループ : 主要地物ごと
+            foreach (var primaryCityObj in primaryCityObjs)
+            {
+                // この LOD で 主要地物モデルが存在するなら、それを配置します。
+                string primaryGameObjName = GameObjNameParser.ComposeName(lod, primaryCityObj.ID);
+                var primaryGameObj = PlaceToScene(foundObj, primaryGameObjName, parentTrans);
+
+
+                // このLODで主要地物が存在しないなら、空のGameObjectのみ用意します。
+                if (primaryGameObj == null)
+                {
+                    string primaryObjName = GameObjNameParser.ComposeName(lod, primaryCityObj.ID);
+                    // 古いGameObjectがあれば削除します。
+                    var oldPrimaryTrans = GameObjectUtil.FindRecursive(parentTrans, primaryObjName);
+                    if (oldPrimaryTrans != null) Object.DestroyImmediate(oldPrimaryTrans.gameObject);
+                    // 空のGameObjectを作ります。
+                    primaryGameObj = new GameObject(primaryObjName);
+                    primaryGameObj.transform.parent = parentTrans;
+                }
+                else
+                {
+                    anyModelExist = true;
                 }
 
-                // 1つのLODのみを探索する設定なら、範囲を1つに狭めます。
-                if (placeMethod.DoSearchOnlyOneLod())
-                {
-                    int max = lodRange.Max;
-                    lodRange.SetMinMax(max, max);
-                }
+                // LOD <= 1 の場合 : 主要地物を配置すれば完了となります。主要でない地物の配置をスキップします。
+                // （メッシュの結合単位に関わらず、 LOD <= 1 では主要地物より細かいものは出てきません。）
+                if (lod <= 1) continue;
 
+                // LOD >= 2 の場合 : 子の CityObject をそれぞれ配置します。
+                // （メッシュの結合単位が最小地物の場合に出てくる細かいモデルです。）
+                var childCityObjs = primaryCityObj.CityObjectDescendantsDFS;
 
-                // ループ 2段目 : LODごと
-                for (int currentLod = lodRange.Max; currentLod >= lodRange.Min; currentLod--) 
-                {
-                    // 対応する3Dモデルファイルを探します。
-                    var foundObj = FindObjFile(metadata, currentLod, gmlRelativePath);
-                    if (foundObj == null) continue;
+                // 主要地物の子をすべて配置します。
+                anyModelExist |= PlaceCityObjs(foundObj, childCityObjs.ToArray(), primaryGameObj.transform);
 
-                    bool anyModelExist = false;
+            } // ループ ここまで (主要地物ごと) 
 
-                    // ループ 3段目 : 主要地物ごと
-                    foreach (var primaryCityObj in primaryCityObjs)
-                    {
-                        Transform gmlTrans = gmlGameObj.transform;
-                        // この LOD で 主要地物モデルが存在するなら、それを配置します。
-                        string primaryGameObjName = GameObjNameParser.ComposeName(currentLod, primaryCityObj.ID);
-                        var primaryGameObj = PlaceToScene(foundObj, primaryGameObjName, gmlTrans);
-                        
-
-                        // このLODで主要地物が存在しないなら、空のGameObjectのみ用意します。
-                        if (primaryGameObj == null)
-                        {
-                            string primaryObjName = GameObjNameParser.ComposeName(currentLod, primaryCityObj.ID);
-                            // 古いGameObjectがあれば削除します。
-                            var oldPrimaryTrans = GameObjectUtil.FindRecursive(gmlTrans, primaryObjName);
-                            if(oldPrimaryTrans != null) Object.DestroyImmediate(oldPrimaryTrans.gameObject);
-                            // 空のGameObjectを作ります。
-                            primaryGameObj = new GameObject(primaryObjName);
-                            primaryGameObj.transform.parent = gmlTrans;
-                        }
-                        else
-                        {
-                            anyModelExist = true;
-                        }
-
-                        // LOD <= 1 の場合 : 主要地物を配置すれば完了となります。主要でない地物の配置をスキップします。
-                        // （メッシュの結合単位に関わらず、 LOD <= 1 では主要地物より細かいものは出てきません。）
-                        if (currentLod <= 1 ) continue;
-                    
-                        // LOD >= 2 の場合 : 子の CityObject をそれぞれ配置します。
-                        // （メッシュの結合単位が最小地物の場合に出てくる細かいモデルです。）
-                        var childCityObjs = primaryCityObj.CityObjectDescendantsDFS;
-                    
-                        // 主要地物の子をすべて配置します。
-                        anyModelExist |= PlaceCityObjs(foundObj, childCityObjs.ToArray(), primaryGameObj.transform);
-
-                    } // ループ 3段目 ここまで (主要地物ごと) 
-                    // ループ 2段目 (LODごと)
-                    
-                    if (anyModelExist && !placeMethod.DoesAllowMultipleLodPlaced())
-                    {
-                        // 今のLODですでにモデルが配置されており、かつ複数LODを同時に配置しない設定ならば、
-                        // これ以下のLODの配置はスキップします。
-                        break;
-                    }
-                }// ループ 2段目 ここまで (LODごと)
-                
-            }// ループ 1段目 ここまで (gmlファイルごと)
+            return anyModelExist;
         }
 
         private static CityModel ParseGml(CityMetadata metadata, string gmlRelativePath)
