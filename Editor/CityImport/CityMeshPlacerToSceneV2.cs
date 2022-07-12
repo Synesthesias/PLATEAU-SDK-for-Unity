@@ -58,9 +58,7 @@ namespace PLATEAU.Editor.CityImport
                     int min = lodRange.Min;
                     // int max = Math.Min(lodRange.Max, selectedLod);
                     int max = selectedLod;
-                    Debug.Log($"lodRange = {lodRange}, selectedLod = {selectedLod}, type = {gmlType}");
                     lodRange.SetMinMax(min, max);
-                    Debug.Log($"lodRange = {lodRange}, selectedLod = {selectedLod}, type = {gmlType}");
                 }
 
                 // 1つのLODのみを探索する設定なら、範囲を1つに狭めます。
@@ -87,13 +85,7 @@ namespace PLATEAU.Editor.CityImport
                         // この LOD で 主要地物モデルが存在するなら、それを配置します。
                         string primaryGameObjName = GameObjNameParser.ComposeName(currentLod, primaryCityObj.ID);
                         var primaryGameObj = PlaceToScene(foundObj, primaryGameObjName, gmlTrans);
-
-                        // この LOD で 主要地物モデルが存在しないなら、シーンに配置済みの低いLODを検索します。
-                        // if (primaryGameObj == null)
-                        // {
-                        //     primaryGameObj =
-                        //         SearchCityObjInScene(primaryCityObj.ID, currentLod, gmlTrans);
-                        // }
+                        
 
                         // このLODで主要地物が存在しないなら、空のGameObjectのみ用意します。
                         if (primaryGameObj == null)
@@ -158,29 +150,7 @@ namespace PLATEAU.Editor.CityImport
             string targetObjName = $"LOD{lod}_{GmlFileNameParser.FileNameWithoutExtension(gmlRelativePath)}.obj"; // TODO ハードコード
             return objInfos.FirstOrDefault(info => Path.GetFileName(info.assetsPath) == targetObjName);
         }
-
-        // /// <summary>
-        // /// シーン中の <see cref="CityObject"/> を検索します。
-        // /// 検索範囲は <paramref name="parentTransform"/> の子（再帰的）です。
-        // /// LODが <paramref name="startLod"/> のものから検索し、なければ それより低いLODを検索します。
-        // /// それでも見つからなければ null を返します。
-        // /// </summary>
-        // private static GameObject SearchCityObjInScene(string cityObjId, int startLod, Transform parentTransform)
-        // {
-        //     GameObject foundGameObj = null;
-        //     for (int searchingLod = startLod; searchingLod >= 0; searchingLod--)
-        //     {
-        //         string gameObjName = GameObjNameParser.ComposeName(searchingLod, cityObjId);
-        //         var trans = GameObjectUtil.FindRecursive(parentTransform, gameObjName);
-        //         if (trans != null)
-        //         {
-        //             foundGameObj = trans.gameObject;
-        //             break;
-        //         }
-        //     }
-        //
-        //     return foundGameObj;
-        // }
+        
 
         /// <summary>
         /// <see cref="PlaceToScene"/> の複数版です。
