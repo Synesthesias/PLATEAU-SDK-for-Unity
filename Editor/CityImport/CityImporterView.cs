@@ -90,7 +90,7 @@ namespace PLATEAU.Editor.CityImport
                         {
                             // インポート開始します。
                             // this.cityImporterModel.Import(gmlFiles.ToArray(), importConfig, out _);
-                            presenter.Import(gmlFiles.ToArray());
+                            presenter.Import(gmlFiles.ToArray(), out _);
                         }
                     }
                 }

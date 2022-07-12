@@ -1,4 +1,7 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace PLATEAU.Util
 {
@@ -62,13 +65,35 @@ namespace PLATEAU.Util
         /// </summary>
         public static GameObject AssureGameObject(string name)
         {
-            var gameObj = GameObject.Find(name);
+            var scene = SceneManager.GetActiveScene();
+            var gameObj = ListGameObjsInScene(scene).FirstOrDefault(go => go.name == name);
             if (gameObj == null)
             {
                 gameObj = new GameObject(name);
             }
 
             return gameObj;
+        }
+
+        public static List<GameObject> ListGameObjsInScene(Scene scene)
+        {
+            var list = new List<GameObject>();
+            var rootObjs = scene.GetRootGameObjects();
+            foreach (var go in rootObjs)
+            {
+                ListGameObjsRecursive(go, list);
+            }
+
+            return list;
+        }
+
+        public static void ListGameObjsRecursive(GameObject targetGameObj, List<GameObject> list)
+        {
+            list.Add(targetGameObj);
+            foreach (Transform childTrans in targetGameObj.transform)
+            {
+                ListGameObjsRecursive(childTrans.gameObject, list);
+            }
         }
     }
 }

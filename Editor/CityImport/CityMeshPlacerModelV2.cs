@@ -22,6 +22,7 @@ namespace PLATEAU.Editor.CityImport
         /// </summary>
         public static void Place(CityMeshPlacerConfig placeConfig, CityMetadata metadata)
         {
+            
             // Plateau元データのルートフォルダと同名の ルートGame Objectを作ります。 
             string rootDirName = metadata.cityImportConfig.rootDirName;
             var rootGameObj = GameObjectUtil.AssureGameObject(rootDirName);
@@ -32,9 +33,12 @@ namespace PLATEAU.Editor.CityImport
             
             string[] gmlRelativePaths = metadata.gmlRelativePaths;
             
+            Debug.Log($"placing gml count : {gmlRelativePaths.Length}");
+            
             // ループ : gmlファイルごと
             foreach (var gmlRelativePath in gmlRelativePaths)
             {
+                Debug.Log($"placing for gml : {gmlRelativePath}");
                 PlaceGmlModel(metadata, gmlRelativePath, placeConfig, rootGameObj.transform);
             }
         }
@@ -46,12 +50,14 @@ namespace PLATEAU.Editor.CityImport
             CityMeshPlacerConfig placeConfig, Transform parentTrans)
         {
             var cityModel = ParseGml(metadata, gmlRelativePath);
-            if (cityModel == null) return;
+            if (cityModel == null)
+            {
+                Debug.LogError($"Could not read gml file: {gmlRelativePath}");
+                return;
+            }
 
             var gmlType = GmlFileNameParser.GetGmlTypeEnum(gmlRelativePath);
             var placeMethod = placeConfig.GetPerTypeConfig(gmlType).placeMethod;
-
-            if (placeMethod == CityMeshPlacerConfig.PlaceMethod.DoNotPlace) return;
 
             // gmlファイル名と同名のGameObjectをルート直下に作ります。
             var gmlGameObj =
@@ -69,6 +75,7 @@ namespace PLATEAU.Editor.CityImport
             // ループ : LODごと
             for (int currentLod = lodRange.Max; currentLod >= lodRange.Min; currentLod--)
             {
+                Debug.Log($"current lod = {currentLod}");
                 bool anyModelExist = PlaceGmlModelOfLod(currentLod, gmlRelativePath, metadata, primaryCityObjs, gmlGameObj.transform);
                 
                 if (anyModelExist && !placeMethod.DoesAllowMultipleLodPlaced())
@@ -174,6 +181,7 @@ namespace PLATEAU.Editor.CityImport
                 if (placed != null)
                 {
                     anyModelPlaced = true;
+                    Debug.Log("Placed model");
                 }
             }
 

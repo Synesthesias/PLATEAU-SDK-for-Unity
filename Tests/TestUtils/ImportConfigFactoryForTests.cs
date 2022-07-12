@@ -1,7 +1,10 @@
 ﻿using System.Collections.Generic;
+using PLATEAU.CityGML;
 using PLATEAU.CityMeta;
 using PLATEAU.CommonDataStructure;
+using PLATEAU.Editor.CityImport;
 using PLATEAU.IO;
+using UnityEngine;
 
 namespace PLATEAU.Tests.TestUtils
 {
@@ -12,9 +15,9 @@ namespace PLATEAU.Tests.TestUtils
     internal static class ImportConfigFactoryForTests
     {
         /// <summary>
-        /// PLATEAUインポート設定でなるべくシンプルなものを作って返します。
+        /// PLATEAUインポート設定で標準的なものを作って返します。
         /// </summary>
-        public static CityImportConfig MinimumConfig(string srcFullPathBeforeImport, string outputDirAssetsPath)
+        public static CityImportConfig StandardConfig(string srcFullPathBeforeImport, string outputDirAssetsPath)
         {
             var conf = new CityImportConfig
             {
@@ -26,15 +29,19 @@ namespace PLATEAU.Tests.TestUtils
                     DirAssetsPath = outputDirAssetsPath
                 }
             };
+            
             // タイプ別 3Dモデル変換設定
             var convertTypeConf = conf.objConvertTypesConfig;
-            convertTypeConf.SetLodRangeToOnlyMin();
+            convertTypeConf.SetLodRangeToAllRange();
             convertTypeConf.SetExportLowerLodForAllTypes(true);
             // タイプ別 シーン配置設定
             var placeTypeConf = conf.cityMeshPlacerConfig;
             placeTypeConf.SetPlaceMethodForAllTypes(CityMeshPlacerConfig.PlaceMethod.DoNotPlace);
             placeTypeConf.SetSelectedLodForAllTypes(0);
-            
+
+            GmlSearcherModel gmlSearcher = new GmlSearcherModel(srcFullPathBeforeImport);
+            conf.gmlSearcherConfig.GenerateAreaTree(gmlSearcher.AreaIds, false);
+            Debug.Log($"standard config : srcRootPathBeforeImport = {conf.SrcRootPathBeforeImport}");
             return conf;
         }
         

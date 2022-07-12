@@ -24,7 +24,7 @@ namespace PLATEAU.Editor.CityImport
             ProgressBar("コピー中", 0, numGml);
             
             string rootDirName = PlateauSourcePath.RootDirName(srcRootPathBeforeImport);
-            if (rootDirName == null) throw new FileNotFoundException($"{nameof(rootDirName)} is null.");
+            if (rootDirName == null) throw new FileNotFoundException($"{nameof(rootDirName)} is null. srcRootPathBeforeImport = {srcRootPathBeforeImport}");
             var dest = new PlateauSourcePath(PathUtil.FullPathToAssetsPath(Path.Combine(copyDest, rootDirName)));
 
             // コピー先のルートフォルダを作成します。

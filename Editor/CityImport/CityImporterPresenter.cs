@@ -1,5 +1,6 @@
 ﻿using PLATEAU.CityMeta;
 using PLATEAU.Util;
+using UnityEngine;
 
 namespace PLATEAU.Editor.CityImport
 {
@@ -15,14 +16,16 @@ namespace PLATEAU.Editor.CityImport
         /// <summary> 既存の設定で初期化します。 </summary>
         public static CityImporterPresenter InitWithConfig(CityImportConfig importConfig)
         {
-            // 記録されたインポート元パスを復元し、GUI画面の初期値に代入します。
+            // メタデータにファイルとして記録されたインポート元パスがあれば、それを復元し、GUI画面の初期値に代入します。
             string loadedSrcRootPath = importConfig.sourcePath.RootDirAssetPath;
-            string initialSrcRootPath = loadedSrcRootPath;
-            if (initialSrcRootPath.Replace('\\', '/').StartsWith("Assets/"))
+            if (loadedSrcRootPath.Replace('\\', '/').StartsWith("Assets/"))
             {
-                initialSrcRootPath = PathUtil.AssetsPathToFullPath(initialSrcRootPath);
+                loadedSrcRootPath = PathUtil.AssetsPathToFullPath(loadedSrcRootPath);
             }
-            importConfig.SrcRootPathBeforeImport = initialSrcRootPath;
+            if (!string.IsNullOrEmpty(loadedSrcRootPath))
+            {
+                importConfig.SrcRootPathBeforeImport = loadedSrcRootPath;
+            }
             
             return new CityImporterPresenter(importConfig);
         }
@@ -49,10 +52,10 @@ namespace PLATEAU.Editor.CityImport
             this.view.Draw(this, this.config);
         }
 
-        /// <summary> インポートします。 </summary>
-        public void Import(string[] gmlRelativePaths)
+        /// <summary> インポートします。 変換に成功したgmlの数を返します。 </summary>
+        public int Import(string[] gmlRelativePaths, out CityMetadata metadata)
         {
-            this.model.Import(gmlRelativePaths, this.config, out _);
+            return this.model.Import(gmlRelativePaths, this.config, out metadata);
         }
     }
 }

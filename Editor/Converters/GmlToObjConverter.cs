@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Threading;
 using PLATEAU.CityGML;
+using PLATEAU.CityMeta;
 using PLATEAU.Interop;
 using PLATEAU.Util;
 using PLATEAU.IO;
@@ -65,7 +66,7 @@ namespace PLATEAU.Editor.Converters
         //TODO exportObjFilePath は本来は ファイルパスではなくディレクトリのパスであるべき（いちおうファイルパスでも動くけど、名前は変えられない仕様）
         public bool Convert(string gmlFilePath, string exportObjFilePath)
         {
-            return ConvertInner(gmlFilePath, exportObjFilePath, null);
+            return ConvertInner(gmlFilePath, exportObjFilePath, null, null);
         }
 
         /// <summary>
@@ -74,15 +75,16 @@ namespace PLATEAU.Editor.Converters
         /// 設定で <see cref="gmlParserParams"/> はロード後は変更できませんが、
         /// meshGranularity, axesConversion の設定は反映されます。
         /// </summary>
-        public bool ConvertWithoutLoad(CityModel cityModel, string gmlFilePath, string objDestDirFullPath)
+        public bool ConvertWithoutLoad(CityModel cityModel, string gmlFilePath, string objDestDirFullPath, CityMetadata metadataDebugOnly)
         {
+            // TODO DebugOnlyな引数を削除
             if (cityModel == null)
             {
                 Debug.LogError("cityModel is null.");
                 return false;
             }
 
-            return ConvertInner(gmlFilePath, objDestDirFullPath, cityModel);
+            return ConvertInner(gmlFilePath, objDestDirFullPath, cityModel, metadataDebugOnly);
         }
 
         /// <summary>
@@ -91,8 +93,9 @@ namespace PLATEAU.Editor.Converters
         /// null でなければ、ファイルロードを省略して代わりに渡された <see cref="CityModel"/> を変換します。
         /// 成否をboolで返します。
         /// </summary>
-        private bool ConvertInner(string gmlFilePath, string exportDirFullPath, CityModel cityModel) 
+        private bool ConvertInner(string gmlFilePath, string exportDirFullPath, CityModel cityModel, CityMetadata metadataDebugOnly)
         {
+            // TODO debugOnlyな引数を削除
             if (!IsPathValid(gmlFilePath, exportDirFullPath)) return false;
             try
             {
@@ -145,6 +148,7 @@ namespace PLATEAU.Editor.Converters
                 // 出力先が Assets フォルダ内なら、それをUnityに反映させます。
                 if (PathUtil.IsSubDirectoryOfAssets(exportDirFullPath))
                 {
+                    AssetDatabase.SaveAssets(); // ここで Save しておかないと、次の AssetDatabase.Refresh() のタイミングで CityMetadata のデータが壊れる厄介なバグが発生します。
                     foreach (string objFullPath in objFullPaths)
                     {
                         string assetPath = PathUtil.FullPathToAssetsPath(objFullPath);

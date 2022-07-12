@@ -1,6 +1,7 @@
 ﻿using System;
 using PLATEAU.CityMeta;
 using PLATEAU.Editor.CityImport;
+using UnityEngine;
 
 namespace PLATEAU.Tests.TestUtils
 {
@@ -18,9 +19,11 @@ namespace PLATEAU.Tests.TestUtils
         /// <returns></returns>
         public static int Import(ImportPathForTests pathSet, out CityMetadata metadata, Action<CityImportConfig> additionalConfigFunc)
         {
-            var config = ImportConfigFactoryForTests.MinimumConfig(pathSet.SrcRootFullPath, pathSet.OutputDirAssetsPath);
+            var config = ImportConfigFactoryForTests.StandardConfig(pathSet.SrcRootFullPath, pathSet.OutputDirAssetsPath);
             additionalConfigFunc?.Invoke(config);
-            int successCount = new CityImporterModel().Import(pathSet.GmlRelativePaths, config, out metadata);
+            Debug.Log($"Test Importing : srcRootPathBeforeImport = {config.SrcRootPathBeforeImport}");
+            int successCount = CityImporterPresenter.InitWithConfig(config).Import(pathSet.GmlRelativePaths, out metadata);
+            Debug.Log($"Test Importing : numGml : {metadata.gmlRelativePaths.Length}");
             return successCount;
         }
     }

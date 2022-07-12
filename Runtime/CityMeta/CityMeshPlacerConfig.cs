@@ -50,13 +50,15 @@ namespace PLATEAU.CityMeta
         }
 
         // TODO このメソッドを使って一括設定のGUIを作ると便利かも？
-        public void SetPlaceMethodForAllTypes(PlaceMethod placeMethod)
+        public CityMeshPlacerConfig SetPlaceMethodForAllTypes(PlaceMethod placeMethod)
         {
             var dict = this.perTypeConfigs;
             foreach (var type in dict.Keys)
             {
                 dict[type].placeMethod = placeMethod;
             }
+
+            return this;
         }
 
         // TODO このメソッドを使って一括設定のGUIを作ると便利かも？
