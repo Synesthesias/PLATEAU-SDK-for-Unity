@@ -39,7 +39,7 @@ namespace PLATEAU.CityMeta
 
         public static readonly string[] PlaceMethodDisplay = new string[]
         {
-            "全LODを配置", "最大LODを配置", "選択LODを配置、なければ配置しない", "選択LODを配置、なければ最大LODを配置", "配置しない"
+            "全LODを配置", "最大LODを配置", "選択LODを配置、なければ配置しない", "選択LODを配置、なければそれ以下で最大のLODを配置", "配置しない"
         };
 
         public ScenePlacementConfig()
@@ -112,6 +112,16 @@ namespace PLATEAU.CityMeta
         {
             return method == PlaceMethod.PlaceSelectedLodOrMax ||
                    method == PlaceMethod.PlaceSelectedLodOrDoNotPlace;
+        }
+
+        public static bool DoesAllowMultipleLodPlaced(this PlaceMethod method)
+        {
+            return method == PlaceMethod.PlaceAllLod;
+        }
+
+        public static bool DoSearchOnlyOneLod(this PlaceMethod method)
+        {
+            return method == PlaceMethod.PlaceSelectedLodOrDoNotPlace;
         }
     }
 }

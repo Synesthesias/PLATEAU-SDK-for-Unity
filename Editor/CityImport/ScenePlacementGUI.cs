@@ -2,6 +2,7 @@
 using PLATEAU.CommonDataStructure;
 using PLATEAU.Editor.EditorWindowCommon;
 using UnityEditor;
+using UnityEngine;
 
 namespace PLATEAU.Editor.CityImport
 {
@@ -37,6 +38,7 @@ namespace PLATEAU.Editor.CityImport
                 {
                     // 再配置
                     // CityMeshPlacerToScene.Place(placementConfig, availableObjs, rootDirName, metaData);
+                    Debug.Log($"selected lod for building: {placementConfig.GetPerTypeConfig(GmlType.Building).selectedLod}");
                     CityMeshPlacerToSceneV2.Place(placementConfig, metaData);
                 }
                 

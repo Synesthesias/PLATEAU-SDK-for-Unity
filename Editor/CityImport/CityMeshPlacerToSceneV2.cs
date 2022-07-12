@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using PLATEAU.Behaviour;
@@ -33,58 +34,104 @@ namespace PLATEAU.Editor.CityImport
                 var cityModel = ParseGml(metaData, gmlRelativePath);
                 if (cityModel == null) continue;
                 
+                // var placeConfig = metaData.cityImportConfig.scenePlacementConfig;
+                var gmlType = GmlFileNameParser.GetGmlTypeEnum(gmlRelativePath);
+                var placeMethod = placeConfig.GetPerTypeConfig(gmlType).placeMethod;
+                
+                if (placeMethod == ScenePlacementConfig.PlaceMethod.DoNotPlace) continue;
+                
                 // gmlファイル名と同名のGameObjectをルート直下に作ります。
                 var gmlGameObj =
                     GameObjectUtil.AssureGameObject(GmlFileNameParser.FileNameWithoutExtension(gmlRelativePath));
                 gmlGameObj.transform.parent = rootGameObj.transform;
 
                 var primaryCityObjs = cityModel.GetCityObjectsByType(PrimaryCityObjectTypes.PrimaryTypeMask);
+
                 
-                var gmlType = GmlFileNameParser.GetGmlTypeEnum(gmlRelativePath);
-                int targetLod = metaData.cityImportConfig.scenePlacementConfig.GetPerTypeConfig(gmlType).selectedLod;
-                targetLod = 2; // TODO 仮
-                
+                // 3Dモデルファイルへの変換でのLOD範囲
+                var lodRange = metaData.cityImportConfig.objConvertTypesConfig.TypeLodDict[gmlType];
+
+                // LODを数値指定する設定なら、その指定LODを最大LODとします。
+                if (placeMethod.DoUseSelectedLod())
+                {
+                    int selectedLod = placeConfig.GetPerTypeConfig(gmlType).selectedLod;
+                    int min = lodRange.Min;
+                    // int max = Math.Min(lodRange.Max, selectedLod);
+                    int max = selectedLod;
+                    Debug.Log($"lodRange = {lodRange}, selectedLod = {selectedLod}, type = {gmlType}");
+                    lodRange.SetMinMax(min, max);
+                    Debug.Log($"lodRange = {lodRange}, selectedLod = {selectedLod}, type = {gmlType}");
+                }
+
+                // 1つのLODのみを探索する設定なら、範囲を1つに狭めます。
+                if (placeMethod.DoSearchOnlyOneLod())
+                {
+                    int max = lodRange.Max;
+                    lodRange.SetMinMax(max, max);
+                }
+
 
                 // ループ 2段目 : LODごと
-                for (int currentLod = 0; currentLod <= targetLod; currentLod++) // TODO currentLod を 0からではなくタイプ別最小値から始める
+                for (int currentLod = lodRange.Max; currentLod >= lodRange.Min; currentLod--) 
                 {
                     // 対応する3Dモデルファイルを探します。
                     var foundObj = FindObjFile(metaData, currentLod, gmlRelativePath);
                     if (foundObj == null) continue;
-                
+
+                    bool anyModelExist = false;
+
                     // ループ 3段目 : 主要地物ごと
                     foreach (var primaryCityObj in primaryCityObjs)
                     {
-
-                        // この LOD で 主要地物が存在するなら、それを配置します。
+                        Transform gmlTrans = gmlGameObj.transform;
+                        // この LOD で 主要地物モデルが存在するなら、それを配置します。
                         string primaryGameObjName = GameObjNameParser.ComposeName(currentLod, primaryCityObj.ID);
-                        var primaryGameObj = PlaceToScene(foundObj, primaryGameObjName, gmlGameObj.transform);
+                        var primaryGameObj = PlaceToScene(foundObj, primaryGameObjName, gmlTrans);
 
-                        // この LOD で 主要地物が存在しないなら、シーンに配置済みの低いLODを検索します。
+                        // この LOD で 主要地物モデルが存在しないなら、シーンに配置済みの低いLODを検索します。
+                        // if (primaryGameObj == null)
+                        // {
+                        //     primaryGameObj =
+                        //         SearchCityObjInScene(primaryCityObj.ID, currentLod, gmlTrans);
+                        // }
+
+                        // このLODで主要地物が存在しないなら、空のGameObjectのみ用意します。
                         if (primaryGameObj == null)
                         {
-                            primaryGameObj =
-                                SearchCityObjInScene(primaryCityObj.ID, currentLod, gmlGameObj.transform);
+                            string primaryObjName = GameObjNameParser.ComposeName(currentLod, primaryCityObj.ID);
+                            // 古いGameObjectがあれば削除します。
+                            var oldPrimaryTrans = GameObjectUtil.FindRecursive(gmlTrans, primaryObjName);
+                            if(oldPrimaryTrans != null) Object.DestroyImmediate(oldPrimaryTrans.gameObject);
+                            // 空のGameObjectを作ります。
+                            primaryGameObj = new GameObject(primaryObjName);
+                            primaryGameObj.transform.parent = gmlTrans;
                         }
-
-                        // 検索してもまだ主要地物が存在しないなら、この主要地物はスキップします。
-                        if (primaryGameObj == null)
+                        else
                         {
-                            Debug.LogError($"Primary game obj is not found.\ntargetGameObjName = {primaryGameObjName}");
-                            continue;
+                            anyModelExist = true;
                         }
 
                         // LOD <= 1 の場合 : 主要地物を配置すれば完了となります。主要でない地物の配置をスキップします。
+                        // （メッシュの結合単位に関わらず、 LOD <= 1 では主要地物より細かいものは出てきません。）
                         if (currentLod <= 1 ) continue;
                     
                         // LOD >= 2 の場合 : 子の CityObject をそれぞれ配置します。
+                        // （メッシュの結合単位が最小地物の場合に出てくる細かいモデルです。）
                         var childCityObjs = primaryCityObj.CityObjectDescendantsDFS;
                     
                         // 主要地物の子をすべて配置します。
-                        PlaceCityObjs(foundObj, childCityObjs.ToArray(), primaryGameObj.transform);
+                        anyModelExist |= PlaceCityObjs(foundObj, childCityObjs.ToArray(), primaryGameObj.transform);
 
                     } // ループ 3段目 ここまで (主要地物ごと) 
-                }
+                    // ループ 2段目 (LODごと)
+                    
+                    if (anyModelExist && !placeMethod.DoesAllowMultipleLodPlaced())
+                    {
+                        // 今のLODですでにモデルが配置されており、かつ複数LODを同時に配置しない設定ならば、
+                        // これ以下のLODの配置はスキップします。
+                        break;
+                    }
+                }// ループ 2段目 ここまで (LODごと)
                 
             }// ループ 1段目 ここまで (gmlファイルごと)
         }
@@ -112,44 +159,52 @@ namespace PLATEAU.Editor.CityImport
             return objInfos.FirstOrDefault(info => Path.GetFileName(info.assetsPath) == targetObjName);
         }
 
-        /// <summary>
-        /// シーン中の <see cref="CityObject"/> を検索します。
-        /// 検索範囲は <paramref name="parentTransform"/> の子（再帰的）です。
-        /// LODが <paramref name="startLod"/> のものから検索し、なければ それより低いLODを検索します。
-        /// それでも見つからなければ null を返します。
-        /// </summary>
-        private static GameObject SearchCityObjInScene(string cityObjId, int startLod, Transform parentTransform)
-        {
-            GameObject foundGameObj = null;
-            for (int searchingLod = startLod; searchingLod >= 0; searchingLod--)
-            {
-                string gameObjName = GameObjNameParser.ComposeName(searchingLod, cityObjId);
-                var trans = GameObjectUtil.FindRecursive(parentTransform, gameObjName);
-                if (trans != null)
-                {
-                    foundGameObj = trans.gameObject;
-                    break;
-                }
-            }
-
-            return foundGameObj;
-        }
+        // /// <summary>
+        // /// シーン中の <see cref="CityObject"/> を検索します。
+        // /// 検索範囲は <paramref name="parentTransform"/> の子（再帰的）です。
+        // /// LODが <paramref name="startLod"/> のものから検索し、なければ それより低いLODを検索します。
+        // /// それでも見つからなければ null を返します。
+        // /// </summary>
+        // private static GameObject SearchCityObjInScene(string cityObjId, int startLod, Transform parentTransform)
+        // {
+        //     GameObject foundGameObj = null;
+        //     for (int searchingLod = startLod; searchingLod >= 0; searchingLod--)
+        //     {
+        //         string gameObjName = GameObjNameParser.ComposeName(searchingLod, cityObjId);
+        //         var trans = GameObjectUtil.FindRecursive(parentTransform, gameObjName);
+        //         if (trans != null)
+        //         {
+        //             foundGameObj = trans.gameObject;
+        //             break;
+        //         }
+        //     }
+        //
+        //     return foundGameObj;
+        // }
 
         /// <summary>
         /// <see cref="PlaceToScene"/> の複数版です。
         /// </summary>
-        private static void PlaceCityObjs(ObjInfo objInfo, ICollection<CityObject> cityObjs, Transform parent)
+        /// <returns>1つでも3Dモデルを配置したら true、そうでなければ false を返します。</returns>
+        private static bool PlaceCityObjs(ObjInfo objInfo, ICollection<CityObject> cityObjs, Transform parent)
         {
+            bool anyModelPlaced = false;
             foreach (var cityObj in cityObjs)
             {
                 string gameObjName = GameObjNameParser.ComposeName(objInfo.lod, cityObj.ID);
-                PlaceToScene(objInfo, gameObjName, parent);
+                var placed = PlaceToScene(objInfo, gameObjName, parent);
+                if (placed != null)
+                {
+                    anyModelPlaced = true;
+                }
             }
+
+            return anyModelPlaced;
         }
 
         /// <summary>
         /// <paramref name="objInfo"/> の3Dモデルのうち、名前が <paramref name="objName"/> であるものを探します。
-        /// あればシーンに配置して、それを返します。
+        /// あればシーンに配置して、それを返します。配置のとき、すでに同名のものがある場合は削除してから配置します。
         /// なければ null を返します。
         /// </summary>
         private static GameObject PlaceToScene(ObjInfo objInfo, string objName, Transform parentTransform)

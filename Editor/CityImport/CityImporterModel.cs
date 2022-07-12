@@ -137,9 +137,7 @@ namespace PLATEAU.Editor.CityImport
             
             // シーンに配置します。
             importConfig.rootDirName = PlateauSourcePath.RootDirName(sourcePathConf.RootDirAssetPath);
-            CityMeshPlacerToSceneV2.Place(
-                importConfig.scenePlacementConfig, metaData
-            );
+            CityMeshPlacerToSceneV2.Place(metaData.cityImportConfig.scenePlacementConfig, metaData);
             
             // 後処理
             EditorUtility.SetDirty(metaData);

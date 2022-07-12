@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading.Tasks;
 using PLATEAU.Editor.EditorWindowCommon;
 using UnityEditor;
 using UnityEngine;

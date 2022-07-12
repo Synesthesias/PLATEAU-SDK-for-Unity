@@ -1,4 +1,5 @@
 ﻿using System;
+using Codice.CM.Common;
 using UnityEngine;
 
 namespace PLATEAU.CommonDataStructure
@@ -52,8 +53,14 @@ namespace PLATEAU.CommonDataStructure
                 (this.min, this.max) = (this.max, this.min);
             }
         }
+
+        public override string ToString()
+        {
+            return $"(min: {Min}, max: {Max})";
+        }
     }
 
+    
     /// <summary>
     /// <see cref="MinMax{T}"/> の値を readonly にしたバージョンです。 
     /// </summary>

@@ -1,7 +1,5 @@
 ﻿using System.Collections.Generic;
-using Codice.CM.Common;
 using PLATEAU.CityMeta;
-using UnityEngine;
 
 namespace PLATEAU.Editor.CityImport
 {
