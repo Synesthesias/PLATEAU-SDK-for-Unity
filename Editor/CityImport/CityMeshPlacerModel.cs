@@ -5,7 +5,7 @@ using PLATEAU.Behaviour;
 using PLATEAU.CityMeta;
 using UnityEditor;
 using UnityEngine;
-using static PLATEAU.CityMeta.ScenePlacementConfig;
+using static PLATEAU.CityMeta.CityMeshPlacerConfig;
 using Object = UnityEngine.Object;
 
 namespace PLATEAU.Editor.CityImport
@@ -13,15 +13,15 @@ namespace PLATEAU.Editor.CityImport
     /// <summary>
     /// インポートされた都市の3Dモデルファイルをロードし、シーンに配置します。
     /// </summary>
-    [Obsolete("代わりに CityMeshPlacerToSceneV2 を利用してください")]
-    internal static class CityMeshPlacerToScene
+    [Obsolete("代わりに CityMeshPlacerV2 を利用してください")]
+    internal static class CityMeshPlacerModel
     {
         /// <summary>
         /// <paramref name="availableObjs"/> の3Dモデルをロードし、
         /// <paramref name="parentGameObjName"/> の子オブジェクトとしてシーンに配置します。
-        /// 親ゲームオブジェクトには <see cref="CityBehaviour"/> をアタッチし、与えられた<see cref="CityMetaData"/> をリンクします。
+        /// 親ゲームオブジェクトには <see cref="CityBehaviour"/> をアタッチし、与えられた<see cref="CityMetadata"/> をリンクします。
         /// </summary>
-        public static void Place(ScenePlacementConfig placementConf, List<ObjInfo> availableObjs, string parentGameObjName, CityMetaData metaData)
+        public static void Place(CityMeshPlacerConfig placementConf, List<ObjInfo> availableObjs, string parentGameObjName, CityMetadata metadata)
         {
             // 設定に基づいてシーンに配置すべき obj ファイルを決めます。
             var objsToPlace = new List<ObjInfo>();
@@ -98,7 +98,7 @@ namespace PLATEAU.Editor.CityImport
             {
                 cityBehaviour = parent.AddComponent<CityBehaviour>();
             }
-            cityBehaviour.CityMetaData = metaData;
+            cityBehaviour.CityMetadata = metadata;
             
             // 親に古い子が付いているなら、子を全削除します。
             DestroyAllChild(parent.transform);

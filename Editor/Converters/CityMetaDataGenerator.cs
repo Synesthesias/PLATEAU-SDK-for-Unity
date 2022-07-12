@@ -10,23 +10,23 @@ using Debug = UnityEngine.Debug;
 namespace PLATEAU.Editor.Converters
 {
     /// <summary>
-    /// <see cref="CityMetaData"/> を生成します。
+    /// <see cref="CityMetadata"/> を生成します。
     /// </summary>
     internal class CityMetaDataGenerator
     {
 
         /// <summary>
-        /// <see cref="CityMetaData"/> を生成します。
+        /// <see cref="CityMetadata"/> を生成します。
         /// gml元データのインポート時に利用されることを想定しています。
         ///
-        /// <paramref name="metaData"/> が null のとき、既存のメタデータをファイルからロード、なければ新規作成した上でそのメタデータの情報を書き換えます。
-        /// <paramref name="metaData"/> が null でないとき、そのメモリ上のメタデータに対して情報を書き換えます。
+        /// <paramref name="metadata"/> が null のとき、既存のメタデータをファイルからロード、なければ新規作成した上でそのメタデータの情報を書き換えます。
+        /// <paramref name="metadata"/> が null でないとき、そのメモリ上のメタデータに対して情報を書き換えます。
         /// <paramref name="doSaveFile"/> が false のとき、ファイルには保存せずメモリ内でのみ変更が保持されます。
         /// これを false にする動機は、シリアライズするタイミングを手動でコントロールすることでシリアライズ回数を減らし、高速化することです。
         /// </summary>
         public bool Generate(
             CityMapMetaDataGeneratorConfig config, string meshAssetPath, string gmlFileName,
-            CityMetaData metaData = null, bool doSaveFile = true)
+            CityMetadata metadata = null, bool doSaveFile = true)
         {
             try
             {
@@ -34,9 +34,9 @@ namespace PLATEAU.Editor.Converters
                 var importConf = config.CityImportConfig;
                 var importDestPath = importConf.importDestPath;
                 string srcRootAssetsPath = importConf.sourcePath.RootDirAssetPath;
-                if (metaData == null)
+                if (metadata == null)
                 {
-                    metaData = LoadOrCreateMetaData(importDestPath.MetaDataAssetPath, config.DoClearIdToGmlTable);
+                    metadata = LoadOrCreateMetaData(importDestPath.MetaDataAssetPath, config.DoClearIdToGmlTable);
                 }
                 
                 var assets = AssetDatabase.LoadAllAssetsAtPath(meshAssetPath);
@@ -52,20 +52,20 @@ namespace PLATEAU.Editor.Converters
                 foreach (var mesh in meshes)
                 {
                     string id = mesh.name;
-                    if (metaData.DoGmlTableContainsKey(id)) continue;
-                    metaData.AddToGmlTable(id, gmlFileName);
+                    if (metadata.DoGmlTableContainsKey(id)) continue;
+                    metadata.AddToGmlTable(id, gmlFileName);
                 }
 
                 // 変換時の設定を書き込みます。
                 importConf.sourcePath.RootDirAssetPath = srcRootAssetsPath;
 
                 importConf.importDestPath.DirAssetsPath = importDestPath.DirAssetsPath;
-                metaData.cityImportConfig = importConf;
+                metadata.cityImportConfig = importConf;
                 
                 // ファイルに保存します。
                 if (doSaveFile)
                 {
-                    EditorUtility.SetDirty(metaData);
+                    EditorUtility.SetDirty(metadata);
                     AssetDatabase.SaveAssets();
                 }
 
@@ -73,27 +73,27 @@ namespace PLATEAU.Editor.Converters
             }
             catch (Exception e)
             {
-                Debug.LogError($"Error generating {nameof(CityMetaData)}.\n{e}");
+                Debug.LogError($"Error generating {nameof(CityMetadata)}.\n{e}");
                 return false;
             }
         }
         
         /// <summary>
-        /// 指定パスの <see cref="CityMetaData"/> をロードします。
+        /// 指定パスの <see cref="CityMetadata"/> をロードします。
         /// ファイルが存在しない場合、新しく作成します。
         /// ファイルが存在する場合、それをロードします。
         /// ロード時、<paramref name="doClearIdToGmlTable"/> がtrueなら idToGmlTable を消去します。
         /// </summary>
-        public static CityMetaData LoadOrCreateMetaData(string dstAssetPath, bool doClearIdToGmlTable)
+        public static CityMetadata LoadOrCreateMetaData(string dstAssetPath, bool doClearIdToGmlTable)
         {
             bool doFileExists = File.Exists(PathUtil.AssetsPathToFullPath(dstAssetPath));
             if (!doFileExists)
             {
-                var instance = ScriptableObject.CreateInstance<CityMetaData>();
+                var instance = ScriptableObject.CreateInstance<CityMetadata>();
                 AssetDatabase.CreateAsset(instance, dstAssetPath);
                 AssetDatabase.SaveAssets();
             }
-            var loadedMetaData = AssetDatabase.LoadAssetAtPath<CityMetaData>(dstAssetPath);
+            var loadedMetaData = AssetDatabase.LoadAssetAtPath<CityMetadata>(dstAssetPath);
             if (doClearIdToGmlTable)
             {
                 loadedMetaData.ClearIdToGmlTable();

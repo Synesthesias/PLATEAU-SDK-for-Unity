@@ -42,7 +42,7 @@ namespace PLATEAU.CityMeta
         /// <see cref="GmlType"/> を key として、存在するLODの範囲を value とします。
         /// <see cref="GmlType"/> に対応する objファイルが存在しない場合は、そのタイプの value は null となります。
         /// </returns>
-        public static Dictionary<GmlType, MinMax<int>> AvailableLodInObjs(IReadOnlyList<ObjInfo> objInfoList)
+        public static Dictionary<GmlType, MinMax<int>> AvailableLodInObjs(IReadOnlyCollection<ObjInfo> objInfoList)
         {
             var typeLodDict = GmlTypeConvert.ComposeTypeDict<MinMax<int>>(null);
             foreach (var objInfo in objInfoList)

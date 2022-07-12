@@ -38,7 +38,7 @@ namespace PLATEAU.CityMeta
         public ImportDestPath importDestPath = new ImportDestPath();
 
         /// <summary> インポートした物をシーンに配置する設定 </summary>
-        public ScenePlacementConfig scenePlacementConfig = new ScenePlacementConfig();
+        public CityMeshPlacerConfig cityMeshPlacerConfig = new CityMeshPlacerConfig();
 
         public ObjConvertTypesConfig objConvertTypesConfig = new ObjConvertTypesConfig();
 

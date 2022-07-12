@@ -12,7 +12,7 @@ namespace PLATEAU.CityMeta
     ///   これにより、この ScriptableObject をプロジェクトビューから選択したときに「再変換」画面を出すことができます。
     ///
     /// </summary>
-    public class CityMetaData : ScriptableObject
+    public class CityMetadata : ScriptableObject
     {
         /// <value>都市オブジェクトのIDから、それに対応する gmlファイル名を検索できる辞書です。</value>
         [SerializeField] internal IdToGmlTable idToGmlTable = new IdToGmlTable();

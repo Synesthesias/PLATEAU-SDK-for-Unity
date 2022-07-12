@@ -7,13 +7,13 @@ using UnityEngine;
 namespace PLATEAU.Editor.CityImport
 {
     /// <summary>
-    /// <see cref="CityMetaData"/> のインスペクタでの表示を行います。
+    /// <see cref="CityMetadata"/> のインスペクタでの表示を行います。
     /// 役割は2つあります。
-    /// ・<see cref="CityMetaData"/> が保持する情報を（必要なら）インスペクタに表示すること。
-    /// ・<see cref="CityMetaData"/> はインポート時の設定を覚えているので、その設定で「再変換」画面をインスペクタに表示すること。
+    /// ・<see cref="CityMetadata"/> が保持する情報を（必要なら）インスペクタに表示すること。
+    /// ・<see cref="CityMetadata"/> はインポート時の設定を覚えているので、その設定で「再変換」画面をインスペクタに表示すること。
     /// 　再変換の画面では、ユーザーが設定を変えることが可能であること。この機能によりユーザーが「前回から少しだけ設定を変えて変換」する操作をする上で便利になること。
     /// </summary>
-    [CustomEditor(typeof(CityMetaData))]
+    [CustomEditor(typeof(CityMetadata))]
     internal class CityMetaDataEditor : UnityEditor.Editor
     {
         private bool foldOutIdGmlTable;
@@ -22,14 +22,14 @@ namespace PLATEAU.Editor.CityImport
         private bool foldOutOtherData;
         private bool foldOutGmlPaths;
         private CityImporterPresenter importerPresenter;
-        private ScenePlacementGUI scenePlacementGUI;
+        private readonly CityMeshPlacerPresenter cityMeshPlacerPresenter = new CityMeshPlacerPresenter();
         private Vector2 scrollPosOfIdGmlTable;
         private Vector2 scrollPosOfObjInfo;
         private Vector2 scrollPosOfGmlPaths;
         public override void OnInspectorGUI()
         {
             HeaderDrawer.Reset();
-            var metaData = target as CityMetaData;
+            var metaData = target as CityMetadata;
             if (metaData == null)
             {
                 EditorGUILayout.HelpBox($"{nameof(metaData)} が null です。", MessageType.Error);
@@ -38,7 +38,6 @@ namespace PLATEAU.Editor.CityImport
 
             // 初期化
             this.importerPresenter ??= CityImporterPresenter.InitWithConfig(metaData.cityImportConfig);
-            this.scenePlacementGUI ??= new ScenePlacementGUI();
 
             EditorGUILayout.Space(10);
             
@@ -67,7 +66,7 @@ namespace PLATEAU.Editor.CityImport
                 if (this.foldOutReplace)
                 {
                     HeaderDrawer.IncrementDepth();
-                    this.scenePlacementGUI.Draw(metaData);
+                    this.cityMeshPlacerPresenter.Draw(metaData);
                     HeaderDrawer.DecrementDepth();
                 }
             }

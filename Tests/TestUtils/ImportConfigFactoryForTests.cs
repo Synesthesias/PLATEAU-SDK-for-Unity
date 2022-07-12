@@ -31,8 +31,8 @@ namespace PLATEAU.Tests.TestUtils
             convertTypeConf.SetLodRangeToOnlyMin();
             convertTypeConf.SetExportLowerLodForAllTypes(true);
             // タイプ別 シーン配置設定
-            var placeTypeConf = conf.scenePlacementConfig;
-            placeTypeConf.SetPlaceMethodForAllTypes(ScenePlacementConfig.PlaceMethod.DoNotPlace);
+            var placeTypeConf = conf.cityMeshPlacerConfig;
+            placeTypeConf.SetPlaceMethodForAllTypes(CityMeshPlacerConfig.PlaceMethod.DoNotPlace);
             placeTypeConf.SetSelectedLodForAllTypes(0);
             
             return conf;

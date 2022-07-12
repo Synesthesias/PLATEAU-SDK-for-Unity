@@ -17,17 +17,17 @@ namespace PLATEAU.Behaviour
     {
         private readonly Dictionary<string, CityModel> fileToCityModelCache = new Dictionary<string, CityModel>();
 
-        public CityObject Load(string gameObjName, CityMetaData cityMetaData)
+        public CityObject Load(string gameObjName, CityMetadata cityMetadata)
         {
-            if (cityMetaData == null)
+            if (cityMetadata == null)
             {
-                throw new ArgumentNullException($"{nameof(cityMetaData)}");
+                throw new ArgumentNullException($"{nameof(cityMetadata)}");
             }
             
             // テーブルから cityObjectId に対応する gmlFileName を検索します。
-            if( !cityMetaData.TryGetValueFromGmlTable(gameObjName, out var gmlFileName))
+            if( !cityMetadata.TryGetValueFromGmlTable(gameObjName, out var gmlFileName))
             {
-                throw new KeyNotFoundException($"cityObjectId {gameObjName} is not found in {nameof(CityMetaData)}.");
+                throw new KeyNotFoundException($"cityObjectId {gameObjName} is not found in {nameof(CityMetadata)}.");
             }
             
             
@@ -48,7 +48,7 @@ namespace PLATEAU.Behaviour
                 return GetCityObjectById(cityModel, cityObjId);
             }
             
-            string udxFullPath = cityMetaData.cityImportConfig.sourcePath.UdxFullPath();
+            string udxFullPath = cityMetadata.cityImportConfig.sourcePath.UdxFullPath();
             // udxフォルダは StreamingAssets フォルダにあることを前提とします。
             if (!PathUtil.IsSubDirectory(udxFullPath, PlateauUnityPath.StreamingFolder))
             {

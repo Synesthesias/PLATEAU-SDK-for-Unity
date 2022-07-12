@@ -8,7 +8,7 @@ namespace PLATEAU.CityMeta
 {
     /// <summary>
     /// <see cref="CityObject"/> のIDから、対応するGMLのファイル名を検索できる辞書データです。
-    /// <see cref="CityMetaData"/> によって保持されます。
+    /// <see cref="CityMetadata"/> によって保持されます。
     /// </summary>
     [Serializable]
     internal class IdToGmlTable :  ISerializationCallbackReceiver//, IDictionary<string, string> // TODO IDictionary に対応したほうが便利だけどまだやってない

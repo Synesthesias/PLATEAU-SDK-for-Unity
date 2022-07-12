@@ -4,7 +4,7 @@ using NUnit.Framework;
 using PLATEAU.Tests.TestUtils;
 using PLATEAU.Util;
 using UnityEngine;
-using static PLATEAU.CityMeta.ScenePlacementConfig;
+using static PLATEAU.CityMeta.CityMeshPlacerConfig;
 
 namespace PLATEAU.Tests.EditModeTests
 {
@@ -106,7 +106,7 @@ namespace PLATEAU.Tests.EditModeTests
                 config =>
                 {
                     config.SetConvertLods(minLod, maxLod);
-                    var placeConf = config.scenePlacementConfig;
+                    var placeConf = config.cityMeshPlacerConfig;
                     placeConf.SetSelectedLodForAllTypes(selectedLod);
                     placeConf.SetPlaceMethodForAllTypes(placeMethod);
                 });

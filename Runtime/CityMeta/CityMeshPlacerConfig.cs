@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using PLATEAU.Util;
 using UnityEngine;
-using static PLATEAU.CityMeta.ScenePlacementConfig;
+using static PLATEAU.CityMeta.CityMeshPlacerConfig;
 
 namespace PLATEAU.CityMeta
 {
@@ -15,7 +15,7 @@ namespace PLATEAU.CityMeta
     /// ・インポート時の設定を保存する目的で SerializeField を保持すること。 
     /// </summary>
     [Serializable]
-    internal class ScenePlacementConfig : ISerializationCallbackReceiver
+    internal class CityMeshPlacerConfig : ISerializationCallbackReceiver
     {
         private Dictionary<GmlType, ScenePlacementConfigPerType> perTypeConfigs;
         
@@ -42,7 +42,7 @@ namespace PLATEAU.CityMeta
             "全LODを配置", "最大LODを配置", "選択LODを配置、なければ配置しない", "選択LODを配置、なければそれ以下で最大のLODを配置", "配置しない"
         };
 
-        public ScenePlacementConfig()
+        public CityMeshPlacerConfig()
         {
             // 各タイプごとの設定を初期化します。
             this.perTypeConfigs = GmlTypeConvert.ComposeTypeDict<ScenePlacementConfigPerType>();
@@ -93,7 +93,7 @@ namespace PLATEAU.CityMeta
     }
 
     /// <summary>
-    /// <see cref="ScenePlacementConfig"/> の 1タイプあたりの設定項目です。
+    /// <see cref="CityMeshPlacerConfig"/> の 1タイプあたりの設定項目です。
     /// </summary>
     [Serializable]
     internal class ScenePlacementConfigPerType
@@ -106,7 +106,7 @@ namespace PLATEAU.CityMeta
     {
         /// <summary>
         /// 設定項目で <see cref="ScenePlacementConfigPerType.selectedLod"/> を使うかどうかは
-        /// <see cref="ScenePlacementConfig.PlaceMethod"/> に依るので、使うかどうかを返します。
+        /// <see cref="CityMeshPlacerConfig.PlaceMethod"/> に依るので、使うかどうかを返します。
         /// </summary>
         public static bool DoUseSelectedLod(this PlaceMethod method)
         {

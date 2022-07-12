@@ -6,18 +6,18 @@ namespace PLATEAU.Behaviour
 {
     /// <summary>
     /// ゲームオブジェクトの名称からPlateauの <see cref="CityGML.CityObject"/> を返す MonoBehaviour です。
-    /// 実行には <see cref="CityMeta.CityMetaData"/> を保持する必要があります。
+    /// 実行には <see cref="CityMetadata"/> を保持する必要があります。
     /// </summary>
     public class CityBehaviour : MonoBehaviour
     {
-        [SerializeField] private CityMetaData cityMetaData;
+        [SerializeField] private CityMetadata cityMetadata;
         private readonly CityModelLoader loader = new CityModelLoader();
 
-        /// <summary> ゲームオブジェクトとgmlファイルを対応付けるために必要な <see cref="CityMeta.CityMetaData"/> です。 </summary>
-        public CityMetaData CityMetaData
+        /// <summary> ゲームオブジェクトとgmlファイルを対応付けるために必要な <see cref="CityMetadata"/> です。 </summary>
+        public CityMetadata CityMetadata
         {
-            get => this.cityMetaData;
-            set => this.cityMetaData = value;
+            get => this.cityMetadata;
+            set => this.cityMetadata = value;
         }
 
         /// <summary>
@@ -27,7 +27,7 @@ namespace PLATEAU.Behaviour
         /// <returns>引数に対応する<see cref="CityGML.CityObject"/></returns>
         public CityObject LoadCityObject(string gameObjName)
         {
-            return this.loader.Load(gameObjName, this.cityMetaData);
+            return this.loader.Load(gameObjName, this.cityMetadata);
         }
     }
 }

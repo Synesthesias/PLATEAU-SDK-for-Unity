@@ -1,8 +1,8 @@
-﻿using PLATEAU.CityMeta;
+﻿using System.Collections.Generic;
+using PLATEAU.CityMeta;
 using PLATEAU.CommonDataStructure;
 using PLATEAU.Editor.EditorWindowCommon;
 using UnityEditor;
-using UnityEngine;
 
 namespace PLATEAU.Editor.CityImport
 {
@@ -10,16 +10,16 @@ namespace PLATEAU.Editor.CityImport
     /// インポートした objファイルをシーンに配置することに関する設定GUIを描画します。
     /// <see cref="CityImporterView"/> がこのクラスを保持します。
     /// </summary>
-    internal class ScenePlacementGUI
+    internal static class CityMeshPlacerView
     {
-        public void Draw(CityMetaData metaData)
+        public static void Draw(CityMeshPlacerPresenter presenter, CityMeshPlacerConfig placerConfig, IReadOnlyCollection<ObjInfo> availableObjs)
         {
             using (PlateauEditorStyle.VerticalScopeLevel1())
             {
-                var importConfig = metaData.cityImportConfig;
-                var placementConfig = importConfig.scenePlacementConfig;
-                var gmlTypes = placementConfig.AllGmlTypes();
-                var availableObjs = importConfig.generatedObjFiles;
+                // var importConfig = metadata.cityImportConfig;
+                // var placerConfig = importConfig.cityMeshPlacerConfig;
+                var gmlTypes = placerConfig.AllGmlTypes();
+                // var availableObjs = importConfig.generatedObjFiles;
                 var typeLodDict = ObjInfo.AvailableLodInObjs(availableObjs);
                 foreach (var gmlType in gmlTypes)
                 {
@@ -29,7 +29,7 @@ namespace PLATEAU.Editor.CityImport
                     EditorGUILayout.LabelField(gmlType.ToDisplay());
                     using (PlateauEditorStyle.VerticalScopeLevel2())
                     {
-                        var typeConf = placementConfig.GetPerTypeConfig(gmlType);
+                        var typeConf = placerConfig.GetPerTypeConfig(gmlType);
                         DrawPerTypeConfGUI(typeConf, possibleLodRange); 
                     }
                                
@@ -37,9 +37,7 @@ namespace PLATEAU.Editor.CityImport
                 if (PlateauEditorStyle.MainButton("シーンにモデルを再配置"))
                 {
                     // 再配置
-                    // CityMeshPlacerToScene.Place(placementConfig, availableObjs, rootDirName, metaData);
-                    Debug.Log($"selected lod for building: {placementConfig.GetPerTypeConfig(GmlType.Building).selectedLod}");
-                    CityMeshPlacerToSceneV2.Place(placementConfig, metaData);
+                    presenter.Place();
                 }
                 
             }
@@ -49,11 +47,11 @@ namespace PLATEAU.Editor.CityImport
         /// <summary>
         /// タイプ別のシーン配置設定GUIです。
         /// </summary>
-        private void DrawPerTypeConfGUI(ScenePlacementConfigPerType typeConf, MinMax<int> possibleLodRange)
+        private static void DrawPerTypeConfGUI(ScenePlacementConfigPerType typeConf, MinMax<int> possibleLodRange)
         {
             var placeMethod = typeConf.placeMethod;
-            placeMethod = (ScenePlacementConfig.PlaceMethod)
-                EditorGUILayout.Popup("シーン配置方法", (int)placeMethod, ScenePlacementConfig.PlaceMethodDisplay);
+            placeMethod = (CityMeshPlacerConfig.PlaceMethod)
+                EditorGUILayout.Popup("シーン配置方法", (int)placeMethod, CityMeshPlacerConfig.PlaceMethodDisplay);
             typeConf.placeMethod = placeMethod;
             if (placeMethod.DoUseSelectedLod())
             {

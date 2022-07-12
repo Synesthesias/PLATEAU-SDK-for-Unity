@@ -121,7 +121,7 @@ namespace PLATEAU.Tests.EditModeTests
             // 値2: CityMapInfo に書き込まれた MeshGranularity の値
             string metaDataPath =
                 Path.Combine(testOutputDirAssetsPath, "CityMapMetaData.asset");
-            var loadedMetaData = AssetDatabase.LoadAssetAtPath<CityMetaData>(metaDataPath);
+            var loadedMetaData = AssetDatabase.LoadAssetAtPath<CityMetadata>(metaDataPath);
             Assert.NotNull(loadedMetaData, "メタデータをロードできる");
             var granularityOnMapInfo = loadedMetaData.cityImportConfig.meshGranularity;
             
@@ -132,7 +132,7 @@ namespace PLATEAU.Tests.EditModeTests
         [Test]
         public void When_CityMapInfo_Is_Already_Exist_Then_Clear_Its_Data_Before_Convert()
         {
-            bool DoContainAtomic(CityMetaData info) => info.idToGmlTable.Keys.Any(id => id.Contains("_wall_"));
+            bool DoContainAtomic(CityMetadata info) => info.idToGmlTable.Keys.Any(id => id.Contains("_wall_"));
 
             TestImporter.Import(ImportPathForTests.Simple, out var metaData,
                 config =>
@@ -211,7 +211,7 @@ namespace PLATEAU.Tests.EditModeTests
             Assert.AreEqual( expectedSrcPath, actualRootPath, "メモリ上のメタデータの sourcePath がコピー後を指している" );
 
             var metaDataPath = metaData.cityImportConfig.importDestPath.MetaDataAssetPath;
-            var loadedMetaData = AssetDatabase.LoadAssetAtPath<CityMetaData>(metaDataPath);
+            var loadedMetaData = AssetDatabase.LoadAssetAtPath<CityMetadata>(metaDataPath);
             Assert.NotNull(loadedMetaData, "生成後のメタデータをロードできる");
             var loadedSrcPath = fullRootPath.Replace('\\', '/');
             Assert.AreEqual(expectedSrcPath, loadedSrcPath, "保存されたメタデータの sourcePath がコピー後を指している");

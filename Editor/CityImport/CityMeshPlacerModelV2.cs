@@ -14,31 +14,31 @@ using Object = UnityEngine.Object;
 
 namespace PLATEAU.Editor.CityImport
 {
-    internal static class CityMeshPlacerToSceneV2
+    internal static class CityMeshPlacerModelV2
     {
-        public static void Place(ScenePlacementConfig placeConfig, CityMetaData metaData)
+        public static void Place(CityMeshPlacerConfig placeConfig, CityMetadata metadata)
         {
             // Plateau元データのルートフォルダと同名の ルートGame Objectを作ります。 
-            string rootDirName = metaData.cityImportConfig.rootDirName;
+            string rootDirName = metadata.cityImportConfig.rootDirName;
             var rootGameObj = GameObjectUtil.AssureGameObject(rootDirName);
             
             // ルートGameObjectに CityBehaviour をアタッチしてメタデータをリンクします。
             var cityBehaviour = GameObjectUtil.AssureComponent<CityBehaviour>(rootGameObj);
-            cityBehaviour.CityMetaData = metaData;
+            cityBehaviour.CityMetadata = metadata;
             
-            string[] gmlRelativePaths = metaData.gmlRelativePaths;
+            string[] gmlRelativePaths = metadata.gmlRelativePaths;
             
             // ループ 1段目 : gmlファイルごと
             foreach (var gmlRelativePath in gmlRelativePaths)
             {
-                var cityModel = ParseGml(metaData, gmlRelativePath);
+                var cityModel = ParseGml(metadata, gmlRelativePath);
                 if (cityModel == null) continue;
                 
                 // var placeConfig = metaData.cityImportConfig.scenePlacementConfig;
                 var gmlType = GmlFileNameParser.GetGmlTypeEnum(gmlRelativePath);
                 var placeMethod = placeConfig.GetPerTypeConfig(gmlType).placeMethod;
                 
-                if (placeMethod == ScenePlacementConfig.PlaceMethod.DoNotPlace) continue;
+                if (placeMethod == CityMeshPlacerConfig.PlaceMethod.DoNotPlace) continue;
                 
                 // gmlファイル名と同名のGameObjectをルート直下に作ります。
                 var gmlGameObj =
@@ -49,7 +49,7 @@ namespace PLATEAU.Editor.CityImport
 
                 
                 // 3Dモデルファイルへの変換でのLOD範囲
-                var lodRange = metaData.cityImportConfig.objConvertTypesConfig.TypeLodDict[gmlType];
+                var lodRange = metadata.cityImportConfig.objConvertTypesConfig.TypeLodDict[gmlType];
 
                 // LODを数値指定する設定なら、その指定LODを最大LODとします。
                 if (placeMethod.DoUseSelectedLod())
@@ -73,7 +73,7 @@ namespace PLATEAU.Editor.CityImport
                 for (int currentLod = lodRange.Max; currentLod >= lodRange.Min; currentLod--) 
                 {
                     // 対応する3Dモデルファイルを探します。
-                    var foundObj = FindObjFile(metaData, currentLod, gmlRelativePath);
+                    var foundObj = FindObjFile(metadata, currentLod, gmlRelativePath);
                     if (foundObj == null) continue;
 
                     bool anyModelExist = false;
@@ -128,7 +128,7 @@ namespace PLATEAU.Editor.CityImport
             }// ループ 1段目 ここまで (gmlファイルごと)
         }
 
-        private static CityModel ParseGml(CityMetaData metadata, string gmlRelativePath)
+        private static CityModel ParseGml(CityMetadata metadata, string gmlRelativePath)
         {
             string gmlFullPath = metadata.cityImportConfig.sourcePath.UdxRelativeToFullPath(gmlRelativePath);
             // tessellate を false にすることで、3Dモデルができない代わりにパースが高速になります。3Dモデルはインポート時のものを使います。
@@ -144,9 +144,9 @@ namespace PLATEAU.Editor.CityImport
         /// <summary>
         /// LOD, gml に対応する3Dモデルファイルを探します。
         /// </summary>
-        private static ObjInfo FindObjFile(CityMetaData metaData, int lod, string gmlRelativePath)
+        private static ObjInfo FindObjFile(CityMetadata metadata, int lod, string gmlRelativePath)
         {
-            var objInfos = metaData.cityImportConfig.generatedObjFiles;
+            var objInfos = metadata.cityImportConfig.generatedObjFiles;
             string targetObjName = $"LOD{lod}_{GmlFileNameParser.FileNameWithoutExtension(gmlRelativePath)}.obj"; // TODO ハードコード
             return objInfos.FirstOrDefault(info => Path.GetFileName(info.assetsPath) == targetObjName);
         }

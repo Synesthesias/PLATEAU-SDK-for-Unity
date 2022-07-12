@@ -19,7 +19,7 @@ namespace PLATEAU.Editor.CityImport
     /// ここでいうインポートとは、次の複数の処理をまとめたものを指します:
     /// ・Plateau元データを StreamingAssets/PLATEAU 内にコピーします。GUI設定で選んだ一部のみをコピーすることもできます。
     ///   テクスチャなど関連するフォルダがあればそれもコピーします。
-    /// ・Plateau元データから、複数のobj および 1つの <see cref="CityMetaData"/> を作成します。
+    /// ・Plateau元データから、複数のobj および 1つの <see cref="CityMetadata"/> を作成します。
     /// ・変換したモデルを現在のシーンに配置します。
     /// </summary>
     internal class CityImporterModel
@@ -32,17 +32,17 @@ namespace PLATEAU.Editor.CityImport
         /// </summary>
         /// <param name="gmlRelativePaths">gmlファイルの相対パスのリストです。パスの起点は udx フォルダです。</param>
         /// <param name="importConfig">変換設定です。</param>
-        /// <param name="metaData">インポートによって生成されたメタデータです。</param>
-        public int Import(string[] gmlRelativePaths, CityImportConfig importConfig, out CityMetaData metaData)
+        /// <param name="metadata">インポートによって生成されたメタデータです。</param>
+        public int Import(string[] gmlRelativePaths, CityImportConfig importConfig, out CityMetadata metadata)
         {
             // 元フォルダを StreamingAssets/PLATEAU にコピーします。すでに StreamingAssets内にある場合を除きます。 
             // 設定のインポート元パスをコピー後のパスに変更します。
             var sourcePathConf = importConfig.sourcePath;
             sourcePathConf.SetRootDirFullPath(CopyImportSrcToStreamingAssets(importConfig.SrcRootPathBeforeImport, gmlRelativePaths));
             var importDest = importConfig.importDestPath;
-            metaData = CityMetaDataGenerator.LoadOrCreateMetaData(importDest.MetaDataAssetPath, true);
+            metadata = CityMetaDataGenerator.LoadOrCreateMetaData(importDest.MetaDataAssetPath, true);
 
-            metaData.gmlRelativePaths = gmlRelativePaths;
+            metadata.gmlRelativePaths = gmlRelativePaths;
             
             // gmlファイルごとのループを始めます。
             int successCount = 0;
@@ -121,7 +121,7 @@ namespace PLATEAU.Editor.CityImport
                 foreach(string objAssetPath in objAssetPaths)
                 {
                     // CityMapMetaData を生成します。
-                    if (!TryGenerateMetaData(metaData, gmlFileName, objAssetPath, importConfig))
+                    if (!TryGenerateMetaData(metadata, gmlFileName, objAssetPath, importConfig))
                     {
                         Debug.LogError($"Failed to generate meta data.\nobjAssetPath = {objAssetPath}");
                     }
@@ -137,10 +137,10 @@ namespace PLATEAU.Editor.CityImport
             
             // シーンに配置します。
             importConfig.rootDirName = PlateauSourcePath.RootDirName(sourcePathConf.RootDirAssetPath);
-            CityMeshPlacerToSceneV2.Place(metaData.cityImportConfig.scenePlacementConfig, metaData);
+            CityMeshPlacerModelV2.Place(metadata.cityImportConfig.cityMeshPlacerConfig, metadata);
             
             // 後処理
-            EditorUtility.SetDirty(metaData);
+            EditorUtility.SetDirty(metadata);
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
             int failureCount = loopCount - successCount;
@@ -254,7 +254,7 @@ namespace PLATEAU.Editor.CityImport
         /// 高速化の都合上、シリアライズの回数を削減するため、このメソッドではメタデータはファイルに保存されず、メモリ内でのみ変更が保持されます。
         /// ファイルの保存はインポートの終了時に別途行われることが前提です。
         /// </summary>
-        private static bool TryGenerateMetaData(CityMetaData cityMetaData, string gmlFileName,
+        private static bool TryGenerateMetaData(CityMetadata cityMetadata, string gmlFileName,
             string dstMeshAssetPath, CityImportConfig importConf)
         {
             var metaGen = new CityMetaDataGenerator();
@@ -265,7 +265,7 @@ namespace PLATEAU.Editor.CityImport
                 ParserParams = new CitygmlParserParams(),
             };
             
-            bool isSucceed = metaGen.Generate(metaGenConfig, dstMeshAssetPath , gmlFileName, cityMetaData, doSaveFile: false);
+            bool isSucceed = metaGen.Generate(metaGenConfig, dstMeshAssetPath , gmlFileName, cityMetadata, doSaveFile: false);
             
             if (!isSucceed)
             {
