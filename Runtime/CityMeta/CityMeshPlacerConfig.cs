@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using PLATEAU.CommonDataStructure;
 using PLATEAU.Util;
 using UnityEngine;
 using static PLATEAU.CityMeta.CityMeshPlacerConfig;
@@ -113,13 +114,38 @@ namespace PLATEAU.CityMeta
             return method == PlaceMethod.PlaceSelectedLodOrMax ||
                    method == PlaceMethod.PlaceSelectedLodOrDoNotPlace;
         }
+        
+        /// <summary>
+        /// 3Dモデルファイルのシーンへの配置について、配置設定と3Dモデルに存在するLODの範囲から、配置時に探索対象とすべきLODの範囲を求めます。
+        /// </summary>
+        public static MinMax<int> PlaceLodRange(this PlaceMethod placeMethod, MinMax<int> availableObjLodRange, int selectedLod)
+        {
+            var placeRange = new MinMax<int>(availableObjLodRange);
+            // LODを数値指定する設定なら、その指定LODを最大LODとします。
+            if (placeMethod.DoUseSelectedLod())
+            {
+                
+                int min = placeRange.Min;
+                int max = Math.Min(selectedLod, placeRange.Max);
+                placeRange.SetMinMax(min, max);
+            }
+
+            // 1つのLODのみを探索する設定なら、範囲を1つに狭めます。
+            if (placeMethod.DoSearchOnlyOneLod())
+            {
+                int max = placeRange.Max;
+                placeRange.SetMinMax(max, max);
+            }
+
+            return placeRange;
+        }
 
         public static bool DoesAllowMultipleLodPlaced(this PlaceMethod method)
         {
             return method == PlaceMethod.PlaceAllLod;
         }
 
-        public static bool DoSearchOnlyOneLod(this PlaceMethod method)
+        private static bool DoSearchOnlyOneLod(this PlaceMethod method)
         {
             return method == PlaceMethod.PlaceSelectedLodOrDoNotPlace;
         }

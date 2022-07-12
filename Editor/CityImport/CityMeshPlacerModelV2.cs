@@ -17,6 +17,9 @@ namespace PLATEAU.Editor.CityImport
 {
     internal static class CityMeshPlacerModelV2
     {
+        /// <summary>
+        /// 都市モデルをシーンに配置します。
+        /// </summary>
         public static void Place(CityMeshPlacerConfig placeConfig, CityMetadata metadata)
         {
             // Plateau元データのルートフォルダと同名の ルートGame Objectを作ります。 
@@ -36,6 +39,9 @@ namespace PLATEAU.Editor.CityImport
             }
         }
 
+        /// <summary>
+        /// シーン配置の gmlファイルごとの処理です。
+        /// </summary>　
         private static void PlaceGmlModel(CityMetadata metadata, string gmlRelativePath,
             CityMeshPlacerConfig placeConfig, Transform parentTrans)
         {
@@ -56,7 +62,7 @@ namespace PLATEAU.Editor.CityImport
             // 3Dモデルファイルへの変換でのLOD範囲
             var lodRange = metadata.cityImportConfig.objConvertTypesConfig.TypeLodDict[gmlType];
             int selectedLod = placeConfig.GetPerTypeConfig(gmlType).selectedLod;
-            lodRange = PlaceLodRange(lodRange, placeMethod, selectedLod);
+            lodRange = placeMethod.PlaceLodRange(lodRange, selectedLod);
 
             var primaryCityObjs = cityModel.GetCityObjectsByType(PrimaryCityObjectTypes.PrimaryTypeMask);
 
@@ -74,6 +80,9 @@ namespace PLATEAU.Editor.CityImport
             }
         }
 
+        /// <summary>
+        /// シーン配置のgmlファイルごとの処理の内部の、LODごとの処理です。
+        /// </summary>
         private static bool PlaceGmlModelOfLod(int lod, string gmlRelativePath, CityMetadata metadata, IReadOnlyCollection<CityObject> primaryCityObjs, Transform parentTrans)
         {
             // 対応する3Dモデルファイルを探します。
@@ -122,29 +131,11 @@ namespace PLATEAU.Editor.CityImport
             return anyModelExist;
         }
 
-        private static MinMax<int> PlaceLodRange(MinMax<int> availableObjLodRange,
-            CityMeshPlacerConfig.PlaceMethod placeMethod, int selectedLod)
-        {
-            var placeRange = new MinMax<int>(availableObjLodRange);
-            // LODを数値指定する設定なら、その指定LODを最大LODとします。
-            if (placeMethod.DoUseSelectedLod())
-            {
-                
-                int min = placeRange.Min;
-                int max = Math.Min(selectedLod, placeRange.Max);
-                placeRange.SetMinMax(min, max);
-            }
+        
 
-            // 1つのLODのみを探索する設定なら、範囲を1つに狭めます。
-            if (placeMethod.DoSearchOnlyOneLod())
-            {
-                int max = placeRange.Max;
-                placeRange.SetMinMax(max, max);
-            }
-
-            return placeRange;
-        }
-
+        /// <summary>
+        /// GMLファイルをパースします。
+        /// </summary>
         private static CityModel ParseGml(CityMetadata metadata, string gmlRelativePath)
         {
             string gmlFullPath = metadata.cityImportConfig.sourcePath.UdxRelativeToFullPath(gmlRelativePath);
