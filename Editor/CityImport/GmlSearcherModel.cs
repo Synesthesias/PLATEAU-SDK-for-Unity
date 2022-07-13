@@ -65,11 +65,12 @@ namespace PLATEAU.Editor.CityImport
         }
 
         /// <summary>
-        /// 与えられたパスが Plateau元データのRootフォルダ かどうか判別します。
+        /// 与えられたパスが Plateau元データのRootフォルダ であるかどうか判別します。
         /// Root直下に udx という名前のフォルダがあればOKとみなします。
         /// </summary>
         public static bool IsPathPlateauRoot(string path)
         {
+            if (string.IsNullOrEmpty(path)) return false;
             string udxPath = Path.Combine(path, "udx");
             return Directory.Exists(udxPath);
         }

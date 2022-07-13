@@ -1,8 +1,6 @@
 ﻿using System.IO;
-using System.Linq;
 using NUnit.Framework;
 using PLATEAU.CityMeta;
-using PLATEAU.Editor.CityImport;
 using PLATEAU.IO;
 using PLATEAU.Tests.TestUtils;
 using PLATEAU.Util;
@@ -12,19 +10,29 @@ using static PLATEAU.Tests.EditModeTests.Placer.TestPlacerUtil;
 namespace PLATEAU.Tests.EditModeTests.Placer
 {
     /// <summary>
-    /// <see cref="CityMeshPlacerModelV2"/> のテストで、
-    /// インポート設定が <see cref="MeshGranularity.PerAtomicFeatureObject"/> であるケースをテストします。
+    /// <see cref="CityMeshPlacerModelV2"/> のテストの基底クラスです。
+    /// 
+    /// このクラスでは、各 <see cref="PlaceMethod"/> ごとに正しくシーンに配置できるかをテストします。
+    /// このテストを 各 <see cref="MeshGranularity"/> ごとに行いたいので、
+    /// <see cref="MeshGranularity"/> ごとにサブクラスを実装して確認しています。 
     /// </summary>
-    [TestFixture]
-    public class TestCityMeshPlacerModelV2ForAtomic
+    [Ignore("これは基底クラスなので、実際のテストは派生クラスで行ってください。")]
+    public abstract class TestCityMeshPlacerModelV2Base
     {
         private string prevDefaultDstPath;
         private static readonly string testDefaultCopyDestPath = Path.Combine(DirectoryUtil.TempAssetFolderPath, "PLATEAU");
         private CityMetadata metaData;
         
+        /// <summary>
+        /// このプロパティをサブクラスで実装することで、
+        /// <see cref="MeshGranularity"/> を変えながらこのテストを使い回すことができます。
+        /// </summary>
+        protected abstract MeshGranularity MeshGranularity { get; }
+        
+        
         // インポートには時間がかかるので、 OneTimeSetUp 内でインポートしたものを使い回します。
         // 別のインポート設定でテストしたい場合は、別のソースファイルを作ってください。
-
+        
         [OneTimeSetUp]
         public void OneTimeSetUp()
         {
@@ -36,7 +44,7 @@ namespace PLATEAU.Tests.EditModeTests.Placer
             
             // インポートします。
             var initialPlaceConf = new CityMeshPlacerConfig().SetPlaceMethodForAllTypes(PlaceMethod.DoNotPlace);
-            this.metaData = ImportSimple(initialPlaceConf, MeshGranularity.PerAtomicFeatureObject);
+            this.metaData = ImportSimple(initialPlaceConf, MeshGranularity);
         }
 
         [OneTimeTearDown]
@@ -51,7 +59,7 @@ namespace PLATEAU.Tests.EditModeTests.Placer
         {
             SceneUtil.DestroyAllGameObjectsInEditModeTestScene();
         }
-
+        
         [Test]
         public void When_PlaceMethod_Is_DoNotPlace_Then_No_Model_Is_Placed()
         {
@@ -65,7 +73,7 @@ namespace PLATEAU.Tests.EditModeTests.Placer
         {
             Place(PlaceMethod.PlaceAllLod, -1, this.metaData);
             AssertLodPlaced(0,1,2);
-    }
+        }
 
         [Test]
         public void When_PlaceMethod_Is_MaxLod_Then_Only_MaxLod_Is_Placed()
@@ -105,12 +113,5 @@ namespace PLATEAU.Tests.EditModeTests.Placer
             AssertLodPlaced(1);
             AssertLodNotPlaced(0,2);
         }
-
-        
-
-
-        
-
-        
     }
 }
