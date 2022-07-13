@@ -67,7 +67,7 @@ namespace PLATEAU.Editor.CityImport
                 
                 
                 // objに変換します。
-                if (!TryConvertToObj(cityModel, ref referencePoint, importConfig, gmlFullPath, importDest.DirFullPath, metadata))
+                if (!TryConvertToObj(cityModel, ref referencePoint, importConfig, gmlFullPath, importDest.DirFullPath))
                 {
                     // 出力されるモデルがなければ、ここで終了します。
                     cityModel?.Dispose();
@@ -210,9 +210,9 @@ namespace PLATEAU.Editor.CityImport
         /// <see cref="CityModel"/> を obj形式の3Dモデルに変換します。
         /// 成否を bool で返します。
         /// </summary>
-        private static bool TryConvertToObj(CityModel cityModel, ref Vector3? referencePoint, CityImportConfig importConfig, string gmlFullPath, string objDestDirFullPath, CityMetadata metadataDebugOnly)
+        private static bool TryConvertToObj(CityModel cityModel, ref Vector3? referencePoint,
+            CityImportConfig importConfig, string gmlFullPath, string objDestDirFullPath)
         {
-            // TODO debugOnlyな引数を削除する
             using (var objConverter = new GmlToObjConverter())
             {
                 
@@ -245,7 +245,7 @@ namespace PLATEAU.Editor.CityImport
                 
                 objConverter.Config = converterConf;
                 
-                bool isSuccess = objConverter.ConvertWithoutLoad(cityModel, gmlFullPath, objDestDirFullPath, metadataDebugOnly);
+                bool isSuccess = objConverter.ConvertWithoutLoad(cityModel, gmlFullPath, objDestDirFullPath);
 
                 return isSuccess;
             }

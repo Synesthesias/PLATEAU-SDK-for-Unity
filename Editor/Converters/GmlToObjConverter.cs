@@ -66,7 +66,7 @@ namespace PLATEAU.Editor.Converters
         //TODO exportObjFilePath は本来は ファイルパスではなくディレクトリのパスであるべき（いちおうファイルパスでも動くけど、名前は変えられない仕様）
         public bool Convert(string gmlFilePath, string exportObjFilePath)
         {
-            return ConvertInner(gmlFilePath, exportObjFilePath, null, null);
+            return ConvertInner(gmlFilePath, exportObjFilePath, null);
         }
 
         /// <summary>
@@ -75,16 +75,15 @@ namespace PLATEAU.Editor.Converters
         /// 設定で <see cref="gmlParserParams"/> はロード後は変更できませんが、
         /// meshGranularity, axesConversion の設定は反映されます。
         /// </summary>
-        public bool ConvertWithoutLoad(CityModel cityModel, string gmlFilePath, string objDestDirFullPath, CityMetadata metadataDebugOnly)
+        public bool ConvertWithoutLoad(CityModel cityModel, string gmlFilePath, string objDestDirFullPath)
         {
-            // TODO DebugOnlyな引数を削除
             if (cityModel == null)
             {
                 Debug.LogError("cityModel is null.");
                 return false;
             }
 
-            return ConvertInner(gmlFilePath, objDestDirFullPath, cityModel, metadataDebugOnly);
+            return ConvertInner(gmlFilePath, objDestDirFullPath, cityModel);
         }
 
         /// <summary>
@@ -93,9 +92,8 @@ namespace PLATEAU.Editor.Converters
         /// null でなければ、ファイルロードを省略して代わりに渡された <see cref="CityModel"/> を変換します。
         /// 成否をboolで返します。
         /// </summary>
-        private bool ConvertInner(string gmlFilePath, string exportDirFullPath, CityModel cityModel, CityMetadata metadataDebugOnly)
+        private bool ConvertInner(string gmlFilePath, string exportDirFullPath, CityModel cityModel)
         {
-            // TODO debugOnlyな引数を削除
             if (!IsPathValid(gmlFilePath, exportDirFullPath)) return false;
             try
             {

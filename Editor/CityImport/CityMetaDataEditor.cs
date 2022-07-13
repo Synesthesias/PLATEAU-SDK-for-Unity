@@ -20,7 +20,7 @@ namespace PLATEAU.Editor.CityImport
         private bool foldOutReconvert;
         private bool foldOutReplace;
         private bool foldOutOtherData;
-        private bool foldOutGmlPaths;
+        // private bool foldOutGmlPaths;
         private CityImporterPresenter importerPresenter;
         private readonly CityMeshPlacerPresenter cityMeshPlacerPresenter = new CityMeshPlacerPresenter();
         private Vector2 scrollPosOfIdGmlTable;
@@ -85,19 +85,19 @@ namespace PLATEAU.Editor.CityImport
                     EditorGUILayout.Space(10);
                     
                     
-                    // TODO 以下の foldOut は要らない
-                    this.foldOutGmlPaths = EditorGUILayout.Foldout(this.foldOutGmlPaths, "gmlファイルパス");
-                    if (this.foldOutGmlPaths)
+                    // this.foldOutGmlPaths = EditorGUILayout.Foldout(this.foldOutGmlPaths, "gmlファイルパス");
+                    // if (this.foldOutGmlPaths)
+                    // {
+                    EditorGUILayout.LabelField("gmlファイルパス");
+                    var gmlSb = new StringBuilder();
+                    foreach (var gmlPath in metaData.gmlRelativePaths)
                     {
-                        var gmlSb = new StringBuilder();
-                        foreach (var gmlPath in metaData.gmlRelativePaths)
-                        {
-                            gmlSb.Append(gmlPath + "\n");
-                        }
-
-                        this.scrollPosOfGmlPaths =
-                            PlateauEditorStyle.ScrollableMultiLineLabel(gmlSb.ToString(), 300, this.scrollPosOfGmlPaths);
+                        gmlSb.Append(gmlPath + "\n");
                     }
+
+                    this.scrollPosOfGmlPaths =
+                        PlateauEditorStyle.ScrollableMultiLineLabel(gmlSb.ToString(), 300, this.scrollPosOfGmlPaths);
+                    // }
 
                     EditorGUILayout.Space(10);
                     
