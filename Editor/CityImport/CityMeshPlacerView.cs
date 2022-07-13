@@ -2,6 +2,7 @@
 using PLATEAU.CityMeta;
 using PLATEAU.CommonDataStructure;
 using PLATEAU.Editor.EditorWindowCommon;
+using PLATEAU.Util;
 using UnityEditor;
 
 namespace PLATEAU.Editor.CityImport
@@ -27,7 +28,7 @@ namespace PLATEAU.Editor.CityImport
                     using (PlateauEditorStyle.VerticalScopeLevel2())
                     {
                         var typeConf = placerConfig.GetPerTypeConfig(gmlType);
-                        DrawPerTypeConfGUI(typeConf, possibleLodRange); 
+                        DrawPerTypeConfGUI(typeConf, possibleLodRange, gmlType); 
                     }
                                
                 }
@@ -44,7 +45,7 @@ namespace PLATEAU.Editor.CityImport
         /// <summary>
         /// タイプ別のシーン配置設定GUIです。
         /// </summary>
-        private static void DrawPerTypeConfGUI(ScenePlacementConfigPerType typeConf, MinMax<int> possibleLodRange)
+        private static void DrawPerTypeConfGUI(ScenePlacementConfigPerType typeConf, MinMax<int> possibleLodRange, GmlType gmlType)
         {
             var placeMethod = typeConf.placeMethod;
             placeMethod = (CityMeshPlacerConfig.PlaceMethod)
@@ -77,7 +78,14 @@ namespace PLATEAU.Editor.CityImport
                     }
                     
                 }
-               
+                
+            }
+            
+            // 追加の配置フラグ設定
+            var availableCityObjTypes = CityObjectTypeExtension.GetFlags(gmlType, possibleLodRange).ToTypeArray();
+            foreach (var coType in availableCityObjTypes)
+            {
+                EditorGUILayout.Toggle(coType.ToString(), true);
             }
         }
 
