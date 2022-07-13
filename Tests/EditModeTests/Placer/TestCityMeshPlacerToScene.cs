@@ -6,7 +6,7 @@ using PLATEAU.Util;
 using UnityEngine;
 using static PLATEAU.CityMeta.CityMeshPlacerConfig;
 
-namespace PLATEAU.Tests.EditModeTests
+namespace PLATEAU.Tests.EditModeTests.Placer
 {
     [Ignore("古い機能のテストなので無視しています。新バージョンCityMeshPlacerToSceneV2向けのテストを新たに作る必要があります。")]
     public class TestCityMeshPlacerToScene
