@@ -32,4 +32,15 @@ namespace PLATEAU.Tests.EditModeTests.Placer
         protected override MeshGranularity MeshGranularity => MeshGranularity.PerPrimaryFeatureObject;
         // テスト内容は親クラスのものを使い回します。
     }
+    
+    /// <summary>
+    /// <see cref="CityMeshPlacerModelV2"/> のテストで、
+    /// インポート設定が <see cref="IO.MeshGranularity.PerCityModelArea"/> であるケースをテストします。
+    /// </summary>
+    [TestFixture]
+    public class TestCityMeshPlacerModelV2ForArea : TestCityMeshPlacerModelV2Base
+    {
+        protected override MeshGranularity MeshGranularity => MeshGranularity.PerCityModelArea;
+        // テスト内容は親クラスのものを使い回します。
+    }
 }
