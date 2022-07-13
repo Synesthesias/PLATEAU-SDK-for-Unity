@@ -7,7 +7,7 @@ using UnityEngine;
 namespace PLATEAU.CityMeta
 {
     /// <summary>
-    /// Plateau元データをインポートする時の設定です。
+    /// PLATEAU元データをインポートする時の設定です。
     /// </summary>
     
     // 注意事項 1:
