@@ -23,8 +23,8 @@ namespace PLATEAU.Editor.Behaviour
             HeaderDrawer.Draw("3Dモデルをシーンに再配置");
             using (PlateauEditorStyle.VerticalScopeLevel1())
             {
-                var metaData = cityBehaviour.CityMetadata;
-                if (metaData == null)
+                var metadata = cityBehaviour.CityMetadata;
+                if (metadata == null)
                 {
                     EditorGUILayout.HelpBox("メタデータがアタッチされていません。", MessageType.Error);
                     return;
@@ -32,7 +32,7 @@ namespace PLATEAU.Editor.Behaviour
                 this.foldOutObjPlaceGUI = EditorGUILayout.Foldout(this.foldOutObjPlaceGUI, "再配置画面");
                 if (this.foldOutObjPlaceGUI)
                 {
-                    this.cityMeshPlacerPresenter.Draw(metaData);
+                    this.cityMeshPlacerPresenter.Draw(metadata);
                 }
             }
 

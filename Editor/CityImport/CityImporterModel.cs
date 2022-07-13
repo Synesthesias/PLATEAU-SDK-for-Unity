@@ -40,7 +40,7 @@ namespace PLATEAU.Editor.CityImport
             var sourcePathConf = importConfig.sourcePath;
             sourcePathConf.SetRootDirFullPath(CopyImportSrcToStreamingAssets(importConfig.SrcRootPathBeforeImport, gmlRelativePaths));
             var importDest = importConfig.importDestPath;
-            metadata = CityMetaDataGenerator.LoadOrCreateMetaData(importDest.MetaDataAssetPath, true);
+            metadata = CityMetadataGenerator.LoadOrCreateMetadata(importDest.MetadataAssetPath, true);
             EditorUtility.SetDirty(metadata);
 
             metadata.gmlRelativePaths = gmlRelativePaths;
@@ -121,8 +121,8 @@ namespace PLATEAU.Editor.CityImport
                 var objAssetPaths = objNames.Select(name => Path.Combine(importDest.DirAssetsPath, name + ".obj"));
                 foreach(string objAssetPath in objAssetPaths)
                 {
-                    // CityMapMetaData を生成します。
-                    if (!TryGenerateMetaData(metadata, gmlFileName, objAssetPath, importConfig))
+                    // CityMetadata を生成します。
+                    if (!TryGenerateMetadata(metadata, gmlFileName, objAssetPath, importConfig))
                     {
                         Debug.LogError($"Failed to generate meta data.\nobjAssetPath = {objAssetPath}");
                     }
@@ -256,11 +256,11 @@ namespace PLATEAU.Editor.CityImport
         /// 高速化の都合上、シリアライズの回数を削減するため、このメソッドではメタデータはファイルに保存されず、メモリ内でのみ変更が保持されます。
         /// ファイルの保存はインポートの終了時に別途行われることが前提です。
         /// </summary>
-        private static bool TryGenerateMetaData(CityMetadata cityMetadata, string gmlFileName,
+        private static bool TryGenerateMetadata(CityMetadata cityMetadata, string gmlFileName,
             string dstMeshAssetPath, CityImportConfig importConf)
         {
-            var metaGen = new CityMetaDataGenerator();
-            var metaGenConfig = new CityMapMetaDataGeneratorConfig
+            var metaGen = new CityMetadataGenerator();
+            var metaGenConfig = new CityMapMetadataGeneratorConfig
             {
                 CityImportConfig = importConf,
                 DoClearIdToGmlTable = false, // 新規ではなく上書き。gmlファイルごとに情報を追記していくため。

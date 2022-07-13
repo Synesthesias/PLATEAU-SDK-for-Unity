@@ -27,6 +27,6 @@ namespace PLATEAU.CityMeta
             }
         }
 
-        public string MetaDataAssetPath => Path.Combine(this.dirAssetsPath, MetaDataFileName);
+        public string MetadataAssetPath => Path.Combine(this.dirAssetsPath, MetaDataFileName);
     }
 }

@@ -12,7 +12,7 @@ namespace PLATEAU.Editor.Converters
     /// <summary>
     /// <see cref="CityMetadata"/> を生成します。
     /// </summary>
-    internal class CityMetaDataGenerator
+    internal class CityMetadataGenerator
     {
 
         /// <summary>
@@ -26,7 +26,7 @@ namespace PLATEAU.Editor.Converters
         /// </summary>
         /// <returns>成功したかどうかをboolで返します。</returns>
         public bool Generate(
-            CityMapMetaDataGeneratorConfig config, string meshAssetPath, string gmlFileName,
+            CityMapMetadataGeneratorConfig config, string meshAssetPath, string gmlFileName,
             CityMetadata metadata = null, bool doSaveFile = true)
         {
             try
@@ -37,7 +37,7 @@ namespace PLATEAU.Editor.Converters
                 string srcRootAssetsPath = importConf.sourcePath.RootDirAssetPath;
                 if (metadata == null)
                 {
-                    metadata = LoadOrCreateMetaData(importDestPath.MetaDataAssetPath, config.DoClearIdToGmlTable);
+                    metadata = LoadOrCreateMetadata(importDestPath.MetadataAssetPath, config.DoClearIdToGmlTable);
                 }
                 
                 var assets = AssetDatabase.LoadAllAssetsAtPath(meshAssetPath);
@@ -85,7 +85,7 @@ namespace PLATEAU.Editor.Converters
         /// ファイルが存在する場合、それをロードします。
         /// ロード時、<paramref name="doClearIdToGmlTable"/> がtrueなら idToGmlTable を消去します。
         /// </summary>
-        public static CityMetadata LoadOrCreateMetaData(string dstAssetPath, bool doClearIdToGmlTable)
+        public static CityMetadata LoadOrCreateMetadata(string dstAssetPath, bool doClearIdToGmlTable)
         {
             bool doFileExists = File.Exists(PathUtil.AssetsPathToFullPath(dstAssetPath));
             if (!doFileExists)
@@ -94,12 +94,12 @@ namespace PLATEAU.Editor.Converters
                 AssetDatabase.CreateAsset(instance, dstAssetPath);
                 AssetDatabase.SaveAssets();
             }
-            var loadedMetaData = AssetDatabase.LoadAssetAtPath<CityMetadata>(dstAssetPath);
+            var loadedMetadata = AssetDatabase.LoadAssetAtPath<CityMetadata>(dstAssetPath);
             if (doClearIdToGmlTable)
             {
-                loadedMetaData.ClearIdToGmlTable();
+                loadedMetadata.ClearIdToGmlTable();
             }
-            return loadedMetaData;
+            return loadedMetadata;
         }
     }   
 }

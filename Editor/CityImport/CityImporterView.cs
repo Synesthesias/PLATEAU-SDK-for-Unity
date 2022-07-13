@@ -15,7 +15,7 @@ namespace PLATEAU.Editor.CityImport
     /// ユーザーが行う設定項目には、gmlファイル群を地物タイプや地域IDで絞り込む機能を含みます。
     ///
     /// このクラスを利用するクラスは、
-    /// <see cref="CityImportWindow"/> および <see cref="CityMetaDataEditor"/> です。
+    /// <see cref="CityImportWindow"/> および <see cref="CityMetadataEditor"/> です。
     /// </summary>
     internal class CityImporterView
     {

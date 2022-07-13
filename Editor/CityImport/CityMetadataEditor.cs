@@ -14,13 +14,12 @@ namespace PLATEAU.Editor.CityImport
     /// 　再変換の画面では、ユーザーが設定を変えることが可能であること。この機能によりユーザーが「前回から少しだけ設定を変えて変換」する操作をする上で便利になること。
     /// </summary>
     [CustomEditor(typeof(CityMetadata))]
-    internal class CityMetaDataEditor : UnityEditor.Editor
+    internal class CityMetadataEditor : UnityEditor.Editor
     {
         private bool foldOutIdGmlTable;
         private bool foldOutReconvert;
         private bool foldOutReplace;
         private bool foldOutOtherData;
-        // private bool foldOutGmlPaths;
         private CityImporterPresenter importerPresenter;
         private readonly CityMeshPlacerPresenter cityMeshPlacerPresenter = new CityMeshPlacerPresenter();
         private Vector2 scrollPosOfIdGmlTable;
@@ -29,15 +28,15 @@ namespace PLATEAU.Editor.CityImport
         public override void OnInspectorGUI()
         {
             HeaderDrawer.Reset();
-            var metaData = target as CityMetadata;
-            if (metaData == null)
+            var metadata = target as CityMetadata;
+            if (metadata == null)
             {
-                EditorGUILayout.HelpBox($"{nameof(metaData)} が null です。", MessageType.Error);
+                EditorGUILayout.HelpBox($"{nameof(metadata)} が null です。", MessageType.Error);
                 return;
             }
 
             // 初期化
-            this.importerPresenter ??= CityImporterPresenter.InitWithConfig(metaData.cityImportConfig);
+            this.importerPresenter ??= CityImporterPresenter.InitWithConfig(metadata.cityImportConfig);
 
             EditorGUILayout.Space(10);
             
@@ -66,7 +65,7 @@ namespace PLATEAU.Editor.CityImport
                 if (this.foldOutReplace)
                 {
                     HeaderDrawer.IncrementDepth();
-                    this.cityMeshPlacerPresenter.Draw(metaData);
+                    this.cityMeshPlacerPresenter.Draw(metadata);
                     HeaderDrawer.DecrementDepth();
                 }
             }
@@ -77,7 +76,7 @@ namespace PLATEAU.Editor.CityImport
                 this.foldOutOtherData = EditorGUILayout.Foldout(this.foldOutOtherData, "その他の情報");
                 if (this.foldOutOtherData)
                 {
-                    var cityConfig = metaData.cityImportConfig;
+                    var cityConfig = metadata.cityImportConfig;
                     var refPoint = cityConfig.referencePoint;
                     EditorGUILayout.LabelField($"基準点: ( {refPoint.x} , {refPoint.y} , {refPoint.z} )");
                     EditorGUILayout.LabelField($"インポート元ルートフォルダ名: {cityConfig.rootDirName}");
@@ -85,19 +84,15 @@ namespace PLATEAU.Editor.CityImport
                     EditorGUILayout.Space(10);
                     
                     
-                    // this.foldOutGmlPaths = EditorGUILayout.Foldout(this.foldOutGmlPaths, "gmlファイルパス");
-                    // if (this.foldOutGmlPaths)
-                    // {
                     EditorGUILayout.LabelField("gmlファイルパス");
                     var gmlSb = new StringBuilder();
-                    foreach (var gmlPath in metaData.gmlRelativePaths)
+                    foreach (var gmlPath in metadata.gmlRelativePaths)
                     {
                         gmlSb.Append(gmlPath + "\n");
                     }
 
                     this.scrollPosOfGmlPaths =
                         PlateauEditorStyle.ScrollableMultiLineLabel(gmlSb.ToString(), 300, this.scrollPosOfGmlPaths);
-                    // }
 
                     EditorGUILayout.Space(10);
                     
@@ -119,7 +114,7 @@ namespace PLATEAU.Editor.CityImport
                         using (PlateauEditorStyle.VerticalScopeLevel1(false))
                         {
                             var sb = new StringBuilder();
-                            foreach (var pair in metaData.idToGmlTable)
+                            foreach (var pair in metadata.idToGmlTable)
                             {
                                 sb.Append($"{pair.Key}\n=> {pair.Value}\n\n");
                             }

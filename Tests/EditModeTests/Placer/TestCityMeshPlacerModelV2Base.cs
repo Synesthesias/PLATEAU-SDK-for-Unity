@@ -21,7 +21,7 @@ namespace PLATEAU.Tests.EditModeTests.Placer
     {
         private string prevDefaultDstPath;
         private static readonly string testDefaultCopyDestPath = Path.Combine(DirectoryUtil.TempAssetFolderPath, "PLATEAU");
-        private CityMetadata metaData;
+        private CityMetadata metadata;
         
         /// <summary>
         /// このプロパティをサブクラスで実装することで、
@@ -44,7 +44,7 @@ namespace PLATEAU.Tests.EditModeTests.Placer
             
             // インポートします。
             var initialPlaceConf = new CityMeshPlacerConfig().SetPlaceMethodForAllTypes(PlaceMethod.DoNotPlace);
-            this.metaData = ImportSimple(initialPlaceConf, MeshGranularity);
+            this.metadata = ImportSimple(initialPlaceConf, MeshGranularity);
         }
 
         [OneTimeTearDown]
@@ -63,7 +63,7 @@ namespace PLATEAU.Tests.EditModeTests.Placer
         [Test]
         public void When_PlaceMethod_Is_DoNotPlace_Then_No_Model_Is_Placed()
         {
-            Place(PlaceMethod.DoNotPlace, 1, this.metaData);
+            Place(PlaceMethod.DoNotPlace, 1, this.metadata);
             AssertLodNotPlaced(0,1,2);
         }
 
@@ -71,14 +71,14 @@ namespace PLATEAU.Tests.EditModeTests.Placer
         [Test]
         public void When_PlaceMethod_Is_PlaceAllLod_Then_All_Lods_Are_Placed()
         {
-            Place(PlaceMethod.PlaceAllLod, -1, this.metaData);
+            Place(PlaceMethod.PlaceAllLod, -1, this.metadata);
             AssertLodPlaced(0,1,2);
         }
 
         [Test]
         public void When_PlaceMethod_Is_MaxLod_Then_Only_MaxLod_Is_Placed()
         {
-            Place(PlaceMethod.PlaceMaxLod, -1, this.metaData);
+            Place(PlaceMethod.PlaceMaxLod, -1, this.metadata);
             AssertLodPlaced(2);
             AssertLodNotPlaced(0,1);
         }
@@ -86,7 +86,7 @@ namespace PLATEAU.Tests.EditModeTests.Placer
         [Test]
         public void When_PlaceMethod_Is_PlaceSelectedLodOrMax_And_Lod_Not_Found_Then_MaxLod_Is_Placed()
         {
-            Place(PlaceMethod.PlaceSelectedLodOrMax, 999, this.metaData);
+            Place(PlaceMethod.PlaceSelectedLodOrMax, 999, this.metadata);
             AssertLodPlaced(2); // 存在するなかで最大
             AssertLodNotPlaced(0,1);
         }
@@ -94,7 +94,7 @@ namespace PLATEAU.Tests.EditModeTests.Placer
         [Test]
         public void When_PlaceMethod_Is_PlaceSelectedLodOrMax_And_Lod_Found_Then_TargetLod_Is_Placed()
         {
-            Place(PlaceMethod.PlaceSelectedLodOrMax, 1, this.metaData);
+            Place(PlaceMethod.PlaceSelectedLodOrMax, 1, this.metadata);
             AssertLodPlaced(1);
             AssertLodNotPlaced(0,2);
         }
@@ -102,14 +102,14 @@ namespace PLATEAU.Tests.EditModeTests.Placer
         [Test]
         public void When_PlaceMethod_Is_PlaceSelectedLodOrDoNotPlace_And_Lod_Not_Found_Then_Do_Not_Place()
         {
-            Place(PlaceMethod.PlaceSelectedLodOrDoNotPlace, 999, this.metaData);
+            Place(PlaceMethod.PlaceSelectedLodOrDoNotPlace, 999, this.metadata);
             AssertLodNotPlaced(0,1,2);
         }
 
         [Test]
         public void When_PlaceMethod_Is_PlaceSelectedOrDoNotPlace_And_Lod_Found_Then_TargetLod_Is_Placed()
         {
-            Place(PlaceMethod.PlaceSelectedLodOrDoNotPlace, 1, this.metaData);
+            Place(PlaceMethod.PlaceSelectedLodOrDoNotPlace, 1, this.metadata);
             AssertLodPlaced(1);
             AssertLodNotPlaced(0,2);
         }

@@ -7,7 +7,7 @@ namespace PLATEAU.Editor.Converters
     /// <summary>
     /// <see cref="GmlToObjConverter"/> の設定を保持します。
     /// </summary>
-    internal class CityMapMetaDataGeneratorConfig
+    internal class CityMapMetadataGeneratorConfig
     {
         /// <summary> gmlロード時に使う設定です。 </summary>
         public CitygmlParserParams ParserParams;
@@ -19,7 +19,7 @@ namespace PLATEAU.Editor.Converters
         public bool DoClearIdToGmlTable;
         
 
-        public CityMapMetaDataGeneratorConfig()
+        public CityMapMetadataGeneratorConfig()
         {
             this.ParserParams = new CitygmlParserParams();
             this.CityImportConfig = new CityImportConfig();
