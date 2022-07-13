@@ -100,13 +100,10 @@ namespace PLATEAU.Editor.CityImport
                         if (File.Exists(PathUtil.AssetsPathToFullPath(mtlAssetsPath)))
                         {
                             AssetDatabase.ImportAsset(mtlAssetsPath);
-                            // AssetDatabase.Refresh();
-                            // Debug.Log($"importing mtl : {mtlAssetsPath}");
                         }
                         
                         // objファイルをインポートします。
                         AssetDatabase.ImportAsset(objAssetsPath);
-                        // AssetDatabase.Refresh();
                     }
                 }
                 if (lodCountForThisGml <= 0)

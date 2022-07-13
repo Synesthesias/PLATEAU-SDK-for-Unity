@@ -1,4 +1,5 @@
-﻿using PLATEAU.Behaviour;
+﻿using System.Runtime.InteropServices.WindowsRuntime;
+using PLATEAU.Behaviour;
 using PLATEAU.Editor.CityImport;
 using PLATEAU.Editor.EditorWindowCommon;
 using UnityEditor;
@@ -23,6 +24,11 @@ namespace PLATEAU.Editor.Behaviour
             using (PlateauEditorStyle.VerticalScopeLevel1())
             {
                 var metaData = cityBehaviour.CityMetadata;
+                if (metaData == null)
+                {
+                    EditorGUILayout.HelpBox("メタデータがアタッチされていません。", MessageType.Error);
+                    return;
+                }
                 this.foldOutObjPlaceGUI = EditorGUILayout.Foldout(this.foldOutObjPlaceGUI, "再配置画面");
                 if (this.foldOutObjPlaceGUI)
                 {

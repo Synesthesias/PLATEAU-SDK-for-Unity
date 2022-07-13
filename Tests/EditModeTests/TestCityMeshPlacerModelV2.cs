@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using NUnit.Framework;
 using PLATEAU.CityMeta;
@@ -34,7 +35,7 @@ namespace PLATEAU.Tests.EditModeTests
         {
             DirectoryUtil.DeleteTempAssetFolder();
             PlateauUnityPath.TestOnly_SetStreamingGmlFolder(this.prevDefaultDstPath);
-            SceneUtil.DestroyAllGameObjectsInActiveScene();
+            SceneUtil.DestroyAllGameObjectsInEditModeTestScene();
         }
 
         [Test]
@@ -42,30 +43,50 @@ namespace PLATEAU.Tests.EditModeTests
         {
             Place(PlaceMethod.DoNotPlace, MeshGranularity.PerCityModelArea);
             
-            var gameObjs = SceneUtil.GetRootObjectsOfEditModeTestScene();
-            int numChild = gameObjs[0].transform.childCount;
-            Assert.AreEqual(0, numChild, $"DoNotPlace のとき、ルート以下にゲームオブジェクトは配置されません。");
+            var gameObjs = SceneUtil.GetObjectsOfEditModeTestScene();
+            foreach (var go in gameObjs)
+            {
+                Debug.Log("exists: " + go.name);
+            }
+            Assert.AreEqual(1, gameObjs.Count, $"DoNotPlace のとき、ルート以下にゲームオブジェクトは配置されません。");
         }
-        
+
 
         [Test]
         public void When_PlaceMethod_Is_PlaceAllLod_Then_All_Lods_Are_Placed()
         {
             Place(PlaceMethod.PlaceAllLod, MeshGranularity.PerAtomicFeatureObject);
-            var gameObjs = SceneUtil.GetRootObjectsOfEditModeTestScene();
-            foreach (var go in gameObjs)
-            {
-                Debug.Log("listed obj: " + go.name);
-            }
-            // Assert.NotNull(GameObject.Find("53392642_bldg_6697_op2"));
-            // Assert.NotNull(GameObject.Find("LOD2_BLD_0772bfd9-fa36-4747-ad0f-1e57f883f745"));
-            bool containsLod0 = gameObjs.Any(go => go.name.Contains("LOD0_"));
-            bool containsLod1 = gameObjs.Any(go => go.name.Contains("LOD1_"));
-            bool containsLod2 = gameObjs.Any(go => go.name.Contains("LOD2_"));
-            Assert.IsTrue(containsLod0, "AllLod で Lod0 が配置される");
-            Assert.IsTrue(containsLod1, "AllLod で Lod1 が配置される");
-            Assert.IsTrue(containsLod2, "AllLod で Lod2 が配置される");
+            AssertLodPlaced(0,1,2);
+    }
+
+        [Test]
+        public void When_PlaceMethod_Is_MaxLod_Then_Only_MaxLod_Is_Placed()
+        {
+            Place(PlaceMethod.PlaceMaxLod, MeshGranularity.PerPrimaryFeatureObject);
+            AssertLodPlaced(2);
+            AssertLodNotPlaced(0,1);
         }
+
+        private static void AssertLodPlaced(params int[] shouldContain)
+        {
+            var gameObjs = SceneUtil.GetObjectsOfEditModeTestScene();
+            foreach (var lod in shouldContain)
+            {
+                bool contains = gameObjs.Any(go => go.name.StartsWith($"LOD{lod}_"));
+                Assert.IsTrue(contains, $"LOD{lod} がシーンに配置されます。");
+            }
+        }
+
+        private static void AssertLodNotPlaced(params int[] shouldNotContain)
+        {
+            var gameObjs = SceneUtil.GetObjectsOfEditModeTestScene();
+            foreach (var lod in shouldNotContain)
+            {
+                bool contains = gameObjs.Any(go => go.name.StartsWith($"LOD{lod}_"));
+                Assert.IsFalse(contains, $"LOD{lod} はシーンに配置されません。");
+            }
+        }
+
 
         private static void Place(PlaceMethod placeMethod, MeshGranularity meshGranularity)
         {

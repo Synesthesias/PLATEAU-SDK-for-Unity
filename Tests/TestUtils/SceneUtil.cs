@@ -10,9 +10,9 @@ namespace PLATEAU.Tests.TestUtils
 {
     public static class SceneUtil
     {
-        public static void DestroyAllGameObjectsInActiveScene()
+        public static void DestroyAllGameObjectsInEditModeTestScene()
         {
-            var rootObjs = UnityEngine.SceneManagement.SceneManager.GetActiveScene().GetRootGameObjects();
+            var rootObjs = SceneUtil.GetEditModeTestScene().GetRootGameObjects();
             foreach (var obj in rootObjs)
             {
                 Object.DestroyImmediate(obj);
@@ -50,7 +50,7 @@ namespace PLATEAU.Tests.TestUtils
         }
 
 
-        public static List<GameObject> GetRootObjectsOfEditModeTestScene()
+        public static List<GameObject> GetObjectsOfEditModeTestScene()
         {
             return GameObjectUtil.ListGameObjsInScene(GetEditModeTestScene());
         }

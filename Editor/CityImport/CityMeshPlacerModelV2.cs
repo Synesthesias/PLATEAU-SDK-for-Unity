@@ -59,6 +59,8 @@ namespace PLATEAU.Editor.CityImport
             var gmlType = GmlFileNameParser.GetGmlTypeEnum(gmlRelativePath);
             var placeMethod = placeConfig.GetPerTypeConfig(gmlType).placeMethod;
 
+            if (placeMethod == CityMeshPlacerConfig.PlaceMethod.DoNotPlace) return;
+
             // gmlファイル名と同名のGameObjectをルート直下に作ります。
             var gmlGameObj =
                 GameObjectUtil.AssureGameObject(GmlFileNameParser.FileNameWithoutExtension(gmlRelativePath));

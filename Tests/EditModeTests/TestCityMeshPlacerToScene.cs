@@ -31,7 +31,7 @@ namespace PLATEAU.Tests.EditModeTests
         {
             DirectoryUtil.DeleteTempAssetFolder();
             PlateauUnityPath.TestOnly_SetStreamingGmlFolder(this.prevDefaultDstPath);
-            SceneUtil.DestroyAllGameObjectsInActiveScene();
+            SceneUtil.DestroyAllGameObjectsInEditModeTestScene();
         }
 
         [Test]
