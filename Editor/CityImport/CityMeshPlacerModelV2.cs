@@ -33,12 +33,10 @@ namespace PLATEAU.Editor.CityImport
             
             string[] gmlRelativePaths = metadata.gmlRelativePaths;
             
-            Debug.Log($"placing gml count : {gmlRelativePaths.Length}");
             
             // ループ : gmlファイルごと
             foreach (var gmlRelativePath in gmlRelativePaths)
             {
-                Debug.Log($"placing for gml : {gmlRelativePath}");
                 PlaceGmlModel(metadata, gmlRelativePath, placeConfig, rootGameObj.transform);
             }
         }
@@ -90,7 +88,7 @@ namespace PLATEAU.Editor.CityImport
         }
 
         /// <summary>
-        /// シーン配置のgmlファイルごとの処理の内部の、LODごとの処理です。
+        /// シーン配置について、gmlファイルごとの処理の内部の、LODごとの処理です。
         /// </summary>
         private static bool PlaceGmlModelOfLod(int lod, string gmlRelativePath, CityMetadata metadata, IReadOnlyCollection<CityObject> primaryCityObjs, Transform parentTrans)
         {
@@ -99,6 +97,22 @@ namespace PLATEAU.Editor.CityImport
             if (foundObj == null) return false;
 
             bool anyModelExist = false;
+            
+            // 例外的に、メッシュ分けの粒度が PerCityModelArea のとき、
+            // 主要地物は存在せず、3Dモデルファイル内にメッシュが1つしか存在しないので
+            // それを配置して return します。
+            if (metadata.cityImportConfig.meshGranularity == MeshGranularity.PerCityModelArea)
+            {
+                // TODO meshNameのハードコード
+                string meshName = $"LOD{lod}_{GmlFileNameParser.FileNameWithoutExtension(gmlRelativePath)}";
+                Debug.Log($"Trying to place {meshName}");
+                var placed = PlaceToScene(foundObj, meshName, parentTrans);
+                if (placed == null)
+                {
+                    Debug.Log($"not found.");
+                }
+                return placed != null;
+            }
 
             // ループ : 主要地物ごと
             foreach (var primaryCityObj in primaryCityObjs)
@@ -207,16 +221,21 @@ namespace PLATEAU.Editor.CityImport
         }
 
         /// <summary>
-        /// <paramref name="objInfo"/> の3Dモデルのうち、名前が <paramref name="objName"/> であるものを探します。
+        /// <paramref name="objInfo"/> の3Dモデルメッシュのうち、名前が <paramref name="objName"/> であるものを探します。
         /// あればシーンに配置して、それを返します。配置のとき、すでに同名のものがある場合は削除してから配置します。
         /// なければ null を返します。
         /// </summary>
         private static GameObject PlaceToScene(ObjInfo objInfo, string objName, Transform parentTransform)
         {
             // 3Dモデルファイル内で、対応するメッシュを探します。
-            var gameObjs = AssetDatabase.LoadAllAssetsAtPath(objInfo.assetsPath).OfType<GameObject>().ToArray();
-            
-            var gameObj =  gameObjs.FirstOrDefault(go => go.name == objName);
+            var gameObjs = AssetDatabase
+                .LoadAllAssetsAtPath(objInfo.assetsPath)
+                .OfType<GameObject>()
+                .ToArray();
+
+            var gameObj =  gameObjs
+                .Skip(1)  // 配列の順番は 3Dモデルファイル → 中身　です。中身だけ見たいので最初は飛ばします。
+                .FirstOrDefault(go => go.name == objName);
             bool isValidMeshObj = gameObj != null && gameObj.GetComponent<MeshFilter>() != null;
             if (!isValidMeshObj)
             {

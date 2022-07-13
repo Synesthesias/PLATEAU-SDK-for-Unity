@@ -44,7 +44,6 @@ namespace PLATEAU.Editor.CityImport
             EditorUtility.SetDirty(metadata);
 
             metadata.gmlRelativePaths = gmlRelativePaths;
-            Debug.Log($"importing. gml count : {metadata.gmlRelativePaths.Length}");
             
             // gmlファイルごとのループを始めます。
             int successCount = 0;
@@ -66,18 +65,15 @@ namespace PLATEAU.Editor.CityImport
                     continue;
                 }
                 
-                Debug.Log($"importing. after load gml. gml count : {metadata.gmlRelativePaths.Length}");
                 
                 // objに変換します。
                 if (!TryConvertToObj(cityModel, ref referencePoint, importConfig, gmlFullPath, importDest.DirFullPath, metadata))
                 {
                     // 出力されるモデルがなければ、ここで終了します。
                     cityModel?.Dispose();
-                    Debug.Log($"importing failed. could not convert to obj. gml count : {metadata.gmlRelativePaths.Length}");
                     continue;
                 }
                 
-                Debug.Log($"importing. after obj. gml count : {metadata.gmlRelativePaths.Length}");
                 
                 // 変換した結果、どのLODのobjが生成されたかを調べてインポートします。
 
@@ -117,7 +113,6 @@ namespace PLATEAU.Editor.CityImport
                 if (!referencePoint.HasValue) throw new Exception($"{nameof(referencePoint)} is null.");
                 importConfig.referencePoint = referencePoint.Value;
                 
-                Debug.Log($"importing. ref point. gml count : {metadata.gmlRelativePaths.Length}");
 
                 // 1つのgmlから LODごとに 0個以上の .obj ファイルが生成されます。
                 // .obj ファイルごとのループを始めます。
