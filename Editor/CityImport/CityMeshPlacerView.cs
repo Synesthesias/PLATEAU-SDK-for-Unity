@@ -16,10 +16,7 @@ namespace PLATEAU.Editor.CityImport
         {
             using (PlateauEditorStyle.VerticalScopeLevel1())
             {
-                // var importConfig = metadata.cityImportConfig;
-                // var placerConfig = importConfig.cityMeshPlacerConfig;
                 var gmlTypes = placerConfig.AllGmlTypes();
-                // var availableObjs = importConfig.generatedObjFiles;
                 var typeLodDict = ObjInfo.AvailableLodInObjs(availableObjs);
                 foreach (var gmlType in gmlTypes)
                 {

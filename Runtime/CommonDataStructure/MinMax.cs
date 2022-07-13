@@ -1,5 +1,4 @@
 ﻿using System;
-using Codice.CM.Common;
 using UnityEngine;
 
 namespace PLATEAU.CommonDataStructure
