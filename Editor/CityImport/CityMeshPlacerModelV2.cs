@@ -109,6 +109,7 @@ namespace PLATEAU.Editor.CityImport
 
 
                 // このLODで主要地物が存在しないなら、空のGameObjectのみ用意します。
+                bool isPrimaryGameObjEmpty = false;
                 if (primaryGameObj == null)
                 {
                     string primaryObjName = GameObjNameParser.ComposeName(lod, primaryCityObj.ID);
@@ -118,6 +119,7 @@ namespace PLATEAU.Editor.CityImport
                     // 空のGameObjectを作ります。
                     primaryGameObj = new GameObject(primaryObjName);
                     primaryGameObj.transform.parent = parentTrans;
+                    isPrimaryGameObjEmpty = true;
                 }
                 else
                 {
@@ -126,14 +128,29 @@ namespace PLATEAU.Editor.CityImport
 
                 // LOD <= 1 の場合 : 主要地物を配置すれば完了となります。主要でない地物の配置をスキップします。
                 // （メッシュの結合単位に関わらず、 LOD <= 1 では主要地物より細かいものは出てきません。）
-                if (lod <= 1) continue;
+                if (lod <= 1)
+                {
+                    if (isPrimaryGameObjEmpty)
+                    {
+                        // 子のない空のオブジェクトは不要なので削除します。
+                        Object.DestroyImmediate(primaryGameObj);
+                    }
+                    continue;
+                }
 
                 // LOD >= 2 の場合 : 子の CityObject をそれぞれ配置します。
                 // （メッシュの結合単位が最小地物の場合に出てくる細かいモデルです。）
                 var childCityObjs = primaryCityObj.CityObjectDescendantsDFS;
 
                 // 主要地物の子をすべて配置します。
-                anyModelExist |= PlaceCityObjs(foundObj, childCityObjs.ToArray(), primaryGameObj.transform);
+                bool placedAnyChild = PlaceCityObjs(foundObj, childCityObjs.ToArray(), primaryGameObj.transform);
+                anyModelExist |= placedAnyChild;
+                
+                // 子の数がゼロで、親も空（メッシュがない）なら、親は不要なので削除します。
+                if (!placedAnyChild && isPrimaryGameObjEmpty)
+                {
+                    Object.DestroyImmediate(primaryGameObj);
+                }
 
             } // ループ ここまで (主要地物ごと) 
 
@@ -200,7 +217,8 @@ namespace PLATEAU.Editor.CityImport
             var gameObjs = AssetDatabase.LoadAllAssetsAtPath(objInfo.assetsPath).OfType<GameObject>().ToArray();
             
             var gameObj =  gameObjs.FirstOrDefault(go => go.name == objName);
-            if (gameObj == null)
+            bool isValidMeshObj = gameObj != null && gameObj.GetComponent<MeshFilter>() != null;
+            if (!isValidMeshObj)
             {
                 return null;
             }
