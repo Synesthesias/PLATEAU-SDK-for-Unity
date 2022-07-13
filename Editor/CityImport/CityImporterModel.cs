@@ -154,7 +154,6 @@ namespace PLATEAU.Editor.CityImport
                 Debug.LogError($"Convert end with error. {failureCount} of {loopCount} gml files are not converted.");
             }
             EditorUtility.ClearProgressBar();
-            Debug.Log($"import end. gml count = {metadata.gmlRelativePaths.Length}");
             return successCount;
         }
 

@@ -75,7 +75,6 @@ namespace PLATEAU.Editor.CityImport
             // ループ : LODごと
             for (int currentLod = lodRange.Max; currentLod >= lodRange.Min; currentLod--)
             {
-                Debug.Log($"current lod = {currentLod}");
                 bool anyModelExist = PlaceGmlModelOfLod(currentLod, gmlRelativePath, metadata, primaryCityObjs, gmlGameObj.transform);
                 
                 if (anyModelExist && !placeMethod.DoesAllowMultipleLodPlaced())

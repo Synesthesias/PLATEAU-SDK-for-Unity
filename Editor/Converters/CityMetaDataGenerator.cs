@@ -24,6 +24,7 @@ namespace PLATEAU.Editor.Converters
         /// <paramref name="doSaveFile"/> が false のとき、ファイルには保存せずメモリ内でのみ変更が保持されます。
         /// これを false にする動機は、シリアライズするタイミングを手動でコントロールすることでシリアライズ回数を減らし、高速化することです。
         /// </summary>
+        /// <returns>成功したかどうかをboolで返します。</returns>
         public bool Generate(
             CityMapMetaDataGeneratorConfig config, string meshAssetPath, string gmlFileName,
             CityMetadata metadata = null, bool doSaveFile = true)
