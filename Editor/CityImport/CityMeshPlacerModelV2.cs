@@ -183,7 +183,6 @@ namespace PLATEAU.Editor.CityImport
                 if (placed != null)
                 {
                     anyModelPlaced = true;
-                    Debug.Log("Placed model");
                 }
             }
 

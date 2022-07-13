@@ -18,53 +18,90 @@ namespace PLATEAU.Tests.EditModeTests
     {
         private string prevDefaultDstPath;
         private static readonly string testDefaultCopyDestPath = Path.Combine(DirectoryUtil.TempAssetFolderPath, "PLATEAU");
+        private CityMetadata metaData;
         
-        
-        [SetUp]
-        public void SetUp()
+        // インポートには時間がかかるので、 OneTimeSetUp 内でインポートしたものを使い回します。
+        // 別のインポート設定でテストしたい場合は、別のソースファイルを作ってください。
+
+        [OneTimeSetUp]
+        public void OneTimeSetUp()
         {
             DirectoryUtil.SetUpTempAssetFolder();
             
-            // テスト用に一時的に MultiGmlConverter のデフォルト出力先を変更します。
+            // テスト用に一時的に デフォルト出力先を変更します。
             this.prevDefaultDstPath = PlateauUnityPath.StreamingGmlFolder;
             PlateauUnityPath.TestOnly_SetStreamingGmlFolder(testDefaultCopyDestPath);
+            
+            // インポートします。
+            var initialPlaceConf = new CityMeshPlacerConfig().SetPlaceMethodForAllTypes(PlaceMethod.DoNotPlace);
+            this.metaData = ImportSimple(initialPlaceConf, MeshGranularity.PerAtomicFeatureObject);
+        }
+
+        [OneTimeTearDown]
+        public void OneTimeTearDown()
+        {
+            DirectoryUtil.DeleteTempAssetFolder();
+            PlateauUnityPath.TestOnly_SetStreamingGmlFolder(this.prevDefaultDstPath);
         }
 
         [TearDown]
         public void TearDown()
         {
-            DirectoryUtil.DeleteTempAssetFolder();
-            PlateauUnityPath.TestOnly_SetStreamingGmlFolder(this.prevDefaultDstPath);
             SceneUtil.DestroyAllGameObjectsInEditModeTestScene();
         }
 
         [Test]
         public void When_PlaceMethod_Is_DoNotPlace_Then_No_Model_Is_Placed()
         {
-            Place(PlaceMethod.DoNotPlace, MeshGranularity.PerCityModelArea);
-            
-            var gameObjs = SceneUtil.GetObjectsOfEditModeTestScene();
-            foreach (var go in gameObjs)
-            {
-                Debug.Log("exists: " + go.name);
-            }
-            Assert.AreEqual(1, gameObjs.Count, $"DoNotPlace のとき、ルート以下にゲームオブジェクトは配置されません。");
+            Place(PlaceMethod.DoNotPlace, 1);
+            AssertLodNotPlaced(0,1,2);
         }
 
 
         [Test]
         public void When_PlaceMethod_Is_PlaceAllLod_Then_All_Lods_Are_Placed()
         {
-            Place(PlaceMethod.PlaceAllLod, MeshGranularity.PerAtomicFeatureObject);
+            Place(PlaceMethod.PlaceAllLod, -1);
             AssertLodPlaced(0,1,2);
     }
 
         [Test]
         public void When_PlaceMethod_Is_MaxLod_Then_Only_MaxLod_Is_Placed()
         {
-            Place(PlaceMethod.PlaceMaxLod, MeshGranularity.PerPrimaryFeatureObject);
+            Place(PlaceMethod.PlaceMaxLod, -1);
             AssertLodPlaced(2);
             AssertLodNotPlaced(0,1);
+        }
+
+        [Test]
+        public void When_PlaceMethod_Is_PlaceSelectedLodOrMax_And_Lod_Not_Found_Then_MaxLod_Is_Placed()
+        {
+            Place(PlaceMethod.PlaceSelectedLodOrMax, 999);
+            AssertLodPlaced(2); // 存在するなかで最大
+            AssertLodNotPlaced(0,1);
+        }
+
+        [Test]
+        public void When_PlaceMethod_Is_PlaceSelectedLodOrMax_And_Lod_Found_Then_TargetLod_Is_Placed()
+        {
+            Place(PlaceMethod.PlaceSelectedLodOrMax, 1);
+            AssertLodPlaced(1);
+            AssertLodNotPlaced(0,2);
+        }
+
+        [Test]
+        public void When_PlaceMethod_Is_PlaceSelectedLodOrDoNotPlace_And_Lod_Not_Found_Then_Do_Not_Place()
+        {
+            Place(PlaceMethod.PlaceSelectedLodOrDoNotPlace, 999);
+            AssertLodNotPlaced(0,1,2);
+        }
+
+        [Test]
+        public void When_PlaceMethod_Is_PlaceSelectedOrDoNotPlace_And_Lod_Found_Then_TargetLod_Is_Placed()
+        {
+            Place(PlaceMethod.PlaceSelectedLodOrDoNotPlace, 1);
+            AssertLodPlaced(1);
+            AssertLodNotPlaced(0,2);
         }
 
         private static void AssertLodPlaced(params int[] shouldContain)
@@ -88,17 +125,12 @@ namespace PLATEAU.Tests.EditModeTests
         }
 
 
-        private static void Place(PlaceMethod placeMethod, MeshGranularity meshGranularity)
+        private void Place(PlaceMethod placeMethod, int selectedLod)
         {
-            var placeConf = PlaceConf(placeMethod);
-            var metadata = ImportSimple(placeConf, meshGranularity);
-
-            CityMeshPlacerModelV2.Place(placeConf, metadata);
-        }
-        
-        private static CityMeshPlacerConfig PlaceConf(PlaceMethod placeMethod)
-        {
-            return new CityMeshPlacerConfig().SetPlaceMethodForAllTypes(placeMethod);
+            var placeConf = new CityMeshPlacerConfig()
+                .SetPlaceMethodForAllTypes(placeMethod)
+                .SetSelectedLodForAllTypes(selectedLod);
+            CityMeshPlacerModelV2.Place(placeConf, this.metaData);
         }
 
         private static CityMetadata ImportSimple(CityMeshPlacerConfig placeConf, MeshGranularity meshGranularity)

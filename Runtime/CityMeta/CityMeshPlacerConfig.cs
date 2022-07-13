@@ -62,13 +62,15 @@ namespace PLATEAU.CityMeta
         }
 
         // TODO このメソッドを使って一括設定のGUIを作ると便利かも？
-        public void SetSelectedLodForAllTypes(int lod)
+        public CityMeshPlacerConfig SetSelectedLodForAllTypes(int lod)
         {
             var dict = this.perTypeConfigs;
             foreach (var type in dict.Keys)
             {
                 dict[type].selectedLod = lod;
             }
+
+            return this;
         }
 
         public ScenePlacementConfigPerType GetPerTypeConfig(GmlType type)
