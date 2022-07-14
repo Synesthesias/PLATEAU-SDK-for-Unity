@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using PLATEAU.CityGML;
 using PLATEAU.CommonDataStructure;
 using PLATEAU.Util;
 using UnityEngine;
@@ -105,6 +106,7 @@ namespace PLATEAU.CityMeta
     {
         public PlaceMethod placeMethod = PlaceMethod.PlaceMaxLod;
         public int selectedLod;
+        public ulong cityObjectTypeFlags = (ulong)CityObjectType.COT_All;
     }
 
     internal static class PlaceMethodExtension

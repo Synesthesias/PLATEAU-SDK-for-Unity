@@ -33,15 +33,15 @@ namespace PLATEAU.Util.CityObjectTypeExtensions
             return dict[Key(gmlType, lod)];
         }
 
-        public static CityObjectType GetFlags(GmlType gmlType, MinMax<int> lodRange)
+        public static ulong GetFlags(GmlType gmlType, MinMax<int> lodRange)
         {
-            CityObjectType ret = 0;
+            ulong flags = 0;
             for (int i = lodRange.Min; i <= lodRange.Max; i++)
             {
-                ret |= GetFlags(gmlType, i);
+                flags |= (ulong)GetFlags(gmlType, i);
             }
 
-            return ret;
+            return flags;
         }
 
         static CityObjectTypeClassification()
@@ -89,37 +89,7 @@ namespace PLATEAU.Util.CityObjectTypeExtensions
             return d;
         }
 
-        /// <summary>
-        /// 引数をビット列（フラグの集まり）として見ます。
-        /// 右のフラグから順に確認し、立っているフラグに対応する CityObjectType を順番に返します。
-        /// </summary>
-        public static IEnumerable<CityObjectType> ForEachTypes(this CityObjectType typeFlags)
-        {
-            ulong flags = (ulong)typeFlags;
-            int shiftCount = 0;
-            while (flags != 0)
-            {
-                if ((flags & 1) == 1)
-                {
-                    yield return (CityObjectType)(1ul << shiftCount);
-                }
-                flags >>= 1;
-                shiftCount++;
-                if (shiftCount > 99999)
-                {
-                    throw new Exception("無限ループのフェイルセーフが発動しました。");
-                }
-            }
-        }
-
-        /// <summary>
-        /// 引数をビット列（フラグの集まり）として見ます。
-        /// 右のフラグから順に確認し、立っているフラグに対応する CityObjectType を配列で返します。
-        /// </summary>
-        public static CityObjectType[] ToTypeArray(this CityObjectType typeFlags)
-        {
-            return typeFlags.ForEachTypes().ToArray();
-        }
+        
 
         
 

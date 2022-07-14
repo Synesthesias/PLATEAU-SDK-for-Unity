@@ -1,10 +1,12 @@
 ﻿using System.Collections.Generic;
+using PLATEAU.CityGML;
 using PLATEAU.CityMeta;
 using PLATEAU.CommonDataStructure;
 using PLATEAU.Editor.EditorWindowCommon;
 using PLATEAU.Util;
 using PLATEAU.Util.CityObjectTypeExtensions;
 using UnityEditor;
+using UnityEngine;
 
 namespace PLATEAU.Editor.CityImport
 {
@@ -83,19 +85,17 @@ namespace PLATEAU.Editor.CityImport
             }
             
             // 都市オブジェクトの種類別の配置設定
-            var availableCityObjTypes = CityObjectTypeClassification.GetFlags(gmlType, possibleLodRange).ToTypeArray();
-            if (availableCityObjTypes.Length > 0)
+            var availableCityObjTypes = CityObjectTypeClassification.GetFlags(gmlType, possibleLodRange);
+            if (availableCityObjTypes > 0)
             {
-                EditorGUILayout.Space(15);
-                
-                EditorGUILayout.LabelField("配置都市オブジェクトの種類");
-                using (PlateauEditorStyle.VerticalScopeLevel1())
+                Debug.Log($"before: typeConf.cityObjectTypeFlags = {typeConf.cityObjectTypeFlags}");
+                typeConf.cityObjectTypeFlags = 
+                    (ulong)((CityObjectType)availableCityObjTypes).FlagField("配置都市オブジェクトの種類", typeConf.cityObjectTypeFlags);
+                if (typeConf.cityObjectTypeFlags > 0)
                 {
-                    foreach (var coType in availableCityObjTypes)
-                    {
-                        EditorGUILayout.Toggle(coType.ToDisplay(), true);
-                    }
+                    Debug.Log($"after: typeConf.cityObjectTypeFlags = {typeConf.cityObjectTypeFlags}");
                 }
+                
             }
             
             
