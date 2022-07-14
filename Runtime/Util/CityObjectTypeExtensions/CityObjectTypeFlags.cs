@@ -58,6 +58,19 @@ namespace PLATEAU.Util.CityObjectTypeExtensions
         /// <returns>選択されたタイプをフラグ群として返します。</returns>
         public static CityObjectType FlagField(this CityObjectType candidateFlags, string label, ulong currentSelectedTypeFlags)
         {
+            return FlagFieldInner(candidateFlags, currentSelectedTypeFlags,
+                (currentSubsetFlags, subsetDisplays) =>
+                    EditorGUILayout.MaskField(label, currentSubsetFlags, subsetDisplays));
+        }
+
+        public delegate int SubsetFlagsSelector(int currentSubsetFlags, string[] subsetDisplays); 
+        
+        public static CityObjectType FlagFieldInner(
+            CityObjectType candidateFlags,
+            ulong currentSelectedTypeFlags,
+            SubsetFlagsSelector subsetFlagsSelector // テストできるようにGUI部分を置き換え可能にします。
+            )
+        {
             // 実装方針 :
             // CityObjectType のうち、候補だけを取り出した集合を subset と呼びます。
             // 対照的に CityObjectType 全体の集合を type と呼びます。
@@ -75,13 +88,22 @@ namespace PLATEAU.Util.CityObjectTypeExtensions
             }
             var subsetDisplays = subset.Select(type => type.ToDisplay()).ToArray();
             int currentSubsetFlags = TypeToSubsetFlags(subset, currentSelectedTypeFlags);
-            int selectedSubsetFlags = EditorGUILayout.MaskField(label, currentSubsetFlags , subsetDisplays);
+            
+            // GUIで選択
+            int selectedSubsetFlags = subsetFlagsSelector(currentSubsetFlags, subsetDisplays);
+            
             // Debug.Log($"selectedSubsetFlags = {Convert.ToString(selectedSubsetFlags, 2)}");
             return SubsetFlagsToType(subset, selectedSubsetFlags);
         }
 
         private static int TypeToSubsetFlags(CityObjectType[] subset, ulong typeFlags)
         {
+            // GUIで Everything が選択されたとき、int型の全ビットを立てます。
+            if (typeFlags == ~0ul)
+            {
+                return ~0;
+            }
+            // Everything 以外のとき、typeFlags に対応する subsetFlags のビットを立てます。
             int subsetFlags = 0;
             for (int i = 0; i < subset.Length; i++)
             {
@@ -96,10 +118,17 @@ namespace PLATEAU.Util.CityObjectTypeExtensions
 
         private static CityObjectType SubsetFlagsToType(CityObjectType[] subset, int subsetFlags)
         {
+            // GUIで Everything が選択されたとき、CityObjectType (ulong) の全ビットを立てます。
+            if (subsetFlags == ~0)
+            {
+                return (CityObjectType)(~0ul);
+            }
+            // Everything 以外のとき、subsetFlags に対応する typeFlags のビットを立てます。
             ulong typeFlags = 0;
             int loopCount = 0;
-            for(int flags = subsetFlags; flags > 0; flags >>=1)
+            for(int flags = subsetFlags; flags != 0; flags >>=1)
             {
+                if (loopCount >= subset.Length) break;
                 if ((flags & 1) == 1)
                 {
                     typeFlags |= (ulong)subset[loopCount];

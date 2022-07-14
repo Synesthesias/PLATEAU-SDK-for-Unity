@@ -88,13 +88,13 @@ namespace PLATEAU.Editor.CityImport
             var availableCityObjTypes = CityObjectTypeClassification.GetFlags(gmlType, possibleLodRange);
             if (availableCityObjTypes > 0)
             {
-                Debug.Log($"before: typeConf.cityObjectTypeFlags = {typeConf.cityObjectTypeFlags}");
+                // Debug.Log($"before: typeConf.cityObjectTypeFlags = {typeConf.cityObjectTypeFlags}");
                 typeConf.cityObjectTypeFlags = 
                     (ulong)((CityObjectType)availableCityObjTypes).FlagField("配置都市オブジェクトの種類", typeConf.cityObjectTypeFlags);
-                if (typeConf.cityObjectTypeFlags > 0)
-                {
-                    Debug.Log($"after: typeConf.cityObjectTypeFlags = {typeConf.cityObjectTypeFlags}");
-                }
+                // if (typeConf.cityObjectTypeFlags > 0)
+                // {
+                    // Debug.Log($"after: typeConf.cityObjectTypeFlags = {typeConf.cityObjectTypeFlags}");
+                // }
                 
             }
             

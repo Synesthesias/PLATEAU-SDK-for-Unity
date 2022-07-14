@@ -106,7 +106,7 @@ namespace PLATEAU.CityMeta
     {
         public PlaceMethod placeMethod = PlaceMethod.PlaceMaxLod;
         public int selectedLod;
-        public ulong cityObjectTypeFlags = (ulong)CityObjectType.COT_All;
+        public ulong cityObjectTypeFlags = ~0ul; // 初期値は ulong の全bitを立てて Everything にします。
     }
 
     internal static class PlaceMethodExtension

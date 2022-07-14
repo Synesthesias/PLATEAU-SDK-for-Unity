@@ -40,7 +40,7 @@ namespace PLATEAU.Util.CityObjectTypeExtensions
                     { CityObjectType.COT_Room , "(仕様外)部屋"}, // 国交省の仕様書には見当たらない
                     { CityObjectType.COT_BuildingInstallation, "建築付属物"},
                     { CityObjectType.COT_BuildingFurniture, "(仕様外)建築設備"}, // 国交省の仕様書には見当たらない
-                    { CityObjectType.COT_Door, "出入口(ドア等)"}, // 国交省仕様書を見るとDoorの定義で「ドア」とは書いてなく、「開口部のうち人や物の出入りを目的とするもの」と書いてあるので「ドア」より「出入口」が近いと判断
+                    { CityObjectType.COT_Door, "出入口"}, // 国交省仕様書を見るとDoorの定義で「ドア」とは書いてなく、「開口部のうち人や物の出入りを目的とするもの」と書いてあるので「ドア」より「出入口」が近いと判断
                     { CityObjectType.COT_Window, "窓"},
                     { CityObjectType.COT_CityFurniture, "都市設備"},
                     { CityObjectType.COT_Track, "(仕様外)Track"}, // 国交省の仕様書には見当たらない
