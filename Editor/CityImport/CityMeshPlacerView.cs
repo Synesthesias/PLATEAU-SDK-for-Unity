@@ -81,12 +81,23 @@ namespace PLATEAU.Editor.CityImport
                 
             }
             
-            // 追加の配置フラグ設定
+            // 都市オブジェクトの種類別の配置設定
             var availableCityObjTypes = CityObjectTypeExtension.GetFlags(gmlType, possibleLodRange).ToTypeArray();
-            foreach (var coType in availableCityObjTypes)
+            if (availableCityObjTypes.Length > 0)
             {
-                EditorGUILayout.Toggle(coType.ToString(), true);
+                EditorGUILayout.Space(15);
+                
+                EditorGUILayout.LabelField("配置都市オブジェクトの種類");
+                using (PlateauEditorStyle.VerticalScopeLevel1())
+                {
+                    foreach (var coType in availableCityObjTypes)
+                    {
+                        EditorGUILayout.Toggle(coType.ToDisplay(), true);
+                    }
+                }
             }
+            
+            
         }
 
         
