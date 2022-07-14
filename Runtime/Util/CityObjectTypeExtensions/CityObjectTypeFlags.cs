@@ -51,6 +51,8 @@ namespace PLATEAU.Util.CityObjectTypeExtensions
         /// <summary>
         /// <see cref="CityObjectType"/> のうちの候補を0個以上選択するGUIを作ります。
         /// 候補は <see cref="CityObjectType"/> のうちの一部分であり、31個以下である必要があります。
+        /// 候補のうちGUIで選択されていないものは、対応するビットが 0 になり、選択されているものは 1 になります。
+        /// 候補でないものは、対応するビットが 1 になります。（候補でカバーしきれないものはとりあえず対象としないと、対象にするすべがないので。）
         /// </summary>
         /// <param name="candidateFlags">選択の候補をフラグ群（ビット列）で表現したものです。</param>
         /// <param name="label">ラベルです。</param>
@@ -65,6 +67,9 @@ namespace PLATEAU.Util.CityObjectTypeExtensions
 
         public delegate int SubsetFlagsSelector(int currentSubsetFlags, string[] subsetDisplays); 
         
+        /// <summary>
+        /// 詳しい説明は <see cref="FlagField"/> をご覧ください。
+        /// </summary>
         public static CityObjectType FlagFieldInner(
             CityObjectType candidateFlags,
             ulong currentSelectedTypeFlags,
@@ -92,8 +97,13 @@ namespace PLATEAU.Util.CityObjectTypeExtensions
             // GUIで選択
             int selectedSubsetFlags = subsetFlagsSelector(currentSubsetFlags, subsetDisplays);
             
-            // Debug.Log($"selectedSubsetFlags = {Convert.ToString(selectedSubsetFlags, 2)}");
-            return SubsetFlagsToType(subset, selectedSubsetFlags);
+            // subsetFlags を typeFlags に変換
+            var typeFlags = SubsetFlagsToType(subset, selectedSubsetFlags);
+            
+            // 候補でないものは、対応する bit を 1 にします。
+            typeFlags |= ~(ulong)candidateFlags;
+            
+            return (CityObjectType)typeFlags;
         }
 
         private static int TypeToSubsetFlags(CityObjectType[] subset, ulong typeFlags)
@@ -116,12 +126,12 @@ namespace PLATEAU.Util.CityObjectTypeExtensions
             return subsetFlags;
         }
 
-        private static CityObjectType SubsetFlagsToType(CityObjectType[] subset, int subsetFlags)
+        private static ulong SubsetFlagsToType(CityObjectType[] subset, int subsetFlags)
         {
             // GUIで Everything が選択されたとき、CityObjectType (ulong) の全ビットを立てます。
             if (subsetFlags == ~0)
             {
-                return (CityObjectType)(~0ul);
+                return ~0ul;
             }
             // Everything 以外のとき、subsetFlags に対応する typeFlags のビットを立てます。
             ulong typeFlags = 0;
@@ -136,7 +146,7 @@ namespace PLATEAU.Util.CityObjectTypeExtensions
                 loopCount++;
             }
             // Debug.Log($"typeFlags = {typeFlags}");
-            return (CityObjectType)typeFlags;
+            return typeFlags;
         }
     }
     #endif

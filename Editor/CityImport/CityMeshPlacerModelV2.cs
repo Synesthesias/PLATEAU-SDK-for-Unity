@@ -11,6 +11,7 @@ using PLATEAU.IO;
 using PLATEAU.Util;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.PlayerLoop;
 using Object = UnityEngine.Object;
 
 namespace PLATEAU.Editor.CityImport
@@ -68,14 +69,14 @@ namespace PLATEAU.Editor.CityImport
             // 3Dモデルファイルへの変換でのLOD範囲
             var lodRange = metadata.cityImportConfig.objConvertTypesConfig.TypeLodDict[gmlType];
             int selectedLod = placeConfig.GetPerTypeConfig(gmlType).selectedLod;
-            lodRange = placeMethod.PlaceLodRange(lodRange, selectedLod);
+            lodRange = placeMethod.LodRangeToPlace(lodRange, selectedLod);
 
             var primaryCityObjs = cityModel.GetCityObjectsByType(PrimaryCityObjectTypes.PrimaryTypeMask);
 
             // ループ : LODごと
             for (int currentLod = lodRange.Max; currentLod >= lodRange.Min; currentLod--)
             {
-                bool anyModelExist = PlaceGmlModelOfLod(currentLod, gmlRelativePath, metadata, primaryCityObjs, gmlGameObj.transform);
+                bool anyModelExist = PlaceGmlModelOfLod(currentLod, gmlRelativePath, metadata, primaryCityObjs, gmlGameObj.transform, cityModel);
                 
                 if (anyModelExist && !placeMethod.DoesAllowMultipleLodPlaced())
                 {
@@ -89,7 +90,7 @@ namespace PLATEAU.Editor.CityImport
         /// <summary>
         /// シーン配置について、gmlファイルごとの処理の内部の、LODごとの処理です。
         /// </summary>
-        private static bool PlaceGmlModelOfLod(int lod, string gmlRelativePath, CityMetadata metadata, IReadOnlyCollection<CityObject> primaryCityObjs, Transform parentTrans)
+        private static bool PlaceGmlModelOfLod(int lod, string gmlRelativePath, CityMetadata metadata, IReadOnlyCollection<CityObject> primaryCityObjs, Transform parentTrans, CityModel cityModel)
         {
             // 対応する3Dモデルファイルを探します。
             var foundObj = FindObjFile(metadata, lod, gmlRelativePath);
@@ -118,6 +119,7 @@ namespace PLATEAU.Editor.CityImport
             {
                 // この LOD で 主要地物モデルが存在するなら、それを配置します。
                 string primaryGameObjName = GameObjNameParser.ComposeName(lod, primaryCityObj.ID);
+                // TODO
                 var primaryGameObj = PlaceToScene(foundObj, primaryGameObjName, parentTrans);
 
 
@@ -248,6 +250,19 @@ namespace PLATEAU.Editor.CityImport
             var newGameObj = Object.Instantiate(gameObj, parentTransform, true);
             newGameObj.name = newGameObj.name.Replace("(Clone)", "");
             return newGameObj;
+        }
+
+        /// <summary>
+        /// 配置する <see cref="CityObject"/> が、
+        /// 配置設定における 配置対象 <see cref="CityObjectType"/> に含まれているかどうかを bool で返します。
+        /// </summary>
+        private static bool IsCityObjectMatchesTypeFlagsConfig(string cityObjId, CityModel cityModel, ScenePlacementConfigPerType placeConfPerType)
+        {
+            var cityObj = cityModel.GetCityObjectById(cityObjId);
+            var coType = cityObj.Type;
+            bool matches = ((ulong)coType & placeConfPerType.cityObjectTypeFlags) != 0;
+            Debug.Log($"{cityObjId} は配置対象？ : {matches}");
+            return matches;
         }
         
 

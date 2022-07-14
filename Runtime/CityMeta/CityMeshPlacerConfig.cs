@@ -124,7 +124,7 @@ namespace PLATEAU.CityMeta
         /// <summary>
         /// 3Dモデルファイルのシーンへの配置について、配置設定と3Dモデルに存在するLODの範囲から、配置時に探索対象とすべきLODの範囲を求めます。
         /// </summary>
-        public static MinMax<int> PlaceLodRange(this PlaceMethod placeMethod, MinMax<int> availableObjLodRange, int selectedLod)
+        public static MinMax<int> LodRangeToPlace(this PlaceMethod placeMethod, MinMax<int> availableObjLodRange, int selectedLod)
         {
             var placeRange = new MinMax<int>(availableObjLodRange);
             // LODを数値指定する設定なら、その指定LODを最大LODとします。

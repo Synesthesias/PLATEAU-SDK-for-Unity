@@ -20,9 +20,14 @@ namespace PLATEAU.Tests.EditModeTests
             var selected = CityObjectTypeFlagsEditor.FlagFieldInner(candidates, 0,
                 (_, __) => 3
             );
-            var expect =
-                CityObjectType.COT_WallSurface |
-                CityObjectType.COT_RoofSurface;
+            
+            // 期待すること :
+            // ・Wall, Roof は選択されているので ビットは 1 です。
+            // ・Ground は選択されていないので ビットは 0 です。
+            // ・選択候補にないものは ビットは 1 です。
+            // まとめると、 Ground のビットが 0 で、それ以外は 1 です。
+            var expect = ~CityObjectType.COT_GroundSurface;
+
             Assert.AreEqual(expect, selected);
         }
 
