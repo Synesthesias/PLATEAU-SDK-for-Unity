@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using PLATEAU.CityMeta;
+﻿using PLATEAU.CityMeta;
 
 namespace PLATEAU.Editor.CityImport
 {

@@ -1,17 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using PLATEAU.Behaviour;
 using PLATEAU.CityGML;
 using PLATEAU.CityMeta;
-using PLATEAU.CommonDataStructure;
 using PLATEAU.Interop;
 using PLATEAU.IO;
 using PLATEAU.Util;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.PlayerLoop;
 using Object = UnityEngine.Object;
 
 namespace PLATEAU.Editor.CityImport
@@ -76,7 +73,7 @@ namespace PLATEAU.Editor.CityImport
             // ループ : LODごと
             for (int currentLod = lodRange.Max; currentLod >= lodRange.Min; currentLod--)
             {
-                bool anyModelExist = PlaceGmlModelOfLod(currentLod, gmlRelativePath, metadata, primaryCityObjs, gmlGameObj.transform, cityModel);
+                bool anyModelExist = PlaceGmlModelOfLod(currentLod, gmlRelativePath, metadata, primaryCityObjs, gmlGameObj.transform);
                 
                 if (anyModelExist && !placeMethod.DoesAllowMultipleLodPlaced())
                 {
@@ -90,7 +87,7 @@ namespace PLATEAU.Editor.CityImport
         /// <summary>
         /// シーン配置について、gmlファイルごとの処理の内部の、LODごとの処理です。
         /// </summary>
-        private static bool PlaceGmlModelOfLod(int lod, string gmlRelativePath, CityMetadata metadata, IReadOnlyCollection<CityObject> primaryCityObjs, Transform parentTrans, CityModel cityModel)
+        private static bool PlaceGmlModelOfLod(int lod, string gmlRelativePath, CityMetadata metadata, IReadOnlyCollection<CityObject> primaryCityObjs, Transform parentTrans)
         {
             // 対応する3Dモデルファイルを探します。
             var foundObj = FindObjFile(metadata, lod, gmlRelativePath);
@@ -113,14 +110,17 @@ namespace PLATEAU.Editor.CityImport
                 }
                 return placed != null;
             }
+            
+            var type = GmlFileNameParser.GetGmlTypeEnum(gmlRelativePath);
+            var typeConf = metadata.cityImportConfig.cityMeshPlacerConfig.GetPerTypeConfig(type);
 
             // ループ : 主要地物ごと
             foreach (var primaryCityObj in primaryCityObjs)
             {
                 // この LOD で 主要地物モデルが存在するなら、それを配置します。
                 string primaryGameObjName = GameObjNameParser.ComposeName(lod, primaryCityObj.ID);
-                // TODO
-                var primaryGameObj = PlaceToScene(foundObj, primaryGameObjName, parentTrans);
+                
+                var primaryGameObj = PlaceToSceneIfConditionMatch(foundObj, primaryGameObjName, parentTrans, primaryCityObj, typeConf);
 
 
                 // このLODで主要地物が存在しないなら、空のGameObjectのみ用意します。
@@ -158,7 +158,7 @@ namespace PLATEAU.Editor.CityImport
                 var childCityObjs = primaryCityObj.CityObjectDescendantsDFS;
 
                 // 主要地物の子をすべて配置します。
-                bool placedAnyChild = PlaceCityObjs(foundObj, childCityObjs.ToArray(), primaryGameObj.transform);
+                bool placedAnyChild = PlaceCityObjsIfConditionMatch(foundObj, childCityObjs.ToArray(), primaryGameObj.transform, typeConf);
                 anyModelExist |= placedAnyChild;
                 
                 // 子の数がゼロで、親も空（メッシュがない）なら、親は不要なので削除します。
@@ -202,16 +202,16 @@ namespace PLATEAU.Editor.CityImport
         
 
         /// <summary>
-        /// <see cref="PlaceToScene"/> の複数版です。
+        /// <see cref="PlaceToSceneIfConditionMatch"/> の複数版です。
         /// </summary>
         /// <returns>1つでも3Dモデルを配置したら true、そうでなければ false を返します。</returns>
-        private static bool PlaceCityObjs(ObjInfo objInfo, ICollection<CityObject> cityObjs, Transform parent)
+        private static bool PlaceCityObjsIfConditionMatch(ObjInfo objInfo, ICollection<CityObject> cityObjs, Transform parent, ScenePlacementConfigPerType typeConfig)
         {
             bool anyModelPlaced = false;
             foreach (var cityObj in cityObjs)
             {
                 string gameObjName = GameObjNameParser.ComposeName(objInfo.lod, cityObj.ID);
-                var placed = PlaceToScene(objInfo, gameObjName, parent);
+                var placed = PlaceToSceneIfConditionMatch(objInfo, gameObjName, parent, cityObj, typeConfig);
                 if (placed != null)
                 {
                     anyModelPlaced = true;
@@ -219,6 +219,16 @@ namespace PLATEAU.Editor.CityImport
             }
 
             return anyModelPlaced;
+        }
+
+        private static GameObject PlaceToSceneIfConditionMatch(ObjInfo objInfo, string objName,
+            Transform parentTransform, CityObject cityObj, ScenePlacementConfigPerType configPerType)
+        {
+            if (!IsCityObjectMatchesTypeFlagsConfig(cityObj, configPerType))
+            {
+                return null;
+            }
+            return PlaceToScene(objInfo, objName, parentTransform);
         }
 
         /// <summary>
@@ -256,12 +266,12 @@ namespace PLATEAU.Editor.CityImport
         /// 配置する <see cref="CityObject"/> が、
         /// 配置設定における 配置対象 <see cref="CityObjectType"/> に含まれているかどうかを bool で返します。
         /// </summary>
-        private static bool IsCityObjectMatchesTypeFlagsConfig(string cityObjId, CityModel cityModel, ScenePlacementConfigPerType placeConfPerType)
+        private static bool IsCityObjectMatchesTypeFlagsConfig(CityObject cityObj, ScenePlacementConfigPerType placeConfPerType)
         {
-            var cityObj = cityModel.GetCityObjectById(cityObjId);
+            // var cityObj = cityModel.GetCityObjectById(cityObjId);
             var coType = cityObj.Type;
             bool matches = ((ulong)coType & placeConfPerType.cityObjectTypeFlags) != 0;
-            Debug.Log($"{cityObjId} は配置対象？ : {matches}");
+            Debug.Log($"{cityObj.ID} は配置対象？ : {matches}");
             return matches;
         }
         

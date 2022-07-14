@@ -3,10 +3,8 @@ using PLATEAU.CityGML;
 using PLATEAU.CityMeta;
 using PLATEAU.CommonDataStructure;
 using PLATEAU.Editor.EditorWindowCommon;
-using PLATEAU.Util;
 using PLATEAU.Util.CityObjectTypeExtensions;
 using UnityEditor;
-using UnityEngine;
 
 namespace PLATEAU.Editor.CityImport
 {
