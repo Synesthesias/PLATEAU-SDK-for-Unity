@@ -3,6 +3,7 @@ using PLATEAU.CityMeta;
 using PLATEAU.CommonDataStructure;
 using PLATEAU.Editor.EditorWindowCommon;
 using PLATEAU.Util;
+using PLATEAU.Util.CityObjectTypeExtensions;
 using UnityEditor;
 
 namespace PLATEAU.Editor.CityImport
@@ -82,7 +83,7 @@ namespace PLATEAU.Editor.CityImport
             }
             
             // 都市オブジェクトの種類別の配置設定
-            var availableCityObjTypes = CityObjectTypeExtension.GetFlags(gmlType, possibleLodRange).ToTypeArray();
+            var availableCityObjTypes = CityObjectTypeClassification.GetFlags(gmlType, possibleLodRange).ToTypeArray();
             if (availableCityObjTypes.Length > 0)
             {
                 EditorGUILayout.Space(15);
