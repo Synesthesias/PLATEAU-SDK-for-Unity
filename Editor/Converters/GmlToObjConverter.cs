@@ -91,7 +91,7 @@ namespace PLATEAU.Editor.Converters
         /// null でなければ、ファイルロードを省略して代わりに渡された <see cref="CityModel"/> を変換します。
         /// 成否をboolで返します。
         /// </summary>
-        private bool ConvertInner(string gmlFilePath, string exportDirFullPath, CityModel cityModel) 
+        private bool ConvertInner(string gmlFilePath, string exportDirFullPath, CityModel cityModel)
         {
             if (!IsPathValid(gmlFilePath, exportDirFullPath)) return false;
             try
@@ -145,6 +145,7 @@ namespace PLATEAU.Editor.Converters
                 // 出力先が Assets フォルダ内なら、それをUnityに反映させます。
                 if (PathUtil.IsSubDirectoryOfAssets(exportDirFullPath))
                 {
+                    AssetDatabase.SaveAssets(); // ここで Save しておかないと、次の AssetDatabase.Refresh() のタイミングで CityMetadata のデータが壊れる厄介なバグが発生します。
                     foreach (string objFullPath in objFullPaths)
                     {
                         string assetPath = PathUtil.FullPathToAssetsPath(objFullPath);

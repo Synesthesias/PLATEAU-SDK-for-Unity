@@ -86,12 +86,12 @@ namespace PLATEAU.Tests.EditModeTests
             LogAssert.ignoreFailingMessages = true;
             // 2つのGMLファイルを変換対象とします。
             var tokyoPaths = ImportPathForTests.Tokyo2;
-            TestImporter.Import(tokyoPaths, out var metaData, _ => { });
+            TestImporter.Import(tokyoPaths, out var metadata, _ => { });
 
             LogAssert.ignoreFailingMessages = false;
             
             // 値1 : CityMapInfo に記録された Reference Point を取得します。
-            var recordedReferencePoint = metaData.cityImportConfig.referencePoint;
+            var recordedReferencePoint = metadata.cityImportConfig.referencePoint;
 
             // 値2 : GmlToObjFileConverter にかけたときの Reference Point を取得します。
             string gmlFilePath = Path.Combine(tokyoPaths.SrcRootFullPath, "udx", tokyoPaths.GmlRelativePaths[0]);
@@ -119,9 +119,9 @@ namespace PLATEAU.Tests.EditModeTests
                 });
 
             // 値2: CityMapInfo に書き込まれた MeshGranularity の値
-            string metaDataPath =
+            string metadataPath =
                 Path.Combine(testOutputDirAssetsPath, "CityMapMetaData.asset");
-            var loadedMetaData = AssetDatabase.LoadAssetAtPath<CityMetaData>(metaDataPath);
+            var loadedMetaData = AssetDatabase.LoadAssetAtPath<CityMetadata>(metadataPath);
             Assert.NotNull(loadedMetaData, "メタデータをロードできる");
             var granularityOnMapInfo = loadedMetaData.cityImportConfig.meshGranularity;
             
@@ -132,9 +132,9 @@ namespace PLATEAU.Tests.EditModeTests
         [Test]
         public void When_CityMapInfo_Is_Already_Exist_Then_Clear_Its_Data_Before_Convert()
         {
-            bool DoContainAtomic(CityMetaData info) => info.idToGmlTable.Keys.Any(id => id.Contains("_wall_"));
+            bool DoContainAtomic(CityMetadata info) => info.idToGmlTable.Keys.Any(id => id.Contains("_wall_"));
 
-            TestImporter.Import(ImportPathForTests.Simple, out var metaData,
+            TestImporter.Import(ImportPathForTests.Simple, out var metadata,
                 config =>
                 {
                     config.SetConvertLods(2, 2);
@@ -142,14 +142,14 @@ namespace PLATEAU.Tests.EditModeTests
                 });
             
             
-            foreach (var key in metaData.idToGmlTable.Keys)
+            foreach (var key in metadata.idToGmlTable.Keys)
             {
                 Console.Write(key);
             }
-            Assert.IsTrue(DoContainAtomic(metaData), "1回目の変換は最小地物を含むことを確認");
+            Assert.IsTrue(DoContainAtomic(metadata), "1回目の変換は最小地物を含むことを確認");
 
             // 2回目のインポート
-            TestImporter.Import(ImportPathForTests.Simple, out metaData,
+            TestImporter.Import(ImportPathForTests.Simple, out metadata,
                 config =>
                 {
                     config.SetConvertLods(2, 2);
@@ -157,8 +157,8 @@ namespace PLATEAU.Tests.EditModeTests
                 });
             
             // 1回目の値は2回目のインポートでクリアされていることを確認
-            bool doContainBuilding = metaData.idToGmlTable.Keys.Any(id => id.Contains("_BLD_"));
-            Assert.IsFalse(DoContainAtomic(metaData), "2回目の変換は最小地物を含まないことを確認");
+            bool doContainBuilding = metadata.idToGmlTable.Keys.Any(id => id.Contains("_BLD_"));
+            Assert.IsFalse(DoContainAtomic(metadata), "2回目の変換は最小地物を含まないことを確認");
             Assert.IsTrue(doContainBuilding, "2回目の変換は主要地物を含むことを確認");
         }
 
@@ -203,15 +203,15 @@ namespace PLATEAU.Tests.EditModeTests
         [Test]
         public void SrcPath_Of_MetaData_Is_Set_To_Post_Copy_Path()
         {
-            TestImporter.Import(ImportPathForTests.Simple, out var metaData, _ => { });
+            TestImporter.Import(ImportPathForTests.Simple, out var metadata, _ => { });
             
             string expectedSrcPath = Path.Combine(testDefaultCopyDestPath, "TestDataSimpleGml").Replace('\\', '/');
-            string fullRootPath = metaData.cityImportConfig.sourcePath.RootDirFullPath();
+            string fullRootPath = metadata.cityImportConfig.sourcePath.RootDirFullPath();
             string actualRootPath = fullRootPath.Replace('\\', '/');
             Assert.AreEqual( expectedSrcPath, actualRootPath, "メモリ上のメタデータの sourcePath がコピー後を指している" );
 
-            var metaDataPath = metaData.cityImportConfig.importDestPath.MetaDataAssetPath;
-            var loadedMetaData = AssetDatabase.LoadAssetAtPath<CityMetaData>(metaDataPath);
+            var metadataPath = metadata.cityImportConfig.importDestPath.MetadataAssetPath;
+            var loadedMetaData = AssetDatabase.LoadAssetAtPath<CityMetadata>(metadataPath);
             Assert.NotNull(loadedMetaData, "生成後のメタデータをロードできる");
             var loadedSrcPath = fullRootPath.Replace('\\', '/');
             Assert.AreEqual(expectedSrcPath, loadedSrcPath, "保存されたメタデータの sourcePath がコピー後を指している");

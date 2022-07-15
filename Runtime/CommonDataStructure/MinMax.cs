@@ -19,6 +19,11 @@ namespace PLATEAU.CommonDataStructure
             SetMinMax(min, max);
         }
 
+        public MinMax(MinMax<T> other)
+        {
+            SetMinMax(other.Min, other.Max);
+        }
+
         /// <summary>
         /// min と max を設定します。
         /// 必ず両方同時に設定する仕様にしています。
@@ -52,8 +57,14 @@ namespace PLATEAU.CommonDataStructure
                 (this.min, this.max) = (this.max, this.min);
             }
         }
+
+        public override string ToString()
+        {
+            return $"(min: {Min}, max: {Max})";
+        }
     }
 
+    
     /// <summary>
     /// <see cref="MinMax{T}"/> の値を readonly にしたバージョンです。 
     /// </summary>

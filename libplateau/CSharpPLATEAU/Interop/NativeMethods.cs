@@ -292,6 +292,16 @@ namespace PLATEAU.Interop
             [In] byte[] keyUtf8,
             out bool doContainsKey);
 
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_attributes_map_to_string_size(
+            [In] IntPtr attributesMap,
+            out int size);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_attributes_map_to_string(
+            [In] IntPtr attributesMap,
+            [In,Out] IntPtr outStrPtrUtf8);
+
 
         // ***************
         //  attributevalue_c.cpp

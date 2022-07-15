@@ -11,7 +11,7 @@ namespace PLATEAU.Tests.EditModeTests
         [Test]
         public void AreaIds_Returns_File_AreaIds()
         {
-            var searcher = new GmlSearcher(DirectoryUtil.TestTokyoSrcPath);
+            var searcher = new GmlSearcherModel(DirectoryUtil.TestTokyoSrcPath);
             var areaIds = searcher.AreaIds;
             Assert.Contains(53394525, areaIds, "地域IDを検索して返す");
             Assert.Contains(533925, areaIds);

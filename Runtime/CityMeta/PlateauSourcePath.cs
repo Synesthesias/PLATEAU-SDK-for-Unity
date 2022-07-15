@@ -8,7 +8,7 @@ namespace PLATEAU.CityMeta
     /// <summary>
     /// Plateauの元データのパスです。
     /// 2つの役割があります。
-    /// ・インポート時の設定として <see cref="CityMetaData"/> に 元データパスを保持、記録されること
+    /// ・インポート時の設定として <see cref="CityMetadata"/> に 元データパスを保持、記録されること
     /// ・udxフォルダのパスから、関連パスを取得できるようにすること。
     /// </summary>
     [Serializable]

@@ -49,7 +49,7 @@ namespace PLATEAU.Util
         /// <summary>
         /// LOD, id から ゲームオブジェクト名を構築します。
         /// </summary>
-        public static string ComposeGameObjName(int lod, string id)
+        public static string ComposeName(int lod, string id)
         {
             return $"LOD{lod}_{id}";
         }
