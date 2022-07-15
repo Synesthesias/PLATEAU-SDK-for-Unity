@@ -2,12 +2,12 @@
   "api/PLATEAU.Behaviour.CityBehaviour.html": {
     "href": "api/PLATEAU.Behaviour.CityBehaviour.html",
     "title": "Class CityBehaviour | PLATEAU SDK for Unity",
-    "keywords": "Class CityBehaviour ゲームオブジェクトの名称からPlateauの CityObject を返す MonoBehaviour です。 実行には CityMetaData を保持する必要があります。 Inheritance Object CityBehaviour Namespace : PLATEAU.Behaviour Assembly : cs.temp.dll.dll Syntax public class CityBehaviour : MonoBehaviour Properties CityMetaData ゲームオブジェクトとgmlファイルを対応付けるために必要な CityMetaData です。 Declaration public CityMetaData CityMetaData { get; set; } Property Value Type Description CityMetaData Methods LoadCityObject(String) ゲームオブジェクト名 から CityObject を返します。 Declaration public CityObject LoadCityObject(string gameObjName) Parameters Type Name Description String gameObjName ゲームオブジェクト名 Returns Type Description CityObject 引数に対応する CityObject"
+    "keywords": "Class CityBehaviour ゲームオブジェクトの名称からPlateauの CityObject を返す MonoBehaviour です。 実行には CityMetadata を保持する必要があります。 Inheritance Object CityBehaviour Namespace : PLATEAU.Behaviour Assembly : cs.temp.dll.dll Syntax public class CityBehaviour : MonoBehaviour Properties CityMetadata ゲームオブジェクトとgmlファイルを対応付けるために必要な CityMetadata です。 Declaration public CityMetadata CityMetadata { get; set; } Property Value Type Description CityMetadata Methods LoadCityObject(String) ゲームオブジェクト名 から CityObject を返します。 Declaration public CityObject LoadCityObject(string gameObjName) Parameters Type Name Description String gameObjName ゲームオブジェクト名 Returns Type Description CityObject 引数に対応する CityObject"
   },
   "api/PLATEAU.Behaviour.html": {
     "href": "api/PLATEAU.Behaviour.html",
     "title": "Namespace PLATEAU.Behaviour | PLATEAU SDK for Unity",
-    "keywords": "Namespace PLATEAU.Behaviour Classes CityBehaviour ゲームオブジェクトの名称からPlateauの CityObject を返す MonoBehaviour です。 実行には CityMetaData を保持する必要があります。"
+    "keywords": "Namespace PLATEAU.Behaviour Classes CityBehaviour ゲームオブジェクトの名称からPlateauの CityObject を返す MonoBehaviour です。 実行には CityMetadata を保持する必要があります。"
   },
   "api/PLATEAU.CityGML.Address.html": {
     "href": "api/PLATEAU.CityGML.Address.html",
@@ -32,7 +32,7 @@
   "api/PLATEAU.CityGML.AttributesMap.html": {
     "href": "api/PLATEAU.CityGML.AttributesMap.html",
     "title": "Class AttributesMap | PLATEAU SDK for Unity",
-    "keywords": "Class AttributesMap 属性の辞書です。 を実装します。 string をキーとし、 AttributeValue が値になります。 this[key] で AttributeValue が返ります。 Inheritance Object AttributesMap Namespace : PLATEAU.CityGML Assembly : cs.temp.dll.dll Syntax public class AttributesMap : IReadOnlyDictionary<string, AttributeValue> Properties Count 属性の数を返します。 Declaration public int Count { get; } Property Value Type Description Int32 Item[String] 属性のキーから値を返します。 key が存在しない場合は を投げます。 例外を投げてほしくない場合は代わりに TryGetValue(String, out AttributeValue) メソッドを利用してください。 Declaration public AttributeValue this[string key] { get; } Parameters Type Name Description String key Property Value Type Description AttributeValue Keys 属性のキーをすべて返します。 結果はキャッシュされるので2回目以降は速いです。 Declaration public IEnumerable<string> Keys { get; } Property Value Type Description IEnumerable < String > Values (key, value) のペアのうち value ( AttributeValue ) をすべて返します。 Declaration public IEnumerable<AttributeValue> Values { get; } Property Value Type Description IEnumerable < AttributeValue > Methods ContainsKey(String) 属性に key が含まれていれば true, key がなければ false を返します。 Declaration public bool ContainsKey(string key) Parameters Type Name Description String key Returns Type Description Boolean GetEnumerator() Declaration public IEnumerator<AttrPair> GetEnumerator() Returns Type Description IEnumerator < AttrPair > ToString() key と value と型 のセットをすべて文字にします。 Declaration public override string ToString() Returns Type Description String TryGetValue(String, out AttributeValue) 属性辞書の中に key が存在すればその値を value に代入して true を返します。 key が存在しなければ value に null を代入して false を返します。 Declaration public bool TryGetValue(string key, out AttributeValue value) Parameters Type Name Description String key AttributeValue value Returns Type Description Boolean"
+    "keywords": "Class AttributesMap 属性の辞書です。 を実装します。 string をキーとし、 AttributeValue が値になります。 this[key] で AttributeValue が返ります。 Inheritance Object AttributesMap Namespace : PLATEAU.CityGML Assembly : cs.temp.dll.dll Syntax public class AttributesMap : IReadOnlyDictionary<string, AttributeValue> Properties Count 属性の数を返します。 Declaration public int Count { get; } Property Value Type Description Int32 Item[String] 属性のキーから値を返します。 key が存在しない場合は を投げます。 例外を投げてほしくない場合は代わりに TryGetValue(String, out AttributeValue) メソッドを利用してください。 Declaration public AttributeValue this[string key] { get; } Parameters Type Name Description String key Property Value Type Description AttributeValue Keys 属性のキーをすべて返します。 結果はキャッシュされるので2回目以降は速いです。 Declaration public IEnumerable<string> Keys { get; } Property Value Type Description IEnumerable < String > Values (key, value) のペアのうち value ( AttributeValue ) をすべて返します。 Declaration public IEnumerable<AttributeValue> Values { get; } Property Value Type Description IEnumerable < AttributeValue > Methods ContainsKey(String) 属性に key が含まれていれば true, key がなければ false を返します。 Declaration public bool ContainsKey(string key) Parameters Type Name Description String key Returns Type Description Boolean GetEnumerator() Declaration public IEnumerator<AttrPair> GetEnumerator() Returns Type Description IEnumerator < AttrPair > ToString() 属性の中身を、見やすくフォーマットした文字列にして返します。 子の属性も再帰的に含みます。 Declaration public override string ToString() Returns Type Description String TryGetValue(String, out AttributeValue) 属性辞書の中に key が存在すればその値を value に代入して true を返します。 key が存在しなければ value に null を代入して false を返します。 Declaration public bool TryGetValue(string key, out AttributeValue value) Parameters Type Name Description String key AttributeValue value Returns Type Description Boolean"
   },
   "api/PLATEAU.CityGML.AttributeType.html": {
     "href": "api/PLATEAU.CityGML.AttributeType.html",
@@ -129,15 +129,15 @@
     "title": "Enum TextureWrapMode | PLATEAU SDK for Unity",
     "keywords": "Enum TextureWrapMode Namespace : PLATEAU.CityGML Assembly : cs.temp.dll.dll Syntax public enum TextureWrapMode Fields Name Description WM_Border WM_Clamp WM_Mirror WM_None WM_Wrap"
   },
-  "api/PLATEAU.CityMeta.CityMetaData.html": {
-    "href": "api/PLATEAU.CityMeta.CityMetaData.html",
-    "title": "Class CityMetaData | PLATEAU SDK for Unity",
-    "keywords": "Class CityMetaData Plateau元データのインポート時に ScriptableObject として保存されるメタデータです。 ・PlateauオブジェクトのIDから、対応する gml ファイルを検索する辞書である PLATEAU.CityMeta.CityMetaData.idToGmlTable を保持します。 この情報の用途は、Unityシーン内のオブジェクトから対応する gml をロードして Plateau の情報を取得する処理の起点となります。 ・インポート時の設定を保持します。 これにより、この ScriptableObject をプロジェクトビューから選択したときに「再変換」画面を出すことができます。 Inheritance Object CityMetaData Namespace : PLATEAU.CityMeta Assembly : cs.temp.dll.dll Syntax public class CityMetaData : ScriptableObject"
+  "api/PLATEAU.CityMeta.CityMetadata.html": {
+    "href": "api/PLATEAU.CityMeta.CityMetadata.html",
+    "title": "Class CityMetadata | PLATEAU SDK for Unity",
+    "keywords": "Class CityMetadata Plateau元データのインポート時に ScriptableObject として保存されるメタデータです。 ・PlateauオブジェクトのIDから、対応する gml ファイルを検索する辞書である PLATEAU.CityMeta.CityMetadata.idToGmlTable を保持します。 この情報の用途は、Unityシーン内のオブジェクトから対応する gml をロードして Plateau の情報を取得する処理の起点となります。 ・インポート時の設定を保持します。 これにより、この ScriptableObject をプロジェクトビューから選択したときに「再変換」画面を出すことができます。 Inheritance Object CityMetadata Namespace : PLATEAU.CityMeta Assembly : cs.temp.dll.dll Syntax public class CityMetadata : ScriptableObject"
   },
   "api/PLATEAU.CityMeta.html": {
     "href": "api/PLATEAU.CityMeta.html",
     "title": "Namespace PLATEAU.CityMeta | PLATEAU SDK for Unity",
-    "keywords": "Namespace PLATEAU.CityMeta Classes CityMetaData Plateau元データのインポート時に ScriptableObject として保存されるメタデータです。 ・PlateauオブジェクトのIDから、対応する gml ファイルを検索する辞書である PLATEAU.CityMeta.CityMetaData.idToGmlTable を保持します。 この情報の用途は、Unityシーン内のオブジェクトから対応する gml をロードして Plateau の情報を取得する処理の起点となります。 ・インポート時の設定を保持します。 これにより、この ScriptableObject をプロジェクトビューから選択したときに「再変換」画面を出すことができます。"
+    "keywords": "Namespace PLATEAU.CityMeta Classes CityMetadata Plateau元データのインポート時に ScriptableObject として保存されるメタデータです。 ・PlateauオブジェクトのIDから、対応する gml ファイルを検索する辞書である PLATEAU.CityMeta.CityMetadata.idToGmlTable を保持します。 この情報の用途は、Unityシーン内のオブジェクトから対応する gml をロードして Plateau の情報を取得する処理の起点となります。 ・インポート時の設定を保持します。 これにより、この ScriptableObject をプロジェクトビューから選択したときに「再変換」画面を出すことができます。"
   },
   "api/PLATEAU.Interop.APIResult.html": {
     "href": "api/PLATEAU.Interop.APIResult.html",

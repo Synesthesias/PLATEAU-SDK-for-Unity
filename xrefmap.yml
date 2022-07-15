@@ -13,19 +13,19 @@ references:
   commentId: T:PLATEAU.Behaviour.CityBehaviour
   fullName: PLATEAU.Behaviour.CityBehaviour
   nameWithType: CityBehaviour
-- uid: PLATEAU.Behaviour.CityBehaviour.CityMetaData
-  name: CityMetaData
-  href: api/PLATEAU.Behaviour.CityBehaviour.html#PLATEAU_Behaviour_CityBehaviour_CityMetaData
-  commentId: P:PLATEAU.Behaviour.CityBehaviour.CityMetaData
-  fullName: PLATEAU.Behaviour.CityBehaviour.CityMetaData
-  nameWithType: CityBehaviour.CityMetaData
-- uid: PLATEAU.Behaviour.CityBehaviour.CityMetaData*
-  name: CityMetaData
-  href: api/PLATEAU.Behaviour.CityBehaviour.html#PLATEAU_Behaviour_CityBehaviour_CityMetaData_
-  commentId: Overload:PLATEAU.Behaviour.CityBehaviour.CityMetaData
+- uid: PLATEAU.Behaviour.CityBehaviour.CityMetadata
+  name: CityMetadata
+  href: api/PLATEAU.Behaviour.CityBehaviour.html#PLATEAU_Behaviour_CityBehaviour_CityMetadata
+  commentId: P:PLATEAU.Behaviour.CityBehaviour.CityMetadata
+  fullName: PLATEAU.Behaviour.CityBehaviour.CityMetadata
+  nameWithType: CityBehaviour.CityMetadata
+- uid: PLATEAU.Behaviour.CityBehaviour.CityMetadata*
+  name: CityMetadata
+  href: api/PLATEAU.Behaviour.CityBehaviour.html#PLATEAU_Behaviour_CityBehaviour_CityMetadata_
+  commentId: Overload:PLATEAU.Behaviour.CityBehaviour.CityMetadata
   isSpec: "True"
-  fullName: PLATEAU.Behaviour.CityBehaviour.CityMetaData
-  nameWithType: CityBehaviour.CityMetaData
+  fullName: PLATEAU.Behaviour.CityBehaviour.CityMetadata
+  nameWithType: CityBehaviour.CityMetadata
 - uid: PLATEAU.Behaviour.CityBehaviour.LoadCityObject(System.String)
   name: LoadCityObject(String)
   href: api/PLATEAU.Behaviour.CityBehaviour.html#PLATEAU_Behaviour_CityBehaviour_LoadCityObject_System_String_
@@ -1766,12 +1766,12 @@ references:
   commentId: N:PLATEAU.CityMeta
   fullName: PLATEAU.CityMeta
   nameWithType: PLATEAU.CityMeta
-- uid: PLATEAU.CityMeta.CityMetaData
-  name: CityMetaData
-  href: api/PLATEAU.CityMeta.CityMetaData.html
-  commentId: T:PLATEAU.CityMeta.CityMetaData
-  fullName: PLATEAU.CityMeta.CityMetaData
-  nameWithType: CityMetaData
+- uid: PLATEAU.CityMeta.CityMetadata
+  name: CityMetadata
+  href: api/PLATEAU.CityMeta.CityMetadata.html
+  commentId: T:PLATEAU.CityMeta.CityMetadata
+  fullName: PLATEAU.CityMeta.CityMetadata
+  nameWithType: CityMetadata
 - uid: PLATEAU.Interop
   name: PLATEAU.Interop
   href: api/PLATEAU.Interop.html
