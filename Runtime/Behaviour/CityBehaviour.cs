@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using PLATEAU.CityGML;
 using PLATEAU.CityMeta;
 using UnityEngine;
@@ -44,6 +45,16 @@ namespace PLATEAU.Behaviour
                 yield return co;
             }
         }
-        
+
+        public IEnumerable<GameObject> ChildGameObjsOnHierarchyDfs()
+        {
+            var gameObjs = CityHierarchyEnumerator.ChildrenDfsAsTransform(transform, 0)
+                .Select(trans => trans.gameObject);
+            foreach (var go in gameObjs)
+            {
+                yield return go;
+            }
+        }
+
     }
 }
