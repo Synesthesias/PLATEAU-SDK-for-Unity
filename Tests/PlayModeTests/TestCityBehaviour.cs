@@ -40,7 +40,6 @@ namespace PLATEAU.Tests.PlayModeTests
         }
 
         [Test]
-        [Ignore("要更新")]
         public void LoadCityObject_Returns_NotNull()
         {
             var cityBehaviour = Object.FindObjectOfType<CityBehaviour>();
@@ -51,8 +50,8 @@ namespace PLATEAU.Tests.PlayModeTests
                 Debug.Log($"{pair.Key} => {pair.Value}");
             }
 
-            string objName = cityBehaviour.transform.GetChild(0).GetChild(0).name;
-            var cityObj = cityBehaviour.LoadCityObject(objName);
+            var gameObj = cityBehaviour.transform.GetChild(0).GetChild(0).gameObject;
+            var cityObj = cityBehaviour.LoadCityObject(gameObj);
             Debug.Log(cityObj.ID);
         }
     }
