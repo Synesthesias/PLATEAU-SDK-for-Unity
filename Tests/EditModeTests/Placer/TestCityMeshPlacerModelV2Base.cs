@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using NUnit.Framework;
+using PLATEAU.CityGML;
 using PLATEAU.CityMeta;
 using PLATEAU.IO;
 using PLATEAU.Tests.TestUtils;
@@ -22,6 +23,7 @@ namespace PLATEAU.Tests.EditModeTests.Placer
         private string prevDefaultDstPath;
         private static readonly string testDefaultCopyDestPath = Path.Combine(DirectoryUtil.TempAssetFolderPath, "PLATEAU");
         private CityMetadata metadata;
+        protected CityMetadata Metadata => this.metadata;
         
         /// <summary>
         /// このプロパティをサブクラスで実装することで、

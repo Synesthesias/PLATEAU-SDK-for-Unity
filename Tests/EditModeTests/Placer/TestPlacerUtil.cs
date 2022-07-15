@@ -42,6 +42,7 @@ namespace PLATEAU.Tests.EditModeTests.Placer
                 .SetPlaceMethodForAllTypes(placeMethod)
                 .SetSelectedLodForAllTypes(selectedLod);
             additionalConfigFunc?.Invoke(placeConf);
+            metadata.cityImportConfig.cityMeshPlacerConfig = placeConf;
             CityMeshPlacerModelV2.Place(placeConf, metadata);
         }
         
@@ -51,7 +52,7 @@ namespace PLATEAU.Tests.EditModeTests.Placer
         /// </summary>
         public static void Place(CityMeshPlacerConfig.PlaceMethod placeMethod, int selectedLod, CityMetadata metadata)
         {
-            Place(placeMethod, selectedLod, metadata, (_) => { });
+            Place(placeMethod, selectedLod, metadata, (conf) => {});
         }
         
         /// <summary>

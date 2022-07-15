@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using NUnit.Framework;
 using PLATEAU.Util;
 using UnityEngine;
@@ -53,6 +54,25 @@ namespace PLATEAU.Tests.TestUtils
         public static List<GameObject> GetObjectsOfEditModeTestScene()
         {
             return GameObjectUtil.ListGameObjsInScene(GetEditModeTestScene());
+        }
+
+        public static void AssertGameObjExists(string name)
+        {
+            AssertGameObjExists(name, true);
+        }
+
+        public static void AssertGameObjNotExists(string name)
+        {
+            AssertGameObjExists(name, false);
+        }
+
+        private static void AssertGameObjExists(string name, bool expect)
+        {
+            var foundObj = GetObjectsOfEditModeTestScene();
+             bool found = foundObj.Any(obj => obj.name == name);
+             string message = $"{name} という名称のゲームオブジェクトが";
+             message += expect ? "存在します" : "存在しません";
+             Assert.AreEqual(expect, found, message);
         }
     }
 }
