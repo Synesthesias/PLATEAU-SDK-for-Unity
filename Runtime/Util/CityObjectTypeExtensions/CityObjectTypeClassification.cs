@@ -81,10 +81,14 @@ namespace PLATEAU.Util.CityObjectTypeExtensions
                 CityObjectType.COT_Window |
                 d[Key(GmlType.Building, 2)]
             );
+            
             SetFlags(d, GmlType.Transport, 3,
                 CityObjectType.COT_TransportationObject
             );
             SetFlags(d, GmlType.Transport, 2, d[Key(GmlType.Transport, 3)]);
+            
+            // TODO　以下に SetFlags の続きを記載します。
+            // 現状、正しく登録できているのは GmlType.Building だけです。
 
             return d;
         }
