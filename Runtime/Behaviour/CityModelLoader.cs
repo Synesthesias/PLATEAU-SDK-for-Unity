@@ -13,7 +13,7 @@ namespace PLATEAU.Behaviour
     /// <summary>
     /// Unityのランタイムでゲームオブジェクト名から <see cref="CityGML.CityObject"/> を取得します。
     /// </summary>
-    internal class CityModelLoader
+    public class CityModelLoader
     {
         private readonly Dictionary<string, CityModel> fileToCityModelCache = new Dictionary<string, CityModel>();
 

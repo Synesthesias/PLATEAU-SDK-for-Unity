@@ -1,11 +1,12 @@
-﻿using PLATEAU.CityGML;
+﻿using System.Collections.Generic;
+using PLATEAU.CityGML;
 using PLATEAU.CityMeta;
 using UnityEngine;
 
 namespace PLATEAU.Behaviour
 {
     /// <summary>
-    /// ゲームオブジェクトの名称からPlateauの <see cref="CityGML.CityObject"/> を返す MonoBehaviour です。
+    /// ゲームオブジェクトからPlateauの <see cref="CityGML.CityObject"/> を返す MonoBehaviour です。
     /// 実行には <see cref="CityMetadata"/> を保持する必要があります。
     /// </summary>
     public class CityBehaviour : MonoBehaviour
@@ -29,5 +30,20 @@ namespace PLATEAU.Behaviour
         {
             return this.loader.Load(gameObj, this.cityMetadata);
         }
+
+        /// <summary>
+        /// 再帰的にヒエラルキーの子を探索し、 <see cref="CityObject"/> に対応付けできるものをすべて <see cref="CityObject"/> にして
+        /// IEnumerable で返します。
+        /// </summary>
+        public IEnumerable<CityObject> ChildCityObjsOnHierarchyDfs()
+        {
+            // minDepth = 2 である理由 : 自身はルートなのでスキップし、直近の子は gmlファイル名 が付いた空のゲームオブジェクトなのでスキップします。
+            var cityObjs = CityHierarchyEnumerator.ChildrenDfsAsCityObjects(transform, 2, this.loader, CityMetadata);
+            foreach (var co in cityObjs)
+            {
+                yield return co;
+            }
+        }
+        
     }
 }
