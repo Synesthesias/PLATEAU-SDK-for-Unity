@@ -1,6 +1,5 @@
 ﻿using System.IO;
 using NUnit.Framework;
-using PLATEAU.CityGML;
 using PLATEAU.CityMeta;
 using PLATEAU.IO;
 using PLATEAU.Tests.TestUtils;
@@ -11,7 +10,7 @@ using static PLATEAU.Tests.EditModeTests.Placer.TestPlacerUtil;
 namespace PLATEAU.Tests.EditModeTests.Placer
 {
     /// <summary>
-    /// <see cref="CityMeshPlacerModelV2"/> のテストの基底クラスです。
+    /// <see cref="Editor.CityImport.CityMeshPlacerModelV2"/> のテストの基底クラスです。
     /// 
     /// このクラスでは、各 <see cref="PlaceMethod"/> ごとに正しくシーンに配置できるかをテストします。
     /// このテストを 各 <see cref="MeshGranularity"/> ごとに行いたいので、

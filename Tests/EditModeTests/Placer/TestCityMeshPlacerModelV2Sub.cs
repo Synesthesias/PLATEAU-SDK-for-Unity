@@ -1,14 +1,8 @@
-﻿using System.IO;
-using System.Linq;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using PLATEAU.CityGML;
-using PLATEAU.CityMeta;
 using PLATEAU.Editor.CityImport;
 using PLATEAU.IO;
 using PLATEAU.Tests.TestUtils;
-using PLATEAU.Util;
-using UnityEngine;
-using static PLATEAU.CityMeta.CityMeshPlacerConfig;
 using static PLATEAU.Tests.EditModeTests.Placer.TestPlacerUtil;
 
 namespace PLATEAU.Tests.EditModeTests.Placer
@@ -28,9 +22,11 @@ namespace PLATEAU.Tests.EditModeTests.Placer
         public void CityObjectTypeMask_Works()
         {
             PlaceWithBuildingTypeMask(2, Metadata, (ulong)CityObjectType.COT_WallSurface | (ulong)CityObjectType.COT_GroundSurface);
+            // ReSharper disable StringLiteralTypo
             SceneUtil.AssertGameObjExists("LOD2_wall_HNAP0279_p2471_4"); // wall が存在する
             SceneUtil.AssertGameObjExists("LOD2_gnd_4cc1a87b-838b-4528-89ec-6065d8442251"); // gnd が存在する
             SceneUtil.AssertGameObjNotExists("LOD2_roof_HNAP0279_p2471_0"); // roof が存在しない
+            // ReSharper restore StringLiteralTypo
         }
     }
 

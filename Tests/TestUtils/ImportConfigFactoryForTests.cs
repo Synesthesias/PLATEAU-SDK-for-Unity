@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using PLATEAU.CityGML;
 using PLATEAU.CityMeta;
 using PLATEAU.CommonDataStructure;
 using PLATEAU.Editor.CityImport;
