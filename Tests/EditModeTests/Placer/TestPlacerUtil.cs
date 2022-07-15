@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using NUnit.Framework;
+using PLATEAU.CityGML;
 using PLATEAU.CityMeta;
 using PLATEAU.Editor.CityImport;
 using PLATEAU.IO;
@@ -53,6 +54,17 @@ namespace PLATEAU.Tests.EditModeTests.Placer
         public static void Place(CityMeshPlacerConfig.PlaceMethod placeMethod, int selectedLod, CityMetadata metadata)
         {
             Place(placeMethod, selectedLod, metadata, (conf) => {});
+        }
+
+        public static void PlaceWithBuildingTypeMask(int lod, CityMetadata metadata, ulong cityObjectTypeFlags)
+        {
+            Place(CityMeshPlacerConfig.PlaceMethod.PlaceSelectedLodOrMax, lod, metadata,
+                (placerConf) =>
+                {
+                    var buildingConf = placerConf.GetPerTypeConfig(GmlType.Building);
+                    buildingConf.cityObjectTypeFlags = cityObjectTypeFlags;
+                }
+            );
         }
         
         /// <summary>

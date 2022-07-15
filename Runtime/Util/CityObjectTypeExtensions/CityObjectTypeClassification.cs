@@ -68,6 +68,10 @@ namespace PLATEAU.Util.CityObjectTypeExtensions
             }
              
             // 辞書に値を登録します。
+            SetFlags(d, GmlType.Building, 0,
+                CityObjectType.COT_Building);
+            SetFlags(d, GmlType.Building, 1,
+                d[Key(GmlType.Building, 0)]);
             SetFlags(d, GmlType.Building, 2,
                 CityObjectType.COT_WallSurface |
                 CityObjectType.COT_RoofSurface |

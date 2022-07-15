@@ -268,10 +268,9 @@ namespace PLATEAU.Editor.CityImport
         /// </summary>
         private static bool IsCityObjectMatchesTypeFlagsConfig(CityObject cityObj, ScenePlacementConfigPerType placeConfPerType)
         {
-            // var cityObj = cityModel.GetCityObjectById(cityObjId);
             var coType = cityObj.Type;
             bool matches = ((ulong)coType & placeConfPerType.cityObjectTypeFlags) != 0;
-            Debug.Log($"{cityObj.ID} は配置対象？ : {matches}");
+            // Debug.Log($"配置対象？ id = {cityObj.ID}, type = {cityObj.Type}, matches = {matches}");
             return matches;
         }
         
