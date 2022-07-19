@@ -13,29 +13,27 @@ namespace PLATEAU.Behaviour
     /// <summary>
     /// Unityのランタイムでゲームオブジェクト名から <see cref="CityGML.CityObject"/> を取得します。
     /// </summary>
-    internal class CityModelLoader
+    public class CityModelLoader
     {
         private readonly Dictionary<string, CityModel> fileToCityModelCache = new Dictionary<string, CityModel>();
 
-        public CityObject Load(string gameObjName, CityMetadata cityMetadata)
+        public CityObject Load(GameObject gameObj, CityMetadata cityMetadata)
         {
             if (cityMetadata == null)
             {
                 throw new ArgumentNullException($"{nameof(cityMetadata)}");
             }
             
-            // テーブルから cityObjectId に対応する gmlFileName を検索します。
-            if( !cityMetadata.TryGetValueFromGmlTable(gameObjName, out var gmlFileName))
-            {
-                throw new KeyNotFoundException($"cityObjectId {gameObjName} is not found in {nameof(CityMetadata)}.");
-            }
-            
-            
+            string gmlFileName = FindGmlNameByMetadata(gameObj ,cityMetadata);
+            // string gmlFileName = FindGmlName(gameObj);
+            if (gmlFileName == null) return null;
+
+
             // gameObjName から cityObjId を取得します。
-            bool succeed = GameObjNameParser.TryGetId(gameObjName, out string cityObjId);
+            bool succeed = GameObjNameParser.TryGetId(gameObj.name, out string cityObjId);
             if (!succeed)
             {
-                Debug.LogError($"{nameof(gameObjName)} is invalid formatted.");
+                Debug.LogError($"{nameof(gameObj.name)} is invalid formatted.");
                 return null;
             }
             
@@ -74,6 +72,39 @@ namespace PLATEAU.Behaviour
         private static CityObject GetCityObjectById(CityModel model, string id)
         {
             return model.GetCityObjectById(id);
+        }
+
+        /// <summary>
+        /// <paramref name="gameObj"/> に対応する gmlファイル名を <see cref="CityMetadata"/> から探します。
+        /// </summary>
+        private static string FindGmlNameByMetadata(GameObject gameObj, CityMetadata cityMetadata)
+        {
+            // テーブルから cityObjectId に対応する gmlFileName を検索します。
+            if( !cityMetadata.TryGetValueFromGmlTable(gameObj.name, out var gmlFileName))
+            {
+                return null;
+            }
+            return gmlFileName;
+        }
+
+        /// <summary>
+        /// <paramref name="gameObj"/> に対応する Gmlファイル名を、ヒエラルキー構造を利用して探して返します。
+        /// <see cref="CityBehaviour"/> の子の GameObject の名称に Gmlファイル名が含まれることを利用し、
+        /// <paramref name="gameObj"/> の親をさかのぼることで gmlファイル名を探します。
+        /// <paramref name="gameObj"/> の親(再帰的)に <see cref="CityBehaviour"/> がなければ処理は失敗し、nullを返します。
+        /// </summary>
+        private static string FindGmlNameByHierarchy(GameObject gameObj)
+        {
+            var parentTrans = gameObj.transform.parent;
+            // 親がなければ失敗します。
+            if (parentTrans == null) return null;
+            // 親が CityBehaviour なら、gameObjの名称が Gmlファイル名に対応します。
+            if (parentTrans.GetComponent<CityBehaviour>() != null)
+            {
+                return gameObj.name;
+            }
+            // 再帰的に親を探します。
+            return FindGmlNameByHierarchy(parentTrans.gameObject);
         }
     }
 }

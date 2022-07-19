@@ -1,11 +1,13 @@
-﻿using PLATEAU.CityGML;
+﻿using System.Collections.Generic;
+using System.Linq;
+using PLATEAU.CityGML;
 using PLATEAU.CityMeta;
 using UnityEngine;
 
 namespace PLATEAU.Behaviour
 {
     /// <summary>
-    /// ゲームオブジェクトの名称からPlateauの <see cref="CityGML.CityObject"/> を返す MonoBehaviour です。
+    /// ゲームオブジェクトからPlateauの <see cref="CityGML.CityObject"/> を返す MonoBehaviour です。
     /// 実行には <see cref="CityMetadata"/> を保持する必要があります。
     /// </summary>
     public class CityBehaviour : MonoBehaviour
@@ -21,13 +23,38 @@ namespace PLATEAU.Behaviour
         }
 
         /// <summary>
-        /// ゲームオブジェクト名 から <see cref="CityGML.CityObject"/> を返します。
+        /// ゲームオブジェクト から <see cref="CityGML.CityObject"/> を返します。
         /// </summary>
-        /// <param name="gameObjName">ゲームオブジェクト名</param>
+        /// <param name="gameObj"><see cref="CityObject"/>に対応するゲームオブジェクト</param>
         /// <returns>引数に対応する<see cref="CityGML.CityObject"/></returns>
-        public CityObject LoadCityObject(string gameObjName)
+        public CityObject LoadCityObject(GameObject gameObj)
         {
-            return this.loader.Load(gameObjName, this.cityMetadata);
+            return this.loader.Load(gameObj, this.cityMetadata);
         }
+
+        /// <summary>
+        /// 再帰的にヒエラルキーの子を探索し、 <see cref="CityObject"/> に対応付けできるものをすべて <see cref="CityObject"/> にして
+        /// IEnumerable で返します。
+        /// </summary>
+        public IEnumerable<CityObject> ChildCityObjsOnHierarchyDfs()
+        {
+            // minDepth = 2 である理由 : 自身はルートなのでスキップし、直近の子は gmlファイル名 が付いた空のゲームオブジェクトなのでスキップします。
+            var cityObjs = CityHierarchyEnumerator.ChildrenDfsAsCityObjects(transform, 2, this.loader, CityMetadata);
+            foreach (var co in cityObjs)
+            {
+                yield return co;
+            }
+        }
+
+        public IEnumerable<GameObject> ChildGameObjsOnHierarchyDfs()
+        {
+            var gameObjs = CityHierarchyEnumerator.ChildrenDfsAsTransform(transform, 0)
+                .Select(trans => trans.gameObject);
+            foreach (var go in gameObjs)
+            {
+                yield return go;
+            }
+        }
+
     }
 }
