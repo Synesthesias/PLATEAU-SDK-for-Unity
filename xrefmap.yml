@@ -13,6 +13,32 @@ references:
   commentId: T:PLATEAU.Behaviour.CityBehaviour
   fullName: PLATEAU.Behaviour.CityBehaviour
   nameWithType: CityBehaviour
+- uid: PLATEAU.Behaviour.CityBehaviour.ChildCityObjsOnHierarchyDfs
+  name: ChildCityObjsOnHierarchyDfs()
+  href: api/PLATEAU.Behaviour.CityBehaviour.html#PLATEAU_Behaviour_CityBehaviour_ChildCityObjsOnHierarchyDfs
+  commentId: M:PLATEAU.Behaviour.CityBehaviour.ChildCityObjsOnHierarchyDfs
+  fullName: PLATEAU.Behaviour.CityBehaviour.ChildCityObjsOnHierarchyDfs()
+  nameWithType: CityBehaviour.ChildCityObjsOnHierarchyDfs()
+- uid: PLATEAU.Behaviour.CityBehaviour.ChildCityObjsOnHierarchyDfs*
+  name: ChildCityObjsOnHierarchyDfs
+  href: api/PLATEAU.Behaviour.CityBehaviour.html#PLATEAU_Behaviour_CityBehaviour_ChildCityObjsOnHierarchyDfs_
+  commentId: Overload:PLATEAU.Behaviour.CityBehaviour.ChildCityObjsOnHierarchyDfs
+  isSpec: "True"
+  fullName: PLATEAU.Behaviour.CityBehaviour.ChildCityObjsOnHierarchyDfs
+  nameWithType: CityBehaviour.ChildCityObjsOnHierarchyDfs
+- uid: PLATEAU.Behaviour.CityBehaviour.ChildGameObjsOnHierarchyDfs
+  name: ChildGameObjsOnHierarchyDfs()
+  href: api/PLATEAU.Behaviour.CityBehaviour.html#PLATEAU_Behaviour_CityBehaviour_ChildGameObjsOnHierarchyDfs
+  commentId: M:PLATEAU.Behaviour.CityBehaviour.ChildGameObjsOnHierarchyDfs
+  fullName: PLATEAU.Behaviour.CityBehaviour.ChildGameObjsOnHierarchyDfs()
+  nameWithType: CityBehaviour.ChildGameObjsOnHierarchyDfs()
+- uid: PLATEAU.Behaviour.CityBehaviour.ChildGameObjsOnHierarchyDfs*
+  name: ChildGameObjsOnHierarchyDfs
+  href: api/PLATEAU.Behaviour.CityBehaviour.html#PLATEAU_Behaviour_CityBehaviour_ChildGameObjsOnHierarchyDfs_
+  commentId: Overload:PLATEAU.Behaviour.CityBehaviour.ChildGameObjsOnHierarchyDfs
+  isSpec: "True"
+  fullName: PLATEAU.Behaviour.CityBehaviour.ChildGameObjsOnHierarchyDfs
+  nameWithType: CityBehaviour.ChildGameObjsOnHierarchyDfs
 - uid: PLATEAU.Behaviour.CityBehaviour.CityMetadata
   name: CityMetadata
   href: api/PLATEAU.Behaviour.CityBehaviour.html#PLATEAU_Behaviour_CityBehaviour_CityMetadata
@@ -26,12 +52,12 @@ references:
   isSpec: "True"
   fullName: PLATEAU.Behaviour.CityBehaviour.CityMetadata
   nameWithType: CityBehaviour.CityMetadata
-- uid: PLATEAU.Behaviour.CityBehaviour.LoadCityObject(System.String)
-  name: LoadCityObject(String)
-  href: api/PLATEAU.Behaviour.CityBehaviour.html#PLATEAU_Behaviour_CityBehaviour_LoadCityObject_System_String_
-  commentId: M:PLATEAU.Behaviour.CityBehaviour.LoadCityObject(System.String)
-  fullName: PLATEAU.Behaviour.CityBehaviour.LoadCityObject(System.String)
-  nameWithType: CityBehaviour.LoadCityObject(String)
+- uid: PLATEAU.Behaviour.CityBehaviour.LoadCityObject(GameObject)
+  name: LoadCityObject(GameObject)
+  href: api/PLATEAU.Behaviour.CityBehaviour.html#PLATEAU_Behaviour_CityBehaviour_LoadCityObject_GameObject_
+  commentId: M:PLATEAU.Behaviour.CityBehaviour.LoadCityObject(GameObject)
+  fullName: PLATEAU.Behaviour.CityBehaviour.LoadCityObject(GameObject)
+  nameWithType: CityBehaviour.LoadCityObject(GameObject)
 - uid: PLATEAU.Behaviour.CityBehaviour.LoadCityObject*
   name: LoadCityObject
   href: api/PLATEAU.Behaviour.CityBehaviour.html#PLATEAU_Behaviour_CityBehaviour_LoadCityObject_
@@ -39,6 +65,57 @@ references:
   isSpec: "True"
   fullName: PLATEAU.Behaviour.CityBehaviour.LoadCityObject
   nameWithType: CityBehaviour.LoadCityObject
+- uid: PLATEAU.Behaviour.CityHierarchyEnumerator
+  name: CityHierarchyEnumerator
+  href: api/PLATEAU.Behaviour.CityHierarchyEnumerator.html
+  commentId: T:PLATEAU.Behaviour.CityHierarchyEnumerator
+  fullName: PLATEAU.Behaviour.CityHierarchyEnumerator
+  nameWithType: CityHierarchyEnumerator
+- uid: PLATEAU.Behaviour.CityHierarchyEnumerator.ChildrenDfsAsCityObjects(Transform,System.Int32,PLATEAU.Behaviour.CityModelLoader,CityMetadata)
+  name: ChildrenDfsAsCityObjects(Transform, Int32, CityModelLoader, CityMetadata)
+  href: api/PLATEAU.Behaviour.CityHierarchyEnumerator.html#PLATEAU_Behaviour_CityHierarchyEnumerator_ChildrenDfsAsCityObjects_Transform_System_Int32_PLATEAU_Behaviour_CityModelLoader_CityMetadata_
+  commentId: M:PLATEAU.Behaviour.CityHierarchyEnumerator.ChildrenDfsAsCityObjects(Transform,System.Int32,PLATEAU.Behaviour.CityModelLoader,CityMetadata)
+  fullName: PLATEAU.Behaviour.CityHierarchyEnumerator.ChildrenDfsAsCityObjects(Transform, System.Int32, PLATEAU.Behaviour.CityModelLoader, CityMetadata)
+  nameWithType: CityHierarchyEnumerator.ChildrenDfsAsCityObjects(Transform, Int32, CityModelLoader, CityMetadata)
+- uid: PLATEAU.Behaviour.CityHierarchyEnumerator.ChildrenDfsAsCityObjects*
+  name: ChildrenDfsAsCityObjects
+  href: api/PLATEAU.Behaviour.CityHierarchyEnumerator.html#PLATEAU_Behaviour_CityHierarchyEnumerator_ChildrenDfsAsCityObjects_
+  commentId: Overload:PLATEAU.Behaviour.CityHierarchyEnumerator.ChildrenDfsAsCityObjects
+  isSpec: "True"
+  fullName: PLATEAU.Behaviour.CityHierarchyEnumerator.ChildrenDfsAsCityObjects
+  nameWithType: CityHierarchyEnumerator.ChildrenDfsAsCityObjects
+- uid: PLATEAU.Behaviour.CityHierarchyEnumerator.ChildrenDfsAsTransform(Transform,System.Int32)
+  name: ChildrenDfsAsTransform(Transform, Int32)
+  href: api/PLATEAU.Behaviour.CityHierarchyEnumerator.html#PLATEAU_Behaviour_CityHierarchyEnumerator_ChildrenDfsAsTransform_Transform_System_Int32_
+  commentId: M:PLATEAU.Behaviour.CityHierarchyEnumerator.ChildrenDfsAsTransform(Transform,System.Int32)
+  fullName: PLATEAU.Behaviour.CityHierarchyEnumerator.ChildrenDfsAsTransform(Transform, System.Int32)
+  nameWithType: CityHierarchyEnumerator.ChildrenDfsAsTransform(Transform, Int32)
+- uid: PLATEAU.Behaviour.CityHierarchyEnumerator.ChildrenDfsAsTransform*
+  name: ChildrenDfsAsTransform
+  href: api/PLATEAU.Behaviour.CityHierarchyEnumerator.html#PLATEAU_Behaviour_CityHierarchyEnumerator_ChildrenDfsAsTransform_
+  commentId: Overload:PLATEAU.Behaviour.CityHierarchyEnumerator.ChildrenDfsAsTransform
+  isSpec: "True"
+  fullName: PLATEAU.Behaviour.CityHierarchyEnumerator.ChildrenDfsAsTransform
+  nameWithType: CityHierarchyEnumerator.ChildrenDfsAsTransform
+- uid: PLATEAU.Behaviour.CityModelLoader
+  name: CityModelLoader
+  href: api/PLATEAU.Behaviour.CityModelLoader.html
+  commentId: T:PLATEAU.Behaviour.CityModelLoader
+  fullName: PLATEAU.Behaviour.CityModelLoader
+  nameWithType: CityModelLoader
+- uid: PLATEAU.Behaviour.CityModelLoader.Load(GameObject,CityMetadata)
+  name: Load(GameObject, CityMetadata)
+  href: api/PLATEAU.Behaviour.CityModelLoader.html#PLATEAU_Behaviour_CityModelLoader_Load_GameObject_CityMetadata_
+  commentId: M:PLATEAU.Behaviour.CityModelLoader.Load(GameObject,CityMetadata)
+  fullName: PLATEAU.Behaviour.CityModelLoader.Load(GameObject, CityMetadata)
+  nameWithType: CityModelLoader.Load(GameObject, CityMetadata)
+- uid: PLATEAU.Behaviour.CityModelLoader.Load*
+  name: Load
+  href: api/PLATEAU.Behaviour.CityModelLoader.html#PLATEAU_Behaviour_CityModelLoader_Load_
+  commentId: Overload:PLATEAU.Behaviour.CityModelLoader.Load
+  isSpec: "True"
+  fullName: PLATEAU.Behaviour.CityModelLoader.Load
+  nameWithType: CityModelLoader.Load
 - uid: PLATEAU.CityGML
   name: PLATEAU.CityGML
   href: api/PLATEAU.CityGML.html

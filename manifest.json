@@ -28,7 +28,31 @@
       "output": {
         ".html": {
           "relative_path": "api/PLATEAU.Behaviour.CityBehaviour.html",
-          "hash": "nDGFwE+EfBEu9a71ZqRoQ75cWoan6G/ykYCw8MhUCZM="
+          "hash": "q/GPjKHIUuUNdCIVdStRwneroiVcZj1Gu5y9cWZglXs="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/PLATEAU.Behaviour.CityHierarchyEnumerator.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PLATEAU.Behaviour.CityHierarchyEnumerator.html",
+          "hash": "llMTM2PMgmtTXNae6d72WBaF+cG1qk158WtEaEkNyuM="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/PLATEAU.Behaviour.CityModelLoader.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PLATEAU.Behaviour.CityModelLoader.html",
+          "hash": "HmwmRDK9W91ozpK73ncPSNun3gP+9VCLHR9if+r08YM="
         }
       },
       "is_incremental": false,
@@ -40,7 +64,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PLATEAU.Behaviour.html",
-          "hash": "PC4dsBe24rpnnpuVxXDygcqRuhNitxWXnepJdVnqgGY="
+          "hash": "bNizYdSqv6VDA0mdfJLxLAq1rx6erqMww8gEJ/jW90Q="
         }
       },
       "is_incremental": false,
@@ -544,7 +568,7 @@
       "output": {
         ".html": {
           "relative_path": "api/toc.html",
-          "hash": "YwZ5SS0G77qFjU6tmzS6iLSjpczSwmFDieMCTkknyvw="
+          "hash": "cilx+dsmpHkIJqj7FztiF/jG3fzNVHKb+XvaJzO9qRA="
         }
       },
       "is_incremental": false,
@@ -666,7 +690,7 @@
         "ManagedReferenceDocumentProcessor": {
           "can_incremental": false,
           "incrementalPhase": "build",
-          "total_file_count": 43,
+          "total_file_count": 45,
           "skipped_file_count": 0
         },
         "ResourceDocumentProcessor": {

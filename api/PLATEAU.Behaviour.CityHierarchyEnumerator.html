@@ -5,10 +5,10 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>Class CityBehaviour
+    <title>Class CityHierarchyEnumerator
    | PLATEAU SDK for Unity </title>
     <meta name="viewport" content="width=device-width">
-    <meta name="title" content="Class CityBehaviour
+    <meta name="title" content="Class CityHierarchyEnumerator
    | PLATEAU SDK for Unity ">
     <meta name="generator" content="docfx 2.59.3.0">
     
@@ -78,68 +78,93 @@
         </div>
         <div class="article row grid-right">
           <div class="col-md-10">
-            <article class="content wrap" id="_content" data-uid="PLATEAU.Behaviour.CityBehaviour">
+            <article class="content wrap" id="_content" data-uid="PLATEAU.Behaviour.CityHierarchyEnumerator">
   
   
-  <h1 id="PLATEAU_Behaviour_CityBehaviour" data-uid="PLATEAU.Behaviour.CityBehaviour" class="text-break">Class CityBehaviour
+  <h1 id="PLATEAU_Behaviour_CityHierarchyEnumerator" data-uid="PLATEAU.Behaviour.CityHierarchyEnumerator" class="text-break">Class CityHierarchyEnumerator
   </h1>
-  <div class="markdown level0 summary"><p>ゲームオブジェクトからPlateauの <a class="xref" href="PLATEAU.CityGML.CityObject.html">CityObject</a> を返す MonoBehaviour です。
-実行には <a class="xref" href="PLATEAU.Behaviour.CityBehaviour.html#PLATEAU_Behaviour_CityBehaviour_CityMetadata">CityMetadata</a> を保持する必要があります。</p>
+  <div class="markdown level0 summary"><p>シーン上の都市ゲームオブジェクトを列挙します。</p>
 </div>
   <div class="markdown level0 conceptual"></div>
   <div class="inheritance">
     <h5>Inheritance</h5>
     <div class="level0"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></div>
-    <div class="level1"><span class="xref">CityBehaviour</span></div>
+    <div class="level1"><span class="xref">CityHierarchyEnumerator</span></div>
+  </div>
+  <div class="inheritedMembers">
+    <h5>Inherited Members</h5>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.tostring#system-object-tostring">Object.ToString()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)">Object.Equals(Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)">Object.Equals(Object, Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.referenceequals#system-object-referenceequals(system-object-system-object)">Object.ReferenceEquals(Object, Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gethashcode#system-object-gethashcode">Object.GetHashCode()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gettype#system-object-gettype">Object.GetType()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.memberwiseclone#system-object-memberwiseclone">Object.MemberwiseClone()</a>
+    </div>
   </div>
   <h6><strong>Namespace</strong>: <a class="xref" href="PLATEAU.Behaviour.html">PLATEAU.Behaviour</a></h6>
   <h6><strong>Assembly</strong>: cs.temp.dll.dll</h6>
-  <h5 id="PLATEAU_Behaviour_CityBehaviour_syntax">Syntax</h5>
+  <h5 id="PLATEAU_Behaviour_CityHierarchyEnumerator_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public class CityBehaviour : MonoBehaviour</code></pre>
+    <pre><code class="lang-csharp hljs">public static class CityHierarchyEnumerator</code></pre>
   </div>
-  <h3 id="properties">Properties
+  <h3 id="methods">Methods
   </h3>
   
   
-  <a id="PLATEAU_Behaviour_CityBehaviour_CityMetadata_" data-uid="PLATEAU.Behaviour.CityBehaviour.CityMetadata*"></a>
-  <h4 id="PLATEAU_Behaviour_CityBehaviour_CityMetadata" data-uid="PLATEAU.Behaviour.CityBehaviour.CityMetadata">CityMetadata</h4>
-  <div class="markdown level1 summary"><p>ゲームオブジェクトとgmlファイルを対応付けるために必要な <a class="xref" href="PLATEAU.Behaviour.CityBehaviour.html#PLATEAU_Behaviour_CityBehaviour_CityMetadata">CityMetadata</a> です。 </p>
-</div>
+  <a id="PLATEAU_Behaviour_CityHierarchyEnumerator_ChildrenDfsAsCityObjects_" data-uid="PLATEAU.Behaviour.CityHierarchyEnumerator.ChildrenDfsAsCityObjects*"></a>
+  <h4 id="PLATEAU_Behaviour_CityHierarchyEnumerator_ChildrenDfsAsCityObjects_Transform_System_Int32_PLATEAU_Behaviour_CityModelLoader_CityMetadata_" data-uid="PLATEAU.Behaviour.CityHierarchyEnumerator.ChildrenDfsAsCityObjects(Transform,System.Int32,PLATEAU.Behaviour.CityModelLoader,CityMetadata)">ChildrenDfsAsCityObjects(Transform, Int32, CityModelLoader, CityMetadata)</h4>
+  <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public CityMetadata CityMetadata { get; set; }</code></pre>
+    <pre><code class="lang-csharp hljs">public static IEnumerable&lt;CityObject&gt; ChildrenDfsAsCityObjects(Transform parent, int minDepth, CityModelLoader cityModelLoader, CityMetadata metadata)</code></pre>
   </div>
-  <h5 class="propertyValue">Property Value</h5>
+  <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
     <thead>
       <tr>
         <th>Type</th>
+        <th>Name</th>
         <th>Description</th>
       </tr>
     </thead>
     <tbody>
       <tr>
+        <td><span class="xref">Transform</span></td>
+        <td><span class="parametername">parent</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><span class="parametername">minDepth</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="PLATEAU.Behaviour.CityModelLoader.html">CityModelLoader</a></td>
+        <td><span class="parametername">cityModelLoader</span></td>
+        <td></td>
+      </tr>
+      <tr>
         <td><span class="xref">CityMetadata</span></td>
+        <td><span class="parametername">metadata</span></td>
         <td></td>
       </tr>
     </tbody>
   </table>
-  <h3 id="methods">Methods
-  </h3>
-  
-  
-  <a id="PLATEAU_Behaviour_CityBehaviour_ChildCityObjsOnHierarchyDfs_" data-uid="PLATEAU.Behaviour.CityBehaviour.ChildCityObjsOnHierarchyDfs*"></a>
-  <h4 id="PLATEAU_Behaviour_CityBehaviour_ChildCityObjsOnHierarchyDfs" data-uid="PLATEAU.Behaviour.CityBehaviour.ChildCityObjsOnHierarchyDfs">ChildCityObjsOnHierarchyDfs()</h4>
-  <div class="markdown level1 summary"><p>再帰的にヒエラルキーの子を探索し、 <see cref="!:CityObject"></see> に対応付けできるものをすべて <see cref="!:CityObject"></see> にして
-IEnumerable で返します。</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public IEnumerable&lt;CityObject&gt; ChildCityObjsOnHierarchyDfs()</code></pre>
-  </div>
   <h5 class="returns">Returns</h5>
   <table class="table table-bordered table-striped table-condensed">
     <thead>
@@ -157,39 +182,13 @@ IEnumerable で返します。</p>
   </table>
   
   
-  <a id="PLATEAU_Behaviour_CityBehaviour_ChildGameObjsOnHierarchyDfs_" data-uid="PLATEAU.Behaviour.CityBehaviour.ChildGameObjsOnHierarchyDfs*"></a>
-  <h4 id="PLATEAU_Behaviour_CityBehaviour_ChildGameObjsOnHierarchyDfs" data-uid="PLATEAU.Behaviour.CityBehaviour.ChildGameObjsOnHierarchyDfs">ChildGameObjsOnHierarchyDfs()</h4>
+  <a id="PLATEAU_Behaviour_CityHierarchyEnumerator_ChildrenDfsAsTransform_" data-uid="PLATEAU.Behaviour.CityHierarchyEnumerator.ChildrenDfsAsTransform*"></a>
+  <h4 id="PLATEAU_Behaviour_CityHierarchyEnumerator_ChildrenDfsAsTransform_Transform_System_Int32_" data-uid="PLATEAU.Behaviour.CityHierarchyEnumerator.ChildrenDfsAsTransform(Transform,System.Int32)">ChildrenDfsAsTransform(Transform, Int32)</h4>
   <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public IEnumerable&lt;GameObject&gt; ChildGameObjsOnHierarchyDfs()</code></pre>
-  </div>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="xref">IEnumerable</span>&lt;<span class="xref">GameObject</span>&gt;</td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  
-  
-  <a id="PLATEAU_Behaviour_CityBehaviour_LoadCityObject_" data-uid="PLATEAU.Behaviour.CityBehaviour.LoadCityObject*"></a>
-  <h4 id="PLATEAU_Behaviour_CityBehaviour_LoadCityObject_GameObject_" data-uid="PLATEAU.Behaviour.CityBehaviour.LoadCityObject(GameObject)">LoadCityObject(GameObject)</h4>
-  <div class="markdown level1 summary"><p>ゲームオブジェクト から <a class="xref" href="PLATEAU.CityGML.CityObject.html">CityObject</a> を返します。</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public CityObject LoadCityObject(GameObject gameObj)</code></pre>
+    <pre><code class="lang-csharp hljs">public static IEnumerable&lt;Transform&gt; ChildrenDfsAsTransform(Transform parent, int minDepth)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -202,10 +201,14 @@ IEnumerable で返します。</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">GameObject</span></td>
-        <td><span class="parametername">gameObj</span></td>
-        <td><p><see cref="!:CityObject"></see>に対応するゲームオブジェクト</p>
-</td>
+        <td><span class="xref">Transform</span></td>
+        <td><span class="parametername">parent</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><span class="parametername">minDepth</span></td>
+        <td></td>
       </tr>
     </tbody>
   </table>
@@ -219,9 +222,8 @@ IEnumerable で返します。</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">CityObject</span></td>
-        <td><p>引数に対応する<a class="xref" href="PLATEAU.CityGML.CityObject.html">CityObject</a></p>
-</td>
+        <td><span class="xref">IEnumerable</span>&lt;<span class="xref">Transform</span>&gt;</td>
+        <td></td>
       </tr>
     </tbody>
   </table>

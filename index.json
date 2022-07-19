@@ -2,12 +2,22 @@
   "api/PLATEAU.Behaviour.CityBehaviour.html": {
     "href": "api/PLATEAU.Behaviour.CityBehaviour.html",
     "title": "Class CityBehaviour | PLATEAU SDK for Unity",
-    "keywords": "Class CityBehaviour ゲームオブジェクトの名称からPlateauの CityObject を返す MonoBehaviour です。 実行には CityMetadata を保持する必要があります。 Inheritance Object CityBehaviour Namespace : PLATEAU.Behaviour Assembly : cs.temp.dll.dll Syntax public class CityBehaviour : MonoBehaviour Properties CityMetadata ゲームオブジェクトとgmlファイルを対応付けるために必要な CityMetadata です。 Declaration public CityMetadata CityMetadata { get; set; } Property Value Type Description CityMetadata Methods LoadCityObject(String) ゲームオブジェクト名 から CityObject を返します。 Declaration public CityObject LoadCityObject(string gameObjName) Parameters Type Name Description String gameObjName ゲームオブジェクト名 Returns Type Description CityObject 引数に対応する CityObject"
+    "keywords": "Class CityBehaviour ゲームオブジェクトからPlateauの CityObject を返す MonoBehaviour です。 実行には CityMetadata を保持する必要があります。 Inheritance Object CityBehaviour Namespace : PLATEAU.Behaviour Assembly : cs.temp.dll.dll Syntax public class CityBehaviour : MonoBehaviour Properties CityMetadata ゲームオブジェクトとgmlファイルを対応付けるために必要な CityMetadata です。 Declaration public CityMetadata CityMetadata { get; set; } Property Value Type Description CityMetadata Methods ChildCityObjsOnHierarchyDfs() 再帰的にヒエラルキーの子を探索し、 に対応付けできるものをすべて にして IEnumerable で返します。 Declaration public IEnumerable<CityObject> ChildCityObjsOnHierarchyDfs() Returns Type Description IEnumerable < CityObject > ChildGameObjsOnHierarchyDfs() Declaration public IEnumerable<GameObject> ChildGameObjsOnHierarchyDfs() Returns Type Description IEnumerable < GameObject > LoadCityObject(GameObject) ゲームオブジェクト から CityObject を返します。 Declaration public CityObject LoadCityObject(GameObject gameObj) Parameters Type Name Description GameObject gameObj に対応するゲームオブジェクト Returns Type Description CityObject 引数に対応する CityObject"
+  },
+  "api/PLATEAU.Behaviour.CityHierarchyEnumerator.html": {
+    "href": "api/PLATEAU.Behaviour.CityHierarchyEnumerator.html",
+    "title": "Class CityHierarchyEnumerator | PLATEAU SDK for Unity",
+    "keywords": "Class CityHierarchyEnumerator シーン上の都市ゲームオブジェクトを列挙します。 Inheritance Object CityHierarchyEnumerator Inherited Members Object.ToString() Object.Equals(Object) Object.Equals(Object, Object) Object.ReferenceEquals(Object, Object) Object.GetHashCode() Object.GetType() Object.MemberwiseClone() Namespace : PLATEAU.Behaviour Assembly : cs.temp.dll.dll Syntax public static class CityHierarchyEnumerator Methods ChildrenDfsAsCityObjects(Transform, Int32, CityModelLoader, CityMetadata) Declaration public static IEnumerable<CityObject> ChildrenDfsAsCityObjects(Transform parent, int minDepth, CityModelLoader cityModelLoader, CityMetadata metadata) Parameters Type Name Description Transform parent Int32 minDepth CityModelLoader cityModelLoader CityMetadata metadata Returns Type Description IEnumerable < CityObject > ChildrenDfsAsTransform(Transform, Int32) Declaration public static IEnumerable<Transform> ChildrenDfsAsTransform(Transform parent, int minDepth) Parameters Type Name Description Transform parent Int32 minDepth Returns Type Description IEnumerable < Transform >"
+  },
+  "api/PLATEAU.Behaviour.CityModelLoader.html": {
+    "href": "api/PLATEAU.Behaviour.CityModelLoader.html",
+    "title": "Class CityModelLoader | PLATEAU SDK for Unity",
+    "keywords": "Class CityModelLoader Unityのランタイムでゲームオブジェクト名から CityObject を取得します。 Inheritance Object CityModelLoader Inherited Members Object.ToString() Object.Equals(Object) Object.Equals(Object, Object) Object.ReferenceEquals(Object, Object) Object.GetHashCode() Object.GetType() Object.MemberwiseClone() Namespace : PLATEAU.Behaviour Assembly : cs.temp.dll.dll Syntax public class CityModelLoader Methods Load(GameObject, CityMetadata) Declaration public CityObject Load(GameObject gameObj, CityMetadata cityMetadata) Parameters Type Name Description GameObject gameObj CityMetadata cityMetadata Returns Type Description CityObject"
   },
   "api/PLATEAU.Behaviour.html": {
     "href": "api/PLATEAU.Behaviour.html",
     "title": "Namespace PLATEAU.Behaviour | PLATEAU SDK for Unity",
-    "keywords": "Namespace PLATEAU.Behaviour Classes CityBehaviour ゲームオブジェクトの名称からPlateauの CityObject を返す MonoBehaviour です。 実行には CityMetadata を保持する必要があります。"
+    "keywords": "Namespace PLATEAU.Behaviour Classes CityBehaviour ゲームオブジェクトからPlateauの CityObject を返す MonoBehaviour です。 実行には CityMetadata を保持する必要があります。 CityHierarchyEnumerator シーン上の都市ゲームオブジェクトを列挙します。 CityModelLoader Unityのランタイムでゲームオブジェクト名から CityObject を取得します。"
   },
   "api/PLATEAU.CityGML.Address.html": {
     "href": "api/PLATEAU.CityGML.Address.html",
