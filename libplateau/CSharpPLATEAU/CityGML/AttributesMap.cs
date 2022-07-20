@@ -141,29 +141,7 @@ namespace PLATEAU.CityGML
             return new AttributesMapEnumerator(this);
         }
         
-        /// <summary>
-        /// スラッシュで分割されたキーに対して値を取得します。
-        /// 例えば、属性のキー "水害情報" の中に 入れ子の属性セットがあり、
-        /// その中のキー "浸水レベル" に対応する値を取得するには 
-        /// "水害情報/浸水レベル" を指定します。
-        /// </summary>
-        /// <returns>成否をboolで返します。</returns>
-        public bool TryGetValueSlashSeparated(string keyWithSlash, out AttributeValue resultVal)
-        {
-            resultVal = null;
-            var keys = keyWithSlash.Split('/');
-            var currentAttrs = this;
-            // 入れ子の属性
-            for (int i = 0; i < keys.Length-1; i++)
-            {
-                bool result = currentAttrs.TryGetValue(keys[i], out var value);
-                if (!result) return false;
-                currentAttrs = value.AsAttrSet;
-                if (currentAttrs == null) return false;
-            }
-
-            return currentAttrs.TryGetValue(keys[keys.Length - 1], out resultVal);
-        }
+        
 
         /// <summary>
         /// 属性の中身を、見やすくフォーマットした文字列にして返します。

@@ -3,7 +3,6 @@ using PLATEAU.CityMeta;
 using PLATEAU.CommonDataStructure;
 using PLATEAU.Editor.CityImport;
 using PLATEAU.IO;
-using UnityEngine;
 
 namespace PLATEAU.Tests.TestUtils
 {
@@ -46,7 +45,7 @@ namespace PLATEAU.Tests.TestUtils
         /// <summary>
         /// objファイル変換において、辞書によってLOD範囲を指定します。
         /// </summary>
-        public static CityImportConfig SetConvertLods(this CityImportConfig conf, Dictionary<GmlType, MinMax<int>> argDict)
+        public static void SetConvertLods(this CityImportConfig conf, Dictionary<GmlType, MinMax<int>> argDict)
         {
             var lodDict = conf.objConvertTypesConfig.TypeLodDict;
             foreach (var type in argDict.Keys)
@@ -54,8 +53,6 @@ namespace PLATEAU.Tests.TestUtils
                 var argLodRange = argDict[type];
                 lodDict[type] = argLodRange;
             }
-
-            return conf;
         }
 
         /// <summary>
