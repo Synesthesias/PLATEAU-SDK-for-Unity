@@ -94,39 +94,6 @@ namespace PLATEAU.Editor.CityImport
                     AssetDatabase.ImportAsset(objAssetsPath);
                 }
                 
-                // 変換した結果、どのLODのobjが生成されたかを調べてインポートします。
-
-                // string gmlFileName = Path.GetFileNameWithoutExtension(gmlRelativePath);
-                // var gmlType = GmlFileNameParser.GetGmlTypeEnum(gmlFileName);
-                // var objConvertLodConf = importConfig.objConvertTypesConfig;
-                // (int minLod, int maxLod) = objConvertLodConf.GetMinMaxLodForType(gmlType);
-                // int lodCountForThisGml = 0;
-                // for (int l = minLod; l <= maxLod; l++)
-                // {
-                //     string objFullPath = Path.Combine(importDest.DirFullPath, $"LOD{l}_{gmlFileName}.obj");
-                //     if (File.Exists(objFullPath))
-                //     {
-                //         string objAssetsPath = PathUtil.FullPathToAssetsPath(objFullPath);
-                //         generatedObjs.Add(new ObjInfo(objAssetsPath, l, gmlType));
-                //         lodCountForThisGml++;
-                //         
-                //         // mtlファイルが存在すればインポートします。
-                //         string mtlAssetsPath = PathUtil.RemoveExtension(objAssetsPath) + ".mtl";
-                //         if (File.Exists(PathUtil.AssetsPathToFullPath(mtlAssetsPath)))
-                //         {
-                //             AssetDatabase.ImportAsset(mtlAssetsPath);
-                //         }
-                //         
-                //         // objファイルをインポートします。
-                //         AssetDatabase.ImportAsset(objAssetsPath);
-                //     }
-                // }
-                // if (lodCountForThisGml <= 0)
-                // {
-                //     Debug.LogError($"No 3d models are found for the lod in the gml file.\ngml file = {gmlFullPath}");
-                //     cityModel?.Dispose();
-                //     continue;
-                // }
                 
                 // 基準座標は最初のものに合わせます。
                 if (!referencePoint.HasValue) throw new Exception($"{nameof(referencePoint)} is null.");
@@ -159,7 +126,7 @@ namespace PLATEAU.Editor.CityImport
             
             // シーンに配置します。
             importConfig.rootDirName = PlateauSourcePath.RootDirName(sourcePathConf.RootDirAssetPath);
-            CityMeshPlacerModelV2.Place(metadata.cityImportConfig.cityMeshPlacerConfig, metadata);
+            CityMeshPlacerModel.Place(metadata.cityImportConfig.cityMeshPlacerConfig, metadata);
             
             // 後処理
             EditorUtility.SetDirty(metadata);

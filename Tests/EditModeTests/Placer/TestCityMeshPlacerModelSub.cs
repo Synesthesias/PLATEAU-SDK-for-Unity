@@ -8,11 +8,11 @@ using static PLATEAU.Tests.EditModeTests.Placer.TestPlacerUtil;
 namespace PLATEAU.Tests.EditModeTests.Placer
 {
     /// <summary>
-    /// <see cref="CityMeshPlacerModelV2"/> のテストで、
+    /// <see cref="CityMeshPlacerModel"/> のテストで、
     /// インポート設定が <see cref="IO.MeshGranularity.PerAtomicFeatureObject"/> であるケースをテストします。
     /// </summary>
     [TestFixture]
-    public class TestCityMeshPlacerModelV2ForAtomic : TestCityMeshPlacerModelV2Base
+    public class TestCityMeshPlacerModelForAtomic : TestCityMeshPlacerModelBase
     {
         protected override MeshGranularity MeshGranularity => MeshGranularity.PerAtomicFeatureObject;
         // テスト内容は親クラスのものを使い回します。
@@ -31,11 +31,11 @@ namespace PLATEAU.Tests.EditModeTests.Placer
     }
 
     /// <summary>
-    /// <see cref="CityMeshPlacerModelV2"/> のテストで、
+    /// <see cref="CityMeshPlacerModel"/> のテストで、
     /// インポート設定が <see cref="IO.MeshGranularity.PerPrimaryFeatureObject"/> であるケースをテストします。
     /// </summary>
     [TestFixture]
-    public class TestCityMeshPlacerModelV2ForPrimary : TestCityMeshPlacerModelV2Base
+    public class TestCityMeshPlacerModelForPrimary : TestCityMeshPlacerModelBase
     {
         protected override MeshGranularity MeshGranularity => MeshGranularity.PerPrimaryFeatureObject;
         // テスト内容は親クラスのものを使い回します。
@@ -57,11 +57,11 @@ namespace PLATEAU.Tests.EditModeTests.Placer
     }
     
     /// <summary>
-    /// <see cref="CityMeshPlacerModelV2"/> のテストで、
+    /// <see cref="CityMeshPlacerModel"/> のテストで、
     /// インポート設定が <see cref="IO.MeshGranularity.PerCityModelArea"/> であるケースをテストします。
     /// </summary>
     [TestFixture]
-    public class TestCityMeshPlacerModelV2ForArea : TestCityMeshPlacerModelV2Base
+    public class TestCityMeshPlacerModelForArea : TestCityMeshPlacerModelBase
     {
         protected override MeshGranularity MeshGranularity => MeshGranularity.PerCityModelArea;
         // テスト内容は親クラスのものを使い回します。

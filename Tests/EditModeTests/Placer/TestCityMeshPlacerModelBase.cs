@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using NUnit.Framework;
 using PLATEAU.CityMeta;
+using PLATEAU.Editor.CityImport;
 using PLATEAU.IO;
 using PLATEAU.Tests.TestUtils;
 using PLATEAU.Util;
@@ -10,14 +11,14 @@ using static PLATEAU.Tests.EditModeTests.Placer.TestPlacerUtil;
 namespace PLATEAU.Tests.EditModeTests.Placer
 {
     /// <summary>
-    /// <see cref="Editor.CityImport.CityMeshPlacerModelV2"/> のテストの基底クラスです。
+    /// <see cref="CityMeshPlacerModel"/> のテストの基底クラスです。
     /// 
     /// このクラスでは、各 <see cref="PlaceMethod"/> ごとに正しくシーンに配置できるかをテストします。
     /// このテストを 各 <see cref="MeshGranularity"/> ごとに行いたいので、
     /// <see cref="MeshGranularity"/> ごとにサブクラスを実装して確認しています。 
     /// </summary>
     [Ignore("これは基底クラスなので、実際のテストは派生クラスで行ってください。")]
-    public abstract class TestCityMeshPlacerModelV2Base
+    public abstract class TestCityMeshPlacerModelBase
     {
         private string prevDefaultDstPath;
         private static readonly string testDefaultCopyDestPath = Path.Combine(DirectoryUtil.TempAssetFolderPath, "PLATEAU");
