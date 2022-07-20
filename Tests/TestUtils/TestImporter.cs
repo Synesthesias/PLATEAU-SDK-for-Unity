@@ -21,9 +21,7 @@ namespace PLATEAU.Tests.TestUtils
         {
             var config = ImportConfigFactoryForTests.StandardConfig(pathSet.SrcRootFullPath, pathSet.OutputDirAssetsPath);
             additionalConfigFunc?.Invoke(config);
-            Debug.Log($"Test Importing : srcRootPathBeforeImport = {config.SrcRootPathBeforeImport}");
             int successCount = CityImporterPresenter.InitWithConfig(config).Import(pathSet.GmlRelativePaths, out metadata);
-            Debug.Log($"Test Importing : numGml : {metadata.gmlRelativePaths.Length}");
             return successCount;
         }
     }

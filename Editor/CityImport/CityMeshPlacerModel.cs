@@ -270,7 +270,6 @@ namespace PLATEAU.Editor.CityImport
         {
             var coType = cityObj.Type;
             bool matches = ((ulong)coType & placeConfPerType.cityObjectTypeFlags) != 0;
-            // Debug.Log($"配置対象？ id = {cityObj.ID}, type = {cityObj.Type}, matches = {matches}");
             return matches;
         }
         

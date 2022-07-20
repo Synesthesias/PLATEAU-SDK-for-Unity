@@ -8,7 +8,6 @@ namespace PLATEAU.Editor.CityImport
     /// </summary>
     internal class CityImporterPresenter
     {
-        private readonly CityImporterModel model;
         private readonly CityImporterView view;
         private readonly CityImportConfig config;
 
@@ -40,7 +39,6 @@ namespace PLATEAU.Editor.CityImport
         /// <summary> 上の複数の初期化処理の共通部分です。 </summary>
         private CityImporterPresenter(CityImportConfig config)
         {
-            this.model = new CityImporterModel();
             this.view = new CityImporterView();
             this.config = config;
         }
@@ -54,7 +52,7 @@ namespace PLATEAU.Editor.CityImport
         /// <summary> インポートします。 変換に成功したgmlの数を返します。 </summary>
         public int Import(string[] gmlRelativePaths, out CityMetadata metadata)
         {
-            return this.model.Import(gmlRelativePaths, this.config, out metadata);
+            return CityImporterModel.Import(gmlRelativePaths, this.config, out metadata);
         }
     }
 }

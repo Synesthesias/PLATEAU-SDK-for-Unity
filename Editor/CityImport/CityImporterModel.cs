@@ -23,7 +23,7 @@ namespace PLATEAU.Editor.CityImport
     /// ・Plateau元データから、複数のobj および 1つの <see cref="CityMetadata"/> を作成します。
     /// ・変換したモデルを現在のシーンに配置します。
     /// </summary>
-    internal class CityImporterModel
+    internal static class CityImporterModel
     {
 
         /// <summary>
@@ -34,7 +34,7 @@ namespace PLATEAU.Editor.CityImport
         /// <param name="gmlRelativePaths">gmlファイルの相対パスのリストです。パスの起点は udx フォルダです。</param>
         /// <param name="importConfig">変換設定です。</param>
         /// <param name="metadata">インポートによって生成されたメタデータです。</param>
-        public int Import(string[] gmlRelativePaths, CityImportConfig importConfig, out CityMetadata metadata)
+        public static int Import(string[] gmlRelativePaths, CityImportConfig importConfig, out CityMetadata metadata)
         {
             // 元フォルダを StreamingAssets/PLATEAU にコピーします。すでに StreamingAssets内にある場合を除きます。 
             // 設定のインポート元パスをコピー後のパスに変更します。
@@ -181,7 +181,7 @@ namespace PLATEAU.Editor.CityImport
             return true;
         }
 
-        private string CopyImportSrcToStreamingAssets(string srcRootPathBeforeImport, string[] gmlRelativePaths)
+        private static string CopyImportSrcToStreamingAssets(string srcRootPathBeforeImport, string[] gmlRelativePaths)
         {
             string newRootFullPath = srcRootPathBeforeImport; // デフォルト値
             if (!IsInStreamingAssets(srcRootPathBeforeImport))

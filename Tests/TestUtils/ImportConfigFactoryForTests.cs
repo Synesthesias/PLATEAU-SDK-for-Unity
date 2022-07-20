@@ -40,7 +40,6 @@ namespace PLATEAU.Tests.TestUtils
 
             GmlSearcherModel gmlSearcher = new GmlSearcherModel(srcFullPathBeforeImport);
             conf.gmlSearcherConfig.GenerateAreaTree(gmlSearcher.AreaIds, false);
-            Debug.Log($"standard config : srcRootPathBeforeImport = {conf.SrcRootPathBeforeImport}");
             return conf;
         }
         
