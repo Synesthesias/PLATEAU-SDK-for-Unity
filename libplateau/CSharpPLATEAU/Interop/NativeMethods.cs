@@ -131,6 +131,17 @@ namespace PLATEAU.Interop
             [In] IntPtr logger);
 
         [DllImport(DllName)]
+        internal static extern APIResult plateau_mesh_converter_get_last_exported_model_file_names_count(
+            [In] IntPtr meshConverter,
+            out int fileCount);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_mesh_converter_get_last_exported_model_file_names(
+            [In] IntPtr meshConverter,
+            [In, Out] IntPtr[] strPointers,
+            [Out] int[] outStrSizes);
+
+        [DllImport(DllName)]
         internal static extern APIResult plateau_mesh_converter_set_options(
             [In] IntPtr meshConverter,
             MeshConvertOptionsData value);
