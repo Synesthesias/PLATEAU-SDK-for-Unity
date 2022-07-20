@@ -63,9 +63,9 @@ namespace PLATEAU.Editor.Converters
         /// 成功時はtrue,失敗時はfalseを返します。
         /// </summary>
         //TODO exportObjFilePath は本来は ファイルパスではなくディレクトリのパスであるべき（いちおうファイルパスでも動くけど、名前は変えられない仕様）
-        public bool Convert(string gmlFilePath, string exportObjFilePath)
+        public bool Convert(string gmlFilePath, string exportObjFilePath, out string[] exportedFilePaths)
         {
-            return ConvertInner(gmlFilePath, exportObjFilePath, null);
+            return ConvertInner(gmlFilePath, exportObjFilePath, null, out exportedFilePaths);
         }
 
         /// <summary>
@@ -74,15 +74,16 @@ namespace PLATEAU.Editor.Converters
         /// 設定で <see cref="gmlParserParams"/> はロード後は変更できませんが、
         /// meshGranularity, axesConversion の設定は反映されます。
         /// </summary>
-        public bool ConvertWithoutLoad(CityModel cityModel, string gmlFilePath, string objDestDirFullPath)
+        public bool ConvertWithoutLoad(CityModel cityModel, string gmlFilePath, string objDestDirFullPath, out string[] exportedFilePaths)
         {
+            exportedFilePaths = new string[] { };
             if (cityModel == null)
             {
                 Debug.LogError("cityModel is null.");
                 return false;
             }
 
-            return ConvertInner(gmlFilePath, objDestDirFullPath, cityModel);
+            return ConvertInner(gmlFilePath, objDestDirFullPath, cityModel, out exportedFilePaths);
         }
 
         /// <summary>
@@ -91,8 +92,9 @@ namespace PLATEAU.Editor.Converters
         /// null でなければ、ファイルロードを省略して代わりに渡された <see cref="CityModel"/> を変換します。
         /// 成否をboolで返します。
         /// </summary>
-        private bool ConvertInner(string gmlFilePath, string exportDirFullPath, CityModel cityModel)
+        private bool ConvertInner(string gmlFilePath, string exportDirFullPath, CityModel cityModel, out string[] exportedFilePaths)
         {
+            exportedFilePaths = new string[] { };
             if (!IsPathValid(gmlFilePath, exportDirFullPath)) return false;
             try
             {
@@ -140,7 +142,7 @@ namespace PLATEAU.Editor.Converters
                 }
                 
                 // 変換してファイルに書き込みます。
-                this.meshConverter.Convert(exportDirFullPath, gmlFilePath, cityModel, this.dllLogger);
+                exportedFilePaths = this.meshConverter.Convert(exportDirFullPath, gmlFilePath, cityModel, this.dllLogger);
                 
                 // 出力先が Assets フォルダ内なら、それをUnityに反映させます。
                 if (PathUtil.IsSubDirectoryOfAssets(exportDirFullPath))

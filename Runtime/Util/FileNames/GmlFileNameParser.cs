@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using PLATEAU.CityMeta;
 
-namespace PLATEAU.Util
+namespace PLATEAU.Util.FileNames
 {
     /// <summary>
     /// gmlファイルのファイル名は

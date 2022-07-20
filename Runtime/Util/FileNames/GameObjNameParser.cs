@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace PLATEAU.Util
+namespace PLATEAU.Util.FileNames
 {
     /// <summary>
     /// 都市オブジェクトである GameObject の名称をパースします。

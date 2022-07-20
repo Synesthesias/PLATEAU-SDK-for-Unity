@@ -7,6 +7,7 @@ using PLATEAU.Editor.Converters;
 using PLATEAU.CityMeta;
 using PLATEAU.Interop;
 using PLATEAU.Util;
+using PLATEAU.Util.FileNames;
 using UnityEditor;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
@@ -67,47 +68,65 @@ namespace PLATEAU.Editor.CityImport
                 
                 
                 // objに変換します。
-                if (!TryConvertToObj(cityModel, ref referencePoint, importConfig, gmlFullPath, importDest.DirFullPath))
+                if (!TryConvertToObj(cityModel, ref referencePoint, importConfig, gmlFullPath, importDest.DirFullPath, out string[] exportedFilePaths))
                 {
                     // 出力されるモデルがなければ、ここで終了します。
                     cityModel?.Dispose();
                     continue;
                 }
-                
+
+                // 生成されたファイルをインポートします。
+                foreach (string fullPath in exportedFilePaths)
+                {
+                    string objAssetsPath = PathUtil.FullPathToAssetsPath(fullPath);
+                    var gmlType = GmlFileNameParser.GetGmlTypeEnum(gmlRelativePath);
+                    int lod = ModelFileNameParser.GetLod(objAssetsPath);
+                    generatedObjs.Add(new ObjInfo(objAssetsPath, lod, gmlType));
+                    
+                    // mtlファイルが存在すればインポートします。
+                    string mtlAssetsPath = PathUtil.RemoveExtension(objAssetsPath) + ".mtl";
+                    if (File.Exists(PathUtil.AssetsPathToFullPath(mtlAssetsPath)))
+                    {
+                        AssetDatabase.ImportAsset(mtlAssetsPath);
+                    }
+                        
+                    // objファイルをインポートします。
+                    AssetDatabase.ImportAsset(objAssetsPath);
+                }
                 
                 // 変換した結果、どのLODのobjが生成されたかを調べてインポートします。
 
-                string gmlFileName = Path.GetFileNameWithoutExtension(gmlRelativePath);
-                var gmlType = GmlFileNameParser.GetGmlTypeEnum(gmlFileName);
-                var objConvertLodConf = importConfig.objConvertTypesConfig;
-                (int minLod, int maxLod) = objConvertLodConf.GetMinMaxLodForType(gmlType);
-                int lodCountForThisGml = 0;
-                for (int l = minLod; l <= maxLod; l++)
-                {
-                    string objFullPath = Path.Combine(importDest.DirFullPath, $"LOD{l}_{gmlFileName}.obj");
-                    if (File.Exists(objFullPath))
-                    {
-                        string objAssetsPath = PathUtil.FullPathToAssetsPath(objFullPath);
-                        generatedObjs.Add(new ObjInfo(objAssetsPath, l, gmlType));
-                        lodCountForThisGml++;
-                        
-                        // mtlファイルが存在すればインポートします。
-                        string mtlAssetsPath = PathUtil.RemoveExtension(objAssetsPath) + ".mtl";
-                        if (File.Exists(PathUtil.AssetsPathToFullPath(mtlAssetsPath)))
-                        {
-                            AssetDatabase.ImportAsset(mtlAssetsPath);
-                        }
-                        
-                        // objファイルをインポートします。
-                        AssetDatabase.ImportAsset(objAssetsPath);
-                    }
-                }
-                if (lodCountForThisGml <= 0)
-                {
-                    Debug.LogError($"No 3d models are found for the lod in the gml file.\ngml file = {gmlFullPath}");
-                    cityModel?.Dispose();
-                    continue;
-                }
+                // string gmlFileName = Path.GetFileNameWithoutExtension(gmlRelativePath);
+                // var gmlType = GmlFileNameParser.GetGmlTypeEnum(gmlFileName);
+                // var objConvertLodConf = importConfig.objConvertTypesConfig;
+                // (int minLod, int maxLod) = objConvertLodConf.GetMinMaxLodForType(gmlType);
+                // int lodCountForThisGml = 0;
+                // for (int l = minLod; l <= maxLod; l++)
+                // {
+                //     string objFullPath = Path.Combine(importDest.DirFullPath, $"LOD{l}_{gmlFileName}.obj");
+                //     if (File.Exists(objFullPath))
+                //     {
+                //         string objAssetsPath = PathUtil.FullPathToAssetsPath(objFullPath);
+                //         generatedObjs.Add(new ObjInfo(objAssetsPath, l, gmlType));
+                //         lodCountForThisGml++;
+                //         
+                //         // mtlファイルが存在すればインポートします。
+                //         string mtlAssetsPath = PathUtil.RemoveExtension(objAssetsPath) + ".mtl";
+                //         if (File.Exists(PathUtil.AssetsPathToFullPath(mtlAssetsPath)))
+                //         {
+                //             AssetDatabase.ImportAsset(mtlAssetsPath);
+                //         }
+                //         
+                //         // objファイルをインポートします。
+                //         AssetDatabase.ImportAsset(objAssetsPath);
+                //     }
+                // }
+                // if (lodCountForThisGml <= 0)
+                // {
+                //     Debug.LogError($"No 3d models are found for the lod in the gml file.\ngml file = {gmlFullPath}");
+                //     cityModel?.Dispose();
+                //     continue;
+                // }
                 
                 // 基準座標は最初のものに合わせます。
                 if (!referencePoint.HasValue) throw new Exception($"{nameof(referencePoint)} is null.");
@@ -117,6 +136,8 @@ namespace PLATEAU.Editor.CityImport
                 // 1つのgmlから LODごとに 0個以上の .obj ファイルが生成されます。
                 // .obj ファイルごとのループを始めます。
                 
+                string gmlFileName = Path.GetFileNameWithoutExtension(gmlRelativePath);
+                var objConvertLodConf = importConfig.objConvertTypesConfig;
                 var objNames = objConvertLodConf.ObjFileNamesForGml(gmlFileName);
                 var objAssetPaths = objNames.Select(name => Path.Combine(importDest.DirAssetsPath, name + ".obj"));
                 foreach(string objAssetPath in objAssetPaths)
@@ -210,7 +231,7 @@ namespace PLATEAU.Editor.CityImport
         /// 成否を bool で返します。
         /// </summary>
         private static bool TryConvertToObj(CityModel cityModel, ref Vector3? referencePoint,
-            CityImportConfig importConfig, string gmlFullPath, string objDestDirFullPath)
+            CityImportConfig importConfig, string gmlFullPath, string objDestDirFullPath, out string[] exportedFilePaths)
         {
             using (var objConverter = new GmlToObjConverter())
             {
@@ -244,7 +265,7 @@ namespace PLATEAU.Editor.CityImport
                 
                 objConverter.Config = converterConf;
                 
-                bool isSuccess = objConverter.ConvertWithoutLoad(cityModel, gmlFullPath, objDestDirFullPath);
+                bool isSuccess = objConverter.ConvertWithoutLoad(cityModel, gmlFullPath, objDestDirFullPath, out exportedFilePaths);
 
                 return isSuccess;
             }

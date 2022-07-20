@@ -7,6 +7,7 @@ using PLATEAU.CityMeta;
 using PLATEAU.Interop;
 using PLATEAU.IO;
 using PLATEAU.Util;
+using PLATEAU.Util.FileNames;
 using UnityEditor;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -102,7 +103,6 @@ namespace PLATEAU.Editor.CityImport
             {
                 // TODO meshNameのハードコード
                 string meshName = $"LOD{lod}_{GmlFileNameParser.FileNameWithoutExtension(gmlRelativePath)}";
-                Debug.Log($"Trying to place {meshName}");
                 var placed = PlaceToScene(foundObj, meshName, parentTrans);
                 if (placed == null)
                 {

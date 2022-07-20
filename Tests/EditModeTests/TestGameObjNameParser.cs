@@ -1,5 +1,6 @@
 ﻿using NUnit.Framework;
 using PLATEAU.Util;
+using PLATEAU.Util.FileNames;
 
 namespace PLATEAU.Tests.EditModeTests
 {
