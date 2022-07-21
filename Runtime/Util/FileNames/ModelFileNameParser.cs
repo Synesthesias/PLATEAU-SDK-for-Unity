@@ -23,6 +23,15 @@ namespace PLATEAU.Util.FileNames
         }
         
         /// <summary>
+        /// <paramref name="lod"/>, <paramref name="gmlFilePath"/> から
+        /// 3Dモデルファイル名（拡張子付き）を返します。
+        /// </summary>
+        public static string FileName(int lod, string gmlFilePath)
+        {
+            return $"{FileNameWithoutExtension(lod, gmlFilePath)}.obj";
+        }
+        
+        /// <summary>
         /// ファイル名からLODの数値を取り出します。
         /// </summary>
         public static int GetLod(string modelFilePath)

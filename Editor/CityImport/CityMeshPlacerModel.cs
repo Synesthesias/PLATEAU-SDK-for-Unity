@@ -196,7 +196,7 @@ namespace PLATEAU.Editor.CityImport
         private static ObjInfo FindObjFile(CityMetadata metadata, int lod, string gmlRelativePath)
         {
             var objInfos = metadata.cityImportConfig.generatedObjFiles;
-            string targetObjName = $"LOD{lod}_{GmlFileNameParser.FileNameWithoutExtension(gmlRelativePath)}.obj"; // TODO ハードコード
+            string targetObjName = ModelFileNameParser.FileName(lod, gmlRelativePath);
             return objInfos.FirstOrDefault(info => Path.GetFileName(info.assetsPath) == targetObjName);
         }
         
