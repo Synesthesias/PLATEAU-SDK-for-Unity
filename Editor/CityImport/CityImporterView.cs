@@ -19,7 +19,6 @@ namespace PLATEAU.Editor.CityImport
     /// </summary>
     internal class CityImporterView
     {
-        // private readonly CityImportConfig cityImportConfig;
         private readonly InputFolderSelectorGUI importFolderSelectorGUI;
         private readonly GmlSearcherPresenter gmlSearcherPresenter = new GmlSearcherPresenter();
         private readonly ObjConvertTypesGUI objConvertTypesGUI;
@@ -89,7 +88,6 @@ namespace PLATEAU.Editor.CityImport
                         if (PlateauEditorStyle.MainButton("出力"))
                         {
                             // インポート開始します。
-                            // this.cityImporterModel.Import(gmlFiles.ToArray(), importConfig, out _);
                             presenter.Import(gmlFiles.ToArray(), out _);
                         }
                     }
@@ -109,7 +107,7 @@ namespace PLATEAU.Editor.CityImport
             this.gmlSearcherPresenter.OnImportSrcPathChanged(path, changeMethod);
         }
 
-        private bool IsImportReady(CityImportConfig config, out string message)
+        private static bool IsImportReady(CityImportConfig config, out string message)
         {
             message = "";
             var dirPath = config.importDestPath;
