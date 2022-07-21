@@ -22,8 +22,11 @@ namespace PLATEAU.Editor.Converters
         private readonly MeshConverter meshConverter;
 
         private GmlToObjConverterConfig config;
-        private CitygmlParserParams gmlParserParams;
         private DllLogger dllLogger;
+
+        // 3Dモデル変換においては、gmlパース設定は常に optimize = true, tessellate = true で固定して良いです。
+        // tessellate = true でないと、メッシュの頂点の代わりに LinearRing が生成されてしまいます。
+        private readonly CitygmlParserParams gmlParserParams = new CitygmlParserParams(true);
 
         private int disposed;
 
@@ -31,19 +34,15 @@ namespace PLATEAU.Editor.Converters
         {
             this.meshConverter = new MeshConverter();
             this.config = new GmlToObjConverterConfig();
-            this.gmlParserParams = new CitygmlParserParams();
-            ApplyConfig(this.config, ref this.gmlParserParams);
+            ApplyConfig(this.config);
         }
 
-        private void ApplyConfig(GmlToObjConverterConfig conf, ref CitygmlParserParams parserParams)
+        private void ApplyConfig(GmlToObjConverterConfig conf)
         {
             var logger = new DllLogger();
             logger.SetLogCallbacks(DllLogCallback.UnityLogCallbacks);
             logger.SetLogLevel(conf.LogLevel);
             this.dllLogger = logger;
-            // TODO parserParams の2つの値が強制的に true になるのは分かりにくい。もっといいインターフェイスがあるはず。
-            parserParams.Optimize = true; // Unityでは基本的に Optimize は全部 true で良いです。
-            parserParams.Tessellate = true; // true でないと、頂点の代わりに LinearRing が生成されてしまい 3Dモデルには不適になります。
             this.meshConverter.Options = conf.DllConvertOption;
         }
         
@@ -53,7 +52,7 @@ namespace PLATEAU.Editor.Converters
             set
             {
                 this.config = value;
-                ApplyConfig(value, ref this.gmlParserParams);
+                ApplyConfig(value);
             }
             get => this.config;
         }
