@@ -61,10 +61,9 @@ namespace PLATEAU.Editor.Converters
         /// gmlファイルをロードし、変換してobjファイルを出力します。
         /// 成功時はtrue,失敗時はfalseを返します。
         /// </summary>
-        //TODO exportObjFilePath は本来は ファイルパスではなくディレクトリのパスであるべき（いちおうファイルパスでも動くけど、名前は変えられない仕様）
-        public bool Convert(string gmlFilePath, string exportObjFilePath, out string[] exportedFilePaths)
+        public bool Convert(string gmlFilePath, string objDestDirFullPath, out string[] exportedFilePaths)
         {
-            return ConvertInner(gmlFilePath, exportObjFilePath, null, out exportedFilePaths);
+            return ConvertInner(gmlFilePath, objDestDirFullPath, null, out exportedFilePaths);
         }
 
         /// <summary>
