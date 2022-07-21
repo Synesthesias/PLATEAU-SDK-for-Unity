@@ -58,12 +58,12 @@ namespace PLATEAU.Util.FileNames
 
         /// <summary>
         /// このクラスでファイル名を受け取る時の前処理です。
+        /// ・fileName に "フォルダ名/" が含まれていれば、それを削除してファイル名のみにします。
+        /// ・末尾に .gml が含まれていれば、それを削除します。
         /// </summary>
         public static string FileNameWithoutExtension(string fileName)
         {
-            // fileName に "フォルダ名/" が含まれていれば、それを削除してファイル名のみにします。
             fileName = Path.GetFileName(fileName);
-            // 末尾に .gml が含まれていれば、それを削除します。
             return RemoveGmlExtension(fileName);
         }
 

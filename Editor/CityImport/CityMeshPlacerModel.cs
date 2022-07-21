@@ -101,8 +101,8 @@ namespace PLATEAU.Editor.CityImport
             // それを配置して return します。
             if (metadata.cityImportConfig.meshGranularity == MeshGranularity.PerCityModelArea)
             {
-                // TODO meshNameのハードコード
-                string meshName = $"LOD{lod}_{GmlFileNameParser.FileNameWithoutExtension(gmlRelativePath)}";
+                // この設定下では、3Dモデルファイルの中の唯一のメッシュの名前は ファイル名と同一になります。
+                string meshName = ModelFileNameParser.FileNameWithoutExtension(lod, gmlRelativePath);
                 var placed = PlaceToScene(foundObj, meshName, parentTrans);
                 if (placed == null)
                 {
