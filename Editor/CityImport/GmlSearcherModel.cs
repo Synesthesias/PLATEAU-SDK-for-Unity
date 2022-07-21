@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using PLATEAU.CityMeta;
-using PLATEAU.Util;
 using PLATEAU.Util.FileNames;
 
 namespace PLATEAU.Editor.CityImport

@@ -9,8 +9,8 @@ namespace PLATEAU.Editor.CityImport
     internal class GmlSearcherPresenter
     {
         private GmlSearcherConfig config;
-        private GmlSearcherView view = new GmlSearcherView();
         private GmlSearcherModel model;
+        private readonly GmlSearcherView view = new GmlSearcherView();
         private bool isInitialized;
         private bool shouldOverwriteMetadata;
 
@@ -39,7 +39,7 @@ namespace PLATEAU.Editor.CityImport
         {
             if (!GmlSearcherModel.IsPathPlateauRoot(path)) return;
             this.model ??= new GmlSearcherModel(path);
-            this.view ??= new GmlSearcherView(); // TODO これは readonly の使い回しでよさそう
+            this.view.Reset();
             this.model.GenerateFileDictionary(path);
             
             // 次の描画時に初期化処理をやり直します。
