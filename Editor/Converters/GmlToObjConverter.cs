@@ -101,6 +101,7 @@ namespace PLATEAU.Editor.Converters
                 if (!exportDirFullPath.EndsWith("/")) exportDirFullPath += "/";
 
                 cityModel ??= CityGml.Load(gmlFilePath, this.gmlParserParams, DllLogCallback.UnityLogCallbacks, this.config.LogLevel);
+                if (cityModel == null) return false;
                 
                 // 生成する obj のパスのリスト
                 int minLod = this.config.MinLod;
@@ -154,10 +155,6 @@ namespace PLATEAU.Editor.Converters
                     }
                     
                 }
-            }
-            catch (FileLoadException e)
-            {
-                Debug.LogError($"Failed to load gml file.\n gml path = {gmlFilePath}\n{e}");
             }
             catch (Exception e)
             {

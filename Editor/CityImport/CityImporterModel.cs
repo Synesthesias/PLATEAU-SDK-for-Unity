@@ -153,29 +153,22 @@ namespace PLATEAU.Editor.CityImport
         private static bool TryLoadCityGml(out CityModel cityModel, string gmlFullPath, CityImportConfig config)
         {
             cityModel = null;
-            try
+            if (!File.Exists(gmlFullPath))
             {
-                if (!File.Exists(gmlFullPath))
-                {
-                    throw new FileNotFoundException($"Gml file is not found.\ngmlPath = {gmlFullPath}");
-                }
-
-                // 設定の parserParams.tessellate は true にしないとポリゴンにならない部分があるので true で固定します。
-                // 　　　 最適化は常に true にします。false にする意味が無いので。
-                CitygmlParserParams parserParams = new CitygmlParserParams(true);
-                cityModel = CityGml.Load(gmlFullPath, parserParams, DllLogCallback.UnityLogCallbacks, config.logLevel);
-            }
-            catch (FileNotFoundException e)
-            {
-                Debug.LogError($"{e}");
+                Debug.LogError($"Gml file is not found.\ngmlPath = {gmlFullPath}");
                 return false;
             }
-            catch (Exception e)
+
+            // 設定の parserParams.tessellate は true にしないとポリゴンにならない部分があるので true で固定します。
+            // 　　　 最適化は常に true にします。false にする意味が無いので。
+            CitygmlParserParams parserParams = new CitygmlParserParams(true);
+            cityModel = CityGml.Load(gmlFullPath, parserParams, DllLogCallback.UnityLogCallbacks, config.logLevel);
+            if (cityModel == null)
             {
-                Debug.LogError($"Loading gml failed.\ngml path = {gmlFullPath}\n{e}");
+                Debug.LogError($"Loading gml failed.\ngml path = {gmlFullPath}");
                 cityModel?.Dispose();
                 return false;
-                
+
             }
 
             return true;
