@@ -3,6 +3,7 @@ using PLATEAU.CityMeta;
 using PLATEAU.Util;
 using PLATEAU.Util.FileNames;
 using UnityEditor;
+using UnityEngine;
 
 namespace PLATEAU.Editor.CityImport
 {
@@ -13,12 +14,31 @@ namespace PLATEAU.Editor.CityImport
     /// </summary>
     internal static class CopyPlateauSrcFiles
     {
+        
+        /// <summary>
+        /// 元フォルダを StreamingAssets/PLATEAU にコピーします。ただしすでに StreamingAssets内にある場合を除きます。 
+        /// <see cref="CityImportConfig"/> のインポート元パスを、コピー後のパスに変更します。
+        /// </summary>
+        public static void ImportCopy(CityImportConfig importConf, string[] gmlRelativePaths)
+        {
+            string srcRootPathBeforeImport = importConf.SrcRootPathBeforeImport;
+            string newRootFullPath = srcRootPathBeforeImport; // デフォルト値
+            if (!IsInStreamingAssets(srcRootPathBeforeImport))
+            {
+                string copyDest = PlateauUnityPath.StreamingGmlFolder;
+                // コピー実行
+                SelectCopy(srcRootPathBeforeImport, copyDest, gmlRelativePaths);
+                newRootFullPath = Path.Combine(copyDest, $"{PlateauSourcePath.RootDirName(srcRootPathBeforeImport)}");
+            }
+            // パス変更
+            importConf.sourcePath.SetRootDirFullPath(newRootFullPath);
+        }
 
         /// <summary>
         /// Plateau元データのうち、 <paramref name="gmlRelativePaths"/> のリストにある gmlファイルとそれに関連するもののみをコピーします。
         /// 変換先 <paramref name="copyDest"/> は Assets フォルダ内であることが前提です。
         /// </summary>
-        public static void SelectCopy(string srcRootPathBeforeImport, string copyDest,
+        private static void SelectCopy(string srcRootPathBeforeImport, string copyDest,
             string[] gmlRelativePaths)
         {
             int numGml = gmlRelativePaths.Length;
@@ -111,6 +131,11 @@ namespace PLATEAU.Editor.CityImport
         private static void ProgressBar(string info, int currentCount, int maxCount)
         {
             EditorUtility.DisplayProgressBar("コピー中", info, currentCount/((float)maxCount));
+        }
+        
+        public static bool IsInStreamingAssets(string path)
+        {
+            return PathUtil.IsSubDirectory(path, Application.streamingAssetsPath);
         }
         
     }

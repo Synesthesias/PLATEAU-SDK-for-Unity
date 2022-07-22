@@ -99,6 +99,7 @@ namespace PLATEAU.Editor.Converters
             {
                 loadedMetadata.ClearIdToGmlTable();
             }
+            EditorUtility.SetDirty(loadedMetadata);
             return loadedMetadata;
         }
     }   

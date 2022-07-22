@@ -101,7 +101,7 @@ namespace PLATEAU.Editor.CityImport
         /// </summary>
         private bool ShouldCopyToStreamingFolder()
         {
-            return !CityImporterModel.IsInStreamingAssets(this.folderPath);
+            return !CopyPlateauSrcFiles.IsInStreamingAssets(this.folderPath);
         }
         
     }

@@ -36,13 +36,14 @@ namespace PLATEAU.Editor.CityImport
         /// <param name="metadata">インポートによって生成されたメタデータです。</param>
         public static int Import(string[] gmlRelativePaths, CityImportConfig importConfig, out CityMetadata metadata)
         {
-            // 元フォルダを StreamingAssets/PLATEAU にコピーします。すでに StreamingAssets内にある場合を除きます。 
-            // 設定のインポート元パスをコピー後のパスに変更します。
-            var sourcePathConf = importConfig.sourcePath;
-            sourcePathConf.SetRootDirFullPath(CopyImportSrcToStreamingAssets(importConfig.SrcRootPathBeforeImport, gmlRelativePaths));
+            
+            CopyPlateauSrcFiles.ImportCopy(importConfig, gmlRelativePaths);
+            
+            
+            // メタデータを作成またはロードします。
             var importDest = importConfig.importDestPath;
             metadata = CityMetadataGenerator.LoadOrCreateMetadata(importDest.MetadataAssetPath, true);
-            EditorUtility.SetDirty(metadata);
+            
 
             metadata.gmlRelativePaths = gmlRelativePaths;
             
@@ -57,7 +58,7 @@ namespace PLATEAU.Editor.CityImport
                 loopCount++;
                 ProgressBar($"gml変換中 : [{loopCount}/{numGml}] {gmlRelativePath}", loopCount, numGml );
 
-                string gmlFullPath = sourcePathConf.UdxRelativeToFullPath(gmlRelativePath);
+                string gmlFullPath = importConfig.sourcePath.UdxRelativeToFullPath(gmlRelativePath);
 
                 // gmlをロードします。
                 if (!TryLoadCityGml(out var cityModel, gmlFullPath, importConfig))
@@ -125,7 +126,7 @@ namespace PLATEAU.Editor.CityImport
             importConfig.generatedObjFiles = generatedObjs;
             
             // シーンに配置します。
-            importConfig.rootDirName = PlateauSourcePath.RootDirName(sourcePathConf.RootDirAssetPath);
+            importConfig.rootDirName = PlateauSourcePath.RootDirName(importConfig.sourcePath.RootDirAssetPath);
             CityMeshPlacerModel.Place(metadata.cityImportConfig.cityMeshPlacerConfig, metadata);
             
             // 後処理
@@ -172,18 +173,6 @@ namespace PLATEAU.Editor.CityImport
             }
 
             return true;
-        }
-
-        private static string CopyImportSrcToStreamingAssets(string srcRootPathBeforeImport, string[] gmlRelativePaths)
-        {
-            string newRootFullPath = srcRootPathBeforeImport; // デフォルト値
-            if (!IsInStreamingAssets(srcRootPathBeforeImport))
-            {
-                string copyDest = PlateauUnityPath.StreamingGmlFolder;
-                CopyPlateauSrcFiles.SelectCopy(srcRootPathBeforeImport, copyDest, gmlRelativePaths);
-                newRootFullPath = Path.Combine(copyDest, $"{PlateauSourcePath.RootDirName(srcRootPathBeforeImport)}");
-            }
-            return newRootFullPath;
         }
 
         /// <summary>
@@ -255,12 +244,6 @@ namespace PLATEAU.Editor.CityImport
                 return false;
             }
             return true;
-        }
-        
-        
-        public static bool IsInStreamingAssets(string path)
-        {
-            return PathUtil.IsSubDirectory(path, Application.streamingAssetsPath);
         }
 
         private static void ProgressBar(string info, int currentCount, int maxCount)
