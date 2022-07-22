@@ -1,5 +1,4 @@
 ﻿using PLATEAU.CityMeta;
-using PLATEAU.Util;
 
 namespace PLATEAU.Editor.CityImport
 {
@@ -27,7 +26,7 @@ namespace PLATEAU.Editor.CityImport
         /// <summary> 上の複数の初期化処理の共通部分です。 </summary>
         private CityImporterPresenter(CityImportConfig config)
         {
-            this.view = new CityImporterView();
+            this.view = new CityImporterView(config);
             this.config = config;
         }
         

@@ -5,6 +5,7 @@ using PLATEAU.Interop;
 using PLATEAU.IO;
 using PLATEAU.Util;
 using UnityEditor;
+using UnityEngine;
 
 namespace PLATEAU.Editor.CityImport
 {
@@ -19,13 +20,14 @@ namespace PLATEAU.Editor.CityImport
     internal class CityImporterView : IInputPathChangedEventListener
     {
         private readonly InputFolderSelectorGUI importFolderSelectorGUI;
-        private readonly GmlSearcherPresenter gmlSearcherPresenter = new GmlSearcherPresenter();
+        private readonly GmlSearcherPresenter gmlSearcherPresenter;
         private readonly ObjConvertTypesGUI objConvertTypesGUI;
         private readonly ExportFolderSelectorGUI exportFolderSelectorGUI;
         
-        public CityImporterView()
+        public CityImporterView(CityImportConfig importConfig)
         {
             this.importFolderSelectorGUI = new InputFolderSelectorGUI(this);
+            this.gmlSearcherPresenter = new GmlSearcherPresenter(importConfig.gmlSearcherConfig);
             this.objConvertTypesGUI = new ObjConvertTypesGUI();
             this.exportFolderSelectorGUI = new ExportFolderSelectorGUI();
         }
@@ -47,7 +49,7 @@ namespace PLATEAU.Editor.CityImport
                 }
                 
                 // 変換対象の絞り込み
-                var gmlFiles = this.gmlSearcherPresenter.Draw(importConfig);
+                var gmlFiles = this.gmlSearcherPresenter.Draw(importConfig.gmlSearcherConfig);
 
                 // 変換設定
                 HeaderDrawer.Draw("メッシュ設定");
@@ -103,6 +105,11 @@ namespace PLATEAU.Editor.CityImport
         /// </summary>
         public void OnInputPathChanged(string path, InputFolderSelectorGUI.PathChangeMethod changeMethod)
         {
+            if (this.gmlSearcherPresenter == null)
+            {
+                Debug.LogError($"{nameof(this.gmlSearcherPresenter)} is null.");
+                return;
+            }
             this.gmlSearcherPresenter.OnImportSrcPathChanged(path, changeMethod);
         }
 

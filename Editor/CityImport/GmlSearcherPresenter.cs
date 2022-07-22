@@ -11,24 +11,29 @@ namespace PLATEAU.Editor.CityImport
         private GmlSearcherConfig config;
         private GmlSearcherModel model;
         private readonly GmlSearcherView view = new GmlSearcherView();
-        private bool isInitialized;
-        private bool shouldOverwriteMetadata;
+        // private bool isInitialized;
+        // private bool shouldOverwriteMetadata;
 
-
-        private void Initialize(CityImportConfig importConfig)
+        public GmlSearcherPresenter(GmlSearcherConfig searcherConfig)
         {
-            this.config = importConfig.gmlSearcherConfig;
-            this.config.GenerateAreaTree(this.model.AreaIds, !this.shouldOverwriteMetadata);
-            this.isInitialized = true;
+            this.config = searcherConfig;
+            this.model = new GmlSearcherModel("");
+            Initialize(false);
+        }
+
+        private void Initialize(bool shouldOverwriteMetadata)
+        {
+            this.config.GenerateAreaTree(this.model.AreaIds, !shouldOverwriteMetadata);
+            // this.isInitialized = true;
         }
 
         /// <summary>
         /// GmlSearcher の設定GUIを描画し、その設定を適用します。
         /// 戻り値は Gml検索の結果である gmlファイルの相対パスのリストです。
         /// </summary>
-        public List<string> Draw(CityImportConfig importConfig) // TODO 戻り値は本当は config に含めた方が良いかも
+        public List<string> Draw(GmlSearcherConfig searcherConfig) // TODO 戻り値は本当は config に含めた方が良いかも
         {
-            if(!this.isInitialized) Initialize(importConfig);
+            // if(!this.isInitialized) Initialize(searcherConfig, false);
             return this.view.Draw(this.model, ref this.config);
         }
         
@@ -39,13 +44,13 @@ namespace PLATEAU.Editor.CityImport
         {
             // gmlファイルの検索をやり直します。
             if (!GmlSearcherModel.IsPathPlateauRoot(path)) return;
-            this.model ??= new GmlSearcherModel(path);
+            this.model = new GmlSearcherModel(path);
             this.view.Reset();
             this.model.GenerateFileDictionary(path);
             
-            // 次の描画時に初期化処理をやり直します。
-            this.shouldOverwriteMetadata = changeMethod == InputFolderSelectorGUI.PathChangeMethod.Dialogue;
-            this.isInitialized = false;
+            // 初期化処理をやり直します。
+            bool shouldOverwriteMetadata = changeMethod == InputFolderSelectorGUI.PathChangeMethod.Dialogue;
+            Initialize(shouldOverwriteMetadata);
         }
     }
 }

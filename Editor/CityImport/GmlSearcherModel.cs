@@ -99,7 +99,7 @@ namespace PLATEAU.Editor.CityImport
             {
                 if (this.fileTable == null)
                 {
-                    throw new Exception("fileTable is null.");
+                    return new int[] { };
                 }
                 return this.fileTable.Keys.ToArray();
             }
