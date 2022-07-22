@@ -43,72 +43,77 @@ namespace PLATEAU.Editor.CityImport
         }
 
 
-        private static bool ImportGml(string gmlRelativePath, CityImportConfig importConfig, ref Vector3? referencePoint, List<ObjInfo> generatedObjs, CityMetadata metadata)
+        private static bool ImportGml(string gmlRelativePath, CityImportConfig importConfig,
+            ref Vector3? referencePoint, List<ObjInfo> generatedObjs, CityMetadata metadata)
         {
+            // 実装上の注意 : このメソッドの終了前に cityModel?.Dispose() が必ず実行されるようにしてください。
+            //              そうしないと Unityが終了するまでファイルの利用プロセスが解放されなくなります。
+            
             string gmlFullPath = importConfig.sourcePath.UdxRelativeToFullPath(gmlRelativePath);
 
-                // gmlをロードします。
-                if (!TryLoadCityGml(out var cityModel, gmlFullPath, importConfig))
-                {
-                    cityModel?.Dispose();
-                    return false;
-                }
-
-                var importDest = importConfig.importDestPath;
-                // objに変換します。
-                if (!TryConvertToObj(cityModel, ref referencePoint, importConfig, gmlFullPath, importDest.DirFullPath, out string[] exportedFilePaths))
-                {
-                    // 出力されるモデルがなければ、ここで終了します。
-                    cityModel?.Dispose();
-                    return false;
-                }
-
-                // 生成されたファイルをインポートします。
-                foreach (string fullPath in exportedFilePaths)
-                {
-                    string objAssetsPath = PathUtil.FullPathToAssetsPath(fullPath);
-                    var gmlType = GmlFileNameParser.GetGmlTypeEnum(gmlRelativePath);
-                    int lod = ModelFileNameParser.GetLod(objAssetsPath);
-                    generatedObjs.Add(new ObjInfo(objAssetsPath, lod, gmlType));
-                    
-                    // mtlファイルが存在すればインポートします。
-                    string mtlAssetsPath = PathUtil.RemoveExtension(objAssetsPath) + ".mtl";
-                    if (File.Exists(PathUtil.AssetsPathToFullPath(mtlAssetsPath)))
-                    {
-                        AssetDatabase.ImportAsset(mtlAssetsPath);
-                    }
-                        
-                    // objファイルをインポートします。
-                    AssetDatabase.ImportAsset(objAssetsPath);
-                }
-                
-                
-                // 基準座標は最初のものに合わせます。
-                if (!referencePoint.HasValue) throw new Exception($"{nameof(referencePoint)} is null.");
-                importConfig.referencePoint = referencePoint.Value;
-                
-
-                // 1つのgmlから LODごとに 0個以上の .obj ファイルが生成されます。
-                // .obj ファイルごとのループを始めます。
-                
-                string gmlFileName = Path.GetFileNameWithoutExtension(gmlRelativePath);
-                var objConvertLodConf = importConfig.objConvertTypesConfig;
-                var objNames = objConvertLodConf.ObjFileNamesForGml(gmlFileName);
-                var objAssetPaths = objNames.Select(name => Path.Combine(importDest.DirAssetsPath, name + ".obj"));
-                foreach(string objAssetPath in objAssetPaths)
-                {
-                    // CityMetadata に情報を記録します。
-                    if (!TryWriteConfigsToMetadata(metadata, gmlFileName, objAssetPath, importConfig))
-                    {
-                        Debug.LogError($"Failed to generate meta data.\nobjAssetPath = {objAssetPath}");
-                    }
-                }
-                
-                
+            // gmlをロードします。
+            if (!TryLoadCityGml(out var cityModel, gmlFullPath, importConfig))
+            {
                 cityModel?.Dispose();
-                return true;
+                return false;
+            }
+
+            var importDest = importConfig.importDestPath;
+            // objに変換します。
+            if (!TryConvertToObj(cityModel, ref referencePoint, importConfig, gmlFullPath, importDest.DirFullPath,
+                    out string[] exportedFilePaths))
+            {
+                // 出力されるモデルがなければ、ここで終了します。
+                cityModel?.Dispose();
+                return false;
+            }
+
+            // 生成されたファイルをインポートします。
+            foreach (string fullPath in exportedFilePaths)
+            {
+                string objAssetsPath = PathUtil.FullPathToAssetsPath(fullPath);
+                var gmlType = GmlFileNameParser.GetGmlTypeEnum(gmlRelativePath);
+                int lod = ModelFileNameParser.GetLod(objAssetsPath);
+                generatedObjs.Add(new ObjInfo(objAssetsPath, lod, gmlType));
+
+                // mtlファイルが存在すればインポートします。
+                string mtlAssetsPath = PathUtil.RemoveExtension(objAssetsPath) + ".mtl";
+                if (File.Exists(PathUtil.AssetsPathToFullPath(mtlAssetsPath)))
+                {
+                    AssetDatabase.ImportAsset(mtlAssetsPath);
+                }
+
+                // objファイルをインポートします。
+                AssetDatabase.ImportAsset(objAssetsPath);
+            }
+
+
+            // 基準座標は最初のものに合わせます。
+            if (!referencePoint.HasValue) throw new Exception($"{nameof(referencePoint)} is null.");
+            importConfig.referencePoint = referencePoint.Value;
+
+
+            // 1つのgmlから LODごとに 0個以上の .obj ファイルが生成されます。
+            // .obj ファイルごとのループを始めます。
+
+            string gmlFileName = Path.GetFileNameWithoutExtension(gmlRelativePath);
+            var objConvertLodConf = importConfig.objConvertTypesConfig;
+            var objNames = objConvertLodConf.ObjFileNamesForGml(gmlFileName);
+            var objAssetPaths = objNames.Select(name => Path.Combine(importDest.DirAssetsPath, name + ".obj"));
+            foreach (string objAssetPath in objAssetPaths)
+            {
+                // CityMetadata に情報を記録します。
+                if (!TryWriteConfigsToMetadata(metadata, gmlFileName, objAssetPath, importConfig))
+                {
+                    Debug.LogError($"Failed to generate meta data.\nobjAssetPath = {objAssetPath}");
+                }
+            }
+
+
+            cityModel?.Dispose();
+            return true;
         }
-        
+
         private static void ProgressBar(string info, int currentCount, int maxCount)
         {
             EditorUtility.DisplayProgressBar("gmlファイル変換中", info, ((float)currentCount)/maxCount);
