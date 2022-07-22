@@ -51,7 +51,7 @@ namespace PLATEAU.Tests.TestUtils
             foreach (var type in argDict.Keys)
             {
                 var argLodRange = argDict[type];
-                typeConf.SetLodRange(type, argLodRange);
+                typeConf.SetLodRangeForType(type, argLodRange);
             }
         }
 

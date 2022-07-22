@@ -217,7 +217,7 @@ namespace PLATEAU.Editor.CityImport
                     meshGranularity:         importConfig.meshGranularity,
                     minLod:                  minLod,
                     maxLod:                  maxLod,
-                    exportLowerLod:          importConfig.objConvertTypesConfig.TypeExportLowerLodDict[gmlType],
+                    exportLowerLod:          importConfig.objConvertTypesConfig.GetDoExportLowerLodForType(gmlType),
                     doAutoSetReferencePoint: false,
                     manualReferencePoint:    manualReferencePoint,
                     logLevel:               importConfig.logLevel

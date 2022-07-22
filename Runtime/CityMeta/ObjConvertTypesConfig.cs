@@ -17,8 +17,10 @@ namespace PLATEAU.CityMeta
     [Serializable]
     internal class ObjConvertTypesConfig : ISerializationCallbackReceiver
     {
+        // 辞書 GmlType => LOD範囲
         private Dictionary<GmlType, MinMax<int>> typeLodDict = GmlTypeConvert.ComposeTypeDict<MinMax<int>>();
-        public Dictionary<GmlType, bool> TypeExportLowerLodDict = GmlTypeConvert.ComposeTypeDict(true);
+        // 辞書 GmlType => 低いLODも出力するか
+        private Dictionary<GmlType, bool> typeDoExportLowerLodDict = GmlTypeConvert.ComposeTypeDict(true);
 
         /// <summary> GUIでスライダーの値を一時的保持するためのメンバ </summary>
         [NonSerialized] public Dictionary<GmlType, MinMax<float>> TypeLodSliderDict = new Dictionary<GmlType, MinMax<float>>();
@@ -36,14 +38,24 @@ namespace PLATEAU.CityMeta
             LodToSliderVal();
         }
 
-        public MinMax<int> GetLodRange(GmlType gmlType)
+        public MinMax<int> GetLodRangeForType(GmlType gmlType)
         {
             return this.typeLodDict[gmlType];
         }
 
-        public void SetLodRange(GmlType gmlType, MinMax<int> minmax)
+        public void SetLodRangeForType(GmlType gmlType, MinMax<int> minmax)
         {
             this.typeLodDict[gmlType] = minmax;
+        }
+
+        public bool GetDoExportLowerLodForType(GmlType gmlType)
+        {
+            return this.typeDoExportLowerLodDict[gmlType];
+        }
+
+        public void SetDoExportLowerLodForType(GmlType gmlType, bool doExportLower)
+        {
+            this.typeDoExportLowerLodDict[gmlType] = doExportLower;
         }
 
         /// <summary> Lod設定の値をGUIスライダー用値に反映させます。 </summary>
@@ -150,7 +162,7 @@ namespace PLATEAU.CityMeta
         // TODO このメソッドを使って、 ExportLowerLod のGUIで一括選択ボタンを置いた方が便利そう
         public void SetExportLowerLodForAllTypes(bool exportLower)
         {
-            var dict = this.TypeExportLowerLodDict;
+            var dict = this.typeDoExportLowerLodDict;
             foreach (var type in dict.Keys.ToArray())
             {
                 dict[type] = exportLower;
@@ -161,14 +173,14 @@ namespace PLATEAU.CityMeta
         void ISerializationCallbackReceiver.OnBeforeSerialize()
         {
             DictionarySerializer.OnBeforeSerialize(this.typeLodDict, this.keysLod, this.valuesLod);
-            DictionarySerializer.OnBeforeSerialize(this.TypeExportLowerLodDict, this.keysExportLower, this.valuesExportLower);
+            DictionarySerializer.OnBeforeSerialize(this.typeDoExportLowerLodDict, this.keysExportLower, this.valuesExportLower);
         }
 
         /// <summary> デシリアライズするときに List から Dictionary 形式に直します。 </summary>
         void ISerializationCallbackReceiver.OnAfterDeserialize()
         {
             this.typeLodDict = DictionarySerializer.OnAfterSerialize(this.keysLod, this.valuesLod);
-            this.TypeExportLowerLodDict =
+            this.typeDoExportLowerLodDict =
                 DictionarySerializer.OnAfterSerialize(this.keysExportLower, this.valuesExportLower);
             LodToSliderVal();
         }

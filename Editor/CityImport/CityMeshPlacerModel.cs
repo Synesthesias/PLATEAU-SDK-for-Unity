@@ -65,7 +65,7 @@ namespace PLATEAU.Editor.CityImport
 
 
             // 3Dモデルファイルへの変換でのLOD範囲
-            var lodRange = metadata.cityImportConfig.objConvertTypesConfig.GetLodRange(gmlType);
+            var lodRange = metadata.cityImportConfig.objConvertTypesConfig.GetLodRangeForType(gmlType);
             int selectedLod = placeConfig.GetPerTypeConfig(gmlType).selectedLod;
             lodRange = placeMethod.LodRangeToPlace(lodRange, selectedLod);
 

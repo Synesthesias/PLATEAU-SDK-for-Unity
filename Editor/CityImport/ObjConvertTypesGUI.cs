@@ -51,14 +51,14 @@ namespace PLATEAU.Editor.CityImport
                     using (PlateauEditorStyle.VerticalScopeLevel2())
                     {
                         // LOD対象選択 全LOD / 最大のみ
-                        var typeExportLower = typesConf.TypeExportLowerLodDict[gmlType];
+                        var typeExportLower = typesConf.GetDoExportLowerLodForType(gmlType);
                         typeExportLower = Convert.ToBoolean(EditorGUILayout.Popup("出力モード",
                             Convert.ToInt32(typeExportLower), new [] { "選択中最大LODのみ", "全LOD" }));
-                        typesConf.TypeExportLowerLodDict[gmlType] = typeExportLower;
+                        typesConf.SetDoExportLowerLodForType(gmlType, typeExportLower);
                         
                         // LOD範囲選択
                         typesConf.ClampLodRangeToPossibleVal();
-                        var typeLodRange = typesConf.GetLodRange(gmlType);
+                        var typeLodRange = typesConf.GetLodRangeForType(gmlType);
                         var sliderMinMax = typesConf.TypeLodSliderDict[gmlType];
                         (float valueMin, float valueMax) = (sliderMinMax.Min, sliderMinMax.Max);
                         var availableRange = gmlType.PossibleLodRange();
