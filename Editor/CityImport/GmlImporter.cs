@@ -15,13 +15,16 @@ namespace PLATEAU.Editor.CityImport
 {
     internal static class GmlImporter
     {
-        public static int ImportGmls(out List<ObjInfo> generatedObjs, out int failureCount, string[] gmlRelativePaths, CityImportConfig importConfig, CityMetadata metadata)
+        /// <summary>
+        /// GML群のインポートで、objファイル変換と <see cref="CityMetadata"/> への書き込みをします。
+        /// </summary>
+        public static void ImportGmls(out int successCount, out int failureCount, string[] gmlRelativePaths, CityImportConfig importConfig, CityMetadata metadata)
         {
-            int successCount = 0;
+            successCount = 0;
             int loopCount = 0;
             int numGml = gmlRelativePaths.Length;
             Vector3? referencePoint = null;
-            generatedObjs = new List<ObjInfo>();
+            var generatedObjs = new List<ObjInfo>();
             // gmlごとのループ
             foreach (var gmlRelativePath in gmlRelativePaths)
             {
@@ -31,8 +34,10 @@ namespace PLATEAU.Editor.CityImport
                 if (result) successCount++;
             }
 
+            metadata.gmlRelativePaths = gmlRelativePaths;
+            importConfig.generatedObjFiles = generatedObjs;
+            
             failureCount = loopCount - successCount;
-            return successCount;
         }
 
 
@@ -198,11 +203,7 @@ namespace PLATEAU.Editor.CityImport
             
             bool isSucceed = CityMetadataGenerator.WriteConfigs(metaGenConfig, dstMeshAssetPath , gmlFileName, cityMetadata, doSaveFile: false);
             
-            if (!isSucceed)
-            {
-                return false;
-            }
-            return true;
+            return isSucceed;
         }
     }
 }

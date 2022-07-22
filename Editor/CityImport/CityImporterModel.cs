@@ -31,22 +31,17 @@ namespace PLATEAU.Editor.CityImport
             // データを StreamingAssets にコピーします。
             CopyPlateauSrcFiles.ImportCopy(importConfig, gmlRelativePaths);
             
-            
             // メタデータを作成またはロードします。
-            var importDest = importConfig.importDestPath;
-            metadata = CityMetadataGenerator.LoadOrCreateMetadata(importDest.MetadataAssetPath, true);
-            
+            metadata = CityMetadataGenerator.LoadOrCreateMetadata(importConfig.importDestPath.MetadataAssetPath, true);
+            // TODO この metadata にどのように設定が書き込まれていくかが分かりにくく、そのあたりの処理でGmlImporterが無駄に複雑化している気がするので整理したい
 
-            metadata.gmlRelativePaths = gmlRelativePaths;
-            
             // gmlファイル群をインポートします。
-            int successCount = GmlImporter.ImportGmls(out var generatedObjs, out int failureCount, gmlRelativePaths, importConfig, metadata);
+            GmlImporter.ImportGmls(out int successCount, out int failureCount, gmlRelativePaths, importConfig, metadata);
             
-            importConfig.generatedObjFiles = generatedObjs;
             
             // シーンに配置します。
             importConfig.rootDirName = PlateauSourcePath.RootDirName(importConfig.sourcePath.RootDirAssetPath);
-            CityMeshPlacerModel.Place(metadata.cityImportConfig.cityMeshPlacerConfig, metadata);
+            CityMeshPlacerModel.Place(importConfig.cityMeshPlacerConfig, metadata);
             
             // 後処理
             SaveAssets(metadata);
