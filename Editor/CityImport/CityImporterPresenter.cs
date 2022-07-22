@@ -11,14 +11,14 @@ namespace PLATEAU.Editor.CityImport
         private readonly CityImporterView view;
         private readonly CityImportConfig config;
 
-        /// <summary> 既存の設定で初期化します。 </summary>
+        /// <summary> 既存の設定で初期化したインスタンスを返します。 </summary>
         public static CityImporterPresenter InitWithConfig(CityImportConfig importConfig)
         {
             importConfig.GuiConfFromLoadedConf();
             return new CityImporterPresenter(importConfig);
         }
 
-        /// <summary> 初期値で初期化します。 </summary>
+        /// <summary> 初期値で初期化したインスタンスを返します。 </summary>
         public static CityImporterPresenter InitWithDefaultValue()
         {
             return InitWithConfig(CityImportConfig.Default);

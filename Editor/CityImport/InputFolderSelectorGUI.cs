@@ -13,10 +13,10 @@ namespace PLATEAU.Editor.CityImport
     internal class InputFolderSelectorGUI
     {
         private string folderPath;
-        private event Action<string, PathChangeMethod> OnPathChanged;
+        private readonly IInputPathChangedEventListener onPathChangedListener;
         
         public enum PathChangeMethod{SetterProperty, Dialogue}
-        
+
 
         public string FolderPath
         {
@@ -26,15 +26,16 @@ namespace PLATEAU.Editor.CityImport
                 this.folderPath = value;
                 if (isChanged)
                 {
-                    OnPathChanged?.Invoke(this.folderPath, PathChangeMethod.SetterProperty);
+                    this.onPathChangedListener.OnInputPathChanged(this.folderPath, PathChangeMethod.SetterProperty);
                 }
             }
         }
 
-        public InputFolderSelectorGUI(Action<string, PathChangeMethod> onPathChanged)
+        public InputFolderSelectorGUI(IInputPathChangedEventListener pathChangedEventListener)
         {
-            OnPathChanged += onPathChanged;
+            this.onPathChangedListener = pathChangedEventListener;
         }
+
 
         /// <summary>
         /// フォルダを選択するGUIを表示し、選択されたフォルダのパスを返します。
@@ -63,7 +64,7 @@ namespace PLATEAU.Editor.CityImport
                 if (!string.IsNullOrEmpty(selectedPath))
                 {
                     this.folderPath = selectedPath;
-                    OnPathChanged?.Invoke(this.folderPath, PathChangeMethod.Dialogue);
+                    this.onPathChangedListener.OnInputPathChanged(this.folderPath, PathChangeMethod.Dialogue);
                 }
             }
 
@@ -76,5 +77,13 @@ namespace PLATEAU.Editor.CityImport
             return this.folderPath;
         }
         
+    }
+
+    /// <summary>
+    /// 入力パスが変わったことの通知を受け取るインターフェイスです。
+    /// </summary>
+    internal interface IInputPathChangedEventListener
+    {
+        public void OnInputPathChanged(string path, InputFolderSelectorGUI.PathChangeMethod changeMethod);
     }
 }

@@ -11,13 +11,12 @@ namespace PLATEAU.Editor.CityImport
 
     /// <summary>
     /// Plateau元データをインポートするためのGUIです。
-    /// ユーザーが選択したインポート設定を <see cref="CityImporterModel"/> に渡して実行することでインポートが行われます。
-    /// ユーザーが行う設定項目には、gmlファイル群を地物タイプや地域IDで絞り込む機能を含みます。
+    /// このGUIでユーザーが選択したインポート設定を <see cref="CityImporterModel"/> に渡して実行することでインポートが行われます。
     ///
     /// このクラスを利用するクラスは、
     /// <see cref="CityImportWindow"/> および <see cref="CityMetadataEditor"/> です。
     /// </summary>
-    internal class CityImporterView
+    internal class CityImporterView : IInputPathChangedEventListener
     {
         private readonly InputFolderSelectorGUI importFolderSelectorGUI;
         private readonly GmlSearcherPresenter gmlSearcherPresenter = new GmlSearcherPresenter();
@@ -26,7 +25,7 @@ namespace PLATEAU.Editor.CityImport
         
         public CityImporterView()
         {
-            this.importFolderSelectorGUI = new InputFolderSelectorGUI(OnImportSrcPathChanged);
+            this.importFolderSelectorGUI = new InputFolderSelectorGUI(this);
             this.objConvertTypesGUI = new ObjConvertTypesGUI();
             this.exportFolderSelectorGUI = new ExportFolderSelectorGUI();
         }
@@ -102,7 +101,7 @@ namespace PLATEAU.Editor.CityImport
         /// <summary>
         /// udxフォルダパス選択GUIで、新しいパスが指定されたときに呼ばれます。
         /// </summary>
-        private void OnImportSrcPathChanged(string path, InputFolderSelectorGUI.PathChangeMethod changeMethod)
+        public void OnInputPathChanged(string path, InputFolderSelectorGUI.PathChangeMethod changeMethod)
         {
             this.gmlSearcherPresenter.OnImportSrcPathChanged(path, changeMethod);
         }

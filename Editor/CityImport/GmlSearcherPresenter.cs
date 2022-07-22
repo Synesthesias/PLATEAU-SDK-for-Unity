@@ -37,6 +37,7 @@ namespace PLATEAU.Editor.CityImport
         /// </summary>
         public void OnImportSrcPathChanged(string path, InputFolderSelectorGUI.PathChangeMethod changeMethod)
         {
+            // gmlファイルの検索をやり直します。
             if (!GmlSearcherModel.IsPathPlateauRoot(path)) return;
             this.model ??= new GmlSearcherModel(path);
             this.view.Reset();
