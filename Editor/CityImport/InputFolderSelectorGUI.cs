@@ -1,7 +1,6 @@
 ﻿using PLATEAU.Editor.EditorWindowCommon;
 using PLATEAU.Util;
 using UnityEditor;
-using UnityEngine.WSA;
 using Application = UnityEngine.Application;
 
 namespace PLATEAU.Editor.CityImport

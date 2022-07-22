@@ -1,9 +1,7 @@
-﻿using System.IO;
-using PLATEAU.Editor.EditorWindowCommon;
+﻿using PLATEAU.Editor.EditorWindowCommon;
 using PLATEAU.CityMeta;
 using PLATEAU.Interop;
 using PLATEAU.IO;
-using PLATEAU.Util;
 using UnityEditor;
 using UnityEngine;
 
@@ -74,7 +72,7 @@ namespace PLATEAU.Editor.CityImport
                 using (PlateauEditorStyle.VerticalScopeLevel1())
                 {
                     // 出力できない状況なら、エラーメッセージを表示してボタンを無効化します。
-                    bool importReady = IsImportReady(importConfig, out string message);
+                    bool importReady = importConfig.IsImportReady(out string message);
                     if (!string.IsNullOrEmpty(message))
                     {
                         EditorGUILayout.HelpBox(message, MessageType.Error);
@@ -109,23 +107,7 @@ namespace PLATEAU.Editor.CityImport
             this.gmlSearcherPresenter.OnImportSrcPathChanged(path, changeMethod);
         }
 
-        private static bool IsImportReady(CityImportConfig config, out string message)
-        {
-            message = "";
-            var dirPath = config.importDestPath;
-            if (string.IsNullOrEmpty(dirPath?.DirAssetsPath))
-            {
-                message = "出力先を指定してください。";
-                return false;
-            }
-            if (!Directory.Exists(dirPath.DirFullPath))
-            {
-                message = "出力先として指定されたフォルダが存在しません。";
-                return false;
-            }
-
-            return true;
-        }
+        
         
         
     }

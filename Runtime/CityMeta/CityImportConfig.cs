@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using PLATEAU.Interop;
 using PLATEAU.IO;
 using PLATEAU.Util;
@@ -105,6 +106,25 @@ namespace PLATEAU.CityMeta
             {
                 this.SrcRootPathBeforeImport = loadedSrcRootPath;
             }
+        }
+        
+        
+        public bool IsImportReady(out string message)
+        {
+            message = "";
+            var dirPath = this.importDestPath;
+            if (string.IsNullOrEmpty(dirPath?.DirAssetsPath))
+            {
+                message = "出力先を指定してください。";
+                return false;
+            }
+            if (!Directory.Exists(dirPath.DirFullPath))
+            {
+                message = "出力先として指定されたフォルダが存在しません。";
+                return false;
+            }
+
+            return true;
         }
     }
 }
