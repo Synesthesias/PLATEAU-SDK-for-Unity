@@ -25,6 +25,21 @@ namespace PLATEAU.CityMeta
     [Serializable]
     internal class CityImportConfig
     {
+        /// <summary>
+        /// インポートウィンドウを開いた最初の画面で、設定の初期値がどうなっているべきかを定義します。
+        /// </summary>
+        public static CityImportConfig Default
+        {
+            get
+            {
+                var conf = new CityImportConfig();
+                conf.objConvertTypesConfig.SetLodRangeToAllRange();
+                return conf;
+            }
+
+        }
+
+
         /// <summary> インポート時の対象gmlファイルの絞り込みの設定 </summary>
         public GmlSearcherConfig gmlSearcherConfig = new GmlSearcherConfig();
         

@@ -31,9 +31,7 @@ namespace PLATEAU.Editor.CityImport
         /// <summary> 初期値で初期化します。 </summary>
         public static CityImporterPresenter InitWithDefaultValue()
         {
-            var config = new CityImportConfig();
-            config.objConvertTypesConfig.SetLodRangeToAllRange(); // 初期値
-            return InitWithConfig(config);
+            return InitWithConfig(CityImportConfig.Default);
         }
 
         /// <summary> 上の複数の初期化処理の共通部分です。 </summary>

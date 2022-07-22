@@ -53,7 +53,7 @@ namespace PLATEAU.Editor.CityImport
                 }
             }
 
-            // この処理は本来ならば上記の if(ボタン押下){} の中に移動して良さそうですが、
+            // この処理は本来ならば上記の if(ボタン押下時){処理} の処理中に移動して良さそうですが、
             // Unityのバグで VerticaScope 内で時間のかかる処理をするとエラーメッセージが出るので
             // VerticalScope の外に移動しています。
             // 参考 : https://qiita.com/kumaS-kumachan/items/8d669e56feaf6e47adf1
