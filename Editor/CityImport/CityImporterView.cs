@@ -35,18 +35,14 @@ namespace PLATEAU.Editor.CityImport
         public void Draw(CityImporterPresenter presenter, CityImportConfig importConfig)
         {
             // インポート元フォルダ選択
-            this.importFolderSelectorGUI.FolderPath = importConfig.SrcRootPathBeforeImport;
-            string sourcePath = this.importFolderSelectorGUI.Draw("インポート元フォルダ選択");
+            string sourcePath = this.importFolderSelectorGUI.Draw("インポート元フォルダ選択", importConfig.SrcRootPathBeforeImport);
             importConfig.SrcRootPathBeforeImport = sourcePath;
 
             // udxフォルダが選択されているなら、設定と出力のGUIを表示
-            if (GmlSearcherModel.IsPathPlateauRoot(sourcePath))
+            if (this.importFolderSelectorGUI.IsPlateauFolderSelected())
             {
                 // 案内
-                if (!CityImporterModel.IsInStreamingAssets(sourcePath))
-                {
-                    EditorGUILayout.HelpBox($"入力フォルダは {PathUtil.FullPathToAssetsPath(PlateauUnityPath.StreamingGmlFolder)} にコピーされます。", MessageType.Info);
-                }
+                this.importFolderSelectorGUI.DisplayGuidanceAboutCopy();
                 
                 // 変換対象の絞り込み
                 var gmlFiles = this.gmlSearcherPresenter.Draw(importConfig.gmlSearcherConfig);

@@ -1,6 +1,8 @@
 ﻿using PLATEAU.Editor.EditorWindowCommon;
+using PLATEAU.Util;
 using UnityEditor;
-using UnityEngine;
+using UnityEngine.WSA;
+using Application = UnityEngine.Application;
 
 namespace PLATEAU.Editor.CityImport
 {
@@ -39,8 +41,10 @@ namespace PLATEAU.Editor.CityImport
         /// <summary>
         /// フォルダを選択するGUIを表示し、選択されたフォルダのパスを返します。
         /// </summary>
-        public string Draw(string title)
+        public string Draw(string title, string folderPathArg)
         {
+            FolderPath = folderPathArg;
+            
             HeaderDrawer.Draw(title);
             bool isButtonPressed = false;
             using (PlateauEditorStyle.VerticalScopeLevel1())
@@ -74,6 +78,31 @@ namespace PLATEAU.Editor.CityImport
             }
 
             return this.folderPath;
+        }
+
+        public bool IsPlateauFolderSelected()
+        {
+            return GmlSearcherModel.IsPathPlateauRoot(this.folderPath);
+        }
+
+        public void DisplayGuidanceAboutCopy()
+        {
+            using (PlateauEditorStyle.VerticalScopeLevel1())
+            {
+                EditorGUILayout.HelpBox(
+                    ShouldCopyToStreamingFolder()
+                        ? $"入力フォルダは {PathUtil.FullPathToAssetsPath(PlateauUnityPath.StreamingGmlFolder)} にコピーされます。"
+                        : "入力フォルダは既に StreamingAssets 内にあるのでコピーは省略されます。", MessageType.Info);
+            }
+        }
+
+        /// <summary>
+        /// インポート元パスが StreamingAssets の外であれば、そこにコピーすべきなので、
+        /// パスを見てコピーすべきかどうかチェックします。
+        /// </summary>
+        private bool ShouldCopyToStreamingFolder()
+        {
+            return !CityImporterModel.IsInStreamingAssets(this.folderPath);
         }
         
     }
