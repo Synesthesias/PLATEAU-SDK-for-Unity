@@ -47,11 +47,11 @@ namespace PLATEAU.Tests.TestUtils
         /// </summary>
         public static void SetConvertLods(this CityImportConfig conf, Dictionary<GmlType, MinMax<int>> argDict)
         {
-            var lodDict = conf.objConvertTypesConfig.TypeLodDict;
+            var typeConf = conf.objConvertTypesConfig;
             foreach (var type in argDict.Keys)
             {
                 var argLodRange = argDict[type];
-                lodDict[type] = argLodRange;
+                typeConf.SetLodRange(type, argLodRange);
             }
         }
 

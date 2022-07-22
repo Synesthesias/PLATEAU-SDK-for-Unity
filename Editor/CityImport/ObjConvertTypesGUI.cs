@@ -38,9 +38,9 @@ namespace PLATEAU.Editor.CityImport
                     }
                 }
 
-                var gmlTypes = typesConf.TypeLodDict.Keys;
+                var gmlTypes = typesConf.GmlTypes;
 
-                // 地物タイプごとのループ
+                // 地物タイプごとに設定GUIを表示するループ
                 foreach (var gmlType in gmlTypes)
                 {
                     bool isTypeTarget = gmlSearcherConfig.GetIsTypeTarget(gmlType);
@@ -58,7 +58,7 @@ namespace PLATEAU.Editor.CityImport
                         
                         // LOD範囲選択
                         typesConf.ClampLodRangeToPossibleVal();
-                        var typeLodRange = typesConf.TypeLodDict[gmlType];
+                        var typeLodRange = typesConf.GetLodRange(gmlType);
                         var sliderMinMax = typesConf.TypeLodSliderDict[gmlType];
                         (float valueMin, float valueMax) = (sliderMinMax.Min, sliderMinMax.Max);
                         var availableRange = gmlType.PossibleLodRange();
