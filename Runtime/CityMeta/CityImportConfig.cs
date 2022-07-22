@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using PLATEAU.Interop;
 using PLATEAU.IO;
+using PLATEAU.Util;
 using UnityEngine;
 
 namespace PLATEAU.CityMeta
@@ -76,5 +77,34 @@ namespace PLATEAU.CityMeta
         
         /// <summary> インポート時のログレベル </summary>
         public DllLogLevel logLevel = DllLogLevel.Error;
+
+        /// <summary>
+        /// Scriptable Object としてファイルからロードしたメタデータを、
+        /// インポート設定GUIで利用するにあたって必要な変換処理です。
+        /// </summary>
+        public void GuiConfFromLoadedConf()
+        {
+            // インポート元パスについて、ファイルに記録されるのは アセットパスですが、
+            // GUI 上では フルパスであって欲しいです。 
+            // そのためロードしたパスをフルパスに変換します。
+            
+            // 補足 : アセットパスを記録する理由
+            // 処理の流れは
+            // インポート元は任意のパスをユーザーが指定 →
+            // それをインポート時に StreamingAssets にコピー →
+            // 新しいインポート元パスとして コピー後の アセットパスを保存
+            // となっています。
+            // こうすることで、他のPCでも元GMLファイルを参照できるようになります。
+            
+            string loadedSrcRootPath = this.sourcePath.RootDirAssetPath;
+            if (loadedSrcRootPath.Replace('\\', '/').StartsWith("Assets/"))
+            {
+                loadedSrcRootPath = PathUtil.AssetsPathToFullPath(loadedSrcRootPath);
+            }
+            if (!string.IsNullOrEmpty(loadedSrcRootPath))
+            {
+                this.SrcRootPathBeforeImport = loadedSrcRootPath;
+            }
+        }
     }
 }

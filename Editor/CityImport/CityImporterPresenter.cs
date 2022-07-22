@@ -14,17 +14,7 @@ namespace PLATEAU.Editor.CityImport
         /// <summary> 既存の設定で初期化します。 </summary>
         public static CityImporterPresenter InitWithConfig(CityImportConfig importConfig)
         {
-            // メタデータにファイルとして記録されたインポート元パスがあれば、それを復元し、GUI画面の初期値に代入します。
-            string loadedSrcRootPath = importConfig.sourcePath.RootDirAssetPath;
-            if (loadedSrcRootPath.Replace('\\', '/').StartsWith("Assets/"))
-            {
-                loadedSrcRootPath = PathUtil.AssetsPathToFullPath(loadedSrcRootPath);
-            }
-            if (!string.IsNullOrEmpty(loadedSrcRootPath))
-            {
-                importConfig.SrcRootPathBeforeImport = loadedSrcRootPath;
-            }
-            
+            importConfig.GuiConfFromLoadedConf();
             return new CityImporterPresenter(importConfig);
         }
 
