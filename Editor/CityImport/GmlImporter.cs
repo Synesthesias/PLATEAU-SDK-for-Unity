@@ -34,8 +34,10 @@ namespace PLATEAU.Editor.CityImport
                 if (result) successCount++;
             }
 
+            // 情報書き込み
             metadata.gmlRelativePaths = gmlRelativePaths;
             importConfig.generatedObjFiles = generatedObjs;
+            importConfig.rootDirName = PlateauSourcePath.RootDirName(importConfig.sourcePath.RootDirAssetPath);
             
             failureCount = loopCount - successCount;
         }
