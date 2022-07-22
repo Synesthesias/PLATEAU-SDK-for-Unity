@@ -8,7 +8,7 @@ namespace PLATEAU.Editor.CityImport
 
     /// <summary>
     /// 入力フォルダのパスを選択するGUIを提供します。
-    /// 新しいパスが選択されたとき、 <see cref="OnPathChanged"/> が呼ばれます。
+    /// 新しいパスが選択されたとき、 <see cref="onPathChangedListener"/> が呼ばれます。
     /// </summary>
     internal class InputFolderSelectorGUI
     {
@@ -18,7 +18,7 @@ namespace PLATEAU.Editor.CityImport
         public enum PathChangeMethod{SetterProperty, Dialogue}
 
 
-        public string FolderPath
+        private string FolderPath
         {
             set
             {

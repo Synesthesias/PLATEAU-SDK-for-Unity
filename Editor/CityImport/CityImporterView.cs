@@ -1,7 +1,5 @@
 ﻿using PLATEAU.Editor.EditorWindowCommon;
 using PLATEAU.CityMeta;
-using PLATEAU.Interop;
-using PLATEAU.IO;
 using UnityEditor;
 using UnityEngine;
 
@@ -19,15 +17,11 @@ namespace PLATEAU.Editor.CityImport
     {
         private readonly InputFolderSelectorGUI importFolderSelectorGUI;
         private readonly GmlSearcherPresenter gmlSearcherPresenter;
-        private readonly ObjConvertTypesGUI objConvertTypesGUI;
-        private readonly ExportFolderSelectorGUI exportFolderSelectorGUI;
         
         public CityImporterView(CityImportConfig importConfig)
         {
             this.importFolderSelectorGUI = new InputFolderSelectorGUI(this);
             this.gmlSearcherPresenter = new GmlSearcherPresenter(importConfig.gmlSearcherConfig);
-            this.objConvertTypesGUI = new ObjConvertTypesGUI();
-            this.exportFolderSelectorGUI = new ExportFolderSelectorGUI();
         }
 
         public void Draw(CityImporterPresenter presenter, CityImportConfig importConfig)
@@ -49,21 +43,12 @@ namespace PLATEAU.Editor.CityImport
                 HeaderDrawer.Draw("メッシュ設定");
                 HeaderDrawer.IncrementDepth();
                 HeaderDrawer.Draw("基本メッシュ設定");
-                using (PlateauEditorStyle.VerticalScopeLevel1())
-                {
-                    importConfig.exportAppearance = EditorGUILayout.Toggle("テクスチャを含める", importConfig.exportAppearance);
-                    importConfig.meshGranularity = (MeshGranularity)EditorGUILayout.Popup("メッシュ結合単位", (int)importConfig.meshGranularity,
-                        new [] { "最小地物単位", "主要地物単位", "都市モデル地域単位" });
-                    importConfig.logLevel = (DllLogLevel)EditorGUILayout.EnumPopup("(開発者向け)ログの詳細度", importConfig.logLevel);
-                }
+                BasicMeshConfigGUI.Draw(importConfig);
                 HeaderDrawer.Draw("地物タイプ別 メッシュ設定");
-                using (PlateauEditorStyle.VerticalScopeLevel1())
-                {
-                    this.objConvertTypesGUI.Draw(importConfig.objConvertTypesConfig, importConfig.gmlSearcherConfig);
-                }
-                
+                ObjConvertTypesGUI.Draw(importConfig.objConvertTypesConfig, importConfig.gmlSearcherConfig);
+
                 // 変換先パス設定
-                importConfig.importDestPath.DirAssetsPath = this.exportFolderSelectorGUI.Draw(importConfig.importDestPath.DirAssetsPath);
+                importConfig.importDestPath.DirAssetsPath = ExportFolderSelectorGUI.Draw(importConfig.importDestPath.DirAssetsPath);
                 
                 HeaderDrawer.DecrementDepth();
                 

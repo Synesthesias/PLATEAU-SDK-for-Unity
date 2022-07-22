@@ -9,14 +9,14 @@ namespace PLATEAU.Editor.CityImport
     /// <summary>
     /// 出力先フォルダ選択GUIを表示します。
     /// </summary>
-    internal class ExportFolderSelectorGUI
+    internal static class ExportFolderSelectorGUI
     {
 
         /// <summary>
         /// GUIを表示し、選択されたパスを返します。
         /// パスは Assets パスとなります。
         /// </summary>
-        public string Draw(string exportAssetPath)
+        public static string Draw(string exportAssetPath)
         {
             HeaderDrawer.Draw("出力先選択");
             using (PlateauEditorStyle.VerticalScopeLevel1())

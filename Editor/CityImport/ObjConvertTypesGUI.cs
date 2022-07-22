@@ -10,12 +10,12 @@ namespace PLATEAU.Editor.CityImport
     /// gmlファイルから objファイルへの変換に関して、地物タイプごとに対象のLOD範囲を設定するGUIです。
     /// <see cref="CityImporterView"/> によって利用されます。
     /// </summary>
-    internal class ObjConvertTypesGUI
+    internal static class ObjConvertTypesGUI
     {
         /// <summary>
         /// obj変換のLOD設定のGUI描画し、ユーザーのGUI操作に応じて引数である <see cref="ObjConvertTypesConfig"/> の中身を書き換えます。
         /// </summary>
-        public void Draw(ObjConvertTypesConfig typesConf, GmlSearcherConfig gmlSearcherConfig)
+        public static void Draw(ObjConvertTypesConfig typesConf, GmlSearcherConfig gmlSearcherConfig)
         {
             using (PlateauEditorStyle.VerticalScopeLevel1())
             {
