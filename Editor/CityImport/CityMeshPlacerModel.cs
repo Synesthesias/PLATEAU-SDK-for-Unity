@@ -21,9 +21,13 @@ namespace PLATEAU.Editor.CityImport
         /// </summary>
         public static void Place(CityMeshPlacerConfig placeConfig, CityMetadata metadata)
         {
+            string rootDirName = metadata.cityImportConfig.rootDirName;
+            
+            // すでに配置されている場合は削除します。
+            var oldObj = GameObject.Find(rootDirName);
+            if(oldObj != null) GameObjectUtil.DestroyChildOf(oldObj);
             
             // Plateau元データのルートフォルダと同名の ルートGame Objectを作ります。 
-            string rootDirName = metadata.cityImportConfig.rootDirName;
             var rootGameObj = GameObjectUtil.AssureGameObject(rootDirName);
             
             // ルートGameObjectに CityBehaviour をアタッチしてメタデータをリンクします。
