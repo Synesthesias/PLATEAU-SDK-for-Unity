@@ -34,6 +34,7 @@ namespace PLATEAU.Util
         /// </summary>
         public static void DestroyChildOf(Transform parent, string targetName)
         {
+            Debug.Log($"Destroyed one of duplicate : {targetName}");
             var oldObj = parent.Find(targetName);
             if (oldObj != null)
             {
