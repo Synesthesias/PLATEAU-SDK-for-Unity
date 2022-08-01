@@ -37,6 +37,8 @@ namespace PLATEAU.Editor.Diagnostics
         /// <summary>
         /// 名前によって表の1マスを指定し、そこのストップウォッチを開始させます。
         /// 前のストップウォッチを停止させます。
+        /// 引数で　処理名（縦軸）とデータ名（横軸）によって表のマスを指定します。
+        /// 引数で未知の名前が与えられたらその名前に新しい行（列）を割り当て、既知の名前が与えられたらその行（列）を指定した扱いになります。
         /// </summary>
         public void Start(string processName, string dataName)
         {
