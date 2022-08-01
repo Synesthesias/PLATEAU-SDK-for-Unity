@@ -9,7 +9,7 @@ using UnityEngine;
 namespace PLATEAU.Tests.EditModeTests
 {
     [TestFixture]
-    public class TestsGmlSearcher
+    public class TestGmlSearcher
     {
         [Test]
         public void AreaIds_Returns_File_AreaIds()
@@ -24,9 +24,7 @@ namespace PLATEAU.Tests.EditModeTests
         [Test]
         public void When_AreaId_And_Type_Are_All_Set_Then_All_Types_In_TestTokyo_Are_Targeted()
         {
-            var conf = new GmlSearcherConfig();
-            var presenter = new GmlSearcherPresenter(conf);
-            presenter.OnImportSrcPathChanged(DirectoryUtil.TestTokyoSrcPath, InputFolderSelectorGUI.PathChangeMethod.Dialogue);
+            var presenter = PreparePresenter(DirectoryUtil.TestTokyoSrcPath, out var conf);
             conf.SetAllAreaId(true);
             conf.SetAllTypeTarget(true);
             var gmlFiles = presenter.ListTargetGmlFiles();
@@ -39,6 +37,33 @@ namespace PLATEAU.Tests.EditModeTests
             Assert.IsTrue(DoStringsContains("brid", gmlFiles));
             Assert.IsTrue(DoStringsContains("frn", gmlFiles));
             Assert.IsFalse(DoStringsContains("veg", gmlFiles), "vegはこのテストデータには含まれないので対象としません。");
+        }
+
+        [Test]
+        public void When_Etc_Type_Is_Not_Targeted_Then_GmlFiles_Do_Not_Contain_Etc()
+        {
+            var presenter = PreparePresenter(DirectoryUtil.TestTokyoSrcPath, out var conf);
+            // Etc タイプ以外は対象とする設定にします。
+            conf.SetAllAreaId(true);
+            conf.SetAllTypeTarget(true);
+            conf.SetIsTypeTarget(GmlType.Etc, false);
+            var gmlFiles = presenter.ListTargetGmlFiles();
+            Assert.IsTrue(DoStringsContains("bldg", gmlFiles), "その他枠でないものは対象になっています。");
+            Assert.IsTrue(DoStringsContains("tran", gmlFiles));
+            Assert.IsTrue(DoStringsContains("frn", gmlFiles));
+            Assert.IsTrue(DoStringsContains("dem", gmlFiles));
+            Assert.IsFalse(DoStringsContains("lsld", gmlFiles), "その他枠のものは対象になっていません。");
+            Assert.IsFalse(DoStringsContains("luse", gmlFiles));
+            Assert.IsFalse(DoStringsContains("urf", gmlFiles));
+            Assert.IsFalse(DoStringsContains("brid", gmlFiles));
+        }
+
+        private GmlSearcherPresenter PreparePresenter(string testDataPath, out GmlSearcherConfig conf)
+        {
+            conf = new GmlSearcherConfig();
+            var presenter = new GmlSearcherPresenter(conf);
+            presenter.OnImportSrcPathChanged(DirectoryUtil.TestTokyoSrcPath, InputFolderSelectorGUI.PathChangeMethod.Dialogue);
+            return presenter;
         }
 
         /// <summary>
