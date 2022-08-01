@@ -23,7 +23,7 @@ namespace PLATEAU.Editor.CityImport
             successCount = 0;
             int loopCount = 0;
             int numGml = gmlRelativePaths.Length;
-            Vector3? referencePoint = null;
+            Vector3? referencePoint = null; // referencePoint は最初に合わせます
             var generatedObjs = new List<ObjInfo>();
             // gmlごとのループ
             foreach (var gmlRelativePath in gmlRelativePaths)
@@ -45,6 +45,7 @@ namespace PLATEAU.Editor.CityImport
 
         /// <summary>
         /// Gmlファイルを1つインポートします。成否をboolで返します。
+        /// <paramref name="referencePoint"/> は null の場合は新しく設定し、値がある場合はその値を利用します。
         /// </summary>
         private static bool ImportGml(string gmlRelativePath, CityImportConfig importConfig,
             ref Vector3? referencePoint, List<ObjInfo> generatedObjs, CityMetadata metadata)
@@ -158,10 +159,9 @@ namespace PLATEAU.Editor.CityImport
             {
                 
                 // configの値を作ります。
-                var gmlType = GmlFileNameParser.GetGmlTypeEnum(gmlFullPath);
-                (int minLod, int maxLod) = importConfig.objConvertTypesConfig.GetMinMaxLodForType(gmlType);
                 Vector3? manualReferencePoint;
                 // Reference Pointは最初のものに合わせます。
+                // 最初は referencePoint == null なので新しく値を設定、以降は値が設定されているのでその値を利用します。
                 if (referencePoint == null)
                 {
                     referencePoint = objConverter.SetValidReferencePoint(cityModel);
@@ -173,16 +173,8 @@ namespace PLATEAU.Editor.CityImport
                 }
                 
                 // 変換設定を作成します。この設定は gml 1つに対する変換に関して利用されます。
-                var converterConf = new GmlToObjConverterConfig(
-                    exportAppearance:        importConfig.exportAppearance,
-                    meshGranularity:         importConfig.meshGranularity,
-                    minLod:                  minLod,
-                    maxLod:                  maxLod,
-                    exportLowerLod:          importConfig.objConvertTypesConfig.GetDoExportLowerLodForType(gmlType),
-                    doAutoSetReferencePoint: false,
-                    manualReferencePoint:    manualReferencePoint,
-                    logLevel:               importConfig.logLevel
-                );
+                var gmlType = GmlFileNameParser.GetGmlTypeEnum(gmlFullPath);
+                var converterConf = importConfig.ToConverterConfig(gmlType, manualReferencePoint);
                 
                 objConverter.Config = converterConf;
                 

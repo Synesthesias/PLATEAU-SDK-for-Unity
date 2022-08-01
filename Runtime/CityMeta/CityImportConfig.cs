@@ -126,5 +126,23 @@ namespace PLATEAU.CityMeta
 
             return true;
         }
+
+        /// <summary>
+        /// Gmlファイルから3Dモデルにファイルに変換する時の設定を返します。
+        /// </summary>
+        public GmlToObjConverterConfig ToConverterConfig(GmlType gmlType, Vector3? manualReferencePoint)
+        {
+            (int minLod, int maxLod) = this.objConvertTypesConfig.GetMinMaxLodForType(gmlType);
+            return new GmlToObjConverterConfig(
+                exportAppearance:        this.exportAppearance,
+                meshGranularity:         this.meshGranularity,
+                minLod:                  minLod,
+                maxLod:                  maxLod,
+                exportLowerLod:          this.objConvertTypesConfig.GetDoExportLowerLodForType(gmlType),
+                doAutoSetReferencePoint: false,
+                manualReferencePoint:    manualReferencePoint,
+                logLevel:               this.logLevel
+            );
+        }
     }
 }

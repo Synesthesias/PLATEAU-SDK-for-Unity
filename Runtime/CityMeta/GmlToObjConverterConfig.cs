@@ -2,7 +2,7 @@
 using PLATEAU.IO;
 using UnityEngine;
 
-namespace PLATEAU.Editor.Converters
+namespace PLATEAU.CityMeta
 {
 
     /// <summary>

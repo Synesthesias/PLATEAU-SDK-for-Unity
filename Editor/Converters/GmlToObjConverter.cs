@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Threading;
 using PLATEAU.CityGML;
+using PLATEAU.CityMeta;
 using PLATEAU.Interop;
 using PLATEAU.Util;
 using PLATEAU.IO;
