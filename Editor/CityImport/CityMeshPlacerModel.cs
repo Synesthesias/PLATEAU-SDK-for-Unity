@@ -4,6 +4,7 @@ using System.Linq;
 using PLATEAU.Behaviour;
 using PLATEAU.CityGML;
 using PLATEAU.CityMeta;
+using PLATEAU.Editor.Diagnostics;
 using PLATEAU.Interop;
 using PLATEAU.IO;
 using PLATEAU.Util;
@@ -35,7 +36,8 @@ namespace PLATEAU.Editor.CityImport
             cityBehaviour.CityMetadata = metadata;
             
             string[] gmlRelativePaths = metadata.gmlRelativePaths;
-            
+
+            var timer = new TimeDiagnosticsTable();
             
             // ループ : gmlファイルごと
             int numGml = gmlRelativePaths.Length;
@@ -43,17 +45,25 @@ namespace PLATEAU.Editor.CityImport
             {
                 var gmlRelativePath = gmlRelativePaths[i];
                 EditorUtility.DisplayProgressBar("配置中", $"[{i}/{numGml}] {GmlFileNameParser.FileNameWithoutExtension(gmlRelativePath)}.gml", (float)i/numGml);
-                PlaceGmlModel(metadata, gmlRelativePath, placeConfig, rootGameObj.transform);
+                PlaceGmlModel(metadata, gmlRelativePath, placeConfig, rootGameObj.transform, timer);
             }
             EditorUtility.ClearProgressBar();
+            Debug.Log($"[メッシュ配置 処理時間ログ]\n処理別 : \n{timer.SummaryByProcess()}\nデータ別 :\n{timer.SummaryByData()}");
         }
 
         /// <summary>
         /// シーン配置の gmlファイルごとの処理です。
         /// </summary>　
         private static void PlaceGmlModel(CityMetadata metadata, string gmlRelativePath,
-            CityMeshPlacerConfig placeConfig, Transform parentTrans)
+            CityMeshPlacerConfig placeConfig, Transform parentTrans, TimeDiagnosticsTable timer)
         {
+            var gmlType = GmlFileNameParser.GetGmlTypeEnum(gmlRelativePath);
+            var placeMethod = placeConfig.GetPerTypeConfig(gmlType).placeMethod;
+
+            if (placeMethod == CityMeshPlacerConfig.PlaceMethod.DoNotPlace) return;
+            
+            string gmlFileName = $"{GmlFileNameParser.FileNameWithoutExtension(gmlRelativePath)}.gml";
+            timer.Start("ParseGml", gmlFileName);
             var cityModel = ParseGml(metadata, gmlRelativePath);
             if (cityModel == null)
             {
@@ -61,14 +71,9 @@ namespace PLATEAU.Editor.CityImport
                 return;
             }
 
-            var gmlType = GmlFileNameParser.GetGmlTypeEnum(gmlRelativePath);
-            var placeMethod = placeConfig.GetPerTypeConfig(gmlType).placeMethod;
-
-            if (placeMethod == CityMeshPlacerConfig.PlaceMethod.DoNotPlace) return;
-
             // gmlファイル名と同名のGameObjectをルート直下に作ります。
             var gmlGameObj =
-                GameObjectUtil.AssureGameObject(GmlFileNameParser.FileNameWithoutExtension(gmlRelativePath));
+                GameObjectUtil.AssureGameObject(gmlFileName);
             gmlGameObj.transform.parent = parentTrans;
 
 
@@ -78,6 +83,8 @@ namespace PLATEAU.Editor.CityImport
             lodRange = placeMethod.LodRangeToPlace(lodRange, selectedLod);
 
             var primaryCityObjs = cityModel.GetCityObjectsByType(PrimaryCityObjectTypes.PrimaryTypeMask);
+            
+            timer.Start("Place3dModels", gmlFileName);
 
             // ループ : LODごと
             for (int currentLod = lodRange.Max; currentLod >= lodRange.Min; currentLod--)
