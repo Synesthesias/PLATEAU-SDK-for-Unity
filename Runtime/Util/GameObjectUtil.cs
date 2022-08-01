@@ -34,6 +34,7 @@ namespace PLATEAU.Util
         /// </summary>
         public static void DestroyChildOf(Transform parent, string targetName)
         {
+            Debug.Log($"Destroyed one of duplicate : {targetName}");
             var oldObj = parent.Find(targetName);
             if (oldObj != null)
             {
@@ -73,6 +74,21 @@ namespace PLATEAU.Util
             }
 
             return gameObj;
+        }
+
+        /// <summary>
+        /// <paramref name="obj"/> の子をすべて削除します。
+        /// </summary>
+        public static void DestroyChildOf(GameObject obj)
+        {
+            var trans = obj.transform;
+            int cnt = trans.childCount;
+            var destroyList = new List<GameObject>();
+            for (int i = 0; i < cnt; i++)
+            {
+                destroyList.Add(trans.GetChild(i).gameObject);
+            }
+            foreach(var d in destroyList) Object.DestroyImmediate(d); 
         }
 
         public static List<GameObject> ListGameObjsInScene(Scene scene)

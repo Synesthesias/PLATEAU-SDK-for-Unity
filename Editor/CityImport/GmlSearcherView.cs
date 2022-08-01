@@ -24,7 +24,7 @@ namespace PLATEAU.Editor.CityImport
         /// その結果を gmlファイルの相対パスのリストで返します。
         /// その際にユーザーが選択した設定内容は引数 <paramref name="searcherConfig"/> に格納されます。
         /// </summary>
-        public List<string> Draw(GmlSearcherModel gmlSearcher, ref GmlSearcherConfig searcherConfig)
+        public List<string> Draw(GmlSearcherModel gmlSearcher, ref GmlSearcherConfig searcherConfig, GmlSearcherPresenter presenter)
         {
             HeaderDrawer.IncrementDepth();
             HeaderDrawer.Draw("含める地域");
@@ -129,8 +129,7 @@ namespace PLATEAU.Editor.CityImport
             List<string> gmlFiles;
             using (PlateauEditorStyle.VerticalScopeLevel1())
             {
-                gmlFiles = ListTargetGmlFiles(gmlSearcher, searcherConfig.AreaTree,
-                    searcherConfig);
+                gmlFiles = presenter.ListTargetGmlFiles();
                 this.scrollPosForGmlList = PlateauEditorStyle.ScrollableMultiLineLabel(string.Join("\n", gmlFiles), 150, this.scrollPosForGmlList);
             }
             
@@ -145,19 +144,6 @@ namespace PLATEAU.Editor.CityImport
         }
 
 
-        private static List<string> ListTargetGmlFiles(GmlSearcherModel gmlSearcherModel, AreaTree areaTree, GmlSearcherConfig searcherConfig)
-        {
-            var gmlFiles = new List<string>();
-
-            var nodes = areaTree.IterateDfs();
-            foreach (var tuple in nodes)
-            {
-                var area = tuple.node.Value;
-                if (!area.IsTarget) continue;
-                gmlFiles.AddRange(gmlSearcherModel.GetGmlFilePathsForAreaIdAndType(area.Id, searcherConfig, false));
-            }
-
-            return gmlFiles;
-        }
+        
     }
 }

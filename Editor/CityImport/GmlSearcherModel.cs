@@ -146,6 +146,24 @@ namespace PLATEAU.Editor.CityImport
 
             return found;
         }
+        
+        public static List<string> ListTargetGmlFiles(GmlSearcherModel gmlSearcherModel, GmlSearcherConfig searcherConfig)
+        {
+            var gmlFiles = new List<string>();
+            AreaTree areaTree = searcherConfig.AreaTree;
+
+            var nodes = areaTree.IterateDfs();
+            // 地域ツリーの各地域について
+            foreach (var tuple in nodes)
+            {
+                var area = tuple.node.Value;
+                if (!area.IsTarget) continue;
+                // 対象地域に対応する gmlファイルのうち 、選択したgmlタイプに合致するものをすべて追加します。
+                gmlFiles.AddRange(gmlSearcherModel.GetGmlFilePathsForAreaIdAndType(area.Id, searcherConfig, false));
+            }
+
+            return gmlFiles;
+        }
 
         /// <summary>
         /// 与えられた <paramref name="areaIds"/> のリストの中に、どのような <see cref="GmlType"/> が含まれているかを返します。

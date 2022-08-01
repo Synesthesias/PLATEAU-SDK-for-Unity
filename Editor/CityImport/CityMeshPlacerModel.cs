@@ -21,9 +21,13 @@ namespace PLATEAU.Editor.CityImport
         /// </summary>
         public static void Place(CityMeshPlacerConfig placeConfig, CityMetadata metadata)
         {
+            string rootDirName = metadata.cityImportConfig.rootDirName;
+            
+            // すでに配置されている場合は削除します。
+            var oldObj = GameObject.Find(rootDirName);
+            if(oldObj != null) GameObjectUtil.DestroyChildOf(oldObj);
             
             // Plateau元データのルートフォルダと同名の ルートGame Objectを作ります。 
-            string rootDirName = metadata.cityImportConfig.rootDirName;
             var rootGameObj = GameObjectUtil.AssureGameObject(rootDirName);
             
             // ルートGameObjectに CityBehaviour をアタッチしてメタデータをリンクします。
@@ -238,6 +242,9 @@ namespace PLATEAU.Editor.CityImport
         /// </summary>
         private static GameObject PlaceToScene(ObjInfo objInfo, string objName, Transform parentTransform)
         {
+            // LOD >=2 のときに親と子でまったく同じオブジェクトが配置されてしまう場合があり、それを回避します。
+            if (parentTransform.gameObject.name == objName) return null;
+            
             // 3Dモデルファイル内で、対応するメッシュを探します。
             var gameObjs = AssetDatabase
                 .LoadAllAssetsAtPath(objInfo.assetsPath)

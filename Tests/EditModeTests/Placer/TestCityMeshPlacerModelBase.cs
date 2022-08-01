@@ -33,7 +33,7 @@ namespace PLATEAU.Tests.EditModeTests.Placer
         
         
         // インポートには時間がかかるので、 OneTimeSetUp 内でインポートしたものを使い回します。
-        // 別のインポート設定でテストしたい場合は、別のソースファイルを作ってください。
+        // 別のインポート設定でテストしたい場合は、別のテストソースファイルを作ってください。
         
         [OneTimeSetUp]
         public void OneTimeSetUp()
@@ -114,6 +114,14 @@ namespace PLATEAU.Tests.EditModeTests.Placer
             Place(PlaceMethod.PlaceSelectedLodOrDoNotPlace, 1, this.metadata);
             AssertLodPlaced(1);
             AssertLodNotPlaced(0,2);
+        }
+
+        [Test]
+        public void When_Replaced_Then_Old_Placed_Objects_Are_Removed_From_Scene()
+        {
+            Place(PlaceMethod.PlaceAllLod, 1, this.metadata);
+            Place(PlaceMethod.DoNotPlace, 1, this.metadata);
+            AssertLodNotPlaced(0,1,2);
         }
     }
 }

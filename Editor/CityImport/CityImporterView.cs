@@ -37,7 +37,7 @@ namespace PLATEAU.Editor.CityImport
                 this.importFolderSelectorGUI.DisplayGuidanceAboutCopy();
                 
                 // 変換対象の絞り込み
-                var gmlFiles = this.gmlSearcherPresenter.Draw(importConfig.gmlSearcherConfig);
+                var gmlFiles = this.gmlSearcherPresenter.Draw();
 
                 // 変換設定
                 HeaderDrawer.Draw("メッシュ設定");

@@ -38,7 +38,7 @@ namespace PLATEAU.CityMeta
         private static readonly IReadOnlyDictionary<GmlType, string> prefixDict = new Dictionary<GmlType, string>
         {
             { Building, "bldg" },
-            { Transport, "trans" },
+            { Transport, "tran" },
             { Vegetation, "veg" },
             { CityFurniture, "frn" },
             { DigitalElevationModel, "dem" }

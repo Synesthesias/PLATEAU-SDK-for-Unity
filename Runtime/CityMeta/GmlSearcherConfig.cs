@@ -31,6 +31,10 @@ namespace PLATEAU.CityMeta
         internal void SetAllAreaId(bool isTarget)
         {
             var nodes = IterateAreaTree();
+            if (nodes == null)
+            {
+                Debug.LogError($"{nameof(nodes)} is null. Call method {nameof(GenerateAreaTree)} or GmlSearcherPresenter.OnImportSrcPathChanged  before reading AreaId.");
+            }
             foreach (var tuple in nodes)
             {
                 tuple.node.Value.IsTarget = isTarget;
