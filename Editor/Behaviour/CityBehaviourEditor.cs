@@ -9,7 +9,7 @@ namespace PLATEAU.Editor.Behaviour
     internal class CityBehaviourEditor : UnityEditor.Editor
     {
         private bool foldOutObjPlaceGUI;
-        private CityMeshPlacerPresenter cityMeshPlacerPresenter = new CityMeshPlacerPresenter();
+        private readonly CityMeshPlacerPresenter cityMeshPlacerPresenter = new CityMeshPlacerPresenter();
         
         public override void OnInspectorGUI()
         {

@@ -38,10 +38,14 @@ namespace PLATEAU.Editor.CityImport
             
             
             // ループ : gmlファイルごと
-            foreach (var gmlRelativePath in gmlRelativePaths)
+            int numGml = gmlRelativePaths.Length;
+            for (int i = 0; i < numGml; i++)
             {
+                var gmlRelativePath = gmlRelativePaths[i];
+                EditorUtility.DisplayProgressBar("配置中", $"[{i}/{numGml}] {GmlFileNameParser.FileNameWithoutExtension(gmlRelativePath)}.gml", (float)i/numGml);
                 PlaceGmlModel(metadata, gmlRelativePath, placeConfig, rootGameObj.transform);
             }
+            EditorUtility.ClearProgressBar();
         }
 
         /// <summary>
