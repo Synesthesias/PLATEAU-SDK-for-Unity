@@ -9,14 +9,14 @@ namespace PLATEAU.Editor.CityImport
     /// <summary>
     /// 出力先フォルダ選択GUIを表示します。
     /// </summary>
-    internal class ExportFolderSelectorGUI
+    internal static class ExportFolderSelectorGUI
     {
 
         /// <summary>
         /// GUIを表示し、選択されたパスを返します。
         /// パスは Assets パスとなります。
         /// </summary>
-        public string Draw(string exportAssetPath)
+        public static string Draw(string exportAssetPath)
         {
             HeaderDrawer.Draw("出力先選択");
             using (PlateauEditorStyle.VerticalScopeLevel1())
@@ -28,15 +28,20 @@ namespace PLATEAU.Editor.CityImport
                     // ボタン押下時
                     string selectedFullPath =
                         EditorUtility.SaveFolderPanel("保存先選択", Application.dataPath, "PlateauData");
+                    
+                    // キャンセル時は変更なし（引数をそのまま返す）
+                    if (string.IsNullOrEmpty(selectedFullPath))
+                    {
+                        return exportAssetPath;
+                    }
+                    
                     if (!PathUtil.IsSubDirectoryOfAssets(selectedFullPath))
                     {
                         EditorUtility.DisplayDialog("エラー", "出力先は Assets フォルダ内である必要があります。", "OK");
-                        return "";
+                        return exportAssetPath;
                     }
-                    if (!string.IsNullOrEmpty(selectedFullPath))
-                    {
-                        exportAssetPath = PathUtil.FullPathToAssetsPath(selectedFullPath);
-                    }
+                    
+                    exportAssetPath = PathUtil.FullPathToAssetsPath(selectedFullPath);
                 }
                 
                 string displayExportPath = string.IsNullOrEmpty(exportAssetPath) ? "未選択" : exportAssetPath;

@@ -140,6 +140,8 @@ namespace PLATEAU.CityGML
         {
             return new AttributesMapEnumerator(this);
         }
+        
+        
 
         /// <summary>
         /// 属性の中身を、見やすくフォーマットした文字列にして返します。

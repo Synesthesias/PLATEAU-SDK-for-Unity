@@ -81,7 +81,7 @@ namespace PLATEAU.IO
         /// <param name="gmlPath">入力GMLファイル</param>
         /// <param name="cityModel"><paramref name="gmlPath"/>がパースされた都市モデル。nullの場合は内部でパースされます。</param>
         /// <param name="logger">内部ログ受け取り用の<see cref="DllLogger"/>インスタンス</param>
-        public void Convert(string destinationDirectory, string gmlPath, CityModel cityModel = null, DllLogger logger = null)
+        public string[] Convert(string destinationDirectory, string gmlPath, CityModel cityModel = null, DllLogger logger = null)
         {
             ApplyOptions();
 
@@ -89,6 +89,10 @@ namespace PLATEAU.IO
             var loggerHandle = logger?.Handle ?? IntPtr.Zero;
             APIResult result = NativeMethods.plateau_mesh_converter_convert(this.handle, destinationDirectory, gmlPath, cityModelHandle, loggerHandle);
             DLLUtil.CheckDllError(result);
+            string[] exportedFileNames = DLLUtil.GetNativeStringArrayByPtr(this.handle,
+                NativeMethods.plateau_mesh_converter_get_last_exported_model_file_names_count,
+                NativeMethods.plateau_mesh_converter_get_last_exported_model_file_names);
+            return exportedFileNames;
         }
 
         private void ApplyOptions()

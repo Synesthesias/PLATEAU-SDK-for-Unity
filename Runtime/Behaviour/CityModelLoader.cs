@@ -1,11 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using PLATEAU.CityGML;
 using PLATEAU.CityMeta;
 using PLATEAU.Interop;
 using PLATEAU.Util;
+using PLATEAU.Util.FileNames;
 using UnityEngine;
 
 namespace PLATEAU.Behaviour
@@ -17,15 +17,20 @@ namespace PLATEAU.Behaviour
     {
         private readonly Dictionary<string, CityModel> fileToCityModelCache = new Dictionary<string, CityModel>();
 
+        /// <summary>
+        /// <paramref name="gameObj"/> に対応する <see cref="CityObject"/> を
+        /// <paramref name="cityMetadata"/> を使ってロードします。
+        /// </summary>
+        /// <returns><see cref="CityObject"/>を返します。例外時はnullを返します。</returns>
         public CityObject Load(GameObject gameObj, CityMetadata cityMetadata)
         {
             if (cityMetadata == null)
             {
-                throw new ArgumentNullException($"{nameof(cityMetadata)}");
+                Debug.LogError("argument cityMetadata is null.");
+                return null;
             }
             
             string gmlFileName = FindGmlNameByMetadata(gameObj ,cityMetadata);
-            // string gmlFileName = FindGmlName(gameObj);
             if (gmlFileName == null) return null;
 
 
@@ -56,6 +61,10 @@ namespace PLATEAU.Behaviour
             }
             string gmlPath = SearchGmlPath(gmlFileName);
             var loadedModel = CityGml.Load(gmlPath, new CitygmlParserParams(true, false), DllLogCallback.UnityLogCallbacks);
+            if (loadedModel == null)
+            {
+                return null;
+            }
             this.fileToCityModelCache[gmlFileName] = loadedModel;
             
             return GetCityObjectById(loadedModel, cityObjId);

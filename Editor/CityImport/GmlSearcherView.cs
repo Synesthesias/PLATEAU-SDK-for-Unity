@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using PLATEAU.Editor.EditorWindowCommon;
 using PLATEAU.CityMeta;
 using UnityEditor;
@@ -14,12 +13,10 @@ namespace PLATEAU.Editor.CityImport
     /// </summary>
     internal class GmlSearcherView
     {
-        private List<string> gmlFiles;
-        // private bool shouldOverwriteMetadata;
+        // private List<string> gmlFiles;
         private Vector2 scrollPosForGmlList;
 
         private const int indentWidth = 30; // 経験的にこの数値だとGUIの見た目が整います。
-        // public bool ShouldOverwriteMetadata => this.shouldOverwriteMetadata;
 
 
         /// <summary>
@@ -129,16 +126,22 @@ namespace PLATEAU.Editor.CityImport
             }
 
             HeaderDrawer.Draw("対象gmlファイル");
+            List<string> gmlFiles;
             using (PlateauEditorStyle.VerticalScopeLevel1())
             {
-                this.gmlFiles = ListTargetGmlFiles(gmlSearcher, searcherConfig.AreaTree,
+                gmlFiles = ListTargetGmlFiles(gmlSearcher, searcherConfig.AreaTree,
                     searcherConfig);
-                this.scrollPosForGmlList = PlateauEditorStyle.ScrollableMultiLineLabel(String.Join("\n", this.gmlFiles), 150, this.scrollPosForGmlList);
+                this.scrollPosForGmlList = PlateauEditorStyle.ScrollableMultiLineLabel(string.Join("\n", gmlFiles), 150, this.scrollPosForGmlList);
             }
             
             HeaderDrawer.DecrementDepth();
 
-            return this.gmlFiles;
+            return gmlFiles;
+        }
+
+        public void Reset()
+        {
+            this.scrollPosForGmlList = new Vector2(0, 0);
         }
 
 

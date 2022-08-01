@@ -3,7 +3,6 @@ using PLATEAU.CityMeta;
 using PLATEAU.CommonDataStructure;
 using PLATEAU.Editor.CityImport;
 using PLATEAU.IO;
-using UnityEngine;
 
 namespace PLATEAU.Tests.TestUtils
 {
@@ -40,23 +39,20 @@ namespace PLATEAU.Tests.TestUtils
 
             GmlSearcherModel gmlSearcher = new GmlSearcherModel(srcFullPathBeforeImport);
             conf.gmlSearcherConfig.GenerateAreaTree(gmlSearcher.AreaIds, false);
-            Debug.Log($"standard config : srcRootPathBeforeImport = {conf.SrcRootPathBeforeImport}");
             return conf;
         }
         
         /// <summary>
         /// objファイル変換において、辞書によってLOD範囲を指定します。
         /// </summary>
-        public static CityImportConfig SetConvertLods(this CityImportConfig conf, Dictionary<GmlType, MinMax<int>> argDict)
+        public static void SetConvertLods(this CityImportConfig conf, Dictionary<GmlType, MinMax<int>> argDict)
         {
-            var lodDict = conf.objConvertTypesConfig.TypeLodDict;
+            var typeConf = conf.objConvertTypesConfig;
             foreach (var type in argDict.Keys)
             {
                 var argLodRange = argDict[type];
-                lodDict[type] = argLodRange;
+                typeConf.SetLodRangeForType(type, argLodRange);
             }
-
-            return conf;
         }
 
         /// <summary>

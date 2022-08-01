@@ -44,12 +44,6 @@ namespace PLATEAU.Tests.PlayModeTests
         {
             var cityBehaviour = Object.FindObjectOfType<CityBehaviour>();
 
-            var idGmlTable = cityBehaviour.CityMetadata.idToGmlTable;
-            foreach (var pair in idGmlTable)
-            {
-                Debug.Log($"{pair.Key} => {pair.Value}");
-            }
-
             var gameObj = cityBehaviour.transform.GetChild(0).GetChild(0).gameObject;
             var cityObj = cityBehaviour.LoadCityObject(gameObj);
             Debug.Log(cityObj.ID);

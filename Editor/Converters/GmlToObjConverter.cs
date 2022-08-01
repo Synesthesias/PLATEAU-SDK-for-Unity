@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Threading;
 using PLATEAU.CityGML;
+using PLATEAU.CityMeta;
 using PLATEAU.Interop;
 using PLATEAU.Util;
 using PLATEAU.IO;
@@ -22,8 +23,11 @@ namespace PLATEAU.Editor.Converters
         private readonly MeshConverter meshConverter;
 
         private GmlToObjConverterConfig config;
-        private CitygmlParserParams gmlParserParams;
         private DllLogger dllLogger;
+
+        // 3Dモデル変換においては、gmlパース設定は常に optimize = true, tessellate = true で固定して良いです。
+        // tessellate = true でないと、メッシュの頂点の代わりに LinearRing が生成されてしまいます。
+        private readonly CitygmlParserParams gmlParserParams = new CitygmlParserParams(true);
 
         private int disposed;
 
@@ -31,19 +35,15 @@ namespace PLATEAU.Editor.Converters
         {
             this.meshConverter = new MeshConverter();
             this.config = new GmlToObjConverterConfig();
-            this.gmlParserParams = new CitygmlParserParams();
-            ApplyConfig(this.config, ref this.gmlParserParams);
+            ApplyConfig(this.config);
         }
 
-        private void ApplyConfig(GmlToObjConverterConfig conf, ref CitygmlParserParams parserParams)
+        private void ApplyConfig(GmlToObjConverterConfig conf)
         {
             var logger = new DllLogger();
             logger.SetLogCallbacks(DllLogCallback.UnityLogCallbacks);
             logger.SetLogLevel(conf.LogLevel);
             this.dllLogger = logger;
-            // TODO parserParams の2つの値が強制的に true になるのは分かりにくい。もっといいインターフェイスがあるはず。
-            parserParams.Optimize = true; // Unityでは基本的に Optimize は全部 true で良いです。
-            parserParams.Tessellate = true; // true でないと、頂点の代わりに LinearRing が生成されてしまい 3Dモデルには不適になります。
             this.meshConverter.Options = conf.DllConvertOption;
         }
         
@@ -53,7 +53,7 @@ namespace PLATEAU.Editor.Converters
             set
             {
                 this.config = value;
-                ApplyConfig(value, ref this.gmlParserParams);
+                ApplyConfig(value);
             }
             get => this.config;
         }
@@ -62,10 +62,9 @@ namespace PLATEAU.Editor.Converters
         /// gmlファイルをロードし、変換してobjファイルを出力します。
         /// 成功時はtrue,失敗時はfalseを返します。
         /// </summary>
-        //TODO exportObjFilePath は本来は ファイルパスではなくディレクトリのパスであるべき（いちおうファイルパスでも動くけど、名前は変えられない仕様）
-        public bool Convert(string gmlFilePath, string exportObjFilePath)
+        public bool Convert(string gmlFilePath, string objDestDirFullPath, out string[] exportedFilePaths)
         {
-            return ConvertInner(gmlFilePath, exportObjFilePath, null);
+            return ConvertInner(gmlFilePath, objDestDirFullPath, null, out exportedFilePaths);
         }
 
         /// <summary>
@@ -74,15 +73,16 @@ namespace PLATEAU.Editor.Converters
         /// 設定で <see cref="gmlParserParams"/> はロード後は変更できませんが、
         /// meshGranularity, axesConversion の設定は反映されます。
         /// </summary>
-        public bool ConvertWithoutLoad(CityModel cityModel, string gmlFilePath, string objDestDirFullPath)
+        public bool ConvertWithoutLoad(CityModel cityModel, string gmlFilePath, string objDestDirFullPath, out string[] exportedFilePaths)
         {
+            exportedFilePaths = new string[] { };
             if (cityModel == null)
             {
                 Debug.LogError("cityModel is null.");
                 return false;
             }
 
-            return ConvertInner(gmlFilePath, objDestDirFullPath, cityModel);
+            return ConvertInner(gmlFilePath, objDestDirFullPath, cityModel, out exportedFilePaths);
         }
 
         /// <summary>
@@ -91,8 +91,9 @@ namespace PLATEAU.Editor.Converters
         /// null でなければ、ファイルロードを省略して代わりに渡された <see cref="CityModel"/> を変換します。
         /// 成否をboolで返します。
         /// </summary>
-        private bool ConvertInner(string gmlFilePath, string exportDirFullPath, CityModel cityModel)
+        private bool ConvertInner(string gmlFilePath, string exportDirFullPath, CityModel cityModel, out string[] exportedFilePaths)
         {
+            exportedFilePaths = new string[] { };
             if (!IsPathValid(gmlFilePath, exportDirFullPath)) return false;
             try
             {
@@ -101,6 +102,7 @@ namespace PLATEAU.Editor.Converters
                 if (!exportDirFullPath.EndsWith("/")) exportDirFullPath += "/";
 
                 cityModel ??= CityGml.Load(gmlFilePath, this.gmlParserParams, DllLogCallback.UnityLogCallbacks, this.config.LogLevel);
+                if (cityModel == null) return false;
                 
                 // 生成する obj のパスのリスト
                 int minLod = this.config.MinLod;
@@ -140,7 +142,7 @@ namespace PLATEAU.Editor.Converters
                 }
                 
                 // 変換してファイルに書き込みます。
-                this.meshConverter.Convert(exportDirFullPath, gmlFilePath, cityModel, this.dllLogger);
+                exportedFilePaths = this.meshConverter.Convert(exportDirFullPath, gmlFilePath, cityModel, this.dllLogger);
                 
                 // 出力先が Assets フォルダ内なら、それをUnityに反映させます。
                 if (PathUtil.IsSubDirectoryOfAssets(exportDirFullPath))
@@ -154,10 +156,6 @@ namespace PLATEAU.Editor.Converters
                     }
                     
                 }
-            }
-            catch (FileLoadException e)
-            {
-                Debug.LogError($"Failed to load gml file.\n gml path = {gmlFilePath}\n{e}");
             }
             catch (Exception e)
             {

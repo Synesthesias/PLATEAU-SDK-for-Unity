@@ -3,21 +3,24 @@ using System.Collections.Generic;
 using System.Linq;
 using PLATEAU.CommonDataStructure;
 using PLATEAU.Util;
+using PLATEAU.Util.FileNames;
 using UnityEngine;
 
 namespace PLATEAU.CityMeta
 {
     /// <summary>
     /// インポート時の Objファイル変換について、地物タイプ別の変換設定を保持するクラスです。
-    /// 具体的には 地物タイプ別 LOD 範囲設定、　地物タイプ別 (LOD範囲内複数 or 最大LODのみ) 出力選択設定です。
+    /// 具体的には 地物タイプ別 LOD 範囲設定、　地物タイプ別モード設定 (1.LOD範囲内複数 or 2.最大LODのみ) です。
     /// 設定は辞書形式で、 <see cref="GmlType"/> => 値 の形式で保持します。
     /// <see cref="CityImportConfig"/> がこのクラスを保持します。
     /// </summary>
     [Serializable]
     internal class ObjConvertTypesConfig : ISerializationCallbackReceiver
     {
-        public Dictionary<GmlType, MinMax<int>> TypeLodDict = GmlTypeConvert.ComposeTypeDict<MinMax<int>>();
-        public Dictionary<GmlType, bool> TypeExportLowerLodDict = GmlTypeConvert.ComposeTypeDict(true);
+        // 辞書 GmlType => LOD範囲
+        private Dictionary<GmlType, MinMax<int>> typeLodDict = GmlTypeConvert.ComposeTypeDict<MinMax<int>>();
+        // 辞書 GmlType => 低いLODも出力するか
+        private Dictionary<GmlType, bool> typeDoExportLowerLodDict = GmlTypeConvert.ComposeTypeDict(true);
 
         /// <summary> GUIでスライダーの値を一時的保持するためのメンバ </summary>
         [NonSerialized] public Dictionary<GmlType, MinMax<float>> TypeLodSliderDict = new Dictionary<GmlType, MinMax<float>>();
@@ -28,17 +31,38 @@ namespace PLATEAU.CityMeta
         [SerializeField] private List<GmlType> keysExportLower = new List<GmlType>();
         [SerializeField] private List<bool> valuesExportLower = new List<bool>();
 
-
+        public GmlType[] GmlTypes => this.typeLodDict.Keys.ToArray();
+        
         public ObjConvertTypesConfig()
         {
             LodToSliderVal();
+        }
+
+        public MinMax<int> GetLodRangeForType(GmlType gmlType)
+        {
+            return this.typeLodDict[gmlType];
+        }
+
+        public void SetLodRangeForType(GmlType gmlType, MinMax<int> minmax)
+        {
+            this.typeLodDict[gmlType] = minmax;
+        }
+
+        public bool GetDoExportLowerLodForType(GmlType gmlType)
+        {
+            return this.typeDoExportLowerLodDict[gmlType];
+        }
+
+        public void SetDoExportLowerLodForType(GmlType gmlType, bool doExportLower)
+        {
+            this.typeDoExportLowerLodDict[gmlType] = doExportLower;
         }
 
         /// <summary> Lod設定の値をGUIスライダー用値に反映させます。 </summary>
         private void LodToSliderVal()
         {
             this.TypeLodSliderDict =
-                this.TypeLodDict.ToDictionary(
+                this.typeLodDict.ToDictionary(
                     pair => pair.Key,
                     pair => new MinMax<float>(pair.Value.Min, pair.Value.Max)
                 );
@@ -49,7 +73,7 @@ namespace PLATEAU.CityMeta
         /// </summary>
         public void ClampLodRangeToPossibleVal()
         {
-            foreach (var pair in this.TypeLodDict)
+            foreach (var pair in this.typeLodDict)
             {
                 var type = pair.Key;
                 var possibleMinMax = type.PossibleLodRange();
@@ -80,7 +104,7 @@ namespace PLATEAU.CityMeta
         {
             string gmlFileWithoutExtension = GmlFileNameParser.FileNameWithoutExtension(gmlFile);
             var gmlType = GmlFileNameParser.GetGmlTypeEnum(gmlFile);
-            var typeLodRange = this.TypeLodDict[gmlType];
+            var typeLodRange = this.typeLodDict[gmlType];
             int min = typeLodRange.Min;
             int max = typeLodRange.Max;
             if (min > max) throw new Exception("Error. min > max.");
@@ -95,16 +119,16 @@ namespace PLATEAU.CityMeta
 
         public (int min, int max) GetMinMaxLodForType(GmlType t)
         {
-            int min = this.TypeLodDict[t].Min;
-            int max = this.TypeLodDict[t].Max;
+            int min = this.typeLodDict[t].Min;
+            int max = this.typeLodDict[t].Max;
             return (min, max);
         }
 
         public void SetLodRangeByFunc(Func<GmlType, MinMax<int>> gmlTypeToLodRangeFunc)
         {
-            foreach (var type in this.TypeLodDict.Keys)
+            foreach (var type in this.typeLodDict.Keys)
             {
-                this.TypeLodDict[type].SetMinMax(gmlTypeToLodRangeFunc(type));
+                this.typeLodDict[type].SetMinMax(gmlTypeToLodRangeFunc(type));
             }
             LodToSliderVal();
         }
@@ -138,7 +162,7 @@ namespace PLATEAU.CityMeta
         // TODO このメソッドを使って、 ExportLowerLod のGUIで一括選択ボタンを置いた方が便利そう
         public void SetExportLowerLodForAllTypes(bool exportLower)
         {
-            var dict = this.TypeExportLowerLodDict;
+            var dict = this.typeDoExportLowerLodDict;
             foreach (var type in dict.Keys.ToArray())
             {
                 dict[type] = exportLower;
@@ -148,17 +172,18 @@ namespace PLATEAU.CityMeta
         /// <summary> シリアライズするときに List形式に直します。 </summary>
         void ISerializationCallbackReceiver.OnBeforeSerialize()
         {
-            DictionarySerializer.OnBeforeSerialize(this.TypeLodDict, this.keysLod, this.valuesLod);
-            DictionarySerializer.OnBeforeSerialize(this.TypeExportLowerLodDict, this.keysExportLower, this.valuesExportLower);
+            DictionarySerializer.OnBeforeSerialize(this.typeLodDict, this.keysLod, this.valuesLod);
+            DictionarySerializer.OnBeforeSerialize(this.typeDoExportLowerLodDict, this.keysExportLower, this.valuesExportLower);
         }
 
         /// <summary> デシリアライズするときに List から Dictionary 形式に直します。 </summary>
         void ISerializationCallbackReceiver.OnAfterDeserialize()
         {
-            this.TypeLodDict = DictionarySerializer.OnAfterSerialize(this.keysLod, this.valuesLod);
-            this.TypeExportLowerLodDict =
+            this.typeLodDict = DictionarySerializer.OnAfterSerialize(this.keysLod, this.valuesLod);
+            this.typeDoExportLowerLodDict =
                 DictionarySerializer.OnAfterSerialize(this.keysExportLower, this.valuesExportLower);
             LodToSliderVal();
         }
+        
     }
 }

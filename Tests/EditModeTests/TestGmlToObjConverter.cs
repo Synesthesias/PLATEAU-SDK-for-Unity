@@ -30,15 +30,17 @@ namespace PLATEAU.Tests.EditModeTests
         }
         
         [Test]
-        public void Convert_Generates_Obj_File()
+        public void Convert_Generates_Obj_File_And_Returns_Generated_File_Name()
         {
             string outputDirectory = DirectoryUtil.TempCacheFolderPath;
+            string[] exportedFilePaths;
             using (var converter = new GmlToObjConverter())
             {
-                converter.Convert(DirectoryUtil.TestSimpleGmlFilePath, outputDirectory);
+                converter.Convert(DirectoryUtil.TestSimpleGmlFilePath, outputDirectory, out exportedFilePaths);
             }
             bool fileExists = File.Exists(Path.Combine(outputDirectory, "LOD0_53392642_bldg_6697_op2.obj"));
             Assert.IsTrue(fileExists, "変換後、objファイルが存在する");
+            Assert.IsTrue(exportedFilePaths.Any(name => name.Contains("LOD0_53392642_bldg_6697_op2.obj")), "戻り値に出力ファイル名が含まれる");
             // objファイルの中身まではチェック未実装です。
             }
 
@@ -93,7 +95,7 @@ namespace PLATEAU.Tests.EditModeTests
                 conf.MeshGranularity = meshGranularity;
                 conf.ExportAppearance = false;
                 converter.Config = conf;
-                bool result = converter.Convert(inputFilePath, outputDirectory);
+                bool result = converter.Convert(inputFilePath, outputDirectory, out _);
                 Assert.IsTrue(result, "objへの変換が成功する");
             }
             AssetDatabase.Refresh();

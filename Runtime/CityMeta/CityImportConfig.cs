@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using PLATEAU.Interop;
 using PLATEAU.IO;
+using PLATEAU.Util;
 using UnityEngine;
 
 namespace PLATEAU.CityMeta
@@ -25,6 +27,21 @@ namespace PLATEAU.CityMeta
     [Serializable]
     internal class CityImportConfig
     {
+        /// <summary>
+        /// インポートウィンドウを開いた最初の画面で、設定の初期値がどうなっているべきかを定義します。
+        /// </summary>
+        public static CityImportConfig Default
+        {
+            get
+            {
+                var conf = new CityImportConfig();
+                conf.objConvertTypesConfig.SetLodRangeToAllRange();
+                return conf;
+            }
+
+        }
+
+
         /// <summary> インポート時の対象gmlファイルの絞り込みの設定 </summary>
         public GmlSearcherConfig gmlSearcherConfig = new GmlSearcherConfig();
         
@@ -61,5 +78,71 @@ namespace PLATEAU.CityMeta
         
         /// <summary> インポート時のログレベル </summary>
         public DllLogLevel logLevel = DllLogLevel.Error;
+
+        /// <summary>
+        /// Scriptable Object としてファイルからロードしたメタデータを、
+        /// インポート設定GUIで利用するにあたって必要な変換処理です。
+        /// </summary>
+        public void GuiConfFromLoadedConf()
+        {
+            // インポート元パスについて、ファイルに記録されるのは アセットパスですが、
+            // GUI 上では フルパスであって欲しいです。 
+            // そのためロードしたパスをフルパスに変換します。
+            
+            // 補足 : アセットパスを記録する理由
+            // 処理の流れは
+            // インポート元は任意のパスをユーザーが指定 →
+            // それをインポート時に StreamingAssets にコピー →
+            // 新しいインポート元パスとして コピー後の アセットパスを保存
+            // となっています。
+            // こうすることで、他のPCでも元GMLファイルを参照できるようになります。
+            
+            string loadedSrcRootPath = this.sourcePath.RootDirAssetPath;
+            if (loadedSrcRootPath.Replace('\\', '/').StartsWith("Assets/"))
+            {
+                loadedSrcRootPath = PathUtil.AssetsPathToFullPath(loadedSrcRootPath);
+            }
+            if (!string.IsNullOrEmpty(loadedSrcRootPath))
+            {
+                this.SrcRootPathBeforeImport = loadedSrcRootPath;
+            }
+        }
+        
+        
+        public bool IsImportReady(out string message)
+        {
+            message = "";
+            var dirPath = this.importDestPath;
+            if (string.IsNullOrEmpty(dirPath?.DirAssetsPath))
+            {
+                message = "出力先を指定してください。";
+                return false;
+            }
+            if (!Directory.Exists(dirPath.DirFullPath))
+            {
+                message = "出力先として指定されたフォルダが存在しません。";
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Gmlファイルから3Dモデルにファイルに変換する時の設定を返します。
+        /// </summary>
+        public GmlToObjConverterConfig ToConverterConfig(GmlType gmlType, Vector3? manualReferencePoint)
+        {
+            (int minLod, int maxLod) = this.objConvertTypesConfig.GetMinMaxLodForType(gmlType);
+            return new GmlToObjConverterConfig(
+                exportAppearance:        this.exportAppearance,
+                meshGranularity:         this.meshGranularity,
+                minLod:                  minLod,
+                maxLod:                  maxLod,
+                exportLowerLod:          this.objConvertTypesConfig.GetDoExportLowerLodForType(gmlType),
+                doAutoSetReferencePoint: false,
+                manualReferencePoint:    manualReferencePoint,
+                logLevel:               this.logLevel
+            );
+        }
     }
 }

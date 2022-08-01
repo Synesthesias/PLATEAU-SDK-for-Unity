@@ -12,11 +12,11 @@ namespace PLATEAU.Editor.Converters
     /// <summary>
     /// <see cref="CityMetadata"/> を生成します。
     /// </summary>
-    internal class CityMetadataGenerator
+    internal static class CityMetadataGenerator
     {
 
         /// <summary>
-        /// <see cref="CityMetadata"/> を生成します。
+        /// <see cref="CityMetadata"/> にインポート設定を記録します。
         /// gml元データのインポート時に利用されることを想定しています。
         ///
         /// <paramref name="metadata"/> が null のとき、既存のメタデータをファイルからロード、なければ新規作成した上でそのメタデータの情報を書き換えます。
@@ -25,7 +25,7 @@ namespace PLATEAU.Editor.Converters
         /// これを false にする動機は、シリアライズするタイミングを手動でコントロールすることでシリアライズ回数を減らし、高速化することです。
         /// </summary>
         /// <returns>成功したかどうかをboolで返します。</returns>
-        public bool Generate(
+        public static bool WriteConfigs(
             CityMapMetadataGeneratorConfig config, string meshAssetPath, string gmlFileName,
             CityMetadata metadata = null, bool doSaveFile = true)
         {
@@ -99,6 +99,7 @@ namespace PLATEAU.Editor.Converters
             {
                 loadedMetadata.ClearIdToGmlTable();
             }
+            EditorUtility.SetDirty(loadedMetadata);
             return loadedMetadata;
         }
     }   

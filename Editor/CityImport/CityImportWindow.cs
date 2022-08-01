@@ -1,5 +1,4 @@
 ﻿using PLATEAU.Editor.EditorWindowCommon;
-using PLATEAU.CityMeta;
 using UnityEditor;
 using UnityEngine;
 
@@ -26,8 +25,6 @@ namespace PLATEAU.Editor.CityImport
 
         private void Init()
         {
-            var importConfig = new CityImportConfig();
-            importConfig.objConvertTypesConfig.SetLodRangeToAllRange(); // 初期値
             this.cityImporterPresenter = CityImporterPresenter.InitWithDefaultValue();
         }
 
