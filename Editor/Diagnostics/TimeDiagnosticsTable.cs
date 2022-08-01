@@ -1,22 +1,28 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Text;
-using Microsoft.SqlServer.Server;
-using NUnit.Framework.Constraints;
-using PlasticPipe.PlasticProtocol.Messages;
-using Debug = UnityEngine.Debug;
 
 namespace PLATEAU.Editor.Diagnostics
 {
+    /// <summary>
+    /// 処理時間を計測するためのクラスです。
+    /// 異なるデータに対して複数の同じ処理を適用するときの処理時間を計測・集計します。
+    /// 時間の記録は 二次元テーブル上で行われ、縦軸に処理名、横軸にデータ名をとる表の各マスにストップウォッチが並んでいるイメージです。
+    /// データの集計は 処理ごと、データごと の2種類の方法で可能です。
+    /// </summary>
     public class TimeDiagnosticsTable
     {
-        // 処理 / データ　を軸とする二次元テーブル
-        private Stopwatch[,] table = new Stopwatch[maxNumProcess, maxNumData];
-        private Dictionary<string, int> processNameToId = new Dictionary<string, int>();
-        private Dictionary<string, int> dataNameToId = new Dictionary<string, int>();
+        
+        /// <summary>処理 と データ　を軸とする二次元テーブルです。 </summary>
+        private readonly Stopwatch[,] table = new Stopwatch[maxNumProcess, maxNumData];
+        
+        /// <summary> 処理名とテーブルの縦軸インデックスを紐付けます。 </summary>
+        private readonly Dictionary<string, int> processNameToId = new Dictionary<string, int>();
+        
+        /// <summary> データ名とテーブルの横軸インデックスを紐付けます。 </summary>
+        private readonly Dictionary<string, int> dataNameToId = new Dictionary<string, int>();
+        
         private const int maxNumProcess = 30;
         private const int maxNumData = 99;
         private Stopwatch currentStopwatch = null;
@@ -27,6 +33,11 @@ namespace PLATEAU.Editor.Diagnostics
             Clear();
         }
 
+        
+        /// <summary>
+        /// 名前によって表の1マスを指定し、そこのストップウォッチを開始させます。
+        /// 前のストップウォッチを停止させます。
+        /// </summary>
         public void Start(string processName, string dataName)
         {
             this.currentStopwatch?.Stop();
@@ -41,6 +52,9 @@ namespace PLATEAU.Editor.Diagnostics
             this.currentStopwatch = null;
         }
 
+        /// <summary>
+        /// 処理ごとに時間を集計します。
+        /// </summary>
         public string SummaryByProcess()
         {
             if (this.outOfRangeFlag) return "Error. Exceeds max num.";
@@ -67,6 +81,9 @@ namespace PLATEAU.Editor.Diagnostics
             return sb.ToString();
         }
 
+        /// <summary>
+        /// データごとに時間を集計します。
+        /// </summary>
         public string SummaryByData()
         {
             if (this.outOfRangeFlag) return "Error. Exceeds max num.";
