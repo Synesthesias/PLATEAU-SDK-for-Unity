@@ -11,7 +11,7 @@ namespace PLATEAU.Editor.Diagnostics
     /// 時間の記録は 二次元テーブル上で行われ、縦軸に処理名、横軸にデータ名をとる表の各マスにストップウォッチが並んでいるイメージです。
     /// データの集計は 処理ごと、データごと の2種類の方法で可能です。
     /// </summary>
-    public class TimeDiagnosticsTable
+    internal class TimeDiagnosticsTable
     {
         
         /// <summary>処理 と データ　を軸とする二次元テーブルです。 </summary>

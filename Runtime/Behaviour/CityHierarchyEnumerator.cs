@@ -11,6 +11,15 @@ namespace PLATEAU.Behaviour
     /// </summary>
     public static class CityHierarchyEnumerator
     {
+        /// <summary>
+        /// <paramref name="parent"/> に対し再帰的にヒエラルキーの子を探索し、 <see cref="CityObject"/> に対応付けできるものをすべて <see cref="CityObject"/> にして
+        /// IEnumerable で返します。 <see cref="CityObject"/> 形式で列挙します。
+        /// </summary>
+        /// <param name="parent">対象となるゲームオブジェクトの Transform です。</param>
+        /// <param name="minDepth">これより小さい深さは無視します。0は <paramref name="parent"/> 自身、1は子、2は孫です。</param>
+        /// <param name="cityModelLoader">都市情報のロードに使います。</param>
+        /// <param name="metadata">都市情報のロードに使います。</param>
+        /// <returns><see cref="CityObject"/> の列挙子です。</returns>
         public static IEnumerable<CityObject> ChildrenDfsAsCityObjects(Transform parent, int minDepth, CityModelLoader cityModelLoader, CityMetadata metadata)
         {
             var childGameObjs = ChildrenDfsAsTransform(parent, minDepth).Select(transform => transform.gameObject);
@@ -25,6 +34,12 @@ namespace PLATEAU.Behaviour
         }
 
 
+        /// <summary>
+        /// <paramref name="parent"/> のヒエラルキーの子を再帰的に列挙します。
+        /// </summary>
+        /// <param name="parent">対象となるゲームオブジェクトの Transform です。</param>
+        /// <param name="minDepth">これより小さい深さは無視します。0は <paramref name="parent"/> 自身、1は子、2は孫です。</param>
+        /// <returns></returns>
         public static IEnumerable<Transform> ChildrenDfsAsTransform(Transform parent, int minDepth)
         {
             var result = ChildrenDfsAsTransformRecursive(parent, minDepth, 0);
