@@ -149,6 +149,16 @@
     "title": "Namespace PLATEAU.CityMeta | PLATEAU SDK for Unity",
     "keywords": "Namespace PLATEAU.CityMeta Classes CityMetadata Plateau元データのインポート時に ScriptableObject として保存されるメタデータです。 ・PlateauオブジェクトのIDから、対応する gml ファイルを検索する辞書である PLATEAU.CityMeta.CityMetadata.idToGmlTable を保持します。 この情報の用途は、Unityシーン内のオブジェクトから対応する gml をロードして Plateau の情報を取得する処理の起点となります。 ・インポート時の設定を保持します。 これにより、この ScriptableObject をプロジェクトビューから選択したときに「再変換」画面を出すことができます。"
   },
+  "api/PLATEAU.Editor.Diagnostics.html": {
+    "href": "api/PLATEAU.Editor.Diagnostics.html",
+    "title": "Namespace PLATEAU.Editor.Diagnostics | PLATEAU SDK for Unity",
+    "keywords": "Namespace PLATEAU.Editor.Diagnostics Classes TimeDiagnosticsTable 処理時間を計測するためのクラスです。 異なるデータに対して複数の同じ処理を適用するときの処理時間を計測・集計します。 時間の記録は 二次元テーブル上で行われ、縦軸に処理名、横軸にデータ名をとる表の各マスにストップウォッチが並んでいるイメージです。 データの集計は 処理ごと、データごと の2種類の方法で可能です。"
+  },
+  "api/PLATEAU.Editor.Diagnostics.TimeDiagnosticsTable.html": {
+    "href": "api/PLATEAU.Editor.Diagnostics.TimeDiagnosticsTable.html",
+    "title": "Class TimeDiagnosticsTable | PLATEAU SDK for Unity",
+    "keywords": "Class TimeDiagnosticsTable 処理時間を計測するためのクラスです。 異なるデータに対して複数の同じ処理を適用するときの処理時間を計測・集計します。 時間の記録は 二次元テーブル上で行われ、縦軸に処理名、横軸にデータ名をとる表の各マスにストップウォッチが並んでいるイメージです。 データの集計は 処理ごと、データごと の2種類の方法で可能です。 Inheritance Object TimeDiagnosticsTable Inherited Members Object.ToString() Object.Equals(Object) Object.Equals(Object, Object) Object.ReferenceEquals(Object, Object) Object.GetHashCode() Object.GetType() Object.MemberwiseClone() Namespace : PLATEAU.Editor.Diagnostics Assembly : cs.temp.dll.dll Syntax public class TimeDiagnosticsTable Constructors TimeDiagnosticsTable() Declaration public TimeDiagnosticsTable() Methods Start(String, String) 名前によって表の1マスを指定し、そこのストップウォッチを開始させます。 前のストップウォッチを停止させます。 引数で 処理名（縦軸）とデータ名（横軸）によって表のマスを指定します。 引数で未知の名前が与えられたらその名前に新しい行（列）を割り当て、既知の名前が与えられたらその行（列）を指定した扱いになります。 Declaration public void Start(string processName, string dataName) Parameters Type Name Description String processName String dataName Stop(String, String) Declaration public void Stop(string processName, string dataName) Parameters Type Name Description String processName String dataName SummaryByData() データごとに時間を集計します。 Declaration public string SummaryByData() Returns Type Description String SummaryByProcess() 処理ごとに時間を集計します。 Declaration public string SummaryByProcess() Returns Type Description String"
+  },
   "api/PLATEAU.Interop.APIResult.html": {
     "href": "api/PLATEAU.Interop.APIResult.html",
     "title": "Enum APIResult | PLATEAU SDK for Unity",

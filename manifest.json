@@ -384,6 +384,30 @@
     },
     {
       "type": "ManagedReference",
+      "source_relative_path": "api/PLATEAU.Editor.Diagnostics.TimeDiagnosticsTable.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PLATEAU.Editor.Diagnostics.TimeDiagnosticsTable.html",
+          "hash": "waTjySox+Wnym4oLpkCf7bbvZgcM0L2Zj9cQ3AImHwQ="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/PLATEAU.Editor.Diagnostics.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PLATEAU.Editor.Diagnostics.html",
+          "hash": "zFTvjl66UcJWhKeAzHaK9FrmDD4qX2EUnNsegHXEpZs="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
       "source_relative_path": "api/PLATEAU.IO.AxesConversion.yml",
       "output": {
         ".html": {
@@ -568,7 +592,7 @@
       "output": {
         ".html": {
           "relative_path": "api/toc.html",
-          "hash": "cilx+dsmpHkIJqj7FztiF/jG3fzNVHKb+XvaJzO9qRA="
+          "hash": "IPyGzgASZMs3nPUlEli7h0wQHwYpkcoOHh72qgj3beY="
         }
       },
       "is_incremental": false,
@@ -690,7 +714,7 @@
         "ManagedReferenceDocumentProcessor": {
           "can_incremental": false,
           "incrementalPhase": "build",
-          "total_file_count": 45,
+          "total_file_count": 47,
           "skipped_file_count": 0
         },
         "ResourceDocumentProcessor": {

@@ -1849,6 +1849,83 @@ references:
   commentId: T:PLATEAU.CityMeta.CityMetadata
   fullName: PLATEAU.CityMeta.CityMetadata
   nameWithType: CityMetadata
+- uid: PLATEAU.Editor.Diagnostics
+  name: PLATEAU.Editor.Diagnostics
+  href: api/PLATEAU.Editor.Diagnostics.html
+  commentId: N:PLATEAU.Editor.Diagnostics
+  fullName: PLATEAU.Editor.Diagnostics
+  nameWithType: PLATEAU.Editor.Diagnostics
+- uid: PLATEAU.Editor.Diagnostics.TimeDiagnosticsTable
+  name: TimeDiagnosticsTable
+  href: api/PLATEAU.Editor.Diagnostics.TimeDiagnosticsTable.html
+  commentId: T:PLATEAU.Editor.Diagnostics.TimeDiagnosticsTable
+  fullName: PLATEAU.Editor.Diagnostics.TimeDiagnosticsTable
+  nameWithType: TimeDiagnosticsTable
+- uid: PLATEAU.Editor.Diagnostics.TimeDiagnosticsTable.#ctor
+  name: TimeDiagnosticsTable()
+  href: api/PLATEAU.Editor.Diagnostics.TimeDiagnosticsTable.html#PLATEAU_Editor_Diagnostics_TimeDiagnosticsTable__ctor
+  commentId: M:PLATEAU.Editor.Diagnostics.TimeDiagnosticsTable.#ctor
+  fullName: PLATEAU.Editor.Diagnostics.TimeDiagnosticsTable.TimeDiagnosticsTable()
+  nameWithType: TimeDiagnosticsTable.TimeDiagnosticsTable()
+- uid: PLATEAU.Editor.Diagnostics.TimeDiagnosticsTable.#ctor*
+  name: TimeDiagnosticsTable
+  href: api/PLATEAU.Editor.Diagnostics.TimeDiagnosticsTable.html#PLATEAU_Editor_Diagnostics_TimeDiagnosticsTable__ctor_
+  commentId: Overload:PLATEAU.Editor.Diagnostics.TimeDiagnosticsTable.#ctor
+  isSpec: "True"
+  fullName: PLATEAU.Editor.Diagnostics.TimeDiagnosticsTable.TimeDiagnosticsTable
+  nameWithType: TimeDiagnosticsTable.TimeDiagnosticsTable
+- uid: PLATEAU.Editor.Diagnostics.TimeDiagnosticsTable.Start(System.String,System.String)
+  name: Start(String, String)
+  href: api/PLATEAU.Editor.Diagnostics.TimeDiagnosticsTable.html#PLATEAU_Editor_Diagnostics_TimeDiagnosticsTable_Start_System_String_System_String_
+  commentId: M:PLATEAU.Editor.Diagnostics.TimeDiagnosticsTable.Start(System.String,System.String)
+  fullName: PLATEAU.Editor.Diagnostics.TimeDiagnosticsTable.Start(System.String, System.String)
+  nameWithType: TimeDiagnosticsTable.Start(String, String)
+- uid: PLATEAU.Editor.Diagnostics.TimeDiagnosticsTable.Start*
+  name: Start
+  href: api/PLATEAU.Editor.Diagnostics.TimeDiagnosticsTable.html#PLATEAU_Editor_Diagnostics_TimeDiagnosticsTable_Start_
+  commentId: Overload:PLATEAU.Editor.Diagnostics.TimeDiagnosticsTable.Start
+  isSpec: "True"
+  fullName: PLATEAU.Editor.Diagnostics.TimeDiagnosticsTable.Start
+  nameWithType: TimeDiagnosticsTable.Start
+- uid: PLATEAU.Editor.Diagnostics.TimeDiagnosticsTable.Stop(System.String,System.String)
+  name: Stop(String, String)
+  href: api/PLATEAU.Editor.Diagnostics.TimeDiagnosticsTable.html#PLATEAU_Editor_Diagnostics_TimeDiagnosticsTable_Stop_System_String_System_String_
+  commentId: M:PLATEAU.Editor.Diagnostics.TimeDiagnosticsTable.Stop(System.String,System.String)
+  fullName: PLATEAU.Editor.Diagnostics.TimeDiagnosticsTable.Stop(System.String, System.String)
+  nameWithType: TimeDiagnosticsTable.Stop(String, String)
+- uid: PLATEAU.Editor.Diagnostics.TimeDiagnosticsTable.Stop*
+  name: Stop
+  href: api/PLATEAU.Editor.Diagnostics.TimeDiagnosticsTable.html#PLATEAU_Editor_Diagnostics_TimeDiagnosticsTable_Stop_
+  commentId: Overload:PLATEAU.Editor.Diagnostics.TimeDiagnosticsTable.Stop
+  isSpec: "True"
+  fullName: PLATEAU.Editor.Diagnostics.TimeDiagnosticsTable.Stop
+  nameWithType: TimeDiagnosticsTable.Stop
+- uid: PLATEAU.Editor.Diagnostics.TimeDiagnosticsTable.SummaryByData
+  name: SummaryByData()
+  href: api/PLATEAU.Editor.Diagnostics.TimeDiagnosticsTable.html#PLATEAU_Editor_Diagnostics_TimeDiagnosticsTable_SummaryByData
+  commentId: M:PLATEAU.Editor.Diagnostics.TimeDiagnosticsTable.SummaryByData
+  fullName: PLATEAU.Editor.Diagnostics.TimeDiagnosticsTable.SummaryByData()
+  nameWithType: TimeDiagnosticsTable.SummaryByData()
+- uid: PLATEAU.Editor.Diagnostics.TimeDiagnosticsTable.SummaryByData*
+  name: SummaryByData
+  href: api/PLATEAU.Editor.Diagnostics.TimeDiagnosticsTable.html#PLATEAU_Editor_Diagnostics_TimeDiagnosticsTable_SummaryByData_
+  commentId: Overload:PLATEAU.Editor.Diagnostics.TimeDiagnosticsTable.SummaryByData
+  isSpec: "True"
+  fullName: PLATEAU.Editor.Diagnostics.TimeDiagnosticsTable.SummaryByData
+  nameWithType: TimeDiagnosticsTable.SummaryByData
+- uid: PLATEAU.Editor.Diagnostics.TimeDiagnosticsTable.SummaryByProcess
+  name: SummaryByProcess()
+  href: api/PLATEAU.Editor.Diagnostics.TimeDiagnosticsTable.html#PLATEAU_Editor_Diagnostics_TimeDiagnosticsTable_SummaryByProcess
+  commentId: M:PLATEAU.Editor.Diagnostics.TimeDiagnosticsTable.SummaryByProcess
+  fullName: PLATEAU.Editor.Diagnostics.TimeDiagnosticsTable.SummaryByProcess()
+  nameWithType: TimeDiagnosticsTable.SummaryByProcess()
+- uid: PLATEAU.Editor.Diagnostics.TimeDiagnosticsTable.SummaryByProcess*
+  name: SummaryByProcess
+  href: api/PLATEAU.Editor.Diagnostics.TimeDiagnosticsTable.html#PLATEAU_Editor_Diagnostics_TimeDiagnosticsTable_SummaryByProcess_
+  commentId: Overload:PLATEAU.Editor.Diagnostics.TimeDiagnosticsTable.SummaryByProcess
+  isSpec: "True"
+  fullName: PLATEAU.Editor.Diagnostics.TimeDiagnosticsTable.SummaryByProcess
+  nameWithType: TimeDiagnosticsTable.SummaryByProcess
 - uid: PLATEAU.Interop
   name: PLATEAU.Interop
   href: api/PLATEAU.Interop.html
