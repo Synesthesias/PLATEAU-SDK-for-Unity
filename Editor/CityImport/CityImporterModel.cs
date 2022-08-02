@@ -1,5 +1,6 @@
 ﻿using PLATEAU.Editor.Converters;
 using PLATEAU.CityMeta;
+using PLATEAU.Editor.Diagnostics;
 using UnityEditor;
 using Debug = UnityEngine.Debug;
 
@@ -27,23 +28,30 @@ namespace PLATEAU.Editor.CityImport
         /// <param name="metadata">インポートによって生成されたメタデータです。</param>
         public static int Import(string[] gmlRelativePaths, CityImportConfig importConfig, out CityMetadata metadata)
         {
-         
+            var timer = new TimeDiagnosticsTable(); // 時間計測
+
             // データを StreamingAssets にコピーします。
+            timer.Start("ImportCopySrc", "all");
             CopyPlateauSrcFiles.ImportCopy(importConfig, gmlRelativePaths);
             
             // メタデータを作成またはロードします。
+            timer.Start("LoadOrCreateMetadata", "all");
             metadata = CityMetadataGenerator.LoadOrCreateMetadata(importConfig.importDestPath.MetadataAssetPath, true);
             // TODO この metadata にどのように設定が書き込まれていくかが分かりにくく、そのあたりの処理でGmlImporterが無駄に複雑化している気がするので整理したい
 
             // gmlファイル群をインポートします。
+            timer.Start("ImportGmls", "all");
             GmlImporter.ImportGmls(out int successCount, out int failureCount, gmlRelativePaths, importConfig, metadata);
             
             
             // シーンに配置します。
+            timer.Start("PlaceToScene", "all");
             CityMeshPlacerModel.Place(importConfig.cityMeshPlacerConfig, metadata);
             
             // 後処理
+            timer.Start("PostProcess", "all");
             SaveAssets(metadata);
+            Debug.Log($"[インポート 処理時間ログ]\n{timer.SummaryByProcess()}");
             PrintResult(successCount, failureCount, gmlRelativePaths.Length);
             EditorUtility.ClearProgressBar();
             return successCount;
