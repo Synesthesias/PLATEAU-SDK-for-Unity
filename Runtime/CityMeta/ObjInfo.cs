@@ -71,12 +71,14 @@ namespace PLATEAU.CityMeta
         }
 
         /// <summary>
+        /// [Editor専用]
         /// <see cref="ObjInfo"/> が指し示す3Dモデルファイルの中身のうち、引数に合致する名前の GameObject を返します。
         /// 初回実行時はファイル内の全オブジェクト名をキャッシュに入れるので時間がかかりますが、2回目以降はキャッシュから引っ張るので早いです。
         /// PLATEAU プロジェクトにおいて、このキャッシュは重要です。
         /// なぜなら、1つの3Dモデルファイルの中に大量にオブジェクトが入っている状況で、モデル配置のために何度もメッシュオブジェクトを検索するには
         /// キャッシュがないと極めて遅くなるためです。
         /// </summary>
+        #if UNITY_EDITOR
         public GameObject GetGameObjByName(string objName)
         {
             if (this.nameToObjCache == null)
@@ -91,7 +93,9 @@ namespace PLATEAU.CityMeta
 
             return null;
         }
+        #endif // UNITY_EDITOR
 
+        #if UNITY_EDITOR
         private void ComposeNameToObjCache()
         {
             this.nameToObjCache = new Dictionary<string, GameObject>();
@@ -105,5 +109,6 @@ namespace PLATEAU.CityMeta
                 this.nameToObjCache.Add(go.name, go);
             }
         }
+        #endif // UNITY_EDITOR
     }
 }
