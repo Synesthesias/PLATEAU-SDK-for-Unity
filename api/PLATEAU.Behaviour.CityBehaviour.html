@@ -84,7 +84,7 @@
   <h1 id="PLATEAU_Behaviour_CityBehaviour" data-uid="PLATEAU.Behaviour.CityBehaviour" class="text-break">Class CityBehaviour
   </h1>
   <div class="markdown level0 summary"><p>ゲームオブジェクトからPlateauの <a class="xref" href="PLATEAU.CityGML.CityObject.html">CityObject</a> を返す MonoBehaviour です。
-実行には <a class="xref" href="PLATEAU.Behaviour.CityBehaviour.html#PLATEAU_Behaviour_CityBehaviour_CityMetadata">CityMetadata</a> を保持する必要があります。</p>
+実行のために <a class="xref" href="PLATEAU.Behaviour.CityBehaviour.html#PLATEAU_Behaviour_CityBehaviour_CityMetadata">CityMetadata</a> と <a class="xref" href="PLATEAU.Behaviour.CityModelLoader.html">CityModelLoader</a> を保持します。</p>
 </div>
   <div class="markdown level0 conceptual"></div>
   <div class="inheritance">
@@ -133,7 +133,8 @@
   <a id="PLATEAU_Behaviour_CityBehaviour_ChildCityObjsOnHierarchyDfs_" data-uid="PLATEAU.Behaviour.CityBehaviour.ChildCityObjsOnHierarchyDfs*"></a>
   <h4 id="PLATEAU_Behaviour_CityBehaviour_ChildCityObjsOnHierarchyDfs" data-uid="PLATEAU.Behaviour.CityBehaviour.ChildCityObjsOnHierarchyDfs">ChildCityObjsOnHierarchyDfs()</h4>
   <div class="markdown level1 summary"><p>再帰的にヒエラルキーの子を探索し、 <see cref="!:CityObject"></see> に対応付けできるものをすべて <see cref="!:CityObject"></see> にして
-IEnumerable で返します。</p>
+IEnumerable で返します。
+順番は DFS (深さ優先探索)です。</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
@@ -159,7 +160,9 @@ IEnumerable で返します。</p>
   
   <a id="PLATEAU_Behaviour_CityBehaviour_ChildGameObjsOnHierarchyDfs_" data-uid="PLATEAU.Behaviour.CityBehaviour.ChildGameObjsOnHierarchyDfs*"></a>
   <h4 id="PLATEAU_Behaviour_CityBehaviour_ChildGameObjsOnHierarchyDfs" data-uid="PLATEAU.Behaviour.CityBehaviour.ChildGameObjsOnHierarchyDfs">ChildGameObjsOnHierarchyDfs()</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>再帰的にヒエラルキーの子を列挙します。
+順番は DFS (深さ優先探索)です。</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">

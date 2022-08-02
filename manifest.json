@@ -28,7 +28,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PLATEAU.Behaviour.CityBehaviour.html",
-          "hash": "q/GPjKHIUuUNdCIVdStRwneroiVcZj1Gu5y9cWZglXs="
+          "hash": "5P5WbEKDw3P68lEOji/VXVmzq9S9Y3EWzM4SO6DKLic="
         }
       },
       "is_incremental": false,
@@ -40,7 +40,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PLATEAU.Behaviour.CityHierarchyEnumerator.html",
-          "hash": "llMTM2PMgmtTXNae6d72WBaF+cG1qk158WtEaEkNyuM="
+          "hash": "is3CzZoNzT25FV0jlrivZG0yRG/+JCo/r0TYPZl1+uM="
         }
       },
       "is_incremental": false,
@@ -64,7 +64,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PLATEAU.Behaviour.html",
-          "hash": "bNizYdSqv6VDA0mdfJLxLAq1rx6erqMww8gEJ/jW90Q="
+          "hash": "w5Ad6q5iNhlWVnJdIyjgbMZ+M9N9RiwMnv0yjvLtDCs="
         }
       },
       "is_incremental": false,
@@ -384,30 +384,6 @@
     },
     {
       "type": "ManagedReference",
-      "source_relative_path": "api/PLATEAU.Editor.Diagnostics.TimeDiagnosticsTable.yml",
-      "output": {
-        ".html": {
-          "relative_path": "api/PLATEAU.Editor.Diagnostics.TimeDiagnosticsTable.html",
-          "hash": "waTjySox+Wnym4oLpkCf7bbvZgcM0L2Zj9cQ3AImHwQ="
-        }
-      },
-      "is_incremental": false,
-      "version": ""
-    },
-    {
-      "type": "ManagedReference",
-      "source_relative_path": "api/PLATEAU.Editor.Diagnostics.yml",
-      "output": {
-        ".html": {
-          "relative_path": "api/PLATEAU.Editor.Diagnostics.html",
-          "hash": "zFTvjl66UcJWhKeAzHaK9FrmDD4qX2EUnNsegHXEpZs="
-        }
-      },
-      "is_incremental": false,
-      "version": ""
-    },
-    {
-      "type": "ManagedReference",
       "source_relative_path": "api/PLATEAU.IO.AxesConversion.yml",
       "output": {
         ".html": {
@@ -592,7 +568,7 @@
       "output": {
         ".html": {
           "relative_path": "api/toc.html",
-          "hash": "IPyGzgASZMs3nPUlEli7h0wQHwYpkcoOHh72qgj3beY="
+          "hash": "cilx+dsmpHkIJqj7FztiF/jG3fzNVHKb+XvaJzO9qRA="
         }
       },
       "is_incremental": false,
@@ -628,7 +604,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/ImportCityModels.html",
-          "hash": "cJNC2TTxq7FTDvxwbQJVpKoEGAAi6pnrYAUimeMP8lA="
+          "hash": "t1yktzwFdyTALbqWVG6c0ohYn7/phSdmsfPasbLY6fg="
         }
       },
       "is_incremental": false,
@@ -640,7 +616,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/Installation.html",
-          "hash": "3lL1p44xywqvQx8dG8RwCtB08c1aeS8IauSGH8JDtvo="
+          "hash": "wvzWgGhWoU2pzDUJzYbgmTxdpKIrTZDveGsVppxunek="
         }
       },
       "is_incremental": false,
@@ -682,6 +658,127 @@
       "version": ""
     },
     {
+      "type": "Resource",
+      "source_relative_path": "resources/manual.meta",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual.meta"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/manual/importCityModels/exported.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/importCityModels/exported.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/manual/importCityModels/idmap.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/importCityModels/idmap.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/manual/importCityModels/importWindowAreaSelect.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/importCityModels/importWindowAreaSelect.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/manual/importCityModels/importWindowConvertOption.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/importCityModels/importWindowConvertOption.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/manual/importCityModels/importWindowExport.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/importCityModels/importWindowExport.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/manual/importCityModels/importWindowGmlTypeSelect.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/importCityModels/importWindowGmlTypeSelect.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/manual/importCityModels/importWindowInitial.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/importCityModels/importWindowInitial.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/manual/installation/unityHub.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/installation/unityHub.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/manual/installation/unityHubNewProject.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/installation/unityHubNewProject.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/manual/installation/unityHubSelectVersion.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/installation/unityHubSelectVersion.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
       "type": "Toc",
       "source_relative_path": "toc.yml",
       "output": {
@@ -714,7 +811,7 @@
         "ManagedReferenceDocumentProcessor": {
           "can_incremental": false,
           "incrementalPhase": "build",
-          "total_file_count": 47,
+          "total_file_count": 45,
           "skipped_file_count": 0
         },
         "ResourceDocumentProcessor": {
