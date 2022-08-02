@@ -37,7 +37,7 @@ namespace PLATEAU.Editor.CityImport
             
             string[] gmlRelativePaths = metadata.gmlRelativePaths;
 
-            var timer = new TimeDiagnosticsTable();
+            var timer = new TimeDiagnosticsTable(); // 時間計測
             
             // ループ : gmlファイルごと
             int numGml = gmlRelativePaths.Length;
@@ -255,16 +255,8 @@ namespace PLATEAU.Editor.CityImport
         {
             // LOD >=2 のときに親と子でまったく同じオブジェクトが配置されてしまう場合があり、それを回避します。
             if (parentTransform.gameObject.name == objName) return null;
-            
-            // 3Dモデルファイル内で、対応するメッシュを探します。
-            var gameObjs = AssetDatabase
-                .LoadAllAssetsAtPath(objInfo.assetsPath)
-                .OfType<GameObject>()
-                .ToArray();
 
-            var gameObj =  gameObjs
-                .Skip(1)  // 配列の順番は 3Dモデルファイル → 中身　です。中身だけ見たいので最初は飛ばします。
-                .FirstOrDefault(go => go.name == objName);
+            var gameObj = objInfo.GetGameObjByName(objName);
             bool isValidMeshObj = gameObj != null && gameObj.GetComponent<MeshFilter>() != null;
             if (!isValidMeshObj)
             {
