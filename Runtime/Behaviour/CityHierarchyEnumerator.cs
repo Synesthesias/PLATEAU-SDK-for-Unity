@@ -14,6 +14,7 @@ namespace PLATEAU.Behaviour
         /// <summary>
         /// <paramref name="parent"/> に対し再帰的にヒエラルキーの子を探索し、 <see cref="CityObject"/> に対応付けできるものをすべて <see cref="CityObject"/> にして
         /// IEnumerable で返します。 <see cref="CityObject"/> 形式で列挙します。
+        /// 順番は DFS (深さ優先探索) です。
         /// </summary>
         /// <param name="parent">対象となるゲームオブジェクトの Transform です。</param>
         /// <param name="minDepth">これより小さい深さは無視します。0は <paramref name="parent"/> 自身、1は子、2は孫です。</param>
@@ -36,6 +37,7 @@ namespace PLATEAU.Behaviour
 
         /// <summary>
         /// <paramref name="parent"/> のヒエラルキーの子を再帰的に列挙します。
+        /// 順番は DFS (深さ優先探索) です。
         /// </summary>
         /// <param name="parent">対象となるゲームオブジェクトの Transform です。</param>
         /// <param name="minDepth">これより小さい深さは無視します。0は <paramref name="parent"/> 自身、1は子、2は孫です。</param>
