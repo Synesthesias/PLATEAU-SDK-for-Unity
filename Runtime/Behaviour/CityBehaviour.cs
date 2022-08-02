@@ -8,7 +8,7 @@ namespace PLATEAU.Behaviour
 {
     /// <summary>
     /// ゲームオブジェクトからPlateauの <see cref="CityGML.CityObject"/> を返す MonoBehaviour です。
-    /// 実行には <see cref="CityMetadata"/> を保持する必要があります。
+    /// 実行のために <see cref="CityMetadata"/> と <see cref="CityModelLoader"/> を保持します。
     /// </summary>
     public class CityBehaviour : MonoBehaviour
     {
@@ -35,6 +35,7 @@ namespace PLATEAU.Behaviour
         /// <summary>
         /// 再帰的にヒエラルキーの子を探索し、 <see cref="CityObject"/> に対応付けできるものをすべて <see cref="CityObject"/> にして
         /// IEnumerable で返します。
+        /// 順番は DFS (深さ優先探索)です。
         /// </summary>
         public IEnumerable<CityObject> ChildCityObjsOnHierarchyDfs()
         {
@@ -46,6 +47,10 @@ namespace PLATEAU.Behaviour
             }
         }
 
+        /// <summary>
+        /// 再帰的にヒエラルキーの子を列挙します。
+        /// 順番は DFS (深さ優先探索)です。
+        /// </summary>
         public IEnumerable<GameObject> ChildGameObjsOnHierarchyDfs()
         {
             var gameObjs = CityHierarchyEnumerator.ChildrenDfsAsTransform(transform, 0)
