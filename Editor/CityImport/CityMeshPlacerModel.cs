@@ -19,21 +19,28 @@ namespace PLATEAU.Editor.CityImport
     {
         /// <summary>
         /// 都市モデルをシーンに配置します。
+        /// 
+        /// 引数の <paramref name="metadata"/> に記録されたパスのGMLファイルをロードし、それに対応する変換済みの3Dモデルを探し、それを配置対象（PlaceConfigで配置する設定なら）とします。
+        /// 3Dモデルはすでに生成済みであることが前提です。
+        /// 引数 <paramref name="placeConfig"/> の設定に従って配置します。
+        /// GMLファイルをロードする代わりに、すでにロード済みの <see cref="CityModel"/> がある場合は、
+        /// 引数 <paramref name="gmlToCityModelCache"/> に渡すことでGMLロード時間を節約できます。
         /// </summary>
-        public static void Place(CityMeshPlacerConfig placeConfig, CityMetadata metadata)
+        /// <param name="placeConfig">配置の設定です。</param>
+        /// <param name="metadata">このメタデータに記録されたパスのGMLファイルに対応する変換済みの3Dモデルを配置対象とします。</param>
+        ///
+        /// <param name="gmlToCityModelCache">
+        /// 高速化のためのキャッシュです。
+        /// 実装意図は、インポート時に3Dモデル変換でGMLがパースされ、続くメッシュ配置でもGMLがパースされて二度手間だったのを一度で済ませて処理時間を削減するために設けました。
+        /// ロード済みの <see cref="CityModel"/> のキャッシュです。
+        /// なければ null で構いませんが、あれば GMLのパースにかかる時間を節約できます。
+        /// 辞書であり、キーはGMLファイル名(拡張子抜き)で、値はCityModelです。
+        /// </param>
+        public static void Place(CityMeshPlacerConfig placeConfig, CityMetadata metadata, GmlToCityModelDict gmlToCityModelCache)
         {
             string rootDirName = metadata.cityImportConfig.rootDirName;
             
-            // すでに配置されている場合は削除します。
-            var oldObj = GameObject.Find(rootDirName);
-            if(oldObj != null) GameObjectUtil.DestroyChildOf(oldObj);
-            
-            // Plateau元データのルートフォルダと同名の ルートGame Objectを作ります。 
-            var rootGameObj = GameObjectUtil.AssureGameObject(rootDirName);
-            
-            // ルートGameObjectに CityBehaviour をアタッチしてメタデータをリンクします。
-            var cityBehaviour = GameObjectUtil.AssureComponent<CityBehaviour>(rootGameObj);
-            cityBehaviour.CityMetadata = metadata;
+            var rootGameObj = PlaceCityBehaviourGameObject(rootDirName, metadata);
             
             string[] gmlRelativePaths = metadata.gmlRelativePaths;
 
@@ -45,17 +52,32 @@ namespace PLATEAU.Editor.CityImport
             {
                 var gmlRelativePath = gmlRelativePaths[i];
                 EditorUtility.DisplayProgressBar("配置中", $"[{i}/{numGml}] {GmlFileNameParser.FileNameWithoutExtension(gmlRelativePath)}.gml", (float)i/numGml);
-                PlaceGmlModel(metadata, gmlRelativePath, placeConfig, rootGameObj.transform, timer);
+                PlaceGmlModel(metadata, gmlRelativePath, placeConfig, rootGameObj.transform, timer, gmlToCityModelCache);
             }
             EditorUtility.ClearProgressBar();
             Debug.Log($"[メッシュ配置 処理時間ログ]\n処理別 : \n{timer.SummaryByProcess()}\nデータ別 :\n{timer.SummaryByData()}");
+        }
+
+        private static GameObject PlaceCityBehaviourGameObject(string rootDirName, CityMetadata metadata)
+        {
+            // すでに配置されている場合は削除します。
+            var oldObj = GameObject.Find(rootDirName);
+            if(oldObj != null) GameObjectUtil.DestroyChildOf(oldObj);
+            
+            // Plateau元データのルートフォルダと同名の ルートGame Objectを作ります。 
+            var rootGameObj = GameObjectUtil.AssureGameObject(rootDirName);
+            
+            // ルートGameObjectに CityBehaviour をアタッチしてメタデータをリンクします。
+            var cityBehaviour = GameObjectUtil.AssureComponent<CityBehaviour>(rootGameObj);
+            cityBehaviour.CityMetadata = metadata;
+            return rootGameObj;
         }
 
         /// <summary>
         /// シーン配置の gmlファイルごとの処理です。
         /// </summary>　
         private static void PlaceGmlModel(CityMetadata metadata, string gmlRelativePath,
-            CityMeshPlacerConfig placeConfig, Transform parentTrans, TimeDiagnosticsTable timer)
+            CityMeshPlacerConfig placeConfig, Transform parentTrans, TimeDiagnosticsTable timer, GmlToCityModelDict gmlToCityModelCache)
         {
             var gmlType = GmlFileNameParser.GetGmlTypeEnum(gmlRelativePath);
             var placeMethod = placeConfig.GetPerTypeConfig(gmlType).placeMethod;
@@ -64,7 +86,7 @@ namespace PLATEAU.Editor.CityImport
             
             string gmlFileName = $"{GmlFileNameParser.FileNameWithoutExtension(gmlRelativePath)}.gml";
             timer.Start("ParseGml", gmlFileName);
-            var cityModel = ParseGml(metadata, gmlRelativePath);
+            var cityModel = LoadGml(metadata, gmlRelativePath, gmlToCityModelCache);
             if (cityModel == null)
             {
                 Debug.LogError($"Could not read gml file: {gmlRelativePath}");
@@ -147,8 +169,13 @@ namespace PLATEAU.Editor.CityImport
                     var oldPrimaryTrans = GameObjectUtil.FindRecursive(parentTrans, primaryObjName);
                     if (oldPrimaryTrans != null) Object.DestroyImmediate(oldPrimaryTrans.gameObject);
                     // 空のGameObjectを作ります。
-                    primaryGameObj = new GameObject(primaryObjName);
-                    primaryGameObj.transform.parent = parentTrans;
+                    primaryGameObj = new GameObject(primaryObjName)
+                    {
+                        transform =
+                        {
+                            parent = parentTrans
+                        }
+                    };
                     isPrimaryGameObjEmpty = true;
                 }
                 else
@@ -190,12 +217,18 @@ namespace PLATEAU.Editor.CityImport
         
 
         /// <summary>
-        /// GMLファイルをパースします。
+        /// GMLファイルをロードします。
+        /// 引数のキャッシュにあればそれを返し、なければGMLをパースして <see cref="CityModel"/> を返します。
         /// </summary>
-        private static CityModel ParseGml(CityMetadata metadata, string gmlRelativePath)
+        private static CityModel LoadGml(CityMetadata metadata, string gmlRelativePath, GmlToCityModelDict gmlToCityModeCache)
         {
+            string gmlFileName = GmlFileNameParser.FileNameWithoutExtension(gmlRelativePath);
+            if (gmlToCityModeCache != null && gmlToCityModeCache.TryGetValue(gmlFileName, out var cachedCityModel))
+            {
+                return cachedCityModel;
+            }
             string gmlFullPath = metadata.cityImportConfig.sourcePath.UdxRelativeToFullPath(gmlRelativePath);
-            // tessellate を false にすることで、3Dモデルができない代わりにパースが高速になります。3Dモデルはインポート時のものを使います。
+            // tessellate を false にすることで、3Dモデルができない代わりにパースが高速になります。
             var gmlParserParams = new CitygmlParserParams(true, false);
             var cityModel = CityGml.Load(gmlFullPath, gmlParserParams, DllLogCallback.UnityLogCallbacks);
             if (cityModel == null)

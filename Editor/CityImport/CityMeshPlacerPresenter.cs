@@ -15,7 +15,7 @@ namespace PLATEAU.Editor.CityImport
 
         public void Place()
         {
-            CityMeshPlacerModel.Place(this.metadata.cityImportConfig.cityMeshPlacerConfig, this.metadata);
+            CityMeshPlacerModel.Place(this.metadata.cityImportConfig.cityMeshPlacerConfig, this.metadata, null);
         }
     }
 }

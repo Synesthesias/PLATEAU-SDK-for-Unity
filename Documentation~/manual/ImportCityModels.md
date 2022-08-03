@@ -104,6 +104,7 @@
 ロードに失敗したgmlファイルがある場合、Unityのコンソールにエラーログが出力されます。  
 そのような場合でも、一部のgmlファイルのロードが成功していれば、そのgmlに関しては正常にインポートされています。  
 複数のエラーログが出力されるので、その見方をこの項で説明します。
+![](../resources/manual/importCityModels/importErrorLog.png)
 - 失敗・成功の件数を確認するには
   - 複数あるエラーログのうち、最後のものを確認すると次のメッセージがあります。  
     ```Convert end with error. (失敗件数) of (全体件数) gml files are not converted.```  

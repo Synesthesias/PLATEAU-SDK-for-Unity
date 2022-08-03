@@ -15,7 +15,7 @@ namespace PLATEAU.Behaviour
     /// </summary>
     public class CityModelLoader
     {
-        private readonly Dictionary<string, CityModel> fileToCityModelCache = new Dictionary<string, CityModel>();
+        private readonly GmlToCityModelDict fileToCityModelCache = new GmlToCityModelDict();
 
         /// <summary>
         /// <paramref name="gameObj"/> に対応する <see cref="CityObject"/> を
@@ -65,7 +65,8 @@ namespace PLATEAU.Behaviour
             {
                 return null;
             }
-            this.fileToCityModelCache[gmlFileName] = loadedModel;
+
+            this.fileToCityModelCache.Add(gmlFileName, loadedModel);
             
             return GetCityObjectById(loadedModel, cityObjId);
         }
