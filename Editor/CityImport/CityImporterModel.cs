@@ -1,4 +1,6 @@
-﻿using PLATEAU.Editor.Converters;
+﻿using System.Collections.Generic;
+using PLATEAU.CityGML;
+using PLATEAU.Editor.Converters;
 using PLATEAU.CityMeta;
 using PLATEAU.Editor.Diagnostics;
 using UnityEditor;
@@ -39,22 +41,31 @@ namespace PLATEAU.Editor.CityImport
             metadata = CityMetadataGenerator.LoadOrCreateMetadata(importConfig.importDestPath.MetadataAssetPath, true);
             // TODO この metadata にどのように設定が書き込まれていくかが分かりにくく、そのあたりの処理でGmlImporterが無駄に複雑化している気がするので整理したい
 
+            
             // gmlファイル群をインポートします。
             timer.Start("ImportGmls", "all");
-            GmlImporter.ImportGmls(out int successCount, out int failureCount, gmlRelativePaths, importConfig, metadata);
             
-            
-            // シーンに配置します。
-            timer.Start("PlaceToScene", "all");
-            CityMeshPlacerModel.Place(importConfig.cityMeshPlacerConfig, metadata);
-            
-            // 後処理
-            timer.Start("PostProcess", "all");
-            SaveAssets(metadata);
-            Debug.Log($"[インポート 処理時間ログ]\n{timer.SummaryByProcess()}");
-            PrintResult(successCount, failureCount, gmlRelativePaths.Length);
-            EditorUtility.ClearProgressBar();
-            return successCount;
+            // このキャッシュの実装意図については CityMeshPlacerModel.Place() のコメントを参照してください。
+            using (var gmlToCityModelCache = new GmlToCityModelDict())
+            {
+
+                GmlImporter.ImportGmls(out int successCount, out int failureCount, gmlRelativePaths, importConfig,
+                    metadata, gmlToCityModelCache);
+
+
+                // シーンに配置します。
+                timer.Start("PlaceToScene", "all");
+                CityMeshPlacerModel.Place(importConfig.cityMeshPlacerConfig, metadata, gmlToCityModelCache);
+
+                // 後処理
+                timer.Start("PostProcess", "all");
+                SaveAssets(metadata);
+                Debug.Log($"[インポート 処理時間ログ]\n{timer.SummaryByProcess()}");
+                PrintResult(successCount, failureCount, gmlRelativePaths.Length);
+                EditorUtility.ClearProgressBar();
+                return successCount;
+            }
+
         }
 
         private static void SaveAssets(CityMetadata metadata)

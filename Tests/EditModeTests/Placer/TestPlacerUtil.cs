@@ -43,7 +43,7 @@ namespace PLATEAU.Tests.EditModeTests.Placer
                 .SetSelectedLodForAllTypes(selectedLod);
             additionalConfigFunc?.Invoke(placeConf);
             metadata.cityImportConfig.cityMeshPlacerConfig = placeConf;
-            CityMeshPlacerModel.Place(placeConf, metadata);
+            CityMeshPlacerModel.Place(placeConf, metadata, null);
         }
         
         /// <summary>

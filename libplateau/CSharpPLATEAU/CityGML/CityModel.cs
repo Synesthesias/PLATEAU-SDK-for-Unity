@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading;
+using UnityEngine;
 
 namespace PLATEAU.CityGML
 {
@@ -49,27 +50,37 @@ namespace PLATEAU.CityGML
 
         /// <summary>
         /// <see cref="CityModel"/>の<paramref name="type"/>タイプの全ての<see cref="CityObject"/>を返します。
+        /// 例外時は空の配列を返します。
         /// </summary>
         /// <param name="type">取得したい都市オブジェクトのタイプ</param>
         /// <returns><paramref name="type"/>タイプの全ての<see cref="CityObject"/></returns>
         public CityObject[] GetCityObjectsByType(CityObjectType type)
         {
-            var result = NativeMethods.plateau_city_model_get_all_city_object_count_of_type(
-                Handle, out int count, type);
-            DLLUtil.CheckDllError(result);
-
-            var cityObjectHandles = new IntPtr[count];
-            result = NativeMethods.plateau_city_model_get_all_city_objects_of_type(
-                Handle, cityObjectHandles, type, count);
-            DLLUtil.CheckDllError(result);
-
-            var cityObjects = new CityObject[count];
-            for (int i = 0; i < count; i++)
+            try
             {
-                cityObjects[i] = new CityObject(cityObjectHandles[i]);
+                var result = NativeMethods.plateau_city_model_get_all_city_object_count_of_type(
+                    Handle, out int count, type);
+                DLLUtil.CheckDllError(result);
+
+                var cityObjectHandles = new IntPtr[count];
+                result = NativeMethods.plateau_city_model_get_all_city_objects_of_type(
+                    Handle, cityObjectHandles, type, count);
+                DLLUtil.CheckDllError(result);
+
+                var cityObjects = new CityObject[count];
+                for (int i = 0; i < count; i++)
+                {
+                    cityObjects[i] = new CityObject(cityObjectHandles[i]);
+                }
+                return cityObjects;
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"Error on {nameof(GetCityObjectsByType)}.\n{e}");
+                return new CityObject[]{};
             }
 
-            return cityObjects;
+            
         }
 
         /// <summary>
