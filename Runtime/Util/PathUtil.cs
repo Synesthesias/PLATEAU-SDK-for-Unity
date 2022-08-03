@@ -103,6 +103,10 @@ namespace PLATEAU.Util
 
         public static bool IsSubDirectoryOfAssets(string filePath)
         {
+            if (!filePath.EndsWith(Path.DirectorySeparatorChar.ToString()))
+            {
+                filePath += Path.DirectorySeparatorChar;
+            }
             var fullPath = Path.GetFullPath(filePath);
             var assetsPath = Path.GetFullPath(unityProjectDataPath) + Path.DirectorySeparatorChar;
             return fullPath.StartsWith(assetsPath);
