@@ -4,7 +4,11 @@ using PLATEAU.CityGML;
 
 namespace PLATEAU.CityMeta
 {
-    public class GmlToCityModelDict : IDisposable
+    /// <summary>
+    /// Gmlファイル名と <see cref="CityModel"/> を対応付ける辞書です。
+    /// Dispose時に辞書内の各 CityModel を Dispose します。
+    /// </summary>
+    internal class GmlToCityModelDict : IDisposable
     {
         private readonly Dictionary<string, CityModel> dict = new Dictionary<string, CityModel>();
         private bool isDisposed;
