@@ -172,7 +172,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PLATEAU.CityGML.CityModel.html",
-          "hash": "IKm610mBzgODpHLqkPLZkxwyCDu0VZ4KRcSTMkvD2VU="
+          "hash": "JFN8uONiqaO0uosFxE7wfhn7/YwEJtjz5TkK2tm9Y+w="
         }
       },
       "is_incremental": false,
@@ -604,7 +604,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/ImportCityModels.html",
-          "hash": "t1yktzwFdyTALbqWVG6c0ohYn7/phSdmsfPasbLY6fg="
+          "hash": "r1zXZp7D/qRzwQj+/tKtQBF7GIFH0ncV7i46dlXXzAw="
         }
       },
       "is_incremental": false,
@@ -616,7 +616,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/Installation.html",
-          "hash": "wvzWgGhWoU2pzDUJzYbgmTxdpKIrTZDveGsVppxunek="
+          "hash": "FkEtaFd8x3JwPvBivlgfwyUfE16yAIW8gxGFJBzJcbs="
         }
       },
       "is_incremental": false,
@@ -692,6 +692,17 @@
     },
     {
       "type": "Resource",
+      "source_relative_path": "resources/manual/importCityModels/importErrorLog.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/importCityModels/importErrorLog.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
       "source_relative_path": "resources/manual/importCityModels/importWindowAreaSelect.png",
       "output": {
         "resource": {
@@ -747,6 +758,28 @@
     },
     {
       "type": "Resource",
+      "source_relative_path": "resources/manual/installation/packageAddFromGit.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/installation/packageAddFromGit.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/manual/installation/packageInstalled.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/installation/packageInstalled.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
       "source_relative_path": "resources/manual/installation/unityHub.png",
       "output": {
         "resource": {
@@ -762,6 +795,17 @@
       "output": {
         "resource": {
           "relative_path": "resources/manual/installation/unityHubNewProject.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/manual/installation/unityHubNewProjectVersion.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/installation/unityHubNewProjectVersion.png"
         }
       },
       "is_incremental": false,
