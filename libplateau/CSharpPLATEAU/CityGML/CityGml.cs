@@ -2,7 +2,6 @@
 using System;
 using System.IO;
 using PLATEAU.Interop;
-using UnityEngine;
 
 namespace PLATEAU.CityGML
 {
@@ -10,7 +9,6 @@ namespace PLATEAU.CityGML
     {
         /// <summary>
         /// DLLの機能によって gmlファイルをパースし、CityModelを生成します。
-        /// 失敗した場合は null を返します。
         /// </summary>
         /// <param name="gmlPath">gmlファイルのパスです。</param>
         /// <param name="parserParams">変換の設定です。</param>
@@ -31,20 +29,10 @@ namespace PLATEAU.CityGML
                 logLevel, logCallbacks.LogErrorFuncPtr, logCallbacks.LogWarnFuncPtr, logCallbacks.LogInfoFuncPtr);
             if (result == APIResult.ErrorLoadingCityGml)
             {
-                Debug.LogError($"Loading gml failed.\nPlease check codelist xml files are located in (gmlFolder)/../../codelists\nAND gml file is located at {gmlPath}\nand ");
-                return null;
+                throw new FileLoadException(
+                    $"Loading gml failed.\nPlease check codelist xml files are located in (gmlFolder)/../../codelists\nAND gml file is located at {gmlPath}\nand ");
             }
-
-            try
-            {
-                DLLUtil.CheckDllError(result);
-            }
-            catch (Exception e)
-            {
-                Debug.LogError(e.Message);
-                return null;
-            }
-
+            DLLUtil.CheckDllError(result);
             return new CityModel(cityModelHandle);
         }
     }
