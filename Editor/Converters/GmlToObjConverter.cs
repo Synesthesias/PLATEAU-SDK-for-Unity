@@ -145,17 +145,18 @@ namespace PLATEAU.Editor.Converters
                 exportedFilePaths = this.meshConverter.Convert(exportDirFullPath, gmlFilePath, cityModel, this.dllLogger);
                 
                 // 出力先が Assets フォルダ内なら、それをUnityに反映させます。
-                if (PathUtil.IsSubDirectoryOfAssets(exportDirFullPath))
-                {
-                    AssetDatabase.SaveAssets(); // ここで Save しておかないと、次の AssetDatabase.Refresh() のタイミングで CityMetadata のデータが壊れる厄介なバグが発生します。
-                    foreach (string objFullPath in objFullPaths)
-                    {
-                        string assetPath = PathUtil.FullPathToAssetsPath(objFullPath);
-                        AssetDatabase.ImportAsset(assetPath);
-                        AssetDatabase.Refresh();
-                    }
-                    
-                }
+                // 3Dモデルファイルのインポートが不必要に複数回行われていたので削除
+                // if (PathUtil.IsSubDirectoryOfAssets(exportDirFullPath))
+                // {
+                //     AssetDatabase.SaveAssets(); // ここで Save しておかないと、次の AssetDatabase.Refresh() のタイミングで CityMetadata のデータが壊れる厄介なバグが発生します。
+                //     foreach (string objFullPath in objFullPaths)
+                //     {
+                //         string assetPath = PathUtil.FullPathToAssetsPath(objFullPath);
+                //         AssetDatabase.ImportAsset(assetPath);
+                //         AssetDatabase.Refresh();
+                //     }
+                //     
+                // }
             }
             catch (Exception e)
             {
