@@ -51,16 +51,42 @@ namespace PLATEAU.Editor.CityImport
             this.fileTable = new Dictionary<int, List<string>>();
 
             // パス: udx/(地物型)
-            foreach (var dirPath in Directory.EnumerateDirectories(Path.GetFullPath(Path.Combine(plateauSrcRootPathArg, "udx"))))
+            // foreach (var dirPath in Directory.EnumerateDirectories(Path.GetFullPath(Path.Combine(plateauSrcRootPathArg, "udx"))))
+            // {
+            //     // パス: udx/(地物型)/(各gmlファイル)
+            //     foreach (var filePath in Directory.EnumerateFiles(dirPath))
+            //     {
+            //         if (Path.GetExtension(filePath) != ".gml") continue;
+            //         string fileName = Path.GetFileName(filePath);
+            //         int areaId = GmlFileNameParser.GetAreaId(fileName);
+            //         FileTableAdd(areaId, filePath);
+            //     }
+            // }
+
+            string udxFullPath = Path.GetFullPath(Path.Combine(plateauSrcRootPathArg, "udx"));
+            foreach (string gmlPath in EnumerateGmlFilePaths(udxFullPath))
             {
-                // パス: udx/(地物型)/(各gmlファイル)
-                foreach (var filePath in Directory.EnumerateFiles(dirPath))
-                {
-                    if (Path.GetExtension(filePath) != ".gml") continue;
-                    string fileName = Path.GetFileName(filePath);
-                    int areaId = GmlFileNameParser.GetAreaId(fileName);
-                    FileTableAdd(areaId, filePath);
-                }
+                string fileName = Path.GetFileName(gmlPath);
+                int areaId = GmlFileNameParser.GetAreaId(fileName);
+                FileTableAdd(areaId, gmlPath);
+            }
+        }
+
+        /// <summary>
+        /// <paramref name="dirPath"/> 内のgmlファイルを再帰的に検索します。
+        /// </summary>
+        private IEnumerable<string> EnumerateGmlFilePaths(string dirPath)
+        {
+            foreach (var childDirPath in Directory.EnumerateDirectories(dirPath))
+            {
+                var gmlPaths = EnumerateGmlFilePaths(childDirPath);
+                foreach (string g in gmlPaths) yield return g;
+            }
+
+            foreach (var filePath in Directory.EnumerateFiles(dirPath))
+            {
+                if (Path.GetExtension(filePath) != ".gml") continue;
+                yield return filePath;
             }
         }
 

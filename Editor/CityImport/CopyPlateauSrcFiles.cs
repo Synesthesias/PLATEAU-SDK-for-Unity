@@ -71,22 +71,29 @@ namespace PLATEAU.Editor.CityImport
                 loopCnt++;
                 ProgressBar($"コピー中 : [{loopCnt}/{numGml}] {gml}", loopCnt, numGml);
                 string gmlType = GmlFileNameParser.GetGmlTypeStr(gml);
-                // 地物タイプのディレクトリを作ります。
-                // 例: gml のタイプが bldg なら、
-                //     Assets/StreamingAssets/PLATEAU/Tokyo/udx/bldg　ができます。
-                string dstObjTypeFolder = dest.GmlTypeDirFullPath(gmlType);
-                Mkdir(dstObjTypeFolder);
+                // コピー先のgmlファイルを格納するフォルダを作ります。
+                // 例えば gml == bldg/foobar.gml のとき、
+                // フォルダ　Assets/StreamingAssets/PLATEAU/Tokyo/udx/bldg　ができます。
+                string dstGmlFolder = Directory.GetParent(Path.Combine(dest.FullUdxPath, gml))?.FullName;
+                if (dstGmlFolder == null)
+                {
+                    Debug.LogError($"{nameof(dstGmlFolder)} is not found.");
+                }
+                Mkdir(dstGmlFolder);
 
                 // gmlファイルをコピーします。
                 // 例: Assets/StreamingAssets/PLATEAU/Tokyo/bldg/1234.gml　ができます。
                 string gmlName = Path.GetFileName(gml);
-                string srcObjTypeFolder = Path.Combine(srcRootPathBeforeImport, "udx", gmlType);
-                File.Copy(Path.Combine(srcObjTypeFolder, gmlName), Path.Combine(dstObjTypeFolder, gmlName), true);
+                string srcGmlFullPath = Path.Combine(srcRootPathBeforeImport, "udx", gml);
+                File.Copy(srcGmlFullPath, Path.Combine(dest.FullUdxPath, gml), true);
 
                 // gmlファイルに関連するフォルダをコピーします。
                 // gmlの名称からオプションと拡張子を除いた文字列がフォルダ名に含まれていれば、コピー対象のディレクトリとみなします。
                 // 例: Assets/StreamingAssets/PLATEAU/Tokyo/bldg/1234_appearance に含まれる各テクスチャなどがコピーされます。 
                 string gmlIdentity = GmlFileNameParser.NameWithoutOption(gml);
+                string srcObjTypeFolder = Path.Combine(srcRootPathBeforeImport, "udx", gmlType);
+                string dstObjTypeFolder = dest.GmlTypeDirFullPath(gmlType);
+                // 検索対象は地物タイプのフォルダとします。
                 foreach (var srcDir in Directory.GetDirectories(srcObjTypeFolder))
                 {
                     string srcDirName = new DirectoryInfo(srcDir).Name;
