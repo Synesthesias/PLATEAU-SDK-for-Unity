@@ -60,10 +60,14 @@ namespace PLATEAU.Interop
         [MarshalAs(UnmanagedType.U1)]
         public bool Tessellate;
 
-        public CitygmlParserParams(bool optimize, bool tessellate = true)
+        [MarshalAs(UnmanagedType.U1)]
+        public bool IgnoreGeometries;
+
+        public CitygmlParserParams(bool optimize, bool tessellate, bool ignoreGeometries)
         {
             this.Optimize = optimize;
             this.Tessellate = tessellate;
+            this.IgnoreGeometries = ignoreGeometries;
         }
     }
 
@@ -107,7 +111,7 @@ namespace PLATEAU.Interop
         [DllImport(DllName, CharSet = CharSet.Ansi)]
         internal static extern APIResult plateau_load_citygml(
             [In] string gmlPath,
-            [In] CitygmlParserParams parserParams,
+            [In] CitygmlParserParams m_parserParams,
             out IntPtr cityModelHandle,
             DllLogLevel logLevel,
             IntPtr logErrorCallbackFuncPtr,

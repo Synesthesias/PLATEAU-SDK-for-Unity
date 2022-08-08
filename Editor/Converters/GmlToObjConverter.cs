@@ -27,7 +27,7 @@ namespace PLATEAU.Editor.Converters
 
         // 3Dモデル変換においては、gmlパース設定は常に optimize = true, tessellate = true で固定して良いです。
         // tessellate = true でないと、メッシュの頂点の代わりに LinearRing が生成されてしまいます。
-        private readonly CitygmlParserParams gmlParserParams = new CitygmlParserParams(true);
+        private readonly CitygmlParserParams gmlParserParams = new CitygmlParserParams(true, true, false);
 
         private int disposed;
 
