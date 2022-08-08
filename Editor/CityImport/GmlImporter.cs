@@ -142,7 +142,7 @@ namespace PLATEAU.Editor.CityImport
 
             // 設定の parserParams.tessellate は true にしないとポリゴンにならない部分があるので true で固定します。
             // 　　　 最適化は常に true にします。false にする意味が無いので。
-            CitygmlParserParams parserParams = new CitygmlParserParams(true);
+            CitygmlParserParams parserParams = new CitygmlParserParams(true, true, false);
             cityModel = CityGml.Load(gmlFullPath, parserParams, DllLogCallback.UnityLogCallbacks, config.logLevel);
             if (cityModel == null)
             {

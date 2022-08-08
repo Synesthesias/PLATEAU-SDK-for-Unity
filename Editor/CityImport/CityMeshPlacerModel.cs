@@ -228,8 +228,8 @@ namespace PLATEAU.Editor.CityImport
                 return cachedCityModel;
             }
             string gmlFullPath = metadata.cityImportConfig.sourcePath.UdxRelativeToFullPath(gmlRelativePath);
-            // tessellate を false にすることで、3Dモデルができない代わりにパースが高速になります。
-            var gmlParserParams = new CitygmlParserParams(true, false);
+            // tessellate を false 、ignoreGeometries を true にすることで、3Dモデルができない代わりにパースが高速になります。
+            var gmlParserParams = new CitygmlParserParams(true, false, true);
             var cityModel = CityGml.Load(gmlFullPath, gmlParserParams, DllLogCallback.UnityLogCallbacks);
             if (cityModel == null)
             {

@@ -60,7 +60,8 @@ namespace PLATEAU.Behaviour
                     $"Could not find gml file, because udx path is not in StreamingAssets folder.\nudxFullPath = {udxFullPath}");
             }
             string gmlPath = SearchGmlPath(gmlFileName);
-            var loadedModel = CityGml.Load(gmlPath, new CitygmlParserParams(true, false), DllLogCallback.UnityLogCallbacks);
+            // GMLパース設定は、高速であることを重視し、ジオメトリはパースしない設定とします。
+            var loadedModel = CityGml.Load(gmlPath, new CitygmlParserParams(true, false, true), DllLogCallback.UnityLogCallbacks);
             if (loadedModel == null)
             {
                 return null;

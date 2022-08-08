@@ -60,10 +60,14 @@ namespace PLATEAU.Interop
         [MarshalAs(UnmanagedType.U1)]
         public bool Tessellate;
 
-        public CitygmlParserParams(bool optimize, bool tessellate = true)
+        [MarshalAs(UnmanagedType.U1)]
+        public bool IgnoreGeometries;
+
+        public CitygmlParserParams(bool optimize, bool tessellate, bool ignoreGeometries)
         {
             this.Optimize = optimize;
             this.Tessellate = tessellate;
+            this.IgnoreGeometries = ignoreGeometries;
         }
     }
 
