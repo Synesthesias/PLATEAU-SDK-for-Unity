@@ -1891,12 +1891,12 @@ references:
   commentId: T:PLATEAU.Interop.CitygmlParserParams
   fullName: PLATEAU.Interop.CitygmlParserParams
   nameWithType: CitygmlParserParams
-- uid: PLATEAU.Interop.CitygmlParserParams.#ctor(System.Boolean,System.Boolean)
-  name: CitygmlParserParams(Boolean, Boolean)
-  href: api/PLATEAU.Interop.CitygmlParserParams.html#PLATEAU_Interop_CitygmlParserParams__ctor_System_Boolean_System_Boolean_
-  commentId: M:PLATEAU.Interop.CitygmlParserParams.#ctor(System.Boolean,System.Boolean)
-  fullName: PLATEAU.Interop.CitygmlParserParams.CitygmlParserParams(System.Boolean, System.Boolean)
-  nameWithType: CitygmlParserParams.CitygmlParserParams(Boolean, Boolean)
+- uid: PLATEAU.Interop.CitygmlParserParams.#ctor(System.Boolean,System.Boolean,System.Boolean)
+  name: CitygmlParserParams(Boolean, Boolean, Boolean)
+  href: api/PLATEAU.Interop.CitygmlParserParams.html#PLATEAU_Interop_CitygmlParserParams__ctor_System_Boolean_System_Boolean_System_Boolean_
+  commentId: M:PLATEAU.Interop.CitygmlParserParams.#ctor(System.Boolean,System.Boolean,System.Boolean)
+  fullName: PLATEAU.Interop.CitygmlParserParams.CitygmlParserParams(System.Boolean, System.Boolean, System.Boolean)
+  nameWithType: CitygmlParserParams.CitygmlParserParams(Boolean, Boolean, Boolean)
 - uid: PLATEAU.Interop.CitygmlParserParams.#ctor*
   name: CitygmlParserParams
   href: api/PLATEAU.Interop.CitygmlParserParams.html#PLATEAU_Interop_CitygmlParserParams__ctor_
@@ -1904,6 +1904,12 @@ references:
   isSpec: "True"
   fullName: PLATEAU.Interop.CitygmlParserParams.CitygmlParserParams
   nameWithType: CitygmlParserParams.CitygmlParserParams
+- uid: PLATEAU.Interop.CitygmlParserParams.IgnoreGeometries
+  name: IgnoreGeometries
+  href: api/PLATEAU.Interop.CitygmlParserParams.html#PLATEAU_Interop_CitygmlParserParams_IgnoreGeometries
+  commentId: F:PLATEAU.Interop.CitygmlParserParams.IgnoreGeometries
+  fullName: PLATEAU.Interop.CitygmlParserParams.IgnoreGeometries
+  nameWithType: CitygmlParserParams.IgnoreGeometries
 - uid: PLATEAU.Interop.CitygmlParserParams.Optimize
   name: Optimize
   href: api/PLATEAU.Interop.CitygmlParserParams.html#PLATEAU_Interop_CitygmlParserParams_Optimize
