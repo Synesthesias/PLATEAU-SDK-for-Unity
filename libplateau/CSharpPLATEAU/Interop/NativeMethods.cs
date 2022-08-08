@@ -111,7 +111,7 @@ namespace PLATEAU.Interop
         [DllImport(DllName, CharSet = CharSet.Ansi)]
         internal static extern APIResult plateau_load_citygml(
             [In] string gmlPath,
-            [In] CitygmlParserParams m_parserParams,
+            [In] CitygmlParserParams parserParams,
             out IntPtr cityModelHandle,
             DllLogLevel logLevel,
             IntPtr logErrorCallbackFuncPtr,
