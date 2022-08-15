@@ -85,6 +85,7 @@ namespace PLATEAU.CityGrid
             var parentTrans = GameObjectUtil.AssureGameObject(parentObjName).transform;
             foreach (var uMesh in unityMeshes)
             {
+                if (uMesh.mesh.vertexCount <= 0) continue;
                 var meshObj = GameObjectUtil.AssureGameObjectInChild(uMesh.name, parentTrans);
                 var meshFilter = GameObjectUtil.AssureComponent<MeshFilter>(meshObj);
                 meshFilter.mesh = uMesh.mesh;
