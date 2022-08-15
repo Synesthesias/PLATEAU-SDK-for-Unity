@@ -667,5 +667,32 @@ namespace PLATEAU.Interop
         internal static extern APIResult plateau_dll_logger_set_log_level(
             [In] IntPtr handle,
             DllLogLevel dllLogLevel);
+        
+        
+        // ***************
+        //  mesh_merger_c.cpp
+        // ***************
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_mesh_merger_new(
+            out IntPtr outMeshMergerPtr);
+        
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_mesh_merger_delete(
+            [In] IntPtr outMeshMergerPtr);
+        
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_mesh_merger_grid_merge(
+            [In] IntPtr meshMergerPtr,
+            [In] IntPtr cityModelPtr,
+            CityObjectType targetTypeMask,
+            int gridNumX,
+            int gridNumY,
+            out int outNumPolygons,
+            [In] IntPtr dllLoggerPtr);
+        
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_mesh_merger_get_last_result_of_grid_merge(
+            [In] IntPtr meshMergerPtr,
+            IntPtr[] outPolygonPtrArray);
     }
 }
