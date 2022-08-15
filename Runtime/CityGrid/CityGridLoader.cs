@@ -6,6 +6,7 @@ using PLATEAU.Interop;
 using PLATEAU.Util;
 using PLATEAU.Util.FileNames;
 using UnityEngine;
+using UnityEngine.Rendering;
 using Object = PLATEAU.CityGML.Object;
 
 namespace PLATEAU.CityGrid
@@ -50,12 +51,20 @@ namespace PLATEAU.CityGrid
             var plateauIndices = plateauPoly.Indices.ToArray();
             
             // debug print
-            var sb = new StringBuilder();
+            var sbIndices = new StringBuilder("Indices : ");
             foreach (int index in plateauIndices)
             {
-                sb.Append($"{index}, ");
+                sbIndices.Append($"{index}, ");
             }
-            Debug.Log(sb.ToString());
+            Debug.Log(sbIndices.ToString());
+            var sbVertices = new StringBuilder("Vertices : ");
+            for(int i=0; i < plateauPoly.VertexCount; i++)
+            {
+                var vert = plateauPoly.GetVertex(i);
+                sbVertices.Append($"({vert.X}, {vert.Y}, {vert.Z}), ");
+            }
+            Debug.Log(sbVertices.ToString());
+            
             
             for (int i = 0; i < numIndices; i++)
             {
@@ -64,6 +73,8 @@ namespace PLATEAU.CityGrid
 
             mesh.vertices = unityVerts;
             mesh.triangles = unityTriangles;
+            mesh.RecalculateNormals();
+            mesh.RecalculateTangents();
             var unityMesh = new UnityMesh(mesh, plateauPoly.ID);
             Debug.Log(unityMesh);
             return unityMesh;
@@ -77,6 +88,8 @@ namespace PLATEAU.CityGrid
                 var meshObj = GameObjectUtil.AssureGameObjectInChild(uMesh.name, parentTrans);
                 var meshFilter = GameObjectUtil.AssureComponent<MeshFilter>(meshObj);
                 meshFilter.mesh = uMesh.mesh;
+                var renderer = GameObjectUtil.AssureComponent<MeshRenderer>(meshObj);
+                renderer.material = new UnityEngine.Material(Shader.Find("Standard"));
             }
         }
 
