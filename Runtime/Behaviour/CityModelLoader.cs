@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
 using System.Linq;
 using PLATEAU.CityGML;
 using PLATEAU.CityMeta;

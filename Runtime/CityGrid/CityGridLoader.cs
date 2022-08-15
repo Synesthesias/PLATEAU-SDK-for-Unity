@@ -1,13 +1,9 @@
 ﻿using System.Linq;
-using System.Text;
-using Codice.CM.Common;
 using PLATEAU.CityGML;
 using PLATEAU.Interop;
 using PLATEAU.Util;
 using PLATEAU.Util.FileNames;
 using UnityEngine;
-using UnityEngine.Rendering;
-using Object = PLATEAU.CityGML.Object;
 
 namespace PLATEAU.CityGrid
 {
@@ -20,7 +16,7 @@ namespace PLATEAU.CityGrid
         {
             string gmlAbsolutePath = Application.dataPath + "/" + this.gmlRelativePathFromAssets;
             CitygmlParserParams parserParams = new CitygmlParserParams(true, true, false);
-            var cityModel = CityGml.Load(gmlAbsolutePath, parserParams, DllLogCallback.UnityLogCallbacks, DllLogLevel.Error);
+            var cityModel = CityGml.Load(gmlAbsolutePath, parserParams, DllLogCallback.UnityLogCallbacks);
             var meshMerger = new MeshMerger();
             var logger = new DllLogger();
             logger.SetLogCallbacks(DllLogCallback.UnityLogCallbacks);
@@ -50,22 +46,6 @@ namespace PLATEAU.CityGrid
             var unityTriangles = new int[numIndices];
             var plateauIndices = plateauPoly.Indices.ToArray();
             
-            // debug print
-            var sbIndices = new StringBuilder("Indices : ");
-            foreach (int index in plateauIndices)
-            {
-                sbIndices.Append($"{index}, ");
-            }
-            Debug.Log(sbIndices.ToString());
-            var sbVertices = new StringBuilder("Vertices : ");
-            for(int i=0; i < plateauPoly.VertexCount; i++)
-            {
-                var vert = plateauPoly.GetVertex(i);
-                sbVertices.Append($"({vert.X}, {vert.Y}, {vert.Z}), ");
-            }
-            Debug.Log(sbVertices.ToString());
-            
-            
             for (int i = 0; i < numIndices; i++)
             {
                 unityTriangles[i] = plateauIndices[i];
@@ -76,7 +56,6 @@ namespace PLATEAU.CityGrid
             mesh.RecalculateNormals();
             mesh.RecalculateTangents();
             var unityMesh = new UnityMesh(mesh, plateauPoly.ID);
-            Debug.Log(unityMesh);
             return unityMesh;
         }
 
@@ -85,10 +64,10 @@ namespace PLATEAU.CityGrid
             var parentTrans = GameObjectUtil.AssureGameObject(parentObjName).transform;
             foreach (var uMesh in unityMeshes)
             {
-                if (uMesh.mesh.vertexCount <= 0) continue;
-                var meshObj = GameObjectUtil.AssureGameObjectInChild(uMesh.name, parentTrans);
+                if (uMesh.Mesh.vertexCount <= 0) continue;
+                var meshObj = GameObjectUtil.AssureGameObjectInChild(uMesh.Name, parentTrans);
                 var meshFilter = GameObjectUtil.AssureComponent<MeshFilter>(meshObj);
-                meshFilter.mesh = uMesh.mesh;
+                meshFilter.mesh = uMesh.Mesh;
                 var renderer = GameObjectUtil.AssureComponent<MeshRenderer>(meshObj);
                 renderer.material = new UnityEngine.Material(Shader.Find("Standard"));
             }
@@ -96,25 +75,13 @@ namespace PLATEAU.CityGrid
 
         private class UnityMesh
         {
-            public Mesh mesh;
-            public string name;
+            public readonly Mesh Mesh;
+            public readonly string Name;
 
             public UnityMesh(Mesh mesh, string name)
             {
-                this.mesh = mesh;
-                this.name = name;
-            }
-
-            public override string ToString()
-            {
-                var sb = new StringBuilder();
-                sb.Append($"UnityMesh name={this.name}\n");
-                sb.Append($"verticesCount={this.mesh.vertexCount}\nindices = ");
-                for (int i = 0; i < this.mesh.triangles.Length; i++)
-                {
-                    sb.Append($"{this.mesh.triangles[i]} , ");
-                }
-                return sb.ToString();
+                this.Mesh = mesh;
+                this.Name = name;
             }
         }
     }
