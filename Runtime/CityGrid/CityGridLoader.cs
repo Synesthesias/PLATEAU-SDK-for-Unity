@@ -10,17 +10,24 @@ namespace PLATEAU.CityGrid
     public class CityGridLoader : MonoBehaviour
     {
         [SerializeField] private string gmlRelativePathFromAssets;
+        [SerializeField] private int numGridX = 10;
+        [SerializeField] private int numGridY = 10;
 
         #if UNITY_EDITOR
         public void Load()
         {
+            if (this.numGridX <= 0 || this.numGridY <= 0)
+            {
+                Debug.LogError("numGrid の値を1以上にしてください");
+                return;
+            }
             string gmlAbsolutePath = Application.dataPath + "/" + this.gmlRelativePathFromAssets;
             CitygmlParserParams parserParams = new CitygmlParserParams(true, true, false);
             var cityModel = CityGml.Load(gmlAbsolutePath, parserParams, DllLogCallback.UnityLogCallbacks);
             var meshMerger = new MeshMerger();
             var logger = new DllLogger();
             logger.SetLogCallbacks(DllLogCallback.UnityLogCallbacks);
-            var plateauPolygons = meshMerger.GridMerge(cityModel, CityObjectType.COT_All, 10, 10, logger);
+            var plateauPolygons = meshMerger.GridMerge(cityModel, CityObjectType.COT_All, this.numGridX, this.numGridY, logger);
             int numPolygons = plateauPolygons.Length;
             var unityMeshes = new UnityMesh[numPolygons];
             for (int i = 0; i < numPolygons; i++)
