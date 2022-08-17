@@ -14,6 +14,7 @@ namespace PLATEAU.CityGrid
     {
         public static UnityMeshWithName Convert(PlateauPolygon plateauPoly)
         {
+            // TODO コメントを整備したい
             var mesh = new Mesh();
             int numVerts = plateauPoly.VertexCount;
             var unityVerts = new Vector3[numVerts];
@@ -25,14 +26,6 @@ namespace PLATEAU.CityGrid
             mesh.vertices = unityVerts;
 
             var plateauIndices = plateauPoly.Indices.ToList();
-            //
-            // var sb = new StringBuilder("indices : ");
-            // for (int i = 0; i < numIndices; i++)
-            // {
-            //     sb.Append(plateauIndices[i]);
-            //     sb.Append(", ");
-            // }
-            // Debug.Log(sb.ToString());
 
             var multiTexture = plateauPoly.GetMultiTexture();
             int currentSubMeshStart = 0;
@@ -88,7 +81,10 @@ namespace PLATEAU.CityGrid
             meshFilter.mesh = Mesh;
             var renderer = GameObjectUtil.AssureComponent<MeshRenderer>(meshObj);
             var materials = new UnityEngine.Material[Mesh.subMeshCount];
-            for(int i=0; i<materials.Length; i++) materials[i] = new  UnityEngine.Material(Shader.Find("Standard"));
+            for (int i = 0; i < materials.Length; i++)
+            {
+                materials[i] = new  UnityEngine.Material(Shader.Find("Standard"));
+            }
             renderer.materials = materials;
         }
     }

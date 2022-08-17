@@ -24,17 +24,22 @@ namespace PLATEAU.CityGrid
             string gmlAbsolutePath = Application.dataPath + "/" + this.gmlRelativePathFromAssets;
             CitygmlParserParams parserParams = new CitygmlParserParams(true, true, false);
             var cityModel = CityGml.Load(gmlAbsolutePath, parserParams, DllLogCallback.UnityLogCallbacks);
-            var meshMerger = new MeshMerger();
-            var logger = new DllLogger();
-            logger.SetLogCallbacks(DllLogCallback.UnityLogCallbacks);
-            var plateauPolygons = meshMerger.GridMerge(cityModel, CityObjectType.COT_All, this.numGridX, this.numGridY, logger);
-            int numPolygons = plateauPolygons.Length;
-            var unityMeshes = new UnityMeshWithName[numPolygons];
-            for (int i = 0; i < numPolygons; i++)
+            using (var meshMerger = new MeshMerger())
             {
-                unityMeshes[i] = PlateauPolygonConverter.Convert(plateauPolygons[i]);
+                var logger = new DllLogger();
+                logger.SetLogCallbacks(DllLogCallback.UnityLogCallbacks);
+                var plateauPolygons = meshMerger.GridMerge(cityModel, CityObjectType.COT_All, this.numGridX,
+                    this.numGridY, logger);
+                int numPolygons = plateauPolygons.Length;
+                var unityMeshes = new UnityMeshWithName[numPolygons];
+                for (int i = 0; i < numPolygons; i++)
+                {
+                    unityMeshes[i] = PlateauPolygonConverter.Convert(plateauPolygons[i]);
+                }
+
+                PlaceGridMeshes(unityMeshes,
+                    GmlFileNameParser.FileNameWithoutExtension(this.gmlRelativePathFromAssets));
             }
-            PlaceGridMeshes(unityMeshes, GmlFileNameParser.FileNameWithoutExtension(this.gmlRelativePathFromAssets));
         }
         #endif
 
