@@ -26,13 +26,17 @@ namespace PLATEAU.CityGrid
             
             // 頂点をコピーします。
             int numVerts = plateauPoly.VertexCount;
+            var plateauUv1 = plateauPoly.GetUv1();
             var unityVerts = new Vector3[numVerts];
+            var unityUv1 = new Vector2[numVerts];
             for (int i = 0; i < numVerts; i++)
             {
                 var vert = plateauPoly.GetVertex(i);
                 unityVerts[i] = new Vector3((float)vert.X, (float)vert.Y, (float)vert.Z);
+                unityUv1[i] = new Vector2(plateauUv1[i].X, plateauUv1[i].Y);
             }
             mesh.vertices = unityVerts;
+            mesh.uv = unityUv1;
 
             // Indices(Triangles)をコピーします。
             // サブメッシュごとに行います。

@@ -12,6 +12,14 @@ namespace PLATEAU.CityGML
         {
         }
 
+        public PlateauVector2f[] GetUv1()
+        {
+            var uv1 = new PlateauVector2f[VertexCount];
+            var result = NativeMethods.plateau_polygon_get_uv1(Handle, uv1);
+            DLLUtil.CheckDllError(result);
+            return uv1;
+        }
+
         public MultiTexture GetMultiTexture()
         {
             int numTexture = DLLUtil.GetNativeValue<int>(Handle,

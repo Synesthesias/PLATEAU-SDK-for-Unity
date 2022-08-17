@@ -709,5 +709,10 @@ namespace PLATEAU.Interop
             [In] IntPtr plateauPolygonPtr,
             int[] outVertexIndexArray,
             IntPtr[] outTexturePtrArray);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_polygon_get_uv1(
+            [In] IntPtr plateauPolygonPtr,
+            PlateauVector2f[] outUvPosArray);
     }
 }
