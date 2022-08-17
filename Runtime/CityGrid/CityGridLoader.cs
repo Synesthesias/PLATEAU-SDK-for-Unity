@@ -31,10 +31,10 @@ namespace PLATEAU.CityGrid
                 var plateauPolygons = meshMerger.GridMerge(cityModel, CityObjectType.COT_All, this.numGridX,
                     this.numGridY, logger);
                 int numPolygons = plateauPolygons.Length;
-                var unityMeshes = new UnityMeshWithName[numPolygons];
+                var unityMeshes = new UnityConvertedMesh[numPolygons];
                 for (int i = 0; i < numPolygons; i++)
                 {
-                    unityMeshes[i] = PlateauPolygonConverter.Convert(plateauPolygons[i]);
+                    unityMeshes[i] = PlateauPolygonConverter.Convert(plateauPolygons[i], gmlAbsolutePath);
                 }
 
                 PlaceGridMeshes(unityMeshes,
@@ -43,7 +43,7 @@ namespace PLATEAU.CityGrid
         }
         #endif
 
-        private static void PlaceGridMeshes(UnityMeshWithName[] unityMeshes, string parentObjName)
+        private static void PlaceGridMeshes(UnityConvertedMesh[] unityMeshes, string parentObjName)
         {
             var parentTrans = GameObjectUtil.AssureGameObject(parentObjName).transform;
             foreach (var uMesh in unityMeshes)
