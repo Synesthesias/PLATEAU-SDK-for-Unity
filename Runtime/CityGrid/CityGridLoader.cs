@@ -62,6 +62,7 @@ namespace PLATEAU.CityGrid
             mesh.triangles = unityTriangles;
             mesh.RecalculateNormals();
             mesh.RecalculateTangents();
+            mesh.RecalculateBounds();
             var unityMesh = new UnityMesh(mesh, plateauPoly.ID);
             return unityMesh;
         }
