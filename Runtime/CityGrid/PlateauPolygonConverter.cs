@@ -21,7 +21,14 @@ namespace PLATEAU.CityGrid
         /// </summary>
         public static async Task<UnityConvertedMesh> Convert(PlateauPolygon plateauPoly, string gmlAbsolutePath)
         {
-            var mesh = CopyVerticesAndUV1(plateauPoly);
+            var (unityVerts, unityUv1) = await Task.Run(()=>CopyVerticesAndUV1(plateauPoly));
+            
+            var mesh = new Mesh
+            {
+                vertices = unityVerts,
+                uv = unityUv1
+            };
+            
             CopyIndicesPerSubMeshes(plateauPoly, mesh, out var plateauTextures);
 
             PostProcess(mesh);
@@ -30,7 +37,7 @@ namespace PLATEAU.CityGrid
             return unityMesh;
         }
 
-        private static Mesh CopyVerticesAndUV1(PlateauPolygon plateauPoly)
+        private static (Vector3[] unityVerts, Vector2[] unityUv1) CopyVerticesAndUV1(PlateauPolygon plateauPoly)
         {
             int numVerts = plateauPoly.VertexCount;
             var plateauUv1 = plateauPoly.GetUv1();
@@ -42,13 +49,7 @@ namespace PLATEAU.CityGrid
                 unityVerts[i] = new Vector3((float)vert.X, (float)vert.Y, (float)vert.Z);
                 unityUv1[i] = new Vector2(plateauUv1[i].X, plateauUv1[i].Y);
             }
-
-            var mesh = new Mesh
-            {
-                vertices = unityVerts,
-                uv = unityUv1
-            };
-            return mesh;
+            return (unityVerts, unityUv1);
         }
 
         private static void CopyIndicesPerSubMeshes(PlateauPolygon plateauPoly, Mesh mesh, out List<Texture> plateauTextures)
