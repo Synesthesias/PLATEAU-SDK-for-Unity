@@ -1,13 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using PLATEAU.CityGML;
-using PLATEAU.Util;
 using PLATEAU.Util.Async;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.Networking;
 using Texture = PLATEAU.CityGML.Texture;
@@ -85,7 +82,6 @@ namespace PLATEAU.CityGrid
             {
                 if (plateauTextures[i] == null) continue;
                 string textureFullPath = Path.GetFullPath(Path.Combine(gmlAbsolutePath, "../", plateauTextures[i].Url));
-                EditorUtility.DisplayProgressBar("Loading Texture...", textureFullPath, (float)i / plateauTextures.Count);
                 Debug.Log(textureFullPath);
                 var request = UnityWebRequestTexture.GetTexture($"file://{textureFullPath}");
                 request.timeout = 1;
@@ -99,18 +95,7 @@ namespace PLATEAU.CityGrid
                 UnityEngine.Texture texture = ((DownloadHandlerTexture)request.downloadHandler).texture;
                 unityMesh.AddTexture(i, texture);
                 
-                // unityMesh.AddTexture(texture);
-                // TODO 仮（Assetsフォルダ内でないと動かない）
-                // string textureAssetsPath = PathUtil.FullPathToAssetsPath(textureFullPath);
-                // UnityEngine.Texture texture =
-                //     AssetDatabase.LoadAssetAtPath<UnityEngine.Texture>(textureAssetsPath);
-                // if (texture == null)
-                // {
-                //     Debug.LogError($"texture {textureAssetsPath} is not found.");
-                // }
-                // unityMesh.AddTexture(i, texture);
             }
-            EditorUtility.ClearProgressBar();
 
             return unityMesh;
         }

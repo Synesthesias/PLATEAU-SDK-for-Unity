@@ -9,7 +9,7 @@ namespace PLATEAU.Util.Async
     /// UnityWebRequest を await できるようにするための拡張です。
     /// <seealso href="https://zenn.dev/meson/articles/implement-awaiter-for-unity"/>
     /// </summary>
-    public static class UnityWebRequestExtension
+    internal static class UnityWebRequestExtension
     {
         public static UnityWebRequestAwaitable GetAwaiter(this UnityWebRequestAsyncOperation operation)
         {
