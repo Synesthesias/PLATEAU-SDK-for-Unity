@@ -32,10 +32,10 @@ namespace PLATEAU.CityGrid
                 // 処理A :
                 // Unityでメッシュを作るためのデータを構築します。
                 // 実際のメッシュデータを触らないので、Task.Run で別のスレッドで処理できます。
-                var meshDataArray = await Task.Run(async () =>
+                var meshDataArray = await Task.Run( () =>
                 {
                     var plateauPolygons = LoadGmlAndMergePolygons(meshMerger, gmlAbsolutePath, this.numGridX, this.numGridY);
-                    var meshDataArray = await ConvertToUnityMeshes(plateauPolygons, gmlAbsolutePath);
+                    var meshDataArray = ConvertToUnityMeshes(plateauPolygons, gmlAbsolutePath);
                     return meshDataArray;
                 });
 
@@ -81,16 +81,14 @@ namespace PLATEAU.CityGrid
         }
 
         /// <summary> <see cref="PlateauPolygon"/> の配列をUnityのメッシュに変換します。 </summary>
-        private static async Task<ConvertedMeshData[]> ConvertToUnityMeshes(IReadOnlyList<PlateauPolygon> plateauPolygons, string gmlAbsolutePath)
+        private static ConvertedMeshData[] ConvertToUnityMeshes(IReadOnlyList<PlateauPolygon> plateauPolygons, string gmlAbsolutePath)
         {
             int numPolygons = plateauPolygons.Count;
             var meshDataArray = new ConvertedMeshData[numPolygons];
-            // var convertTasks = new Task<ConvertedMeshData>[numPolygons];
             for (int i = 0; i < numPolygons; i++)
             {
-                meshDataArray[i] = await PlateauPolygonConverter.Convert(plateauPolygons[i], gmlAbsolutePath);
+                meshDataArray[i] = PlateauPolygonConverter.Convert(plateauPolygons[i]);
             }
-            // var meshDataArray = await Task.WhenAll(convertTasks);
 
             return meshDataArray;
         }

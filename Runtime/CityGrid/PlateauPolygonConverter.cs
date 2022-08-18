@@ -19,12 +19,11 @@ namespace PLATEAU.CityGrid
         /// <summary>
         /// <see cref="PlateauPolygon"/> を Unity向けのデータ に変換します。
         /// </summary>
-        public static async Task<ConvertedMeshData> Convert(PlateauPolygon plateauPoly, string gmlAbsolutePath)
+        public static ConvertedMeshData Convert(PlateauPolygon plateauPoly)
         {
-            var (unityVerts, unityUv1) = await Task.Run(()=>CopyVerticesAndUV1(plateauPoly));
-            var (subMeshTriangles, plateauTextures) = await Task.Run(() => CopyIndicesPerSubMeshes(plateauPoly));
-            
-            
+            var (unityVerts, unityUv1) = CopyVerticesAndUV1(plateauPoly);
+            var (subMeshTriangles, plateauTextures) = CopyIndicesPerSubMeshes(plateauPoly);
+
             var meshData = new ConvertedMeshData(unityVerts, unityUv1, subMeshTriangles, plateauTextures, plateauPoly.ID);
             return meshData;
         }
