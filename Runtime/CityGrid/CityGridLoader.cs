@@ -34,7 +34,6 @@ namespace PLATEAU.CityGrid
                     this.numGridY, logger);
                 int numPolygons = plateauPolygons.Length;
                 var unityMeshes = new UnityConvertedMesh[numPolygons];
-                Debug.Log($"numPolygons = {numPolygons}");
                 for (int i = 0; i < numPolygons; i++)
                 {
                     // TODO もっと効率的な非同期方法があるはず

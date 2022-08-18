@@ -77,14 +77,14 @@ namespace PLATEAU.CityGrid
             mesh.RecalculateBounds();
             var unityMesh = new UnityConvertedMesh(mesh, plateauPoly.ID);
 
-            // テクスチャに関して
+            // テクスチャのロード
             for (int i = 0; i < mesh.subMeshCount; i++)
             {
                 if (plateauTextures[i] == null) continue;
                 string textureFullPath = Path.GetFullPath(Path.Combine(gmlAbsolutePath, "../", plateauTextures[i].Url));
                 Debug.Log(textureFullPath);
                 var request = UnityWebRequestTexture.GetTexture($"file://{textureFullPath}");
-                request.timeout = 1;
+                request.timeout = 3;
                 await request.SendWebRequest();
                 
                 if (request.result != UnityWebRequest.Result.Success)
@@ -93,6 +93,7 @@ namespace PLATEAU.CityGrid
                     continue;
                 }
                 UnityEngine.Texture texture = ((DownloadHandlerTexture)request.downloadHandler).texture;
+                texture.name = Path.GetFileNameWithoutExtension(plateauTextures[i].Url);
                 unityMesh.AddTexture(i, texture);
                 
             }

@@ -19,6 +19,7 @@ namespace PLATEAU.CityGrid
         {
             Mesh = mesh;
             Name = name;
+            Mesh.name = Name;
             this.subMeshIdToTexture = new Dictionary<int, Texture>();
         }
 
@@ -41,6 +42,7 @@ namespace PLATEAU.CityGrid
                 if (this.subMeshIdToTexture.TryGetValue(i, out var tex))
                 {
                     materials[i].mainTexture = tex;
+                    materials[i].name = tex.name;
                 }
             }
             renderer.materials = materials;
