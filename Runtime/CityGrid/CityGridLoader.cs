@@ -14,9 +14,7 @@ namespace PLATEAU.CityGrid
         [SerializeField] private string gmlRelativePathFromStreamingAssets;
         [SerializeField] private int numGridX = 10;
         [SerializeField] private int numGridY = 10;
-
-        // TODO 実行時でもいけるはず
-        #if UNITY_EDITOR
+        
         public async Task Load()
         {
             if (!AreMemberVariablesOK()) return;
@@ -34,7 +32,6 @@ namespace PLATEAU.CityGrid
                     GmlFileNameParser.FileNameWithoutExtension(this.gmlRelativePathFromStreamingAssets));
             }
         }
-        #endif
 
         private bool AreMemberVariablesOK()
         {
@@ -47,12 +44,18 @@ namespace PLATEAU.CityGrid
             return true;
         }
 
+        /// <summary> gmlファイルをパースして <see cref="CityModel"/> を返します。 </summary>
         private static CityModel LoadCityModel(string gmlAbsolutePath)
         {
             CitygmlParserParams parserParams = new CitygmlParserParams(true, true, false);
             return CityGml.Load(gmlAbsolutePath, parserParams, DllLogCallback.UnityLogCallbacks);
         }
 
+        /// <summary>
+        /// gmlファイルをパースして、得られた都市をグリッドに分けて、
+        /// グリッドごとにメッシュを結合して、グリッドごとの<see cref="PlateauPolygon"/> を配列で返します。
+        /// メインスレッドでなくても動作します。
+        /// </summary>
         private static PlateauPolygon[] LoadGmlAndMergePolygons(MeshMerger meshMerger, string gmlAbsolutePath, int numGridX, int numGridY)
         {
             var cityModel = LoadCityModel(gmlAbsolutePath);
@@ -62,6 +65,7 @@ namespace PLATEAU.CityGrid
             return plateauPolygons;
         }
 
+        /// <summary> <see cref="PlateauPolygon"/> の配列をUnityのメッシュに変換します。 </summary>
         private static async Task<UnityConvertedMesh[]> ConvertToUnityMeshes(IReadOnlyList<PlateauPolygon> plateauPolygons, string gmlAbsolutePath)
         {
             int numPolygons = plateauPolygons.Count;
@@ -74,6 +78,9 @@ namespace PLATEAU.CityGrid
             return unityMeshes;
         }
         
+        /// <summary>
+        /// <see cref="UnityConvertedMesh"/>(PlateauからUnityに変換したモデルデータ) をシーンに配置します。
+        /// </summary>
         private static void PlaceGridMeshes(IEnumerable<UnityConvertedMesh> unityMeshes, string parentObjName)
         {
             var parentTrans = GameObjectUtil.AssureGameObject(parentObjName).transform;

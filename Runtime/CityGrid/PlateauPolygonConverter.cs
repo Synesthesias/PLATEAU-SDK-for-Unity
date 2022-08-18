@@ -22,14 +22,19 @@ namespace PLATEAU.CityGrid
         public static async Task<UnityConvertedMesh> Convert(PlateauPolygon plateauPoly, string gmlAbsolutePath)
         {
             var (unityVerts, unityUv1) = await Task.Run(()=>CopyVerticesAndUV1(plateauPoly));
+            var (subMeshTriangles, plateauTextures) = await Task.Run(() => CopyIndicesPerSubMeshes(plateauPoly));
             
             var mesh = new Mesh
             {
                 vertices = unityVerts,
-                uv = unityUv1
+                uv = unityUv1,
+                subMeshCount = subMeshTriangles.Count
             };
-            
-            CopyIndicesPerSubMeshes(plateauPoly, mesh, out var plateauTextures);
+            // subMesh ごとに Indices(Triangles) を UnityのMeshにコピーします。
+            for (int i = 0; i < subMeshTriangles.Count; i++)
+            {
+                mesh.SetTriangles(subMeshTriangles[i], i);
+            }
 
             PostProcess(mesh);
             var unityMesh = new UnityConvertedMesh(mesh, plateauPoly.ID);
@@ -52,13 +57,13 @@ namespace PLATEAU.CityGrid
             return (unityVerts, unityUv1);
         }
 
-        private static void CopyIndicesPerSubMeshes(PlateauPolygon plateauPoly, Mesh mesh, out List<Texture> plateauTextures)
+        private static (List<List<int>> subMeshTriangles, List<Texture> plateauTextures) CopyIndicesPerSubMeshes(PlateauPolygon plateauPoly)
         {
             var plateauIndices = plateauPoly.Indices.ToList();
             var multiTexture = plateauPoly.GetMultiTexture();
             int currentSubMeshStart = 0;
             var subMeshTriangles = new List<List<int>>();
-            plateauTextures = new List<Texture>();
+            var plateauTextures = new List<Texture>();
             Texture currentPlateauTex = null;
             // PlateauPolygon の multiTexture ごとにサブメッシュを分けます。
             for (int i = 0; i < multiTexture.Length; i++)
@@ -78,12 +83,7 @@ namespace PLATEAU.CityGrid
             int lastSubMeshCount = plateauIndices.Count - currentSubMeshStart;
             subMeshTriangles.Add(plateauIndices.GetRange(currentSubMeshStart, lastSubMeshCount));
             plateauTextures.Add(currentPlateauTex);
-            // subMesh ごとに Indices(Triangles) を UnityのMeshにコピーします。
-            mesh.subMeshCount = subMeshTriangles.Count;
-            for (int i = 0; i < subMeshTriangles.Count; i++)
-            {
-                mesh.SetTriangles(subMeshTriangles[i], i);
-            }
+            return (subMeshTriangles, plateauTextures);
         }
 
         /// <summary>
