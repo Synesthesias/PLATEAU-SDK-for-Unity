@@ -84,13 +84,13 @@ namespace PLATEAU.CityGrid
         private static async Task<ConvertedMeshData[]> ConvertToUnityMeshes(IReadOnlyList<PlateauPolygon> plateauPolygons, string gmlAbsolutePath)
         {
             int numPolygons = plateauPolygons.Count;
-            // var meshDataArray = new ConvertedMeshData[numPolygons];
-            var convertTasks = new Task<ConvertedMeshData>[numPolygons];
+            var meshDataArray = new ConvertedMeshData[numPolygons];
+            // var convertTasks = new Task<ConvertedMeshData>[numPolygons];
             for (int i = 0; i < numPolygons; i++)
             {
-                convertTasks[i] = PlateauPolygonConverter.Convert(plateauPolygons[i], gmlAbsolutePath);
+                meshDataArray[i] = await PlateauPolygonConverter.Convert(plateauPolygons[i], gmlAbsolutePath);
             }
-            var meshDataArray = await Task.WhenAll(convertTasks);
+            // var meshDataArray = await Task.WhenAll(convertTasks);
 
             return meshDataArray;
         }
