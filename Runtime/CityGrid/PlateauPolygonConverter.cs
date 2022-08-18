@@ -136,41 +136,5 @@ namespace PLATEAU.CityGrid
     }
     
     
-    public class UnityConvertedMesh
-    {
-        public Mesh Mesh { get; }
-        public string Name { get; }
-        private Dictionary<int, UnityEngine.Texture> subMeshIdToTexture;
-
-        public UnityConvertedMesh(Mesh mesh, string name)
-        {
-            Mesh = mesh;
-            Name = name;
-            this.subMeshIdToTexture = new Dictionary<int, UnityEngine.Texture>();
-        }
-
-        public void AddTexture(int subMeshId, UnityEngine.Texture tex)
-        {
-            this.subMeshIdToTexture.Add(subMeshId, tex);
-        }
-
-        public void PlaceToScene(Transform parentTrans)
-        {
-            if (Mesh.vertexCount <= 0) return;
-            var meshObj = GameObjectUtil.AssureGameObjectInChild(Name, parentTrans);
-            var meshFilter = GameObjectUtil.AssureComponent<MeshFilter>(meshObj);
-            meshFilter.mesh = Mesh;
-            var renderer = GameObjectUtil.AssureComponent<MeshRenderer>(meshObj);
-            var materials = new UnityEngine.Material[Mesh.subMeshCount];
-            for (int i = 0; i < Mesh.subMeshCount; i++)
-            {
-                materials[i] = new UnityEngine.Material(Shader.Find("Standard"));
-                if (this.subMeshIdToTexture.TryGetValue(i, out var tex))
-                {
-                    materials[i].mainTexture = tex;
-                }
-            }
-            renderer.materials = materials;
-        }
-    }
+    
 }
