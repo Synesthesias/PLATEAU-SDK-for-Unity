@@ -17,29 +17,16 @@ namespace PLATEAU.CityGrid
     internal static class PlateauPolygonConverter
     {
         /// <summary>
-        /// <see cref="PlateauPolygon"/> を Unityの Mesh に変換します。
+        /// <see cref="PlateauPolygon"/> を Unity向けのデータ に変換します。
         /// </summary>
-        public static async Task<UnityConvertedMesh> Convert(PlateauPolygon plateauPoly, string gmlAbsolutePath)
+        public static async Task<ConvertedMeshData> Convert(PlateauPolygon plateauPoly, string gmlAbsolutePath)
         {
             var (unityVerts, unityUv1) = await Task.Run(()=>CopyVerticesAndUV1(plateauPoly));
             var (subMeshTriangles, plateauTextures) = await Task.Run(() => CopyIndicesPerSubMeshes(plateauPoly));
             
-            var mesh = new Mesh
-            {
-                vertices = unityVerts,
-                uv = unityUv1,
-                subMeshCount = subMeshTriangles.Count
-            };
-            // subMesh ごとに Indices(Triangles) を UnityのMeshにコピーします。
-            for (int i = 0; i < subMeshTriangles.Count; i++)
-            {
-                mesh.SetTriangles(subMeshTriangles[i], i);
-            }
-
-            PostProcess(mesh);
-            var unityMesh = new UnityConvertedMesh(mesh, plateauPoly.ID);
-            await LoadTextures(unityMesh, plateauTextures, gmlAbsolutePath);
-            return unityMesh;
+            
+            var meshData = new ConvertedMeshData(unityVerts, unityUv1, subMeshTriangles, plateauTextures, plateauPoly.ID);
+            return meshData;
         }
 
         private static (Vector3[] unityVerts, Vector2[] unityUv1) CopyVerticesAndUV1(PlateauPolygon plateauPoly)
@@ -84,38 +71,6 @@ namespace PLATEAU.CityGrid
             subMeshTriangles.Add(plateauIndices.GetRange(currentSubMeshStart, lastSubMeshCount));
             plateauTextures.Add(currentPlateauTex);
             return (subMeshTriangles, plateauTextures);
-        }
-
-        /// <summary>
-        /// メッシュの形状を変更したあとに必要な後処理です。
-        /// </summary>
-        private static void PostProcess(Mesh mesh)
-        {
-            mesh.RecalculateNormals();
-            mesh.RecalculateTangents();
-            mesh.RecalculateBounds();
-        }
-
-        private static async Task LoadTextures(UnityConvertedMesh unityMesh, IReadOnlyList<Texture> plateauTextures, string gmlAbsolutePath)
-        {
-            for (int i = 0; i < unityMesh.Mesh.subMeshCount; i++)
-            {
-                if (plateauTextures[i] == null) continue;
-                string textureFullPath = Path.GetFullPath(Path.Combine(gmlAbsolutePath, "../", plateauTextures[i].Url));
-                var request = UnityWebRequestTexture.GetTexture($"file://{textureFullPath}");
-                request.timeout = 3;
-                await request.SendWebRequest();
-                
-                if (request.result != UnityWebRequest.Result.Success)
-                {
-                    Debug.LogError($"failed to load texture : {textureFullPath} result = {(int)request.result}");
-                    continue;
-                }
-                UnityEngine.Texture texture = ((DownloadHandlerTexture)request.downloadHandler).texture;
-                texture.name = Path.GetFileNameWithoutExtension(plateauTextures[i].Url);
-                unityMesh.AddTexture(i, texture);
-                
-            }
         }
 
 

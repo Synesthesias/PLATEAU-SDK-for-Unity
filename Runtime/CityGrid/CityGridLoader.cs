@@ -22,14 +22,29 @@ namespace PLATEAU.CityGrid
             
             using (var meshMerger = new MeshMerger())
             {
-                // この処理は別スレッドで可能
-                var plateauPolygons = await Task.Run(() => LoadGmlAndMergePolygons(meshMerger, gmlAbsolutePath, this.numGridX, this.numGridY));
-                
-                // この処理はメインスレッドでのみ可能
-                var unityMeshes = await ConvertToUnityMeshes(plateauPolygons, gmlAbsolutePath);
+                // ここの処理は 処理A と 処理B に分割されています。
+                // Unityのメッシュデータを操作するのは 処理B のみであり、
+                // 処理A はメッシュ構築のための準備(データを List, 配列などで保持する)を
+                // するのみでメッシュデータは触らないこととしています。
+                // なぜなら、メッシュデータを操作可能なのはメインスレッドのみなので、
+                // 処理Aを並列処理するために必要だからです。
 
-                PlaceGridMeshes(unityMeshes,
-                    GmlFileNameParser.FileNameWithoutExtension(this.gmlRelativePathFromStreamingAssets));
+                // 処理A :
+                // Unityでメッシュを作るためのデータを構築します。
+                // 実際のメッシュデータを触らないので、Task.Run で別のスレッドで処理できます。
+                var meshDataArray = await Task.Run(async () =>
+                {
+                    var plateauPolygons = LoadGmlAndMergePolygons(meshMerger, gmlAbsolutePath, this.numGridX, this.numGridY);
+                    var meshDataArray = await ConvertToUnityMeshes(plateauPolygons, gmlAbsolutePath);
+                    return meshDataArray;
+                });
+
+                // 処理B :
+                // 実際にメッシュを操作してシーンに配置します。
+                // こちらはメインスレッドでのみ実行可能です。
+                await PlaceGridMeshes(meshDataArray,
+                    GmlFileNameParser.FileNameWithoutExtension(this.gmlRelativePathFromStreamingAssets),
+                    gmlAbsolutePath);
             }
         }
 
@@ -66,27 +81,29 @@ namespace PLATEAU.CityGrid
         }
 
         /// <summary> <see cref="PlateauPolygon"/> の配列をUnityのメッシュに変換します。 </summary>
-        private static async Task<UnityConvertedMesh[]> ConvertToUnityMeshes(IReadOnlyList<PlateauPolygon> plateauPolygons, string gmlAbsolutePath)
+        private static async Task<ConvertedMeshData[]> ConvertToUnityMeshes(IReadOnlyList<PlateauPolygon> plateauPolygons, string gmlAbsolutePath)
         {
             int numPolygons = plateauPolygons.Count;
-            var unityMeshes = new UnityConvertedMesh[numPolygons];
+            // var meshDataArray = new ConvertedMeshData[numPolygons];
+            var convertTasks = new Task<ConvertedMeshData>[numPolygons];
             for (int i = 0; i < numPolygons; i++)
             {
-                unityMeshes[i] = await PlateauPolygonConverter.Convert(plateauPolygons[i], gmlAbsolutePath);
+                convertTasks[i] = PlateauPolygonConverter.Convert(plateauPolygons[i], gmlAbsolutePath);
             }
+            var meshDataArray = await Task.WhenAll(convertTasks);
 
-            return unityMeshes;
+            return meshDataArray;
         }
         
         /// <summary>
-        /// <see cref="UnityConvertedMesh"/>(PlateauからUnityに変換したモデルデータ) をシーンに配置します。
+        /// <see cref="ConvertedMeshData"/>(PlateauからUnity向けに変換したモデルデータ) をメッシュとして実体化してシーンに配置します。
         /// </summary>
-        private static void PlaceGridMeshes(IEnumerable<UnityConvertedMesh> unityMeshes, string parentObjName)
+        private static async Task PlaceGridMeshes(IEnumerable<ConvertedMeshData> unityMeshes, string parentObjName, string gmlAbsolutePath)
         {
             var parentTrans = GameObjectUtil.AssureGameObject(parentObjName).transform;
             foreach (var uMesh in unityMeshes)
             {
-                uMesh.PlaceToScene(parentTrans);
+                await uMesh.PlaceToScene(parentTrans, gmlAbsolutePath);
             }
         }
         
