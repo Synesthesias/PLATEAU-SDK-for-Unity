@@ -19,7 +19,7 @@ namespace PLATEAU.Editor.CityGrid
                 var task = gridLoader.Load();
                 task.ContinueWith(t =>
                 {
-                    if (t.Exception is AggregateException age)
+                    if (t.Exception is { } age)
                     {
                         var inner = age.InnerException;
                         if (inner == null) return;
