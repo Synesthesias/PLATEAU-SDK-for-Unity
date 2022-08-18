@@ -3,8 +3,10 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using PLATEAU.CityGML;
 using PLATEAU.Util;
+using PLATEAU.Util.Async;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -20,8 +22,9 @@ namespace PLATEAU.CityGrid
         /// <summary>
         /// <see cref="PlateauPolygon"/> を Unityの Mesh に変換します。
         /// </summary>
-        public static UnityConvertedMesh Convert(PlateauPolygon plateauPoly, string gmlAbsolutePath)
+        public static async Task<UnityConvertedMesh> Convert(PlateauPolygon plateauPoly, string gmlAbsolutePath)
         {
+            Debug.Log($"converting. threadId={Thread.CurrentThread.ManagedThreadId}");
             var mesh = new Mesh();
             
             // 頂点をコピーします。
@@ -82,50 +85,30 @@ namespace PLATEAU.CityGrid
             {
                 if (plateauTextures[i] == null) continue;
                 string textureFullPath = Path.GetFullPath(Path.Combine(gmlAbsolutePath, "../", plateauTextures[i].Url));
-                // EditorUtility.DisplayProgressBar("Loading Texture...", textureFullPath, (float)i / plateauTextures.Count);
-                // UnityEngine.Texture texture = null;
-                // Debug.Log(textureFullPath);
-                // var request = UnityWebRequestTexture.GetTexture($"file://{textureFullPath}");
-                // request.timeout = 2;
-                // request.SendWebRequest();
-                // // TODO ここは非同期処理にしたい
-                // float loadTime = 0f;
-                // bool isLoadSuccess = true;
-                // // while (!request.isDone)
-                // // {
-                // //     Thread.Sleep(50);
-                // //     loadTime += 50f / 1000f;
-                // //     if (loadTime > 1f)
-                // //     {
-                // //         isLoadSuccess = false;
-                // //         break;
-                // //     }
-                // // }
-                // Thread.Sleep(300);
-                // //
-                // if (request.result != UnityWebRequest.Result.Success)
-                // {
-                //     isLoadSuccess = false;
-                // }
-                //
-                // if (!isLoadSuccess)
-                // {
-                //     Debug.LogError($"failed to load texture : {textureFullPath}");
-                //     // TODO 要整理
-                //     unityMesh.AddTexture(null);
-                //     continue;
-                // }
-                // texture = ((DownloadHandlerTexture)request.downloadHandler).texture;
+                EditorUtility.DisplayProgressBar("Loading Texture...", textureFullPath, (float)i / plateauTextures.Count);
+                Debug.Log(textureFullPath);
+                var request = UnityWebRequestTexture.GetTexture($"file://{textureFullPath}");
+                request.timeout = 1;
+                await request.SendWebRequest();
+                
+                if (request.result != UnityWebRequest.Result.Success)
+                {
+                    Debug.LogError($"failed to load texture : {textureFullPath} result = {(int)request.result}");
+                    continue;
+                }
+                UnityEngine.Texture texture = ((DownloadHandlerTexture)request.downloadHandler).texture;
+                unityMesh.AddTexture(i, texture);
+                
                 // unityMesh.AddTexture(texture);
                 // TODO 仮（Assetsフォルダ内でないと動かない）
-                string textureAssetsPath = PathUtil.FullPathToAssetsPath(textureFullPath);
-                UnityEngine.Texture texture =
-                    AssetDatabase.LoadAssetAtPath<UnityEngine.Texture>(textureAssetsPath);
-                if (texture == null)
-                {
-                    Debug.LogError($"texture {textureAssetsPath} is not found.");
-                }
-                unityMesh.AddTexture(i, texture);
+                // string textureAssetsPath = PathUtil.FullPathToAssetsPath(textureFullPath);
+                // UnityEngine.Texture texture =
+                //     AssetDatabase.LoadAssetAtPath<UnityEngine.Texture>(textureAssetsPath);
+                // if (texture == null)
+                // {
+                //     Debug.LogError($"texture {textureAssetsPath} is not found.");
+                // }
+                // unityMesh.AddTexture(i, texture);
             }
             EditorUtility.ClearProgressBar();
 

@@ -1,6 +1,9 @@
-﻿using PLATEAU.CityGrid;
+﻿using System;
+using System.Threading.Tasks;
+using PLATEAU.CityGrid;
 using PLATEAU.Editor.EditorWindowCommon;
 using UnityEditor;
+using UnityEngine;
 
 namespace PLATEAU.Editor.CityGrid
 {
@@ -13,7 +16,16 @@ namespace PLATEAU.Editor.CityGrid
             base.OnInspectorGUI();
             if (PlateauEditorStyle.MainButton("ロード"))
             {
-                gridLoader.Load();
+                var task = gridLoader.Load();
+                task.ContinueWith(t =>
+                {
+                    if (t.Exception is AggregateException age)
+                    {
+                        var inner = age.InnerException;
+                        if (inner == null) return;
+                        Debug.LogError($"{inner.Message}\n{inner.StackTrace}");
+                    }
+                });
             }
         }     
     }
