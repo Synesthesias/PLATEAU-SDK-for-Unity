@@ -21,10 +21,17 @@ namespace PLATEAU.CityGrid
         /// </summary>
         public static async Task<UnityConvertedMesh> Convert(PlateauPolygon plateauPoly, string gmlAbsolutePath)
         {
-            Debug.Log($"converting. threadId={Thread.CurrentThread.ManagedThreadId}");
-            var mesh = new Mesh();
-            
-            // 頂点をコピーします。
+            var mesh = CopyVerticesAndUV1(plateauPoly);
+            CopyIndicesPerSubMeshes(plateauPoly, mesh, out var plateauTextures);
+
+            PostProcess(mesh);
+            var unityMesh = new UnityConvertedMesh(mesh, plateauPoly.ID);
+            await LoadTextures(unityMesh, plateauTextures, gmlAbsolutePath);
+            return unityMesh;
+        }
+
+        private static Mesh CopyVerticesAndUV1(PlateauPolygon plateauPoly)
+        {
             int numVerts = plateauPoly.VertexCount;
             var plateauUv1 = plateauPoly.GetUv1();
             var unityVerts = new Vector3[numVerts];
@@ -35,16 +42,22 @@ namespace PLATEAU.CityGrid
                 unityVerts[i] = new Vector3((float)vert.X, (float)vert.Y, (float)vert.Z);
                 unityUv1[i] = new Vector2(plateauUv1[i].X, plateauUv1[i].Y);
             }
-            mesh.vertices = unityVerts;
-            mesh.uv = unityUv1;
 
-            // Indices(Triangles)をコピーします。
-            // サブメッシュごとに行います。
+            var mesh = new Mesh
+            {
+                vertices = unityVerts,
+                uv = unityUv1
+            };
+            return mesh;
+        }
+
+        private static void CopyIndicesPerSubMeshes(PlateauPolygon plateauPoly, Mesh mesh, out List<Texture> plateauTextures)
+        {
             var plateauIndices = plateauPoly.Indices.ToList();
             var multiTexture = plateauPoly.GetMultiTexture();
             int currentSubMeshStart = 0;
             var subMeshTriangles = new List<List<int>>();
-            var plateauTextures = new List<Texture>();
+            plateauTextures = new List<Texture>();
             Texture currentPlateauTex = null;
             // PlateauPolygon の multiTexture ごとにサブメッシュを分けます。
             for (int i = 0; i < multiTexture.Length; i++)
@@ -70,19 +83,24 @@ namespace PLATEAU.CityGrid
             {
                 mesh.SetTriangles(subMeshTriangles[i], i);
             }
-            
-            // 形状を変更したあとに必要な後処理です。
+        }
+
+        /// <summary>
+        /// メッシュの形状を変更したあとに必要な後処理です。
+        /// </summary>
+        private static void PostProcess(Mesh mesh)
+        {
             mesh.RecalculateNormals();
             mesh.RecalculateTangents();
             mesh.RecalculateBounds();
-            var unityMesh = new UnityConvertedMesh(mesh, plateauPoly.ID);
+        }
 
-            // テクスチャのロード
-            for (int i = 0; i < mesh.subMeshCount; i++)
+        private static async Task LoadTextures(UnityConvertedMesh unityMesh, IReadOnlyList<Texture> plateauTextures, string gmlAbsolutePath)
+        {
+            for (int i = 0; i < unityMesh.Mesh.subMeshCount; i++)
             {
                 if (plateauTextures[i] == null) continue;
                 string textureFullPath = Path.GetFullPath(Path.Combine(gmlAbsolutePath, "../", plateauTextures[i].Url));
-                Debug.Log(textureFullPath);
                 var request = UnityWebRequestTexture.GetTexture($"file://{textureFullPath}");
                 request.timeout = 3;
                 await request.SendWebRequest();
@@ -97,8 +115,6 @@ namespace PLATEAU.CityGrid
                 unityMesh.AddTexture(i, texture);
                 
             }
-
-            return unityMesh;
         }
 
 

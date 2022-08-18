@@ -10,8 +10,8 @@ namespace PLATEAU.CityGrid
     /// </summary>
     internal class UnityConvertedMesh
     {
-        private Mesh Mesh { get; }
-        private string Name { get; }
+        public Mesh Mesh { get; }
+        public string Name { get; }
         private readonly Dictionary<int, Texture> subMeshIdToTexture;
         private const string shaderName = "Standard";
 

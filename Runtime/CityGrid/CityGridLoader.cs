@@ -68,7 +68,6 @@ namespace PLATEAU.CityGrid
             var unityMeshes = new UnityConvertedMesh[numPolygons];
             for (int i = 0; i < numPolygons; i++)
             {
-                // TODO もっと効率的な非同期方法があるはず
                 unityMeshes[i] = await PlateauPolygonConverter.Convert(plateauPolygons[i], gmlAbsolutePath);
             }
 
