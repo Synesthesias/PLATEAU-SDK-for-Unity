@@ -1,12 +1,7 @@
 ﻿using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using PLATEAU.CityGML;
-using PLATEAU.Util.Async;
 using UnityEngine;
-using UnityEngine.Networking;
 using Texture = PLATEAU.CityGML.Texture;
 
 namespace PLATEAU.CityGrid
@@ -18,11 +13,13 @@ namespace PLATEAU.CityGrid
     {
         /// <summary>
         /// <see cref="PlateauPolygon"/> を Unity向けのデータ に変換します。
+        /// Unityのメッシュを生成する準備としてのデータ生成です。実際のメッシュはまだ触りません。
+        /// このメソッドの結果をもとに、 <see cref="ConvertedMeshData.PlaceToScene"/> メソッドで実際のメッシュを配置できます。
         /// </summary>
         public static ConvertedMeshData Convert(PlateauPolygon plateauPoly)
         {
             var (unityVerts, unityUv1) = CopyVerticesAndUV1(plateauPoly);
-            var (subMeshTriangles, plateauTextures) = CopyIndicesPerSubMeshes(plateauPoly);
+            var (subMeshTriangles, plateauTextures) = CopySubMeshInfo(plateauPoly);
 
             var meshData = new ConvertedMeshData(unityVerts, unityUv1, subMeshTriangles, plateauTextures, plateauPoly.ID);
             return meshData;
@@ -43,7 +40,7 @@ namespace PLATEAU.CityGrid
             return (unityVerts, unityUv1);
         }
 
-        private static (List<List<int>> subMeshTriangles, List<Texture> plateauTextures) CopyIndicesPerSubMeshes(PlateauPolygon plateauPoly)
+        private static (List<List<int>> subMeshTriangles, List<Texture> plateauTextures) CopySubMeshInfo(PlateauPolygon plateauPoly)
         {
             var plateauIndices = plateauPoly.Indices.ToList();
             var multiTexture = plateauPoly.GetMultiTexture();
@@ -51,10 +48,14 @@ namespace PLATEAU.CityGrid
             var subMeshTriangles = new List<List<int>>();
             var plateauTextures = new List<Texture>();
             Texture currentPlateauTex = null;
+            int numTexInfo = multiTexture.Length;
             // PlateauPolygon の multiTexture ごとにサブメッシュを分けます。
-            for (int i = 0; i < multiTexture.Length; i++)
+            for (int i = 0; i <= numTexInfo; i++)
             {
-                int nextSubMeshStart = multiTexture[i].VertexIndex;
+                int nextSubMeshStart = 
+                    (i == numTexInfo) ? 
+                        plateauIndices.Count :
+                        multiTexture[i].VertexIndex;
                 int count = nextSubMeshStart - currentSubMeshStart;
                 if (count > 0)
                 {
@@ -62,13 +63,13 @@ namespace PLATEAU.CityGrid
                     subMeshTriangles.Add(subMeshIndices);
                     plateauTextures.Add(currentPlateauTex);
                 }
-                currentSubMeshStart = nextSubMeshStart;
-                currentPlateauTex = multiTexture[i].Texture;
+
+                if (i < numTexInfo)
+                {
+                    currentSubMeshStart = nextSubMeshStart;
+                    currentPlateauTex = multiTexture[i].Texture;
+                }
             }
-            // 上のforループでは最後の subMesh までは回らないのでここで最後の1回を実行します。
-            int lastSubMeshCount = plateauIndices.Count - currentSubMeshStart;
-            subMeshTriangles.Add(plateauIndices.GetRange(currentSubMeshStart, lastSubMeshCount));
-            plateauTextures.Add(currentPlateauTex);
             return (subMeshTriangles, plateauTextures);
         }
 
