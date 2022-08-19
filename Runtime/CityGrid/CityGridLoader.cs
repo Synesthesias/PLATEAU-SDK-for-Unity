@@ -4,7 +4,9 @@ using PLATEAU.CityGML;
 using PLATEAU.Interop;
 using PLATEAU.Util;
 using PLATEAU.Util.FileNames;
+using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace PLATEAU.CityGrid
 {
@@ -45,6 +47,15 @@ namespace PLATEAU.CityGrid
             await PlaceGridMeshes(meshDataArray,
                 GmlFileNameParser.FileNameWithoutExtension(this.gmlRelativePathFromStreamingAssets),
                 gmlAbsolutePath);
+            
+            // エディター内での実行であれば、生成したメッシュ,テクスチャ等をシーンに保存したいので
+            // シーンにダーティフラグを付けます。
+            #if UNITY_EDITOR
+            if (Application.isEditor)
+            {
+                EditorSceneManager.MarkSceneDirty(SceneManager.GetActiveScene());
+            }
+            #endif
         }
 
         private bool AreMemberVariablesOK()
