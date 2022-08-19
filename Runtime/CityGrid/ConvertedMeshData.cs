@@ -116,9 +116,7 @@ namespace PLATEAU.CityGrid
                 }
                 string textureFullPath = Path.GetFullPath(Path.Combine(gmlAbsolutePath, "../", texUrl));
                 
-                // この引数で nonReadable を true にすることで、
-                // テクスチャの RawData にはアクセスできなくなりますが、メモリを削減できます。
-                var request = UnityWebRequestTexture.GetTexture($"file://{textureFullPath}", true);
+                var request = UnityWebRequestTexture.GetTexture($"file://{textureFullPath}");
                 
                 request.timeout = 3;
                 await request.SendWebRequest();
@@ -129,6 +127,7 @@ namespace PLATEAU.CityGrid
                     continue;
                 }
                 Texture texture = ((DownloadHandlerTexture)request.downloadHandler).texture;
+                ((Texture2D)texture).Compress(false);
                 texture.name = Path.GetFileNameWithoutExtension(texUrl);
                 meshData.AddTexture(i, texture);
                 
