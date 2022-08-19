@@ -78,12 +78,17 @@ namespace PLATEAU.CityGrid
             renderer.materials = materials;
         }
         
+        /// <summary>
+        /// データをもとにUnity のメッシュを生成します。
+        /// </summary>
         private Mesh GenerateMesh()
         {
             var mesh = new Mesh
             {
                 vertices = this.vertices,
                 uv = this.uv1,
+                uv2 = this.uv2,
+                uv3 = this.uv3,
                 subMeshCount = this.subMeshTriangles.Count
             };
             // subMesh ごとに Indices(Triangles) を UnityのMeshにコピーします。
@@ -110,7 +115,11 @@ namespace PLATEAU.CityGrid
                     continue;
                 }
                 string textureFullPath = Path.GetFullPath(Path.Combine(gmlAbsolutePath, "../", texUrl));
-                var request = UnityWebRequestTexture.GetTexture($"file://{textureFullPath}");
+                
+                // この引数で nonReadable を true にすることで、
+                // テクスチャの RawData にはアクセスできなくなりますが、メモリを削減できます。
+                var request = UnityWebRequestTexture.GetTexture($"file://{textureFullPath}", true);
+                
                 request.timeout = 3;
                 await request.SendWebRequest();
                 
