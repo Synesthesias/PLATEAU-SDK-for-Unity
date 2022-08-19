@@ -13,26 +13,30 @@ namespace PLATEAU.CityGrid
     /// </summary>
     internal class ConvertedMeshData
     {
-        public Vector3[] Vertices;
-        public Vector2[] Uv;
-        public List<List<int>> SubMeshTriangles;
-        public List<CityGML.Texture> PlateauTextures;
-        public string Name { get; }
+        private readonly Vector3[] vertices;
+        private readonly Vector2[] uv1;
+        private readonly Vector2[] uv2;
+        private readonly Vector2[] uv3;
+        private readonly List<List<int>> subMeshTriangles;
+        private readonly List<CityGML.Texture> plateauTextures;
+        private string Name { get; }
         private readonly Dictionary<int, Texture> subMeshIdToTexture;
         private const string shaderName = "Standard";
-        public int SubMeshCount => this.SubMeshTriangles.Count;
+        private int SubMeshCount => this.subMeshTriangles.Count;
 
-        public ConvertedMeshData(Vector3[] vertices, Vector2[] uv, List<List<int>> subMeshTriangles,List<CityGML.Texture> plateauTextures, string name)
+        public ConvertedMeshData(Vector3[] vertices, Vector2[] uv1, Vector2[] uv2, Vector2[] uv3, List<List<int>> subMeshTriangles,List<CityGML.Texture> plateauTextures, string name)
         {
-            this.Vertices = vertices;
-            this.Uv = uv;
-            this.SubMeshTriangles = subMeshTriangles;
-            this.PlateauTextures = plateauTextures;
+            this.vertices = vertices;
+            this.uv1 = uv1;
+            this.uv2 = uv2;
+            this.uv3 = uv3;
+            this.subMeshTriangles = subMeshTriangles;
+            this.plateauTextures = plateauTextures;
             Name = name;
             this.subMeshIdToTexture = new Dictionary<int, Texture>();
         }
 
-        public void AddTexture(int subMeshId, Texture tex)
+        private void AddTexture(int subMeshId, Texture tex)
         {
             this.subMeshIdToTexture.Add(subMeshId, tex);
         }
@@ -56,7 +60,7 @@ namespace PLATEAU.CityGrid
             meshFilter.mesh = mesh;
             var renderer = GameObjectUtil.AssureComponent<MeshRenderer>(meshObj);
             
-            await LoadTextures(this, this.PlateauTextures, gmlAbsolutePath);
+            await LoadTextures(this, this.plateauTextures, gmlAbsolutePath);
             
             var materials = new Material[mesh.subMeshCount];
             for (int i = 0; i < mesh.subMeshCount; i++)
@@ -64,8 +68,11 @@ namespace PLATEAU.CityGrid
                 materials[i] = new Material(Shader.Find(shaderName));
                 if (this.subMeshIdToTexture.TryGetValue(i, out var tex))
                 {
-                    materials[i].mainTexture = tex;
-                    materials[i].name = tex.name;
+                    if (tex != null)
+                    {
+                        materials[i].mainTexture = tex;
+                        materials[i].name = tex.name;
+                    }
                 }
             }
             renderer.materials = materials;
@@ -75,14 +82,14 @@ namespace PLATEAU.CityGrid
         {
             var mesh = new Mesh
             {
-                vertices = this.Vertices,
-                uv = this.Uv,
-                subMeshCount = this.SubMeshTriangles.Count
+                vertices = this.vertices,
+                uv = this.uv1,
+                subMeshCount = this.subMeshTriangles.Count
             };
             // subMesh ごとに Indices(Triangles) を UnityのMeshにコピーします。
-            for (int i = 0; i < this.SubMeshTriangles.Count; i++)
+            for (int i = 0; i < this.subMeshTriangles.Count; i++)
             {
-                mesh.SetTriangles(this.SubMeshTriangles[i], i);
+                mesh.SetTriangles(this.subMeshTriangles[i], i);
             }
 
             PostProcess(mesh);
@@ -94,8 +101,15 @@ namespace PLATEAU.CityGrid
         {
             for (int i = 0; i < meshData.SubMeshCount; i++)
             {
-                if (plateauTextures[i] == null) continue;
-                string textureFullPath = Path.GetFullPath(Path.Combine(gmlAbsolutePath, "../", plateauTextures[i].Url));
+                var plateauTex = plateauTextures[i];
+                if (plateauTex == null) continue;
+                string texUrl = plateauTex.Url;
+                if (texUrl == "noneTexture")
+                {
+                    meshData.AddTexture(i, null);
+                    continue;
+                }
+                string textureFullPath = Path.GetFullPath(Path.Combine(gmlAbsolutePath, "../", texUrl));
                 var request = UnityWebRequestTexture.GetTexture($"file://{textureFullPath}");
                 request.timeout = 3;
                 await request.SendWebRequest();
@@ -105,8 +119,8 @@ namespace PLATEAU.CityGrid
                     Debug.LogError($"failed to load texture : {textureFullPath} result = {(int)request.result}");
                     continue;
                 }
-                UnityEngine.Texture texture = ((DownloadHandlerTexture)request.downloadHandler).texture;
-                texture.name = Path.GetFileNameWithoutExtension(plateauTextures[i].Url);
+                Texture texture = ((DownloadHandlerTexture)request.downloadHandler).texture;
+                texture.name = Path.GetFileNameWithoutExtension(texUrl);
                 meshData.AddTexture(i, texture);
                 
             }

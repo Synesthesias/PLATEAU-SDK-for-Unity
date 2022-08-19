@@ -40,11 +40,12 @@ namespace PLATEAU.CityGML
                     NativeMethods.plateau_object_get_id);
                 return this.id;
             }
+            protected set => this.id = value;
         }
 
         /// <summary> 属性の辞書を取得します。 </summary>
         /// <returns> <see cref="CityGML.AttributesMap"/> 型で返します。</returns>
-        public AttributesMap AttributesMap
+        public virtual AttributesMap AttributesMap
         {
             get
             {
