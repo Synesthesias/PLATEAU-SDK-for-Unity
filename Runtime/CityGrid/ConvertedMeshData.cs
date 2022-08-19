@@ -127,7 +127,12 @@ namespace PLATEAU.CityGrid
                     continue;
                 }
                 Texture texture = ((DownloadHandlerTexture)request.downloadHandler).texture;
-                ((Texture2D)texture).Compress(false);
+                
+                // この Compress によってテクスチャ容量が 6分の1 になります。
+                // 松山市のLOD2の建物モデルで計測したところ、 テクスチャのメモリ使用量が 2.6GB から 421.3MB になりました。
+                // 画質は下がりますが、メモリ使用量を適正にするために必須と思われます。
+                ((Texture2D)texture).Compress(true);
+                
                 texture.name = Path.GetFileNameWithoutExtension(texUrl);
                 meshData.AddTexture(i, texture);
                 
