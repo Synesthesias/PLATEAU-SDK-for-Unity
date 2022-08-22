@@ -31,7 +31,7 @@ namespace PLATEAU.CityGrid
             if (!AreMemberVariablesOK()) return;
             string gmlAbsolutePath = Application.streamingAssetsPath + "/" + this.gmlRelativePathFromStreamingAssets;
 
-            using var meshMerger = new MeshMerger();
+            using var meshMerger = new MeshExtractor();
             // ここの処理は 処理A と 処理B に分割されています。
             // Unityのメッシュデータを操作するのは 処理B のみであり、
             // 処理A はメッシュ構築のための準備(データを List, 配列などで保持する)を
@@ -82,7 +82,7 @@ namespace PLATEAU.CityGrid
         /// グリッドごとにメッシュを結合して、グリッドごとの<see cref="CityGML.Mesh"/> を配列で返します。
         /// メインスレッドでなくても動作します。
         /// </summary>
-        private static CityGML.Mesh[] LoadGmlAndMergePolygons(MeshMerger meshMerger, string gmlAbsolutePath, int numGridX, int numGridY)
+        private static CityGML.Mesh[] LoadGmlAndMergePolygons(MeshExtractor meshMerger, string gmlAbsolutePath, int numGridX, int numGridY)
         {
             // GMLロード
             var cityModel = LoadCityModel(gmlAbsolutePath);

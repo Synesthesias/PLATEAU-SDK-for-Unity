@@ -670,18 +670,18 @@ namespace PLATEAU.Interop
         
         
         // ***************
-        //  mesh_merger_c.cpp
+        //  mesh_extractor_c.cpp
         // ***************
         [DllImport(DllName)]
-        internal static extern APIResult plateau_mesh_merger_new(
+        internal static extern APIResult plateau_mesh_extractor_new(
             out IntPtr outMeshMergerPtr);
         
         [DllImport(DllName)]
-        internal static extern APIResult plateau_mesh_merger_delete(
+        internal static extern APIResult plateau_mesh_extractor_delete(
             [In] IntPtr outMeshMergerPtr);
         
         [DllImport(DllName)]
-        internal static extern APIResult plateau_mesh_merger_grid_merge(
+        internal static extern APIResult plateau_mesh_extractor_grid_merge(
             [In] IntPtr meshMergerPtr,
             [In] IntPtr cityModelPtr,
             CityObjectType targetTypeMask,
@@ -691,9 +691,9 @@ namespace PLATEAU.Interop
             [In] IntPtr dllLoggerPtr);
         
         [DllImport(DllName)]
-        internal static extern APIResult plateau_mesh_merger_get_last_result_of_grid_merge(
+        internal static extern APIResult plateau_mesh_extractor_get_last_result_of_grid_merge(
             [In] IntPtr meshMergerPtr,
-            IntPtr[] outMeshPtrArray);
+            IntPtr[] outPlateauPolygonPtrArray);
         
         
         // ***************
