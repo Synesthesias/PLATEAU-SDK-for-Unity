@@ -33,7 +33,7 @@ namespace PLATEAU.CityGML
             this.isDisposed = true;
         }
         
-        public PlateauPolygon[] GridMerge(
+        public Mesh[] GridMerge(
             CityModel cityModel,
             CityObjectType targetTypeMask,
             int gridNumX,
@@ -58,10 +58,10 @@ namespace PLATEAU.CityGML
             );
             DLLUtil.CheckDllError(result2);
             
-            var retPolygons = new PlateauPolygon[numPolygons];
+            var retPolygons = new Mesh[numPolygons];
             for (int i = 0; i < numPolygons; i++)
             {
-                retPolygons[i] = new PlateauPolygon(polygonPointers[i]);
+                retPolygons[i] = new Mesh(polygonPointers[i]);
             }
 
             return retPolygons;

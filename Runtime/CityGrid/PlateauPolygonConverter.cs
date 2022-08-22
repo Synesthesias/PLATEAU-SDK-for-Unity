@@ -7,30 +7,30 @@ using Texture = PLATEAU.CityGML.Texture;
 namespace PLATEAU.CityGrid
 {
     /// <summary>
-    /// <see cref="PlateauPolygon"/> を Unityの Mesh に変換します。
+    /// <see cref="Mesh"/> を Unityの Mesh に変換します。
     /// </summary>
-    internal static class PlateauPolygonConverter
+    internal static class MeshConverter
     {
         /// <summary>
-        /// <see cref="PlateauPolygon"/> を Unity向けのデータ に変換します。
+        /// C++側の<see cref="CityGML.Mesh"/> を Unity向けのデータ に変換します。
         /// Unityのメッシュを生成する準備としてのデータ生成です。実際のメッシュはまだ触りません。
         /// その理由は <see cref="CityGridLoader.Load"/> のコメントを参照してください。
         /// このメソッドの結果をもとに、 <see cref="ConvertedMeshData.PlaceToScene"/> メソッドで実際のメッシュを配置できます。
         /// </summary>
-        public static ConvertedMeshData Convert(PlateauPolygon plateauPoly)
+        public static ConvertedMeshData Convert(CityGML.Mesh plateauMesh)
         {
             var (unityVerts, unityUv1, unityUv2, unityUv3) =
-                CopyVerticesAndUV(plateauPoly);
+                CopyVerticesAndUV(plateauMesh);
             var (subMeshTriangles, plateauTextures) =
-                CopySubMeshInfo(plateauPoly);
+                CopySubMeshInfo(plateauMesh);
 
-            var meshData = new ConvertedMeshData(unityVerts, unityUv1, unityUv2, unityUv3, subMeshTriangles, plateauTextures, plateauPoly.ID);
+            var meshData = new ConvertedMeshData(unityVerts, unityUv1, unityUv2, unityUv3, subMeshTriangles, plateauTextures, plateauMesh.ID);
             return meshData;
         }
 
         private static
             (Vector3[] unityVerts, Vector2[] unityUv1, Vector2[] unityUv2, Vector2[] unityUv3)
-            CopyVerticesAndUV(PlateauPolygon plateauPoly)
+            CopyVerticesAndUV(CityGML.Mesh plateauPoly)
         {
             int numVerts = plateauPoly.VertexCount;
             var plateauUv1 = plateauPoly.GetUv1();
@@ -51,16 +51,16 @@ namespace PLATEAU.CityGrid
             return (unityVerts, unityUv1, unityUv2, unityUv3);
         }
 
-        private static (List<List<int>> subMeshTriangles, List<Texture> plateauTextures) CopySubMeshInfo(PlateauPolygon plateauPoly)
+        private static (List<List<int>> subMeshTriangles, List<Texture> plateauTextures) CopySubMeshInfo(CityGML.Mesh plateauMesh)
         {
-            var plateauIndices = plateauPoly.Indices.ToList();
-            var multiTexture = plateauPoly.GetMultiTexture();
+            var plateauIndices = plateauMesh.Indices.ToList();
+            var multiTexture = plateauMesh.GetMultiTexture();
             int currentSubMeshStart = 0;
             var subMeshTriangles = new List<List<int>>();
             var plateauTextures = new List<Texture>();
             Texture currentPlateauTex = null;
             int numTexInfo = multiTexture.Length;
-            // PlateauPolygon の multiTexture ごとにサブメッシュを分けます。
+            // Mesh の multiTexture ごとにサブメッシュを分けます。
             for (int i = 0; i <= numTexInfo; i++)
             {
                 int nextSubMeshStart = 

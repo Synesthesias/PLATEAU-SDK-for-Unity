@@ -6,16 +6,16 @@ namespace PLATEAU.CityGML
     /// <summary>
     /// LibCityGml の <see cref="Polygon"/> を継承して PLATEAU向けに機能拡張したものです。
     /// </summary>
-    public class PlateauPolygon : Polygon
+    public class Mesh : Polygon
     {
-        internal PlateauPolygon(IntPtr handle) : base(handle)
+        internal Mesh(IntPtr handle) : base(handle)
         {
         }
 
         public PlateauVector2f[] GetUv1()
         {
             var uv1 = new PlateauVector2f[VertexCount];
-            var result = NativeMethods.plateau_polygon_get_uv1(Handle, uv1);
+            var result = NativeMethods.plateau_mesh_get_uv1(Handle, uv1);
             DLLUtil.CheckDllError(result);
             return uv1;
         }
@@ -23,7 +23,7 @@ namespace PLATEAU.CityGML
         public PlateauVector2f[] GetUv2()
         {
             var uv2 = new PlateauVector2f[VertexCount];
-            var result = NativeMethods.plateau_polygon_get_uv2(Handle, uv2);
+            var result = NativeMethods.plateau_mesh_get_uv2(Handle, uv2);
             DLLUtil.CheckDllError(result);
             return uv2;
         }
@@ -31,7 +31,7 @@ namespace PLATEAU.CityGML
         public PlateauVector2f[] GetUv3()
         {
             var uv3 = new PlateauVector2f[VertexCount];
-            var result = NativeMethods.plateau_polygon_get_uv3(Handle, uv3);
+            var result = NativeMethods.plateau_mesh_get_uv3(Handle, uv3);
             DLLUtil.CheckDllError(result);
             return uv3;
         }
@@ -39,10 +39,10 @@ namespace PLATEAU.CityGML
         public MultiTexture GetMultiTexture()
         {
             int numTexture = DLLUtil.GetNativeValue<int>(Handle,
-                NativeMethods.plateau_polygon_get_multi_texture_count);
+                NativeMethods.plateau_mesh_get_multi_texture_count);
             var vertexIndices = new int[numTexture];
             var texturePtrArray = new IntPtr[numTexture];
-            var result = NativeMethods.plateau_polygon_get_multi_texture(
+            var result = NativeMethods.plateau_mesh_get_multi_texture(
                 Handle, vertexIndices, texturePtrArray
             );
             DLLUtil.CheckDllError(result);

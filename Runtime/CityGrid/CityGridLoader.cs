@@ -79,18 +79,18 @@ namespace PLATEAU.CityGrid
 
         /// <summary>
         /// gmlファイルをパースして、得られた都市をグリッドに分けて、
-        /// グリッドごとにメッシュを結合して、グリッドごとの<see cref="PlateauPolygon"/> を配列で返します。
+        /// グリッドごとにメッシュを結合して、グリッドごとの<see cref="CityGML.Mesh"/> を配列で返します。
         /// メインスレッドでなくても動作します。
         /// </summary>
-        private static PlateauPolygon[] LoadGmlAndMergePolygons(MeshMerger meshMerger, string gmlAbsolutePath, int numGridX, int numGridY)
+        private static CityGML.Mesh[] LoadGmlAndMergePolygons(MeshMerger meshMerger, string gmlAbsolutePath, int numGridX, int numGridY)
         {
             // GMLロード
             var cityModel = LoadCityModel(gmlAbsolutePath);
             // マージ
             var logger = new DllLogger();
             logger.SetLogCallbacks(DllLogCallback.UnityLogCallbacks);
-            var plateauPolygons = meshMerger.GridMerge(cityModel, CityObjectType.COT_All, numGridX, numGridY, logger);
-            return plateauPolygons;
+            var plateauMeshes = meshMerger.GridMerge(cityModel, CityObjectType.COT_All, numGridX, numGridY, logger);
+            return plateauMeshes;
         }
         
         /// <summary> gmlファイルをパースして <see cref="CityModel"/> を返します。 </summary>
@@ -100,14 +100,14 @@ namespace PLATEAU.CityGrid
             return CityGml.Load(gmlAbsolutePath, parserParams, DllLogCallback.UnityLogCallbacks);
         }
 
-        /// <summary> <see cref="PlateauPolygon"/> の配列をUnityのメッシュに変換します。 </summary>
-        private static ConvertedMeshData[] ConvertToUnityMeshes(IReadOnlyList<PlateauPolygon> plateauPolygons)
+        /// <summary> C++由来の<see cref="CityGML.Mesh"/> の配列をUnityのメッシュに変換します。 </summary>
+        private static ConvertedMeshData[] ConvertToUnityMeshes(IReadOnlyList<CityGML.Mesh> plateauMeshes)
         {
-            int numPolygons = plateauPolygons.Count;
+            int numPolygons = plateauMeshes.Count;
             var meshDataArray = new ConvertedMeshData[numPolygons];
             for (int i = 0; i < numPolygons; i++)
             {
-                meshDataArray[i] = PlateauPolygonConverter.Convert(plateauPolygons[i]);
+                meshDataArray[i] = MeshConverter.Convert(plateauMeshes[i]);
             }
 
             return meshDataArray;

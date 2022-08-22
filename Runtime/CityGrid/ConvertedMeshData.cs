@@ -53,7 +53,7 @@ namespace PLATEAU.CityGrid
 
         public async Task PlaceToScene(Transform parentTrans, string gmlAbsolutePath)
         {
-            var mesh = GenerateMesh();
+            var mesh = GenerateUnityMesh();
             if (mesh.vertexCount <= 0) return;
             var meshObj = GameObjectUtil.AssureGameObjectInChild(Name, parentTrans);
             var meshFilter = GameObjectUtil.AssureComponent<MeshFilter>(meshObj);
@@ -81,7 +81,7 @@ namespace PLATEAU.CityGrid
         /// <summary>
         /// データをもとにUnity のメッシュを生成します。
         /// </summary>
-        private Mesh GenerateMesh()
+        private Mesh GenerateUnityMesh()
         {
             var mesh = new Mesh
             {
@@ -104,7 +104,7 @@ namespace PLATEAU.CityGrid
         
         /// <summary>
         /// <paramref name="plateauTextures"/> に記録された URL から、テクスチャを非同期でロードします。
-        /// 生成した Textureインスタンスへの参照を <paramref name="meshData"/> に追加します。
+        /// 生成した Unity の Textureインスタンスへの参照を <paramref name="meshData"/> に追加します。
         /// </summary>
         private static async Task LoadTextures(ConvertedMeshData meshData, IReadOnlyList<CityGML.Texture> plateauTextures, string gmlAbsolutePath)
         {
