@@ -102,13 +102,19 @@ namespace PLATEAU.CityGrid
             return mesh;
         }
         
+        /// <summary>
+        /// <paramref name="plateauTextures"/> に記録された URL から、テクスチャを非同期でロードします。
+        /// 生成した Textureインスタンスへの参照を <paramref name="meshData"/> に追加します。
+        /// </summary>
         private static async Task LoadTextures(ConvertedMeshData meshData, IReadOnlyList<CityGML.Texture> plateauTextures, string gmlAbsolutePath)
         {
             for (int i = 0; i < meshData.SubMeshCount; i++)
             {
+                // テクスチャURLを取得します。
                 var plateauTex = plateauTextures[i];
                 if (plateauTex == null) continue;
                 string texUrl = plateauTex.Url;
+                // テクスチャがない状態を表現するとき、urlが "noneTexture" となるのはライブラリの仕様です。
                 if (texUrl == "noneTexture")
                 {
                     meshData.AddTexture(i, null);
@@ -116,6 +122,7 @@ namespace PLATEAU.CityGrid
                 }
                 string textureFullPath = Path.GetFullPath(Path.Combine(gmlAbsolutePath, "../", texUrl));
                 
+                // 非同期でテクスチャをロードします。
                 var request = UnityWebRequestTexture.GetTexture($"file://{textureFullPath}");
                 
                 request.timeout = 3;
@@ -133,6 +140,7 @@ namespace PLATEAU.CityGrid
                 // 画質は下がりますが、メモリ使用量を適正にするために必須と思われます。
                 ((Texture2D)texture).Compress(true);
                 
+                // 生成したUnityテクスチャへの参照を meshData に追加します。
                 texture.name = Path.GetFileNameWithoutExtension(texUrl);
                 meshData.AddTexture(i, texture);
                 

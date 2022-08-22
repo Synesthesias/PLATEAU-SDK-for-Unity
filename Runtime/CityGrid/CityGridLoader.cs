@@ -10,6 +10,10 @@ using UnityEngine.SceneManagement;
 
 namespace PLATEAU.CityGrid
 {
+    /// <summary>
+    /// 都市を指定数のグリッドに分割し、各グリッド内のメッシュを結合し、シーンに配置します。
+    /// 
+    /// </summary>
     internal class CityGridLoader : MonoBehaviour
     {
         [SerializeField] private string gmlRelativePathFromStreamingAssets;
@@ -18,6 +22,10 @@ namespace PLATEAU.CityGrid
         
         // TODO Loadの実行中にまたLoadが実行されることを防ぐ仕組みが未実装
         // TODO 進捗を表示する機能と処理をキャンセルする機能が未実装
+        /// <summary>
+        /// GMLファイルをロードし、都市を指定数のグリッドに分割し、グリッド内のメッシュを結合し、シーンに配置します。
+        /// 非同期処理です。必ずメインスレッドで呼ぶ必要があります。
+        /// </summary>
         public async Task Load()
         {
             if (!AreMemberVariablesOK()) return;
@@ -29,7 +37,7 @@ namespace PLATEAU.CityGrid
             // 処理A はメッシュ構築のための準備(データを List, 配列などで保持する)を
             // するのみでメッシュデータは触らないこととしています。
             // なぜなら、メッシュデータを操作可能なのはメインスレッドのみなので、
-            // 処理Aを別スレッドで実行するために必要だからです。
+            // 処理Aを別スレッドで実行してメインスレッドの負荷を減らすために必要だからです。
 
             // 処理A :
             // Unityでメッシュを作るためのデータを構築します。
@@ -43,7 +51,7 @@ namespace PLATEAU.CityGrid
 
             // 処理B :
             // 実際にメッシュを操作してシーンに配置します。
-            // こちらはメインスレッドでのみ実行可能です。
+            // こちらはメインスレッドでのみ実行可能なので、Loadメソッドはメインスレッドから呼ぶ必要があります。
             await PlaceGridMeshes(meshDataArray,
                 GmlFileNameParser.FileNameWithoutExtension(this.gmlRelativePathFromStreamingAssets),
                 gmlAbsolutePath);
@@ -76,7 +84,9 @@ namespace PLATEAU.CityGrid
         /// </summary>
         private static PlateauPolygon[] LoadGmlAndMergePolygons(MeshMerger meshMerger, string gmlAbsolutePath, int numGridX, int numGridY)
         {
+            // GMLロード
             var cityModel = LoadCityModel(gmlAbsolutePath);
+            // マージ
             var logger = new DllLogger();
             logger.SetLogCallbacks(DllLogCallback.UnityLogCallbacks);
             var plateauPolygons = meshMerger.GridMerge(cityModel, CityObjectType.COT_All, numGridX, numGridY, logger);
