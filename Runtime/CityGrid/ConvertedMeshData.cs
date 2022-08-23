@@ -1,8 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
-using Codice.CM.Common;
 using PLATEAU.GeometryModel;
 using PLATEAU.Util;
 using PLATEAU.Util.Async;
@@ -32,7 +30,8 @@ namespace PLATEAU.CityGrid
             {
                 var rootNode = plateauModel.GetRootNodeAt(i);
                 this.children.Add(new ConvertedGameObjData(rootNode));
-            }            
+            }
+            Debug.Log("converted plateau model.");
         }
         
         /// <summary>

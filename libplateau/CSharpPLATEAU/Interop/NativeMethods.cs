@@ -700,20 +700,21 @@ namespace PLATEAU.Interop
             [In] IntPtr loggerPtr,
             out IntPtr outModelPtr);
         
-        [DllImport(DllName)]
-        internal static extern APIResult plateau_mesh_extractor_grid_merge(
-            [In] IntPtr meshMergerPtr,
-            [In] IntPtr cityModelPtr,
-            CityObjectType targetTypeMask,
-            int gridNumX,
-            int gridNumY,
-            out int outNumPolygons,
-            [In] IntPtr dllLoggerPtr);
-        
-        [DllImport(DllName)]
-        internal static extern APIResult plateau_mesh_extractor_get_last_result_of_grid_merge(
-            [In] IntPtr meshMergerPtr,
-            IntPtr[] outPlateauPolygonPtrArray);
+        // TODO 後で消す
+        // [DllImport(DllName)]
+        // internal static extern APIResult plateau_mesh_extractor_grid_merge(
+        //     [In] IntPtr meshMergerPtr,
+        //     [In] IntPtr cityModelPtr,
+        //     CityObjectType targetTypeMask,
+        //     int gridNumX,
+        //     int gridNumY,
+        //     out int outNumPolygons,
+        //     [In] IntPtr dllLoggerPtr);
+        //
+        // [DllImport(DllName)]
+        // internal static extern APIResult plateau_mesh_extractor_get_last_result_of_grid_merge(
+        //     [In] IntPtr meshMergerPtr,
+        //     IntPtr[] outPlateauPolygonPtrArray);
         
         
         // ***************
@@ -749,6 +750,16 @@ namespace PLATEAU.Interop
         // ***************
         //  model_c.cpp
         // ***************
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_model_new(
+            out IntPtr outModelPtr);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_model_delete(
+            [In] IntPtr modelPtr);
+
+
         [DllImport(DllName)]
         internal static extern APIResult plateau_model_get_root_nodes_count(
             [In] IntPtr handle,

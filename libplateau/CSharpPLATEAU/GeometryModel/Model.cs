@@ -3,9 +3,10 @@ using PLATEAU.Interop;
 
 namespace PLATEAU.GeometryModel
 {
-    public class Model
+    public class Model : IDisposable
     {
-        private IntPtr handle;
+        private readonly IntPtr handle;
+        private bool isDisposed;
         
         public Model(IntPtr handle)
         {
@@ -28,6 +29,19 @@ namespace PLATEAU.GeometryModel
                 this.handle, index,
                 NativeMethods.plateau_model_get_root_node_at_index);
             return new Node(nodePtr);
+        }
+
+        public void Dispose()
+        {
+            if (this.isDisposed) return;
+            NativeMethods.plateau_model_delete(this.handle);
+            GC.SuppressFinalize(this);
+            this.isDisposed = true;
+        }
+
+        ~Model()
+        {
+            Dispose();
         }
     }
 }

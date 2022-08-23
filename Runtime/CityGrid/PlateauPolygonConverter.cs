@@ -14,7 +14,7 @@ namespace PLATEAU.CityGrid
         /// C++側の<see cref="GeometryModel.Mesh"/> を Unity向けのデータ に変換します。
         /// Unityのメッシュを生成する準備としてのデータ生成です。実際のメッシュはまだ触りません。
         /// その理由は <see cref="CityGridLoader.Load"/> のコメントを参照してください。
-        /// このメソッドの結果をもとに、 <see cref="ConConvertedMeshDataaceToScene"/> メソッドで実際のメッシュを配置できます。
+        /// このメソッドの結果をもとに、 <see cref="ConvertedGameObjData.PlaceToScene"/> メソッドで実際のメッシュを配置できます。
         /// </summary>
         public static ConvertedMeshData Convert(GeometryModel.Mesh plateauMesh)
         {

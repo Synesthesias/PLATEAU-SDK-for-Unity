@@ -1,16 +1,12 @@
-﻿using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using PLATEAU.CityGML;
 using PLATEAU.GeometryModel;
 using PLATEAU.Interop;
 using PLATEAU.IO;
 using PLATEAU.Util;
-using PLATEAU.Util.FileNames;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.Serialization;
 
 namespace PLATEAU.CityGrid
 {
@@ -32,42 +28,46 @@ namespace PLATEAU.CityGrid
         public async Task Load()
         {
             if (!AreMemberVariablesOK()) return;
+            Debug.Log("load started.");
             string gmlAbsolutePath = Application.streamingAssetsPath + "/" + this.gmlRelativePathFromStreamingAssets;
 
-            using var meshMerger = new MeshExtractor();
-            // ここの処理は 処理A と 処理B に分割されています。
-            // Unityのメッシュデータを操作するのは 処理B のみであり、
-            // 処理A はメッシュ構築のための準備(データを List, 配列などで保持する)を
-            // するのみでメッシュデータは触らないこととしています。
-            // なぜなら、メッシュデータを操作可能なのはメインスレッドのみなので、
-            // 処理Aを別スレッドで実行してメインスレッドの負荷を減らすために必要だからです。
-
-            // 処理A :
-            // Unityでメッシュを作るためのデータを構築します。
-            // 実際のメッシュデータを触らないので、Task.Run で別のスレッドで処理できます。
-            var meshObjsData = await Task.Run( () =>
+            ConvertedGameObjData meshObjsData;
+            using (var meshMerger = new MeshExtractor())
             {
-                var plateauModel = LoadGmlAndMergePolygons(meshMerger, gmlAbsolutePath, this.gridCountOfSide);
-                var meshObjsData = new ConvertedGameObjData(plateauModel);
-                return meshObjsData;
-            });
+                // ここの処理は 処理A と 処理B に分割されています。
+                // Unityのメッシュデータを操作するのは 処理B のみであり、
+                // 処理A はメッシュ構築のための準備(データを List, 配列などで保持する)を
+                // するのみでメッシュデータは触らないこととしています。
+                // なぜなら、メッシュデータを操作可能なのはメインスレッドのみなので、
+                // 処理Aを別スレッドで実行してメインスレッドの負荷を減らすために必要だからです。
 
-            // 処理B :
-            // 実際にメッシュを操作してシーンに配置します。
-            // こちらはメインスレッドでのみ実行可能なので、Loadメソッドはメインスレッドから呼ぶ必要があります。
-            // await PlaceGridMeshes(meshObjsData,
-            //     GmlFileNameParser.FileNameWithoutExtension(this.gmlRelativePathFromStreamingAssets),
-            //     gmlAbsolutePath);
-            await meshObjsData.PlaceToScene(null, gmlAbsolutePath);
-            
-            // エディター内での実行であれば、生成したメッシュ,テクスチャ等をシーンに保存したいので
-            // シーンにダーティフラグを付けます。
-            #if UNITY_EDITOR
-            if (Application.isEditor)
-            {
-                EditorSceneManager.MarkSceneDirty(SceneManager.GetActiveScene());
+                // 処理A :
+                // Unityでメッシュを作るためのデータを構築します。
+                // 実際のメッシュデータを触らないので、Task.Run で別のスレッドで処理できます。
+                meshObjsData = await Task.Run(() =>
+                {
+                    var plateauModel = LoadGmlAndMergeMeshes(meshMerger, gmlAbsolutePath, this.gridCountOfSide);
+                    var convertedObjData = new ConvertedGameObjData(plateauModel);
+                    return convertedObjData;
+                });
+
+
+                // 処理B :
+                // 実際にメッシュを操作してシーンに配置します。
+                // こちらはメインスレッドでのみ実行可能なので、Loadメソッドはメインスレッドから呼ぶ必要があります。
+                await meshObjsData.PlaceToScene(null, gmlAbsolutePath);
+
+                // エディター内での実行であれば、生成したメッシュ,テクスチャ等をシーンに保存したいので
+                // シーンにダーティフラグを付けます。
+#if UNITY_EDITOR
+                if (Application.isEditor)
+                {
+                    EditorSceneManager.MarkSceneDirty(SceneManager.GetActiveScene());
+                }
+#endif
+
+                Debug.Log("Load complete!");
             }
-            #endif
         }
 
         private bool AreMemberVariablesOK()
@@ -83,17 +83,17 @@ namespace PLATEAU.CityGrid
 
         /// <summary>
         /// gmlファイルをパースして、得られた都市をグリッドに分けて、
-        /// グリッドごとにメッシュを結合して、グリッドごとの<see cref="CityGML.Mesh"/> を配列で返します。
+        /// グリッドごとにメッシュを結合して、グリッドごとの<see cref="GeometryModel.Model"/> で返します。
         /// メインスレッドでなくても動作します。
         /// </summary>
-        private static Model LoadGmlAndMergePolygons(MeshExtractor meshExtractor, string gmlAbsolutePath, int numGridCountOfSide)
+        private static Model LoadGmlAndMergeMeshes(MeshExtractor meshExtractor, string gmlAbsolutePath, int numGridCountOfSide)
         {
             // GMLロード
             var cityModel = LoadCityModel(gmlAbsolutePath);
+            Debug.Log("gml loaded.");
             // マージ
             var logger = new DllLogger();
             logger.SetLogCallbacks(DllLogCallback.UnityLogCallbacks);
-            // var plateauMeshes = meshExtractor.GridMerge(cityModel, CityObjectType.COT_All, numGridX, numGridY, logger);
             var options = new MeshExtractOptions()
             {
                 // TODO ReferencePointを正しく設定できるようにする
@@ -107,6 +107,7 @@ namespace PLATEAU.CityGrid
                 GridCountOfSide = numGridCountOfSide
             };
             var model = meshExtractor.Extract(cityModel, options, logger);
+            Debug.Log("model extracted.");
             return model;
         }
         
