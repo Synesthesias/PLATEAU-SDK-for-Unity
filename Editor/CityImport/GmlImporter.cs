@@ -1,14 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using PLATEAU.CityGML;
+﻿using PLATEAU.CityGML;
 using PLATEAU.CityMeta;
 using PLATEAU.Editor.Converters;
 using PLATEAU.Editor.Diagnostics;
 using PLATEAU.Interop;
 using PLATEAU.Util;
 using PLATEAU.Util.FileNames;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
@@ -31,7 +31,7 @@ namespace PLATEAU.Editor.CityImport
             foreach (var gmlRelativePath in gmlRelativePaths)
             {
                 loopCount++;
-                ProgressBar($"gml変換中 : [{loopCount}/{numGml}] {gmlRelativePath}", loopCount, numGml );
+                ProgressBar($"gml変換中 : [{loopCount}/{numGml}] {gmlRelativePath}", loopCount, numGml);
                 bool result = ImportGml(gmlRelativePath, importConfig, ref referencePoint, generatedObjs, metadata, gmlToCityModelCache, timer);
                 if (result) successCount++;
             }
@@ -40,7 +40,7 @@ namespace PLATEAU.Editor.CityImport
             metadata.gmlRelativePaths = gmlRelativePaths;
             importConfig.generatedObjFiles = generatedObjs;
             importConfig.rootDirName = PlateauSourcePath.RootDirName(importConfig.sourcePath.RootDirAssetPath);
-            
+
             failureCount = loopCount - successCount;
             Debug.Log($"[ImportGmls 処理時間ログ]\n処理別:\n{timer.SummaryByProcess()}\n\nデータ別:\n{timer.SummaryByData()}");
         }
@@ -83,7 +83,7 @@ namespace PLATEAU.Editor.CityImport
                 var gmlType = GmlFileNameParser.GetGmlTypeEnum(gmlRelativePath);
                 int lod = ModelFileNameParser.GetLod(objAssetsPath);
                 generatedObjs.Add(new ObjInfo(objAssetsPath, lod, gmlType));
-                
+
                 // mtlファイルが存在すればインポートします。
                 timer.Start("ImportMtlFiles", gmlFileName);
                 string mtlAssetsPath = PathUtil.RemoveExtension(objAssetsPath) + ".mtl";
@@ -93,7 +93,7 @@ namespace PLATEAU.Editor.CityImport
                 }
 
                 // objファイルをインポートします。
-                timer.Start("ImportObjFiles", gmlFileName );
+                timer.Start("ImportObjFiles", gmlFileName);
                 AssetDatabase.ImportAsset(objAssetsPath);
             }
 
@@ -105,7 +105,7 @@ namespace PLATEAU.Editor.CityImport
 
             // 1つのgmlから LODごとに 0個以上の .obj ファイルが生成されます。
             // .obj ファイルごとのループを始めます。
-            
+
             timer.Start("WritingMetadata", gmlFileName);
             var objConvertLodConf = importConfig.objConvertTypesConfig;
             var objNames = objConvertLodConf.ObjFileNamesForGml(gmlFileNameWithoutExtension);
@@ -124,9 +124,9 @@ namespace PLATEAU.Editor.CityImport
 
         private static void ProgressBar(string info, int currentCount, int maxCount)
         {
-            EditorUtility.DisplayProgressBar("gmlファイル変換中", info, ((float)currentCount)/maxCount);
+            EditorUtility.DisplayProgressBar("gmlファイル変換中", info, ((float)currentCount) / maxCount);
         }
-        
+
         /// <summary>
         /// Gmlファイルをロードします。
         /// 成否を bool で返します。
@@ -164,7 +164,7 @@ namespace PLATEAU.Editor.CityImport
         {
             using (var objConverter = new GmlToObjConverter())
             {
-                
+
                 // configの値を作ります。
                 Vector3? manualReferencePoint;
                 // Reference Pointは最初のものに合わせます。
@@ -178,13 +178,13 @@ namespace PLATEAU.Editor.CityImport
                 {
                     manualReferencePoint = referencePoint.Value;
                 }
-                
+
                 // 変換設定を作成します。この設定は gml 1つに対する変換に関して利用されます。
                 var gmlType = GmlFileNameParser.GetGmlTypeEnum(gmlFullPath);
                 var converterConf = importConfig.ToConverterConfig(gmlType, manualReferencePoint);
-                
+
                 objConverter.Config = converterConf;
-                
+
                 bool isSuccess = objConverter.ConvertWithoutLoad(cityModel, gmlFullPath, objDestDirFullPath, out exportedFilePaths);
 
                 return isSuccess;
@@ -206,9 +206,9 @@ namespace PLATEAU.Editor.CityImport
                 DoClearIdToGmlTable = false, // 新規ではなく上書き。gmlファイルごとに情報を追記していくため。
                 ParserParams = new CitygmlParserParams(),
             };
-            
-            bool isSucceed = CityMetadataGenerator.WriteConfigs(metaGenConfig, dstMeshAssetPath , gmlFileName, cityMetadata, doSaveFile: false);
-            
+
+            bool isSucceed = CityMetadataGenerator.WriteConfigs(metaGenConfig, dstMeshAssetPath, gmlFileName, cityMetadata, doSaveFile: false);
+
             return isSucceed;
         }
     }

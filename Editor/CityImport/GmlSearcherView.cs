@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using PLATEAU.CityMeta;
 using PLATEAU.Editor.EditorWindowCommon;
-using PLATEAU.CityMeta;
+using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
@@ -91,8 +91,8 @@ namespace PLATEAU.Editor.CityImport
 
             // 選択した地域に存在しない地物タイプは、GUI上で無効にしたいのでそのための辞書を構築します。
             var typeExistingDict = gmlSearcher.ExistingTypesForAreaIds(searcherConfig.GetTargetAreaIds());
-            
-            
+
+
             // 地物タイプごとの設定です。
             HeaderDrawer.Draw("含める地物");
             using (PlateauEditorStyle.VerticalScopeLevel1())
@@ -109,7 +109,7 @@ namespace PLATEAU.Editor.CityImport
                         searcherConfig.SetAllTypeTarget(false);
                     }
                 }
-                
+
                 // 地物タイプごとのチェックマークです。
                 foreach (var gmlType in searcherConfig.AllGmlTypes())
                 {
@@ -132,7 +132,7 @@ namespace PLATEAU.Editor.CityImport
                 gmlFiles = presenter.ListTargetGmlFiles();
                 this.scrollPosForGmlList = PlateauEditorStyle.ScrollableMultiLineLabel(string.Join("\n", gmlFiles), 150, this.scrollPosForGmlList);
             }
-            
+
             HeaderDrawer.DecrementDepth();
 
             return gmlFiles;
@@ -144,6 +144,6 @@ namespace PLATEAU.Editor.CityImport
         }
 
 
-        
+
     }
 }

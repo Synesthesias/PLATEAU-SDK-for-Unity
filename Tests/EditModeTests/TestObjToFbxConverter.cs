@@ -1,7 +1,7 @@
-﻿using System.IO;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using PLATEAU.Editor.Converters;
 using PLATEAU.Tests.TestUtils;
+using System.IO;
 
 namespace PLATEAU.Tests.EditModeTests
 {
@@ -19,7 +19,7 @@ namespace PLATEAU.Tests.EditModeTests
 
         private static readonly string destFbxFilePath =
             Path.Combine(DirectoryUtil.TempCacheFolderPath, "converted_fbx.fbx");
-        
+
         [SetUp]
         public void SetUp()
         {

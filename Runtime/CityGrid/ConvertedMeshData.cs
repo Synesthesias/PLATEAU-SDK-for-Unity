@@ -1,15 +1,16 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using System.Threading.Tasks;
-using PLATEAU.GeometryModel;
+﻿using PLATEAU.GeometryModel;
 using PLATEAU.Util;
 using PLATEAU.Util.Async;
+using System.Collections.Generic;
+using System.IO;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Networking;
 using Mesh = UnityEngine.Mesh;
 
 namespace PLATEAU.CityGrid
 {
+    // TODO 1つのファイルにクラスが2つあってややこしいので別ファイルに移す
     internal class ConvertedGameObjData
     {
         private ConvertedMeshData meshData;
@@ -33,7 +34,7 @@ namespace PLATEAU.CityGrid
             }
             Debug.Log("converted plateau model.");
         }
-        
+
         /// <summary>
         /// C++側の <see cref="GeometryModel.Node"/> から変換して
         /// <see cref="ConvertedGameObjData"/> を作ります。
@@ -63,7 +64,9 @@ namespace PLATEAU.CityGrid
                     },
                     name = this.name
                 };
-            }else {
+            }
+            else
+            {
                 nextParent = await this.meshData.PlaceToScene(parent, gmlAbsolutePath);
             }
 
@@ -73,7 +76,7 @@ namespace PLATEAU.CityGrid
             }
         }
     }
-    
+
     /// <summary>
     /// DLL側の Mesh を Unity向けに変換したものです。
     /// </summary>
@@ -90,7 +93,7 @@ namespace PLATEAU.CityGrid
         private const string shaderName = "Standard";
         private int SubMeshCount => this.subMeshTriangles.Count;
 
-        public ConvertedMeshData(Vector3[] vertices, Vector2[] uv1, Vector2[] uv2, Vector2[] uv3, List<List<int>> subMeshTriangles,List<CityGML.Texture> plateauTextures, string name)
+        public ConvertedMeshData(Vector3[] vertices, Vector2[] uv1, Vector2[] uv2, Vector2[] uv3, List<List<int>> subMeshTriangles, List<CityGML.Texture> plateauTextures, string name)
         {
             this.vertices = vertices;
             this.uv1 = uv1;
@@ -125,9 +128,9 @@ namespace PLATEAU.CityGrid
             var meshFilter = GameObjectUtil.AssureComponent<MeshFilter>(meshObj);
             meshFilter.mesh = mesh;
             var renderer = GameObjectUtil.AssureComponent<MeshRenderer>(meshObj);
-            
+
             await LoadTextures(this, this.plateauTextures, gmlAbsolutePath);
-            
+
             var materials = new Material[mesh.subMeshCount];
             for (int i = 0; i < mesh.subMeshCount; i++)
             {
@@ -144,7 +147,7 @@ namespace PLATEAU.CityGrid
             renderer.materials = materials;
             return meshObj;
         }
-        
+
         /// <summary>
         /// データをもとにUnity のメッシュを生成します。
         /// </summary>
@@ -168,7 +171,7 @@ namespace PLATEAU.CityGrid
             mesh.name = Name;
             return mesh;
         }
-        
+
         /// <summary>
         /// <paramref name="plateauTextures"/> に記録された URL から、テクスチャを非同期でロードします。
         /// 生成した Unity の Textureインスタンスへの参照を <paramref name="meshData"/> に追加します。
@@ -188,29 +191,29 @@ namespace PLATEAU.CityGrid
                     continue;
                 }
                 string textureFullPath = Path.GetFullPath(Path.Combine(gmlAbsolutePath, "../", texUrl));
-                
+
                 // 非同期でテクスチャをロードします。
                 var request = UnityWebRequestTexture.GetTexture($"file://{textureFullPath}");
-                
+
                 request.timeout = 3;
                 await request.SendWebRequest();
-                
+
                 if (request.result != UnityWebRequest.Result.Success)
                 {
                     Debug.LogError($"failed to load texture : {textureFullPath} result = {(int)request.result}");
                     continue;
                 }
                 Texture texture = ((DownloadHandlerTexture)request.downloadHandler).texture;
-                
+
                 // この Compress によってテクスチャ容量が 6分の1 になります。
                 // 松山市のLOD2の建物モデルで計測したところ、 テクスチャのメモリ使用量が 2.6GB から 421.3MB になりました。
                 // 画質は下がりますが、メモリ使用量を適正にするために必須と思われます。
                 ((Texture2D)texture).Compress(true);
-                
+
                 // 生成したUnityテクスチャへの参照を meshData に追加します。
                 texture.name = Path.GetFileNameWithoutExtension(texUrl);
                 meshData.AddTexture(i, texture);
-                
+
             }
         }
     }

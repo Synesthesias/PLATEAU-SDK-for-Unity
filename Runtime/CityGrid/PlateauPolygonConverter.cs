@@ -63,8 +63,8 @@ namespace PLATEAU.CityGrid
             // Mesh の multiTexture ごとにサブメッシュを分けます。
             for (int i = 0; i <= numTexInfo; i++)
             {
-                int nextSubMeshStart = 
-                    (i == numTexInfo) ? 
+                int nextSubMeshStart =
+                    (i == numTexInfo) ?
                         plateauIndices.Count :
                         multiTexture[i].VertexIndex;
                 int count = nextSubMeshStart - currentSubMeshStart;
@@ -86,7 +86,7 @@ namespace PLATEAU.CityGrid
 
 
     }
-    
-    
-    
+
+
+
 }

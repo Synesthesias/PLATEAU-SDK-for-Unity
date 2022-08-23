@@ -38,7 +38,7 @@ namespace PLATEAU.GeometryModel
         public Model Extract(CityModel cityModel, MeshExtractOptions options, DllLogger logger)
         {
             var result = NativeMethods.plateau_mesh_extractor_extract(
-                this.handle, cityModel.Handle, options, logger.Handle,
+                this.handle, cityModel.Handle, options,
                 out IntPtr outModelPtr
             );
             DLLUtil.CheckDllError(result);

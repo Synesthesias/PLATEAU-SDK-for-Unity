@@ -10,15 +10,15 @@ namespace PLATEAU.Editor.Behaviour
     {
         private bool foldOutObjPlaceGUI;
         private readonly CityMeshPlacerPresenter cityMeshPlacerPresenter = new CityMeshPlacerPresenter();
-        
+
         public override void OnInspectorGUI()
         {
             CityBehaviour cityBehaviour = (CityBehaviour)target;
             HeaderDrawer.Reset();
             base.OnInspectorGUI();
-            
+
             EditorGUILayout.Space(15);
-            
+
             HeaderDrawer.Draw("3Dモデルをシーンに再配置");
             using (PlateauEditorStyle.VerticalScopeLevel1())
             {

@@ -15,7 +15,7 @@ namespace PLATEAU.CityMeta
     {
         /// <value>都市オブジェクトのIDから、それに対応する gmlファイル名を検索できる辞書です。</value>
         [SerializeField] internal IdToGmlTable idToGmlTable = new IdToGmlTable();
-        
+
         // TODO 要検討 : idToGmlTable の必要性は？
         // << 検討事項 >>
         // idToGmlTable とは、GameObject名 と Gmlファイル名を対応付ける辞書です。
@@ -46,7 +46,7 @@ namespace PLATEAU.CityMeta
         /// <value>インポート時の設定です。</value>
         [SerializeField] internal CityImportConfig cityImportConfig = new CityImportConfig();
 
-        [SerializeField] internal string[] gmlRelativePaths = {};
+        [SerializeField] internal string[] gmlRelativePaths = { };
 
         /// <summary>
         /// 辞書 <see cref="idToGmlTable"/> の中に引数をキーとするものがあるかどうか返します。

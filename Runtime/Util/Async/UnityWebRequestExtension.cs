@@ -15,7 +15,7 @@ namespace PLATEAU.Util.Async
         {
             return new UnityWebRequestAwaitable(operation);
         }
-        
+
         public class UnityWebRequestAwaitable : INotifyCompletion
         {
             private UnityWebRequestAsyncOperation operation;
@@ -30,8 +30,8 @@ namespace PLATEAU.Util.Async
             public bool IsCompleted => this.operation.isDone;
 
             public void OnCompleted(Action continuationArg) => this.continuation = continuationArg;
-            
-            public void GetResult(){}
+
+            public void GetResult() { }
 
             private IEnumerator CheckLoop()
             {

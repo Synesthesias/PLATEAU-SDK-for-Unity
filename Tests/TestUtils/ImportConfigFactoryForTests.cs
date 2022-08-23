@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
-using PLATEAU.CityMeta;
+﻿using PLATEAU.CityMeta;
 using PLATEAU.CommonDataStructure;
 using PLATEAU.Editor.CityImport;
 using PLATEAU.IO;
+using System.Collections.Generic;
 
 namespace PLATEAU.Tests.TestUtils
 {
@@ -27,7 +27,7 @@ namespace PLATEAU.Tests.TestUtils
                     DirAssetsPath = outputDirAssetsPath
                 }
             };
-            
+
             // タイプ別 3Dモデル変換設定
             var convertTypeConf = conf.objConvertTypesConfig;
             convertTypeConf.SetLodRangeToAllRange();
@@ -41,7 +41,7 @@ namespace PLATEAU.Tests.TestUtils
             conf.gmlSearcherConfig.GenerateAreaTree(gmlSearcher.AreaIds, false);
             return conf;
         }
-        
+
         /// <summary>
         /// objファイル変換において、辞書によってLOD範囲を指定します。
         /// </summary>

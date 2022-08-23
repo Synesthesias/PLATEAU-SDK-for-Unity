@@ -697,7 +697,6 @@ namespace PLATEAU.Interop
             [In] IntPtr meshExtractorPtr,
             [In] IntPtr cityModelPtr,
             MeshExtractOptions options,
-            [In] IntPtr loggerPtr,
             out IntPtr outModelPtr);
         
         // TODO 後で消す

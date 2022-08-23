@@ -1,10 +1,10 @@
-﻿using System.IO;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using PLATEAU.Behaviour;
 using PLATEAU.CityMeta;
 using PLATEAU.IO;
 using PLATEAU.Tests.TestUtils;
 using PLATEAU.Util;
+using System.IO;
 using UnityEngine;
 
 namespace PLATEAU.Tests.PlayModeTests
@@ -15,16 +15,16 @@ namespace PLATEAU.Tests.PlayModeTests
         // private CityBehaviour cityBehaviour;
         private string prevDefaultDstPath;
         private static readonly string testDefaultCopyDestPath = Path.Combine(DirectoryUtil.TempAssetFolderPath, "PLATEAU");
-        
+
         [SetUp]
         public void SetUp()
         {
             DirectoryUtil.SetUpTempAssetFolder();
-            
+
             // テスト用に一時的に MultiGmlConverter のデフォルト出力先を変更します。
             this.prevDefaultDstPath = PlateauUnityPath.StreamingGmlFolder;
             PlateauUnityPath.TestOnly_SetStreamingGmlFolder(testDefaultCopyDestPath);
-            
+
             TestImporter.Import(ImportPathForTests.Simple, out _, config =>
             {
                 config.cityMeshPlacerConfig.SetPlaceMethodForAllTypes(CityMeshPlacerConfig.PlaceMethod.PlaceAllLod);

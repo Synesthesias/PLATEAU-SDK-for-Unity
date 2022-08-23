@@ -1,8 +1,8 @@
-﻿using System;
+﻿using PLATEAU.CityMeta;
+using PLATEAU.Util;
+using System;
 using System.IO;
 using System.Linq;
-using PLATEAU.CityMeta;
-using PLATEAU.Util;
 using UnityEditor;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
@@ -39,7 +39,7 @@ namespace PLATEAU.Editor.Converters
                 {
                     metadata = LoadOrCreateMetadata(importDestPath.MetadataAssetPath, config.DoClearIdToGmlTable);
                 }
-                
+
                 var assets = AssetDatabase.LoadAllAssetsAtPath(meshAssetPath);
                 if (assets == null || assets.Length <= 0)
                 {
@@ -47,7 +47,7 @@ namespace PLATEAU.Editor.Converters
                     // TODO ここがtrueなのは仮。ちゃんとLODごとにできたら false にして失敗通知すべき。
                     return true;
                 }
-                
+
                 // 各メッシュの名前とgmlファイル名を紐付けます。
                 var meshes = assets.OfType<Mesh>().ToArray();
                 foreach (var mesh in meshes)
@@ -62,7 +62,7 @@ namespace PLATEAU.Editor.Converters
 
                 importConf.importDestPath.DirAssetsPath = importDestPath.DirAssetsPath;
                 metadata.cityImportConfig = importConf;
-                
+
                 // ファイルに保存します。
                 if (doSaveFile)
                 {
@@ -78,7 +78,7 @@ namespace PLATEAU.Editor.Converters
                 return false;
             }
         }
-        
+
         /// <summary>
         /// 指定パスの <see cref="CityMetadata"/> をロードします。
         /// ファイルが存在しない場合、新しく作成します。
@@ -102,5 +102,5 @@ namespace PLATEAU.Editor.Converters
             EditorUtility.SetDirty(loadedMetadata);
             return loadedMetadata;
         }
-    }   
+    }
 }

@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using PLATEAU.CityMeta;
+﻿using PLATEAU.CityMeta;
+using System.Collections.Generic;
 
 namespace PLATEAU.Editor.CityImport
 {
@@ -34,7 +34,7 @@ namespace PLATEAU.Editor.CityImport
         {
             return GmlSearcherModel.ListTargetGmlFiles(this.model, this.config);
         }
-        
+
         /// <summary>
         /// インポート元パスが変わったときの処理です。
         /// </summary>
@@ -50,7 +50,7 @@ namespace PLATEAU.Editor.CityImport
             this.model = new GmlSearcherModel(path);
             this.view.Reset();
             this.model.GenerateFileDictionary(path);
-            
+
             // 初期化処理をやり直します。
             this.config.GenerateAreaTree(this.model.AreaIds, !shouldOverwriteMetadata);
         }

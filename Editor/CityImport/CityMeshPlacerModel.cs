@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using PLATEAU.Behaviour;
+﻿using PLATEAU.Behaviour;
 using PLATEAU.CityGML;
 using PLATEAU.CityMeta;
 using PLATEAU.Editor.Diagnostics;
@@ -9,6 +6,9 @@ using PLATEAU.Interop;
 using PLATEAU.IO;
 using PLATEAU.Util;
 using PLATEAU.Util.FileNames;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -39,19 +39,19 @@ namespace PLATEAU.Editor.CityImport
         public static void Place(CityMeshPlacerConfig placeConfig, CityMetadata metadata, GmlToCityModelDict gmlToCityModelCache)
         {
             string rootDirName = metadata.cityImportConfig.rootDirName;
-            
+
             var rootGameObj = PlaceCityBehaviourGameObject(rootDirName, metadata);
-            
+
             string[] gmlRelativePaths = metadata.gmlRelativePaths;
 
             var timer = new TimeDiagnosticsTable(); // 時間計測
-            
+
             // ループ : gmlファイルごと
             int numGml = gmlRelativePaths.Length;
             for (int i = 0; i < numGml; i++)
             {
                 var gmlRelativePath = gmlRelativePaths[i];
-                EditorUtility.DisplayProgressBar("配置中", $"[{i}/{numGml}] {GmlFileNameParser.FileNameWithoutExtension(gmlRelativePath)}.gml", (float)i/numGml);
+                EditorUtility.DisplayProgressBar("配置中", $"[{i}/{numGml}] {GmlFileNameParser.FileNameWithoutExtension(gmlRelativePath)}.gml", (float)i / numGml);
                 PlaceGmlModel(metadata, gmlRelativePath, placeConfig, rootGameObj.transform, timer, gmlToCityModelCache);
             }
             EditorUtility.ClearProgressBar();
@@ -62,11 +62,11 @@ namespace PLATEAU.Editor.CityImport
         {
             // すでに配置されている場合は削除します。
             var oldObj = GameObject.Find(rootDirName);
-            if(oldObj != null) GameObjectUtil.DestroyChildOf(oldObj);
-            
+            if (oldObj != null) GameObjectUtil.DestroyChildOf(oldObj);
+
             // Plateau元データのルートフォルダと同名の ルートGame Objectを作ります。 
             var rootGameObj = GameObjectUtil.AssureGameObject(rootDirName);
-            
+
             // ルートGameObjectに CityBehaviour をアタッチしてメタデータをリンクします。
             var cityBehaviour = GameObjectUtil.AssureComponent<CityBehaviour>(rootGameObj);
             cityBehaviour.CityMetadata = metadata;
@@ -83,7 +83,7 @@ namespace PLATEAU.Editor.CityImport
             var placeMethod = placeConfig.GetPerTypeConfig(gmlType).placeMethod;
 
             if (placeMethod == CityMeshPlacerConfig.PlaceMethod.DoNotPlace) return;
-            
+
             string gmlFileName = $"{GmlFileNameParser.FileNameWithoutExtension(gmlRelativePath)}.gml";
             timer.Start("ParseGml", gmlFileName);
             var cityModel = LoadGml(metadata, gmlRelativePath, gmlToCityModelCache);
@@ -105,14 +105,14 @@ namespace PLATEAU.Editor.CityImport
             lodRange = placeMethod.LodRangeToPlace(lodRange, selectedLod);
 
             var primaryCityObjs = cityModel.GetCityObjectsByType(PrimaryCityObjectTypes.PrimaryTypeMask);
-            
+
             timer.Start("Place3dModels", gmlFileName);
 
             // ループ : LODごと
             for (int currentLod = lodRange.Max; currentLod >= lodRange.Min; currentLod--)
             {
                 bool anyModelExist = PlaceGmlModelOfLod(currentLod, gmlRelativePath, metadata, primaryCityObjs, gmlGameObj.transform);
-                
+
                 if (anyModelExist && !placeMethod.DoesAllowMultipleLodPlaced())
                 {
                     // 今のLODですでにモデルが配置されており、かつ複数LODを同時に配置しない設定ならば、
@@ -132,7 +132,7 @@ namespace PLATEAU.Editor.CityImport
             if (foundObj == null) return false;
 
             bool anyModelExist = false;
-            
+
             // 例外的に、メッシュ分けの粒度が PerCityModelArea のとき、
             // 主要地物は存在せず、3Dモデルファイル内にメッシュが1つしか存在しないので
             // それを配置して return します。
@@ -147,7 +147,7 @@ namespace PLATEAU.Editor.CityImport
                 }
                 return placed != null;
             }
-            
+
             var type = GmlFileNameParser.GetGmlTypeEnum(gmlRelativePath);
             var typeConf = metadata.cityImportConfig.cityMeshPlacerConfig.GetPerTypeConfig(type);
 
@@ -156,7 +156,7 @@ namespace PLATEAU.Editor.CityImport
             {
                 // この LOD で 主要地物モデルが存在するなら、それを配置します。
                 string primaryGameObjName = GameObjNameParser.ComposeName(lod, primaryCityObj.ID);
-                
+
                 var primaryGameObj = PlaceToSceneIfConditionMatch(foundObj, primaryGameObjName, parentTrans, primaryCityObj, typeConf);
 
 
@@ -202,7 +202,7 @@ namespace PLATEAU.Editor.CityImport
                 // 主要地物の子をすべて配置します。
                 bool placedAnyChild = PlaceCityObjsIfConditionMatch(foundObj, childCityObjs.ToArray(), primaryGameObj.transform, typeConf);
                 anyModelExist |= placedAnyChild;
-                
+
                 // 子の数がゼロで、親も空（メッシュがない）なら、親は不要なので削除します。
                 if (!placedAnyChild && isPrimaryGameObjEmpty)
                 {
@@ -214,7 +214,7 @@ namespace PLATEAU.Editor.CityImport
             return anyModelExist;
         }
 
-        
+
 
         /// <summary>
         /// GMLファイルをロードします。
@@ -247,7 +247,7 @@ namespace PLATEAU.Editor.CityImport
             string targetObjName = ModelFileNameParser.FileName(lod, gmlRelativePath);
             return objInfos.FirstOrDefault(info => Path.GetFileName(info.assetsPath) == targetObjName);
         }
-        
+
 
         /// <summary>
         /// <see cref="PlaceToSceneIfConditionMatch"/> の複数版です。
@@ -295,10 +295,10 @@ namespace PLATEAU.Editor.CityImport
             {
                 return null;
             }
-            
+
             // すでに同名のものがある場合は削除します。
             GameObjectUtil.DestroyChildOf(parentTransform, objName);
-                    
+
             // メッシュをシーンに配置します。
             var newGameObj = Object.Instantiate(gameObj, parentTransform, true);
             newGameObj.name = newGameObj.name.Replace("(Clone)", "");
@@ -315,7 +315,7 @@ namespace PLATEAU.Editor.CityImport
             bool matches = ((ulong)coType & placeConfPerType.cityObjectTypeFlags) != 0;
             return matches;
         }
-        
+
 
     }
 }

@@ -11,7 +11,7 @@ namespace PLATEAU.CommonDataStructure
 
         public MinMax()
         {
-            
+
         }
 
         public MinMax(T min, T max)
@@ -64,7 +64,7 @@ namespace PLATEAU.CommonDataStructure
         }
     }
 
-    
+
     /// <summary>
     /// <see cref="MinMax{T}"/> の値を readonly にしたバージョンです。 
     /// </summary>

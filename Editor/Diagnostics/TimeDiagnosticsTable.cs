@@ -13,16 +13,16 @@ namespace PLATEAU.Editor.Diagnostics
     /// </summary>
     internal class TimeDiagnosticsTable
     {
-        
+
         /// <summary>処理 と データ　を軸とする二次元テーブルです。 </summary>
         private readonly Stopwatch[,] table = new Stopwatch[maxNumProcess, maxNumData];
-        
+
         /// <summary> 処理名とテーブルの縦軸インデックスを紐付けます。 </summary>
         private readonly Dictionary<string, int> processNameToId = new Dictionary<string, int>();
-        
+
         /// <summary> データ名とテーブルの横軸インデックスを紐付けます。 </summary>
         private readonly Dictionary<string, int> dataNameToId = new Dictionary<string, int>();
-        
+
         private const int maxNumProcess = 30;
         private const int maxNumData = 99;
         private Stopwatch currentStopwatch = null;
@@ -33,7 +33,7 @@ namespace PLATEAU.Editor.Diagnostics
             Clear();
         }
 
-        
+
         /// <summary>
         /// 名前によって表の1マスを指定し、そこのストップウォッチを開始させます。
         /// 前のストップウォッチを停止させます。

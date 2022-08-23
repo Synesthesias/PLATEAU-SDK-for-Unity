@@ -21,7 +21,7 @@ namespace PLATEAU.Util.FileNames
             string gmlName = GmlFileNameParser.FileNameWithoutExtension(gmlFilePath);
             return $"LOD{lod}_{gmlName}";
         }
-        
+
         /// <summary>
         /// <paramref name="lod"/>, <paramref name="gmlFilePath"/> から
         /// 3Dモデルファイル名（拡張子付き）を返します。
@@ -30,7 +30,7 @@ namespace PLATEAU.Util.FileNames
         {
             return $"{FileNameWithoutExtension(lod, gmlFilePath)}.obj";
         }
-        
+
         /// <summary>
         /// ファイル名からLODの数値を取り出します。
         /// </summary>

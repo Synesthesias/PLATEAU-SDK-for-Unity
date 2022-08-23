@@ -27,7 +27,7 @@ namespace PLATEAU.Editor.EditorWindowCommon
         {
             GUILayout.Box(text, styleHeading2);
         }
-        
+
         /// <summary> 見出し3のスタイルで文字を表示します。 </summary>
         public static void Heading3(string text)
         {
@@ -43,7 +43,7 @@ namespace PLATEAU.Editor.EditorWindowCommon
             contentOffset = new Vector2(4f, -4f),
             margin = new RectOffset(3, 2, 4, 4)
         };
-        
+
         /// <summary> 見出し2のスタイルです。 </summary>
         private static readonly GUIStyle styleHeading2 = new GUIStyle("ShurikenModuleTitle")
         {
@@ -52,7 +52,7 @@ namespace PLATEAU.Editor.EditorWindowCommon
             contentOffset = new Vector2(4f, -4f),
             margin = new RectOffset(15, 12, 4, 4)
         };
-        
+
         /// <summary> 見出し3のスタイルです。 </summary>
         private static readonly GUIStyle styleHeading3 = new GUIStyle("ShurikenModuleTitle")
         {
@@ -72,7 +72,7 @@ namespace PLATEAU.Editor.EditorWindowCommon
             });
             return isButtonPushed;
         }
-        
+
         public static bool MiniButton(string text)
         {
             bool isButtonPushed = DrawButton(text, mainButtonColorTint, new GUIStyle(GUI.skin.button)
@@ -106,32 +106,32 @@ namespace PLATEAU.Editor.EditorWindowCommon
         {
             int lineCount = text.Count(c => c.Equals('\n')) + 1;
             maxHeight = Math.Min(maxHeight, lineCount * 15);
-            
+
             // ScrollView の内側のスタイル
             GUIStyle labelStyle = new GUIStyle(EditorStyles.label)
             {
                 wordWrap = true
             };
-            
+
             // ScrollView の外側のスタイル
             var boxStyle = ContentStyleLevel2;
             boxStyle.padding.bottom = 4;
             boxStyle.margin.bottom = 4;
             boxStyle.fixedHeight = maxHeight + labelStyle.padding.top + labelStyle.padding.bottom + labelStyle.margin.top + labelStyle.margin.bottom + boxStyle.padding.top + boxStyle.padding.bottom;
-            
+
             using (new EditorGUILayout.VerticalScope(boxStyle))
             {
                 using (var scrollView = new EditorGUILayout.ScrollViewScope(scrollPos))
                 {
                     scrollPos = scrollView.scrollPosition;
-                    
+
                     EditorGUILayout.LabelField(text, labelStyle);
                 }
             }
 
             return scrollPos;
         }
-        
+
         /// <summary> 色指定でボタンを描画します。 </summary>
         private static bool DrawButton(string text, Color buttonColorTint, GUIStyle style)
         {
@@ -178,7 +178,7 @@ namespace PLATEAU.Editor.EditorWindowCommon
                 padding = new RectOffset(8, 8, 8, 8),
                 margin = new RectOffset(marginLeft, 8, 8, 8)
             };
-                
+
             return style;
         }
 
@@ -195,14 +195,16 @@ namespace PLATEAU.Editor.EditorWindowCommon
                 return style;
             }
         }
-        
+
         /// <summary>
         /// ContentStyle入れ子の3段目のスタイルです。
         /// 青っぽい色に寄せた背景色のBoxStyleを返します。
         /// エディタのテーマが Dark か Light かに応じて異なる色を返します。
         /// </summary>
-        private static GUIStyle ContentStyleLevel3 {
-            get {
+        private static GUIStyle ContentStyleLevel3
+        {
+            get
+            {
                 GUIStyle style = new GUIStyle(ContentStyleLevel1(false));
                 string colorCode = EditorGUIUtility.isProSkin ? cyanBackgroundDark : cyanBackgroundLight;
                 style.normal.background = ColoredBackground(colorCode);
@@ -239,15 +241,17 @@ namespace PLATEAU.Editor.EditorWindowCommon
             GUI.backgroundColor = prevColor;
             return newTabIndex;
         }
-        
-        
+
+
         /// <summary>
         /// 背景用に単色のテクスチャを作ります。
         /// </summary>
-        private static Texture2D ColoredBackground(string colorCode) {
+        private static Texture2D ColoredBackground(string colorCode)
+        {
             // 作ったテクスチャはなるべく使い回します。
             // 毎フレーム Texture を new していると エラー「Resource ID out of range」が出るためです。 
-            if (cachedTexture.ContainsKey(colorCode)) {
+            if (cachedTexture.ContainsKey(colorCode))
+            {
                 return cachedTexture[colorCode];
             }
             Texture2D tex = new Texture2D(1, 1);

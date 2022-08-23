@@ -1,7 +1,7 @@
-﻿using System;
+﻿using PLATEAU.CommonDataStructure;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using PLATEAU.CommonDataStructure;
 using UnityEditor;
 using UnityEngine;
 
@@ -17,7 +17,7 @@ namespace PLATEAU.CityMeta
         public int lod;
         public GmlType gmlType;
 
-        [NonSerialized] private Dictionary<string, GameObject> nameToObjCache; 
+        [NonSerialized] private Dictionary<string, GameObject> nameToObjCache;
 
         public ObjInfo(string assetsPath, int lod, GmlType gmlType)
         {
@@ -37,8 +37,8 @@ namespace PLATEAU.CityMeta
         {
             return $"[LOD{this.lod}] {this.assetsPath}";
         }
-        
-        
+
+
         /// <summary>
         /// インポート時に生成された objファイルのリストを受け取り、
         /// Gmlタイプ別にどの範囲のLODが存在するかを辞書形式で返します。
@@ -78,7 +78,7 @@ namespace PLATEAU.CityMeta
         /// なぜなら、1つの3Dモデルファイルの中に大量にオブジェクトが入っている状況で、モデル配置のために何度もメッシュオブジェクトを検索するには
         /// キャッシュがないと極めて遅くなるためです。
         /// </summary>
-        #if UNITY_EDITOR
+#if UNITY_EDITOR
         public GameObject GetGameObjByName(string objName)
         {
             if (this.nameToObjCache == null)
@@ -93,9 +93,9 @@ namespace PLATEAU.CityMeta
 
             return null;
         }
-        #endif // UNITY_EDITOR
+#endif // UNITY_EDITOR
 
-        #if UNITY_EDITOR
+#if UNITY_EDITOR
         private void ComposeNameToObjCache()
         {
             this.nameToObjCache = new Dictionary<string, GameObject>();
@@ -109,6 +109,6 @@ namespace PLATEAU.CityMeta
                 this.nameToObjCache.Add(go.name, go);
             }
         }
-        #endif // UNITY_EDITOR
+#endif // UNITY_EDITOR
     }
 }

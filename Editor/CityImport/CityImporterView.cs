@@ -1,5 +1,5 @@
-﻿using PLATEAU.Editor.EditorWindowCommon;
-using PLATEAU.CityMeta;
+﻿using PLATEAU.CityMeta;
+using PLATEAU.Editor.EditorWindowCommon;
 using UnityEditor;
 using UnityEngine;
 
@@ -17,7 +17,7 @@ namespace PLATEAU.Editor.CityImport
     {
         private readonly InputFolderSelectorGUI importFolderSelectorGUI;
         private readonly GmlSearcherPresenter gmlSearcherPresenter;
-        
+
         public CityImporterView(CityImportConfig importConfig)
         {
             this.importFolderSelectorGUI = new InputFolderSelectorGUI(this);
@@ -35,7 +35,7 @@ namespace PLATEAU.Editor.CityImport
             {
                 // 案内
                 this.importFolderSelectorGUI.DisplayGuidanceAboutCopy();
-                
+
                 // 変換対象の絞り込み
                 var gmlFiles = this.gmlSearcherPresenter.Draw();
 
@@ -49,9 +49,9 @@ namespace PLATEAU.Editor.CityImport
 
                 // 変換先パス設定
                 importConfig.importDestPath.DirAssetsPath = ExportFolderSelectorGUI.Draw(importConfig.importDestPath.DirAssetsPath);
-                
+
                 HeaderDrawer.DecrementDepth();
-                
+
                 // 出力ボタン
                 HeaderDrawer.Draw("出力");
                 using (PlateauEditorStyle.VerticalScopeLevel1())
@@ -78,7 +78,7 @@ namespace PLATEAU.Editor.CityImport
                 EditorGUILayout.HelpBox("Plateauフォルダが選択されていません。（直下に udx という名前のフォルダを含むフォルダを選択してください。）", MessageType.Error);
             }
         }
-        
+
         /// <summary>
         /// udxフォルダパス選択GUIで、新しいパスが指定されたときに呼ばれます。
         /// </summary>
@@ -92,8 +92,8 @@ namespace PLATEAU.Editor.CityImport
             this.gmlSearcherPresenter.OnImportSrcPathChanged(path, changeMethod);
         }
 
-        
-        
-        
+
+
+
     }
 }

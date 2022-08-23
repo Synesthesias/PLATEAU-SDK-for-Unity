@@ -13,7 +13,7 @@ namespace PLATEAU.Behaviour
             InitMembers();
             AttachMeshCollidersToCity();
         }
-        
+
         private void Update()
         {
             if (Input.GetMouseButton(0)) // マウスクリック時
@@ -48,7 +48,7 @@ namespace PLATEAU.Behaviour
                 GameObjectUtil.AssureComponent<MeshCollider>(child.gameObject);
             }
         }
-        
+
         /// <summary>
         /// マウスカーソルの位置にレイを飛ばし、ヒット情報を返します。
         /// 当たったかどうかをboolで返し、当たった場合はその位置の UV を out引数で返します。

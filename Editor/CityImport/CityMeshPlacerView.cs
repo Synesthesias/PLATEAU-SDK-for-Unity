@@ -1,9 +1,9 @@
-﻿using System.Collections.Generic;
-using PLATEAU.CityGML;
+﻿using PLATEAU.CityGML;
 using PLATEAU.CityMeta;
 using PLATEAU.CommonDataStructure;
 using PLATEAU.Editor.EditorWindowCommon;
 using PLATEAU.Util.CityObjectTypeExtensions;
+using System.Collections.Generic;
 using UnityEditor;
 
 namespace PLATEAU.Editor.CityImport
@@ -24,23 +24,23 @@ namespace PLATEAU.Editor.CityImport
                 {
                     var possibleLodRange = typeLodDict[gmlType];
                     if (possibleLodRange == null) continue; // その地物タイプが存在しない時
-                    
+
                     EditorGUILayout.LabelField(gmlType.ToDisplay());
                     using (PlateauEditorStyle.VerticalScopeLevel2())
                     {
                         var typeConf = placerConfig.GetPerTypeConfig(gmlType);
-                        DrawPerTypeConfGUI(typeConf, possibleLodRange, gmlType); 
+                        DrawPerTypeConfGUI(typeConf, possibleLodRange, gmlType);
                     }
-                               
+
                 }
                 if (PlateauEditorStyle.MainButton("シーンにモデルを再配置"))
                 {
                     // 再配置
                     presenter.Place();
                 }
-                
+
             }
-            
+
         }
 
         /// <summary>
@@ -61,7 +61,7 @@ namespace PLATEAU.Editor.CityImport
                     EditorGUILayout.LabelField($"存在するLOD");
                     EditorGUILayout.LabelField($"最小 {minLod} , 最大 {maxLod}");
                 }
-                
+
                 int rangeDiff = maxLod - minLod;
                 if (rangeDiff >= 1)
                 {
@@ -77,22 +77,22 @@ namespace PLATEAU.Editor.CityImport
                         EditorGUILayout.LabelField($"配置LOD");
                         EditorGUILayout.LabelField($"{typeConf.selectedLod}");
                     }
-                    
+
                 }
-                
+
             }
-            
+
             // 都市オブジェクトの種類別の配置設定
             var availableCityObjTypes = CityObjectTypeClassification.GetFlags(gmlType, possibleLodRange);
             if (availableCityObjTypes > 0)
             {
-                typeConf.cityObjectTypeFlags = 
+                typeConf.cityObjectTypeFlags =
                     (ulong)((CityObjectType)availableCityObjTypes).FlagField("配置都市オブジェクトの種類", typeConf.cityObjectTypeFlags);
             }
-            
-            
+
+
         }
 
-        
+
     }
 }

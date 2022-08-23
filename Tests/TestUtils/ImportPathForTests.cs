@@ -16,8 +16,8 @@ namespace PLATEAU.Tests.TestUtils
                 new[] { "bldg/53392642_bldg_6697_op2.gml" },
                 PathUtil.FullPathToAssetsPath(DirectoryUtil.TempAssetFolderPath)
             );
-        
-        
+
+
         /// <summary>
         /// ミニ東京のうち、bldg と dem の2つのgmlファイルを対象とするテストのパスのセットです。
         /// </summary>

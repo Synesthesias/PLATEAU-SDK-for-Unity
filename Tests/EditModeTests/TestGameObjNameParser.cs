@@ -1,5 +1,4 @@
 ﻿using NUnit.Framework;
-using PLATEAU.Util;
 using PLATEAU.Util.FileNames;
 
 namespace PLATEAU.Tests.EditModeTests
@@ -42,11 +41,11 @@ namespace PLATEAU.Tests.EditModeTests
             new TestCaseData("LOD1_abc_123")
                 .Returns(("abc_123", true))
                 .SetName("PlateauのID, trueを返します。"),
-            
+
             new TestCaseData("id length is zero_")
                 .Returns(("", false))
                 .SetName("idの長さが0のとき 空文字, false を返します。"),
-            
+
             new TestCaseData("no underscore")
                 .Returns(("", false))
                 .SetName("アンダースコアがないとき 空文字, false を返します。")

@@ -1,11 +1,11 @@
-using System;
-using System.IO;
-using System.Threading;
 using PLATEAU.CityGML;
 using PLATEAU.CityMeta;
 using PLATEAU.Interop;
-using PLATEAU.Util;
 using PLATEAU.IO;
+using PLATEAU.Util;
+using System;
+using System.IO;
+using System.Threading;
 using UnityEditor;
 using UnityEngine;
 
@@ -46,7 +46,7 @@ namespace PLATEAU.Editor.Converters
             this.dllLogger = logger;
             this.meshConverter.Options = conf.DllConvertOption;
         }
-        
+
         /// <summary> コンバートの設定です。setで設定を変えます。 </summary>
         public GmlToObjConverterConfig Config
         {
@@ -103,7 +103,7 @@ namespace PLATEAU.Editor.Converters
 
                 cityModel ??= CityGml.Load(gmlFilePath, this.gmlParserParams, DllLogCallback.UnityLogCallbacks, this.config.LogLevel);
                 if (cityModel == null) return false;
-                
+
                 // 生成する obj のパスのリスト
                 int minLod = this.config.MinLod;
                 int maxLod = this.config.MaxLod;
@@ -111,7 +111,7 @@ namespace PLATEAU.Editor.Converters
                 string[] objFullPaths = new string[maxLod - minLod + 1];
                 for (int l = minLod; l <= maxLod; l++)
                 {
-                    objFullPaths[l-minLod] = Path.Combine(exportDirFullPath,
+                    objFullPaths[l - minLod] = Path.Combine(exportDirFullPath,
                         $"LOD{l}_{Path.GetFileNameWithoutExtension(gmlFilePath)}.obj");
                 }
 
@@ -126,7 +126,7 @@ namespace PLATEAU.Editor.Converters
                         AssetDatabase.Refresh();
                     }
                 }
-                
+
                 // ReferencePointを設定します。
                 if (this.config.DoAutoSetReferencePoint)
                 {
@@ -140,10 +140,10 @@ namespace PLATEAU.Editor.Converters
                         throw new Exception($"{nameof(this.config.ManualReferencePoint)} is null.");
                     this.meshConverter.Options.ReferencePoint = VectorConverter.ToPlateauVector(referencePoint.Value);
                 }
-                
+
                 // 変換してファイルに書き込みます。
                 exportedFilePaths = this.meshConverter.Convert(exportDirFullPath, gmlFilePath, cityModel, this.dllLogger);
-                
+
                 // 出力先が Assets フォルダ内なら、それをUnityに反映させます。
                 // 3Dモデルファイルのインポートが不必要に複数回行われていたので削除
                 // if (PathUtil.IsSubDirectoryOfAssets(exportDirFullPath))
@@ -193,7 +193,7 @@ namespace PLATEAU.Editor.Converters
             this.config.ManualReferencePoint = coord;
             return coord;
         }
-        
+
         /// <summary>
         /// 変換後の obj ファイルを開放したい時に呼びます。
         /// </summary>

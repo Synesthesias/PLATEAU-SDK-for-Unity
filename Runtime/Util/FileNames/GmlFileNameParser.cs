@@ -1,5 +1,5 @@
-﻿using System.IO;
-using PLATEAU.CityMeta;
+﻿using PLATEAU.CityMeta;
+using System.IO;
 
 namespace PLATEAU.Util.FileNames
 {
@@ -20,7 +20,7 @@ namespace PLATEAU.Util.FileNames
         public static void Parse(string gmlFileName, out int areaId, out GmlType gmlType, out int crs, out string option)
         {
             gmlFileName = FileNameWithoutExtension(gmlFileName);
-            
+
             areaId = GetAreaId(gmlFileName);
             gmlType = GetGmlTypeEnum(gmlFileName);
             string[] tokens = gmlFileName.Split('_');
@@ -47,7 +47,7 @@ namespace PLATEAU.Util.FileNames
             gmlFileName = FileNameWithoutExtension(gmlFileName);
             return gmlFileName.Split('_')[1];
         }
-        
+
         /// <summary> gmlファイル名からオプションと拡張子を除いて返します。 </summary>
         public static string NameWithoutOption(string gmlFileName)
         {

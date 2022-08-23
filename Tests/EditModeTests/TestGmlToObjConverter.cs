@@ -1,10 +1,10 @@
-using System.IO;
-using System.Linq;
 using NUnit.Framework;
 using PLATEAU.Editor.Converters;
 using PLATEAU.IO;
-using PLATEAU.Util;
 using PLATEAU.Tests.TestUtils;
+using PLATEAU.Util;
+using System.IO;
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
@@ -13,7 +13,7 @@ namespace PLATEAU.Tests.EditModeTests
     [TestFixture]
     public class TestGmlToObjConverter
     {
-        
+
 
         [SetUp]
         public void SetUp()
@@ -28,7 +28,7 @@ namespace PLATEAU.Tests.EditModeTests
             DirectoryUtil.DeleteTempAssetFolder();
             DirectoryUtil.DeleteTempCacheFolder();
         }
-        
+
         [Test]
         public void Convert_Generates_Obj_File_And_Returns_Generated_File_Name()
         {
@@ -42,7 +42,7 @@ namespace PLATEAU.Tests.EditModeTests
             Assert.IsTrue(fileExists, "変換後、objファイルが存在する");
             Assert.IsTrue(exportedFilePaths.Any(name => name.Contains("LOD0_53392642_bldg_6697_op2.obj")), "戻り値に出力ファイル名が含まれる");
             // objファイルの中身まではチェック未実装です。
-            }
+        }
 
         [Test]
         public void If_MeshGranularity_Is_PerCityModelArea_Then_Mesh_Count_Is_One()
@@ -52,7 +52,7 @@ namespace PLATEAU.Tests.EditModeTests
             Debug.Log($"Count : {count}");
             Assert.AreEqual(1, count, "メッシュを結合する設定のとき、オブジェクト数は1である");
         }
-        
+
         [Test]
         public void If_MeshGranularity_Is_PerPrimaryFeatureObject_Then_Multiple_BLD_Are_Exported()
         {
@@ -66,7 +66,7 @@ namespace PLATEAU.Tests.EditModeTests
                 Assert.IsTrue(mesh.name.Contains("BLD"), "粒度が主要地物のとき、各メッシュ名が BLD を含む（BLDは建物を意味する）");
             }
         }
-        
+
         [Test]
         public void If_MeshGranularity_Is_PerAtomicFeatureObject_Then_Multiple_Walls_Are_Exported()
         {
@@ -104,6 +104,6 @@ namespace PLATEAU.Tests.EditModeTests
             var meshes = obj.GetComponentsInChildren<MeshFilter>().Select(mf => mf.sharedMesh).ToArray();
             return meshes;
         }
-        
+
     }
 }

@@ -23,85 +23,85 @@ namespace PLATEAU.CommonDataStructure
     internal class ClassificationTree<TKey, TVal>
         where TKey : IComparable<TKey>
     {
-    private readonly TVal value;
+        private readonly TVal value;
 
-    private readonly SortedDictionary<TKey, ClassificationTree<TKey, TVal>> children =
-        new SortedDictionary<TKey, ClassificationTree<TKey, TVal>>();
-    
-    public ClassificationTree<TKey, TVal> Parent { get; }
+        private readonly SortedDictionary<TKey, ClassificationTree<TKey, TVal>> children =
+            new SortedDictionary<TKey, ClassificationTree<TKey, TVal>>();
 
-    /// <summary>
-    /// ノードを作ります。
-    /// ルートノードの場合は <paramref name="parent"/> は null にしてください。
-    /// </summary>
-    public ClassificationTree(TVal value, ClassificationTree<TKey, TVal> parent)
-    {
-        this.value = value;
-        Parent = parent;
-    }
+        public ClassificationTree<TKey, TVal> Parent { get; }
 
-    public TVal Value => this.value;
-
-    public void AddChild(TKey key, TVal val)
-    {
-        this.children.Add(key, new ClassificationTree<TKey, TVal>(val, this));
-    }
-
-    /// <summary>
-    /// 子に <paramref name="key"/> を含むかどうかをboolで返します。
-    /// 再帰的には処理しません。
-    /// </summary>
-    public bool ContainsInChildren(TKey key)
-    {
-        return this.children.ContainsKey(key);
-    }
-
-    public bool HasAnyChild()
-    {
-        return this.children.Any();
-    }
-
-    public ClassificationTree<TKey, TVal> GetChild(TKey childKey)
-    {
-        return this.children[childKey];
-    }
-    
-
-
-    /// <summary>
-    /// 深さ優先探索 (DFS) で木の全体をイテレートします。
-    /// </summary>
-    public IEnumerable<(int depth, ClassificationTree<TKey, TVal> node)> IterateDfsWithDepth()
-    {
-        var values = IterateDfsRecursive(this, 1);
-        foreach (var val in values)
+        /// <summary>
+        /// ノードを作ります。
+        /// ルートノードの場合は <paramref name="parent"/> は null にしてください。
+        /// </summary>
+        public ClassificationTree(TVal value, ClassificationTree<TKey, TVal> parent)
         {
-            yield return val;
-        }
-    }
-    
-    
-    /// <summary>
-    /// 深さ優先探索 (DFS) で、指定のノード以下をイテレートします。
-    /// </summary>
-    public static IEnumerable<(int depth, ClassificationTree<TKey, TVal> node)> IterateDfsRecursive(ClassificationTree<TKey, TVal> node, int depth)
-    {
-        if (node == null)
-        {
-            throw new ArgumentNullException($"{nameof(node)}");
+            this.value = value;
+            Parent = parent;
         }
 
-        yield return (depth, node);
-        foreach (var child in node.children)
+        public TVal Value => this.value;
+
+        public void AddChild(TKey key, TVal val)
         {
-            var childNode = child.Value;
-            var childRecursive = IterateDfsRecursive(childNode, depth+1);
-            foreach (var c in childRecursive)
+            this.children.Add(key, new ClassificationTree<TKey, TVal>(val, this));
+        }
+
+        /// <summary>
+        /// 子に <paramref name="key"/> を含むかどうかをboolで返します。
+        /// 再帰的には処理しません。
+        /// </summary>
+        public bool ContainsInChildren(TKey key)
+        {
+            return this.children.ContainsKey(key);
+        }
+
+        public bool HasAnyChild()
+        {
+            return this.children.Any();
+        }
+
+        public ClassificationTree<TKey, TVal> GetChild(TKey childKey)
+        {
+            return this.children[childKey];
+        }
+
+
+
+        /// <summary>
+        /// 深さ優先探索 (DFS) で木の全体をイテレートします。
+        /// </summary>
+        public IEnumerable<(int depth, ClassificationTree<TKey, TVal> node)> IterateDfsWithDepth()
+        {
+            var values = IterateDfsRecursive(this, 1);
+            foreach (var val in values)
             {
-                yield return c;
+                yield return val;
             }
         }
-    }
+
+
+        /// <summary>
+        /// 深さ優先探索 (DFS) で、指定のノード以下をイテレートします。
+        /// </summary>
+        public static IEnumerable<(int depth, ClassificationTree<TKey, TVal> node)> IterateDfsRecursive(ClassificationTree<TKey, TVal> node, int depth)
+        {
+            if (node == null)
+            {
+                throw new ArgumentNullException($"{nameof(node)}");
+            }
+
+            yield return (depth, node);
+            foreach (var child in node.children)
+            {
+                var childNode = child.Value;
+                var childRecursive = IterateDfsRecursive(childNode, depth + 1);
+                foreach (var c in childRecursive)
+                {
+                    yield return c;
+                }
+            }
+        }
 
     }
 }

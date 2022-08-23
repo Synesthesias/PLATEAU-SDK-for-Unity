@@ -1,8 +1,8 @@
-﻿using System;
+﻿using NUnit.Framework;
+using PLATEAU.Util;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using NUnit.Framework;
-using PLATEAU.Util;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Object = UnityEngine.Object;
@@ -20,7 +20,7 @@ namespace PLATEAU.Tests.TestUtils
             }
         }
 
-        
+
 
         /// <summary>
         /// EditModeテストの実行時にUnityが自動的に立ち上げる、デフォルトのテストシーンを返します。
@@ -69,10 +69,10 @@ namespace PLATEAU.Tests.TestUtils
         private static void AssertGameObjExists(string name, bool expect)
         {
             var foundObj = GetObjectsOfEditModeTestScene();
-             bool found = foundObj.Any(obj => obj.name == name);
-             string message = $"{name} という名称のゲームオブジェクトが";
-             message += expect ? "存在します" : "存在しません";
-             Assert.AreEqual(expect, found, message);
+            bool found = foundObj.Any(obj => obj.name == name);
+            string message = $"{name} という名称のゲームオブジェクトが";
+            message += expect ? "存在します" : "存在しません";
+            Assert.AreEqual(expect, found, message);
         }
     }
 }

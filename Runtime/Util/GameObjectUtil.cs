@@ -41,7 +41,7 @@ namespace PLATEAU.Util
             }
         }
 
-        
+
         /// <summary>
         /// <paramref name="gameObj"/> にコンポーネント <typeparamref name="T"/> がなければ追加します。
         /// すでにあれば何もしません。
@@ -106,7 +106,7 @@ namespace PLATEAU.Util
             {
                 destroyList.Add(trans.GetChild(i).gameObject);
             }
-            foreach(var d in destroyList) Object.DestroyImmediate(d); 
+            foreach (var d in destroyList) Object.DestroyImmediate(d);
         }
 
         public static List<GameObject> ListGameObjsInScene(Scene scene)

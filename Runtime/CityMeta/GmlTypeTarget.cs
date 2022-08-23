@@ -1,7 +1,7 @@
-﻿using System;
+﻿using PLATEAU.Util;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using PLATEAU.Util;
 using UnityEngine;
 
 namespace PLATEAU.CityMeta
@@ -14,11 +14,11 @@ namespace PLATEAU.CityMeta
     /// <para>
     /// 例: udx/bldg 下のgmlは対象にするが、udx/veg 下のgmlは対象にしない、など。</para>
     /// </summary>
-    
+
     // 補足:
     // 他クラスとの関係は CityImporterConfig -> 保持 -> GmlSearcherConfig -> 保持 -> GmlTypeTarget
     // という関係なので、 CityImporterConfig の注意事項に基づいてこのクラスには Serializable属性が付いている必要があります。
-    
+
     [Serializable]
     internal class GmlTypeTarget : ISerializationCallbackReceiver
     {
@@ -74,6 +74,6 @@ namespace PLATEAU.CityMeta
         {
             IsTypeTargetDict = DictionarySerializer.OnAfterSerialize(this.keys, this.values);
         }
-        
+
     }
 }

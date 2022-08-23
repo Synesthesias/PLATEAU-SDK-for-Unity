@@ -1,6 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-using PLATEAU.CityGrid;
+﻿using PLATEAU.CityGrid;
 using PLATEAU.Editor.EditorWindowCommon;
 using UnityEditor;
 using UnityEngine;
@@ -27,6 +25,6 @@ namespace PLATEAU.Editor.CityGrid
                     }
                 });
             }
-        }     
+        }
     }
 }

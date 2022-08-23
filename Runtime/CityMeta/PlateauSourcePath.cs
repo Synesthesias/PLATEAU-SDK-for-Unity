@@ -1,6 +1,6 @@
-﻿using System;
+﻿using PLATEAU.Util;
+using System;
 using System.IO;
-using PLATEAU.Util;
 using UnityEngine;
 
 namespace PLATEAU.CityMeta
@@ -34,7 +34,7 @@ namespace PLATEAU.CityMeta
         {
             this.rootDirAssetPath = rootDirAssetPath;
         }
-        
+
 
         /// <summary>
         /// 元データのRoot (= udxの親) フォルダの名前です。
@@ -63,8 +63,8 @@ namespace PLATEAU.CityMeta
         {
             this.rootDirAssetPath = PathUtil.FullPathToAssetsPath(rootDirFullPath);
         }
-        
-        
+
+
 
         /// <summary>
         /// udxフォルダからの相対パスを受け取り、そのフルパスを返します。

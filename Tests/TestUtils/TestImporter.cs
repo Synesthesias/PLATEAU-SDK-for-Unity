@@ -1,6 +1,6 @@
-﻿using System;
-using PLATEAU.CityMeta;
+﻿using PLATEAU.CityMeta;
 using PLATEAU.Editor.CityImport;
+using System;
 
 namespace PLATEAU.Tests.TestUtils
 {

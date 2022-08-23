@@ -13,8 +13,8 @@ namespace PLATEAU.Util
         /// <summary>
         /// シリアライズするときに List形式に直します。
         /// </summary>
-        public static void OnBeforeSerialize<TKey,TValue>(
-            Dictionary<TKey,TValue> dict,
+        public static void OnBeforeSerialize<TKey, TValue>(
+            Dictionary<TKey, TValue> dict,
             List<TKey> keys,
             List<TValue> values
             )
@@ -31,7 +31,7 @@ namespace PLATEAU.Util
         /// <summary>
         /// デシリアライズするときに List から Dictionary 形式に直します。
         /// </summary>
-        public static Dictionary<TKey,TValue> OnAfterSerialize<TKey, TValue>(
+        public static Dictionary<TKey, TValue> OnAfterSerialize<TKey, TValue>(
             List<TKey> keys,
             List<TValue> values
         )

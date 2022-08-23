@@ -1,7 +1,7 @@
-﻿using System;
+﻿using PLATEAU.CityGML;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using PLATEAU.CityGML;
 using UnityEditor;
 
 namespace PLATEAU.Util.CityObjectTypeExtensions
@@ -44,7 +44,7 @@ namespace PLATEAU.Util.CityObjectTypeExtensions
         }
     }
 
-    #if UNITY_EDITOR
+#if UNITY_EDITOR
     internal static class CityObjectTypeFlagsEditor
     {
         /// <summary>
@@ -64,8 +64,8 @@ namespace PLATEAU.Util.CityObjectTypeExtensions
                     EditorGUILayout.MaskField(label, currentSubsetFlags, subsetDisplays));
         }
 
-        public delegate int SubsetFlagsSelector(int currentSubsetFlags, string[] subsetDisplays); 
-        
+        public delegate int SubsetFlagsSelector(int currentSubsetFlags, string[] subsetDisplays);
+
         /// <summary>
         /// 詳しい説明は <see cref="FlagField"/> をご覧ください。
         /// </summary>
@@ -81,10 +81,10 @@ namespace PLATEAU.Util.CityObjectTypeExtensions
             // subsetFlagsとは、int型であり、 (subsetFlags の 2進数のi桁目 (1の位を i=0 とする)) = (subset[i] を対象とするとき 1, そうでなければ 0)で定義されます。
             // typeFlags は、CityObjectType全体のフラグ群で ulong型です。2進数で見たフラグ群です。
             // 2つのフラグを相互に変換しながら実装します。 
-            
+
             // この配列内の各要素はフラグが1つしか立っていないことが前提です。
             var subset = candidateFlags.ToTypeArray();
-            
+
             // Unityの MaskField に渡すフラグ型は int(符号付き32bit) なので、フラグの個数は 31 までしか対応できません。
             if (subset.Length > 31)
             {
@@ -92,16 +92,16 @@ namespace PLATEAU.Util.CityObjectTypeExtensions
             }
             var subsetDisplays = subset.Select(type => type.ToDisplay()).ToArray();
             int currentSubsetFlags = TypeToSubsetFlags(subset, currentSelectedTypeFlags);
-            
+
             // GUIで選択
             int selectedSubsetFlags = subsetFlagsSelector(currentSubsetFlags, subsetDisplays);
-            
+
             // subsetFlags を typeFlags に変換
             var typeFlags = SubsetFlagsToType(subset, selectedSubsetFlags);
-            
+
             // 候補でないものは、対応する bit を 1 にします。
             typeFlags |= ~(ulong)candidateFlags;
-            
+
             return (CityObjectType)typeFlags;
         }
 
@@ -135,7 +135,7 @@ namespace PLATEAU.Util.CityObjectTypeExtensions
             // Everything 以外のとき、subsetFlags に対応する typeFlags のビットを立てます。
             ulong typeFlags = 0;
             int loopCount = 0;
-            for(int flags = subsetFlags; flags != 0; flags >>=1)
+            for (int flags = subsetFlags; flags != 0; flags >>= 1)
             {
                 if (loopCount >= subset.Length) break;
                 if ((flags & 1) == 1)
@@ -148,5 +148,5 @@ namespace PLATEAU.Util.CityObjectTypeExtensions
             return typeFlags;
         }
     }
-    #endif
+#endif
 }

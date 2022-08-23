@@ -1,7 +1,7 @@
-﻿using System.IO;
-using PLATEAU.CityMeta;
+﻿using PLATEAU.CityMeta;
 using PLATEAU.Util;
 using PLATEAU.Util.FileNames;
+using System.IO;
 using UnityEditor;
 using UnityEngine;
 
@@ -14,7 +14,7 @@ namespace PLATEAU.Editor.CityImport
     /// </summary>
     internal static class CopyPlateauSrcFiles
     {
-        
+
         /// <summary>
         /// 元フォルダを StreamingAssets/PLATEAU にコピーします。ただしすでに StreamingAssets内にある場合を除きます。 
         /// <see cref="CityImportConfig"/> のインポート元パスを、コピー後のパスに変更します。
@@ -43,7 +43,7 @@ namespace PLATEAU.Editor.CityImport
         {
             int numGml = gmlRelativePaths.Length;
             ProgressBar("コピー中", 0, numGml);
-            
+
             string rootDirName = PlateauSourcePath.RootDirName(srcRootPathBeforeImport);
             if (rootDirName == null) throw new FileNotFoundException($"{nameof(rootDirName)} is null. srcRootPathBeforeImport = {srcRootPathBeforeImport}");
             var dest = new PlateauSourcePath(PathUtil.FullPathToAssetsPath(Path.Combine(copyDest, rootDirName)));
@@ -58,7 +58,7 @@ namespace PLATEAU.Editor.CityImport
             ProgressBar("コピー中 : codelists", 0, numGml);
             const string codelistsFolderName = "codelists";
             PathUtil.CloneDirectory(Path.Combine(PlateauSourcePath.GetRootDirFullPath(srcRootPathBeforeImport), codelistsFolderName), dest.RootDirFullPath());
-            
+
 
             // udxのパスです。
             // 例: Assets/StreamingAssets/PLATEAU/Tokyo/udx
@@ -117,33 +117,33 @@ namespace PLATEAU.Editor.CityImport
         {
             // すでにフォルダが存在するなら何もしません。
             if (Directory.Exists(fullPath)) return;
-            
+
             string assetPath = PathUtil.FullPathToAssetsPath(fullPath);
             string newDirName = new DirectoryInfo(assetPath).Name;
             var parentDirInfo = new DirectoryInfo(fullPath).Parent;
             string parentDirFullPath = parentDirInfo == null ? "" : parentDirInfo.FullName;
-            
+
             // 指定パスの親ディレクトリも存在しなければ、パスを親へさかのぼり、親のあるパスから再帰的にフォルダを作ります。
             if (parentDirFullPath != "" && !Directory.Exists(parentDirFullPath))
             {
                 Mkdir(parentDirFullPath);
             }
-            
+
             // フォルダを作ります。
             string parentDirAssetPath = PathUtil.FullPathToAssetsPath(parentDirFullPath);
             AssetDatabase.CreateFolder(parentDirAssetPath, newDirName);
         }
-        
+
 
         private static void ProgressBar(string info, int currentCount, int maxCount)
         {
-            EditorUtility.DisplayProgressBar("コピー中", info, currentCount/((float)maxCount));
+            EditorUtility.DisplayProgressBar("コピー中", info, currentCount / ((float)maxCount));
         }
-        
+
         public static bool IsInStreamingAssets(string path)
         {
             return PathUtil.IsSubDirectory(path, Application.streamingAssetsPath);
         }
-        
+
     }
 }

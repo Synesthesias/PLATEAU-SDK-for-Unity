@@ -1,5 +1,5 @@
-﻿using System.IO;
-using PLATEAU.Util;
+﻿using PLATEAU.Util;
+using System.IO;
 using UnityEditor;
 using UnityEngine;
 
@@ -62,7 +62,7 @@ namespace PLATEAU.Tests.TestUtils
                 string folderName = Path.GetFileName(assetPath);
                 AssetDatabase.CreateFolder(parent, folderName);
             }
-            
+
             AssetDatabase.Refresh();
         }
 

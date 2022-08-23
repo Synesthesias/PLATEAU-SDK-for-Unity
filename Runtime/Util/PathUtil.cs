@@ -144,7 +144,7 @@ namespace PLATEAU.Util
             return Path.GetFullPath(Path.Combine(Application.dataPath, "../", assetsPath));
         }
 
-        #if UNITY_EDITOR
+#if UNITY_EDITOR
         /// <summary>
         /// Unity Editor 専用メソッドです。
         /// ディレクトリとファイルを再帰的にコピーします。
@@ -154,8 +154,8 @@ namespace PLATEAU.Util
         public static void CloneDirectory(string src, string dest)
         {
             // src がディレクトリのパスであると認識されるためには、末尾がパスのセパレーターである必要があります。
-            if(!(src.EndsWith("/") || src.EndsWith("\\") )) src = string.Concat(src, "/");
-            
+            if (!(src.EndsWith("/") || src.EndsWith("\\"))) src = string.Concat(src, "/");
+
             string srcDirPath = Path.GetDirectoryName(src);
             if (srcDirPath == null)
             {
@@ -175,8 +175,8 @@ namespace PLATEAU.Util
             CloneDirectoryRecursive(src, dest);
             AssetDatabase.Refresh();
         }
-        #endif
-        
+#endif
+
         private static void CloneDirectoryRecursive(string src, string dest)
         {
             // 各子ディレクトリのコピー

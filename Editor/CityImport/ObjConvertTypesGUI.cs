@@ -1,7 +1,7 @@
-﻿using System;
-using PLATEAU.CityMeta;
+﻿using PLATEAU.CityMeta;
 using PLATEAU.CommonDataStructure;
 using PLATEAU.Editor.EditorWindowCommon;
+using System;
 using UnityEditor;
 using UnityEngine;
 
@@ -46,7 +46,7 @@ namespace PLATEAU.Editor.CityImport
                 {
                     bool isTypeTarget = gmlSearcherConfig.GetIsTypeTarget(gmlType);
                     if (!isTypeTarget) continue;
-                    
+
                     string typeText = gmlType.ToDisplay();
                     EditorGUILayout.LabelField(typeText);
                     using (PlateauEditorStyle.VerticalScopeLevel2())
@@ -54,9 +54,9 @@ namespace PLATEAU.Editor.CityImport
                         // LOD対象選択 全LOD / 最大のみ
                         var typeExportLower = typesConf.GetDoExportLowerLodForType(gmlType);
                         typeExportLower = Convert.ToBoolean(EditorGUILayout.Popup("出力モード",
-                            Convert.ToInt32(typeExportLower), new [] { "選択範囲のうち最大LODのみ", "選択範囲のうち全LOD" }));
+                            Convert.ToInt32(typeExportLower), new[] { "選択範囲のうち最大LODのみ", "選択範囲のうち全LOD" }));
                         typesConf.SetDoExportLowerLodForType(gmlType, typeExportLower);
-                        
+
                         // LOD範囲選択
                         typesConf.ClampLodRangeToPossibleVal();
                         var typeLodRange = typesConf.GetLodRangeForType(gmlType);
@@ -71,7 +71,7 @@ namespace PLATEAU.Editor.CityImport
                         sliderMinMax.SetMinMax(valueMin, valueMax);
                         EditorGUILayout.LabelField($"最小LOD: {typeLodRange.Min}, 最大LOD: {typeLodRange.Max}");
                     }
-                    
+
                 }
             }
         }
