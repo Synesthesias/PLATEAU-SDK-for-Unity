@@ -186,7 +186,6 @@ namespace PLATEAU.Interop
         {
             APIResult result = strPtrAndLengthGetter(handle, out IntPtr strPtr, out int strLength);
             CheckDllError(result);
-            // return Marshal.PtrToStringAnsi(strPtr, strLength - 1); // -1 は null終端文字の分です。
             return ReadUtf8Str(strPtr, strLength - 1);
         }
 

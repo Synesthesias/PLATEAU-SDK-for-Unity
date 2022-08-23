@@ -85,6 +85,18 @@ namespace PLATEAU.Interop
         public float UnitScale;
     }
 
+    [StructLayout(LayoutKind.Sequential)]
+    public struct MeshExtractOptions
+    {
+        public PlateauVector3d ReferencePoint;
+        public AxesConversion MeshAxes;
+        public MeshGranularity MeshGranularity;
+        public int MaxLod;
+        public int MinLod;
+        [MarshalAs(UnmanagedType.U1)] public bool ExportAppearance;
+        public int GridCountOfSide;
+    } 
+
     public enum APIResult
     {
         Success,
@@ -679,6 +691,14 @@ namespace PLATEAU.Interop
         [DllImport(DllName)]
         internal static extern APIResult plateau_mesh_extractor_delete(
             [In] IntPtr outMeshMergerPtr);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_mesh_extractor_extract(
+            [In] IntPtr meshExtractorPtr,
+            [In] IntPtr cityModelPtr,
+            MeshExtractOptions options,
+            [In] IntPtr loggerPtr,
+            out IntPtr outModelPtr);
         
         [DllImport(DllName)]
         internal static extern APIResult plateau_mesh_extractor_grid_merge(
@@ -724,5 +744,45 @@ namespace PLATEAU.Interop
         internal static extern APIResult plateau_mesh_get_uv3(
             [In] IntPtr plateauPolygonPtr,
             PlateauVector2f[] outUvPosArray);
+        
+        
+        // ***************
+        //  model_c.cpp
+        // ***************
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_model_get_root_nodes_count(
+            [In] IntPtr handle,
+            out int outCount);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_model_get_root_node_at_index(
+            [In] IntPtr handle,
+            out IntPtr outNode,
+            int index);
+        
+        // ***************
+        //  node_c.cpp
+        // ***************
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_node_get_name(
+            [In] IntPtr handle,
+            out IntPtr strPtr,
+            out int strLength);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_node_get_child_count(
+            [In] IntPtr nodeHandle,
+            out int outChildCount);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_node_get_child_at_index(
+            [In] IntPtr nodeHandle,
+            out IntPtr childNodePtr,
+            int index);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_node_get_mesh(
+            [In] IntPtr nodeHandle,
+            out IntPtr outMeshPtr);
     }
 }

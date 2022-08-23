@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using PLATEAU.CityGML;
 using UnityEngine;
 using Texture = PLATEAU.CityGML.Texture;
 
@@ -12,13 +11,14 @@ namespace PLATEAU.CityGrid
     internal static class MeshConverter
     {
         /// <summary>
-        /// C++側の<see cref="CityGML.Mesh"/> を Unity向けのデータ に変換します。
+        /// C++側の<see cref="GeometryModel.Mesh"/> を Unity向けのデータ に変換します。
         /// Unityのメッシュを生成する準備としてのデータ生成です。実際のメッシュはまだ触りません。
         /// その理由は <see cref="CityGridLoader.Load"/> のコメントを参照してください。
-        /// このメソッドの結果をもとに、 <see cref="ConvertedMeshData.PlaceToScene"/> メソッドで実際のメッシュを配置できます。
+        /// このメソッドの結果をもとに、 <see cref="ConConvertedMeshDataaceToScene"/> メソッドで実際のメッシュを配置できます。
         /// </summary>
-        public static ConvertedMeshData Convert(CityGML.Mesh plateauMesh)
+        public static ConvertedMeshData Convert(GeometryModel.Mesh plateauMesh)
         {
+            if (plateauMesh == null) return null;
             var (unityVerts, unityUv1, unityUv2, unityUv3) =
                 CopyVerticesAndUV(plateauMesh);
             var (subMeshTriangles, plateauTextures) =
@@ -30,7 +30,7 @@ namespace PLATEAU.CityGrid
 
         private static
             (Vector3[] unityVerts, Vector2[] unityUv1, Vector2[] unityUv2, Vector2[] unityUv3)
-            CopyVerticesAndUV(CityGML.Mesh plateauPoly)
+            CopyVerticesAndUV(GeometryModel.Mesh plateauPoly)
         {
             int numVerts = plateauPoly.VertexCount;
             var plateauUv1 = plateauPoly.GetUv1();
@@ -51,7 +51,7 @@ namespace PLATEAU.CityGrid
             return (unityVerts, unityUv1, unityUv2, unityUv3);
         }
 
-        private static (List<List<int>> subMeshTriangles, List<Texture> plateauTextures) CopySubMeshInfo(CityGML.Mesh plateauMesh)
+        private static (List<List<int>> subMeshTriangles, List<Texture> plateauTextures) CopySubMeshInfo(GeometryModel.Mesh plateauMesh)
         {
             var plateauIndices = plateauMesh.Indices.ToList();
             var multiTexture = plateauMesh.GetMultiTexture();

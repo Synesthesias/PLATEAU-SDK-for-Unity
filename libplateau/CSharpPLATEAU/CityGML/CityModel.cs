@@ -10,6 +10,10 @@ namespace PLATEAU.CityGML
     /// GMLファイルをパースして得られる街のモデルです。
     /// 0個以上の <see cref="CityObject"/> を保持します。
     /// </summary>
+    
+    // 注意 : NativeDLL へ P/Invoke を使って CityModel のアドレスを送るとき、
+    // Native側では cityModelHandle->getCityModelPtr() を介さないと
+    // 正しいアドレスにならないので注意。
     public sealed class CityModel : IDisposable
     {
         private int disposed;

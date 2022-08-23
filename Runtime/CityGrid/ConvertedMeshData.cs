@@ -1,15 +1,82 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using Codice.CM.Common;
+using PLATEAU.GeometryModel;
 using PLATEAU.Util;
 using PLATEAU.Util.Async;
 using UnityEngine;
 using UnityEngine.Networking;
+using Mesh = UnityEngine.Mesh;
 
 namespace PLATEAU.CityGrid
 {
+    internal class ConvertedGameObjData
+    {
+        private ConvertedMeshData meshData;
+        private string name;
+        private List<ConvertedGameObjData> children = new List<ConvertedGameObjData>();
+
+        /// <summary>
+        /// C++側の <see cref="GeometryModel.Model"/> から変換して
+        /// <see cref="ConvertedGameObjData"/> を作ります。
+        /// 子も再帰的に作ります。
+        /// </summary>
+        /// <param name="plateauModel"></param>
+        public ConvertedGameObjData(Model plateauModel)
+        {
+            this.meshData = null;
+            this.name = "CityRoot";
+            for (int i = 0; i < plateauModel.RootNodesCount; i++)
+            {
+                var rootNode = plateauModel.GetRootNodeAt(i);
+                this.children.Add(new ConvertedGameObjData(rootNode));
+            }            
+        }
+        
+        /// <summary>
+        /// C++側の <see cref="GeometryModel.Node"/> から変換して
+        /// <see cref="ConvertedGameObjData"/> を作ります。
+        /// 子も再帰的に作ります。
+        /// </summary>
+        public ConvertedGameObjData(Node plateauNode)
+        {
+            this.meshData = MeshConverter.Convert(plateauNode.Mesh);
+            this.name = plateauNode.Name;
+            for (int i = 0; i < plateauNode.ChildCount; i++)
+            {
+                var child = plateauNode.GetChildAt(i);
+                this.children.Add(new ConvertedGameObjData(child));
+            }
+        }
+
+        public async Task PlaceToScene(Transform parent, string gmlAbsolutePath)
+        {
+            GameObject nextParent;
+            if (this.meshData == null)
+            {
+                nextParent = new GameObject
+                {
+                    transform =
+                    {
+                        parent = parent
+                    },
+                    name = this.name
+                };
+            }else {
+                nextParent = await this.meshData.PlaceToScene(parent, gmlAbsolutePath);
+            }
+
+            foreach (var child in this.children)
+            {
+                await child.PlaceToScene(nextParent.transform, gmlAbsolutePath);
+            }
+        }
+    }
+    
     /// <summary>
-    /// DLL側の PlateauMesh を Unity向けに変換したものです。
+    /// DLL側の Mesh を Unity向けに変換したものです。
     /// </summary>
     internal class ConvertedMeshData
     {
@@ -51,10 +118,10 @@ namespace PLATEAU.CityGrid
             mesh.RecalculateBounds();
         }
 
-        public async Task PlaceToScene(Transform parentTrans, string gmlAbsolutePath)
+        public async Task<GameObject> PlaceToScene(Transform parentTrans, string gmlAbsolutePath)
         {
             var mesh = GenerateUnityMesh();
-            if (mesh.vertexCount <= 0) return;
+            if (mesh.vertexCount <= 0) return null;
             var meshObj = GameObjectUtil.AssureGameObjectInChild(Name, parentTrans);
             var meshFilter = GameObjectUtil.AssureComponent<MeshFilter>(meshObj);
             meshFilter.mesh = mesh;
@@ -76,6 +143,7 @@ namespace PLATEAU.CityGrid
                 }
             }
             renderer.materials = materials;
+            return meshObj;
         }
         
         /// <summary>
