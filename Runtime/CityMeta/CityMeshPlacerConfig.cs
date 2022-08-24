@@ -48,8 +48,7 @@ namespace PLATEAU.CityMeta
             // 各タイプごとの設定を初期化します。
             this.perTypeConfigs = GmlTypeConvert.ComposeTypeDict<ScenePlacementConfigPerType>();
         }
-
-        // TODO このメソッドを使って一括設定のGUIを作ると便利かも？
+        
         public CityMeshPlacerConfig SetPlaceMethodForAllTypes(PlaceMethod placeMethod)
         {
             var dict = this.perTypeConfigs;
@@ -60,8 +59,7 @@ namespace PLATEAU.CityMeta
 
             return this;
         }
-
-        // TODO このメソッドを使って一括設定のGUIを作ると便利かも？
+        
         public CityMeshPlacerConfig SetSelectedLodForAllTypes(int lod)
         {
             var dict = this.perTypeConfigs;

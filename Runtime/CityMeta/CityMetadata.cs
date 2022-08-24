@@ -16,8 +16,9 @@ namespace PLATEAU.CityMeta
         /// <value>都市オブジェクトのIDから、それに対応する gmlファイル名を検索できる辞書です。</value>
         [SerializeField] internal IdToGmlTable idToGmlTable = new IdToGmlTable();
 
-        // TODO 要検討 : idToGmlTable の必要性は？
+        // TODO 要検討 : 
         // << 検討事項 >>
+        // [ idToGmlTable の必要性は？ ]
         // idToGmlTable とは、GameObject名 と Gmlファイル名を対応付ける辞書です。
         // 実装当初の目的は、ヒエラルキーの GameObject から 対応する CityObject を取得するために、どのGmlファイルを読めばいいのかを求める目的でした。
         // しかし、都市3Dモデルをシーンに自動配置する方法が変わり、 配置した都市3Dモデルの 親GameObject の名前が Gmlファイル名になりました。

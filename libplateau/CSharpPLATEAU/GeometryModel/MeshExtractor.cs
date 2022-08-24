@@ -35,7 +35,7 @@ namespace PLATEAU.GeometryModel
             GC.SuppressFinalize(this);
         }
 
-        public Model Extract(CityModel cityModel, MeshExtractOptions options, DllLogger logger)
+        public Model Extract(CityModel cityModel, MeshExtractOptions options)
         {
             var result = NativeMethods.plateau_mesh_extractor_extract(
                 this.handle, cityModel.Handle, options,

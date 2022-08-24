@@ -87,14 +87,10 @@ namespace PLATEAU.CityGrid
             int numGridCountOfSide)
         {
             // GMLロード
-
-            // TODO ここにusingをつける
-            var cityModel = LoadCityModel(gmlAbsolutePath);
+            using var cityModel = LoadCityModel(gmlAbsolutePath);
 
             Debug.Log("gml loaded.");
             // マージ
-            var logger = new DllLogger();
-            logger.SetLogCallbacks(DllLogCallback.UnityLogCallbacks);
             var options = new MeshExtractOptions()
             {
                 // TODO ReferencePointを正しく設定できるようにする
@@ -107,7 +103,7 @@ namespace PLATEAU.CityGrid
                 ExportAppearance = true,
                 GridCountOfSide = numGridCountOfSide
             };
-            var model = meshExtractor.Extract(cityModel, options, logger);
+            var model = meshExtractor.Extract(cityModel, options);
             Debug.Log("model extracted.");
             return model;
         }
@@ -118,17 +114,5 @@ namespace PLATEAU.CityGrid
             var parserParams = new CitygmlParserParams(true, true, false);
             return CityGml.Load(gmlAbsolutePath, parserParams, DllLogCallback.UnityLogCallbacks);
         }
-
-        /// <summary>
-        /// <see cref="ConvertedMeshData"/>(PlateauからUnity向けに変換したモデルデータ) をメッシュとして実体化してシーンに配置します。
-        /// </summary>
-        // private static async Task PlaceGridMeshes(ConvertedGameObjData meshObjData, string parentObjName, string gmlAbsolutePath)
-        // {
-        //     var parentTrans = GameObjectUtil.AssureGameObject(parentObjName).transform;
-        //     foreach (var uMesh in unityMeshes)
-        //     {
-        //         await uMesh.PlaceToScene(parentTrans, gmlAbsolutePath);
-        //     }
-        // }
     }
 }
