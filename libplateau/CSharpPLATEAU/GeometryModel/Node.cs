@@ -1,13 +1,11 @@
 ﻿using System;
-using System.Runtime.CompilerServices;
-using PLATEAU.CityGML;
 using PLATEAU.Interop;
 
 namespace PLATEAU.GeometryModel
 {
     public class Node
     {
-        private IntPtr handle;
+        private readonly IntPtr handle;
 
         public Node(IntPtr handle)
         {

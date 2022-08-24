@@ -36,7 +36,7 @@ namespace PLATEAU.CityGrid
         /// </summary>
         public ConvertedGameObjData(Node plateauNode)
         {
-            this.meshData = MeshConverter.Convert(plateauNode.Mesh);
+            this.meshData = MeshConverter.Convert(plateauNode.Mesh, plateauNode.Name);
             this.name = plateauNode.Name;
             for (int i = 0; i < plateauNode.ChildCount; i++)
             {

@@ -1,52 +1,87 @@
 ﻿using System;
 using System.Collections.Generic;
-using PLATEAU.CityGML;
 using PLATEAU.Interop;
 
 namespace PLATEAU.GeometryModel
 {
     /// <summary>
-    /// LibCityGml の <see cref="Polygon"/> を継承して PLATEAU向けに機能拡張したものです。
+    /// DLLから受け取ったメッシュ・テクスチャ情報です。
     /// </summary>
-    public class Mesh : Polygon
+    public class Mesh
     {
-        internal Mesh(IntPtr handle) : base(handle)
+        private readonly IntPtr handle;
+        internal Mesh(IntPtr handle)
         {
+            this.handle = handle;
+        }
+
+        public int VerticesCount
+        {
+            get
+            {
+                int verticesCount = DLLUtil.GetNativeValue<int>(this.handle,
+                    NativeMethods.plateau_mesh_get_vertices_count);
+                return verticesCount;
+            }
+        }
+
+        public int IndicesCount
+        {
+            get
+            {
+                int indicesCount = DLLUtil.GetNativeValue<int>(this.handle,
+                    NativeMethods.plateau_mesh_get_indices_count);
+                return indicesCount;
+            }
+        }
+
+        public PlateauVector3d GetVertexAt(int index)
+        {
+            var vert = DLLUtil.GetNativeValue<PlateauVector3d>(this.handle, index,
+                NativeMethods.plateau_mesh_get_vertex_at_index);
+            return vert;
+        }
+
+        public int GetIndiceAt(int index)
+        {
+            int vertexId = DLLUtil.GetNativeValue<int>(this.handle, index,
+                NativeMethods.plateau_mesh_get_indice_at_index);
+            return vertexId;
         }
 
         public PlateauVector2f[] GetUv1()
         {
-            var uv1 = new PlateauVector2f[VertexCount];
-            var result = NativeMethods.plateau_mesh_get_uv1(Handle, uv1);
+            var uv1 = new PlateauVector2f[VerticesCount];
+            var result = NativeMethods.plateau_mesh_get_uv1(this.handle, uv1);
             DLLUtil.CheckDllError(result);
             return uv1;
         }
         
         public PlateauVector2f[] GetUv2()
         {
-            var uv2 = new PlateauVector2f[VertexCount];
-            var result = NativeMethods.plateau_mesh_get_uv2(Handle, uv2);
+            var uv2 = new PlateauVector2f[VerticesCount];
+            var result = NativeMethods.plateau_mesh_get_uv2(this.handle, uv2);
             DLLUtil.CheckDllError(result);
             return uv2;
         }
         
         public PlateauVector2f[] GetUv3()
         {
-            var uv3 = new PlateauVector2f[VertexCount];
-            var result = NativeMethods.plateau_mesh_get_uv3(Handle, uv3);
+            var uv3 = new PlateauVector2f[VerticesCount];
+            var result = NativeMethods.plateau_mesh_get_uv3(this.handle, uv3);
             DLLUtil.CheckDllError(result);
             return uv3;
         }
 
         public MultiTexture GetMultiTexture()
         {
-            int numTexture = DLLUtil.GetNativeValue<int>(Handle,
+            int numTexture = DLLUtil.GetNativeValue<int>(this.handle,
                 NativeMethods.plateau_mesh_get_multi_texture_count);
             var vertexIndices = new int[numTexture];
             var textureUrlStrPointers = new IntPtr[numTexture];
             var textureUrlStrLengthArray = new int[numTexture];
             var result = NativeMethods.plateau_mesh_get_multi_texture(
-                Handle, vertexIndices, textureUrlStrPointers, textureUrlStrLengthArray
+                this.handle, vertexIndices, textureUrlStrPointers, textureUrlStrLengthArray
             );
             DLLUtil.CheckDllError(result);
             var textureUrls = DLLUtil.ReadNativeStrPtrArray(textureUrlStrPointers, textureUrlStrLengthArray);

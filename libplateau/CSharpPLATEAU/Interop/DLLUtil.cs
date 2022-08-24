@@ -284,6 +284,10 @@ namespace PLATEAU.Interop
 
         public static string ReadUtf8Str(IntPtr strPtr, int strByteSize)
         {
+            if (strByteSize < 0)
+            {
+                throw new ArgumentException($"{nameof(strByteSize)} should be non-negative number. Actual is {strByteSize} .");
+            }
             var data = new List<byte>(strByteSize);
             for (int i = 0; i < strByteSize; i++)
             {

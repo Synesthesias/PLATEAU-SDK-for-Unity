@@ -719,6 +719,29 @@ namespace PLATEAU.Interop
         // ***************
         //  mesh_c.cpp
         // ***************
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_mesh_get_vertices_count(
+            [In] IntPtr handle,
+            out int outVerticesCount);
+        
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_mesh_get_vertex_at_index(
+            [In] IntPtr handle,
+            out PlateauVector3d outVertPos,
+            int index);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_mesh_get_indices_count(
+            [In] IntPtr handle,
+            out int outIndicesCount);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_mesh_get_indice_at_index(
+            [In] IntPtr handle,
+            out int vertexId,
+            int index);
+        
         [DllImport(DllName)]
         internal static extern APIResult plateau_mesh_get_multi_texture_count(
             [In] IntPtr plateauMeshPtr,
