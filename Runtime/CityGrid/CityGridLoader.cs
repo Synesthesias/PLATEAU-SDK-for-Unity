@@ -45,9 +45,7 @@ namespace PLATEAU.CityGrid
             meshObjsData = await Task.Run(() =>
             {
                 using var meshExtractor = new MeshExtractor();
-
-                // TODO ここに usingを付ける
-                var plateauModel = LoadGmlAndMergeMeshes(meshExtractor, gmlAbsolutePath, this.gridCountOfSide);
+                using var plateauModel = LoadGmlAndMergeMeshes(meshExtractor, gmlAbsolutePath, this.gridCountOfSide);
                 var convertedObjData = new ConvertedGameObjData(plateauModel);
                 return convertedObjData;
             });
