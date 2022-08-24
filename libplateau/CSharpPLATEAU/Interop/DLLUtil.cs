@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Text;
-using UnityEngine;
 
 namespace PLATEAU.Interop
 {
@@ -187,8 +186,7 @@ namespace PLATEAU.Interop
         {
             APIResult result = strPtrAndLengthGetter(handle, out IntPtr strPtr, out int strLength);
             CheckDllError(result);
-            int strLenToRead = strLength - 1; // -1 は null終端文字の分です。
-            return ReadUtf8Str(strPtr, strLenToRead);
+            return ReadUtf8Str(strPtr, strLength - 1);
         }
 
         /// <summary>
@@ -286,11 +284,6 @@ namespace PLATEAU.Interop
 
         public static string ReadUtf8Str(IntPtr strPtr, int strByteSize)
         {
-            if (strByteSize < 0)
-            {
-                Debug.LogError($"Negative StrSize. strSize={strByteSize}");
-                return "";
-            }
             var data = new List<byte>(strByteSize);
             for (int i = 0; i < strByteSize; i++)
             {

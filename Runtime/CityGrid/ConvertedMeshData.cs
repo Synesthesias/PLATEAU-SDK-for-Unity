@@ -87,20 +87,20 @@ namespace PLATEAU.CityGrid
         private readonly Vector2[] uv2;
         private readonly Vector2[] uv3;
         private readonly List<List<int>> subMeshTriangles;
-        private readonly List<CityGML.Texture> plateauTextures;
+        private readonly List<string> textureUrls;
         private string Name { get; }
         private readonly Dictionary<int, Texture> subMeshIdToTexture;
         private const string shaderName = "Standard";
         private int SubMeshCount => this.subMeshTriangles.Count;
 
-        public ConvertedMeshData(Vector3[] vertices, Vector2[] uv1, Vector2[] uv2, Vector2[] uv3, List<List<int>> subMeshTriangles, List<CityGML.Texture> plateauTextures, string name)
+        public ConvertedMeshData(Vector3[] vertices, Vector2[] uv1, Vector2[] uv2, Vector2[] uv3, List<List<int>> subMeshTriangles, List<string> textureUrls, string name)
         {
             this.vertices = vertices;
             this.uv1 = uv1;
             this.uv2 = uv2;
             this.uv3 = uv3;
             this.subMeshTriangles = subMeshTriangles;
-            this.plateauTextures = plateauTextures;
+            this.textureUrls = textureUrls;
             Name = name;
             this.subMeshIdToTexture = new Dictionary<int, Texture>();
         }
@@ -129,7 +129,7 @@ namespace PLATEAU.CityGrid
             meshFilter.mesh = mesh;
             var renderer = GameObjectUtil.AssureComponent<MeshRenderer>(meshObj);
 
-            await LoadTextures(this, this.plateauTextures, gmlAbsolutePath);
+            await LoadTextures(this, this.textureUrls, gmlAbsolutePath);
 
             var materials = new Material[mesh.subMeshCount];
             for (int i = 0; i < mesh.subMeshCount; i++)
@@ -173,19 +173,16 @@ namespace PLATEAU.CityGrid
         }
 
         /// <summary>
-        /// <paramref name="plateauTextures"/> に記録された URL から、テクスチャを非同期でロードします。
+        /// テクスチャのURL から、テクスチャを非同期でロードします。
         /// 生成した Unity の Textureインスタンスへの参照を <paramref name="meshData"/> に追加します。
         /// </summary>
-        private static async Task LoadTextures(ConvertedMeshData meshData, IReadOnlyList<CityGML.Texture> plateauTextures, string gmlAbsolutePath)
+        private static async Task LoadTextures(ConvertedMeshData meshData, IReadOnlyList<string> textureUrls, string gmlAbsolutePath)
         {
             for (int i = 0; i < meshData.SubMeshCount; i++)
             {
                 // テクスチャURLを取得します。
-                var plateauTex = plateauTextures[i];
-                if (plateauTex == null) continue;
-                string texUrl = plateauTex.Url;
-                // テクスチャがない状態を表現するとき、urlが "noneTexture" となるのはライブラリの仕様です。
-                if (texUrl == "noneTexture")
+                string texUrl = textureUrls[i];
+                if (string.IsNullOrEmpty(texUrl)) 
                 {
                     meshData.AddTexture(i, null);
                     continue;

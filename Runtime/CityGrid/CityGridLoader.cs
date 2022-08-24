@@ -49,7 +49,6 @@ namespace PLATEAU.CityGrid
 
                 // TODO ここに usingを付ける
                 var plateauModel = LoadGmlAndMergeMeshes(meshExtractor, gmlAbsolutePath, this.gridCountOfSide);
-                Debug.Log("first node name = " + plateauModel.GetRootNodeAt(0).Name);
                 var convertedObjData = new ConvertedGameObjData(plateauModel);
                 return convertedObjData;
             });

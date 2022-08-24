@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using PLATEAU.CityGML;
 using PLATEAU.Interop;
 
@@ -42,12 +43,14 @@ namespace PLATEAU.GeometryModel
             int numTexture = DLLUtil.GetNativeValue<int>(Handle,
                 NativeMethods.plateau_mesh_get_multi_texture_count);
             var vertexIndices = new int[numTexture];
-            var texturePtrArray = new IntPtr[numTexture];
+            var textureUrlStrPointers = new IntPtr[numTexture];
+            var textureUrlStrLengthArray = new int[numTexture];
             var result = NativeMethods.plateau_mesh_get_multi_texture(
-                Handle, vertexIndices, texturePtrArray
+                Handle, vertexIndices, textureUrlStrPointers, textureUrlStrLengthArray
             );
             DLLUtil.CheckDllError(result);
-            return new MultiTexture(vertexIndices, texturePtrArray);
+            var textureUrls = DLLUtil.ReadNativeStrPtrArray(textureUrlStrPointers, textureUrlStrLengthArray);
+            return new MultiTexture(vertexIndices, textureUrls);
         }
         
         public class MultiTexture
@@ -56,25 +59,30 @@ namespace PLATEAU.GeometryModel
             public int Length => this.subTextures.Length;
             public SubTexture this[int index] => this.subTextures[index];
 
-            public MultiTexture(int[] vertexIndices, IntPtr[] texturePtrArray)
+            public MultiTexture(IReadOnlyList<int> vertexIndices, IReadOnlyList<string> textureUrlArray)
             {
-                int num = vertexIndices.Length;
+                
+                int num = vertexIndices.Count;
+                if (num != textureUrlArray.Count)
+                {
+                    throw new ArgumentException($"{nameof(MultiTexture)} : argument array length do not match.");
+                }
                 this.subTextures = new SubTexture[num];
                 for (int i = 0; i < num; i++)
                 {
-                    this.subTextures[i] = new SubTexture(vertexIndices[i], new Texture(texturePtrArray[i]));
+                    this.subTextures[i] = new SubTexture(vertexIndices[i], textureUrlArray[i]);
                 }
             }
             
             public class SubTexture
             {
                 public readonly int VertexIndex;
-                public readonly Texture Texture;
+                public readonly string TextureUrl;
 
-                public SubTexture(int vertexIndex, Texture texture)
+                public SubTexture(int vertexIndex, string textureUrl)
                 {
                     this.VertexIndex = vertexIndex;
-                    this.Texture = texture;
+                    this.TextureUrl = textureUrl;
                 }
             }
         }

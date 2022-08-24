@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using PLATEAU.Util;
 using UnityEngine;
 using Texture = PLATEAU.CityGML.Texture;
 
@@ -21,10 +22,8 @@ namespace PLATEAU.CityGrid
             if (plateauMesh == null) return null;
             var (unityVerts, unityUv1, unityUv2, unityUv3) =
                 CopyVerticesAndUV(plateauMesh);
-            var (subMeshTriangles, plateauTextures) =
-                CopySubMeshInfo(plateauMesh);
-
-            var meshData = new ConvertedMeshData(unityVerts, unityUv1, unityUv2, unityUv3, subMeshTriangles, plateauTextures, plateauMesh.ID);
+            var (subMeshTriangles, textureUrls) = CopySubMeshInfo(plateauMesh);
+            var meshData = new ConvertedMeshData(unityVerts, unityUv1, unityUv2, unityUv3, subMeshTriangles, textureUrls, plateauMesh.ID);
             return meshData;
         }
 
@@ -51,14 +50,14 @@ namespace PLATEAU.CityGrid
             return (unityVerts, unityUv1, unityUv2, unityUv3);
         }
 
-        private static (List<List<int>> subMeshTriangles, List<Texture> plateauTextures) CopySubMeshInfo(GeometryModel.Mesh plateauMesh)
+        private static (List<List<int>> subMeshTriangles, List<string> textureUrls) CopySubMeshInfo(GeometryModel.Mesh plateauMesh)
         {
             var plateauIndices = plateauMesh.Indices.ToList();
             var multiTexture = plateauMesh.GetMultiTexture();
             int currentSubMeshStart = 0;
             var subMeshTriangles = new List<List<int>>();
-            var plateauTextures = new List<Texture>();
-            Texture currentPlateauTex = null;
+            var texUrls = new List<string>();
+            string currentTexUrl = "";
             int numTexInfo = multiTexture.Length;
             // Mesh の multiTexture ごとにサブメッシュを分けます。
             for (int i = 0; i <= numTexInfo; i++)
@@ -72,16 +71,16 @@ namespace PLATEAU.CityGrid
                 {
                     var subMeshIndices = plateauIndices.GetRange(currentSubMeshStart, count);
                     subMeshTriangles.Add(subMeshIndices);
-                    plateauTextures.Add(currentPlateauTex);
+                    texUrls.Add(currentTexUrl);
                 }
 
                 if (i < numTexInfo)
                 {
                     currentSubMeshStart = nextSubMeshStart;
-                    currentPlateauTex = multiTexture[i].Texture;
+                    currentTexUrl = multiTexture[i].TextureUrl;
                 }
             }
-            return (subMeshTriangles, plateauTextures);
+            return (subMeshTriangles, texUrls);
         }
 
 

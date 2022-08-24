@@ -721,28 +721,29 @@ namespace PLATEAU.Interop
         // ***************
         [DllImport(DllName)]
         internal static extern APIResult plateau_mesh_get_multi_texture_count(
-            [In] IntPtr plateauPolygonPtr,
+            [In] IntPtr plateauMeshPtr,
             out int multiTextureCount);
         
         [DllImport(DllName)]
         internal static extern APIResult plateau_mesh_get_multi_texture(
-            [In] IntPtr plateauPolygonPtr,
+            [In] IntPtr plateauMeshPtr,
             int[] outVertexIndexArray,
-            IntPtr[] outTexturePtrArray);
+            [In,Out] IntPtr[] textureUrlStrPointers,
+            [Out] int[] textureUrlStrLengthArray);
 
         [DllImport(DllName)]
         internal static extern APIResult plateau_mesh_get_uv1(
-            [In] IntPtr plateauPolygonPtr,
+            [In] IntPtr plateauMeshPtr,
             PlateauVector2f[] outUvPosArray);
         
         [DllImport(DllName)]
         internal static extern APIResult plateau_mesh_get_uv2(
-            [In] IntPtr plateauPolygonPtr,
+            [In] IntPtr plateauMeshPtr,
             PlateauVector2f[] outUvPosArray);
         
         [DllImport(DllName)]
         internal static extern APIResult plateau_mesh_get_uv3(
-            [In] IntPtr plateauPolygonPtr,
+            [In] IntPtr plateauMeshPtr,
             PlateauVector2f[] outUvPosArray);
         
         
