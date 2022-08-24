@@ -44,8 +44,7 @@ namespace PLATEAU.CityGrid
             // 実際のメッシュデータを触らないので、Task.Run で別のスレッドで処理できます。
             meshObjsData = await Task.Run(() =>
             {
-                // TODO ここに usingをつける
-                var meshExtractor = new MeshExtractor();
+                using var meshExtractor = new MeshExtractor();
 
                 // TODO ここに usingを付ける
                 var plateauModel = LoadGmlAndMergeMeshes(meshExtractor, gmlAbsolutePath, this.gridCountOfSide);
