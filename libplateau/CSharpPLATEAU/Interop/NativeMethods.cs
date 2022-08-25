@@ -95,6 +95,7 @@ namespace PLATEAU.Interop
         public int MinLod;
         [MarshalAs(UnmanagedType.U1)] public bool ExportAppearance;
         public int GridCountOfSide;
+        public float UnitScale;
     } 
 
     public enum APIResult

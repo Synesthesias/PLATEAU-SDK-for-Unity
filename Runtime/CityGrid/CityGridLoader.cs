@@ -101,7 +101,8 @@ namespace PLATEAU.CityGrid
                 MaxLod = 2,
                 MinLod = 2,
                 ExportAppearance = true,
-                GridCountOfSide = numGridCountOfSide
+                GridCountOfSide = numGridCountOfSide,
+                UnitScale = 1f
             };
             var model = meshExtractor.Extract(cityModel, options);
             Debug.Log("model extracted.");
