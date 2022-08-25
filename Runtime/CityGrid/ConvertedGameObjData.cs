@@ -45,6 +45,10 @@ namespace PLATEAU.CityGrid
             }
         }
 
+        /// <summary>
+        /// ゲームオブジェクト、メッシュ、テクスチャの実体を作ってシーンに配置します。
+        /// 再帰によって子も配置します。
+        /// </summary>
         public async Task PlaceToScene(Transform parent, string gmlAbsolutePath)
         {
             GameObject nextParent;

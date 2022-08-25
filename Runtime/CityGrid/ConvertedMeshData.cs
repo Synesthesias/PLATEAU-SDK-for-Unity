@@ -52,6 +52,9 @@ namespace PLATEAU.CityGrid
             mesh.RecalculateBounds();
         }
 
+        /// <summary>
+        /// ゲームオブジェクト、メッシュ、テクスチャの実体を作ってシーンに配置します。
+        /// </summary>
         public async Task<GameObject> PlaceToScene(Transform parentTrans, string gmlAbsolutePath)
         {
             var mesh = GenerateUnityMesh();
@@ -105,7 +108,7 @@ namespace PLATEAU.CityGrid
         }
 
         /// <summary>
-        /// テクスチャのURL から、テクスチャを非同期でロードします。
+        /// テクスチャのURL（パス） から、テクスチャを非同期でロードします。
         /// 生成した Unity の Textureインスタンスへの参照を <paramref name="meshData"/> に追加します。
         /// </summary>
         private static async Task LoadTextures(ConvertedMeshData meshData, IReadOnlyList<string> textureUrls, string gmlAbsolutePath)
@@ -123,8 +126,12 @@ namespace PLATEAU.CityGrid
 
                 // 非同期でテクスチャをロードします。
                 var request = UnityWebRequestTexture.GetTexture($"file://{textureFullPath}");
-
                 request.timeout = 3;
+                
+                // 注意 :
+                // 下の SendWebRequest は、見た目に反してメインスレッドで行われ、Unityのコルーチンによって await します。
+                // UnityWebRequestExtension クラスの拡張メソッドにより、コルーチンを await できるようにする機能を使っており、
+                // コルーチンはメインスレッド限定です。
                 await request.SendWebRequest();
 
                 if (request.result != UnityWebRequest.Result.Success)
