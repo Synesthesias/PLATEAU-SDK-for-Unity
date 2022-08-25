@@ -1,5 +1,4 @@
-﻿using PLATEAU.GeometryModel;
-using PLATEAU.Util;
+﻿using PLATEAU.Util;
 using PLATEAU.Util.Async;
 using System.Collections.Generic;
 using System.IO;

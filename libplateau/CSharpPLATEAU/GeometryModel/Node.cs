@@ -3,6 +3,7 @@ using PLATEAU.Interop;
 
 namespace PLATEAU.GeometryModel
 {
+    // TODO コメントを書く
     public class Node
     {
         private readonly IntPtr handle;

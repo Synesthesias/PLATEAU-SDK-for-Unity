@@ -698,24 +698,8 @@ namespace PLATEAU.Interop
             [In] IntPtr cityModelPtr,
             MeshExtractOptions options,
             out IntPtr outModelPtr);
-        
-        // TODO 後で消す
-        // [DllImport(DllName)]
-        // internal static extern APIResult plateau_mesh_extractor_grid_merge(
-        //     [In] IntPtr meshMergerPtr,
-        //     [In] IntPtr cityModelPtr,
-        //     CityObjectType targetTypeMask,
-        //     int gridNumX,
-        //     int gridNumY,
-        //     out int outNumPolygons,
-        //     [In] IntPtr dllLoggerPtr);
-        //
-        // [DllImport(DllName)]
-        // internal static extern APIResult plateau_mesh_extractor_get_last_result_of_grid_merge(
-        //     [In] IntPtr meshMergerPtr,
-        //     IntPtr[] outPlateauPolygonPtrArray);
-        
-        
+
+
         // ***************
         //  mesh_c.cpp
         // ***************
@@ -743,16 +727,15 @@ namespace PLATEAU.Interop
             int index);
         
         [DllImport(DllName)]
-        internal static extern APIResult plateau_mesh_get_multi_texture_count(
+        internal static extern APIResult plateau_mesh_get_sub_mesh_count(
             [In] IntPtr plateauMeshPtr,
-            out int multiTextureCount);
-        
+            out int subMeshCount);
+
         [DllImport(DllName)]
-        internal static extern APIResult plateau_mesh_get_multi_texture(
+        internal static extern APIResult plateau_mesh_get_sub_mesh_at_index(
             [In] IntPtr plateauMeshPtr,
-            int[] outVertexIndexArray,
-            [In,Out] IntPtr[] textureUrlStrPointers,
-            [Out] int[] textureUrlStrLengthArray);
+            out IntPtr plateauSubMeshPtr,
+            int index);
 
         [DllImport(DllName)]
         internal static extern APIResult plateau_mesh_get_uv1(
@@ -769,7 +752,25 @@ namespace PLATEAU.Interop
             [In] IntPtr plateauMeshPtr,
             PlateauVector2f[] outUvPosArray);
         
+        // ***************
+        //  sub_mesh_c.cpp
+        // ***************
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_sub_mesh_get_start_index(
+            [In] IntPtr subMeshPtr,
+            out int startIndex);
         
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_sub_mesh_get_end_index(
+            [In] IntPtr subMeshPtr,
+            out int endIndex);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_sub_mesh_get_texture_path(
+            [In] IntPtr subMeshPtr,
+            out IntPtr strPtr,
+            out int strLength);
+
         // ***************
         //  model_c.cpp
         // ***************

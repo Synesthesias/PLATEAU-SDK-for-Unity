@@ -4,6 +4,7 @@ using PLATEAU.Interop;
 
 namespace PLATEAU.GeometryModel
 {
+    // TODO コメントを詳しく書く
     /// <summary>
     /// DLLから受け取ったメッシュ・テクスチャ情報です。
     /// </summary>
@@ -73,53 +74,56 @@ namespace PLATEAU.GeometryModel
             return uv3;
         }
 
-        public MultiTexture GetMultiTexture()
+        public int SubMeshCount
         {
-            int numTexture = DLLUtil.GetNativeValue<int>(this.handle,
-                NativeMethods.plateau_mesh_get_multi_texture_count);
-            var vertexIndices = new int[numTexture];
-            var textureUrlStrPointers = new IntPtr[numTexture];
-            var textureUrlStrLengthArray = new int[numTexture];
-            var result = NativeMethods.plateau_mesh_get_multi_texture(
-                this.handle, vertexIndices, textureUrlStrPointers, textureUrlStrLengthArray
-            );
-            DLLUtil.CheckDllError(result);
-            var textureUrls = DLLUtil.ReadNativeStrPtrArray(textureUrlStrPointers, textureUrlStrLengthArray);
-            return new MultiTexture(vertexIndices, textureUrls);
+            get
+            {
+                int numSubMesh = DLLUtil.GetNativeValue<int>(this.handle,
+                    NativeMethods.plateau_mesh_get_sub_mesh_count);
+                return numSubMesh;
+            }
         }
         
-        public class MultiTexture
+        public SubMesh GetSubMeshAt(int index)
         {
-            private readonly SubTexture[] subTextures;
-            public int Length => this.subTextures.Length;
-            public SubTexture this[int index] => this.subTextures[index];
-
-            public MultiTexture(IReadOnlyList<int> vertexIndices, IReadOnlyList<string> textureUrlArray)
-            {
-                
-                int num = vertexIndices.Count;
-                if (num != textureUrlArray.Count)
-                {
-                    throw new ArgumentException($"{nameof(MultiTexture)} : argument array length do not match.");
-                }
-                this.subTextures = new SubTexture[num];
-                for (int i = 0; i < num; i++)
-                {
-                    this.subTextures[i] = new SubTexture(vertexIndices[i], textureUrlArray[i]);
-                }
-            }
-            
-            public class SubTexture
-            {
-                public readonly int VertexIndex;
-                public readonly string TextureUrl;
-
-                public SubTexture(int vertexIndex, string textureUrl)
-                {
-                    this.VertexIndex = vertexIndex;
-                    this.TextureUrl = textureUrl;
-                }
-            }
+            var subMeshPtr = DLLUtil.GetNativeValue<IntPtr>(this.handle, index,
+                NativeMethods.plateau_mesh_get_sub_mesh_at_index);
+            return new SubMesh(subMeshPtr);
         }
+        
+        // TODO あとで消す
+        // public class MultiTexture
+        // {
+        //     private readonly SubTexture[] subTextures;
+        //     public int Length => this.subTextures.Length;
+        //     public SubTexture this[int index] => this.subTextures[index];
+        //
+        //     public MultiTexture(IReadOnlyList<int> vertexIndices, IReadOnlyList<string> textureUrlArray)
+        //     {
+        //         
+        //         int num = vertexIndices.Count;
+        //         if (num != textureUrlArray.Count)
+        //         {
+        //             throw new ArgumentException($"{nameof(MultiTexture)} : argument array length do not match.");
+        //         }
+        //         this.subTextures = new SubTexture[num];
+        //         for (int i = 0; i < num; i++)
+        //         {
+        //             this.subTextures[i] = new SubTexture(vertexIndices[i], textureUrlArray[i]);
+        //         }
+        //     }
+        //     
+        //     public class SubTexture
+        //     {
+        //         public readonly int VertexIndex;
+        //         public readonly string TextureUrl;
+        //
+        //         public SubTexture(int vertexIndex, string textureUrl)
+        //         {
+        //             this.VertexIndex = vertexIndex;
+        //             this.TextureUrl = textureUrl;
+        //         }
+        //     }
+        // }
     }
 }

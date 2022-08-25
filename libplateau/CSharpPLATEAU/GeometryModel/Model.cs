@@ -3,6 +3,7 @@ using PLATEAU.Interop;
 
 namespace PLATEAU.GeometryModel
 {
+    // TODO コメントを書く（Model以下のデータ構造クラスにも書く）
     public class Model : IDisposable
     {
         private readonly IntPtr handle;

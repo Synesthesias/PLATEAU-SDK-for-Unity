@@ -1,8 +1,5 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
-using PLATEAU.Util;
 using UnityEngine;
-using Texture = PLATEAU.CityGML.Texture;
 
 namespace PLATEAU.CityGrid
 {
@@ -22,8 +19,8 @@ namespace PLATEAU.CityGrid
             if (plateauMesh == null) return null;
             var (unityVerts, unityUv1, unityUv2, unityUv3) =
                 CopyVerticesAndUV(plateauMesh);
-            var (subMeshTriangles, textureUrls) = CopySubMeshInfo(plateauMesh);
-            var meshData = new ConvertedMeshData(unityVerts, unityUv1, unityUv2, unityUv3, subMeshTriangles, textureUrls, meshName);
+            var (subMeshTriangles, texturePaths) = CopySubMeshInfo(plateauMesh);
+            var meshData = new ConvertedMeshData(unityVerts, unityUv1, unityUv2, unityUv3, subMeshTriangles, texturePaths, meshName);
             return meshData;
         }
 
@@ -50,42 +47,53 @@ namespace PLATEAU.CityGrid
             return (unityVerts, unityUv1, unityUv2, unityUv3);
         }
 
-        private static (List<List<int>> subMeshTriangles, List<string> textureUrls) CopySubMeshInfo(GeometryModel.Mesh plateauMesh)
+        private static (List<List<int>> subMeshTriangles, List<string> texturePaths) CopySubMeshInfo(GeometryModel.Mesh plateauMesh)
         {
-            // var plateauIndices = plateauMesh.Indices.ToList();
-            var multiTexture = plateauMesh.GetMultiTexture();
-            int currentSubMeshStart = 0;
-            var subMeshTriangles = new List<List<int>>();
-            var texUrls = new List<string>();
-            string currentTexUrl = "";
-            int numTexInfo = multiTexture.Length;
-            // TODO このへんのsubMeshの実装はちょっと分かりにくい。あとで仕様変更で SubMeshクラスの導入により分かりやすくなるはず
-            // Mesh の multiTexture ごとにサブメッシュを分けます。
-            for (int i = 0; i <= numTexInfo; i++)
+            // var multiTexture = plateauMesh.GetMultiTexture();
+            // int currentSubMeshStart = 0;
+            var subMeshTrianglesList = new List<List<int>>();
+            var texPaths = new List<string>();
+            // string currentTexPath = "";
+            int numSubMesh = plateauMesh.SubMeshCount;
+            for (int i = 0; i < numSubMesh; i++)
             {
-                int nextSubMeshStart =
-                    (i == numTexInfo) ?
-                        plateauMesh.IndicesCount :
-                        multiTexture[i].VertexIndex;
-                int count = nextSubMeshStart - currentSubMeshStart;
-                if (count > 0)
+                var subMesh = plateauMesh.GetSubMeshAt(i);
+                var subMeshIndices = new List<int>(subMesh.EndIndex - subMesh.StartIndex + 1);
+                for (int j = subMesh.StartIndex; j <= subMesh.EndIndex; j++)
                 {
-                    var subMeshIndices = new List<int>();
-                    for (int j = 0; j < count; j++)
-                    {
-                        subMeshIndices.Add(plateauMesh.GetIndiceAt(j + currentSubMeshStart));
-                    }
-                    subMeshTriangles.Add(subMeshIndices);
-                    texUrls.Add(currentTexUrl);
+                    subMeshIndices.Add(plateauMesh.GetIndiceAt(j));
                 }
-
-                if (i < numTexInfo)
-                {
-                    currentSubMeshStart = nextSubMeshStart;
-                    currentTexUrl = multiTexture[i].TextureUrl;
-                }
+                subMeshTrianglesList.Add(subMeshIndices);
+                texPaths.Add(subMesh.TexturePath);
             }
-            return (subMeshTriangles, texUrls);
+            
+            // サブメッシュを分けます。
+            // for (int i = 0; i <= numSubMesh; i++)
+            // {
+            //     var subMesh = plateauMesh.GetSubMeshAt(i);
+            //     int nextSubMeshStart =
+            //         (i == numSubMesh) ?
+            //             plateauMesh.IndicesCount :
+            //             subMesh.StartIndex;
+            //     int count = nextSubMeshStart - currentSubMeshStart;
+            //     if (count > 0)
+            //     {
+            //         var subMeshIndices = new List<int>();
+            //         for (int j = 0; j < count; j++)
+            //         {
+            //             subMeshIndices.Add(plateauMesh.GetIndiceAt(j + currentSubMeshStart));
+            //         }
+            //         subMeshTrianglesList.Add(subMeshIndices);
+            //         texPaths.Add(currentTexPath);
+            //     }
+            //
+            //     if (i < numSubMesh)
+            //     {
+            //         currentSubMeshStart = nextSubMeshStart;
+            //         currentTexPath = subMesh.TexturePath;
+            //     }
+            // }
+            return (subMeshTrianglesList, texPaths);
         }
 
 
