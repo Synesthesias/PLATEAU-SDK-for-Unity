@@ -17,7 +17,8 @@ namespace PLATEAU.CityGrid
     internal class CityGridLoader : MonoBehaviour
     {
         [SerializeField] private string gmlRelativePathFromStreamingAssets;
-        [SerializeField] private int gridCountOfSide = 10;
+        [SerializeField, Tooltip("グリッド分けした時の一辺のグリッド数です。グリッドの数はこの数値の2乗になります。")] private int gridCountOfSide = 10;
+        [SerializeField] private bool doExportAppearance = true;
         [SerializeField] private int minLOD = 2;
         [SerializeField] private int maxLOD = 2;
 
@@ -47,7 +48,7 @@ namespace PLATEAU.CityGrid
             meshObjsData = await Task.Run(() =>
             {
                 using var meshExtractor = new MeshExtractor();
-                using var plateauModel = LoadGmlAndMergeMeshes(meshExtractor, gmlAbsolutePath, this.gridCountOfSide, this.minLOD, this.maxLOD);
+                using var plateauModel = LoadGmlAndMergeMeshes(meshExtractor, gmlAbsolutePath, this.gridCountOfSide,this.doExportAppearance, this.minLOD, this.maxLOD);
                 var convertedObjData = new ConvertedGameObjData(plateauModel);
                 return convertedObjData;
             });
@@ -92,7 +93,7 @@ namespace PLATEAU.CityGrid
         /// メインスレッドでなくても動作します。
         /// </summary>
         private static Model LoadGmlAndMergeMeshes(MeshExtractor meshExtractor, string gmlAbsolutePath,
-            int numGridCountOfSide, int minLOD, int maxLOD)
+            int numGridCountOfSide, bool doExportAppearance, int minLOD, int maxLOD)
         {
             // GMLロード
             using var cityModel = LoadCityModel(gmlAbsolutePath);
@@ -105,10 +106,9 @@ namespace PLATEAU.CityGrid
                 ReferencePoint = cityModel.CenterPoint,
                 MeshAxes = AxesConversion.WUN,
                 MeshGranularity = MeshGranularity.PerCityModelArea,
-                // TODO 選択できるようにする
                 MaxLOD = minLOD,
                 MinLOD = maxLOD,
-                ExportAppearance = true,
+                ExportAppearance = doExportAppearance,
                 GridCountOfSide = numGridCountOfSide,
                 UnitScale = 1f
             };

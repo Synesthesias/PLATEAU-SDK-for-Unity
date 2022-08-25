@@ -2,6 +2,7 @@
 using PLATEAU.Util.Async;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -96,6 +97,7 @@ namespace PLATEAU.CityGrid
                 uv3 = this.uv3,
                 subMeshCount = this.subMeshTriangles.Count
             };
+            
             // subMesh ごとに Indices(Triangles) を UnityのMeshにコピーします。
             for (int i = 0; i < this.subMeshTriangles.Count; i++)
             {
