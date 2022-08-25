@@ -819,5 +819,13 @@ namespace PLATEAU.Interop
         internal static extern APIResult plateau_node_get_mesh(
             [In] IntPtr nodeHandle,
             out IntPtr outMeshPtr);
+        
+        // ***************
+        //  geometry_utils_c.cpp
+        // ***************
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_geometry_utils_get_center_point(
+            [In] IntPtr cityModelPtr,
+            out PlateauVector3d outCenterPoint);
     }
 }

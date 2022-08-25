@@ -93,8 +93,8 @@ namespace PLATEAU.CityGrid
             // マージ
             var options = new MeshExtractOptions()
             {
-                // TODO ReferencePointを正しく設定できるようにする
-                ReferencePoint = new PlateauVector3d(0, 0, 0),
+                // TODO ReferencePoint はユーザーが設定できるようにしたほうが良い
+                ReferencePoint = cityModel.CenterPoint,
                 MeshAxes = AxesConversion.WUN,
                 MeshGranularity = MeshGranularity.PerCityModelArea,
                 // TODO 選択できるようにする
