@@ -91,8 +91,8 @@ namespace PLATEAU.Interop
         public PlateauVector3d ReferencePoint;
         public AxesConversion MeshAxes;
         public MeshGranularity MeshGranularity;
-        public int MaxLod;
-        public int MinLod;
+        public int MaxLOD;
+        public int MinLOD;
         [MarshalAs(UnmanagedType.U1)] public bool ExportAppearance;
         public int GridCountOfSide;
         public float UnitScale;

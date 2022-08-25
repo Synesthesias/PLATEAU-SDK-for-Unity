@@ -18,6 +18,8 @@ namespace PLATEAU.CityGrid
     {
         [SerializeField] private string gmlRelativePathFromStreamingAssets;
         [SerializeField] private int gridCountOfSide = 10;
+        [SerializeField] private int minLOD = 2;
+        [SerializeField] private int maxLOD = 2;
 
         // TODO Loadの実行中にまたLoadが実行されることを防ぐ仕組みが未実装
         // TODO 進捗を表示する機能と処理をキャンセルする機能が未実装
@@ -45,7 +47,7 @@ namespace PLATEAU.CityGrid
             meshObjsData = await Task.Run(() =>
             {
                 using var meshExtractor = new MeshExtractor();
-                using var plateauModel = LoadGmlAndMergeMeshes(meshExtractor, gmlAbsolutePath, this.gridCountOfSide);
+                using var plateauModel = LoadGmlAndMergeMeshes(meshExtractor, gmlAbsolutePath, this.gridCountOfSide, this.minLOD, this.maxLOD);
                 var convertedObjData = new ConvertedGameObjData(plateauModel);
                 return convertedObjData;
             });
@@ -75,6 +77,12 @@ namespace PLATEAU.CityGrid
                 return false;
             }
 
+            if (this.minLOD < 0 || this.maxLOD < 0 || this.maxLOD < this.minLOD)
+            {
+                Debug.LogError($"{nameof(this.minLOD)}, {nameof(this.maxLOD)} は0以上であり、 min <= max である必要があります。");
+                return false;
+            }
+
             return true;
         }
 
@@ -84,7 +92,7 @@ namespace PLATEAU.CityGrid
         /// メインスレッドでなくても動作します。
         /// </summary>
         private static Model LoadGmlAndMergeMeshes(MeshExtractor meshExtractor, string gmlAbsolutePath,
-            int numGridCountOfSide)
+            int numGridCountOfSide, int minLOD, int maxLOD)
         {
             // GMLロード
             using var cityModel = LoadCityModel(gmlAbsolutePath);
@@ -98,8 +106,8 @@ namespace PLATEAU.CityGrid
                 MeshAxes = AxesConversion.WUN,
                 MeshGranularity = MeshGranularity.PerCityModelArea,
                 // TODO 選択できるようにする
-                MaxLod = 2,
-                MinLod = 2,
+                MaxLOD = minLOD,
+                MinLOD = maxLOD,
                 ExportAppearance = true,
                 GridCountOfSide = numGridCountOfSide,
                 UnitScale = 1f
