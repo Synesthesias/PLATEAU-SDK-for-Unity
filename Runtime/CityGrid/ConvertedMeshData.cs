@@ -115,6 +115,7 @@ namespace PLATEAU.CityGrid
         /// </summary>
         private static async Task LoadTextures(ConvertedMeshData meshData, IReadOnlyList<string> textureUrls, string gmlAbsolutePath)
         {
+            // TODO テクスチャをキャッシュする機能を作る。異なるオブジェクトで同じテクスチャを使う場合でも愚直にテクスチャを読んでシーン保存しているので、最小地物単位でめっちゃ重くなる。
             for (int i = 0; i < meshData.SubMeshCount; i++)
             {
                 // テクスチャURLを取得します。
