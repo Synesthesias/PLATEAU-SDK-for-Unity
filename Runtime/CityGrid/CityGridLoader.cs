@@ -17,10 +17,11 @@ namespace PLATEAU.CityGrid
     internal class CityGridLoader : MonoBehaviour
     {
         [SerializeField] private string gmlRelativePathFromStreamingAssets;
+        [SerializeField] private MeshGranularity meshGranularity = MeshGranularity.PerCityModelArea;
         [SerializeField, Tooltip("グリッド分けした時の一辺のグリッド数です。グリッドの数はこの数値の2乗になります。")] private int gridCountOfSide = 10;
         [SerializeField] private bool doExportAppearance = true;
-        [SerializeField] private int minLOD = 2;
-        [SerializeField] private int maxLOD = 2;
+        [SerializeField] private uint minLOD = 2;
+        [SerializeField] private uint maxLOD = 2;
 
         // TODO Loadの実行中にまたLoadが実行されることを防ぐ仕組みが未実装
         // TODO 進捗を表示する機能と処理をキャンセルする機能が未実装
@@ -48,7 +49,7 @@ namespace PLATEAU.CityGrid
             meshObjsData = await Task.Run(() =>
             {
                 using var meshExtractor = new MeshExtractor();
-                using var plateauModel = LoadGmlAndMergeMeshes(meshExtractor, gmlAbsolutePath, this.gridCountOfSide,this.doExportAppearance, this.minLOD, this.maxLOD);
+                using var plateauModel = LoadGmlAndMergeMeshes(meshExtractor, gmlAbsolutePath,this.meshGranularity, this.gridCountOfSide,this.doExportAppearance, this.minLOD, this.maxLOD);
                 var convertedObjData = new ConvertedGameObjData(plateauModel);
                 return convertedObjData;
             });
@@ -93,7 +94,7 @@ namespace PLATEAU.CityGrid
         /// メインスレッドでなくても動作します。
         /// </summary>
         private static Model LoadGmlAndMergeMeshes(MeshExtractor meshExtractor, string gmlAbsolutePath,
-            int numGridCountOfSide, bool doExportAppearance, int minLOD, int maxLOD)
+            MeshGranularity meshGranularity, int numGridCountOfSide, bool doExportAppearance, uint minLOD, uint maxLOD)
         {
             // GMLロード
             using var cityModel = LoadCityModel(gmlAbsolutePath);
@@ -105,7 +106,7 @@ namespace PLATEAU.CityGrid
                 // TODO ReferencePoint はユーザーが設定できるようにしたほうが良い
                 ReferencePoint = cityModel.CenterPoint,
                 MeshAxes = AxesConversion.WUN,
-                MeshGranularity = MeshGranularity.PerCityModelArea,
+                MeshGranularity = meshGranularity,
                 MaxLOD = minLOD,
                 MinLOD = maxLOD,
                 ExportAppearance = doExportAppearance,
