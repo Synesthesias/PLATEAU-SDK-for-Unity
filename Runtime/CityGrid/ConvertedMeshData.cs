@@ -56,7 +56,7 @@ namespace PLATEAU.CityGrid
         /// <summary>
         /// ゲームオブジェクト、メッシュ、テクスチャの実体を作ってシーンに配置します。
         /// </summary>
-        public async Task<GameObject> PlaceToScene(Transform parentTrans, string gmlAbsolutePath)
+        public async Task<GameObject> PlaceToScene(Transform parentTrans, string gmlAbsolutePath, Dictionary<string, Texture> cachedTexture)
         {
             var mesh = GenerateUnityMesh();
             if (mesh.vertexCount <= 0) return null;
@@ -65,7 +65,7 @@ namespace PLATEAU.CityGrid
             meshFilter.mesh = mesh;
             var renderer = GameObjectUtil.AssureComponent<MeshRenderer>(meshObj);
 
-            await LoadTextures(this, this.textureUrls, gmlAbsolutePath);
+            await LoadTextures(this, this.textureUrls, gmlAbsolutePath, cachedTexture);
 
             var materials = new Material[mesh.subMeshCount];
             for (int i = 0; i < mesh.subMeshCount; i++)
@@ -113,11 +113,12 @@ namespace PLATEAU.CityGrid
         /// テクスチャのURL（パス） から、テクスチャを非同期でロードします。
         /// 生成した Unity の Textureインスタンスへの参照を <paramref name="meshData"/> に追加します。
         /// </summary>
-        private static async Task LoadTextures(ConvertedMeshData meshData, IReadOnlyList<string> textureUrls, string gmlAbsolutePath)
+        private static async Task LoadTextures(ConvertedMeshData meshData, IReadOnlyList<string> textureUrls, string gmlAbsolutePath, Dictionary<string, Texture> cachedTexture)
         {
-            // TODO テクスチャをキャッシュする機能を作る。異なるオブジェクトで同じテクスチャを使う場合でも愚直にテクスチャを読んでシーン保存しているので、最小地物単位でめっちゃ重くなる。
+            // TODO マテリアルをキャッシュする機能を作る。異なるオブジェクトで同じテクスチャを使う場合でも愚直にテクスチャを読んでシーン保存しているので、最小地物単位でめっちゃ重くなる。
             for (int i = 0; i < meshData.SubMeshCount; i++)
             {
+                // TODO テクスチャを返すのが素直な実装であって、返す代わりに meshData.AddTexture で結果を格納するという今のやり方は分かりにくい
                 // テクスチャURLを取得します。
                 string texUrl = textureUrls[i];
                 if (string.IsNullOrEmpty(texUrl)) 
@@ -125,6 +126,14 @@ namespace PLATEAU.CityGrid
                     meshData.AddTexture(i, null);
                     continue;
                 }
+                
+                // キャッシュにあればそれを使います
+                if (cachedTexture.TryGetValue(texUrl, out var tex))
+                {
+                    meshData.AddTexture(i, tex);
+                    continue;
+                }
+                
                 string textureFullPath = Path.GetFullPath(Path.Combine(gmlAbsolutePath, "../", texUrl));
 
                 // 非同期でテクスチャをロードします。
@@ -151,6 +160,7 @@ namespace PLATEAU.CityGrid
 
                 // 生成したUnityテクスチャへの参照を meshData に追加します。
                 texture.name = Path.GetFileNameWithoutExtension(texUrl);
+                cachedTexture[texUrl] = texture;
                 meshData.AddTexture(i, texture);
 
             }

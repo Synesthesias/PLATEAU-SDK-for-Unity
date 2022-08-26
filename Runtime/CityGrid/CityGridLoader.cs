@@ -1,4 +1,5 @@
-﻿using PLATEAU.CityGML;
+﻿using System.Collections.Generic;
+using PLATEAU.CityGML;
 using PLATEAU.GeometryModel;
 using PLATEAU.Interop;
 using PLATEAU.IO;
@@ -7,6 +8,7 @@ using System.Threading.Tasks;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using Texture = UnityEngine.Texture;
 
 namespace PLATEAU.CityGrid
 {
@@ -22,6 +24,12 @@ namespace PLATEAU.CityGrid
         [SerializeField] private bool doExportAppearance = true;
         [SerializeField] private uint minLOD = 2;
         [SerializeField] private uint maxLOD = 2;
+        
+        /// <summary>
+        /// テクスチャパス と テクスチャを紐付ける辞書です。同じテクスチャが繰り返しロードされることを防ぎます。
+        /// これがないと、異なるオブジェクトが同じテクスチャURLを指していても愚直にオブジェクトごとにテクスチャをロードしてシーンに保存することになるので、最小地物を扱うときのシーン容量がゴジラのごとくになります。
+        /// </summary>
+        private readonly Dictionary<string, Texture> cachedTexture = new Dictionary<string, Texture>();
 
         // TODO Loadの実行中にまたLoadが実行されることを防ぐ仕組みが未実装
         // TODO 進捗を表示する機能と処理をキャンセルする機能が未実装
@@ -57,7 +65,7 @@ namespace PLATEAU.CityGrid
             // 処理B :
             // 実際にメッシュを操作してシーンに配置します。
             // こちらはメインスレッドでのみ実行可能なので、Loadメソッドはメインスレッドから呼ぶ必要があります。
-            await meshObjsData.PlaceToScene(null, gmlAbsolutePath);
+            await meshObjsData.PlaceToScene(null, gmlAbsolutePath, this.cachedTexture);
 
             // エディター内での実行であれば、生成したメッシュ,テクスチャ等をシーンに保存したいので
             // シーンにダーティフラグを付けます。

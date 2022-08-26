@@ -49,7 +49,7 @@ namespace PLATEAU.CityGrid
         /// ゲームオブジェクト、メッシュ、テクスチャの実体を作ってシーンに配置します。
         /// 再帰によって子も配置します。
         /// </summary>
-        public async Task PlaceToScene(Transform parent, string gmlAbsolutePath)
+        public async Task PlaceToScene(Transform parent, string gmlAbsolutePath, Dictionary<string, Texture> cachedTexture)
         {
             GameObject nextParent;
             if (this.meshData == null)
@@ -65,12 +65,12 @@ namespace PLATEAU.CityGrid
             }
             else
             {
-                nextParent = await this.meshData.PlaceToScene(parent, gmlAbsolutePath);
+                nextParent = await this.meshData.PlaceToScene(parent, gmlAbsolutePath, cachedTexture);
             }
 
             foreach (var child in this.children)
             {
-                await child.PlaceToScene(nextParent.transform, gmlAbsolutePath);
+                await child.PlaceToScene(nextParent.transform, gmlAbsolutePath, cachedTexture);
             }
         }
     }
