@@ -87,7 +87,7 @@ namespace PLATEAU.CityGrid
                 return false;
             }
 
-            if (this.minLOD < 0 || this.maxLOD < 0 || this.maxLOD < this.minLOD)
+            if (this.maxLOD < this.minLOD)
             {
                 Debug.LogError($"{nameof(this.minLOD)}, {nameof(this.maxLOD)} は0以上であり、 min <= max である必要があります。");
                 return false;
@@ -115,8 +115,8 @@ namespace PLATEAU.CityGrid
                 ReferencePoint = cityModel.CenterPoint,
                 MeshAxes = AxesConversion.WUN,
                 MeshGranularity = meshGranularity,
-                MaxLOD = minLOD,
-                MinLOD = maxLOD,
+                MaxLOD = maxLOD,
+                MinLOD = minLOD,
                 ExportAppearance = doExportAppearance,
                 GridCountOfSide = numGridCountOfSide,
                 UnitScale = 1f
