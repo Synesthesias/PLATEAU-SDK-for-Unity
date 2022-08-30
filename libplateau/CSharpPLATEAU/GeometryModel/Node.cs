@@ -3,7 +3,15 @@ using PLATEAU.Interop;
 
 namespace PLATEAU.GeometryModel
 {
-    // TODO コメントを書く
+    /// <summary>
+    /// <see cref="Model"/> 以下の階層構造を構成するノードです。
+    /// Node は 0個以上の 子Node を持つため階層構造になります。
+    ///
+    /// 詳しくは <see cref="Model"/> クラスのコメントをご覧ください。
+    ///
+    /// Name はゲームエンジン側ではゲームオブジェクトの名前として解釈されることが想定されます。
+    /// Mesh はそのゲームオブジェクトの持つメッシュとして解釈されることが想定されます。
+    /// </summary>
     public class Node
     {
         private readonly IntPtr handle;
@@ -13,6 +21,10 @@ namespace PLATEAU.GeometryModel
             this.handle = handle;
         }
 
+        /// <summary>
+        /// ノードの名称を返します。
+        /// ゲームエンジン側ではゲームオブジェクトの名称となります。
+        /// </summary>
         public string Name
         {
             get
@@ -23,6 +35,9 @@ namespace PLATEAU.GeometryModel
             }
         }
 
+        /// <summary>
+        /// 子ノードの数を返します。
+        /// </summary>
         public int ChildCount
         {
             get
@@ -33,6 +48,9 @@ namespace PLATEAU.GeometryModel
             }
         }
 
+        /// <summary>
+        /// <paramref name="index"/> 番目の子ノードを返します。
+        /// </summary>
         public Node GetChildAt(int index)
         {
             var childNodePtr = DLLUtil.GetNativeValue<IntPtr>(
@@ -41,6 +59,10 @@ namespace PLATEAU.GeometryModel
             return new Node(childNodePtr);
         }
 
+        /// <summary>
+        /// ノードが保有する <see cref="Mesh"/> を返します。
+        /// なければ null を返します。
+        /// </summary>
         public Mesh Mesh
         {
             get

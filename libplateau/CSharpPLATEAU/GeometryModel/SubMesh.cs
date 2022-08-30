@@ -3,7 +3,11 @@ using PLATEAU.Interop;
 
 namespace PLATEAU.GeometryModel
 {
-    // TODO コメントを書く
+    /// <summary>
+    /// SubMesh は、 <see cref="Mesh"/> の一部 (Indices リストの中のとある範囲)がとあるテクスチャであることを表現します。
+    ///
+    /// 詳しくは <see cref="Model"/> クラスのコメントをご覧ください。
+    /// </summary>
     public class SubMesh
     {
         private IntPtr handle;

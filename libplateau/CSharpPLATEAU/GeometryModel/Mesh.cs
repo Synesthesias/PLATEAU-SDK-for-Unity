@@ -4,9 +4,12 @@ using PLATEAU.Interop;
 
 namespace PLATEAU.GeometryModel
 {
-    // TODO コメントを詳しく書く
     /// <summary>
-    /// DLLから受け取ったメッシュ・テクスチャ情報です。
+    /// メッシュ情報です。
+    /// Unity や Unreal Engine でメッシュを生成するために必要な情報が含まれるよう意図されています。
+    /// 具体的には 頂点リスト、Indicesリスト、UV、サブメッシュ（含テクスチャ）があります。
+    ///
+    /// 詳しくは <see cref="Model"/> クラスのコメントをご覧ください。
     /// </summary>
     public class Mesh
     {
@@ -90,40 +93,5 @@ namespace PLATEAU.GeometryModel
                 NativeMethods.plateau_mesh_get_sub_mesh_at_index);
             return new SubMesh(subMeshPtr);
         }
-        
-        // TODO あとで消す
-        // public class MultiTexture
-        // {
-        //     private readonly SubTexture[] subTextures;
-        //     public int Length => this.subTextures.Length;
-        //     public SubTexture this[int index] => this.subTextures[index];
-        //
-        //     public MultiTexture(IReadOnlyList<int> vertexIndices, IReadOnlyList<string> textureUrlArray)
-        //     {
-        //         
-        //         int num = vertexIndices.Count;
-        //         if (num != textureUrlArray.Count)
-        //         {
-        //             throw new ArgumentException($"{nameof(MultiTexture)} : argument array length do not match.");
-        //         }
-        //         this.subTextures = new SubTexture[num];
-        //         for (int i = 0; i < num; i++)
-        //         {
-        //             this.subTextures[i] = new SubTexture(vertexIndices[i], textureUrlArray[i]);
-        //         }
-        //     }
-        //     
-        //     public class SubTexture
-        //     {
-        //         public readonly int VertexIndex;
-        //         public readonly string TextureUrl;
-        //
-        //         public SubTexture(int vertexIndex, string textureUrl)
-        //         {
-        //             this.VertexIndex = vertexIndex;
-        //             this.TextureUrl = textureUrl;
-        //         }
-        //     }
-        // }
     }
 }
