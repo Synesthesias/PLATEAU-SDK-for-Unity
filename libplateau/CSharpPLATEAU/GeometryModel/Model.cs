@@ -8,6 +8,13 @@ namespace PLATEAU.GeometryModel
     {
         private readonly IntPtr handle;
         private bool isDisposed;
+
+        public Model()
+        {
+            var result = NativeMethods.plateau_model_new(out IntPtr outModelPtr);
+            DLLUtil.CheckDllError(result);
+            this.handle = outModelPtr;
+        }
         
         public Model(IntPtr handle)
         {
@@ -44,5 +51,7 @@ namespace PLATEAU.GeometryModel
         {
             Dispose();
         }
+
+        public IntPtr Handle => this.handle;
     }
 }

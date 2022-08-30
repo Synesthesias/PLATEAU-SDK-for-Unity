@@ -56,8 +56,7 @@ namespace PLATEAU.CityGrid
             // 実際のメッシュデータを触らないので、Task.Run で別のスレッドで処理できます。
             meshObjsData = await Task.Run(() =>
             {
-                using var meshExtractor = new MeshExtractor();
-                using var plateauModel = LoadGmlAndMergeMeshes(meshExtractor, gmlAbsolutePath,this.meshGranularity, this.gridCountOfSide,this.doExportAppearance, this.minLOD, this.maxLOD);
+                using var plateauModel = LoadGmlAndMergeMeshes(gmlAbsolutePath,this.meshGranularity, this.gridCountOfSide,this.doExportAppearance, this.minLOD, this.maxLOD);
                 var convertedObjData = new ConvertedGameObjData(plateauModel);
                 return convertedObjData;
             });
@@ -101,7 +100,7 @@ namespace PLATEAU.CityGrid
         /// グリッドごとにメッシュを結合して、グリッドごとの<see cref="GeometryModel.Model"/> で返します。
         /// メインスレッドでなくても動作します。
         /// </summary>
-        private static Model LoadGmlAndMergeMeshes(MeshExtractor meshExtractor, string gmlAbsolutePath,
+        private static Model LoadGmlAndMergeMeshes(string gmlAbsolutePath,
             MeshGranularity meshGranularity, int numGridCountOfSide, bool doExportAppearance, uint minLOD, uint maxLOD)
         {
             // GMLロード
@@ -121,7 +120,8 @@ namespace PLATEAU.CityGrid
                 GridCountOfSide = numGridCountOfSide,
                 UnitScale = 1f
             };
-            var model = meshExtractor.Extract(cityModel, options);
+            var model = new Model();
+            MeshExtractor.Extract(ref model, cityModel, options);
             Debug.Log("model extracted.");
             return model;
         }

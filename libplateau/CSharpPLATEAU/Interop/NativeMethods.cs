@@ -685,20 +685,12 @@ namespace PLATEAU.Interop
         // ***************
         //  mesh_extractor_c.cpp
         // ***************
-        [DllImport(DllName)]
-        internal static extern APIResult plateau_mesh_extractor_new(
-            out IntPtr outMeshMergerPtr);
-        
-        [DllImport(DllName)]
-        internal static extern APIResult plateau_mesh_extractor_delete(
-            [In] IntPtr outMeshMergerPtr);
 
         [DllImport(DllName)]
         internal static extern APIResult plateau_mesh_extractor_extract(
-            [In] IntPtr meshExtractorPtr,
             [In] IntPtr cityModelPtr,
             MeshExtractOptions options,
-            out IntPtr outModelPtr);
+            [In]IntPtr outModelPtr);
 
 
         // ***************

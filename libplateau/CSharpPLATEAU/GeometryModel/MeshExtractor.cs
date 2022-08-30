@@ -6,43 +6,22 @@ using PLATEAU.Interop;
 namespace PLATEAU.GeometryModel
 {
     /// <summary>
-    /// <see cref="CityModel"/> の範囲をグリッド状に分割して、各グリッド内のメッシュを結合する機能を提供します。
-    /// Dispose すると結合結果となるポリゴンは廃棄されます。
+    /// <see cref="CityModel"/> から<see cref="Model"/>を抽出します。
     /// </summary>
-    public class MeshExtractor : IDisposable
+    public static class MeshExtractor
     {
-        private readonly IntPtr handle;
-        private int disposed;
 
-        public MeshExtractor()
-        {
-            var result = NativeMethods.plateau_mesh_extractor_new(out IntPtr meshMergerPtr);
-            DLLUtil.CheckDllError(result);
-            this.handle = meshMergerPtr;
-        }
-
-        ~MeshExtractor()
-        {
-            Dispose();
-        }
-
-        public void Dispose()
-        {
-            if (Interlocked.Exchange(ref this.disposed, 1) == 0)
-            {
-                NativeMethods.plateau_mesh_extractor_delete(this.handle);
-            }
-            GC.SuppressFinalize(this);
-        }
-
-        public Model Extract(CityModel cityModel, MeshExtractOptions options)
+        /// <summary>
+        /// <see cref="CityModel"/> から <see cref="Model"/> を抽出します。
+        /// 結果は <paramref name="outModel"/> に格納されます。
+        /// 通常、<paramref name="outModel"/> には new したばかりの Model を渡してください。
+        /// </summary>
+        public static void Extract(ref Model outModel, CityModel cityModel, MeshExtractOptions options)
         {
             var result = NativeMethods.plateau_mesh_extractor_extract(
-                this.handle, cityModel.Handle, options,
-                out IntPtr outModelPtr
+                cityModel.Handle, options, outModel.Handle
             );
             DLLUtil.CheckDllError(result);
-            return new Model(outModelPtr);
         }
     }
 }
