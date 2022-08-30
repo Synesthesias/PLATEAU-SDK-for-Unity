@@ -166,6 +166,10 @@ namespace PLATEAU.Interop
         /// </summary>
         internal static void CheckDllError(APIResult result)
         {
+            if (result == APIResult.ErrorIndexOutOfBounds)
+            {
+                throw new IndexOutOfRangeException("Index is out of range.");
+            }
             if (result != APIResult.Success)
             {
                 throw new Exception($"Error in Lib Plateau DLL. APIResult = {result}");
