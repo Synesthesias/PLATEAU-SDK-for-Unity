@@ -1,7 +1,7 @@
 ﻿using System;
 using PLATEAU.Interop;
 
-namespace PLATEAU.GeometryModel
+namespace PLATEAU.PolygonMesh
 {
     /// <summary>
     /// SubMesh は、 <see cref="Mesh"/> の一部 (Indices リストの中のとある範囲)がとあるテクスチャであることを表現します。

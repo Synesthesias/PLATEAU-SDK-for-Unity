@@ -1,7 +1,7 @@
 ﻿using System;
 using PLATEAU.Interop;
 
-namespace PLATEAU.GeometryModel
+namespace PLATEAU.PolygonMesh
 {
     /// <summary>
     /// DLL側で実装された Model を、C# 側の Model としてデータを受け取るためのクラスです。

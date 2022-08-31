@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using PLATEAU.GeometryModel;
+using PLATEAU.PolygonMesh;
 using UnityEngine;
 
 namespace PLATEAU.CityGrid

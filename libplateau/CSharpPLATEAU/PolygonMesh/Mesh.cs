@@ -1,8 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using PLATEAU.Interop;
 
-namespace PLATEAU.GeometryModel
+namespace PLATEAU.PolygonMesh
 {
     /// <summary>
     /// メッシュ情報です。

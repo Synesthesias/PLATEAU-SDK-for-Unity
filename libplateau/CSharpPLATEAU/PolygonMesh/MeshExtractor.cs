@@ -1,9 +1,7 @@
-﻿using System;
-using System.Threading;
-using PLATEAU.CityGML;
+﻿using PLATEAU.CityGML;
 using PLATEAU.Interop;
 
-namespace PLATEAU.GeometryModel
+namespace PLATEAU.PolygonMesh
 {
     /// <summary>
     /// <see cref="CityModel"/> から<see cref="Model"/>を抽出します。

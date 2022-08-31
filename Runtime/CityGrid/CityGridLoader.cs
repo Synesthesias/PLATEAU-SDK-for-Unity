@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using PLATEAU.CityGML;
-using PLATEAU.GeometryModel;
+using PLATEAU.PolygonMesh;
 using PLATEAU.Interop;
 using PLATEAU.IO;
 using PLATEAU.Util;

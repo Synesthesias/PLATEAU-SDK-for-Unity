@@ -14,7 +14,7 @@ namespace PLATEAU.CityGrid
         /// その理由は <see cref="CityGridLoader.Load"/> のコメントを参照してください。
         /// このメソッドの結果をもとに、 <see cref="ConvertedGameObjData.PlaceToScene"/> メソッドで実際のメッシュを配置できます。
         /// </summary>
-        public static ConvertedMeshData Convert(GeometryModel.Mesh plateauMesh, string meshName)
+        public static ConvertedMeshData Convert(PolygonMesh.Mesh plateauMesh, string meshName)
         {
             if (plateauMesh == null) return null;
             var (unityVerts, unityUv1, unityUv2, unityUv3) =
@@ -26,7 +26,7 @@ namespace PLATEAU.CityGrid
 
         private static
             (Vector3[] unityVerts, Vector2[] unityUv1, Vector2[] unityUv2, Vector2[] unityUv3)
-            CopyVerticesAndUV(GeometryModel.Mesh plateauMesh)
+            CopyVerticesAndUV(PolygonMesh.Mesh plateauMesh)
         {
             int numVerts = plateauMesh.VerticesCount;
             var plateauUv1 = plateauMesh.GetUv1();
@@ -47,7 +47,7 @@ namespace PLATEAU.CityGrid
             return (unityVerts, unityUv1, unityUv2, unityUv3);
         }
 
-        private static (List<List<int>> subMeshTriangles, List<string> texturePaths) CopySubMeshInfo(GeometryModel.Mesh plateauMesh)
+        private static (List<List<int>> subMeshTriangles, List<string> texturePaths) CopySubMeshInfo(PolygonMesh.Mesh plateauMesh)
         {
             // var multiTexture = plateauMesh.GetMultiTexture();
             // int currentSubMeshStart = 0;

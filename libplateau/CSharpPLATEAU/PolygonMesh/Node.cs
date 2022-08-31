@@ -1,7 +1,7 @@
 ﻿using System;
 using PLATEAU.Interop;
 
-namespace PLATEAU.GeometryModel
+namespace PLATEAU.PolygonMesh
 {
     /// <summary>
     /// <see cref="Model"/> 以下の階層構造を構成するノードです。
