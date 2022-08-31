@@ -34,7 +34,7 @@ namespace PLATEAU.GeometryModel
 
         public Model()
         {
-            var result = NativeMethods.plateau_model_new(out IntPtr outModelPtr);
+            var result = NativeMethods.plateau_create_model(out IntPtr outModelPtr);
             DLLUtil.CheckDllError(result);
             this.handle = outModelPtr;
         }
@@ -71,7 +71,7 @@ namespace PLATEAU.GeometryModel
         public void Dispose()
         {
             if (this.isDisposed) return;
-            NativeMethods.plateau_model_delete(this.handle);
+            NativeMethods.plateau_delete_model(this.handle);
             GC.SuppressFinalize(this);
             this.isDisposed = true;
         }

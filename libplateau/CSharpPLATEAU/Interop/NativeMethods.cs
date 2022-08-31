@@ -770,11 +770,11 @@ namespace PLATEAU.Interop
         // ***************
 
         [DllImport(DllName)]
-        internal static extern APIResult plateau_model_new(
+        internal static extern APIResult plateau_create_model(
             out IntPtr outModelPtr);
 
         [DllImport(DllName)]
-        internal static extern APIResult plateau_model_delete(
+        internal static extern APIResult plateau_delete_model(
             [In] IntPtr modelPtr);
 
 
