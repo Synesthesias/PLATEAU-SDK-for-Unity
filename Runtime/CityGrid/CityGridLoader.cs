@@ -5,9 +5,13 @@ using PLATEAU.Interop;
 using PLATEAU.IO;
 using PLATEAU.Util;
 using System.Threading.Tasks;
-using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+
+#if UNITY_EDITOR
+using UnityEditor.SceneManagement;
+#endif
+
 using Texture = UnityEngine.Texture;
 
 namespace PLATEAU.CityGrid
