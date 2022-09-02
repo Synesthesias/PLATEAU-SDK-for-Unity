@@ -75,7 +75,7 @@ namespace PLATEAU.Interop
     [StructLayout(LayoutKind.Sequential)]
     internal struct MeshConvertOptionsData
     {
-        public AxesConversion MeshAxes;
+        public CoordinateSystem MeshAxes;
         public PlateauVector3d ReferencePoint;
         public MeshGranularity MeshGranularity;
         public uint MinLOD;
@@ -89,7 +89,7 @@ namespace PLATEAU.Interop
     public struct MeshExtractOptions
     {
         public PlateauVector3d ReferencePoint;
-        public AxesConversion MeshAxes;
+        public CoordinateSystem MeshAxes;
         public MeshGranularity MeshGranularity;
         public uint MaxLOD;
         public uint MinLOD;

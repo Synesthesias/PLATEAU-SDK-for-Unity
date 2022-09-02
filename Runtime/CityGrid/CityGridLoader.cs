@@ -116,7 +116,7 @@ namespace PLATEAU.CityGrid
             {
                 // TODO ReferencePoint はユーザーが設定できるようにしたほうが良い
                 ReferencePoint = cityModel.CenterPoint,
-                MeshAxes = AxesConversion.WUN,
+                MeshAxes = CoordinateSystem.WUN,
                 MeshGranularity = meshGranularity,
                 MaxLOD = maxLOD,
                 MinLOD = minLOD,
