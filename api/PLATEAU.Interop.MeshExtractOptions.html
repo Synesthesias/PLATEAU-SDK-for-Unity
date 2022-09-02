@@ -5,10 +5,10 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>Class CityModel
+    <title>Struct MeshExtractOptions
    | PLATEAU SDK for Unity </title>
     <meta name="viewport" content="width=device-width">
-    <meta name="title" content="Class CityModel
+    <meta name="title" content="Struct MeshExtractOptions
    | PLATEAU SDK for Unity ">
     <meta name="generator" content="docfx 2.59.3.0">
     
@@ -78,162 +78,76 @@
         </div>
         <div class="article row grid-right">
           <div class="col-md-10">
-            <article class="content wrap" id="_content" data-uid="PLATEAU.CityGML.CityModel">
+            <article class="content wrap" id="_content" data-uid="PLATEAU.Interop.MeshExtractOptions">
   
   
-  <h1 id="PLATEAU_CityGML_CityModel" data-uid="PLATEAU.CityGML.CityModel" class="text-break">Class CityModel
+  <h1 id="PLATEAU_Interop_MeshExtractOptions" data-uid="PLATEAU.Interop.MeshExtractOptions" class="text-break">Struct MeshExtractOptions
   </h1>
-  <div class="markdown level0 summary"><p>GMLファイルをパースして得られる街のモデルです。
-0個以上の <a class="xref" href="PLATEAU.CityGML.CityObject.html">CityObject</a> を保持します。</p>
-</div>
+  <div class="markdown level0 summary"></div>
   <div class="markdown level0 conceptual"></div>
-  <div class="inheritance">
-    <h5>Inheritance</h5>
-    <div class="level0"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></div>
-    <div class="level1"><span class="xref">CityModel</span></div>
+  <div class="inheritedMembers">
+    <h5>Inherited Members</h5>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.valuetype.equals#system-valuetype-equals(system-object)">ValueType.Equals(Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.valuetype.gethashcode#system-valuetype-gethashcode">ValueType.GetHashCode()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.valuetype.tostring#system-valuetype-tostring">ValueType.ToString()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)">Object.Equals(Object, Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.referenceequals#system-object-referenceequals(system-object-system-object)">Object.ReferenceEquals(Object, Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gettype#system-object-gettype">Object.GetType()</a>
+    </div>
   </div>
-  <h6><strong>Namespace</strong>: <a class="xref" href="PLATEAU.CityGML.html">PLATEAU.CityGML</a></h6>
+  <h6><strong>Namespace</strong>: <a class="xref" href="PLATEAU.Interop.html">PLATEAU.Interop</a></h6>
   <h6><strong>Assembly</strong>: cs.temp.dll.dll</h6>
-  <h5 id="PLATEAU_CityGML_CityModel_syntax">Syntax</h5>
+  <h5 id="PLATEAU_Interop_MeshExtractOptions_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public sealed class CityModel : IDisposable</code></pre>
+    <pre><code class="lang-csharp hljs">public struct MeshExtractOptions</code></pre>
   </div>
-  <h3 id="properties">Properties
+  <h3 id="fields">Fields
   </h3>
   
   
-  <a id="PLATEAU_CityGML_CityModel_CenterPoint_" data-uid="PLATEAU.CityGML.CityModel.CenterPoint*"></a>
-  <h4 id="PLATEAU_CityGML_CityModel_CenterPoint" data-uid="PLATEAU.CityGML.CityModel.CenterPoint">CenterPoint</h4>
-  <div class="markdown level1 summary"><p>cityModel の中心点を返します。
-ただし高さ方向の座標は 0 とし、東西南北の方向の座標のみ中心を指します。
-そうでないと基準点が空中に浮かぶので気分的には良くないためです。
-また GMLファイルから cityModel の Envelope を読み取れない場合は、
-中心点が分からないので原点座標を返します。</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public PlateauVector3d CenterPoint { get; }</code></pre>
-  </div>
-  <h5 class="propertyValue">Property Value</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="xref">PlateauVector3d</span></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  
-  
-  <a id="PLATEAU_CityGML_CityModel_Handle_" data-uid="PLATEAU.CityGML.CityModel.Handle*"></a>
-  <h4 id="PLATEAU_CityGML_CityModel_Handle" data-uid="PLATEAU.CityGML.CityModel.Handle">Handle</h4>
-  <div class="markdown level1 summary"><p>セーフハンドルを取得します。</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public IntPtr Handle { get; }</code></pre>
-  </div>
-  <h5 class="propertyValue">Property Value</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="xref">IntPtr</span></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  
-  
-  <a id="PLATEAU_CityGML_CityModel_RootCityObjects_" data-uid="PLATEAU.CityGML.CityModel.RootCityObjects*"></a>
-  <h4 id="PLATEAU_CityGML_CityModel_RootCityObjects" data-uid="PLATEAU.CityGML.CityModel.RootCityObjects">RootCityObjects</h4>
-  <div class="markdown level1 summary"><p><a class="xref" href="PLATEAU.CityGML.CityModel.html">CityModel</a> のトップレベルにある <a class="xref" href="PLATEAU.CityGML.CityObject.html">CityObject</a> の一覧を返します。</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public ReadOnlyCollection&lt;CityObject&gt; RootCityObjects { get; }</code></pre>
-  </div>
-  <h5 class="propertyValue">Property Value</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="xref">ReadOnlyCollection</span>&lt;<a class="xref" href="PLATEAU.CityGML.CityObject.html">CityObject</a>&gt;</td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  <h3 id="methods">Methods
-  </h3>
-  
-  
-  <a id="PLATEAU_CityGML_CityModel_Dispose_" data-uid="PLATEAU.CityGML.CityModel.Dispose*"></a>
-  <h4 id="PLATEAU_CityGML_CityModel_Dispose" data-uid="PLATEAU.CityGML.CityModel.Dispose">Dispose()</h4>
+  <h4 id="PLATEAU_Interop_MeshExtractOptions_ExportAppearance" data-uid="PLATEAU.Interop.MeshExtractOptions.ExportAppearance">ExportAppearance</h4>
   <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public void Dispose()</code></pre>
+    <pre><code class="lang-csharp hljs">public bool ExportAppearance</code></pre>
   </div>
+  <h5 class="fieldValue">Field Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
   
   
-  <a id="PLATEAU_CityGML_CityModel_Finalize_" data-uid="PLATEAU.CityGML.CityModel.Finalize*"></a>
-  <h4 id="PLATEAU_CityGML_CityModel_Finalize" data-uid="PLATEAU.CityGML.CityModel.Finalize">Finalize()</h4>
+  <h4 id="PLATEAU_Interop_MeshExtractOptions_GridCountOfSide" data-uid="PLATEAU.Interop.MeshExtractOptions.GridCountOfSide">GridCountOfSide</h4>
   <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">protected void Finalize()</code></pre>
+    <pre><code class="lang-csharp hljs">public int GridCountOfSide</code></pre>
   </div>
-  
-  
-  <a id="PLATEAU_CityGML_CityModel_GetCityObjectById_" data-uid="PLATEAU.CityGML.CityModel.GetCityObjectById*"></a>
-  <h4 id="PLATEAU_CityGML_CityModel_GetCityObjectById_System_String_" data-uid="PLATEAU.CityGML.CityModel.GetCityObjectById(System.String)">GetCityObjectById(String)</h4>
-  <div class="markdown level1 summary"><p>idから <a class="xref" href="PLATEAU.CityGML.CityObject.html">CityObject</a> を返します。
-該当idのものがない場合は <see cref="!:KeyNotFoundException"></see> を投げます。</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public CityObject GetCityObjectById(string id)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a></td>
-        <td><span class="parametername">id</span></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
+  <h5 class="fieldValue">Field Value</h5>
   <table class="table table-bordered table-striped table-condensed">
     <thead>
       <tr>
@@ -243,41 +157,45 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="PLATEAU.CityGML.CityObject.html">CityObject</a></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
         <td></td>
       </tr>
     </tbody>
   </table>
   
   
-  <a id="PLATEAU_CityGML_CityModel_GetCityObjectsByType_" data-uid="PLATEAU.CityGML.CityModel.GetCityObjectsByType*"></a>
-  <h4 id="PLATEAU_CityGML_CityModel_GetCityObjectsByType_PLATEAU_CityGML_CityObjectType_" data-uid="PLATEAU.CityGML.CityModel.GetCityObjectsByType(PLATEAU.CityGML.CityObjectType)">GetCityObjectsByType(CityObjectType)</h4>
-  <div class="markdown level1 summary"><p><a class="xref" href="PLATEAU.CityGML.CityModel.html">CityModel</a>の<code data-dev-comment-type="paramref" class="paramref">type</code>タイプの全ての<a class="xref" href="PLATEAU.CityGML.CityObject.html">CityObject</a>を返します。</p>
-</div>
+  <h4 id="PLATEAU_Interop_MeshExtractOptions_MaxLOD" data-uid="PLATEAU.Interop.MeshExtractOptions.MaxLOD">MaxLOD</h4>
+  <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public CityObject[] GetCityObjectsByType(CityObjectType type)</code></pre>
+    <pre><code class="lang-csharp hljs">public uint MaxLOD</code></pre>
   </div>
-  <h5 class="parameters">Parameters</h5>
+  <h5 class="fieldValue">Field Value</h5>
   <table class="table table-bordered table-striped table-condensed">
     <thead>
       <tr>
         <th>Type</th>
-        <th>Name</th>
         <th>Description</th>
       </tr>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="PLATEAU.CityGML.CityObjectType.html">CityObjectType</a></td>
-        <td><span class="parametername">type</span></td>
-        <td><p>取得したい都市オブジェクトのタイプ</p>
-</td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.uint32">UInt32</a></td>
+        <td></td>
       </tr>
     </tbody>
   </table>
-  <h5 class="returns">Returns</h5>
+  
+  
+  <h4 id="PLATEAU_Interop_MeshExtractOptions_MeshAxes" data-uid="PLATEAU.Interop.MeshExtractOptions.MeshAxes">MeshAxes</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public AxesConversion MeshAxes</code></pre>
+  </div>
+  <h5 class="fieldValue">Field Value</h5>
   <table class="table table-bordered table-striped table-condensed">
     <thead>
       <tr>
@@ -287,9 +205,104 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="PLATEAU.CityGML.CityObject.html">CityObject</a>[]</td>
-        <td><p><code data-dev-comment-type="paramref" class="paramref">type</code>タイプの全ての<a class="xref" href="PLATEAU.CityGML.CityObject.html">CityObject</a></p>
-</td>
+        <td><span class="xref">AxesConversion</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
+  <h4 id="PLATEAU_Interop_MeshExtractOptions_MeshGranularity" data-uid="PLATEAU.Interop.MeshExtractOptions.MeshGranularity">MeshGranularity</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public MeshGranularity MeshGranularity</code></pre>
+  </div>
+  <h5 class="fieldValue">Field Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">MeshGranularity</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
+  <h4 id="PLATEAU_Interop_MeshExtractOptions_MinLOD" data-uid="PLATEAU.Interop.MeshExtractOptions.MinLOD">MinLOD</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public uint MinLOD</code></pre>
+  </div>
+  <h5 class="fieldValue">Field Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.uint32">UInt32</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
+  <h4 id="PLATEAU_Interop_MeshExtractOptions_ReferencePoint" data-uid="PLATEAU.Interop.MeshExtractOptions.ReferencePoint">ReferencePoint</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public PlateauVector3d ReferencePoint</code></pre>
+  </div>
+  <h5 class="fieldValue">Field Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="PLATEAU.Interop.PlateauVector3d.html">PlateauVector3d</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
+  <h4 id="PLATEAU_Interop_MeshExtractOptions_UnitScale" data-uid="PLATEAU.Interop.MeshExtractOptions.UnitScale">UnitScale</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public float UnitScale</code></pre>
+  </div>
+  <h5 class="fieldValue">Field Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.single">Single</a></td>
+        <td></td>
       </tr>
     </tbody>
   </table>

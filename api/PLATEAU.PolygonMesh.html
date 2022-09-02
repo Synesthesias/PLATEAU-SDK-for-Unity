@@ -5,10 +5,10 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>Namespace PLATEAU.Behaviour
+    <title>Namespace PLATEAU.PolygonMesh
    | PLATEAU SDK for Unity </title>
     <meta name="viewport" content="width=device-width">
-    <meta name="title" content="Namespace PLATEAU.Behaviour
+    <meta name="title" content="Namespace PLATEAU.PolygonMesh
    | PLATEAU SDK for Unity ">
     <meta name="generator" content="docfx 2.59.3.0">
     
@@ -78,27 +78,53 @@
         </div>
         <div class="article row grid-right">
           <div class="col-md-10">
-            <article class="content wrap" id="_content" data-uid="PLATEAU.Behaviour">
+            <article class="content wrap" id="_content" data-uid="PLATEAU.PolygonMesh">
   
-  <h1 id="PLATEAU_Behaviour" data-uid="PLATEAU.Behaviour" class="text-break">Namespace PLATEAU.Behaviour
+  <h1 id="PLATEAU_PolygonMesh" data-uid="PLATEAU.PolygonMesh" class="text-break">Namespace PLATEAU.PolygonMesh
   </h1>
   <div class="markdown level0 summary"></div>
   <div class="markdown level0 conceptual"></div>
   <div class="markdown level0 remarks"></div>
     <h3 id="classes">Classes
   </h3>
-      <h4><a class="xref" href="PLATEAU.Behaviour.CityBehaviour.html">CityBehaviour</a></h4>
-      <section><p>ゲームオブジェクトからPlateauの <a class="xref" href="PLATEAU.CityGML.CityObject.html">CityObject</a> を返す MonoBehaviour です。
-実行のために <a class="xref" href="PLATEAU.Behaviour.CityBehaviour.html#PLATEAU_Behaviour_CityBehaviour_CityMetadata">CityMetadata</a> と <a class="xref" href="PLATEAU.Behaviour.CityModelLoader.html">CityModelLoader</a> を保持します。</p>
+      <h4><a class="xref" href="PLATEAU.PolygonMesh.Mesh.html">Mesh</a></h4>
+      <section><p>メッシュ情報です。
+Unity や Unreal Engine でメッシュを生成するために必要な情報が含まれるよう意図されています。
+具体的には 頂点リスト、Indicesリスト、UV、サブメッシュ（含テクスチャ）があります。</p>
+<p>詳しくは <a class="xref" href="PLATEAU.PolygonMesh.Model.html">Model</a> クラスのコメントをご覧ください。</p>
 </section>
-      <h4><a class="xref" href="PLATEAU.Behaviour.CityHierarchyEnumerator.html">CityHierarchyEnumerator</a></h4>
-      <section><p>シーン上の都市ゲームオブジェクトを列挙します。</p>
+      <h4><a class="xref" href="PLATEAU.PolygonMesh.MeshExtractor.html">MeshExtractor</a></h4>
+      <section><p><see cref="!:CityModel"></see> から<a class="xref" href="PLATEAU.PolygonMesh.Model.html">Model</a>を抽出します。</p>
 </section>
-      <h4><a class="xref" href="PLATEAU.Behaviour.CityModelLoader.html">CityModelLoader</a></h4>
-      <section><p>Unityのランタイムでゲームオブジェクト名から <a class="xref" href="PLATEAU.CityGML.CityObject.html">CityObject</a> を取得します。</p>
+      <h4><a class="xref" href="PLATEAU.PolygonMesh.Model.html">Model</a></h4>
+      <section><p>DLL側で実装された Model を、C# 側の Model としてデータを受け取るためのクラスです。
+(<a class="xref" href="PLATEAU.PolygonMesh.Node.html">Node</a>, <a class="xref" href="PLATEAU.PolygonMesh.Mesh.html">Mesh</a>, <a class="xref" href="PLATEAU.PolygonMesh.SubMesh.html">SubMesh</a> も同様です。)</p>
+<p>Model は、GMLファイルパーサーから読み取った3Dメッシュ情報を各ゲームエンジンに渡すための中間データ構造として設計されています。
+そのデータにはメッシュ、テクスチャパス、ゲームオブジェクトの階層構造が含まれており、
+DLLの利用者である Unity や Unreal Engine がメッシュやゲームオブジェクトを生成するために必要な情報が入るよう意図されています。
+Model はそのデータ構造の階層のトップに位置します。</p>
+<p>Model クラスのデータを元に、実際にメッシュやゲームオブジェクトを生成するのは
+PLATEAU Unity SDK の責務となります。</p>
+<p>中間データ構造の階層 :
+Model -&gt; 所有(0個以上) -&gt; Node(階層構造) -&gt; 所有(0or1個) -&gt; Mesh -&gt; 所有(1個以上) -&gt; SubMesh</p>
+<p>Model が所有する <a class="xref" href="PLATEAU.PolygonMesh.Node.html">Node</a> の階層関係は、ゲームエンジン側でのゲームオブジェクトの階層関係に対応します。
+Node が所有する <a class="xref" href="PLATEAU.PolygonMesh.Mesh.html">Mesh</a> は、そのゲームオブジェクトが保持する3Dメッシュに対応します。
+Mesh が所有する <a class="xref" href="PLATEAU.PolygonMesh.SubMesh.html">SubMesh</a> は、そのメッシュのサブメッシュ（テクスチャパスを含む）に対応します。</p>
+<p>DLLから得た Model を delete するのは C# 側の責務なので、
+IDisposable を実装して不要時に delete しています。
+delete 後は、配下のノードやメッシュにもアクセスできなくなります。</p>
 </section>
-      <h4><a class="xref" href="PLATEAU.Behaviour.ClickToGetCityAttributes.html">ClickToGetCityAttributes</a></h4>
-      <section></section>
+      <h4><a class="xref" href="PLATEAU.PolygonMesh.Node.html">Node</a></h4>
+      <section><p><a class="xref" href="PLATEAU.PolygonMesh.Model.html">Model</a> 以下の階層構造を構成するノードです。
+Node は 0個以上の 子Node を持つため階層構造になります。</p>
+<p>詳しくは <a class="xref" href="PLATEAU.PolygonMesh.Model.html">Model</a> クラスのコメントをご覧ください。</p>
+<p>Name はゲームエンジン側ではゲームオブジェクトの名前として解釈されることが想定されます。
+Mesh はそのゲームオブジェクトの持つメッシュとして解釈されることが想定されます。</p>
+</section>
+      <h4><a class="xref" href="PLATEAU.PolygonMesh.SubMesh.html">SubMesh</a></h4>
+      <section><p>SubMesh は、 <a class="xref" href="PLATEAU.PolygonMesh.Mesh.html">Mesh</a> の一部 (Indices リストの中のとある範囲)がとあるテクスチャであることを表現します。</p>
+<p>詳しくは <a class="xref" href="PLATEAU.PolygonMesh.Model.html">Model</a> クラスのコメントをご覧ください。</p>
+</section>
 </article>
           </div>
           

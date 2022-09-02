@@ -5,10 +5,10 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>Enum APIResult
+    <title>Class MeshExtractor
    | PLATEAU SDK for Unity </title>
     <meta name="viewport" content="width=device-width">
-    <meta name="title" content="Enum APIResult
+    <meta name="title" content="Class MeshExtractor
    | PLATEAU SDK for Unity ">
     <meta name="generator" content="docfx 2.59.3.0">
     
@@ -78,51 +78,91 @@
         </div>
         <div class="article row grid-right">
           <div class="col-md-10">
-            <article class="content wrap" id="_content" data-uid="PLATEAU.Interop.APIResult">
+            <article class="content wrap" id="_content" data-uid="PLATEAU.PolygonMesh.MeshExtractor">
   
   
-  <h1 id="PLATEAU_Interop_APIResult" data-uid="PLATEAU.Interop.APIResult" class="text-break">Enum APIResult
+  <h1 id="PLATEAU_PolygonMesh_MeshExtractor" data-uid="PLATEAU.PolygonMesh.MeshExtractor" class="text-break">Class MeshExtractor
   </h1>
-  <div class="markdown level0 summary"></div>
+  <div class="markdown level0 summary"><p><see cref="!:CityModel"></see> から<a class="xref" href="PLATEAU.PolygonMesh.Model.html">Model</a>を抽出します。</p>
+</div>
   <div class="markdown level0 conceptual"></div>
-  <h6><strong>Namespace</strong>: <a class="xref" href="PLATEAU.Interop.html">PLATEAU.Interop</a></h6>
-  <h6><strong>Assembly</strong>: cs.temp.dll.dll</h6>
-  <h5 id="PLATEAU_Interop_APIResult_syntax">Syntax</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public enum APIResult</code></pre>
+  <div class="inheritance">
+    <h5>Inheritance</h5>
+    <div class="level0"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></div>
+    <div class="level1"><span class="xref">MeshExtractor</span></div>
   </div>
-  <h3 id="fields">Fields
+  <div class="inheritedMembers">
+    <h5>Inherited Members</h5>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.tostring#system-object-tostring">Object.ToString()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)">Object.Equals(Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)">Object.Equals(Object, Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.referenceequals#system-object-referenceequals(system-object-system-object)">Object.ReferenceEquals(Object, Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gethashcode#system-object-gethashcode">Object.GetHashCode()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gettype#system-object-gettype">Object.GetType()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.memberwiseclone#system-object-memberwiseclone">Object.MemberwiseClone()</a>
+    </div>
+  </div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="PLATEAU.PolygonMesh.html">PLATEAU.PolygonMesh</a></h6>
+  <h6><strong>Assembly</strong>: cs.temp.dll.dll</h6>
+  <h5 id="PLATEAU_PolygonMesh_MeshExtractor_syntax">Syntax</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static class MeshExtractor</code></pre>
+  </div>
+  <h3 id="methods">Methods
   </h3>
+  
+  
+  <a id="PLATEAU_PolygonMesh_MeshExtractor_Extract_" data-uid="PLATEAU.PolygonMesh.MeshExtractor.Extract*"></a>
+  <h4 id="PLATEAU_PolygonMesh_MeshExtractor_Extract_PLATEAU_PolygonMesh_Model__CityModel_MeshExtractOptions_" data-uid="PLATEAU.PolygonMesh.MeshExtractor.Extract(PLATEAU.PolygonMesh.Model@,CityModel,MeshExtractOptions)">Extract(ref Model, CityModel, MeshExtractOptions)</h4>
+  <div class="markdown level1 summary"><p><see cref="!:CityModel"></see> から <a class="xref" href="PLATEAU.PolygonMesh.Model.html">Model</a> を抽出します。
+結果は <code data-dev-comment-type="paramref" class="paramref">outModel</code> に格納されます。
+通常、<code data-dev-comment-type="paramref" class="paramref">outModel</code> には new したばかりの Model を渡してください。</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static void Extract(ref Model outModel, CityModel cityModel, MeshExtractOptions options)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
     <thead>
       <tr>
+        <th>Type</th>
         <th>Name</th>
         <th>Description</th>
       </tr>
-    <thead>
+    </thead>
     <tbody>
       <tr>
-        <td id="PLATEAU_Interop_APIResult_ErrorIndexOutOfBounds">ErrorIndexOutOfBounds</td>
+        <td><a class="xref" href="PLATEAU.PolygonMesh.Model.html">Model</a></td>
+        <td><span class="parametername">outModel</span></td>
         <td></td>
       </tr>
       <tr>
-        <td id="PLATEAU_Interop_APIResult_ErrorLoadingCityGml">ErrorLoadingCityGml</td>
+        <td><span class="xref">CityModel</span></td>
+        <td><span class="parametername">cityModel</span></td>
         <td></td>
       </tr>
       <tr>
-        <td id="PLATEAU_Interop_APIResult_ErrorUnknown">ErrorUnknown</td>
-        <td></td>
-      </tr>
-      <tr>
-        <td id="PLATEAU_Interop_APIResult_ErrorValueNotFound">ErrorValueNotFound</td>
-        <td></td>
-      </tr>
-      <tr>
-        <td id="PLATEAU_Interop_APIResult_Success">Success</td>
+        <td><span class="xref">MeshExtractOptions</span></td>
+        <td><span class="parametername">options</span></td>
         <td></td>
       </tr>
     </tbody>
-  </thead></thead></table>
+  </table>
 </article>
           </div>
           
