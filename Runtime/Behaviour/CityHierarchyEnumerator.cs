@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using PLATEAU.CityGML;
+﻿using PLATEAU.CityGML;
 using PLATEAU.CityMeta;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace PLATEAU.Behaviour
@@ -57,12 +57,12 @@ namespace PLATEAU.Behaviour
             {
                 yield return parent;
             }
-            
+
             int numChild = parent.childCount;
             for (int i = 0; i < numChild; i++)
             {
                 var child = parent.GetChild(i);
-                var children = ChildrenDfsAsTransformRecursive(child, minDepth, currentDepth+1);
+                var children = ChildrenDfsAsTransformRecursive(child, minDepth, currentDepth + 1);
                 foreach (var c in children)
                 {
                     yield return c;

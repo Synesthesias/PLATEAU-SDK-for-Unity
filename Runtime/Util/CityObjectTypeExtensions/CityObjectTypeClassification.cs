@@ -1,10 +1,10 @@
-﻿using System;
-using System.Linq;
-using PLATEAU.CityGML;
+﻿using PLATEAU.CityGML;
 using PLATEAU.CityMeta;
 using PLATEAU.CommonDataStructure;
-using TReadOnlyDict = System.Collections.ObjectModel.ReadOnlyDictionary<PLATEAU.Util.CityObjectTypeExtensions.CityObjectTypeClassification.KeyType, PLATEAU.CityGML.CityObjectType>;
+using System;
+using System.Linq;
 using TDict = System.Collections.Generic.Dictionary<PLATEAU.Util.CityObjectTypeExtensions.CityObjectTypeClassification.KeyType, PLATEAU.CityGML.CityObjectType>;
+using TReadOnlyDict = System.Collections.ObjectModel.ReadOnlyDictionary<PLATEAU.Util.CityObjectTypeExtensions.CityObjectTypeClassification.KeyType, PLATEAU.CityGML.CityObjectType>;
 
 namespace PLATEAU.Util.CityObjectTypeExtensions
 {
@@ -24,7 +24,7 @@ namespace PLATEAU.Util.CityObjectTypeExtensions
     internal static class CityObjectTypeClassification
     {
         private static readonly TReadOnlyDict dict;
-        
+
 
         public static CityObjectType GetFlags(GmlType gmlType, int lod)
         {
@@ -50,7 +50,7 @@ namespace PLATEAU.Util.CityObjectTypeExtensions
         private static TDict GenerateDictionary()
         {
             var d = new TDict();
-            
+
             // (gmlタイプ, lod） の組について、とりうる組み合わせを全て列挙して Key とします。
             // Value は初期値として 0 (フラグ全部 false のEnumとみなされます) にします。
             var gmlTypes = Enum.GetValues(typeof(GmlType)).OfType<GmlType>();
@@ -64,7 +64,7 @@ namespace PLATEAU.Util.CityObjectTypeExtensions
                     d.Add(key, initialFlags);
                 }
             }
-             
+
             // 辞書に値を登録します。
             SetFlags(d, GmlType.Building, 0,
                 CityObjectType.COT_Building);
@@ -83,21 +83,21 @@ namespace PLATEAU.Util.CityObjectTypeExtensions
                 CityObjectType.COT_Window |
                 d[Key(GmlType.Building, 2)]
             );
-            
+
             SetFlags(d, GmlType.Transport, 3,
                 CityObjectType.COT_TransportationObject
             );
             SetFlags(d, GmlType.Transport, 2, d[Key(GmlType.Transport, 3)]);
-            
+
             // TODO　以下に SetFlags の続きを記載します。
             // 現状、正しく登録できているのは GmlType.Building だけです。
 
             return d;
         }
 
-        
 
-        
+
+
 
         private static void SetFlags(TDict d, GmlType gmlType, int lod, CityObjectType cityObjTypeFlags)
         {
@@ -109,8 +109,8 @@ namespace PLATEAU.Util.CityObjectTypeExtensions
         {
             return new KeyType(lod, gmlType);
         }
-        
-        
+
+
         /// <summary>
         /// 分類のキーであるインナー構造体です。
         /// </summary>

@@ -1,7 +1,5 @@
-﻿using System.Collections.Generic;
-using PLATEAU.CityGML;
+﻿using PLATEAU.CityMeta;
 using PLATEAU.Editor.Converters;
-using PLATEAU.CityMeta;
 using PLATEAU.Editor.Diagnostics;
 using UnityEditor;
 using Debug = UnityEngine.Debug;
@@ -35,16 +33,16 @@ namespace PLATEAU.Editor.CityImport
             // データを StreamingAssets にコピーします。
             timer.Start("ImportCopySrc", "all");
             CopyPlateauSrcFiles.ImportCopy(importConfig, gmlRelativePaths);
-            
+
             // メタデータを作成またはロードします。
             timer.Start("LoadOrCreateMetadata", "all");
             metadata = CityMetadataGenerator.LoadOrCreateMetadata(importConfig.importDestPath.MetadataAssetPath, true);
             // TODO この metadata にどのように設定が書き込まれていくかが分かりにくく、そのあたりの処理でGmlImporterが無駄に複雑化している気がするので整理したい
 
-            
+
             // gmlファイル群をインポートします。
             timer.Start("ImportGmls", "all");
-            
+
             // このキャッシュの実装意図については CityMeshPlacerModel.Place() のコメントを参照してください。
             using (var gmlToCityModelCache = new GmlToCityModelDict())
             {
@@ -88,6 +86,6 @@ namespace PLATEAU.Editor.CityImport
         }
 
 
-        
+
     }
 }

@@ -1,9 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using PLATEAU.CommonDataStructure;
+﻿using PLATEAU.CommonDataStructure;
 using PLATEAU.Util;
 using PLATEAU.Util.FileNames;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace PLATEAU.CityMeta
@@ -32,7 +32,7 @@ namespace PLATEAU.CityMeta
         [SerializeField] private List<bool> valuesExportLower = new List<bool>();
 
         public GmlType[] GmlTypes => this.typeLodDict.Keys.ToArray();
-        
+
         public ObjConvertTypesConfig()
         {
             LodToSliderVal();
@@ -93,7 +93,7 @@ namespace PLATEAU.CityMeta
                 sliderVal.SetMinMax(min, max);
             }
         }
-        
+
         /// <summary>
         /// 現在の <see cref="GmlTypeTarget"/> の設定において、
         /// 指定のgmlファイルから何という名前の .obj ファイルが生成されるかを配列で返します。
@@ -138,7 +138,7 @@ namespace PLATEAU.CityMeta
         {
             SetLodRangeByFunc(type => type.PossibleLodRange().ToWritable);
         }
-        
+
         /// <summary> 各タイプのLOD範囲を、仕様上の最小LODのみに設定します。 </summary>
         public void SetLodRangeToOnlyMin()
         {
@@ -158,7 +158,7 @@ namespace PLATEAU.CityMeta
                 return new MinMax<int>(max, max);
             });
         }
-        
+
         // TODO このメソッドを使って、 ExportLowerLod のGUIで一括選択ボタンを置いた方が便利そう
         public void SetExportLowerLodForAllTypes(bool exportLower)
         {
@@ -168,7 +168,7 @@ namespace PLATEAU.CityMeta
                 dict[type] = exportLower;
             }
         }
-        
+
         /// <summary> シリアライズするときに List形式に直します。 </summary>
         void ISerializationCallbackReceiver.OnBeforeSerialize()
         {
@@ -184,6 +184,6 @@ namespace PLATEAU.CityMeta
                 DictionarySerializer.OnAfterSerialize(this.keysExportLower, this.valuesExportLower);
             LodToSliderVal();
         }
-        
+
     }
 }

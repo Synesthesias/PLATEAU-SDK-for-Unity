@@ -2,20 +2,24 @@ using System;
 using System.Reflection;
 using UnityEngine;
 
-namespace PLATEAU.Tests.TestUtils {
-    
+namespace PLATEAU.Tests.TestUtils
+{
+
     /// <summary>
     /// テストのとき public でない対象をテストするために、
     /// リフレクションで 非public のものにアクセスするためのツールを提供します。
     /// </summary>
-    public static class ReflectionUtil {
-        
+    public static class ReflectionUtil
+    {
+
         /// <summary>
         /// targetType の private static フィールドの値を取得します。
         /// </summary>
-        public static TField GetPrivateStaticFieldVal<TField>(Type targetType, string fieldName) {
+        public static TField GetPrivateStaticFieldVal<TField>(Type targetType, string fieldName)
+        {
             var fieldInfo = GetPrivateStaticFieldInfo(targetType, fieldName);
-            if (fieldInfo == null) {
+            if (fieldInfo == null)
+            {
                 Debug.LogError($"Field '{fieldName}' is not found.");
                 return default;
             }
@@ -25,9 +29,11 @@ namespace PLATEAU.Tests.TestUtils {
         /// <summary>
         /// targetType の private static フィールドの値を newFiledValue にします。
         /// </summary>
-        public static void SetPrivateStaticFieldVal<TField>(TField newFieldValue, Type targetType, string fieldName) {
+        public static void SetPrivateStaticFieldVal<TField>(TField newFieldValue, Type targetType, string fieldName)
+        {
             var fieldInfo = GetPrivateStaticFieldInfo(targetType, fieldName);
-            if (fieldInfo == null) {
+            if (fieldInfo == null)
+            {
                 Debug.LogError($"Field '{fieldName}' is not found.");
                 return;
             }

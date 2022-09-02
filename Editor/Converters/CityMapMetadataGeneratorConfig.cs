@@ -17,7 +17,7 @@ namespace PLATEAU.Editor.Converters
 
         /// <summary> 変換時すでに CityMapInfo ファイルが存在する場合、trueならば idToGmlTable 消して作り直し、falseならば以前のデータに追加します。 </summary>
         public bool DoClearIdToGmlTable;
-        
+
 
         public CityMapMetadataGeneratorConfig()
         {

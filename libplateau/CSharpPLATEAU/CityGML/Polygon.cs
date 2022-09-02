@@ -134,5 +134,10 @@ namespace PLATEAU.CityGML
                 }
             }
         }
+
+        public override string ToString()
+        {
+            return $"Polygon : ID={ID}, VertexCount={VertexCount}";
+        }
     }
 }

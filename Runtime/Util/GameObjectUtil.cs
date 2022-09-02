@@ -41,7 +41,7 @@ namespace PLATEAU.Util
             }
         }
 
-        
+
         /// <summary>
         /// <paramref name="gameObj"/> にコンポーネント <typeparamref name="T"/> がなければ追加します。
         /// すでにあれば何もしません。
@@ -76,6 +76,25 @@ namespace PLATEAU.Util
         }
 
         /// <summary>
+        /// <paramref name="parent"/> の子に <paramref name="name"/> という名前の GameObject が存在しなければ作ります。
+        /// すでに存在すれば何もしません。
+        /// どちらにしても対象の GameObject を返します。
+        /// </summary>
+        public static GameObject AssureGameObjectInChild(string name, Transform parent)
+        {
+            var existingTrans = parent.Find(name);
+            if (existingTrans) return existingTrans.gameObject;
+            var newObj = new GameObject(name)
+            {
+                transform =
+                {
+                    parent = parent
+                }
+            };
+            return newObj;
+        }
+
+        /// <summary>
         /// <paramref name="obj"/> の子をすべて削除します。
         /// </summary>
         public static void DestroyChildOf(GameObject obj)
@@ -87,7 +106,7 @@ namespace PLATEAU.Util
             {
                 destroyList.Add(trans.GetChild(i).gameObject);
             }
-            foreach(var d in destroyList) Object.DestroyImmediate(d); 
+            foreach (var d in destroyList) Object.DestroyImmediate(d);
         }
 
         public static List<GameObject> ListGameObjsInScene(Scene scene)

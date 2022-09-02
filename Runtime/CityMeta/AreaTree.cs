@@ -1,7 +1,7 @@
-﻿using System;
+﻿using PLATEAU.CommonDataStructure;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using PLATEAU.CommonDataStructure;
 using UnityEngine;
 
 namespace PLATEAU.CityMeta
@@ -20,19 +20,19 @@ namespace PLATEAU.CityMeta
     internal class AreaTree : ISerializationCallbackReceiver
     {
         private ClassificationTree<int, Area> rootNode;
-        
+
         // シリアライズする時に List型に変換されて保存されます。
         // デシリアライズする時にここから復元します。
         [SerializeField] private List<Area> serializedAreas;
         private const int rootAreaId = -1;
-        
+
 
         /// <summary>
         /// <see cref="Area"/> のリストから木を生成します。
         /// </summary>
         public void Generate(IEnumerable<Area> areas)
         {
-            var root = new ClassificationTree<int ,Area>(new Area(rootAreaId), null);
+            var root = new ClassificationTree<int, Area>(new Area(rootAreaId), null);
             foreach (var area in areas)
             {
                 int secondKey = area.SecondSectionId();

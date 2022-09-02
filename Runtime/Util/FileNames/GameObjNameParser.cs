@@ -41,7 +41,7 @@ namespace PLATEAU.Util.FileNames
             // オブジェクト名から先頭の LOD(num)_ を取り除いた部分がIDです。 
             id = "";
             int underScoreIndex = objName.IndexOf("_", StringComparison.Ordinal);
-            if (underScoreIndex < 0 || underScoreIndex >= objName.Length-1) return false;
+            if (underScoreIndex < 0 || underScoreIndex >= objName.Length - 1) return false;
             id = objName.Substring(underScoreIndex + 1);
             return true;
         }

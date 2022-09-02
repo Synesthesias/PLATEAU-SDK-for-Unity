@@ -1,7 +1,7 @@
-﻿using System;
+﻿using PLATEAU.CityGML;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using PLATEAU.CityGML;
 
 namespace PLATEAU.Util.CityObjectTypeExtensions
 {
@@ -16,13 +16,13 @@ namespace PLATEAU.Util.CityObjectTypeExtensions
         {
             displayDict = GenerateDisplayDict();
         }
-        
+
         /// <summary>
         /// <see cref="CityObjectType"/> を分かりやすい日本語文字にして返します。
         /// </summary>
         public static string ToDisplay(this CityObjectType typeFlags)
         {
-            if(displayDict.TryGetValue(typeFlags, out var val))
+            if (displayDict.TryGetValue(typeFlags, out var val))
             {
                 return val;
             }

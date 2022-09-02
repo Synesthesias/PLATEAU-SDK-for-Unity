@@ -1,10 +1,10 @@
-﻿using System;
+﻿using PLATEAU.CityMeta;
+using PLATEAU.Util.FileNames;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using PLATEAU.CityMeta;
-using PLATEAU.Util.FileNames;
 
 namespace PLATEAU.Editor.CityImport
 {
@@ -34,7 +34,7 @@ namespace PLATEAU.Editor.CityImport
             if (!IsPathPlateauRoot(srcRootFolderPath)) return;
             GenerateFileDictionary(srcRootFolderPath);
         }
-        
+
 
         /// <summary>
         /// 地域メッシュコードからgmlファイルリストを検索する辞書を構築します。
@@ -117,7 +117,7 @@ namespace PLATEAU.Editor.CityImport
 
             return sb.ToString();
         }
-        
+
         /// <summary> udx フォルダに含まれる地域メッシュコードを配列で返します。 </summary>
         public int[] AreaIds
         {
@@ -140,19 +140,19 @@ namespace PLATEAU.Editor.CityImport
             if (!this.fileTable.ContainsKey(areaId))
             {
                 // AreaTree の木構造の都合で生成された 第2地域区画のIDのノードは、実際には存在しないことがあるので空を返します。
-                return new string[]{};
+                return new string[] { };
             }
 
             var pathList = this.fileTable[areaId];
             if (doAbsolutePath)
             {
                 return pathList
-                    .Select(relativePath => Path.Combine(this.srcRootFolderPath, "udx",  relativePath))
+                    .Select(relativePath => Path.Combine(this.srcRootFolderPath, "udx", relativePath))
                     .Select(Path.GetFullPath);
             }
             return pathList.ToArray();
         }
-        
+
         /// <summary>
         /// gmlファイルのうち、<paramref name="areaId"/> が指定したものであり、かつ
         /// <see cref="GmlType"/> が <paramref name="searcherConfig"/> で対象とするタイプリストに含まれるものを0個以上返します。
@@ -172,7 +172,7 @@ namespace PLATEAU.Editor.CityImport
 
             return found;
         }
-        
+
         public static List<string> ListTargetGmlFiles(GmlSearcherModel gmlSearcherModel, GmlSearcherConfig searcherConfig)
         {
             var gmlFiles = new List<string>();
@@ -235,7 +235,7 @@ namespace PLATEAU.Editor.CityImport
                 this.fileTable[areaId].Add(relativePath);
                 return;
             }
-            this.fileTable.Add(areaId, new List<string>{relativePath});
+            this.fileTable.Add(areaId, new List<string> { relativePath });
         }
 
         private static string GetRelativePath(string targetPath, string basePath)

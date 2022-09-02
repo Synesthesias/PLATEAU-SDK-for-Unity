@@ -1,6 +1,6 @@
-﻿using System;
+﻿using PLATEAU.CommonDataStructure;
+using System;
 using System.Collections.Generic;
-using PLATEAU.CommonDataStructure;
 using UnityEngine;
 
 namespace PLATEAU.CityMeta
@@ -10,10 +10,10 @@ namespace PLATEAU.CityMeta
     /// GmlSearcher の設定です。
     /// 対象gmlファイル選択において、地域IDと地物タイプの絞り込み設定を保持します。
     /// </summary>
-    
+
     // 注意事項:
     // このクラスは CityImporterConfig によって保持されるので、そちらの注意事項もご覧ください。
-    
+
     [Serializable]
     internal class GmlSearcherConfig
     {
@@ -58,7 +58,7 @@ namespace PLATEAU.CityMeta
             {
                 var area = tuple.node.Value;
                 if (area.IsTarget)
-                {  
+                {
                     targetIds.Add(area.Id);
                 }
             }
@@ -100,7 +100,7 @@ namespace PLATEAU.CityMeta
 
         public IEnumerable<(int depth, ClassificationTree<int, Area> node)> IterateAreaTree()
         {
-            
+
             var areasIter = this.areaTree.IterateDfs();
             foreach (var iter in areasIter)
             {

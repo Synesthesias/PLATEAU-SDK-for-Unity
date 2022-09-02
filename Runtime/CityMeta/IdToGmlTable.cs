@@ -1,7 +1,7 @@
-using System;
-using System.Collections.Generic;
 using PLATEAU.CityGML;
 using PLATEAU.Util;
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace PLATEAU.CityMeta
@@ -11,7 +11,7 @@ namespace PLATEAU.CityMeta
     /// <see cref="CityMetadata"/> によって保持されます。
     /// </summary>
     [Serializable]
-    internal class IdToGmlTable :  ISerializationCallbackReceiver//, IDictionary<string, string> // TODO IDictionary に対応したほうが便利だけどまだやってない
+    internal class IdToGmlTable : ISerializationCallbackReceiver//, IDictionary<string, string> // TODO IDictionary に対応したほうが便利だけどまだやってない
     {
         private Dictionary<string, string> dictionary = new Dictionary<string, string>();
         // Unityの仕様上、シリアライズするときは List 形式で行い、 デシリアライズするときは Dictionary 形式に直します。
@@ -36,7 +36,7 @@ namespace PLATEAU.CityMeta
 
         public void Add(string id, string gmlFileName)
         {
-            Add(new KeyValuePair<string, string>(id, gmlFileName));    
+            Add(new KeyValuePair<string, string>(id, gmlFileName));
         }
 
         public void Add(KeyValuePair<string, string> item)

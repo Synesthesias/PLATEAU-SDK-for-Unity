@@ -1,16 +1,16 @@
-﻿using System;
+﻿using NUnit.Framework;
+using PLATEAU.CityGML;
+using PLATEAU.CityMeta;
+using PLATEAU.CommonDataStructure;
+using PLATEAU.Editor.Converters;
+using PLATEAU.Interop;
+using PLATEAU.IO;
+using PLATEAU.Tests.TestUtils;
+using PLATEAU.Util;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using PLATEAU.CityGML;
-using NUnit.Framework;
-using PLATEAU.Editor.Converters;
-using PLATEAU.CityMeta;
-using PLATEAU.CommonDataStructure;
-using PLATEAU.Interop;
-using PLATEAU.IO;
-using PLATEAU.Util;
-using PLATEAU.Tests.TestUtils;
 using UnityEditor;
 using UnityEngine.TestTools;
 
@@ -33,7 +33,7 @@ namespace PLATEAU.Tests.EditModeTests
         public void SetUp()
         {
             DirectoryUtil.SetUpTempAssetFolder();
-            
+
             // テスト用に一時的に MultiGmlConverter のデフォルト出力先を変更します。
             this.prevDefaultDstPath = PlateauUnityPath.StreamingGmlFolder;
             PlateauUnityPath.TestOnly_SetStreamingGmlFolder(testDefaultCopyDestPath);
@@ -59,8 +59,8 @@ namespace PLATEAU.Tests.EditModeTests
                         { GmlType.DigitalElevationModel, new MinMax<int>(1, 1) }
                     });
                 });
-            
-            
+
+
             // 変換後、出力されたファイルの数を数えます。
             int objCount = 0;
             int assetCount = 0;
@@ -89,7 +89,7 @@ namespace PLATEAU.Tests.EditModeTests
             TestImporter.Import(tokyoPaths, out var metadata, _ => { });
 
             LogAssert.ignoreFailingMessages = false;
-            
+
             // 値1 : CityMapInfo に記録された Reference Point を取得します。
             var recordedReferencePoint = metadata.cityImportConfig.referencePoint;
 
@@ -101,7 +101,7 @@ namespace PLATEAU.Tests.EditModeTests
                 DllLogCallback.UnityLogCallbacks);
             var objConverter = new GmlToObjConverter();
             var firstGmlReferencePoint = objConverter.SetValidReferencePoint(cityModel);
-            
+
             // 値1と値2は同一であることを期待します。
             Assert.AreEqual(firstGmlReferencePoint, recordedReferencePoint);
         }
@@ -124,7 +124,7 @@ namespace PLATEAU.Tests.EditModeTests
             var loadedMetaData = AssetDatabase.LoadAssetAtPath<CityMetadata>(metadataPath);
             Assert.NotNull(loadedMetaData, "メタデータをロードできる");
             var granularityOnMapInfo = loadedMetaData.cityImportConfig.meshGranularity;
-            
+
             // 値1と値2が同一であることを期待します。
             Assert.AreEqual(granularityOnConvert, granularityOnMapInfo, "変換時の粒度設定がメタデータに記録されている");
         }
@@ -140,8 +140,8 @@ namespace PLATEAU.Tests.EditModeTests
                     config.SetConvertLods(2, 2);
                     config.meshGranularity = MeshGranularity.PerAtomicFeatureObject;
                 });
-            
-            
+
+
             foreach (var key in metadata.idToGmlTable.Keys)
             {
                 Console.Write(key);
@@ -155,7 +155,7 @@ namespace PLATEAU.Tests.EditModeTests
                     config.SetConvertLods(2, 2);
                     config.meshGranularity = MeshGranularity.PerPrimaryFeatureObject;
                 });
-            
+
             // 1回目の値は2回目のインポートでクリアされていることを確認
             bool doContainBuilding = metadata.idToGmlTable.Keys.Any(id => id.Contains("_BLD_"));
             Assert.IsFalse(DoContainAtomic(metadata), "2回目の変換は最小地物を含まないことを確認");
@@ -173,7 +173,7 @@ namespace PLATEAU.Tests.EditModeTests
         public void When_Lod_Is_2_to_2_Then_Only_Lod2_Objs_Are_Generated()
         {
             TestImporter.Import(ImportPathForTests.Simple, out _,
-                conf => conf.SetConvertLods(2, 2) 
+                conf => conf.SetConvertLods(2, 2)
             );
 
             string gmlId = "53392642_bldg_6697_op2";
@@ -182,15 +182,15 @@ namespace PLATEAU.Tests.EditModeTests
             Assert.IsTrue(lod2Exists);
             Assert.IsFalse(lod1Exists);
         }
-        
+
         [Test]
         public void When_Lod_Is_0_to_1_Then_Only_2_Objs_Are_Generated()
         {
 
             TestImporter.Import(ImportPathForTests.Simple, out _,
-                conf => conf.SetConvertLods(0, 1) 
+                conf => conf.SetConvertLods(0, 1)
             );
-            
+
             string gmlId = "53392642_bldg_6697_op2";
             bool lod2Exists = File.Exists(Path.Combine(testOutputDir, $"LOD2_{gmlId}.obj"));
             bool lod1Exists = File.Exists(Path.Combine(testOutputDir, $"LOD1_{gmlId}.obj"));
@@ -204,11 +204,11 @@ namespace PLATEAU.Tests.EditModeTests
         public void SrcPath_Of_MetaData_Is_Set_To_Post_Copy_Path()
         {
             TestImporter.Import(ImportPathForTests.Simple, out var metadata, _ => { });
-            
+
             string expectedSrcPath = Path.Combine(testDefaultCopyDestPath, "TestDataSimpleGml").Replace('\\', '/');
             string fullRootPath = metadata.cityImportConfig.sourcePath.RootDirFullPath();
             string actualRootPath = fullRootPath.Replace('\\', '/');
-            Assert.AreEqual( expectedSrcPath, actualRootPath, "メモリ上のメタデータの sourcePath がコピー後を指している" );
+            Assert.AreEqual(expectedSrcPath, actualRootPath, "メモリ上のメタデータの sourcePath がコピー後を指している");
 
             var metadataPath = metadata.cityImportConfig.importDestPath.MetadataAssetPath;
             var loadedMetaData = AssetDatabase.LoadAssetAtPath<CityMetadata>(metadataPath);

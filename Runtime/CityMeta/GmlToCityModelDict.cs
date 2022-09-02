@@ -1,6 +1,6 @@
-﻿using System;
+﻿using PLATEAU.CityGML;
+using System;
 using System.Collections.Generic;
-using PLATEAU.CityGML;
 
 namespace PLATEAU.CityMeta
 {

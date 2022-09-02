@@ -1,10 +1,10 @@
-﻿using System.IO;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using PLATEAU.CityMeta;
 using PLATEAU.Editor.CityImport;
 using PLATEAU.IO;
 using PLATEAU.Tests.TestUtils;
 using PLATEAU.Util;
+using System.IO;
 using static PLATEAU.CityMeta.CityMeshPlacerConfig;
 using static PLATEAU.Tests.EditModeTests.Placer.TestPlacerUtil;
 
@@ -24,26 +24,26 @@ namespace PLATEAU.Tests.EditModeTests.Placer
         private static readonly string testDefaultCopyDestPath = Path.Combine(DirectoryUtil.TempAssetFolderPath, "PLATEAU");
         private CityMetadata metadata;
         protected CityMetadata Metadata => this.metadata;
-        
+
         /// <summary>
         /// このプロパティをサブクラスで実装することで、
         /// <see cref="MeshGranularity"/> を変えながらこのテストを使い回すことができます。
         /// </summary>
         protected abstract MeshGranularity MeshGranularity { get; }
-        
-        
+
+
         // インポートには時間がかかるので、 OneTimeSetUp 内でインポートしたものを使い回します。
         // 別のインポート設定でテストしたい場合は、別のテストソースファイルを作ってください。
-        
+
         [OneTimeSetUp]
         public void OneTimeSetUp()
         {
             DirectoryUtil.SetUpTempAssetFolder();
-            
+
             // テスト用に一時的に デフォルト出力先を変更します。
             this.prevDefaultDstPath = PlateauUnityPath.StreamingGmlFolder;
             PlateauUnityPath.TestOnly_SetStreamingGmlFolder(testDefaultCopyDestPath);
-            
+
             // インポートします。
             var initialPlaceConf = new CityMeshPlacerConfig().SetPlaceMethodForAllTypes(PlaceMethod.DoNotPlace);
             this.metadata = ImportSimple(initialPlaceConf, MeshGranularity);
@@ -61,12 +61,12 @@ namespace PLATEAU.Tests.EditModeTests.Placer
         {
             SceneUtil.DestroyAllGameObjectsInEditModeTestScene();
         }
-        
+
         [Test]
         public void When_PlaceMethod_Is_DoNotPlace_Then_No_Model_Is_Placed()
         {
             Place(PlaceMethod.DoNotPlace, 1, this.metadata);
-            AssertLodNotPlaced(0,1,2);
+            AssertLodNotPlaced(0, 1, 2);
         }
 
 
@@ -74,7 +74,7 @@ namespace PLATEAU.Tests.EditModeTests.Placer
         public void When_PlaceMethod_Is_PlaceAllLod_Then_All_Lods_Are_Placed()
         {
             Place(PlaceMethod.PlaceAllLod, -1, this.metadata);
-            AssertLodPlaced(0,1,2);
+            AssertLodPlaced(0, 1, 2);
         }
 
         [Test]
@@ -82,7 +82,7 @@ namespace PLATEAU.Tests.EditModeTests.Placer
         {
             Place(PlaceMethod.PlaceMaxLod, -1, this.metadata);
             AssertLodPlaced(2);
-            AssertLodNotPlaced(0,1);
+            AssertLodNotPlaced(0, 1);
         }
 
         [Test]
@@ -90,7 +90,7 @@ namespace PLATEAU.Tests.EditModeTests.Placer
         {
             Place(PlaceMethod.PlaceSelectedLodOrMax, 999, this.metadata);
             AssertLodPlaced(2); // 存在するなかで最大
-            AssertLodNotPlaced(0,1);
+            AssertLodNotPlaced(0, 1);
         }
 
         [Test]
@@ -98,14 +98,14 @@ namespace PLATEAU.Tests.EditModeTests.Placer
         {
             Place(PlaceMethod.PlaceSelectedLodOrMax, 1, this.metadata);
             AssertLodPlaced(1);
-            AssertLodNotPlaced(0,2);
+            AssertLodNotPlaced(0, 2);
         }
 
         [Test]
         public void When_PlaceMethod_Is_PlaceSelectedLodOrDoNotPlace_And_Lod_Not_Found_Then_Do_Not_Place()
         {
             Place(PlaceMethod.PlaceSelectedLodOrDoNotPlace, 999, this.metadata);
-            AssertLodNotPlaced(0,1,2);
+            AssertLodNotPlaced(0, 1, 2);
         }
 
         [Test]
@@ -113,7 +113,7 @@ namespace PLATEAU.Tests.EditModeTests.Placer
         {
             Place(PlaceMethod.PlaceSelectedLodOrDoNotPlace, 1, this.metadata);
             AssertLodPlaced(1);
-            AssertLodNotPlaced(0,2);
+            AssertLodNotPlaced(0, 2);
         }
 
         [Test]
@@ -121,7 +121,7 @@ namespace PLATEAU.Tests.EditModeTests.Placer
         {
             Place(PlaceMethod.PlaceAllLod, 1, this.metadata);
             Place(PlaceMethod.DoNotPlace, 1, this.metadata);
-            AssertLodNotPlaced(0,1,2);
+            AssertLodNotPlaced(0, 1, 2);
         }
     }
 }

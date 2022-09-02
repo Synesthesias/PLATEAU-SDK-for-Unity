@@ -22,7 +22,7 @@
         public static int NumDigits(int num)
         {
             if (num < 0) num *= -1;
-            
+
             int digits = 0;
             while (num > 0)
             {

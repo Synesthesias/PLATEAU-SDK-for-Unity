@@ -8,7 +8,7 @@ namespace PLATEAU.CityMeta
     /// <summary>
     /// <see cref="GmlToObjConverter"/> の設定を保持するクラスです。
     /// </summary>
-    
+
     internal class GmlToObjConverterConfig
     {
         /// <summary> C++側の変換器に渡すオプションです。 </summary>
@@ -34,7 +34,7 @@ namespace PLATEAU.CityMeta
             get => this.DllConvertOption.ExportAppearance;
             set => this.DllConvertOption.ExportAppearance = value;
         }
-        
+
         public MeshGranularity MeshGranularity
         {
             get => this.DllConvertOption.MeshGranularity;
@@ -46,7 +46,7 @@ namespace PLATEAU.CityMeta
             get => (int)this.DllConvertOption.MinLOD;
             set => this.DllConvertOption.MinLOD = (uint)value;
         }
-        
+
         public int MaxLod
         {
             get => (int)this.DllConvertOption.MaxLOD;

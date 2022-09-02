@@ -16,7 +16,7 @@ namespace PLATEAU.Tests.EditModeTests.Placer
     {
         protected override MeshGranularity MeshGranularity => MeshGranularity.PerAtomicFeatureObject;
         // テスト内容は親クラスのものを使い回します。
-        
+
         // Atomic 専用のテストです。
         [Test]
         public void CityObjectTypeMask_Works()
@@ -39,7 +39,7 @@ namespace PLATEAU.Tests.EditModeTests.Placer
     {
         protected override MeshGranularity MeshGranularity => MeshGranularity.PerPrimaryFeatureObject;
         // テスト内容は親クラスのものを使い回します。
-        
+
         // Primary 専用のテストです。
         [Test]
         public void When_CityObjectType_Excludes_Building_Then_Not_Placed()
@@ -55,7 +55,7 @@ namespace PLATEAU.Tests.EditModeTests.Placer
             SceneUtil.AssertGameObjExists("LOD2_BLD_0772bfd9-fa36-4747-ad0f-1e57f883f745");
         }
     }
-    
+
     /// <summary>
     /// <see cref="CityMeshPlacerModel"/> のテストで、
     /// インポート設定が <see cref="IO.MeshGranularity.PerCityModelArea"/> であるケースをテストします。

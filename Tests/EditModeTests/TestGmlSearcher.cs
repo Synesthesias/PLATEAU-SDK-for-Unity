@@ -1,9 +1,8 @@
-﻿using System.Collections.Generic;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using PLATEAU.CityMeta;
 using PLATEAU.Editor.CityImport;
 using PLATEAU.Tests.TestUtils;
-using UnityEditor;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace PLATEAU.Tests.EditModeTests

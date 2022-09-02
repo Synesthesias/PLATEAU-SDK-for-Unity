@@ -21,7 +21,7 @@ namespace PLATEAU.Editor.CityImport
             window.Show();
             window.Init();
         }
-        
+
 
         private void Init()
         {

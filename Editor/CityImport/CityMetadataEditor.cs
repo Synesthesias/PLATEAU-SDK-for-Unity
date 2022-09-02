@@ -1,6 +1,6 @@
-﻿using System.Text;
+﻿using PLATEAU.CityMeta;
 using PLATEAU.Editor.EditorWindowCommon;
-using PLATEAU.CityMeta;
+using System.Text;
 using UnityEditor;
 using UnityEngine;
 
@@ -39,11 +39,11 @@ namespace PLATEAU.Editor.CityImport
             this.importerPresenter ??= CityImporterPresenter.InitWithConfig(metadata.cityImportConfig);
 
             EditorGUILayout.Space(10);
-            
+
             HeaderDrawer.Draw("再変換画面");
-            
+
             HeaderDrawer.IncrementDepth();
-            
+
             // 本当はこの部分を using (PlateauEditorStyle.VerticalScopeLevel1()) で囲って
             // インデントを整えたいところですが、
             // Unityのバグで VerticalScope 内でフォルダ選択ダイアログを開くなどの時間のかかる処理をすると
@@ -52,12 +52,12 @@ namespace PLATEAU.Editor.CityImport
             if (this.foldOutReconvert)
             {
                 this.importerPresenter.Draw();
-            
+
             }
             HeaderDrawer.DecrementDepth();
 
             EditorGUILayout.Space(10);
-            
+
             HeaderDrawer.Draw("シーン配置");
             using (PlateauEditorStyle.VerticalScopeLevel1())
             {
@@ -69,7 +69,7 @@ namespace PLATEAU.Editor.CityImport
                     HeaderDrawer.DecrementDepth();
                 }
             }
-            
+
             HeaderDrawer.Draw("その他の情報");
             using (PlateauEditorStyle.VerticalScopeLevel1())
             {
@@ -80,10 +80,10 @@ namespace PLATEAU.Editor.CityImport
                     var refPoint = cityConfig.referencePoint;
                     EditorGUILayout.LabelField($"基準点: ( {refPoint.x} , {refPoint.y} , {refPoint.z} )");
                     EditorGUILayout.LabelField($"インポート元ルートフォルダ名: {cityConfig.rootDirName}");
-                
+
                     EditorGUILayout.Space(10);
-                    
-                    
+
+
                     EditorGUILayout.LabelField("gmlファイルパス");
                     var gmlSb = new StringBuilder();
                     foreach (var gmlPath in metadata.gmlRelativePaths)
@@ -95,7 +95,7 @@ namespace PLATEAU.Editor.CityImport
                         PlateauEditorStyle.ScrollableMultiLineLabel(gmlSb.ToString(), 300, this.scrollPosOfGmlPaths);
 
                     EditorGUILayout.Space(10);
-                    
+
                     // objファイルの情報を表示します。
                     EditorGUILayout.LabelField("3Dモデルのファイルパス");
                     var objSb = new StringBuilder();
@@ -105,8 +105,8 @@ namespace PLATEAU.Editor.CityImport
                     }
                     this.scrollPosOfObjInfo =
                         PlateauEditorStyle.ScrollableMultiLineLabel(objSb.ToString(), 300, this.scrollPosOfObjInfo);
-                    
-                
+
+
                     // IDとGMLの紐付け情報を表示します。
                     this.foldOutIdGmlTable = EditorGUILayout.Foldout(this.foldOutIdGmlTable, "IDとGMLファイルの紐付け");
                     if (this.foldOutIdGmlTable)

@@ -1,7 +1,7 @@
-﻿using System;
+﻿using PLATEAU.CommonDataStructure;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using PLATEAU.CommonDataStructure;
 using static PLATEAU.CityMeta.GmlType;
 
 namespace PLATEAU.CityMeta
@@ -74,7 +74,7 @@ namespace PLATEAU.CityMeta
             // しかし実際のデータを見ると他のLODも含まれているため、Etc は全LODを想定します。
             { Etc, new ReadOnlyMinMax<int>(0,3) }
         };
-        
+
         /// <summary>
         /// <see cref="GmlType"/> を接頭辞に変換する拡張メソッドです。
         /// 接頭辞はフォルダ名などに使われます。
@@ -150,7 +150,7 @@ namespace PLATEAU.CityMeta
                 .OfType<GmlType>()
                 .ToDictionary(t => t, _ => new T());
         }
-        
+
         /// <summary>
         /// <see cref="ComposeTypeDict{T}()"/> の初期値を指定する版です。
         /// </summary>

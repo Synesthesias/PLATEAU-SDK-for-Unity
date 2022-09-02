@@ -1,11 +1,10 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using PLATEAU.CityGML;
+﻿using PLATEAU.CityGML;
 using PLATEAU.CityMeta;
 using PLATEAU.Interop;
 using PLATEAU.Util;
 using PLATEAU.Util.FileNames;
+using System.IO;
+using System.Linq;
 using UnityEngine;
 
 namespace PLATEAU.Behaviour
@@ -29,8 +28,8 @@ namespace PLATEAU.Behaviour
                 Debug.LogError("argument cityMetadata is null.");
                 return null;
             }
-            
-            string gmlFileName = FindGmlNameByMetadata(gameObj ,cityMetadata);
+
+            string gmlFileName = FindGmlNameByMetadata(gameObj, cityMetadata);
             if (gmlFileName == null) return null;
 
 
@@ -41,16 +40,16 @@ namespace PLATEAU.Behaviour
                 Debug.LogError($"{nameof(gameObj.name)} is invalid formatted.");
                 return null;
             }
-            
+
             // 名前が gmlFileName である gmlファイルを検索します。
             // gmlファイルは StreamingAssets フォルダ内にあることを前提とします（そうでないと実行時に読めないので）。
-            
+
             // キャッシュにあればそれを返します。
             if (this.fileToCityModelCache.TryGetValue(gmlFileName, out CityModel cityModel))
             {
                 return GetCityObjectById(cityModel, cityObjId);
             }
-            
+
             string udxFullPath = cityMetadata.cityImportConfig.sourcePath.UdxFullPath();
             // udxフォルダは StreamingAssets フォルダにあることを前提とします。
             if (!PathUtil.IsSubDirectory(udxFullPath, PlateauUnityPath.StreamingFolder))
@@ -68,7 +67,7 @@ namespace PLATEAU.Behaviour
             }
 
             this.fileToCityModelCache.Add(gmlFileName, loadedModel);
-            
+
             return GetCityObjectById(loadedModel, cityObjId);
         }
 
@@ -91,7 +90,7 @@ namespace PLATEAU.Behaviour
         private static string FindGmlNameByMetadata(GameObject gameObj, CityMetadata cityMetadata)
         {
             // テーブルから cityObjectId に対応する gmlFileName を検索します。
-            if( !cityMetadata.TryGetValueFromGmlTable(gameObj.name, out var gmlFileName))
+            if (!cityMetadata.TryGetValueFromGmlTable(gameObj.name, out var gmlFileName))
             {
                 return null;
             }

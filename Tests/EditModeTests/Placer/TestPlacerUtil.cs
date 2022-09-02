@@ -1,10 +1,10 @@
-﻿using System;
-using System.Linq;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using PLATEAU.CityMeta;
 using PLATEAU.Editor.CityImport;
 using PLATEAU.IO;
 using PLATEAU.Tests.TestUtils;
+using System;
+using System.Linq;
 
 namespace PLATEAU.Tests.EditModeTests.Placer
 {
@@ -36,7 +36,7 @@ namespace PLATEAU.Tests.EditModeTests.Placer
         /// 全GMLタイプについて ターゲットLOD = <paramref name="selectedLod"/> を適用したあと、
         /// 追加の設定として <paramref name="additionalConfigFunc"/> を実行したものとなります。
         /// </summary>
-        public static void Place(CityMeshPlacerConfig.PlaceMethod placeMethod, int selectedLod , CityMetadata metadata, Action<CityMeshPlacerConfig> additionalConfigFunc)
+        public static void Place(CityMeshPlacerConfig.PlaceMethod placeMethod, int selectedLod, CityMetadata metadata, Action<CityMeshPlacerConfig> additionalConfigFunc)
         {
             var placeConf = new CityMeshPlacerConfig()
                 .SetPlaceMethodForAllTypes(placeMethod)
@@ -45,14 +45,14 @@ namespace PLATEAU.Tests.EditModeTests.Placer
             metadata.cityImportConfig.cityMeshPlacerConfig = placeConf;
             CityMeshPlacerModel.Place(placeConf, metadata, null);
         }
-        
+
         /// <summary>
         /// <see cref="Place(PLATEAU.CityMeta.CityMeshPlacerConfig.PlaceMethod,int,PLATEAU.CityMeta.CityMetadata,System.Action{PLATEAU.CityMeta.CityMeshPlacerConfig})"/>
         /// のメソッドの引数 additionalConfigFunc を省略した版です。
         /// </summary>
         public static void Place(CityMeshPlacerConfig.PlaceMethod placeMethod, int selectedLod, CityMetadata metadata)
         {
-            Place(placeMethod, selectedLod, metadata, (conf) => {});
+            Place(placeMethod, selectedLod, metadata, (conf) => { });
         }
 
         public static void PlaceWithBuildingTypeMask(int lod, CityMetadata metadata, ulong cityObjectTypeFlags)
@@ -65,7 +65,7 @@ namespace PLATEAU.Tests.EditModeTests.Placer
                 }
             );
         }
-        
+
         /// <summary>
         /// 引数の各数値について、 "LOD{数値}_" で始まる名前のゲームオブジェクトが存在することを確認します。
         /// </summary>

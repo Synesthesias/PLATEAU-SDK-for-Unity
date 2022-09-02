@@ -1,23 +1,26 @@
-using System.IO;
 using NUnit.Framework;
-using PLATEAU.Util;
 using PLATEAU.Tests.TestUtils;
+using PLATEAU.Util;
+using System.IO;
 using UnityEngine.TestTools;
 
-namespace PLATEAU.Tests.EditModeTests {
-    
+namespace PLATEAU.Tests.EditModeTests
+{
+
     [TestFixture]
-    public class TestPathUtil {
-        
-        
+    public class TestPathUtil
+    {
+
+
         [TestCaseSource(nameof(testIsValidInputFilePath))]
-        public bool Test_IsValidInputFilePath(string filePath, string extension) {
+        public bool Test_IsValidInputFilePath(string filePath, string extension)
+        {
             LogAssert.ignoreFailingMessages = true;
             bool result = PathUtil.IsValidInputFilePath(filePath, extension, false);
             return result;
         }
 
-        
+
         private static TestCaseData[] testIsValidInputFilePath =
         {
             #if UNITY_STANDALONE_WIN
@@ -25,7 +28,7 @@ namespace PLATEAU.Tests.EditModeTests {
             new TestCaseData("C:\\Windows\\System32\\input.dll", "dll")
                 .Returns(true)
                 .SetName("[Windowsのみ] 実在するファイルパスは true になります。"),
-            
+
             new TestCaseData("C:\\Windows\\System32\\input.dll", "間違い拡張子")
                 .Returns(false)
                 .SetName("[Windowsのみ] 実在するファイルであっても拡張子が違うと false になります。"),
@@ -47,11 +50,12 @@ namespace PLATEAU.Tests.EditModeTests {
                 .SetName("実在しないファイルパスは false になります。")
 
         };
-        
-        
-        
+
+
+
         [TestCaseSource(nameof(testIsValidOutputPath))]
-        public bool Test_IsValidOutputFilePath(string filePath, string extension) {
+        public bool Test_IsValidOutputFilePath(string filePath, string extension)
+        {
             LogAssert.ignoreFailingMessages = true;
             bool result = PathUtil.IsValidOutputFilePath(filePath, extension);
             return result;
@@ -87,20 +91,21 @@ namespace PLATEAU.Tests.EditModeTests {
                 .SetName("実在しないフォルダでは false になります。")
 
         };
-        
-        
-        
+
+
+
         [TestCaseSource(nameof(testFullPathToAssetsPathNormal))]
-        public string Test_FullPathToAssetsPath_Normal(string assetsDir, string fullPath) {
+        public string Test_FullPathToAssetsPath_Normal(string assetsDir, string fullPath)
+        {
             // 後でAssetsフォルダのパス設定を戻すために覚えておきます。
             string prevDataPath = ReflectionUtil.GetPrivateStaticFieldVal<string>(typeof(PathUtil), "unityProjectDataPath");
-            
+
             // Assetsフォルダが引数のパスにあると仮定します。
             ReflectionUtil.SetPrivateStaticFieldVal(assetsDir, typeof(PathUtil), "unityProjectDataPath");
-            
+
             // テスト対象コードを実行します。 
             string result = PathUtil.FullPathToAssetsPath(fullPath);
-            
+
             // Assetsフォルダの設定を戻します。
             ReflectionUtil.SetPrivateStaticFieldVal(prevDataPath, typeof(PathUtil), "unityProjectDataPath");
             return result;
@@ -130,8 +135,8 @@ namespace PLATEAU.Tests.EditModeTests {
                 .Returns("Assets/♪ 🎶.wav")
                 .SetName("絵文字やスペースが含まれるパスに対応します。")
         };
-        
-        [Test] 
+
+        [Test]
         public void FullPathToAssetsPath_Returns_Error_When_Outside_Assets_Folder()
         {
             Assert.That(() =>
@@ -144,6 +149,6 @@ namespace PLATEAU.Tests.EditModeTests {
         }
 
 
-        
+
     }
 }

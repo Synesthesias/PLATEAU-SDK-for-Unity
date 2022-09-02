@@ -41,7 +41,7 @@ namespace PLATEAU.Editor.EditorWindowCommon
         /// </summary>
         public static void IncrementDepth(bool doGoPrev = true)
         {
-            if(doGoPrev) Prev();
+            if (doGoPrev) Prev();
             currentHeaderNum.Add(1);
         }
 
@@ -51,7 +51,7 @@ namespace PLATEAU.Editor.EditorWindowCommon
         /// </summary>
         public static void DecrementDepth(bool doGoNext = true)
         {
-            if(Depth >= 2) currentHeaderNum.RemoveAt(Depth-1);
+            if (Depth >= 2) currentHeaderNum.RemoveAt(Depth - 1);
             if (doGoNext) Next();
         }
 

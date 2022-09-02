@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using PLATEAU.CityGML;
+﻿using PLATEAU.CityGML;
 using PLATEAU.CityMeta;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace PLATEAU.Behaviour

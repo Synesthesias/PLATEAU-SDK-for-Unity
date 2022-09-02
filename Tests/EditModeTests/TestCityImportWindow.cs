@@ -1,6 +1,6 @@
-﻿using System.Collections;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using PLATEAU.Editor.CityImport;
+using System.Collections;
 using UnityEditor;
 using UnityEngine.TestTools;
 
@@ -10,7 +10,7 @@ namespace PLATEAU.Tests.EditModeTests
     public class TestCityModelImportWindow
     {
         private CityImportWindow window;
-        
+
 
         [UnitySetUp]
         public IEnumerator SetUp()
@@ -26,7 +26,7 @@ namespace PLATEAU.Tests.EditModeTests
         {
             this.window.Close();
         }
-        
+
         [Test]
         public void No_Error_With_Initial_Window()
         {

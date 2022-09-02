@@ -3,3 +3,4 @@ Documentation~/api
 .docs/_site
 .docs/obj
 Documentation~/obj
+*.pdb

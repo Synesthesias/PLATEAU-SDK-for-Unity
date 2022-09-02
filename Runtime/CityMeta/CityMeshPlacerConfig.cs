@@ -1,8 +1,8 @@
-﻿using System;
+﻿using PLATEAU.CommonDataStructure;
+using PLATEAU.Util;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using PLATEAU.CommonDataStructure;
-using PLATEAU.Util;
 using UnityEngine;
 using static PLATEAU.CityMeta.CityMeshPlacerConfig;
 
@@ -19,7 +19,7 @@ namespace PLATEAU.CityMeta
     internal class CityMeshPlacerConfig : ISerializationCallbackReceiver
     {
         private Dictionary<GmlType, ScenePlacementConfigPerType> perTypeConfigs;
-        
+
         // シリアライズ時に Dictionary を List形式にします。
         [SerializeField] private List<GmlType> keys = new List<GmlType>();
         [SerializeField] private List<ScenePlacementConfigPerType> values = new List<ScenePlacementConfigPerType>();
@@ -48,8 +48,7 @@ namespace PLATEAU.CityMeta
             // 各タイプごとの設定を初期化します。
             this.perTypeConfigs = GmlTypeConvert.ComposeTypeDict<ScenePlacementConfigPerType>();
         }
-
-        // TODO このメソッドを使って一括設定のGUIを作ると便利かも？
+        
         public CityMeshPlacerConfig SetPlaceMethodForAllTypes(PlaceMethod placeMethod)
         {
             var dict = this.perTypeConfigs;
@@ -60,8 +59,7 @@ namespace PLATEAU.CityMeta
 
             return this;
         }
-
-        // TODO このメソッドを使って一括設定のGUIを作ると便利かも？
+        
         public CityMeshPlacerConfig SetSelectedLodForAllTypes(int lod)
         {
             var dict = this.perTypeConfigs;
@@ -94,7 +92,7 @@ namespace PLATEAU.CityMeta
         {
             this.perTypeConfigs = DictionarySerializer.OnAfterSerialize(this.keys, this.values);
         }
-        
+
     }
 
     /// <summary>
@@ -119,7 +117,7 @@ namespace PLATEAU.CityMeta
             return method == PlaceMethod.PlaceSelectedLodOrMax ||
                    method == PlaceMethod.PlaceSelectedLodOrDoNotPlace;
         }
-        
+
         /// <summary>
         /// 3Dモデルファイルのシーンへの配置について、配置設定と3Dモデルに存在するLODの範囲から、配置時に探索対象とすべきLODの範囲を求めます。
         /// </summary>
@@ -129,7 +127,7 @@ namespace PLATEAU.CityMeta
             // LODを数値指定する設定なら、その指定LODを最大LODとします。
             if (placeMethod.DoUseSelectedLod())
             {
-                
+
                 int min = placeRange.Min;
                 int max = Math.Min(selectedLod, placeRange.Max);
                 placeRange.SetMinMax(min, max);

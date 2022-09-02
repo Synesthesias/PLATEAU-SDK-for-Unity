@@ -29,7 +29,7 @@ namespace PLATEAU.Editor.CityImport
             this.view = new CityImporterView(config);
             this.config = config;
         }
-        
+
         /// <summary> インポート設定GUIを描画します。 </summary>
         public void Draw()
         {

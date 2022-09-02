@@ -19,7 +19,7 @@ namespace PLATEAU.Tests.EditModeTests
             var selected = CityObjectTypeFlagsEditor.FlagFieldInner(candidates, 0,
                 (_, __) => 3
             );
-            
+
             // 期待すること :
             // ・Wall, Roof は選択されているので ビットは 1 です。
             // ・Ground は選択されていないので ビットは 0 です。
@@ -40,11 +40,11 @@ namespace PLATEAU.Tests.EditModeTests
 
             var selected = CityObjectTypeFlagsEditor.FlagFieldInner(candidates, 0,
                 // GUI で Everything を選択すると全フラグ1になります。
-                (_,__) => ~0
+                (_, __) => ~0
             );
 
             var expect = CityObjectType.COT_All;
-            
+
             Assert.AreEqual(expect, selected);
         }
     }

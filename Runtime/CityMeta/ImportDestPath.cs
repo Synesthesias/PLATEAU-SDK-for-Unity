@@ -1,6 +1,6 @@
-﻿using System;
+﻿using PLATEAU.Util;
+using System;
 using System.IO;
-using PLATEAU.Util;
 using UnityEngine;
 
 namespace PLATEAU.CityMeta
@@ -9,7 +9,7 @@ namespace PLATEAU.CityMeta
     internal class ImportDestPath
     {
         public const string MetaDataFileName = "CityMapMetaData.asset";
-        
+
         [SerializeField] private string dirAssetsPath;
 
         public string DirAssetsPath

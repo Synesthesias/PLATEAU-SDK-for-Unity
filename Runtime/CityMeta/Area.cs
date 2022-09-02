@@ -1,5 +1,5 @@
-﻿using System;
-using PLATEAU.Util;
+﻿using PLATEAU.Util;
+using System;
 using UnityEngine;
 
 namespace PLATEAU.CityMeta
@@ -8,7 +8,7 @@ namespace PLATEAU.CityMeta
     // 地域ID は 6桁または8桁からなります。
     // 最初の6桁が 第2次地域区画 (1辺10km) です。
     // 残りの2桁がある場合、それが 第3次地域区画 (1辺1km) です。
-    
+
     [Serializable]
     internal class Area : IComparable<Area>
     {
@@ -35,10 +35,10 @@ namespace PLATEAU.CityMeta
             get => this.isTarget;
             set => this.isTarget = value;
         }
-        
+
 
         /// <summary> 第2地域区画 (1辺10km)の番号、すなわちIDの最初の6桁です。 </summary>
-        public int SecondSectionId() => SecondSectionId(Id); 
+        public int SecondSectionId() => SecondSectionId(Id);
 
         /// <summary>
         /// 第2次地域区画のIDを返します。
@@ -65,7 +65,7 @@ namespace PLATEAU.CityMeta
             int mod = IntPow(10, (uint)numDigits - numDigitsOfSecondSection);
             return id % mod;
         }
-        
+
 
         public int CompareTo(Area other)
         {
@@ -76,13 +76,13 @@ namespace PLATEAU.CityMeta
         {
             return Id.ToString();
         }
-        
+
         private static int IntPow(int x, uint pow)
         {
             int ret = 1;
-            while ( pow != 0 )
+            while (pow != 0)
             {
-                if ( (pow & 1) == 1 )
+                if ((pow & 1) == 1)
                     ret *= x;
                 x *= x;
                 pow >>= 1;
@@ -90,8 +90,8 @@ namespace PLATEAU.CityMeta
             return ret;
         }
 
-        
-        
-        
+
+
+
     }
 }

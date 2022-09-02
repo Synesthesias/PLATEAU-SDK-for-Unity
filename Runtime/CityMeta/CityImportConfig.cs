@@ -1,9 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using PLATEAU.Interop;
+﻿using PLATEAU.Interop;
 using PLATEAU.IO;
 using PLATEAU.Util;
+using System;
+using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 
 namespace PLATEAU.CityMeta
@@ -11,7 +11,7 @@ namespace PLATEAU.CityMeta
     /// <summary>
     /// PLATEAU元データをインポートする時の設定です。
     /// </summary>
-    
+
     // 注意事項 1:
     // このクラスは多くの場所で利用されることに注意してください。
     // 例えば 変換設定GUI、変換処理 だけでなく、
@@ -23,7 +23,7 @@ namespace PLATEAU.CityMeta
     // 注意事項 2:
     // 変換時の設定を覚えておく目的で、クラスは Serializable属性が付いている必要があります。
     // これはこのクラスが保持するメンバ変数のクラス、例えば <see cref="GmlSearcherConfig"/> も同様です。
-    
+
     [Serializable]
     internal class CityImportConfig
     {
@@ -44,13 +44,13 @@ namespace PLATEAU.CityMeta
 
         /// <summary> インポート時の対象gmlファイルの絞り込みの設定 </summary>
         public GmlSearcherConfig gmlSearcherConfig = new GmlSearcherConfig();
-        
+
         /// <summary> インポート元ファイルのパス（コピー後）です。通常 StreamingAssets内を指します。 パスは Assets から始まります。 </summary>
         public PlateauSourcePath sourcePath = new PlateauSourcePath("");
 
         /// <summary> これはファイルには記録されません。 インポート元ファイルのパス（コピー前）です。 Assetsフォルダ外を指すこともあります。フルパスです。 </summary>
         [NonSerialized] public string SrcRootPathBeforeImport;
-        
+
         /// <summary> インポートの出力先 </summary>
         public ImportDestPath importDestPath = new ImportDestPath();
 
@@ -64,7 +64,7 @@ namespace PLATEAU.CityMeta
 
         /// <summary> オブジェクト分けの粒度 </summary>
         public MeshGranularity meshGranularity = MeshGranularity.PerPrimaryFeatureObject;
-        
+
         /// <summary> メッシュ変換の基準座標 </summary>
         public Vector3 referencePoint = Vector3.zero;
 
@@ -75,7 +75,7 @@ namespace PLATEAU.CityMeta
         /// インポート元のルートディレクトリの名前
         /// </summary>
         public string rootDirName = "";
-        
+
         /// <summary> インポート時のログレベル </summary>
         public DllLogLevel logLevel = DllLogLevel.Error;
 
@@ -88,7 +88,7 @@ namespace PLATEAU.CityMeta
             // インポート元パスについて、ファイルに記録されるのは アセットパスですが、
             // GUI 上では フルパスであって欲しいです。 
             // そのためロードしたパスをフルパスに変換します。
-            
+
             // 補足 : アセットパスを記録する理由
             // 処理の流れは
             // インポート元は任意のパスをユーザーが指定 →
@@ -96,7 +96,7 @@ namespace PLATEAU.CityMeta
             // 新しいインポート元パスとして コピー後の アセットパスを保存
             // となっています。
             // こうすることで、他のPCでも元GMLファイルを参照できるようになります。
-            
+
             string loadedSrcRootPath = this.sourcePath.RootDirAssetPath;
             if (loadedSrcRootPath.Replace('\\', '/').StartsWith("Assets/"))
             {
@@ -107,8 +107,8 @@ namespace PLATEAU.CityMeta
                 this.SrcRootPathBeforeImport = loadedSrcRootPath;
             }
         }
-        
-        
+
+
         public bool IsImportReady(out string message)
         {
             message = "";
@@ -134,14 +134,14 @@ namespace PLATEAU.CityMeta
         {
             (int minLod, int maxLod) = this.objConvertTypesConfig.GetMinMaxLodForType(gmlType);
             return new GmlToObjConverterConfig(
-                exportAppearance:        this.exportAppearance,
-                meshGranularity:         this.meshGranularity,
-                minLod:                  minLod,
-                maxLod:                  maxLod,
-                exportLowerLod:          this.objConvertTypesConfig.GetDoExportLowerLodForType(gmlType),
+                exportAppearance: this.exportAppearance,
+                meshGranularity: this.meshGranularity,
+                minLod: minLod,
+                maxLod: maxLod,
+                exportLowerLod: this.objConvertTypesConfig.GetDoExportLowerLodForType(gmlType),
                 doAutoSetReferencePoint: false,
-                manualReferencePoint:    manualReferencePoint,
-                logLevel:               this.logLevel
+                manualReferencePoint: manualReferencePoint,
+                logLevel: this.logLevel
             );
         }
     }

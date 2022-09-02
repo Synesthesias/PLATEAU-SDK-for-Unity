@@ -14,8 +14,8 @@ namespace PLATEAU.Editor.CityImport
     {
         private string folderPath;
         private readonly IInputPathChangedEventListener onPathChangedListener;
-        
-        public enum PathChangeMethod{SetterProperty, Dialogue}
+
+        public enum PathChangeMethod { SetterProperty, Dialogue }
 
 
         private string FolderPath
@@ -43,13 +43,13 @@ namespace PLATEAU.Editor.CityImport
         public string Draw(string title, string folderPathArg)
         {
             FolderPath = folderPathArg;
-            
+
             HeaderDrawer.Draw(title);
             bool isButtonPressed = false;
             using (PlateauEditorStyle.VerticalScopeLevel1())
             {
                 EditorGUILayout.LabelField("入力フォルダ");
-                
+
                 if (PlateauEditorStyle.MiniButton("参照..."))
                 {
                     isButtonPressed = true;
@@ -103,7 +103,7 @@ namespace PLATEAU.Editor.CityImport
         {
             return !CopyPlateauSrcFiles.IsInStreamingAssets(this.folderPath);
         }
-        
+
     }
 
     /// <summary>

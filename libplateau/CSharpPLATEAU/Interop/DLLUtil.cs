@@ -166,6 +166,10 @@ namespace PLATEAU.Interop
         /// </summary>
         internal static void CheckDllError(APIResult result)
         {
+            if (result == APIResult.ErrorIndexOutOfBounds)
+            {
+                throw new IndexOutOfRangeException("Index is out of range.");
+            }
             if (result != APIResult.Success)
             {
                 throw new Exception($"Error in Lib Plateau DLL. APIResult = {result}");
@@ -186,7 +190,6 @@ namespace PLATEAU.Interop
         {
             APIResult result = strPtrAndLengthGetter(handle, out IntPtr strPtr, out int strLength);
             CheckDllError(result);
-            // return Marshal.PtrToStringAnsi(strPtr, strLength - 1); // -1 は null終端文字の分です。
             return ReadUtf8Str(strPtr, strLength - 1);
         }
 
@@ -285,6 +288,10 @@ namespace PLATEAU.Interop
 
         public static string ReadUtf8Str(IntPtr strPtr, int strByteSize)
         {
+            if (strByteSize < 0)
+            {
+                throw new ArgumentException($"{nameof(strByteSize)} should be non-negative number. Actual is {strByteSize} .");
+            }
             var data = new List<byte>(strByteSize);
             for (int i = 0; i < strByteSize; i++)
             {

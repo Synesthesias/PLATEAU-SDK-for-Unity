@@ -85,12 +85,26 @@ namespace PLATEAU.Interop
         public float UnitScale;
     }
 
+    [StructLayout(LayoutKind.Sequential)]
+    public struct MeshExtractOptions
+    {
+        public PlateauVector3d ReferencePoint;
+        public AxesConversion MeshAxes;
+        public MeshGranularity MeshGranularity;
+        public uint MaxLOD;
+        public uint MinLOD;
+        [MarshalAs(UnmanagedType.U1)] public bool ExportAppearance;
+        public int GridCountOfSide;
+        public float UnitScale;
+    } 
+
     public enum APIResult
     {
         Success,
         ErrorUnknown,
         ErrorValueNotFound,
-        ErrorLoadingCityGml
+        ErrorLoadingCityGml,
+        ErrorIndexOutOfBounds
     }
 
     public enum DllLogLevel
@@ -667,5 +681,145 @@ namespace PLATEAU.Interop
         internal static extern APIResult plateau_dll_logger_set_log_level(
             [In] IntPtr handle,
             DllLogLevel dllLogLevel);
+        
+        
+        // ***************
+        //  mesh_extractor_c.cpp
+        // ***************
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_mesh_extractor_extract(
+            [In] IntPtr cityModelPtr,
+            MeshExtractOptions options,
+            [In]IntPtr outModelPtr);
+
+
+        // ***************
+        //  mesh_c.cpp
+        // ***************
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_mesh_get_vertices_count(
+            [In] IntPtr handle,
+            out int outVerticesCount);
+        
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_mesh_get_vertex_at_index(
+            [In] IntPtr handle,
+            out PlateauVector3d outVertPos,
+            int index);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_mesh_get_indices_count(
+            [In] IntPtr handle,
+            out int outIndicesCount);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_mesh_get_indice_at_index(
+            [In] IntPtr handle,
+            out int vertexId,
+            int index);
+        
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_mesh_get_sub_mesh_count(
+            [In] IntPtr plateauMeshPtr,
+            out int subMeshCount);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_mesh_get_sub_mesh_at_index(
+            [In] IntPtr plateauMeshPtr,
+            out IntPtr plateauSubMeshPtr,
+            int index);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_mesh_get_uv1(
+            [In] IntPtr plateauMeshPtr,
+            PlateauVector2f[] outUvPosArray);
+        
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_mesh_get_uv2(
+            [In] IntPtr plateauMeshPtr,
+            PlateauVector2f[] outUvPosArray);
+        
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_mesh_get_uv3(
+            [In] IntPtr plateauMeshPtr,
+            PlateauVector2f[] outUvPosArray);
+        
+        // ***************
+        //  sub_mesh_c.cpp
+        // ***************
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_sub_mesh_get_start_index(
+            [In] IntPtr subMeshPtr,
+            out int startIndex);
+        
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_sub_mesh_get_end_index(
+            [In] IntPtr subMeshPtr,
+            out int endIndex);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_sub_mesh_get_texture_path(
+            [In] IntPtr subMeshPtr,
+            out IntPtr strPtr,
+            out int strLength);
+
+        // ***************
+        //  model_c.cpp
+        // ***************
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_create_model(
+            out IntPtr outModelPtr);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_delete_model(
+            [In] IntPtr modelPtr);
+
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_model_get_root_nodes_count(
+            [In] IntPtr handle,
+            out int outCount);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_model_get_root_node_at_index(
+            [In] IntPtr handle,
+            out IntPtr outNode,
+            int index);
+        
+        // ***************
+        //  node_c.cpp
+        // ***************
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_node_get_name(
+            [In] IntPtr handle,
+            out IntPtr strPtr,
+            out int strLength);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_node_get_child_count(
+            [In] IntPtr nodeHandle,
+            out int outChildCount);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_node_get_child_at_index(
+            [In] IntPtr nodeHandle,
+            out IntPtr childNodePtr,
+            int index);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_node_get_mesh(
+            [In] IntPtr nodeHandle,
+            out IntPtr outMeshPtr);
+        
+        // ***************
+        //  geometry_utils_c.cpp
+        // ***************
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_geometry_utils_get_center_point(
+            [In] IntPtr cityModelPtr,
+            out PlateauVector3d outCenterPoint);
     }
 }
