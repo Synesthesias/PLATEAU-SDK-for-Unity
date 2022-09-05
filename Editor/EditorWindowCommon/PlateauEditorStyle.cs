@@ -234,8 +234,6 @@ namespace PLATEAU.Editor.EditorWindowCommon
                         GUI.ToolbarButtonSize.Fixed
                     );
                 }
-
-                EditorGUILayout.LabelField($"Selected : {tabNames[newTabIndex]}");
             }
 
             GUI.backgroundColor = prevColor;

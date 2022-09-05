@@ -1,4 +1,5 @@
-﻿using PLATEAU.Editor.EditorWindowCommon;
+﻿using System;
+using PLATEAU.Editor.EditorWindowCommon;
 using UnityEditor;
 using UnityEngine;
 
@@ -9,6 +10,7 @@ namespace PLATEAU.Editor.CityImport
     /// 都市モデルをインポートするウィンドウです。
     /// 表示は <see cref="CityImporterView"/> に委譲します。
     /// </summary>
+    [Obsolete("このWindowは PlateauWindow クラスに置き換えられます。")]
     internal class CityImportWindow : EditorWindow
     {
         private Vector2 scrollPosition;
