@@ -9,7 +9,7 @@ namespace PLATEAU.IO
     /// U,Dはそれぞれ上,下<br/>
     /// に対応します。<br/>
     /// </summary>
-    public enum AxesConversion
+    public enum CoordinateSystem
     {
         /// <summary>
         /// PLATEAUでの座標系
@@ -54,7 +54,7 @@ namespace PLATEAU.IO
         /// <summary>
         /// 出力後のメッシュの座標系を指定します。
         /// </summary>
-        public AxesConversion MeshAxes
+        public CoordinateSystem MeshAxes
         {
             get => this.data.MeshAxes;
             set => this.data.MeshAxes = value;
