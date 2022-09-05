@@ -2386,30 +2386,30 @@ references:
   commentId: N:PLATEAU.IO
   fullName: PLATEAU.IO
   nameWithType: PLATEAU.IO
-- uid: PLATEAU.IO.AxesConversion
-  name: AxesConversion
-  href: api/PLATEAU.IO.AxesConversion.html
-  commentId: T:PLATEAU.IO.AxesConversion
-  fullName: PLATEAU.IO.AxesConversion
-  nameWithType: AxesConversion
-- uid: PLATEAU.IO.AxesConversion.ENU
+- uid: PLATEAU.IO.CoordinateSystem
+  name: CoordinateSystem
+  href: api/PLATEAU.IO.CoordinateSystem.html
+  commentId: T:PLATEAU.IO.CoordinateSystem
+  fullName: PLATEAU.IO.CoordinateSystem
+  nameWithType: CoordinateSystem
+- uid: PLATEAU.IO.CoordinateSystem.ENU
   name: ENU
-  href: api/PLATEAU.IO.AxesConversion.html#PLATEAU_IO_AxesConversion_ENU
-  commentId: F:PLATEAU.IO.AxesConversion.ENU
-  fullName: PLATEAU.IO.AxesConversion.ENU
-  nameWithType: AxesConversion.ENU
-- uid: PLATEAU.IO.AxesConversion.NWU
+  href: api/PLATEAU.IO.CoordinateSystem.html#PLATEAU_IO_CoordinateSystem_ENU
+  commentId: F:PLATEAU.IO.CoordinateSystem.ENU
+  fullName: PLATEAU.IO.CoordinateSystem.ENU
+  nameWithType: CoordinateSystem.ENU
+- uid: PLATEAU.IO.CoordinateSystem.NWU
   name: NWU
-  href: api/PLATEAU.IO.AxesConversion.html#PLATEAU_IO_AxesConversion_NWU
-  commentId: F:PLATEAU.IO.AxesConversion.NWU
-  fullName: PLATEAU.IO.AxesConversion.NWU
-  nameWithType: AxesConversion.NWU
-- uid: PLATEAU.IO.AxesConversion.WUN
+  href: api/PLATEAU.IO.CoordinateSystem.html#PLATEAU_IO_CoordinateSystem_NWU
+  commentId: F:PLATEAU.IO.CoordinateSystem.NWU
+  fullName: PLATEAU.IO.CoordinateSystem.NWU
+  nameWithType: CoordinateSystem.NWU
+- uid: PLATEAU.IO.CoordinateSystem.WUN
   name: WUN
-  href: api/PLATEAU.IO.AxesConversion.html#PLATEAU_IO_AxesConversion_WUN
-  commentId: F:PLATEAU.IO.AxesConversion.WUN
-  fullName: PLATEAU.IO.AxesConversion.WUN
-  nameWithType: AxesConversion.WUN
+  href: api/PLATEAU.IO.CoordinateSystem.html#PLATEAU_IO_CoordinateSystem_WUN
+  commentId: F:PLATEAU.IO.CoordinateSystem.WUN
+  fullName: PLATEAU.IO.CoordinateSystem.WUN
+  nameWithType: CoordinateSystem.WUN
 - uid: PLATEAU.IO.MeshConverter
   name: MeshConverter
   href: api/PLATEAU.IO.MeshConverter.html
