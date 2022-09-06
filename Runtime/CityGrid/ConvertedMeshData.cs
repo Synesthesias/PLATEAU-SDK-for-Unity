@@ -115,7 +115,6 @@ namespace PLATEAU.CityGrid
         /// </summary>
         private static async Task LoadTextures(ConvertedMeshData meshData, IReadOnlyList<string> textureUrls, string gmlAbsolutePath, Dictionary<string, Texture> cachedTexture)
         {
-            // TODO マテリアルをキャッシュする機能を作る。異なるオブジェクトで同じテクスチャを使う場合でも愚直にテクスチャを読んでシーン保存しているので、最小地物単位でめっちゃ重くなる。
             for (int i = 0; i < meshData.SubMeshCount; i++)
             {
                 // TODO テクスチャを返すのが素直な実装であって、返す代わりに meshData.AddTexture で結果を格納するという今のやり方は分かりにくい
@@ -137,21 +136,9 @@ namespace PLATEAU.CityGrid
                 string textureFullPath = Path.GetFullPath(Path.Combine(gmlAbsolutePath, "../", texUrl));
 
                 // 非同期でテクスチャをロードします。
-                var request = UnityWebRequestTexture.GetTexture($"file://{textureFullPath}");
-                request.timeout = 3;
-                
-                // 注意 :
-                // 下の SendWebRequest は、見た目に反してメインスレッドで行われ、Unityのコルーチンによって await します。
-                // UnityWebRequestExtension クラスの拡張メソッドにより、コルーチンを await できるようにする機能を使っており、
-                // コルーチンはメインスレッド限定です。
-                await request.SendWebRequest();
+                Texture texture = await TextureLoader.LoadAsync($"file://{textureFullPath}", 3);
 
-                if (request.result != UnityWebRequest.Result.Success)
-                {
-                    Debug.LogError($"failed to load texture : {textureFullPath} result = {(int)request.result}");
-                    continue;
-                }
-                Texture texture = ((DownloadHandlerTexture)request.downloadHandler).texture;
+                if (texture == null) continue;
 
                 // この Compress によってテクスチャ容量が 6分の1 になります。
                 // 松山市のLOD2の建物モデルで計測したところ、 テクスチャのメモリ使用量が 2.6GB から 421.3MB になりました。
