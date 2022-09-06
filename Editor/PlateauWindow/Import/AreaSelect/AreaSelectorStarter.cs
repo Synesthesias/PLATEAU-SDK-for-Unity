@@ -1,0 +1,52 @@
+﻿using System.IO;
+using System.Net.Mime;
+using Codice.CM.Common;
+using PLATEAU.CityLoader;
+using PLATEAU.CityLoader.AreaSelector;
+using UnityEditor;
+using UnityEditor.SceneManagement;
+using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.SceneManagement;
+
+namespace PLATEAU.Editor.PlateauWindow.Import.AreaSelect
+{
+    public class AreaSelectorStarter
+    {
+        private Scene prevScene;
+
+        private const string areaSelectorPrafabPath =
+            "Packages/com.synesthesias.plateau-unity-sdk/Prefabs/AreaSelectorPrefab.prefab";
+        public void Start()
+        {
+            if (!EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())
+            {
+                return;
+            }
+
+            string prevScenePath = SceneManager.GetActiveScene().path;
+            SetUpTemporaryScene();
+            var behaviour = Object.FindObjectOfType<AreaSelectorBehaviour>();
+            behaviour.Init(prevScenePath);
+            EditorApplication.EnterPlaymode();
+        }
+
+        private static void SetUpTemporaryScene()
+        {
+            var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
+            scene.name = "AreaSelectScene";
+            SceneManager.SetActiveScene(scene);
+            var prefab =
+                AssetDatabase.LoadAssetAtPath<GameObject>(areaSelectorPrafabPath);
+            PrefabUtility.InstantiatePrefab(prefab);
+            SetUpEventSystem();
+        }
+
+        private static void SetUpEventSystem()
+        {
+            var obj = new GameObject("EventSystem");
+            obj.AddComponent<EventSystem>();
+            obj.AddComponent<StandaloneInputModule>();
+        }
+    }
+}

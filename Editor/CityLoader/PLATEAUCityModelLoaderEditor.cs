@@ -2,7 +2,9 @@
 using PLATEAU.Behaviour;
 using PLATEAU.CityLoader;
 using PLATEAU.Editor.EditorWindowCommon;
+using PLATEAU.Editor.PlateauWindow.Import;
 using UnityEditor;
+using UnityEngine;
 
 namespace PLATEAU.Editor.CityLoader
 {
@@ -12,11 +14,19 @@ namespace PLATEAU.Editor.CityLoader
         public override void OnInspectorGUI()
         {
             var loader = (PLATEAUCityModelLoader)target;
+            if (PlateauEditorStyle.MainButton("再インポート"))
+            {
+                new Importer().Import(loader.SourcePathAfterImport);
+            }
             EditorGUILayout.LabelField("インポート前パス:");
             PlateauEditorStyle.MultiLineLabelWithBox(loader.SourcePathBeforeImport);
             EditorGUILayout.LabelField("インポート後パス:");
             PlateauEditorStyle.MultiLineLabelWithBox(loader.SourcePathAfterImport);
-            base.OnInspectorGUI();
+            
+            //TODO デバッグ用、後で消す
+            // GUI.enabled = false;
+            // base.OnInspectorGUI();
+            // GUI.enabled = true;
         }   
     }
 }
