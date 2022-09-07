@@ -13,6 +13,7 @@ namespace PLATEAU.CityLoader.AreaSelector
         [SerializeField] private MeshRenderer mapPlane;
         [SerializeField] private string prevScenePath;
         private readonly List<Material> mapMaterials = new List<Material>();
+        [SerializeField] private AreaSelectorCursor cursor;
 
         public void Init(string prevScenePathArg)
         {
@@ -25,7 +26,7 @@ namespace PLATEAU.CityLoader.AreaSelector
             var photoLoadTask = GSIPhotoLoader.Load("seamlessphoto", 10, 909, 403, this.mapPlane, this.mapMaterials);
             photoLoadTask.ContinueWithErrorCatch();
         }
-        
+
         private void EndAreaSelection()
         {
             AreaSelectorGUI.Disable();
