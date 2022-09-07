@@ -103,7 +103,6 @@ GameObject:
   m_Component:
   - component: {fileID: 8500583615660682854}
   - component: {fileID: 2236022856352534956}
-  - component: {fileID: 7664809412243855999}
   m_Layer: 0
   m_Name: Camera
   m_TagString: Untagged
@@ -168,14 +167,6 @@ Camera:
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
---- !u!81 &7664809412243855999
-AudioListener:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 736336368801548934}
-  m_Enabled: 1
 --- !u!1 &1318432509145802145
 GameObject:
   m_ObjectHideFlags: 0
@@ -344,7 +335,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 8b50654a308be134a9424e9cc83a30ef, type: 2}
+  - {fileID: 0}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -458,4 +449,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5ccfe2fd3705421fbabd82890ecd8f99, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cursorPos: {x: 64.23, y: 0, z: 0}
+  areaMin: {x: 0, y: 0}
+  areaMax: {x: 100, y: 100}
