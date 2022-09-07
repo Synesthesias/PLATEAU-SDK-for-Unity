@@ -28,13 +28,12 @@ namespace PLATEAU.Editor.PlateauWindow.Import.AreaSelect
             SetUpTemporaryScene();
             var behaviour = Object.FindObjectOfType<AreaSelectorBehaviour>();
             behaviour.Init(prevScenePath);
-            EditorApplication.EnterPlaymode();
         }
 
         private static void SetUpTemporaryScene()
         {
             var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
-            scene.name = "AreaSelectScene";
+            scene.name = "Temporary_AreaSelectScene";
             SceneManager.SetActiveScene(scene);
             var prefab =
                 AssetDatabase.LoadAssetAtPath<GameObject>(areaSelectorPrafabPath);

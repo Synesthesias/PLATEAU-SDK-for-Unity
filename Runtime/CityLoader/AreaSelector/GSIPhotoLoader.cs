@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using PLATEAU.Util.Async;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -13,12 +14,17 @@ namespace PLATEAU.CityLoader.AreaSelector
         private const string GSIMapURL = "https://cyberjapandata.gsi.go.jp/xyz";
         private const int timeOutSec = 10;
         
-        public static async Task Load(string id, int z, int x, int y, MeshRenderer renderer)
+        public static async Task Load(string id, int z, int x, int y, MeshRenderer renderer, List<Material> mapMaterials)
         {
             string url = $"{GSIMapURL}/{id}/{z}/{x}/{y}.jpg";
             Texture texture = await TextureLoader.LoadAsync(url, timeOutSec);
             if (texture == null) return;
-            renderer.material.mainTexture = texture;
+            var mat = new Material(renderer.sharedMaterial)
+            {
+                mainTexture = texture
+            };
+            renderer.sharedMaterial = mat;
+            mapMaterials.Add(mat);
         }
     }
 }

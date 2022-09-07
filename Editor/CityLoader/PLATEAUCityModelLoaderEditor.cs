@@ -14,7 +14,7 @@ namespace PLATEAU.Editor.CityLoader
         public override void OnInspectorGUI()
         {
             var loader = (PLATEAUCityModelLoader)target;
-            if (PlateauEditorStyle.MainButton("再インポート"))
+            if (PlateauEditorStyle.MainButton("範囲選択"))
             {
                 new Importer().Import(loader.SourcePathAfterImport);
             }
