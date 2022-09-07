@@ -14,29 +14,12 @@ namespace PLATEAU.CityLoader.AreaSelector
     [ExecuteInEditMode]
     public class AreaSelectorCursor : MonoBehaviour
     {
-        // [SerializeField] private Vector2 areaMin = Vector2.zero;
-        // [SerializeField] private Vector2 areaMax = Vector2.one * 100;
+
         private readonly Color cursorColor = Color.blue;
-        private const float boxUpperHeight = 30f;
+        private const float boxUpperHeight = 30f; // なんとなく見やすそうな高さ
         private const float boxBottomHeight = 1f; // カーソルの線が地面と重なって隠れない程度の高さ
         private const float boxCenterHeight = (boxUpperHeight + boxBottomHeight) / 2.0f;
         private const float boxSizeY = boxUpperHeight - boxBottomHeight;
-
-        // public Vector2 CenterPos
-        // {
-        //     get => (this.areaMin + this.areaMax) / 2.0f;
-        //     set
-        //     {
-        //         var diff = value - CenterPos;
-        //         this.areaMin += diff / 2.0f;
-        //         this.areaMax += diff / 2.0f;
-        //     }
-        // }
-
-        // public Vector2 Size
-        // {
-        //     get => this.areaMax - this.areaMin;
-        // }
 
         private void Start()
         {
@@ -90,8 +73,11 @@ namespace PLATEAU.CityLoader.AreaSelector
             var handlePos = new Vector3(pos.x, boxUpperHeight, pos.z);
             EditorGUI.BeginChangeCheck();
 
+            // 中心点ハンドル
             handlePos = Slider2D(handlePos);
+            // X軸ハンドル
             handlePos = Handles.Slider(handlePos, Vector3.right);
+            // Z軸ハンドル
             handlePos = Handles.Slider(handlePos, Vector3.forward);
             
             if (EditorGUI.EndChangeCheck())
@@ -109,19 +95,33 @@ namespace PLATEAU.CityLoader.AreaSelector
             
             EditorGUI.BeginChangeCheck();
             
+            // 最大点のハンドル
             var nextPosMax = Slider2D(prevPosMax);
+
+            // 最小点のハンドル
             var minHandlePos = new Vector3(prevPosMin.x, boxUpperHeight, prevPosMin.z);
-            
-            
             var minHandlePosNext = Slider2D(minHandlePos);
             var nextPosMin = new Vector3(minHandlePosNext.x, boxBottomHeight, minHandlePosNext.z);
+            
+            // Xが最小、Zが最大の点のハンドル
+            var minMaxHandlePos = new Vector3(nextPosMin.x, boxUpperHeight, nextPosMax.z);
+            var minMaxHandlePosNext = Slider2D(minMaxHandlePos);
+            nextPosMin = new Vector3(minMaxHandlePosNext.x, nextPosMin.y, nextPosMin.z);
+            nextPosMax = new Vector3(nextPosMax.x, nextPosMax.y, minMaxHandlePosNext.z);
+            
+            // Xが最大、Zが最小の点のハンドル
+            var maxMinHandlePos = new Vector3(nextPosMax.x, boxUpperHeight, nextPosMin.z);
+            var maxMinHandlePosNext = Slider2D(maxMinHandlePos);
+            nextPosMin = new Vector3(nextPosMin.x, nextPosMin.y, maxMinHandlePosNext.z);
+            nextPosMax = new Vector3(maxMinHandlePosNext.x, nextPosMax.y, nextPosMax.z);
+            
             
             if (EditorGUI.EndChangeCheck())
             {
                 (nextPosMin, nextPosMax) = SwapMinMaxIfReversed(nextPosMin, nextPosMax);
-                var (nextCenter2, nextSize2) = CalcTransFromArea(nextPosMax, nextPosMin);
-                trans.position = nextCenter2;
-                trans.localScale = nextSize2;
+                var (nextCenter, nextSize) = CalcTransFromArea(nextPosMax, nextPosMin);
+                trans.position = nextCenter;
+                trans.localScale = nextSize;
             }
         }
 
@@ -134,11 +134,6 @@ namespace PLATEAU.CityLoader.AreaSelector
             );
         }
 
-        private static void Slider2DHandleCap(int controlID, Vector3 position, Quaternion rotation, float size, EventType eventType)
-        {
-            Handles.DotHandleCap(controlID, position, rotation, size, eventType);
-        }
-        
         #endif
 
         private static Vector3 CalcAreaMax(Vector3 center, Vector3 size)
