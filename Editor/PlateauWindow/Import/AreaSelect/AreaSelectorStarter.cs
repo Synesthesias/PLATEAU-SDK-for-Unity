@@ -37,7 +37,8 @@ namespace PLATEAU.Editor.PlateauWindow.Import.AreaSelect
             SceneManager.SetActiveScene(scene);
             var prefab =
                 AssetDatabase.LoadAssetAtPath<GameObject>(areaSelectorPrafabPath);
-            PrefabUtility.InstantiatePrefab(prefab);
+            Object.Instantiate(prefab);
+            prefab.transform.position = Vector3.zero;
             SetUpEventSystem();
         }
 

@@ -23,10 +23,7 @@ namespace PLATEAU.CityLoader.AreaSelector
 
         private void Start()
         {
-            #if UNITY_EDITOR
-            SceneView.duringSceneGui -= OnSceneGUI;
-            SceneView.duringSceneGui += OnSceneGUI;
-            #endif
+            EnableHandles();
             var trans = transform;
             var prevPos = trans.position;
             var nextPos = new Vector3(prevPos.x, boxCenterHeight, prevPos.z);
@@ -37,11 +34,34 @@ namespace PLATEAU.CityLoader.AreaSelector
             trans.localScale = nextLocalScale;
         }
 
+        private void OnEnable()
+        {
+            EnableHandles();
+        }
+
+        private void OnDisable()
+        {
+            DisableHandles();
+        }
+
+        private void EnableHandles()
+        {
+#if UNITY_EDITOR
+            SceneView.duringSceneGui -= OnSceneGUI;
+            SceneView.duringSceneGui += OnSceneGUI;
+#endif
+        }
+
+        private void DisableHandles()
+        {
+#if UNITY_EDITOR
+            SceneView.duringSceneGui -= OnSceneGUI;
+#endif
+        }
+
         private void OnDestroy()
         {
-            #if UNITY_EDITOR
-            SceneView.duringSceneGui -= OnSceneGUI;
-            #endif
+            DisableHandles();
         }
 
 
