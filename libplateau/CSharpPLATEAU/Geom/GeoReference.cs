@@ -12,7 +12,7 @@ namespace PLATEAU.Geom
     {
         private readonly IntPtr handle;
         private bool isDisposed;
-        
+
         /// <summary>
         /// 
         /// </summary>
@@ -32,7 +32,8 @@ namespace PLATEAU.Geom
         /// 詳しくはこちらを参照してください :
         /// https://www.gsi.go.jp/sokuchikijun/jpc.html
         /// </param>
-        public GeoReference(PlateauVector3d referencePoint, float unitScale, CoordinateSystem coordinateSystem, int zoneID)
+        public GeoReference(PlateauVector3d referencePoint, float unitScale, CoordinateSystem coordinateSystem,
+            int zoneID)
         {
             var result = NativeMethods.plateau_create_geo_reference(
                 out var geoReferencePtr, referencePoint, unitScale,
@@ -50,7 +51,7 @@ namespace PLATEAU.Geom
             DLLUtil.CheckDllError(result);
             return outXyz;
         }
-        
+
         public void Dispose()
         {
             if (this.isDisposed) return;

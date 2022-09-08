@@ -28,6 +28,10 @@ namespace PLATEAU.CityGrid
         [SerializeField] private bool doExportAppearance = true;
         [SerializeField] private uint minLOD = 2;
         [SerializeField] private uint maxLOD = 2;
+        [SerializeField] private double minLatitude = -90;
+        [SerializeField] private double maxLatitude = 90;
+        [SerializeField] private double minLongitude = -180;
+        [SerializeField] private double maxLongitude = 180;
         
         /// <summary>
         /// テクスチャパス と テクスチャを紐付ける辞書です。同じテクスチャが繰り返しロードされることを防ぎます。
@@ -60,7 +64,10 @@ namespace PLATEAU.CityGrid
             // 実際のメッシュデータを触らないので、Task.Run で別のスレッドで処理できます。
             meshObjsData = await Task.Run(() =>
             {
-                using var plateauModel = LoadGmlAndMergeMeshes(gmlAbsolutePath,this.meshGranularity, this.gridCountOfSide,this.doExportAppearance, this.minLOD, this.maxLOD);
+                Extent extent = new Extent(
+                    new GeoCoordinate(this.minLatitude, this.minLongitude, -9999),
+                    new GeoCoordinate(this.maxLatitude, this.maxLongitude, 9999)); 
+                using var plateauModel = LoadGmlAndMergeMeshes(gmlAbsolutePath,this.meshGranularity, this.gridCountOfSide,this.doExportAppearance, this.minLOD, this.maxLOD, extent);
                 var convertedObjData = new ConvertedGameObjData(plateauModel);
                 return convertedObjData;
             });
@@ -104,8 +111,9 @@ namespace PLATEAU.CityGrid
         /// グリッドごとにメッシュを結合して、グリッドごとの<see cref="GeometryModel.Model"/> で返します。
         /// メインスレッドでなくても動作します。
         /// </summary>
-        private static Model LoadGmlAndMergeMeshes(string gmlAbsolutePath,
-            MeshGranularity meshGranularity, int numGridCountOfSide, bool doExportAppearance, uint minLOD, uint maxLOD)
+        private static Model LoadGmlAndMergeMeshes(
+            string gmlAbsolutePath, MeshGranularity meshGranularity, int numGridCountOfSide,
+            bool doExportAppearance, uint minLOD, uint maxLOD, Extent extent)
         {
             // GMLロード
             using var cityModel = LoadCityModel(gmlAbsolutePath);
@@ -122,7 +130,8 @@ namespace PLATEAU.CityGrid
                 MinLOD = minLOD,
                 ExportAppearance = doExportAppearance,
                 GridCountOfSide = numGridCountOfSide,
-                UnitScale = 1f
+                UnitScale = 1f,
+                Extent = extent
             };
             var model = new Model();
             MeshExtractor.Extract(ref model, cityModel, options);

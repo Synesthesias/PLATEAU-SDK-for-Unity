@@ -96,6 +96,7 @@ namespace PLATEAU.Interop
         [MarshalAs(UnmanagedType.U1)] public bool ExportAppearance;
         public int GridCountOfSide;
         public float UnitScale;
+        public Extent Extent;
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -110,6 +111,22 @@ namespace PLATEAU.Interop
             this.Latitude = lat;
             this.Longitude = lon;
             this.Height = height;
+        }
+    }
+
+    /// <summary>
+    /// 最小・最大からなる範囲です。
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential)]
+    public struct Extent
+    {
+        public GeoCoordinate Min;
+        public GeoCoordinate Max;
+
+        public Extent(GeoCoordinate min, GeoCoordinate max)
+        {
+            this.Min = min;
+            this.Max = max;
         }
     }
 
