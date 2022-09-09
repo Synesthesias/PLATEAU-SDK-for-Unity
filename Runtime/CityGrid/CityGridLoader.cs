@@ -28,9 +28,9 @@ namespace PLATEAU.CityGrid
         [SerializeField] private bool doExportAppearance = true;
         [SerializeField] private uint minLOD = 2;
         [SerializeField] private uint maxLOD = 2;
-        [SerializeField] private double minLatitude = -90;
+        [SerializeField, Tooltip("範囲指定（緯度）です。")] private double minLatitude = -90;
         [SerializeField] private double maxLatitude = 90;
-        [SerializeField] private double minLongitude = -180;
+        [SerializeField, Tooltip("範囲指定（経度）です。")] private double minLongitude = -180;
         [SerializeField] private double maxLongitude = 180;
         
         /// <summary>
