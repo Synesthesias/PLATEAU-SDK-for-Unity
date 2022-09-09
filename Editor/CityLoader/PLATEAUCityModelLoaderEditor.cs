@@ -1,10 +1,7 @@
-﻿using System.Xml.Resolvers;
-using PLATEAU.Behaviour;
-using PLATEAU.CityLoader;
+﻿using PLATEAU.CityLoader;
 using PLATEAU.Editor.EditorWindowCommon;
-using PLATEAU.Editor.PlateauWindow.Import;
+using PLATEAU.Runtime.CityLoader.AreaSelector.Import;
 using UnityEditor;
-using UnityEngine;
 
 namespace PLATEAU.Editor.CityLoader
 {
@@ -23,10 +20,6 @@ namespace PLATEAU.Editor.CityLoader
             EditorGUILayout.LabelField("インポート後パス:");
             PlateauEditorStyle.MultiLineLabelWithBox(loader.SourcePathAfterImport);
             
-            //TODO デバッグ用、後で消す
-            // GUI.enabled = false;
-            // base.OnInspectorGUI();
-            // GUI.enabled = true;
         }   
     }
 }

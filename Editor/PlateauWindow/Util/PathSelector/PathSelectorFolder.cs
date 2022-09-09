@@ -1,6 +1,6 @@
 ﻿using UnityEditor;
 
-namespace PLATEAU.Editor.PlateauWindow.Util.PathSelector
+namespace PLATEAU.Runtime.CityLoader.AreaSelector.Util.PathSelector
 {
     internal class PathSelectorFolder : PathSelectorBase
     {

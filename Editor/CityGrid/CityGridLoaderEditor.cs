@@ -2,7 +2,6 @@
 using PLATEAU.Editor.EditorWindowCommon;
 using PLATEAU.Util.Async;
 using UnityEditor;
-using UnityEngine;
 
 namespace PLATEAU.Editor.CityGrid
 {

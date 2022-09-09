@@ -1,11 +1,9 @@
 ﻿using PLATEAU.CityLoader;
-using PLATEAU.Editor.CityImport;
 using PLATEAU.Editor.EditorWindowCommon;
-using PLATEAU.Editor.PlateauWindow.Util;
-using PLATEAU.Editor.PlateauWindow.Util.PathSelector;
+using PLATEAU.Runtime.CityLoader.AreaSelector.Util.PathSelector;
 using UnityEditor;
 
-namespace PLATEAU.Editor.PlateauWindow.MainTabGUI
+namespace PLATEAU.Runtime.CityLoader.AreaSelector.MainTabGUI
 {
     internal class CityImportLocalGUI : IEditorDrawable
     {

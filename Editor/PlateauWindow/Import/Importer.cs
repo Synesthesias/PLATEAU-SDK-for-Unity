@@ -1,6 +1,6 @@
-﻿using PLATEAU.Editor.PlateauWindow.Import.AreaSelect;
+﻿using PLATEAU.Runtime.CityLoader.AreaSelector.Import.AreaSelect;
 
-namespace PLATEAU.Editor.PlateauWindow.Import
+namespace PLATEAU.Runtime.CityLoader.AreaSelector.Import
 {
     public class Importer
     {

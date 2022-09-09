@@ -1,8 +1,6 @@
 ﻿using System;
-using System.IO;
 using PLATEAU.Editor.EditorWindowCommon;
-using PLATEAU.Editor.PlateauWindow.Util;
-using PLATEAU.Editor.PlateauWindow.Util.PathSelector;
+using PLATEAU.Runtime.CityLoader.AreaSelector.Util.PathSelector;
 using PLATEAU.Util;
 using UnityEditor;
 using Application = UnityEngine.Application;

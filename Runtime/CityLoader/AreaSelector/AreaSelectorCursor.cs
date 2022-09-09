@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Specialized;
-using UnityEngine;
-using Vector2 = UnityEngine.Vector2;
+﻿using UnityEngine;
 using Vector3 = UnityEngine.Vector3;
 
 #if UNITY_EDITOR
 using UnityEditor;
-using UnityEngine.UI;
 #endif
 
 namespace PLATEAU.CityLoader.AreaSelector

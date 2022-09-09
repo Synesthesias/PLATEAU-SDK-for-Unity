@@ -1,15 +1,11 @@
-﻿using System.IO;
-using System.Net.Mime;
-using Codice.CM.Common;
-using PLATEAU.CityLoader;
-using PLATEAU.CityLoader.AreaSelector;
+﻿using PLATEAU.CityLoader.AreaSelector;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 
-namespace PLATEAU.Editor.PlateauWindow.Import.AreaSelect
+namespace PLATEAU.Runtime.CityLoader.AreaSelector.Import.AreaSelect
 {
     public class AreaSelectorStarter
     {

@@ -1,7 +1,8 @@
-﻿using UnityEditor;
+﻿using PLATEAU.CityLoader.AreaSelector;
+using UnityEditor;
 using UnityEngine;
 
-namespace PLATEAU.CityLoader.AreaSelector
+namespace PLATEAU.Runtime.CityLoader.AreaSelector.Import.AreaSelect
 {
     public static class AreaSelectorGUI
     {
@@ -11,30 +12,38 @@ namespace PLATEAU.CityLoader.AreaSelector
 
         public static void Enable(AreaSelectorBehaviour areaSelectorArg)
         {
+            #if UNITY_EDITOR
             SceneView.duringSceneGui += OnGUI;
             windowRect = initialWindowRect;
             areaSelector = areaSelectorArg;
+            #endif
         }
 
         public static void Disable()
         {
+            #if UNITY_EDITOR
             SceneView.duringSceneGui -= OnGUI;
+            #endif
         }
 
         private static void OnGUI(SceneView sceneView)
         {
+            #if UNITY_EDITOR
             Handles.BeginGUI();
             windowRect = GUILayout.Window(1, windowRect, DrawInsideWindow, "範囲選択");
             Handles.EndGUI();
+            #endif
         }
 
         private static void DrawInsideWindow(int id)
         {
+            #if UNITY_EDITOR
             if (GUILayout.Button("キャンセル"))
             {
                    areaSelector.OnCancelButtonPushed();
             }
             GUI.DragWindow();
+            #endif
         }
     }
 }

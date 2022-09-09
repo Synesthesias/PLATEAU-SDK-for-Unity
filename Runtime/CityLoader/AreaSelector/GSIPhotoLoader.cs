@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using PLATEAU.Util.Async;
 using UnityEngine;
-using UnityEngine.Networking;
 
 namespace PLATEAU.CityLoader.AreaSelector
 {
