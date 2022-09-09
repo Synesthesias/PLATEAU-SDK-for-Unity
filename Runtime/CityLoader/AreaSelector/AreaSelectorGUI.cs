@@ -26,14 +26,14 @@ namespace PLATEAU.Runtime.CityLoader.AreaSelector.Import.AreaSelect
             #endif
         }
 
+#if UNITY_EDITOR
         private static void OnGUI(SceneView sceneView)
         {
-            #if UNITY_EDITOR
             Handles.BeginGUI();
             windowRect = GUILayout.Window(1, windowRect, DrawInsideWindow, "範囲選択");
             Handles.EndGUI();
-            #endif
         }
+#endif
 
         private static void DrawInsideWindow(int id)
         {
