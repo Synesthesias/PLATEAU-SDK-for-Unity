@@ -1,4 +1,5 @@
-﻿using PLATEAU.CityGML;
+﻿using System;
+using PLATEAU.CityGML;
 using PLATEAU.CityMeta;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,6 +11,7 @@ namespace PLATEAU.Behaviour
     /// ゲームオブジェクトからPlateauの <see cref="CityGML.CityObject"/> を返す MonoBehaviour です。
     /// 実行のために <see cref="CityMetadata"/> と <see cref="CityModelLoader"/> を保持します。
     /// </summary>
+    [Obsolete]
     public class CityBehaviour : MonoBehaviour
     {
         [SerializeField] private CityMetadata cityMetadata;

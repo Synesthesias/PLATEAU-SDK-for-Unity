@@ -1,4 +1,5 @@
-﻿using PLATEAU.CityMeta;
+﻿using System;
+using PLATEAU.CityMeta;
 using PLATEAU.Editor.EditorWindowCommon;
 using PLATEAU.Interop;
 using PLATEAU.IO;
@@ -12,6 +13,7 @@ namespace PLATEAU.Editor.CityImportOLD
     /// 設定内容:
     /// テクスチャを含めるか / メッシュ粒度 / ログレベル
     /// </summary>
+    [Obsolete]
     internal static class BasicMeshConfigGUI
     {
         public static void Draw(CityImportConfig importConfig)

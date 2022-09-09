@@ -1,10 +1,12 @@
-﻿using PLATEAU.CityMeta;
+﻿using System;
+using PLATEAU.CityMeta;
 
 namespace PLATEAU.Editor.CityImportOLD
 {
     /// <summary>
     /// CityImporter の model, view, config を結びつけ、それぞれに指示を出します。
     /// </summary>
+    [Obsolete]
     internal class CityImporterPresenter
     {
         private readonly CityImporterView view;

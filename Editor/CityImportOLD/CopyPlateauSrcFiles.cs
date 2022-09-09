@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using PLATEAU.CityMeta;
 using PLATEAU.Util;
 using PLATEAU.Util.FileNames;
@@ -12,6 +13,7 @@ namespace PLATEAU.Editor.CityImportOLD
     /// Plateauの元データをコピーします。
     /// インポート時に <see cref="CityImporterModel"/> が利用します。
     /// </summary>
+    [Obsolete]
     internal static class CopyPlateauSrcFiles
     {
 

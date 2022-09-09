@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using PLATEAU.CityMeta;
 using PLATEAU.Editor.EditorWindowCommon;
 using UnityEditor;
@@ -11,6 +12,7 @@ namespace PLATEAU.Editor.CityImportOLD
     /// udxフォルダ内の gml ファイルのうち、どれを対象とするかを
     /// 条件によって絞り込む GUI を提供します。
     /// </summary>
+    [Obsolete]
     internal class GmlSearcherView
     {
         // private List<string> gmlFiles;

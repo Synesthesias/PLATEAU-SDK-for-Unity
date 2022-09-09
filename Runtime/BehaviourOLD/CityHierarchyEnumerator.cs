@@ -1,4 +1,5 @@
-﻿using PLATEAU.CityGML;
+﻿using System;
+using PLATEAU.CityGML;
 using PLATEAU.CityMeta;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +10,7 @@ namespace PLATEAU.Behaviour
     /// <summary>
     /// シーン上の都市ゲームオブジェクトを列挙します。
     /// </summary>
+    [Obsolete]
     public static class CityHierarchyEnumerator
     {
         /// <summary>

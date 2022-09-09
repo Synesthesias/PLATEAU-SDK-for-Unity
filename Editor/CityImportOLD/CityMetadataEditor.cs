@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System;
+using System.Text;
 using PLATEAU.CityMeta;
 using PLATEAU.Editor.EditorWindowCommon;
 using UnityEditor;
@@ -13,6 +14,7 @@ namespace PLATEAU.Editor.CityImportOLD
     /// ・<see cref="CityMetadata"/> はインポート時の設定を覚えているので、その設定で「再変換」画面をインスペクタに表示すること。
     /// 　再変換の画面では、ユーザーが設定を変えることが可能であること。この機能によりユーザーが「前回から少しだけ設定を変えて変換」する操作をする上で便利になること。
     /// </summary>
+    [Obsolete]
     [CustomEditor(typeof(CityMetadata))]
     internal class CityMetadataEditor : UnityEditor.Editor
     {

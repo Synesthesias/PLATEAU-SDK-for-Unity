@@ -1,8 +1,10 @@
-﻿using PLATEAU.Util;
+﻿using System;
+using PLATEAU.Util;
 using UnityEngine;
 
 namespace PLATEAU.Behaviour
 {
+    [Obsolete]
     public class ClickToGetCityAttributes : MonoBehaviour
     {
         [SerializeField] private Transform gridParent;

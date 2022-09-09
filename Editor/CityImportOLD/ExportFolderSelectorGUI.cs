@@ -1,4 +1,5 @@
-﻿using PLATEAU.Editor.EditorWindowCommon;
+﻿using System;
+using PLATEAU.Editor.EditorWindowCommon;
 using PLATEAU.Util;
 using UnityEditor;
 using UnityEngine;
@@ -9,6 +10,7 @@ namespace PLATEAU.Editor.CityImportOLD
     /// <summary>
     /// 出力先フォルダ選択GUIを表示します。
     /// </summary>
+    [Obsolete]
     internal static class ExportFolderSelectorGUI
     {
 

@@ -16,7 +16,7 @@ namespace PLATEAU.Editor.CityImportOLD
         private Vector2 scrollPosition;
         private CityImporterPresenter cityImporterPresenter;
 
-        [MenuItem("PLATEAU/都市モデルをインポート")]
+        // [MenuItem("PLATEAU/都市モデルをインポート")]
         public static void Open()
         {
             var window = GetWindow<CityImportWindow>("都市モデルをインポート");

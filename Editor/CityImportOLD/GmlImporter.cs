@@ -19,6 +19,7 @@ namespace PLATEAU.Editor.CityImportOLD
         /// <summary>
         /// GML群のインポートで、objファイル変換と <see cref="CityMetadata"/> への書き込みをします。
         /// </summary>
+        [Obsolete]
         public static void ImportGmls(out int successCount, out int failureCount, string[] gmlRelativePaths, CityImportConfig importConfig, CityMetadata metadata, GmlToCityModelDict gmlToCityModelCache)
         {
             successCount = 0;

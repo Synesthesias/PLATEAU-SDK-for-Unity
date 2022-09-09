@@ -1,4 +1,5 @@
-﻿using PLATEAU.CityMeta;
+﻿using System;
+using PLATEAU.CityMeta;
 using PLATEAU.Editor.Converters;
 using PLATEAU.Editor.Diagnostics;
 using UnityEditor;
@@ -15,6 +16,7 @@ namespace PLATEAU.Editor.CityImportOLD
     /// ・Plateau元データから、複数のobj および 1つの <see cref="CityMetadata"/> を作成します。
     /// ・変換したモデルを現在のシーンに配置します。
     /// </summary>
+    [Obsolete]
     internal static class CityImporterModel
     {
 

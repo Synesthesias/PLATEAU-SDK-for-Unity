@@ -1,4 +1,5 @@
-﻿using PLATEAU.CityMeta;
+﻿using System;
+using PLATEAU.CityMeta;
 using PLATEAU.Editor.EditorWindowCommon;
 using UnityEditor;
 using UnityEngine;
@@ -13,6 +14,7 @@ namespace PLATEAU.Editor.CityImportOLD
     /// このクラスを利用するクラスは、
     /// <see cref="CityImportWindow"/> および <see cref="CityMetadataEditor"/> です。
     /// </summary>
+    [Obsolete]
     internal class CityImporterView : IInputPathChangedEventListener
     {
         private readonly InputFolderSelectorGUI importFolderSelectorGUI;

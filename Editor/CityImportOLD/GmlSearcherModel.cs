@@ -75,6 +75,7 @@ namespace PLATEAU.Editor.CityImportOLD
         /// <summary>
         /// <paramref name="dirPath"/> 内のgmlファイルを再帰的に検索します。
         /// </summary>
+        [Obsolete]
         private IEnumerable<string> EnumerateGmlFilePaths(string dirPath)
         {
             foreach (var childDirPath in Directory.EnumerateDirectories(dirPath))

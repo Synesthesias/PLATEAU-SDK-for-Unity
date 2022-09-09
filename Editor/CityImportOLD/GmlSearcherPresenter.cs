@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using PLATEAU.CityMeta;
 
 namespace PLATEAU.Editor.CityImportOLD
@@ -22,6 +23,7 @@ namespace PLATEAU.Editor.CityImportOLD
         /// GmlSearcher の設定GUIを描画し、その設定を適用します。
         /// 戻り値は Gml検索の結果である gmlファイルの相対パスのリストです。
         /// </summary>
+        [Obsolete]
         public List<string> Draw()
         {
             return this.view.Draw(this.model, ref this.config, this);

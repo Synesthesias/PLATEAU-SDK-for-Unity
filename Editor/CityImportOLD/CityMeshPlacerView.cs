@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using PLATEAU.CityGML;
 using PLATEAU.CityMeta;
 using PLATEAU.CommonDataStructure;
@@ -12,6 +13,7 @@ namespace PLATEAU.Editor.CityImportOLD
     /// インポートした objファイルをシーンに配置することに関する設定GUIを描画します。
     /// <see cref="CityImporterView"/> がこのクラスを保持します。
     /// </summary>
+    [Obsolete]
     internal static class CityMeshPlacerView
     {
         public static void Draw(CityMeshPlacerPresenter presenter, CityMeshPlacerConfig placerConfig, IReadOnlyCollection<ObjInfo> availableObjs)

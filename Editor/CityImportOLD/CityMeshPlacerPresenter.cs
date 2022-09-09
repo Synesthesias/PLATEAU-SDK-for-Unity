@@ -1,7 +1,9 @@
-﻿using PLATEAU.CityMeta;
+﻿using System;
+using PLATEAU.CityMeta;
 
 namespace PLATEAU.Editor.CityImportOLD
 {
+    [Obsolete]
     internal class CityMeshPlacerPresenter
     {
         private CityMetadata metadata;
