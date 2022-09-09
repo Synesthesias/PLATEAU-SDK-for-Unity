@@ -4,7 +4,7 @@ using PLATEAU.Interop;
 using PLATEAU.IO;
 using UnityEditor;
 
-namespace PLATEAU.Editor.CityImport
+namespace PLATEAU.Editor.CityImportOLD
 {
     /// <summary>
     /// 基本メッシュ設定のGUIを提供します。

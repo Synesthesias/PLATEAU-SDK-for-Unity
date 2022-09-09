@@ -1,11 +1,11 @@
-﻿using PLATEAU.CityMeta;
+﻿using System;
+using PLATEAU.CityMeta;
 using PLATEAU.CommonDataStructure;
 using PLATEAU.Editor.EditorWindowCommon;
-using System;
 using UnityEditor;
 using UnityEngine;
 
-namespace PLATEAU.Editor.CityImport
+namespace PLATEAU.Editor.CityImportOLD
 {
     /// <summary>
     /// gmlファイルから objファイルへの変換に関して、地物タイプごとに対象のLOD範囲を設定するGUIです。

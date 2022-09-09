@@ -3,11 +3,18 @@ using UnityEngine;
 
 namespace PLATEAU.CityLoader
 {
+    /// <summary>
+    /// 都市モデルを読み込むコンポーネントです。
+    /// インスペクタに表示されるボタンについては PLATEAUCityModelLoaderEditor を参照してください。
+    /// </summary>
     internal class PLATEAUCityModelLoader : MonoBehaviour
     {
         [SerializeField] private string sourcePathBeforeImport;
         [SerializeField] private string sourcePathAfterImport; // TODO
         
+        /// <summary>
+        /// このコンポーネントが付いたゲームオブジェクトをシーンに生成します。
+        /// </summary>
         public static GameObject Create(string sourcePathBeforeImport)
         {
             string objName = Path.GetFileName(sourcePathBeforeImport);

@@ -1,11 +1,11 @@
 ﻿using System;
 using PLATEAU.Editor.EditorWindowCommon;
-using PLATEAU.Runtime.CityLoader.AreaSelector.Util.PathSelector;
+using PLATEAU.Editor.PlateauWindow.Util.PathSelector;
 using PLATEAU.Util;
 using UnityEditor;
 using Application = UnityEngine.Application;
 
-namespace PLATEAU.Editor.CityImport
+namespace PLATEAU.Editor.CityImportOLD
 {
 
     /// <summary>

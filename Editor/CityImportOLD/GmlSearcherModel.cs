@@ -1,12 +1,12 @@
-﻿using PLATEAU.CityMeta;
-using PLATEAU.Util.FileNames;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using PLATEAU.CityMeta;
+using PLATEAU.Util.FileNames;
 
-namespace PLATEAU.Editor.CityImport
+namespace PLATEAU.Editor.CityImportOLD
 {
     /// <summary>
     /// udxフォルダ内のgmlファイルを検索します。

@@ -5,14 +5,23 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 
-namespace PLATEAU.Runtime.CityLoader.AreaSelector.Import.AreaSelect
+namespace PLATEAU.Editor.PlateauWindow.Import.AreaSelect
 {
+    /// <summary>
+    /// 地図からの範囲選択画面を開始します。
+    /// 範囲選択専用のシーンを立ち上げます。Editモードであることが前提です。
+    /// </summary>
     public class AreaSelectorStarter
     {
         private Scene prevScene;
 
         private const string areaSelectorPrafabPath =
             "Packages/com.synesthesias.plateau-unity-sdk/Prefabs/AreaSelectorPrefab.prefab";
+        
+        /// <summary>
+        /// 範囲選択の専用シーンを立ち上げます。
+        /// ただし、現在のシーンに変更があれば保存するかどうかユーザーに尋ね、キャンセルが選択されたならば中止します。
+        /// </summary>
         public void Start()
         {
             if (!EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())

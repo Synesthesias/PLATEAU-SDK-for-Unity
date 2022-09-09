@@ -1,6 +1,6 @@
 ﻿using PLATEAU.Editor.EditorWindowCommon;
 
-namespace PLATEAU.Runtime.CityLoader.AreaSelector.MainTabGUI
+namespace PLATEAU.Editor.PlateauWindow.MainTabGUI
 {
     internal class CityVisualizeGUI : IEditorDrawable
     {

@@ -1,10 +1,10 @@
 ﻿using NUnit.Framework;
 using PLATEAU.CityMeta;
-using PLATEAU.Editor.CityImport;
 using PLATEAU.IO;
 using PLATEAU.Tests.TestUtils;
 using System;
 using System.Linq;
+using PLATEAU.Editor.CityImportOLD;
 
 namespace PLATEAU.Tests.EditModeTests.Placer
 {

@@ -1,10 +1,10 @@
-﻿using PLATEAU.CityMeta;
+﻿using System.Text;
+using PLATEAU.CityMeta;
 using PLATEAU.Editor.EditorWindowCommon;
-using System.Text;
 using UnityEditor;
 using UnityEngine;
 
-namespace PLATEAU.Editor.CityImport
+namespace PLATEAU.Editor.CityImportOLD
 {
     /// <summary>
     /// <see cref="CityMetadata"/> のインスペクタでの表示を行います。

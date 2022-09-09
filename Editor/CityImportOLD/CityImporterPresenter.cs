@@ -1,6 +1,6 @@
 ﻿using PLATEAU.CityMeta;
 
-namespace PLATEAU.Editor.CityImport
+namespace PLATEAU.Editor.CityImportOLD
 {
     /// <summary>
     /// CityImporter の model, view, config を結びつけ、それぞれに指示を出します。

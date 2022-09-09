@@ -1,6 +1,6 @@
 ﻿using PLATEAU.CityMeta;
 
-namespace PLATEAU.Editor.CityImport
+namespace PLATEAU.Editor.CityImportOLD
 {
     internal class CityMeshPlacerPresenter
     {

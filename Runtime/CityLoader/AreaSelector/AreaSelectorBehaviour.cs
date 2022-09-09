@@ -5,6 +5,9 @@ using UnityEngine;
 
 namespace PLATEAU.CityLoader.AreaSelector
 {
+    /// <summary>
+    /// 範囲選択画面の進行を担当するコンポーネントです。
+    /// </summary>
     [ExecuteInEditMode]
     public class AreaSelectorBehaviour : MonoBehaviour
     {

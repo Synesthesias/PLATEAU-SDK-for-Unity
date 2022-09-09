@@ -1,11 +1,11 @@
-﻿using PLATEAU.CityMeta;
+﻿using System.IO;
+using PLATEAU.CityMeta;
 using PLATEAU.Util;
 using PLATEAU.Util.FileNames;
-using System.IO;
 using UnityEditor;
 using UnityEngine;
 
-namespace PLATEAU.Editor.CityImport
+namespace PLATEAU.Editor.CityImportOLD
 {
 
     /// <summary>

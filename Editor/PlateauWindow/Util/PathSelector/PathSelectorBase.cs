@@ -1,7 +1,7 @@
 ﻿using PLATEAU.Editor.EditorWindowCommon;
 using UnityEditor;
 
-namespace PLATEAU.Runtime.CityLoader.AreaSelector.Util.PathSelector
+namespace PLATEAU.Editor.PlateauWindow.Util.PathSelector
 {
     internal abstract class PathSelectorBase
     {

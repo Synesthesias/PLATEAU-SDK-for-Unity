@@ -1,8 +1,8 @@
 ﻿using PLATEAU.CityMeta;
 using PLATEAU.CommonDataStructure;
-using PLATEAU.Editor.CityImport;
 using PLATEAU.IO;
 using System.Collections.Generic;
+using PLATEAU.Editor.CityImportOLD;
 
 namespace PLATEAU.Tests.TestUtils
 {

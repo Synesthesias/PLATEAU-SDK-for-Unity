@@ -1,7 +1,7 @@
 ﻿using PLATEAU.Editor.EditorWindowCommon;
 using UnityEditor;
 
-namespace PLATEAU.Runtime.CityLoader.AreaSelector.MainTabGUI
+namespace PLATEAU.Editor.PlateauWindow.MainTabGUI
 {
     internal class CityImportRemoteGUI : IEditorDrawable
     {

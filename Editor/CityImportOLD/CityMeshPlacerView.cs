@@ -1,12 +1,12 @@
-﻿using PLATEAU.CityGML;
+﻿using System.Collections.Generic;
+using PLATEAU.CityGML;
 using PLATEAU.CityMeta;
 using PLATEAU.CommonDataStructure;
 using PLATEAU.Editor.EditorWindowCommon;
 using PLATEAU.Util.CityObjectTypeExtensions;
-using System.Collections.Generic;
 using UnityEditor;
 
-namespace PLATEAU.Editor.CityImport
+namespace PLATEAU.Editor.CityImportOLD
 {
     /// <summary>
     /// インポートした objファイルをシーンに配置することに関する設定GUIを描画します。

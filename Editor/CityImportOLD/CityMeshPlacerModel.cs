@@ -1,4 +1,7 @@
-﻿using PLATEAU.Behaviour;
+﻿using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using PLATEAU.Behaviour;
 using PLATEAU.CityGML;
 using PLATEAU.CityMeta;
 using PLATEAU.Editor.Diagnostics;
@@ -6,14 +9,11 @@ using PLATEAU.Interop;
 using PLATEAU.IO;
 using PLATEAU.Util;
 using PLATEAU.Util.FileNames;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using UnityEditor;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace PLATEAU.Editor.CityImport
+namespace PLATEAU.Editor.CityImportOLD
 {
     internal static class CityMeshPlacerModel
     {

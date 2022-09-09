@@ -1,6 +1,6 @@
 ﻿using NUnit.Framework;
-using PLATEAU.Editor.CityImport;
 using System.Collections;
+using PLATEAU.Editor.CityImportOLD;
 using UnityEditor;
 using UnityEngine.TestTools;
 

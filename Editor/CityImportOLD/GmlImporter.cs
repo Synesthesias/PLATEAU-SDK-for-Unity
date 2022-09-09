@@ -1,18 +1,18 @@
-﻿using PLATEAU.CityGML;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using PLATEAU.CityGML;
 using PLATEAU.CityMeta;
 using PLATEAU.Editor.Converters;
 using PLATEAU.Editor.Diagnostics;
 using PLATEAU.Interop;
 using PLATEAU.Util;
 using PLATEAU.Util.FileNames;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
-namespace PLATEAU.Editor.CityImport
+namespace PLATEAU.Editor.CityImportOLD
 {
     internal static class GmlImporter
     {

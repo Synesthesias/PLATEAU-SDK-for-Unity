@@ -1,6 +1,6 @@
 ﻿using PLATEAU.CityLoader;
 using PLATEAU.Editor.EditorWindowCommon;
-using PLATEAU.Runtime.CityLoader.AreaSelector.Import;
+using PLATEAU.Editor.PlateauWindow.Import.AreaSelect;
 using UnityEditor;
 
 namespace PLATEAU.Editor.CityLoader
@@ -13,7 +13,8 @@ namespace PLATEAU.Editor.CityLoader
             var loader = (PLATEAUCityModelLoader)target;
             if (PlateauEditorStyle.MainButton("範囲選択"))
             {
-                new Importer().Import(loader.SourcePathAfterImport);
+                var areaSelector = new AreaSelectorStarter();
+                areaSelector.Start();
             }
             EditorGUILayout.LabelField("インポート前パス:");
             PlateauEditorStyle.MultiLineLabelWithBox(loader.SourcePathBeforeImport);

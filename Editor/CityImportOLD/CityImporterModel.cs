@@ -4,7 +4,7 @@ using PLATEAU.Editor.Diagnostics;
 using UnityEditor;
 using Debug = UnityEngine.Debug;
 
-namespace PLATEAU.Editor.CityImport
+namespace PLATEAU.Editor.CityImportOLD
 {
 
     /// <summary>

@@ -2,7 +2,7 @@
 using UnityEditor;
 using UnityEngine;
 
-namespace PLATEAU.Runtime.CityLoader.AreaSelector
+namespace PLATEAU.Editor.PlateauWindow
 {
     internal class PlateauWindow : EditorWindow
     {

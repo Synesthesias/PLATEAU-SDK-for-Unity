@@ -3,7 +3,7 @@ using PLATEAU.Editor.EditorWindowCommon;
 using UnityEditor;
 using UnityEngine;
 
-namespace PLATEAU.Editor.CityImport
+namespace PLATEAU.Editor.CityImportOLD
 {
 
     /// <summary>

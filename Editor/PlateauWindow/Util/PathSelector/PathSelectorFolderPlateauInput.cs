@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using UnityEditor;
 
-namespace PLATEAU.Runtime.CityLoader.AreaSelector.Util.PathSelector
+namespace PLATEAU.Editor.PlateauWindow.Util.PathSelector
 {
     internal class PathSelectorFolderPlateauInput : PathSelectorFolder
     {

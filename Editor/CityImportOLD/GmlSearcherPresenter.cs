@@ -1,7 +1,7 @@
-﻿using PLATEAU.CityMeta;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using PLATEAU.CityMeta;
 
-namespace PLATEAU.Editor.CityImport
+namespace PLATEAU.Editor.CityImportOLD
 {
     /// <summary>
     /// GmlSearcher の Model, View, Config を結びつけ、設定GUIの描画と適用を行います。

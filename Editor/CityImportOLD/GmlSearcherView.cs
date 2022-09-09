@@ -1,10 +1,10 @@
-﻿using PLATEAU.CityMeta;
+﻿using System.Collections.Generic;
+using PLATEAU.CityMeta;
 using PLATEAU.Editor.EditorWindowCommon;
-using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-namespace PLATEAU.Editor.CityImport
+namespace PLATEAU.Editor.CityImportOLD
 {
 
     /// <summary>

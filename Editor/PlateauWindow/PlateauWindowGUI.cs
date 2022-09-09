@@ -1,7 +1,7 @@
 ﻿using PLATEAU.Editor.EditorWindowCommon;
-using PLATEAU.Runtime.CityLoader.AreaSelector.MainTabGUI;
+using PLATEAU.Editor.PlateauWindow.MainTabGUI;
 
-namespace PLATEAU.Runtime.CityLoader.AreaSelector
+namespace PLATEAU.Editor.PlateauWindow
 {
     internal class PlateauWindowGUI : IEditorDrawable
     {

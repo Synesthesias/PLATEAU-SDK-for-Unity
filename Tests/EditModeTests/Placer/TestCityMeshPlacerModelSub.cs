@@ -1,6 +1,6 @@
 ﻿using NUnit.Framework;
 using PLATEAU.CityGML;
-using PLATEAU.Editor.CityImport;
+using PLATEAU.Editor.CityImportOLD;
 using PLATEAU.IO;
 using PLATEAU.Tests.TestUtils;
 using static PLATEAU.Tests.EditModeTests.Placer.TestPlacerUtil;
