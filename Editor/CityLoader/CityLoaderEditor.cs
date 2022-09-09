@@ -1,20 +1,20 @@
-﻿using PLATEAU.CityGrid;
+﻿using PLATEAU.CityLoader.Load;
 using PLATEAU.Editor.EditorWindowCommon;
 using PLATEAU.Util.Async;
 using UnityEditor;
 
-namespace PLATEAU.Editor.CityGrid
+namespace PLATEAU.Editor.CityLoader
 {
-    [CustomEditor(typeof(CityGridLoader))]
+    [CustomEditor(typeof(CityLoaderBehaviour))]
     public class CityGridLoaderEditor : UnityEditor.Editor
     {
         public override void OnInspectorGUI()
         {
-            var gridLoader = (CityGridLoader)target;
+            var behaviour = (CityLoaderBehaviour)target;
             base.OnInspectorGUI();
             if (PlateauEditorStyle.MainButton("ロード"))
             {
-                var task = gridLoader.Load();
+                var task = behaviour.LoadAsync();
                 task.ContinueWithErrorCatch();
             }
         }

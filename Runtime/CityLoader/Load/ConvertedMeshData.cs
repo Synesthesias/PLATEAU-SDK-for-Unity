@@ -1,12 +1,12 @@
-﻿using PLATEAU.Util;
-using PLATEAU.Util.Async;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using PLATEAU.Util;
+using PLATEAU.Util.Async;
 using UnityEngine;
 using Mesh = UnityEngine.Mesh;
 
-namespace PLATEAU.CityGrid
+namespace PLATEAU.CityLoader.Load
 {
     /// <summary>
     /// DLL側の Mesh を Unity向けに変換したものです。

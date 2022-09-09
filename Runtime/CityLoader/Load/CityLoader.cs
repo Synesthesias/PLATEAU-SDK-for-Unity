@@ -1,43 +1,20 @@
 ﻿using System.Collections.Generic;
+using System.IO;
+using System.Threading.Tasks;
 using PLATEAU.CityGML;
-using PLATEAU.PolygonMesh;
 using PLATEAU.Interop;
 using PLATEAU.IO;
+using PLATEAU.PolygonMesh;
 using PLATEAU.Util;
-using System.Threading.Tasks;
+using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-
-#if UNITY_EDITOR
-using UnityEditor.SceneManagement;
-#endif
-
 using Texture = UnityEngine.Texture;
 
-namespace PLATEAU.CityGrid
+namespace PLATEAU.CityLoader.Load
 {
-    /// <summary>
-    /// 都市を指定数のグリッドに分割し、各グリッド内のメッシュを結合し、シーンに配置します。
-    /// 
-    /// </summary>
-    internal class CityGridLoader : MonoBehaviour
+    internal static class CityLoader
     {
-        [SerializeField] private string gmlRelativePathFromStreamingAssets;
-        [SerializeField] private MeshGranularity meshGranularity = MeshGranularity.PerCityModelArea;
-        [SerializeField, Tooltip("グリッド分けした時の一辺のグリッド数です。グリッドの数はこの数値の2乗になります。")] private int gridCountOfSide = 10;
-        [SerializeField] private bool doExportAppearance = true;
-        [SerializeField] private uint minLOD = 2;
-        [SerializeField] private uint maxLOD = 2;
-        [SerializeField, Tooltip("範囲指定（緯度）です。")] private double minLatitude = -90;
-        [SerializeField] private double maxLatitude = 90;
-        [SerializeField, Tooltip("範囲指定（経度）です。")] private double minLongitude = -180;
-        [SerializeField] private double maxLongitude = 180;
-        
-        /// <summary>
-        /// テクスチャパス と テクスチャを紐付ける辞書です。同じテクスチャが繰り返しロードされることを防ぎます。
-        /// これがないと、異なるオブジェクトが同じテクスチャURLを指していても愚直にオブジェクトごとにテクスチャをロードしてシーンに保存することになるので、最小地物を扱うときのシーン容量がゴジラのごとくになります。
-        /// </summary>
-        private readonly Dictionary<string, Texture> cachedTexture = new Dictionary<string, Texture>();
 
         // TODO Loadの実行中にまたLoadが実行されることを防ぐ仕組みが未実装
         // TODO 進捗を表示する機能と処理をキャンセルする機能が未実装
@@ -45,11 +22,23 @@ namespace PLATEAU.CityGrid
         /// GMLファイルをロードし、都市を指定数のグリッドに分割し、グリッド内のメッシュを結合し、シーンに配置します。
         /// 非同期処理です。必ずメインスレッドで呼ぶ必要があります。
         /// </summary>
-        public async Task Load()
+        public static async Task Load(
+            string gmlRelativePathFromStreamingAssets,
+            MeshGranularity meshGranularity,
+            uint minLOD, uint maxLOD,
+            bool doExportAppearance,
+            int gridCountOfSide,
+            double minLatitude, double minLongitude, double maxLatitude, double maxLongitude
+            )
         {
-            if (!AreMemberVariablesOK()) return;
+            if (!AreArgumentsOK(gridCountOfSide, minLOD, maxLOD)) return;
+            string gmlAbsolutePath = Application.streamingAssetsPath + "/" + gmlRelativePathFromStreamingAssets;
+            if (!File.Exists(gmlAbsolutePath))
+            {
+                Debug.LogError($"File not found on {gmlAbsolutePath}");
+                return;
+            }
             Debug.Log("load started.");
-            string gmlAbsolutePath = Application.streamingAssetsPath + "/" + this.gmlRelativePathFromStreamingAssets;
 
             ConvertedGameObjData meshObjsData;
             // ここの処理は 処理A と 処理B に分割されています。
@@ -65,9 +54,9 @@ namespace PLATEAU.CityGrid
             meshObjsData = await Task.Run(() =>
             {
                 Extent extent = new Extent(
-                    new GeoCoordinate(this.minLatitude, this.minLongitude, -9999),
-                    new GeoCoordinate(this.maxLatitude, this.maxLongitude, 9999)); 
-                using var plateauModel = LoadGmlAndMergeMeshes(gmlAbsolutePath,this.meshGranularity, this.gridCountOfSide,this.doExportAppearance, this.minLOD, this.maxLOD, extent);
+                    new GeoCoordinate(minLatitude, minLongitude, -9999),
+                    new GeoCoordinate(maxLatitude, maxLongitude, 9999)); 
+                using var plateauModel = LoadGmlAndMergeMeshes(gmlAbsolutePath,meshGranularity, gridCountOfSide, doExportAppearance, minLOD, maxLOD, extent);
                 var convertedObjData = new ConvertedGameObjData(plateauModel);
                 return convertedObjData;
             });
@@ -75,7 +64,11 @@ namespace PLATEAU.CityGrid
             // 処理B :
             // 実際にメッシュを操作してシーンに配置します。
             // こちらはメインスレッドでのみ実行可能なので、Loadメソッドはメインスレッドから呼ぶ必要があります。
-            await meshObjsData.PlaceToScene(null, gmlAbsolutePath, this.cachedTexture);
+            
+            // テクスチャパス と テクスチャを紐付ける辞書です。同じテクスチャが繰り返しロードされることを防ぎます。
+            Dictionary<string, Texture> cachedTexture = new Dictionary<string, Texture>();
+            
+            await meshObjsData.PlaceToScene(null, gmlAbsolutePath, cachedTexture);
 
             // エディター内での実行であれば、生成したメッシュ,テクスチャ等をシーンに保存したいので
             // シーンにダーティフラグを付けます。
@@ -89,17 +82,17 @@ namespace PLATEAU.CityGrid
             Debug.Log("Load complete!");
         }
 
-        private bool AreMemberVariablesOK()
+        private static bool AreArgumentsOK(int gridCountOfSide, uint minLOD, uint maxLOD)
         {
-            if (this.gridCountOfSide <= 0)
+            if (gridCountOfSide <= 0)
             {
-                Debug.LogError($"{nameof(this.gridCountOfSide)} の値を1以上にしてください");
+                Debug.LogError($"{nameof(gridCountOfSide)} の値を1以上にしてください");
                 return false;
             }
 
-            if (this.maxLOD < this.minLOD)
+            if (maxLOD < minLOD)
             {
-                Debug.LogError($"{nameof(this.minLOD)}, {nameof(this.maxLOD)} は0以上であり、 min <= max である必要があります。");
+                Debug.LogError($"{nameof(minLOD)}, {nameof(maxLOD)} は0以上であり、 min <= max である必要があります。");
                 return false;
             }
 
@@ -139,7 +132,7 @@ namespace PLATEAU.CityGrid
             return model;
         }
 
-        /// <summary> gmlファイルをパースして <see cref="CityModel"/> を返します。 </summary>
+        /// <summary> gmlファイルをパースして <see cref="CityGML.CityModel"/> を返します。 </summary>
         private static CityModel LoadCityModel(string gmlAbsolutePath)
         {
             var parserParams = new CitygmlParserParams(true, true, false);

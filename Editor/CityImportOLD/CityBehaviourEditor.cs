@@ -1,9 +1,8 @@
 ﻿using PLATEAU.Behaviour;
-using PLATEAU.Editor.CityImportOLD;
 using PLATEAU.Editor.EditorWindowCommon;
 using UnityEditor;
 
-namespace PLATEAU.Editor.Behaviour
+namespace PLATEAU.Editor.CityImportOLD
 {
     [CustomEditor(typeof(CityBehaviour))]
     internal class CityBehaviourEditor : UnityEditor.Editor

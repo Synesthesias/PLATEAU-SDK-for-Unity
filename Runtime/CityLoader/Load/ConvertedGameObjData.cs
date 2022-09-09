@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using PLATEAU.PolygonMesh;
 using UnityEngine;
 
-namespace PLATEAU.CityGrid
+namespace PLATEAU.CityLoader.Load
 {
     internal class ConvertedGameObjData
     {

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-namespace PLATEAU.CityGrid
+namespace PLATEAU.CityLoader.Load
 {
     /// <summary>
     /// <see cref="Mesh"/> を Unityの Mesh に変換します。
@@ -11,7 +11,7 @@ namespace PLATEAU.CityGrid
         /// <summary>
         /// C++側の<see cref="GeometryModel.Mesh"/> を Unity向けのデータ に変換します。
         /// Unityのメッシュを生成する準備としてのデータ生成です。実際のメッシュはまだ触りません。
-        /// その理由は <see cref="CityGridLoader.Load"/> のコメントを参照してください。
+        /// その理由は <see cref="CityLoaderBehaviour.LoadAsync"/> のコメントを参照してください。
         /// このメソッドの結果をもとに、 <see cref="ConvertedGameObjData.PlaceToScene"/> メソッドで実際のメッシュを配置できます。
         /// </summary>
         public static ConvertedMeshData Convert(PolygonMesh.Mesh plateauMesh, string meshName)

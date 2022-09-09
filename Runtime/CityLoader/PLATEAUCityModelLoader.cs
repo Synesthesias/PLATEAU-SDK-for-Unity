@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using PLATEAU.CityLoader.Setting;
 using UnityEngine;
 
 namespace PLATEAU.CityLoader
@@ -11,6 +12,7 @@ namespace PLATEAU.CityLoader
     {
         [SerializeField] private string sourcePathBeforeImport;
         [SerializeField] private string sourcePathAfterImport; // TODO
+        [SerializeField] private CityLoadSetting cityLoadSetting = new CityLoadSetting();
         
         /// <summary>
         /// このコンポーネントが付いたゲームオブジェクトをシーンに生成します。
