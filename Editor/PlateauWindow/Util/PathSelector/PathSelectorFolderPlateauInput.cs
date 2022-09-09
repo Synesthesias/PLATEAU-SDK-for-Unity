@@ -3,6 +3,10 @@ using UnityEditor;
 
 namespace PLATEAU.Editor.PlateauWindow.Util.PathSelector
 {
+    /// <summary>
+    /// <see cref="PathSelectorFolder"/> に PLATEAU入力パスとして固有の機能を追加したものです。
+    /// PLATEAUフォルダが選択されていなければ警告を表示します。
+    /// </summary>
     internal class PathSelectorFolderPlateauInput : PathSelectorFolder
     {
         public override string Draw(string labelText)

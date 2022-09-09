@@ -4,8 +4,16 @@ using UnityEngine.Networking;
 
 namespace PLATEAU.Util.Async
 {
+    /// <summary>
+    /// URLから画像をロードしてテクスチャとして返します。
+    /// </summary>
     public static class TextureLoader
     {
+        /// <summary>
+        /// 非同期で url から画像をダウンロードしてテクスチャとして返します。
+        /// コルーチンを使うので、メインスレッドで行われる必要があります。
+        /// 失敗した場合は null を返します。
+        /// </summary>
         public static async Task<Texture> LoadAsync(string url, int timeOutSec)
         {
             var request = UnityWebRequestTexture.GetTexture(url);

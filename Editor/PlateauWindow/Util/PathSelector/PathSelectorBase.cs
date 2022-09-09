@@ -3,6 +3,10 @@ using UnityEditor;
 
 namespace PLATEAU.Editor.PlateauWindow.Util.PathSelector
 {
+    /// <summary>
+    /// Unityの拡張エディタで、パスを選択するGUIの基底クラスです。
+    /// パス選択のダイアログ表示処理はサブクラスで実装されます。
+    /// </summary>
     internal abstract class PathSelectorBase
     {
         protected string SelectedPath { get; set; }
@@ -18,6 +22,7 @@ namespace PLATEAU.Editor.PlateauWindow.Util.PathSelector
                 }
             }
             
+            // ボタンが押された時。
             // この処理は本来ならば上記の if(ボタン押下時){処理} の処理中に移動して良さそうですが、
             // Unityのバグで VerticaScope 内で時間のかかる処理をするとエラーメッセージが出るので
             // VerticalScope の外に移動しています。
@@ -25,18 +30,22 @@ namespace PLATEAU.Editor.PlateauWindow.Util.PathSelector
             if (isButtonPressed)
             {
                 string dialoguePath = PathSelectorDialogue();
-                this.SelectedPath = string.IsNullOrEmpty(dialoguePath) ? SelectedPath : dialoguePath;
+                SelectedPath = string.IsNullOrEmpty(dialoguePath) ? SelectedPath : dialoguePath;
             }
 
+            // 選択されたパスを表示するGUIです。
             using (PlateauEditorStyle.VerticalScopeLevel1())
             {
                 string displayFolderPath = string.IsNullOrEmpty(SelectedPath) ? "未選択" : SelectedPath;
                 PlateauEditorStyle.MultiLineLabelWithBox(displayFolderPath);
             }
 
-            return this.SelectedPath;
+            return SelectedPath;
         }
 
+        /// <summary>
+        /// パスを選択するダイアログを表示します。
+        /// </summary>
         protected abstract string PathSelectorDialogue();
     }
 }

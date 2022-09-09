@@ -4,6 +4,9 @@ using UnityEngine;
 
 namespace PLATEAU.Editor.PlateauWindow
 {
+    /// <summary>
+    /// PLATEAU SDK ウィンドウのエントリーポイントです。
+    /// </summary>
     internal class PlateauWindow : EditorWindow
     {
         private Vector2 scrollPosition;

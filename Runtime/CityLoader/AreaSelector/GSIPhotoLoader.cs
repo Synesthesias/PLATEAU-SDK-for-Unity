@@ -19,7 +19,8 @@ namespace PLATEAU.CityLoader.AreaSelector
         /// 引数の値の意味は <see href="https://maps.gsi.go.jp/development/siyou.html#siyou-url"> 国土地理院のWebページ </see> を参照してください。
         /// どのような id の地図が存在するかは、 <see cref="https://maps.gsi.go.jp/development/ichiran.html"> 地理院地図の一覧 </see> を参照してください。
         /// また、生成されたマテリアルは 引数の <paramref name="mapMaterials"/> に追加されます。
-        /// その意図は、Editモードで生成されたマテリアルは利用終了後に廃棄しないとリークするので、あとで廃棄すべきマテリアルとして覚えておくためです。 
+        /// Editモードで生成されたマテリアルは利用終了後に廃棄しないとリークするので、
+        /// メソッド利用者の責任で <paramref name="mapMaterials"/> の各マテリアルを廃棄する必要があります。
         /// </summary>
         public static async Task Load(string id, int z, int x, int y, MeshRenderer renderer, List<Material> mapMaterials)
         {
