@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using PLATEAU.Util.Async;
+using UnityEditor;
 using UnityEngine;
 
 namespace PLATEAU.CityLoader.AreaSelector
@@ -12,6 +13,7 @@ namespace PLATEAU.CityLoader.AreaSelector
     {
         private const string GSIMapURL = "https://cyberjapandata.gsi.go.jp/xyz";
         private const int timeOutSec = 10;
+        private const string MapMaterialPath = "Packages/com.synesthesias.plateau-unity-sdk/Materials/MapUnlitMaterial.mat";
         
         /// <summary>
         /// 国土地理院の地図画像を取得し、引数の <paramref name="renderer"/> のマテリアルのメインテクスチャにその地図画像を割り当てます。
@@ -27,6 +29,13 @@ namespace PLATEAU.CityLoader.AreaSelector
             string url = $"{GSIMapURL}/{id}/{z}/{x}/{y}.jpg";
             Texture texture = await TextureLoader.LoadAsync(url, timeOutSec);
             if (texture == null) return;
+            var loadedMaterial = AssetDatabase.LoadAssetAtPath<Material>(MapMaterialPath);
+            if (loadedMaterial == null)
+            {
+                Debug.LogError("Could not find material.");
+                return;
+            }
+            renderer.sharedMaterial = loadedMaterial;
             var mat = new Material(renderer.sharedMaterial)
             {
                 mainTexture = texture

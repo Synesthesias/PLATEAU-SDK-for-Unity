@@ -117,7 +117,7 @@ namespace PLATEAU.CityLoader.Load
             {
                 // TODO ReferencePoint はユーザーが設定できるようにしたほうが良い
                 ReferencePoint = cityModel.CenterPoint,
-                MeshAxes = CoordinateSystem.WUN,
+                MeshAxes = CoordinateSystem.EUN,
                 MeshGranularity = meshGranularity,
                 MaxLOD = maxLOD,
                 MinLOD = minLOD,

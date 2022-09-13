@@ -19,7 +19,7 @@ namespace PLATEAU.Editor.CityLoader
             if (PlateauEditorStyle.MainButton("範囲選択"))
             {
                 var areaSelector = new AreaSelectorStarter();
-                areaSelector.Start();
+                areaSelector.Start(loader.SourcePathBeforeImport);
             }
 
             if (PlateauEditorStyle.MainButton("インポート"))

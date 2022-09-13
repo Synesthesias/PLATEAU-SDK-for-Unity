@@ -2,6 +2,7 @@
 using System.Runtime.InteropServices;
 using PLATEAU.CityGML;
 using PLATEAU.IO;
+using PLATEAU.Udx;
 
 // 文字列のサイズをDLLでやりとりする時の型を決めます。
 using DllStrSizeT = System.Int32;
@@ -874,5 +875,66 @@ namespace PLATEAU.Interop
             [In] IntPtr geoReferencePtr,
             out PlateauVector3d outXyz,
             GeoCoordinate latLon);
+        
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_geo_reference_unproject(
+            [In] IntPtr geoReferencePtr,
+            out GeoCoordinate outLatlon,
+            PlateauVector3d point);
+
+        // ***************
+        //  mesh_code_c.cpp
+        // ***************
+        [DllImport(DllName)]
+        internal static extern MeshCode plateau_mesh_code_parse(
+            [In] string code);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_mesh_code_get_extent(
+            [In] MeshCode meshCode,
+            [In, Out] ref Extent outExtent);
+
+        // ***************
+        //  udx_file_collection_c.cpp
+        // ***************
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_create_udx_file_collection(
+            out IntPtr handle);
+        
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_delete_udx_file_collection(
+            [In] IntPtr handle);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_udx_file_collection_find(
+            [In] string source, [In, Out] IntPtr handle);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_udx_file_collection_filter(
+            [In] IntPtr handle, [In] Extent extent, [In, Out] IntPtr out_handle);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_udx_file_collection_get_packages(
+            [In] IntPtr handle, out PredefinedCityModelPackage packages);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_udx_file_collection_get_mesh_code_count(
+            [In] IntPtr handle, [In, Out] ref int count);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_udx_file_collection_get_mesh_codes(
+            [In] IntPtr handle, [In, Out] MeshCode[] meshCodes, [In] int count);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_udx_file_collection_get_gml_file_count(
+            [In] IntPtr handle, out int count, [In] PredefinedCityModelPackage package);
+        
+        [DllImport(DllName, CharSet = CharSet.Ansi)]
+        internal static extern APIResult plateau_udx_file_collection_get_gml_file(
+            [In] IntPtr handle,
+            out IntPtr strPtr,
+            out int strLength,
+            [In] PredefinedCityModelPackage package,
+            [In] int index);
     }
 }

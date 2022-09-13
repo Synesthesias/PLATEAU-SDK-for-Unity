@@ -3,7 +3,7 @@ using System;
 using System.Linq;
 using System.Reflection;
 using UnityEditor;
-using UnityEditor.Formats.Fbx.Exporter;
+// using UnityEditor.Formats.Fbx.Exporter;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -13,6 +13,7 @@ namespace PLATEAU.Editor.Converters
     /// <summary>
     /// Objファイルをfbxファイルに変換します。
     /// </summary>
+    [Obsolete("廃止中")]
     internal class ObjToFbxConverter
     {
         private FbxFormat fbxFormat = FbxFormat.Binary;
@@ -41,25 +42,25 @@ namespace PLATEAU.Editor.Converters
         /// </summary>
         public bool Convert(string srcFilePath, string dstFilePath)
         {
-            if (!PathUtil.IsValidInputFilePath(srcFilePath, "obj", true)) return false;
-            if (!PathUtil.IsValidOutputFilePath(dstFilePath, "fbx")) return false;
-
-
-            var srcAssetPath = PathUtil.FullPathToAssetsPath(srcFilePath);
-            var objMesh = AssetDatabase.LoadAssetAtPath<Object>(srcAssetPath);
-
-            switch (this.fbxFormat)
-            {
-                case FbxFormat.Binary:
-                    ExportBinaryFBX(dstFilePath, objMesh);
-                    break;
-                case FbxFormat.Ascii:
-                    ExportAsciiFBX(dstFilePath, objMesh);
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
-
+            // if (!PathUtil.IsValidInputFilePath(srcFilePath, "obj", true)) return false;
+            // if (!PathUtil.IsValidOutputFilePath(dstFilePath, "fbx")) return false;
+            //
+            //
+            // var srcAssetPath = PathUtil.FullPathToAssetsPath(srcFilePath);
+            // var objMesh = AssetDatabase.LoadAssetAtPath<Object>(srcAssetPath);
+            //
+            // switch (this.fbxFormat)
+            // {
+            //     case FbxFormat.Binary:
+            //         ExportBinaryFBX(dstFilePath, objMesh);
+            //         break;
+            //     case FbxFormat.Ascii:
+            //         ExportAsciiFBX(dstFilePath, objMesh);
+            //         break;
+            //     default:
+            //         throw new ArgumentOutOfRangeException();
+            // }
+            //
             return true;
         }
 
@@ -70,7 +71,7 @@ namespace PLATEAU.Editor.Converters
         {
             // ModelExporterのデフォルト設定が Asciiフォーマットなので、
             // 普通に下記のメソッドを実行すれば AsciiフォーマットのFBXファイルができます。
-            ModelExporter.ExportObject(exportPath, objMesh);
+            // ModelExporter.ExportObject(exportPath, objMesh);
         }
 
 
@@ -87,51 +88,51 @@ namespace PLATEAU.Editor.Converters
             // 参考 : https://forum.unity.com/threads/fbx-exporter-binary-export-doesnt-work-via-editor-scripting.1114221/#post-7277590
 
             // Unity.Formats.Fbx.Editor のアセンブリから関連する型を取得します。
-            var types = AppDomain.CurrentDomain.GetAssemblies().First(x =>
-                    x.FullName == "Unity.Formats.Fbx.Editor, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
-                )
-                .GetTypes();
-            var optionsInterfaceType = types.First(x => x.Name == "IExportOptions");
-            var optionsType = types.First(x => x.Name == "ExportOptionsSettingsSerializeBase");
+            // var types = AppDomain.CurrentDomain.GetAssemblies().First(x =>
+            //         x.FullName == "Unity.Formats.Fbx.Editor, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+            //     )
+            //     .GetTypes();
+            // var optionsInterfaceType = types.First(x => x.Name == "IExportOptions");
+            // var optionsType = types.First(x => x.Name == "ExportOptionsSettingsSerializeBase");
 
             // 設定用オブジェクトをインスタンス化します。
-            var propertyInfo =
-                typeof(ModelExporter).GetProperty("DefaultOptions", BindingFlags.Static | BindingFlags.NonPublic);
-            if (propertyInfo == null)
-            {
-                LogAbort();
-                return;
-            }
+            // var propertyInfo =
+            //     typeof(ModelExporter).GetProperty("DefaultOptions", BindingFlags.Static | BindingFlags.NonPublic);
+            // if (propertyInfo == null)
+            // {
+            //     LogAbort();
+            //     return;
+            // }
 
-            var optionsProperty = propertyInfo.GetGetMethod(true);
-            var optionsInstance = optionsProperty.Invoke(null, null);
+            // var optionsProperty = propertyInfo.GetGetMethod(true);
+            // var optionsInstance = optionsProperty.Invoke(null, null);
 
             // エクスポート設定をASCIIからBinaryに変更します。
-            var exportFormatField =
-                optionsType.GetField("exportFormat", BindingFlags.Instance | BindingFlags.NonPublic);
-            if (exportFormatField == null)
-            {
-                LogAbort();
-                return;
-            }
-
-            exportFormatField.SetValue(optionsInstance, 1);
-
-            // 設定を指定しつつfbxファイルをエクスポートします。
-            var exportObjectMethod = typeof(ModelExporter).GetMethod(
-                "ExportObject",
-                BindingFlags.Static | BindingFlags.NonPublic,
-                Type.DefaultBinder,
-                new[] { typeof(string), typeof(Object), optionsInterfaceType },
-                null
-            );
-            if (exportObjectMethod == null)
-            {
-                LogAbort();
-                return;
-            }
-
-            exportObjectMethod.Invoke(null, new[] { filePath, singleObject, optionsInstance });
+            // var exportFormatField =
+            //     optionsType.GetField("exportFormat", BindingFlags.Instance | BindingFlags.NonPublic);
+            // if (exportFormatField == null)
+            // {
+            //     LogAbort();
+            //     return;
+            // }
+            //
+            // exportFormatField.SetValue(optionsInstance, 1);
+            //
+            // // 設定を指定しつつfbxファイルをエクスポートします。
+            // var exportObjectMethod = typeof(ModelExporter).GetMethod(
+            //     "ExportObject",
+            //     BindingFlags.Static | BindingFlags.NonPublic,
+            //     Type.DefaultBinder,
+            //     new[] { typeof(string), typeof(Object), optionsInterfaceType },
+            //     null
+            // );
+            // if (exportObjectMethod == null)
+            // {
+            //     LogAbort();
+            //     return;
+            // }
+            //
+            // exportObjectMethod.Invoke(null, new[] { filePath, singleObject, optionsInstance });
         }
 
         /// <summary> "Aborting." というメッセージでエラーログを出します。</summary>

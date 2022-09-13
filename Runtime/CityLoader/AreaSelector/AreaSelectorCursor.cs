@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 using Vector3 = UnityEngine.Vector3;
 
 #if UNITY_EDITOR
@@ -8,52 +9,45 @@ using UnityEditor;
 namespace PLATEAU.CityLoader.AreaSelector
 {
     [ExecuteInEditMode]
-    public class AreaSelectorCursor : MonoBehaviour
+    public class AreaSelectorCursor : BoxGizmoDrawer
     {
 
         private readonly Color cursorColor = Color.blue;
-        private const float boxUpperHeight = 30f; // なんとなく見やすそうな高さ
-        private const float boxBottomHeight = 1f; // カーソルの線が地面と重なって隠れない程度の高さ
-        private const float boxCenterHeight = (boxUpperHeight + boxBottomHeight) / 2.0f;
-        private const float boxSizeY = boxUpperHeight - boxBottomHeight;
+        public const float BoxUpperHeight = 30f; // なんとなく見やすそうな高さ
+        public const float BoxBottomHeight = 1f; // カーソルの線が地面と重なって隠れない程度の高さ
+        public const float BoxCenterHeight = (BoxUpperHeight + BoxBottomHeight) / 2.0f;
+        private const float boxSizeY = BoxUpperHeight - BoxBottomHeight;
+
+        /// <summary>
+        /// 引数である候補のうち、カーソルと重なる箇所のあるものをリストで返します。
+        /// </summary>
+        public List<BoxGizmoDrawer> SelectedMeshCodes(List<BoxGizmoDrawer> candidates)
+        {
+            var selected = new List<BoxGizmoDrawer>();
+            foreach(var candidate in candidates)
+            {
+                if (IsBoxIntersectXZ(candidate))
+                {
+                    selected.Add(candidate);
+                }
+            }
+
+            return selected;
+        }
 
         private void Start()
         {
             EnableHandles();
             var trans = transform;
             var prevPos = trans.position;
-            var nextPos = new Vector3(prevPos.x, boxCenterHeight, prevPos.z);
+            var nextPos = new Vector3(prevPos.x, BoxCenterHeight, prevPos.z);
             trans.position = nextPos;
             
             var prevLocalScale = trans.lossyScale;
             var nextLocalScale = new Vector3(prevLocalScale.x, boxSizeY, prevLocalScale.z);
             trans.localScale = nextLocalScale;
         }
-
-        private void OnEnable()
-        {
-            EnableHandles();
-        }
-
-        private void OnDisable()
-        {
-            DisableHandles();
-        }
-
-        private void EnableHandles()
-        {
-#if UNITY_EDITOR
-            SceneView.duringSceneGui -= OnSceneGUI;
-            SceneView.duringSceneGui += OnSceneGUI;
-#endif
-        }
-
-        private void DisableHandles()
-        {
-#if UNITY_EDITOR
-            SceneView.duringSceneGui -= OnSceneGUI;
-#endif
-        }
+        
 
         private void OnDestroy()
         {
@@ -62,16 +56,9 @@ namespace PLATEAU.CityLoader.AreaSelector
 
 
         #if UNITY_EDITOR
+        
 
-        private void OnDrawGizmos()
-        {
-            var trans = transform;
-            var centerPos = trans.position;
-            var size = trans.localScale;
-            Gizmos.DrawWireCube(centerPos, size);
-        }
-
-        private void OnSceneGUI(SceneView _)
+        protected override void OnSceneGUI(SceneView _)
         {
             var prevColor = Handles.color;
             Handles.color = this.cursorColor;
@@ -86,7 +73,7 @@ namespace PLATEAU.CityLoader.AreaSelector
         private static void CenterPointHandle(Transform trans)
         {
             var pos = trans.position;
-            var handlePos = new Vector3(pos.x, boxUpperHeight, pos.z);
+            var handlePos = new Vector3(pos.x, BoxUpperHeight, pos.z);
             EditorGUI.BeginChangeCheck();
 
             // 中心点ハンドル
@@ -98,7 +85,7 @@ namespace PLATEAU.CityLoader.AreaSelector
             
             if (EditorGUI.EndChangeCheck())
             {
-                trans.position = new Vector3(handlePos.x, boxCenterHeight, handlePos.z);
+                trans.position = new Vector3(handlePos.x, BoxCenterHeight, handlePos.z);
             }
         }
 
@@ -106,8 +93,8 @@ namespace PLATEAU.CityLoader.AreaSelector
         {
             var pos = trans.position;
             var size = trans.localScale;
-            var prevPosMax = CalcAreaMax(pos, size);
-            var prevPosMin = CalcAreaMin(pos, size);
+            var prevPosMax = AreaMax(pos, size);
+            var prevPosMin = AreaMin(pos, size);
             
             EditorGUI.BeginChangeCheck();
             
@@ -115,18 +102,18 @@ namespace PLATEAU.CityLoader.AreaSelector
             var nextPosMax = Slider2D(prevPosMax);
 
             // 最小点のハンドル
-            var minHandlePos = new Vector3(prevPosMin.x, boxUpperHeight, prevPosMin.z);
+            var minHandlePos = new Vector3(prevPosMin.x, BoxUpperHeight, prevPosMin.z);
             var minHandlePosNext = Slider2D(minHandlePos);
-            var nextPosMin = new Vector3(minHandlePosNext.x, boxBottomHeight, minHandlePosNext.z);
+            var nextPosMin = new Vector3(minHandlePosNext.x, BoxBottomHeight, minHandlePosNext.z);
             
             // Xが最小、Zが最大の点のハンドル
-            var minMaxHandlePos = new Vector3(nextPosMin.x, boxUpperHeight, nextPosMax.z);
+            var minMaxHandlePos = new Vector3(nextPosMin.x, BoxUpperHeight, nextPosMax.z);
             var minMaxHandlePosNext = Slider2D(minMaxHandlePos);
             nextPosMin = new Vector3(minMaxHandlePosNext.x, nextPosMin.y, nextPosMin.z);
             nextPosMax = new Vector3(nextPosMax.x, nextPosMax.y, minMaxHandlePosNext.z);
             
             // Xが最大、Zが最小の点のハンドル
-            var maxMinHandlePos = new Vector3(nextPosMax.x, boxUpperHeight, nextPosMin.z);
+            var maxMinHandlePos = new Vector3(nextPosMax.x, BoxUpperHeight, nextPosMin.z);
             var maxMinHandlePosNext = Slider2D(maxMinHandlePos);
             nextPosMin = new Vector3(nextPosMin.x, nextPosMin.y, maxMinHandlePosNext.z);
             nextPosMax = new Vector3(maxMinHandlePosNext.x, nextPosMax.y, nextPosMax.z);
@@ -151,16 +138,6 @@ namespace PLATEAU.CityLoader.AreaSelector
         }
 
         #endif
-
-        private static Vector3 CalcAreaMax(Vector3 center, Vector3 size)
-        {
-            return center + size / 2.0f;
-        }
-
-        private static Vector3 CalcAreaMin(Vector3 center, Vector3 size)
-        {
-            return center - size / 2.0f;
-        }
 
         private static (Vector3 center, Vector3 size) CalcTransFromArea(Vector3 areaMax, Vector3 areaMin)
         {

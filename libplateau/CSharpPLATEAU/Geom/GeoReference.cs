@@ -52,6 +52,15 @@ namespace PLATEAU.Geom
             return outXyz;
         }
 
+        public GeoCoordinate Unproject(PlateauVector3d point)
+        {
+            var result = NativeMethods.plateau_geo_reference_unproject(
+                this.handle, out var outLatlon,
+                point);
+            DLLUtil.CheckDllError(result);
+            return outLatlon;
+        }
+
         public void Dispose()
         {
             if (this.isDisposed) return;
