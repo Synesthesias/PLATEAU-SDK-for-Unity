@@ -2,6 +2,7 @@
 using PLATEAU.Editor.EditorWindowCommon;
 using PLATEAU.Editor.PlateauWindow.Util.PathSelector;
 using UnityEditor;
+using UnityEditor.SceneManagement;
 
 namespace PLATEAU.Editor.PlateauWindow.MainTabGUI
 {

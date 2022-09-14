@@ -35,6 +35,7 @@ namespace PLATEAU.CityLoader.AreaSelector
                 Debug.LogError("Could not find material.");
                 return;
             }
+            // TODO ここ、簡潔になりそうな気がする
             renderer.sharedMaterial = loadedMaterial;
             var mat = new Material(renderer.sharedMaterial)
             {

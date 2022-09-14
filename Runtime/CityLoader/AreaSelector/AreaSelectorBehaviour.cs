@@ -8,6 +8,7 @@ using PLATEAU.Runtime.CityLoader.AreaSelector.Import.AreaSelect;
 using PLATEAU.Udx;
 using PLATEAU.Util;
 using PLATEAU.Util.Async;
+using UnityEditor;
 using UnityEngine;
 
 namespace PLATEAU.CityLoader.AreaSelector
@@ -53,6 +54,7 @@ namespace PLATEAU.CityLoader.AreaSelector
 
         private static void PlaceMeshCodeBoxGizmos(string sourcePath, List<BoxGizmoDrawer> boxGizmoDrawers)
         {
+            EditorUtility.DisplayProgressBar("", "データファイルを検索中です...", 0f);
             var udx = UdxFileCollection.Find(sourcePath);
             Debug.Log(DebugUtil.EnumerableToString(udx.MeshCodes));
             if (udx.MeshCodes.Count <= 0)
@@ -60,8 +62,9 @@ namespace PLATEAU.CityLoader.AreaSelector
                 Debug.LogError("No MeshCode found.");
                 return;
             }
-
+            EditorUtility.DisplayProgressBar("", "範囲座標を計算中です...", 0.5f);
             var meshCodes = udx.MeshCodes;
+            // TODO geoReferenceの生成は1度で済むはず
             // 仮に (0,0,0) を referencePoint とする geoReference を作成
             using var geoReferenceTmp = new GeoReference(new PlateauVector3d(0, 0, 0), 1.0f, CoordinateSystem.EUN, 9);
             // 中心を計算し、そこを基準点として geoReference を再生成
@@ -96,6 +99,7 @@ namespace PLATEAU.CityLoader.AreaSelector
                 var drawer = gizmoObj.AddComponent<BoxGizmoDrawer>();
                 boxGizmoDrawers.Add(drawer);
             }
+            EditorUtility.ClearProgressBar();
         }
 
         private void EndAreaSelection()

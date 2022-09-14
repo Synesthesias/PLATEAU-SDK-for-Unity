@@ -18,8 +18,7 @@ namespace PLATEAU.Editor.CityLoader
             var loader = (PLATEAUCityModelLoader)target;
             if (PlateauEditorStyle.MainButton("範囲選択"))
             {
-                var areaSelector = new AreaSelectorStarter();
-                areaSelector.Start(loader.SourcePathBeforeImport);
+                AreaSelectorStarter.Start(loader.SourcePathBeforeImport);
             }
 
             if (PlateauEditorStyle.MainButton("インポート"))

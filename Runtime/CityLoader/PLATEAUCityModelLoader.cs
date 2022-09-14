@@ -1,6 +1,8 @@
 ﻿using System.IO;
 using PLATEAU.CityLoader.Setting;
+using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace PLATEAU.CityLoader
 {
@@ -23,6 +25,7 @@ namespace PLATEAU.CityLoader
             var obj = new GameObject(objName);
             var loader = obj.AddComponent<PLATEAUCityModelLoader>();
             loader.Init(sourcePathBeforeImport);
+            EditorSceneManager.MarkSceneDirty(SceneManager.GetActiveScene());
             return obj;
         }
 

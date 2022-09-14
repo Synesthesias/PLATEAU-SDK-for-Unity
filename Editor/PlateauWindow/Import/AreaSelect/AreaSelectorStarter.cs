@@ -22,7 +22,7 @@ namespace PLATEAU.Editor.PlateauWindow.Import.AreaSelect
         /// 範囲選択の専用シーンを立ち上げます。
         /// ただし、現在のシーンに変更があれば保存するかどうかユーザーに尋ね、キャンセルが選択されたならば中止します。
         /// </summary>
-        public void Start(string dataSourcePath)
+        public static void Start(string dataSourcePath)
         {
             if (!EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())
             {
