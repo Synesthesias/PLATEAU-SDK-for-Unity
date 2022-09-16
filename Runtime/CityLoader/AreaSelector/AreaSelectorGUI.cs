@@ -38,6 +38,10 @@ namespace PLATEAU.Runtime.CityLoader.AreaSelector.Import.AreaSelect
         private static void DrawInsideWindow(int id)
         {
             #if UNITY_EDITOR
+            if (GUILayout.Button("決定"))
+            {
+                areaSelector.OnSelectButtonPushed();
+            }
             if (GUILayout.Button("キャンセル"))
             {
                    areaSelector.OnCancelButtonPushed();

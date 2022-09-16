@@ -11,11 +11,10 @@ namespace PLATEAU.Editor.PlateauWindow.Import.AreaSelect
     /// 地図からの範囲選択画面を開始します。
     /// 範囲選択専用のシーンを立ち上げます。Editモードであることが前提です。
     /// </summary>
-    public class AreaSelectorStarter
+    public static class AreaSelectorStarter
     {
-        private Scene prevScene;
 
-        private const string areaSelectorPrafabPath =
+        private const string areaSelectorPrefabPath =
             "Packages/com.synesthesias.plateau-unity-sdk/Prefabs/AreaSelectorPrefab.prefab";
         
         /// <summary>
@@ -41,7 +40,7 @@ namespace PLATEAU.Editor.PlateauWindow.Import.AreaSelect
             scene.name = "Temporary_AreaSelectScene";
             SceneManager.SetActiveScene(scene);
             var prefab =
-                AssetDatabase.LoadAssetAtPath<GameObject>(areaSelectorPrafabPath);
+                AssetDatabase.LoadAssetAtPath<GameObject>(areaSelectorPrefabPath);
             Object.Instantiate(prefab);
             prefab.transform.position = Vector3.zero;
             SetUpEventSystem();

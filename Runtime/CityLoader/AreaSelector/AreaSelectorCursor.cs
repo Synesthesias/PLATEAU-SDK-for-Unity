@@ -22,9 +22,9 @@ namespace PLATEAU.CityLoader.AreaSelector
         /// <summary>
         /// 引数である候補のうち、カーソルと重なる箇所のあるものをリストで返します。
         /// </summary>
-        public List<BoxGizmoDrawer> SelectedMeshCodes(List<BoxGizmoDrawer> candidates)
+        public List<MeshCodeGizmoDrawer> SelectedMeshCodes(List<MeshCodeGizmoDrawer> candidates)
         {
-            var selected = new List<BoxGizmoDrawer>();
+            var selected = new List<MeshCodeGizmoDrawer>();
             foreach(var candidate in candidates)
             {
                 if (IsBoxIntersectXZ(candidate))

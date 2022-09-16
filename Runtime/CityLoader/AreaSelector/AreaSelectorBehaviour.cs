@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using PLATEAU.Geom;
 using PLATEAU.Interop;
@@ -24,7 +25,7 @@ namespace PLATEAU.CityLoader.AreaSelector
         [SerializeField] private string dataSourcePath;
         private readonly List<Material> mapMaterials = new List<Material>();
         [SerializeField] private AreaSelectorCursor cursor;
-        private List<BoxGizmoDrawer> boxGizmoDrawers = new List<BoxGizmoDrawer>();
+        private List<MeshCodeGizmoDrawer> meshCodeDrawers = new List<MeshCodeGizmoDrawer>();
 
         public void Init(string prevScenePathArg, string dataSourcePathArg)
         {
@@ -37,22 +38,23 @@ namespace PLATEAU.CityLoader.AreaSelector
             AreaSelectorGUI.Enable(this);
             var photoLoadTask = GSIPhotoLoader.Load("seamlessphoto", 10, 909, 403, this.mapPlane, this.mapMaterials);
             photoLoadTask.ContinueWithErrorCatch();
-            PlaceMeshCodeBoxGizmos(this.dataSourcePath, this.boxGizmoDrawers);
+            PlaceMeshCodeDrawers(this.dataSourcePath, this.meshCodeDrawers);
         }
 
         private void Update()
         {
+            // カーソルの選択範囲に応じてメッシュコードのギズモの色を変えます。
             if (this.cursor == null)
             {
                 Debug.LogError($"{nameof(AreaSelectorCursor)} is null.");
                 return;
             }
-            foreach (var box in this.boxGizmoDrawers) box.BoxColor = Color.green;
-            var selected = this.cursor.SelectedMeshCodes(this.boxGizmoDrawers);
+            foreach (var box in this.meshCodeDrawers) box.BoxColor = Color.green;
+            var selected = this.cursor.SelectedMeshCodes(this.meshCodeDrawers);
             foreach (var select in selected) select.BoxColor = Color.yellow;
         }
 
-        private static void PlaceMeshCodeBoxGizmos(string sourcePath, List<BoxGizmoDrawer> boxGizmoDrawers)
+        private static void PlaceMeshCodeDrawers(string sourcePath, List<MeshCodeGizmoDrawer> boxGizmoDrawers)
         {
             EditorUtility.DisplayProgressBar("", "データファイルを検索中です...", 0f);
             var udx = UdxFileCollection.Find(sourcePath);
@@ -67,7 +69,7 @@ namespace PLATEAU.CityLoader.AreaSelector
             // TODO geoReferenceの生成は1度で済むはず
             // 仮に (0,0,0) を referencePoint とする geoReference を作成
             using var geoReferenceTmp = new GeoReference(new PlateauVector3d(0, 0, 0), 1.0f, CoordinateSystem.EUN, 9);
-            // 中心を計算し、そこを基準点として geoReference を再生成
+            // 中心を計算し、そこを基準点として geoReference を再設定
             var referencePoint = new PlateauVector3d(0, 0, 0);
             foreach (var meshCode in meshCodes)
             {
@@ -96,7 +98,8 @@ namespace PLATEAU.CityLoader.AreaSelector
                     (float)Math.Abs(max.Z - min.Z));
                 gizmoObj.transform.position = center;
                 gizmoObj.transform.localScale = size;
-                var drawer = gizmoObj.AddComponent<BoxGizmoDrawer>();
+                var drawer = gizmoObj.AddComponent<MeshCodeGizmoDrawer>();
+                drawer.MeshCode = meshCode;
                 boxGizmoDrawers.Add(drawer);
             }
             EditorUtility.ClearProgressBar();
@@ -106,13 +109,21 @@ namespace PLATEAU.CityLoader.AreaSelector
         {
             AreaSelectorGUI.Disable();
             DestroyMaterials();
-            var testAreaSelectResult = new List<int> { 123 };
+            var testAreaSelectResult = 
+                this.cursor.SelectedMeshCodes(this.meshCodeDrawers)
+                    .Select(drawer => drawer.MeshCode);
             // 無名関数のキャプチャを利用して、シーン終了後も必要なデータが渡るようにします。
             AreaSelectorDataPass.Exec(this.prevScenePath, testAreaSelectResult);
+        }
+
+        public void OnSelectButtonPushed()
+        {
+            EndAreaSelection();
         }
         
         public void OnCancelButtonPushed()
         {
+            // TODO キャンセルになってない
             EndAreaSelection();
         }
 
