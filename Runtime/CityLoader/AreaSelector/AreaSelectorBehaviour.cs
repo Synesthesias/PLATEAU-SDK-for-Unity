@@ -56,14 +56,14 @@ namespace PLATEAU.CityLoader.AreaSelector
         {
             EditorUtility.DisplayProgressBar("", "データファイルを検索中です...", 0f);
             var udx = UdxFileCollection.Find(sourcePath);
-            Debug.Log(DebugUtil.EnumerableToString(udx.MeshCodes));
+            var meshCodes = udx.MeshCodes;
+            Debug.Log(DebugUtil.EnumerableToString(meshCodes));
             if (udx.MeshCodes.Count <= 0)
             {
                 Debug.LogError("No MeshCode found.");
                 return;
             }
             EditorUtility.DisplayProgressBar("", "範囲座標を計算中です...", 0.5f);
-            var meshCodes = udx.MeshCodes;
             // TODO geoReferenceの生成は1度で済むはず
             // 仮に (0,0,0) を referencePoint とする geoReference を作成
             using var geoReferenceTmp = new GeoReference(new PlateauVector3d(0, 0, 0), 1.0f, CoordinateSystem.EUN, 9);

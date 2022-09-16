@@ -17,6 +17,7 @@ namespace PLATEAU.CityLoader.AreaSelector
         public const float BoxBottomHeight = 1f; // カーソルの線が地面と重なって隠れない程度の高さ
         public const float BoxCenterHeight = (BoxUpperHeight + BoxBottomHeight) / 2.0f;
         private const float boxSizeY = BoxUpperHeight - BoxBottomHeight;
+        private const float slider2DHandleSize = 0.35f;
 
         /// <summary>
         /// 引数である候補のうち、カーソルと重なる箇所のあるものをリストで返します。
@@ -132,7 +133,7 @@ namespace PLATEAU.CityLoader.AreaSelector
         {
             return Handles.Slider2D(
                 sliderPos, Vector3.up, Vector3.forward,
-                Vector3.right, HandleUtility.GetHandleSize(sliderPos) * 0.5f,
+                Vector3.right, HandleUtility.GetHandleSize(sliderPos) * slider2DHandleSize,
                 Handles.SphereHandleCap, 15
             );
         }
