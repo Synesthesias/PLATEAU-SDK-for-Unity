@@ -69,15 +69,34 @@ namespace PLATEAU.Udx
         public static UdxFileCollection Find(string source)
         {
             var result = new UdxFileCollection();
-            NativeMethods.plateau_udx_file_collection_find(source, result.handle);
+            var apiResult = NativeMethods.plateau_udx_file_collection_find(source, result.handle);
+            DLLUtil.CheckDllError(apiResult);
             return result;
         }
 
         public UdxFileCollection Filter(Extent extent)
         {
             var result = new UdxFileCollection();
-            NativeMethods.plateau_udx_file_collection_filter(this.handle, extent, result.handle);
+            var apiResult = NativeMethods.plateau_udx_file_collection_filter(this.handle, extent, result.handle);
+            DLLUtil.CheckDllError(apiResult);
             return result;
+        }
+
+        public UdxFileCollection FilterByMeshCodes(MeshCode[] meshCodeArray)
+        {
+            var result = new UdxFileCollection();
+            var apiResult = NativeMethods.plateau_udx_file_collection_filter_by_mesh_codes(
+                this.handle, meshCodeArray, meshCodeArray.Length, result.handle);
+            DLLUtil.CheckDllError(apiResult);
+            return result;
+        }
+
+        public void Fetch(string destinationRootPath, GmlFileInfo gmlFileInfo)
+        {
+            var apiResult = NativeMethods.plateau_udx_file_collection_fetch(
+                this.handle, destinationRootPath, gmlFileInfo.Handle 
+            );
+            DLLUtil.CheckDllError(apiResult);
         }
 
         public string[] GetGmlFiles(PredefinedCityModelPackage package)

@@ -14,6 +14,8 @@ namespace PLATEAU.Util
         // ReSharper disable once FieldCanBeMadeReadOnly.Local
         private static string unityProjectDataPath = Application.dataPath;
 
+        public static readonly string plateauSrcFetchDir = Application.dataPath + "/StreamingAssets/.PLATEAU";
+
         /// <summary>
         /// 入力ファイル用のパスとして正しければtrue,不適切であればfalseを返します。
         /// </summary>

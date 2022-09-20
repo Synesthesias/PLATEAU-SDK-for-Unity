@@ -113,7 +113,7 @@ namespace PLATEAU.CityLoader.AreaSelector
                 this.cursor.SelectedMeshCodes(this.meshCodeDrawers)
                     .Select(drawer => drawer.MeshCode);
             // 無名関数のキャプチャを利用して、シーン終了後も必要なデータが渡るようにします。
-            AreaSelectorDataPass.Exec(this.prevScenePath, testAreaSelectResult);
+            AreaSelectorDataPass.Exec(this.prevScenePath, testAreaSelectResult, this.dataSourcePath);
         }
 
         public void OnSelectButtonPushed()
