@@ -23,7 +23,7 @@ namespace PLATEAU.CityLoader.AreaSelector
             SceneManager.SetActiveScene(scene);
             var selectedAreas = areaSelectResult.ToArray();
             var collection = UdxFileCollection.Find(dataSourcePath).FilterByMeshCodes(selectedAreas);
-            string destPath = PathUtil.plateauSrcFetchDir + "/" + Path.GetFileName(dataSourcePath);
+            string destPath = PathUtil.plateauSrcFetchDir;
             var fetchTargetGmls = new List<GmlFileInfo>();
             var gmlInfoToDestroy = new List<GmlFileInfo>();
             foreach (PredefinedCityModelPackage package in Enum.GetValues(typeof(PredefinedCityModelPackage)))
@@ -36,12 +36,14 @@ namespace PLATEAU.CityLoader.AreaSelector
                 }
             }
 
-            for (int i = 0; i < fetchTargetGmls.Count; i++)
+            int targetGmlCount = fetchTargetGmls.Count;
+            for (int i = 0; i < targetGmlCount; i++)
             {
                 var gml = fetchTargetGmls[i];
-                EditorUtility.DisplayProgressBar("", $"コピー中 : {Path.GetFileName(gml.Path)}",
-                    (float)i / fetchTargetGmls.Count);
+                EditorUtility.DisplayProgressBar("", $"インポート処理中 : {Path.GetFileName(gml.Path)} {i}/{targetGmlCount}",
+                    (float)i / targetGmlCount);
                 collection.Fetch(destPath, gml);
+                Debug.Log($"gml = {gml.Path}, \ndestPath = {destPath}\ndataSourcepath = {dataSourcePath}");
             }
             foreach(var gml in gmlInfoToDestroy) gml.Dispose();
             
