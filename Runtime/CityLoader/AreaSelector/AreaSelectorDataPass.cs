@@ -14,6 +14,9 @@ using UnityEditor.SceneManagement;
 
 namespace PLATEAU.CityLoader.AreaSelector
 {
+    /// <summary>
+    /// 範囲選択画面が終わったとき、
+    /// </summary>
     public static class AreaSelectorDataPass
     {
         public static void Exec(string prevScenePath, IEnumerable<MeshCode> areaSelectResult, string dataSourcePath)
@@ -40,10 +43,9 @@ namespace PLATEAU.CityLoader.AreaSelector
             for (int i = 0; i < targetGmlCount; i++)
             {
                 var gml = fetchTargetGmls[i];
-                EditorUtility.DisplayProgressBar("", $"インポート処理中 : {Path.GetFileName(gml.Path)} {i}/{targetGmlCount}",
+                EditorUtility.DisplayProgressBar("", $"インポート処理中 : [{i}/{targetGmlCount}] {Path.GetFileName(gml.Path)}",
                     (float)i / targetGmlCount);
                 collection.Fetch(destPath, gml);
-                Debug.Log($"gml = {gml.Path}, \ndestPath = {destPath}\ndataSourcepath = {dataSourcePath}");
             }
             foreach(var gml in gmlInfoToDestroy) gml.Dispose();
             
