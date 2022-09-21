@@ -13,7 +13,7 @@ namespace PLATEAU.CityLoader.Setting
     [Serializable]
     internal class CityLoadConfig : ISerializationCallbackReceiver
     {
-        private Dictionary<PredefinedCityModelPackage, PackageLoadSetting> perPackageSettings = new Dictionary<PredefinedCityModelPackage, PackageLoadSetting>();
+        private Dictionary<PredefinedCityModelPackage, PackageLoadSetting> perPackagePairSettings = new Dictionary<PredefinedCityModelPackage, PackageLoadSetting>();
         
         [SerializeField] private List<PredefinedCityModelPackage> perPackageSettingKeys = new List<PredefinedCityModelPackage>();
         [SerializeField] private List<PackageLoadSetting> perPackageSettingValues = new List<PackageLoadSetting>();
@@ -23,17 +23,23 @@ namespace PLATEAU.CityLoader.Setting
             // InitWithPredefined();
         }
 
-        public IEnumerable<KeyValuePair<PredefinedCityModelPackage, PackageLoadSetting>> ForEachPackage =>
-            this.perPackageSettings;
+        public IEnumerable<KeyValuePair<PredefinedCityModelPackage, PackageLoadSetting>> ForEachPackagePair =>
+            this.perPackagePairSettings;
+
+        public PackageLoadSetting GetConfigForPackage(PredefinedCityModelPackage package)
+        {
+            return this.perPackagePairSettings[package];
+        }
 
         public void InitWithPackageFlags(PredefinedCityModelPackage packageFlags)
         {
+            this.perPackagePairSettings.Clear();
             foreach (var package in EnumUtil.EachFlags(packageFlags))
             {
                 var predefined = CityModelPackageInfo.GetPredefined(package);
                 var val = new PackageLoadSetting(predefined.hasAppearance, predefined.minLOD, predefined.maxLOD,
                     MeshGranularity.PerCityModelArea);
-                this.perPackageSettings.Add(package, val);
+                this.perPackagePairSettings.Add(package, val);
             }
         }
 
@@ -51,12 +57,12 @@ namespace PLATEAU.CityLoader.Setting
 
         void ISerializationCallbackReceiver.OnBeforeSerialize()
         {
-            DictionarySerializer.OnBeforeSerialize(this.perPackageSettings, this.perPackageSettingKeys, this.perPackageSettingValues);    
+            DictionarySerializer.OnBeforeSerialize(this.perPackagePairSettings, this.perPackageSettingKeys, this.perPackageSettingValues);    
         }
 
         void ISerializationCallbackReceiver.OnAfterDeserialize()
         {
-            this.perPackageSettings = DictionarySerializer.OnAfterSerialize(this.perPackageSettingKeys, this.perPackageSettingValues);
+            this.perPackagePairSettings = DictionarySerializer.OnAfterSerialize(this.perPackageSettingKeys, this.perPackageSettingValues);
         }
     }
 }

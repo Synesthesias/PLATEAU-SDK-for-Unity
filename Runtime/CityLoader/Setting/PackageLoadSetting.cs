@@ -8,7 +8,7 @@ namespace PLATEAU.CityLoader.Setting
     /// <see cref="PLATEAUCityModelLoader"/> の設定のうち、パッケージごとの設定です。
     /// </summary>
     [Serializable]
-    public struct PackageLoadSetting
+    public class PackageLoadSetting
     {
         public bool includeTexture;
         public int minLOD;

@@ -3,6 +3,7 @@ using PLATEAU.CityLoader;
 using PLATEAU.Editor.EditorWindowCommon;
 using PLATEAU.Editor.PlateauWindow.Import.AreaSelect;
 using PLATEAU.IO;
+using PLATEAU.Udx;
 using PLATEAU.Util;
 using PLATEAU.Util.Async;
 using UnityEditor;
