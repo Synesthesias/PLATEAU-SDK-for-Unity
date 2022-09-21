@@ -1,10 +1,9 @@
-﻿using PLATEAU.CityLoader.AreaSelector;
-using UnityEditor;
+﻿using UnityEditor;
 using UnityEngine;
 
-namespace PLATEAU.Runtime.CityLoader.AreaSelector.Import.AreaSelect
+namespace PLATEAU.CityLoader.AreaSelector
 {
-    public static class AreaSelectorGUI
+    internal static class AreaSelectorGUI
     {
         private static Rect windowRect;
         private static readonly Rect initialWindowRect = new Rect(15f, 30f, 150f, 90f);

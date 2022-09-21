@@ -13,8 +13,9 @@ namespace PLATEAU.CityLoader
     internal class PLATEAUCityModelLoader : MonoBehaviour
     {
         [SerializeField] private string sourcePathBeforeImport;
-        [SerializeField] private string sourcePathAfterImport; // TODO
+        [SerializeField] private string sourcePathAfterImport;
         [SerializeField] private CityLoadSetting cityLoadSetting = new CityLoadSetting();
+        [SerializeField] private string[] areaMeshCodes;
         
         /// <summary>
         /// このコンポーネントが付いたゲームオブジェクトをシーンに生成します。
@@ -35,7 +36,18 @@ namespace PLATEAU.CityLoader
         }
 
         public string SourcePathBeforeImport => this.sourcePathBeforeImport;
-        public string SourcePathAfterImport  => this.sourcePathAfterImport;
+
+        public string SourcePathAfterImport
+        {
+            get => this.sourcePathAfterImport;
+            set => this.sourcePathAfterImport = value;
+        }
+
+        public string[] AreaMeshCodes
+        {
+            get => this.areaMeshCodes;
+            set => this.areaMeshCodes = value;
+        }
 
     }
 }

@@ -1,4 +1,5 @@
-﻿using PLATEAU.CityLoader.AreaSelector;
+﻿using PLATEAU.CityLoader;
+using PLATEAU.CityLoader.AreaSelector;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -11,7 +12,7 @@ namespace PLATEAU.Editor.PlateauWindow.Import.AreaSelect
     /// 地図からの範囲選択画面を開始します。
     /// 範囲選択専用のシーンを立ち上げます。Editモードであることが前提です。
     /// </summary>
-    public static class AreaSelectorStarter
+    internal static class AreaSelectorStarter
     {
 
         private const string areaSelectorPrefabPath =
@@ -21,7 +22,7 @@ namespace PLATEAU.Editor.PlateauWindow.Import.AreaSelect
         /// 範囲選択の専用シーンを立ち上げます。
         /// ただし、現在のシーンに変更があれば保存するかどうかユーザーに尋ね、キャンセルが選択されたならば中止します。
         /// </summary>
-        public static void Start(string dataSourcePath)
+        public static void Start(string dataSourcePath, PLATEAUCityModelLoader loaderBehaviour)
         {
             if (!EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())
             {
@@ -29,9 +30,10 @@ namespace PLATEAU.Editor.PlateauWindow.Import.AreaSelect
             }
 
             string prevScenePath = SceneManager.GetActiveScene().path;
+            var loaderBehaviourID = GlobalObjectId.GetGlobalObjectIdSlow(loaderBehaviour);
             SetUpTemporaryScene();
             var behaviour = Object.FindObjectOfType<AreaSelectorBehaviour>();
-            behaviour.Init(prevScenePath, dataSourcePath);
+            behaviour.Init(prevScenePath, dataSourcePath, loaderBehaviourID);
         }
 
         private static void SetUpTemporaryScene()

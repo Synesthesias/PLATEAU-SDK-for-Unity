@@ -4,6 +4,7 @@ using PLATEAU.Editor.EditorWindowCommon;
 using PLATEAU.Editor.PlateauWindow.Import.AreaSelect;
 using PLATEAU.IO;
 using PLATEAU.PolygonMesh;
+using PLATEAU.Util;
 using PLATEAU.Util.Async;
 using UnityEditor;
 using UnityEngine;
@@ -18,7 +19,7 @@ namespace PLATEAU.Editor.CityLoader
             var loader = (PLATEAUCityModelLoader)target;
             if (PlateauEditorStyle.MainButton("範囲選択"))
             {
-                AreaSelectorStarter.Start(loader.SourcePathBeforeImport);
+                AreaSelectorStarter.Start(loader.SourcePathBeforeImport, loader);
             }
 
             if (PlateauEditorStyle.MainButton("インポート"))
@@ -38,7 +39,8 @@ namespace PLATEAU.Editor.CityLoader
             PlateauEditorStyle.MultiLineLabelWithBox(loader.SourcePathBeforeImport);
             EditorGUILayout.LabelField("インポート後パス:");
             PlateauEditorStyle.MultiLineLabelWithBox(loader.SourcePathAfterImport);
-            
+            EditorGUILayout.LabelField("地域メッシュコード");
+            PlateauEditorStyle.MultiLineLabelWithBox(DebugUtil.EnumerableToString(loader.AreaMeshCodes));
         }   
     }
 }

@@ -5,7 +5,6 @@ using System.Runtime.CompilerServices;
 using PLATEAU.Geom;
 using PLATEAU.Interop;
 using PLATEAU.IO;
-using PLATEAU.Runtime.CityLoader.AreaSelector.Import.AreaSelect;
 using PLATEAU.Udx;
 using PLATEAU.Util;
 using PLATEAU.Util.Async;
@@ -18,7 +17,7 @@ namespace PLATEAU.CityLoader.AreaSelector
     /// 範囲選択画面の進行を担当するコンポーネントです。
     /// </summary>
     [ExecuteInEditMode]
-    public class AreaSelectorBehaviour : MonoBehaviour
+    internal class AreaSelectorBehaviour : MonoBehaviour
     {
         [SerializeField] private MeshRenderer mapPlane;
         [SerializeField] private string prevScenePath;
@@ -26,11 +25,13 @@ namespace PLATEAU.CityLoader.AreaSelector
         private readonly List<Material> mapMaterials = new List<Material>();
         [SerializeField] private AreaSelectorCursor cursor;
         private List<MeshCodeGizmoDrawer> meshCodeDrawers = new List<MeshCodeGizmoDrawer>();
+        private GlobalObjectId loaderBehaviourID;
 
-        public void Init(string prevScenePathArg, string dataSourcePathArg)
+        public void Init(string prevScenePathArg, string dataSourcePathArg, GlobalObjectId loaderBehaviourIDArg)
         {
             this.prevScenePath = prevScenePathArg;
             this.dataSourcePath = dataSourcePathArg;
+            this.loaderBehaviourID = loaderBehaviourIDArg;
         }
 
         private void Start()
@@ -113,7 +114,7 @@ namespace PLATEAU.CityLoader.AreaSelector
                 this.cursor.SelectedMeshCodes(this.meshCodeDrawers)
                     .Select(drawer => drawer.MeshCode);
             // 無名関数のキャプチャを利用して、シーン終了後も必要なデータが渡るようにします。
-            AreaSelectorDataPass.Exec(this.prevScenePath, testAreaSelectResult, this.dataSourcePath);
+            AreaSelectorDataPass.Exec(this.prevScenePath, testAreaSelectResult, this.dataSourcePath, this.loaderBehaviourID);
         }
 
         public void OnSelectButtonPushed()
