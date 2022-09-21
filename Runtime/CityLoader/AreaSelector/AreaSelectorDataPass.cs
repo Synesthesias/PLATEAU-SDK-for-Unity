@@ -24,16 +24,16 @@ namespace PLATEAU.CityLoader.AreaSelector
         // シーンをまたいで渡したいデータ
         private static string prevScenePath;
         private static IEnumerable<MeshCode> areaSelectResult;
-        private static string dataSourcePath;
+        // private static string dataSourcePath;
         private static GlobalObjectId loaderBehaviourID;
 
-        public static void Exec(string prevScenePathArg, IEnumerable<MeshCode> areaSelectResultArg, string dataSourcePathArg, GlobalObjectId loaderBehaviourIDArg)
+        public static void Exec(string prevScenePathArg, IEnumerable<MeshCode> areaSelectResultArg, GlobalObjectId loaderBehaviourIDArg)
         {
             #if UNITY_EDITOR
 
             prevScenePath = prevScenePathArg;
             areaSelectResult = areaSelectResultArg;
-            dataSourcePath = dataSourcePathArg;
+            // dataSourcePath = dataSourcePathArg;
             loaderBehaviourID = loaderBehaviourIDArg;
             
             EditorSceneManager.sceneOpened += OnBackToPrevScene;
@@ -47,6 +47,7 @@ namespace PLATEAU.CityLoader.AreaSelector
             EditorSceneManager.sceneOpened -= OnBackToPrevScene;
             SceneManager.SetActiveScene(scene);
             PassAreaSelectDataToBehaviour();
+            EditorSceneManager.MarkSceneDirty(scene);
         }
 
         private static void PassAreaSelectDataToBehaviour()
@@ -60,8 +61,7 @@ namespace PLATEAU.CityLoader.AreaSelector
             }
 
             var loaderBehaviour = (PLATEAUCityModelLoader)loaderBehaviourObj;
-
-            loaderBehaviour.SourcePathAfterImport = dataSourcePath;
+            
             loaderBehaviour.AreaMeshCodes = areaSelectResult.Select(meshCode => meshCode.ToString()).ToArray();
 
             // TODO 下のインポート処理はインポート設定後に動作するように移動

@@ -969,5 +969,39 @@ namespace PLATEAU.Interop
             [In] IntPtr handle,
             out IntPtr strPtr,
             out int strLength);
+            
+        // ***************
+        //  city_model_package_info_c.cpp
+        // ***************
+        
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_create_city_model_package_info(
+            out IntPtr outPackageInfoPtr,
+            [MarshalAs(UnmanagedType.U1)] bool hasAppearance, int minLOD, int maxLOD);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_delete_city_model_package_info(
+            [In] IntPtr packageInfoPtr);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_city_model_package_info_get_has_appearance(
+            [In] IntPtr packageInfoPtr,
+            [MarshalAs(UnmanagedType.U1)] out bool outHasAppearance);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_city_model_package_info_get_min_lod(
+            [In] IntPtr packageInfoPtr,
+            out int outMinLOD);
+        
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_city_model_package_info_get_max_lod(
+            [In] IntPtr packageInfoPtr,
+            out int outMaxLOD);
+        
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_city_model_package_info_get_predefined(
+            PredefinedCityModelPackage package,
+            [MarshalAs(UnmanagedType.U1)] out bool outHasAppearance,
+            out int outMinLOD, out int outMaxLOD);
     }
 }

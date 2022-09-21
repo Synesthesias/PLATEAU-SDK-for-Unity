@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using PLATEAU.Geom;
 using PLATEAU.Interop;
 using PLATEAU.IO;
@@ -114,7 +113,7 @@ namespace PLATEAU.CityLoader.AreaSelector
                 this.cursor.SelectedMeshCodes(this.meshCodeDrawers)
                     .Select(drawer => drawer.MeshCode);
             // 無名関数のキャプチャを利用して、シーン終了後も必要なデータが渡るようにします。
-            AreaSelectorDataPass.Exec(this.prevScenePath, testAreaSelectResult, this.dataSourcePath, this.loaderBehaviourID);
+            AreaSelectorDataPass.Exec(this.prevScenePath, testAreaSelectResult, this.loaderBehaviourID);
         }
 
         public void OnSelectButtonPushed()
