@@ -1,5 +1,8 @@
 ﻿using System.IO;
+using PLATEAU.Behaviour;
 using PLATEAU.CityLoader.Setting;
+using PLATEAU.Udx;
+using PLATEAU.Util;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -14,7 +17,7 @@ namespace PLATEAU.CityLoader
     {
         [SerializeField] private string sourcePathBeforeImport;
         [SerializeField] private string sourcePathAfterImport;
-        [SerializeField] private CityLoadSetting cityLoadSetting = new CityLoadSetting();
+        [SerializeField] private CityLoadConfig cityLoadConfig = new CityLoadConfig();
         [SerializeField] private string[] areaMeshCodes;
         
         /// <summary>
@@ -49,5 +52,11 @@ namespace PLATEAU.CityLoader
             set => this.areaMeshCodes = value;
         }
 
+        public CityLoadConfig CityLoadConfig => this.cityLoadConfig;
+
+        public void InitPackageConfigsWithPackageFlags(PredefinedCityModelPackage flags)
+        {
+            this.cityLoadConfig.InitWithPackageFlags(flags);
+        }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using PLATEAU.Geom;
 using PLATEAU.Interop;
@@ -25,6 +26,7 @@ namespace PLATEAU.CityLoader.AreaSelector
         [SerializeField] private AreaSelectorCursor cursor;
         private List<MeshCodeGizmoDrawer> meshCodeDrawers = new List<MeshCodeGizmoDrawer>();
         private GlobalObjectId loaderBehaviourID;
+        private PredefinedCityModelPackage availablePackageFlags;
 
         public void Init(string prevScenePathArg, string dataSourcePathArg, GlobalObjectId loaderBehaviourIDArg)
         {
@@ -38,7 +40,9 @@ namespace PLATEAU.CityLoader.AreaSelector
             AreaSelectorGUI.Enable(this);
             var photoLoadTask = GSIPhotoLoader.Load("seamlessphoto", 10, 909, 403, this.mapPlane, this.mapMaterials);
             photoLoadTask.ContinueWithErrorCatch();
-            PlaceMeshCodeDrawers(this.dataSourcePath, this.meshCodeDrawers);
+            var gatherResult = GatherMeshCodesInGMLDirectory(this.dataSourcePath);
+            PlaceMeshCodeDrawers(gatherResult.meshCodes, this.meshCodeDrawers);
+            this.availablePackageFlags = gatherResult.availablePackageFlags;
         }
 
         private void Update()
@@ -54,17 +58,23 @@ namespace PLATEAU.CityLoader.AreaSelector
             foreach (var select in selected) select.BoxColor = Color.yellow;
         }
 
-        private static void PlaceMeshCodeDrawers(string sourcePath, List<MeshCodeGizmoDrawer> boxGizmoDrawers)
+        private static (ReadOnlyCollection<MeshCode> meshCodes, PredefinedCityModelPackage availablePackageFlags) GatherMeshCodesInGMLDirectory(string sourcePath)
         {
             EditorUtility.DisplayProgressBar("", "データファイルを検索中です...", 0f);
-            var udx = UdxFileCollection.Find(sourcePath);
-            var meshCodes = udx.MeshCodes;
+            var collection = UdxFileCollection.Find(sourcePath);
+            var availablePackageFlags = collection.Packages;
+            var meshCodes = collection.MeshCodes;
             Debug.Log(DebugUtil.EnumerableToString(meshCodes));
-            if (udx.MeshCodes.Count <= 0)
+            if (meshCodes.Count <= 0)
             {
                 Debug.LogError("No MeshCode found.");
-                return;
             }
+
+            return (meshCodes, availablePackageFlags);
+        }
+
+        private static void PlaceMeshCodeDrawers(ReadOnlyCollection<MeshCode> meshCodes, ICollection<MeshCodeGizmoDrawer> boxGizmoDrawers)
+        {
             EditorUtility.DisplayProgressBar("", "範囲座標を計算中です...", 0.5f);
             // TODO geoReferenceの生成は1度で済むはず
             // 仮に (0,0,0) を referencePoint とする geoReference を作成
@@ -113,7 +123,7 @@ namespace PLATEAU.CityLoader.AreaSelector
                 this.cursor.SelectedMeshCodes(this.meshCodeDrawers)
                     .Select(drawer => drawer.MeshCode);
             // 無名関数のキャプチャを利用して、シーン終了後も必要なデータが渡るようにします。
-            AreaSelectorDataPass.Exec(this.prevScenePath, testAreaSelectResult, this.loaderBehaviourID);
+            AreaSelectorDataPass.Exec(this.prevScenePath, testAreaSelectResult, this.loaderBehaviourID, this.availablePackageFlags);
         }
 
         public void OnSelectButtonPushed()
