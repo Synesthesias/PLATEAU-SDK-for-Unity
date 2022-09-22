@@ -20,6 +20,9 @@ namespace PLATEAU.Udx
             return new CityModelPackageInfo(ptr);
         }
 
+        /// <summary>
+        /// 与えられたパッケージ種別に対して、仕様上存在する可能性のあるLODの範囲と、仕様上テクスチャが存在する可能性があるかをタプルで返します。
+        /// </summary>
         public static (bool hasAppearance, int minLOD, int maxLOD) GetPredefined(PredefinedCityModelPackage package)
         {
             var apiResult = NativeMethods.plateau_city_model_package_info_get_predefined(

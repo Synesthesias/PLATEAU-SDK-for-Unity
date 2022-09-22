@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using PLATEAU.IO;
 using PLATEAU.Udx;
 using PLATEAU.Util;
@@ -13,6 +14,10 @@ namespace PLATEAU.CityLoader.Setting
     [Serializable]
     internal class CityLoadConfig : ISerializationCallbackReceiver
     {
+        [SerializeField] private string sourcePathBeforeImport;
+        [SerializeField] private string sourcePathAfterImport;
+        [SerializeField] private string[] areaMeshCodes;
+        
         private Dictionary<PredefinedCityModelPackage, PackageLoadSetting> perPackagePairSettings = new Dictionary<PredefinedCityModelPackage, PackageLoadSetting>();
         
         [SerializeField] private List<PredefinedCityModelPackage> perPackageSettingKeys = new List<PredefinedCityModelPackage>();
@@ -54,6 +59,51 @@ namespace PLATEAU.CityLoader.Setting
         //         this.perPackageSettings.Add(package, val);
         //     }
         // }
+
+        /// <summary>
+        /// 設定に合うGMLファイルを検索します。
+        /// やや時間がかかります。
+        /// </summary>
+        /// <param name="rootPath">検索元となる PLATEAUルートフォルダです。</param>
+        /// <param name="collection">検索に利用した collection を outで返します。</param>
+        /// <returns>検索にヒットしたGMLのパスです。</returns>
+        public List<string> SearchMatchingGMLList(string rootPath, out UdxFileCollection collection)
+        {
+            var meshCodes = AreaMeshCodes.Select(str => MeshCode.Parse(str)).ToArray();
+            collection = UdxFileCollection.Find(rootPath).FilterByMeshCodes(meshCodes);
+            var targetPackages =
+                this
+                    .ForEachPackagePair
+                    .Where(pair => pair.Value.loadPackage)
+                    .Select(pair => pair.Key);
+            var foundGmls = new List<string>();
+            foreach (var package in targetPackages)
+            {
+                foreach (var gmlPath in collection.GetGmlFiles(package))
+                {
+                   foundGmls.Add(gmlPath);
+                }
+            }
+            return foundGmls;
+        }
+
+        public string SourcePathBeforeImport
+        {
+            get => this.sourcePathBeforeImport;
+            set => this.sourcePathBeforeImport = value;
+        }
+
+        public string SourcePathAfterImport
+        {
+            get => this.sourcePathAfterImport;
+            set => this.sourcePathAfterImport = value;
+        }
+
+        public string[] AreaMeshCodes
+        {
+            get => this.areaMeshCodes;
+            set => this.areaMeshCodes = value;
+        }
 
         void ISerializationCallbackReceiver.OnBeforeSerialize()
         {

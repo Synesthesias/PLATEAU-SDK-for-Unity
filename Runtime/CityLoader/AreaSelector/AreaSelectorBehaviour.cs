@@ -61,6 +61,7 @@ namespace PLATEAU.CityLoader.AreaSelector
         private static (ReadOnlyCollection<MeshCode> meshCodes, PredefinedCityModelPackage availablePackageFlags) GatherMeshCodesInGMLDirectory(string sourcePath)
         {
             EditorUtility.DisplayProgressBar("", "データファイルを検索中です...", 0f);
+            Debug.Log(sourcePath);
             var collection = UdxFileCollection.Find(sourcePath);
             var availablePackageFlags = collection.Packages;
             var meshCodes = collection.MeshCodes;

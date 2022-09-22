@@ -23,7 +23,7 @@ namespace PLATEAU.CityLoader.Load
         /// 非同期処理です。必ずメインスレッドで呼ぶ必要があります。
         /// </summary>
         public static async Task Load(
-            string gmlRelativePathFromStreamingAssets,
+            string gmlAbsolutePath,
             MeshGranularity meshGranularity,
             uint minLOD, uint maxLOD,
             bool doExportAppearance,
@@ -32,7 +32,7 @@ namespace PLATEAU.CityLoader.Load
             )
         {
             if (!AreArgumentsOK(gridCountOfSide, minLOD, maxLOD)) return;
-            string gmlAbsolutePath = Application.streamingAssetsPath + "/" + gmlRelativePathFromStreamingAssets;
+            // string gmlAbsolutePath = Application.streamingAssetsPath + "/" + gmlRelativePathFromStreamingAssets;
             if (!File.Exists(gmlAbsolutePath))
             {
                 Debug.LogError($"File not found on {gmlAbsolutePath}");

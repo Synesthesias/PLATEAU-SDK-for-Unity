@@ -1,4 +1,7 @@
-﻿using System.IO;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Threading.Tasks;
 using PLATEAU.CityLoader;
 using PLATEAU.CityLoader.Load;
 using PLATEAU.Editor.EditorWindowCommon;
@@ -46,15 +49,11 @@ namespace PLATEAU.Editor.CityLoader
                     {
                         // string path = Path.Combine(loader.SourcePathBeforeImport, "udx/bldg/53392642_bldg_6697_op2.gml").Replace('\\', '/');
                         // Debug.Log($"loading {path}");
-                        CityFilesCopy.ToStreamingAssets(loader.SourcePathBeforeImport, loader.AreaMeshCodes, loader.CityLoadConfig);
-                        // var task = PLATEAU.CityLoader.Load.CityLoader.Load(
-                        //     // TODO これは仮。ここに設定を正しく渡せるようにする
-                        //     "TestDataSimple/udx/bldg/53392642_bldg_6697_op2.gml",
-                        //     MeshGranularity.PerCityModelArea,
-                        //     2, 2, true, 5,
-                        //     -90, -180, 90, 180
-                        // );
-                        // task.ContinueWithErrorCatch();
+                        string destPath = CityFilesCopy.ToStreamingAssets(loader.SourcePathBeforeImport, loader.CityLoadConfig);
+                        loader.SourcePathAfterImport = destPath;
+                        var gmlPaths = loader.CityLoadConfig.SearchMatchingGMLList(destPath, out _);
+                        var task = LoadGmlsAsync(gmlPaths);
+                        task.ContinueWithErrorCatch();
                     }
                 }
             }
@@ -70,6 +69,20 @@ namespace PLATEAU.Editor.CityLoader
                 PlateauEditorStyle.MultiLineLabelWithBox(DebugUtil.EnumerableToString(loader.AreaMeshCodes));
             }
             
-        }   
+        }
+
+        private async Task LoadGmlsAsync(ICollection<string> gmlPaths)
+        {
+            foreach (var gmlPath in gmlPaths)
+            {
+                await PLATEAU.CityLoader.Load.CityLoader.Load(
+                    // TODO これは仮。ここに設定を正しく渡せるようにする
+                    gmlPath,
+                    MeshGranularity.PerCityModelArea,
+                    2, 2, true, 5,
+                    -90, -180, 90, 180
+                );
+            }
+        }
     }
 }

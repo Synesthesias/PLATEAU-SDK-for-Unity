@@ -15,11 +15,8 @@ namespace PLATEAU.CityLoader
     /// </summary>
     internal class PLATEAUCityModelLoader : MonoBehaviour
     {
-        [SerializeField] private string sourcePathBeforeImport;
-        [SerializeField] private string sourcePathAfterImport;
         [SerializeField] private CityLoadConfig cityLoadConfig = new CityLoadConfig();
-        [SerializeField] private string[] areaMeshCodes;
-        
+
         /// <summary>
         /// このコンポーネントが付いたゲームオブジェクトをシーンに生成します。
         /// </summary>
@@ -29,27 +26,32 @@ namespace PLATEAU.CityLoader
             var obj = new GameObject(objName);
             var loader = obj.AddComponent<PLATEAUCityModelLoader>();
             loader.Init(sourcePathBeforeImport);
+            Debug.Log(loader.CityLoadConfig.SourcePathBeforeImport);
             EditorSceneManager.MarkSceneDirty(SceneManager.GetActiveScene());
             return obj;
         }
 
         private void Init(string sourcePathBeforeImportArg)
         {
-            this.sourcePathBeforeImport = sourcePathBeforeImportArg;
+            SourcePathBeforeImport = sourcePathBeforeImportArg;
         }
 
-        public string SourcePathBeforeImport => this.sourcePathBeforeImport;
+        public string SourcePathBeforeImport
+        {
+            get => CityLoadConfig.SourcePathBeforeImport;
+            set => CityLoadConfig.SourcePathBeforeImport = value;
+        }
 
         public string SourcePathAfterImport
         {
-            get => this.sourcePathAfterImport;
-            set => this.sourcePathAfterImport = value;
+            get => CityLoadConfig.SourcePathAfterImport;
+            set => CityLoadConfig.SourcePathAfterImport = value;
         }
 
         public string[] AreaMeshCodes
         {
-            get => this.areaMeshCodes;
-            set => this.areaMeshCodes = value;
+            get => CityLoadConfig.AreaMeshCodes;
+            set => CityLoadConfig.AreaMeshCodes = value;
         }
 
         public CityLoadConfig CityLoadConfig => this.cityLoadConfig;
