@@ -1,6 +1,6 @@
 ﻿using System;
 using PLATEAU.CityLoader.Setting;
-using PLATEAU.Editor.EditorWindowCommon;
+using PLATEAU.Editor.EditorWindow.Common;
 using PLATEAU.IO;
 using PLATEAU.Udx;
 using UnityEditor;
