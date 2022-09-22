@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using PLATEAU.CityLoader.Setting;
 using PLATEAU.Udx;
 using PLATEAU.Util;
@@ -30,8 +31,8 @@ namespace PLATEAU.CityLoader.Load
             //         fetchTargetGmls.Add(gmlInfo);
             //     }
             // }
-            var gmlPaths = config.SearchMatchingGMLList(sourcePath, out var collection);
-            foreach (var gmlPath in gmlPaths)
+            var gmlPathsDict = config.SearchMatchingGMLList(sourcePath, out var collection);
+            foreach (var gmlPath in gmlPathsDict.SelectMany(pair => pair.Value))
             {
                 var gmlInfo = GmlFileInfo.Create(gmlPath);
                 gmlInfoToDestroy.Add(gmlInfo);

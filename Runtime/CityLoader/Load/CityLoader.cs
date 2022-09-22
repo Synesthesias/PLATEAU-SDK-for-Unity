@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using PLATEAU.CityGML;
@@ -38,9 +39,8 @@ namespace PLATEAU.CityLoader.Load
                 Debug.LogError($"File not found on {gmlAbsolutePath}");
                 return;
             }
-            Debug.Log("load started.");
+            Debug.Log($"load started : {gmlAbsolutePath}");
 
-            ConvertedGameObjData meshObjsData;
             // ここの処理は 処理A と 処理B に分割されています。
             // Unityのメッシュデータを操作するのは 処理B のみであり、
             // 処理A はメッシュ構築のための準備(データを List, 配列などで保持する)を
@@ -51,7 +51,7 @@ namespace PLATEAU.CityLoader.Load
             // 処理A :
             // Unityでメッシュを作るためのデータを構築します。
             // 実際のメッシュデータを触らないので、Task.Run で別のスレッドで処理できます。
-            meshObjsData = await Task.Run(() =>
+            ConvertedGameObjData meshObjsData = await Task.Run(() =>
             {
                 Extent extent = new Extent(
                     new GeoCoordinate(minLatitude, minLongitude, -9999),
@@ -101,7 +101,7 @@ namespace PLATEAU.CityLoader.Load
 
         /// <summary>
         /// gmlファイルをパースして、得られた都市をグリッドに分けて、
-        /// グリッドごとにメッシュを結合して、グリッドごとの<see cref="GeometryModel.Model"/> で返します。
+        /// グリッドごとにメッシュを結合して、グリッドごとの<see cref="Model"/> で返します。
         /// メインスレッドでなくても動作します。
         /// </summary>
         private static Model LoadGmlAndMergeMeshes(

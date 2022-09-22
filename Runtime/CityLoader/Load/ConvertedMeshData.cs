@@ -132,6 +132,7 @@ namespace PLATEAU.CityLoader.Load
                 }
                 
                 string textureFullPath = Path.GetFullPath(Path.Combine(gmlAbsolutePath, "../", texUrl));
+                Debug.Log($"Loading Texture : {textureFullPath}");
 
                 // 非同期でテクスチャをロードします。
                 Texture texture = await TextureLoader.LoadAsync($"file://{textureFullPath}", 3);

@@ -28,7 +28,7 @@ namespace PLATEAU.Editor.CityLoader
                         {
                             var predefined = CityModelPackageInfo.GetPredefined(package);
                             TextureIncludeGUI(conf, predefined.hasAppearance);
-                            LODRangeGUI(conf, predefined.minLOD, predefined.maxLOD);
+                            LODRangeGUI(conf, (uint)predefined.minLOD, (uint)predefined.maxLOD);
                             conf.meshGranularity = (MeshGranularity)EditorGUILayout.Popup("メッシュ結合単位",
                                 (int)conf.meshGranularity, new[] { "最小地物単位", "主要地物単位", "都市モデル地域単位" });
                         }
@@ -45,7 +45,7 @@ namespace PLATEAU.Editor.CityLoader
             conf.includeTexture = EditorGUILayout.Toggle("テクスチャを含める", conf.includeTexture);
         }
 
-        private static void LODRangeGUI(PackageLoadSetting conf, int minLODLimit, int maxLODLimit)
+        private static void LODRangeGUI(PackageLoadSetting conf, uint minLODLimit, uint maxLODLimit)
         {
             if (minLODLimit == maxLODLimit)
             {
@@ -54,8 +54,8 @@ namespace PLATEAU.Editor.CityLoader
             }
             (float sliderValMin, float sliderValMax) = (conf.minLOD, conf.maxLOD);
             EditorGUILayout.MinMaxSlider("LOD範囲", ref sliderValMin, ref sliderValMax, minLODLimit, maxLODLimit);
-            conf.minLOD = (int)Mathf.Round(sliderValMin);
-            conf.maxLOD = (int)Mathf.Round(sliderValMax);
+            conf.minLOD = (uint)Mathf.Round(sliderValMin);
+            conf.maxLOD = (uint)Mathf.Round(sliderValMax);
             EditorGUILayout.LabelField($"選択LOD: {conf.minLOD} 以上 {conf.maxLOD} 以下");
         }
     }

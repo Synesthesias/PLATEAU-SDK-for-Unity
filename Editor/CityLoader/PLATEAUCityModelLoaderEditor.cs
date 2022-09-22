@@ -6,6 +6,7 @@ using PLATEAU.CityLoader.Setting;
 using PLATEAU.Editor.CityLoader.AreaSelector;
 using PLATEAU.Editor.EditorWindow.Common;
 using PLATEAU.IO;
+using PLATEAU.Udx;
 using PLATEAU.Util;
 using PLATEAU.Util.Async;
 using UnityEditor;
@@ -50,8 +51,8 @@ namespace PLATEAU.Editor.CityLoader
                     {
                         string destPath = CityFilesCopy.ToStreamingAssets(loader.SourcePathBeforeImport, loader.CityLoadConfig);
                         loader.SourcePathAfterImport = destPath;
-                        var gmlPaths = loader.CityLoadConfig.SearchMatchingGMLList(destPath, out _);
-                        var task = LoadGmlsAsync(gmlPaths);
+                        var gmlPathsDict = loader.CityLoadConfig.SearchMatchingGMLList(destPath, out _);
+                        var task = LoadGmlsAsync(gmlPathsDict, loader.CityLoadConfig);
                         task.ContinueWithErrorCatch();
                     }
                 }
@@ -69,18 +70,22 @@ namespace PLATEAU.Editor.CityLoader
             }
             
         }
-
-        private static async Task LoadGmlsAsync(IEnumerable<string> gmlPaths)
+        
+        private static async Task LoadGmlsAsync(Dictionary<PredefinedCityModelPackage, List<string>> gmlPathsDict, CityLoadConfig config)
         {
-            foreach (string gmlPath in gmlPaths)
+            foreach (var package in gmlPathsDict.Keys)
             {
-                await PLATEAU.CityLoader.Load.CityLoader.Load(
-                    // TODO これは仮。ここに設定を正しく渡せるようにする
-                    gmlPath,
-                    MeshGranularity.PerCityModelArea,
-                    2, 2, true, 5,
-                    -90, -180, 90, 180
-                );
+                var packageConf = config.GetConfigForPackage(package);
+                foreach (string gmlPath in gmlPathsDict[package])
+                {
+                    await PLATEAU.CityLoader.Load.CityLoader.Load(
+                        // TODO これは仮。ここに後半の設定を正しく渡せるようにする。
+                        gmlPath,
+                        packageConf.meshGranularity,
+                        packageConf.minLOD, packageConf.maxLOD, packageConf.includeTexture, 5,
+                        -90, -180, 90, 180
+                    );
+                }
             }
         }
     }

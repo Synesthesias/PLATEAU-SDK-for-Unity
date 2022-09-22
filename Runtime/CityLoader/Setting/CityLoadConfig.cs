@@ -14,19 +14,18 @@ namespace PLATEAU.CityLoader.Setting
     [Serializable]
     internal class CityLoadConfig : ISerializationCallbackReceiver
     {
+        // 都市モデル読み込みの全体設定です。
         [SerializeField] private string sourcePathBeforeImport;
         [SerializeField] private string sourcePathAfterImport;
         [SerializeField] private string[] areaMeshCodes;
         
+        // 都市モデル読み込みの、パッケージ種ごとの設定です。
         private Dictionary<PredefinedCityModelPackage, PackageLoadSetting> perPackagePairSettings = new Dictionary<PredefinedCityModelPackage, PackageLoadSetting>();
         
+        // Dictionary をシリアライズ化して保存するために Array化して保持するもの です。
         [SerializeField] private List<PredefinedCityModelPackage> perPackageSettingKeys = new List<PredefinedCityModelPackage>();
         [SerializeField] private List<PackageLoadSetting> perPackageSettingValues = new List<PackageLoadSetting>();
-
-        public CityLoadConfig()
-        {
-            // InitWithPredefined();
-        }
+        
 
         public IEnumerable<KeyValuePair<PredefinedCityModelPackage, PackageLoadSetting>> ForEachPackagePair =>
             this.perPackagePairSettings;
@@ -42,7 +41,7 @@ namespace PLATEAU.CityLoader.Setting
             foreach (var package in EnumUtil.EachFlags(packageFlags))
             {
                 var predefined = CityModelPackageInfo.GetPredefined(package);
-                var val = new PackageLoadSetting(true, predefined.hasAppearance, predefined.minLOD, predefined.maxLOD,
+                var val = new PackageLoadSetting(true, predefined.hasAppearance, (uint)predefined.minLOD, (uint)predefined.maxLOD,
                     MeshGranularity.PerCityModelArea);
                 this.perPackagePairSettings.Add(package, val);
             }
@@ -66,8 +65,8 @@ namespace PLATEAU.CityLoader.Setting
         /// </summary>
         /// <param name="rootPath">検索元となる PLATEAUルートフォルダです。</param>
         /// <param name="collection">検索に利用した collection を outで返します。</param>
-        /// <returns>検索にヒットしたGMLのパスです。</returns>
-        public List<string> SearchMatchingGMLList(string rootPath, out UdxFileCollection collection)
+        /// <returns>検索にヒットしたGMLをパッケージごとに分けたものです。keyはパッケージ、 valueはそのパッケージに属するgmlファイルのパスのリストです。</returns>
+        public Dictionary<PredefinedCityModelPackage, List<string>> SearchMatchingGMLList(string rootPath, out UdxFileCollection collection)
         {
             var meshCodes = AreaMeshCodes.Select(str => MeshCode.Parse(str)).ToArray();
             collection = UdxFileCollection.Find(rootPath).FilterByMeshCodes(meshCodes);
@@ -76,12 +75,16 @@ namespace PLATEAU.CityLoader.Setting
                     .ForEachPackagePair
                     .Where(pair => pair.Value.loadPackage)
                     .Select(pair => pair.Key);
-            var foundGmls = new List<string>();
+            var foundGmls = new Dictionary<PredefinedCityModelPackage, List<string>>();
             foreach (var package in targetPackages)
             {
                 foreach (var gmlPath in collection.GetGmlFiles(package))
                 {
-                   foundGmls.Add(gmlPath);
+                    if (!foundGmls.ContainsKey(package))
+                    {
+                        foundGmls[package] = new List<string>();
+                    } 
+                    foundGmls[package].Add(gmlPath);
                 }
             }
             return foundGmls;
