@@ -10,13 +10,15 @@ namespace PLATEAU.CityLoader.Setting
     [Serializable]
     public class PackageLoadSetting
     {
+        public bool loadPackage;
         public bool includeTexture;
         public int minLOD;
         public int maxLOD;
         public MeshGranularity meshGranularity;
 
-        public PackageLoadSetting(bool includeTexture, int minLOD, int maxLOD, MeshGranularity meshGranularity)
+        public PackageLoadSetting(bool loadPackage, bool includeTexture, int minLOD, int maxLOD, MeshGranularity meshGranularity)
         {
+            this.loadPackage = loadPackage;
             this.includeTexture = includeTexture;
             this.minLOD = minLOD;
             this.maxLOD = maxLOD;

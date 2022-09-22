@@ -37,7 +37,7 @@ namespace PLATEAU.CityLoader.Setting
             foreach (var package in EnumUtil.EachFlags(packageFlags))
             {
                 var predefined = CityModelPackageInfo.GetPredefined(package);
-                var val = new PackageLoadSetting(predefined.hasAppearance, predefined.minLOD, predefined.maxLOD,
+                var val = new PackageLoadSetting(true, predefined.hasAppearance, predefined.minLOD, predefined.maxLOD,
                     MeshGranularity.PerCityModelArea);
                 this.perPackagePairSettings.Add(package, val);
             }

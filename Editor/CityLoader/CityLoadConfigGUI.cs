@@ -13,19 +13,29 @@ namespace PLATEAU.Editor.CityLoader
         public static void Draw(CityLoadConfig cityLoadConf)
         {
             HeaderDrawer.Draw("パッケージ別設定");
+            HeaderDrawer.IncrementDepth();
             foreach (var pair in cityLoadConf.ForEachPackagePair)
             {
                 var package = pair.Key;
                 var conf = pair.Value;
-                EditorGUILayout.LabelField(Enum.GetName(typeof(PredefinedCityModelPackage), package));
-                using (PlateauEditorStyle.VerticalScopeLevel2())
+                HeaderDrawer.Draw(Enum.GetName(typeof(PredefinedCityModelPackage), package));
+                using (PlateauEditorStyle.VerticalScopeLevel1())
                 {
-                    var predefined = CityModelPackageInfo.GetPredefined(package);
-                    TextureIncludeGUI(conf, predefined.hasAppearance);
-                    LODRangeGUI(conf, predefined.minLOD, predefined.maxLOD);
-                    conf.meshGranularity = (MeshGranularity)EditorGUILayout.EnumPopup("メッシュ結合単位", conf.meshGranularity);
+                    conf.loadPackage = EditorGUILayout.Toggle("インポートする", conf.loadPackage);
+                    if (conf.loadPackage)
+                    {
+                        using (PlateauEditorStyle.VerticalScopeLevel2())
+                        {
+                            var predefined = CityModelPackageInfo.GetPredefined(package);
+                            TextureIncludeGUI(conf, predefined.hasAppearance);
+                            LODRangeGUI(conf, predefined.minLOD, predefined.maxLOD);
+                            conf.meshGranularity = (MeshGranularity)EditorGUILayout.EnumPopup("メッシュ結合単位", conf.meshGranularity);
+                        }
+                    }
                 }
+                
             }
+            HeaderDrawer.DecrementDepth();
         }
 
         private static void TextureIncludeGUI(PackageLoadSetting conf, bool mayTextureExist)
