@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using Codice.Client.GameUI.Update;
 using PLATEAU.Udx;
-using PLATEAU.Util;
-using UnityEditor.Build.Content;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 #if UNITY_EDITOR
-using System.IO;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 #endif

@@ -1,8 +1,6 @@
 ﻿using System.IO;
-using PLATEAU.Behaviour;
 using PLATEAU.CityLoader.Setting;
 using PLATEAU.Udx;
-using PLATEAU.Util;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;

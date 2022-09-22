@@ -1,16 +1,8 @@
 ﻿#if UNITY_EDITOR
 #endif
-using System.Collections.Generic;
 using System.Threading.Tasks;
-using PLATEAU.CityGML;
-using PLATEAU.Interop;
 using PLATEAU.IO;
-using PLATEAU.PolygonMesh;
-using PLATEAU.Util;
-using UnityEditor.SceneManagement;
 using UnityEngine;
-using UnityEngine.SceneManagement;
-using Texture = UnityEngine.Texture;
 
 namespace PLATEAU.CityLoader.Load
 {

@@ -1,5 +1,4 @@
 ﻿using PLATEAU.Udx;
-using UnityEngine;
 
 namespace PLATEAU.CityLoader.AreaSelector
 {
