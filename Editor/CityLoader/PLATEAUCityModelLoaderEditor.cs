@@ -1,20 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using PLATEAU.CityLoader;
 using PLATEAU.CityLoader.Load;
+using PLATEAU.CityLoader.Setting;
 using PLATEAU.Editor.CityLoader.AreaSelector;
 using PLATEAU.Editor.EditorWindow.Common;
 using PLATEAU.IO;
-using PLATEAU.Udx;
 using PLATEAU.Util;
 using PLATEAU.Util.Async;
 using UnityEditor;
-using UnityEngine;
 
 namespace PLATEAU.Editor.CityLoader
 {
+    /// <summary>
+    /// 都市モデルの読み込み設定をするGUIをインスペクタに表示し、
+    /// ボタン操作に応じて選択画面の表示や読み込みを行います。
+    /// </summary>
     [CustomEditor(typeof(PLATEAUCityModelLoader))]
     internal class PLATEAUCityModelLoaderEditor : UnityEditor.Editor
     {
@@ -47,8 +48,6 @@ namespace PLATEAU.Editor.CityLoader
                 {
                     if (PlateauEditorStyle.MainButton("インポート"))
                     {
-                        // string path = Path.Combine(loader.SourcePathBeforeImport, "udx/bldg/53392642_bldg_6697_op2.gml").Replace('\\', '/');
-                        // Debug.Log($"loading {path}");
                         string destPath = CityFilesCopy.ToStreamingAssets(loader.SourcePathBeforeImport, loader.CityLoadConfig);
                         loader.SourcePathAfterImport = destPath;
                         var gmlPaths = loader.CityLoadConfig.SearchMatchingGMLList(destPath, out _);
@@ -71,9 +70,9 @@ namespace PLATEAU.Editor.CityLoader
             
         }
 
-        private async Task LoadGmlsAsync(ICollection<string> gmlPaths)
+        private static async Task LoadGmlsAsync(IEnumerable<string> gmlPaths)
         {
-            foreach (var gmlPath in gmlPaths)
+            foreach (string gmlPath in gmlPaths)
             {
                 await PLATEAU.CityLoader.Load.CityLoader.Load(
                     // TODO これは仮。ここに設定を正しく渡せるようにする

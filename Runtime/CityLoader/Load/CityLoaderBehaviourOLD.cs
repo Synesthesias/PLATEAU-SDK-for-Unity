@@ -1,5 +1,6 @@
 ﻿#if UNITY_EDITOR
 #endif
+using System;
 using System.Threading.Tasks;
 using PLATEAU.IO;
 using UnityEngine;
@@ -10,7 +11,8 @@ namespace PLATEAU.CityLoader.Load
     /// 都市を指定数のグリッドに分割し、各グリッド内のメッシュを結合し、シーンに配置します。
     /// インスペクタでの表示については CityLoaderBehaviourEditor を参照してください。
     /// </summary>
-    internal class CityLoaderBehaviour : MonoBehaviour
+    [Obsolete]
+    internal class CityLoaderBehaviourOLD : MonoBehaviour
     {
         [SerializeField] private string gmlRelativePathFromStreamingAssets;
         [SerializeField] private MeshGranularity meshGranularity = MeshGranularity.PerCityModelArea;

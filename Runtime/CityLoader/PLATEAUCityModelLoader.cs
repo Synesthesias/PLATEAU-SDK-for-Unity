@@ -8,8 +8,8 @@ using UnityEngine.SceneManagement;
 namespace PLATEAU.CityLoader
 {
     /// <summary>
-    /// 都市モデルを読み込むコンポーネントです。
-    /// インスペクタに表示されるボタンについては PLATEAUCityModelLoaderEditor を参照してください。
+    /// 都市モデルを読み込むための設定を保持するコンポーネントです。
+    /// 具体的な都市読み込み処理については PLATEAUCityModelLoaderEditor を参照してください。
     /// </summary>
     internal class PLATEAUCityModelLoader : MonoBehaviour
     {
@@ -56,7 +56,7 @@ namespace PLATEAU.CityLoader
 
         public void InitPackageConfigsWithPackageFlags(PredefinedCityModelPackage flags)
         {
-            this.cityLoadConfig.InitWithPackageFlags(flags);
+            CityLoadConfig.InitWithPackageFlags(flags);
         }
     }
 }
