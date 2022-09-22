@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using PLATEAU.CityLoader;
+using PLATEAU.CityLoader.Load;
 using PLATEAU.Editor.EditorWindowCommon;
 using PLATEAU.Editor.PlateauWindow.Import.AreaSelect;
 using PLATEAU.IO;
@@ -43,16 +44,17 @@ namespace PLATEAU.Editor.CityLoader
                 {
                     if (PlateauEditorStyle.MainButton("インポート"))
                     {
-                        string path = Path.Combine(loader.SourcePathBeforeImport, "udx/bldg/53392642_bldg_6697_op2.gml").Replace('\\', '/');
-                        Debug.Log($"loading {path}");
-                        var task = PLATEAU.CityLoader.Load.CityLoader.Load(
-                            // TODO これは仮。ここに設定を正しく渡せるようにする
-                            "TestDataSimple/udx/bldg/53392642_bldg_6697_op2.gml",
-                            MeshGranularity.PerCityModelArea,
-                            2, 2, true, 5,
-                            -90, -180, 90, 180
-                        );
-                        task.ContinueWithErrorCatch();
+                        // string path = Path.Combine(loader.SourcePathBeforeImport, "udx/bldg/53392642_bldg_6697_op2.gml").Replace('\\', '/');
+                        // Debug.Log($"loading {path}");
+                        CityFilesCopy.ToStreamingAssets(loader.SourcePathBeforeImport, loader.AreaMeshCodes, loader.CityLoadConfig);
+                        // var task = PLATEAU.CityLoader.Load.CityLoader.Load(
+                        //     // TODO これは仮。ここに設定を正しく渡せるようにする
+                        //     "TestDataSimple/udx/bldg/53392642_bldg_6697_op2.gml",
+                        //     MeshGranularity.PerCityModelArea,
+                        //     2, 2, true, 5,
+                        //     -90, -180, 90, 180
+                        // );
+                        // task.ContinueWithErrorCatch();
                     }
                 }
             }

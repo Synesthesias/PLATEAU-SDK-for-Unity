@@ -19,7 +19,7 @@ namespace PLATEAU.CityLoader.Load
         // TODO Loadの実行中にまたLoadが実行されることを防ぐ仕組みが未実装
         // TODO 進捗を表示する機能と処理をキャンセルする機能が未実装
         /// <summary>
-        /// GMLファイルをロードし、都市を指定数のグリッドに分割し、グリッド内のメッシュを結合し、シーンに配置します。
+        /// GMLファイルをロードし、シーンに配置します。
         /// 非同期処理です。必ずメインスレッドで呼ぶ必要があります。
         /// </summary>
         public static async Task Load(
