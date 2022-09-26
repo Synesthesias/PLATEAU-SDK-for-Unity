@@ -1,8 +1,14 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
+using PLATEAU.CityGML;
 using PLATEAU.CityLoader.Setting;
+using PLATEAU.Interop;
+using PLATEAU.IO;
 using PLATEAU.Udx;
+using PLATEAU.Util;
 using PLATEAU.Util.Async;
+using UnityEngine;
 
 namespace PLATEAU.CityLoader.Load
 {
@@ -36,15 +42,43 @@ namespace PLATEAU.CityLoader.Load
                 var packageConf = config.GetConfigForPackage(package);
                 foreach (string gmlPath in gmlPathsDict[package])
                 {
-                    await GMLLoader.Load(
-                        // TODO これは仮。ここに後半の設定を正しく渡せるようにする。
-                        gmlPath,
+                    using var cityModel = await Task.Run(() => ParseGML(gmlPath));
+                    if (cityModel == null) continue;
+                    var meshExtractOptions = new MeshExtractOptions(
+                        // TODO ReferencePoint, gridCountOfSide, Extent はユーザーが設定できるようにしたほうが良い
+                        cityModel.CenterPoint,
+                        CoordinateSystem.EUN,
                         packageConf.meshGranularity,
-                        packageConf.minLOD, packageConf.maxLOD, packageConf.includeTexture, 5,
-                        -90, -180, 90, 180
+                        packageConf.maxLOD,
+                        packageConf.minLOD,
+                        packageConf.includeTexture,
+                        5,
+                        1.0f,
+                        new Extent(new GeoCoordinate(-90, -180, -9999), new GeoCoordinate(90, 180, 9999))
+                    );
+                    
+                    if (!meshExtractOptions.Validate()) continue;
+
+                    await PlateauToUnityModelConverter.ConvertAndPlaceToScene(
+                        cityModel,
+                        meshExtractOptions,
+                        gmlPath
                     );
                 }
             }
+        }
+        
+        /// <summary> gmlファイルをパースします。 </summary>
+        /// <param name="gmlAbsolutePath"> gmlファイルのパスです。 </param>
+        /// <returns><see cref="CityGML.CityModel"/> を返します。パスにファイルがなければ null を返します。</returns>
+        private static CityModel ParseGML(string gmlAbsolutePath)
+        {
+            if (!File.Exists(gmlAbsolutePath))
+            {
+                return null;
+            }
+            var parserParams = new CitygmlParserParams(true, true, false);
+            return CityGml.Load(gmlAbsolutePath, parserParams, DllLogCallback.UnityLogCallbacks);
         }
     }
 }

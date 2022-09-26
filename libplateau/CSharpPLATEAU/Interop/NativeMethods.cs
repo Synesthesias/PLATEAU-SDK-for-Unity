@@ -3,9 +3,11 @@ using System.Runtime.InteropServices;
 using PLATEAU.CityGML;
 using PLATEAU.IO;
 using PLATEAU.Udx;
+using UnityEngine;
 
 // 文字列のサイズをDLLでやりとりする時の型を決めます。
 using DllStrSizeT = System.Int32;
+using TextureWrapMode = PLATEAU.CityGML.TextureWrapMode;
 
 namespace PLATEAU.Interop
 {
@@ -98,6 +100,42 @@ namespace PLATEAU.Interop
         public int GridCountOfSide;
         public float UnitScale;
         public Extent Extent;
+
+        public MeshExtractOptions(PlateauVector3d referencePoint, CoordinateSystem meshAxes,
+            MeshGranularity meshGranularity, uint maxLOD, uint minLOD, bool exportAppearance, int gridCountOfSide,
+            float unitScale, Extent extent)
+        {
+            this.ReferencePoint = referencePoint;
+            this.MeshAxes = meshAxes;
+            this.MeshGranularity = meshGranularity;
+            this.MaxLOD = maxLOD;
+            this.MinLOD = minLOD;
+            this.ExportAppearance = exportAppearance;
+            this.GridCountOfSide = gridCountOfSide;
+            this.UnitScale = unitScale;
+            this.Extent = extent;
+        }
+        
+        /// <summary>
+        /// 値が正常かどうか確認します。
+        /// </summary>
+        /// <returns>正常かどうかを bool で返します。</returns>
+        public bool Validate()
+        {
+            if (this.GridCountOfSide <= 0)
+            {
+                Debug.LogError($"{nameof(GridCountOfSide)} の値を1以上にしてください");
+                return false;
+            }
+
+            if (this.MaxLOD < this.MinLOD)
+            {
+                Debug.LogError($"min <= max である必要があります。");
+                return false;
+            }
+
+            return true;
+        }
     }
 
     [StructLayout(LayoutKind.Sequential)]
