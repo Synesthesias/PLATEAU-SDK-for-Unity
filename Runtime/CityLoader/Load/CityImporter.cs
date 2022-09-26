@@ -26,6 +26,11 @@ namespace PLATEAU.CityLoader.Load
             loader.SourcePathAfterImport = destPath;
             // シーン配置
             var gmlPathsDict = loader.CityLoadConfig.SearchMatchingGMLList(destPath, out _);
+            if (gmlPathsDict.Count == 0)
+            {
+                Debug.LogError("該当するGMLファイルの数が0です。");
+                return;
+            }
             var task = LoadAndPlaceGmlsAsync(gmlPathsDict, loader.CityLoadConfig);
             task.ContinueWithErrorCatch();
         }
