@@ -9,7 +9,7 @@ using UnityEngine;
 namespace PLATEAU.CityLoader.Setting
 {
     /// <summary>
-    /// <see cref="PLATEAUCityModelLoader"/> の設定です。
+    /// <see cref="PLATEAUCityLoaderBehaviour"/> の設定です。
     /// </summary>
     [Serializable]
     internal class CityLoadConfig : ISerializationCallbackReceiver

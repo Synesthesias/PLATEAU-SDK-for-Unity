@@ -4,7 +4,7 @@ using PLATEAU.IO;
 namespace PLATEAU.CityLoader.Setting
 {
     /// <summary>
-    /// <see cref="PLATEAUCityModelLoader"/> の設定のうち、パッケージごとの設定です。
+    /// <see cref="PLATEAUCityLoaderBehaviour"/> の設定のうち、パッケージごとの設定です。
     /// </summary>
     [Serializable]
     public class PackageLoadSetting

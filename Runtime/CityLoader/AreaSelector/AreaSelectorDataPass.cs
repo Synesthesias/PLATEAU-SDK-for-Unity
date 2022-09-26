@@ -11,7 +11,7 @@ using UnityEditor.SceneManagement;
 namespace PLATEAU.CityLoader.AreaSelector
 {
     /// <summary>
-    /// 範囲選択画面が終わったとき、元のシーンの <see cref="PLATEAUCityModelLoader"/> コンポーネントに
+    /// 範囲選択画面が終わったとき、元のシーンの <see cref="PLATEAUCityLoaderBehaviour"/> コンポーネントに
     /// 選択結果を渡します。
     /// </summary>
     internal static class AreaSelectorDataPass
@@ -50,11 +50,11 @@ namespace PLATEAU.CityLoader.AreaSelector
             var loaderBehaviourObj = GlobalObjectId.GlobalObjectIdentifierToObjectSlow(loaderBehaviourID);
             if (loaderBehaviourObj == null)
             {
-                Debug.LogError($"元の{nameof(PLATEAUCityModelLoader)} コンポーネントが見つかりません。 globalID = {loaderBehaviourID}");
+                Debug.LogError($"元の{nameof(PLATEAUCityLoaderBehaviour)} コンポーネントが見つかりません。 globalID = {loaderBehaviourID}");
                 return;
             }
 
-            var loaderBehaviour = (PLATEAUCityModelLoader)loaderBehaviourObj;
+            var loaderBehaviour = (PLATEAUCityLoaderBehaviour)loaderBehaviourObj;
             
             loaderBehaviour.AreaMeshCodes = areaSelectResult.Select(meshCode => meshCode.ToString()).ToArray();
             loaderBehaviour.InitPackageConfigsWithPackageFlags(availablePackageFlags);

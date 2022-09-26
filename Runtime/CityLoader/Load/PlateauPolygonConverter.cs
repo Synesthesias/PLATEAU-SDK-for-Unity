@@ -49,11 +49,8 @@ namespace PLATEAU.CityLoader.Load
 
         private static (List<List<int>> subMeshTriangles, List<string> texturePaths) CopySubMeshInfo(PolygonMesh.Mesh plateauMesh)
         {
-            // var multiTexture = plateauMesh.GetMultiTexture();
-            // int currentSubMeshStart = 0;
             var subMeshTrianglesList = new List<List<int>>();
             var texPaths = new List<string>();
-            // string currentTexPath = "";
             int numSubMesh = plateauMesh.SubMeshCount;
             for (int i = 0; i < numSubMesh; i++)
             {
@@ -66,33 +63,6 @@ namespace PLATEAU.CityLoader.Load
                 subMeshTrianglesList.Add(subMeshIndices);
                 texPaths.Add(subMesh.TexturePath);
             }
-            
-            // サブメッシュを分けます。
-            // for (int i = 0; i <= numSubMesh; i++)
-            // {
-            //     var subMesh = plateauMesh.GetSubMeshAt(i);
-            //     int nextSubMeshStart =
-            //         (i == numSubMesh) ?
-            //             plateauMesh.IndicesCount :
-            //             subMesh.StartIndex;
-            //     int count = nextSubMeshStart - currentSubMeshStart;
-            //     if (count > 0)
-            //     {
-            //         var subMeshIndices = new List<int>();
-            //         for (int j = 0; j < count; j++)
-            //         {
-            //             subMeshIndices.Add(plateauMesh.GetIndiceAt(j + currentSubMeshStart));
-            //         }
-            //         subMeshTrianglesList.Add(subMeshIndices);
-            //         texPaths.Add(currentTexPath);
-            //     }
-            //
-            //     if (i < numSubMesh)
-            //     {
-            //         currentSubMeshStart = nextSubMeshStart;
-            //         currentTexPath = subMesh.TexturePath;
-            //     }
-            // }
             return (subMeshTrianglesList, texPaths);
         }
 

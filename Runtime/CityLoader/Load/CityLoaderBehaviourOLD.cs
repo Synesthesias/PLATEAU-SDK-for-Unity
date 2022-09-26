@@ -27,7 +27,7 @@ namespace PLATEAU.CityLoader.Load
 
         public Task LoadAsync()
         {
-            return CityLoader.Load(
+            return GMLLoader.Load(
                 this.gmlRelativePathFromStreamingAssets,
                 this.meshGranularity,
                 this.minLOD, this.maxLOD,
