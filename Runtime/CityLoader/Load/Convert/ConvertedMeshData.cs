@@ -83,6 +83,8 @@ namespace PLATEAU.CityLoader.Load.Convert
             return meshObj;
         }
 
+        public int VerticesCount => this.vertices.Length;
+
         /// <summary>
         /// データをもとにUnity のメッシュを生成します。
         /// </summary>

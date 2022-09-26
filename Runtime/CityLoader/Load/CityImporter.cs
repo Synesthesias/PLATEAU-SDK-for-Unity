@@ -32,7 +32,6 @@ namespace PLATEAU.CityLoader.Load
                 return;
             }
 
-            string rootDirName = Path.GetFileName(destPath);
             var task = LoadAndPlaceGmlsAsync(gmlPathsDict, loader.CityLoadConfig, loader.transform);
             task.ContinueWithErrorCatch();
         }

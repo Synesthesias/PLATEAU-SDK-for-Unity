@@ -59,6 +59,7 @@ namespace PLATEAU.CityLoader.Load.Convert
         /// </summary>
         public async Task PlaceToScene(Transform parent, string gmlAbsolutePath, Dictionary<string, Texture> cachedTexture, bool skipRoot)
         {
+
             var nextParent = parent;
             if (!skipRoot)
             {
