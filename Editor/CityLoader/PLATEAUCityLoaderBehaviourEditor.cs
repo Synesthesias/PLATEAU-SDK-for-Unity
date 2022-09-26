@@ -5,6 +5,7 @@ using PLATEAU.CityLoader.Load;
 using PLATEAU.CityLoader.Setting;
 using PLATEAU.Editor.CityLoader.AreaSelector;
 using PLATEAU.Editor.EditorWindow.Common;
+using PLATEAU.Editor.EditorWindow.ProgressDisplay;
 using PLATEAU.IO;
 using PLATEAU.Udx;
 using PLATEAU.Util;
@@ -49,7 +50,7 @@ namespace PLATEAU.Editor.CityLoader
                 {
                     if (PlateauEditorStyle.MainButton("インポート"))
                     {
-                        CityImporter.Import(loader);
+                        CityImporter.Import(loader, ProgressDisplayWindow.Open());
                     }
                 }
             }

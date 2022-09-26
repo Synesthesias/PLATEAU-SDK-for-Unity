@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using PLATEAU.CityGML;
 using PLATEAU.CityLoader.Load.Convert;
@@ -19,7 +20,7 @@ namespace PLATEAU.CityLoader.Load
         /// <summary>
         /// 選択されたGMLとその関連ファイルを StreamingAssetsフォルダにコピーし、都市モデルをシーンに配置します。
         /// </summary>
-        public static void Import(PLATEAUCityLoaderBehaviour loader)
+        public static void Import(PLATEAUCityLoaderBehaviour loader, IProgressDisplay progressDisplay)
         {
             // コピー
             string destPath = CityFilesCopy.ToStreamingAssets(loader.SourcePathBeforeImport, loader.CityLoadConfig);
@@ -32,7 +33,8 @@ namespace PLATEAU.CityLoader.Load
                 return;
             }
 
-            var task = LoadAndPlaceGmlsAsync(gmlPathsDict, loader.CityLoadConfig, loader.transform);
+            var rootDirName = Path.GetFileName(destPath);
+            var task = LoadAndPlaceGmlsAsync(gmlPathsDict, loader.CityLoadConfig, rootDirName, progressDisplay);
             task.ContinueWithErrorCatch();
         }
         
@@ -41,15 +43,20 @@ namespace PLATEAU.CityLoader.Load
         /// </summary>
         /// <param name="gmlPathsDict">対象となるGMLファイルのパスです。辞書であり、キーはパッケージ種、値はそのパッケージに該当するGMLファイルパスリストです。</param>
         /// <param name="config">ロード設定です。</param>
-        private static async Task LoadAndPlaceGmlsAsync(Dictionary<PredefinedCityModelPackage, List<string>> gmlPathsDict, CityLoadConfig config, Transform rootTrans)
+        private static async Task LoadAndPlaceGmlsAsync(Dictionary<PredefinedCityModelPackage, List<string>> gmlPathsDict, CityLoadConfig config, string rootObjName, IProgressDisplay progressDisplay)
         {
+            int gmlCount = gmlPathsDict.SelectMany(pair => pair.Value).Count();
+            var rootTrans = new GameObject(rootObjName).transform;
             // パッケージ種ごとのループです。
+            int loopCountGml = 0;
             foreach (var package in gmlPathsDict.Keys)
             {
                 // パッケージ種ごとの設定を利用します。
                 var packageConf = config.GetConfigForPackage(package);
+                // GMLファイルごとのループです。
                 foreach (string gmlPath in gmlPathsDict[package])
                 {
+                    progressDisplay.SetProgress("3Dモデルのロード", (float)(loopCountGml) * 100 / gmlCount, $"[{loopCountGml+1} / {gmlCount} : {Path.GetFileName(gmlPath)}]");
                     var gmlTrans = new GameObject(Path.GetFileName(gmlPath)).transform;
                     gmlTrans.parent = rootTrans;
                     using var cityModel = await Task.Run(() => ParseGML(gmlPath));
@@ -72,8 +79,10 @@ namespace PLATEAU.CityLoader.Load
                     await PlateauToUnityModelConverter.ConvertAndPlaceToScene(
                         cityModel, meshExtractOptions, gmlPath, gmlTrans
                     );
-                }
-            }
+                    loopCountGml++;
+                } // gmlファイルごとのループ
+            }// パッケージ種ごとのループ
+            progressDisplay.SetProgress("3Dモデルのロード", 100f, "完了");
         }
         
         /// <summary> gmlファイルをパースします。 </summary>
