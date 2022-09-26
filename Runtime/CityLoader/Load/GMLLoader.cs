@@ -36,7 +36,6 @@ namespace PLATEAU.CityLoader.Load
             )
         {
             if (!AreArgumentsOK(gridCountOfSide, minLOD, maxLOD)) return;
-            // string gmlAbsolutePath = Application.streamingAssetsPath + "/" + gmlRelativePathFromStreamingAssets;
             if (!File.Exists(gmlAbsolutePath))
             {
                 Debug.LogError($"File not found on {gmlAbsolutePath}");

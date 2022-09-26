@@ -10,27 +10,19 @@ namespace PLATEAU.CityLoader.Load
 {
     internal static class CityFilesCopy
     {
-        public static string ToStreamingAssets(string sourcePath,/* ICollection<string> areaMeshCodesStr,*/ CityLoadConfig config)
+        /// <summary>
+        /// 条件に合うGMLファイルを検索し、そのGMLと関連ファイルを StreamingAssets 以下の規定のフォルダにコピーします。
+        /// </summary>
+        /// <param name="sourcePath">検索元となるルートフォルダです。</param>
+        /// <param name="config">検索対象となるGMLファイルの絞り込みの条件として利用します。</param>
+        /// <returns>コピー先のルートフォルダのパスを返します。</returns>
+        public static string ToStreamingAssets(string sourcePath, CityLoadConfig config)
         {
-            // var areaMeshCodes = areaMeshCodesStr.Select(str => MeshCode.Parse(str)).ToArray();
-            // var collection = UdxFileCollection.Find(sourcePath).FilterByMeshCodes(areaMeshCodes);
+            // TODO 非同期にする
+            // 条件に合うGMLファイルを検索して記憶します。
             string destPath = PathUtil.plateauSrcFetchDir;
             var fetchTargetGmls = new List<GmlFileInfo>();
             var gmlInfoToDestroy = new List<GmlFileInfo>();
-            // var targetPackages = 
-            //     config
-            //         .ForEachPackagePair
-            //         .Where(pair => pair.Value.loadPackage)
-            //         .Select(pair => pair.Key);
-            // foreach (var package in targetPackages)
-            // {
-            //     foreach (var gmlPath in collection.GetGmlFiles(package))
-            //     {
-            //         var gmlInfo = GmlFileInfo.Create(gmlPath);
-            //         gmlInfoToDestroy.Add(gmlInfo);
-            //         fetchTargetGmls.Add(gmlInfo);
-            //     }
-            // }
             var gmlPathsDict = config.SearchMatchingGMLList(sourcePath, out var collection);
             foreach (var gmlPath in gmlPathsDict.SelectMany(pair => pair.Value))
             {
@@ -39,6 +31,7 @@ namespace PLATEAU.CityLoader.Load
                 fetchTargetGmls.Add(gmlInfo);
             }
 
+            // GMLと関連ファイルをコピーします。
             int targetGmlCount = fetchTargetGmls.Count;
             for (int i = 0; i < targetGmlCount; i++)
             {

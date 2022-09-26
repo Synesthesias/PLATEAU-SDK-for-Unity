@@ -47,35 +47,28 @@ namespace PLATEAU.CityLoader.Setting
             }
         }
 
-        // private void InitWithPredefined()
-        // {
-        //     this.perPackageSettings = new Dictionary<PredefinedCityModelPackage, PackageLoadSetting>();
-        //     foreach (PredefinedCityModelPackage package in Enum.GetValues(typeof(PredefinedCityModelPackage)))
-        //     {
-        //         var predefined = CityModelPackageInfo.GetPredefined(package);
-        //         var val = new PackageLoadSetting(predefined.hasAppearance, predefined.minLOD, predefined.maxLOD,
-        //             MeshGranularity.PerCityModelArea);
-        //         this.perPackageSettings.Add(package, val);
-        //     }
-        // }
-
         /// <summary>
         /// 設定に合うGMLファイルを検索します。
-        /// やや時間がかかります。
+        /// 多数のファイルから検索するので、実行時間が長くなりがちである点にご注意ください。
         /// </summary>
         /// <param name="rootPath">検索元となる PLATEAUルートフォルダです。</param>
         /// <param name="collection">検索に利用した collection を outで返します。</param>
         /// <returns>検索にヒットしたGMLをパッケージごとに分けたものです。keyはパッケージ、 valueはそのパッケージに属するgmlファイルのパスのリストです。</returns>
         public Dictionary<PredefinedCityModelPackage, List<string>> SearchMatchingGMLList(string rootPath, out UdxFileCollection collection)
         {
+            // 地域ID(メッシュコード)で絞り込みます。
             var meshCodes = AreaMeshCodes.Select(str => MeshCode.Parse(str)).ToArray();
             collection = UdxFileCollection.Find(rootPath).FilterByMeshCodes(meshCodes);
+            
+            // パッケージ種ごとの設定で「ロードする」にチェックが入っているパッケージ種で絞り込みます。
             var targetPackages =
                 this
                     .ForEachPackagePair
                     .Where(pair => pair.Value.loadPackage)
                     .Select(pair => pair.Key);
             var foundGmls = new Dictionary<PredefinedCityModelPackage, List<string>>();
+            
+            // 絞り込まれたGMLパスを戻り値の辞書にコピーします。
             foreach (var package in targetPackages)
             {
                 foreach (var gmlPath in collection.GetGmlFiles(package))

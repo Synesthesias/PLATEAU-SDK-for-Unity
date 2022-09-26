@@ -6,12 +6,17 @@ using PLATEAU.Util.Async;
 
 namespace PLATEAU.CityLoader.Load
 {
-    internal class CityImporter
+    internal static class CityImporter
     {
+        /// <summary>
+        /// 選択されたGMLとその関連ファイルを StreamingAssetsフォルダにコピーし、都市モデルをシーンに配置します。
+        /// </summary>
         public static void Import(PLATEAUCityLoaderBehaviour loader)
         {
+            // コピー
             string destPath = CityFilesCopy.ToStreamingAssets(loader.SourcePathBeforeImport, loader.CityLoadConfig);
             loader.SourcePathAfterImport = destPath;
+            // シーン配置
             var gmlPathsDict = loader.CityLoadConfig.SearchMatchingGMLList(destPath, out _);
             var task = LoadGmlsAsync(gmlPathsDict, loader.CityLoadConfig);
             task.ContinueWithErrorCatch();
