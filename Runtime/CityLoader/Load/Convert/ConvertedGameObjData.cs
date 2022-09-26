@@ -38,7 +38,7 @@ namespace PLATEAU.CityLoader.Load.Convert
         }
 
         /// <summary>
-        /// C++側の <see cref="GeometryModel.Node"/> から変換して
+        /// C++側の <see cref="PolygonMesh.Node"/> から変換して
         /// <see cref="ConvertedGameObjData"/> を作ります。
         /// 子も再帰的に作ります。
         /// </summary>

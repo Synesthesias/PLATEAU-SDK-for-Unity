@@ -4,53 +4,49 @@ using UnityEngine;
 namespace PLATEAU.CityLoader.Load.Convert
 {
     /// <summary>
-    /// <see cref="Mesh"/> を Unityの Mesh に変換します。
+    /// PLATEAUの <see cref="Mesh"/> を Unityの Mesh 用データに変換します。
     /// </summary>
     internal static class MeshConverter
     {
         /// <summary>
-        /// C++側の<see cref="GeometryModel.Mesh"/> を Unity向けのデータ に変換します。
+        /// C++側の<see cref="PolygonMesh.Mesh"/> を Unity向けのデータ に変換します。
         /// Unityのメッシュを生成する準備としてのデータ生成です。実際のメッシュはまだ触りません。
-        /// その理由は <see cref="CityLoaderBehaviourOLD.LoadAsync"/> のコメントを参照してください。
+        /// その理由は <see cref="PlateauToUnityModelConverter.ConvertAndPlaceToScene"/> のコメントを参照してください。
         /// このメソッドの結果をもとに、 <see cref="ConvertedGameObjData.PlaceToScene"/> メソッドで実際のメッシュを配置できます。
         /// </summary>
         public static ConvertedMeshData Convert(PolygonMesh.Mesh plateauMesh, string meshName)
         {
             if (plateauMesh == null) return null;
-            var (unityVerts, unityUv1, unityUv2, unityUv3) =
-                CopyVerticesAndUV(plateauMesh);
-            var (subMeshTriangles, texturePaths) = CopySubMeshInfo(plateauMesh);
-            var meshData = new ConvertedMeshData(unityVerts, unityUv1, unityUv2, unityUv3, subMeshTriangles, texturePaths, meshName);
+            CopyVerticesAndUV(plateauMesh, out var unityVerts, out var unityUV1, out var unityUV2, out var unityUV3);
+            CopySubMeshInfo(plateauMesh, out var subMeshTriangles, out var texturePaths);
+            var meshData = new ConvertedMeshData(unityVerts, unityUV1, unityUV2, unityUV3, subMeshTriangles, texturePaths, meshName);
             return meshData;
         }
 
-        private static
-            (Vector3[] unityVerts, Vector2[] unityUv1, Vector2[] unityUv2, Vector2[] unityUv3)
-            CopyVerticesAndUV(PolygonMesh.Mesh plateauMesh)
+        private static void CopyVerticesAndUV(PolygonMesh.Mesh plateauMesh, out Vector3[] unityVerts, out Vector2[] unityUV1, out Vector2[] unityUV2, out Vector2[] unityUV3)
         {
             int numVerts = plateauMesh.VerticesCount;
             var plateauUv1 = plateauMesh.GetUv1();
             var plateauUv2 = plateauMesh.GetUv2();
             var plateauUv3 = plateauMesh.GetUv3();
-            var unityVerts = new Vector3[numVerts];
-            var unityUv1 = new Vector2[numVerts];
-            var unityUv2 = new Vector2[numVerts];
-            var unityUv3 = new Vector2[numVerts];
+            unityVerts = new Vector3[numVerts];
+            unityUV1 = new Vector2[numVerts];
+            unityUV2 = new Vector2[numVerts];
+            unityUV3 = new Vector2[numVerts];
             for (int i = 0; i < numVerts; i++)
             {
                 var vert = plateauMesh.GetVertexAt(i);
                 unityVerts[i] = new Vector3((float)vert.X, (float)vert.Y, (float)vert.Z);
-                unityUv1[i] = new Vector2(plateauUv1[i].X, plateauUv1[i].Y);
-                unityUv2[i] = new Vector2(plateauUv2[i].X, plateauUv2[i].Y);
-                unityUv3[i] = new Vector2(plateauUv3[i].X, plateauUv3[i].Y);
+                unityUV1[i] = new Vector2(plateauUv1[i].X, plateauUv1[i].Y);
+                unityUV2[i] = new Vector2(plateauUv2[i].X, plateauUv2[i].Y);
+                unityUV3[i] = new Vector2(plateauUv3[i].X, plateauUv3[i].Y);
             }
-            return (unityVerts, unityUv1, unityUv2, unityUv3);
         }
 
-        private static (List<List<int>> subMeshTriangles, List<string> texturePaths) CopySubMeshInfo(PolygonMesh.Mesh plateauMesh)
+        private static void CopySubMeshInfo(PolygonMesh.Mesh plateauMesh, out List<List<int>> subMeshTriangles, out List<string> texturePaths)
         {
-            var subMeshTrianglesList = new List<List<int>>();
-            var texPaths = new List<string>();
+            subMeshTriangles = new List<List<int>>();
+            texturePaths = new List<string>();
             int numSubMesh = plateauMesh.SubMeshCount;
             for (int i = 0; i < numSubMesh; i++)
             {
@@ -60,10 +56,9 @@ namespace PLATEAU.CityLoader.Load.Convert
                 {
                     subMeshIndices.Add(plateauMesh.GetIndiceAt(j));
                 }
-                subMeshTrianglesList.Add(subMeshIndices);
-                texPaths.Add(subMesh.TexturePath);
+                subMeshTriangles.Add(subMeshIndices);
+                texturePaths.Add(subMesh.TexturePath);
             }
-            return (subMeshTrianglesList, texPaths);
         }
 
 
