@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-namespace PLATEAU.CityLoader.Load
+namespace PLATEAU.CityLoader.Load.Convert
 {
     /// <summary>
     /// <see cref="Mesh"/> を Unityの Mesh に変換します。

@@ -3,8 +3,15 @@ using System.Threading.Tasks;
 using PLATEAU.PolygonMesh;
 using UnityEngine;
 
-namespace PLATEAU.CityLoader.Load
+namespace PLATEAU.CityLoader.Load.Convert
 {
+    /// <summary>
+    /// PLATEAU から Unity の GameObject を生成するためのデータです。
+    /// メッシュデータ、名前、子を持ちます。
+    /// PLATEAU 側の <see cref="PolygonMesh.Model"/> 以下にある <see cref="Node"/> の木構造が
+    /// ゲームエンジン側のゲームオブジェクト階層に対応するよう設計されているので、それを Unity用のデータに直したものです。
+    /// 子は木構造を形成し、それはゲームエンジン側のヒエラルキーに対応します。
+    /// </summary>
     internal class ConvertedGameObjData
     {
         private readonly ConvertedMeshData meshData;
@@ -12,7 +19,7 @@ namespace PLATEAU.CityLoader.Load
         private readonly List<ConvertedGameObjData> children = new List<ConvertedGameObjData>();
 
         /// <summary>
-        /// C++側の <see cref="GeometryModel.Model"/> から変換して
+        /// C++側の <see cref="PolygonMesh.Model"/> から変換して
         /// <see cref="ConvertedGameObjData"/> を作ります。
         /// 子も再帰的に作ります。
         /// </summary>
@@ -24,6 +31,7 @@ namespace PLATEAU.CityLoader.Load
             for (int i = 0; i < plateauModel.RootNodesCount; i++)
             {
                 var rootNode = plateauModel.GetRootNodeAt(i);
+                // 再帰的な子の生成です。
                 this.children.Add(new ConvertedGameObjData(rootNode));
             }
             Debug.Log("converted plateau model.");

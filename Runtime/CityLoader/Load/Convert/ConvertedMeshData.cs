@@ -6,7 +6,7 @@ using PLATEAU.Util.Async;
 using UnityEngine;
 using Mesh = UnityEngine.Mesh;
 
-namespace PLATEAU.CityLoader.Load
+namespace PLATEAU.CityLoader.Load.Convert
 {
     /// <summary>
     /// DLL側の Mesh を Unity向けに変換したものです。

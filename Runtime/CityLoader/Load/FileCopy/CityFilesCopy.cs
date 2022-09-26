@@ -6,7 +6,7 @@ using PLATEAU.Udx;
 using PLATEAU.Util;
 using UnityEditor;
 
-namespace PLATEAU.CityLoader.Load
+namespace PLATEAU.CityLoader.Load.FileCopy
 {
     internal static class CityFilesCopy
     {

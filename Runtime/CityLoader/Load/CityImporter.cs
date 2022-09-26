@@ -2,6 +2,8 @@
 using System.IO;
 using System.Threading.Tasks;
 using PLATEAU.CityGML;
+using PLATEAU.CityLoader.Load.Convert;
+using PLATEAU.CityLoader.Load.FileCopy;
 using PLATEAU.CityLoader.Setting;
 using PLATEAU.Interop;
 using PLATEAU.IO;
@@ -24,16 +26,16 @@ namespace PLATEAU.CityLoader.Load
             loader.SourcePathAfterImport = destPath;
             // シーン配置
             var gmlPathsDict = loader.CityLoadConfig.SearchMatchingGMLList(destPath, out _);
-            var task = LoadGmlsAsync(gmlPathsDict, loader.CityLoadConfig);
+            var task = LoadAndPlaceGmlsAsync(gmlPathsDict, loader.CityLoadConfig);
             task.ContinueWithErrorCatch();
         }
         
         /// <summary>
-        /// 選択された GMLファイル群を非同期でロードします。
+        /// 選択された GMLファイル群を非同期でロードし、モデルをシーンに配置します。
         /// </summary>
-        /// <param name="gmlPathsDict">辞書であり、キーはパッケージ種、値はそのパッケージに該当するGMLファイルパスリストです。</param>
+        /// <param name="gmlPathsDict">対象となるGMLファイルのパスです。辞書であり、キーはパッケージ種、値はそのパッケージに該当するGMLファイルパスリストです。</param>
         /// <param name="config">ロード設定です。</param>
-        private static async Task LoadGmlsAsync(Dictionary<PredefinedCityModelPackage, List<string>> gmlPathsDict, CityLoadConfig config)
+        private static async Task LoadAndPlaceGmlsAsync(Dictionary<PredefinedCityModelPackage, List<string>> gmlPathsDict, CityLoadConfig config)
         {
             // パッケージ種ごとのループです。
             foreach (var package in gmlPathsDict.Keys)
@@ -60,9 +62,7 @@ namespace PLATEAU.CityLoader.Load
                     if (!meshExtractOptions.Validate()) continue;
 
                     await PlateauToUnityModelConverter.ConvertAndPlaceToScene(
-                        cityModel,
-                        meshExtractOptions,
-                        gmlPath
+                        cityModel, meshExtractOptions, gmlPath
                     );
                 }
             }

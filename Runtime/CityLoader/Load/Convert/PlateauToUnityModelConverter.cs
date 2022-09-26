@@ -1,18 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using PLATEAU.CityGML;
 using PLATEAU.Interop;
-using PLATEAU.IO;
 using PLATEAU.PolygonMesh;
-using PLATEAU.Util;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Texture = UnityEngine.Texture;
 
-namespace PLATEAU.CityLoader.Load
+namespace PLATEAU.CityLoader.Load.Convert
 {
     /// <summary>
     /// 都市の3Dモデルを PLATEAU から Unity に変換してシーンに配置します。
@@ -46,10 +42,7 @@ namespace PLATEAU.CityLoader.Load
             // 実際のメッシュデータを触らないので、Task.Run で別のスレッドで処理できます。
             ConvertedGameObjData meshObjsData = await Task.Run(() =>
             {
-                // Extent extent = new Extent(
-                    // new GeoCoordinate(minLatitude, minLongitude, -99999),
-                    // new GeoCoordinate(maxLatitude, maxLongitude, 99999)); 
-                using var plateauModel = MergeMeshes(cityModel, meshExtractOptions);
+                using var plateauModel = ExtractMeshes(cityModel, meshExtractOptions);
                 var convertedObjData = new ConvertedGameObjData(plateauModel);
                 return convertedObjData;
             });
@@ -80,23 +73,9 @@ namespace PLATEAU.CityLoader.Load
         /// メッシュを結合して、各メッシュとその名称を含んだ<see cref="Model"/> を返します。
         /// メインスレッドでなくても動作します。
         /// </summary>
-        private static Model MergeMeshes(
+        private static Model ExtractMeshes(
             CityModel cityModel, MeshExtractOptions meshExtractOptions)
         {
-            // マージ
-            // var options = new MeshExtractOptions()
-            // {
-            //     
-            //     ReferencePoint = cityModel.CenterPoint,
-            //     MeshAxes = CoordinateSystem.EUN,
-            //     MeshGranularity = meshGranularity,
-            //     MaxLOD = maxLOD,
-            //     MinLOD = minLOD,
-            //     ExportAppearance = doExportAppearance,
-            //     GridCountOfSide = numGridCountOfSide,
-            //     UnitScale = 1f,
-            //     Extent = extent
-            // };
             var model = new Model();
             MeshExtractor.Extract(ref model, cityModel, meshExtractOptions);
             Debug.Log("model extracted.");
