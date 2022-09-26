@@ -31,7 +31,9 @@ namespace PLATEAU.CityLoader.Load
                 Debug.LogError("該当するGMLファイルの数が0です。");
                 return;
             }
-            var task = LoadAndPlaceGmlsAsync(gmlPathsDict, loader.CityLoadConfig);
+
+            string rootDirName = Path.GetFileName(destPath);
+            var task = LoadAndPlaceGmlsAsync(gmlPathsDict, loader.CityLoadConfig, loader.transform);
             task.ContinueWithErrorCatch();
         }
         
@@ -40,7 +42,7 @@ namespace PLATEAU.CityLoader.Load
         /// </summary>
         /// <param name="gmlPathsDict">対象となるGMLファイルのパスです。辞書であり、キーはパッケージ種、値はそのパッケージに該当するGMLファイルパスリストです。</param>
         /// <param name="config">ロード設定です。</param>
-        private static async Task LoadAndPlaceGmlsAsync(Dictionary<PredefinedCityModelPackage, List<string>> gmlPathsDict, CityLoadConfig config)
+        private static async Task LoadAndPlaceGmlsAsync(Dictionary<PredefinedCityModelPackage, List<string>> gmlPathsDict, CityLoadConfig config, Transform rootTrans)
         {
             // パッケージ種ごとのループです。
             foreach (var package in gmlPathsDict.Keys)
@@ -49,6 +51,8 @@ namespace PLATEAU.CityLoader.Load
                 var packageConf = config.GetConfigForPackage(package);
                 foreach (string gmlPath in gmlPathsDict[package])
                 {
+                    var gmlTrans = new GameObject(Path.GetFileName(gmlPath)).transform;
+                    gmlTrans.parent = rootTrans;
                     using var cityModel = await Task.Run(() => ParseGML(gmlPath));
                     if (cityModel == null) continue;
                     var meshExtractOptions = new MeshExtractOptions(
@@ -67,7 +71,7 @@ namespace PLATEAU.CityLoader.Load
                     if (!meshExtractOptions.Validate()) continue;
 
                     await PlateauToUnityModelConverter.ConvertAndPlaceToScene(
-                        cityModel, meshExtractOptions, gmlPath
+                        cityModel, meshExtractOptions, gmlPath, gmlTrans
                     );
                 }
             }

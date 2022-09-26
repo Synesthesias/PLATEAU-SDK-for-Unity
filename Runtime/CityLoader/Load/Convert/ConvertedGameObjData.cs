@@ -57,28 +57,35 @@ namespace PLATEAU.CityLoader.Load.Convert
         /// ゲームオブジェクト、メッシュ、テクスチャの実体を作ってシーンに配置します。
         /// 再帰によって子も配置します。
         /// </summary>
-        public async Task PlaceToScene(Transform parent, string gmlAbsolutePath, Dictionary<string, Texture> cachedTexture)
+        public async Task PlaceToScene(Transform parent, string gmlAbsolutePath, Dictionary<string, Texture> cachedTexture, bool skipRoot)
         {
-            GameObject nextParent;
-            if (this.meshData == null)
+            var nextParent = parent;
+            if (!skipRoot)
             {
-                nextParent = new GameObject
+                if (this.meshData == null)
                 {
-                    transform =
+                    // メッシュがなければ、中身のないゲームオブジェクトを作成します。
+                    nextParent = new GameObject
                     {
-                        parent = parent
-                    },
-                    name = this.name
-                };
+                        transform =
+                        {
+                            parent = parent
+                        },
+                        name = this.name
+                    }.transform;
+                }
+                else
+                {
+                    // メッシュがあれば、それを配置します。（ただし頂点数が0の場合は配置しません。）
+                    var placedObj = await this.meshData.PlaceToScene(parent, gmlAbsolutePath, cachedTexture);
+                    if (placedObj != null) nextParent = placedObj.transform;
+                }
             }
-            else
-            {
-                nextParent = await this.meshData.PlaceToScene(parent, gmlAbsolutePath, cachedTexture);
-            }
-
+            
+            // 子を再帰的に配置します。
             foreach (var child in this.children)
             {
-                await child.PlaceToScene(nextParent.transform, gmlAbsolutePath, cachedTexture);
+                await child.PlaceToScene(nextParent.transform, gmlAbsolutePath, cachedTexture, false);
             }
         }
     }

@@ -23,9 +23,8 @@ namespace PLATEAU.CityLoader.Load.Convert
         /// 非同期処理です。必ずメインスレッドで呼ぶ必要があります。
         /// </summary>
         public static async Task ConvertAndPlaceToScene(
-            CityModel cityModel,
-            MeshExtractOptions meshExtractOptions,
-            string gmlAbsolutePath
+            CityModel cityModel, MeshExtractOptions meshExtractOptions,
+            string gmlAbsolutePath, Transform parentTrans
             )
         {
             Debug.Log($"load started");
@@ -54,7 +53,7 @@ namespace PLATEAU.CityLoader.Load.Convert
             // テクスチャパス と テクスチャを紐付ける辞書です。同じテクスチャが繰り返しロードされることを防ぎます。
             Dictionary<string, Texture> cachedTexture = new Dictionary<string, Texture>();
             
-            await meshObjsData.PlaceToScene(null, gmlAbsolutePath, cachedTexture);
+            await meshObjsData.PlaceToScene(parentTrans, gmlAbsolutePath, cachedTexture, true);
 
             // エディター内での実行であれば、生成したメッシュ,テクスチャ等をシーンに保存したいので
             // シーンにダーティフラグを付けます。

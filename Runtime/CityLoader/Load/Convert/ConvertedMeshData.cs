@@ -53,6 +53,7 @@ namespace PLATEAU.CityLoader.Load.Convert
 
         /// <summary>
         /// ゲームオブジェクト、メッシュ、テクスチャの実体を作ってシーンに配置します。
+        /// 頂点がない場合は nullが返ります。
         /// </summary>
         public async Task<GameObject> PlaceToScene(Transform parentTrans, string gmlAbsolutePath, Dictionary<string, Texture> cachedTexture)
         {
