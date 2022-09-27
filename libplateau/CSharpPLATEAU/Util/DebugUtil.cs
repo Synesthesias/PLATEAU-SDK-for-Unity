@@ -10,6 +10,7 @@ namespace PLATEAU.Util
         /// </summary>
         public static string EnumerableToString<T>(IEnumerable<T> enumerable)
         {
+            if (enumerable == null) return "";
             var sb = new StringBuilder();
             foreach (T t in enumerable)
             {

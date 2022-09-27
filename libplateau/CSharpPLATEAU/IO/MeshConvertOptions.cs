@@ -15,14 +15,15 @@ namespace PLATEAU.IO
         /// PLATEAUでの座標系
         /// </summary>
         ENU,
-        /// <summary>
-        /// Unityでの座標系
-        /// </summary>
         WUN,
         /// <summary>
         /// Unreal Engineでの座標系
         /// </summary>
-        NWU
+        NWU,
+        /// <summary>
+        /// Unityでの座標系
+        /// </summary>
+        EUN
     }
 
     /// <summary>

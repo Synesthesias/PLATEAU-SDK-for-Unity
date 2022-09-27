@@ -2,9 +2,12 @@
 using System.Runtime.InteropServices;
 using PLATEAU.CityGML;
 using PLATEAU.IO;
+using PLATEAU.Udx;
+using UnityEngine;
 
 // 文字列のサイズをDLLでやりとりする時の型を決めます。
 using DllStrSizeT = System.Int32;
+using TextureWrapMode = PLATEAU.CityGML.TextureWrapMode;
 
 namespace PLATEAU.Interop
 {
@@ -96,7 +99,75 @@ namespace PLATEAU.Interop
         [MarshalAs(UnmanagedType.U1)] public bool ExportAppearance;
         public int GridCountOfSide;
         public float UnitScale;
-    } 
+        public Extent Extent;
+
+        public MeshExtractOptions(PlateauVector3d referencePoint, CoordinateSystem meshAxes,
+            MeshGranularity meshGranularity, uint maxLOD, uint minLOD, bool exportAppearance, int gridCountOfSide,
+            float unitScale, Extent extent)
+        {
+            this.ReferencePoint = referencePoint;
+            this.MeshAxes = meshAxes;
+            this.MeshGranularity = meshGranularity;
+            this.MaxLOD = maxLOD;
+            this.MinLOD = minLOD;
+            this.ExportAppearance = exportAppearance;
+            this.GridCountOfSide = gridCountOfSide;
+            this.UnitScale = unitScale;
+            this.Extent = extent;
+        }
+        
+        /// <summary>
+        /// 値が正常かどうか確認します。
+        /// </summary>
+        /// <returns>正常かどうかを bool で返します。</returns>
+        public bool Validate()
+        {
+            if (this.GridCountOfSide <= 0)
+            {
+                Debug.LogError($"{nameof(GridCountOfSide)} の値を1以上にしてください");
+                return false;
+            }
+
+            if (this.MaxLOD < this.MinLOD)
+            {
+                Debug.LogError($"min <= max である必要があります。");
+                return false;
+            }
+
+            return true;
+        }
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct GeoCoordinate
+    {
+        public double Latitude;
+        public double Longitude;
+        public double Height;
+
+        public GeoCoordinate(double lat, double lon, double height)
+        {
+            this.Latitude = lat;
+            this.Longitude = lon;
+            this.Height = height;
+        }
+    }
+
+    /// <summary>
+    /// 最小・最大からなる範囲です。
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential)]
+    public struct Extent
+    {
+        public GeoCoordinate Min;
+        public GeoCoordinate Max;
+
+        public Extent(GeoCoordinate min, GeoCoordinate max)
+        {
+            this.Min = min;
+            this.Max = max;
+        }
+    }
 
     public enum APIResult
     {
@@ -104,7 +175,8 @@ namespace PLATEAU.Interop
         ErrorUnknown,
         ErrorValueNotFound,
         ErrorLoadingCityGml,
-        ErrorIndexOutOfBounds
+        ErrorIndexOutOfBounds,
+        ErrorFileSystem
     }
 
     public enum DllLogLevel
@@ -135,7 +207,7 @@ namespace PLATEAU.Interop
         [DllImport(DllName)]
         internal static extern APIResult plateau_create_mesh_converter(
             out IntPtr outHandle
-            );
+        );
 
         [DllImport(DllName)]
         internal static extern void plateau_delete_mesh_converter([In] IntPtr meshConverter);
@@ -329,7 +401,7 @@ namespace PLATEAU.Interop
         [DllImport(DllName)]
         internal static extern APIResult plateau_attributes_map_to_string(
             [In] IntPtr attributesMap,
-            [In,Out] IntPtr outStrPtrUtf8);
+            [In, Out] IntPtr outStrPtrUtf8);
 
 
         // ***************
@@ -681,8 +753,8 @@ namespace PLATEAU.Interop
         internal static extern APIResult plateau_dll_logger_set_log_level(
             [In] IntPtr handle,
             DllLogLevel dllLogLevel);
-        
-        
+
+
         // ***************
         //  mesh_extractor_c.cpp
         // ***************
@@ -691,7 +763,7 @@ namespace PLATEAU.Interop
         internal static extern APIResult plateau_mesh_extractor_extract(
             [In] IntPtr cityModelPtr,
             MeshExtractOptions options,
-            [In]IntPtr outModelPtr);
+            [In] IntPtr outModelPtr);
 
 
         // ***************
@@ -702,7 +774,7 @@ namespace PLATEAU.Interop
         internal static extern APIResult plateau_mesh_get_vertices_count(
             [In] IntPtr handle,
             out int outVerticesCount);
-        
+
         [DllImport(DllName)]
         internal static extern APIResult plateau_mesh_get_vertex_at_index(
             [In] IntPtr handle,
@@ -719,7 +791,7 @@ namespace PLATEAU.Interop
             [In] IntPtr handle,
             out int vertexId,
             int index);
-        
+
         [DllImport(DllName)]
         internal static extern APIResult plateau_mesh_get_sub_mesh_count(
             [In] IntPtr plateauMeshPtr,
@@ -735,17 +807,17 @@ namespace PLATEAU.Interop
         internal static extern APIResult plateau_mesh_get_uv1(
             [In] IntPtr plateauMeshPtr,
             PlateauVector2f[] outUvPosArray);
-        
+
         [DllImport(DllName)]
         internal static extern APIResult plateau_mesh_get_uv2(
             [In] IntPtr plateauMeshPtr,
             PlateauVector2f[] outUvPosArray);
-        
+
         [DllImport(DllName)]
         internal static extern APIResult plateau_mesh_get_uv3(
             [In] IntPtr plateauMeshPtr,
             PlateauVector2f[] outUvPosArray);
-        
+
         // ***************
         //  sub_mesh_c.cpp
         // ***************
@@ -753,7 +825,7 @@ namespace PLATEAU.Interop
         internal static extern APIResult plateau_sub_mesh_get_start_index(
             [In] IntPtr subMeshPtr,
             out int startIndex);
-        
+
         [DllImport(DllName)]
         internal static extern APIResult plateau_sub_mesh_get_end_index(
             [In] IntPtr subMeshPtr,
@@ -788,7 +860,7 @@ namespace PLATEAU.Interop
             [In] IntPtr handle,
             out IntPtr outNode,
             int index);
-        
+
         // ***************
         //  node_c.cpp
         // ***************
@@ -813,7 +885,7 @@ namespace PLATEAU.Interop
         internal static extern APIResult plateau_node_get_mesh(
             [In] IntPtr nodeHandle,
             out IntPtr outMeshPtr);
-        
+
         // ***************
         //  geometry_utils_c.cpp
         // ***************
@@ -821,5 +893,154 @@ namespace PLATEAU.Interop
         internal static extern APIResult plateau_geometry_utils_get_center_point(
             [In] IntPtr cityModelPtr,
             out PlateauVector3d outCenterPoint);
+
+        // ***************
+        //  geo_reference_c.cpp
+        // ***************
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_create_geo_reference(
+            out IntPtr outGeoReferencePtr,
+            PlateauVector3d referencePoint,
+            float unitScale,
+            CoordinateSystem coordinateSystem,
+            int zoneId);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_delete_geo_reference(
+            [In] IntPtr geoReferencePtr);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_geo_reference_project(
+            [In] IntPtr geoReferencePtr,
+            out PlateauVector3d outXyz,
+            GeoCoordinate latLon);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_geo_reference_unproject(
+            [In] IntPtr geoReferencePtr,
+            out GeoCoordinate outLatlon,
+            PlateauVector3d point);
+
+        // ***************
+        //  mesh_code_c.cpp
+        // ***************
+        [DllImport(DllName)]
+        internal static extern MeshCode plateau_mesh_code_parse(
+            [In] string code);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_mesh_code_get_extent(
+            [In] MeshCode meshCode,
+            [In, Out] ref Extent outExtent);
+
+        // ***************
+        //  udx_file_collection_c.cpp
+        // ***************
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_create_udx_file_collection(
+            out IntPtr handle);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_delete_udx_file_collection(
+            [In] IntPtr handle);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_udx_file_collection_find(
+            [In] string source, [In, Out] IntPtr handle);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_udx_file_collection_filter(
+            [In] IntPtr handle, [In] Extent extent, [In, Out] IntPtr out_handle);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_udx_file_collection_filter_by_mesh_codes(
+            [In] IntPtr handle,
+            [In] MeshCode[] meshCodes,
+            int meshCodeCount,
+            IntPtr collectionPtrForResult
+        );
+
+        [DllImport(DllName, CharSet = CharSet.Ansi)]
+        internal static extern APIResult plateau_udx_file_collection_fetch(
+            [In] IntPtr handle,
+            [In] string destinationRootPath,
+            [In] IntPtr gmlFileInfoPtr);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_udx_file_collection_get_packages(
+            [In] IntPtr handle, out PredefinedCityModelPackage packages);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_udx_file_collection_get_mesh_code_count(
+            [In] IntPtr handle, [In, Out] ref int count);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_udx_file_collection_get_mesh_codes(
+            [In] IntPtr handle, [In, Out] MeshCode[] meshCodes, [In] int count);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_udx_file_collection_get_gml_file_count(
+            [In] IntPtr handle, out int count, [In] PredefinedCityModelPackage package);
+
+        [DllImport(DllName, CharSet = CharSet.Ansi)]
+        internal static extern APIResult plateau_udx_file_collection_get_gml_file(
+            [In] IntPtr handle,
+            out IntPtr strPtr,
+            out int strLength,
+            [In] PredefinedCityModelPackage package,
+            [In] int index);
+
+
+        // ***************
+        //  gml_file_info_c.cpp
+        // ***************
+        [DllImport(DllName, CharSet = CharSet.Ansi)]
+        internal static extern APIResult plateau_create_gml_file_info(
+            out IntPtr outGmlFileInfoPtr,
+            [In] string path);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_delete_gml_file_info(
+            [In] IntPtr handle);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_gml_file_info_get_path(
+            [In] IntPtr handle,
+            out IntPtr strPtr,
+            out int strLength);
+            
+        // ***************
+        //  city_model_package_info_c.cpp
+        // ***************
+        
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_create_city_model_package_info(
+            out IntPtr outPackageInfoPtr,
+            [MarshalAs(UnmanagedType.U1)] bool hasAppearance, int minLOD, int maxLOD);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_delete_city_model_package_info(
+            [In] IntPtr packageInfoPtr);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_city_model_package_info_get_has_appearance(
+            [In] IntPtr packageInfoPtr,
+            [MarshalAs(UnmanagedType.U1)] out bool outHasAppearance);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_city_model_package_info_get_min_lod(
+            [In] IntPtr packageInfoPtr,
+            out int outMinLOD);
+        
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_city_model_package_info_get_max_lod(
+            [In] IntPtr packageInfoPtr,
+            out int outMaxLOD);
+        
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_city_model_package_info_get_predefined(
+            PredefinedCityModelPackage package,
+            [MarshalAs(UnmanagedType.U1)] out bool outHasAppearance,
+            out int outMinLOD, out int outMaxLOD);
     }
 }
