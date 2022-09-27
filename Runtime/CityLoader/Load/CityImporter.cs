@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -87,15 +88,27 @@ namespace PLATEAU.CityLoader.Load
         
         /// <summary> gmlファイルをパースします。 </summary>
         /// <param name="gmlAbsolutePath"> gmlファイルのパスです。 </param>
-        /// <returns><see cref="CityGML.CityModel"/> を返します。パスにファイルがなければ null を返します。</returns>
+        /// <returns><see cref="CityGML.CityModel"/> を返します。ロードに問題があった場合は null を返します。</returns>
         private static CityModel ParseGML(string gmlAbsolutePath)
         {
             if (!File.Exists(gmlAbsolutePath))
             {
+                Debug.LogError($"GMLファイルが存在しません。 : {gmlAbsolutePath}");
                 return null;
             }
             var parserParams = new CitygmlParserParams(true, true, false);
-            return CityGml.Load(gmlAbsolutePath, parserParams, DllLogCallback.UnityLogCallbacks);
+            
+            CityModel cityModel = null;
+            try
+            {
+                cityModel = CityGml.Load(gmlAbsolutePath, parserParams, DllLogCallback.UnityLogCallbacks);
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"GMLファイルのロードに失敗しました。 : {gmlAbsolutePath}.\n{e.Message}");
+            }
+
+            return cityModel;
         }
     }
 }
