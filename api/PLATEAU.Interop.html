@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Namespace PLATEAU.Interop
    | PLATEAU SDK for Unity ">
-    <meta name="generator" content="docfx 2.59.3.0">
+    <meta name="generator" content="docfx 2.59.4.0">
     
     <link rel="shortcut icon" href="../favicon.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -96,11 +96,21 @@ C#側でログを表示するためのコールバックメソッドとログ詳
 その Error, Warn, Info の3つのコールバックをまとめたクラスです。
 詳しくは <a class="xref" href="PLATEAU.Interop.DllLogger.html">DllLogger</a> をご覧ください。</p>
 </section>
+      <h4><a class="xref" href="PLATEAU.Interop.PInvokeDisposable.html">PInvokeDisposable</a></h4>
+      <section><p>廃棄時に Native側で delete する必要があるものの基底クラスです。
+Native側で delete する処理として、 DisposeNative() がサブクラスで実装されていることを前提とします。
+廃棄タイミングは GC処理時 または using(var a){} ブロックを抜ける時 または Dispose() を呼んだときです。</p>
+</section>
     <h3 id="structs">Structs
   </h3>
       <h4><a class="xref" href="PLATEAU.Interop.CitygmlParserParams.html">CitygmlParserParams</a></h4>
       <section><p>GMLファイルのパース時の設定です。</p>
 </section>
+      <h4><a class="xref" href="PLATEAU.Interop.Extent.html">Extent</a></h4>
+      <section><p>最小・最大からなる範囲です。</p>
+</section>
+      <h4><a class="xref" href="PLATEAU.Interop.GeoCoordinate.html">GeoCoordinate</a></h4>
+      <section></section>
       <h4><a class="xref" href="PLATEAU.Interop.MeshExtractOptions.html">MeshExtractOptions</a></h4>
       <section></section>
       <h4><a class="xref" href="PLATEAU.Interop.PlateauVector2f.html">PlateauVector2f</a></h4>

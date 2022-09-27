@@ -1,29 +1,4 @@
 {
-  "api/PLATEAU.Behaviour.CityBehaviour.html": {
-    "href": "api/PLATEAU.Behaviour.CityBehaviour.html",
-    "title": "Class CityBehaviour | PLATEAU SDK for Unity",
-    "keywords": "Class CityBehaviour ゲームオブジェクトからPlateauの CityObject を返す MonoBehaviour です。 実行のために CityMetadata と CityModelLoader を保持します。 Inheritance Object CityBehaviour Namespace : PLATEAU.Behaviour Assembly : cs.temp.dll.dll Syntax public class CityBehaviour : MonoBehaviour Properties CityMetadata ゲームオブジェクトとgmlファイルを対応付けるために必要な CityMetadata です。 Declaration public CityMetadata CityMetadata { get; set; } Property Value Type Description CityMetadata Methods ChildCityObjsOnHierarchyDfs() 再帰的にヒエラルキーの子を探索し、 に対応付けできるものをすべて にして IEnumerable で返します。 順番は DFS (深さ優先探索)です。 Declaration public IEnumerable<CityObject> ChildCityObjsOnHierarchyDfs() Returns Type Description IEnumerable < CityObject > ChildGameObjsOnHierarchyDfs() 再帰的にヒエラルキーの子を列挙します。 順番は DFS (深さ優先探索)です。 Declaration public IEnumerable<GameObject> ChildGameObjsOnHierarchyDfs() Returns Type Description IEnumerable < GameObject > LoadCityObject(GameObject) ゲームオブジェクト から CityObject を返します。 Declaration public CityObject LoadCityObject(GameObject gameObj) Parameters Type Name Description GameObject gameObj に対応するゲームオブジェクト Returns Type Description CityObject 引数に対応する CityObject"
-  },
-  "api/PLATEAU.Behaviour.CityHierarchyEnumerator.html": {
-    "href": "api/PLATEAU.Behaviour.CityHierarchyEnumerator.html",
-    "title": "Class CityHierarchyEnumerator | PLATEAU SDK for Unity",
-    "keywords": "Class CityHierarchyEnumerator シーン上の都市ゲームオブジェクトを列挙します。 Inheritance Object CityHierarchyEnumerator Inherited Members Object.ToString() Object.Equals(Object) Object.Equals(Object, Object) Object.ReferenceEquals(Object, Object) Object.GetHashCode() Object.GetType() Object.MemberwiseClone() Namespace : PLATEAU.Behaviour Assembly : cs.temp.dll.dll Syntax public static class CityHierarchyEnumerator Methods ChildrenDfsAsCityObjects(Transform, Int32, CityModelLoader, CityMetadata) parent に対し再帰的にヒエラルキーの子を探索し、 に対応付けできるものをすべて にして IEnumerable で返します。 形式で列挙します。 順番は DFS (深さ優先探索) です。 Declaration public static IEnumerable<CityObject> ChildrenDfsAsCityObjects(Transform parent, int minDepth, CityModelLoader cityModelLoader, CityMetadata metadata) Parameters Type Name Description Transform parent 対象となるゲームオブジェクトの Transform です。 Int32 minDepth これより小さい深さは無視します。0は parent 自身、1は子、2は孫です。 CityModelLoader cityModelLoader 都市情報のロードに使います。 CityMetadata metadata 都市情報のロードに使います。 Returns Type Description IEnumerable < CityObject > の列挙子です。 ChildrenDfsAsTransform(Transform, Int32) parent のヒエラルキーの子を再帰的に列挙します。 順番は DFS (深さ優先探索) です。 Declaration public static IEnumerable<Transform> ChildrenDfsAsTransform(Transform parent, int minDepth) Parameters Type Name Description Transform parent 対象となるゲームオブジェクトの Transform です。 Int32 minDepth これより小さい深さは無視します。0は parent 自身、1は子、2は孫です。 Returns Type Description IEnumerable < Transform >"
-  },
-  "api/PLATEAU.Behaviour.CityModelLoader.html": {
-    "href": "api/PLATEAU.Behaviour.CityModelLoader.html",
-    "title": "Class CityModelLoader | PLATEAU SDK for Unity",
-    "keywords": "Class CityModelLoader Unityのランタイムでゲームオブジェクト名から CityObject を取得します。 Inheritance Object CityModelLoader Inherited Members Object.ToString() Object.Equals(Object) Object.Equals(Object, Object) Object.ReferenceEquals(Object, Object) Object.GetHashCode() Object.GetType() Object.MemberwiseClone() Namespace : PLATEAU.Behaviour Assembly : cs.temp.dll.dll Syntax public class CityModelLoader Methods Load(GameObject, CityMetadata) gameObj に対応する を cityMetadata を使ってロードします。 Declaration public CityObject Load(GameObject gameObj, CityMetadata cityMetadata) Parameters Type Name Description GameObject gameObj CityMetadata cityMetadata Returns Type Description CityObject を返します。例外時はnullを返します。"
-  },
-  "api/PLATEAU.Behaviour.ClickToGetCityAttributes.html": {
-    "href": "api/PLATEAU.Behaviour.ClickToGetCityAttributes.html",
-    "title": "Class ClickToGetCityAttributes | PLATEAU SDK for Unity",
-    "keywords": "Class ClickToGetCityAttributes Inheritance Object ClickToGetCityAttributes Namespace : PLATEAU.Behaviour Assembly : cs.temp.dll.dll Syntax public class ClickToGetCityAttributes : MonoBehaviour"
-  },
-  "api/PLATEAU.Behaviour.html": {
-    "href": "api/PLATEAU.Behaviour.html",
-    "title": "Namespace PLATEAU.Behaviour | PLATEAU SDK for Unity",
-    "keywords": "Namespace PLATEAU.Behaviour Classes CityBehaviour ゲームオブジェクトからPlateauの CityObject を返す MonoBehaviour です。 実行のために CityMetadata と CityModelLoader を保持します。 CityHierarchyEnumerator シーン上の都市ゲームオブジェクトを列挙します。 CityModelLoader Unityのランタイムでゲームオブジェクト名から CityObject を取得します。 ClickToGetCityAttributes"
-  },
   "api/PLATEAU.CityGML.Address.html": {
     "href": "api/PLATEAU.CityGML.Address.html",
     "title": "Class Address | PLATEAU SDK for Unity",
@@ -144,30 +119,85 @@
     "title": "Enum TextureWrapMode | PLATEAU SDK for Unity",
     "keywords": "Enum TextureWrapMode Namespace : PLATEAU.CityGML Assembly : cs.temp.dll.dll Syntax public enum TextureWrapMode Fields Name Description WM_Border WM_Clamp WM_Mirror WM_None WM_Wrap"
   },
-  "api/PLATEAU.CityMeta.CityMetadata.html": {
-    "href": "api/PLATEAU.CityMeta.CityMetadata.html",
-    "title": "Class CityMetadata | PLATEAU SDK for Unity",
-    "keywords": "Class CityMetadata Plateau元データのインポート時に ScriptableObject として保存されるメタデータです。 ・PlateauオブジェクトのIDから、対応する gml ファイルを検索する辞書である PLATEAU.CityMeta.CityMetadata.idToGmlTable を保持します。 この情報の用途は、Unityシーン内のオブジェクトから対応する gml をロードして Plateau の情報を取得する処理の起点となります。 ・インポート時の設定を保持します。 これにより、この ScriptableObject をプロジェクトビューから選択したときに「再変換」画面を出すことができます。 Inheritance Object CityMetadata Namespace : PLATEAU.CityMeta Assembly : cs.temp.dll.dll Syntax public class CityMetadata : ScriptableObject"
+  "api/PLATEAU.CityLoader.AreaSelector.SceneObjs.AreaSelectorCursor.html": {
+    "href": "api/PLATEAU.CityLoader.AreaSelector.SceneObjs.AreaSelectorCursor.html",
+    "title": "Class AreaSelectorCursor | PLATEAU SDK for Unity",
+    "keywords": "Class AreaSelectorCursor Inheritance Object HandlesBase BoxGizmoDrawer AreaSelectorCursor Inherited Members BoxGizmoDrawer.BoxColor BoxGizmoDrawer.SizeMultiplier BoxGizmoDrawer.AdditionalGizmo() BoxGizmoDrawer.OnSceneGUI(SceneView) BoxGizmoDrawer.AreaMax(Vector3, Vector3) BoxGizmoDrawer.AreaMin(Vector3, Vector3) BoxGizmoDrawer.IsBoxIntersectXZ(BoxGizmoDrawer) HandlesBase.EnableHandles() HandlesBase.DisableHandles() Namespace : PLATEAU.CityLoader.AreaSelector.SceneObjs Assembly : cs.temp.dll.dll Syntax public class AreaSelectorCursor : BoxGizmoDrawer Fields BoxBottomHeight Declaration public const float BoxBottomHeight = 1F Field Value Type Description Single BoxCenterHeight Declaration public const float BoxCenterHeight = 15.5F Field Value Type Description Single BoxUpperHeight Declaration public const float BoxUpperHeight = 30F Field Value Type Description Single Methods SelectedMeshCodes(List<MeshCodeGizmoDrawer>) 引数である候補のうち、カーソルと重なる箇所のあるものをリストで返します。 Declaration public List<MeshCodeGizmoDrawer> SelectedMeshCodes(List<MeshCodeGizmoDrawer> candidates) Parameters Type Name Description List < MeshCodeGizmoDrawer > candidates Returns Type Description List < MeshCodeGizmoDrawer >"
   },
-  "api/PLATEAU.CityMeta.html": {
-    "href": "api/PLATEAU.CityMeta.html",
-    "title": "Namespace PLATEAU.CityMeta | PLATEAU SDK for Unity",
-    "keywords": "Namespace PLATEAU.CityMeta Classes CityMetadata Plateau元データのインポート時に ScriptableObject として保存されるメタデータです。 ・PlateauオブジェクトのIDから、対応する gml ファイルを検索する辞書である PLATEAU.CityMeta.CityMetadata.idToGmlTable を保持します。 この情報の用途は、Unityシーン内のオブジェクトから対応する gml をロードして Plateau の情報を取得する処理の起点となります。 ・インポート時の設定を保持します。 これにより、この ScriptableObject をプロジェクトビューから選択したときに「再変換」画面を出すことができます。"
+  "api/PLATEAU.CityLoader.AreaSelector.SceneObjs.BoxGizmoDrawer.html": {
+    "href": "api/PLATEAU.CityLoader.AreaSelector.SceneObjs.BoxGizmoDrawer.html",
+    "title": "Class BoxGizmoDrawer | PLATEAU SDK for Unity",
+    "keywords": "Class BoxGizmoDrawer 自身の transform に応じた箱型のギズモを表示します。 Inheritance Object HandlesBase BoxGizmoDrawer AreaSelectorCursor MeshCodeGizmoDrawer Inherited Members HandlesBase.EnableHandles() HandlesBase.DisableHandles() Namespace : PLATEAU.CityLoader.AreaSelector.SceneObjs Assembly : cs.temp.dll.dll Syntax public class BoxGizmoDrawer : HandlesBase Properties BoxColor Declaration public Color BoxColor { get; set; } Property Value Type Description Color SizeMultiplier Declaration protected virtual float SizeMultiplier { get; } Property Value Type Description Single Methods AdditionalGizmo() サブクラスで描画ギズモを増やしたい場合に実装します。 Declaration protected virtual void AdditionalGizmo() AreaMax(Vector3, Vector3) Declaration public static Vector3 AreaMax(Vector3 center, Vector3 size) Parameters Type Name Description Vector3 center Vector3 size Returns Type Description Vector3 AreaMin(Vector3, Vector3) Declaration public static Vector3 AreaMin(Vector3 center, Vector3 size) Parameters Type Name Description Vector3 center Vector3 size Returns Type Description Vector3 IsBoxIntersectXZ(BoxGizmoDrawer) Y軸の値は無視して、XとZの値で箱同士が重なる箇所があるかどうかを bool で返します。 Declaration public bool IsBoxIntersectXZ(BoxGizmoDrawer other) Parameters Type Name Description BoxGizmoDrawer other Returns Type Description Boolean OnSceneGUI(SceneView) Declaration protected override void OnSceneGUI(SceneView sceneView) Parameters Type Name Description SceneView sceneView Overrides HandlesBase.OnSceneGUI(SceneView)"
   },
-  "api/PLATEAU.Editor.CityGrid.CityGridLoaderEditor.html": {
-    "href": "api/PLATEAU.Editor.CityGrid.CityGridLoaderEditor.html",
-    "title": "Class CityGridLoaderEditor | PLATEAU SDK for Unity",
-    "keywords": "Class CityGridLoaderEditor Inheritance Object CityGridLoaderEditor Namespace : PLATEAU.Editor.CityGrid Assembly : cs.temp.dll.dll Syntax public class CityGridLoaderEditor : UnityEditor.Editor Methods OnInspectorGUI() Declaration public override void OnInspectorGUI()"
+  "api/PLATEAU.CityLoader.AreaSelector.SceneObjs.GSIPhotoLoader.html": {
+    "href": "api/PLATEAU.CityLoader.AreaSelector.SceneObjs.GSIPhotoLoader.html",
+    "title": "Class GSIPhotoLoader | PLATEAU SDK for Unity",
+    "keywords": "Class GSIPhotoLoader 国土地理院の地図画像を取得します。 Inheritance Object GSIPhotoLoader Inherited Members Object.ToString() Object.Equals(Object) Object.Equals(Object, Object) Object.ReferenceEquals(Object, Object) Object.GetHashCode() Object.GetType() Object.MemberwiseClone() Namespace : PLATEAU.CityLoader.AreaSelector.SceneObjs Assembly : cs.temp.dll.dll Syntax public static class GSIPhotoLoader Methods Load(String, Int32, Int32, Int32, MeshRenderer, List<Material>) 国土地理院の地図画像を取得し、引数の renderer のマテリアルのメインテクスチャにその地図画像を割り当てます。 引数の id, z, x, y はAPIにURLとして渡す値です。 引数の値の意味は 国土地理院のWebページ を参照してください。 どのような id の地図が存在するかは、 地理院地図の一覧 を参照してください。 また、生成されたマテリアルは 引数の mapMaterials に追加されます。 Editモードで生成されたマテリアルは利用終了後に廃棄しないとリークするので、 メソッド利用者の責任で mapMaterials の各マテリアルを廃棄する必要があります。 Declaration public static async Task Load(string id, int z, int x, int y, MeshRenderer renderer, List<Material> mapMaterials) Parameters Type Name Description String id Int32 z Int32 x Int32 y MeshRenderer renderer List < Material > mapMaterials Returns Type Description Task"
   },
-  "api/PLATEAU.Editor.CityGrid.html": {
-    "href": "api/PLATEAU.Editor.CityGrid.html",
-    "title": "Namespace PLATEAU.Editor.CityGrid | PLATEAU SDK for Unity",
-    "keywords": "Namespace PLATEAU.Editor.CityGrid Classes CityGridLoaderEditor"
+  "api/PLATEAU.CityLoader.AreaSelector.SceneObjs.HandlesBase.html": {
+    "href": "api/PLATEAU.CityLoader.AreaSelector.SceneObjs.HandlesBase.html",
+    "title": "Class HandlesBase | PLATEAU SDK for Unity",
+    "keywords": "Class HandlesBase シーンビューにハンドルを表示する MonoBehaviour の基底クラスです。 Inheritance Object HandlesBase BoxGizmoDrawer Namespace : PLATEAU.CityLoader.AreaSelector.SceneObjs Assembly : cs.temp.dll.dll Syntax public abstract class HandlesBase : MonoBehaviour Methods DisableHandles() Declaration protected void DisableHandles() EnableHandles() Declaration protected void EnableHandles() OnSceneGUI(SceneView) Declaration protected abstract void OnSceneGUI(SceneView sceneView) Parameters Type Name Description SceneView sceneView"
+  },
+  "api/PLATEAU.CityLoader.AreaSelector.SceneObjs.html": {
+    "href": "api/PLATEAU.CityLoader.AreaSelector.SceneObjs.html",
+    "title": "Namespace PLATEAU.CityLoader.AreaSelector.SceneObjs | PLATEAU SDK for Unity",
+    "keywords": "Namespace PLATEAU.CityLoader.AreaSelector.SceneObjs Classes AreaSelectorCursor BoxGizmoDrawer 自身の transform に応じた箱型のギズモを表示します。 GSIPhotoLoader 国土地理院の地図画像を取得します。 HandlesBase シーンビューにハンドルを表示する MonoBehaviour の基底クラスです。 MeshCodeGizmoDrawer BoxGizmoDrawer の MeshCode を保持する版です。"
+  },
+  "api/PLATEAU.CityLoader.AreaSelector.SceneObjs.MeshCodeGizmoDrawer.html": {
+    "href": "api/PLATEAU.CityLoader.AreaSelector.SceneObjs.MeshCodeGizmoDrawer.html",
+    "title": "Class MeshCodeGizmoDrawer | PLATEAU SDK for Unity",
+    "keywords": "Class MeshCodeGizmoDrawer BoxGizmoDrawer の MeshCode を保持する版です。 Inheritance Object HandlesBase BoxGizmoDrawer MeshCodeGizmoDrawer Inherited Members BoxGizmoDrawer.BoxColor BoxGizmoDrawer.OnSceneGUI(SceneView) BoxGizmoDrawer.AreaMax(Vector3, Vector3) BoxGizmoDrawer.AreaMin(Vector3, Vector3) BoxGizmoDrawer.IsBoxIntersectXZ(BoxGizmoDrawer) HandlesBase.EnableHandles() HandlesBase.DisableHandles() Namespace : PLATEAU.CityLoader.AreaSelector.SceneObjs Assembly : cs.temp.dll.dll Syntax public class MeshCodeGizmoDrawer : BoxGizmoDrawer Properties MeshCode Declaration public MeshCode MeshCode { get; set; } Property Value Type Description MeshCode SizeMultiplier Declaration protected override float SizeMultiplier { get; } Property Value Type Description Single Overrides BoxGizmoDrawer.SizeMultiplier Methods AdditionalGizmo() Declaration protected override void AdditionalGizmo() Overrides BoxGizmoDrawer.AdditionalGizmo()"
+  },
+  "api/PLATEAU.CityLoader.Setting.html": {
+    "href": "api/PLATEAU.CityLoader.Setting.html",
+    "title": "Namespace PLATEAU.CityLoader.Setting | PLATEAU SDK for Unity",
+    "keywords": "Namespace PLATEAU.CityLoader.Setting Classes PackageLoadSetting PLATEAU.CityLoader.PLATEAUCityLoaderBehaviour の設定のうち、パッケージごとの設定です。"
+  },
+  "api/PLATEAU.CityLoader.Setting.PackageLoadSetting.html": {
+    "href": "api/PLATEAU.CityLoader.Setting.PackageLoadSetting.html",
+    "title": "Class PackageLoadSetting | PLATEAU SDK for Unity",
+    "keywords": "Class PackageLoadSetting PLATEAU.CityLoader.PLATEAUCityLoaderBehaviour の設定のうち、パッケージごとの設定です。 Inheritance Object PackageLoadSetting Inherited Members Object.ToString() Object.Equals(Object) Object.Equals(Object, Object) Object.ReferenceEquals(Object, Object) Object.GetHashCode() Object.GetType() Object.MemberwiseClone() Namespace : PLATEAU.CityLoader.Setting Assembly : cs.temp.dll.dll Syntax public class PackageLoadSetting Constructors PackageLoadSetting(Boolean, Boolean, UInt32, UInt32, MeshGranularity) Declaration public PackageLoadSetting(bool loadPackage, bool includeTexture, uint minLOD, uint maxLOD, MeshGranularity meshGranularity) Parameters Type Name Description Boolean loadPackage Boolean includeTexture UInt32 minLOD UInt32 maxLOD MeshGranularity meshGranularity Fields includeTexture Declaration public bool includeTexture Field Value Type Description Boolean loadPackage Declaration public bool loadPackage Field Value Type Description Boolean maxLOD Declaration public uint maxLOD Field Value Type Description UInt32 meshGranularity Declaration public MeshGranularity meshGranularity Field Value Type Description MeshGranularity minLOD Declaration public uint minLOD Field Value Type Description UInt32"
+  },
+  "api/PLATEAU.Editor.CityLoader.CityGridLoaderEditorOLD.html": {
+    "href": "api/PLATEAU.Editor.CityLoader.CityGridLoaderEditorOLD.html",
+    "title": "Class CityGridLoaderEditorOLD | PLATEAU SDK for Unity",
+    "keywords": "Class CityGridLoaderEditorOLD Inheritance Object CityGridLoaderEditorOLD Namespace : PLATEAU.Editor.CityLoader Assembly : cs.temp.dll.dll Syntax public class CityGridLoaderEditorOLD : UnityEditor.Editor"
+  },
+  "api/PLATEAU.Editor.CityLoader.html": {
+    "href": "api/PLATEAU.Editor.CityLoader.html",
+    "title": "Namespace PLATEAU.Editor.CityLoader | PLATEAU SDK for Unity",
+    "keywords": "Namespace PLATEAU.Editor.CityLoader Classes CityGridLoaderEditorOLD"
+  },
+  "api/PLATEAU.Editor.EditorWindow.ProgressDisplay.html": {
+    "href": "api/PLATEAU.Editor.EditorWindow.ProgressDisplay.html",
+    "title": "Namespace PLATEAU.Editor.EditorWindow.ProgressDisplay | PLATEAU SDK for Unity",
+    "keywords": "Namespace PLATEAU.Editor.EditorWindow.ProgressDisplay Classes ProgressDisplayWindow ProgressDisplayWindow.Progress"
+  },
+  "api/PLATEAU.Editor.EditorWindow.ProgressDisplay.ProgressDisplayWindow.html": {
+    "href": "api/PLATEAU.Editor.EditorWindow.ProgressDisplay.ProgressDisplayWindow.html",
+    "title": "Class ProgressDisplayWindow | PLATEAU SDK for Unity",
+    "keywords": "Class ProgressDisplayWindow Inheritance Object ProgressDisplayWindow Implements IProgressDisplay Namespace : PLATEAU.Editor.EditorWindow.ProgressDisplay Assembly : cs.temp.dll.dll Syntax public class ProgressDisplayWindow : UnityEditor.EditorWindow Methods OnGUI() Declaration public void OnGUI() Open() Declaration public static ProgressDisplayWindow Open() Returns Type Description ProgressDisplayWindow SetProgress(String, Single, String) Declaration public void SetProgress(string progressName, float percentage, string message) Parameters Type Name Description String progressName Single percentage String message Implements IProgressDisplay"
+  },
+  "api/PLATEAU.Editor.EditorWindow.ProgressDisplay.ProgressDisplayWindow.Progress.html": {
+    "href": "api/PLATEAU.Editor.EditorWindow.ProgressDisplay.ProgressDisplayWindow.Progress.html",
+    "title": "Class ProgressDisplayWindow.Progress | PLATEAU SDK for Unity",
+    "keywords": "Class ProgressDisplayWindow.Progress Inheritance Object ProgressDisplayWindow.Progress Inherited Members Object.ToString() Object.Equals(Object) Object.Equals(Object, Object) Object.ReferenceEquals(Object, Object) Object.GetHashCode() Object.GetType() Object.MemberwiseClone() Namespace : PLATEAU.Editor.EditorWindow.ProgressDisplay Assembly : cs.temp.dll.dll Syntax public class Progress Constructors Progress(String, Single, String) Declaration public Progress(string name, float percentage, string message) Parameters Type Name Description String name Single percentage String message Fields Message Declaration public string Message Field Value Type Description String Name Declaration public string Name Field Value Type Description String Percentage Declaration public float Percentage Field Value Type Description Single Properties PercentageStr Declaration public string PercentageStr { get; } Property Value Type Description String"
+  },
+  "api/PLATEAU.Geom.GeoReference.html": {
+    "href": "api/PLATEAU.Geom.GeoReference.html",
+    "title": "Class GeoReference | PLATEAU SDK for Unity",
+    "keywords": "Class GeoReference 極座標と平面直角座標を変換します。 また座標変換の基準を保持します。 Inheritance Object GeoReference Namespace : PLATEAU.Geom Assembly : cs.temp.dll.dll Syntax public class GeoReference : IDisposable Constructors GeoReference(PlateauVector3d, Single, CoordinateSystem, Int32) Declaration public GeoReference(PlateauVector3d referencePoint, float unitScale, CoordinateSystem coordinateSystem, int zoneID) Parameters Type Name Description PlateauVector3d referencePoint 平面直角座標に変換したあと、この座標が原点となるように並行移動します。 Single unitScale 平面直角座標に変換したあと、拡大縮小します。 CoordinateSystem coordinateSystem 平面直角座標のX,Y,Z軸の向きを決めます。 Int32 zoneID 国土交通省告示第九号に基づく平面直角座標系の原点の番号です。 関東地方では 9 を選択すると歪みが少なくなりますが、 この値を間違えても、ぱっと見ですぐ分かるような歪みにはなりません。 詳しくはこちらを参照してください : https://www.gsi.go.jp/sokuchikijun/jpc.html Methods Dispose() Declaration public void Dispose() Finalize() Declaration protected void Finalize() Project(GeoCoordinate) Declaration public PlateauVector3d Project(GeoCoordinate geoCoordinate) Parameters Type Name Description GeoCoordinate geoCoordinate Returns Type Description PlateauVector3d Unproject(PlateauVector3d) Declaration public GeoCoordinate Unproject(PlateauVector3d point) Parameters Type Name Description PlateauVector3d point Returns Type Description GeoCoordinate"
+  },
+  "api/PLATEAU.Geom.html": {
+    "href": "api/PLATEAU.Geom.html",
+    "title": "Namespace PLATEAU.Geom | PLATEAU SDK for Unity",
+    "keywords": "Namespace PLATEAU.Geom Classes GeoReference 極座標と平面直角座標を変換します。 また座標変換の基準を保持します。"
   },
   "api/PLATEAU.Interop.APIResult.html": {
     "href": "api/PLATEAU.Interop.APIResult.html",
     "title": "Enum APIResult | PLATEAU SDK for Unity",
-    "keywords": "Enum APIResult Namespace : PLATEAU.Interop Assembly : cs.temp.dll.dll Syntax public enum APIResult Fields Name Description ErrorIndexOutOfBounds ErrorLoadingCityGml ErrorUnknown ErrorValueNotFound Success"
+    "keywords": "Enum APIResult Namespace : PLATEAU.Interop Assembly : cs.temp.dll.dll Syntax public enum APIResult Fields Name Description ErrorFileSystem ErrorIndexOutOfBounds ErrorLoadingCityGml ErrorUnknown ErrorValueNotFound Success"
   },
   "api/PLATEAU.Interop.CitygmlParserParams.html": {
     "href": "api/PLATEAU.Interop.CitygmlParserParams.html",
@@ -184,10 +214,20 @@
     "title": "Enum DllLogLevel | PLATEAU SDK for Unity",
     "keywords": "Enum DllLogLevel Namespace : PLATEAU.Interop Assembly : cs.temp.dll.dll Syntax public enum DllLogLevel Fields Name Description Debug Error Info Trace Warning"
   },
+  "api/PLATEAU.Interop.Extent.html": {
+    "href": "api/PLATEAU.Interop.Extent.html",
+    "title": "Struct Extent | PLATEAU SDK for Unity",
+    "keywords": "Struct Extent 最小・最大からなる範囲です。 Inherited Members ValueType.Equals(Object) ValueType.GetHashCode() ValueType.ToString() Object.Equals(Object, Object) Object.ReferenceEquals(Object, Object) Object.GetType() Namespace : PLATEAU.Interop Assembly : cs.temp.dll.dll Syntax public struct Extent Constructors Extent(GeoCoordinate, GeoCoordinate) Declaration public Extent(GeoCoordinate min, GeoCoordinate max) Parameters Type Name Description GeoCoordinate min GeoCoordinate max Fields Max Declaration public GeoCoordinate Max Field Value Type Description GeoCoordinate Min Declaration public GeoCoordinate Min Field Value Type Description GeoCoordinate"
+  },
+  "api/PLATEAU.Interop.GeoCoordinate.html": {
+    "href": "api/PLATEAU.Interop.GeoCoordinate.html",
+    "title": "Struct GeoCoordinate | PLATEAU SDK for Unity",
+    "keywords": "Struct GeoCoordinate Inherited Members ValueType.Equals(Object) ValueType.GetHashCode() ValueType.ToString() Object.Equals(Object, Object) Object.ReferenceEquals(Object, Object) Object.GetType() Namespace : PLATEAU.Interop Assembly : cs.temp.dll.dll Syntax public struct GeoCoordinate Constructors GeoCoordinate(Double, Double, Double) Declaration public GeoCoordinate(double lat, double lon, double height) Parameters Type Name Description Double lat Double lon Double height Fields Height Declaration public double Height Field Value Type Description Double Latitude Declaration public double Latitude Field Value Type Description Double Longitude Declaration public double Longitude Field Value Type Description Double"
+  },
   "api/PLATEAU.Interop.html": {
     "href": "api/PLATEAU.Interop.html",
     "title": "Namespace PLATEAU.Interop | PLATEAU SDK for Unity",
-    "keywords": "Namespace PLATEAU.Interop Classes DllLogger DLL側のログをC#側にコールバックで転送するクラスです。 C#側でログを表示するためのコールバックメソッドとログ詳細度を指定できます。 LogCallbacks DLL側のログをC#側でコールバックで受け取ることができますが、 その Error, Warn, Info の3つのコールバックをまとめたクラスです。 詳しくは DllLogger をご覧ください。 Structs CitygmlParserParams GMLファイルのパース時の設定です。 MeshExtractOptions PlateauVector2f PlateauVector3d Enums APIResult DllLogLevel Delegates LogCallbackFuncType"
+    "keywords": "Namespace PLATEAU.Interop Classes DllLogger DLL側のログをC#側にコールバックで転送するクラスです。 C#側でログを表示するためのコールバックメソッドとログ詳細度を指定できます。 LogCallbacks DLL側のログをC#側でコールバックで受け取ることができますが、 その Error, Warn, Info の3つのコールバックをまとめたクラスです。 詳しくは DllLogger をご覧ください。 PInvokeDisposable 廃棄時に Native側で delete する必要があるものの基底クラスです。 Native側で delete する処理として、 DisposeNative() がサブクラスで実装されていることを前提とします。 廃棄タイミングは GC処理時 または using(var a){} ブロックを抜ける時 または Dispose() を呼んだときです。 Structs CitygmlParserParams GMLファイルのパース時の設定です。 Extent 最小・最大からなる範囲です。 GeoCoordinate MeshExtractOptions PlateauVector2f PlateauVector3d Enums APIResult DllLogLevel Delegates LogCallbackFuncType"
   },
   "api/PLATEAU.Interop.LogCallbackFuncType.html": {
     "href": "api/PLATEAU.Interop.LogCallbackFuncType.html",
@@ -202,7 +242,12 @@
   "api/PLATEAU.Interop.MeshExtractOptions.html": {
     "href": "api/PLATEAU.Interop.MeshExtractOptions.html",
     "title": "Struct MeshExtractOptions | PLATEAU SDK for Unity",
-    "keywords": "Struct MeshExtractOptions Inherited Members ValueType.Equals(Object) ValueType.GetHashCode() ValueType.ToString() Object.Equals(Object, Object) Object.ReferenceEquals(Object, Object) Object.GetType() Namespace : PLATEAU.Interop Assembly : cs.temp.dll.dll Syntax public struct MeshExtractOptions Fields ExportAppearance Declaration public bool ExportAppearance Field Value Type Description Boolean GridCountOfSide Declaration public int GridCountOfSide Field Value Type Description Int32 MaxLOD Declaration public uint MaxLOD Field Value Type Description UInt32 MeshAxes Declaration public CoordinateSystem MeshAxes Field Value Type Description CoordinateSystem MeshGranularity Declaration public MeshGranularity MeshGranularity Field Value Type Description MeshGranularity MinLOD Declaration public uint MinLOD Field Value Type Description UInt32 ReferencePoint Declaration public PlateauVector3d ReferencePoint Field Value Type Description PlateauVector3d UnitScale Declaration public float UnitScale Field Value Type Description Single"
+    "keywords": "Struct MeshExtractOptions Inherited Members ValueType.Equals(Object) ValueType.GetHashCode() ValueType.ToString() Object.Equals(Object, Object) Object.ReferenceEquals(Object, Object) Object.GetType() Namespace : PLATEAU.Interop Assembly : cs.temp.dll.dll Syntax public struct MeshExtractOptions Constructors MeshExtractOptions(PlateauVector3d, CoordinateSystem, MeshGranularity, UInt32, UInt32, Boolean, Int32, Single, Extent) Declaration public MeshExtractOptions(PlateauVector3d referencePoint, CoordinateSystem meshAxes, MeshGranularity meshGranularity, uint maxLOD, uint minLOD, bool exportAppearance, int gridCountOfSide, float unitScale, Extent extent) Parameters Type Name Description PlateauVector3d referencePoint CoordinateSystem meshAxes MeshGranularity meshGranularity UInt32 maxLOD UInt32 minLOD Boolean exportAppearance Int32 gridCountOfSide Single unitScale Extent extent Fields ExportAppearance Declaration public bool ExportAppearance Field Value Type Description Boolean Extent Declaration public Extent Extent Field Value Type Description Extent GridCountOfSide Declaration public int GridCountOfSide Field Value Type Description Int32 MaxLOD Declaration public uint MaxLOD Field Value Type Description UInt32 MeshAxes Declaration public CoordinateSystem MeshAxes Field Value Type Description CoordinateSystem MeshGranularity Declaration public MeshGranularity MeshGranularity Field Value Type Description MeshGranularity MinLOD Declaration public uint MinLOD Field Value Type Description UInt32 ReferencePoint Declaration public PlateauVector3d ReferencePoint Field Value Type Description PlateauVector3d UnitScale Declaration public float UnitScale Field Value Type Description Single Methods Validate() 値が正常かどうか確認します。 Declaration public bool Validate() Returns Type Description Boolean 正常かどうかを bool で返します。"
+  },
+  "api/PLATEAU.Interop.PInvokeDisposable.html": {
+    "href": "api/PLATEAU.Interop.PInvokeDisposable.html",
+    "title": "Class PInvokeDisposable | PLATEAU SDK for Unity",
+    "keywords": "Class PInvokeDisposable 廃棄時に Native側で delete する必要があるものの基底クラスです。 Native側で delete する処理として、 DisposeNative() がサブクラスで実装されていることを前提とします。 廃棄タイミングは GC処理時 または using(var a){} ブロックを抜ける時 または Dispose() を呼んだときです。 Inheritance Object PInvokeDisposable Namespace : PLATEAU.Interop Assembly : cs.temp.dll.dll Syntax public abstract class PInvokeDisposable : IDisposable Constructors PInvokeDisposable(IntPtr) Declaration public PInvokeDisposable(IntPtr handle) Parameters Type Name Description IntPtr handle Properties Handle Declaration public IntPtr Handle { get; } Property Value Type Description IntPtr Methods Dispose() Declaration public void Dispose() DisposeNative() Declaration protected abstract void DisposeNative() Finalize() Declaration protected void Finalize()"
   },
   "api/PLATEAU.Interop.PlateauVector2f.html": {
     "href": "api/PLATEAU.Interop.PlateauVector2f.html",
@@ -217,7 +262,7 @@
   "api/PLATEAU.IO.CoordinateSystem.html": {
     "href": "api/PLATEAU.IO.CoordinateSystem.html",
     "title": "Enum CoordinateSystem | PLATEAU SDK for Unity",
-    "keywords": "Enum CoordinateSystem 各列挙子について、3つのアルファベットはXYZ軸がどの方角、方向になるかを表しています。 N,S,E,Wはそれぞれ北,南,東,西 U,Dはそれぞれ上,下 に対応します。 Namespace : PLATEAU.IO Assembly : cs.temp.dll.dll Syntax public enum CoordinateSystem Fields Name Description ENU PLATEAUでの座標系 NWU Unreal Engineでの座標系 WUN Unityでの座標系"
+    "keywords": "Enum CoordinateSystem 各列挙子について、3つのアルファベットはXYZ軸がどの方角、方向になるかを表しています。 N,S,E,Wはそれぞれ北,南,東,西 U,Dはそれぞれ上,下 に対応します。 Namespace : PLATEAU.IO Assembly : cs.temp.dll.dll Syntax public enum CoordinateSystem Fields Name Description ENU PLATEAUでの座標系 EUN Unityでの座標系 NWU Unreal Engineでの座標系 WUN"
   },
   "api/PLATEAU.IO.html": {
     "href": "api/PLATEAU.IO.html",
@@ -274,15 +319,70 @@
     "title": "Class SubMesh | PLATEAU SDK for Unity",
     "keywords": "Class SubMesh SubMesh は、 Mesh の一部 (Indices リストの中のとある範囲)がとあるテクスチャであることを表現します。 詳しくは Model クラスのコメントをご覧ください。 Inheritance Object SubMesh Inherited Members Object.ToString() Object.Equals(Object) Object.Equals(Object, Object) Object.ReferenceEquals(Object, Object) Object.GetHashCode() Object.GetType() Object.MemberwiseClone() Namespace : PLATEAU.PolygonMesh Assembly : cs.temp.dll.dll Syntax public class SubMesh Constructors SubMesh(IntPtr) Declaration public SubMesh(IntPtr handle) Parameters Type Name Description IntPtr handle Properties EndIndex Declaration public int EndIndex { get; } Property Value Type Description Int32 StartIndex Declaration public int StartIndex { get; } Property Value Type Description Int32 TexturePath Declaration public string TexturePath { get; } Property Value Type Description String"
   },
+  "api/PLATEAU.Udx.CityModelPackageInfo.html": {
+    "href": "api/PLATEAU.Udx.CityModelPackageInfo.html",
+    "title": "Class CityModelPackageInfo | PLATEAU SDK for Unity",
+    "keywords": "Class CityModelPackageInfo 都市モデルインポート時のパッケージごとの設定です。 Inheritance Object CityModelPackageInfo Namespace : PLATEAU.Udx Assembly : cs.temp.dll.dll Syntax public class CityModelPackageInfo : PInvokeDisposable Constructors CityModelPackageInfo(IntPtr) Declaration public CityModelPackageInfo(IntPtr handle) Parameters Type Name Description IntPtr handle Properties HasAppearance Declaration public bool HasAppearance { get; } Property Value Type Description Boolean MaxLOD Declaration public int MaxLOD { get; } Property Value Type Description Int32 MinLOD Declaration public int MinLOD { get; } Property Value Type Description Int32 Methods Create(Boolean, Int32, Int32) Declaration public static CityModelPackageInfo Create(bool hasAppearance, int minLOD, int maxLOD) Parameters Type Name Description Boolean hasAppearance Int32 minLOD Int32 maxLOD Returns Type Description CityModelPackageInfo DisposeNative() Declaration protected override void DisposeNative() GetPredefined(PredefinedCityModelPackage) 与えられたパッケージ種別に対して、仕様上存在する可能性のあるLODの範囲と、仕様上テクスチャが存在する可能性があるかをタプルで返します。 Declaration public static (bool hasAppearance, int minLOD, int maxLOD) GetPredefined(PredefinedCityModelPackage package) Parameters Type Name Description PredefinedCityModelPackage package Returns Type Description (T1, T2, T3) < Boolean , Int32 , Int32 >"
+  },
+  "api/PLATEAU.Udx.GmlFileInfo.html": {
+    "href": "api/PLATEAU.Udx.GmlFileInfo.html",
+    "title": "Class GmlFileInfo | PLATEAU SDK for Unity",
+    "keywords": "Class GmlFileInfo Inheritance Object GmlFileInfo Namespace : PLATEAU.Udx Assembly : cs.temp.dll.dll Syntax public class GmlFileInfo : PInvokeDisposable Constructors GmlFileInfo(IntPtr) Declaration public GmlFileInfo(IntPtr handle) Parameters Type Name Description IntPtr handle Properties Path Declaration public string Path { get; } Property Value Type Description String Methods Create(String) Declaration public static GmlFileInfo Create(string path) Parameters Type Name Description String path Returns Type Description GmlFileInfo DisposeNative() Declaration protected override void DisposeNative()"
+  },
+  "api/PLATEAU.Udx.html": {
+    "href": "api/PLATEAU.Udx.html",
+    "title": "Namespace PLATEAU.Udx | PLATEAU SDK for Unity",
+    "keywords": "Namespace PLATEAU.Udx Classes CityModelPackageInfo 都市モデルインポート時のパッケージごとの設定です。 GmlFileInfo UdxFileCollection Structs MeshCode Enums PredefinedCityModelPackage"
+  },
+  "api/PLATEAU.Udx.MeshCode.html": {
+    "href": "api/PLATEAU.Udx.MeshCode.html",
+    "title": "Struct MeshCode | PLATEAU SDK for Unity",
+    "keywords": "Struct MeshCode Inherited Members ValueType.Equals(Object) ValueType.GetHashCode() Object.Equals(Object, Object) Object.ReferenceEquals(Object, Object) Object.GetType() Namespace : PLATEAU.Udx Assembly : cs.temp.dll.dll Syntax public struct MeshCode Fields FirstCol Declaration public int FirstCol Field Value Type Description Int32 FirstRow Declaration public int FirstRow Field Value Type Description Int32 Level Declaration public int Level Field Value Type Description Int32 SecondCol Declaration public int SecondCol Field Value Type Description Int32 SecondRow Declaration public int SecondRow Field Value Type Description Int32 ThirdCol Declaration public int ThirdCol Field Value Type Description Int32 ThirdRow Declaration public int ThirdRow Field Value Type Description Int32 Properties Extent Declaration public readonly Extent Extent { get; } Property Value Type Description Extent Methods Parse(String) Declaration public static MeshCode Parse(string code) Parameters Type Name Description String code Returns Type Description MeshCode ToString() Declaration public override string ToString() Returns Type Description String Overrides ValueType.ToString()"
+  },
+  "api/PLATEAU.Udx.PredefinedCityModelPackage.html": {
+    "href": "api/PLATEAU.Udx.PredefinedCityModelPackage.html",
+    "title": "Enum PredefinedCityModelPackage | PLATEAU SDK for Unity",
+    "keywords": "Enum PredefinedCityModelPackage Namespace : PLATEAU.Udx Assembly : cs.temp.dll.dll Syntax public enum PredefinedCityModelPackage : uint Fields Name Description Building CityFurniture DisasterRisk LandUse None Relief Road Unknown UrbanPlanningDecision Vegetation"
+  },
+  "api/PLATEAU.Udx.UdxFileCollection.html": {
+    "href": "api/PLATEAU.Udx.UdxFileCollection.html",
+    "title": "Class UdxFileCollection | PLATEAU SDK for Unity",
+    "keywords": "Class UdxFileCollection Inheritance Object UdxFileCollection Namespace : PLATEAU.Udx Assembly : cs.temp.dll.dll Syntax public class UdxFileCollection : IDisposable Constructors UdxFileCollection() Declaration public UdxFileCollection() Properties Handle セーフハンドルを取得します。 Declaration public IntPtr Handle { get; } Property Value Type Description IntPtr MeshCodes Declaration public ReadOnlyCollection<MeshCode> MeshCodes { get; } Property Value Type Description ReadOnlyCollection < MeshCode > Packages Declaration public PredefinedCityModelPackage Packages { get; } Property Value Type Description PredefinedCityModelPackage Methods Dispose() Declaration public void Dispose() Fetch(String, GmlFileInfo) Declaration public void Fetch(string destinationRootPath, GmlFileInfo gmlFileInfo) Parameters Type Name Description String destinationRootPath GmlFileInfo gmlFileInfo Filter(Extent) Declaration public UdxFileCollection Filter(Extent extent) Parameters Type Name Description Extent extent Returns Type Description UdxFileCollection FilterByMeshCodes(MeshCode[]) Declaration public UdxFileCollection FilterByMeshCodes(MeshCode[] meshCodeArray) Parameters Type Name Description MeshCode [] meshCodeArray Returns Type Description UdxFileCollection Finalize() Declaration protected void Finalize() Find(String) Declaration public static UdxFileCollection Find(string source) Parameters Type Name Description String source Returns Type Description UdxFileCollection GetGmlFiles(PredefinedCityModelPackage) Declaration public string[] GetGmlFiles(PredefinedCityModelPackage package) Parameters Type Name Description PredefinedCityModelPackage package Returns Type Description String []"
+  },
+  "api/PLATEAU.Util.Async.html": {
+    "href": "api/PLATEAU.Util.Async.html",
+    "title": "Namespace PLATEAU.Util.Async | PLATEAU SDK for Unity",
+    "keywords": "Namespace PLATEAU.Util.Async Classes TaskExtension TextureLoader URLから画像をロードしてテクスチャとして返します。"
+  },
+  "api/PLATEAU.Util.Async.TaskExtension.html": {
+    "href": "api/PLATEAU.Util.Async.TaskExtension.html",
+    "title": "Class TaskExtension | PLATEAU SDK for Unity",
+    "keywords": "Class TaskExtension Inheritance Object TaskExtension Inherited Members Object.ToString() Object.Equals(Object) Object.Equals(Object, Object) Object.ReferenceEquals(Object, Object) Object.GetHashCode() Object.GetType() Object.MemberwiseClone() Namespace : PLATEAU.Util.Async Assembly : cs.temp.dll.dll Syntax public static class TaskExtension Methods ContinueWithErrorCatch(Task) Declaration public static Task ContinueWithErrorCatch(this Task task) Parameters Type Name Description Task task Returns Type Description Task"
+  },
+  "api/PLATEAU.Util.Async.TextureLoader.html": {
+    "href": "api/PLATEAU.Util.Async.TextureLoader.html",
+    "title": "Class TextureLoader | PLATEAU SDK for Unity",
+    "keywords": "Class TextureLoader URLから画像をロードしてテクスチャとして返します。 Inheritance Object TextureLoader Inherited Members Object.ToString() Object.Equals(Object) Object.Equals(Object, Object) Object.ReferenceEquals(Object, Object) Object.GetHashCode() Object.GetType() Object.MemberwiseClone() Namespace : PLATEAU.Util.Async Assembly : cs.temp.dll.dll Syntax public static class TextureLoader Methods LoadAsync(String, Int32) 非同期で url から画像をダウンロードしてテクスチャとして返します。 コルーチンを使うので、メインスレッドで行われる必要があります。 失敗した場合は null を返します。 Declaration public static async Task<Texture> LoadAsync(string url, int timeOutSec) Parameters Type Name Description String url Int32 timeOutSec Returns Type Description Task < Texture >"
+  },
   "api/PLATEAU.Util.DebugUtil.html": {
     "href": "api/PLATEAU.Util.DebugUtil.html",
     "title": "Class DebugUtil | PLATEAU SDK for Unity",
     "keywords": "Class DebugUtil Inheritance Object DebugUtil Inherited Members Object.ToString() Object.Equals(Object) Object.Equals(Object, Object) Object.ReferenceEquals(Object, Object) Object.GetHashCode() Object.GetType() Object.MemberwiseClone() Namespace : PLATEAU.Util Assembly : cs.temp.dll.dll Syntax public static class DebugUtil Methods EnumerableToString<T>(IEnumerable<T>) 複数オブジェクトの ToString をまとめて行い、結合した string を返します。 Declaration public static string EnumerableToString<T>(IEnumerable<T> enumerable) Parameters Type Name Description IEnumerable <T> enumerable Returns Type Description String Type Parameters Name Description T"
   },
+  "api/PLATEAU.Util.EnumUtil.html": {
+    "href": "api/PLATEAU.Util.EnumUtil.html",
+    "title": "Class EnumUtil | PLATEAU SDK for Unity",
+    "keywords": "Class EnumUtil Inheritance Object EnumUtil Inherited Members Object.ToString() Object.Equals(Object) Object.Equals(Object, Object) Object.ReferenceEquals(Object, Object) Object.GetHashCode() Object.GetType() Object.MemberwiseClone() Namespace : PLATEAU.Util Assembly : cs.temp.dll.dll Syntax public static class EnumUtil Methods EachFlags<TEnum>(TEnum) フラグ式のEnumを受け取り、そのフラグが立っている各Enumタイプに分解します。 Declaration public static IEnumerable<TEnum> EachFlags<TEnum>(TEnum input) where TEnum : Enum Parameters Type Name Description TEnum input Returns Type Description IEnumerable <TEnum> Type Parameters Name Description TEnum"
+  },
   "api/PLATEAU.Util.html": {
     "href": "api/PLATEAU.Util.html",
     "title": "Namespace PLATEAU.Util | PLATEAU SDK for Unity",
-    "keywords": "Namespace PLATEAU.Util Classes DebugUtil"
+    "keywords": "Namespace PLATEAU.Util Classes DebugUtil EnumUtil Interfaces IProgressDisplay"
+  },
+  "api/PLATEAU.Util.IProgressDisplay.html": {
+    "href": "api/PLATEAU.Util.IProgressDisplay.html",
+    "title": "Interface IProgressDisplay | PLATEAU SDK for Unity",
+    "keywords": "Interface IProgressDisplay Namespace : PLATEAU.Util Assembly : cs.temp.dll.dll Syntax public interface IProgressDisplay Methods SetProgress(String, Single, String) Declaration void SetProgress(string progressName, float percentage, string message) Parameters Type Name Description String progressName Single percentage String message"
   },
   "index.html": {
     "href": "index.html",
