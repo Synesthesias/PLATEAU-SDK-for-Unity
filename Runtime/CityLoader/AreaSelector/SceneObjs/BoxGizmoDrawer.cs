@@ -10,6 +10,7 @@ namespace PLATEAU.CityLoader.AreaSelector.SceneObjs
     public class BoxGizmoDrawer : HandlesBase
     {
         public Color BoxColor { get; set; } = Color.white;
+        protected virtual float SizeMultiplier => 1f;
         
 #if UNITY_EDITOR
         private void OnDrawGizmos()
@@ -18,11 +19,20 @@ namespace PLATEAU.CityLoader.AreaSelector.SceneObjs
             Gizmos.color = this.BoxColor;
             var trans = transform;
             var centerPos = trans.position;
-            var size = trans.localScale;
+            var size = trans.localScale * SizeMultiplier;
             Gizmos.DrawWireCube(centerPos, size);
+            AdditionalGizmo();
             Gizmos.color = prevColor;
         }
 #endif
+
+        /// <summary>
+        /// サブクラスで描画ギズモを増やしたい場合に実装します。
+        /// </summary>
+        protected virtual void AdditionalGizmo()
+        {
+            
+        }
         protected override void OnSceneGUI(SceneView sceneView)
         {
             
