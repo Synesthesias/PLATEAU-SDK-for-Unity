@@ -2222,6 +2222,19 @@ references:
   isSpec: "True"
   fullName: PLATEAU.Geom.GeoReference.Finalize
   nameWithType: GeoReference.Finalize
+- uid: PLATEAU.Geom.GeoReference.Handle
+  name: Handle
+  href: api/PLATEAU.Geom.GeoReference.html#PLATEAU_Geom_GeoReference_Handle
+  commentId: P:PLATEAU.Geom.GeoReference.Handle
+  fullName: PLATEAU.Geom.GeoReference.Handle
+  nameWithType: GeoReference.Handle
+- uid: PLATEAU.Geom.GeoReference.Handle*
+  name: Handle
+  href: api/PLATEAU.Geom.GeoReference.html#PLATEAU_Geom_GeoReference_Handle_
+  commentId: Overload:PLATEAU.Geom.GeoReference.Handle
+  isSpec: "True"
+  fullName: PLATEAU.Geom.GeoReference.Handle
+  nameWithType: GeoReference.Handle
 - uid: PLATEAU.Geom.GeoReference.Project(GeoCoordinate)
   name: Project(GeoCoordinate)
   href: api/PLATEAU.Geom.GeoReference.html#PLATEAU_Geom_GeoReference_Project_GeoCoordinate_
@@ -3907,6 +3920,19 @@ references:
   isSpec: "True"
   fullName: PLATEAU.Udx.UdxFileCollection.UdxFileCollection
   nameWithType: UdxFileCollection.UdxFileCollection
+- uid: PLATEAU.Udx.UdxFileCollection.CalcCenterPoint(GeoReference)
+  name: CalcCenterPoint(GeoReference)
+  href: api/PLATEAU.Udx.UdxFileCollection.html#PLATEAU_Udx_UdxFileCollection_CalcCenterPoint_GeoReference_
+  commentId: M:PLATEAU.Udx.UdxFileCollection.CalcCenterPoint(GeoReference)
+  fullName: PLATEAU.Udx.UdxFileCollection.CalcCenterPoint(GeoReference)
+  nameWithType: UdxFileCollection.CalcCenterPoint(GeoReference)
+- uid: PLATEAU.Udx.UdxFileCollection.CalcCenterPoint*
+  name: CalcCenterPoint
+  href: api/PLATEAU.Udx.UdxFileCollection.html#PLATEAU_Udx_UdxFileCollection_CalcCenterPoint_
+  commentId: Overload:PLATEAU.Udx.UdxFileCollection.CalcCenterPoint
+  isSpec: "True"
+  fullName: PLATEAU.Udx.UdxFileCollection.CalcCenterPoint
+  nameWithType: UdxFileCollection.CalcCenterPoint
 - uid: PLATEAU.Udx.UdxFileCollection.Dispose
   name: Dispose()
   href: api/PLATEAU.Udx.UdxFileCollection.html#PLATEAU_Udx_UdxFileCollection_Dispose
