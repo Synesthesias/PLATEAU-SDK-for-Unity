@@ -2,9 +2,15 @@
 using System;
 using System.Collections.ObjectModel;
 using System.Threading;
+using PLATEAU.Geom;
+using PLATEAU.IO;
 
 namespace PLATEAU.Udx
 {
+    /// <summary>
+    /// PLATEAUのデータファイルから、GMLファイル群を検索し、結果を保持します。
+    /// 条件によりGMLファイルを絞り込む機能と、GMLと関連ファイルをコピーする機能があります。
+    /// </summary>
     public class UdxFileCollection : IDisposable
     {
         private readonly IntPtr handle;
@@ -66,6 +72,10 @@ namespace PLATEAU.Udx
             GC.SuppressFinalize(this);
         }
 
+        /// <summary>
+        /// GMLファイルを検索し、結果を保持します。
+        /// </summary>
+        /// <param name="source">検索元のルートフォルダのパスです。</param>
         public static UdxFileCollection Find(string source)
         {
             var result = new UdxFileCollection();
@@ -74,6 +84,9 @@ namespace PLATEAU.Udx
             return result;
         }
 
+        /// <summary>
+        /// GMLファイルを街の緯度・経度・高さによって絞り込みます。
+        /// </summary>
         public UdxFileCollection Filter(Extent extent)
         {
             var result = new UdxFileCollection();
@@ -82,6 +95,9 @@ namespace PLATEAU.Udx
             return result;
         }
 
+        /// <summary>
+        /// GMLファイルを地域ID(メッシュコード)によって絞り込みます。
+        /// </summary>
         public UdxFileCollection FilterByMeshCodes(MeshCode[] meshCodeArray)
         {
             var result = new UdxFileCollection();
@@ -91,6 +107,14 @@ namespace PLATEAU.Udx
             return result;
         }
 
+        /// <summary>
+        /// GMLファイルとその関連ファイルをコピーします。
+        /// 関連ファイルを探すために、GMLファイルの中身に対して文字列検索（テクスチャパスなどの記載を探す）が行われるため、
+        /// GMLファイルの容量が増えるほど処理時間が増えます。
+        /// GMLが100MBを超えると「だいぶ待たされるなあ」という印象です。
+        /// </summary>
+        /// <param name="destinationRootPath">コピー先のルートフォルダのパスです。</param>
+        /// <param name="gmlFileInfo">コピー元のGMLファイルの <see cref="GmlFileInfo"/> です。</param>
         public void Fetch(string destinationRootPath, GmlFileInfo gmlFileInfo)
         {
             var apiResult = NativeMethods.plateau_udx_file_collection_fetch(
@@ -99,6 +123,9 @@ namespace PLATEAU.Udx
             DLLUtil.CheckDllError(apiResult);
         }
 
+        /// <summary>
+        /// GMLファイルのうち、引数で与えられたパッケージ種に該当するもののパスを string の配列で返します。
+        /// </summary>
         public string[] GetGmlFiles(PredefinedCityModelPackage package)
         {
             NativeMethods.plateau_udx_file_collection_get_gml_file_count(this.handle, out int count, package);
@@ -111,6 +138,14 @@ namespace PLATEAU.Udx
             }
 
             return gmlFiles;
+        }
+
+        public PlateauVector3d CalcCenterPoint(GeoReference geoReference)
+        {
+            var apiResult = NativeMethods.plateau_udx_file_collection_center_point(
+                this.handle, out var centerPoint, geoReference.Handle);
+            DLLUtil.CheckDllError(apiResult);
+            return centerPoint;
         }
     }
 }

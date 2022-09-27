@@ -78,6 +78,7 @@ namespace PLATEAU.CityLoader.Setting
                         foundGmls[package] = new List<string>();
                     } 
                     foundGmls[package].Add(gmlPath);
+                    Debug.Log($"found gml : {package}, {gmlPath}");
                 }
             }
             return foundGmls;
