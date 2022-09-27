@@ -13,6 +13,8 @@ namespace PLATEAU.Geom
         private readonly IntPtr handle;
         private bool isDisposed;
 
+        public IntPtr Handle => this.handle;
+
         /// <summary>
         /// 
         /// </summary>

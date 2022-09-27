@@ -7,6 +7,7 @@ using PLATEAU.CityGML;
 using PLATEAU.CityLoader.Load.Convert;
 using PLATEAU.CityLoader.Load.FileCopy;
 using PLATEAU.CityLoader.Setting;
+using PLATEAU.Geom;
 using PLATEAU.Interop;
 using PLATEAU.IO;
 using PLATEAU.Udx;
@@ -27,7 +28,7 @@ namespace PLATEAU.CityLoader.Load
             string destPath = CityFilesCopy.ToStreamingAssets(loader.SourcePathBeforeImport, loader.CityLoadConfig);
             loader.SourcePathAfterImport = destPath;
             // シーン配置
-            var gmlPathsDict = loader.CityLoadConfig.SearchMatchingGMLList(destPath, out _);
+            var gmlPathsDict = loader.CityLoadConfig.SearchMatchingGMLList(destPath, out var collection);
             if (gmlPathsDict.Count == 0)
             {
                 Debug.LogError("該当するGMLファイルの数が0です。");
@@ -35,8 +36,14 @@ namespace PLATEAU.CityLoader.Load
             }
 
             var rootDirName = Path.GetFileName(destPath);
-            var task = LoadAndPlaceGmlsAsync(gmlPathsDict, loader.CityLoadConfig, rootDirName, progressDisplay);
+            var task = LoadAndPlaceGmlsAsync(gmlPathsDict, loader.CityLoadConfig, rootDirName, progressDisplay, CalcCenterPoint(collection));
             task.ContinueWithErrorCatch();
+        }
+
+        private static PlateauVector3d CalcCenterPoint(UdxFileCollection collection)
+        {
+            using var geoReference = CoordinatesConvertUtil.UnityStandardGeoReference();
+            return collection.CalcCenterPoint(geoReference);
         }
         
         /// <summary>
@@ -44,7 +51,7 @@ namespace PLATEAU.CityLoader.Load
         /// </summary>
         /// <param name="gmlPathsDict">対象となるGMLファイルのパスです。辞書であり、キーはパッケージ種、値はそのパッケージに該当するGMLファイルパスリストです。</param>
         /// <param name="config">ロード設定です。</param>
-        private static async Task LoadAndPlaceGmlsAsync(Dictionary<PredefinedCityModelPackage, List<string>> gmlPathsDict, CityLoadConfig config, string rootObjName, IProgressDisplay progressDisplay)
+        private static async Task LoadAndPlaceGmlsAsync(Dictionary<PredefinedCityModelPackage, List<string>> gmlPathsDict, CityLoadConfig config, string rootObjName, IProgressDisplay progressDisplay, PlateauVector3d referencePoint)
         {
             int gmlCount = gmlPathsDict.SelectMany(pair => pair.Value).Count();
             var rootTrans = new GameObject(rootObjName).transform;
@@ -63,8 +70,8 @@ namespace PLATEAU.CityLoader.Load
                     using var cityModel = await Task.Run(() => ParseGML(gmlPath));
                     if (cityModel == null) continue;
                     var meshExtractOptions = new MeshExtractOptions(
-                        // TODO ReferencePoint, gridCountOfSide, Extent はユーザーが設定できるようにしたほうが良い
-                        cityModel.CenterPoint,
+                        // TODO gridCountOfSide, Extent はユーザーが設定できるようにしたほうが良い
+                        referencePoint,
                         CoordinateSystem.EUN,
                         packageConf.meshGranularity,
                         packageConf.maxLOD,
@@ -74,8 +81,12 @@ namespace PLATEAU.CityLoader.Load
                         1.0f,
                         new Extent(new GeoCoordinate(-90, -180, -9999), new GeoCoordinate(90, 180, 9999))
                     );
-                    
-                    if (!meshExtractOptions.Validate()) continue;
+
+                    if (!meshExtractOptions.Validate())
+                    {
+                        Debug.LogError("メッシュ抽出設定に不正な点があります。");
+                        continue;
+                    }
 
                     await PlateauToUnityModelConverter.ConvertAndPlaceToScene(
                         cityModel, meshExtractOptions, gmlPath, gmlTrans

@@ -3,11 +3,9 @@ using System.Runtime.InteropServices;
 using PLATEAU.CityGML;
 using PLATEAU.IO;
 using PLATEAU.Udx;
-using UnityEngine;
 
 // 文字列のサイズをDLLでやりとりする時の型を決めます。
 using DllStrSizeT = System.Int32;
-using TextureWrapMode = PLATEAU.CityGML.TextureWrapMode;
 
 namespace PLATEAU.Interop
 {
@@ -115,23 +113,27 @@ namespace PLATEAU.Interop
             this.UnitScale = unitScale;
             this.Extent = extent;
         }
-        
+
         /// <summary>
-        /// 値が正常かどうか確認します。
+        /// 設定の値が正常なら true, 異常な点があれば false を返します。
         /// </summary>
-        /// <returns>正常かどうかを bool で返します。</returns>
         public bool Validate()
         {
-            if (this.GridCountOfSide <= 0)
+            if (this.MinLOD > this.MaxLOD)
             {
-                Debug.LogError($"{nameof(GridCountOfSide)} の値を1以上にしてください");
+                Console.WriteLine($"Validate failed : {nameof(this.MinLOD)} should not greater than {nameof(this.MaxLOD)}.");
                 return false;
             }
 
-            if (this.MaxLOD < this.MinLOD)
+            if (this.GridCountOfSide <= 0)
             {
-                Debug.LogError($"min <= max である必要があります。");
+                Console.WriteLine($"Validate failed : {nameof(this.GridCountOfSide)} should be positive number.");
                 return false;
+            }
+
+            if (Math.Abs(this.UnitScale) < 0.00000001)
+            {
+                Console.WriteLine($"Validate failed : {nameof(this.UnitScale)} is too small.");
             }
 
             return true;
@@ -989,6 +991,12 @@ namespace PLATEAU.Interop
             out int strLength,
             [In] PredefinedCityModelPackage package,
             [In] int index);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_udx_file_collection_center_point(
+            [In] IntPtr handle,
+            out PlateauVector3d outCenterPoint,
+            [In] IntPtr geoReferencePtr);
 
 
         // ***************
