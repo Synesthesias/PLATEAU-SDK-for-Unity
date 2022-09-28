@@ -1,4 +1,4 @@
-﻿using PLATEAU.CityLoader;
+﻿using PLATEAU.CityImport;
 using PLATEAU.Editor.EditorWindow.Common;
 using PLATEAU.Editor.EditorWindow.Common.PathSelector;
 using UnityEditor;
