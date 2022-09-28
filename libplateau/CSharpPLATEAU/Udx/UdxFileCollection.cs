@@ -2,7 +2,7 @@
 using System;
 using System.Collections.ObjectModel;
 using System.Threading;
-using PLATEAU.Geom;
+using PLATEAU.Geometries;
 using PLATEAU.IO;
 
 namespace PLATEAU.Udx
@@ -111,7 +111,6 @@ namespace PLATEAU.Udx
         /// GMLファイルとその関連ファイルをコピーします。
         /// 関連ファイルを探すために、GMLファイルの中身に対して文字列検索（テクスチャパスなどの記載を探す）が行われるため、
         /// GMLファイルの容量が増えるほど処理時間が増えます。
-        /// GMLが100MBを超えると「だいぶ待たされるなあ」という印象です。
         /// </summary>
         /// <param name="destinationRootPath">コピー先のルートフォルダのパスです。</param>
         /// <param name="gmlFileInfo">コピー元のGMLファイルの <see cref="GmlFileInfo"/> です。</param>

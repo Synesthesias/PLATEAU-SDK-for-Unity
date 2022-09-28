@@ -2,7 +2,7 @@
 using PLATEAU.Interop;
 using PLATEAU.IO;
 
-namespace PLATEAU.Geom
+namespace PLATEAU.Geometries
 {
     /// <summary>
     /// 極座標と平面直角座標を変換します。

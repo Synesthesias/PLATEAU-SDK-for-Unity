@@ -81,9 +81,9 @@ namespace PLATEAU.CityImport.Load
                         new Extent(new GeoCoordinate(-90, -180, -9999), new GeoCoordinate(90, 180, 9999))
                     );
 
-                    if (!meshExtractOptions.Validate())
+                    if (!meshExtractOptions.Validate(out var failureMessage))
                     {
-                        Debug.LogError("メッシュ抽出設定に不正な点があります。");
+                        Debug.LogError($"メッシュ抽出設定に不正な点があります。 理由 : {failureMessage}");
                         continue;
                     }
 
