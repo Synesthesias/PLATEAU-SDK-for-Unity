@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using PLATEAU.Util;
 using PLATEAU.Util.Async;
 using UnityEngine;
+using UnityEngine.Rendering;
 using Mesh = UnityEngine.Mesh;
 
 namespace PLATEAU.CityImport.Load.Convert
@@ -92,13 +93,14 @@ namespace PLATEAU.CityImport.Load.Convert
         {
             var mesh = new Mesh
             {
+                indexFormat = IndexFormat.UInt32,
                 vertices = this.vertices,
                 uv = this.uv1,
                 uv2 = this.uv2,
                 uv3 = this.uv3,
                 subMeshCount = this.subMeshTriangles.Count
             };
-            
+
             // subMesh ごとに Indices(Triangles) を UnityのMeshにコピーします。
             for (int i = 0; i < this.subMeshTriangles.Count; i++)
             {
