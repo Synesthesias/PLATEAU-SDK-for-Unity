@@ -25,10 +25,10 @@ namespace PLATEAU.Util
         /// <summary>
         /// Unity標準の座標変換インスタンスを new して返します。
         /// </summary>
-        public static GeoReference UnityStandardGeoReference()
+        public static GeoReference UnityStandardGeoReference(int coordinateZoneID)
         {
             return new GeoReference(new PlateauVector3d(0, 0, 0),
-                1.0f, CoordinateSystem.EUN, 9);
+                1.0f, CoordinateSystem.EUN, coordinateZoneID);
         }
     }
 }

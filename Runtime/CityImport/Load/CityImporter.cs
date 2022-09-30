@@ -35,13 +35,13 @@ namespace PLATEAU.CityImport.Load
             }
 
             var rootDirName = Path.GetFileName(destPath);
-            var task = LoadAndPlaceGmlsAsync(gmlPathsDict, loader.CityLoadConfig, rootDirName, progressDisplay, CalcCenterPoint(collection));
+            var task = LoadAndPlaceGmlsAsync(gmlPathsDict, loader.CityLoadConfig, rootDirName, progressDisplay, CalcCenterPoint(collection, loader.CoordinateZoneID));
             task.ContinueWithErrorCatch();
         }
 
-        private static PlateauVector3d CalcCenterPoint(UdxFileCollection collection)
+        private static PlateauVector3d CalcCenterPoint(UdxFileCollection collection, int coordinateZoneID)
         {
-            using var geoReference = CoordinatesConvertUtil.UnityStandardGeoReference();
+            using var geoReference = CoordinatesConvertUtil.UnityStandardGeoReference(coordinateZoneID);
             return collection.CalcCenterPoint(geoReference);
         }
         
@@ -50,6 +50,9 @@ namespace PLATEAU.CityImport.Load
         /// </summary>
         /// <param name="gmlPathsDict">対象となるGMLファイルのパスです。辞書であり、キーはパッケージ種、値はそのパッケージに該当するGMLファイルパスリストです。</param>
         /// <param name="config">ロード設定です。</param>
+        /// <param name="rootObjName">配置するゲームオブジェクトの中でヒエラルキーが最も上であるものの名称です。</param>
+        /// <param name="progressDisplay">処理の進捗がこのディスプレイに表示されます。</param>
+        /// <param name="referencePoint">変換座標の基準点です。</param>
         private static async Task LoadAndPlaceGmlsAsync(Dictionary<PredefinedCityModelPackage, List<string>> gmlPathsDict, CityLoadConfig config, string rootObjName, IProgressDisplay progressDisplay, PlateauVector3d referencePoint)
         {
             int gmlCount = gmlPathsDict.SelectMany(pair => pair.Value).Count();
@@ -78,6 +81,7 @@ namespace PLATEAU.CityImport.Load
                         packageConf.includeTexture,
                         5,
                         1.0f,
+                        config.CoordinateZoneID,
                         new Extent(new GeoCoordinate(-90, -180, -9999), new GeoCoordinate(90, 180, 9999))
                     );
 

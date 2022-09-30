@@ -22,7 +22,7 @@ namespace PLATEAU.Editor.CityImport.AreaSelector
         /// 範囲選択の専用シーンを立ち上げます。
         /// ただし、現在のシーンに変更があれば保存するかどうかユーザーに尋ね、キャンセルが選択されたならば中止します。
         /// </summary>
-        public static void Start(string dataSourcePath, PLATEAUCityLoaderBehaviour loaderBehaviourBehaviour)
+        public static void Start(string dataSourcePath, PLATEAUCityLoaderBehaviour loaderBehaviourBehaviour, int coordinateZoneID)
         {
             if (!EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())
             {
@@ -33,7 +33,7 @@ namespace PLATEAU.Editor.CityImport.AreaSelector
             var loaderBehaviourID = GlobalObjectId.GetGlobalObjectIdSlow(loaderBehaviourBehaviour);
             SetUpTemporaryScene();
             var behaviour = Object.FindObjectOfType<AreaSelectorBehaviour>();
-            behaviour.Init(prevScenePath, dataSourcePath, loaderBehaviourID);
+            behaviour.Init(prevScenePath, dataSourcePath, loaderBehaviourID, coordinateZoneID);
         }
 
         private static void SetUpTemporaryScene()

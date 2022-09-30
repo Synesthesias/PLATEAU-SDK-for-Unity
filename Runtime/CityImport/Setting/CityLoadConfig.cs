@@ -18,6 +18,7 @@ namespace PLATEAU.CityImport.Setting
         [SerializeField] private string sourcePathBeforeImport;
         [SerializeField] private string sourcePathAfterImport;
         [SerializeField] private string[] areaMeshCodes;
+        [SerializeField] private int coordinateZoneID = 9;
         
         // 都市モデル読み込みの、パッケージ種ごとの設定です。
         private Dictionary<PredefinedCityModelPackage, PackageLoadSetting> perPackagePairSettings = new Dictionary<PredefinedCityModelPackage, PackageLoadSetting>();
@@ -100,6 +101,12 @@ namespace PLATEAU.CityImport.Setting
         {
             get => this.areaMeshCodes;
             set => this.areaMeshCodes = value;
+        }
+
+        public int CoordinateZoneID
+        {
+            get => this.coordinateZoneID;
+            set => this.coordinateZoneID = value;
         }
 
         void ISerializationCallbackReceiver.OnBeforeSerialize()

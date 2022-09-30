@@ -28,12 +28,14 @@ namespace PLATEAU.CityImport.AreaSelector
         private List<MeshCodeGizmoDrawer> meshCodeDrawers = new List<MeshCodeGizmoDrawer>();
         private GlobalObjectId loaderBehaviourID;
         private PredefinedCityModelPackage availablePackageFlags;
+        private int coordinateZoneID;
 
-        public void Init(string prevScenePathArg, string dataSourcePathArg, GlobalObjectId loaderBehaviourIDArg)
+        public void Init(string prevScenePathArg, string dataSourcePathArg, GlobalObjectId loaderBehaviourIDArg, int coordinateZoneIDArg)
         {
             this.prevScenePath = prevScenePathArg;
             this.dataSourcePath = dataSourcePathArg;
             this.loaderBehaviourID = loaderBehaviourIDArg;
+            this.coordinateZoneID = coordinateZoneIDArg;
         }
 
         private void Start()
@@ -42,7 +44,7 @@ namespace PLATEAU.CityImport.AreaSelector
             var photoLoadTask = GSIPhotoLoader.Load("seamlessphoto", 10, 909, 403, this.mapPlane, this.mapMaterials);
             photoLoadTask.ContinueWithErrorCatch();
             var gatherResult = GatherMeshCodesInGMLDirectory(this.dataSourcePath);
-            PlaceMeshCodeDrawers(gatherResult.meshCodes, this.meshCodeDrawers);
+            PlaceMeshCodeDrawers(gatherResult.meshCodes, this.meshCodeDrawers, coordinateZoneID);
             this.availablePackageFlags = gatherResult.availablePackageFlags;
         }
 
@@ -75,12 +77,12 @@ namespace PLATEAU.CityImport.AreaSelector
             return (meshCodes, availablePackageFlags);
         }
 
-        private static void PlaceMeshCodeDrawers(ReadOnlyCollection<MeshCode> meshCodes, ICollection<MeshCodeGizmoDrawer> boxGizmoDrawers)
+        private static void PlaceMeshCodeDrawers(ReadOnlyCollection<MeshCode> meshCodes, ICollection<MeshCodeGizmoDrawer> boxGizmoDrawers, int coordinateZoneID)
         {
             EditorUtility.DisplayProgressBar("", "範囲座標を計算中です...", 0.5f);
             // TODO geoReferenceの生成は1度で済むはず
             // 仮に (0,0,0) を referencePoint とする geoReference を作成
-            using var geoReferenceTmp = new GeoReference(new PlateauVector3d(0, 0, 0), 1.0f, CoordinateSystem.EUN, 9);
+            using var geoReferenceTmp = new GeoReference(new PlateauVector3d(0, 0, 0), 1.0f, CoordinateSystem.EUN, coordinateZoneID);
             // 中心を計算し、そこを基準点として geoReference を再設定
             var referencePoint = new PlateauVector3d(0, 0, 0);
             foreach (var meshCode in meshCodes)
@@ -92,7 +94,7 @@ namespace PLATEAU.CityImport.AreaSelector
 
             referencePoint =
                 new PlateauVector3d(referencePoint.X / meshCodes.Count, 0, referencePoint.Z / meshCodes.Count);
-            var geoReference = new GeoReference(referencePoint, 1f, CoordinateSystem.EUN, 9);
+            var geoReference = new GeoReference(referencePoint, 1f, CoordinateSystem.EUN, coordinateZoneID);
             foreach (var meshCode in meshCodes)
             {
                 var gizmoObj = new GameObject($"MeshCodeGizmo");

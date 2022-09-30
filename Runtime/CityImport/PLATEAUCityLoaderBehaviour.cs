@@ -9,7 +9,7 @@ namespace PLATEAU.CityImport
 {
     /// <summary>
     /// 都市モデルをロードするための設定を保持するコンポーネントです。
-    /// インスペクタでの表示については PLATEAUCityModelLoaderEditor を参照してください。
+    /// インスペクタでの表示については PLATEAUCityLoaderEditor を参照してください。
     /// 実際にロードする処理については <see cref="Load.CityImporter"/> を参照してください。
     /// </summary>
     internal class PLATEAUCityLoaderBehaviour : MonoBehaviour
@@ -51,6 +51,12 @@ namespace PLATEAU.CityImport
         {
             get => CityLoadConfig.AreaMeshCodes;
             set => CityLoadConfig.AreaMeshCodes = value;
+        }
+
+        public int CoordinateZoneID
+        {
+            get => CityLoadConfig.CoordinateZoneID;
+            set => CityLoadConfig.CoordinateZoneID = value;
         }
 
         public CityLoadConfig CityLoadConfig => this.cityLoadConfig;

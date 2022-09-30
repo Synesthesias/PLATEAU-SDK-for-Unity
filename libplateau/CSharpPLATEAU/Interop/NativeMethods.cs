@@ -84,6 +84,7 @@ namespace PLATEAU.Interop
         [MarshalAs(UnmanagedType.U1)] public bool ExportLowerLOD;
         [MarshalAs(UnmanagedType.U1)] public bool ExportAppearance;
         public float UnitScale;
+        public int CoordinateZoneID;
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -97,11 +98,12 @@ namespace PLATEAU.Interop
         [MarshalAs(UnmanagedType.U1)] public bool ExportAppearance;
         public int GridCountOfSide;
         public float UnitScale;
+        public int CoordinateZoneID;
         public Extent Extent;
 
         public MeshExtractOptions(PlateauVector3d referencePoint, CoordinateSystem meshAxes,
             MeshGranularity meshGranularity, uint maxLOD, uint minLOD, bool exportAppearance, int gridCountOfSide,
-            float unitScale, Extent extent)
+            float unitScale, int coordinateZoneID, Extent extent)
         {
             this.ReferencePoint = referencePoint;
             this.MeshAxes = meshAxes;
@@ -111,6 +113,7 @@ namespace PLATEAU.Interop
             this.ExportAppearance = exportAppearance;
             this.GridCountOfSide = gridCountOfSide;
             this.UnitScale = unitScale;
+            this.CoordinateZoneID = coordinateZoneID;
             this.Extent = extent;
         }
 
@@ -897,7 +900,8 @@ namespace PLATEAU.Interop
         [DllImport(DllName)]
         internal static extern APIResult plateau_geometry_utils_get_center_point(
             [In] IntPtr cityModelPtr,
-            out PlateauVector3d outCenterPoint);
+            out PlateauVector3d outCenterPoint,
+            int coordinateZoneID);
 
         // ***************
         //  geo_reference_c.cpp
