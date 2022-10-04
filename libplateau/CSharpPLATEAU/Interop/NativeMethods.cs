@@ -84,6 +84,7 @@ namespace PLATEAU.Interop
         [MarshalAs(UnmanagedType.U1)] public bool ExportLowerLOD;
         [MarshalAs(UnmanagedType.U1)] public bool ExportAppearance;
         public float UnitScale;
+        public int CoordinateZoneID;
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -97,11 +98,12 @@ namespace PLATEAU.Interop
         [MarshalAs(UnmanagedType.U1)] public bool ExportAppearance;
         public int GridCountOfSide;
         public float UnitScale;
+        public int CoordinateZoneID;
         public Extent Extent;
 
         public MeshExtractOptions(PlateauVector3d referencePoint, CoordinateSystem meshAxes,
             MeshGranularity meshGranularity, uint maxLOD, uint minLOD, bool exportAppearance, int gridCountOfSide,
-            float unitScale, Extent extent)
+            float unitScale, int coordinateZoneID, Extent extent)
         {
             this.ReferencePoint = referencePoint;
             this.MeshAxes = meshAxes;
@@ -111,29 +113,33 @@ namespace PLATEAU.Interop
             this.ExportAppearance = exportAppearance;
             this.GridCountOfSide = gridCountOfSide;
             this.UnitScale = unitScale;
+            this.CoordinateZoneID = coordinateZoneID;
             this.Extent = extent;
         }
 
         /// <summary>
         /// 設定の値が正常なら true, 異常な点があれば false を返します。
+        /// <param name="failureMessage">異常な点があれば、それを説明する文字列が入ります。正常なら空文字列になります。</param>
         /// </summary>
-        public bool Validate()
+        public bool Validate(out string failureMessage)
         {
+            failureMessage = "";
             if (this.MinLOD > this.MaxLOD)
             {
-                Console.WriteLine($"Validate failed : {nameof(this.MinLOD)} should not greater than {nameof(this.MaxLOD)}.");
+                failureMessage = $"Validate failed : {nameof(this.MinLOD)} should not greater than {nameof(this.MaxLOD)}.";
                 return false;
             }
 
             if (this.GridCountOfSide <= 0)
             {
-                Console.WriteLine($"Validate failed : {nameof(this.GridCountOfSide)} should be positive number.");
+                failureMessage = $"Validate failed : {nameof(this.GridCountOfSide)} should be positive number.";
                 return false;
             }
 
             if (Math.Abs(this.UnitScale) < 0.00000001)
             {
-                Console.WriteLine($"Validate failed : {nameof(this.UnitScale)} is too small.");
+                failureMessage = $"Validate failed : {nameof(this.UnitScale)} is too small.";
+                return false;
             }
 
             return true;
@@ -894,7 +900,8 @@ namespace PLATEAU.Interop
         [DllImport(DllName)]
         internal static extern APIResult plateau_geometry_utils_get_center_point(
             [In] IntPtr cityModelPtr,
-            out PlateauVector3d outCenterPoint);
+            out PlateauVector3d outCenterPoint,
+            int coordinateZoneID);
 
         // ***************
         //  geo_reference_c.cpp
