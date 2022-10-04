@@ -56,7 +56,7 @@ namespace PLATEAU.CityImport.Load.Convert
         /// ゲームオブジェクト、メッシュ、テクスチャの実体を作ってシーンに配置します。
         /// 頂点がない場合は nullが返ります。
         /// </summary>
-        public async Task<GameObject> PlaceToScene(Transform parentTrans, string gmlAbsolutePath, Dictionary<string, Texture> cachedTexture)
+        public async Task<GameObject> PlaceToScene(Transform parentTrans, Dictionary<string, Texture> cachedTexture)
         {
             var mesh = GenerateUnityMesh();
             if (mesh.vertexCount <= 0) return null;
@@ -65,7 +65,7 @@ namespace PLATEAU.CityImport.Load.Convert
             meshFilter.mesh = mesh;
             var renderer = GameObjectUtil.AssureComponent<MeshRenderer>(meshObj);
 
-            await LoadTextures(this, this.textureUrls, gmlAbsolutePath, cachedTexture);
+            await LoadTextures(this, this.textureUrls, cachedTexture);
 
             var materials = new Material[mesh.subMeshCount];
             for (int i = 0; i < mesh.subMeshCount; i++)
@@ -116,27 +116,27 @@ namespace PLATEAU.CityImport.Load.Convert
         /// テクスチャのURL（パス） から、テクスチャを非同期でロードします。
         /// 生成した Unity の Textureインスタンスへの参照を <paramref name="meshData"/> に追加します。
         /// </summary>
-        private static async Task LoadTextures(ConvertedMeshData meshData, IReadOnlyList<string> textureUrls, string gmlAbsolutePath, Dictionary<string, Texture> cachedTexture)
+        private static async Task LoadTextures(ConvertedMeshData meshData, IReadOnlyList<string> textureUrls,
+            Dictionary<string, Texture> cachedTexture)
         {
             for (int i = 0; i < meshData.SubMeshCount; i++)
             {
                 // TODO テクスチャを返すのが素直な実装であって、返す代わりに meshData.AddTexture で結果を格納するという今のやり方は分かりにくい
                 // テクスチャURLを取得します。
-                string texUrl = textureUrls[i];
-                if (string.IsNullOrEmpty(texUrl)) 
+                string textureFullPath = textureUrls[i];
+                if (string.IsNullOrEmpty(textureFullPath)) 
                 {
                     meshData.AddTexture(i, null);
                     continue;
                 }
                 
                 // キャッシュにあればそれを使います
-                if (cachedTexture.TryGetValue(texUrl, out var tex))
+                if (cachedTexture.TryGetValue(textureFullPath, out var tex))
                 {
                     meshData.AddTexture(i, tex);
                     continue;
                 }
                 
-                string textureFullPath = Path.GetFullPath(Path.Combine(gmlAbsolutePath, "../", texUrl));
                 Debug.Log($"Loading Texture : {textureFullPath}");
 
                 // 非同期でテクスチャをロードします。
@@ -150,8 +150,8 @@ namespace PLATEAU.CityImport.Load.Convert
                 ((Texture2D)texture).Compress(true);
 
                 // 生成したUnityテクスチャへの参照を meshData に追加します。
-                texture.name = Path.GetFileNameWithoutExtension(texUrl);
-                cachedTexture[texUrl] = texture;
+                texture.name = Path.GetFileNameWithoutExtension(textureFullPath);
+                cachedTexture[textureFullPath] = texture;
                 meshData.AddTexture(i, texture);
 
             }

@@ -53,7 +53,7 @@ namespace PLATEAU.CityImport.Load.Convert
             // テクスチャパス と テクスチャを紐付ける辞書です。同じテクスチャが繰り返しロードされることを防ぎます。
             Dictionary<string, Texture> cachedTexture = new Dictionary<string, Texture>();
             
-            await meshObjsData.PlaceToScene(parentTrans, gmlAbsolutePath, cachedTexture, true);
+            await meshObjsData.PlaceToScene(parentTrans, cachedTexture, true);
 
             // エディター内での実行であれば、生成したメッシュ,テクスチャ等をシーンに保存したいので
             // シーンにダーティフラグを付けます。
