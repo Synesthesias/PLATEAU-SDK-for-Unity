@@ -117,12 +117,12 @@
   
   
   <a id="PLATEAU_Interop_MeshExtractOptions__ctor_" data-uid="PLATEAU.Interop.MeshExtractOptions.#ctor*"></a>
-  <h4 id="PLATEAU_Interop_MeshExtractOptions__ctor_PLATEAU_Interop_PlateauVector3d_CoordinateSystem_MeshGranularity_System_UInt32_System_UInt32_System_Boolean_System_Int32_System_Single_PLATEAU_Interop_Extent_" data-uid="PLATEAU.Interop.MeshExtractOptions.#ctor(PLATEAU.Interop.PlateauVector3d,CoordinateSystem,MeshGranularity,System.UInt32,System.UInt32,System.Boolean,System.Int32,System.Single,PLATEAU.Interop.Extent)">MeshExtractOptions(PlateauVector3d, CoordinateSystem, MeshGranularity, UInt32, UInt32, Boolean, Int32, Single, Extent)</h4>
+  <h4 id="PLATEAU_Interop_MeshExtractOptions__ctor_PLATEAU_Interop_PlateauVector3d_CoordinateSystem_MeshGranularity_System_UInt32_System_UInt32_System_Boolean_System_Int32_System_Single_System_Int32_PLATEAU_Interop_Extent_" data-uid="PLATEAU.Interop.MeshExtractOptions.#ctor(PLATEAU.Interop.PlateauVector3d,CoordinateSystem,MeshGranularity,System.UInt32,System.UInt32,System.Boolean,System.Int32,System.Single,System.Int32,PLATEAU.Interop.Extent)">MeshExtractOptions(PlateauVector3d, CoordinateSystem, MeshGranularity, UInt32, UInt32, Boolean, Int32, Single, Int32, Extent)</h4>
   <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public MeshExtractOptions(PlateauVector3d referencePoint, CoordinateSystem meshAxes, MeshGranularity meshGranularity, uint maxLOD, uint minLOD, bool exportAppearance, int gridCountOfSide, float unitScale, Extent extent)</code></pre>
+    <pre><code class="lang-csharp hljs">public MeshExtractOptions(PlateauVector3d referencePoint, CoordinateSystem meshAxes, MeshGranularity meshGranularity, uint maxLOD, uint minLOD, bool exportAppearance, int gridCountOfSide, float unitScale, int coordinateZoneID, Extent extent)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -175,6 +175,11 @@
         <td></td>
       </tr>
       <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><span class="parametername">coordinateZoneID</span></td>
+        <td></td>
+      </tr>
+      <tr>
         <td><a class="xref" href="PLATEAU.Interop.Extent.html">Extent</a></td>
         <td><span class="parametername">extent</span></td>
         <td></td>
@@ -183,6 +188,30 @@
   </table>
   <h3 id="fields">Fields
   </h3>
+  
+  
+  <h4 id="PLATEAU_Interop_MeshExtractOptions_CoordinateZoneID" data-uid="PLATEAU.Interop.MeshExtractOptions.CoordinateZoneID">CoordinateZoneID</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public int CoordinateZoneID</code></pre>
+  </div>
+  <h5 class="fieldValue">Field Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
   
   
   <h4 id="PLATEAU_Interop_MeshExtractOptions_ExportAppearance" data-uid="PLATEAU.Interop.MeshExtractOptions.ExportAppearance">ExportAppearance</h4>
@@ -404,14 +433,32 @@
   
   
   <a id="PLATEAU_Interop_MeshExtractOptions_Validate_" data-uid="PLATEAU.Interop.MeshExtractOptions.Validate*"></a>
-  <h4 id="PLATEAU_Interop_MeshExtractOptions_Validate" data-uid="PLATEAU.Interop.MeshExtractOptions.Validate">Validate()</h4>
-  <div class="markdown level1 summary"><p>設定の値が正常なら true, 異常な点があれば false を返します。</p>
+  <h4 id="PLATEAU_Interop_MeshExtractOptions_Validate_System_String__" data-uid="PLATEAU.Interop.MeshExtractOptions.Validate(System.String@)">Validate(out String)</h4>
+  <div class="markdown level1 summary"><p>設定の値が正常なら true, 異常な点があれば false を返します。
+<param name="failureMessage">異常な点があれば、それを説明する文字列が入ります。正常なら空文字列になります。</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public bool Validate()</code></pre>
+    <pre><code class="lang-csharp hljs">public bool Validate(out string failureMessage)</code></pre>
   </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">String</a></td>
+        <td><span class="parametername">failureMessage</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
   <h5 class="returns">Returns</h5>
   <table class="table table-bordered table-striped table-condensed">
     <thead>

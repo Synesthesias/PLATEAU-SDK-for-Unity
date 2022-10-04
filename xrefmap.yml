@@ -568,19 +568,6 @@ references:
   commentId: T:PLATEAU.CityGML.CityModel
   fullName: PLATEAU.CityGML.CityModel
   nameWithType: CityModel
-- uid: PLATEAU.CityGML.CityModel.CenterPoint
-  name: CenterPoint
-  href: api/PLATEAU.CityGML.CityModel.html#PLATEAU_CityGML_CityModel_CenterPoint
-  commentId: P:PLATEAU.CityGML.CityModel.CenterPoint
-  fullName: PLATEAU.CityGML.CityModel.CenterPoint
-  nameWithType: CityModel.CenterPoint
-- uid: PLATEAU.CityGML.CityModel.CenterPoint*
-  name: CenterPoint
-  href: api/PLATEAU.CityGML.CityModel.html#PLATEAU_CityGML_CityModel_CenterPoint_
-  commentId: Overload:PLATEAU.CityGML.CityModel.CenterPoint
-  isSpec: "True"
-  fullName: PLATEAU.CityGML.CityModel.CenterPoint
-  nameWithType: CityModel.CenterPoint
 - uid: PLATEAU.CityGML.CityModel.Dispose
   name: Dispose()
   href: api/PLATEAU.CityGML.CityModel.html#PLATEAU_CityGML_CityModel_Dispose
@@ -607,6 +594,19 @@ references:
   isSpec: "True"
   fullName: PLATEAU.CityGML.CityModel.Finalize
   nameWithType: CityModel.Finalize
+- uid: PLATEAU.CityGML.CityModel.GetCenterPoint(System.Int32)
+  name: GetCenterPoint(Int32)
+  href: api/PLATEAU.CityGML.CityModel.html#PLATEAU_CityGML_CityModel_GetCenterPoint_System_Int32_
+  commentId: M:PLATEAU.CityGML.CityModel.GetCenterPoint(System.Int32)
+  fullName: PLATEAU.CityGML.CityModel.GetCenterPoint(System.Int32)
+  nameWithType: CityModel.GetCenterPoint(Int32)
+- uid: PLATEAU.CityGML.CityModel.GetCenterPoint*
+  name: GetCenterPoint
+  href: api/PLATEAU.CityGML.CityModel.html#PLATEAU_CityGML_CityModel_GetCenterPoint_
+  commentId: Overload:PLATEAU.CityGML.CityModel.GetCenterPoint
+  isSpec: "True"
+  fullName: PLATEAU.CityGML.CityModel.GetCenterPoint
+  nameWithType: CityModel.GetCenterPoint
 - uid: PLATEAU.CityGML.CityModel.GetCityObjectById(System.String)
   name: GetCityObjectById(String)
   href: api/PLATEAU.CityGML.CityModel.html#PLATEAU_CityGML_CityModel_GetCityObjectById_System_String_
@@ -1748,327 +1748,339 @@ references:
   commentId: F:PLATEAU.CityGML.TextureWrapMode.WM_Wrap
   fullName: PLATEAU.CityGML.TextureWrapMode.WM_Wrap
   nameWithType: TextureWrapMode.WM_Wrap
-- uid: PLATEAU.CityLoader.AreaSelector.SceneObjs
-  name: PLATEAU.CityLoader.AreaSelector.SceneObjs
-  href: api/PLATEAU.CityLoader.AreaSelector.SceneObjs.html
-  commentId: N:PLATEAU.CityLoader.AreaSelector.SceneObjs
-  fullName: PLATEAU.CityLoader.AreaSelector.SceneObjs
-  nameWithType: PLATEAU.CityLoader.AreaSelector.SceneObjs
-- uid: PLATEAU.CityLoader.AreaSelector.SceneObjs.AreaSelectorCursor
+- uid: PLATEAU.CityImport.AreaSelector.SceneObjs
+  name: PLATEAU.CityImport.AreaSelector.SceneObjs
+  href: api/PLATEAU.CityImport.AreaSelector.SceneObjs.html
+  commentId: N:PLATEAU.CityImport.AreaSelector.SceneObjs
+  fullName: PLATEAU.CityImport.AreaSelector.SceneObjs
+  nameWithType: PLATEAU.CityImport.AreaSelector.SceneObjs
+- uid: PLATEAU.CityImport.AreaSelector.SceneObjs.AreaSelectorCursor
   name: AreaSelectorCursor
-  href: api/PLATEAU.CityLoader.AreaSelector.SceneObjs.AreaSelectorCursor.html
-  commentId: T:PLATEAU.CityLoader.AreaSelector.SceneObjs.AreaSelectorCursor
-  fullName: PLATEAU.CityLoader.AreaSelector.SceneObjs.AreaSelectorCursor
+  href: api/PLATEAU.CityImport.AreaSelector.SceneObjs.AreaSelectorCursor.html
+  commentId: T:PLATEAU.CityImport.AreaSelector.SceneObjs.AreaSelectorCursor
+  fullName: PLATEAU.CityImport.AreaSelector.SceneObjs.AreaSelectorCursor
   nameWithType: AreaSelectorCursor
-- uid: PLATEAU.CityLoader.AreaSelector.SceneObjs.AreaSelectorCursor.BoxBottomHeight
+- uid: PLATEAU.CityImport.AreaSelector.SceneObjs.AreaSelectorCursor.BoxBottomHeight
   name: BoxBottomHeight
-  href: api/PLATEAU.CityLoader.AreaSelector.SceneObjs.AreaSelectorCursor.html#PLATEAU_CityLoader_AreaSelector_SceneObjs_AreaSelectorCursor_BoxBottomHeight
-  commentId: F:PLATEAU.CityLoader.AreaSelector.SceneObjs.AreaSelectorCursor.BoxBottomHeight
-  fullName: PLATEAU.CityLoader.AreaSelector.SceneObjs.AreaSelectorCursor.BoxBottomHeight
+  href: api/PLATEAU.CityImport.AreaSelector.SceneObjs.AreaSelectorCursor.html#PLATEAU_CityImport_AreaSelector_SceneObjs_AreaSelectorCursor_BoxBottomHeight
+  commentId: F:PLATEAU.CityImport.AreaSelector.SceneObjs.AreaSelectorCursor.BoxBottomHeight
+  fullName: PLATEAU.CityImport.AreaSelector.SceneObjs.AreaSelectorCursor.BoxBottomHeight
   nameWithType: AreaSelectorCursor.BoxBottomHeight
-- uid: PLATEAU.CityLoader.AreaSelector.SceneObjs.AreaSelectorCursor.BoxCenterHeight
+- uid: PLATEAU.CityImport.AreaSelector.SceneObjs.AreaSelectorCursor.BoxCenterHeight
   name: BoxCenterHeight
-  href: api/PLATEAU.CityLoader.AreaSelector.SceneObjs.AreaSelectorCursor.html#PLATEAU_CityLoader_AreaSelector_SceneObjs_AreaSelectorCursor_BoxCenterHeight
-  commentId: F:PLATEAU.CityLoader.AreaSelector.SceneObjs.AreaSelectorCursor.BoxCenterHeight
-  fullName: PLATEAU.CityLoader.AreaSelector.SceneObjs.AreaSelectorCursor.BoxCenterHeight
+  href: api/PLATEAU.CityImport.AreaSelector.SceneObjs.AreaSelectorCursor.html#PLATEAU_CityImport_AreaSelector_SceneObjs_AreaSelectorCursor_BoxCenterHeight
+  commentId: F:PLATEAU.CityImport.AreaSelector.SceneObjs.AreaSelectorCursor.BoxCenterHeight
+  fullName: PLATEAU.CityImport.AreaSelector.SceneObjs.AreaSelectorCursor.BoxCenterHeight
   nameWithType: AreaSelectorCursor.BoxCenterHeight
-- uid: PLATEAU.CityLoader.AreaSelector.SceneObjs.AreaSelectorCursor.BoxUpperHeight
+- uid: PLATEAU.CityImport.AreaSelector.SceneObjs.AreaSelectorCursor.BoxUpperHeight
   name: BoxUpperHeight
-  href: api/PLATEAU.CityLoader.AreaSelector.SceneObjs.AreaSelectorCursor.html#PLATEAU_CityLoader_AreaSelector_SceneObjs_AreaSelectorCursor_BoxUpperHeight
-  commentId: F:PLATEAU.CityLoader.AreaSelector.SceneObjs.AreaSelectorCursor.BoxUpperHeight
-  fullName: PLATEAU.CityLoader.AreaSelector.SceneObjs.AreaSelectorCursor.BoxUpperHeight
+  href: api/PLATEAU.CityImport.AreaSelector.SceneObjs.AreaSelectorCursor.html#PLATEAU_CityImport_AreaSelector_SceneObjs_AreaSelectorCursor_BoxUpperHeight
+  commentId: F:PLATEAU.CityImport.AreaSelector.SceneObjs.AreaSelectorCursor.BoxUpperHeight
+  fullName: PLATEAU.CityImport.AreaSelector.SceneObjs.AreaSelectorCursor.BoxUpperHeight
   nameWithType: AreaSelectorCursor.BoxUpperHeight
-- uid: PLATEAU.CityLoader.AreaSelector.SceneObjs.AreaSelectorCursor.SelectedMeshCodes(List{PLATEAU.CityLoader.AreaSelector.SceneObjs.MeshCodeGizmoDrawer})
+- uid: PLATEAU.CityImport.AreaSelector.SceneObjs.AreaSelectorCursor.SelectedMeshCodes(List{PLATEAU.CityImport.AreaSelector.SceneObjs.MeshCodeGizmoDrawer})
   name: SelectedMeshCodes(List<MeshCodeGizmoDrawer>)
-  href: api/PLATEAU.CityLoader.AreaSelector.SceneObjs.AreaSelectorCursor.html#PLATEAU_CityLoader_AreaSelector_SceneObjs_AreaSelectorCursor_SelectedMeshCodes_List_PLATEAU_CityLoader_AreaSelector_SceneObjs_MeshCodeGizmoDrawer__
-  commentId: M:PLATEAU.CityLoader.AreaSelector.SceneObjs.AreaSelectorCursor.SelectedMeshCodes(List{PLATEAU.CityLoader.AreaSelector.SceneObjs.MeshCodeGizmoDrawer})
+  href: api/PLATEAU.CityImport.AreaSelector.SceneObjs.AreaSelectorCursor.html#PLATEAU_CityImport_AreaSelector_SceneObjs_AreaSelectorCursor_SelectedMeshCodes_List_PLATEAU_CityImport_AreaSelector_SceneObjs_MeshCodeGizmoDrawer__
+  commentId: M:PLATEAU.CityImport.AreaSelector.SceneObjs.AreaSelectorCursor.SelectedMeshCodes(List{PLATEAU.CityImport.AreaSelector.SceneObjs.MeshCodeGizmoDrawer})
   name.vb: SelectedMeshCodes(List(Of MeshCodeGizmoDrawer))
-  fullName: PLATEAU.CityLoader.AreaSelector.SceneObjs.AreaSelectorCursor.SelectedMeshCodes(List<PLATEAU.CityLoader.AreaSelector.SceneObjs.MeshCodeGizmoDrawer>)
-  fullName.vb: PLATEAU.CityLoader.AreaSelector.SceneObjs.AreaSelectorCursor.SelectedMeshCodes(List(Of PLATEAU.CityLoader.AreaSelector.SceneObjs.MeshCodeGizmoDrawer))
+  fullName: PLATEAU.CityImport.AreaSelector.SceneObjs.AreaSelectorCursor.SelectedMeshCodes(List<PLATEAU.CityImport.AreaSelector.SceneObjs.MeshCodeGizmoDrawer>)
+  fullName.vb: PLATEAU.CityImport.AreaSelector.SceneObjs.AreaSelectorCursor.SelectedMeshCodes(List(Of PLATEAU.CityImport.AreaSelector.SceneObjs.MeshCodeGizmoDrawer))
   nameWithType: AreaSelectorCursor.SelectedMeshCodes(List<MeshCodeGizmoDrawer>)
   nameWithType.vb: AreaSelectorCursor.SelectedMeshCodes(List(Of MeshCodeGizmoDrawer))
-- uid: PLATEAU.CityLoader.AreaSelector.SceneObjs.AreaSelectorCursor.SelectedMeshCodes*
+- uid: PLATEAU.CityImport.AreaSelector.SceneObjs.AreaSelectorCursor.SelectedMeshCodes*
   name: SelectedMeshCodes
-  href: api/PLATEAU.CityLoader.AreaSelector.SceneObjs.AreaSelectorCursor.html#PLATEAU_CityLoader_AreaSelector_SceneObjs_AreaSelectorCursor_SelectedMeshCodes_
-  commentId: Overload:PLATEAU.CityLoader.AreaSelector.SceneObjs.AreaSelectorCursor.SelectedMeshCodes
+  href: api/PLATEAU.CityImport.AreaSelector.SceneObjs.AreaSelectorCursor.html#PLATEAU_CityImport_AreaSelector_SceneObjs_AreaSelectorCursor_SelectedMeshCodes_
+  commentId: Overload:PLATEAU.CityImport.AreaSelector.SceneObjs.AreaSelectorCursor.SelectedMeshCodes
   isSpec: "True"
-  fullName: PLATEAU.CityLoader.AreaSelector.SceneObjs.AreaSelectorCursor.SelectedMeshCodes
+  fullName: PLATEAU.CityImport.AreaSelector.SceneObjs.AreaSelectorCursor.SelectedMeshCodes
   nameWithType: AreaSelectorCursor.SelectedMeshCodes
-- uid: PLATEAU.CityLoader.AreaSelector.SceneObjs.BoxGizmoDrawer
+- uid: PLATEAU.CityImport.AreaSelector.SceneObjs.BoxGizmoDrawer
   name: BoxGizmoDrawer
-  href: api/PLATEAU.CityLoader.AreaSelector.SceneObjs.BoxGizmoDrawer.html
-  commentId: T:PLATEAU.CityLoader.AreaSelector.SceneObjs.BoxGizmoDrawer
-  fullName: PLATEAU.CityLoader.AreaSelector.SceneObjs.BoxGizmoDrawer
+  href: api/PLATEAU.CityImport.AreaSelector.SceneObjs.BoxGizmoDrawer.html
+  commentId: T:PLATEAU.CityImport.AreaSelector.SceneObjs.BoxGizmoDrawer
+  fullName: PLATEAU.CityImport.AreaSelector.SceneObjs.BoxGizmoDrawer
   nameWithType: BoxGizmoDrawer
-- uid: PLATEAU.CityLoader.AreaSelector.SceneObjs.BoxGizmoDrawer.AdditionalGizmo
+- uid: PLATEAU.CityImport.AreaSelector.SceneObjs.BoxGizmoDrawer.AdditionalGizmo
   name: AdditionalGizmo()
-  href: api/PLATEAU.CityLoader.AreaSelector.SceneObjs.BoxGizmoDrawer.html#PLATEAU_CityLoader_AreaSelector_SceneObjs_BoxGizmoDrawer_AdditionalGizmo
-  commentId: M:PLATEAU.CityLoader.AreaSelector.SceneObjs.BoxGizmoDrawer.AdditionalGizmo
-  fullName: PLATEAU.CityLoader.AreaSelector.SceneObjs.BoxGizmoDrawer.AdditionalGizmo()
+  href: api/PLATEAU.CityImport.AreaSelector.SceneObjs.BoxGizmoDrawer.html#PLATEAU_CityImport_AreaSelector_SceneObjs_BoxGizmoDrawer_AdditionalGizmo
+  commentId: M:PLATEAU.CityImport.AreaSelector.SceneObjs.BoxGizmoDrawer.AdditionalGizmo
+  fullName: PLATEAU.CityImport.AreaSelector.SceneObjs.BoxGizmoDrawer.AdditionalGizmo()
   nameWithType: BoxGizmoDrawer.AdditionalGizmo()
-- uid: PLATEAU.CityLoader.AreaSelector.SceneObjs.BoxGizmoDrawer.AdditionalGizmo*
+- uid: PLATEAU.CityImport.AreaSelector.SceneObjs.BoxGizmoDrawer.AdditionalGizmo*
   name: AdditionalGizmo
-  href: api/PLATEAU.CityLoader.AreaSelector.SceneObjs.BoxGizmoDrawer.html#PLATEAU_CityLoader_AreaSelector_SceneObjs_BoxGizmoDrawer_AdditionalGizmo_
-  commentId: Overload:PLATEAU.CityLoader.AreaSelector.SceneObjs.BoxGizmoDrawer.AdditionalGizmo
+  href: api/PLATEAU.CityImport.AreaSelector.SceneObjs.BoxGizmoDrawer.html#PLATEAU_CityImport_AreaSelector_SceneObjs_BoxGizmoDrawer_AdditionalGizmo_
+  commentId: Overload:PLATEAU.CityImport.AreaSelector.SceneObjs.BoxGizmoDrawer.AdditionalGizmo
   isSpec: "True"
-  fullName: PLATEAU.CityLoader.AreaSelector.SceneObjs.BoxGizmoDrawer.AdditionalGizmo
+  fullName: PLATEAU.CityImport.AreaSelector.SceneObjs.BoxGizmoDrawer.AdditionalGizmo
   nameWithType: BoxGizmoDrawer.AdditionalGizmo
-- uid: PLATEAU.CityLoader.AreaSelector.SceneObjs.BoxGizmoDrawer.AreaMax(Vector3,Vector3)
+- uid: PLATEAU.CityImport.AreaSelector.SceneObjs.BoxGizmoDrawer.AreaMax(Vector3,Vector3)
   name: AreaMax(Vector3, Vector3)
-  href: api/PLATEAU.CityLoader.AreaSelector.SceneObjs.BoxGizmoDrawer.html#PLATEAU_CityLoader_AreaSelector_SceneObjs_BoxGizmoDrawer_AreaMax_Vector3_Vector3_
-  commentId: M:PLATEAU.CityLoader.AreaSelector.SceneObjs.BoxGizmoDrawer.AreaMax(Vector3,Vector3)
-  fullName: PLATEAU.CityLoader.AreaSelector.SceneObjs.BoxGizmoDrawer.AreaMax(Vector3, Vector3)
+  href: api/PLATEAU.CityImport.AreaSelector.SceneObjs.BoxGizmoDrawer.html#PLATEAU_CityImport_AreaSelector_SceneObjs_BoxGizmoDrawer_AreaMax_Vector3_Vector3_
+  commentId: M:PLATEAU.CityImport.AreaSelector.SceneObjs.BoxGizmoDrawer.AreaMax(Vector3,Vector3)
+  fullName: PLATEAU.CityImport.AreaSelector.SceneObjs.BoxGizmoDrawer.AreaMax(Vector3, Vector3)
   nameWithType: BoxGizmoDrawer.AreaMax(Vector3, Vector3)
-- uid: PLATEAU.CityLoader.AreaSelector.SceneObjs.BoxGizmoDrawer.AreaMax*
+- uid: PLATEAU.CityImport.AreaSelector.SceneObjs.BoxGizmoDrawer.AreaMax*
   name: AreaMax
-  href: api/PLATEAU.CityLoader.AreaSelector.SceneObjs.BoxGizmoDrawer.html#PLATEAU_CityLoader_AreaSelector_SceneObjs_BoxGizmoDrawer_AreaMax_
-  commentId: Overload:PLATEAU.CityLoader.AreaSelector.SceneObjs.BoxGizmoDrawer.AreaMax
+  href: api/PLATEAU.CityImport.AreaSelector.SceneObjs.BoxGizmoDrawer.html#PLATEAU_CityImport_AreaSelector_SceneObjs_BoxGizmoDrawer_AreaMax_
+  commentId: Overload:PLATEAU.CityImport.AreaSelector.SceneObjs.BoxGizmoDrawer.AreaMax
   isSpec: "True"
-  fullName: PLATEAU.CityLoader.AreaSelector.SceneObjs.BoxGizmoDrawer.AreaMax
+  fullName: PLATEAU.CityImport.AreaSelector.SceneObjs.BoxGizmoDrawer.AreaMax
   nameWithType: BoxGizmoDrawer.AreaMax
-- uid: PLATEAU.CityLoader.AreaSelector.SceneObjs.BoxGizmoDrawer.AreaMin(Vector3,Vector3)
+- uid: PLATEAU.CityImport.AreaSelector.SceneObjs.BoxGizmoDrawer.AreaMin(Vector3,Vector3)
   name: AreaMin(Vector3, Vector3)
-  href: api/PLATEAU.CityLoader.AreaSelector.SceneObjs.BoxGizmoDrawer.html#PLATEAU_CityLoader_AreaSelector_SceneObjs_BoxGizmoDrawer_AreaMin_Vector3_Vector3_
-  commentId: M:PLATEAU.CityLoader.AreaSelector.SceneObjs.BoxGizmoDrawer.AreaMin(Vector3,Vector3)
-  fullName: PLATEAU.CityLoader.AreaSelector.SceneObjs.BoxGizmoDrawer.AreaMin(Vector3, Vector3)
+  href: api/PLATEAU.CityImport.AreaSelector.SceneObjs.BoxGizmoDrawer.html#PLATEAU_CityImport_AreaSelector_SceneObjs_BoxGizmoDrawer_AreaMin_Vector3_Vector3_
+  commentId: M:PLATEAU.CityImport.AreaSelector.SceneObjs.BoxGizmoDrawer.AreaMin(Vector3,Vector3)
+  fullName: PLATEAU.CityImport.AreaSelector.SceneObjs.BoxGizmoDrawer.AreaMin(Vector3, Vector3)
   nameWithType: BoxGizmoDrawer.AreaMin(Vector3, Vector3)
-- uid: PLATEAU.CityLoader.AreaSelector.SceneObjs.BoxGizmoDrawer.AreaMin*
+- uid: PLATEAU.CityImport.AreaSelector.SceneObjs.BoxGizmoDrawer.AreaMin*
   name: AreaMin
-  href: api/PLATEAU.CityLoader.AreaSelector.SceneObjs.BoxGizmoDrawer.html#PLATEAU_CityLoader_AreaSelector_SceneObjs_BoxGizmoDrawer_AreaMin_
-  commentId: Overload:PLATEAU.CityLoader.AreaSelector.SceneObjs.BoxGizmoDrawer.AreaMin
+  href: api/PLATEAU.CityImport.AreaSelector.SceneObjs.BoxGizmoDrawer.html#PLATEAU_CityImport_AreaSelector_SceneObjs_BoxGizmoDrawer_AreaMin_
+  commentId: Overload:PLATEAU.CityImport.AreaSelector.SceneObjs.BoxGizmoDrawer.AreaMin
   isSpec: "True"
-  fullName: PLATEAU.CityLoader.AreaSelector.SceneObjs.BoxGizmoDrawer.AreaMin
+  fullName: PLATEAU.CityImport.AreaSelector.SceneObjs.BoxGizmoDrawer.AreaMin
   nameWithType: BoxGizmoDrawer.AreaMin
-- uid: PLATEAU.CityLoader.AreaSelector.SceneObjs.BoxGizmoDrawer.BoxColor
+- uid: PLATEAU.CityImport.AreaSelector.SceneObjs.BoxGizmoDrawer.BoxColor
   name: BoxColor
-  href: api/PLATEAU.CityLoader.AreaSelector.SceneObjs.BoxGizmoDrawer.html#PLATEAU_CityLoader_AreaSelector_SceneObjs_BoxGizmoDrawer_BoxColor
-  commentId: P:PLATEAU.CityLoader.AreaSelector.SceneObjs.BoxGizmoDrawer.BoxColor
-  fullName: PLATEAU.CityLoader.AreaSelector.SceneObjs.BoxGizmoDrawer.BoxColor
+  href: api/PLATEAU.CityImport.AreaSelector.SceneObjs.BoxGizmoDrawer.html#PLATEAU_CityImport_AreaSelector_SceneObjs_BoxGizmoDrawer_BoxColor
+  commentId: P:PLATEAU.CityImport.AreaSelector.SceneObjs.BoxGizmoDrawer.BoxColor
+  fullName: PLATEAU.CityImport.AreaSelector.SceneObjs.BoxGizmoDrawer.BoxColor
   nameWithType: BoxGizmoDrawer.BoxColor
-- uid: PLATEAU.CityLoader.AreaSelector.SceneObjs.BoxGizmoDrawer.BoxColor*
+- uid: PLATEAU.CityImport.AreaSelector.SceneObjs.BoxGizmoDrawer.BoxColor*
   name: BoxColor
-  href: api/PLATEAU.CityLoader.AreaSelector.SceneObjs.BoxGizmoDrawer.html#PLATEAU_CityLoader_AreaSelector_SceneObjs_BoxGizmoDrawer_BoxColor_
-  commentId: Overload:PLATEAU.CityLoader.AreaSelector.SceneObjs.BoxGizmoDrawer.BoxColor
+  href: api/PLATEAU.CityImport.AreaSelector.SceneObjs.BoxGizmoDrawer.html#PLATEAU_CityImport_AreaSelector_SceneObjs_BoxGizmoDrawer_BoxColor_
+  commentId: Overload:PLATEAU.CityImport.AreaSelector.SceneObjs.BoxGizmoDrawer.BoxColor
   isSpec: "True"
-  fullName: PLATEAU.CityLoader.AreaSelector.SceneObjs.BoxGizmoDrawer.BoxColor
+  fullName: PLATEAU.CityImport.AreaSelector.SceneObjs.BoxGizmoDrawer.BoxColor
   nameWithType: BoxGizmoDrawer.BoxColor
-- uid: PLATEAU.CityLoader.AreaSelector.SceneObjs.BoxGizmoDrawer.IsBoxIntersectXZ(PLATEAU.CityLoader.AreaSelector.SceneObjs.BoxGizmoDrawer)
+- uid: PLATEAU.CityImport.AreaSelector.SceneObjs.BoxGizmoDrawer.IsBoxIntersectXZ(PLATEAU.CityImport.AreaSelector.SceneObjs.BoxGizmoDrawer)
   name: IsBoxIntersectXZ(BoxGizmoDrawer)
-  href: api/PLATEAU.CityLoader.AreaSelector.SceneObjs.BoxGizmoDrawer.html#PLATEAU_CityLoader_AreaSelector_SceneObjs_BoxGizmoDrawer_IsBoxIntersectXZ_PLATEAU_CityLoader_AreaSelector_SceneObjs_BoxGizmoDrawer_
-  commentId: M:PLATEAU.CityLoader.AreaSelector.SceneObjs.BoxGizmoDrawer.IsBoxIntersectXZ(PLATEAU.CityLoader.AreaSelector.SceneObjs.BoxGizmoDrawer)
-  fullName: PLATEAU.CityLoader.AreaSelector.SceneObjs.BoxGizmoDrawer.IsBoxIntersectXZ(PLATEAU.CityLoader.AreaSelector.SceneObjs.BoxGizmoDrawer)
+  href: api/PLATEAU.CityImport.AreaSelector.SceneObjs.BoxGizmoDrawer.html#PLATEAU_CityImport_AreaSelector_SceneObjs_BoxGizmoDrawer_IsBoxIntersectXZ_PLATEAU_CityImport_AreaSelector_SceneObjs_BoxGizmoDrawer_
+  commentId: M:PLATEAU.CityImport.AreaSelector.SceneObjs.BoxGizmoDrawer.IsBoxIntersectXZ(PLATEAU.CityImport.AreaSelector.SceneObjs.BoxGizmoDrawer)
+  fullName: PLATEAU.CityImport.AreaSelector.SceneObjs.BoxGizmoDrawer.IsBoxIntersectXZ(PLATEAU.CityImport.AreaSelector.SceneObjs.BoxGizmoDrawer)
   nameWithType: BoxGizmoDrawer.IsBoxIntersectXZ(BoxGizmoDrawer)
-- uid: PLATEAU.CityLoader.AreaSelector.SceneObjs.BoxGizmoDrawer.IsBoxIntersectXZ*
+- uid: PLATEAU.CityImport.AreaSelector.SceneObjs.BoxGizmoDrawer.IsBoxIntersectXZ*
   name: IsBoxIntersectXZ
-  href: api/PLATEAU.CityLoader.AreaSelector.SceneObjs.BoxGizmoDrawer.html#PLATEAU_CityLoader_AreaSelector_SceneObjs_BoxGizmoDrawer_IsBoxIntersectXZ_
-  commentId: Overload:PLATEAU.CityLoader.AreaSelector.SceneObjs.BoxGizmoDrawer.IsBoxIntersectXZ
+  href: api/PLATEAU.CityImport.AreaSelector.SceneObjs.BoxGizmoDrawer.html#PLATEAU_CityImport_AreaSelector_SceneObjs_BoxGizmoDrawer_IsBoxIntersectXZ_
+  commentId: Overload:PLATEAU.CityImport.AreaSelector.SceneObjs.BoxGizmoDrawer.IsBoxIntersectXZ
   isSpec: "True"
-  fullName: PLATEAU.CityLoader.AreaSelector.SceneObjs.BoxGizmoDrawer.IsBoxIntersectXZ
+  fullName: PLATEAU.CityImport.AreaSelector.SceneObjs.BoxGizmoDrawer.IsBoxIntersectXZ
   nameWithType: BoxGizmoDrawer.IsBoxIntersectXZ
-- uid: PLATEAU.CityLoader.AreaSelector.SceneObjs.BoxGizmoDrawer.OnSceneGUI(SceneView)
+- uid: PLATEAU.CityImport.AreaSelector.SceneObjs.BoxGizmoDrawer.OnSceneGUI(SceneView)
   name: OnSceneGUI(SceneView)
-  href: api/PLATEAU.CityLoader.AreaSelector.SceneObjs.BoxGizmoDrawer.html#PLATEAU_CityLoader_AreaSelector_SceneObjs_BoxGizmoDrawer_OnSceneGUI_SceneView_
-  commentId: M:PLATEAU.CityLoader.AreaSelector.SceneObjs.BoxGizmoDrawer.OnSceneGUI(SceneView)
-  fullName: PLATEAU.CityLoader.AreaSelector.SceneObjs.BoxGizmoDrawer.OnSceneGUI(SceneView)
+  href: api/PLATEAU.CityImport.AreaSelector.SceneObjs.BoxGizmoDrawer.html#PLATEAU_CityImport_AreaSelector_SceneObjs_BoxGizmoDrawer_OnSceneGUI_SceneView_
+  commentId: M:PLATEAU.CityImport.AreaSelector.SceneObjs.BoxGizmoDrawer.OnSceneGUI(SceneView)
+  fullName: PLATEAU.CityImport.AreaSelector.SceneObjs.BoxGizmoDrawer.OnSceneGUI(SceneView)
   nameWithType: BoxGizmoDrawer.OnSceneGUI(SceneView)
-- uid: PLATEAU.CityLoader.AreaSelector.SceneObjs.BoxGizmoDrawer.OnSceneGUI*
+- uid: PLATEAU.CityImport.AreaSelector.SceneObjs.BoxGizmoDrawer.OnSceneGUI*
   name: OnSceneGUI
-  href: api/PLATEAU.CityLoader.AreaSelector.SceneObjs.BoxGizmoDrawer.html#PLATEAU_CityLoader_AreaSelector_SceneObjs_BoxGizmoDrawer_OnSceneGUI_
-  commentId: Overload:PLATEAU.CityLoader.AreaSelector.SceneObjs.BoxGizmoDrawer.OnSceneGUI
+  href: api/PLATEAU.CityImport.AreaSelector.SceneObjs.BoxGizmoDrawer.html#PLATEAU_CityImport_AreaSelector_SceneObjs_BoxGizmoDrawer_OnSceneGUI_
+  commentId: Overload:PLATEAU.CityImport.AreaSelector.SceneObjs.BoxGizmoDrawer.OnSceneGUI
   isSpec: "True"
-  fullName: PLATEAU.CityLoader.AreaSelector.SceneObjs.BoxGizmoDrawer.OnSceneGUI
+  fullName: PLATEAU.CityImport.AreaSelector.SceneObjs.BoxGizmoDrawer.OnSceneGUI
   nameWithType: BoxGizmoDrawer.OnSceneGUI
-- uid: PLATEAU.CityLoader.AreaSelector.SceneObjs.BoxGizmoDrawer.SizeMultiplier
+- uid: PLATEAU.CityImport.AreaSelector.SceneObjs.BoxGizmoDrawer.SizeMultiplier
   name: SizeMultiplier
-  href: api/PLATEAU.CityLoader.AreaSelector.SceneObjs.BoxGizmoDrawer.html#PLATEAU_CityLoader_AreaSelector_SceneObjs_BoxGizmoDrawer_SizeMultiplier
-  commentId: P:PLATEAU.CityLoader.AreaSelector.SceneObjs.BoxGizmoDrawer.SizeMultiplier
-  fullName: PLATEAU.CityLoader.AreaSelector.SceneObjs.BoxGizmoDrawer.SizeMultiplier
+  href: api/PLATEAU.CityImport.AreaSelector.SceneObjs.BoxGizmoDrawer.html#PLATEAU_CityImport_AreaSelector_SceneObjs_BoxGizmoDrawer_SizeMultiplier
+  commentId: P:PLATEAU.CityImport.AreaSelector.SceneObjs.BoxGizmoDrawer.SizeMultiplier
+  fullName: PLATEAU.CityImport.AreaSelector.SceneObjs.BoxGizmoDrawer.SizeMultiplier
   nameWithType: BoxGizmoDrawer.SizeMultiplier
-- uid: PLATEAU.CityLoader.AreaSelector.SceneObjs.BoxGizmoDrawer.SizeMultiplier*
+- uid: PLATEAU.CityImport.AreaSelector.SceneObjs.BoxGizmoDrawer.SizeMultiplier*
   name: SizeMultiplier
-  href: api/PLATEAU.CityLoader.AreaSelector.SceneObjs.BoxGizmoDrawer.html#PLATEAU_CityLoader_AreaSelector_SceneObjs_BoxGizmoDrawer_SizeMultiplier_
-  commentId: Overload:PLATEAU.CityLoader.AreaSelector.SceneObjs.BoxGizmoDrawer.SizeMultiplier
+  href: api/PLATEAU.CityImport.AreaSelector.SceneObjs.BoxGizmoDrawer.html#PLATEAU_CityImport_AreaSelector_SceneObjs_BoxGizmoDrawer_SizeMultiplier_
+  commentId: Overload:PLATEAU.CityImport.AreaSelector.SceneObjs.BoxGizmoDrawer.SizeMultiplier
   isSpec: "True"
-  fullName: PLATEAU.CityLoader.AreaSelector.SceneObjs.BoxGizmoDrawer.SizeMultiplier
+  fullName: PLATEAU.CityImport.AreaSelector.SceneObjs.BoxGizmoDrawer.SizeMultiplier
   nameWithType: BoxGizmoDrawer.SizeMultiplier
-- uid: PLATEAU.CityLoader.AreaSelector.SceneObjs.GSIPhotoLoader
+- uid: PLATEAU.CityImport.AreaSelector.SceneObjs.GSIPhotoLoader
   name: GSIPhotoLoader
-  href: api/PLATEAU.CityLoader.AreaSelector.SceneObjs.GSIPhotoLoader.html
-  commentId: T:PLATEAU.CityLoader.AreaSelector.SceneObjs.GSIPhotoLoader
-  fullName: PLATEAU.CityLoader.AreaSelector.SceneObjs.GSIPhotoLoader
+  href: api/PLATEAU.CityImport.AreaSelector.SceneObjs.GSIPhotoLoader.html
+  commentId: T:PLATEAU.CityImport.AreaSelector.SceneObjs.GSIPhotoLoader
+  fullName: PLATEAU.CityImport.AreaSelector.SceneObjs.GSIPhotoLoader
   nameWithType: GSIPhotoLoader
-- uid: PLATEAU.CityLoader.AreaSelector.SceneObjs.GSIPhotoLoader.Load(System.String,System.Int32,System.Int32,System.Int32,MeshRenderer,List{Material})
+- uid: PLATEAU.CityImport.AreaSelector.SceneObjs.GSIPhotoLoader.Load(System.String,System.Int32,System.Int32,System.Int32,MeshRenderer,List{Material})
   name: Load(String, Int32, Int32, Int32, MeshRenderer, List<Material>)
-  href: api/PLATEAU.CityLoader.AreaSelector.SceneObjs.GSIPhotoLoader.html#PLATEAU_CityLoader_AreaSelector_SceneObjs_GSIPhotoLoader_Load_System_String_System_Int32_System_Int32_System_Int32_MeshRenderer_List_Material__
-  commentId: M:PLATEAU.CityLoader.AreaSelector.SceneObjs.GSIPhotoLoader.Load(System.String,System.Int32,System.Int32,System.Int32,MeshRenderer,List{Material})
+  href: api/PLATEAU.CityImport.AreaSelector.SceneObjs.GSIPhotoLoader.html#PLATEAU_CityImport_AreaSelector_SceneObjs_GSIPhotoLoader_Load_System_String_System_Int32_System_Int32_System_Int32_MeshRenderer_List_Material__
+  commentId: M:PLATEAU.CityImport.AreaSelector.SceneObjs.GSIPhotoLoader.Load(System.String,System.Int32,System.Int32,System.Int32,MeshRenderer,List{Material})
   name.vb: Load(String, Int32, Int32, Int32, MeshRenderer, List(Of Material))
-  fullName: PLATEAU.CityLoader.AreaSelector.SceneObjs.GSIPhotoLoader.Load(System.String, System.Int32, System.Int32, System.Int32, MeshRenderer, List<Material>)
-  fullName.vb: PLATEAU.CityLoader.AreaSelector.SceneObjs.GSIPhotoLoader.Load(System.String, System.Int32, System.Int32, System.Int32, MeshRenderer, List(Of Material))
+  fullName: PLATEAU.CityImport.AreaSelector.SceneObjs.GSIPhotoLoader.Load(System.String, System.Int32, System.Int32, System.Int32, MeshRenderer, List<Material>)
+  fullName.vb: PLATEAU.CityImport.AreaSelector.SceneObjs.GSIPhotoLoader.Load(System.String, System.Int32, System.Int32, System.Int32, MeshRenderer, List(Of Material))
   nameWithType: GSIPhotoLoader.Load(String, Int32, Int32, Int32, MeshRenderer, List<Material>)
   nameWithType.vb: GSIPhotoLoader.Load(String, Int32, Int32, Int32, MeshRenderer, List(Of Material))
-- uid: PLATEAU.CityLoader.AreaSelector.SceneObjs.GSIPhotoLoader.Load*
+- uid: PLATEAU.CityImport.AreaSelector.SceneObjs.GSIPhotoLoader.Load*
   name: Load
-  href: api/PLATEAU.CityLoader.AreaSelector.SceneObjs.GSIPhotoLoader.html#PLATEAU_CityLoader_AreaSelector_SceneObjs_GSIPhotoLoader_Load_
-  commentId: Overload:PLATEAU.CityLoader.AreaSelector.SceneObjs.GSIPhotoLoader.Load
+  href: api/PLATEAU.CityImport.AreaSelector.SceneObjs.GSIPhotoLoader.html#PLATEAU_CityImport_AreaSelector_SceneObjs_GSIPhotoLoader_Load_
+  commentId: Overload:PLATEAU.CityImport.AreaSelector.SceneObjs.GSIPhotoLoader.Load
   isSpec: "True"
-  fullName: PLATEAU.CityLoader.AreaSelector.SceneObjs.GSIPhotoLoader.Load
+  fullName: PLATEAU.CityImport.AreaSelector.SceneObjs.GSIPhotoLoader.Load
   nameWithType: GSIPhotoLoader.Load
-- uid: PLATEAU.CityLoader.AreaSelector.SceneObjs.HandlesBase
+- uid: PLATEAU.CityImport.AreaSelector.SceneObjs.HandlesBase
   name: HandlesBase
-  href: api/PLATEAU.CityLoader.AreaSelector.SceneObjs.HandlesBase.html
-  commentId: T:PLATEAU.CityLoader.AreaSelector.SceneObjs.HandlesBase
-  fullName: PLATEAU.CityLoader.AreaSelector.SceneObjs.HandlesBase
+  href: api/PLATEAU.CityImport.AreaSelector.SceneObjs.HandlesBase.html
+  commentId: T:PLATEAU.CityImport.AreaSelector.SceneObjs.HandlesBase
+  fullName: PLATEAU.CityImport.AreaSelector.SceneObjs.HandlesBase
   nameWithType: HandlesBase
-- uid: PLATEAU.CityLoader.AreaSelector.SceneObjs.HandlesBase.DisableHandles
+- uid: PLATEAU.CityImport.AreaSelector.SceneObjs.HandlesBase.DisableHandles
   name: DisableHandles()
-  href: api/PLATEAU.CityLoader.AreaSelector.SceneObjs.HandlesBase.html#PLATEAU_CityLoader_AreaSelector_SceneObjs_HandlesBase_DisableHandles
-  commentId: M:PLATEAU.CityLoader.AreaSelector.SceneObjs.HandlesBase.DisableHandles
-  fullName: PLATEAU.CityLoader.AreaSelector.SceneObjs.HandlesBase.DisableHandles()
+  href: api/PLATEAU.CityImport.AreaSelector.SceneObjs.HandlesBase.html#PLATEAU_CityImport_AreaSelector_SceneObjs_HandlesBase_DisableHandles
+  commentId: M:PLATEAU.CityImport.AreaSelector.SceneObjs.HandlesBase.DisableHandles
+  fullName: PLATEAU.CityImport.AreaSelector.SceneObjs.HandlesBase.DisableHandles()
   nameWithType: HandlesBase.DisableHandles()
-- uid: PLATEAU.CityLoader.AreaSelector.SceneObjs.HandlesBase.DisableHandles*
+- uid: PLATEAU.CityImport.AreaSelector.SceneObjs.HandlesBase.DisableHandles*
   name: DisableHandles
-  href: api/PLATEAU.CityLoader.AreaSelector.SceneObjs.HandlesBase.html#PLATEAU_CityLoader_AreaSelector_SceneObjs_HandlesBase_DisableHandles_
-  commentId: Overload:PLATEAU.CityLoader.AreaSelector.SceneObjs.HandlesBase.DisableHandles
+  href: api/PLATEAU.CityImport.AreaSelector.SceneObjs.HandlesBase.html#PLATEAU_CityImport_AreaSelector_SceneObjs_HandlesBase_DisableHandles_
+  commentId: Overload:PLATEAU.CityImport.AreaSelector.SceneObjs.HandlesBase.DisableHandles
   isSpec: "True"
-  fullName: PLATEAU.CityLoader.AreaSelector.SceneObjs.HandlesBase.DisableHandles
+  fullName: PLATEAU.CityImport.AreaSelector.SceneObjs.HandlesBase.DisableHandles
   nameWithType: HandlesBase.DisableHandles
-- uid: PLATEAU.CityLoader.AreaSelector.SceneObjs.HandlesBase.EnableHandles
+- uid: PLATEAU.CityImport.AreaSelector.SceneObjs.HandlesBase.EnableHandles
   name: EnableHandles()
-  href: api/PLATEAU.CityLoader.AreaSelector.SceneObjs.HandlesBase.html#PLATEAU_CityLoader_AreaSelector_SceneObjs_HandlesBase_EnableHandles
-  commentId: M:PLATEAU.CityLoader.AreaSelector.SceneObjs.HandlesBase.EnableHandles
-  fullName: PLATEAU.CityLoader.AreaSelector.SceneObjs.HandlesBase.EnableHandles()
+  href: api/PLATEAU.CityImport.AreaSelector.SceneObjs.HandlesBase.html#PLATEAU_CityImport_AreaSelector_SceneObjs_HandlesBase_EnableHandles
+  commentId: M:PLATEAU.CityImport.AreaSelector.SceneObjs.HandlesBase.EnableHandles
+  fullName: PLATEAU.CityImport.AreaSelector.SceneObjs.HandlesBase.EnableHandles()
   nameWithType: HandlesBase.EnableHandles()
-- uid: PLATEAU.CityLoader.AreaSelector.SceneObjs.HandlesBase.EnableHandles*
+- uid: PLATEAU.CityImport.AreaSelector.SceneObjs.HandlesBase.EnableHandles*
   name: EnableHandles
-  href: api/PLATEAU.CityLoader.AreaSelector.SceneObjs.HandlesBase.html#PLATEAU_CityLoader_AreaSelector_SceneObjs_HandlesBase_EnableHandles_
-  commentId: Overload:PLATEAU.CityLoader.AreaSelector.SceneObjs.HandlesBase.EnableHandles
+  href: api/PLATEAU.CityImport.AreaSelector.SceneObjs.HandlesBase.html#PLATEAU_CityImport_AreaSelector_SceneObjs_HandlesBase_EnableHandles_
+  commentId: Overload:PLATEAU.CityImport.AreaSelector.SceneObjs.HandlesBase.EnableHandles
   isSpec: "True"
-  fullName: PLATEAU.CityLoader.AreaSelector.SceneObjs.HandlesBase.EnableHandles
+  fullName: PLATEAU.CityImport.AreaSelector.SceneObjs.HandlesBase.EnableHandles
   nameWithType: HandlesBase.EnableHandles
-- uid: PLATEAU.CityLoader.AreaSelector.SceneObjs.HandlesBase.OnSceneGUI(SceneView)
+- uid: PLATEAU.CityImport.AreaSelector.SceneObjs.HandlesBase.OnSceneGUI(SceneView)
   name: OnSceneGUI(SceneView)
-  href: api/PLATEAU.CityLoader.AreaSelector.SceneObjs.HandlesBase.html#PLATEAU_CityLoader_AreaSelector_SceneObjs_HandlesBase_OnSceneGUI_SceneView_
-  commentId: M:PLATEAU.CityLoader.AreaSelector.SceneObjs.HandlesBase.OnSceneGUI(SceneView)
-  fullName: PLATEAU.CityLoader.AreaSelector.SceneObjs.HandlesBase.OnSceneGUI(SceneView)
+  href: api/PLATEAU.CityImport.AreaSelector.SceneObjs.HandlesBase.html#PLATEAU_CityImport_AreaSelector_SceneObjs_HandlesBase_OnSceneGUI_SceneView_
+  commentId: M:PLATEAU.CityImport.AreaSelector.SceneObjs.HandlesBase.OnSceneGUI(SceneView)
+  fullName: PLATEAU.CityImport.AreaSelector.SceneObjs.HandlesBase.OnSceneGUI(SceneView)
   nameWithType: HandlesBase.OnSceneGUI(SceneView)
-- uid: PLATEAU.CityLoader.AreaSelector.SceneObjs.HandlesBase.OnSceneGUI*
+- uid: PLATEAU.CityImport.AreaSelector.SceneObjs.HandlesBase.OnSceneGUI*
   name: OnSceneGUI
-  href: api/PLATEAU.CityLoader.AreaSelector.SceneObjs.HandlesBase.html#PLATEAU_CityLoader_AreaSelector_SceneObjs_HandlesBase_OnSceneGUI_
-  commentId: Overload:PLATEAU.CityLoader.AreaSelector.SceneObjs.HandlesBase.OnSceneGUI
+  href: api/PLATEAU.CityImport.AreaSelector.SceneObjs.HandlesBase.html#PLATEAU_CityImport_AreaSelector_SceneObjs_HandlesBase_OnSceneGUI_
+  commentId: Overload:PLATEAU.CityImport.AreaSelector.SceneObjs.HandlesBase.OnSceneGUI
   isSpec: "True"
-  fullName: PLATEAU.CityLoader.AreaSelector.SceneObjs.HandlesBase.OnSceneGUI
+  fullName: PLATEAU.CityImport.AreaSelector.SceneObjs.HandlesBase.OnSceneGUI
   nameWithType: HandlesBase.OnSceneGUI
-- uid: PLATEAU.CityLoader.AreaSelector.SceneObjs.MeshCodeGizmoDrawer
+- uid: PLATEAU.CityImport.AreaSelector.SceneObjs.MeshCodeGizmoDrawer
   name: MeshCodeGizmoDrawer
-  href: api/PLATEAU.CityLoader.AreaSelector.SceneObjs.MeshCodeGizmoDrawer.html
-  commentId: T:PLATEAU.CityLoader.AreaSelector.SceneObjs.MeshCodeGizmoDrawer
-  fullName: PLATEAU.CityLoader.AreaSelector.SceneObjs.MeshCodeGizmoDrawer
+  href: api/PLATEAU.CityImport.AreaSelector.SceneObjs.MeshCodeGizmoDrawer.html
+  commentId: T:PLATEAU.CityImport.AreaSelector.SceneObjs.MeshCodeGizmoDrawer
+  fullName: PLATEAU.CityImport.AreaSelector.SceneObjs.MeshCodeGizmoDrawer
   nameWithType: MeshCodeGizmoDrawer
-- uid: PLATEAU.CityLoader.AreaSelector.SceneObjs.MeshCodeGizmoDrawer.AdditionalGizmo
+- uid: PLATEAU.CityImport.AreaSelector.SceneObjs.MeshCodeGizmoDrawer.AdditionalGizmo
   name: AdditionalGizmo()
-  href: api/PLATEAU.CityLoader.AreaSelector.SceneObjs.MeshCodeGizmoDrawer.html#PLATEAU_CityLoader_AreaSelector_SceneObjs_MeshCodeGizmoDrawer_AdditionalGizmo
-  commentId: M:PLATEAU.CityLoader.AreaSelector.SceneObjs.MeshCodeGizmoDrawer.AdditionalGizmo
-  fullName: PLATEAU.CityLoader.AreaSelector.SceneObjs.MeshCodeGizmoDrawer.AdditionalGizmo()
+  href: api/PLATEAU.CityImport.AreaSelector.SceneObjs.MeshCodeGizmoDrawer.html#PLATEAU_CityImport_AreaSelector_SceneObjs_MeshCodeGizmoDrawer_AdditionalGizmo
+  commentId: M:PLATEAU.CityImport.AreaSelector.SceneObjs.MeshCodeGizmoDrawer.AdditionalGizmo
+  fullName: PLATEAU.CityImport.AreaSelector.SceneObjs.MeshCodeGizmoDrawer.AdditionalGizmo()
   nameWithType: MeshCodeGizmoDrawer.AdditionalGizmo()
-- uid: PLATEAU.CityLoader.AreaSelector.SceneObjs.MeshCodeGizmoDrawer.AdditionalGizmo*
+- uid: PLATEAU.CityImport.AreaSelector.SceneObjs.MeshCodeGizmoDrawer.AdditionalGizmo*
   name: AdditionalGizmo
-  href: api/PLATEAU.CityLoader.AreaSelector.SceneObjs.MeshCodeGizmoDrawer.html#PLATEAU_CityLoader_AreaSelector_SceneObjs_MeshCodeGizmoDrawer_AdditionalGizmo_
-  commentId: Overload:PLATEAU.CityLoader.AreaSelector.SceneObjs.MeshCodeGizmoDrawer.AdditionalGizmo
+  href: api/PLATEAU.CityImport.AreaSelector.SceneObjs.MeshCodeGizmoDrawer.html#PLATEAU_CityImport_AreaSelector_SceneObjs_MeshCodeGizmoDrawer_AdditionalGizmo_
+  commentId: Overload:PLATEAU.CityImport.AreaSelector.SceneObjs.MeshCodeGizmoDrawer.AdditionalGizmo
   isSpec: "True"
-  fullName: PLATEAU.CityLoader.AreaSelector.SceneObjs.MeshCodeGizmoDrawer.AdditionalGizmo
+  fullName: PLATEAU.CityImport.AreaSelector.SceneObjs.MeshCodeGizmoDrawer.AdditionalGizmo
   nameWithType: MeshCodeGizmoDrawer.AdditionalGizmo
-- uid: PLATEAU.CityLoader.AreaSelector.SceneObjs.MeshCodeGizmoDrawer.MeshCode
+- uid: PLATEAU.CityImport.AreaSelector.SceneObjs.MeshCodeGizmoDrawer.MeshCode
   name: MeshCode
-  href: api/PLATEAU.CityLoader.AreaSelector.SceneObjs.MeshCodeGizmoDrawer.html#PLATEAU_CityLoader_AreaSelector_SceneObjs_MeshCodeGizmoDrawer_MeshCode
-  commentId: P:PLATEAU.CityLoader.AreaSelector.SceneObjs.MeshCodeGizmoDrawer.MeshCode
-  fullName: PLATEAU.CityLoader.AreaSelector.SceneObjs.MeshCodeGizmoDrawer.MeshCode
+  href: api/PLATEAU.CityImport.AreaSelector.SceneObjs.MeshCodeGizmoDrawer.html#PLATEAU_CityImport_AreaSelector_SceneObjs_MeshCodeGizmoDrawer_MeshCode
+  commentId: P:PLATEAU.CityImport.AreaSelector.SceneObjs.MeshCodeGizmoDrawer.MeshCode
+  fullName: PLATEAU.CityImport.AreaSelector.SceneObjs.MeshCodeGizmoDrawer.MeshCode
   nameWithType: MeshCodeGizmoDrawer.MeshCode
-- uid: PLATEAU.CityLoader.AreaSelector.SceneObjs.MeshCodeGizmoDrawer.MeshCode*
+- uid: PLATEAU.CityImport.AreaSelector.SceneObjs.MeshCodeGizmoDrawer.MeshCode*
   name: MeshCode
-  href: api/PLATEAU.CityLoader.AreaSelector.SceneObjs.MeshCodeGizmoDrawer.html#PLATEAU_CityLoader_AreaSelector_SceneObjs_MeshCodeGizmoDrawer_MeshCode_
-  commentId: Overload:PLATEAU.CityLoader.AreaSelector.SceneObjs.MeshCodeGizmoDrawer.MeshCode
+  href: api/PLATEAU.CityImport.AreaSelector.SceneObjs.MeshCodeGizmoDrawer.html#PLATEAU_CityImport_AreaSelector_SceneObjs_MeshCodeGizmoDrawer_MeshCode_
+  commentId: Overload:PLATEAU.CityImport.AreaSelector.SceneObjs.MeshCodeGizmoDrawer.MeshCode
   isSpec: "True"
-  fullName: PLATEAU.CityLoader.AreaSelector.SceneObjs.MeshCodeGizmoDrawer.MeshCode
+  fullName: PLATEAU.CityImport.AreaSelector.SceneObjs.MeshCodeGizmoDrawer.MeshCode
   nameWithType: MeshCodeGizmoDrawer.MeshCode
-- uid: PLATEAU.CityLoader.AreaSelector.SceneObjs.MeshCodeGizmoDrawer.SizeMultiplier
+- uid: PLATEAU.CityImport.AreaSelector.SceneObjs.MeshCodeGizmoDrawer.SizeMultiplier
   name: SizeMultiplier
-  href: api/PLATEAU.CityLoader.AreaSelector.SceneObjs.MeshCodeGizmoDrawer.html#PLATEAU_CityLoader_AreaSelector_SceneObjs_MeshCodeGizmoDrawer_SizeMultiplier
-  commentId: P:PLATEAU.CityLoader.AreaSelector.SceneObjs.MeshCodeGizmoDrawer.SizeMultiplier
-  fullName: PLATEAU.CityLoader.AreaSelector.SceneObjs.MeshCodeGizmoDrawer.SizeMultiplier
+  href: api/PLATEAU.CityImport.AreaSelector.SceneObjs.MeshCodeGizmoDrawer.html#PLATEAU_CityImport_AreaSelector_SceneObjs_MeshCodeGizmoDrawer_SizeMultiplier
+  commentId: P:PLATEAU.CityImport.AreaSelector.SceneObjs.MeshCodeGizmoDrawer.SizeMultiplier
+  fullName: PLATEAU.CityImport.AreaSelector.SceneObjs.MeshCodeGizmoDrawer.SizeMultiplier
   nameWithType: MeshCodeGizmoDrawer.SizeMultiplier
-- uid: PLATEAU.CityLoader.AreaSelector.SceneObjs.MeshCodeGizmoDrawer.SizeMultiplier*
+- uid: PLATEAU.CityImport.AreaSelector.SceneObjs.MeshCodeGizmoDrawer.SizeMultiplier*
   name: SizeMultiplier
-  href: api/PLATEAU.CityLoader.AreaSelector.SceneObjs.MeshCodeGizmoDrawer.html#PLATEAU_CityLoader_AreaSelector_SceneObjs_MeshCodeGizmoDrawer_SizeMultiplier_
-  commentId: Overload:PLATEAU.CityLoader.AreaSelector.SceneObjs.MeshCodeGizmoDrawer.SizeMultiplier
+  href: api/PLATEAU.CityImport.AreaSelector.SceneObjs.MeshCodeGizmoDrawer.html#PLATEAU_CityImport_AreaSelector_SceneObjs_MeshCodeGizmoDrawer_SizeMultiplier_
+  commentId: Overload:PLATEAU.CityImport.AreaSelector.SceneObjs.MeshCodeGizmoDrawer.SizeMultiplier
   isSpec: "True"
-  fullName: PLATEAU.CityLoader.AreaSelector.SceneObjs.MeshCodeGizmoDrawer.SizeMultiplier
+  fullName: PLATEAU.CityImport.AreaSelector.SceneObjs.MeshCodeGizmoDrawer.SizeMultiplier
   nameWithType: MeshCodeGizmoDrawer.SizeMultiplier
-- uid: PLATEAU.CityLoader.Setting
-  name: PLATEAU.CityLoader.Setting
-  href: api/PLATEAU.CityLoader.Setting.html
-  commentId: N:PLATEAU.CityLoader.Setting
-  fullName: PLATEAU.CityLoader.Setting
-  nameWithType: PLATEAU.CityLoader.Setting
-- uid: PLATEAU.CityLoader.Setting.PackageLoadSetting
+- uid: PLATEAU.CityImport.Setting
+  name: PLATEAU.CityImport.Setting
+  href: api/PLATEAU.CityImport.Setting.html
+  commentId: N:PLATEAU.CityImport.Setting
+  fullName: PLATEAU.CityImport.Setting
+  nameWithType: PLATEAU.CityImport.Setting
+- uid: PLATEAU.CityImport.Setting.PackageLoadSetting
   name: PackageLoadSetting
-  href: api/PLATEAU.CityLoader.Setting.PackageLoadSetting.html
-  commentId: T:PLATEAU.CityLoader.Setting.PackageLoadSetting
-  fullName: PLATEAU.CityLoader.Setting.PackageLoadSetting
+  href: api/PLATEAU.CityImport.Setting.PackageLoadSetting.html
+  commentId: T:PLATEAU.CityImport.Setting.PackageLoadSetting
+  fullName: PLATEAU.CityImport.Setting.PackageLoadSetting
   nameWithType: PackageLoadSetting
-- uid: PLATEAU.CityLoader.Setting.PackageLoadSetting.#ctor(System.Boolean,System.Boolean,System.UInt32,System.UInt32,MeshGranularity)
+- uid: PLATEAU.CityImport.Setting.PackageLoadSetting.#ctor(System.Boolean,System.Boolean,System.UInt32,System.UInt32,MeshGranularity)
   name: PackageLoadSetting(Boolean, Boolean, UInt32, UInt32, MeshGranularity)
-  href: api/PLATEAU.CityLoader.Setting.PackageLoadSetting.html#PLATEAU_CityLoader_Setting_PackageLoadSetting__ctor_System_Boolean_System_Boolean_System_UInt32_System_UInt32_MeshGranularity_
-  commentId: M:PLATEAU.CityLoader.Setting.PackageLoadSetting.#ctor(System.Boolean,System.Boolean,System.UInt32,System.UInt32,MeshGranularity)
-  fullName: PLATEAU.CityLoader.Setting.PackageLoadSetting.PackageLoadSetting(System.Boolean, System.Boolean, System.UInt32, System.UInt32, MeshGranularity)
+  href: api/PLATEAU.CityImport.Setting.PackageLoadSetting.html#PLATEAU_CityImport_Setting_PackageLoadSetting__ctor_System_Boolean_System_Boolean_System_UInt32_System_UInt32_MeshGranularity_
+  commentId: M:PLATEAU.CityImport.Setting.PackageLoadSetting.#ctor(System.Boolean,System.Boolean,System.UInt32,System.UInt32,MeshGranularity)
+  fullName: PLATEAU.CityImport.Setting.PackageLoadSetting.PackageLoadSetting(System.Boolean, System.Boolean, System.UInt32, System.UInt32, MeshGranularity)
   nameWithType: PackageLoadSetting.PackageLoadSetting(Boolean, Boolean, UInt32, UInt32, MeshGranularity)
-- uid: PLATEAU.CityLoader.Setting.PackageLoadSetting.#ctor*
+- uid: PLATEAU.CityImport.Setting.PackageLoadSetting.#ctor*
   name: PackageLoadSetting
-  href: api/PLATEAU.CityLoader.Setting.PackageLoadSetting.html#PLATEAU_CityLoader_Setting_PackageLoadSetting__ctor_
-  commentId: Overload:PLATEAU.CityLoader.Setting.PackageLoadSetting.#ctor
+  href: api/PLATEAU.CityImport.Setting.PackageLoadSetting.html#PLATEAU_CityImport_Setting_PackageLoadSetting__ctor_
+  commentId: Overload:PLATEAU.CityImport.Setting.PackageLoadSetting.#ctor
   isSpec: "True"
-  fullName: PLATEAU.CityLoader.Setting.PackageLoadSetting.PackageLoadSetting
+  fullName: PLATEAU.CityImport.Setting.PackageLoadSetting.PackageLoadSetting
   nameWithType: PackageLoadSetting.PackageLoadSetting
-- uid: PLATEAU.CityLoader.Setting.PackageLoadSetting.includeTexture
+- uid: PLATEAU.CityImport.Setting.PackageLoadSetting.includeTexture
   name: includeTexture
-  href: api/PLATEAU.CityLoader.Setting.PackageLoadSetting.html#PLATEAU_CityLoader_Setting_PackageLoadSetting_includeTexture
-  commentId: F:PLATEAU.CityLoader.Setting.PackageLoadSetting.includeTexture
-  fullName: PLATEAU.CityLoader.Setting.PackageLoadSetting.includeTexture
+  href: api/PLATEAU.CityImport.Setting.PackageLoadSetting.html#PLATEAU_CityImport_Setting_PackageLoadSetting_includeTexture
+  commentId: F:PLATEAU.CityImport.Setting.PackageLoadSetting.includeTexture
+  fullName: PLATEAU.CityImport.Setting.PackageLoadSetting.includeTexture
   nameWithType: PackageLoadSetting.includeTexture
-- uid: PLATEAU.CityLoader.Setting.PackageLoadSetting.loadPackage
+- uid: PLATEAU.CityImport.Setting.PackageLoadSetting.loadPackage
   name: loadPackage
-  href: api/PLATEAU.CityLoader.Setting.PackageLoadSetting.html#PLATEAU_CityLoader_Setting_PackageLoadSetting_loadPackage
-  commentId: F:PLATEAU.CityLoader.Setting.PackageLoadSetting.loadPackage
-  fullName: PLATEAU.CityLoader.Setting.PackageLoadSetting.loadPackage
+  href: api/PLATEAU.CityImport.Setting.PackageLoadSetting.html#PLATEAU_CityImport_Setting_PackageLoadSetting_loadPackage
+  commentId: F:PLATEAU.CityImport.Setting.PackageLoadSetting.loadPackage
+  fullName: PLATEAU.CityImport.Setting.PackageLoadSetting.loadPackage
   nameWithType: PackageLoadSetting.loadPackage
-- uid: PLATEAU.CityLoader.Setting.PackageLoadSetting.maxLOD
+- uid: PLATEAU.CityImport.Setting.PackageLoadSetting.maxLOD
   name: maxLOD
-  href: api/PLATEAU.CityLoader.Setting.PackageLoadSetting.html#PLATEAU_CityLoader_Setting_PackageLoadSetting_maxLOD
-  commentId: F:PLATEAU.CityLoader.Setting.PackageLoadSetting.maxLOD
-  fullName: PLATEAU.CityLoader.Setting.PackageLoadSetting.maxLOD
+  href: api/PLATEAU.CityImport.Setting.PackageLoadSetting.html#PLATEAU_CityImport_Setting_PackageLoadSetting_maxLOD
+  commentId: F:PLATEAU.CityImport.Setting.PackageLoadSetting.maxLOD
+  fullName: PLATEAU.CityImport.Setting.PackageLoadSetting.maxLOD
   nameWithType: PackageLoadSetting.maxLOD
-- uid: PLATEAU.CityLoader.Setting.PackageLoadSetting.meshGranularity
+- uid: PLATEAU.CityImport.Setting.PackageLoadSetting.meshGranularity
   name: meshGranularity
-  href: api/PLATEAU.CityLoader.Setting.PackageLoadSetting.html#PLATEAU_CityLoader_Setting_PackageLoadSetting_meshGranularity
-  commentId: F:PLATEAU.CityLoader.Setting.PackageLoadSetting.meshGranularity
-  fullName: PLATEAU.CityLoader.Setting.PackageLoadSetting.meshGranularity
+  href: api/PLATEAU.CityImport.Setting.PackageLoadSetting.html#PLATEAU_CityImport_Setting_PackageLoadSetting_meshGranularity
+  commentId: F:PLATEAU.CityImport.Setting.PackageLoadSetting.meshGranularity
+  fullName: PLATEAU.CityImport.Setting.PackageLoadSetting.meshGranularity
   nameWithType: PackageLoadSetting.meshGranularity
-- uid: PLATEAU.CityLoader.Setting.PackageLoadSetting.minLOD
+- uid: PLATEAU.CityImport.Setting.PackageLoadSetting.minLOD
   name: minLOD
-  href: api/PLATEAU.CityLoader.Setting.PackageLoadSetting.html#PLATEAU_CityLoader_Setting_PackageLoadSetting_minLOD
-  commentId: F:PLATEAU.CityLoader.Setting.PackageLoadSetting.minLOD
-  fullName: PLATEAU.CityLoader.Setting.PackageLoadSetting.minLOD
+  href: api/PLATEAU.CityImport.Setting.PackageLoadSetting.html#PLATEAU_CityImport_Setting_PackageLoadSetting_minLOD
+  commentId: F:PLATEAU.CityImport.Setting.PackageLoadSetting.minLOD
+  fullName: PLATEAU.CityImport.Setting.PackageLoadSetting.minLOD
   nameWithType: PackageLoadSetting.minLOD
-- uid: PLATEAU.Editor.CityLoader
-  name: PLATEAU.Editor.CityLoader
-  href: api/PLATEAU.Editor.CityLoader.html
-  commentId: N:PLATEAU.Editor.CityLoader
-  fullName: PLATEAU.Editor.CityLoader
-  nameWithType: PLATEAU.Editor.CityLoader
-- uid: PLATEAU.Editor.CityLoader.CityGridLoaderEditorOLD
+- uid: PLATEAU.CityInfo
+  name: PLATEAU.CityInfo
+  href: api/PLATEAU.CityInfo.html
+  commentId: N:PLATEAU.CityInfo
+  fullName: PLATEAU.CityInfo
+  nameWithType: PLATEAU.CityInfo
+- uid: PLATEAU.CityInfo.PLATEAUCityInfoProxy
+  name: PLATEAUCityInfoProxy
+  href: api/PLATEAU.CityInfo.PLATEAUCityInfoProxy.html
+  commentId: T:PLATEAU.CityInfo.PLATEAUCityInfoProxy
+  fullName: PLATEAU.CityInfo.PLATEAUCityInfoProxy
+  nameWithType: PLATEAUCityInfoProxy
+- uid: PLATEAU.Editor.CityImport
+  name: PLATEAU.Editor.CityImport
+  href: api/PLATEAU.Editor.CityImport.html
+  commentId: N:PLATEAU.Editor.CityImport
+  fullName: PLATEAU.Editor.CityImport
+  nameWithType: PLATEAU.Editor.CityImport
+- uid: PLATEAU.Editor.CityImport.CityGridLoaderEditorOLD
   name: CityGridLoaderEditorOLD
-  href: api/PLATEAU.Editor.CityLoader.CityGridLoaderEditorOLD.html
-  commentId: T:PLATEAU.Editor.CityLoader.CityGridLoaderEditorOLD
-  fullName: PLATEAU.Editor.CityLoader.CityGridLoaderEditorOLD
+  href: api/PLATEAU.Editor.CityImport.CityGridLoaderEditorOLD.html
+  commentId: T:PLATEAU.Editor.CityImport.CityGridLoaderEditorOLD
+  fullName: PLATEAU.Editor.CityImport.CityGridLoaderEditorOLD
   nameWithType: CityGridLoaderEditorOLD
 - uid: PLATEAU.Editor.EditorWindow.ProgressDisplay
   name: PLATEAU.Editor.EditorWindow.ProgressDisplay
@@ -2171,95 +2183,95 @@ references:
   isSpec: "True"
   fullName: PLATEAU.Editor.EditorWindow.ProgressDisplay.ProgressDisplayWindow.SetProgress
   nameWithType: ProgressDisplayWindow.SetProgress
-- uid: PLATEAU.Geom
-  name: PLATEAU.Geom
-  href: api/PLATEAU.Geom.html
-  commentId: N:PLATEAU.Geom
-  fullName: PLATEAU.Geom
-  nameWithType: PLATEAU.Geom
-- uid: PLATEAU.Geom.GeoReference
+- uid: PLATEAU.Geometries
+  name: PLATEAU.Geometries
+  href: api/PLATEAU.Geometries.html
+  commentId: N:PLATEAU.Geometries
+  fullName: PLATEAU.Geometries
+  nameWithType: PLATEAU.Geometries
+- uid: PLATEAU.Geometries.GeoReference
   name: GeoReference
-  href: api/PLATEAU.Geom.GeoReference.html
-  commentId: T:PLATEAU.Geom.GeoReference
-  fullName: PLATEAU.Geom.GeoReference
+  href: api/PLATEAU.Geometries.GeoReference.html
+  commentId: T:PLATEAU.Geometries.GeoReference
+  fullName: PLATEAU.Geometries.GeoReference
   nameWithType: GeoReference
-- uid: PLATEAU.Geom.GeoReference.#ctor(PlateauVector3d,System.Single,CoordinateSystem,System.Int32)
+- uid: PLATEAU.Geometries.GeoReference.#ctor(PlateauVector3d,System.Single,CoordinateSystem,System.Int32)
   name: GeoReference(PlateauVector3d, Single, CoordinateSystem, Int32)
-  href: api/PLATEAU.Geom.GeoReference.html#PLATEAU_Geom_GeoReference__ctor_PlateauVector3d_System_Single_CoordinateSystem_System_Int32_
-  commentId: M:PLATEAU.Geom.GeoReference.#ctor(PlateauVector3d,System.Single,CoordinateSystem,System.Int32)
-  fullName: PLATEAU.Geom.GeoReference.GeoReference(PlateauVector3d, System.Single, CoordinateSystem, System.Int32)
+  href: api/PLATEAU.Geometries.GeoReference.html#PLATEAU_Geometries_GeoReference__ctor_PlateauVector3d_System_Single_CoordinateSystem_System_Int32_
+  commentId: M:PLATEAU.Geometries.GeoReference.#ctor(PlateauVector3d,System.Single,CoordinateSystem,System.Int32)
+  fullName: PLATEAU.Geometries.GeoReference.GeoReference(PlateauVector3d, System.Single, CoordinateSystem, System.Int32)
   nameWithType: GeoReference.GeoReference(PlateauVector3d, Single, CoordinateSystem, Int32)
-- uid: PLATEAU.Geom.GeoReference.#ctor*
+- uid: PLATEAU.Geometries.GeoReference.#ctor*
   name: GeoReference
-  href: api/PLATEAU.Geom.GeoReference.html#PLATEAU_Geom_GeoReference__ctor_
-  commentId: Overload:PLATEAU.Geom.GeoReference.#ctor
+  href: api/PLATEAU.Geometries.GeoReference.html#PLATEAU_Geometries_GeoReference__ctor_
+  commentId: Overload:PLATEAU.Geometries.GeoReference.#ctor
   isSpec: "True"
-  fullName: PLATEAU.Geom.GeoReference.GeoReference
+  fullName: PLATEAU.Geometries.GeoReference.GeoReference
   nameWithType: GeoReference.GeoReference
-- uid: PLATEAU.Geom.GeoReference.Dispose
+- uid: PLATEAU.Geometries.GeoReference.Dispose
   name: Dispose()
-  href: api/PLATEAU.Geom.GeoReference.html#PLATEAU_Geom_GeoReference_Dispose
-  commentId: M:PLATEAU.Geom.GeoReference.Dispose
-  fullName: PLATEAU.Geom.GeoReference.Dispose()
+  href: api/PLATEAU.Geometries.GeoReference.html#PLATEAU_Geometries_GeoReference_Dispose
+  commentId: M:PLATEAU.Geometries.GeoReference.Dispose
+  fullName: PLATEAU.Geometries.GeoReference.Dispose()
   nameWithType: GeoReference.Dispose()
-- uid: PLATEAU.Geom.GeoReference.Dispose*
+- uid: PLATEAU.Geometries.GeoReference.Dispose*
   name: Dispose
-  href: api/PLATEAU.Geom.GeoReference.html#PLATEAU_Geom_GeoReference_Dispose_
-  commentId: Overload:PLATEAU.Geom.GeoReference.Dispose
+  href: api/PLATEAU.Geometries.GeoReference.html#PLATEAU_Geometries_GeoReference_Dispose_
+  commentId: Overload:PLATEAU.Geometries.GeoReference.Dispose
   isSpec: "True"
-  fullName: PLATEAU.Geom.GeoReference.Dispose
+  fullName: PLATEAU.Geometries.GeoReference.Dispose
   nameWithType: GeoReference.Dispose
-- uid: PLATEAU.Geom.GeoReference.Finalize
+- uid: PLATEAU.Geometries.GeoReference.Finalize
   name: Finalize()
-  href: api/PLATEAU.Geom.GeoReference.html#PLATEAU_Geom_GeoReference_Finalize
-  commentId: M:PLATEAU.Geom.GeoReference.Finalize
-  fullName: PLATEAU.Geom.GeoReference.Finalize()
+  href: api/PLATEAU.Geometries.GeoReference.html#PLATEAU_Geometries_GeoReference_Finalize
+  commentId: M:PLATEAU.Geometries.GeoReference.Finalize
+  fullName: PLATEAU.Geometries.GeoReference.Finalize()
   nameWithType: GeoReference.Finalize()
-- uid: PLATEAU.Geom.GeoReference.Finalize*
+- uid: PLATEAU.Geometries.GeoReference.Finalize*
   name: Finalize
-  href: api/PLATEAU.Geom.GeoReference.html#PLATEAU_Geom_GeoReference_Finalize_
-  commentId: Overload:PLATEAU.Geom.GeoReference.Finalize
+  href: api/PLATEAU.Geometries.GeoReference.html#PLATEAU_Geometries_GeoReference_Finalize_
+  commentId: Overload:PLATEAU.Geometries.GeoReference.Finalize
   isSpec: "True"
-  fullName: PLATEAU.Geom.GeoReference.Finalize
+  fullName: PLATEAU.Geometries.GeoReference.Finalize
   nameWithType: GeoReference.Finalize
-- uid: PLATEAU.Geom.GeoReference.Handle
+- uid: PLATEAU.Geometries.GeoReference.Handle
   name: Handle
-  href: api/PLATEAU.Geom.GeoReference.html#PLATEAU_Geom_GeoReference_Handle
-  commentId: P:PLATEAU.Geom.GeoReference.Handle
-  fullName: PLATEAU.Geom.GeoReference.Handle
+  href: api/PLATEAU.Geometries.GeoReference.html#PLATEAU_Geometries_GeoReference_Handle
+  commentId: P:PLATEAU.Geometries.GeoReference.Handle
+  fullName: PLATEAU.Geometries.GeoReference.Handle
   nameWithType: GeoReference.Handle
-- uid: PLATEAU.Geom.GeoReference.Handle*
+- uid: PLATEAU.Geometries.GeoReference.Handle*
   name: Handle
-  href: api/PLATEAU.Geom.GeoReference.html#PLATEAU_Geom_GeoReference_Handle_
-  commentId: Overload:PLATEAU.Geom.GeoReference.Handle
+  href: api/PLATEAU.Geometries.GeoReference.html#PLATEAU_Geometries_GeoReference_Handle_
+  commentId: Overload:PLATEAU.Geometries.GeoReference.Handle
   isSpec: "True"
-  fullName: PLATEAU.Geom.GeoReference.Handle
+  fullName: PLATEAU.Geometries.GeoReference.Handle
   nameWithType: GeoReference.Handle
-- uid: PLATEAU.Geom.GeoReference.Project(GeoCoordinate)
+- uid: PLATEAU.Geometries.GeoReference.Project(GeoCoordinate)
   name: Project(GeoCoordinate)
-  href: api/PLATEAU.Geom.GeoReference.html#PLATEAU_Geom_GeoReference_Project_GeoCoordinate_
-  commentId: M:PLATEAU.Geom.GeoReference.Project(GeoCoordinate)
-  fullName: PLATEAU.Geom.GeoReference.Project(GeoCoordinate)
+  href: api/PLATEAU.Geometries.GeoReference.html#PLATEAU_Geometries_GeoReference_Project_GeoCoordinate_
+  commentId: M:PLATEAU.Geometries.GeoReference.Project(GeoCoordinate)
+  fullName: PLATEAU.Geometries.GeoReference.Project(GeoCoordinate)
   nameWithType: GeoReference.Project(GeoCoordinate)
-- uid: PLATEAU.Geom.GeoReference.Project*
+- uid: PLATEAU.Geometries.GeoReference.Project*
   name: Project
-  href: api/PLATEAU.Geom.GeoReference.html#PLATEAU_Geom_GeoReference_Project_
-  commentId: Overload:PLATEAU.Geom.GeoReference.Project
+  href: api/PLATEAU.Geometries.GeoReference.html#PLATEAU_Geometries_GeoReference_Project_
+  commentId: Overload:PLATEAU.Geometries.GeoReference.Project
   isSpec: "True"
-  fullName: PLATEAU.Geom.GeoReference.Project
+  fullName: PLATEAU.Geometries.GeoReference.Project
   nameWithType: GeoReference.Project
-- uid: PLATEAU.Geom.GeoReference.Unproject(PlateauVector3d)
+- uid: PLATEAU.Geometries.GeoReference.Unproject(PlateauVector3d)
   name: Unproject(PlateauVector3d)
-  href: api/PLATEAU.Geom.GeoReference.html#PLATEAU_Geom_GeoReference_Unproject_PlateauVector3d_
-  commentId: M:PLATEAU.Geom.GeoReference.Unproject(PlateauVector3d)
-  fullName: PLATEAU.Geom.GeoReference.Unproject(PlateauVector3d)
+  href: api/PLATEAU.Geometries.GeoReference.html#PLATEAU_Geometries_GeoReference_Unproject_PlateauVector3d_
+  commentId: M:PLATEAU.Geometries.GeoReference.Unproject(PlateauVector3d)
+  fullName: PLATEAU.Geometries.GeoReference.Unproject(PlateauVector3d)
   nameWithType: GeoReference.Unproject(PlateauVector3d)
-- uid: PLATEAU.Geom.GeoReference.Unproject*
+- uid: PLATEAU.Geometries.GeoReference.Unproject*
   name: Unproject
-  href: api/PLATEAU.Geom.GeoReference.html#PLATEAU_Geom_GeoReference_Unproject_
-  commentId: Overload:PLATEAU.Geom.GeoReference.Unproject
+  href: api/PLATEAU.Geometries.GeoReference.html#PLATEAU_Geometries_GeoReference_Unproject_
+  commentId: Overload:PLATEAU.Geometries.GeoReference.Unproject
   isSpec: "True"
-  fullName: PLATEAU.Geom.GeoReference.Unproject
+  fullName: PLATEAU.Geometries.GeoReference.Unproject
   nameWithType: GeoReference.Unproject
 - uid: PLATEAU.Interop
   name: PLATEAU.Interop
@@ -2667,12 +2679,12 @@ references:
   commentId: T:PLATEAU.Interop.MeshExtractOptions
   fullName: PLATEAU.Interop.MeshExtractOptions
   nameWithType: MeshExtractOptions
-- uid: PLATEAU.Interop.MeshExtractOptions.#ctor(PLATEAU.Interop.PlateauVector3d,CoordinateSystem,MeshGranularity,System.UInt32,System.UInt32,System.Boolean,System.Int32,System.Single,PLATEAU.Interop.Extent)
-  name: MeshExtractOptions(PlateauVector3d, CoordinateSystem, MeshGranularity, UInt32, UInt32, Boolean, Int32, Single, Extent)
-  href: api/PLATEAU.Interop.MeshExtractOptions.html#PLATEAU_Interop_MeshExtractOptions__ctor_PLATEAU_Interop_PlateauVector3d_CoordinateSystem_MeshGranularity_System_UInt32_System_UInt32_System_Boolean_System_Int32_System_Single_PLATEAU_Interop_Extent_
-  commentId: M:PLATEAU.Interop.MeshExtractOptions.#ctor(PLATEAU.Interop.PlateauVector3d,CoordinateSystem,MeshGranularity,System.UInt32,System.UInt32,System.Boolean,System.Int32,System.Single,PLATEAU.Interop.Extent)
-  fullName: PLATEAU.Interop.MeshExtractOptions.MeshExtractOptions(PLATEAU.Interop.PlateauVector3d, CoordinateSystem, MeshGranularity, System.UInt32, System.UInt32, System.Boolean, System.Int32, System.Single, PLATEAU.Interop.Extent)
-  nameWithType: MeshExtractOptions.MeshExtractOptions(PlateauVector3d, CoordinateSystem, MeshGranularity, UInt32, UInt32, Boolean, Int32, Single, Extent)
+- uid: PLATEAU.Interop.MeshExtractOptions.#ctor(PLATEAU.Interop.PlateauVector3d,CoordinateSystem,MeshGranularity,System.UInt32,System.UInt32,System.Boolean,System.Int32,System.Single,System.Int32,PLATEAU.Interop.Extent)
+  name: MeshExtractOptions(PlateauVector3d, CoordinateSystem, MeshGranularity, UInt32, UInt32, Boolean, Int32, Single, Int32, Extent)
+  href: api/PLATEAU.Interop.MeshExtractOptions.html#PLATEAU_Interop_MeshExtractOptions__ctor_PLATEAU_Interop_PlateauVector3d_CoordinateSystem_MeshGranularity_System_UInt32_System_UInt32_System_Boolean_System_Int32_System_Single_System_Int32_PLATEAU_Interop_Extent_
+  commentId: M:PLATEAU.Interop.MeshExtractOptions.#ctor(PLATEAU.Interop.PlateauVector3d,CoordinateSystem,MeshGranularity,System.UInt32,System.UInt32,System.Boolean,System.Int32,System.Single,System.Int32,PLATEAU.Interop.Extent)
+  fullName: PLATEAU.Interop.MeshExtractOptions.MeshExtractOptions(PLATEAU.Interop.PlateauVector3d, CoordinateSystem, MeshGranularity, System.UInt32, System.UInt32, System.Boolean, System.Int32, System.Single, System.Int32, PLATEAU.Interop.Extent)
+  nameWithType: MeshExtractOptions.MeshExtractOptions(PlateauVector3d, CoordinateSystem, MeshGranularity, UInt32, UInt32, Boolean, Int32, Single, Int32, Extent)
 - uid: PLATEAU.Interop.MeshExtractOptions.#ctor*
   name: MeshExtractOptions
   href: api/PLATEAU.Interop.MeshExtractOptions.html#PLATEAU_Interop_MeshExtractOptions__ctor_
@@ -2680,6 +2692,12 @@ references:
   isSpec: "True"
   fullName: PLATEAU.Interop.MeshExtractOptions.MeshExtractOptions
   nameWithType: MeshExtractOptions.MeshExtractOptions
+- uid: PLATEAU.Interop.MeshExtractOptions.CoordinateZoneID
+  name: CoordinateZoneID
+  href: api/PLATEAU.Interop.MeshExtractOptions.html#PLATEAU_Interop_MeshExtractOptions_CoordinateZoneID
+  commentId: F:PLATEAU.Interop.MeshExtractOptions.CoordinateZoneID
+  fullName: PLATEAU.Interop.MeshExtractOptions.CoordinateZoneID
+  nameWithType: MeshExtractOptions.CoordinateZoneID
 - uid: PLATEAU.Interop.MeshExtractOptions.ExportAppearance
   name: ExportAppearance
   href: api/PLATEAU.Interop.MeshExtractOptions.html#PLATEAU_Interop_MeshExtractOptions_ExportAppearance
@@ -2734,12 +2752,15 @@ references:
   commentId: F:PLATEAU.Interop.MeshExtractOptions.UnitScale
   fullName: PLATEAU.Interop.MeshExtractOptions.UnitScale
   nameWithType: MeshExtractOptions.UnitScale
-- uid: PLATEAU.Interop.MeshExtractOptions.Validate
-  name: Validate()
-  href: api/PLATEAU.Interop.MeshExtractOptions.html#PLATEAU_Interop_MeshExtractOptions_Validate
-  commentId: M:PLATEAU.Interop.MeshExtractOptions.Validate
-  fullName: PLATEAU.Interop.MeshExtractOptions.Validate()
-  nameWithType: MeshExtractOptions.Validate()
+- uid: PLATEAU.Interop.MeshExtractOptions.Validate(System.String@)
+  name: Validate(out String)
+  href: api/PLATEAU.Interop.MeshExtractOptions.html#PLATEAU_Interop_MeshExtractOptions_Validate_System_String__
+  commentId: M:PLATEAU.Interop.MeshExtractOptions.Validate(System.String@)
+  name.vb: Validate(ByRef String)
+  fullName: PLATEAU.Interop.MeshExtractOptions.Validate(out System.String)
+  fullName.vb: PLATEAU.Interop.MeshExtractOptions.Validate(ByRef System.String)
+  nameWithType: MeshExtractOptions.Validate(out String)
+  nameWithType.vb: MeshExtractOptions.Validate(ByRef String)
 - uid: PLATEAU.Interop.MeshExtractOptions.Validate*
   name: Validate
   href: api/PLATEAU.Interop.MeshExtractOptions.html#PLATEAU_Interop_MeshExtractOptions_Validate_
@@ -3051,6 +3072,19 @@ references:
   isSpec: "True"
   fullName: PLATEAU.IO.MeshConvertOptions.MeshConvertOptions
   nameWithType: MeshConvertOptions.MeshConvertOptions
+- uid: PLATEAU.IO.MeshConvertOptions.CoordinateZoneID
+  name: CoordinateZoneID
+  href: api/PLATEAU.IO.MeshConvertOptions.html#PLATEAU_IO_MeshConvertOptions_CoordinateZoneID
+  commentId: P:PLATEAU.IO.MeshConvertOptions.CoordinateZoneID
+  fullName: PLATEAU.IO.MeshConvertOptions.CoordinateZoneID
+  nameWithType: MeshConvertOptions.CoordinateZoneID
+- uid: PLATEAU.IO.MeshConvertOptions.CoordinateZoneID*
+  name: CoordinateZoneID
+  href: api/PLATEAU.IO.MeshConvertOptions.html#PLATEAU_IO_MeshConvertOptions_CoordinateZoneID_
+  commentId: Overload:PLATEAU.IO.MeshConvertOptions.CoordinateZoneID
+  isSpec: "True"
+  fullName: PLATEAU.IO.MeshConvertOptions.CoordinateZoneID
+  nameWithType: MeshConvertOptions.CoordinateZoneID
 - uid: PLATEAU.IO.MeshConvertOptions.ExportAppearance
   name: ExportAppearance
   href: api/PLATEAU.IO.MeshConvertOptions.html#PLATEAU_IO_MeshConvertOptions_ExportAppearance

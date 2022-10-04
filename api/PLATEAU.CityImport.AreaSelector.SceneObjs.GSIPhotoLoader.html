@@ -5,10 +5,10 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>Class PackageLoadSetting
+    <title>Class GSIPhotoLoader
    | PLATEAU SDK for Unity </title>
     <meta name="viewport" content="width=device-width">
-    <meta name="title" content="Class PackageLoadSetting
+    <meta name="title" content="Class GSIPhotoLoader
    | PLATEAU SDK for Unity ">
     <meta name="generator" content="docfx 2.59.4.0">
     
@@ -78,18 +78,18 @@
         </div>
         <div class="article row grid-right">
           <div class="col-md-10">
-            <article class="content wrap" id="_content" data-uid="PLATEAU.CityLoader.Setting.PackageLoadSetting">
+            <article class="content wrap" id="_content" data-uid="PLATEAU.CityImport.AreaSelector.SceneObjs.GSIPhotoLoader">
   
   
-  <h1 id="PLATEAU_CityLoader_Setting_PackageLoadSetting" data-uid="PLATEAU.CityLoader.Setting.PackageLoadSetting" class="text-break">Class PackageLoadSetting
+  <h1 id="PLATEAU_CityImport_AreaSelector_SceneObjs_GSIPhotoLoader" data-uid="PLATEAU.CityImport.AreaSelector.SceneObjs.GSIPhotoLoader" class="text-break">Class GSIPhotoLoader
   </h1>
-  <div class="markdown level0 summary"><p><span class="xref">PLATEAU.CityLoader.PLATEAUCityLoaderBehaviour</span> の設定のうち、パッケージごとの設定です。</p>
+  <div class="markdown level0 summary"><p>国土地理院の地図画像を取得します。</p>
 </div>
   <div class="markdown level0 conceptual"></div>
   <div class="inheritance">
     <h5>Inheritance</h5>
     <div class="level0"><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">Object</a></div>
-    <div class="level1"><span class="xref">PackageLoadSetting</span></div>
+    <div class="level1"><span class="xref">GSIPhotoLoader</span></div>
   </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
@@ -115,23 +115,30 @@
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone#system-object-memberwiseclone">Object.MemberwiseClone()</a>
     </div>
   </div>
-  <h6><strong>Namespace</strong>: <a class="xref" href="PLATEAU.CityLoader.Setting.html">PLATEAU.CityLoader.Setting</a></h6>
+  <h6><strong>Namespace</strong>: <a class="xref" href="PLATEAU.CityImport.AreaSelector.SceneObjs.html">PLATEAU.CityImport.AreaSelector.SceneObjs</a></h6>
   <h6><strong>Assembly</strong>: cs.temp.dll.dll</h6>
-  <h5 id="PLATEAU_CityLoader_Setting_PackageLoadSetting_syntax">Syntax</h5>
+  <h5 id="PLATEAU_CityImport_AreaSelector_SceneObjs_GSIPhotoLoader_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public class PackageLoadSetting</code></pre>
+    <pre><code class="lang-csharp hljs">public static class GSIPhotoLoader</code></pre>
   </div>
-  <h3 id="constructors">Constructors
+  <h3 id="methods">Methods
   </h3>
   
   
-  <a id="PLATEAU_CityLoader_Setting_PackageLoadSetting__ctor_" data-uid="PLATEAU.CityLoader.Setting.PackageLoadSetting.#ctor*"></a>
-  <h4 id="PLATEAU_CityLoader_Setting_PackageLoadSetting__ctor_System_Boolean_System_Boolean_System_UInt32_System_UInt32_MeshGranularity_" data-uid="PLATEAU.CityLoader.Setting.PackageLoadSetting.#ctor(System.Boolean,System.Boolean,System.UInt32,System.UInt32,MeshGranularity)">PackageLoadSetting(Boolean, Boolean, UInt32, UInt32, MeshGranularity)</h4>
-  <div class="markdown level1 summary"></div>
+  <a id="PLATEAU_CityImport_AreaSelector_SceneObjs_GSIPhotoLoader_Load_" data-uid="PLATEAU.CityImport.AreaSelector.SceneObjs.GSIPhotoLoader.Load*"></a>
+  <h4 id="PLATEAU_CityImport_AreaSelector_SceneObjs_GSIPhotoLoader_Load_System_String_System_Int32_System_Int32_System_Int32_MeshRenderer_List_Material__" data-uid="PLATEAU.CityImport.AreaSelector.SceneObjs.GSIPhotoLoader.Load(System.String,System.Int32,System.Int32,System.Int32,MeshRenderer,List{Material})">Load(String, Int32, Int32, Int32, MeshRenderer, List&lt;Material&gt;)</h4>
+  <div class="markdown level1 summary"><p>国土地理院の地図画像を取得し、引数の <code data-dev-comment-type="paramref" class="paramref">renderer</code> のマテリアルのメインテクスチャにその地図画像を割り当てます。
+引数の id, z, x, y はAPIにURLとして渡す値です。
+引数の値の意味は <a href="https://maps.gsi.go.jp/development/siyou.html#siyou-url"> 国土地理院のWebページ </a> を参照してください。
+どのような id の地図が存在するかは、 <see cref="!:https://maps.gsi.go.jp/development/ichiran.html"> 地理院地図の一覧 </see> を参照してください。
+また、生成されたマテリアルは 引数の <code data-dev-comment-type="paramref" class="paramref">mapMaterials</code> に追加されます。
+Editモードで生成されたマテリアルは利用終了後に廃棄しないとリークするので、
+メソッド利用者の責任で <code data-dev-comment-type="paramref" class="paramref">mapMaterials</code> の各マテリアルを廃棄する必要があります。</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public PackageLoadSetting(bool loadPackage, bool includeTexture, uint minLOD, uint maxLOD, MeshGranularity meshGranularity)</code></pre>
+    <pre><code class="lang-csharp hljs">public static async Task Load(string id, int z, int x, int y, MeshRenderer renderer, List&lt;Material&gt; mapMaterials)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -144,44 +151,38 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
-        <td><span class="parametername">loadPackage</span></td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">String</a></td>
+        <td><span class="parametername">id</span></td>
         <td></td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
-        <td><span class="parametername">includeTexture</span></td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><span class="parametername">z</span></td>
         <td></td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">UInt32</a></td>
-        <td><span class="parametername">minLOD</span></td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><span class="parametername">x</span></td>
         <td></td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">UInt32</a></td>
-        <td><span class="parametername">maxLOD</span></td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><span class="parametername">y</span></td>
         <td></td>
       </tr>
       <tr>
-        <td><span class="xref">MeshGranularity</span></td>
-        <td><span class="parametername">meshGranularity</span></td>
+        <td><span class="xref">MeshRenderer</span></td>
+        <td><span class="parametername">renderer</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">List</span>&lt;<span class="xref">Material</span>&gt;</td>
+        <td><span class="parametername">mapMaterials</span></td>
         <td></td>
       </tr>
     </tbody>
   </table>
-  <h3 id="fields">Fields
-  </h3>
-  
-  
-  <h4 id="PLATEAU_CityLoader_Setting_PackageLoadSetting_includeTexture" data-uid="PLATEAU.CityLoader.Setting.PackageLoadSetting.includeTexture">includeTexture</h4>
-  <div class="markdown level1 summary"></div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public bool includeTexture</code></pre>
-  </div>
-  <h5 class="fieldValue">Field Value</h5>
+  <h5 class="returns">Returns</h5>
   <table class="table table-bordered table-striped table-condensed">
     <thead>
       <tr>
@@ -191,103 +192,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  
-  
-  <h4 id="PLATEAU_CityLoader_Setting_PackageLoadSetting_loadPackage" data-uid="PLATEAU.CityLoader.Setting.PackageLoadSetting.loadPackage">loadPackage</h4>
-  <div class="markdown level1 summary"></div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public bool loadPackage</code></pre>
-  </div>
-  <h5 class="fieldValue">Field Value</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  
-  
-  <h4 id="PLATEAU_CityLoader_Setting_PackageLoadSetting_maxLOD" data-uid="PLATEAU.CityLoader.Setting.PackageLoadSetting.maxLOD">maxLOD</h4>
-  <div class="markdown level1 summary"></div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public uint maxLOD</code></pre>
-  </div>
-  <h5 class="fieldValue">Field Value</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">UInt32</a></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  
-  
-  <h4 id="PLATEAU_CityLoader_Setting_PackageLoadSetting_meshGranularity" data-uid="PLATEAU.CityLoader.Setting.PackageLoadSetting.meshGranularity">meshGranularity</h4>
-  <div class="markdown level1 summary"></div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public MeshGranularity meshGranularity</code></pre>
-  </div>
-  <h5 class="fieldValue">Field Value</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="xref">MeshGranularity</span></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  
-  
-  <h4 id="PLATEAU_CityLoader_Setting_PackageLoadSetting_minLOD" data-uid="PLATEAU.CityLoader.Setting.PackageLoadSetting.minLOD">minLOD</h4>
-  <div class="markdown level1 summary"></div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public uint minLOD</code></pre>
-  </div>
-  <h5 class="fieldValue">Field Value</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">UInt32</a></td>
+        <td><span class="xref">Task</span></td>
         <td></td>
       </tr>
     </tbody>

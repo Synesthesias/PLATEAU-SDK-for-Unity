@@ -102,36 +102,6 @@
   </h3>
   
   
-  <a id="PLATEAU_CityGML_CityModel_CenterPoint_" data-uid="PLATEAU.CityGML.CityModel.CenterPoint*"></a>
-  <h4 id="PLATEAU_CityGML_CityModel_CenterPoint" data-uid="PLATEAU.CityGML.CityModel.CenterPoint">CenterPoint</h4>
-  <div class="markdown level1 summary"><p>cityModel の中心点を返します。
-ただし高さ方向の座標は 0 とし、東西南北の方向の座標のみ中心を指します。
-そうでないと基準点が空中に浮かぶので気分的には良くないためです。
-また GMLファイルから cityModel の Envelope を読み取れない場合は、
-中心点が分からないので原点座標を返します。</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public PlateauVector3d CenterPoint { get; }</code></pre>
-  </div>
-  <h5 class="propertyValue">Property Value</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="xref">PlateauVector3d</span></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  
-  
   <a id="PLATEAU_CityGML_CityModel_Handle_" data-uid="PLATEAU.CityGML.CityModel.Handle*"></a>
   <h4 id="PLATEAU_CityGML_CityModel_Handle" data-uid="PLATEAU.CityGML.CityModel.Handle">Handle</h4>
   <div class="markdown level1 summary"><p>セーフハンドルを取得します。</p>
@@ -204,6 +174,51 @@
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">protected void Finalize()</code></pre>
   </div>
+  
+  
+  <a id="PLATEAU_CityGML_CityModel_GetCenterPoint_" data-uid="PLATEAU.CityGML.CityModel.GetCenterPoint*"></a>
+  <h4 id="PLATEAU_CityGML_CityModel_GetCenterPoint_System_Int32_" data-uid="PLATEAU.CityGML.CityModel.GetCenterPoint(System.Int32)">GetCenterPoint(Int32)</h4>
+  <div class="markdown level1 summary"><p>cityModel の中心点を返します。
+また GMLファイルから cityModel の Envelope を読み取れない場合は、
+中心点が分からないので原点座標を返します。</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public PlateauVector3d GetCenterPoint(int coordinateZoneID)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><span class="parametername">coordinateZoneID</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">PlateauVector3d</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
   
   
   <a id="PLATEAU_CityGML_CityModel_GetCityObjectById_" data-uid="PLATEAU.CityGML.CityModel.GetCityObjectById*"></a>
