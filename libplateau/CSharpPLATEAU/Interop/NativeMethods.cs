@@ -1023,6 +1023,12 @@ namespace PLATEAU.Interop
             [In] IntPtr handle,
             out IntPtr strPtr,
             out int strLength);
+
+        [DllImport(DllName, CharSet = CharSet.Ansi)]
+        internal static extern APIResult plateau_gml_file_info_get_feature_type_str(
+            [In] IntPtr handle,
+            out IntPtr strPtr,
+            out int strLength);
             
         // ***************
         //  city_model_package_info_c.cpp

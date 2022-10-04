@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using UnityEngine;
 
 namespace PLATEAU.Util
@@ -6,7 +7,7 @@ namespace PLATEAU.Util
     /// <summary>
     /// PlateauUnitySDK が利用するパスです。
     /// </summary>
-    internal static class PlateauUnityPath
+    [Obsolete("Use PathUtil.")] internal static class PlateauUnityPath
     {
         /// <summary>
         /// gmlをインポートする時、インポート元のgmlはデフォルトではこのパスにコピーされます。
@@ -14,7 +15,9 @@ namespace PLATEAU.Util
         /// 実行中にPlateauオブジェクトの情報を得るためには、実行中にgmlファイルをロードできるようにしたいためです。
         /// パスは StreamingAssets/PLATEAU を指します。
         /// </summary>
-        public static string StreamingGmlFolder { get; private set; } = Path.Combine(Application.streamingAssetsPath, "PLATEAU");
+        [Obsolete] public static string StreamingGmlFolder { get; private set; } = Path.Combine(Application.streamingAssetsPath, "PLATEAU");
+
+        
 
         public static string StreamingFolder => Path.Combine(StreamingGmlFolder, "../");
 

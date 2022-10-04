@@ -19,6 +19,9 @@ namespace PLATEAU.Udx
 
         public string Path => DLLUtil.GetNativeString(Handle, NativeMethods.plateau_gml_file_info_get_path);
 
+        public string FeatureType =>
+            DLLUtil.GetNativeString(Handle, NativeMethods.plateau_gml_file_info_get_feature_type_str);
+
         protected override void DisposeNative()
         {
             NativeMethods.plateau_delete_gml_file_info(Handle);
