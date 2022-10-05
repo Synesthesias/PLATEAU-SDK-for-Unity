@@ -12,12 +12,12 @@ namespace PLATEAU.Editor.CityImport
     /// 都市モデルの読み込み設定をするGUIをインスペクタに表示し、
     /// ボタン操作に応じて選択画面の表示や読み込みを行います。
     /// </summary>
-    [CustomEditor(typeof(PLATEAUCityLoaderBehaviour))]
-    internal class PLATEAUCityLoaderBehaviourEditor : UnityEditor.Editor
+    [CustomEditor(typeof(PLATEAUCityModelLoader))]
+    internal class PLATEAUCityModelLoaderEditor : UnityEditor.Editor
     {
         public override void OnInspectorGUI()
         {
-            var loader = (PLATEAUCityLoaderBehaviour)target;
+            var loader = (PLATEAUCityModelLoader)target;
             bool isAreaSelectComplete;
 
             HeaderDrawer.Reset();

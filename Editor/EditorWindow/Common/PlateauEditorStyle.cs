@@ -62,6 +62,15 @@ namespace PLATEAU.Editor.EditorWindow.Common
             margin = new RectOffset(27, 12, 4, 4)
         };
 
+        public static void Separator(int indentLevel)
+        {
+            using (new GUILayout.HorizontalScope())
+            {
+                GUILayout.Space(indentLevel * 15);
+                GUILayout.Box("", GUILayout.ExpandWidth(true), GUILayout.Height(1));
+            }
+        }
+
         /// <summary> ボタンのスタイルです。押されたときにtrueを返します。 </summary>
         public static bool MainButton(string text)
         {

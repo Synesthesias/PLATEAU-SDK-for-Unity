@@ -4,7 +4,7 @@ using PLATEAU.IO;
 namespace PLATEAU.CityImport.Setting
 {
     /// <summary>
-    /// <see cref="PLATEAUCityLoaderBehaviour"/> の設定のうち、パッケージごとの設定です。
+    /// <see cref="PLATEAUCityModelLoader"/> の設定のうち、パッケージごとの設定です。
     /// <see cref="CityLoadConfig"/> によって保持されます。
     /// </summary>
     [Serializable]

@@ -21,7 +21,7 @@ namespace PLATEAU.CityImport.Load
         /// <summary>
         /// 選択されたGMLとその関連ファイルを StreamingAssetsフォルダにコピーし、都市モデルをシーンに配置します。
         /// </summary>
-        public static void Import(PLATEAUCityLoaderBehaviour loader, IProgressDisplay progressDisplay)
+        public static void Import(PLATEAUCityModelLoader loader, IProgressDisplay progressDisplay)
         {
             // コピー
             string destPath = CityFilesCopy.ToStreamingAssets(loader.SourcePathBeforeImport, loader.CityLoadConfig);

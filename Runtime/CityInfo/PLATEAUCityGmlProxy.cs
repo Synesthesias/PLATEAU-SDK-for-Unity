@@ -14,7 +14,7 @@ namespace PLATEAU.CityInfo
     /// <summary>
     /// GMLファイルから都市情報を読み込みます。
     /// </summary>
-    public class PLATEAUCityInfoLoader
+    public class PLATEAUCityGmlProxy
     {
         /// <summary>
         /// GMLパス と <see cref="CityModel"/> を紐付けるキャッシュです。

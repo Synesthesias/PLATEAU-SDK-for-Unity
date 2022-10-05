@@ -9,10 +9,10 @@ namespace PLATEAU.CityImport
 {
     /// <summary>
     /// 都市モデルをロードするための設定を保持するコンポーネントです。
-    /// インスペクタでの表示については PLATEAUCityLoaderEditor を参照してください。
+    /// インスペクタでの表示については PLATEAUCityModelLoaderEditor を参照してください。
     /// 実際にロードする処理については <see cref="Load.CityImporter"/> を参照してください。
     /// </summary>
-    internal class PLATEAUCityLoaderBehaviour : MonoBehaviour
+    internal class PLATEAUCityModelLoader : MonoBehaviour
     {
         [SerializeField] private CityLoadConfig cityLoadConfig = new CityLoadConfig();
 
@@ -23,7 +23,7 @@ namespace PLATEAU.CityImport
         {
             string objName = Path.GetFileName(sourcePathBeforeImport);
             var obj = new GameObject(objName);
-            var loader = obj.AddComponent<PLATEAUCityLoaderBehaviour>();
+            var loader = obj.AddComponent<PLATEAUCityModelLoader>();
             loader.Init(sourcePathBeforeImport);
             Debug.Log(loader.CityLoadConfig.SourcePathBeforeImport);
             EditorSceneManager.MarkSceneDirty(SceneManager.GetActiveScene());
