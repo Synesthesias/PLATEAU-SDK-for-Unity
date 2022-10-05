@@ -21,6 +21,15 @@ namespace PLATEAU.Udx
 
         public string FeatureType =>
             DLLUtil.GetNativeString(Handle, NativeMethods.plateau_gml_file_info_get_feature_type_str);
+        
+        public PredefinedCityModelPackage Package {
+            get
+            {
+                var apiResult = NativeMethods.plateau_udx_sub_folder_dir_name_to_package(FeatureType, out var package);
+                DLLUtil.CheckDllError(apiResult);
+                return package;
+            }
+        }
 
         protected override void DisposeNative()
         {

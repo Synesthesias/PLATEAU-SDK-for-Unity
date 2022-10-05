@@ -22,47 +22,52 @@ namespace PLATEAU.CityImport.Load
         /// 選択されたGMLとその関連ファイルを StreamingAssetsフォルダにコピーし、都市モデルをシーンに配置します。
         /// メインスレッドから呼ぶ必要があります。
         /// </summary>
-        [Obsolete]
-        public static async void ImportAsync(PLATEAUCityModelLoader loader, IProgressDisplay progressDisplay)
-        {
-            // コピー
-            string fetchDestPath = PathUtil.plateauSrcFetchDir;
-            string destPath = await Task.Run(()=>CityFilesCopy.ToStreamingAssets(loader.SourcePathBeforeImport, loader.CityLoadConfig, progressDisplay, fetchDestPath));
-            loader.SourcePathAfterImport = destPath;
-            // シーン配置
-            var gmlPathsDict = loader.CityLoadConfig.SearchMatchingGMLList(destPath, out var collection);
-            if (gmlPathsDict.Count == 0)
-            {
-                Debug.LogError("該当するGMLファイルの数が0です。");
-                return;
-            }
+        // [Obsolete]
+        // public static async void ImportAsync(PLATEAUCityModelLoader loader, IProgressDisplay progressDisplay)
+        // {
+        //     // コピー
+        //     string fetchDestPath = PathUtil.plateauSrcFetchDir;
+        //     string destPath = await Task.Run(()=>CityFilesCopy.ToStreamingAssets(loader.SourcePathBeforeImport, loader.CityLoadConfig, progressDisplay, fetchDestPath));
+        //     loader.SourcePathAfterImport = destPath;
+        //     // シーン配置
+        //     var gmlPathsDict = loader.CityLoadConfig.SearchMatchingGMLList(destPath, out var collection);
+        //     if (gmlPathsDict.Count == 0)
+        //     {
+        //         Debug.LogError("該当するGMLファイルの数が0です。");
+        //         return;
+        //     }
+        //
+        //     var rootDirName = Path.GetFileName(destPath);
+        //     var task = LoadAndPlaceGmlsAsync(gmlPathsDict, loader.CityLoadConfig, rootDirName, progressDisplay, CalcCenterPoint(collection, loader.CoordinateZoneID));
+        //     task.ContinueWithErrorCatch();
+        // }
 
-            var rootDirName = Path.GetFileName(destPath);
-            var task = LoadAndPlaceGmlsAsync(gmlPathsDict, loader.CityLoadConfig, rootDirName, progressDisplay, CalcCenterPoint(collection, loader.CoordinateZoneID));
-            task.ContinueWithErrorCatch();
-        }
-
-        public static void ImportV2(PLATEAUCityModelLoader loader, IProgressDisplay progressDisplay)
+        public static async Task ImportV2Async(PLATEAUCityModelLoader loader, IProgressDisplay progressDisplay)
         {
+            string sourcePath = loader.SourcePathBeforeImport; 
             string destPath = PathUtil.plateauSrcFetchDir;
+            string destFolderName = Path.GetFileName(sourcePath);
+            string destRootFolderPath = Path.Combine(destPath, destFolderName);
             var targetGmls = CityFilesCopy.FindTargetGmls(
-                loader.SourcePathBeforeImport, loader.CityLoadConfig, out var collection
+                sourcePath, loader.CityLoadConfig, out var collection
             );
             if (targetGmls.Count <= 0)
             {
                 Debug.LogError("該当するGMLファイルがありません。");
                 return;
             }
+            var rootTrans = new GameObject(destFolderName).transform;
 
             try
             {
-                Parallel.ForEach(targetGmls, gmlInfo =>
+                await Task.WhenAll(targetGmls.Select(async gmlInfo =>
                 {
                     string gmlName = Path.GetFileName(gmlInfo.Path);
-                    progressDisplay.SetProgress(gmlName, 1f / 3f, "インポート処理中");
+                    progressDisplay.SetProgress(gmlName, 0f / 3f, "インポート処理中");
                     collection.Fetch(destPath, gmlInfo);
-
-                });
+                    progressDisplay.SetProgress(gmlName, 1f / 3f, "ロード中");
+                    await LoadAndPlaceGmlAsync(gmlInfo, rootTrans, loader.CityLoadConfig, CalcCenterPoint(collection, loader.CoordinateZoneID));
+                }));
             }
             catch (AggregateException ae)
             {
@@ -90,51 +95,63 @@ namespace PLATEAU.CityImport.Load
         /// <param name="rootObjName">配置するゲームオブジェクトの中でヒエラルキーが最も上であるものの名称です。</param>
         /// <param name="progressDisplay">処理の進捗がこのディスプレイに表示されます。</param>
         /// <param name="referencePoint">変換座標の基準点です。</param>
-        private static async Task LoadAndPlaceGmlsAsync(Dictionary<PredefinedCityModelPackage, List<string>> gmlPathsDict, CityLoadConfig config, string rootObjName, IProgressDisplay progressDisplay, PlateauVector3d referencePoint)
+        // private static async Task LoadAndPlaceGmlsAsync(Dictionary<PredefinedCityModelPackage, List<string>> gmlPathsDict, CityLoadConfig config, string rootObjName, IProgressDisplay progressDisplay, PlateauVector3d referencePoint)
+        // {
+        //     int gmlCount = gmlPathsDict.SelectMany(pair => pair.Value).Count();
+        //     var rootTrans = new GameObject(rootObjName).transform;
+        //     // パッケージ種ごとのループです。
+        //     int loopCountGml = 0;
+        //     foreach (var package in gmlPathsDict.Keys)
+        //     {
+        //         // パッケージ種ごとの設定を利用します。
+        //         var packageConf = config.GetConfigForPackage(package);
+        //         // GMLファイルごとのループです。
+        //         foreach (string gmlPath in gmlPathsDict[package])
+        //         {
+        //             progressDisplay.SetProgress("3Dモデルのロード", (float)(loopCountGml) * 100 / gmlCount, $"[{loopCountGml+1} / {gmlCount} : {Path.GetFileName(gmlPath)}]");
+        //             await LoadGmlAsync();
+        //             loopCountGml++;
+        //         } // gmlファイルごとのループ
+        //     }// パッケージ種ごとのループ
+        //     progressDisplay.SetProgress("3Dモデルのロード", 100f, "完了");
+        // }
+
+        private static async Task LoadAndPlaceGmlAsync(GmlFileInfo gmlInfo, Transform rootTrans, CityLoadConfig config, PlateauVector3d referencePoint)
         {
-            int gmlCount = gmlPathsDict.SelectMany(pair => pair.Value).Count();
-            var rootTrans = new GameObject(rootObjName).transform;
-            // パッケージ種ごとのループです。
-            int loopCountGml = 0;
-            foreach (var package in gmlPathsDict.Keys)
+            string gmlPath = gmlInfo.Path;
+            var packageConf = config.GetConfigForPackage(gmlInfo.Package);
+            var gmlTrans = new GameObject(Path.GetFileName(gmlPath)).transform;
+            gmlTrans.parent = rootTrans;
+            using var cityModel = await Task.Run(() => ParseGML(gmlPath));
+            if (cityModel == null)
             {
-                // パッケージ種ごとの設定を利用します。
-                var packageConf = config.GetConfigForPackage(package);
-                // GMLファイルごとのループです。
-                foreach (string gmlPath in gmlPathsDict[package])
-                {
-                    progressDisplay.SetProgress("3Dモデルのロード", (float)(loopCountGml) * 100 / gmlCount, $"[{loopCountGml+1} / {gmlCount} : {Path.GetFileName(gmlPath)}]");
-                    var gmlTrans = new GameObject(Path.GetFileName(gmlPath)).transform;
-                    gmlTrans.parent = rootTrans;
-                    using var cityModel = await Task.Run(() => ParseGML(gmlPath));
-                    if (cityModel == null) continue;
-                    var meshExtractOptions = new MeshExtractOptions(
-                        // TODO gridCountOfSide, Extent はユーザーが設定できるようにしたほうが良い
-                        referencePoint,
-                        CoordinateSystem.EUN,
-                        packageConf.meshGranularity,
-                        packageConf.maxLOD,
-                        packageConf.minLOD,
-                        packageConf.includeTexture,
-                        5,
-                        1.0f,
-                        config.CoordinateZoneID,
-                        new Extent(new GeoCoordinate(-90, -180, -9999), new GeoCoordinate(90, 180, 9999))
-                    );
+                // TODO GMLのパースに失敗したと分かるメッセージを何か出す
+                return;
+            }
+            var meshExtractOptions = new MeshExtractOptions(
+                // TODO gridCountOfSide, Extent はユーザーが設定できるようにしたほうが良い
+                referencePoint,
+                CoordinateSystem.EUN,
+                packageConf.meshGranularity,
+                packageConf.maxLOD,
+                packageConf.minLOD,
+                packageConf.includeTexture,
+                5,
+                1.0f,
+                config.CoordinateZoneID,
+                new Extent(new GeoCoordinate(-90, -180, -9999), new GeoCoordinate(90, 180, 9999))
+            );
 
-                    if (!meshExtractOptions.Validate(out var failureMessage))
-                    {
-                        Debug.LogError($"メッシュ抽出設定に不正な点があります。 理由 : {failureMessage}");
-                        continue;
-                    }
-
-                    await PlateauToUnityModelConverter.ConvertAndPlaceToScene(
-                        cityModel, meshExtractOptions, gmlPath, gmlTrans
-                    );
-                    loopCountGml++;
-                } // gmlファイルごとのループ
-            }// パッケージ種ごとのループ
-            progressDisplay.SetProgress("3Dモデルのロード", 100f, "完了");
+            if (!meshExtractOptions.Validate(out var failureMessage))
+            {
+                // TODO これはメインスレッドでないと動かない
+                Debug.LogError($"メッシュ抽出設定に不正な点があります。 理由 : {failureMessage}"); 
+                return;
+            }
+            
+            await PlateauToUnityModelConverter.ConvertAndPlaceToScene(
+                cityModel, meshExtractOptions, gmlPath, gmlTrans
+            );
         }
         
         /// <summary> gmlファイルをパースします。 </summary>

@@ -32,7 +32,7 @@ namespace PLATEAU.CityInfo
                 string rootDirName = go.transform.parent.name;
                 gmlPath = Path.Combine(PathUtil.plateauSrcFetchDir, rootDirName, PathUtil.UdxFolderName, gmlFeatureDir, gmlName);
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 Debug.LogError("Could not get gmlInfo from gmlName.");
                 return null;

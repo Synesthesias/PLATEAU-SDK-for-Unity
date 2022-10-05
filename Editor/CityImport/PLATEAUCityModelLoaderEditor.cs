@@ -5,6 +5,7 @@ using PLATEAU.Editor.CityImport.AreaSelector;
 using PLATEAU.Editor.EditorWindow.Common;
 using PLATEAU.Editor.EditorWindow.ProgressDisplay;
 using PLATEAU.Util;
+using PLATEAU.Util.Async;
 using UnityEditor;
 
 namespace PLATEAU.Editor.CityImport
@@ -80,7 +81,8 @@ namespace PLATEAU.Editor.CityImport
                     if (PlateauEditorStyle.MainButton("インポート"))
                     {
                         var mainThreadContext = SynchronizationContext.Current;
-                        CityImporter.ImportV2(loader, ProgressDisplayWindow.Open(mainThreadContext));
+                        var task = CityImporter.ImportV2Async(loader, ProgressDisplayWindow.Open(mainThreadContext));
+                        task.ContinueWithErrorCatch();
                     }
                 }
             }

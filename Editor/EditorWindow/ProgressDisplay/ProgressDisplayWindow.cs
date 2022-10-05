@@ -58,7 +58,7 @@ namespace PLATEAU.Editor.EditorWindow.ProgressDisplay
                 matched.Message = message;
             }
 
-            // Window の Repaint はメインスレッドで行う必要があります。
+            // 再描画はメインスレッドで行う必要があります。
             this.mainThreadContext.Post(__ => Repaint(), null);
         }
 
