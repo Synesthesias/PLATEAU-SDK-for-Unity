@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using PLATEAU.CityGML;
 using PLATEAU.Interop;
 using PLATEAU.PolygonMesh;
+using PLATEAU.Util;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -24,7 +26,7 @@ namespace PLATEAU.CityImport.Load.Convert
         /// </summary>
         public static async Task ConvertAndPlaceToScene(
             CityModel cityModel, MeshExtractOptions meshExtractOptions,
-            string gmlAbsolutePath, Transform parentTrans
+            Transform parentTrans, IProgressDisplay progressDisplay, string progressName
             )
         {
             Debug.Log($"load started");
@@ -39,6 +41,7 @@ namespace PLATEAU.CityImport.Load.Convert
             // 処理A :
             // Unityでメッシュを作るためのデータを構築します。
             // 実際のメッシュデータを触らないので、Task.Run で別のスレッドで処理できます。
+            progressDisplay.SetProgress(progressName, 60f, "3Dメッシュを変換中");
             ConvertedGameObjData meshObjsData = await Task.Run(() =>
             {
                 using var plateauModel = ExtractMeshes(cityModel, meshExtractOptions);
@@ -52,7 +55,7 @@ namespace PLATEAU.CityImport.Load.Convert
             
             // テクスチャパス と テクスチャを紐付ける辞書です。同じテクスチャが繰り返しロードされることを防ぎます。
             Dictionary<string, Texture> cachedTexture = new Dictionary<string, Texture>();
-            
+            progressDisplay.SetProgress(progressName, 80f, "シーンに配置中");
             await meshObjsData.PlaceToScene(parentTrans, cachedTexture, true);
 
             // エディター内での実行であれば、生成したメッシュ,テクスチャ等をシーンに保存したいので
@@ -76,6 +79,7 @@ namespace PLATEAU.CityImport.Load.Convert
             CityModel cityModel, MeshExtractOptions meshExtractOptions)
         {
             var model = new Model();
+            if (cityModel == null) return model;
             MeshExtractor.Extract(ref model, cityModel, meshExtractOptions);
             Debug.Log("model extracted.");
             return model;

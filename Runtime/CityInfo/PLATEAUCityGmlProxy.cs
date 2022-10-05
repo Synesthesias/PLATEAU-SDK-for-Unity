@@ -2,7 +2,6 @@
 using System.Collections.Concurrent;
 using System.IO;
 using System.Threading.Tasks;
-using Codice.Client.GameUI.Update;
 using PLATEAU.CityGML;
 using PLATEAU.Interop;
 using PLATEAU.Udx;

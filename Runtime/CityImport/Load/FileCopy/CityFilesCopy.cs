@@ -1,12 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using PLATEAU.CityImport.Setting;
 using PLATEAU.Udx;
 using PLATEAU.Util;
-using UnityEditor;
-using UnityEngine;
 
 namespace PLATEAU.CityImport.Load.FileCopy
 {
