@@ -1,4 +1,5 @@
-﻿using PLATEAU.CityImport;
+﻿using System.Threading;
+using PLATEAU.CityImport;
 using PLATEAU.CityImport.Load;
 using PLATEAU.Editor.CityImport.AreaSelector;
 using PLATEAU.Editor.EditorWindow.Common;
@@ -78,7 +79,8 @@ namespace PLATEAU.Editor.CityImport
                 {
                     if (PlateauEditorStyle.MainButton("インポート"))
                     {
-                        CityImporter.Import(loader, ProgressDisplayWindow.Open());
+                        var mainThreadContext = SynchronizationContext.Current;
+                        CityImporter.ImportAsync(loader, ProgressDisplayWindow.Open(mainThreadContext));
                     }
                 }
             }

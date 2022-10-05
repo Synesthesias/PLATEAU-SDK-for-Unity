@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using PLATEAU.Editor.EditorWindow.Common;
 using PLATEAU.Util;
 using UnityEditor;
@@ -9,11 +10,13 @@ namespace PLATEAU.Editor.EditorWindow.ProgressDisplay
     public class ProgressDisplayWindow : UnityEditor.EditorWindow, IProgressDisplay
     {
         private List<Progress> progressList = new List<Progress>();
+        private SynchronizationContext mainThreadContext;
         
-        public static ProgressDisplayWindow Open()
+        public static ProgressDisplayWindow Open(SynchronizationContext mainThreadContext)
         {
             var window = GetWindow<ProgressDisplayWindow>("計算状況");
             window.Show();
+            window.mainThreadContext = mainThreadContext;
             return window;
         }
 
@@ -47,7 +50,9 @@ namespace PLATEAU.Editor.EditorWindow.ProgressDisplay
                 matched.Percentage = percentage;
                 matched.Message = message;
             }
-            Repaint();
+
+            // Window の Repaint はメインスレッドで行う必要があります。
+            this.mainThreadContext.Post(__ => Repaint(), null);
         }
 
 

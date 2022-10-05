@@ -20,11 +20,13 @@ namespace PLATEAU.CityImport.Load
     {
         /// <summary>
         /// 選択されたGMLとその関連ファイルを StreamingAssetsフォルダにコピーし、都市モデルをシーンに配置します。
+        /// メインスレッドから呼ぶ必要があります。
         /// </summary>
-        public static void Import(PLATEAUCityModelLoader loader, IProgressDisplay progressDisplay)
+        public static async void ImportAsync(PLATEAUCityModelLoader loader, IProgressDisplay progressDisplay)
         {
             // コピー
-            string destPath = CityFilesCopy.ToStreamingAssets(loader.SourcePathBeforeImport, loader.CityLoadConfig);
+            string fetchDestPath = PathUtil.plateauSrcFetchDir;
+            string destPath = await Task.Run(()=>CityFilesCopy.ToStreamingAssets(loader.SourcePathBeforeImport, loader.CityLoadConfig, progressDisplay, fetchDestPath));
             loader.SourcePathAfterImport = destPath;
             // シーン配置
             var gmlPathsDict = loader.CityLoadConfig.SearchMatchingGMLList(destPath, out var collection);
