@@ -1,16 +1,19 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using PLATEAU.Editor.EditorWindow.Common;
 using PLATEAU.Util;
 using UnityEditor;
+using UnityEngine;
 
 namespace PLATEAU.Editor.EditorWindow.ProgressDisplay
 {
     public class ProgressDisplayWindow : UnityEditor.EditorWindow, IProgressDisplay
     {
-        private List<Progress> progressList = new List<Progress>();
+        private readonly ConcurrentBag<Progress> progressBag = new ConcurrentBag<Progress>();
         private SynchronizationContext mainThreadContext;
+        private Vector2 scrollPos;
         
         public static ProgressDisplayWindow Open(SynchronizationContext mainThreadContext)
         {
@@ -22,17 +25,21 @@ namespace PLATEAU.Editor.EditorWindow.ProgressDisplay
 
         public void OnGUI()
         {
-            using (PlateauEditorStyle.VerticalScopeLevel1())
+            using (var scrollView = new EditorGUILayout.ScrollViewScope(this.scrollPos))
             {
-                foreach (var progress in this.progressList)
+                this.scrollPos = scrollView.scrollPosition;
+                using (PlateauEditorStyle.VerticalScopeLevel1())
                 {
-                    using (PlateauEditorStyle.VerticalScopeLevel2())
+                    foreach (var progress in this.progressBag)
                     {
-                        EditorGUILayout.LabelField(progress.Name);
-                        float sliderLower = 0f;
-                        float sliderUpper = progress.Percentage;
-                        EditorGUILayout.MinMaxSlider($"{progress.PercentageStr}", ref sliderLower, ref sliderUpper, 0f, 100f );
-                        EditorGUILayout.LabelField(progress.Message);
+                        using (PlateauEditorStyle.VerticalScopeLevel2())
+                        {
+                            EditorGUILayout.LabelField(progress.Name);
+                            float sliderLower = 0f;
+                            float sliderUpper = progress.Percentage;
+                            EditorGUILayout.MinMaxSlider($"{progress.PercentageStr}", ref sliderLower, ref sliderUpper, 0f, 100f );
+                            EditorGUILayout.LabelField(progress.Message);
+                        }
                     }
                 }
             }
@@ -40,10 +47,10 @@ namespace PLATEAU.Editor.EditorWindow.ProgressDisplay
 
         public void SetProgress(string progressName, float percentage, string message)
         {
-            var matched = this.progressList.FirstOrDefault(progress => progress.Name == progressName);
+            var matched = this.progressBag.FirstOrDefault(progress => progress.Name == progressName);
             if (matched == null)
             {
-                this.progressList.Add(new Progress(progressName, percentage, message));
+                this.progressBag.Add(new Progress(progressName, percentage, message));
             }
             else
             {

@@ -22,6 +22,7 @@ namespace PLATEAU.CityImport.Load
         /// 選択されたGMLとその関連ファイルを StreamingAssetsフォルダにコピーし、都市モデルをシーンに配置します。
         /// メインスレッドから呼ぶ必要があります。
         /// </summary>
+        [Obsolete]
         public static async void ImportAsync(PLATEAUCityModelLoader loader, IProgressDisplay progressDisplay)
         {
             // コピー
@@ -39,6 +40,40 @@ namespace PLATEAU.CityImport.Load
             var rootDirName = Path.GetFileName(destPath);
             var task = LoadAndPlaceGmlsAsync(gmlPathsDict, loader.CityLoadConfig, rootDirName, progressDisplay, CalcCenterPoint(collection, loader.CoordinateZoneID));
             task.ContinueWithErrorCatch();
+        }
+
+        public static void ImportV2(PLATEAUCityModelLoader loader, IProgressDisplay progressDisplay)
+        {
+            string destPath = PathUtil.plateauSrcFetchDir;
+            var targetGmls = CityFilesCopy.FindTargetGmls(
+                loader.SourcePathBeforeImport, loader.CityLoadConfig, out var collection
+            );
+            if (targetGmls.Count <= 0)
+            {
+                Debug.LogError("該当するGMLファイルがありません。");
+                return;
+            }
+
+            try
+            {
+                Parallel.ForEach(targetGmls, gmlInfo =>
+                {
+                    string gmlName = Path.GetFileName(gmlInfo.Path);
+                    progressDisplay.SetProgress(gmlName, 1f / 3f, "インポート処理中");
+                    collection.Fetch(destPath, gmlInfo);
+
+                });
+            }
+            catch (AggregateException ae)
+            {
+                foreach(var e in ae.InnerExceptions)
+                {
+                    Debug.LogError(e);
+                }
+            }
+
+            foreach(var gmlInfo in targetGmls) gmlInfo.Dispose();
+
         }
 
         private static PlateauVector3d CalcCenterPoint(UdxFileCollection collection, int coordinateZoneID)

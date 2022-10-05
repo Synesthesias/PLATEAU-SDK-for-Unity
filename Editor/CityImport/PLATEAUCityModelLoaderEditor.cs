@@ -80,7 +80,7 @@ namespace PLATEAU.Editor.CityImport
                     if (PlateauEditorStyle.MainButton("インポート"))
                     {
                         var mainThreadContext = SynchronizationContext.Current;
-                        CityImporter.ImportAsync(loader, ProgressDisplayWindow.Open(mainThreadContext));
+                        CityImporter.ImportV2(loader, ProgressDisplayWindow.Open(mainThreadContext));
                     }
                 }
             }
