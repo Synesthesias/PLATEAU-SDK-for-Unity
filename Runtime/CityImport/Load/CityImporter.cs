@@ -1,5 +1,7 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using PLATEAU.CityGML;
 using PLATEAU.CityImport.Load.Convert;
@@ -18,7 +20,7 @@ namespace PLATEAU.CityImport.Load
 
         public static async Task ImportAsync(PLATEAUCityModelLoader loader, IProgressDisplay progressDisplay)
         {
-            string sourcePath = loader.SourcePathBeforeImport; 
+            string sourcePath = loader.SourcePathBeforeImport;
             string destPath = PathUtil.plateauSrcFetchDir;
             string destFolderName = Path.GetFileName(sourcePath);
             var conf = loader.CityLoadConfig;
@@ -35,29 +37,37 @@ namespace PLATEAU.CityImport.Load
             {
                 progressDisplay.SetProgress(Path.GetFileName(gml.Path), 0f, "未処理");
             }
-            
-            var rootTrans = new GameObject(destFolderName).transform;
 
-            try
+            var rootTrans = new GameObject(destFolderName).transform;
+            
+            // GMLファイルを同時に処理する最大数。
+            // 並列数が 4 くらいだと、1つずつ処理するよりも、全部同時に処理するよりも速いという経験則。
+            var sem = new SemaphoreSlim(4);
+            
+            await Task.WhenAll(targetGmls.Select(async gmlInfo =>
             {
-                // await Task.WhenAll(targetGmls.Select(async gmlInfo =>
-                // {
-                //     await ImportGml(gmlInfo, destPath, conf, collection, rootTrans, progressDisplay);
-                // }));
-                foreach(var gmlInfo in targetGmls)
+                await sem.WaitAsync(); 
+                try
                 {
                     await ImportGml(gmlInfo, destPath, conf, collection, rootTrans, progressDisplay);
                 }
-            }
-            catch (AggregateException ae)
-            {
-                foreach(var e in ae.InnerExceptions)
+                catch (Exception e)
                 {
                     Debug.LogError(e);
                 }
-            }
+                finally
+                {
+                    sem.Release();
+                }
 
-            foreach(var gmlInfo in targetGmls) gmlInfo.Dispose();
+            }));
+            // foreach(var gmlInfo in targetGmls)
+            // {
+            //     await ImportGml(gmlInfo, destPath, conf, collection, rootTrans, progressDisplay);
+            // }
+
+
+            foreach (var gmlInfo in targetGmls) gmlInfo.Dispose();
 
         }
 
