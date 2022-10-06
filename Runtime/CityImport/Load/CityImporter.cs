@@ -40,8 +40,8 @@ namespace PLATEAU.CityImport.Load
 
             var rootTrans = new GameObject(destFolderName).transform;
             
-            // GMLファイルを同時に処理する最大数。
-            // 並列数が 4 くらいだと、1つずつ処理するよりも、全部同時に処理するよりも速いという経験則。
+            // GMLファイルを同時に処理する最大数です。
+            // 並列数が 4 くらいだと、1つずつ処理するよりも、全部同時に処理するよりも速いという経験則です。
             var sem = new SemaphoreSlim(4);
             
             await Task.WhenAll(targetGmls.Select(async gmlInfo =>
@@ -92,7 +92,7 @@ namespace PLATEAU.CityImport.Load
             gmlTrans.parent = rootTrans;
             var packageConf = conf.GetConfigForPackage(gmlInfo.Package);
             var meshExtractOptions = new MeshExtractOptions(
-                // TODO gridCountOfSide, Extent はユーザーが設定できるようにしたほうが良い
+                // TODO gridCountOfSideはユーザーが設定できるようにしたほうが良い
                 CalcCenterPoint(collection, conf.CoordinateZoneID),
                 CoordinateSystem.EUN,
                 packageConf.meshGranularity,
@@ -102,7 +102,7 @@ namespace PLATEAU.CityImport.Load
                 5,
                 1.0f,
                 conf.CoordinateZoneID,
-                new Extent(new GeoCoordinate(-90, -180, -9999), new GeoCoordinate(90, 180, 9999))
+                conf.Extent
             );
 
             if (!meshExtractOptions.Validate(out var failureMessage))

@@ -1,4 +1,8 @@
 ﻿using System.Collections.Generic;
+using PLATEAU.Geometries;
+using PLATEAU.Interop;
+using PLATEAU.IO;
+using PLATEAU.Util;
 using UnityEditor;
 using UnityEngine;
 using Vector3 = UnityEngine.Vector3;
@@ -31,6 +35,17 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
             }
 
             return selected;
+        }
+
+        public Extent GetExtent(int coordinateZoneID, PlateauVector3d referencePoint)
+        {
+            using var geoReference = new GeoReference(referencePoint, 1.0f, CoordinateSystem.EUN, coordinateZoneID);
+            var (min, max) = CalcMinMaxFromTrans();
+            // 直交座標を（緯度・経度・高さ）に変換します。
+            var geoMin = geoReference.Unproject(min.ToPlateauVector());
+            var geoMax = geoReference.Unproject(max.ToPlateauVector());
+            var extent = new Extent(geoMin, geoMax);
+            return extent;
         }
 
         private void Start()
@@ -142,6 +157,14 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
             var center = (areaMax + areaMin) / 2.0f;
             var size = areaMax - areaMin;
             return (center, size);
+        }
+
+        private (Vector3 min, Vector3 max) CalcMinMaxFromTrans()
+        {
+            var trans = transform;
+            var center = trans.position;
+            var size = trans.localScale;
+            return (center - size * 0.5f, center + size * 0.5f);
         }
 
         private static (Vector3 min, Vector3 max) SwapMinMaxIfReversed(Vector3 min, Vector3 max)

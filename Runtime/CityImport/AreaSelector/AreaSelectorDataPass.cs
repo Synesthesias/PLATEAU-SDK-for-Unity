@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using PLATEAU.Interop;
 using PLATEAU.Udx;
 using UnityEditor;
 using UnityEditor.SceneManagement;
@@ -16,18 +17,23 @@ namespace PLATEAU.CityImport.AreaSelector
     {
         // シーンをまたいで渡したいデータ
         private static string prevScenePath;
-        private static IEnumerable<MeshCode> areaSelectResult;
+        private static IEnumerable<MeshCode> selectedMeshCodes;
         private static GlobalObjectId loaderBehaviourID;
         private static PredefinedCityModelPackage availablePackageFlags;
+        private static Extent extent;
 
-        public static void Exec(string prevScenePathArg, IEnumerable<MeshCode> areaSelectResultArg, GlobalObjectId loaderBehaviourIDArg, PredefinedCityModelPackage availablePackageFlagsArg)
+        public static void Exec(
+            string prevScenePathArg, IEnumerable<MeshCode> selectedMeshCodesArg,
+            GlobalObjectId loaderBehaviourIDArg, PredefinedCityModelPackage availablePackageFlagsArg,
+            Extent selectedExtent)
         {
             #if UNITY_EDITOR
 
             prevScenePath = prevScenePathArg;
-            areaSelectResult = areaSelectResultArg;
+            selectedMeshCodes = selectedMeshCodesArg;
             loaderBehaviourID = loaderBehaviourIDArg;
             availablePackageFlags = availablePackageFlagsArg;
+            extent = selectedExtent;
             
             EditorSceneManager.sceneOpened += OnBackToPrevScene;
             EditorSceneManager.OpenScene(prevScenePath);
@@ -42,6 +48,9 @@ namespace PLATEAU.CityImport.AreaSelector
             EditorSceneManager.MarkSceneDirty(scene);
         }
 
+        /// <summary>
+        /// 戻った先のシーンで、Behaviourに範囲選択の結果を渡します。
+        /// </summary>
         private static void PassAreaSelectDataToBehaviour()
         {
             
@@ -54,8 +63,9 @@ namespace PLATEAU.CityImport.AreaSelector
 
             var loaderBehaviour = (PLATEAUCityModelLoader)loaderBehaviourObj;
             
-            loaderBehaviour.AreaMeshCodes = areaSelectResult.Select(meshCode => meshCode.ToString()).ToArray();
+            loaderBehaviour.AreaMeshCodes = selectedMeshCodes.Select(meshCode => meshCode.ToString()).ToArray();
             loaderBehaviour.InitPackageConfigsWithPackageFlags(availablePackageFlags);
+            loaderBehaviour.Extent = extent;
         }
     }
 }

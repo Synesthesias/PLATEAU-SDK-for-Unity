@@ -96,6 +96,15 @@ namespace PLATEAU.Editor.CityImport
                 PlateauEditorStyle.MultiLineLabelWithBox(loader.SourcePathAfterImport);
                 EditorGUILayout.LabelField("地域メッシュコード");
                 PlateauEditorStyle.MultiLineLabelWithBox(DebugUtil.EnumerableToString(loader.AreaMeshCodes));
+                EditorGUILayout.LabelField("範囲");
+                using (PlateauEditorStyle.VerticalScopeLevel2())
+                {
+                    var extent = loader.Extent;
+                    var min = extent.Min;
+                    var max = extent.Max;
+                    EditorGUILayout.LabelField($"最小: 緯度 {min.Latitude} , 経度 {min.Longitude}");
+                    EditorGUILayout.LabelField($"最大: 緯度 {max.Latitude} , 経度 {max.Longitude}");
+                }
             }
             
         }

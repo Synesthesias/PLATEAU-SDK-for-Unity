@@ -29,6 +29,7 @@ namespace PLATEAU.CityImport.AreaSelector
         private GlobalObjectId loaderBehaviourID;
         private PredefinedCityModelPackage availablePackageFlags;
         private int coordinateZoneID;
+        private PlateauVector3d referencePoint;
 
         public void Init(string prevScenePathArg, string dataSourcePathArg, GlobalObjectId loaderBehaviourIDArg, int coordinateZoneIDArg)
         {
@@ -44,7 +45,7 @@ namespace PLATEAU.CityImport.AreaSelector
             var photoLoadTask = GSIPhotoLoader.Load("seamlessphoto", 10, 909, 403, this.mapPlane, this.mapMaterials);
             photoLoadTask.ContinueWithErrorCatch();
             var gatherResult = GatherMeshCodesInGMLDirectory(this.dataSourcePath);
-            PlaceMeshCodeDrawers(gatherResult.meshCodes, this.meshCodeDrawers, coordinateZoneID);
+            PlaceMeshCodeDrawers(gatherResult.meshCodes, this.meshCodeDrawers, this.coordinateZoneID, out this.referencePoint);
             this.availablePackageFlags = gatherResult.availablePackageFlags;
         }
 
@@ -77,14 +78,14 @@ namespace PLATEAU.CityImport.AreaSelector
             return (meshCodes, availablePackageFlags);
         }
 
-        private static void PlaceMeshCodeDrawers(ReadOnlyCollection<MeshCode> meshCodes, ICollection<MeshCodeGizmoDrawer> boxGizmoDrawers, int coordinateZoneID)
+        private static void PlaceMeshCodeDrawers(ReadOnlyCollection<MeshCode> meshCodes, ICollection<MeshCodeGizmoDrawer> boxGizmoDrawers, int coordinateZoneID, out PlateauVector3d referencePoint)
         {
             EditorUtility.DisplayProgressBar("", "範囲座標を計算中です...", 0.5f);
             // TODO geoReferenceの生成は1度で済むはず
             // 仮に (0,0,0) を referencePoint とする geoReference を作成
-            using var geoReferenceTmp = new GeoReference(new PlateauVector3d(0, 0, 0), 1.0f, CoordinateSystem.EUN, coordinateZoneID);
+            using var geoReferenceTmp = CoordinatesConvertUtil.UnityStandardGeoReference(coordinateZoneID);
             // 中心を計算し、そこを基準点として geoReference を再設定
-            var referencePoint = new PlateauVector3d(0, 0, 0);
+            referencePoint = new PlateauVector3d(0, 0, 0);
             foreach (var meshCode in meshCodes)
             {
                 var min = geoReferenceTmp.Project(meshCode.Extent.Min);
@@ -123,11 +124,12 @@ namespace PLATEAU.CityImport.AreaSelector
         {
             AreaSelectorGUI.Disable();
             DestroyMaterials();
-            var testAreaSelectResult = 
+            var areaSelectResult = 
                 this.cursor.SelectedMeshCodes(this.meshCodeDrawers)
                     .Select(drawer => drawer.MeshCode);
+            var selectedExtent = this.cursor.GetExtent(this.coordinateZoneID, this.referencePoint);
             // 無名関数のキャプチャを利用して、シーン終了後も必要なデータが渡るようにします。
-            AreaSelectorDataPass.Exec(this.prevScenePath, testAreaSelectResult, this.loaderBehaviourID, this.availablePackageFlags);
+            AreaSelectorDataPass.Exec(this.prevScenePath, areaSelectResult, this.loaderBehaviourID, this.availablePackageFlags, selectedExtent);
         }
 
         public void OnSelectButtonPushed()

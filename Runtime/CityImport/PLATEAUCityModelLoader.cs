@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using PLATEAU.CityImport.Setting;
+using PLATEAU.Interop;
 using PLATEAU.Udx;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -57,6 +58,12 @@ namespace PLATEAU.CityImport
         {
             get => CityLoadConfig.CoordinateZoneID;
             set => CityLoadConfig.CoordinateZoneID = value;
+        }
+
+        public Extent Extent
+        {
+            get => CityLoadConfig.Extent;
+            set => CityLoadConfig.Extent = value;
         }
 
         public CityLoadConfig CityLoadConfig => this.cityLoadConfig;
