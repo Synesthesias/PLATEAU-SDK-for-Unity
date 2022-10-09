@@ -99,11 +99,44 @@ namespace PLATEAU.Interop
         public int GridCountOfSide;
         public float UnitScale;
         public int CoordinateZoneID;
-        public Extent Extent;
+        [MarshalAs(UnmanagedType.U1)] public bool ExcludeCityObjIfFirstVertexIsOutsideExtent;
+        [MarshalAs(UnmanagedType.U1)] public bool ExcludeTrianglesOutsideExtent;
+         public Extent Extent;
 
+         /// <summary>
+         /// GMLファイルから3Dメッシュを取り出すための設定です。
+         /// </summary>
+         /// <param name="referencePoint">直交座標系における座標で、3Dモデルの原点をどこに設定するかです。</param>
+         /// <param name="meshAxes">座標軸の向きです。</param>
+         /// <param name="meshGranularity">メッシュ結合の粒度です。</param>
+         /// <param name="maxLOD">出力するLODの範囲上限です。</param>
+         /// <param name="minLOD">出力するLODの範囲の下限です。</param>
+         /// <param name="exportAppearance">テクスチャを含めるかどうかです。</param>
+         /// <param name="gridCountOfSide">メッシュ結合の粒度が「都市モデル単位」の時のみ有効で、この設定では都市を格子状のグリッドに分割するので、その1辺あたりの分割数(縦の数 = 横の数)です。</param>
+         /// <param name="unitScale">大きさ補正です。</param>
+         /// <param name="coordinateZoneID">
+         /// 国土交通省が規定する、日本の平面直角座標系の基準点の番号です。
+         /// 詳しくは次の国土地理院のサイトをご覧ください。
+         ///　<see href="https://www.gsi.go.jp/sokuchikijun/jpc.html"/>
+         /// </param>
+         /// <param name="excludeCityObjIfFirstVertexIsOutsideExtent">
+         /// 範囲外の3Dモデルを出力から除外するための、2つの方法のうち1つを有効にするかどうかを bool で指定します。
+         /// その方法とは、都市オブジェクトの最初の頂点の位置が範囲外のとき、そのオブジェクトはすべて範囲外とみなして出力から除外します。
+         /// これはビル1棟程度の大きさのオブジェクトでは有効ですが、
+         /// 10km×10kmの地形のような巨大なオブジェクトでは、実際には範囲内なのに最初の頂点が遠いために除外されるということがおきます。
+         /// したがって、この値は建物では true, 地形では false となるべきです。
+         /// </param>
+         /// <param name="excludeTrianglesOutsideExtent">
+         /// 範囲外の3Dモデルを出力から除外するための、2つの方法のうち1つを有効にするかどうかを bool で指定します。
+         /// その方法とは、メッシュ操作によって、範囲外に存在するポリゴンを除外します。
+         /// この方法であれば 10km×10km の地形など巨大なオブジェクトにも対応できます。
+         ///</param>
+         /// <param name="extent">対象範囲を緯度・経度・高さで指定します。</param>
         public MeshExtractOptions(PlateauVector3d referencePoint, CoordinateSystem meshAxes,
             MeshGranularity meshGranularity, uint maxLOD, uint minLOD, bool exportAppearance, int gridCountOfSide,
-            float unitScale, int coordinateZoneID, Extent extent)
+            float unitScale, int coordinateZoneID,
+            bool excludeCityObjIfFirstVertexIsOutsideExtent,
+            bool excludeTrianglesOutsideExtent, Extent extent)
         {
             this.ReferencePoint = referencePoint;
             this.MeshAxes = meshAxes;
@@ -114,6 +147,8 @@ namespace PLATEAU.Interop
             this.GridCountOfSide = gridCountOfSide;
             this.UnitScale = unitScale;
             this.CoordinateZoneID = coordinateZoneID;
+            this.ExcludeCityObjIfFirstVertexIsOutsideExtent = excludeCityObjIfFirstVertexIsOutsideExtent;
+            this.ExcludeTrianglesOutsideExtent = excludeTrianglesOutsideExtent;
             this.Extent = extent;
         }
 

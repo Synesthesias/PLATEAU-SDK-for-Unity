@@ -90,7 +90,8 @@ namespace PLATEAU.CityImport.Load
             string gmlPath = gmlInfo.Path;
             var gmlTrans = new GameObject(Path.GetFileName(gmlPath)).transform;
             gmlTrans.parent = rootTrans;
-            var packageConf = conf.GetConfigForPackage(gmlInfo.Package);
+            var package = gmlInfo.Package;
+            var packageConf = conf.GetConfigForPackage(package);
             var meshExtractOptions = new MeshExtractOptions(
                 // TODO gridCountOfSideはユーザーが設定できるようにしたほうが良い
                 CalcCenterPoint(collection, conf.CoordinateZoneID),
@@ -102,6 +103,8 @@ namespace PLATEAU.CityImport.Load
                 5,
                 1.0f,
                 conf.CoordinateZoneID,
+                ShouldExcludeCityObjIfFirstVertexIsOutsideExtent(package),
+                ShouldExcludeTrianglesOutsideExtent(package),
                 conf.Extent
             );
 
@@ -116,6 +119,19 @@ namespace PLATEAU.CityImport.Load
             );
             progressDisplay.SetProgress(gmlName, 100f, "完了");
         }
+
+        private static bool ShouldExcludeCityObjIfFirstVertexIsOutsideExtent(PredefinedCityModelPackage package)
+        {
+            if (package == PredefinedCityModelPackage.Relief) return false;
+            return true;
+        }
+
+        private static bool ShouldExcludeTrianglesOutsideExtent(PredefinedCityModelPackage package)
+        {
+            return !ShouldExcludeCityObjIfFirstVertexIsOutsideExtent(package);
+        }
+        
+        
 
         private static PlateauVector3d CalcCenterPoint(UdxFileCollection collection, int coordinateZoneID)
         {
