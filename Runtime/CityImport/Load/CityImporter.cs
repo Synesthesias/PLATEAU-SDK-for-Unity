@@ -92,21 +92,19 @@ namespace PLATEAU.CityImport.Load
             gmlTrans.parent = rootTrans;
             var package = gmlInfo.Package;
             var packageConf = conf.GetConfigForPackage(package);
-            var meshExtractOptions = new MeshExtractOptions(
-                // TODO gridCountOfSideはユーザーが設定できるようにしたほうが良い
-                CalcCenterPoint(collection, conf.CoordinateZoneID),
-                CoordinateSystem.EUN,
-                packageConf.meshGranularity,
-                packageConf.maxLOD,
-                packageConf.minLOD,
-                packageConf.includeTexture,
-                5,
-                1.0f,
-                conf.CoordinateZoneID,
-                ShouldExcludeCityObjIfFirstVertexIsOutsideExtent(package),
-                ShouldExcludeTrianglesOutsideExtent(package),
-                conf.Extent
-            );
+            var meshExtractOptions = MeshExtractOptions.DefaultValue();
+            meshExtractOptions.ReferencePoint = CalcCenterPoint(collection, conf.CoordinateZoneID);
+            meshExtractOptions.MeshAxes = CoordinateSystem.EUN;
+            meshExtractOptions.MeshGranularity = packageConf.meshGranularity;
+            meshExtractOptions.MaxLOD = packageConf.maxLOD;
+            meshExtractOptions.MinLOD = packageConf.minLOD;
+            meshExtractOptions.ExportAppearance = packageConf.includeTexture;
+            meshExtractOptions.GridCountOfSide = 10; // TODO gridCountOfSideはユーザーが設定できるようにしたほうが良い
+            meshExtractOptions.UnitScale = 1.0f;
+            meshExtractOptions.CoordinateZoneID = conf.CoordinateZoneID;
+            meshExtractOptions.ExcludeCityObjectOutsideExtent = ShouldExcludeCityObjectOutsideExtent(package);
+            meshExtractOptions.ExcludeTrianglesOutsideExtent = ShouldExcludeTrianglesOutsideExtent(package);
+            meshExtractOptions.Extent = conf.Extent;
 
             if (!meshExtractOptions.Validate(out var failureMessage))
             {
@@ -120,7 +118,7 @@ namespace PLATEAU.CityImport.Load
             progressDisplay.SetProgress(gmlName, 100f, "完了");
         }
 
-        private static bool ShouldExcludeCityObjIfFirstVertexIsOutsideExtent(PredefinedCityModelPackage package)
+        private static bool ShouldExcludeCityObjectOutsideExtent(PredefinedCityModelPackage package)
         {
             if (package == PredefinedCityModelPackage.Relief) return false;
             return true;
@@ -128,7 +126,7 @@ namespace PLATEAU.CityImport.Load
 
         private static bool ShouldExcludeTrianglesOutsideExtent(PredefinedCityModelPackage package)
         {
-            return !ShouldExcludeCityObjIfFirstVertexIsOutsideExtent(package);
+            return !ShouldExcludeCityObjectOutsideExtent(package);
         }
         
         
