@@ -71,6 +71,8 @@ namespace PLATEAU.Interop
             this.IgnoreGeometries = ignoreGeometries;
         }
     }
+    
+    public enum MeshFileFormat{OBJ, GLTF}
 
 
     [StructLayout(LayoutKind.Sequential)]
@@ -84,6 +86,7 @@ namespace PLATEAU.Interop
         [MarshalAs(UnmanagedType.U1)] public bool ExportLowerLOD;
         [MarshalAs(UnmanagedType.U1)] public bool ExportAppearance;
         public float UnitScale;
+        public MeshFileFormat MeshFileFormat;
         public int CoordinateZoneID;
     }
 

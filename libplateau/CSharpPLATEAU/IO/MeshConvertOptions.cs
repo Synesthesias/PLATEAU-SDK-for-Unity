@@ -125,6 +125,12 @@ namespace PLATEAU.IO
             set => this.data.UnitScale = value;
         }
 
+        public MeshFileFormat MeshFileFormat
+        {
+            get => this.data.MeshFileFormat;
+            set => this.data.MeshFileFormat = value;
+        }
+
         /// <summary>
         /// 日本における平面直角座標系の基準点の番号です。
         /// <seealso href="https://www.gsi.go.jp/sokuchikijun/jpc.html">国土地理院のサイト</seealso> を参照してください。
