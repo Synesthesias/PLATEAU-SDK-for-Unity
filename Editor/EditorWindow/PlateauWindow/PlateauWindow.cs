@@ -24,7 +24,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow
             if (this.gui == null) this.gui = new PlateauWindowGUI();
             HeaderDrawer.Reset();
             this.scrollPosition = EditorGUILayout.BeginScrollView(this.scrollPosition);
-            this.gui.Draw();
+            this.gui.Draw(this);
             EditorGUILayout.EndScrollView();
         }
     }

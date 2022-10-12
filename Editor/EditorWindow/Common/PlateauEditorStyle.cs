@@ -1,6 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using Codice.Client.Common;
+using PLATEAU.Util;
 using UnityEditor;
 using UnityEngine;
 
@@ -266,6 +269,37 @@ namespace PLATEAU.Editor.EditorWindow.Common
             tex.SetPixel(0, 0, col);
             tex.Apply();
             cachedTexture.Add(colorCode, tex);
+            return tex;
+        }
+
+        public static void MainLogo(Vector2 windowSize)
+        {
+            var tex = LoadTexture(Path.Combine(PathUtil.EditorWindowImagePath, "logo 1.png"));
+            if (tex is null) return;
+            float width = Math.Min(tex.width, windowSize.x);
+            float height = tex.height * width / tex.width;
+            using (new EditorGUILayout.HorizontalScope())
+            {
+                EditorGUILayout.Space(0);
+                EditorGUILayout.LabelField(new GUIContent(tex), GUILayout.Width(width), GUILayout.Height(height));
+                EditorGUILayout.Space(0);
+            }
+            
+        }
+
+        private static Texture2D LoadTexture(string path)
+        {
+            if (cachedTexture.TryGetValue(path, out var cacheHitTexture))
+            {
+                return cacheHitTexture;
+            }
+
+            var tex = AssetDatabase.LoadAssetAtPath<Texture2D>(path);
+            if (tex is null)
+            {
+                Debug.LogError($"Texture is not found : path = {path}");
+            }
+            cachedTexture.Add(path, tex);
             return tex;
         }
     }
