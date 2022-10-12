@@ -272,11 +272,11 @@ namespace PLATEAU.Editor.EditorWindow.Common
             return tex;
         }
 
-        public static void MainLogo(Vector2 windowSize)
+        public static void MainLogo()
         {
             var tex = LoadTexture(Path.Combine(PathUtil.EditorWindowImagePath, "logo 1.png"));
             if (tex is null) return;
-            float width = Math.Min(tex.width, windowSize.x);
+            float width = Math.Min(tex.width, Screen.width);
             float height = tex.height * width / tex.width;
             using (new EditorGUILayout.HorizontalScope())
             {
