@@ -119,6 +119,16 @@
     "title": "Enum TextureWrapMode | PLATEAU SDK for Unity",
     "keywords": "Enum TextureWrapMode Namespace : PLATEAU.CityGML Assembly : cs.temp.dll.dll Syntax public enum TextureWrapMode Fields Name Description WM_Border WM_Clamp WM_Mirror WM_None WM_Wrap"
   },
+  "api/PLATEAU.CityImport.AreaSelector.html": {
+    "href": "api/PLATEAU.CityImport.AreaSelector.html",
+    "title": "Namespace PLATEAU.CityImport.AreaSelector | PLATEAU SDK for Unity",
+    "keywords": "Namespace PLATEAU.CityImport.AreaSelector Interfaces IAreaSelectResultReceiver"
+  },
+  "api/PLATEAU.CityImport.AreaSelector.IAreaSelectResultReceiver.html": {
+    "href": "api/PLATEAU.CityImport.AreaSelector.IAreaSelectResultReceiver.html",
+    "title": "Interface IAreaSelectResultReceiver | PLATEAU SDK for Unity",
+    "keywords": "Interface IAreaSelectResultReceiver Namespace : PLATEAU.CityImport.AreaSelector Assembly : cs.temp.dll.dll Syntax public interface IAreaSelectResultReceiver Methods ReceiveResult(String[], Extent, PredefinedCityModelPackage) Declaration void ReceiveResult(string[] areaMeshCodes, Extent extent, PredefinedCityModelPackage availablePackageFlags) Parameters Type Name Description String [] areaMeshCodes Extent extent PredefinedCityModelPackage availablePackageFlags"
+  },
   "api/PLATEAU.CityImport.AreaSelector.SceneObjs.AreaSelectorCursor.html": {
     "href": "api/PLATEAU.CityImport.AreaSelector.SceneObjs.AreaSelectorCursor.html",
     "title": "Class AreaSelectorCursor | PLATEAU SDK for Unity",

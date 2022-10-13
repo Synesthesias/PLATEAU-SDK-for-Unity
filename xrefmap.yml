@@ -1748,6 +1748,34 @@ references:
   commentId: F:PLATEAU.CityGML.TextureWrapMode.WM_Wrap
   fullName: PLATEAU.CityGML.TextureWrapMode.WM_Wrap
   nameWithType: TextureWrapMode.WM_Wrap
+- uid: PLATEAU.CityImport.AreaSelector
+  name: PLATEAU.CityImport.AreaSelector
+  href: api/PLATEAU.CityImport.AreaSelector.html
+  commentId: N:PLATEAU.CityImport.AreaSelector
+  fullName: PLATEAU.CityImport.AreaSelector
+  nameWithType: PLATEAU.CityImport.AreaSelector
+- uid: PLATEAU.CityImport.AreaSelector.IAreaSelectResultReceiver
+  name: IAreaSelectResultReceiver
+  href: api/PLATEAU.CityImport.AreaSelector.IAreaSelectResultReceiver.html
+  commentId: T:PLATEAU.CityImport.AreaSelector.IAreaSelectResultReceiver
+  fullName: PLATEAU.CityImport.AreaSelector.IAreaSelectResultReceiver
+  nameWithType: IAreaSelectResultReceiver
+- uid: PLATEAU.CityImport.AreaSelector.IAreaSelectResultReceiver.ReceiveResult(System.String[],Extent,PredefinedCityModelPackage)
+  name: ReceiveResult(String[], Extent, PredefinedCityModelPackage)
+  href: api/PLATEAU.CityImport.AreaSelector.IAreaSelectResultReceiver.html#PLATEAU_CityImport_AreaSelector_IAreaSelectResultReceiver_ReceiveResult_System_String___Extent_PredefinedCityModelPackage_
+  commentId: M:PLATEAU.CityImport.AreaSelector.IAreaSelectResultReceiver.ReceiveResult(System.String[],Extent,PredefinedCityModelPackage)
+  name.vb: ReceiveResult(String(), Extent, PredefinedCityModelPackage)
+  fullName: PLATEAU.CityImport.AreaSelector.IAreaSelectResultReceiver.ReceiveResult(System.String[], Extent, PredefinedCityModelPackage)
+  fullName.vb: PLATEAU.CityImport.AreaSelector.IAreaSelectResultReceiver.ReceiveResult(System.String(), Extent, PredefinedCityModelPackage)
+  nameWithType: IAreaSelectResultReceiver.ReceiveResult(String[], Extent, PredefinedCityModelPackage)
+  nameWithType.vb: IAreaSelectResultReceiver.ReceiveResult(String(), Extent, PredefinedCityModelPackage)
+- uid: PLATEAU.CityImport.AreaSelector.IAreaSelectResultReceiver.ReceiveResult*
+  name: ReceiveResult
+  href: api/PLATEAU.CityImport.AreaSelector.IAreaSelectResultReceiver.html#PLATEAU_CityImport_AreaSelector_IAreaSelectResultReceiver_ReceiveResult_
+  commentId: Overload:PLATEAU.CityImport.AreaSelector.IAreaSelectResultReceiver.ReceiveResult
+  isSpec: "True"
+  fullName: PLATEAU.CityImport.AreaSelector.IAreaSelectResultReceiver.ReceiveResult
+  nameWithType: IAreaSelectResultReceiver.ReceiveResult
 - uid: PLATEAU.CityImport.AreaSelector.SceneObjs
   name: PLATEAU.CityImport.AreaSelector.SceneObjs
   href: api/PLATEAU.CityImport.AreaSelector.SceneObjs.html

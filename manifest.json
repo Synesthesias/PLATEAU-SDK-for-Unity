@@ -312,6 +312,18 @@
     },
     {
       "type": "ManagedReference",
+      "source_relative_path": "api/PLATEAU.CityImport.AreaSelector.IAreaSelectResultReceiver.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PLATEAU.CityImport.AreaSelector.IAreaSelectResultReceiver.html",
+          "hash": "M1cc1OT8jxTmDRBu+Uhn/mvVN5VSOhxXO/XBxRMK864="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
       "source_relative_path": "api/PLATEAU.CityImport.AreaSelector.SceneObjs.AreaSelectorCursor.yml",
       "output": {
         ".html": {
@@ -377,6 +389,18 @@
         ".html": {
           "relative_path": "api/PLATEAU.CityImport.AreaSelector.SceneObjs.html",
           "hash": "N4TwnUkEem0gulWrmXCfUHxp8+Br4PHRuXAI4XwpDcU="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/PLATEAU.CityImport.AreaSelector.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PLATEAU.CityImport.AreaSelector.html",
+          "hash": "SDGigibs5mV07xgIVUJxER+Zr5tqSnyz6y47qVFpD28="
         }
       },
       "is_incremental": false,
@@ -964,7 +988,7 @@
       "output": {
         ".html": {
           "relative_path": "api/toc.html",
-          "hash": "XE4G8hMlZIWEbVDC+v320ZzsDQijNKWDGe8XRpPAwUE="
+          "hash": "uZR+qTTC+24/h5g2c+T8FsLmV/CZ67e1ZrSOGBlh1I8="
         }
       },
       "is_incremental": false,
@@ -1251,7 +1275,7 @@
         "ManagedReferenceDocumentProcessor": {
           "can_incremental": false,
           "incrementalPhase": "build",
-          "total_file_count": 78,
+          "total_file_count": 80,
           "skipped_file_count": 0
         },
         "ResourceDocumentProcessor": {
