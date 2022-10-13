@@ -1778,6 +1778,19 @@ references:
   commentId: F:PLATEAU.CityImport.AreaSelector.SceneObjs.AreaSelectorCursor.BoxUpperHeight
   fullName: PLATEAU.CityImport.AreaSelector.SceneObjs.AreaSelectorCursor.BoxUpperHeight
   nameWithType: AreaSelectorCursor.BoxUpperHeight
+- uid: PLATEAU.CityImport.AreaSelector.SceneObjs.AreaSelectorCursor.GetExtent(System.Int32,PlateauVector3d)
+  name: GetExtent(Int32, PlateauVector3d)
+  href: api/PLATEAU.CityImport.AreaSelector.SceneObjs.AreaSelectorCursor.html#PLATEAU_CityImport_AreaSelector_SceneObjs_AreaSelectorCursor_GetExtent_System_Int32_PlateauVector3d_
+  commentId: M:PLATEAU.CityImport.AreaSelector.SceneObjs.AreaSelectorCursor.GetExtent(System.Int32,PlateauVector3d)
+  fullName: PLATEAU.CityImport.AreaSelector.SceneObjs.AreaSelectorCursor.GetExtent(System.Int32, PlateauVector3d)
+  nameWithType: AreaSelectorCursor.GetExtent(Int32, PlateauVector3d)
+- uid: PLATEAU.CityImport.AreaSelector.SceneObjs.AreaSelectorCursor.GetExtent*
+  name: GetExtent
+  href: api/PLATEAU.CityImport.AreaSelector.SceneObjs.AreaSelectorCursor.html#PLATEAU_CityImport_AreaSelector_SceneObjs_AreaSelectorCursor_GetExtent_
+  commentId: Overload:PLATEAU.CityImport.AreaSelector.SceneObjs.AreaSelectorCursor.GetExtent
+  isSpec: "True"
+  fullName: PLATEAU.CityImport.AreaSelector.SceneObjs.AreaSelectorCursor.GetExtent
+  nameWithType: AreaSelectorCursor.GetExtent
 - uid: PLATEAU.CityImport.AreaSelector.SceneObjs.AreaSelectorCursor.SelectedMeshCodes(List{PLATEAU.CityImport.AreaSelector.SceneObjs.MeshCodeGizmoDrawer})
   name: SelectedMeshCodes(List<MeshCodeGizmoDrawer>)
   href: api/PLATEAU.CityImport.AreaSelector.SceneObjs.AreaSelectorCursor.html#PLATEAU_CityImport_AreaSelector_SceneObjs_AreaSelectorCursor_SelectedMeshCodes_List_PLATEAU_CityImport_AreaSelector_SceneObjs_MeshCodeGizmoDrawer__
@@ -2064,24 +2077,31 @@ references:
   commentId: N:PLATEAU.CityInfo
   fullName: PLATEAU.CityInfo
   nameWithType: PLATEAU.CityInfo
-- uid: PLATEAU.CityInfo.PLATEAUCityInfoProxy
-  name: PLATEAUCityInfoProxy
-  href: api/PLATEAU.CityInfo.PLATEAUCityInfoProxy.html
-  commentId: T:PLATEAU.CityInfo.PLATEAUCityInfoProxy
-  fullName: PLATEAU.CityInfo.PLATEAUCityInfoProxy
-  nameWithType: PLATEAUCityInfoProxy
-- uid: PLATEAU.Editor.CityImport
-  name: PLATEAU.Editor.CityImport
-  href: api/PLATEAU.Editor.CityImport.html
-  commentId: N:PLATEAU.Editor.CityImport
-  fullName: PLATEAU.Editor.CityImport
-  nameWithType: PLATEAU.Editor.CityImport
-- uid: PLATEAU.Editor.CityImport.CityGridLoaderEditorOLD
-  name: CityGridLoaderEditorOLD
-  href: api/PLATEAU.Editor.CityImport.CityGridLoaderEditorOLD.html
-  commentId: T:PLATEAU.Editor.CityImport.CityGridLoaderEditorOLD
-  fullName: PLATEAU.Editor.CityImport.CityGridLoaderEditorOLD
-  nameWithType: CityGridLoaderEditorOLD
+- uid: PLATEAU.CityInfo.PLATEAUCityGmlProxy
+  name: PLATEAUCityGmlProxy
+  href: api/PLATEAU.CityInfo.PLATEAUCityGmlProxy.html
+  commentId: T:PLATEAU.CityInfo.PLATEAUCityGmlProxy
+  fullName: PLATEAU.CityInfo.PLATEAUCityGmlProxy
+  nameWithType: PLATEAUCityGmlProxy
+- uid: PLATEAU.CityInfo.PLATEAUCityGmlProxy.LoadAsync(GameObject)
+  name: LoadAsync(GameObject)
+  href: api/PLATEAU.CityInfo.PLATEAUCityGmlProxy.html#PLATEAU_CityInfo_PLATEAUCityGmlProxy_LoadAsync_GameObject_
+  commentId: M:PLATEAU.CityInfo.PLATEAUCityGmlProxy.LoadAsync(GameObject)
+  fullName: PLATEAU.CityInfo.PLATEAUCityGmlProxy.LoadAsync(GameObject)
+  nameWithType: PLATEAUCityGmlProxy.LoadAsync(GameObject)
+- uid: PLATEAU.CityInfo.PLATEAUCityGmlProxy.LoadAsync(System.String)
+  name: LoadAsync(String)
+  href: api/PLATEAU.CityInfo.PLATEAUCityGmlProxy.html#PLATEAU_CityInfo_PLATEAUCityGmlProxy_LoadAsync_System_String_
+  commentId: M:PLATEAU.CityInfo.PLATEAUCityGmlProxy.LoadAsync(System.String)
+  fullName: PLATEAU.CityInfo.PLATEAUCityGmlProxy.LoadAsync(System.String)
+  nameWithType: PLATEAUCityGmlProxy.LoadAsync(String)
+- uid: PLATEAU.CityInfo.PLATEAUCityGmlProxy.LoadAsync*
+  name: LoadAsync
+  href: api/PLATEAU.CityInfo.PLATEAUCityGmlProxy.html#PLATEAU_CityInfo_PLATEAUCityGmlProxy_LoadAsync_
+  commentId: Overload:PLATEAU.CityInfo.PLATEAUCityGmlProxy.LoadAsync
+  isSpec: "True"
+  fullName: PLATEAU.CityInfo.PLATEAUCityGmlProxy.LoadAsync
+  nameWithType: PLATEAUCityGmlProxy.LoadAsync
 - uid: PLATEAU.Editor.EditorWindow.ProgressDisplay
   name: PLATEAU.Editor.EditorWindow.ProgressDisplay
   href: api/PLATEAU.Editor.EditorWindow.ProgressDisplay.html
@@ -2107,12 +2127,12 @@ references:
   isSpec: "True"
   fullName: PLATEAU.Editor.EditorWindow.ProgressDisplay.ProgressDisplayWindow.OnGUI
   nameWithType: ProgressDisplayWindow.OnGUI
-- uid: PLATEAU.Editor.EditorWindow.ProgressDisplay.ProgressDisplayWindow.Open
-  name: Open()
-  href: api/PLATEAU.Editor.EditorWindow.ProgressDisplay.ProgressDisplayWindow.html#PLATEAU_Editor_EditorWindow_ProgressDisplay_ProgressDisplayWindow_Open
-  commentId: M:PLATEAU.Editor.EditorWindow.ProgressDisplay.ProgressDisplayWindow.Open
-  fullName: PLATEAU.Editor.EditorWindow.ProgressDisplay.ProgressDisplayWindow.Open()
-  nameWithType: ProgressDisplayWindow.Open()
+- uid: PLATEAU.Editor.EditorWindow.ProgressDisplay.ProgressDisplayWindow.Open(SynchronizationContext)
+  name: Open(SynchronizationContext)
+  href: api/PLATEAU.Editor.EditorWindow.ProgressDisplay.ProgressDisplayWindow.html#PLATEAU_Editor_EditorWindow_ProgressDisplay_ProgressDisplayWindow_Open_SynchronizationContext_
+  commentId: M:PLATEAU.Editor.EditorWindow.ProgressDisplay.ProgressDisplayWindow.Open(SynchronizationContext)
+  fullName: PLATEAU.Editor.EditorWindow.ProgressDisplay.ProgressDisplayWindow.Open(SynchronizationContext)
+  nameWithType: ProgressDisplayWindow.Open(SynchronizationContext)
 - uid: PLATEAU.Editor.EditorWindow.ProgressDisplay.ProgressDisplayWindow.Open*
   name: Open
   href: api/PLATEAU.Editor.EditorWindow.ProgressDisplay.ProgressDisplayWindow.html#PLATEAU_Editor_EditorWindow_ProgressDisplay_ProgressDisplayWindow_Open_
@@ -2679,25 +2699,37 @@ references:
   commentId: T:PLATEAU.Interop.MeshExtractOptions
   fullName: PLATEAU.Interop.MeshExtractOptions
   nameWithType: MeshExtractOptions
-- uid: PLATEAU.Interop.MeshExtractOptions.#ctor(PLATEAU.Interop.PlateauVector3d,CoordinateSystem,MeshGranularity,System.UInt32,System.UInt32,System.Boolean,System.Int32,System.Single,System.Int32,PLATEAU.Interop.Extent)
-  name: MeshExtractOptions(PlateauVector3d, CoordinateSystem, MeshGranularity, UInt32, UInt32, Boolean, Int32, Single, Int32, Extent)
-  href: api/PLATEAU.Interop.MeshExtractOptions.html#PLATEAU_Interop_MeshExtractOptions__ctor_PLATEAU_Interop_PlateauVector3d_CoordinateSystem_MeshGranularity_System_UInt32_System_UInt32_System_Boolean_System_Int32_System_Single_System_Int32_PLATEAU_Interop_Extent_
-  commentId: M:PLATEAU.Interop.MeshExtractOptions.#ctor(PLATEAU.Interop.PlateauVector3d,CoordinateSystem,MeshGranularity,System.UInt32,System.UInt32,System.Boolean,System.Int32,System.Single,System.Int32,PLATEAU.Interop.Extent)
-  fullName: PLATEAU.Interop.MeshExtractOptions.MeshExtractOptions(PLATEAU.Interop.PlateauVector3d, CoordinateSystem, MeshGranularity, System.UInt32, System.UInt32, System.Boolean, System.Int32, System.Single, System.Int32, PLATEAU.Interop.Extent)
-  nameWithType: MeshExtractOptions.MeshExtractOptions(PlateauVector3d, CoordinateSystem, MeshGranularity, UInt32, UInt32, Boolean, Int32, Single, Int32, Extent)
-- uid: PLATEAU.Interop.MeshExtractOptions.#ctor*
-  name: MeshExtractOptions
-  href: api/PLATEAU.Interop.MeshExtractOptions.html#PLATEAU_Interop_MeshExtractOptions__ctor_
-  commentId: Overload:PLATEAU.Interop.MeshExtractOptions.#ctor
-  isSpec: "True"
-  fullName: PLATEAU.Interop.MeshExtractOptions.MeshExtractOptions
-  nameWithType: MeshExtractOptions.MeshExtractOptions
 - uid: PLATEAU.Interop.MeshExtractOptions.CoordinateZoneID
   name: CoordinateZoneID
   href: api/PLATEAU.Interop.MeshExtractOptions.html#PLATEAU_Interop_MeshExtractOptions_CoordinateZoneID
   commentId: F:PLATEAU.Interop.MeshExtractOptions.CoordinateZoneID
   fullName: PLATEAU.Interop.MeshExtractOptions.CoordinateZoneID
   nameWithType: MeshExtractOptions.CoordinateZoneID
+- uid: PLATEAU.Interop.MeshExtractOptions.DefaultValue
+  name: DefaultValue()
+  href: api/PLATEAU.Interop.MeshExtractOptions.html#PLATEAU_Interop_MeshExtractOptions_DefaultValue
+  commentId: M:PLATEAU.Interop.MeshExtractOptions.DefaultValue
+  fullName: PLATEAU.Interop.MeshExtractOptions.DefaultValue()
+  nameWithType: MeshExtractOptions.DefaultValue()
+- uid: PLATEAU.Interop.MeshExtractOptions.DefaultValue*
+  name: DefaultValue
+  href: api/PLATEAU.Interop.MeshExtractOptions.html#PLATEAU_Interop_MeshExtractOptions_DefaultValue_
+  commentId: Overload:PLATEAU.Interop.MeshExtractOptions.DefaultValue
+  isSpec: "True"
+  fullName: PLATEAU.Interop.MeshExtractOptions.DefaultValue
+  nameWithType: MeshExtractOptions.DefaultValue
+- uid: PLATEAU.Interop.MeshExtractOptions.ExcludeCityObjectOutsideExtent
+  name: ExcludeCityObjectOutsideExtent
+  href: api/PLATEAU.Interop.MeshExtractOptions.html#PLATEAU_Interop_MeshExtractOptions_ExcludeCityObjectOutsideExtent
+  commentId: F:PLATEAU.Interop.MeshExtractOptions.ExcludeCityObjectOutsideExtent
+  fullName: PLATEAU.Interop.MeshExtractOptions.ExcludeCityObjectOutsideExtent
+  nameWithType: MeshExtractOptions.ExcludeCityObjectOutsideExtent
+- uid: PLATEAU.Interop.MeshExtractOptions.ExcludeTrianglesOutsideExtent
+  name: ExcludeTrianglesOutsideExtent
+  href: api/PLATEAU.Interop.MeshExtractOptions.html#PLATEAU_Interop_MeshExtractOptions_ExcludeTrianglesOutsideExtent
+  commentId: F:PLATEAU.Interop.MeshExtractOptions.ExcludeTrianglesOutsideExtent
+  fullName: PLATEAU.Interop.MeshExtractOptions.ExcludeTrianglesOutsideExtent
+  nameWithType: MeshExtractOptions.ExcludeTrianglesOutsideExtent
 - uid: PLATEAU.Interop.MeshExtractOptions.ExportAppearance
   name: ExportAppearance
   href: api/PLATEAU.Interop.MeshExtractOptions.html#PLATEAU_Interop_MeshExtractOptions_ExportAppearance
@@ -2768,6 +2800,24 @@ references:
   isSpec: "True"
   fullName: PLATEAU.Interop.MeshExtractOptions.Validate
   nameWithType: MeshExtractOptions.Validate
+- uid: PLATEAU.Interop.MeshFileFormat
+  name: MeshFileFormat
+  href: api/PLATEAU.Interop.MeshFileFormat.html
+  commentId: T:PLATEAU.Interop.MeshFileFormat
+  fullName: PLATEAU.Interop.MeshFileFormat
+  nameWithType: MeshFileFormat
+- uid: PLATEAU.Interop.MeshFileFormat.GLTF
+  name: GLTF
+  href: api/PLATEAU.Interop.MeshFileFormat.html#PLATEAU_Interop_MeshFileFormat_GLTF
+  commentId: F:PLATEAU.Interop.MeshFileFormat.GLTF
+  fullName: PLATEAU.Interop.MeshFileFormat.GLTF
+  nameWithType: MeshFileFormat.GLTF
+- uid: PLATEAU.Interop.MeshFileFormat.OBJ
+  name: OBJ
+  href: api/PLATEAU.Interop.MeshFileFormat.html#PLATEAU_Interop_MeshFileFormat_OBJ
+  commentId: F:PLATEAU.Interop.MeshFileFormat.OBJ
+  fullName: PLATEAU.Interop.MeshFileFormat.OBJ
+  nameWithType: MeshFileFormat.OBJ
 - uid: PLATEAU.Interop.PInvokeDisposable
   name: PInvokeDisposable
   href: api/PLATEAU.Interop.PInvokeDisposable.html
@@ -3137,6 +3187,19 @@ references:
   isSpec: "True"
   fullName: PLATEAU.IO.MeshConvertOptions.MeshAxes
   nameWithType: MeshConvertOptions.MeshAxes
+- uid: PLATEAU.IO.MeshConvertOptions.MeshFileFormat
+  name: MeshFileFormat
+  href: api/PLATEAU.IO.MeshConvertOptions.html#PLATEAU_IO_MeshConvertOptions_MeshFileFormat
+  commentId: P:PLATEAU.IO.MeshConvertOptions.MeshFileFormat
+  fullName: PLATEAU.IO.MeshConvertOptions.MeshFileFormat
+  nameWithType: MeshConvertOptions.MeshFileFormat
+- uid: PLATEAU.IO.MeshConvertOptions.MeshFileFormat*
+  name: MeshFileFormat
+  href: api/PLATEAU.IO.MeshConvertOptions.html#PLATEAU_IO_MeshConvertOptions_MeshFileFormat_
+  commentId: Overload:PLATEAU.IO.MeshConvertOptions.MeshFileFormat
+  isSpec: "True"
+  fullName: PLATEAU.IO.MeshConvertOptions.MeshFileFormat
+  nameWithType: MeshConvertOptions.MeshFileFormat
 - uid: PLATEAU.IO.MeshConvertOptions.MeshGranularity
   name: MeshGranularity
   href: api/PLATEAU.IO.MeshConvertOptions.html#PLATEAU_IO_MeshConvertOptions_MeshGranularity
@@ -3769,6 +3832,32 @@ references:
   isSpec: "True"
   fullName: PLATEAU.Udx.GmlFileInfo.DisposeNative
   nameWithType: GmlFileInfo.DisposeNative
+- uid: PLATEAU.Udx.GmlFileInfo.FeatureType
+  name: FeatureType
+  href: api/PLATEAU.Udx.GmlFileInfo.html#PLATEAU_Udx_GmlFileInfo_FeatureType
+  commentId: P:PLATEAU.Udx.GmlFileInfo.FeatureType
+  fullName: PLATEAU.Udx.GmlFileInfo.FeatureType
+  nameWithType: GmlFileInfo.FeatureType
+- uid: PLATEAU.Udx.GmlFileInfo.FeatureType*
+  name: FeatureType
+  href: api/PLATEAU.Udx.GmlFileInfo.html#PLATEAU_Udx_GmlFileInfo_FeatureType_
+  commentId: Overload:PLATEAU.Udx.GmlFileInfo.FeatureType
+  isSpec: "True"
+  fullName: PLATEAU.Udx.GmlFileInfo.FeatureType
+  nameWithType: GmlFileInfo.FeatureType
+- uid: PLATEAU.Udx.GmlFileInfo.Package
+  name: Package
+  href: api/PLATEAU.Udx.GmlFileInfo.html#PLATEAU_Udx_GmlFileInfo_Package
+  commentId: P:PLATEAU.Udx.GmlFileInfo.Package
+  fullName: PLATEAU.Udx.GmlFileInfo.Package
+  nameWithType: GmlFileInfo.Package
+- uid: PLATEAU.Udx.GmlFileInfo.Package*
+  name: Package
+  href: api/PLATEAU.Udx.GmlFileInfo.html#PLATEAU_Udx_GmlFileInfo_Package_
+  commentId: Overload:PLATEAU.Udx.GmlFileInfo.Package
+  isSpec: "True"
+  fullName: PLATEAU.Udx.GmlFileInfo.Package
+  nameWithType: GmlFileInfo.Package
 - uid: PLATEAU.Udx.GmlFileInfo.Path
   name: Path
   href: api/PLATEAU.Udx.GmlFileInfo.html#PLATEAU_Udx_GmlFileInfo_Path
