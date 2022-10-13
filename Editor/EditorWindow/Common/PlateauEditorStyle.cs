@@ -252,6 +252,78 @@ namespace PLATEAU.Editor.EditorWindow.Common
             return newTabIndex;
         }
 
+        public static int TabWithImages(int currentTabIndex, string[] tabNames, string[] imagePathsRelative)
+        {
+            int nextTabIndex = currentTabIndex;
+            float widthPerTab = 65f;
+            float imageHeight = 60f;
+            float textHeight = 16f;
+            int count = Math.Min(tabNames.Length, imagePathsRelative.Length);
+            using (new EditorGUILayout.HorizontalScope())
+            {
+                EditorGUILayout.Space();
+                using (new EditorGUILayout.HorizontalScope(GUILayout.MaxWidth(widthPerTab * count)))
+                {
+                    EditorGUILayout.Space();
+                    for (int i = 0; i < count; i++)
+                    {
+                        using (new EditorGUILayout.VerticalScope())
+                        {
+                            // // 中央揃えで画像を描きます。
+                            // using (new EditorGUILayout.HorizontalScope(GUILayout.MaxWidth(maxWidthPerTab)))
+                            // {
+                            //     EditorGUILayout.Space();
+                            //     string imagePath = Path.Combine(PathUtil.EditorWindowImagePath, imagePathsRelative[i]);
+                            //     var image = LoadTexture(imagePath);
+                            //     var imageMaxWidth = Math.Min(maxWidthPerTab, image.width);
+                            //     EditorGUILayout.LabelField(new GUIContent(image), GUILayout.MaxWidth(imageMaxWidth), GUILayout.MaxHeight(imageHeight));
+                            //     EditorGUILayout.Space();
+                            // }
+                            //
+                            // // 画像の下に中央揃えで文字を置きます。
+                            // using (new EditorGUILayout.HorizontalScope())
+                            // {
+                            //     EditorGUILayout.Space();
+                            //     var style = new GUIStyle(EditorStyles.label);
+                            //     style.alignment = TextAnchor.MiddleCenter;
+                            //     EditorGUILayout.LabelField(tabNames[i], style, GUILayout.MaxWidth(maxWidthPerTab), GUILayout.MaxHeight(textHeight));
+                            //     EditorGUILayout.Space();
+                            // }
+                            
+                            string imagePath = Path.Combine(PathUtil.EditorWindowImagePath, imagePathsRelative[i]);
+                            var image = LoadTexture(imagePath);
+                            var style = new GUIStyle(EditorStyles.toolbarButton);
+                            style.margin.bottom = 0;
+                            style.margin.top = 0;
+                            var layout = new GUILayoutOption[] { GUILayout.MaxWidth(widthPerTab) };
+                            GUILayout.Button(image, style, layout);
+                            GUILayout.Button(tabNames[i], style, layout);
+                        }
+                    }
+
+                    EditorGUILayout.Space();
+                    // var images = imagePathsRelative
+                    //     .Select(relative => Path.Combine(PathUtil.EditorWindowImagePath, relative))
+                    //     .Select(path => (Texture)LoadTexture(path))
+                    //     .ToArray();
+                    // var tabs = new GUIContent[count];
+                    // for (int i = 0; i < count; i++)
+                    // {
+                    //     tabs[i] = new GUIContent(tabNames[i], images[i]);
+                    // }
+                    // nextTabIndex = GUILayout.Toolbar(
+                    //     currentTabIndex,
+                    //     tabs,
+                    //     GUILayout.Height(100)
+                    // );
+                }
+
+                EditorGUILayout.Space();
+            }
+
+            return nextTabIndex;
+        }
+
 
         /// <summary>
         /// 背景用に単色のテクスチャを作ります。
