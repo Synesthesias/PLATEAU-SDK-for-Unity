@@ -234,12 +234,12 @@ namespace PLATEAU.Editor.EditorWindow.Common
         {
             var prevColor = GUI.backgroundColor;
             GUI.backgroundColor = mainButtonColorTint;
-            int newTabIndex;
+            int nextTabIndex;
             using (VerticalScopeLevel1())
             {
                 using (new EditorGUILayout.HorizontalScope())
                 {
-                    newTabIndex = GUILayout.Toolbar(
+                    nextTabIndex = GUILayout.Toolbar(
                         currentTabIndex,
                         tabNames,
                         "LargeButton",
@@ -249,78 +249,141 @@ namespace PLATEAU.Editor.EditorWindow.Common
             }
 
             GUI.backgroundColor = prevColor;
-            return newTabIndex;
+            return nextTabIndex;
         }
 
-        public static int TabWithImages(int currentTabIndex, string[] tabNames, string[] imagePathsRelative)
+        public static int TabWithImages(int currentTabIndex, string[] imagePathsRelative)
         {
+            const float buttonWidth = 110;
             int nextTabIndex = currentTabIndex;
-            float widthPerTab = 65f;
-            float imageHeight = 60f;
-            float textHeight = 16f;
-            int count = Math.Min(tabNames.Length, imagePathsRelative.Length);
+            int tabCount = imagePathsRelative.Length;
+            if (tabCount <= 0) return nextTabIndex;
+            
+            var images = imagePathsRelative
+                .Select(relative => Path.Combine(PathUtil.EditorWindowImagePath, relative))
+                .Select(path => (Texture)LoadTexture(path))
+                .ToArray();
+            // float toolbarButtonWidth = images[0].width;
+            float toolbarButtonHeight = images[0].height * buttonWidth / images[0].width;
+
+            var contents = new GUIContent[tabCount];
+            for (int i = 0; i < tabCount; i++)
+            {
+                contents[i] = new GUIContent(images[i]);
+            }
+
+            var style = new GUIStyle(EditorStyles.toolbarButton);
+            style.imagePosition = ImagePosition.ImageAbove;
+            
+            
+            //
+            // var style = new GUIStyle(GUI.skin.button);
+            // style.padding.bottom = 0;
+            // style.padding.top = 0;
+            // style.padding.left = 0;
+            // style.padding.right = 0;
+            style.fixedWidth = buttonWidth;
+            style.fixedHeight = toolbarButtonHeight;
+            // style.imagePosition.
+            //
             using (new EditorGUILayout.HorizontalScope())
             {
                 EditorGUILayout.Space();
-                using (new EditorGUILayout.HorizontalScope(GUILayout.MaxWidth(widthPerTab * count)))
+                for (int i = 0; i < tabCount; i++)
                 {
-                    EditorGUILayout.Space();
-                    for (int i = 0; i < count; i++)
+                    if (GUILayout.Button(contents[i], style))
                     {
-                        using (new EditorGUILayout.VerticalScope())
-                        {
-                            // // 中央揃えで画像を描きます。
-                            // using (new EditorGUILayout.HorizontalScope(GUILayout.MaxWidth(maxWidthPerTab)))
-                            // {
-                            //     EditorGUILayout.Space();
-                            //     string imagePath = Path.Combine(PathUtil.EditorWindowImagePath, imagePathsRelative[i]);
-                            //     var image = LoadTexture(imagePath);
-                            //     var imageMaxWidth = Math.Min(maxWidthPerTab, image.width);
-                            //     EditorGUILayout.LabelField(new GUIContent(image), GUILayout.MaxWidth(imageMaxWidth), GUILayout.MaxHeight(imageHeight));
-                            //     EditorGUILayout.Space();
-                            // }
-                            //
-                            // // 画像の下に中央揃えで文字を置きます。
-                            // using (new EditorGUILayout.HorizontalScope())
-                            // {
-                            //     EditorGUILayout.Space();
-                            //     var style = new GUIStyle(EditorStyles.label);
-                            //     style.alignment = TextAnchor.MiddleCenter;
-                            //     EditorGUILayout.LabelField(tabNames[i], style, GUILayout.MaxWidth(maxWidthPerTab), GUILayout.MaxHeight(textHeight));
-                            //     EditorGUILayout.Space();
-                            // }
-                            
-                            string imagePath = Path.Combine(PathUtil.EditorWindowImagePath, imagePathsRelative[i]);
-                            var image = LoadTexture(imagePath);
-                            var style = new GUIStyle(EditorStyles.toolbarButton);
-                            style.margin.bottom = 0;
-                            style.margin.top = 0;
-                            var layout = new GUILayoutOption[] { GUILayout.MaxWidth(widthPerTab) };
-                            GUILayout.Button(image, style, layout);
-                            GUILayout.Button(tabNames[i], style, layout);
-                        }
+                        nextTabIndex = i;
                     }
-
-                    EditorGUILayout.Space();
-                    // var images = imagePathsRelative
-                    //     .Select(relative => Path.Combine(PathUtil.EditorWindowImagePath, relative))
-                    //     .Select(path => (Texture)LoadTexture(path))
-                    //     .ToArray();
-                    // var tabs = new GUIContent[count];
-                    // for (int i = 0; i < count; i++)
-                    // {
-                    //     tabs[i] = new GUIContent(tabNames[i], images[i]);
-                    // }
-                    // nextTabIndex = GUILayout.Toolbar(
-                    //     currentTabIndex,
-                    //     tabs,
-                    //     GUILayout.Height(100)
-                    // );
                 }
-
                 EditorGUILayout.Space();
             }
-
+            // using (VerticalScopeLevel1())
+            // {
+            //     using (new EditorGUILayout.HorizontalScope())
+            //     {
+            //         var style = new GUIStyle(EditorStyles.largeLabel);
+            //         style.fixedHeight = toolbarButtonHeight;
+            //         style.fixedWidth = toolbarButtonWidth;
+            //         // style.stretchHeight = true;
+            //         // style.stretchWidth = true;
+            //         nextTabIndex = GUILayout.Toolbar(
+            //             currentTabIndex,
+            //             images,
+            //             style,
+            //             GUI.ToolbarButtonSize.Fixed,
+            //             GUILayout.Width(toolbarButtonWidth * tabCount),
+            //             GUILayout.Height(toolbarButtonHeight)
+            //         );
+            //     }
+            // }
+            // int nextTabIndex = currentTabIndex;
+            // float widthPerTab = 65f;
+            // float imageHeight = 60f;
+            // float textHeight = 16f;
+            // int count = Math.Min(tabNames.Length, imagePathsRelative.Length);
+            // using (new EditorGUILayout.HorizontalScope())
+            // {
+            //     EditorGUILayout.Space();
+            //     using (new EditorGUILayout.HorizontalScope(GUILayout.MaxWidth(widthPerTab * count)))
+            //     {
+            //         EditorGUILayout.Space();
+            //         for (int i = 0; i < count; i++)
+            //         {
+            //             using (new EditorGUILayout.VerticalScope())
+            //             {
+            //                 // // 中央揃えで画像を描きます。
+            //                 // using (new EditorGUILayout.HorizontalScope(GUILayout.MaxWidth(maxWidthPerTab)))
+            //                 // {
+            //                 //     EditorGUILayout.Space();
+            //                 //     string imagePath = Path.Combine(PathUtil.EditorWindowImagePath, imagePathsRelative[i]);
+            //                 //     var image = LoadTexture(imagePath);
+            //                 //     var imageMaxWidth = Math.Min(maxWidthPerTab, image.width);
+            //                 //     EditorGUILayout.LabelField(new GUIContent(image), GUILayout.MaxWidth(imageMaxWidth), GUILayout.MaxHeight(imageHeight));
+            //                 //     EditorGUILayout.Space();
+            //                 // }
+            //                 //
+            //                 // // 画像の下に中央揃えで文字を置きます。
+            //                 // using (new EditorGUILayout.HorizontalScope())
+            //                 // {
+            //                 //     EditorGUILayout.Space();
+            //                 //     var style = new GUIStyle(EditorStyles.label);
+            //                 //     style.alignment = TextAnchor.MiddleCenter;
+            //                 //     EditorGUILayout.LabelField(tabNames[i], style, GUILayout.MaxWidth(maxWidthPerTab), GUILayout.MaxHeight(textHeight));
+            //                 //     EditorGUILayout.Space();
+            //                 // }
+            //                 
+            //                 string imagePath = Path.Combine(PathUtil.EditorWindowImagePath, imagePathsRelative[i]);
+            //                 var image = LoadTexture(imagePath);
+            //                 var style = new GUIStyle(EditorStyles.toolbarButton);
+            //                 style.margin.bottom = 0;
+            //                 style.margin.top = 0;
+            //                 var layout = new GUILayoutOption[] { GUILayout.MaxWidth(widthPerTab) };
+            //                 GUILayout.Button(image, style, layout);
+            //                 GUILayout.Button(tabNames[i], style, layout);
+            //             }
+            //         }
+            //
+            //         EditorGUILayout.Space();
+            //         // var images = imagePathsRelative
+            //         //     .Select(relative => Path.Combine(PathUtil.EditorWindowImagePath, relative))
+            //         //     .Select(path => (Texture)LoadTexture(path))
+            //         //     .ToArray();
+            //         // var tabs = new GUIContent[count];
+            //         // for (int i = 0; i < count; i++)
+            //         // {
+            //         //     tabs[i] = new GUIContent(tabNames[i], images[i]);
+            //         // }
+            //         // nextTabIndex = GUILayout.Toolbar(
+            //         //     currentTabIndex,
+            //         //     tabs,
+            //         //     GUILayout.Height(100)
+            //         // );
+            //     }
+            //
+            //     EditorGUILayout.Space();
+            // }
+            //
             return nextTabIndex;
         }
 
