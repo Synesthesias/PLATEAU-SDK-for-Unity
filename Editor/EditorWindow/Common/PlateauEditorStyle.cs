@@ -21,6 +21,7 @@ namespace PLATEAU.Editor.EditorWindow.Common
         private const string colorDarkBoxSelectedElement = "#676767";
         private const string colorDarkBoxClickedElement = "#303030";
         private const string colorLogoBackground = "#676767";
+        private const string colorLogoLine = "#D2D2D2";
         private static readonly Dictionary<string, Texture2D> cachedTexture = new Dictionary<string, Texture2D>();
 
         /// <summary> 見出し1のスタイルで文字を表示します。 </summary>
@@ -387,13 +388,31 @@ namespace PLATEAU.Editor.EditorWindow.Common
             if (tex is null) return;
             float width = Math.Min(tex.width, Screen.width);
             float height = tex.height * width / tex.width;
-            using (new EditorGUILayout.HorizontalScope(StyleLogoBackground))
+            using (new EditorGUILayout.VerticalScope(StyleLogoBackground))
             {
-                EditorGUILayout.Space(0);
-                EditorGUILayout.LabelField(new GUIContent(tex), GUILayout.Width(width), GUILayout.Height(height));
-                EditorGUILayout.Space(0);
+                LogoLine();
+                using (new EditorGUILayout.HorizontalScope())
+                {
+                    EditorGUILayout.Space(0);
+                    EditorGUILayout.LabelField(new GUIContent(tex), GUILayout.Width(width), GUILayout.Height(height));
+                    EditorGUILayout.Space(0);
+                }
+                LogoLine();
             }
-            
+
+            void LogoLine()
+            {
+                var style = new GUIStyle()
+                {
+                    normal =
+                    {
+                        background = ColoredTexture(colorLogoLine)
+                    },
+                    margin = new RectOffset(0,0,0,0),
+                    fixedHeight = 1
+                };
+                GUILayout.Box("", style);
+            }
         }
 
         private static Texture2D LoadTexture(string path)
