@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -23,9 +23,15 @@ namespace PLATEAU.CityImport.Load
             string sourcePath = config.SourcePathBeforeImport;
             string destPath = PathUtil.plateauSrcFetchDir;
             string destFolderName = Path.GetFileName(sourcePath);
-            var targetGmls = CityFilesCopy.FindTargetGmls(
-                sourcePath, config, out var collection
-            );
+
+            var conf = loader.CityLoadConfig; 
+            var collection = new UdxFileCollection();
+            progressDisplay.SetProgress("GMLファイル検索", 10f, "");
+            var targetGmls = await Task.Run(() => CityFilesCopy.FindTargetGmls(
+                sourcePath, config, out collection
+            ));
+            progressDisplay.SetProgress("GMLファイル検索", 100f, "完了");
+
             if (targetGmls.Count <= 0)
             {
                 Debug.LogError("該当するGMLファイルがありません。");
