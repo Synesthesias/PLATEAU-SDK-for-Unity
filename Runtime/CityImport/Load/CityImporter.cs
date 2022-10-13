@@ -53,6 +53,7 @@ namespace PLATEAU.CityImport.Load
                 await sem.WaitAsync(); 
                 try
                 {
+                    // ここはメインスレッドで呼ぶ必要があります。
                     await ImportGml(gmlInfo, destPath, config, collection, rootTrans, progressDisplay);
                 }
                 catch (Exception e)
@@ -75,16 +76,21 @@ namespace PLATEAU.CityImport.Load
 
         }
 
+        /// <summary>
+        /// GMLファイルを1つインポートします。
+        /// メインスレッドで呼ぶ必要があります。
+        /// </summary>
         public static async Task ImportGml(
             GmlFileInfo gmlInfo, string destPath, CityLoadConfig conf,
             UdxFileCollection collection, Transform rootTrans, IProgressDisplay progressDisplay)
         {
             string gmlName = Path.GetFileName(gmlInfo.Path);
             progressDisplay.SetProgress(gmlName, 0f, "インポート処理中");
-            collection.Fetch(destPath, gmlInfo);
+            // ここは別スレッドで実行可能です。
+            await Task.Run(() => collection.Fetch(destPath, gmlInfo));
             progressDisplay.SetProgress(gmlName, 20f, "GMLファイルをロード中");
-            var cityModel = await LoadGmlAsync(gmlInfo);
-            // TODO cityModel が Disposeされるようにする
+            
+            using var cityModel = await LoadGmlAsync(gmlInfo);
             if (cityModel == null)
             {
                 progressDisplay.SetProgress(gmlName, 0f, "失敗 : GMLファイルのパースに失敗しました。");
@@ -116,6 +122,7 @@ namespace PLATEAU.CityImport.Load
                 return;
             }
 
+            // ここはメインスレッドで呼ぶ必要があります。
             await PlateauToUnityModelConverter.ConvertAndPlaceToScene(
                 cityModel, meshExtractOptions, gmlTrans, progressDisplay, gmlName
             );
