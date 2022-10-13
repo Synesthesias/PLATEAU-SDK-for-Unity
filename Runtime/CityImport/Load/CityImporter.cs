@@ -23,8 +23,7 @@ namespace PLATEAU.CityImport.Load
             string sourcePath = config.SourcePathBeforeImport;
             string destPath = PathUtil.plateauSrcFetchDir;
             string destFolderName = Path.GetFileName(sourcePath);
-
-            var conf = loader.CityLoadConfig; 
+            
             var collection = new UdxFileCollection();
             progressDisplay.SetProgress("GMLファイル検索", 10f, "");
             var targetGmls = await Task.Run(() => CityFilesCopy.FindTargetGmls(
