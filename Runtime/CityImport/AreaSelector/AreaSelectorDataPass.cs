@@ -18,20 +18,20 @@ namespace PLATEAU.CityImport.AreaSelector
         // シーンをまたいで渡したいデータ
         private static string prevScenePath;
         private static IEnumerable<MeshCode> selectedMeshCodes;
-        private static GlobalObjectId loaderBehaviourID;
+        private static IAreaSelectResultReceiver areaSelectResultReceiver;
         private static PredefinedCityModelPackage availablePackageFlags;
         private static Extent extent;
 
         public static void Exec(
             string prevScenePathArg, IEnumerable<MeshCode> selectedMeshCodesArg,
-            GlobalObjectId loaderBehaviourIDArg, PredefinedCityModelPackage availablePackageFlagsArg,
+            IAreaSelectResultReceiver areaSelectResultReceiverArg, PredefinedCityModelPackage availablePackageFlagsArg,
             Extent selectedExtent)
         {
             #if UNITY_EDITOR
 
             prevScenePath = prevScenePathArg;
             selectedMeshCodes = selectedMeshCodesArg;
-            loaderBehaviourID = loaderBehaviourIDArg;
+            areaSelectResultReceiver = areaSelectResultReceiverArg;
             availablePackageFlags = availablePackageFlagsArg;
             extent = selectedExtent;
             
@@ -49,23 +49,27 @@ namespace PLATEAU.CityImport.AreaSelector
         }
 
         /// <summary>
-        /// 戻った先のシーンで、Behaviourに範囲選択の結果を渡します。
+        /// 戻った先のシーンで、範囲選択の結果を渡します。
         /// </summary>
         private static void PassAreaSelectDataToBehaviour()
         {
             
-            var loaderBehaviourObj = GlobalObjectId.GlobalObjectIdentifierToObjectSlow(loaderBehaviourID);
-            if (loaderBehaviourObj == null)
-            {
-                Debug.LogError($"元の{nameof(PLATEAUCityModelLoader)} コンポーネントが見つかりません。 globalID = {loaderBehaviourID}");
-                return;
-            }
-
-            var loaderBehaviour = (PLATEAUCityModelLoader)loaderBehaviourObj;
-            
-            loaderBehaviour.AreaMeshCodes = selectedMeshCodes.Select(meshCode => meshCode.ToString()).ToArray();
-            loaderBehaviour.InitPackageConfigsWithPackageFlags(availablePackageFlags);
-            loaderBehaviour.Extent = extent;
+            // var loaderBehaviourObj = GlobalObjectId.GlobalObjectIdentifierToObjectSlow(loaderBehaviourID);
+            // if (loaderBehaviourObj == null)
+            // {
+            //     Debug.LogError($"元の{nameof(PLATEAUCityModelLoader)} コンポーネントが見つかりません。 globalID = {loaderBehaviourID}");
+            //     return;
+            // }
+            //
+            // var loaderBehaviour = (PLATEAUCityModelLoader)loaderBehaviourObj;
+            //
+            // loaderBehaviour.AreaMeshCodes = selectedMeshCodes.Select(meshCode => meshCode.ToString()).ToArray();
+            // loaderBehaviour.InitPackageConfigsWithPackageFlags(availablePackageFlags);
+            // loaderBehaviour.Extent = extent;
+            var areaMeshCodes = selectedMeshCodes
+                .Select(meshCode => meshCode.ToString())
+                .ToArray();
+            areaSelectResultReceiver.ReceiveResult(areaMeshCodes, extent, availablePackageFlags);
         }
     }
 }

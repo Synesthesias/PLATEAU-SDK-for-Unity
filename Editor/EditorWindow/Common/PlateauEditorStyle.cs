@@ -286,7 +286,7 @@ namespace PLATEAU.Editor.EditorWindow.Common
             style.fixedHeight = toolbarButtonHeight;
             // style.imagePosition.
             //
-            using (new EditorGUILayout.HorizontalScope())
+            using (new EditorGUILayout.HorizontalScope(ContentStyleLevel3))
             {
                 EditorGUILayout.Space();
                 for (int i = 0; i < tabCount; i++)
@@ -413,7 +413,7 @@ namespace PLATEAU.Editor.EditorWindow.Common
             if (tex is null) return;
             float width = Math.Min(tex.width, Screen.width);
             float height = tex.height * width / tex.width;
-            using (new EditorGUILayout.HorizontalScope())
+            using (new EditorGUILayout.HorizontalScope(ContentStyleLevel3))
             {
                 EditorGUILayout.Space(0);
                 EditorGUILayout.LabelField(new GUIContent(tex), GUILayout.Width(width), GUILayout.Height(height));

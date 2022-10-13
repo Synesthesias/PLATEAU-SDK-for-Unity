@@ -10,7 +10,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
         public void Draw()
         {
             HeaderDrawer.Draw("都市の追加");
-            this.importTabIndex = PlateauEditorStyle.Tabs(this.importTabIndex, "ローカル", "リモート");
+            this.importTabIndex = PlateauEditorStyle.Tabs(this.importTabIndex, "ローカル", "サーバー");
             this.importTabGUIArray[this.importTabIndex].Draw();
         }
     }

@@ -18,14 +18,13 @@ namespace PLATEAU.CityImport.Load
     internal static class CityImporter
     {
 
-        public static async Task ImportAsync(PLATEAUCityModelLoader loader, IProgressDisplay progressDisplay)
+        public static async Task ImportAsync(CityLoadConfig config, IProgressDisplay progressDisplay)
         {
-            string sourcePath = loader.SourcePathBeforeImport;
+            string sourcePath = config.SourcePathBeforeImport;
             string destPath = PathUtil.plateauSrcFetchDir;
             string destFolderName = Path.GetFileName(sourcePath);
-            var conf = loader.CityLoadConfig;
             var targetGmls = CityFilesCopy.FindTargetGmls(
-                sourcePath, conf, out var collection
+                sourcePath, config, out var collection
             );
             if (targetGmls.Count <= 0)
             {
@@ -49,7 +48,7 @@ namespace PLATEAU.CityImport.Load
                 await sem.WaitAsync(); 
                 try
                 {
-                    await ImportGml(gmlInfo, destPath, conf, collection, rootTrans, progressDisplay);
+                    await ImportGml(gmlInfo, destPath, config, collection, rootTrans, progressDisplay);
                 }
                 catch (Exception e)
                 {
