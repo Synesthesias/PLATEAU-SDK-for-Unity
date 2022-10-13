@@ -24,4 +24,14 @@ namespace PLATEAU.Util
             return Marshal.PtrToStringAnsi(ptr);
         }
     }
+
+    internal static class DllUnityLogger
+    {
+        public static DllLogger Create()
+        {
+            var logger = new DllLogger();
+            logger.SetLogCallbacks(DllLogCallback.UnityLogCallbacks);
+            return logger;
+        }
+    }
 }

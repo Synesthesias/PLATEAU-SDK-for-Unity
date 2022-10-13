@@ -22,7 +22,7 @@ namespace PLATEAU.Editor.CityImport.AreaSelector
         /// 範囲選択の専用シーンを立ち上げます。
         /// ただし、現在のシーンに変更があれば保存するかどうかユーザーに尋ね、キャンセルが選択されたならば中止します。
         /// </summary>
-        public static void Start(string dataSourcePath, PLATEAUCityLoaderBehaviour loaderBehaviourBehaviour, int coordinateZoneID)
+        public static void Start(string dataSourcePath, PLATEAUCityModelLoader loaderBehaviourBehaviour, int coordinateZoneID)
         {
             if (!EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())
             {

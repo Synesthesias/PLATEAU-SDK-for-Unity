@@ -71,6 +71,8 @@ namespace PLATEAU.Interop
             this.IgnoreGeometries = ignoreGeometries;
         }
     }
+    
+    public enum MeshFileFormat{OBJ, GLTF}
 
 
     [StructLayout(LayoutKind.Sequential)]
@@ -84,40 +86,64 @@ namespace PLATEAU.Interop
         [MarshalAs(UnmanagedType.U1)] public bool ExportLowerLOD;
         [MarshalAs(UnmanagedType.U1)] public bool ExportAppearance;
         public float UnitScale;
+        public MeshFileFormat MeshFileFormat;
         public int CoordinateZoneID;
     }
 
+    /// <summary>
+    /// GMLファイルから3Dメッシュを取り出すための設定です。
+    /// </summary>
     [StructLayout(LayoutKind.Sequential)]
     public struct MeshExtractOptions
     {
+        /// <summary> 直交座標系における座標で、3Dモデルの原点をどこに設定するかです。 </summary>
         public PlateauVector3d ReferencePoint;
+        /// <summary> 座標軸の向きです。 </summary>
         public CoordinateSystem MeshAxes;
+        /// <summary> メッシュ結合の粒度です。 </summary>
         public MeshGranularity MeshGranularity;
+        /// <summary> 出力するLODの範囲上限です。 </summary>
         public uint MaxLOD;
+        /// <summary> 出力するLODの範囲の下限です。 </summary>
         public uint MinLOD;
+        /// <summary> テクスチャを含めるかどうかです。 </summary>
         [MarshalAs(UnmanagedType.U1)] public bool ExportAppearance;
+        /// <summary> メッシュ結合の粒度が「都市モデル単位」の時のみ有効で、この設定では都市を格子状のグリッドに分割するので、その1辺あたりの分割数(縦の数 = 横の数)です </summary>
         public int GridCountOfSide;
+        /// <summary> 大きさ補正です。 </summary>
         public float UnitScale;
+        /// <summary>
+        /// 国土交通省が規定する、日本の平面直角座標系の基準点の番号です。
+        /// 詳しくは次の国土地理院のサイトをご覧ください。
+        ///　<see href="https://www.gsi.go.jp/sokuchikijun/jpc.html"/>
+        /// </summary>
         public int CoordinateZoneID;
-        public Extent Extent;
-
-        public MeshExtractOptions(PlateauVector3d referencePoint, CoordinateSystem meshAxes,
-            MeshGranularity meshGranularity, uint maxLOD, uint minLOD, bool exportAppearance, int gridCountOfSide,
-            float unitScale, int coordinateZoneID, Extent extent)
+        /// <summary>
+        /// 範囲外の3Dモデルを出力から除外するための、2つの方法のうち1つを有効にするかどうかを bool で指定します。
+        /// その方法とは、都市オブジェクトの最初の頂点の位置が範囲外のとき、そのオブジェクトはすべて範囲外とみなして出力から除外します。
+        /// これはビル1棟程度の大きさのオブジェクトでは有効ですが、
+        /// 10km×10kmの地形のような巨大なオブジェクトでは、実際には範囲内なのに最初の頂点が遠いために除外されるということがおきます。
+        /// したがって、この値は建物では true, 地形では false となるべきです。
+        /// </summary>
+        [MarshalAs(UnmanagedType.U1)] public bool ExcludeCityObjectOutsideExtent;
+        /// <summary>
+        /// 範囲外の3Dモデルを出力から除外するための、2つの方法のうち1つを有効にするかどうかを bool で指定します。
+        /// その方法とは、メッシュ操作によって、範囲外に存在するポリゴンを除外します。
+        /// この方法であれば 10km×10km の地形など巨大なオブジェクトにも対応できます。
+        /// </summary>
+        [MarshalAs(UnmanagedType.U1)] public bool ExcludeTrianglesOutsideExtent;
+        /// <summary> 対象範囲を緯度・経度・高さで指定します。 </summary>
+         public Extent Extent;
+        
+        /// <summary> デフォルト値の設定を返します。 </summary>
+        public static MeshExtractOptions DefaultValue()
         {
-            this.ReferencePoint = referencePoint;
-            this.MeshAxes = meshAxes;
-            this.MeshGranularity = meshGranularity;
-            this.MaxLOD = maxLOD;
-            this.MinLOD = minLOD;
-            this.ExportAppearance = exportAppearance;
-            this.GridCountOfSide = gridCountOfSide;
-            this.UnitScale = unitScale;
-            this.CoordinateZoneID = coordinateZoneID;
-            this.Extent = extent;
+            var apiResult = NativeMethods.plateau_mesh_extract_options_default_value(out var defaultOptions);
+            DLLUtil.CheckDllError(apiResult);
+            return defaultOptions;
         }
 
-        /// <summary>
+         /// <summary>
         /// 設定の値が正常なら true, 異常な点があれば false を返します。
         /// <param name="failureMessage">異常な点があれば、それを説明する文字列が入ります。正常なら空文字列になります。</param>
         /// </summary>
@@ -1005,6 +1031,11 @@ namespace PLATEAU.Interop
             out PlateauVector3d outCenterPoint,
             [In] IntPtr geoReferencePtr);
 
+        [DllImport(DllName, CharSet = CharSet.Ansi)]
+        internal static extern APIResult plateau_udx_sub_folder_dir_name_to_package(
+            string dirName,
+            out PredefinedCityModelPackage outPackage);
+
 
         // ***************
         //  gml_file_info_c.cpp
@@ -1020,6 +1051,12 @@ namespace PLATEAU.Interop
 
         [DllImport(DllName)]
         internal static extern APIResult plateau_gml_file_info_get_path(
+            [In] IntPtr handle,
+            out IntPtr strPtr,
+            out int strLength);
+
+        [DllImport(DllName, CharSet = CharSet.Ansi)]
+        internal static extern APIResult plateau_gml_file_info_get_feature_type_str(
             [In] IntPtr handle,
             out IntPtr strPtr,
             out int strLength);
@@ -1057,5 +1094,13 @@ namespace PLATEAU.Interop
             PredefinedCityModelPackage package,
             [MarshalAs(UnmanagedType.U1)] out bool outHasAppearance,
             out int outMinLOD, out int outMaxLOD);
+        
+        // ***************
+        //  mesh_extract_options_c.cpp
+        // ***************
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_mesh_extract_options_default_value(
+            out MeshExtractOptions outDefaultOptions);
+        
     }
 }

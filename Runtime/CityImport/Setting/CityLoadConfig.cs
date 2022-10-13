@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using PLATEAU.Interop;
 using PLATEAU.IO;
 using PLATEAU.Udx;
 using PLATEAU.Util;
@@ -9,7 +10,7 @@ using UnityEngine;
 namespace PLATEAU.CityImport.Setting
 {
     /// <summary>
-    /// <see cref="PLATEAUCityLoaderBehaviour"/> の設定です。
+    /// <see cref="PLATEAUCityModelLoader"/> の設定です。
     /// </summary>
     [Serializable]
     internal class CityLoadConfig : ISerializationCallbackReceiver
@@ -19,7 +20,12 @@ namespace PLATEAU.CityImport.Setting
         [SerializeField] private string sourcePathAfterImport;
         [SerializeField] private string[] areaMeshCodes;
         [SerializeField] private int coordinateZoneID = 9;
-        
+        // 対象となる緯度経度の範囲です。
+        [SerializeField] private double minLatitude;
+        [SerializeField] private double maxLatitude;
+        [SerializeField] private double minLongitude;
+        [SerializeField] private double maxLongitude;
+
         // 都市モデル読み込みの、パッケージ種ごとの設定です。
         private Dictionary<PredefinedCityModelPackage, PackageLoadSetting> perPackagePairSettings = new Dictionary<PredefinedCityModelPackage, PackageLoadSetting>();
         
@@ -107,6 +113,34 @@ namespace PLATEAU.CityImport.Setting
         {
             get => this.coordinateZoneID;
             set => this.coordinateZoneID = value;
+        }
+
+        public void SetExtent(Extent extent)
+        {
+            
+        }
+
+        /// <summary>
+        /// 緯度・経度での範囲です。
+        /// ただし、高さの設定は無視され、高さの範囲は必ず -99,999 ～ 99,999 になります。
+        /// </summary>
+        public Extent Extent
+        {
+            get
+            {
+                var geoMin = new GeoCoordinate(this.minLatitude, this.minLongitude, -99999);
+                var geoMax = new GeoCoordinate(this.maxLatitude, this.maxLongitude, 99999);
+                return new Extent(geoMin, geoMax);
+            }
+            set
+            {
+                var geoMin = value.Min;
+                var geoMax = value.Max;
+                this.minLatitude = geoMin.Latitude;
+                this.maxLatitude = geoMax.Latitude;
+                this.minLongitude = geoMin.Longitude;
+                this.maxLongitude = geoMax.Longitude;
+            }
         }
 
         void ISerializationCallbackReceiver.OnBeforeSerialize()

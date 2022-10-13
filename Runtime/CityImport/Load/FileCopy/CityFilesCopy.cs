@@ -4,7 +4,6 @@ using System.Linq;
 using PLATEAU.CityImport.Setting;
 using PLATEAU.Udx;
 using PLATEAU.Util;
-using UnityEditor;
 
 namespace PLATEAU.CityImport.Load.FileCopy
 {
@@ -16,37 +15,39 @@ namespace PLATEAU.CityImport.Load.FileCopy
         /// <param name="sourcePath">検索元となるルートフォルダです。</param>
         /// <param name="config">検索対象となるGMLファイルの絞り込みの条件として利用します。</param>
         /// <returns>コピー先のルートフォルダのパスを返します。</returns>
-        public static string ToStreamingAssets(string sourcePath, CityLoadConfig config)
+        public static string ToStreamingAssets(string sourcePath, CityLoadConfig config, IProgressDisplay progressDisplay, string destPath)
         {
             // TODO 非同期にする
             // 条件に合うGMLファイルを検索して記憶します。
-            string destPath = PathUtil.plateauSrcFetchDir;
-            var fetchTargetGmls = new List<GmlFileInfo>();
-            var gmlInfoToDestroy = new List<GmlFileInfo>();
-            var gmlPathsDict = config.SearchMatchingGMLList(sourcePath, out var collection);
-            foreach (var gmlPath in gmlPathsDict.SelectMany(pair => pair.Value))
-            {
-                var gmlInfo = GmlFileInfo.Create(gmlPath);
-                gmlInfoToDestroy.Add(gmlInfo);
-                fetchTargetGmls.Add(gmlInfo);
-            }
+            var fetchTargetGmls = FindTargetGmls(sourcePath, config, out var collection);
+            // TODO gmlFileInfoの中身はあとで Dispose するべし
 
             // GMLと関連ファイルをコピーします。
             int targetGmlCount = fetchTargetGmls.Count;
             for (int i = 0; i < targetGmlCount; i++)
             {
                 var gml = fetchTargetGmls[i];
-                EditorUtility.DisplayProgressBar("", $"インポート処理中 : [{i}/{targetGmlCount}] {Path.GetFileName(gml.Path)}",
-                    (float)i / targetGmlCount);
+                progressDisplay.SetProgress("インポート処理", 100f * i / targetGmlCount, $"[{i+1} / {targetGmlCount}] {Path.GetFileName(gml.Path)}");
                 collection.Fetch(destPath, gml);
             }
-            foreach(var gml in gmlInfoToDestroy) gml.Dispose();
-            
-            EditorUtility.ClearProgressBar();
 
             string destFolderName = Path.GetFileName(sourcePath);
             string destRootFolderPath = Path.Combine(destPath, destFolderName);
+            progressDisplay.SetProgress("インポート処理", 100f, "完了");
             return destRootFolderPath;
+        }
+
+        public static List<GmlFileInfo> FindTargetGmls(string sourcePath, CityLoadConfig config, out UdxFileCollection collection)
+        {
+            var fetchTargetGmls = new List<GmlFileInfo>();
+            var gmlPathsDict = config.SearchMatchingGMLList(sourcePath, out collection);
+            foreach (var gmlPath in gmlPathsDict.SelectMany(pair => pair.Value))
+            {
+                var gmlInfo = GmlFileInfo.Create(gmlPath);
+                fetchTargetGmls.Add(gmlInfo);
+            }
+
+            return fetchTargetGmls;
         }
     }
 }

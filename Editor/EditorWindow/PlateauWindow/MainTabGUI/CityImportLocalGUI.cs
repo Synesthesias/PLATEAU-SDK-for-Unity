@@ -18,7 +18,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
             {
                 if (PlateauEditorStyle.MainButton("都市の追加"))
                 {
-                    var obj = PLATEAUCityLoaderBehaviour.Create(this.folderPath);
+                    var obj = PLATEAUCityModelLoader.Create(this.folderPath);
                     Selection.activeObject = obj;
                 }
             }

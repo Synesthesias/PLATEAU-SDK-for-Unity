@@ -14,7 +14,10 @@ namespace PLATEAU.Util
         // ReSharper disable once FieldCanBeMadeReadOnly.Local
         private static string unityProjectDataPath = Application.dataPath;
 
-        public static readonly string plateauSrcFetchDir = Application.dataPath + "/StreamingAssets/.PLATEAU";
+        public static readonly string plateauSrcFetchDir = Application.streamingAssetsPath + "/.PLATEAU";
+        public const string UdxFolderName = "udx";
+        public const string PackagePath = "Packages/com.synesthesias.plateau-unity-sdk";
+        public static readonly string EditorWindowImagePath = Path.Combine(PackagePath, "Images");
 
         /// <summary>
         /// 入力ファイル用のパスとして正しければtrue,不適切であればfalseを返します。
