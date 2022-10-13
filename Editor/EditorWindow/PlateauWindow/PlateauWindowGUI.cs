@@ -17,8 +17,8 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow
         {
             // ウィンドウのメインとなるタブ選択GUIを表示し、選択中のタブGUIクラスに描画処理を委譲します。
             // this.tabIndex = PlateauEditorStyle.Tabs(this.tabIndex, this.tabNames);
-            // this.tabIndex = PlateauEditorStyle.TabWithImages(this.tabIndex, this.tabNames, this.tabImages);
-            this.tabIndex = PlateauEditorStyle.Tabs(this.tabIndex, this.tabNames);
+            this.tabIndex = PlateauEditorStyle.TabWithImages(this.tabIndex, this.tabImages);
+            // this.tabIndex = PlateauEditorStyle.Tabs(this.tabIndex, this.tabNames);
             PlateauEditorStyle.MainLogo();
             this.tabGUIArray[this.tabIndex].Draw();
         }

@@ -26,16 +26,16 @@ namespace PLATEAU.CityImport.AreaSelector
         private readonly List<Material> mapMaterials = new List<Material>();
         [SerializeField] private AreaSelectorCursor cursor;
         private List<MeshCodeGizmoDrawer> meshCodeDrawers = new List<MeshCodeGizmoDrawer>();
-        private GlobalObjectId loaderBehaviourID;
+        private IAreaSelectResultReceiver areaSelectResultReceiver;
         private PredefinedCityModelPackage availablePackageFlags;
         private int coordinateZoneID;
         private PlateauVector3d referencePoint;
 
-        public void Init(string prevScenePathArg, string dataSourcePathArg, GlobalObjectId loaderBehaviourIDArg, int coordinateZoneIDArg)
+        public void Init(string prevScenePathArg, string dataSourcePathArg, IAreaSelectResultReceiver areaSelectResultReceiverArg, int coordinateZoneIDArg)
         {
             this.prevScenePath = prevScenePathArg;
             this.dataSourcePath = dataSourcePathArg;
-            this.loaderBehaviourID = loaderBehaviourIDArg;
+            this.areaSelectResultReceiver = areaSelectResultReceiverArg;
             this.coordinateZoneID = coordinateZoneIDArg;
         }
 
@@ -129,7 +129,7 @@ namespace PLATEAU.CityImport.AreaSelector
                     .Select(drawer => drawer.MeshCode);
             var selectedExtent = this.cursor.GetExtent(this.coordinateZoneID, this.referencePoint);
             // 無名関数のキャプチャを利用して、シーン終了後も必要なデータが渡るようにします。
-            AreaSelectorDataPass.Exec(this.prevScenePath, areaSelectResult, this.loaderBehaviourID, this.availablePackageFlags, selectedExtent);
+            AreaSelectorDataPass.Exec(this.prevScenePath, areaSelectResult, this.areaSelectResultReceiver, this.availablePackageFlags, selectedExtent);
         }
 
         public void OnSelectButtonPushed()
