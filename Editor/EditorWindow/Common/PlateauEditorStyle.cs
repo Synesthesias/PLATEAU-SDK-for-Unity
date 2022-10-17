@@ -381,22 +381,24 @@ namespace PLATEAU.Editor.EditorWindow.Common
             int tabCount = imagePathsRelative.Length;
             if (tabCount <= 0) return nextTabIndex;
             
-            var images = imagePathsRelative
+            var buttonIcons = imagePathsRelative
                 .Select(ImagePath)
                 .Select(path => (Texture)LoadTexture(path))
                 .ToArray();
-            float toolbarButtonHeight = images[0].height * buttonWidth / images[0].width;
+            var buttonBackground = LoadTexture(ImagePath("round-button.png"));
+            float toolbarButtonHeight = buttonBackground.height * buttonWidth / buttonBackground.width;
 
-            var contents = new GUIContent[tabCount];
+            var iconContents = new GUIContent[tabCount];
             for (int i = 0; i < tabCount; i++)
             {
-                contents[i] = new GUIContent(images[i]);
+                iconContents[i] = new GUIContent(buttonIcons[i]);
             }
 
             var baseStyle = new GUIStyle(EditorStyles.toolbarButton)
             {
                 imagePosition = ImagePosition.ImageAbove,
                 fixedHeight = toolbarButtonHeight,
+                fixedWidth = buttonWidth,
                 normal =
                 {
                     background = ColoredTexture(colorDarkBoxBackground),
@@ -414,14 +416,15 @@ namespace PLATEAU.Editor.EditorWindow.Common
                     var buttonStyle = new GUIStyle(baseStyle);
                     if (i == currentTabIndex)
                     {
-                        buttonStyle.normal.background = ColoredTexture(colorDarkBoxSelectedElement);
+                        // buttonStyle.normal.background = ColoredTexture(colorDarkBoxSelectedElement);
+                        buttonStyle.normal.background = buttonBackground;
                     }
                     else
                     {
                         buttonStyle.active.background = ColoredTexture(colorDarkBoxClickedElement);
                     }
 
-                    if (GUILayout.Button(contents[i], buttonStyle, GUILayout.MaxWidth(buttonWidth)))
+                    if (GUILayout.Button(iconContents[i], buttonStyle, GUILayout.MaxWidth(buttonWidth), GUILayout.MaxHeight(toolbarButtonHeight)))
                     {
                         nextTabIndex = i;
                     }
