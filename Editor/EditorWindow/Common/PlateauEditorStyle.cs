@@ -26,22 +26,43 @@ namespace PLATEAU.Editor.EditorWindow.Common
         private const string imageNameGradationDarkLong = "dark_gradation_long.png";
         private const string imageNameGradationDarkShortInverted = "dark_gradation_short_inverted.png";
         private const string imageNameGradationDarkShort = "dark_gradation_short.png";
+        private const string imageNameIconBuildingDark = "dark_icon_building.png";
         private static readonly Dictionary<string, Texture2D> cachedTexture = new Dictionary<string, Texture2D>();
 
-        public static void Heading(string text)
+        public static void Heading(string text, string imageIconRelativePath)
         {
-
-            using (new EditorGUILayout.HorizontalScope())
+            const float height = 50;
+            var imageIcon = LoadTexture(ImagePath(imageIconRelativePath));
+            var iconStyle = new GUIStyle(EditorStyles.label)
             {
+                fixedHeight = height
+            };
+            using (new EditorGUILayout.HorizontalScope(GUILayout.Height(height)))
+            {
+                var iconContent = new GUIContent(imageIcon);
+                var iconWidth = iconStyle.CalcSize(iconContent).x;
+                EditorGUILayout.LabelField(iconContent, iconStyle, GUILayout.MaxWidth(iconWidth));
                 var textStyle = new GUIStyle(EditorStyles.label)
                 {
                     fontSize = 14
                 };
                 var textContent = new GUIContent(text);
                 var textWidth = textStyle.CalcSize(textContent).x;
-                EditorGUILayout.LabelField(textContent, textStyle, GUILayout.MaxWidth(textWidth));
-                var image = LoadTexture(ImagePath(imageNameGradationDarkLong));
-                EditorGUILayout.LabelField(new GUIContent(image));
+                using (new EditorGUILayout.VerticalScope(GUILayout.Height(height), GUILayout.Width(textWidth)))
+                {
+                    GUILayout.FlexibleSpace();
+                    EditorGUILayout.LabelField(textContent, textStyle, GUILayout.MaxWidth(textWidth));
+                    GUILayout.FlexibleSpace();
+                }
+
+                using (new EditorGUILayout.VerticalScope(GUILayout.Height(height)))
+                {
+                    GUILayout.FlexibleSpace();
+                    var imageLine = LoadTexture(ImagePath(imageNameGradationDarkLong));
+                    EditorGUILayout.LabelField(new GUIContent(imageLine));
+                    GUILayout.FlexibleSpace();
+                }
+
             }
         }
 
@@ -91,6 +112,8 @@ namespace PLATEAU.Editor.EditorWindow.Common
             contentOffset = new Vector2(4f, -4f),
             margin = new RectOffset(27, 12, 4, 4)
         };
+
+        public static string IconPathBuilding => imageNameIconBuildingDark;
 
         public static void Separator(int indentLevel)
         {
