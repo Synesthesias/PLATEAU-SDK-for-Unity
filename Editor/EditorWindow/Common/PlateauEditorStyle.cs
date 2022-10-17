@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using PLATEAU.Util;
 using UnityEditor;
+using UnityEditor.SceneManagement;
 using UnityEngine;
 
 namespace PLATEAU.Editor.EditorWindow.Common
@@ -45,7 +46,11 @@ namespace PLATEAU.Editor.EditorWindow.Common
         public static void Heading(string text, string imageIconRelativePath)
         {
             const float height = 40;
-            using (new EditorGUILayout.HorizontalScope(GUILayout.Height(height)))
+            var boxStyle = new GUIStyle(EditorStyles.label)
+            {
+                margin = new RectOffset(5, 5, 5, 5)
+            };
+            using (new EditorGUILayout.HorizontalScope(boxStyle, GUILayout.Height(height)))
             {
                 // 行頭のアイコン
                 if (imageIconRelativePath != null)
@@ -55,7 +60,7 @@ namespace PLATEAU.Editor.EditorWindow.Common
                     var iconStyle = new GUIStyle(EditorStyles.label)
                     {
                         fixedHeight = height,
-                        fixedWidth = iconWidth
+                        fixedWidth = iconWidth,
                     };
                     var iconContent = new GUIContent(imageIcon);
                     LabelSizeFit(iconContent, iconStyle);
@@ -499,9 +504,21 @@ namespace PLATEAU.Editor.EditorWindow.Common
             using (new EditorGUILayout.VerticalScope(styleLogoBackground))
             {
                 LogoLine();
-
+                const int imageTopMargin = 10;
+                const int imageBottomMargin = 0;
+                var imageStyle = new GUIStyle(EditorStyles.label)
+                {
+                    fixedHeight = height,
+                    fixedWidth = width,
+                    margin = new RectOffset(0, 0, imageTopMargin, imageBottomMargin)
+                };
+                var imageContent = new GUIContent(tex);
+                var logoSize = imageStyle.CalcSize(imageContent);
                 CenterAlignHorizontal(() =>
-                    EditorGUILayout.LabelField(new GUIContent(tex), GUILayout.Width(width), GUILayout.Height(height))
+                    {
+                        EditorGUILayout.LabelField(imageContent, imageStyle);
+                    }
+                    , GUILayout.Height(logoSize.y + imageTopMargin + imageBottomMargin), GUILayout.Width(Screen.width)
                 );
                 LogoLine();
             }
@@ -521,13 +538,13 @@ namespace PLATEAU.Editor.EditorWindow.Common
             }
         }
 
-        public static void CenterAlignHorizontal(Action drawFunc)
+        public static void CenterAlignHorizontal(Action drawFunc, params GUILayoutOption[] layoutOptions)
         {
-            using (new EditorGUILayout.HorizontalScope())
+            using (new EditorGUILayout.HorizontalScope(layoutOptions))
             {
-                EditorGUILayout.Space();
+                GUILayout.FlexibleSpace();
                 drawFunc();
-                EditorGUILayout.Space();
+                GUILayout.FlexibleSpace();
             }
         }
 
