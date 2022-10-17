@@ -1,5 +1,4 @@
 ﻿using System.Threading;
-using PLATEAU.CityImport;
 using PLATEAU.CityImport.AreaSelector;
 using PLATEAU.CityImport.Load;
 using PLATEAU.CityImport.Setting;

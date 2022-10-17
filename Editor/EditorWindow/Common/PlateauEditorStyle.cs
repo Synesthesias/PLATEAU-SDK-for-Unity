@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Codice.Client.Common;
 using PLATEAU.Util;
 using UnityEditor;
 using UnityEngine;
@@ -14,6 +13,7 @@ namespace PLATEAU.Editor.EditorWindow.Common
     /// </summary>
     internal static class PlateauEditorStyle
     {
+        private const string imageDirPath = "Packages/com.synesthesias.plateau-unity-sdk/Images";
         private static readonly Color mainButtonColorTint = new Color(140f / 255f, 235f / 255f, 255f / 255f);
         private const string cyanBackgroundDark = "#292e30";
         private const string cyanBackgroundLight = "#abc4c9";
@@ -24,10 +24,28 @@ namespace PLATEAU.Editor.EditorWindow.Common
         private const string colorLogoLine = "#D2D2D2";
         private static readonly Dictionary<string, Texture2D> cachedTexture = new Dictionary<string, Texture2D>();
 
+        public static void Heading(string text)
+        {
+
+            using (new EditorGUILayout.HorizontalScope())
+            {
+                var textStyle = new GUIStyle(EditorStyles.label)
+                {
+                    fontSize = 14
+                };
+                var textContent = new GUIContent(text);
+                var textWidth = textStyle.CalcSize(textContent).x;
+                EditorGUILayout.LabelField(textContent, textStyle, GUILayout.MaxWidth(textWidth));
+                var image = LoadTexture(ImagePath("dark_gradation_long.png"));
+                EditorGUILayout.LabelField(new GUIContent(image));
+            }
+        }
+
         /// <summary> 見出し1のスタイルで文字を表示します。 </summary>
         public static void Heading1(string text)
         {
             GUILayout.Box(text, styleHeading1);
+
         }
 
         /// <summary> 見出し2のスタイルで文字を表示します。 </summary>
@@ -131,10 +149,12 @@ namespace PLATEAU.Editor.EditorWindow.Common
             };
 
             // ScrollView の外側のスタイル
-            var boxStyle = ContentStyleLevel2;
+            var boxStyle = contentStyleLevel2;
             boxStyle.padding.bottom = 4;
             boxStyle.margin.bottom = 4;
-            boxStyle.fixedHeight = maxHeight + labelStyle.padding.top + labelStyle.padding.bottom + labelStyle.margin.top + labelStyle.margin.bottom + boxStyle.padding.top + boxStyle.padding.bottom;
+            boxStyle.fixedHeight = maxHeight + labelStyle.padding.top + labelStyle.padding.bottom +
+                                   labelStyle.margin.top + labelStyle.margin.bottom + boxStyle.padding.top +
+                                   boxStyle.padding.bottom;
 
             using (new EditorGUILayout.VerticalScope(boxStyle))
             {
@@ -173,7 +193,7 @@ namespace PLATEAU.Editor.EditorWindow.Common
         /// </summary>
         public static EditorGUILayout.VerticalScope VerticalScopeLevel2()
         {
-            return new EditorGUILayout.VerticalScope(ContentStyleLevel2);
+            return new EditorGUILayout.VerticalScope(contentStyleLevel2);
         }
 
         /// <summary>
@@ -181,12 +201,12 @@ namespace PLATEAU.Editor.EditorWindow.Common
         /// </summary>
         public static EditorGUILayout.VerticalScope VerticalScopeLevel3()
         {
-            return new EditorGUILayout.VerticalScope(ContentStyleLevel3);
+            return new EditorGUILayout.VerticalScope(contentStyleLevel3);
         }
 
         public static EditorGUILayout.VerticalScope VerticalScopeDarkBox()
         {
-            return new EditorGUILayout.VerticalScope(StyleDarkBox);
+            return new EditorGUILayout.VerticalScope(styleDarkBox);
         }
 
         /// <summary>
@@ -204,70 +224,53 @@ namespace PLATEAU.Editor.EditorWindow.Common
             return style;
         }
 
-        public static GUIStyle ContentStyleLevel2
+        private static readonly GUIStyle contentStyleLevel2 = new GUIStyle(GUI.skin.box)
         {
-            get
-            {
-                var style = new GUIStyle(GUI.skin.box)
-                {
-                    padding = new RectOffset(8, 8, 8, 8),
-                    margin = new RectOffset(16, 8, 8, 8)
-                };
-
-                return style;
-            }
-        }
+            padding = new RectOffset(8, 8, 8, 8),
+            margin = new RectOffset(16, 8, 8, 8)
+        };
 
         /// <summary>
         /// ContentStyle入れ子の3段目のスタイルです。
         /// 青っぽい色に寄せた背景色のBoxStyleを返します。
         /// エディタのテーマが Dark か Light かに応じて異なる色を返します。
         /// </summary>
-        private static GUIStyle ContentStyleLevel3
+        private static readonly GUIStyle contentStyleLevel3 = new GUIStyle(ContentStyleLevel1(false))
         {
-            get
+            normal =
             {
-                GUIStyle style = new GUIStyle(ContentStyleLevel1(false));
-                string colorCode = EditorGUIUtility.isProSkin ? cyanBackgroundDark : cyanBackgroundLight;
-                style.normal.background = ColoredTexture(colorCode);
-                style.padding.top = style.padding.bottom = 10;
-                style.margin.left = 16;
-                return style;
+                background = ColoredTexture(EditorGUIUtility.isProSkin ? cyanBackgroundDark : cyanBackgroundLight)
+            },
+            margin =
+            {
+                left = 16
+            },
+            padding =
+            {
+                top = 10,
+                bottom = 10
             }
-        }
+        };
 
-        private static GUIStyle StyleDarkBox
+        private static readonly GUIStyle styleDarkBox = new GUIStyle
         {
-            get
+            normal =
             {
-                var style = new GUIStyle
-                {
-                    normal =
-                    {
-                        background = ColoredTexture(colorDarkBoxBackground)
-                    },
-                    margin = new RectOffset(15, 15, 15, 15),
-                    padding = new RectOffset(5, 5, 15, 15)
-                };
-                return style;
-            }
-        }
+                background = ColoredTexture(colorDarkBoxBackground)
+            },
+            margin = new RectOffset(15, 15, 15, 15),
+            padding = new RectOffset(5, 5, 15, 15)
+        };
 
-        private static GUIStyle StyleLogoBackground
+
+        private static readonly GUIStyle styleLogoBackground = new GUIStyle
         {
-            get
+            normal =
             {
-                var style = new GUIStyle
-                {
-                    normal =
-                    {
-                        background = ColoredTexture(colorLogoBackground)
-                    },
-                    margin = new RectOffset(0, 0, 15, 15)
-                };
-                return style;
-            }
-        }
+                background = ColoredTexture(colorLogoBackground)
+            },
+            margin = new RectOffset(0, 0, 15, 15)
+        };
 
         /// <summary>
         /// タブ形式で複数のボタンから選ぶGUIを表示し、選択されたタブのインデックスを返します。
@@ -299,7 +302,7 @@ namespace PLATEAU.Editor.EditorWindow.Common
         /// タブ形式の選択GUIで、タブの中身が画像です。
         /// </summary>
         /// <param name="currentTabIndex">現在選択されているタブの番号です。</param>
-        /// <param name="imagePathsRelative"><see cref="PathUtil.EditorWindowImagePath"/> からの相対パスで画像を指定します。</param>
+        /// <param name="imagePathsRelative"><see cref="imageDirPath"/> からの相対パスで画像を指定します。</param>
         /// <param name="buttonWidth">ボタン1つあたりの横幅(px)です。</param>
         /// <returns>選択されたタブの番号です。</returns>
         public static int TabWithImages(int currentTabIndex, string[] imagePathsRelative, float buttonWidth)
@@ -309,7 +312,7 @@ namespace PLATEAU.Editor.EditorWindow.Common
             if (tabCount <= 0) return nextTabIndex;
             
             var images = imagePathsRelative
-                .Select(relative => Path.Combine(PathUtil.EditorWindowImagePath, relative))
+                .Select(ImagePath)
                 .Select(path => (Texture)LoadTexture(path))
                 .ToArray();
             float toolbarButtonHeight = images[0].height * buttonWidth / images[0].width;
@@ -323,7 +326,6 @@ namespace PLATEAU.Editor.EditorWindow.Common
             var baseStyle = new GUIStyle(EditorStyles.toolbarButton)
             {
                 imagePosition = ImagePosition.ImageAbove,
-                fixedWidth = buttonWidth,
                 fixedHeight = toolbarButtonHeight,
                 normal =
                 {
@@ -333,7 +335,7 @@ namespace PLATEAU.Editor.EditorWindow.Common
             // タブ形式の選択ボタンを描画します。
             // GUILayout.Toolbar() で実装できると思いきや、サイズ調整が上手くいかなかったので
             // 代わりにタブの数だけ Button を描画することにします。
-            using (new EditorGUILayout.HorizontalScope(StyleDarkBox))
+            using (new EditorGUILayout.HorizontalScope(styleDarkBox))
             {
                 EditorGUILayout.Space();
                 // ボタンごとのループです。
@@ -349,7 +351,7 @@ namespace PLATEAU.Editor.EditorWindow.Common
                         buttonStyle.active.background = ColoredTexture(colorDarkBoxClickedElement);
                     }
 
-                    if (GUILayout.Button(contents[i], buttonStyle))
+                    if (GUILayout.Button(contents[i], buttonStyle, GUILayout.MaxWidth(buttonWidth)))
                     {
                         nextTabIndex = i;
                     }
@@ -361,6 +363,30 @@ namespace PLATEAU.Editor.EditorWindow.Common
             return nextTabIndex;
         }
 
+        public static void SubTitle(string text)
+        {
+            var lineImageL =
+                LoadTexture(ImagePath("dark_gradation_short_inverted.png"));
+            var lineImageR =
+                LoadTexture(ImagePath("dark_gradation_short.png"));
+            
+            using (new EditorGUILayout.HorizontalScope())
+            {
+                EditorGUILayout.Space();
+                EditorGUILayout.LabelField(new GUIContent(lineImageL), GUILayout.MaxWidth(lineImageL.width));
+                var textContent = new GUIContent(text);
+                var textStyle = new GUIStyle(EditorStyles.label)
+                {
+                    fontSize = 14,
+                    fontStyle = FontStyle.Bold
+                };
+                float textWidth = textStyle.CalcSize(textContent).x;
+                EditorGUILayout.LabelField(text, textStyle, GUILayout.MaxWidth(textWidth));
+                EditorGUILayout.LabelField(new GUIContent(lineImageR), GUILayout.MaxWidth(lineImageR.width));
+                EditorGUILayout.Space();
+            }
+        }
+        
 
         /// <summary>
         /// 背景用に単色のテクスチャを作ります。
@@ -384,11 +410,11 @@ namespace PLATEAU.Editor.EditorWindow.Common
 
         public static void MainLogo()
         {
-            var tex = LoadTexture(Path.Combine(PathUtil.EditorWindowImagePath, "logo 1.png"));
+            var tex = LoadTexture(ImagePath("logo 1.png"));
             if (tex is null) return;
             float width = Math.Min(tex.width, Screen.width);
             float height = tex.height * width / tex.width;
-            using (new EditorGUILayout.VerticalScope(StyleLogoBackground))
+            using (new EditorGUILayout.VerticalScope(styleLogoBackground))
             {
                 LogoLine();
                 using (new EditorGUILayout.HorizontalScope())
@@ -429,6 +455,11 @@ namespace PLATEAU.Editor.EditorWindow.Common
             }
             cachedTexture.Add(path, tex);
             return tex;
+        }
+
+        private static string ImagePath(string imageName)
+        {
+            return Path.Combine(imageDirPath, imageName);
         }
     }
 }

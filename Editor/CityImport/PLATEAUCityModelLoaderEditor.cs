@@ -1,11 +1,6 @@
-﻿using System.Threading;
-using PLATEAU.CityImport;
-using PLATEAU.CityImport.Load;
-using PLATEAU.Editor.CityImport.AreaSelector;
+﻿using PLATEAU.CityImport;
 using PLATEAU.Editor.EditorWindow.Common;
-using PLATEAU.Editor.EditorWindow.ProgressDisplay;
 using PLATEAU.Util;
-using PLATEAU.Util.Async;
 using UnityEditor;
 
 namespace PLATEAU.Editor.CityImport

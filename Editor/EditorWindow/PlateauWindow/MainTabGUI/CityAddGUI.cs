@@ -9,7 +9,8 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
         
         public void Draw()
         {
-            HeaderDrawer.Draw("都市の追加");
+            PlateauEditorStyle.SubTitle("モデルデータのインポートを行います。");
+            PlateauEditorStyle.Heading("都市の追加");
             this.importTabIndex = PlateauEditorStyle.Tabs(this.importTabIndex, "ローカル", "サーバー");
             this.importTabGUIArray[this.importTabIndex].Draw();
         }
