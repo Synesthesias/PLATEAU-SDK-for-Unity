@@ -29,41 +29,60 @@ namespace PLATEAU.Editor.EditorWindow.Common
         private const string imageNameIconBuildingDark = "dark_icon_building.png";
         private static readonly Dictionary<string, Texture2D> cachedTexture = new Dictionary<string, Texture2D>();
 
+        /// <summary>
+        /// 見出しを表示します。
+        /// 行頭にアイコンを表示します。アイコンのパスは引数で <see cref="imageDirPath"/> からの相対パスで指定します。
+        /// パスが null の場合はアイコンを表示しません。
+        /// </summary>
         public static void Heading(string text, string imageIconRelativePath)
         {
             const float height = 50;
-            var imageIcon = LoadTexture(ImagePath(imageIconRelativePath));
-            var iconStyle = new GUIStyle(EditorStyles.label)
-            {
-                fixedHeight = height
-            };
             using (new EditorGUILayout.HorizontalScope(GUILayout.Height(height)))
             {
-                var iconContent = new GUIContent(imageIcon);
-                var iconWidth = iconStyle.CalcSize(iconContent).x;
-                EditorGUILayout.LabelField(iconContent, iconStyle, GUILayout.MaxWidth(iconWidth));
+                // 行頭のアイコン
+                if (imageIconRelativePath != null)
+                {
+                    var imageIcon = LoadTexture(ImagePath(imageIconRelativePath));
+                    var iconStyle = new GUIStyle(EditorStyles.label)
+                    {
+                        fixedHeight = height
+                    };
+                    var iconContent = new GUIContent(imageIcon);
+                    LabelSizeFit(iconContent, iconStyle);
+                }
+                // テキスト
                 var textStyle = new GUIStyle(EditorStyles.label)
                 {
-                    fontSize = 14
+                    fontSize = 15,
+                    fontStyle = FontStyle.Bold
                 };
                 var textContent = new GUIContent(text);
                 var textWidth = textStyle.CalcSize(textContent).x;
-                using (new EditorGUILayout.VerticalScope(GUILayout.Height(height), GUILayout.Width(textWidth)))
-                {
-                    GUILayout.FlexibleSpace();
-                    EditorGUILayout.LabelField(textContent, textStyle, GUILayout.MaxWidth(textWidth));
-                    GUILayout.FlexibleSpace();
-                }
-
-                using (new EditorGUILayout.VerticalScope(GUILayout.Height(height)))
-                {
-                    GUILayout.FlexibleSpace();
-                    var imageLine = LoadTexture(ImagePath(imageNameGradationDarkLong));
-                    EditorGUILayout.LabelField(new GUIContent(imageLine));
-                    GUILayout.FlexibleSpace();
-                }
+                CenterAlignVertical(() =>
+                    {
+                        EditorGUILayout.LabelField(textContent, textStyle, GUILayout.MaxWidth(textWidth));
+                    }
+                    , GUILayout.Height(height), GUILayout.Width(textWidth)
+                );
+                // 行末の線の画像
+                CenterAlignVertical(() =>
+                    {
+                        var imageLine = LoadTexture(ImagePath(imageNameGradationDarkLong));
+                        EditorGUILayout.LabelField(new GUIContent(imageLine));
+                    }
+                    , GUILayout.Height(height)
+                );
 
             }
+        }
+
+        /// <summary>
+        /// ラベルの幅 = ラベルの中身の幅　となるラベルを描画します。
+        /// </summary>
+        public static void LabelSizeFit(GUIContent content, GUIStyle style)
+        {
+            var width = style.CalcSize(content).x;
+            EditorGUILayout.LabelField(content, style, GUILayout.Width(width));
         }
 
         /// <summary> 見出し1のスタイルで文字を表示します。 </summary>
@@ -397,9 +416,8 @@ namespace PLATEAU.Editor.EditorWindow.Common
             var lineImageR =
                 LoadTexture(ImagePath(imageNameGradationDarkShort));
             
-            using (new EditorGUILayout.HorizontalScope())
+            CenterAlignHorizontal(() =>
             {
-                EditorGUILayout.Space();
                 EditorGUILayout.LabelField(new GUIContent(lineImageL), GUILayout.MaxWidth(lineImageL.width));
                 var textContent = new GUIContent(text);
                 var textStyle = new GUIStyle(EditorStyles.label)
@@ -410,8 +428,7 @@ namespace PLATEAU.Editor.EditorWindow.Common
                 float textWidth = textStyle.CalcSize(textContent).x;
                 EditorGUILayout.LabelField(text, textStyle, GUILayout.MaxWidth(textWidth));
                 EditorGUILayout.LabelField(new GUIContent(lineImageR), GUILayout.MaxWidth(lineImageR.width));
-                EditorGUILayout.Space();
-            }
+            });
         }
         
 
@@ -444,12 +461,10 @@ namespace PLATEAU.Editor.EditorWindow.Common
             using (new EditorGUILayout.VerticalScope(styleLogoBackground))
             {
                 LogoLine();
-                using (new EditorGUILayout.HorizontalScope())
-                {
-                    EditorGUILayout.Space(0);
-                    EditorGUILayout.LabelField(new GUIContent(tex), GUILayout.Width(width), GUILayout.Height(height));
-                    EditorGUILayout.Space(0);
-                }
+
+                CenterAlignHorizontal(() =>
+                    EditorGUILayout.LabelField(new GUIContent(tex), GUILayout.Width(width), GUILayout.Height(height))
+                );
                 LogoLine();
             }
 
@@ -465,6 +480,26 @@ namespace PLATEAU.Editor.EditorWindow.Common
                     fixedHeight = 1
                 };
                 GUILayout.Box("", style);
+            }
+        }
+
+        public static void CenterAlignHorizontal(Action drawFunc)
+        {
+            using (new EditorGUILayout.HorizontalScope())
+            {
+                EditorGUILayout.Space();
+                drawFunc();
+                EditorGUILayout.Space();
+            }
+        }
+
+        public static void CenterAlignVertical(Action drawFunc, params GUILayoutOption[] layoutOptions)
+        {
+            using (new EditorGUILayout.VerticalScope(layoutOptions))
+            {
+                GUILayout.FlexibleSpace();
+                drawFunc();
+                GUILayout.FlexibleSpace();
             }
         }
 
