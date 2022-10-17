@@ -414,10 +414,13 @@ namespace PLATEAU.Editor.EditorWindow.Common
                 for (int i = 0; i < tabCount; i++)
                 {
                     var buttonStyle = new GUIStyle(baseStyle);
+                    var prevBackgroundColor = GUI.backgroundColor;
                     if (i == currentTabIndex)
                     {
-                        // buttonStyle.normal.background = ColoredTexture(colorDarkBoxSelectedElement);
+                        ColorUtility.TryParseHtmlString(colorDarkBoxSelectedElement, out var selectedColorTint);
+                        GUI.backgroundColor = selectedColorTint;
                         buttonStyle.normal.background = buttonBackground;
+                        
                     }
                     else
                     {
@@ -428,6 +431,7 @@ namespace PLATEAU.Editor.EditorWindow.Common
                     {
                         nextTabIndex = i;
                     }
+                    GUI.backgroundColor = prevBackgroundColor;
                 }
 
                 EditorGUILayout.Space();
