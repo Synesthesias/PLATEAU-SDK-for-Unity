@@ -92,7 +92,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
                 
                 PlateauEditorStyle.Separator(0);
                 
-                HeaderDrawer.Draw("インポート");
+                PlateauEditorStyle.Separator(0);
                 using (PlateauEditorStyle.VerticalScopeLevel1())
                 {
                     if (PlateauEditorStyle.MainButton("インポート"))

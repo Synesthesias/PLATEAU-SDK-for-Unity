@@ -136,10 +136,24 @@ namespace PLATEAU.Editor.EditorWindow.Common
 
         public static void Separator(int indentLevel)
         {
-            using (new GUILayout.HorizontalScope())
+            const float lineWidth = 1;
+            const int marginY = 15;
+            var horizontalStyle = new GUIStyle
+            {
+                margin = new RectOffset(0, 0, marginY, marginY)
+            };
+            using (new GUILayout.HorizontalScope(horizontalStyle))
             {
                 GUILayout.Space(indentLevel * 15);
-                GUILayout.Box("", GUILayout.ExpandWidth(true), GUILayout.Height(1));
+                var boxStyle = new GUIStyle(EditorStyles.label)
+                {
+                    normal =
+                    {
+                        background = ColoredTexture(colorDarkBoxSelectedElement)
+                    },
+                    margin = new RectOffset(0, 0, 0, 0) 
+                };
+                GUILayout.Box("", boxStyle, GUILayout.ExpandWidth(true), GUILayout.Height(lineWidth));
             }
         }
 
