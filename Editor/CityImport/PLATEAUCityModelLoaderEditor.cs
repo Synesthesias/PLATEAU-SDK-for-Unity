@@ -15,7 +15,6 @@ namespace PLATEAU.Editor.CityImport
         public override void OnInspectorGUI()
         {
             var loader = (PLATEAUCityModelLoader)target;
-            bool isAreaSelectComplete;
 
             HeaderDrawer.Reset();
             
