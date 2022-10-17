@@ -23,10 +23,18 @@ namespace PLATEAU.Editor.EditorWindow.Common
         private const string colorLogoBackground = "#676767";
         private const string colorLogoLine = "#D2D2D2";
         private const string imageNameLogo = "logo-for-unity.png";
-        private const string imageNameGradationDarkLong = "dark_gradation_long.png";
-        private const string imageNameGradationDarkShortInverted = "dark_gradation_short_inverted.png";
-        private const string imageNameGradationDarkShort = "dark_gradation_short.png";
-        private const string imageNameIconBuildingDark = "dark_icon_building.png";
+
+        private static readonly ImagePathLightDark imageGradationLong =
+            new ImagePathLightDark("light_gradation_long.png", "dark_gradation_long.png");
+
+        private static readonly ImagePathLightDark imageGradationShortInverted =
+            new ImagePathLightDark("light_gradation_short_inverted.png", "dark_gradation_short_inverted.png");
+
+        private static readonly ImagePathLightDark imageGradationShort =
+            new ImagePathLightDark("light_gradation_short.png", "dark_gradation_short.png");
+
+        private static readonly ImagePathLightDark imageIconBuilding =
+            new ImagePathLightDark("light_icon_building.png", "dark_icon_building.png");
         private static readonly Dictionary<string, Texture2D> cachedTexture = new Dictionary<string, Texture2D>();
 
         /// <summary>
@@ -36,16 +44,18 @@ namespace PLATEAU.Editor.EditorWindow.Common
         /// </summary>
         public static void Heading(string text, string imageIconRelativePath)
         {
-            const float height = 50;
+            const float height = 40;
             using (new EditorGUILayout.HorizontalScope(GUILayout.Height(height)))
             {
                 // 行頭のアイコン
                 if (imageIconRelativePath != null)
                 {
                     var imageIcon = LoadTexture(ImagePath(imageIconRelativePath));
+                    var iconWidth = imageIcon.width * height / imageIcon.height;
                     var iconStyle = new GUIStyle(EditorStyles.label)
                     {
-                        fixedHeight = height
+                        fixedHeight = height,
+                        fixedWidth = iconWidth
                     };
                     var iconContent = new GUIContent(imageIcon);
                     LabelSizeFit(iconContent, iconStyle);
@@ -67,7 +77,7 @@ namespace PLATEAU.Editor.EditorWindow.Common
                 // 行末の線の画像
                 CenterAlignVertical(() =>
                     {
-                        var imageLine = LoadTexture(ImagePath(imageNameGradationDarkLong));
+                        var imageLine = LoadTexture(ImagePath(imageGradationLong.RelativePath));
                         EditorGUILayout.LabelField(new GUIContent(imageLine));
                     }
                     , GUILayout.Height(height)
@@ -132,7 +142,7 @@ namespace PLATEAU.Editor.EditorWindow.Common
             margin = new RectOffset(27, 12, 4, 4)
         };
 
-        public static string IconPathBuilding => imageNameIconBuildingDark;
+        public static string IconPathBuilding => imageIconBuilding.RelativePath;
 
         public static void Separator(int indentLevel)
         {
@@ -266,7 +276,7 @@ namespace PLATEAU.Editor.EditorWindow.Common
 
         public static EditorGUILayout.VerticalScope VerticalScopeDarkBox()
         {
-            return new EditorGUILayout.VerticalScope(styleDarkBox);
+            return new EditorGUILayout.VerticalScope(new GUIStyle(styleDarkBox));
         }
 
         /// <summary>
@@ -395,7 +405,7 @@ namespace PLATEAU.Editor.EditorWindow.Common
             // タブ形式の選択ボタンを描画します。
             // GUILayout.Toolbar() で実装できると思いきや、サイズ調整が上手くいかなかったので
             // 代わりにタブの数だけ Button を描画することにします。
-            using (new EditorGUILayout.HorizontalScope(styleDarkBox))
+            using (new EditorGUILayout.HorizontalScope(new GUIStyle(styleDarkBox)))
             {
                 EditorGUILayout.Space();
                 // ボタンごとのループです。
@@ -426,9 +436,9 @@ namespace PLATEAU.Editor.EditorWindow.Common
         public static void SubTitle(string text)
         {
             var lineImageL =
-                LoadTexture(ImagePath(imageNameGradationDarkShortInverted));
+                LoadTexture(ImagePath(imageGradationShortInverted.RelativePath));
             var lineImageR =
-                LoadTexture(ImagePath(imageNameGradationDarkShort));
+                LoadTexture(ImagePath(imageGradationShort.RelativePath));
             
             CenterAlignHorizontal(() =>
             {
@@ -541,6 +551,23 @@ namespace PLATEAU.Editor.EditorWindow.Common
         private static string ImagePath(string imageName)
         {
             return Path.Combine(imageDirPath, imageName);
+        }
+
+        /// <summary>
+        /// Unityのテーマがダークかライトかによってパスを切り替えるクラスです。
+        /// </summary>
+        class ImagePathLightDark
+        {
+            private readonly string lightModePathRelative;
+            private readonly string darkModePathRelative;
+            public ImagePathLightDark(string lightModePathRelative, string darkModePathRelative)
+            {
+                this.lightModePathRelative = lightModePathRelative;
+                this.darkModePathRelative = darkModePathRelative;
+            }
+
+            public string RelativePath =>
+                EditorGUIUtility.isProSkin ? this.darkModePathRelative : this.lightModePathRelative;
         }
     }
 }
