@@ -17,7 +17,7 @@ namespace PLATEAU.Editor.EditorWindow.Common
         private static readonly Color mainButtonColorTint = new Color(140f / 255f, 235f / 255f, 255f / 255f);
         private const string cyanBackgroundDark = "#292e30";
         private const string cyanBackgroundLight = "#abc4c9";
-        private const string colorDarkBoxBackground = "#191919";
+        private static readonly ColorLightDark colorDarkBoxBackground = new ColorLightDark("#515151", "#191919");
         private const string colorDarkBoxSelectedElement = "#676767";
         private const string colorDarkBoxClickedElement = "#303030";
         private const string colorLogoBackground = "#676767";
@@ -326,10 +326,12 @@ namespace PLATEAU.Editor.EditorWindow.Common
         {
             normal =
             {
-                background = ColoredTexture(colorDarkBoxBackground)
+                // background = ColoredTexture(colorDarkBoxBackground)
+                background = LoadTexture(ImagePath("round-window-wide.png")),
             },
             margin = new RectOffset(15, 15, 15, 15),
-            padding = new RectOffset(5, 5, 15, 15)
+            padding = new RectOffset(5, 5, 15, 15),
+            
         };
 
 
@@ -401,22 +403,26 @@ namespace PLATEAU.Editor.EditorWindow.Common
                 fixedWidth = buttonWidth,
                 normal =
                 {
-                    background = ColoredTexture(colorDarkBoxBackground),
+                    background = ColoredTexture(ColorUtility.ToHtmlStringRGB(colorDarkBoxBackground.Color)),
                 }
             };
+            var prevBackgroundColor = GUI.backgroundColor;
+            GUI.backgroundColor = colorDarkBoxBackground.Color;
             // タブ形式の選択ボタンを描画します。
             // GUILayout.Toolbar() で実装できると思いきや、サイズ調整が上手くいかなかったので
             // 代わりにタブの数だけ Button を描画することにします。
             using (new EditorGUILayout.HorizontalScope(new GUIStyle(styleDarkBox)))
             {
+                GUI.backgroundColor = prevBackgroundColor;
                 EditorGUILayout.Space();
                 // ボタンごとのループです。
                 for (int i = 0; i < tabCount; i++)
                 {
                     var buttonStyle = new GUIStyle(baseStyle);
-                    var prevBackgroundColor = GUI.backgroundColor;
+                    var prevBackgroundColor2 = GUI.backgroundColor;
                     if (i == currentTabIndex)
                     {
+                        
                         ColorUtility.TryParseHtmlString(colorDarkBoxSelectedElement, out var selectedColorTint);
                         GUI.backgroundColor = selectedColorTint;
                         buttonStyle.normal.background = buttonBackground;
@@ -424,6 +430,7 @@ namespace PLATEAU.Editor.EditorWindow.Common
                     }
                     else
                     {
+                        GUI.backgroundColor = colorDarkBoxBackground.Color;
                         buttonStyle.active.background = ColoredTexture(colorDarkBoxClickedElement);
                     }
 
@@ -431,7 +438,7 @@ namespace PLATEAU.Editor.EditorWindow.Common
                     {
                         nextTabIndex = i;
                     }
-                    GUI.backgroundColor = prevBackgroundColor;
+                    GUI.backgroundColor = prevBackgroundColor2;
                 }
 
                 EditorGUILayout.Space();
@@ -563,7 +570,7 @@ namespace PLATEAU.Editor.EditorWindow.Common
         /// <summary>
         /// Unityのテーマがダークかライトかによってパスを切り替えるクラスです。
         /// </summary>
-        class ImagePathLightDark
+        private class ImagePathLightDark
         {
             private readonly string lightModePathRelative;
             private readonly string darkModePathRelative;
@@ -575,6 +582,24 @@ namespace PLATEAU.Editor.EditorWindow.Common
 
             public string RelativePath =>
                 EditorGUIUtility.isProSkin ? this.darkModePathRelative : this.lightModePathRelative;
+        }
+
+        /// <summary>
+        /// Unityのテーマがライトかダークかによって色を切り替えるクラスです。
+        /// </summary>
+        private class ColorLightDark
+        {
+            private readonly Color lightModeColor;
+            private readonly Color darkModeColor;
+
+            public ColorLightDark(string lightModeColorCode, string darkModeColorCode)
+            {
+                ColorUtility.TryParseHtmlString(lightModeColorCode, out this.lightModeColor);
+                ColorUtility.TryParseHtmlString(darkModeColorCode, out this.darkModeColor);
+            }
+
+            public Color Color =>
+                EditorGUIUtility.isProSkin ? this.darkModeColor : this.lightModeColor;
         }
     }
 }
