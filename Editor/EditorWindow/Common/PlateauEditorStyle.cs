@@ -23,7 +23,7 @@ namespace PLATEAU.Editor.EditorWindow.Common
         private const string colorDarkBoxClickedElement = "#303030";
         private const string colorLogoBackground = "#676767";
         private const string colorLogoLine = "#D2D2D2";
-        private const string imageNameLogo = "logo-for-unity.png";
+        private const string imageNameLogo = "logo_for_unity.png";
 
         private static readonly ImagePathLightDark imageGradationLong =
             new ImagePathLightDark("light_gradation_long.png", "dark_gradation_long.png");
@@ -335,8 +335,7 @@ namespace PLATEAU.Editor.EditorWindow.Common
                 background = LoadTexture(ImagePath("round-window-wide.png")),
             },
             margin = new RectOffset(15, 15, 15, 15),
-            padding = new RectOffset(5, 5, 15, 15),
-            
+            padding = new RectOffset(5, 5, 15, 15)
         };
 
 
@@ -405,7 +404,9 @@ namespace PLATEAU.Editor.EditorWindow.Common
             {
                 imagePosition = ImagePosition.ImageAbove,
                 fixedHeight = toolbarButtonHeight,
-                fixedWidth = buttonWidth,
+                // fixedWidth = buttonWidth,
+                stretchWidth = true,
+                stretchHeight = true,
                 normal =
                 {
                     background = ColoredTexture(ColorUtility.ToHtmlStringRGB(colorDarkBoxBackground.Color)),
@@ -413,13 +414,16 @@ namespace PLATEAU.Editor.EditorWindow.Common
             };
             var prevBackgroundColor = GUI.backgroundColor;
             GUI.backgroundColor = colorDarkBoxBackground.Color;
-            // タブ形式の選択ボタンを描画します。
-            // GUILayout.Toolbar() で実装できると思いきや、サイズ調整が上手くいかなかったので
-            // 代わりにタブの数だけ Button を描画することにします。
-            using (new EditorGUILayout.HorizontalScope(new GUIStyle(styleDarkBox)))
+            
+            // 枠を表示します。
+            using (new EditorGUILayout.HorizontalScope(new GUIStyle(styleDarkBox), GUILayout.MaxWidth(ScreenDrawableWidth), GUILayout.MinWidth(20 * tabCount)))
             {
                 GUI.backgroundColor = prevBackgroundColor;
                 EditorGUILayout.Space();
+                // タブ形式の選択ボタンを描画します。
+                // GUILayout.Toolbar() で実装できると思いきや、サイズ調整が上手くいかなかったので
+                // 代わりにタブの数だけ Button を描画することにします。
+                
                 // ボタンごとのループです。
                 for (int i = 0; i < tabCount; i++)
                 {
@@ -438,19 +442,26 @@ namespace PLATEAU.Editor.EditorWindow.Common
                         GUI.backgroundColor = colorDarkBoxBackground.Color;
                         buttonStyle.active.background = ColoredTexture(colorDarkBoxClickedElement);
                     }
-
-                    if (GUILayout.Button(iconContents[i], buttonStyle, GUILayout.MaxWidth(buttonWidth), GUILayout.MaxHeight(toolbarButtonHeight)))
+            
+                    if (GUILayout.Button(iconContents[i], buttonStyle, GUILayout.MaxWidth(buttonWidth), GUILayout.MaxHeight(toolbarButtonHeight), GUILayout.MinWidth(20)))
                     {
                         nextTabIndex = i;
                     }
                     GUI.backgroundColor = prevBackgroundColor2;
                 }
-
+            
+                GUI.backgroundColor = prevBackgroundColor;
+            
                 EditorGUILayout.Space();
             }
 
             return nextTabIndex;
         }
+
+        /// <summary>
+        /// スクリーンの幅からスクロールバーを除いたものを返します。
+        /// </summary>
+        private static int ScreenDrawableWidth => Screen.width - 15;
 
         public static void SubTitle(string text)
         {
@@ -497,11 +508,12 @@ namespace PLATEAU.Editor.EditorWindow.Common
 
         public static void MainLogo()
         {
+            const int logoMaxWidth = 300;
             var tex = LoadTexture(ImagePath(imageNameLogo));
             if (tex is null) return;
-            float width = Math.Min(tex.width, Screen.width);
+            float width = Math.Min(Math.Min(tex.width, ScreenDrawableWidth), logoMaxWidth);
             float height = tex.height * width / tex.width;
-            using (new EditorGUILayout.VerticalScope(styleLogoBackground))
+            using (new EditorGUILayout.VerticalScope(new GUIStyle(styleLogoBackground)))
             {
                 LogoLine();
                 const int imageTopMargin = 10;
@@ -509,16 +521,17 @@ namespace PLATEAU.Editor.EditorWindow.Common
                 var imageStyle = new GUIStyle(EditorStyles.label)
                 {
                     fixedHeight = height,
-                    fixedWidth = width,
+                    fixedWidth = width - 15,
                     margin = new RectOffset(0, 0, imageTopMargin, imageBottomMargin)
                 };
                 var imageContent = new GUIContent(tex);
                 var logoSize = imageStyle.CalcSize(imageContent);
                 CenterAlignHorizontal(() =>
                     {
-                        EditorGUILayout.LabelField(imageContent, imageStyle);
+                        EditorGUILayout.LabelField(imageContent, imageStyle, GUILayout.MaxWidth(width), GUILayout.MaxHeight(height));
                     }
-                    , GUILayout.Height(logoSize.y + imageTopMargin + imageBottomMargin), GUILayout.Width(Screen.width)
+                    , GUILayout.Height(logoSize.y + imageTopMargin + imageBottomMargin)
+                    , GUILayout.Width(ScreenDrawableWidth)
                 );
                 LogoLine();
             }
