@@ -87,7 +87,10 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
 
             if (this.isAreaSelectComplete)
             {
+                PlateauEditorStyle.Heading("地物別設定", null);
                 CityLoadConfigGUI.Draw(this.config);
+                
+                PlateauEditorStyle.Separator(0);
                 
                 HeaderDrawer.Draw("インポート");
                 using (PlateauEditorStyle.VerticalScopeLevel1())

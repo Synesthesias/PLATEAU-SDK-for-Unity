@@ -12,13 +12,12 @@ namespace PLATEAU.Editor.CityImport
     {
         public static void Draw(CityLoadConfig cityLoadConf)
         {
-            HeaderDrawer.Draw("パッケージ別設定");
             HeaderDrawer.IncrementDepth();
             foreach (var pair in cityLoadConf.ForEachPackagePair)
             {
                 var package = pair.Key;
                 var conf = pair.Value;
-                HeaderDrawer.Draw(Enum.GetName(typeof(PredefinedCityModelPackage), package));
+                HeaderDrawer.Draw(package.ToJapaneseName());
                 using (PlateauEditorStyle.VerticalScopeLevel1())
                 {
                     conf.loadPackage = EditorGUILayout.Toggle("インポートする", conf.loadPackage);

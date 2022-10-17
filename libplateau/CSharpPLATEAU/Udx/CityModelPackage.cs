@@ -25,4 +25,35 @@ namespace PLATEAU.Udx
         //! その他
         Unknown = 1u << 31
     }
+
+    public static class PredefinedCityModelPackageExtension
+    {
+        public static string ToJapaneseName(this PredefinedCityModelPackage package)
+        {
+            switch (package)
+            {
+                case PredefinedCityModelPackage.Building:
+                    return "建築物";
+                case PredefinedCityModelPackage.Road:
+                    return "道路";
+                case PredefinedCityModelPackage.UrbanPlanningDecision:
+                    return "都市計画決定情報";
+                case PredefinedCityModelPackage.LandUse:
+                    return "土地利用";
+                case PredefinedCityModelPackage.CityFurniture:
+                    return "都市設備";
+                case PredefinedCityModelPackage.Vegetation:
+                    return "植生";
+                case PredefinedCityModelPackage.Relief:
+                    return "土地起伏";
+                case PredefinedCityModelPackage.DisasterRisk:
+                    return "災害リスク";
+                case PredefinedCityModelPackage.Unknown:
+                    return "その他";
+                case PredefinedCityModelPackage.None:
+                default:
+                    throw new NotImplementedException();
+            }
+        }
+    }
 }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using PLATEAU.Interop;
 
 namespace PLATEAU.Udx
@@ -25,7 +25,7 @@ namespace PLATEAU.Udx
         public PredefinedCityModelPackage Package {
             get
             {
-                var apiResult = NativeMethods.plateau_udx_sub_folder_dir_name_to_package(FeatureType, out var package);
+                var apiResult = NativeMethods.plateau_udx_sub_folder_get_package(FeatureType, out var package);
                 DLLUtil.CheckDllError(apiResult);
                 return package;
             }
