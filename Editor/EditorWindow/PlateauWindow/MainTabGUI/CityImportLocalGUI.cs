@@ -67,14 +67,9 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
                 if (PlateauEditorStyle.MainButton("範囲選択"))
                 {
                     AreaSelectorStarter.Start(this.config.SourcePathBeforeImport, this, this.config.CoordinateZoneID);
+                    GUIUtility.ExitGUI();
                 }
                 this.isAreaSelectComplete = this.config.AreaMeshCodes != null && this.config.AreaMeshCodes.Length > 0;
-                // using (new EditorGUILayout.HorizontalScope())
-                // {
-                //     EditorGUILayout.Space();
-                //     EditorGUILayout.LabelField();
-                //     EditorGUILayout.Space();
-                // }
                 PlateauEditorStyle.CenterAlignHorizontal(() =>
                 {
                     string str = this.isAreaSelectComplete ? "範囲選択 : セット済" : "範囲選択 : 未";

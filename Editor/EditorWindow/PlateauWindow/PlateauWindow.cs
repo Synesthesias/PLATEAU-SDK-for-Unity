@@ -21,11 +21,11 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow
 
         private void OnGUI()
         {
-            if (this.gui == null) this.gui = new PlateauWindowGUI();
+            this.gui ??= new PlateauWindowGUI();
             HeaderDrawer.Reset();
-            this.scrollPosition = EditorGUILayout.BeginScrollView(this.scrollPosition);
+            using var scrollView = new EditorGUILayout.ScrollViewScope(this.scrollPosition);
+            this.scrollPosition = scrollView.scrollPosition;
             this.gui.Draw();
-            EditorGUILayout.EndScrollView();
         }
     }
 }
