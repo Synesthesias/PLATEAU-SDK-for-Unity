@@ -22,6 +22,10 @@ namespace PLATEAU.Editor.EditorWindow.Common
         private const string colorDarkBoxClickedElement = "#303030";
         private const string colorLogoBackground = "#676767";
         private const string colorLogoLine = "#D2D2D2";
+        private const string imageNameLogo = "logo-for-unity.png";
+        private const string imageNameGradationDarkLong = "dark_gradation_long.png";
+        private const string imageNameGradationDarkShortInverted = "dark_gradation_short_inverted.png";
+        private const string imageNameGradationDarkShort = "dark_gradation_short.png";
         private static readonly Dictionary<string, Texture2D> cachedTexture = new Dictionary<string, Texture2D>();
 
         public static void Heading(string text)
@@ -36,7 +40,7 @@ namespace PLATEAU.Editor.EditorWindow.Common
                 var textContent = new GUIContent(text);
                 var textWidth = textStyle.CalcSize(textContent).x;
                 EditorGUILayout.LabelField(textContent, textStyle, GUILayout.MaxWidth(textWidth));
-                var image = LoadTexture(ImagePath("dark_gradation_long.png"));
+                var image = LoadTexture(ImagePath(imageNameGradationDarkLong));
                 EditorGUILayout.LabelField(new GUIContent(image));
             }
         }
@@ -366,9 +370,9 @@ namespace PLATEAU.Editor.EditorWindow.Common
         public static void SubTitle(string text)
         {
             var lineImageL =
-                LoadTexture(ImagePath("dark_gradation_short_inverted.png"));
+                LoadTexture(ImagePath(imageNameGradationDarkShortInverted));
             var lineImageR =
-                LoadTexture(ImagePath("dark_gradation_short.png"));
+                LoadTexture(ImagePath(imageNameGradationDarkShort));
             
             using (new EditorGUILayout.HorizontalScope())
             {
@@ -410,7 +414,7 @@ namespace PLATEAU.Editor.EditorWindow.Common
 
         public static void MainLogo()
         {
-            var tex = LoadTexture(ImagePath("logo 1.png"));
+            var tex = LoadTexture(ImagePath(imageNameLogo));
             if (tex is null) return;
             float width = Math.Min(tex.width, Screen.width);
             float height = tex.height * width / tex.width;
@@ -441,6 +445,11 @@ namespace PLATEAU.Editor.EditorWindow.Common
             }
         }
 
+        /// <summary>
+        /// テクスチャをロードし、キャッシュに追加してから返します。
+        /// すでにキャッシュにあれば、ファイルロードの代わりにキャッシュから返します。
+        /// 引数文字列がキャッシュのキーとなります。
+        /// </summary>
         private static Texture2D LoadTexture(string path)
         {
             if (cachedTexture.TryGetValue(path, out var cacheHitTexture))
