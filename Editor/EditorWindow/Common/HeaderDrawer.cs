@@ -11,6 +11,7 @@ namespace PLATEAU.Editor.EditorWindow.Common
     /// <see cref="Draw"/> で見出し番号の深さに応じたヘッダーを表示しつつ、見出し番号を数えます。
     /// <see cref="IncrementDepth"/>, <see cref="DecrementDepth"/> で番号の深さを変えます。
     /// </summary>
+    [Obsolete]
     internal static class HeaderDrawer
     {
         /// <summary> 例えば現在の見出し番号が 2-1-1. であれば、このリストは {2,1,1} になります。 </summary>
