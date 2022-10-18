@@ -13,7 +13,7 @@ namespace PLATEAU.Editor.EditorWindow.Common
     internal static class PlateauEditorStyle
     {
         private const string imageDirPath = "Packages/com.synesthesias.plateau-unity-sdk/Images";
-        private static readonly Color mainButtonColorTint = new Color(140f / 255f, 235f / 255f, 255f / 255f);
+        // private static readonly Color mainButtonColorTint = new Color(140f / 255f, 235f / 255f, 255f / 255f);
         private const string cyanBackgroundDark = "#292e30";
         private const string cyanBackgroundLight = "#abc4c9";
         private static readonly ColorLightDark colorDarkBoxBackground = new ColorLightDark("#515151", "#191919");
@@ -179,21 +179,33 @@ namespace PLATEAU.Editor.EditorWindow.Common
         /// <summary> ボタンのスタイルです。押されたときにtrueを返します。 </summary>
         public static bool MainButton(string text)
         {
-            var isButtonPushed = DrawButton(text, mainButtonColorTint, new GUIStyle(GUI.skin.button)
+            var buttonStyle = new GUIStyle(GUI.skin.button)
             {
+                normal =
+                {
+                    background = LoadTexture(ImagePath(imageRoundWindowWide)),
+                    textColor = colorDefaultFont.Dark
+                },
                 margin = new RectOffset(20, 20, 5, 5),
                 padding = new RectOffset(10, 10, 10, 10)
-            });
+            };
+            var isButtonPushed = ButtonWithColorTint(new GUIContent(text), colorButtonMain.Color, buttonStyle, GUILayout.Height(60));
             return isButtonPushed;
         }
 
         public static bool MiniButton(string text)
         {
-            bool isButtonPushed = DrawButton(text, mainButtonColorTint, new GUIStyle(GUI.skin.button)
+            var buttonStyle = new GUIStyle(GUI.skin.button)
             {
+                normal =
+                {
+                    background = LoadTexture(ImagePath(imageRoundWindowWide)),
+                    textColor = colorDefaultFont.Dark
+                },
                 margin = new RectOffset(10, 10, 5, 5),
                 padding = new RectOffset(5, 5, 3, 3)
-            });
+            };
+            bool isButtonPushed = ButtonWithColorTint(new GUIContent(text), colorButtonMain.Color, buttonStyle, GUILayout.Height(40));
             return isButtonPushed;
         }
 
