@@ -159,8 +159,7 @@ namespace PLATEAU.Editor.EditorWindow.Common
                     textColor = colorDefaultFont.Dark
                 }
             };
-            bool isButtonPushed = false;
-            isButtonPushed = ButtonWithColorTint(new GUIContent(text), colorButtonMain.Color, buttonStyle,
+            bool isButtonPushed = ButtonWithColorTint(new GUIContent(text), colorButtonMain.Color, buttonStyle,
                 GUILayout.Height(40), GUILayout.MaxWidth(width));
             return isButtonPushed;
         }
@@ -168,17 +167,18 @@ namespace PLATEAU.Editor.EditorWindow.Common
         /// <summary> 複数行のラベルを表示します。 </summary>
         private static void MultiLineLabel(string text)
         {
-            GUIStyle style = new GUIStyle(EditorStyles.label)
-            {
-                wordWrap = true
-            };
-            EditorGUILayout.LabelField(text, style);
+            EditorGUILayout.LabelField(text, new GUIStyle(StyleMultiLineLabel));
         }
 
-        /// <summary> 複数行のラベルを表示して Box で囲みます。 </summary>
-        public static void MultiLineLabelWithBox(string text)
+        private static GUIStyle StyleMultiLineLabel => new GUIStyle(EditorStyles.label)
         {
-            using (VerticalScopeLevel2())
+            wordWrap = true
+        };
+
+        /// <summary> 複数行のラベルを表示して Box で囲みます。 </summary>
+        public static void MultiLineLabelWithBox(string text, params GUILayoutOption[] options)
+        {
+            using (VerticalScopeLevel2(options))
             {
                 MultiLineLabel(text);
             }
@@ -227,9 +227,9 @@ namespace PLATEAU.Editor.EditorWindow.Common
         /// <summary>
         /// 中のGUIコンテンツをグレーの Box で囲みます。
         /// </summary>
-        public static EditorGUILayout.VerticalScope VerticalScopeLevel2()
+        public static EditorGUILayout.VerticalScope VerticalScopeLevel2(params GUILayoutOption[] options)
         {
-            return new EditorGUILayout.VerticalScope(ContentStyleLevel2);
+            return new EditorGUILayout.VerticalScope(ContentStyleLevel2, options);
         }
 
         /// <summary>
@@ -587,7 +587,7 @@ namespace PLATEAU.Editor.EditorWindow.Common
             }
         }
 
-        private static void CenterAlignVertical(Action drawFunc, params GUILayoutOption[] layoutOptions)
+        public static void CenterAlignVertical(Action drawFunc, params GUILayoutOption[] layoutOptions)
         {
             using (new EditorGUILayout.VerticalScope(layoutOptions))
             {

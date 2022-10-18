@@ -12,21 +12,36 @@ namespace PLATEAU.Editor.EditorWindow.Common.PathSelector
         protected string SelectedPath { get; set; }
         public virtual string Draw(string labelText)
         {
+            const int height = 50;
             bool isButtonPressed = false;
             using (PlateauEditorStyle.VerticalScopeLevel1())
             {
-                using (new EditorGUILayout.HorizontalScope())
+                using(new EditorGUILayout.HorizontalScope(GUILayout.Height(height)))
                 {
-                    PlateauEditorStyle.LabelSizeFit(new GUIContent(labelText), new GUIStyle(EditorStyles.label));
-                    string displayFolderPath = string.IsNullOrEmpty(SelectedPath) ? "未選択" : SelectedPath;
-                    PlateauEditorStyle.MultiLineLabelWithBox(displayFolderPath);
-                    if (PlateauEditorStyle.MiniButton("参照...", 80))
+                    // 表題ラベル
+                    var labelContent = new GUIContent(labelText);
+                    var labelStyle = new GUIStyle(EditorStyles.label);
+                    var labelSize = labelStyle.CalcSize(labelContent);
+                    PlateauEditorStyle.CenterAlignVertical(() =>
                     {
-                        isButtonPressed = true;
-                    }
+                        PlateauEditorStyle.LabelSizeFit(labelContent,
+                                new GUIStyle(EditorStyles.label));
+                    }, GUILayout.Width(labelSize.x), GUILayout.Height(height));
+                    // パス表示
+                    string displayFolderPath = string.IsNullOrEmpty(SelectedPath) ? "未選択" : SelectedPath;
+                    PlateauEditorStyle.MultiLineLabelWithBox(displayFolderPath, GUILayout.Height(height));
+                    // 「参照」ボタン
+                    const int buttonWidth = 80;
+                    PlateauEditorStyle.CenterAlignVertical(() =>
+                    {
+                        if (PlateauEditorStyle.MiniButton("参照...", buttonWidth))
+                        {
+                            isButtonPressed = true;
+                        }
+                    }, GUILayout.Width(buttonWidth), GUILayout.Height(height));
+                    
                 }
-                // EditorGUILayout.LabelField(labelText);
-                
+
             }
             
             // ボタンが押された時。
