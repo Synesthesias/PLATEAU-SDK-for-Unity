@@ -106,53 +106,6 @@ namespace PLATEAU.Editor.EditorWindow.Common
             EditorGUILayout.LabelField(content, style, GUILayout.Width(width));
         }
 
-        /// <summary> 見出し1のスタイルで文字を表示します。 </summary>
-        public static void Heading1(string text)
-        {
-            GUILayout.Box(text, StyleHeading1);
-
-        }
-
-        /// <summary> 見出し2のスタイルで文字を表示します。 </summary>
-        public static void Heading2(string text)
-        {
-            GUILayout.Box(text, StyleHeading2);
-        }
-
-        /// <summary> 見出し3のスタイルで文字を表示します。 </summary>
-        public static void Heading3(string text)
-        {
-            GUILayout.Box(text, StyleHeading3);
-        }
-
-        /// <summary> 見出し1のスタイルです。 </summary>
-        private static GUIStyle StyleHeading1 => new GUIStyle("ShurikenModuleTitle")
-        {
-            fontSize = 15,
-            fontStyle = FontStyle.Bold,
-            fixedHeight = 30,
-            contentOffset = new Vector2(4f, -4f),
-            margin = new RectOffset(3, 2, 4, 4)
-        };
-
-        /// <summary> 見出し2のスタイルです。 </summary>
-        private static GUIStyle StyleHeading2 => new GUIStyle("ShurikenModuleTitle")
-        {
-            fontSize = 13,
-            fixedHeight = 25,
-            contentOffset = new Vector2(4f, -4f),
-            margin = new RectOffset(15, 12, 4, 4)
-        };
-
-        /// <summary> 見出し3のスタイルです。 </summary>
-        private static GUIStyle StyleHeading3 => new GUIStyle("ShurikenModuleTitle")
-        {
-            fontSize = 12,
-            fixedHeight = 22,
-            contentOffset = new Vector2(4f, -4f),
-            margin = new RectOffset(27, 12, 4, 4)
-        };
-
         public static string IconPathBuilding => imageIconBuilding.RelativePath;
 
         public static void Separator(int indentLevel)
