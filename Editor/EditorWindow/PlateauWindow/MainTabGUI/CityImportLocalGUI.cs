@@ -20,12 +20,16 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
         private readonly PathSelectorFolderPlateauInput folderSelector = new PathSelectorFolderPlateauInput();
         private readonly CityLoadConfig config = new CityLoadConfig();
         private bool isAreaSelectComplete;
+        private bool foldOutSourceFolderPath = true;
 
         
         public void Draw()
         {
-            this.config.SourcePathBeforeImport = this.folderSelector.Draw("入力フォルダ");
-
+            this.foldOutSourceFolderPath = PlateauEditorStyle.FoldOut(this.foldOutSourceFolderPath, "入力フォルダ", () =>
+            {
+                this.config.SourcePathBeforeImport = this.folderSelector.Draw("フォルダパス");
+            });
+            
             PlateauEditorStyle.Separator(0);
             PlateauEditorStyle.SubTitle("モデルデータの配置を行います。");
             PlateauEditorStyle.Heading("基準座標系の選択", null);

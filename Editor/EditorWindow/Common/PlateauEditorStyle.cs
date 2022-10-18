@@ -149,7 +149,7 @@ namespace PLATEAU.Editor.EditorWindow.Common
             return isButtonPushed;
         }
 
-        public static bool MiniButton(string text)
+        public static bool MiniButton(string text, int width)
         {
             var buttonStyle = new GUIStyle(GUI.skin.button)
             {
@@ -160,10 +160,8 @@ namespace PLATEAU.Editor.EditorWindow.Common
                 }
             };
             bool isButtonPushed = false;
-            CenterAlignHorizontal(() =>
-            {
-                isButtonPushed = ButtonWithColorTint(new GUIContent(text), colorButtonMain.Color, buttonStyle, GUILayout.Height(40), GUILayout.MaxWidth(240));
-            });
+            isButtonPushed = ButtonWithColorTint(new GUIContent(text), colorButtonMain.Color, buttonStyle,
+                GUILayout.Height(40), GUILayout.MaxWidth(width));
             return isButtonPushed;
         }
 
