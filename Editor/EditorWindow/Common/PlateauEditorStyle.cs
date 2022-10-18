@@ -2,9 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using PLATEAU.Util;
 using UnityEditor;
-using UnityEditor.SceneManagement;
 using UnityEngine;
 
 namespace PLATEAU.Editor.EditorWindow.Common
@@ -353,36 +351,10 @@ namespace PLATEAU.Editor.EditorWindow.Common
             },
             margin = new RectOffset(0, 0, 15, 15)
         };
+        
 
         /// <summary>
-        /// タブ形式で複数のボタンから選ぶGUIを表示し、選択されたタブのインデックスを返します。
-        /// 引数には現在のタブのインデックスと、paramsで各タブの表示名を与えます。
-        /// </summary>
-        [Obsolete]
-        public static int TabsOLD(int currentTabIndex, params string[] tabNames)
-        {
-            var prevColor = GUI.backgroundColor;
-            GUI.backgroundColor = mainButtonColorTint;
-            int nextTabIndex;
-            using (VerticalScopeLevel1())
-            {
-                using (new EditorGUILayout.HorizontalScope())
-                {
-                    nextTabIndex = GUILayout.Toolbar(
-                        currentTabIndex,
-                        tabNames,
-                        "LargeButton",
-                        GUI.ToolbarButtonSize.Fixed
-                    );
-                }
-            }
-
-            GUI.backgroundColor = prevColor;
-            return nextTabIndex;
-        }
-
-        /// <summary>
-        /// タブ形式の選択GUIで、タブの中身が画像です。
+        /// タブ形式の選択GUIで、タブの中身が画像のものを表示します。
         /// </summary>
         /// <param name="currentTabIndex">現在選択されているタブの番号です。</param>
         /// <param name="imagePathsRelative"><see cref="imageDirPath"/> からの相対パスで画像を指定します。</param>
@@ -466,10 +438,13 @@ namespace PLATEAU.Editor.EditorWindow.Common
             return nextTabIndex;
         }
 
+        /// <summary>
+        /// 選択式のタブを表示します。
+        /// 選択されたタブの番号を返します。
+        /// </summary>
         public static int Tabs(int currentTabIndex, params string[] tabNames)
         {
             const int height = 40;
-            const int sideMargin = 100;
             int tabCount = tabNames.Length;
             int nextTabIndex = currentTabIndex;
             var boxStyle = new GUIStyle(EditorStyles.label)
@@ -493,11 +468,13 @@ namespace PLATEAU.Editor.EditorWindow.Common
                     fontSize = 14,
                     fontStyle = FontStyle.Bold
                 };
+                // ボタンごとのループ
                 for (int i = 0; i < tabCount; i++)
                 {
                     var buttonStyle = new GUIStyle(baseStyle);
                     if (i == currentTabIndex)
                     {
+                        // 選択中のボタンは背景が暗いので、テキストは白っぽい色にします。
                         buttonStyle.normal.textColor = colorDefaultFont.Dark;
                     }
                     var backgroundColorTint = i == currentTabIndex ? colorButtonMain.Color : colorButtonSub.Color;

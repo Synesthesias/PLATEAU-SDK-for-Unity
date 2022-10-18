@@ -1,5 +1,4 @@
-﻿using System;
-using PLATEAU.CityImport.Setting;
+﻿using PLATEAU.CityImport.Setting;
 using PLATEAU.Editor.EditorWindow.Common;
 using PLATEAU.IO;
 using PLATEAU.Udx;
