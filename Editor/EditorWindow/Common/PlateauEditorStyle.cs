@@ -19,6 +19,8 @@ namespace PLATEAU.Editor.EditorWindow.Common
         private const string cyanBackgroundDark = "#292e30";
         private const string cyanBackgroundLight = "#abc4c9";
         private static readonly ColorLightDark colorDarkBoxBackground = new ColorLightDark("#515151", "#191919");
+        private static readonly ColorLightDark colorButtonMain = new ColorLightDark("#005858", "#005858");
+        private static readonly ColorLightDark colorButtonSub = new ColorLightDark("#E4E4E4", "#676767");
         private const string colorDarkBoxSelectedElement = "#676767";
         private const string colorDarkBoxClickedElement = "#303030";
         private const string colorLogoBackground = "#676767";
@@ -36,6 +38,9 @@ namespace PLATEAU.Editor.EditorWindow.Common
 
         private static readonly ImagePathLightDark imageIconBuilding =
             new ImagePathLightDark("light_icon_building.png", "dark_icon_building.png");
+
+        private const string imageRoundButton = "round-button.png";
+        private const string imageRoundWindowWide = "round-window-wide.png";
         private static readonly Dictionary<string, Texture2D> cachedTexture = new Dictionary<string, Texture2D>();
 
         /// <summary>
@@ -332,7 +337,7 @@ namespace PLATEAU.Editor.EditorWindow.Common
             normal =
             {
                 // background = ColoredTexture(colorDarkBoxBackground)
-                background = LoadTexture(ImagePath("round-window-wide.png")),
+                background = LoadTexture(ImagePath(imageRoundWindowWide)),
             },
             margin = new RectOffset(15, 15, 15, 15),
             padding = new RectOffset(5, 5, 15, 15)
@@ -352,7 +357,8 @@ namespace PLATEAU.Editor.EditorWindow.Common
         /// タブ形式で複数のボタンから選ぶGUIを表示し、選択されたタブのインデックスを返します。
         /// 引数には現在のタブのインデックスと、paramsで各タブの表示名を与えます。
         /// </summary>
-        public static int Tabs(int currentTabIndex, params string[] tabNames)
+        [Obsolete]
+        public static int TabsOLD(int currentTabIndex, params string[] tabNames)
         {
             var prevColor = GUI.backgroundColor;
             GUI.backgroundColor = mainButtonColorTint;
@@ -391,7 +397,7 @@ namespace PLATEAU.Editor.EditorWindow.Common
                 .Select(ImagePath)
                 .Select(path => (Texture)LoadTexture(path))
                 .ToArray();
-            var buttonBackground = LoadTexture(ImagePath("round-button.png"));
+            var buttonBackground = LoadTexture(ImagePath(imageRoundButton));
             float toolbarButtonHeight = buttonBackground.height * buttonWidth / buttonBackground.width;
 
             var iconContents = new GUIContent[tabCount];
@@ -428,26 +434,27 @@ namespace PLATEAU.Editor.EditorWindow.Common
                 for (int i = 0; i < tabCount; i++)
                 {
                     var buttonStyle = new GUIStyle(baseStyle);
-                    var prevBackgroundColor2 = GUI.backgroundColor;
+                    Color buttonBackgroundColorTint;
                     if (i == currentTabIndex)
                     {
                         
                         ColorUtility.TryParseHtmlString(colorDarkBoxSelectedElement, out var selectedColorTint);
-                        GUI.backgroundColor = selectedColorTint;
+                        buttonBackgroundColorTint = selectedColorTint;
                         buttonStyle.normal.background = buttonBackground;
                         
                     }
                     else
                     {
-                        GUI.backgroundColor = colorDarkBoxBackground.Color;
+                        buttonBackgroundColorTint = colorDarkBoxBackground.Color;
                         buttonStyle.active.background = ColoredTexture(colorDarkBoxClickedElement);
                     }
-            
-                    if (GUILayout.Button(iconContents[i], buttonStyle, GUILayout.MaxWidth(buttonWidth), GUILayout.MaxHeight(toolbarButtonHeight), GUILayout.MinWidth(20)))
+
+                    if (ButtonWithColorTint(iconContents[i], buttonBackgroundColorTint, buttonStyle,
+                            GUILayout.MaxWidth(buttonWidth), GUILayout.MaxHeight(toolbarButtonHeight),
+                            GUILayout.MinWidth(20)))
                     {
                         nextTabIndex = i;
                     }
-                    GUI.backgroundColor = prevBackgroundColor2;
                 }
             
                 GUI.backgroundColor = prevBackgroundColor;
@@ -456,6 +463,51 @@ namespace PLATEAU.Editor.EditorWindow.Common
             }
 
             return nextTabIndex;
+        }
+
+        public static int Tabs(int currentTabIndex, params string[] tabNames)
+        {
+            const int height = 40;
+            int tabCount = tabNames.Length;
+            int nextTabIndex = currentTabIndex;
+            using (new EditorGUILayout.HorizontalScope(GUILayout.Height(height)))
+            {
+                var baseStyle = new GUIStyle(EditorStyles.toolbarButton)
+                {
+                    normal =
+                    {
+                        background = LoadTexture(ImagePath(imageRoundWindowWide))
+                    },
+                    margin =
+                    {
+                        left = 0,
+                        right = 0
+                    },
+                    fixedHeight = height
+                };
+                for (int i = 0; i < tabCount; i++)
+                {
+                    var backgroundColorTint = i == currentTabIndex ? colorButtonMain.Color : colorButtonSub.Color;
+                    if (ButtonWithColorTint(new GUIContent(tabNames[i]), backgroundColorTint, baseStyle, GUILayout.Height(height)))
+                    {
+                        nextTabIndex = i;
+                    }
+                }
+            }
+
+            return nextTabIndex;
+        }
+
+        /// <summary>
+        /// 背景色をベースに対する乗算で指定するボタンです。
+        /// </summary>
+        public static bool ButtonWithColorTint(GUIContent buttonContent, Color backgroundColorTint, GUIStyle buttonStyle, params GUILayoutOption[] options)
+        {
+            var prevBackgroundColor = GUI.backgroundColor;
+            GUI.backgroundColor = backgroundColorTint;
+            bool isPushed = GUILayout.Button(buttonContent, buttonStyle, options);
+            GUI.backgroundColor = prevBackgroundColor;
+            return isPushed;
         }
 
         /// <summary>
