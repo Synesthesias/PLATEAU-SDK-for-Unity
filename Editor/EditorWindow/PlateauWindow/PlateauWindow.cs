@@ -22,7 +22,6 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow
         private void OnGUI()
         {
             this.gui ??= new PlateauWindowGUI();
-            HeaderDrawer.Reset();
             using var scrollView = new EditorGUILayout.ScrollViewScope(this.scrollPosition);
             this.scrollPosition = scrollView.scrollPosition;
             this.gui.Draw();

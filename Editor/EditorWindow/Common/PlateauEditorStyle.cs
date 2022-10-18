@@ -264,7 +264,6 @@ namespace PLATEAU.Editor.EditorWindow.Common
 
         /// <summary>
         /// IDisposable な VerticalScope を作り、中のGUIコンテンツを Box で囲みます。
-        /// Box の位置には <see cref="HeaderDrawer"/> の見出しの深さがインデントとして反映されます。
         /// </summary>
         public static EditorGUILayout.VerticalScope VerticalScopeLevel1(int indent = 0)
         {
@@ -495,25 +494,18 @@ namespace PLATEAU.Editor.EditorWindow.Common
         {
             var style = new GUIStyle(EditorStyles.foldoutHeader)
             {
-                // normal =
-                // {
-                //     // background = ColoredTexture("#" + ColorUtility.ToHtmlStringRGB(colorFoldOutBackground.Color)),
-                // },
                 fixedWidth = ScreenDrawableWidth
             };
             var textContent = new GUIContent(text);
-            // var rect = GUILayoutUtility.GetRect(textContent, style);
             var colorTint = new Color(
                 colorFoldOutBackground.Color.r / colorDefaultBackground.Color.r,
                 colorFoldOutBackground.Color.g / colorDefaultBackground.Color.g,
                 colorFoldOutBackground.Color.b / colorDefaultBackground.Color.b);
             var prevBackgroundColor = GUI.backgroundColor;
             GUI.backgroundColor = colorTint;
-            // foldOut = EditorGUI.BeginFoldoutHeaderGroup(rect, foldOut, textContent, style, null, new GUIStyle(EditorStyles.foldoutHeaderIcon));
             foldOut = EditorGUILayout.Foldout(foldOut, textContent, style);
             GUI.backgroundColor = prevBackgroundColor;
             EditorGUI.EndFoldoutHeaderGroup();
-            // Debug.Log(ColorUtility.ToHtmlStringRGB(colorFoldOutBackground.Color));
             return foldOut;
         }
 

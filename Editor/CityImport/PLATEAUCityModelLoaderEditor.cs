@@ -16,11 +16,9 @@ namespace PLATEAU.Editor.CityImport
         {
             var loader = (PLATEAUCityModelLoader)target;
 
-            HeaderDrawer.Reset();
-            
-            
-            
-            HeaderDrawer.Draw("詳細データ");
+
+
+            PlateauEditorStyle.FoldOut(true, "詳細データ");
             using (PlateauEditorStyle.VerticalScopeLevel1())
             {
                 EditorGUILayout.LabelField("インポート前パス:");

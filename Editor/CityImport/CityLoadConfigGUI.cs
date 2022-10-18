@@ -11,12 +11,11 @@ namespace PLATEAU.Editor.CityImport
     {
         public static void Draw(CityLoadConfig cityLoadConf)
         {
-            HeaderDrawer.IncrementDepth();
             foreach (var pair in cityLoadConf.ForEachPackagePair)
             {
                 var package = pair.Key;
                 var conf = pair.Value;
-                HeaderDrawer.Draw(package.ToJapaneseName());
+                PlateauEditorStyle.FoldOut(true, package.ToJapaneseName());
                 using (PlateauEditorStyle.VerticalScopeLevel1())
                 {
                     conf.loadPackage = EditorGUILayout.Toggle("インポートする", conf.loadPackage);
@@ -34,7 +33,6 @@ namespace PLATEAU.Editor.CityImport
                 }
                 
             }
-            HeaderDrawer.DecrementDepth();
         }
 
         private static void TextureIncludeGUI(PackageLoadSetting conf, bool mayTextureExist)
