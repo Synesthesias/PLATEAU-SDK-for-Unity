@@ -13,7 +13,6 @@ namespace PLATEAU.Editor.EditorWindow.Common
     internal static class PlateauEditorStyle
     {
         private const string imageDirPath = "Packages/com.synesthesias.plateau-unity-sdk/Images";
-        // private static readonly Color mainButtonColorTint = new Color(140f / 255f, 235f / 255f, 255f / 255f);
         private const string cyanBackgroundDark = "#292e30";
         private const string cyanBackgroundLight = "#abc4c9";
         private static readonly ColorLightDark colorDarkBoxBackground = new ColorLightDark("#515151", "#191919");
@@ -141,10 +140,14 @@ namespace PLATEAU.Editor.EditorWindow.Common
                     background = LoadTexture(imageRoundWindowWide),
                     textColor = colorDefaultFont.Dark
                 },
-                margin = new RectOffset(20, 20, 5, 5),
-                padding = new RectOffset(10, 10, 10, 10)
+                // margin = new RectOffset(20, 20, 5, 5),
+                // padding = new RectOffset(10, 10, 10, 10)
             };
-            var isButtonPushed = ButtonWithColorTint(new GUIContent(text), colorButtonMain.Color, buttonStyle, GUILayout.Height(60));
+            bool isButtonPushed = false;
+            CenterAlignHorizontal(() =>
+            {
+                isButtonPushed = ButtonWithColorTint(new GUIContent(text), colorButtonMain.Color, buttonStyle, GUILayout.Height(60), GUILayout.MaxWidth(240));
+            });
             return isButtonPushed;
         }
 
@@ -157,10 +160,14 @@ namespace PLATEAU.Editor.EditorWindow.Common
                     background = LoadTexture(imageRoundWindowWide),
                     textColor = colorDefaultFont.Dark
                 },
-                margin = new RectOffset(10, 10, 5, 5),
-                padding = new RectOffset(5, 5, 3, 3)
+                // margin = new RectOffset(10, 10, 5, 5),
+                // padding = new RectOffset(5, 5, 3, 3)
             };
-            bool isButtonPushed = ButtonWithColorTint(new GUIContent(text), colorButtonMain.Color, buttonStyle, GUILayout.Height(40));
+            bool isButtonPushed = false;
+            CenterAlignHorizontal(() =>
+            {
+                isButtonPushed = ButtonWithColorTint(new GUIContent(text), colorButtonMain.Color, buttonStyle, GUILayout.Height(40), GUILayout.MaxWidth(240));
+            });
             return isButtonPushed;
         }
 
@@ -291,7 +298,6 @@ namespace PLATEAU.Editor.EditorWindow.Common
         {
             normal =
             {
-                // background = ColoredTexture(colorDarkBoxBackground)
                 background = LoadTexture(imageRoundWindowWide),
             },
             margin = new RectOffset(15, 15, 15, 15),
@@ -338,7 +344,6 @@ namespace PLATEAU.Editor.EditorWindow.Common
             {
                 imagePosition = ImagePosition.ImageAbove,
                 fixedHeight = toolbarButtonHeight,
-                // fixedWidth = buttonWidth,
                 stretchWidth = true,
                 stretchHeight = true,
                 normal =
