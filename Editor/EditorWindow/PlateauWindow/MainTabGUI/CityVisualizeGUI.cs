@@ -6,7 +6,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
     {
         public void Draw()
         {
-            HeaderDrawer.Draw("都市の可視化");
+            PlateauEditorStyle.SubTitle("配置済みモデルデータの調整を行います。");
         }
     }
 }

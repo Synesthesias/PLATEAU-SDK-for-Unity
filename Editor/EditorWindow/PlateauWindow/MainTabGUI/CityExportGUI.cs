@@ -12,13 +12,11 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
         private MeshFileFormat meshFileFormat = MeshFileFormat.OBJ;
         public void Draw()
         {
-            HeaderDrawer.Draw("都市モデルのエクスポート");
-            EditorGUILayout.LabelField("モデルデータのエクスポートを行います。");
-            HeaderDrawer.IncrementDepth();
-            HeaderDrawer.Draw("選択オブジェクト");
+            PlateauEditorStyle.SubTitle("モデルデータのエクスポートを行います。");
+            PlateauEditorStyle.Heading("選択オブジェクト", null);
             // TODO 仮
             this.meshFileFormat = (MeshFileFormat)EditorGUILayout.EnumPopup("出力形式", this.meshFileFormat);
-            HeaderDrawer.Draw("Option");
+            PlateauEditorStyle.FoldOut(true, "Option");
             PlateauEditorStyle.Separator(0);
             if (PlateauEditorStyle.MainButton("エクスポート"))
             {

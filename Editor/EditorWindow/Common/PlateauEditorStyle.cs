@@ -20,6 +20,8 @@ namespace PLATEAU.Editor.EditorWindow.Common
         private static readonly ColorLightDark colorButtonMain = new ColorLightDark("#005858", "#005858");
         private static readonly ColorLightDark colorButtonSub = new ColorLightDark("#E4E4E4", "#676767");
         private static readonly ColorLightDark colorDefaultFont = new ColorLightDark("#090909", "#C4C4C4");
+        private static readonly ColorLightDark colorDefaultBackground = new ColorLightDark("#C8C8C8", "#383838");
+        private static readonly ColorLightDark colorFoldOutBackground = new ColorLightDark("#BBBBBB", "#3E3E3E");
         private const string colorDarkBoxSelectedElement = "#676767";
         private const string colorDarkBoxClickedElement = "#303030";
         private const string colorLogoBackground = "#676767";
@@ -264,9 +266,9 @@ namespace PLATEAU.Editor.EditorWindow.Common
         /// IDisposable な VerticalScope を作り、中のGUIコンテンツを Box で囲みます。
         /// Box の位置には <see cref="HeaderDrawer"/> の見出しの深さがインデントとして反映されます。
         /// </summary>
-        public static EditorGUILayout.VerticalScope VerticalScopeLevel1(bool useHeaderDepth = true)
+        public static EditorGUILayout.VerticalScope VerticalScopeLevel1(int indent = 0)
         {
-            return new EditorGUILayout.VerticalScope(ContentStyleLevel1(useHeaderDepth));
+            return new EditorGUILayout.VerticalScope(ContentStyleLevel1(indent));
         }
 
         /// <summary>
@@ -293,9 +295,9 @@ namespace PLATEAU.Editor.EditorWindow.Common
         /// <summary>
         /// GUIのコンテンツをまとめるのに利用できます。
         /// </summary>
-        private static GUIStyle ContentStyleLevel1(bool useHeaderDepth = true)
+        private static GUIStyle ContentStyleLevel1(int indent)
         {
-            int marginLeft = useHeaderDepth ? HeaderDrawer.Depth * 12 : 12;
+            int marginLeft = Math.Min(1, indent) * 12;
             var style = new GUIStyle
             {
                 padding = new RectOffset(8, 8, 8, 8),
@@ -316,7 +318,7 @@ namespace PLATEAU.Editor.EditorWindow.Common
         /// 青っぽい色に寄せた背景色のBoxStyleを返します。
         /// エディタのテーマが Dark か Light かに応じて異なる色を返します。
         /// </summary>
-        private static GUIStyle ContentStyleLevel3 => new GUIStyle(ContentStyleLevel1(false))
+        private static GUIStyle ContentStyleLevel3 => new GUIStyle(ContentStyleLevel1(0))
         {
             normal =
             {
@@ -487,6 +489,32 @@ namespace PLATEAU.Editor.EditorWindow.Common
             }
 
             return nextTabIndex;
+        }
+
+        public static bool FoldOut(bool foldOut, string text)
+        {
+            var style = new GUIStyle(EditorStyles.foldoutHeader)
+            {
+                // normal =
+                // {
+                //     // background = ColoredTexture("#" + ColorUtility.ToHtmlStringRGB(colorFoldOutBackground.Color)),
+                // },
+                fixedWidth = ScreenDrawableWidth
+            };
+            var textContent = new GUIContent(text);
+            // var rect = GUILayoutUtility.GetRect(textContent, style);
+            var colorTint = new Color(
+                colorFoldOutBackground.Color.r / colorDefaultBackground.Color.r,
+                colorFoldOutBackground.Color.g / colorDefaultBackground.Color.g,
+                colorFoldOutBackground.Color.b / colorDefaultBackground.Color.b);
+            var prevBackgroundColor = GUI.backgroundColor;
+            GUI.backgroundColor = colorTint;
+            // foldOut = EditorGUI.BeginFoldoutHeaderGroup(rect, foldOut, textContent, style, null, new GUIStyle(EditorStyles.foldoutHeaderIcon));
+            foldOut = EditorGUILayout.Foldout(foldOut, textContent, style);
+            GUI.backgroundColor = prevBackgroundColor;
+            EditorGUI.EndFoldoutHeaderGroup();
+            // Debug.Log(ColorUtility.ToHtmlStringRGB(colorFoldOutBackground.Color));
+            return foldOut;
         }
 
         /// <summary>
