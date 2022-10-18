@@ -21,6 +21,7 @@ namespace PLATEAU.Editor.EditorWindow.Common
         private static readonly ColorLightDark colorDarkBoxBackground = new ColorLightDark("#515151", "#191919");
         private static readonly ColorLightDark colorButtonMain = new ColorLightDark("#005858", "#005858");
         private static readonly ColorLightDark colorButtonSub = new ColorLightDark("#E4E4E4", "#676767");
+        private static readonly ColorLightDark colorDefaultFont = new ColorLightDark("#090909", "#C4C4C4");
         private const string colorDarkBoxSelectedElement = "#676767";
         private const string colorDarkBoxClickedElement = "#303030";
         private const string colorLogoBackground = "#676767";
@@ -468,9 +469,14 @@ namespace PLATEAU.Editor.EditorWindow.Common
         public static int Tabs(int currentTabIndex, params string[] tabNames)
         {
             const int height = 40;
+            const int sideMargin = 100;
             int tabCount = tabNames.Length;
             int nextTabIndex = currentTabIndex;
-            using (new EditorGUILayout.HorizontalScope(GUILayout.Height(height)))
+            var boxStyle = new GUIStyle(EditorStyles.label)
+            {
+                padding = new RectOffset(30, 30, 0, 0)
+            };
+            using (new EditorGUILayout.HorizontalScope(boxStyle,  GUILayout.Height(height)))
             {
                 var baseStyle = new GUIStyle(EditorStyles.toolbarButton)
                 {
@@ -480,15 +486,22 @@ namespace PLATEAU.Editor.EditorWindow.Common
                     },
                     margin =
                     {
-                        left = 0,
-                        right = 0
+                        left = -5,
+                        right = -5
                     },
-                    fixedHeight = height
+                    fixedHeight = height,
+                    fontSize = 14,
+                    fontStyle = FontStyle.Bold
                 };
                 for (int i = 0; i < tabCount; i++)
                 {
+                    var buttonStyle = new GUIStyle(baseStyle);
+                    if (i == currentTabIndex)
+                    {
+                        buttonStyle.normal.textColor = colorDefaultFont.Dark;
+                    }
                     var backgroundColorTint = i == currentTabIndex ? colorButtonMain.Color : colorButtonSub.Color;
-                    if (ButtonWithColorTint(new GUIContent(tabNames[i]), backgroundColorTint, baseStyle, GUILayout.Height(height)))
+                    if (ButtonWithColorTint(new GUIContent(tabNames[i]), backgroundColorTint, buttonStyle, GUILayout.Height(height)))
                     {
                         nextTabIndex = i;
                     }
@@ -680,8 +693,14 @@ namespace PLATEAU.Editor.EditorWindow.Common
                 ColorUtility.TryParseHtmlString(darkModeColorCode, out this.darkModeColor);
             }
 
+            /// <summary>
+            /// 現在のUnityテーマに応じた色を返します。
+            /// </summary>
             public Color Color =>
                 EditorGUIUtility.isProSkin ? this.darkModeColor : this.lightModeColor;
+
+            public Color Dark => this.darkModeColor;
+            public Color Light => this.lightModeColor;
         }
     }
 }
