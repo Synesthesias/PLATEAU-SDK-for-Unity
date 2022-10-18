@@ -139,9 +139,7 @@ namespace PLATEAU.Editor.EditorWindow.Common
                 {
                     background = LoadTexture(imageRoundWindowWide),
                     textColor = colorDefaultFont.Dark
-                },
-                // margin = new RectOffset(20, 20, 5, 5),
-                // padding = new RectOffset(10, 10, 10, 10)
+                }
             };
             bool isButtonPushed = false;
             CenterAlignHorizontal(() =>
@@ -159,9 +157,7 @@ namespace PLATEAU.Editor.EditorWindow.Common
                 {
                     background = LoadTexture(imageRoundWindowWide),
                     textColor = colorDefaultFont.Dark
-                },
-                // margin = new RectOffset(10, 10, 5, 5),
-                // padding = new RectOffset(5, 5, 3, 3)
+                }
             };
             bool isButtonPushed = false;
             CenterAlignHorizontal(() =>
@@ -447,24 +443,31 @@ namespace PLATEAU.Editor.EditorWindow.Common
 
             return nextTabIndex;
         }
-
-        public static bool FoldOut(bool foldOut, string text)
+        
+        public static bool FoldOut(bool foldOutState, string headerText, Action drawInner)
         {
+            // ヘッダーを描画します。
             var style = new GUIStyle(EditorStyles.foldoutHeader)
             {
                 fixedWidth = ScreenDrawableWidth
             };
-            var textContent = new GUIContent(text);
+            var textContent = new GUIContent(headerText);
             var colorTint = new Color(
                 colorFoldOutBackground.Color.r / colorDefaultBackground.Color.r,
                 colorFoldOutBackground.Color.g / colorDefaultBackground.Color.g,
                 colorFoldOutBackground.Color.b / colorDefaultBackground.Color.b);
             var prevBackgroundColor = GUI.backgroundColor;
             GUI.backgroundColor = colorTint;
-            foldOut = EditorGUILayout.Foldout(foldOut, textContent, style);
+            foldOutState = EditorGUILayout.Foldout(foldOutState, textContent, true, style);
             GUI.backgroundColor = prevBackgroundColor;
             EditorGUI.EndFoldoutHeaderGroup();
-            return foldOut;
+            
+            // 折りたたみ可能な中身を表示します。
+            if (foldOutState)
+            {
+                drawInner();
+            }
+            return foldOutState;
         }
 
         /// <summary>
@@ -662,5 +665,7 @@ namespace PLATEAU.Editor.EditorWindow.Common
             public Color Dark => this.darkModeColor;
             // public Color Light => this.lightModeColor;
         }
+
+        
     }
 }

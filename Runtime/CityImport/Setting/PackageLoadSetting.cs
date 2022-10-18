@@ -1,5 +1,6 @@
 ﻿using System;
 using PLATEAU.IO;
+using UnityEditor;
 
 namespace PLATEAU.CityImport.Setting
 {
@@ -15,6 +16,8 @@ namespace PLATEAU.CityImport.Setting
         public uint minLOD;
         public uint maxLOD;
         public MeshGranularity meshGranularity;
+        /// <summary> GUIで設定を表示する(true)か、折りたたむ(false)か </summary>
+        [NonSerialized] public bool GuiFoldOutState = true; 
 
         public PackageLoadSetting(bool loadPackage, bool includeTexture, uint minLOD, uint maxLOD, MeshGranularity meshGranularity)
         {

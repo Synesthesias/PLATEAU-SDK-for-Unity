@@ -1,4 +1,5 @@
-﻿using PLATEAU.CityImport.Setting;
+﻿using System.Collections.Generic;
+using PLATEAU.CityImport.Setting;
 using PLATEAU.Editor.EditorWindow.Common;
 using PLATEAU.IO;
 using PLATEAU.Udx;
@@ -15,23 +16,24 @@ namespace PLATEAU.Editor.CityImport
             {
                 var package = pair.Key;
                 var conf = pair.Value;
-                PlateauEditorStyle.FoldOut(true, package.ToJapaneseName());
-                using (PlateauEditorStyle.VerticalScopeLevel1())
+                conf.GuiFoldOutState = PlateauEditorStyle.FoldOut(conf.GuiFoldOutState, package.ToJapaneseName(), () =>
                 {
-                    conf.loadPackage = EditorGUILayout.Toggle("インポートする", conf.loadPackage);
-                    if (conf.loadPackage)
+                    using (PlateauEditorStyle.VerticalScopeLevel1())
                     {
-                        using (PlateauEditorStyle.VerticalScopeLevel2())
+                        conf.loadPackage = EditorGUILayout.Toggle("インポートする", conf.loadPackage);
+                        if (conf.loadPackage)
                         {
-                            var predefined = CityModelPackageInfo.GetPredefined(package);
-                            TextureIncludeGUI(conf, predefined.hasAppearance);
-                            LODRangeGUI(conf, (uint)predefined.minLOD, (uint)predefined.maxLOD);
-                            conf.meshGranularity = (MeshGranularity)EditorGUILayout.Popup("メッシュ結合単位",
-                                (int)conf.meshGranularity, new[] { "最小地物単位", "主要地物単位", "都市モデル地域単位" });
+                            using (PlateauEditorStyle.VerticalScopeLevel2())
+                            {
+                                var predefined = CityModelPackageInfo.GetPredefined(package);
+                                TextureIncludeGUI(conf, predefined.hasAppearance);
+                                LODRangeGUI(conf, (uint)predefined.minLOD, (uint)predefined.maxLOD);
+                                conf.meshGranularity = (MeshGranularity)EditorGUILayout.Popup("メッシュ結合単位",
+                                    (int)conf.meshGranularity, new[] { "最小地物単位", "主要地物単位", "都市モデル地域単位" });
+                            }
                         }
                     }
-                }
-                
+                });
             }
         }
 

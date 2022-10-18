@@ -10,13 +10,14 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
     internal class CityExportGUI : IEditorDrawable
     {
         private MeshFileFormat meshFileFormat = MeshFileFormat.OBJ;
+        private bool foldOutOption = true;
         public void Draw()
         {
             PlateauEditorStyle.SubTitle("モデルデータのエクスポートを行います。");
             PlateauEditorStyle.Heading("選択オブジェクト", null);
             // TODO 仮
             this.meshFileFormat = (MeshFileFormat)EditorGUILayout.EnumPopup("出力形式", this.meshFileFormat);
-            PlateauEditorStyle.FoldOut(true, "Option");
+            this.foldOutOption = PlateauEditorStyle.FoldOut(this.foldOutOption, "Option", () => { });
             PlateauEditorStyle.Separator(0);
             if (PlateauEditorStyle.MainButton("エクスポート"))
             {
