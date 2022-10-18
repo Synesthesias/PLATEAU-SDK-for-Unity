@@ -1,5 +1,4 @@
-﻿using PLATEAU.Editor.EditorWindow.Common;
-using UnityEditor;
+﻿using UnityEditor;
 using UnityEngine;
 
 namespace PLATEAU.Editor.EditorWindow.PlateauWindow

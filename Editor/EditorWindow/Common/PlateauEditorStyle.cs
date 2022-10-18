@@ -21,6 +21,7 @@ namespace PLATEAU.Editor.EditorWindow.Common
         private static readonly ColorLightDark colorDefaultFont = new ColorLightDark("#090909", "#C4C4C4");
         private static readonly ColorLightDark colorDefaultBackground = new ColorLightDark("#C8C8C8", "#383838");
         private static readonly ColorLightDark colorFoldOutBackground = new ColorLightDark("#BBBBBB", "#3E3E3E");
+        private static readonly ColorLightDark colorNumberDisplayBackground = new ColorLightDark("#E4E4E4", "#191919");
         private const string colorDarkBoxSelectedElement = "#676767";
         private const string colorDarkBoxClickedElement = "#303030";
         private const string colorLogoBackground = "#676767";
@@ -99,10 +100,27 @@ namespace PLATEAU.Editor.EditorWindow.Common
         /// <summary>
         /// ラベルの幅 = ラベルの中身の幅　となるラベルを描画します。
         /// </summary>
-        public static void LabelSizeFit(GUIContent content, GUIStyle style)
+        public static void LabelSizeFit(GUIContent content, GUIStyle style = null)
         {
+            style ??= new GUIStyle(EditorStyles.label);
             var width = style.CalcSize(content).x;
             EditorGUILayout.LabelField(content, style, GUILayout.Width(width));
+        }
+
+        public static void NumberDisplay(int num)
+        {
+            var style = new GUIStyle(EditorStyles.label)
+            {
+                normal =
+                {
+                    background = LoadTexture(imageRoundButton)
+                },
+                fontStyle = FontStyle.Bold
+            };
+            var prevBackgroundColor = GUI.backgroundColor;
+            GUI.backgroundColor = colorNumberDisplayBackground.Color;
+            LabelSizeFit(new GUIContent($"  {num}  "), style);
+            GUI.backgroundColor = prevBackgroundColor;
         }
 
         public static string IconPathBuilding => imageIconBuilding.RelativePath;
