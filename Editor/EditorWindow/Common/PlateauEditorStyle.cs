@@ -449,7 +449,8 @@ namespace PLATEAU.Editor.EditorWindow.Common
             // ヘッダーを描画します。
             var style = new GUIStyle(EditorStyles.foldoutHeader)
             {
-                fixedWidth = ScreenDrawableWidth
+                fixedWidth = ScreenDrawableWidth,
+                // fixedHeight = 100
             };
             var textContent = new GUIContent(headerText);
             var colorTint = new Color(
@@ -460,8 +461,7 @@ namespace PLATEAU.Editor.EditorWindow.Common
             GUI.backgroundColor = colorTint;
             foldOutState = EditorGUILayout.Foldout(foldOutState, textContent, true, style);
             GUI.backgroundColor = prevBackgroundColor;
-            EditorGUI.EndFoldoutHeaderGroup();
-            
+
             // 折りたたみ可能な中身を表示します。
             if (foldOutState)
             {
