@@ -312,126 +312,6 @@
     },
     {
       "type": "ManagedReference",
-      "source_relative_path": "api/PLATEAU.CityImport.AreaSelector.IAreaSelectResultReceiver.yml",
-      "output": {
-        ".html": {
-          "relative_path": "api/PLATEAU.CityImport.AreaSelector.IAreaSelectResultReceiver.html",
-          "hash": "M1cc1OT8jxTmDRBu+Uhn/mvVN5VSOhxXO/XBxRMK864="
-        }
-      },
-      "is_incremental": false,
-      "version": ""
-    },
-    {
-      "type": "ManagedReference",
-      "source_relative_path": "api/PLATEAU.CityImport.AreaSelector.SceneObjs.AreaSelectorCursor.yml",
-      "output": {
-        ".html": {
-          "relative_path": "api/PLATEAU.CityImport.AreaSelector.SceneObjs.AreaSelectorCursor.html",
-          "hash": "9/Co6+jG3JdHFwH/6Pc/2L9RgsyQhI4Np474PHNJsdo="
-        }
-      },
-      "is_incremental": false,
-      "version": ""
-    },
-    {
-      "type": "ManagedReference",
-      "source_relative_path": "api/PLATEAU.CityImport.AreaSelector.SceneObjs.BoxGizmoDrawer.yml",
-      "output": {
-        ".html": {
-          "relative_path": "api/PLATEAU.CityImport.AreaSelector.SceneObjs.BoxGizmoDrawer.html",
-          "hash": "SouqapTk7GejObo6kyTFb01FqXXAENAwrQVa+BUBF0U="
-        }
-      },
-      "is_incremental": false,
-      "version": ""
-    },
-    {
-      "type": "ManagedReference",
-      "source_relative_path": "api/PLATEAU.CityImport.AreaSelector.SceneObjs.GSIPhotoLoader.yml",
-      "output": {
-        ".html": {
-          "relative_path": "api/PLATEAU.CityImport.AreaSelector.SceneObjs.GSIPhotoLoader.html",
-          "hash": "FBzq2urqhuNLo0qASz83wUCFBU4wDAPdskow1DAXks8="
-        }
-      },
-      "is_incremental": false,
-      "version": ""
-    },
-    {
-      "type": "ManagedReference",
-      "source_relative_path": "api/PLATEAU.CityImport.AreaSelector.SceneObjs.HandlesBase.yml",
-      "output": {
-        ".html": {
-          "relative_path": "api/PLATEAU.CityImport.AreaSelector.SceneObjs.HandlesBase.html",
-          "hash": "BHUvJV4LUPNgG/a4LZBEAul8BKeu9yoq3/d/vFGuwJE="
-        }
-      },
-      "is_incremental": false,
-      "version": ""
-    },
-    {
-      "type": "ManagedReference",
-      "source_relative_path": "api/PLATEAU.CityImport.AreaSelector.SceneObjs.MeshCodeGizmoDrawer.yml",
-      "output": {
-        ".html": {
-          "relative_path": "api/PLATEAU.CityImport.AreaSelector.SceneObjs.MeshCodeGizmoDrawer.html",
-          "hash": "xBddMlG/WLuFcDHEamP823mkbkZtTS6uUzuQNSS/F8A="
-        }
-      },
-      "is_incremental": false,
-      "version": ""
-    },
-    {
-      "type": "ManagedReference",
-      "source_relative_path": "api/PLATEAU.CityImport.AreaSelector.SceneObjs.yml",
-      "output": {
-        ".html": {
-          "relative_path": "api/PLATEAU.CityImport.AreaSelector.SceneObjs.html",
-          "hash": "N4TwnUkEem0gulWrmXCfUHxp8+Br4PHRuXAI4XwpDcU="
-        }
-      },
-      "is_incremental": false,
-      "version": ""
-    },
-    {
-      "type": "ManagedReference",
-      "source_relative_path": "api/PLATEAU.CityImport.AreaSelector.yml",
-      "output": {
-        ".html": {
-          "relative_path": "api/PLATEAU.CityImport.AreaSelector.html",
-          "hash": "SDGigibs5mV07xgIVUJxER+Zr5tqSnyz6y47qVFpD28="
-        }
-      },
-      "is_incremental": false,
-      "version": ""
-    },
-    {
-      "type": "ManagedReference",
-      "source_relative_path": "api/PLATEAU.CityImport.Setting.PackageLoadSetting.yml",
-      "output": {
-        ".html": {
-          "relative_path": "api/PLATEAU.CityImport.Setting.PackageLoadSetting.html",
-          "hash": "VZxfskCAB3AEdRXiiBrm9hLNPlFtcX3B64YafrIfgCo="
-        }
-      },
-      "is_incremental": false,
-      "version": ""
-    },
-    {
-      "type": "ManagedReference",
-      "source_relative_path": "api/PLATEAU.CityImport.Setting.yml",
-      "output": {
-        ".html": {
-          "relative_path": "api/PLATEAU.CityImport.Setting.html",
-          "hash": "7uqEhjC+o1sUP5DVfOggP5T+4B93hbt/UkzACDq4odo="
-        }
-      },
-      "is_incremental": false,
-      "version": ""
-    },
-    {
-      "type": "ManagedReference",
       "source_relative_path": "api/PLATEAU.CityInfo.PLATEAUCityGmlProxy.yml",
       "output": {
         ".html": {
@@ -449,42 +329,6 @@
         ".html": {
           "relative_path": "api/PLATEAU.CityInfo.html",
           "hash": "/JLwWqKag1JbfAZcw1KABUFHCihznbSLDtaI3pbnAns="
-        }
-      },
-      "is_incremental": false,
-      "version": ""
-    },
-    {
-      "type": "ManagedReference",
-      "source_relative_path": "api/PLATEAU.Editor.EditorWindow.ProgressDisplay.ProgressDisplayWindow.Progress.yml",
-      "output": {
-        ".html": {
-          "relative_path": "api/PLATEAU.Editor.EditorWindow.ProgressDisplay.ProgressDisplayWindow.Progress.html",
-          "hash": "BwUtasceAg3X9MazAndd19biriNUiKyIPM4JyTzDdMs="
-        }
-      },
-      "is_incremental": false,
-      "version": ""
-    },
-    {
-      "type": "ManagedReference",
-      "source_relative_path": "api/PLATEAU.Editor.EditorWindow.ProgressDisplay.ProgressDisplayWindow.yml",
-      "output": {
-        ".html": {
-          "relative_path": "api/PLATEAU.Editor.EditorWindow.ProgressDisplay.ProgressDisplayWindow.html",
-          "hash": "HBwbjxBh2GkhbA3Ftb70MNWc/x+KHp+rfinQCA+9dU8="
-        }
-      },
-      "is_incremental": false,
-      "version": ""
-    },
-    {
-      "type": "ManagedReference",
-      "source_relative_path": "api/PLATEAU.Editor.EditorWindow.ProgressDisplay.yml",
-      "output": {
-        ".html": {
-          "relative_path": "api/PLATEAU.Editor.EditorWindow.ProgressDisplay.html",
-          "hash": "TZS2ywEfO82FRhtXe+a/gARlXxUDJnZsUshFw7ttZ4E="
         }
       },
       "is_incremental": false,
@@ -604,7 +448,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PLATEAU.Interop.CitygmlParserParams.html",
-          "hash": "vxLvuAgYh/dNlygHko9R391M/BruUfaXlgNvMmX8M9M="
+          "hash": "9dknl0hFIkDZ21ivrpK4uRq0dRoaX0cLS3gT0JCQFPk="
         }
       },
       "is_incremental": false,
@@ -640,7 +484,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PLATEAU.Interop.Extent.html",
-          "hash": "staieB35cj5Qu2DN13OT5Nq6eiL0SLZH+lNSLa/vbIY="
+          "hash": "tPSue+uaO6igX2XJYBoX6g8PILDSgHZKfygsvnAOtpo="
         }
       },
       "is_incremental": false,
@@ -688,7 +532,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PLATEAU.Interop.MeshExtractOptions.html",
-          "hash": "jDecQ8RI+wbfQHAyhWbSL7hCYrKTuQH4dcpX7GdvfUE="
+          "hash": "T1HZ5j6YZ3giv9BZslGGkrE6055SIkofb5F4Qw+Yjns="
         }
       },
       "is_incremental": false,
@@ -748,7 +592,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PLATEAU.Interop.html",
-          "hash": "tIHiMI7PLO1Mer8Z3yzTUatSgvxMZ35kjTRjYNwbX3k="
+          "hash": "iEgO92DqkiNvsv+qo7bHdEntNAJUQ5spFCpeWhOkkf0="
         }
       },
       "is_incremental": false,
@@ -876,6 +720,18 @@
     },
     {
       "type": "ManagedReference",
+      "source_relative_path": "api/PLATEAU.Udx.PredefinedCityModelPackageExtension.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PLATEAU.Udx.PredefinedCityModelPackageExtension.html",
+          "hash": "4/7CW25xPtNji45LHXsRWVqvSr0QpTFfdwYb9SMgbXc="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
       "source_relative_path": "api/PLATEAU.Udx.UdxFileCollection.yml",
       "output": {
         ".html": {
@@ -892,7 +748,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PLATEAU.Udx.html",
-          "hash": "qDzvd+lc50ZL84Pgu9avQnA+VVFicNw7u9aOariDF6k="
+          "hash": "DR6SEO+h5g07gy9H0LsG3Cso/YQFSCiOdt4p021Nk/s="
         }
       },
       "is_incremental": false,
@@ -988,7 +844,7 @@
       "output": {
         ".html": {
           "relative_path": "api/toc.html",
-          "hash": "uZR+qTTC+24/h5g2c+T8FsLmV/CZ67e1ZrSOGBlh1I8="
+          "hash": "J/OJNB5F4m1lp3btDT05cd/8T67F6PEZzAOjDWqn4lU="
         }
       },
       "is_incremental": false,
@@ -1024,7 +880,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/ImportCityModels.html",
-          "hash": "08rvT+kexYc6HPLFK+1PivtFgzB8ZGL6/YWlU1TU+b8="
+          "hash": "NIwYQf8RoC/CdROVna4btC8bUG0y9llDlBSdKZUzzYU="
         }
       },
       "is_incremental": false,
@@ -1090,6 +946,39 @@
     },
     {
       "type": "Resource",
+      "source_relative_path": "resources/manual/importCityModels/areaSelectWindow.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/importCityModels/areaSelectWindow.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/manual/importCityModels/areaSelected.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/importCityModels/areaSelected.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/manual/importCityModels/coordinateSystemSelect.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/importCityModels/coordinateSystemSelect.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
       "source_relative_path": "resources/manual/importCityModels/exported.png",
       "output": {
         "resource": {
@@ -1112,10 +1001,54 @@
     },
     {
       "type": "Resource",
+      "source_relative_path": "resources/manual/importCityModels/importButton.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/importCityModels/importButton.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/manual/importCityModels/importComplete.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/importCityModels/importComplete.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
       "source_relative_path": "resources/manual/importCityModels/importErrorLog.png",
       "output": {
         "resource": {
           "relative_path": "resources/manual/importCityModels/importErrorLog.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/manual/importCityModels/importPerPackageConfig.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/importCityModels/importPerPackageConfig.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/manual/importCityModels/importProgressWindow.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/importCityModels/importProgressWindow.png"
         }
       },
       "is_incremental": false,
@@ -1171,6 +1104,28 @@
       "output": {
         "resource": {
           "relative_path": "resources/manual/importCityModels/importWindowInitial.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/manual/importCityModels/plateauWindowImport.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/importCityModels/plateauWindowImport.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/manual/importCityModels/sceneSaveDialogue.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/importCityModels/sceneSaveDialogue.png"
         }
       },
       "is_incremental": false,
@@ -1275,7 +1230,7 @@
         "ManagedReferenceDocumentProcessor": {
           "can_incremental": false,
           "incrementalPhase": "build",
-          "total_file_count": 80,
+          "total_file_count": 68,
           "skipped_file_count": 0
         },
         "ResourceDocumentProcessor": {

@@ -82,118 +82,98 @@
 <p>このページでは、都市データをUnityプロジェクトにインポートする手順を説明します。</p>
 <h2 id="準備">準備</h2>
 <ul>
-<li>都市データを用意します。<br>これは国土交通省のPLATEAUのWebサイトからダウンロードできます。  </li>
 <li>PlateauSDK を導入したUnityプロジェクトを用意します。<br>SDKの導入方法は <a href="Installation.html">インストール</a> を参照してください。</li>
 </ul>
 <h2 id="インポート手順">インポート手順</h2>
 <h3 id="インポート元の選択">インポート元の選択</h3>
 <ul>
-<li>Unityのメニューバーから <code>PLATEAU → 都市モデルをインポート</code> を選択します。<br>するとインポートウィンドウが表示されます。
-<img src="../resources/manual/importCityModels/importWindowInitial.png" alt=""></li>
-<li><code>参照</code>ボタンから都市データのフォルダを選択します。<br>都市データのフォルダは、中に <code>udx</code>, <code>codelists</code>という名称のフォルダがあるはずです。</li>
+<li>Unityのメニューバーから <code>PLATEAU → PLATEAU SDK ウィンドウ</code> を選択します。<br>表示されるウィンドウの上部に3つのタブ「インポート、モデル調整、エクスポート」があります。<br>このうちインポートを選択します。
+<img src="../resources/manual/importCityModels/plateauWindowImport.png" alt=""></li>
+<li>インポート先がローカルかサーバーかを選択します。<ul>
+<li>導入したい都市データが自分のコンピュータにある場合はローカルを選択します。<br>なお、都市データは国交省のPLATEAU Webサイトからダウンロードできます。<ul>
+<li><code>参照</code>ボタンを押します。都市データのフォルダの選択画面が表示されます。</li>
+<li>都市データのフォルダの中には、<code>udx</code>,<code>codelists</code>という名前のフォルダがあるはずです。<br><code>udx</code>の<strong>1つ上</strong>のフォルダを選択します。</li>
 </ul>
-<h3 id="インポート対象の絞り込み">インポート対象の絞り込み</h3>
-<ul>
-<li>インポートする対象を選択します。<br>地域IDと地物タイプのチェックボックスで対象を絞り込むことができます。</li>
+</li>
+<li><code>サーバー</code>では、ローカルの代わりにPLATEAUのデータサーバーから都市データをインポートできます。<ul>
+<li>この機能は未実装です。</li>
 </ul>
-<h4 id="地域idの選択">地域IDの選択</h4>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="基準座標系の選択">基準座標系の選択</h3>
+<p>リストのうち、都市が属する場所として近いものを選択します。<br><img src="../resources/manual/importCityModels/coordinateSystemSelect.png" alt=""><br>適切なものを選ぶと座標の誤差が小さくなります。<br>ここで選択する座標系は国土交通省が定める平面直角座標系に準拠しています。<br>詳しくは <a href="https://www.gsi.go.jp/sokuchikijun/jpc.html">国土地理院のWebサイト「わかりやすい平面直角座標系」</a> をご覧ください。</p>
+<h3 id="インポート範囲の選択">インポート範囲の選択</h3>
 <ul>
-<li>地域IDの選択では下図のように、まず6桁の地域IDにチェックを入れます。<br>するとそれよりも細かい区分である 8桁の地域IDのチェックボックスが表示されます。<br><img src="../resources/manual/importCityModels/importWindowAreaSelect.png" alt=""><ul>
-<li>地域IDを確認するには、ダウンロードしたフォルダに付属している <code>indexmap</code> という名前のpdfファイルをご覧ください。<br>下図のように地図上に地域IDが記載されています。
+<li><code>範囲選択</code>ボタンを押します。</li>
+<li>現在のUnityシーンに変更がある場合、変更を保存するかどうかを尋ねるダイアログが表示されます。<br><code>Save</code> または <code>Don&#39;t Save</code> をクリックします。
+<img src="../resources/manual/importCityModels/sceneSaveDialogue.png" alt=""></li>
+<li>シーンビューの表示が切り替わり、利用可能な範囲の一覧が緑色の線で表示されます。
+<img src="../resources/manual/importCityModels/areaSelectWindow.png" alt=""><br>地図の全体像がうまく表示されない場合は次の操作を試してください:  <ul>
+<li>マウスホイールを上下に回してズームアウト、ズームイン</li>
+<li>マウスホイールを押し込んだままドラッグしてカメラ移動</li>
+<li>右マウスボタンを押したままドラッグで向き変更</li>
+</ul>
+</li>
+<li>青色の球体をドラッグして範囲を選択します。</li>
+<li>シーンビュー左上の<code>決定</code>ボタンを押します。すると元のシーンに戻ります。</li>
+<li>範囲選択が完了すると、<code>範囲選択</code> ボタンの下に <code>範囲選択:セット済</code> という表示がなされ、<br>その下に<code>地物別設定</code> が表示されるようになります。<br><img src="../resources/manual/importCityModels/areaSelected.png" alt=""></li>
+<li><strong>補足</strong>:<br>地域の区分を確認したい時は、ローカルにダウンロードしたフォルダに付属している <code>indexmap</code> という名前のpdfファイルをご覧ください。<br>下図のように地図上に区分が記載されています。
 <img src="../resources/manual/importCityModels/idmap.png" alt=""></li>
 </ul>
-</li>
-</ul>
-<h4 id="地物タイプの選択">地物タイプの選択</h4>
+<h3 id="地物別設定">地物別設定</h3>
+<p>地物の種類ごとにインポートに関する設定を行います。<br><img src="../resources/manual/importCityModels/importPerPackageConfig.png" alt=""><br><strong>設定項目について:</strong></p>
 <ul>
-<li>インポートしたい地物のタイプについて、下図のようにチェックマークを入れてください。<br>灰色になり選択できないタイプは、データの中に含まれていないタイプです。</li>
-<li><code>1-3. 対象gmlファイル</code>の中には、選択した地域IDと地物タイプに合致するgmlファイルのリストが表示されます。</li>
-</ul>
-<p><img src="../resources/manual/importCityModels/importWindowGmlTypeSelect.png" alt=""></p>
-<h3 id="変換設定">変換設定</h3>
-<p>3Dモデルのメッシュに関する変換設定をします。<br><img src="../resources/manual/importCityModels/importWindowConvertOption.png" alt=""></p>
-<h4 id="基本メッシュ設定">基本メッシュ設定</h4>
-<ul>
-<li><strong>テクスチャを含める</strong><ul>
-<li>チェックマークを入れるとテクスチャも合わせて出力されます。 </li>
+<li><code>インポートする</code><ul>
+<li>チェックが付いている地物タイプのみインポートします。</li>
 </ul>
 </li>
-<li><strong>メッシュ結合単位</strong><ul>
-<li><strong>主要地物単位</strong><ul>
+<li><code>テクスチャを含める</code><ul>
+<li>テクスチャが存在する地物タイプで表示される設定項目です。<br>チェックが付いていて、かつテクスチャがある場合はそれを含めてインポートします。<br>都市データによってはテクスチャがない場合があり、<br>その場合はチェックを外した時と同様に真っ白な3Dモデルが出力されます。</li>
+</ul>
+</li>
+<li><code>LOD範囲設定</code><ul>
+<li>複数のLODを利用可能な地物タイプで表示される設定項目です。<br>バーの左端と右端をドラッグして、利用するLODの範囲を指定できます。</li>
+</ul>
+</li>
+</ul>
+<div class="NOTE"><h5>Note</h5><p><strong>LODとは</strong><br>gmlファイルの中には、都市モデルの形状の細かさを指定したいという需要に対応するため、<br>複数の形状データが格納されている場合があります。<br>LOD0がもっとも大雑把な形状で、LOD1, LOD2 と数字が上がるほど細かい形状になります。<br>建築物の場合、LOD0 は平面、LOD1は平面に一定の高さを付けたもの、LOD2はより細かい形状です。</p>
+</div>
+<ul>
+<li><code>メッシュ結合単位</code><ul>
+<li><code>主要地物単位</code><ul>
 <li>メッシュは建物ごとに分かれて出力されます。</li>
 <li>建物ごとに地物データを取得できるようにしたい場合はこちらを選択します。</li>
 </ul>
 </li>
-<li><strong>最小地物単位</strong><ul>
-<li>屋根、壁単位など非常に細かくオブジェクトを分けたい場合はこちらを選択します。  </li>
+<li><code>最小地物単位</code><ul>
+<li>屋根、壁単位など非常に細かくオブジェクトを分けたい場合はこちらを選択します。</li>
 </ul>
 </li>
-<li><strong>都市モデル地域単位</strong><ul>
-<li>メッシュは1つに結合されて出力されます。</li>
+<li><code>都市モデル地域単位</code><ul>
+<li>メッシュは結合されて出力されます。</li>
 <li>オブジェクト数を削減して軽量化できますが、建物ごとの地物データは取得不可になります。</li>
+<li>メッシュの結合はある程度の大きさの範囲ごとに行われます。</li>
 </ul>
 </li>
 </ul>
 </li>
 </ul>
-<h4 id="地物タイプ別-メッシュ設定">地物タイプ別 メッシュ設定</h4>
-<ul>
-<li>地物タイプ別に、出力するLODを選択します。</li>
-</ul>
-<div class="NOTE"><h5>Note</h5><p><strong>LODとは</strong><br>gmlファイルの中には、都市モデルの形状の細かさを変えたいという需要に対応するため、<br>複数の形状データが格納されている場合があります。<br>LOD0がもっとも大雑把な形状で、LOD1, LOD2 と数字が上がるほど細かい形状になります。<br>建築物の場合、LOD0 は平面、LOD1は平面に一定の高さを付けたもの、LOD2はより細かい形状です。</p>
+<div class="NOTE"><h5>Note</h5><p><strong>地物の選択について</strong><br>地物の中にはインポートに時間がかかるものもあるのでご注意ください。<br>例えば 土地起伏 はデータの範囲が 10km × 10km と非常に広く、<br>データ容量が重く処理に時間がかかるのでご注意ください。</p>
 </div>
+<h3 id="インポートの実行">インポートの実行</h3>
 <ul>
-<li><strong>出力モード</strong><ul>
-<li><strong>選択範囲のうち全LOD</strong><ul>
-<li>スライダーで選択したLOD範囲のうち、データがあるLOD形状をすべて出力します。</li>
+<li><code>インポート</code>ボタンを押します。<br><img src="../resources/manual/importCityModels/importButton.png" alt=""></li>
+<li><code>計算状況</code>ウィンドウが現れ、インポート処理の進捗が表示されます。
+<img src="../resources/manual/importCityModels/importProgressWindow.png" alt=""></li>
+<li>処理が進むと、都市のオブジェクトが順次シーンに配置されていきます。<br>計算状況ウィンドウがすべて「完了」になったらインポート終了です。<br><img src="../resources/manual/importCityModels/importComplete.png" alt=""></li>
 </ul>
-</li>
-<li><strong>選択範囲のうち最大LODのみ</strong><ul>
-<li>スライダーで選択したLOD範囲のうち、データがある中で最大のLOD形状を1つ出力します。</li>
-</ul>
-</li>
-<li><strong>LODスライダー</strong><ul>
-<li>ドラッグで動かしてLODの範囲を指定します。</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-<h3 id="出力先選択とインポートの実行">出力先選択とインポートの実行</h3>
-<p><img src="../resources/manual/importCityModels/importWindowExport.png" alt=""></p>
-<ul>
-<li>3Dモデルファイルとメタデータの出力先を指定します。
-出力先はUnityプロジェクトのAssetsフォルダの内部である必要があります。<br>ここで選択したフォルダに、 gml ファイルを変換した 3Dモデル(.obj形式)ファイル および メタデータが出力されます。</li>
-</ul>
-<div class="NOTE"><h5>Note</h5><p>  ここで選択したフォルダとは別に、インポート元となる都市データも合わせてUnityプロジェクト内にコピーされます。<br>  こちらのコピー先は、上の設定に関わらず <code>Assets/StreamingAssets/PLATEAU</code> になります。<br>  こうする意図は、Unityアプリケーションの実行中にgmlファイルのデータを取得する目的で、gmlファイルを StreamingAssetsフォルダに配置する必要があるためです。<br>  なお、インポート対象として選択したものに関連するもののみがコピーされます。</p>
-</div>
-<ul>
-<li><code>出力</code>ボタンを押してインポートを実行します。</li>
-<li>出力結果を確認します。<ul>
-<li>3Dモデルファイル(.obj形式)が指定した出力先に生成されます。</li>
-<li>変換したモデルがUnityのシーンに自動で配置されます。</li>
-<li>変換元ファイルが <code>Assets/StreamingAssets/PLATEAU</code> にコピーされています。</li>
-<li>メタデータが出力先に配置されます。
-<img src="../resources/manual/importCityModels/exported.png" alt=""></li>
-</ul>
-</li>
-</ul>
-<div class="NOTE"><h5>Note</h5><p>メタデータを選択すると再変換の画面がインスペクタに表示されます。<br>メタデータはインポート時の設定を覚えているので、「設定を少し変えて再変換」する操作が便利にできるようになっています。<br>また、再変換時はシーンに配置されたモデルも置き換わります。<br>変換せずにLODを指定して再配置するオプションもあります。</p>
+<div class="NOTE"><h5>Note</h5><p>  インポート元となる都市データは <code>Assets/StreamingAssets/.PLATEAU</code> にコピーされます。<br>  .PLATEAU は隠しフォルダである点にご注意ください。Unityのインポート処理を削減する目的でこうなっています。
+  なお、インポート対象として選択したものに関連するもののみがコピーされます。</p>
 </div>
 <h3 id="エラーログの確認">エラーログの確認</h3>
-<p>ロードに失敗したgmlファイルがある場合、Unityのコンソールにエラーログが出力されます。<br>そのような場合でも、一部のgmlファイルのロードが成功していれば、そのgmlに関しては正常にインポートされています。<br>複数のエラーログが出力されるので、その見方をこの項で説明します。
-<img src="../resources/manual/importCityModels/importErrorLog.png" alt=""></p>
-<ul>
-<li>失敗・成功の件数を確認するには<ul>
-<li>複数あるエラーログのうち、最後のものを確認すると次のメッセージがあります。<br><code>Convert end with error. (失敗件数) of (全体件数) gml files are not converted.</code><br>これにより失敗件数が分かります。また、残りのgmlファイルは正常にインポートできたことが分かります。</li>
-</ul>
-</li>
-<li>どのgmlファイルでなぜ失敗したのか確認するには<ul>
-<li>次のエラーメッセージで、どのgmlファイルで失敗したかを確認できます。<br><code>Loading gml failed. gml path =(gmlファイルの場所)</code> または<br><code>Gml to obj convert is Failed. gml path =(gmlファイルの場所)</code>  </li>
-<li>上記のエラーログの直前のエラーは、通常そのgmlファイルのロードに失敗した理由を示します。</li>
-</ul>
-</li>
-</ul>
+<p>インポートの結果、計算状況ウィンドウの内容がすべて「完了」となれば良いですが、<br>ロードできなかったgmlファイルに関しては「失敗」と表示されます。<br>そのような場合でも、一部のgmlファイルのロードが成功していれば、そのgmlに関しては正常にインポートされています。<br>失敗の場合は Unityのコンソールにエラーログが出力されます。</p>
 </article>
           </div>
           
