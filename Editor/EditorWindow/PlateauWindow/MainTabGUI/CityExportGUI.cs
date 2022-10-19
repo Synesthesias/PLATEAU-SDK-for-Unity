@@ -1,9 +1,5 @@
-﻿using PLATEAU.CityGML;
-using PLATEAU.CityImport.Load.Convert;
-using PLATEAU.Editor.EditorWindow.Common;
-using PLATEAU.Geometries;
+﻿using PLATEAU.Editor.EditorWindow.Common;
 using PLATEAU.Interop;
-using PLATEAU.Util;
 using UnityEditor;
 
 namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
