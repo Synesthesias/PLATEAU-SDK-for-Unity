@@ -33,8 +33,8 @@ namespace PLATEAU.Editor.CityImport
                                 var predefined = CityModelPackageInfo.GetPredefined(package);
                                 TextureIncludeGUI(conf, predefined.hasAppearance);
                                 LODRangeGUI(conf, (uint)predefined.minLOD, (uint)predefined.maxLOD);
-                                conf.meshGranularity = (MeshGranularity)EditorGUILayout.Popup("メッシュ結合単位",
-                                    (int)conf.meshGranularity, new[] { "最小地物単位", "主要地物単位", "都市モデル地域単位" });
+                                conf.meshGranularity = (MeshGranularity)EditorGUILayout.Popup("モデル結合",
+                                    (int)conf.meshGranularity, new[] { "最小地物単位(壁面,屋根面等)", "主要地物単位(建築物,道路等)", "地域単位" });
                             }
                         }
                     }
