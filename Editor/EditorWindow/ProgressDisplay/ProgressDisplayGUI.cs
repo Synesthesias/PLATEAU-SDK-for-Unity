@@ -24,7 +24,10 @@ namespace PLATEAU.Editor.EditorWindow.ProgressDisplay
                 {
                     using (PlateauEditorStyle.VerticalScopeLevel2())
                     {
-                        EditorGUILayout.LabelField(progress.Name);
+                        PlateauEditorStyle.CenterAlignHorizontal(() =>
+                        {
+                            PlateauEditorStyle.LabelSizeFit(new GUIContent(progress.Name));
+                        });
                         float sliderLower = 0f;
                         float sliderUpper = progress.Percentage;
                         EditorGUILayout.MinMaxSlider("", ref sliderLower, ref sliderUpper, 0f, 100f );
