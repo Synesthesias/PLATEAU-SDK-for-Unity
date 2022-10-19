@@ -11,7 +11,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow
         private Vector2 scrollPosition;
         private PlateauWindowGUI gui;
 
-        [MenuItem("PLATEAU/PLATEAU SDK ウィンドウ")]
+        [MenuItem("PLATEAU/PLATEAU SDK")]
         public static void Open()
         {
             var window = GetWindow<PlateauWindow>("PLATEAU SDK");

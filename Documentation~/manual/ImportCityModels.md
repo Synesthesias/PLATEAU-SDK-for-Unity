@@ -8,7 +8,7 @@
 
 ## インポート手順
 ### インポート元の選択
-- Unityのメニューバーから ```PLATEAU → PLATEAU SDK ウィンドウ``` を選択します。   
+- Unityのメニューバーから ```PLATEAU → PLATEAU SDK``` を選択します。   
   表示されるウィンドウの上部に3つのタブ「インポート、モデル調整、エクスポート」があります。  
   このうちインポートを選択します。
 ![](../resources/manual/importCityModels/plateauWindowImport.png)
