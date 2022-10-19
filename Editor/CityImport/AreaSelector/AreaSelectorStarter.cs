@@ -1,5 +1,4 @@
-﻿using PLATEAU.CityImport;
-using PLATEAU.CityImport.AreaSelector;
+﻿using PLATEAU.CityImport.AreaSelector;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;

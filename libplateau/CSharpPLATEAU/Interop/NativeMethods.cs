@@ -1,10 +1,10 @@
-﻿using System;
+using System;
 using System.Runtime.InteropServices;
 using PLATEAU.CityGML;
 using PLATEAU.IO;
 using PLATEAU.Udx;
 
-// 文字列のサイズをDLLでやりとりする時の型を決めます。
+// �?���?のサイズをDLLで�?��とりする時の型を決めます�??
 using DllStrSizeT = System.Int32;
 
 namespace PLATEAU.Interop
@@ -48,7 +48,7 @@ namespace PLATEAU.Interop
     }
 
     /// <summary>
-    /// GMLファイルのパース時の設定です。
+    /// GMLファイルのパ�?ス時�?設定です�??
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
     public struct CitygmlParserParams
@@ -56,7 +56,7 @@ namespace PLATEAU.Interop
         [MarshalAs(UnmanagedType.U1)]
         public bool Optimize;
         /// <summary>
-        /// <see cref="Tessellate"/> を false に設定すると、 <see cref="Polygon"/> が頂点を保持する代わりに <see cref="LinearRing"/> を保持することがあります。
+        /// <see cref="Tessellate"/> �? false に設定すると�? <see cref="Polygon"/> が�?�点を保持する代わりに <see cref="LinearRing"/> を保持することがあります�??
         /// </summary>
         [MarshalAs(UnmanagedType.U1)]
         public bool Tessellate;
@@ -91,51 +91,51 @@ namespace PLATEAU.Interop
     }
 
     /// <summary>
-    /// GMLファイルから3Dメッシュを取り出すための設定です。
+    /// GMLファイルから3Dメ�?��ュを取り�?すため�?設定です�??
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
     public struct MeshExtractOptions
     {
-        /// <summary> 直交座標系における座標で、3Dモデルの原点をどこに設定するかです。 </summary>
+        /// <summary> 直交座標系における座標で�?3Dモ�?��の原点をどこに設定するかです�?? </summary>
         public PlateauVector3d ReferencePoint;
-        /// <summary> 座標軸の向きです。 </summary>
+        /// <summary> 座標軸の向きです�?? </summary>
         public CoordinateSystem MeshAxes;
-        /// <summary> メッシュ結合の粒度です。 </summary>
+        /// <summary> メ�?��ュ結合の粒度です�?? </summary>
         public MeshGranularity MeshGranularity;
-        /// <summary> 出力するLODの範囲上限です。 </summary>
+        /// <summary> 出力するLODの�?��上限です�?? </summary>
         public uint MaxLOD;
-        /// <summary> 出力するLODの範囲の下限です。 </summary>
+        /// <summary> 出力するLODの�?��の下限です�?? </summary>
         public uint MinLOD;
-        /// <summary> テクスチャを含めるかどうかです。 </summary>
+        /// <summary> �?��スチャを含めるかど�?��です�?? </summary>
         [MarshalAs(UnmanagedType.U1)] public bool ExportAppearance;
-        /// <summary> メッシュ結合の粒度が「都市モデル単位」の時のみ有効で、この設定では都市を格子状のグリッドに分割するので、その1辺あたりの分割数(縦の数 = 横の数)です </summary>
+        /// <summary> メ�?��ュ結合の粒度が�?��?市モ�?��単位�?��?時�?み有効で、この設定では都市を格子状のグリ�?��に�?��するので、その1辺あたり�?�?��数(縦の数 = 横の数)で�? </summary>
         public int GridCountOfSide;
-        /// <summary> 大きさ補正です。 </summary>
+        /// <summary> 大きさ補正です�?? </summary>
         public float UnitScale;
         /// <summary>
-        /// 国土交通省が規定する、日本の平面直角座標系の基準点の番号です。
-        /// 詳しくは次の国土地理院のサイトをご覧ください。
-        ///　<see href="https://www.gsi.go.jp/sokuchikijun/jpc.html"/>
+        /// 国土交通省が規定する�?�日本の平面直角座標系の基準点の番号です�??
+        /// 詳しくは次の国土地�?��のサイトをご覧ください�?
+        ///�?<see href="https://www.gsi.go.jp/sokuchikijun/jpc.html"/>
         /// </summary>
         public int CoordinateZoneID;
         /// <summary>
-        /// 範囲外の3Dモデルを出力から除外するための、2つの方法のうち1つを有効にするかどうかを bool で指定します。
-        /// その方法とは、都市オブジェクトの最初の頂点の位置が範囲外のとき、そのオブジェクトはすべて範囲外とみなして出力から除外します。
-        /// これはビル1棟程度の大きさのオブジェクトでは有効ですが、
-        /// 10km×10kmの地形のような巨大なオブジェクトでは、実際には範囲内なのに最初の頂点が遠いために除外されるということがおきます。
-        /// したがって、この値は建物では true, 地形では false となるべきです。
+        /// �?��外�?3Dモ�?��を�?力から除外するため�?�?2つの方法�?�?��1つを有効にするかど�?���? bool で�?��します�??
+        /// そ�?方法とは�??市オブジェクト�?�?初�?頂点の位置が�?��外�?とき�?�そのオブジェクト�?すべて�?��外とみなして出力から除外します�??
+        /// これはビル1棟程度の大きさのオブジェクトでは有効ですが�?
+        /// 10km�?10kmの地形のような巨大なオブジェクトでは、実際には�?���?��のに�?初�?頂点が遠�?��めに除外されると�?��ことがおきます�??
+        /// したがって、この値は建物では true, 地形では false となるべきです�??
         /// </summary>
         [MarshalAs(UnmanagedType.U1)] public bool ExcludeCityObjectOutsideExtent;
         /// <summary>
-        /// 範囲外の3Dモデルを出力から除外するための、2つの方法のうち1つを有効にするかどうかを bool で指定します。
-        /// その方法とは、メッシュ操作によって、範囲外に存在するポリゴンを除外します。
-        /// この方法であれば 10km×10km の地形など巨大なオブジェクトにも対応できます。
+        /// �?��外�?3Dモ�?��を�?力から除外するため�?�?2つの方法�?�?��1つを有効にするかど�?���? bool で�?��します�??
+        /// そ�?方法とは、メ�?��ュ操作によって、�?��外に存在するポリゴンを除外します�??
+        /// こ�?方法であれば 10km�?10km の地形など巨大なオブジェクトにも対応できます�??
         /// </summary>
         [MarshalAs(UnmanagedType.U1)] public bool ExcludeTrianglesOutsideExtent;
-        /// <summary> 対象範囲を緯度・経度・高さで指定します。 </summary>
+        /// <summary> 対象�?��を緯度・経度・高さで�?��します�?? </summary>
          public Extent Extent;
         
-        /// <summary> デフォルト値の設定を返します。 </summary>
+        /// <summary> �?��ォルト�?�の設定を返します�?? </summary>
         public static MeshExtractOptions DefaultValue()
         {
             var apiResult = NativeMethods.plateau_mesh_extract_options_default_value(out var defaultOptions);
@@ -144,8 +144,8 @@ namespace PLATEAU.Interop
         }
 
          /// <summary>
-        /// 設定の値が正常なら true, 異常な点があれば false を返します。
-        /// <param name="failureMessage">異常な点があれば、それを説明する文字列が入ります。正常なら空文字列になります。</param>
+        /// 設定�?値が正常な�? true, 異常な点があれ�? false を返します�??
+        /// <param name="failureMessage">異常な点があれ�?、それを説明する文字�?が�?ります�?�正常なら空�?���?になります�??</param>
         /// </summary>
         public bool Validate(out string failureMessage)
         {
@@ -188,7 +188,7 @@ namespace PLATEAU.Interop
     }
 
     /// <summary>
-    /// 最小・最大からなる範囲です。
+    /// �?小�?�?大からなる�?��です�??
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
     public struct Extent
@@ -1032,7 +1032,7 @@ namespace PLATEAU.Interop
             [In] IntPtr geoReferencePtr);
 
         [DllImport(DllName, CharSet = CharSet.Ansi)]
-        internal static extern APIResult plateau_udx_sub_folder_dir_name_to_package(
+        internal static extern APIResult plateau_udx_sub_folder_get_package(
             string dirName,
             out PredefinedCityModelPackage outPackage);
 

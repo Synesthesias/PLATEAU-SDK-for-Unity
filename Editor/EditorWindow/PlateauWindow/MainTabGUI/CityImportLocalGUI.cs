@@ -1,5 +1,4 @@
 ﻿using System.Threading;
-using PLATEAU.CityImport;
 using PLATEAU.CityImport.AreaSelector;
 using PLATEAU.CityImport.Load;
 using PLATEAU.CityImport.Setting;
@@ -12,6 +11,7 @@ using PLATEAU.Interop;
 using PLATEAU.Udx;
 using PLATEAU.Util.Async;
 using UnityEditor;
+using UnityEngine;
 
 namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
 {
@@ -20,21 +20,20 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
         private readonly PathSelectorFolderPlateauInput folderSelector = new PathSelectorFolderPlateauInput();
         private readonly CityLoadConfig config = new CityLoadConfig();
         private bool isAreaSelectComplete;
+        private bool foldOutSourceFolderPath = true;
 
         
         public void Draw()
         {
-            this.config.SourcePathBeforeImport = this.folderSelector.Draw("入力フォルダ");
-            // if (this.folderSelector.IsPathPlateauRoot())
-            // {
-            //     if (PlateauEditorStyle.MainButton("都市の追加"))
-            //     {
-            //         var obj = PLATEAUCityModelLoader.Create(this.folderPath);
-            //         Selection.activeObject = obj;
-            //     }
-            // }
+
+            this.foldOutSourceFolderPath = PlateauEditorStyle.FoldOut(this.foldOutSourceFolderPath, "入力フォルダ", () =>
+            {
+                this.config.SourcePathBeforeImport = this.folderSelector.Draw("フォルダパス");
+            });
             
-            HeaderDrawer.Draw("基準座標系の選択");
+            PlateauEditorStyle.Separator(0);
+            PlateauEditorStyle.SubTitle("モデルデータの配置を行います。");
+            PlateauEditorStyle.Heading("基準座標系の選択", null);
 
             // 基準座標系についてはこのWebサイトを参照してください。
             // https://www.gsi.go.jp/sokuchikijun/jpc.html
@@ -67,15 +66,20 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
             }
             
 
-            HeaderDrawer.Draw("範囲選択");
+            PlateauEditorStyle.Heading("マップ範囲選択", null);
             using (PlateauEditorStyle.VerticalScopeLevel1())
             {
                 if (PlateauEditorStyle.MainButton("範囲選択"))
                 {
                     AreaSelectorStarter.Start(this.config.SourcePathBeforeImport, this, this.config.CoordinateZoneID);
+                    GUIUtility.ExitGUI();
                 }
                 this.isAreaSelectComplete = this.config.AreaMeshCodes != null && this.config.AreaMeshCodes.Length > 0;
-                EditorGUILayout.LabelField(this.isAreaSelectComplete ? "範囲選択 : 済" : "範囲選択 : 未");
+                PlateauEditorStyle.CenterAlignHorizontal(() =>
+                {
+                    string str = this.isAreaSelectComplete ? "範囲選択 : セット済" : "範囲選択 : 未";
+                    PlateauEditorStyle.LabelSizeFit(new GUIContent(str), EditorStyles.label);
+                });
             }
             
 
@@ -83,9 +87,12 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
 
             if (this.isAreaSelectComplete)
             {
+                PlateauEditorStyle.Heading("地物別設定", null);
                 CityLoadConfigGUI.Draw(this.config);
                 
-                HeaderDrawer.Draw("インポート");
+                PlateauEditorStyle.Separator(0);
+                
+                PlateauEditorStyle.Separator(0);
                 using (PlateauEditorStyle.VerticalScopeLevel1())
                 {
                     if (PlateauEditorStyle.MainButton("インポート"))

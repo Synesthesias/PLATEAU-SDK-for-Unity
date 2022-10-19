@@ -1,5 +1,4 @@
 ﻿using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using PLATEAU.Editor.EditorWindow.Common;
@@ -9,7 +8,7 @@ using UnityEngine;
 
 namespace PLATEAU.Editor.EditorWindow.ProgressDisplay
 {
-    public class ProgressDisplayWindow : UnityEditor.EditorWindow, IProgressDisplay
+    internal class ProgressDisplayWindow : UnityEditor.EditorWindow, IProgressDisplay
     {
         private readonly ConcurrentBag<Progress> progressBag = new ConcurrentBag<Progress>();
         private SynchronizationContext mainThreadContext;

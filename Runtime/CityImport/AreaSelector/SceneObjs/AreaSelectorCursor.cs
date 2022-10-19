@@ -10,7 +10,7 @@ using Vector3 = UnityEngine.Vector3;
 namespace PLATEAU.CityImport.AreaSelector.SceneObjs
 {
     [ExecuteInEditMode]
-    public class AreaSelectorCursor : BoxGizmoDrawer
+    internal class AreaSelectorCursor : BoxGizmoDrawer
     {
 
         private readonly Color cursorColor = Color.blue;

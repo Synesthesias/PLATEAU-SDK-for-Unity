@@ -9,7 +9,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
     /// <summary>
     /// 国土地理院の地図画像を取得します。
     /// </summary>
-    public static class GSIPhotoLoader
+    internal static class GSIPhotoLoader
     {
         private const string GSIMapURL = "https://cyberjapandata.gsi.go.jp/xyz";
         private const int timeOutSec = 10;

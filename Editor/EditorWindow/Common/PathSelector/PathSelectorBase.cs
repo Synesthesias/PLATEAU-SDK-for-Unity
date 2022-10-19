@@ -1,4 +1,5 @@
 ﻿using UnityEditor;
+using UnityEngine;
 
 namespace PLATEAU.Editor.EditorWindow.Common.PathSelector
 {
@@ -11,14 +12,36 @@ namespace PLATEAU.Editor.EditorWindow.Common.PathSelector
         protected string SelectedPath { get; set; }
         public virtual string Draw(string labelText)
         {
+            const int height = 50;
             bool isButtonPressed = false;
             using (PlateauEditorStyle.VerticalScopeLevel1())
             {
-                EditorGUILayout.LabelField(labelText);
-                if (PlateauEditorStyle.MiniButton("参照..."))
+                using(new EditorGUILayout.HorizontalScope(GUILayout.Height(height)))
                 {
-                    isButtonPressed = true;
+                    // 表題ラベル
+                    var labelContent = new GUIContent(labelText);
+                    var labelStyle = new GUIStyle(EditorStyles.label);
+                    var labelSize = labelStyle.CalcSize(labelContent);
+                    PlateauEditorStyle.CenterAlignVertical(() =>
+                    {
+                        PlateauEditorStyle.LabelSizeFit(labelContent,
+                                new GUIStyle(EditorStyles.label));
+                    }, GUILayout.Width(labelSize.x), GUILayout.Height(height));
+                    // パス表示
+                    string displayFolderPath = string.IsNullOrEmpty(SelectedPath) ? "未選択" : SelectedPath;
+                    PlateauEditorStyle.MultiLineLabelWithBox(displayFolderPath, GUILayout.Height(height));
+                    // 「参照」ボタン
+                    const int buttonWidth = 80;
+                    PlateauEditorStyle.CenterAlignVertical(() =>
+                    {
+                        if (PlateauEditorStyle.MiniButton("参照...", buttonWidth))
+                        {
+                            isButtonPressed = true;
+                        }
+                    }, GUILayout.Width(buttonWidth), GUILayout.Height(height));
+                    
                 }
+
             }
             
             // ボタンが押された時。
@@ -30,13 +53,6 @@ namespace PLATEAU.Editor.EditorWindow.Common.PathSelector
             {
                 string dialoguePath = PathSelectorDialogue();
                 SelectedPath = string.IsNullOrEmpty(dialoguePath) ? SelectedPath : dialoguePath;
-            }
-
-            // 選択されたパスを表示するGUIです。
-            using (PlateauEditorStyle.VerticalScopeLevel1())
-            {
-                string displayFolderPath = string.IsNullOrEmpty(SelectedPath) ? "未選択" : SelectedPath;
-                PlateauEditorStyle.MultiLineLabelWithBox(displayFolderPath);
             }
 
             return SelectedPath;

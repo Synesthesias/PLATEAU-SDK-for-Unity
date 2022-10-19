@@ -1,5 +1,4 @@
-﻿using PLATEAU.Editor.EditorWindow.Common;
-using UnityEditor;
+﻿using UnityEditor;
 using UnityEngine;
 
 namespace PLATEAU.Editor.EditorWindow.PlateauWindow
@@ -21,11 +20,10 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow
 
         private void OnGUI()
         {
-            if (this.gui == null) this.gui = new PlateauWindowGUI();
-            HeaderDrawer.Reset();
-            this.scrollPosition = EditorGUILayout.BeginScrollView(this.scrollPosition);
+            this.gui ??= new PlateauWindowGUI();
+            using var scrollView = new EditorGUILayout.ScrollViewScope(this.scrollPosition);
+            this.scrollPosition = scrollView.scrollPosition;
             this.gui.Draw();
-            EditorGUILayout.EndScrollView();
         }
     }
 }

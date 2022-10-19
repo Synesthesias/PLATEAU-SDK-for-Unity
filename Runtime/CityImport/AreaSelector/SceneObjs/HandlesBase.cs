@@ -7,7 +7,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
     /// シーンビューにハンドルを表示する MonoBehaviour の基底クラスです。
     /// </summary>
     [ExecuteInEditMode]
-    public abstract class HandlesBase : MonoBehaviour
+    internal abstract class HandlesBase : MonoBehaviour
     {
         private void OnEnable()
         {
