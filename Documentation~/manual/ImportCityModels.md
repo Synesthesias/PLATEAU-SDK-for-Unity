@@ -91,12 +91,11 @@
 > データ容量が重く処理に時間がかかるのでご注意ください。
   
 ### インポートの実行
-- ```モデルをインポート```ボタンを押します。  
-![](../resources/manual/importCityModels/importButton.png)
-- ```計算状況```ウィンドウが現れ、インポート処理の進捗が表示されます。
+- ```モデルをインポート```ボタンを押します。
+- ウィンドウの下部にインポート処理の進捗が表示されます。
 ![](../resources/manual/importCityModels/importProgressWindow.png)
 - 処理が進むと、都市のオブジェクトが順次シーンに配置されていきます。  
-  計算状況ウィンドウがすべて「完了」になったらインポート終了です。  
+  進捗表示がすべて「完了」になったらインポート終了です。  
 ![](../resources/manual/importCityModels/importComplete.png)
 
 >[!NOTE]
