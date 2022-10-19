@@ -23,6 +23,12 @@ namespace PLATEAU.CityImport.Load
             string sourcePath = config.SourcePathBeforeImport;
             string destPath = PathUtil.plateauSrcFetchDir;
             string destFolderName = Path.GetFileName(sourcePath);
+
+            if (!Directory.Exists(sourcePath))
+            {
+                Debug.LogError($"インポート元パスが存在しません。 sourcePath = {sourcePath}");
+                return;
+            }
             
             var collection = new UdxFileCollection();
             progressDisplay.SetProgress("GMLファイル検索", 10f, "");

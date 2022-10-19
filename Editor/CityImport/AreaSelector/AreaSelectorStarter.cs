@@ -1,4 +1,5 @@
-﻿using PLATEAU.CityImport.AreaSelector;
+﻿using System.IO;
+using PLATEAU.CityImport.AreaSelector;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -23,6 +24,11 @@ namespace PLATEAU.Editor.CityImport.AreaSelector
         /// </summary>
         public static void Start(string dataSourcePath, IAreaSelectResultReceiver areaSelectResultReceiver, int coordinateZoneID)
         {
+            if (!Directory.Exists(dataSourcePath))
+            {
+                Debug.LogError($"データ元パスが存在しません。 dataSourcePath = {dataSourcePath}");
+                return;
+            }
             if (!EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())
             {
                 return;
