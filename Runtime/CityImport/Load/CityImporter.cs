@@ -130,7 +130,7 @@ namespace PLATEAU.CityImport.Load
 
             // ここはメインスレッドで呼ぶ必要があります。
             await PlateauToUnityModelConverter.ConvertAndPlaceToScene(
-                cityModel, meshExtractOptions, gmlTrans, progressDisplay, gmlName
+                cityModel, meshExtractOptions, gmlTrans, progressDisplay, gmlName, packageConf.doSetMeshCollider
             );
             progressDisplay.SetProgress(gmlName, 100f, "完了");
         }

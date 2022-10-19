@@ -95,7 +95,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
                 PlateauEditorStyle.Separator(0);
                 using (PlateauEditorStyle.VerticalScopeLevel1())
                 {
-                    if (PlateauEditorStyle.MainButton("インポート"))
+                    if (PlateauEditorStyle.MainButton("モデルをインポート"))
                     {
                         var mainThreadContext = SynchronizationContext.Current;
                         var task = CityImporter.ImportAsync(this.config, ProgressDisplayWindow.Open(mainThreadContext));

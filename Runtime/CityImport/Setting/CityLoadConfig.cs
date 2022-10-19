@@ -48,7 +48,7 @@ namespace PLATEAU.CityImport.Setting
             {
                 var predefined = CityModelPackageInfo.GetPredefined(package);
                 var val = new PackageLoadSetting(true, predefined.hasAppearance, (uint)predefined.minLOD, (uint)predefined.maxLOD,
-                    MeshGranularity.PerCityModelArea);
+                    MeshGranularity.PerCityModelArea, false);
                 this.perPackagePairSettings.Add(package, val);
             }
         }

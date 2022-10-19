@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using PLATEAU.CityGML;
 using PLATEAU.CityInfo;
+using PLATEAU.Geometries;
 using PLATEAU.Interop;
 using PLATEAU.PolygonMesh;
 using PLATEAU.Util;
@@ -27,7 +28,8 @@ namespace PLATEAU.CityImport.Load.Convert
         /// </summary>
         public static async Task ConvertAndPlaceToScene(
             CityModel cityModel, MeshExtractOptions meshExtractOptions,
-            Transform parentTrans, IProgressDisplay progressDisplay, string progressName
+            Transform parentTrans, IProgressDisplay progressDisplay, string progressName,
+            bool doSetMeshCollider
             )
         {
             Debug.Log($"load started");
@@ -59,8 +61,10 @@ namespace PLATEAU.CityImport.Load.Convert
             progressDisplay.SetProgress(progressName, 80f, "シーンに配置中");
             // ルートのGameObjectにコンポーネントを付けます。 
             var cityModelComponent = parentTrans.gameObject.AddComponent<PLATEAUInstancedCityModel>();
+            cityModelComponent.GeoReference = new GeoReference(meshExtractOptions.ReferencePoint,
+                meshExtractOptions.UnitScale, meshExtractOptions.MeshAxes, meshExtractOptions.CoordinateZoneID);
             
-            await meshObjsData.PlaceToScene(parentTrans, cachedTexture, true);
+            await meshObjsData.PlaceToScene(parentTrans, cachedTexture, true, doSetMeshCollider);
 
             // エディター内での実行であれば、生成したメッシュ,テクスチャ等をシーンに保存したいので
             // シーンにダーティフラグを付けます。
