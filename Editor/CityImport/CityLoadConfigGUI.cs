@@ -1,6 +1,6 @@
 ﻿using PLATEAU.CityImport.Setting;
 using PLATEAU.Editor.EditorWindow.Common;
-using PLATEAU.IO;
+using PLATEAU.Interop;
 using PLATEAU.Udx;
 using UnityEditor;
 using UnityEngine;

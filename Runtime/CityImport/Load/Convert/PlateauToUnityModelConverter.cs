@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using PLATEAU.CityGML;
+using PLATEAU.CityInfo;
 using PLATEAU.Interop;
 using PLATEAU.PolygonMesh;
 using PLATEAU.Util;
@@ -19,7 +20,7 @@ namespace PLATEAU.CityImport.Load.Convert
     {
 
         // TODO Loadの実行中にまたLoadが実行されることを防ぐ仕組みが未実装
-        // TODO 進捗を表示する機能と処理をキャンセルする機能が未実装
+        // TODO 処理をキャンセルする機能が未実装
         /// <summary>
         /// 引数の cityModel を Unity向けに変換し、シーンに配置します。
         /// 非同期処理です。必ずメインスレッドで呼ぶ必要があります。
@@ -56,6 +57,9 @@ namespace PLATEAU.CityImport.Load.Convert
             // テクスチャパス と テクスチャを紐付ける辞書です。同じテクスチャが繰り返しロードされることを防ぎます。
             Dictionary<string, Texture> cachedTexture = new Dictionary<string, Texture>();
             progressDisplay.SetProgress(progressName, 80f, "シーンに配置中");
+            // ルートのGameObjectにコンポーネントを付けます。 
+            var cityModelComponent = parentTrans.gameObject.AddComponent<PLATEAUInstancedCityModel>();
+            
             await meshObjsData.PlaceToScene(parentTrans, cachedTexture, true);
 
             // エディター内での実行であれば、生成したメッシュ,テクスチャ等をシーンに保存したいので

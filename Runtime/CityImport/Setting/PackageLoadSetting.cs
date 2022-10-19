@@ -1,6 +1,5 @@
 ﻿using System;
-using PLATEAU.IO;
-using UnityEditor;
+using PLATEAU.Interop;
 
 namespace PLATEAU.CityImport.Setting
 {

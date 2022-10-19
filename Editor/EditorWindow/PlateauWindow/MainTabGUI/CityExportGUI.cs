@@ -1,7 +1,8 @@
 ﻿using PLATEAU.CityGML;
+using PLATEAU.CityImport.Load.Convert;
 using PLATEAU.Editor.EditorWindow.Common;
+using PLATEAU.Geometries;
 using PLATEAU.Interop;
-using PLATEAU.IO;
 using PLATEAU.Util;
 using UnityEditor;
 
@@ -28,27 +29,29 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
 
         private string[] Export(string destinationDir, string gmlPath)
         {
-            using var logger = DllUnityLogger.Create();
-            var parserParams = new CitygmlParserParams(true, true, false);
-            var cityModel = CityGml.Load(gmlPath, parserParams, DllLogCallback.UnityLogCallbacks, DllLogLevel.Warning);
-            var converter = new MeshConverter();
-            var option = new MeshConvertOptions
-            {
-                // TODO 選択できるようにする
-                MeshAxes = CoordinateSystem.ENU,
-                MeshFileFormat = this.meshFileFormat,
-                ReferencePoint = cityModel.GetCenterPoint(9), // TODO coordinateZoneID を選択できるようにする
-                MeshGranularity = MeshGranularity.PerPrimaryFeatureObject,
-                MinLOD = 0,
-                MaxLOD = 3,
-                ExportLowerLOD = false,
-                ExportAppearance = true,
-                UnitScale = 1f,
-                CoordinateZoneID = 9
-            };
-            converter.Options = option;
-            var exportedFileNames = converter.Convert(destinationDir, gmlPath, cityModel, logger);
-            return exportedFileNames;
+            // TODO 仮
+                // using var logger = DllUnityLogger.Create();
+                // var parserParams = new CitygmlParserParams(true, true, false);
+                // var cityModel = CityGml.Load(gmlPath, parserParams, DllLogCallback.UnityLogCallbacks, DllLogLevel.Warning);
+                // // var converter = new MeshConverter();
+                // var option = new MeshConvertOptionsData
+                // {
+                //     // TODO 選択できるようにする
+                //     MeshAxes = CoordinateSystem.ENU,
+                //     MeshFileFormat = this.meshFileFormat,
+                //     ReferencePoint = cityModel.GetCenterPoint(9), // TODO coordinateZoneID を選択できるようにする
+                //     MeshGranularity = MeshGranularity.PerPrimaryFeatureObject,
+                //     MinLOD = 0,
+                //     MaxLOD = 3,
+                //     ExportLowerLOD = false,
+                //     ExportAppearance = true,
+                //     UnitScale = 1f,
+                //     CoordinateZoneID = 9
+                // };
+                // converter.Options = option;
+                // var exportedFileNames = converter.Convert(destinationDir, gmlPath, cityModel, logger);
+                // return exportedFileNames;
+                return null;
         }
     }
 }
