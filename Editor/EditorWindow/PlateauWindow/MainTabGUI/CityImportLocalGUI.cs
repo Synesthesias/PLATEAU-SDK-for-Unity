@@ -21,7 +21,8 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
     {
         private readonly PathSelectorFolderPlateauInput folderSelector = new PathSelectorFolderPlateauInput();
         private readonly CityLoadConfig config = new CityLoadConfig();
-        private readonly ProgressDisplayGUI progressGUI = new ProgressDisplayGUI();
+        // インポートの処理状況はウィンドウを消しても残しておきたいので static にします。
+        private static readonly ProgressDisplayGUI progressGUI = new ProgressDisplayGUI();
         private bool isAreaSelectComplete;
         private bool foldOutSourceFolderPath = true;
         private SynchronizationContext mainThreadContext;
@@ -36,7 +37,6 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
             this.parentEditorWindow = parentEditorWindow;
         }
 
-        
         public void Draw()
         {
 
@@ -116,8 +116,15 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
             }
             
             PlateauEditorStyle.Separator(0);
+            if (!progressGUI.IsEmpty)
+            {
+                PlateauEditorStyle.CenterAlignHorizontal(() =>
+                {
+                    PlateauEditorStyle.LabelSizeFit(new GUIContent("インポート処理"));
+                });
+                progressGUI.Draw();
+            }
             
-            this.progressGUI.Draw();
             
         }
 
@@ -130,7 +137,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
 
         public void SetProgress(string progressName, float percentage, string message)
         {
-            this.progressGUI.SetProgress(progressName, percentage, message);
+            progressGUI.SetProgress(progressName, percentage, message);
             this.mainThreadContext.Post(_ =>
             {
                 this.parentEditorWindow.Repaint();

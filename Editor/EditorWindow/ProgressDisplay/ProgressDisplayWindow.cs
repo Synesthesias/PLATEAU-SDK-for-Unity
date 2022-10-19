@@ -1,10 +1,12 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using PLATEAU.Util;
 using UnityEditor;
 using UnityEngine;
 
 namespace PLATEAU.Editor.EditorWindow.ProgressDisplay
 {
+    [Obsolete]
     internal class ProgressDisplayWindow : UnityEditor.EditorWindow, IProgressDisplay
     {
         private ProgressDisplayGUI progressGUI;

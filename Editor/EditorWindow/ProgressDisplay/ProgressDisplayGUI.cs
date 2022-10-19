@@ -3,6 +3,7 @@ using System.Linq;
 using PLATEAU.Editor.EditorWindow.Common;
 using PLATEAU.Util;
 using UnityEditor;
+using UnityEngine;
 
 namespace PLATEAU.Editor.EditorWindow.ProgressDisplay
 {
@@ -12,6 +13,8 @@ namespace PLATEAU.Editor.EditorWindow.ProgressDisplay
     internal class ProgressDisplayGUI : IProgressDisplay
     {
         private readonly ConcurrentBag<DisplayedProgress> progressBag = new ConcurrentBag<DisplayedProgress>();
+
+        public bool IsEmpty => this.progressBag.IsEmpty;
 
         public void Draw()
         {
@@ -24,8 +27,16 @@ namespace PLATEAU.Editor.EditorWindow.ProgressDisplay
                         EditorGUILayout.LabelField(progress.Name);
                         float sliderLower = 0f;
                         float sliderUpper = progress.Percentage;
-                        EditorGUILayout.MinMaxSlider($"{progress.PercentageStr}", ref sliderLower, ref sliderUpper, 0f, 100f );
-                        EditorGUILayout.LabelField(progress.Message);
+                        EditorGUILayout.MinMaxSlider("", ref sliderLower, ref sliderUpper, 0f, 100f );
+                        PlateauEditorStyle.CenterAlignHorizontal(() =>
+                        {
+                            PlateauEditorStyle.LabelSizeFit(new GUIContent($"{progress.PercentageStr}"));
+                        });
+                        PlateauEditorStyle.CenterAlignHorizontal(() =>
+                        { 
+                            PlateauEditorStyle.LabelSizeFit(new GUIContent(progress.Message));
+                        });
+                        
                     }
                 }
             }
