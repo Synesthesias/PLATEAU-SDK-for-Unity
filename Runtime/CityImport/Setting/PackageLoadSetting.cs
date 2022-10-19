@@ -9,7 +9,7 @@ namespace PLATEAU.CityImport.Setting
     /// <see cref="CityLoadConfig"/> によって保持されます。
     /// </summary>
     [Serializable]
-    public class PackageLoadSetting
+    internal class PackageLoadSetting
     {
         public bool loadPackage;
         public bool includeTexture;

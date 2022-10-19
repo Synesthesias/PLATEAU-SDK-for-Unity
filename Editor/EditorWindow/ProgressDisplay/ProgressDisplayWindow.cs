@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace PLATEAU.Editor.EditorWindow.ProgressDisplay
 {
-    public class ProgressDisplayWindow : UnityEditor.EditorWindow, IProgressDisplay
+    internal class ProgressDisplayWindow : UnityEditor.EditorWindow, IProgressDisplay
     {
         private readonly ConcurrentBag<Progress> progressBag = new ConcurrentBag<Progress>();
         private SynchronizationContext mainThreadContext;

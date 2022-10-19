@@ -7,7 +7,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
     /// <summary>
     /// 自身の transform に応じた箱型のギズモを表示します。
     /// </summary>
-    public class BoxGizmoDrawer : HandlesBase
+    internal class BoxGizmoDrawer : HandlesBase
     {
         public Color BoxColor { get; set; } = Color.white;
         protected virtual float SizeMultiplier => 1f;
