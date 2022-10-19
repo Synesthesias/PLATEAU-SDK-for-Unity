@@ -59,11 +59,7 @@ namespace PLATEAU.CityImport.Load.Convert
             // テクスチャパス と テクスチャを紐付ける辞書です。同じテクスチャが繰り返しロードされることを防ぎます。
             Dictionary<string, Texture> cachedTexture = new Dictionary<string, Texture>();
             progressDisplay.SetProgress(progressName, 80f, "シーンに配置中");
-            // ルートのGameObjectにコンポーネントを付けます。 
-            var cityModelComponent = parentTrans.gameObject.AddComponent<PLATEAUInstancedCityModel>();
-            cityModelComponent.GeoReference = new GeoReference(meshExtractOptions.ReferencePoint,
-                meshExtractOptions.UnitScale, meshExtractOptions.MeshAxes, meshExtractOptions.CoordinateZoneID);
-            
+
             await meshObjsData.PlaceToScene(parentTrans, cachedTexture, true, doSetMeshCollider);
 
             // エディター内での実行であれば、生成したメッシュ,テクスチャ等をシーンに保存したいので
