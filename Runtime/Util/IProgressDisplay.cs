@@ -2,6 +2,12 @@
 {
     public interface IProgressDisplay
     {
+        /// <summary>
+        /// 進捗情報をセットします。
+        /// <paramref name="progressName"/> をキーとし、キーがすでにあれば進捗を更新、
+        /// なければ追加します。
+        /// 別スレッドから呼ばれることがあります。
+        /// </summary>
         public void SetProgress(string progressName, float percentage, string message);
     }
     

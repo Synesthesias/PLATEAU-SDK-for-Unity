@@ -9,18 +9,32 @@ using PLATEAU.Editor.EditorWindow.Common.PathSelector;
 using PLATEAU.Editor.EditorWindow.ProgressDisplay;
 using PLATEAU.Interop;
 using PLATEAU.Udx;
+using PLATEAU.Util;
 using PLATEAU.Util.Async;
 using UnityEditor;
+using UnityEditor.Experimental.TerrainAPI;
 using UnityEngine;
 
 namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
 {
-    internal class CityImportLocalGUI : IEditorDrawable, IAreaSelectResultReceiver
+    internal class CityImportLocalGUI : IEditorDrawable, IAreaSelectResultReceiver, IProgressDisplay
     {
         private readonly PathSelectorFolderPlateauInput folderSelector = new PathSelectorFolderPlateauInput();
         private readonly CityLoadConfig config = new CityLoadConfig();
+        private readonly ProgressDisplayGUI progressGUI = new ProgressDisplayGUI();
         private bool isAreaSelectComplete;
         private bool foldOutSourceFolderPath = true;
+        private SynchronizationContext mainThreadContext;
+        private UnityEditor.EditorWindow parentEditorWindow;
+
+        /// <summary>
+        /// メインスレッドから呼ばれることを前提とします。
+        /// </summary>
+        public CityImportLocalGUI(UnityEditor.EditorWindow parentEditorWindow)
+        {
+            this.mainThreadContext = SynchronizationContext.Current;
+            this.parentEditorWindow = parentEditorWindow;
+        }
 
         
         public void Draw()
@@ -82,9 +96,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
                 });
             }
             
-
             
-
             if (this.isAreaSelectComplete)
             {
                 PlateauEditorStyle.Heading("地物別設定", null);
@@ -97,12 +109,15 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
                 {
                     if (PlateauEditorStyle.MainButton("モデルをインポート"))
                     {
-                        var mainThreadContext = SynchronizationContext.Current;
-                        var task = CityImporter.ImportAsync(this.config, ProgressDisplayWindow.Open(mainThreadContext));
+                        var task = CityImporter.ImportAsync(this.config, this);
                         task.ContinueWithErrorCatch();
                     }
                 }
             }
+            
+            PlateauEditorStyle.Separator(0);
+            
+            this.progressGUI.Draw();
             
         }
 
@@ -111,6 +126,15 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
             this.config.InitWithPackageFlags(availablePackageFlags);
             this.config.AreaMeshCodes = areaMeshCodes;
             this.config.Extent = extent;
+        }
+
+        public void SetProgress(string progressName, float percentage, string message)
+        {
+            this.progressGUI.SetProgress(progressName, percentage, message);
+            this.mainThreadContext.Post(_ =>
+            {
+                this.parentEditorWindow.Repaint();
+            }, null);
         }
     }
 }
