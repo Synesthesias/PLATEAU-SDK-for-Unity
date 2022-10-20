@@ -5,10 +5,10 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>Interface IProgressDisplay
+    <title>Class GltfWriter
    | PLATEAU SDK for Unity </title>
     <meta name="viewport" content="width=device-width">
-    <meta name="title" content="Interface IProgressDisplay
+    <meta name="title" content="Class GltfWriter
    | PLATEAU SDK for Unity ">
     <meta name="generator" content="docfx 2.59.4.0">
     
@@ -78,34 +78,67 @@
         </div>
         <div class="article row grid-right">
           <div class="col-md-10">
-            <article class="content wrap" id="_content" data-uid="PLATEAU.Util.IProgressDisplay">
+            <article class="content wrap" id="_content" data-uid="PLATEAU.MeshWriter.GltfWriter">
   
   
-  <h1 id="PLATEAU_Util_IProgressDisplay" data-uid="PLATEAU.Util.IProgressDisplay" class="text-break">Interface IProgressDisplay
+  <h1 id="PLATEAU_MeshWriter_GltfWriter" data-uid="PLATEAU.MeshWriter.GltfWriter" class="text-break">Class GltfWriter
   </h1>
   <div class="markdown level0 summary"></div>
   <div class="markdown level0 conceptual"></div>
-  <h6><strong>Namespace</strong>: <a class="xref" href="PLATEAU.Util.html">PLATEAU.Util</a></h6>
+  <div class="inheritance">
+    <h5>Inheritance</h5>
+    <div class="level0"><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">Object</a></div>
+    <div class="level1"><span class="xref">GltfWriter</span></div>
+  </div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="PLATEAU.MeshWriter.html">PLATEAU.MeshWriter</a></h6>
   <h6><strong>Assembly</strong>: cs.temp.dll.dll</h6>
-  <h5 id="PLATEAU_Util_IProgressDisplay_syntax">Syntax</h5>
+  <h5 id="PLATEAU_MeshWriter_GltfWriter_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public interface IProgressDisplay</code></pre>
+    <pre><code class="lang-csharp hljs">public class GltfWriter : IDisposable</code></pre>
+  </div>
+  <h3 id="constructors">Constructors
+  </h3>
+  
+  
+  <a id="PLATEAU_MeshWriter_GltfWriter__ctor_" data-uid="PLATEAU.MeshWriter.GltfWriter.#ctor*"></a>
+  <h4 id="PLATEAU_MeshWriter_GltfWriter__ctor" data-uid="PLATEAU.MeshWriter.GltfWriter.#ctor">GltfWriter()</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public GltfWriter()</code></pre>
   </div>
   <h3 id="methods">Methods
   </h3>
   
   
-  <a id="PLATEAU_Util_IProgressDisplay_SetProgress_" data-uid="PLATEAU.Util.IProgressDisplay.SetProgress*"></a>
-  <h4 id="PLATEAU_Util_IProgressDisplay_SetProgress_System_String_System_Single_System_String_" data-uid="PLATEAU.Util.IProgressDisplay.SetProgress(System.String,System.Single,System.String)">SetProgress(String, Single, String)</h4>
-  <div class="markdown level1 summary"><p>進捗情報をセットします。
-<code data-dev-comment-type="paramref" class="paramref">progressName</code> をキーとし、キーがすでにあれば進捗を更新、
-なければ追加します。
-別スレッドから呼ばれることがあります。</p>
-</div>
+  <a id="PLATEAU_MeshWriter_GltfWriter_Dispose_" data-uid="PLATEAU.MeshWriter.GltfWriter.Dispose*"></a>
+  <h4 id="PLATEAU_MeshWriter_GltfWriter_Dispose" data-uid="PLATEAU.MeshWriter.GltfWriter.Dispose">Dispose()</h4>
+  <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">void SetProgress(string progressName, float percentage, string message)</code></pre>
+    <pre><code class="lang-csharp hljs">public void Dispose()</code></pre>
+  </div>
+  
+  
+  <a id="PLATEAU_MeshWriter_GltfWriter_Finalize_" data-uid="PLATEAU.MeshWriter.GltfWriter.Finalize*"></a>
+  <h4 id="PLATEAU_MeshWriter_GltfWriter_Finalize" data-uid="PLATEAU.MeshWriter.GltfWriter.Finalize">Finalize()</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">protected void Finalize()</code></pre>
+  </div>
+  
+  
+  <a id="PLATEAU_MeshWriter_GltfWriter_Write_" data-uid="PLATEAU.MeshWriter.GltfWriter.Write*"></a>
+  <h4 id="PLATEAU_MeshWriter_GltfWriter_Write_System_String_Model_PLATEAU_MeshWriter_GltfWriteOptions_" data-uid="PLATEAU.MeshWriter.GltfWriter.Write(System.String,Model,PLATEAU.MeshWriter.GltfWriteOptions)">Write(String, Model, GltfWriteOptions)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool Write(string destination, Model model, GltfWriteOptions options)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -119,17 +152,32 @@
     <tbody>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">String</a></td>
-        <td><span class="parametername">progressName</span></td>
+        <td><span class="parametername">destination</span></td>
         <td></td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.single">Single</a></td>
-        <td><span class="parametername">percentage</span></td>
+        <td><span class="xref">Model</span></td>
+        <td><span class="parametername">model</span></td>
         <td></td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">String</a></td>
-        <td><span class="parametername">message</span></td>
+        <td><a class="xref" href="PLATEAU.MeshWriter.GltfWriteOptions.html">GltfWriteOptions</a></td>
+        <td><span class="parametername">options</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
         <td></td>
       </tr>
     </tbody>

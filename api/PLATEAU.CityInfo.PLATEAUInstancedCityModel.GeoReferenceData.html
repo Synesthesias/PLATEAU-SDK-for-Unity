@@ -5,10 +5,10 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>Struct CitygmlParserParams
+    <title>Struct PLATEAUInstancedCityModel.GeoReferenceData
    | PLATEAU SDK for Unity </title>
     <meta name="viewport" content="width=device-width">
-    <meta name="title" content="Struct CitygmlParserParams
+    <meta name="title" content="Struct PLATEAUInstancedCityModel.GeoReferenceData
    | PLATEAU SDK for Unity ">
     <meta name="generator" content="docfx 2.59.4.0">
     
@@ -78,12 +78,12 @@
         </div>
         <div class="article row grid-right">
           <div class="col-md-10">
-            <article class="content wrap" id="_content" data-uid="PLATEAU.Interop.CitygmlParserParams">
+            <article class="content wrap" id="_content" data-uid="PLATEAU.CityInfo.PLATEAUInstancedCityModel.GeoReferenceData">
   
   
-  <h1 id="PLATEAU_Interop_CitygmlParserParams" data-uid="PLATEAU.Interop.CitygmlParserParams" class="text-break">Struct CitygmlParserParams
+  <h1 id="PLATEAU_CityInfo_PLATEAUInstancedCityModel_GeoReferenceData" data-uid="PLATEAU.CityInfo.PLATEAUInstancedCityModel.GeoReferenceData" class="text-break">Struct PLATEAUInstancedCityModel.GeoReferenceData
   </h1>
-  <div class="markdown level0 summary"><p>GMLファイルのパース時の設定です。</p>
+  <div class="markdown level0 summary"><p>Unityでシリアライズ化して保存できるようにした <a class="xref" href="PLATEAU.CityInfo.PLATEAUInstancedCityModel.html#PLATEAU_CityInfo_PLATEAUInstancedCityModel_GeoReference">GeoReference</a> のデータです。</p>
 </div>
   <div class="markdown level0 conceptual"></div>
   <div class="inheritedMembers">
@@ -107,23 +107,23 @@
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gettype#system-object-gettype">Object.GetType()</a>
     </div>
   </div>
-  <h6><strong>Namespace</strong>: <a class="xref" href="PLATEAU.Interop.html">PLATEAU.Interop</a></h6>
+  <h6><strong>Namespace</strong>: <a class="xref" href="PLATEAU.CityInfo.html">PLATEAU.CityInfo</a></h6>
   <h6><strong>Assembly</strong>: cs.temp.dll.dll</h6>
-  <h5 id="PLATEAU_Interop_CitygmlParserParams_syntax">Syntax</h5>
+  <h5 id="PLATEAU_CityInfo_PLATEAUInstancedCityModel_GeoReferenceData_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public struct CitygmlParserParams</code></pre>
+    <pre><code class="lang-csharp hljs">public struct GeoReferenceData</code></pre>
   </div>
   <h3 id="constructors">Constructors
   </h3>
   
   
-  <a id="PLATEAU_Interop_CitygmlParserParams__ctor_" data-uid="PLATEAU.Interop.CitygmlParserParams.#ctor*"></a>
-  <h4 id="PLATEAU_Interop_CitygmlParserParams__ctor_System_Boolean_System_Boolean_System_Boolean_" data-uid="PLATEAU.Interop.CitygmlParserParams.#ctor(System.Boolean,System.Boolean,System.Boolean)">CitygmlParserParams(Boolean, Boolean, Boolean)</h4>
+  <a id="PLATEAU_CityInfo_PLATEAUInstancedCityModel_GeoReferenceData__ctor_" data-uid="PLATEAU.CityInfo.PLATEAUInstancedCityModel.GeoReferenceData.#ctor*"></a>
+  <h4 id="PLATEAU_CityInfo_PLATEAUInstancedCityModel_GeoReferenceData__ctor_System_Double_System_Double_System_Double_System_Single_CoordinateSystem_System_Int32_" data-uid="PLATEAU.CityInfo.PLATEAUInstancedCityModel.GeoReferenceData.#ctor(System.Double,System.Double,System.Double,System.Single,CoordinateSystem,System.Int32)">GeoReferenceData(Double, Double, Double, Single, CoordinateSystem, Int32)</h4>
   <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public CitygmlParserParams(bool optimize, bool tessellate, bool ignoreGeometries)</code></pre>
+    <pre><code class="lang-csharp hljs">public GeoReferenceData(double referencePointX, double referencePointY, double referencePointZ, float unitScale, CoordinateSystem coordinateSystem, int zoneID)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -136,18 +136,33 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
-        <td><span class="parametername">optimize</span></td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.double">Double</a></td>
+        <td><span class="parametername">referencePointX</span></td>
         <td></td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
-        <td><span class="parametername">tessellate</span></td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.double">Double</a></td>
+        <td><span class="parametername">referencePointY</span></td>
         <td></td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
-        <td><span class="parametername">ignoreGeometries</span></td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.double">Double</a></td>
+        <td><span class="parametername">referencePointZ</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.single">Single</a></td>
+        <td><span class="parametername">unitScale</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">CoordinateSystem</span></td>
+        <td><span class="parametername">coordinateSystem</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><span class="parametername">zoneID</span></td>
         <td></td>
       </tr>
     </tbody>
@@ -156,12 +171,12 @@
   </h3>
   
   
-  <h4 id="PLATEAU_Interop_CitygmlParserParams_IgnoreGeometries" data-uid="PLATEAU.Interop.CitygmlParserParams.IgnoreGeometries">IgnoreGeometries</h4>
+  <h4 id="PLATEAU_CityInfo_PLATEAUInstancedCityModel_GeoReferenceData_coordinateSystem" data-uid="PLATEAU.CityInfo.PLATEAUInstancedCityModel.GeoReferenceData.coordinateSystem">coordinateSystem</h4>
   <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public bool IgnoreGeometries</code></pre>
+    <pre><code class="lang-csharp hljs">public CoordinateSystem coordinateSystem</code></pre>
   </div>
   <h5 class="fieldValue">Field Value</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -173,19 +188,19 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><span class="xref">CoordinateSystem</span></td>
         <td></td>
       </tr>
     </tbody>
   </table>
   
   
-  <h4 id="PLATEAU_Interop_CitygmlParserParams_Optimize" data-uid="PLATEAU.Interop.CitygmlParserParams.Optimize">Optimize</h4>
+  <h4 id="PLATEAU_CityInfo_PLATEAUInstancedCityModel_GeoReferenceData_referencePointX" data-uid="PLATEAU.CityInfo.PLATEAUInstancedCityModel.GeoReferenceData.referencePointX">referencePointX</h4>
   <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public bool Optimize</code></pre>
+    <pre><code class="lang-csharp hljs">public double referencePointX</code></pre>
   </div>
   <h5 class="fieldValue">Field Value</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -197,20 +212,19 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.double">Double</a></td>
         <td></td>
       </tr>
     </tbody>
   </table>
   
   
-  <h4 id="PLATEAU_Interop_CitygmlParserParams_Tessellate" data-uid="PLATEAU.Interop.CitygmlParserParams.Tessellate">Tessellate</h4>
-  <div class="markdown level1 summary"><p><a class="xref" href="PLATEAU.Interop.CitygmlParserParams.html#PLATEAU_Interop_CitygmlParserParams_Tessellate">Tessellate</a> を false に設定すると、 <see cref="!:Polygon"></see> が頂点を保持する代わりに <see cref="!:LinearRing"></see> を保持することがあります。</p>
-</div>
+  <h4 id="PLATEAU_CityInfo_PLATEAUInstancedCityModel_GeoReferenceData_referencePointY" data-uid="PLATEAU.CityInfo.PLATEAUInstancedCityModel.GeoReferenceData.referencePointY">referencePointY</h4>
+  <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public bool Tessellate</code></pre>
+    <pre><code class="lang-csharp hljs">public double referencePointY</code></pre>
   </div>
   <h5 class="fieldValue">Field Value</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -222,7 +236,79 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.double">Double</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
+  <h4 id="PLATEAU_CityInfo_PLATEAUInstancedCityModel_GeoReferenceData_referencePointZ" data-uid="PLATEAU.CityInfo.PLATEAUInstancedCityModel.GeoReferenceData.referencePointZ">referencePointZ</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public double referencePointZ</code></pre>
+  </div>
+  <h5 class="fieldValue">Field Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.double">Double</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
+  <h4 id="PLATEAU_CityInfo_PLATEAUInstancedCityModel_GeoReferenceData_unitScale" data-uid="PLATEAU.CityInfo.PLATEAUInstancedCityModel.GeoReferenceData.unitScale">unitScale</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public float unitScale</code></pre>
+  </div>
+  <h5 class="fieldValue">Field Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.single">Single</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
+  <h4 id="PLATEAU_CityInfo_PLATEAUInstancedCityModel_GeoReferenceData_zoneID" data-uid="PLATEAU.CityInfo.PLATEAUInstancedCityModel.GeoReferenceData.zoneID">zoneID</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public int zoneID</code></pre>
+  </div>
+  <h5 class="fieldValue">Field Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">Int32</a></td>
         <td></td>
       </tr>
     </tbody>

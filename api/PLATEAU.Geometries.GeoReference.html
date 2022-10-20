@@ -103,7 +103,7 @@
   
   
   <a id="PLATEAU_Geometries_GeoReference__ctor_" data-uid="PLATEAU.Geometries.GeoReference.#ctor*"></a>
-  <h4 id="PLATEAU_Geometries_GeoReference__ctor_PlateauVector3d_System_Single_CoordinateSystem_System_Int32_" data-uid="PLATEAU.Geometries.GeoReference.#ctor(PlateauVector3d,System.Single,CoordinateSystem,System.Int32)">GeoReference(PlateauVector3d, Single, CoordinateSystem, Int32)</h4>
+  <h4 id="PLATEAU_Geometries_GeoReference__ctor_PlateauVector3d_System_Single_PLATEAU_Geometries_CoordinateSystem_System_Int32_" data-uid="PLATEAU.Geometries.GeoReference.#ctor(PlateauVector3d,System.Single,PLATEAU.Geometries.CoordinateSystem,System.Int32)">GeoReference(PlateauVector3d, Single, CoordinateSystem, Int32)</h4>
   <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
@@ -133,7 +133,7 @@
 </td>
       </tr>
       <tr>
-        <td><span class="xref">CoordinateSystem</span></td>
+        <td><a class="xref" href="PLATEAU.Geometries.CoordinateSystem.html">CoordinateSystem</a></td>
         <td><span class="parametername">coordinateSystem</span></td>
         <td><p>平面直角座標のX,Y,Z軸の向きを決めます。</p>
 </td>
@@ -152,6 +152,31 @@
   </table>
   <h3 id="properties">Properties
   </h3>
+  
+  
+  <a id="PLATEAU_Geometries_GeoReference_CoordinateSystem_" data-uid="PLATEAU.Geometries.GeoReference.CoordinateSystem*"></a>
+  <h4 id="PLATEAU_Geometries_GeoReference_CoordinateSystem" data-uid="PLATEAU.Geometries.GeoReference.CoordinateSystem">CoordinateSystem</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public CoordinateSystem CoordinateSystem { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="PLATEAU.Geometries.CoordinateSystem.html">CoordinateSystem</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
   
   
   <a id="PLATEAU_Geometries_GeoReference_Handle_" data-uid="PLATEAU.Geometries.GeoReference.Handle*"></a>
@@ -173,6 +198,81 @@
     <tbody>
       <tr>
         <td><span class="xref">IntPtr</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
+  <a id="PLATEAU_Geometries_GeoReference_ReferencePoint_" data-uid="PLATEAU.Geometries.GeoReference.ReferencePoint*"></a>
+  <h4 id="PLATEAU_Geometries_GeoReference_ReferencePoint" data-uid="PLATEAU.Geometries.GeoReference.ReferencePoint">ReferencePoint</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public PlateauVector3d ReferencePoint { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">PlateauVector3d</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
+  <a id="PLATEAU_Geometries_GeoReference_UnitScale_" data-uid="PLATEAU.Geometries.GeoReference.UnitScale*"></a>
+  <h4 id="PLATEAU_Geometries_GeoReference_UnitScale" data-uid="PLATEAU.Geometries.GeoReference.UnitScale">UnitScale</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public float UnitScale { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.single">Single</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
+  <a id="PLATEAU_Geometries_GeoReference_ZoneID_" data-uid="PLATEAU.Geometries.GeoReference.ZoneID*"></a>
+  <h4 id="PLATEAU_Geometries_GeoReference_ZoneID" data-uid="PLATEAU.Geometries.GeoReference.ZoneID">ZoneID</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public int ZoneID { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">Int32</a></td>
         <td></td>
       </tr>
     </tbody>

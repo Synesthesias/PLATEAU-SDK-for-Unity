@@ -5,10 +5,10 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>Class PrimaryCityObjectTypes
+    <title>Class ObjWriter
    | PLATEAU SDK for Unity </title>
     <meta name="viewport" content="width=device-width">
-    <meta name="title" content="Class PrimaryCityObjectTypes
+    <meta name="title" content="Class ObjWriter
    | PLATEAU SDK for Unity ">
     <meta name="generator" content="docfx 2.59.4.0">
     
@@ -78,89 +78,67 @@
         </div>
         <div class="article row grid-right">
           <div class="col-md-10">
-            <article class="content wrap" id="_content" data-uid="PLATEAU.IO.PrimaryCityObjectTypes">
+            <article class="content wrap" id="_content" data-uid="PLATEAU.MeshWriter.ObjWriter">
   
   
-  <h1 id="PLATEAU_IO_PrimaryCityObjectTypes" data-uid="PLATEAU.IO.PrimaryCityObjectTypes" class="text-break">Class PrimaryCityObjectTypes
+  <h1 id="PLATEAU_MeshWriter_ObjWriter" data-uid="PLATEAU.MeshWriter.ObjWriter" class="text-break">Class ObjWriter
   </h1>
-  <div class="markdown level0 summary"><p>都市モデル内の地物について「主要である」かどうかを判断するための静的メソッドを提供します。
-LOD2,3の細分化された地物ではない地物は全て「主要である」とみなされます。</p>
-</div>
+  <div class="markdown level0 summary"></div>
   <div class="markdown level0 conceptual"></div>
   <div class="inheritance">
     <h5>Inheritance</h5>
     <div class="level0"><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">Object</a></div>
-    <div class="level1"><span class="xref">PrimaryCityObjectTypes</span></div>
+    <div class="level1"><span class="xref">ObjWriter</span></div>
   </div>
-  <div class="inheritedMembers">
-    <h5>Inherited Members</h5>
-    <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.tostring#system-object-tostring">Object.ToString()</a>
-    </div>
-    <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)">Object.Equals(Object)</a>
-    </div>
-    <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)">Object.Equals(Object, Object)</a>
-    </div>
-    <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.referenceequals#system-object-referenceequals(system-object-system-object)">Object.ReferenceEquals(Object, Object)</a>
-    </div>
-    <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gethashcode#system-object-gethashcode">Object.GetHashCode()</a>
-    </div>
-    <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gettype#system-object-gettype">Object.GetType()</a>
-    </div>
-    <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone#system-object-memberwiseclone">Object.MemberwiseClone()</a>
-    </div>
-  </div>
-  <h6><strong>Namespace</strong>: <a class="xref" href="PLATEAU.IO.html">PLATEAU.IO</a></h6>
+  <h6><strong>Namespace</strong>: <a class="xref" href="PLATEAU.MeshWriter.html">PLATEAU.MeshWriter</a></h6>
   <h6><strong>Assembly</strong>: cs.temp.dll.dll</h6>
-  <h5 id="PLATEAU_IO_PrimaryCityObjectTypes_syntax">Syntax</h5>
+  <h5 id="PLATEAU_MeshWriter_ObjWriter_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static class PrimaryCityObjectTypes</code></pre>
+    <pre><code class="lang-csharp hljs">public class ObjWriter : IDisposable</code></pre>
   </div>
-  <h3 id="fields">Fields
+  <h3 id="constructors">Constructors
   </h3>
   
   
-  <h4 id="PLATEAU_IO_PrimaryCityObjectTypes_PrimaryTypeMask" data-uid="PLATEAU.IO.PrimaryCityObjectTypes.PrimaryTypeMask">PrimaryTypeMask</h4>
-  <div class="markdown level1 summary"><p>主要な都市オブジェクトタイプのマスク</p>
-</div>
+  <a id="PLATEAU_MeshWriter_ObjWriter__ctor_" data-uid="PLATEAU.MeshWriter.ObjWriter.#ctor*"></a>
+  <h4 id="PLATEAU_MeshWriter_ObjWriter__ctor" data-uid="PLATEAU.MeshWriter.ObjWriter.#ctor">ObjWriter()</h4>
+  <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public const CityObjectType PrimaryTypeMask = null</code></pre>
+    <pre><code class="lang-csharp hljs">public ObjWriter()</code></pre>
   </div>
-  <h5 class="fieldValue">Field Value</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="xref">CityObjectType</span></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
   <h3 id="methods">Methods
   </h3>
   
   
-  <a id="PLATEAU_IO_PrimaryCityObjectTypes_IsPrimary_" data-uid="PLATEAU.IO.PrimaryCityObjectTypes.IsPrimary*"></a>
-  <h4 id="PLATEAU_IO_PrimaryCityObjectTypes_IsPrimary_CityObjectType_" data-uid="PLATEAU.IO.PrimaryCityObjectTypes.IsPrimary(CityObjectType)">IsPrimary(CityObjectType)</h4>
-  <div class="markdown level1 summary"><p>都市オブジェクトタイプが主要であるかどうかを取得します。</p>
-</div>
+  <a id="PLATEAU_MeshWriter_ObjWriter_Dispose_" data-uid="PLATEAU.MeshWriter.ObjWriter.Dispose*"></a>
+  <h4 id="PLATEAU_MeshWriter_ObjWriter_Dispose" data-uid="PLATEAU.MeshWriter.ObjWriter.Dispose">Dispose()</h4>
+  <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static bool IsPrimary(CityObjectType type)</code></pre>
+    <pre><code class="lang-csharp hljs">public void Dispose()</code></pre>
+  </div>
+  
+  
+  <a id="PLATEAU_MeshWriter_ObjWriter_Finalize_" data-uid="PLATEAU.MeshWriter.ObjWriter.Finalize*"></a>
+  <h4 id="PLATEAU_MeshWriter_ObjWriter_Finalize" data-uid="PLATEAU.MeshWriter.ObjWriter.Finalize">Finalize()</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">protected void Finalize()</code></pre>
+  </div>
+  
+  
+  <a id="PLATEAU_MeshWriter_ObjWriter_Write_" data-uid="PLATEAU.MeshWriter.ObjWriter.Write*"></a>
+  <h4 id="PLATEAU_MeshWriter_ObjWriter_Write_System_String_Model_" data-uid="PLATEAU.MeshWriter.ObjWriter.Write(System.String,Model)">Write(String, Model)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool Write(string destination, Model model)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -173,10 +151,14 @@ LOD2,3の細分化された地物ではない地物は全て「主要である�
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">CityObjectType</span></td>
-        <td><span class="parametername">type</span></td>
-        <td><p>都市オブジェクトタイプ</p>
-</td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">String</a></td>
+        <td><span class="parametername">destination</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">Model</span></td>
+        <td><span class="parametername">model</span></td>
+        <td></td>
       </tr>
     </tbody>
   </table>
@@ -191,8 +173,7 @@ LOD2,3の細分化された地物ではない地物は全て「主要である�
     <tbody>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
-        <td><p>主要である場合true, そうでなければfalse</p>
-</td>
+        <td></td>
       </tr>
     </tbody>
   </table>

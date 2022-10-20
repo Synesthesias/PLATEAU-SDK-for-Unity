@@ -1779,23 +1779,127 @@ references:
   isSpec: "True"
   fullName: PLATEAU.CityInfo.PLATEAUCityGmlProxy.LoadAsync
   nameWithType: PLATEAUCityGmlProxy.LoadAsync
+- uid: PLATEAU.CityInfo.PLATEAUInstancedCityModel
+  name: PLATEAUInstancedCityModel
+  href: api/PLATEAU.CityInfo.PLATEAUInstancedCityModel.html
+  commentId: T:PLATEAU.CityInfo.PLATEAUInstancedCityModel
+  fullName: PLATEAU.CityInfo.PLATEAUInstancedCityModel
+  nameWithType: PLATEAUInstancedCityModel
+- uid: PLATEAU.CityInfo.PLATEAUInstancedCityModel.GeoReference
+  name: GeoReference
+  href: api/PLATEAU.CityInfo.PLATEAUInstancedCityModel.html#PLATEAU_CityInfo_PLATEAUInstancedCityModel_GeoReference
+  commentId: P:PLATEAU.CityInfo.PLATEAUInstancedCityModel.GeoReference
+  fullName: PLATEAU.CityInfo.PLATEAUInstancedCityModel.GeoReference
+  nameWithType: PLATEAUInstancedCityModel.GeoReference
+- uid: PLATEAU.CityInfo.PLATEAUInstancedCityModel.GeoReference*
+  name: GeoReference
+  href: api/PLATEAU.CityInfo.PLATEAUInstancedCityModel.html#PLATEAU_CityInfo_PLATEAUInstancedCityModel_GeoReference_
+  commentId: Overload:PLATEAU.CityInfo.PLATEAUInstancedCityModel.GeoReference
+  isSpec: "True"
+  fullName: PLATEAU.CityInfo.PLATEAUInstancedCityModel.GeoReference
+  nameWithType: PLATEAUInstancedCityModel.GeoReference
+- uid: PLATEAU.CityInfo.PLATEAUInstancedCityModel.GeoReferenceData
+  name: PLATEAUInstancedCityModel.GeoReferenceData
+  href: api/PLATEAU.CityInfo.PLATEAUInstancedCityModel.GeoReferenceData.html
+  commentId: T:PLATEAU.CityInfo.PLATEAUInstancedCityModel.GeoReferenceData
+  fullName: PLATEAU.CityInfo.PLATEAUInstancedCityModel.GeoReferenceData
+  nameWithType: PLATEAUInstancedCityModel.GeoReferenceData
+- uid: PLATEAU.CityInfo.PLATEAUInstancedCityModel.GeoReferenceData.#ctor(System.Double,System.Double,System.Double,System.Single,CoordinateSystem,System.Int32)
+  name: GeoReferenceData(Double, Double, Double, Single, CoordinateSystem, Int32)
+  href: api/PLATEAU.CityInfo.PLATEAUInstancedCityModel.GeoReferenceData.html#PLATEAU_CityInfo_PLATEAUInstancedCityModel_GeoReferenceData__ctor_System_Double_System_Double_System_Double_System_Single_CoordinateSystem_System_Int32_
+  commentId: M:PLATEAU.CityInfo.PLATEAUInstancedCityModel.GeoReferenceData.#ctor(System.Double,System.Double,System.Double,System.Single,CoordinateSystem,System.Int32)
+  fullName: PLATEAU.CityInfo.PLATEAUInstancedCityModel.GeoReferenceData.GeoReferenceData(System.Double, System.Double, System.Double, System.Single, CoordinateSystem, System.Int32)
+  nameWithType: PLATEAUInstancedCityModel.GeoReferenceData.GeoReferenceData(Double, Double, Double, Single, CoordinateSystem, Int32)
+- uid: PLATEAU.CityInfo.PLATEAUInstancedCityModel.GeoReferenceData.#ctor*
+  name: GeoReferenceData
+  href: api/PLATEAU.CityInfo.PLATEAUInstancedCityModel.GeoReferenceData.html#PLATEAU_CityInfo_PLATEAUInstancedCityModel_GeoReferenceData__ctor_
+  commentId: Overload:PLATEAU.CityInfo.PLATEAUInstancedCityModel.GeoReferenceData.#ctor
+  isSpec: "True"
+  fullName: PLATEAU.CityInfo.PLATEAUInstancedCityModel.GeoReferenceData.GeoReferenceData
+  nameWithType: PLATEAUInstancedCityModel.GeoReferenceData.GeoReferenceData
+- uid: PLATEAU.CityInfo.PLATEAUInstancedCityModel.GeoReferenceData.coordinateSystem
+  name: coordinateSystem
+  href: api/PLATEAU.CityInfo.PLATEAUInstancedCityModel.GeoReferenceData.html#PLATEAU_CityInfo_PLATEAUInstancedCityModel_GeoReferenceData_coordinateSystem
+  commentId: F:PLATEAU.CityInfo.PLATEAUInstancedCityModel.GeoReferenceData.coordinateSystem
+  fullName: PLATEAU.CityInfo.PLATEAUInstancedCityModel.GeoReferenceData.coordinateSystem
+  nameWithType: PLATEAUInstancedCityModel.GeoReferenceData.coordinateSystem
+- uid: PLATEAU.CityInfo.PLATEAUInstancedCityModel.GeoReferenceData.referencePointX
+  name: referencePointX
+  href: api/PLATEAU.CityInfo.PLATEAUInstancedCityModel.GeoReferenceData.html#PLATEAU_CityInfo_PLATEAUInstancedCityModel_GeoReferenceData_referencePointX
+  commentId: F:PLATEAU.CityInfo.PLATEAUInstancedCityModel.GeoReferenceData.referencePointX
+  fullName: PLATEAU.CityInfo.PLATEAUInstancedCityModel.GeoReferenceData.referencePointX
+  nameWithType: PLATEAUInstancedCityModel.GeoReferenceData.referencePointX
+- uid: PLATEAU.CityInfo.PLATEAUInstancedCityModel.GeoReferenceData.referencePointY
+  name: referencePointY
+  href: api/PLATEAU.CityInfo.PLATEAUInstancedCityModel.GeoReferenceData.html#PLATEAU_CityInfo_PLATEAUInstancedCityModel_GeoReferenceData_referencePointY
+  commentId: F:PLATEAU.CityInfo.PLATEAUInstancedCityModel.GeoReferenceData.referencePointY
+  fullName: PLATEAU.CityInfo.PLATEAUInstancedCityModel.GeoReferenceData.referencePointY
+  nameWithType: PLATEAUInstancedCityModel.GeoReferenceData.referencePointY
+- uid: PLATEAU.CityInfo.PLATEAUInstancedCityModel.GeoReferenceData.referencePointZ
+  name: referencePointZ
+  href: api/PLATEAU.CityInfo.PLATEAUInstancedCityModel.GeoReferenceData.html#PLATEAU_CityInfo_PLATEAUInstancedCityModel_GeoReferenceData_referencePointZ
+  commentId: F:PLATEAU.CityInfo.PLATEAUInstancedCityModel.GeoReferenceData.referencePointZ
+  fullName: PLATEAU.CityInfo.PLATEAUInstancedCityModel.GeoReferenceData.referencePointZ
+  nameWithType: PLATEAUInstancedCityModel.GeoReferenceData.referencePointZ
+- uid: PLATEAU.CityInfo.PLATEAUInstancedCityModel.GeoReferenceData.unitScale
+  name: unitScale
+  href: api/PLATEAU.CityInfo.PLATEAUInstancedCityModel.GeoReferenceData.html#PLATEAU_CityInfo_PLATEAUInstancedCityModel_GeoReferenceData_unitScale
+  commentId: F:PLATEAU.CityInfo.PLATEAUInstancedCityModel.GeoReferenceData.unitScale
+  fullName: PLATEAU.CityInfo.PLATEAUInstancedCityModel.GeoReferenceData.unitScale
+  nameWithType: PLATEAUInstancedCityModel.GeoReferenceData.unitScale
+- uid: PLATEAU.CityInfo.PLATEAUInstancedCityModel.GeoReferenceData.zoneID
+  name: zoneID
+  href: api/PLATEAU.CityInfo.PLATEAUInstancedCityModel.GeoReferenceData.html#PLATEAU_CityInfo_PLATEAUInstancedCityModel_GeoReferenceData_zoneID
+  commentId: F:PLATEAU.CityInfo.PLATEAUInstancedCityModel.GeoReferenceData.zoneID
+  fullName: PLATEAU.CityInfo.PLATEAUInstancedCityModel.GeoReferenceData.zoneID
+  nameWithType: PLATEAUInstancedCityModel.GeoReferenceData.zoneID
 - uid: PLATEAU.Geometries
   name: PLATEAU.Geometries
   href: api/PLATEAU.Geometries.html
   commentId: N:PLATEAU.Geometries
   fullName: PLATEAU.Geometries
   nameWithType: PLATEAU.Geometries
+- uid: PLATEAU.Geometries.CoordinateSystem
+  name: CoordinateSystem
+  href: api/PLATEAU.Geometries.CoordinateSystem.html
+  commentId: T:PLATEAU.Geometries.CoordinateSystem
+  fullName: PLATEAU.Geometries.CoordinateSystem
+  nameWithType: CoordinateSystem
+- uid: PLATEAU.Geometries.CoordinateSystem.ENU
+  name: ENU
+  href: api/PLATEAU.Geometries.CoordinateSystem.html#PLATEAU_Geometries_CoordinateSystem_ENU
+  commentId: F:PLATEAU.Geometries.CoordinateSystem.ENU
+  fullName: PLATEAU.Geometries.CoordinateSystem.ENU
+  nameWithType: CoordinateSystem.ENU
+- uid: PLATEAU.Geometries.CoordinateSystem.EUN
+  name: EUN
+  href: api/PLATEAU.Geometries.CoordinateSystem.html#PLATEAU_Geometries_CoordinateSystem_EUN
+  commentId: F:PLATEAU.Geometries.CoordinateSystem.EUN
+  fullName: PLATEAU.Geometries.CoordinateSystem.EUN
+  nameWithType: CoordinateSystem.EUN
+- uid: PLATEAU.Geometries.CoordinateSystem.NWU
+  name: NWU
+  href: api/PLATEAU.Geometries.CoordinateSystem.html#PLATEAU_Geometries_CoordinateSystem_NWU
+  commentId: F:PLATEAU.Geometries.CoordinateSystem.NWU
+  fullName: PLATEAU.Geometries.CoordinateSystem.NWU
+  nameWithType: CoordinateSystem.NWU
+- uid: PLATEAU.Geometries.CoordinateSystem.WUN
+  name: WUN
+  href: api/PLATEAU.Geometries.CoordinateSystem.html#PLATEAU_Geometries_CoordinateSystem_WUN
+  commentId: F:PLATEAU.Geometries.CoordinateSystem.WUN
+  fullName: PLATEAU.Geometries.CoordinateSystem.WUN
+  nameWithType: CoordinateSystem.WUN
 - uid: PLATEAU.Geometries.GeoReference
   name: GeoReference
   href: api/PLATEAU.Geometries.GeoReference.html
   commentId: T:PLATEAU.Geometries.GeoReference
   fullName: PLATEAU.Geometries.GeoReference
   nameWithType: GeoReference
-- uid: PLATEAU.Geometries.GeoReference.#ctor(PlateauVector3d,System.Single,CoordinateSystem,System.Int32)
+- uid: PLATEAU.Geometries.GeoReference.#ctor(PlateauVector3d,System.Single,PLATEAU.Geometries.CoordinateSystem,System.Int32)
   name: GeoReference(PlateauVector3d, Single, CoordinateSystem, Int32)
-  href: api/PLATEAU.Geometries.GeoReference.html#PLATEAU_Geometries_GeoReference__ctor_PlateauVector3d_System_Single_CoordinateSystem_System_Int32_
-  commentId: M:PLATEAU.Geometries.GeoReference.#ctor(PlateauVector3d,System.Single,CoordinateSystem,System.Int32)
-  fullName: PLATEAU.Geometries.GeoReference.GeoReference(PlateauVector3d, System.Single, CoordinateSystem, System.Int32)
+  href: api/PLATEAU.Geometries.GeoReference.html#PLATEAU_Geometries_GeoReference__ctor_PlateauVector3d_System_Single_PLATEAU_Geometries_CoordinateSystem_System_Int32_
+  commentId: M:PLATEAU.Geometries.GeoReference.#ctor(PlateauVector3d,System.Single,PLATEAU.Geometries.CoordinateSystem,System.Int32)
+  fullName: PLATEAU.Geometries.GeoReference.GeoReference(PlateauVector3d, System.Single, PLATEAU.Geometries.CoordinateSystem, System.Int32)
   nameWithType: GeoReference.GeoReference(PlateauVector3d, Single, CoordinateSystem, Int32)
 - uid: PLATEAU.Geometries.GeoReference.#ctor*
   name: GeoReference
@@ -1804,6 +1908,19 @@ references:
   isSpec: "True"
   fullName: PLATEAU.Geometries.GeoReference.GeoReference
   nameWithType: GeoReference.GeoReference
+- uid: PLATEAU.Geometries.GeoReference.CoordinateSystem
+  name: CoordinateSystem
+  href: api/PLATEAU.Geometries.GeoReference.html#PLATEAU_Geometries_GeoReference_CoordinateSystem
+  commentId: P:PLATEAU.Geometries.GeoReference.CoordinateSystem
+  fullName: PLATEAU.Geometries.GeoReference.CoordinateSystem
+  nameWithType: GeoReference.CoordinateSystem
+- uid: PLATEAU.Geometries.GeoReference.CoordinateSystem*
+  name: CoordinateSystem
+  href: api/PLATEAU.Geometries.GeoReference.html#PLATEAU_Geometries_GeoReference_CoordinateSystem_
+  commentId: Overload:PLATEAU.Geometries.GeoReference.CoordinateSystem
+  isSpec: "True"
+  fullName: PLATEAU.Geometries.GeoReference.CoordinateSystem
+  nameWithType: GeoReference.CoordinateSystem
 - uid: PLATEAU.Geometries.GeoReference.Dispose
   name: Dispose()
   href: api/PLATEAU.Geometries.GeoReference.html#PLATEAU_Geometries_GeoReference_Dispose
@@ -1856,6 +1973,32 @@ references:
   isSpec: "True"
   fullName: PLATEAU.Geometries.GeoReference.Project
   nameWithType: GeoReference.Project
+- uid: PLATEAU.Geometries.GeoReference.ReferencePoint
+  name: ReferencePoint
+  href: api/PLATEAU.Geometries.GeoReference.html#PLATEAU_Geometries_GeoReference_ReferencePoint
+  commentId: P:PLATEAU.Geometries.GeoReference.ReferencePoint
+  fullName: PLATEAU.Geometries.GeoReference.ReferencePoint
+  nameWithType: GeoReference.ReferencePoint
+- uid: PLATEAU.Geometries.GeoReference.ReferencePoint*
+  name: ReferencePoint
+  href: api/PLATEAU.Geometries.GeoReference.html#PLATEAU_Geometries_GeoReference_ReferencePoint_
+  commentId: Overload:PLATEAU.Geometries.GeoReference.ReferencePoint
+  isSpec: "True"
+  fullName: PLATEAU.Geometries.GeoReference.ReferencePoint
+  nameWithType: GeoReference.ReferencePoint
+- uid: PLATEAU.Geometries.GeoReference.UnitScale
+  name: UnitScale
+  href: api/PLATEAU.Geometries.GeoReference.html#PLATEAU_Geometries_GeoReference_UnitScale
+  commentId: P:PLATEAU.Geometries.GeoReference.UnitScale
+  fullName: PLATEAU.Geometries.GeoReference.UnitScale
+  nameWithType: GeoReference.UnitScale
+- uid: PLATEAU.Geometries.GeoReference.UnitScale*
+  name: UnitScale
+  href: api/PLATEAU.Geometries.GeoReference.html#PLATEAU_Geometries_GeoReference_UnitScale_
+  commentId: Overload:PLATEAU.Geometries.GeoReference.UnitScale
+  isSpec: "True"
+  fullName: PLATEAU.Geometries.GeoReference.UnitScale
+  nameWithType: GeoReference.UnitScale
 - uid: PLATEAU.Geometries.GeoReference.Unproject(PlateauVector3d)
   name: Unproject(PlateauVector3d)
   href: api/PLATEAU.Geometries.GeoReference.html#PLATEAU_Geometries_GeoReference_Unproject_PlateauVector3d_
@@ -1869,6 +2012,19 @@ references:
   isSpec: "True"
   fullName: PLATEAU.Geometries.GeoReference.Unproject
   nameWithType: GeoReference.Unproject
+- uid: PLATEAU.Geometries.GeoReference.ZoneID
+  name: ZoneID
+  href: api/PLATEAU.Geometries.GeoReference.html#PLATEAU_Geometries_GeoReference_ZoneID
+  commentId: P:PLATEAU.Geometries.GeoReference.ZoneID
+  fullName: PLATEAU.Geometries.GeoReference.ZoneID
+  nameWithType: GeoReference.ZoneID
+- uid: PLATEAU.Geometries.GeoReference.ZoneID*
+  name: ZoneID
+  href: api/PLATEAU.Geometries.GeoReference.html#PLATEAU_Geometries_GeoReference_ZoneID_
+  commentId: Overload:PLATEAU.Geometries.GeoReference.ZoneID
+  isSpec: "True"
+  fullName: PLATEAU.Geometries.GeoReference.ZoneID
+  nameWithType: GeoReference.ZoneID
 - uid: PLATEAU.Interop
   name: PLATEAU.Interop
   href: api/PLATEAU.Interop.html
@@ -2148,6 +2304,24 @@ references:
   commentId: F:PLATEAU.Interop.GeoCoordinate.Longitude
   fullName: PLATEAU.Interop.GeoCoordinate.Longitude
   nameWithType: GeoCoordinate.Longitude
+- uid: PLATEAU.Interop.GltfFileFormat
+  name: GltfFileFormat
+  href: api/PLATEAU.Interop.GltfFileFormat.html
+  commentId: T:PLATEAU.Interop.GltfFileFormat
+  fullName: PLATEAU.Interop.GltfFileFormat
+  nameWithType: GltfFileFormat
+- uid: PLATEAU.Interop.GltfFileFormat.GLB
+  name: GLB
+  href: api/PLATEAU.Interop.GltfFileFormat.html#PLATEAU_Interop_GltfFileFormat_GLB
+  commentId: F:PLATEAU.Interop.GltfFileFormat.GLB
+  fullName: PLATEAU.Interop.GltfFileFormat.GLB
+  nameWithType: GltfFileFormat.GLB
+- uid: PLATEAU.Interop.GltfFileFormat.GLTF
+  name: GLTF
+  href: api/PLATEAU.Interop.GltfFileFormat.html#PLATEAU_Interop_GltfFileFormat_GLTF
+  commentId: F:PLATEAU.Interop.GltfFileFormat.GLTF
+  fullName: PLATEAU.Interop.GltfFileFormat.GLTF
+  nameWithType: GltfFileFormat.GLTF
 - uid: PLATEAU.Interop.LogCallbackFuncType
   name: LogCallbackFuncType
   href: api/PLATEAU.Interop.LogCallbackFuncType.html
@@ -2269,6 +2443,72 @@ references:
   commentId: F:PLATEAU.Interop.LogCallbacks.StdOutFunc
   fullName: PLATEAU.Interop.LogCallbacks.StdOutFunc
   nameWithType: LogCallbacks.StdOutFunc
+- uid: PLATEAU.Interop.MeshConvertOptionsData
+  name: MeshConvertOptionsData
+  href: api/PLATEAU.Interop.MeshConvertOptionsData.html
+  commentId: T:PLATEAU.Interop.MeshConvertOptionsData
+  fullName: PLATEAU.Interop.MeshConvertOptionsData
+  nameWithType: MeshConvertOptionsData
+- uid: PLATEAU.Interop.MeshConvertOptionsData.CoordinateZoneID
+  name: CoordinateZoneID
+  href: api/PLATEAU.Interop.MeshConvertOptionsData.html#PLATEAU_Interop_MeshConvertOptionsData_CoordinateZoneID
+  commentId: F:PLATEAU.Interop.MeshConvertOptionsData.CoordinateZoneID
+  fullName: PLATEAU.Interop.MeshConvertOptionsData.CoordinateZoneID
+  nameWithType: MeshConvertOptionsData.CoordinateZoneID
+- uid: PLATEAU.Interop.MeshConvertOptionsData.ExportAppearance
+  name: ExportAppearance
+  href: api/PLATEAU.Interop.MeshConvertOptionsData.html#PLATEAU_Interop_MeshConvertOptionsData_ExportAppearance
+  commentId: F:PLATEAU.Interop.MeshConvertOptionsData.ExportAppearance
+  fullName: PLATEAU.Interop.MeshConvertOptionsData.ExportAppearance
+  nameWithType: MeshConvertOptionsData.ExportAppearance
+- uid: PLATEAU.Interop.MeshConvertOptionsData.ExportLowerLOD
+  name: ExportLowerLOD
+  href: api/PLATEAU.Interop.MeshConvertOptionsData.html#PLATEAU_Interop_MeshConvertOptionsData_ExportLowerLOD
+  commentId: F:PLATEAU.Interop.MeshConvertOptionsData.ExportLowerLOD
+  fullName: PLATEAU.Interop.MeshConvertOptionsData.ExportLowerLOD
+  nameWithType: MeshConvertOptionsData.ExportLowerLOD
+- uid: PLATEAU.Interop.MeshConvertOptionsData.MaxLOD
+  name: MaxLOD
+  href: api/PLATEAU.Interop.MeshConvertOptionsData.html#PLATEAU_Interop_MeshConvertOptionsData_MaxLOD
+  commentId: F:PLATEAU.Interop.MeshConvertOptionsData.MaxLOD
+  fullName: PLATEAU.Interop.MeshConvertOptionsData.MaxLOD
+  nameWithType: MeshConvertOptionsData.MaxLOD
+- uid: PLATEAU.Interop.MeshConvertOptionsData.MeshAxes
+  name: MeshAxes
+  href: api/PLATEAU.Interop.MeshConvertOptionsData.html#PLATEAU_Interop_MeshConvertOptionsData_MeshAxes
+  commentId: F:PLATEAU.Interop.MeshConvertOptionsData.MeshAxes
+  fullName: PLATEAU.Interop.MeshConvertOptionsData.MeshAxes
+  nameWithType: MeshConvertOptionsData.MeshAxes
+- uid: PLATEAU.Interop.MeshConvertOptionsData.MeshFileFormat
+  name: MeshFileFormat
+  href: api/PLATEAU.Interop.MeshConvertOptionsData.html#PLATEAU_Interop_MeshConvertOptionsData_MeshFileFormat
+  commentId: F:PLATEAU.Interop.MeshConvertOptionsData.MeshFileFormat
+  fullName: PLATEAU.Interop.MeshConvertOptionsData.MeshFileFormat
+  nameWithType: MeshConvertOptionsData.MeshFileFormat
+- uid: PLATEAU.Interop.MeshConvertOptionsData.MeshGranularity
+  name: MeshGranularity
+  href: api/PLATEAU.Interop.MeshConvertOptionsData.html#PLATEAU_Interop_MeshConvertOptionsData_MeshGranularity
+  commentId: F:PLATEAU.Interop.MeshConvertOptionsData.MeshGranularity
+  fullName: PLATEAU.Interop.MeshConvertOptionsData.MeshGranularity
+  nameWithType: MeshConvertOptionsData.MeshGranularity
+- uid: PLATEAU.Interop.MeshConvertOptionsData.MinLOD
+  name: MinLOD
+  href: api/PLATEAU.Interop.MeshConvertOptionsData.html#PLATEAU_Interop_MeshConvertOptionsData_MinLOD
+  commentId: F:PLATEAU.Interop.MeshConvertOptionsData.MinLOD
+  fullName: PLATEAU.Interop.MeshConvertOptionsData.MinLOD
+  nameWithType: MeshConvertOptionsData.MinLOD
+- uid: PLATEAU.Interop.MeshConvertOptionsData.ReferencePoint
+  name: ReferencePoint
+  href: api/PLATEAU.Interop.MeshConvertOptionsData.html#PLATEAU_Interop_MeshConvertOptionsData_ReferencePoint
+  commentId: F:PLATEAU.Interop.MeshConvertOptionsData.ReferencePoint
+  fullName: PLATEAU.Interop.MeshConvertOptionsData.ReferencePoint
+  nameWithType: MeshConvertOptionsData.ReferencePoint
+- uid: PLATEAU.Interop.MeshConvertOptionsData.UnitScale
+  name: UnitScale
+  href: api/PLATEAU.Interop.MeshConvertOptionsData.html#PLATEAU_Interop_MeshConvertOptionsData_UnitScale
+  commentId: F:PLATEAU.Interop.MeshConvertOptionsData.UnitScale
+  fullName: PLATEAU.Interop.MeshConvertOptionsData.UnitScale
+  nameWithType: MeshConvertOptionsData.UnitScale
 - uid: PLATEAU.Interop.MeshExtractOptions
   name: MeshExtractOptions
   href: api/PLATEAU.Interop.MeshExtractOptions.html
@@ -2394,6 +2634,30 @@ references:
   commentId: F:PLATEAU.Interop.MeshFileFormat.OBJ
   fullName: PLATEAU.Interop.MeshFileFormat.OBJ
   nameWithType: MeshFileFormat.OBJ
+- uid: PLATEAU.Interop.MeshGranularity
+  name: MeshGranularity
+  href: api/PLATEAU.Interop.MeshGranularity.html
+  commentId: T:PLATEAU.Interop.MeshGranularity
+  fullName: PLATEAU.Interop.MeshGranularity
+  nameWithType: MeshGranularity
+- uid: PLATEAU.Interop.MeshGranularity.PerAtomicFeatureObject
+  name: PerAtomicFeatureObject
+  href: api/PLATEAU.Interop.MeshGranularity.html#PLATEAU_Interop_MeshGranularity_PerAtomicFeatureObject
+  commentId: F:PLATEAU.Interop.MeshGranularity.PerAtomicFeatureObject
+  fullName: PLATEAU.Interop.MeshGranularity.PerAtomicFeatureObject
+  nameWithType: MeshGranularity.PerAtomicFeatureObject
+- uid: PLATEAU.Interop.MeshGranularity.PerCityModelArea
+  name: PerCityModelArea
+  href: api/PLATEAU.Interop.MeshGranularity.html#PLATEAU_Interop_MeshGranularity_PerCityModelArea
+  commentId: F:PLATEAU.Interop.MeshGranularity.PerCityModelArea
+  fullName: PLATEAU.Interop.MeshGranularity.PerCityModelArea
+  nameWithType: MeshGranularity.PerCityModelArea
+- uid: PLATEAU.Interop.MeshGranularity.PerPrimaryFeatureObject
+  name: PerPrimaryFeatureObject
+  href: api/PLATEAU.Interop.MeshGranularity.html#PLATEAU_Interop_MeshGranularity_PerPrimaryFeatureObject
+  commentId: F:PLATEAU.Interop.MeshGranularity.PerPrimaryFeatureObject
+  fullName: PLATEAU.Interop.MeshGranularity.PerPrimaryFeatureObject
+  nameWithType: MeshGranularity.PerPrimaryFeatureObject
 - uid: PLATEAU.Interop.PInvokeDisposable
   name: PInvokeDisposable
   href: api/PLATEAU.Interop.PInvokeDisposable.html
@@ -2559,337 +2823,159 @@ references:
   commentId: F:PLATEAU.Interop.PlateauVector3d.Z
   fullName: PLATEAU.Interop.PlateauVector3d.Z
   nameWithType: PlateauVector3d.Z
-- uid: PLATEAU.IO
-  name: PLATEAU.IO
-  href: api/PLATEAU.IO.html
-  commentId: N:PLATEAU.IO
-  fullName: PLATEAU.IO
-  nameWithType: PLATEAU.IO
-- uid: PLATEAU.IO.CoordinateSystem
-  name: CoordinateSystem
-  href: api/PLATEAU.IO.CoordinateSystem.html
-  commentId: T:PLATEAU.IO.CoordinateSystem
-  fullName: PLATEAU.IO.CoordinateSystem
-  nameWithType: CoordinateSystem
-- uid: PLATEAU.IO.CoordinateSystem.ENU
-  name: ENU
-  href: api/PLATEAU.IO.CoordinateSystem.html#PLATEAU_IO_CoordinateSystem_ENU
-  commentId: F:PLATEAU.IO.CoordinateSystem.ENU
-  fullName: PLATEAU.IO.CoordinateSystem.ENU
-  nameWithType: CoordinateSystem.ENU
-- uid: PLATEAU.IO.CoordinateSystem.EUN
-  name: EUN
-  href: api/PLATEAU.IO.CoordinateSystem.html#PLATEAU_IO_CoordinateSystem_EUN
-  commentId: F:PLATEAU.IO.CoordinateSystem.EUN
-  fullName: PLATEAU.IO.CoordinateSystem.EUN
-  nameWithType: CoordinateSystem.EUN
-- uid: PLATEAU.IO.CoordinateSystem.NWU
-  name: NWU
-  href: api/PLATEAU.IO.CoordinateSystem.html#PLATEAU_IO_CoordinateSystem_NWU
-  commentId: F:PLATEAU.IO.CoordinateSystem.NWU
-  fullName: PLATEAU.IO.CoordinateSystem.NWU
-  nameWithType: CoordinateSystem.NWU
-- uid: PLATEAU.IO.CoordinateSystem.WUN
-  name: WUN
-  href: api/PLATEAU.IO.CoordinateSystem.html#PLATEAU_IO_CoordinateSystem_WUN
-  commentId: F:PLATEAU.IO.CoordinateSystem.WUN
-  fullName: PLATEAU.IO.CoordinateSystem.WUN
-  nameWithType: CoordinateSystem.WUN
-- uid: PLATEAU.IO.MeshConverter
-  name: MeshConverter
-  href: api/PLATEAU.IO.MeshConverter.html
-  commentId: T:PLATEAU.IO.MeshConverter
-  fullName: PLATEAU.IO.MeshConverter
-  nameWithType: MeshConverter
-- uid: PLATEAU.IO.MeshConverter.#ctor
-  name: MeshConverter()
-  href: api/PLATEAU.IO.MeshConverter.html#PLATEAU_IO_MeshConverter__ctor
-  commentId: M:PLATEAU.IO.MeshConverter.#ctor
-  fullName: PLATEAU.IO.MeshConverter.MeshConverter()
-  nameWithType: MeshConverter.MeshConverter()
-- uid: PLATEAU.IO.MeshConverter.#ctor*
-  name: MeshConverter
-  href: api/PLATEAU.IO.MeshConverter.html#PLATEAU_IO_MeshConverter__ctor_
-  commentId: Overload:PLATEAU.IO.MeshConverter.#ctor
+- uid: PLATEAU.MeshWriter
+  name: PLATEAU.MeshWriter
+  href: api/PLATEAU.MeshWriter.html
+  commentId: N:PLATEAU.MeshWriter
+  fullName: PLATEAU.MeshWriter
+  nameWithType: PLATEAU.MeshWriter
+- uid: PLATEAU.MeshWriter.GltfWriteOptions
+  name: GltfWriteOptions
+  href: api/PLATEAU.MeshWriter.GltfWriteOptions.html
+  commentId: T:PLATEAU.MeshWriter.GltfWriteOptions
+  fullName: PLATEAU.MeshWriter.GltfWriteOptions
+  nameWithType: GltfWriteOptions
+- uid: PLATEAU.MeshWriter.GltfWriteOptions.#ctor(GltfFileFormat,System.String)
+  name: GltfWriteOptions(GltfFileFormat, String)
+  href: api/PLATEAU.MeshWriter.GltfWriteOptions.html#PLATEAU_MeshWriter_GltfWriteOptions__ctor_GltfFileFormat_System_String_
+  commentId: M:PLATEAU.MeshWriter.GltfWriteOptions.#ctor(GltfFileFormat,System.String)
+  fullName: PLATEAU.MeshWriter.GltfWriteOptions.GltfWriteOptions(GltfFileFormat, System.String)
+  nameWithType: GltfWriteOptions.GltfWriteOptions(GltfFileFormat, String)
+- uid: PLATEAU.MeshWriter.GltfWriteOptions.#ctor*
+  name: GltfWriteOptions
+  href: api/PLATEAU.MeshWriter.GltfWriteOptions.html#PLATEAU_MeshWriter_GltfWriteOptions__ctor_
+  commentId: Overload:PLATEAU.MeshWriter.GltfWriteOptions.#ctor
   isSpec: "True"
-  fullName: PLATEAU.IO.MeshConverter.MeshConverter
-  nameWithType: MeshConverter.MeshConverter
-- uid: PLATEAU.IO.MeshConverter.Convert(System.String,System.String,CityModel,DllLogger)
-  name: Convert(String, String, CityModel, DllLogger)
-  href: api/PLATEAU.IO.MeshConverter.html#PLATEAU_IO_MeshConverter_Convert_System_String_System_String_CityModel_DllLogger_
-  commentId: M:PLATEAU.IO.MeshConverter.Convert(System.String,System.String,CityModel,DllLogger)
-  fullName: PLATEAU.IO.MeshConverter.Convert(System.String, System.String, CityModel, DllLogger)
-  nameWithType: MeshConverter.Convert(String, String, CityModel, DllLogger)
-- uid: PLATEAU.IO.MeshConverter.Convert*
-  name: Convert
-  href: api/PLATEAU.IO.MeshConverter.html#PLATEAU_IO_MeshConverter_Convert_
-  commentId: Overload:PLATEAU.IO.MeshConverter.Convert
+  fullName: PLATEAU.MeshWriter.GltfWriteOptions.GltfWriteOptions
+  nameWithType: GltfWriteOptions.GltfWriteOptions
+- uid: PLATEAU.MeshWriter.GltfWriteOptions.GltfFileFormat
+  name: GltfFileFormat
+  href: api/PLATEAU.MeshWriter.GltfWriteOptions.html#PLATEAU_MeshWriter_GltfWriteOptions_GltfFileFormat
+  commentId: F:PLATEAU.MeshWriter.GltfWriteOptions.GltfFileFormat
+  fullName: PLATEAU.MeshWriter.GltfWriteOptions.GltfFileFormat
+  nameWithType: GltfWriteOptions.GltfFileFormat
+- uid: PLATEAU.MeshWriter.GltfWriteOptions.TextureDirectoryPath
+  name: TextureDirectoryPath
+  href: api/PLATEAU.MeshWriter.GltfWriteOptions.html#PLATEAU_MeshWriter_GltfWriteOptions_TextureDirectoryPath
+  commentId: F:PLATEAU.MeshWriter.GltfWriteOptions.TextureDirectoryPath
+  fullName: PLATEAU.MeshWriter.GltfWriteOptions.TextureDirectoryPath
+  nameWithType: GltfWriteOptions.TextureDirectoryPath
+- uid: PLATEAU.MeshWriter.GltfWriter
+  name: GltfWriter
+  href: api/PLATEAU.MeshWriter.GltfWriter.html
+  commentId: T:PLATEAU.MeshWriter.GltfWriter
+  fullName: PLATEAU.MeshWriter.GltfWriter
+  nameWithType: GltfWriter
+- uid: PLATEAU.MeshWriter.GltfWriter.#ctor
+  name: GltfWriter()
+  href: api/PLATEAU.MeshWriter.GltfWriter.html#PLATEAU_MeshWriter_GltfWriter__ctor
+  commentId: M:PLATEAU.MeshWriter.GltfWriter.#ctor
+  fullName: PLATEAU.MeshWriter.GltfWriter.GltfWriter()
+  nameWithType: GltfWriter.GltfWriter()
+- uid: PLATEAU.MeshWriter.GltfWriter.#ctor*
+  name: GltfWriter
+  href: api/PLATEAU.MeshWriter.GltfWriter.html#PLATEAU_MeshWriter_GltfWriter__ctor_
+  commentId: Overload:PLATEAU.MeshWriter.GltfWriter.#ctor
   isSpec: "True"
-  fullName: PLATEAU.IO.MeshConverter.Convert
-  nameWithType: MeshConverter.Convert
-- uid: PLATEAU.IO.MeshConverter.Dispose
+  fullName: PLATEAU.MeshWriter.GltfWriter.GltfWriter
+  nameWithType: GltfWriter.GltfWriter
+- uid: PLATEAU.MeshWriter.GltfWriter.Dispose
   name: Dispose()
-  href: api/PLATEAU.IO.MeshConverter.html#PLATEAU_IO_MeshConverter_Dispose
-  commentId: M:PLATEAU.IO.MeshConverter.Dispose
-  fullName: PLATEAU.IO.MeshConverter.Dispose()
-  nameWithType: MeshConverter.Dispose()
-- uid: PLATEAU.IO.MeshConverter.Dispose*
+  href: api/PLATEAU.MeshWriter.GltfWriter.html#PLATEAU_MeshWriter_GltfWriter_Dispose
+  commentId: M:PLATEAU.MeshWriter.GltfWriter.Dispose
+  fullName: PLATEAU.MeshWriter.GltfWriter.Dispose()
+  nameWithType: GltfWriter.Dispose()
+- uid: PLATEAU.MeshWriter.GltfWriter.Dispose*
   name: Dispose
-  href: api/PLATEAU.IO.MeshConverter.html#PLATEAU_IO_MeshConverter_Dispose_
-  commentId: Overload:PLATEAU.IO.MeshConverter.Dispose
+  href: api/PLATEAU.MeshWriter.GltfWriter.html#PLATEAU_MeshWriter_GltfWriter_Dispose_
+  commentId: Overload:PLATEAU.MeshWriter.GltfWriter.Dispose
   isSpec: "True"
-  fullName: PLATEAU.IO.MeshConverter.Dispose
-  nameWithType: MeshConverter.Dispose
-- uid: PLATEAU.IO.MeshConverter.Finalize
+  fullName: PLATEAU.MeshWriter.GltfWriter.Dispose
+  nameWithType: GltfWriter.Dispose
+- uid: PLATEAU.MeshWriter.GltfWriter.Finalize
   name: Finalize()
-  href: api/PLATEAU.IO.MeshConverter.html#PLATEAU_IO_MeshConverter_Finalize
-  commentId: M:PLATEAU.IO.MeshConverter.Finalize
-  fullName: PLATEAU.IO.MeshConverter.Finalize()
-  nameWithType: MeshConverter.Finalize()
-- uid: PLATEAU.IO.MeshConverter.Finalize*
+  href: api/PLATEAU.MeshWriter.GltfWriter.html#PLATEAU_MeshWriter_GltfWriter_Finalize
+  commentId: M:PLATEAU.MeshWriter.GltfWriter.Finalize
+  fullName: PLATEAU.MeshWriter.GltfWriter.Finalize()
+  nameWithType: GltfWriter.Finalize()
+- uid: PLATEAU.MeshWriter.GltfWriter.Finalize*
   name: Finalize
-  href: api/PLATEAU.IO.MeshConverter.html#PLATEAU_IO_MeshConverter_Finalize_
-  commentId: Overload:PLATEAU.IO.MeshConverter.Finalize
+  href: api/PLATEAU.MeshWriter.GltfWriter.html#PLATEAU_MeshWriter_GltfWriter_Finalize_
+  commentId: Overload:PLATEAU.MeshWriter.GltfWriter.Finalize
   isSpec: "True"
-  fullName: PLATEAU.IO.MeshConverter.Finalize
-  nameWithType: MeshConverter.Finalize
-- uid: PLATEAU.IO.MeshConverter.Handle
-  name: Handle
-  href: api/PLATEAU.IO.MeshConverter.html#PLATEAU_IO_MeshConverter_Handle
-  commentId: P:PLATEAU.IO.MeshConverter.Handle
-  fullName: PLATEAU.IO.MeshConverter.Handle
-  nameWithType: MeshConverter.Handle
-- uid: PLATEAU.IO.MeshConverter.Handle*
-  name: Handle
-  href: api/PLATEAU.IO.MeshConverter.html#PLATEAU_IO_MeshConverter_Handle_
-  commentId: Overload:PLATEAU.IO.MeshConverter.Handle
+  fullName: PLATEAU.MeshWriter.GltfWriter.Finalize
+  nameWithType: GltfWriter.Finalize
+- uid: PLATEAU.MeshWriter.GltfWriter.Write(System.String,Model,PLATEAU.MeshWriter.GltfWriteOptions)
+  name: Write(String, Model, GltfWriteOptions)
+  href: api/PLATEAU.MeshWriter.GltfWriter.html#PLATEAU_MeshWriter_GltfWriter_Write_System_String_Model_PLATEAU_MeshWriter_GltfWriteOptions_
+  commentId: M:PLATEAU.MeshWriter.GltfWriter.Write(System.String,Model,PLATEAU.MeshWriter.GltfWriteOptions)
+  fullName: PLATEAU.MeshWriter.GltfWriter.Write(System.String, Model, PLATEAU.MeshWriter.GltfWriteOptions)
+  nameWithType: GltfWriter.Write(String, Model, GltfWriteOptions)
+- uid: PLATEAU.MeshWriter.GltfWriter.Write*
+  name: Write
+  href: api/PLATEAU.MeshWriter.GltfWriter.html#PLATEAU_MeshWriter_GltfWriter_Write_
+  commentId: Overload:PLATEAU.MeshWriter.GltfWriter.Write
   isSpec: "True"
-  fullName: PLATEAU.IO.MeshConverter.Handle
-  nameWithType: MeshConverter.Handle
-- uid: PLATEAU.IO.MeshConverter.Options
-  name: Options
-  href: api/PLATEAU.IO.MeshConverter.html#PLATEAU_IO_MeshConverter_Options
-  commentId: P:PLATEAU.IO.MeshConverter.Options
-  fullName: PLATEAU.IO.MeshConverter.Options
-  nameWithType: MeshConverter.Options
-- uid: PLATEAU.IO.MeshConverter.Options*
-  name: Options
-  href: api/PLATEAU.IO.MeshConverter.html#PLATEAU_IO_MeshConverter_Options_
-  commentId: Overload:PLATEAU.IO.MeshConverter.Options
+  fullName: PLATEAU.MeshWriter.GltfWriter.Write
+  nameWithType: GltfWriter.Write
+- uid: PLATEAU.MeshWriter.ObjWriter
+  name: ObjWriter
+  href: api/PLATEAU.MeshWriter.ObjWriter.html
+  commentId: T:PLATEAU.MeshWriter.ObjWriter
+  fullName: PLATEAU.MeshWriter.ObjWriter
+  nameWithType: ObjWriter
+- uid: PLATEAU.MeshWriter.ObjWriter.#ctor
+  name: ObjWriter()
+  href: api/PLATEAU.MeshWriter.ObjWriter.html#PLATEAU_MeshWriter_ObjWriter__ctor
+  commentId: M:PLATEAU.MeshWriter.ObjWriter.#ctor
+  fullName: PLATEAU.MeshWriter.ObjWriter.ObjWriter()
+  nameWithType: ObjWriter.ObjWriter()
+- uid: PLATEAU.MeshWriter.ObjWriter.#ctor*
+  name: ObjWriter
+  href: api/PLATEAU.MeshWriter.ObjWriter.html#PLATEAU_MeshWriter_ObjWriter__ctor_
+  commentId: Overload:PLATEAU.MeshWriter.ObjWriter.#ctor
   isSpec: "True"
-  fullName: PLATEAU.IO.MeshConverter.Options
-  nameWithType: MeshConverter.Options
-- uid: PLATEAU.IO.MeshConvertOptions
-  name: MeshConvertOptions
-  href: api/PLATEAU.IO.MeshConvertOptions.html
-  commentId: T:PLATEAU.IO.MeshConvertOptions
-  fullName: PLATEAU.IO.MeshConvertOptions
-  nameWithType: MeshConvertOptions
-- uid: PLATEAU.IO.MeshConvertOptions.#ctor
-  name: MeshConvertOptions()
-  href: api/PLATEAU.IO.MeshConvertOptions.html#PLATEAU_IO_MeshConvertOptions__ctor
-  commentId: M:PLATEAU.IO.MeshConvertOptions.#ctor
-  fullName: PLATEAU.IO.MeshConvertOptions.MeshConvertOptions()
-  nameWithType: MeshConvertOptions.MeshConvertOptions()
-- uid: PLATEAU.IO.MeshConvertOptions.#ctor*
-  name: MeshConvertOptions
-  href: api/PLATEAU.IO.MeshConvertOptions.html#PLATEAU_IO_MeshConvertOptions__ctor_
-  commentId: Overload:PLATEAU.IO.MeshConvertOptions.#ctor
+  fullName: PLATEAU.MeshWriter.ObjWriter.ObjWriter
+  nameWithType: ObjWriter.ObjWriter
+- uid: PLATEAU.MeshWriter.ObjWriter.Dispose
+  name: Dispose()
+  href: api/PLATEAU.MeshWriter.ObjWriter.html#PLATEAU_MeshWriter_ObjWriter_Dispose
+  commentId: M:PLATEAU.MeshWriter.ObjWriter.Dispose
+  fullName: PLATEAU.MeshWriter.ObjWriter.Dispose()
+  nameWithType: ObjWriter.Dispose()
+- uid: PLATEAU.MeshWriter.ObjWriter.Dispose*
+  name: Dispose
+  href: api/PLATEAU.MeshWriter.ObjWriter.html#PLATEAU_MeshWriter_ObjWriter_Dispose_
+  commentId: Overload:PLATEAU.MeshWriter.ObjWriter.Dispose
   isSpec: "True"
-  fullName: PLATEAU.IO.MeshConvertOptions.MeshConvertOptions
-  nameWithType: MeshConvertOptions.MeshConvertOptions
-- uid: PLATEAU.IO.MeshConvertOptions.CoordinateZoneID
-  name: CoordinateZoneID
-  href: api/PLATEAU.IO.MeshConvertOptions.html#PLATEAU_IO_MeshConvertOptions_CoordinateZoneID
-  commentId: P:PLATEAU.IO.MeshConvertOptions.CoordinateZoneID
-  fullName: PLATEAU.IO.MeshConvertOptions.CoordinateZoneID
-  nameWithType: MeshConvertOptions.CoordinateZoneID
-- uid: PLATEAU.IO.MeshConvertOptions.CoordinateZoneID*
-  name: CoordinateZoneID
-  href: api/PLATEAU.IO.MeshConvertOptions.html#PLATEAU_IO_MeshConvertOptions_CoordinateZoneID_
-  commentId: Overload:PLATEAU.IO.MeshConvertOptions.CoordinateZoneID
+  fullName: PLATEAU.MeshWriter.ObjWriter.Dispose
+  nameWithType: ObjWriter.Dispose
+- uid: PLATEAU.MeshWriter.ObjWriter.Finalize
+  name: Finalize()
+  href: api/PLATEAU.MeshWriter.ObjWriter.html#PLATEAU_MeshWriter_ObjWriter_Finalize
+  commentId: M:PLATEAU.MeshWriter.ObjWriter.Finalize
+  fullName: PLATEAU.MeshWriter.ObjWriter.Finalize()
+  nameWithType: ObjWriter.Finalize()
+- uid: PLATEAU.MeshWriter.ObjWriter.Finalize*
+  name: Finalize
+  href: api/PLATEAU.MeshWriter.ObjWriter.html#PLATEAU_MeshWriter_ObjWriter_Finalize_
+  commentId: Overload:PLATEAU.MeshWriter.ObjWriter.Finalize
   isSpec: "True"
-  fullName: PLATEAU.IO.MeshConvertOptions.CoordinateZoneID
-  nameWithType: MeshConvertOptions.CoordinateZoneID
-- uid: PLATEAU.IO.MeshConvertOptions.ExportAppearance
-  name: ExportAppearance
-  href: api/PLATEAU.IO.MeshConvertOptions.html#PLATEAU_IO_MeshConvertOptions_ExportAppearance
-  commentId: P:PLATEAU.IO.MeshConvertOptions.ExportAppearance
-  fullName: PLATEAU.IO.MeshConvertOptions.ExportAppearance
-  nameWithType: MeshConvertOptions.ExportAppearance
-- uid: PLATEAU.IO.MeshConvertOptions.ExportAppearance*
-  name: ExportAppearance
-  href: api/PLATEAU.IO.MeshConvertOptions.html#PLATEAU_IO_MeshConvertOptions_ExportAppearance_
-  commentId: Overload:PLATEAU.IO.MeshConvertOptions.ExportAppearance
+  fullName: PLATEAU.MeshWriter.ObjWriter.Finalize
+  nameWithType: ObjWriter.Finalize
+- uid: PLATEAU.MeshWriter.ObjWriter.Write(System.String,Model)
+  name: Write(String, Model)
+  href: api/PLATEAU.MeshWriter.ObjWriter.html#PLATEAU_MeshWriter_ObjWriter_Write_System_String_Model_
+  commentId: M:PLATEAU.MeshWriter.ObjWriter.Write(System.String,Model)
+  fullName: PLATEAU.MeshWriter.ObjWriter.Write(System.String, Model)
+  nameWithType: ObjWriter.Write(String, Model)
+- uid: PLATEAU.MeshWriter.ObjWriter.Write*
+  name: Write
+  href: api/PLATEAU.MeshWriter.ObjWriter.html#PLATEAU_MeshWriter_ObjWriter_Write_
+  commentId: Overload:PLATEAU.MeshWriter.ObjWriter.Write
   isSpec: "True"
-  fullName: PLATEAU.IO.MeshConvertOptions.ExportAppearance
-  nameWithType: MeshConvertOptions.ExportAppearance
-- uid: PLATEAU.IO.MeshConvertOptions.ExportLowerLOD
-  name: ExportLowerLOD
-  href: api/PLATEAU.IO.MeshConvertOptions.html#PLATEAU_IO_MeshConvertOptions_ExportLowerLOD
-  commentId: P:PLATEAU.IO.MeshConvertOptions.ExportLowerLOD
-  fullName: PLATEAU.IO.MeshConvertOptions.ExportLowerLOD
-  nameWithType: MeshConvertOptions.ExportLowerLOD
-- uid: PLATEAU.IO.MeshConvertOptions.ExportLowerLOD*
-  name: ExportLowerLOD
-  href: api/PLATEAU.IO.MeshConvertOptions.html#PLATEAU_IO_MeshConvertOptions_ExportLowerLOD_
-  commentId: Overload:PLATEAU.IO.MeshConvertOptions.ExportLowerLOD
-  isSpec: "True"
-  fullName: PLATEAU.IO.MeshConvertOptions.ExportLowerLOD
-  nameWithType: MeshConvertOptions.ExportLowerLOD
-- uid: PLATEAU.IO.MeshConvertOptions.MaxLOD
-  name: MaxLOD
-  href: api/PLATEAU.IO.MeshConvertOptions.html#PLATEAU_IO_MeshConvertOptions_MaxLOD
-  commentId: P:PLATEAU.IO.MeshConvertOptions.MaxLOD
-  fullName: PLATEAU.IO.MeshConvertOptions.MaxLOD
-  nameWithType: MeshConvertOptions.MaxLOD
-- uid: PLATEAU.IO.MeshConvertOptions.MaxLOD*
-  name: MaxLOD
-  href: api/PLATEAU.IO.MeshConvertOptions.html#PLATEAU_IO_MeshConvertOptions_MaxLOD_
-  commentId: Overload:PLATEAU.IO.MeshConvertOptions.MaxLOD
-  isSpec: "True"
-  fullName: PLATEAU.IO.MeshConvertOptions.MaxLOD
-  nameWithType: MeshConvertOptions.MaxLOD
-- uid: PLATEAU.IO.MeshConvertOptions.MeshAxes
-  name: MeshAxes
-  href: api/PLATEAU.IO.MeshConvertOptions.html#PLATEAU_IO_MeshConvertOptions_MeshAxes
-  commentId: P:PLATEAU.IO.MeshConvertOptions.MeshAxes
-  fullName: PLATEAU.IO.MeshConvertOptions.MeshAxes
-  nameWithType: MeshConvertOptions.MeshAxes
-- uid: PLATEAU.IO.MeshConvertOptions.MeshAxes*
-  name: MeshAxes
-  href: api/PLATEAU.IO.MeshConvertOptions.html#PLATEAU_IO_MeshConvertOptions_MeshAxes_
-  commentId: Overload:PLATEAU.IO.MeshConvertOptions.MeshAxes
-  isSpec: "True"
-  fullName: PLATEAU.IO.MeshConvertOptions.MeshAxes
-  nameWithType: MeshConvertOptions.MeshAxes
-- uid: PLATEAU.IO.MeshConvertOptions.MeshFileFormat
-  name: MeshFileFormat
-  href: api/PLATEAU.IO.MeshConvertOptions.html#PLATEAU_IO_MeshConvertOptions_MeshFileFormat
-  commentId: P:PLATEAU.IO.MeshConvertOptions.MeshFileFormat
-  fullName: PLATEAU.IO.MeshConvertOptions.MeshFileFormat
-  nameWithType: MeshConvertOptions.MeshFileFormat
-- uid: PLATEAU.IO.MeshConvertOptions.MeshFileFormat*
-  name: MeshFileFormat
-  href: api/PLATEAU.IO.MeshConvertOptions.html#PLATEAU_IO_MeshConvertOptions_MeshFileFormat_
-  commentId: Overload:PLATEAU.IO.MeshConvertOptions.MeshFileFormat
-  isSpec: "True"
-  fullName: PLATEAU.IO.MeshConvertOptions.MeshFileFormat
-  nameWithType: MeshConvertOptions.MeshFileFormat
-- uid: PLATEAU.IO.MeshConvertOptions.MeshGranularity
-  name: MeshGranularity
-  href: api/PLATEAU.IO.MeshConvertOptions.html#PLATEAU_IO_MeshConvertOptions_MeshGranularity
-  commentId: P:PLATEAU.IO.MeshConvertOptions.MeshGranularity
-  fullName: PLATEAU.IO.MeshConvertOptions.MeshGranularity
-  nameWithType: MeshConvertOptions.MeshGranularity
-- uid: PLATEAU.IO.MeshConvertOptions.MeshGranularity*
-  name: MeshGranularity
-  href: api/PLATEAU.IO.MeshConvertOptions.html#PLATEAU_IO_MeshConvertOptions_MeshGranularity_
-  commentId: Overload:PLATEAU.IO.MeshConvertOptions.MeshGranularity
-  isSpec: "True"
-  fullName: PLATEAU.IO.MeshConvertOptions.MeshGranularity
-  nameWithType: MeshConvertOptions.MeshGranularity
-- uid: PLATEAU.IO.MeshConvertOptions.MinLOD
-  name: MinLOD
-  href: api/PLATEAU.IO.MeshConvertOptions.html#PLATEAU_IO_MeshConvertOptions_MinLOD
-  commentId: P:PLATEAU.IO.MeshConvertOptions.MinLOD
-  fullName: PLATEAU.IO.MeshConvertOptions.MinLOD
-  nameWithType: MeshConvertOptions.MinLOD
-- uid: PLATEAU.IO.MeshConvertOptions.MinLOD*
-  name: MinLOD
-  href: api/PLATEAU.IO.MeshConvertOptions.html#PLATEAU_IO_MeshConvertOptions_MinLOD_
-  commentId: Overload:PLATEAU.IO.MeshConvertOptions.MinLOD
-  isSpec: "True"
-  fullName: PLATEAU.IO.MeshConvertOptions.MinLOD
-  nameWithType: MeshConvertOptions.MinLOD
-- uid: PLATEAU.IO.MeshConvertOptions.ReferencePoint
-  name: ReferencePoint
-  href: api/PLATEAU.IO.MeshConvertOptions.html#PLATEAU_IO_MeshConvertOptions_ReferencePoint
-  commentId: P:PLATEAU.IO.MeshConvertOptions.ReferencePoint
-  fullName: PLATEAU.IO.MeshConvertOptions.ReferencePoint
-  nameWithType: MeshConvertOptions.ReferencePoint
-- uid: PLATEAU.IO.MeshConvertOptions.ReferencePoint*
-  name: ReferencePoint
-  href: api/PLATEAU.IO.MeshConvertOptions.html#PLATEAU_IO_MeshConvertOptions_ReferencePoint_
-  commentId: Overload:PLATEAU.IO.MeshConvertOptions.ReferencePoint
-  isSpec: "True"
-  fullName: PLATEAU.IO.MeshConvertOptions.ReferencePoint
-  nameWithType: MeshConvertOptions.ReferencePoint
-- uid: PLATEAU.IO.MeshConvertOptions.SetValidReferencePoint(CityModel)
-  name: SetValidReferencePoint(CityModel)
-  href: api/PLATEAU.IO.MeshConvertOptions.html#PLATEAU_IO_MeshConvertOptions_SetValidReferencePoint_CityModel_
-  commentId: M:PLATEAU.IO.MeshConvertOptions.SetValidReferencePoint(CityModel)
-  fullName: PLATEAU.IO.MeshConvertOptions.SetValidReferencePoint(CityModel)
-  nameWithType: MeshConvertOptions.SetValidReferencePoint(CityModel)
-- uid: PLATEAU.IO.MeshConvertOptions.SetValidReferencePoint*
-  name: SetValidReferencePoint
-  href: api/PLATEAU.IO.MeshConvertOptions.html#PLATEAU_IO_MeshConvertOptions_SetValidReferencePoint_
-  commentId: Overload:PLATEAU.IO.MeshConvertOptions.SetValidReferencePoint
-  isSpec: "True"
-  fullName: PLATEAU.IO.MeshConvertOptions.SetValidReferencePoint
-  nameWithType: MeshConvertOptions.SetValidReferencePoint
-- uid: PLATEAU.IO.MeshConvertOptions.UnitScale
-  name: UnitScale
-  href: api/PLATEAU.IO.MeshConvertOptions.html#PLATEAU_IO_MeshConvertOptions_UnitScale
-  commentId: P:PLATEAU.IO.MeshConvertOptions.UnitScale
-  fullName: PLATEAU.IO.MeshConvertOptions.UnitScale
-  nameWithType: MeshConvertOptions.UnitScale
-- uid: PLATEAU.IO.MeshConvertOptions.UnitScale*
-  name: UnitScale
-  href: api/PLATEAU.IO.MeshConvertOptions.html#PLATEAU_IO_MeshConvertOptions_UnitScale_
-  commentId: Overload:PLATEAU.IO.MeshConvertOptions.UnitScale
-  isSpec: "True"
-  fullName: PLATEAU.IO.MeshConvertOptions.UnitScale
-  nameWithType: MeshConvertOptions.UnitScale
-- uid: PLATEAU.IO.MeshGranularity
-  name: MeshGranularity
-  href: api/PLATEAU.IO.MeshGranularity.html
-  commentId: T:PLATEAU.IO.MeshGranularity
-  fullName: PLATEAU.IO.MeshGranularity
-  nameWithType: MeshGranularity
-- uid: PLATEAU.IO.MeshGranularity.PerAtomicFeatureObject
-  name: PerAtomicFeatureObject
-  href: api/PLATEAU.IO.MeshGranularity.html#PLATEAU_IO_MeshGranularity_PerAtomicFeatureObject
-  commentId: F:PLATEAU.IO.MeshGranularity.PerAtomicFeatureObject
-  fullName: PLATEAU.IO.MeshGranularity.PerAtomicFeatureObject
-  nameWithType: MeshGranularity.PerAtomicFeatureObject
-- uid: PLATEAU.IO.MeshGranularity.PerCityModelArea
-  name: PerCityModelArea
-  href: api/PLATEAU.IO.MeshGranularity.html#PLATEAU_IO_MeshGranularity_PerCityModelArea
-  commentId: F:PLATEAU.IO.MeshGranularity.PerCityModelArea
-  fullName: PLATEAU.IO.MeshGranularity.PerCityModelArea
-  nameWithType: MeshGranularity.PerCityModelArea
-- uid: PLATEAU.IO.MeshGranularity.PerPrimaryFeatureObject
-  name: PerPrimaryFeatureObject
-  href: api/PLATEAU.IO.MeshGranularity.html#PLATEAU_IO_MeshGranularity_PerPrimaryFeatureObject
-  commentId: F:PLATEAU.IO.MeshGranularity.PerPrimaryFeatureObject
-  fullName: PLATEAU.IO.MeshGranularity.PerPrimaryFeatureObject
-  nameWithType: MeshGranularity.PerPrimaryFeatureObject
-- uid: PLATEAU.IO.PrimaryCityObjectTypes
-  name: PrimaryCityObjectTypes
-  href: api/PLATEAU.IO.PrimaryCityObjectTypes.html
-  commentId: T:PLATEAU.IO.PrimaryCityObjectTypes
-  fullName: PLATEAU.IO.PrimaryCityObjectTypes
-  nameWithType: PrimaryCityObjectTypes
-- uid: PLATEAU.IO.PrimaryCityObjectTypes.IsPrimary(CityObjectType)
-  name: IsPrimary(CityObjectType)
-  href: api/PLATEAU.IO.PrimaryCityObjectTypes.html#PLATEAU_IO_PrimaryCityObjectTypes_IsPrimary_CityObjectType_
-  commentId: M:PLATEAU.IO.PrimaryCityObjectTypes.IsPrimary(CityObjectType)
-  fullName: PLATEAU.IO.PrimaryCityObjectTypes.IsPrimary(CityObjectType)
-  nameWithType: PrimaryCityObjectTypes.IsPrimary(CityObjectType)
-- uid: PLATEAU.IO.PrimaryCityObjectTypes.IsPrimary*
-  name: IsPrimary
-  href: api/PLATEAU.IO.PrimaryCityObjectTypes.html#PLATEAU_IO_PrimaryCityObjectTypes_IsPrimary_
-  commentId: Overload:PLATEAU.IO.PrimaryCityObjectTypes.IsPrimary
-  isSpec: "True"
-  fullName: PLATEAU.IO.PrimaryCityObjectTypes.IsPrimary
-  nameWithType: PrimaryCityObjectTypes.IsPrimary
-- uid: PLATEAU.IO.PrimaryCityObjectTypes.PrimaryTypeMask
-  name: PrimaryTypeMask
-  href: api/PLATEAU.IO.PrimaryCityObjectTypes.html#PLATEAU_IO_PrimaryCityObjectTypes_PrimaryTypeMask
-  commentId: F:PLATEAU.IO.PrimaryCityObjectTypes.PrimaryTypeMask
-  fullName: PLATEAU.IO.PrimaryCityObjectTypes.PrimaryTypeMask
-  nameWithType: PrimaryCityObjectTypes.PrimaryTypeMask
+  fullName: PLATEAU.MeshWriter.ObjWriter.Write
+  nameWithType: ObjWriter.Write
 - uid: PLATEAU.PolygonMesh
   name: PLATEAU.PolygonMesh
   href: api/PLATEAU.PolygonMesh.html
@@ -3856,6 +3942,56 @@ references:
   fullName.vb: PLATEAU.Util.DebugUtil.EnumerableToString(Of T)(IEnumerable(Of T))
   nameWithType: DebugUtil.EnumerableToString<T>(IEnumerable<T>)
   nameWithType.vb: DebugUtil.EnumerableToString(Of T)(IEnumerable(Of T))
+- uid: PLATEAU.Util.DisplayedProgress
+  name: DisplayedProgress
+  href: api/PLATEAU.Util.DisplayedProgress.html
+  commentId: T:PLATEAU.Util.DisplayedProgress
+  fullName: PLATEAU.Util.DisplayedProgress
+  nameWithType: DisplayedProgress
+- uid: PLATEAU.Util.DisplayedProgress.#ctor(System.String,System.Single,System.String)
+  name: DisplayedProgress(String, Single, String)
+  href: api/PLATEAU.Util.DisplayedProgress.html#PLATEAU_Util_DisplayedProgress__ctor_System_String_System_Single_System_String_
+  commentId: M:PLATEAU.Util.DisplayedProgress.#ctor(System.String,System.Single,System.String)
+  fullName: PLATEAU.Util.DisplayedProgress.DisplayedProgress(System.String, System.Single, System.String)
+  nameWithType: DisplayedProgress.DisplayedProgress(String, Single, String)
+- uid: PLATEAU.Util.DisplayedProgress.#ctor*
+  name: DisplayedProgress
+  href: api/PLATEAU.Util.DisplayedProgress.html#PLATEAU_Util_DisplayedProgress__ctor_
+  commentId: Overload:PLATEAU.Util.DisplayedProgress.#ctor
+  isSpec: "True"
+  fullName: PLATEAU.Util.DisplayedProgress.DisplayedProgress
+  nameWithType: DisplayedProgress.DisplayedProgress
+- uid: PLATEAU.Util.DisplayedProgress.Message
+  name: Message
+  href: api/PLATEAU.Util.DisplayedProgress.html#PLATEAU_Util_DisplayedProgress_Message
+  commentId: F:PLATEAU.Util.DisplayedProgress.Message
+  fullName: PLATEAU.Util.DisplayedProgress.Message
+  nameWithType: DisplayedProgress.Message
+- uid: PLATEAU.Util.DisplayedProgress.Name
+  name: Name
+  href: api/PLATEAU.Util.DisplayedProgress.html#PLATEAU_Util_DisplayedProgress_Name
+  commentId: F:PLATEAU.Util.DisplayedProgress.Name
+  fullName: PLATEAU.Util.DisplayedProgress.Name
+  nameWithType: DisplayedProgress.Name
+- uid: PLATEAU.Util.DisplayedProgress.Percentage
+  name: Percentage
+  href: api/PLATEAU.Util.DisplayedProgress.html#PLATEAU_Util_DisplayedProgress_Percentage
+  commentId: F:PLATEAU.Util.DisplayedProgress.Percentage
+  fullName: PLATEAU.Util.DisplayedProgress.Percentage
+  nameWithType: DisplayedProgress.Percentage
+- uid: PLATEAU.Util.DisplayedProgress.PercentageStr
+  name: PercentageStr
+  href: api/PLATEAU.Util.DisplayedProgress.html#PLATEAU_Util_DisplayedProgress_PercentageStr
+  commentId: P:PLATEAU.Util.DisplayedProgress.PercentageStr
+  fullName: PLATEAU.Util.DisplayedProgress.PercentageStr
+  nameWithType: DisplayedProgress.PercentageStr
+- uid: PLATEAU.Util.DisplayedProgress.PercentageStr*
+  name: PercentageStr
+  href: api/PLATEAU.Util.DisplayedProgress.html#PLATEAU_Util_DisplayedProgress_PercentageStr_
+  commentId: Overload:PLATEAU.Util.DisplayedProgress.PercentageStr
+  isSpec: "True"
+  fullName: PLATEAU.Util.DisplayedProgress.PercentageStr
+  nameWithType: DisplayedProgress.PercentageStr
 - uid: PLATEAU.Util.EnumUtil
   name: EnumUtil
   href: api/PLATEAU.Util.EnumUtil.html

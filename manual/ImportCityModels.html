@@ -87,7 +87,7 @@
 <h2 id="インポート手順">インポート手順</h2>
 <h3 id="インポート元の選択">インポート元の選択</h3>
 <ul>
-<li>Unityのメニューバーから <code>PLATEAU → PLATEAU SDK ウィンドウ</code> を選択します。<br>表示されるウィンドウの上部に3つのタブ「インポート、モデル調整、エクスポート」があります。<br>このうちインポートを選択します。
+<li>Unityのメニューバーから <code>PLATEAU → PLATEAU SDK</code> を選択します。<br>表示されるウィンドウの上部に3つのタブ「インポート、モデル調整、エクスポート」があります。<br>このうちインポートを選択します。
 <img src="../resources/manual/importCityModels/plateauWindowImport.png" alt=""></li>
 <li>インポート先がローカルかサーバーかを選択します。<ul>
 <li>導入したい都市データが自分のコンピュータにある場合はローカルを選択します。<br>なお、都市データは国交省のPLATEAU Webサイトからダウンロードできます。<ul>
@@ -129,30 +129,34 @@
 <li>チェックが付いている地物タイプのみインポートします。</li>
 </ul>
 </li>
+<li><code>Mesh Collider をセットする</code><ul>
+<li>チェックが付いている場合、各モデルに Mesh Collider が追加されます。</li>
+</ul>
+</li>
 <li><code>テクスチャを含める</code><ul>
 <li>テクスチャが存在する地物タイプで表示される設定項目です。<br>チェックが付いていて、かつテクスチャがある場合はそれを含めてインポートします。<br>都市データによってはテクスチャがない場合があり、<br>その場合はチェックを外した時と同様に真っ白な3Dモデルが出力されます。</li>
 </ul>
 </li>
-<li><code>LOD範囲設定</code><ul>
-<li>複数のLODを利用可能な地物タイプで表示される設定項目です。<br>バーの左端と右端をドラッグして、利用するLODの範囲を指定できます。</li>
+<li><code>LOD描画設定</code><ul>
+<li>複数のLODを利用可能な地物タイプで表示される設定項目です。<br>バーの左端と右端をドラッグして、インポートするLODの範囲を指定できます。</li>
 </ul>
 </li>
 </ul>
 <div class="NOTE"><h5>Note</h5><p><strong>LODとは</strong><br>gmlファイルの中には、都市モデルの形状の細かさを指定したいという需要に対応するため、<br>複数の形状データが格納されている場合があります。<br>LOD0がもっとも大雑把な形状で、LOD1, LOD2 と数字が上がるほど細かい形状になります。<br>建築物の場合、LOD0 は平面、LOD1は平面に一定の高さを付けたもの、LOD2はより細かい形状です。</p>
 </div>
 <ul>
-<li><code>メッシュ結合単位</code><ul>
-<li><code>主要地物単位</code><ul>
-<li>メッシュは建物ごとに分かれて出力されます。</li>
+<li><code>モデル結合</code><ul>
+<li><code>主要地物単位（建築物,道路等）</code><ul>
+<li>モデルのメッシュは建物ごとに結合されて出力されます。</li>
 <li>建物ごとに地物データを取得できるようにしたい場合はこちらを選択します。</li>
 </ul>
 </li>
-<li><code>最小地物単位</code><ul>
+<li><code>最小地物単位（壁面,屋根面等）</code><ul>
 <li>屋根、壁単位など非常に細かくオブジェクトを分けたい場合はこちらを選択します。</li>
 </ul>
 </li>
-<li><code>都市モデル地域単位</code><ul>
-<li>メッシュは結合されて出力されます。</li>
+<li><code>地域単位</code><ul>
+<li>モデルのメッシュは結合されて出力されます。</li>
 <li>オブジェクト数を削減して軽量化できますが、建物ごとの地物データは取得不可になります。</li>
 <li>メッシュの結合はある程度の大きさの範囲ごとに行われます。</li>
 </ul>
@@ -164,10 +168,10 @@
 </div>
 <h3 id="インポートの実行">インポートの実行</h3>
 <ul>
-<li><code>インポート</code>ボタンを押します。<br><img src="../resources/manual/importCityModels/importButton.png" alt=""></li>
-<li><code>計算状況</code>ウィンドウが現れ、インポート処理の進捗が表示されます。
+<li><code>モデルをインポート</code>ボタンを押します。</li>
+<li>ウィンドウの下部にインポート処理の進捗が表示されます。
 <img src="../resources/manual/importCityModels/importProgressWindow.png" alt=""></li>
-<li>処理が進むと、都市のオブジェクトが順次シーンに配置されていきます。<br>計算状況ウィンドウがすべて「完了」になったらインポート終了です。<br><img src="../resources/manual/importCityModels/importComplete.png" alt=""></li>
+<li>処理が進むと、都市のオブジェクトが順次シーンに配置されていきます。<br>進捗表示がすべて「完了」になったらインポート終了です。<br><img src="../resources/manual/importCityModels/importComplete.png" alt=""></li>
 </ul>
 <div class="NOTE"><h5>Note</h5><p>  インポート元となる都市データは <code>Assets/StreamingAssets/.PLATEAU</code> にコピーされます。<br>  .PLATEAU は隠しフォルダである点にご注意ください。Unityのインポート処理を削減する目的でこうなっています。
   なお、インポート対象として選択したものに関連するもののみがコピーされます。</p>
