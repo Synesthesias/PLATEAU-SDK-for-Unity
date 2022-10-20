@@ -7,8 +7,9 @@ using PLATEAU.CityGML;
 using PLATEAU.CityImport.Load.Convert;
 using PLATEAU.CityImport.Load.FileCopy;
 using PLATEAU.CityImport.Setting;
+using PLATEAU.CityInfo;
+using PLATEAU.Geometries;
 using PLATEAU.Interop;
-using PLATEAU.IO;
 using PLATEAU.Udx;
 using PLATEAU.Util;
 using UnityEngine;
@@ -17,12 +18,21 @@ namespace PLATEAU.CityImport.Load
 {
     internal static class CityImporter
     {
+        // インポート設定のうち、Unityで共通するものです。
+        private const CoordinateSystem meshAxes = CoordinateSystem.EUN;
+        private const float unitScale = 1.0f;
 
         public static async Task ImportAsync(CityLoadConfig config, IProgressDisplay progressDisplay)
         {
             string sourcePath = config.SourcePathBeforeImport;
             string destPath = PathUtil.plateauSrcFetchDir;
             string destFolderName = Path.GetFileName(sourcePath);
+
+            if (!Directory.Exists(sourcePath))
+            {
+                Debug.LogError($"インポート元パスが存在しません。 sourcePath = {sourcePath}");
+                return;
+            }
             
             var collection = new UdxFileCollection();
             progressDisplay.SetProgress("GMLファイル検索", 10f, "");
@@ -43,6 +53,14 @@ namespace PLATEAU.CityImport.Load
             }
 
             var rootTrans = new GameObject(destFolderName).transform;
+
+            // 各GMLファイルで共通する設定です。
+            var referencePoint = CalcCenterPoint(collection, config.CoordinateZoneID);
+            
+            // ルートのGameObjectにコンポーネントを付けます。 
+            var cityModelComponent = rootTrans.gameObject.AddComponent<PLATEAUInstancedCityModel>();
+            cityModelComponent.GeoReference =
+                new GeoReference(referencePoint, unitScale, meshAxes, config.CoordinateZoneID);
             
             // GMLファイルを同時に処理する最大数です。
             // 並列数が 4 くらいだと、1つずつ処理するよりも、全部同時に処理するよりも速いという経験則です。
@@ -54,7 +72,7 @@ namespace PLATEAU.CityImport.Load
                 try
                 {
                     // ここはメインスレッドで呼ぶ必要があります。
-                    await ImportGml(gmlInfo, destPath, config, collection, rootTrans, progressDisplay);
+                    await ImportGml(gmlInfo, destPath, config, collection, rootTrans, progressDisplay, referencePoint);
                 }
                 catch (Exception e)
                 {
@@ -82,7 +100,8 @@ namespace PLATEAU.CityImport.Load
         /// </summary>
         public static async Task ImportGml(
             GmlFileInfo gmlInfo, string destPath, CityLoadConfig conf,
-            UdxFileCollection collection, Transform rootTrans, IProgressDisplay progressDisplay)
+            UdxFileCollection collection, Transform rootTrans, IProgressDisplay progressDisplay,
+            PlateauVector3d referencePoint)
         {
             string gmlName = Path.GetFileName(gmlInfo.Path);
             progressDisplay.SetProgress(gmlName, 0f, "インポート処理中");
@@ -103,14 +122,14 @@ namespace PLATEAU.CityImport.Load
             var package = gmlInfo.Package;
             var packageConf = conf.GetConfigForPackage(package);
             var meshExtractOptions = MeshExtractOptions.DefaultValue();
-            meshExtractOptions.ReferencePoint = CalcCenterPoint(collection, conf.CoordinateZoneID);
-            meshExtractOptions.MeshAxes = CoordinateSystem.EUN;
+            meshExtractOptions.ReferencePoint = referencePoint;
+            meshExtractOptions.MeshAxes = meshAxes;
             meshExtractOptions.MeshGranularity = packageConf.meshGranularity;
             meshExtractOptions.MaxLOD = packageConf.maxLOD;
             meshExtractOptions.MinLOD = packageConf.minLOD;
             meshExtractOptions.ExportAppearance = packageConf.includeTexture;
             meshExtractOptions.GridCountOfSide = 10; // TODO gridCountOfSideはユーザーが設定できるようにしたほうが良い
-            meshExtractOptions.UnitScale = 1.0f;
+            meshExtractOptions.UnitScale = unitScale;
             meshExtractOptions.CoordinateZoneID = conf.CoordinateZoneID;
             meshExtractOptions.ExcludeCityObjectOutsideExtent = ShouldExcludeCityObjectOutsideExtent(package);
             meshExtractOptions.ExcludeTrianglesOutsideExtent = ShouldExcludeTrianglesOutsideExtent(package);
@@ -124,7 +143,7 @@ namespace PLATEAU.CityImport.Load
 
             // ここはメインスレッドで呼ぶ必要があります。
             await PlateauToUnityModelConverter.ConvertAndPlaceToScene(
-                cityModel, meshExtractOptions, gmlTrans, progressDisplay, gmlName
+                cityModel, meshExtractOptions, gmlTrans, progressDisplay, gmlName, packageConf.doSetMeshCollider
             );
             progressDisplay.SetProgress(gmlName, 100f, "完了");
         }

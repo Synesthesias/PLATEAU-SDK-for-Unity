@@ -7,7 +7,18 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
     internal class CityAddGUI : IEditorDrawable
     {
         private int importTabIndex;
-        private readonly IEditorDrawable[] importTabGUIArray = { new CityImportLocalGUI(), new CityImportRemoteGUI() };
+        private UnityEditor.EditorWindow parentEditorWindow;
+        private readonly IEditorDrawable[] importTabGUIArray;
+
+        public CityAddGUI(UnityEditor.EditorWindow parentEditorWindow)
+        {
+            this.parentEditorWindow = parentEditorWindow;
+            this.importTabGUIArray = new IEditorDrawable[]
+            {
+                new CityImportLocalGUI(parentEditorWindow),
+                new CityImportRemoteGUI()
+            };
+        }
         
         public void Draw()
         {

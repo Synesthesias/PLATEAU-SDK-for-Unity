@@ -3,7 +3,6 @@ using System;
 using System.Collections.ObjectModel;
 using System.Threading;
 using PLATEAU.Geometries;
-using PLATEAU.IO;
 
 namespace PLATEAU.Udx
 {

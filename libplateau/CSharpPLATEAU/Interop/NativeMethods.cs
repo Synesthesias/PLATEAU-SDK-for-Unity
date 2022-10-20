@@ -1,14 +1,39 @@
 using System;
 using System.Runtime.InteropServices;
 using PLATEAU.CityGML;
-using PLATEAU.IO;
+using PLATEAU.Geometries;
 using PLATEAU.Udx;
 
-// �?���?のサイズをDLLで�?��とりする時の型を決めます�??
+// 文字列のサイズをDLLでやりとりする時の型を決めます。
 using DllStrSizeT = System.Int32;
 
 namespace PLATEAU.Interop
 {
+    /// <summary>
+    /// メッシュの結合単位
+    /// </summary>
+    public enum MeshGranularity
+    {
+        /// <summary>
+        /// 最小地物単位(LOD2, LOD3の各部品)
+        /// </summary>
+        PerAtomicFeatureObject,
+        /// <summary>
+        /// 主要地物単位(建築物、道路等)
+        /// </summary>
+        PerPrimaryFeatureObject,
+        /// <summary>
+        /// 都市モデル地域単位(GMLファイル内のすべてを結合)
+        /// </summary>
+        PerCityModelArea
+    }
+
+    public enum GltfFileFormat
+    {
+        GLB,
+        GLTF
+    }
+
     [StructLayout(LayoutKind.Sequential)]
     public struct PlateauVector3d
     {
@@ -48,7 +73,7 @@ namespace PLATEAU.Interop
     }
 
     /// <summary>
-    /// GMLファイルのパ�?ス時�?設定です�??
+    ///  GMLファイルのパース時の設定です。
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
     public struct CitygmlParserParams
@@ -56,7 +81,7 @@ namespace PLATEAU.Interop
         [MarshalAs(UnmanagedType.U1)]
         public bool Optimize;
         /// <summary>
-        /// <see cref="Tessellate"/> �? false に設定すると�? <see cref="Polygon"/> が�?�点を保持する代わりに <see cref="LinearRing"/> を保持することがあります�??
+        /// <see cref="Tessellate"/> を false に設定すると、 <see cref="Polygon"/> が頂点を保持する代わりに <see cref="LinearRing"/> を保持することがあります。
         /// </summary>
         [MarshalAs(UnmanagedType.U1)]
         public bool Tessellate;
@@ -76,7 +101,7 @@ namespace PLATEAU.Interop
 
 
     [StructLayout(LayoutKind.Sequential)]
-    internal struct MeshConvertOptionsData
+    public struct MeshConvertOptionsData
     {
         public CoordinateSystem MeshAxes;
         public PlateauVector3d ReferencePoint;
@@ -91,51 +116,51 @@ namespace PLATEAU.Interop
     }
 
     /// <summary>
-    /// GMLファイルから3Dメ�?��ュを取り�?すため�?設定です�??
+    /// GMLファイルから3Dメッシュを取り出すための設定です。
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
     public struct MeshExtractOptions
     {
-        /// <summary> 直交座標系における座標で�?3Dモ�?��の原点をどこに設定するかです�?? </summary>
+        /// <summary> 直交座標系における座標で、3Dモデルの原点をどこに設定するかです。 </summary>
         public PlateauVector3d ReferencePoint;
-        /// <summary> 座標軸の向きです�?? </summary>
+        /// <summary> 座標軸の向きです。 </summary>
         public CoordinateSystem MeshAxes;
-        /// <summary> メ�?��ュ結合の粒度です�?? </summary>
+        /// <summary> メッシュ結合の粒度です。 </summary>
         public MeshGranularity MeshGranularity;
-        /// <summary> 出力するLODの�?��上限です�?? </summary>
+        /// <summary> 出力するLODの範囲上限です。 </summary>
         public uint MaxLOD;
-        /// <summary> 出力するLODの�?��の下限です�?? </summary>
+        /// <summary> 出力するLODの範囲の下限です。 </summary>
         public uint MinLOD;
-        /// <summary> �?��スチャを含めるかど�?��です�?? </summary>
+        /// <summary> テクスチャを含めるかどうかです。 </summary>
         [MarshalAs(UnmanagedType.U1)] public bool ExportAppearance;
-        /// <summary> メ�?��ュ結合の粒度が�?��?市モ�?��単位�?��?時�?み有効で、この設定では都市を格子状のグリ�?��に�?��するので、その1辺あたり�?�?��数(縦の数 = 横の数)で�? </summary>
+        /// <summary> メッシュ結合の粒度が「都市モデル単位」の時のみ有効で、この設定では都市を格子状のグリッドに分割するので、その1辺あたりの分割数(縦の数 = 横の数)です。</summary>
         public int GridCountOfSide;
-        /// <summary> 大きさ補正です�?? </summary>
+        /// <summary>  大きさ補正です。  </summary>
         public float UnitScale;
         /// <summary>
-        /// 国土交通省が規定する�?�日本の平面直角座標系の基準点の番号です�??
-        /// 詳しくは次の国土地�?��のサイトをご覧ください�?
-        ///�?<see href="https://www.gsi.go.jp/sokuchikijun/jpc.html"/>
+        /// 国土交通省が規定する、日本の平面直角座標系の基準点の番号です。
+        /// 詳しくは次の国土地理院のサイトをご覧ください。
+        /// <see href="https://www.gsi.go.jp/sokuchikijun/jpc.html"/>
         /// </summary>
         public int CoordinateZoneID;
         /// <summary>
-        /// �?��外�?3Dモ�?��を�?力から除外するため�?�?2つの方法�?�?��1つを有効にするかど�?���? bool で�?��します�??
-        /// そ�?方法とは�??市オブジェクト�?�?初�?頂点の位置が�?��外�?とき�?�そのオブジェクト�?すべて�?��外とみなして出力から除外します�??
-        /// これはビル1棟程度の大きさのオブジェクトでは有効ですが�?
-        /// 10km�?10kmの地形のような巨大なオブジェクトでは、実際には�?���?��のに�?初�?頂点が遠�?��めに除外されると�?��ことがおきます�??
-        /// したがって、この値は建物では true, 地形では false となるべきです�??
+        /// 範囲外の3Dモデルを出力から除外するための、2つの方法のうち1つを有効にするかどうかを bool で指定します。
+        /// その方法とは、都市オブジェクトの最初の頂点の位置が範囲外のとき、そのオブジェクトはすべて範囲外とみなして出力から除外します。
+        /// これはビル1棟程度の大きさのオブジェクトでは有効ですが、
+        /// 10km×10kmの地形のような巨大なオブジェクトでは、実際には範囲内なのに最初の頂点が遠いために除外されるということがおきます。
+        /// したがって、この値は建物では true, 地形では false となるべきです。
         /// </summary>
         [MarshalAs(UnmanagedType.U1)] public bool ExcludeCityObjectOutsideExtent;
         /// <summary>
-        /// �?��外�?3Dモ�?��を�?力から除外するため�?�?2つの方法�?�?��1つを有効にするかど�?���? bool で�?��します�??
-        /// そ�?方法とは、メ�?��ュ操作によって、�?��外に存在するポリゴンを除外します�??
-        /// こ�?方法であれば 10km�?10km の地形など巨大なオブジェクトにも対応できます�??
+        /// 範囲外の3Dモデルを出力から除外するための、2つの方法のうち1つを有効にするかどうかを bool で指定します。
+        /// その方法とは、メッシュ操作によって、範囲外に存在するポリゴンを除外します。
+        /// この方法であれば 10km×10km の地形など巨大なオブジェクトにも対応できます。
         /// </summary>
         [MarshalAs(UnmanagedType.U1)] public bool ExcludeTrianglesOutsideExtent;
-        /// <summary> 対象�?��を緯度・経度・高さで�?��します�?? </summary>
+        /// <summary>  対象範囲を緯度・経度・高さで指定します。 </summary>
          public Extent Extent;
         
-        /// <summary> �?��ォルト�?�の設定を返します�?? </summary>
+        /// <summary> デフォルト値の設定を返します。 </summary>
         public static MeshExtractOptions DefaultValue()
         {
             var apiResult = NativeMethods.plateau_mesh_extract_options_default_value(out var defaultOptions);
@@ -144,8 +169,8 @@ namespace PLATEAU.Interop
         }
 
          /// <summary>
-        /// 設定�?値が正常な�? true, 異常な点があれ�? false を返します�??
-        /// <param name="failureMessage">異常な点があれ�?、それを説明する文字�?が�?ります�?�正常なら空�?���?になります�??</param>
+        /// 設定の値が正常なら true, 異常な点があれば false を返します。
+         /// <param name="failureMessage">異常な点があれば、それを説明する文字列が入ります。正常なら空文字列になります。</param>
         /// </summary>
         public bool Validate(out string failureMessage)
         {
@@ -188,7 +213,7 @@ namespace PLATEAU.Interop
     }
 
     /// <summary>
-    /// �?小�?�?大からなる�?��です�??
+    /// 最小・最大からなる範囲です。
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
     public struct Extent
@@ -956,6 +981,26 @@ namespace PLATEAU.Interop
             out GeoCoordinate outLatlon,
             PlateauVector3d point);
 
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_geo_reference_get_reference_point(
+            [In] IntPtr handle,
+            out PlateauVector3d outReferencePoint);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_geo_reference_get_zone_id(
+            [In] IntPtr handle,
+            out int zoneID);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_geo_reference_get_unit_scale(
+            [In] IntPtr handle,
+            out float unitScale);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_geo_reference_get_coordinate_system(
+            [In] IntPtr handle,
+            out CoordinateSystem outCoordinateSystem);
+
         // ***************
         //  mesh_code_c.cpp
         // ***************
@@ -1102,5 +1147,38 @@ namespace PLATEAU.Interop
         internal static extern APIResult plateau_mesh_extract_options_default_value(
             out MeshExtractOptions outDefaultOptions);
         
+        // ***************
+        //  gltf_writer_c.cpp
+        // ***************
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_create_gltf_writer(out IntPtr outHandle);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_delete_gltf_writer([In] IntPtr gltf_writer);
+
+        [DllImport(DllName, CharSet = CharSet.Ansi)]
+        internal static extern APIResult plateau_gltf_writer_write(
+            [In] IntPtr handle,
+            out bool flg,
+            [In] string gltfFilePath,
+            [In] IntPtr ModelPtr,
+            [In] string tex_path,
+            GltfFileFormat format);
+
+        // ***************
+        //  obj_writer_c.cpp
+        // ***************
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_create_obj_writer(out IntPtr outHandle);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_delete_obj_writer([In] IntPtr obj_writer);
+
+        [DllImport(DllName, CharSet = CharSet.Ansi)]
+        internal static extern APIResult plateau_obj_writer_write(
+            [In] IntPtr handle,
+            out bool flg,
+            [In] string objFilePath,
+            [In] IntPtr ModelPtr);
     }
 }

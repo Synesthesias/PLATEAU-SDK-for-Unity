@@ -6,12 +6,22 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow
     internal class PlateauWindowGUI : IEditorDrawable
     {
         private int tabIndex;
-        private readonly IEditorDrawable[] tabGUIArray =
-            {new CityAddGUI(), new CityVisualizeGUI(), new CityExportGUI()};
+        private readonly IEditorDrawable[] tabGUIArray;
         private readonly string[] tabNames = { "追加", "モデル調整", "エクスポート" };
 
         private readonly string[] tabImages =
             { "dark_icon_import.png", "dark_icon_adjust.png", "dark_icon_export.png" };
+
+
+        public PlateauWindowGUI(UnityEditor.EditorWindow parentEditorWindow)
+        {
+            this.tabGUIArray = new IEditorDrawable[]
+            {
+                new CityAddGUI(parentEditorWindow),
+                new CityVisualizeGUI(),
+                new CityExportGUI()
+            };
+        }
 
         public void Draw()
         {
