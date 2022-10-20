@@ -1,4 +1,5 @@
 ﻿using System;
+using PLATEAU.Geometries;
 using PLATEAU.Interop;
 
 namespace PLATEAU.PolygonMesh
@@ -12,17 +13,24 @@ namespace PLATEAU.PolygonMesh
     /// </summary>
     public class Mesh
     {
-        private readonly IntPtr handle;
-        internal Mesh(IntPtr handle)
+        public IntPtr Handle { get; }
+        public Mesh(IntPtr handle)
         {
-            this.handle = handle;
+            Handle = handle;
+        }
+
+        public static Mesh Create(string meshID)
+        {
+            var result = NativeMethods.plateau_create_mesh(out var newMeshPtr, meshID);
+            DLLUtil.CheckDllError(result);
+            return new Mesh(newMeshPtr);
         }
 
         public int VerticesCount
         {
             get
             {
-                int verticesCount = DLLUtil.GetNativeValue<int>(this.handle,
+                int verticesCount = DLLUtil.GetNativeValue<int>(Handle,
                     NativeMethods.plateau_mesh_get_vertices_count);
                 return verticesCount;
             }
@@ -32,7 +40,7 @@ namespace PLATEAU.PolygonMesh
         {
             get
             {
-                int indicesCount = DLLUtil.GetNativeValue<int>(this.handle,
+                int indicesCount = DLLUtil.GetNativeValue<int>(Handle,
                     NativeMethods.plateau_mesh_get_indices_count);
                 return indicesCount;
             }
@@ -40,14 +48,14 @@ namespace PLATEAU.PolygonMesh
 
         public PlateauVector3d GetVertexAt(int index)
         {
-            var vert = DLLUtil.GetNativeValue<PlateauVector3d>(this.handle, index,
+            var vert = DLLUtil.GetNativeValue<PlateauVector3d>(Handle, index,
                 NativeMethods.plateau_mesh_get_vertex_at_index);
             return vert;
         }
 
         public int GetIndiceAt(int index)
         {
-            int vertexId = DLLUtil.GetNativeValue<int>(this.handle, index,
+            int vertexId = DLLUtil.GetNativeValue<int>(Handle, index,
                 NativeMethods.plateau_mesh_get_indice_at_index);
             return vertexId;
         }
@@ -55,7 +63,7 @@ namespace PLATEAU.PolygonMesh
         public PlateauVector2f[] GetUv1()
         {
             var uv1 = new PlateauVector2f[VerticesCount];
-            var result = NativeMethods.plateau_mesh_get_uv1(this.handle, uv1);
+            var result = NativeMethods.plateau_mesh_get_uv1(Handle, uv1);
             DLLUtil.CheckDllError(result);
             return uv1;
         }
@@ -63,7 +71,7 @@ namespace PLATEAU.PolygonMesh
         public PlateauVector2f[] GetUv2()
         {
             var uv2 = new PlateauVector2f[VerticesCount];
-            var result = NativeMethods.plateau_mesh_get_uv2(this.handle, uv2);
+            var result = NativeMethods.plateau_mesh_get_uv2(Handle, uv2);
             DLLUtil.CheckDllError(result);
             return uv2;
         }
@@ -71,7 +79,7 @@ namespace PLATEAU.PolygonMesh
         public PlateauVector2f[] GetUv3()
         {
             var uv3 = new PlateauVector2f[VerticesCount];
-            var result = NativeMethods.plateau_mesh_get_uv3(this.handle, uv3);
+            var result = NativeMethods.plateau_mesh_get_uv3(Handle, uv3);
             DLLUtil.CheckDllError(result);
             return uv3;
         }
@@ -80,7 +88,7 @@ namespace PLATEAU.PolygonMesh
         {
             get
             {
-                int numSubMesh = DLLUtil.GetNativeValue<int>(this.handle,
+                int numSubMesh = DLLUtil.GetNativeValue<int>(Handle,
                     NativeMethods.plateau_mesh_get_sub_mesh_count);
                 return numSubMesh;
             }
@@ -88,9 +96,29 @@ namespace PLATEAU.PolygonMesh
         
         public SubMesh GetSubMeshAt(int index)
         {
-            var subMeshPtr = DLLUtil.GetNativeValue<IntPtr>(this.handle, index,
+            var subMeshPtr = DLLUtil.GetNativeValue<IntPtr>(Handle, index,
                 NativeMethods.plateau_mesh_get_sub_mesh_at_index);
             return new SubMesh(subMeshPtr);
+        }
+
+        public void Merge(Mesh otherMesh, CoordinateSystem meshAxes, bool includeTexture)
+        {
+            var result = NativeMethods.plateau_mesh_merger_merge_mesh(
+                Handle, otherMesh.Handle, meshAxes, includeTexture
+            );
+            DLLUtil.CheckDllError(result);
+        }
+
+        /// <summary>
+        /// 取扱注意:
+        /// 通常は Model が廃棄されるときに C++側で Mesh も廃棄されるので、このメソッドを呼ぶ必要はありません。
+        /// Model に属さず、C#側で明示的に Create した Mesh のみ Dispose してください。
+        /// それ以外のタイミングで呼ぶとメモリ違反でUnityが落ちます。
+        /// </summary>
+        public void Dispose()
+        {
+            var result = NativeMethods.plateau_delete_mesh(Handle);
+            DLLUtil.CheckDllError(result);
         }
     }
 }

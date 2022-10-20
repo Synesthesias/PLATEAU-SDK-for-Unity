@@ -829,6 +829,15 @@ namespace PLATEAU.Interop
         //  mesh_c.cpp
         // ***************
 
+        [DllImport(DllName, CharSet = CharSet.Ansi)]
+        internal static extern APIResult plateau_create_mesh(
+            out IntPtr newMeshPtr,
+            string meshID);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_delete_mesh(
+            [In] IntPtr handle);
+
         [DllImport(DllName)]
         internal static extern APIResult plateau_mesh_get_vertices_count(
             [In] IntPtr handle,
@@ -1180,5 +1189,16 @@ namespace PLATEAU.Interop
             out bool flg,
             [In] string objFilePath,
             [In] IntPtr ModelPtr);
+        
+        // ***************
+        //  mesh_merger_c.cpp
+        // ***************
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_mesh_merger_merge_mesh(
+            [In] IntPtr meshPtr,
+            [In] IntPtr otherMeshPtr,
+            CoordinateSystem meshAxes,
+            [MarshalAs(UnmanagedType.U1)] bool includeTexture);
     }
 }
