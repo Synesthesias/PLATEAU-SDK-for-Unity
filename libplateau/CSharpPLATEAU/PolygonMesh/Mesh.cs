@@ -134,6 +134,13 @@ namespace PLATEAU.PolygonMesh
             DLLUtil.CheckDllError(result);
         }
 
+        public void AddSubMesh(string texturePath, int subMeshStartIndex, int subMeshEndIndex)
+        {
+            var result = NativeMethods.plateau_mesh_add_sub_mesh(
+                Handle, texturePath, subMeshStartIndex, subMeshEndIndex);
+            DLLUtil.CheckDllError(result);
+        }
+
         /// <summary>
         /// 取扱注意:
         /// 通常は Model が廃棄されるときに C++側で Mesh も廃棄されるので、このメソッドを呼ぶ必要はありません。

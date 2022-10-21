@@ -31,7 +31,8 @@ namespace PLATEAU.Editor.CityExport.ModelConvert
         /// <param name="model"> <paramref name="parentNode"/> が null のとき、<see cref="Node"/> は <paramref name="model"/> に追加されます。</param>
         private static void ConvertRecursive(Node parentNode, Transform trans, Model model)
         {
-            var node = ConvertGameObj(trans);
+            var node = GameObjToNode(trans);
+
             if (parentNode == null)
             {
                 // ルートのときは Model に Node を追加します。
@@ -56,7 +57,7 @@ namespace PLATEAU.Editor.CityExport.ModelConvert
             }
         }
 
-        private static Node ConvertGameObj(Transform trans)
+        private static Node GameObjToNode(Transform trans)
         {
             var node = Node.Create(trans.name);
             var meshFilter = trans.GetComponent<MeshFilter>();
@@ -64,7 +65,16 @@ namespace PLATEAU.Editor.CityExport.ModelConvert
             var unityMesh = meshFilter.sharedMesh;
             if (unityMesh == null) return node;
             var dllMesh = ConvertMesh(unityMesh);
+            int subMeshCount = unityMesh.subMeshCount;
+            for (int i = 0; i < subMeshCount; i++)
+            {
+                var subMesh = unityMesh.GetSubMesh(i);
+                int startId = subMesh.indexStart;
+                int endId = startId + subMesh.indexCount - 1;
+                dllMesh.AddSubMesh("", startId, endId); // TODO ここにテクスチャパスが来るようにする
+            }
             node.SetMeshByCppMove(dllMesh);
+            
             return node;
         }
 

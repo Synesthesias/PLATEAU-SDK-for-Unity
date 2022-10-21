@@ -26,7 +26,9 @@ namespace PLATEAU.Editor.CityExport
                 var childTrans = trans.GetChild(i);
                 var childName = childTrans.name;
                 if (!childName.EndsWith(".gml")) continue;
+                
                 using var model = UnityMeshToDllModelConverter.Convert(childTrans.gameObject);
+                
                 ModelToFile(destDir, Path.GetFileNameWithoutExtension(childName), model, options);
                 Debug.Log(model.DebugString());
             }

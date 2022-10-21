@@ -887,6 +887,13 @@ namespace PLATEAU.Interop
             [In] IntPtr plateauMeshPtr,
             [Out] PlateauVector2f[] outUvPosArray);
 
+        [DllImport(DllName, CharSet = CharSet.Ansi)]
+        internal static extern APIResult plateau_mesh_add_sub_mesh(
+            [In] IntPtr meshPtr,
+            [In] string texturePath,
+            int subMeshStartIndex,
+            int subMeshEndIndex);
+
         // ***************
         //  sub_mesh_c.cpp
         // ***************
