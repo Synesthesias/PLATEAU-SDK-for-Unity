@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Text;
 using PLATEAU.Interop;
+using PLATEAU.Util;
 
 namespace PLATEAU.PolygonMesh
 {
@@ -87,6 +89,21 @@ namespace PLATEAU.PolygonMesh
         ~Model()
         {
             Dispose();
+        }
+
+        /// <summary>
+        /// <see cref="Model"/> 以下の階層構造を文字列で表現します。
+        /// </summary>
+        public string DebugString()
+        {
+            var sb = new StringBuilderWithIndent();
+            sb.IncrementIndent();
+            for (int i = 0; i < RootNodesCount; i++)
+            {
+                GetRootNodeAt(i).DebugString(sb);
+            }
+            sb.DecrementIndent();
+            return sb.ToString();
         }
     }
 }

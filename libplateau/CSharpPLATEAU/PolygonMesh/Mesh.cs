@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Text;
 using PLATEAU.Geometries;
 using PLATEAU.Interop;
+using PLATEAU.Util;
 
 namespace PLATEAU.PolygonMesh
 {
@@ -152,6 +154,17 @@ namespace PLATEAU.PolygonMesh
         private void ThrowIfInvalid()
         {
             if (!this.isValid) throw new Exception("Mesh is invalid.");
+        }
+
+        public void DebugString(StringBuilderWithIndent sb)
+        {
+            sb.AppendLine($"Mesh : vertCount = {VerticesCount}");
+            sb.IncrementIndent();
+            for (int i = 0; i < SubMeshCount; i++)
+            {
+                GetSubMeshAt(i).DebugPrint(sb);
+            }
+            sb.DecrementIndent();
         }
     }
 }

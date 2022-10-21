@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using PLATEAU.CityInfo;
 using PLATEAU.Editor.CityExport.ModelConvert;
 using PLATEAU.Interop;
@@ -10,9 +11,14 @@ namespace PLATEAU.Editor.CityExport
 {
     internal static class MeshExporter
     {
-        public static void Export(string destination, PLATEAUInstancedCityModel instancedCityModel, MeshExportOptions options)
+        public static void Export(string destDir, PLATEAUInstancedCityModel instancedCityModel, MeshExportOptions options)
         {
-            
+            destDir = destDir.Replace('\\', '/');
+            if (!Directory.Exists(destDir))
+            {
+                Debug.LogError($"Destination Path is not a folder. destination = '{destDir}'");
+                return;
+            }
             var trans = instancedCityModel.transform;
             int numChild = trans.childCount;
             for (int i = 0; i < numChild; i++)
@@ -21,24 +27,27 @@ namespace PLATEAU.Editor.CityExport
                 var childName = childTrans.name;
                 if (!childName.EndsWith(".gml")) continue;
                 using var model = UnityMeshToDllModelConverter.Convert(childTrans.gameObject);
-                ModelToFile(destination, model, options);
+                ModelToFile(destDir, Path.GetFileNameWithoutExtension(childName), model, options);
+                Debug.Log(model.DebugString());
             }
         }
 
-        public static void ModelToFile(string destination, Model model, MeshExportOptions options)
+        public static void ModelToFile(string destDir, string fileNameWithoutExtension, Model model,
+            MeshExportOptions options)
         {
+            string filePathWithoutExtension = Path.Combine(destDir, fileNameWithoutExtension);
             switch (options.FileFormat)
             {
                 case MeshExportOptions.MeshFileFormat.Obj:
                     using (var objWriter = new ObjWriter())
                     {
-                        objWriter.Write(destination, model);
+                        objWriter.Write(filePathWithoutExtension + ".obj", model);
                     }
                     break;
                 case MeshExportOptions.MeshFileFormat.Gltf:
                     using (var gltfWriter = new GltfWriter())
                     {
-                        gltfWriter.Write(destination, model, options.GltfWriteOptions);
+                        gltfWriter.Write(filePathWithoutExtension, model, options.GltfWriteOptions);
                     }
                     break;
                 case MeshExportOptions.MeshFileFormat.Fbx:

@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Text;
 using PLATEAU.Interop;
+using PLATEAU.Util;
 
 namespace PLATEAU.PolygonMesh
 {
@@ -44,6 +46,11 @@ namespace PLATEAU.PolygonMesh
                     NativeMethods.plateau_sub_mesh_get_texture_path);
                 return path;
             }
+        }
+
+        public void DebugPrint(StringBuilderWithIndent sb)
+        {
+            sb.AppendLine($"SubMesh: indexRange = ({StartIndex}, {EndIndex}), texturePath = {TexturePath}");
         }
     }
 }

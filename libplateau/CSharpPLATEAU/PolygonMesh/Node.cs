@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Text;
 using PLATEAU.Interop;
+using PLATEAU.Util;
 
 namespace PLATEAU.PolygonMesh
 {
@@ -140,6 +142,25 @@ namespace PLATEAU.PolygonMesh
         private void ThrowIfInvalid()
         {
             if (!this.isValid) throw new Exception("The instance is invalid.");
+        }
+
+        public void DebugString(StringBuilderWithIndent sb)
+        {
+            sb.AppendLine($"Node {Name}");
+            sb.IncrementIndent();
+            if (Mesh == null)
+            {
+                sb.AppendLine("Mesh : none");
+            }
+            else
+            {
+                Mesh.DebugString(sb);
+            }
+            for (int i = 0; i < ChildCount; i++)
+            {
+                GetChildAt(i).DebugString(sb);
+            }
+            sb.DecrementIndent();
         }
     }
 }
