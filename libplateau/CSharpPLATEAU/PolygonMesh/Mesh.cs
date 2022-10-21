@@ -14,6 +14,7 @@ namespace PLATEAU.PolygonMesh
     public class Mesh
     {
         public IntPtr Handle { get; }
+        private bool isValid = true;
         public Mesh(IntPtr handle)
         {
             Handle = handle;
@@ -30,6 +31,7 @@ namespace PLATEAU.PolygonMesh
         {
             get
             {
+                ThrowIfInvalid();
                 int verticesCount = DLLUtil.GetNativeValue<int>(Handle,
                     NativeMethods.plateau_mesh_get_vertices_count);
                 return verticesCount;
@@ -40,6 +42,7 @@ namespace PLATEAU.PolygonMesh
         {
             get
             {
+                ThrowIfInvalid();
                 int indicesCount = DLLUtil.GetNativeValue<int>(Handle,
                     NativeMethods.plateau_mesh_get_indices_count);
                 return indicesCount;
@@ -48,6 +51,7 @@ namespace PLATEAU.PolygonMesh
 
         public PlateauVector3d GetVertexAt(int index)
         {
+            ThrowIfInvalid();
             var vert = DLLUtil.GetNativeValue<PlateauVector3d>(Handle, index,
                 NativeMethods.plateau_mesh_get_vertex_at_index);
             return vert;
@@ -55,6 +59,7 @@ namespace PLATEAU.PolygonMesh
 
         public int GetIndiceAt(int index)
         {
+            ThrowIfInvalid();
             int vertexId = DLLUtil.GetNativeValue<int>(Handle, index,
                 NativeMethods.plateau_mesh_get_indice_at_index);
             return vertexId;
@@ -62,6 +67,7 @@ namespace PLATEAU.PolygonMesh
 
         public PlateauVector2f[] GetUv1()
         {
+            ThrowIfInvalid();
             var uv1 = new PlateauVector2f[VerticesCount];
             var result = NativeMethods.plateau_mesh_get_uv1(Handle, uv1);
             DLLUtil.CheckDllError(result);
@@ -70,6 +76,7 @@ namespace PLATEAU.PolygonMesh
         
         public PlateauVector2f[] GetUv2()
         {
+            ThrowIfInvalid();
             var uv2 = new PlateauVector2f[VerticesCount];
             var result = NativeMethods.plateau_mesh_get_uv2(Handle, uv2);
             DLLUtil.CheckDllError(result);
@@ -78,6 +85,7 @@ namespace PLATEAU.PolygonMesh
         
         public PlateauVector2f[] GetUv3()
         {
+            ThrowIfInvalid();
             var uv3 = new PlateauVector2f[VerticesCount];
             var result = NativeMethods.plateau_mesh_get_uv3(Handle, uv3);
             DLLUtil.CheckDllError(result);
@@ -88,6 +96,7 @@ namespace PLATEAU.PolygonMesh
         {
             get
             {
+                ThrowIfInvalid();
                 int numSubMesh = DLLUtil.GetNativeValue<int>(Handle,
                     NativeMethods.plateau_mesh_get_sub_mesh_count);
                 return numSubMesh;
@@ -96,15 +105,29 @@ namespace PLATEAU.PolygonMesh
         
         public SubMesh GetSubMeshAt(int index)
         {
+            ThrowIfInvalid();
             var subMeshPtr = DLLUtil.GetNativeValue<IntPtr>(Handle, index,
                 NativeMethods.plateau_mesh_get_sub_mesh_at_index);
             return new SubMesh(subMeshPtr);
         }
 
-        public void Merge(Mesh otherMesh, CoordinateSystem meshAxes, bool includeTexture)
+        public void MergeMesh(Mesh otherMesh, CoordinateSystem meshAxes, bool includeTexture)
         {
+            ThrowIfInvalid();
             var result = NativeMethods.plateau_mesh_merger_merge_mesh(
                 Handle, otherMesh.Handle, meshAxes, includeTexture
+            );
+            DLLUtil.CheckDllError(result);
+        }
+
+        public void MergeMeshInfo(PlateauVector3d[] vertices, uint[] indices, PlateauVector2f[] uv1,
+            CoordinateSystem meshAxes, bool includeTexture)
+        {
+            ThrowIfInvalid();
+            var result = NativeMethods.plateau_mesh_merger_mesh_info(
+                Handle,
+                vertices, vertices.Length, indices, indices.Length, uv1, uv1.Length,
+                meshAxes, includeTexture
             );
             DLLUtil.CheckDllError(result);
         }
@@ -119,6 +142,16 @@ namespace PLATEAU.PolygonMesh
         {
             var result = NativeMethods.plateau_delete_mesh(Handle);
             DLLUtil.CheckDllError(result);
+        }
+
+        public void MarkInvalid()
+        {
+            this.isValid = false;
+        }
+
+        private void ThrowIfInvalid()
+        {
+            if (!this.isValid) throw new Exception("Mesh is invalid.");
         }
     }
 }

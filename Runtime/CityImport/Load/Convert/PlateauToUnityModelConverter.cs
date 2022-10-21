@@ -82,7 +82,7 @@ namespace PLATEAU.CityImport.Load.Convert
         private static Model ExtractMeshes(
             CityModel cityModel, MeshExtractOptions meshExtractOptions)
         {
-            var model = new Model();
+            var model = Model.Create();
             if (cityModel == null) return model;
             MeshExtractor.Extract(ref model, cityModel, meshExtractOptions);
             Debug.Log("model extracted.");

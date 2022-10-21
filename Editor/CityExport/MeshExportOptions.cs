@@ -11,5 +11,13 @@ namespace PLATEAU.Editor.CityExport
         public bool ExportHiddenObjects;
         public MeshFileFormat FileFormat;
         public GltfWriteOptions GltfWriteOptions; // Gltf形式のときのみ利用します。
+
+        public MeshExportOptions(MeshTransformType transformType, bool exportHiddenObjects, MeshFileFormat fileFormat, GltfWriteOptions gltfWriteOptions)
+        {
+            this.TransformType = transformType;
+            this.ExportHiddenObjects = exportHiddenObjects;
+            this.FileFormat = fileFormat;
+            this.GltfWriteOptions = gltfWriteOptions;
+        }
     }
 }

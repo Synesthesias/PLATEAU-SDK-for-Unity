@@ -2,6 +2,7 @@ using System;
 using System.Runtime.InteropServices;
 using PLATEAU.CityGML;
 using PLATEAU.Geometries;
+using PLATEAU.PolygonMesh;
 using PLATEAU.Udx;
 
 // 文字列のサイズをDLLでやりとりする時の型を決めます。
@@ -874,17 +875,17 @@ namespace PLATEAU.Interop
         [DllImport(DllName)]
         internal static extern APIResult plateau_mesh_get_uv1(
             [In] IntPtr plateauMeshPtr,
-            PlateauVector2f[] outUvPosArray);
+            [Out] PlateauVector2f[] outUvPosArray);
 
         [DllImport(DllName)]
         internal static extern APIResult plateau_mesh_get_uv2(
             [In] IntPtr plateauMeshPtr,
-            PlateauVector2f[] outUvPosArray);
+            [Out] PlateauVector2f[] outUvPosArray);
 
         [DllImport(DllName)]
         internal static extern APIResult plateau_mesh_get_uv3(
             [In] IntPtr plateauMeshPtr,
-            PlateauVector2f[] outUvPosArray);
+            [Out] PlateauVector2f[] outUvPosArray);
 
         // ***************
         //  sub_mesh_c.cpp
@@ -929,9 +930,27 @@ namespace PLATEAU.Interop
             out IntPtr outNode,
             int index);
 
+        /// <summary>
+        /// 注意:
+        /// 利用後、元の <see cref="Node"/> は利用不可になります。
+        /// </summary>
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_model_add_node_by_std_move(
+            [In] IntPtr modelPtr,
+            [In] IntPtr nodePtr);
+
         // ***************
         //  node_c.cpp
         // ***************
+        [DllImport(DllName, CharSet = CharSet.Ansi)]
+        internal static extern APIResult plateau_create_node(
+            out IntPtr outNodePtr,
+            string id);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_delete_node(
+            [In] IntPtr nodePtr);
+        
         [DllImport(DllName)]
         internal static extern APIResult plateau_node_get_name(
             [In] IntPtr handle,
@@ -953,6 +972,16 @@ namespace PLATEAU.Interop
         internal static extern APIResult plateau_node_get_mesh(
             [In] IntPtr nodeHandle,
             out IntPtr outMeshPtr);
+        
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_node_set_mesh_by_std_move(
+            [In] IntPtr nodePtr,
+            [In] IntPtr meshPtr);
+        
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_node_add_child_node_by_std_move(
+            [In] IntPtr nodePtr,
+            [In] IntPtr childNodePtr);
 
         // ***************
         //  geometry_utils_c.cpp
@@ -1198,6 +1227,18 @@ namespace PLATEAU.Interop
         internal static extern APIResult plateau_mesh_merger_merge_mesh(
             [In] IntPtr meshPtr,
             [In] IntPtr otherMeshPtr,
+            CoordinateSystem meshAxes,
+            [MarshalAs(UnmanagedType.U1)] bool includeTexture);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_mesh_merger_mesh_info(
+            [In] IntPtr meshPtr,
+            [In] PlateauVector3d[] vertices,
+            int verticesCount,
+            [In] uint[] indices,
+            int indicesCount,
+            [In] PlateauVector2f[] uv1,
+            int uv1Count,
             CoordinateSystem meshAxes,
             [MarshalAs(UnmanagedType.U1)] bool includeTexture);
     }
