@@ -13,6 +13,11 @@ namespace PLATEAU.Editor.CityExport
     {
         public static void Export(string destDir, PLATEAUInstancedCityModel instancedCityModel, MeshExportOptions options)
         {
+            if (instancedCityModel == null)
+            {
+                Debug.LogError($"{nameof(instancedCityModel)} is null.");
+                return;
+            }
             destDir = destDir.Replace('\\', '/');
             if (!Directory.Exists(destDir))
             {

@@ -4,6 +4,7 @@ using PLATEAU.Interop;
 using PLATEAU.PolygonMesh;
 using UnityEditor.UI;
 using UnityEngine;
+using UnityEngine.Assertions;
 using Mesh = UnityEngine.Mesh;
 
 namespace PLATEAU.Editor.CityExport.ModelConvert
@@ -64,13 +65,18 @@ namespace PLATEAU.Editor.CityExport.ModelConvert
             if (meshFilter == null) return node;
             var unityMesh = meshFilter.sharedMesh;
             if (unityMesh == null) return node;
+            
             var dllMesh = ConvertMesh(unityMesh);
+            
             int subMeshCount = unityMesh.subMeshCount;
             for (int i = 0; i < subMeshCount; i++)
             {
                 var subMesh = unityMesh.GetSubMesh(i);
+                if (subMesh.indexCount == 0) continue;
                 int startId = subMesh.indexStart;
                 int endId = startId + subMesh.indexCount - 1;
+                Assert.IsTrue(startId < endId);
+                Assert.IsTrue(endId < dllMesh.IndicesCount);
                 dllMesh.AddSubMesh("", startId, endId); // TODO ここにテクスチャパスが来るようにする
             }
             node.SetMeshByCppMove(dllMesh);
@@ -86,8 +92,7 @@ namespace PLATEAU.Editor.CityExport.ModelConvert
                     .Select(vert => new PlateauVector3d(vert.x, vert.y, vert.z))
                     .ToArray();
             var indices =
-                unityMesh
-                    .GetIndices(0) // TODO 複数の subMesh に対応
+                unityMesh.triangles
                     .Select(id => (uint)id)
                     .ToArray();
             var uv1 =
