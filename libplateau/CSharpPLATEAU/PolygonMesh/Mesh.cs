@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Text;
+using System.Linq;
 using PLATEAU.Geometries;
 using PLATEAU.Interop;
 using PLATEAU.Util;
@@ -123,12 +123,14 @@ namespace PLATEAU.PolygonMesh
         }
 
         public void MergeMeshInfo(PlateauVector3d[] vertices, uint[] indices, PlateauVector2f[] uv1,
-            CoordinateSystem meshAxes, bool includeTexture)
+            SubMesh[] subMeshes,CoordinateSystem meshAxes, bool includeTexture)
         {
             ThrowIfInvalid();
+            var subMeshPointers = subMeshes.Select(sm => sm.Handle).ToArray();
             var result = NativeMethods.plateau_mesh_merger_mesh_info(
                 Handle,
                 vertices, vertices.Length, indices, indices.Length, uv1, uv1.Length,
+                subMeshPointers, subMeshes.Length,
                 meshAxes, includeTexture
             );
             DLLUtil.CheckDllError(result);
@@ -143,8 +145,8 @@ namespace PLATEAU.PolygonMesh
 
         /// <summary>
         /// 取扱注意:
-        /// 通常は Model が廃棄されるときに C++側で Mesh も廃棄されるので、このメソッドを呼ぶ必要はありません。
-        /// Model に属さず、C#側で明示的に Create した Mesh のみ Dispose してください。
+        /// 通常は <see cref="Node"/> が廃棄されるときに C++側で <see cref="Mesh"/> も廃棄されるので、このメソッドを呼ぶ必要はありません。
+        /// <see cref="Node"/> に属さず、C#側で明示的に Create した <see cref="Mesh"/> のみ <see cref="Dispose"/> してください。
         /// それ以外のタイミングで呼ぶとメモリ違反でUnityが落ちます。
         /// </summary>
         public void Dispose()

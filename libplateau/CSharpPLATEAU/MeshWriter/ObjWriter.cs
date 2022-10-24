@@ -1,6 +1,5 @@
 ﻿using System;
 using PLATEAU.Interop;
-using System.Threading;
 using PLATEAU.PolygonMesh;
 
 namespace PLATEAU.MeshWriter

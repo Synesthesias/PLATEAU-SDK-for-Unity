@@ -913,6 +913,17 @@ namespace PLATEAU.Interop
             out IntPtr strPtr,
             out int strLength);
 
+        [DllImport(DllName, CharSet = CharSet.Ansi)]
+        internal static extern APIResult plateau_create_sub_mesh(
+            out IntPtr outSubMeshPtr,
+            int startIndex,
+            int endIndex,
+            string texturePath);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_delete_sub_mesh(
+            [In] IntPtr subMeshPtr);
+
         // ***************
         //  model_c.cpp
         // ***************
@@ -1246,6 +1257,8 @@ namespace PLATEAU.Interop
             int indicesCount,
             [In] PlateauVector2f[] uv1,
             int uv1Count,
+            [In] IntPtr[] subMeshPointers,
+            int subMeshCount,
             CoordinateSystem meshAxes,
             [MarshalAs(UnmanagedType.U1)] bool includeTexture);
     }

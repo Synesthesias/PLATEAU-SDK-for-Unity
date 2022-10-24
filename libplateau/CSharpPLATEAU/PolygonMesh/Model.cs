@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Text;
 using PLATEAU.Interop;
 using PLATEAU.Util;
 

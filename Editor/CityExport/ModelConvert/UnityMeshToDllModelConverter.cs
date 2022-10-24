@@ -1,8 +1,8 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using PLATEAU.Geometries;
 using PLATEAU.Interop;
 using PLATEAU.PolygonMesh;
-using UnityEditor.UI;
 using UnityEngine;
 using UnityEngine.Assertions;
 using Mesh = UnityEngine.Mesh;
@@ -101,8 +101,22 @@ namespace PLATEAU.Editor.CityExport.ModelConvert
                     .Select(uv => new PlateauVector2f(uv.x, uv.y))
                     .ToArray();
 
+            int subMeshCount = unityMesh.subMeshCount;
+            var dllSubMeshes = new List<SubMesh>();
+            for (int i = 0; i < subMeshCount; i++)
+            {
+                var unitySubMesh = unityMesh.GetSubMesh(i);
+                int startIndex = unitySubMesh.firstVertex;
+                int endIndex = startIndex + unitySubMesh.indexCount - 1;
+                string texturePath = ""; // TODO
+                dllSubMeshes.Add(SubMesh.Create(startIndex, endIndex, texturePath));
+            }
+
             var dllMesh = PolygonMesh.Mesh.Create(unityMesh.name);
-            dllMesh.MergeMeshInfo(vertices, indices, uv1, CoordinateSystem.EUN, true);
+            dllMesh.MergeMeshInfo(
+                vertices, indices, uv1,
+                dllSubMeshes.ToArray(),
+                CoordinateSystem.EUN, true);
             return dllMesh;
         }
     }
