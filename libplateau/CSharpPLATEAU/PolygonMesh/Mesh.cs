@@ -122,6 +122,11 @@ namespace PLATEAU.PolygonMesh
             DLLUtil.CheckDllError(result);
         }
 
+        /// <summary>
+        /// 配列によって <see cref="Mesh"/> に形状を追加します。
+        /// 配列と <see cref="SubMesh"/> は C++の move によって移動するので、
+        /// 実行後は利用不可になることにご注意ください。
+        /// </summary>
         public void MergeMeshInfo(PlateauVector3d[] vertices, uint[] indices, PlateauVector2f[] uv1,
             SubMesh[] subMeshes,CoordinateSystem meshAxes, bool includeTexture)
         {

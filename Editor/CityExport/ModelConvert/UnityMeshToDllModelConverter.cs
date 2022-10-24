@@ -111,9 +111,10 @@ namespace PLATEAU.Editor.CityExport.ModelConvert
             for (int i = 0; i < subMeshCount; i++)
             {
                 var unitySubMesh = unityMesh.GetSubMesh(i);
-                int startIndex = unitySubMesh.firstVertex;
+                int startIndex = unitySubMesh.indexStart;
                 int endIndex = startIndex + unitySubMesh.indexCount - 1;
-                Assert.IsTrue(startIndex <= endIndex);
+                if (startIndex == endIndex) continue;
+                Assert.IsTrue(startIndex < endIndex);
                 Assert.IsTrue(endIndex < indices.Length);
                 Assert.IsTrue(startIndex < indices.Length);
                 Assert.IsTrue(0 <= startIndex);
@@ -129,6 +130,7 @@ namespace PLATEAU.Editor.CityExport.ModelConvert
                     texturePath = Path.Combine(PathUtil.plateauSrcFetchDir, texture.name);
                 }
                 dllSubMeshes.Add(SubMesh.Create(startIndex, endIndex, texturePath));
+                
             }
 
             var dllMesh = PolygonMesh.Mesh.Create(unityMesh.name);
