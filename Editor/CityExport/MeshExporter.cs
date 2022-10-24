@@ -58,7 +58,6 @@ namespace PLATEAU.Editor.CityExport
                     break;
                 case MeshExportOptions.MeshFileFormat.Fbx:
                     throw new NotImplementedException();
-                    break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(options), "Unknown FileFormat to export.");
             }

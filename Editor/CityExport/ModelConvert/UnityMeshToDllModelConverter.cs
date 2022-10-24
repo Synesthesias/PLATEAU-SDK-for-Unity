@@ -79,7 +79,6 @@ namespace PLATEAU.Editor.CityExport.ModelConvert
                 int endId = startId + subMesh.indexCount - 1;
                 Assert.IsTrue(startId < endId);
                 Assert.IsTrue(endId < dllMesh.IndicesCount);
-                dllMesh.AddSubMesh("", startId, endId); // TODO ここにテクスチャパスが来るようにする
             }
             node.SetMeshByCppMove(dllMesh);
             
@@ -132,6 +131,8 @@ namespace PLATEAU.Editor.CityExport.ModelConvert
                 dllSubMeshes.Add(SubMesh.Create(startIndex, endIndex, texturePath));
                 
             }
+            
+            Assert.AreEqual(uv1.Length, vertices.Length);
 
             var dllMesh = PolygonMesh.Mesh.Create(unityMesh.name);
             dllMesh.MergeMeshInfo(
