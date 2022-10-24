@@ -113,6 +113,10 @@ namespace PLATEAU.Editor.CityExport.ModelConvert
                 var unitySubMesh = unityMesh.GetSubMesh(i);
                 int startIndex = unitySubMesh.firstVertex;
                 int endIndex = startIndex + unitySubMesh.indexCount - 1;
+                Assert.IsTrue(startIndex <= endIndex);
+                Assert.IsTrue(endIndex < indices.Length);
+                Assert.IsTrue(startIndex < indices.Length);
+                Assert.IsTrue(0 <= startIndex);
 
                 // テクスチャパスは、Unityシーン内のテクスチャの名前に記載してあるので取得します。
                 string texturePath = "";
