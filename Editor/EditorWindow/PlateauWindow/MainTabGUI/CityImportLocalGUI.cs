@@ -46,11 +46,10 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
             
             PlateauEditorStyle.Separator(0);
             PlateauEditorStyle.SubTitle("モデルデータの配置を行います。");
-            PlateauEditorStyle.Heading("基準座標系の選択", null);
+            PlateauEditorStyle.Heading("基準座標系の選択", "num1.png");
 
             // 基準座標系についてはこのWebサイトを参照してください。
             // https://www.gsi.go.jp/sokuchikijun/jpc.html
-
             using (PlateauEditorStyle.VerticalScopeLevel1())
             {
                 this.config.CoordinateZoneID = EditorGUILayout.Popup(
@@ -79,7 +78,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
             }
             
 
-            PlateauEditorStyle.Heading("マップ範囲選択", null);
+            PlateauEditorStyle.Heading("マップ範囲選択", "num2.png");
             using (PlateauEditorStyle.VerticalScopeLevel1())
             {
                 if (PlateauEditorStyle.MainButton("範囲選択"))
@@ -98,7 +97,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
             
             if (this.isAreaSelectComplete)
             {
-                PlateauEditorStyle.Heading("地物別設定", null);
+                PlateauEditorStyle.Heading("地物別設定", "num3.png");
                 CityLoadConfigGUI.Draw(this.config);
                 
                 PlateauEditorStyle.Separator(0);
