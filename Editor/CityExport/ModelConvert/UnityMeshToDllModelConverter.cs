@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using PLATEAU.Geometries;
 using PLATEAU.Interop;
 using PLATEAU.PolygonMesh;
+using PLATEAU.Util;
 using UnityEngine;
 using UnityEngine.Assertions;
 using Mesh = UnityEngine.Mesh;
@@ -66,7 +68,7 @@ namespace PLATEAU.Editor.CityExport.ModelConvert
             var unityMesh = meshFilter.sharedMesh;
             if (unityMesh == null) return node;
             
-            var dllMesh = ConvertMesh(unityMesh);
+            var dllMesh = ConvertMesh(unityMesh, trans.GetComponent<MeshRenderer>());
             
             int subMeshCount = unityMesh.subMeshCount;
             for (int i = 0; i < subMeshCount; i++)
@@ -84,7 +86,7 @@ namespace PLATEAU.Editor.CityExport.ModelConvert
             return node;
         }
 
-        private static PolygonMesh.Mesh ConvertMesh(Mesh unityMesh)
+        private static PolygonMesh.Mesh ConvertMesh(Mesh unityMesh, MeshRenderer meshRenderer)
         {
             var vertices =
                 unityMesh
@@ -101,6 +103,9 @@ namespace PLATEAU.Editor.CityExport.ModelConvert
                     .Select(uv => new PlateauVector2f(uv.x, uv.y))
                     .ToArray();
 
+            Material[] materials = null;
+            if (meshRenderer != null) materials = meshRenderer.sharedMaterials;
+
             int subMeshCount = unityMesh.subMeshCount;
             var dllSubMeshes = new List<SubMesh>();
             for (int i = 0; i < subMeshCount; i++)
@@ -108,7 +113,17 @@ namespace PLATEAU.Editor.CityExport.ModelConvert
                 var unitySubMesh = unityMesh.GetSubMesh(i);
                 int startIndex = unitySubMesh.firstVertex;
                 int endIndex = startIndex + unitySubMesh.indexCount - 1;
-                string texturePath = ""; // TODO
+
+                // テクスチャパスは、Unityシーン内のテクスチャの名前に記載してあるので取得します。
+                string texturePath = "";
+                if (materials != null && i < materials.Length)
+                {
+                    var material = materials[i];
+                    if (material == null) continue;
+                    var texture = material.mainTexture;
+                    if (texture == null) continue;
+                    texturePath = Path.Combine(PathUtil.plateauSrcFetchDir, texture.name);
+                }
                 dllSubMeshes.Add(SubMesh.Create(startIndex, endIndex, texturePath));
             }
 
