@@ -1155,6 +1155,11 @@ namespace PLATEAU.Interop
             [In] IntPtr handle,
             out IntPtr strPtr,
             out int strLength);
+        
+        [DllImport(DllName, CharSet = CharSet.Ansi)]
+        internal static extern APIResult plateau_gml_file_info_set_path(
+            [In] IntPtr gmlFileInfoPtr,
+            [In] string path);
 
         [DllImport(DllName, CharSet = CharSet.Ansi)]
         internal static extern APIResult plateau_gml_file_info_get_feature_type_str(

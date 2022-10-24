@@ -150,7 +150,7 @@ namespace PLATEAU.CityImport.Load.Convert
                 ((Texture2D)texture).Compress(true);
 
                 // 生成したUnityテクスチャへの参照を meshData に追加します。
-                texture.name = Path.GetFileNameWithoutExtension(textureFullPath);
+                texture.name = textureFullPath;
                 cachedTexture[textureFullPath] = texture;
                 meshData.AddTexture(i, texture);
 

@@ -105,9 +105,23 @@ namespace PLATEAU.CityImport.Load
         {
             string gmlName = Path.GetFileName(gmlInfo.Path);
             progressDisplay.SetProgress(gmlName, 0f, "インポート処理中");
+
+            destPath = destPath.Replace('\\', '/');
+            if (!destPath.EndsWith("/")) destPath += "/";
+            
+            // GMLと関連ファイルを StreamingAssets にコピーします。
             // ここは別スレッドで実行可能です。
             await Task.Run(() => collection.Fetch(destPath, gmlInfo));
+            // ここでメインスレッドに戻ります。
             progressDisplay.SetProgress(gmlName, 20f, "GMLファイルをロード中");
+
+            // GMLと関連ファイルをコピーしたので、パスをコピー後のものに更新します。
+            // 元パスが　AAA/ルートフォルダ名/udx/パッケージ名/111.gml　だったとすると、
+            // AAAの部分だけ置き換えます。
+            string gmlPathBefore = Path.GetFullPath(gmlInfo.Path).Replace('\\', '/');
+            string pathToReplace = Path.GetFullPath(Path.Combine(gmlPathBefore, "../../../../")).Replace('\\', '/');
+            string gmlPathAfter = gmlPathBefore.Replace(pathToReplace, destPath);
+            gmlInfo.Path = gmlPathAfter;
             
             using var cityModel = await LoadGmlAsync(gmlInfo);
             if (cityModel == null)
@@ -116,8 +130,7 @@ namespace PLATEAU.CityImport.Load
                 return;
             }
 
-            string gmlPath = gmlInfo.Path;
-            var gmlTrans = new GameObject(Path.GetFileName(gmlPath)).transform;
+            var gmlTrans = new GameObject(Path.GetFileName(gmlPathAfter)).transform;
             gmlTrans.parent = rootTrans;
             var package = gmlInfo.Package;
             var packageConf = conf.GetConfigForPackage(package);

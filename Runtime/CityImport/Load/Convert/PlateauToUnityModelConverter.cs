@@ -58,6 +58,7 @@ namespace PLATEAU.CityImport.Load.Convert
             
             // テクスチャパス と テクスチャを紐付ける辞書です。同じテクスチャが繰り返しロードされることを防ぎます。
             Dictionary<string, Texture> cachedTexture = new Dictionary<string, Texture>();
+            
             progressDisplay.SetProgress(progressName, 80f, "シーンに配置中");
 
             await meshObjsData.PlaceToScene(parentTrans, cachedTexture, true, doSetMeshCollider);
