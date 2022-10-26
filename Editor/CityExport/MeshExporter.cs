@@ -66,6 +66,7 @@ namespace PLATEAU.Editor.CityExport
                         string gltfFilePath = Path.Combine(dirPath, fileNameWithoutExtension + fileExtension);
                         options.GltfWriteOptions.TextureDirectoryPath = Path.Combine(dirPath, "textures");
                         
+                        // TODO 出力結果をBlenderで見ると面の向きが逆？？
                         gltfWriter.Write(gltfFilePath, model, options.GltfWriteOptions);
                     }
                     break;

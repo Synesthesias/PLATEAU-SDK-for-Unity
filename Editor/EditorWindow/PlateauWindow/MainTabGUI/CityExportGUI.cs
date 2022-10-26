@@ -1,16 +1,18 @@
-﻿using PLATEAU.CityInfo;
+﻿using System;
+using PLATEAU.CityInfo;
 using PLATEAU.Editor.CityExport;
 using PLATEAU.Editor.EditorWindow.Common;
 using PLATEAU.Interop;
 using PLATEAU.MeshWriter;
 using UnityEditor;
-using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
 {
     internal class CityExportGUI : IEditorDrawable
     {
         private MeshFileFormat meshFileFormat = MeshFileFormat.OBJ;
+        private GltfFileFormat gltfFileFormat = GltfFileFormat.GLB;
         private bool foldOutOption = true;
         public void Draw()
         {
@@ -18,7 +20,13 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
             PlateauEditorStyle.Heading("選択オブジェクト", null);
             // TODO 仮
             this.meshFileFormat = (MeshFileFormat)EditorGUILayout.EnumPopup("出力形式", this.meshFileFormat);
-            this.foldOutOption = PlateauEditorStyle.FoldOut(this.foldOutOption, "Option", () => { });
+            this.foldOutOption = PlateauEditorStyle.FoldOut(this.foldOutOption, "Option", () =>
+            {
+                if (this.meshFileFormat == MeshFileFormat.GLTF)
+                {
+                    this.gltfFileFormat = (GltfFileFormat)EditorGUILayout.EnumPopup("GLTFフォーマット", this.gltfFileFormat);
+                }
+            });
             PlateauEditorStyle.Separator(0);
             if (PlateauEditorStyle.MainButton("エクスポート"))
             {
@@ -30,7 +38,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
         private void Export(string destinationDir, PLATEAUInstancedCityModel instancedModel)
         {
             var meshExportOptions = new MeshExportOptions(MeshExportOptions.MeshTransformType.Local, true,
-                this.meshFileFormat, new GltfWriteOptions(GltfFileFormat.GLTF, destinationDir));
+                this.meshFileFormat, new GltfWriteOptions(this.gltfFileFormat, destinationDir));
             MeshExporter.Export(destinationDir, instancedModel,  meshExportOptions);
             // TODO 仮
                 // using var logger = DllUnityLogger.Create();
