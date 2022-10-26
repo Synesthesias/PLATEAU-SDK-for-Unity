@@ -1,27 +1,35 @@
-﻿using System;
-using PLATEAU.CityInfo;
+﻿using PLATEAU.CityInfo;
 using PLATEAU.Editor.CityExport;
 using PLATEAU.Editor.EditorWindow.Common;
 using PLATEAU.Interop;
 using PLATEAU.MeshWriter;
 using UnityEditor;
-using Object = UnityEngine.Object;
+using UnityEngine;
 
 namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
 {
     internal class CityExportGUI : IEditorDrawable
     {
+        private PLATEAUInstancedCityModel exportTarget;
         private MeshFileFormat meshFileFormat = MeshFileFormat.OBJ;
         private GltfFileFormat gltfFileFormat = GltfFileFormat.GLB;
-        private bool exportTextures = false;
-        private bool exportHiddenObject = false;
+        private bool exportTextures;
+        private bool exportHiddenObject;
         private MeshExportOptions.MeshTransformType meshTransformType = MeshExportOptions.MeshTransformType.Local;
         private bool foldOutOption = true;
         public void Draw()
         {
             PlateauEditorStyle.SubTitle("モデルデータのエクスポートを行います。");
+            using (PlateauEditorStyle.VerticalScopeLevel1())
+            {
+                this.exportTarget =
+                    (PLATEAUInstancedCityModel)EditorGUILayout.ObjectField(
+                        "エクスポート対象", this.exportTarget,
+                        typeof(PLATEAUInstancedCityModel), true);
+            }
             PlateauEditorStyle.Heading("選択オブジェクト", null);
-            // TODO 仮
+            // TODO
+            PlateauEditorStyle.Heading("出力形式", null);
             using (PlateauEditorStyle.VerticalScopeLevel1())
             {
                 this.meshFileFormat = (MeshFileFormat)EditorGUILayout.EnumPopup("出力形式", this.meshFileFormat);
@@ -45,38 +53,21 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
             PlateauEditorStyle.Separator(0);
             if (PlateauEditorStyle.MainButton("エクスポート"))
             {
-                Export("D:\\Linoal\\Desktop\\tmpTestConv", Object.FindObjectOfType<PLATEAUInstancedCityModel>());
+                Export("D:\\Linoal\\Desktop\\tmpTestConv", this.exportTarget);
             }
         }
 
         // TODO 出力したファイルパスのリストを返すようにする
-        private void Export(string destinationDir, PLATEAUInstancedCityModel instancedModel)
+        private void Export(string destinationDir, PLATEAUInstancedCityModel target)
         {
+            if (target == null)
+            {
+                Debug.LogError("エクスポート対象が指定されていません。");
+                return;
+            }
             var meshExportOptions = new MeshExportOptions(this.meshTransformType, this.exportTextures, this.exportHiddenObject,
                 this.meshFileFormat, new GltfWriteOptions(this.gltfFileFormat, destinationDir));
-            MeshExporter.Export(destinationDir, instancedModel,  meshExportOptions);
-            // TODO 仮
-                // using var logger = DllUnityLogger.Create();
-                // var parserParams = new CitygmlParserParams(true, true, false);
-                // var cityModel = CityGml.Load(gmlPath, parserParams, DllLogCallback.UnityLogCallbacks, DllLogLevel.Warning);
-                // // var converter = new MeshConverter();
-                // var option = new MeshConvertOptionsData
-                // {
-                //     // TODO 選択できるようにする
-                //     MeshAxes = CoordinateSystem.ENU,
-                //     MeshFileFormat = this.meshFileFormat,
-                //     ReferencePoint = cityModel.GetCenterPoint(9), // TODO coordinateZoneID を選択できるようにする
-                //     MeshGranularity = MeshGranularity.PerPrimaryFeatureObject,
-                //     MinLOD = 0,
-                //     MaxLOD = 3,
-                //     ExportLowerLOD = false,
-                //     ExportAppearance = true,
-                //     UnitScale = 1f,
-                //     CoordinateZoneID = 9
-                // };
-                // converter.Options = option;
-                // var exportedFileNames = converter.Convert(destinationDir, gmlPath, cityModel, logger);
-                // return exportedFileNames;
+            MeshExporter.Export(destinationDir, target,  meshExportOptions);
         }
     }
 }
