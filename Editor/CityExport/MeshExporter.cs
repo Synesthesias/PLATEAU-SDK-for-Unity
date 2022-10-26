@@ -37,9 +37,30 @@ namespace PLATEAU.Editor.CityExport
                 {
                     continue;
                 }
+
+                using var geoReference = instancedCityModel.GeoReference;
+                var referencePoint = geoReference.ReferencePoint;
+                var rootPos = trans.position;
+                
+                UnityMeshToDllModelConverter.VertexConvertFunc vertexConvertFunc = options.TransformType switch
+                {
+                    MeshExportOptions.MeshTransformType.Local => src =>
+                    {
+                        // instancedCityModel を基準とする座標にします。
+                        var pos = src - rootPos;
+                        return new PlateauVector3d(pos.x, pos.y, pos.z);
+                    },
+                    MeshExportOptions.MeshTransformType.PlaneCartesian => src =>
+                    {
+                        // 変換時の referencePoint をオフセットします。
+                        var pos = referencePoint + new PlateauVector3d(src.x - rootPos.x, src.y - rootPos.y, src.z - rootPos.z);
+                        return pos;
+                    },
+                    _ => throw new Exception("Unknown transform type.")
+                };
                 
                 // Unity のメッシュを中間データ構造(Model)に変換します。
-                using var model = UnityMeshToDllModelConverter.Convert(childTrans.gameObject, options.ExportHiddenObjects);
+                using var model = UnityMeshToDllModelConverter.Convert(childTrans.gameObject, options.ExportHiddenObjects, vertexConvertFunc);
                 
                 // Model をファイルにして出力します。
                 ModelToFile(destDir, Path.GetFileNameWithoutExtension(childName), model, options);

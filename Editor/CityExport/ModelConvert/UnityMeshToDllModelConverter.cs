@@ -17,11 +17,20 @@ namespace PLATEAU.Editor.CityExport.ModelConvert
     /// </summary>
     internal static class UnityMeshToDllModelConverter
     {
-        public static Model Convert(GameObject go, bool exportDisabledGameObj)
+        public delegate PlateauVector3d VertexConvertFunc(Vector3 src);
+        
+        /// <summary>
+        /// 引数で与えられたゲームオブジェクトとその子(再帰的)を <see cref="Model"/> に変換して返します。
+        /// </summary>
+        /// <param name="go">変換対象ゲームオブジェクトのルートです。</param>
+        /// <param name="exportDisabledGameObj">false のとき、非Activeのものは対象外とします。</param>
+        /// <param name="vertexConvertFunc">頂点座標を変換するメソッドで、 Vector3 から PlateauVector3d に変換する方法を指定します。</param>
+        public static Model Convert(GameObject go, bool exportDisabledGameObj, VertexConvertFunc vertexConvertFunc)
         {
             var trans = go.transform;
             var model = Model.Create();
-            ConvertRecursive(null, trans, model, exportDisabledGameObj);
+            
+            ConvertRecursive(null, trans, model, exportDisabledGameObj, vertexConvertFunc);
             return model;
         }
 
@@ -33,10 +42,13 @@ namespace PLATEAU.Editor.CityExport.ModelConvert
         /// <param name="trans">このゲームオブジェクトとその子を再帰的に <see cref="Node"/> にします。</param>
         /// <param name="model"> <paramref name="parentNode"/> が null のとき、<see cref="Node"/> は <paramref name="model"/> に追加されます。</param>
         /// <param name="exportDisabledGameObj">false のとき、ActiveでないGameObjectは対象から除外します。</param>
-        private static void ConvertRecursive(Node parentNode, Transform trans, Model model, bool exportDisabledGameObj)
+        /// <param name="vertexConvertFunc"></param>
+        private static void ConvertRecursive(Node parentNode, Transform trans, Model model, bool exportDisabledGameObj, VertexConvertFunc vertexConvertFunc)
         {
             if ((!trans.gameObject.activeInHierarchy) && (!exportDisabledGameObj)) return;
-            var node = GameObjToNode(trans);
+
+            // メッシュを変換して Node を作ります。
+            var node = GameObjToNode(trans, vertexConvertFunc);
 
             if (parentNode == null)
             {
@@ -58,19 +70,19 @@ namespace PLATEAU.Editor.CityExport.ModelConvert
             for (int i = 0; i < numChild; i++)
             {
                 var childTrans = trans.GetChild(i);
-                ConvertRecursive(node, childTrans, model, exportDisabledGameObj);
+                ConvertRecursive(node, childTrans, model, exportDisabledGameObj, vertexConvertFunc);
             }
         }
 
-        private static Node GameObjToNode(Transform trans)
+        private static Node GameObjToNode(Transform trans, VertexConvertFunc vertexConvertFunc)
         {
             var node = Node.Create(trans.name);
             var meshFilter = trans.GetComponent<MeshFilter>();
             if (meshFilter == null) return node;
             var unityMesh = meshFilter.sharedMesh;
             if (unityMesh == null) return node;
-            
-            var dllMesh = ConvertMesh(unityMesh, trans.GetComponent<MeshRenderer>());
+
+            var dllMesh = ConvertMesh(unityMesh, trans.GetComponent<MeshRenderer>(), vertexConvertFunc);
             
             int subMeshCount = unityMesh.subMeshCount;
             for (int i = 0; i < subMeshCount; i++)
@@ -87,12 +99,12 @@ namespace PLATEAU.Editor.CityExport.ModelConvert
             return node;
         }
 
-        private static PolygonMesh.Mesh ConvertMesh(Mesh unityMesh, MeshRenderer meshRenderer)
+        private static PolygonMesh.Mesh ConvertMesh(Mesh unityMesh, MeshRenderer meshRenderer, VertexConvertFunc vertexConvertFunc)
         {
             var vertices =
                 unityMesh
                     .vertices
-                    .Select(vert => new PlateauVector3d(vert.x, vert.y, vert.z))
+                    .Select(vert => vertexConvertFunc(vert))
                     .ToArray();
             var indices =
                 unityMesh.triangles
