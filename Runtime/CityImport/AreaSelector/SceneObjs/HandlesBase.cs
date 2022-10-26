@@ -34,6 +34,8 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
 #endif
         }
 
+        #if UNITY_EDITOR
         protected abstract void OnSceneGUI(SceneView sceneView);
+        #endif
     }
 }

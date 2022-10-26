@@ -2,9 +2,12 @@
 using PLATEAU.CityImport.Setting;
 using PLATEAU.Interop;
 using PLATEAU.Udx;
-using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+
+#if UNITY_EDITOR
+using UnityEditor.SceneManagement;
+#endif
 
 namespace PLATEAU.CityImport
 {
@@ -27,7 +30,9 @@ namespace PLATEAU.CityImport
             var loader = obj.AddComponent<PLATEAUCityModelLoader>();
             loader.Init(sourcePathBeforeImport);
             Debug.Log(loader.CityLoadConfig.SourcePathBeforeImport);
+            #if UNITY_EDITOR
             EditorSceneManager.MarkSceneDirty(SceneManager.GetActiveScene());
+            #endif
             return obj;
         }
 

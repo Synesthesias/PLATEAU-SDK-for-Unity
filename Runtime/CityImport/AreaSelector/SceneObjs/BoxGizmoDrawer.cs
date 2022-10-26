@@ -33,10 +33,13 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         {
             
         }
+        
+        #if UNITY_EDITOR
         protected override void OnSceneGUI(SceneView sceneView)
         {
             
         }
+        #endif
         
         public static Vector3 AreaMax(Vector3 center, Vector3 size)
         {

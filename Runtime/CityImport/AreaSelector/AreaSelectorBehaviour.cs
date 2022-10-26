@@ -63,7 +63,9 @@ namespace PLATEAU.CityImport.AreaSelector
 
         private static (ReadOnlyCollection<MeshCode> meshCodes, PredefinedCityModelPackage availablePackageFlags) GatherMeshCodesInGMLDirectory(string sourcePath)
         {
+            #if UNITY_EDITOR
             EditorUtility.DisplayProgressBar("", "データファイルを検索中です...", 0f);
+            #endif
             Debug.Log(sourcePath);
             var collection = UdxFileCollection.Find(sourcePath);
             var availablePackageFlags = collection.Packages;
@@ -79,7 +81,9 @@ namespace PLATEAU.CityImport.AreaSelector
 
         private static void PlaceMeshCodeDrawers(ReadOnlyCollection<MeshCode> meshCodes, ICollection<MeshCodeGizmoDrawer> boxGizmoDrawers, int coordinateZoneID, out PlateauVector3d referencePoint)
         {
+            #if UNITY_EDITOR
             EditorUtility.DisplayProgressBar("", "範囲座標を計算中です...", 0.5f);
+            #endif
             // TODO geoReferenceの生成は1度で済むはず
             // 仮に (0,0,0) を referencePoint とする geoReference を作成
             using var geoReferenceTmp = CoordinatesConvertUtil.UnityStandardGeoReference(coordinateZoneID);
@@ -116,7 +120,9 @@ namespace PLATEAU.CityImport.AreaSelector
                 drawer.MeshCode = meshCode;
                 boxGizmoDrawers.Add(drawer);
             }
+            #if UNITY_EDITOR
             EditorUtility.ClearProgressBar();
+            #endif
         }
 
         private void EndAreaSelection()

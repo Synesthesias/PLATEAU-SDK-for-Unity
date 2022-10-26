@@ -26,6 +26,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         /// </summary>
         public static async Task Load(string id, int z, int x, int y, MeshRenderer renderer, List<Material> mapMaterials)
         {
+            #if UNITY_EDITOR
             string url = $"{GSIMapURL}/{id}/{z}/{x}/{y}.jpg";
             Texture texture = await TextureLoader.LoadAsync(url, timeOutSec);
             if (texture == null) return;
@@ -43,6 +44,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
             };
             renderer.sharedMaterial = mat;
             mapMaterials.Add(mat);
+            #endif
         }
     }
 }

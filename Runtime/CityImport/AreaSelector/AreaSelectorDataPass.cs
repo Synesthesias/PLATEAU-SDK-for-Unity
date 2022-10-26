@@ -2,10 +2,11 @@
 using System.Linq;
 using PLATEAU.Interop;
 using PLATEAU.Udx;
-using UnityEditor;
-using UnityEditor.SceneManagement;
-using UnityEngine;
 using UnityEngine.SceneManagement;
+
+#if UNITY_EDITOR
+using UnityEditor.SceneManagement;
+#endif
 
 namespace PLATEAU.CityImport.AreaSelector
 {
@@ -27,7 +28,7 @@ namespace PLATEAU.CityImport.AreaSelector
             IAreaSelectResultReceiver areaSelectResultReceiverArg, PredefinedCityModelPackage availablePackageFlagsArg,
             Extent selectedExtent)
         {
-            #if UNITY_EDITOR
+#if UNITY_EDITOR
 
             prevScenePath = prevScenePathArg;
             selectedMeshCodes = selectedMeshCodesArg;
@@ -39,7 +40,8 @@ namespace PLATEAU.CityImport.AreaSelector
             EditorSceneManager.OpenScene(prevScenePath);
 #endif
         }
-
+        
+#if UNITY_EDITOR
         private static void OnBackToPrevScene(Scene scene, OpenSceneMode __)
         {
             EditorSceneManager.sceneOpened -= OnBackToPrevScene;
@@ -47,25 +49,13 @@ namespace PLATEAU.CityImport.AreaSelector
             PassAreaSelectDataToBehaviour();
             EditorSceneManager.MarkSceneDirty(scene);
         }
+#endif
 
         /// <summary>
         /// 戻った先のシーンで、範囲選択の結果を渡します。
         /// </summary>
         private static void PassAreaSelectDataToBehaviour()
         {
-            
-            // var loaderBehaviourObj = GlobalObjectId.GlobalObjectIdentifierToObjectSlow(loaderBehaviourID);
-            // if (loaderBehaviourObj == null)
-            // {
-            //     Debug.LogError($"元の{nameof(PLATEAUCityModelLoader)} コンポーネントが見つかりません。 globalID = {loaderBehaviourID}");
-            //     return;
-            // }
-            //
-            // var loaderBehaviour = (PLATEAUCityModelLoader)loaderBehaviourObj;
-            //
-            // loaderBehaviour.AreaMeshCodes = selectedMeshCodes.Select(meshCode => meshCode.ToString()).ToArray();
-            // loaderBehaviour.InitPackageConfigsWithPackageFlags(availablePackageFlags);
-            // loaderBehaviour.Extent = extent;
             var areaMeshCodes = selectedMeshCodes
                 .Select(meshCode => meshCode.ToString())
                 .ToArray();
