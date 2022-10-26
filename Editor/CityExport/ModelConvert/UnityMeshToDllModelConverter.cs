@@ -23,14 +23,15 @@ namespace PLATEAU.Editor.CityExport.ModelConvert
         /// 引数で与えられたゲームオブジェクトとその子(再帰的)を <see cref="Model"/> に変換して返します。
         /// </summary>
         /// <param name="go">変換対象ゲームオブジェクトのルートです。</param>
+        /// <param name="includeTexture"></param>
         /// <param name="exportDisabledGameObj">false のとき、非Activeのものは対象外とします。</param>
         /// <param name="vertexConvertFunc">頂点座標を変換するメソッドで、 Vector3 から PlateauVector3d に変換する方法を指定します。</param>
-        public static Model Convert(GameObject go, bool exportDisabledGameObj, VertexConvertFunc vertexConvertFunc)
+        public static Model Convert(GameObject go, bool includeTexture, bool exportDisabledGameObj, VertexConvertFunc vertexConvertFunc)
         {
             var trans = go.transform;
             var model = Model.Create();
             
-            ConvertRecursive(null, trans, model, exportDisabledGameObj, vertexConvertFunc);
+            ConvertRecursive(null, trans, model, includeTexture, exportDisabledGameObj, vertexConvertFunc);
             return model;
         }
 
@@ -41,14 +42,15 @@ namespace PLATEAU.Editor.CityExport.ModelConvert
         /// <param name="parentNode"> <paramref name="trans"/> の親 Transform に対応する親 Node です。親がない（ルート）のときは null にします。</param>
         /// <param name="trans">このゲームオブジェクトとその子を再帰的に <see cref="Node"/> にします。</param>
         /// <param name="model"> <paramref name="parentNode"/> が null のとき、<see cref="Node"/> は <paramref name="model"/> に追加されます。</param>
+        /// <param name="includeTexture"></param>
         /// <param name="exportDisabledGameObj">false のとき、ActiveでないGameObjectは対象から除外します。</param>
         /// <param name="vertexConvertFunc"></param>
-        private static void ConvertRecursive(Node parentNode, Transform trans, Model model, bool exportDisabledGameObj, VertexConvertFunc vertexConvertFunc)
+        private static void ConvertRecursive(Node parentNode, Transform trans, Model model, bool includeTexture, bool exportDisabledGameObj, VertexConvertFunc vertexConvertFunc)
         {
             if ((!trans.gameObject.activeInHierarchy) && (!exportDisabledGameObj)) return;
 
             // メッシュを変換して Node を作ります。
-            var node = GameObjToNode(trans, vertexConvertFunc);
+            var node = GameObjToNode(trans, includeTexture, vertexConvertFunc);
 
             if (parentNode == null)
             {
@@ -70,19 +72,20 @@ namespace PLATEAU.Editor.CityExport.ModelConvert
             for (int i = 0; i < numChild; i++)
             {
                 var childTrans = trans.GetChild(i);
-                ConvertRecursive(node, childTrans, model, exportDisabledGameObj, vertexConvertFunc);
+                ConvertRecursive(node, childTrans, model, includeTexture, exportDisabledGameObj, vertexConvertFunc);
             }
         }
 
-        private static Node GameObjToNode(Transform trans, VertexConvertFunc vertexConvertFunc)
+        private static Node GameObjToNode(Transform trans, bool includeTexture, VertexConvertFunc vertexConvertFunc)
         {
             var node = Node.Create(trans.name);
             var meshFilter = trans.GetComponent<MeshFilter>();
             if (meshFilter == null) return node;
             var unityMesh = meshFilter.sharedMesh;
             if (unityMesh == null) return node;
+            if (unityMesh.vertexCount <= 0 || unityMesh.subMeshCount <= 0 || unityMesh.triangles.Length <= 0) return node;
 
-            var dllMesh = ConvertMesh(unityMesh, trans.GetComponent<MeshRenderer>(), vertexConvertFunc);
+            var dllMesh = ConvertMesh(unityMesh, trans.GetComponent<MeshRenderer>(), includeTexture, vertexConvertFunc);
             
             int subMeshCount = unityMesh.subMeshCount;
             for (int i = 0; i < subMeshCount; i++)
@@ -99,7 +102,7 @@ namespace PLATEAU.Editor.CityExport.ModelConvert
             return node;
         }
 
-        private static PolygonMesh.Mesh ConvertMesh(Mesh unityMesh, MeshRenderer meshRenderer, VertexConvertFunc vertexConvertFunc)
+        private static PolygonMesh.Mesh ConvertMesh(Mesh unityMesh, MeshRenderer meshRenderer, bool includeTexture, VertexConvertFunc vertexConvertFunc)
         {
             var vertices =
                 unityMesh
@@ -121,30 +124,38 @@ namespace PLATEAU.Editor.CityExport.ModelConvert
 
             int subMeshCount = unityMesh.subMeshCount;
             var dllSubMeshes = new List<SubMesh>();
-            for (int i = 0; i < subMeshCount; i++)
+            if (includeTexture)
             {
-                var unitySubMesh = unityMesh.GetSubMesh(i);
-                int startIndex = unitySubMesh.indexStart;
-                int endIndex = startIndex + unitySubMesh.indexCount - 1;
-                if (startIndex == endIndex) continue;
-                Assert.IsTrue(startIndex < endIndex);
-                Assert.IsTrue(endIndex < indices.Length);
-                Assert.IsTrue(startIndex < indices.Length);
-                Assert.IsTrue(0 <= startIndex);
-
-                // テクスチャパスは、Unityシーン内のテクスチャの名前に記載してあるので取得します。
-                string texturePath = "";
-                if (materials != null && i < materials.Length)
+                for (int i = 0; i < subMeshCount; i++)
                 {
-                    var material = materials[i];
-                    if (material == null) continue;
-                    var texture = material.mainTexture;
-                    if (texture == null) continue;
-                    texturePath = Path.Combine(PathUtil.plateauSrcFetchDir, texture.name);
-                }
-                dllSubMeshes.Add(SubMesh.Create(startIndex, endIndex, texturePath));
+                    var unitySubMesh = unityMesh.GetSubMesh(i);
+                    int startIndex = unitySubMesh.indexStart;
+                    int endIndex = startIndex + unitySubMesh.indexCount - 1;
+                    if (startIndex == endIndex) continue;
+                    Assert.IsTrue(startIndex < endIndex);
+                    Assert.IsTrue(endIndex < indices.Length);
+                    Assert.IsTrue(startIndex < indices.Length);
+                    Assert.IsTrue(0 <= startIndex);
+
+                    // テクスチャパスは、Unityシーン内のテクスチャの名前に記載してあるので取得します。
+                    string texturePath = "";
+                    if (materials != null && i < materials.Length)
+                    {
+                        var material = materials[i];
+                        if (material == null) continue;
+                        var texture = material.mainTexture;
+                        if (texture == null) continue;
+                        texturePath = Path.Combine(PathUtil.plateauSrcFetchDir, texture.name);
+                    }
+                    dllSubMeshes.Add(SubMesh.Create(startIndex, endIndex, texturePath));
                 
+                }
             }
+            else
+            { // テクスチャを含めないとき、サブメッシュはただ1つです。
+                dllSubMeshes.Add(SubMesh.Create(0, indices.Length - 1, ""));
+            }
+            
             
             Assert.AreEqual(uv1.Length, vertices.Length);
 
