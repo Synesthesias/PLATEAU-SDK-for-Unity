@@ -1,7 +1,9 @@
 ﻿using System;
+using System.ComponentModel.Design;
 using System.IO;
 using PLATEAU.CityInfo;
 using PLATEAU.Editor.CityExport.ModelConvert;
+using PLATEAU.Interop;
 using PLATEAU.MeshWriter;
 using PLATEAU.PolygonMesh;
 using UnityEngine;
@@ -41,23 +43,32 @@ namespace PLATEAU.Editor.CityExport
         public static void ModelToFile(string destDir, string fileNameWithoutExtension, Model model,
             MeshExportOptions options)
         {
-            string filePathWithoutExtension = Path.Combine(destDir, fileNameWithoutExtension);
             switch (options.FileFormat)
             {
-                case MeshExportOptions.MeshFileFormat.Obj:
+                case MeshFileFormat.OBJ:
+                    string filePathWithoutExtension = Path.Combine(destDir, fileNameWithoutExtension);
                     using (var objWriter = new ObjWriter())
                     {
                         objWriter.Write(filePathWithoutExtension + ".obj", model);
                     }
                     break;
-                case MeshExportOptions.MeshFileFormat.Gltf:
+                case MeshFileFormat.GLTF:
                     using (var gltfWriter = new GltfWriter())
                     {
-                        gltfWriter.Write(filePathWithoutExtension, model, options.GltfWriteOptions);
+                        string fileExtension = options.GltfWriteOptions.GltfFileFormat switch
+                        {
+                            GltfFileFormat.GLB => ".glb",
+                            GltfFileFormat.GLTF => ".gltf",
+                            _ => throw new ArgumentException("Unknown gltf file format.")
+                        };
+                        string dirPath = Path.Combine(destDir, fileNameWithoutExtension);
+                        Directory.CreateDirectory(dirPath);
+                        string gltfFilePath = Path.Combine(dirPath, fileNameWithoutExtension + fileExtension);
+                        options.GltfWriteOptions.TextureDirectoryPath = Path.Combine(dirPath, "textures");
+                        
+                        gltfWriter.Write(gltfFilePath, model, options.GltfWriteOptions);
                     }
                     break;
-                case MeshExportOptions.MeshFileFormat.Fbx:
-                    throw new NotImplementedException();
                 default:
                     throw new ArgumentOutOfRangeException(nameof(options), "Unknown FileFormat to export.");
             }

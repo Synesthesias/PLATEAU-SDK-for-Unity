@@ -30,7 +30,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
         private void Export(string destinationDir, PLATEAUInstancedCityModel instancedModel)
         {
             var meshExportOptions = new MeshExportOptions(MeshExportOptions.MeshTransformType.Local, true,
-                MeshExportOptions.MeshFileFormat.Obj, new GltfWriteOptions());
+                this.meshFileFormat, new GltfWriteOptions(GltfFileFormat.GLTF, destinationDir));
             MeshExporter.Export(destinationDir, instancedModel,  meshExportOptions);
             // TODO 仮
                 // using var logger = DllUnityLogger.Create();

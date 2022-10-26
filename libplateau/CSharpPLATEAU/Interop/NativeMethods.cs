@@ -34,7 +34,7 @@ namespace PLATEAU.Interop
         GLB,
         GLTF
     }
-
+    
     [StructLayout(LayoutKind.Sequential)]
     public struct PlateauVector3d
     {
