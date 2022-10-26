@@ -184,6 +184,31 @@ Mesh はそのゲームオブジェクトの持つメッシュとして解釈さ
   </table>
   
   
+  <a id="PLATEAU_PolygonMesh_Node_Handle_" data-uid="PLATEAU.PolygonMesh.Node.Handle*"></a>
+  <h4 id="PLATEAU_PolygonMesh_Node_Handle" data-uid="PLATEAU.PolygonMesh.Node.Handle">Handle</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public IntPtr Handle { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">IntPtr</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
   <a id="PLATEAU_PolygonMesh_Node_Mesh_" data-uid="PLATEAU.PolygonMesh.Node.Mesh*"></a>
   <h4 id="PLATEAU_PolygonMesh_Node_Mesh" data-uid="PLATEAU.PolygonMesh.Node.Mesh">Mesh</h4>
   <div class="markdown level1 summary"><p>ノードが保有する <a class="xref" href="PLATEAU.PolygonMesh.Node.html#PLATEAU_PolygonMesh_Node_Mesh">Mesh</a> を返します。
@@ -240,6 +265,120 @@ Mesh はそのゲームオブジェクトの持つメッシュとして解釈さ
   </h3>
   
   
+  <a id="PLATEAU_PolygonMesh_Node_AddChildNodeByCppMove_" data-uid="PLATEAU.PolygonMesh.Node.AddChildNodeByCppMove*"></a>
+  <h4 id="PLATEAU_PolygonMesh_Node_AddChildNodeByCppMove_PLATEAU_PolygonMesh_Node_" data-uid="PLATEAU.PolygonMesh.Node.AddChildNodeByCppMove(PLATEAU.PolygonMesh.Node)">AddChildNodeByCppMove(Node)</h4>
+  <div class="markdown level1 summary"><p>子ノードを追加します。
+取扱注意:
+C++の move によって <a class="xref" href="PLATEAU.PolygonMesh.Node.html">Node</a> を移動するので、
+実行後は元の <a class="xref" href="PLATEAU.PolygonMesh.Node.html">Node</a> は利用不可になります。</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void AddChildNodeByCppMove(Node node)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="PLATEAU.PolygonMesh.Node.html">Node</a></td>
+        <td><span class="parametername">node</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
+  <a id="PLATEAU_PolygonMesh_Node_Create_" data-uid="PLATEAU.PolygonMesh.Node.Create*"></a>
+  <h4 id="PLATEAU_PolygonMesh_Node_Create_System_String_" data-uid="PLATEAU.PolygonMesh.Node.Create(System.String)">Create(String)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static Node Create(string id)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">String</a></td>
+        <td><span class="parametername">id</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="PLATEAU.PolygonMesh.Node.html">Node</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
+  <a id="PLATEAU_PolygonMesh_Node_DebugString_" data-uid="PLATEAU.PolygonMesh.Node.DebugString*"></a>
+  <h4 id="PLATEAU_PolygonMesh_Node_DebugString_StringBuilderWithIndent_" data-uid="PLATEAU.PolygonMesh.Node.DebugString(StringBuilderWithIndent)">DebugString(StringBuilderWithIndent)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void DebugString(StringBuilderWithIndent sb)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">StringBuilderWithIndent</span></td>
+        <td><span class="parametername">sb</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
+  <a id="PLATEAU_PolygonMesh_Node_Dispose_" data-uid="PLATEAU.PolygonMesh.Node.Dispose*"></a>
+  <h4 id="PLATEAU_PolygonMesh_Node_Dispose" data-uid="PLATEAU.PolygonMesh.Node.Dispose">Dispose()</h4>
+  <div class="markdown level1 summary"><p>取扱注意:
+通常、<a class="xref" href="PLATEAU.PolygonMesh.Model.html">Model</a> が廃棄されたときに <a class="xref" href="PLATEAU.PolygonMesh.Node.html">Node</a> も破棄されるので
+<a class="xref" href="PLATEAU.PolygonMesh.Node.html#PLATEAU_PolygonMesh_Node_Dispose">Dispose()</a> を呼ぶ必要はありません。
+<a class="xref" href="PLATEAU.PolygonMesh.Model.html">Model</a> に属さず、C#側から <a class="xref" href="PLATEAU.PolygonMesh.Node.html#PLATEAU_PolygonMesh_Node_Create_System_String_">Create(String)</a> したもののみ <a class="xref" href="PLATEAU.PolygonMesh.Node.html#PLATEAU_PolygonMesh_Node_Dispose">Dispose()</a> してください。</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void Dispose()</code></pre>
+  </div>
+  
+  
   <a id="PLATEAU_PolygonMesh_Node_GetChildAt_" data-uid="PLATEAU.PolygonMesh.Node.GetChildAt*"></a>
   <h4 id="PLATEAU_PolygonMesh_Node_GetChildAt_System_Int32_" data-uid="PLATEAU.PolygonMesh.Node.GetChildAt(System.Int32)">GetChildAt(Int32)</h4>
   <div class="markdown level1 summary"><p><code data-dev-comment-type="paramref" class="paramref">index</code> 番目の子ノードを返します。</p>
@@ -277,6 +416,47 @@ Mesh はそのゲームオブジェクトの持つメッシュとして解釈さ
     <tbody>
       <tr>
         <td><a class="xref" href="PLATEAU.PolygonMesh.Node.html">Node</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
+  <a id="PLATEAU_PolygonMesh_Node_MarkInvalid_" data-uid="PLATEAU.PolygonMesh.Node.MarkInvalid*"></a>
+  <h4 id="PLATEAU_PolygonMesh_Node_MarkInvalid" data-uid="PLATEAU.PolygonMesh.Node.MarkInvalid">MarkInvalid()</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void MarkInvalid()</code></pre>
+  </div>
+  
+  
+  <a id="PLATEAU_PolygonMesh_Node_SetMeshByCppMove_" data-uid="PLATEAU.PolygonMesh.Node.SetMeshByCppMove*"></a>
+  <h4 id="PLATEAU_PolygonMesh_Node_SetMeshByCppMove_PLATEAU_PolygonMesh_Mesh_" data-uid="PLATEAU.PolygonMesh.Node.SetMeshByCppMove(PLATEAU.PolygonMesh.Mesh)">SetMeshByCppMove(Mesh)</h4>
+  <div class="markdown level1 summary"><p><a class="xref" href="PLATEAU.PolygonMesh.Node.html#PLATEAU_PolygonMesh_Node_Mesh">Mesh</a> を <a class="xref" href="PLATEAU.PolygonMesh.Node.html">Node</a>にセットします。
+取扱注意:
+C++の move によって <a class="xref" href="PLATEAU.PolygonMesh.Node.html#PLATEAU_PolygonMesh_Node_Mesh">Mesh</a> を移動するので、
+実行後は元の <a class="xref" href="PLATEAU.PolygonMesh.Node.html#PLATEAU_PolygonMesh_Node_Mesh">Mesh</a> は利用不可になります。</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void SetMeshByCppMove(Mesh mesh)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="PLATEAU.PolygonMesh.Mesh.html">Mesh</a></td>
+        <td><span class="parametername">mesh</span></td>
         <td></td>
       </tr>
     </tbody>

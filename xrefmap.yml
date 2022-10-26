@@ -2792,6 +2792,58 @@ references:
   isSpec: "True"
   fullName: PLATEAU.Interop.PlateauVector3d.PlateauVector3d
   nameWithType: PlateauVector3d.PlateauVector3d
+- uid: PLATEAU.Interop.PlateauVector3d.op_Addition(PLATEAU.Interop.PlateauVector3d,PLATEAU.Interop.PlateauVector3d)
+  name: Addition(PlateauVector3d, PlateauVector3d)
+  href: api/PLATEAU.Interop.PlateauVector3d.html#PLATEAU_Interop_PlateauVector3d_op_Addition_PLATEAU_Interop_PlateauVector3d_PLATEAU_Interop_PlateauVector3d_
+  commentId: M:PLATEAU.Interop.PlateauVector3d.op_Addition(PLATEAU.Interop.PlateauVector3d,PLATEAU.Interop.PlateauVector3d)
+  fullName: PLATEAU.Interop.PlateauVector3d.Addition(PLATEAU.Interop.PlateauVector3d, PLATEAU.Interop.PlateauVector3d)
+  nameWithType: PlateauVector3d.Addition(PlateauVector3d, PlateauVector3d)
+- uid: PLATEAU.Interop.PlateauVector3d.op_Addition*
+  name: Addition
+  href: api/PLATEAU.Interop.PlateauVector3d.html#PLATEAU_Interop_PlateauVector3d_op_Addition_
+  commentId: Overload:PLATEAU.Interop.PlateauVector3d.op_Addition
+  isSpec: "True"
+  fullName: PLATEAU.Interop.PlateauVector3d.Addition
+  nameWithType: PlateauVector3d.Addition
+- uid: PLATEAU.Interop.PlateauVector3d.op_Division(PLATEAU.Interop.PlateauVector3d,System.Double)
+  name: Division(PlateauVector3d, Double)
+  href: api/PLATEAU.Interop.PlateauVector3d.html#PLATEAU_Interop_PlateauVector3d_op_Division_PLATEAU_Interop_PlateauVector3d_System_Double_
+  commentId: M:PLATEAU.Interop.PlateauVector3d.op_Division(PLATEAU.Interop.PlateauVector3d,System.Double)
+  fullName: PLATEAU.Interop.PlateauVector3d.Division(PLATEAU.Interop.PlateauVector3d, System.Double)
+  nameWithType: PlateauVector3d.Division(PlateauVector3d, Double)
+- uid: PLATEAU.Interop.PlateauVector3d.op_Division*
+  name: Division
+  href: api/PLATEAU.Interop.PlateauVector3d.html#PLATEAU_Interop_PlateauVector3d_op_Division_
+  commentId: Overload:PLATEAU.Interop.PlateauVector3d.op_Division
+  isSpec: "True"
+  fullName: PLATEAU.Interop.PlateauVector3d.Division
+  nameWithType: PlateauVector3d.Division
+- uid: PLATEAU.Interop.PlateauVector3d.op_Multiply(PLATEAU.Interop.PlateauVector3d,System.Double)
+  name: Multiply(PlateauVector3d, Double)
+  href: api/PLATEAU.Interop.PlateauVector3d.html#PLATEAU_Interop_PlateauVector3d_op_Multiply_PLATEAU_Interop_PlateauVector3d_System_Double_
+  commentId: M:PLATEAU.Interop.PlateauVector3d.op_Multiply(PLATEAU.Interop.PlateauVector3d,System.Double)
+  fullName: PLATEAU.Interop.PlateauVector3d.Multiply(PLATEAU.Interop.PlateauVector3d, System.Double)
+  nameWithType: PlateauVector3d.Multiply(PlateauVector3d, Double)
+- uid: PLATEAU.Interop.PlateauVector3d.op_Multiply*
+  name: Multiply
+  href: api/PLATEAU.Interop.PlateauVector3d.html#PLATEAU_Interop_PlateauVector3d_op_Multiply_
+  commentId: Overload:PLATEAU.Interop.PlateauVector3d.op_Multiply
+  isSpec: "True"
+  fullName: PLATEAU.Interop.PlateauVector3d.Multiply
+  nameWithType: PlateauVector3d.Multiply
+- uid: PLATEAU.Interop.PlateauVector3d.op_Subtraction(PLATEAU.Interop.PlateauVector3d,PLATEAU.Interop.PlateauVector3d)
+  name: Subtraction(PlateauVector3d, PlateauVector3d)
+  href: api/PLATEAU.Interop.PlateauVector3d.html#PLATEAU_Interop_PlateauVector3d_op_Subtraction_PLATEAU_Interop_PlateauVector3d_PLATEAU_Interop_PlateauVector3d_
+  commentId: M:PLATEAU.Interop.PlateauVector3d.op_Subtraction(PLATEAU.Interop.PlateauVector3d,PLATEAU.Interop.PlateauVector3d)
+  fullName: PLATEAU.Interop.PlateauVector3d.Subtraction(PLATEAU.Interop.PlateauVector3d, PLATEAU.Interop.PlateauVector3d)
+  nameWithType: PlateauVector3d.Subtraction(PlateauVector3d, PlateauVector3d)
+- uid: PLATEAU.Interop.PlateauVector3d.op_Subtraction*
+  name: Subtraction
+  href: api/PLATEAU.Interop.PlateauVector3d.html#PLATEAU_Interop_PlateauVector3d_op_Subtraction_
+  commentId: Overload:PLATEAU.Interop.PlateauVector3d.op_Subtraction
+  isSpec: "True"
+  fullName: PLATEAU.Interop.PlateauVector3d.Subtraction
+  nameWithType: PlateauVector3d.Subtraction
 - uid: PLATEAU.Interop.PlateauVector3d.ToString
   name: ToString()
   href: api/PLATEAU.Interop.PlateauVector3d.html#PLATEAU_Interop_PlateauVector3d_ToString
@@ -2988,6 +3040,71 @@ references:
   commentId: T:PLATEAU.PolygonMesh.Mesh
   fullName: PLATEAU.PolygonMesh.Mesh
   nameWithType: Mesh
+- uid: PLATEAU.PolygonMesh.Mesh.#ctor(IntPtr)
+  name: Mesh(IntPtr)
+  href: api/PLATEAU.PolygonMesh.Mesh.html#PLATEAU_PolygonMesh_Mesh__ctor_IntPtr_
+  commentId: M:PLATEAU.PolygonMesh.Mesh.#ctor(IntPtr)
+  fullName: PLATEAU.PolygonMesh.Mesh.Mesh(IntPtr)
+  nameWithType: Mesh.Mesh(IntPtr)
+- uid: PLATEAU.PolygonMesh.Mesh.#ctor*
+  name: Mesh
+  href: api/PLATEAU.PolygonMesh.Mesh.html#PLATEAU_PolygonMesh_Mesh__ctor_
+  commentId: Overload:PLATEAU.PolygonMesh.Mesh.#ctor
+  isSpec: "True"
+  fullName: PLATEAU.PolygonMesh.Mesh.Mesh
+  nameWithType: Mesh.Mesh
+- uid: PLATEAU.PolygonMesh.Mesh.AddSubMesh(System.String,System.Int32,System.Int32)
+  name: AddSubMesh(String, Int32, Int32)
+  href: api/PLATEAU.PolygonMesh.Mesh.html#PLATEAU_PolygonMesh_Mesh_AddSubMesh_System_String_System_Int32_System_Int32_
+  commentId: M:PLATEAU.PolygonMesh.Mesh.AddSubMesh(System.String,System.Int32,System.Int32)
+  fullName: PLATEAU.PolygonMesh.Mesh.AddSubMesh(System.String, System.Int32, System.Int32)
+  nameWithType: Mesh.AddSubMesh(String, Int32, Int32)
+- uid: PLATEAU.PolygonMesh.Mesh.AddSubMesh*
+  name: AddSubMesh
+  href: api/PLATEAU.PolygonMesh.Mesh.html#PLATEAU_PolygonMesh_Mesh_AddSubMesh_
+  commentId: Overload:PLATEAU.PolygonMesh.Mesh.AddSubMesh
+  isSpec: "True"
+  fullName: PLATEAU.PolygonMesh.Mesh.AddSubMesh
+  nameWithType: Mesh.AddSubMesh
+- uid: PLATEAU.PolygonMesh.Mesh.Create(System.String)
+  name: Create(String)
+  href: api/PLATEAU.PolygonMesh.Mesh.html#PLATEAU_PolygonMesh_Mesh_Create_System_String_
+  commentId: M:PLATEAU.PolygonMesh.Mesh.Create(System.String)
+  fullName: PLATEAU.PolygonMesh.Mesh.Create(System.String)
+  nameWithType: Mesh.Create(String)
+- uid: PLATEAU.PolygonMesh.Mesh.Create*
+  name: Create
+  href: api/PLATEAU.PolygonMesh.Mesh.html#PLATEAU_PolygonMesh_Mesh_Create_
+  commentId: Overload:PLATEAU.PolygonMesh.Mesh.Create
+  isSpec: "True"
+  fullName: PLATEAU.PolygonMesh.Mesh.Create
+  nameWithType: Mesh.Create
+- uid: PLATEAU.PolygonMesh.Mesh.DebugString(StringBuilderWithIndent)
+  name: DebugString(StringBuilderWithIndent)
+  href: api/PLATEAU.PolygonMesh.Mesh.html#PLATEAU_PolygonMesh_Mesh_DebugString_StringBuilderWithIndent_
+  commentId: M:PLATEAU.PolygonMesh.Mesh.DebugString(StringBuilderWithIndent)
+  fullName: PLATEAU.PolygonMesh.Mesh.DebugString(StringBuilderWithIndent)
+  nameWithType: Mesh.DebugString(StringBuilderWithIndent)
+- uid: PLATEAU.PolygonMesh.Mesh.DebugString*
+  name: DebugString
+  href: api/PLATEAU.PolygonMesh.Mesh.html#PLATEAU_PolygonMesh_Mesh_DebugString_
+  commentId: Overload:PLATEAU.PolygonMesh.Mesh.DebugString
+  isSpec: "True"
+  fullName: PLATEAU.PolygonMesh.Mesh.DebugString
+  nameWithType: Mesh.DebugString
+- uid: PLATEAU.PolygonMesh.Mesh.Dispose
+  name: Dispose()
+  href: api/PLATEAU.PolygonMesh.Mesh.html#PLATEAU_PolygonMesh_Mesh_Dispose
+  commentId: M:PLATEAU.PolygonMesh.Mesh.Dispose
+  fullName: PLATEAU.PolygonMesh.Mesh.Dispose()
+  nameWithType: Mesh.Dispose()
+- uid: PLATEAU.PolygonMesh.Mesh.Dispose*
+  name: Dispose
+  href: api/PLATEAU.PolygonMesh.Mesh.html#PLATEAU_PolygonMesh_Mesh_Dispose_
+  commentId: Overload:PLATEAU.PolygonMesh.Mesh.Dispose
+  isSpec: "True"
+  fullName: PLATEAU.PolygonMesh.Mesh.Dispose
+  nameWithType: Mesh.Dispose
 - uid: PLATEAU.PolygonMesh.Mesh.GetIndiceAt(System.Int32)
   name: GetIndiceAt(Int32)
   href: api/PLATEAU.PolygonMesh.Mesh.html#PLATEAU_PolygonMesh_Mesh_GetIndiceAt_System_Int32_
@@ -3066,6 +3183,19 @@ references:
   isSpec: "True"
   fullName: PLATEAU.PolygonMesh.Mesh.GetVertexAt
   nameWithType: Mesh.GetVertexAt
+- uid: PLATEAU.PolygonMesh.Mesh.Handle
+  name: Handle
+  href: api/PLATEAU.PolygonMesh.Mesh.html#PLATEAU_PolygonMesh_Mesh_Handle
+  commentId: P:PLATEAU.PolygonMesh.Mesh.Handle
+  fullName: PLATEAU.PolygonMesh.Mesh.Handle
+  nameWithType: Mesh.Handle
+- uid: PLATEAU.PolygonMesh.Mesh.Handle*
+  name: Handle
+  href: api/PLATEAU.PolygonMesh.Mesh.html#PLATEAU_PolygonMesh_Mesh_Handle_
+  commentId: Overload:PLATEAU.PolygonMesh.Mesh.Handle
+  isSpec: "True"
+  fullName: PLATEAU.PolygonMesh.Mesh.Handle
+  nameWithType: Mesh.Handle
 - uid: PLATEAU.PolygonMesh.Mesh.IndicesCount
   name: IndicesCount
   href: api/PLATEAU.PolygonMesh.Mesh.html#PLATEAU_PolygonMesh_Mesh_IndicesCount
@@ -3079,6 +3209,48 @@ references:
   isSpec: "True"
   fullName: PLATEAU.PolygonMesh.Mesh.IndicesCount
   nameWithType: Mesh.IndicesCount
+- uid: PLATEAU.PolygonMesh.Mesh.MarkInvalid
+  name: MarkInvalid()
+  href: api/PLATEAU.PolygonMesh.Mesh.html#PLATEAU_PolygonMesh_Mesh_MarkInvalid
+  commentId: M:PLATEAU.PolygonMesh.Mesh.MarkInvalid
+  fullName: PLATEAU.PolygonMesh.Mesh.MarkInvalid()
+  nameWithType: Mesh.MarkInvalid()
+- uid: PLATEAU.PolygonMesh.Mesh.MarkInvalid*
+  name: MarkInvalid
+  href: api/PLATEAU.PolygonMesh.Mesh.html#PLATEAU_PolygonMesh_Mesh_MarkInvalid_
+  commentId: Overload:PLATEAU.PolygonMesh.Mesh.MarkInvalid
+  isSpec: "True"
+  fullName: PLATEAU.PolygonMesh.Mesh.MarkInvalid
+  nameWithType: Mesh.MarkInvalid
+- uid: PLATEAU.PolygonMesh.Mesh.MergeMesh(PLATEAU.PolygonMesh.Mesh,CoordinateSystem,System.Boolean)
+  name: MergeMesh(Mesh, CoordinateSystem, Boolean)
+  href: api/PLATEAU.PolygonMesh.Mesh.html#PLATEAU_PolygonMesh_Mesh_MergeMesh_PLATEAU_PolygonMesh_Mesh_CoordinateSystem_System_Boolean_
+  commentId: M:PLATEAU.PolygonMesh.Mesh.MergeMesh(PLATEAU.PolygonMesh.Mesh,CoordinateSystem,System.Boolean)
+  fullName: PLATEAU.PolygonMesh.Mesh.MergeMesh(PLATEAU.PolygonMesh.Mesh, CoordinateSystem, System.Boolean)
+  nameWithType: Mesh.MergeMesh(Mesh, CoordinateSystem, Boolean)
+- uid: PLATEAU.PolygonMesh.Mesh.MergeMesh*
+  name: MergeMesh
+  href: api/PLATEAU.PolygonMesh.Mesh.html#PLATEAU_PolygonMesh_Mesh_MergeMesh_
+  commentId: Overload:PLATEAU.PolygonMesh.Mesh.MergeMesh
+  isSpec: "True"
+  fullName: PLATEAU.PolygonMesh.Mesh.MergeMesh
+  nameWithType: Mesh.MergeMesh
+- uid: PLATEAU.PolygonMesh.Mesh.MergeMeshInfo(PlateauVector3d[],System.UInt32[],PlateauVector2f[],PLATEAU.PolygonMesh.SubMesh[],CoordinateSystem,System.Boolean)
+  name: MergeMeshInfo(PlateauVector3d[], UInt32[], PlateauVector2f[], SubMesh[], CoordinateSystem, Boolean)
+  href: api/PLATEAU.PolygonMesh.Mesh.html#PLATEAU_PolygonMesh_Mesh_MergeMeshInfo_PlateauVector3d___System_UInt32___PlateauVector2f___PLATEAU_PolygonMesh_SubMesh___CoordinateSystem_System_Boolean_
+  commentId: M:PLATEAU.PolygonMesh.Mesh.MergeMeshInfo(PlateauVector3d[],System.UInt32[],PlateauVector2f[],PLATEAU.PolygonMesh.SubMesh[],CoordinateSystem,System.Boolean)
+  name.vb: MergeMeshInfo(PlateauVector3d(), UInt32(), PlateauVector2f(), SubMesh(), CoordinateSystem, Boolean)
+  fullName: PLATEAU.PolygonMesh.Mesh.MergeMeshInfo(PlateauVector3d[], System.UInt32[], PlateauVector2f[], PLATEAU.PolygonMesh.SubMesh[], CoordinateSystem, System.Boolean)
+  fullName.vb: PLATEAU.PolygonMesh.Mesh.MergeMeshInfo(PlateauVector3d(), System.UInt32(), PlateauVector2f(), PLATEAU.PolygonMesh.SubMesh(), CoordinateSystem, System.Boolean)
+  nameWithType: Mesh.MergeMeshInfo(PlateauVector3d[], UInt32[], PlateauVector2f[], SubMesh[], CoordinateSystem, Boolean)
+  nameWithType.vb: Mesh.MergeMeshInfo(PlateauVector3d(), UInt32(), PlateauVector2f(), SubMesh(), CoordinateSystem, Boolean)
+- uid: PLATEAU.PolygonMesh.Mesh.MergeMeshInfo*
+  name: MergeMeshInfo
+  href: api/PLATEAU.PolygonMesh.Mesh.html#PLATEAU_PolygonMesh_Mesh_MergeMeshInfo_
+  commentId: Overload:PLATEAU.PolygonMesh.Mesh.MergeMeshInfo
+  isSpec: "True"
+  fullName: PLATEAU.PolygonMesh.Mesh.MergeMeshInfo
+  nameWithType: Mesh.MergeMeshInfo
 - uid: PLATEAU.PolygonMesh.Mesh.SubMeshCount
   name: SubMeshCount
   href: api/PLATEAU.PolygonMesh.Mesh.html#PLATEAU_PolygonMesh_Mesh_SubMeshCount
@@ -3133,12 +3305,6 @@ references:
   commentId: T:PLATEAU.PolygonMesh.Model
   fullName: PLATEAU.PolygonMesh.Model
   nameWithType: Model
-- uid: PLATEAU.PolygonMesh.Model.#ctor
-  name: Model()
-  href: api/PLATEAU.PolygonMesh.Model.html#PLATEAU_PolygonMesh_Model__ctor
-  commentId: M:PLATEAU.PolygonMesh.Model.#ctor
-  fullName: PLATEAU.PolygonMesh.Model.Model()
-  nameWithType: Model.Model()
 - uid: PLATEAU.PolygonMesh.Model.#ctor(IntPtr)
   name: Model(IntPtr)
   href: api/PLATEAU.PolygonMesh.Model.html#PLATEAU_PolygonMesh_Model__ctor_IntPtr_
@@ -3152,19 +3318,58 @@ references:
   isSpec: "True"
   fullName: PLATEAU.PolygonMesh.Model.Model
   nameWithType: Model.Model
-- uid: PLATEAU.PolygonMesh.Model.Dispose
-  name: Dispose()
-  href: api/PLATEAU.PolygonMesh.Model.html#PLATEAU_PolygonMesh_Model_Dispose
-  commentId: M:PLATEAU.PolygonMesh.Model.Dispose
-  fullName: PLATEAU.PolygonMesh.Model.Dispose()
-  nameWithType: Model.Dispose()
-- uid: PLATEAU.PolygonMesh.Model.Dispose*
-  name: Dispose
-  href: api/PLATEAU.PolygonMesh.Model.html#PLATEAU_PolygonMesh_Model_Dispose_
-  commentId: Overload:PLATEAU.PolygonMesh.Model.Dispose
+- uid: PLATEAU.PolygonMesh.Model.AddNodeByCppMove(PLATEAU.PolygonMesh.Node)
+  name: AddNodeByCppMove(Node)
+  href: api/PLATEAU.PolygonMesh.Model.html#PLATEAU_PolygonMesh_Model_AddNodeByCppMove_PLATEAU_PolygonMesh_Node_
+  commentId: M:PLATEAU.PolygonMesh.Model.AddNodeByCppMove(PLATEAU.PolygonMesh.Node)
+  fullName: PLATEAU.PolygonMesh.Model.AddNodeByCppMove(PLATEAU.PolygonMesh.Node)
+  nameWithType: Model.AddNodeByCppMove(Node)
+- uid: PLATEAU.PolygonMesh.Model.AddNodeByCppMove*
+  name: AddNodeByCppMove
+  href: api/PLATEAU.PolygonMesh.Model.html#PLATEAU_PolygonMesh_Model_AddNodeByCppMove_
+  commentId: Overload:PLATEAU.PolygonMesh.Model.AddNodeByCppMove
   isSpec: "True"
-  fullName: PLATEAU.PolygonMesh.Model.Dispose
-  nameWithType: Model.Dispose
+  fullName: PLATEAU.PolygonMesh.Model.AddNodeByCppMove
+  nameWithType: Model.AddNodeByCppMove
+- uid: PLATEAU.PolygonMesh.Model.Create
+  name: Create()
+  href: api/PLATEAU.PolygonMesh.Model.html#PLATEAU_PolygonMesh_Model_Create
+  commentId: M:PLATEAU.PolygonMesh.Model.Create
+  fullName: PLATEAU.PolygonMesh.Model.Create()
+  nameWithType: Model.Create()
+- uid: PLATEAU.PolygonMesh.Model.Create*
+  name: Create
+  href: api/PLATEAU.PolygonMesh.Model.html#PLATEAU_PolygonMesh_Model_Create_
+  commentId: Overload:PLATEAU.PolygonMesh.Model.Create
+  isSpec: "True"
+  fullName: PLATEAU.PolygonMesh.Model.Create
+  nameWithType: Model.Create
+- uid: PLATEAU.PolygonMesh.Model.DebugString
+  name: DebugString()
+  href: api/PLATEAU.PolygonMesh.Model.html#PLATEAU_PolygonMesh_Model_DebugString
+  commentId: M:PLATEAU.PolygonMesh.Model.DebugString
+  fullName: PLATEAU.PolygonMesh.Model.DebugString()
+  nameWithType: Model.DebugString()
+- uid: PLATEAU.PolygonMesh.Model.DebugString*
+  name: DebugString
+  href: api/PLATEAU.PolygonMesh.Model.html#PLATEAU_PolygonMesh_Model_DebugString_
+  commentId: Overload:PLATEAU.PolygonMesh.Model.DebugString
+  isSpec: "True"
+  fullName: PLATEAU.PolygonMesh.Model.DebugString
+  nameWithType: Model.DebugString
+- uid: PLATEAU.PolygonMesh.Model.DisposeNative
+  name: DisposeNative()
+  href: api/PLATEAU.PolygonMesh.Model.html#PLATEAU_PolygonMesh_Model_DisposeNative
+  commentId: M:PLATEAU.PolygonMesh.Model.DisposeNative
+  fullName: PLATEAU.PolygonMesh.Model.DisposeNative()
+  nameWithType: Model.DisposeNative()
+- uid: PLATEAU.PolygonMesh.Model.DisposeNative*
+  name: DisposeNative
+  href: api/PLATEAU.PolygonMesh.Model.html#PLATEAU_PolygonMesh_Model_DisposeNative_
+  commentId: Overload:PLATEAU.PolygonMesh.Model.DisposeNative
+  isSpec: "True"
+  fullName: PLATEAU.PolygonMesh.Model.DisposeNative
+  nameWithType: Model.DisposeNative
 - uid: PLATEAU.PolygonMesh.Model.Finalize
   name: Finalize()
   href: api/PLATEAU.PolygonMesh.Model.html#PLATEAU_PolygonMesh_Model_Finalize
@@ -3191,19 +3396,6 @@ references:
   isSpec: "True"
   fullName: PLATEAU.PolygonMesh.Model.GetRootNodeAt
   nameWithType: Model.GetRootNodeAt
-- uid: PLATEAU.PolygonMesh.Model.Handle
-  name: Handle
-  href: api/PLATEAU.PolygonMesh.Model.html#PLATEAU_PolygonMesh_Model_Handle
-  commentId: P:PLATEAU.PolygonMesh.Model.Handle
-  fullName: PLATEAU.PolygonMesh.Model.Handle
-  nameWithType: Model.Handle
-- uid: PLATEAU.PolygonMesh.Model.Handle*
-  name: Handle
-  href: api/PLATEAU.PolygonMesh.Model.html#PLATEAU_PolygonMesh_Model_Handle_
-  commentId: Overload:PLATEAU.PolygonMesh.Model.Handle
-  isSpec: "True"
-  fullName: PLATEAU.PolygonMesh.Model.Handle
-  nameWithType: Model.Handle
 - uid: PLATEAU.PolygonMesh.Model.RootNodesCount
   name: RootNodesCount
   href: api/PLATEAU.PolygonMesh.Model.html#PLATEAU_PolygonMesh_Model_RootNodesCount
@@ -3236,6 +3428,19 @@ references:
   isSpec: "True"
   fullName: PLATEAU.PolygonMesh.Node.Node
   nameWithType: Node.Node
+- uid: PLATEAU.PolygonMesh.Node.AddChildNodeByCppMove(PLATEAU.PolygonMesh.Node)
+  name: AddChildNodeByCppMove(Node)
+  href: api/PLATEAU.PolygonMesh.Node.html#PLATEAU_PolygonMesh_Node_AddChildNodeByCppMove_PLATEAU_PolygonMesh_Node_
+  commentId: M:PLATEAU.PolygonMesh.Node.AddChildNodeByCppMove(PLATEAU.PolygonMesh.Node)
+  fullName: PLATEAU.PolygonMesh.Node.AddChildNodeByCppMove(PLATEAU.PolygonMesh.Node)
+  nameWithType: Node.AddChildNodeByCppMove(Node)
+- uid: PLATEAU.PolygonMesh.Node.AddChildNodeByCppMove*
+  name: AddChildNodeByCppMove
+  href: api/PLATEAU.PolygonMesh.Node.html#PLATEAU_PolygonMesh_Node_AddChildNodeByCppMove_
+  commentId: Overload:PLATEAU.PolygonMesh.Node.AddChildNodeByCppMove
+  isSpec: "True"
+  fullName: PLATEAU.PolygonMesh.Node.AddChildNodeByCppMove
+  nameWithType: Node.AddChildNodeByCppMove
 - uid: PLATEAU.PolygonMesh.Node.ChildCount
   name: ChildCount
   href: api/PLATEAU.PolygonMesh.Node.html#PLATEAU_PolygonMesh_Node_ChildCount
@@ -3249,6 +3454,45 @@ references:
   isSpec: "True"
   fullName: PLATEAU.PolygonMesh.Node.ChildCount
   nameWithType: Node.ChildCount
+- uid: PLATEAU.PolygonMesh.Node.Create(System.String)
+  name: Create(String)
+  href: api/PLATEAU.PolygonMesh.Node.html#PLATEAU_PolygonMesh_Node_Create_System_String_
+  commentId: M:PLATEAU.PolygonMesh.Node.Create(System.String)
+  fullName: PLATEAU.PolygonMesh.Node.Create(System.String)
+  nameWithType: Node.Create(String)
+- uid: PLATEAU.PolygonMesh.Node.Create*
+  name: Create
+  href: api/PLATEAU.PolygonMesh.Node.html#PLATEAU_PolygonMesh_Node_Create_
+  commentId: Overload:PLATEAU.PolygonMesh.Node.Create
+  isSpec: "True"
+  fullName: PLATEAU.PolygonMesh.Node.Create
+  nameWithType: Node.Create
+- uid: PLATEAU.PolygonMesh.Node.DebugString(StringBuilderWithIndent)
+  name: DebugString(StringBuilderWithIndent)
+  href: api/PLATEAU.PolygonMesh.Node.html#PLATEAU_PolygonMesh_Node_DebugString_StringBuilderWithIndent_
+  commentId: M:PLATEAU.PolygonMesh.Node.DebugString(StringBuilderWithIndent)
+  fullName: PLATEAU.PolygonMesh.Node.DebugString(StringBuilderWithIndent)
+  nameWithType: Node.DebugString(StringBuilderWithIndent)
+- uid: PLATEAU.PolygonMesh.Node.DebugString*
+  name: DebugString
+  href: api/PLATEAU.PolygonMesh.Node.html#PLATEAU_PolygonMesh_Node_DebugString_
+  commentId: Overload:PLATEAU.PolygonMesh.Node.DebugString
+  isSpec: "True"
+  fullName: PLATEAU.PolygonMesh.Node.DebugString
+  nameWithType: Node.DebugString
+- uid: PLATEAU.PolygonMesh.Node.Dispose
+  name: Dispose()
+  href: api/PLATEAU.PolygonMesh.Node.html#PLATEAU_PolygonMesh_Node_Dispose
+  commentId: M:PLATEAU.PolygonMesh.Node.Dispose
+  fullName: PLATEAU.PolygonMesh.Node.Dispose()
+  nameWithType: Node.Dispose()
+- uid: PLATEAU.PolygonMesh.Node.Dispose*
+  name: Dispose
+  href: api/PLATEAU.PolygonMesh.Node.html#PLATEAU_PolygonMesh_Node_Dispose_
+  commentId: Overload:PLATEAU.PolygonMesh.Node.Dispose
+  isSpec: "True"
+  fullName: PLATEAU.PolygonMesh.Node.Dispose
+  nameWithType: Node.Dispose
 - uid: PLATEAU.PolygonMesh.Node.GetChildAt(System.Int32)
   name: GetChildAt(Int32)
   href: api/PLATEAU.PolygonMesh.Node.html#PLATEAU_PolygonMesh_Node_GetChildAt_System_Int32_
@@ -3262,6 +3506,32 @@ references:
   isSpec: "True"
   fullName: PLATEAU.PolygonMesh.Node.GetChildAt
   nameWithType: Node.GetChildAt
+- uid: PLATEAU.PolygonMesh.Node.Handle
+  name: Handle
+  href: api/PLATEAU.PolygonMesh.Node.html#PLATEAU_PolygonMesh_Node_Handle
+  commentId: P:PLATEAU.PolygonMesh.Node.Handle
+  fullName: PLATEAU.PolygonMesh.Node.Handle
+  nameWithType: Node.Handle
+- uid: PLATEAU.PolygonMesh.Node.Handle*
+  name: Handle
+  href: api/PLATEAU.PolygonMesh.Node.html#PLATEAU_PolygonMesh_Node_Handle_
+  commentId: Overload:PLATEAU.PolygonMesh.Node.Handle
+  isSpec: "True"
+  fullName: PLATEAU.PolygonMesh.Node.Handle
+  nameWithType: Node.Handle
+- uid: PLATEAU.PolygonMesh.Node.MarkInvalid
+  name: MarkInvalid()
+  href: api/PLATEAU.PolygonMesh.Node.html#PLATEAU_PolygonMesh_Node_MarkInvalid
+  commentId: M:PLATEAU.PolygonMesh.Node.MarkInvalid
+  fullName: PLATEAU.PolygonMesh.Node.MarkInvalid()
+  nameWithType: Node.MarkInvalid()
+- uid: PLATEAU.PolygonMesh.Node.MarkInvalid*
+  name: MarkInvalid
+  href: api/PLATEAU.PolygonMesh.Node.html#PLATEAU_PolygonMesh_Node_MarkInvalid_
+  commentId: Overload:PLATEAU.PolygonMesh.Node.MarkInvalid
+  isSpec: "True"
+  fullName: PLATEAU.PolygonMesh.Node.MarkInvalid
+  nameWithType: Node.MarkInvalid
 - uid: PLATEAU.PolygonMesh.Node.Mesh
   name: Mesh
   href: api/PLATEAU.PolygonMesh.Node.html#PLATEAU_PolygonMesh_Node_Mesh
@@ -3288,6 +3558,19 @@ references:
   isSpec: "True"
   fullName: PLATEAU.PolygonMesh.Node.Name
   nameWithType: Node.Name
+- uid: PLATEAU.PolygonMesh.Node.SetMeshByCppMove(PLATEAU.PolygonMesh.Mesh)
+  name: SetMeshByCppMove(Mesh)
+  href: api/PLATEAU.PolygonMesh.Node.html#PLATEAU_PolygonMesh_Node_SetMeshByCppMove_PLATEAU_PolygonMesh_Mesh_
+  commentId: M:PLATEAU.PolygonMesh.Node.SetMeshByCppMove(PLATEAU.PolygonMesh.Mesh)
+  fullName: PLATEAU.PolygonMesh.Node.SetMeshByCppMove(PLATEAU.PolygonMesh.Mesh)
+  nameWithType: Node.SetMeshByCppMove(Mesh)
+- uid: PLATEAU.PolygonMesh.Node.SetMeshByCppMove*
+  name: SetMeshByCppMove
+  href: api/PLATEAU.PolygonMesh.Node.html#PLATEAU_PolygonMesh_Node_SetMeshByCppMove_
+  commentId: Overload:PLATEAU.PolygonMesh.Node.SetMeshByCppMove
+  isSpec: "True"
+  fullName: PLATEAU.PolygonMesh.Node.SetMeshByCppMove
+  nameWithType: Node.SetMeshByCppMove
 - uid: PLATEAU.PolygonMesh.SubMesh
   name: SubMesh
   href: api/PLATEAU.PolygonMesh.SubMesh.html
@@ -3307,6 +3590,45 @@ references:
   isSpec: "True"
   fullName: PLATEAU.PolygonMesh.SubMesh.SubMesh
   nameWithType: SubMesh.SubMesh
+- uid: PLATEAU.PolygonMesh.SubMesh.Create(System.Int32,System.Int32,System.String)
+  name: Create(Int32, Int32, String)
+  href: api/PLATEAU.PolygonMesh.SubMesh.html#PLATEAU_PolygonMesh_SubMesh_Create_System_Int32_System_Int32_System_String_
+  commentId: M:PLATEAU.PolygonMesh.SubMesh.Create(System.Int32,System.Int32,System.String)
+  fullName: PLATEAU.PolygonMesh.SubMesh.Create(System.Int32, System.Int32, System.String)
+  nameWithType: SubMesh.Create(Int32, Int32, String)
+- uid: PLATEAU.PolygonMesh.SubMesh.Create*
+  name: Create
+  href: api/PLATEAU.PolygonMesh.SubMesh.html#PLATEAU_PolygonMesh_SubMesh_Create_
+  commentId: Overload:PLATEAU.PolygonMesh.SubMesh.Create
+  isSpec: "True"
+  fullName: PLATEAU.PolygonMesh.SubMesh.Create
+  nameWithType: SubMesh.Create
+- uid: PLATEAU.PolygonMesh.SubMesh.DebugPrint(StringBuilderWithIndent)
+  name: DebugPrint(StringBuilderWithIndent)
+  href: api/PLATEAU.PolygonMesh.SubMesh.html#PLATEAU_PolygonMesh_SubMesh_DebugPrint_StringBuilderWithIndent_
+  commentId: M:PLATEAU.PolygonMesh.SubMesh.DebugPrint(StringBuilderWithIndent)
+  fullName: PLATEAU.PolygonMesh.SubMesh.DebugPrint(StringBuilderWithIndent)
+  nameWithType: SubMesh.DebugPrint(StringBuilderWithIndent)
+- uid: PLATEAU.PolygonMesh.SubMesh.DebugPrint*
+  name: DebugPrint
+  href: api/PLATEAU.PolygonMesh.SubMesh.html#PLATEAU_PolygonMesh_SubMesh_DebugPrint_
+  commentId: Overload:PLATEAU.PolygonMesh.SubMesh.DebugPrint
+  isSpec: "True"
+  fullName: PLATEAU.PolygonMesh.SubMesh.DebugPrint
+  nameWithType: SubMesh.DebugPrint
+- uid: PLATEAU.PolygonMesh.SubMesh.Dispose
+  name: Dispose()
+  href: api/PLATEAU.PolygonMesh.SubMesh.html#PLATEAU_PolygonMesh_SubMesh_Dispose
+  commentId: M:PLATEAU.PolygonMesh.SubMesh.Dispose
+  fullName: PLATEAU.PolygonMesh.SubMesh.Dispose()
+  nameWithType: SubMesh.Dispose()
+- uid: PLATEAU.PolygonMesh.SubMesh.Dispose*
+  name: Dispose
+  href: api/PLATEAU.PolygonMesh.SubMesh.html#PLATEAU_PolygonMesh_SubMesh_Dispose_
+  commentId: Overload:PLATEAU.PolygonMesh.SubMesh.Dispose
+  isSpec: "True"
+  fullName: PLATEAU.PolygonMesh.SubMesh.Dispose
+  nameWithType: SubMesh.Dispose
 - uid: PLATEAU.PolygonMesh.SubMesh.EndIndex
   name: EndIndex
   href: api/PLATEAU.PolygonMesh.SubMesh.html#PLATEAU_PolygonMesh_SubMesh_EndIndex
@@ -3320,6 +3642,19 @@ references:
   isSpec: "True"
   fullName: PLATEAU.PolygonMesh.SubMesh.EndIndex
   nameWithType: SubMesh.EndIndex
+- uid: PLATEAU.PolygonMesh.SubMesh.Handle
+  name: Handle
+  href: api/PLATEAU.PolygonMesh.SubMesh.html#PLATEAU_PolygonMesh_SubMesh_Handle
+  commentId: P:PLATEAU.PolygonMesh.SubMesh.Handle
+  fullName: PLATEAU.PolygonMesh.SubMesh.Handle
+  nameWithType: SubMesh.Handle
+- uid: PLATEAU.PolygonMesh.SubMesh.Handle*
+  name: Handle
+  href: api/PLATEAU.PolygonMesh.SubMesh.html#PLATEAU_PolygonMesh_SubMesh_Handle_
+  commentId: Overload:PLATEAU.PolygonMesh.SubMesh.Handle
+  isSpec: "True"
+  fullName: PLATEAU.PolygonMesh.SubMesh.Handle
+  nameWithType: SubMesh.Handle
 - uid: PLATEAU.PolygonMesh.SubMesh.StartIndex
   name: StartIndex
   href: api/PLATEAU.PolygonMesh.SubMesh.html#PLATEAU_PolygonMesh_SubMesh_StartIndex
@@ -4033,3 +4368,74 @@ references:
   isSpec: "True"
   fullName: PLATEAU.Util.IProgressDisplay.SetProgress
   nameWithType: IProgressDisplay.SetProgress
+- uid: PLATEAU.Util.StringBuilderWithIndent
+  name: StringBuilderWithIndent
+  href: api/PLATEAU.Util.StringBuilderWithIndent.html
+  commentId: T:PLATEAU.Util.StringBuilderWithIndent
+  fullName: PLATEAU.Util.StringBuilderWithIndent
+  nameWithType: StringBuilderWithIndent
+- uid: PLATEAU.Util.StringBuilderWithIndent.#ctor
+  name: StringBuilderWithIndent()
+  href: api/PLATEAU.Util.StringBuilderWithIndent.html#PLATEAU_Util_StringBuilderWithIndent__ctor
+  commentId: M:PLATEAU.Util.StringBuilderWithIndent.#ctor
+  fullName: PLATEAU.Util.StringBuilderWithIndent.StringBuilderWithIndent()
+  nameWithType: StringBuilderWithIndent.StringBuilderWithIndent()
+- uid: PLATEAU.Util.StringBuilderWithIndent.#ctor*
+  name: StringBuilderWithIndent
+  href: api/PLATEAU.Util.StringBuilderWithIndent.html#PLATEAU_Util_StringBuilderWithIndent__ctor_
+  commentId: Overload:PLATEAU.Util.StringBuilderWithIndent.#ctor
+  isSpec: "True"
+  fullName: PLATEAU.Util.StringBuilderWithIndent.StringBuilderWithIndent
+  nameWithType: StringBuilderWithIndent.StringBuilderWithIndent
+- uid: PLATEAU.Util.StringBuilderWithIndent.AppendLine(System.String)
+  name: AppendLine(String)
+  href: api/PLATEAU.Util.StringBuilderWithIndent.html#PLATEAU_Util_StringBuilderWithIndent_AppendLine_System_String_
+  commentId: M:PLATEAU.Util.StringBuilderWithIndent.AppendLine(System.String)
+  fullName: PLATEAU.Util.StringBuilderWithIndent.AppendLine(System.String)
+  nameWithType: StringBuilderWithIndent.AppendLine(String)
+- uid: PLATEAU.Util.StringBuilderWithIndent.AppendLine*
+  name: AppendLine
+  href: api/PLATEAU.Util.StringBuilderWithIndent.html#PLATEAU_Util_StringBuilderWithIndent_AppendLine_
+  commentId: Overload:PLATEAU.Util.StringBuilderWithIndent.AppendLine
+  isSpec: "True"
+  fullName: PLATEAU.Util.StringBuilderWithIndent.AppendLine
+  nameWithType: StringBuilderWithIndent.AppendLine
+- uid: PLATEAU.Util.StringBuilderWithIndent.DecrementIndent
+  name: DecrementIndent()
+  href: api/PLATEAU.Util.StringBuilderWithIndent.html#PLATEAU_Util_StringBuilderWithIndent_DecrementIndent
+  commentId: M:PLATEAU.Util.StringBuilderWithIndent.DecrementIndent
+  fullName: PLATEAU.Util.StringBuilderWithIndent.DecrementIndent()
+  nameWithType: StringBuilderWithIndent.DecrementIndent()
+- uid: PLATEAU.Util.StringBuilderWithIndent.DecrementIndent*
+  name: DecrementIndent
+  href: api/PLATEAU.Util.StringBuilderWithIndent.html#PLATEAU_Util_StringBuilderWithIndent_DecrementIndent_
+  commentId: Overload:PLATEAU.Util.StringBuilderWithIndent.DecrementIndent
+  isSpec: "True"
+  fullName: PLATEAU.Util.StringBuilderWithIndent.DecrementIndent
+  nameWithType: StringBuilderWithIndent.DecrementIndent
+- uid: PLATEAU.Util.StringBuilderWithIndent.IncrementIndent
+  name: IncrementIndent()
+  href: api/PLATEAU.Util.StringBuilderWithIndent.html#PLATEAU_Util_StringBuilderWithIndent_IncrementIndent
+  commentId: M:PLATEAU.Util.StringBuilderWithIndent.IncrementIndent
+  fullName: PLATEAU.Util.StringBuilderWithIndent.IncrementIndent()
+  nameWithType: StringBuilderWithIndent.IncrementIndent()
+- uid: PLATEAU.Util.StringBuilderWithIndent.IncrementIndent*
+  name: IncrementIndent
+  href: api/PLATEAU.Util.StringBuilderWithIndent.html#PLATEAU_Util_StringBuilderWithIndent_IncrementIndent_
+  commentId: Overload:PLATEAU.Util.StringBuilderWithIndent.IncrementIndent
+  isSpec: "True"
+  fullName: PLATEAU.Util.StringBuilderWithIndent.IncrementIndent
+  nameWithType: StringBuilderWithIndent.IncrementIndent
+- uid: PLATEAU.Util.StringBuilderWithIndent.ToString
+  name: ToString()
+  href: api/PLATEAU.Util.StringBuilderWithIndent.html#PLATEAU_Util_StringBuilderWithIndent_ToString
+  commentId: M:PLATEAU.Util.StringBuilderWithIndent.ToString
+  fullName: PLATEAU.Util.StringBuilderWithIndent.ToString()
+  nameWithType: StringBuilderWithIndent.ToString()
+- uid: PLATEAU.Util.StringBuilderWithIndent.ToString*
+  name: ToString
+  href: api/PLATEAU.Util.StringBuilderWithIndent.html#PLATEAU_Util_StringBuilderWithIndent_ToString_
+  commentId: Overload:PLATEAU.Util.StringBuilderWithIndent.ToString
+  isSpec: "True"
+  fullName: PLATEAU.Util.StringBuilderWithIndent.ToString
+  nameWithType: StringBuilderWithIndent.ToString

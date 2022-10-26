@@ -110,20 +110,10 @@ delete 後は、配下のノードやメッシュにもアクセスできなく�
   <h6><strong>Assembly</strong>: cs.temp.dll.dll</h6>
   <h5 id="PLATEAU_PolygonMesh_Model_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public class Model : IDisposable</code></pre>
+    <pre><code class="lang-csharp hljs">public class Model : PInvokeDisposable</code></pre>
   </div>
   <h3 id="constructors">Constructors
   </h3>
-  
-  
-  <a id="PLATEAU_PolygonMesh_Model__ctor_" data-uid="PLATEAU.PolygonMesh.Model.#ctor*"></a>
-  <h4 id="PLATEAU_PolygonMesh_Model__ctor" data-uid="PLATEAU.PolygonMesh.Model.#ctor">Model()</h4>
-  <div class="markdown level1 summary"></div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public Model()</code></pre>
-  </div>
   
   
   <a id="PLATEAU_PolygonMesh_Model__ctor_" data-uid="PLATEAU.PolygonMesh.Model.#ctor*"></a>
@@ -155,31 +145,6 @@ delete 後は、配下のノードやメッシュにもアクセスできなく�
   </h3>
   
   
-  <a id="PLATEAU_PolygonMesh_Model_Handle_" data-uid="PLATEAU.PolygonMesh.Model.Handle*"></a>
-  <h4 id="PLATEAU_PolygonMesh_Model_Handle" data-uid="PLATEAU.PolygonMesh.Model.Handle">Handle</h4>
-  <div class="markdown level1 summary"></div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public IntPtr Handle { get; }</code></pre>
-  </div>
-  <h5 class="propertyValue">Property Value</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="xref">IntPtr</span></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  
-  
   <a id="PLATEAU_PolygonMesh_Model_RootNodesCount_" data-uid="PLATEAU.PolygonMesh.Model.RootNodesCount*"></a>
   <h4 id="PLATEAU_PolygonMesh_Model_RootNodesCount" data-uid="PLATEAU.PolygonMesh.Model.RootNodesCount">RootNodesCount</h4>
   <div class="markdown level1 summary"><p><a class="xref" href="PLATEAU.PolygonMesh.Model.html">Model</a> の持つ ルート<a class="xref" href="PLATEAU.PolygonMesh.Node.html">Node</a> の数を返します。</p>
@@ -208,13 +173,95 @@ delete 後は、配下のノードやメッシュにもアクセスできなく�
   </h3>
   
   
-  <a id="PLATEAU_PolygonMesh_Model_Dispose_" data-uid="PLATEAU.PolygonMesh.Model.Dispose*"></a>
-  <h4 id="PLATEAU_PolygonMesh_Model_Dispose" data-uid="PLATEAU.PolygonMesh.Model.Dispose">Dispose()</h4>
+  <a id="PLATEAU_PolygonMesh_Model_AddNodeByCppMove_" data-uid="PLATEAU.PolygonMesh.Model.AddNodeByCppMove*"></a>
+  <h4 id="PLATEAU_PolygonMesh_Model_AddNodeByCppMove_PLATEAU_PolygonMesh_Node_" data-uid="PLATEAU.PolygonMesh.Model.AddNodeByCppMove(PLATEAU.PolygonMesh.Node)">AddNodeByCppMove(Node)</h4>
+  <div class="markdown level1 summary"><p>ルートにノードを加えます。
+取扱注意:
+C++の std::move によって Node が移動するので、
+実行後は元の node は利用不可になります。</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void AddNodeByCppMove(Node node)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="PLATEAU.PolygonMesh.Node.html">Node</a></td>
+        <td><span class="parametername">node</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
+  <a id="PLATEAU_PolygonMesh_Model_Create_" data-uid="PLATEAU.PolygonMesh.Model.Create*"></a>
+  <h4 id="PLATEAU_PolygonMesh_Model_Create" data-uid="PLATEAU.PolygonMesh.Model.Create">Create()</h4>
   <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public void Dispose()</code></pre>
+    <pre><code class="lang-csharp hljs">public static Model Create()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="PLATEAU.PolygonMesh.Model.html">Model</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
+  <a id="PLATEAU_PolygonMesh_Model_DebugString_" data-uid="PLATEAU.PolygonMesh.Model.DebugString*"></a>
+  <h4 id="PLATEAU_PolygonMesh_Model_DebugString" data-uid="PLATEAU.PolygonMesh.Model.DebugString">DebugString()</h4>
+  <div class="markdown level1 summary"><p><a class="xref" href="PLATEAU.PolygonMesh.Model.html">Model</a> 以下の階層構造を文字列で表現します。</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public string DebugString()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">String</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
+  <a id="PLATEAU_PolygonMesh_Model_DisposeNative_" data-uid="PLATEAU.PolygonMesh.Model.DisposeNative*"></a>
+  <h4 id="PLATEAU_PolygonMesh_Model_DisposeNative" data-uid="PLATEAU.PolygonMesh.Model.DisposeNative">DisposeNative()</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">protected override void DisposeNative()</code></pre>
   </div>
   
   

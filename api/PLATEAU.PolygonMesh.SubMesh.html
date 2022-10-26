@@ -180,6 +180,31 @@
   </table>
   
   
+  <a id="PLATEAU_PolygonMesh_SubMesh_Handle_" data-uid="PLATEAU.PolygonMesh.SubMesh.Handle*"></a>
+  <h4 id="PLATEAU_PolygonMesh_SubMesh_Handle" data-uid="PLATEAU.PolygonMesh.SubMesh.Handle">Handle</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public IntPtr Handle { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">IntPtr</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
   <a id="PLATEAU_PolygonMesh_SubMesh_StartIndex_" data-uid="PLATEAU.PolygonMesh.SubMesh.StartIndex*"></a>
   <h4 id="PLATEAU_PolygonMesh_SubMesh_StartIndex" data-uid="PLATEAU.PolygonMesh.SubMesh.StartIndex">StartIndex</h4>
   <div class="markdown level1 summary"></div>
@@ -228,6 +253,102 @@
       </tr>
     </tbody>
   </table>
+  <h3 id="methods">Methods
+  </h3>
+  
+  
+  <a id="PLATEAU_PolygonMesh_SubMesh_Create_" data-uid="PLATEAU.PolygonMesh.SubMesh.Create*"></a>
+  <h4 id="PLATEAU_PolygonMesh_SubMesh_Create_System_Int32_System_Int32_System_String_" data-uid="PLATEAU.PolygonMesh.SubMesh.Create(System.Int32,System.Int32,System.String)">Create(Int32, Int32, String)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static SubMesh Create(int startIndex, int endIndex, string texturePath)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><span class="parametername">startIndex</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><span class="parametername">endIndex</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">String</a></td>
+        <td><span class="parametername">texturePath</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="PLATEAU.PolygonMesh.SubMesh.html">SubMesh</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
+  <a id="PLATEAU_PolygonMesh_SubMesh_DebugPrint_" data-uid="PLATEAU.PolygonMesh.SubMesh.DebugPrint*"></a>
+  <h4 id="PLATEAU_PolygonMesh_SubMesh_DebugPrint_StringBuilderWithIndent_" data-uid="PLATEAU.PolygonMesh.SubMesh.DebugPrint(StringBuilderWithIndent)">DebugPrint(StringBuilderWithIndent)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void DebugPrint(StringBuilderWithIndent sb)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">StringBuilderWithIndent</span></td>
+        <td><span class="parametername">sb</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
+  <a id="PLATEAU_PolygonMesh_SubMesh_Dispose_" data-uid="PLATEAU.PolygonMesh.SubMesh.Dispose*"></a>
+  <h4 id="PLATEAU_PolygonMesh_SubMesh_Dispose" data-uid="PLATEAU.PolygonMesh.SubMesh.Dispose">Dispose()</h4>
+  <div class="markdown level1 summary"><p>取扱注意:
+通常は <a class="xref" href="PLATEAU.PolygonMesh.Mesh.html">Mesh</a> が廃棄されるときに C++側で <a class="xref" href="PLATEAU.PolygonMesh.SubMesh.html">SubMesh</a> も廃棄されるので、
+このメソッドを呼ぶ必要はありません。
+<a class="xref" href="PLATEAU.PolygonMesh.Mesh.html">Mesh</a> に属さず、C#側で明示的に Create した <a class="xref" href="PLATEAU.PolygonMesh.SubMesh.html">SubMesh</a> のみ <a class="xref" href="PLATEAU.PolygonMesh.SubMesh.html#PLATEAU_PolygonMesh_SubMesh_Dispose">Dispose()</a> してください。
+それ以外のタイミングで呼ぶとメモリ違反でUnityが落ちます。</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void Dispose()</code></pre>
+  </div>
 </article>
           </div>
           
