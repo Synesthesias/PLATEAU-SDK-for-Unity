@@ -1,5 +1,6 @@
 ﻿using System;
 using PLATEAU.Interop;
+using PLATEAU.Util;
 
 namespace PLATEAU.PolygonMesh
 {
@@ -27,21 +28,18 @@ namespace PLATEAU.PolygonMesh
     /// delete 後は、配下のノードやメッシュにもアクセスできなくなります。
     /// </summary>
     
-    public class Model : IDisposable
+    public class Model : PInvokeDisposable
     {
-        private readonly IntPtr handle;
-        private bool isDisposed;
-
-        public Model()
+        public static Model Create()
         {
             var result = NativeMethods.plateau_create_model(out IntPtr outModelPtr);
             DLLUtil.CheckDllError(result);
-            this.handle = outModelPtr;
+            return new Model(outModelPtr);
         }
-        
-        public Model(IntPtr handle)
+
+        public Model(IntPtr handle) : base(handle)
         {
-            this.handle = handle;
+            
         }
 
         /// <summary>
@@ -51,7 +49,7 @@ namespace PLATEAU.PolygonMesh
         {
             get
             {
-                int childCount = DLLUtil.GetNativeValue<int>(this.handle,
+                int childCount = DLLUtil.GetNativeValue<int>(Handle,
                     NativeMethods.plateau_model_get_root_nodes_count);
                 return childCount;
             }
@@ -63,17 +61,28 @@ namespace PLATEAU.PolygonMesh
         public Node GetRootNodeAt(int index)
         {
             var nodePtr = DLLUtil.GetNativeValue<IntPtr>(
-                this.handle, index,
+                Handle, index,
                 NativeMethods.plateau_model_get_root_node_at_index);
             return new Node(nodePtr);
         }
 
-        public void Dispose()
+        /// <summary>
+        /// ルートにノードを加えます。
+        /// 取扱注意:
+        /// C++の std::move によって Node が移動するので、
+        /// 実行後は元の node は利用不可になります。
+        /// </summary>
+        public void AddNodeByCppMove(Node node)
         {
-            if (this.isDisposed) return;
-            NativeMethods.plateau_delete_model(this.handle);
-            GC.SuppressFinalize(this);
-            this.isDisposed = true;
+            var result = NativeMethods.plateau_model_add_node_by_std_move(
+                Handle, node.Handle);
+            DLLUtil.CheckDllError(result);
+            node.MarkInvalid();
+        }
+
+        protected override void DisposeNative()
+        {
+            NativeMethods.plateau_delete_model(Handle);
         }
 
         ~Model()
@@ -81,6 +90,19 @@ namespace PLATEAU.PolygonMesh
             Dispose();
         }
 
-        public IntPtr Handle => this.handle;
+        /// <summary>
+        /// <see cref="Model"/> 以下の階層構造を文字列で表現します。
+        /// </summary>
+        public string DebugString()
+        {
+            var sb = new StringBuilderWithIndent();
+            sb.IncrementIndent();
+            for (int i = 0; i < RootNodesCount; i++)
+            {
+                GetRootNodeAt(i).DebugString(sb);
+            }
+            sb.DecrementIndent();
+            return sb.ToString();
+        }
     }
 }

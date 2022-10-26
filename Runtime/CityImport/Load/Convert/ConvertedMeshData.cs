@@ -130,8 +130,12 @@ namespace PLATEAU.CityImport.Load.Convert
                     continue;
                 }
                 
+                // .PLATEAU からの相対パスを求めます。
+                string pathToReplace = PathUtil.plateauSrcFetchDir + "/";
+                string relativePath = (textureFullPath.Replace('\\', '/')).Replace(pathToReplace, "");
+
                 // キャッシュにあればそれを使います
-                if (cachedTexture.TryGetValue(textureFullPath, out var tex))
+                if (cachedTexture.TryGetValue(relativePath, out var tex))
                 {
                     meshData.AddTexture(i, tex);
                     continue;
@@ -150,9 +154,10 @@ namespace PLATEAU.CityImport.Load.Convert
                 ((Texture2D)texture).Compress(true);
 
                 // 生成したUnityテクスチャへの参照を meshData に追加します。
-                texture.name = Path.GetFileNameWithoutExtension(textureFullPath);
-                cachedTexture[textureFullPath] = texture;
                 meshData.AddTexture(i, texture);
+                texture.name = relativePath;
+                cachedTexture[relativePath] = texture;
+                
 
             }
         }

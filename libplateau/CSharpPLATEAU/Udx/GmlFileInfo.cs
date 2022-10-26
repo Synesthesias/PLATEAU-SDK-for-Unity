@@ -17,7 +17,16 @@ namespace PLATEAU.Udx
             return new GmlFileInfo(outPtr);
         }
 
-        public string Path => DLLUtil.GetNativeString(Handle, NativeMethods.plateau_gml_file_info_get_path);
+        public string Path
+        {
+            get => DLLUtil.GetNativeString(Handle, NativeMethods.plateau_gml_file_info_get_path);
+            set
+            {
+                var result = NativeMethods.plateau_gml_file_info_set_path(
+                    Handle, value);
+                DLLUtil.CheckDllError(result);
+            }
+        }
 
         public string FeatureType =>
             DLLUtil.GetNativeString(Handle, NativeMethods.plateau_gml_file_info_get_feature_type_str);
