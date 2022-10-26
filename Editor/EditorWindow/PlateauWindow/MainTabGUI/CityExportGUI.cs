@@ -1,10 +1,12 @@
 ﻿using PLATEAU.CityInfo;
 using PLATEAU.Editor.CityExport;
 using PLATEAU.Editor.EditorWindow.Common;
+using PLATEAU.Editor.EditorWindow.Common.PathSelector;
 using PLATEAU.Interop;
 using PLATEAU.MeshWriter;
 using UnityEditor;
 using UnityEngine;
+using Directory = System.IO.Directory;
 
 namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
 {
@@ -16,10 +18,14 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
         private bool exportTextures;
         private bool exportHiddenObject;
         private MeshExportOptions.MeshTransformType meshTransformType = MeshExportOptions.MeshTransformType.Local;
+        private string exportDirPath = "";
         private bool foldOutOption = true;
+        private bool foldOutExportPath = true;
+        private PathSelectorFolder exportDirSelector = new PathSelectorFolder();
         public void Draw()
         {
             PlateauEditorStyle.SubTitle("モデルデータのエクスポートを行います。");
+            PlateauEditorStyle.Heading("選択オブジェクト", "num1.png");
             using (PlateauEditorStyle.VerticalScopeLevel1())
             {
                 this.exportTarget =
@@ -27,9 +33,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
                         "エクスポート対象", this.exportTarget,
                         typeof(PLATEAUInstancedCityModel), true);
             }
-            PlateauEditorStyle.Heading("選択オブジェクト", null);
-            // TODO
-            PlateauEditorStyle.Heading("出力形式", null);
+            PlateauEditorStyle.Heading("出力形式", "num2.png");
             using (PlateauEditorStyle.VerticalScopeLevel1())
             {
                 this.meshFileFormat = (MeshFileFormat)EditorGUILayout.EnumPopup("出力形式", this.meshFileFormat);
@@ -50,10 +54,16 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
                         (MeshExportOptions.MeshTransformType)EditorGUILayout.EnumPopup("座標変換", this.meshTransformType);
                 }
             });
+
+            this.foldOutExportPath = PlateauEditorStyle.FoldOut(this.foldOutExportPath, "出力フォルダ", () =>
+            {
+                this.exportDirPath = this.exportDirSelector.Draw("フォルダパス");
+            });
+            
             PlateauEditorStyle.Separator(0);
             if (PlateauEditorStyle.MainButton("エクスポート"))
             {
-                Export("D:\\Linoal\\Desktop\\tmpTestConv", this.exportTarget);
+                Export(this.exportDirPath, this.exportTarget);
             }
         }
 
@@ -63,6 +73,18 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
             if (target == null)
             {
                 Debug.LogError("エクスポート対象が指定されていません。");
+                return;
+            }
+
+            if (string.IsNullOrEmpty(destinationDir))
+            {
+                Debug.LogError("エクスポート先が指定されていません。");
+                return;
+            }
+
+            if (!Directory.Exists(destinationDir))
+            {
+                Debug.LogError("エクスポート先フォルダが実在しません。");
                 return;
             }
             var meshExportOptions = new MeshExportOptions(this.meshTransformType, this.exportTextures, this.exportHiddenObject,
