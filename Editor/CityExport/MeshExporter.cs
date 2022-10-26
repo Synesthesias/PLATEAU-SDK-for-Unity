@@ -32,9 +32,16 @@ namespace PLATEAU.Editor.CityExport
                 var childTrans = trans.GetChild(i);
                 var childName = childTrans.name;
                 if (!childName.EndsWith(".gml")) continue;
+
+                if ((!options.ExportHiddenObjects) && (!childTrans.gameObject.activeInHierarchy))
+                {
+                    continue;
+                }
                 
-                using var model = UnityMeshToDllModelConverter.Convert(childTrans.gameObject);
+                // Unity のメッシュを中間データ構造(Model)に変換します。
+                using var model = UnityMeshToDllModelConverter.Convert(childTrans.gameObject, options.ExportHiddenObjects);
                 
+                // Model をファイルにして出力します。
                 ModelToFile(destDir, Path.GetFileNameWithoutExtension(childName), model, options);
                 Debug.Log(model.DebugString());
             }

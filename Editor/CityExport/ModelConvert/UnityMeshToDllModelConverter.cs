@@ -17,11 +17,11 @@ namespace PLATEAU.Editor.CityExport.ModelConvert
     /// </summary>
     internal static class UnityMeshToDllModelConverter
     {
-        public static Model Convert(GameObject go)
+        public static Model Convert(GameObject go, bool exportDisabledGameObj)
         {
             var trans = go.transform;
             var model = Model.Create();
-            ConvertRecursive(null, trans, model);
+            ConvertRecursive(null, trans, model, exportDisabledGameObj);
             return model;
         }
 
@@ -32,8 +32,10 @@ namespace PLATEAU.Editor.CityExport.ModelConvert
         /// <param name="parentNode"> <paramref name="trans"/> の親 Transform に対応する親 Node です。親がない（ルート）のときは null にします。</param>
         /// <param name="trans">このゲームオブジェクトとその子を再帰的に <see cref="Node"/> にします。</param>
         /// <param name="model"> <paramref name="parentNode"/> が null のとき、<see cref="Node"/> は <paramref name="model"/> に追加されます。</param>
-        private static void ConvertRecursive(Node parentNode, Transform trans, Model model)
+        /// <param name="exportDisabledGameObj">false のとき、ActiveでないGameObjectは対象から除外します。</param>
+        private static void ConvertRecursive(Node parentNode, Transform trans, Model model, bool exportDisabledGameObj)
         {
+            if ((!trans.gameObject.activeInHierarchy) && (!exportDisabledGameObj)) return;
             var node = GameObjToNode(trans);
 
             if (parentNode == null)
@@ -56,7 +58,7 @@ namespace PLATEAU.Editor.CityExport.ModelConvert
             for (int i = 0; i < numChild; i++)
             {
                 var childTrans = trans.GetChild(i);
-                ConvertRecursive(node, childTrans, model);
+                ConvertRecursive(node, childTrans, model, exportDisabledGameObj);
             }
         }
 

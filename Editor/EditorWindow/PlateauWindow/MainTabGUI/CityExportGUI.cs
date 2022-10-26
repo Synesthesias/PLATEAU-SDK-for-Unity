@@ -13,18 +13,27 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
     {
         private MeshFileFormat meshFileFormat = MeshFileFormat.OBJ;
         private GltfFileFormat gltfFileFormat = GltfFileFormat.GLB;
+        private bool exportHiddenObject = false;
         private bool foldOutOption = true;
         public void Draw()
         {
             PlateauEditorStyle.SubTitle("モデルデータのエクスポートを行います。");
             PlateauEditorStyle.Heading("選択オブジェクト", null);
             // TODO 仮
-            this.meshFileFormat = (MeshFileFormat)EditorGUILayout.EnumPopup("出力形式", this.meshFileFormat);
+            using (PlateauEditorStyle.VerticalScopeLevel1())
+            {
+                this.meshFileFormat = (MeshFileFormat)EditorGUILayout.EnumPopup("出力形式", this.meshFileFormat);
+            }
+            
             this.foldOutOption = PlateauEditorStyle.FoldOut(this.foldOutOption, "Option", () =>
             {
-                if (this.meshFileFormat == MeshFileFormat.GLTF)
+                using (PlateauEditorStyle.VerticalScopeLevel1())
                 {
-                    this.gltfFileFormat = (GltfFileFormat)EditorGUILayout.EnumPopup("GLTFフォーマット", this.gltfFileFormat);
+                    if (this.meshFileFormat == MeshFileFormat.GLTF)
+                    {
+                        this.gltfFileFormat = (GltfFileFormat)EditorGUILayout.EnumPopup("GLTFフォーマット", this.gltfFileFormat);
+                    }
+                    this.exportHiddenObject = EditorGUILayout.Toggle("非アクティブオブジェクトを含める", this.exportHiddenObject);
                 }
             });
             PlateauEditorStyle.Separator(0);
@@ -37,7 +46,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
         // TODO 出力したファイルパスのリストを返すようにする
         private void Export(string destinationDir, PLATEAUInstancedCityModel instancedModel)
         {
-            var meshExportOptions = new MeshExportOptions(MeshExportOptions.MeshTransformType.Local, true,
+            var meshExportOptions = new MeshExportOptions(MeshExportOptions.MeshTransformType.Local, this.exportHiddenObject,
                 this.meshFileFormat, new GltfWriteOptions(this.gltfFileFormat, destinationDir));
             MeshExporter.Export(destinationDir, instancedModel,  meshExportOptions);
             // TODO 仮
