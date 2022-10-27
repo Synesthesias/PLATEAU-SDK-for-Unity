@@ -26,6 +26,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
     /// 対して、Blender は objファイルのインポート時に座標系を設定できるので、
     /// Blenderの画面で正しく設定すればモデルが反転することなく objファイルをインポートできます。
     /// なお、Unity で正しい形状になるようにエクスポートしたければ、 EUN を左右反転させた座標系である WUN を利用してください。
+    /// 参考 : https://gamedev.stackexchange.com/questions/39906/why-does-unity-obj-import-flip-my-x-coordinate
     internal class CityExportGUI : IEditorDrawable
     {
         private PLATEAUInstancedCityModel exportTarget;
