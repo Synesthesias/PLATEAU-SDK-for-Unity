@@ -2,6 +2,7 @@
 using PLATEAU.Editor.CityExport;
 using PLATEAU.Editor.EditorWindow.Common;
 using PLATEAU.Editor.EditorWindow.Common.PathSelector;
+using PLATEAU.Geometries;
 using PLATEAU.Interop;
 using PLATEAU.MeshWriter;
 using UnityEditor;
@@ -18,6 +19,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
         private bool exportTextures;
         private bool exportHiddenObject;
         private MeshExportOptions.MeshTransformType meshTransformType = MeshExportOptions.MeshTransformType.Local;
+        private CoordinateSystem meshAxis = CoordinateSystem.ENU;
         private string exportDirPath = "";
         private bool foldOutOption = true;
         private bool foldOutExportPath = true;
@@ -52,6 +54,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
                     this.exportHiddenObject = EditorGUILayout.Toggle("非アクティブオブジェクトを含める", this.exportHiddenObject);
                     this.meshTransformType =
                         (MeshExportOptions.MeshTransformType)EditorGUILayout.EnumPopup("座標変換", this.meshTransformType);
+                    this.meshAxis = (CoordinateSystem)EditorGUILayout.EnumPopup("座標軸", this.meshAxis);
                 }
             });
 
@@ -88,7 +91,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
                 return;
             }
             var meshExportOptions = new MeshExportOptions(this.meshTransformType, this.exportTextures, this.exportHiddenObject,
-                this.meshFileFormat, new GltfWriteOptions(this.gltfFileFormat, destinationDir));
+                this.meshFileFormat, this.meshAxis, new GltfWriteOptions(this.gltfFileFormat, destinationDir));
             MeshExporter.Export(destinationDir, target,  meshExportOptions);
         }
     }

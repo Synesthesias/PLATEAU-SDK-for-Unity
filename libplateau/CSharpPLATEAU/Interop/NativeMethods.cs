@@ -1270,7 +1270,7 @@ namespace PLATEAU.Interop
         internal static extern APIResult plateau_mesh_merger_merge_mesh(
             [In] IntPtr meshPtr,
             [In] IntPtr otherMeshPtr,
-            CoordinateSystem meshAxes,
+            [MarshalAs(UnmanagedType.U1)] bool invertMeshFrontBack,
             [MarshalAs(UnmanagedType.U1)] bool includeTexture);
 
         [DllImport(DllName)]
@@ -1284,7 +1284,8 @@ namespace PLATEAU.Interop
             int uv1Count,
             [In] IntPtr[] subMeshPointers,
             int subMeshCount,
-            CoordinateSystem meshAxes,
+            CoordinateSystem meshAxisConvertFrom,
+            CoordinateSystem meshAxisConvertTo,
             [MarshalAs(UnmanagedType.U1)] bool includeTexture);
     }
 }
