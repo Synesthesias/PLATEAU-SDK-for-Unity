@@ -169,7 +169,7 @@ namespace PLATEAU.Editor.CityExport.ModelConvert
             dllMesh.MergeMeshInfo(
                 vertices, indices, uv1,
                 dllSubMeshes.ToArray(),
-                meshAxis, true);
+                CoordinateSystem.EUN, meshAxis, true);
             // 補足:
             // 上の行で MergeMeshInfo に渡す実引数 includeTexture が常に true になっていますが、それで良いです。
             // 上の処理で テクスチャを含める/含めない の設定に即した SubMesh がすでにできているので、

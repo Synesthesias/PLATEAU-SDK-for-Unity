@@ -123,7 +123,7 @@ namespace PLATEAU.PolygonMesh
         }
 
         public void MergeMeshInfo(PlateauVector3d[] vertices, uint[] indices, PlateauVector2f[] uv1,
-            SubMesh[] subMeshes,CoordinateSystem meshAxisConvertTo, bool includeTexture)
+            SubMesh[] subMeshes, CoordinateSystem meshAxisConvertFrom, CoordinateSystem meshAxisConvertTo, bool includeTexture)
         {
             ThrowIfInvalid();
             var subMeshPointers = subMeshes.Select(sm => sm.Handle).ToArray();
@@ -131,7 +131,7 @@ namespace PLATEAU.PolygonMesh
                 Handle,
                 vertices, vertices.Length, indices, indices.Length, uv1, uv1.Length,
                 subMeshPointers, subMeshes.Length,
-                CoordinateSystem.EUN, meshAxisConvertTo, includeTexture
+                meshAxisConvertFrom, meshAxisConvertTo, includeTexture
             );
             DLLUtil.CheckDllError(result);
         }
