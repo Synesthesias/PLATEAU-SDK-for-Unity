@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace PLATEAU.CityImport.Load.Convert
@@ -55,7 +56,7 @@ namespace PLATEAU.CityImport.Load.Convert
                 var subMeshIndices = new List<int>(sizeOfList);
                 if (sizeOfList % 3 != 0)
                 {
-                    Debug.LogError("三角形リストの要素数が3の倍数になりません。 num={}");
+                    throw new Exception($"三角形リストの要素数が3の倍数になりません。 num={sizeOfList}");
                 }
                 for (int j = subMesh.StartIndex; j <= subMesh.EndIndex; j++)
                 {

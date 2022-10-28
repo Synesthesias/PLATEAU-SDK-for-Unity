@@ -155,10 +155,18 @@ namespace PLATEAU.CityImport.Load
             }
 
             // ここはメインスレッドで呼ぶ必要があります。
-            await PlateauToUnityModelConverter.ConvertAndPlaceToScene(
+            bool placingSucceed = await PlateauToUnityModelConverter.ConvertAndPlaceToScene(
                 cityModel, meshExtractOptions, gmlTrans, progressDisplay, gmlName, packageConf.doSetMeshCollider
             );
-            progressDisplay.SetProgress(gmlName, 100f, "完了");
+            if (placingSucceed)
+            {
+                progressDisplay.SetProgress(gmlName, 100f, "完了");
+            }
+            else
+            {
+                progressDisplay.SetProgress(gmlName, 0f, "失敗 : モデルの変換または配置に失敗しました。");
+            }
+            
         }
 
         private static bool ShouldExcludeCityObjectOutsideExtent(PredefinedCityModelPackage package)
