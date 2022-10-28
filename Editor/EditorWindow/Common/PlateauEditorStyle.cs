@@ -12,6 +12,18 @@ namespace PLATEAU.Editor.EditorWindow.Common
     /// </summary>
     internal static class PlateauEditorStyle
     {
+        // 実装の留意点:
+        // 【利用する GUIStyle について】
+        // GUIStyle を作るとき、 new GUIStyle(baseStyle) という表記になります。
+        // ここで baseStyle は EditorStyles.Label 等になります。
+        // baseStyle で EditorStyles.toolbarButton など、ボタン系のものを指定することは推奨しません。
+        // Unity標準のボタン系スタイルは、Windowsのディスプレイ設定で 拡大/縮小 を 100% 以外に設定したときに
+        // 背景画像を設定していても Unity デフォルト背景に置き換わる問題があります。
+        // ボタンの背景として角丸画像を利用する PlateauEditorStyle ではなおさら問題となります。
+        // そのため、 baseStyle には EditorStyles.label を推奨します。
+        // label からボタンっぽい見た目にするには、 alignment = TextAnchor.MiddleCenter に設定すれば良いです。
+
+
         private const string imageDirPath = "Packages/com.synesthesias.plateau-unity-sdk/Images";
         private const string cyanBackgroundDark = "#292e30";
         private const string cyanBackgroundLight = "#abc4c9";
@@ -161,13 +173,14 @@ namespace PLATEAU.Editor.EditorWindow.Common
         /// <summary> ボタンのスタイルです。押されたときにtrueを返します。 </summary>
         public static bool MainButton(string text)
         {
-            var buttonStyle = new GUIStyle(GUI.skin.button)
+            var buttonStyle = new GUIStyle(EditorStyles.label)
             {
                 normal =
                 {
                     background = LoadTexture(imageRoundWindowWide),
                     textColor = colorDefaultFont.Dark
-                }
+                },
+                alignment = TextAnchor.MiddleCenter
             };
             bool isButtonPushed = false;
             CenterAlignHorizontal(() =>
@@ -179,13 +192,14 @@ namespace PLATEAU.Editor.EditorWindow.Common
 
         public static bool MiniButton(string text, int width)
         {
-            var buttonStyle = new GUIStyle(GUI.skin.button)
+            var buttonStyle = new GUIStyle(EditorStyles.label)
             {
                 normal =
                 {
                     background = LoadTexture(imageRoundWindowWide),
                     textColor = colorDefaultFont.Dark
-                }
+                },
+                alignment = TextAnchor.MiddleCenter
             };
             bool isButtonPushed = ButtonWithColorTint(new GUIContent(text), colorButtonMain.Color, buttonStyle,
                 GUILayout.Height(40), GUILayout.MaxWidth(width));
@@ -435,7 +449,7 @@ namespace PLATEAU.Editor.EditorWindow.Common
             };
             using (new EditorGUILayout.HorizontalScope(boxStyle,  GUILayout.Height(height)))
             {
-                var baseStyle = new GUIStyle(EditorStyles.toolbarButton)
+                var baseStyle = new GUIStyle(EditorStyles.label)
                 {
                     normal =
                     {
@@ -448,7 +462,8 @@ namespace PLATEAU.Editor.EditorWindow.Common
                     },
                     fixedHeight = height,
                     fontSize = 14,
-                    fontStyle = FontStyle.Bold
+                    fontStyle = FontStyle.Bold,
+                    alignment = TextAnchor.MiddleCenter
                 };
                 // ボタンごとのループ
                 for (int i = 0; i < tabCount; i++)
