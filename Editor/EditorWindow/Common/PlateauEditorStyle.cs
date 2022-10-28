@@ -44,6 +44,16 @@ namespace PLATEAU.Editor.EditorWindow.Common
         private const string imageRoundWindowWide = "round-window-wide.png";
         private static readonly Dictionary<string, Texture2D> cachedTexture = new Dictionary<string, Texture2D>();
 
+        private static UnityEditor.EditorWindow currentWindow = null;
+
+        /// <summary>
+        /// このクラスを使うための設定として、EditorWindow の OnGUI の開始時にこのメソッドを呼ぶ必要があります。
+        /// </summary>
+        public static void SetCurrentWindow(UnityEditor.EditorWindow window)
+        {
+            currentWindow = window;
+        } 
+
         /// <summary>
         /// 見出しを表示します。
         /// 行頭にアイコンを表示します。アイコンのパスは引数で <see cref="imageDirPath"/> からの相対パスで指定します。
@@ -501,7 +511,18 @@ namespace PLATEAU.Editor.EditorWindow.Common
         /// <summary>
         /// スクリーンの幅からスクロールバーを除いたものを返します。
         /// </summary>
-        private static int ScreenDrawableWidth => Screen.width - 15;
+        private static float ScreenDrawableWidth
+        {
+            get
+            {
+                if (currentWindow == null)
+                {
+                    Debug.LogError($"{nameof(PlateauEditorStyle)}.{nameof(SetCurrentWindow)} がコールされていません。各ウィンドウのGUI開始時にコールする必要があります。");
+                    return 400; // デフォルト値。ウィンドウサイズの取得ができなかったので、代わりになんとなく横幅としてありそうな値を返します。
+                }
+                return currentWindow.position.width - 15;
+            }
+        }
 
         public static void SubTitle(string text)
         {
