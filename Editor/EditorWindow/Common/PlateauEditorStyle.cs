@@ -476,7 +476,6 @@ namespace PLATEAU.Editor.EditorWindow.Common
             var style = new GUIStyle(EditorStyles.foldoutHeader)
             {
                 fixedWidth = ScreenDrawableWidth,
-                // fixedHeight = 100
             };
             var textContent = new GUIContent(headerText);
             var colorTint = new Color(
@@ -563,9 +562,16 @@ namespace PLATEAU.Editor.EditorWindow.Common
                     return cachedTexture[colorCode];
                 }
             }
-            Texture2D tex = new Texture2D(1, 1);
+            Texture2D tex = new Texture2D(4, 4);
             ColorUtility.TryParseHtmlString(colorCode, out Color col);
-            tex.SetPixel(0, 0, col);
+            for (int x = 0; x < tex.width; x++)
+            {
+                for (int y = 0; y < tex.height; y++)
+                {
+                    tex.SetPixel(x, y, col);
+                }
+            }
+
             tex.Apply();
             cachedTexture[colorCode] = tex;
             return tex;
@@ -575,7 +581,7 @@ namespace PLATEAU.Editor.EditorWindow.Common
         {
             const int logoMaxWidth = 300;
             var tex = LoadTexture(imageNameLogo);
-            if (tex is null) return;
+            if (tex == null) return;
             float width = Math.Min(Math.Min(tex.width, ScreenDrawableWidth), logoMaxWidth);
             float height = tex.height * width / tex.width;
             using (new EditorGUILayout.VerticalScope(new GUIStyle(StyleLogoBackground)))
@@ -654,7 +660,7 @@ namespace PLATEAU.Editor.EditorWindow.Common
             }
 
             var tex = AssetDatabase.LoadAssetAtPath<Texture2D>(assetPath);
-            if (tex is null)
+            if (tex == null)
             {
                 Debug.LogError($"Texture is not found : assetPath = {assetPath}");
             }
