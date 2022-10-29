@@ -10,6 +10,7 @@ using PLATEAU.Tests.TestUtils;
 using PLATEAU.Udx;
 using PLATEAU.Util.Async;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;
 
 namespace PLATEAU.Tests.EditModeTests
@@ -39,15 +40,15 @@ namespace PLATEAU.Tests.EditModeTests
         }
         
         [UnityTest]
-        public IEnumerator ImportCopiesSrcFilesToStreamingAssets()
+        public IEnumerator TestImport()
         {
             yield return ImportMiniTokyo(out config).AsIEnumerator();
             
+            // GMLファイルとその関連ファイルが Assets/StreamingAssets/.PLATEAU にコピーされることを確認します。
             AssertFilesExist(
                 basePath: testDataFetchPath,
                 "codelists/Common_districtsAndZonesType.xml",
                 "udx/bldg/53392546_bldg_6697_2_op.gml",
-                "udx/bldg/53392547_bldg_6697_2_op.gml",
                 "udx/bldg/53392547_bldg_6697_2_op.gml",
                 "udx/brid/53394525_brid_6697_op.gml",
                 "udx/brid/53394525_brid_6697_appearance/skjp6776.jpg",
@@ -63,7 +64,20 @@ namespace PLATEAU.Tests.EditModeTests
                 "udx/urf/533925_urf_6668_yoto_op.gml"
                 );
 
-
+            AssertGameObjsExist(
+                "LOD0", "LOD1", "LOD2",
+                "53392546_bldg_6697_2_op.gml",
+                "53392547_bldg_6697_2_op.gml",
+                "53394525_brid_6697_op.gml",
+                "533925_dem_6697_op.gml",
+                "53394525_frn_6697_sjkms_op.gml",
+                "533925_lsld_6668_op.gml",
+                "533925_luse_6668_2_op.gml",
+                "533925_luse_6697_park_op.gml",
+                "533925_tran_6697_op.gml",
+                "533925_urf_6668_boka_op.gml",
+                "533925_urf_6668_kodo_op.gml",
+                "533925_urf_6668_yoto_op.gml");
         }
 
         private static Task ImportMiniTokyo(out CityLoadConfig outConfig)
@@ -101,6 +115,14 @@ namespace PLATEAU.Tests.EditModeTests
             {
                 string path = Path.GetFullPath(Path.Combine(basePath, relativePath));
                 Assert.IsTrue(File.Exists(path), $"次のパスにファイルが存在する : {path}");
+            }
+        }
+
+        private static void AssertGameObjsExist(params string[] objNames)
+        {
+            foreach (string objName in objNames)
+            {
+                SceneUtil.AssertGameObjExists(objName);
             }
         }
     }
