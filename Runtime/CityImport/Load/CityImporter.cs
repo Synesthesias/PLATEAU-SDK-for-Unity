@@ -16,12 +16,20 @@ using UnityEngine;
 
 namespace PLATEAU.CityImport.Load
 {
+    /// <summary>
+    /// GMLファイルに記載された都市モデルを Unity にインポートします。
+    /// </summary>
     internal static class CityImporter
     {
         // インポート設定のうち、Unityで共通するものです。
         private const CoordinateSystem meshAxes = CoordinateSystem.EUN;
         private const float unitScale = 1.0f;
 
+        /// <summary>
+        /// <see cref="CityImporter"/> クラスのメインメソッドです。
+        /// GMLファイルから都市モデルを読み、そのメッシュをUnity向けに変換してシーンに配置します。
+        /// メインスレッドで呼ぶ必要があります。
+        /// </summary>
         public static async Task ImportAsync(CityLoadConfig config, IProgressDisplay progressDisplay)
         {
             string sourcePath = config.SourcePathBeforeImport;
@@ -84,10 +92,6 @@ namespace PLATEAU.CityImport.Load
                 }
 
             }));
-            // foreach(var gmlInfo in targetGmls)
-            // {
-            //     await ImportGml(gmlInfo, destPath, conf, collection, rootTrans, progressDisplay);
-            // }
 
 
             foreach (var gmlInfo in targetGmls) gmlInfo.Dispose();
@@ -98,7 +102,7 @@ namespace PLATEAU.CityImport.Load
         /// GMLファイルを1つインポートします。
         /// メインスレッドで呼ぶ必要があります。
         /// </summary>
-        public static async Task ImportGml(
+        private static async Task ImportGml(
             GmlFileInfo gmlInfo, string destPath, CityLoadConfig conf,
             UdxFileCollection collection, Transform rootTrans, IProgressDisplay progressDisplay,
             PlateauVector3d referencePoint)
