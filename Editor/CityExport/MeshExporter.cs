@@ -68,7 +68,7 @@ namespace PLATEAU.Editor.CityExport
             }
         }
 
-        public static void ModelToFile(string destDir, string fileNameWithoutExtension, Model model,
+        private static void ModelToFile(string destDir, string fileNameWithoutExtension, Model model,
             MeshExportOptions options)
         {
             switch (options.FileFormat)
