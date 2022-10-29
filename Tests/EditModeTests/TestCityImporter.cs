@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using PLATEAU.CityImport.Load;
@@ -42,18 +43,26 @@ namespace PLATEAU.Tests.EditModeTests
         {
             yield return ImportMiniTokyo(out config).AsIEnumerator();
             
-            string path = testDataFetchPath;
-            Assert.IsTrue(Directory.Exists(path));
-            Assert.IsTrue(File.Exists(path + "/codelists/Common_districtsAndZonesType.xml"));
-            Assert.IsTrue(File.Exists(path + "/udx/bldg/53392546_bldg_6697_2_op.gml"));
-            Assert.IsTrue(File.Exists(path + "/udx/bldg/53392547_bldg_6697_2_op.gml"));
-            Assert.IsTrue(File.Exists(path + "/udx/bldg/53392547_bldg_6697_2_op.gml"));
-            // TODO 下のコメントアウトAssertが通るようにする
-            // Assert.IsTrue(File.Exists(path + "/udx/brid/53394525_brid_6697_op.gml"));
-            Assert.IsTrue(File.Exists(path + "/udx/dem/533925_dem_6697_op.gml"));
-            
-            Assert.IsTrue(File.Exists(path + "/udx/tran/533925_tran_6697_op.gml"));
-            
+            AssertFilesExist(
+                basePath: testDataFetchPath,
+                "codelists/Common_districtsAndZonesType.xml",
+                "udx/bldg/53392546_bldg_6697_2_op.gml",
+                "udx/bldg/53392547_bldg_6697_2_op.gml",
+                "udx/bldg/53392547_bldg_6697_2_op.gml",
+                "udx/brid/53394525_brid_6697_op.gml",
+                "udx/brid/53394525_brid_6697_appearance/skjp6776.jpg",
+                "udx/dem/533925_dem_6697_op.gml",
+                "udx/frn/53394525_frn_6697_sjkms_op.gml",
+                "udx/frn/53394525_frn_6697_sjkms_appearance/17992.jpg",
+                "udx/lsld/533925_lsld_6668_op.gml",
+                "udx/luse/533925_luse_6668_2_op.gml",
+                "udx/luse/533925_luse_6697_park_op.gml",
+                "udx/tran/533925_tran_6697_op.gml",
+                "udx/urf/533925_urf_6668_boka_op.gml",
+                "udx/urf/533925_urf_6668_kodo_op.gml",
+                "udx/urf/533925_urf_6668_yoto_op.gml"
+                );
+
 
         }
 
@@ -68,7 +77,10 @@ namespace PLATEAU.Tests.EditModeTests
             {
                 "53394525", "53392546", "53392547", "533925"
             };
-            //TODO com.の部分を共通化
+            foreach (var packageConf in outConfig.ForEachPackagePair)
+            {
+                packageConf.Value.includeTexture = true;
+            }
             outConfig.SourcePathBeforeImport =
                 Path.GetFullPath(testDataPath);
 
@@ -81,6 +93,15 @@ namespace PLATEAU.Tests.EditModeTests
             string fullPath = Path.GetFullPath(testDataFetchPath);
             if (!Directory.Exists(fullPath)) return;
             Directory.Delete(Path.GetFullPath(fullPath), true);
+        }
+
+        private static void AssertFilesExist(string basePath, params string[] relativePaths)
+        {
+            foreach(string relativePath in relativePaths)
+            {
+                string path = Path.GetFullPath(Path.Combine(basePath, relativePath));
+                Assert.IsTrue(File.Exists(path), $"次のパスにファイルが存在する : {path}");
+            }
         }
     }
 }
