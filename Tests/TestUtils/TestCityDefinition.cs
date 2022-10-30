@@ -8,6 +8,10 @@ using PLATEAU.Udx;
 
 namespace PLATEAU.Tests.TestUtils
 {
+    /// <summary>
+    /// ユニットテストにおいて、都市データに期待する状態を定義します。
+    /// 何というGMLファイルがあることが期待され、どの地域メッシュコードがあるかを記述します。
+    /// </summary>
     internal class TestCityDefinition
     {
         public string SrcRootDirPath => Path.GetFullPath(Path.Combine(testDataDir, this.rootDirName));
@@ -45,6 +49,11 @@ namespace PLATEAU.Tests.TestUtils
             return task;
         }
 
+        /// <summary>
+        /// ユニットテストにおいて、GMLファイルに期待する状態を定義します。
+        /// どのパスにGMLファイルがあることが期待されるか、メッシュは有するか、期待するテクスチャのパスは何か
+        /// を定義します。
+        /// </summary>
         public class TestGmlDefinition
         {
             public string GmlPath { get; set; }

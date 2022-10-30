@@ -2,19 +2,11 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using NUnit.Framework;
-using PLATEAU.CityImport.Load;
 using PLATEAU.CityImport.Setting;
-using PLATEAU.Editor.EditorWindow.ProgressDisplay;
-using PLATEAU.Interop;
 using PLATEAU.Tests.TestUtils;
-using PLATEAU.Udx;
-using PLATEAU.Util.Async;
 using UnityEngine;
 using UnityEngine.Rendering;
-using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;
 
 namespace PLATEAU.Tests.EditModeTests

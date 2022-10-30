@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.IO;
 using NUnit.Framework;
 using PLATEAU.CityInfo;
@@ -8,7 +7,6 @@ using PLATEAU.Geometries;
 using PLATEAU.Interop;
 using PLATEAU.MeshWriter;
 using PLATEAU.Tests.TestUtils;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.TestTools;
 using Object = UnityEngine.Object;
