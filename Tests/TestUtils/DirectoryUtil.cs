@@ -119,7 +119,6 @@ namespace PLATEAU.Tests.TestUtils
             var directoryInfo = new DirectoryInfo(dirPath);
             foreach (var file in directoryInfo.GetFiles())
             {
-                if (file.Name.Contains(".mtl")) continue;
                 file.Delete();
             }
 
