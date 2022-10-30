@@ -70,13 +70,13 @@ namespace PLATEAU.Tests.TestUtils
                 new TestGmlDefinition("udx/dem/533925_dem_6697_op.gml", true, null),
                 new TestGmlDefinition("udx/frn/53394525_frn_6697_sjkms_op.gml", true,
                     new[] { "udx/frn/53394525_frn_6697_sjkms_appearance/17992.jpg" }),
-                new TestGmlDefinition("udx/lsld/533925_lsld_6668_op.gml", true, null),
+                new TestGmlDefinition("udx/lsld/533925_lsld_6668_op.gml", false, null),
                 new TestGmlDefinition("udx/luse/533925_luse_6668_2_op.gml", true, null),
                 new TestGmlDefinition("udx/luse/533925_luse_6697_park_op.gml", true, null),
                 new TestGmlDefinition("udx/tran/533925_tran_6697_op.gml", true,  null),
-                new TestGmlDefinition("udx/urf/533925_urf_6668_boka_op.gml", true, null),
-                new TestGmlDefinition("udx/urf/533925_urf_6668_kodo_op.gml", true, null),
-                new TestGmlDefinition("udx/urf/533925_urf_6668_yoto_op.gml", true, null)
+                new TestGmlDefinition("udx/urf/533925_urf_6668_boka_op.gml", false, null),
+                new TestGmlDefinition("udx/urf/533925_urf_6668_kodo_op.gml", false, null),
+                new TestGmlDefinition("udx/urf/533925_urf_6668_yoto_op.gml", false, null)
             }, new []
             {
                 "53394525", "53392546", "53392547", "533925"
