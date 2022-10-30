@@ -85,7 +85,9 @@ namespace PLATEAU.Tests.TestUtils
                 new TestGmlDefinition("udx/tran/533925_tran_6697_op.gml", true,  null),
                 new TestGmlDefinition("udx/urf/533925_urf_6668_boka_op.gml", false, null),
                 new TestGmlDefinition("udx/urf/533925_urf_6668_kodo_op.gml", false, null),
-                new TestGmlDefinition("udx/urf/533925_urf_6668_yoto_op.gml", false, null)
+                new TestGmlDefinition("udx/urf/533925_urf_6668_yoto_op.gml", false, null),
+                new TestGmlDefinition("udx/fld/natl/tamagawa_tamagawa-asakawa-etc/53392547_fld_6697_l1_op.gml", true, null),
+                new TestGmlDefinition("udx/fld/natl/tamagawa_tamagawa-asakawa-etc/53392547_fld_6697_l2_op.gml", true, null),
             }, new []
             {
                 "53394525", "53392546", "53392547", "533925"
