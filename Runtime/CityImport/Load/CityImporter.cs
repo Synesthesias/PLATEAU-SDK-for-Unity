@@ -120,10 +120,12 @@ namespace PLATEAU.CityImport.Load
             progressDisplay.SetProgress(gmlName, 20f, "GMLファイルをロード中");
 
             // GMLと関連ファイルをコピーしたので、パスをコピー後のものに更新します。
-            // 元パスが　AAA/ルートフォルダ名/udx/パッケージ名/111.gml　だったとすると、
+            // 元パスが　AAA/ルートフォルダ名/udx/パッケージ名/(0個以上のフォルダ)/111.gml　だったとすると、
             // AAAの部分だけ置き換えます。
+            string rootDirName = Path.GetFileName(conf.SourcePathBeforeImport);
             string gmlPathBefore = Path.GetFullPath(gmlInfo.Path).Replace('\\', '/');
-            string pathToReplace = Path.GetFullPath(Path.Combine(gmlPathBefore, "../../../../")).Replace('\\', '/');
+            int replaceIndex = gmlPathBefore.LastIndexOf($"{rootDirName}/udx/{gmlInfo.FeatureType}/", StringComparison.Ordinal);
+            string pathToReplace = gmlPathBefore.Substring(0, replaceIndex);
             string gmlPathAfter = gmlPathBefore.Replace(pathToReplace, destPath);
             gmlInfo.Path = gmlPathAfter;
             
