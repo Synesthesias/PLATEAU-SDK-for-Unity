@@ -132,6 +132,7 @@ namespace PLATEAU.Editor.CityExport.ModelConvert
             var dllSubMeshes = new List<SubMesh>();
             if (includeTexture)
             {
+                Debug.Log($"subMeshCount={subMeshCount}");
                 for (int i = 0; i < subMeshCount; i++)
                 {
                     var unitySubMesh = unityMesh.GetSubMesh(i);
@@ -147,18 +148,14 @@ namespace PLATEAU.Editor.CityExport.ModelConvert
                     string texturePath = "";
                     if (materials != null && i < materials.Length)
                     {
-                        var material = materials[i];
-                        if (material == null) continue;
-                        var texture = material.mainTexture;
-                        if (texture == null) continue;
-                        texturePath = Path.Combine(PathUtil.plateauSrcFetchDir, texture.name);
+                        texturePath = GetTexturePathFromMaterialName(materials[i]);
                     }
                     dllSubMeshes.Add(SubMesh.Create(startIndex, endIndex, texturePath));
                 
                 }
             }
             else
-            { // テクスチャを含めないとき、サブメッシュはただ1つです。
+            { // テクスチャを含めない設定のとき、サブメッシュはただ1つです。
                 dllSubMeshes.Add(SubMesh.Create(0, indices.Length - 1, ""));
             }
             
@@ -176,6 +173,14 @@ namespace PLATEAU.Editor.CityExport.ModelConvert
             // C++側で特別にテクスチャを除く処理は不必要だからです。
             
             return dllMesh;
+        }
+        
+        private static string GetTexturePathFromMaterialName(Material mat)
+        {
+            if (mat == null) return "";
+            var tex = mat.mainTexture;
+            if (tex == null) return "";
+            return Path.Combine(PathUtil.plateauSrcFetchDir, tex.name);
         }
 
         private static void InvertTriangles(IList<uint> indices)

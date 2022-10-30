@@ -78,13 +78,29 @@ namespace PLATEAU.Tests.EditModeTests
                 string fileContent = File.ReadAllText(objFilePath);
                 string objFileName = Path.GetFileName(objFilePath);
             
+                // objファイルの中身を見て、メッシュを構成するのに必要な要素が存在するかを確認します。
+                // objフォーマットの文法に則った正規表現で検索します。
                 AssertStringMatchRegexes(fileContent,new []
                 {
-                    ("^mtllib ", $"{objFileName} にマテリアルが含まれる"),
-                    ("^g ", $"{objFileName} にグループが含まれる"),
-                    ("^v ", $"{objFileName} に頂点が含まれる"),
-                    ("^vt ", $"{objFileName} にUVが含まれる"),
-                    ("^f ", $"{objFileName} に面が含まれる")
+                    // 正規表現の実装上の注意:
+                    // Windowsの場合、改行は \n ではなく \r\n になります。
+                    // そのため、行末でマッチさせるには $ ではなく \r?$ と表記する必要があります。
+                    
+                    ( // 文法 : matlib (materialファイル名).mtl　でマテリアル定義ファイルを参照
+                        @"^mtllib .+\.mtl\r?$",
+                        $"{objFileName} にマテリアル定義ファイルへの参照が含まれる"),
+                    ( // 文法 : g (group名)　でグループを定義
+                        @"^g .+\r?$",
+                        $"{objFileName} にグループが含まれる"),
+                    ( // 文法 : v (x座標) (y座標) (z座標) で頂点を定義
+                        @"^v [0-9.\-]+ [0-9.\-]+ [0-9.\-]+\r?$",
+                        $"{objFileName} に頂点が含まれる"),
+                    ( // 文法 : vt (x座標) (y座標) でUV座標を定義
+                        @"^vt [0-9.\-]+ [0-9.\-]+\r?$",
+                        $"{objFileName} にUVが含まれる"),
+                    ( // 文法 : f (頂点インデックス) (頂点インデックス) (頂点インデックス) で面を定義
+                        @"^f \d+ \d+ \d+\r?$",
+                        $"{objFileName} に面が含まれる")
                 });
             }
            
@@ -94,7 +110,7 @@ namespace PLATEAU.Tests.EditModeTests
         {
             foreach (var (regex, message) in regexAndMessages)
             {
-                Assert.IsTrue(Regex.IsMatch(str, regex), message);
+                Assert.IsTrue(Regex.IsMatch(str, regex, RegexOptions.Multiline), message);
             }
         }
     }
