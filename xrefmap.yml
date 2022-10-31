@@ -3222,12 +3222,12 @@ references:
   isSpec: "True"
   fullName: PLATEAU.PolygonMesh.Mesh.MarkInvalid
   nameWithType: Mesh.MarkInvalid
-- uid: PLATEAU.PolygonMesh.Mesh.MergeMesh(PLATEAU.PolygonMesh.Mesh,CoordinateSystem,System.Boolean)
-  name: MergeMesh(Mesh, CoordinateSystem, Boolean)
-  href: api/PLATEAU.PolygonMesh.Mesh.html#PLATEAU_PolygonMesh_Mesh_MergeMesh_PLATEAU_PolygonMesh_Mesh_CoordinateSystem_System_Boolean_
-  commentId: M:PLATEAU.PolygonMesh.Mesh.MergeMesh(PLATEAU.PolygonMesh.Mesh,CoordinateSystem,System.Boolean)
-  fullName: PLATEAU.PolygonMesh.Mesh.MergeMesh(PLATEAU.PolygonMesh.Mesh, CoordinateSystem, System.Boolean)
-  nameWithType: Mesh.MergeMesh(Mesh, CoordinateSystem, Boolean)
+- uid: PLATEAU.PolygonMesh.Mesh.MergeMesh(PLATEAU.PolygonMesh.Mesh,System.Boolean)
+  name: MergeMesh(Mesh, Boolean)
+  href: api/PLATEAU.PolygonMesh.Mesh.html#PLATEAU_PolygonMesh_Mesh_MergeMesh_PLATEAU_PolygonMesh_Mesh_System_Boolean_
+  commentId: M:PLATEAU.PolygonMesh.Mesh.MergeMesh(PLATEAU.PolygonMesh.Mesh,System.Boolean)
+  fullName: PLATEAU.PolygonMesh.Mesh.MergeMesh(PLATEAU.PolygonMesh.Mesh, System.Boolean)
+  nameWithType: Mesh.MergeMesh(Mesh, Boolean)
 - uid: PLATEAU.PolygonMesh.Mesh.MergeMesh*
   name: MergeMesh
   href: api/PLATEAU.PolygonMesh.Mesh.html#PLATEAU_PolygonMesh_Mesh_MergeMesh_
@@ -3235,15 +3235,15 @@ references:
   isSpec: "True"
   fullName: PLATEAU.PolygonMesh.Mesh.MergeMesh
   nameWithType: Mesh.MergeMesh
-- uid: PLATEAU.PolygonMesh.Mesh.MergeMeshInfo(PlateauVector3d[],System.UInt32[],PlateauVector2f[],PLATEAU.PolygonMesh.SubMesh[],CoordinateSystem,System.Boolean)
-  name: MergeMeshInfo(PlateauVector3d[], UInt32[], PlateauVector2f[], SubMesh[], CoordinateSystem, Boolean)
-  href: api/PLATEAU.PolygonMesh.Mesh.html#PLATEAU_PolygonMesh_Mesh_MergeMeshInfo_PlateauVector3d___System_UInt32___PlateauVector2f___PLATEAU_PolygonMesh_SubMesh___CoordinateSystem_System_Boolean_
-  commentId: M:PLATEAU.PolygonMesh.Mesh.MergeMeshInfo(PlateauVector3d[],System.UInt32[],PlateauVector2f[],PLATEAU.PolygonMesh.SubMesh[],CoordinateSystem,System.Boolean)
-  name.vb: MergeMeshInfo(PlateauVector3d(), UInt32(), PlateauVector2f(), SubMesh(), CoordinateSystem, Boolean)
-  fullName: PLATEAU.PolygonMesh.Mesh.MergeMeshInfo(PlateauVector3d[], System.UInt32[], PlateauVector2f[], PLATEAU.PolygonMesh.SubMesh[], CoordinateSystem, System.Boolean)
-  fullName.vb: PLATEAU.PolygonMesh.Mesh.MergeMeshInfo(PlateauVector3d(), System.UInt32(), PlateauVector2f(), PLATEAU.PolygonMesh.SubMesh(), CoordinateSystem, System.Boolean)
-  nameWithType: Mesh.MergeMeshInfo(PlateauVector3d[], UInt32[], PlateauVector2f[], SubMesh[], CoordinateSystem, Boolean)
-  nameWithType.vb: Mesh.MergeMeshInfo(PlateauVector3d(), UInt32(), PlateauVector2f(), SubMesh(), CoordinateSystem, Boolean)
+- uid: PLATEAU.PolygonMesh.Mesh.MergeMeshInfo(PlateauVector3d[],System.UInt32[],PlateauVector2f[],PLATEAU.PolygonMesh.SubMesh[],CoordinateSystem,CoordinateSystem,System.Boolean)
+  name: MergeMeshInfo(PlateauVector3d[], UInt32[], PlateauVector2f[], SubMesh[], CoordinateSystem, CoordinateSystem, Boolean)
+  href: api/PLATEAU.PolygonMesh.Mesh.html#PLATEAU_PolygonMesh_Mesh_MergeMeshInfo_PlateauVector3d___System_UInt32___PlateauVector2f___PLATEAU_PolygonMesh_SubMesh___CoordinateSystem_CoordinateSystem_System_Boolean_
+  commentId: M:PLATEAU.PolygonMesh.Mesh.MergeMeshInfo(PlateauVector3d[],System.UInt32[],PlateauVector2f[],PLATEAU.PolygonMesh.SubMesh[],CoordinateSystem,CoordinateSystem,System.Boolean)
+  name.vb: MergeMeshInfo(PlateauVector3d(), UInt32(), PlateauVector2f(), SubMesh(), CoordinateSystem, CoordinateSystem, Boolean)
+  fullName: PLATEAU.PolygonMesh.Mesh.MergeMeshInfo(PlateauVector3d[], System.UInt32[], PlateauVector2f[], PLATEAU.PolygonMesh.SubMesh[], CoordinateSystem, CoordinateSystem, System.Boolean)
+  fullName.vb: PLATEAU.PolygonMesh.Mesh.MergeMeshInfo(PlateauVector3d(), System.UInt32(), PlateauVector2f(), PLATEAU.PolygonMesh.SubMesh(), CoordinateSystem, CoordinateSystem, System.Boolean)
+  nameWithType: Mesh.MergeMeshInfo(PlateauVector3d[], UInt32[], PlateauVector2f[], SubMesh[], CoordinateSystem, CoordinateSystem, Boolean)
+  nameWithType.vb: Mesh.MergeMeshInfo(PlateauVector3d(), UInt32(), PlateauVector2f(), SubMesh(), CoordinateSystem, CoordinateSystem, Boolean)
 - uid: PLATEAU.PolygonMesh.Mesh.MergeMeshInfo*
   name: MergeMeshInfo
   href: api/PLATEAU.PolygonMesh.Mesh.html#PLATEAU_PolygonMesh_Mesh_MergeMeshInfo_

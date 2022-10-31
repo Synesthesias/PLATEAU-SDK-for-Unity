@@ -591,12 +591,12 @@ Unity や Unreal Engine でメッシュを生成するために必要な情報�
   
   
   <a id="PLATEAU_PolygonMesh_Mesh_MergeMesh_" data-uid="PLATEAU.PolygonMesh.Mesh.MergeMesh*"></a>
-  <h4 id="PLATEAU_PolygonMesh_Mesh_MergeMesh_PLATEAU_PolygonMesh_Mesh_CoordinateSystem_System_Boolean_" data-uid="PLATEAU.PolygonMesh.Mesh.MergeMesh(PLATEAU.PolygonMesh.Mesh,CoordinateSystem,System.Boolean)">MergeMesh(Mesh, CoordinateSystem, Boolean)</h4>
+  <h4 id="PLATEAU_PolygonMesh_Mesh_MergeMesh_PLATEAU_PolygonMesh_Mesh_System_Boolean_" data-uid="PLATEAU.PolygonMesh.Mesh.MergeMesh(PLATEAU.PolygonMesh.Mesh,System.Boolean)">MergeMesh(Mesh, Boolean)</h4>
   <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public void MergeMesh(Mesh otherMesh, CoordinateSystem meshAxes, bool includeTexture)</code></pre>
+    <pre><code class="lang-csharp hljs">public void MergeMesh(Mesh otherMesh, bool includeTexture)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -614,11 +614,6 @@ Unity や Unreal Engine でメッシュを生成するために必要な情報�
         <td></td>
       </tr>
       <tr>
-        <td><span class="xref">CoordinateSystem</span></td>
-        <td><span class="parametername">meshAxes</span></td>
-        <td></td>
-      </tr>
-      <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
         <td><span class="parametername">includeTexture</span></td>
         <td></td>
@@ -628,12 +623,12 @@ Unity や Unreal Engine でメッシュを生成するために必要な情報�
   
   
   <a id="PLATEAU_PolygonMesh_Mesh_MergeMeshInfo_" data-uid="PLATEAU.PolygonMesh.Mesh.MergeMeshInfo*"></a>
-  <h4 id="PLATEAU_PolygonMesh_Mesh_MergeMeshInfo_PlateauVector3d___System_UInt32___PlateauVector2f___PLATEAU_PolygonMesh_SubMesh___CoordinateSystem_System_Boolean_" data-uid="PLATEAU.PolygonMesh.Mesh.MergeMeshInfo(PlateauVector3d[],System.UInt32[],PlateauVector2f[],PLATEAU.PolygonMesh.SubMesh[],CoordinateSystem,System.Boolean)">MergeMeshInfo(PlateauVector3d[], UInt32[], PlateauVector2f[], SubMesh[], CoordinateSystem, Boolean)</h4>
+  <h4 id="PLATEAU_PolygonMesh_Mesh_MergeMeshInfo_PlateauVector3d___System_UInt32___PlateauVector2f___PLATEAU_PolygonMesh_SubMesh___CoordinateSystem_CoordinateSystem_System_Boolean_" data-uid="PLATEAU.PolygonMesh.Mesh.MergeMeshInfo(PlateauVector3d[],System.UInt32[],PlateauVector2f[],PLATEAU.PolygonMesh.SubMesh[],CoordinateSystem,CoordinateSystem,System.Boolean)">MergeMeshInfo(PlateauVector3d[], UInt32[], PlateauVector2f[], SubMesh[], CoordinateSystem, CoordinateSystem, Boolean)</h4>
   <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public void MergeMeshInfo(PlateauVector3d[] vertices, uint[] indices, PlateauVector2f[] uv1, SubMesh[] subMeshes, CoordinateSystem meshAxes, bool includeTexture)</code></pre>
+    <pre><code class="lang-csharp hljs">public void MergeMeshInfo(PlateauVector3d[] vertices, uint[] indices, PlateauVector2f[] uv1, SubMesh[] subMeshes, CoordinateSystem meshAxisConvertFrom, CoordinateSystem meshAxisConvertTo, bool includeTexture)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -667,7 +662,12 @@ Unity や Unreal Engine でメッシュを生成するために必要な情報�
       </tr>
       <tr>
         <td><span class="xref">CoordinateSystem</span></td>
-        <td><span class="parametername">meshAxes</span></td>
+        <td><span class="parametername">meshAxisConvertFrom</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">CoordinateSystem</span></td>
+        <td><span class="parametername">meshAxisConvertTo</span></td>
         <td></td>
       </tr>
       <tr>
