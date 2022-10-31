@@ -1241,9 +1241,9 @@ namespace PLATEAU.Interop
         internal static extern APIResult plateau_gltf_writer_write(
             [In] IntPtr handle,
             out bool flg,
-            [In] string gltfFilePath,
-            [In] IntPtr ModelPtr,
-            [In] string tex_path,
+            [In] byte[] gltfFilePathUtf8,
+            [In] IntPtr modelPtr,
+            [In] byte[] texPathUtf8,
             GltfFileFormat format);
 
         // ***************
@@ -1259,7 +1259,7 @@ namespace PLATEAU.Interop
         internal static extern APIResult plateau_obj_writer_write(
             [In] IntPtr handle,
             out bool flg,
-            [In] string objFilePath,
+            [In] byte[] objFilePathUtf8,
             [In] IntPtr ModelPtr);
         
         // ***************

@@ -42,7 +42,6 @@ namespace PLATEAU.Editor.CityImport.AreaSelector
             }
 
             string prevScenePath = SceneManager.GetActiveScene().path;
-            // var loaderBehaviourID = GlobalObjectId.GetGlobalObjectIdSlow(loaderBehaviourBehaviour);
             SetUpTemporaryScene();
             var behaviour = Object.FindObjectOfType<AreaSelectorBehaviour>();
             behaviour.Init(prevScenePath, dataSourcePath, areaSelectResultReceiver, coordinateZoneID);
