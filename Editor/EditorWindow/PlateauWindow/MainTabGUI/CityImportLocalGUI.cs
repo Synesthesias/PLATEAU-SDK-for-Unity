@@ -27,6 +27,8 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
         private SynchronizationContext mainThreadContext;
         private UnityEditor.EditorWindow parentEditorWindow;
 
+        private static int numCurrentRunningTasks = 0;
+
         /// <summary>
         /// メインスレッドから呼ばれることを前提とします。
         /// </summary>
@@ -107,7 +109,21 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
                 {
                     if (PlateauEditorStyle.MainButton("モデルをインポート"))
                     {
+                        if (numCurrentRunningTasks > 0)
+                        {
+                            bool dialogueResult = EditorUtility.DisplayDialog("PLATEAU SDK", $"すでに {numCurrentRunningTasks}つのインポート処理を実行中です。\n追加で処理に加えますか？", "はい", "いいえ");
+                            if (!dialogueResult)
+                            {
+                                GUIUtility.ExitGUI();
+                                return;
+                            }
+                        }
+                        
+                        Interlocked.Increment(ref numCurrentRunningTasks);
+                        
+                        // ここでインポートします。
                         var task = CityImporter.ImportAsync(this.config, this);
+                        task.ContinueWith((t) => { Interlocked.Decrement(ref numCurrentRunningTasks); });
                         task.ContinueWithErrorCatch();
                     }
                 }
