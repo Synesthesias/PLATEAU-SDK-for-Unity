@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using PLATEAU.CityGML;
 using PLATEAU.Interop;
@@ -25,8 +26,9 @@ namespace PLATEAU.CityImport.Load.Convert
         /// <summary>
         /// 引数の cityModel を Unity向けに変換し、シーンに配置します。
         /// 非同期処理です。必ずメインスレッドで呼ぶ必要があります。
+        /// 成否を bool で返します。
         /// </summary>
-        public static async Task ConvertAndPlaceToScene(
+        public static async Task<bool> ConvertAndPlaceToScene(
             CityModel cityModel, MeshExtractOptions meshExtractOptions,
             Transform parentTrans, IProgressDisplay progressDisplay, string progressName,
             bool doSetMeshCollider
@@ -45,12 +47,21 @@ namespace PLATEAU.CityImport.Load.Convert
             // Unityでメッシュを作るためのデータを構築します。
             // 実際のメッシュデータを触らないので、Task.Run で別のスレッドで処理できます。
             progressDisplay.SetProgress(progressName, 60f, "3Dメッシュを変換中");
-            ConvertedGameObjData meshObjsData = await Task.Run(() =>
+            ConvertedGameObjData meshObjsData;
+            try
             {
-                using var plateauModel = ExtractMeshes(cityModel, meshExtractOptions);
-                var convertedObjData = new ConvertedGameObjData(plateauModel);
-                return convertedObjData;
-            });
+                meshObjsData = await Task.Run(() =>
+                {
+                    using var plateauModel = ExtractMeshes(cityModel, meshExtractOptions);
+                    var convertedObjData = new ConvertedGameObjData(plateauModel);
+                    return convertedObjData;
+                });
+            }
+            catch (Exception e)
+            {
+                Debug.LogError("メッシュデータの取得に失敗しました。\n" + e);
+                return false;
+            }
 
             // 処理B :
             // 実際にメッシュを操作してシーンに配置します。
@@ -61,7 +72,15 @@ namespace PLATEAU.CityImport.Load.Convert
             
             progressDisplay.SetProgress(progressName, 80f, "シーンに配置中");
 
-            await meshObjsData.PlaceToScene(parentTrans, cachedTexture, true, doSetMeshCollider);
+            try
+            {
+                await meshObjsData.PlaceToScene(parentTrans, cachedTexture, true, doSetMeshCollider);
+            }
+            catch (Exception e)
+            {
+                Debug.Log("メッシュデータの配置に失敗しました。\n" + e);
+                return false;
+            }
 
             // エディター内での実行であれば、生成したメッシュ,テクスチャ等をシーンに保存したいので
             // シーンにダーティフラグを付けます。
@@ -73,6 +92,7 @@ namespace PLATEAU.CityImport.Load.Convert
 #endif
 
             Debug.Log("Load complete!");
+            return true;
         }
 
         /// <summary>

@@ -11,7 +11,8 @@ namespace PLATEAU.MeshWriter
 
         public bool Write(string destination, Model model)
         {
-            var result = NativeMethods.plateau_obj_writer_write(this.handle, out var flg, destination, model.Handle);
+            var result = NativeMethods.plateau_obj_writer_write(
+                this.handle, out var flg, DLLUtil.StrToUtf8Bytes(destination), model.Handle);
             DLLUtil.CheckDllError(result);
             return flg;
         }

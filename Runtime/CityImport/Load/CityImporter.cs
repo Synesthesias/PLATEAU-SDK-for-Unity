@@ -16,12 +16,20 @@ using UnityEngine;
 
 namespace PLATEAU.CityImport.Load
 {
+    /// <summary>
+    /// GMLファイルに記載された都市モデルを Unity にインポートします。
+    /// </summary>
     internal static class CityImporter
     {
         // インポート設定のうち、Unityで共通するものです。
         private const CoordinateSystem meshAxes = CoordinateSystem.EUN;
         private const float unitScale = 1.0f;
 
+        /// <summary>
+        /// <see cref="CityImporter"/> クラスのメインメソッドです。
+        /// GMLファイルから都市モデルを読み、そのメッシュをUnity向けに変換してシーンに配置します。
+        /// メインスレッドで呼ぶ必要があります。
+        /// </summary>
         public static async Task ImportAsync(CityLoadConfig config, IProgressDisplay progressDisplay)
         {
             string sourcePath = config.SourcePathBeforeImport;
@@ -84,10 +92,6 @@ namespace PLATEAU.CityImport.Load
                 }
 
             }));
-            // foreach(var gmlInfo in targetGmls)
-            // {
-            //     await ImportGml(gmlInfo, destPath, conf, collection, rootTrans, progressDisplay);
-            // }
 
 
             foreach (var gmlInfo in targetGmls) gmlInfo.Dispose();
@@ -98,7 +102,7 @@ namespace PLATEAU.CityImport.Load
         /// GMLファイルを1つインポートします。
         /// メインスレッドで呼ぶ必要があります。
         /// </summary>
-        public static async Task ImportGml(
+        private static async Task ImportGml(
             GmlFileInfo gmlInfo, string destPath, CityLoadConfig conf,
             UdxFileCollection collection, Transform rootTrans, IProgressDisplay progressDisplay,
             PlateauVector3d referencePoint)
@@ -116,10 +120,12 @@ namespace PLATEAU.CityImport.Load
             progressDisplay.SetProgress(gmlName, 20f, "GMLファイルをロード中");
 
             // GMLと関連ファイルをコピーしたので、パスをコピー後のものに更新します。
-            // 元パスが　AAA/ルートフォルダ名/udx/パッケージ名/111.gml　だったとすると、
+            // 元パスが　AAA/ルートフォルダ名/udx/パッケージ名/(0個以上のフォルダ)/111.gml　だったとすると、
             // AAAの部分だけ置き換えます。
+            string rootDirName = Path.GetFileName(conf.SourcePathBeforeImport);
             string gmlPathBefore = Path.GetFullPath(gmlInfo.Path).Replace('\\', '/');
-            string pathToReplace = Path.GetFullPath(Path.Combine(gmlPathBefore, "../../../../")).Replace('\\', '/');
+            int replaceIndex = gmlPathBefore.LastIndexOf($"{rootDirName}/udx/{gmlInfo.FeatureType}/", StringComparison.Ordinal);
+            string pathToReplace = gmlPathBefore.Substring(0, replaceIndex);
             string gmlPathAfter = gmlPathBefore.Replace(pathToReplace, destPath);
             gmlInfo.Path = gmlPathAfter;
             
@@ -155,10 +161,18 @@ namespace PLATEAU.CityImport.Load
             }
 
             // ここはメインスレッドで呼ぶ必要があります。
-            await PlateauToUnityModelConverter.ConvertAndPlaceToScene(
+            bool placingSucceed = await PlateauToUnityModelConverter.ConvertAndPlaceToScene(
                 cityModel, meshExtractOptions, gmlTrans, progressDisplay, gmlName, packageConf.doSetMeshCollider
             );
-            progressDisplay.SetProgress(gmlName, 100f, "完了");
+            if (placingSucceed)
+            {
+                progressDisplay.SetProgress(gmlName, 100f, "完了");
+            }
+            else
+            {
+                progressDisplay.SetProgress(gmlName, 0f, "失敗 : モデルの変換または配置に失敗しました。");
+            }
+            
         }
 
         private static bool ShouldExcludeCityObjectOutsideExtent(PredefinedCityModelPackage package)

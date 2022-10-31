@@ -12,6 +12,18 @@ namespace PLATEAU.Editor.EditorWindow.Common
     /// </summary>
     internal static class PlateauEditorStyle
     {
+        // 実装の留意点:
+        // 【利用する GUIStyle について】
+        // GUIStyle を作るとき、 new GUIStyle(baseStyle) という表記になります。
+        // ここで baseStyle は EditorStyles.Label 等になります。
+        // baseStyle で EditorStyles.toolbarButton など、ボタン系のものを指定することは推奨しません。
+        // Unity標準のボタン系スタイルは、Windowsのディスプレイ設定で 拡大/縮小 を 100% 以外に設定したときに
+        // 背景画像を設定していても Unity デフォルト背景に置き換わる問題があります。
+        // ボタンの背景として角丸画像を利用する PlateauEditorStyle ではなおさら問題となります。
+        // そのため、 baseStyle には EditorStyles.label を推奨します。
+        // label からボタンっぽい見た目にするには、 alignment = TextAnchor.MiddleCenter に設定すれば良いです。
+
+
         private const string imageDirPath = "Packages/com.synesthesias.plateau-unity-sdk/Images";
         private const string cyanBackgroundDark = "#292e30";
         private const string cyanBackgroundLight = "#abc4c9";
@@ -43,6 +55,16 @@ namespace PLATEAU.Editor.EditorWindow.Common
         private const string imageRoundButton = "round-button.png";
         private const string imageRoundWindowWide = "round-window-wide.png";
         private static readonly Dictionary<string, Texture2D> cachedTexture = new Dictionary<string, Texture2D>();
+
+        private static UnityEditor.EditorWindow currentWindow = null;
+
+        /// <summary>
+        /// このクラスを使うための設定として、EditorWindow の OnGUI の開始時にこのメソッドを呼ぶ必要があります。
+        /// </summary>
+        public static void SetCurrentWindow(UnityEditor.EditorWindow window)
+        {
+            currentWindow = window;
+        } 
 
         /// <summary>
         /// 見出しを表示します。
@@ -151,13 +173,14 @@ namespace PLATEAU.Editor.EditorWindow.Common
         /// <summary> ボタンのスタイルです。押されたときにtrueを返します。 </summary>
         public static bool MainButton(string text)
         {
-            var buttonStyle = new GUIStyle(GUI.skin.button)
+            var buttonStyle = new GUIStyle(EditorStyles.label)
             {
                 normal =
                 {
                     background = LoadTexture(imageRoundWindowWide),
                     textColor = colorDefaultFont.Dark
-                }
+                },
+                alignment = TextAnchor.MiddleCenter
             };
             bool isButtonPushed = false;
             CenterAlignHorizontal(() =>
@@ -169,13 +192,14 @@ namespace PLATEAU.Editor.EditorWindow.Common
 
         public static bool MiniButton(string text, int width)
         {
-            var buttonStyle = new GUIStyle(GUI.skin.button)
+            var buttonStyle = new GUIStyle(EditorStyles.label)
             {
                 normal =
                 {
                     background = LoadTexture(imageRoundWindowWide),
                     textColor = colorDefaultFont.Dark
-                }
+                },
+                alignment = TextAnchor.MiddleCenter
             };
             bool isButtonPushed = ButtonWithColorTint(new GUIContent(text), colorButtonMain.Color, buttonStyle,
                 GUILayout.Height(40), GUILayout.MaxWidth(width));
@@ -425,7 +449,7 @@ namespace PLATEAU.Editor.EditorWindow.Common
             };
             using (new EditorGUILayout.HorizontalScope(boxStyle,  GUILayout.Height(height)))
             {
-                var baseStyle = new GUIStyle(EditorStyles.toolbarButton)
+                var baseStyle = new GUIStyle(EditorStyles.label)
                 {
                     normal =
                     {
@@ -438,7 +462,8 @@ namespace PLATEAU.Editor.EditorWindow.Common
                     },
                     fixedHeight = height,
                     fontSize = 14,
-                    fontStyle = FontStyle.Bold
+                    fontStyle = FontStyle.Bold,
+                    alignment = TextAnchor.MiddleCenter
                 };
                 // ボタンごとのループ
                 for (int i = 0; i < tabCount; i++)
@@ -466,7 +491,6 @@ namespace PLATEAU.Editor.EditorWindow.Common
             var style = new GUIStyle(EditorStyles.foldoutHeader)
             {
                 fixedWidth = ScreenDrawableWidth,
-                // fixedHeight = 100
             };
             var textContent = new GUIContent(headerText);
             var colorTint = new Color(
@@ -501,7 +525,18 @@ namespace PLATEAU.Editor.EditorWindow.Common
         /// <summary>
         /// スクリーンの幅からスクロールバーを除いたものを返します。
         /// </summary>
-        private static int ScreenDrawableWidth => Screen.width - 15;
+        private static float ScreenDrawableWidth
+        {
+            get
+            {
+                if (currentWindow == null)
+                {
+                    Debug.LogError($"{nameof(PlateauEditorStyle)}.{nameof(SetCurrentWindow)} がコールされていません。各ウィンドウのGUI開始時にコールする必要があります。");
+                    return 400; // デフォルト値。ウィンドウサイズの取得ができなかったので、代わりになんとなく横幅としてありそうな値を返します。
+                }
+                return currentWindow.position.width - 15;
+            }
+        }
 
         public static void SubTitle(string text)
         {
@@ -542,9 +577,16 @@ namespace PLATEAU.Editor.EditorWindow.Common
                     return cachedTexture[colorCode];
                 }
             }
-            Texture2D tex = new Texture2D(1, 1);
+            Texture2D tex = new Texture2D(4, 4);
             ColorUtility.TryParseHtmlString(colorCode, out Color col);
-            tex.SetPixel(0, 0, col);
+            for (int x = 0; x < tex.width; x++)
+            {
+                for (int y = 0; y < tex.height; y++)
+                {
+                    tex.SetPixel(x, y, col);
+                }
+            }
+
             tex.Apply();
             cachedTexture[colorCode] = tex;
             return tex;
@@ -554,7 +596,7 @@ namespace PLATEAU.Editor.EditorWindow.Common
         {
             const int logoMaxWidth = 300;
             var tex = LoadTexture(imageNameLogo);
-            if (tex is null) return;
+            if (tex == null) return;
             float width = Math.Min(Math.Min(tex.width, ScreenDrawableWidth), logoMaxWidth);
             float height = tex.height * width / tex.width;
             using (new EditorGUILayout.VerticalScope(new GUIStyle(StyleLogoBackground)))
@@ -633,7 +675,7 @@ namespace PLATEAU.Editor.EditorWindow.Common
             }
 
             var tex = AssetDatabase.LoadAssetAtPath<Texture2D>(assetPath);
-            if (tex is null)
+            if (tex == null)
             {
                 Debug.LogError($"Texture is not found : assetPath = {assetPath}");
             }

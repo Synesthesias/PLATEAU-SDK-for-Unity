@@ -26,6 +26,7 @@ namespace PLATEAU.Editor.CityImport.AreaSelector
         {
             if (!Directory.Exists(dataSourcePath))
             {
+                EditorUtility.DisplayDialog("PLATEAU SDK", $"入力フォルダが存在しません。\nフォルダを指定してください。", "OK");
                 Debug.LogError($"データ元パスが存在しません。 dataSourcePath = {dataSourcePath}");
                 return;
             }
@@ -34,8 +35,13 @@ namespace PLATEAU.Editor.CityImport.AreaSelector
                 return;
             }
 
+            if (AreaSelectorBehaviour.IsAreaSelectEnabled)
+            {
+                EditorUtility.DisplayDialog("PLATEAU SDK", "範囲選択画面がすでに開いています。\nシーンビュー左上の決定ボタンを押して選択を確定してください。", "OK");
+                return;
+            }
+
             string prevScenePath = SceneManager.GetActiveScene().path;
-            // var loaderBehaviourID = GlobalObjectId.GetGlobalObjectIdSlow(loaderBehaviourBehaviour);
             SetUpTemporaryScene();
             var behaviour = Object.FindObjectOfType<AreaSelectorBehaviour>();
             behaviour.Init(prevScenePath, dataSourcePath, areaSelectResultReceiver, coordinateZoneID);

@@ -2,6 +2,7 @@
 using PLATEAU.Editor.CityExport;
 using PLATEAU.Editor.EditorWindow.Common;
 using PLATEAU.Editor.EditorWindow.Common.PathSelector;
+using PLATEAU.Geometries;
 using PLATEAU.Interop;
 using PLATEAU.MeshWriter;
 using UnityEditor;
@@ -10,6 +11,22 @@ using Directory = System.IO.Directory;
 
 namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
 {
+    /// <summary>
+    /// 都市のモデルデータのエクスポートのGUIです。
+    /// </summary>
+    /// TODO : 下のコメントをドキュメントに記載する
+    /// エクスポートの座標軸設定について留意点 :
+    /// Unity の座標系は EUN なので、objファイルを EUN でエクスポートしてそれを Unity にインポートすれば
+    /// 元のモデルと同じものが現れるだろうと考えるのが自然です。
+    /// ところが、実際には X軸方向に反転したモデルが表示されます。
+    /// これは Unityの仕様によります。
+    /// Unityは、objファイルは右手座標系であると考えます。実際には左手座標系である EUN で座標を記述したとしてもです。
+    /// 右手座標系を左手座標系に補正するため、Unityは自動で objファイルに記載された X座標の正負を反転させます。
+    /// そのため左右が反転します。
+    /// 対して、Blender は objファイルのインポート時に座標系を設定できるので、
+    /// Blenderの画面で正しく設定すればモデルが反転することなく objファイルをインポートできます。
+    /// なお、Unity で正しい形状になるようにエクスポートしたければ、 EUN を左右反転させた座標系である WUN を利用してください。
+    /// 参考 : https://gamedev.stackexchange.com/questions/39906/why-does-unity-obj-import-flip-my-x-coordinate
     internal class CityExportGUI : IEditorDrawable
     {
         private PLATEAUInstancedCityModel exportTarget;
@@ -18,6 +35,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
         private bool exportTextures;
         private bool exportHiddenObject;
         private MeshExportOptions.MeshTransformType meshTransformType = MeshExportOptions.MeshTransformType.Local;
+        private CoordinateSystem meshAxis = CoordinateSystem.ENU;
         private string exportDirPath = "";
         private bool foldOutOption = true;
         private bool foldOutExportPath = true;
@@ -52,6 +70,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
                     this.exportHiddenObject = EditorGUILayout.Toggle("非アクティブオブジェクトを含める", this.exportHiddenObject);
                     this.meshTransformType =
                         (MeshExportOptions.MeshTransformType)EditorGUILayout.EnumPopup("座標変換", this.meshTransformType);
+                    this.meshAxis = (CoordinateSystem)EditorGUILayout.EnumPopup("座標軸", this.meshAxis);
                 }
             });
 
@@ -88,7 +107,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
                 return;
             }
             var meshExportOptions = new MeshExportOptions(this.meshTransformType, this.exportTextures, this.exportHiddenObject,
-                this.meshFileFormat, new GltfWriteOptions(this.gltfFileFormat, destinationDir));
+                this.meshFileFormat, this.meshAxis, new GltfWriteOptions(this.gltfFileFormat, destinationDir));
             MeshExporter.Export(destinationDir, target,  meshExportOptions);
         }
     }

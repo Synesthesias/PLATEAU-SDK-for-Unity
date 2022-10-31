@@ -25,7 +25,9 @@ namespace PLATEAU.MeshWriter
         {
             string texturePath = options.TextureDirectoryPath;
             GltfFileFormat format = options.GltfFileFormat;
-            var result = NativeMethods.plateau_gltf_writer_write(this.handle, out var flg, destination, model.Handle, texturePath, format);
+            var result = NativeMethods.plateau_gltf_writer_write(
+                this.handle, out var flg, DLLUtil.StrToUtf8Bytes(destination), model.Handle,
+                DLLUtil.StrToUtf8Bytes(texturePath), format);
             DLLUtil.CheckDllError(result);
             return flg;
         }
