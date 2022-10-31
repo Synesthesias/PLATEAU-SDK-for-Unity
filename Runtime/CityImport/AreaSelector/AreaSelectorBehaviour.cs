@@ -30,8 +30,11 @@ namespace PLATEAU.CityImport.AreaSelector
         private int coordinateZoneID;
         private PlateauVector3d referencePoint;
 
+        public static bool IsAreaSelectEnabled { get; set; }
+
         public void Init(string prevScenePathArg, string dataSourcePathArg, IAreaSelectResultReceiver areaSelectResultReceiverArg, int coordinateZoneIDArg)
         {
+            IsAreaSelectEnabled = true;
             this.prevScenePath = prevScenePathArg;
             this.dataSourcePath = dataSourcePathArg;
             this.areaSelectResultReceiver = areaSelectResultReceiverArg;
@@ -139,11 +142,13 @@ namespace PLATEAU.CityImport.AreaSelector
 
         public void OnSelectButtonPushed()
         {
+            IsAreaSelectEnabled = false;
             EndAreaSelection();
         }
         
         public void OnCancelButtonPushed()
         {
+            IsAreaSelectEnabled = false;
             // TODO キャンセルになってない
             EndAreaSelection();
         }

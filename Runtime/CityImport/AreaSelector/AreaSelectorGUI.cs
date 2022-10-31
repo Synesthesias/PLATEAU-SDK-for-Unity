@@ -41,10 +41,11 @@ namespace PLATEAU.CityImport.AreaSelector
             {
                 areaSelector.OnSelectButtonPushed();
             }
-            if (GUILayout.Button("キャンセル"))
-            {
-                   areaSelector.OnCancelButtonPushed();
-            }
+            // TODO キャンセル未実装　
+            // if (GUILayout.Button("キャンセル"))
+            // {
+            //        areaSelector.OnCancelButtonPushed();
+            // }
             GUI.DragWindow();
             #endif
         }
