@@ -948,6 +948,18 @@
     },
     {
       "type": "Conceptual",
+      "source_relative_path": "manual/ExportCityModels.md",
+      "output": {
+        ".html": {
+          "relative_path": "manual/ExportCityModels.html",
+          "hash": "XFm4fiuRZ2jW7W6T4h07YRvMW4aNnNfHinXBpdcSW8U="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
       "source_relative_path": "manual/ImportCityModels.md",
       "output": {
         ".html": {
@@ -988,7 +1000,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/toc.html",
-          "hash": "7HcwyG9A3oc7+Imm8sW0lPVlcrf50o4h/0jAVZOaYRU="
+          "hash": "hWUaKGIi6ouJbuS5w8g5b2+k0S7TBC14XeZ6+5s8ytc="
         }
       },
       "is_incremental": false,
@@ -1011,6 +1023,61 @@
       "output": {
         "resource": {
           "relative_path": "resources/manual.meta"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/manual/exportCityModels/disabledObj.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/exportCityModels/disabledObj.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/manual/exportCityModels/exportLocalCoord.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/exportCityModels/exportLocalCoord.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/manual/exportCityModels/exportWindow.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/exportCityModels/exportWindow.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/manual/exportCityModels/importedCity.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/exportCityModels/importedCity.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/manual/exportCityModels/japanCoordinateSystem.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/exportCityModels/japanCoordinateSystem.png"
         }
       },
       "is_incremental": false,
@@ -1296,7 +1363,7 @@
         "ConceptualDocumentProcessor": {
           "can_incremental": false,
           "incrementalPhase": "build",
-          "total_file_count": 5,
+          "total_file_count": 6,
           "skipped_file_count": 0
         },
         "ManagedReferenceDocumentProcessor": {

@@ -1,0 +1,217 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>&#37117;&#24066;&#12514;&#12487;&#12523;&#12398;&#12456;&#12463;&#12473;&#12509;&#12540;&#12488; | PLATEAU SDK for Unity </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="&#37117;&#24066;&#12514;&#12487;&#12523;&#12398;&#12456;&#12463;&#12473;&#12509;&#12540;&#12488; | PLATEAU SDK for Unity ">
+    <meta name="generator" content="docfx 2.59.4.0">
+    
+    <link rel="shortcut icon" href="../favicon.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+    
+    <meta property="docfx:rel" content="../">
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../logo.svg" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div class="container body-content">
+        
+        <div id="search-results">
+          <div class="search-list">Search Results for <span></span></div>
+          <div class="sr-items">
+            <p><i class="glyphicon glyphicon-refresh index-loading"></i></p>
+          </div>
+          <ul id="pagination" data-first="First" data-prev="Previous" data-next="Next" data-last="Last"></ul>
+        </div>
+      </div>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="都市モデルのエクスポート">都市モデルのエクスポート</h1>
+
+<p>Unityのシーンに配置された都市の3Dモデルを、objファイルや gltfファイルとしてエクスポートできます。<br>このページではエクスポートの手順を説明します。</p>
+<h2 id="前提">前提</h2>
+<p>Unityのシーンに都市モデルがインポートされていることが前提です。<br>インポートの方法については <a href="ImportCityModels.html">都市モデルのインポート</a> をご覧ください。<br><img src="../resources/manual/exportCityModels/importedCity.png" alt=""></p>
+<h2 id="エクスポート手順">エクスポート手順</h2>
+<h3 id="エクスポート対象の指定">エクスポート対象の指定</h3>
+<ul>
+<li><p>Unityのメニューバーから <code>PLATEAU → PLATEAU SDK</code> を選択します。<br>表示されるウィンドウの上部に3つのタブ「インポート、モデル調整、エクスポート」があります。<br>このうちエクスポートを選択します。  </p>
+<p><img src="../resources/manual/exportCityModels/exportWindow.png" alt=""></p>
+</li>
+<li><p><code>選択オブジェクト</code> からエクスポート対象を選択します。</p>
+<ul>
+<li>対象として選択できるのはインポート時に生成されたゲームオブジェクトのうち、<br>親子関係における最上位のものです。</li>
+<li>親子関係の最上位には自動で <code>PLATEAUInstancedCityModel</code> コンポーネントが付与されています。<br>このコンポーネントを持つゲームオブジェクトが選択対象となります。</li>
+</ul>
+</li>
+<li>出力形式を選択します。<ul>
+<li>OBJ形式か、GLTF形式かを選択します。</li>
+<li>ただし、OBJ形式はフォーマットの仕様上、後述の技術的な制約があります。</li>
+</ul>
+</li>
+</ul>
+<h3 id="出力オプションの設定">出力オプションの設定</h3>
+<p>オプションの設定項目について説明します。</p>
+<ul>
+<li><p><strong>GLTFフォーマット</strong></p>
+<ul>
+<li>出力形式がGLTFのときのみ表示される設定項目です。<br>フォーマットを次から選択します。</li>
+<li><strong>GLTF</strong><ul>
+<li>3Dモデル、テクスチャ、binファイルを別々のファイルとするフォーマットです。 </li>
+</ul>
+</li>
+<li><strong>GLB</strong><ul>
+<li>3Dモデルとその関連データをまとめて1つのファイルとするフォーマットです。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><strong>テクスチャ</strong></p>
+<ul>
+<li>出力にテクスチャを含めるかどうかを設定します。チェックが付いていれば含みます。</li>
+</ul>
+</li>
+<li><p><strong>非アクティブオブジェクトを含める</strong></p>
+<ul>
+<li>ヒエラルキー上で非アクティブになっているゲームオブジェクトを含めるかどうかを設定します。</li>
+<li>チェックが外れているとき、非アクティブなものを出力から除外します。</li>
+<li>ここでいう <code>非アクティブ</code> とは、下図のチェックマークが自身または親において外れており、<br>ヒエラルキービュー上で文字色が薄くなっている状態を指します。  </li>
+</ul>
+<p><img src="../resources/manual/exportCityModels/disabledObj.png" alt="">  </p>
+</li>
+<li><p><code>座標変換</code></p>
+<ul>
+<li>座標の基準点を設定します。</li>
+<li><p><code>Local</code> (ローカル) </p>
+<ul>
+<li>ポリゴンの座標は <code>PLATEAUInstancedCityModel</code> の位置を原点とした座標で表されます。<br><img src="../resources/manual/exportCityModels/exportLocalCoord.png" alt=""></li>
+</ul>
+</li>
+<li><p><code>Plane Cartesian</code> (直交座標系) </p>
+<ul>
+<li>ポリゴンの座標は、国土交通省が定める直交座標系のうち、インポート時に選択した直交座標系を原点とするよう平行移動されます。<br><img src="../resources/manual/exportCityModels/japanCoordinateSystem.png" alt=""><br>上図は <a href="https://www.gsi.go.jp/sokuchikijun/jpc.html">国土地理院のWebサイト「わかりやすい平面直角座標系」</a> より引用<br>(原点マークは別途追記)</li>
+</ul>
+</li>
+<li>2つの使い分けについて<ul>
+<li>原点付近に3Dモデルが来るようにしたいときは Local</li>
+<li>原点から遠い位置に3Dモデルが配置されますが、複数の異なる都市をエクスポートするときに位置の整合性を取りたいときは Plane Cartesian が利用できます。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><code>座標軸</code><ul>
+<li>エクスポートした objファイルを Unityにインポートしたい場合は、<br>後述の理由で WUN を指定してください。</li>
+<li><strong>座標軸設定の趣旨:</strong></li>
+<li>x,y,z 軸がどの方向を向いているかはアプリケーションによって異なりますが、<br>この設定項目によって座標軸の違いに合わせて変換できます。</li>
+<li>座標軸の名称はアルファベット3文字で表され、<br>(1文字目,2文字目,3文字目) が (x軸,y軸,z軸) の向きを表します。</li>
+<li>例えば、Unityでは x軸が東(East), y軸が上(Up), z軸が北(North) を向くので、<br>頭文字をとって EUN が Unityの座標系となります。</li>
+<li>ただし、Unity向けに objをエクスポートするときは、<br>後述の理由で EUN ではなく WUN が正しい指定となります。</li>
+<li>W は 西(West) を表します。</li>
+</ul>
+</li>
+</ul>
+<div class="NOTE"><h5>Note</h5><p><strong>OBJファイルの技術的制約について</strong>  </p>
+<p>OBJファイルはそのフォーマットの仕様上、制約があります。  </p>
+<ol>
+<li><p>オブジェクトが分割されず、1つのオブジェクトとして出力されます。<br>その代わり、頂点グループとしてオブジェクト内で領域分けされます。<br>例えば、Blenderの場合、インポート時に <code>頂点グループ</code> にチェックを入れると、図のように頂点グループが設定されます。  </p>
+</li>
+<li><p>objファイルを Unity にインポートするとき、左右が反転します。<br>これは Unity の仕様によるものです。<br>Unityの座標系は EUN ですが、EUNで出力した objファイルをインポートすると左右反転します。<br>そこで EUN を左右反転させた座標系である WUN で出力すると、objファイルをUnityにインポートしたときに正しくなります。<br>このようになる理由は、Unityは objファイルを右手座標系であると解釈し、Unityの左手座標系に合わせるために x座標の正負を反転させる仕様のためです。  </p>
+</li>
+</ol>
+</div>
+<h3 id="エクスポート">エクスポート</h3>
+<ul>
+<li>出力先のフォルダを指定します。</li>
+<li><code>エクスポート</code> ボタンを押してしばらく待ちます。</li>
+<li>指定のフォルダに3Dモデルファイルが出力されます。</li>
+</ul>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/Synesthesias/PlateauUnitySDK/blob/main/Documentation~/manual/ExportCityModels.md/#L1" class="contribution-link">Improve this Doc</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+                <h5>In This Article</h5>
+                <div></div>
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            PLATEAU SDK for Unity
+            
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>
