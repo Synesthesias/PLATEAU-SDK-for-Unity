@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 
-namespace PLATEAU.Editor.Diagnostics
+namespace PLATEAU.Editor.DebugPlateau
 {
     /// <summary>
     /// 処理時間を計測するためのクラスです。
