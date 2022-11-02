@@ -138,7 +138,7 @@ namespace PLATEAU.Editor.CityExport.ModelConvert
                     var unitySubMesh = unityMesh.GetSubMesh(i);
                     int startIndex = unitySubMesh.indexStart;
                     int endIndex = startIndex + unitySubMesh.indexCount - 1;
-                    if (startIndex == endIndex) continue;
+                    if (startIndex >= endIndex) continue;
                     Assert.IsTrue(startIndex < endIndex);
                     Assert.IsTrue(endIndex < indices.Length);
                     Assert.IsTrue(startIndex < indices.Length);
