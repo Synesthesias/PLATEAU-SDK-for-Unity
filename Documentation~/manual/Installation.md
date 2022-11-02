@@ -17,13 +17,16 @@
 ![](../resources/manual/installation/unityHubNewProject.png)
 
 ## PLATEAU Unity SDK の導入
-導入方法は ~~Github から導入するか、または~~ 配布の tar.gz ファイルから導入できます。  
-（Coming soon: Githubリポジトリは現在のところ非公開です。配布のtar.gz から導入してください。）  
+導入方法は ~~Github から導入するか、または~~ 配布の tgz ファイルから導入できます。  
+（Coming soon: Githubリポジトリは現在のところ非公開です。配布の tgz から導入してください。）  
 
 
-### 配布の tar.gz ファイルから導入する場合
+### 配布の tgz ファイルから導入する場合
 - Unityのメニューバーから ```Window``` → ```Package Manager``` を選択します。
-- Package Manager ウィンドウの左上の＋ボタンから
+- Package Manager ウィンドウの左上の＋ボタンから ```Add pacakge from tarball...``` を選択します。
+  ![](../resources/manual/installation/addPackageFromTarball.png)
+- ウィンドウのパッケージ一覧に ```Plateau Unity SDK``` が表示されたら完了です。
+  ![](../resources/manual/installation/packageInstalled.png)
 
 ### Githubから導入する場合
 
