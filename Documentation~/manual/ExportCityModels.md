@@ -51,11 +51,11 @@ Unityのシーンに都市モデルがインポートされていることが前
     
 - ```座標変換```
   - 座標の基準点を設定します。
-  - ```Local``` (ローカル) 
+  - ```Local``` (ローカル) のとき:
     - ポリゴンの座標は ```PLATEAUInstancedCityModel``` の位置を原点とした座標で表されます。  
       ![](../resources/manual/exportCityModels/exportLocalCoord.png)
       
-  - ```Plane Cartesian``` (直交座標系) 
+  - ```Plane Cartesian``` (直交座標系) のとき: 
     - ポリゴンの座標は、国土交通省が定める直交座標系のうち、インポート時に選択した直交座標系を原点とするよう平行移動されます。  
       ![](../resources/manual/exportCityModels/japanCoordinateSystem.png)  
       上図は [国土地理院のWebサイト「わかりやすい平面直角座標系」](https://www.gsi.go.jp/sokuchikijun/jpc.html) より引用  
