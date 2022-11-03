@@ -1,31 +1,3 @@
-﻿using PLATEAU.Editor.EditorWindow.Common;
-using UnityEditor;
-using UnityEngine;
-
-namespace PLATEAU.Editor.EditorWindow.PlateauWindow
-{
-    /// <summary>
-    /// PLATEAU SDK ウィンドウのエントリーポイントです。
-    /// </summary>
-    internal class PlateauWindow : UnityEditor.EditorWindow
-    {
-        private Vector2 scrollPosition;
-        private PlateauWindowGUI gui;
-
-        [MenuItem("PLATEAU/PLATEAU SDK")]
-        public static void Open()
-        {
-            var window = GetWindow<PlateauWindow>("PLATEAU SDK");
-            window.Show();
-        }
-
-        private void OnGUI()
-        {
-            this.gui ??= new PlateauWindowGUI(this);
-            using var scrollView = new EditorGUILayout.ScrollViewScope(this.scrollPosition);
-            this.scrollPosition = scrollView.scrollPosition;
-            PlateauEditorStyle.SetCurrentWindow(this);
-            this.gui.Draw();
-        }
-    }
-}
+version https://git-lfs.github.com/spec/v1
+oid sha256:f0c4c5a4f593bc3db4e447919823613f7074b38ee645ea549dcf5b457bdd6565
+size 933

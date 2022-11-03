@@ -1,24 +1,3 @@
-﻿using System.Collections.Generic;
-using System.Text;
-
-namespace PLATEAU.Util
-{
-    public static class DebugUtil
-    {
-        /// <summary>
-        /// 複数オブジェクトの ToString をまとめて行い、結合した string を返します。
-        /// </summary>
-        public static string EnumerableToString<T>(IEnumerable<T> enumerable)
-        {
-            if (enumerable == null) return "";
-            var sb = new StringBuilder();
-            foreach (T t in enumerable)
-            {
-                sb.Append(t);
-                sb.Append("\n");
-            }
-
-            return sb.ToString();
-        }
-    }
-}
+version https://git-lfs.github.com/spec/v1
+oid sha256:f6e458cdf06a7d44fc302046cb52b1a62db4b5ac849641f6371bc8ca23aa62d1
+size 640

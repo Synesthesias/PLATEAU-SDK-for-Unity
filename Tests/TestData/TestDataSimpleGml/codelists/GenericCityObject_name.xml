@@ -1,10 +1,3 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<gml:Dictionary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/profiles/SimpleDictionary/1.0.0/gmlSimpleDictionaryProfile.xsd" gml:id="GenericCityObject_name">
-	<gml:name>GenericCityObject_name</gml:name>
-	<gml:dictionaryEntry>
-		<gml:Definition gml:id="id3">
-			<gml:description>土砂災害警戒区域</gml:description>
-			<gml:name>3</gml:name>
-		</gml:Definition>
-	</gml:dictionaryEntry>
-</gml:Dictionary>
+version https://git-lfs.github.com/spec/v1
+oid sha256:d7c6fdd028f45de6441b6fa8b54a5a417c849041071c7750619c49577c12182a
+size 580

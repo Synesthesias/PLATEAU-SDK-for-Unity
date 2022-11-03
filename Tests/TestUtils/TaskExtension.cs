@@ -1,25 +1,3 @@
-﻿using System.Collections;
-using System.Threading.Tasks;
-
-namespace PLATEAU.Tests.TestUtils
-{
-    public static class TaskExtension
-    {
-        /// <summary>
-        /// 非同期Taskをコルーチンに変換することで、Unityテストで実行できるようにします。
-        /// 参考 : https://light11.hatenadiary.com/entry/2020/05/23/194951
-        /// </summary>
-        public static IEnumerator AsIEnumerator(this Task task)
-        {
-            while (!task.IsCompleted)
-            {
-                yield return null;
-            }
-
-            if (task.IsFaulted)
-            {
-                throw task.Exception;
-            }
-        }
-    }
-}
+version https://git-lfs.github.com/spec/v1
+oid sha256:1235907be3cca29c08a5a5f51473f10626e16d8592121ba80e58368c8f291cec
+size 678

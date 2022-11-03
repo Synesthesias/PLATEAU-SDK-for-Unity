@@ -1,16 +1,3 @@
-{
-    "name": "PLATEAU.Runtime",
-    "rootNamespace": "PLATEAU",
-    "references": [
-        "libplateau"
-    ],
-    "includePlatforms": [],
-    "excludePlatforms": [],
-    "allowUnsafeCode": false,
-    "overrideReferences": false,
-    "precompiledReferences": [],
-    "autoReferenced": true,
-    "defineConstraints": [],
-    "versionDefines": [],
-    "noEngineReferences": false
-}
+version https://git-lfs.github.com/spec/v1
+oid sha256:72935bbf467b2ebe2e7ee780abf9d4473313d36dc8a0ffecad719ffbb622d0bf
+size 381

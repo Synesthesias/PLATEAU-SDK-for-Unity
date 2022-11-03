@@ -1,20 +1,3 @@
-{
-    "name": "PLATEAU.Editor",
-    "rootNamespace": "PLATEAU",
-    "references": [
-        "Unity.Formats.Fbx.Editor",
-        "libplateau",
-        "PLATEAU.Runtime"
-    ],
-    "includePlatforms": [
-        "Editor"
-    ],
-    "excludePlatforms": [],
-    "allowUnsafeCode": false,
-    "overrideReferences": false,
-    "precompiledReferences": [],
-    "autoReferenced": true,
-    "defineConstraints": [],
-    "versionDefines": [],
-    "noEngineReferences": false
-}
+version https://git-lfs.github.com/spec/v1
+oid sha256:b7352a7ba090b0570965c69685b632d6d47624d11d7b152baad5238001a216b3
+size 465

@@ -1,14 +1,3 @@
-{
-    "name": "libplateau",
-    "rootNamespace": "",
-    "references": [],
-    "includePlatforms": [],
-    "excludePlatforms": [],
-    "allowUnsafeCode": true,
-    "overrideReferences": false,
-    "precompiledReferences": [],
-    "autoReferenced": true,
-    "defineConstraints": [],
-    "versionDefines": [],
-    "noEngineReferences": false
-}
+version https://git-lfs.github.com/spec/v1
+oid sha256:9f7b09fbd042e0c7025dbb626abaf9d4489ced0d59f2d22a60efbe851f003074
+size 342

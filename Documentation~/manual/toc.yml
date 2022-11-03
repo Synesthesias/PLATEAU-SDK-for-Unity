@@ -1,14 +1,3 @@
-- name: PLATEAU SDK for Unity
-  href: ../index.md
-- name: 利用を開始する
-  items:
-  - name: インストール
-    href: Installation.md
-  - name: チュートリアル
-    href: Tutorial.md
-  - name: 都市モデルのインポート
-    href: ImportCityModels.md
-  - name: 都市モデルのエクスポート
-    href: ExportCityModels.md
-  - name: 都市情報へのアクセス
-    href: AccessCityObject.md
+version https://git-lfs.github.com/spec/v1
+oid sha256:81def2f44501146884a5e4f0f705b11f3b5f61b19a5492dc4ddfb3c83ff15c87
+size 420

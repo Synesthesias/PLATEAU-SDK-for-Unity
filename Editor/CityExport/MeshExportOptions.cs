@@ -1,28 +1,3 @@
-﻿using PLATEAU.Geometries;
-using PLATEAU.Interop;
-using PLATEAU.MeshWriter;
-
-namespace PLATEAU.Editor.CityExport
-{
-    internal struct MeshExportOptions
-    {
-        public enum MeshTransformType{Local/*ローカル座標系*/, PlaneCartesian/*平面直角座標系*/}
-
-        public MeshTransformType TransformType;
-        public bool ExportTextures;
-        public bool ExportHiddenObjects;
-        public MeshFileFormat FileFormat;
-        public CoordinateSystem MeshAxis;
-        public GltfWriteOptions GltfWriteOptions; // Gltf形式のときのみ利用します。
-
-        public MeshExportOptions(MeshTransformType transformType, bool exportTextures, bool exportHiddenObjects, MeshFileFormat fileFormat, CoordinateSystem meshAxis, GltfWriteOptions gltfWriteOptions)
-        {
-            this.TransformType = transformType;
-            this.ExportTextures = exportTextures;
-            this.ExportHiddenObjects = exportHiddenObjects;
-            this.FileFormat = fileFormat;
-            this.MeshAxis = meshAxis;
-            this.GltfWriteOptions = gltfWriteOptions;
-        }
-    }
-}
+version https://git-lfs.github.com/spec/v1
+oid sha256:559fcac7cadf0b5a17bc34ac72e7f0e0438e3a97e426e5c9bc672a45d72f3da0
+size 1102

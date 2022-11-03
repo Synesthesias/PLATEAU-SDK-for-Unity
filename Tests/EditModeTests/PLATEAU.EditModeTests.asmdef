@@ -1,27 +1,3 @@
-{
-    "name": "PLATEAU.EditModeTests",
-    "rootNamespace": "PLATEAU",
-    "references": [
-        "UnityEngine.TestRunner",
-        "UnityEditor.TestRunner",
-        "PLATEAU.TestUtils",
-        "PLATEAU.Editor",
-        "libplateau",
-        "PLATEAU.Runtime"
-    ],
-    "includePlatforms": [
-        "Editor"
-    ],
-    "excludePlatforms": [],
-    "allowUnsafeCode": false,
-    "overrideReferences": true,
-    "precompiledReferences": [
-        "nunit.framework.dll"
-    ],
-    "autoReferenced": false,
-    "defineConstraints": [
-        "UNITY_INCLUDE_TESTS"
-    ],
-    "versionDefines": [],
-    "noEngineReferences": false
-}
+version https://git-lfs.github.com/spec/v1
+oid sha256:346aff105d90b3bc182a2332971c80fcac0d44edfb0ae666593faaf9829e8581
+size 629
