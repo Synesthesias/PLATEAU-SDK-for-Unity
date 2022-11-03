@@ -1,3 +1,13 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:e3218cf4bf3df693bca3586fc1079948376a3896655357c6be95fc0eb7a3278a
-size 310
+﻿using PLATEAU.Editor.EditorWindow.Common;
+using UnityEditor;
+
+namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
+{
+    internal class CityImportRemoteGUI : IEditorDrawable
+    {
+        public void Draw()
+        {
+            EditorGUILayout.LabelField("未実装です。");
+        }
+    }
+}

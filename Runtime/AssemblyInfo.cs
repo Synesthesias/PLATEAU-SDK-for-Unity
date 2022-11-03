@@ -1,3 +1,11 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:3ca9f422efc783fcf96091fcf9030f71845ab5c66a09563fd9eedcd706e80a0f
-size 433
+﻿using System.Runtime.CompilerServices;
+
+// このアセンブリの設定です。
+
+// internal を Editor から利用できるようにします。
+[assembly: InternalsVisibleTo("PLATEAU.Editor")]
+
+// internal をテストから利用できるようにします。
+[assembly: InternalsVisibleTo("PLATEAU.EditModeTests")]
+[assembly: InternalsVisibleTo("PLATEAU.PlayModeTests")]
+[assembly: InternalsVisibleTo("PLATEAU.TestUtils")]

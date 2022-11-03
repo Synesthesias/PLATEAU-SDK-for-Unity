@@ -1,3 +1,36 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:2354406a06f553957e352e875c32476839dd1a5a4d70d5b2effc0621843ea583
-size 1050
+﻿using System;
+using PLATEAU.Interop;
+
+namespace PLATEAU.CityGML
+{
+
+    /// <summary>
+    /// <see cref="Texture"/> , <see cref="Material"/> の基底クラスです。
+    /// </summary>
+    public class Appearance : Object
+    {
+        internal Appearance(IntPtr handle) : base(handle)
+        {
+        }
+
+        /// <summary>
+        /// Texture なら "Texture" という文字列を返します。
+        /// </summary>
+        public string Type =>
+            DLLUtil.GetNativeString(Handle,
+                NativeMethods.plateau_appearance_get_type);
+
+        public bool IsFront =>
+            DLLUtil.GetNativeValue<bool>(Handle,
+                NativeMethods.plateau_appearance_get_is_front);
+
+        /// <summary>
+        /// テーマ名を配列で返します。
+        /// </summary>
+        public string[] Themes =>
+            DLLUtil.GetNativeStringArrayByPtr(
+                Handle,
+                NativeMethods.plateau_appearance_get_themes_count,
+                NativeMethods.plateau_appearance_get_themes);
+    }
+}

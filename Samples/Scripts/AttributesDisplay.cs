@@ -1,3 +1,34 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:ae721c64cb6461e8824f2a51857ef7bb6e429706695a5a08961e0045c2dba417
-size 917
+using UnityEngine;
+using UnityEngine.UI;
+
+namespace PLATEAU.Samples.Scripts
+{
+    public class AttributesDisplay : MonoBehaviour
+    {
+        [SerializeField] private Text titleText;
+        [SerializeField] private Text attributesText;
+
+        public string TitleText
+        {
+            set => this.titleText.text = value;
+        }
+
+        public string AttributesText
+        {
+            set => this.attributesText.text = value;
+        }
+
+        private void Awake()
+        {
+            if (this.titleText == null)
+            {
+                Debug.LogError($"{nameof(this.titleText)} が null です。インスペクタから設定してください。");
+            }
+
+            if (this.attributesText == null)
+            {
+                Debug.LogError($"{nameof(this.attributesText)} が null です。インスペクタから設定してください。");
+            }
+        }
+    }
+}

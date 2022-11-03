@@ -1,3 +1,22 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:5ed537f56612338319f48cd0e0b273de8746fa5e939a6007e1f0fbb4095d42da
-size 930
+{
+    "name": "com.synesthesias.plateau-unity-sdk",
+    "version": "1.0.0",
+    "displayName": "PLATEAU SDK for Unity",
+    "description": "このパッケージには、PLATEAUの3D都市モデルデータを利用するためのAPI、サンプルが含まれます。PLATEAU SDK for Unityを利用することで、実世界を舞台にしたゲームの開発や、PLATEAUの豊富なデータを活用したシミュレーションを簡単に行うことができます。",
+    "unity": "2020.3",
+    "dependencies": {
+        "com.unity.formats.fbx" : "4.1.2",
+        "com.unity.test-framework" : "1.1.31"
+    },
+    "author":{
+        "name": "Synesthesias Inc."
+    },
+    "samples":[
+        {
+            
+            "displayName": "Attributes Sample",
+            "description": "都市オブジェクトの属性を取得するサンプルです。",
+            "path": "Samples/AttributesSample"
+        }
+    ]
+}

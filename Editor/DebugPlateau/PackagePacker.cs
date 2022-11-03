@@ -1,3 +1,15 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:e54f6c41c39a0b4bca5bb87a44944c6841ca8c02a4d242fcce4ce11508fb407d
-size 433
+﻿using UnityEditor;
+using UnityEditor.PackageManager;
+
+namespace PLATEAU.Editor.DebugPlateau
+{
+    public static class PackagePacker
+    {
+        [MenuItem("PLATEAU/Debug/Pack PLATEAU Package to tarball")]
+        public static void Pack()
+        {
+            string destDir = EditorUtility.SaveFolderPanel("出力先", "", "");
+            Client.Pack("Packages/com.synesthesias.plateau-unity-sdk", destDir);
+        }
+    }
+}

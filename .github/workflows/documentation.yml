@@ -1,3 +1,25 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:3373a2e311e80b9bdcde21a567c19a3bac5e37ed9f156dfe666624472b0a738d
-size 509
+name: Documentation
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Install DocFX
+        run: choco install -y docfx
+
+      - name: Build Document
+        run: docfx Documentation~/docfx.json
+
+      - name: Publish Documentation on GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: .docs/_site

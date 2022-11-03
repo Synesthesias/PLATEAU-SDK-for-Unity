@@ -1,3 +1,14 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:3ea2b3403b92a480302bebded917c1f2ab8aea452bb68a663a6f50e1684aea97
-size 396
+namespace PLATEAU.Editor.EditorWindow.Common
+{
+    /// <summary>
+    /// EditorWindow に描画するインターフェイスです。
+    /// <see cref="Draw"/> で描画します。 
+    /// </summary>
+    internal interface IEditorDrawable
+    {
+        /// <summary>
+        /// EditorWindow用のコンテンツを描画します。
+        /// </summary>
+        public void Draw();
+    }
+}

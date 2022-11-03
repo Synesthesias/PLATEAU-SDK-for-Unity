@@ -1,3 +1,4 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:af099dd4f47cbe0d9aa6f950380db6f9adeeab9e96ee89e8b428493b14bc86c3
-size 435
+# PLATEAU SDK for Unity
+
+このパッケージには、[PLATEAU](https://www.mlit.go.jp/plateau/)の3D都市モデルデータを利用するためのAPI、サンプルが含まれます。PLATEAU SDK for Unityを利用することで、実世界を舞台にしたゲームの開発や、PLATEAUの豊富なデータを活用したシミュレーションを簡単に行うことができます。
+![](resources/index/citymodel.png)  

@@ -1,3 +1,4 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:bb43234da8b1a19c732f39ebe3ddb928f7372a20cb171163ccf982b22bb6c310
-size 65
+- name: Manual
+  href: manual/
+- name: Scripting API
+  href: api/

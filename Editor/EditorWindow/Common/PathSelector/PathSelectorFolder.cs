@@ -1,3 +1,15 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:2fd7f5776811aaeae59dad1e45f151bac835bcfe8cd639c8d64a61d17431976c
-size 435
+﻿using UnityEditor;
+
+namespace PLATEAU.Editor.EditorWindow.Common.PathSelector
+{
+    /// <summary>
+    /// フォルダ選択ダイアログを使ってパスを選択するGUIです。
+    /// </summary>
+    internal class PathSelectorFolder : PathSelectorBase
+    {
+        protected override string PathSelectorDialogue()
+        {
+            return EditorUtility.OpenFolderPanel("フォルダ選択", "", "");
+        }
+    }
+}

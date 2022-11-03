@@ -1,3 +1,72 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:389a2442974f11de23dee70836250a9115827d1455b94204163dfab9d8564d92
-size 2197
+﻿using System;
+using UnityEditor;
+using UnityEngine;
+
+namespace PLATEAU.CityImport.AreaSelector.SceneObjs
+{
+    /// <summary>
+    /// 自身の transform に応じた箱型のギズモを表示します。
+    /// </summary>
+    internal class BoxGizmoDrawer : HandlesBase
+    {
+        public Color BoxColor { get; set; } = Color.white;
+        protected virtual float SizeMultiplier => 1f;
+        
+#if UNITY_EDITOR
+        private void OnDrawGizmos()
+        {
+            var prevColor = Gizmos.color;
+            Gizmos.color = this.BoxColor;
+            var trans = transform;
+            var centerPos = trans.position;
+            var size = trans.localScale * SizeMultiplier;
+            Gizmos.DrawWireCube(centerPos, size);
+            AdditionalGizmo();
+            Gizmos.color = prevColor;
+        }
+#endif
+
+        /// <summary>
+        /// サブクラスで描画ギズモを増やしたい場合に実装します。
+        /// </summary>
+        protected virtual void AdditionalGizmo()
+        {
+            
+        }
+        
+        #if UNITY_EDITOR
+        protected override void OnSceneGUI(SceneView sceneView)
+        {
+            
+        }
+        #endif
+        
+        public static Vector3 AreaMax(Vector3 center, Vector3 size)
+        {
+            return center + size / 2.0f;
+        }
+
+        public static Vector3 AreaMin(Vector3 center, Vector3 size)
+        {
+            return center - size / 2.0f;
+        }
+
+        /// <summary>
+        /// Y軸の値は無視して、XとZの値で箱同士が重なる箇所があるかどうかを bool で返します。
+        /// </summary>
+        public bool IsBoxIntersectXZ(BoxGizmoDrawer other)
+        {
+            var trans = transform;
+            var pos = trans.position;
+            var size = trans.localScale;
+
+            var otherTrans = other.transform;
+            var otherPos = otherTrans.position;
+            var otherSize = otherTrans.localScale;
+
+            return
+                Math.Abs(pos.x - otherPos.x) <= (Math.Abs(size.x) + Math.Abs(otherSize.x)) * 0.5 &&
+                Math.Abs(pos.z - otherPos.z) <= (Math.Abs(size.z) + Math.Abs(otherSize.z)) * 0.5;
+        }
+    }
+}
