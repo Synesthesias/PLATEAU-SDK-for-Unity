@@ -1,6 +1,5 @@
 using System.IO;
 using System.Threading.Tasks;
-using PlasticPipe.PlasticProtocol.Messages;
 using PLATEAU.CityGML;
 using PLATEAU.CityInfo;
 using PLATEAU.Util.Async;
@@ -84,7 +83,7 @@ namespace PLATEAU.Samples.Scripts
             if (cityModel == null) return false;
             
             // CityModel の中では、 CityObject が階層構造になっています。
-            // クリックされた CityObject を ID をキーとして取得します。
+            // しかし階層構造をたどって検索しなくとも、IDをキーとして CityObject を取得できます。
             var cityObj = cityModel.GetCityObjectById(cityObjID);
 
             if (cityObj == null) return false;
@@ -96,17 +95,34 @@ namespace PLATEAU.Samples.Scripts
             this.display.AttributesText = cityObj.AttributesMap.ToString();
             
             // 住所の市を取得します。
-            // AttributesMap["キー名"] または AttributesMap.TryGetValue("キー名", out var val) で AttributeValue を取得できます。
+            // AttributesMap.GetValueOrNull で AttributeValue を取得できます。
             // AttributeValue は、キー名に対応する値として 文字列 または 子のAttributesMap のどちらか1つを保持します。
             // AsAttrSet で 子AttributesMap を取得します。 AsString で文字列を取得します。
             // AsDouble, AsInt というメソッドもあります。これは内部的には文字列であるものをパースしたものを返します。
-            var attrs = cityObj.AttributesMap;
-            attrs.TryGetValue("uro:buildingDetails", out var buildingDetailAttr);
-            AttributeValue cityAttr = null;
-            buildingDetailAttr?.AsAttrSet.TryGetValue("uro:city", out cityAttr);
-            string cityName = cityAttr?.AsString ?? "";
+            string cityName = cityObj
+                .AttributesMap // 属性の辞書を取得します。
+                .GetValueOrNull("uro:buildingDetails") // 辞書のうち キーに対応する AttributeValue を取得します。 
+                ?.AsAttrSet // AttributeValue のデータの実体は AsString か AsAttrSet のどちらかで取得できます。今回は子の属性辞書を取得します。
+                ?.GetValueOrNull("uro:city") // 子AttributesMap について、キーに対応する AttributeValue を取得します。
+                ?.AsString; // 値として市の名称が入っているので取得します。
 
-            this.display.TitleText = $"[{cityName}]\nID: {cityObjID}";
+            // 属性から高さを取得します。
+            double? height = cityObj.AttributesMap
+                .GetValueOrNull("高さ")
+                ?.AsDouble; // AttributeValue.AsString を double にパースしたものを返します。
+
+            // 取得した属性値を表示します。
+            this.display.TitleText = $"[{cityName ?? "No data"}]   高さ: {height?.ToString() ?? "No data"}\nID: {cityObjID}";
+
+            
+            // AttributeValue には 文字列 または 子のAttributesMap のどちらか1つが入っていることを上述しました。
+            // ではどちらを取得すれば良いのかというと、 AttributeValue.Type で判別できます。
+            // Type が AttributeSet であれば AsAttrSet で取得でき、それ以外ではれば AsString で取得できます。
+            var detailAttr = cityObj.AttributesMap.GetValueOrNull("uro:buildingDetails");
+            if (detailAttr != null)
+            {
+                Assert.AreEqual(AttributeType.AttributeSet ,detailAttr.Type);
+            }
             
             return true;
         }
