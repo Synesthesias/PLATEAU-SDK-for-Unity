@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gml:Dictionary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/profiles/SimpleDictionary/1.0.0/gmlSimpleDictionaryProfile.xsd" gml:id="ExtendedAttribute_key">
+  <gml:name>ExtendedAttribute_key</gml:name>
+  <gml:dictionaryEntry>
+    <gml:Definition gml:id="id2">
+      <gml:description>LOD1の立ち上げに使用する建築物の高さ</gml:description>
+      <gml:name>2</gml:name>
+    </gml:Definition>
+  </gml:dictionaryEntry>
+  <gml:dictionaryEntry>
+    <gml:Definition gml:id="id6">
+      <gml:description>建物利用現況（小分類）</gml:description>
+      <gml:name>6</gml:name>
+    </gml:Definition>
+  </gml:dictionaryEntry>
+  <gml:dictionaryEntry>
+    <gml:Definition gml:id="id10">
+      <gml:description>構造</gml:description>
+      <gml:name>10</gml:name>
+    </gml:Definition>
+  </gml:dictionaryEntry>
+  <gml:dictionaryEntry>
+    <gml:Definition gml:id="id11">
+      <gml:description>新規建物コードv</gml:description>
+      <gml:name>100</gml:name>
+    </gml:Definition>
+  </gml:dictionaryEntry>
+  <gml:dictionaryEntry>
+    <gml:Definition gml:id="id12">
+      <gml:description>建物特定用途フラグ</gml:description>
+      <gml:name>101</gml:name>
+    </gml:Definition>
+  </gml:dictionaryEntry>
+  <gml:dictionaryEntry>
+    <gml:Definition gml:id="id13">
+      <gml:description>建物棟数フラグ</gml:description>
+      <gml:name>102</gml:name>
+    </gml:Definition>
+  </gml:dictionaryEntry>
+  <gml:dictionaryEntry>
+    <gml:Definition gml:id="id14">
+      <gml:description>変化フラグ</gml:description>
+      <gml:name>103</gml:name>
+    </gml:Definition>
+  </gml:dictionaryEntry>
+  <gml:dictionaryEntry>
+    <gml:Definition gml:id="id15">
+      <gml:description>床面積算入フラグ</gml:description>
+      <gml:name>104</gml:name>
+    </gml:Definition>
+  </gml:dictionaryEntry>
+  <gml:dictionaryEntry>
+    <gml:Definition gml:id="id16">
+      <gml:description>中抜けフラグ</gml:description>
+      <gml:name>105</gml:name>
+    </gml:Definition>
+  </gml:dictionaryEntry>
+</gml:Dictionary>

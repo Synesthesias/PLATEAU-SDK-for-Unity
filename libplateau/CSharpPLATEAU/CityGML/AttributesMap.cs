@@ -87,7 +87,6 @@ namespace PLATEAU.CityGML
         /// <summary>
         /// 属性のキーから値を返します。
         /// <paramref name="key"/> が存在しない場合は <see cref="KeyNotFoundException"/> を投げます。
-        /// 例外を投げてほしくない場合は代わりに <see cref="TryGetValue"/> メソッドを利用してください。
         /// </summary>
         public AttributeValue this[string key]
         {
@@ -133,6 +132,16 @@ namespace PLATEAU.CityGML
 
             value = null;
             return false;
+        }
+
+        /// <summary>
+        /// <paramref name="key"/> に対応する値 <see cref="AttributeValue"/> を返します。
+        /// なければ null を返します。
+        /// </summary>
+        public AttributeValue GetValueOrNull(string key)
+        {
+            if (ContainsKey(key)) return this[key];
+            return null;
         }
 
         public IEnumerator<AttrPair> GetEnumerator()

@@ -51,11 +51,11 @@ Unityのシーンに都市モデルがインポートされていることが前
     
 - ```座標変換```
   - 座標の基準点を設定します。
-  - ```Local``` (ローカル) 
+  - ```Local``` (ローカル) のとき:
     - ポリゴンの座標は ```PLATEAUInstancedCityModel``` の位置を原点とした座標で表されます。  
       ![](../resources/manual/exportCityModels/exportLocalCoord.png)
       
-  - ```Plane Cartesian``` (直交座標系) 
+  - ```Plane Cartesian``` (直交座標系) のとき: 
     - ポリゴンの座標は、国土交通省が定める直交座標系のうち、インポート時に選択した直交座標系を原点とするよう平行移動されます。  
       ![](../resources/manual/exportCityModels/japanCoordinateSystem.png)  
       上図は [国土地理院のWebサイト「わかりやすい平面直角座標系」](https://www.gsi.go.jp/sokuchikijun/jpc.html) より引用  
@@ -85,14 +85,18 @@ Unityのシーンに都市モデルがインポートされていることが前
 > 1. オブジェクトが分割されず、1つのオブジェクトとして出力されます。  
 >    その代わり、頂点グループとしてオブジェクト内で領域分けされます。  
 >    例えば、Blenderの場合、インポート時に ```頂点グループ``` にチェックを入れると、図のように頂点グループが設定されます。  
+>    ![](../resources/manual/exportCityModels/blenderVertexGroup.png)
 >     
-> 2. objファイルを Unity にインポートするとき、左右が反転します。  
+> 3. objファイルを Unity にインポートするとき、左右が反転します。  
 >    これは Unity の仕様によるものです。  
->    Unityの座標系は EUN ですが、EUNで出力した objファイルをインポートすると左右反転します。  
->    そこで EUN を左右反転させた座標系である WUN で出力すると、objファイルをUnityにインポートしたときに正しくなります。  
->    このようになる理由は、Unityは objファイルを右手座標系であると解釈し、Unityの左手座標系に合わせるために x座標の正負を反転させる仕様のためです。  
+>    Unityの座標系は EUN ですが、EUNで出力した objファイルをインポートすると左右反転したモデルになります。  
+>    そこで EUN を左右反転させた座標系である WUN で出力すると、Unityにインポートしたときに正しくなります。  
+>    このようになる理由は、Unityは objファイルを右手座標系であると解釈し、Unityの左手座標系に合わせるために x座標の正負を反転させるためです。  
 
 ### エクスポート
 - 出力先のフォルダを指定します。
 - ```エクスポート``` ボタンを押してしばらく待ちます。
 - 指定のフォルダに3Dモデルファイルが出力されます。
+
+![](../resources/manual/exportCityModels/tokyoBlender.png)  
+上図はエクスポートしたobjファイルを Blender で読み込んだものです。

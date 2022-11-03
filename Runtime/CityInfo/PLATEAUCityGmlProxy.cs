@@ -18,55 +18,72 @@ namespace PLATEAU.CityInfo
         /// <summary>
         /// GMLパス と <see cref="CityModel"/> を紐付けるキャッシュです。
         /// </summary>
-        private static ConcurrentDictionary<string, CityModel> cache = new ConcurrentDictionary<string, CityModel>();
+        private static readonly ConcurrentDictionary<string, CityModel> cache = new ConcurrentDictionary<string, CityModel>();
 
-        public async Task<CityModel> LoadAsync(GameObject go)
+        /// <summary>
+        /// GMLファイルをパースし、<see cref="CityModel"/> を返します。
+        /// パースには時間がかかりますが、結果はキャッシュに入るので、2回目以降はパースはスキップされて速いです。
+        /// </summary>
+        /// <param name="go">GMLファイルの名称が、与えられたゲームオブジェクトの名称であるものをパースします。</param>
+        /// <param name="rootDirName">
+        /// 都市データが入っているディレクトリのルートの名称を指定します。
+        /// 省略した場合、 <paramref name="go"/>.transform.parent.name になります。
+        /// </param>
+        /// <param name="parentPathOfRootDir">
+        /// <paramref name="rootDirName"/>の親ディレクトリのパスを指定します。
+        /// 省略した場合、インポート時に自動でコピーされる場所になります。
+        /// すなわち、 Assets/StreamingAssets/.PLATEAU になります。
+        /// </param>
+        /// <returns>パースした結果を返します。パース失敗時は null を返します。</returns>
+        public static async Task<CityModel> LoadAsync(GameObject go, string rootDirName = null, string parentPathOfRootDir = null)
         {
+            // デフォルト値は PLATEAUウィンドウで操作したときのインポート先です。
+            parentPathOfRootDir ??= PathUtil.plateauSrcFetchDir;
+            rootDirName ??= go.transform.parent.name;
+            
             string gmlName = go.name;
             string gmlPath;
             try
             {
                 using var gmlInfo = GmlFileInfo.Create(gmlName);
                 string gmlFeatureDir = gmlInfo.FeatureType;
-                string rootDirName = go.transform.parent.name;
-                gmlPath = Path.Combine(PathUtil.plateauSrcFetchDir, rootDirName, PathUtil.UdxFolderName, gmlFeatureDir, gmlName);
+                gmlPath = Path.Combine(parentPathOfRootDir, rootDirName, PathUtil.UdxFolderName, gmlFeatureDir, gmlName);
             }
             catch (Exception)
             {
                 Debug.LogError("Could not get gmlInfo from gmlName.");
                 return null;
             }
-            return await LoadAsync(gmlPath);
+            string gmlFullPath = Path.GetFullPath(Path.Combine(PathUtil.plateauSrcFetchDir, gmlPath));
+            return await LoadAsync(gmlFullPath);
         }
 
         
         /// <summary>
         /// 非同期で GMLパスから <see cref="CityModel"/> を取得します。
         /// </summary>
-        /// <param name="gmlRelativePath"> <see cref="PathUtil.plateauSrcFetchDir"/> からの相対パスでGMLファイルを指定します。 </param>
         /// <returns>
         /// <see cref="CityModel"/> を返します。
         /// キャッシュにあればそれを返し、なければGMLファイルをパースして結果を返します。
         /// パースに失敗した場合 null を返します。
         /// パースの高速化のため、返す CityModel には属性情報が含まれますが、3Dモデル情報は含まれません。
         /// </returns>
-        public async Task<CityModel> LoadAsync(string gmlRelativePath)
+        private static async Task<CityModel> LoadAsync(string gmlFullPath)
         {
             // キャッシュを確認します。
-            if (cache.TryGetValue(gmlRelativePath, out var cachedCityModel))
+            if (cache.TryGetValue(gmlFullPath, out var cachedCityModel))
             {
                 return cachedCityModel;
             }
             // GMLファイルをパースして返します。
-            var cityModel = await LoadInnerAsync(gmlRelativePath);
-            cache.TryAdd(gmlRelativePath, cityModel);
+            var cityModel = await LoadInnerAsync(gmlFullPath);
+            cache.TryAdd(gmlFullPath, cityModel);
             return cityModel;
         }
 
-        private static async Task<CityModel> LoadInnerAsync(string gmlRelativePath)
+        private static async Task<CityModel> LoadInnerAsync(string gmlFullPath)
         {
-            string gmlFullPath = Path.Combine(PathUtil.plateauSrcFetchDir, gmlRelativePath);
-            
+
             if (!File.Exists(gmlFullPath))
             {
                 Debug.LogError($"GMLファイルが存在しません。 : {gmlFullPath}");

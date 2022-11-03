@@ -1,0 +1,269 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gml:Dictionary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/profiles/SimpleDictionary/1.0.0/gmlSimpleDictionaryProfile.xsd" gml:id="LandUse_genUsage">
+　<gml:name>LandUse_genUsage</gml:name>
+    <gml:dictionaryEntry>
+        <gml:Definition gml:id="id1">
+            <gml:description>田</gml:description>
+            <gml:name>10101</gml:name>
+        </gml:Definition>
+    </gml:dictionaryEntry>
+    <gml:dictionaryEntry>
+        <gml:Definition gml:id="id2">
+            <gml:description>畑</gml:description>
+            <gml:name>10201</gml:name>
+        </gml:Definition>
+    </gml:dictionaryEntry>
+    <gml:dictionaryEntry>
+        <gml:Definition gml:id="id3">
+            <gml:description>農業施設用地（畜舎、温室、船小屋、農業用納屋、農林漁業用作業場）</gml:description>
+            <gml:name>10206</gml:name>
+        </gml:Definition>
+    </gml:dictionaryEntry>
+    <gml:dictionaryEntry>
+        <gml:Definition gml:id="id4">
+            <gml:description>山林（社寺林、学校所有の森を含む）</gml:description>
+            <gml:name>10300</gml:name>
+        </gml:Definition>
+    </gml:dictionaryEntry>
+    <gml:dictionaryEntry>
+        <gml:Definition gml:id="id5">
+            <gml:description>河川・水路</gml:description>
+            <gml:name>10501</gml:name>
+        </gml:Definition>
+    </gml:dictionaryEntry>
+    <gml:dictionaryEntry>
+        <gml:Definition gml:id="id6">
+            <gml:description>湖沼（（普段から水をためている）調整池、釣堀含む）</gml:description>
+            <gml:name>10502</gml:name>
+        </gml:Definition>
+    </gml:dictionaryEntry>
+    <gml:dictionaryEntry>
+        <gml:Definition gml:id="id7">
+            <gml:description>プール・貯水槽</gml:description>
+            <gml:name>10506</gml:name>
+        </gml:Definition>
+    </gml:dictionaryEntry>
+    <gml:dictionaryEntry>
+        <gml:Definition gml:id="id8">
+            <gml:description>荒地（砕石場、荒地（堤内））</gml:description>
+            <gml:name>10601</gml:name>
+        </gml:Definition>
+    </gml:dictionaryEntry>
+    <gml:dictionaryEntry>
+        <gml:Definition gml:id="id9">
+            <gml:description>海浜等（遊水池、河川敷（未利用）(堤外）、海浜）</gml:description>
+            <gml:name>10602</gml:name>
+        </gml:Definition>
+    </gml:dictionaryEntry>
+    <gml:dictionaryEntry>
+        <gml:Definition gml:id="id10">
+            <gml:description>法面（人工的な斜面）</gml:description>
+            <gml:name>10603</gml:name>
+        </gml:Definition>
+    </gml:dictionaryEntry>
+    <gml:dictionaryEntry>
+        <gml:Definition gml:id="id11">
+            <gml:description>耕作放棄地</gml:description>
+            <gml:name>10701</gml:name>
+        </gml:Definition>
+    </gml:dictionaryEntry>
+    <gml:dictionaryEntry>
+        <gml:Definition gml:id="id12">
+            <gml:description>住宅用地</gml:description>
+            <gml:name>20100</gml:name>
+        </gml:Definition>
+    </gml:dictionaryEntry>
+    <gml:dictionaryEntry>
+        <gml:Definition gml:id="id13">
+            <gml:description>集合住宅用地</gml:description>
+            <gml:name>20200</gml:name>
+        </gml:Definition>
+    </gml:dictionaryEntry>
+    <gml:dictionaryEntry>
+        <gml:Definition gml:id="id14">
+            <gml:description>店舗併用住宅用地</gml:description>
+            <gml:name>20300</gml:name>
+        </gml:Definition>
+    </gml:dictionaryEntry>
+    <gml:dictionaryEntry>
+        <gml:Definition gml:id="id15">
+            <gml:description>店舗併用集合住宅用地</gml:description>
+            <gml:name>20400</gml:name>
+        </gml:Definition>
+    </gml:dictionaryEntry>
+    <gml:dictionaryEntry>
+        <gml:Definition gml:id="id16">
+            <gml:description>作業所併用住宅用地</gml:description>
+            <gml:name>20500</gml:name>
+        </gml:Definition>
+    </gml:dictionaryEntry>
+    <gml:dictionaryEntry>
+        <gml:Definition gml:id="id17">
+            <gml:description>業務用地</gml:description>
+            <gml:name>20600</gml:name>
+        </gml:Definition>
+    </gml:dictionaryEntry>
+    <gml:dictionaryEntry>
+        <gml:Definition gml:id="id18">
+            <gml:description>商業用地</gml:description>
+            <gml:name>20700</gml:name>
+        </gml:Definition>
+    </gml:dictionaryEntry>
+    <gml:dictionaryEntry>
+        <gml:Definition gml:id="id19">
+            <gml:description>宿泊娯楽施設用地（キャンプ場（民間）を含む）</gml:description>
+            <gml:name>20800</gml:name>
+        </gml:Definition>
+    </gml:dictionaryEntry>
+    <gml:dictionaryEntry>
+        <gml:Definition gml:id="id20">
+            <gml:description>商業用地（複合系）</gml:description>
+            <gml:name>21100</gml:name>
+        </gml:Definition>
+    </gml:dictionaryEntry>
+    <gml:dictionaryEntry>
+        <gml:Definition gml:id="id21">
+            <gml:description>公共用地</gml:description>
+            <gml:name>21200</gml:name>
+        </gml:Definition>
+    </gml:dictionaryEntry>
+    <gml:dictionaryEntry>
+        <gml:Definition gml:id="id22">
+            <gml:description>文教厚生用地（キャンプ場（公営）を含む）</gml:description>
+            <gml:name>21300</gml:name>
+        </gml:Definition>
+    </gml:dictionaryEntry>
+    <gml:dictionaryEntry>
+        <gml:Definition gml:id="id23">
+            <gml:description>運輸倉庫用地（港区含む）</gml:description>
+            <gml:name>21400</gml:name>
+        </gml:Definition>
+    </gml:dictionaryEntry>
+    <gml:dictionaryEntry>
+        <gml:Definition gml:id="id24">
+            <gml:description>工業用地</gml:description>
+            <gml:name>21500</gml:name>
+        </gml:Definition>
+    </gml:dictionaryEntry>
+    <gml:dictionaryEntry>
+        <gml:Definition gml:id="id25">
+            <gml:description>供給処理施設用地（送電線鉄塔用地　雨水調整池（通常は、駐車場やグラウンド等その他利用））</gml:description>
+            <gml:name>21900</gml:name>
+        </gml:Definition>
+    </gml:dictionaryEntry>
+    <gml:dictionaryEntry>
+        <gml:Definition gml:id="id26">
+            <gml:description>農地（農業施設）</gml:description>
+            <gml:name>22000</gml:name>
+        </gml:Definition>
+    </gml:dictionaryEntry>
+    <gml:dictionaryEntry>
+        <gml:Definition gml:id="id27">
+            <gml:description>防衛施設用地</gml:description>
+            <gml:name>22100</gml:name>
+        </gml:Definition>
+    </gml:dictionaryEntry>
+    <gml:dictionaryEntry>
+        <gml:Definition gml:id="id28">
+            <gml:description>都市公園（都市公園内の芝地、樹林地を含む　市民の森は除外）</gml:description>
+            <gml:name>30101</gml:name>
+        </gml:Definition>
+    </gml:dictionaryEntry>
+    <gml:dictionaryEntry>
+        <gml:Definition gml:id="id29">
+            <gml:description>ゴルフ場</gml:description>
+            <gml:name>30102</gml:name>
+        </gml:Definition>
+    </gml:dictionaryEntry>
+    <gml:dictionaryEntry>
+        <gml:Definition gml:id="id30">
+            <gml:description>その他オープンスペース（児童広場、市民の森等の開放されている広場）</gml:description>
+            <gml:name>30103</gml:name>
+        </gml:Definition>
+    </gml:dictionaryEntry>
+    <gml:dictionaryEntry>
+        <gml:Definition gml:id="id31">
+            <gml:description>未建築宅地（DM記号上の「(空）」）</gml:description>
+            <gml:name>30201</gml:name>
+        </gml:Definition>
+    </gml:dictionaryEntry>
+    <gml:dictionaryEntry>
+        <gml:Definition gml:id="id32">
+            <gml:description>改変工事中の土地（(建設中）建物のないもの　材料置き場（工事中））</gml:description>
+            <gml:name>30202</gml:name>
+        </gml:Definition>
+    </gml:dictionaryEntry>
+    <gml:dictionaryEntry>
+        <gml:Definition gml:id="id33">
+"            <gml:description>駐車場（DM記号上の「(P）」
+（個人宅、マンション、店舗等に隣接付随するものを除く））</gml:description>"
+            <gml:name>30203</gml:name>
+        </gml:Definition>
+    </gml:dictionaryEntry>
+    <gml:dictionaryEntry>
+        <gml:Definition gml:id="id34">
+            <gml:description>その他空地（企業・大学等のグラウンド（校舎等に隣接していない）,住宅展示場,材料置き場(工場内の資材置き場を除く））</gml:description>
+            <gml:name>30204</gml:name>
+        </gml:Definition>
+    </gml:dictionaryEntry>
+    <gml:dictionaryEntry>
+        <gml:Definition gml:id="id35">
+            <gml:description>自動車専用道路</gml:description>
+            <gml:name>30301</gml:name>
+        </gml:Definition>
+    </gml:dictionaryEntry>
+    <gml:dictionaryEntry>
+        <gml:Definition gml:id="id36">
+            <gml:description>道路：幅員22ｍ以上</gml:description>
+            <gml:name>30302</gml:name>
+        </gml:Definition>
+    </gml:dictionaryEntry>
+    <gml:dictionaryEntry>
+        <gml:Definition gml:id="id37">
+            <gml:description>駅前広場</gml:description>
+            <gml:name>30305</gml:name>
+        </gml:Definition>
+    </gml:dictionaryEntry>
+    <gml:dictionaryEntry>
+        <gml:Definition gml:id="id38">
+            <gml:description>道路：4ｍ未満</gml:description>
+            <gml:name>30306</gml:name>
+        </gml:Definition>
+    </gml:dictionaryEntry>
+    <gml:dictionaryEntry>
+        <gml:Definition gml:id="id39">
+            <gml:description>道路その他（道路中央分離帯、管理用地等）</gml:description>
+            <gml:name>30307</gml:name>
+        </gml:Definition>
+    </gml:dictionaryEntry>
+    <gml:dictionaryEntry>
+        <gml:Definition gml:id="id40">
+            <gml:description>道路：幅員15.0m 以上22.0m 未満（●　新設）</gml:description>
+            <gml:name>30308</gml:name>
+        </gml:Definition>
+    </gml:dictionaryEntry>
+    <gml:dictionaryEntry>
+        <gml:Definition gml:id="id41">
+            <gml:description>道路：幅員12.0m 以上15.0m 未満（●　新設）</gml:description>
+            <gml:name>30309</gml:name>
+        </gml:Definition>
+    </gml:dictionaryEntry>
+    <gml:dictionaryEntry>
+        <gml:Definition gml:id="id42">
+            <gml:description>道路：幅員6.0m 以上12.0m 未満（●　新設）</gml:description>
+            <gml:name>30310</gml:name>
+        </gml:Definition>
+    </gml:dictionaryEntry>
+    <gml:dictionaryEntry>
+        <gml:Definition gml:id="id43">
+            <gml:description>道路：幅員4.0m 以上6.0m 未満（●　新設）</gml:description>
+            <gml:name>30311</gml:name>
+        </gml:Definition>
+    </gml:dictionaryEntry>
+    <gml:dictionaryEntry>
+        <gml:Definition gml:id="id44">
+            <gml:description>鉄道用地</gml:description>
+            <gml:name>30400</gml:name>
+        </gml:Definition>
+    </gml:dictionaryEntry>
+</gml:Dictionary>

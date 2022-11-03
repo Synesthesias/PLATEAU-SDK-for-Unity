@@ -5,6 +5,7 @@ using PLATEAU.Geometries;
 using PLATEAU.Interop;
 using PLATEAU.PolygonMesh;
 using PLATEAU.Util;
+using UnityEditor.Compilation;
 using UnityEngine;
 using UnityEngine.Assertions;
 using Mesh = UnityEngine.Mesh;
@@ -132,13 +133,12 @@ namespace PLATEAU.Editor.CityExport.ModelConvert
             var dllSubMeshes = new List<SubMesh>();
             if (includeTexture)
             {
-                Debug.Log($"subMeshCount={subMeshCount}");
                 for (int i = 0; i < subMeshCount; i++)
                 {
                     var unitySubMesh = unityMesh.GetSubMesh(i);
                     int startIndex = unitySubMesh.indexStart;
                     int endIndex = startIndex + unitySubMesh.indexCount - 1;
-                    if (startIndex == endIndex) continue;
+                    if (startIndex >= endIndex) continue;
                     Assert.IsTrue(startIndex < endIndex);
                     Assert.IsTrue(endIndex < indices.Length);
                     Assert.IsTrue(startIndex < indices.Length);

@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gml:Dictionary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/profiles/SimpleDictionary/1.0.0/gmlSimpleDictionaryProfile.xsd" gml:id="Common_districtsAndZonesType">
+	<gml:name>Common_districtsAndZonesType</gml:name>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id1">
+			<gml:description>用途地域の指定をしない区域</gml:description>
+			<gml:name>0</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id2">
+			<gml:description>第1種低層住居専用地域</gml:description>
+			<gml:name>1</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id3">
+			<gml:description>第2種低層住居専用地域</gml:description>
+			<gml:name>2</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id4">
+			<gml:description>第1種中高層住居専用地域</gml:description>
+			<gml:name>3</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id5">
+			<gml:description>第2種中高層住居専用地域</gml:description>
+			<gml:name>4</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id6">
+			<gml:description>第1種住居地域</gml:description>
+			<gml:name>5</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id7">
+			<gml:description>第2種住居地域</gml:description>
+			<gml:name>6</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id8">
+			<gml:description>準住居地域</gml:description>
+			<gml:name>7</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id9">
+			<gml:description>田園住居地域</gml:description>
+			<gml:name>8</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id10">
+			<gml:description>近隣商業地域</gml:description>
+			<gml:name>9</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id11">
+			<gml:description>商業地域</gml:description>
+			<gml:name>10</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id12">
+			<gml:description>準工業地域</gml:description>
+			<gml:name>11</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id13">
+			<gml:description>工業地域</gml:description>
+			<gml:name>12</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id14">
+			<gml:description>工業専用地域</gml:description>
+			<gml:name>13</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id15">
+			<gml:description>特別用途地区</gml:description>
+			<gml:name>14</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id16">
+			<gml:description>特定用途制限地域</gml:description>
+			<gml:name>15</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id17">
+			<gml:description>特例容積率適用地区</gml:description>
+			<gml:name>16</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id18">
+			<gml:description>高層住居誘導地区</gml:description>
+			<gml:name>17</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id19">
+			<gml:description>高度地区</gml:description>
+			<gml:name>18</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id20">
+			<gml:description>高度利用地区</gml:description>
+			<gml:name>19</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id21">
+			<gml:description>特定街区</gml:description>
+			<gml:name>20</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id22">
+			<gml:description>都市再生特別地区</gml:description>
+			<gml:name>21</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id23">
+			<gml:description>居住調整地域</gml:description>
+			<gml:name>22</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id24">
+			<gml:description>特定用途誘導地区</gml:description>
+			<gml:name>23</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id25">
+			<gml:description>防火地域</gml:description>
+			<gml:name>24</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id26">
+			<gml:description>準防火地域</gml:description>
+			<gml:name>25</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id27">
+			<gml:description>特定防災街区整備地区</gml:description>
+			<gml:name>26</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id28">
+			<gml:description>景観地区</gml:description>
+			<gml:name>27</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id29">
+			<gml:description>風致地区</gml:description>
+			<gml:name>28</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id30">
+			<gml:description>駐車場整備地区</gml:description>
+			<gml:name>29</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id31">
+			<gml:description>臨港地区</gml:description>
+			<gml:name>30</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id32">
+			<gml:description>歴史的風土特別保存地区</gml:description>
+			<gml:name>31</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id33">
+			<gml:description>第1種歴史的風土保全地区</gml:description>
+			<gml:name>32</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id34">
+			<gml:description>第2種歴史的風土保全地区</gml:description>
+			<gml:name>33</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id35">
+			<gml:description>緑地保全地域</gml:description>
+			<gml:name>34</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id36">
+			<gml:description>特別緑地保存地区</gml:description>
+			<gml:name>35</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id37">
+			<gml:description>緑化地域</gml:description>
+			<gml:name>36</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id38">
+			<gml:description>流通業務地区</gml:description>
+			<gml:name>37</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id39">
+			<gml:description>生産緑地地区</gml:description>
+			<gml:name>38</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id40">
+			<gml:description>伝統的建造物群保存地区</gml:description>
+			<gml:name>39</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id41">
+			<gml:description>航空機騒音障害防止地区</gml:description>
+			<gml:name>40</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id42">
+			<gml:description>航空機騒音障害防止特別地区</gml:description>
+			<gml:name>41</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id43">
+			<gml:description>居住環境向上用途誘導地区</gml:description>
+			<gml:name>42</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+</gml:Dictionary>
