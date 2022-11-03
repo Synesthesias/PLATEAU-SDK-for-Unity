@@ -132,12 +132,12 @@
 <li><p><code>座標変換</code></p>
 <ul>
 <li>座標の基準点を設定します。</li>
-<li><p><code>Local</code> (ローカル) </p>
+<li><p><code>Local</code> (ローカル) のとき:</p>
 <ul>
 <li>ポリゴンの座標は <code>PLATEAUInstancedCityModel</code> の位置を原点とした座標で表されます。<br><img src="../resources/manual/exportCityModels/exportLocalCoord.png" alt=""></li>
 </ul>
 </li>
-<li><p><code>Plane Cartesian</code> (直交座標系) </p>
+<li><p><code>Plane Cartesian</code> (直交座標系) のとき: </p>
 <ul>
 <li>ポリゴンの座標は、国土交通省が定める直交座標系のうち、インポート時に選択した直交座標系を原点とするよう平行移動されます。<br><img src="../resources/manual/exportCityModels/japanCoordinateSystem.png" alt=""><br>上図は <a href="https://www.gsi.go.jp/sokuchikijun/jpc.html">国土地理院のWebサイト「わかりやすい平面直角座標系」</a> より引用<br>(原点マークは別途追記)</li>
 </ul>
@@ -163,9 +163,9 @@
 <div class="NOTE"><h5>Note</h5><p><strong>OBJファイルの技術的制約について</strong>  </p>
 <p>OBJファイルはそのフォーマットの仕様上、制約があります。  </p>
 <ol>
-<li><p>オブジェクトが分割されず、1つのオブジェクトとして出力されます。<br>その代わり、頂点グループとしてオブジェクト内で領域分けされます。<br>例えば、Blenderの場合、インポート時に <code>頂点グループ</code> にチェックを入れると、図のように頂点グループが設定されます。  </p>
+<li><p>オブジェクトが分割されず、1つのオブジェクトとして出力されます。<br>その代わり、頂点グループとしてオブジェクト内で領域分けされます。<br>例えば、Blenderの場合、インポート時に <code>頂点グループ</code> にチェックを入れると、図のように頂点グループが設定されます。<br><img src="../resources/manual/exportCityModels/blenderVertexGroup.png" alt=""></p>
 </li>
-<li><p>objファイルを Unity にインポートするとき、左右が反転します。<br>これは Unity の仕様によるものです。<br>Unityの座標系は EUN ですが、EUNで出力した objファイルをインポートすると左右反転します。<br>そこで EUN を左右反転させた座標系である WUN で出力すると、objファイルをUnityにインポートしたときに正しくなります。<br>このようになる理由は、Unityは objファイルを右手座標系であると解釈し、Unityの左手座標系に合わせるために x座標の正負を反転させる仕様のためです。  </p>
+<li><p>objファイルを Unity にインポートするとき、左右が反転します。<br>これは Unity の仕様によるものです。<br>Unityの座標系は EUN ですが、EUNで出力した objファイルをインポートすると左右反転したモデルになります。<br>そこで EUN を左右反転させた座標系である WUN で出力すると、Unityにインポートしたときに正しくなります。<br>このようになる理由は、Unityは objファイルを右手座標系であると解釈し、Unityの左手座標系に合わせるために x座標の正負を反転させるためです。  </p>
 </li>
 </ol>
 </div>
@@ -175,6 +175,7 @@
 <li><code>エクスポート</code> ボタンを押してしばらく待ちます。</li>
 <li>指定のフォルダに3Dモデルファイルが出力されます。</li>
 </ul>
+<p><img src="../resources/manual/exportCityModels/tokyoBlender.png" alt=""><br>上図はエクスポートしたobjファイルを Blender で読み込んだものです。</p>
 </article>
           </div>
           
@@ -183,7 +184,7 @@
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/Synesthesias/PlateauUnitySDK/blob/main/Documentation~/manual/ExportCityModels.md/#L1" class="contribution-link">Improve this Doc</a>
+                    <a href="https://github.com/Synesthesias/PLATEAU-SDK-for-Unity/blob/main/Documentation~/manual/ExportCityModels.md/#L1" class="contribution-link">Improve this Doc</a>
                   </li>
                 </ul>
               </div>

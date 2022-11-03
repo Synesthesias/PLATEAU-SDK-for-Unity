@@ -79,42 +79,41 @@
             <article class="content wrap" id="_content" data-uid="">
 <h1 id="都市情報へのアクセス">都市情報へのアクセス</h1>
 
-<p>C#プログラムによって都市情報にアクセスする手順は、おおまかには次のとおりです。  </p>
-<ul>
-<li>GameObject から CityObject を取得  </li>
-<li>CityObject から 属性(AttributesMap) を取得</li>
-<li>属性から値を取得  </li>
-</ul>
-<p>以下で詳しく解説します。<br>まずサンプルを提示し、次に都市情報を取得するために知っておくべきことを解説します。</p>
+<p>C# APIによって都市オブジェクトの情報を取得できます。<br>このページでその方法を説明します。</p>
 <h2 id="サンプル">サンプル</h2>
-<p>シーンに配置された都市の3Dモデルから、都市情報の1つである属性を取得できます。<br>そのサンプルとして、<code>PlateauLogAttributes</code> シーンをご覧ください。<br>シーンを開いてPlayボタンを押すと、建物の情報がUnityコンソールに表示されます。<br>そのコードのサンプルが <code>PlateauAttributesLogger.cs</code> になります。</p>
+<p>クリックした建物の情報を表示するサンプルを用意しています。<br>次の方法で確認できます。</p>
+<ul>
+<li>下図のボタンをクリックして <code>Attributes Sample</code> をインポートします。
+<img src="../resources/manual/accessCityObject/importSample.png" alt=""><br>　　図は Package Manager の Import ボタンを押している様子です。</li>
+<li>シーン AttributesSample を開きます。</li>
+<li>Playボタンで再生します。</li>
+<li>クリックした建物の情報が画面に表示されます。<br><img src="../resources/manual/accessCityObject/attributeDisplay.png" alt=""></li>
+<li>ソースコード <code>ClickToShowAttributes.cs</code> の中に、この実装とコメントでの説明が記載されています。</li>
+</ul>
+<h2 id="都市モデルのロード">都市モデルのロード</h2>
+<p>都市に関するデータは、GMLファイルをパースすることで得られます。<br><code>PLATEAUCityGmlProxy.LoadAsync</code> によってGMLファイルがパースされ、<br>パース結果が <code>CityModel</code> 型で返ります。<br><code>CityModel</code> の中には <code>CityObject</code> が木構造で格納されています。<br>木構造をたどるか <code>CityModel.GetCityObjectById</code> メソッドによって <code>CityObject</code>を取得できます。<br>このメソッドに渡すべきIDは、インポート時にメッシュ結合単位を &quot;最小地物単位&quot; または &quot;主要地物単位&quot; にすることでゲームオブジェクト名に記載されます。<br><code>CityObject</code>の属性を取得することで地物（建物など）の情報を取得できます。</p>
 <h2 id="属性とは">属性とは</h2>
-<p>取得できる都市情報の1つに「属性」があります。<br>属性は例えば  </p>
-<pre><code class="lang-text"> (String) 大字・町コード =&gt; 42,
- (String) 防火及び準防火地域 =&gt; 準防火地域
-</code></pre><p>のように、キーと値のペアからなる辞書形式の情報です。<br>属性の値は文字列型として取得できるか、または<br>子の属性（属性は入れ子になることもあります）として取得できるかのいずれかです。<br>属性が入れ子になっている例は次のとおりです（サンプルシーンの実行結果から抜粋）。</p>
+<p>都市オブジェクトの情報は「属性」として取得できます。<br>属性は例えば  </p>
+<pre><code class="lang-text">(String) 大字・町コード =&gt; 42,
+(String) 防火及び準防火地域 =&gt; 準防火地域
+</code></pre><p>のように、キーと値のペアからなる辞書形式の情報です。<br>属性辞書は <code>CityObject.AttributesSet</code> メソッドで取得できます。<br><code>AttributesSet.ToString()</code> をコールすると、属性情報をすべて文字列にして返します。　　
+<code>AttributesSet.GetValueOrNull(&quot;key&quot;)</code> によってキーに対応する<code>AttributeValue</code> を取得できます。<br><code>AttributeValue</code> の具体的な値は文字列型として取得できるか、または<br>子の属性（属性は入れ子になることもあります）として取得できるかのいずれかです。<br>属性が入れ子になっている例は次のとおりです。</p>
 <pre><code class="lang-text"> (AttributeSet) 多摩水系多摩川、浅川、大栗川洪水浸水想定区域（想定最大規模） =&gt; 
     [ { (String) 浸水ランク =&gt; 2 }
     { (Measure) 浸水深 =&gt; 0.990 }
     { (Measure) 継続時間 =&gt; 0.68 }
     { (String) 規模 =&gt; L2 }  
 ]}
-</code></pre><p>上の例において、(括弧)内の文字は属性の型を示します。<br>属性は次の型があります:<br><code>AttributeSet, String, Double, Integer, Data, Uri, Measure</code><br>AttributeSet以外の型はすべて内部的には文字列型であり、<br><code>attributeValue.AsString</code> で値を取得できます。<br>入れ子AttributeSetの値は <code>AsString</code> では取得できず、<code>attributeValue.AsAttrSet</code>で取得できます。</p>
-<h2 id="属性の取得">属性の取得</h2>
-<p>シーンの GameObject から都市情報の属性を取得する方法については<br>サンプルの <code>PlateauAttributesLogger.cs</code> が例になります。<br>その補足として、方法の概要を以下に記します。</p>
+</code></pre><p>上の例において、(括弧)内の文字は属性の型を示します。<br>属性値は次の型があります。:<br><code>AttributeSet, String, Double, Integer, Data, Uri, Measure</code><br>AttributeSet以外の型はすべて内部的には文字列型であり、<br><code>AttributeValue.AsString</code> で値を取得できます。<br>入れ子AttributeSetの値は <code>AsString</code> ではなく <code>AttributeValue.AsAttrSet</code>で取得できます。<br>属性値の型は <code>AttributeValue.Type</code> で取得でき、この値が <code>AttributeSet</code> である場合は　　
+<code>AttributeValue.AsAttrSet</code>で子の <code>AttributesMap</code> を取得できます。<br><code>AttributeValue.Type</code> がそれ以外 (String, Doubleなど) である場合は <code>AttributeValue.AsString</code> で文字列を取得できます。</p>
 <h3 id="シーンのヒエラルキー">シーンのヒエラルキー</h3>
 <p>PlateauデータをUnityにインポートすると、<br>サンプルシーンにあるとおり、次の階層構造でオブジェクトが配置されます。</p>
-<pre><code class="lang-text"> 都市モデルルート( CityBehaviour がアタッチされます )
-   → 子 : 3Dモデルファイルのインスタンス ( プレハブとして配置されます )
-             → 子 : CityObject に対応する GameObject
-</code></pre><p>すなわち、 CityBehaviour の孫にあたる GameObject が CityObject と対応します。</p>
-<h3 id="cityobject-の取得">CityObject の取得</h3>
-<p>GameObject の名称から CityObject を取得するには次のようにします。  </p>
-<pre><code class="lang-cs">var cityObj = cityBehaviour.LoadCityObject(gameObj.name);
-</code></pre><p>そうすると CityBehaviour は自身の参照するメタデータを利用し、<br>GameObjectの名称からどの gml ファイルをロードするべきか検索します。<br>そして gmlファイルから CityModel ロードして（ロード済みの場合はキャッシュが使われます）、<br>CityModel のうち 該当する CityObject を返します。  </p>
-<p><strong>補足:</strong><br>ここで利用するメタデータとは、<br>インポート時に生成される CityMetaData型の Scriptable Object です。<br>CityMetaDataは、インポート時に GameObject名と gmlファイル名の対応表を記録します。</p>
-<h3 id="cityobject-の属性の取得">CityObject の属性の取得</h3>
-<p>CityObject から属性を取得するには、<br><code>cityObject.AttributesMap</code> を利用します。<br>属性については上述の通りです。</p>
+<pre><code class="lang-text"> 都市モデルルート( PLATEAUInstancedCityObject がアタッチされます )
+   → 子 : GMLファイルに対応するゲームオブジェクト
+       → 子 : LODに対応するゲームオブジェクト
+           → 子 : CityObject に対応するゲームオブジェクト
+</code></pre><p><img src="../resources/manual/accessCityObject/hierarchy.png" alt=""></p>
+<p>ただし、インポート時のメッシュ粒度設定が <code>地域単位</code> だった場合、<br>メッシュは結合されて出力されるので CityObject とは対応しません。</p>
 </article>
           </div>
           
@@ -123,7 +122,7 @@
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/Synesthesias/PlateauUnitySDK/blob/main/Documentation~/manual/AccessCityObject.md/#L1" class="contribution-link">Improve this Doc</a>
+                    <a href="https://github.com/Synesthesias/PLATEAU-SDK-for-Unity/blob/main/Documentation~/manual/AccessCityObject.md/#L1" class="contribution-link">Improve this Doc</a>
                   </li>
                 </ul>
               </div>

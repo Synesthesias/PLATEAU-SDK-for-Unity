@@ -10,7 +10,7 @@
     "changefreq": "weekly"
   },
   "homepages": [],
-  "source_base_path": "D:/a/PlateauUnitySDK/PlateauUnitySDK/Documentation~",
+  "source_base_path": "D:/a/PLATEAU-SDK-for-Unity/PLATEAU-SDK-for-Unity/Documentation~",
   "xrefmap": "xrefmap.yml",
   "files": [
     {
@@ -100,7 +100,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PLATEAU.CityGML.AttributesMap.html",
-          "hash": "eYERowVv0yBYg/ymWmnd4F1yu2GtNOGoqXhbSMReSqs="
+          "hash": "S8su9FCnHq8ZUhYQVaAptAKnoAgOM42390/nYACldGs="
         }
       },
       "is_incremental": false,
@@ -316,7 +316,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PLATEAU.CityInfo.PLATEAUCityGmlProxy.html",
-          "hash": "RlgzlGDXYJjVXGWQppKpQ5K1HVBWfz1rXuFJ1Qs//xA="
+          "hash": "4F7SzomF+xGQheYKLTI7VKVxABR/r8T0RbWlAQH4g/E="
         }
       },
       "is_incremental": false,
@@ -808,7 +808,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PLATEAU.Util.Async.TaskExtension.html",
-          "hash": "JGaO3bddgLEsgsa5w5dQ6V4m91WRgutzo/FWYblRqKE="
+          "hash": "cSvUubec8e+UZ0qklUUdnH3xVqHkYddsbjtE/Y/Seko="
         }
       },
       "is_incremental": false,
@@ -928,7 +928,7 @@
       "output": {
         ".html": {
           "relative_path": "index.html",
-          "hash": "AylK5ZQKxoIo/BupEqfMsQBD9+/pLcdXbqhsDB83fRo="
+          "hash": "H6bv6pzjez6WLKcKfvZsdYSZX2NqQK38oHujm91aHOI="
         }
       },
       "is_incremental": false,
@@ -940,7 +940,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/AccessCityObject.html",
-          "hash": "W0Ax101HG4hRd24/hD3AFHXnt++q9GzL5asa3pZ6jio="
+          "hash": "jNhWZkj24RBwzL6qygIyMTj6ItGUxXFD4O/8z09Uju8="
         }
       },
       "is_incremental": false,
@@ -952,7 +952,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/ExportCityModels.html",
-          "hash": "XFm4fiuRZ2jW7W6T4h07YRvMW4aNnNfHinXBpdcSW8U="
+          "hash": "2YIIRix57ph/sA1ckVGf7c9peSFV1fUQzBpHyvIGIwE="
         }
       },
       "is_incremental": false,
@@ -964,7 +964,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/ImportCityModels.html",
-          "hash": "n040kJJ3x1teSsk6IzkkChT1fCXzenCikZtwXFyFkBo="
+          "hash": "vnc3at6GVT5diSesobhiBaaJ3JxreTfyZHNJIa3YRrY="
         }
       },
       "is_incremental": false,
@@ -976,7 +976,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/Installation.html",
-          "hash": "PfG84DGRc7NqfFSJUDaD8a3eSC5JluNH+EB7f1b+gvQ="
+          "hash": "4Lw0FbO4/V8XMzEFtB5+i5a2V3SvgHYNu/+fqHUxJhA="
         }
       },
       "is_incremental": false,
@@ -988,7 +988,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/Tutorial.html",
-          "hash": "O5P0YRXaYzmi4f1ApwQLtRfs8hQrf24uqThEjBlc3d8="
+          "hash": "hXmrLg4HAs4vPh70wORP3q0wY/5g7caJT1miYqDReOI="
         }
       },
       "is_incremental": false,
@@ -1023,6 +1023,50 @@
       "output": {
         "resource": {
           "relative_path": "resources/manual.meta"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/manual/accessCityObject/attributeDisplay.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/accessCityObject/attributeDisplay.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/manual/accessCityObject/hierarchy.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/accessCityObject/hierarchy.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/manual/accessCityObject/importSample.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/accessCityObject/importSample.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/manual/exportCityModels/blenderVertexGroup.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/exportCityModels/blenderVertexGroup.png"
         }
       },
       "is_incremental": false,
@@ -1078,6 +1122,17 @@
       "output": {
         "resource": {
           "relative_path": "resources/manual/exportCityModels/japanCoordinateSystem.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/manual/exportCityModels/tokyoBlender.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/exportCityModels/tokyoBlender.png"
         }
       },
       "is_incremental": false,
@@ -1265,6 +1320,17 @@
       "output": {
         "resource": {
           "relative_path": "resources/manual/importCityModels/sceneSaveDialogue.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/manual/installation/addPackageFromTarball.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/installation/addPackageFromTarball.png"
         }
       },
       "is_incremental": false,

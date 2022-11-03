@@ -340,6 +340,19 @@ references:
   isSpec: "True"
   fullName: PLATEAU.CityGML.AttributesMap.GetEnumerator
   nameWithType: AttributesMap.GetEnumerator
+- uid: PLATEAU.CityGML.AttributesMap.GetValueOrNull(System.String)
+  name: GetValueOrNull(String)
+  href: api/PLATEAU.CityGML.AttributesMap.html#PLATEAU_CityGML_AttributesMap_GetValueOrNull_System_String_
+  commentId: M:PLATEAU.CityGML.AttributesMap.GetValueOrNull(System.String)
+  fullName: PLATEAU.CityGML.AttributesMap.GetValueOrNull(System.String)
+  nameWithType: AttributesMap.GetValueOrNull(String)
+- uid: PLATEAU.CityGML.AttributesMap.GetValueOrNull*
+  name: GetValueOrNull
+  href: api/PLATEAU.CityGML.AttributesMap.html#PLATEAU_CityGML_AttributesMap_GetValueOrNull_
+  commentId: Overload:PLATEAU.CityGML.AttributesMap.GetValueOrNull
+  isSpec: "True"
+  fullName: PLATEAU.CityGML.AttributesMap.GetValueOrNull
+  nameWithType: AttributesMap.GetValueOrNull
 - uid: PLATEAU.CityGML.AttributesMap.Item(System.String)
   name: Item[String]
   href: api/PLATEAU.CityGML.AttributesMap.html#PLATEAU_CityGML_AttributesMap_Item_System_String_
@@ -1760,18 +1773,12 @@ references:
   commentId: T:PLATEAU.CityInfo.PLATEAUCityGmlProxy
   fullName: PLATEAU.CityInfo.PLATEAUCityGmlProxy
   nameWithType: PLATEAUCityGmlProxy
-- uid: PLATEAU.CityInfo.PLATEAUCityGmlProxy.LoadAsync(GameObject)
-  name: LoadAsync(GameObject)
-  href: api/PLATEAU.CityInfo.PLATEAUCityGmlProxy.html#PLATEAU_CityInfo_PLATEAUCityGmlProxy_LoadAsync_GameObject_
-  commentId: M:PLATEAU.CityInfo.PLATEAUCityGmlProxy.LoadAsync(GameObject)
-  fullName: PLATEAU.CityInfo.PLATEAUCityGmlProxy.LoadAsync(GameObject)
-  nameWithType: PLATEAUCityGmlProxy.LoadAsync(GameObject)
-- uid: PLATEAU.CityInfo.PLATEAUCityGmlProxy.LoadAsync(System.String)
-  name: LoadAsync(String)
-  href: api/PLATEAU.CityInfo.PLATEAUCityGmlProxy.html#PLATEAU_CityInfo_PLATEAUCityGmlProxy_LoadAsync_System_String_
-  commentId: M:PLATEAU.CityInfo.PLATEAUCityGmlProxy.LoadAsync(System.String)
-  fullName: PLATEAU.CityInfo.PLATEAUCityGmlProxy.LoadAsync(System.String)
-  nameWithType: PLATEAUCityGmlProxy.LoadAsync(String)
+- uid: PLATEAU.CityInfo.PLATEAUCityGmlProxy.LoadAsync(GameObject,System.String,System.String)
+  name: LoadAsync(GameObject, String, String)
+  href: api/PLATEAU.CityInfo.PLATEAUCityGmlProxy.html#PLATEAU_CityInfo_PLATEAUCityGmlProxy_LoadAsync_GameObject_System_String_System_String_
+  commentId: M:PLATEAU.CityInfo.PLATEAUCityGmlProxy.LoadAsync(GameObject,System.String,System.String)
+  fullName: PLATEAU.CityInfo.PLATEAUCityGmlProxy.LoadAsync(GameObject, System.String, System.String)
+  nameWithType: PLATEAUCityGmlProxy.LoadAsync(GameObject, String, String)
 - uid: PLATEAU.CityInfo.PLATEAUCityGmlProxy.LoadAsync*
   name: LoadAsync
   href: api/PLATEAU.CityInfo.PLATEAUCityGmlProxy.html#PLATEAU_CityInfo_PLATEAUCityGmlProxy_LoadAsync_

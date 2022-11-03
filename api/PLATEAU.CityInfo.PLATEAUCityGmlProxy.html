@@ -126,12 +126,14 @@
   
   
   <a id="PLATEAU_CityInfo_PLATEAUCityGmlProxy_LoadAsync_" data-uid="PLATEAU.CityInfo.PLATEAUCityGmlProxy.LoadAsync*"></a>
-  <h4 id="PLATEAU_CityInfo_PLATEAUCityGmlProxy_LoadAsync_GameObject_" data-uid="PLATEAU.CityInfo.PLATEAUCityGmlProxy.LoadAsync(GameObject)">LoadAsync(GameObject)</h4>
-  <div class="markdown level1 summary"></div>
+  <h4 id="PLATEAU_CityInfo_PLATEAUCityGmlProxy_LoadAsync_GameObject_System_String_System_String_" data-uid="PLATEAU.CityInfo.PLATEAUCityGmlProxy.LoadAsync(GameObject,System.String,System.String)">LoadAsync(GameObject, String, String)</h4>
+  <div class="markdown level1 summary"><p>GMLファイルをパースし、<see cref="!:CityModel"></see> を返します。
+パースには時間がかかりますが、結果はキャッシュに入るので、2回目以降はパースはスキップされて速いです。</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public async Task&lt;CityModel&gt; LoadAsync(GameObject go)</code></pre>
+    <pre><code class="lang-csharp hljs">public static async Task&lt;CityModel&gt; LoadAsync(GameObject go, string rootDirName = null, string parentPathOfRootDir = null)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -146,50 +148,22 @@
       <tr>
         <td><span class="xref">GameObject</span></td>
         <td><span class="parametername">go</span></td>
-        <td></td>
+        <td><p>GMLファイルの名称が、与えられたゲームオブジェクトの名称であるものをパースします。</p>
+</td>
       </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="xref">Task</span>&lt;<span class="xref">CityModel</span>&gt;</td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  
-  
-  <a id="PLATEAU_CityInfo_PLATEAUCityGmlProxy_LoadAsync_" data-uid="PLATEAU.CityInfo.PLATEAUCityGmlProxy.LoadAsync*"></a>
-  <h4 id="PLATEAU_CityInfo_PLATEAUCityGmlProxy_LoadAsync_System_String_" data-uid="PLATEAU.CityInfo.PLATEAUCityGmlProxy.LoadAsync(System.String)">LoadAsync(String)</h4>
-  <div class="markdown level1 summary"><p>非同期で GMLパスから <see cref="!:CityModel"></see> を取得します。</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public async Task&lt;CityModel&gt; LoadAsync(string gmlRelativePath)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">String</a></td>
-        <td><span class="parametername">gmlRelativePath</span></td>
-        <td><p><see cref="!:PathUtil.plateauSrcFetchDir"></see> からの相対パスでGMLファイルを指定します。 </p>
+        <td><span class="parametername">rootDirName</span></td>
+        <td><p>都市データが入っているディレクトリのルートの名称を指定します。
+省略した場合、 <code data-dev-comment-type="paramref" class="paramref">go</code>.transform.parent.name になります。</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">String</a></td>
+        <td><span class="parametername">parentPathOfRootDir</span></td>
+        <td><p><code data-dev-comment-type="paramref" class="paramref">rootDirName</code>の親ディレクトリのパスを指定します。
+省略した場合、インポート時に自動でコピーされる場所になります。
+すなわち、 Assets/StreamingAssets/.PLATEAU になります。</p>
 </td>
       </tr>
     </tbody>
@@ -205,10 +179,7 @@
     <tbody>
       <tr>
         <td><span class="xref">Task</span>&lt;<span class="xref">CityModel</span>&gt;</td>
-        <td><p><see cref="!:CityModel"></see> を返します。
-キャッシュにあればそれを返し、なければGMLファイルをパースして結果を返します。
-パースに失敗した場合 null を返します。
-パースの高速化のため、返す CityModel には属性情報が含まれますが、3Dモデル情報は含まれません。</p>
+        <td><p>パースした結果を返します。パース失敗時は null を返します。</p>
 </td>
       </tr>
     </tbody>
