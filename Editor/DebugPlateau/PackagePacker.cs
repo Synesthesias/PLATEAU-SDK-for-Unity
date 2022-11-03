@@ -3,7 +3,7 @@ using UnityEditor.PackageManager;
 
 namespace PLATEAU.Editor.DebugPlateau
 {
-    public static class PackagePacker
+    internal static class PackagePacker
     {
         [MenuItem("PLATEAU/Debug/Pack PLATEAU Package to tarball")]
         public static void Pack()
