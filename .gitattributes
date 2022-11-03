@@ -7,9 +7,9 @@
 *.jpeg filter=lfs diff=lfs merge=lfs -text
 *.jpg filter=lfs diff=lfs merge=lfs -text
 # Documentation~ 以下にある画像は、LFSの対象外としないとドキュメントデプロイ時に現れません。
-Documentation~/**/*.png filter= diff= merge= text
-Documentation~/**/*.jpeg filter= diff= merge= text
-Documentation~/**/*.jpg filter= diff= merge= text
+Documentation~/**/*.png !filter !diff !merge text
+Documentation~/**/*.jpeg !filter !diff !merge text
+Documentation~/**/*.jpg !filter !diff !merge text
 
 
 # General Binary
