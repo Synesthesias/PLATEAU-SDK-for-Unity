@@ -73,5 +73,8 @@ PlateauデータをUnityにインポートすると、
        → 子 : LODに対応するゲームオブジェクト
            → 子 : CityObject に対応するゲームオブジェクト
 ```
+
+![](../resources/manual/accessCityObject/hierarchy.png)
+
 ただし、インポート時のメッシュ粒度設定が `地域単位` だった場合、  
 メッシュは結合されて出力されるので CityObject とは対応しません。
