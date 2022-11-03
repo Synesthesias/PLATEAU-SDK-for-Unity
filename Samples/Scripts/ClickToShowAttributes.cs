@@ -1,9 +1,11 @@
 using System.IO;
 using System.Threading.Tasks;
 using PlasticPipe.PlasticProtocol.Messages;
+using PLATEAU.CityGML;
 using PLATEAU.CityInfo;
 using PLATEAU.Util.Async;
 using UnityEngine;
+using UnityEngine.Assertions;
 
 namespace PLATEAU.Samples.Scripts
 {
@@ -76,7 +78,7 @@ namespace PLATEAU.Samples.Scripts
             // GMLファイルをパースします。
             // パースした結果は CityModel 型で返されます。
             // パースは重い処理ですが、結果はキャッシュに入るので2回目以降は速いです。
-            // 3つ目の引数を省略すると、ローカルインポート時に自動でコピーされるパスになります。今回はサンプル用のデータを読みたいので指定します。
+            // 3つ目の引数を省略すると、インポート時に自動でコピーされるパスになります。今回はサンプル用のデータを読みたいので指定します。
             var cityModel = await PLATEAUCityGmlProxy.LoadAsync(gmlTrans.gameObject, rootDirName, cityDataPath);
             
             if (cityModel == null) return false;
@@ -86,13 +88,26 @@ namespace PLATEAU.Samples.Scripts
             var cityObj = cityModel.GetCityObjectById(cityObjID);
 
             if (cityObj == null) return false;
-            this.display.TitleText = cityObjID;
-            
+
             // CityObject の中に属性情報が含まれます。
             // AttributesMap は属性の辞書であり、キーと値の集合です。
             // 属性は入れ子構造、すなわち AttributesMap の中に AttributesMap がある場合があります。
             // AttributesMap.ToString() を実行すると、入れ子構造の子まで含めて再帰的に属性の内容を文字列にします。
             this.display.AttributesText = cityObj.AttributesMap.ToString();
+            
+            // 住所の市を取得します。
+            // AttributesMap["キー名"] または AttributesMap.TryGetValue("キー名", out var val) で AttributeValue を取得できます。
+            // AttributeValue は、キー名に対応する値として 文字列 または 子のAttributesMap のどちらか1つを保持します。
+            // AsAttrSet で 子AttributesMap を取得します。 AsString で文字列を取得します。
+            // AsDouble, AsInt というメソッドもあります。これは内部的には文字列であるものをパースしたものを返します。
+            var attrs = cityObj.AttributesMap;
+            attrs.TryGetValue("uro:buildingDetails", out var buildingDetailAttr);
+            AttributeValue cityAttr = null;
+            buildingDetailAttr?.AsAttrSet.TryGetValue("uro:city", out cityAttr);
+            string cityName = cityAttr?.AsString ?? "";
+
+            this.display.TitleText = $"[{cityName}]\nID: {cityObjID}";
+            
             return true;
         }
 
