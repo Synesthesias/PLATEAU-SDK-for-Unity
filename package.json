@@ -16,7 +16,7 @@
             
             "displayName": "Attributes Sample",
             "description": "都市オブジェクトの属性を取得するサンプルです。",
-            "path": "Samples/AttributesSample"
+            "path": "Samples~/AttributesSample"
         }
     ]
 }
