@@ -1019,6 +1019,17 @@
     },
     {
       "type": "Resource",
+      "source_relative_path": "resources/index/citymodel_old.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/index/citymodel_old.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
       "source_relative_path": "resources/manual.meta",
       "output": {
         "resource": {
