@@ -25,6 +25,10 @@ namespace PLATEAU.Samples.Scripts
         [SerializeField] private AttributesDisplay display;
         private Camera mainCamera;
 
+        /// <summary>
+        /// このコードをサンプル以外に転用したい場合は、このデータパスをご自分のものに変更するか、
+        /// 下の await PLATEAUCityGmlProxy.LoadAsync の引数の2番目と3番目をデフォルト引数にしてください。
+        /// </summary>
         private static readonly string cityDataPath =
             Path.GetFullPath("Packages/com.synesthesias.plateau-unity-sdk/Samples~/");
 
