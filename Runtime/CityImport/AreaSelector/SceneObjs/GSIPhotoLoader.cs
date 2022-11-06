@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using PLATEAU.Util.Async;
 using UnityEditor;
@@ -9,6 +10,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
     /// <summary>
     /// 国土地理院の地図画像を取得します。
     /// </summary>
+    [Obsolete]
     internal static class GSIPhotoLoader
     {
         private const string GSIMapURL = "https://cyberjapandata.gsi.go.jp/xyz";
