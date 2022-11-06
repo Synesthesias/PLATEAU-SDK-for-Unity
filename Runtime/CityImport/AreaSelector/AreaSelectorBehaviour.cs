@@ -48,10 +48,8 @@ namespace PLATEAU.CityImport.AreaSelector
             var gatherResult = GatherMeshCodesInGMLDirectory(this.dataSourcePath);
             PlaceMeshCodeDrawers(gatherResult.meshCodes, this.meshCodeDrawers, this.coordinateZoneID, out this.geoReference);
             this.availablePackageFlags = gatherResult.availablePackageFlags;
-            // var photoLoadTask = GSIPhotoLoader.Load("seamlessphoto", 10, 909, 403, this.mapPlane, this.mapMaterials);
-            // photoLoadTask.ContinueWithErrorCatch();
             var entireExtent = CalcExtentCoversAllMeshCodes(gatherResult.meshCodes);
-            GSIMapLoader.Load(entireExtent).ContinueWithErrorCatch();
+            GSIMapLoader.Load(entireExtent, this.geoReference).ContinueWithErrorCatch();
         }
 
         private void Update()
@@ -108,7 +106,6 @@ namespace PLATEAU.CityImport.AreaSelector
             #if UNITY_EDITOR
             EditorUtility.DisplayProgressBar("", "範囲座標を計算中です...", 0.5f);
             #endif
-            // TODO geoReferenceの生成は1度で済むはず
             // 仮に (0,0,0) を referencePoint とする geoReference を作成
             using var geoReferenceTmp = CoordinatesConvertUtil.UnityStandardGeoReference(coordinateZoneID);
             // 中心を計算し、そこを基準点として geoReference を再設定します。
