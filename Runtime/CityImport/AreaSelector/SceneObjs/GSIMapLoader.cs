@@ -8,6 +8,7 @@ using PLATEAU.Util;
 using PLATEAU.Util.Async;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Assertions;
 
 namespace PLATEAU.CityImport.AreaSelector.SceneObjs
 {
@@ -31,8 +32,15 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
                 MapTile mapTile = null;
                 await Task.Run(() =>
                 {
-                    downloader.Download(i, out var tileCoord, out string path);
-                    mapTile = new MapTile(path, tileCoord);
+                    string mapFilePath = downloader.CalcDestPath(i);
+                    var tileCoord = downloader.GetTileCoordinate(i);
+                    if (!File.Exists(mapFilePath))
+                    {
+                        downloader.Download(i, out var downloadedTileCoord, out string downloadDestPath);
+                        Assert.AreEqual(mapFilePath, downloadDestPath);
+                        Assert.AreEqual(tileCoord, downloadedTileCoord);
+                    }
+                    mapTile = new MapTile(mapFilePath, tileCoord);
                 });
                 if (cancel.IsCancellationRequested)
                 {
