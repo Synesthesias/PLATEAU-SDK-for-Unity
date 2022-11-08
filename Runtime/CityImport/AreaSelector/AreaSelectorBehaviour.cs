@@ -35,6 +35,7 @@ namespace PLATEAU.CityImport.AreaSelector
         private int coordinateZoneID;
         private GeoReference geoReference;
         private CancellationTokenSource mapLoadCancel;
+        private bool prevSceneCameraRotationLocked;
 
         public static bool IsAreaSelectEnabled { get; set; }
 
@@ -45,6 +46,9 @@ namespace PLATEAU.CityImport.AreaSelector
             this.dataSourcePath = dataSourcePathArg;
             this.areaSelectResultReceiver = areaSelectResultReceiverArg;
             this.coordinateZoneID = coordinateZoneIDArg;
+            #if UNITY_EDITOR
+            this.prevSceneCameraRotationLocked = SceneView.lastActiveSceneView.isRotationLocked;
+            #endif
         }
 
         private void Start()
@@ -81,6 +85,9 @@ namespace PLATEAU.CityImport.AreaSelector
         private void OnDisable()
         {
             this.mapLoadCancel.Cancel();
+            #if UNITY_EDITOR
+            SceneView.lastActiveSceneView.isRotationLocked = this.prevSceneCameraRotationLocked;
+            #endif
         }
 
         private static Extent CalcExtentCoversAllMeshCodes(IEnumerable<MeshCode> meshCodes)
