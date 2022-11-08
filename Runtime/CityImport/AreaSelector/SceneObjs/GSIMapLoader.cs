@@ -25,7 +25,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         /// </summary>
         public static async Task DownloadAndPlaceAsync(Extent extent, GeoReference geoReference, CancellationToken cancel)
         {
-            using var downloader = VectorTileDownloader.Create(mapDownloadDest, extent);
+            using var downloader = VectorTileDownloader.Create(mapDownloadDest, extent, 11);
             int tileCount = downloader.TileCount;
             for (int i = 0; i < tileCount; i++)
             {

@@ -1348,7 +1348,8 @@ namespace PLATEAU.Interop
         internal static extern APIResult plateau_create_vector_tile_downloader(
             out IntPtr handle,
             string destination,
-            Extent extent);
+            Extent extent,
+            int zoomLevel);
 
         [DllImport(DllName)]
         internal static extern APIResult plateau_delete_vector_tile_downloader(

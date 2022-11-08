@@ -133,9 +133,10 @@ namespace PLATEAU.CityImport.AreaSelector
             referencePoint /= meshCodes.Count;
             referencePoint.Y = 0;
             geoReference = new GeoReference(referencePoint, 1f, CoordinateSystem.EUN, coordinateZoneID);
+            var gizmoParent = new GameObject("MeshCodeGizmos").transform;
             foreach (var meshCode in meshCodes)
             {
-                var gizmoObj = new GameObject($"MeshCodeGizmo");
+                var gizmoObj = new GameObject($"MeshCodeGizmo{meshCode.ToString()}");
                 var extent = meshCode.Extent; // extent は緯度,経度,高さ
                 // min, max は xyz の平面直行座標系に変換したもの
                 var min = geoReference.Project(extent.Min);
@@ -148,8 +149,10 @@ namespace PLATEAU.CityImport.AreaSelector
                     (float)Math.Abs(max.X - min.X),
                     AreaSelectorCursor.BoxUpperHeight - AreaSelectorCursor.BoxBottomHeight,
                     (float)Math.Abs(max.Z - min.Z));
-                gizmoObj.transform.position = center;
-                gizmoObj.transform.localScale = size;
+                var gizmoTrans = gizmoObj.transform;
+                gizmoTrans.position = center;
+                gizmoTrans.localScale = size;
+                gizmoTrans.parent = gizmoParent;
                 var drawer = gizmoObj.AddComponent<MeshCodeGizmoDrawer>();
                 drawer.MeshCode = meshCode;
                 boxGizmoDrawers.Add(drawer);

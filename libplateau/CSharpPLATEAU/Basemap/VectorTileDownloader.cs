@@ -15,10 +15,10 @@ namespace PLATEAU.Basemap
         {
         }
 
-        public static VectorTileDownloader Create(string destinationPath, Extent extent)
+        public static VectorTileDownloader Create(string destinationPath, Extent extent, int zoomLevel)
         {
             var result = NativeMethods.plateau_create_vector_tile_downloader(
-                out var pointer, destinationPath, extent
+                out var pointer, destinationPath, extent, zoomLevel
             );
             DLLUtil.CheckDllError(result);
             return new VectorTileDownloader(pointer);
