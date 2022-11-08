@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading;
 using PLATEAU.CityImport.AreaSelector.SceneObjs;
 using PLATEAU.Geometries;
 using PLATEAU.Interop;
@@ -29,6 +30,7 @@ namespace PLATEAU.CityImport.AreaSelector
         private PredefinedCityModelPackage availablePackageFlags;
         private int coordinateZoneID;
         private GeoReference geoReference;
+        private CancellationTokenSource mapLoadCancel;
 
         public static bool IsAreaSelectEnabled { get; set; }
 
@@ -49,7 +51,10 @@ namespace PLATEAU.CityImport.AreaSelector
             PlaceMeshCodeDrawers(gatherResult.meshCodes, this.meshCodeDrawers, this.coordinateZoneID, out this.geoReference);
             this.availablePackageFlags = gatherResult.availablePackageFlags;
             var entireExtent = CalcExtentCoversAllMeshCodes(gatherResult.meshCodes);
-            GSIMapLoader.Load(entireExtent, this.geoReference).ContinueWithErrorCatch();
+            this.mapLoadCancel = new CancellationTokenSource();
+            GSIMapLoader
+                .DownloadAndPlaceAsync(entireExtent, this.geoReference, this.mapLoadCancel.Token)
+                .ContinueWithErrorCatch();
         }
 
         private void Update()
@@ -63,6 +68,11 @@ namespace PLATEAU.CityImport.AreaSelector
             foreach (var box in this.meshCodeDrawers) box.BoxColor = Color.green;
             var selected = this.cursor.SelectedMeshCodes(this.meshCodeDrawers);
             foreach (var select in selected) select.BoxColor = Color.yellow;
+        }
+
+        private void OnDisable()
+        {
+            this.mapLoadCancel.Cancel();
         }
 
         private static Extent CalcExtentCoversAllMeshCodes(IEnumerable<MeshCode> meshCodes)
@@ -90,7 +100,7 @@ namespace PLATEAU.CityImport.AreaSelector
             var collection = UdxFileCollection.Find(sourcePath);
             var availablePackageFlags = collection.Packages;
             var meshCodes = collection.MeshCodes;
-            Debug.Log(DebugUtil.EnumerableToString(meshCodes));
+            Debug.Log($"Area Mesh Code Selected : \n" + DebugUtil.EnumerableToString(meshCodes));
             if (meshCodes.Count <= 0)
             {
                 Debug.LogError("No MeshCode found.");

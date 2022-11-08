@@ -1,6 +1,5 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+﻿using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using PLATEAU.Basemap;
 using PLATEAU.Geometries;
@@ -18,52 +17,53 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
             Path.GetFullPath(Path.Combine(Application.temporaryCachePath, "GSIMapImages"));
         private const string mapMaterialPath = "Packages/com.synesthesias.plateau-unity-sdk/Materials/MapUnlitMaterial.mat";
         private const int timeOutSec = 10;
-
-        public static async Task Load(Extent extent, GeoReference geoReference)
+        
+        /// <summary>
+        /// 地理院地図タイルをダウンロードして、シーンに配置します。
+        /// メインスレッドで呼ぶ必要があります。
+        /// </summary>
+        public static async Task DownloadAndPlaceAsync(Extent extent, GeoReference geoReference, CancellationToken cancel)
         {
-            var mapTiles = await DownloadAsync(extent);
-            await PlaceAsGameObj(mapTiles, geoReference);
-        }
-
-        private static async Task<List<MapTile>> DownloadAsync(Extent extent)
-        {
-            var mapTiles = new List<MapTile>();
             using var downloader = VectorTileDownloader.Create(mapDownloadDest, extent);
             int tileCount = downloader.TileCount;
             for (int i = 0; i < tileCount; i++)
             {
+                MapTile mapTile = null;
                 await Task.Run(() =>
                 {
                     downloader.Download(i, out var tileCoord, out string path);
-                    var mapTile = new MapTile(path, tileCoord);
-                    mapTiles.Add(mapTile);
+                    mapTile = new MapTile(path, tileCoord);
                 });
+                if (cancel.IsCancellationRequested)
+                {
+                    Debug.Log("Map Download is Cancelled.");
+                    break;
+                }
+                await PlaceAsGameObj(mapTile, geoReference);
             }
-
-            return mapTiles;
         }
 
-        private static async Task PlaceAsGameObj(IEnumerable<MapTile> mapTiles, GeoReference geoReference)
+        private static async Task PlaceAsGameObj(MapTile mapTile, GeoReference geoReference)
         {
             var mapMaterial = AssetDatabase.LoadAssetAtPath<Material>(mapMaterialPath);
             if (mapMaterial == null)
             {
                 Debug.LogError("Could not find material for map.");
             }
-            foreach (var mapTile in mapTiles)
+            var texture = await TextureLoader.LoadAsync(mapTile.Path, timeOutSec);
+            var gameObj = GameObject.CreatePrimitive(PrimitiveType.Plane);
+            var trans = gameObj.transform;
+            trans.position = mapTile.UnityCenter(geoReference);
+            // UnityのPlaneは 10m×10m なので 0.1倍します。
+            trans.localScale = mapTile.UnityScale(geoReference) * 0.1f;
+            trans.eulerAngles = new Vector3(0, 180, 0);
+            var renderer = gameObj.GetComponent<MeshRenderer>();
+            renderer.sharedMaterial = mapMaterial;
+            var mat = new Material(renderer.sharedMaterial)
             {
-                var texture = await Task.Run(() =>
-                    TextureLoader.LoadAsync(mapTile.Path, timeOutSec)
-                );
-                var gameObj = GameObject.CreatePrimitive(PrimitiveType.Plane);
-                var trans = gameObj.transform;
-                trans.position = mapTile.UnityCenter(geoReference);
-                trans.localScale = mapTile.UnityScale(geoReference);
-                var renderer = gameObj.GetComponent<MeshRenderer>();
-                renderer.sharedMaterial = mapMaterial;
-                var mat = renderer.material;
-                mat.mainTexture = texture;
-            }
+                mainTexture = texture
+            };
+            renderer.sharedMaterial = mat;
         }
 
         private class MapTile
