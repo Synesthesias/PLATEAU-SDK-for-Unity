@@ -1,4 +1,6 @@
-﻿// using PLATEAU.CityImport.AreaSelector;
+﻿
+// TODO あとで消す
+// using PLATEAU.CityImport.AreaSelector;
 // using UnityEditor;
 // using UnityEngine;
 //

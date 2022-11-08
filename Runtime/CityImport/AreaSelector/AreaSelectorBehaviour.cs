@@ -24,18 +24,20 @@ namespace PLATEAU.CityImport.AreaSelector
     [ExecuteInEditMode]
     internal class AreaSelectorBehaviour : MonoBehaviour
     {
-        [SerializeField] private MeshRenderer mapPlane;
+        // [SerializeField] private MeshRenderer mapPlane;
         [SerializeField] private string prevScenePath;
         [SerializeField] private string dataSourcePath;
+        // TODO マテリアルを消す
         private readonly List<Material> mapMaterials = new List<Material>();
         [SerializeField] private AreaSelectorCursor cursor;
-        private List<MeshCodeGizmoDrawer> meshCodeDrawers = new List<MeshCodeGizmoDrawer>();
+        private readonly List<MeshCodeGizmoDrawer> meshCodeDrawers = new List<MeshCodeGizmoDrawer>();
         private IAreaSelectResultReceiver areaSelectResultReceiver;
         private PredefinedCityModelPackage availablePackageFlags;
         private int coordinateZoneID;
         private GeoReference geoReference;
         private CancellationTokenSource mapLoadCancel;
         private bool prevSceneCameraRotationLocked;
+        private GSIMapLoaderZoomSwitch mapLoader;
 
         public static bool IsAreaSelectEnabled { get; set; }
 
@@ -61,9 +63,10 @@ namespace PLATEAU.CityImport.AreaSelector
             this.availablePackageFlags = gatherResult.availablePackageFlags;
             var entireExtent = CalcExtentCoversAllMeshCodes(gatherResult.meshCodes);
             this.mapLoadCancel = new CancellationTokenSource();
-            GSIMapLoader
-                .DownloadAndPlaceAsync(entireExtent, this.geoReference, this.mapLoadCancel.Token)
-                .ContinueWithErrorCatch();
+            // GSIMapLoader
+            //     .DownloadAndPlaceAsync(entireExtent, this.geoReference, 11, this.mapLoadCancel.Token)
+            //     .ContinueWithErrorCatch();
+            this.mapLoader = new GSIMapLoaderZoomSwitch(this.geoReference);
         }
 
         private void Update()
@@ -80,6 +83,10 @@ namespace PLATEAU.CityImport.AreaSelector
             
             // カメラを下に向けます。
             RotateSceneViewCameraDown();
+            
+            #if UNITY_EDITOR
+            this.mapLoader.Update(SceneView.lastActiveSceneView.camera);
+            #endif
         }
 
         private void OnDisable()

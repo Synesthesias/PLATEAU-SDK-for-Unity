@@ -12,7 +12,10 @@ using UnityEngine.Assertions;
 
 namespace PLATEAU.CityImport.AreaSelector.SceneObjs
 {
-    public class GSIMapLoader
+    /// <summary>
+    /// 地理院地図タイルをダウンロードしてシーンに配置します。
+    /// </summary>
+    public static class GSIMapLoader
     {
         private static readonly string mapDownloadDest =
             Path.GetFullPath(Path.Combine(Application.temporaryCachePath, "GSIMapImages"));
@@ -23,17 +26,29 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         /// 地理院地図タイルをダウンロードして、シーンに配置します。
         /// メインスレッドで呼ぶ必要があります。
         /// </summary>
-        public static async Task DownloadAndPlaceAsync(Extent extent, GeoReference geoReference, CancellationToken cancel)
+        public static async Task DownloadAndPlaceAsync(Extent extent, GeoReference geoReference, int zoomLevel, CancellationToken cancel)
         {
-            using var downloader = VectorTileDownloader.Create(mapDownloadDest, extent, 11);
+            using var downloader = VectorTileDownloader.Create(mapDownloadDest, extent, zoomLevel);
             int tileCount = downloader.TileCount;
             for (int i = 0; i < tileCount; i++)
             {
+
                 MapTile mapTile = null;
+                string mapFilePath = downloader.CalcDestPath(i);
+                var tileCoord = downloader.GetTileCoordinate(i);
+                
+                var mapRoot = GameObjectUtil.AssureGameObject("GSIMap").transform;
+                var zoomLevelTrans = GameObjectUtil.AssureGameObjectInChild(zoomLevel.ToString(), mapRoot).transform;
+                var rowTrans = GameObjectUtil.AssureGameObjectInChild(tileCoord.Row.ToString(), zoomLevelTrans).transform;
+                var mapName = $"{tileCoord.Column}";
+                if (rowTrans.Find(mapName) != null)
+                {   // すでにマップがシーンに配置済みのケース
+                    continue;
+                }
+                
                 await Task.Run(() =>
                 {
-                    string mapFilePath = downloader.CalcDestPath(i);
-                    var tileCoord = downloader.GetTileCoordinate(i);
+                    
                     if (!File.Exists(mapFilePath))
                     {
                         downloader.Download(i, out var downloadedTileCoord, out string downloadDestPath);
@@ -47,11 +62,12 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
                     Debug.Log("Map Download is Cancelled.");
                     break;
                 }
-                await PlaceAsGameObj(mapTile, geoReference);
+                
+                await PlaceAsGameObj(mapTile, geoReference, rowTrans, mapName);
             }
         }
 
-        private static async Task PlaceAsGameObj(MapTile mapTile, GeoReference geoReference)
+        private static async Task PlaceAsGameObj(MapTile mapTile, GeoReference geoReference, Transform parentTrans, string mapObjName)
         {
             var mapMaterial = AssetDatabase.LoadAssetAtPath<Material>(mapMaterialPath);
             if (mapMaterial == null)
@@ -60,11 +76,13 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
             }
             var texture = await TextureLoader.LoadAsync(mapTile.Path, timeOutSec);
             var gameObj = GameObject.CreatePrimitive(PrimitiveType.Plane);
+            gameObj.name = mapObjName;
             var trans = gameObj.transform;
             trans.position = mapTile.UnityCenter(geoReference);
             // UnityのPlaneは 10m×10m なので 0.1倍します。
             trans.localScale = mapTile.UnityScale(geoReference) * 0.1f;
             trans.eulerAngles = new Vector3(0, 180, 0);
+            trans.parent = parentTrans;
             var renderer = gameObj.GetComponent<MeshRenderer>();
             renderer.sharedMaterial = mapMaterial;
             var mat = new Material(renderer.sharedMaterial)
