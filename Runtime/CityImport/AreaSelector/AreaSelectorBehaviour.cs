@@ -8,7 +8,6 @@ using PLATEAU.Geometries;
 using PLATEAU.Interop;
 using PLATEAU.Udx;
 using PLATEAU.Util;
-using PLATEAU.Util.Async;
 using UnityEngine;
 
 #if UNITY_EDITOR

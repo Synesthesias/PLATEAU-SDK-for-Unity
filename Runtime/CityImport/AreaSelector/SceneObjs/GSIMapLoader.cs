@@ -21,6 +21,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
             Path.GetFullPath(Path.Combine(Application.temporaryCachePath, "GSIMapImages"));
         private const string mapMaterialPath = "Packages/com.synesthesias.plateau-unity-sdk/Materials/MapUnlitMaterial.mat";
         private const int timeOutSec = 10;
+        public const string MapRootObjName = "GSIMaps";
         
         /// <summary>
         /// 地理院地図タイルをダウンロードして、シーンに配置します。
@@ -37,12 +38,14 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
                 string mapFilePath = downloader.CalcDestPath(i);
                 var tileCoord = downloader.GetTileCoordinate(i);
                 
-                var mapRoot = GameObjectUtil.AssureGameObject("GSIMap").transform;
+                var mapRoot = GameObjectUtil.AssureGameObject(MapRootObjName).transform;
                 var zoomLevelTrans = GameObjectUtil.AssureGameObjectInChild(zoomLevel.ToString(), mapRoot).transform;
                 var rowTrans = GameObjectUtil.AssureGameObjectInChild(tileCoord.Row.ToString(), zoomLevelTrans).transform;
                 var mapName = $"{tileCoord.Column}";
-                if (rowTrans.Find(mapName) != null)
+                var mapTrans = rowTrans.Find(mapName);
+                if ( mapTrans != null)
                 {   // すでにマップがシーンに配置済みのケース
+                    mapTrans.gameObject.SetActive(true);
                     continue;
                 }
                 
@@ -69,6 +72,10 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
 
         private static async Task PlaceAsGameObj(MapTile mapTile, GeoReference geoReference, Transform parentTrans, string mapObjName)
         {
+            if (parentTrans.Find(mapObjName) != null)
+            {   // すでに配置済みのケース
+                return;
+            }
             var mapMaterial = AssetDatabase.LoadAssetAtPath<Material>(mapMaterialPath);
             if (mapMaterial == null)
             {
