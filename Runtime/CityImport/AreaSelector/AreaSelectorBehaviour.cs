@@ -9,13 +9,17 @@ using PLATEAU.Interop;
 using PLATEAU.Udx;
 using PLATEAU.Util;
 using PLATEAU.Util.Async;
-using UnityEditor;
 using UnityEngine;
+
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 namespace PLATEAU.CityImport.AreaSelector
 {
     /// <summary>
     /// 範囲選択画面の進行を担当するコンポーネントです。
+    /// 別途 AreaSelectorBehaviourEditor も参照してください。
     /// </summary>
     [ExecuteInEditMode]
     internal class AreaSelectorBehaviour : MonoBehaviour
@@ -45,6 +49,7 @@ namespace PLATEAU.CityImport.AreaSelector
 
         private void Start()
         {
+            RotateSceneViewCameraDown();
             AreaSelectorGUI.Enable(this);
             // TODO タプルで戻るのは分かりにくいのでは
             var gatherResult = GatherMeshCodesInGMLDirectory(this.dataSourcePath);
@@ -68,6 +73,9 @@ namespace PLATEAU.CityImport.AreaSelector
             foreach (var box in this.meshCodeDrawers) box.BoxColor = Color.green;
             var selected = this.cursor.SelectedMeshCodes(this.meshCodeDrawers);
             foreach (var select in selected) select.BoxColor = Color.yellow;
+            
+            // カメラを下に向けます。
+            RotateSceneViewCameraDown();
         }
 
         private void OnDisable()
@@ -193,6 +201,15 @@ namespace PLATEAU.CityImport.AreaSelector
             {
                 DestroyImmediate(mat);
             }
+        }
+
+        private void RotateSceneViewCameraDown()
+        {
+            #if UNITY_EDITOR
+            var scene = SceneView.lastActiveSceneView;
+            scene.isRotationLocked = true;
+            scene.rotation = Quaternion.Euler(90, 0, 0);
+            #endif
         }
     }
 }
