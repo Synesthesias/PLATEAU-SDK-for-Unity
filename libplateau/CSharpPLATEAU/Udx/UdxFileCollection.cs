@@ -113,12 +113,14 @@ namespace PLATEAU.Udx
         /// </summary>
         /// <param name="destinationRootPath">コピー先のルートフォルダのパスです。</param>
         /// <param name="gmlFileInfo">コピー元のGMLファイルの <see cref="GmlFileInfo"/> です。</param>
-        public void Fetch(string destinationRootPath, GmlFileInfo gmlFileInfo)
+        public static GmlFileInfo Fetch(string destinationRootPath, GmlFileInfo gmlFileInfo)
         {
+            var result = GmlFileInfo.Create("");
             var apiResult = NativeMethods.plateau_udx_file_collection_fetch(
-                this.handle, destinationRootPath, gmlFileInfo.Handle 
+                destinationRootPath, gmlFileInfo.Handle, result.Handle
             );
             DLLUtil.CheckDllError(apiResult);
+            return result;
         }
 
         /// <summary>

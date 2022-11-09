@@ -20,7 +20,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         private const int mapUpdateInterval = 1;
         private int framesTillMapUpdate;
         private Task mapUpdateTask = null;
-        private const int minZoomLevel = 8;
+        private const int minZoomLevel = 3;
         private const int maxZoomLevel = 16;
         
         // 国土地理院の地図タイルは 256×256 ピクセルで統一されています。
