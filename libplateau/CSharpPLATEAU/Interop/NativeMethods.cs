@@ -136,6 +136,11 @@ namespace PLATEAU.Interop
         public int CoordinateZoneID;
     }
 
+    /// <summary>
+    /// 地理院地図のタイル座標です。
+    /// タイル座標については国土地理院のWebサイトを参照してください。
+    /// <see href="https://maps.gsi.go.jp/development/siyou.html#siyou-zm"/>
+    /// </summary>
     [StructLayout(LayoutKind.Sequential)]
     public struct TileCoordinate
     {

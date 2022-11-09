@@ -26,8 +26,6 @@ namespace PLATEAU.CityImport.AreaSelector
         // [SerializeField] private MeshRenderer mapPlane;
         [SerializeField] private string prevScenePath;
         [SerializeField] private string dataSourcePath;
-        // TODO マテリアルを消す
-        private readonly List<Material> mapMaterials = new List<Material>();
         [SerializeField] private AreaSelectorCursor cursor;
         private readonly List<MeshCodeGizmoDrawer> meshCodeDrawers = new List<MeshCodeGizmoDrawer>();
         private IAreaSelectResultReceiver areaSelectResultReceiver;
@@ -60,12 +58,8 @@ namespace PLATEAU.CityImport.AreaSelector
             var gatherResult = GatherMeshCodesInGMLDirectory(this.dataSourcePath);
             PlaceMeshCodeDrawers(gatherResult.meshCodes, this.meshCodeDrawers, this.coordinateZoneID, out this.geoReference);
             this.availablePackageFlags = gatherResult.availablePackageFlags;
-            var entireExtent = CalcExtentCoversAllMeshCodes(gatherResult.meshCodes);
             this.mapLoadCancel = new CancellationTokenSource();
-            // GSIMapLoader
-            //     .DownloadAndPlaceAsync(entireExtent, this.geoReference, 11, this.mapLoadCancel.Token)
-            //     .ContinueWithErrorCatch();
-            this.mapLoader = new GSIMapLoaderZoomSwitch(this.geoReference);
+            this.mapLoader = new GSIMapLoaderZoomSwitch(this.geoReference, this.mapLoadCancel);
         }
 
         private void Update()
@@ -94,6 +88,7 @@ namespace PLATEAU.CityImport.AreaSelector
             #if UNITY_EDITOR
             SceneView.lastActiveSceneView.isRotationLocked = this.prevSceneCameraRotationLocked;
             #endif
+            this.mapLoader.DestroyMaterials();
         }
 
         private static Extent CalcExtentCoversAllMeshCodes(IEnumerable<MeshCode> meshCodes)
@@ -186,7 +181,6 @@ namespace PLATEAU.CityImport.AreaSelector
         private void EndAreaSelection()
         {
             AreaSelectorGUI.Disable();
-            DestroyMaterials();
             var areaSelectResult = 
                 this.cursor.SelectedMeshCodes(this.meshCodeDrawers)
                     .Select(drawer => drawer.MeshCode);
@@ -206,14 +200,6 @@ namespace PLATEAU.CityImport.AreaSelector
             IsAreaSelectEnabled = false;
             // TODO キャンセルになってない
             EndAreaSelection();
-        }
-
-        private void DestroyMaterials()
-        {
-            foreach (var mat in this.mapMaterials)
-            {
-                DestroyImmediate(mat);
-            }
         }
 
         private void RotateSceneViewCameraDown()

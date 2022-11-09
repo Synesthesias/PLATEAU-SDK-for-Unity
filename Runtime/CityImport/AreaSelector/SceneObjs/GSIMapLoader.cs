@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using PLATEAU.Basemap;
@@ -7,6 +8,7 @@ using PLATEAU.Interop;
 using PLATEAU.Util;
 using PLATEAU.Util.Async;
 using UnityEditor;
+using UnityEditorInternal;
 using UnityEngine;
 using UnityEngine.Assertions;
 
@@ -27,50 +29,75 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         /// 地理院地図タイルをダウンロードして、シーンに配置します。
         /// メインスレッドで呼ぶ必要があります。
         /// </summary>
-        public static async Task DownloadAndPlaceAsync(Extent extent, GeoReference geoReference, int zoomLevel, CancellationToken cancel)
+        /// <returns>生成したマテリアルのリストを返します。このマテリアルはメソッドの利用者が利用終了時に廃棄してください。</returns>
+        public static async Task<List<Material>> DownloadAndPlaceAsync(Extent extent, GeoReference geoReference, int zoomLevel, CancellationToken cancel)
         {
+            Debug.Log("download start");
+            var generatedMaterials = new List<Material>();
             using var downloader = VectorTileDownloader.Create(mapDownloadDest, extent, zoomLevel);
             int tileCount = downloader.TileCount;
             for (int i = 0; i < tileCount; i++)
             {
-
+            
                 MapTile mapTile = null;
                 string mapFilePath = downloader.CalcDestPath(i);
                 var tileCoord = downloader.GetTileCoordinate(i);
-                
-                var mapRoot = GameObjectUtil.AssureGameObject(MapRootObjName).transform;
-                var zoomLevelTrans = GameObjectUtil.AssureGameObjectInChild(zoomLevel.ToString(), mapRoot).transform;
-                var rowTrans = GameObjectUtil.AssureGameObjectInChild(tileCoord.Row.ToString(), zoomLevelTrans).transform;
-                var mapName = $"{tileCoord.Column}";
-                var mapTrans = rowTrans.Find(mapName);
-                if ( mapTrans != null)
-                {   // すでにマップがシーンに配置済みのケース
-                    mapTrans.gameObject.SetActive(true);
-                    continue;
-                }
-                
-                await Task.Run(() =>
-                {
-                    
-                    if (!File.Exists(mapFilePath))
-                    {
-                        downloader.Download(i, out var downloadedTileCoord, out string downloadDestPath);
-                        Assert.AreEqual(mapFilePath, downloadDestPath);
-                        Assert.AreEqual(tileCoord, downloadedTileCoord);
-                    }
-                    mapTile = new MapTile(mapFilePath, tileCoord);
-                });
-                if (cancel.IsCancellationRequested)
-                {
-                    Debug.Log("Map Download is Cancelled.");
-                    break;
-                }
-                
-                await PlaceAsGameObj(mapTile, geoReference, rowTrans, mapName);
+            
+            var mapRoot = GameObjectUtil.AssureGameObject(MapRootObjName).transform;
+            var zoomLevelTrans = GameObjectUtil.AssureGameObjectInChild(zoomLevel.ToString(), mapRoot).transform;
+            var rowTrans = GameObjectUtil.AssureGameObjectInChild(tileCoord.Row.ToString(), zoomLevelTrans).transform;
+            var mapName = $"{tileCoord.Column}";
+            var mapTrans = rowTrans.Find(mapName);
+            if ( mapTrans != null)
+            {   // すでにマップがシーンに配置済みのケース
+                mapTrans.gameObject.SetActive(true);
+                continue;
             }
+            mapTile = new MapTile(mapFilePath, tileCoord);
+            bool isSucceed = await Task.Run(() =>
+            {
+            //         // ファイルがすでにあるなら、そのファイルの書き込み完了を待って、そのファイルを利用します。
+            //         if (File.Exists(mapFilePath))
+            //         {
+            //             int tryLeft = 5;
+            //             while (true)
+            //             {
+            //                 if (!IsFileLocked(new FileInfo(mapFilePath))) break;
+            //                 Thread.Sleep(50);
+            //                 if (--tryLeft <= 0)
+            //                 {
+            //                     return false;
+            //                 }
+            //             }
+            //             return true;
+            //         }
+            //         // ファイルがなければダウンロードします。
+            downloader.Download(i, out var downloadedTileCoord, out string downloadDestPath);
+            Assert.AreEqual(mapFilePath, downloadDestPath);
+            Assert.AreEqual(tileCoord, downloadedTileCoord);
+            return true;
+            });
+            if (cancel.IsCancellationRequested)
+            {
+                Debug.Log("Map Download is Cancelled.");
+                break;
+            }
+            //
+            //     if (isSucceed)
+            //     {
+            //         await PlaceAsGameObj(mapTile, geoReference, rowTrans, mapName, generatedMaterials);
+            //     }
+            //     else
+            //     {
+            //         Debug.LogError("Failed to load a tile.");
+            //     }
+            //     
+            }
+
+            return generatedMaterials;
         }
 
-        private static async Task PlaceAsGameObj(MapTile mapTile, GeoReference geoReference, Transform parentTrans, string mapObjName)
+        private static async Task PlaceAsGameObj(MapTile mapTile, GeoReference geoReference, Transform parentTrans, string mapObjName, List<Material> generatedMaterials)
         {
             if (parentTrans.Find(mapObjName) != null)
             {   // すでに配置済みのケース
@@ -81,7 +108,10 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
             {
                 Debug.LogError("Could not find material for map.");
             }
+            
+            // ダウンロードしたテクスチャファイルをロードします。
             var texture = await TextureLoader.LoadAsync(mapTile.Path, timeOutSec);
+            
             var gameObj = GameObject.CreatePrimitive(PrimitiveType.Plane);
             gameObj.name = mapObjName;
             var trans = gameObj.transform;
@@ -97,6 +127,24 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
                 mainTexture = texture
             };
             renderer.sharedMaterial = mat;
+            generatedMaterials.Add(mat);
+        }
+        
+        private static bool IsFileLocked(FileInfo file)
+        {
+            try
+            {
+                using (FileStream fs = file.Open(FileMode.Open, FileAccess.ReadWrite, FileShare.None))
+                {
+                    fs.Close();
+                }
+            }
+            catch (IOException)
+            {
+                return true;
+            }
+
+            return false;
         }
 
         private class MapTile
