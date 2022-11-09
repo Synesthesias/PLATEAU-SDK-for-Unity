@@ -32,17 +32,27 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         private int prevZoomLevel = -1;
         private CancellationTokenSource zoomLoadCancel;
         private DateTime lastUpdateTime = DateTime.MinValue;
+        private Extent mapAvailableExtent;
 
-        public GSIMapLoaderZoomSwitch(GeoReference geoReference)
+        public GSIMapLoaderZoomSwitch(GeoReference geoReference, Extent entireExtent)
         {
             this.geoReference = geoReference;
+            // 基準点から離れすぎると座標が歪むので、遠すぎる部分（日本からはみ出す程度）は描画しないようにします。
+            this.mapAvailableExtent = new Extent(
+                entireExtent.Min + new GeoCoordinate(-10, -10, -9999),
+                entireExtent.Max + new GeoCoordinate(10, 10, 9999)
+            );
         }
 
         public void Update(Camera cam)
         {
             if ((DateTime.Now - this.lastUpdateTime).Milliseconds <= updateIntervalMilliSec)
             {
-                var extent = CalcCameraExtent(cam, this.geoReference);
+                var extent = Extent.Intersection(
+                    CalcCameraExtent(cam, this.geoReference),
+                    this.mapAvailableExtent
+                );
+                Debug.Log($"camera: {CalcCameraExtent(cam, this.geoReference)}, available:{this.mapAvailableExtent}, intersect:{extent}");
                 int zoomLevel = CalcZoomLevel(extent);
                 // ズームレベルが切り替わったとき、前のズームレベルを読み込む処理をキャンセルします。
                 bool zoomLevelChanged = this.prevZoomLevel != zoomLevel;
@@ -128,7 +138,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
             return maxZoomLevel;
         }
 
-        private void DisableExceptZoomLevel(int zoomLevel)
+        private static void DisableExceptZoomLevel(int zoomLevel)
         {
             var mapRoot = GameObject.Find(GSIMapLoader.MapRootObjName);
             if (mapRoot == null) return;

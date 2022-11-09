@@ -22,7 +22,6 @@ namespace PLATEAU.CityImport.AreaSelector
     [ExecuteInEditMode]
     internal class AreaSelectorBehaviour : MonoBehaviour
     {
-        // [SerializeField] private MeshRenderer mapPlane;
         [SerializeField] private string prevScenePath;
         [SerializeField] private string dataSourcePath;
         [SerializeField] private AreaSelectorCursor cursor;
@@ -56,7 +55,8 @@ namespace PLATEAU.CityImport.AreaSelector
             var gatherResult = GatherMeshCodesInGMLDirectory(this.dataSourcePath);
             PlaceMeshCodeDrawers(gatherResult.meshCodes, this.meshCodeDrawers, this.coordinateZoneID, out this.geoReference);
             this.availablePackageFlags = gatherResult.availablePackageFlags;
-            this.mapLoader = new GSIMapLoaderZoomSwitch(this.geoReference);
+            var entireExtent = CalcExtentCoversAllMeshCodes(gatherResult.meshCodes);
+            this.mapLoader = new GSIMapLoaderZoomSwitch(this.geoReference, entireExtent);
         }
 
         private void Update()
