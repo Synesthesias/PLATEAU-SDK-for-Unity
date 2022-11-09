@@ -27,7 +27,6 @@ namespace PLATEAU.Editor.CityImport.AreaSelector
             if (!Directory.Exists(dataSourcePath))
             {
                 EditorUtility.DisplayDialog("PLATEAU SDK", $"入力フォルダが存在しません。\nフォルダを指定してください。", "OK");
-                Debug.LogError($"データ元パスが存在しません。 dataSourcePath = {dataSourcePath}");
                 return;
             }
             if (!EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())

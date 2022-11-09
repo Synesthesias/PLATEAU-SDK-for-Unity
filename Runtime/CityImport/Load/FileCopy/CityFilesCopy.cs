@@ -28,7 +28,7 @@ namespace PLATEAU.CityImport.Load.FileCopy
             {
                 var gml = fetchTargetGmls[i];
                 progressDisplay.SetProgress("インポート処理", 100f * i / targetGmlCount, $"[{i+1} / {targetGmlCount}] {Path.GetFileName(gml.Path)}");
-                collection.Fetch(destPath, gml);
+                UdxFileCollection.Fetch(destPath, gml);
             }
 
             string destFolderName = Path.GetFileName(sourcePath);

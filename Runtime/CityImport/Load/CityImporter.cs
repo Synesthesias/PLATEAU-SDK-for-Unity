@@ -115,7 +115,7 @@ namespace PLATEAU.CityImport.Load
             
             // GMLと関連ファイルを StreamingAssets にコピーします。
             // ここは別スレッドで実行可能です。
-            await Task.Run(() => collection.Fetch(destPath, gmlInfo));
+            await Task.Run(() => UdxFileCollection.Fetch(destPath, gmlInfo));
             // ここでメインスレッドに戻ります。
             progressDisplay.SetProgress(gmlName, 20f, "GMLファイルをロード中");
 

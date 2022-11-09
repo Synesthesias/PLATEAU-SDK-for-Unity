@@ -136,6 +136,26 @@ namespace PLATEAU.Interop
         public int CoordinateZoneID;
     }
 
+    [StructLayout(LayoutKind.Sequential)]
+    public struct TileCoordinate
+    {
+        public int Column;
+        public int Row;
+        public int ZoomLevel;
+
+        public TileCoordinate(int column, int row, int zoomLevel)
+        {
+            this.Column = column;
+            this.Row = row;
+            this.ZoomLevel = zoomLevel;
+        }
+
+        public override string ToString()
+        {
+            return $"TileCoordinate: (Column={this.Column}, Row={this.Row}, ZoomLevel={this.ZoomLevel})";
+        }
+    }
+
     /// <summary>
     /// GMLファイルから3Dメッシュを取り出すための設定です。
     /// </summary>
@@ -231,6 +251,29 @@ namespace PLATEAU.Interop
             this.Longitude = lon;
             this.Height = height;
         }
+
+        public override string ToString()
+        {
+            return $"GeoCoordinate: (Lat={this.Latitude}, Lon={this.Longitude}, Height={this.Height})";
+        }
+
+        public static GeoCoordinate Min(GeoCoordinate op1, GeoCoordinate op2)
+        {
+            return new GeoCoordinate(
+                Math.Min(op1.Latitude, op2.Latitude),
+                Math.Min(op1.Longitude, op2.Longitude),
+                Math.Min(op1.Height, op2.Height)
+            );
+        }
+
+        public static GeoCoordinate Max(GeoCoordinate op1, GeoCoordinate op2)
+        {
+            return new GeoCoordinate(
+                Math.Max(op1.Latitude, op2.Latitude),
+                Math.Max(op1.Longitude, op2.Longitude),
+                Math.Max(op1.Height, op2.Height)
+            );
+        }
     }
 
     /// <summary>
@@ -247,6 +290,16 @@ namespace PLATEAU.Interop
             this.Min = min;
             this.Max = max;
         }
+
+        public GeoCoordinate Center => new GeoCoordinate(
+            (this.Min.Latitude + this.Max.Latitude) * 0.5,
+            (this.Min.Longitude + this.Max.Longitude) * 0.5,
+            (this.Min.Height + this.Max.Height) * 0.5);
+
+        public override string ToString()
+        {
+            return $"Extent: (Min={this.Min}, Max={this.Max})";
+        }
     }
 
     public enum APIResult
@@ -256,7 +309,8 @@ namespace PLATEAU.Interop
         ErrorValueNotFound,
         ErrorLoadingCityGml,
         ErrorIndexOutOfBounds,
-        ErrorFileSystem
+        ErrorFileSystem,
+        ErrorInvalidArgument
     }
 
     public enum DllLogLevel
@@ -1118,9 +1172,9 @@ namespace PLATEAU.Interop
 
         [DllImport(DllName, CharSet = CharSet.Ansi)]
         internal static extern APIResult plateau_udx_file_collection_fetch(
-            [In] IntPtr handle,
             [In] string destinationRootPath,
-            [In] IntPtr gmlFileInfoPtr);
+            [In] IntPtr gmlFileInfoPtr,
+            [In, Out] IntPtr outGmlFileInfoPtr);
 
         [DllImport(DllName)]
         internal static extern APIResult plateau_udx_file_collection_get_packages(
@@ -1287,5 +1341,68 @@ namespace PLATEAU.Interop
             CoordinateSystem meshAxisConvertFrom,
             CoordinateSystem meshAxisConvertTo,
             [MarshalAs(UnmanagedType.U1)] bool includeTexture);
+        
+        // ***************
+        //  vector_tile_downloader_c.cpp
+        // ***************
+        [DllImport(DllName, CharSet = CharSet.Ansi)]
+        internal static extern APIResult plateau_create_vector_tile_downloader(
+            out IntPtr handle,
+            string destination,
+            Extent extent,
+            int zoomLevel);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_delete_vector_tile_downloader(
+            [In] IntPtr handle);
+        
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_vector_tile_downloader_get_tile_count(
+            [In] IntPtr handle,
+            out int tileCount);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_vector_tile_downloader_download(
+            [In] IntPtr handle,
+            int index,
+            out TileCoordinate tileCoordinate,
+            out int sizeOfImagePath);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_vector_tile_downloader_last_image_path(
+            [In] IntPtr strPtr);
+
+        // ***************
+        //  vector_tile_downloader_c.cpp
+        // ***************
+        
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_tile_projection_project(
+            [In] GeoCoordinate geoCoordinate,
+            int zoomLevel,
+            out TileCoordinate outTileCoordinate);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_tile_projection_unproject(
+            [In] TileCoordinate tileCoordinate,
+            out Extent outExtent);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_vector_tile_downloader_calc_destination_path_size(
+            [In] IntPtr handle,
+            out int outStrSize,
+            int index);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_vector_tile_downloader_calc_destination_path(
+            [In] IntPtr handle,
+            [In, Out] IntPtr strPtr,
+            int index);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_vector_tile_downloader_get_tile(
+            [In] IntPtr handle,
+            out TileCoordinate outTileCoordinate,
+            int index);
     }
 }
