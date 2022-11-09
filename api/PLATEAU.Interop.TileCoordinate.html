@@ -5,10 +5,10 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>Struct Extent
+    <title>Struct TileCoordinate
    | PLATEAU SDK for Unity </title>
     <meta name="viewport" content="width=device-width">
-    <meta name="title" content="Struct Extent
+    <meta name="title" content="Struct TileCoordinate
    | PLATEAU SDK for Unity ">
     <meta name="generator" content="docfx 2.59.4.0">
     
@@ -78,13 +78,12 @@
         </div>
         <div class="article row grid-right">
           <div class="col-md-10">
-            <article class="content wrap" id="_content" data-uid="PLATEAU.Interop.Extent">
+            <article class="content wrap" id="_content" data-uid="PLATEAU.Interop.TileCoordinate">
   
   
-  <h1 id="PLATEAU_Interop_Extent" data-uid="PLATEAU.Interop.Extent" class="text-break">Struct Extent
+  <h1 id="PLATEAU_Interop_TileCoordinate" data-uid="PLATEAU.Interop.TileCoordinate" class="text-break">Struct TileCoordinate
   </h1>
-  <div class="markdown level0 summary"><p>最小・最大からなる範囲です。</p>
-</div>
+  <div class="markdown level0 summary"></div>
   <div class="markdown level0 conceptual"></div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
@@ -106,21 +105,21 @@
   </div>
   <h6><strong>Namespace</strong>: <a class="xref" href="PLATEAU.Interop.html">PLATEAU.Interop</a></h6>
   <h6><strong>Assembly</strong>: cs.temp.dll.dll</h6>
-  <h5 id="PLATEAU_Interop_Extent_syntax">Syntax</h5>
+  <h5 id="PLATEAU_Interop_TileCoordinate_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public struct Extent</code></pre>
+    <pre><code class="lang-csharp hljs">public struct TileCoordinate</code></pre>
   </div>
   <h3 id="constructors">Constructors
   </h3>
   
   
-  <a id="PLATEAU_Interop_Extent__ctor_" data-uid="PLATEAU.Interop.Extent.#ctor*"></a>
-  <h4 id="PLATEAU_Interop_Extent__ctor_PLATEAU_Interop_GeoCoordinate_PLATEAU_Interop_GeoCoordinate_" data-uid="PLATEAU.Interop.Extent.#ctor(PLATEAU.Interop.GeoCoordinate,PLATEAU.Interop.GeoCoordinate)">Extent(GeoCoordinate, GeoCoordinate)</h4>
+  <a id="PLATEAU_Interop_TileCoordinate__ctor_" data-uid="PLATEAU.Interop.TileCoordinate.#ctor*"></a>
+  <h4 id="PLATEAU_Interop_TileCoordinate__ctor_System_Int32_System_Int32_System_Int32_" data-uid="PLATEAU.Interop.TileCoordinate.#ctor(System.Int32,System.Int32,System.Int32)">TileCoordinate(Int32, Int32, Int32)</h4>
   <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public Extent(GeoCoordinate min, GeoCoordinate max)</code></pre>
+    <pre><code class="lang-csharp hljs">public TileCoordinate(int column, int row, int zoomLevel)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -133,13 +132,18 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="PLATEAU.Interop.GeoCoordinate.html">GeoCoordinate</a></td>
-        <td><span class="parametername">min</span></td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><span class="parametername">column</span></td>
         <td></td>
       </tr>
       <tr>
-        <td><a class="xref" href="PLATEAU.Interop.GeoCoordinate.html">GeoCoordinate</a></td>
-        <td><span class="parametername">max</span></td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><span class="parametername">row</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><span class="parametername">zoomLevel</span></td>
         <td></td>
       </tr>
     </tbody>
@@ -148,12 +152,12 @@
   </h3>
   
   
-  <h4 id="PLATEAU_Interop_Extent_Max" data-uid="PLATEAU.Interop.Extent.Max">Max</h4>
+  <h4 id="PLATEAU_Interop_TileCoordinate_Column" data-uid="PLATEAU.Interop.TileCoordinate.Column">Column</h4>
   <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public GeoCoordinate Max</code></pre>
+    <pre><code class="lang-csharp hljs">public int Column</code></pre>
   </div>
   <h5 class="fieldValue">Field Value</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -165,19 +169,19 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="PLATEAU.Interop.GeoCoordinate.html">GeoCoordinate</a></td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">Int32</a></td>
         <td></td>
       </tr>
     </tbody>
   </table>
   
   
-  <h4 id="PLATEAU_Interop_Extent_Min" data-uid="PLATEAU.Interop.Extent.Min">Min</h4>
+  <h4 id="PLATEAU_Interop_TileCoordinate_Row" data-uid="PLATEAU.Interop.TileCoordinate.Row">Row</h4>
   <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public GeoCoordinate Min</code></pre>
+    <pre><code class="lang-csharp hljs">public int Row</code></pre>
   </div>
   <h5 class="fieldValue">Field Value</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -189,24 +193,21 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="PLATEAU.Interop.GeoCoordinate.html">GeoCoordinate</a></td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">Int32</a></td>
         <td></td>
       </tr>
     </tbody>
   </table>
-  <h3 id="properties">Properties
-  </h3>
   
   
-  <a id="PLATEAU_Interop_Extent_Center_" data-uid="PLATEAU.Interop.Extent.Center*"></a>
-  <h4 id="PLATEAU_Interop_Extent_Center" data-uid="PLATEAU.Interop.Extent.Center">Center</h4>
+  <h4 id="PLATEAU_Interop_TileCoordinate_ZoomLevel" data-uid="PLATEAU.Interop.TileCoordinate.ZoomLevel">ZoomLevel</h4>
   <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public readonly GeoCoordinate Center { get; }</code></pre>
+    <pre><code class="lang-csharp hljs">public int ZoomLevel</code></pre>
   </div>
-  <h5 class="propertyValue">Property Value</h5>
+  <h5 class="fieldValue">Field Value</h5>
   <table class="table table-bordered table-striped table-condensed">
     <thead>
       <tr>
@@ -216,7 +217,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="PLATEAU.Interop.GeoCoordinate.html">GeoCoordinate</a></td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">Int32</a></td>
         <td></td>
       </tr>
     </tbody>
@@ -225,8 +226,8 @@
   </h3>
   
   
-  <a id="PLATEAU_Interop_Extent_ToString_" data-uid="PLATEAU.Interop.Extent.ToString*"></a>
-  <h4 id="PLATEAU_Interop_Extent_ToString" data-uid="PLATEAU.Interop.Extent.ToString">ToString()</h4>
+  <a id="PLATEAU_Interop_TileCoordinate_ToString_" data-uid="PLATEAU.Interop.TileCoordinate.ToString*"></a>
+  <h4 id="PLATEAU_Interop_TileCoordinate_ToString" data-uid="PLATEAU.Interop.TileCoordinate.ToString">ToString()</h4>
   <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>

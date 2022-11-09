@@ -5,10 +5,10 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>Struct Extent
+    <title>Class TileProjection
    | PLATEAU SDK for Unity </title>
     <meta name="viewport" content="width=device-width">
-    <meta name="title" content="Struct Extent
+    <meta name="title" content="Class TileProjection
    | PLATEAU SDK for Unity ">
     <meta name="generator" content="docfx 2.59.4.0">
     
@@ -78,21 +78,26 @@
         </div>
         <div class="article row grid-right">
           <div class="col-md-10">
-            <article class="content wrap" id="_content" data-uid="PLATEAU.Interop.Extent">
+            <article class="content wrap" id="_content" data-uid="PLATEAU.Basemap.TileProjection">
   
   
-  <h1 id="PLATEAU_Interop_Extent" data-uid="PLATEAU.Interop.Extent" class="text-break">Struct Extent
+  <h1 id="PLATEAU_Basemap_TileProjection" data-uid="PLATEAU.Basemap.TileProjection" class="text-break">Class TileProjection
   </h1>
-  <div class="markdown level0 summary"><p>最小・最大からなる範囲です。</p>
+  <div class="markdown level0 summary"><p>緯度経度と、地理院地図タイル番号を変換します。</p>
 </div>
   <div class="markdown level0 conceptual"></div>
+  <div class="inheritance">
+    <h5>Inheritance</h5>
+    <div class="level0"><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">Object</a></div>
+    <div class="level1"><span class="xref">TileProjection</span></div>
+  </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
     <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.valuetype.equals#system-valuetype-equals(system-object)">ValueType.Equals(Object)</a>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.tostring#system-object-tostring">Object.ToString()</a>
     </div>
     <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.valuetype.gethashcode#system-valuetype-gethashcode">ValueType.GetHashCode()</a>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)">Object.Equals(Object)</a>
     </div>
     <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)">Object.Equals(Object, Object)</a>
@@ -101,26 +106,33 @@
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.referenceequals#system-object-referenceequals(system-object-system-object)">Object.ReferenceEquals(Object, Object)</a>
     </div>
     <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gethashcode#system-object-gethashcode">Object.GetHashCode()</a>
+    </div>
+    <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gettype#system-object-gettype">Object.GetType()</a>
     </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone#system-object-memberwiseclone">Object.MemberwiseClone()</a>
+    </div>
   </div>
-  <h6><strong>Namespace</strong>: <a class="xref" href="PLATEAU.Interop.html">PLATEAU.Interop</a></h6>
+  <h6><strong>Namespace</strong>: <a class="xref" href="PLATEAU.Basemap.html">PLATEAU.Basemap</a></h6>
   <h6><strong>Assembly</strong>: cs.temp.dll.dll</h6>
-  <h5 id="PLATEAU_Interop_Extent_syntax">Syntax</h5>
+  <h5 id="PLATEAU_Basemap_TileProjection_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public struct Extent</code></pre>
+    <pre><code class="lang-csharp hljs">public static class TileProjection</code></pre>
   </div>
-  <h3 id="constructors">Constructors
+  <h3 id="methods">Methods
   </h3>
   
   
-  <a id="PLATEAU_Interop_Extent__ctor_" data-uid="PLATEAU.Interop.Extent.#ctor*"></a>
-  <h4 id="PLATEAU_Interop_Extent__ctor_PLATEAU_Interop_GeoCoordinate_PLATEAU_Interop_GeoCoordinate_" data-uid="PLATEAU.Interop.Extent.#ctor(PLATEAU.Interop.GeoCoordinate,PLATEAU.Interop.GeoCoordinate)">Extent(GeoCoordinate, GeoCoordinate)</h4>
-  <div class="markdown level1 summary"></div>
+  <a id="PLATEAU_Basemap_TileProjection_Project_" data-uid="PLATEAU.Basemap.TileProjection.Project*"></a>
+  <h4 id="PLATEAU_Basemap_TileProjection_Project_GeoCoordinate_System_Int32_" data-uid="PLATEAU.Basemap.TileProjection.Project(GeoCoordinate,System.Int32)">Project(GeoCoordinate, Int32)</h4>
+  <div class="markdown level1 summary"><p>緯度経度から地理院地図タイル番号に変換します。</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public Extent(GeoCoordinate min, GeoCoordinate max)</code></pre>
+    <pre><code class="lang-csharp hljs">public static TileCoordinate Project(GeoCoordinate geoCoord, int zoomLevel = 15)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -133,106 +145,17 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="PLATEAU.Interop.GeoCoordinate.html">GeoCoordinate</a></td>
-        <td><span class="parametername">min</span></td>
+        <td><span class="xref">GeoCoordinate</span></td>
+        <td><span class="parametername">geoCoord</span></td>
         <td></td>
       </tr>
       <tr>
-        <td><a class="xref" href="PLATEAU.Interop.GeoCoordinate.html">GeoCoordinate</a></td>
-        <td><span class="parametername">max</span></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  <h3 id="fields">Fields
-  </h3>
-  
-  
-  <h4 id="PLATEAU_Interop_Extent_Max" data-uid="PLATEAU.Interop.Extent.Max">Max</h4>
-  <div class="markdown level1 summary"></div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public GeoCoordinate Max</code></pre>
-  </div>
-  <h5 class="fieldValue">Field Value</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="PLATEAU.Interop.GeoCoordinate.html">GeoCoordinate</a></td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><span class="parametername">zoomLevel</span></td>
         <td></td>
       </tr>
     </tbody>
   </table>
-  
-  
-  <h4 id="PLATEAU_Interop_Extent_Min" data-uid="PLATEAU.Interop.Extent.Min">Min</h4>
-  <div class="markdown level1 summary"></div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public GeoCoordinate Min</code></pre>
-  </div>
-  <h5 class="fieldValue">Field Value</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="PLATEAU.Interop.GeoCoordinate.html">GeoCoordinate</a></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  <h3 id="properties">Properties
-  </h3>
-  
-  
-  <a id="PLATEAU_Interop_Extent_Center_" data-uid="PLATEAU.Interop.Extent.Center*"></a>
-  <h4 id="PLATEAU_Interop_Extent_Center" data-uid="PLATEAU.Interop.Extent.Center">Center</h4>
-  <div class="markdown level1 summary"></div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public readonly GeoCoordinate Center { get; }</code></pre>
-  </div>
-  <h5 class="propertyValue">Property Value</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="PLATEAU.Interop.GeoCoordinate.html">GeoCoordinate</a></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  <h3 id="methods">Methods
-  </h3>
-  
-  
-  <a id="PLATEAU_Interop_Extent_ToString_" data-uid="PLATEAU.Interop.Extent.ToString*"></a>
-  <h4 id="PLATEAU_Interop_Extent_ToString" data-uid="PLATEAU.Interop.Extent.ToString">ToString()</h4>
-  <div class="markdown level1 summary"></div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public override string ToString()</code></pre>
-  </div>
   <h5 class="returns">Returns</h5>
   <table class="table table-bordered table-striped table-condensed">
     <thead>
@@ -243,13 +166,54 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">String</a></td>
+        <td><span class="xref">TileCoordinate</span></td>
         <td></td>
       </tr>
     </tbody>
   </table>
-  <h5 class="overrides">Overrides</h5>
-  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.valuetype.tostring#system-valuetype-tostring">ValueType.ToString()</a></div>
+  
+  
+  <a id="PLATEAU_Basemap_TileProjection_Unproject_" data-uid="PLATEAU.Basemap.TileProjection.Unproject*"></a>
+  <h4 id="PLATEAU_Basemap_TileProjection_Unproject_TileCoordinate_" data-uid="PLATEAU.Basemap.TileProjection.Unproject(TileCoordinate)">Unproject(TileCoordinate)</h4>
+  <div class="markdown level1 summary"><p>地理院地図タイル番号から緯度経度範囲に変換します。</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static Extent Unproject(TileCoordinate tileCoord)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TileCoordinate</span></td>
+        <td><span class="parametername">tileCoord</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Extent</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
 </article>
           </div>
           

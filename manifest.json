@@ -24,6 +24,42 @@
     },
     {
       "type": "ManagedReference",
+      "source_relative_path": "api/PLATEAU.Basemap.TileProjection.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PLATEAU.Basemap.TileProjection.html",
+          "hash": "y8QH83zDla3g3fo7xA+pWlPXgx6XVf2aTc0j1VSpe6k="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/PLATEAU.Basemap.VectorTileDownloader.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PLATEAU.Basemap.VectorTileDownloader.html",
+          "hash": "x1/erI2a1x2PstezyV0GD5qvJIUc37WDb6NXFuE95qk="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/PLATEAU.Basemap.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PLATEAU.Basemap.html",
+          "hash": "I3KM/K4Xr7v8LCYrKUpFHg6/NrfuiM99+GTdHcSlhJs="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
       "source_relative_path": "api/PLATEAU.CityGML.Address.yml",
       "output": {
         ".html": {
@@ -312,6 +348,42 @@
     },
     {
       "type": "ManagedReference",
+      "source_relative_path": "api/PLATEAU.CityImport.AreaSelector.SceneObjs.GSIMapLoader.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PLATEAU.CityImport.AreaSelector.SceneObjs.GSIMapLoader.html",
+          "hash": "iu3PEKsXmZ5TjNGZ9SIuTf5YbEWfR3P2AwLG+aGsIs8="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/PLATEAU.CityImport.AreaSelector.SceneObjs.GSIMapLoaderZoomSwitch.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PLATEAU.CityImport.AreaSelector.SceneObjs.GSIMapLoaderZoomSwitch.html",
+          "hash": "yLG3BqoZ54qBY1Kg8iuscpDaALofwRlkaLWzUbCu96Y="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/PLATEAU.CityImport.AreaSelector.SceneObjs.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PLATEAU.CityImport.AreaSelector.SceneObjs.html",
+          "hash": "IjrCX1/emVs80W50OeFLRlmWuzAAV+iqi25LKnW/1ts="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
       "source_relative_path": "api/PLATEAU.CityInfo.PLATEAUCityGmlProxy.yml",
       "output": {
         ".html": {
@@ -400,7 +472,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PLATEAU.Interop.APIResult.html",
-          "hash": "VT0lzOyCfOk+tL3FZRK/pvwhpRkRPoQHDMtXKpVVgQ4="
+          "hash": "kWGRpEs7ikgZIE3zUoiAqwVD9grtlIcTNgYlkCwjKwE="
         }
       },
       "is_incremental": false,
@@ -448,7 +520,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PLATEAU.Interop.Extent.html",
-          "hash": "staieB35cj5Qu2DN13OT5Nq6eiL0SLZH+lNSLa/vbIY="
+          "hash": "Ap79/uIlLh2zwr+tHHTrjZIvGtwXxFCAULBYvRIVrKU="
         }
       },
       "is_incremental": false,
@@ -460,7 +532,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PLATEAU.Interop.GeoCoordinate.html",
-          "hash": "Dbo+8u4n+RcLJFkiGPJBojcO4td1CjqZYQegefdsix8="
+          "hash": "E+ywklpS+EdF8rAMjSDFkzSlnzFPrfM0TIUbftwuSmg="
         }
       },
       "is_incremental": false,
@@ -588,11 +660,23 @@
     },
     {
       "type": "ManagedReference",
+      "source_relative_path": "api/PLATEAU.Interop.TileCoordinate.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PLATEAU.Interop.TileCoordinate.html",
+          "hash": "JcaBCHTxYb2mR86ATK8X7jywgHj1DjdrQBHP4Z8SOm4="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
       "source_relative_path": "api/PLATEAU.Interop.yml",
       "output": {
         ".html": {
           "relative_path": "api/PLATEAU.Interop.html",
-          "hash": "dPTdayA2UjLNmfiJzGPIsItLprJ7tPP5ifgNr3DUMLw="
+          "hash": "yClUDyxv1gykfQMlDNK0oE9wUsAdZpSLWyRcNBDwzpo="
         }
       },
       "is_incremental": false,
@@ -784,7 +868,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PLATEAU.Udx.UdxFileCollection.html",
-          "hash": "YPEnrNjXqtVoLBWnuJXQ371U/7cNMSirNe02J+3TIq0="
+          "hash": "tag3jQarsF+Vmg5H+36boxhRqmG4QwS7q566Zcbp2j0="
         }
       },
       "is_incremental": false,
@@ -916,7 +1000,7 @@
       "output": {
         ".html": {
           "relative_path": "api/toc.html",
-          "hash": "H3HgDtMN60mx1HoxTRx/bBjYExTybmANVf5RSoadsgM="
+          "hash": "LFmbafCJD6SFCeIqCgUeUWeheNP5A8lIomvQ3M2RCh0="
         }
       },
       "is_incremental": false,
@@ -964,7 +1048,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/ImportCityModels.html",
-          "hash": "cmMFvOgqG76qaJ6+lJ8ubHQCQdsDEU1IJ/QaWwgsvi4="
+          "hash": "5+19j5gugeIVKlquiqDJCLXpAdXlPD5F34ZlzoYSrho="
         }
       },
       "is_incremental": false,
@@ -1419,7 +1503,7 @@
       "output": {
         ".html": {
           "relative_path": "toc.html",
-          "hash": "segIdXR20ozY/bADUoKkIYvm7JhZnO04dzPZEzlpC44="
+          "hash": "LKx8vuyb+lBWMMlgoHMtN3BgMoKWoPrQPSEm9jSXfTA="
         }
       },
       "is_incremental": false,
@@ -1446,7 +1530,7 @@
         "ManagedReferenceDocumentProcessor": {
           "can_incremental": false,
           "incrementalPhase": "build",
-          "total_file_count": 74,
+          "total_file_count": 81,
           "skipped_file_count": 0
         },
         "ResourceDocumentProcessor": {

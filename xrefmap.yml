@@ -1,6 +1,144 @@
 ### YamlMime:XRefMap
 sorted: true
 references:
+- uid: PLATEAU.Basemap
+  name: PLATEAU.Basemap
+  href: api/PLATEAU.Basemap.html
+  commentId: N:PLATEAU.Basemap
+  fullName: PLATEAU.Basemap
+  nameWithType: PLATEAU.Basemap
+- uid: PLATEAU.Basemap.TileProjection
+  name: TileProjection
+  href: api/PLATEAU.Basemap.TileProjection.html
+  commentId: T:PLATEAU.Basemap.TileProjection
+  fullName: PLATEAU.Basemap.TileProjection
+  nameWithType: TileProjection
+- uid: PLATEAU.Basemap.TileProjection.Project(GeoCoordinate,System.Int32)
+  name: Project(GeoCoordinate, Int32)
+  href: api/PLATEAU.Basemap.TileProjection.html#PLATEAU_Basemap_TileProjection_Project_GeoCoordinate_System_Int32_
+  commentId: M:PLATEAU.Basemap.TileProjection.Project(GeoCoordinate,System.Int32)
+  fullName: PLATEAU.Basemap.TileProjection.Project(GeoCoordinate, System.Int32)
+  nameWithType: TileProjection.Project(GeoCoordinate, Int32)
+- uid: PLATEAU.Basemap.TileProjection.Project*
+  name: Project
+  href: api/PLATEAU.Basemap.TileProjection.html#PLATEAU_Basemap_TileProjection_Project_
+  commentId: Overload:PLATEAU.Basemap.TileProjection.Project
+  isSpec: "True"
+  fullName: PLATEAU.Basemap.TileProjection.Project
+  nameWithType: TileProjection.Project
+- uid: PLATEAU.Basemap.TileProjection.Unproject(TileCoordinate)
+  name: Unproject(TileCoordinate)
+  href: api/PLATEAU.Basemap.TileProjection.html#PLATEAU_Basemap_TileProjection_Unproject_TileCoordinate_
+  commentId: M:PLATEAU.Basemap.TileProjection.Unproject(TileCoordinate)
+  fullName: PLATEAU.Basemap.TileProjection.Unproject(TileCoordinate)
+  nameWithType: TileProjection.Unproject(TileCoordinate)
+- uid: PLATEAU.Basemap.TileProjection.Unproject*
+  name: Unproject
+  href: api/PLATEAU.Basemap.TileProjection.html#PLATEAU_Basemap_TileProjection_Unproject_
+  commentId: Overload:PLATEAU.Basemap.TileProjection.Unproject
+  isSpec: "True"
+  fullName: PLATEAU.Basemap.TileProjection.Unproject
+  nameWithType: TileProjection.Unproject
+- uid: PLATEAU.Basemap.VectorTileDownloader
+  name: VectorTileDownloader
+  href: api/PLATEAU.Basemap.VectorTileDownloader.html
+  commentId: T:PLATEAU.Basemap.VectorTileDownloader
+  fullName: PLATEAU.Basemap.VectorTileDownloader
+  nameWithType: VectorTileDownloader
+- uid: PLATEAU.Basemap.VectorTileDownloader.#ctor(IntPtr)
+  name: VectorTileDownloader(IntPtr)
+  href: api/PLATEAU.Basemap.VectorTileDownloader.html#PLATEAU_Basemap_VectorTileDownloader__ctor_IntPtr_
+  commentId: M:PLATEAU.Basemap.VectorTileDownloader.#ctor(IntPtr)
+  fullName: PLATEAU.Basemap.VectorTileDownloader.VectorTileDownloader(IntPtr)
+  nameWithType: VectorTileDownloader.VectorTileDownloader(IntPtr)
+- uid: PLATEAU.Basemap.VectorTileDownloader.#ctor*
+  name: VectorTileDownloader
+  href: api/PLATEAU.Basemap.VectorTileDownloader.html#PLATEAU_Basemap_VectorTileDownloader__ctor_
+  commentId: Overload:PLATEAU.Basemap.VectorTileDownloader.#ctor
+  isSpec: "True"
+  fullName: PLATEAU.Basemap.VectorTileDownloader.VectorTileDownloader
+  nameWithType: VectorTileDownloader.VectorTileDownloader
+- uid: PLATEAU.Basemap.VectorTileDownloader.CalcDestPath(System.Int32)
+  name: CalcDestPath(Int32)
+  href: api/PLATEAU.Basemap.VectorTileDownloader.html#PLATEAU_Basemap_VectorTileDownloader_CalcDestPath_System_Int32_
+  commentId: M:PLATEAU.Basemap.VectorTileDownloader.CalcDestPath(System.Int32)
+  fullName: PLATEAU.Basemap.VectorTileDownloader.CalcDestPath(System.Int32)
+  nameWithType: VectorTileDownloader.CalcDestPath(Int32)
+- uid: PLATEAU.Basemap.VectorTileDownloader.CalcDestPath*
+  name: CalcDestPath
+  href: api/PLATEAU.Basemap.VectorTileDownloader.html#PLATEAU_Basemap_VectorTileDownloader_CalcDestPath_
+  commentId: Overload:PLATEAU.Basemap.VectorTileDownloader.CalcDestPath
+  isSpec: "True"
+  fullName: PLATEAU.Basemap.VectorTileDownloader.CalcDestPath
+  nameWithType: VectorTileDownloader.CalcDestPath
+- uid: PLATEAU.Basemap.VectorTileDownloader.Create(System.String,Extent,System.Int32)
+  name: Create(String, Extent, Int32)
+  href: api/PLATEAU.Basemap.VectorTileDownloader.html#PLATEAU_Basemap_VectorTileDownloader_Create_System_String_Extent_System_Int32_
+  commentId: M:PLATEAU.Basemap.VectorTileDownloader.Create(System.String,Extent,System.Int32)
+  fullName: PLATEAU.Basemap.VectorTileDownloader.Create(System.String, Extent, System.Int32)
+  nameWithType: VectorTileDownloader.Create(String, Extent, Int32)
+- uid: PLATEAU.Basemap.VectorTileDownloader.Create*
+  name: Create
+  href: api/PLATEAU.Basemap.VectorTileDownloader.html#PLATEAU_Basemap_VectorTileDownloader_Create_
+  commentId: Overload:PLATEAU.Basemap.VectorTileDownloader.Create
+  isSpec: "True"
+  fullName: PLATEAU.Basemap.VectorTileDownloader.Create
+  nameWithType: VectorTileDownloader.Create
+- uid: PLATEAU.Basemap.VectorTileDownloader.DisposeNative
+  name: DisposeNative()
+  href: api/PLATEAU.Basemap.VectorTileDownloader.html#PLATEAU_Basemap_VectorTileDownloader_DisposeNative
+  commentId: M:PLATEAU.Basemap.VectorTileDownloader.DisposeNative
+  fullName: PLATEAU.Basemap.VectorTileDownloader.DisposeNative()
+  nameWithType: VectorTileDownloader.DisposeNative()
+- uid: PLATEAU.Basemap.VectorTileDownloader.DisposeNative*
+  name: DisposeNative
+  href: api/PLATEAU.Basemap.VectorTileDownloader.html#PLATEAU_Basemap_VectorTileDownloader_DisposeNative_
+  commentId: Overload:PLATEAU.Basemap.VectorTileDownloader.DisposeNative
+  isSpec: "True"
+  fullName: PLATEAU.Basemap.VectorTileDownloader.DisposeNative
+  nameWithType: VectorTileDownloader.DisposeNative
+- uid: PLATEAU.Basemap.VectorTileDownloader.Download(System.Int32,TileCoordinate@,System.String@)
+  name: Download(Int32, out TileCoordinate, out String)
+  href: api/PLATEAU.Basemap.VectorTileDownloader.html#PLATEAU_Basemap_VectorTileDownloader_Download_System_Int32_TileCoordinate__System_String__
+  commentId: M:PLATEAU.Basemap.VectorTileDownloader.Download(System.Int32,TileCoordinate@,System.String@)
+  name.vb: Download(Int32, ByRef TileCoordinate, ByRef String)
+  fullName: PLATEAU.Basemap.VectorTileDownloader.Download(System.Int32, out TileCoordinate, out System.String)
+  fullName.vb: PLATEAU.Basemap.VectorTileDownloader.Download(System.Int32, ByRef TileCoordinate, ByRef System.String)
+  nameWithType: VectorTileDownloader.Download(Int32, out TileCoordinate, out String)
+  nameWithType.vb: VectorTileDownloader.Download(Int32, ByRef TileCoordinate, ByRef String)
+- uid: PLATEAU.Basemap.VectorTileDownloader.Download*
+  name: Download
+  href: api/PLATEAU.Basemap.VectorTileDownloader.html#PLATEAU_Basemap_VectorTileDownloader_Download_
+  commentId: Overload:PLATEAU.Basemap.VectorTileDownloader.Download
+  isSpec: "True"
+  fullName: PLATEAU.Basemap.VectorTileDownloader.Download
+  nameWithType: VectorTileDownloader.Download
+- uid: PLATEAU.Basemap.VectorTileDownloader.GetTileCoordinate(System.Int32)
+  name: GetTileCoordinate(Int32)
+  href: api/PLATEAU.Basemap.VectorTileDownloader.html#PLATEAU_Basemap_VectorTileDownloader_GetTileCoordinate_System_Int32_
+  commentId: M:PLATEAU.Basemap.VectorTileDownloader.GetTileCoordinate(System.Int32)
+  fullName: PLATEAU.Basemap.VectorTileDownloader.GetTileCoordinate(System.Int32)
+  nameWithType: VectorTileDownloader.GetTileCoordinate(Int32)
+- uid: PLATEAU.Basemap.VectorTileDownloader.GetTileCoordinate*
+  name: GetTileCoordinate
+  href: api/PLATEAU.Basemap.VectorTileDownloader.html#PLATEAU_Basemap_VectorTileDownloader_GetTileCoordinate_
+  commentId: Overload:PLATEAU.Basemap.VectorTileDownloader.GetTileCoordinate
+  isSpec: "True"
+  fullName: PLATEAU.Basemap.VectorTileDownloader.GetTileCoordinate
+  nameWithType: VectorTileDownloader.GetTileCoordinate
+- uid: PLATEAU.Basemap.VectorTileDownloader.TileCount
+  name: TileCount
+  href: api/PLATEAU.Basemap.VectorTileDownloader.html#PLATEAU_Basemap_VectorTileDownloader_TileCount
+  commentId: P:PLATEAU.Basemap.VectorTileDownloader.TileCount
+  fullName: PLATEAU.Basemap.VectorTileDownloader.TileCount
+  nameWithType: VectorTileDownloader.TileCount
+- uid: PLATEAU.Basemap.VectorTileDownloader.TileCount*
+  name: TileCount
+  href: api/PLATEAU.Basemap.VectorTileDownloader.html#PLATEAU_Basemap_VectorTileDownloader_TileCount_
+  commentId: Overload:PLATEAU.Basemap.VectorTileDownloader.TileCount
+  isSpec: "True"
+  fullName: PLATEAU.Basemap.VectorTileDownloader.TileCount
+  nameWithType: VectorTileDownloader.TileCount
 - uid: PLATEAU.CityGML
   name: PLATEAU.CityGML
   href: api/PLATEAU.CityGML.html
@@ -1761,6 +1899,69 @@ references:
   commentId: F:PLATEAU.CityGML.TextureWrapMode.WM_Wrap
   fullName: PLATEAU.CityGML.TextureWrapMode.WM_Wrap
   nameWithType: TextureWrapMode.WM_Wrap
+- uid: PLATEAU.CityImport.AreaSelector.SceneObjs
+  name: PLATEAU.CityImport.AreaSelector.SceneObjs
+  href: api/PLATEAU.CityImport.AreaSelector.SceneObjs.html
+  commentId: N:PLATEAU.CityImport.AreaSelector.SceneObjs
+  fullName: PLATEAU.CityImport.AreaSelector.SceneObjs
+  nameWithType: PLATEAU.CityImport.AreaSelector.SceneObjs
+- uid: PLATEAU.CityImport.AreaSelector.SceneObjs.GSIMapLoader
+  name: GSIMapLoader
+  href: api/PLATEAU.CityImport.AreaSelector.SceneObjs.GSIMapLoader.html
+  commentId: T:PLATEAU.CityImport.AreaSelector.SceneObjs.GSIMapLoader
+  fullName: PLATEAU.CityImport.AreaSelector.SceneObjs.GSIMapLoader
+  nameWithType: GSIMapLoader
+- uid: PLATEAU.CityImport.AreaSelector.SceneObjs.GSIMapLoader.DownloadAndPlaceAsync(Extent,GeoReference,System.Int32,CancellationToken)
+  name: DownloadAndPlaceAsync(Extent, GeoReference, Int32, CancellationToken)
+  href: api/PLATEAU.CityImport.AreaSelector.SceneObjs.GSIMapLoader.html#PLATEAU_CityImport_AreaSelector_SceneObjs_GSIMapLoader_DownloadAndPlaceAsync_Extent_GeoReference_System_Int32_CancellationToken_
+  commentId: M:PLATEAU.CityImport.AreaSelector.SceneObjs.GSIMapLoader.DownloadAndPlaceAsync(Extent,GeoReference,System.Int32,CancellationToken)
+  fullName: PLATEAU.CityImport.AreaSelector.SceneObjs.GSIMapLoader.DownloadAndPlaceAsync(Extent, GeoReference, System.Int32, CancellationToken)
+  nameWithType: GSIMapLoader.DownloadAndPlaceAsync(Extent, GeoReference, Int32, CancellationToken)
+- uid: PLATEAU.CityImport.AreaSelector.SceneObjs.GSIMapLoader.DownloadAndPlaceAsync*
+  name: DownloadAndPlaceAsync
+  href: api/PLATEAU.CityImport.AreaSelector.SceneObjs.GSIMapLoader.html#PLATEAU_CityImport_AreaSelector_SceneObjs_GSIMapLoader_DownloadAndPlaceAsync_
+  commentId: Overload:PLATEAU.CityImport.AreaSelector.SceneObjs.GSIMapLoader.DownloadAndPlaceAsync
+  isSpec: "True"
+  fullName: PLATEAU.CityImport.AreaSelector.SceneObjs.GSIMapLoader.DownloadAndPlaceAsync
+  nameWithType: GSIMapLoader.DownloadAndPlaceAsync
+- uid: PLATEAU.CityImport.AreaSelector.SceneObjs.GSIMapLoader.MapRootObjName
+  name: MapRootObjName
+  href: api/PLATEAU.CityImport.AreaSelector.SceneObjs.GSIMapLoader.html#PLATEAU_CityImport_AreaSelector_SceneObjs_GSIMapLoader_MapRootObjName
+  commentId: F:PLATEAU.CityImport.AreaSelector.SceneObjs.GSIMapLoader.MapRootObjName
+  fullName: PLATEAU.CityImport.AreaSelector.SceneObjs.GSIMapLoader.MapRootObjName
+  nameWithType: GSIMapLoader.MapRootObjName
+- uid: PLATEAU.CityImport.AreaSelector.SceneObjs.GSIMapLoaderZoomSwitch
+  name: GSIMapLoaderZoomSwitch
+  href: api/PLATEAU.CityImport.AreaSelector.SceneObjs.GSIMapLoaderZoomSwitch.html
+  commentId: T:PLATEAU.CityImport.AreaSelector.SceneObjs.GSIMapLoaderZoomSwitch
+  fullName: PLATEAU.CityImport.AreaSelector.SceneObjs.GSIMapLoaderZoomSwitch
+  nameWithType: GSIMapLoaderZoomSwitch
+- uid: PLATEAU.CityImport.AreaSelector.SceneObjs.GSIMapLoaderZoomSwitch.#ctor(GeoReference)
+  name: GSIMapLoaderZoomSwitch(GeoReference)
+  href: api/PLATEAU.CityImport.AreaSelector.SceneObjs.GSIMapLoaderZoomSwitch.html#PLATEAU_CityImport_AreaSelector_SceneObjs_GSIMapLoaderZoomSwitch__ctor_GeoReference_
+  commentId: M:PLATEAU.CityImport.AreaSelector.SceneObjs.GSIMapLoaderZoomSwitch.#ctor(GeoReference)
+  fullName: PLATEAU.CityImport.AreaSelector.SceneObjs.GSIMapLoaderZoomSwitch.GSIMapLoaderZoomSwitch(GeoReference)
+  nameWithType: GSIMapLoaderZoomSwitch.GSIMapLoaderZoomSwitch(GeoReference)
+- uid: PLATEAU.CityImport.AreaSelector.SceneObjs.GSIMapLoaderZoomSwitch.#ctor*
+  name: GSIMapLoaderZoomSwitch
+  href: api/PLATEAU.CityImport.AreaSelector.SceneObjs.GSIMapLoaderZoomSwitch.html#PLATEAU_CityImport_AreaSelector_SceneObjs_GSIMapLoaderZoomSwitch__ctor_
+  commentId: Overload:PLATEAU.CityImport.AreaSelector.SceneObjs.GSIMapLoaderZoomSwitch.#ctor
+  isSpec: "True"
+  fullName: PLATEAU.CityImport.AreaSelector.SceneObjs.GSIMapLoaderZoomSwitch.GSIMapLoaderZoomSwitch
+  nameWithType: GSIMapLoaderZoomSwitch.GSIMapLoaderZoomSwitch
+- uid: PLATEAU.CityImport.AreaSelector.SceneObjs.GSIMapLoaderZoomSwitch.Update(Camera)
+  name: Update(Camera)
+  href: api/PLATEAU.CityImport.AreaSelector.SceneObjs.GSIMapLoaderZoomSwitch.html#PLATEAU_CityImport_AreaSelector_SceneObjs_GSIMapLoaderZoomSwitch_Update_Camera_
+  commentId: M:PLATEAU.CityImport.AreaSelector.SceneObjs.GSIMapLoaderZoomSwitch.Update(Camera)
+  fullName: PLATEAU.CityImport.AreaSelector.SceneObjs.GSIMapLoaderZoomSwitch.Update(Camera)
+  nameWithType: GSIMapLoaderZoomSwitch.Update(Camera)
+- uid: PLATEAU.CityImport.AreaSelector.SceneObjs.GSIMapLoaderZoomSwitch.Update*
+  name: Update
+  href: api/PLATEAU.CityImport.AreaSelector.SceneObjs.GSIMapLoaderZoomSwitch.html#PLATEAU_CityImport_AreaSelector_SceneObjs_GSIMapLoaderZoomSwitch_Update_
+  commentId: Overload:PLATEAU.CityImport.AreaSelector.SceneObjs.GSIMapLoaderZoomSwitch.Update
+  isSpec: "True"
+  fullName: PLATEAU.CityImport.AreaSelector.SceneObjs.GSIMapLoaderZoomSwitch.Update
+  nameWithType: GSIMapLoaderZoomSwitch.Update
 - uid: PLATEAU.CityInfo
   name: PLATEAU.CityInfo
   href: api/PLATEAU.CityInfo.html
@@ -2056,6 +2257,12 @@ references:
   commentId: F:PLATEAU.Interop.APIResult.ErrorIndexOutOfBounds
   fullName: PLATEAU.Interop.APIResult.ErrorIndexOutOfBounds
   nameWithType: APIResult.ErrorIndexOutOfBounds
+- uid: PLATEAU.Interop.APIResult.ErrorInvalidArgument
+  name: ErrorInvalidArgument
+  href: api/PLATEAU.Interop.APIResult.html#PLATEAU_Interop_APIResult_ErrorInvalidArgument
+  commentId: F:PLATEAU.Interop.APIResult.ErrorInvalidArgument
+  fullName: PLATEAU.Interop.APIResult.ErrorInvalidArgument
+  nameWithType: APIResult.ErrorInvalidArgument
 - uid: PLATEAU.Interop.APIResult.ErrorLoadingCityGml
   name: ErrorLoadingCityGml
   href: api/PLATEAU.Interop.APIResult.html#PLATEAU_Interop_APIResult_ErrorLoadingCityGml
@@ -2262,6 +2469,19 @@ references:
   isSpec: "True"
   fullName: PLATEAU.Interop.Extent.Extent
   nameWithType: Extent.Extent
+- uid: PLATEAU.Interop.Extent.Center
+  name: Center
+  href: api/PLATEAU.Interop.Extent.html#PLATEAU_Interop_Extent_Center
+  commentId: P:PLATEAU.Interop.Extent.Center
+  fullName: PLATEAU.Interop.Extent.Center
+  nameWithType: Extent.Center
+- uid: PLATEAU.Interop.Extent.Center*
+  name: Center
+  href: api/PLATEAU.Interop.Extent.html#PLATEAU_Interop_Extent_Center_
+  commentId: Overload:PLATEAU.Interop.Extent.Center
+  isSpec: "True"
+  fullName: PLATEAU.Interop.Extent.Center
+  nameWithType: Extent.Center
 - uid: PLATEAU.Interop.Extent.Max
   name: Max
   href: api/PLATEAU.Interop.Extent.html#PLATEAU_Interop_Extent_Max
@@ -2274,6 +2494,19 @@ references:
   commentId: F:PLATEAU.Interop.Extent.Min
   fullName: PLATEAU.Interop.Extent.Min
   nameWithType: Extent.Min
+- uid: PLATEAU.Interop.Extent.ToString
+  name: ToString()
+  href: api/PLATEAU.Interop.Extent.html#PLATEAU_Interop_Extent_ToString
+  commentId: M:PLATEAU.Interop.Extent.ToString
+  fullName: PLATEAU.Interop.Extent.ToString()
+  nameWithType: Extent.ToString()
+- uid: PLATEAU.Interop.Extent.ToString*
+  name: ToString
+  href: api/PLATEAU.Interop.Extent.html#PLATEAU_Interop_Extent_ToString_
+  commentId: Overload:PLATEAU.Interop.Extent.ToString
+  isSpec: "True"
+  fullName: PLATEAU.Interop.Extent.ToString
+  nameWithType: Extent.ToString
 - uid: PLATEAU.Interop.GeoCoordinate
   name: GeoCoordinate
   href: api/PLATEAU.Interop.GeoCoordinate.html
@@ -2311,6 +2544,45 @@ references:
   commentId: F:PLATEAU.Interop.GeoCoordinate.Longitude
   fullName: PLATEAU.Interop.GeoCoordinate.Longitude
   nameWithType: GeoCoordinate.Longitude
+- uid: PLATEAU.Interop.GeoCoordinate.Max(PLATEAU.Interop.GeoCoordinate,PLATEAU.Interop.GeoCoordinate)
+  name: Max(GeoCoordinate, GeoCoordinate)
+  href: api/PLATEAU.Interop.GeoCoordinate.html#PLATEAU_Interop_GeoCoordinate_Max_PLATEAU_Interop_GeoCoordinate_PLATEAU_Interop_GeoCoordinate_
+  commentId: M:PLATEAU.Interop.GeoCoordinate.Max(PLATEAU.Interop.GeoCoordinate,PLATEAU.Interop.GeoCoordinate)
+  fullName: PLATEAU.Interop.GeoCoordinate.Max(PLATEAU.Interop.GeoCoordinate, PLATEAU.Interop.GeoCoordinate)
+  nameWithType: GeoCoordinate.Max(GeoCoordinate, GeoCoordinate)
+- uid: PLATEAU.Interop.GeoCoordinate.Max*
+  name: Max
+  href: api/PLATEAU.Interop.GeoCoordinate.html#PLATEAU_Interop_GeoCoordinate_Max_
+  commentId: Overload:PLATEAU.Interop.GeoCoordinate.Max
+  isSpec: "True"
+  fullName: PLATEAU.Interop.GeoCoordinate.Max
+  nameWithType: GeoCoordinate.Max
+- uid: PLATEAU.Interop.GeoCoordinate.Min(PLATEAU.Interop.GeoCoordinate,PLATEAU.Interop.GeoCoordinate)
+  name: Min(GeoCoordinate, GeoCoordinate)
+  href: api/PLATEAU.Interop.GeoCoordinate.html#PLATEAU_Interop_GeoCoordinate_Min_PLATEAU_Interop_GeoCoordinate_PLATEAU_Interop_GeoCoordinate_
+  commentId: M:PLATEAU.Interop.GeoCoordinate.Min(PLATEAU.Interop.GeoCoordinate,PLATEAU.Interop.GeoCoordinate)
+  fullName: PLATEAU.Interop.GeoCoordinate.Min(PLATEAU.Interop.GeoCoordinate, PLATEAU.Interop.GeoCoordinate)
+  nameWithType: GeoCoordinate.Min(GeoCoordinate, GeoCoordinate)
+- uid: PLATEAU.Interop.GeoCoordinate.Min*
+  name: Min
+  href: api/PLATEAU.Interop.GeoCoordinate.html#PLATEAU_Interop_GeoCoordinate_Min_
+  commentId: Overload:PLATEAU.Interop.GeoCoordinate.Min
+  isSpec: "True"
+  fullName: PLATEAU.Interop.GeoCoordinate.Min
+  nameWithType: GeoCoordinate.Min
+- uid: PLATEAU.Interop.GeoCoordinate.ToString
+  name: ToString()
+  href: api/PLATEAU.Interop.GeoCoordinate.html#PLATEAU_Interop_GeoCoordinate_ToString
+  commentId: M:PLATEAU.Interop.GeoCoordinate.ToString
+  fullName: PLATEAU.Interop.GeoCoordinate.ToString()
+  nameWithType: GeoCoordinate.ToString()
+- uid: PLATEAU.Interop.GeoCoordinate.ToString*
+  name: ToString
+  href: api/PLATEAU.Interop.GeoCoordinate.html#PLATEAU_Interop_GeoCoordinate_ToString_
+  commentId: Overload:PLATEAU.Interop.GeoCoordinate.ToString
+  isSpec: "True"
+  fullName: PLATEAU.Interop.GeoCoordinate.ToString
+  nameWithType: GeoCoordinate.ToString
 - uid: PLATEAU.Interop.GltfFileFormat
   name: GltfFileFormat
   href: api/PLATEAU.Interop.GltfFileFormat.html
@@ -2882,6 +3154,56 @@ references:
   commentId: F:PLATEAU.Interop.PlateauVector3d.Z
   fullName: PLATEAU.Interop.PlateauVector3d.Z
   nameWithType: PlateauVector3d.Z
+- uid: PLATEAU.Interop.TileCoordinate
+  name: TileCoordinate
+  href: api/PLATEAU.Interop.TileCoordinate.html
+  commentId: T:PLATEAU.Interop.TileCoordinate
+  fullName: PLATEAU.Interop.TileCoordinate
+  nameWithType: TileCoordinate
+- uid: PLATEAU.Interop.TileCoordinate.#ctor(System.Int32,System.Int32,System.Int32)
+  name: TileCoordinate(Int32, Int32, Int32)
+  href: api/PLATEAU.Interop.TileCoordinate.html#PLATEAU_Interop_TileCoordinate__ctor_System_Int32_System_Int32_System_Int32_
+  commentId: M:PLATEAU.Interop.TileCoordinate.#ctor(System.Int32,System.Int32,System.Int32)
+  fullName: PLATEAU.Interop.TileCoordinate.TileCoordinate(System.Int32, System.Int32, System.Int32)
+  nameWithType: TileCoordinate.TileCoordinate(Int32, Int32, Int32)
+- uid: PLATEAU.Interop.TileCoordinate.#ctor*
+  name: TileCoordinate
+  href: api/PLATEAU.Interop.TileCoordinate.html#PLATEAU_Interop_TileCoordinate__ctor_
+  commentId: Overload:PLATEAU.Interop.TileCoordinate.#ctor
+  isSpec: "True"
+  fullName: PLATEAU.Interop.TileCoordinate.TileCoordinate
+  nameWithType: TileCoordinate.TileCoordinate
+- uid: PLATEAU.Interop.TileCoordinate.Column
+  name: Column
+  href: api/PLATEAU.Interop.TileCoordinate.html#PLATEAU_Interop_TileCoordinate_Column
+  commentId: F:PLATEAU.Interop.TileCoordinate.Column
+  fullName: PLATEAU.Interop.TileCoordinate.Column
+  nameWithType: TileCoordinate.Column
+- uid: PLATEAU.Interop.TileCoordinate.Row
+  name: Row
+  href: api/PLATEAU.Interop.TileCoordinate.html#PLATEAU_Interop_TileCoordinate_Row
+  commentId: F:PLATEAU.Interop.TileCoordinate.Row
+  fullName: PLATEAU.Interop.TileCoordinate.Row
+  nameWithType: TileCoordinate.Row
+- uid: PLATEAU.Interop.TileCoordinate.ToString
+  name: ToString()
+  href: api/PLATEAU.Interop.TileCoordinate.html#PLATEAU_Interop_TileCoordinate_ToString
+  commentId: M:PLATEAU.Interop.TileCoordinate.ToString
+  fullName: PLATEAU.Interop.TileCoordinate.ToString()
+  nameWithType: TileCoordinate.ToString()
+- uid: PLATEAU.Interop.TileCoordinate.ToString*
+  name: ToString
+  href: api/PLATEAU.Interop.TileCoordinate.html#PLATEAU_Interop_TileCoordinate_ToString_
+  commentId: Overload:PLATEAU.Interop.TileCoordinate.ToString
+  isSpec: "True"
+  fullName: PLATEAU.Interop.TileCoordinate.ToString
+  nameWithType: TileCoordinate.ToString
+- uid: PLATEAU.Interop.TileCoordinate.ZoomLevel
+  name: ZoomLevel
+  href: api/PLATEAU.Interop.TileCoordinate.html#PLATEAU_Interop_TileCoordinate_ZoomLevel
+  commentId: F:PLATEAU.Interop.TileCoordinate.ZoomLevel
+  fullName: PLATEAU.Interop.TileCoordinate.ZoomLevel
+  nameWithType: TileCoordinate.ZoomLevel
 - uid: PLATEAU.MeshWriter
   name: PLATEAU.MeshWriter
   href: api/PLATEAU.MeshWriter.html
