@@ -52,7 +52,6 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
                     CalcCameraExtent(cam, this.geoReference),
                     this.mapAvailableExtent
                 );
-                Debug.Log($"camera: {CalcCameraExtent(cam, this.geoReference)}, available:{this.mapAvailableExtent}, intersect:{extent}");
                 int zoomLevel = CalcZoomLevel(extent);
                 // ズームレベルが切り替わったとき、前のズームレベルを読み込む処理をキャンセルします。
                 bool zoomLevelChanged = this.prevZoomLevel != zoomLevel;

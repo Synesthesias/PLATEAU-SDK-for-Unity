@@ -77,22 +77,22 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
 
         private static bool DownloadFileIfNotExist(VectorTileDownloader downloader, int index, string mapFilePath, TileCoordinate tileCoord)
         {
-            //         // ファイルがすでにあるなら、そのファイルの書き込み完了を待って、そのファイルを利用します。
-            //         if (File.Exists(mapFilePath))
-            //         {
-            //             int tryLeft = 5;
-            //             while (true)
-            //             {
-            //                 if (!IsFileLocked(new FileInfo(mapFilePath))) break;
-            //                 Thread.Sleep(50);
-            //                 if (--tryLeft <= 0)
-            //                 {
-            //                     return false;
-            //                 }
-            //             }
-            //             return true;
-            //         }
-            //         // ファイルがなければダウンロードします。
+            // ファイルがすでにあるなら、そのファイルの書き込み完了を待って、そのファイルを利用します。
+            if (File.Exists(mapFilePath))
+            {
+                int tryLeft = 5;
+                while (true)
+                {
+                    if (!IsFileLocked(new FileInfo(mapFilePath))) break;
+                    Thread.Sleep(50);
+                    if (--tryLeft <= 0)
+                    {
+                        return false;
+                    }
+                }
+                return true;
+            }
+            // ファイルがなければダウンロードします。
             downloader.Download(index, out var downloadedTileCoord, out string downloadDestPath);
             Assert.AreEqual(mapFilePath, downloadDestPath);
             Assert.AreEqual(tileCoord, downloadedTileCoord);
