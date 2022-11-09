@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -15,10 +14,11 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
     /// <see cref="GSIMapLoader"/> に次の機能を追加したものです:
     /// ・カメラの位置によってズームレベル（地図の詳細度）を切り替えて表示します
     /// </summary>
-    public class GSIMapLoaderZoomSwitch
+    public class GSIMapLoaderZoomSwitch : IDisposable
     {
         private const int minZoomLevel = 3;
         private const int maxZoomLevel = 16;
+        private const float updateIntervalMilliSec = 500;
         
         
         /// <summary>
@@ -27,57 +27,61 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         private const int maxMapCountInScreen = 30;
         
         private readonly GeoReference geoReference;
-        private const int mapUpdateInterval = 5;
-        private int framesTillMapUpdate = 0;
         private Task mapUpdateTask;
         private readonly List<Material> mapMaterials = new List<Material>();
         private int prevZoomLevel = -1;
-        private CancellationTokenSource cancel;
+        private CancellationTokenSource zoomLoadCancel;
+        private DateTime lastUpdateTime = DateTime.MinValue;
 
-        public GSIMapLoaderZoomSwitch(GeoReference geoReference, CancellationTokenSource cancel)
+        public GSIMapLoaderZoomSwitch(GeoReference geoReference)
         {
             this.geoReference = geoReference;
-            this.cancel = cancel;
         }
 
         public void Update(Camera cam)
         {
-            if (--this.framesTillMapUpdate <= 0)
+            if ((DateTime.Now - this.lastUpdateTime).Milliseconds <= updateIntervalMilliSec)
             {
-                this.framesTillMapUpdate = mapUpdateInterval;
-                if (this.mapUpdateTask == null || this.mapUpdateTask.IsCompleted)
+                var extent = CalcCameraExtent(cam, this.geoReference);
+                int zoomLevel = CalcZoomLevel(extent);
+                // ズームレベルが切り替わったとき、前のズームレベルを読み込む処理をキャンセルします。
+                bool zoomLevelChanged = this.prevZoomLevel != zoomLevel;
+                if (zoomLevelChanged)
                 {
-                    this.mapUpdateTask = MapUpdateTask(cam);
+                    this.zoomLoadCancel?.Cancel();
+                    this.zoomLoadCancel = new CancellationTokenSource();
+                }
+                if (this.mapUpdateTask == null || this.mapUpdateTask.IsCompleted || zoomLevelChanged)
+                {
+                    this.mapUpdateTask = MapUpdateTask(zoomLevel, extent, this.zoomLoadCancel);
                     this.mapUpdateTask.ContinueWithErrorCatch();
                 }
+                this.prevZoomLevel = zoomLevel;
+                this.lastUpdateTime = DateTime.Now;
+                
             }
         }
 
-        /// <summary>
-        /// 利用終了時にコールしてください。
-        /// </summary>
-        public void DestroyMaterials()
+        public void Dispose()
         {
             foreach (var mat in this.mapMaterials)
             {
                 UnityEngine.Object.DestroyImmediate(mat);
             }
+            this.zoomLoadCancel.Cancel();
         }
 
-        private async Task MapUpdateTask(Camera cam)
+        private async Task MapUpdateTask(int zoomLevel, Extent extent, CancellationTokenSource downloadCancel)
         {
-            this.framesTillMapUpdate = mapUpdateInterval;
-            var extent = CalcCameraExtent(cam, this.geoReference);
-            int zoomLevel = CalcZoomLevel(extent);
             if (zoomLevel != this.prevZoomLevel)
             {
                 DisableExceptZoomLevel(zoomLevel);
             }
 
             var materials = await GSIMapLoader
-                .DownloadAndPlaceAsync(extent, this.geoReference, zoomLevel, this.cancel.Token);
+                .DownloadAndPlaceAsync(extent, this.geoReference, zoomLevel, downloadCancel.Token);
             this.mapMaterials.AddRange(materials);
-            this.prevZoomLevel = zoomLevel;
+            
         }
 
         private static Extent CalcCameraExtent(Camera cam, GeoReference geoRef)
@@ -137,7 +141,6 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
                 zoomLevelTrans.gameObject.SetActive(zoom == zoomLevel);
             }
         }
-
-
+        
     }
 }

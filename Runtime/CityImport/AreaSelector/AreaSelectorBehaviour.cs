@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Threading;
 using PLATEAU.CityImport.AreaSelector.SceneObjs;
 using PLATEAU.Geometries;
 using PLATEAU.Interop;
@@ -32,7 +31,6 @@ namespace PLATEAU.CityImport.AreaSelector
         private PredefinedCityModelPackage availablePackageFlags;
         private int coordinateZoneID;
         private GeoReference geoReference;
-        private CancellationTokenSource mapLoadCancel;
         private bool prevSceneCameraRotationLocked;
         private GSIMapLoaderZoomSwitch mapLoader;
 
@@ -58,8 +56,7 @@ namespace PLATEAU.CityImport.AreaSelector
             var gatherResult = GatherMeshCodesInGMLDirectory(this.dataSourcePath);
             PlaceMeshCodeDrawers(gatherResult.meshCodes, this.meshCodeDrawers, this.coordinateZoneID, out this.geoReference);
             this.availablePackageFlags = gatherResult.availablePackageFlags;
-            this.mapLoadCancel = new CancellationTokenSource();
-            this.mapLoader = new GSIMapLoaderZoomSwitch(this.geoReference, this.mapLoadCancel);
+            this.mapLoader = new GSIMapLoaderZoomSwitch(this.geoReference);
         }
 
         private void Update()
@@ -84,11 +81,10 @@ namespace PLATEAU.CityImport.AreaSelector
 
         private void OnDisable()
         {
-            this.mapLoadCancel.Cancel();
-            #if UNITY_EDITOR
+#if UNITY_EDITOR
             SceneView.lastActiveSceneView.isRotationLocked = this.prevSceneCameraRotationLocked;
             #endif
-            this.mapLoader.DestroyMaterials();
+            this.mapLoader.Dispose();
         }
 
         private static Extent CalcExtentCoversAllMeshCodes(IEnumerable<MeshCode> meshCodes)

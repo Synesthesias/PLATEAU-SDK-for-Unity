@@ -8,7 +8,6 @@ using PLATEAU.Interop;
 using PLATEAU.Util;
 using PLATEAU.Util.Async;
 using UnityEditor;
-using UnityEditorInternal;
 using UnityEngine;
 using UnityEngine.Assertions;
 
@@ -32,7 +31,6 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         /// <returns>生成したマテリアルのリストを返します。このマテリアルはメソッドの利用者が利用終了時に廃棄してください。</returns>
         public static async Task<List<Material>> DownloadAndPlaceAsync(Extent extent, GeoReference geoReference, int zoomLevel, CancellationToken cancel)
         {
-            Debug.Log("download start");
             var generatedMaterials = new List<Material>();
             using var downloader = VectorTileDownloader.Create(mapDownloadDest, extent, zoomLevel);
             int tileCount = downloader.TileCount;
@@ -60,7 +58,6 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
             });
             if (cancel.IsCancellationRequested)
             {
-                Debug.Log("Map Download is Cancelled.");
                 break;
             }
             
