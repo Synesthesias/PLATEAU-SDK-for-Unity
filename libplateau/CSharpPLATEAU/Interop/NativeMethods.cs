@@ -309,7 +309,8 @@ namespace PLATEAU.Interop
         ErrorValueNotFound,
         ErrorLoadingCityGml,
         ErrorIndexOutOfBounds,
-        ErrorFileSystem
+        ErrorFileSystem,
+        ErrorInvalidArgument
     }
 
     public enum DllLogLevel
