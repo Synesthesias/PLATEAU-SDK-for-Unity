@@ -44,7 +44,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
                 var tileCoord = downloader.GetTileCoordinate(i);
             
             var mapRoot = GameObjectUtil.AssureGameObject(MapRootObjName).transform;
-            var zoomLevelTrans = GameObjectUtil.AssureGameObjectInChild(zoomLevel.ToString(), mapRoot).transform;
+            var  zoomLevelTrans = GameObjectUtil.AssureGameObjectInChild(zoomLevel.ToString(), mapRoot).transform;
             var rowTrans = GameObjectUtil.AssureGameObjectInChild(tileCoord.Row.ToString(), zoomLevelTrans).transform;
             var mapName = $"{tileCoord.Column}";
             var mapTrans = rowTrans.Find(mapName);
@@ -56,6 +56,30 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
             mapTile = new MapTile(mapFilePath, tileCoord);
             bool isSucceed = await Task.Run(() =>
             {
+                return DownloadFileIfNotExist(downloader, i, mapFilePath, tileCoord);
+            });
+            if (cancel.IsCancellationRequested)
+            {
+                Debug.Log("Map Download is Cancelled.");
+                break;
+            }
+            
+            if (isSucceed)
+            {
+                await PlaceAsGameObj(mapTile, geoReference, rowTrans, mapName, generatedMaterials);
+            }
+            else
+            {
+                Debug.LogError("Failed to load a map tile image.");
+            }
+            
+            }
+
+            return generatedMaterials;
+        }
+
+        private static bool DownloadFileIfNotExist(VectorTileDownloader downloader, int index, string mapFilePath, TileCoordinate tileCoord)
+        {
             //         // ファイルがすでにあるなら、そのファイルの書き込み完了を待って、そのファイルを利用します。
             //         if (File.Exists(mapFilePath))
             //         {
@@ -72,29 +96,10 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
             //             return true;
             //         }
             //         // ファイルがなければダウンロードします。
-            downloader.Download(i, out var downloadedTileCoord, out string downloadDestPath);
+            downloader.Download(index, out var downloadedTileCoord, out string downloadDestPath);
             Assert.AreEqual(mapFilePath, downloadDestPath);
             Assert.AreEqual(tileCoord, downloadedTileCoord);
             return true;
-            });
-            if (cancel.IsCancellationRequested)
-            {
-                Debug.Log("Map Download is Cancelled.");
-                break;
-            }
-            //
-            //     if (isSucceed)
-            //     {
-            //         await PlaceAsGameObj(mapTile, geoReference, rowTrans, mapName, generatedMaterials);
-            //     }
-            //     else
-            //     {
-            //         Debug.LogError("Failed to load a tile.");
-            //     }
-            //     
-            }
-
-            return generatedMaterials;
         }
 
         private static async Task PlaceAsGameObj(MapTile mapTile, GeoReference geoReference, Transform parentTrans, string mapObjName, List<Material> generatedMaterials)

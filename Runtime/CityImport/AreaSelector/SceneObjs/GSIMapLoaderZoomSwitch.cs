@@ -27,8 +27,8 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         private const int maxMapCountInScreen = 30;
         
         private readonly GeoReference geoReference;
-        private const int mapUpdateInterval = 1;
-        private int framesTillMapUpdate;
+        private const int mapUpdateInterval = 5;
+        private int framesTillMapUpdate = 0;
         private Task mapUpdateTask;
         private readonly List<Material> mapMaterials = new List<Material>();
         private int prevZoomLevel = -1;
@@ -37,7 +37,6 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         public GSIMapLoaderZoomSwitch(GeoReference geoReference, CancellationTokenSource cancel)
         {
             this.geoReference = geoReference;
-            this.framesTillMapUpdate = mapUpdateInterval;
             this.cancel = cancel;
         }
 
@@ -45,6 +44,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         {
             if (--this.framesTillMapUpdate <= 0)
             {
+                this.framesTillMapUpdate = mapUpdateInterval;
                 if (this.mapUpdateTask == null || this.mapUpdateTask.IsCompleted)
                 {
                     this.mapUpdateTask = MapUpdateTask(cam);
