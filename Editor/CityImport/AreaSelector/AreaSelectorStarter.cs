@@ -41,6 +41,12 @@ namespace PLATEAU.Editor.CityImport.AreaSelector
             }
 
             string prevScenePath = SceneManager.GetActiveScene().path;
+            if (string.IsNullOrEmpty(prevScenePath))
+            {
+                EditorUtility.DisplayDialog("PLATEAU SDK", "シーンが未保存です。\n保存してから再度実行してください。", "OK");
+                return;
+            }
+            
             SetUpTemporaryScene();
             var behaviour = Object.FindObjectOfType<AreaSelectorBehaviour>();
             behaviour.Init(prevScenePath, dataSourcePath, areaSelectResultReceiver, coordinateZoneID);
