@@ -31,7 +31,6 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
                     selected.Add(candidate);
                 }
             }
-            Debug.Log($"selected count: {selected.Count}/{candidates.Count}, center={this.centerPos}, size={this.size}");
 
             return selected;
         }
