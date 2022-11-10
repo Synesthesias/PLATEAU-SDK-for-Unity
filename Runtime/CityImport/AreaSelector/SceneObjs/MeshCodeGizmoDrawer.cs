@@ -31,15 +31,15 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
             // min, max は xyz の平面直行座標系に変換したもの
             var min = geoReference.Project(extent.Min);
             var max = geoReference.Project(extent.Max);
-            var centerPos = new Vector3(
+            var centerPosTmp = new Vector3(
                 (float)(min.X + max.X) / 2.0f,
                 AreaSelectorCursor.BoxCenterHeight,
                 (float)(min.Z + max.Z) / 2.0f);
-            var size = new Vector3(
+            var sizeTmp = new Vector3(
                 (float)Math.Abs(max.X - min.X),
                 AreaSelectorCursor.BoxUpperHeight - AreaSelectorCursor.BoxBottomHeight,
                 (float)Math.Abs(max.Z - min.Z));
-            Init(centerPos, size);
+            Init(centerPosTmp, sizeTmp);
             MeshCode = meshCode;
         }
 
@@ -62,8 +62,8 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         {
             #if UNITY_EDITOR
             // 追加でボックスの中心にクロスヘア（十字マーク）を描きます。
-            var center = CenterPos;
-            var crossHairLength = Size * crossHairSizeMultiplier;
+            var center = centerPos;
+            var crossHairLength = size * crossHairSizeMultiplier;
             Gizmos.DrawLine(
                 center + Vector3.left    *  crossHairLength.x * 0.5f,
                 center + Vector3.right   * crossHairLength.x * 0.5f);

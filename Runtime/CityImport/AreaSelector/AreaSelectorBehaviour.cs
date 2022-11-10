@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using Codice.CM.Common;
 using PLATEAU.CityImport.AreaSelector.SceneObjs;
 using PLATEAU.Geometries;
 using PLATEAU.Interop;
@@ -21,8 +22,8 @@ namespace PLATEAU.CityImport.AreaSelector
     {
         [SerializeField] private string prevScenePath;
         [SerializeField] private string dataSourcePath;
-        private AreaSelectorCursor cursor;
-        private MeshCodeGizmosDrawer gizmosDrawer;
+        // private AreaSelectorCursor cursor;
+        private AreaSelectGizmosDrawer gizmosDrawer;
         private IAreaSelectResultReceiver areaSelectResultReceiver;
         private PredefinedCityModelPackage availablePackageFlags;
         private int coordinateZoneID;
@@ -51,10 +52,10 @@ namespace PLATEAU.CityImport.AreaSelector
             AreaSelectorGUI.Enable(this);
             // TODO タプルで戻るのは分かりにくいのでは
             var gatherResult = GatherMeshCodesInGMLDirectory(this.dataSourcePath);
-            var drawerObj = new GameObject($"{nameof(MeshCodeGizmosDrawer)}");
-            this.gizmosDrawer = drawerObj.AddComponent<MeshCodeGizmosDrawer>();
-            this.cursor = new AreaSelectorCursor();
-            this.gizmosDrawer.Init(gatherResult.meshCodes, this.coordinateZoneID, out this.geoReference, this.cursor);
+            var drawerObj = new GameObject($"{nameof(AreaSelectGizmosDrawer)}");
+            this.gizmosDrawer = drawerObj.AddComponent<AreaSelectGizmosDrawer>();
+            // this.cursor = new AreaSelectorCursor();
+            this.gizmosDrawer.Init(gatherResult.meshCodes, this.coordinateZoneID, out this.geoReference);
             this.availablePackageFlags = gatherResult.availablePackageFlags;
             var entireExtent = CalcExtentCoversAllMeshCodes(gatherResult.meshCodes);
             this.mapLoader = new GSIMapLoaderZoomSwitch(this.geoReference, entireExtent);
@@ -63,11 +64,11 @@ namespace PLATEAU.CityImport.AreaSelector
         private void Update()
         {
             // カーソルの選択範囲に応じてメッシュコードのギズモの色を変えます。
-            if (this.cursor == null)
-            {
-                Debug.LogError($"{nameof(AreaSelectorCursor)} is null.");
-                return;
-            }
+            // if (this.cursor == null)
+            // {
+            //     Debug.LogError($"{nameof(AreaSelectorCursor)} is null.");
+            //     return;
+            // }
             
             
             // カメラを下に向けます。
@@ -125,7 +126,8 @@ namespace PLATEAU.CityImport.AreaSelector
         {
             AreaSelectorGUI.Disable();
             var areaSelectResult = this.gizmosDrawer.SelectedMeshCodes;
-            var selectedExtent = this.cursor.GetExtent(this.coordinateZoneID, this.geoReference.ReferencePoint);
+            // var selectedExtent = this.cursor.GetExtent(this.coordinateZoneID, this.geoReference.ReferencePoint);
+            var selectedExtent = this.gizmosDrawer.CursorExtent(this.coordinateZoneID, this.geoReference.ReferencePoint);
             // 無名関数のキャプチャを利用して、シーン終了後も必要なデータが渡るようにします。
             AreaSelectorDataPass.Exec(this.prevScenePath, areaSelectResult, this.areaSelectResultReceiver, this.availablePackageFlags, selectedExtent);
         }

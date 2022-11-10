@@ -8,7 +8,6 @@ using Vector3 = UnityEngine.Vector3;
 
 namespace PLATEAU.CityImport.AreaSelector.SceneObjs
 {
-    [ExecuteInEditMode]
     internal class AreaSelectorCursor : BoxGizmoDrawer
     {
 
@@ -18,8 +17,6 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         public const float BoxCenterHeight = (BoxUpperHeight + BoxBottomHeight) / 2.0f;
         private const float boxSizeY = BoxUpperHeight - BoxBottomHeight;
         private const float slider2DHandleSize = 0.35f;
-        private Vector3 centerPos;
-        private Vector3 size;
 
         /// <summary>
         /// 引数である候補のうち、カーソルと重なる箇所のあるものをリストで返します。
@@ -34,6 +31,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
                     selected.Add(candidate);
                 }
             }
+            Debug.Log($"selected count: {selected.Count}/{candidates.Count}, center={this.centerPos}, size={this.size}");
 
             return selected;
         }
@@ -85,7 +83,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         //     Handles.color = prevColor;
         // }
 
-        public void Draw()
+        public void DrawAndUpdate()
         {
             var prevColor = Handles.color;
             Handles.color = this.cursorColor;

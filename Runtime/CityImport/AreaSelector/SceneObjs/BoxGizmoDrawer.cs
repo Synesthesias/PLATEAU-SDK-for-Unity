@@ -9,16 +9,16 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
     /// </summary>
     internal class BoxGizmoDrawer
     {
-        protected Vector3 CenterPos { get; set; }
-        protected Vector3 Size { get; set; }
+        protected Vector3 centerPos;
+        protected Vector3 size;
         public Color BoxColor { get; set; } = Color.white;
         public float LineWidth { get; set; } = 1f;
         protected virtual float SizeMultiplier => 1f;
 
-        public void Init(Vector3 centerPos, Vector3 size)
+        public void Init(Vector3 centerPosArg, Vector3 sizeArg)
         {
-            CenterPos = centerPos;
-            Size = size;
+            centerPos = centerPosArg;
+            size = sizeArg;
         }
         
 
@@ -28,8 +28,8 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
             var prevColor = Gizmos.color;
             Gizmos.color = this.BoxColor;
             // Gizmos.DrawWireCube(centerPos, size);
-            var max = AreaMax(CenterPos, Size);
-            var min = AreaMin(CenterPos, Size);
+            var max = AreaMax(centerPos, size);
+            var min = AreaMin(centerPos, size);
             var p1 = new Vector3(min.x, max.y, min.z);
             var p2 = new Vector3(min.x, max.y, max.z);
             var p3 = new Vector3(max.x, max.y, max.z);
@@ -64,14 +64,14 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         /// <summary>
         /// Y軸の値は無視して、XとZの値で箱同士が重なる箇所があるかどうかを bool で返します。
         /// </summary>
-        public bool IsBoxIntersectXZ(BoxGizmoDrawer other)
+        public bool IsBoxIntersectXZ(MeshCodeGizmoDrawer other)
         {
-            var otherPos = other.CenterPos;
-            var otherSize = other.Size;
+            var otherPos = other.centerPos;
+            var otherSize = other.size;
 
             return
-                Math.Abs(CenterPos.x - otherPos.x) <= (Math.Abs(Size.x) + Math.Abs(otherSize.x)) * 0.5 &&
-                Math.Abs(CenterPos.z - otherPos.z) <= (Math.Abs(Size.z) + Math.Abs(otherSize.z)) * 0.5;
+                Math.Abs(centerPos.x - otherPos.x) <= (Math.Abs(size.x) + Math.Abs(otherSize.x)) * 0.5 &&
+                Math.Abs(centerPos.z - otherPos.z) <= (Math.Abs(size.z) + Math.Abs(otherSize.z)) * 0.5;
         }
 
 
