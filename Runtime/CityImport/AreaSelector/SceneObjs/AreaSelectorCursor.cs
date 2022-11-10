@@ -23,8 +23,8 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
 
         public AreaSelectorCursor()
         {
-            this.centerPos = new Vector3(0, BoxCenterHeight, 0);
-            this.size = new Vector3(1000, boxSizeY, 1000);
+            this.CenterPos = new Vector3(0, BoxCenterHeight, 0);
+            this.Size = new Vector3(1000, boxSizeY, 1000);
             LineWidth = lineWidth;
             BoxColor = selectRectangleColor;
         }
@@ -68,8 +68,8 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
             var prevColor = Handles.color;
             Handles.color = handleColor;
 
-            this.centerPos = CenterPointHandle(this.centerPos);
-            CornerPointHandle(this.centerPos, this.size, out this.centerPos, out this.size);
+            this.CenterPos = CenterPointHandle(this.CenterPos);
+            CornerPointHandle(this.CenterPos, this.Size, out this.CenterPos, out this.Size);
 
             Handles.color = prevColor;
         }
@@ -150,7 +150,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
 
         private (Vector3 min, Vector3 max) CalcMinMaxFromTrans()
         {
-            return (this.centerPos - this.size * 0.5f, this.centerPos + this.size * 0.5f);
+            return (this.CenterPos - this.Size * 0.5f, this.CenterPos + this.Size * 0.5f);
         }
 
         private static (Vector3 min, Vector3 max) SwapMinMaxIfReversed(Vector3 min, Vector3 max)

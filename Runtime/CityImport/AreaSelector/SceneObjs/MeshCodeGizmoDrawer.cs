@@ -61,8 +61,8 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         {
             #if UNITY_EDITOR
             // 追加でボックスの中心にクロスヘア（十字マーク）を描きます。
-            var center = centerPos;
-            var crossHairLength = size * crossHairSizeMultiplier;
+            var center = this.CenterPos;
+            var crossHairLength = this.Size * crossHairSizeMultiplier;
             Gizmos.DrawLine(
                 center + Vector3.left    *  crossHairLength.x * 0.5f,
                 center + Vector3.right   * crossHairLength.x * 0.5f);

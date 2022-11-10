@@ -7,12 +7,13 @@ using PLATEAU.Udx;
 using PLATEAU.Util;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace PLATEAU.CityImport.AreaSelector.SceneObjs
 {
     internal class AreaSelectGizmosDrawer : HandlesBase
     {
-        private List<MeshCodeGizmoDrawer> drawers = new List<MeshCodeGizmoDrawer>();
+        private readonly List<MeshCodeGizmoDrawer> meshCodeDrawers = new List<MeshCodeGizmoDrawer>();
         private AreaSelectorCursor cursor;
         
         
@@ -50,7 +51,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
             {
                 var drawer = new MeshCodeGizmoDrawer();
                 drawer.SetUp(meshCode, geoReference, gizmoParent);
-                this.drawers.Add(drawer);
+                this.meshCodeDrawers.Add(drawer);
             }
 #if UNITY_EDITOR
             EditorUtility.ClearProgressBar();
@@ -60,7 +61,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         public IEnumerable<MeshCode> SelectedMeshCodes {
             get
             {
-                return this.cursor.SelectedMeshCodes(this.drawers)
+                return this.cursor.SelectedMeshCodes(this.meshCodeDrawers)
                     .Select(drawer => drawer.MeshCode);
             }
         }
@@ -77,11 +78,17 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
 
         private void OnDrawGizmos()
         {
-            foreach (var box in this.drawers) box.ApplyStyle(false);
-            var selected = this.cursor.SelectedMeshCodes(this.drawers);
-            foreach (var select in selected) select.ApplyStyle(true);
+            foreach (var mcDrawer in this.meshCodeDrawers)
+            {
+                mcDrawer.ApplyStyle(false);
+            }
+            var selected = this.cursor.SelectedMeshCodes(this.meshCodeDrawers);
+            foreach (var select in selected)
+            {
+                select.ApplyStyle(true);
+            }
             
-            foreach(var drawer in this.drawers) drawer.DrawGizmos();
+            foreach(var drawer in this.meshCodeDrawers) drawer.DrawGizmos();
             this.cursor.DrawGizmos();
         }
     }
