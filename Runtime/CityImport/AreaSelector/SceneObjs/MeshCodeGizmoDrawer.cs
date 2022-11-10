@@ -11,8 +11,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
     internal class MeshCodeGizmoDrawer : BoxGizmoDrawer
     {
         public MeshCode MeshCode { get; set; }
-
-        protected override float SizeMultiplier => 1f;
+        
         private const float crossHairSizeMultiplier = 0.2f;
         
         private static readonly Color boxColorNormalLevel2 = new Color(0f, 0f, 0f);

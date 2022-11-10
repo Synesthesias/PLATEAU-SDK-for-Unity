@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using Codice.CM.Common;
 using PLATEAU.CityImport.AreaSelector.SceneObjs;
 using PLATEAU.Geometries;
 using PLATEAU.Interop;
@@ -61,14 +60,6 @@ namespace PLATEAU.CityImport.AreaSelector
 
         private void Update()
         {
-            // カーソルの選択範囲に応じてメッシュコードのギズモの色を変えます。
-            // if (this.cursor == null)
-            // {
-            //     Debug.LogError($"{nameof(AreaSelectorCursor)} is null.");
-            //     return;
-            // }
-            
-            
             // カメラを下に向けます。
             RotateSceneViewCameraDown();
             
@@ -81,7 +72,7 @@ namespace PLATEAU.CityImport.AreaSelector
         {
 #if UNITY_EDITOR
             SceneView.lastActiveSceneView.isRotationLocked = this.prevSceneCameraRotationLocked;
-            #endif
+#endif
             this.mapLoader.Dispose();
         }
 
@@ -124,7 +115,6 @@ namespace PLATEAU.CityImport.AreaSelector
         {
             AreaSelectorGUI.Disable();
             var areaSelectResult = this.gizmosDrawer.SelectedMeshCodes;
-            // var selectedExtent = this.cursor.GetExtent(this.coordinateZoneID, this.geoReference.ReferencePoint);
             var selectedExtent = this.gizmosDrawer.CursorExtent(this.coordinateZoneID, this.geoReference.ReferencePoint);
             // 無名関数のキャプチャを利用して、シーン終了後も必要なデータが渡るようにします。
             AreaSelectorDataPass.Exec(this.prevScenePath, areaSelectResult, this.areaSelectResultReceiver, this.availablePackageFlags, selectedExtent);

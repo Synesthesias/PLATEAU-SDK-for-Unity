@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using Codice.CM.Common;
 using PLATEAU.Geometries;
 using PLATEAU.Interop;
 using PLATEAU.Udx;
@@ -19,7 +17,8 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         
         
         /// <summary>
-        /// メッシュコードのリストを受け取り、メッシュコード1つにつき1つのギズモ描画オブジェクトを生成します。
+        /// 範囲選択に関するギズモを表示する MonoBehaviour です。
+        /// 地域メッシュコードと、範囲選択カーソルを保持して表示します。
         /// </summary>
         public void Init(
             ReadOnlyCollection<MeshCode> meshCodes,
@@ -49,8 +48,6 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
             var gizmoParent = new GameObject("MeshCodeGizmos").transform;
             foreach (var meshCode in meshCodes)
             {
-                // var gizmoObj = new GameObject($"{meshCode}");
-                // var drawer = gizmoObj.AddComponent<MeshCodeGizmoDrawer>();
                 var drawer = new MeshCodeGizmoDrawer();
                 drawer.SetUp(meshCode, geoReference, gizmoParent);
                 this.drawers.Add(drawer);
@@ -75,7 +72,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
 
         protected override void OnSceneGUI(SceneView sceneView)
         {
-            this.cursor.DrawAndUpdate();
+            this.cursor.DrawSceneGUI();
         }
 
         private void OnDrawGizmos()
@@ -83,7 +80,9 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
             foreach (var box in this.drawers) box.ApplyStyle(false);
             var selected = this.cursor.SelectedMeshCodes(this.drawers);
             foreach (var select in selected) select.ApplyStyle(true);
-            foreach(var drawer in this.drawers) drawer.Draw();
+            
+            foreach(var drawer in this.drawers) drawer.DrawGizmos();
+            this.cursor.DrawGizmos();
         }
     }
 }

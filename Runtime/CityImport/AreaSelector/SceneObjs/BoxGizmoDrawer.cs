@@ -1,5 +1,4 @@
 ﻿using System;
-using UnityEditor;
 using UnityEngine;
 
 namespace PLATEAU.CityImport.AreaSelector.SceneObjs
@@ -13,7 +12,6 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         protected Vector3 size;
         public Color BoxColor { get; set; } = Color.white;
         public float LineWidth { get; set; } = 1f;
-        protected virtual float SizeMultiplier => 1f;
 
         public void Init(Vector3 centerPosArg, Vector3 sizeArg)
         {
@@ -22,12 +20,11 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         }
         
 
-        public void Draw()
+        public virtual void DrawGizmos()
         {
 #if UNITY_EDITOR
             var prevColor = Gizmos.color;
             Gizmos.color = this.BoxColor;
-            // Gizmos.DrawWireCube(centerPos, size);
             var max = AreaMax(centerPos, size);
             var min = AreaMin(centerPos, size);
             var p1 = new Vector3(min.x, max.y, min.z);
@@ -41,6 +38,11 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
             AdditionalGizmo();
             Gizmos.color = prevColor;
 #endif
+        }
+
+        public virtual void DrawSceneGUI()
+        {
+            
         }
 
         /// <summary>

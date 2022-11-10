@@ -91,7 +91,7 @@ namespace PLATEAU.CityImport.Load.Convert
             }
 #endif
 
-            Debug.Log("Load complete!");
+            Debug.Log("Gml model placed.");
             return true;
         }
 

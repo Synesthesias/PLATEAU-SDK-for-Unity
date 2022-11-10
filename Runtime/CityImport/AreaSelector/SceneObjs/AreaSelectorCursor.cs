@@ -12,11 +12,20 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
     {
 
         private readonly Color cursorColor = Color.blue;
+        // TODO boxに bottomHeight と upperHeight があるのは、ギズモが箱型だったときの名残。今は二次元的な四角形なので高さは1つで良い。
         public const float BoxUpperHeight = 30f; // なんとなく見やすそうな高さ
         public const float BoxBottomHeight = 1f; // カーソルの線が地面と重なって隠れない程度の高さ
         public const float BoxCenterHeight = (BoxUpperHeight + BoxBottomHeight) / 2.0f;
         private const float boxSizeY = BoxUpperHeight - BoxBottomHeight;
         private const float slider2DHandleSize = 0.35f;
+        private const float lineWidth = 2;
+
+        public AreaSelectorCursor()
+        {
+            this.centerPos = new Vector3(0, BoxCenterHeight, 0);
+            this.size = new Vector3(1000, boxSizeY, 1000);
+            LineWidth = lineWidth;
+        }
 
         /// <summary>
         /// 引数である候補のうち、カーソルと重なる箇所のあるものをリストで返します。
@@ -31,7 +40,6 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
                     selected.Add(candidate);
                 }
             }
-
             return selected;
         }
 
@@ -46,43 +54,14 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
             return extent;
         }
 
-        private void Init()
+#if UNITY_EDITOR
+
+        public override void DrawGizmos()
         {
-            // EnableHandles();
-            // var trans = transform;
-            // var prevPos = trans.position;
-            this.centerPos = new Vector3(0, BoxCenterHeight, 0);
-            // trans.position = nextPos;
-            
-            // var prevLocalScale = trans.lossyScale;
-            // var nextLocalScale = new Vector3(prevLocalScale.x, boxSizeY, prevLocalScale.z);
-            // trans.localScale = nextLocalScale;
-            this.size = new Vector3(1000, boxSizeY, 1000);
+            base.DrawGizmos();
         }
-        
 
-        // private void OnDestroy()
-        // {
-        //     DisableHandles();
-        // }
-
-
-        #if UNITY_EDITOR
-        
-
-        // protected override void OnSceneGUI(SceneView _)
-        // {
-        //     var prevColor = Handles.color;
-        //     Handles.color = this.cursorColor;
-        //     var trans = transform;
-        //     
-        //     CenterPointHandle(trans);
-        //     CornerPointHandle(trans);
-        //     
-        //     Handles.color = prevColor;
-        // }
-
-        public void DrawAndUpdate()
+        public override void DrawSceneGUI()
         {
             var prevColor = Handles.color;
             Handles.color = this.cursorColor;
@@ -160,7 +139,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
             );
         }
 
-        #endif
+#endif
 
         private static (Vector3 center, Vector3 size) CalcTransFromArea(Vector3 areaMax, Vector3 areaMin)
         {
