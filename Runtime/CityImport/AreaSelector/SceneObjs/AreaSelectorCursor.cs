@@ -10,8 +10,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
 {
     internal class AreaSelectorCursor : BoxGizmoDrawer
     {
-
-        private readonly Color cursorColor = Color.blue;
+        
         // TODO boxに bottomHeight と upperHeight があるのは、ギズモが箱型だったときの名残。今は二次元的な四角形なので高さは1つで良い。
         public const float BoxUpperHeight = 30f; // なんとなく見やすそうな高さ
         public const float BoxBottomHeight = 1f; // カーソルの線が地面と重なって隠れない程度の高さ
@@ -19,12 +18,15 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         private const float boxSizeY = BoxUpperHeight - BoxBottomHeight;
         private const float slider2DHandleSize = 0.35f;
         private const float lineWidth = 2;
+        private static readonly Color handleColor = new Color(1f, 72f / 255f, 0f);
+        private static readonly Color selectRectangleColor = new Color(1f, 72f / 255f, 0f);
 
         public AreaSelectorCursor()
         {
             this.centerPos = new Vector3(0, BoxCenterHeight, 0);
             this.size = new Vector3(1000, boxSizeY, 1000);
             LineWidth = lineWidth;
+            BoxColor = selectRectangleColor;
         }
 
         /// <summary>
@@ -64,7 +66,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         public override void DrawSceneGUI()
         {
             var prevColor = Handles.color;
-            Handles.color = this.cursorColor;
+            Handles.color = handleColor;
 
             this.centerPos = CenterPointHandle(this.centerPos);
             CornerPointHandle(this.centerPos, this.size, out this.centerPos, out this.size);
@@ -94,8 +96,6 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
 
         private static void CornerPointHandle(Vector3 centerPos, Vector3 size, out Vector3 nextCenterPos, out Vector3 nextSize)
         {
-            // var pos = trans.position;
-            // var size = trans.localScale;
             var prevPosMax = AreaMax(centerPos, size);
             var prevPosMin = AreaMin(centerPos, size);
             
