@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using PLATEAU.CityImport.AreaSelector.SceneObjs;
 using PLATEAU.Geometries;
 using PLATEAU.Interop;
 using PLATEAU.Udx;
-using PLATEAU.Util;
 using UnityEngine;
 
 #if UNITY_EDITOR
@@ -32,8 +30,7 @@ namespace PLATEAU.CityImport.AreaSelector
         private GeoReference geoReference;
         private bool prevSceneCameraRotationLocked;
         private GSIMapLoaderZoomSwitch mapLoader;
-        private static readonly Color AreaGizmoBoxColorNormal = new Color(0f, 84f / 255f, 1f);
-        private static readonly Color AreaGizmoBoxColorSelected = new Color(1f, 162f / 255f, 62f / 255f);
+        
 
         public static bool IsAreaSelectEnabled { get; set; }
 
@@ -55,7 +52,7 @@ namespace PLATEAU.CityImport.AreaSelector
             AreaSelectorGUI.Enable(this);
             // TODO タプルで戻るのは分かりにくいのでは
             var gatherResult = GatherMeshCodesInGMLDirectory(this.dataSourcePath);
-            PlaceMeshCodeDrawers(gatherResult.meshCodes, this.meshCodeDrawers, this.coordinateZoneID, out this.geoReference);
+            MeshCodeGizmoDrawer.PlaceMeshCodeDrawers(gatherResult.meshCodes, this.meshCodeDrawers, this.coordinateZoneID, out this.geoReference);
             this.availablePackageFlags = gatherResult.availablePackageFlags;
             var entireExtent = CalcExtentCoversAllMeshCodes(gatherResult.meshCodes);
             this.mapLoader = new GSIMapLoaderZoomSwitch(this.geoReference, entireExtent);
@@ -69,9 +66,9 @@ namespace PLATEAU.CityImport.AreaSelector
                 Debug.LogError($"{nameof(AreaSelectorCursor)} is null.");
                 return;
             }
-            foreach (var box in this.meshCodeDrawers) box.BoxColor = AreaGizmoBoxColorNormal;
+            foreach (var box in this.meshCodeDrawers) box.ApplyStyle(false);
             var selected = this.cursor.SelectedMeshCodes(this.meshCodeDrawers);
-            foreach (var select in selected) select.BoxColor = AreaGizmoBoxColorSelected;
+            foreach (var select in selected) select.ApplyStyle(true);
             
             // カメラを下に向けます。
             RotateSceneViewCameraDown();
@@ -122,58 +119,7 @@ namespace PLATEAU.CityImport.AreaSelector
             return (meshCodes, availablePackageFlags);
         }
 
-        private static void PlaceMeshCodeDrawers(
-            ReadOnlyCollection<MeshCode> meshCodes, ICollection<MeshCodeGizmoDrawer> boxGizmoDrawers,
-            int coordinateZoneID, out GeoReference geoReference)
-        {
-            #if UNITY_EDITOR
-            EditorUtility.DisplayProgressBar("", "範囲座標を計算中です...", 0.5f);
-            #endif
-            // 仮に (0,0,0) を referencePoint とする geoReference を作成
-            using var geoReferenceTmp = CoordinatesConvertUtil.UnityStandardGeoReference(coordinateZoneID);
-            // 中心を計算し、そこを基準点として geoReference を再設定します。
-            var referencePoint = new PlateauVector3d(0, 0, 0);
-            
-            foreach (var meshCode in meshCodes)
-            {
-                var geoMin = meshCode.Extent.Min;
-                var geoMax = meshCode.Extent.Max;
-                var min = geoReferenceTmp.Project(geoMin);
-                var max = geoReferenceTmp.Project(geoMax);
-                var center = (min + max) * 0.5;
-                referencePoint += center;
-            }
-            referencePoint /= meshCodes.Count;
-            referencePoint.Y = 0;
-            geoReference = new GeoReference(referencePoint, 1f, CoordinateSystem.EUN, coordinateZoneID);
-            var gizmoParent = new GameObject("MeshCodeGizmos").transform;
-            foreach (var meshCode in meshCodes)
-            {
-                var gizmoObj = new GameObject($"{meshCode}");
-                var extent = meshCode.Extent; // extent は緯度,経度,高さ
-                // min, max は xyz の平面直行座標系に変換したもの
-                var min = geoReference.Project(extent.Min);
-                var max = geoReference.Project(extent.Max);
-                var center = new Vector3(
-                    (float)(min.X + max.X) / 2.0f,
-                    AreaSelectorCursor.BoxCenterHeight,
-                    (float)(min.Z + max.Z) / 2.0f);
-                var size = new Vector3(
-                    (float)Math.Abs(max.X - min.X),
-                    AreaSelectorCursor.BoxUpperHeight - AreaSelectorCursor.BoxBottomHeight,
-                    (float)Math.Abs(max.Z - min.Z));
-                var gizmoTrans = gizmoObj.transform;
-                gizmoTrans.position = center;
-                gizmoTrans.localScale = size;
-                gizmoTrans.parent = gizmoParent;
-                var drawer = gizmoObj.AddComponent<MeshCodeGizmoDrawer>();
-                drawer.MeshCode = meshCode;
-                boxGizmoDrawers.Add(drawer);
-            }
-            #if UNITY_EDITOR
-            EditorUtility.ClearProgressBar();
-            #endif
-        }
+        
 
         private void EndAreaSelection()
         {

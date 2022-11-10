@@ -10,7 +10,9 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
     internal class BoxGizmoDrawer : HandlesBase
     {
         public Color BoxColor { get; set; } = Color.white;
+        public float LineWidth { get; set; } = 1f;
         protected virtual float SizeMultiplier => 1f;
+        
         
 #if UNITY_EDITOR
         private void OnDrawGizmos()
@@ -20,7 +22,17 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
             var trans = transform;
             var centerPos = trans.position;
             var size = trans.localScale * SizeMultiplier;
-            Gizmos.DrawWireCube(centerPos, size);
+            // Gizmos.DrawWireCube(centerPos, size);
+            var max = AreaMax(centerPos, size);
+            var min = AreaMin(centerPos, size);
+            var p1 = new Vector3(min.x, max.y, min.z);
+            var p2 = new Vector3(min.x, max.y, max.z);
+            var p3 = new Vector3(max.x, max.y, max.z);
+            var p4 = new Vector3(max.x, max.y, min.z);
+            DrawThickLine(p1, p2, LineWidth);
+            DrawThickLine(p2, p3, LineWidth);
+            DrawThickLine(p3, p4, LineWidth);
+            DrawThickLine(p4, p1, LineWidth);
             AdditionalGizmo();
             Gizmos.color = prevColor;
         }
@@ -41,12 +53,12 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         }
         #endif
         
-        public static Vector3 AreaMax(Vector3 center, Vector3 size)
+        protected static Vector3 AreaMax(Vector3 center, Vector3 size)
         {
             return center + size / 2.0f;
         }
 
-        public static Vector3 AreaMin(Vector3 center, Vector3 size)
+        protected static Vector3 AreaMin(Vector3 center, Vector3 size)
         {
             return center - size / 2.0f;
         }
@@ -67,6 +79,42 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
             return
                 Math.Abs(pos.x - otherPos.x) <= (Math.Abs(size.x) + Math.Abs(otherSize.x)) * 0.5 &&
                 Math.Abs(pos.z - otherPos.z) <= (Math.Abs(size.z) + Math.Abs(otherSize.z)) * 0.5;
+        }
+
+
+        /// <summary>
+        /// 太さのある線を描画します。
+        /// 参考 : <see href="http://answers.unity.com/answers/1614973/view.html"/>
+        /// </summary>
+        private void DrawThickLine(Vector3 p1, Vector3 p2, float width)
+        {
+            int count = 1 + Mathf.CeilToInt(width); // 必要な線の数
+            if (count == 1)
+            {
+                Gizmos.DrawLine(p1, p2);
+            }
+            else
+            {
+                Camera c = Camera.current;
+                if (c == null)
+                {
+                    Debug.LogError("Camera.current is null");
+                    return;
+                }
+                var scp1 = c.WorldToScreenPoint(p1);
+                var scp2 = c.WorldToScreenPoint(p2);
+ 
+                Vector3 v1 = (scp2 - scp1).normalized; // 線の方向
+                Vector3 n = Vector3.Cross(v1, Vector3.forward); // 法線ベクトル
+ 
+                for (int i = 0; i < count; i++)
+                {
+                    Vector3 o = 0.99f * n * width * ((float)i / (count - 1) - 0.5f);
+                    Vector3 origin = c.ScreenToWorldPoint(scp1 + o);
+                    Vector3 destiny = c.ScreenToWorldPoint(scp2 + o);
+                    Gizmos.DrawLine(origin, destiny);
+                }
+            }
         }
     }
 }
