@@ -10,6 +10,8 @@ using PLATEAU.Util.Async;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Assertions;
+using UnityEngine.Rendering;
+using RenderSettings = UnityEditor.Experimental.RenderSettings;
 
 namespace PLATEAU.CityImport.AreaSelector.SceneObjs
 {
@@ -20,7 +22,9 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
     {
         private static readonly string mapDownloadDest =
             Path.GetFullPath(Path.Combine(Application.temporaryCachePath, "GSIMapImages"));
-        private const string mapMaterialPath = "Packages/com.synesthesias.plateau-unity-sdk/Materials/MapUnlitMaterial.mat";
+        private const string mapMaterialDir = "Packages/com.synesthesias.plateau-unity-sdk/Materials";
+        private const string mapMaterialNameBuiltInRP = "MapUnlitMaterial_BuiltInRP.mat";
+        private const string mapMaterialNameURP = "MapUnlitMaterial_URP.mat";
         private const int timeOutSec = 10;
         public const string MapRootObjName = "GSIMaps";
         
@@ -99,17 +103,37 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
             return true;
         }
 
+        private static Material LoadMapMaterial()
+        {
+            string matFileName;
+            var pipelineAsset = GraphicsSettings.renderPipelineAsset;
+            if (pipelineAsset == null)
+            {
+                matFileName = mapMaterialNameBuiltInRP;
+            }
+            else
+            {
+                var pipelineName = pipelineAsset.GetType().Name;
+                matFileName = pipelineName switch
+                {
+                    "UniversalRenderPipelineAsset" => mapMaterialNameURP,
+                    _ => throw new InvalidDataException("Unknown material for pipeline.")
+                };
+            }
+
+            string matFilePath = Path.Combine(mapMaterialDir, matFileName);
+            var material = AssetDatabase.LoadAssetAtPath<Material>(matFilePath);
+            return material;
+        }
+
         private static async Task PlaceAsGameObj(MapTile mapTile, GeoReference geoReference, Transform parentTrans, string mapObjName, List<Material> generatedMaterials)
         {
             if (parentTrans.Find(mapObjName) != null)
             {   // すでに配置済みのケース
                 return;
             }
-            var mapMaterial = AssetDatabase.LoadAssetAtPath<Material>(mapMaterialPath);
-            if (mapMaterial == null)
-            {
-                Debug.LogError("Could not find material for map.");
-            }
+
+            var mapMaterial = LoadMapMaterial();
             
             // ダウンロードしたテクスチャファイルをロードします。
             var texture = await TextureLoader.LoadAsync(mapTile.Path, timeOutSec);

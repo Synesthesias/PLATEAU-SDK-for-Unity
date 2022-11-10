@@ -80,7 +80,7 @@ namespace PLATEAU.CityImport.Load
                 try
                 {
                     // ここはメインスレッドで呼ぶ必要があります。
-                    await ImportGml(gmlInfo, destPath, config, collection, rootTrans, progressDisplay, referencePoint);
+                    await ImportGml(gmlInfo, destPath, config, rootTrans, progressDisplay, referencePoint);
                 }
                 catch (Exception e)
                 {
@@ -102,9 +102,8 @@ namespace PLATEAU.CityImport.Load
         /// GMLファイルを1つインポートします。
         /// メインスレッドで呼ぶ必要があります。
         /// </summary>
-        private static async Task ImportGml(
-            GmlFileInfo gmlInfo, string destPath, CityLoadConfig conf,
-            UdxFileCollection collection, Transform rootTrans, IProgressDisplay progressDisplay,
+        private static async Task ImportGml(GmlFileInfo gmlInfo, string destPath, CityLoadConfig conf,
+            Transform rootTrans, IProgressDisplay progressDisplay,
             PlateauVector3d referencePoint)
         {
             string gmlName = Path.GetFileName(gmlInfo.Path);
