@@ -17,7 +17,7 @@ namespace PLATEAU.CityImport.Setting
         public MeshGranularity meshGranularity;
         public bool doSetMeshCollider;
         /// <summary> GUIで設定を表示する(true)か、折りたたむ(false)か </summary>
-        [NonSerialized] public bool GuiFoldOutState = true; 
+        [NonSerialized] public bool GuiFoldOutState = true;
 
         public PackageLoadSetting(bool loadPackage, bool includeTexture, uint minLOD, uint maxLOD, MeshGranularity meshGranularity, bool doSetMeshCollider)
         {
