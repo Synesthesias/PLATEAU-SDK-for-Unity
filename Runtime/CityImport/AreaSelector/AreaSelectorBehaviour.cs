@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
 using PLATEAU.CityImport.AreaSelector.SceneObjs;
 using PLATEAU.Geometries;
 using PLATEAU.Interop;
@@ -23,7 +22,7 @@ namespace PLATEAU.CityImport.AreaSelector
         [SerializeField] private string prevScenePath;
         [SerializeField] private string dataSourcePath;
         [SerializeField] private AreaSelectorCursor cursor;
-        private readonly List<MeshCodeGizmoDrawer> meshCodeDrawers = new List<MeshCodeGizmoDrawer>();
+        private MeshCodeGizmosDrawer gizmosDrawer;
         private IAreaSelectResultReceiver areaSelectResultReceiver;
         private PredefinedCityModelPackage availablePackageFlags;
         private int coordinateZoneID;
@@ -52,7 +51,9 @@ namespace PLATEAU.CityImport.AreaSelector
             AreaSelectorGUI.Enable(this);
             // TODO タプルで戻るのは分かりにくいのでは
             var gatherResult = GatherMeshCodesInGMLDirectory(this.dataSourcePath);
-            MeshCodeGizmoDrawer.PlaceMeshCodeDrawers(gatherResult.meshCodes, this.meshCodeDrawers, this.coordinateZoneID, out this.geoReference);
+            var drawerObj = new GameObject($"{nameof(MeshCodeGizmosDrawer)}");
+            this.gizmosDrawer = drawerObj.AddComponent<MeshCodeGizmosDrawer>();
+            this.gizmosDrawer.Init(gatherResult.meshCodes, this.coordinateZoneID, out this.geoReference, this.cursor);
             this.availablePackageFlags = gatherResult.availablePackageFlags;
             var entireExtent = CalcExtentCoversAllMeshCodes(gatherResult.meshCodes);
             this.mapLoader = new GSIMapLoaderZoomSwitch(this.geoReference, entireExtent);
@@ -66,9 +67,7 @@ namespace PLATEAU.CityImport.AreaSelector
                 Debug.LogError($"{nameof(AreaSelectorCursor)} is null.");
                 return;
             }
-            foreach (var box in this.meshCodeDrawers) box.ApplyStyle(false);
-            var selected = this.cursor.SelectedMeshCodes(this.meshCodeDrawers);
-            foreach (var select in selected) select.ApplyStyle(true);
+            
             
             // カメラを下に向けます。
             RotateSceneViewCameraDown();
@@ -124,9 +123,7 @@ namespace PLATEAU.CityImport.AreaSelector
         private void EndAreaSelection()
         {
             AreaSelectorGUI.Disable();
-            var areaSelectResult = 
-                this.cursor.SelectedMeshCodes(this.meshCodeDrawers)
-                    .Select(drawer => drawer.MeshCode);
+            var areaSelectResult = this.gizmosDrawer.SelectedMeshCodes;
             var selectedExtent = this.cursor.GetExtent(this.coordinateZoneID, this.geoReference.ReferencePoint);
             // 無名関数のキャプチャを利用して、シーン終了後も必要なデータが渡るようにします。
             AreaSelectorDataPass.Exec(this.prevScenePath, areaSelectResult, this.areaSelectResultReceiver, this.availablePackageFlags, selectedExtent);

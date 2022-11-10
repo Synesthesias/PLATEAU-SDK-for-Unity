@@ -1,11 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using PLATEAU.Geometries;
-using PLATEAU.Interop;
 using PLATEAU.Udx;
-using PLATEAU.Util;
-using UnityEditor;
 using UnityEngine;
 
 namespace PLATEAU.CityImport.AreaSelector.SceneObjs
@@ -26,45 +21,6 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         private const int lineWidthLevel2 = 3;
         private const int lineWidthLevel3 = 2;
         
-        /// <summary>
-        /// メッシュコードのリストを受け取り、メッシュコード1つにつき1つのギズモ描画オブジェクトを生成します。
-        /// </summary>
-        public static void PlaceMeshCodeDrawers(
-            ReadOnlyCollection<MeshCode> meshCodes, ICollection<MeshCodeGizmoDrawer> boxGizmoDrawers,
-            int coordinateZoneID, out GeoReference geoReference)
-        {
-#if UNITY_EDITOR
-            EditorUtility.DisplayProgressBar("", "範囲座標を計算中です...", 0.5f);
-#endif
-            // 仮に (0,0,0) を referencePoint とする geoReference を作成
-            using var geoReferenceTmp = CoordinatesConvertUtil.UnityStandardGeoReference(coordinateZoneID);
-            // 中心を計算し、そこを基準点として geoReference を再設定します。
-            var referencePoint = new PlateauVector3d(0, 0, 0);
-            
-            foreach (var meshCode in meshCodes)
-            {
-                var geoMin = meshCode.Extent.Min;
-                var geoMax = meshCode.Extent.Max;
-                var min = geoReferenceTmp.Project(geoMin);
-                var max = geoReferenceTmp.Project(geoMax);
-                var center = (min + max) * 0.5;
-                referencePoint += center;
-            }
-            referencePoint /= meshCodes.Count;
-            referencePoint.Y = 0;
-            geoReference = new GeoReference(referencePoint, 1f, CoordinateSystem.EUN, coordinateZoneID);
-            var gizmoParent = new GameObject("MeshCodeGizmos").transform;
-            foreach (var meshCode in meshCodes)
-            {
-                var gizmoObj = new GameObject($"{meshCode}");
-                var drawer = gizmoObj.AddComponent<MeshCodeGizmoDrawer>();
-                drawer.SetUp(meshCode, geoReference, gizmoParent);
-                boxGizmoDrawers.Add(drawer);
-            }
-#if UNITY_EDITOR
-            EditorUtility.ClearProgressBar();
-#endif
-        }
 
         /// <summary>
         /// メッシュコードに対応したギズモを表示するようにします。
