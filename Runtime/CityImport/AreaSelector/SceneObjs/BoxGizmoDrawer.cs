@@ -5,26 +5,31 @@ using UnityEngine;
 namespace PLATEAU.CityImport.AreaSelector.SceneObjs
 {
     /// <summary>
-    /// 自身の transform に応じた箱型のギズモを表示します。
+    /// 箱型のギズモを表示します。
     /// </summary>
-    internal class BoxGizmoDrawer : HandlesBase
+    internal class BoxGizmoDrawer
     {
+        protected Vector3 CenterPos { get; set; }
+        protected Vector3 Size { get; set; }
         public Color BoxColor { get; set; } = Color.white;
         public float LineWidth { get; set; } = 1f;
         protected virtual float SizeMultiplier => 1f;
-        
-        
-#if UNITY_EDITOR
-        private void OnDrawGizmos()
+
+        public void Init(Vector3 centerPos, Vector3 size)
         {
+            CenterPos = centerPos;
+            Size = size;
+        }
+        
+
+        public void Draw()
+        {
+#if UNITY_EDITOR
             var prevColor = Gizmos.color;
             Gizmos.color = this.BoxColor;
-            var trans = transform;
-            var centerPos = trans.position;
-            var size = trans.localScale * SizeMultiplier;
             // Gizmos.DrawWireCube(centerPos, size);
-            var max = AreaMax(centerPos, size);
-            var min = AreaMin(centerPos, size);
+            var max = AreaMax(CenterPos, Size);
+            var min = AreaMin(CenterPos, Size);
             var p1 = new Vector3(min.x, max.y, min.z);
             var p2 = new Vector3(min.x, max.y, max.z);
             var p3 = new Vector3(max.x, max.y, max.z);
@@ -35,8 +40,8 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
             DrawThickLine(p4, p1, LineWidth);
             AdditionalGizmo();
             Gizmos.color = prevColor;
-        }
 #endif
+        }
 
         /// <summary>
         /// サブクラスで描画ギズモを増やしたい場合に実装します。
@@ -45,14 +50,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         {
             
         }
-        
-        #if UNITY_EDITOR
-        protected override void OnSceneGUI(SceneView sceneView)
-        {
-            
-        }
-        #endif
-        
+
         protected static Vector3 AreaMax(Vector3 center, Vector3 size)
         {
             return center + size / 2.0f;
@@ -68,17 +66,12 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         /// </summary>
         public bool IsBoxIntersectXZ(BoxGizmoDrawer other)
         {
-            var trans = transform;
-            var pos = trans.position;
-            var size = trans.localScale;
-
-            var otherTrans = other.transform;
-            var otherPos = otherTrans.position;
-            var otherSize = otherTrans.localScale;
+            var otherPos = other.CenterPos;
+            var otherSize = other.Size;
 
             return
-                Math.Abs(pos.x - otherPos.x) <= (Math.Abs(size.x) + Math.Abs(otherSize.x)) * 0.5 &&
-                Math.Abs(pos.z - otherPos.z) <= (Math.Abs(size.z) + Math.Abs(otherSize.z)) * 0.5;
+                Math.Abs(CenterPos.x - otherPos.x) <= (Math.Abs(Size.x) + Math.Abs(otherSize.x)) * 0.5 &&
+                Math.Abs(CenterPos.z - otherPos.z) <= (Math.Abs(Size.z) + Math.Abs(otherSize.z)) * 0.5;
         }
 
 

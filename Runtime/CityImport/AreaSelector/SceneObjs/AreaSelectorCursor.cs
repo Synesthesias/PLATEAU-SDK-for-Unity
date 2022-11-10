@@ -18,6 +18,8 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         public const float BoxCenterHeight = (BoxUpperHeight + BoxBottomHeight) / 2.0f;
         private const float boxSizeY = BoxUpperHeight - BoxBottomHeight;
         private const float slider2DHandleSize = 0.35f;
+        private Vector3 centerPos;
+        private Vector3 size;
 
         /// <summary>
         /// 引数である候補のうち、カーソルと重なる箇所のあるものをリストで返します。
@@ -47,45 +49,56 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
             return extent;
         }
 
-        private void Start()
+        private void Init()
         {
-            EnableHandles();
-            var trans = transform;
-            var prevPos = trans.position;
-            var nextPos = new Vector3(prevPos.x, BoxCenterHeight, prevPos.z);
-            trans.position = nextPos;
+            // EnableHandles();
+            // var trans = transform;
+            // var prevPos = trans.position;
+            this.centerPos = new Vector3(0, BoxCenterHeight, 0);
+            // trans.position = nextPos;
             
-            var prevLocalScale = trans.lossyScale;
-            var nextLocalScale = new Vector3(prevLocalScale.x, boxSizeY, prevLocalScale.z);
-            trans.localScale = nextLocalScale;
+            // var prevLocalScale = trans.lossyScale;
+            // var nextLocalScale = new Vector3(prevLocalScale.x, boxSizeY, prevLocalScale.z);
+            // trans.localScale = nextLocalScale;
+            this.size = new Vector3(1000, boxSizeY, 1000);
         }
         
 
-        private void OnDestroy()
-        {
-            DisableHandles();
-        }
+        // private void OnDestroy()
+        // {
+        //     DisableHandles();
+        // }
 
 
         #if UNITY_EDITOR
         
 
-        protected override void OnSceneGUI(SceneView _)
+        // protected override void OnSceneGUI(SceneView _)
+        // {
+        //     var prevColor = Handles.color;
+        //     Handles.color = this.cursorColor;
+        //     var trans = transform;
+        //     
+        //     CenterPointHandle(trans);
+        //     CornerPointHandle(trans);
+        //     
+        //     Handles.color = prevColor;
+        // }
+
+        public void Draw()
         {
             var prevColor = Handles.color;
             Handles.color = this.cursorColor;
-            var trans = transform;
-            
-            CenterPointHandle(trans);
-            CornerPointHandle(trans);
-            
+
+            this.centerPos = CenterPointHandle(this.centerPos);
+            CornerPointHandle(this.centerPos, this.size, out this.centerPos, out this.size);
+
             Handles.color = prevColor;
         }
 
-        private static void CenterPointHandle(Transform trans)
+        private static Vector3 CenterPointHandle(Vector3 centerPos)
         {
-            var pos = trans.position;
-            var handlePos = new Vector3(pos.x, BoxUpperHeight, pos.z);
+            var handlePos = new Vector3(centerPos.x, BoxUpperHeight, centerPos.z);
             EditorGUI.BeginChangeCheck();
 
             // 中心点ハンドル
@@ -97,16 +110,18 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
             
             if (EditorGUI.EndChangeCheck())
             {
-                trans.position = new Vector3(handlePos.x, BoxCenterHeight, handlePos.z);
+                centerPos = new Vector3(handlePos.x, BoxCenterHeight, handlePos.z);
             }
+
+            return centerPos;
         }
 
-        private static void CornerPointHandle(Transform trans)
+        private static void CornerPointHandle(Vector3 centerPos, Vector3 size, out Vector3 nextCenterPos, out Vector3 nextSize)
         {
-            var pos = trans.position;
-            var size = trans.localScale;
-            var prevPosMax = AreaMax(pos, size);
-            var prevPosMin = AreaMin(pos, size);
+            // var pos = trans.position;
+            // var size = trans.localScale;
+            var prevPosMax = AreaMax(centerPos, size);
+            var prevPosMin = AreaMin(centerPos, size);
             
             EditorGUI.BeginChangeCheck();
             
@@ -129,14 +144,13 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
             var maxMinHandlePosNext = Slider2D(maxMinHandlePos);
             nextPosMin = new Vector3(nextPosMin.x, nextPosMin.y, maxMinHandlePosNext.z);
             nextPosMax = new Vector3(maxMinHandlePosNext.x, nextPosMax.y, nextPosMax.z);
-            
-            
+
+            nextCenterPos = centerPos;
+            nextSize = size;
             if (EditorGUI.EndChangeCheck())
             {
                 (nextPosMin, nextPosMax) = SwapMinMaxIfReversed(nextPosMin, nextPosMax);
-                var (nextCenter, nextSize) = CalcTransFromArea(nextPosMax, nextPosMin);
-                trans.position = nextCenter;
-                trans.localScale = nextSize;
+                (nextCenterPos, nextSize) = CalcTransFromArea(nextPosMax, nextPosMin); 
             }
         }
 
@@ -160,10 +174,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
 
         private (Vector3 min, Vector3 max) CalcMinMaxFromTrans()
         {
-            var trans = transform;
-            var center = trans.position;
-            var size = trans.localScale;
-            return (center - size * 0.5f, center + size * 0.5f);
+            return (this.centerPos - this.size * 0.5f, this.centerPos + this.size * 0.5f);
         }
 
         private static (Vector3 min, Vector3 max) SwapMinMaxIfReversed(Vector3 min, Vector3 max)

@@ -21,7 +21,7 @@ namespace PLATEAU.CityImport.AreaSelector
     {
         [SerializeField] private string prevScenePath;
         [SerializeField] private string dataSourcePath;
-        [SerializeField] private AreaSelectorCursor cursor;
+        private AreaSelectorCursor cursor;
         private MeshCodeGizmosDrawer gizmosDrawer;
         private IAreaSelectResultReceiver areaSelectResultReceiver;
         private PredefinedCityModelPackage availablePackageFlags;
@@ -53,6 +53,7 @@ namespace PLATEAU.CityImport.AreaSelector
             var gatherResult = GatherMeshCodesInGMLDirectory(this.dataSourcePath);
             var drawerObj = new GameObject($"{nameof(MeshCodeGizmosDrawer)}");
             this.gizmosDrawer = drawerObj.AddComponent<MeshCodeGizmosDrawer>();
+            this.cursor = new AreaSelectorCursor();
             this.gizmosDrawer.Init(gatherResult.meshCodes, this.coordinateZoneID, out this.geoReference, this.cursor);
             this.availablePackageFlags = gatherResult.availablePackageFlags;
             var entireExtent = CalcExtentCoversAllMeshCodes(gatherResult.meshCodes);

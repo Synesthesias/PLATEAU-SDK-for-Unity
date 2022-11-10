@@ -20,7 +20,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         private static readonly Color boxColorSelected = new Color(1f, 162f / 255f, 62f / 255f);
         private const int lineWidthLevel2 = 3;
         private const int lineWidthLevel3 = 2;
-        
+
 
         /// <summary>
         /// メッシュコードに対応したギズモを表示するようにします。
@@ -31,7 +31,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
             // min, max は xyz の平面直行座標系に変換したもの
             var min = geoReference.Project(extent.Min);
             var max = geoReference.Project(extent.Max);
-            var center = new Vector3(
+            var centerPos = new Vector3(
                 (float)(min.X + max.X) / 2.0f,
                 AreaSelectorCursor.BoxCenterHeight,
                 (float)(min.Z + max.Z) / 2.0f);
@@ -39,10 +39,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
                 (float)Math.Abs(max.X - min.X),
                 AreaSelectorCursor.BoxUpperHeight - AreaSelectorCursor.BoxBottomHeight,
                 (float)Math.Abs(max.Z - min.Z));
-            var gizmoTrans = transform;
-            gizmoTrans.position = center;
-            gizmoTrans.localScale = size;
-            gizmoTrans.parent = parent;
+            Init(centerPos, size);
             MeshCode = meshCode;
         }
 
@@ -65,9 +62,8 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         {
             #if UNITY_EDITOR
             // 追加でボックスの中心にクロスヘア（十字マーク）を描きます。
-            var trans = transform;
-            var center = trans.position;
-            var crossHairLength = trans.localScale * crossHairSizeMultiplier;
+            var center = CenterPos;
+            var crossHairLength = Size * crossHairSizeMultiplier;
             Gizmos.DrawLine(
                 center + Vector3.left    *  crossHairLength.x * 0.5f,
                 center + Vector3.right   * crossHairLength.x * 0.5f);

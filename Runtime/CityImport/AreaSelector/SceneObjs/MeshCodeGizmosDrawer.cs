@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using PLATEAU.Geometries;
@@ -51,8 +52,9 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
             var gizmoParent = new GameObject("MeshCodeGizmos").transform;
             foreach (var meshCode in meshCodes)
             {
-                var gizmoObj = new GameObject($"{meshCode}");
-                var drawer = gizmoObj.AddComponent<MeshCodeGizmoDrawer>();
+                // var gizmoObj = new GameObject($"{meshCode}");
+                // var drawer = gizmoObj.AddComponent<MeshCodeGizmoDrawer>();
+                var drawer = new MeshCodeGizmoDrawer();
                 drawer.SetUp(meshCode, geoReference, gizmoParent);
                 this.drawers.Add(drawer);
             }
@@ -71,9 +73,17 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
 
         protected override void OnSceneGUI(SceneView sceneView)
         {
-            foreach (var box in this.drawers) box.ApplyStyle(false);
+        //     foreach (var box in this.drawers) box.ApplyStyle(false);
+        //     var selected = this.cursor.SelectedMeshCodes(this.drawers);
+        //     foreach (var select in selected) select.ApplyStyle(true);
+        //     foreach(var drawer in this.drawers) drawer.Draw();
+        }
+
+        private void OnDrawGizmos()
+        {foreach (var box in this.drawers) box.ApplyStyle(false);
             var selected = this.cursor.SelectedMeshCodes(this.drawers);
             foreach (var select in selected) select.ApplyStyle(true);
+            foreach(var drawer in this.drawers) drawer.Draw();
         }
     }
 }
