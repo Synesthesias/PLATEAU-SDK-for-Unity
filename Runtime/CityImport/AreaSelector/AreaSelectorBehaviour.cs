@@ -32,6 +32,8 @@ namespace PLATEAU.CityImport.AreaSelector
         private GeoReference geoReference;
         private bool prevSceneCameraRotationLocked;
         private GSIMapLoaderZoomSwitch mapLoader;
+        private static readonly Color AreaGizmoBoxColorNormal = new Color(0f, 84f / 255f, 1f);
+        private static readonly Color AreaGizmoBoxColorSelected = new Color(1f, 162f / 255f, 62f / 255f);
 
         public static bool IsAreaSelectEnabled { get; set; }
 
@@ -67,9 +69,9 @@ namespace PLATEAU.CityImport.AreaSelector
                 Debug.LogError($"{nameof(AreaSelectorCursor)} is null.");
                 return;
             }
-            foreach (var box in this.meshCodeDrawers) box.BoxColor = Color.green;
+            foreach (var box in this.meshCodeDrawers) box.BoxColor = AreaGizmoBoxColorNormal;
             var selected = this.cursor.SelectedMeshCodes(this.meshCodeDrawers);
-            foreach (var select in selected) select.BoxColor = Color.yellow;
+            foreach (var select in selected) select.BoxColor = AreaGizmoBoxColorSelected;
             
             // カメラを下に向けます。
             RotateSceneViewCameraDown();
@@ -112,7 +114,6 @@ namespace PLATEAU.CityImport.AreaSelector
             var collection = UdxFileCollection.Find(sourcePath);
             var availablePackageFlags = collection.Packages;
             var meshCodes = collection.MeshCodes;
-            Debug.Log($"Area Mesh Code Selected : \n" + DebugUtil.EnumerableToString(meshCodes));
             if (meshCodes.Count <= 0)
             {
                 Debug.LogError("No MeshCode found.");
@@ -148,7 +149,7 @@ namespace PLATEAU.CityImport.AreaSelector
             var gizmoParent = new GameObject("MeshCodeGizmos").transform;
             foreach (var meshCode in meshCodes)
             {
-                var gizmoObj = new GameObject($"MeshCodeGizmo{meshCode.ToString()}");
+                var gizmoObj = new GameObject($"{meshCode}");
                 var extent = meshCode.Extent; // extent は緯度,経度,高さ
                 // min, max は xyz の平面直行座標系に変換したもの
                 var min = geoReference.Project(extent.Min);

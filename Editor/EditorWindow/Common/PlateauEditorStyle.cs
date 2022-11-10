@@ -54,6 +54,9 @@ namespace PLATEAU.Editor.EditorWindow.Common
 
         private const string imageRoundButton = "round-button.png";
         private const string imageRoundWindowWide = "round-window-wide.png";
+
+        public static readonly Color AreaGizmoBoxColor = new Color(0f, 84f / 255f, 1f);
+        
         private static readonly Dictionary<string, Texture2D> cachedTexture = new Dictionary<string, Texture2D>();
 
         private static UnityEditor.EditorWindow currentWindow = null;
