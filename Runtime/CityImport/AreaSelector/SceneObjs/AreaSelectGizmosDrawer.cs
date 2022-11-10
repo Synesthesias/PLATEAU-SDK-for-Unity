@@ -81,15 +81,26 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
             foreach (var mcDrawer in this.meshCodeDrawers)
             {
                 mcDrawer.ApplyStyle(false);
+                // 大きな粒度の線は優先して表示されるようにします。
+                mcDrawer.Priority = mcDrawer.MeshCode.Level switch
+                {
+                    2 => 1,
+                    3 => 0,
+                    _ => 0
+                };
             }
             var selected = this.cursor.SelectedMeshCodes(this.meshCodeDrawers);
             foreach (var select in selected)
             {
                 select.ApplyStyle(true);
+                // 選択されたエリアの線は上に（優先して）表示されるようにします。
+                select.Priority += 10;
             }
-            
-            foreach(var drawer in this.meshCodeDrawers) drawer.DrawGizmos();
-            this.cursor.DrawGizmos();
+
+            var gizmosToDraw = new List<BoxGizmoDrawer>();
+            gizmosToDraw.AddRange(this.meshCodeDrawers);
+            gizmosToDraw.Add(this.cursor);
+            BoxGizmoDrawer.DrawWithPriority(gizmosToDraw);
         }
     }
 }

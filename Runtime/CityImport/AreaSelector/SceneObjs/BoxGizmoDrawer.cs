@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace PLATEAU.CityImport.AreaSelector.SceneObjs
@@ -12,11 +14,21 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         protected Vector3 Size;
         protected Color BoxColor { get; set; } = Color.white;
         protected float LineWidth { get; set; } = 1f;
+        public int Priority { get; set; } = 0;
 
         protected void Init(Vector3 centerPosArg, Vector3 sizeArg)
         {
             this.CenterPos = centerPosArg;
             this.Size = sizeArg;
+        }
+
+        public static void DrawWithPriority(IEnumerable<BoxGizmoDrawer> drawers)
+        {
+            var sorted = drawers.OrderBy(d => d.Priority);
+            foreach (var d in sorted)
+            {
+                d.DrawGizmos();
+            }
         }
         
 
