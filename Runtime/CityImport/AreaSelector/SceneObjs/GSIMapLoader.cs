@@ -25,6 +25,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         private const string mapMaterialDir = "Packages/com.synesthesias.plateau-unity-sdk/Materials";
         private const string mapMaterialNameBuiltInRP = "MapUnlitMaterial_BuiltInRP.mat";
         private const string mapMaterialNameURP = "MapUnlitMaterial_URP.mat";
+        private const string mapMaterialNameHDRP = "MapUnlitMaterial_HDRP.mat";
         private const int timeOutSec = 10;
         public const string MapRootObjName = "GSIMaps";
         
@@ -107,16 +108,17 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         {
             string matFileName;
             var pipelineAsset = GraphicsSettings.renderPipelineAsset;
-            if (pipelineAsset == null)
-            {
+            if (pipelineAsset == null) 
+            {   // Built-in Render Pipeline のとき
                 matFileName = mapMaterialNameBuiltInRP;
             }
             else
-            {
+            {   // URP または HDRP のとき
                 var pipelineName = pipelineAsset.GetType().Name;
                 matFileName = pipelineName switch
                 {
                     "UniversalRenderPipelineAsset" => mapMaterialNameURP,
+                    "HDRenderPipelineAsset" => mapMaterialNameHDRP,
                     _ => throw new InvalidDataException("Unknown material for pipeline.")
                 };
             }
