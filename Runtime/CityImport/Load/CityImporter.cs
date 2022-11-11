@@ -94,10 +94,9 @@ namespace PLATEAU.CityImport.Load
 
             }));
             
+            // インポート完了後の処理
             CityDuplicateProcessor.EnableOnlyLargestLODInDuplicate(cityModelComponent);
-            
             foreach (var gmlInfo in targetGmls) gmlInfo.Dispose();
-
         }
 
         /// <summary>
@@ -137,7 +136,15 @@ namespace PLATEAU.CityImport.Load
                 return;
             }
 
-            var gmlTrans = new GameObject(Path.GetFileName(gmlPathAfter)).transform;
+            string udxFeature = $"/udx/{gmlInfo.FeatureType}/";
+            string relativeGmlPathFromFeature =
+                gmlPathAfter.Substring(
+                    gmlPathAfter.LastIndexOf(udxFeature,
+                        StringComparison.Ordinal) + udxFeature.Length);
+            // gmlファイルに対応するゲームオブジェクトの名称は、地物タイプフォルダからの相対パスにします。
+            string gmlObjName = relativeGmlPathFromFeature;
+            var gmlTrans = new GameObject(gmlObjName).transform;
+            
             gmlTrans.parent = rootTrans;
             var package = gmlInfo.Package;
             var packageConf = conf.GetConfigForPackage(package);

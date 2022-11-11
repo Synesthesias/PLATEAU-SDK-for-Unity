@@ -226,5 +226,13 @@ namespace PLATEAU.Util
             if (lastPeriod < 0) throw new ArgumentException("path does not contain period.");
             return path.Substring(0, lastPeriod);
         }
+
+        public static string GetRelativePath(string fullPath, string basePath)
+        {
+            fullPath = Path.GetFullPath(fullPath).Replace('\\', '/');
+            basePath = Path.GetFullPath(basePath).Replace('\\', '/');
+            if (!basePath.EndsWith("/")) basePath += "/";
+            return fullPath.Replace(basePath, "");
+        }
     }
 }
