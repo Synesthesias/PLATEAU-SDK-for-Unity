@@ -60,6 +60,30 @@
     },
     {
       "type": "ManagedReference",
+      "source_relative_path": "api/PLATEAU.CityAdjust.CityDuplicateProcessor.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PLATEAU.CityAdjust.CityDuplicateProcessor.html",
+          "hash": "paAmph94VEmFjv5PQBdr+qk0byd4Upz+xkn5syLfZb8="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/PLATEAU.CityAdjust.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PLATEAU.CityAdjust.html",
+          "hash": "DyLTSgUwMyH4nH+cfK9lT4ZCD+G9njwUTbaF2IAn2/Y="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
       "source_relative_path": "api/PLATEAU.CityGML.Address.yml",
       "output": {
         ".html": {
@@ -1048,7 +1072,7 @@
       "output": {
         ".html": {
           "relative_path": "api/toc.html",
-          "hash": "hKxHv7Hdh0Yx2+z3JJLUf3SGxXWF51HAzB/wfG7toPk="
+          "hash": "3aEi6A/TBzsU8OyVSHvAdEbLIqzZvmUDv7Fxd6aZbyY="
         }
       },
       "is_incremental": false,
@@ -1578,7 +1602,7 @@
         "ManagedReferenceDocumentProcessor": {
           "can_incremental": false,
           "incrementalPhase": "build",
-          "total_file_count": 85,
+          "total_file_count": 87,
           "skipped_file_count": 0
         },
         "ResourceDocumentProcessor": {

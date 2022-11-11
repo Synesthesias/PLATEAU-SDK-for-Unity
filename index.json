@@ -14,6 +14,16 @@
     "title": "Class VectorTileDownloader | PLATEAU SDK for Unity",
     "keywords": "Class VectorTileDownloader 地理院地図の地図タイルをダウンロードします。 Inheritance Object VectorTileDownloader Namespace : PLATEAU.Basemap Assembly : cs.temp.dll.dll Syntax public class VectorTileDownloader : PInvokeDisposable Constructors VectorTileDownloader(IntPtr) Declaration public VectorTileDownloader(IntPtr handle) Parameters Type Name Description IntPtr handle Properties TileCount Declaration public int TileCount { get; } Property Value Type Description Int32 Methods CalcDestPath(Int32) Declaration public string CalcDestPath(int index) Parameters Type Name Description Int32 index Returns Type Description String Create(String, Extent, Int32) Declaration public static VectorTileDownloader Create(string destinationPath, Extent extent, int zoomLevel) Parameters Type Name Description String destinationPath Extent extent Int32 zoomLevel Returns Type Description VectorTileDownloader DisposeNative() Declaration protected override void DisposeNative() Download(Int32) 地理院地図タイルをダウンロードして pngファイルに保存します。 Declaration public void Download(int index) Parameters Type Name Description Int32 index GetTileCoordinate(Int32) Declaration public TileCoordinate GetTileCoordinate(int index) Parameters Type Name Description Int32 index Returns Type Description TileCoordinate"
   },
+  "api/PLATEAU.CityAdjust.CityDuplicateProcessor.html": {
+    "href": "api/PLATEAU.CityAdjust.CityDuplicateProcessor.html",
+    "title": "Class CityDuplicateProcessor | PLATEAU SDK for Unity",
+    "keywords": "Class CityDuplicateProcessor Inheritance Object CityDuplicateProcessor Inherited Members Object.ToString() Object.Equals(Object) Object.Equals(Object, Object) Object.ReferenceEquals(Object, Object) Object.GetHashCode() Object.GetType() Object.MemberwiseClone() Namespace : PLATEAU.CityAdjust Assembly : cs.temp.dll.dll Syntax public static class CityDuplicateProcessor Methods EnableOnlyLargestLODInDuplicate(PLATEAUInstancedCityModel) 重複した地物があるか検索します。 重複のうちLODが最大のものを有効化し、そうでないものを無効化します。 Declaration public static void EnableOnlyLargestLODInDuplicate(PLATEAUInstancedCityModel city) Parameters Type Name Description PLATEAUInstancedCityModel city"
+  },
+  "api/PLATEAU.CityAdjust.html": {
+    "href": "api/PLATEAU.CityAdjust.html",
+    "title": "Namespace PLATEAU.CityAdjust | PLATEAU SDK for Unity",
+    "keywords": "Namespace PLATEAU.CityAdjust Classes CityDuplicateProcessor"
+  },
   "api/PLATEAU.CityGML.Address.html": {
     "href": "api/PLATEAU.CityGML.Address.html",
     "title": "Class Address | PLATEAU SDK for Unity",

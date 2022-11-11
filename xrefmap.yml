@@ -136,6 +136,31 @@ references:
   isSpec: "True"
   fullName: PLATEAU.Basemap.VectorTileDownloader.TileCount
   nameWithType: VectorTileDownloader.TileCount
+- uid: PLATEAU.CityAdjust
+  name: PLATEAU.CityAdjust
+  href: api/PLATEAU.CityAdjust.html
+  commentId: N:PLATEAU.CityAdjust
+  fullName: PLATEAU.CityAdjust
+  nameWithType: PLATEAU.CityAdjust
+- uid: PLATEAU.CityAdjust.CityDuplicateProcessor
+  name: CityDuplicateProcessor
+  href: api/PLATEAU.CityAdjust.CityDuplicateProcessor.html
+  commentId: T:PLATEAU.CityAdjust.CityDuplicateProcessor
+  fullName: PLATEAU.CityAdjust.CityDuplicateProcessor
+  nameWithType: CityDuplicateProcessor
+- uid: PLATEAU.CityAdjust.CityDuplicateProcessor.EnableOnlyLargestLODInDuplicate(PLATEAUInstancedCityModel)
+  name: EnableOnlyLargestLODInDuplicate(PLATEAUInstancedCityModel)
+  href: api/PLATEAU.CityAdjust.CityDuplicateProcessor.html#PLATEAU_CityAdjust_CityDuplicateProcessor_EnableOnlyLargestLODInDuplicate_PLATEAUInstancedCityModel_
+  commentId: M:PLATEAU.CityAdjust.CityDuplicateProcessor.EnableOnlyLargestLODInDuplicate(PLATEAUInstancedCityModel)
+  fullName: PLATEAU.CityAdjust.CityDuplicateProcessor.EnableOnlyLargestLODInDuplicate(PLATEAUInstancedCityModel)
+  nameWithType: CityDuplicateProcessor.EnableOnlyLargestLODInDuplicate(PLATEAUInstancedCityModel)
+- uid: PLATEAU.CityAdjust.CityDuplicateProcessor.EnableOnlyLargestLODInDuplicate*
+  name: EnableOnlyLargestLODInDuplicate
+  href: api/PLATEAU.CityAdjust.CityDuplicateProcessor.html#PLATEAU_CityAdjust_CityDuplicateProcessor_EnableOnlyLargestLODInDuplicate_
+  commentId: Overload:PLATEAU.CityAdjust.CityDuplicateProcessor.EnableOnlyLargestLODInDuplicate
+  isSpec: "True"
+  fullName: PLATEAU.CityAdjust.CityDuplicateProcessor.EnableOnlyLargestLODInDuplicate
+  nameWithType: CityDuplicateProcessor.EnableOnlyLargestLODInDuplicate
 - uid: PLATEAU.CityGML
   name: PLATEAU.CityGML
   href: api/PLATEAU.CityGML.html
