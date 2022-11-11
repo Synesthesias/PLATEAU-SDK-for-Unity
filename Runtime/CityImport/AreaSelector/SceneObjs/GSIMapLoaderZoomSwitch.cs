@@ -46,10 +46,8 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
 
         public void Update(Camera cam)
         {
-            Debug.Log("Update");
             if ((DateTime.Now - this.lastUpdateTime).Milliseconds <= updateIntervalMilliSec)
             {
-                Debug.Log("Map Update");
                 var extent = Extent.Intersection(
                     CalcCameraExtent(cam, this.geoReference),
                     this.mapAvailableExtent
@@ -59,15 +57,12 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
                 bool zoomLevelChanged = this.prevZoomLevel != zoomLevel;
                 if (zoomLevelChanged)
                 {
-                    Debug.Log("zoom level changed");
                     this.zoomLoadCancel?.Cancel();
                     this.zoomLoadCancel = new CancellationTokenSource();
                     DisableExceptZoomLevel(zoomLevel);
-                    // this.lastUpdateTime = DateTime.Now; // TODO 試験的
                 }
-                else if (this.mapUpdateTask == null || this.mapUpdateTask.IsCompleted/* || zoomLevelChanged*/)
+                else if (this.mapUpdateTask == null || this.mapUpdateTask.IsCompleted)
                 {
-                    Debug.Log("Map Update Task Start");
                     this.mapUpdateTask = MapUpdateTask(zoomLevel, extent, this.zoomLoadCancel);
                     this.mapUpdateTask.ContinueWithErrorCatch();
                     this.lastUpdateTime = DateTime.Now;

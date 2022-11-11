@@ -59,12 +59,10 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
                 }
 
                 var mapTile = new MapTile(mapFilePath, tileCoord);
-                Debug.Log($"Start: Download map : {mapFilePath}");
                 bool isSucceed = await Task.Run(() =>
                 {
                     return DownloadFileIfNotExist(downloader, i, mapFilePath, tileCoord);
                 });
-                Debug.Log($"End: Download map : {mapFilePath}");
                 if (isSucceed)
                 {
                     await PlaceAsGameObj(mapTile, geoReference, rowTrans, mapName, generatedMaterials);

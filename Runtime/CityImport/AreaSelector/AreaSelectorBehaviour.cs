@@ -88,7 +88,6 @@ namespace PLATEAU.CityImport.AreaSelector
             SceneView.lastActiveSceneView.isRotationLocked = this.prevSceneCameraRotationLocked;
 #endif
             this.mapLoader.Dispose();
-            Debug.Log("mapLoader is disposed.");
         }
 
         private static Extent CalcExtentCoversAllMeshCodes(IEnumerable<MeshCode> meshCodes)
@@ -112,7 +111,6 @@ namespace PLATEAU.CityImport.AreaSelector
             #if UNITY_EDITOR
             EditorUtility.DisplayProgressBar("", "データファイルを検索中です...", 0f);
             #endif
-            Debug.Log(sourcePath);
             var collection = UdxFileCollection.Find(sourcePath);
             var availablePackageFlags = collection.Packages;
             var meshCodes = collection.MeshCodes;
