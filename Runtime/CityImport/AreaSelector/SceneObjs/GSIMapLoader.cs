@@ -41,40 +41,44 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
             int tileCount = downloader.TileCount;
             for (int i = 0; i < tileCount; i++)
             {
-            
-                MapTile mapTile = null;
+                
                 string mapFilePath = downloader.CalcDestPath(i);
                 var tileCoord = downloader.GetTileCoordinate(i);
-            
-            var mapRoot = GameObjectUtil.AssureGameObject(MapRootObjName).transform;
-            var  zoomLevelTrans = GameObjectUtil.AssureGameObjectInChild(zoomLevel.ToString(), mapRoot).transform;
-            var rowTrans = GameObjectUtil.AssureGameObjectInChild(tileCoord.Row.ToString(), zoomLevelTrans).transform;
-            var mapName = $"{tileCoord.Column}";
-            var mapTrans = rowTrans.Find(mapName);
-            if ( mapTrans != null)
-            {   // すでにマップがシーンに配置済みのケース
-                mapTrans.gameObject.SetActive(true);
-                continue;
-            }
-            mapTile = new MapTile(mapFilePath, tileCoord);
-            bool isSucceed = await Task.Run(() =>
-            {
-                return DownloadFileIfNotExist(downloader, i, mapFilePath, tileCoord);
-            });
-            if (cancel.IsCancellationRequested)
-            {
-                break;
-            }
-            
-            if (isSucceed)
-            {
-                await PlaceAsGameObj(mapTile, geoReference, rowTrans, mapName, generatedMaterials);
-            }
-            else
-            {
-                Debug.LogError("Failed to load a map tile image.");
-            }
-            
+
+                var mapRoot = GameObjectUtil.AssureGameObject(MapRootObjName).transform;
+                var zoomLevelTrans = GameObjectUtil.AssureGameObjectInChild(zoomLevel.ToString(), mapRoot).transform;
+                var rowTrans = GameObjectUtil.AssureGameObjectInChild(tileCoord.Row.ToString(), zoomLevelTrans)
+                    .transform;
+                var mapName = $"{tileCoord.Column}";
+                var mapTrans = rowTrans.Find(mapName);
+                if (mapTrans != null)
+                {
+                    // すでにマップがシーンに配置済みのケース
+                    mapTrans.gameObject.SetActive(true);
+                    continue;
+                }
+
+                var mapTile = new MapTile(mapFilePath, tileCoord);
+                Debug.Log($"Start: Download map : {mapFilePath}");
+                bool isSucceed = await Task.Run(() =>
+                {
+                    return DownloadFileIfNotExist(downloader, i, mapFilePath, tileCoord);
+                });
+                Debug.Log($"End: Download map : {mapFilePath}");
+                if (isSucceed)
+                {
+                    await PlaceAsGameObj(mapTile, geoReference, rowTrans, mapName, generatedMaterials);
+                }
+                else
+                {
+                    Debug.LogError("Failed to load a map tile image.");
+                }
+
+                if (cancel.IsCancellationRequested)
+                {
+                    break;
+                }
+
             }
 
             return generatedMaterials;
@@ -98,9 +102,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
                 return true;
             }
             // ファイルがなければダウンロードします。
-            downloader.Download(index, out var downloadedTileCoord, out string downloadDestPath);
-            Assert.AreEqual(mapFilePath, downloadDestPath);
-            Assert.AreEqual(tileCoord, downloadedTileCoord);
+            downloader.Download(index);
             return true;
         }
 

@@ -46,8 +46,10 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
 
         public void Update(Camera cam)
         {
+            Debug.Log("Update");
             if ((DateTime.Now - this.lastUpdateTime).Milliseconds <= updateIntervalMilliSec)
             {
+                Debug.Log("Map Update");
                 var extent = Extent.Intersection(
                     CalcCameraExtent(cam, this.geoReference),
                     this.mapAvailableExtent
@@ -57,17 +59,21 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
                 bool zoomLevelChanged = this.prevZoomLevel != zoomLevel;
                 if (zoomLevelChanged)
                 {
+                    Debug.Log("zoom level changed");
                     this.zoomLoadCancel?.Cancel();
                     this.zoomLoadCancel = new CancellationTokenSource();
+                    DisableExceptZoomLevel(zoomLevel);
+                    // this.lastUpdateTime = DateTime.Now; // TODO 試験的
                 }
-                if (this.mapUpdateTask == null || this.mapUpdateTask.IsCompleted || zoomLevelChanged)
+                else if (this.mapUpdateTask == null || this.mapUpdateTask.IsCompleted/* || zoomLevelChanged*/)
                 {
+                    Debug.Log("Map Update Task Start");
                     this.mapUpdateTask = MapUpdateTask(zoomLevel, extent, this.zoomLoadCancel);
                     this.mapUpdateTask.ContinueWithErrorCatch();
+                    this.lastUpdateTime = DateTime.Now;
                 }
                 this.prevZoomLevel = zoomLevel;
-                this.lastUpdateTime = DateTime.Now;
-                
+
             }
         }
 
@@ -77,16 +83,11 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
             {
                 UnityEngine.Object.DestroyImmediate(mat);
             }
-            this.zoomLoadCancel.Cancel();
+            this.zoomLoadCancel?.Cancel();
         }
 
         private async Task MapUpdateTask(int zoomLevel, Extent extent, CancellationTokenSource downloadCancel)
         {
-            if (zoomLevel != this.prevZoomLevel)
-            {
-                DisableExceptZoomLevel(zoomLevel);
-            }
-
             var materials = await GSIMapLoader
                 .DownloadAndPlaceAsync(extent, this.geoReference, zoomLevel, downloadCancel.Token);
             this.mapMaterials.AddRange(materials);

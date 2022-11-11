@@ -1409,13 +1409,7 @@ namespace PLATEAU.Interop
         [DllImport(DllName)]
         internal static extern APIResult plateau_vector_tile_downloader_download(
             [In] IntPtr handle,
-            int index,
-            out TileCoordinate tileCoordinate,
-            out int sizeOfImagePath);
-
-        [DllImport(DllName)]
-        internal static extern APIResult plateau_vector_tile_downloader_last_image_path(
-            [In] IntPtr strPtr);
+            int index);
 
         // ***************
         //  vector_tile_downloader_c.cpp

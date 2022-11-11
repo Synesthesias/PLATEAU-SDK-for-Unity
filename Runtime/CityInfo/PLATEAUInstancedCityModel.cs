@@ -5,6 +5,9 @@ using UnityEngine;
 
 namespace PLATEAU.CityInfo
 {
+    /// <summary>
+    /// GMLファイルからUnityにインポートした都市のルートGameObjectに付与されます。
+    /// </summary>
     public class PLATEAUInstancedCityModel : MonoBehaviour
     {
         [SerializeField] private GeoReferenceData geoReferenceData;
