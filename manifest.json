@@ -40,7 +40,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PLATEAU.Basemap.VectorTileDownloader.html",
-          "hash": "x1/erI2a1x2PstezyV0GD5qvJIUc37WDb6NXFuE95qk="
+          "hash": "xVAQbid0gk21SiGrYVe7bisa9PzmNPFuOFr4P9VjKw8="
         }
       },
       "is_incremental": false,
@@ -424,7 +424,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PLATEAU.CityInfo.PLATEAUInstancedCityModel.html",
-          "hash": "E9EQACbFO55w4tggYnctzT07FMXlideB0LOIyPZuoBg="
+          "hash": "0fyvM+trSdVVh/l0L2/WtK+L60N++jBraQLVUHCDass="
         }
       },
       "is_incremental": false,
@@ -436,7 +436,31 @@
       "output": {
         ".html": {
           "relative_path": "api/PLATEAU.CityInfo.html",
-          "hash": "OVVj1/L7cm3ncqr4VeaA5FPTIxDZlwhaC1fkWeHKZls="
+          "hash": "sHXHoIbSnt87zn9wlJQAynII4jeaohJqOK/PxO519No="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/PLATEAU.Editor.CityInfo.PLATEAUInstancedCityModelEditor.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PLATEAU.Editor.CityInfo.PLATEAUInstancedCityModelEditor.html",
+          "hash": "WHwvG0N9dudCcnCZ8+7RDOBvQQrPxlutP5zSeE9c3rQ="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/PLATEAU.Editor.CityInfo.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PLATEAU.Editor.CityInfo.html",
+          "hash": "oOvEI7VDCA3q0x39Yc4oSa/Qnuar1T3y9Xat1qSRDHA="
         }
       },
       "is_incremental": false,
@@ -460,7 +484,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PLATEAU.Geometries.GeoReference.html",
-          "hash": "90V6IXIjpplmWrMkBHqfrozawnpF6nKVC05JPh2dFUk="
+          "hash": "Wr6bmbapmDqavu8u7S5/5BQseVNKw+IQiZ6lmQyohzg="
         }
       },
       "is_incremental": false,
@@ -1024,7 +1048,7 @@
       "output": {
         ".html": {
           "relative_path": "api/toc.html",
-          "hash": "7vCJVf2GEMhpxWJNpmSqqnMTEJO+fbdvm33F4xnJ46Q="
+          "hash": "hKxHv7Hdh0Yx2+z3JJLUf3SGxXWF51HAzB/wfG7toPk="
         }
       },
       "is_incremental": false,
@@ -1554,7 +1578,7 @@
         "ManagedReferenceDocumentProcessor": {
           "can_incremental": false,
           "incrementalPhase": "build",
-          "total_file_count": 83,
+          "total_file_count": 85,
           "skipped_file_count": 0
         },
         "ResourceDocumentProcessor": {

@@ -97,15 +97,12 @@ references:
   isSpec: "True"
   fullName: PLATEAU.Basemap.VectorTileDownloader.DisposeNative
   nameWithType: VectorTileDownloader.DisposeNative
-- uid: PLATEAU.Basemap.VectorTileDownloader.Download(System.Int32,TileCoordinate@,System.String@)
-  name: Download(Int32, out TileCoordinate, out String)
-  href: api/PLATEAU.Basemap.VectorTileDownloader.html#PLATEAU_Basemap_VectorTileDownloader_Download_System_Int32_TileCoordinate__System_String__
-  commentId: M:PLATEAU.Basemap.VectorTileDownloader.Download(System.Int32,TileCoordinate@,System.String@)
-  name.vb: Download(Int32, ByRef TileCoordinate, ByRef String)
-  fullName: PLATEAU.Basemap.VectorTileDownloader.Download(System.Int32, out TileCoordinate, out System.String)
-  fullName.vb: PLATEAU.Basemap.VectorTileDownloader.Download(System.Int32, ByRef TileCoordinate, ByRef System.String)
-  nameWithType: VectorTileDownloader.Download(Int32, out TileCoordinate, out String)
-  nameWithType.vb: VectorTileDownloader.Download(Int32, ByRef TileCoordinate, ByRef String)
+- uid: PLATEAU.Basemap.VectorTileDownloader.Download(System.Int32)
+  name: Download(Int32)
+  href: api/PLATEAU.Basemap.VectorTileDownloader.html#PLATEAU_Basemap_VectorTileDownloader_Download_System_Int32_
+  commentId: M:PLATEAU.Basemap.VectorTileDownloader.Download(System.Int32)
+  fullName: PLATEAU.Basemap.VectorTileDownloader.Download(System.Int32)
+  nameWithType: VectorTileDownloader.Download(Int32)
 - uid: PLATEAU.Basemap.VectorTileDownloader.Download*
   name: Download
   href: api/PLATEAU.Basemap.VectorTileDownloader.html#PLATEAU_Basemap_VectorTileDownloader_Download_
@@ -2106,6 +2103,31 @@ references:
   commentId: F:PLATEAU.CityInfo.PLATEAUInstancedCityModel.GeoReferenceData.zoneID
   fullName: PLATEAU.CityInfo.PLATEAUInstancedCityModel.GeoReferenceData.zoneID
   nameWithType: PLATEAUInstancedCityModel.GeoReferenceData.zoneID
+- uid: PLATEAU.Editor.CityInfo
+  name: PLATEAU.Editor.CityInfo
+  href: api/PLATEAU.Editor.CityInfo.html
+  commentId: N:PLATEAU.Editor.CityInfo
+  fullName: PLATEAU.Editor.CityInfo
+  nameWithType: PLATEAU.Editor.CityInfo
+- uid: PLATEAU.Editor.CityInfo.PLATEAUInstancedCityModelEditor
+  name: PLATEAUInstancedCityModelEditor
+  href: api/PLATEAU.Editor.CityInfo.PLATEAUInstancedCityModelEditor.html
+  commentId: T:PLATEAU.Editor.CityInfo.PLATEAUInstancedCityModelEditor
+  fullName: PLATEAU.Editor.CityInfo.PLATEAUInstancedCityModelEditor
+  nameWithType: PLATEAUInstancedCityModelEditor
+- uid: PLATEAU.Editor.CityInfo.PLATEAUInstancedCityModelEditor.OnInspectorGUI
+  name: OnInspectorGUI()
+  href: api/PLATEAU.Editor.CityInfo.PLATEAUInstancedCityModelEditor.html#PLATEAU_Editor_CityInfo_PLATEAUInstancedCityModelEditor_OnInspectorGUI
+  commentId: M:PLATEAU.Editor.CityInfo.PLATEAUInstancedCityModelEditor.OnInspectorGUI
+  fullName: PLATEAU.Editor.CityInfo.PLATEAUInstancedCityModelEditor.OnInspectorGUI()
+  nameWithType: PLATEAUInstancedCityModelEditor.OnInspectorGUI()
+- uid: PLATEAU.Editor.CityInfo.PLATEAUInstancedCityModelEditor.OnInspectorGUI*
+  name: OnInspectorGUI
+  href: api/PLATEAU.Editor.CityInfo.PLATEAUInstancedCityModelEditor.html#PLATEAU_Editor_CityInfo_PLATEAUInstancedCityModelEditor_OnInspectorGUI_
+  commentId: Overload:PLATEAU.Editor.CityInfo.PLATEAUInstancedCityModelEditor.OnInspectorGUI
+  isSpec: "True"
+  fullName: PLATEAU.Editor.CityInfo.PLATEAUInstancedCityModelEditor.OnInspectorGUI
+  nameWithType: PLATEAUInstancedCityModelEditor.OnInspectorGUI
 - uid: PLATEAU.Geometries
   name: PLATEAU.Geometries
   href: api/PLATEAU.Geometries.html
@@ -2278,6 +2300,19 @@ references:
   isSpec: "True"
   fullName: PLATEAU.Geometries.GeoReference.ZoneID
   nameWithType: GeoReference.ZoneID
+- uid: PLATEAU.Geometries.GeoReference.ZoneIdExplanation
+  name: ZoneIdExplanation
+  href: api/PLATEAU.Geometries.GeoReference.html#PLATEAU_Geometries_GeoReference_ZoneIdExplanation
+  commentId: P:PLATEAU.Geometries.GeoReference.ZoneIdExplanation
+  fullName: PLATEAU.Geometries.GeoReference.ZoneIdExplanation
+  nameWithType: GeoReference.ZoneIdExplanation
+- uid: PLATEAU.Geometries.GeoReference.ZoneIdExplanation*
+  name: ZoneIdExplanation
+  href: api/PLATEAU.Geometries.GeoReference.html#PLATEAU_Geometries_GeoReference_ZoneIdExplanation_
+  commentId: Overload:PLATEAU.Geometries.GeoReference.ZoneIdExplanation
+  isSpec: "True"
+  fullName: PLATEAU.Geometries.GeoReference.ZoneIdExplanation
+  nameWithType: GeoReference.ZoneIdExplanation
 - uid: PLATEAU.Interop
   name: PLATEAU.Interop
   href: api/PLATEAU.Interop.html
