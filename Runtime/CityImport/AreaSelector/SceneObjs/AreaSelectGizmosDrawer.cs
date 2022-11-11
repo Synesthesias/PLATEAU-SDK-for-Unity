@@ -71,10 +71,12 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
             return this.cursor.GetExtent(coordinateZoneID, referencePoint);
         }
 
+        #if UNITY_EDITOR
         protected override void OnSceneGUI(SceneView sceneView)
         {
             this.cursor.DrawSceneGUI();
         }
+        #endif
 
         private void OnDrawGizmos()
         {

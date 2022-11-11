@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -124,8 +125,13 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
             }
 
             string matFilePath = Path.Combine(mapMaterialDir, matFileName);
+#if UNITY_EDITOR
             var material = AssetDatabase.LoadAssetAtPath<Material>(matFilePath);
             return material;
+#else
+            throw new NotImplementedException("Map Load in PlayMode is not implemented.");
+            return null;
+#endif
         }
 
         private static async Task PlaceAsGameObj(MapTile mapTile, GeoReference geoReference, Transform parentTrans, string mapObjName, List<Material> generatedMaterials)
