@@ -1936,12 +1936,12 @@ references:
   commentId: T:PLATEAU.CityImport.AreaSelector.SceneObjs.GSIMapLoaderZoomSwitch
   fullName: PLATEAU.CityImport.AreaSelector.SceneObjs.GSIMapLoaderZoomSwitch
   nameWithType: GSIMapLoaderZoomSwitch
-- uid: PLATEAU.CityImport.AreaSelector.SceneObjs.GSIMapLoaderZoomSwitch.#ctor(GeoReference)
-  name: GSIMapLoaderZoomSwitch(GeoReference)
-  href: api/PLATEAU.CityImport.AreaSelector.SceneObjs.GSIMapLoaderZoomSwitch.html#PLATEAU_CityImport_AreaSelector_SceneObjs_GSIMapLoaderZoomSwitch__ctor_GeoReference_
-  commentId: M:PLATEAU.CityImport.AreaSelector.SceneObjs.GSIMapLoaderZoomSwitch.#ctor(GeoReference)
-  fullName: PLATEAU.CityImport.AreaSelector.SceneObjs.GSIMapLoaderZoomSwitch.GSIMapLoaderZoomSwitch(GeoReference)
-  nameWithType: GSIMapLoaderZoomSwitch.GSIMapLoaderZoomSwitch(GeoReference)
+- uid: PLATEAU.CityImport.AreaSelector.SceneObjs.GSIMapLoaderZoomSwitch.#ctor(GeoReference,Extent)
+  name: GSIMapLoaderZoomSwitch(GeoReference, Extent)
+  href: api/PLATEAU.CityImport.AreaSelector.SceneObjs.GSIMapLoaderZoomSwitch.html#PLATEAU_CityImport_AreaSelector_SceneObjs_GSIMapLoaderZoomSwitch__ctor_GeoReference_Extent_
+  commentId: M:PLATEAU.CityImport.AreaSelector.SceneObjs.GSIMapLoaderZoomSwitch.#ctor(GeoReference,Extent)
+  fullName: PLATEAU.CityImport.AreaSelector.SceneObjs.GSIMapLoaderZoomSwitch.GSIMapLoaderZoomSwitch(GeoReference, Extent)
+  nameWithType: GSIMapLoaderZoomSwitch.GSIMapLoaderZoomSwitch(GeoReference, Extent)
 - uid: PLATEAU.CityImport.AreaSelector.SceneObjs.GSIMapLoaderZoomSwitch.#ctor*
   name: GSIMapLoaderZoomSwitch
   href: api/PLATEAU.CityImport.AreaSelector.SceneObjs.GSIMapLoaderZoomSwitch.html#PLATEAU_CityImport_AreaSelector_SceneObjs_GSIMapLoaderZoomSwitch__ctor_
@@ -1949,6 +1949,19 @@ references:
   isSpec: "True"
   fullName: PLATEAU.CityImport.AreaSelector.SceneObjs.GSIMapLoaderZoomSwitch.GSIMapLoaderZoomSwitch
   nameWithType: GSIMapLoaderZoomSwitch.GSIMapLoaderZoomSwitch
+- uid: PLATEAU.CityImport.AreaSelector.SceneObjs.GSIMapLoaderZoomSwitch.Dispose
+  name: Dispose()
+  href: api/PLATEAU.CityImport.AreaSelector.SceneObjs.GSIMapLoaderZoomSwitch.html#PLATEAU_CityImport_AreaSelector_SceneObjs_GSIMapLoaderZoomSwitch_Dispose
+  commentId: M:PLATEAU.CityImport.AreaSelector.SceneObjs.GSIMapLoaderZoomSwitch.Dispose
+  fullName: PLATEAU.CityImport.AreaSelector.SceneObjs.GSIMapLoaderZoomSwitch.Dispose()
+  nameWithType: GSIMapLoaderZoomSwitch.Dispose()
+- uid: PLATEAU.CityImport.AreaSelector.SceneObjs.GSIMapLoaderZoomSwitch.Dispose*
+  name: Dispose
+  href: api/PLATEAU.CityImport.AreaSelector.SceneObjs.GSIMapLoaderZoomSwitch.html#PLATEAU_CityImport_AreaSelector_SceneObjs_GSIMapLoaderZoomSwitch_Dispose_
+  commentId: Overload:PLATEAU.CityImport.AreaSelector.SceneObjs.GSIMapLoaderZoomSwitch.Dispose
+  isSpec: "True"
+  fullName: PLATEAU.CityImport.AreaSelector.SceneObjs.GSIMapLoaderZoomSwitch.Dispose
+  nameWithType: GSIMapLoaderZoomSwitch.Dispose
 - uid: PLATEAU.CityImport.AreaSelector.SceneObjs.GSIMapLoaderZoomSwitch.Update(Camera)
   name: Update(Camera)
   href: api/PLATEAU.CityImport.AreaSelector.SceneObjs.GSIMapLoaderZoomSwitch.html#PLATEAU_CityImport_AreaSelector_SceneObjs_GSIMapLoaderZoomSwitch_Update_Camera_
@@ -1962,6 +1975,38 @@ references:
   isSpec: "True"
   fullName: PLATEAU.CityImport.AreaSelector.SceneObjs.GSIMapLoaderZoomSwitch.Update
   nameWithType: GSIMapLoaderZoomSwitch.Update
+- uid: PLATEAU.CityImport.AreaSelector.SceneObjs.HandlesBase
+  name: HandlesBase
+  href: api/PLATEAU.CityImport.AreaSelector.SceneObjs.HandlesBase.html
+  commentId: T:PLATEAU.CityImport.AreaSelector.SceneObjs.HandlesBase
+  fullName: PLATEAU.CityImport.AreaSelector.SceneObjs.HandlesBase
+  nameWithType: HandlesBase
+- uid: PLATEAU.CityImport.AreaSelector.SceneObjs.HandlesBase.DisableHandles
+  name: DisableHandles()
+  href: api/PLATEAU.CityImport.AreaSelector.SceneObjs.HandlesBase.html#PLATEAU_CityImport_AreaSelector_SceneObjs_HandlesBase_DisableHandles
+  commentId: M:PLATEAU.CityImport.AreaSelector.SceneObjs.HandlesBase.DisableHandles
+  fullName: PLATEAU.CityImport.AreaSelector.SceneObjs.HandlesBase.DisableHandles()
+  nameWithType: HandlesBase.DisableHandles()
+- uid: PLATEAU.CityImport.AreaSelector.SceneObjs.HandlesBase.DisableHandles*
+  name: DisableHandles
+  href: api/PLATEAU.CityImport.AreaSelector.SceneObjs.HandlesBase.html#PLATEAU_CityImport_AreaSelector_SceneObjs_HandlesBase_DisableHandles_
+  commentId: Overload:PLATEAU.CityImport.AreaSelector.SceneObjs.HandlesBase.DisableHandles
+  isSpec: "True"
+  fullName: PLATEAU.CityImport.AreaSelector.SceneObjs.HandlesBase.DisableHandles
+  nameWithType: HandlesBase.DisableHandles
+- uid: PLATEAU.CityImport.AreaSelector.SceneObjs.HandlesBase.EnableHandles
+  name: EnableHandles()
+  href: api/PLATEAU.CityImport.AreaSelector.SceneObjs.HandlesBase.html#PLATEAU_CityImport_AreaSelector_SceneObjs_HandlesBase_EnableHandles
+  commentId: M:PLATEAU.CityImport.AreaSelector.SceneObjs.HandlesBase.EnableHandles
+  fullName: PLATEAU.CityImport.AreaSelector.SceneObjs.HandlesBase.EnableHandles()
+  nameWithType: HandlesBase.EnableHandles()
+- uid: PLATEAU.CityImport.AreaSelector.SceneObjs.HandlesBase.EnableHandles*
+  name: EnableHandles
+  href: api/PLATEAU.CityImport.AreaSelector.SceneObjs.HandlesBase.html#PLATEAU_CityImport_AreaSelector_SceneObjs_HandlesBase_EnableHandles_
+  commentId: Overload:PLATEAU.CityImport.AreaSelector.SceneObjs.HandlesBase.EnableHandles
+  isSpec: "True"
+  fullName: PLATEAU.CityImport.AreaSelector.SceneObjs.HandlesBase.EnableHandles
+  nameWithType: HandlesBase.EnableHandles
 - uid: PLATEAU.CityInfo
   name: PLATEAU.CityInfo
   href: api/PLATEAU.CityInfo.html
@@ -2482,6 +2527,19 @@ references:
   isSpec: "True"
   fullName: PLATEAU.Interop.Extent.Center
   nameWithType: Extent.Center
+- uid: PLATEAU.Interop.Extent.Intersection(PLATEAU.Interop.Extent,PLATEAU.Interop.Extent)
+  name: Intersection(Extent, Extent)
+  href: api/PLATEAU.Interop.Extent.html#PLATEAU_Interop_Extent_Intersection_PLATEAU_Interop_Extent_PLATEAU_Interop_Extent_
+  commentId: M:PLATEAU.Interop.Extent.Intersection(PLATEAU.Interop.Extent,PLATEAU.Interop.Extent)
+  fullName: PLATEAU.Interop.Extent.Intersection(PLATEAU.Interop.Extent, PLATEAU.Interop.Extent)
+  nameWithType: Extent.Intersection(Extent, Extent)
+- uid: PLATEAU.Interop.Extent.Intersection*
+  name: Intersection
+  href: api/PLATEAU.Interop.Extent.html#PLATEAU_Interop_Extent_Intersection_
+  commentId: Overload:PLATEAU.Interop.Extent.Intersection
+  isSpec: "True"
+  fullName: PLATEAU.Interop.Extent.Intersection
+  nameWithType: Extent.Intersection
 - uid: PLATEAU.Interop.Extent.Max
   name: Max
   href: api/PLATEAU.Interop.Extent.html#PLATEAU_Interop_Extent_Max
@@ -2494,6 +2552,19 @@ references:
   commentId: F:PLATEAU.Interop.Extent.Min
   fullName: PLATEAU.Interop.Extent.Min
   nameWithType: Extent.Min
+- uid: PLATEAU.Interop.Extent.Size
+  name: Size()
+  href: api/PLATEAU.Interop.Extent.html#PLATEAU_Interop_Extent_Size
+  commentId: M:PLATEAU.Interop.Extent.Size
+  fullName: PLATEAU.Interop.Extent.Size()
+  nameWithType: Extent.Size()
+- uid: PLATEAU.Interop.Extent.Size*
+  name: Size
+  href: api/PLATEAU.Interop.Extent.html#PLATEAU_Interop_Extent_Size_
+  commentId: Overload:PLATEAU.Interop.Extent.Size
+  isSpec: "True"
+  fullName: PLATEAU.Interop.Extent.Size
+  nameWithType: Extent.Size
 - uid: PLATEAU.Interop.Extent.ToString
   name: ToString()
   href: api/PLATEAU.Interop.Extent.html#PLATEAU_Interop_Extent_ToString
@@ -2570,6 +2641,32 @@ references:
   isSpec: "True"
   fullName: PLATEAU.Interop.GeoCoordinate.Min
   nameWithType: GeoCoordinate.Min
+- uid: PLATEAU.Interop.GeoCoordinate.op_Addition(PLATEAU.Interop.GeoCoordinate,PLATEAU.Interop.GeoCoordinate)
+  name: Addition(GeoCoordinate, GeoCoordinate)
+  href: api/PLATEAU.Interop.GeoCoordinate.html#PLATEAU_Interop_GeoCoordinate_op_Addition_PLATEAU_Interop_GeoCoordinate_PLATEAU_Interop_GeoCoordinate_
+  commentId: M:PLATEAU.Interop.GeoCoordinate.op_Addition(PLATEAU.Interop.GeoCoordinate,PLATEAU.Interop.GeoCoordinate)
+  fullName: PLATEAU.Interop.GeoCoordinate.Addition(PLATEAU.Interop.GeoCoordinate, PLATEAU.Interop.GeoCoordinate)
+  nameWithType: GeoCoordinate.Addition(GeoCoordinate, GeoCoordinate)
+- uid: PLATEAU.Interop.GeoCoordinate.op_Addition*
+  name: Addition
+  href: api/PLATEAU.Interop.GeoCoordinate.html#PLATEAU_Interop_GeoCoordinate_op_Addition_
+  commentId: Overload:PLATEAU.Interop.GeoCoordinate.op_Addition
+  isSpec: "True"
+  fullName: PLATEAU.Interop.GeoCoordinate.Addition
+  nameWithType: GeoCoordinate.Addition
+- uid: PLATEAU.Interop.GeoCoordinate.op_Subtraction(PLATEAU.Interop.GeoCoordinate,PLATEAU.Interop.GeoCoordinate)
+  name: Subtraction(GeoCoordinate, GeoCoordinate)
+  href: api/PLATEAU.Interop.GeoCoordinate.html#PLATEAU_Interop_GeoCoordinate_op_Subtraction_PLATEAU_Interop_GeoCoordinate_PLATEAU_Interop_GeoCoordinate_
+  commentId: M:PLATEAU.Interop.GeoCoordinate.op_Subtraction(PLATEAU.Interop.GeoCoordinate,PLATEAU.Interop.GeoCoordinate)
+  fullName: PLATEAU.Interop.GeoCoordinate.Subtraction(PLATEAU.Interop.GeoCoordinate, PLATEAU.Interop.GeoCoordinate)
+  nameWithType: GeoCoordinate.Subtraction(GeoCoordinate, GeoCoordinate)
+- uid: PLATEAU.Interop.GeoCoordinate.op_Subtraction*
+  name: Subtraction
+  href: api/PLATEAU.Interop.GeoCoordinate.html#PLATEAU_Interop_GeoCoordinate_op_Subtraction_
+  commentId: Overload:PLATEAU.Interop.GeoCoordinate.op_Subtraction
+  isSpec: "True"
+  fullName: PLATEAU.Interop.GeoCoordinate.Subtraction
+  nameWithType: GeoCoordinate.Subtraction
 - uid: PLATEAU.Interop.GeoCoordinate.ToString
   name: ToString()
   href: api/PLATEAU.Interop.GeoCoordinate.html#PLATEAU_Interop_GeoCoordinate_ToString
@@ -4697,6 +4794,25 @@ references:
   isSpec: "True"
   fullName: PLATEAU.Util.IProgressDisplay.SetProgress
   nameWithType: IProgressDisplay.SetProgress
+- uid: PLATEAU.Util.RenderUtil
+  name: RenderUtil
+  href: api/PLATEAU.Util.RenderUtil.html
+  commentId: T:PLATEAU.Util.RenderUtil
+  fullName: PLATEAU.Util.RenderUtil
+  nameWithType: RenderUtil
+- uid: PLATEAU.Util.RenderUtil.DefaultMaterial
+  name: DefaultMaterial
+  href: api/PLATEAU.Util.RenderUtil.html#PLATEAU_Util_RenderUtil_DefaultMaterial
+  commentId: P:PLATEAU.Util.RenderUtil.DefaultMaterial
+  fullName: PLATEAU.Util.RenderUtil.DefaultMaterial
+  nameWithType: RenderUtil.DefaultMaterial
+- uid: PLATEAU.Util.RenderUtil.DefaultMaterial*
+  name: DefaultMaterial
+  href: api/PLATEAU.Util.RenderUtil.html#PLATEAU_Util_RenderUtil_DefaultMaterial_
+  commentId: Overload:PLATEAU.Util.RenderUtil.DefaultMaterial
+  isSpec: "True"
+  fullName: PLATEAU.Util.RenderUtil.DefaultMaterial
+  nameWithType: RenderUtil.DefaultMaterial
 - uid: PLATEAU.Util.StringBuilderWithIndent
   name: StringBuilderWithIndent
   href: api/PLATEAU.Util.StringBuilderWithIndent.html

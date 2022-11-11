@@ -5,10 +5,10 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>Class PLATEAUCityGmlProxy
+    <title>Class RenderUtil
    | PLATEAU SDK for Unity </title>
     <meta name="viewport" content="width=device-width">
-    <meta name="title" content="Class PLATEAUCityGmlProxy
+    <meta name="title" content="Class RenderUtil
    | PLATEAU SDK for Unity ">
     <meta name="generator" content="docfx 2.59.4.0">
     
@@ -78,18 +78,17 @@
         </div>
         <div class="article row grid-right">
           <div class="col-md-10">
-            <article class="content wrap" id="_content" data-uid="PLATEAU.CityInfo.PLATEAUCityGmlProxy">
+            <article class="content wrap" id="_content" data-uid="PLATEAU.Util.RenderUtil">
   
   
-  <h1 id="PLATEAU_CityInfo_PLATEAUCityGmlProxy" data-uid="PLATEAU.CityInfo.PLATEAUCityGmlProxy" class="text-break">Class PLATEAUCityGmlProxy
+  <h1 id="PLATEAU_Util_RenderUtil" data-uid="PLATEAU.Util.RenderUtil" class="text-break">Class RenderUtil
   </h1>
-  <div class="markdown level0 summary"><p>GMLファイルから都市情報を読み込みます。</p>
-</div>
+  <div class="markdown level0 summary"></div>
   <div class="markdown level0 conceptual"></div>
   <div class="inheritance">
     <h5>Inheritance</h5>
     <div class="level0"><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">Object</a></div>
-    <div class="level1"><span class="xref">PLATEAUCityGmlProxy</span></div>
+    <div class="level1"><span class="xref">RenderUtil</span></div>
   </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
@@ -115,60 +114,25 @@
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone#system-object-memberwiseclone">Object.MemberwiseClone()</a>
     </div>
   </div>
-  <h6><strong>Namespace</strong>: <a class="xref" href="PLATEAU.CityInfo.html">PLATEAU.CityInfo</a></h6>
+  <h6><strong>Namespace</strong>: <a class="xref" href="PLATEAU.Util.html">PLATEAU.Util</a></h6>
   <h6><strong>Assembly</strong>: cs.temp.dll.dll</h6>
-  <h5 id="PLATEAU_CityInfo_PLATEAUCityGmlProxy_syntax">Syntax</h5>
+  <h5 id="PLATEAU_Util_RenderUtil_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public class PLATEAUCityGmlProxy</code></pre>
+    <pre><code class="lang-csharp hljs">public static class RenderUtil</code></pre>
   </div>
-  <h3 id="methods">Methods
+  <h3 id="properties">Properties
   </h3>
   
   
-  <a id="PLATEAU_CityInfo_PLATEAUCityGmlProxy_LoadAsync_" data-uid="PLATEAU.CityInfo.PLATEAUCityGmlProxy.LoadAsync*"></a>
-  <h4 id="PLATEAU_CityInfo_PLATEAUCityGmlProxy_LoadAsync_GameObject_System_String_System_String_" data-uid="PLATEAU.CityInfo.PLATEAUCityGmlProxy.LoadAsync(GameObject,System.String,System.String)">LoadAsync(GameObject, String, String)</h4>
-  <div class="markdown level1 summary"><p>GMLファイルをパースし、<see cref="!:CityModel"></see> を返します。
-パースには時間がかかりますが、結果はキャッシュに入るので、2回目以降はパースはスキップされて速いです。</p>
-</div>
+  <a id="PLATEAU_Util_RenderUtil_DefaultMaterial_" data-uid="PLATEAU.Util.RenderUtil.DefaultMaterial*"></a>
+  <h4 id="PLATEAU_Util_RenderUtil_DefaultMaterial" data-uid="PLATEAU.Util.RenderUtil.DefaultMaterial">DefaultMaterial</h4>
+  <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static async Task&lt;CityModel&gt; LoadAsync(GameObject go, string rootDirName = null, string parentPathOfRootDir = null)</code></pre>
+    <pre><code class="lang-csharp hljs">public static Material DefaultMaterial { get; }</code></pre>
   </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="xref">GameObject</span></td>
-        <td><span class="parametername">go</span></td>
-        <td><p>GMLファイルの名称が、与えられたゲームオブジェクトの名称であるものをパースします。</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">String</a></td>
-        <td><span class="parametername">rootDirName</span></td>
-        <td><p>都市データが入っているディレクトリのルートの名称を指定します。
-省略または空文字の場合、 <code data-dev-comment-type="paramref" class="paramref">go</code>.transform.parent.name になります。</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">String</a></td>
-        <td><span class="parametername">parentPathOfRootDir</span></td>
-        <td><p><code data-dev-comment-type="paramref" class="paramref">rootDirName</code>の親ディレクトリのパスを指定します。
-省略または空文字の場合、インポート時に自動でコピーされる場所になります。
-すなわち、 Assets/StreamingAssets/.PLATEAU になります。</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
+  <h5 class="propertyValue">Property Value</h5>
   <table class="table table-bordered table-striped table-condensed">
     <thead>
       <tr>
@@ -178,9 +142,8 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">Task</span>&lt;<span class="xref">CityModel</span>&gt;</td>
-        <td><p>パースした結果を返します。パース失敗時は null を返します。</p>
-</td>
+        <td><span class="xref">Material</span></td>
+        <td></td>
       </tr>
     </tbody>
   </table>

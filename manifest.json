@@ -352,7 +352,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PLATEAU.CityImport.AreaSelector.SceneObjs.GSIMapLoader.html",
-          "hash": "iu3PEKsXmZ5TjNGZ9SIuTf5YbEWfR3P2AwLG+aGsIs8="
+          "hash": "YZRAsvUBddl6YDLB1bFbxTPwKdSSS30fpFnW1qIS5MQ="
         }
       },
       "is_incremental": false,
@@ -364,7 +364,19 @@
       "output": {
         ".html": {
           "relative_path": "api/PLATEAU.CityImport.AreaSelector.SceneObjs.GSIMapLoaderZoomSwitch.html",
-          "hash": "yLG3BqoZ54qBY1Kg8iuscpDaALofwRlkaLWzUbCu96Y="
+          "hash": "eWmKlIR4F7WZOgw/dZNJTUyN1yoB3uRXB2zdK4CpZI4="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/PLATEAU.CityImport.AreaSelector.SceneObjs.HandlesBase.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PLATEAU.CityImport.AreaSelector.SceneObjs.HandlesBase.html",
+          "hash": "SrHTr/1o5ny4pnGMOR066sQYOw1D5Z3OswJqJseQnyY="
         }
       },
       "is_incremental": false,
@@ -376,7 +388,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PLATEAU.CityImport.AreaSelector.SceneObjs.html",
-          "hash": "IjrCX1/emVs80W50OeFLRlmWuzAAV+iqi25LKnW/1ts="
+          "hash": "Gs5ol2SFEFgLICzEj/IgHEqliChtMfRAe74ZaP/sXD4="
         }
       },
       "is_incremental": false,
@@ -388,7 +400,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PLATEAU.CityInfo.PLATEAUCityGmlProxy.html",
-          "hash": "4F7SzomF+xGQheYKLTI7VKVxABR/r8T0RbWlAQH4g/E="
+          "hash": "+lMGuRC0LhRKYHLNPVTNgDDgpuctSkBq+FL33xRa3LU="
         }
       },
       "is_incremental": false,
@@ -520,7 +532,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PLATEAU.Interop.Extent.html",
-          "hash": "Ap79/uIlLh2zwr+tHHTrjZIvGtwXxFCAULBYvRIVrKU="
+          "hash": "WMy1NbOWRiy8rKtT6km4n6aLBs/oLQiW0u7X8mGkNVM="
         }
       },
       "is_incremental": false,
@@ -532,7 +544,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PLATEAU.Interop.GeoCoordinate.html",
-          "hash": "E+ywklpS+EdF8rAMjSDFkzSlnzFPrfM0TIUbftwuSmg="
+          "hash": "oIM4JeVZpNbePTXWrDfBHviVtF1hYJYbhbf6Ib66eOo="
         }
       },
       "is_incremental": false,
@@ -664,7 +676,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PLATEAU.Interop.TileCoordinate.html",
-          "hash": "JcaBCHTxYb2mR86ATK8X7jywgHj1DjdrQBHP4Z8SOm4="
+          "hash": "TR8Bf5+66QRjIArwuQl1oHoWrzwJBm3M/hEDke98KI0="
         }
       },
       "is_incremental": false,
@@ -676,7 +688,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PLATEAU.Interop.html",
-          "hash": "yClUDyxv1gykfQMlDNK0oE9wUsAdZpSLWyRcNBDwzpo="
+          "hash": "7O7LhGsqraP+o3Q02Glhafr6iTKTP6ghPcpjzRUiWkE="
         }
       },
       "is_incremental": false,
@@ -972,6 +984,18 @@
     },
     {
       "type": "ManagedReference",
+      "source_relative_path": "api/PLATEAU.Util.RenderUtil.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PLATEAU.Util.RenderUtil.html",
+          "hash": "5NkUSV/uQNTC7xRc7FMHIu6mbofhH+UTXKl4lzEM540="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
       "source_relative_path": "api/PLATEAU.Util.StringBuilderWithIndent.yml",
       "output": {
         ".html": {
@@ -988,7 +1012,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PLATEAU.Util.html",
-          "hash": "PkyFQP2Vh3qROG1H/iVlkecwFBGsqZ7wm+DQgxEqAXA="
+          "hash": "uC9qyDlXHcKUHoHaRhCX42fn5wPzlq5OYiD72TX6NWs="
         }
       },
       "is_incremental": false,
@@ -1000,7 +1024,7 @@
       "output": {
         ".html": {
           "relative_path": "api/toc.html",
-          "hash": "LFmbafCJD6SFCeIqCgUeUWeheNP5A8lIomvQ3M2RCh0="
+          "hash": "7vCJVf2GEMhpxWJNpmSqqnMTEJO+fbdvm33F4xnJ46Q="
         }
       },
       "is_incremental": false,
@@ -1048,7 +1072,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/ImportCityModels.html",
-          "hash": "5+19j5gugeIVKlquiqDJCLXpAdXlPD5F34ZlzoYSrho="
+          "hash": "2htJXWY0FLBrowkucqUxsxMzWTNzOZAZubysQrSxEOI="
         }
       },
       "is_incremental": false,
@@ -1530,7 +1554,7 @@
         "ManagedReferenceDocumentProcessor": {
           "can_incremental": false,
           "incrementalPhase": "build",
-          "total_file_count": 81,
+          "total_file_count": 83,
           "skipped_file_count": 0
         },
         "ResourceDocumentProcessor": {
