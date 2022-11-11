@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using PLATEAU.Basemap;
@@ -13,49 +14,83 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
     /// <see cref="GSIMapLoader"/> に次の機能を追加したものです:
     /// ・カメラの位置によってズームレベル（地図の詳細度）を切り替えて表示します
     /// </summary>
-    public class GSIMapLoaderZoomSwitch
+    public class GSIMapLoaderZoomSwitch : IDisposable
     {
-        private GeoReference geoReference;
-        private CancellationTokenSource cancel = new CancellationTokenSource();
-        private const int mapUpdateInterval = 1;
-        private int framesTillMapUpdate;
-        private Task mapUpdateTask = null;
         private const int minZoomLevel = 3;
         private const int maxZoomLevel = 16;
-        
-        // 国土地理院の地図タイルは 256×256 ピクセルで統一されています。
-        // 参考 : https://maps.gsi.go.jp/development/siyou.html
-        private static int mapImagePixelWidth = 256; 
+        private const float updateIntervalMilliSec = 500;
         
         
+        /// <summary>
+        /// 画面に同時に映る地図タイルの枚数がこの枚数以下になるようにズームレベルが調整されます。
+        /// </summary>
+        private const int maxMapCountInScreen = 30;
+        
+        private readonly GeoReference geoReference;
+        private Task mapUpdateTask;
+        private readonly List<Material> mapMaterials = new List<Material>();
+        private int prevZoomLevel = -1;
+        private CancellationTokenSource zoomLoadCancel;
+        private DateTime lastUpdateTime = DateTime.MinValue;
+        private Extent mapAvailableExtent;
 
-        public GSIMapLoaderZoomSwitch(GeoReference geoReference)
+        public GSIMapLoaderZoomSwitch(GeoReference geoReference, Extent entireExtent)
         {
             this.geoReference = geoReference;
-            this.framesTillMapUpdate = mapUpdateInterval;
+            // 基準点から離れすぎると座標が歪むので、遠すぎる部分（日本からはみ出す程度）は描画しないようにします。
+            this.mapAvailableExtent = new Extent(
+                entireExtent.Min + new GeoCoordinate(-10, -10, -9999),
+                entireExtent.Max + new GeoCoordinate(10, 10, 9999)
+            );
         }
 
         public void Update(Camera cam)
         {
-            if (--this.framesTillMapUpdate <= 0)
+            if ((DateTime.Now - this.lastUpdateTime).Milliseconds <= updateIntervalMilliSec)
             {
-                if (!(this.mapUpdateTask is { Status: TaskStatus.Running }))
+                var extent = Extent.Intersection(
+                    CalcCameraExtent(cam, this.geoReference),
+                    this.mapAvailableExtent
+                );
+                int zoomLevel = CalcZoomLevel(extent);
+                // ズームレベルが切り替わったとき、前のズームレベルを読み込む処理をキャンセルします。
+                bool zoomLevelChanged = this.prevZoomLevel != zoomLevel;
+                if (zoomLevelChanged)
                 {
-                    this.mapUpdateTask =
-                        MapUpdateTask(cam).ContinueWithErrorCatch();
+                    this.zoomLoadCancel?.Cancel();
+                    this.zoomLoadCancel = new CancellationTokenSource();
                 }
+                if (this.mapUpdateTask == null || this.mapUpdateTask.IsCompleted || zoomLevelChanged)
+                {
+                    this.mapUpdateTask = MapUpdateTask(zoomLevel, extent, this.zoomLoadCancel);
+                    this.mapUpdateTask.ContinueWithErrorCatch();
+                }
+                this.prevZoomLevel = zoomLevel;
+                this.lastUpdateTime = DateTime.Now;
+                
             }
         }
 
-        private async Task MapUpdateTask(Camera cam)
+        public void Dispose()
         {
-            this.framesTillMapUpdate = mapUpdateInterval;
-            var extent = CalcCameraExtent(cam, this.geoReference);
-            int zoomLevel = CalcZoomLevel(extent, Screen.width);
-            DisableExceptZoomLevel(extent, zoomLevel);
-            await GSIMapLoader
-                .DownloadAndPlaceAsync(extent, this.geoReference, zoomLevel, this.cancel.Token)
-                .ContinueWithErrorCatch();
+            foreach (var mat in this.mapMaterials)
+            {
+                UnityEngine.Object.DestroyImmediate(mat);
+            }
+            this.zoomLoadCancel.Cancel();
+        }
+
+        private async Task MapUpdateTask(int zoomLevel, Extent extent, CancellationTokenSource downloadCancel)
+        {
+            if (zoomLevel != this.prevZoomLevel)
+            {
+                DisableExceptZoomLevel(zoomLevel);
+            }
+
+            var materials = await GSIMapLoader
+                .DownloadAndPlaceAsync(extent, this.geoReference, zoomLevel, downloadCancel.Token);
+            this.mapMaterials.AddRange(materials);
+            
         }
 
         private static Extent CalcCameraExtent(Camera cam, GeoReference geoRef)
@@ -81,18 +116,19 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
             return new Extent(geoMin, geoMax);
         }
 
-        private static int CalcZoomLevel(Extent cameraExtent, int screenWidth)
+        private static int CalcZoomLevel(Extent cameraExtent)
         {
-            for (int zoom = minZoomLevel; zoom <= maxZoomLevel; zoom++)
+            for (int zoom = maxZoomLevel; zoom >= minZoomLevel; zoom--)
             {
                 var tile = TileProjection.Project(cameraExtent.Center, zoom);
                 var tileExtent = TileProjection.Unproject(tile);
-                var screenPixelWidthPerImage = 
-                    (tileExtent.Max.Longitude - tileExtent.Min.Longitude) /
-                    (cameraExtent.Max.Longitude - cameraExtent.Min.Longitude)
-                    * screenWidth;
-                double textureZoomRatio = screenPixelWidthPerImage / mapImagePixelWidth;
-                if (textureZoomRatio <= 1.5)
+                double tileCountX =
+                    (cameraExtent.Max.Longitude - cameraExtent.Min.Longitude) /
+                    (tileExtent.Max.Longitude - tileExtent.Min.Longitude);
+                double tileCountY =
+                    (cameraExtent.Max.Latitude - cameraExtent.Min.Latitude) /
+                    (tileExtent.Max.Latitude - tileExtent.Min.Latitude);
+                if (tileCountX * tileCountY <= maxMapCountInScreen)
                 {
                     return zoom;
                 }
@@ -101,92 +137,19 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
             return maxZoomLevel;
         }
 
-        private static void DisableExceptZoomLevel(Extent cameraExtent, int zoomLevel)
+        private static void DisableExceptZoomLevel(int zoomLevel)
         {
             var mapRoot = GameObject.Find(GSIMapLoader.MapRootObjName);
             if (mapRoot == null) return;
             for (int zoom = minZoomLevel; zoom <= maxZoomLevel; zoom++)
             {
-                
+
+                // GameObject を SetActiveします。       
                 var zoomLevelTrans = mapRoot.transform.Find(zoom.ToString());
                 if (zoomLevelTrans == null) continue;
                 zoomLevelTrans.gameObject.SetActive(zoom == zoomLevel);
-                // var tileMin = TileProjection.Project(cameraExtent.Min, zoom);
-                // var tileMax = TileProjection.Project(cameraExtent.Max, zoom);
-                // int rowMin = Math.Min(tileMin.Row, tileMax.Row);
-                // int rowMax = Math.Max(tileMin.Row, tileMax.Row);
-                // int colMin = Math.Min(tileMin.Column, tileMax.Column);
-                // int colMax = Math.Max(tileMin.Column, tileMax.Column);
-                // // Debug.Log($"found. zoomLevel={zoom}, rowMin={rowMin}, rowMax={rowMax}, colMin={colMin}, colMax={colMax}");
-                // // TODO 同じオブジェクトが複数生成されてしまうのはなんで？
-                // int rowObjCount = zoomLevelTrans.childCount;
-                // for (int childRowId = 0; childRowId < rowObjCount; childRowId++)
-                // {
-                //     var rowTrans = zoomLevelTrans.GetChild(childRowId);
-                //     string rowStr = rowTrans.name;
-                //     bool isValidRow = int.TryParse(rowStr, out int row);
-                //     if (!isValidRow) continue;
-                //     if (rowMin <= row && row <= rowMax)
-                //     {
-                //         int colObjCount = zoomLevelTrans.childCount;
-                //         for (int childColumnId = 0; childColumnId < colObjCount; childColumnId++)
-                //         {
-                //             var colTrans = rowTrans.GetChild(childColumnId);
-                //             var colStr = colTrans.name;
-                //             bool isValidCol = int.TryParse(colStr, out int col);
-                //             if (!isValidCol) continue;
-                //             if (colMin <= col && col <= colMax)
-                //             {
-                //                 colTrans.gameObject.SetActive(false);
-                //             }
-                //         }
-                //     }
-                // }// var tileMin = TileProjection.Project(cameraExtent.Min, zoom);
-                // var tileMax = TileProjection.Project(cameraExtent.Max, zoom);
-                // int rowMin = Math.Min(tileMin.Row, tileMax.Row);
-                // int rowMax = Math.Max(tileMin.Row, tileMax.Row);
-                // int colMin = Math.Min(tileMin.Column, tileMax.Column);
-                // int colMax = Math.Max(tileMin.Column, tileMax.Column);
-                // // Debug.Log($"found. zoomLevel={zoom}, rowMin={rowMin}, rowMax={rowMax}, colMin={colMin}, colMax={colMax}");
-                // // TODO 同じオブジェクトが複数生成されてしまうのはなんで？
-                // int rowObjCount = zoomLevelTrans.childCount;
-                // for (int childRowId = 0; childRowId < rowObjCount; childRowId++)
-                // {
-                //     var rowTrans = zoomLevelTrans.GetChild(childRowId);
-                //     string rowStr = rowTrans.name;
-                //     bool isValidRow = int.TryParse(rowStr, out int row);
-                //     if (!isValidRow) continue;
-                //     if (rowMin <= row && row <= rowMax)
-                //     {
-                //         int colObjCount = zoomLevelTrans.childCount;
-                //         for (int childColumnId = 0; childColumnId < colObjCount; childColumnId++)
-                //         {
-                //             var colTrans = rowTrans.GetChild(childColumnId);
-                //             var colStr = colTrans.name;
-                //             bool isValidCol = int.TryParse(colStr, out int col);
-                //             if (!isValidCol) continue;
-                //             if (colMin <= col && col <= colMax)
-                //             {
-                //                 colTrans.gameObject.SetActive(false);
-                //             }
-                //         }
-                //     }
-                // }
-                // for (int row = rowMin; row <= rowMax; row++)
-                // {
-                //     var rowTrans = zoomLevelTrans.Find(row.ToString());
-                //     if (rowTrans == null) continue;
-                //     for (int col = colMin; col <= colMax; col++)
-                //     {
-                //         var colTrans = rowTrans.Find(col.ToString());
-                //         if (colTrans == null) continue;
-                //         colTrans.gameObject.SetActive(false);
-                //         Debug.Log("disabled");
-                //     }
-                // }
             }
         }
-
-
+        
     }
 }

@@ -27,19 +27,26 @@ namespace PLATEAU.CityInfo
         /// <param name="go">GMLファイルの名称が、与えられたゲームオブジェクトの名称であるものをパースします。</param>
         /// <param name="rootDirName">
         /// 都市データが入っているディレクトリのルートの名称を指定します。
-        /// 省略した場合、 <paramref name="go"/>.transform.parent.name になります。
+        /// 省略または空文字の場合、 <paramref name="go"/>.transform.parent.name になります。
         /// </param>
         /// <param name="parentPathOfRootDir">
         /// <paramref name="rootDirName"/>の親ディレクトリのパスを指定します。
-        /// 省略した場合、インポート時に自動でコピーされる場所になります。
+        /// 省略または空文字の場合、インポート時に自動でコピーされる場所になります。
         /// すなわち、 Assets/StreamingAssets/.PLATEAU になります。
         /// </param>
         /// <returns>パースした結果を返します。パース失敗時は null を返します。</returns>
         public static async Task<CityModel> LoadAsync(GameObject go, string rootDirName = null, string parentPathOfRootDir = null)
         {
             // デフォルト値は PLATEAUウィンドウで操作したときのインポート先です。
-            parentPathOfRootDir ??= PathUtil.plateauSrcFetchDir;
-            rootDirName ??= go.transform.parent.name;
+            if (string.IsNullOrEmpty(parentPathOfRootDir))
+            {
+                parentPathOfRootDir = PathUtil.plateauSrcFetchDir;
+            }
+
+            if (string.IsNullOrEmpty(rootDirName))
+            {
+                rootDirName = go.transform.parent.name;
+            }
             
             string gmlName = go.name;
             string gmlPath;

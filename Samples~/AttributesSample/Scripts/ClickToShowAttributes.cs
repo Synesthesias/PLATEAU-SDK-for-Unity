@@ -26,10 +26,11 @@ namespace PLATEAU.Samples.Scripts
         private Camera mainCamera;
 
         /// <summary>
-        /// このコードをサンプル以外に転用したい場合は、このデータパスをご自分のものに変更するか、
-        /// 下の await PLATEAUCityGmlProxy.LoadAsync の引数の2番目と3番目をデフォルト引数にしてください。
+        /// !!! 重要 :
+        /// !!! サンプルデータではなくご自分のデータを使いたい場合は、この値を空文字に変更してください。
+        /// ここを空文字にすると、PLATEAU SDK ウィンドウの操作で都市データをインポートしたときのパスに自動設定されます。
         /// </summary>
-        private static readonly string cityDataPath =
+        private static readonly string cityDataPath = // ""; // ここを空文字にするとインポートしたデータを利用します。
             Path.GetFullPath("Packages/com.synesthesias.plateau-unity-sdk/Samples~/");
 
         private void Start()
@@ -81,7 +82,7 @@ namespace PLATEAU.Samples.Scripts
             // GMLファイルをパースします。
             // パースした結果は CityModel 型で返されます。
             // パースは重い処理ですが、結果はキャッシュに入るので2回目以降は速いです。
-            // 3つ目の引数を省略すると、インポート時に自動でコピーされるパスになります。今回はサンプル用のデータを読みたいので指定します。
+            // 3つ目の引数を省略または空文字にすると、インポート時に自動でコピーされるパスになります。今回はサンプル用のデータを読みたいので指定します。
             var cityModel = await PLATEAUCityGmlProxy.LoadAsync(gmlTrans.gameObject, rootDirName, cityDataPath);
             
             if (cityModel == null) return false;
@@ -99,8 +100,8 @@ namespace PLATEAU.Samples.Scripts
             this.display.AttributesText = cityObj.AttributesMap.ToString();
             
             // 住所の市を取得します。
-            // AttributesMap.GetValueOrNull で AttributeValue を取得できます。
-            // AttributeValue は、キー名に対応する値として 文字列 または 子のAttributesMap のどちらか1つを保持します。
+            // AttributesMap.GetValueOrNull を使うと、属性のキーに対応する値である AttributeValue を取得できます。
+            // AttributeValue は、値として 文字列 または 子のAttributesMap のどちらか1つを保持します。
             // AsAttrSet で 子AttributesMap を取得します。 AsString で文字列を取得します。
             // AsDouble, AsInt というメソッドもあります。これは内部的には文字列であるものをパースしたものを返します。
             string cityName = cityObj
@@ -121,7 +122,7 @@ namespace PLATEAU.Samples.Scripts
             
             // AttributeValue には 文字列 または 子のAttributesMap のどちらか1つが入っていることを上述しました。
             // ではどちらを取得すれば良いのかというと、 AttributeValue.Type で判別できます。
-            // Type が AttributeSet であれば AsAttrSet で取得でき、それ以外ではれば AsString で取得できます。
+            // Type が AttributeSet であれば AsAttrSet で取得でき、それ以外であれば AsString で取得できます。
             var detailAttr = cityObj.AttributesMap.GetValueOrNull("uro:buildingDetails");
             if (detailAttr != null)
             {

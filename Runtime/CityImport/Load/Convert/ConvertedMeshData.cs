@@ -21,7 +21,6 @@ namespace PLATEAU.CityImport.Load.Convert
         private readonly List<string> textureUrls;
         private string Name { get; }
         private readonly Dictionary<int, Texture> subMeshIdToTexture;
-        private const string shaderName = "Standard";
         private int SubMeshCount => this.subMeshTriangles.Count;
 
         public ConvertedMeshData(Vector3[] vertices, Vector2[] uv1, Vector2[] uv2, Vector2[] uv3, List<List<int>> subMeshTriangles, List<string> textureUrls, string name)
@@ -69,7 +68,7 @@ namespace PLATEAU.CityImport.Load.Convert
             var materials = new Material[mesh.subMeshCount];
             for (int i = 0; i < mesh.subMeshCount; i++)
             {
-                materials[i] = new Material(Shader.Find(shaderName));
+                materials[i] = new Material(RenderUtil.DefaultMaterial);
                 if (this.subMeshIdToTexture.TryGetValue(i, out var tex))
                 {
                     if (tex != null)
