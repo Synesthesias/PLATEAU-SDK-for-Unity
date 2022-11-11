@@ -57,12 +57,14 @@ namespace PLATEAU.Tests.TestUtils
         public class TestGmlDefinition
         {
             public string GmlPath { get; set; }
+            public string GameObjName { get; set; }
             public bool ContainsMesh { get; set; }
             public string[] TexturePaths { get; set; }
 
-            public TestGmlDefinition(string gmlPath, bool containsMesh, string[] texturePaths)
+            public TestGmlDefinition(string gmlPath, string gameObjName, bool containsMesh, string[] texturePaths)
             {
                 GmlPath = gmlPath;
+                GameObjName = gameObjName;
                 ContainsMesh = containsMesh;
                 TexturePaths = texturePaths;
             }
@@ -72,22 +74,22 @@ namespace PLATEAU.Tests.TestUtils
         public static TestCityDefinition MiniTokyo =
             new TestCityDefinition("TestDataTokyoMini", new[]
             {
-                new TestGmlDefinition("udx/bldg/53392546_bldg_6697_2_op.gml", true, null),
-                new TestGmlDefinition("udx/bldg/53392547_bldg_6697_2_op.gml", true, null),
-                new TestGmlDefinition("udx/brid/53394525_brid_6697_op.gml", true,
+                new TestGmlDefinition("udx/bldg/53392546_bldg_6697_2_op.gml", "53392546_bldg_6697_2_op.gml", true, null),
+                new TestGmlDefinition("udx/bldg/53392547_bldg_6697_2_op.gml", "53392547_bldg_6697_2_op.gml", true, null),
+                new TestGmlDefinition("udx/brid/53394525_brid_6697_op.gml", "53394525_brid_6697_op.gml", true,
                     new[] { "udx/brid/53394525_brid_6697_appearance/skjp6776.jpg" }),
-                new TestGmlDefinition("udx/dem/533925_dem_6697_op.gml", true, null),
-                new TestGmlDefinition("udx/frn/53394525_frn_6697_sjkms_op.gml", true,
+                new TestGmlDefinition("udx/dem/533925_dem_6697_op.gml", "533925_dem_6697_op.gml", true, null),
+                new TestGmlDefinition("udx/frn/53394525_frn_6697_sjkms_op.gml", "53394525_frn_6697_sjkms_op.gml", true,
                     new[] { "udx/frn/53394525_frn_6697_sjkms_appearance/17992.jpg" }),
-                new TestGmlDefinition("udx/lsld/533925_lsld_6668_op.gml", false, null),
-                new TestGmlDefinition("udx/luse/533925_luse_6668_2_op.gml", true, null),
-                new TestGmlDefinition("udx/luse/533925_luse_6697_park_op.gml", true, null),
-                new TestGmlDefinition("udx/tran/533925_tran_6697_op.gml", true,  null),
-                new TestGmlDefinition("udx/urf/533925_urf_6668_boka_op.gml", false, null),
-                new TestGmlDefinition("udx/urf/533925_urf_6668_kodo_op.gml", false, null),
-                new TestGmlDefinition("udx/urf/533925_urf_6668_yoto_op.gml", false, null),
-                new TestGmlDefinition("udx/fld/natl/tamagawa_tamagawa-asakawa-etc/53392547_fld_6697_l1_op.gml", true, null),
-                new TestGmlDefinition("udx/fld/natl/tamagawa_tamagawa-asakawa-etc/53392547_fld_6697_l2_op.gml", true, null),
+                new TestGmlDefinition("udx/lsld/533925_lsld_6668_op.gml", "533925_lsld_6668_op.gml", false, null),
+                new TestGmlDefinition("udx/luse/533925_luse_6668_2_op.gml", "533925_luse_6668_2_op.gml", true, null),
+                new TestGmlDefinition("udx/luse/533925_luse_6697_park_op.gml", "533925_luse_6697_park_op.gml", true, null),
+                new TestGmlDefinition("udx/tran/533925_tran_6697_op.gml", "533925_tran_6697_op.gml", true,  null),
+                new TestGmlDefinition("udx/urf/533925_urf_6668_boka_op.gml", "533925_urf_6668_boka_op.gml", false, null),
+                new TestGmlDefinition("udx/urf/533925_urf_6668_kodo_op.gml", "533925_urf_6668_kodo_op.gml", false, null),
+                new TestGmlDefinition("udx/urf/533925_urf_6668_yoto_op.gml", "533925_urf_6668_yoto_op.gml", false, null),
+                new TestGmlDefinition("udx/fld/natl/tamagawa_tamagawa-asakawa-etc/53392547_fld_6697_l1_op.gml", "natl/tamagawa_tamagawa-asakawa-etc/53392547_fld_6697_l1_op.gml", true, null),
+                new TestGmlDefinition("udx/fld/natl/tamagawa_tamagawa-asakawa-etc/53392547_fld_6697_l2_op.gml", "natl/tamagawa_tamagawa-asakawa-etc/53392547_fld_6697_l2_op.gml", true, null),
             }, new []
             {
                 "53394525", "53392546", "53392547", "533925"

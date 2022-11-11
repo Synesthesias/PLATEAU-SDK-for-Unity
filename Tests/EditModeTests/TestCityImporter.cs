@@ -48,7 +48,7 @@ namespace PLATEAU.Tests.EditModeTests
                 cityDefinition
                     .GmlDefinitions
                     .Where(def => def.ContainsMesh)
-                    .Select(def => Path.GetFileName(def.GmlPath))
+                    .Select(def => def.GameObjName)
                     .ToList();
 
             AssertGameObjsExist(expectedObjNames.Concat(new []{"LOD0", "LOD1", "LOD2"}));
