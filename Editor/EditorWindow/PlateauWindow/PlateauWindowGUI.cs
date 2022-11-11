@@ -18,7 +18,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow
             this.tabGUIArray = new IEditorDrawable[]
             {
                 new CityAddGUI(parentEditorWindow),
-                new CityVisualizeGUI(),
+                new CityAdjustGUI(),
                 new CityExportGUI()
             };
         }

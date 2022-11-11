@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using PLATEAU.CityAdjust;
 using PLATEAU.CityGML;
 using PLATEAU.CityImport.Load.Convert;
 using PLATEAU.CityImport.Load.FileCopy;
@@ -92,8 +93,9 @@ namespace PLATEAU.CityImport.Load
                 }
 
             }));
-
-
+            
+            CityDuplicateProcessor.EnableOnlyLargestLODInDuplicate(cityModelComponent);
+            
             foreach (var gmlInfo in targetGmls) gmlInfo.Dispose();
 
         }
