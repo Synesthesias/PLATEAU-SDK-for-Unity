@@ -16,7 +16,7 @@ namespace PLATEAU.CityImport.AreaSelector
     /// 範囲選択画面の進行を担当するコンポーネントです。
     /// 別途 AreaSelectorBehaviourEditor も参照してください。
     /// </summary>
-    [ExecuteInEditMode]
+    [ExecuteAlways]
     internal class AreaSelectorBehaviour : MonoBehaviour
     {
         [SerializeField] private string prevScenePath;
@@ -68,12 +68,27 @@ namespace PLATEAU.CityImport.AreaSelector
             #endif
         }
 
+        private void OnRenderObject()
+        {
+            // [ExecuteAlways] を付けたクラスは Editモードでも Updateが呼ばれるとはいえ、
+            // その呼び出し頻度は低い（何か変更しないと呼び出されない）ため、地図読込に悪影響があります。
+            // そこで描画のたびに Update を回すようにします。
+#if UNITY_EDITOR
+            if (!Application.isPlaying)
+            {
+                EditorApplication.QueuePlayerLoopUpdate();
+                SceneView.RepaintAll();
+            }
+#endif
+        }
+
         private void OnDisable()
         {
 #if UNITY_EDITOR
             SceneView.lastActiveSceneView.isRotationLocked = this.prevSceneCameraRotationLocked;
 #endif
             this.mapLoader.Dispose();
+            Debug.Log("mapLoader is disposed.");
         }
 
         private static Extent CalcExtentCoversAllMeshCodes(IEnumerable<MeshCode> meshCodes)

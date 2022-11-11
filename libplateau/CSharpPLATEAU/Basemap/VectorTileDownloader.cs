@@ -30,18 +30,12 @@ namespace PLATEAU.Basemap
         /// <summary>
         /// 地理院地図タイルをダウンロードして pngファイルに保存します。
         /// </summary>
-        public void Download(int index, out TileCoordinate tileCoordinate, out string imagePath)
+        public void Download(int index)
         {
             var result = NativeMethods.plateau_vector_tile_downloader_download(
-                Handle, index, out tileCoordinate, out int sizeOfImagePath
+                Handle, index
             );
             DLLUtil.CheckDllError(result);
-            IntPtr pathStrPtr = Marshal.AllocCoTaskMem(sizeOfImagePath);
-            var result2 = NativeMethods.plateau_vector_tile_downloader_last_image_path(pathStrPtr);
-            DLLUtil.CheckDllError(result2);
-            string pathStr = DLLUtil.ReadUtf8Str(pathStrPtr, sizeOfImagePath);
-            Marshal.FreeCoTaskMem(pathStrPtr);
-            imagePath = pathStr;
         }
 
         public string CalcDestPath(int index)

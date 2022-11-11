@@ -102,9 +102,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
                 return true;
             }
             // ファイルがなければダウンロードします。
-            downloader.Download(index, out var downloadedTileCoord, out string downloadDestPath);
-            Assert.AreEqual(mapFilePath, downloadDestPath);
-            Assert.AreEqual(tileCoord, downloadedTileCoord);
+            downloader.Download(index);
             return true;
         }
 
