@@ -1443,5 +1443,14 @@ namespace PLATEAU.Interop
             [In] IntPtr handle,
             out TileCoordinate outTileCoordinate,
             int index);
+        
+        // ***************
+        //  available_lod_searcher_c.cpp
+        // ***************
+
+        [DllImport(DllName, CharSet = CharSet.Ansi)]
+        internal static extern APIResult plateau_lod_searcher_search_lods_in_file(
+            [In] byte[] filePathUtf8,
+            out uint outLodFlags);
     }
 }
