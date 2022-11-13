@@ -1,13 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using PLATEAU.Editor.CityImport.AreaSelector;
 using PLATEAU.Geometries;
 using PLATEAU.Interop;
 using PLATEAU.Udx;
 using PLATEAU.Util;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 namespace PLATEAU.CityImport.AreaSelector.SceneObjs
 {
@@ -15,6 +15,8 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
     {
         private readonly List<MeshCodeGizmoDrawer> meshCodeDrawers = new List<MeshCodeGizmoDrawer>();
         private AreaSelectorCursor cursor;
+        private AreaLodController areaLod;
+        private GeoReference geoReference;
         
         
         /// <summary>
@@ -22,8 +24,8 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         /// 地域メッシュコードと、範囲選択カーソルを保持して表示します。
         /// </summary>
         public void Init(
-            ReadOnlyCollection<MeshCode> meshCodes,
-            int coordinateZoneID, out GeoReference geoReference)
+            ReadOnlyCollection<MeshCode> meshCodes, string rootPath,
+            int coordinateZoneID, out GeoReference outGeoReference)
         {
 #if UNITY_EDITOR
             EditorUtility.DisplayProgressBar("", "範囲座標を計算中です...", 0.5f);
@@ -45,14 +47,17 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
             }
             referencePoint /= meshCodes.Count;
             referencePoint.Y = 0;
-            geoReference = new GeoReference(referencePoint, 1f, CoordinateSystem.EUN, coordinateZoneID);
+            outGeoReference = new GeoReference(referencePoint, 1f, CoordinateSystem.EUN, coordinateZoneID);
             var gizmoParent = new GameObject("MeshCodeGizmos").transform;
             foreach (var meshCode in meshCodes)
             {
                 var drawer = new MeshCodeGizmoDrawer();
-                drawer.SetUp(meshCode, geoReference, gizmoParent);
+                drawer.SetUp(meshCode, outGeoReference, gizmoParent);
                 this.meshCodeDrawers.Add(drawer);
             }
+
+            this.areaLod = new AreaLodController(rootPath, outGeoReference, meshCodes);
+            this.geoReference = outGeoReference;
 #if UNITY_EDITOR
             EditorUtility.ClearProgressBar();
 #endif
@@ -75,6 +80,8 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         protected override void OnSceneGUI(SceneView sceneView)
         {
             this.cursor.DrawSceneGUI();
+            this.areaLod.Update(GSIMapLoaderZoomSwitch.CalcCameraExtent(sceneView.camera, this.geoReference));
+            this.areaLod.DrawSceneGUI();
         }
         #endif
 

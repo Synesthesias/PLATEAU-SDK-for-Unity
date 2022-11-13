@@ -51,7 +51,7 @@ namespace PLATEAU.CityImport.AreaSelector
             GatherMeshCodesInGMLDirectory(this.dataSourcePath, out var meshCodes, out var packageFlags);
             var drawerObj = new GameObject($"{nameof(AreaSelectGizmosDrawer)}");
             this.gizmosDrawer = drawerObj.AddComponent<AreaSelectGizmosDrawer>();
-            this.gizmosDrawer.Init(meshCodes, this.coordinateZoneID, out this.geoReference);
+            this.gizmosDrawer.Init(meshCodes, this.dataSourcePath, this.coordinateZoneID, out this.geoReference);
             this.availablePackageFlags = packageFlags;
             var entireExtent = CalcExtentCoversAllMeshCodes(meshCodes);
             this.mapLoader = new GSIMapLoaderZoomSwitch(this.geoReference, entireExtent);

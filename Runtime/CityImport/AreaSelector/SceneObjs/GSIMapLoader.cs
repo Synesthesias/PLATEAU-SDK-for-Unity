@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -10,9 +9,7 @@ using PLATEAU.Util;
 using PLATEAU.Util.Async;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.Assertions;
 using UnityEngine.Rendering;
-using RenderSettings = UnityEditor.Experimental.RenderSettings;
 
 namespace PLATEAU.CityImport.AreaSelector.SceneObjs
 {

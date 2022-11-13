@@ -89,7 +89,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
             
         }
 
-        private static Extent CalcCameraExtent(Camera cam, GeoReference geoRef)
+        public static Extent CalcCameraExtent(Camera cam, GeoReference geoRef)
         {
             var camTrans = cam.transform;
             float distance = camTrans.position.y;
