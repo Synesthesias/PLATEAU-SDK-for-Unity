@@ -9,7 +9,7 @@ using PLATEAU.Util;
 using PLATEAU.Util.Async;
 using UnityEngine;
 
-namespace PLATEAU.Editor.CityImport.AreaSelector
+namespace PLATEAU.CityImport.AreaSelector.SceneObjs
 {
     public class AreaLodController
     {
@@ -26,6 +26,7 @@ namespace PLATEAU.Editor.CityImport.AreaSelector
             {
                 this.viewDict.TryAdd(meshCode, null);
             }
+            AreaLodView.Init();
         }
 
         public void Update(Extent cameraExtent)
@@ -33,7 +34,6 @@ namespace PLATEAU.Editor.CityImport.AreaSelector
             if (this.loadTask is { IsCompleted: false }) return;
             var meshCode = CalcNearestUnloadMeshCode(cameraExtent.Center);
             if (meshCode == null) return;
-            Debug.Log("starting task");
             this.loadTask = Task.Run(async() =>
             {
                 await LoadAsync(meshCode.Value);
