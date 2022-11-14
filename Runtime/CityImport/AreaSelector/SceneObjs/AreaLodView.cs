@@ -25,6 +25,9 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
             this.position = position;
         }
 
+        /// <summary>
+        /// 地図上に利用可能LODを表示するためのアイコンをロードします。
+        /// </summary>
         public static void Init()
         {
             iconDict = ComposeIconDict();
@@ -83,6 +86,9 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
                 });
         }
 
+        /// <summary>
+        /// このパッケージの利用可能LODを地図上で表示するかどうかを返します。
+        /// </summary>
         public static bool HasIconOfPackage(PredefinedCityModelPackage package)
         {
             iconDict ??= ComposeIconDict();
