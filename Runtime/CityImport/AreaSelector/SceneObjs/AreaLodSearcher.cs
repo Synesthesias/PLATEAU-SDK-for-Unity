@@ -17,12 +17,12 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
     {
         // MeshCode <- (1対多) <- [ Package種, (多)LODs ]
         private readonly ConcurrentDictionary<string, PackageToLodDict> meshCodeToPackageLodDict;
-        private readonly string rootPath;
+        private readonly UdxFileCollection collection;
 
         public AreaLodSearcher(string rootPath)
         {
             this.meshCodeToPackageLodDict = new ConcurrentDictionary<string, PackageToLodDict>();
-            this.rootPath = rootPath;
+            this.collection = UdxFileCollection.Find(rootPath);
         }
         
         
@@ -32,7 +32,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         public PackageToLodDict LoadLodsInMeshCode(string meshCode)
         {
 
-            SearchLodsInMeshCode(meshCode, this.rootPath, this.meshCodeToPackageLodDict);
+            SearchLodsInMeshCode(meshCode);
             if (this.meshCodeToPackageLodDict.TryGetValue(meshCode, out var packageToLodDict))
             {
                 // 上位のメッシュコードがあれば、そのパッケージとLODも戻り値に加えます。
@@ -50,23 +50,23 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
 
         /// <summary>
         /// メッシュコードと、その上位のメッシュコードに含まれるパッケージとLODを検索します。
-        /// 結果は引数の <paramref name="data" /> に格納されます。
+        /// <see cref="meshCodeToPackageLodDict"/> に格納されます。
         /// </summary>
-        private static void SearchLodsInMeshCode(string meshCode, string rootPath, ConcurrentDictionary<string, PackageToLodDict> data)
+        private void SearchLodsInMeshCode(string meshCode)
         {
             
             var meshCodes = new List<string> { meshCode };
             // 上位のメッシュコードも対象とします。
             var parsedMeshCode = MeshCode.Parse(meshCode);
             if(parsedMeshCode.Level == 3) meshCodes.Add(parsedMeshCode.Level2());
-            
+
             foreach (PredefinedCityModelPackage package in Enum.GetValues(typeof(PredefinedCityModelPackage)))
             {
                 if (!AreaLodView.HasIconOfPackage(package)) continue; // 地図に表示しないパッケージはスキップします。
                 foreach (string currentMeshCode in meshCodes)
                 {
                     // すでに検索済みデータがあればそれを利用します。
-                    if (data.TryGetValue(currentMeshCode, out var existing))
+                    if (this.meshCodeToPackageLodDict.TryGetValue(currentMeshCode, out var existing))
                     {
                         if (existing.ExistLod(package))
                         {
@@ -75,9 +75,9 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
                     }
                     
                     // LODを検索します。
-                    using var collection = UdxFileCollection.Find(rootPath).FilterByMeshCodes(new []{MeshCode.Parse(currentMeshCode)});
+                    var currentGmlCollection = this.collection.FilterByMeshCodes(new []{MeshCode.Parse(currentMeshCode)});
 
-                    var gmlPaths = collection.GetGmlFiles(package);
+                    var gmlPaths = currentGmlCollection.GetGmlFiles(package);
                     var lodSet = new SortedSet<uint>();
                     foreach (string gmlPath in gmlPaths)
                     {
@@ -86,6 +86,8 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
                     
                         // ファイルの中身を検索するので時間がかかります。
                         var lods = LodSearcher.SearchLodsInFile(fullPath);
+                        
+                        Debug.Log("Searched.");
                     
                         foreach (var lod in lods)
                         {
@@ -93,7 +95,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
                         }
                     }
                     // 検索結果を追加します。
-                    data.AddOrUpdate(currentMeshCode,
+                    this.meshCodeToPackageLodDict.AddOrUpdate(currentMeshCode,
                         _ =>
                         {
                             var d = new PackageToLodDict();
