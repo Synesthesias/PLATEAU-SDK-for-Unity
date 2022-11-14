@@ -1,10 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using PLATEAU.CityAdjust;
+﻿using PLATEAU.CityAdjust;
 using PLATEAU.CityInfo;
 using PLATEAU.Editor.EditorWindow.Common;
 using UnityEditor;
-using UnityEngine;
 
 namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
 {

@@ -48,13 +48,12 @@ namespace PLATEAU.CityImport.AreaSelector
         {
             RotateSceneViewCameraDown();
             AreaSelectorGUI.Enable(this);
-            // TODO タプルで戻るのは分かりにくいのでは
-            var gatherResult = GatherMeshCodesInGMLDirectory(this.dataSourcePath);
+            GatherMeshCodesInGMLDirectory(this.dataSourcePath, out var meshCodes, out var packageFlags);
             var drawerObj = new GameObject($"{nameof(AreaSelectGizmosDrawer)}");
             this.gizmosDrawer = drawerObj.AddComponent<AreaSelectGizmosDrawer>();
-            this.gizmosDrawer.Init(gatherResult.meshCodes, this.coordinateZoneID, out this.geoReference);
-            this.availablePackageFlags = gatherResult.availablePackageFlags;
-            var entireExtent = CalcExtentCoversAllMeshCodes(gatherResult.meshCodes);
+            this.gizmosDrawer.Init(meshCodes, this.dataSourcePath, this.coordinateZoneID, out this.geoReference);
+            this.availablePackageFlags = packageFlags;
+            var entireExtent = CalcExtentCoversAllMeshCodes(meshCodes);
             this.mapLoader = new GSIMapLoaderZoomSwitch(this.geoReference, entireExtent);
         }
 
@@ -106,20 +105,18 @@ namespace PLATEAU.CityImport.AreaSelector
             return entireExtent;
         }
 
-        private static (ReadOnlyCollection<MeshCode> meshCodes, PredefinedCityModelPackage availablePackageFlags) GatherMeshCodesInGMLDirectory(string sourcePath)
+        private static void GatherMeshCodesInGMLDirectory(string sourcePath, out ReadOnlyCollection<MeshCode> meshCodes, out PredefinedCityModelPackage availablePackageFlags)
         {
             #if UNITY_EDITOR
             EditorUtility.DisplayProgressBar("", "データファイルを検索中です...", 0f);
             #endif
             var collection = UdxFileCollection.Find(sourcePath);
-            var availablePackageFlags = collection.Packages;
-            var meshCodes = collection.MeshCodes;
+            availablePackageFlags = collection.Packages;
+            meshCodes = collection.MeshCodes;
             if (meshCodes.Count <= 0)
             {
                 Debug.LogError("No MeshCode found.");
             }
-
-            return (meshCodes, availablePackageFlags);
         }
 
         

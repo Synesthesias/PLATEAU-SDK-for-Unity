@@ -298,6 +298,12 @@ namespace PLATEAU.Interop
                 op1.Height - op2.Height
             );
         }
+
+        /// <summary>
+        /// 緯度、経度の値を2次元ベクトルとして見たときのベクトルの長さの2乗です。
+        /// 高さは無視されます。
+        /// </summary>
+        public double SqrMagnitudeLatLon => this.Latitude * this.Latitude + this.Longitude * this.Longitude;
     }
 
     /// <summary>
@@ -1443,5 +1449,14 @@ namespace PLATEAU.Interop
             [In] IntPtr handle,
             out TileCoordinate outTileCoordinate,
             int index);
+        
+        // ***************
+        //  available_lod_searcher_c.cpp
+        // ***************
+
+        [DllImport(DllName, CharSet = CharSet.Ansi)]
+        internal static extern APIResult plateau_lod_searcher_search_lods_in_file(
+            [In] byte[] filePathUtf8,
+            out uint outLodFlags);
     }
 }

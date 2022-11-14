@@ -5,7 +5,6 @@ using PLATEAU.Geometries;
 using PLATEAU.Interop;
 using PLATEAU.PolygonMesh;
 using PLATEAU.Util;
-using UnityEditor.Compilation;
 using UnityEngine;
 using UnityEngine.Assertions;
 using Mesh = UnityEngine.Mesh;

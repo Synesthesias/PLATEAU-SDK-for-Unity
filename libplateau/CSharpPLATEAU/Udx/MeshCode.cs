@@ -32,10 +32,15 @@ namespace PLATEAU.Udx
 
         public override string ToString()
         {
-            string secondString = $"{this.FirstRow | 00}{this.FirstCol | 00}{this.SecondRow | 0}{this.SecondCol | 0}";
+            string secondString = Level2();
             if (this.Level == 2)
                 return secondString;
             return secondString + $"{this.ThirdRow | 0}{this.ThirdCol | 0}";
+        }
+
+        public string Level2()
+        {
+            return $"{this.FirstRow | 00}{this.FirstCol | 00}{this.SecondRow | 0}{this.SecondCol | 0}";
         }
     }
 }
