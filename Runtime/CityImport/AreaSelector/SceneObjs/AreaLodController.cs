@@ -61,7 +61,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
 
         public async Task LoadAsync(MeshCode meshCode)
         {
-            var packageLods = await Task.Run(() => this.searcher.LoadLodsInMeshCode(meshCode).ToArray());
+            var packageLods = await Task.Run(() => this.searcher.LoadLodsInMeshCode(meshCode.ToString()).ToArray());
             var position = this.geoReference.Project(meshCode.Extent.Center).ToUnityVector();
             this.viewDict.AddOrUpdate(meshCode,
                 code => new AreaLodView(packageLods, position),
