@@ -17,7 +17,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
     {
         private readonly AreaLodSearcher searcher;
         private readonly ConcurrentDictionary<MeshCode, AreaLodView> viewDict = new ConcurrentDictionary<MeshCode, AreaLodView>();
-        private Task loadTask = null;
+        private Task loadTask;
         private readonly GeoReference geoReference;
 
         public AreaLodController(string rootPath, GeoReference geoReference, IEnumerable<MeshCode> allMeshCodes)
@@ -65,7 +65,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
             return nearestMeshCode;
         }
 
-        public async Task LoadAsync(MeshCode meshCode)
+        private async Task LoadAsync(MeshCode meshCode)
         {
             var packageLods = await Task.Run(() => this.searcher.LoadLodsInMeshCode(meshCode.ToString()));
             var position = this.geoReference.Project(meshCode.Extent.Center).ToUnityVector();

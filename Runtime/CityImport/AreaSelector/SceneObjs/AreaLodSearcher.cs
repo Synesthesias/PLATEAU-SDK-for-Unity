@@ -11,6 +11,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
 {
     /// <summary>
     /// メッシュコード内で利用可能なLODを検索します。
+    /// <see cref="AreaLodController"/> によって保持されます。
     /// </summary>
     public class AreaLodSearcher
     {
@@ -25,18 +26,20 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         }
         
         
-
+        /// <summary>
+        /// 与えられたメッシュコードと、その上位に含まれるパッケージとLODを返します。
+        /// </summary>
         public PackageToLodDict LoadLodsInMeshCode(string meshCode)
         {
 
-            SearchLodsInMeshCodeInner(meshCode, this.rootPath, this.data);
+            SearchLodsInMeshCode(meshCode, this.rootPath, this.data);
             if (this.data.TryGetValue(meshCode, out var packageToLodDict))
             {
                 if (MeshCode.Parse(meshCode).Level == 3)
                 {
+                    // 上位のメッシュコードがあれば、そのパッケージとLODも戻り値に加えます。
                     if (this.data.TryGetValue(MeshCode.Parse(meshCode).Level2(), out var packageToLodDictLevel2))
                     {
-                        // foreach(var l2 in packageToLodDictLevel2) packageToLodDict.AddOrUpdate(l2);
                         packageToLodDict.Marge(packageToLodDictLevel2);
                     }
                 }
@@ -45,7 +48,11 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
             return packageToLodDict;
         }
 
-        public static void SearchLodsInMeshCodeInner(string meshCode, string rootPath, ConcurrentDictionary<string, PackageToLodDict> data)
+        /// <summary>
+        /// メッシュコードと、その上位のメッシュコードに含まれるパッケージとLODを検索します。
+        /// 結果は引数の <paramref name="data" /> に格納されます。
+        /// </summary>
+        private static void SearchLodsInMeshCode(string meshCode, string rootPath, ConcurrentDictionary<string, PackageToLodDict> data)
         {
             
             var meshCodes = new List<string> { meshCode };
@@ -92,7 +99,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
                             var d = new PackageToLodDict();
                             d.AddOrUpdate(package, lodSet);
                             return d;
-                        },//new ConcurrentBag<PackageLods> { new PackageLods(package, lodSet) },
+                        },
                         (_, d) =>
                         {
                             d.AddOrUpdate(package, lodSet);
@@ -103,6 +110,9 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         } 
     }
 
+    /// <summary>
+    /// パッケージとそこに含まれるLODの組です。
+    /// </summary>
     public class PackageToLodDict
     {
         private ConcurrentDictionary<PredefinedCityModelPackage, ConcurrentBag<uint>> data = new ConcurrentDictionary<PredefinedCityModelPackage, ConcurrentBag<uint>>();
@@ -141,20 +151,6 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
             }
         }
         
-        /// <summary>
-        /// <see cref="PredefinedCityModelPackage"/> と LODリストの組です。
-        /// </summary>
-        // public class PackageLods
-        // {
-        //     public PredefinedCityModelPackage Package { get; private set; }
-        //     public List<uint> Lods { get; private set; }
-        //
-        //     public PackageLods(PredefinedCityModelPackage package, IEnumerable<uint> lods)
-        //     {
-        //         Package = package;
-        //         Lods = lods.ToList();
-        //     }
-        // }
         public IEnumerator<KeyValuePair<PredefinedCityModelPackage, ConcurrentBag<uint>>> GetEnumerator()
         {
             return this.data.GetEnumerator();

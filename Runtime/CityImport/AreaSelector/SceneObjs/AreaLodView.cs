@@ -8,11 +8,14 @@ using UnityEngine;
 
 namespace PLATEAU.CityImport.AreaSelector.SceneObjs
 {
+    /// <summary>
+    /// 範囲選択画面で、メッシュコードごとに利用可能なLODを表示します。
+    /// <see cref="AreaLodController"/> によって保持されます。
+    /// </summary>
     public class AreaLodView
     {
-        private PackageToLodDict packageToLodDict = null;
-        private Vector3 position;
-        // private static readonly Color textColor = Color.black;
+        private readonly PackageToLodDict packageToLodDict;
+        private readonly Vector3 position;
         private const string iconDirPath = "Packages/com.synesthesias.plateau-unity-sdk/Images/AreaSelect";
         private static ConcurrentDictionary<(PredefinedCityModelPackage package, uint lod), Texture> iconDict;
 
@@ -35,18 +38,6 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
                 Debug.LogError("Failed to load icons.");
                 return;
             }
-            // var sb = new StringBuilder();
-            // foreach (var packageLod in this.packageLods)
-            // {
-            //     if (packageLod.Lods.Count == 0) continue;
-            //     sb.Append($"{packageLod.Package} => ");
-            //     foreach(var lod in packageLod.Lods)
-            //     {
-            //         sb.Append($"{lod}, ");
-            //     }
-            //
-            //     sb.Append("\n");
-            // }
 
             var pos = this.position;
             foreach (var packageToLods in this.packageToLodDict)
@@ -56,9 +47,11 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
                 var package = packageToLods.Key;
                 if (iconDict.TryGetValue((package, maxLod), out var iconTex))
                 {
-                    var style = new GUIStyle(EditorStyles.label);
-                    style.fixedHeight = 50;
-                    style.fixedWidth = 50;
+                    var style = new GUIStyle(EditorStyles.label)
+                    {
+                        fixedHeight = 50,
+                        fixedWidth = 50
+                    };
                     var content = new GUIContent(iconTex);
                     Handles.Label(pos, content, style);
                     pos += new Vector3(100, 0, 0);
