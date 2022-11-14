@@ -15,14 +15,16 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
     public class AreaLodView
     {
         private readonly PackageToLodDict packageToLodDict;
-        private readonly Vector3 position;
+        private readonly Vector3 meshCodeUnityPositionUpperLeft;
+        private readonly Vector3 meshCodeUnityPositionLowerRight;
         private const string iconDirPath = "Packages/com.synesthesias.plateau-unity-sdk/Images/AreaSelect";
         private static ConcurrentDictionary<(PredefinedCityModelPackage package, uint lod), Texture> iconDict;
 
-        public AreaLodView(PackageToLodDict packageToLodDict, Vector3 position)
+        public AreaLodView(PackageToLodDict packageToLodDict, Vector3 meshCodeUnityPositionUpperLeft, Vector3 meshCodeUnityPositionLowerRight)
         {
             this.packageToLodDict = packageToLodDict;
-            this.position = position;
+            this.meshCodeUnityPositionUpperLeft = meshCodeUnityPositionUpperLeft;
+            this.meshCodeUnityPositionLowerRight = meshCodeUnityPositionLowerRight;
         }
 
         /// <summary>
@@ -33,7 +35,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
             iconDict = ComposeIconDict();
         }
 
-        public void DrawHandles()
+        public void DrawHandles(Camera camera)
         {
             if (this.packageToLodDict == null) return;
             if (iconDict == null)
@@ -42,23 +44,41 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
                 return;
             }
 
-            var pos = this.position;
+            // アイコンの表示を開始する地点は、地域メッシュコードの左上から、オフセット(スクリーンスペース)だけ動かした地点とします。
+            var pos = this.meshCodeUnityPositionUpperLeft;
+            var posOffsetScreenSpace = new Vector3(5, -5, 0);
+            pos = camera.ScreenToWorldPoint(camera.WorldToScreenPoint(pos) + posOffsetScreenSpace);
+            
+            // アイコンを表示します。
             foreach (var packageToLods in this.packageToLodDict)
             {
                 if (packageToLods.Value.IsEmpty) continue;
                 uint maxLod = packageToLods.Value.Max();
                 var package = packageToLods.Key;
-                if (iconDict.TryGetValue((package, maxLod), out var iconTex))
+                if (!iconDict.TryGetValue((package, maxLod), out var iconTex)) continue;
+
+                float meshCodeScreenWidth =
+                    (camera.WorldToScreenPoint(this.meshCodeUnityPositionLowerRight) -
+                     camera.WorldToScreenPoint(this.meshCodeUnityPositionUpperLeft))
+                    .x;
+                
+                // 地域メッシュコードの枠内にアイコンが4つ並ぶ程度の大きさ
+                float iconWidth = Mathf.Min(70, meshCodeScreenWidth / 4);
+                
+                var style = new GUIStyle(EditorStyles.label)
                 {
-                    var style = new GUIStyle(EditorStyles.label)
-                    {
-                        fixedHeight = 50,
-                        fixedWidth = 50
-                    };
-                    var content = new GUIContent(iconTex);
-                    Handles.Label(pos, content, style);
-                    pos += new Vector3(100, 0, 0);
-                }
+                    fixedHeight = iconWidth,
+                    fixedWidth = iconWidth,
+                    alignment = TextAnchor.UpperLeft
+                };
+                var content = new GUIContent(iconTex);
+                Handles.Label(pos, content, style);
+
+                var iconScreenPosLeft = camera.WorldToScreenPoint(pos);
+                var iconScreenPosRight = iconScreenPosLeft + new Vector3(iconWidth, 0, 0);
+                var distance = Mathf.Abs(camera.transform.position.y - pos.y);
+                var iconWorldPosRight = camera.ScreenToWorldPoint(new Vector3(iconScreenPosRight.x, iconScreenPosRight.y, distance));
+                pos += new Vector3(iconWorldPosRight.x - pos.x, 0, 0);
             }
         }
 

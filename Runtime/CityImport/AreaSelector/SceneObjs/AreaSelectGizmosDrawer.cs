@@ -80,7 +80,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         {
             this.cursor.DrawSceneGUI();
             this.areaLod.Update(GSIMapLoaderZoomSwitch.CalcCameraExtent(sceneView.camera, this.geoReference));
-            this.areaLod.DrawSceneGUI();
+            this.areaLod.DrawSceneGUI(sceneView.camera);
         }
         #endif
 

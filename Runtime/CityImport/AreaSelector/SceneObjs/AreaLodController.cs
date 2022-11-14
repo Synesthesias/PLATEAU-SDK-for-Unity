@@ -6,6 +6,7 @@ using PLATEAU.Interop;
 using PLATEAU.Udx;
 using PLATEAU.Util;
 using PLATEAU.Util.Async;
+using UnityEngine;
 
 namespace PLATEAU.CityImport.AreaSelector.SceneObjs
 {
@@ -75,20 +76,23 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         private async Task LoadAsync(MeshCode meshCode)
         {
             var packageLods = await Task.Run(() => this.searcher.LoadLodsInMeshCode(meshCode.ToString()));
-            var position = this.geoReference.Project(meshCode.Extent.Center).ToUnityVector();
+            var extent = meshCode.Extent;
+            var positionUpperLeft = this.geoReference.Project(new GeoCoordinate(extent.Max.Latitude, extent.Min.Longitude, 0)).ToUnityVector();
+            var positionLowerRight = this.geoReference
+                .Project(new GeoCoordinate(extent.Min.Latitude, extent.Max.Longitude, 0)).ToUnityVector();
             this.viewDict.AddOrUpdate(meshCode,
-                code => new AreaLodView(packageLods, position),
-                (code, view) => new AreaLodView(packageLods, position));
+                code => new AreaLodView(packageLods, positionUpperLeft, positionLowerRight),
+                (code, view) => new AreaLodView(packageLods, positionUpperLeft, positionLowerRight));
         }
 
         /// <summary>
         /// ビューに描画させます。
         /// </summary>
-        public void DrawSceneGUI()
+        public void DrawSceneGUI(Camera camera)
         {
             foreach (var view in this.viewDict.Values)
             {
-                view?.DrawHandles();
+                view?.DrawHandles(camera);
             }
         }
     }
