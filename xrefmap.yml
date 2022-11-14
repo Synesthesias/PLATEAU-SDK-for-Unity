@@ -1927,6 +1927,144 @@ references:
   commentId: N:PLATEAU.CityImport.AreaSelector.SceneObjs
   fullName: PLATEAU.CityImport.AreaSelector.SceneObjs
   nameWithType: PLATEAU.CityImport.AreaSelector.SceneObjs
+- uid: PLATEAU.CityImport.AreaSelector.SceneObjs.AreaLodController
+  name: AreaLodController
+  href: api/PLATEAU.CityImport.AreaSelector.SceneObjs.AreaLodController.html
+  commentId: T:PLATEAU.CityImport.AreaSelector.SceneObjs.AreaLodController
+  fullName: PLATEAU.CityImport.AreaSelector.SceneObjs.AreaLodController
+  nameWithType: AreaLodController
+- uid: PLATEAU.CityImport.AreaSelector.SceneObjs.AreaLodController.#ctor(System.String,GeoReference,IEnumerable{MeshCode})
+  name: AreaLodController(String, GeoReference, IEnumerable<MeshCode>)
+  href: api/PLATEAU.CityImport.AreaSelector.SceneObjs.AreaLodController.html#PLATEAU_CityImport_AreaSelector_SceneObjs_AreaLodController__ctor_System_String_GeoReference_IEnumerable_MeshCode__
+  commentId: M:PLATEAU.CityImport.AreaSelector.SceneObjs.AreaLodController.#ctor(System.String,GeoReference,IEnumerable{MeshCode})
+  name.vb: AreaLodController(String, GeoReference, IEnumerable(Of MeshCode))
+  fullName: PLATEAU.CityImport.AreaSelector.SceneObjs.AreaLodController.AreaLodController(System.String, GeoReference, IEnumerable<MeshCode>)
+  fullName.vb: PLATEAU.CityImport.AreaSelector.SceneObjs.AreaLodController.AreaLodController(System.String, GeoReference, IEnumerable(Of MeshCode))
+  nameWithType: AreaLodController.AreaLodController(String, GeoReference, IEnumerable<MeshCode>)
+  nameWithType.vb: AreaLodController.AreaLodController(String, GeoReference, IEnumerable(Of MeshCode))
+- uid: PLATEAU.CityImport.AreaSelector.SceneObjs.AreaLodController.#ctor*
+  name: AreaLodController
+  href: api/PLATEAU.CityImport.AreaSelector.SceneObjs.AreaLodController.html#PLATEAU_CityImport_AreaSelector_SceneObjs_AreaLodController__ctor_
+  commentId: Overload:PLATEAU.CityImport.AreaSelector.SceneObjs.AreaLodController.#ctor
+  isSpec: "True"
+  fullName: PLATEAU.CityImport.AreaSelector.SceneObjs.AreaLodController.AreaLodController
+  nameWithType: AreaLodController.AreaLodController
+- uid: PLATEAU.CityImport.AreaSelector.SceneObjs.AreaLodController.DrawSceneGUI(Camera)
+  name: DrawSceneGUI(Camera)
+  href: api/PLATEAU.CityImport.AreaSelector.SceneObjs.AreaLodController.html#PLATEAU_CityImport_AreaSelector_SceneObjs_AreaLodController_DrawSceneGUI_Camera_
+  commentId: M:PLATEAU.CityImport.AreaSelector.SceneObjs.AreaLodController.DrawSceneGUI(Camera)
+  fullName: PLATEAU.CityImport.AreaSelector.SceneObjs.AreaLodController.DrawSceneGUI(Camera)
+  nameWithType: AreaLodController.DrawSceneGUI(Camera)
+- uid: PLATEAU.CityImport.AreaSelector.SceneObjs.AreaLodController.DrawSceneGUI*
+  name: DrawSceneGUI
+  href: api/PLATEAU.CityImport.AreaSelector.SceneObjs.AreaLodController.html#PLATEAU_CityImport_AreaSelector_SceneObjs_AreaLodController_DrawSceneGUI_
+  commentId: Overload:PLATEAU.CityImport.AreaSelector.SceneObjs.AreaLodController.DrawSceneGUI
+  isSpec: "True"
+  fullName: PLATEAU.CityImport.AreaSelector.SceneObjs.AreaLodController.DrawSceneGUI
+  nameWithType: AreaLodController.DrawSceneGUI
+- uid: PLATEAU.CityImport.AreaSelector.SceneObjs.AreaLodController.Update(Extent)
+  name: Update(Extent)
+  href: api/PLATEAU.CityImport.AreaSelector.SceneObjs.AreaLodController.html#PLATEAU_CityImport_AreaSelector_SceneObjs_AreaLodController_Update_Extent_
+  commentId: M:PLATEAU.CityImport.AreaSelector.SceneObjs.AreaLodController.Update(Extent)
+  fullName: PLATEAU.CityImport.AreaSelector.SceneObjs.AreaLodController.Update(Extent)
+  nameWithType: AreaLodController.Update(Extent)
+- uid: PLATEAU.CityImport.AreaSelector.SceneObjs.AreaLodController.Update*
+  name: Update
+  href: api/PLATEAU.CityImport.AreaSelector.SceneObjs.AreaLodController.html#PLATEAU_CityImport_AreaSelector_SceneObjs_AreaLodController_Update_
+  commentId: Overload:PLATEAU.CityImport.AreaSelector.SceneObjs.AreaLodController.Update
+  isSpec: "True"
+  fullName: PLATEAU.CityImport.AreaSelector.SceneObjs.AreaLodController.Update
+  nameWithType: AreaLodController.Update
+- uid: PLATEAU.CityImport.AreaSelector.SceneObjs.AreaLodSearcher
+  name: AreaLodSearcher
+  href: api/PLATEAU.CityImport.AreaSelector.SceneObjs.AreaLodSearcher.html
+  commentId: T:PLATEAU.CityImport.AreaSelector.SceneObjs.AreaLodSearcher
+  fullName: PLATEAU.CityImport.AreaSelector.SceneObjs.AreaLodSearcher
+  nameWithType: AreaLodSearcher
+- uid: PLATEAU.CityImport.AreaSelector.SceneObjs.AreaLodSearcher.#ctor(System.String)
+  name: AreaLodSearcher(String)
+  href: api/PLATEAU.CityImport.AreaSelector.SceneObjs.AreaLodSearcher.html#PLATEAU_CityImport_AreaSelector_SceneObjs_AreaLodSearcher__ctor_System_String_
+  commentId: M:PLATEAU.CityImport.AreaSelector.SceneObjs.AreaLodSearcher.#ctor(System.String)
+  fullName: PLATEAU.CityImport.AreaSelector.SceneObjs.AreaLodSearcher.AreaLodSearcher(System.String)
+  nameWithType: AreaLodSearcher.AreaLodSearcher(String)
+- uid: PLATEAU.CityImport.AreaSelector.SceneObjs.AreaLodSearcher.#ctor*
+  name: AreaLodSearcher
+  href: api/PLATEAU.CityImport.AreaSelector.SceneObjs.AreaLodSearcher.html#PLATEAU_CityImport_AreaSelector_SceneObjs_AreaLodSearcher__ctor_
+  commentId: Overload:PLATEAU.CityImport.AreaSelector.SceneObjs.AreaLodSearcher.#ctor
+  isSpec: "True"
+  fullName: PLATEAU.CityImport.AreaSelector.SceneObjs.AreaLodSearcher.AreaLodSearcher
+  nameWithType: AreaLodSearcher.AreaLodSearcher
+- uid: PLATEAU.CityImport.AreaSelector.SceneObjs.AreaLodSearcher.LoadLodsInMeshCode(System.String)
+  name: LoadLodsInMeshCode(String)
+  href: api/PLATEAU.CityImport.AreaSelector.SceneObjs.AreaLodSearcher.html#PLATEAU_CityImport_AreaSelector_SceneObjs_AreaLodSearcher_LoadLodsInMeshCode_System_String_
+  commentId: M:PLATEAU.CityImport.AreaSelector.SceneObjs.AreaLodSearcher.LoadLodsInMeshCode(System.String)
+  fullName: PLATEAU.CityImport.AreaSelector.SceneObjs.AreaLodSearcher.LoadLodsInMeshCode(System.String)
+  nameWithType: AreaLodSearcher.LoadLodsInMeshCode(String)
+- uid: PLATEAU.CityImport.AreaSelector.SceneObjs.AreaLodSearcher.LoadLodsInMeshCode*
+  name: LoadLodsInMeshCode
+  href: api/PLATEAU.CityImport.AreaSelector.SceneObjs.AreaLodSearcher.html#PLATEAU_CityImport_AreaSelector_SceneObjs_AreaLodSearcher_LoadLodsInMeshCode_
+  commentId: Overload:PLATEAU.CityImport.AreaSelector.SceneObjs.AreaLodSearcher.LoadLodsInMeshCode
+  isSpec: "True"
+  fullName: PLATEAU.CityImport.AreaSelector.SceneObjs.AreaLodSearcher.LoadLodsInMeshCode
+  nameWithType: AreaLodSearcher.LoadLodsInMeshCode
+- uid: PLATEAU.CityImport.AreaSelector.SceneObjs.AreaLodView
+  name: AreaLodView
+  href: api/PLATEAU.CityImport.AreaSelector.SceneObjs.AreaLodView.html
+  commentId: T:PLATEAU.CityImport.AreaSelector.SceneObjs.AreaLodView
+  fullName: PLATEAU.CityImport.AreaSelector.SceneObjs.AreaLodView
+  nameWithType: AreaLodView
+- uid: PLATEAU.CityImport.AreaSelector.SceneObjs.AreaLodView.#ctor(PLATEAU.CityImport.AreaSelector.SceneObjs.PackageToLodDict,Vector3,Vector3)
+  name: AreaLodView(PackageToLodDict, Vector3, Vector3)
+  href: api/PLATEAU.CityImport.AreaSelector.SceneObjs.AreaLodView.html#PLATEAU_CityImport_AreaSelector_SceneObjs_AreaLodView__ctor_PLATEAU_CityImport_AreaSelector_SceneObjs_PackageToLodDict_Vector3_Vector3_
+  commentId: M:PLATEAU.CityImport.AreaSelector.SceneObjs.AreaLodView.#ctor(PLATEAU.CityImport.AreaSelector.SceneObjs.PackageToLodDict,Vector3,Vector3)
+  fullName: PLATEAU.CityImport.AreaSelector.SceneObjs.AreaLodView.AreaLodView(PLATEAU.CityImport.AreaSelector.SceneObjs.PackageToLodDict, Vector3, Vector3)
+  nameWithType: AreaLodView.AreaLodView(PackageToLodDict, Vector3, Vector3)
+- uid: PLATEAU.CityImport.AreaSelector.SceneObjs.AreaLodView.#ctor*
+  name: AreaLodView
+  href: api/PLATEAU.CityImport.AreaSelector.SceneObjs.AreaLodView.html#PLATEAU_CityImport_AreaSelector_SceneObjs_AreaLodView__ctor_
+  commentId: Overload:PLATEAU.CityImport.AreaSelector.SceneObjs.AreaLodView.#ctor
+  isSpec: "True"
+  fullName: PLATEAU.CityImport.AreaSelector.SceneObjs.AreaLodView.AreaLodView
+  nameWithType: AreaLodView.AreaLodView
+- uid: PLATEAU.CityImport.AreaSelector.SceneObjs.AreaLodView.DrawHandles(Camera)
+  name: DrawHandles(Camera)
+  href: api/PLATEAU.CityImport.AreaSelector.SceneObjs.AreaLodView.html#PLATEAU_CityImport_AreaSelector_SceneObjs_AreaLodView_DrawHandles_Camera_
+  commentId: M:PLATEAU.CityImport.AreaSelector.SceneObjs.AreaLodView.DrawHandles(Camera)
+  fullName: PLATEAU.CityImport.AreaSelector.SceneObjs.AreaLodView.DrawHandles(Camera)
+  nameWithType: AreaLodView.DrawHandles(Camera)
+- uid: PLATEAU.CityImport.AreaSelector.SceneObjs.AreaLodView.DrawHandles*
+  name: DrawHandles
+  href: api/PLATEAU.CityImport.AreaSelector.SceneObjs.AreaLodView.html#PLATEAU_CityImport_AreaSelector_SceneObjs_AreaLodView_DrawHandles_
+  commentId: Overload:PLATEAU.CityImport.AreaSelector.SceneObjs.AreaLodView.DrawHandles
+  isSpec: "True"
+  fullName: PLATEAU.CityImport.AreaSelector.SceneObjs.AreaLodView.DrawHandles
+  nameWithType: AreaLodView.DrawHandles
+- uid: PLATEAU.CityImport.AreaSelector.SceneObjs.AreaLodView.HasIconOfPackage(PredefinedCityModelPackage)
+  name: HasIconOfPackage(PredefinedCityModelPackage)
+  href: api/PLATEAU.CityImport.AreaSelector.SceneObjs.AreaLodView.html#PLATEAU_CityImport_AreaSelector_SceneObjs_AreaLodView_HasIconOfPackage_PredefinedCityModelPackage_
+  commentId: M:PLATEAU.CityImport.AreaSelector.SceneObjs.AreaLodView.HasIconOfPackage(PredefinedCityModelPackage)
+  fullName: PLATEAU.CityImport.AreaSelector.SceneObjs.AreaLodView.HasIconOfPackage(PredefinedCityModelPackage)
+  nameWithType: AreaLodView.HasIconOfPackage(PredefinedCityModelPackage)
+- uid: PLATEAU.CityImport.AreaSelector.SceneObjs.AreaLodView.HasIconOfPackage*
+  name: HasIconOfPackage
+  href: api/PLATEAU.CityImport.AreaSelector.SceneObjs.AreaLodView.html#PLATEAU_CityImport_AreaSelector_SceneObjs_AreaLodView_HasIconOfPackage_
+  commentId: Overload:PLATEAU.CityImport.AreaSelector.SceneObjs.AreaLodView.HasIconOfPackage
+  isSpec: "True"
+  fullName: PLATEAU.CityImport.AreaSelector.SceneObjs.AreaLodView.HasIconOfPackage
+  nameWithType: AreaLodView.HasIconOfPackage
+- uid: PLATEAU.CityImport.AreaSelector.SceneObjs.AreaLodView.Init
+  name: Init()
+  href: api/PLATEAU.CityImport.AreaSelector.SceneObjs.AreaLodView.html#PLATEAU_CityImport_AreaSelector_SceneObjs_AreaLodView_Init
+  commentId: M:PLATEAU.CityImport.AreaSelector.SceneObjs.AreaLodView.Init
+  fullName: PLATEAU.CityImport.AreaSelector.SceneObjs.AreaLodView.Init()
+  nameWithType: AreaLodView.Init()
+- uid: PLATEAU.CityImport.AreaSelector.SceneObjs.AreaLodView.Init*
+  name: Init
+  href: api/PLATEAU.CityImport.AreaSelector.SceneObjs.AreaLodView.html#PLATEAU_CityImport_AreaSelector_SceneObjs_AreaLodView_Init_
+  commentId: Overload:PLATEAU.CityImport.AreaSelector.SceneObjs.AreaLodView.Init
+  isSpec: "True"
+  fullName: PLATEAU.CityImport.AreaSelector.SceneObjs.AreaLodView.Init
+  nameWithType: AreaLodView.Init
 - uid: PLATEAU.CityImport.AreaSelector.SceneObjs.GSIMapLoader
   name: GSIMapLoader
   href: api/PLATEAU.CityImport.AreaSelector.SceneObjs.GSIMapLoader.html
@@ -1971,6 +2109,19 @@ references:
   isSpec: "True"
   fullName: PLATEAU.CityImport.AreaSelector.SceneObjs.GSIMapLoaderZoomSwitch.GSIMapLoaderZoomSwitch
   nameWithType: GSIMapLoaderZoomSwitch.GSIMapLoaderZoomSwitch
+- uid: PLATEAU.CityImport.AreaSelector.SceneObjs.GSIMapLoaderZoomSwitch.CalcCameraExtent(Camera,GeoReference)
+  name: CalcCameraExtent(Camera, GeoReference)
+  href: api/PLATEAU.CityImport.AreaSelector.SceneObjs.GSIMapLoaderZoomSwitch.html#PLATEAU_CityImport_AreaSelector_SceneObjs_GSIMapLoaderZoomSwitch_CalcCameraExtent_Camera_GeoReference_
+  commentId: M:PLATEAU.CityImport.AreaSelector.SceneObjs.GSIMapLoaderZoomSwitch.CalcCameraExtent(Camera,GeoReference)
+  fullName: PLATEAU.CityImport.AreaSelector.SceneObjs.GSIMapLoaderZoomSwitch.CalcCameraExtent(Camera, GeoReference)
+  nameWithType: GSIMapLoaderZoomSwitch.CalcCameraExtent(Camera, GeoReference)
+- uid: PLATEAU.CityImport.AreaSelector.SceneObjs.GSIMapLoaderZoomSwitch.CalcCameraExtent*
+  name: CalcCameraExtent
+  href: api/PLATEAU.CityImport.AreaSelector.SceneObjs.GSIMapLoaderZoomSwitch.html#PLATEAU_CityImport_AreaSelector_SceneObjs_GSIMapLoaderZoomSwitch_CalcCameraExtent_
+  commentId: Overload:PLATEAU.CityImport.AreaSelector.SceneObjs.GSIMapLoaderZoomSwitch.CalcCameraExtent
+  isSpec: "True"
+  fullName: PLATEAU.CityImport.AreaSelector.SceneObjs.GSIMapLoaderZoomSwitch.CalcCameraExtent
+  nameWithType: GSIMapLoaderZoomSwitch.CalcCameraExtent
 - uid: PLATEAU.CityImport.AreaSelector.SceneObjs.GSIMapLoaderZoomSwitch.Dispose
   name: Dispose()
   href: api/PLATEAU.CityImport.AreaSelector.SceneObjs.GSIMapLoaderZoomSwitch.html#PLATEAU_CityImport_AreaSelector_SceneObjs_GSIMapLoaderZoomSwitch_Dispose
@@ -2029,6 +2180,67 @@ references:
   isSpec: "True"
   fullName: PLATEAU.CityImport.AreaSelector.SceneObjs.HandlesBase.EnableHandles
   nameWithType: HandlesBase.EnableHandles
+- uid: PLATEAU.CityImport.AreaSelector.SceneObjs.PackageToLodDict
+  name: PackageToLodDict
+  href: api/PLATEAU.CityImport.AreaSelector.SceneObjs.PackageToLodDict.html
+  commentId: T:PLATEAU.CityImport.AreaSelector.SceneObjs.PackageToLodDict
+  fullName: PLATEAU.CityImport.AreaSelector.SceneObjs.PackageToLodDict
+  nameWithType: PackageToLodDict
+- uid: PLATEAU.CityImport.AreaSelector.SceneObjs.PackageToLodDict.AddOrUpdate(PredefinedCityModelPackage,IEnumerable{System.UInt32})
+  name: AddOrUpdate(PredefinedCityModelPackage, IEnumerable<UInt32>)
+  href: api/PLATEAU.CityImport.AreaSelector.SceneObjs.PackageToLodDict.html#PLATEAU_CityImport_AreaSelector_SceneObjs_PackageToLodDict_AddOrUpdate_PredefinedCityModelPackage_IEnumerable_System_UInt32__
+  commentId: M:PLATEAU.CityImport.AreaSelector.SceneObjs.PackageToLodDict.AddOrUpdate(PredefinedCityModelPackage,IEnumerable{System.UInt32})
+  name.vb: AddOrUpdate(PredefinedCityModelPackage, IEnumerable(Of UInt32))
+  fullName: PLATEAU.CityImport.AreaSelector.SceneObjs.PackageToLodDict.AddOrUpdate(PredefinedCityModelPackage, IEnumerable<System.UInt32>)
+  fullName.vb: PLATEAU.CityImport.AreaSelector.SceneObjs.PackageToLodDict.AddOrUpdate(PredefinedCityModelPackage, IEnumerable(Of System.UInt32))
+  nameWithType: PackageToLodDict.AddOrUpdate(PredefinedCityModelPackage, IEnumerable<UInt32>)
+  nameWithType.vb: PackageToLodDict.AddOrUpdate(PredefinedCityModelPackage, IEnumerable(Of UInt32))
+- uid: PLATEAU.CityImport.AreaSelector.SceneObjs.PackageToLodDict.AddOrUpdate*
+  name: AddOrUpdate
+  href: api/PLATEAU.CityImport.AreaSelector.SceneObjs.PackageToLodDict.html#PLATEAU_CityImport_AreaSelector_SceneObjs_PackageToLodDict_AddOrUpdate_
+  commentId: Overload:PLATEAU.CityImport.AreaSelector.SceneObjs.PackageToLodDict.AddOrUpdate
+  isSpec: "True"
+  fullName: PLATEAU.CityImport.AreaSelector.SceneObjs.PackageToLodDict.AddOrUpdate
+  nameWithType: PackageToLodDict.AddOrUpdate
+- uid: PLATEAU.CityImport.AreaSelector.SceneObjs.PackageToLodDict.ExistLod(PredefinedCityModelPackage)
+  name: ExistLod(PredefinedCityModelPackage)
+  href: api/PLATEAU.CityImport.AreaSelector.SceneObjs.PackageToLodDict.html#PLATEAU_CityImport_AreaSelector_SceneObjs_PackageToLodDict_ExistLod_PredefinedCityModelPackage_
+  commentId: M:PLATEAU.CityImport.AreaSelector.SceneObjs.PackageToLodDict.ExistLod(PredefinedCityModelPackage)
+  fullName: PLATEAU.CityImport.AreaSelector.SceneObjs.PackageToLodDict.ExistLod(PredefinedCityModelPackage)
+  nameWithType: PackageToLodDict.ExistLod(PredefinedCityModelPackage)
+- uid: PLATEAU.CityImport.AreaSelector.SceneObjs.PackageToLodDict.ExistLod*
+  name: ExistLod
+  href: api/PLATEAU.CityImport.AreaSelector.SceneObjs.PackageToLodDict.html#PLATEAU_CityImport_AreaSelector_SceneObjs_PackageToLodDict_ExistLod_
+  commentId: Overload:PLATEAU.CityImport.AreaSelector.SceneObjs.PackageToLodDict.ExistLod
+  isSpec: "True"
+  fullName: PLATEAU.CityImport.AreaSelector.SceneObjs.PackageToLodDict.ExistLod
+  nameWithType: PackageToLodDict.ExistLod
+- uid: PLATEAU.CityImport.AreaSelector.SceneObjs.PackageToLodDict.GetEnumerator
+  name: GetEnumerator()
+  href: api/PLATEAU.CityImport.AreaSelector.SceneObjs.PackageToLodDict.html#PLATEAU_CityImport_AreaSelector_SceneObjs_PackageToLodDict_GetEnumerator
+  commentId: M:PLATEAU.CityImport.AreaSelector.SceneObjs.PackageToLodDict.GetEnumerator
+  fullName: PLATEAU.CityImport.AreaSelector.SceneObjs.PackageToLodDict.GetEnumerator()
+  nameWithType: PackageToLodDict.GetEnumerator()
+- uid: PLATEAU.CityImport.AreaSelector.SceneObjs.PackageToLodDict.GetEnumerator*
+  name: GetEnumerator
+  href: api/PLATEAU.CityImport.AreaSelector.SceneObjs.PackageToLodDict.html#PLATEAU_CityImport_AreaSelector_SceneObjs_PackageToLodDict_GetEnumerator_
+  commentId: Overload:PLATEAU.CityImport.AreaSelector.SceneObjs.PackageToLodDict.GetEnumerator
+  isSpec: "True"
+  fullName: PLATEAU.CityImport.AreaSelector.SceneObjs.PackageToLodDict.GetEnumerator
+  nameWithType: PackageToLodDict.GetEnumerator
+- uid: PLATEAU.CityImport.AreaSelector.SceneObjs.PackageToLodDict.Marge(PLATEAU.CityImport.AreaSelector.SceneObjs.PackageToLodDict)
+  name: Marge(PackageToLodDict)
+  href: api/PLATEAU.CityImport.AreaSelector.SceneObjs.PackageToLodDict.html#PLATEAU_CityImport_AreaSelector_SceneObjs_PackageToLodDict_Marge_PLATEAU_CityImport_AreaSelector_SceneObjs_PackageToLodDict_
+  commentId: M:PLATEAU.CityImport.AreaSelector.SceneObjs.PackageToLodDict.Marge(PLATEAU.CityImport.AreaSelector.SceneObjs.PackageToLodDict)
+  fullName: PLATEAU.CityImport.AreaSelector.SceneObjs.PackageToLodDict.Marge(PLATEAU.CityImport.AreaSelector.SceneObjs.PackageToLodDict)
+  nameWithType: PackageToLodDict.Marge(PackageToLodDict)
+- uid: PLATEAU.CityImport.AreaSelector.SceneObjs.PackageToLodDict.Marge*
+  name: Marge
+  href: api/PLATEAU.CityImport.AreaSelector.SceneObjs.PackageToLodDict.html#PLATEAU_CityImport_AreaSelector_SceneObjs_PackageToLodDict_Marge_
+  commentId: Overload:PLATEAU.CityImport.AreaSelector.SceneObjs.PackageToLodDict.Marge
+  isSpec: "True"
+  fullName: PLATEAU.CityImport.AreaSelector.SceneObjs.PackageToLodDict.Marge
+  nameWithType: PackageToLodDict.Marge
 - uid: PLATEAU.CityInfo
   name: PLATEAU.CityInfo
   href: api/PLATEAU.CityInfo.html
@@ -2128,6 +2340,31 @@ references:
   commentId: F:PLATEAU.CityInfo.PLATEAUInstancedCityModel.GeoReferenceData.zoneID
   fullName: PLATEAU.CityInfo.PLATEAUInstancedCityModel.GeoReferenceData.zoneID
   nameWithType: PLATEAUInstancedCityModel.GeoReferenceData.zoneID
+- uid: PLATEAU.Editor.CityImport.AreaSelector
+  name: PLATEAU.Editor.CityImport.AreaSelector
+  href: api/PLATEAU.Editor.CityImport.AreaSelector.html
+  commentId: N:PLATEAU.Editor.CityImport.AreaSelector
+  fullName: PLATEAU.Editor.CityImport.AreaSelector
+  nameWithType: PLATEAU.Editor.CityImport.AreaSelector
+- uid: PLATEAU.Editor.CityImport.AreaSelector.LodSearcher
+  name: LodSearcher
+  href: api/PLATEAU.Editor.CityImport.AreaSelector.LodSearcher.html
+  commentId: T:PLATEAU.Editor.CityImport.AreaSelector.LodSearcher
+  fullName: PLATEAU.Editor.CityImport.AreaSelector.LodSearcher
+  nameWithType: LodSearcher
+- uid: PLATEAU.Editor.CityImport.AreaSelector.LodSearcher.SearchLodsInFile(System.String)
+  name: SearchLodsInFile(String)
+  href: api/PLATEAU.Editor.CityImport.AreaSelector.LodSearcher.html#PLATEAU_Editor_CityImport_AreaSelector_LodSearcher_SearchLodsInFile_System_String_
+  commentId: M:PLATEAU.Editor.CityImport.AreaSelector.LodSearcher.SearchLodsInFile(System.String)
+  fullName: PLATEAU.Editor.CityImport.AreaSelector.LodSearcher.SearchLodsInFile(System.String)
+  nameWithType: LodSearcher.SearchLodsInFile(String)
+- uid: PLATEAU.Editor.CityImport.AreaSelector.LodSearcher.SearchLodsInFile*
+  name: SearchLodsInFile
+  href: api/PLATEAU.Editor.CityImport.AreaSelector.LodSearcher.html#PLATEAU_Editor_CityImport_AreaSelector_LodSearcher_SearchLodsInFile_
+  commentId: Overload:PLATEAU.Editor.CityImport.AreaSelector.LodSearcher.SearchLodsInFile
+  isSpec: "True"
+  fullName: PLATEAU.Editor.CityImport.AreaSelector.LodSearcher.SearchLodsInFile
+  nameWithType: LodSearcher.SearchLodsInFile
 - uid: PLATEAU.Editor.CityInfo
   name: PLATEAU.Editor.CityInfo
   href: api/PLATEAU.Editor.CityInfo.html
@@ -2727,6 +2964,19 @@ references:
   isSpec: "True"
   fullName: PLATEAU.Interop.GeoCoordinate.Subtraction
   nameWithType: GeoCoordinate.Subtraction
+- uid: PLATEAU.Interop.GeoCoordinate.SqrMagnitudeLatLon
+  name: SqrMagnitudeLatLon
+  href: api/PLATEAU.Interop.GeoCoordinate.html#PLATEAU_Interop_GeoCoordinate_SqrMagnitudeLatLon
+  commentId: P:PLATEAU.Interop.GeoCoordinate.SqrMagnitudeLatLon
+  fullName: PLATEAU.Interop.GeoCoordinate.SqrMagnitudeLatLon
+  nameWithType: GeoCoordinate.SqrMagnitudeLatLon
+- uid: PLATEAU.Interop.GeoCoordinate.SqrMagnitudeLatLon*
+  name: SqrMagnitudeLatLon
+  href: api/PLATEAU.Interop.GeoCoordinate.html#PLATEAU_Interop_GeoCoordinate_SqrMagnitudeLatLon_
+  commentId: Overload:PLATEAU.Interop.GeoCoordinate.SqrMagnitudeLatLon
+  isSpec: "True"
+  fullName: PLATEAU.Interop.GeoCoordinate.SqrMagnitudeLatLon
+  nameWithType: GeoCoordinate.SqrMagnitudeLatLon
 - uid: PLATEAU.Interop.GeoCoordinate.ToString
   name: ToString()
   href: api/PLATEAU.Interop.GeoCoordinate.html#PLATEAU_Interop_GeoCoordinate_ToString
@@ -4391,6 +4641,19 @@ references:
   commentId: F:PLATEAU.Udx.MeshCode.Level
   fullName: PLATEAU.Udx.MeshCode.Level
   nameWithType: MeshCode.Level
+- uid: PLATEAU.Udx.MeshCode.Level2
+  name: Level2()
+  href: api/PLATEAU.Udx.MeshCode.html#PLATEAU_Udx_MeshCode_Level2
+  commentId: M:PLATEAU.Udx.MeshCode.Level2
+  fullName: PLATEAU.Udx.MeshCode.Level2()
+  nameWithType: MeshCode.Level2()
+- uid: PLATEAU.Udx.MeshCode.Level2*
+  name: Level2
+  href: api/PLATEAU.Udx.MeshCode.html#PLATEAU_Udx_MeshCode_Level2_
+  commentId: Overload:PLATEAU.Udx.MeshCode.Level2
+  isSpec: "True"
+  fullName: PLATEAU.Udx.MeshCode.Level2
+  nameWithType: MeshCode.Level2
 - uid: PLATEAU.Udx.MeshCode.Parse(System.String)
   name: Parse(String)
   href: api/PLATEAU.Udx.MeshCode.html#PLATEAU_Udx_MeshCode_Parse_System_String_

@@ -5,10 +5,10 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>Class GSIMapLoaderZoomSwitch
+    <title>Class AreaLodView
    | PLATEAU SDK for Unity </title>
     <meta name="viewport" content="width=device-width">
-    <meta name="title" content="Class GSIMapLoaderZoomSwitch
+    <meta name="title" content="Class AreaLodView
    | PLATEAU SDK for Unity ">
     <meta name="generator" content="docfx 2.59.4.0">
     
@@ -78,37 +78,61 @@
         </div>
         <div class="article row grid-right">
           <div class="col-md-10">
-            <article class="content wrap" id="_content" data-uid="PLATEAU.CityImport.AreaSelector.SceneObjs.GSIMapLoaderZoomSwitch">
+            <article class="content wrap" id="_content" data-uid="PLATEAU.CityImport.AreaSelector.SceneObjs.AreaLodView">
   
   
-  <h1 id="PLATEAU_CityImport_AreaSelector_SceneObjs_GSIMapLoaderZoomSwitch" data-uid="PLATEAU.CityImport.AreaSelector.SceneObjs.GSIMapLoaderZoomSwitch" class="text-break">Class GSIMapLoaderZoomSwitch
+  <h1 id="PLATEAU_CityImport_AreaSelector_SceneObjs_AreaLodView" data-uid="PLATEAU.CityImport.AreaSelector.SceneObjs.AreaLodView" class="text-break">Class AreaLodView
   </h1>
-  <div class="markdown level0 summary"><p><a class="xref" href="PLATEAU.CityImport.AreaSelector.SceneObjs.GSIMapLoader.html">GSIMapLoader</a> に次の機能を追加したものです:
-・カメラの位置によってズームレベル（地図の詳細度）を切り替えて表示します</p>
+  <div class="markdown level0 summary"><p>範囲選択画面で、メッシュコードごとに利用可能なLODを表示します。
+<a class="xref" href="PLATEAU.CityImport.AreaSelector.SceneObjs.AreaLodController.html">AreaLodController</a> によって保持されます。</p>
 </div>
   <div class="markdown level0 conceptual"></div>
   <div class="inheritance">
     <h5>Inheritance</h5>
     <div class="level0"><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">Object</a></div>
-    <div class="level1"><span class="xref">GSIMapLoaderZoomSwitch</span></div>
+    <div class="level1"><span class="xref">AreaLodView</span></div>
+  </div>
+  <div class="inheritedMembers">
+    <h5>Inherited Members</h5>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.tostring#system-object-tostring">Object.ToString()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)">Object.Equals(Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)">Object.Equals(Object, Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.referenceequals#system-object-referenceequals(system-object-system-object)">Object.ReferenceEquals(Object, Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gethashcode#system-object-gethashcode">Object.GetHashCode()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gettype#system-object-gettype">Object.GetType()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone#system-object-memberwiseclone">Object.MemberwiseClone()</a>
+    </div>
   </div>
   <h6><strong>Namespace</strong>: <a class="xref" href="PLATEAU.CityImport.AreaSelector.SceneObjs.html">PLATEAU.CityImport.AreaSelector.SceneObjs</a></h6>
   <h6><strong>Assembly</strong>: cs.temp.dll.dll</h6>
-  <h5 id="PLATEAU_CityImport_AreaSelector_SceneObjs_GSIMapLoaderZoomSwitch_syntax">Syntax</h5>
+  <h5 id="PLATEAU_CityImport_AreaSelector_SceneObjs_AreaLodView_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public class GSIMapLoaderZoomSwitch : IDisposable</code></pre>
+    <pre><code class="lang-csharp hljs">public class AreaLodView</code></pre>
   </div>
   <h3 id="constructors">Constructors
   </h3>
   
   
-  <a id="PLATEAU_CityImport_AreaSelector_SceneObjs_GSIMapLoaderZoomSwitch__ctor_" data-uid="PLATEAU.CityImport.AreaSelector.SceneObjs.GSIMapLoaderZoomSwitch.#ctor*"></a>
-  <h4 id="PLATEAU_CityImport_AreaSelector_SceneObjs_GSIMapLoaderZoomSwitch__ctor_GeoReference_Extent_" data-uid="PLATEAU.CityImport.AreaSelector.SceneObjs.GSIMapLoaderZoomSwitch.#ctor(GeoReference,Extent)">GSIMapLoaderZoomSwitch(GeoReference, Extent)</h4>
+  <a id="PLATEAU_CityImport_AreaSelector_SceneObjs_AreaLodView__ctor_" data-uid="PLATEAU.CityImport.AreaSelector.SceneObjs.AreaLodView.#ctor*"></a>
+  <h4 id="PLATEAU_CityImport_AreaSelector_SceneObjs_AreaLodView__ctor_PLATEAU_CityImport_AreaSelector_SceneObjs_PackageToLodDict_Vector3_Vector3_" data-uid="PLATEAU.CityImport.AreaSelector.SceneObjs.AreaLodView.#ctor(PLATEAU.CityImport.AreaSelector.SceneObjs.PackageToLodDict,Vector3,Vector3)">AreaLodView(PackageToLodDict, Vector3, Vector3)</h4>
   <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public GSIMapLoaderZoomSwitch(GeoReference geoReference, Extent entireExtent)</code></pre>
+    <pre><code class="lang-csharp hljs">public AreaLodView(PackageToLodDict packageToLodDict, Vector3 meshCodeUnityPositionUpperLeft, Vector3 meshCodeUnityPositionLowerRight)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -121,13 +145,18 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">GeoReference</span></td>
-        <td><span class="parametername">geoReference</span></td>
+        <td><a class="xref" href="PLATEAU.CityImport.AreaSelector.SceneObjs.PackageToLodDict.html">PackageToLodDict</a></td>
+        <td><span class="parametername">packageToLodDict</span></td>
         <td></td>
       </tr>
       <tr>
-        <td><span class="xref">Extent</span></td>
-        <td><span class="parametername">entireExtent</span></td>
+        <td><span class="xref">Vector3</span></td>
+        <td><span class="parametername">meshCodeUnityPositionUpperLeft</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">Vector3</span></td>
+        <td><span class="parametername">meshCodeUnityPositionLowerRight</span></td>
         <td></td>
       </tr>
     </tbody>
@@ -136,13 +165,13 @@
   </h3>
   
   
-  <a id="PLATEAU_CityImport_AreaSelector_SceneObjs_GSIMapLoaderZoomSwitch_CalcCameraExtent_" data-uid="PLATEAU.CityImport.AreaSelector.SceneObjs.GSIMapLoaderZoomSwitch.CalcCameraExtent*"></a>
-  <h4 id="PLATEAU_CityImport_AreaSelector_SceneObjs_GSIMapLoaderZoomSwitch_CalcCameraExtent_Camera_GeoReference_" data-uid="PLATEAU.CityImport.AreaSelector.SceneObjs.GSIMapLoaderZoomSwitch.CalcCameraExtent(Camera,GeoReference)">CalcCameraExtent(Camera, GeoReference)</h4>
+  <a id="PLATEAU_CityImport_AreaSelector_SceneObjs_AreaLodView_DrawHandles_" data-uid="PLATEAU.CityImport.AreaSelector.SceneObjs.AreaLodView.DrawHandles*"></a>
+  <h4 id="PLATEAU_CityImport_AreaSelector_SceneObjs_AreaLodView_DrawHandles_Camera_" data-uid="PLATEAU.CityImport.AreaSelector.SceneObjs.AreaLodView.DrawHandles(Camera)">DrawHandles(Camera)</h4>
   <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static Extent CalcCameraExtent(Camera cam, GeoReference geoRef)</code></pre>
+    <pre><code class="lang-csharp hljs">public void DrawHandles(Camera camera)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -156,12 +185,35 @@
     <tbody>
       <tr>
         <td><span class="xref">Camera</span></td>
-        <td><span class="parametername">cam</span></td>
+        <td><span class="parametername">camera</span></td>
         <td></td>
       </tr>
+    </tbody>
+  </table>
+  
+  
+  <a id="PLATEAU_CityImport_AreaSelector_SceneObjs_AreaLodView_HasIconOfPackage_" data-uid="PLATEAU.CityImport.AreaSelector.SceneObjs.AreaLodView.HasIconOfPackage*"></a>
+  <h4 id="PLATEAU_CityImport_AreaSelector_SceneObjs_AreaLodView_HasIconOfPackage_PredefinedCityModelPackage_" data-uid="PLATEAU.CityImport.AreaSelector.SceneObjs.AreaLodView.HasIconOfPackage(PredefinedCityModelPackage)">HasIconOfPackage(PredefinedCityModelPackage)</h4>
+  <div class="markdown level1 summary"><p>このパッケージの利用可能LODを地図上で表示するかどうかを返します。</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static bool HasIconOfPackage(PredefinedCityModelPackage package)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
       <tr>
-        <td><span class="xref">GeoReference</span></td>
-        <td><span class="parametername">geoRef</span></td>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">PredefinedCityModelPackage</span></td>
+        <td><span class="parametername">package</span></td>
         <td></td>
       </tr>
     </tbody>
@@ -176,48 +228,22 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">Extent</span></td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
         <td></td>
       </tr>
     </tbody>
   </table>
   
   
-  <a id="PLATEAU_CityImport_AreaSelector_SceneObjs_GSIMapLoaderZoomSwitch_Dispose_" data-uid="PLATEAU.CityImport.AreaSelector.SceneObjs.GSIMapLoaderZoomSwitch.Dispose*"></a>
-  <h4 id="PLATEAU_CityImport_AreaSelector_SceneObjs_GSIMapLoaderZoomSwitch_Dispose" data-uid="PLATEAU.CityImport.AreaSelector.SceneObjs.GSIMapLoaderZoomSwitch.Dispose">Dispose()</h4>
-  <div class="markdown level1 summary"></div>
+  <a id="PLATEAU_CityImport_AreaSelector_SceneObjs_AreaLodView_Init_" data-uid="PLATEAU.CityImport.AreaSelector.SceneObjs.AreaLodView.Init*"></a>
+  <h4 id="PLATEAU_CityImport_AreaSelector_SceneObjs_AreaLodView_Init" data-uid="PLATEAU.CityImport.AreaSelector.SceneObjs.AreaLodView.Init">Init()</h4>
+  <div class="markdown level1 summary"><p>地図上に利用可能LODを表示するためのアイコンをロードします。</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public void Dispose()</code></pre>
+    <pre><code class="lang-csharp hljs">public static void Init()</code></pre>
   </div>
-  
-  
-  <a id="PLATEAU_CityImport_AreaSelector_SceneObjs_GSIMapLoaderZoomSwitch_Update_" data-uid="PLATEAU.CityImport.AreaSelector.SceneObjs.GSIMapLoaderZoomSwitch.Update*"></a>
-  <h4 id="PLATEAU_CityImport_AreaSelector_SceneObjs_GSIMapLoaderZoomSwitch_Update_Camera_" data-uid="PLATEAU.CityImport.AreaSelector.SceneObjs.GSIMapLoaderZoomSwitch.Update(Camera)">Update(Camera)</h4>
-  <div class="markdown level1 summary"></div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public void Update(Camera cam)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="xref">Camera</span></td>
-        <td><span class="parametername">cam</span></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
 </article>
           </div>
           
