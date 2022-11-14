@@ -85,7 +85,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
 
         public static bool HasIconOfPackage(PredefinedCityModelPackage package)
         {
-            if (iconDict == null) iconDict = ComposeIconDict();
+            iconDict ??= ComposeIconDict();
             return iconDict.TryGetValue((package, 1), out _);
         }
 

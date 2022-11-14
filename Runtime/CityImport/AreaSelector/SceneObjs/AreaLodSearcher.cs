@@ -16,12 +16,12 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
     public class AreaLodSearcher
     {
         // MeshCode <- (1対多) <- [ Package種, (多)LODs ]
-        private readonly ConcurrentDictionary<string, PackageToLodDict> data;
+        private readonly ConcurrentDictionary<string, PackageToLodDict> meshCodeToPackageLodDict;
         private readonly string rootPath;
 
         public AreaLodSearcher(string rootPath)
         {
-            this.data = new ConcurrentDictionary<string, PackageToLodDict>();
+            this.meshCodeToPackageLodDict = new ConcurrentDictionary<string, PackageToLodDict>();
             this.rootPath = rootPath;
         }
         
@@ -32,13 +32,13 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         public PackageToLodDict LoadLodsInMeshCode(string meshCode)
         {
 
-            SearchLodsInMeshCode(meshCode, this.rootPath, this.data);
-            if (this.data.TryGetValue(meshCode, out var packageToLodDict))
+            SearchLodsInMeshCode(meshCode, this.rootPath, this.meshCodeToPackageLodDict);
+            if (this.meshCodeToPackageLodDict.TryGetValue(meshCode, out var packageToLodDict))
             {
+                // 上位のメッシュコードがあれば、そのパッケージとLODも戻り値に加えます。
                 if (MeshCode.Parse(meshCode).Level == 3)
                 {
-                    // 上位のメッシュコードがあれば、そのパッケージとLODも戻り値に加えます。
-                    if (this.data.TryGetValue(MeshCode.Parse(meshCode).Level2(), out var packageToLodDictLevel2))
+                    if (this.meshCodeToPackageLodDict.TryGetValue(MeshCode.Parse(meshCode).Level2(), out var packageToLodDictLevel2))
                     {
                         packageToLodDict.Marge(packageToLodDictLevel2);
                     }
@@ -63,10 +63,10 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
             foreach (PredefinedCityModelPackage package in Enum.GetValues(typeof(PredefinedCityModelPackage)))
             {
                 if (!AreaLodView.HasIconOfPackage(package)) continue; // 地図に表示しないパッケージはスキップします。
-                foreach (var mCode in meshCodes)
+                foreach (string currentMeshCode in meshCodes)
                 {
                     // すでに検索済みデータがあればそれを利用します。
-                    if (data.TryGetValue(mCode, out var existing))
+                    if (data.TryGetValue(currentMeshCode, out var existing))
                     {
                         if (existing.ExistLod(package))
                         {
@@ -75,11 +75,11 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
                     }
                     
                     // LODを検索します。
-                    using var collection = UdxFileCollection.Find(rootPath).FilterByMeshCodes(new []{MeshCode.Parse(mCode)});
+                    using var collection = UdxFileCollection.Find(rootPath).FilterByMeshCodes(new []{MeshCode.Parse(currentMeshCode)});
 
                     var gmlPaths = collection.GetGmlFiles(package);
                     var lodSet = new SortedSet<uint>();
-                    foreach (var gmlPath in gmlPaths)
+                    foreach (string gmlPath in gmlPaths)
                     {
                         string fullPath = Path.GetFullPath(gmlPath);
                         Debug.Log($"Searching LOD for {Path.GetFileName(gmlPath)}, {package}");
@@ -93,7 +93,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
                         }
                     }
                     // 検索結果を追加します。
-                    data.AddOrUpdate(mCode,
+                    data.AddOrUpdate(currentMeshCode,
                         _ =>
                         {
                             var d = new PackageToLodDict();
@@ -111,11 +111,11 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
     }
 
     /// <summary>
-    /// パッケージとそこに含まれるLODの組です。
+    /// パッケージとそこに含まれるLOD集合の組です。
     /// </summary>
     public class PackageToLodDict
     {
-        private ConcurrentDictionary<PredefinedCityModelPackage, ConcurrentBag<uint>> data = new ConcurrentDictionary<PredefinedCityModelPackage, ConcurrentBag<uint>>();
+        private readonly ConcurrentDictionary<PredefinedCityModelPackage, ConcurrentBag<uint>> data = new ConcurrentDictionary<PredefinedCityModelPackage, ConcurrentBag<uint>>();
         
         public void AddOrUpdate(PredefinedCityModelPackage package, IEnumerable<uint> lods)
         {
