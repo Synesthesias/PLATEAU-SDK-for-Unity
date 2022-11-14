@@ -31,10 +31,14 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
             AreaLodView.Init();
         }
 
+        /// <summary>
+        /// LOD未検索のメッシュコードのうち、カメラにもっとも近いメッシュコードのLODを検索して、
+        /// 範囲選択画面の地図に表示します。
+        /// ただし、すでに検索処理が動いている場合は何もしません。
+        /// </summary>
         public void Update(Extent cameraExtent)
         {
             if (this.loadTask is { IsCompleted: false }) return;
-            // カメラ中心にもっとも近いメッシュコードについて、利用可能なLODを検索します。
             var meshCode = CalcNearestUnloadMeshCode(cameraExtent.Center);
             if (meshCode == null) return;
             this.loadTask = Task.Run(async() =>
@@ -65,6 +69,9 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
             return nearestMeshCode;
         }
 
+        /// <summary>
+        /// 与えられたメッシュコードで利用可能なパッケージとLODを検索し、ビューに渡します。
+        /// </summary>
         private async Task LoadAsync(MeshCode meshCode)
         {
             var packageLods = await Task.Run(() => this.searcher.LoadLodsInMeshCode(meshCode.ToString()));
@@ -74,6 +81,9 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
                 (code, view) => new AreaLodView(packageLods, position));
         }
 
+        /// <summary>
+        /// ビューに描画させます。
+        /// </summary>
         public void DrawSceneGUI()
         {
             foreach (var view in this.viewDict.Values)
