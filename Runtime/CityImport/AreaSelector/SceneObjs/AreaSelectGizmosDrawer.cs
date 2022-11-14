@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using PLATEAU.Editor.CityImport.AreaSelector;
 using PLATEAU.Geometries;
 using PLATEAU.Interop;
 using PLATEAU.Udx;

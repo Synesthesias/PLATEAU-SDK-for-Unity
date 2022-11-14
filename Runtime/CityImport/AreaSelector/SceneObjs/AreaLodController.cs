@@ -1,16 +1,18 @@
 ﻿using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using PLATEAU.Geometries;
 using PLATEAU.Interop;
 using PLATEAU.Udx;
 using PLATEAU.Util;
 using PLATEAU.Util.Async;
-using UnityEngine;
 
 namespace PLATEAU.CityImport.AreaSelector.SceneObjs
 {
+    /// <summary>
+    /// 範囲選択画面で、利用可能なLODをメッシュコードごとに検索して表示します。<br />
+    /// 構成: <see cref="AreaLodController"/> -> (所有) -> [ <see cref="AreaLodSearcher"/> , (多)<see cref="AreaLodView"/> ]
+    /// </summary>
     public class AreaLodController
     {
         private readonly AreaLodSearcher searcher;
@@ -32,6 +34,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         public void Update(Extent cameraExtent)
         {
             if (this.loadTask is { IsCompleted: false }) return;
+            // カメラ中心にもっとも近いメッシュコードについて、利用可能なLODを検索します。
             var meshCode = CalcNearestUnloadMeshCode(cameraExtent.Center);
             if (meshCode == null) return;
             this.loadTask = Task.Run(async() =>
@@ -40,6 +43,9 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
             }).ContinueWithErrorCatch();
         }
 
+        /// <summary>
+        /// またLODを検索していないメッシュコードのうち、 <paramref name="geoCoordinate"/> に最も近いものを返します。
+        /// </summary>
         private MeshCode? CalcNearestUnloadMeshCode(GeoCoordinate geoCoordinate)
         {
             double minSqrDist = float.MaxValue;
@@ -61,7 +67,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
 
         public async Task LoadAsync(MeshCode meshCode)
         {
-            var packageLods = await Task.Run(() => this.searcher.LoadLodsInMeshCode(meshCode.ToString()).ToArray());
+            var packageLods = await Task.Run(() => this.searcher.LoadLodsInMeshCode(meshCode.ToString()));
             var position = this.geoReference.Project(meshCode.Extent.Center).ToUnityVector();
             this.viewDict.AddOrUpdate(meshCode,
                 code => new AreaLodView(packageLods, position),

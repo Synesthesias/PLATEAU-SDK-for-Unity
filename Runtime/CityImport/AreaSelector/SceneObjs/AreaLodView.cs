@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using PLATEAU.Udx;
 using UnityEditor;
 using UnityEngine;
@@ -11,15 +10,15 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
 {
     public class AreaLodView
     {
-        private PackageLods[] packageLods = null;
+        private PackageToLodDict packageToLodDict = null;
         private Vector3 position;
         // private static readonly Color textColor = Color.black;
         private const string iconDirPath = "Packages/com.synesthesias.plateau-unity-sdk/Images/AreaSelect";
         private static ConcurrentDictionary<(PredefinedCityModelPackage package, uint lod), Texture> iconDict;
 
-        public AreaLodView(IEnumerable<PackageLods> packageLods, Vector3 position)
+        public AreaLodView(PackageToLodDict packageToLodDict, Vector3 position)
         {
-            this.packageLods = packageLods.ToArray();
+            this.packageToLodDict = packageToLodDict;
             this.position = position;
         }
 
@@ -30,7 +29,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
 
         public void DrawHandles()
         {
-            if (this.packageLods == null) return;
+            if (this.packageToLodDict == null) return;
             if (iconDict == null)
             {
                 Debug.LogError("Failed to load icons.");
@@ -50,11 +49,11 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
             // }
 
             var pos = this.position;
-            foreach (var packageLod in this.packageLods)
+            foreach (var packageToLods in this.packageToLodDict)
             {
-                if (packageLod.Lods.Count == 0) continue;
-                uint maxLod = packageLod.Lods.Max();
-                var package = packageLod.Package;
+                if (packageToLods.Value.IsEmpty) continue;
+                uint maxLod = packageToLods.Value.Max();
+                var package = packageToLods.Key;
                 if (iconDict.TryGetValue((package, maxLod), out var iconTex))
                 {
                     var style = new GUIStyle(EditorStyles.label);
