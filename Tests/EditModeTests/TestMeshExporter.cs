@@ -32,7 +32,6 @@ namespace PLATEAU.Tests.EditModeTests
         public void TearDown()
         {
             TestCityImporter.DeleteFetchedTestDir();
-            // DirectoryUtil.DeleteTempCacheFolder(); TODO
         }
 
         [Test]

@@ -80,9 +80,13 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
             var positionUpperLeft = this.geoReference.Project(new GeoCoordinate(extent.Max.Latitude, extent.Min.Longitude, 0)).ToUnityVector();
             var positionLowerRight = this.geoReference
                 .Project(new GeoCoordinate(extent.Min.Latitude, extent.Max.Longitude, 0)).ToUnityVector();
-            this.viewDict.AddOrUpdate(meshCode,
-                code => new AreaLodView(packageLods, positionUpperLeft, positionLowerRight),
-                (code, view) => new AreaLodView(packageLods, positionUpperLeft, positionLowerRight));
+            if (meshCode.Level >= 3)
+            {
+                this.viewDict.AddOrUpdate(meshCode,
+                    code => new AreaLodView(packageLods, positionUpperLeft, positionLowerRight),
+                    (code, view) => new AreaLodView(packageLods, positionUpperLeft, positionLowerRight));
+            }
+            
         }
 
         /// <summary>
