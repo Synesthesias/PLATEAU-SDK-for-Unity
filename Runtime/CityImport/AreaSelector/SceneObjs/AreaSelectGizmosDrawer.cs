@@ -10,18 +10,20 @@ using UnityEngine;
 
 namespace PLATEAU.CityImport.AreaSelector.SceneObjs
 {
+    /// <summary>
+    /// 範囲選択に関するギズモを表示する MonoBehaviour です。
+    /// 地域メッシュコードと、範囲選択カーソルと、利用可能LOD表示を保持して表示します。
+    /// </summary>
     internal class AreaSelectGizmosDrawer : HandlesBase
     {
+        /// <summary> 地域メッシュの範囲表示です。 </summary>
         private readonly List<MeshCodeGizmoDrawer> meshCodeDrawers = new List<MeshCodeGizmoDrawer>();
+        /// <summary> 範囲選択カーソルです。 </summary>
         private AreaSelectorCursor cursor;
+        /// <summary> 地域メッシュごとの利用可能LOD表示です。 </summary>
         private AreaLodController areaLod;
         private GeoReference geoReference;
         
-        
-        /// <summary>
-        /// 範囲選択に関するギズモを表示する MonoBehaviour です。
-        /// 地域メッシュコードと、範囲選択カーソルを保持して表示します。
-        /// </summary>
         public void Init(
             ReadOnlyCollection<MeshCode> meshCodes, string rootPath,
             int coordinateZoneID, out GeoReference outGeoReference)

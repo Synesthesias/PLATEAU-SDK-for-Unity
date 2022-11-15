@@ -59,9 +59,7 @@ namespace PLATEAU.Editor.CityExport
                 };
                 
                 // Unity のメッシュを中間データ構造(Model)に変換します。
-                // bool doInvertTriangles = options.FileFormat == MeshFileFormat.GLTF; // GLTFで出力するとポリゴンが裏返るのを修正します。
-                bool doInvertTriangles = false;
-                using var model = UnityMeshToDllModelConverter.Convert(childTrans.gameObject, options.ExportTextures, options.ExportHiddenObjects, doInvertTriangles, options.MeshAxis, vertexConvertFunc);
+                using var model = UnityMeshToDllModelConverter.Convert(childTrans.gameObject, options.ExportTextures, options.ExportHiddenObjects, false, options.MeshAxis, vertexConvertFunc);
                 
                 // Model をファイルにして出力します。
                 ModelToFile(destDir, Path.GetFileNameWithoutExtension(childName), model, options);
@@ -75,7 +73,7 @@ namespace PLATEAU.Editor.CityExport
             switch (options.FileFormat)
             {
                 case MeshFileFormat.OBJ:
-                    string filePathWithoutExtension = Path.Combine(destDir, fileNameWithoutExtension);
+                    string filePathWithoutExtension = Path.Combine(destDir, fileNameWithoutExtension).Replace('\\', '/');
                     using (var objWriter = new ObjWriter())
                     {
                         objWriter.Write(filePathWithoutExtension + ".obj", model);

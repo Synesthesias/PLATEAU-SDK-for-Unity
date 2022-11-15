@@ -31,8 +31,13 @@ namespace PLATEAU.Editor.CityExport.ModelConvert
         {
             var trans = go.transform;
             var model = Model.Create();
+            int childCount = trans.childCount;
+            for (int i = 0; i < childCount; i++)
+            {
+                var childTrans = trans.GetChild(i);
+                ConvertRecursive(null, childTrans, model, includeTexture, exportDisabledGameObj, doInvertTriangles, meshAxis, vertexConvertFunc);
+            }
             
-            ConvertRecursive(null, trans, model, includeTexture, exportDisabledGameObj, doInvertTriangles, meshAxis, vertexConvertFunc);
             return model;
         }
 

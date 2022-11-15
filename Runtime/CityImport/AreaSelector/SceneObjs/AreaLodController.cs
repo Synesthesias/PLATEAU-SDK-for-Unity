@@ -39,24 +39,28 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         /// </summary>
         public void Update(Extent cameraExtent)
         {
-            if (this.loadTask is { IsCompleted: false }) return;
-            var meshCode = CalcNearestUnloadMeshCode(cameraExtent.Center);
-            if (meshCode == null) return;
-            this.loadTask = Task.Run(async() =>
-            {
-                await LoadAsync(meshCode.Value);
-            }).ContinueWithErrorCatch();
+            // TODO 一時的にオフにしています。あとでコメントを戻す。
+            // if (this.loadTask is { IsCompleted: false }) return;
+            // var meshCode = CalcNearestUnloadMeshCode(cameraExtent.Center, 3);
+            // if (meshCode == null) return;
+            // Debug.Log($"start task for {meshCode.ToString()}");
+            // this.loadTask = Task.Run(async() =>
+            // {
+            //     await LoadAsync(meshCode.Value);
+            // }).ContinueWithErrorCatch();
         }
 
         /// <summary>
-        /// またLODを検索していないメッシュコードのうち、 <paramref name="geoCoordinate"/> に最も近いものを返します。
+        /// またLODを検索していないメッシュコードで、地域レベルが与えられたもののうち、
+        /// <paramref name="geoCoordinate"/> に最も近いものを返します。
         /// </summary>
-        private MeshCode? CalcNearestUnloadMeshCode(GeoCoordinate geoCoordinate)
+        private MeshCode? CalcNearestUnloadMeshCode(GeoCoordinate geoCoordinate, int level)
         {
-            double minSqrDist = float.MaxValue;
+            double minSqrDist = double.MaxValue;
             MeshCode? nearestMeshCode = null;
             foreach (var meshCode in this.viewDict.Keys)
             {
+                if (meshCode.Level != level) continue;
                 // 読込済みのものは飛ばします
                 if (this.viewDict.TryGetValue(meshCode, out var areaLodView) && areaLodView != null) continue;
                 
@@ -80,9 +84,13 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
             var positionUpperLeft = this.geoReference.Project(new GeoCoordinate(extent.Max.Latitude, extent.Min.Longitude, 0)).ToUnityVector();
             var positionLowerRight = this.geoReference
                 .Project(new GeoCoordinate(extent.Min.Latitude, extent.Max.Longitude, 0)).ToUnityVector();
-            this.viewDict.AddOrUpdate(meshCode,
-                code => new AreaLodView(packageLods, positionUpperLeft, positionLowerRight),
-                (code, view) => new AreaLodView(packageLods, positionUpperLeft, positionLowerRight));
+            if (meshCode.Level >= 3)
+            {
+                this.viewDict.AddOrUpdate(meshCode,
+                    code => new AreaLodView(packageLods, positionUpperLeft, positionLowerRight),
+                    (code, view) => new AreaLodView(packageLods, positionUpperLeft, positionLowerRight));
+            }
+            
         }
 
         /// <summary>

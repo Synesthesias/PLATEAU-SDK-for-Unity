@@ -14,16 +14,16 @@ namespace PLATEAU.Geometries
         /// <summary>
         /// PLATEAUでの座標系
         /// </summary>
-        ENU,
-        WUN,
+        ENU = 0,
+        WUN = 1,
         /// <summary>
         /// Unreal Engineでの座標系
         /// </summary>
-        NWU,
+        ESU = 2,
         /// <summary>
         /// Unityでの座標系
         /// </summary>
-        EUN
+        EUN = 3
     }
 
     /// <summary>

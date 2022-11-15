@@ -32,7 +32,6 @@ namespace PLATEAU.Tests.EditModeTests
         public void TearDown()
         {
             TestCityImporter.DeleteFetchedTestDir();
-            // DirectoryUtil.DeleteTempCacheFolder(); TODO
         }
 
         [Test]
@@ -48,7 +47,7 @@ namespace PLATEAU.Tests.EditModeTests
 
             var expectedObjFiles = TestCityDefinition.MiniTokyo.GmlDefinitions
                 .Where(def => def.ContainsMesh)
-                .Select(def => Path.GetFileNameWithoutExtension(def.GmlPath) + ".obj")
+                .Select(def => Path.GetFileNameWithoutExtension(def.GmlPath) + $"_LOD{def.MaxLod}.obj")
                 .ToList();
             var expectedMtlFiles = expectedObjFiles
                 .Select(path => path.Replace(".obj", ".mtl"));

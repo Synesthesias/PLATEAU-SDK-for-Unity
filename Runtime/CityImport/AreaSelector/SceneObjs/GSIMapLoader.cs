@@ -11,6 +11,11 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.Rendering;
 
+#if UNITY_EDITOR
+#else
+using System;
+#endif
+
 namespace PLATEAU.CityImport.AreaSelector.SceneObjs
 {
     /// <summary>
