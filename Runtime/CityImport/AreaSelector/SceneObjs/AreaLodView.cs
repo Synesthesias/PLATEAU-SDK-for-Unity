@@ -37,6 +37,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
 
         public void DrawHandles(Camera camera)
         {
+            #if UNITY_EDITOR
             if (this.packageToLodDict == null) return;
             if (iconDict == null)
             {
@@ -80,6 +81,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
                 var iconWorldPosRight = camera.ScreenToWorldPoint(new Vector3(iconScreenPosRight.x, iconScreenPosRight.y, distance));
                 pos += new Vector3(iconWorldPosRight.x - pos.x, 0, 0);
             }
+            #endif
         }
 
         private static ConcurrentDictionary<(PredefinedCityModelPackage package, uint lod), Texture> ComposeIconDict()
@@ -117,6 +119,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
 
         private static Texture LoadIcon(string relativePath)
         {
+            #if UNITY_EDITOR
             string path = Path.Combine(iconDirPath, relativePath).Replace('\\', '/');
             var texture =  AssetDatabase.LoadAssetAtPath<Texture>(path);
             if (texture == null)
@@ -124,6 +127,9 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
                 Debug.LogError($"Icon image file is not found : {path}");
             }
             return texture;
+            #else
+            return null;
+            #endif
         }
     }
 }

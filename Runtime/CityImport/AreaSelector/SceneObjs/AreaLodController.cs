@@ -39,14 +39,15 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         /// </summary>
         public void Update(Extent cameraExtent)
         {
-            if (this.loadTask is { IsCompleted: false }) return;
-            var meshCode = CalcNearestUnloadMeshCode(cameraExtent.Center, 3);
-            if (meshCode == null) return;
-            Debug.Log($"start task for {meshCode.ToString()}");
-            this.loadTask = Task.Run(async() =>
-            {
-                await LoadAsync(meshCode.Value);
-            }).ContinueWithErrorCatch();
+            // TODO 一時的にオフにしています。あとでコメントを戻す。
+            // if (this.loadTask is { IsCompleted: false }) return;
+            // var meshCode = CalcNearestUnloadMeshCode(cameraExtent.Center, 3);
+            // if (meshCode == null) return;
+            // Debug.Log($"start task for {meshCode.ToString()}");
+            // this.loadTask = Task.Run(async() =>
+            // {
+            //     await LoadAsync(meshCode.Value);
+            // }).ContinueWithErrorCatch();
         }
 
         /// <summary>
