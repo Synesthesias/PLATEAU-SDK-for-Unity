@@ -2408,18 +2408,18 @@ references:
   commentId: F:PLATEAU.Geometries.CoordinateSystem.ENU
   fullName: PLATEAU.Geometries.CoordinateSystem.ENU
   nameWithType: CoordinateSystem.ENU
+- uid: PLATEAU.Geometries.CoordinateSystem.ESU
+  name: ESU
+  href: api/PLATEAU.Geometries.CoordinateSystem.html#PLATEAU_Geometries_CoordinateSystem_ESU
+  commentId: F:PLATEAU.Geometries.CoordinateSystem.ESU
+  fullName: PLATEAU.Geometries.CoordinateSystem.ESU
+  nameWithType: CoordinateSystem.ESU
 - uid: PLATEAU.Geometries.CoordinateSystem.EUN
   name: EUN
   href: api/PLATEAU.Geometries.CoordinateSystem.html#PLATEAU_Geometries_CoordinateSystem_EUN
   commentId: F:PLATEAU.Geometries.CoordinateSystem.EUN
   fullName: PLATEAU.Geometries.CoordinateSystem.EUN
   nameWithType: CoordinateSystem.EUN
-- uid: PLATEAU.Geometries.CoordinateSystem.NWU
-  name: NWU
-  href: api/PLATEAU.Geometries.CoordinateSystem.html#PLATEAU_Geometries_CoordinateSystem_NWU
-  commentId: F:PLATEAU.Geometries.CoordinateSystem.NWU
-  fullName: PLATEAU.Geometries.CoordinateSystem.NWU
-  nameWithType: CoordinateSystem.NWU
 - uid: PLATEAU.Geometries.CoordinateSystem.WUN
   name: WUN
   href: api/PLATEAU.Geometries.CoordinateSystem.html#PLATEAU_Geometries_CoordinateSystem_WUN
