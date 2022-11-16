@@ -60,22 +60,22 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
             var parsedMeshCode = MeshCode.Parse(meshCode);
             if(parsedMeshCode.Level == 3) meshCodes.Add(parsedMeshCode.Level2());
 
-            foreach (PredefinedCityModelPackage package in Enum.GetValues(typeof(PredefinedCityModelPackage)))
+            foreach (string currentMeshCode in meshCodes)
             {
-                if (!AreaLodView.HasIconOfPackage(package)) continue; // 地図に表示しないパッケージはスキップします。
-                foreach (string currentMeshCode in meshCodes)
+                // LODを検索します。
+                var currentGmlCollection = this.collection.FilterByMeshCodes(new []{MeshCode.Parse(currentMeshCode)});
+                // すでに検索済みデータがあればそれを利用します。
+                this.meshCodeToPackageLodDict.TryGetValue(currentMeshCode, out var existing);
+                
+                foreach (PredefinedCityModelPackage package in Enum.GetValues(typeof(PredefinedCityModelPackage)))
                 {
-                    // すでに検索済みデータがあればそれを利用します。
-                    if (this.meshCodeToPackageLodDict.TryGetValue(currentMeshCode, out var existing))
-                    {
-                        if (existing.ExistLod(package))
-                        {
-                            continue;
-                        }
-                    }
+                    if (!AreaLodView.HasIconOfPackage(package)) continue; // 地図に表示しないパッケージはスキップします。
                     
-                    // LODを検索します。
-                    var currentGmlCollection = this.collection.FilterByMeshCodes(new []{MeshCode.Parse(currentMeshCode)});
+                    // すでに検索済みデータがあれば飛ばします。
+                    if (existing?.ExistLod(package) is true)
+                    {
+                        continue;
+                    }
 
                     var gmlPaths = currentGmlCollection.GetGmlFiles(package);
                     var lodSet = new SortedSet<uint>();
@@ -109,6 +109,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
                         });
                 }
             }
+            Debug.Log("end foreach");
         } 
     }
 

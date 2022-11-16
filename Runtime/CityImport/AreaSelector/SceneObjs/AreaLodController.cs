@@ -43,9 +43,9 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
             var meshCode = CalcNearestUnloadMeshCode(cameraExtent.Center, 3);
             if (meshCode == null) return;
             Debug.Log($"start task for {meshCode.ToString()}");
-            this.loadTask = Task.Run(async() =>
+            this.loadTask = Task.Run(() =>
             {
-                await LoadAsync(meshCode.Value);
+                Load(meshCode.Value);
             }).ContinueWithErrorCatch();
         }
 
@@ -76,9 +76,9 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         /// <summary>
         /// 与えられたメッシュコードで利用可能なパッケージとLODを検索し、ビューに渡します。
         /// </summary>
-        private async Task LoadAsync(MeshCode meshCode)
+        private void Load(MeshCode meshCode)
         {
-            var packageLods = await Task.Run(() => this.searcher.LoadLodsInMeshCode(meshCode.ToString()));
+            var packageLods = this.searcher.LoadLodsInMeshCode(meshCode.ToString());
             var extent = meshCode.Extent;
             var positionUpperLeft = this.geoReference.Project(new GeoCoordinate(extent.Max.Latitude, extent.Min.Longitude, 0)).ToUnityVector();
             var positionLowerRight = this.geoReference
@@ -89,6 +89,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
                     code => new AreaLodView(packageLods, positionUpperLeft, positionLowerRight),
                     (code, view) => new AreaLodView(packageLods, positionUpperLeft, positionLowerRight));
             }
+            Debug.Log("meshcode loaded.");
             
         }
 
