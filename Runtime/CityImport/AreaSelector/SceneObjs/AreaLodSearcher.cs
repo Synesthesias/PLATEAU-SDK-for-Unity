@@ -67,13 +67,13 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
                 if (existing != null) continue;
                 
                 // LODを検索します。
-                var currentGmlCollection = this.collection.FilterByMeshCodes(new []{MeshCode.Parse(currentMeshCode)});
+                using var currentGmlCollection = this.collection.FilterByMeshCodes(new []{MeshCode.Parse(currentMeshCode)});
 
                 foreach (PredefinedCityModelPackage package in Enum.GetValues(typeof(PredefinedCityModelPackage)))
                 {
                     if (!AreaLodView.HasIconOfPackage(package)) continue; // 地図に表示しないパッケージはスキップします。
 
-                    var gmlPaths = currentGmlCollection.GetGmlFiles(package);
+                    string[] gmlPaths = currentGmlCollection.GetGmlFiles(package);
                     var lodSet = new SortedSet<uint>();
                     foreach (string gmlPath in gmlPaths)
                     {

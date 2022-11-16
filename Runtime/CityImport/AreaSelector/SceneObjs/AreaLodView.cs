@@ -114,7 +114,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         public static bool HasIconOfPackage(PredefinedCityModelPackage package)
         {
             iconDict ??= ComposeIconDict();
-            return iconDict.TryGetValue((package, 1), out _);
+            return iconDict.ContainsKey((package, 1));
         }
 
         private static Texture LoadIcon(string relativePath)
