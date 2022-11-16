@@ -5,7 +5,6 @@ using System.IO;
 using System.Linq;
 using PLATEAU.Editor.CityImport.AreaSelector;
 using PLATEAU.Udx;
-using UnityEngine;
 
 namespace PLATEAU.CityImport.AreaSelector.SceneObjs
 {
@@ -78,12 +77,10 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
                     foreach (string gmlPath in gmlPaths)
                     {
                         string fullPath = Path.GetFullPath(gmlPath);
-                        Debug.Log($"Searching LOD for {Path.GetFileName(gmlPath)}, {package}");
                     
                         // ファイルの中身を検索するので時間がかかります。
                         var lods = LodSearcher.SearchLodsInFile(fullPath);
                         
-                        Debug.Log("Searched.");
                     
                         foreach (var lod in lods)
                         {
@@ -105,7 +102,6 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
                         });
                 }
             }
-            Debug.Log("end foreach");
         } 
     }
 
