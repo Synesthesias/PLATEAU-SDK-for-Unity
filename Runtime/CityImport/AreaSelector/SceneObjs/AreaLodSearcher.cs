@@ -5,7 +5,6 @@ using System.IO;
 using System.Linq;
 using PLATEAU.Editor.CityImport.AreaSelector;
 using PLATEAU.Udx;
-using UnityEngine;
 
 namespace PLATEAU.CityImport.AreaSelector.SceneObjs
 {
@@ -60,34 +59,28 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
             var parsedMeshCode = MeshCode.Parse(meshCode);
             if(parsedMeshCode.Level == 3) meshCodes.Add(parsedMeshCode.Level2());
 
-            foreach (PredefinedCityModelPackage package in Enum.GetValues(typeof(PredefinedCityModelPackage)))
+            foreach (string currentMeshCode in meshCodes)
             {
-                if (!AreaLodView.HasIconOfPackage(package)) continue; // 地図に表示しないパッケージはスキップします。
-                foreach (string currentMeshCode in meshCodes)
-                {
-                    // すでに検索済みデータがあればそれを利用します。
-                    if (this.meshCodeToPackageLodDict.TryGetValue(currentMeshCode, out var existing))
-                    {
-                        if (existing.ExistLod(package))
-                        {
-                            continue;
-                        }
-                    }
-                    
-                    // LODを検索します。
-                    var currentGmlCollection = this.collection.FilterByMeshCodes(new []{MeshCode.Parse(currentMeshCode)});
+                // すでに検索済みデータがあればそれを利用します。
+                this.meshCodeToPackageLodDict.TryGetValue(currentMeshCode, out var existing);
+                if (existing != null) continue;
+                
+                // LODを検索します。
+                using var currentGmlCollection = this.collection.FilterByMeshCodes(new []{MeshCode.Parse(currentMeshCode)});
 
-                    var gmlPaths = currentGmlCollection.GetGmlFiles(package);
+                foreach (PredefinedCityModelPackage package in Enum.GetValues(typeof(PredefinedCityModelPackage)))
+                {
+                    if (!AreaLodView.HasIconOfPackage(package)) continue; // 地図に表示しないパッケージはスキップします。
+
+                    string[] gmlPaths = currentGmlCollection.GetGmlFiles(package);
                     var lodSet = new SortedSet<uint>();
                     foreach (string gmlPath in gmlPaths)
                     {
                         string fullPath = Path.GetFullPath(gmlPath);
-                        Debug.Log($"Searching LOD for {Path.GetFileName(gmlPath)}, {package}");
                     
                         // ファイルの中身を検索するので時間がかかります。
                         var lods = LodSearcher.SearchLodsInFile(fullPath);
                         
-                        Debug.Log("Searched.");
                     
                         foreach (var lod in lods)
                         {

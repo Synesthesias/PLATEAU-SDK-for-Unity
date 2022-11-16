@@ -39,20 +39,18 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         /// </summary>
         public void Update(Extent cameraExtent)
         {
-            // TODO 一時的にオフにしています。あとでコメントを戻す。
-            // if (this.loadTask is { IsCompleted: false }) return;
-            // var meshCode = CalcNearestUnloadMeshCode(cameraExtent.Center, 3);
-            // if (meshCode == null) return;
-            // Debug.Log($"start task for {meshCode.ToString()}");
-            // this.loadTask = Task.Run(async() =>
-            // {
-            //     await LoadAsync(meshCode.Value);
-            // }).ContinueWithErrorCatch();
+            if (this.loadTask is { IsCompleted: false }) return;
+            var meshCode = CalcNearestUnloadMeshCode(cameraExtent.Center, 3);
+            if (meshCode == null) return;
+            this.loadTask = Task.Run(() =>
+            {
+                Load(meshCode.Value);
+            }).ContinueWithErrorCatch();
         }
 
         /// <summary>
         /// またLODを検索していないメッシュコードで、地域レベルが与えられたもののうち、
-        /// <paramref name="geoCoordinate"/> に最も近いものを返します。
+        /// <paramref name="geoCoordinate"/> に最も近い（補正あり）ものを返します。
         /// </summary>
         private MeshCode? CalcNearestUnloadMeshCode(GeoCoordinate geoCoordinate, int level)
         {
@@ -63,8 +61,15 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
                 if (meshCode.Level != level) continue;
                 // 読込済みのものは飛ばします
                 if (this.viewDict.TryGetValue(meshCode, out var areaLodView) && areaLodView != null) continue;
+
+                var distFromCenter = meshCode.Extent.Center - geoCoordinate;
                 
-                double sqrDist = (meshCode.Extent.Center - geoCoordinate).SqrMagnitudeLatLon;
+                // 緯度・経度の値でそのまま距離を取ると、探索範囲が縦長になり、画面の上下にはみ出した箇所が探索されがちになります。
+                // これを補正するため、縦よりも横を優先します。
+                // 探索範囲が横長になり、横に長いディスプレイに映る範囲が優先的に探索されるようにします。
+                distFromCenter.Longitude *= 0.5; 
+                
+                double sqrDist = distFromCenter.SqrMagnitudeLatLon;
                 if (sqrDist < minSqrDist)
                 {
                     minSqrDist = sqrDist;
@@ -73,13 +78,13 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
             }
             return nearestMeshCode;
         }
-
+        
         /// <summary>
         /// 与えられたメッシュコードで利用可能なパッケージとLODを検索し、ビューに渡します。
         /// </summary>
-        private async Task LoadAsync(MeshCode meshCode)
+        private void Load(MeshCode meshCode)
         {
-            var packageLods = await Task.Run(() => this.searcher.LoadLodsInMeshCode(meshCode.ToString()));
+            var packageLods = this.searcher.LoadLodsInMeshCode(meshCode.ToString());
             var extent = meshCode.Extent;
             var positionUpperLeft = this.geoReference.Project(new GeoCoordinate(extent.Max.Latitude, extent.Min.Longitude, 0)).ToUnityVector();
             var positionLowerRight = this.geoReference
@@ -90,7 +95,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
                     code => new AreaLodView(packageLods, positionUpperLeft, positionLowerRight),
                     (code, view) => new AreaLodView(packageLods, positionUpperLeft, positionLowerRight));
             }
-            
+
         }
 
         /// <summary>
