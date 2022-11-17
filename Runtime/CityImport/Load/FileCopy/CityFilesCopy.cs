@@ -28,7 +28,7 @@ namespace PLATEAU.CityImport.Load.FileCopy
             {
                 var gml = fetchTargetGmls[i];
                 progressDisplay.SetProgress("インポート処理", 100f * i / targetGmlCount, $"[{i+1} / {targetGmlCount}] {Path.GetFileName(gml.Path)}");
-                UdxFileCollection.Fetch(destPath, gml);
+                gml.Fetch(destPath);
             }
 
             string destFolderName = Path.GetFileName(sourcePath);
@@ -37,10 +37,10 @@ namespace PLATEAU.CityImport.Load.FileCopy
             return destRootFolderPath;
         }
 
-        public static List<GmlFileInfo> FindTargetGmls(string sourcePath, CityLoadConfig config, out UdxFileCollection collection)
+        public static List<GmlFileInfo> FindTargetGmls(string sourcePath, CityLoadConfig config, out LocalDatasetAccessor datasetAccessor)
         {
             var fetchTargetGmls = new List<GmlFileInfo>();
-            var gmlPathsDict = config.SearchMatchingGMLList(sourcePath, out collection);
+            var gmlPathsDict = config.SearchMatchingGMLList(sourcePath, out datasetAccessor);
             foreach (var gmlPath in gmlPathsDict.SelectMany(pair => pair.Value))
             {
                 var gmlInfo = GmlFileInfo.Create(gmlPath);

@@ -1195,56 +1195,50 @@ namespace PLATEAU.Interop
             [In, Out] ref Extent outExtent);
 
         // ***************
-        //  udx_file_collection_c.cpp
+        //  local_dataset_accessor_c.cpp
         // ***************
         [DllImport(DllName)]
-        internal static extern APIResult plateau_create_udx_file_collection(
+        internal static extern APIResult plateau_create_local_dataset_accessor(
             out IntPtr handle);
 
         [DllImport(DllName)]
-        internal static extern APIResult plateau_delete_udx_file_collection(
+        internal static extern APIResult plateau_delete_local_dataset_accessor(
             [In] IntPtr handle);
 
         [DllImport(DllName)]
-        internal static extern APIResult plateau_udx_file_collection_find(
+        internal static extern APIResult plateau_local_dataset_accessor_find(
             [In] string source, [In, Out] IntPtr handle);
 
         [DllImport(DllName)]
-        internal static extern APIResult plateau_udx_file_collection_filter(
+        internal static extern APIResult plateau_local_dataset_accessor_filter(
             [In] IntPtr handle, [In] Extent extent, [In, Out] IntPtr out_handle);
 
         [DllImport(DllName)]
-        internal static extern APIResult plateau_udx_file_collection_filter_by_mesh_codes(
+        internal static extern APIResult plateau_local_dataset_accessor_filter_by_mesh_codes(
             [In] IntPtr handle,
             [In] MeshCode[] meshCodes,
             int meshCodeCount,
             IntPtr collectionPtrForResult
         );
 
-        [DllImport(DllName, CharSet = CharSet.Ansi)]
-        internal static extern APIResult plateau_udx_file_collection_fetch(
-            [In] string destinationRootPath,
-            [In] IntPtr gmlFileInfoPtr,
-            [In, Out] IntPtr outGmlFileInfoPtr);
-
         [DllImport(DllName)]
-        internal static extern APIResult plateau_udx_file_collection_get_packages(
+        internal static extern APIResult plateau_local_dataset_accessor_get_packages(
             [In] IntPtr handle, out PredefinedCityModelPackage packages);
 
         [DllImport(DllName)]
-        internal static extern APIResult plateau_udx_file_collection_get_mesh_code_count(
+        internal static extern APIResult plateau_local_dataset_accessor_get_mesh_code_count(
             [In] IntPtr handle, [In, Out] ref int count);
 
         [DllImport(DllName)]
-        internal static extern APIResult plateau_udx_file_collection_get_mesh_codes(
+        internal static extern APIResult plateau_local_dataset_accessor_get_mesh_codes(
             [In] IntPtr handle, [In, Out] MeshCode[] meshCodes, [In] int count);
 
         [DllImport(DllName)]
-        internal static extern APIResult plateau_udx_file_collection_get_gml_file_count(
+        internal static extern APIResult plateau_local_dataset_accessor_get_gml_file_count(
             [In] IntPtr handle, out int count, [In] PredefinedCityModelPackage package);
 
         [DllImport(DllName, CharSet = CharSet.Ansi)]
-        internal static extern APIResult plateau_udx_file_collection_get_gml_file(
+        internal static extern APIResult plateau_local_dataset_accessor_get_gml_file(
             [In] IntPtr handle,
             out IntPtr strPtr,
             out int strLength,
@@ -1252,7 +1246,7 @@ namespace PLATEAU.Interop
             [In] int index);
 
         [DllImport(DllName)]
-        internal static extern APIResult plateau_udx_file_collection_center_point(
+        internal static extern APIResult plateau_local_dataset_accessor_center_point(
             [In] IntPtr handle,
             out PlateauVector3d outCenterPoint,
             [In] IntPtr geoReferencePtr);
@@ -1291,6 +1285,12 @@ namespace PLATEAU.Interop
             [In] IntPtr handle,
             out IntPtr strPtr,
             out int strLength);
+        
+        [DllImport(DllName, CharSet = CharSet.Ansi)]
+        internal static extern APIResult plateau_gml_file_info_fetch(
+            [In] IntPtr gmlFileInfoPtr,
+            [In] string destinationRootPath,
+            [In, Out] IntPtr outGmlFileInfoPtr);
             
         // ***************
         //  city_model_package_info_c.cpp

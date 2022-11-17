@@ -110,9 +110,9 @@ namespace PLATEAU.CityImport.AreaSelector
             #if UNITY_EDITOR
             EditorUtility.DisplayProgressBar("", "データファイルを検索中です...", 0f);
             #endif
-            var collection = UdxFileCollection.Find(sourcePath);
-            availablePackageFlags = collection.Packages;
-            meshCodes = collection.MeshCodes;
+            var datasetAccessor = LocalDatasetAccessor.Find(sourcePath);
+            availablePackageFlags = datasetAccessor.Packages;
+            meshCodes = datasetAccessor.MeshCodes;
             if (meshCodes.Count <= 0)
             {
                 Debug.LogError("No MeshCode found.");

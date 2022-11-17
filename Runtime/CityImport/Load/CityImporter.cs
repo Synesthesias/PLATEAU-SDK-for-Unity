@@ -43,10 +43,10 @@ namespace PLATEAU.CityImport.Load
                 return;
             }
             
-            var collection = new UdxFileCollection();
+            var datasetAccessor = new LocalDatasetAccessor();
             progressDisplay.SetProgress("GMLファイル検索", 10f, "");
             var targetGmls = await Task.Run(() => CityFilesCopy.FindTargetGmls(
-                sourcePath, config, out collection
+                sourcePath, config, out datasetAccessor
             ));
             progressDisplay.SetProgress("GMLファイル検索", 100f, "完了");
 
@@ -64,7 +64,7 @@ namespace PLATEAU.CityImport.Load
             var rootTrans = new GameObject(destFolderName).transform;
 
             // 各GMLファイルで共通する設定です。
-            var referencePoint = CalcCenterPoint(collection, config.CoordinateZoneID);
+            var referencePoint = CalcCenterPoint(datasetAccessor, config.CoordinateZoneID);
             
             // ルートのGameObjectにコンポーネントを付けます。 
             var cityModelComponent = rootTrans.gameObject.AddComponent<PLATEAUInstancedCityModel>();
@@ -107,6 +107,10 @@ namespace PLATEAU.CityImport.Load
             Transform rootTrans, IProgressDisplay progressDisplay,
             PlateauVector3d referencePoint)
         {
+            if (gmlInfo.Path == null)
+            {
+                return;
+            }
             string gmlName = Path.GetFileName(gmlInfo.Path);
             progressDisplay.SetProgress(gmlName, 0f, "インポート処理中");
 
@@ -115,7 +119,7 @@ namespace PLATEAU.CityImport.Load
             
             // GMLと関連ファイルを StreamingAssets にコピーします。
             // ここは別スレッドで実行可能です。
-            await Task.Run(() => UdxFileCollection.Fetch(destPath, gmlInfo));
+            await Task.Run(() => gmlInfo.Fetch(destPath));
             // ここでメインスレッドに戻ります。
             progressDisplay.SetProgress(gmlName, 20f, "GMLファイルをロード中");
 
@@ -196,7 +200,7 @@ namespace PLATEAU.CityImport.Load
         
         
 
-        private static PlateauVector3d CalcCenterPoint(UdxFileCollection collection, int coordinateZoneID)
+        private static PlateauVector3d CalcCenterPoint(LocalDatasetAccessor collection, int coordinateZoneID)
         {
             using var geoReference = CoordinatesConvertUtil.UnityStandardGeoReference(coordinateZoneID);
             return collection.CalcCenterPoint(geoReference);

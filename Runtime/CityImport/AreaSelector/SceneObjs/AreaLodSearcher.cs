@@ -16,12 +16,12 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
     {
         // MeshCode <- (1対多) <- [ Package種, (多)LODs ]
         private readonly ConcurrentDictionary<string, PackageToLodDict> meshCodeToPackageLodDict;
-        private readonly UdxFileCollection collection;
+        private readonly LocalDatasetAccessor datasetAccessor;
 
         public AreaLodSearcher(string rootPath)
         {
             this.meshCodeToPackageLodDict = new ConcurrentDictionary<string, PackageToLodDict>();
-            this.collection = UdxFileCollection.Find(rootPath);
+            this.datasetAccessor = LocalDatasetAccessor.Find(rootPath);
         }
         
         
@@ -66,7 +66,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
                 if (existing != null) continue;
                 
                 // LODを検索します。
-                using var currentGmlCollection = this.collection.FilterByMeshCodes(new []{MeshCode.Parse(currentMeshCode)});
+                using var currentGmlCollection = this.datasetAccessor.FilterByMeshCodes(new []{MeshCode.Parse(currentMeshCode)});
 
                 foreach (PredefinedCityModelPackage package in Enum.GetValues(typeof(PredefinedCityModelPackage)))
                 {
