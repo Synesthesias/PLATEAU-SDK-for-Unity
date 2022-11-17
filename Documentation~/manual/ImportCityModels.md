@@ -103,6 +103,9 @@
 >   .PLATEAU は隠しフォルダである点にご注意ください。Unityのインポート処理を削減する目的でこうなっています。
 >   なお、インポート対象として選択したものに関連するもののみがコピーされます。
 
+配置されたゲームオブジェクト階層のトップには、コンポーネント`PLATEAUInstancedCityModel` がアタッチされます。  
+このインスペクタから緯度、経度などの情報を確認できます。  
+![](../resources/manual/importCityModels/InstancedCityModelInspector.png)
 
 ### エラーログの確認
 
