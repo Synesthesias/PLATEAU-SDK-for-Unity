@@ -11,7 +11,12 @@ namespace PLATEAU.Udx
         {
         }
 
-        public static DatasetAccessor Create(IntPtr innerAccessorPtr)
+        public static DatasetAccessor CreateBySelfPtr(IntPtr selfAccessorPtr)
+        {
+            return new DatasetAccessor(selfAccessorPtr);
+        }
+
+        public static DatasetAccessor CreateByInnerPtr(IntPtr innerAccessorPtr)
         {
             var result = NativeMethods.plateau_create_dataset_accessor_p_invoke(
                 innerAccessorPtr, out var selfAccessorPtr);
@@ -60,6 +65,19 @@ namespace PLATEAU.Udx
 
                 return ret;
             }
+        }
+
+        /// <summary>
+        /// ファイルに含まれる最大LODを検索します。
+        /// GMLファイルの全文を文字列検索するので時間がかかります。
+        /// 対応LODがなければ -1 を返します。
+        /// </summary>
+        public int MaxLod(MeshCode meshCode, PredefinedCityModelPackage package)
+        {
+            var result = NativeMethods.plateau_dataset_accessor_p_invoke_get_max_lod(
+                Handle, meshCode, package, out int maxLod);
+            DLLUtil.CheckDllError(result);
+            return maxLod;
         }
 
         protected override void DisposeNative()

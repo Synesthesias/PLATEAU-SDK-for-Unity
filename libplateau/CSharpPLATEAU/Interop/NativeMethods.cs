@@ -1238,6 +1238,13 @@ namespace PLATEAU.Interop
             [In] IntPtr accessorPtr,
             out int outCount);
 
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_dataset_accessor_p_invoke_get_max_lod(
+            [In] IntPtr accessorPtr,
+            MeshCode meshCode,
+            PredefinedCityModelPackage package,
+            out int outMaxLod);
+
         // ***************
         //  local_dataset_accessor_c.cpp
         // ***************
@@ -1299,6 +1306,24 @@ namespace PLATEAU.Interop
         internal static extern APIResult plateau_udx_sub_folder_get_package(
             string dirName,
             out PredefinedCityModelPackage outPackage);
+        
+        // ***************
+        //  dataset_source_c.cpp
+        // ***************
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_create_dataset_source_local(
+            out IntPtr outDatasetSource,
+            [In] byte[] sourcePathUtf8);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_delete_dataset_source(
+            [In] IntPtr datasetSourcePtr);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_dataset_source_get_accessor(
+            [In] IntPtr datasetSourcePtr,
+            out IntPtr newDatasetAccessorPInvokePtr);
 
 
         // ***************

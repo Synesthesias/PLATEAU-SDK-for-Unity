@@ -10,6 +10,10 @@ namespace PLATEAU.Udx
             
         }
 
+        /// <summary>
+        /// GMLファイルに関する情報を保持するためのインスタンスを生成します。
+        /// 実際にGMLファイルを作るわけではありません。
+        /// </summary>
         public static GmlFile Create(string path)
         {
             var apiResult = NativeMethods.plateau_create_gml_file(out IntPtr outPtr, path);
