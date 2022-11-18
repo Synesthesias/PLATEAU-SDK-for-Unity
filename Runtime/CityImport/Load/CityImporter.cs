@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -43,10 +44,10 @@ namespace PLATEAU.CityImport.Load
                 return;
             }
             
-            var datasetAccessor = new LocalDatasetAccessor();
             progressDisplay.SetProgress("GMLファイル検索", 10f, "");
+            using var datasetAccessor = DatasetSource.CreateLocal(sourcePath).Accessor;
             var targetGmls = await Task.Run(() => CityFilesCopy.FindTargetGmls(
-                sourcePath, config, out datasetAccessor
+                datasetAccessor, config
             ));
             progressDisplay.SetProgress("GMLファイル検索", 100f, "完了");
 
@@ -64,7 +65,7 @@ namespace PLATEAU.CityImport.Load
             var rootTrans = new GameObject(destFolderName).transform;
 
             // 各GMLファイルで共通する設定です。
-            var referencePoint = CalcCenterPoint(datasetAccessor, config.CoordinateZoneID);
+            var referencePoint = CalcCenterPoint(targetGmls, config.CoordinateZoneID);
             
             // ルートのGameObjectにコンポーネントを付けます。 
             var cityModelComponent = rootTrans.gameObject.AddComponent<PLATEAUInstancedCityModel>();
@@ -200,10 +201,20 @@ namespace PLATEAU.CityImport.Load
         
         
 
-        private static PlateauVector3d CalcCenterPoint(LocalDatasetAccessor collection, int coordinateZoneID)
+        private static PlateauVector3d CalcCenterPoint(IEnumerable<GmlFile> targetGmls, int coordinateZoneID)
         {
             using var geoReference = CoordinatesConvertUtil.UnityStandardGeoReference(coordinateZoneID);
-            return collection.CalcCenterPoint(geoReference);
+            var geoCoordSum = new GeoCoordinate(0, 0, 0);
+            int count = 0;
+            foreach (var gml in targetGmls)
+            {
+                geoCoordSum += gml.MeshCode.Extent.Center;
+                count++;
+            }
+
+            if (count == 0) throw new ArgumentException("Target gmls count is zero.");
+            var centerGeo = geoCoordSum / count;
+            return geoReference.Project(centerGeo);
         }
 
         private static async Task<CityModel> LoadGmlAsync(GmlFile gmlInfo)

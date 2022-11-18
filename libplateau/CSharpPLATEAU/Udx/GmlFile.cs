@@ -56,6 +56,17 @@ namespace PLATEAU.Udx
                 return package;
             }
         }
+
+        public MeshCode MeshCode
+        {
+            get
+            {
+                ThrowIfDisposed();
+                var meshCode = DLLUtil.GetNativeValue<MeshCode>(Handle,
+                    NativeMethods.plateau_gml_file_get_mesh_code);
+                return meshCode;
+            }
+        }
         
         /// <summary>
         /// GMLファイルとその関連ファイルをコピーします。

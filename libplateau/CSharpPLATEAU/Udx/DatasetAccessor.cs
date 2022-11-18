@@ -26,12 +26,6 @@ namespace PLATEAU.Udx
 
         public GmlFile[] GetGmlFiles(Extent extent, PredefinedCityModelPackage package)
         {
-            if ((extent.Max - extent.Min).SqrMagnitudeLatLon >= 1)
-            {
-                // 緯度経度の範囲が広すぎると地域メッシュコード生成が終わらなくなるので防止します。
-                // ただし高さは問いません。
-                throw new ArgumentException("Extent is too large.");
-            }
             var resultG = NativeMethods.plateau_dataset_accessor_p_invoke_get_gml_files(
                 Handle, extent, package);
             DLLUtil.CheckDllError(resultG);

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics.Tracing;
 using System.IO;
 using System.Linq;
 using PLATEAU.CityImport.Setting;
@@ -19,7 +20,8 @@ namespace PLATEAU.CityImport.Load.FileCopy
         {
             // TODO 非同期にする
             // 条件に合うGMLファイルを検索して記憶します。
-            var fetchTargetGmls = FindTargetGmls(sourcePath, config, out var collection);
+            using var datasetAccessor = DatasetSource.CreateLocal(sourcePath).Accessor;
+            var fetchTargetGmls = FindTargetGmls(datasetAccessor, config);
             // TODO gmlFileInfoの中身はあとで Dispose するべし
 
             // GMLと関連ファイルをコピーします。
@@ -37,14 +39,13 @@ namespace PLATEAU.CityImport.Load.FileCopy
             return destRootFolderPath;
         }
 
-        public static List<GmlFile> FindTargetGmls(string sourcePath, CityLoadConfig config, out LocalDatasetAccessor datasetAccessor)
+        public static List<GmlFile> FindTargetGmls(DatasetAccessor datasetAccessor, CityLoadConfig config)
         {
             var fetchTargetGmls = new List<GmlFile>();
-            var gmlPathsDict = config.SearchMatchingGMLList(sourcePath, out datasetAccessor);
-            foreach (var gmlPath in gmlPathsDict.SelectMany(pair => pair.Value))
+            var gmlFilesDict = config.SearchMatchingGMLList(datasetAccessor);
+            foreach (var gmlFile in gmlFilesDict.SelectMany(pair => pair.Value))
             {
-                var gmlInfo = GmlFile.Create(gmlPath);
-                fetchTargetGmls.Add(gmlInfo);
+                fetchTargetGmls.Add(gmlFile);
             }
 
             return fetchTargetGmls;

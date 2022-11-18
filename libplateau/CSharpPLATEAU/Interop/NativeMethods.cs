@@ -299,6 +299,21 @@ namespace PLATEAU.Interop
             );
         }
 
+        public static GeoCoordinate operator *(GeoCoordinate geo, double scalar)
+        {
+            return new GeoCoordinate(
+                geo.Latitude * scalar,
+                geo.Longitude * scalar,
+                geo.Height * scalar
+            );
+        }
+
+        public static GeoCoordinate operator /(GeoCoordinate geo, double scalar)
+        {
+            if (Math.Abs(scalar) <= double.Epsilon) throw new DivideByZeroException();
+            return geo * (1.0 / scalar);
+        }
+
         /// <summary>
         /// 緯度、経度の値を2次元ベクトルとして見たときのベクトルの長さの2乗です。
         /// 高さは無視されます。
@@ -346,6 +361,11 @@ namespace PLATEAU.Interop
          {
              return this.Max - this.Min;
          }
+
+         public static readonly Extent All =
+             new Extent(
+                 new GeoCoordinate(-90, -180, -9999),
+                 new GeoCoordinate(90, 180, 9999));
          
         public override string ToString()
         {
@@ -1354,6 +1374,11 @@ namespace PLATEAU.Interop
             [In] IntPtr handle,
             out IntPtr strPtr,
             out int strLength);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_gml_file_get_mesh_code(
+            [In] IntPtr gmlFilePtr,
+            out MeshCode outMeshCode);
         
         [DllImport(DllName, CharSet = CharSet.Ansi)]
         internal static extern APIResult plateau_gml_file_fetch(
