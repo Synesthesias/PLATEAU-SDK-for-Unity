@@ -37,13 +37,13 @@ namespace PLATEAU.CityImport.Load.FileCopy
             return destRootFolderPath;
         }
 
-        public static List<GmlFileInfo> FindTargetGmls(string sourcePath, CityLoadConfig config, out LocalDatasetAccessor datasetAccessor)
+        public static List<GmlFile> FindTargetGmls(string sourcePath, CityLoadConfig config, out LocalDatasetAccessor datasetAccessor)
         {
-            var fetchTargetGmls = new List<GmlFileInfo>();
+            var fetchTargetGmls = new List<GmlFile>();
             var gmlPathsDict = config.SearchMatchingGMLList(sourcePath, out datasetAccessor);
             foreach (var gmlPath in gmlPathsDict.SelectMany(pair => pair.Value))
             {
-                var gmlInfo = GmlFileInfo.Create(gmlPath);
+                var gmlInfo = GmlFile.Create(gmlPath);
                 fetchTargetGmls.Add(gmlInfo);
             }
 

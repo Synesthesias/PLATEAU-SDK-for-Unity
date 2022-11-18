@@ -103,7 +103,7 @@ namespace PLATEAU.CityImport.Load
         /// GMLファイルを1つインポートします。
         /// メインスレッドで呼ぶ必要があります。
         /// </summary>
-        private static async Task ImportGml(GmlFileInfo gmlInfo, string destPath, CityLoadConfig conf,
+        private static async Task ImportGml(GmlFile gmlInfo, string destPath, CityLoadConfig conf,
             Transform rootTrans, IProgressDisplay progressDisplay,
             PlateauVector3d referencePoint)
         {
@@ -206,7 +206,7 @@ namespace PLATEAU.CityImport.Load
             return collection.CalcCenterPoint(geoReference);
         }
 
-        private static async Task<CityModel> LoadGmlAsync(GmlFileInfo gmlInfo)
+        private static async Task<CityModel> LoadGmlAsync(GmlFile gmlInfo)
         {
             string gmlPath = gmlInfo.Path;
 

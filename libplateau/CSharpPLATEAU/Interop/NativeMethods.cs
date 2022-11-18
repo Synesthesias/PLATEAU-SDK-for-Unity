@@ -1193,6 +1193,50 @@ namespace PLATEAU.Interop
         internal static extern APIResult plateau_mesh_code_get_extent(
             [In] MeshCode meshCode,
             [In, Out] ref Extent outExtent);
+        
+        // ***************
+        //  dataset_accessor_p_invoke_c.cpp
+        // ***************
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_create_dataset_accessor_p_invoke(
+            [In] IntPtr innerAccessorPtr,
+            out IntPtr outSelfAccessorPtr);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_delete_dataset_accessor_p_invoke(
+            [In] IntPtr accessorPtr);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_dataset_accessor_p_invoke_get_gml_files(
+            [In] IntPtr accessorPtr,
+            Extent extent,
+            PredefinedCityModelPackage package);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_dataset_accessor_p_invoke_result_of_get_gml_files(
+            [In] IntPtr accessorPtr,
+            out IntPtr outGmlFileInfoPtr,
+            int index);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_dataset_accessor_p_invoke_result_of_get_gml_files_count(
+            [In] IntPtr accessorPtr,
+            out int outCount);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_dataset_accessor_p_invoke_get_mesh_codes(
+            [In] IntPtr accessorPtr);
+        
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_dataset_accessor_p_invoke_result_of_get_mesh_codes(
+            [In] IntPtr accessorPtr,
+            out MeshCode outMeshCode,
+            int index);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_dataset_accessor_p_invoke_result_of_get_mesh_codes_count(
+            [In] IntPtr accessorPtr,
+            out int outCount);
 
         // ***************
         //  local_dataset_accessor_c.cpp
@@ -1258,36 +1302,36 @@ namespace PLATEAU.Interop
 
 
         // ***************
-        //  gml_file_info_c.cpp
+        //  gml_file_c.cpp
         // ***************
         [DllImport(DllName, CharSet = CharSet.Ansi)]
-        internal static extern APIResult plateau_create_gml_file_info(
+        internal static extern APIResult plateau_create_gml_file(
             out IntPtr outGmlFileInfoPtr,
             [In] string path);
 
         [DllImport(DllName)]
-        internal static extern APIResult plateau_delete_gml_file_info(
+        internal static extern APIResult plateau_delete_gml_file(
             [In] IntPtr handle);
 
         [DllImport(DllName)]
-        internal static extern APIResult plateau_gml_file_info_get_path(
+        internal static extern APIResult plateau_gml_file_get_path(
             [In] IntPtr handle,
             out IntPtr strPtr,
             out int strLength);
         
         [DllImport(DllName, CharSet = CharSet.Ansi)]
-        internal static extern APIResult plateau_gml_file_info_set_path(
+        internal static extern APIResult plateau_gml_file_set_path(
             [In] IntPtr gmlFileInfoPtr,
             [In] string path);
 
         [DllImport(DllName, CharSet = CharSet.Ansi)]
-        internal static extern APIResult plateau_gml_file_info_get_feature_type_str(
+        internal static extern APIResult plateau_gml_file_get_feature_type_str(
             [In] IntPtr handle,
             out IntPtr strPtr,
             out int strLength);
         
         [DllImport(DllName, CharSet = CharSet.Ansi)]
-        internal static extern APIResult plateau_gml_file_info_fetch(
+        internal static extern APIResult plateau_gml_file_fetch(
             [In] IntPtr gmlFileInfoPtr,
             [In] string destinationRootPath,
             [In, Out] IntPtr outGmlFileInfoPtr);
