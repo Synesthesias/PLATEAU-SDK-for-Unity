@@ -64,7 +64,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
                 var mapTile = new MapTile(mapFilePath, tileCoord);
                 bool isSucceed = await Task.Run(() =>
                 {
-                    return DownloadFileIfNotExist(downloader, i, mapFilePath, tileCoord);
+                    return DownloadFileIfNotExist(downloader, i, mapFilePath);
                 });
                 if (isSucceed)
                 {
@@ -85,7 +85,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
             return generatedMaterials;
         }
 
-        private static bool DownloadFileIfNotExist(VectorTileDownloader downloader, int index, string mapFilePath, TileCoordinate tileCoord)
+        private static bool DownloadFileIfNotExist(VectorTileDownloader downloader, int index, string mapFilePath)
         {
             // ファイルがすでにあるなら、そのファイルの書き込み完了を待って、そのファイルを利用します。
             if (File.Exists(mapFilePath))
@@ -162,6 +162,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
             {
                 mainTexture = texture
             };
+            // ReSharper disable once Unity.InefficientPropertyAccess
             renderer.sharedMaterial = mat;
             generatedMaterials.Add(mat);
         }

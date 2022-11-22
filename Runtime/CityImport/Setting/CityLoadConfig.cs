@@ -58,7 +58,6 @@ namespace PLATEAU.CityImport.Setting
         /// 設定に合うGMLファイルを検索します。
         /// 多数のファイルから検索するので、実行時間が長くなりがちである点にご注意ください。
         /// </summary>
-        /// <param name="rootPath">検索元となる PLATEAUルートフォルダです。</param>
         /// <param name="datasetAccessor">検索に利用した collection を outで返します。</param>
         /// <returns>検索にヒットしたGMLをパッケージごとに分けたものです。keyはパッケージ、 valueはそのパッケージに属するgmlファイルのパスのリストです。</returns>
         public Dictionary<PredefinedCityModelPackage, List<GmlFile>> SearchMatchingGMLList(DatasetAccessor datasetAccessor)

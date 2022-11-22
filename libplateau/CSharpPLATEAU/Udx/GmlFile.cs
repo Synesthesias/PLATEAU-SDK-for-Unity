@@ -75,7 +75,6 @@ namespace PLATEAU.Udx
         /// GMLファイルの容量が増えるほど処理時間が増えます。
         /// </summary>
         /// <param name="destinationRootPath">コピー先のルートフォルダのパスです。</param>
-        /// <param name="gmlFileInfo">コピー元のGMLファイルの <see cref="GmlFile"/> です。</param>
         public GmlFile Fetch(string destinationRootPath)
         {
             // ThrowIfDisposed();

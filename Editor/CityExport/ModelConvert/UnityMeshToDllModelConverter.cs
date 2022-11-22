@@ -186,7 +186,7 @@ namespace PLATEAU.Editor.CityExport.ModelConvert
             if (mat == null) return "";
             var tex = mat.mainTexture;
             if (tex == null) return "";
-            return Path.Combine(PathUtil.plateauSrcFetchDir, tex.name);
+            return Path.Combine(PathUtil.PLATEAUSrcFetchDir, tex.name);
         }
 
         private static void InvertTriangles(IList<uint> indices)

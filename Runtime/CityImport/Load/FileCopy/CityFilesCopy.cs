@@ -14,6 +14,8 @@ namespace PLATEAU.CityImport.Load.FileCopy
         /// </summary>
         /// <param name="sourcePath">検索元となるルートフォルダです。</param>
         /// <param name="config">検索対象となるGMLファイルの絞り込みの条件として利用します。</param>
+        /// <param name="progressDisplay">進捗表示のインターフェイスです。</param>
+        /// <param name="destPath">コピー先のパスです。</param>
         /// <returns>コピー先のルートフォルダのパスを返します。</returns>
         public static string ToStreamingAssets(string sourcePath, CityLoadConfig config, IProgressDisplay progressDisplay, string destPath)
         {

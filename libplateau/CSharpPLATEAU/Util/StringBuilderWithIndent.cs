@@ -9,7 +9,7 @@ namespace PLATEAU.Util
     public class StringBuilderWithIndent
     {
         private StringBuilder sb;
-        private int indent = 0;
+        private int indent;
 
         public StringBuilderWithIndent()
         {

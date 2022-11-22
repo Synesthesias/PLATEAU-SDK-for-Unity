@@ -1,5 +1,4 @@
 using System;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using PLATEAU.CityGML;
 using PLATEAU.Geometries;
@@ -1312,7 +1311,7 @@ namespace PLATEAU.Interop
 
         [DllImport(DllName)]
         internal static extern APIResult plateau_local_dataset_accessor_filter(
-            [In] IntPtr handle, [In] Extent extent, [In, Out] IntPtr out_handle);
+            [In] IntPtr handle, [In] Extent extent, [In, Out] IntPtr outHandle);
 
         [DllImport(DllName)]
         internal static extern APIResult plateau_local_dataset_accessor_filter_by_mesh_codes(
@@ -1464,7 +1463,7 @@ namespace PLATEAU.Interop
         internal static extern APIResult plateau_create_gltf_writer(out IntPtr outHandle);
 
         [DllImport(DllName)]
-        internal static extern APIResult plateau_delete_gltf_writer([In] IntPtr gltf_writer);
+        internal static extern APIResult plateau_delete_gltf_writer([In] IntPtr gltfWriter);
 
         [DllImport(DllName, CharSet = CharSet.Ansi)]
         internal static extern APIResult plateau_gltf_writer_write(
@@ -1482,14 +1481,14 @@ namespace PLATEAU.Interop
         internal static extern APIResult plateau_create_obj_writer(out IntPtr outHandle);
 
         [DllImport(DllName)]
-        internal static extern APIResult plateau_delete_obj_writer([In] IntPtr obj_writer);
+        internal static extern APIResult plateau_delete_obj_writer([In] IntPtr objWriter);
 
         [DllImport(DllName, CharSet = CharSet.Ansi)]
         internal static extern APIResult plateau_obj_writer_write(
             [In] IntPtr handle,
             out bool flg,
             [In] byte[] objFilePathUtf8,
-            [In] IntPtr ModelPtr);
+            [In] IntPtr modelPtr);
         
         // ***************
         //  mesh_merger_c.cpp

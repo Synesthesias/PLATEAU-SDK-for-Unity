@@ -40,7 +40,7 @@ namespace PLATEAU.CityInfo
             // デフォルト値は PLATEAUウィンドウで操作したときのインポート先です。
             if (string.IsNullOrEmpty(parentPathOfRootDir))
             {
-                parentPathOfRootDir = PathUtil.plateauSrcFetchDir;
+                parentPathOfRootDir = PathUtil.PLATEAUSrcFetchDir;
             }
 
             if (string.IsNullOrEmpty(rootDirName))
@@ -62,7 +62,7 @@ namespace PLATEAU.CityInfo
                 Debug.LogError("Could not get gmlInfo from gmlName.");
                 return null;
             }
-            string gmlFullPath = Path.GetFullPath(Path.Combine(PathUtil.plateauSrcFetchDir, gmlPath));
+            string gmlFullPath = Path.GetFullPath(Path.Combine(PathUtil.PLATEAUSrcFetchDir, gmlPath));
             return await LoadAsync(gmlFullPath);
         }
 

@@ -35,7 +35,7 @@ namespace PLATEAU.CityImport.Load
         public static async Task ImportAsync(CityLoadConfig config, IProgressDisplay progressDisplay)
         {
             string sourcePath = config.SourcePathBeforeImport;
-            string destPath = PathUtil.plateauSrcFetchDir;
+            string destPath = PathUtil.PLATEAUSrcFetchDir;
             string destFolderName = Path.GetFileName(sourcePath);
 
             if (!Directory.Exists(sourcePath))

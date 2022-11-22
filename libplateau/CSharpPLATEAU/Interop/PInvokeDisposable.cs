@@ -10,7 +10,7 @@ namespace PLATEAU.Interop
     public abstract class PInvokeDisposable : IDisposable
     {
         public IntPtr Handle { get; }
-        private bool IsDisposed;
+        private bool isDisposed;
 
         protected abstract void DisposeNative();
 
@@ -21,15 +21,15 @@ namespace PLATEAU.Interop
         
         public void Dispose()
         {
-            if (this.IsDisposed) return;
+            if (this.isDisposed) return;
             DisposeNative();
             GC.SuppressFinalize(this);
-            this.IsDisposed = true;
+            this.isDisposed = true;
         }
 
         protected void ThrowIfDisposed()
         {
-            if (this.IsDisposed) throw new ObjectDisposedException("Object is disposed.");
+            if (this.isDisposed) throw new ObjectDisposedException("Object is disposed.");
         }
 
         ~PInvokeDisposable()

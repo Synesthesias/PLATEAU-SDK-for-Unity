@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 using PLATEAU.Udx;
 
 namespace PLATEAU.Interop
