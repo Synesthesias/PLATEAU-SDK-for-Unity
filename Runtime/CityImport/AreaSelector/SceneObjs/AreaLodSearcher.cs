@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using PLATEAU.Editor.CityImport.AreaSelector;
+using PLATEAU.Interop;
 using PLATEAU.Udx;
 
 namespace PLATEAU.CityImport.AreaSelector.SceneObjs
@@ -16,12 +17,12 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
     {
         // MeshCode <- (1対多) <- [ Package種, (多)LODs ]
         private readonly ConcurrentDictionary<string, PackageToLodDict> meshCodeToPackageLodDict;
-        private readonly LocalDatasetAccessor datasetAccessor;
+        private readonly DatasetSource datasetSource;
 
         public AreaLodSearcher(string rootPath)
         {
             this.meshCodeToPackageLodDict = new ConcurrentDictionary<string, PackageToLodDict>();
-            this.datasetAccessor = LocalDatasetAccessor.Find(rootPath);
+            this.datasetSource = DatasetSource.CreateLocal(rootPath);
         }
         
         
@@ -66,17 +67,20 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
                 if (existing != null) continue;
                 
                 // LODを検索します。
-                var currentGmlAccessor = this.datasetAccessor.FilterByMeshCodes(new []{MeshCode.Parse(currentMeshCode)});
+                // var currentGmlAccessor = this.datasetSource.Accessor.FilterByMeshCodes(new []{MeshCode.Parse(currentMeshCode)});
+                var accessor = this.datasetSource.Accessor;
 
                 foreach (PredefinedCityModelPackage package in Enum.GetValues(typeof(PredefinedCityModelPackage)))
                 {
                     if (!AreaLodView.HasIconOfPackage(package)) continue; // 地図に表示しないパッケージはスキップします。
+                    var gmls = accessor.GetGmlFiles(Extent.All, package);
 
-                    string[] gmlPaths = currentGmlAccessor.GetGmlFiles(package);
+                    // string[] gmlPaths = currentGmlAccessor.GetGmlFiles(package);
                     var lodSet = new SortedSet<uint>();
-                    foreach (string gmlPath in gmlPaths)
+                    foreach (var gml in gmls)
                     {
-                        string fullPath = Path.GetFullPath(gmlPath);
+                        if (gml.MeshCode.ToString() != currentMeshCode) return;
+                        string fullPath = Path.GetFullPath(gml.Path);
                     
                         // ファイルの中身を検索するので時間がかかります。
                         var lods = LodSearcher.SearchLodsInFile(fullPath);

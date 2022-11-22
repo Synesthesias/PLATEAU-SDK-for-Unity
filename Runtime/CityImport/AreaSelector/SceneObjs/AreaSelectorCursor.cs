@@ -57,11 +57,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         }
 
 #if UNITY_EDITOR
-
-        public override void DrawGizmos()
-        {
-            base.DrawGizmos();
-        }
+        
 
         public override void DrawSceneGUI()
         {
