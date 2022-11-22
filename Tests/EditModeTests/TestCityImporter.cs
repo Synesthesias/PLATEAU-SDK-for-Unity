@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using NUnit.Framework;
-using PLATEAU.CityImport.Setting;
 using PLATEAU.Tests.TestUtils;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -14,7 +13,6 @@ namespace PLATEAU.Tests.EditModeTests
     [TestFixture]
     public class TestCityImporter
     {
-        private static CityLoadConfig config;
 
         /// <summary> インポート時、テストデータはこのパスにコピーされることを確認します。 </summary>
         private const string testDataFetchPath = "Assets/StreamingAssets/.PLATEAU/TestDataTokyoMini";
@@ -35,7 +33,7 @@ namespace PLATEAU.Tests.EditModeTests
         public IEnumerator TestImport()
         {
             var cityDefinition = TestCityDefinition.MiniTokyo;
-            yield return cityDefinition.Import(out config).AsIEnumerator();
+            yield return cityDefinition.Import(out _).AsIEnumerator();
             
             // GMLファイルとその関連ファイルが Assets/StreamingAssets/.PLATEAU にコピーされることを確認します。
             AssertFilesExist(

@@ -129,7 +129,7 @@ namespace PLATEAU.CityImport.Load.Convert
                 }
                 
                 // .PLATEAU からの相対パスを求めます。
-                string pathToReplace = PathUtil.plateauSrcFetchDir + "/";
+                string pathToReplace = PathUtil.PLATEAUSrcFetchDir + "/";
                 string relativePath = (textureFullPath.Replace('\\', '/')).Replace(pathToReplace, "");
 
                 // キャッシュにあればそれを使います

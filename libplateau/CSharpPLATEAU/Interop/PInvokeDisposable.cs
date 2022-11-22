@@ -27,6 +27,11 @@ namespace PLATEAU.Interop
             this.isDisposed = true;
         }
 
+        protected void ThrowIfDisposed()
+        {
+            if (this.isDisposed) throw new ObjectDisposedException("Object is disposed.");
+        }
+
         ~PInvokeDisposable()
         {
             Dispose();

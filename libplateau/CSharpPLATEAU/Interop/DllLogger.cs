@@ -57,7 +57,7 @@ namespace PLATEAU.Interop
     {
         private IntPtr handle;
         private int disposed;
-        private readonly bool hasOwnership = false;
+        private readonly bool hasOwnership;
 
         internal IntPtr Handle => this.handle;
 

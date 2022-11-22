@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using PLATEAU.CityImport.AreaSelector.SceneObjs;
 using PLATEAU.Geometries;
 using PLATEAU.Interop;
@@ -110,9 +111,10 @@ namespace PLATEAU.CityImport.AreaSelector
             #if UNITY_EDITOR
             EditorUtility.DisplayProgressBar("", "データファイルを検索中です...", 0f);
             #endif
-            var collection = UdxFileCollection.Find(sourcePath);
-            availablePackageFlags = collection.Packages;
-            meshCodes = collection.MeshCodes;
+            using var datasetSource = DatasetSource.CreateLocal(sourcePath);
+            var accessor = datasetSource.Accessor;
+            availablePackageFlags = accessor.Packages;
+            meshCodes = new ReadOnlyCollection<MeshCode>(accessor.MeshCodes.ToArray());
             if (meshCodes.Count <= 0)
             {
                 Debug.LogError("No MeshCode found.");

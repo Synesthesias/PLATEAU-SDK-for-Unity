@@ -14,12 +14,15 @@ namespace PLATEAU.CityImport.Load.FileCopy
         /// </summary>
         /// <param name="sourcePath">検索元となるルートフォルダです。</param>
         /// <param name="config">検索対象となるGMLファイルの絞り込みの条件として利用します。</param>
+        /// <param name="progressDisplay">進捗表示のインターフェイスです。</param>
+        /// <param name="destPath">コピー先のパスです。</param>
         /// <returns>コピー先のルートフォルダのパスを返します。</returns>
         public static string ToStreamingAssets(string sourcePath, CityLoadConfig config, IProgressDisplay progressDisplay, string destPath)
         {
             // TODO 非同期にする
             // 条件に合うGMLファイルを検索して記憶します。
-            var fetchTargetGmls = FindTargetGmls(sourcePath, config, out var collection);
+            var datasetAccessor = DatasetSource.CreateLocal(sourcePath).Accessor;
+            var fetchTargetGmls = FindTargetGmls(datasetAccessor, config);
             // TODO gmlFileInfoの中身はあとで Dispose するべし
 
             // GMLと関連ファイルをコピーします。
@@ -28,7 +31,7 @@ namespace PLATEAU.CityImport.Load.FileCopy
             {
                 var gml = fetchTargetGmls[i];
                 progressDisplay.SetProgress("インポート処理", 100f * i / targetGmlCount, $"[{i+1} / {targetGmlCount}] {Path.GetFileName(gml.Path)}");
-                UdxFileCollection.Fetch(destPath, gml);
+                gml.Fetch(destPath);
             }
 
             string destFolderName = Path.GetFileName(sourcePath);
@@ -37,14 +40,13 @@ namespace PLATEAU.CityImport.Load.FileCopy
             return destRootFolderPath;
         }
 
-        public static List<GmlFileInfo> FindTargetGmls(string sourcePath, CityLoadConfig config, out UdxFileCollection collection)
+        public static List<GmlFile> FindTargetGmls(DatasetAccessor datasetAccessor, CityLoadConfig config)
         {
-            var fetchTargetGmls = new List<GmlFileInfo>();
-            var gmlPathsDict = config.SearchMatchingGMLList(sourcePath, out collection);
-            foreach (var gmlPath in gmlPathsDict.SelectMany(pair => pair.Value))
+            var fetchTargetGmls = new List<GmlFile>();
+            var gmlFilesDict = config.SearchMatchingGMLList(datasetAccessor);
+            foreach (var gmlFile in gmlFilesDict.SelectMany(pair => pair.Value))
             {
-                var gmlInfo = GmlFileInfo.Create(gmlPath);
-                fetchTargetGmls.Add(gmlInfo);
+                fetchTargetGmls.Add(gmlFile);
             }
 
             return fetchTargetGmls;

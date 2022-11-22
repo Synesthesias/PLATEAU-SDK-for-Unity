@@ -1,5 +1,4 @@
 using System;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using PLATEAU.CityGML;
 using PLATEAU.Geometries;
@@ -299,6 +298,21 @@ namespace PLATEAU.Interop
             );
         }
 
+        public static GeoCoordinate operator *(GeoCoordinate geo, double scalar)
+        {
+            return new GeoCoordinate(
+                geo.Latitude * scalar,
+                geo.Longitude * scalar,
+                geo.Height * scalar
+            );
+        }
+
+        public static GeoCoordinate operator /(GeoCoordinate geo, double scalar)
+        {
+            if (Math.Abs(scalar) <= double.Epsilon) throw new DivideByZeroException();
+            return geo * (1.0 / scalar);
+        }
+
         /// <summary>
         /// 緯度、経度の値を2次元ベクトルとして見たときのベクトルの長さの2乗です。
         /// 高さは無視されます。
@@ -346,6 +360,11 @@ namespace PLATEAU.Interop
          {
              return this.Max - this.Min;
          }
+
+         public static readonly Extent All =
+             new Extent(
+                 new GeoCoordinate(-90, -180, -9999),
+                 new GeoCoordinate(90, 180, 9999));
          
         public override string ToString()
         {
@@ -1193,58 +1212,133 @@ namespace PLATEAU.Interop
         internal static extern APIResult plateau_mesh_code_get_extent(
             [In] MeshCode meshCode,
             [In, Out] ref Extent outExtent);
-
+        
         // ***************
-        //  udx_file_collection_c.cpp
+        //  i_dataset_accessor_c.cpp
         // ***************
         [DllImport(DllName)]
-        internal static extern APIResult plateau_create_udx_file_collection(
+        internal static extern APIResult plateau_i_dataset_accessor_get_gml_files(
+            [In] IntPtr accessorPtr,
+            Extent extent,
+            PredefinedCityModelPackage package,
+            [In] IntPtr refVectorGmlFilePtr);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_i_dataset_accessor_get_mesh_codes(
+            [In] IntPtr accessorPtr,
+            [In,Out] IntPtr refVectorMeshCodePtr);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_i_dataset_accessor_get_max_lod(
+            [In] IntPtr accessorPtr,
+            out int outMaxLod,
+            MeshCode meshCode,
+            PredefinedCityModelPackage package);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_i_dataset_accessor_get_packages(
+            [In] IntPtr accessorPtr,
+            out PredefinedCityModelPackage outPackageFlags);
+        
+        // ***************
+        //  dataset_accessor_p_invoke_c.cpp
+        // ***************
+        // TODO あとで消す
+        // [DllImport(DllName)]
+        // internal static extern APIResult plateau_create_dataset_accessor_p_invoke(
+        //     [In] IntPtr innerAccessorPtr,
+        //     out IntPtr outSelfAccessorPtr);
+        //
+        // [DllImport(DllName)]
+        // internal static extern APIResult plateau_delete_dataset_accessor_p_invoke(
+        //     [In] IntPtr accessorPtr);
+        //
+        // [DllImport(DllName)]
+        // internal static extern APIResult plateau_dataset_accessor_p_invoke_get_gml_files(
+        //     [In] IntPtr accessorPtr,
+        //     Extent extent,
+        //     PredefinedCityModelPackage package);
+        //
+        // [DllImport(DllName)]
+        // internal static extern APIResult plateau_dataset_accessor_p_invoke_result_of_get_gml_files(
+        //     [In] IntPtr accessorPtr,
+        //     out IntPtr outGmlFileInfoPtr,
+        //     PredefinedCityModelPackage package,
+        //     int index);
+        //
+        // [DllImport(DllName)]
+        // internal static extern APIResult plateau_dataset_accessor_p_invoke_result_of_get_gml_files_count(
+        //     [In] IntPtr accessorPtr,
+        //     out int outCount,
+        //     PredefinedCityModelPackage package);
+        //
+        // [DllImport(DllName)]
+        // internal static extern APIResult plateau_dataset_accessor_p_invoke_get_mesh_codes(
+        //     [In] IntPtr accessorPtr);
+        //
+        // [DllImport(DllName)]
+        // internal static extern APIResult plateau_dataset_accessor_p_invoke_result_of_get_mesh_codes(
+        //     [In] IntPtr accessorPtr,
+        //     out MeshCode outMeshCode,
+        //     int index);
+        //
+        // [DllImport(DllName)]
+        // internal static extern APIResult plateau_dataset_accessor_p_invoke_result_of_get_mesh_codes_count(
+        //     [In] IntPtr accessorPtr,
+        //     out int outCount);
+        //
+        // [DllImport(DllName)]
+        // internal static extern APIResult plateau_dataset_accessor_p_invoke_get_max_lod(
+        //     [In] IntPtr accessorPtr,
+        //     MeshCode meshCode,
+        //     PredefinedCityModelPackage package,
+        //     out int outMaxLod);
+
+        // ***************
+        //  local_dataset_accessor_c.cpp
+        // ***************
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_create_local_dataset_accessor(
             out IntPtr handle);
 
         [DllImport(DllName)]
-        internal static extern APIResult plateau_delete_udx_file_collection(
+        internal static extern APIResult plateau_delete_local_dataset_accessor(
             [In] IntPtr handle);
 
         [DllImport(DllName)]
-        internal static extern APIResult plateau_udx_file_collection_find(
+        internal static extern APIResult plateau_local_dataset_accessor_find(
             [In] string source, [In, Out] IntPtr handle);
 
         [DllImport(DllName)]
-        internal static extern APIResult plateau_udx_file_collection_filter(
-            [In] IntPtr handle, [In] Extent extent, [In, Out] IntPtr out_handle);
+        internal static extern APIResult plateau_local_dataset_accessor_filter(
+            [In] IntPtr handle, [In] Extent extent, [In, Out] IntPtr outHandle);
 
         [DllImport(DllName)]
-        internal static extern APIResult plateau_udx_file_collection_filter_by_mesh_codes(
+        internal static extern APIResult plateau_local_dataset_accessor_filter_by_mesh_codes(
             [In] IntPtr handle,
             [In] MeshCode[] meshCodes,
             int meshCodeCount,
             IntPtr collectionPtrForResult
         );
 
-        [DllImport(DllName, CharSet = CharSet.Ansi)]
-        internal static extern APIResult plateau_udx_file_collection_fetch(
-            [In] string destinationRootPath,
-            [In] IntPtr gmlFileInfoPtr,
-            [In, Out] IntPtr outGmlFileInfoPtr);
-
         [DllImport(DllName)]
-        internal static extern APIResult plateau_udx_file_collection_get_packages(
+        internal static extern APIResult plateau_local_dataset_accessor_get_packages(
             [In] IntPtr handle, out PredefinedCityModelPackage packages);
 
         [DllImport(DllName)]
-        internal static extern APIResult plateau_udx_file_collection_get_mesh_code_count(
-            [In] IntPtr handle, [In, Out] ref int count);
+        internal static extern APIResult plateau_local_dataset_accessor_get_mesh_code_count(
+            [In] IntPtr handle, out int count);
 
         [DllImport(DllName)]
-        internal static extern APIResult plateau_udx_file_collection_get_mesh_codes(
+        internal static extern APIResult plateau_local_dataset_accessor_get_mesh_codes(
             [In] IntPtr handle, [In, Out] MeshCode[] meshCodes, [In] int count);
 
         [DllImport(DllName)]
-        internal static extern APIResult plateau_udx_file_collection_get_gml_file_count(
+        internal static extern APIResult plateau_local_dataset_accessor_get_gml_file_count(
             [In] IntPtr handle, out int count, [In] PredefinedCityModelPackage package);
 
         [DllImport(DllName, CharSet = CharSet.Ansi)]
-        internal static extern APIResult plateau_udx_file_collection_get_gml_file(
+        internal static extern APIResult plateau_local_dataset_accessor_get_gml_file(
             [In] IntPtr handle,
             out IntPtr strPtr,
             out int strLength,
@@ -1252,7 +1346,7 @@ namespace PLATEAU.Interop
             [In] int index);
 
         [DllImport(DllName)]
-        internal static extern APIResult plateau_udx_file_collection_center_point(
+        internal static extern APIResult plateau_local_dataset_accessor_center_point(
             [In] IntPtr handle,
             out PlateauVector3d outCenterPoint,
             [In] IntPtr geoReferencePtr);
@@ -1261,36 +1355,65 @@ namespace PLATEAU.Interop
         internal static extern APIResult plateau_udx_sub_folder_get_package(
             string dirName,
             out PredefinedCityModelPackage outPackage);
+        
+        // ***************
+        //  dataset_source_c.cpp
+        // ***************
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_create_dataset_source_local(
+            out IntPtr outDatasetSource,
+            [In] byte[] sourcePathUtf8);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_delete_dataset_source(
+            [In] IntPtr datasetSourcePtr);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_dataset_source_get_accessor(
+            [In] IntPtr datasetSourcePtr,
+            out IntPtr accessorPtr);
 
 
         // ***************
-        //  gml_file_info_c.cpp
+        //  gml_file_c.cpp
         // ***************
         [DllImport(DllName, CharSet = CharSet.Ansi)]
-        internal static extern APIResult plateau_create_gml_file_info(
+        internal static extern APIResult plateau_create_gml_file(
             out IntPtr outGmlFileInfoPtr,
             [In] string path);
 
         [DllImport(DllName)]
-        internal static extern APIResult plateau_delete_gml_file_info(
+        internal static extern APIResult plateau_delete_gml_file(
             [In] IntPtr handle);
 
         [DllImport(DllName)]
-        internal static extern APIResult plateau_gml_file_info_get_path(
+        internal static extern APIResult plateau_gml_file_get_path(
             [In] IntPtr handle,
             out IntPtr strPtr,
             out int strLength);
         
         [DllImport(DllName, CharSet = CharSet.Ansi)]
-        internal static extern APIResult plateau_gml_file_info_set_path(
+        internal static extern APIResult plateau_gml_file_set_path(
             [In] IntPtr gmlFileInfoPtr,
             [In] string path);
 
         [DllImport(DllName, CharSet = CharSet.Ansi)]
-        internal static extern APIResult plateau_gml_file_info_get_feature_type_str(
+        internal static extern APIResult plateau_gml_file_get_feature_type_str(
             [In] IntPtr handle,
             out IntPtr strPtr,
             out int strLength);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_gml_file_get_mesh_code(
+            [In] IntPtr gmlFilePtr,
+            out MeshCode outMeshCode);
+        
+        [DllImport(DllName, CharSet = CharSet.Ansi)]
+        internal static extern APIResult plateau_gml_file_fetch(
+            [In] IntPtr gmlFileInfoPtr,
+            [In] string destinationRootPath,
+            [In, Out] IntPtr outGmlFileInfoPtr);
             
         // ***************
         //  city_model_package_info_c.cpp
@@ -1340,7 +1463,7 @@ namespace PLATEAU.Interop
         internal static extern APIResult plateau_create_gltf_writer(out IntPtr outHandle);
 
         [DllImport(DllName)]
-        internal static extern APIResult plateau_delete_gltf_writer([In] IntPtr gltf_writer);
+        internal static extern APIResult plateau_delete_gltf_writer([In] IntPtr gltfWriter);
 
         [DllImport(DllName, CharSet = CharSet.Ansi)]
         internal static extern APIResult plateau_gltf_writer_write(
@@ -1358,14 +1481,14 @@ namespace PLATEAU.Interop
         internal static extern APIResult plateau_create_obj_writer(out IntPtr outHandle);
 
         [DllImport(DllName)]
-        internal static extern APIResult plateau_delete_obj_writer([In] IntPtr obj_writer);
+        internal static extern APIResult plateau_delete_obj_writer([In] IntPtr objWriter);
 
         [DllImport(DllName, CharSet = CharSet.Ansi)]
         internal static extern APIResult plateau_obj_writer_write(
             [In] IntPtr handle,
             out bool flg,
             [In] byte[] objFilePathUtf8,
-            [In] IntPtr ModelPtr);
+            [In] IntPtr modelPtr);
         
         // ***************
         //  mesh_merger_c.cpp
@@ -1458,5 +1581,46 @@ namespace PLATEAU.Interop
         internal static extern APIResult plateau_lod_searcher_search_lods_in_file(
             [In] byte[] filePathUtf8,
             out uint outLodFlags);
+        
+        // ***************
+        //  vector_c.cpp
+        // ***************
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_create_vector_gml_file(
+            out IntPtr outVectorPtr);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_delete_vector_gml_file(
+            [In] IntPtr vectorPtr);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_vector_gml_file_get_pointer(
+            [In] IntPtr vectorPtr,
+            out IntPtr outGmlFilePtr,
+            int index);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_vector_gml_file_count(
+            [In] IntPtr handle,
+            out int outCount);
+        
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_create_vector_mesh_code(
+            out IntPtr outVectorPtr);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_delete_vector_mesh_code(
+            [In] IntPtr vectorPtr);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_vector_mesh_code_get_value(
+            [In] IntPtr vectorPtr,
+            out MeshCode outMeshCode,
+            int index);
+        
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_vector_mesh_code_count(
+            [In] IntPtr handle,
+            out int outCount);
     }
 }

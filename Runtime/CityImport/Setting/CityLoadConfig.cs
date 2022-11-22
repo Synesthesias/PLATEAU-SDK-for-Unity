@@ -58,34 +58,38 @@ namespace PLATEAU.CityImport.Setting
         /// 設定に合うGMLファイルを検索します。
         /// 多数のファイルから検索するので、実行時間が長くなりがちである点にご注意ください。
         /// </summary>
-        /// <param name="rootPath">検索元となる PLATEAUルートフォルダです。</param>
-        /// <param name="collection">検索に利用した collection を outで返します。</param>
+        /// <param name="datasetAccessor">検索に利用した collection を outで返します。</param>
         /// <returns>検索にヒットしたGMLをパッケージごとに分けたものです。keyはパッケージ、 valueはそのパッケージに属するgmlファイルのパスのリストです。</returns>
-        public Dictionary<PredefinedCityModelPackage, List<string>> SearchMatchingGMLList(string rootPath, out UdxFileCollection collection)
+        public Dictionary<PredefinedCityModelPackage, List<GmlFile>> SearchMatchingGMLList(DatasetAccessor datasetAccessor)
         {
             // 地域ID(メッシュコード)で絞り込みます。
             var meshCodes = AreaMeshCodes.Select(str => MeshCode.Parse(str)).ToArray();
-            collection = UdxFileCollection.Find(rootPath).FilterByMeshCodes(meshCodes);
-            
+            // datasetAccessor = LocalDatasetAccessor.Find(rootPath).FilterByMeshCodes(meshCodes);
+
             // パッケージ種ごとの設定で「ロードする」にチェックが入っているパッケージ種で絞り込みます。
             var targetPackages =
                 this
                     .ForEachPackagePair
                     .Where(pair => pair.Value.loadPackage)
                     .Select(pair => pair.Key);
-            var foundGmls = new Dictionary<PredefinedCityModelPackage, List<string>>();
+            var foundGmls = new Dictionary<PredefinedCityModelPackage, List<GmlFile>>();
             
             // 絞り込まれたGMLパスを戻り値の辞書にコピーします。
             foreach (var package in targetPackages)
             {
-                foreach (var gmlPath in collection.GetGmlFiles(package))
+                var gmlFiles = datasetAccessor.GetGmlFiles(Extent.All, package);
+                int gmlCount = gmlFiles.Length;
+                for (int i=0; i<gmlCount; i++)
                 {
+                    var gml = gmlFiles.At(i);
                     if (!foundGmls.ContainsKey(package))
                     {
-                        foundGmls[package] = new List<string>();
-                    } 
-                    foundGmls[package].Add(gmlPath);
-                    Debug.Log($"found gml : {package}, {gmlPath}");
+                        foundGmls[package] = new List<GmlFile>();
+                    }
+                    // メッシュコードで絞り込みます。
+                    if (meshCodes.All(mc => mc.ToString() != gml.MeshCode.ToString())) continue;
+                    foundGmls[package].Add(gml);
+                    Debug.Log($"found gml : {package}, {gml.Path}");
                 }
             }
             return foundGmls;

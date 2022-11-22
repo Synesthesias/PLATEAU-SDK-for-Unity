@@ -7,7 +7,6 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow
     {
         private int tabIndex;
         private readonly IEditorDrawable[] tabGUIArray;
-        private readonly string[] tabNames = { "追加", "モデル調整", "エクスポート" };
 
         private readonly string[] tabImages =
             { "dark_icon_import.png", "dark_icon_adjust.png", "dark_icon_export.png" };

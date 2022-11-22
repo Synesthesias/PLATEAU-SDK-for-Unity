@@ -25,7 +25,7 @@ namespace PLATEAU.Editor.DebugPlateau
 
         private const int maxNumProcess = 30;
         private const int maxNumData = 99;
-        private Stopwatch currentStopwatch = null;
+        private Stopwatch currentStopwatch;
         private bool outOfRangeFlag;
 
         public TimeDiagnosticsTable()

@@ -14,7 +14,7 @@ namespace PLATEAU.Util
         // ReSharper disable once FieldCanBeMadeReadOnly.Local
         private static string unityProjectDataPath = Application.dataPath;
 
-        public static readonly string plateauSrcFetchDir = Application.streamingAssetsPath + "/.PLATEAU";
+        public static readonly string PLATEAUSrcFetchDir = Application.streamingAssetsPath + "/.PLATEAU";
         public const string UdxFolderName = "udx";
         public const string PackagePath = "Packages/com.synesthesias.plateau-unity-sdk";
 

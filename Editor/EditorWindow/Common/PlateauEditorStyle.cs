@@ -59,7 +59,7 @@ namespace PLATEAU.Editor.EditorWindow.Common
         
         private static readonly Dictionary<string, Texture2D> cachedTexture = new Dictionary<string, Texture2D>();
 
-        private static UnityEditor.EditorWindow currentWindow = null;
+        private static UnityEditor.EditorWindow currentWindow;
 
         /// <summary>
         /// このクラスを使うための設定として、EditorWindow の OnGUI の開始時にこのメソッドを呼ぶ必要があります。

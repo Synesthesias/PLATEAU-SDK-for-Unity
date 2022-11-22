@@ -28,7 +28,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
         private SynchronizationContext mainThreadContext;
         private UnityEditor.EditorWindow parentEditorWindow;
 
-        private static int numCurrentRunningTasks = 0;
+        private static int numCurrentRunningTasks;
 
         /// <summary>
         /// メインスレッドから呼ばれることを前提とします。

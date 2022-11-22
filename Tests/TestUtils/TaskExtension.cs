@@ -11,6 +11,7 @@ namespace PLATEAU.Tests.TestUtils
         /// </summary>
         public static IEnumerator AsIEnumerator(this Task task)
         {
+            
             while (!task.IsCompleted)
             {
                 yield return null;
