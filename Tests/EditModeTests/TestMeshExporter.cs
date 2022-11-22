@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
-using System.Threading;
 using NUnit.Framework;
 using PLATEAU.CityInfo;
 using PLATEAU.Editor.CityExport;
@@ -11,7 +10,6 @@ using PLATEAU.Geometries;
 using PLATEAU.Interop;
 using PLATEAU.MeshWriter;
 using PLATEAU.Tests.TestUtils;
-using UnityEngine;
 using UnityEngine.TestTools;
 using Object = UnityEngine.Object;
 
@@ -25,7 +23,7 @@ namespace PLATEAU.Tests.EditModeTests
         {
             TestCityImporter.DeleteFetchedTestDir();
             DirectoryUtil.SetUpTempCacheFolder();
-            yield return TestCityDefinition.MiniTokyo.Import(out var config).AsIEnumerator();
+            yield return TestCityDefinition.MiniTokyo.Import(out _).AsIEnumerator();
         }
 
         [TearDown]

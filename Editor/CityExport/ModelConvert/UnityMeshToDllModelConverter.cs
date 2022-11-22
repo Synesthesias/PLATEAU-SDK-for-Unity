@@ -26,6 +26,7 @@ namespace PLATEAU.Editor.CityExport.ModelConvert
         /// <param name="includeTexture"></param>
         /// <param name="exportDisabledGameObj">false のとき、非Activeのものは対象外とします。</param>
         /// <param name="doInvertTriangles">ポリゴン内の頂点番号の配置を逆転させることで、ポリゴンの表裏を逆転させます。</param>
+        /// <param name="meshAxis">座標系です。</param>
         /// <param name="vertexConvertFunc">頂点座標を変換するメソッドで、 Vector3 から PlateauVector3d に変換する方法を指定します。</param>
         public static Model Convert(GameObject go, bool includeTexture, bool exportDisabledGameObj, bool doInvertTriangles, CoordinateSystem meshAxis, VertexConvertFunc vertexConvertFunc)
         {
@@ -51,6 +52,7 @@ namespace PLATEAU.Editor.CityExport.ModelConvert
         /// <param name="includeTexture"></param>
         /// <param name="exportDisabledGameObj">false のとき、ActiveでないGameObjectは対象から除外します。</param>
         /// <param name="doInvertTriangles"></param>
+        /// <param name="meshAxis"></param>
         /// <param name="vertexConvertFunc"></param>
         private static void ConvertRecursive(Node parentNode, Transform trans, Model model, bool includeTexture, bool exportDisabledGameObj, bool doInvertTriangles, CoordinateSystem meshAxis, VertexConvertFunc vertexConvertFunc)
         {
