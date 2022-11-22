@@ -14,7 +14,6 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
     /// <summary>
     /// 都市のモデルデータのエクスポートのGUIです。
     /// </summary>
-    /// TODO : 下のコメントをドキュメントに記載する
     /// エクスポートの座標軸設定について留意点 :
     /// Unity の座標系は EUN なので、objファイルを EUN でエクスポートしてそれを Unity にインポートすれば
     /// 元のモデルと同じものが現れるだろうと考えるのが自然です。

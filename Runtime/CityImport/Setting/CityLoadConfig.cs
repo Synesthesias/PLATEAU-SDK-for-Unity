@@ -64,7 +64,6 @@ namespace PLATEAU.CityImport.Setting
         {
             // 地域ID(メッシュコード)で絞り込みます。
             var meshCodes = AreaMeshCodes.Select(str => MeshCode.Parse(str)).ToArray();
-            // datasetAccessor = LocalDatasetAccessor.Find(rootPath).FilterByMeshCodes(meshCodes);
 
             // パッケージ種ごとの設定で「ロードする」にチェックが入っているパッケージ種で絞り込みます。
             var targetPackages =

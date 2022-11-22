@@ -23,7 +23,6 @@ namespace PLATEAU.CityImport.Load.FileCopy
             // 条件に合うGMLファイルを検索して記憶します。
             var datasetAccessor = DatasetSource.CreateLocal(sourcePath).Accessor;
             var fetchTargetGmls = FindTargetGmls(datasetAccessor, config);
-            // TODO gmlFileInfoの中身はあとで Dispose するべし
 
             // GMLと関連ファイルをコピーします。
             int targetGmlCount = fetchTargetGmls.Count;
