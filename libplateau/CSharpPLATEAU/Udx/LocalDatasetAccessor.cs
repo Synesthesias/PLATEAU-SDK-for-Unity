@@ -10,9 +10,10 @@ namespace PLATEAU.Udx
     /// PLATEAUのデータファイルから、GMLファイル群を検索し、結果を保持します。
     /// 条件によりGMLファイルを絞り込む機能と、GMLと関連ファイルをコピーする機能があります。
     /// </summary>
-    public class LocalDatasetAccessor : IDisposable
+    [Obsolete("C++側の基底クラスDatasetAccessor に移行する")]
+    public class LocalDatasetAccessor// : IDisposable
     {
-        private readonly IntPtr handle;
+        public IntPtr Handle { get; private set; }
         private int disposed;
 
         private MeshCode[] meshCodes;
@@ -24,11 +25,10 @@ namespace PLATEAU.Udx
                 if (this.meshCodes != null)
                     return Array.AsReadOnly(this.meshCodes);
 
-                int count = 0;
-                var result = NativeMethods.plateau_local_dataset_accessor_get_mesh_code_count(this.handle, ref count);
+                var result = NativeMethods.plateau_local_dataset_accessor_get_mesh_code_count(Handle, out int count);
                 DLLUtil.CheckDllError(result);
                 this.meshCodes = new MeshCode[count];
-                result = NativeMethods.plateau_local_dataset_accessor_get_mesh_codes(this.handle, this.meshCodes, count);
+                result = NativeMethods.plateau_local_dataset_accessor_get_mesh_codes(Handle, this.meshCodes, count);
                 DLLUtil.CheckDllError(result);
                 return Array.AsReadOnly(this.meshCodes);
             }
@@ -38,7 +38,7 @@ namespace PLATEAU.Udx
         {
             get
             {
-                var result = NativeMethods.plateau_local_dataset_accessor_get_packages(this.handle, out var value);
+                var result = NativeMethods.plateau_local_dataset_accessor_get_packages(Handle, out var value);
                 DLLUtil.CheckDllError(result);
                 return value;
             }
@@ -48,7 +48,7 @@ namespace PLATEAU.Udx
         {
             APIResult result = NativeMethods.plateau_create_local_dataset_accessor(out IntPtr outPtr);
             DLLUtil.CheckDllError(result);
-            this.handle = outPtr;
+            Handle = outPtr;
         }
 
         ~LocalDatasetAccessor()
@@ -56,16 +56,11 @@ namespace PLATEAU.Udx
             Dispose();
         }
 
-        /// <summary>
-        /// セーフハンドルを取得します。
-        /// </summary>
-        public IntPtr Handle => this.handle;
-
         public void Dispose()
         {
             if (Interlocked.Exchange(ref this.disposed, 1) == 0)
             {
-                NativeMethods.plateau_delete_local_dataset_accessor(this.handle);
+                NativeMethods.plateau_delete_local_dataset_accessor(Handle);
             }
 
             GC.SuppressFinalize(this);
@@ -78,7 +73,7 @@ namespace PLATEAU.Udx
         public static LocalDatasetAccessor Find(string source)
         {
             var result = new LocalDatasetAccessor();
-            var apiResult = NativeMethods.plateau_local_dataset_accessor_find(source, result.handle);
+            var apiResult = NativeMethods.plateau_local_dataset_accessor_find(source, result.Handle);
             DLLUtil.CheckDllError(apiResult);
             return result;
         }
@@ -89,7 +84,7 @@ namespace PLATEAU.Udx
         public LocalDatasetAccessor Filter(Extent extent)
         {
             var result = new LocalDatasetAccessor();
-            var apiResult = NativeMethods.plateau_local_dataset_accessor_filter(this.handle, extent, result.handle);
+            var apiResult = NativeMethods.plateau_local_dataset_accessor_filter(Handle, extent, result.Handle);
             DLLUtil.CheckDllError(apiResult);
             return result;
         }
@@ -101,7 +96,7 @@ namespace PLATEAU.Udx
         {
             var result = new LocalDatasetAccessor();
             var apiResult = NativeMethods.plateau_local_dataset_accessor_filter_by_mesh_codes(
-                this.handle, meshCodeArray, meshCodeArray.Length, result.handle);
+                Handle, meshCodeArray, meshCodeArray.Length, result.Handle);
             DLLUtil.CheckDllError(apiResult);
             return result;
         }
@@ -111,11 +106,11 @@ namespace PLATEAU.Udx
         /// </summary>
         public string[] GetGmlFiles(PredefinedCityModelPackage package)
         {
-            NativeMethods.plateau_local_dataset_accessor_get_gml_file_count(this.handle, out int count, package);
+            NativeMethods.plateau_local_dataset_accessor_get_gml_file_count(Handle, out int count, package);
             var gmlFiles = new string[count];
             for (int i = 0; i < count; i++)
             {
-                var result = NativeMethods.plateau_local_dataset_accessor_get_gml_file(this.handle, out IntPtr strPtr, out int strLength, package, i);
+                var result = NativeMethods.plateau_local_dataset_accessor_get_gml_file(Handle, out IntPtr strPtr, out int strLength, package, i);
                 DLLUtil.CheckDllError(result);
                 gmlFiles[i] = DLLUtil.ReadUtf8Str(strPtr, strLength - 1);
             }
@@ -126,7 +121,7 @@ namespace PLATEAU.Udx
         public PlateauVector3d CalcCenterPoint(GeoReference geoReference)
         {
             var apiResult = NativeMethods.plateau_local_dataset_accessor_center_point(
-                this.handle, out var centerPoint, geoReference.Handle);
+                Handle, out var centerPoint, geoReference.Handle);
             DLLUtil.CheckDllError(apiResult);
             return centerPoint;
         }

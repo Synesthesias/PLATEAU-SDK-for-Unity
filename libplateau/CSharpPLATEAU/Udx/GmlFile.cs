@@ -3,11 +3,12 @@ using PLATEAU.Interop;
 
 namespace PLATEAU.Udx
 {
-    public class GmlFile : PInvokeDisposable
+    public class GmlFile// : PInvokeDisposable
     {
-        public GmlFile(IntPtr handle) : base(handle)
+        public IntPtr Handle { get; private set; }
+        public GmlFile(IntPtr handle)// : base(handle)
         {
-            
+            Handle = handle;
         }
 
         /// <summary>
@@ -25,12 +26,12 @@ namespace PLATEAU.Udx
         {
             get
             {
-                ThrowIfDisposed();
+                // ThrowIfDisposed();
                 return DLLUtil.GetNativeString(Handle, NativeMethods.plateau_gml_file_get_path);
             }
             set
             {
-                ThrowIfDisposed();
+                // ThrowIfDisposed();
                 var result = NativeMethods.plateau_gml_file_set_path(
                     Handle, value);
                 DLLUtil.CheckDllError(result);
@@ -41,7 +42,7 @@ namespace PLATEAU.Udx
         {
             get
             {
-                ThrowIfDisposed();
+                // ThrowIfDisposed();
                 return DLLUtil.GetNativeString(Handle, NativeMethods.plateau_gml_file_get_feature_type_str);
             }
         }
@@ -50,7 +51,7 @@ namespace PLATEAU.Udx
         public PredefinedCityModelPackage Package {
             get
             {
-                ThrowIfDisposed();
+                // ThrowIfDisposed();
                 var apiResult = NativeMethods.plateau_udx_sub_folder_get_package(FeatureType, out var package);
                 DLLUtil.CheckDllError(apiResult);
                 return package;
@@ -61,7 +62,7 @@ namespace PLATEAU.Udx
         {
             get
             {
-                ThrowIfDisposed();
+                // ThrowIfDisposed();
                 var meshCode = DLLUtil.GetNativeValue<MeshCode>(Handle,
                     NativeMethods.plateau_gml_file_get_mesh_code);
                 return meshCode;
@@ -77,7 +78,7 @@ namespace PLATEAU.Udx
         /// <param name="gmlFileInfo">コピー元のGMLファイルの <see cref="GmlFile"/> です。</param>
         public GmlFile Fetch(string destinationRootPath)
         {
-            ThrowIfDisposed();
+            // ThrowIfDisposed();
             var result = Create("");
             var apiResult = NativeMethods.plateau_gml_file_fetch(
                 Handle, destinationRootPath, result.Handle
@@ -86,9 +87,15 @@ namespace PLATEAU.Udx
             return result;
         }
 
-        protected override void DisposeNative()
+        // protected override void DisposeNative()
+        // {
+            // NativeMethods.plateau_delete_gml_file(Handle);
+        // }
+
+        public void Dispose()
         {
-            NativeMethods.plateau_delete_gml_file(Handle);
+            var result = NativeMethods.plateau_delete_gml_file(Handle);
+            DLLUtil.CheckDllError(result);
         }
     }
 }

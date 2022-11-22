@@ -52,9 +52,10 @@ namespace PLATEAU.CityInfo
             string gmlPath;
             try
             {
-                using var gmlInfo = GmlFile.Create(gmlName);
-                string gmlFeatureDir = gmlInfo.FeatureType;
+                var gmlFile = GmlFile.Create(gmlName);
+                string gmlFeatureDir = gmlFile.FeatureType;
                 gmlPath = Path.Combine(parentPathOfRootDir, rootDirName, PathUtil.UdxFolderName, gmlFeatureDir, gmlName);
+                gmlFile.Dispose();
             }
             catch (Exception)
             {

@@ -78,8 +78,11 @@ namespace PLATEAU.CityImport.Setting
             // 絞り込まれたGMLパスを戻り値の辞書にコピーします。
             foreach (var package in targetPackages)
             {
-                foreach (var gml in datasetAccessor.GetGmlFiles(Extent.All, package))
+                var gmlFiles = datasetAccessor.GetGmlFiles(Extent.All, package);
+                int gmlCount = gmlFiles.Length;
+                for (int i=0; i<gmlCount; i++)
                 {
+                    var gml = gmlFiles.At(i);
                     if (!foundGmls.ContainsKey(package))
                     {
                         foundGmls[package] = new List<GmlFile>();

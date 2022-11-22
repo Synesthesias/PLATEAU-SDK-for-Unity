@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics.Tracing;
 using System.IO;
 using System.Linq;
 using PLATEAU.CityImport.Setting;
@@ -20,7 +19,7 @@ namespace PLATEAU.CityImport.Load.FileCopy
         {
             // TODO 非同期にする
             // 条件に合うGMLファイルを検索して記憶します。
-            using var datasetAccessor = DatasetSource.CreateLocal(sourcePath).Accessor;
+            var datasetAccessor = DatasetSource.CreateLocal(sourcePath).Accessor;
             var fetchTargetGmls = FindTargetGmls(datasetAccessor, config);
             // TODO gmlFileInfoの中身はあとで Dispose するべし
 

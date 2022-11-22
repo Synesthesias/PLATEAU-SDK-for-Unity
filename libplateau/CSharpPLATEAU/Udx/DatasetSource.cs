@@ -26,9 +26,9 @@ namespace PLATEAU.Udx
              {
                  ThrowIfDisposed();
                  var result = NativeMethods.plateau_dataset_source_get_accessor(
-                     Handle, out var newDatasetAccessorPInvokePtr);
+                     Handle, out var accessorPtr);
                  DLLUtil.CheckDllError(result);
-                 return DatasetAccessor.CreateBySelfPtr(newDatasetAccessorPInvokePtr);
+                 return new DatasetAccessor(accessorPtr);
              }
          }
 

@@ -45,7 +45,8 @@ namespace PLATEAU.CityImport.Load
             }
             
             progressDisplay.SetProgress("GMLファイル検索", 10f, "");
-            using var datasetAccessor = DatasetSource.CreateLocal(sourcePath).Accessor;
+            using var datasetSource = DatasetSource.CreateLocal(sourcePath);
+            var datasetAccessor = datasetSource.Accessor;
             var targetGmls = await Task.Run(() => CityFilesCopy.FindTargetGmls(
                 datasetAccessor, config
             ));
@@ -97,7 +98,7 @@ namespace PLATEAU.CityImport.Load
             
             // インポート完了後の処理
             CityDuplicateProcessor.EnableOnlyLargestLODInDuplicate(cityModelComponent);
-            foreach (var gmlInfo in targetGmls) gmlInfo.Dispose();
+            // foreach (var gmlInfo in targetGmls) gmlInfo.Dispose();
         }
 
         /// <summary>
