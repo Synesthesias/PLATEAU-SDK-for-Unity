@@ -652,7 +652,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PLATEAU.Interop.Extent.html",
-          "hash": "WMy1NbOWRiy8rKtT6km4n6aLBs/oLQiW0u7X8mGkNVM="
+          "hash": "1cmXG+xpGgTPz8Tf2eqs0+UhSC5LNVI5a0oy/sQ3vhw="
         }
       },
       "is_incremental": false,
@@ -664,7 +664,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PLATEAU.Interop.GeoCoordinate.html",
-          "hash": "7VpAyKMuEXMbGVrp1uRJQxKCLNUGOcuc6+J1deciHpE="
+          "hash": "5yrwAtVlzPfgWU7NZlFueENUxcxsBpV1mMuZkqKHZ+8="
         }
       },
       "is_incremental": false,
@@ -756,11 +756,47 @@
     },
     {
       "type": "ManagedReference",
+      "source_relative_path": "api/PLATEAU.Interop.NativeVectorBase-1.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PLATEAU.Interop.NativeVectorBase-1.html",
+          "hash": "djhy1tyKua6ocZp8gtxq4xV75ckHvq0a+k9Q34x55ng="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/PLATEAU.Interop.NativeVectorGmlFile.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PLATEAU.Interop.NativeVectorGmlFile.html",
+          "hash": "Wfs+75zJDiYfJvJVAJaI4latt9XZfISQ7KQWoxxz7uE="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/PLATEAU.Interop.NativeVectorMeshCode.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PLATEAU.Interop.NativeVectorMeshCode.html",
+          "hash": "mUE9jq4JThVvUhTu2RAi2qa1zVBAM3sVUtQbJdCPk8Q="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
       "source_relative_path": "api/PLATEAU.Interop.PInvokeDisposable.yml",
       "output": {
         ".html": {
           "relative_path": "api/PLATEAU.Interop.PInvokeDisposable.html",
-          "hash": "4XAENZGagPBMBdNebRYjLx1t98STQUDUs4BuUyoKRBk="
+          "hash": "oS6EOrkmQIcqxoPZ5JXpxaL9k7PmpV+8NmuCOzITm7I="
         }
       },
       "is_incremental": false,
@@ -808,7 +844,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PLATEAU.Interop.html",
-          "hash": "7O7LhGsqraP+o3Q02Glhafr6iTKTP6ghPcpjzRUiWkE="
+          "hash": "vXm2Sxyfpjth2rVALHqXPnOQ7nsG5rukYih6nxibleY="
         }
       },
       "is_incremental": false,
@@ -948,11 +984,47 @@
     },
     {
       "type": "ManagedReference",
-      "source_relative_path": "api/PLATEAU.Udx.GmlFileInfo.yml",
+      "source_relative_path": "api/PLATEAU.Udx.DatasetAccessor.yml",
       "output": {
         ".html": {
-          "relative_path": "api/PLATEAU.Udx.GmlFileInfo.html",
-          "hash": "BPCCXeI0HqBj3nsxUhF9Gp73Z4fauf8D4TDvDpvzbsE="
+          "relative_path": "api/PLATEAU.Udx.DatasetAccessor.html",
+          "hash": "KbfyDcxa/S7CfrPPbf+3LcX71neEdW/nplbQKOQJqEg="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/PLATEAU.Udx.DatasetSource.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PLATEAU.Udx.DatasetSource.html",
+          "hash": "wMV1Q5T09XowtoMGs4BqeDLM7nNH9uehUXAjVVuGE1o="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/PLATEAU.Udx.GmlFile.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PLATEAU.Udx.GmlFile.html",
+          "hash": "wtgmm4m0bz6QzGTl3RxhGrrO3pC0NmwukfAoA4gsHgM="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/PLATEAU.Udx.LocalDatasetAccessor.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PLATEAU.Udx.LocalDatasetAccessor.html",
+          "hash": "6qN5385BLoe2835ZgbZKDTYEMEoaXnGwR3S6UfsY1rk="
         }
       },
       "is_incremental": false,
@@ -996,23 +1068,11 @@
     },
     {
       "type": "ManagedReference",
-      "source_relative_path": "api/PLATEAU.Udx.UdxFileCollection.yml",
-      "output": {
-        ".html": {
-          "relative_path": "api/PLATEAU.Udx.UdxFileCollection.html",
-          "hash": "tag3jQarsF+Vmg5H+36boxhRqmG4QwS7q566Zcbp2j0="
-        }
-      },
-      "is_incremental": false,
-      "version": ""
-    },
-    {
-      "type": "ManagedReference",
       "source_relative_path": "api/PLATEAU.Udx.yml",
       "output": {
         ".html": {
           "relative_path": "api/PLATEAU.Udx.html",
-          "hash": "DR6SEO+h5g07gy9H0LsG3Cso/YQFSCiOdt4p021Nk/s="
+          "hash": "HVTFkzw5JW6+1+xjG7ymSp+cEm0NU2P+aWuQtilAC24="
         }
       },
       "is_incremental": false,
@@ -1144,7 +1204,7 @@
       "output": {
         ".html": {
           "relative_path": "api/toc.html",
-          "hash": "FWBYJMUq8ESYu3MjDTadPJ5gNkBhLUnHU1LB8to+XGg="
+          "hash": "/oa1xYur0IPdce+95n4lE8Pjb7qrH1aiKv2S/LXtg7w="
         }
       },
       "is_incremental": false,
@@ -1192,7 +1252,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/ImportCityModels.html",
-          "hash": "2htJXWY0FLBrowkucqUxsxMzWTNzOZAZubysQrSxEOI="
+          "hash": "eP0bsuTkMRE5Rl71ZPOXD3f3W4GbcO+VXYMV63YAgHs="
         }
       },
       "is_incremental": false,
@@ -1372,6 +1432,17 @@
       "output": {
         "resource": {
           "relative_path": "resources/manual/exportCityModels/tokyoBlender.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/manual/importCityModels/InstancedCityModelInspector.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/importCityModels/InstancedCityModelInspector.png"
         }
       },
       "is_incremental": false,
@@ -1674,7 +1745,7 @@
         "ManagedReferenceDocumentProcessor": {
           "can_incremental": false,
           "incrementalPhase": "build",
-          "total_file_count": 93,
+          "total_file_count": 98,
           "skipped_file_count": 0
         },
         "ResourceDocumentProcessor": {
