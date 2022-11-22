@@ -3,7 +3,7 @@ using PLATEAU.Udx;
 
 namespace PLATEAU.Interop
 {
-    public class NativeVectorMeshCode : PInvokeDisposable
+    public class NativeVectorMeshCode : NativeVectorBase<MeshCode>
     {
         private NativeVectorMeshCode(IntPtr ptr) : base(ptr)
         {
@@ -16,7 +16,7 @@ namespace PLATEAU.Interop
             return new NativeVectorMeshCode(ptr);
         }
 
-        public MeshCode At(int index)
+        public override MeshCode At(int index)
         {
             ThrowIfDisposed();
             var meshCode = DLLUtil.GetNativeValue<MeshCode>(Handle, index,
@@ -24,7 +24,7 @@ namespace PLATEAU.Interop
             return meshCode;
         }
 
-        public int Length
+        public override int Length
         {
             get
             {

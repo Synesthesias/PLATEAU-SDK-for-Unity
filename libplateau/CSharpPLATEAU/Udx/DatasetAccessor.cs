@@ -47,6 +47,8 @@ namespace PLATEAU.Udx
             return maxLod;
         }
 
-        
+        public PredefinedCityModelPackage Packages =>
+            DLLUtil.GetNativeValue<PredefinedCityModelPackage>(Handle,
+                NativeMethods.plateau_i_dataset_accessor_get_packages);
     }
 }

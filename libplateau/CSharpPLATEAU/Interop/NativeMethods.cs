@@ -1235,6 +1235,11 @@ namespace PLATEAU.Interop
             out int outMaxLod,
             MeshCode meshCode,
             PredefinedCityModelPackage package);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_i_dataset_accessor_get_packages(
+            [In] IntPtr accessorPtr,
+            out PredefinedCityModelPackage outPackageFlags);
         
         // ***************
         //  dataset_accessor_p_invoke_c.cpp

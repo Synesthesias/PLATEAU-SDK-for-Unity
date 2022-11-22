@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using PLATEAU.Udx;
 
 namespace PLATEAU.Interop
 {
-    public class NativeVectorGmlFile : PInvokeDisposable
+    public class NativeVectorGmlFile : NativeVectorBase<GmlFile>
     {
         private NativeVectorGmlFile(IntPtr ptr) : base(ptr)
         {
@@ -16,7 +18,7 @@ namespace PLATEAU.Interop
             return new NativeVectorGmlFile(ptr);
         }
 
-        public GmlFile At(int index)
+        public override GmlFile At(int index)
         {
             ThrowIfDisposed();
             var gmlFilePtr = DLLUtil.GetNativeValue<IntPtr>(Handle, index,
@@ -24,7 +26,7 @@ namespace PLATEAU.Interop
             return new GmlFile(gmlFilePtr);
         }
 
-        public int Length
+        public override int Length
         {
             get
             {
