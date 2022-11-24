@@ -4,7 +4,7 @@ using PLATEAU.CityImport.Load;
 using PLATEAU.CityImport.Setting;
 using PLATEAU.Editor.EditorWindow.ProgressDisplay;
 using PLATEAU.Interop;
-using PLATEAU.Udx;
+using PLATEAU.Dataset;
 
 namespace PLATEAU.Tests.TestUtils
 {

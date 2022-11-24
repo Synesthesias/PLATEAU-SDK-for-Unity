@@ -1,12 +1,20 @@
 using System;
 using PLATEAU.Interop;
 
-namespace PLATEAU.Udx
+namespace PLATEAU.Dataset
 {
-    public class GmlFile// : PInvokeDisposable
+    /// <summary>
+    /// GMLファイルに関する情報を保持します。
+    /// 
+    /// 寿命管理について:
+    /// <see cref="NativeVectorGmlFile"/> の Dispose時、中身の <see cref="GmlFile"/> も自動的に廃棄されます。
+    /// その自動廃棄が呼ばれないケースでのみ、手動で <see cref="GmlFile.Dispose"/> を呼んでください。
+    /// </summary>
+    public class GmlFile
     {
         public IntPtr Handle { get; private set; }
-        public GmlFile(IntPtr handle)// : base(handle)
+        private bool isDisposed;
+        public GmlFile(IntPtr handle)
         {
             Handle = handle;
         }
@@ -42,7 +50,7 @@ namespace PLATEAU.Udx
         {
             get
             {
-                // ThrowIfDisposed();
+                ThrowIfDisposed();
                 return DLLUtil.GetNativeString(Handle, NativeMethods.plateau_gml_file_get_feature_type_str);
             }
         }
@@ -51,7 +59,7 @@ namespace PLATEAU.Udx
         public PredefinedCityModelPackage Package {
             get
             {
-                // ThrowIfDisposed();
+                ThrowIfDisposed();
                 var apiResult = NativeMethods.plateau_udx_sub_folder_get_package(FeatureType, out var package);
                 DLLUtil.CheckDllError(apiResult);
                 return package;
@@ -62,7 +70,7 @@ namespace PLATEAU.Udx
         {
             get
             {
-                // ThrowIfDisposed();
+                ThrowIfDisposed();
                 var meshCode = DLLUtil.GetNativeValue<MeshCode>(Handle,
                     NativeMethods.plateau_gml_file_get_mesh_code);
                 return meshCode;
@@ -77,7 +85,7 @@ namespace PLATEAU.Udx
         /// <param name="destinationRootPath">コピー先のルートフォルダのパスです。</param>
         public GmlFile Fetch(string destinationRootPath)
         {
-            // ThrowIfDisposed();
+            ThrowIfDisposed();
             var result = Create("");
             var apiResult = NativeMethods.plateau_gml_file_fetch(
                 Handle, destinationRootPath, result.Handle
@@ -86,15 +94,19 @@ namespace PLATEAU.Udx
             return result;
         }
 
-        // protected override void DisposeNative()
-        // {
-            // NativeMethods.plateau_delete_gml_file(Handle);
-        // }
-
         public void Dispose()
         {
+            this.isDisposed = true;
             var result = NativeMethods.plateau_delete_gml_file(Handle);
             DLLUtil.CheckDllError(result);
+        }
+
+        private void ThrowIfDisposed()
+        {
+            if (this.isDisposed)
+            {
+                throw new ObjectDisposedException("GmlFile is disposed.");
+            }
         }
     }
 }

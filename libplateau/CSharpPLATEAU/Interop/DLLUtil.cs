@@ -131,6 +131,7 @@ namespace PLATEAU.Interop
         {
             for (int i = 0; i < count; i++)
             {
+                
                 var ptr = ((IntPtr*)ptrOfPtrArray)[i];
                 Marshal.FreeCoTaskMem(ptr);
             }

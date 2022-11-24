@@ -2,7 +2,7 @@
 using System.IO;
 using System.Linq;
 using PLATEAU.CityImport.Setting;
-using PLATEAU.Udx;
+using PLATEAU.Dataset;
 using PLATEAU.Util;
 
 namespace PLATEAU.CityImport.Load.FileCopy

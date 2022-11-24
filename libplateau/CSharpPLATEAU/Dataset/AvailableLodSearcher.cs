@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using PLATEAU.Interop;
 
-namespace PLATEAU.Editor.CityImport.AreaSelector
+namespace PLATEAU.Dataset
 {
     public static class LodSearcher
     {

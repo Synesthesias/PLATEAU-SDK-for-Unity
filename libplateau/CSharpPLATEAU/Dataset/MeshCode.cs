@@ -1,7 +1,7 @@
 ﻿using PLATEAU.Interop;
 using System.Runtime.InteropServices;
 
-namespace PLATEAU.Udx
+namespace PLATEAU.Dataset
 {
     [StructLayout(LayoutKind.Sequential)]
     public struct MeshCode

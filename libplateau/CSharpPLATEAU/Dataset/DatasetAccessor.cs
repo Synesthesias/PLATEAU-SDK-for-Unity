@@ -1,7 +1,7 @@
 ﻿using System;
 using PLATEAU.Interop;
 
-namespace PLATEAU.Udx
+namespace PLATEAU.Dataset
 {
     /// <summary>
     /// GMLファイル群から利用可能なファイル、メッシュコード、LODを検索します。

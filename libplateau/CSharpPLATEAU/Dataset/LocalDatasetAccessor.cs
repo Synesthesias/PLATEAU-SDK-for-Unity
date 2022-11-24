@@ -4,7 +4,7 @@ using System.Collections.ObjectModel;
 using System.Threading;
 using PLATEAU.Geometries;
 
-namespace PLATEAU.Udx
+namespace PLATEAU.Dataset
 {
     /// <summary>
     /// PLATEAUのデータファイルから、GMLファイル群を検索し、結果を保持します。

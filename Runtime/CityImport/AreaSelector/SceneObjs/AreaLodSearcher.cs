@@ -3,9 +3,8 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using PLATEAU.Editor.CityImport.AreaSelector;
 using PLATEAU.Interop;
-using PLATEAU.Udx;
+using PLATEAU.Dataset;
 
 namespace PLATEAU.CityImport.AreaSelector.SceneObjs
 {

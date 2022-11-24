@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace PLATEAU.Udx
+namespace PLATEAU.Dataset
 {
     [Flags]
     public enum PredefinedCityModelPackage : uint
