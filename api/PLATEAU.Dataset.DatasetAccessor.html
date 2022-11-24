@@ -5,10 +5,10 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>Class LocalDatasetAccessor
+    <title>Class DatasetAccessor
    | PLATEAU SDK for Unity </title>
     <meta name="viewport" content="width=device-width">
-    <meta name="title" content="Class LocalDatasetAccessor
+    <meta name="title" content="Class DatasetAccessor
    | PLATEAU SDK for Unity ">
     <meta name="generator" content="docfx 2.59.4.0">
     
@@ -78,19 +78,21 @@
         </div>
         <div class="article row grid-right">
           <div class="col-md-10">
-            <article class="content wrap" id="_content" data-uid="PLATEAU.Udx.LocalDatasetAccessor">
+            <article class="content wrap" id="_content" data-uid="PLATEAU.Dataset.DatasetAccessor">
   
   
-  <h1 id="PLATEAU_Udx_LocalDatasetAccessor" data-uid="PLATEAU.Udx.LocalDatasetAccessor" class="text-break">Class LocalDatasetAccessor
+  <h1 id="PLATEAU_Dataset_DatasetAccessor" data-uid="PLATEAU.Dataset.DatasetAccessor" class="text-break">Class DatasetAccessor
   </h1>
-  <div class="markdown level0 summary"><p>PLATEAUのデータファイルから、GMLファイル群を検索し、結果を保持します。
-条件によりGMLファイルを絞り込む機能と、GMLと関連ファイルをコピーする機能があります。</p>
+  <div class="markdown level0 summary"><p>GMLファイル群から利用可能なファイル、メッシュコード、LODを検索します。
+C++側では、IDatasetAccessorは LocalDatasetAccessor と ServerDatasetAccessor の
+基底クラスになっています。
+このクラスは IDatasetAccessor のポインタを保持します。</p>
 </div>
   <div class="markdown level0 conceptual"></div>
   <div class="inheritance">
     <h5>Inheritance</h5>
     <div class="level0"><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">Object</a></div>
-    <div class="level1"><span class="xref">LocalDatasetAccessor</span></div>
+    <div class="level1"><span class="xref">DatasetAccessor</span></div>
   </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
@@ -116,30 +118,47 @@
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone#system-object-memberwiseclone">Object.MemberwiseClone()</a>
     </div>
   </div>
-  <h6><strong>Namespace</strong>: <a class="xref" href="PLATEAU.Udx.html">PLATEAU.Udx</a></h6>
+  <h6><strong>Namespace</strong>: <a class="xref" href="PLATEAU.Dataset.html">PLATEAU.Dataset</a></h6>
   <h6><strong>Assembly</strong>: cs.temp.dll.dll</h6>
-  <h5 id="PLATEAU_Udx_LocalDatasetAccessor_syntax">Syntax</h5>
+  <h5 id="PLATEAU_Dataset_DatasetAccessor_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public class LocalDatasetAccessor</code></pre>
+    <pre><code class="lang-csharp hljs">public class DatasetAccessor</code></pre>
   </div>
   <h3 id="constructors">Constructors
   </h3>
   
   
-  <a id="PLATEAU_Udx_LocalDatasetAccessor__ctor_" data-uid="PLATEAU.Udx.LocalDatasetAccessor.#ctor*"></a>
-  <h4 id="PLATEAU_Udx_LocalDatasetAccessor__ctor" data-uid="PLATEAU.Udx.LocalDatasetAccessor.#ctor">LocalDatasetAccessor()</h4>
+  <a id="PLATEAU_Dataset_DatasetAccessor__ctor_" data-uid="PLATEAU.Dataset.DatasetAccessor.#ctor*"></a>
+  <h4 id="PLATEAU_Dataset_DatasetAccessor__ctor_IntPtr_" data-uid="PLATEAU.Dataset.DatasetAccessor.#ctor(IntPtr)">DatasetAccessor(IntPtr)</h4>
   <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public LocalDatasetAccessor()</code></pre>
+    <pre><code class="lang-csharp hljs">public DatasetAccessor(IntPtr handle)</code></pre>
   </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">IntPtr</span></td>
+        <td><span class="parametername">handle</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
   <h3 id="properties">Properties
   </h3>
   
   
-  <a id="PLATEAU_Udx_LocalDatasetAccessor_Handle_" data-uid="PLATEAU.Udx.LocalDatasetAccessor.Handle*"></a>
-  <h4 id="PLATEAU_Udx_LocalDatasetAccessor_Handle" data-uid="PLATEAU.Udx.LocalDatasetAccessor.Handle">Handle</h4>
+  <a id="PLATEAU_Dataset_DatasetAccessor_Handle_" data-uid="PLATEAU.Dataset.DatasetAccessor.Handle*"></a>
+  <h4 id="PLATEAU_Dataset_DatasetAccessor_Handle" data-uid="PLATEAU.Dataset.DatasetAccessor.Handle">Handle</h4>
   <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
@@ -163,13 +182,13 @@
   </table>
   
   
-  <a id="PLATEAU_Udx_LocalDatasetAccessor_MeshCodes_" data-uid="PLATEAU.Udx.LocalDatasetAccessor.MeshCodes*"></a>
-  <h4 id="PLATEAU_Udx_LocalDatasetAccessor_MeshCodes" data-uid="PLATEAU.Udx.LocalDatasetAccessor.MeshCodes">MeshCodes</h4>
+  <a id="PLATEAU_Dataset_DatasetAccessor_MeshCodes_" data-uid="PLATEAU.Dataset.DatasetAccessor.MeshCodes*"></a>
+  <h4 id="PLATEAU_Dataset_DatasetAccessor_MeshCodes" data-uid="PLATEAU.Dataset.DatasetAccessor.MeshCodes">MeshCodes</h4>
   <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public ReadOnlyCollection&lt;MeshCode&gt; MeshCodes { get; }</code></pre>
+    <pre><code class="lang-csharp hljs">public NativeVectorMeshCode MeshCodes { get; }</code></pre>
   </div>
   <h5 class="propertyValue">Property Value</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -181,15 +200,15 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">ReadOnlyCollection</span>&lt;<a class="xref" href="PLATEAU.Udx.MeshCode.html">MeshCode</a>&gt;</td>
+        <td><span class="xref">NativeVectorMeshCode</span></td>
         <td></td>
       </tr>
     </tbody>
   </table>
   
   
-  <a id="PLATEAU_Udx_LocalDatasetAccessor_Packages_" data-uid="PLATEAU.Udx.LocalDatasetAccessor.Packages*"></a>
-  <h4 id="PLATEAU_Udx_LocalDatasetAccessor_Packages" data-uid="PLATEAU.Udx.LocalDatasetAccessor.Packages">Packages</h4>
+  <a id="PLATEAU_Dataset_DatasetAccessor_Packages_" data-uid="PLATEAU.Dataset.DatasetAccessor.Packages*"></a>
+  <h4 id="PLATEAU_Dataset_DatasetAccessor_Packages" data-uid="PLATEAU.Dataset.DatasetAccessor.Packages">Packages</h4>
   <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
@@ -206,7 +225,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="PLATEAU.Udx.PredefinedCityModelPackage.html">PredefinedCityModelPackage</a></td>
+        <td><a class="xref" href="PLATEAU.Dataset.PredefinedCityModelPackage.html">PredefinedCityModelPackage</a></td>
         <td></td>
       </tr>
     </tbody>
@@ -215,66 +234,13 @@
   </h3>
   
   
-  <a id="PLATEAU_Udx_LocalDatasetAccessor_CalcCenterPoint_" data-uid="PLATEAU.Udx.LocalDatasetAccessor.CalcCenterPoint*"></a>
-  <h4 id="PLATEAU_Udx_LocalDatasetAccessor_CalcCenterPoint_GeoReference_" data-uid="PLATEAU.Udx.LocalDatasetAccessor.CalcCenterPoint(GeoReference)">CalcCenterPoint(GeoReference)</h4>
+  <a id="PLATEAU_Dataset_DatasetAccessor_GetGmlFiles_" data-uid="PLATEAU.Dataset.DatasetAccessor.GetGmlFiles*"></a>
+  <h4 id="PLATEAU_Dataset_DatasetAccessor_GetGmlFiles_Extent_PLATEAU_Dataset_PredefinedCityModelPackage_" data-uid="PLATEAU.Dataset.DatasetAccessor.GetGmlFiles(Extent,PLATEAU.Dataset.PredefinedCityModelPackage)">GetGmlFiles(Extent, PredefinedCityModelPackage)</h4>
   <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public PlateauVector3d CalcCenterPoint(GeoReference geoReference)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="xref">GeoReference</span></td>
-        <td><span class="parametername">geoReference</span></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="xref">PlateauVector3d</span></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  
-  
-  <a id="PLATEAU_Udx_LocalDatasetAccessor_Dispose_" data-uid="PLATEAU.Udx.LocalDatasetAccessor.Dispose*"></a>
-  <h4 id="PLATEAU_Udx_LocalDatasetAccessor_Dispose" data-uid="PLATEAU.Udx.LocalDatasetAccessor.Dispose">Dispose()</h4>
-  <div class="markdown level1 summary"></div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public void Dispose()</code></pre>
-  </div>
-  
-  
-  <a id="PLATEAU_Udx_LocalDatasetAccessor_Filter_" data-uid="PLATEAU.Udx.LocalDatasetAccessor.Filter*"></a>
-  <h4 id="PLATEAU_Udx_LocalDatasetAccessor_Filter_Extent_" data-uid="PLATEAU.Udx.LocalDatasetAccessor.Filter(Extent)">Filter(Extent)</h4>
-  <div class="markdown level1 summary"><p>GMLファイルを街の緯度・経度・高さによって絞り込みます。</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public LocalDatasetAccessor Filter(Extent extent)</code></pre>
+    <pre><code class="lang-csharp hljs">public NativeVectorGmlFile GetGmlFiles(Extent extent, PredefinedCityModelPackage package)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -291,143 +257,8 @@
         <td><span class="parametername">extent</span></td>
         <td></td>
       </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
       <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="PLATEAU.Udx.LocalDatasetAccessor.html">LocalDatasetAccessor</a></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  
-  
-  <a id="PLATEAU_Udx_LocalDatasetAccessor_FilterByMeshCodes_" data-uid="PLATEAU.Udx.LocalDatasetAccessor.FilterByMeshCodes*"></a>
-  <h4 id="PLATEAU_Udx_LocalDatasetAccessor_FilterByMeshCodes_PLATEAU_Udx_MeshCode___" data-uid="PLATEAU.Udx.LocalDatasetAccessor.FilterByMeshCodes(PLATEAU.Udx.MeshCode[])">FilterByMeshCodes(MeshCode[])</h4>
-  <div class="markdown level1 summary"><p>GMLファイルを地域ID(メッシュコード)によって絞り込みます。</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public LocalDatasetAccessor FilterByMeshCodes(MeshCode[] meshCodeArray)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="PLATEAU.Udx.MeshCode.html">MeshCode</a>[]</td>
-        <td><span class="parametername">meshCodeArray</span></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="PLATEAU.Udx.LocalDatasetAccessor.html">LocalDatasetAccessor</a></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  
-  
-  <a id="PLATEAU_Udx_LocalDatasetAccessor_Finalize_" data-uid="PLATEAU.Udx.LocalDatasetAccessor.Finalize*"></a>
-  <h4 id="PLATEAU_Udx_LocalDatasetAccessor_Finalize" data-uid="PLATEAU.Udx.LocalDatasetAccessor.Finalize">Finalize()</h4>
-  <div class="markdown level1 summary"></div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">protected void Finalize()</code></pre>
-  </div>
-  
-  
-  <a id="PLATEAU_Udx_LocalDatasetAccessor_Find_" data-uid="PLATEAU.Udx.LocalDatasetAccessor.Find*"></a>
-  <h4 id="PLATEAU_Udx_LocalDatasetAccessor_Find_System_String_" data-uid="PLATEAU.Udx.LocalDatasetAccessor.Find(System.String)">Find(String)</h4>
-  <div class="markdown level1 summary"><p>GMLファイルを検索し、結果を保持します。</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static LocalDatasetAccessor Find(string source)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">String</a></td>
-        <td><span class="parametername">source</span></td>
-        <td><p>検索元のルートフォルダのパスです。</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="PLATEAU.Udx.LocalDatasetAccessor.html">LocalDatasetAccessor</a></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  
-  
-  <a id="PLATEAU_Udx_LocalDatasetAccessor_GetGmlFiles_" data-uid="PLATEAU.Udx.LocalDatasetAccessor.GetGmlFiles*"></a>
-  <h4 id="PLATEAU_Udx_LocalDatasetAccessor_GetGmlFiles_PLATEAU_Udx_PredefinedCityModelPackage_" data-uid="PLATEAU.Udx.LocalDatasetAccessor.GetGmlFiles(PLATEAU.Udx.PredefinedCityModelPackage)">GetGmlFiles(PredefinedCityModelPackage)</h4>
-  <div class="markdown level1 summary"><p>GMLファイルのうち、引数で与えられたパッケージ種に該当するもののパスを string の配列で返します。</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public string[] GetGmlFiles(PredefinedCityModelPackage package)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="PLATEAU.Udx.PredefinedCityModelPackage.html">PredefinedCityModelPackage</a></td>
+        <td><a class="xref" href="PLATEAU.Dataset.PredefinedCityModelPackage.html">PredefinedCityModelPackage</a></td>
         <td><span class="parametername">package</span></td>
         <td></td>
       </tr>
@@ -443,7 +274,54 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">String</a>[]</td>
+        <td><span class="xref">NativeVectorGmlFile</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
+  <a id="PLATEAU_Dataset_DatasetAccessor_GetMaxLod_" data-uid="PLATEAU.Dataset.DatasetAccessor.GetMaxLod*"></a>
+  <h4 id="PLATEAU_Dataset_DatasetAccessor_GetMaxLod_PLATEAU_Dataset_MeshCode_PLATEAU_Dataset_PredefinedCityModelPackage_" data-uid="PLATEAU.Dataset.DatasetAccessor.GetMaxLod(PLATEAU.Dataset.MeshCode,PLATEAU.Dataset.PredefinedCityModelPackage)">GetMaxLod(MeshCode, PredefinedCityModelPackage)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public int GetMaxLod(MeshCode meshCode, PredefinedCityModelPackage package)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="PLATEAU.Dataset.MeshCode.html">MeshCode</a></td>
+        <td><span class="parametername">meshCode</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="PLATEAU.Dataset.PredefinedCityModelPackage.html">PredefinedCityModelPackage</a></td>
+        <td><span class="parametername">package</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">Int32</a></td>
         <td></td>
       </tr>
     </tbody>

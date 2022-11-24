@@ -5,10 +5,10 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>Class CityModelPackageInfo
+    <title>Class GmlFile
    | PLATEAU SDK for Unity </title>
     <meta name="viewport" content="width=device-width">
-    <meta name="title" content="Class CityModelPackageInfo
+    <meta name="title" content="Class GmlFile
    | PLATEAU SDK for Unity ">
     <meta name="generator" content="docfx 2.59.4.0">
     
@@ -78,36 +78,63 @@
         </div>
         <div class="article row grid-right">
           <div class="col-md-10">
-            <article class="content wrap" id="_content" data-uid="PLATEAU.Udx.CityModelPackageInfo">
+            <article class="content wrap" id="_content" data-uid="PLATEAU.Dataset.GmlFile">
   
   
-  <h1 id="PLATEAU_Udx_CityModelPackageInfo" data-uid="PLATEAU.Udx.CityModelPackageInfo" class="text-break">Class CityModelPackageInfo
+  <h1 id="PLATEAU_Dataset_GmlFile" data-uid="PLATEAU.Dataset.GmlFile" class="text-break">Class GmlFile
   </h1>
-  <div class="markdown level0 summary"><p>都市モデルインポート時のパッケージごとの設定です。</p>
+  <div class="markdown level0 summary"><p>GMLファイルに関する情報を保持します。</p>
+<p>寿命管理について:
+<see cref="!:NativeVectorGmlFile"></see> の Dispose時、中身の <a class="xref" href="PLATEAU.Dataset.GmlFile.html">GmlFile</a> も自動的に廃棄されます。
+その自動廃棄が呼ばれないケースでのみ、手動で <a class="xref" href="PLATEAU.Dataset.GmlFile.html#PLATEAU_Dataset_GmlFile_Dispose">Dispose()</a> を呼んでください。</p>
 </div>
   <div class="markdown level0 conceptual"></div>
   <div class="inheritance">
     <h5>Inheritance</h5>
     <div class="level0"><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">Object</a></div>
-    <div class="level1"><span class="xref">CityModelPackageInfo</span></div>
+    <div class="level1"><span class="xref">GmlFile</span></div>
   </div>
-  <h6><strong>Namespace</strong>: <a class="xref" href="PLATEAU.Udx.html">PLATEAU.Udx</a></h6>
+  <div class="inheritedMembers">
+    <h5>Inherited Members</h5>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.tostring#system-object-tostring">Object.ToString()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)">Object.Equals(Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)">Object.Equals(Object, Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.referenceequals#system-object-referenceequals(system-object-system-object)">Object.ReferenceEquals(Object, Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gethashcode#system-object-gethashcode">Object.GetHashCode()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gettype#system-object-gettype">Object.GetType()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone#system-object-memberwiseclone">Object.MemberwiseClone()</a>
+    </div>
+  </div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="PLATEAU.Dataset.html">PLATEAU.Dataset</a></h6>
   <h6><strong>Assembly</strong>: cs.temp.dll.dll</h6>
-  <h5 id="PLATEAU_Udx_CityModelPackageInfo_syntax">Syntax</h5>
+  <h5 id="PLATEAU_Dataset_GmlFile_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public class CityModelPackageInfo : PInvokeDisposable</code></pre>
+    <pre><code class="lang-csharp hljs">public class GmlFile</code></pre>
   </div>
   <h3 id="constructors">Constructors
   </h3>
   
   
-  <a id="PLATEAU_Udx_CityModelPackageInfo__ctor_" data-uid="PLATEAU.Udx.CityModelPackageInfo.#ctor*"></a>
-  <h4 id="PLATEAU_Udx_CityModelPackageInfo__ctor_IntPtr_" data-uid="PLATEAU.Udx.CityModelPackageInfo.#ctor(IntPtr)">CityModelPackageInfo(IntPtr)</h4>
+  <a id="PLATEAU_Dataset_GmlFile__ctor_" data-uid="PLATEAU.Dataset.GmlFile.#ctor*"></a>
+  <h4 id="PLATEAU_Dataset_GmlFile__ctor_IntPtr_" data-uid="PLATEAU.Dataset.GmlFile.#ctor(IntPtr)">GmlFile(IntPtr)</h4>
   <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public CityModelPackageInfo(IntPtr handle)</code></pre>
+    <pre><code class="lang-csharp hljs">public GmlFile(IntPtr handle)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -130,13 +157,13 @@
   </h3>
   
   
-  <a id="PLATEAU_Udx_CityModelPackageInfo_HasAppearance_" data-uid="PLATEAU.Udx.CityModelPackageInfo.HasAppearance*"></a>
-  <h4 id="PLATEAU_Udx_CityModelPackageInfo_HasAppearance" data-uid="PLATEAU.Udx.CityModelPackageInfo.HasAppearance">HasAppearance</h4>
+  <a id="PLATEAU_Dataset_GmlFile_FeatureType_" data-uid="PLATEAU.Dataset.GmlFile.FeatureType*"></a>
+  <h4 id="PLATEAU_Dataset_GmlFile_FeatureType" data-uid="PLATEAU.Dataset.GmlFile.FeatureType">FeatureType</h4>
   <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public bool HasAppearance { get; }</code></pre>
+    <pre><code class="lang-csharp hljs">public string FeatureType { get; }</code></pre>
   </div>
   <h5 class="propertyValue">Property Value</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -148,20 +175,20 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">String</a></td>
         <td></td>
       </tr>
     </tbody>
   </table>
   
   
-  <a id="PLATEAU_Udx_CityModelPackageInfo_MaxLOD_" data-uid="PLATEAU.Udx.CityModelPackageInfo.MaxLOD*"></a>
-  <h4 id="PLATEAU_Udx_CityModelPackageInfo_MaxLOD" data-uid="PLATEAU.Udx.CityModelPackageInfo.MaxLOD">MaxLOD</h4>
+  <a id="PLATEAU_Dataset_GmlFile_Handle_" data-uid="PLATEAU.Dataset.GmlFile.Handle*"></a>
+  <h4 id="PLATEAU_Dataset_GmlFile_Handle" data-uid="PLATEAU.Dataset.GmlFile.Handle">Handle</h4>
   <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public int MaxLOD { get; }</code></pre>
+    <pre><code class="lang-csharp hljs">public IntPtr Handle { get; }</code></pre>
   </div>
   <h5 class="propertyValue">Property Value</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -173,20 +200,20 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><span class="xref">IntPtr</span></td>
         <td></td>
       </tr>
     </tbody>
   </table>
   
   
-  <a id="PLATEAU_Udx_CityModelPackageInfo_MinLOD_" data-uid="PLATEAU.Udx.CityModelPackageInfo.MinLOD*"></a>
-  <h4 id="PLATEAU_Udx_CityModelPackageInfo_MinLOD" data-uid="PLATEAU.Udx.CityModelPackageInfo.MinLOD">MinLOD</h4>
+  <a id="PLATEAU_Dataset_GmlFile_MeshCode_" data-uid="PLATEAU.Dataset.GmlFile.MeshCode*"></a>
+  <h4 id="PLATEAU_Dataset_GmlFile_MeshCode" data-uid="PLATEAU.Dataset.GmlFile.MeshCode">MeshCode</h4>
   <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public int MinLOD { get; }</code></pre>
+    <pre><code class="lang-csharp hljs">public MeshCode MeshCode { get; }</code></pre>
   </div>
   <h5 class="propertyValue">Property Value</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -198,7 +225,57 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><a class="xref" href="PLATEAU.Dataset.MeshCode.html">MeshCode</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
+  <a id="PLATEAU_Dataset_GmlFile_Package_" data-uid="PLATEAU.Dataset.GmlFile.Package*"></a>
+  <h4 id="PLATEAU_Dataset_GmlFile_Package" data-uid="PLATEAU.Dataset.GmlFile.Package">Package</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public PredefinedCityModelPackage Package { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="PLATEAU.Dataset.PredefinedCityModelPackage.html">PredefinedCityModelPackage</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
+  <a id="PLATEAU_Dataset_GmlFile_Path_" data-uid="PLATEAU.Dataset.GmlFile.Path*"></a>
+  <h4 id="PLATEAU_Dataset_GmlFile_Path" data-uid="PLATEAU.Dataset.GmlFile.Path">Path</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public string Path { get; set; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">String</a></td>
         <td></td>
       </tr>
     </tbody>
@@ -207,76 +284,15 @@
   </h3>
   
   
-  <a id="PLATEAU_Udx_CityModelPackageInfo_Create_" data-uid="PLATEAU.Udx.CityModelPackageInfo.Create*"></a>
-  <h4 id="PLATEAU_Udx_CityModelPackageInfo_Create_System_Boolean_System_Int32_System_Int32_" data-uid="PLATEAU.Udx.CityModelPackageInfo.Create(System.Boolean,System.Int32,System.Int32)">Create(Boolean, Int32, Int32)</h4>
-  <div class="markdown level1 summary"></div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static CityModelPackageInfo Create(bool hasAppearance, int minLOD, int maxLOD)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
-        <td><span class="parametername">hasAppearance</span></td>
-        <td></td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">Int32</a></td>
-        <td><span class="parametername">minLOD</span></td>
-        <td></td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">Int32</a></td>
-        <td><span class="parametername">maxLOD</span></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="PLATEAU.Udx.CityModelPackageInfo.html">CityModelPackageInfo</a></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  
-  
-  <a id="PLATEAU_Udx_CityModelPackageInfo_DisposeNative_" data-uid="PLATEAU.Udx.CityModelPackageInfo.DisposeNative*"></a>
-  <h4 id="PLATEAU_Udx_CityModelPackageInfo_DisposeNative" data-uid="PLATEAU.Udx.CityModelPackageInfo.DisposeNative">DisposeNative()</h4>
-  <div class="markdown level1 summary"></div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">protected override void DisposeNative()</code></pre>
-  </div>
-  
-  
-  <a id="PLATEAU_Udx_CityModelPackageInfo_GetPredefined_" data-uid="PLATEAU.Udx.CityModelPackageInfo.GetPredefined*"></a>
-  <h4 id="PLATEAU_Udx_CityModelPackageInfo_GetPredefined_PLATEAU_Udx_PredefinedCityModelPackage_" data-uid="PLATEAU.Udx.CityModelPackageInfo.GetPredefined(PLATEAU.Udx.PredefinedCityModelPackage)">GetPredefined(PredefinedCityModelPackage)</h4>
-  <div class="markdown level1 summary"><p>与えられたパッケージ種別に対して、仕様上存在する可能性のあるLODの範囲と、仕様上テクスチャが存在する可能性があるかをタプルで返します。</p>
+  <a id="PLATEAU_Dataset_GmlFile_Create_" data-uid="PLATEAU.Dataset.GmlFile.Create*"></a>
+  <h4 id="PLATEAU_Dataset_GmlFile_Create_System_String_" data-uid="PLATEAU.Dataset.GmlFile.Create(System.String)">Create(String)</h4>
+  <div class="markdown level1 summary"><p>GMLファイルに関する情報を保持するためのインスタンスを生成します。
+実際にGMLファイルを作るわけではありません。</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static (bool hasAppearance, int minLOD, int maxLOD) GetPredefined(PredefinedCityModelPackage package)</code></pre>
+    <pre><code class="lang-csharp hljs">public static GmlFile Create(string path)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -289,8 +305,8 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="PLATEAU.Udx.PredefinedCityModelPackage.html">PredefinedCityModelPackage</a></td>
-        <td><span class="parametername">package</span></td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">String</a></td>
+        <td><span class="parametername">path</span></td>
         <td></td>
       </tr>
     </tbody>
@@ -305,7 +321,63 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.valuetuple-3">(T1, T2, T3)</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">Boolean</a>, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">Int32</a>, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">Int32</a>&gt;</td>
+        <td><a class="xref" href="PLATEAU.Dataset.GmlFile.html">GmlFile</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
+  <a id="PLATEAU_Dataset_GmlFile_Dispose_" data-uid="PLATEAU.Dataset.GmlFile.Dispose*"></a>
+  <h4 id="PLATEAU_Dataset_GmlFile_Dispose" data-uid="PLATEAU.Dataset.GmlFile.Dispose">Dispose()</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void Dispose()</code></pre>
+  </div>
+  
+  
+  <a id="PLATEAU_Dataset_GmlFile_Fetch_" data-uid="PLATEAU.Dataset.GmlFile.Fetch*"></a>
+  <h4 id="PLATEAU_Dataset_GmlFile_Fetch_System_String_" data-uid="PLATEAU.Dataset.GmlFile.Fetch(System.String)">Fetch(String)</h4>
+  <div class="markdown level1 summary"><p>GMLファイルとその関連ファイルをコピーします。
+関連ファイルを探すために、GMLファイルの中身に対して文字列検索（テクスチャパスなどの記載を探す）が行われるため、
+GMLファイルの容量が増えるほど処理時間が増えます。</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public GmlFile Fetch(string destinationRootPath)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">String</a></td>
+        <td><span class="parametername">destinationRootPath</span></td>
+        <td><p>コピー先のルートフォルダのパスです。</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="PLATEAU.Dataset.GmlFile.html">GmlFile</a></td>
         <td></td>
       </tr>
     </tbody>

@@ -516,11 +516,11 @@
     },
     {
       "type": "ManagedReference",
-      "source_relative_path": "api/PLATEAU.Editor.CityImport.AreaSelector.LodSearcher.yml",
+      "source_relative_path": "api/PLATEAU.Dataset.CityModelPackageInfo.yml",
       "output": {
         ".html": {
-          "relative_path": "api/PLATEAU.Editor.CityImport.AreaSelector.LodSearcher.html",
-          "hash": "Axtumj9qM/D1Q98VGo+jQB1uoh07Mxzoxru9V9aE8KA="
+          "relative_path": "api/PLATEAU.Dataset.CityModelPackageInfo.html",
+          "hash": "6lMvxz6ypEsPkOBe0Jz3vA4bIyWYCzO8GdYkQJTZu8M="
         }
       },
       "is_incremental": false,
@@ -528,11 +528,107 @@
     },
     {
       "type": "ManagedReference",
-      "source_relative_path": "api/PLATEAU.Editor.CityImport.AreaSelector.yml",
+      "source_relative_path": "api/PLATEAU.Dataset.DatasetAccessor.yml",
       "output": {
         ".html": {
-          "relative_path": "api/PLATEAU.Editor.CityImport.AreaSelector.html",
-          "hash": "0alOIf0tKkhJHHBfoBkPqnAHSrVNVJ4LI9VjE5Me3F4="
+          "relative_path": "api/PLATEAU.Dataset.DatasetAccessor.html",
+          "hash": "81d3EI9L1wr3FDJRgvPdsQ0qriI74Qz2J5EiwE+FPXk="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/PLATEAU.Dataset.DatasetSource.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PLATEAU.Dataset.DatasetSource.html",
+          "hash": "QQpzezWc1RCzPXKtqH+hrSNKag+v3y9e7wheNANHbO8="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/PLATEAU.Dataset.GmlFile.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PLATEAU.Dataset.GmlFile.html",
+          "hash": "b4s2PhrptlHO230ZNsRsqxHP2wx2lWc6cToiQUfe8ec="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/PLATEAU.Dataset.LocalDatasetAccessor.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PLATEAU.Dataset.LocalDatasetAccessor.html",
+          "hash": "PxMSAxXT0d6y9bc7YyQdDnwjQCGAhFsZuWXIJWFyBog="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/PLATEAU.Dataset.LodSearcher.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PLATEAU.Dataset.LodSearcher.html",
+          "hash": "6BXECc2IOhZzsdcnmcKIzTfq7DJNycCLf/rlemVxr2A="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/PLATEAU.Dataset.MeshCode.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PLATEAU.Dataset.MeshCode.html",
+          "hash": "/d4vTEoX9BYjaeMqUKOdhB2mbCj/ON1Y6xWNUcAYD34="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/PLATEAU.Dataset.PredefinedCityModelPackage.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PLATEAU.Dataset.PredefinedCityModelPackage.html",
+          "hash": "ljhLv/352811/+RYD/JtRt9SnKF2LMm5/r1R9BO6WO0="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/PLATEAU.Dataset.PredefinedCityModelPackageExtension.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PLATEAU.Dataset.PredefinedCityModelPackageExtension.html",
+          "hash": "NV4H3ivN5XmkwxuOei2Im++uTqs4DGSSgoD1BcF0jeA="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/PLATEAU.Dataset.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PLATEAU.Dataset.html",
+          "hash": "PGF9jLL2MqlOwhocHdOGamKnOVV+4E1f+E3Y9NBhvh4="
         }
       },
       "is_incremental": false,
@@ -972,114 +1068,6 @@
     },
     {
       "type": "ManagedReference",
-      "source_relative_path": "api/PLATEAU.Udx.CityModelPackageInfo.yml",
-      "output": {
-        ".html": {
-          "relative_path": "api/PLATEAU.Udx.CityModelPackageInfo.html",
-          "hash": "NPQq/JBSTrhVwXqgIyGaPdSVW0tYRt03gEvUiHZXNcw="
-        }
-      },
-      "is_incremental": false,
-      "version": ""
-    },
-    {
-      "type": "ManagedReference",
-      "source_relative_path": "api/PLATEAU.Udx.DatasetAccessor.yml",
-      "output": {
-        ".html": {
-          "relative_path": "api/PLATEAU.Udx.DatasetAccessor.html",
-          "hash": "KbfyDcxa/S7CfrPPbf+3LcX71neEdW/nplbQKOQJqEg="
-        }
-      },
-      "is_incremental": false,
-      "version": ""
-    },
-    {
-      "type": "ManagedReference",
-      "source_relative_path": "api/PLATEAU.Udx.DatasetSource.yml",
-      "output": {
-        ".html": {
-          "relative_path": "api/PLATEAU.Udx.DatasetSource.html",
-          "hash": "wMV1Q5T09XowtoMGs4BqeDLM7nNH9uehUXAjVVuGE1o="
-        }
-      },
-      "is_incremental": false,
-      "version": ""
-    },
-    {
-      "type": "ManagedReference",
-      "source_relative_path": "api/PLATEAU.Udx.GmlFile.yml",
-      "output": {
-        ".html": {
-          "relative_path": "api/PLATEAU.Udx.GmlFile.html",
-          "hash": "wtgmm4m0bz6QzGTl3RxhGrrO3pC0NmwukfAoA4gsHgM="
-        }
-      },
-      "is_incremental": false,
-      "version": ""
-    },
-    {
-      "type": "ManagedReference",
-      "source_relative_path": "api/PLATEAU.Udx.LocalDatasetAccessor.yml",
-      "output": {
-        ".html": {
-          "relative_path": "api/PLATEAU.Udx.LocalDatasetAccessor.html",
-          "hash": "6qN5385BLoe2835ZgbZKDTYEMEoaXnGwR3S6UfsY1rk="
-        }
-      },
-      "is_incremental": false,
-      "version": ""
-    },
-    {
-      "type": "ManagedReference",
-      "source_relative_path": "api/PLATEAU.Udx.MeshCode.yml",
-      "output": {
-        ".html": {
-          "relative_path": "api/PLATEAU.Udx.MeshCode.html",
-          "hash": "r/sjNtMcZbea9D7L4NbSuw1p/NLi/Yj6yKCVS/OmHEI="
-        }
-      },
-      "is_incremental": false,
-      "version": ""
-    },
-    {
-      "type": "ManagedReference",
-      "source_relative_path": "api/PLATEAU.Udx.PredefinedCityModelPackage.yml",
-      "output": {
-        ".html": {
-          "relative_path": "api/PLATEAU.Udx.PredefinedCityModelPackage.html",
-          "hash": "nrX+Sv258ad2Y78JSqvJzGQRauaTfNMlCL5UxksjYg4="
-        }
-      },
-      "is_incremental": false,
-      "version": ""
-    },
-    {
-      "type": "ManagedReference",
-      "source_relative_path": "api/PLATEAU.Udx.PredefinedCityModelPackageExtension.yml",
-      "output": {
-        ".html": {
-          "relative_path": "api/PLATEAU.Udx.PredefinedCityModelPackageExtension.html",
-          "hash": "4/7CW25xPtNji45LHXsRWVqvSr0QpTFfdwYb9SMgbXc="
-        }
-      },
-      "is_incremental": false,
-      "version": ""
-    },
-    {
-      "type": "ManagedReference",
-      "source_relative_path": "api/PLATEAU.Udx.yml",
-      "output": {
-        ".html": {
-          "relative_path": "api/PLATEAU.Udx.html",
-          "hash": "HVTFkzw5JW6+1+xjG7ymSp+cEm0NU2P+aWuQtilAC24="
-        }
-      },
-      "is_incremental": false,
-      "version": ""
-    },
-    {
-      "type": "ManagedReference",
       "source_relative_path": "api/PLATEAU.Util.Async.TaskExtension.yml",
       "output": {
         ".html": {
@@ -1204,7 +1192,7 @@
       "output": {
         ".html": {
           "relative_path": "api/toc.html",
-          "hash": "/oa1xYur0IPdce+95n4lE8Pjb7qrH1aiKv2S/LXtg7w="
+          "hash": "WXnChx/18IMktW1GACxcDkN+OCwSYLZYn57zr0WBAdE="
         }
       },
       "is_incremental": false,
@@ -1745,7 +1733,7 @@
         "ManagedReferenceDocumentProcessor": {
           "can_incremental": false,
           "incrementalPhase": "build",
-          "total_file_count": 98,
+          "total_file_count": 97,
           "skipped_file_count": 0
         },
         "ResourceDocumentProcessor": {

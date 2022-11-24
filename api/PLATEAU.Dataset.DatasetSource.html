@@ -5,10 +5,10 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>Class LodSearcher
+    <title>Class DatasetSource
    | PLATEAU SDK for Unity </title>
     <meta name="viewport" content="width=device-width">
-    <meta name="title" content="Class LodSearcher
+    <meta name="title" content="Class DatasetSource
    | PLATEAU SDK for Unity ">
     <meta name="generator" content="docfx 2.59.4.0">
     
@@ -78,61 +78,92 @@
         </div>
         <div class="article row grid-right">
           <div class="col-md-10">
-            <article class="content wrap" id="_content" data-uid="PLATEAU.Editor.CityImport.AreaSelector.LodSearcher">
+            <article class="content wrap" id="_content" data-uid="PLATEAU.Dataset.DatasetSource">
   
   
-  <h1 id="PLATEAU_Editor_CityImport_AreaSelector_LodSearcher" data-uid="PLATEAU.Editor.CityImport.AreaSelector.LodSearcher" class="text-break">Class LodSearcher
+  <h1 id="PLATEAU_Dataset_DatasetSource" data-uid="PLATEAU.Dataset.DatasetSource" class="text-break">Class DatasetSource
   </h1>
   <div class="markdown level0 summary"></div>
   <div class="markdown level0 conceptual"></div>
   <div class="inheritance">
     <h5>Inheritance</h5>
     <div class="level0"><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">Object</a></div>
-    <div class="level1"><span class="xref">LodSearcher</span></div>
+    <div class="level1"><span class="xref">DatasetSource</span></div>
   </div>
-  <div class="inheritedMembers">
-    <h5>Inherited Members</h5>
-    <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.tostring#system-object-tostring">Object.ToString()</a>
-    </div>
-    <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)">Object.Equals(Object)</a>
-    </div>
-    <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)">Object.Equals(Object, Object)</a>
-    </div>
-    <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.referenceequals#system-object-referenceequals(system-object-system-object)">Object.ReferenceEquals(Object, Object)</a>
-    </div>
-    <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gethashcode#system-object-gethashcode">Object.GetHashCode()</a>
-    </div>
-    <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gettype#system-object-gettype">Object.GetType()</a>
-    </div>
-    <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone#system-object-memberwiseclone">Object.MemberwiseClone()</a>
-    </div>
-  </div>
-  <h6><strong>Namespace</strong>: <a class="xref" href="PLATEAU.Editor.CityImport.AreaSelector.html">PLATEAU.Editor.CityImport.AreaSelector</a></h6>
+  <h6><strong>Namespace</strong>: <a class="xref" href="PLATEAU.Dataset.html">PLATEAU.Dataset</a></h6>
   <h6><strong>Assembly</strong>: cs.temp.dll.dll</h6>
-  <h5 id="PLATEAU_Editor_CityImport_AreaSelector_LodSearcher_syntax">Syntax</h5>
+  <h5 id="PLATEAU_Dataset_DatasetSource_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static class LodSearcher</code></pre>
+    <pre><code class="lang-csharp hljs">public class DatasetSource : PInvokeDisposable</code></pre>
   </div>
+  <h3 id="constructors">Constructors
+  </h3>
+  
+  
+  <a id="PLATEAU_Dataset_DatasetSource__ctor_" data-uid="PLATEAU.Dataset.DatasetSource.#ctor*"></a>
+  <h4 id="PLATEAU_Dataset_DatasetSource__ctor_IntPtr_" data-uid="PLATEAU.Dataset.DatasetSource.#ctor(IntPtr)">DatasetSource(IntPtr)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public DatasetSource(IntPtr handle)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">IntPtr</span></td>
+        <td><span class="parametername">handle</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="properties">Properties
+  </h3>
+  
+  
+  <a id="PLATEAU_Dataset_DatasetSource_Accessor_" data-uid="PLATEAU.Dataset.DatasetSource.Accessor*"></a>
+  <h4 id="PLATEAU_Dataset_DatasetSource_Accessor" data-uid="PLATEAU.Dataset.DatasetSource.Accessor">Accessor</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public DatasetAccessor Accessor { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="PLATEAU.Dataset.DatasetAccessor.html">DatasetAccessor</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
   <h3 id="methods">Methods
   </h3>
   
   
-  <a id="PLATEAU_Editor_CityImport_AreaSelector_LodSearcher_SearchLodsInFile_" data-uid="PLATEAU.Editor.CityImport.AreaSelector.LodSearcher.SearchLodsInFile*"></a>
-  <h4 id="PLATEAU_Editor_CityImport_AreaSelector_LodSearcher_SearchLodsInFile_System_String_" data-uid="PLATEAU.Editor.CityImport.AreaSelector.LodSearcher.SearchLodsInFile(System.String)">SearchLodsInFile(String)</h4>
-  <div class="markdown level1 summary"><p>GMLファイルの中に存在するLODを検索してリストで返します。
-ファイルの全文を文字列検索するので、ファイル容量が大きいほど処理に時間がかかります。</p>
+  <a id="PLATEAU_Dataset_DatasetSource_CreateLocal_" data-uid="PLATEAU.Dataset.DatasetSource.CreateLocal*"></a>
+  <h4 id="PLATEAU_Dataset_DatasetSource_CreateLocal_System_String_" data-uid="PLATEAU.Dataset.DatasetSource.CreateLocal(System.String)">CreateLocal(String)</h4>
+  <div class="markdown level1 summary"><p>ローカルPCのデータセットを指す <a class="xref" href="PLATEAU.Dataset.DatasetSource.html">DatasetSource</a> を作ります。</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static IEnumerable&lt;uint&gt; SearchLodsInFile(string filePath)</code></pre>
+    <pre><code class="lang-csharp hljs">public static DatasetSource CreateLocal(string path)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -146,7 +177,7 @@
     <tbody>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">String</a></td>
-        <td><span class="parametername">filePath</span></td>
+        <td><span class="parametername">path</span></td>
         <td></td>
       </tr>
     </tbody>
@@ -161,11 +192,21 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">IEnumerable</span>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">UInt32</a>&gt;</td>
+        <td><a class="xref" href="PLATEAU.Dataset.DatasetSource.html">DatasetSource</a></td>
         <td></td>
       </tr>
     </tbody>
   </table>
+  
+  
+  <a id="PLATEAU_Dataset_DatasetSource_DisposeNative_" data-uid="PLATEAU.Dataset.DatasetSource.DisposeNative*"></a>
+  <h4 id="PLATEAU_Dataset_DatasetSource_DisposeNative" data-uid="PLATEAU.Dataset.DatasetSource.DisposeNative">DisposeNative()</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">protected override void DisposeNative()</code></pre>
+  </div>
 </article>
           </div>
           
