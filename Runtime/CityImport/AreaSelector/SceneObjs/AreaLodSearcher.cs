@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using PLATEAU.Interop;
 using PLATEAU.Dataset;
+using UnityEngine;
 
 namespace PLATEAU.CityImport.AreaSelector.SceneObjs
 {
@@ -32,6 +33,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         {
 
             SearchLodsInMeshCode(meshCode);
+            
             if (this.meshCodeToPackageLodDict.TryGetValue(meshCode, out var packageToLodDict))
             {
                 // 上位のメッシュコードがあれば、そのパッケージとLODも戻り値に加えます。
@@ -78,9 +80,8 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
                     var lodSet = new SortedSet<uint>();
                     foreach (var gml in gmls)
                     {
-                        if (gml.MeshCode.ToString() != currentMeshCode) return;
+                        if (gml.MeshCode.ToString() != currentMeshCode) continue;
                         string fullPath = Path.GetFullPath(gml.Path);
-                    
                         // ファイルの中身を検索するので時間がかかります。
                         var lods = LodSearcher.SearchLodsInFile(fullPath);
                         

@@ -95,7 +95,6 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
                     code => new AreaLodView(packageLods, positionUpperLeft, positionLowerRight),
                     (code, view) => new AreaLodView(packageLods, positionUpperLeft, positionLowerRight));
             }
-
         }
 
         /// <summary>
