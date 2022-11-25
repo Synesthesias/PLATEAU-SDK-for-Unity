@@ -540,6 +540,30 @@
     },
     {
       "type": "ManagedReference",
+      "source_relative_path": "api/PLATEAU.Dataset.DatasetMetadata.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PLATEAU.Dataset.DatasetMetadata.html",
+          "hash": "6zNu1nSZZiB3Hs/Z5SIAWPfFrA93+70+41EKSrK01og="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/PLATEAU.Dataset.DatasetMetadataGroup.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PLATEAU.Dataset.DatasetMetadataGroup.html",
+          "hash": "HehpNZDbNgkJXyPqi9Qb1pDEwSSC5m0/Qt6Ex65QCeE="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
       "source_relative_path": "api/PLATEAU.Dataset.DatasetSource.yml",
       "output": {
         ".html": {
@@ -624,11 +648,23 @@
     },
     {
       "type": "ManagedReference",
+      "source_relative_path": "api/PLATEAU.Dataset.ServerDatasetAccessor.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PLATEAU.Dataset.ServerDatasetAccessor.html",
+          "hash": "hV5LBKAZu4yZX09BYDUPQY9RdjmCGQzIxot5Osz539o="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
       "source_relative_path": "api/PLATEAU.Dataset.yml",
       "output": {
         ".html": {
           "relative_path": "api/PLATEAU.Dataset.html",
-          "hash": "PGF9jLL2MqlOwhocHdOGamKnOVV+4E1f+E3Y9NBhvh4="
+          "hash": "fvKq5hQSFbawoimJig7+rWmxDDQQJ7bvaxeMMLjFjIc="
         }
       },
       "is_incremental": false,
@@ -856,7 +892,31 @@
       "output": {
         ".html": {
           "relative_path": "api/PLATEAU.Interop.NativeVectorBase-1.html",
-          "hash": "djhy1tyKua6ocZp8gtxq4xV75ckHvq0a+k9Q34x55ng="
+          "hash": "lhUKWLFtzWrJqLS+qkMkXD9NF6Bez+3ZHjR7ML5atE4="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/PLATEAU.Interop.NativeVectorDatasetMetadata.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PLATEAU.Interop.NativeVectorDatasetMetadata.html",
+          "hash": "1F/W2CbQNT4DYcYF0Txt2DhfCnGewWtBv1oOZWBPyyU="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/PLATEAU.Interop.NativeVectorDatasetMetadataGroup.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PLATEAU.Interop.NativeVectorDatasetMetadataGroup.html",
+          "hash": "JsNTJwyfQeWtmet6kFEqYFjK9R2NpuTv/smm9JxCbQI="
         }
       },
       "is_incremental": false,
@@ -940,7 +1000,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PLATEAU.Interop.html",
-          "hash": "vXm2Sxyfpjth2rVALHqXPnOQ7nsG5rukYih6nxibleY="
+          "hash": "LPdjjY/O8wBbWaTEL7pop+wZ62RHMLCpYKLxYXaT/IM="
         }
       },
       "is_incremental": false,
@@ -1192,7 +1252,7 @@
       "output": {
         ".html": {
           "relative_path": "api/toc.html",
-          "hash": "WXnChx/18IMktW1GACxcDkN+OCwSYLZYn57zr0WBAdE="
+          "hash": "uJonAfLswqr9z66GdmJzvJ7LD6FBFK51eDJ1trms1mY="
         }
       },
       "is_incremental": false,
@@ -1733,7 +1793,7 @@
         "ManagedReferenceDocumentProcessor": {
           "can_incremental": false,
           "incrementalPhase": "build",
-          "total_file_count": 97,
+          "total_file_count": 102,
           "skipped_file_count": 0
         },
         "ResourceDocumentProcessor": {
