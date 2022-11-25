@@ -1,5 +1,8 @@
-# Plateau Unity SDK
+# PLATEAU SDK for Unity
 
-想定Unityバージョン Unity2020.3.32f1  
-  
-詳しい説明は ```PlateauUnitySDKDev``` リポジトリの READMEを参照してください。
+このパッケージには、[PLATEAU](https://www.mlit.go.jp/plateau/)の3D都市モデルデータを利用するためのAPI、サンプルが含まれます。  
+PLATEAU SDK for Unityを利用することで、実世界を舞台にしたゲームの開発や、PLATEAUの豊富なデータを活用したシミュレーションを簡単に行うことができます。
+![](resources/index/citymodel.png)
+
+## マニュアル
+[マニュアルはこちら](https://synesthesias.github.io/PLATEAU-SDK-for-Unity/index.html) をご覧ください。
