@@ -23,6 +23,28 @@ namespace PLATEAU.Interop
         internal delegate APIResult StrValueArrayGetDelegate(IntPtr handle, IntPtr strPtrArrayPtr);
 
         internal delegate APIResult StrValueGetDelegate(IntPtr handle, IntPtr strPtr);
+        internal delegate APIResult NativeCreateDelegate(out IntPtr newPtr);
+
+        internal delegate APIResult NativeVoidDelegate(IntPtr ptr);
+
+        /// <summary>
+        /// ネイティブで new してそのポインタを返す関数を引数にとり、それを実行してエラーチェックしてからポインタを返します。
+        /// </summary>
+        internal static IntPtr PtrOfNewInstance(NativeCreateDelegate createFunc)
+        {
+            var result = createFunc(out var newPtr);
+            CheckDllError(result);
+            return newPtr;
+        }
+
+        /// <summary>
+        /// IntPtrを1つ引数にとるメソッドを実行し、その後エラーチェックします。
+        /// </summary>
+        internal static void ExecNativeVoidFunc(IntPtr handle, NativeVoidDelegate nativeVoidFunc)
+        {
+            var result = nativeVoidFunc(handle);
+            CheckDllError(result);
+        }
 
         /// <summary>
         /// DLLから文字列のポインタの配列を受け取り、各ポインタから文字列を読んで string[] で返します。

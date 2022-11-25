@@ -1568,5 +1568,143 @@ namespace PLATEAU.Interop
         internal static extern APIResult plateau_vector_mesh_code_count(
             [In] IntPtr handle,
             out int outCount);
+        
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_create_vector_dataset_metadata_group(
+            out IntPtr outVectorPtr);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_delete_vector_dataset_metadata_group(
+            [In] IntPtr vectorPtr);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_vector_dataset_metadata_group_get_pointer(
+            [In] IntPtr vectorPtr,
+            out IntPtr outGmlFilePtr,
+            int index);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_vector_dataset_metadata_group_count(
+            [In] IntPtr handle,
+            out int outCount);
+        
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_create_vector_dataset_metadata(
+            out IntPtr outVectorPtr);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_delete_vector_dataset_metadata(
+            [In] IntPtr vectorPtr);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_vector_dataset_metadata_get_pointer(
+            [In] IntPtr vectorPtr,
+            out IntPtr outDatasetMetadataPtr,
+            int index);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_vector_dataset_metadata_count(
+            [In] IntPtr handle,
+            out int outCount);
+        
+        // ***************
+        //  dataset_metadata_group_c.cpp
+        // ***************
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_create_dataset_metadata_group(
+            out IntPtr outDatasetMetadataGroupPtr);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_delete_dataset_metadata_group(
+            [In] IntPtr datasetMetadataGroupPtr);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_dataset_metadata_group_get_id(
+            [In] IntPtr handle,
+            out IntPtr outStrPtr,
+            out int strLength);
+        
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_dataset_metadata_group_get_title(
+            [In] IntPtr handle,
+            out IntPtr outStrPtr,
+            out int strLength);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_dataset_metadata_group_get_datasets(
+            [In] IntPtr handle,
+            out IntPtr nativeVectorDatasetMetadataPtr);
+        
+        // ***************
+        //  dataset_metadata_c.cpp
+        // ***************
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_create_dataset_metadata(
+            out IntPtr outDatasetMetadataPtr);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_delete_dataset_metadata(
+            [In] IntPtr datasetMetadataPtr);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_dataset_metadata_get_id(
+            [In] IntPtr handle,
+            out IntPtr outStrPtr,
+            out int strLength);
+        
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_dataset_metadata_get_title(
+            [In] IntPtr handle,
+            out IntPtr outStrPtr,
+            out int strLength);
+        
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_dataset_metadata_get_description(
+            [In] IntPtr handle,
+            out IntPtr outStrPtr,
+            out int strLength);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_dataset_metadata_get_max_lod(
+            [In] IntPtr handle,
+            out int outMaxLod);
+        
+        // ***************
+        //  server_dataset_accessor_c.cpp
+        // ***************
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_create_server_dataset_accessor(
+            out IntPtr outAccessorPtr);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_delete_server_dataset_accessor(
+            [In] IntPtr accessorPtr);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_server_dataset_accessor_get_dataset_metadata_group(
+            [In] IntPtr accessorPtr,
+            [In, Out] IntPtr nativeVectorDatasetMetadataGroupPtr);
+
+        [DllImport(DllName, CharSet = CharSet.Ansi)]
+        internal static extern APIResult plateau_server_dataset_accessor_set_dataset_id(
+            [In] IntPtr accessorPtr,
+            string datasetId);
+        
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_server_dataset_accessor_get_mesh_codes(
+            [In] IntPtr accessorPtr,
+            [In, Out] IntPtr refNativeVectorMeshCodePtr);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_server_dataset_accessor_get_gml_files(
+            [In] IntPtr accessorPtr,
+            [In,Out] IntPtr refNativeVectorGmlFilePtr,
+            Extent extent,
+            PredefinedCityModelPackage package);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_server_dataset_accessor_get_packages(
+            [In] IntPtr accessorPtr,
+            out PredefinedCityModelPackage package);
     }
 }
