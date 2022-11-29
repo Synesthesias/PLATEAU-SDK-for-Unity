@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
 using PLATEAU.CityImport.AreaSelector;
+using PLATEAU.CityImport.Setting;
 using PLATEAU.Dataset;
 using PLATEAU.Editor.CityImport.AreaSelector;
 using PLATEAU.Editor.EditorWindow.Common;
@@ -20,6 +21,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
         private int selectedDatasetGroupIndex;
         private int selectedDatasetIndex;
         private NativeVectorDatasetMetadataGroup datasetGroups;
+        private readonly CityLoadConfig config = new CityLoadConfig();
         private const string serverUrl = "https://9tkm2n.deta.dev";
         
 
@@ -54,6 +56,9 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
             var dataset = datasets.At(this.selectedDatasetIndex);
             PlateauEditorStyle.MultiLineLabelWithBox($"ID        : {dataset.ID}\nタイトル: {dataset.Title}\n説明    : {dataset.Description}");
 
+            this.config.DatasetSourceConfig ??= new DatasetSourceConfig(true, "");
+            this.config.DatasetSourceConfig.DatasetIdOrSourcePath = dataset.ID;
+            
             using (PlateauEditorStyle.VerticalScopeLevel1())
             {
                 if (PlateauEditorStyle.MainButton("範囲選択"))
@@ -79,7 +84,10 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
         public void ReceiveResult(string[] areaMeshCodes, Extent extent,
             PredefinedCityModelPackage availablePackageFlags)
         {
-            // TODO
+            // TODO config周りの実装、CityImportLocalと共通化できないか？
+            this.config.InitWithPackageFlags(availablePackageFlags);
+            this.config.AreaMeshCodes = areaMeshCodes;
+            this.config.Extent = extent;
         }
 
     }

@@ -11,6 +11,7 @@ using PLATEAU.Editor.EditorWindow.ProgressDisplay;
 using PLATEAU.Geometries;
 using PLATEAU.Interop;
 using PLATEAU.Dataset;
+using PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts;
 using PLATEAU.Util;
 using PLATEAU.Util.Async;
 using UnityEditor;
@@ -24,7 +25,6 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
         private readonly CityLoadConfig config = new CityLoadConfig();
         // インポートの処理状況はウィンドウを消しても残しておきたいので static にします。
         private static readonly ProgressDisplayGUI progressGUI = new ProgressDisplayGUI();
-        private bool isAreaSelectComplete;
         private bool foldOutSourceFolderPath = true;
         private SynchronizationContext mainThreadContext;
         private UnityEditor.EditorWindow parentEditorWindow;
@@ -65,31 +65,14 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
             
 
             PlateauEditorStyle.Heading("マップ範囲選択", "num2.png");
+            bool isAreaSelectComplete;
             using (PlateauEditorStyle.VerticalScopeLevel1())
             {
-                if (PlateauEditorStyle.MainButton("範囲選択"))
-                {
-                    string sourcePath = this.config.DatasetSourceConfig.DatasetIdOrSourcePath;
-                    if (!Directory.Exists(sourcePath))
-                    {
-                        EditorUtility.DisplayDialog("PLATEAU SDK", $"入力フォルダが存在しません。\nフォルダを指定してください。", "OK");
-                        return;
-                    }
-
-                    var datasetSourceInitializer = new DatasetSourceConfig(false, sourcePath);
-                    AreaSelectorStarter.Start(datasetSourceInitializer, this, this.config.CoordinateZoneID);
-                    GUIUtility.ExitGUI();
-                }
-                this.isAreaSelectComplete = this.config.AreaMeshCodes != null && this.config.AreaMeshCodes.Length > 0;
-                PlateauEditorStyle.CenterAlignHorizontal(() =>
-                {
-                    string str = this.isAreaSelectComplete ? "範囲選択 : セット済" : "範囲選択 : 未";
-                    PlateauEditorStyle.LabelSizeFit(new GUIContent(str), EditorStyles.label);
-                });
+                isAreaSelectComplete = AreaSelectButton.Draw(this.config.AreaMeshCodes, this.config.DatasetSourceConfig, this, this.config.CoordinateZoneID);
             }
             
             
-            if (this.isAreaSelectComplete)
+            if (isAreaSelectComplete)
             {
                 PlateauEditorStyle.Heading("地物別設定", "num3.png");
                 CityLoadConfigGUI.Draw(this.config);
