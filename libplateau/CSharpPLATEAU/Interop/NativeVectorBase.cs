@@ -5,7 +5,8 @@ using System.Collections.Generic;
 namespace PLATEAU.Interop
 {
     /// <summary>
-    /// <seealso cref="NativeVectorDisposableBase{T}"/>
+    /// C++側の vector を扱う基底クラスです。
+    /// 自動で Dispose したいときは <see cref="NativeVectorDisposableBase{T}"/> を利用してください。
     /// </summary>
     public abstract class NativeVectorBase<T> : INativeVector<T>
     {

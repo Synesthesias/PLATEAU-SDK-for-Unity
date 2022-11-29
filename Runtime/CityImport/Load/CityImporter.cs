@@ -45,7 +45,8 @@ namespace PLATEAU.CityImport.Load
             }
             
             progressDisplay.SetProgress("GMLファイル検索", 10f, "");
-            using var datasetSource = DatasetSource.CreateLocal(sourcePath);
+            // TODO サーバー対応
+            using var datasetSource = DatasetSource.Create(false, sourcePath);
             var datasetAccessor = datasetSource.Accessor;
             var targetGmls = await Task.Run(() => CityFilesCopy.FindTargetGmls(
                 datasetAccessor, config

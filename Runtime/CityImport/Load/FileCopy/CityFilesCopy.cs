@@ -21,7 +21,8 @@ namespace PLATEAU.CityImport.Load.FileCopy
         {
             // TODO 非同期にする
             // 条件に合うGMLファイルを検索して記憶します。
-            var datasetAccessor = DatasetSource.CreateLocal(sourcePath).Accessor;
+            // TODO サーバー対応
+            var datasetAccessor = DatasetSource.Create(false, sourcePath).Accessor;
             var fetchTargetGmls = FindTargetGmls(datasetAccessor, config);
 
             // GMLと関連ファイルをコピーします。

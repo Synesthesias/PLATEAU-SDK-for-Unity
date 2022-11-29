@@ -12,6 +12,10 @@ namespace PLATEAU.Interop
         protected NativeVectorDisposableBase(IntPtr handle) : base(handle)
         {
         }
+        
+        // この実装は NativeVectorBase　と重複しています。
+        // C# 8.0 以降の機能であるインターフェイスのデフォルト実装を使えば重複せず書けそうですが、
+        // Unityの想定バージョンの都合上利用できないため致し方なしです。
 
         public abstract T At(int index);
         public abstract int Length { get; }

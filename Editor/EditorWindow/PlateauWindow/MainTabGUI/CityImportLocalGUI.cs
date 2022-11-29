@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System.IO;
+using System.Threading;
 using PLATEAU.CityImport.AreaSelector;
 using PLATEAU.CityImport.Load;
 using PLATEAU.CityImport.Setting;
@@ -67,7 +68,15 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
             {
                 if (PlateauEditorStyle.MainButton("範囲選択"))
                 {
-                    AreaSelectorStarter.Start(this.config.SourcePathBeforeImport, this, this.config.CoordinateZoneID);
+                    string sourcePath = this.config.SourcePathBeforeImport;
+                    if (!Directory.Exists(sourcePath))
+                    {
+                        EditorUtility.DisplayDialog("PLATEAU SDK", $"入力フォルダが存在しません。\nフォルダを指定してください。", "OK");
+                        return;
+                    }
+
+                    var datasetSourceInitializer = new DatasetSourceInitializer(false, sourcePath);
+                    AreaSelectorStarter.Start(datasetSourceInitializer, this, this.config.CoordinateZoneID);
                     GUIUtility.ExitGUI();
                 }
                 this.isAreaSelectComplete = this.config.AreaMeshCodes != null && this.config.AreaMeshCodes.Length > 0;

@@ -1,15 +1,18 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
+using PLATEAU.CityImport.AreaSelector;
 using PLATEAU.Dataset;
+using PLATEAU.Editor.CityImport.AreaSelector;
 using PLATEAU.Editor.EditorWindow.Common;
 using PLATEAU.Interop;
 using PLATEAU.Network;
 using PLATEAU.Util.Async;
 using UnityEditor;
+using UnityEngine;
 
 namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
 {
-    internal class CityImportRemoteGUI : IEditorDrawable
+    internal class CityImportRemoteGUI : IEditorDrawable, IAreaSelectResultReceiver
     {
         private DatasetSource datasetSource;
         private DatasetAccessor accessor;
@@ -50,7 +53,16 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
             this.selectedDatasetIndex = EditorGUILayout.Popup("データセット", this.selectedDatasetIndex, datasetTitles);
             var dataset = datasets.At(this.selectedDatasetIndex);
             PlateauEditorStyle.MultiLineLabelWithBox($"ID        : {dataset.ID}\nタイトル: {dataset.Title}\n説明    : {dataset.Description}");
-            
+
+            using (PlateauEditorStyle.VerticalScopeLevel1())
+            {
+                if (PlateauEditorStyle.MainButton("範囲選択"))
+                {
+                    var datasetSourceInitializer = new DatasetSourceInitializer(true, dataset.ID);
+                    AreaSelectorStarter.Start(datasetSourceInitializer, this, 9);// TODO zoneID
+                    GUIUtility.ExitGUI();
+                }
+            }
         }
 
         private async Task LoadDatasetAsync()
@@ -62,6 +74,12 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
                 return client.GetDatasetMetadataGroup();
             });
             this.datasetGroupLoaded = true;
+        }
+
+        public void ReceiveResult(string[] areaMeshCodes, Extent extent,
+            PredefinedCityModelPackage availablePackageFlags)
+        {
+            // TODO
         }
 
     }
