@@ -48,6 +48,10 @@ namespace PLATEAU.Dataset
         }
 
         /// <summary>
+        /// <see cref="LocalDatasetAccessor"/> の場合:
+        /// 存在するパッケージ種をフラグ形式で返します。
+        /// 
+        /// <see cref="ServerDatasetAccessor"/> の場合:
         /// <see cref="GetGmlFiles"/> したことのある <see cref="Extent"/> に関して、
         /// 存在するパッケージ種をフラグ形式で返します。
         /// <see cref="GetGmlFiles"/> を実行した後でないと None が返ります。

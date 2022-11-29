@@ -91,8 +91,14 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
         public void ReceiveResult(string[] areaMeshCodes, Extent extent,
             PredefinedCityModelPackage availablePackageFlags)
         {
-            // TODO config周りの実装、CityImportLocalと共通化できないか？
-            this.config.InitWithPackageFlags(availablePackageFlags);
+            // TODO availablePackageFlags は、ローカルモードでは動作しますがサーバーモードでは None になります。
+            //      これは、サーバーからメッシュコードの一覧を受け取る段階では存在するパッケージ種が不明だからです。
+            //      そのため PackageFlags はとりあえず全種類として初期化しています。
+            //      これには存在しないパッケージ種の設定GUIまで表示されるという欠点があります。
+            //      しかしGMLファイルをダウンロードするときにはパッケージ種は分かるわけで、
+            //      工夫すればサーバーに余計な負荷をかけることなしに範囲選択直後のこの段階でもパッケージ種を判別できるかもしれません。
+            // this.config.InitWithPackageFlags(availablePackageFlags);
+            this.config.InitWithPackageFlags((PredefinedCityModelPackage)~0u);
             this.config.AreaMeshCodes = areaMeshCodes;
             this.config.Extent = extent;
         }

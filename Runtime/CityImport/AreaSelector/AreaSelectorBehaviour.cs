@@ -49,7 +49,7 @@ namespace PLATEAU.CityImport.AreaSelector
         {
             RotateSceneViewCameraDown();
             AreaSelectorGUI.Enable(this);
-            GatherMeshCodesInGMLDirectory(this.datasetSourceConfig, out var meshCodes, out var packageFlags);
+            GatherMeshCodes(this.datasetSourceConfig, out var meshCodes, out var packageFlags);
             var drawerObj = new GameObject($"{nameof(AreaSelectGizmosDrawer)}");
             this.gizmosDrawer = drawerObj.AddComponent<AreaSelectGizmosDrawer>();
             this.gizmosDrawer.Init(meshCodes, this.datasetSourceConfig, this.coordinateZoneID, out this.geoReference);
@@ -106,13 +106,14 @@ namespace PLATEAU.CityImport.AreaSelector
             return entireExtent;
         }
 
-        private static void GatherMeshCodesInGMLDirectory(DatasetSourceConfig datasetSourceConfig, out ReadOnlyCollection<MeshCode> meshCodes, out PredefinedCityModelPackage availablePackageFlags)
+        private static void GatherMeshCodes(DatasetSourceConfig datasetSourceConfig, out ReadOnlyCollection<MeshCode> meshCodes, out PredefinedCityModelPackage availablePackageFlags)
         {
             #if UNITY_EDITOR
             EditorUtility.DisplayProgressBar("", "データファイルを検索中です...", 0f);
             #endif
             using var datasetSource = DatasetSource.Create(datasetSourceConfig);
             var accessor = datasetSource.Accessor;
+            // ローカルモードではうまくいきますが、サーバーモードでは Packages は None になります。
             availablePackageFlags = accessor.Packages;
             meshCodes = new ReadOnlyCollection<MeshCode>(accessor.MeshCodes.ToArray());
             if (meshCodes.Count <= 0)
