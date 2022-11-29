@@ -65,13 +65,10 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
             
 
             PlateauEditorStyle.Heading("マップ範囲選択", "num2.png");
-            bool isAreaSelectComplete;
-            using (PlateauEditorStyle.VerticalScopeLevel1())
-            {
-                isAreaSelectComplete = AreaSelectButton.Draw(this.config.AreaMeshCodes, this.config.DatasetSourceConfig, this, this.config.CoordinateZoneID);
-            }
-            
-            
+            bool isAreaSelectComplete = AreaSelectButton.Draw(this.config.AreaMeshCodes, this.config.DatasetSourceConfig,
+                    this, this.config.CoordinateZoneID);
+
+
             if (isAreaSelectComplete)
             {
                 PlateauEditorStyle.Heading("地物別設定", "num3.png");

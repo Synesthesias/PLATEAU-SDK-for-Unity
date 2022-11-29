@@ -19,22 +19,28 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts
         /// </summary>
         public static bool Draw(string[] areaMeshCodes, DatasetSourceConfig datasetSourceConfig, IAreaSelectResultReceiver resultReceiver, int coordinateZoneID)
         {
-            if (PlateauEditorStyle.MainButton("範囲選択"))
-            { 
-                AreaSelectStart(datasetSourceConfig, resultReceiver, coordinateZoneID);
-                GUIUtility.ExitGUI();
-            }
-            
-            bool isAreaSelectComplete = areaMeshCodes != null && areaMeshCodes.Length > 0;
-            PlateauEditorStyle.CenterAlignHorizontal(() =>
+            using (PlateauEditorStyle.VerticalScopeLevel1())
             {
-                string str = isAreaSelectComplete ? "範囲選択 : セット済" : "範囲選択 : 未";
-                PlateauEditorStyle.LabelSizeFit(new GUIContent(str), EditorStyles.label);
-            });
-            return isAreaSelectComplete;
+                // ボタンを表示します。
+                if (PlateauEditorStyle.MainButton("範囲選択"))
+                { 
+                    // ボタンを実行します。
+                    StartAreaSelect(datasetSourceConfig, resultReceiver, coordinateZoneID);
+                    GUIUtility.ExitGUI();
+                }
+            
+                // 範囲選択が済かどうかを表示します。
+                bool isAreaSelectComplete = areaMeshCodes != null && areaMeshCodes.Length > 0;
+                PlateauEditorStyle.CenterAlignHorizontal(() =>
+                {
+                    string str = isAreaSelectComplete ? "範囲選択 : セット済" : "範囲選択 : 未";
+                    PlateauEditorStyle.LabelSizeFit(new GUIContent(str), EditorStyles.label);
+                });
+                return isAreaSelectComplete;
+            }
         }
 
-        private static void AreaSelectStart(DatasetSourceConfig datasetSourceConfig, IAreaSelectResultReceiver resultReceiver, int coordinateZoneID)
+        private static void StartAreaSelect(DatasetSourceConfig datasetSourceConfig, IAreaSelectResultReceiver resultReceiver, int coordinateZoneID)
         {
             if ((!datasetSourceConfig.IsServer) && (!Directory.Exists(datasetSourceConfig.DatasetIdOrSourcePath)))
             {

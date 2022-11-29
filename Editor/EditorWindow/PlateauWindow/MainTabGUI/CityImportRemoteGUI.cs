@@ -5,6 +5,7 @@ using PLATEAU.CityImport.Setting;
 using PLATEAU.Dataset;
 using PLATEAU.Editor.CityImport.AreaSelector;
 using PLATEAU.Editor.EditorWindow.Common;
+using PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts;
 using PLATEAU.Interop;
 using PLATEAU.Network;
 using PLATEAU.Util.Async;
@@ -58,15 +59,13 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
 
             this.config.DatasetSourceConfig ??= new DatasetSourceConfig(true, "");
             this.config.DatasetSourceConfig.DatasetIdOrSourcePath = dataset.ID;
-            
-            using (PlateauEditorStyle.VerticalScopeLevel1())
+
+            bool isAreaSelectComplete = AreaSelectButton.Draw(this.config.AreaMeshCodes, this.config.DatasetSourceConfig,
+                    this, this.config.CoordinateZoneID);
+
+            if (isAreaSelectComplete)
             {
-                if (PlateauEditorStyle.MainButton("範囲選択"))
-                {
-                    var datasetSourceInitializer = new DatasetSourceConfig(true, dataset.ID);
-                    AreaSelectorStarter.Start(datasetSourceInitializer, this, 9);// TODO zoneID
-                    GUIUtility.ExitGUI();
-                }
+                // TODO
             }
         }
 
