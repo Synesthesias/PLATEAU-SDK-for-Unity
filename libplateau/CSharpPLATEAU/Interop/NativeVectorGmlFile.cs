@@ -3,7 +3,7 @@ using PLATEAU.Dataset;
 
 namespace PLATEAU.Interop
 {
-    public class NativeVectorGmlFile : NativeVectorBase<GmlFile>
+    public class NativeVectorGmlFile : NativeVectorDisposableBase<GmlFile>
     {
         private NativeVectorGmlFile(IntPtr ptr) : base(ptr)
         {

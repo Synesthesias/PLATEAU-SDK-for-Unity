@@ -3,11 +3,12 @@ using PLATEAU.Interop;
 
 namespace PLATEAU.Dataset
 {
-    public class DatasetMetadataGroup : PInvokeDisposable
+    public class DatasetMetadataGroup
     {
-        public DatasetMetadataGroup(IntPtr ptr) : base(ptr)
+        public IntPtr Handle { get; }
+        public DatasetMetadataGroup(IntPtr ptr)
         {
-            
+            Handle = ptr;
         }
         
         public static DatasetMetadataGroup Create()
@@ -21,7 +22,6 @@ namespace PLATEAU.Dataset
         {
             get
             {
-                ThrowIfDisposed();
                 return DLLUtil.GetNativeString(Handle, NativeMethods.plateau_dataset_metadata_group_get_id);
             }
         }
@@ -30,7 +30,6 @@ namespace PLATEAU.Dataset
         {
             get
             {
-                ThrowIfDisposed();
                 return DLLUtil.GetNativeString(Handle, NativeMethods.plateau_dataset_metadata_group_get_title);
             }
         }
@@ -45,7 +44,7 @@ namespace PLATEAU.Dataset
             }
         }
 
-        protected override void DisposeNative()
+        public void Dispose()
         {
             var result = NativeMethods.plateau_delete_dataset_metadata_group(Handle);
             DLLUtil.CheckDllError(result);

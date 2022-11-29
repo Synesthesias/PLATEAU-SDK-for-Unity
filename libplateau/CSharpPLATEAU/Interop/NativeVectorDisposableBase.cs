@@ -5,14 +5,12 @@ using System.Collections.Generic;
 namespace PLATEAU.Interop
 {
     /// <summary>
-    /// <seealso cref="NativeVectorDisposableBase{T}"/>
+    /// <seealso cref="NativeVectorBase{T}"/> の自動で NativeDispose する版です。
     /// </summary>
-    public abstract class NativeVectorBase<T> : INativeVector<T>
+    public abstract class NativeVectorDisposableBase<T> : PInvokeDisposable, INativeVector<T>
     {
-        public IntPtr Handle { get; }
-        protected NativeVectorBase(IntPtr handle)
+        protected NativeVectorDisposableBase(IntPtr handle) : base(handle)
         {
-            Handle = handle;
         }
 
         public abstract T At(int index);

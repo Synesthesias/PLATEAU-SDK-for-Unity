@@ -47,6 +47,11 @@ namespace PLATEAU.Dataset
             return maxLod;
         }
 
+        /// <summary>
+        /// <see cref="GetGmlFiles"/> したことのある <see cref="Extent"/> に関して、
+        /// 存在するパッケージ種をフラグ形式で返します。
+        /// <see cref="GetGmlFiles"/> を実行した後でないと None が返ります。
+        /// </summary>
         public PredefinedCityModelPackage Packages =>
             DLLUtil.GetNativeValue<PredefinedCityModelPackage>(Handle,
                 NativeMethods.plateau_i_dataset_accessor_get_packages);
