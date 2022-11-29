@@ -45,7 +45,8 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
 
             this.foldOutSourceFolderPath = PlateauEditorStyle.FoldOut(this.foldOutSourceFolderPath, "入力フォルダ", () =>
             {
-                this.config.SourcePathBeforeImport = this.folderSelector.Draw("フォルダパス");
+                this.config.DatasetSourceConfig ??= new DatasetSourceConfig(false, "");
+                this.config.DatasetSourceConfig.DatasetIdOrSourcePath = this.folderSelector.Draw("フォルダパス");
             });
             
             PlateauEditorStyle.Separator(0);
@@ -68,14 +69,14 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
             {
                 if (PlateauEditorStyle.MainButton("範囲選択"))
                 {
-                    string sourcePath = this.config.SourcePathBeforeImport;
+                    string sourcePath = this.config.DatasetSourceConfig.DatasetIdOrSourcePath;
                     if (!Directory.Exists(sourcePath))
                     {
                         EditorUtility.DisplayDialog("PLATEAU SDK", $"入力フォルダが存在しません。\nフォルダを指定してください。", "OK");
                         return;
                     }
 
-                    var datasetSourceInitializer = new DatasetSourceInitializer(false, sourcePath);
+                    var datasetSourceInitializer = new DatasetSourceConfig(false, sourcePath);
                     AreaSelectorStarter.Start(datasetSourceInitializer, this, this.config.CoordinateZoneID);
                     GUIUtility.ExitGUI();
                 }

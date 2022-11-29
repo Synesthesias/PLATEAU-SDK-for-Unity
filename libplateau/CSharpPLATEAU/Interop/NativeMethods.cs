@@ -1361,7 +1361,7 @@ namespace PLATEAU.Interop
             out MeshCode outMeshCode);
         
         [DllImport(DllName, CharSet = CharSet.Ansi)]
-        internal static extern APIResult plateau_gml_file_fetch(
+        internal static extern APIResult plateau_gml_file_fetch_local(
             [In] IntPtr gmlFileInfoPtr,
             [In] string destinationRootPath,
             [In, Out] IntPtr outGmlFileInfoPtr);
@@ -1730,19 +1730,25 @@ namespace PLATEAU.Interop
             [In, Out] IntPtr refNativeArrayDatasetMetadataGroupPtr);
 
         [DllImport(DllName, CharSet = CharSet.Ansi)]
-        internal static extern APIResult plateau_set_api_server_url(
-            [In] IntPtr handle,
+        internal static extern APIResult plateau_client_set_api_server_url(
+            [In] IntPtr clientPtr,
             [In] string url);
 
         [DllImport(DllName)]
-        internal static extern APIResult plateau_get_api_server_url_size(
-            [In] IntPtr handle,
+        internal static extern APIResult plateau_client_get_api_server_url_size(
+            [In] IntPtr clientPtr,
             out int outUrlSize);
 
         [DllImport(DllName)]
-        internal static extern APIResult plateau_get_api_server_url(
-            [In] IntPtr handle,
+        internal static extern APIResult plateau_client_get_api_server_url(
+            [In] IntPtr clientPtr,
             [In,Out] IntPtr outStrPtr );
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_client_download(
+            [In] IntPtr clientPtr,
+            [In] byte[] destinationDirectoryUtf8,
+            [In] byte[] urlUtf8);
         
     }
 }

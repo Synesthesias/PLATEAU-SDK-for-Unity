@@ -25,7 +25,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         private GeoReference geoReference;
         
         public void Init(
-            ReadOnlyCollection<MeshCode> meshCodes, DatasetSourceInitializer datasetSourceInitializer,
+            ReadOnlyCollection<MeshCode> meshCodes, DatasetSourceConfig datasetSourceConfig,
             int coordinateZoneID, out GeoReference outGeoReference)
         {
 #if UNITY_EDITOR
@@ -57,7 +57,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
                 this.meshCodeDrawers.Add(drawer);
             }
 
-            this.areaLod = new AreaLodController(datasetSourceInitializer, outGeoReference, meshCodes);
+            this.areaLod = new AreaLodController(datasetSourceConfig, outGeoReference, meshCodes);
             this.geoReference = outGeoReference;
 #if UNITY_EDITOR
             EditorUtility.ClearProgressBar();

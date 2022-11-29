@@ -43,7 +43,7 @@ namespace PLATEAU.Tests.TestUtils
                 packageConf.Value.includeTexture = true;
             }
 
-            outConfig.SourcePathBeforeImport = SrcRootDirPath;
+            outConfig.DatasetSourceConfig.DatasetIdOrSourcePath = SrcRootDirPath;
 
             var task = CityImporter.ImportAsync(outConfig, progressDisplay);
             return task;

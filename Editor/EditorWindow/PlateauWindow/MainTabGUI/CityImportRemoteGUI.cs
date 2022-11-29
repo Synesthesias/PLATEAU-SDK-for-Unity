@@ -58,7 +58,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
             {
                 if (PlateauEditorStyle.MainButton("範囲選択"))
                 {
-                    var datasetSourceInitializer = new DatasetSourceInitializer(true, dataset.ID);
+                    var datasetSourceInitializer = new DatasetSourceConfig(true, dataset.ID);
                     AreaSelectorStarter.Start(datasetSourceInitializer, this, 9);// TODO zoneID
                     GUIUtility.ExitGUI();
                 }

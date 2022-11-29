@@ -19,10 +19,10 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         private readonly ConcurrentDictionary<string, PackageToLodDict> meshCodeToPackageLodDict;
         private readonly DatasetSource datasetSource;
 
-        public AreaLodSearcher(DatasetSourceInitializer datasetSourceInitializer)
+        public AreaLodSearcher(DatasetSourceConfig datasetSourceConfig)
         {
             this.meshCodeToPackageLodDict = new ConcurrentDictionary<string, PackageToLodDict>();
-            this.datasetSource = DatasetSource.Create(datasetSourceInitializer);
+            this.datasetSource = DatasetSource.Create(datasetSourceConfig);
         }
         
         

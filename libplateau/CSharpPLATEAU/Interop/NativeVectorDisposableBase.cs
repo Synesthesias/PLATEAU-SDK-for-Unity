@@ -15,7 +15,7 @@ namespace PLATEAU.Interop
         
         // この実装は NativeVectorBase　と重複しています。
         // C# 8.0 以降の機能であるインターフェイスのデフォルト実装を使えば重複せず書けそうですが、
-        // Unityの想定バージョンの都合上利用できないため致し方なしです。
+        // 今のところそのC#バージョンは利用していません。
 
         public abstract T At(int index);
         public abstract int Length { get; }

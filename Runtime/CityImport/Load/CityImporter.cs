@@ -34,19 +34,19 @@ namespace PLATEAU.CityImport.Load
         /// </summary>
         public static async Task ImportAsync(CityLoadConfig config, IProgressDisplay progressDisplay)
         {
-            string sourcePath = config.SourcePathBeforeImport;
+            // string sourcePath = config.SourcePathBeforeImport;
+            var datasetSourceConfig = config.DatasetSourceConfig;
             string destPath = PathUtil.PLATEAUSrcFetchDir;
-            string destFolderName = Path.GetFileName(sourcePath);
+            string destFolderName = datasetSourceConfig.RootDirName;
 
-            if (!Directory.Exists(sourcePath))
+            if ((!datasetSourceConfig.IsServer) && (!Directory.Exists(datasetSourceConfig.DatasetIdOrSourcePath)))
             {
-                Debug.LogError($"インポート元パスが存在しません。 sourcePath = {sourcePath}");
+                Debug.LogError($"インポート元パスが存在しません。 sourcePath = {datasetSourceConfig.DatasetIdOrSourcePath}");
                 return;
             }
             
             progressDisplay.SetProgress("GMLファイル検索", 10f, "");
-            // TODO サーバー対応
-            using var datasetSource = DatasetSource.Create(false, sourcePath);
+            using var datasetSource = DatasetSource.Create(datasetSourceConfig);
             var datasetAccessor = datasetSource.Accessor;
             var targetGmls = await Task.Run(() => CityFilesCopy.FindTargetGmls(
                 datasetAccessor, config
@@ -115,6 +115,7 @@ namespace PLATEAU.CityImport.Load
                 return;
             }
             string gmlName = Path.GetFileName(gmlInfo.Path);
+            // TODO サーバーのときは「ダウンロード中」という表示にする
             progressDisplay.SetProgress(gmlName, 0f, "インポート処理中");
 
             destPath = destPath.Replace('\\', '/');
@@ -129,7 +130,7 @@ namespace PLATEAU.CityImport.Load
             // GMLと関連ファイルをコピーしたので、パスをコピー後のものに更新します。
             // 元パスが　AAA/ルートフォルダ名/udx/パッケージ名/(0個以上のフォルダ)/111.gml　だったとすると、
             // AAAの部分だけ置き換えます。
-            string rootDirName = Path.GetFileName(conf.SourcePathBeforeImport);
+            string rootDirName = Path.GetFileName(conf.DatasetSourceConfig.RootDirName);
             string gmlPathBefore = Path.GetFullPath(gmlInfo.Path).Replace('\\', '/');
             int replaceIndex = gmlPathBefore.LastIndexOf($"{rootDirName}/udx/{gmlInfo.FeatureType}/", StringComparison.Ordinal);
             string pathToReplace = gmlPathBefore.Substring(0, replaceIndex);

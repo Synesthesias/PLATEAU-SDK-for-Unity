@@ -29,12 +29,12 @@ namespace PLATEAU.Network
             get
             {
                 return DLLUtil.GetNativeStringByValue(Handle,
-                    NativeMethods.plateau_get_api_server_url_size,
-                    NativeMethods.plateau_get_api_server_url);
+                    NativeMethods.plateau_client_get_api_server_url_size,
+                    NativeMethods.plateau_client_get_api_server_url);
             }
             set
             {
-                var result = NativeMethods.plateau_set_api_server_url(Handle, value);
+                var result = NativeMethods.plateau_client_set_api_server_url(Handle, value);
                 DLLUtil.CheckDllError(result);
             }
         }

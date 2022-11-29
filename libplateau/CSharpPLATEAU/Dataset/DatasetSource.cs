@@ -22,17 +22,17 @@ namespace PLATEAU.Dataset
         /// </param>
         public static DatasetSource Create(bool isServer, string datasetIdOrSourcePath)
         {
-            return Create(new DatasetSourceInitializer(isServer, datasetIdOrSourcePath));
+            return Create(new DatasetSourceConfig(isServer, datasetIdOrSourcePath));
         }
         
-        public static DatasetSource Create(DatasetSourceInitializer initializer)
+        public static DatasetSource Create(DatasetSourceConfig config)
         {
-            switch (initializer.IsServer)
+            switch (config.IsServer)
             {
                 case true:
-                    return CreateServer(initializer.DatasetIdOrSourcePath);
+                    return CreateServer(config.DatasetIdOrSourcePath);
                 case false:
-                    return CreateLocal(initializer.DatasetIdOrSourcePath);
+                    return CreateLocal(config.DatasetIdOrSourcePath);
                 default:
                     throw new ArgumentOutOfRangeException();
             }

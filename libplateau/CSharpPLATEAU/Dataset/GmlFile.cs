@@ -1,5 +1,7 @@
 using System;
+using System.IO;
 using PLATEAU.Interop;
+using PLATEAU.Network;
 
 namespace PLATEAU.Dataset
 {
@@ -12,6 +14,7 @@ namespace PLATEAU.Dataset
     /// </summary>
     public class GmlFile
     {
+        // private const string APIServerUrl = "https://9tkm2n.deta.dev/";
         public IntPtr Handle { get; private set; }
         private bool isDisposed;
         public GmlFile(IntPtr handle)
@@ -86,12 +89,44 @@ namespace PLATEAU.Dataset
         public GmlFile Fetch(string destinationRootPath)
         {
             ThrowIfDisposed();
+            bool isServer = Path.StartsWith("http");
+            switch (isServer)
+            {
+                case false:
+                    return FetchLocal(destinationRootPath);
+                case true:
+                    return FetchServer(destinationRootPath);
+                default:
+                    throw new ArgumentOutOfRangeException();    
+            }
+            
+        }
+
+        private GmlFile FetchLocal(string destinationRootPath)
+        {
             var result = Create("");
-            var apiResult = NativeMethods.plateau_gml_file_fetch(
+            var apiResult = NativeMethods.plateau_gml_file_fetch_local(
                 Handle, destinationRootPath, result.Handle
             );
             DLLUtil.CheckDllError(apiResult);
             return result;
+        }
+
+        private GmlFile FetchServer(string destinationRootPath)
+        {
+            using (var client = Client.Create())
+            {
+                // client.Url = APIServerUrl;
+                byte[] destinationDirUtf8 = DLLUtil.StrToUtf8Bytes(destinationRootPath);
+                byte[] urlUtf8 = DLLUtil.StrToUtf8Bytes(Path);
+                var result = NativeMethods.plateau_client_download(client.Handle, destinationDirUtf8, urlUtf8);
+                DLLUtil.CheckDllError(result);
+                Console.WriteLine($"GmlFilePath = {Path}"); // TODO
+                string downloadedPath = System.IO.Path.Combine(destinationRootPath, System.IO.Path.GetFileName(Path));
+                if (!File.Exists(downloadedPath)) throw new FileLoadException("Failed to download file.");
+                if (new FileInfo(downloadedPath).Length == 0) throw new FileLoadException("Downloaded file size is zero. Maybe client.Url is wrong.");
+                return Create(downloadedPath);
+            }
         }
 
         public void Dispose()
