@@ -3,11 +3,14 @@ using System.Threading.Tasks;
 using PLATEAU.CityImport.AreaSelector;
 using PLATEAU.CityImport.Setting;
 using PLATEAU.Dataset;
+using PLATEAU.Editor.CityImport;
 using PLATEAU.Editor.CityImport.AreaSelector;
 using PLATEAU.Editor.EditorWindow.Common;
 using PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts;
+using PLATEAU.Editor.EditorWindow.ProgressDisplay;
 using PLATEAU.Interop;
 using PLATEAU.Network;
+using PLATEAU.Util;
 using PLATEAU.Util.Async;
 using UnityEditor;
 using UnityEngine;
@@ -23,12 +26,16 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
         private int selectedDatasetIndex;
         private NativeVectorDatasetMetadataGroup datasetGroups;
         private readonly CityLoadConfig config = new CityLoadConfig();
+        // インポートの処理状況はウィンドウを消しても残しておきたいので static にします。
+        private static ProgressDisplayGUI progressGUI;
         private const string serverUrl = "https://9tkm2n.deta.dev";
         
 
-        public CityImportRemoteGUI()
+        public CityImportRemoteGUI(UnityEditor.EditorWindow parentEditorWindow)
         {
             LoadDatasetAsync().ContinueWithErrorCatch();
+            progressGUI ??= new ProgressDisplayGUI(parentEditorWindow);
+            progressGUI.ParentEditorWindow = parentEditorWindow;
         }
         
         public void Draw()
@@ -65,7 +72,8 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
 
             if (isAreaSelectComplete)
             {
-                // TODO
+                CityLoadConfigGUI.Draw(this.config);
+                ImportButton.Draw(this.config, progressGUI);
             }
         }
 

@@ -14,7 +14,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
             this.importTabGUIArray = new IEditorDrawable[]
             {
                 new CityImportLocalGUI(parentEditorWindow),
-                new CityImportRemoteGUI()
+                new CityImportRemoteGUI(parentEditorWindow)
             };
         }
         

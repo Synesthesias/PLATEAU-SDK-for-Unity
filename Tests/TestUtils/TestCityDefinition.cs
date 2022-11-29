@@ -31,7 +31,7 @@ namespace PLATEAU.Tests.TestUtils
 
         public Task Import(out CityLoadConfig outConfig)
         {
-            var progressDisplay = new ProgressDisplayGUI();
+            var progressDisplay = new ProgressDisplayGUI(null);
             outConfig = new CityLoadConfig();
             // TODO どのパッケージと何が対応するかは要テスト
             uint packageFlagsAll = 0b10000000000000000000000011111111;
