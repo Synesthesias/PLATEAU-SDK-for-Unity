@@ -49,7 +49,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
             using (var groupChangeCheck = new EditorGUI.ChangeCheckScope())
             {
                 var datasetGroupTitles = this.datasetGroups.Select(dg => dg.Title).ToArray();
-                this.selectedDatasetGroupIndex = EditorGUILayout.Popup("データセットグループ", this.selectedDatasetGroupIndex, datasetGroupTitles);
+                this.selectedDatasetGroupIndex = EditorGUILayout.Popup("都道府県", this.selectedDatasetGroupIndex, datasetGroupTitles);
                 if (groupChangeCheck.changed)
                 {
                     this.selectedDatasetIndex = 0;
@@ -57,12 +57,11 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
             }
             
             var datasetGroup = this.datasetGroups.At(this.selectedDatasetGroupIndex);
-            PlateauEditorStyle.MultiLineLabelWithBox($"ID        : {datasetGroup.ID}\nタイトル: {datasetGroup.Title}");
             var datasets = datasetGroup.Datasets;
             var datasetTitles = datasets.Select(d => d.Title).ToArray();
             this.selectedDatasetIndex = EditorGUILayout.Popup("データセット", this.selectedDatasetIndex, datasetTitles);
             var dataset = datasets.At(this.selectedDatasetIndex);
-            PlateauEditorStyle.MultiLineLabelWithBox($"ID        : {dataset.ID}\nタイトル: {dataset.Title}\n説明    : {dataset.Description}");
+            PlateauEditorStyle.MultiLineLabelWithBox($"タイトル: {dataset.Title}\n説明    : {dataset.Description}");
             
             this.config.DatasetSourceConfig ??= new DatasetSourceConfig(true, "");
             var sourceConf = this.config.DatasetSourceConfig;
