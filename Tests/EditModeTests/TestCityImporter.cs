@@ -33,7 +33,7 @@ namespace PLATEAU.Tests.EditModeTests
         public IEnumerator TestImport()
         {
             var cityDefinition = TestCityDefinition.MiniTokyo;
-            yield return cityDefinition.Import(out _).AsIEnumerator();
+            yield return cityDefinition.ImportLocal(out _).AsIEnumerator();
             
             // GMLファイルとその関連ファイルが Assets/StreamingAssets/.PLATEAU にコピーされることを確認します。
             AssertFilesExist(

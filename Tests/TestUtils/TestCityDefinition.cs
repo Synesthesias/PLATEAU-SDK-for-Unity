@@ -29,7 +29,7 @@ namespace PLATEAU.Tests.TestUtils
             AreaMeshCodes = areaMeshCodes;
         }
 
-        public Task Import(out CityLoadConfig outConfig)
+        public Task ImportLocal(out CityLoadConfig outConfig)
         {
             var progressDisplay = new ProgressDisplayGUI(null);
             outConfig = new CityLoadConfig();
@@ -43,7 +43,7 @@ namespace PLATEAU.Tests.TestUtils
                 packageConf.Value.includeTexture = true;
             }
 
-            outConfig.DatasetSourceConfig.DatasetIdOrSourcePath = SrcRootDirPath;
+            outConfig.DatasetSourceConfig = new DatasetSourceConfig(false, SrcRootDirPath);
 
             var task = CityImporter.ImportAsync(outConfig, progressDisplay);
             return task;

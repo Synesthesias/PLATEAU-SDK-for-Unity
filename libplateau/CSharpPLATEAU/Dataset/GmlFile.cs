@@ -104,12 +104,13 @@ namespace PLATEAU.Dataset
 
         private GmlFile FetchLocal(string destinationRootPath)
         {
-            var result = Create("");
+            var resultGml = Create("");
             var apiResult = NativeMethods.plateau_gml_file_fetch_local(
-                Handle, destinationRootPath, result.Handle
+                Handle, destinationRootPath, resultGml.Handle
             );
             DLLUtil.CheckDllError(apiResult);
-            return result;
+            resultGml.Path = resultGml.Path.Replace('\\', '/');
+            return resultGml;
         }
 
         /// <summary>

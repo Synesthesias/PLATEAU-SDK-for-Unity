@@ -118,6 +118,7 @@ namespace PLATEAU.CityImport.Load
             {
                 return;
             }
+            
             string gmlName = Path.GetFileName(gmlInfo.Path);
             // TODO サーバーのときは「ダウンロード中」という表示にする
             progressDisplay.SetProgress(gmlName, 0f, "インポート処理中");
@@ -130,27 +131,6 @@ namespace PLATEAU.CityImport.Load
             var fetchedGmlInfo = await Task.Run(() => gmlInfo.Fetch(destPath));
             // ここでメインスレッドに戻ります。
             progressDisplay.SetProgress(gmlName, 20f, "GMLファイルをロード中");
-
-            // GMLと関連ファイルをコピーしたので、パスをコピー後のものに更新します。
-            // 元パスが　AAA/ルートフォルダ名/udx/パッケージ名/(0個以上のフォルダ)/111.gml　だったとすると、
-            // AAAの部分だけ置き換えます。
-            // string gmlPathAfter;
-            // try
-            // {
-            //     string rootDirName = Path.GetFileName(conf.DatasetSourceConfig.RootDirName);
-            //     if (!gmlInfo.Path.StartsWith("http")) gmlInfo.Path = Path.GetFullPath(gmlInfo.Path);
-            //     string gmlPathBefore = gmlInfo.Path.Replace('\\', '/');
-            //     int replaceIndex = gmlPathBefore.LastIndexOf($"{rootDirName}/udx/{gmlInfo.FeatureType}/",
-            //         StringComparison.Ordinal);
-            //     string pathToReplace = gmlPathBefore.Substring(0, replaceIndex);
-            //     gmlPathAfter = gmlPathBefore.Replace(pathToReplace, destPath);
-            //     gmlInfo.Path = gmlPathAfter;
-            // }
-            // catch (Exception)
-            // {
-            //     progressDisplay.SetProgress(gmlName, 0f, "失敗 : パス計算に失敗しました。");
-            //     throw;
-            // }
             string gmlPathAfter = fetchedGmlInfo.Path;
 
             using var cityModel = await LoadGmlAsync(fetchedGmlInfo);
