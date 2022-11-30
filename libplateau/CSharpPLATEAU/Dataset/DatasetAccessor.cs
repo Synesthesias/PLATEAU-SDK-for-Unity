@@ -59,5 +59,18 @@ namespace PLATEAU.Dataset
         public PredefinedCityModelPackage Packages =>
             DLLUtil.GetNativeValue<PredefinedCityModelPackage>(Handle,
                 NativeMethods.plateau_i_dataset_accessor_get_packages);
+
+        /// <summary>
+        /// gmlのパスが "udx/(featureType)/aaa.gml" として、
+        /// (featureType) の部分を <see cref="PredefinedCityModelPackage"/> に変換します。
+        /// </summary>
+        public static PredefinedCityModelPackage FeatureTypeToPackage(string featureType)
+        {
+            var featureTypeUtf8 = DLLUtil.StrToUtf8Bytes(featureType);
+            var result = NativeMethods.plateau_udx_sub_folder_feature_type_to_package(
+                featureTypeUtf8, out var package);
+            DLLUtil.CheckDllError(result);
+            return package;
+        }
     }
 }

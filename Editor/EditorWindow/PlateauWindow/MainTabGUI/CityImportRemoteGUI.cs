@@ -58,7 +58,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
             var datasetTitles = datasets.Select(d => d.Title).ToArray();
             this.selectedDatasetIndex = EditorGUILayout.Popup("データセット", this.selectedDatasetIndex, datasetTitles);
             var dataset = datasets.At(this.selectedDatasetIndex);
-            PlateauEditorStyle.MultiLineLabelWithBox($"タイトル: {dataset.Title}\n説明    : {dataset.Description}\n最大LOD: {dataset.MaxLOD}");
+            PlateauEditorStyle.MultiLineLabelWithBox($"タイトル: {dataset.Title}\n説明    : {dataset.Description}\n最大LOD: {dataset.MaxLOD}\n種別: {dataset.PackageFlags.ToJapaneseName()}");
             
             this.config.DatasetSourceConfig ??= new DatasetSourceConfig(true, "");
             var sourceConf = this.config.DatasetSourceConfig;
