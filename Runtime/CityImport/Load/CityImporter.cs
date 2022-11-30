@@ -130,13 +130,23 @@ namespace PLATEAU.CityImport.Load
             // GMLと関連ファイルをコピーしたので、パスをコピー後のものに更新します。
             // 元パスが　AAA/ルートフォルダ名/udx/パッケージ名/(0個以上のフォルダ)/111.gml　だったとすると、
             // AAAの部分だけ置き換えます。
-            string rootDirName = Path.GetFileName(conf.DatasetSourceConfig.RootDirName);
-            string gmlPathBefore = Path.GetFullPath(gmlInfo.Path).Replace('\\', '/');
-            int replaceIndex = gmlPathBefore.LastIndexOf($"{rootDirName}/udx/{gmlInfo.FeatureType}/", StringComparison.Ordinal);
-            string pathToReplace = gmlPathBefore.Substring(0, replaceIndex);
-            string gmlPathAfter = gmlPathBefore.Replace(pathToReplace, destPath);
-            gmlInfo.Path = gmlPathAfter;
-            
+            string gmlPathAfter;
+            try
+            {
+                string rootDirName = Path.GetFileName(conf.DatasetSourceConfig.RootDirName);
+                string gmlPathBefore = Path.GetFullPath(gmlInfo.Path).Replace('\\', '/');
+                int replaceIndex = gmlPathBefore.LastIndexOf($"{rootDirName}/udx/{gmlInfo.FeatureType}/",
+                    StringComparison.Ordinal);
+                string pathToReplace = gmlPathBefore.Substring(0, replaceIndex);
+                gmlPathAfter = gmlPathBefore.Replace(pathToReplace, destPath);
+                gmlInfo.Path = gmlPathAfter;
+            }
+            catch (Exception)
+            {
+                progressDisplay.SetProgress(gmlName, 0f, "失敗 : パス計算に失敗しました。");
+                throw;
+            }
+
             using var cityModel = await LoadGmlAsync(gmlInfo);
             if (cityModel == null)
             {

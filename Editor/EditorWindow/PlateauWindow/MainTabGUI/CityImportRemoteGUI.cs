@@ -75,6 +75,8 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
                 CityLoadConfigGUI.Draw(this.config);
                 ImportButton.Draw(this.config, progressGUI);
             }
+            PlateauEditorStyle.Separator(0);
+            progressGUI.Draw();
         }
 
         private async Task LoadDatasetAsync()
