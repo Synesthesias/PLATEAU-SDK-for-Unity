@@ -4,16 +4,13 @@ using PLATEAU.CityImport.AreaSelector;
 using PLATEAU.CityImport.Setting;
 using PLATEAU.Dataset;
 using PLATEAU.Editor.CityImport;
-using PLATEAU.Editor.CityImport.AreaSelector;
 using PLATEAU.Editor.EditorWindow.Common;
 using PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts;
 using PLATEAU.Editor.EditorWindow.ProgressDisplay;
 using PLATEAU.Interop;
 using PLATEAU.Network;
-using PLATEAU.Util;
 using PLATEAU.Util.Async;
 using UnityEditor;
-using UnityEngine;
 
 namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
 {
@@ -61,7 +58,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
             var datasetTitles = datasets.Select(d => d.Title).ToArray();
             this.selectedDatasetIndex = EditorGUILayout.Popup("データセット", this.selectedDatasetIndex, datasetTitles);
             var dataset = datasets.At(this.selectedDatasetIndex);
-            PlateauEditorStyle.MultiLineLabelWithBox($"タイトル: {dataset.Title}\n説明    : {dataset.Description}");
+            PlateauEditorStyle.MultiLineLabelWithBox($"タイトル: {dataset.Title}\n説明    : {dataset.Description}\n最大LOD: {dataset.MaxLOD}");
             
             this.config.DatasetSourceConfig ??= new DatasetSourceConfig(true, "");
             var sourceConf = this.config.DatasetSourceConfig;

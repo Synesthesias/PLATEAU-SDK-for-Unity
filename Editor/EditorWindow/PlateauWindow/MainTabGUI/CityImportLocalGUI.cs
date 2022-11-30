@@ -1,5 +1,4 @@
-﻿using System.Threading;
-using PLATEAU.CityImport.AreaSelector;
+﻿using PLATEAU.CityImport.AreaSelector;
 using PLATEAU.CityImport.Setting;
 using PLATEAU.Editor.CityImport;
 using PLATEAU.Editor.EditorWindow.Common;
@@ -9,9 +8,7 @@ using PLATEAU.Geometries;
 using PLATEAU.Interop;
 using PLATEAU.Dataset;
 using PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts;
-using PLATEAU.Util;
 using UnityEditor;
-using UnityEngine;
 
 namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
 {

@@ -11,12 +11,11 @@ namespace PLATEAU.Dataset
             Handle = ptr;
         }
 
-        public static ServerDatasetAccessor Create()
+        public static ServerDatasetAccessor Create(string datasetId)
         {
-            // TODO PtrOfNewInstance を適用できる場所は他にもあるので置き換える
-            return new ServerDatasetAccessor(DLLUtil.PtrOfNewInstance(
-                NativeMethods.plateau_create_server_dataset_accessor
-            ));
+            var result = NativeMethods.plateau_create_server_dataset_accessor(out var newPtr, datasetId);
+            DLLUtil.CheckDllError(result);
+            return new ServerDatasetAccessor(newPtr);
         }
 
         public NativeVectorDatasetMetadataGroup GetMetadataGroup()

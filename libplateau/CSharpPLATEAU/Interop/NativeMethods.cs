@@ -1677,9 +1677,10 @@ namespace PLATEAU.Interop
         // ***************
         //  server_dataset_accessor_c.cpp
         // ***************
-        [DllImport(DllName)]
+        [DllImport(DllName, CharSet = CharSet.Ansi)]
         internal static extern APIResult plateau_create_server_dataset_accessor(
-            out IntPtr outAccessorPtr);
+            out IntPtr outAccessorPtr,
+            [In] string datasetId);
 
         [DllImport(DllName)]
         internal static extern APIResult plateau_delete_server_dataset_accessor(

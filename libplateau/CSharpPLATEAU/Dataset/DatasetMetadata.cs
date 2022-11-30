@@ -40,6 +40,14 @@ namespace PLATEAU.Dataset
                 return DLLUtil.GetNativeString(Handle, NativeMethods.plateau_dataset_metadata_get_description);
             }
         }
+
+        public int MaxLOD
+        {
+            get
+            {
+                return DLLUtil.GetNativeValue<int>(Handle, NativeMethods.plateau_dataset_metadata_get_max_lod);
+            }
+        }
         
         public void Dispose()
         {
