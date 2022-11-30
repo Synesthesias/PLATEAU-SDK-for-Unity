@@ -63,11 +63,12 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
             this.selectedDatasetIndex = EditorGUILayout.Popup("データセット", this.selectedDatasetIndex, datasetTitles);
             var dataset = datasets.At(this.selectedDatasetIndex);
             PlateauEditorStyle.MultiLineLabelWithBox($"ID        : {dataset.ID}\nタイトル: {dataset.Title}\n説明    : {dataset.Description}");
-
+            
             this.config.DatasetSourceConfig ??= new DatasetSourceConfig(true, "");
-            this.config.DatasetSourceConfig.DatasetIdOrSourcePath = dataset.ID;
+            var sourceConf = this.config.DatasetSourceConfig;
+            sourceConf.DatasetIdOrSourcePath = dataset.ID;
 
-            bool isAreaSelectComplete = AreaSelectButton.Draw(this.config.AreaMeshCodes, this.config.DatasetSourceConfig,
+            bool isAreaSelectComplete = AreaSelectButton.Draw(this.config.AreaMeshCodes, sourceConf,
                     this, this.config.CoordinateZoneID);
 
             if (isAreaSelectComplete)

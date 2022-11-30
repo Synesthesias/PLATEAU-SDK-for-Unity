@@ -39,8 +39,10 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts
                     }
                     // ボタンを実行します。
                     Interlocked.Increment(ref numCurrentRunningTasks);
+                    
                     // ここでインポートします。
                     var task = CityImporter.ImportAsync(config, progressDisplay);
+                    
                     task.ContinueWith((t) => { Interlocked.Decrement(ref numCurrentRunningTasks); });
                     task.ContinueWithErrorCatch();
                 }

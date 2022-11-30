@@ -37,6 +37,10 @@ namespace PLATEAU.CityImport.Load
             // string sourcePath = config.SourcePathBeforeImport;
             var datasetSourceConfig = config.DatasetSourceConfig;
             string destPath = PathUtil.PLATEAUSrcFetchDir;
+            if (config.DatasetSourceConfig.IsServer)
+            {
+                destPath = Path.Combine(destPath, config.DatasetSourceConfig.RootDirName);
+            }
             string destFolderName = datasetSourceConfig.RootDirName;
 
             if ((!datasetSourceConfig.IsServer) && (!Directory.Exists(datasetSourceConfig.DatasetIdOrSourcePath)))
@@ -123,38 +127,40 @@ namespace PLATEAU.CityImport.Load
             
             // GMLと関連ファイルを StreamingAssets にコピーします。
             // ここは別スレッドで実行可能です。
-            await Task.Run(() => gmlInfo.Fetch(destPath));
+            var fetchedGmlInfo = await Task.Run(() => gmlInfo.Fetch(destPath));
             // ここでメインスレッドに戻ります。
             progressDisplay.SetProgress(gmlName, 20f, "GMLファイルをロード中");
 
             // GMLと関連ファイルをコピーしたので、パスをコピー後のものに更新します。
             // 元パスが　AAA/ルートフォルダ名/udx/パッケージ名/(0個以上のフォルダ)/111.gml　だったとすると、
             // AAAの部分だけ置き換えます。
-            string gmlPathAfter;
-            try
-            {
-                string rootDirName = Path.GetFileName(conf.DatasetSourceConfig.RootDirName);
-                string gmlPathBefore = Path.GetFullPath(gmlInfo.Path).Replace('\\', '/');
-                int replaceIndex = gmlPathBefore.LastIndexOf($"{rootDirName}/udx/{gmlInfo.FeatureType}/",
-                    StringComparison.Ordinal);
-                string pathToReplace = gmlPathBefore.Substring(0, replaceIndex);
-                gmlPathAfter = gmlPathBefore.Replace(pathToReplace, destPath);
-                gmlInfo.Path = gmlPathAfter;
-            }
-            catch (Exception)
-            {
-                progressDisplay.SetProgress(gmlName, 0f, "失敗 : パス計算に失敗しました。");
-                throw;
-            }
+            // string gmlPathAfter;
+            // try
+            // {
+            //     string rootDirName = Path.GetFileName(conf.DatasetSourceConfig.RootDirName);
+            //     if (!gmlInfo.Path.StartsWith("http")) gmlInfo.Path = Path.GetFullPath(gmlInfo.Path);
+            //     string gmlPathBefore = gmlInfo.Path.Replace('\\', '/');
+            //     int replaceIndex = gmlPathBefore.LastIndexOf($"{rootDirName}/udx/{gmlInfo.FeatureType}/",
+            //         StringComparison.Ordinal);
+            //     string pathToReplace = gmlPathBefore.Substring(0, replaceIndex);
+            //     gmlPathAfter = gmlPathBefore.Replace(pathToReplace, destPath);
+            //     gmlInfo.Path = gmlPathAfter;
+            // }
+            // catch (Exception)
+            // {
+            //     progressDisplay.SetProgress(gmlName, 0f, "失敗 : パス計算に失敗しました。");
+            //     throw;
+            // }
+            string gmlPathAfter = fetchedGmlInfo.Path;
 
-            using var cityModel = await LoadGmlAsync(gmlInfo);
+            using var cityModel = await LoadGmlAsync(fetchedGmlInfo);
             if (cityModel == null)
             {
                 progressDisplay.SetProgress(gmlName, 0f, "失敗 : GMLファイルのパースに失敗しました。");
                 return;
             }
 
-            string udxFeature = $"/udx/{gmlInfo.FeatureType}/";
+            string udxFeature = $"/udx/{fetchedGmlInfo.FeatureType}/";
             string relativeGmlPathFromFeature =
                 gmlPathAfter.Substring(
                     gmlPathAfter.LastIndexOf(udxFeature,
@@ -164,7 +170,7 @@ namespace PLATEAU.CityImport.Load
             var gmlTrans = new GameObject(gmlObjName).transform;
             
             gmlTrans.parent = rootTrans;
-            var package = gmlInfo.Package;
+            var package = fetchedGmlInfo.Package;
             var packageConf = conf.GetConfigForPackage(package);
             var meshExtractOptions = MeshExtractOptions.DefaultValue();
             meshExtractOptions.ReferencePoint = referencePoint;
