@@ -5,8 +5,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using PLATEAU.CityAdjust;
-using PLATEAU.CityGML;
-using PLATEAU.CityImport.Load.Convert;
+using PLATEAU.CityImport.Load.CityImportProcedure;
 using PLATEAU.CityImport.Load.FileCopy;
 using PLATEAU.CityImport.Setting;
 using PLATEAU.CityInfo;
@@ -23,10 +22,6 @@ namespace PLATEAU.CityImport.Load
     /// </summary>
     internal static class CityImporter
     {
-        // インポート設定のうち、Unityで共通するものです。
-        private const CoordinateSystem meshAxes = CoordinateSystem.EUN;
-        private const float unitScale = 1.0f;
-
         /// <summary>
         /// <see cref="CityImporter"/> クラスのメインメソッドです。
         /// GMLファイルから都市モデルを読み、そのメッシュをUnity向けに変換してシーンに配置します。
@@ -34,7 +29,6 @@ namespace PLATEAU.CityImport.Load
         /// </summary>
         public static async Task ImportAsync(CityLoadConfig config, IProgressDisplay progressDisplay)
         {
-            // string sourcePath = config.SourcePathBeforeImport;
             var datasetSourceConfig = config.DatasetSourceConfig;
             string destPath = PathUtil.PLATEAUSrcFetchDir;
             if (config.DatasetSourceConfig.IsServer)
@@ -76,7 +70,7 @@ namespace PLATEAU.CityImport.Load
             // ルートのGameObjectにコンポーネントを付けます。 
             var cityModelComponent = rootTrans.gameObject.AddComponent<PLATEAUInstancedCityModel>();
             cityModelComponent.GeoReference =
-                new GeoReference(referencePoint, unitScale, meshAxes, config.CoordinateZoneID);
+                new GeoReference(referencePoint, GmlImporter.UnitScale, GmlImporter.MeshAxes, config.CoordinateZoneID);
             
             // GMLファイルを同時に処理する最大数です。
             // 並列数が 4 くらいだと、1つずつ処理するよりも、全部同時に処理するよりも速いという経験則です。
@@ -88,7 +82,7 @@ namespace PLATEAU.CityImport.Load
                 try
                 {
                     // ここはメインスレッドで呼ぶ必要があります。
-                    await ImportGml(gmlInfo, destPath, config, rootTrans, progressDisplay, referencePoint);
+                    await GmlImporter.Import(gmlInfo, destPath, config, rootTrans, progressDisplay, referencePoint);
                 }
                 catch (Exception e)
                 {
@@ -103,102 +97,7 @@ namespace PLATEAU.CityImport.Load
             
             // インポート完了後の処理
             CityDuplicateProcessor.EnableOnlyLargestLODInDuplicate(cityModelComponent);
-            // foreach (var gmlInfo in targetGmls) gmlInfo.Dispose();
         }
-
-        /// <summary>
-        /// GMLファイルを1つインポートします。
-        /// メインスレッドで呼ぶ必要があります。
-        /// </summary>
-        private static async Task ImportGml(GmlFile gmlInfo, string destPath, CityLoadConfig conf,
-            Transform rootTrans, IProgressDisplay progressDisplay,
-            PlateauVector3d referencePoint)
-        {
-            if (gmlInfo.Path == null)
-            {
-                return;
-            }
-            
-            string gmlName = Path.GetFileName(gmlInfo.Path);
-            // TODO サーバーのときは「ダウンロード中」という表示にする
-            progressDisplay.SetProgress(gmlName, 0f, "インポート処理中");
-
-            destPath = destPath.Replace('\\', '/');
-            if (!destPath.EndsWith("/")) destPath += "/";
-            
-            // GMLと関連ファイルを StreamingAssets にコピーします。
-            // ここは別スレッドで実行可能です。
-            var fetchedGmlInfo = await Task.Run(() => gmlInfo.Fetch(destPath));
-            // ここでメインスレッドに戻ります。
-            progressDisplay.SetProgress(gmlName, 20f, "GMLファイルをロード中");
-            string gmlPathAfter = fetchedGmlInfo.Path;
-
-            using var cityModel = await LoadGmlAsync(fetchedGmlInfo);
-            if (cityModel == null)
-            {
-                progressDisplay.SetProgress(gmlName, 0f, "失敗 : GMLファイルのパースに失敗しました。");
-                return;
-            }
-
-            string udxFeature = $"/udx/{fetchedGmlInfo.FeatureType}/";
-            string relativeGmlPathFromFeature =
-                gmlPathAfter.Substring(
-                    gmlPathAfter.LastIndexOf(udxFeature,
-                        StringComparison.Ordinal) + udxFeature.Length);
-            // gmlファイルに対応するゲームオブジェクトの名称は、地物タイプフォルダからの相対パスにします。
-            string gmlObjName = relativeGmlPathFromFeature;
-            var gmlTrans = new GameObject(gmlObjName).transform;
-            
-            gmlTrans.parent = rootTrans;
-            var package = fetchedGmlInfo.Package;
-            var packageConf = conf.GetConfigForPackage(package);
-            var meshExtractOptions = MeshExtractOptions.DefaultValue();
-            meshExtractOptions.ReferencePoint = referencePoint;
-            meshExtractOptions.MeshAxes = meshAxes;
-            meshExtractOptions.MeshGranularity = packageConf.meshGranularity;
-            meshExtractOptions.MaxLOD = packageConf.maxLOD;
-            meshExtractOptions.MinLOD = packageConf.minLOD;
-            meshExtractOptions.ExportAppearance = packageConf.includeTexture;
-            meshExtractOptions.GridCountOfSide = 10; // TODO gridCountOfSideはユーザーが設定できるようにしたほうが良い
-            meshExtractOptions.UnitScale = unitScale;
-            meshExtractOptions.CoordinateZoneID = conf.CoordinateZoneID;
-            meshExtractOptions.ExcludeCityObjectOutsideExtent = ShouldExcludeCityObjectOutsideExtent(package);
-            meshExtractOptions.ExcludeTrianglesOutsideExtent = ShouldExcludeTrianglesOutsideExtent(package);
-            meshExtractOptions.Extent = conf.Extent;
-
-            if (!meshExtractOptions.Validate(out var failureMessage))
-            {
-                progressDisplay.SetProgress(gmlName, 0f, $"失敗 : メッシュ設定に不正な点があります。 : {failureMessage}");
-                return;
-            }
-
-            // ここはメインスレッドで呼ぶ必要があります。
-            bool placingSucceed = await PlateauToUnityModelConverter.ConvertAndPlaceToScene(
-                cityModel, meshExtractOptions, gmlTrans, progressDisplay, gmlName, packageConf.doSetMeshCollider
-            );
-            if (placingSucceed)
-            {
-                progressDisplay.SetProgress(gmlName, 100f, "完了");
-            }
-            else
-            {
-                progressDisplay.SetProgress(gmlName, 0f, "失敗 : モデルの変換または配置に失敗しました。");
-            }
-            
-        }
-
-        private static bool ShouldExcludeCityObjectOutsideExtent(PredefinedCityModelPackage package)
-        {
-            if (package == PredefinedCityModelPackage.Relief) return false;
-            return true;
-        }
-
-        private static bool ShouldExcludeTrianglesOutsideExtent(PredefinedCityModelPackage package)
-        {
-            return !ShouldExcludeCityObjectOutsideExtent(package);
-        }
-        
-        
 
         private static PlateauVector3d CalcCenterPoint(IEnumerable<GmlFile> targetGmls, int coordinateZoneID)
         {
@@ -216,40 +115,6 @@ namespace PLATEAU.CityImport.Load
             return geoReference.Project(centerGeo);
         }
 
-        private static async Task<CityModel> LoadGmlAsync(GmlFile gmlInfo)
-        {
-            string gmlPath = gmlInfo.Path;
-
-            // GMLをパースした結果を返しますが、失敗した時は null を返します。
-            var cityModel = await Task.Run(() => ParseGML(gmlPath));
-
-            return cityModel;
-
-        }
         
-        /// <summary> gmlファイルをパースします。 </summary>
-        /// <param name="gmlAbsolutePath"> gmlファイルのパスです。 </param>
-        /// <returns><see cref="CityGML.CityModel"/> を返します。ロードに問題があった場合は null を返します。</returns>
-        private static CityModel ParseGML(string gmlAbsolutePath)
-        {
-            if (!File.Exists(gmlAbsolutePath))
-            {
-                Debug.LogError($"GMLファイルが存在しません。 : {gmlAbsolutePath}");
-                return null;
-            }
-            var parserParams = new CitygmlParserParams(true, true, false);
-            
-            CityModel cityModel = null;
-            try
-            {
-                cityModel = CityGml.Load(gmlAbsolutePath, parserParams, DllLogCallback.UnityLogCallbacks);
-            }
-            catch (Exception e)
-            {
-                Debug.LogError($"GMLファイルのロードに失敗しました。 : {gmlAbsolutePath}.\n{e.Message}");
-            }
-
-            return cityModel;
-        }
     }
 }

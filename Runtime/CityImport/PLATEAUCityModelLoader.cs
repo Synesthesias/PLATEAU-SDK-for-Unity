@@ -1,5 +1,4 @@
-﻿using System.IO;
-using PLATEAU.CityImport.Setting;
+﻿using PLATEAU.CityImport.Setting;
 using PLATEAU.Interop;
 using PLATEAU.Dataset;
 using UnityEngine;

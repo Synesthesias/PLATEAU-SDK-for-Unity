@@ -5,7 +5,6 @@ using System.IO;
 using System.Linq;
 using PLATEAU.Interop;
 using PLATEAU.Dataset;
-using UnityEngine;
 
 namespace PLATEAU.CityImport.AreaSelector.SceneObjs
 {
