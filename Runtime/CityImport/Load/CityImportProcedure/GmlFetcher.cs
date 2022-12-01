@@ -1,5 +1,11 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 using PLATEAU.Dataset;
+using PLATEAU.Interop;
+using PLATEAU.Network;
 using PLATEAU.Util;
 
 namespace PLATEAU.CityImport.Load.CityImportProcedure
@@ -10,6 +16,9 @@ namespace PLATEAU.CityImport.Load.CityImportProcedure
     /// </summary>
     internal static class GmlFetcher
     {
+        // TODO 下の変数、複数のクラスで重複しているのでまとめる
+        private const string APIServerUrl = "https://9tkm2n.deta.dev";
+        
         /// <summary>
         /// GMLと関連ファイルを StreamingAssets フォルダにコピー(サーバーの場合はダウンロード)します。
         /// </summary>
@@ -29,18 +38,85 @@ namespace PLATEAU.CityImport.Load.CityImportProcedure
             progressDisplay.SetProgress(gmlName, 5f, "ファイルコピー中");
 
             // GMLと関連ファイルを StreamingAssets にコピーします。
-            // 下のメソッドは別スレッドで実行可能です。
-            var fetchedGmlInfo = await Task.Run(() => gmlFile.Fetch(destPath));
-            return fetchedGmlInfo;
+            var fetchedGml = await Task.Run(() => gmlFile.Fetch(destPath));
+            return fetchedGml;
         }
 
-        private static async Task<GmlFile> FetchRemoteAsync(GmlFile gmlFile, string destPath, string gmlName, IProgressDisplay progressDisplay)
+        private static async Task<GmlFile> FetchRemoteAsync(GmlFile remoteGmlFile, string destPath, string gmlName, IProgressDisplay progressDisplay)
         {
             progressDisplay.SetProgress(gmlName, 5f, "ファイルダウンロード中");
-            // GMLと関連ファイルを StreamingAssets にダウンロードします。
-            // 下のメソッドは別スレッドで実行可能です。
-            var fetchedGmlInfo = await Task.Run(() => gmlFile.Fetch(destPath));
-            return fetchedGmlInfo;
+            // GMLファイルを StreamingAssets にダウンロードします。
+            var downloadedGml = await Task.Run(() => remoteGmlFile.Fetch(destPath));
+            // 関連ファイルを取得します。
+            var pathsToDownload = await Task.Run(() =>
+                {
+                    var codelistPaths = downloadedGml.SearchAllCodelistPathsInGml();
+                    var imagePaths = downloadedGml.SearchAllImagePathsInGml();
+                    var pathsToDownload = codelistPaths.ToCSharpArray().Concat(imagePaths.ToCSharpArray());
+                    return pathsToDownload.ToArray();
+                }
+            );
+            // TODO これってライブラリ側に書くべきものでは？
+            string localGmlDirPath = new DirectoryInfo(downloadedGml.Path).Parent?.FullName;
+            if (localGmlDirPath == null) throw new Exception("invalid path.");
+            // 関連ファイルをダウンロードします。
+            using var client = Client.Create();
+            client.Url = APIServerUrl;
+            foreach(string relativePath in pathsToDownload)
+            {
+                // await Task.Run(() =>
+                // {
+                string gmlUrl = remoteGmlFile.Path;
+                string remoteUrlParent = gmlUrl.Substring(0, gmlUrl.LastIndexOf("/", StringComparison.Ordinal));
+                    string remoteUrl = ApplyPeriodPath(Path.Combine(remoteUrlParent, relativePath).Replace('\\', '/'));
+                    string localDest = Path.GetFullPath(Path.Combine(localGmlDirPath, relativePath)).Replace('\\', '/');
+                    string localDestDir = new DirectoryInfo(localDest).Parent?.FullName;
+                    if (localDestDir == null) throw new Exception("invalid path.");
+                    Directory.CreateDirectory(localDestDir);
+                    client.Download(localDestDir, remoteUrl);
+                // });
+            }
+
+            return downloadedGml;
+        }
+
+        /// <summary>
+        /// 引数のURLに含まれる "../" を適用します。
+        /// "./" を除去します。
+        /// パス区切りは "/" であることが前提です。
+        /// </summary>
+        private static string ApplyPeriodPath(string url)
+        {
+            var tokens = url
+                .Split('/')
+                .Where(t => t!=".") // "./" を除去します。
+                .ToArray();
+            while (true)
+            {
+                // "../" を検索します。
+                int doublePeriodIdx = -1;
+                for (int i = 0; i < tokens.Length; i++)
+                {
+                    if (tokens[i] == "..")
+                    {
+                        doublePeriodIdx = i;
+                        break;
+                    }
+                }
+                // なければループを抜けます。
+                if (doublePeriodIdx <= 0) break;
+                
+                // tokens から "../" とその手前のトークンを除いてコピーし、新たな tokens とします。
+                var appliedTokens = new List<string>();
+                for (int i = 0; i < tokens.Length; i++)
+                {
+                    if (i == doublePeriodIdx || i == doublePeriodIdx - 1) continue;
+                    appliedTokens.Add(tokens[i]);
+                }
+
+                tokens = appliedTokens.ToArray();
+            }
+            return string.Join("/", tokens);
         }
     }
 }

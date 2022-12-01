@@ -76,6 +76,7 @@ namespace PLATEAU.Dataset
                         default:
                             names.Add("不明");
                             break;
+                        // throw new NotImplementedException();
                     }
                 }
                 

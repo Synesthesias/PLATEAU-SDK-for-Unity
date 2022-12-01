@@ -1339,27 +1339,27 @@ namespace PLATEAU.Interop
         // ***************
         [DllImport(DllName, CharSet = CharSet.Ansi)]
         internal static extern APIResult plateau_create_gml_file(
-            out IntPtr outGmlFileInfoPtr,
+            out IntPtr outGmlFilePtr,
             [In] string path);
 
         [DllImport(DllName)]
         internal static extern APIResult plateau_delete_gml_file(
-            [In] IntPtr handle);
+            [In] IntPtr gmlFilePtr);
 
         [DllImport(DllName)]
         internal static extern APIResult plateau_gml_file_get_path(
-            [In] IntPtr handle,
+            [In] IntPtr gmlFilePtr,
             out IntPtr strPtr,
             out int strLength);
         
         [DllImport(DllName, CharSet = CharSet.Ansi)]
         internal static extern APIResult plateau_gml_file_set_path(
-            [In] IntPtr gmlFileInfoPtr,
+            [In] IntPtr gmlFilePtr,
             [In] string path);
 
         [DllImport(DllName, CharSet = CharSet.Ansi)]
         internal static extern APIResult plateau_gml_file_get_feature_type_str(
-            [In] IntPtr handle,
+            [In] IntPtr gmlFilePtr,
             out IntPtr strPtr,
             out int strLength);
 
@@ -1370,9 +1370,19 @@ namespace PLATEAU.Interop
         
         [DllImport(DllName, CharSet = CharSet.Ansi)]
         internal static extern APIResult plateau_gml_file_fetch_local(
-            [In] IntPtr gmlFileInfoPtr,
+            [In] IntPtr gmlFilePtr,
             [In] string destinationRootPath,
             [In, Out] IntPtr outGmlFileInfoPtr);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_gml_file_search_all_codelist_paths_in_gml(
+            [In] IntPtr gmlFilePtr,
+            [In,Out] IntPtr refNativeVectorStringPtr);
+        
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_gml_file_search_all_image_paths_in_gml(
+            [In] IntPtr gmlFilePtr,
+            [In,Out] IntPtr refNativeVectorStringPtr);
             
         // ***************
         //  city_model_package_info_c.cpp

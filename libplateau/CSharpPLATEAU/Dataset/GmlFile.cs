@@ -79,6 +79,24 @@ namespace PLATEAU.Dataset
                 return meshCode;
             }
         }
+
+        public NativeVectorString SearchAllCodelistPathsInGml()
+        {
+            var paths = NativeVectorString.Create();
+            var result = NativeMethods.plateau_gml_file_search_all_codelist_paths_in_gml(
+                Handle, paths.Handle);
+            DLLUtil.CheckDllError(result);
+            return paths;
+        }
+        
+        public NativeVectorString SearchAllImagePathsInGml()
+        {
+            var paths = NativeVectorString.Create();
+            var result = NativeMethods.plateau_gml_file_search_all_image_paths_in_gml(
+                Handle, paths.Handle);
+            DLLUtil.CheckDllError(result);
+            return paths;
+        }
         
         /// <summary>
         /// GMLファイルとその関連ファイルをコピーします。
@@ -99,7 +117,6 @@ namespace PLATEAU.Dataset
                 default:
                     throw new ArgumentOutOfRangeException();    
             }
-            
         }
 
         private GmlFile FetchLocal(string destinationRootPath)

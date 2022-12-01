@@ -39,6 +39,15 @@ namespace PLATEAU.Network
             }
         }
 
+        public void Download(string destDirPath, string url)
+        {
+            byte[] destUtf8 = DLLUtil.StrToUtf8Bytes(destDirPath);
+            byte[] urlUtf8 = DLLUtil.StrToUtf8Bytes(url);
+            var result = NativeMethods.plateau_client_download(
+                Handle, destUtf8, urlUtf8);
+            DLLUtil.CheckDllError(result);
+        }
+
         protected override void DisposeNative()
         {
             DLLUtil.ExecNativeVoidFunc(Handle,
