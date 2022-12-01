@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
+using Codice.CM.Common;
 using PLATEAU.CityImport.AreaSelector;
 using PLATEAU.CityImport.Setting;
 using PLATEAU.Dataset;
@@ -7,6 +8,7 @@ using PLATEAU.Editor.CityImport;
 using PLATEAU.Editor.EditorWindow.Common;
 using PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts;
 using PLATEAU.Editor.EditorWindow.ProgressDisplay;
+using PLATEAU.Geometries;
 using PLATEAU.Interop;
 using PLATEAU.Network;
 using PLATEAU.Util.Async;
@@ -63,6 +65,10 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
             this.config.DatasetSourceConfig ??= new DatasetSourceConfig(true, "");
             var sourceConf = this.config.DatasetSourceConfig;
             sourceConf.DatasetIdOrSourcePath = dataset.ID;
+
+            this.config.CoordinateZoneID = EditorGUILayout.Popup(
+                "基準座標系", this.config.CoordinateZoneID - 1,
+                GeoReference.ZoneIdExplanation) + 1; // 番号は 1 スタート
 
             bool isAreaSelectComplete = AreaSelectButton.Draw(this.config.AreaMeshCodes, sourceConf,
                     this, this.config.CoordinateZoneID);
