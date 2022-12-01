@@ -1652,6 +1652,15 @@ namespace PLATEAU.Interop
         // ***************
         //  string_c.cpp
         // ***************
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_create_string(
+            out IntPtr newStringPtr);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_delete_string(
+            [In] IntPtr stringPtr);
+        
         [DllImport(DllName)]
         internal static extern APIResult plateau_string_get_size(
             [In] IntPtr nativeStringPtr,
@@ -1804,7 +1813,8 @@ namespace PLATEAU.Interop
         internal static extern APIResult plateau_client_download(
             [In] IntPtr clientPtr,
             [In] byte[] destinationDirectoryUtf8,
-            [In] byte[] urlUtf8);
+            [In] byte[] urlUtf8,
+            [In,Out] IntPtr refNativeStringPtr);
         
     }
 }

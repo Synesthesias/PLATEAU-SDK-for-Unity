@@ -7,6 +7,7 @@ using PLATEAU.Dataset;
 using PLATEAU.Interop;
 using PLATEAU.Network;
 using PLATEAU.Util;
+using UnityEngine;
 
 namespace PLATEAU.CityImport.Load.CityImportProcedure
 {
@@ -47,6 +48,7 @@ namespace PLATEAU.CityImport.Load.CityImportProcedure
             progressDisplay.SetProgress(gmlName, 5f, "ファイルダウンロード中");
             // GMLファイルを StreamingAssets にダウンロードします。
             var downloadedGml = await Task.Run(() => remoteGmlFile.Fetch(destPath));
+            Debug.Log($"downloaded {remoteGmlFile.Path}");
             // 関連ファイルを取得します。
             var pathsToDownload = await Task.Run(() =>
                 {
@@ -64,8 +66,8 @@ namespace PLATEAU.CityImport.Load.CityImportProcedure
             client.Url = APIServerUrl;
             foreach(string relativePath in pathsToDownload)
             {
-                // await Task.Run(() =>
-                // {
+                await Task.Run(() =>
+                {
                 string gmlUrl = remoteGmlFile.Path;
                 string remoteUrlParent = gmlUrl.Substring(0, gmlUrl.LastIndexOf("/", StringComparison.Ordinal));
                     string remoteUrl = ApplyPeriodPath(Path.Combine(remoteUrlParent, relativePath).Replace('\\', '/'));
@@ -73,8 +75,17 @@ namespace PLATEAU.CityImport.Load.CityImportProcedure
                     string localDestDir = new DirectoryInfo(localDest).Parent?.FullName;
                     if (localDestDir == null) throw new Exception("invalid path.");
                     Directory.CreateDirectory(localDestDir);
-                    client.Download(localDestDir, remoteUrl);
-                // });
+                    try
+                    {
+                        client.Download(localDestDir, remoteUrl);
+                        Debug.Log($"Downloaded {remoteUrl}");
+                    }
+                    catch (FileLoadException)
+                    {
+                        Debug.LogError($"Failed to download file: {remoteUrl}");
+                    }
+                    
+                });
             }
 
             return downloadedGml;

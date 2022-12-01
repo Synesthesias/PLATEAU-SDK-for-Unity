@@ -19,6 +19,17 @@ namespace PLATEAU.Interop
         {
             Handle = handle;
         }
+
+        public static NativeString Create()
+        {
+            var ptr = DLLUtil.PtrOfNewInstance(NativeMethods.plateau_create_string);
+            return new NativeString(ptr);
+        }
+
+        public void Dispose()
+        {
+            DLLUtil.ExecNativeVoidFunc(Handle, NativeMethods.plateau_delete_string);
+        }
         
         public override string ToString()
         {

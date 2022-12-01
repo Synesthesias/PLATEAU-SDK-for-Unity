@@ -154,13 +154,8 @@ namespace PLATEAU.Dataset
             using (var client = Client.Create())
             {
                 client.Url = APIServerUrl;
-                byte[] destinationDirUtf8 = DLLUtil.StrToUtf8Bytes(destDirPath);
-                byte[] urlUtf8 = DLLUtil.StrToUtf8Bytes(Path);
-                var result = NativeMethods.plateau_client_download(client.Handle, destinationDirUtf8, urlUtf8);
-                DLLUtil.CheckDllError(result);
-                if (!File.Exists(destPath)) throw new FileLoadException("Failed to download file.");
-                if (new FileInfo(destPath).Length == 0) throw new FileLoadException("Downloaded file size is zero. Maybe client.Url is wrong.");
-                return Create(destPath);
+                string downloadedPath = client.Download(destDirPath, Path);
+                return Create(downloadedPath);
             }
         }
 
