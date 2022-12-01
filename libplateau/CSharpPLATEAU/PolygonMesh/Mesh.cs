@@ -151,8 +151,7 @@ namespace PLATEAU.PolygonMesh
         /// </summary>
         public void Dispose()
         {
-            var result = NativeMethods.plateau_delete_mesh(Handle);
-            DLLUtil.CheckDllError(result);
+            DLLUtil.ExecNativeVoidFunc(Handle, NativeMethods.plateau_delete_mesh);
         }
 
         public void MarkInvalid()

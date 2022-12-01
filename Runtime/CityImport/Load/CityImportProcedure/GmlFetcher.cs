@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using PLATEAU.Dataset;
-using PLATEAU.Interop;
 using PLATEAU.Network;
 using PLATEAU.Util;
 using UnityEngine;
@@ -45,7 +44,7 @@ namespace PLATEAU.CityImport.Load.CityImportProcedure
 
         private static async Task<GmlFile> FetchRemoteAsync(GmlFile remoteGmlFile, string destPath, string gmlName, IProgressDisplay progressDisplay)
         {
-            progressDisplay.SetProgress(gmlName, 5f, "ファイルダウンロード中");
+            progressDisplay.SetProgress(gmlName, 5f, $"ダウンロード中 :{gmlName}");
             // GMLファイルを StreamingAssets にダウンロードします。
             var downloadedGml = await Task.Run(() => remoteGmlFile.Fetch(destPath));
             Debug.Log($"downloaded {remoteGmlFile.Path}");
@@ -58,18 +57,18 @@ namespace PLATEAU.CityImport.Load.CityImportProcedure
                     return pathsToDownload.ToArray();
                 }
             );
-            // TODO これってライブラリ側に書くべきものでは？
             string localGmlDirPath = new DirectoryInfo(downloadedGml.Path).Parent?.FullName;
             if (localGmlDirPath == null) throw new Exception("invalid path.");
             // 関連ファイルをダウンロードします。
             using var client = Client.Create();
             client.Url = APIServerUrl;
-            foreach(string relativePath in pathsToDownload)
+            for(int i=0; i<pathsToDownload.Length; i++)
             {
+                string relativePath = pathsToDownload[i];
                 await Task.Run(() =>
                 {
-                string gmlUrl = remoteGmlFile.Path;
-                string remoteUrlParent = gmlUrl.Substring(0, gmlUrl.LastIndexOf("/", StringComparison.Ordinal));
+                    string gmlUrl = remoteGmlFile.Path;
+                    string remoteUrlParent = gmlUrl.Substring(0, gmlUrl.LastIndexOf("/", StringComparison.Ordinal));
                     string remoteUrl = ApplyPeriodPath(Path.Combine(remoteUrlParent, relativePath).Replace('\\', '/'));
                     string localDest = Path.GetFullPath(Path.Combine(localGmlDirPath, relativePath)).Replace('\\', '/');
                     string localDestDir = new DirectoryInfo(localDest).Parent?.FullName;
@@ -77,6 +76,7 @@ namespace PLATEAU.CityImport.Load.CityImportProcedure
                     Directory.CreateDirectory(localDestDir);
                     try
                     {
+                        progressDisplay.SetProgress(gmlName, 6f, $"ダウンロード中 : [{i+1} / {pathsToDownload.Length}] {Path.GetFileName(remoteUrl)}");
                         client.Download(localDestDir, remoteUrl);
                         Debug.Log($"Downloaded {remoteUrl}");
                     }
@@ -84,8 +84,9 @@ namespace PLATEAU.CityImport.Load.CityImportProcedure
                     {
                         Debug.LogError($"Failed to download file: {remoteUrl}");
                     }
-                    
+
                 });
+                progressDisplay.SetProgress(gmlName, 7f, $"ダウンロード完了");
             }
 
             return downloadedGml;

@@ -104,8 +104,7 @@ namespace PLATEAU.Geometries
         public void Dispose()
         {
             if (this.isDisposed) return;
-            var result = NativeMethods.plateau_delete_geo_reference(this.handle);
-            DLLUtil.CheckDllError(result);
+            DLLUtil.ExecNativeVoidFunc(Handle, NativeMethods.plateau_delete_geo_reference);
             GC.SuppressFinalize(this);
             this.isDisposed = true;
         }

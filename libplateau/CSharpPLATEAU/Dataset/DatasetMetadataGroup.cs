@@ -46,8 +46,7 @@ namespace PLATEAU.Dataset
 
         public void Dispose()
         {
-            var result = NativeMethods.plateau_delete_dataset_metadata_group(Handle);
-            DLLUtil.CheckDllError(result);
+            DLLUtil.ExecNativeVoidFunc(Handle, NativeMethods.plateau_delete_dataset_metadata_group);
         }
     }
 }

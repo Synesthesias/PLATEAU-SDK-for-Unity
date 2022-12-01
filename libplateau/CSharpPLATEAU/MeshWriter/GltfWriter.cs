@@ -47,8 +47,7 @@ namespace PLATEAU.MeshWriter
         public void Dispose()
         {
             if (this.isDisposed) return;
-            var result = NativeMethods.plateau_delete_gltf_writer(this.handle);
-            DLLUtil.CheckDllError(result);
+            DLLUtil.ExecNativeVoidFunc(this.handle, NativeMethods.plateau_delete_gltf_writer);
             GC.SuppressFinalize(this);
             this.isDisposed = true;
         }

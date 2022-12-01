@@ -98,7 +98,7 @@ namespace PLATEAU.CityImport.Load.CityImportProcedure
         
         private static async Task<CityModel> LoadGmlAsync(GmlFile gmlInfo)
         {
-            string gmlPath = gmlInfo.Path;
+            string gmlPath = gmlInfo.Path.Replace('\\', '/');
 
             // GMLをパースした結果を返しますが、失敗した時は null を返します。
             var cityModel = await Task.Run(() => ParseGML(gmlPath));
@@ -126,7 +126,7 @@ namespace PLATEAU.CityImport.Load.CityImportProcedure
             }
             catch (Exception e)
             {
-                Debug.LogError($"GMLファイルのロードに失敗しました。 : {gmlAbsolutePath}.\n{e.Message}");
+                Debug.LogError($"GMLファイルのロードに失敗しました。 : {gmlAbsolutePath}.\n{e.Message}\n{e.StackTrace}");
             }
 
             return cityModel;

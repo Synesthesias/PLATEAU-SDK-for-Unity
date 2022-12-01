@@ -162,8 +162,7 @@ namespace PLATEAU.Dataset
         public void Dispose()
         {
             this.isDisposed = true;
-            var result = NativeMethods.plateau_delete_gml_file(Handle);
-            DLLUtil.CheckDllError(result);
+            DLLUtil.ExecNativeVoidFunc(Handle, NativeMethods.plateau_delete_gml_file);
         }
 
         private void ThrowIfDisposed()

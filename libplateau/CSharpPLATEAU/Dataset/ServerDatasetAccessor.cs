@@ -67,7 +67,6 @@ namespace PLATEAU.Dataset
 
         public void Dispose()
         {
-            // TODO ExecNativeVoidFunc を適用できる箇所は他にもあるので置き換える
             DLLUtil.ExecNativeVoidFunc(Handle, NativeMethods.plateau_delete_server_dataset_accessor);
         }
     }
