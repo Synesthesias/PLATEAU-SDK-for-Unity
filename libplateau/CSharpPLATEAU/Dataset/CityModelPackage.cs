@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace PLATEAU.Dataset
 {
@@ -28,32 +29,62 @@ namespace PLATEAU.Dataset
 
     public static class PredefinedCityModelPackageExtension
     {
+        /// <summary>
+        /// Package を日本語名にして返します。
+        /// Package として複数のフラグが立っている場合、それらの日本語名を "," で繋いで返します。
+        /// </summary>
         public static string ToJapaneseName(this PredefinedCityModelPackage package)
         {
-            switch (package)
+            ulong flags = (ulong)package;
+            if (flags == 0) return "なし";
+            int i = 0;
+            var names = new List<string>();
+            while (flags != 0)
             {
-                case PredefinedCityModelPackage.Building:
-                    return "建築物";
-                case PredefinedCityModelPackage.Road:
-                    return "道路";
-                case PredefinedCityModelPackage.UrbanPlanningDecision:
-                    return "都市計画決定情報";
-                case PredefinedCityModelPackage.LandUse:
-                    return "土地利用";
-                case PredefinedCityModelPackage.CityFurniture:
-                    return "都市設備";
-                case PredefinedCityModelPackage.Vegetation:
-                    return "植生";
-                case PredefinedCityModelPackage.Relief:
-                    return "土地起伏";
-                case PredefinedCityModelPackage.DisasterRisk:
-                    return "災害リスク";
-                case PredefinedCityModelPackage.Unknown:
-                    return "その他";
-                case PredefinedCityModelPackage.None:
-                default:
-                    throw new NotImplementedException();
+                var flag = (PredefinedCityModelPackage)((flags & 1) << i);
+                if (flag != 0)
+                {
+                    switch (flag)
+                    {
+                        case PredefinedCityModelPackage.Building:
+                            names.Add( "建築物");
+                            break;
+                        case PredefinedCityModelPackage.Road:
+                            names.Add( "道路");
+                            break;
+                        case PredefinedCityModelPackage.UrbanPlanningDecision:
+                            names.Add( "都市計画決定情報");
+                            break;
+                        case PredefinedCityModelPackage.LandUse:
+                            names.Add( "土地利用");
+                            break;
+                        case PredefinedCityModelPackage.CityFurniture:
+                            names.Add( "都市設備");
+                            break;
+                        case PredefinedCityModelPackage.Vegetation:
+                            names.Add( "植生");
+                            break;
+                        case PredefinedCityModelPackage.Relief:
+                            names.Add( "土地起伏");
+                            break;
+                        case PredefinedCityModelPackage.DisasterRisk:
+                            names.Add( "災害リスク");
+                            break;
+                        case PredefinedCityModelPackage.Unknown:
+                            names.Add( "その他");
+                            break;
+                        default:
+                            names.Add("不明");
+                            break;
+                        // throw new NotImplementedException();
+                    }
+                }
+                
+                flags >>= 1;
+                i++;
             }
+
+            return string.Join(", ", names);
         }
     }
 }

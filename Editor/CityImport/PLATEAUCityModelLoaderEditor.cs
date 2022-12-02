@@ -24,7 +24,7 @@ namespace PLATEAU.Editor.CityImport
                 using (PlateauEditorStyle.VerticalScopeLevel1())
                 {
                     EditorGUILayout.LabelField("インポート前パス:");
-                    PlateauEditorStyle.MultiLineLabelWithBox(loader.SourcePathBeforeImport);
+                    PlateauEditorStyle.MultiLineLabelWithBox(loader.DatasetSourceConfig.DatasetIdOrSourcePath);
                     EditorGUILayout.LabelField("インポート後パス:");
                     PlateauEditorStyle.MultiLineLabelWithBox(loader.SourcePathAfterImport);
                     EditorGUILayout.LabelField("地域メッシュコード");

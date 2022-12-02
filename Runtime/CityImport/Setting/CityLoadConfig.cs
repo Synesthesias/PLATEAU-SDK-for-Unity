@@ -15,7 +15,7 @@ namespace PLATEAU.CityImport.Setting
     internal class CityLoadConfig : ISerializationCallbackReceiver
     {
         // 都市モデル読み込みの全体設定です。
-        [SerializeField] private string sourcePathBeforeImport;
+        [SerializeField] private DatasetSourceConfig datasetSourceConfig;
         [SerializeField] private string sourcePathAfterImport;
         [SerializeField] private string[] areaMeshCodes;
         [SerializeField] private int coordinateZoneID = 9;
@@ -94,10 +94,10 @@ namespace PLATEAU.CityImport.Setting
             return foundGmls;
         }
 
-        public string SourcePathBeforeImport
+        public DatasetSourceConfig DatasetSourceConfig
         {
-            get => this.sourcePathBeforeImport;
-            set => this.sourcePathBeforeImport = value;
+            get => this.datasetSourceConfig;
+            set => this.datasetSourceConfig = value;
         }
 
         public string SourcePathAfterImport

@@ -1,5 +1,4 @@
-﻿using System.IO;
-using PLATEAU.CityImport.Setting;
+﻿using PLATEAU.CityImport.Setting;
 using PLATEAU.Interop;
 using PLATEAU.Dataset;
 using UnityEngine;
@@ -23,28 +22,27 @@ namespace PLATEAU.CityImport
         /// <summary>
         /// このコンポーネントが付いたゲームオブジェクトをシーンに生成します。
         /// </summary>
-        public static GameObject Create(string sourcePathBeforeImport)
+        public static GameObject Create(DatasetSourceConfig datasetSourceConfig)
         {
-            string objName = Path.GetFileName(sourcePathBeforeImport);
+            string objName = datasetSourceConfig.RootDirName;
             var obj = new GameObject(objName);
             var loader = obj.AddComponent<PLATEAUCityModelLoader>();
-            loader.Init(sourcePathBeforeImport);
-            Debug.Log(loader.CityLoadConfig.SourcePathBeforeImport);
-            #if UNITY_EDITOR
+            loader.Init(datasetSourceConfig);
+#if UNITY_EDITOR
             EditorSceneManager.MarkSceneDirty(SceneManager.GetActiveScene());
             #endif
             return obj;
         }
 
-        private void Init(string sourcePathBeforeImportArg)
+        private void Init(DatasetSourceConfig arg)
         {
-            SourcePathBeforeImport = sourcePathBeforeImportArg;
+            DatasetSourceConfig = arg;
         }
 
-        public string SourcePathBeforeImport
+        public DatasetSourceConfig DatasetSourceConfig
         {
-            get => CityLoadConfig.SourcePathBeforeImport;
-            set => CityLoadConfig.SourcePathBeforeImport = value;
+            get => CityLoadConfig.DatasetSourceConfig;
+            private set => CityLoadConfig.DatasetSourceConfig = value;
         }
 
         public string SourcePathAfterImport

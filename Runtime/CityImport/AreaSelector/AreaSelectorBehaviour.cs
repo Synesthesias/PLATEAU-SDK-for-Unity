@@ -21,7 +21,7 @@ namespace PLATEAU.CityImport.AreaSelector
     internal class AreaSelectorBehaviour : MonoBehaviour
     {
         [SerializeField] private string prevScenePath;
-        [SerializeField] private string dataSourcePath;
+        [SerializeField] private DatasetSourceConfig datasetSourceConfig;
         private AreaSelectGizmosDrawer gizmosDrawer;
         private IAreaSelectResultReceiver areaSelectResultReceiver;
         private PredefinedCityModelPackage availablePackageFlags;
@@ -33,11 +33,11 @@ namespace PLATEAU.CityImport.AreaSelector
 
         public static bool IsAreaSelectEnabled { get; set; }
 
-        public void Init(string prevScenePathArg, string dataSourcePathArg, IAreaSelectResultReceiver areaSelectResultReceiverArg, int coordinateZoneIDArg)
+        public void Init(string prevScenePathArg, DatasetSourceConfig datasetSourceConfigArg, IAreaSelectResultReceiver areaSelectResultReceiverArg, int coordinateZoneIDArg)
         {
             IsAreaSelectEnabled = true;
             this.prevScenePath = prevScenePathArg;
-            this.dataSourcePath = dataSourcePathArg;
+            this.datasetSourceConfig = datasetSourceConfigArg;
             this.areaSelectResultReceiver = areaSelectResultReceiverArg;
             this.coordinateZoneID = coordinateZoneIDArg;
             #if UNITY_EDITOR
@@ -49,10 +49,10 @@ namespace PLATEAU.CityImport.AreaSelector
         {
             RotateSceneViewCameraDown();
             AreaSelectorGUI.Enable(this);
-            GatherMeshCodesInGMLDirectory(this.dataSourcePath, out var meshCodes, out var packageFlags);
+            GatherMeshCodes(this.datasetSourceConfig, out var meshCodes, out var packageFlags);
             var drawerObj = new GameObject($"{nameof(AreaSelectGizmosDrawer)}");
             this.gizmosDrawer = drawerObj.AddComponent<AreaSelectGizmosDrawer>();
-            this.gizmosDrawer.Init(meshCodes, this.dataSourcePath, this.coordinateZoneID, out this.geoReference);
+            this.gizmosDrawer.Init(meshCodes, this.datasetSourceConfig, this.coordinateZoneID, out this.geoReference);
             this.availablePackageFlags = packageFlags;
             var entireExtent = CalcExtentCoversAllMeshCodes(meshCodes);
             this.mapLoader = new GSIMapLoaderZoomSwitch(this.geoReference, entireExtent);
@@ -106,13 +106,14 @@ namespace PLATEAU.CityImport.AreaSelector
             return entireExtent;
         }
 
-        private static void GatherMeshCodesInGMLDirectory(string sourcePath, out ReadOnlyCollection<MeshCode> meshCodes, out PredefinedCityModelPackage availablePackageFlags)
+        private static void GatherMeshCodes(DatasetSourceConfig datasetSourceConfig, out ReadOnlyCollection<MeshCode> meshCodes, out PredefinedCityModelPackage availablePackageFlags)
         {
             #if UNITY_EDITOR
             EditorUtility.DisplayProgressBar("", "データファイルを検索中です...", 0f);
             #endif
-            using var datasetSource = DatasetSource.CreateLocal(sourcePath);
+            using var datasetSource = DatasetSource.Create(datasetSourceConfig);
             var accessor = datasetSource.Accessor;
+            // ローカルモードではうまくいきますが、サーバーモードでは Packages は None になります。
             availablePackageFlags = accessor.Packages;
             meshCodes = new ReadOnlyCollection<MeshCode>(accessor.MeshCodes.ToArray());
             if (meshCodes.Count <= 0)

@@ -315,6 +315,7 @@ namespace PLATEAU.Interop
             {
                 throw new ArgumentException($"{nameof(strByteSize)} should be non-negative number. Actual is {strByteSize} .");
             }
+            if (strPtr == IntPtr.Zero) throw new NullReferenceException();
             var data = new List<byte>(strByteSize);
             for (int i = 0; i < strByteSize; i++)
             {

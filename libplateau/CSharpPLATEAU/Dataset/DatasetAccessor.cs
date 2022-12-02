@@ -47,8 +47,30 @@ namespace PLATEAU.Dataset
             return maxLod;
         }
 
+        /// <summary>
+        /// <see cref="LocalDatasetAccessor"/> の場合:
+        /// 存在するパッケージ種をフラグ形式で返します。
+        /// 
+        /// <see cref="ServerDatasetAccessor"/> の場合:
+        /// <see cref="GetGmlFiles"/> したことのある <see cref="Extent"/> に関して、
+        /// 存在するパッケージ種をフラグ形式で返します。
+        /// <see cref="GetGmlFiles"/> を実行した後でないと None が返ります。
+        /// </summary>
         public PredefinedCityModelPackage Packages =>
             DLLUtil.GetNativeValue<PredefinedCityModelPackage>(Handle,
                 NativeMethods.plateau_i_dataset_accessor_get_packages);
+
+        /// <summary>
+        /// gmlのパスが "udx/(featureType)/aaa.gml" として、
+        /// (featureType) の部分を <see cref="PredefinedCityModelPackage"/> に変換します。
+        /// </summary>
+        public static PredefinedCityModelPackage FeatureTypeToPackage(string featureType)
+        {
+            var featureTypeUtf8 = DLLUtil.StrToUtf8Bytes(featureType);
+            var result = NativeMethods.plateau_udx_sub_folder_feature_type_to_package(
+                featureTypeUtf8, out var package);
+            DLLUtil.CheckDllError(result);
+            return package;
+        }
     }
 }

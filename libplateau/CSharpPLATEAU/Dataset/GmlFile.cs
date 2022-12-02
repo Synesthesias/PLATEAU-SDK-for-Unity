@@ -1,5 +1,7 @@
 using System;
+using System.IO;
 using PLATEAU.Interop;
+using PLATEAU.Network;
 
 namespace PLATEAU.Dataset
 {
@@ -34,12 +36,12 @@ namespace PLATEAU.Dataset
         {
             get
             {
-                // ThrowIfDisposed();
+                ThrowIfDisposed();
                 return DLLUtil.GetNativeString(Handle, NativeMethods.plateau_gml_file_get_path);
             }
             set
             {
-                // ThrowIfDisposed();
+                ThrowIfDisposed();
                 var result = NativeMethods.plateau_gml_file_set_path(
                     Handle, value);
                 DLLUtil.CheckDllError(result);
@@ -76,6 +78,24 @@ namespace PLATEAU.Dataset
                 return meshCode;
             }
         }
+
+        public NativeVectorString SearchAllCodelistPathsInGml()
+        {
+            var paths = NativeVectorString.Create();
+            var result = NativeMethods.plateau_gml_file_search_all_codelist_paths_in_gml(
+                Handle, paths.Handle);
+            DLLUtil.CheckDllError(result);
+            return paths;
+        }
+        
+        public NativeVectorString SearchAllImagePathsInGml()
+        {
+            var paths = NativeVectorString.Create();
+            var result = NativeMethods.plateau_gml_file_search_all_image_paths_in_gml(
+                Handle, paths.Handle);
+            DLLUtil.CheckDllError(result);
+            return paths;
+        }
         
         /// <summary>
         /// GMLファイルとその関連ファイルをコピーします。
@@ -86,19 +106,62 @@ namespace PLATEAU.Dataset
         public GmlFile Fetch(string destinationRootPath)
         {
             ThrowIfDisposed();
-            var result = Create("");
-            var apiResult = NativeMethods.plateau_gml_file_fetch(
-                Handle, destinationRootPath, result.Handle
+            bool isServer = Path.StartsWith("http");
+            switch (isServer)
+            {
+                case false:
+                    return FetchLocal(destinationRootPath);
+                case true:
+                    return FetchServer(destinationRootPath);
+                default:
+                    throw new ArgumentOutOfRangeException();    
+            }
+        }
+
+        private GmlFile FetchLocal(string destinationRootPath)
+        {
+            var resultGml = Create("");
+            var apiResult = NativeMethods.plateau_gml_file_fetch_local(
+                Handle, destinationRootPath, resultGml.Handle
             );
             DLLUtil.CheckDllError(apiResult);
-            return result;
+            resultGml.Path = resultGml.Path.Replace('\\', '/');
+            return resultGml;
+        }
+
+        /// <summary>
+        /// サーバーからGMLファイルをダウンロードします。
+        /// </summary>
+        /// <param name="destinationRootPath">
+        /// ダウンロード先の基準パスです。
+        /// 実際のダウンロード先は、このパスに "/udx/(種別ディレクトリ)/(0個以上のディレクトリ)/(gmlファイル名)" を追加したものになります。
+        /// この追加分のパスは、接続先URLに含まれるものとします。 
+        /// </param>
+        /// <returns>ダウンロード後のGMLファイルの情報を返します。</returns>
+        private GmlFile FetchServer(string destinationRootPath)
+        {
+            // "./udx/" で始まる相対パスです。
+            int udxIdx = Path.LastIndexOf("/udx/", StringComparison.Ordinal);
+            if (udxIdx < 0) throw new InvalidDataException($"Path should contain '/udx/' but it does not. Path = {Path}");
+            string relativePath = "." + Path.Substring(Path.LastIndexOf("/udx/", StringComparison.Ordinal));
+            
+            string destPath = System.IO.Path.Combine(destinationRootPath, relativePath).Replace('\\', '/');
+            string destDirPath = new DirectoryInfo(destPath).Parent?.FullName.Replace('\\', '/');
+            if (destDirPath == null) throw new InvalidDataException("Invalid path.");
+            Directory.CreateDirectory(destDirPath);
+            
+            using (var client = Client.Create())
+            {
+                client.Url = NetworkConfig.MockServerURL;
+                string downloadedPath = client.Download(destDirPath, Path);
+                return Create(downloadedPath);
+            }
         }
 
         public void Dispose()
         {
             this.isDisposed = true;
-            var result = NativeMethods.plateau_delete_gml_file(Handle);
-            DLLUtil.CheckDllError(result);
+            DLLUtil.ExecNativeVoidFunc(Handle, NativeMethods.plateau_delete_gml_file);
         }
 
         private void ThrowIfDisposed()

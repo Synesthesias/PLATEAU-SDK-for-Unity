@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using PLATEAU.Interop;
 using PLATEAU.Dataset;
-using UnityEngine;
 
 namespace PLATEAU.CityImport.AreaSelector.SceneObjs
 {
@@ -19,10 +16,10 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         private readonly ConcurrentDictionary<string, PackageToLodDict> meshCodeToPackageLodDict;
         private readonly DatasetSource datasetSource;
 
-        public AreaLodSearcher(string rootPath)
+        public AreaLodSearcher(DatasetSourceConfig datasetSourceConfig)
         {
             this.meshCodeToPackageLodDict = new ConcurrentDictionary<string, PackageToLodDict>();
-            this.datasetSource = DatasetSource.CreateLocal(rootPath);
+            this.datasetSource = DatasetSource.Create(datasetSourceConfig);
         }
         
         
@@ -77,31 +74,28 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
                     var gmls = accessor.GetGmlFiles(Extent.All, package);
 
                     // string[] gmlPaths = currentGmlAccessor.GetGmlFiles(package);
-                    var lodSet = new SortedSet<uint>();
+                    int maxLod = -1;
                     foreach (var gml in gmls)
                     {
                         if (gml.MeshCode.ToString() != currentMeshCode) continue;
-                        string fullPath = Path.GetFullPath(gml.Path);
-                        // ファイルの中身を検索するので時間がかかります。
-                        var lods = LodSearcher.SearchLodsInFile(fullPath);
+                        // string fullPath = Path.GetFullPath(gml.Path);
                         
-                    
-                        foreach (var lod in lods)
-                        {
-                            lodSet.Add(lod);
-                        }
+                        // ローカルの場合、ファイルの中身を検索するので時間がかかります。
+                        // サーバーの場合、APIサーバーに問い合わせます。
+                        // var lods = LodSearcher.SearchLodsInFile(fullPath);
+                        maxLod = accessor.GetMaxLod(gml.MeshCode, package);
                     }
                     // 検索結果を追加します。
                     this.meshCodeToPackageLodDict.AddOrUpdate(currentMeshCode,
                         _ =>
                         {
                             var d = new PackageToLodDict();
-                            d.AddOrUpdate(package, lodSet);
+                            d.AddOrUpdate(package, maxLod);
                             return d;
                         },
                         (_, d) =>
                         {
-                            d.AddOrUpdate(package, lodSet);
+                            d.AddOrUpdate(package, maxLod);
                             return d;
                         });
                 }
@@ -114,43 +108,38 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
     /// </summary>
     public class PackageToLodDict
     {
-        private readonly ConcurrentDictionary<PredefinedCityModelPackage, ConcurrentBag<uint>> data = new ConcurrentDictionary<PredefinedCityModelPackage, ConcurrentBag<uint>>();
+        private readonly ConcurrentDictionary<PredefinedCityModelPackage, int> data = new ConcurrentDictionary<PredefinedCityModelPackage, int>();
         
-        public void AddOrUpdate(PredefinedCityModelPackage package, IEnumerable<uint> lods)
+        public void AddOrUpdate(PredefinedCityModelPackage package, int maxLod)
         {
             this.data.AddOrUpdate(package,
-                _ => new ConcurrentBag<uint>(lods), 
-                (_, __) => new ConcurrentBag<uint>(lods));
+                _ => maxLod, 
+                (_, __) => maxLod);
         }
         
-        public bool ExistLod(PredefinedCityModelPackage package)
-        {
-            if (!this.data.TryGetValue(package, out var lods))
-            {
-                return false;
-            }
+        // public bool ExistLod(PredefinedCityModelPackage package)
+        // {
+            // if (!this.data.TryGetValue(package, out var lods))
+            // {
+                // return false;
+            // }
 
-            return lods.Any();
-        }
+            // return lods.Any();
+        // }
 
         public void Marge(PackageToLodDict other)
         {
             foreach (var pair in other)
             {
                 var package = pair.Key;
-                var otherLods = pair.Value;
+                int otherLod = pair.Value;
                 this.data.AddOrUpdate(package,
-                    _ => otherLods,
-                    (modelPackage, bag) =>
-                    {
-                        foreach (uint l in otherLods) bag.Add(l);
-                        return bag;
-                    }
-                );
+                    _ => otherLod,
+                    (modelPackage, lod) => Math.Max(otherLod, lod));
             }
         }
         
-        public IEnumerator<KeyValuePair<PredefinedCityModelPackage, ConcurrentBag<uint>>> GetEnumerator()
+        public IEnumerator<KeyValuePair<PredefinedCityModelPackage, int>> GetEnumerator()
         {
             return this.data.GetEnumerator();
         }
