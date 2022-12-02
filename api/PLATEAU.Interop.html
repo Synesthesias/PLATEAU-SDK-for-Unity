@@ -96,16 +96,27 @@ C#側でログを表示するためのコールバックメソッドとログ詳
 その Error, Warn, Info の3つのコールバックをまとめたクラスです。
 詳しくは <a class="xref" href="PLATEAU.Interop.DllLogger.html">DllLogger</a> をご覧ください。</p>
 </section>
+      <h4><a class="xref" href="PLATEAU.Interop.NativeString.html">NativeString</a></h4>
+      <section><p>C++側の std::string を扱います。</p>
+</section>
       <h4><a class="xref" href="PLATEAU.Interop.NativeVectorBase-1.html">NativeVectorBase&lt;T&gt;</a></h4>
-      <section></section>
+      <section><p>C++側の vector を扱う基底クラスです。
+自動で Dispose したいときは <a class="xref" href="PLATEAU.Interop.NativeVectorDisposableBase-1.html">NativeVectorDisposableBase&lt;T&gt;</a> を利用してください。</p>
+</section>
       <h4><a class="xref" href="PLATEAU.Interop.NativeVectorDatasetMetadata.html">NativeVectorDatasetMetadata</a></h4>
       <section></section>
       <h4><a class="xref" href="PLATEAU.Interop.NativeVectorDatasetMetadataGroup.html">NativeVectorDatasetMetadataGroup</a></h4>
       <section></section>
+      <h4><a class="xref" href="PLATEAU.Interop.NativeVectorDisposableBase-1.html">NativeVectorDisposableBase&lt;T&gt;</a></h4>
+      <section><p><a class="xref" href="PLATEAU.Interop.NativeVectorBase-1.html">NativeVectorBase&lt;T&gt;</a> の自動で NativeDispose する版です。</p>
+</section>
       <h4><a class="xref" href="PLATEAU.Interop.NativeVectorGmlFile.html">NativeVectorGmlFile</a></h4>
       <section></section>
       <h4><a class="xref" href="PLATEAU.Interop.NativeVectorMeshCode.html">NativeVectorMeshCode</a></h4>
       <section></section>
+      <h4><a class="xref" href="PLATEAU.Interop.NativeVectorString.html">NativeVectorString</a></h4>
+      <section><p>C++側の vector{string} を扱います。</p>
+</section>
       <h4><a class="xref" href="PLATEAU.Interop.PInvokeDisposable.html">PInvokeDisposable</a></h4>
       <section><p>廃棄時に Native側で delete する必要があるものの基底クラスです。
 Native側で delete する処理として、 DisposeNative() がサブクラスで実装されていることを前提とします。
@@ -135,6 +146,10 @@ Native側で delete する処理として、 DisposeNative() がサブクラス�
 タイル座標については国土地理院のWebサイトを参照してください。
 <a href="https://maps.gsi.go.jp/development/siyou.html#siyou-zm">https://maps.gsi.go.jp/development/siyou.html#siyou-zm</a></p>
 </section>
+    <h3 id="interfaces">Interfaces
+  </h3>
+      <h4><a class="xref" href="PLATEAU.Interop.INativeVector-1.html">INativeVector&lt;T&gt;</a></h4>
+      <section></section>
     <h3 id="enums">Enums
   </h3>
       <h4><a class="xref" href="PLATEAU.Interop.APIResult.html">APIResult</a></h4>

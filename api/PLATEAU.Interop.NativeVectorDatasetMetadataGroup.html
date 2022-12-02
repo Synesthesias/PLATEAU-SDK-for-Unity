@@ -89,17 +89,18 @@
     <h5>Inheritance</h5>
     <div class="level0"><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">Object</a></div>
     <div class="level1"><a class="xref" href="PLATEAU.Interop.PInvokeDisposable.html">PInvokeDisposable</a></div>
-    <div class="level2"><a class="xref" href="PLATEAU.Interop.NativeVectorBase-1.html">NativeVectorBase</a>&lt;<span class="xref">DatasetMetadataGroup</span>&gt;</div>
+    <div class="level2"><a class="xref" href="PLATEAU.Interop.NativeVectorDisposableBase-1.html">NativeVectorDisposableBase</a>&lt;<span class="xref">DatasetMetadataGroup</span>&gt;</div>
     <div class="level3"><span class="xref">NativeVectorDatasetMetadataGroup</span></div>
   </div>
   <div class="implements">
     <h5>Implements</h5>
+    <div><a class="xref" href="PLATEAU.Interop.INativeVector-1.html">INativeVector</a>&lt;<span class="xref">DatasetMetadataGroup</span>&gt;</div>
     <div><span class="xref">IEnumerable</span>&lt;<span class="xref">DatasetMetadataGroup</span>&gt;</div>
   </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
     <div>
-      <a class="xref" href="PLATEAU.Interop.NativeVectorBase-1.html#PLATEAU_Interop_NativeVectorBase_1_GetEnumerator">NativeVectorBase&lt;DatasetMetadataGroup&gt;.GetEnumerator()</a>
+      <a class="xref" href="PLATEAU.Interop.NativeVectorDisposableBase-1.html#PLATEAU_Interop_NativeVectorDisposableBase_1_GetEnumerator">NativeVectorDisposableBase&lt;DatasetMetadataGroup&gt;.GetEnumerator()</a>
     </div>
     <div>
       <a class="xref" href="PLATEAU.Interop.PInvokeDisposable.html#PLATEAU_Interop_PInvokeDisposable_Handle">PInvokeDisposable.Handle</a>
@@ -115,7 +116,7 @@
   <h6><strong>Assembly</strong>: cs.temp.dll.dll</h6>
   <h5 id="PLATEAU_Interop_NativeVectorDatasetMetadataGroup_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public class NativeVectorDatasetMetadataGroup : NativeVectorBase&lt;DatasetMetadataGroup&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public class NativeVectorDatasetMetadataGroup : NativeVectorDisposableBase&lt;DatasetMetadataGroup&gt;, INativeVector&lt;DatasetMetadataGroup&gt;</code></pre>
   </div>
   <h3 id="constructors">Constructors
   </h3>
@@ -174,7 +175,7 @@
     </tbody>
   </table>
   <h5 class="overrides">Overrides</h5>
-  <div><span class="xref">PLATEAU.Interop.NativeVectorBase&lt;DatasetMetadataGroup&gt;.Length</span></div>
+  <div><span class="xref">PLATEAU.Interop.NativeVectorDisposableBase&lt;DatasetMetadataGroup&gt;.Length</span></div>
   <h3 id="methods">Methods
   </h3>
   
@@ -220,7 +221,7 @@
     </tbody>
   </table>
   <h5 class="overrides">Overrides</h5>
-  <div><span class="xref">PLATEAU.Interop.NativeVectorBase&lt;DatasetMetadataGroup&gt;.At(System.Int32)</span></div>
+  <div><span class="xref">PLATEAU.Interop.NativeVectorDisposableBase&lt;DatasetMetadataGroup&gt;.At(System.Int32)</span></div>
   
   
   <a id="PLATEAU_Interop_NativeVectorDatasetMetadataGroup_Create_" data-uid="PLATEAU.Interop.NativeVectorDatasetMetadataGroup.Create*"></a>
@@ -259,6 +260,9 @@
   <h5 class="overrides">Overrides</h5>
   <div><a class="xref" href="PLATEAU.Interop.PInvokeDisposable.html#PLATEAU_Interop_PInvokeDisposable_DisposeNative">PInvokeDisposable.DisposeNative()</a></div>
   <h3 id="implements">Implements</h3>
+  <div>
+      <a class="xref" href="PLATEAU.Interop.INativeVector-1.html">INativeVector&lt;T&gt;</a>
+  </div>
   <div>
       <span class="xref">IEnumerable&lt;&gt;</span>
   </div>

@@ -1933,15 +1933,15 @@ references:
   commentId: T:PLATEAU.CityImport.AreaSelector.SceneObjs.AreaLodController
   fullName: PLATEAU.CityImport.AreaSelector.SceneObjs.AreaLodController
   nameWithType: AreaLodController
-- uid: PLATEAU.CityImport.AreaSelector.SceneObjs.AreaLodController.#ctor(System.String,GeoReference,IEnumerable{MeshCode})
-  name: AreaLodController(String, GeoReference, IEnumerable<MeshCode>)
-  href: api/PLATEAU.CityImport.AreaSelector.SceneObjs.AreaLodController.html#PLATEAU_CityImport_AreaSelector_SceneObjs_AreaLodController__ctor_System_String_GeoReference_IEnumerable_MeshCode__
-  commentId: M:PLATEAU.CityImport.AreaSelector.SceneObjs.AreaLodController.#ctor(System.String,GeoReference,IEnumerable{MeshCode})
-  name.vb: AreaLodController(String, GeoReference, IEnumerable(Of MeshCode))
-  fullName: PLATEAU.CityImport.AreaSelector.SceneObjs.AreaLodController.AreaLodController(System.String, GeoReference, IEnumerable<MeshCode>)
-  fullName.vb: PLATEAU.CityImport.AreaSelector.SceneObjs.AreaLodController.AreaLodController(System.String, GeoReference, IEnumerable(Of MeshCode))
-  nameWithType: AreaLodController.AreaLodController(String, GeoReference, IEnumerable<MeshCode>)
-  nameWithType.vb: AreaLodController.AreaLodController(String, GeoReference, IEnumerable(Of MeshCode))
+- uid: PLATEAU.CityImport.AreaSelector.SceneObjs.AreaLodController.#ctor(DatasetSourceConfig,GeoReference,IEnumerable{MeshCode})
+  name: AreaLodController(DatasetSourceConfig, GeoReference, IEnumerable<MeshCode>)
+  href: api/PLATEAU.CityImport.AreaSelector.SceneObjs.AreaLodController.html#PLATEAU_CityImport_AreaSelector_SceneObjs_AreaLodController__ctor_DatasetSourceConfig_GeoReference_IEnumerable_MeshCode__
+  commentId: M:PLATEAU.CityImport.AreaSelector.SceneObjs.AreaLodController.#ctor(DatasetSourceConfig,GeoReference,IEnumerable{MeshCode})
+  name.vb: AreaLodController(DatasetSourceConfig, GeoReference, IEnumerable(Of MeshCode))
+  fullName: PLATEAU.CityImport.AreaSelector.SceneObjs.AreaLodController.AreaLodController(DatasetSourceConfig, GeoReference, IEnumerable<MeshCode>)
+  fullName.vb: PLATEAU.CityImport.AreaSelector.SceneObjs.AreaLodController.AreaLodController(DatasetSourceConfig, GeoReference, IEnumerable(Of MeshCode))
+  nameWithType: AreaLodController.AreaLodController(DatasetSourceConfig, GeoReference, IEnumerable<MeshCode>)
+  nameWithType.vb: AreaLodController.AreaLodController(DatasetSourceConfig, GeoReference, IEnumerable(Of MeshCode))
 - uid: PLATEAU.CityImport.AreaSelector.SceneObjs.AreaLodController.#ctor*
   name: AreaLodController
   href: api/PLATEAU.CityImport.AreaSelector.SceneObjs.AreaLodController.html#PLATEAU_CityImport_AreaSelector_SceneObjs_AreaLodController__ctor_
@@ -1981,12 +1981,12 @@ references:
   commentId: T:PLATEAU.CityImport.AreaSelector.SceneObjs.AreaLodSearcher
   fullName: PLATEAU.CityImport.AreaSelector.SceneObjs.AreaLodSearcher
   nameWithType: AreaLodSearcher
-- uid: PLATEAU.CityImport.AreaSelector.SceneObjs.AreaLodSearcher.#ctor(System.String)
-  name: AreaLodSearcher(String)
-  href: api/PLATEAU.CityImport.AreaSelector.SceneObjs.AreaLodSearcher.html#PLATEAU_CityImport_AreaSelector_SceneObjs_AreaLodSearcher__ctor_System_String_
-  commentId: M:PLATEAU.CityImport.AreaSelector.SceneObjs.AreaLodSearcher.#ctor(System.String)
-  fullName: PLATEAU.CityImport.AreaSelector.SceneObjs.AreaLodSearcher.AreaLodSearcher(System.String)
-  nameWithType: AreaLodSearcher.AreaLodSearcher(String)
+- uid: PLATEAU.CityImport.AreaSelector.SceneObjs.AreaLodSearcher.#ctor(DatasetSourceConfig)
+  name: AreaLodSearcher(DatasetSourceConfig)
+  href: api/PLATEAU.CityImport.AreaSelector.SceneObjs.AreaLodSearcher.html#PLATEAU_CityImport_AreaSelector_SceneObjs_AreaLodSearcher__ctor_DatasetSourceConfig_
+  commentId: M:PLATEAU.CityImport.AreaSelector.SceneObjs.AreaLodSearcher.#ctor(DatasetSourceConfig)
+  fullName: PLATEAU.CityImport.AreaSelector.SceneObjs.AreaLodSearcher.AreaLodSearcher(DatasetSourceConfig)
+  nameWithType: AreaLodSearcher.AreaLodSearcher(DatasetSourceConfig)
 - uid: PLATEAU.CityImport.AreaSelector.SceneObjs.AreaLodSearcher.#ctor*
   name: AreaLodSearcher
   href: api/PLATEAU.CityImport.AreaSelector.SceneObjs.AreaLodSearcher.html#PLATEAU_CityImport_AreaSelector_SceneObjs_AreaLodSearcher__ctor_
@@ -2186,15 +2186,12 @@ references:
   commentId: T:PLATEAU.CityImport.AreaSelector.SceneObjs.PackageToLodDict
   fullName: PLATEAU.CityImport.AreaSelector.SceneObjs.PackageToLodDict
   nameWithType: PackageToLodDict
-- uid: PLATEAU.CityImport.AreaSelector.SceneObjs.PackageToLodDict.AddOrUpdate(PredefinedCityModelPackage,IEnumerable{System.UInt32})
-  name: AddOrUpdate(PredefinedCityModelPackage, IEnumerable<UInt32>)
-  href: api/PLATEAU.CityImport.AreaSelector.SceneObjs.PackageToLodDict.html#PLATEAU_CityImport_AreaSelector_SceneObjs_PackageToLodDict_AddOrUpdate_PredefinedCityModelPackage_IEnumerable_System_UInt32__
-  commentId: M:PLATEAU.CityImport.AreaSelector.SceneObjs.PackageToLodDict.AddOrUpdate(PredefinedCityModelPackage,IEnumerable{System.UInt32})
-  name.vb: AddOrUpdate(PredefinedCityModelPackage, IEnumerable(Of UInt32))
-  fullName: PLATEAU.CityImport.AreaSelector.SceneObjs.PackageToLodDict.AddOrUpdate(PredefinedCityModelPackage, IEnumerable<System.UInt32>)
-  fullName.vb: PLATEAU.CityImport.AreaSelector.SceneObjs.PackageToLodDict.AddOrUpdate(PredefinedCityModelPackage, IEnumerable(Of System.UInt32))
-  nameWithType: PackageToLodDict.AddOrUpdate(PredefinedCityModelPackage, IEnumerable<UInt32>)
-  nameWithType.vb: PackageToLodDict.AddOrUpdate(PredefinedCityModelPackage, IEnumerable(Of UInt32))
+- uid: PLATEAU.CityImport.AreaSelector.SceneObjs.PackageToLodDict.AddOrUpdate(PredefinedCityModelPackage,System.Int32)
+  name: AddOrUpdate(PredefinedCityModelPackage, Int32)
+  href: api/PLATEAU.CityImport.AreaSelector.SceneObjs.PackageToLodDict.html#PLATEAU_CityImport_AreaSelector_SceneObjs_PackageToLodDict_AddOrUpdate_PredefinedCityModelPackage_System_Int32_
+  commentId: M:PLATEAU.CityImport.AreaSelector.SceneObjs.PackageToLodDict.AddOrUpdate(PredefinedCityModelPackage,System.Int32)
+  fullName: PLATEAU.CityImport.AreaSelector.SceneObjs.PackageToLodDict.AddOrUpdate(PredefinedCityModelPackage, System.Int32)
+  nameWithType: PackageToLodDict.AddOrUpdate(PredefinedCityModelPackage, Int32)
 - uid: PLATEAU.CityImport.AreaSelector.SceneObjs.PackageToLodDict.AddOrUpdate*
   name: AddOrUpdate
   href: api/PLATEAU.CityImport.AreaSelector.SceneObjs.PackageToLodDict.html#PLATEAU_CityImport_AreaSelector_SceneObjs_PackageToLodDict_AddOrUpdate_
@@ -2202,19 +2199,6 @@ references:
   isSpec: "True"
   fullName: PLATEAU.CityImport.AreaSelector.SceneObjs.PackageToLodDict.AddOrUpdate
   nameWithType: PackageToLodDict.AddOrUpdate
-- uid: PLATEAU.CityImport.AreaSelector.SceneObjs.PackageToLodDict.ExistLod(PredefinedCityModelPackage)
-  name: ExistLod(PredefinedCityModelPackage)
-  href: api/PLATEAU.CityImport.AreaSelector.SceneObjs.PackageToLodDict.html#PLATEAU_CityImport_AreaSelector_SceneObjs_PackageToLodDict_ExistLod_PredefinedCityModelPackage_
-  commentId: M:PLATEAU.CityImport.AreaSelector.SceneObjs.PackageToLodDict.ExistLod(PredefinedCityModelPackage)
-  fullName: PLATEAU.CityImport.AreaSelector.SceneObjs.PackageToLodDict.ExistLod(PredefinedCityModelPackage)
-  nameWithType: PackageToLodDict.ExistLod(PredefinedCityModelPackage)
-- uid: PLATEAU.CityImport.AreaSelector.SceneObjs.PackageToLodDict.ExistLod*
-  name: ExistLod
-  href: api/PLATEAU.CityImport.AreaSelector.SceneObjs.PackageToLodDict.html#PLATEAU_CityImport_AreaSelector_SceneObjs_PackageToLodDict_ExistLod_
-  commentId: Overload:PLATEAU.CityImport.AreaSelector.SceneObjs.PackageToLodDict.ExistLod
-  isSpec: "True"
-  fullName: PLATEAU.CityImport.AreaSelector.SceneObjs.PackageToLodDict.ExistLod
-  nameWithType: PackageToLodDict.ExistLod
 - uid: PLATEAU.CityImport.AreaSelector.SceneObjs.PackageToLodDict.GetEnumerator
   name: GetEnumerator()
   href: api/PLATEAU.CityImport.AreaSelector.SceneObjs.PackageToLodDict.html#PLATEAU_CityImport_AreaSelector_SceneObjs_PackageToLodDict_GetEnumerator
@@ -2462,6 +2446,19 @@ references:
   isSpec: "True"
   fullName: PLATEAU.Dataset.DatasetAccessor.DatasetAccessor
   nameWithType: DatasetAccessor.DatasetAccessor
+- uid: PLATEAU.Dataset.DatasetAccessor.FeatureTypeToPackage(System.String)
+  name: FeatureTypeToPackage(String)
+  href: api/PLATEAU.Dataset.DatasetAccessor.html#PLATEAU_Dataset_DatasetAccessor_FeatureTypeToPackage_System_String_
+  commentId: M:PLATEAU.Dataset.DatasetAccessor.FeatureTypeToPackage(System.String)
+  fullName: PLATEAU.Dataset.DatasetAccessor.FeatureTypeToPackage(System.String)
+  nameWithType: DatasetAccessor.FeatureTypeToPackage(String)
+- uid: PLATEAU.Dataset.DatasetAccessor.FeatureTypeToPackage*
+  name: FeatureTypeToPackage
+  href: api/PLATEAU.Dataset.DatasetAccessor.html#PLATEAU_Dataset_DatasetAccessor_FeatureTypeToPackage_
+  commentId: Overload:PLATEAU.Dataset.DatasetAccessor.FeatureTypeToPackage
+  isSpec: "True"
+  fullName: PLATEAU.Dataset.DatasetAccessor.FeatureTypeToPackage
+  nameWithType: DatasetAccessor.FeatureTypeToPackage
 - uid: PLATEAU.Dataset.DatasetAccessor.GetGmlFiles(Extent,PLATEAU.Dataset.PredefinedCityModelPackage)
   name: GetGmlFiles(Extent, PredefinedCityModelPackage)
   href: api/PLATEAU.Dataset.DatasetAccessor.html#PLATEAU_Dataset_DatasetAccessor_GetGmlFiles_Extent_PLATEAU_Dataset_PredefinedCityModelPackage_
@@ -2585,6 +2582,19 @@ references:
   isSpec: "True"
   fullName: PLATEAU.Dataset.DatasetMetadata.Dispose
   nameWithType: DatasetMetadata.Dispose
+- uid: PLATEAU.Dataset.DatasetMetadata.FeatureTypes
+  name: FeatureTypes
+  href: api/PLATEAU.Dataset.DatasetMetadata.html#PLATEAU_Dataset_DatasetMetadata_FeatureTypes
+  commentId: P:PLATEAU.Dataset.DatasetMetadata.FeatureTypes
+  fullName: PLATEAU.Dataset.DatasetMetadata.FeatureTypes
+  nameWithType: DatasetMetadata.FeatureTypes
+- uid: PLATEAU.Dataset.DatasetMetadata.FeatureTypes*
+  name: FeatureTypes
+  href: api/PLATEAU.Dataset.DatasetMetadata.html#PLATEAU_Dataset_DatasetMetadata_FeatureTypes_
+  commentId: Overload:PLATEAU.Dataset.DatasetMetadata.FeatureTypes
+  isSpec: "True"
+  fullName: PLATEAU.Dataset.DatasetMetadata.FeatureTypes
+  nameWithType: DatasetMetadata.FeatureTypes
 - uid: PLATEAU.Dataset.DatasetMetadata.Handle
   name: Handle
   href: api/PLATEAU.Dataset.DatasetMetadata.html#PLATEAU_Dataset_DatasetMetadata_Handle
@@ -2611,6 +2621,32 @@ references:
   isSpec: "True"
   fullName: PLATEAU.Dataset.DatasetMetadata.ID
   nameWithType: DatasetMetadata.ID
+- uid: PLATEAU.Dataset.DatasetMetadata.MaxLOD
+  name: MaxLOD
+  href: api/PLATEAU.Dataset.DatasetMetadata.html#PLATEAU_Dataset_DatasetMetadata_MaxLOD
+  commentId: P:PLATEAU.Dataset.DatasetMetadata.MaxLOD
+  fullName: PLATEAU.Dataset.DatasetMetadata.MaxLOD
+  nameWithType: DatasetMetadata.MaxLOD
+- uid: PLATEAU.Dataset.DatasetMetadata.MaxLOD*
+  name: MaxLOD
+  href: api/PLATEAU.Dataset.DatasetMetadata.html#PLATEAU_Dataset_DatasetMetadata_MaxLOD_
+  commentId: Overload:PLATEAU.Dataset.DatasetMetadata.MaxLOD
+  isSpec: "True"
+  fullName: PLATEAU.Dataset.DatasetMetadata.MaxLOD
+  nameWithType: DatasetMetadata.MaxLOD
+- uid: PLATEAU.Dataset.DatasetMetadata.PackageFlags
+  name: PackageFlags
+  href: api/PLATEAU.Dataset.DatasetMetadata.html#PLATEAU_Dataset_DatasetMetadata_PackageFlags
+  commentId: P:PLATEAU.Dataset.DatasetMetadata.PackageFlags
+  fullName: PLATEAU.Dataset.DatasetMetadata.PackageFlags
+  nameWithType: DatasetMetadata.PackageFlags
+- uid: PLATEAU.Dataset.DatasetMetadata.PackageFlags*
+  name: PackageFlags
+  href: api/PLATEAU.Dataset.DatasetMetadata.html#PLATEAU_Dataset_DatasetMetadata_PackageFlags_
+  commentId: Overload:PLATEAU.Dataset.DatasetMetadata.PackageFlags
+  isSpec: "True"
+  fullName: PLATEAU.Dataset.DatasetMetadata.PackageFlags
+  nameWithType: DatasetMetadata.PackageFlags
 - uid: PLATEAU.Dataset.DatasetMetadata.Title
   name: Title
   href: api/PLATEAU.Dataset.DatasetMetadata.html#PLATEAU_Dataset_DatasetMetadata_Title
@@ -2669,19 +2705,32 @@ references:
   isSpec: "True"
   fullName: PLATEAU.Dataset.DatasetMetadataGroup.Datasets
   nameWithType: DatasetMetadataGroup.Datasets
-- uid: PLATEAU.Dataset.DatasetMetadataGroup.DisposeNative
-  name: DisposeNative()
-  href: api/PLATEAU.Dataset.DatasetMetadataGroup.html#PLATEAU_Dataset_DatasetMetadataGroup_DisposeNative
-  commentId: M:PLATEAU.Dataset.DatasetMetadataGroup.DisposeNative
-  fullName: PLATEAU.Dataset.DatasetMetadataGroup.DisposeNative()
-  nameWithType: DatasetMetadataGroup.DisposeNative()
-- uid: PLATEAU.Dataset.DatasetMetadataGroup.DisposeNative*
-  name: DisposeNative
-  href: api/PLATEAU.Dataset.DatasetMetadataGroup.html#PLATEAU_Dataset_DatasetMetadataGroup_DisposeNative_
-  commentId: Overload:PLATEAU.Dataset.DatasetMetadataGroup.DisposeNative
+- uid: PLATEAU.Dataset.DatasetMetadataGroup.Dispose
+  name: Dispose()
+  href: api/PLATEAU.Dataset.DatasetMetadataGroup.html#PLATEAU_Dataset_DatasetMetadataGroup_Dispose
+  commentId: M:PLATEAU.Dataset.DatasetMetadataGroup.Dispose
+  fullName: PLATEAU.Dataset.DatasetMetadataGroup.Dispose()
+  nameWithType: DatasetMetadataGroup.Dispose()
+- uid: PLATEAU.Dataset.DatasetMetadataGroup.Dispose*
+  name: Dispose
+  href: api/PLATEAU.Dataset.DatasetMetadataGroup.html#PLATEAU_Dataset_DatasetMetadataGroup_Dispose_
+  commentId: Overload:PLATEAU.Dataset.DatasetMetadataGroup.Dispose
   isSpec: "True"
-  fullName: PLATEAU.Dataset.DatasetMetadataGroup.DisposeNative
-  nameWithType: DatasetMetadataGroup.DisposeNative
+  fullName: PLATEAU.Dataset.DatasetMetadataGroup.Dispose
+  nameWithType: DatasetMetadataGroup.Dispose
+- uid: PLATEAU.Dataset.DatasetMetadataGroup.Handle
+  name: Handle
+  href: api/PLATEAU.Dataset.DatasetMetadataGroup.html#PLATEAU_Dataset_DatasetMetadataGroup_Handle
+  commentId: P:PLATEAU.Dataset.DatasetMetadataGroup.Handle
+  fullName: PLATEAU.Dataset.DatasetMetadataGroup.Handle
+  nameWithType: DatasetMetadataGroup.Handle
+- uid: PLATEAU.Dataset.DatasetMetadataGroup.Handle*
+  name: Handle
+  href: api/PLATEAU.Dataset.DatasetMetadataGroup.html#PLATEAU_Dataset_DatasetMetadataGroup_Handle_
+  commentId: Overload:PLATEAU.Dataset.DatasetMetadataGroup.Handle
+  isSpec: "True"
+  fullName: PLATEAU.Dataset.DatasetMetadataGroup.Handle
+  nameWithType: DatasetMetadataGroup.Handle
 - uid: PLATEAU.Dataset.DatasetMetadataGroup.ID
   name: ID
   href: api/PLATEAU.Dataset.DatasetMetadataGroup.html#PLATEAU_Dataset_DatasetMetadataGroup_ID
@@ -2740,19 +2789,25 @@ references:
   isSpec: "True"
   fullName: PLATEAU.Dataset.DatasetSource.Accessor
   nameWithType: DatasetSource.Accessor
-- uid: PLATEAU.Dataset.DatasetSource.CreateLocal(System.String)
-  name: CreateLocal(String)
-  href: api/PLATEAU.Dataset.DatasetSource.html#PLATEAU_Dataset_DatasetSource_CreateLocal_System_String_
-  commentId: M:PLATEAU.Dataset.DatasetSource.CreateLocal(System.String)
-  fullName: PLATEAU.Dataset.DatasetSource.CreateLocal(System.String)
-  nameWithType: DatasetSource.CreateLocal(String)
-- uid: PLATEAU.Dataset.DatasetSource.CreateLocal*
-  name: CreateLocal
-  href: api/PLATEAU.Dataset.DatasetSource.html#PLATEAU_Dataset_DatasetSource_CreateLocal_
-  commentId: Overload:PLATEAU.Dataset.DatasetSource.CreateLocal
+- uid: PLATEAU.Dataset.DatasetSource.Create(PLATEAU.Dataset.DatasetSourceConfig)
+  name: Create(DatasetSourceConfig)
+  href: api/PLATEAU.Dataset.DatasetSource.html#PLATEAU_Dataset_DatasetSource_Create_PLATEAU_Dataset_DatasetSourceConfig_
+  commentId: M:PLATEAU.Dataset.DatasetSource.Create(PLATEAU.Dataset.DatasetSourceConfig)
+  fullName: PLATEAU.Dataset.DatasetSource.Create(PLATEAU.Dataset.DatasetSourceConfig)
+  nameWithType: DatasetSource.Create(DatasetSourceConfig)
+- uid: PLATEAU.Dataset.DatasetSource.Create(System.Boolean,System.String)
+  name: Create(Boolean, String)
+  href: api/PLATEAU.Dataset.DatasetSource.html#PLATEAU_Dataset_DatasetSource_Create_System_Boolean_System_String_
+  commentId: M:PLATEAU.Dataset.DatasetSource.Create(System.Boolean,System.String)
+  fullName: PLATEAU.Dataset.DatasetSource.Create(System.Boolean, System.String)
+  nameWithType: DatasetSource.Create(Boolean, String)
+- uid: PLATEAU.Dataset.DatasetSource.Create*
+  name: Create
+  href: api/PLATEAU.Dataset.DatasetSource.html#PLATEAU_Dataset_DatasetSource_Create_
+  commentId: Overload:PLATEAU.Dataset.DatasetSource.Create
   isSpec: "True"
-  fullName: PLATEAU.Dataset.DatasetSource.CreateLocal
-  nameWithType: DatasetSource.CreateLocal
+  fullName: PLATEAU.Dataset.DatasetSource.Create
+  nameWithType: DatasetSource.Create
 - uid: PLATEAU.Dataset.DatasetSource.DisposeNative
   name: DisposeNative()
   href: api/PLATEAU.Dataset.DatasetSource.html#PLATEAU_Dataset_DatasetSource_DisposeNative
@@ -2766,6 +2821,64 @@ references:
   isSpec: "True"
   fullName: PLATEAU.Dataset.DatasetSource.DisposeNative
   nameWithType: DatasetSource.DisposeNative
+- uid: PLATEAU.Dataset.DatasetSourceConfig
+  name: DatasetSourceConfig
+  href: api/PLATEAU.Dataset.DatasetSourceConfig.html
+  commentId: T:PLATEAU.Dataset.DatasetSourceConfig
+  fullName: PLATEAU.Dataset.DatasetSourceConfig
+  nameWithType: DatasetSourceConfig
+- uid: PLATEAU.Dataset.DatasetSourceConfig.#ctor(System.Boolean,System.String)
+  name: DatasetSourceConfig(Boolean, String)
+  href: api/PLATEAU.Dataset.DatasetSourceConfig.html#PLATEAU_Dataset_DatasetSourceConfig__ctor_System_Boolean_System_String_
+  commentId: M:PLATEAU.Dataset.DatasetSourceConfig.#ctor(System.Boolean,System.String)
+  fullName: PLATEAU.Dataset.DatasetSourceConfig.DatasetSourceConfig(System.Boolean, System.String)
+  nameWithType: DatasetSourceConfig.DatasetSourceConfig(Boolean, String)
+- uid: PLATEAU.Dataset.DatasetSourceConfig.#ctor*
+  name: DatasetSourceConfig
+  href: api/PLATEAU.Dataset.DatasetSourceConfig.html#PLATEAU_Dataset_DatasetSourceConfig__ctor_
+  commentId: Overload:PLATEAU.Dataset.DatasetSourceConfig.#ctor
+  isSpec: "True"
+  fullName: PLATEAU.Dataset.DatasetSourceConfig.DatasetSourceConfig
+  nameWithType: DatasetSourceConfig.DatasetSourceConfig
+- uid: PLATEAU.Dataset.DatasetSourceConfig.DatasetIdOrSourcePath
+  name: DatasetIdOrSourcePath
+  href: api/PLATEAU.Dataset.DatasetSourceConfig.html#PLATEAU_Dataset_DatasetSourceConfig_DatasetIdOrSourcePath
+  commentId: P:PLATEAU.Dataset.DatasetSourceConfig.DatasetIdOrSourcePath
+  fullName: PLATEAU.Dataset.DatasetSourceConfig.DatasetIdOrSourcePath
+  nameWithType: DatasetSourceConfig.DatasetIdOrSourcePath
+- uid: PLATEAU.Dataset.DatasetSourceConfig.DatasetIdOrSourcePath*
+  name: DatasetIdOrSourcePath
+  href: api/PLATEAU.Dataset.DatasetSourceConfig.html#PLATEAU_Dataset_DatasetSourceConfig_DatasetIdOrSourcePath_
+  commentId: Overload:PLATEAU.Dataset.DatasetSourceConfig.DatasetIdOrSourcePath
+  isSpec: "True"
+  fullName: PLATEAU.Dataset.DatasetSourceConfig.DatasetIdOrSourcePath
+  nameWithType: DatasetSourceConfig.DatasetIdOrSourcePath
+- uid: PLATEAU.Dataset.DatasetSourceConfig.IsServer
+  name: IsServer
+  href: api/PLATEAU.Dataset.DatasetSourceConfig.html#PLATEAU_Dataset_DatasetSourceConfig_IsServer
+  commentId: P:PLATEAU.Dataset.DatasetSourceConfig.IsServer
+  fullName: PLATEAU.Dataset.DatasetSourceConfig.IsServer
+  nameWithType: DatasetSourceConfig.IsServer
+- uid: PLATEAU.Dataset.DatasetSourceConfig.IsServer*
+  name: IsServer
+  href: api/PLATEAU.Dataset.DatasetSourceConfig.html#PLATEAU_Dataset_DatasetSourceConfig_IsServer_
+  commentId: Overload:PLATEAU.Dataset.DatasetSourceConfig.IsServer
+  isSpec: "True"
+  fullName: PLATEAU.Dataset.DatasetSourceConfig.IsServer
+  nameWithType: DatasetSourceConfig.IsServer
+- uid: PLATEAU.Dataset.DatasetSourceConfig.RootDirName
+  name: RootDirName
+  href: api/PLATEAU.Dataset.DatasetSourceConfig.html#PLATEAU_Dataset_DatasetSourceConfig_RootDirName
+  commentId: P:PLATEAU.Dataset.DatasetSourceConfig.RootDirName
+  fullName: PLATEAU.Dataset.DatasetSourceConfig.RootDirName
+  nameWithType: DatasetSourceConfig.RootDirName
+- uid: PLATEAU.Dataset.DatasetSourceConfig.RootDirName*
+  name: RootDirName
+  href: api/PLATEAU.Dataset.DatasetSourceConfig.html#PLATEAU_Dataset_DatasetSourceConfig_RootDirName_
+  commentId: Overload:PLATEAU.Dataset.DatasetSourceConfig.RootDirName
+  isSpec: "True"
+  fullName: PLATEAU.Dataset.DatasetSourceConfig.RootDirName
+  nameWithType: DatasetSourceConfig.RootDirName
 - uid: PLATEAU.Dataset.GmlFile
   name: GmlFile
   href: api/PLATEAU.Dataset.GmlFile.html
@@ -2889,6 +3002,32 @@ references:
   isSpec: "True"
   fullName: PLATEAU.Dataset.GmlFile.Path
   nameWithType: GmlFile.Path
+- uid: PLATEAU.Dataset.GmlFile.SearchAllCodelistPathsInGml
+  name: SearchAllCodelistPathsInGml()
+  href: api/PLATEAU.Dataset.GmlFile.html#PLATEAU_Dataset_GmlFile_SearchAllCodelistPathsInGml
+  commentId: M:PLATEAU.Dataset.GmlFile.SearchAllCodelistPathsInGml
+  fullName: PLATEAU.Dataset.GmlFile.SearchAllCodelistPathsInGml()
+  nameWithType: GmlFile.SearchAllCodelistPathsInGml()
+- uid: PLATEAU.Dataset.GmlFile.SearchAllCodelistPathsInGml*
+  name: SearchAllCodelistPathsInGml
+  href: api/PLATEAU.Dataset.GmlFile.html#PLATEAU_Dataset_GmlFile_SearchAllCodelistPathsInGml_
+  commentId: Overload:PLATEAU.Dataset.GmlFile.SearchAllCodelistPathsInGml
+  isSpec: "True"
+  fullName: PLATEAU.Dataset.GmlFile.SearchAllCodelistPathsInGml
+  nameWithType: GmlFile.SearchAllCodelistPathsInGml
+- uid: PLATEAU.Dataset.GmlFile.SearchAllImagePathsInGml
+  name: SearchAllImagePathsInGml()
+  href: api/PLATEAU.Dataset.GmlFile.html#PLATEAU_Dataset_GmlFile_SearchAllImagePathsInGml
+  commentId: M:PLATEAU.Dataset.GmlFile.SearchAllImagePathsInGml
+  fullName: PLATEAU.Dataset.GmlFile.SearchAllImagePathsInGml()
+  nameWithType: GmlFile.SearchAllImagePathsInGml()
+- uid: PLATEAU.Dataset.GmlFile.SearchAllImagePathsInGml*
+  name: SearchAllImagePathsInGml
+  href: api/PLATEAU.Dataset.GmlFile.html#PLATEAU_Dataset_GmlFile_SearchAllImagePathsInGml_
+  commentId: Overload:PLATEAU.Dataset.GmlFile.SearchAllImagePathsInGml
+  isSpec: "True"
+  fullName: PLATEAU.Dataset.GmlFile.SearchAllImagePathsInGml
+  nameWithType: GmlFile.SearchAllImagePathsInGml
 - uid: PLATEAU.Dataset.LocalDatasetAccessor
   name: LocalDatasetAccessor
   href: api/PLATEAU.Dataset.LocalDatasetAccessor.html
@@ -3264,12 +3403,12 @@ references:
   isSpec: "True"
   fullName: PLATEAU.Dataset.ServerDatasetAccessor.ServerDatasetAccessor
   nameWithType: ServerDatasetAccessor.ServerDatasetAccessor
-- uid: PLATEAU.Dataset.ServerDatasetAccessor.Create
-  name: Create()
-  href: api/PLATEAU.Dataset.ServerDatasetAccessor.html#PLATEAU_Dataset_ServerDatasetAccessor_Create
-  commentId: M:PLATEAU.Dataset.ServerDatasetAccessor.Create
-  fullName: PLATEAU.Dataset.ServerDatasetAccessor.Create()
-  nameWithType: ServerDatasetAccessor.Create()
+- uid: PLATEAU.Dataset.ServerDatasetAccessor.Create(System.String)
+  name: Create(String)
+  href: api/PLATEAU.Dataset.ServerDatasetAccessor.html#PLATEAU_Dataset_ServerDatasetAccessor_Create_System_String_
+  commentId: M:PLATEAU.Dataset.ServerDatasetAccessor.Create(System.String)
+  fullName: PLATEAU.Dataset.ServerDatasetAccessor.Create(System.String)
+  nameWithType: ServerDatasetAccessor.Create(String)
 - uid: PLATEAU.Dataset.ServerDatasetAccessor.Create*
   name: Create
   href: api/PLATEAU.Dataset.ServerDatasetAccessor.html#PLATEAU_Dataset_ServerDatasetAccessor_Create_
@@ -3303,6 +3442,19 @@ references:
   isSpec: "True"
   fullName: PLATEAU.Dataset.ServerDatasetAccessor.GetGmlFiles
   nameWithType: ServerDatasetAccessor.GetGmlFiles
+- uid: PLATEAU.Dataset.ServerDatasetAccessor.GetMaxLod(PLATEAU.Dataset.MeshCode,PLATEAU.Dataset.PredefinedCityModelPackage)
+  name: GetMaxLod(MeshCode, PredefinedCityModelPackage)
+  href: api/PLATEAU.Dataset.ServerDatasetAccessor.html#PLATEAU_Dataset_ServerDatasetAccessor_GetMaxLod_PLATEAU_Dataset_MeshCode_PLATEAU_Dataset_PredefinedCityModelPackage_
+  commentId: M:PLATEAU.Dataset.ServerDatasetAccessor.GetMaxLod(PLATEAU.Dataset.MeshCode,PLATEAU.Dataset.PredefinedCityModelPackage)
+  fullName: PLATEAU.Dataset.ServerDatasetAccessor.GetMaxLod(PLATEAU.Dataset.MeshCode, PLATEAU.Dataset.PredefinedCityModelPackage)
+  nameWithType: ServerDatasetAccessor.GetMaxLod(MeshCode, PredefinedCityModelPackage)
+- uid: PLATEAU.Dataset.ServerDatasetAccessor.GetMaxLod*
+  name: GetMaxLod
+  href: api/PLATEAU.Dataset.ServerDatasetAccessor.html#PLATEAU_Dataset_ServerDatasetAccessor_GetMaxLod_
+  commentId: Overload:PLATEAU.Dataset.ServerDatasetAccessor.GetMaxLod
+  isSpec: "True"
+  fullName: PLATEAU.Dataset.ServerDatasetAccessor.GetMaxLod
+  nameWithType: ServerDatasetAccessor.GetMaxLod
 - uid: PLATEAU.Dataset.ServerDatasetAccessor.GetMetadataGroup
   name: GetMetadataGroup()
   href: api/PLATEAU.Dataset.ServerDatasetAccessor.html#PLATEAU_Dataset_ServerDatasetAccessor_GetMetadataGroup
@@ -4043,6 +4195,49 @@ references:
   commentId: F:PLATEAU.Interop.GltfFileFormat.GLTF
   fullName: PLATEAU.Interop.GltfFileFormat.GLTF
   nameWithType: GltfFileFormat.GLTF
+- uid: PLATEAU.Interop.INativeVector`1
+  name: INativeVector<T>
+  href: api/PLATEAU.Interop.INativeVector-1.html
+  commentId: T:PLATEAU.Interop.INativeVector`1
+  name.vb: INativeVector(Of T)
+  fullName: PLATEAU.Interop.INativeVector<T>
+  fullName.vb: PLATEAU.Interop.INativeVector(Of T)
+  nameWithType: INativeVector<T>
+  nameWithType.vb: INativeVector(Of T)
+- uid: PLATEAU.Interop.INativeVector`1.At(System.Int32)
+  name: At(Int32)
+  href: api/PLATEAU.Interop.INativeVector-1.html#PLATEAU_Interop_INativeVector_1_At_System_Int32_
+  commentId: M:PLATEAU.Interop.INativeVector`1.At(System.Int32)
+  fullName: PLATEAU.Interop.INativeVector<T>.At(System.Int32)
+  fullName.vb: PLATEAU.Interop.INativeVector(Of T).At(System.Int32)
+  nameWithType: INativeVector<T>.At(Int32)
+  nameWithType.vb: INativeVector(Of T).At(Int32)
+- uid: PLATEAU.Interop.INativeVector`1.At*
+  name: At
+  href: api/PLATEAU.Interop.INativeVector-1.html#PLATEAU_Interop_INativeVector_1_At_
+  commentId: Overload:PLATEAU.Interop.INativeVector`1.At
+  isSpec: "True"
+  fullName: PLATEAU.Interop.INativeVector<T>.At
+  fullName.vb: PLATEAU.Interop.INativeVector(Of T).At
+  nameWithType: INativeVector<T>.At
+  nameWithType.vb: INativeVector(Of T).At
+- uid: PLATEAU.Interop.INativeVector`1.Length
+  name: Length
+  href: api/PLATEAU.Interop.INativeVector-1.html#PLATEAU_Interop_INativeVector_1_Length
+  commentId: P:PLATEAU.Interop.INativeVector`1.Length
+  fullName: PLATEAU.Interop.INativeVector<T>.Length
+  fullName.vb: PLATEAU.Interop.INativeVector(Of T).Length
+  nameWithType: INativeVector<T>.Length
+  nameWithType.vb: INativeVector(Of T).Length
+- uid: PLATEAU.Interop.INativeVector`1.Length*
+  name: Length
+  href: api/PLATEAU.Interop.INativeVector-1.html#PLATEAU_Interop_INativeVector_1_Length_
+  commentId: Overload:PLATEAU.Interop.INativeVector`1.Length
+  isSpec: "True"
+  fullName: PLATEAU.Interop.INativeVector<T>.Length
+  fullName.vb: PLATEAU.Interop.INativeVector(Of T).Length
+  nameWithType: INativeVector<T>.Length
+  nameWithType.vb: INativeVector(Of T).Length
 - uid: PLATEAU.Interop.LogCallbackFuncType
   name: LogCallbackFuncType
   href: api/PLATEAU.Interop.LogCallbackFuncType.html
@@ -4379,6 +4574,77 @@ references:
   commentId: F:PLATEAU.Interop.MeshGranularity.PerPrimaryFeatureObject
   fullName: PLATEAU.Interop.MeshGranularity.PerPrimaryFeatureObject
   nameWithType: MeshGranularity.PerPrimaryFeatureObject
+- uid: PLATEAU.Interop.NativeString
+  name: NativeString
+  href: api/PLATEAU.Interop.NativeString.html
+  commentId: T:PLATEAU.Interop.NativeString
+  fullName: PLATEAU.Interop.NativeString
+  nameWithType: NativeString
+- uid: PLATEAU.Interop.NativeString.#ctor(IntPtr)
+  name: NativeString(IntPtr)
+  href: api/PLATEAU.Interop.NativeString.html#PLATEAU_Interop_NativeString__ctor_IntPtr_
+  commentId: M:PLATEAU.Interop.NativeString.#ctor(IntPtr)
+  fullName: PLATEAU.Interop.NativeString.NativeString(IntPtr)
+  nameWithType: NativeString.NativeString(IntPtr)
+- uid: PLATEAU.Interop.NativeString.#ctor*
+  name: NativeString
+  href: api/PLATEAU.Interop.NativeString.html#PLATEAU_Interop_NativeString__ctor_
+  commentId: Overload:PLATEAU.Interop.NativeString.#ctor
+  isSpec: "True"
+  fullName: PLATEAU.Interop.NativeString.NativeString
+  nameWithType: NativeString.NativeString
+- uid: PLATEAU.Interop.NativeString.Create
+  name: Create()
+  href: api/PLATEAU.Interop.NativeString.html#PLATEAU_Interop_NativeString_Create
+  commentId: M:PLATEAU.Interop.NativeString.Create
+  fullName: PLATEAU.Interop.NativeString.Create()
+  nameWithType: NativeString.Create()
+- uid: PLATEAU.Interop.NativeString.Create*
+  name: Create
+  href: api/PLATEAU.Interop.NativeString.html#PLATEAU_Interop_NativeString_Create_
+  commentId: Overload:PLATEAU.Interop.NativeString.Create
+  isSpec: "True"
+  fullName: PLATEAU.Interop.NativeString.Create
+  nameWithType: NativeString.Create
+- uid: PLATEAU.Interop.NativeString.Dispose
+  name: Dispose()
+  href: api/PLATEAU.Interop.NativeString.html#PLATEAU_Interop_NativeString_Dispose
+  commentId: M:PLATEAU.Interop.NativeString.Dispose
+  fullName: PLATEAU.Interop.NativeString.Dispose()
+  nameWithType: NativeString.Dispose()
+- uid: PLATEAU.Interop.NativeString.Dispose*
+  name: Dispose
+  href: api/PLATEAU.Interop.NativeString.html#PLATEAU_Interop_NativeString_Dispose_
+  commentId: Overload:PLATEAU.Interop.NativeString.Dispose
+  isSpec: "True"
+  fullName: PLATEAU.Interop.NativeString.Dispose
+  nameWithType: NativeString.Dispose
+- uid: PLATEAU.Interop.NativeString.Handle
+  name: Handle
+  href: api/PLATEAU.Interop.NativeString.html#PLATEAU_Interop_NativeString_Handle
+  commentId: P:PLATEAU.Interop.NativeString.Handle
+  fullName: PLATEAU.Interop.NativeString.Handle
+  nameWithType: NativeString.Handle
+- uid: PLATEAU.Interop.NativeString.Handle*
+  name: Handle
+  href: api/PLATEAU.Interop.NativeString.html#PLATEAU_Interop_NativeString_Handle_
+  commentId: Overload:PLATEAU.Interop.NativeString.Handle
+  isSpec: "True"
+  fullName: PLATEAU.Interop.NativeString.Handle
+  nameWithType: NativeString.Handle
+- uid: PLATEAU.Interop.NativeString.ToString
+  name: ToString()
+  href: api/PLATEAU.Interop.NativeString.html#PLATEAU_Interop_NativeString_ToString
+  commentId: M:PLATEAU.Interop.NativeString.ToString
+  fullName: PLATEAU.Interop.NativeString.ToString()
+  nameWithType: NativeString.ToString()
+- uid: PLATEAU.Interop.NativeString.ToString*
+  name: ToString
+  href: api/PLATEAU.Interop.NativeString.html#PLATEAU_Interop_NativeString_ToString_
+  commentId: Overload:PLATEAU.Interop.NativeString.ToString
+  isSpec: "True"
+  fullName: PLATEAU.Interop.NativeString.ToString
+  nameWithType: NativeString.ToString
 - uid: PLATEAU.Interop.NativeVectorBase`1
   name: NativeVectorBase<T>
   href: api/PLATEAU.Interop.NativeVectorBase-1.html
@@ -4439,6 +4705,23 @@ references:
   fullName.vb: PLATEAU.Interop.NativeVectorBase(Of T).GetEnumerator
   nameWithType: NativeVectorBase<T>.GetEnumerator
   nameWithType.vb: NativeVectorBase(Of T).GetEnumerator
+- uid: PLATEAU.Interop.NativeVectorBase`1.Handle
+  name: Handle
+  href: api/PLATEAU.Interop.NativeVectorBase-1.html#PLATEAU_Interop_NativeVectorBase_1_Handle
+  commentId: P:PLATEAU.Interop.NativeVectorBase`1.Handle
+  fullName: PLATEAU.Interop.NativeVectorBase<T>.Handle
+  fullName.vb: PLATEAU.Interop.NativeVectorBase(Of T).Handle
+  nameWithType: NativeVectorBase<T>.Handle
+  nameWithType.vb: NativeVectorBase(Of T).Handle
+- uid: PLATEAU.Interop.NativeVectorBase`1.Handle*
+  name: Handle
+  href: api/PLATEAU.Interop.NativeVectorBase-1.html#PLATEAU_Interop_NativeVectorBase_1_Handle_
+  commentId: Overload:PLATEAU.Interop.NativeVectorBase`1.Handle
+  isSpec: "True"
+  fullName: PLATEAU.Interop.NativeVectorBase<T>.Handle
+  fullName.vb: PLATEAU.Interop.NativeVectorBase(Of T).Handle
+  nameWithType: NativeVectorBase<T>.Handle
+  nameWithType.vb: NativeVectorBase(Of T).Handle
 - uid: PLATEAU.Interop.NativeVectorBase`1.Length
   name: Length
   href: api/PLATEAU.Interop.NativeVectorBase-1.html#PLATEAU_Interop_NativeVectorBase_1_Length
@@ -4501,19 +4784,6 @@ references:
   isSpec: "True"
   fullName: PLATEAU.Interop.NativeVectorDatasetMetadata.Create
   nameWithType: NativeVectorDatasetMetadata.Create
-- uid: PLATEAU.Interop.NativeVectorDatasetMetadata.DisposeNative
-  name: DisposeNative()
-  href: api/PLATEAU.Interop.NativeVectorDatasetMetadata.html#PLATEAU_Interop_NativeVectorDatasetMetadata_DisposeNative
-  commentId: M:PLATEAU.Interop.NativeVectorDatasetMetadata.DisposeNative
-  fullName: PLATEAU.Interop.NativeVectorDatasetMetadata.DisposeNative()
-  nameWithType: NativeVectorDatasetMetadata.DisposeNative()
-- uid: PLATEAU.Interop.NativeVectorDatasetMetadata.DisposeNative*
-  name: DisposeNative
-  href: api/PLATEAU.Interop.NativeVectorDatasetMetadata.html#PLATEAU_Interop_NativeVectorDatasetMetadata_DisposeNative_
-  commentId: Overload:PLATEAU.Interop.NativeVectorDatasetMetadata.DisposeNative
-  isSpec: "True"
-  fullName: PLATEAU.Interop.NativeVectorDatasetMetadata.DisposeNative
-  nameWithType: NativeVectorDatasetMetadata.DisposeNative
 - uid: PLATEAU.Interop.NativeVectorDatasetMetadata.Length
   name: Length
   href: api/PLATEAU.Interop.NativeVectorDatasetMetadata.html#PLATEAU_Interop_NativeVectorDatasetMetadata_Length
@@ -4598,6 +4868,83 @@ references:
   isSpec: "True"
   fullName: PLATEAU.Interop.NativeVectorDatasetMetadataGroup.Length
   nameWithType: NativeVectorDatasetMetadataGroup.Length
+- uid: PLATEAU.Interop.NativeVectorDisposableBase`1
+  name: NativeVectorDisposableBase<T>
+  href: api/PLATEAU.Interop.NativeVectorDisposableBase-1.html
+  commentId: T:PLATEAU.Interop.NativeVectorDisposableBase`1
+  name.vb: NativeVectorDisposableBase(Of T)
+  fullName: PLATEAU.Interop.NativeVectorDisposableBase<T>
+  fullName.vb: PLATEAU.Interop.NativeVectorDisposableBase(Of T)
+  nameWithType: NativeVectorDisposableBase<T>
+  nameWithType.vb: NativeVectorDisposableBase(Of T)
+- uid: PLATEAU.Interop.NativeVectorDisposableBase`1.#ctor(IntPtr)
+  name: NativeVectorDisposableBase(IntPtr)
+  href: api/PLATEAU.Interop.NativeVectorDisposableBase-1.html#PLATEAU_Interop_NativeVectorDisposableBase_1__ctor_IntPtr_
+  commentId: M:PLATEAU.Interop.NativeVectorDisposableBase`1.#ctor(IntPtr)
+  fullName: PLATEAU.Interop.NativeVectorDisposableBase<T>.NativeVectorDisposableBase(IntPtr)
+  fullName.vb: PLATEAU.Interop.NativeVectorDisposableBase(Of T).NativeVectorDisposableBase(IntPtr)
+  nameWithType: NativeVectorDisposableBase<T>.NativeVectorDisposableBase(IntPtr)
+  nameWithType.vb: NativeVectorDisposableBase(Of T).NativeVectorDisposableBase(IntPtr)
+- uid: PLATEAU.Interop.NativeVectorDisposableBase`1.#ctor*
+  name: NativeVectorDisposableBase
+  href: api/PLATEAU.Interop.NativeVectorDisposableBase-1.html#PLATEAU_Interop_NativeVectorDisposableBase_1__ctor_
+  commentId: Overload:PLATEAU.Interop.NativeVectorDisposableBase`1.#ctor
+  isSpec: "True"
+  fullName: PLATEAU.Interop.NativeVectorDisposableBase<T>.NativeVectorDisposableBase
+  fullName.vb: PLATEAU.Interop.NativeVectorDisposableBase(Of T).NativeVectorDisposableBase
+  nameWithType: NativeVectorDisposableBase<T>.NativeVectorDisposableBase
+  nameWithType.vb: NativeVectorDisposableBase(Of T).NativeVectorDisposableBase
+- uid: PLATEAU.Interop.NativeVectorDisposableBase`1.At(System.Int32)
+  name: At(Int32)
+  href: api/PLATEAU.Interop.NativeVectorDisposableBase-1.html#PLATEAU_Interop_NativeVectorDisposableBase_1_At_System_Int32_
+  commentId: M:PLATEAU.Interop.NativeVectorDisposableBase`1.At(System.Int32)
+  fullName: PLATEAU.Interop.NativeVectorDisposableBase<T>.At(System.Int32)
+  fullName.vb: PLATEAU.Interop.NativeVectorDisposableBase(Of T).At(System.Int32)
+  nameWithType: NativeVectorDisposableBase<T>.At(Int32)
+  nameWithType.vb: NativeVectorDisposableBase(Of T).At(Int32)
+- uid: PLATEAU.Interop.NativeVectorDisposableBase`1.At*
+  name: At
+  href: api/PLATEAU.Interop.NativeVectorDisposableBase-1.html#PLATEAU_Interop_NativeVectorDisposableBase_1_At_
+  commentId: Overload:PLATEAU.Interop.NativeVectorDisposableBase`1.At
+  isSpec: "True"
+  fullName: PLATEAU.Interop.NativeVectorDisposableBase<T>.At
+  fullName.vb: PLATEAU.Interop.NativeVectorDisposableBase(Of T).At
+  nameWithType: NativeVectorDisposableBase<T>.At
+  nameWithType.vb: NativeVectorDisposableBase(Of T).At
+- uid: PLATEAU.Interop.NativeVectorDisposableBase`1.GetEnumerator
+  name: GetEnumerator()
+  href: api/PLATEAU.Interop.NativeVectorDisposableBase-1.html#PLATEAU_Interop_NativeVectorDisposableBase_1_GetEnumerator
+  commentId: M:PLATEAU.Interop.NativeVectorDisposableBase`1.GetEnumerator
+  fullName: PLATEAU.Interop.NativeVectorDisposableBase<T>.GetEnumerator()
+  fullName.vb: PLATEAU.Interop.NativeVectorDisposableBase(Of T).GetEnumerator()
+  nameWithType: NativeVectorDisposableBase<T>.GetEnumerator()
+  nameWithType.vb: NativeVectorDisposableBase(Of T).GetEnumerator()
+- uid: PLATEAU.Interop.NativeVectorDisposableBase`1.GetEnumerator*
+  name: GetEnumerator
+  href: api/PLATEAU.Interop.NativeVectorDisposableBase-1.html#PLATEAU_Interop_NativeVectorDisposableBase_1_GetEnumerator_
+  commentId: Overload:PLATEAU.Interop.NativeVectorDisposableBase`1.GetEnumerator
+  isSpec: "True"
+  fullName: PLATEAU.Interop.NativeVectorDisposableBase<T>.GetEnumerator
+  fullName.vb: PLATEAU.Interop.NativeVectorDisposableBase(Of T).GetEnumerator
+  nameWithType: NativeVectorDisposableBase<T>.GetEnumerator
+  nameWithType.vb: NativeVectorDisposableBase(Of T).GetEnumerator
+- uid: PLATEAU.Interop.NativeVectorDisposableBase`1.Length
+  name: Length
+  href: api/PLATEAU.Interop.NativeVectorDisposableBase-1.html#PLATEAU_Interop_NativeVectorDisposableBase_1_Length
+  commentId: P:PLATEAU.Interop.NativeVectorDisposableBase`1.Length
+  fullName: PLATEAU.Interop.NativeVectorDisposableBase<T>.Length
+  fullName.vb: PLATEAU.Interop.NativeVectorDisposableBase(Of T).Length
+  nameWithType: NativeVectorDisposableBase<T>.Length
+  nameWithType.vb: NativeVectorDisposableBase(Of T).Length
+- uid: PLATEAU.Interop.NativeVectorDisposableBase`1.Length*
+  name: Length
+  href: api/PLATEAU.Interop.NativeVectorDisposableBase-1.html#PLATEAU_Interop_NativeVectorDisposableBase_1_Length_
+  commentId: Overload:PLATEAU.Interop.NativeVectorDisposableBase`1.Length
+  isSpec: "True"
+  fullName: PLATEAU.Interop.NativeVectorDisposableBase<T>.Length
+  fullName.vb: PLATEAU.Interop.NativeVectorDisposableBase(Of T).Length
+  nameWithType: NativeVectorDisposableBase<T>.Length
+  nameWithType.vb: NativeVectorDisposableBase(Of T).Length
 - uid: PLATEAU.Interop.NativeVectorGmlFile
   name: NativeVectorGmlFile
   href: api/PLATEAU.Interop.NativeVectorGmlFile.html
@@ -4714,6 +5061,90 @@ references:
   isSpec: "True"
   fullName: PLATEAU.Interop.NativeVectorMeshCode.Length
   nameWithType: NativeVectorMeshCode.Length
+- uid: PLATEAU.Interop.NativeVectorString
+  name: NativeVectorString
+  href: api/PLATEAU.Interop.NativeVectorString.html
+  commentId: T:PLATEAU.Interop.NativeVectorString
+  fullName: PLATEAU.Interop.NativeVectorString
+  nameWithType: NativeVectorString
+- uid: PLATEAU.Interop.NativeVectorString.#ctor(IntPtr)
+  name: NativeVectorString(IntPtr)
+  href: api/PLATEAU.Interop.NativeVectorString.html#PLATEAU_Interop_NativeVectorString__ctor_IntPtr_
+  commentId: M:PLATEAU.Interop.NativeVectorString.#ctor(IntPtr)
+  fullName: PLATEAU.Interop.NativeVectorString.NativeVectorString(IntPtr)
+  nameWithType: NativeVectorString.NativeVectorString(IntPtr)
+- uid: PLATEAU.Interop.NativeVectorString.#ctor*
+  name: NativeVectorString
+  href: api/PLATEAU.Interop.NativeVectorString.html#PLATEAU_Interop_NativeVectorString__ctor_
+  commentId: Overload:PLATEAU.Interop.NativeVectorString.#ctor
+  isSpec: "True"
+  fullName: PLATEAU.Interop.NativeVectorString.NativeVectorString
+  nameWithType: NativeVectorString.NativeVectorString
+- uid: PLATEAU.Interop.NativeVectorString.At(System.Int32)
+  name: At(Int32)
+  href: api/PLATEAU.Interop.NativeVectorString.html#PLATEAU_Interop_NativeVectorString_At_System_Int32_
+  commentId: M:PLATEAU.Interop.NativeVectorString.At(System.Int32)
+  fullName: PLATEAU.Interop.NativeVectorString.At(System.Int32)
+  nameWithType: NativeVectorString.At(Int32)
+- uid: PLATEAU.Interop.NativeVectorString.At*
+  name: At
+  href: api/PLATEAU.Interop.NativeVectorString.html#PLATEAU_Interop_NativeVectorString_At_
+  commentId: Overload:PLATEAU.Interop.NativeVectorString.At
+  isSpec: "True"
+  fullName: PLATEAU.Interop.NativeVectorString.At
+  nameWithType: NativeVectorString.At
+- uid: PLATEAU.Interop.NativeVectorString.Create
+  name: Create()
+  href: api/PLATEAU.Interop.NativeVectorString.html#PLATEAU_Interop_NativeVectorString_Create
+  commentId: M:PLATEAU.Interop.NativeVectorString.Create
+  fullName: PLATEAU.Interop.NativeVectorString.Create()
+  nameWithType: NativeVectorString.Create()
+- uid: PLATEAU.Interop.NativeVectorString.Create*
+  name: Create
+  href: api/PLATEAU.Interop.NativeVectorString.html#PLATEAU_Interop_NativeVectorString_Create_
+  commentId: Overload:PLATEAU.Interop.NativeVectorString.Create
+  isSpec: "True"
+  fullName: PLATEAU.Interop.NativeVectorString.Create
+  nameWithType: NativeVectorString.Create
+- uid: PLATEAU.Interop.NativeVectorString.DisposeNative
+  name: DisposeNative()
+  href: api/PLATEAU.Interop.NativeVectorString.html#PLATEAU_Interop_NativeVectorString_DisposeNative
+  commentId: M:PLATEAU.Interop.NativeVectorString.DisposeNative
+  fullName: PLATEAU.Interop.NativeVectorString.DisposeNative()
+  nameWithType: NativeVectorString.DisposeNative()
+- uid: PLATEAU.Interop.NativeVectorString.DisposeNative*
+  name: DisposeNative
+  href: api/PLATEAU.Interop.NativeVectorString.html#PLATEAU_Interop_NativeVectorString_DisposeNative_
+  commentId: Overload:PLATEAU.Interop.NativeVectorString.DisposeNative
+  isSpec: "True"
+  fullName: PLATEAU.Interop.NativeVectorString.DisposeNative
+  nameWithType: NativeVectorString.DisposeNative
+- uid: PLATEAU.Interop.NativeVectorString.Length
+  name: Length
+  href: api/PLATEAU.Interop.NativeVectorString.html#PLATEAU_Interop_NativeVectorString_Length
+  commentId: P:PLATEAU.Interop.NativeVectorString.Length
+  fullName: PLATEAU.Interop.NativeVectorString.Length
+  nameWithType: NativeVectorString.Length
+- uid: PLATEAU.Interop.NativeVectorString.Length*
+  name: Length
+  href: api/PLATEAU.Interop.NativeVectorString.html#PLATEAU_Interop_NativeVectorString_Length_
+  commentId: Overload:PLATEAU.Interop.NativeVectorString.Length
+  isSpec: "True"
+  fullName: PLATEAU.Interop.NativeVectorString.Length
+  nameWithType: NativeVectorString.Length
+- uid: PLATEAU.Interop.NativeVectorString.ToCSharpArray
+  name: ToCSharpArray()
+  href: api/PLATEAU.Interop.NativeVectorString.html#PLATEAU_Interop_NativeVectorString_ToCSharpArray
+  commentId: M:PLATEAU.Interop.NativeVectorString.ToCSharpArray
+  fullName: PLATEAU.Interop.NativeVectorString.ToCSharpArray()
+  nameWithType: NativeVectorString.ToCSharpArray()
+- uid: PLATEAU.Interop.NativeVectorString.ToCSharpArray*
+  name: ToCSharpArray
+  href: api/PLATEAU.Interop.NativeVectorString.html#PLATEAU_Interop_NativeVectorString_ToCSharpArray_
+  commentId: Overload:PLATEAU.Interop.NativeVectorString.ToCSharpArray
+  isSpec: "True"
+  fullName: PLATEAU.Interop.NativeVectorString.ToCSharpArray
+  nameWithType: NativeVectorString.ToCSharpArray
 - uid: PLATEAU.Interop.PInvokeDisposable
   name: PInvokeDisposable
   href: api/PLATEAU.Interop.PInvokeDisposable.html
@@ -5147,6 +5578,115 @@ references:
   isSpec: "True"
   fullName: PLATEAU.MeshWriter.ObjWriter.Write
   nameWithType: ObjWriter.Write
+- uid: PLATEAU.Network
+  name: PLATEAU.Network
+  href: api/PLATEAU.Network.html
+  commentId: N:PLATEAU.Network
+  fullName: PLATEAU.Network
+  nameWithType: PLATEAU.Network
+- uid: PLATEAU.Network.Client
+  name: Client
+  href: api/PLATEAU.Network.Client.html
+  commentId: T:PLATEAU.Network.Client
+  fullName: PLATEAU.Network.Client
+  nameWithType: Client
+- uid: PLATEAU.Network.Client.#ctor(IntPtr)
+  name: Client(IntPtr)
+  href: api/PLATEAU.Network.Client.html#PLATEAU_Network_Client__ctor_IntPtr_
+  commentId: M:PLATEAU.Network.Client.#ctor(IntPtr)
+  fullName: PLATEAU.Network.Client.Client(IntPtr)
+  nameWithType: Client.Client(IntPtr)
+- uid: PLATEAU.Network.Client.#ctor*
+  name: Client
+  href: api/PLATEAU.Network.Client.html#PLATEAU_Network_Client__ctor_
+  commentId: Overload:PLATEAU.Network.Client.#ctor
+  isSpec: "True"
+  fullName: PLATEAU.Network.Client.Client
+  nameWithType: Client.Client
+- uid: PLATEAU.Network.Client.Create
+  name: Create()
+  href: api/PLATEAU.Network.Client.html#PLATEAU_Network_Client_Create
+  commentId: M:PLATEAU.Network.Client.Create
+  fullName: PLATEAU.Network.Client.Create()
+  nameWithType: Client.Create()
+- uid: PLATEAU.Network.Client.Create*
+  name: Create
+  href: api/PLATEAU.Network.Client.html#PLATEAU_Network_Client_Create_
+  commentId: Overload:PLATEAU.Network.Client.Create
+  isSpec: "True"
+  fullName: PLATEAU.Network.Client.Create
+  nameWithType: Client.Create
+- uid: PLATEAU.Network.Client.DisposeNative
+  name: DisposeNative()
+  href: api/PLATEAU.Network.Client.html#PLATEAU_Network_Client_DisposeNative
+  commentId: M:PLATEAU.Network.Client.DisposeNative
+  fullName: PLATEAU.Network.Client.DisposeNative()
+  nameWithType: Client.DisposeNative()
+- uid: PLATEAU.Network.Client.DisposeNative*
+  name: DisposeNative
+  href: api/PLATEAU.Network.Client.html#PLATEAU_Network_Client_DisposeNative_
+  commentId: Overload:PLATEAU.Network.Client.DisposeNative
+  isSpec: "True"
+  fullName: PLATEAU.Network.Client.DisposeNative
+  nameWithType: Client.DisposeNative
+- uid: PLATEAU.Network.Client.Download(System.String,System.String)
+  name: Download(String, String)
+  href: api/PLATEAU.Network.Client.html#PLATEAU_Network_Client_Download_System_String_System_String_
+  commentId: M:PLATEAU.Network.Client.Download(System.String,System.String)
+  fullName: PLATEAU.Network.Client.Download(System.String, System.String)
+  nameWithType: Client.Download(String, String)
+- uid: PLATEAU.Network.Client.Download*
+  name: Download
+  href: api/PLATEAU.Network.Client.html#PLATEAU_Network_Client_Download_
+  commentId: Overload:PLATEAU.Network.Client.Download
+  isSpec: "True"
+  fullName: PLATEAU.Network.Client.Download
+  nameWithType: Client.Download
+- uid: PLATEAU.Network.Client.GetDatasetMetadataGroup
+  name: GetDatasetMetadataGroup()
+  href: api/PLATEAU.Network.Client.html#PLATEAU_Network_Client_GetDatasetMetadataGroup
+  commentId: M:PLATEAU.Network.Client.GetDatasetMetadataGroup
+  fullName: PLATEAU.Network.Client.GetDatasetMetadataGroup()
+  nameWithType: Client.GetDatasetMetadataGroup()
+- uid: PLATEAU.Network.Client.GetDatasetMetadataGroup*
+  name: GetDatasetMetadataGroup
+  href: api/PLATEAU.Network.Client.html#PLATEAU_Network_Client_GetDatasetMetadataGroup_
+  commentId: Overload:PLATEAU.Network.Client.GetDatasetMetadataGroup
+  isSpec: "True"
+  fullName: PLATEAU.Network.Client.GetDatasetMetadataGroup
+  nameWithType: Client.GetDatasetMetadataGroup
+- uid: PLATEAU.Network.Client.Url
+  name: Url
+  href: api/PLATEAU.Network.Client.html#PLATEAU_Network_Client_Url
+  commentId: P:PLATEAU.Network.Client.Url
+  fullName: PLATEAU.Network.Client.Url
+  nameWithType: Client.Url
+- uid: PLATEAU.Network.Client.Url*
+  name: Url
+  href: api/PLATEAU.Network.Client.html#PLATEAU_Network_Client_Url_
+  commentId: Overload:PLATEAU.Network.Client.Url
+  isSpec: "True"
+  fullName: PLATEAU.Network.Client.Url
+  nameWithType: Client.Url
+- uid: PLATEAU.Network.NetworkConfig
+  name: NetworkConfig
+  href: api/PLATEAU.Network.NetworkConfig.html
+  commentId: T:PLATEAU.Network.NetworkConfig
+  fullName: PLATEAU.Network.NetworkConfig
+  nameWithType: NetworkConfig
+- uid: PLATEAU.Network.NetworkConfig.MockServerURL
+  name: MockServerURL
+  href: api/PLATEAU.Network.NetworkConfig.html#PLATEAU_Network_NetworkConfig_MockServerURL
+  commentId: P:PLATEAU.Network.NetworkConfig.MockServerURL
+  fullName: PLATEAU.Network.NetworkConfig.MockServerURL
+  nameWithType: NetworkConfig.MockServerURL
+- uid: PLATEAU.Network.NetworkConfig.MockServerURL*
+  name: MockServerURL
+  href: api/PLATEAU.Network.NetworkConfig.html#PLATEAU_Network_NetworkConfig_MockServerURL_
+  commentId: Overload:PLATEAU.Network.NetworkConfig.MockServerURL
+  isSpec: "True"
+  fullName: PLATEAU.Network.NetworkConfig.MockServerURL
+  nameWithType: NetworkConfig.MockServerURL
 - uid: PLATEAU.PolygonMesh
   name: PLATEAU.PolygonMesh
   href: api/PLATEAU.PolygonMesh.html

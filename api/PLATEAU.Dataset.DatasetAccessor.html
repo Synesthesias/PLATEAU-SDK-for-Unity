@@ -209,7 +209,13 @@ C++側では、IDatasetAccessorは LocalDatasetAccessor と ServerDatasetAccesso
   
   <a id="PLATEAU_Dataset_DatasetAccessor_Packages_" data-uid="PLATEAU.Dataset.DatasetAccessor.Packages*"></a>
   <h4 id="PLATEAU_Dataset_DatasetAccessor_Packages" data-uid="PLATEAU.Dataset.DatasetAccessor.Packages">Packages</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p><a class="xref" href="PLATEAU.Dataset.LocalDatasetAccessor.html">LocalDatasetAccessor</a> の場合:
+存在するパッケージ種をフラグ形式で返します。</p>
+<p><a class="xref" href="PLATEAU.Dataset.ServerDatasetAccessor.html">ServerDatasetAccessor</a> の場合:
+<a class="xref" href="PLATEAU.Dataset.DatasetAccessor.html#PLATEAU_Dataset_DatasetAccessor_GetGmlFiles_Extent_PLATEAU_Dataset_PredefinedCityModelPackage_">GetGmlFiles(Extent, PredefinedCityModelPackage)</a> したことのある <see cref="!:Extent"></see> に関して、
+存在するパッケージ種をフラグ形式で返します。
+<a class="xref" href="PLATEAU.Dataset.DatasetAccessor.html#PLATEAU_Dataset_DatasetAccessor_GetGmlFiles_Extent_PLATEAU_Dataset_PredefinedCityModelPackage_">GetGmlFiles(Extent, PredefinedCityModelPackage)</a> を実行した後でないと None が返ります。</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -232,6 +238,50 @@ C++側では、IDatasetAccessorは LocalDatasetAccessor と ServerDatasetAccesso
   </table>
   <h3 id="methods">Methods
   </h3>
+  
+  
+  <a id="PLATEAU_Dataset_DatasetAccessor_FeatureTypeToPackage_" data-uid="PLATEAU.Dataset.DatasetAccessor.FeatureTypeToPackage*"></a>
+  <h4 id="PLATEAU_Dataset_DatasetAccessor_FeatureTypeToPackage_System_String_" data-uid="PLATEAU.Dataset.DatasetAccessor.FeatureTypeToPackage(System.String)">FeatureTypeToPackage(String)</h4>
+  <div class="markdown level1 summary"><p>gmlのパスが &quot;udx/(featureType)/aaa.gml&quot; として、
+(featureType) の部分を <a class="xref" href="PLATEAU.Dataset.PredefinedCityModelPackage.html">PredefinedCityModelPackage</a> に変換します。</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static PredefinedCityModelPackage FeatureTypeToPackage(string featureType)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">String</a></td>
+        <td><span class="parametername">featureType</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="PLATEAU.Dataset.PredefinedCityModelPackage.html">PredefinedCityModelPackage</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
   
   
   <a id="PLATEAU_Dataset_DatasetAccessor_GetGmlFiles_" data-uid="PLATEAU.Dataset.DatasetAccessor.GetGmlFiles*"></a>

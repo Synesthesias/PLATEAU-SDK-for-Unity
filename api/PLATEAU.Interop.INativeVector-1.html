@@ -5,10 +5,10 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>Class NativeVectorDatasetMetadata
+    <title>Interface INativeVector&lt;T&gt;
    | PLATEAU SDK for Unity </title>
     <meta name="viewport" content="width=device-width">
-    <meta name="title" content="Class NativeVectorDatasetMetadata
+    <meta name="title" content="Interface INativeVector&lt;T&gt;
    | PLATEAU SDK for Unity ">
     <meta name="generator" content="docfx 2.59.4.0">
     
@@ -78,85 +78,30 @@
         </div>
         <div class="article row grid-right">
           <div class="col-md-10">
-            <article class="content wrap" id="_content" data-uid="PLATEAU.Interop.NativeVectorDatasetMetadata">
+            <article class="content wrap" id="_content" data-uid="PLATEAU.Interop.INativeVector`1">
   
   
-  <h1 id="PLATEAU_Interop_NativeVectorDatasetMetadata" data-uid="PLATEAU.Interop.NativeVectorDatasetMetadata" class="text-break">Class NativeVectorDatasetMetadata
+  <h1 id="PLATEAU_Interop_INativeVector_1" data-uid="PLATEAU.Interop.INativeVector`1" class="text-break">Interface INativeVector&lt;T&gt;
   </h1>
   <div class="markdown level0 summary"></div>
   <div class="markdown level0 conceptual"></div>
-  <div class="inheritance">
-    <h5>Inheritance</h5>
-    <div class="level0"><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">Object</a></div>
-    <div class="level1"><a class="xref" href="PLATEAU.Interop.NativeVectorBase-1.html">NativeVectorBase</a>&lt;<span class="xref">DatasetMetadata</span>&gt;</div>
-    <div class="level2"><span class="xref">NativeVectorDatasetMetadata</span></div>
-  </div>
-  <div class="implements">
-    <h5>Implements</h5>
-    <div><a class="xref" href="PLATEAU.Interop.INativeVector-1.html">INativeVector</a>&lt;<span class="xref">DatasetMetadata</span>&gt;</div>
-    <div><span class="xref">IEnumerable</span>&lt;<span class="xref">DatasetMetadata</span>&gt;</div>
-  </div>
-  <div class="inheritedMembers">
-    <h5>Inherited Members</h5>
-    <div>
-      <a class="xref" href="PLATEAU.Interop.NativeVectorBase-1.html#PLATEAU_Interop_NativeVectorBase_1_Handle">NativeVectorBase&lt;DatasetMetadata&gt;.Handle</a>
-    </div>
-    <div>
-      <a class="xref" href="PLATEAU.Interop.NativeVectorBase-1.html#PLATEAU_Interop_NativeVectorBase_1_GetEnumerator">NativeVectorBase&lt;DatasetMetadata&gt;.GetEnumerator()</a>
-    </div>
-    <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.tostring#system-object-tostring">Object.ToString()</a>
-    </div>
-    <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)">Object.Equals(Object)</a>
-    </div>
-    <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)">Object.Equals(Object, Object)</a>
-    </div>
-    <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.referenceequals#system-object-referenceequals(system-object-system-object)">Object.ReferenceEquals(Object, Object)</a>
-    </div>
-    <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gethashcode#system-object-gethashcode">Object.GetHashCode()</a>
-    </div>
-    <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gettype#system-object-gettype">Object.GetType()</a>
-    </div>
-    <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone#system-object-memberwiseclone">Object.MemberwiseClone()</a>
-    </div>
-  </div>
   <h6><strong>Namespace</strong>: <a class="xref" href="PLATEAU.Interop.html">PLATEAU.Interop</a></h6>
   <h6><strong>Assembly</strong>: cs.temp.dll.dll</h6>
-  <h5 id="PLATEAU_Interop_NativeVectorDatasetMetadata_syntax">Syntax</h5>
+  <h5 id="PLATEAU_Interop_INativeVector_1_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public class NativeVectorDatasetMetadata : NativeVectorBase&lt;DatasetMetadata&gt;, INativeVector&lt;DatasetMetadata&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public interface INativeVector&lt;out T&gt;</code></pre>
   </div>
-  <h3 id="constructors">Constructors
-  </h3>
-  
-  
-  <a id="PLATEAU_Interop_NativeVectorDatasetMetadata__ctor_" data-uid="PLATEAU.Interop.NativeVectorDatasetMetadata.#ctor*"></a>
-  <h4 id="PLATEAU_Interop_NativeVectorDatasetMetadata__ctor_IntPtr_" data-uid="PLATEAU.Interop.NativeVectorDatasetMetadata.#ctor(IntPtr)">NativeVectorDatasetMetadata(IntPtr)</h4>
-  <div class="markdown level1 summary"></div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public NativeVectorDatasetMetadata(IntPtr handle)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
+  <h5 class="typeParameters">Type Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
     <thead>
       <tr>
-        <th>Type</th>
         <th>Name</th>
         <th>Description</th>
       </tr>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">IntPtr</span></td>
-        <td><span class="parametername">handle</span></td>
+        <td><span class="parametername">T</span></td>
         <td></td>
       </tr>
     </tbody>
@@ -165,13 +110,13 @@
   </h3>
   
   
-  <a id="PLATEAU_Interop_NativeVectorDatasetMetadata_Length_" data-uid="PLATEAU.Interop.NativeVectorDatasetMetadata.Length*"></a>
-  <h4 id="PLATEAU_Interop_NativeVectorDatasetMetadata_Length" data-uid="PLATEAU.Interop.NativeVectorDatasetMetadata.Length">Length</h4>
+  <a id="PLATEAU_Interop_INativeVector_1_Length_" data-uid="PLATEAU.Interop.INativeVector`1.Length*"></a>
+  <h4 id="PLATEAU_Interop_INativeVector_1_Length" data-uid="PLATEAU.Interop.INativeVector`1.Length">Length</h4>
   <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public override int Length { get; }</code></pre>
+    <pre><code class="lang-csharp hljs">int Length { get; }</code></pre>
   </div>
   <h5 class="propertyValue">Property Value</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -188,19 +133,17 @@
       </tr>
     </tbody>
   </table>
-  <h5 class="overrides">Overrides</h5>
-  <div><span class="xref">PLATEAU.Interop.NativeVectorBase&lt;DatasetMetadata&gt;.Length</span></div>
   <h3 id="methods">Methods
   </h3>
   
   
-  <a id="PLATEAU_Interop_NativeVectorDatasetMetadata_At_" data-uid="PLATEAU.Interop.NativeVectorDatasetMetadata.At*"></a>
-  <h4 id="PLATEAU_Interop_NativeVectorDatasetMetadata_At_System_Int32_" data-uid="PLATEAU.Interop.NativeVectorDatasetMetadata.At(System.Int32)">At(Int32)</h4>
+  <a id="PLATEAU_Interop_INativeVector_1_At_" data-uid="PLATEAU.Interop.INativeVector`1.At*"></a>
+  <h4 id="PLATEAU_Interop_INativeVector_1_At_System_Int32_" data-uid="PLATEAU.Interop.INativeVector`1.At(System.Int32)">At(Int32)</h4>
   <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public override DatasetMetadata At(int index)</code></pre>
+    <pre><code class="lang-csharp hljs">T At(int index)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -229,45 +172,11 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">DatasetMetadata</span></td>
+        <td><span class="xref">T</span></td>
         <td></td>
       </tr>
     </tbody>
   </table>
-  <h5 class="overrides">Overrides</h5>
-  <div><span class="xref">PLATEAU.Interop.NativeVectorBase&lt;DatasetMetadata&gt;.At(System.Int32)</span></div>
-  
-  
-  <a id="PLATEAU_Interop_NativeVectorDatasetMetadata_Create_" data-uid="PLATEAU.Interop.NativeVectorDatasetMetadata.Create*"></a>
-  <h4 id="PLATEAU_Interop_NativeVectorDatasetMetadata_Create" data-uid="PLATEAU.Interop.NativeVectorDatasetMetadata.Create">Create()</h4>
-  <div class="markdown level1 summary"></div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static NativeVectorDatasetMetadata Create()</code></pre>
-  </div>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="PLATEAU.Interop.NativeVectorDatasetMetadata.html">NativeVectorDatasetMetadata</a></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  <h3 id="implements">Implements</h3>
-  <div>
-      <a class="xref" href="PLATEAU.Interop.INativeVector-1.html">INativeVector&lt;T&gt;</a>
-  </div>
-  <div>
-      <span class="xref">IEnumerable&lt;&gt;</span>
-  </div>
 </article>
           </div>
           
