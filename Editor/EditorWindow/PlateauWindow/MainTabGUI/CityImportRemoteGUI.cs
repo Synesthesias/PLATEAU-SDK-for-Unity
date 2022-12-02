@@ -1,6 +1,5 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
-using Codice.CM.Common;
 using PLATEAU.CityImport.AreaSelector;
 using PLATEAU.CityImport.Setting;
 using PLATEAU.Dataset;
@@ -27,8 +26,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
         private readonly CityLoadConfig config = new CityLoadConfig();
         // インポートの処理状況はウィンドウを消しても残しておきたいので static にします。
         private static ProgressDisplayGUI progressGUI;
-        private const string serverUrl = "https://9tkm2n.deta.dev";
-        
+
 
         public CityImportRemoteGUI(UnityEditor.EditorWindow parentEditorWindow)
         {
@@ -70,11 +68,14 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
                 "基準座標系", this.config.CoordinateZoneID - 1,
                 GeoReference.ZoneIdExplanation) + 1; // 番号は 1 スタート
 
+            PlateauEditorStyle.Heading("マップ範囲選択", "num2.png");
+
             bool isAreaSelectComplete = AreaSelectButton.Draw(this.config.AreaMeshCodes, sourceConf,
                     this, this.config.CoordinateZoneID);
 
             if (isAreaSelectComplete)
             {
+                PlateauEditorStyle.Heading("地物別設定", "num3.png");
                 CityLoadConfigGUI.Draw(this.config);
                 ImportButton.Draw(this.config, progressGUI);
             }
@@ -87,7 +88,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
             this.datasetGroups = await Task.Run(() =>
             {
                 using var client = Client.Create();
-                client.Url = serverUrl;
+                client.Url = NetworkConfig.MockServerURL;
                 return client.GetDatasetMetadataGroup();
             });
             this.datasetGroupLoaded = true;

@@ -14,7 +14,6 @@ namespace PLATEAU.Dataset
     /// </summary>
     public class GmlFile
     {
-        private const string APIServerUrl = "https://9tkm2n.deta.dev";
         public IntPtr Handle { get; private set; }
         private bool isDisposed;
         public GmlFile(IntPtr handle)
@@ -153,7 +152,7 @@ namespace PLATEAU.Dataset
             
             using (var client = Client.Create())
             {
-                client.Url = APIServerUrl;
+                client.Url = NetworkConfig.MockServerURL;
                 string downloadedPath = client.Download(destDirPath, Path);
                 return Create(downloadedPath);
             }

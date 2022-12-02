@@ -16,9 +16,7 @@ namespace PLATEAU.CityImport.Load.CityImportProcedure
     /// </summary>
     internal static class GmlFetcher
     {
-        // TODO 下の変数、複数のクラスで重複しているのでまとめる
-        private const string APIServerUrl = "https://9tkm2n.deta.dev";
-        
+
         /// <summary>
         /// GMLと関連ファイルを StreamingAssets フォルダにコピー(サーバーの場合はダウンロード)します。
         /// </summary>
@@ -61,7 +59,7 @@ namespace PLATEAU.CityImport.Load.CityImportProcedure
             if (localGmlDirPath == null) throw new Exception("invalid path.");
             // 関連ファイルをダウンロードします。
             using var client = Client.Create();
-            client.Url = APIServerUrl;
+            client.Url = NetworkConfig.MockServerURL;
             for(int i=0; i<pathsToDownload.Length; i++)
             {
                 string relativePath = pathsToDownload[i];
