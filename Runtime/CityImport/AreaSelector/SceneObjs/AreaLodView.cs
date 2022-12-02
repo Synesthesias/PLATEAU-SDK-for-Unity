@@ -1,7 +1,6 @@
 ﻿using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using PLATEAU.Dataset;
 using UnityEditor;
 using UnityEngine;
@@ -51,12 +50,12 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
             pos = camera.ScreenToWorldPoint(camera.WorldToScreenPoint(pos) + posOffsetScreenSpace);
             
             // アイコンを表示します。
-            foreach (var packageToLods in this.packageToLodDict)
+            foreach (var packageToLod in this.packageToLodDict)
             {
-                if (packageToLods.Value.IsEmpty) continue;
-                uint maxLod = packageToLods.Value.Max();
-                var package = packageToLods.Key;
-                if (!iconDict.TryGetValue((package, maxLod), out var iconTex)) continue;
+                int maxLod = packageToLod.Value;
+                if (maxLod < 0) continue;
+                var package = packageToLod.Key;
+                if (!iconDict.TryGetValue((package, (uint)maxLod), out var iconTex)) continue;
 
                 float meshCodeScreenWidth =
                     (camera.WorldToScreenPoint(this.meshCodeUnityPositionLowerRight) -

@@ -69,8 +69,7 @@ namespace PLATEAU.PolygonMesh
         public void Dispose()
         {
             ThrowIfInvalid();
-            var result = NativeMethods.plateau_delete_sub_mesh(Handle);
-            DLLUtil.CheckDllError(result);
+            DLLUtil.ExecNativeVoidFunc(Handle, NativeMethods.plateau_delete_sub_mesh);
             this.isValid = false;
         }
 

@@ -3,7 +3,7 @@ using PLATEAU.Dataset;
 
 namespace PLATEAU.Interop
 {
-    public class NativeVectorMeshCode : NativeVectorBase<MeshCode>
+    public class NativeVectorMeshCode : NativeVectorDisposableBase<MeshCode>
     {
         private NativeVectorMeshCode(IntPtr ptr) : base(ptr)
         {

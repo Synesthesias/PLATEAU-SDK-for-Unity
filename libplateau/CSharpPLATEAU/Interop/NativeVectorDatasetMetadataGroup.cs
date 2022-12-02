@@ -3,7 +3,7 @@ using PLATEAU.Dataset;
 
 namespace PLATEAU.Interop
 {
-    public class NativeVectorDatasetMetadataGroup : NativeVectorBase<DatasetMetadataGroup>
+    public class NativeVectorDatasetMetadataGroup : NativeVectorDisposableBase<DatasetMetadataGroup>
     {
         public NativeVectorDatasetMetadataGroup(IntPtr handle) : base(handle)
         {

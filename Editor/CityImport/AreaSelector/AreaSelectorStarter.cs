@@ -1,5 +1,5 @@
-﻿using System.IO;
-using PLATEAU.CityImport.AreaSelector;
+﻿using PLATEAU.CityImport.AreaSelector;
+using PLATEAU.Dataset;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -22,13 +22,8 @@ namespace PLATEAU.Editor.CityImport.AreaSelector
         /// 範囲選択の専用シーンを立ち上げます。
         /// ただし、現在のシーンに変更があれば保存するかどうかユーザーに尋ね、キャンセルが選択されたならば中止します。
         /// </summary>
-        public static void Start(string dataSourcePath, IAreaSelectResultReceiver areaSelectResultReceiver, int coordinateZoneID)
+        public static void Start(DatasetSourceConfig datasetSourceConfig, IAreaSelectResultReceiver areaSelectResultReceiver, int coordinateZoneID)
         {
-            if (!Directory.Exists(dataSourcePath))
-            {
-                EditorUtility.DisplayDialog("PLATEAU SDK", $"入力フォルダが存在しません。\nフォルダを指定してください。", "OK");
-                return;
-            }
             if (!EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())
             {
                 return;
@@ -49,7 +44,7 @@ namespace PLATEAU.Editor.CityImport.AreaSelector
             
             SetUpTemporaryScene();
             var behaviour = Object.FindObjectOfType<AreaSelectorBehaviour>();
-            behaviour.Init(prevScenePath, dataSourcePath, areaSelectResultReceiver, coordinateZoneID);
+            behaviour.Init(prevScenePath, datasetSourceConfig, areaSelectResultReceiver, coordinateZoneID);
         }
 
         private static void SetUpTemporaryScene()

@@ -21,9 +21,9 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         private Task loadTask;
         private readonly GeoReference geoReference;
 
-        public AreaLodController(string rootPath, GeoReference geoReference, IEnumerable<MeshCode> allMeshCodes)
+        public AreaLodController(DatasetSourceConfig datasetSourceConfig, GeoReference geoReference, IEnumerable<MeshCode> allMeshCodes)
         {
-            this.searcher = new AreaLodSearcher(rootPath);
+            this.searcher = new AreaLodSearcher(datasetSourceConfig);
             this.geoReference = geoReference;
             foreach (var meshCode in allMeshCodes)
             {

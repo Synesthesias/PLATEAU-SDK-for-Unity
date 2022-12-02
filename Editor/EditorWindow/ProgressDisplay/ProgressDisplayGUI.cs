@@ -1,5 +1,6 @@
 ﻿using System.Collections.Concurrent;
 using System.Linq;
+using System.Threading;
 using PLATEAU.Editor.EditorWindow.Common;
 using PLATEAU.Util;
 using UnityEditor;
@@ -13,11 +14,28 @@ namespace PLATEAU.Editor.EditorWindow.ProgressDisplay
     internal class ProgressDisplayGUI : IProgressDisplay
     {
         private readonly ConcurrentBag<DisplayedProgress> progressBag = new ConcurrentBag<DisplayedProgress>();
+        private SynchronizationContext mainThreadContext;
+        public UnityEditor.EditorWindow ParentEditorWindow { get; set; }
 
-        public bool IsEmpty => this.progressBag.IsEmpty;
+        /// <summary>
+        /// メインスレッドから読んでください。
+        /// </summary>
+        public ProgressDisplayGUI(UnityEditor.EditorWindow parentEditorWindow)
+        {
+            this.mainThreadContext = SynchronizationContext.Current;
+            ParentEditorWindow = parentEditorWindow;
+        }
+
+        private bool IsEmpty => this.progressBag.IsEmpty;
 
         public void Draw()
         {
+            if (IsEmpty) return;
+            
+            PlateauEditorStyle.CenterAlignHorizontal(() =>
+            {
+                PlateauEditorStyle.LabelSizeFit(new GUIContent("インポート処理"));
+            });
             using (PlateauEditorStyle.VerticalScopeLevel1())
             {
                 foreach (var progress in this.progressBag)
@@ -58,7 +76,13 @@ namespace PLATEAU.Editor.EditorWindow.ProgressDisplay
                 matched.Message = message;
             }
 
-            
+            if (ParentEditorWindow != null)
+            {
+                this.mainThreadContext.Post(_ =>
+                {
+                    ParentEditorWindow.Repaint();
+                }, null);
+            }
         }
     }
 }
