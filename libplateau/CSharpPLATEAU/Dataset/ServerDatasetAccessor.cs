@@ -65,6 +65,14 @@ namespace PLATEAU.Dataset
             }
         }
 
+        public int GetMaxLod(MeshCode meshCode, PredefinedCityModelPackage package)
+        {
+            var result = NativeMethods.plateau_server_dataset_accessor_get_max_lod(
+                Handle, meshCode, package, out int maxLod);
+            DLLUtil.CheckDllError(result);
+            return maxLod;
+        }
+
         public void Dispose()
         {
             DLLUtil.ExecNativeVoidFunc(Handle, NativeMethods.plateau_delete_server_dataset_accessor);
