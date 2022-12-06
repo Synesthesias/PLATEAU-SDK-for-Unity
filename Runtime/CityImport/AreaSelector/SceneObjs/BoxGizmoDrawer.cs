@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ICSharpCode.NRefactory.Ast;
 using UnityEngine;
 
 namespace PLATEAU.CityImport.AreaSelector.SceneObjs
@@ -37,8 +38,8 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
 #if UNITY_EDITOR
             var prevColor = Gizmos.color;
             Gizmos.color = this.BoxColor;
-            var max = AreaMax(this.CenterPos, this.Size);
-            var min = AreaMin(this.CenterPos, this.Size);
+            var max = AreaMax;
+            var min = AreaMin;
             var p1 = new Vector3(min.x, max.y, min.z);
             var p2 = new Vector3(min.x, max.y, max.z);
             var p3 = new Vector3(max.x, max.y, max.z);
@@ -65,16 +66,20 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
             
         }
 
-        protected static Vector3 AreaMax(Vector3 center, Vector3 size)
+        protected Vector3 AreaMax => CalcAreaMax(this.CenterPos ,this.Size);
+
+        protected Vector3 AreaMin => CalcAreaMin(this.CenterPos, this.Size);
+
+        protected static Vector3 CalcAreaMax(Vector3 center, Vector3 size)
         {
             return center + size / 2.0f;
         }
-
-        protected static Vector3 AreaMin(Vector3 center, Vector3 size)
+        
+        protected static Vector3 CalcAreaMin(Vector3 center, Vector3 size)
         {
             return center - size / 2.0f;
         }
-
+        
         /// <summary>
         /// Y軸の値は無視して、XとZの値で箱同士が重なる箇所があるかどうかを bool で返します。
         /// </summary>

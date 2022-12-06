@@ -62,7 +62,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         {
             #if UNITY_EDITOR
             // 追加でボックスの中を分割するラインを引きます。
-            var min = AreaMin(this.CenterPos, this.Size);
+            var min = AreaMin;
             var xDiff = this.Size.x / innerDivideCount;
             var linePosUp = min + Vector3.right * xDiff;
             // 縦のライン

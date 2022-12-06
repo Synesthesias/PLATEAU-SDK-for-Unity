@@ -77,7 +77,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
             var posOffsetScreenSpace = new Vector3(-iconWidth * iconsToShow.Count * 0.5f, iconWidth * 0.5f, 0);  
             var iconsUpperLeft = camera.ScreenToWorldPoint(camera.WorldToScreenPoint(meshCodeCenterUnityPos) + posOffsetScreenSpace);
             
-            // アイコンの背景となるボックスを表示します。
+            // アイコンを包むボックスを表示します。
             var iconsBoxPaddingScreen = iconWidth * boxPaddingRatio;
             var boxSizeScreen = new Vector2(
                 iconWidth * iconsToShow.Count + iconsBoxPaddingScreen * 2,
@@ -87,6 +87,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
             Handles.BeginGUI();
             var prevColor = GUI.color;
             GUI.color = boxColor;
+            // ボックスを描画します。ただし、Handles.BeginGUI(); の中では座標系が異なる（特にスクリーン座標系における y座標の向きが異なる）ので変換します。
             GUI.DrawTexture(new Rect(new Vector2(boxPosScreen.x, boxPosScreen.y * -1 + camera.pixelHeight), boxSizeScreen), boxTex, ScaleMode.StretchToFill);
             GUI.color = prevColor;
             Handles.EndGUI();
