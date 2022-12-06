@@ -20,7 +20,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         private const string iconsBoxImagePath = "round-window-wide.png";
         private const float maxIconWidth = 60;
         private const float iconOpacity = 0.9f;
-        private const float iconsBoxPaddingUnity = 100f;
+        private const float iconsBoxPaddingScreen = 5f;
         private static ConcurrentDictionary<(PredefinedCityModelPackage package, uint lod), Texture> iconDict;
         private static Texture iconsBoxTex;
 
@@ -74,27 +74,14 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
             var iconsUpperLeft = camera.ScreenToWorldPoint(camera.WorldToScreenPoint(meshCodeCenterUnityPos) + posOffsetScreenSpace);
             
             // アイコンの背景となるボックスを表示します。
-            var boxContent = new GUIContent(iconsBoxTex);
-            var camPos = camera.transform.position;
-            var iconsBoxPaddingScreen =
-                camera.WorldToScreenPoint(new Vector3(camPos.x + iconsBoxPaddingUnity, 0, camPos.z + iconsBoxPaddingUnity)) -
-                camera.WorldToScreenPoint(new Vector3(camPos.x, 0, camPos.z));
             var boxSizeScreen = new Vector2(
-                iconWidth * iconsToShow.Count + iconsBoxPaddingScreen.x * 2,
-                iconWidth + iconsBoxPaddingScreen.y * 2
+                iconWidth * iconsToShow.Count + iconsBoxPaddingScreen * 2,
+                iconWidth + iconsBoxPaddingScreen * 2
                 );
-            var boxSizeUnity = camera.ScreenToWorldPoint(boxSizeScreen);
-            var boxStyle = new GUIStyle(EditorStyles.label)
-            {
-                fixedHeight = boxSizeScreen.y,
-                fixedWidth = boxSizeScreen.x,
-                stretchHeight = true,
-                stretchWidth = true, 
-            };
-            var boxPos = camera.ScreenToWorldPoint(camera.WorldToScreenPoint(iconsUpperLeft) - new Vector3(boxSizeScreen.x, boxSizeScreen.y, camPos.y));
+            var boxPosScreen = camera.WorldToScreenPoint(iconsUpperLeft) - new Vector3(boxSizeScreen.x, boxSizeScreen.y, 0);
             // Handles.Label(boxPos, boxContent, boxStyle);
             Handles.BeginGUI();
-            GUI.DrawTexture(new Rect(camera.WorldToScreenPoint(boxPos) * new Vector2(1f,-1f) + new Vector2(boxSizeScreen.x, camera.pixelHeight - boxSizeScreen.y), boxSizeScreen), iconsBoxTex, ScaleMode.StretchToFill);
+            GUI.DrawTexture(new Rect(boxPosScreen * new Vector2(1f,-1f) + new Vector2(boxSizeScreen.x, camera.pixelHeight - boxSizeScreen.y), boxSizeScreen), iconsBoxTex, ScaleMode.StretchToFill);
             Handles.EndGUI();
             
             // アイコンを表示します。
