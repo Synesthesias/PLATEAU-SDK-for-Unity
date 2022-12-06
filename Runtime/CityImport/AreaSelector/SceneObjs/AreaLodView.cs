@@ -20,9 +20,13 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         private const string iconsBoxImagePath = "round-window-wide.png";
         private const float maxIconWidth = 60;
         private const float iconOpacity = 0.9f;
-        private const float iconsBoxPaddingScreen = 5f;
+        /// <summary> アイコンを包むボックスについて、そのパディング幅がアイコンの何倍であるかです。 </summary>
+        private const float boxPaddingRatio = 0.05f;
+        /// <summary> アイコンの幅がメッシュコード幅の何分の1であるかです。 </summary>
+        private const float iconWidthDivider = 5;
+        private static readonly Color boxColor = new Color(0.25f, 0.25f, 0.25f, 0.35f);
         private static ConcurrentDictionary<(PredefinedCityModelPackage package, uint lod), Texture> iconDict;
-        private static Texture iconsBoxTex;
+        private static Texture boxTex;
 
         public AreaLodView(PackageToLodDict packageToLodDict, Vector3 meshCodeUnityPositionUpperLeft, Vector3 meshCodeUnityPositionLowerRight)
         {
@@ -65,8 +69,8 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
                 (camera.WorldToScreenPoint(this.meshCodeUnityPositionLowerRight) -
                  camera.WorldToScreenPoint(this.meshCodeUnityPositionUpperLeft))
                 .x;
-            // 地域メッシュコードの枠内にアイコンが4つ並ぶ程度の大きさ
-            float iconWidth = Mathf.Min(maxIconWidth, meshCodeScreenWidth / 4);
+            // 地域メッシュコードの枠内にアイコンが5つ並ぶ程度の大きさ
+            float iconWidth = Mathf.Min(maxIconWidth, meshCodeScreenWidth / iconWidthDivider);
             
             // アイコンを中央揃えで左から右に並べたとき、左上の座標を求めます。
             var meshCodeCenterUnityPos = (this.meshCodeUnityPositionUpperLeft + this.meshCodeUnityPositionLowerRight) * 0.5f;
@@ -74,14 +78,17 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
             var iconsUpperLeft = camera.ScreenToWorldPoint(camera.WorldToScreenPoint(meshCodeCenterUnityPos) + posOffsetScreenSpace);
             
             // アイコンの背景となるボックスを表示します。
+            var iconsBoxPaddingScreen = iconWidth * boxPaddingRatio;
             var boxSizeScreen = new Vector2(
                 iconWidth * iconsToShow.Count + iconsBoxPaddingScreen * 2,
                 iconWidth + iconsBoxPaddingScreen * 2
                 );
-            var boxPosScreen = camera.WorldToScreenPoint(iconsUpperLeft);
-            // Handles.Label(boxPos, boxContent, boxStyle);
+            var boxPosScreen = camera.WorldToScreenPoint(iconsUpperLeft) + new Vector3(-1,1,0) * iconsBoxPaddingScreen;
             Handles.BeginGUI();
-            GUI.DrawTexture(new Rect(boxPosScreen * new Vector2(1f,-1f) + new Vector2(0, camera.pixelHeight), boxSizeScreen), iconsBoxTex, ScaleMode.StretchToFill);
+            var prevColor = GUI.color;
+            GUI.color = boxColor;
+            GUI.DrawTexture(new Rect(new Vector2(boxPosScreen.x, boxPosScreen.y * -1 + camera.pixelHeight), boxSizeScreen), boxTex, ScaleMode.StretchToFill);
+            GUI.color = prevColor;
             Handles.EndGUI();
             
             // アイコンを表示します。
@@ -112,7 +119,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
 
         private static ConcurrentDictionary<(PredefinedCityModelPackage package, uint lod), Texture> LoadIconFiles()
         {
-            iconsBoxTex = LoadIcon(iconsBoxImagePath);
+            boxTex = LoadIcon(iconsBoxImagePath);
             return new ConcurrentDictionary<(PredefinedCityModelPackage package, uint lod), Texture>(
                 new Dictionary<(PredefinedCityModelPackage package, uint lod), Texture>
                 {
