@@ -20,8 +20,6 @@ namespace PLATEAU.CityImport.Load.Convert
     /// </summary>
     internal static class PlateauToUnityModelConverter
     {
-
-        // TODO Loadの実行中にまたLoadが実行されることを防ぐ仕組みが未実装
         // TODO 処理をキャンセルする機能が未実装
         /// <summary>
         /// 引数の cityModel を Unity向けに変換し、シーンに配置します。
