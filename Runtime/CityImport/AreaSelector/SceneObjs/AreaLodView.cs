@@ -78,10 +78,10 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
                 iconWidth * iconsToShow.Count + iconsBoxPaddingScreen * 2,
                 iconWidth + iconsBoxPaddingScreen * 2
                 );
-            var boxPosScreen = camera.WorldToScreenPoint(iconsUpperLeft) - new Vector3(boxSizeScreen.x, boxSizeScreen.y, 0);
+            var boxPosScreen = camera.WorldToScreenPoint(iconsUpperLeft);
             // Handles.Label(boxPos, boxContent, boxStyle);
             Handles.BeginGUI();
-            GUI.DrawTexture(new Rect(boxPosScreen * new Vector2(1f,-1f) + new Vector2(boxSizeScreen.x, camera.pixelHeight - boxSizeScreen.y), boxSizeScreen), iconsBoxTex, ScaleMode.StretchToFill);
+            GUI.DrawTexture(new Rect(boxPosScreen * new Vector2(1f,-1f) + new Vector2(0, camera.pixelHeight), boxSizeScreen), iconsBoxTex, ScaleMode.StretchToFill);
             Handles.EndGUI();
             
             // アイコンを表示します。
