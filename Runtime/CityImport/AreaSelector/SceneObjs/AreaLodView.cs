@@ -1,6 +1,7 @@
 ﻿using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using PLATEAU.Dataset;
 using UnityEditor;
 using UnityEngine;
@@ -44,27 +45,35 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
                 return;
             }
 
-            // アイコンの表示を開始する地点は、地域メッシュコードの左上から、オフセット(スクリーンスペース)だけ動かした地点とします。
-            var pos = this.meshCodeUnityPositionUpperLeft;
-            var posOffsetScreenSpace = new Vector3(5, -5, 0);
-            pos = camera.ScreenToWorldPoint(camera.WorldToScreenPoint(pos) + posOffsetScreenSpace);
-            
-            // アイコンを表示します。
+            // 表示すべきアイコンを求めます。
+            var iconsToShow = new List<Texture>();
             foreach (var packageToLod in this.packageToLodDict)
             {
                 int maxLod = packageToLod.Value;
                 if (maxLod < 0) continue;
                 var package = packageToLod.Key;
                 if (!iconDict.TryGetValue((package, (uint)maxLod), out var iconTex)) continue;
+                iconsToShow.Add(iconTex);
+            }
 
-                float meshCodeScreenWidth =
-                    (camera.WorldToScreenPoint(this.meshCodeUnityPositionLowerRight) -
-                     camera.WorldToScreenPoint(this.meshCodeUnityPositionUpperLeft))
-                    .x;
-                
-                // 地域メッシュコードの枠内にアイコンが4つ並ぶ程度の大きさ
-                float iconWidth = Mathf.Min(70, meshCodeScreenWidth / 4);
-                
+            // アイコンの表示位置の基準点はメッシュコードの中心とします。
+            float meshCodeScreenWidth =
+                (camera.WorldToScreenPoint(this.meshCodeUnityPositionLowerRight) -
+                 camera.WorldToScreenPoint(this.meshCodeUnityPositionUpperLeft))
+                .x;
+            // 地域メッシュコードの枠内にアイコンが4つ並ぶ程度の大きさ
+            float iconWidth = Mathf.Min(70, meshCodeScreenWidth / 4);
+            
+            // アイコンを中央揃えで左から右に並べたとき、左上の座標を求めます。
+            var meshCodeCenterUnityPos = (this.meshCodeUnityPositionUpperLeft + this.meshCodeUnityPositionLowerRight) * 0.5f;
+            var posOffsetScreenSpace = new Vector3(-iconWidth * iconsToShow.Count * 0.5f, iconWidth * 0.5f, 0);  
+            var pos = camera.ScreenToWorldPoint(camera.WorldToScreenPoint(meshCodeCenterUnityPos) + posOffsetScreenSpace);
+            
+            
+            
+            // アイコンを表示します。
+            foreach (var iconTex in iconsToShow)
+            {
                 var style = new GUIStyle(EditorStyles.label)
                 {
                     fixedHeight = iconWidth,
