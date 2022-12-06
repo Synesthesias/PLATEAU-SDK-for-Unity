@@ -53,7 +53,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
             foreach (var meshCode in meshCodes)
             {
                 var drawer = new MeshCodeGizmoDrawer();
-                drawer.SetUp(meshCode, outGeoReference, gizmoParent);
+                drawer.SetUp(meshCode, outGeoReference);
                 this.meshCodeDrawers.Add(drawer);
             }
 

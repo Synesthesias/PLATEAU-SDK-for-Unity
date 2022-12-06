@@ -19,7 +19,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         private const string iconDirPath = "Packages/com.synesthesias.plateau-unity-sdk/Images/AreaSelect";
         private const string iconsBoxImagePath = "round-window-wide.png";
         private const float maxIconWidth = 60;
-        private const float iconOpacity = 0.9f;
+        private const float iconOpacity = 0.95f;
         /// <summary> アイコンを包むボックスについて、そのパディング幅がアイコンの何倍であるかです。 </summary>
         private const float boxPaddingRatio = 0.05f;
         /// <summary> アイコンの幅がメッシュコード幅の何分の1であるかです。 </summary>
