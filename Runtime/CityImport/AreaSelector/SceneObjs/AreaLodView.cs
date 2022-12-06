@@ -1,7 +1,6 @@
 ﻿using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using PLATEAU.Dataset;
 using UnityEditor;
 using UnityEngine;
@@ -18,7 +17,12 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         private readonly Vector3 meshCodeUnityPositionUpperLeft;
         private readonly Vector3 meshCodeUnityPositionLowerRight;
         private const string iconDirPath = "Packages/com.synesthesias.plateau-unity-sdk/Images/AreaSelect";
+        private const string iconsBoxImagePath = "round-window-wide.png";
+        private const float maxIconWidth = 60;
+        private const float iconOpacity = 0.9f;
+        private const float iconsBoxPaddingUnity = 100f;
         private static ConcurrentDictionary<(PredefinedCityModelPackage package, uint lod), Texture> iconDict;
+        private static Texture iconsBoxTex;
 
         public AreaLodView(PackageToLodDict packageToLodDict, Vector3 meshCodeUnityPositionUpperLeft, Vector3 meshCodeUnityPositionLowerRight)
         {
@@ -32,7 +36,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         /// </summary>
         public static void Init()
         {
-            iconDict = ComposeIconDict();
+            iconDict = LoadIconFiles();
         }
 
         public void DrawHandles(Camera camera)
@@ -62,38 +66,66 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
                  camera.WorldToScreenPoint(this.meshCodeUnityPositionUpperLeft))
                 .x;
             // 地域メッシュコードの枠内にアイコンが4つ並ぶ程度の大きさ
-            float iconWidth = Mathf.Min(70, meshCodeScreenWidth / 4);
+            float iconWidth = Mathf.Min(maxIconWidth, meshCodeScreenWidth / 4);
             
             // アイコンを中央揃えで左から右に並べたとき、左上の座標を求めます。
             var meshCodeCenterUnityPos = (this.meshCodeUnityPositionUpperLeft + this.meshCodeUnityPositionLowerRight) * 0.5f;
             var posOffsetScreenSpace = new Vector3(-iconWidth * iconsToShow.Count * 0.5f, iconWidth * 0.5f, 0);  
-            var pos = camera.ScreenToWorldPoint(camera.WorldToScreenPoint(meshCodeCenterUnityPos) + posOffsetScreenSpace);
+            var iconsUpperLeft = camera.ScreenToWorldPoint(camera.WorldToScreenPoint(meshCodeCenterUnityPos) + posOffsetScreenSpace);
             
-            
+            // アイコンの背景となるボックスを表示します。
+            var boxContent = new GUIContent(iconsBoxTex);
+            var camPos = camera.transform.position;
+            var iconsBoxPaddingScreen =
+                camera.WorldToScreenPoint(new Vector3(camPos.x + iconsBoxPaddingUnity, 0, camPos.z + iconsBoxPaddingUnity)) -
+                camera.WorldToScreenPoint(new Vector3(camPos.x, 0, camPos.z));
+            var boxSizeScreen = new Vector2(
+                iconWidth * iconsToShow.Count + iconsBoxPaddingScreen.x * 2,
+                iconWidth + iconsBoxPaddingScreen.y * 2
+                );
+            var boxSizeUnity = camera.ScreenToWorldPoint(boxSizeScreen);
+            var boxStyle = new GUIStyle(EditorStyles.label)
+            {
+                fixedHeight = boxSizeScreen.y,
+                fixedWidth = boxSizeScreen.x,
+                stretchHeight = true,
+                stretchWidth = true, 
+            };
+            var boxPos = camera.ScreenToWorldPoint(camera.WorldToScreenPoint(iconsUpperLeft) - new Vector3(boxSizeScreen.x, boxSizeScreen.y, camPos.y));
+            // Handles.Label(boxPos, boxContent, boxStyle);
+            Handles.BeginGUI();
+            GUI.DrawTexture(new Rect(camera.WorldToScreenPoint(boxPos) * new Vector2(1f,-1f) + new Vector2(boxSizeScreen.x, camera.pixelHeight - boxSizeScreen.y), boxSizeScreen), iconsBoxTex, ScaleMode.StretchToFill);
+            Handles.EndGUI();
             
             // アイコンを表示します。
+            var iconPos = iconsUpperLeft;
             foreach (var iconTex in iconsToShow)
             {
+                var prevBackgroundColor = GUI.contentColor;
+                GUI.contentColor = new Color(1f, 1f, 1f, iconOpacity);
                 var style = new GUIStyle(EditorStyles.label)
                 {
                     fixedHeight = iconWidth,
                     fixedWidth = iconWidth,
-                    alignment = TextAnchor.UpperLeft
+                    alignment = TextAnchor.UpperLeft,
+                    stretchWidth = true
                 };
                 var content = new GUIContent(iconTex);
-                Handles.Label(pos, content, style);
+                Handles.Label(iconPos, content, style);
+                GUI.contentColor = prevBackgroundColor;
 
-                var iconScreenPosLeft = camera.WorldToScreenPoint(pos);
+                var iconScreenPosLeft = camera.WorldToScreenPoint(iconPos);
                 var iconScreenPosRight = iconScreenPosLeft + new Vector3(iconWidth, 0, 0);
-                var distance = Mathf.Abs(camera.transform.position.y - pos.y);
+                var distance = Mathf.Abs(camera.transform.position.y - iconPos.y);
                 var iconWorldPosRight = camera.ScreenToWorldPoint(new Vector3(iconScreenPosRight.x, iconScreenPosRight.y, distance));
-                pos += new Vector3(iconWorldPosRight.x - pos.x, 0, 0);
+                iconPos += new Vector3(iconWorldPosRight.x - iconPos.x, 0, 0);
             }
             #endif
         }
 
-        private static ConcurrentDictionary<(PredefinedCityModelPackage package, uint lod), Texture> ComposeIconDict()
+        private static ConcurrentDictionary<(PredefinedCityModelPackage package, uint lod), Texture> LoadIconFiles()
         {
+            iconsBoxTex = LoadIcon(iconsBoxImagePath);
             return new ConcurrentDictionary<(PredefinedCityModelPackage package, uint lod), Texture>(
                 new Dictionary<(PredefinedCityModelPackage package, uint lod), Texture>
                 {
@@ -121,7 +153,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         /// </summary>
         public static bool HasIconOfPackage(PredefinedCityModelPackage package)
         {
-            iconDict ??= ComposeIconDict();
+            iconDict ??= LoadIconFiles();
             return iconDict.ContainsKey((package, 1));
         }
 
