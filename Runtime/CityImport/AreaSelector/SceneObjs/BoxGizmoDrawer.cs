@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using ICSharpCode.NRefactory.Ast;
 using UnityEngine;
 
 namespace PLATEAU.CityImport.AreaSelector.SceneObjs
@@ -15,7 +14,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         protected Vector3 Size;
         protected Color BoxColor { get; set; } = Color.white;
         protected float LineWidth { get; set; } = 1f;
-        public int Priority { get; set; } = 0;
+        public int Priority { get; set; }
 
         protected void Init(Vector3 centerPosArg, Vector3 sizeArg)
         {
