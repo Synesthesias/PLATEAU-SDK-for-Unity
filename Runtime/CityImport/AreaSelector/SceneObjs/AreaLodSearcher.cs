@@ -71,7 +71,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
                 foreach (PredefinedCityModelPackage package in Enum.GetValues(typeof(PredefinedCityModelPackage)))
                 {
                     if (!AreaLodView.HasIconOfPackage(package)) continue; // 地図に表示しないパッケージはスキップします。
-                    var gmls = accessor.GetGmlFiles(Extent.All, package);
+                    var gmls = accessor.GetGmlFiles(package);
 
                     // string[] gmlPaths = currentGmlAccessor.GetGmlFiles(package);
                     int maxLod = -1;

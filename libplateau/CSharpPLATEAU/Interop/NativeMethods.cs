@@ -454,7 +454,7 @@ namespace PLATEAU.Interop
             [In] IntPtr cityModel);
 
         [DllImport(DllName)]
-        internal static extern int plateau_delete_city_model(
+        internal static extern APIResult plateau_delete_city_model(
             [In] IntPtr cityModel);
 
         [DllImport(DllName)]
@@ -1219,7 +1219,6 @@ namespace PLATEAU.Interop
         [DllImport(DllName)]
         internal static extern APIResult plateau_i_dataset_accessor_get_gml_files(
             [In] IntPtr accessorPtr,
-            Extent extent,
             PredefinedCityModelPackage package,
             [In] IntPtr refVectorGmlFilePtr);
 
