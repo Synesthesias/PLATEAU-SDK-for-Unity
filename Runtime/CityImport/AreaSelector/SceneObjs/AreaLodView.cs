@@ -1,6 +1,8 @@
-﻿using System.Collections.Concurrent;
+﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using PLATEAU.Dataset;
 using UnityEditor;
 using UnityEngine;
@@ -19,7 +21,10 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         private const string iconDirPath = "Packages/com.synesthesias.plateau-unity-sdk/Images/AreaSelect";
         private const string iconsBoxImagePath = "round-window-wide.png";
         private const float maxIconWidth = 60;
-        private const float iconOpacity = 0.95f;
+        /// <summary> 利用可能を意味するアイコンの不透明度です。 </summary>
+        private const float iconOpacityAvailable = 0.95f;
+        /// <summary> 利用不可を意味するアイコンの不透明度です。 </summary>
+        private const float iconOpacityNotAvailable = 0.2f;
         /// <summary> アイコンを包むボックスについて、そのパディング幅がアイコンの何倍であるかです。 </summary>
         private const float boxPaddingRatio = 0.05f;
         /// <summary> アイコンの幅がメッシュコード幅の何分の1であるかです。 </summary>
@@ -53,15 +58,21 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
                 return;
             }
 
-            // 表示すべきアイコンを求めます。
-            var iconsToShow = new List<Texture>();
-            foreach (var packageToLod in this.packageToLodDict)
+            // アイコンが存在するパッケージ種について、表示すべきアイコンを求めます。
+            var iconAvailableForPackages =
+                iconDict.Keys
+                    .Select(tuple => tuple.package)
+                    .Distinct();
+            var iconsToShow = new List<IconToShow>();
+            foreach(var package in iconAvailableForPackages)
             {
-                int maxLod = packageToLod.Value;
-                if (maxLod < 0) continue;
-                var package = packageToLod.Key;
-                if (!iconDict.TryGetValue((package, (uint)maxLod), out var iconTex)) continue;
-                iconsToShow.Add(iconTex);
+                int maxLod = this.packageToLodDict.GetLod(package); // パッケージが存在しないときは -1 になります。
+                uint iconLod = (uint)Math.Max(maxLod, 0); // 存在しない時は「LOD0」アイコンを半透明で表示します。
+                bool isAvailable = maxLod >= 0;
+                // パッケージとLODに対応するテクスチャを求めます。
+                if (!iconDict.TryGetValue((package, iconLod), out var iconTex)) continue;
+                
+                iconsToShow.Add(new IconToShow(iconTex, isAvailable));
             }
 
             // アイコンの表示位置の基準点はメッシュコードの中心とします。
@@ -94,10 +105,10 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
             
             // アイコンを表示します。
             var iconPos = iconsUpperLeft;
-            foreach (var iconTex in iconsToShow)
+            foreach (var iconToShow in iconsToShow)
             {
                 var prevBackgroundColor = GUI.contentColor;
-                GUI.contentColor = new Color(1f, 1f, 1f, iconOpacity);
+                GUI.contentColor = new Color(1f, 1f, 1f, iconToShow.IsAvailable ? iconOpacityAvailable : iconOpacityNotAvailable);
                 var style = new GUIStyle(EditorStyles.label)
                 {
                     fixedHeight = iconWidth,
@@ -105,7 +116,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
                     alignment = TextAnchor.UpperLeft,
                     stretchWidth = true
                 };
-                var content = new GUIContent(iconTex);
+                var content = new GUIContent(iconToShow.Texture);
                 Handles.Label(iconPos, content, style);
                 GUI.contentColor = prevBackgroundColor;
 
@@ -165,6 +176,18 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
             #else
             return null;
             #endif
+        }
+
+        private class IconToShow
+        {
+            public Texture Texture;
+            public bool IsAvailable; // falseだと半透明表示にします。
+
+            public IconToShow(Texture texture, bool isAvailable)
+            {
+                this.Texture = texture;
+                this.IsAvailable = isAvailable;
+            }
         }
     }
 }

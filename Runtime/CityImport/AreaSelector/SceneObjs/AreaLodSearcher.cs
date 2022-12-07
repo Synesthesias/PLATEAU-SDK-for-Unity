@@ -116,16 +116,20 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
                 _ => maxLod, 
                 (_, __) => maxLod);
         }
-        
-        // public bool ExistLod(PredefinedCityModelPackage package)
-        // {
-            // if (!this.data.TryGetValue(package, out var lods))
-            // {
-                // return false;
-            // }
 
-            // return lods.Any();
-        // }
+        /// <summary>
+        /// 引数の <paramref name="package"/> で利用可能な最大LODを返します。
+        /// ない場合は -1 を返します。
+        /// </summary>
+        public int GetLod(PredefinedCityModelPackage package)
+        {
+            if (!this.data.TryGetValue(package, out int lod))
+            {
+                return -1;
+            }
+
+            return lod;
+        }
 
         public void Marge(PackageToLodDict other)
         {
