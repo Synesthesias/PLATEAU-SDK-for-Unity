@@ -2212,6 +2212,19 @@ references:
   isSpec: "True"
   fullName: PLATEAU.CityImport.AreaSelector.SceneObjs.PackageToLodDict.GetEnumerator
   nameWithType: PackageToLodDict.GetEnumerator
+- uid: PLATEAU.CityImport.AreaSelector.SceneObjs.PackageToLodDict.GetLod(PredefinedCityModelPackage)
+  name: GetLod(PredefinedCityModelPackage)
+  href: api/PLATEAU.CityImport.AreaSelector.SceneObjs.PackageToLodDict.html#PLATEAU_CityImport_AreaSelector_SceneObjs_PackageToLodDict_GetLod_PredefinedCityModelPackage_
+  commentId: M:PLATEAU.CityImport.AreaSelector.SceneObjs.PackageToLodDict.GetLod(PredefinedCityModelPackage)
+  fullName: PLATEAU.CityImport.AreaSelector.SceneObjs.PackageToLodDict.GetLod(PredefinedCityModelPackage)
+  nameWithType: PackageToLodDict.GetLod(PredefinedCityModelPackage)
+- uid: PLATEAU.CityImport.AreaSelector.SceneObjs.PackageToLodDict.GetLod*
+  name: GetLod
+  href: api/PLATEAU.CityImport.AreaSelector.SceneObjs.PackageToLodDict.html#PLATEAU_CityImport_AreaSelector_SceneObjs_PackageToLodDict_GetLod_
+  commentId: Overload:PLATEAU.CityImport.AreaSelector.SceneObjs.PackageToLodDict.GetLod
+  isSpec: "True"
+  fullName: PLATEAU.CityImport.AreaSelector.SceneObjs.PackageToLodDict.GetLod
+  nameWithType: PackageToLodDict.GetLod
 - uid: PLATEAU.CityImport.AreaSelector.SceneObjs.PackageToLodDict.Marge(PLATEAU.CityImport.AreaSelector.SceneObjs.PackageToLodDict)
   name: Marge(PackageToLodDict)
   href: api/PLATEAU.CityImport.AreaSelector.SceneObjs.PackageToLodDict.html#PLATEAU_CityImport_AreaSelector_SceneObjs_PackageToLodDict_Marge_PLATEAU_CityImport_AreaSelector_SceneObjs_PackageToLodDict_
