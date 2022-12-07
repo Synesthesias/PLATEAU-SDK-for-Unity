@@ -73,7 +73,7 @@ namespace PLATEAU.Tests.TestUtils
         }
 
 
-        public static TestCityDefinition MiniTokyo =
+        public static readonly TestCityDefinition MiniTokyo =
             new TestCityDefinition("TestDataTokyoMini", new[]
             {
                 new TestGmlDefinition("udx/bldg/53392546_bldg_6697_2_op.gml", "53392546_bldg_6697_2_op.gml", true, null, 1),

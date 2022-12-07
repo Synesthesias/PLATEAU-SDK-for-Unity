@@ -17,7 +17,16 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         private readonly Vector3 meshCodeUnityPositionUpperLeft;
         private readonly Vector3 meshCodeUnityPositionLowerRight;
         private const string iconDirPath = "Packages/com.synesthesias.plateau-unity-sdk/Images/AreaSelect";
+        private const string iconsBoxImagePath = "round-window-wide.png";
+        private const float maxIconWidth = 60;
+        private const float iconOpacity = 0.95f;
+        /// <summary> アイコンを包むボックスについて、そのパディング幅がアイコンの何倍であるかです。 </summary>
+        private const float boxPaddingRatio = 0.05f;
+        /// <summary> アイコンの幅がメッシュコード幅の何分の1であるかです。 </summary>
+        private const float iconWidthDivider = 5;
+        private static readonly Color boxColor = new Color(0.25f, 0.25f, 0.25f, 0.35f);
         private static ConcurrentDictionary<(PredefinedCityModelPackage package, uint lod), Texture> iconDict;
+        private static Texture boxTex;
 
         public AreaLodView(PackageToLodDict packageToLodDict, Vector3 meshCodeUnityPositionUpperLeft, Vector3 meshCodeUnityPositionLowerRight)
         {
@@ -31,7 +40,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         /// </summary>
         public static void Init()
         {
-            iconDict = ComposeIconDict();
+            iconDict = LoadIconFiles();
         }
 
         public void DrawHandles(Camera camera)
@@ -44,47 +53,74 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
                 return;
             }
 
-            // アイコンの表示を開始する地点は、地域メッシュコードの左上から、オフセット(スクリーンスペース)だけ動かした地点とします。
-            var pos = this.meshCodeUnityPositionUpperLeft;
-            var posOffsetScreenSpace = new Vector3(5, -5, 0);
-            pos = camera.ScreenToWorldPoint(camera.WorldToScreenPoint(pos) + posOffsetScreenSpace);
-            
-            // アイコンを表示します。
+            // 表示すべきアイコンを求めます。
+            var iconsToShow = new List<Texture>();
             foreach (var packageToLod in this.packageToLodDict)
             {
                 int maxLod = packageToLod.Value;
                 if (maxLod < 0) continue;
                 var package = packageToLod.Key;
                 if (!iconDict.TryGetValue((package, (uint)maxLod), out var iconTex)) continue;
+                iconsToShow.Add(iconTex);
+            }
 
-                float meshCodeScreenWidth =
-                    (camera.WorldToScreenPoint(this.meshCodeUnityPositionLowerRight) -
-                     camera.WorldToScreenPoint(this.meshCodeUnityPositionUpperLeft))
-                    .x;
-                
-                // 地域メッシュコードの枠内にアイコンが4つ並ぶ程度の大きさ
-                float iconWidth = Mathf.Min(70, meshCodeScreenWidth / 4);
-                
+            // アイコンの表示位置の基準点はメッシュコードの中心とします。
+            float meshCodeScreenWidth =
+                (camera.WorldToScreenPoint(this.meshCodeUnityPositionLowerRight) -
+                 camera.WorldToScreenPoint(this.meshCodeUnityPositionUpperLeft))
+                .x;
+            // 地域メッシュコードの枠内にアイコンが5つ並ぶ程度の大きさ
+            float iconWidth = Mathf.Min(maxIconWidth, meshCodeScreenWidth / iconWidthDivider);
+            
+            // アイコンを中央揃えで左から右に並べたとき、左上の座標を求めます。
+            var meshCodeCenterUnityPos = (this.meshCodeUnityPositionUpperLeft + this.meshCodeUnityPositionLowerRight) * 0.5f;
+            var posOffsetScreenSpace = new Vector3(-iconWidth * iconsToShow.Count * 0.5f, iconWidth * 0.5f, 0);  
+            var iconsUpperLeft = camera.ScreenToWorldPoint(camera.WorldToScreenPoint(meshCodeCenterUnityPos) + posOffsetScreenSpace);
+            
+            // アイコンを包むボックスを表示します。
+            var iconsBoxPaddingScreen = iconWidth * boxPaddingRatio;
+            var boxSizeScreen = new Vector2(
+                iconWidth * iconsToShow.Count + iconsBoxPaddingScreen * 2,
+                iconWidth + iconsBoxPaddingScreen * 2
+                );
+            var boxPosScreen = camera.WorldToScreenPoint(iconsUpperLeft) + new Vector3(-1,1,0) * iconsBoxPaddingScreen;
+            Handles.BeginGUI();
+            var prevColor = GUI.color;
+            GUI.color = boxColor;
+            // ボックスを描画します。ただし、Handles.BeginGUI(); の中では座標系が異なる（特にスクリーン座標系における y座標の向きが異なる）ので変換します。
+            GUI.DrawTexture(new Rect(new Vector2(boxPosScreen.x, boxPosScreen.y * -1 + camera.pixelHeight), boxSizeScreen), boxTex, ScaleMode.StretchToFill);
+            GUI.color = prevColor;
+            Handles.EndGUI();
+            
+            // アイコンを表示します。
+            var iconPos = iconsUpperLeft;
+            foreach (var iconTex in iconsToShow)
+            {
+                var prevBackgroundColor = GUI.contentColor;
+                GUI.contentColor = new Color(1f, 1f, 1f, iconOpacity);
                 var style = new GUIStyle(EditorStyles.label)
                 {
                     fixedHeight = iconWidth,
                     fixedWidth = iconWidth,
-                    alignment = TextAnchor.UpperLeft
+                    alignment = TextAnchor.UpperLeft,
+                    stretchWidth = true
                 };
                 var content = new GUIContent(iconTex);
-                Handles.Label(pos, content, style);
+                Handles.Label(iconPos, content, style);
+                GUI.contentColor = prevBackgroundColor;
 
-                var iconScreenPosLeft = camera.WorldToScreenPoint(pos);
+                var iconScreenPosLeft = camera.WorldToScreenPoint(iconPos);
                 var iconScreenPosRight = iconScreenPosLeft + new Vector3(iconWidth, 0, 0);
-                var distance = Mathf.Abs(camera.transform.position.y - pos.y);
+                var distance = Mathf.Abs(camera.transform.position.y - iconPos.y);
                 var iconWorldPosRight = camera.ScreenToWorldPoint(new Vector3(iconScreenPosRight.x, iconScreenPosRight.y, distance));
-                pos += new Vector3(iconWorldPosRight.x - pos.x, 0, 0);
+                iconPos += new Vector3(iconWorldPosRight.x - iconPos.x, 0, 0);
             }
             #endif
         }
 
-        private static ConcurrentDictionary<(PredefinedCityModelPackage package, uint lod), Texture> ComposeIconDict()
+        private static ConcurrentDictionary<(PredefinedCityModelPackage package, uint lod), Texture> LoadIconFiles()
         {
+            boxTex = LoadIcon(iconsBoxImagePath);
             return new ConcurrentDictionary<(PredefinedCityModelPackage package, uint lod), Texture>(
                 new Dictionary<(PredefinedCityModelPackage package, uint lod), Texture>
                 {
@@ -112,7 +148,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         /// </summary>
         public static bool HasIconOfPackage(PredefinedCityModelPackage package)
         {
-            iconDict ??= ComposeIconDict();
+            iconDict ??= LoadIconFiles();
             return iconDict.ContainsKey((package, 1));
         }
 

@@ -19,14 +19,16 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         private const float slider2DHandleSize = 0.35f;
         private const float lineWidth = 2;
         private static readonly Color handleColor = new Color(1f, 72f / 255f, 0f);
-        private static readonly Color selectRectangleColor = new Color(1f, 72f / 255f, 0f);
+        private static readonly Color selectOutlineColor = new Color(1f, 72f / 255f, 0f);
+        private static readonly Color selectFaceColor = new Color(250f / 255, 160f / 255f, 75f / 255f, 0.3f);
+        private static readonly Color transparentColor = new Color(0f, 0f, 0f, 0f);
 
         public AreaSelectorCursor()
         {
             this.CenterPos = new Vector3(0, BoxCenterHeight, 0);
             this.Size = new Vector3(1000, boxSizeY, 1000);
             LineWidth = lineWidth;
-            BoxColor = selectRectangleColor;
+            BoxColor = selectOutlineColor;
         }
 
         /// <summary>
@@ -59,13 +61,28 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
 #if UNITY_EDITOR
         
 
+        /// <summary>
+        /// ハンドルと選択範囲を描画します。
+        /// </summary>
         public override void DrawSceneGUI()
         {
             var prevColor = Handles.color;
             Handles.color = handleColor;
 
+            // 中央と四隅のドラッグ可能なハンドルを描画します。
             this.CenterPos = CenterPointHandle(this.CenterPos);
             CornerPointHandle(this.CenterPos, this.Size, out this.CenterPos, out this.Size);
+            
+            // 範囲内を半透明の四角で塗りつぶします。
+            var min = AreaMin;
+            var max = AreaMax;
+            var rectVerts = new []
+            {
+                min, new Vector3(min.x, min.y, max.z),
+                max, new Vector3(max.x, max.y, min.z)
+            };
+            // 四角の中を塗りつぶしますが、輪郭線は完全に透明にします。なぜなら、四角の輪郭線の表示は親クラスが行うためです。
+            Handles.DrawSolidRectangleWithOutline(rectVerts, selectFaceColor, transparentColor);
 
             Handles.color = prevColor;
         }
@@ -92,8 +109,8 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
 
         private static void CornerPointHandle(Vector3 centerPos, Vector3 size, out Vector3 nextCenterPos, out Vector3 nextSize)
         {
-            var prevPosMax = AreaMax(centerPos, size);
-            var prevPosMin = AreaMin(centerPos, size);
+            var prevPosMax = CalcAreaMax(centerPos, size);
+            var prevPosMin = CalcAreaMin(centerPos, size);
             
             EditorGUI.BeginChangeCheck();
             
