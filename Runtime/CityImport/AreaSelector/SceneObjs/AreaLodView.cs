@@ -74,20 +74,26 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
                 
                 iconsToShow.Add(new IconToShow(iconTex, isAvailable));
             }
-
-            // アイコンの表示位置の基準点はメッシュコードの中心とします。
+            
+            // Windowsの設定で ディスプレイ -> 拡大/縮小 が 100% 以外になっている場合のずれを補正するための変数です。
+            float monitorDpiScalingFactor = 1f;
+#if UNITY_EDITOR_WIN
+            monitorDpiScalingFactor = Screen.dpi / 96f; // 96f は Windowsの標準DPI
+#endif
+            
             float meshCodeScreenWidth =
                 (camera.WorldToScreenPoint(this.meshCodeUnityPositionLowerRight) -
                  camera.WorldToScreenPoint(this.meshCodeUnityPositionUpperLeft))
                 .x;
+
             // 地域メッシュコードの枠内にアイコンが5つ並ぶ程度の大きさ
-            float iconWidth = Mathf.Min(maxIconWidth, meshCodeScreenWidth / iconWidthDivider);
+            float iconWidth = Mathf.Min(maxIconWidth, meshCodeScreenWidth / iconWidthDivider) / monitorDpiScalingFactor;
             
             // アイコンを中央揃えで左から右に並べたとき、左上の座標を求めます。
             var meshCodeCenterUnityPos = (this.meshCodeUnityPositionUpperLeft + this.meshCodeUnityPositionLowerRight) * 0.5f;
-            var posOffsetScreenSpace = new Vector3(-iconWidth * iconsToShow.Count * 0.5f, iconWidth * 0.5f, 0);  
+            var posOffsetScreenSpace = new Vector3(-iconWidth * iconsToShow.Count * 0.5f, iconWidth * 0.5f, 0) * monitorDpiScalingFactor;  
             var iconsUpperLeft = camera.ScreenToWorldPoint(camera.WorldToScreenPoint(meshCodeCenterUnityPos) + posOffsetScreenSpace);
-            
+
             // アイコンを包むボックスを表示します。
             var iconsBoxPaddingScreen = iconWidth * boxPaddingRatio;
             var boxSizeScreen = new Vector2(
@@ -99,7 +105,9 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
             var prevColor = GUI.color;
             GUI.color = boxColor;
             // ボックスを描画します。ただし、Handles.BeginGUI(); の中では座標系が異なる（特にスクリーン座標系における y座標の向きが異なる）ので変換します。
-            GUI.DrawTexture(new Rect(new Vector2(boxPosScreen.x, boxPosScreen.y * -1 + camera.pixelHeight), boxSizeScreen), boxTex, ScaleMode.StretchToFill);
+            var boxRect = new Rect(new Vector2(boxPosScreen.x, boxPosScreen.y * -1 + camera.pixelHeight), boxSizeScreen);
+            boxRect.position /= monitorDpiScalingFactor;
+            GUI.DrawTexture(boxRect, boxTex, ScaleMode.StretchToFill);
             GUI.color = prevColor;
             Handles.EndGUI();
             
@@ -121,7 +129,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
                 GUI.contentColor = prevBackgroundColor;
 
                 var iconScreenPosLeft = camera.WorldToScreenPoint(iconPos);
-                var iconScreenPosRight = iconScreenPosLeft + new Vector3(iconWidth, 0, 0);
+                var iconScreenPosRight = iconScreenPosLeft + new Vector3(iconWidth * monitorDpiScalingFactor, 0, 0);
                 var distance = Mathf.Abs(camera.transform.position.y - iconPos.y);
                 var iconWorldPosRight = camera.ScreenToWorldPoint(new Vector3(iconScreenPosRight.x, iconScreenPosRight.y, distance));
                 iconPos += new Vector3(iconWorldPosRight.x - iconPos.x, 0, 0);
