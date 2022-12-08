@@ -2,6 +2,7 @@
 using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.ComTypes;
 using PLATEAU.Interop;
+using PLATEAU.Network;
 
 namespace PLATEAU.Dataset
 {
@@ -54,8 +55,9 @@ namespace PLATEAU.Dataset
          /// </summary>
          private static DatasetSource CreateServer(string datasetID)
          {
+             Client client = Client.Create();
              var result = NativeMethods.plateau_create_dataset_source_server(
-                 out var ptr, datasetID);
+                 out var ptr, datasetID, client.Handle);
              DLLUtil.CheckDllError(result);
              return new DatasetSource(ptr);
          }

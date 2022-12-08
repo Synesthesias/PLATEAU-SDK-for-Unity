@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using PLATEAU.Geometries;
 using PLATEAU.Interop;
 
 namespace PLATEAU.Dataset
@@ -59,6 +61,29 @@ namespace PLATEAU.Dataset
         public PredefinedCityModelPackage Packages =>
             DLLUtil.GetNativeValue<PredefinedCityModelPackage>(Handle,
                 NativeMethods.plateau_i_dataset_accessor_get_packages);
+
+        public PlateauVector3d CalculateCenterPoint(GeoReference geoReference)
+        {
+            var result = NativeMethods.plateau_i_dataset_accessor_calculate_center_point(
+                Handle, geoReference.Handle, out var centerPoint);
+            DLLUtil.CheckDllError(result);
+            return centerPoint;
+        }
+
+        public DatasetAccessor FilterByMeshCodes(IEnumerable<MeshCode> meshCodes)
+        {
+            var nativeMeshCodes = NativeVectorMeshCode.Create();
+            foreach (var meshCode in meshCodes)
+            {
+                nativeMeshCodes.Add(meshCode);
+            }
+
+            var result = NativeMethods.plateau_i_dataset_accessor_filter_by_mesh_codes(
+                Handle, nativeMeshCodes.Handle, out var filteredPtr);
+            DLLUtil.CheckDllError(result);
+            nativeMeshCodes.Dispose();
+            return new DatasetAccessor(filteredPtr);
+        }
 
         /// <summary>
         /// gmlのパスが "udx/(featureType)/aaa.gml" として、

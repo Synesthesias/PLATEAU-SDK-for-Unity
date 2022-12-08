@@ -4,10 +4,12 @@ using PLATEAU.Interop;
 
 namespace PLATEAU.Network
 {
-    public class Client : PInvokeDisposable
+    public class Client
     {
-        public Client(IntPtr handle) : base(handle)
+        public IntPtr Handle { get; }
+        public Client(IntPtr handle)
         {
+            Handle = handle;
         }
 
         public static Client Create()
@@ -55,7 +57,7 @@ namespace PLATEAU.Network
             return downloadedPath;
         }
 
-        protected override void DisposeNative()
+        public void Dispose()
         {
             DLLUtil.ExecNativeVoidFunc(Handle,
                 NativeMethods.plateau_delete_client);

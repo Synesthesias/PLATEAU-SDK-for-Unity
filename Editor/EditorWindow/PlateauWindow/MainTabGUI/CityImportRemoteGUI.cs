@@ -87,9 +87,11 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
         {
             this.datasetGroups = await Task.Run(() =>
             {
-                using var client = Client.Create();
-                client.Url = NetworkConfig.MockServerURL;
-                return client.GetDatasetMetadataGroup();
+                var client = Client.Create();
+                client.Url = NetworkConfig.DefaultApiServerUrl;
+                var ret =  client.GetDatasetMetadataGroup();
+                client.Dispose();
+                return ret;
             });
             this.datasetGroupLoaded = true;
         }

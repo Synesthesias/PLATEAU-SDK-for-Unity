@@ -62,7 +62,8 @@ namespace PLATEAU.Dataset
             get
             {
                 ThrowIfDisposed();
-                var apiResult = NativeMethods.plateau_udx_sub_folder_get_package(FeatureType, out var package);
+                var featureTypeUtf8 = DLLUtil.StrToUtf8Bytes(FeatureType);
+                var apiResult = NativeMethods.plateau_udx_sub_folder_feature_type_to_package(featureTypeUtf8, out var package);
                 DLLUtil.CheckDllError(apiResult);
                 return package;
             }
@@ -149,13 +150,23 @@ namespace PLATEAU.Dataset
             string destDirPath = new DirectoryInfo(destPath).Parent?.FullName.Replace('\\', '/');
             if (destDirPath == null) throw new InvalidDataException("Invalid path.");
             Directory.CreateDirectory(destDirPath);
-            
-            using (var client = Client.Create())
-            {
-                client.Url = NetworkConfig.MockServerURL;
-                string downloadedPath = client.Download(destDirPath, Path);
-                return Create(downloadedPath);
-            }
+
+            var client = Client.Create();
+            client.Url = NetworkConfig.DefaultApiServerUrl;
+            string downloadedPath = client.Download(destDirPath, Path);
+            client.Dispose();
+            return Create(downloadedPath);
+        }
+
+        /// <summary>
+        /// ローカルの場合、GMLファイルの全文を検索して対応LODの最大を求めます。
+        /// サーバーの場合、APIサーバーに問い合わせて対応LODの最大を求めます。
+        /// どちらにしても時間がかかる処理になります。
+        /// </summary>
+        public int GetMaxLod()
+        {
+            return DLLUtil.GetNativeValue<int>(Handle,
+                NativeMethods.plateau_gml_file_get_max_lod);
         }
 
         public void Dispose()

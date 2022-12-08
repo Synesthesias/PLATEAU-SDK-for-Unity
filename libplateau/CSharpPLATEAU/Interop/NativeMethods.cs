@@ -1239,6 +1239,18 @@ namespace PLATEAU.Interop
             [In] IntPtr accessorPtr,
             out PredefinedCityModelPackage outPackageFlags);
 
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_i_dataset_accessor_calculate_center_point(
+            [In] IntPtr accessorPtr,
+            [In] IntPtr geoReferencePtr,
+            out PlateauVector3d outCenterPoint);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_i_dataset_accessor_filter_by_mesh_codes(
+            [In] IntPtr accessorPtr,
+            [In] IntPtr nativeVectorMeshCodePtr,
+            out IntPtr outFilteredAccessorPtr);
+
         // ***************
         //  local_dataset_accessor_c.cpp
         // ***************
@@ -1296,11 +1308,6 @@ namespace PLATEAU.Interop
             out PlateauVector3d outCenterPoint,
             [In] IntPtr geoReferencePtr);
 
-        [DllImport(DllName, CharSet = CharSet.Ansi)]
-        internal static extern APIResult plateau_udx_sub_folder_get_package(
-            string dirName,
-            out PredefinedCityModelPackage outPackage);
-        
         // ***************
         //  udx_sub_folder_c.cpp
         // ***************
@@ -1330,7 +1337,8 @@ namespace PLATEAU.Interop
         [DllImport(DllName)]
         internal static extern APIResult plateau_create_dataset_source_server(
             out IntPtr newDatasetSourcePtr,
-            [In] string datasetID);
+            [In] string datasetID,
+            [In] IntPtr clientPtr);
 
 
         // ***************
@@ -1382,6 +1390,11 @@ namespace PLATEAU.Interop
         internal static extern APIResult plateau_gml_file_search_all_image_paths_in_gml(
             [In] IntPtr gmlFilePtr,
             [In,Out] IntPtr refNativeVectorStringPtr);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_gml_file_get_max_lod(
+            [In] IntPtr gmlFilePtr,
+            out int outMaxLod);
             
         // ***************
         //  city_model_package_info_c.cpp
@@ -1590,6 +1603,11 @@ namespace PLATEAU.Interop
         internal static extern APIResult plateau_vector_mesh_code_count(
             [In] IntPtr handle,
             out int outCount);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_vector_mesh_code_push_back_value(
+            [In] IntPtr handle,
+            [In] MeshCode meshCode);
         
         [DllImport(DllName)]
         internal static extern APIResult plateau_create_vector_dataset_metadata_group(
@@ -1821,13 +1839,10 @@ namespace PLATEAU.Interop
             [In] byte[] destinationDirectoryUtf8,
             [In] byte[] urlUtf8,
             [In,Out] IntPtr refNativeStringPtr);
-        
-        // ***************
-        //  network_config_c.cpp
-        // ***************
+
         [DllImport(DllName)]
-        internal static extern APIResult plateau_network_config_mock_server_url(
-            [In, Out] IntPtr refNativeStringPtr);
-        
+        internal static extern APIResult plateau_client_get_default_url(
+            [In, Out] IntPtr nativeStrPtr);
+
     }
 }

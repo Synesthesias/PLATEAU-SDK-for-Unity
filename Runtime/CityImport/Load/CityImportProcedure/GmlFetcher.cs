@@ -58,8 +58,8 @@ namespace PLATEAU.CityImport.Load.CityImportProcedure
             string localGmlDirPath = new DirectoryInfo(downloadedGml.Path).Parent?.FullName;
             if (localGmlDirPath == null) throw new Exception("invalid path.");
             // 関連ファイルをダウンロードします。
-            using var client = Client.Create();
-            client.Url = NetworkConfig.MockServerURL;
+            var client = Client.Create();
+            client.Url = NetworkConfig.DefaultApiServerUrl;
             for(int i=0; i<pathsToDownload.Length; i++)
             {
                 string relativePath = pathsToDownload[i];
@@ -86,7 +86,7 @@ namespace PLATEAU.CityImport.Load.CityImportProcedure
                 });
                 progressDisplay.SetProgress(gmlName, 7f, $"ダウンロード完了");
             }
-
+            client.Dispose();
             return downloadedGml;
         }
 

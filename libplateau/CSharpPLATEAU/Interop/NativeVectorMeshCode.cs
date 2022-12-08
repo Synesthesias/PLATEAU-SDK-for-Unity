@@ -35,6 +35,13 @@ namespace PLATEAU.Interop
             }
         }
 
+        public void Add(MeshCode meshCode)
+        {
+            var result = NativeMethods.plateau_vector_mesh_code_push_back_value(
+                Handle, meshCode);
+            DLLUtil.CheckDllError(result);
+        }
+
 
         protected override void DisposeNative()
         {
