@@ -64,7 +64,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
                 if (existing != null) continue;
                 
                 // LODを検索します。
-                var accessor = this.datasetSource.Accessor;
+                using var accessor = this.datasetSource.Accessor;
 
                 foreach (PredefinedCityModelPackage package in Enum.GetValues(typeof(PredefinedCityModelPackage)))
                 {

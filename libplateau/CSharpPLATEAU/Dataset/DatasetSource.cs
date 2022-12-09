@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Runtime.InteropServices;
-using System.Runtime.InteropServices.ComTypes;
 using PLATEAU.Interop;
 using PLATEAU.Network;
 

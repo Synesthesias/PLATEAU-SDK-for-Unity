@@ -112,7 +112,7 @@ namespace PLATEAU.CityImport.AreaSelector
             EditorUtility.DisplayProgressBar("", "データファイルを検索中です...", 0f);
             #endif
             using var datasetSource = DatasetSource.Create(datasetSourceConfig);
-            var accessor = datasetSource.Accessor;
+            using var accessor = datasetSource.Accessor;
             // ローカルモードではうまくいきますが、サーバーモードでは Packages は None になります。
             availablePackageFlags = accessor.Packages;
             meshCodes = new ReadOnlyCollection<MeshCode>(accessor.MeshCodes.ToArray());
