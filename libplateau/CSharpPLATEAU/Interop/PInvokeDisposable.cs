@@ -7,6 +7,7 @@ namespace PLATEAU.Interop
     /// Native側で delete する処理として、 DisposeNative() がサブクラスで実装されていることを前提とします。
     /// 廃棄タイミングは GC処理時 または using(var a){} ブロックを抜ける時 または Dispose() を呼んだときです。
     /// </summary>
+    // TODO PInvokeDisposableで置き換え可能なラッパークラスを置き換える
     public abstract class PInvokeDisposable : IDisposable
     {
         public IntPtr Handle { get; }

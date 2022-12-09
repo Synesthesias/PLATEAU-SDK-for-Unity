@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using PLATEAU.Interop;
 using PLATEAU.Dataset;
 
 namespace PLATEAU.CityImport.AreaSelector.SceneObjs
@@ -65,24 +64,20 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
                 if (existing != null) continue;
                 
                 // LODを検索します。
-                // var currentGmlAccessor = this.datasetSource.Accessor.FilterByMeshCodes(new []{MeshCode.Parse(currentMeshCode)});
-                var accessor = this.datasetSource.Accessor;
+                using var accessor = this.datasetSource.Accessor;
 
                 foreach (PredefinedCityModelPackage package in Enum.GetValues(typeof(PredefinedCityModelPackage)))
                 {
                     if (!AreaLodView.HasIconOfPackage(package)) continue; // 地図に表示しないパッケージはスキップします。
-                    var gmls = accessor.GetGmlFiles(Extent.All, package);
+                    var gmls = accessor.GetGmlFiles(package);
 
-                    // string[] gmlPaths = currentGmlAccessor.GetGmlFiles(package);
                     int maxLod = -1;
                     foreach (var gml in gmls)
                     {
                         if (gml.MeshCode.ToString() != currentMeshCode) continue;
-                        // string fullPath = Path.GetFullPath(gml.Path);
                         
                         // ローカルの場合、ファイルの中身を検索するので時間がかかります。
                         // サーバーの場合、APIサーバーに問い合わせます。
-                        // var lods = LodSearcher.SearchLodsInFile(fullPath);
                         maxLod = accessor.GetMaxLod(gml.MeshCode, package);
                     }
                     // 検索結果を追加します。
