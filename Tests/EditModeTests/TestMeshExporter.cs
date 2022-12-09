@@ -40,7 +40,7 @@ namespace PLATEAU.Tests.EditModeTests
             var options = new MeshExportOptions(
                 MeshExportOptions.MeshTransformType.Local,
                 true, true, MeshFileFormat.OBJ, CoordinateSystem.ENU,
-                new GltfWriteOptions(GltfFileFormat.GLB, destDirPath));
+                new GltfWriteOptions(GltfFileFormat.GLB, destDirPath), new FbxWriteOptions(FbxFileFormat.Binary));
             MeshExporter.Export(destDirPath, instancedCityModel, options);
 
             var expectedObjFiles = TestCityDefinition.MiniTokyo.GmlDefinitions

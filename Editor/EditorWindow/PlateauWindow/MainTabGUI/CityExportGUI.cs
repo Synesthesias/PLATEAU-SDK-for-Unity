@@ -31,6 +31,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
         private PLATEAUInstancedCityModel exportTarget;
         private MeshFileFormat meshFileFormat = MeshFileFormat.OBJ;
         private GltfFileFormat gltfFileFormat = GltfFileFormat.GLB;
+        private FbxFileFormat fbxFileformat = FbxFileFormat.Binary;
         private bool exportTextures;
         private bool exportHiddenObject;
         private MeshExportOptions.MeshTransformType meshTransformType = MeshExportOptions.MeshTransformType.Local;
@@ -63,6 +64,11 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
                     if (this.meshFileFormat == MeshFileFormat.GLTF)
                     {
                         this.gltfFileFormat = (GltfFileFormat)EditorGUILayout.EnumPopup("GLTFフォーマット", this.gltfFileFormat);
+                    }
+
+                    if (this.meshFileFormat == MeshFileFormat.FBX)
+                    {
+                        this.fbxFileformat = (FbxFileFormat)EditorGUILayout.EnumPopup("FBXフォーマット", this.fbxFileformat);
                     }
 
                     this.exportTextures = EditorGUILayout.Toggle("テクスチャ", this.exportTextures);
@@ -106,7 +112,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
                 return;
             }
             var meshExportOptions = new MeshExportOptions(this.meshTransformType, this.exportTextures, this.exportHiddenObject,
-                this.meshFileFormat, this.meshAxis, new GltfWriteOptions(this.gltfFileFormat, destinationDir));
+                this.meshFileFormat, this.meshAxis, new GltfWriteOptions(this.gltfFileFormat, destinationDir), new FbxWriteOptions(this.fbxFileformat));
             MeshExporter.Export(destinationDir, target,  meshExportOptions);
         }
     }
