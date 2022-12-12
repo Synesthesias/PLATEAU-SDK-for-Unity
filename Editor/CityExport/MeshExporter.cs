@@ -73,6 +73,7 @@ namespace PLATEAU.Editor.CityExport
             switch (options.FileFormat)
             {
                 // TODO このへんのcase列挙、スマートにならないか？
+                // TODO gltf出力、fbx出力のテストを書く
                 case MeshFileFormat.OBJ:
                     string filePathWithoutExtension = Path.Combine(destDir, fileNameWithoutExtension).Replace('\\', '/');
                     using (var objWriter = new ObjWriter())

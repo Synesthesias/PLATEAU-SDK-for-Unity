@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -10,6 +11,7 @@ using PLATEAU.Geometries;
 using PLATEAU.Interop;
 using PLATEAU.MeshWriter;
 using PLATEAU.Tests.TestUtils;
+using UnityEngine;
 using UnityEngine.TestTools;
 using Object = UnityEngine.Object;
 
@@ -30,6 +32,7 @@ namespace PLATEAU.Tests.EditModeTests
         public void TearDown()
         {
             TestCityImporter.DeleteFetchedTestDir();
+            // DirectoryUtil.DeleteTempCacheFolder();
         }
 
         [Test]
@@ -53,6 +56,48 @@ namespace PLATEAU.Tests.EditModeTests
             AssertFilesExist(destDirPath, expectedObjFiles);
             AssertFilesExist(destDirPath, expectedMtlFiles);
             AssertObjFilesHaveMesh(expectedObjFiles, destDirPath);
+        }
+
+        [Test]
+        public void ExportMiniTokyoToFbxFiles()
+        {
+            string destDirPath = Path.Combine(DirectoryUtil.TempCacheFolderPath);
+            var instancedCityModel = Object.FindObjectOfType<PLATEAUInstancedCityModel>();
+            var options = new MeshExportOptions(
+                MeshExportOptions.MeshTransformType.Local,
+                true, false, MeshFileFormat.FBX, CoordinateSystem.ENU,
+                new GltfWriteOptions(GltfFileFormat.GLB, destDirPath), new FbxWriteOptions(FbxFileFormat.Ascii));
+            MeshExporter.Export(destDirPath, instancedCityModel, options);
+            var expectedFbxFiles = TestCityDefinition.MiniTokyo.GmlDefinitions
+                .Where(def => def.ContainsMesh)
+                .Select(def => Path.GetFileNameWithoutExtension(def.GmlPath) + ".fbx")
+                .ToList();
+            
+            AssertFilesExist(destDirPath, expectedFbxFiles);
+        }
+        
+        [Test]
+        public void ExportMiniTokyoToGltfFiles()
+        {
+            string destDirPath = Path.Combine(DirectoryUtil.TempCacheFolderPath);
+            var instancedCityModel = Object.FindObjectOfType<PLATEAUInstancedCityModel>();
+            var options = new MeshExportOptions(
+                MeshExportOptions.MeshTransformType.Local,
+                true, false, MeshFileFormat.GLTF, CoordinateSystem.ENU,
+                new GltfWriteOptions(GltfFileFormat.GLTF, destDirPath), new FbxWriteOptions(FbxFileFormat.Ascii));
+            MeshExporter.Export(destDirPath, instancedCityModel, options);
+            var expectedGltfFiles = TestCityDefinition.MiniTokyo.GmlDefinitions
+                .Where(def => def.ContainsMesh)
+                .Select(def =>
+                {
+                    string fileName = Path.GetFileNameWithoutExtension(def.GmlPath);
+                    return  $"{fileName}/{fileName}"+ ".gltf";
+                })
+                .ToList();
+            var expectedBinFiles = expectedGltfFiles.Select(path => path.Replace(".gltf", ".bin"));
+            
+            AssertFilesExist(destDirPath, expectedGltfFiles);
+            AssertFilesExist(destDirPath, expectedBinFiles);
         }
 
         private static void AssertFilesExist(string basePath, IEnumerable<string> files)
