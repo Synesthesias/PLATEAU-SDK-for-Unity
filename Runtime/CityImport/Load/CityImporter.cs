@@ -31,10 +31,6 @@ namespace PLATEAU.CityImport.Load
         {
             var datasetSourceConfig = config.DatasetSourceConfig;
             string destPath = PathUtil.PLATEAUSrcFetchDir;
-            if (config.DatasetSourceConfig.IsServer)
-            {
-                destPath = Path.Combine(destPath, config.DatasetSourceConfig.RootDirName);
-            }
             string destFolderName = datasetSourceConfig.RootDirName;
 
             if ((!datasetSourceConfig.IsServer) && (!Directory.Exists(datasetSourceConfig.DatasetIdOrSourcePath)))
