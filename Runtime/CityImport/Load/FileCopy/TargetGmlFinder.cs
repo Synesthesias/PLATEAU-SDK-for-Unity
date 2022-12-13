@@ -5,7 +5,7 @@ using PLATEAU.Dataset;
 
 namespace PLATEAU.CityImport.Load.FileCopy
 {
-    internal static class CityFilesCopy
+    internal static class TargetGmlFinder
     {
 
         public static List<GmlFile> FindTargetGmls(DatasetAccessor datasetAccessor, CityLoadConfig config)

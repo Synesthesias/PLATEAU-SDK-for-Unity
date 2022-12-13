@@ -1,5 +1,8 @@
 ﻿using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
+using NUnit.Framework;
+using NUnit.Framework.Internal.Filters;
 using PLATEAU.CityImport.Load;
 using PLATEAU.CityImport.Setting;
 using PLATEAU.Editor.EditorWindow.ProgressDisplay;
@@ -14,7 +17,7 @@ namespace PLATEAU.Tests.TestUtils
     /// </summary>
     internal class TestCityDefinition
     {
-        public string SrcRootDirPath => Path.GetFullPath(Path.Combine(testDataDir, this.rootDirName));
+        public string SrcRootDirPathLocal => Path.GetFullPath(Path.Combine(testDataDir, this.rootDirName));
         public string[] AreaMeshCodes { get; set; }
         public TestGmlDefinition[] GmlDefinitions { get; set; }
 
@@ -32,21 +35,50 @@ namespace PLATEAU.Tests.TestUtils
         public Task ImportLocal(out CityLoadConfig outConfig)
         {
             var progressDisplay = new ProgressDisplayGUI(null);
-            outConfig = new CityLoadConfig();
+            outConfig = MakeConfig(false);
+
+            var task = CityImporter.ImportAsync(outConfig, progressDisplay);
+            return task;
+        }
+
+        public Task ImportServer()
+        {
+            var progressDisplay = new ProgressDisplayGUI(null);
+            var task = CityImporter.ImportAsync(MakeConfig(true), progressDisplay);
+            return task;
+        }
+
+        private CityLoadConfig MakeConfig(bool isServer)
+        {
+            var conf = new CityLoadConfig();
             // TODO どのパッケージと何が対応するかは要テスト
             uint packageFlagsAll = 0b10000000000000000000000011111111;
-            outConfig.InitWithPackageFlags((PredefinedCityModelPackage)packageFlagsAll);
-            outConfig.Extent = new Extent(new GeoCoordinate(-90, -180, -9999), new GeoCoordinate(90, 180, 9999));
-            outConfig.AreaMeshCodes = AreaMeshCodes;
-            foreach (var packageConf in outConfig.ForEachPackagePair)
+            conf.InitWithPackageFlags((PredefinedCityModelPackage)packageFlagsAll);
+            conf.Extent = Extent.All;
+            conf.AreaMeshCodes = AreaMeshCodes;
+            foreach (var packageConf in conf.ForEachPackagePair)
             {
                 packageConf.Value.includeTexture = true;
             }
 
-            outConfig.DatasetSourceConfig = new DatasetSourceConfig(false, SrcRootDirPath);
+            string datasetIdOrSourcePath = isServer ? this.rootDirName: SrcRootDirPathLocal;
+            conf.DatasetSourceConfig = new DatasetSourceConfig(isServer, datasetIdOrSourcePath);
+            return conf;
+        }
 
-            var task = CityImporter.ImportAsync(outConfig, progressDisplay);
-            return task;
+        /// <summary>
+        /// GMLファイルとその関連ファイルが Assets/StreamingAssets/.PLATEAU にコピーされることを確認します。
+        /// </summary>
+        public void AssertFilesExist(string testDataFetchPath)
+        {
+            var relativePaths = GmlDefinitions
+                .Select(def => def.GmlPath)
+                .ToArray();
+            foreach(string relativePath in relativePaths)
+            {
+                string path = Path.GetFullPath(Path.Combine(testDataFetchPath, relativePath));
+                Assert.IsTrue(File.Exists(path), $"次のパスにファイルが存在する : {path}");
+            }
         }
 
         /// <summary>
@@ -96,5 +128,15 @@ namespace PLATEAU.Tests.TestUtils
             {
                 "53394525", "53392546", "53392547", "533925"
             });
+
+        public static readonly TestCityDefinition TestServer23ku =
+            new TestCityDefinition("23ku", new[]
+                {
+                    new TestGmlDefinition("udx/bldg/53392642_bldg_6697_2_op.gml", "53392642_bldg_6697_2_op.gml.gml", true,
+                        null,
+                        2)
+                }, new[]
+                    { "53392642" }
+            );
     }
 }
