@@ -50,18 +50,12 @@ namespace PLATEAU.Tests.EditModeTests
             var cityDefinition = TestCityDefinition.MiniTokyo;
             yield return cityDefinition.ImportLocal(out _).AsIEnumerator();
             
+            // GMLファイルが生成されることを確認します。
             cityDefinition.AssertFilesExist(testDataFetchPath + "/TestDataTokyoMini");
 
             // ゲームオブジェクトが生成されることを確認します。
-            var expectedObjNames =
-                cityDefinition
-                    .GmlDefinitions
-                    .Where(def => def.ContainsMesh)
-                    .Select(def => def.GameObjName)
-                    .ToList();
-
-            AssertGameObjsExist(expectedObjNames.Concat(new []{"LOD0", "LOD1", "LOD2"}));
-            AssertChildHaveMesh(expectedObjNames);
+            AssertGameObjsExist(cityDefinition.ExpectedObjNames.Concat(new []{"LOD0", "LOD1", "LOD2"}));
+            AssertChildHaveMesh(cityDefinition.ExpectedObjNames);
         }
 
         [UnityTest]
@@ -70,7 +64,13 @@ namespace PLATEAU.Tests.EditModeTests
             var cityDefinition = TestCityDefinition.TestServer23ku;
             yield return cityDefinition.ImportServer().AsIEnumerator();
             
+            // GMLファイルが生成されることを確認します。
             cityDefinition.AssertFilesExist(testDataFetchPath + "/13100_tokyo23-ku_2020_citygml_3_2_op");
+            
+            // ゲームオブジェクトが生成されることを確認します。
+            AssertGameObjsExist(cityDefinition.ExpectedObjNames.Concat(new []{"LOD0", "LOD1", "LOD2"}));
+            AssertChildHaveMesh(cityDefinition.ExpectedObjNames);
+            
         }
 
         public static void DeleteFetchedTestDir()

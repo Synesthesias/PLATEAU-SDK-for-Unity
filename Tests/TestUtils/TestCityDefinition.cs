@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using NUnit.Framework;
@@ -81,6 +82,13 @@ namespace PLATEAU.Tests.TestUtils
             }
         }
 
+        public List<string> ExpectedObjNames =>
+            GmlDefinitions
+                .Where(def => def.ContainsMesh)
+                .Select(def => def.GameObjName)
+                .ToList();
+        
+
         /// <summary>
         /// ユニットテストにおいて、GMLファイルに期待する状態を定義します。
         /// どのパスにGMLファイルがあることが期待されるか、メッシュは有するか、期待するテクスチャのパスは何か
@@ -132,7 +140,7 @@ namespace PLATEAU.Tests.TestUtils
         public static readonly TestCityDefinition TestServer23ku =
             new TestCityDefinition("23ku", new[]
                 {
-                    new TestGmlDefinition("udx/bldg/53392642_bldg_6697_2_op.gml", "53392642_bldg_6697_2_op.gml.gml", true,
+                    new TestGmlDefinition("udx/bldg/53392642_bldg_6697_2_op.gml", "53392642_bldg_6697_2_op.gml", true,
                         null,
                         2)
                 }, new[]
