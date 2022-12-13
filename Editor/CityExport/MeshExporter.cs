@@ -24,6 +24,7 @@ namespace PLATEAU.Editor.CityExport
                 Debug.LogError($"Destination Path is not a folder. destination = '{destDir}'");
                 return;
             }
+            // Unityのシーンから情報を読みます。
             var trans = instancedCityModel.transform;
             int numChild = trans.childCount;
             for (int i = 0; i < numChild; i++)
@@ -63,7 +64,6 @@ namespace PLATEAU.Editor.CityExport
                 
                 // Model をファイルにして出力します。
                 ModelToFile(destDir, Path.GetFileNameWithoutExtension(childName), model, options);
-                Debug.Log(model.DebugString());
             }
         }
 
@@ -72,6 +72,8 @@ namespace PLATEAU.Editor.CityExport
         {
             switch (options.FileFormat)
             {
+                // TODO このへんのcase列挙、スマートにならないか？
+                // TODO gltf出力、fbx出力のテストを書く
                 case MeshFileFormat.OBJ:
                     string filePathWithoutExtension = Path.Combine(destDir, fileNameWithoutExtension).Replace('\\', '/');
                     using (var objWriter = new ObjWriter())
@@ -95,6 +97,10 @@ namespace PLATEAU.Editor.CityExport
                         
                         gltfWriter.Write(gltfFilePath, model, options.GltfWriteOptions);
                     }
+                    break;
+                case MeshFileFormat.FBX:
+                    string destPath = Path.Combine(destDir, fileNameWithoutExtension + ".fbx");
+                    FbxWriter.Write(destPath, model, options.FbxWriteOptions);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(options), "Unknown FileFormat to export.");

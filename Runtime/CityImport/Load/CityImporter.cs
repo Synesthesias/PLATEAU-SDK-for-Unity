@@ -31,10 +31,6 @@ namespace PLATEAU.CityImport.Load
         {
             var datasetSourceConfig = config.DatasetSourceConfig;
             string destPath = PathUtil.PLATEAUSrcFetchDir;
-            if (config.DatasetSourceConfig.IsServer)
-            {
-                destPath = Path.Combine(destPath, config.DatasetSourceConfig.RootDirName);
-            }
             string destFolderName = datasetSourceConfig.RootDirName;
 
             if ((!datasetSourceConfig.IsServer) && (!Directory.Exists(datasetSourceConfig.DatasetIdOrSourcePath)))
@@ -46,7 +42,7 @@ namespace PLATEAU.CityImport.Load
             progressDisplay.SetProgress("GMLファイル検索", 10f, "");
             using var datasetSource = DatasetSource.Create(datasetSourceConfig);
             using var datasetAccessor = datasetSource.Accessor;
-            var targetGmls = await Task.Run(() => CityFilesCopy.FindTargetGmls(
+            var targetGmls = await Task.Run(() => TargetGmlFinder.FindTargetGmls(
                 datasetAccessor, config
             ));
             progressDisplay.SetProgress("GMLファイル検索", 100f, "完了");

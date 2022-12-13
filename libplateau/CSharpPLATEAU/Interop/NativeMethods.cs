@@ -118,7 +118,7 @@ namespace PLATEAU.Interop
         }
     }
     
-    public enum MeshFileFormat{OBJ, GLTF}
+    public enum MeshFileFormat{OBJ, GLTF, FBX}
 
 
     [StructLayout(LayoutKind.Sequential)]
@@ -134,6 +134,22 @@ namespace PLATEAU.Interop
         public float UnitScale;
         public MeshFileFormat MeshFileFormat;
         public int CoordinateZoneID;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct FbxWriteOptions
+    {
+        public FbxFileFormat FileFormat;
+
+        public FbxWriteOptions(FbxFileFormat fileFormat)
+        {
+            this.FileFormat = fileFormat;
+        }
+    }
+
+    public enum FbxFileFormat : UInt32
+    {
+        Binary, Ascii
     }
 
     /// <summary>
@@ -1232,13 +1248,6 @@ namespace PLATEAU.Interop
             [In,Out] IntPtr refVectorMeshCodePtr);
 
         [DllImport(DllName)]
-        internal static extern APIResult plateau_i_dataset_accessor_get_max_lod(
-            [In] IntPtr accessorPtr,
-            out int outMaxLod,
-            MeshCode meshCode,
-            PredefinedCityModelPackage package);
-
-        [DllImport(DllName)]
         internal static extern APIResult plateau_i_dataset_accessor_get_packages(
             [In] IntPtr accessorPtr,
             out PredefinedCityModelPackage outPackageFlags);
@@ -1417,6 +1426,16 @@ namespace PLATEAU.Interop
             out bool flg,
             [In] byte[] objFilePathUtf8,
             [In] IntPtr modelPtr);
+        
+        // ***************
+        //  fbx_writer_c.cpp
+        // ***************
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_fbx_writer_write(
+            [In] byte[] fbxFilePathUtf8,
+            [In] IntPtr modelPtr,
+            FbxWriteOptions options,
+            out bool outIsSucceed);
         
         // ***************
         //  mesh_merger_c.cpp

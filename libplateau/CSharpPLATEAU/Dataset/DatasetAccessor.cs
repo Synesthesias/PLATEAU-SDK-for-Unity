@@ -40,14 +40,6 @@ namespace PLATEAU.Dataset
             }
         }
 
-        public int GetMaxLod(MeshCode meshCode, PredefinedCityModelPackage package)
-        {
-            var result = NativeMethods.plateau_i_dataset_accessor_get_max_lod(
-                Handle, out int maxLod, meshCode, package);
-            DLLUtil.CheckDllError(result);
-            return maxLod;
-        }
-
         /// <summary>
         /// ローカルの場合:
         /// 存在するパッケージ種をフラグ形式で返します。

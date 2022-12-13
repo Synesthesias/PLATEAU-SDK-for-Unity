@@ -99,28 +99,17 @@ namespace PLATEAU.Dataset
         }
         
         /// <summary>
+        /// GmlFileのパスがローカルPCを指す場合:
         /// GMLファイルとその関連ファイルをコピーします。
         /// 関連ファイルを探すために、GMLファイルの中身に対して文字列検索（テクスチャパスなどの記載を探す）が行われるため、
         /// GMLファイルの容量が増えるほど処理時間が増えます。
+        /// GmlFileのパスが http で始まる場合:
+        /// GMLファイルとその関連ファイルをダウンロードします。
         /// </summary>
         /// <param name="destinationRootPath">コピー先のルートフォルダのパスです。</param>
         public GmlFile Fetch(string destinationRootPath)
         {
             ThrowIfDisposed();
-            bool isServer = Path.StartsWith("http");
-            switch (isServer)
-            {
-                case false:
-                    return FetchLocal(destinationRootPath);
-                case true:
-                    return FetchServer(destinationRootPath);
-                default:
-                    throw new ArgumentOutOfRangeException();    
-            }
-        }
-
-        private GmlFile FetchLocal(string destinationRootPath)
-        {
             var resultGml = Create("");
             var apiResult = NativeMethods.plateau_gml_file_fetch_local(
                 Handle, destinationRootPath, resultGml.Handle
@@ -128,34 +117,6 @@ namespace PLATEAU.Dataset
             DLLUtil.CheckDllError(apiResult);
             resultGml.Path = resultGml.Path.Replace('\\', '/');
             return resultGml;
-        }
-
-        /// <summary>
-        /// サーバーからGMLファイルをダウンロードします。
-        /// </summary>
-        /// <param name="destinationRootPath">
-        /// ダウンロード先の基準パスです。
-        /// 実際のダウンロード先は、このパスに "/udx/(種別ディレクトリ)/(0個以上のディレクトリ)/(gmlファイル名)" を追加したものになります。
-        /// この追加分のパスは、接続先URLに含まれるものとします。 
-        /// </param>
-        /// <returns>ダウンロード後のGMLファイルの情報を返します。</returns>
-        private GmlFile FetchServer(string destinationRootPath)
-        {
-            // "./udx/" で始まる相対パスです。
-            int udxIdx = Path.LastIndexOf("/udx/", StringComparison.Ordinal);
-            if (udxIdx < 0) throw new InvalidDataException($"Path should contain '/udx/' but it does not. Path = {Path}");
-            string relativePath = "." + Path.Substring(Path.LastIndexOf("/udx/", StringComparison.Ordinal));
-            
-            string destPath = System.IO.Path.Combine(destinationRootPath, relativePath).Replace('\\', '/');
-            string destDirPath = new DirectoryInfo(destPath).Parent?.FullName.Replace('\\', '/');
-            if (destDirPath == null) throw new InvalidDataException("Invalid path.");
-            Directory.CreateDirectory(destDirPath);
-
-            var client = Client.Create();
-            client.Url = NetworkConfig.DefaultApiServerUrl;
-            string downloadedPath = client.Download(destDirPath, Path);
-            client.Dispose();
-            return Create(downloadedPath);
         }
 
         /// <summary>

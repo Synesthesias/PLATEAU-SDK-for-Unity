@@ -78,7 +78,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
                         
                         // ローカルの場合、ファイルの中身を検索するので時間がかかります。
                         // サーバーの場合、APIサーバーに問い合わせます。
-                        maxLod = accessor.GetMaxLod(gml.MeshCode, package);
+                        maxLod = gml.GetMaxLod();
                     }
                     // 検索結果を追加します。
                     this.meshCodeToPackageLodDict.AddOrUpdate(currentMeshCode,
