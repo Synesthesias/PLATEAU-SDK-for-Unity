@@ -48,7 +48,7 @@ namespace PLATEAU.Tests.EditModeTests
         public IEnumerator TestImportLocal()
         {
             var cityDefinition = TestCityDefinition.MiniTokyo;
-            yield return cityDefinition.ImportLocal(out _).AsIEnumerator();
+            yield return cityDefinition.ImportLocal().AsIEnumerator();
             
             // GMLファイルが生成されることを確認します。
             cityDefinition.AssertFilesExist(testDataFetchPath + "/TestDataTokyoMini");
@@ -61,7 +61,7 @@ namespace PLATEAU.Tests.EditModeTests
         [UnityTest]
         public IEnumerator TestImportServer()
         {
-            var cityDefinition = TestCityDefinition.TestServer23ku;
+            var cityDefinition = TestCityDefinition.TestServer23Ku;
             yield return cityDefinition.ImportServer().AsIEnumerator();
             
             // GMLファイルが生成されることを確認します。

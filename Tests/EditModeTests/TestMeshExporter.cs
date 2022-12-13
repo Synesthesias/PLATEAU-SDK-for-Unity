@@ -25,7 +25,7 @@ namespace PLATEAU.Tests.EditModeTests
         {
             TestCityImporter.DeleteFetchedTestDir();
             DirectoryUtil.SetUpTempCacheFolder();
-            yield return TestCityDefinition.MiniTokyo.ImportLocal(out _).AsIEnumerator();
+            yield return TestCityDefinition.MiniTokyo.ImportLocal().AsIEnumerator();
         }
 
         [TearDown]

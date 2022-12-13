@@ -14,7 +14,7 @@ namespace PLATEAU.Tests.TestUtils
 {
     /// <summary>
     /// ユニットテストにおいて、都市データに期待する状態を定義します。
-    /// 何というGMLファイルがあることが期待され、どの地域メッシュコードがあるかを記述します。
+    /// どのようなGMLファイルがあることが期待され、どの地域メッシュコードがあるかを記述します。
     /// </summary>
     internal class TestCityDefinition
     {
@@ -33,15 +33,21 @@ namespace PLATEAU.Tests.TestUtils
             AreaMeshCodes = areaMeshCodes;
         }
 
-        public Task ImportLocal(out CityLoadConfig outConfig)
+        /// <summary>
+        /// <see cref="TestCityDefinition"/> に記述されたパスをもとに、ローカルモードでインポートします。
+        /// </summary>
+        public Task ImportLocal()
         {
             var progressDisplay = new ProgressDisplayGUI(null);
-            outConfig = MakeConfig(false);
+            var conf = MakeConfig(false);
 
-            var task = CityImporter.ImportAsync(outConfig, progressDisplay);
+            var task = CityImporter.ImportAsync(conf, progressDisplay);
             return task;
         }
 
+        /// <summary>
+        /// <see cref="TestCityDefinition"/> に記述されたデータセットID をもとに、サーバーモードでインポートします。
+        /// </summary>
         public Task ImportServer()
         {
             var progressDisplay = new ProgressDisplayGUI(null);
@@ -49,6 +55,9 @@ namespace PLATEAU.Tests.TestUtils
             return task;
         }
 
+        /// <summary>
+        /// インポートするための設定をします。
+        /// </summary>
         private CityLoadConfig MakeConfig(bool isServer)
         {
             var conf = new CityLoadConfig();
@@ -68,6 +77,7 @@ namespace PLATEAU.Tests.TestUtils
         }
 
         /// <summary>
+        /// <see cref="TestCityDefinition"/> に記述されたファイルについて、
         /// GMLファイルとその関連ファイルが Assets/StreamingAssets/.PLATEAU にコピーされることを確認します。
         /// </summary>
         public void AssertFilesExist(string testDataFetchPath)
@@ -82,6 +92,9 @@ namespace PLATEAU.Tests.TestUtils
             }
         }
 
+        /// <summary>
+        /// <see cref="TestCityDefinition"/> に記述されたゲームオブジェクト名をリストで返します。
+        /// </summary>
         public List<string> ExpectedObjNames =>
             GmlDefinitions
                 .Where(def => def.ContainsMesh)
@@ -112,7 +125,10 @@ namespace PLATEAU.Tests.TestUtils
             }
         }
 
-
+        /// <summary>
+        /// テストデータ "MiniTokyo" について、
+        /// その内容を <see cref="TestCityDefinition"/> 形式で説明したものです。 
+        /// </summary>
         public static readonly TestCityDefinition MiniTokyo =
             new TestCityDefinition("TestDataTokyoMini", new[]
             {
@@ -137,14 +153,19 @@ namespace PLATEAU.Tests.TestUtils
                 "53394525", "53392546", "53392547", "533925"
             });
 
-        public static readonly TestCityDefinition TestServer23ku =
+        /// <summary>
+        /// テストデータ "TestServer23Ku" について、
+        /// その内容を <see cref="TestCityDefinition"/> 形式で説明したものです。
+        /// </summary>
+        public static readonly TestCityDefinition TestServer23Ku =
             new TestCityDefinition("23ku", new[]
                 {
                     new TestGmlDefinition("udx/bldg/53392642_bldg_6697_2_op.gml", "53392642_bldg_6697_2_op.gml", true,
                         null,
-                        2)
+                        2),
+                    new TestGmlDefinition("udx/bldg/53392670_bldg_6697_2_op.gml", "53392670_bldg_6697_2_op.gml", true, null, 2)
                 }, new[]
-                    { "53392642" }
+                    { "53392642", "53392670" }
             );
     }
 }
