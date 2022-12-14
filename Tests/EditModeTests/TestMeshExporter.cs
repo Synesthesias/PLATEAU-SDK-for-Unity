@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -11,7 +10,6 @@ using PLATEAU.Geometries;
 using PLATEAU.Interop;
 using PLATEAU.MeshWriter;
 using PLATEAU.Tests.TestUtils;
-using UnityEngine;
 using UnityEngine.TestTools;
 using Object = UnityEngine.Object;
 

@@ -1,7 +1,5 @@
 using System;
-using System.IO;
 using PLATEAU.Interop;
-using PLATEAU.Network;
 
 namespace PLATEAU.Dataset
 {
@@ -37,7 +35,12 @@ namespace PLATEAU.Dataset
             get
             {
                 ThrowIfDisposed();
-                return DLLUtil.GetNativeString(Handle, NativeMethods.plateau_gml_file_get_path);
+                var pathNativeStr = NativeString.Create();
+                var result = NativeMethods.plateau_gml_file_get_path(Handle, pathNativeStr.Handle);
+                DLLUtil.CheckDllError(result);
+                string path = pathNativeStr.ToString();
+                pathNativeStr.Dispose();
+                return path;
             }
             set
             {
@@ -111,8 +114,9 @@ namespace PLATEAU.Dataset
         {
             ThrowIfDisposed();
             var resultGml = Create("");
-            var apiResult = NativeMethods.plateau_gml_file_fetch_local(
-                Handle, destinationRootPath, resultGml.Handle
+            var destinationRootPathUtf8 = DLLUtil.StrToUtf8Bytes(destinationRootPath);
+            var apiResult = NativeMethods.plateau_gml_file_fetch(
+                Handle, destinationRootPathUtf8, resultGml.Handle
             );
             DLLUtil.CheckDllError(apiResult);
             resultGml.Path = resultGml.Path.Replace('\\', '/');
