@@ -2,6 +2,7 @@
 using PLATEAU.CityAdjust;
 using PLATEAU.CityInfo;
 using PLATEAU.Editor.EditorWindow.Common;
+using PLATEAU.Util.Async;
 using UnityEditor;
 
 namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
@@ -24,6 +25,23 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
                     {
                         CityDuplicateProcessor.EnableOnlyLargestLODInDuplicate(this.adjustTarget);            
                     }
+                }
+            }
+            PlateauEditorStyle.Separator(0);
+
+            using (PlateauEditorStyle.VerticalScopeLevel1())
+            {
+                PlateauEditorStyle.SubTitle("フィルタリング");
+                EditorGUILayout.LabelField("条件に応じてゲームオブジェクトのON/OFFを切り替えます。");
+                // TODO ここに条件を記載
+                if (PlateauEditorStyle.MainButton("フィルタリング実行"))
+                {
+                    if (this.adjustTarget == null)
+                    {
+                        EditorUtility.DisplayDialog("PLATEAU", "対象を指定してください。", "OK");
+                        return;
+                    }
+                    this.adjustTarget.FilterByFeatureTypeAsync().ContinueWithErrorCatch();
                 }
             }
         }

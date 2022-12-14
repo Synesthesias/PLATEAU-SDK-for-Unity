@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using PLATEAU.CityGML;
 using PLATEAU.Geometries;
 using PLATEAU.Interop;
@@ -34,7 +35,7 @@ namespace PLATEAU.CityInfo
 
         /// <summary>
         /// GMLに対応する Transform からGMLを非同期ロードして <see cref="CityModel"/> を返します。
-        /// 名称に合致するGMLがなければ null を返します。
+        /// 合致するGMLがなければ null を返します。
         /// </summary>
         public async Task<CityModel> LoadGmlAsync(Transform gmlTransform)
         {
@@ -50,6 +51,58 @@ namespace PLATEAU.CityInfo
             }
 
             return null;
+        }
+
+        /// <summary>
+        /// GMLに対応する Transform を受け取り、そのゲームオブジェクト階層の子を見て
+        /// 利用可能なLODの番号をリストで返します。
+        /// </summary>
+        public static List<int> GetLods(Transform gmlTransform)
+        {
+            int childCount = gmlTransform.childCount;
+            var ret = new List<int>();
+            for (int i = 0; i < childCount; i++)
+            {
+                var child = gmlTransform.GetChild(i);
+                string childName = child.name;
+                if (childName.StartsWith("LOD"))
+                {
+                    if (int.TryParse(childName.Substring("LOD".Length), out int lod))
+                    {   
+                        ret.Add(lod);
+                    }
+                }
+            }
+            return ret;
+        }
+
+        /// <summary>
+        /// 引数として GMLに対応する Transform と LOD番号を受け取ります。
+        /// GMLのゲームオブジェクト階層を見て、そのLODで存在する CityObject に対応する Transform をリストで返します。
+        /// </summary>
+        public static List<Transform> GetCityObjects(Transform gmlTransform, int lod)
+        {
+            var lodTrans = gmlTransform.Find($"LOD{lod}");
+            if (lodTrans == null)
+            {
+                Debug.LogError("LOD GameObject is not found.");
+                return null;
+            }
+
+            var result = new List<Transform>();
+            GetChildrenRecursive(lodTrans, result);
+            return result;
+        }
+
+        private static void GetChildrenRecursive(Transform trans, List<Transform> result)
+        {
+            int childCount = trans.childCount;
+            for (int i = 0; i < childCount; i++)
+            {
+                var childTrans = trans.GetChild(i);
+                result.Add(childTrans);
+                GetChildrenRecursive(childTrans, result);
+            }
         }
         
         /// <summary>

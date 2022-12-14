@@ -45,8 +45,9 @@ namespace PLATEAU.Dataset
             set
             {
                 ThrowIfDisposed();
+                var pathUtf8 = DLLUtil.StrToUtf8Bytes(value);
                 var result = NativeMethods.plateau_gml_file_set_path(
-                    Handle, value);
+                    Handle, pathUtf8);
                 DLLUtil.CheckDllError(result);
             }
         }
