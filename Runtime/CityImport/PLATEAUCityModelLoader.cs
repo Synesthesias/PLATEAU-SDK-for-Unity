@@ -2,10 +2,8 @@
 using PLATEAU.Interop;
 using PLATEAU.Dataset;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 #if UNITY_EDITOR
-using UnityEditor.SceneManagement;
 #endif
 
 namespace PLATEAU.CityImport
