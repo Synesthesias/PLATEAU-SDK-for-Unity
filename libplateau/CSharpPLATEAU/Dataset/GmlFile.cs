@@ -134,6 +134,20 @@ namespace PLATEAU.Dataset
                 NativeMethods.plateau_gml_file_get_max_lod);
         }
 
+        /// <summary>
+        /// 都市データのルートディレクトリ、すなわち "udx"フォルダの1つ上のパスを返します。
+        /// </summary>
+        public string CityRootPath()
+        {
+            string gmlPath = Path.Replace('\\', '/');
+            int udxIdx = gmlPath.LastIndexOf("/udx/", StringComparison.Ordinal);
+            if (udxIdx < 0)
+            {
+                throw new Exception("udx folder is not found in the path.");
+            }
+            return gmlPath.Substring(0, udxIdx);
+        }
+
         public void Dispose()
         {
             this.isDisposed = true;
