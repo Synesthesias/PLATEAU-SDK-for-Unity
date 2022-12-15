@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using PLATEAU.Dataset;
 using PLATEAU.Editor.EditorWindow.Common;
@@ -24,6 +25,21 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.AdjustGUIParts
                 // TODO 「仕様上ありうるLOD」の他に、「実際にGameObjectとして存在する最大・最小LOD」を考慮するのが良い
                 this.data.Add(package, new LodSliderConfig((uint)specMinLod, (uint)specMaxLod, (uint)specMinLod, (uint)specMaxLod));
                 
+            }
+        }
+        
+        // TODO 型名が冗長
+        public ReadOnlyDictionary<PredefinedCityModelPackage, (uint minLod, uint maxLod)> Result {
+            get
+            {
+                var ret = new Dictionary<PredefinedCityModelPackage, (uint minLod, uint maxLod)>();
+                foreach (var pair in this.data)
+                {
+                    var package = pair.Key;
+                    var lodConf = pair.Value;
+                    ret.Add(package, (lodConf.userMinLod, lodConf.userMaxLod));
+                }
+                return new ReadOnlyDictionary<PredefinedCityModelPackage, (uint minLod, uint maxLod)>(ret);
             }
         }
         

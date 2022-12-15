@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using PLATEAU.CityAdjust;
 using PLATEAU.CityInfo;
@@ -58,7 +59,13 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
                         if (PlateauEditorStyle.MainButton(isFilterTaskRunning ? "フィルタリング中..." : "フィルタリング実行"))
                         {
                             isFilterTaskRunning = true;
-                            CityFilterByCityObjectType.FilterAsync(this.adjustTarget, this.typeSelectGUI.SelectionDict)
+                            // TODO InstancedCityModelのメソッドチェーンで書く？
+                            CityFilter.FilterByCityObjectTypeAsync(this.adjustTarget, this.typeSelectGUI.SelectionDict)
+                                .ContinueWithErrorCatch()
+                                .ContinueWith(_ =>
+                                {
+                                    CityFilter.FilterByLod(this.adjustTarget, this.packageLodSelectGUI.Result);
+                                }, TaskScheduler.FromCurrentSynchronizationContext())
                                 .ContinueWithErrorCatch()
                                 .ContinueWith(_ =>
                                 {

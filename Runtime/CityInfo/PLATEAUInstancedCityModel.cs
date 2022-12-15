@@ -57,29 +57,52 @@ namespace PLATEAU.CityInfo
         /// GMLに対応する Transform を受け取り、そのゲームオブジェクト階層の子を見て
         /// 利用可能なLODの番号をリストで返します。
         /// </summary>
+        //TODO staticにしない記法のほうが分かりやすそう
         public static List<int> GetLods(Transform gmlTransform)
         {
+            var lods = new List<int>();
+            foreach (var lodTrans in GetLodTransforms(gmlTransform))
+            {
+                if (TryParseLodGameObjectName(lodTrans.name, out int lod))
+                {
+                    lods.Add(lod);
+                }
+            }
+
+            return lods;
+        }
+
+        /// <summary>
+        /// GMLに対応する Transform を受け取り、そのゲームオブジェクト階層の子を見て
+        /// 利用可能なLODに対応する Transform のリストを返します。
+        /// </summary>
+        public static List<Transform> GetLodTransforms(Transform gmlTransform)
+        {
             int childCount = gmlTransform.childCount;
-            var ret = new List<int>();
+            var ret = new List<Transform>();
             for (int i = 0; i < childCount; i++)
             {
                 var child = gmlTransform.GetChild(i);
                 string childName = child.name;
                 if (childName.StartsWith("LOD"))
                 {
-                    if (int.TryParse(childName.Substring("LOD".Length), out int lod))
-                    {   
-                        ret.Add(lod);
-                    }
+                    ret.Add(child);
                 }
             }
+
             return ret;
+        }
+
+        public static bool TryParseLodGameObjectName(string lodGameObjName, out int outLod)
+        {
+            return int.TryParse(lodGameObjName.Substring("LOD".Length), out outLod);
         }
 
         /// <summary>
         /// 引数として GMLに対応する Transform と LOD番号を受け取ります。
         /// GMLのゲームオブジェクト階層を見て、そのLODで存在する CityObject に対応する Transform をリストで返します。
         /// </summary>
+        //TODO staticにしない記法のほうが分かりやすそう
         public static List<Transform> GetCityObjects(Transform gmlTransform, int lod)
         {
             var lodTrans = gmlTransform.Find($"LOD{lod}");
