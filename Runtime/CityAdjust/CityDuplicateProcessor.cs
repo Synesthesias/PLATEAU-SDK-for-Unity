@@ -12,11 +12,12 @@ namespace PLATEAU.CityAdjust
         /// <summary>
         /// 重複した地物があるか検索します。
         /// 重複のうちLODが最大のものを有効化し、そうでないものを無効化します。
+        /// ただしすでに無効化されているものは無視します。
         /// </summary>
         public static void EnableOnlyLargestLODInDuplicate(PLATEAUInstancedCityModel city)
         {
             var cityTrans = city.transform;
-            SetActiveAll(cityTrans, true);
+            // SetActiveAll(cityTrans, true);
             int gmlCount = cityTrans.childCount;
             for (int i = 0; i < gmlCount; i++)
             {
@@ -29,7 +30,7 @@ namespace PLATEAU.CityAdjust
                     for (int o = 0; o < objCount; o++)
                     {
                         var objTrans = lodTrans.GetChild(o);
-                        if (!objTrans.gameObject.activeSelf) continue;
+                        if (!objTrans.gameObject.activeInHierarchy) continue;
                         var objId = objTrans.name;
                         for (int searchLod = l-1; searchLod >= 0; searchLod--)
                         {
