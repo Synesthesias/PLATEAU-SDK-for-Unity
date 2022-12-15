@@ -290,6 +290,27 @@ namespace PLATEAU.Editor.EditorWindow.Common
             return new EditorGUILayout.VerticalScope(new GUIStyle(StyleDarkBox));
         }
 
+        public static void LODSlider(string label, ref uint minVal, ref uint maxVal, uint minLODLimit, uint maxLODLimit)
+        {
+            if (minLODLimit == maxLODLimit)
+            {
+                (minVal, maxVal) = (minLODLimit, maxLODLimit);
+                return;
+            }
+
+            (float sliderValMin, float sliderValMax) = (minVal, maxVal);
+            using (new EditorGUILayout.HorizontalScope())
+            {
+                EditorGUILayout.LabelField(label, GUILayout.Width(150));
+                NumberDisplay((int)minVal);
+                EditorGUILayout.MinMaxSlider("", ref sliderValMin, ref sliderValMax, minLODLimit, maxLODLimit);
+                NumberDisplay((int)maxVal);
+            }
+
+            minVal = (uint)Mathf.Round(sliderValMin);
+            maxVal = (uint)Mathf.Round(sliderValMax);
+        }
+
         /// <summary>
         /// GUIのコンテンツをまとめるのに利用できます。
         /// </summary>

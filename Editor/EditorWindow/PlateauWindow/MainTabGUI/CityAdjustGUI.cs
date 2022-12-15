@@ -1,6 +1,8 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using PLATEAU.CityAdjust;
 using PLATEAU.CityInfo;
+using PLATEAU.Dataset;
 using PLATEAU.Editor.EditorWindow.Common;
 using PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.AdjustGUIParts;
 using PLATEAU.Util.Async;
@@ -44,6 +46,10 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
                         new GUIContent("重複する地物を非表示", "有効な場合、重複した地物オブジェクトのうちLODが最大のもののみ残してそれ以外を非表示にします。"); 
                     this.disableDuplicate = EditorGUILayout.Toggle(duplicateToggleContent, this.disableDuplicate);
                 
+                    PlateauEditorStyle.Heading("LOD指定", null);
+                    DrawLodGui();
+                    
+                    PlateauEditorStyle.Heading("都市オブジェクトタイプ指定", null);
                     this.typeSelectGUI.Draw();
 
                     using (new EditorGUI.DisabledScope(isFilterTaskRunning))
@@ -61,9 +67,23 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
                                 }, TaskScheduler.FromCurrentSynchronizationContext()).ContinueWithErrorCatch();
                         }
                     }
-                    
+
                 }
             }
+        }
+
+        private static void DrawLodGui()
+        {
+            var packages = Enum.GetValues(typeof(PredefinedCityModelPackage));
+            foreach (PredefinedCityModelPackage package in packages)
+            {
+                // 仕様上ありうる最大・最小LOD
+                var (_, specMinLod, specMaxLod) = CityModelPackageInfo.GetPredefined(package);
+                // TODO 「仕様上ありうるLOD」の他に、「実際にGameObjectとして存在する最大・最小LOD」を考慮するのが良い
+                
+                
+            }
+            
         }
     }
 }
