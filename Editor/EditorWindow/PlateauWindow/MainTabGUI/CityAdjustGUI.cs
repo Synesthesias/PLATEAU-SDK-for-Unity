@@ -1,5 +1,4 @@
 ﻿using System.Threading.Tasks;
-using ICSharpCode.NRefactory.Ast;
 using PLATEAU.CityAdjust;
 using PLATEAU.CityInfo;
 using PLATEAU.Editor.EditorWindow.Common;

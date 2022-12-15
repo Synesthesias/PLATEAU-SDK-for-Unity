@@ -1,22 +1,35 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using PLATEAU.CityInfo;
+using PLATEAU.Editor.EditorWindow.Common;
 using UnityEditor;
-using UnityEngine;
 using Hierarchy = PLATEAU.CityInfo.CityObjectTypeHierarchy;
 
 namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.AdjustGUIParts
 {
     public class CityObjectTypeSelectGUI
     {
-        private Dictionary<Hierarchy.Node, bool> selectionDict = new Dictionary<Hierarchy.Node, bool>();
+        private readonly Dictionary<Hierarchy.Node, bool> selectionDict = new Dictionary<Hierarchy.Node, bool>();
 
         public ReadOnlyDictionary<Hierarchy.Node, bool> SelectionDict =>
             new ReadOnlyDictionary<CityObjectTypeHierarchy.Node, bool>(this.selectionDict);
 
         public void Draw()
         {
-            // ルートノードを除いて描画します。
+            using (new EditorGUILayout.HorizontalScope())
+            {
+                if(PlateauEditorStyle.MiniButton("全選択", 100))
+                {
+                    SetSelectionAll(true);
+                }
+
+                if (PlateauEditorStyle.MiniButton("全選択解除", 100))
+                {
+                    SetSelectionAll(false);
+                }
+            }
+            // ルートノードを除いて、ノードごとのトグルを描画します。
             var rootNode = Hierarchy.RootNode;
             foreach (var node in rootNode.Children)
             {
@@ -32,7 +45,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.AdjustGUIParts
             }
 
             this.selectionDict[node] =
-                EditorGUILayout.Toggle(node.NodeName, this.selectionDict[node]);
+                EditorGUILayout.ToggleLeft(node.NodeName, this.selectionDict[node]);
 
             if (this.selectionDict[node])
             {
@@ -45,6 +58,11 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.AdjustGUIParts
                 EditorGUI.indentLevel--;
             }
             
+        }
+
+        private void SetSelectionAll(bool isActive)
+        {
+            foreach (var node in this.selectionDict.Keys.ToArray()) this.selectionDict[node] = isActive;
         }
     }
 }
