@@ -55,16 +55,16 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
                 {
                     PlateauEditorStyle.SubTitle("フィルタリング");
                     EditorGUILayout.LabelField("条件に応じてゲームオブジェクトのON/OFFを切り替えます。");
+                    
 
+                    PlateauEditorStyle.Heading("フィルタ条件指定", null);
+                    
                     var duplicateToggleContent =
                         new GUIContent("重複する地物を非表示", "有効な場合、重複した地物オブジェクトのうちLODが最大のもののみ残してそれ以外を非表示にします。"); 
                     this.disableDuplicate = EditorGUILayout.Toggle(duplicateToggleContent, this.disableDuplicate);
-
-                    PlateauEditorStyle.Heading("フィルタ条件指定", null);
+                    
                     this.filterConditionGUI.Draw(this.packageToLodMinMax);
                     
-                    // PlateauEditorStyle.Heading("LOD指定", null);
-                    // this.adjustPackageLodGUI.Draw(this.packageToLodMinMax);
 
                     using (new EditorGUI.DisabledScope(isFilterTaskRunning))
                     {
