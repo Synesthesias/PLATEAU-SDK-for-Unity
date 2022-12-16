@@ -99,7 +99,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
     }
 
     /// <summary>
-    /// パッケージとそこに含まれるLOD集合の組です。
+    /// パッケージとそこに含まれる最大LODの組です。
     /// </summary>
     public class PackageToLodDict
     {

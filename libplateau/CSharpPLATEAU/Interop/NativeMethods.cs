@@ -1311,14 +1311,13 @@ namespace PLATEAU.Interop
 
         [DllImport(DllName)]
         internal static extern APIResult plateau_gml_file_get_path(
-            [In] IntPtr gmlFilePtr,
-            out IntPtr strPtr,
-            out int strLength);
-        
+            [In] IntPtr handle,
+            [In, Out] IntPtr refPathNativeStringPtr);
+            
         [DllImport(DllName, CharSet = CharSet.Ansi)]
         internal static extern APIResult plateau_gml_file_set_path(
             [In] IntPtr gmlFilePtr,
-            [In] string path);
+            [In] byte[] pathUtf8);
 
         [DllImport(DllName, CharSet = CharSet.Ansi)]
         internal static extern APIResult plateau_gml_file_get_feature_type_str(
@@ -1332,9 +1331,9 @@ namespace PLATEAU.Interop
             out MeshCode outMeshCode);
         
         [DllImport(DllName, CharSet = CharSet.Ansi)]
-        internal static extern APIResult plateau_gml_file_fetch_local(
+        internal static extern APIResult plateau_gml_file_fetch(
             [In] IntPtr gmlFilePtr,
-            [In] string destinationRootPath,
+            [In] byte[] destinationRootPathUtf8,
             [In, Out] IntPtr outGmlFileInfoPtr);
 
         [DllImport(DllName)]

@@ -3,11 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using NUnit.Framework;
-using PLATEAU.CityImport.Load;
-using PLATEAU.CityImport.Setting;
-using PLATEAU.Dataset;
-using PLATEAU.Editor.EditorWindow.ProgressDisplay;
-using PLATEAU.Interop;
 using PLATEAU.Tests.TestUtils;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -21,29 +16,7 @@ namespace PLATEAU.Tests.EditModeTests
 
         /// <summary> インポート時、テストデータはこのパスにコピーされることを確認します。 </summary>
         private const string testDataFetchPath = "Assets/StreamingAssets/.PLATEAU";
-        
-        // [OneTimeSetUp]
-        // public void OneTimeSetUp()
-        // {
-        //     DeleteFetchedTestDir();
-        // }
-        //
-        // [OneTimeTearDown]
-        // public void OneTimeTearDown()
-        // {
-        //     DeleteFetchedTestDir();
-        // } // [OneTimeSetUp]
-        // public void OneTimeSetUp()
-        // {
-        //     DeleteFetchedTestDir();
-        // }
-        //
-        // [OneTimeTearDown]
-        // public void OneTimeTearDown()
-        // {
-        //     DeleteFetchedTestDir();
-        // }
-        
+
         [UnityTest]
         public IEnumerator TestImportLocal()
         {

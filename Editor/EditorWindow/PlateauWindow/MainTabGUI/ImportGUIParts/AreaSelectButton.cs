@@ -42,7 +42,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts
 
         private static void StartAreaSelect(DatasetSourceConfig datasetSourceConfig, IAreaSelectResultReceiver resultReceiver, int coordinateZoneID)
         {
-            if ((!datasetSourceConfig.IsServer) && (!Directory.Exists(datasetSourceConfig.DatasetIdOrSourcePath)))
+            if ((!datasetSourceConfig.IsServer) && (!Directory.Exists(datasetSourceConfig.LocalSourcePath)))
             {
                 EditorUtility.DisplayDialog("PLATEAU SDK", $"入力フォルダが存在しません。\nフォルダを指定してください。", "OK");
                 return;

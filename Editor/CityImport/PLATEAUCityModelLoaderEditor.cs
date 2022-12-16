@@ -23,8 +23,17 @@ namespace PLATEAU.Editor.CityImport
             {
                 using (PlateauEditorStyle.VerticalScopeLevel1())
                 {
-                    EditorGUILayout.LabelField("インポート前パス:");
-                    PlateauEditorStyle.MultiLineLabelWithBox(loader.DatasetSourceConfig.DatasetIdOrSourcePath);
+                    var datasetConf = loader.DatasetSourceConfig;
+                    if (!string.IsNullOrEmpty(datasetConf.LocalSourcePath))
+                    {
+                        EditorGUILayout.LabelField("インポート前パス:");
+                        PlateauEditorStyle.MultiLineLabelWithBox(datasetConf.LocalSourcePath);
+                    }
+
+                    if (!string.IsNullOrEmpty(datasetConf.ServerDatasetID))
+                    {
+                        EditorGUILayout.LabelField($"サーバーデータセットID: {datasetConf.ServerDatasetID}");
+                    }
                     EditorGUILayout.LabelField("インポート後パス:");
                     PlateauEditorStyle.MultiLineLabelWithBox(loader.SourcePathAfterImport);
                     EditorGUILayout.LabelField("地域メッシュコード");

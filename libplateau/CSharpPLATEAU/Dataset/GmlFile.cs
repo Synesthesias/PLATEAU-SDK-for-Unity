@@ -1,7 +1,5 @@
 using System;
-using System.IO;
 using PLATEAU.Interop;
-using PLATEAU.Network;
 
 namespace PLATEAU.Dataset
 {
@@ -37,13 +35,19 @@ namespace PLATEAU.Dataset
             get
             {
                 ThrowIfDisposed();
-                return DLLUtil.GetNativeString(Handle, NativeMethods.plateau_gml_file_get_path);
+                var pathNativeStr = NativeString.Create();
+                var result = NativeMethods.plateau_gml_file_get_path(Handle, pathNativeStr.Handle);
+                DLLUtil.CheckDllError(result);
+                string path = pathNativeStr.ToString();
+                pathNativeStr.Dispose();
+                return path;
             }
             set
             {
                 ThrowIfDisposed();
+                var pathUtf8 = DLLUtil.StrToUtf8Bytes(value);
                 var result = NativeMethods.plateau_gml_file_set_path(
-                    Handle, value);
+                    Handle, pathUtf8);
                 DLLUtil.CheckDllError(result);
             }
         }
@@ -111,8 +115,9 @@ namespace PLATEAU.Dataset
         {
             ThrowIfDisposed();
             var resultGml = Create("");
-            var apiResult = NativeMethods.plateau_gml_file_fetch_local(
-                Handle, destinationRootPath, resultGml.Handle
+            var destinationRootPathUtf8 = DLLUtil.StrToUtf8Bytes(destinationRootPath);
+            var apiResult = NativeMethods.plateau_gml_file_fetch(
+                Handle, destinationRootPathUtf8, resultGml.Handle
             );
             DLLUtil.CheckDllError(apiResult);
             resultGml.Path = resultGml.Path.Replace('\\', '/');
@@ -128,6 +133,20 @@ namespace PLATEAU.Dataset
         {
             return DLLUtil.GetNativeValue<int>(Handle,
                 NativeMethods.plateau_gml_file_get_max_lod);
+        }
+
+        /// <summary>
+        /// 都市データのルートディレクトリ、すなわち "udx"フォルダの1つ上のパスを返します。
+        /// </summary>
+        public string CityRootPath()
+        {
+            string gmlPath = Path.Replace('\\', '/');
+            int udxIdx = gmlPath.LastIndexOf("/udx/", StringComparison.Ordinal);
+            if (udxIdx < 0)
+            {
+                throw new Exception("udx folder is not found in the path.");
+            }
+            return gmlPath.Substring(0, udxIdx);
         }
 
         public void Dispose()

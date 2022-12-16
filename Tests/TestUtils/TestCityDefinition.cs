@@ -71,8 +71,7 @@ namespace PLATEAU.Tests.TestUtils
                 packageConf.Value.includeTexture = true;
             }
 
-            string datasetIdOrSourcePath = isServer ? this.rootDirName: SrcRootDirPathLocal;
-            conf.DatasetSourceConfig = new DatasetSourceConfig(isServer, datasetIdOrSourcePath);
+            conf.DatasetSourceConfig = new DatasetSourceConfig(isServer, SrcRootDirPathLocal, this.rootDirName);
             return conf;
         }
 
