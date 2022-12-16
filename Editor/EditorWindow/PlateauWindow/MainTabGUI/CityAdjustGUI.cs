@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.ObjectModel;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using PLATEAU.CityAdjust;
 using PLATEAU.CityInfo;
-using PLATEAU.Dataset;
 using PLATEAU.Editor.EditorWindow.Common;
 using PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.AdjustGUIParts;
 using PLATEAU.Util.Async;
@@ -15,8 +12,8 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
     internal class CityAdjustGUI : IEditorDrawable
     {
         private PLATEAUInstancedCityModel adjustTarget;
-        private CityObjectTypeSelectGUI typeSelectGUI = new CityObjectTypeSelectGUI();
-        private PackageLodSelectGUI packageLodSelectGUI = new PackageLodSelectGUI();
+        private readonly CityObjectTypeSelectGUI typeSelectGUI = new CityObjectTypeSelectGUI();
+        private readonly PackageLodSelectGUI packageLodSelectGUI = new PackageLodSelectGUI();
         private bool disableDuplicate = true;
         private static bool isFilterTaskRunning;
         
@@ -49,7 +46,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
                     this.disableDuplicate = EditorGUILayout.Toggle(duplicateToggleContent, this.disableDuplicate);
 
                     PlateauEditorStyle.Heading("都市オブジェクトタイプ指定", null);
-                    this.typeSelectGUI.Draw();
+                    this.typeSelectGUI.Draw(this.adjustTarget);
                     
                     PlateauEditorStyle.Heading("LOD指定", null);
                     this.packageLodSelectGUI.Draw();

@@ -15,6 +15,9 @@ namespace PLATEAU.CityAdjust
             // GMLごとのループ
             foreach (var gmlTrans in gmlTransforms)
             {
+                
+                // TODO GMLの中身をロードして CityObjectType を調べなくとも、パッケージ種だけで Activeにすべきか判断できる場合がある。
+                //      建築物と植生以外はパッケージ種でしか分岐しないので、ロードを省いて高速化することができるはず。
                 var gmlModel = await cityModel.LoadGmlAsync(gmlTrans);
                 if (gmlModel == null)
                 {

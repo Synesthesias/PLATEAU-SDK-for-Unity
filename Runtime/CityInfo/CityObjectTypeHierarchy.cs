@@ -107,6 +107,25 @@ namespace PLATEAU.CityInfo
                     child.Parent = this;
                 }
             }
+
+            /// <summary>
+            /// Nodeの親子関係を自身から上へ調べて、PackageがNoneでない初めて見つかったPackageを返します。
+            /// 調べてもNoneだけならNoneを返します。
+            /// </summary>
+            public Package UpperPackage
+            {
+                get
+                {
+                    var node = this;
+                    while (node.Parent != null)
+                    {
+                        if (node.Package != PredefinedCityModelPackage.None) return node.Package;
+                        node = node.Parent;
+                    }
+
+                    return PredefinedCityModelPackage.None;
+                }
+            }
         }
     }
 }
