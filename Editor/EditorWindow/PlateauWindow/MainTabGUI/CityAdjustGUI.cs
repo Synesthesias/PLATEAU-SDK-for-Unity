@@ -60,7 +60,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
                         new GUIContent("重複する地物を非表示", "有効な場合、重複した地物オブジェクトのうちLODが最大のもののみ残してそれ以外を非表示にします。"); 
                     this.disableDuplicate = EditorGUILayout.Toggle(duplicateToggleContent, this.disableDuplicate);
 
-                    PlateauEditorStyle.Heading("都市オブジェクトタイプ指定", null);
+                    PlateauEditorStyle.Heading("地物タイプ指定", null);
                     this.typeGUI.Draw(this.packageToLodMinMax);
                     
                     PlateauEditorStyle.Heading("LOD指定", null);

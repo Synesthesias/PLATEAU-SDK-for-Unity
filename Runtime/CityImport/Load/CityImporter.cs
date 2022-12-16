@@ -22,6 +22,7 @@ namespace PLATEAU.CityImport.Load
     /// </summary>
     internal static class CityImporter
     {
+        static string  lastFetchedGmlRootPath = "";
         /// <summary>
         /// <see cref="CityImporter"/> クラスのメインメソッドです。
         /// GMLファイルから都市モデルを読み、そのメッシュをUnity向けに変換してシーンに配置します。
@@ -73,7 +74,6 @@ namespace PLATEAU.CityImport.Load
             // GMLファイルを同時に処理する最大数です。
             // 並列数が 4 くらいだと、1つずつ処理するよりも、全部同時に処理するよりも速いという経験則です。
             var sem = new SemaphoreSlim(4);
-            string  lastFetchedGmlRootPath = "";
             await Task.WhenAll(targetGmls.Select(async gmlInfo =>
             {
                 await sem.WaitAsync(); 
