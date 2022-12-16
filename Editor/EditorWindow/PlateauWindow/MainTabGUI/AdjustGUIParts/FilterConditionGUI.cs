@@ -65,6 +65,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.AdjustGUIParts
             
             if (isPackageExistInScene)
             {
+                if(depth == 0) EditorGUILayout.Space(5);
                 // シーンに存在するパッケージ種であれば、トグルGUIを表示します。                
                 this.selectionDict[node] = EditorGUILayout.ToggleLeft(node.NodeName, this.selectionDict[node]);
                 
