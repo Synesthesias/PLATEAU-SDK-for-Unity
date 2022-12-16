@@ -21,7 +21,7 @@ namespace PLATEAU.Tests.EditModeTests
         [UnitySetUp]
         public IEnumerator SetUp()
         {
-            TestCityImporter.DeleteFetchedTestDir();
+            // TestCityImporter.DeleteFetchedTestDir();
             DirectoryUtil.SetUpTempCacheFolder();
             yield return TestCityDefinition.MiniTokyo.ImportLocal().AsIEnumerator();
         }
@@ -29,7 +29,7 @@ namespace PLATEAU.Tests.EditModeTests
         [TearDown]
         public void TearDown()
         {
-            TestCityImporter.DeleteFetchedTestDir();
+            // TestCityImporter.DeleteFetchedTestDir();
             // DirectoryUtil.DeleteTempCacheFolder();
         }
 

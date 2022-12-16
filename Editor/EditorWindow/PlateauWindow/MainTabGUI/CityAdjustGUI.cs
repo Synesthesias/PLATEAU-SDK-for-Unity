@@ -19,8 +19,8 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
     internal class CityAdjustGUI : IEditorDrawable
     {
         private PLATEAUInstancedCityModel adjustTarget;
-        private readonly AdjustCityObjectTypeGUI typeGUI = new AdjustCityObjectTypeGUI();
-        private readonly AdjustPackageLodGUI adjustPackageLodGUI = new AdjustPackageLodGUI();
+        private readonly FilterConditionGUI filterConditionGUI = new FilterConditionGUI();
+        // private readonly AdjustPackageLodGUI adjustPackageLodGUI = new AdjustPackageLodGUI();
         private bool disableDuplicate = true;
         private static bool isFilterTaskRunning;
         
@@ -60,22 +60,22 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
                         new GUIContent("重複する地物を非表示", "有効な場合、重複した地物オブジェクトのうちLODが最大のもののみ残してそれ以外を非表示にします。"); 
                     this.disableDuplicate = EditorGUILayout.Toggle(duplicateToggleContent, this.disableDuplicate);
 
-                    PlateauEditorStyle.Heading("地物タイプ指定", null);
-                    this.typeGUI.Draw(this.packageToLodMinMax);
+                    PlateauEditorStyle.Heading("フィルタ条件指定", null);
+                    this.filterConditionGUI.Draw(this.packageToLodMinMax);
                     
-                    PlateauEditorStyle.Heading("LOD指定", null);
-                    this.adjustPackageLodGUI.Draw(this.packageToLodMinMax);
+                    // PlateauEditorStyle.Heading("LOD指定", null);
+                    // this.adjustPackageLodGUI.Draw(this.packageToLodMinMax);
 
                     using (new EditorGUI.DisabledScope(isFilterTaskRunning))
                     {
                         if (PlateauEditorStyle.MainButton(isFilterTaskRunning ? "フィルタリング中..." : "フィルタリング実行"))
                         {
                             isFilterTaskRunning = true;
-                            CityFilter.FilterByCityObjectTypeAsync(this.adjustTarget, this.typeGUI.SelectionDict)
+                            CityFilter.FilterByCityObjectTypeAsync(this.adjustTarget, this.filterConditionGUI.SelectionDict)
                                 .ContinueWithErrorCatch()
                                 .ContinueWith(_ =>
                                 {
-                                    CityFilter.FilterByLod(this.adjustTarget, this.adjustPackageLodGUI.Result);
+                                    CityFilter.FilterByLod(this.adjustTarget, this.filterConditionGUI.PackageLodSliderResult);
                                 }, TaskScheduler.FromCurrentSynchronizationContext())
                                 .ContinueWithErrorCatch()
                                 .ContinueWith(_ =>
@@ -112,7 +112,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
                 gmlFile.Dispose();
             }
             // GUIを更新します。
-            this.adjustPackageLodGUI.RefreshPackageAndLods(this.packageToLodMinMax);
+            this.filterConditionGUI.RefreshPackageAndLods(this.packageToLodMinMax);
         }
 
         public class PackageToLodMinMax
