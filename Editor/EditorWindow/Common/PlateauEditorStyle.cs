@@ -320,11 +320,6 @@ namespace PLATEAU.Editor.EditorWindow.Common
             maxVal = (uint)Mathf.Round(sliderValMax);
         }
 
-        public static void LodSlider(string label, FilterConditionGUI.LodSliderConfig sliderConf)
-        {
-            LODSlider(label, ref sliderConf.UserMinLod, ref sliderConf.UserMaxLod, sliderConf.AvailableMinLod, sliderConf.AvailableMaxLod);
-        }
-
         /// <summary>
         /// GUIのコンテンツをまとめるのに利用できます。
         /// </summary>

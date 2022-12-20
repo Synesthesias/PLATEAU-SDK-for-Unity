@@ -114,7 +114,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.AdjustGUIParts
             }
             else
             {
-                PlateauEditorStyle.LodSlider($"LOD {sliderLod.UserMinLod}-{sliderLod.UserMaxLod}", sliderLod);
+                PlateauEditorStyle.LODSlider($"LOD {sliderLod.UserMinLod}-{sliderLod.UserMaxLod}", ref sliderLod.UserMinLod, ref sliderLod.UserMaxLod, sliderLod.AvailableMinLod, sliderLod.AvailableMaxLod);
             }
 
             this.sliderPackageLod[selfPackage] = sliderLod;
