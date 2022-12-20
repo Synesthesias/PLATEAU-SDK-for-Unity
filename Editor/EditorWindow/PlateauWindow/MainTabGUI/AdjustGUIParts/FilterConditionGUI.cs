@@ -114,8 +114,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.AdjustGUIParts
             }
             else
             {
-                // TODO lodConf を直接渡すほうがシンプル
-                PlateauEditorStyle.LODSlider($"LOD {sliderLod.UserMinLod}-{sliderLod.UserMaxLod}", ref sliderLod.UserMinLod, ref sliderLod.UserMaxLod, sliderLod.AvailableMinLod, sliderLod.AvailableMaxLod);
+                PlateauEditorStyle.LodSlider($"LOD {sliderLod.UserMinLod}-{sliderLod.UserMaxLod}", sliderLod);
             }
 
             this.sliderPackageLod[selfPackage] = sliderLod;

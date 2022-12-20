@@ -91,7 +91,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
             }
         }
 
-        // TODO 出力したファイルパスのリストを返すようにする
+        // FIXME 出力したファイルパスのリストを返すようにできるか？
         private void Export(string destinationDir, PLATEAUInstancedCityModel target)
         {
             if (target == null)

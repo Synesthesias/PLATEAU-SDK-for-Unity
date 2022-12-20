@@ -8,7 +8,7 @@ namespace PLATEAU.CityAdjust
 {
     internal static class CityFilter
     {
-        public static async Task FilterByCityObjectTypeAsync(PLATEAUInstancedCityModel cityModel,
+        public static async Task FilterByCityObjectTypeAsync(this PLATEAUInstancedCityModel cityModel,
             ReadOnlyDictionary<CityObjectTypeHierarchy.Node, bool> selectionDict)
         {
             var gmlTransforms = cityModel.GmlTransforms;
@@ -73,7 +73,7 @@ namespace PLATEAU.CityAdjust
             } // GMLごとのループ  ここまで
         }
 
-        public static void FilterByLod(PLATEAUInstancedCityModel cityModel,
+        public static void FilterByLod(this PLATEAUInstancedCityModel cityModel,
             ReadOnlyDictionary<PredefinedCityModelPackage, (uint minLod, uint maxLod)> packageToLodRangeDict)
         {
             foreach (var gmlTrans in cityModel.GmlTransforms)

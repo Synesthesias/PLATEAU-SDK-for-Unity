@@ -57,7 +57,6 @@ namespace PLATEAU.CityInfo
         /// GMLに対応する Transform を受け取り、そのゲームオブジェクト階層の子を見て
         /// 利用可能なLODの番号をリストで返します。
         /// </summary>
-        //TODO staticにしない記法のほうが分かりやすそう
         public static List<int> GetLods(Transform gmlTransform)
         {
             var lods = new List<int>();

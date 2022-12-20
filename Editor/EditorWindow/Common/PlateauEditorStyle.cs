@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.AdjustGUIParts;
 using UnityEditor;
 using UnityEngine;
 
@@ -290,6 +291,14 @@ namespace PLATEAU.Editor.EditorWindow.Common
             return new EditorGUILayout.VerticalScope(new GUIStyle(StyleDarkBox));
         }
 
+        /// <summary>
+        /// LOD選択スライダーを描画します。
+        /// </summary>
+        /// <param name="label">ラベルです。</param>
+        /// <param name="minVal">ユーザーが選択したスライダーの最小値を ref で返します。</param>
+        /// <param name="maxVal">ユーザーが選択したスライダーの最大値を ref で返します。</param>
+        /// <param name="minLODLimit">選択可能な範囲の最小値です。</param>
+        /// <param name="maxLODLimit">選択可能な範囲の最大値です。</param>
         public static void LODSlider(string label, ref uint minVal, ref uint maxVal, uint minLODLimit, uint maxLODLimit)
         {
             if (minLODLimit == maxLODLimit)
@@ -309,6 +318,11 @@ namespace PLATEAU.Editor.EditorWindow.Common
 
             minVal = (uint)Mathf.Round(sliderValMin);
             maxVal = (uint)Mathf.Round(sliderValMax);
+        }
+
+        public static void LodSlider(string label, FilterConditionGUI.LodSliderConfig sliderConf)
+        {
+            LODSlider(label, ref sliderConf.UserMinLod, ref sliderConf.UserMaxLod, sliderConf.AvailableMinLod, sliderConf.AvailableMaxLod);
         }
 
         /// <summary>

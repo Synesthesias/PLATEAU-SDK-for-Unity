@@ -71,11 +71,11 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
                         if (PlateauEditorStyle.MainButton(isFilterTaskRunning ? "フィルタリング中..." : "フィルタリング実行"))
                         {
                             isFilterTaskRunning = true;
-                            CityFilter.FilterByCityObjectTypeAsync(this.adjustTarget, this.filterConditionGUI.SelectionDict)
+                            this.adjustTarget.FilterByCityObjectTypeAsync(this.filterConditionGUI.SelectionDict)
                                 .ContinueWithErrorCatch()
                                 .ContinueWith(_ =>
                                 {
-                                    CityFilter.FilterByLod(this.adjustTarget, this.filterConditionGUI.PackageLodSliderResult);
+                                    this.adjustTarget.FilterByLod(this.filterConditionGUI.PackageLodSliderResult);
                                 }, TaskScheduler.FromCurrentSynchronizationContext())
                                 .ContinueWithErrorCatch()
                                 .ContinueWith(_ =>
