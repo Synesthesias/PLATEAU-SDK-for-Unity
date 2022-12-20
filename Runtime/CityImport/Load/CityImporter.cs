@@ -41,13 +41,23 @@ namespace PLATEAU.CityImport.Load
             }
             
             progressDisplay.SetProgress("GMLファイル検索", 10f, "");
-            using var datasetSource = DatasetSource.Create(datasetSourceConfig);
-            using var datasetAccessor = datasetSource.Accessor;
-            var targetGmls = await Task.Run(() => TargetGmlFinder.FindTargetGmls(
-                datasetAccessor, config
-            ));
-            progressDisplay.SetProgress("GMLファイル検索", 100f, "完了");
+            List<GmlFile> targetGmls = null;
+            try
+            {
+                using var datasetSource = DatasetSource.Create(datasetSourceConfig);
+                using var datasetAccessor = datasetSource.Accessor;
+                targetGmls = await Task.Run(() => TargetGmlFinder.FindTargetGmls(
+                    datasetAccessor, config
+                ));
+            }
+            catch (Exception)
+            {
+                progressDisplay.SetProgress("GMLファイル検索", 0f, "失敗 : GMLファイルを検索できませんでした。");
+                throw;
+            }
 
+            progressDisplay.SetProgress("GMLファイル検索", 100f, "完了");
+            
             if (targetGmls.Count <= 0)
             {
                 Debug.LogError("該当するGMLファイルがありません。");
