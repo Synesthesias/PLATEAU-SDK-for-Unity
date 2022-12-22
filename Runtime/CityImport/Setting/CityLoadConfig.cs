@@ -63,7 +63,7 @@ namespace PLATEAU.CityImport.Setting
         public Dictionary<PredefinedCityModelPackage, List<GmlFile>> SearchMatchingGMLList(DatasetAccessor datasetAccessor)
         {
             // 地域ID(メッシュコード)で絞り込みます。
-            var meshCodes = AreaMeshCodes.Select(str => MeshCode.Parse(str)).ToArray();
+            var meshCodes = AreaMeshCodes.Select(MeshCode.Parse).Where(code => code.IsValid).ToArray();
 
             // パッケージ種ごとの設定で「ロードする」にチェックが入っているパッケージ種で絞り込みます。
             var targetPackages =
@@ -85,6 +85,8 @@ namespace PLATEAU.CityImport.Setting
                     {
                         foundGmls[package] = new List<GmlFile>();
                     }
+
+                    if (!gml.MeshCode.IsValid) continue;
                     // メッシュコードで絞り込みます。
                     if (meshCodes.All(mc => mc.ToString() != gml.MeshCode.ToString())) continue;
                     foundGmls[package].Add(gml);

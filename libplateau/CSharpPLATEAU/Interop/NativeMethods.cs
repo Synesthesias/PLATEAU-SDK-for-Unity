@@ -1228,6 +1228,11 @@ namespace PLATEAU.Interop
         internal static extern APIResult plateau_mesh_code_get_extent(
             [In] MeshCode meshCode,
             [In, Out] ref Extent outExtent);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_mesh_code_is_valid(
+            [In] MeshCode meshCode,
+            [MarshalAs(UnmanagedType.U1)]out bool outIsValid);
         
         // ***************
         //  i_dataset_accessor_c.cpp
