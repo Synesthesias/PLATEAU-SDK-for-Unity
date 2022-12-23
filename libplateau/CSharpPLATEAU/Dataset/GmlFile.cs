@@ -25,7 +25,8 @@ namespace PLATEAU.Dataset
         /// </summary>
         public static GmlFile Create(string path)
         {
-            var apiResult = NativeMethods.plateau_create_gml_file(out IntPtr outPtr, path);
+            var pathUtf8 = DLLUtil.StrToUtf8Bytes(path);
+            var apiResult = NativeMethods.plateau_create_gml_file(out IntPtr outPtr, pathUtf8);
             DLLUtil.CheckDllError(apiResult);
             return new GmlFile(outPtr);
         }
