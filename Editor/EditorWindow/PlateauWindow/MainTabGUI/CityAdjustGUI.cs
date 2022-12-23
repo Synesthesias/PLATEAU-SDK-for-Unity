@@ -43,12 +43,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
                 if(EditorGUI.EndChangeCheck()) OnChangeTargetCityModel(this.adjustTarget);
                 
                 if (this.adjustTarget == null) return;
-                
-                if(PlateauEditorStyle.MainButton("重複した地物のうち、\nLODが最大のもののみ有効化"))
-                {
-                    CityDuplicateProcessor.EnableOnlyLargestLODInDuplicate(this.adjustTarget);            
-                }
-                    
+
                 PlateauEditorStyle.Separator(0);
 
                 using (PlateauEditorStyle.VerticalScopeLevel1())
