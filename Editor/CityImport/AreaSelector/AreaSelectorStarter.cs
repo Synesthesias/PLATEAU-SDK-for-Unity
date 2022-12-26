@@ -41,8 +41,7 @@ namespace PLATEAU.Editor.CityImport.AreaSelector
                 EditorUtility.DisplayDialog("PLATEAU SDK", "シーンが未保存です。\n保存してから再度実行してください。", "OK");
                 return;
             }
-
-            SceneView.lastActiveSceneView.in2DMode = false; // 2Dモードだと上から見下ろすカメラにできないため
+            
             SetUpTemporaryScene();
             var behaviour = Object.FindObjectOfType<AreaSelectorBehaviour>();
             behaviour.Init(prevScenePath, datasetSourceConfig, areaSelectResultReceiver, coordinateZoneID);

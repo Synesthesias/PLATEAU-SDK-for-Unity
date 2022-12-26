@@ -138,6 +138,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
 
         private static async Task PlaceAsGameObj(MapTile mapTile, GeoReference geoReference, Transform parentTrans, string mapObjName, List<Material> generatedMaterials)
         {
+            if (parentTrans == null) return;
             if (parentTrans.Find(mapObjName) != null)
             {   // すでに配置済みのケース
                 return;
