@@ -42,6 +42,7 @@ namespace PLATEAU.CityAdjust
                             if (found != null)
                             {
                                 found.gameObject.SetActive(false);
+                                Debug.Log("setactive false");
                             }
                         }
                     }
@@ -81,9 +82,14 @@ namespace PLATEAU.CityAdjust
             //     .Select(tuple => tuple.trans);
         }
 
+        /// <summary>
+        /// 子がおり、それらがすべて非Activeのとき、trueを返します。
+        /// 子がない、または1つでも子がActiveであるとき false を返します。
+        /// </summary>
         private static bool IsAllChildrenDisabled(Transform tran)
         {
             int childCount = tran.childCount;
+            if (childCount == 0) return false;
             for (int i = 0; i < childCount; i++)
             {
                 if (tran.GetChild(i).gameObject.activeInHierarchy) return false;

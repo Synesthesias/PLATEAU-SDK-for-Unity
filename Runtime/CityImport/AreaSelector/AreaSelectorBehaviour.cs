@@ -1,11 +1,14 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using PLATEAU.CityImport.AreaSelector.SceneObjs;
 using PLATEAU.Geometries;
 using PLATEAU.Interop;
 using PLATEAU.Dataset;
+using PLATEAU.Util;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -29,7 +32,7 @@ namespace PLATEAU.CityImport.AreaSelector
         private GeoReference geoReference;
         private bool prevSceneCameraRotationLocked;
         private GSIMapLoaderZoomSwitch mapLoader;
-        
+
 
         public static bool IsAreaSelectEnabled { get; set; }
 
@@ -47,7 +50,6 @@ namespace PLATEAU.CityImport.AreaSelector
 
         private void Start()
         {
-            RotateSceneViewCameraDown();
             AreaSelectorGUI.Enable(this);
             GatherMeshCodes(this.datasetSourceConfig, out var meshCodes, out var packageFlags);
             var drawerObj = new GameObject($"{nameof(AreaSelectGizmosDrawer)}");
@@ -56,16 +58,29 @@ namespace PLATEAU.CityImport.AreaSelector
             this.availablePackageFlags = packageFlags;
             var entireExtent = CalcExtentCoversAllMeshCodes(meshCodes);
             this.mapLoader = new GSIMapLoaderZoomSwitch(this.geoReference, entireExtent);
+            SetInitialCamera(entireExtent);
+        }
+
+        private void SetInitialCamera(Extent entireExtent)
+        {
+            #if UNITY_EDITOR
+            RotateSceneViewCameraDown();
+            var centerPos = this.geoReference.Project(entireExtent.Center).ToUnityVector();
+            var initialCameraPos = new Vector3(centerPos.x, 0, centerPos.z);
+            SceneView.lastActiveSceneView.pivot = initialCameraPos;
+            // シーンビューのカメラが全体を映すようにします。
+            SceneView.lastActiveSceneView.size = Mathf.Abs((float)(this.geoReference.Project(entireExtent.Max).Z - this.geoReference.Project(entireExtent.Min).Z) / 2f);
+            #endif
         }
 
         private void Update()
         {
             // カメラを下に向けます。
             RotateSceneViewCameraDown();
-            
-            #if UNITY_EDITOR
+
+#if UNITY_EDITOR
             this.mapLoader.Update(SceneView.lastActiveSceneView.camera);
-            #endif
+#endif
         }
 
         private void OnRenderObject()
@@ -146,9 +161,10 @@ namespace PLATEAU.CityImport.AreaSelector
             EndAreaSelection();
         }
 
-        private void RotateSceneViewCameraDown()
+        private static void RotateSceneViewCameraDown()
         {
             #if UNITY_EDITOR
+            SceneView.lastActiveSceneView.in2DMode = false; // 2Dモードだと上から見下ろすカメラにできないため
             var scene = SceneView.lastActiveSceneView;
             scene.isRotationLocked = true;
             scene.rotation = Quaternion.Euler(90, 0, 0);
