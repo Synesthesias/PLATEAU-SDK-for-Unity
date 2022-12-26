@@ -115,7 +115,7 @@ namespace PLATEAU.CityImport.AreaSelector
             using var accessor = datasetSource.Accessor;
             // ローカルモードではうまくいきますが、サーバーモードでは Packages は None になります。
             availablePackageFlags = accessor.Packages;
-            meshCodes = new ReadOnlyCollection<MeshCode>(accessor.MeshCodes.ToArray());
+            meshCodes = new ReadOnlyCollection<MeshCode>(accessor.MeshCodes.Where(code => code.IsValid).ToArray());
             if (meshCodes.Count <= 0)
             {
                 Debug.LogError("No MeshCode found.");

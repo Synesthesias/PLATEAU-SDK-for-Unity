@@ -24,7 +24,7 @@ namespace PLATEAU.Tests.TestUtils
 
         private string rootDirName;
 
-        private const string testDataDir = "Packages/com.synesthesias.plateau-unity-sdk/Tests/TestData";
+        private const string testDataDir = "Packages/com.synesthesias.plateau-unity-sdk/Tests/TestData/日本語パステスト";
 
         public TestCityDefinition(string rootDirName, TestGmlDefinition[] gmlDefs, string[] areaMeshCodes)
         {

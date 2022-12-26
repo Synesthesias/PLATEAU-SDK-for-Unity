@@ -416,7 +416,7 @@ namespace PLATEAU.Interop
 
         [DllImport(DllName, CharSet = CharSet.Ansi)]
         internal static extern APIResult plateau_load_citygml(
-            [In] string gmlPath,
+            [In] byte[] gmlPathUtf8,
             [In] CitygmlParserParams parserParams,
             out IntPtr cityModelHandle,
             DllLogLevel logLevel,
@@ -1228,6 +1228,11 @@ namespace PLATEAU.Interop
         internal static extern APIResult plateau_mesh_code_get_extent(
             [In] MeshCode meshCode,
             [In, Out] ref Extent outExtent);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_mesh_code_is_valid(
+            [In] MeshCode meshCode,
+            [MarshalAs(UnmanagedType.U1)]out bool outIsValid);
         
         // ***************
         //  i_dataset_accessor_c.cpp
@@ -1303,7 +1308,7 @@ namespace PLATEAU.Interop
         [DllImport(DllName, CharSet = CharSet.Ansi)]
         internal static extern APIResult plateau_create_gml_file(
             out IntPtr outGmlFilePtr,
-            [In] string path);
+            [In] byte[] pathUtf8);
 
         [DllImport(DllName)]
         internal static extern APIResult plateau_delete_gml_file(

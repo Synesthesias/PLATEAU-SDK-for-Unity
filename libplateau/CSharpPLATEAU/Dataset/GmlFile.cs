@@ -25,7 +25,8 @@ namespace PLATEAU.Dataset
         /// </summary>
         public static GmlFile Create(string path)
         {
-            var apiResult = NativeMethods.plateau_create_gml_file(out IntPtr outPtr, path);
+            var pathUtf8 = DLLUtil.StrToUtf8Bytes(path);
+            var apiResult = NativeMethods.plateau_create_gml_file(out IntPtr outPtr, pathUtf8);
             DLLUtil.CheckDllError(apiResult);
             return new GmlFile(outPtr);
         }
@@ -73,6 +74,11 @@ namespace PLATEAU.Dataset
             }
         }
 
+        /// <summary>
+        /// GMLファイルのメッシュコードを返します。
+        /// ただし、誤った形式のGMLファイル名である等の理由でメッシュコードを読み取れなかった場合は
+        /// 戻り値の meshCode.IsValid が false になります。必ず戻り値の IsValid をチェックしてください。 
+        /// </summary>
         public MeshCode MeshCode
         {
             get
@@ -162,5 +168,6 @@ namespace PLATEAU.Dataset
                 throw new ObjectDisposedException("GmlFile is disposed.");
             }
         }
+
     }
 }

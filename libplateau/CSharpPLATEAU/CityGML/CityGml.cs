@@ -24,8 +24,10 @@ namespace PLATEAU.CityGML
             {
                 logCallbacks = LogCallbacks.StdOut;
             }
+
+            var gmlPathUtf8 = DLLUtil.StrToUtf8Bytes(gmlPath);
             APIResult result = NativeMethods.plateau_load_citygml(
-                gmlPath, parserParams, out IntPtr cityModelHandle,
+                gmlPathUtf8, parserParams, out IntPtr cityModelHandle,
                 logLevel, logCallbacks.LogErrorFuncPtr, logCallbacks.LogWarnFuncPtr, logCallbacks.LogInfoFuncPtr);
             if (result == APIResult.ErrorLoadingCityGml)
             {

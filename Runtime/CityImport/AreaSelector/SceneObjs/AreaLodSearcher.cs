@@ -49,12 +49,12 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         /// メッシュコードと、その上位のメッシュコードに含まれるパッケージとLODを検索します。
         /// <see cref="meshCodeToPackageLodDict"/> に格納されます。
         /// </summary>
-        private void SearchLodsInMeshCode(string meshCode)
+        private void SearchLodsInMeshCode(string meshCodeStr)
         {
             
-            var meshCodes = new List<string> { meshCode };
+            var meshCodes = new List<string> { meshCodeStr };
             // 上位のメッシュコードも対象とします。
-            var parsedMeshCode = MeshCode.Parse(meshCode);
+            var parsedMeshCode = MeshCode.Parse(meshCodeStr);
             if(parsedMeshCode.Level == 3) meshCodes.Add(parsedMeshCode.Level2());
 
             foreach (string currentMeshCode in meshCodes)
@@ -74,7 +74,9 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
                     int maxLod = -1;
                     foreach (var gml in gmls)
                     {
-                        if (gml.MeshCode.ToString() != currentMeshCode) continue;
+                        var gmlMeshCode = gml.MeshCode;
+                        if (!gmlMeshCode.IsValid) continue;
+                        if (gmlMeshCode.ToString() != currentMeshCode) continue;
                         
                         // ローカルの場合、ファイルの中身を検索するので時間がかかります。
                         // サーバーの場合、APIサーバーに問い合わせます。
