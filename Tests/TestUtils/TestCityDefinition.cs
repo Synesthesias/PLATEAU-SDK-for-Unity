@@ -1,5 +1,8 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
+using NUnit.Framework;
 using PLATEAU.CityImport.Load;
 using PLATEAU.CityImport.Setting;
 using PLATEAU.Editor.EditorWindow.ProgressDisplay;
@@ -10,17 +13,17 @@ namespace PLATEAU.Tests.TestUtils
 {
     /// <summary>
     /// ユニットテストにおいて、都市データに期待する状態を定義します。
-    /// 何というGMLファイルがあることが期待され、どの地域メッシュコードがあるかを記述します。
+    /// どのようなGMLファイルがあることが期待され、どの地域メッシュコードがあるかを記述します。
     /// </summary>
     internal class TestCityDefinition
     {
-        public string SrcRootDirPath => Path.GetFullPath(Path.Combine(testDataDir, this.rootDirName));
+        public string SrcRootDirPathLocal => Path.GetFullPath(Path.Combine(testDataDir, this.rootDirName));
         public string[] AreaMeshCodes { get; set; }
         public TestGmlDefinition[] GmlDefinitions { get; set; }
 
         private string rootDirName;
 
-        private const string testDataDir = "Packages/com.synesthesias.plateau-unity-sdk/Tests/TestData";
+        private const string testDataDir = "Packages/com.synesthesias.plateau-unity-sdk/Tests/TestData/日本語パステスト";
 
         public TestCityDefinition(string rootDirName, TestGmlDefinition[] gmlDefs, string[] areaMeshCodes)
         {
@@ -29,25 +32,73 @@ namespace PLATEAU.Tests.TestUtils
             AreaMeshCodes = areaMeshCodes;
         }
 
-        public Task ImportLocal(out CityLoadConfig outConfig)
+        /// <summary>
+        /// <see cref="TestCityDefinition"/> に記述されたパスをもとに、ローカルモードでインポートします。
+        /// </summary>
+        public Task ImportLocal()
         {
             var progressDisplay = new ProgressDisplayGUI(null);
-            outConfig = new CityLoadConfig();
+            var conf = MakeConfig(false);
+
+            var task = CityImporter.ImportAsync(conf, progressDisplay);
+            return task;
+        }
+
+        /// <summary>
+        /// <see cref="TestCityDefinition"/> に記述されたデータセットID をもとに、サーバーモードでインポートします。
+        /// </summary>
+        public Task ImportServer()
+        {
+            var progressDisplay = new ProgressDisplayGUI(null);
+            var task = CityImporter.ImportAsync(MakeConfig(true), progressDisplay);
+            return task;
+        }
+
+        /// <summary>
+        /// インポートするための設定をします。
+        /// </summary>
+        private CityLoadConfig MakeConfig(bool isServer)
+        {
+            var conf = new CityLoadConfig();
             // TODO どのパッケージと何が対応するかは要テスト
             uint packageFlagsAll = 0b10000000000000000000000011111111;
-            outConfig.InitWithPackageFlags((PredefinedCityModelPackage)packageFlagsAll);
-            outConfig.Extent = new Extent(new GeoCoordinate(-90, -180, -9999), new GeoCoordinate(90, 180, 9999));
-            outConfig.AreaMeshCodes = AreaMeshCodes;
-            foreach (var packageConf in outConfig.ForEachPackagePair)
+            conf.InitWithPackageFlags((PredefinedCityModelPackage)packageFlagsAll);
+            conf.Extent = Extent.All;
+            conf.AreaMeshCodes = AreaMeshCodes;
+            foreach (var packageConf in conf.ForEachPackagePair)
             {
                 packageConf.Value.includeTexture = true;
             }
 
-            outConfig.DatasetSourceConfig = new DatasetSourceConfig(false, SrcRootDirPath);
-
-            var task = CityImporter.ImportAsync(outConfig, progressDisplay);
-            return task;
+            conf.DatasetSourceConfig = new DatasetSourceConfig(isServer, SrcRootDirPathLocal, this.rootDirName);
+            return conf;
         }
+
+        /// <summary>
+        /// <see cref="TestCityDefinition"/> に記述されたファイルについて、
+        /// GMLファイルとその関連ファイルが Assets/StreamingAssets/.PLATEAU にコピーされることを確認します。
+        /// </summary>
+        public void AssertFilesExist(string testDataFetchPath)
+        {
+            var relativePaths = GmlDefinitions
+                .Select(def => def.GmlPath)
+                .ToArray();
+            foreach(string relativePath in relativePaths)
+            {
+                string path = Path.GetFullPath(Path.Combine(testDataFetchPath, relativePath));
+                Assert.IsTrue(File.Exists(path), $"次のパスにファイルが存在する : {path}");
+            }
+        }
+
+        /// <summary>
+        /// <see cref="TestCityDefinition"/> に記述されたゲームオブジェクト名をリストで返します。
+        /// </summary>
+        public List<string> ExpectedObjNames =>
+            GmlDefinitions
+                .Where(def => def.ContainsMesh)
+                .Select(def => def.GameObjName)
+                .ToList();
+        
 
         /// <summary>
         /// ユニットテストにおいて、GMLファイルに期待する状態を定義します。
@@ -72,7 +123,10 @@ namespace PLATEAU.Tests.TestUtils
             }
         }
 
-
+        /// <summary>
+        /// テストデータ "MiniTokyo" について、
+        /// その内容を <see cref="TestCityDefinition"/> 形式で説明したものです。 
+        /// </summary>
         public static readonly TestCityDefinition MiniTokyo =
             new TestCityDefinition("TestDataTokyoMini", new[]
             {
@@ -96,5 +150,20 @@ namespace PLATEAU.Tests.TestUtils
             {
                 "53394525", "53392546", "53392547", "533925"
             });
+
+        /// <summary>
+        /// テストデータ "TestServer23Ku" について、
+        /// その内容を <see cref="TestCityDefinition"/> 形式で説明したものです。
+        /// </summary>
+        public static readonly TestCityDefinition TestServer23Ku =
+            new TestCityDefinition("23ku", new[]
+                {
+                    new TestGmlDefinition("udx/bldg/53392642_bldg_6697_2_op.gml", "53392642_bldg_6697_2_op.gml", true,
+                        null,
+                        2),
+                    new TestGmlDefinition("udx/bldg/53392670_bldg_6697_2_op.gml", "53392670_bldg_6697_2_op.gml", true, null, 2)
+                }, new[]
+                    { "53392642", "53392670" }
+            );
     }
 }

@@ -25,32 +25,32 @@ namespace PLATEAU.CityImport.Load.CityImportProcedure
         /// GMLファイルを1つインポートします。
         /// メインスレッドで呼ぶ必要があります。
         /// </summary>
-        internal static async Task Import(GmlFile gmlFile, string destPath, CityLoadConfig conf,
+        internal static async Task<GmlFile> Import(GmlFile gmlFile, string destPath, CityLoadConfig conf,
             Transform rootTrans, IProgressDisplay progressDisplay,
             PlateauVector3d referencePoint)
         {
             if (gmlFile.Path == null)
             {
-                return;
+                return null;
             }
             
             string gmlName = Path.GetFileName(gmlFile.Path);
             destPath = destPath.Replace('\\', '/');
             if (!destPath.EndsWith("/")) destPath += "/";
             
-            var fetchedGmlInfo = await GmlFetcher.FetchAsync(gmlFile, destPath, gmlName, progressDisplay, conf.DatasetSourceConfig.IsServer);
+            var fetchedGmlFile = await GmlFetcher.FetchAsync(gmlFile, destPath, gmlName, progressDisplay, conf.DatasetSourceConfig.IsServer);
 
             progressDisplay.SetProgress(gmlName, 20f, "GMLファイルをロード中");
-            string gmlPathAfter = fetchedGmlInfo.Path;
+            string gmlPathAfter = fetchedGmlFile.Path;
 
-            using var cityModel = await LoadGmlAsync(fetchedGmlInfo);
+            using var cityModel = await LoadGmlAsync(fetchedGmlFile);
             if (cityModel == null)
             {
                 progressDisplay.SetProgress(gmlName, 0f, "失敗 : GMLファイルのパースに失敗しました。");
-                return;
+                return null;
             }
 
-            string udxFeature = $"/udx/{fetchedGmlInfo.FeatureType}/";
+            string udxFeature = $"/udx/{fetchedGmlFile.FeatureType}/";
             string relativeGmlPathFromFeature =
                 gmlPathAfter.Substring(
                     gmlPathAfter.LastIndexOf(udxFeature,
@@ -60,7 +60,7 @@ namespace PLATEAU.CityImport.Load.CityImportProcedure
             var gmlTrans = new GameObject(gmlObjName).transform;
             
             gmlTrans.parent = rootTrans;
-            var package = fetchedGmlInfo.Package;
+            var package = fetchedGmlFile.Package;
             var packageConf = conf.GetConfigForPackage(package);
             var meshExtractOptions = MeshExtractOptions.DefaultValue();
             meshExtractOptions.ReferencePoint = referencePoint;
@@ -79,7 +79,7 @@ namespace PLATEAU.CityImport.Load.CityImportProcedure
             if (!meshExtractOptions.Validate(out var failureMessage))
             {
                 progressDisplay.SetProgress(gmlName, 0f, $"失敗 : メッシュ設定に不正な点があります。 : {failureMessage}");
-                return;
+                return null;
             }
 
             // ここはメインスレッドで呼ぶ必要があります。
@@ -94,6 +94,8 @@ namespace PLATEAU.CityImport.Load.CityImportProcedure
             {
                 progressDisplay.SetProgress(gmlName, 0f, "失敗 : モデルの変換または配置に失敗しました。");
             }
+
+            return fetchedGmlFile;
         }
         
         private static async Task<CityModel> LoadGmlAsync(GmlFile gmlInfo)

@@ -120,7 +120,8 @@ namespace PLATEAU.CityGML
         {
             if (Interlocked.Exchange(ref this.disposed, 1) == 0)
             {
-                NativeMethods.plateau_delete_city_model(this.Handle);
+                var result = NativeMethods.plateau_delete_city_model(Handle);
+                DLLUtil.CheckDllError(result);
             }
             GC.SuppressFinalize(this);
         }

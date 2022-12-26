@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using PLATEAU.Dataset;
-using PLATEAU.Network;
 using PLATEAU.Util;
 using UnityEngine;
 
@@ -46,47 +43,6 @@ namespace PLATEAU.CityImport.Load.CityImportProcedure
             // GMLファイルを StreamingAssets にダウンロードします。
             var downloadedGml = await Task.Run(() => remoteGmlFile.Fetch(destPath));
             Debug.Log($"downloaded {remoteGmlFile.Path}");
-            // 関連ファイルを取得します。
-            var pathsToDownload = await Task.Run(() =>
-                {
-                    var codelistPaths = downloadedGml.SearchAllCodelistPathsInGml();
-                    var imagePaths = downloadedGml.SearchAllImagePathsInGml();
-                    var pathsToDownload = codelistPaths.ToCSharpArray().Concat(imagePaths.ToCSharpArray());
-                    return pathsToDownload.ToArray();
-                }
-            );
-            string localGmlDirPath = new DirectoryInfo(downloadedGml.Path).Parent?.FullName;
-            if (localGmlDirPath == null) throw new Exception("invalid path.");
-            // 関連ファイルをダウンロードします。
-            using var client = Client.Create();
-            client.Url = NetworkConfig.MockServerURL;
-            for(int i=0; i<pathsToDownload.Length; i++)
-            {
-                string relativePath = pathsToDownload[i];
-                await Task.Run(() =>
-                {
-                    string gmlUrl = remoteGmlFile.Path;
-                    string remoteUrlParent = gmlUrl.Substring(0, gmlUrl.LastIndexOf("/", StringComparison.Ordinal));
-                    string remoteUrl = ApplyPeriodPath(Path.Combine(remoteUrlParent, relativePath).Replace('\\', '/'));
-                    string localDest = Path.GetFullPath(Path.Combine(localGmlDirPath, relativePath)).Replace('\\', '/');
-                    string localDestDir = new DirectoryInfo(localDest).Parent?.FullName;
-                    if (localDestDir == null) throw new Exception("invalid path.");
-                    Directory.CreateDirectory(localDestDir);
-                    try
-                    {
-                        progressDisplay.SetProgress(gmlName, 6f, $"ダウンロード中 : [{i+1} / {pathsToDownload.Length}] {Path.GetFileName(remoteUrl)}");
-                        client.Download(localDestDir, remoteUrl);
-                        Debug.Log($"Downloaded {remoteUrl}");
-                    }
-                    catch (FileLoadException)
-                    {
-                        Debug.LogError($"Failed to download file: {remoteUrl}");
-                    }
-
-                });
-                progressDisplay.SetProgress(gmlName, 7f, $"ダウンロード完了");
-            }
-
             return downloadedGml;
         }
 

@@ -1,7 +1,6 @@
 ﻿using System;
-using System.Runtime.InteropServices;
-using System.Runtime.InteropServices.ComTypes;
 using PLATEAU.Interop;
+using PLATEAU.Network;
 
 namespace PLATEAU.Dataset
 {
@@ -15,14 +14,14 @@ namespace PLATEAU.Dataset
         /// <see cref="DatasetSource"/> を生成します。
         /// </summary>
         /// <param name="isServer">データの場所は true ならサーバー、falseならローカルです。</param>
-        /// <param name="datasetIdOrSourcePath">
-        /// サーバーのとき、データセットのIDを渡します。
+        /// <param name="localSourcePath">ローカルモードでのみ利用します。インポート元のパスを渡します。</param>
+        /// <param name="serverDatasetID">
+        /// サーバーモードでのみ利用します。データセットのIDを渡します。
         /// そのIDとは、APIサーバーにデータセットの一覧を問い合わせたときに得られるID文字列です。例: 東京23区のデータセットのIDは "23ku"
-        /// ローカルのとき、そのパスを渡します。
         /// </param>
-        public static DatasetSource Create(bool isServer, string datasetIdOrSourcePath)
+        public static DatasetSource Create(bool isServer, string localSourcePath, string serverDatasetID)
         {
-            return Create(new DatasetSourceConfig(isServer, datasetIdOrSourcePath));
+            return Create(new DatasetSourceConfig(isServer, localSourcePath, serverDatasetID));
         }
         
         public static DatasetSource Create(DatasetSourceConfig config)
@@ -30,9 +29,9 @@ namespace PLATEAU.Dataset
             switch (config.IsServer)
             {
                 case true:
-                    return CreateServer(config.DatasetIdOrSourcePath);
+                    return CreateServer(config.ServerDatasetID);
                 case false:
-                    return CreateLocal(config.DatasetIdOrSourcePath);
+                    return CreateLocal(config.LocalSourcePath);
                 default:
                     throw new ArgumentOutOfRangeException();
             }
@@ -54,8 +53,9 @@ namespace PLATEAU.Dataset
          /// </summary>
          private static DatasetSource CreateServer(string datasetID)
          {
+             Client client = Client.Create();
              var result = NativeMethods.plateau_create_dataset_source_server(
-                 out var ptr, datasetID);
+                 out var ptr, datasetID, client.Handle);
              DLLUtil.CheckDllError(result);
              return new DatasetSource(ptr);
          }

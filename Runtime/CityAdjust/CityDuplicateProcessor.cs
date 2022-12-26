@@ -12,31 +12,37 @@ namespace PLATEAU.CityAdjust
         /// <summary>
         /// 重複した地物があるか検索します。
         /// 重複のうちLODが最大のものを有効化し、そうでないものを無効化します。
+        /// ただしすでに無効化されているものは無視します。
         /// </summary>
         public static void EnableOnlyLargestLODInDuplicate(PLATEAUInstancedCityModel city)
         {
-            var cityTrans = city.transform;
-            SetActiveAll(cityTrans, true);
-            int gmlCount = cityTrans.childCount;
-            for (int i = 0; i < gmlCount; i++)
+            // var cityTrans = city.transform;
+            // SetActiveAll(cityTrans, true);
+            var gmlTransforms = city.GmlTransforms;
+            // 各GMLについて
+            foreach (var gmlTrans in gmlTransforms)
             {
-                var gmlTrans = cityTrans.GetChild(i);
                 var sortedLods = LODTransformsSorted(gmlTrans).ToArray();
+                // LODの高い方から
                 for (int l = sortedLods.Length - 1; l >= 0; l--)
                 {
                     var lodTrans = sortedLods[l];
+                    if (!lodTrans.gameObject.activeInHierarchy) continue;
                     int objCount = lodTrans.childCount;
                     for (int o = 0; o < objCount; o++)
                     {
                         var objTrans = lodTrans.GetChild(o);
-                        if (!objTrans.gameObject.activeSelf) continue;
+                        if (!objTrans.gameObject.activeInHierarchy) continue;
+                        if (IsAllChildrenDisabled(objTrans)) continue; // LOD2以上で、自身はActiveでも子はすべて非Activeになっているというケースに対応します。
                         var objId = objTrans.name;
+                        // LODの低いほうへ見て、重複があれば低いほうを非表示にします。
                         for (int searchLod = l-1; searchLod >= 0; searchLod--)
                         {
                             var found = sortedLods[searchLod].transform.Find(objId);
                             if (found != null)
                             {
                                 found.gameObject.SetActive(false);
+                                Debug.Log("setactive false");
                             }
                         }
                     }
@@ -44,34 +50,52 @@ namespace PLATEAU.CityAdjust
             }
         }
 
-        private static void SetActiveAll(Transform trans, bool isActive)
-        {
-            trans.gameObject.SetActive(isActive);
-            int childCount = trans.childCount;
-            for (int i = 0; i < childCount; i++)
-            {
-                var child = trans.GetChild(i);
-                SetActiveAll(child, isActive);
-            }
-        }
+        // private static void SetActiveAll(Transform trans, bool isActive)
+        // {
+        //     trans.gameObject.SetActive(isActive);
+        //     int childCount = trans.childCount;
+        //     for (int i = 0; i < childCount; i++)
+        //     {
+        //         var child = trans.GetChild(i);
+        //         SetActiveAll(child, isActive);
+        //     }
+        // }
         
         private static IEnumerable<Transform> LODTransformsSorted(Transform gmlTrans)
         {
-            int childCount = gmlTrans.childCount;
-            var availableLODs = new List<(int lod, Transform trans)>();
+            var lods = PLATEAUInstancedCityModel.GetLodTransforms(gmlTrans);
+            return lods.OrderBy(lod => lod.name);
+            // int childCount = gmlTrans.childCount;
+            // var availableLODs = new List<(int lod, Transform trans)>();
+            // for (int i = 0; i < childCount; i++)
+            // {
+            //     var child = gmlTrans.GetChild(i);
+            //     var name = child.name;
+            //     if (!name.StartsWith("LOD")) continue;
+            //     if (!int.TryParse(name.Substring("LOD".Length), out int lod))
+            //         continue;
+            //     availableLODs.Add((lod, child));
+            // }
+            //
+            // return availableLODs
+            //     .OrderBy(tuple => tuple.lod)
+            //     .Select(tuple => tuple.trans);
+        }
+
+        /// <summary>
+        /// 子がおり、それらがすべて非Activeのとき、trueを返します。
+        /// 子がない、または1つでも子がActiveであるとき false を返します。
+        /// </summary>
+        private static bool IsAllChildrenDisabled(Transform tran)
+        {
+            int childCount = tran.childCount;
+            if (childCount == 0) return false;
             for (int i = 0; i < childCount; i++)
             {
-                var child = gmlTrans.GetChild(i);
-                var name = child.name;
-                if (!name.StartsWith("LOD")) continue;
-                if (!int.TryParse(name.Substring("LOD".Length), out int lod))
-                    continue;
-                availableLODs.Add((lod, child));
+                if (tran.GetChild(i).gameObject.activeInHierarchy) return false;
             }
 
-            return availableLODs
-                .OrderBy(tuple => tuple.lod)
-                .Select(tuple => tuple.trans);
+            return true;
         }
     }
 }

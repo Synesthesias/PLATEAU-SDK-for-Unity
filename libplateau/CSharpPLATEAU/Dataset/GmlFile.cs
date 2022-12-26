@@ -1,7 +1,5 @@
 using System;
-using System.IO;
 using PLATEAU.Interop;
-using PLATEAU.Network;
 
 namespace PLATEAU.Dataset
 {
@@ -27,7 +25,8 @@ namespace PLATEAU.Dataset
         /// </summary>
         public static GmlFile Create(string path)
         {
-            var apiResult = NativeMethods.plateau_create_gml_file(out IntPtr outPtr, path);
+            var pathUtf8 = DLLUtil.StrToUtf8Bytes(path);
+            var apiResult = NativeMethods.plateau_create_gml_file(out IntPtr outPtr, pathUtf8);
             DLLUtil.CheckDllError(apiResult);
             return new GmlFile(outPtr);
         }
@@ -37,13 +36,19 @@ namespace PLATEAU.Dataset
             get
             {
                 ThrowIfDisposed();
-                return DLLUtil.GetNativeString(Handle, NativeMethods.plateau_gml_file_get_path);
+                var pathNativeStr = NativeString.Create();
+                var result = NativeMethods.plateau_gml_file_get_path(Handle, pathNativeStr.Handle);
+                DLLUtil.CheckDllError(result);
+                string path = pathNativeStr.ToString();
+                pathNativeStr.Dispose();
+                return path;
             }
             set
             {
                 ThrowIfDisposed();
+                var pathUtf8 = DLLUtil.StrToUtf8Bytes(value);
                 var result = NativeMethods.plateau_gml_file_set_path(
-                    Handle, value);
+                    Handle, pathUtf8);
                 DLLUtil.CheckDllError(result);
             }
         }
@@ -62,12 +67,18 @@ namespace PLATEAU.Dataset
             get
             {
                 ThrowIfDisposed();
-                var apiResult = NativeMethods.plateau_udx_sub_folder_get_package(FeatureType, out var package);
+                var featureTypeUtf8 = DLLUtil.StrToUtf8Bytes(FeatureType);
+                var apiResult = NativeMethods.plateau_udx_sub_folder_feature_type_to_package(featureTypeUtf8, out var package);
                 DLLUtil.CheckDllError(apiResult);
                 return package;
             }
         }
 
+        /// <summary>
+        /// GMLファイルのメッシュコードを返します。
+        /// ただし、誤った形式のGMLファイル名である等の理由でメッシュコードを読み取れなかった場合は
+        /// 戻り値の meshCode.IsValid が false になります。
+        /// </summary>
         public MeshCode MeshCode
         {
             get
@@ -98,31 +109,21 @@ namespace PLATEAU.Dataset
         }
         
         /// <summary>
+        /// GmlFileのパスがローカルPCを指す場合:
         /// GMLファイルとその関連ファイルをコピーします。
         /// 関連ファイルを探すために、GMLファイルの中身に対して文字列検索（テクスチャパスなどの記載を探す）が行われるため、
         /// GMLファイルの容量が増えるほど処理時間が増えます。
+        /// GmlFileのパスが http で始まる場合:
+        /// GMLファイルとその関連ファイルをダウンロードします。
         /// </summary>
         /// <param name="destinationRootPath">コピー先のルートフォルダのパスです。</param>
         public GmlFile Fetch(string destinationRootPath)
         {
             ThrowIfDisposed();
-            bool isServer = Path.StartsWith("http");
-            switch (isServer)
-            {
-                case false:
-                    return FetchLocal(destinationRootPath);
-                case true:
-                    return FetchServer(destinationRootPath);
-                default:
-                    throw new ArgumentOutOfRangeException();    
-            }
-        }
-
-        private GmlFile FetchLocal(string destinationRootPath)
-        {
             var resultGml = Create("");
-            var apiResult = NativeMethods.plateau_gml_file_fetch_local(
-                Handle, destinationRootPath, resultGml.Handle
+            var destinationRootPathUtf8 = DLLUtil.StrToUtf8Bytes(destinationRootPath);
+            var apiResult = NativeMethods.plateau_gml_file_fetch(
+                Handle, destinationRootPathUtf8, resultGml.Handle
             );
             DLLUtil.CheckDllError(apiResult);
             resultGml.Path = resultGml.Path.Replace('\\', '/');
@@ -130,32 +131,28 @@ namespace PLATEAU.Dataset
         }
 
         /// <summary>
-        /// サーバーからGMLファイルをダウンロードします。
+        /// ローカルの場合、GMLファイルの全文を検索して対応LODの最大を求めます。
+        /// サーバーの場合、APIサーバーに問い合わせて対応LODの最大を求めます。
+        /// どちらにしても時間がかかる処理になります。
         /// </summary>
-        /// <param name="destinationRootPath">
-        /// ダウンロード先の基準パスです。
-        /// 実際のダウンロード先は、このパスに "/udx/(種別ディレクトリ)/(0個以上のディレクトリ)/(gmlファイル名)" を追加したものになります。
-        /// この追加分のパスは、接続先URLに含まれるものとします。 
-        /// </param>
-        /// <returns>ダウンロード後のGMLファイルの情報を返します。</returns>
-        private GmlFile FetchServer(string destinationRootPath)
+        public int GetMaxLod()
         {
-            // "./udx/" で始まる相対パスです。
-            int udxIdx = Path.LastIndexOf("/udx/", StringComparison.Ordinal);
-            if (udxIdx < 0) throw new InvalidDataException($"Path should contain '/udx/' but it does not. Path = {Path}");
-            string relativePath = "." + Path.Substring(Path.LastIndexOf("/udx/", StringComparison.Ordinal));
-            
-            string destPath = System.IO.Path.Combine(destinationRootPath, relativePath).Replace('\\', '/');
-            string destDirPath = new DirectoryInfo(destPath).Parent?.FullName.Replace('\\', '/');
-            if (destDirPath == null) throw new InvalidDataException("Invalid path.");
-            Directory.CreateDirectory(destDirPath);
-            
-            using (var client = Client.Create())
+            return DLLUtil.GetNativeValue<int>(Handle,
+                NativeMethods.plateau_gml_file_get_max_lod);
+        }
+
+        /// <summary>
+        /// 都市データのルートディレクトリ、すなわち "udx"フォルダの1つ上のパスを返します。
+        /// </summary>
+        public string CityRootPath()
+        {
+            string gmlPath = Path.Replace('\\', '/');
+            int udxIdx = gmlPath.LastIndexOf("/udx/", StringComparison.Ordinal);
+            if (udxIdx < 0)
             {
-                client.Url = NetworkConfig.MockServerURL;
-                string downloadedPath = client.Download(destDirPath, Path);
-                return Create(downloadedPath);
+                throw new Exception("udx folder is not found in the path.");
             }
+            return gmlPath.Substring(0, udxIdx);
         }
 
         public void Dispose()
@@ -171,5 +168,6 @@ namespace PLATEAU.Dataset
                 throw new ObjectDisposedException("GmlFile is disposed.");
             }
         }
+
     }
 }

@@ -22,6 +22,7 @@ namespace PLATEAU.CityImport.Load
     /// </summary>
     internal static class CityImporter
     {
+        static string  lastFetchedGmlRootPath = "";
         /// <summary>
         /// <see cref="CityImporter"/> クラスのメインメソッドです。
         /// GMLファイルから都市モデルを読み、そのメッシュをUnity向けに変換してシーンに配置します。
@@ -31,26 +32,32 @@ namespace PLATEAU.CityImport.Load
         {
             var datasetSourceConfig = config.DatasetSourceConfig;
             string destPath = PathUtil.PLATEAUSrcFetchDir;
-            if (config.DatasetSourceConfig.IsServer)
-            {
-                destPath = Path.Combine(destPath, config.DatasetSourceConfig.RootDirName);
-            }
-            string destFolderName = datasetSourceConfig.RootDirName;
+            // string destFolderName = datasetSourceConfig.RootDirName;
 
-            if ((!datasetSourceConfig.IsServer) && (!Directory.Exists(datasetSourceConfig.DatasetIdOrSourcePath)))
+            if ((!datasetSourceConfig.IsServer) && (!Directory.Exists(datasetSourceConfig.LocalSourcePath)))
             {
-                Debug.LogError($"インポート元パスが存在しません。 sourcePath = {datasetSourceConfig.DatasetIdOrSourcePath}");
+                Debug.LogError($"インポート元パスが存在しません。 sourcePath = {datasetSourceConfig.LocalSourcePath}");
                 return;
             }
             
             progressDisplay.SetProgress("GMLファイル検索", 10f, "");
-            using var datasetSource = DatasetSource.Create(datasetSourceConfig);
-            var datasetAccessor = datasetSource.Accessor;
-            var targetGmls = await Task.Run(() => CityFilesCopy.FindTargetGmls(
-                datasetAccessor, config
-            ));
-            progressDisplay.SetProgress("GMLファイル検索", 100f, "完了");
+            List<GmlFile> targetGmls = null;
+            try
+            {
+                using var datasetSource = DatasetSource.Create(datasetSourceConfig);
+                using var datasetAccessor = datasetSource.Accessor;
+                targetGmls = await Task.Run(() => TargetGmlFinder.FindTargetGmls(
+                    datasetAccessor, config
+                ));
+            }
+            catch (Exception)
+            {
+                progressDisplay.SetProgress("GMLファイル検索", 0f, "失敗 : GMLファイルを検索できませんでした。");
+                throw;
+            }
 
+            progressDisplay.SetProgress("GMLファイル検索", 100f, "完了");
+            
             if (targetGmls.Count <= 0)
             {
                 Debug.LogError("該当するGMLファイルがありません。");
@@ -61,8 +68,10 @@ namespace PLATEAU.CityImport.Load
             {
                 progressDisplay.SetProgress(Path.GetFileName(gml.Path), 0f, "未処理");
             }
-
-            var rootTrans = new GameObject(destFolderName).transform;
+            
+            // 都市ゲームオブジェクト階層のルートを生成します。
+            // ここで指定するゲームオブジェクト名は仮であり、あとからインポートしたGMLファイルパスに応じてふさわしいものに変更します。
+            var rootTrans = new GameObject("インポート中です...").transform;
 
             // 各GMLファイルで共通する設定です。
             var referencePoint = CalcCenterPoint(targetGmls, config.CoordinateZoneID);
@@ -75,14 +84,22 @@ namespace PLATEAU.CityImport.Load
             // GMLファイルを同時に処理する最大数です。
             // 並列数が 4 くらいだと、1つずつ処理するよりも、全部同時に処理するよりも速いという経験則です。
             var sem = new SemaphoreSlim(4);
-            
             await Task.WhenAll(targetGmls.Select(async gmlInfo =>
             {
                 await sem.WaitAsync(); 
                 try
                 {
+                    // GMLインポートの主たるメソッドです。
                     // ここはメインスレッドで呼ぶ必要があります。
-                    await GmlImporter.Import(gmlInfo, destPath, config, rootTrans, progressDisplay, referencePoint);
+                    var gml = await GmlImporter.Import(gmlInfo, destPath, config, rootTrans, progressDisplay, referencePoint);
+                    
+                    if (gml != null && !string.IsNullOrEmpty(gml.Path))
+                    {
+                        lock (lastFetchedGmlRootPath)
+                        {
+                            lastFetchedGmlRootPath = gml.CityRootPath();
+                        }
+                    }
                 }
                 catch (Exception e)
                 {
@@ -97,6 +114,7 @@ namespace PLATEAU.CityImport.Load
             
             // インポート完了後の処理
             CityDuplicateProcessor.EnableOnlyLargestLODInDuplicate(cityModelComponent);
+            rootTrans.name = Path.GetFileName(lastFetchedGmlRootPath);
         }
 
         private static PlateauVector3d CalcCenterPoint(IEnumerable<GmlFile> targetGmls, int coordinateZoneID)
