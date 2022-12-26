@@ -77,7 +77,7 @@ namespace PLATEAU.Dataset
         /// <summary>
         /// GMLファイルのメッシュコードを返します。
         /// ただし、誤った形式のGMLファイル名である等の理由でメッシュコードを読み取れなかった場合は
-        /// 戻り値の meshCode.IsValid が false になります。必ず戻り値の IsValid をチェックしてください。 
+        /// 戻り値の meshCode.IsValid が false になります。
         /// </summary>
         public MeshCode MeshCode
         {
