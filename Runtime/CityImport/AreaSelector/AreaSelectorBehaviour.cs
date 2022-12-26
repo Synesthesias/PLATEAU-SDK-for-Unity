@@ -63,23 +63,24 @@ namespace PLATEAU.CityImport.AreaSelector
 
         private void SetInitialCamera(Extent entireExtent)
         {
+            #if UNITY_EDITOR
             RotateSceneViewCameraDown();
             var centerPos = this.geoReference.Project(entireExtent.Center).ToUnityVector();
             var initialCameraPos = new Vector3(centerPos.x, 0, centerPos.z);
             SceneView.lastActiveSceneView.pivot = initialCameraPos;
             // シーンビューのカメラが全体を映すようにします。
             SceneView.lastActiveSceneView.size = Mathf.Abs((float)(this.geoReference.Project(entireExtent.Max).Z - this.geoReference.Project(entireExtent.Min).Z) / 2f);
+            #endif
         }
 
         private void Update()
         {
             // カメラを下に向けます。
             RotateSceneViewCameraDown();
-            Debug.Log($"camera size = {SceneView.lastActiveSceneView.size}");
-            
-            #if UNITY_EDITOR
+
+#if UNITY_EDITOR
             this.mapLoader.Update(SceneView.lastActiveSceneView.camera);
-            #endif
+#endif
         }
 
         private void OnRenderObject()
