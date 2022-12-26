@@ -42,7 +42,6 @@ namespace PLATEAU.CityAdjust
                             if (found != null)
                             {
                                 found.gameObject.SetActive(false);
-                                Debug.Log("setactive false");
                             }
                         }
                     }
