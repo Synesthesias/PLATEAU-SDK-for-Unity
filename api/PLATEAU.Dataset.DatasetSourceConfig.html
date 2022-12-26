@@ -127,13 +127,13 @@
   
   
   <a id="PLATEAU_Dataset_DatasetSourceConfig__ctor_" data-uid="PLATEAU.Dataset.DatasetSourceConfig.#ctor*"></a>
-  <h4 id="PLATEAU_Dataset_DatasetSourceConfig__ctor_System_Boolean_System_String_" data-uid="PLATEAU.Dataset.DatasetSourceConfig.#ctor(System.Boolean,System.String)">DatasetSourceConfig(Boolean, String)</h4>
+  <h4 id="PLATEAU_Dataset_DatasetSourceConfig__ctor_System_Boolean_System_String_System_String_" data-uid="PLATEAU.Dataset.DatasetSourceConfig.#ctor(System.Boolean,System.String,System.String)">DatasetSourceConfig(Boolean, String, String)</h4>
   <div class="markdown level1 summary"><p><a class="xref" href="PLATEAU.Dataset.DatasetSource.html">DatasetSource</a> の初期化のための情報を渡すコンストラクタです。</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public DatasetSourceConfig(bool isServer, string datasetIdOrSourcePath)</code></pre>
+    <pre><code class="lang-csharp hljs">public DatasetSourceConfig(bool isServer, string localSourcePath, string serverDatasetID)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -153,41 +153,21 @@
       </tr>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">String</a></td>
-        <td><span class="parametername">datasetIdOrSourcePath</span></td>
-        <td><p>サーバーのとき、データセットのIDを渡します。
-そのIDとは、APIサーバーにデータセットの一覧を問い合わせたときに得られるID文字列です。例: 東京23区のデータセットのIDは &quot;23ku&quot;
-ローカルのとき、そのパスを渡します。</p>
+        <td><span class="parametername">localSourcePath</span></td>
+        <td><p>ローカルモードでのみ利用します。インポート元のパスを渡します。</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">String</a></td>
+        <td><span class="parametername">serverDatasetID</span></td>
+        <td><p>サーバーモードでのみ利用します。データセットのIDを渡します。
+そのIDとは、APIサーバーにデータセットの一覧を問い合わせたときに得られるID文字列です。例: 東京23区のデータセットのIDは &quot;23ku&quot;</p>
 </td>
       </tr>
     </tbody>
   </table>
   <h3 id="properties">Properties
   </h3>
-  
-  
-  <a id="PLATEAU_Dataset_DatasetSourceConfig_DatasetIdOrSourcePath_" data-uid="PLATEAU.Dataset.DatasetSourceConfig.DatasetIdOrSourcePath*"></a>
-  <h4 id="PLATEAU_Dataset_DatasetSourceConfig_DatasetIdOrSourcePath" data-uid="PLATEAU.Dataset.DatasetSourceConfig.DatasetIdOrSourcePath">DatasetIdOrSourcePath</h4>
-  <div class="markdown level1 summary"></div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public string DatasetIdOrSourcePath { get; set; }</code></pre>
-  </div>
-  <h5 class="propertyValue">Property Value</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">String</a></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
   
   
   <a id="PLATEAU_Dataset_DatasetSourceConfig_IsServer_" data-uid="PLATEAU.Dataset.DatasetSourceConfig.IsServer*"></a>
@@ -215,13 +195,38 @@
   </table>
   
   
-  <a id="PLATEAU_Dataset_DatasetSourceConfig_RootDirName_" data-uid="PLATEAU.Dataset.DatasetSourceConfig.RootDirName*"></a>
-  <h4 id="PLATEAU_Dataset_DatasetSourceConfig_RootDirName" data-uid="PLATEAU.Dataset.DatasetSourceConfig.RootDirName">RootDirName</h4>
+  <a id="PLATEAU_Dataset_DatasetSourceConfig_LocalSourcePath_" data-uid="PLATEAU.Dataset.DatasetSourceConfig.LocalSourcePath*"></a>
+  <h4 id="PLATEAU_Dataset_DatasetSourceConfig_LocalSourcePath" data-uid="PLATEAU.Dataset.DatasetSourceConfig.LocalSourcePath">LocalSourcePath</h4>
   <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public string RootDirName { get; }</code></pre>
+    <pre><code class="lang-csharp hljs">public string LocalSourcePath { get; set; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">String</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
+  <a id="PLATEAU_Dataset_DatasetSourceConfig_ServerDatasetID_" data-uid="PLATEAU.Dataset.DatasetSourceConfig.ServerDatasetID*"></a>
+  <h4 id="PLATEAU_Dataset_DatasetSourceConfig_ServerDatasetID" data-uid="PLATEAU.Dataset.DatasetSourceConfig.ServerDatasetID">ServerDatasetID</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public string ServerDatasetID { get; set; }</code></pre>
   </div>
   <h5 class="propertyValue">Property Value</h5>
   <table class="table table-bordered table-striped table-condensed">

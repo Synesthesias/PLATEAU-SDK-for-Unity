@@ -103,7 +103,8 @@
   
   <a id="PLATEAU_CityInfo_PLATEAUInstancedCityModel_GeoReference_" data-uid="PLATEAU.CityInfo.PLATEAUInstancedCityModel.GeoReference*"></a>
   <h4 id="PLATEAU_CityInfo_PLATEAUInstancedCityModel_GeoReference" data-uid="PLATEAU.CityInfo.PLATEAUInstancedCityModel.GeoReference">GeoReference</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>極座標と平面直角座標を変換するインスタンスです。</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -120,6 +121,262 @@
     <tbody>
       <tr>
         <td><span class="xref">GeoReference</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
+  <a id="PLATEAU_CityInfo_PLATEAUInstancedCityModel_GmlTransforms_" data-uid="PLATEAU.CityInfo.PLATEAUInstancedCityModel.GmlTransforms*"></a>
+  <h4 id="PLATEAU_CityInfo_PLATEAUInstancedCityModel_GmlTransforms" data-uid="PLATEAU.CityInfo.PLATEAUInstancedCityModel.GmlTransforms">GmlTransforms</h4>
+  <div class="markdown level1 summary"><p>ゲームオブジェクトの階層のうち、GMLファイルに対応する Transform の一覧を返します。</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Transform[] GmlTransforms { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Transform</span>[]</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="methods">Methods
+  </h3>
+  
+  
+  <a id="PLATEAU_CityInfo_PLATEAUInstancedCityModel_GetCityObjects_" data-uid="PLATEAU.CityInfo.PLATEAUInstancedCityModel.GetCityObjects*"></a>
+  <h4 id="PLATEAU_CityInfo_PLATEAUInstancedCityModel_GetCityObjects_Transform_System_Int32_" data-uid="PLATEAU.CityInfo.PLATEAUInstancedCityModel.GetCityObjects(Transform,System.Int32)">GetCityObjects(Transform, Int32)</h4>
+  <div class="markdown level1 summary"><p>引数として GMLに対応する Transform と LOD番号を受け取ります。
+GMLのゲームオブジェクト階層を見て、そのLODで存在する CityObject に対応する Transform をリストで返します。</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static List&lt;Transform&gt; GetCityObjects(Transform gmlTransform, int lod)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Transform</span></td>
+        <td><span class="parametername">gmlTransform</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><span class="parametername">lod</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">List</span>&lt;<span class="xref">Transform</span>&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
+  <a id="PLATEAU_CityInfo_PLATEAUInstancedCityModel_GetLods_" data-uid="PLATEAU.CityInfo.PLATEAUInstancedCityModel.GetLods*"></a>
+  <h4 id="PLATEAU_CityInfo_PLATEAUInstancedCityModel_GetLods_Transform_" data-uid="PLATEAU.CityInfo.PLATEAUInstancedCityModel.GetLods(Transform)">GetLods(Transform)</h4>
+  <div class="markdown level1 summary"><p>GMLに対応する Transform を受け取り、そのゲームオブジェクト階層の子を見て
+利用可能なLODの番号をリストで返します。</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static List&lt;int&gt; GetLods(Transform gmlTransform)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Transform</span></td>
+        <td><span class="parametername">gmlTransform</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">List</span>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">Int32</a>&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
+  <a id="PLATEAU_CityInfo_PLATEAUInstancedCityModel_GetLodTransforms_" data-uid="PLATEAU.CityInfo.PLATEAUInstancedCityModel.GetLodTransforms*"></a>
+  <h4 id="PLATEAU_CityInfo_PLATEAUInstancedCityModel_GetLodTransforms_Transform_" data-uid="PLATEAU.CityInfo.PLATEAUInstancedCityModel.GetLodTransforms(Transform)">GetLodTransforms(Transform)</h4>
+  <div class="markdown level1 summary"><p>GMLに対応する Transform を受け取り、そのゲームオブジェクト階層の子を見て
+利用可能なLODに対応する Transform のリストを返します。</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static List&lt;Transform&gt; GetLodTransforms(Transform gmlTransform)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Transform</span></td>
+        <td><span class="parametername">gmlTransform</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">List</span>&lt;<span class="xref">Transform</span>&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
+  <a id="PLATEAU_CityInfo_PLATEAUInstancedCityModel_LoadGmlAsync_" data-uid="PLATEAU.CityInfo.PLATEAUInstancedCityModel.LoadGmlAsync*"></a>
+  <h4 id="PLATEAU_CityInfo_PLATEAUInstancedCityModel_LoadGmlAsync_Transform_" data-uid="PLATEAU.CityInfo.PLATEAUInstancedCityModel.LoadGmlAsync(Transform)">LoadGmlAsync(Transform)</h4>
+  <div class="markdown level1 summary"><p>GMLに対応する Transform からGMLを非同期ロードして <see cref="!:CityModel"></see> を返します。
+合致するGMLがなければ null を返します。</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public async Task&lt;CityModel&gt; LoadGmlAsync(Transform gmlTransform)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Transform</span></td>
+        <td><span class="parametername">gmlTransform</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Task</span>&lt;<span class="xref">CityModel</span>&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
+  <a id="PLATEAU_CityInfo_PLATEAUInstancedCityModel_TryParseLodGameObjectName_" data-uid="PLATEAU.CityInfo.PLATEAUInstancedCityModel.TryParseLodGameObjectName*"></a>
+  <h4 id="PLATEAU_CityInfo_PLATEAUInstancedCityModel_TryParseLodGameObjectName_System_String_System_Int32__" data-uid="PLATEAU.CityInfo.PLATEAUInstancedCityModel.TryParseLodGameObjectName(System.String,System.Int32@)">TryParseLodGameObjectName(String, out Int32)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static bool TryParseLodGameObjectName(string lodGameObjName, out int outLod)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">String</a></td>
+        <td><span class="parametername">lodGameObjName</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><span class="parametername">outLod</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
         <td></td>
       </tr>
     </tbody>

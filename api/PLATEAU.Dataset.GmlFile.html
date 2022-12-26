@@ -209,7 +209,10 @@
   
   <a id="PLATEAU_Dataset_GmlFile_MeshCode_" data-uid="PLATEAU.Dataset.GmlFile.MeshCode*"></a>
   <h4 id="PLATEAU_Dataset_GmlFile_MeshCode" data-uid="PLATEAU.Dataset.GmlFile.MeshCode">MeshCode</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>GMLファイルのメッシュコードを返します。
+ただし、誤った形式のGMLファイル名である等の理由でメッシュコードを読み取れなかった場合は
+戻り値の meshCode.IsValid が false になります。</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -284,6 +287,32 @@
   </h3>
   
   
+  <a id="PLATEAU_Dataset_GmlFile_CityRootPath_" data-uid="PLATEAU.Dataset.GmlFile.CityRootPath*"></a>
+  <h4 id="PLATEAU_Dataset_GmlFile_CityRootPath" data-uid="PLATEAU.Dataset.GmlFile.CityRootPath">CityRootPath()</h4>
+  <div class="markdown level1 summary"><p>都市データのルートディレクトリ、すなわち &quot;udx&quot;フォルダの1つ上のパスを返します。</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public string CityRootPath()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">String</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
   <a id="PLATEAU_Dataset_GmlFile_Create_" data-uid="PLATEAU.Dataset.GmlFile.Create*"></a>
   <h4 id="PLATEAU_Dataset_GmlFile_Create_System_String_" data-uid="PLATEAU.Dataset.GmlFile.Create(System.String)">Create(String)</h4>
   <div class="markdown level1 summary"><p>GMLファイルに関する情報を保持するためのインスタンスを生成します。
@@ -340,9 +369,12 @@
   
   <a id="PLATEAU_Dataset_GmlFile_Fetch_" data-uid="PLATEAU.Dataset.GmlFile.Fetch*"></a>
   <h4 id="PLATEAU_Dataset_GmlFile_Fetch_System_String_" data-uid="PLATEAU.Dataset.GmlFile.Fetch(System.String)">Fetch(String)</h4>
-  <div class="markdown level1 summary"><p>GMLファイルとその関連ファイルをコピーします。
+  <div class="markdown level1 summary"><p>GmlFileのパスがローカルPCを指す場合:
+GMLファイルとその関連ファイルをコピーします。
 関連ファイルを探すために、GMLファイルの中身に対して文字列検索（テクスチャパスなどの記載を探す）が行われるため、
-GMLファイルの容量が増えるほど処理時間が増えます。</p>
+GMLファイルの容量が増えるほど処理時間が増えます。
+GmlFileのパスが http で始まる場合:
+GMLファイルとその関連ファイルをダウンロードします。</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
@@ -378,6 +410,34 @@ GMLファイルの容量が増えるほど処理時間が増えます。</p>
     <tbody>
       <tr>
         <td><a class="xref" href="PLATEAU.Dataset.GmlFile.html">GmlFile</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
+  <a id="PLATEAU_Dataset_GmlFile_GetMaxLod_" data-uid="PLATEAU.Dataset.GmlFile.GetMaxLod*"></a>
+  <h4 id="PLATEAU_Dataset_GmlFile_GetMaxLod" data-uid="PLATEAU.Dataset.GmlFile.GetMaxLod">GetMaxLod()</h4>
+  <div class="markdown level1 summary"><p>ローカルの場合、GMLファイルの全文を検索して対応LODの最大を求めます。
+サーバーの場合、APIサーバーに問い合わせて対応LODの最大を求めます。
+どちらにしても時間がかかる処理になります。</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public int GetMaxLod()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">Int32</a></td>
         <td></td>
       </tr>
     </tbody>

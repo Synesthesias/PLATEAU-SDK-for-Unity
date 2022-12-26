@@ -64,7 +64,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PLATEAU.CityAdjust.CityDuplicateProcessor.html",
-          "hash": "paAmph94VEmFjv5PQBdr+qk0byd4Upz+xkn5syLfZb8="
+          "hash": "EPePVf55OD+sBgiO31r4LQZs1o+Gw9IM9qynv6kuCrg="
         }
       },
       "is_incremental": false,
@@ -448,7 +448,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PLATEAU.CityImport.AreaSelector.SceneObjs.PackageToLodDict.html",
-          "hash": "jS/JmrYx4kjqXaM5RC8Pl/lXMpQyWwAt4ls5BceTdSY="
+          "hash": "FxWPTKyH2lKgXt43jd6tBg1VIh3L6kirWaCZfdlvtF4="
         }
       },
       "is_incremental": false,
@@ -460,7 +460,43 @@
       "output": {
         ".html": {
           "relative_path": "api/PLATEAU.CityImport.AreaSelector.SceneObjs.html",
-          "hash": "af0ekY7FlVVUGeggYfGUazqs5FwWJWw2CRpzB1aYi5s="
+          "hash": "xfknWHeN2sUofvEz0mfG6p8tlvAVzgzINyW7BJDP8EI="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/PLATEAU.CityInfo.CityObjectTypeHierarchy.Node.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PLATEAU.CityInfo.CityObjectTypeHierarchy.Node.html",
+          "hash": "tHVj/cLYl2cQcMwuvbW2UDsjq81RmVbtaKzBKwOSR14="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/PLATEAU.CityInfo.CityObjectTypeHierarchy.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PLATEAU.CityInfo.CityObjectTypeHierarchy.html",
+          "hash": "UH3Vb6LgCXFKkh5nlgdc/yV2ofQkCL0MAckLD24uK24="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/PLATEAU.CityInfo.GeoReferenceData.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PLATEAU.CityInfo.GeoReferenceData.html",
+          "hash": "diBFcI9TmuC2SExzP+mVTFjvg20dY22PO9/Q1qxyoJQ="
         }
       },
       "is_incremental": false,
@@ -480,23 +516,11 @@
     },
     {
       "type": "ManagedReference",
-      "source_relative_path": "api/PLATEAU.CityInfo.PLATEAUInstancedCityModel.GeoReferenceData.yml",
-      "output": {
-        ".html": {
-          "relative_path": "api/PLATEAU.CityInfo.PLATEAUInstancedCityModel.GeoReferenceData.html",
-          "hash": "3f0O94uBEsrqcGgMj2jyd8M0zeG28GhwJzitmCkuF/c="
-        }
-      },
-      "is_incremental": false,
-      "version": ""
-    },
-    {
-      "type": "ManagedReference",
       "source_relative_path": "api/PLATEAU.CityInfo.PLATEAUInstancedCityModel.yml",
       "output": {
         ".html": {
           "relative_path": "api/PLATEAU.CityInfo.PLATEAUInstancedCityModel.html",
-          "hash": "0fyvM+trSdVVh/l0L2/WtK+L60N++jBraQLVUHCDass="
+          "hash": "juS/cU9exFpSrh1sWzTjBSp/QAsecau84ePOPswBT0I="
         }
       },
       "is_incremental": false,
@@ -508,7 +532,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PLATEAU.CityInfo.html",
-          "hash": "sHXHoIbSnt87zn9wlJQAynII4jeaohJqOK/PxO519No="
+          "hash": "1qQk0+Ucpud+8VzssxTc4otQLLglDQ3z40yaCaK0A30="
         }
       },
       "is_incremental": false,
@@ -532,7 +556,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PLATEAU.Dataset.DatasetAccessor.html",
-          "hash": "LHG6QiRl5D+eBO4It78rOfIv/ANeEfcGtpNlemuP3PI="
+          "hash": "JX8ZGcblchjfRpTZ110N7kWL4hxXuxmDrDFup+LRiLQ="
         }
       },
       "is_incremental": false,
@@ -568,7 +592,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PLATEAU.Dataset.DatasetSource.html",
-          "hash": "tRBi0VSLVF6NQu3eMDzDBZEFQZZtIB+jpuw7tqCqV40="
+          "hash": "6mbIqRg3LFPhC3QB6mn7Mh6RJJ5EuVa98gnY7/xTAMA="
         }
       },
       "is_incremental": false,
@@ -580,7 +604,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PLATEAU.Dataset.DatasetSourceConfig.html",
-          "hash": "CP4llnhrzJGfgbM/kGhsS/M1Pidy1hM7pCDF01685Wg="
+          "hash": "EWA8KBO8F2TI5WyryJpTWE5aJbPnYrF/IMYyydR2Syg="
         }
       },
       "is_incremental": false,
@@ -592,31 +616,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PLATEAU.Dataset.GmlFile.html",
-          "hash": "kKeanxvjYovhFOC+9rKyAWm3BShrmZA3WzT7TtUysr4="
-        }
-      },
-      "is_incremental": false,
-      "version": ""
-    },
-    {
-      "type": "ManagedReference",
-      "source_relative_path": "api/PLATEAU.Dataset.LocalDatasetAccessor.yml",
-      "output": {
-        ".html": {
-          "relative_path": "api/PLATEAU.Dataset.LocalDatasetAccessor.html",
-          "hash": "PxMSAxXT0d6y9bc7YyQdDnwjQCGAhFsZuWXIJWFyBog="
-        }
-      },
-      "is_incremental": false,
-      "version": ""
-    },
-    {
-      "type": "ManagedReference",
-      "source_relative_path": "api/PLATEAU.Dataset.LodSearcher.yml",
-      "output": {
-        ".html": {
-          "relative_path": "api/PLATEAU.Dataset.LodSearcher.html",
-          "hash": "6BXECc2IOhZzsdcnmcKIzTfq7DJNycCLf/rlemVxr2A="
+          "hash": "zqoJOh44ieJ4Xi3xEJZQJtu3vVpteu/s4OMQQePJ/B8="
         }
       },
       "is_incremental": false,
@@ -628,7 +628,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PLATEAU.Dataset.MeshCode.html",
-          "hash": "/d4vTEoX9BYjaeMqUKOdhB2mbCj/ON1Y6xWNUcAYD34="
+          "hash": "dq/nvBwd30mXeQTWRy+orsQCvNgIPZthpKw30gkClfg="
         }
       },
       "is_incremental": false,
@@ -660,23 +660,11 @@
     },
     {
       "type": "ManagedReference",
-      "source_relative_path": "api/PLATEAU.Dataset.ServerDatasetAccessor.yml",
-      "output": {
-        ".html": {
-          "relative_path": "api/PLATEAU.Dataset.ServerDatasetAccessor.html",
-          "hash": "HBYvjbh+330JplROYXMrN/p9WN7XSmxpJSwPoN6Q3EU="
-        }
-      },
-      "is_incremental": false,
-      "version": ""
-    },
-    {
-      "type": "ManagedReference",
       "source_relative_path": "api/PLATEAU.Dataset.yml",
       "output": {
         ".html": {
           "relative_path": "api/PLATEAU.Dataset.html",
-          "hash": "NS94HCwfGi4CzTRsQ/L/klrB4+C1FclLprTXMHcJwMU="
+          "hash": "hJm4TYy/41M3cnFv/UskRotrspfRJzfFwEdQAn+z23A="
         }
       },
       "is_incremental": false,
@@ -804,6 +792,30 @@
     },
     {
       "type": "ManagedReference",
+      "source_relative_path": "api/PLATEAU.Interop.FbxFileFormat.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PLATEAU.Interop.FbxFileFormat.html",
+          "hash": "oQx0INmYqOmheGH4H+rqptInPjeX4ebo4ESkEET2wAg="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/PLATEAU.Interop.FbxWriteOptions.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PLATEAU.Interop.FbxWriteOptions.html",
+          "hash": "Ko6fErPcJyJRAkwtEvpVhq4uaZ2ibX/ov7aeP3Sn77k="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
       "source_relative_path": "api/PLATEAU.Interop.GeoCoordinate.yml",
       "output": {
         ".html": {
@@ -892,7 +904,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PLATEAU.Interop.MeshFileFormat.html",
-          "hash": "60B/T6n/7qsEboUy7TqwNuKUqd8LdYYYIM/RCsmcw+w="
+          "hash": "xRmXJ69MHA/qOw2P2UXyQdV6rMMYJyRIrFe9h5U+vRQ="
         }
       },
       "is_incremental": false,
@@ -988,7 +1000,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PLATEAU.Interop.NativeVectorMeshCode.html",
-          "hash": "q+TQ1xzeHIMgsVBK6IJ8OeZ5r6GLuKgz4zzFlZ5qDJQ="
+          "hash": "HmCeMd4jz7luG1eUsY4Z5uJ8oatWaf0J/DQdnJoSgIU="
         }
       },
       "is_incremental": false,
@@ -1060,7 +1072,19 @@
       "output": {
         ".html": {
           "relative_path": "api/PLATEAU.Interop.html",
-          "hash": "ZQkqDTPfFQdwiLxlG5usrOiX0I6/1vE5jtbICBZB5/4="
+          "hash": "tk1XIRrvUqxGc63rAC/UyHCqDHyQVxck0J8kaGDSAa0="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/PLATEAU.MeshWriter.FbxWriter.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PLATEAU.MeshWriter.FbxWriter.html",
+          "hash": "nSCPuJNMEmw80rudt9mXbrOvDHSNnsBd4TnKHMRCIo0="
         }
       },
       "is_incremental": false,
@@ -1108,7 +1132,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PLATEAU.MeshWriter.html",
-          "hash": "E2E4sDnmpJqVuqeN6cd42i1xYWpiUoK1QdVNPrmb5/o="
+          "hash": "AXqnBEeLZZkOcNDawWDGhE4w+NH+yzXbmOYw6f3OGj4="
         }
       },
       "is_incremental": false,
@@ -1120,7 +1144,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PLATEAU.Network.Client.html",
-          "hash": "Qw6XF2aTptJG+7xmFQPOsD4tkVc4qsnlN272rgtl3xs="
+          "hash": "+EVyosG2XygUj4XZnZrG2ttrcQCuB3EhbqfkgWN/u/k="
         }
       },
       "is_incremental": false,
@@ -1132,7 +1156,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PLATEAU.Network.NetworkConfig.html",
-          "hash": "tZSWXPVbGINs59p5+XGC3divR5qzyI3em+egkR2tv2Y="
+          "hash": "xt5yPUtEaPWCIBtW8fR/Mb/3RjLpvBRS+LmgvovVwqA="
         }
       },
       "is_incremental": false,
@@ -1348,7 +1372,7 @@
       "output": {
         ".html": {
           "relative_path": "api/toc.html",
-          "hash": "JBg04LXlh7wQVzOK9GBp1FPbJzMzmFxtDYU3AM34p6c="
+          "hash": "Ao+ngjHvP4etb3fzV6Gl2oZSC0Y8r5KZN8nmDOHXWj0="
         }
       },
       "is_incremental": false,
@@ -1396,7 +1420,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/ImportCityModels.html",
-          "hash": "QK+yeLdMIbvjJ5osJf7+ZAsLvZ2Z0OjOPp8RjU8CK8k="
+          "hash": "joLfI5Tv8L0pZ44gaRuf1GZ71HI/EczPFaIdnDOSC5s="
         }
       },
       "is_incremental": false,
@@ -1408,7 +1432,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/Installation.html",
-          "hash": "4Lw0FbO4/V8XMzEFtB5+i5a2V3SvgHYNu/+fqHUxJhA="
+          "hash": "l5d2f8zI1H6mMTvK4sGOL5OLB50lKfuqU9GXML/+y9g="
         }
       },
       "is_incremental": false,
@@ -1638,6 +1662,17 @@
     },
     {
       "type": "Resource",
+      "source_relative_path": "resources/manual/importCityModels/fldAndLandUse.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/importCityModels/fldAndLandUse.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
       "source_relative_path": "resources/manual/importCityModels/idmap.png",
       "output": {
         "resource": {
@@ -1759,6 +1794,17 @@
     },
     {
       "type": "Resource",
+      "source_relative_path": "resources/manual/importCityModels/invalidCoordinateSystem.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/importCityModels/invalidCoordinateSystem.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
       "source_relative_path": "resources/manual/importCityModels/plateauWindowImport.png",
       "output": {
         "resource": {
@@ -1857,6 +1903,17 @@
       "version": ""
     },
     {
+      "type": "Resource",
+      "source_relative_path": "resources/manual/installation/unityHubnewProjectConfig.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/installation/unityHubnewProjectConfig.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
       "type": "Toc",
       "source_relative_path": "toc.yml",
       "output": {
@@ -1889,7 +1946,7 @@
         "ManagedReferenceDocumentProcessor": {
           "can_incremental": false,
           "incrementalPhase": "build",
-          "total_file_count": 110,
+          "total_file_count": 112,
           "skipped_file_count": 0
         },
         "ResourceDocumentProcessor": {

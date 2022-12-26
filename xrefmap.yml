@@ -2244,6 +2244,193 @@ references:
   commentId: N:PLATEAU.CityInfo
   fullName: PLATEAU.CityInfo
   nameWithType: PLATEAU.CityInfo
+- uid: PLATEAU.CityInfo.CityObjectTypeHierarchy
+  name: CityObjectTypeHierarchy
+  href: api/PLATEAU.CityInfo.CityObjectTypeHierarchy.html
+  commentId: T:PLATEAU.CityInfo.CityObjectTypeHierarchy
+  fullName: PLATEAU.CityInfo.CityObjectTypeHierarchy
+  nameWithType: CityObjectTypeHierarchy
+- uid: PLATEAU.CityInfo.CityObjectTypeHierarchy.GetNodeByPackage(Package)
+  name: GetNodeByPackage(Package)
+  href: api/PLATEAU.CityInfo.CityObjectTypeHierarchy.html#PLATEAU_CityInfo_CityObjectTypeHierarchy_GetNodeByPackage_Package_
+  commentId: M:PLATEAU.CityInfo.CityObjectTypeHierarchy.GetNodeByPackage(Package)
+  fullName: PLATEAU.CityInfo.CityObjectTypeHierarchy.GetNodeByPackage(Package)
+  nameWithType: CityObjectTypeHierarchy.GetNodeByPackage(Package)
+- uid: PLATEAU.CityInfo.CityObjectTypeHierarchy.GetNodeByPackage*
+  name: GetNodeByPackage
+  href: api/PLATEAU.CityInfo.CityObjectTypeHierarchy.html#PLATEAU_CityInfo_CityObjectTypeHierarchy_GetNodeByPackage_
+  commentId: Overload:PLATEAU.CityInfo.CityObjectTypeHierarchy.GetNodeByPackage
+  isSpec: "True"
+  fullName: PLATEAU.CityInfo.CityObjectTypeHierarchy.GetNodeByPackage
+  nameWithType: CityObjectTypeHierarchy.GetNodeByPackage
+- uid: PLATEAU.CityInfo.CityObjectTypeHierarchy.GetNodeByType(COType)
+  name: GetNodeByType(COType)
+  href: api/PLATEAU.CityInfo.CityObjectTypeHierarchy.html#PLATEAU_CityInfo_CityObjectTypeHierarchy_GetNodeByType_COType_
+  commentId: M:PLATEAU.CityInfo.CityObjectTypeHierarchy.GetNodeByType(COType)
+  fullName: PLATEAU.CityInfo.CityObjectTypeHierarchy.GetNodeByType(COType)
+  nameWithType: CityObjectTypeHierarchy.GetNodeByType(COType)
+- uid: PLATEAU.CityInfo.CityObjectTypeHierarchy.GetNodeByType*
+  name: GetNodeByType
+  href: api/PLATEAU.CityInfo.CityObjectTypeHierarchy.html#PLATEAU_CityInfo_CityObjectTypeHierarchy_GetNodeByType_
+  commentId: Overload:PLATEAU.CityInfo.CityObjectTypeHierarchy.GetNodeByType
+  isSpec: "True"
+  fullName: PLATEAU.CityInfo.CityObjectTypeHierarchy.GetNodeByType
+  nameWithType: CityObjectTypeHierarchy.GetNodeByType
+- uid: PLATEAU.CityInfo.CityObjectTypeHierarchy.Node
+  name: CityObjectTypeHierarchy.Node
+  href: api/PLATEAU.CityInfo.CityObjectTypeHierarchy.Node.html
+  commentId: T:PLATEAU.CityInfo.CityObjectTypeHierarchy.Node
+  fullName: PLATEAU.CityInfo.CityObjectTypeHierarchy.Node
+  nameWithType: CityObjectTypeHierarchy.Node
+- uid: PLATEAU.CityInfo.CityObjectTypeHierarchy.Node.#ctor(System.String,PredefinedCityModelPackage,CityObjectType[],PLATEAU.CityInfo.CityObjectTypeHierarchy.Node[])
+  name: Node(String, PredefinedCityModelPackage, CityObjectType[], CityObjectTypeHierarchy.Node[])
+  href: api/PLATEAU.CityInfo.CityObjectTypeHierarchy.Node.html#PLATEAU_CityInfo_CityObjectTypeHierarchy_Node__ctor_System_String_PredefinedCityModelPackage_CityObjectType___PLATEAU_CityInfo_CityObjectTypeHierarchy_Node___
+  commentId: M:PLATEAU.CityInfo.CityObjectTypeHierarchy.Node.#ctor(System.String,PredefinedCityModelPackage,CityObjectType[],PLATEAU.CityInfo.CityObjectTypeHierarchy.Node[])
+  name.vb: Node(String, PredefinedCityModelPackage, CityObjectType(), CityObjectTypeHierarchy.Node())
+  fullName: PLATEAU.CityInfo.CityObjectTypeHierarchy.Node.Node(System.String, PredefinedCityModelPackage, CityObjectType[], PLATEAU.CityInfo.CityObjectTypeHierarchy.Node[])
+  fullName.vb: PLATEAU.CityInfo.CityObjectTypeHierarchy.Node.Node(System.String, PredefinedCityModelPackage, CityObjectType(), PLATEAU.CityInfo.CityObjectTypeHierarchy.Node())
+  nameWithType: CityObjectTypeHierarchy.Node.Node(String, PredefinedCityModelPackage, CityObjectType[], CityObjectTypeHierarchy.Node[])
+  nameWithType.vb: CityObjectTypeHierarchy.Node.Node(String, PredefinedCityModelPackage, CityObjectType(), CityObjectTypeHierarchy.Node())
+- uid: PLATEAU.CityInfo.CityObjectTypeHierarchy.Node.#ctor*
+  name: Node
+  href: api/PLATEAU.CityInfo.CityObjectTypeHierarchy.Node.html#PLATEAU_CityInfo_CityObjectTypeHierarchy_Node__ctor_
+  commentId: Overload:PLATEAU.CityInfo.CityObjectTypeHierarchy.Node.#ctor
+  isSpec: "True"
+  fullName: PLATEAU.CityInfo.CityObjectTypeHierarchy.Node.Node
+  nameWithType: CityObjectTypeHierarchy.Node.Node
+- uid: PLATEAU.CityInfo.CityObjectTypeHierarchy.Node.Children
+  name: Children
+  href: api/PLATEAU.CityInfo.CityObjectTypeHierarchy.Node.html#PLATEAU_CityInfo_CityObjectTypeHierarchy_Node_Children
+  commentId: P:PLATEAU.CityInfo.CityObjectTypeHierarchy.Node.Children
+  fullName: PLATEAU.CityInfo.CityObjectTypeHierarchy.Node.Children
+  nameWithType: CityObjectTypeHierarchy.Node.Children
+- uid: PLATEAU.CityInfo.CityObjectTypeHierarchy.Node.Children*
+  name: Children
+  href: api/PLATEAU.CityInfo.CityObjectTypeHierarchy.Node.html#PLATEAU_CityInfo_CityObjectTypeHierarchy_Node_Children_
+  commentId: Overload:PLATEAU.CityInfo.CityObjectTypeHierarchy.Node.Children
+  isSpec: "True"
+  fullName: PLATEAU.CityInfo.CityObjectTypeHierarchy.Node.Children
+  nameWithType: CityObjectTypeHierarchy.Node.Children
+- uid: PLATEAU.CityInfo.CityObjectTypeHierarchy.Node.NodeName
+  name: NodeName
+  href: api/PLATEAU.CityInfo.CityObjectTypeHierarchy.Node.html#PLATEAU_CityInfo_CityObjectTypeHierarchy_Node_NodeName
+  commentId: P:PLATEAU.CityInfo.CityObjectTypeHierarchy.Node.NodeName
+  fullName: PLATEAU.CityInfo.CityObjectTypeHierarchy.Node.NodeName
+  nameWithType: CityObjectTypeHierarchy.Node.NodeName
+- uid: PLATEAU.CityInfo.CityObjectTypeHierarchy.Node.NodeName*
+  name: NodeName
+  href: api/PLATEAU.CityInfo.CityObjectTypeHierarchy.Node.html#PLATEAU_CityInfo_CityObjectTypeHierarchy_Node_NodeName_
+  commentId: Overload:PLATEAU.CityInfo.CityObjectTypeHierarchy.Node.NodeName
+  isSpec: "True"
+  fullName: PLATEAU.CityInfo.CityObjectTypeHierarchy.Node.NodeName
+  nameWithType: CityObjectTypeHierarchy.Node.NodeName
+- uid: PLATEAU.CityInfo.CityObjectTypeHierarchy.Node.Package
+  name: Package
+  href: api/PLATEAU.CityInfo.CityObjectTypeHierarchy.Node.html#PLATEAU_CityInfo_CityObjectTypeHierarchy_Node_Package
+  commentId: P:PLATEAU.CityInfo.CityObjectTypeHierarchy.Node.Package
+  fullName: PLATEAU.CityInfo.CityObjectTypeHierarchy.Node.Package
+  nameWithType: CityObjectTypeHierarchy.Node.Package
+- uid: PLATEAU.CityInfo.CityObjectTypeHierarchy.Node.Package*
+  name: Package
+  href: api/PLATEAU.CityInfo.CityObjectTypeHierarchy.Node.html#PLATEAU_CityInfo_CityObjectTypeHierarchy_Node_Package_
+  commentId: Overload:PLATEAU.CityInfo.CityObjectTypeHierarchy.Node.Package
+  isSpec: "True"
+  fullName: PLATEAU.CityInfo.CityObjectTypeHierarchy.Node.Package
+  nameWithType: CityObjectTypeHierarchy.Node.Package
+- uid: PLATEAU.CityInfo.CityObjectTypeHierarchy.Node.Parent
+  name: Parent
+  href: api/PLATEAU.CityInfo.CityObjectTypeHierarchy.Node.html#PLATEAU_CityInfo_CityObjectTypeHierarchy_Node_Parent
+  commentId: P:PLATEAU.CityInfo.CityObjectTypeHierarchy.Node.Parent
+  fullName: PLATEAU.CityInfo.CityObjectTypeHierarchy.Node.Parent
+  nameWithType: CityObjectTypeHierarchy.Node.Parent
+- uid: PLATEAU.CityInfo.CityObjectTypeHierarchy.Node.Parent*
+  name: Parent
+  href: api/PLATEAU.CityInfo.CityObjectTypeHierarchy.Node.html#PLATEAU_CityInfo_CityObjectTypeHierarchy_Node_Parent_
+  commentId: Overload:PLATEAU.CityInfo.CityObjectTypeHierarchy.Node.Parent
+  isSpec: "True"
+  fullName: PLATEAU.CityInfo.CityObjectTypeHierarchy.Node.Parent
+  nameWithType: CityObjectTypeHierarchy.Node.Parent
+- uid: PLATEAU.CityInfo.CityObjectTypeHierarchy.Node.UpperPackage
+  name: UpperPackage
+  href: api/PLATEAU.CityInfo.CityObjectTypeHierarchy.Node.html#PLATEAU_CityInfo_CityObjectTypeHierarchy_Node_UpperPackage
+  commentId: P:PLATEAU.CityInfo.CityObjectTypeHierarchy.Node.UpperPackage
+  fullName: PLATEAU.CityInfo.CityObjectTypeHierarchy.Node.UpperPackage
+  nameWithType: CityObjectTypeHierarchy.Node.UpperPackage
+- uid: PLATEAU.CityInfo.CityObjectTypeHierarchy.Node.UpperPackage*
+  name: UpperPackage
+  href: api/PLATEAU.CityInfo.CityObjectTypeHierarchy.Node.html#PLATEAU_CityInfo_CityObjectTypeHierarchy_Node_UpperPackage_
+  commentId: Overload:PLATEAU.CityInfo.CityObjectTypeHierarchy.Node.UpperPackage
+  isSpec: "True"
+  fullName: PLATEAU.CityInfo.CityObjectTypeHierarchy.Node.UpperPackage
+  nameWithType: CityObjectTypeHierarchy.Node.UpperPackage
+- uid: PLATEAU.CityInfo.CityObjectTypeHierarchy.RootNode
+  name: RootNode
+  href: api/PLATEAU.CityInfo.CityObjectTypeHierarchy.html#PLATEAU_CityInfo_CityObjectTypeHierarchy_RootNode
+  commentId: P:PLATEAU.CityInfo.CityObjectTypeHierarchy.RootNode
+  fullName: PLATEAU.CityInfo.CityObjectTypeHierarchy.RootNode
+  nameWithType: CityObjectTypeHierarchy.RootNode
+- uid: PLATEAU.CityInfo.CityObjectTypeHierarchy.RootNode*
+  name: RootNode
+  href: api/PLATEAU.CityInfo.CityObjectTypeHierarchy.html#PLATEAU_CityInfo_CityObjectTypeHierarchy_RootNode_
+  commentId: Overload:PLATEAU.CityInfo.CityObjectTypeHierarchy.RootNode
+  isSpec: "True"
+  fullName: PLATEAU.CityInfo.CityObjectTypeHierarchy.RootNode
+  nameWithType: CityObjectTypeHierarchy.RootNode
+- uid: PLATEAU.CityInfo.GeoReferenceData
+  name: GeoReferenceData
+  href: api/PLATEAU.CityInfo.GeoReferenceData.html
+  commentId: T:PLATEAU.CityInfo.GeoReferenceData
+  fullName: PLATEAU.CityInfo.GeoReferenceData
+  nameWithType: GeoReferenceData
+- uid: PLATEAU.CityInfo.GeoReferenceData.#ctor(System.Double,System.Double,System.Double,System.Single,CoordinateSystem,System.Int32)
+  name: GeoReferenceData(Double, Double, Double, Single, CoordinateSystem, Int32)
+  href: api/PLATEAU.CityInfo.GeoReferenceData.html#PLATEAU_CityInfo_GeoReferenceData__ctor_System_Double_System_Double_System_Double_System_Single_CoordinateSystem_System_Int32_
+  commentId: M:PLATEAU.CityInfo.GeoReferenceData.#ctor(System.Double,System.Double,System.Double,System.Single,CoordinateSystem,System.Int32)
+  fullName: PLATEAU.CityInfo.GeoReferenceData.GeoReferenceData(System.Double, System.Double, System.Double, System.Single, CoordinateSystem, System.Int32)
+  nameWithType: GeoReferenceData.GeoReferenceData(Double, Double, Double, Single, CoordinateSystem, Int32)
+- uid: PLATEAU.CityInfo.GeoReferenceData.#ctor*
+  name: GeoReferenceData
+  href: api/PLATEAU.CityInfo.GeoReferenceData.html#PLATEAU_CityInfo_GeoReferenceData__ctor_
+  commentId: Overload:PLATEAU.CityInfo.GeoReferenceData.#ctor
+  isSpec: "True"
+  fullName: PLATEAU.CityInfo.GeoReferenceData.GeoReferenceData
+  nameWithType: GeoReferenceData.GeoReferenceData
+- uid: PLATEAU.CityInfo.GeoReferenceData.coordinateSystem
+  name: coordinateSystem
+  href: api/PLATEAU.CityInfo.GeoReferenceData.html#PLATEAU_CityInfo_GeoReferenceData_coordinateSystem
+  commentId: F:PLATEAU.CityInfo.GeoReferenceData.coordinateSystem
+  fullName: PLATEAU.CityInfo.GeoReferenceData.coordinateSystem
+  nameWithType: GeoReferenceData.coordinateSystem
+- uid: PLATEAU.CityInfo.GeoReferenceData.referencePointX
+  name: referencePointX
+  href: api/PLATEAU.CityInfo.GeoReferenceData.html#PLATEAU_CityInfo_GeoReferenceData_referencePointX
+  commentId: F:PLATEAU.CityInfo.GeoReferenceData.referencePointX
+  fullName: PLATEAU.CityInfo.GeoReferenceData.referencePointX
+  nameWithType: GeoReferenceData.referencePointX
+- uid: PLATEAU.CityInfo.GeoReferenceData.referencePointY
+  name: referencePointY
+  href: api/PLATEAU.CityInfo.GeoReferenceData.html#PLATEAU_CityInfo_GeoReferenceData_referencePointY
+  commentId: F:PLATEAU.CityInfo.GeoReferenceData.referencePointY
+  fullName: PLATEAU.CityInfo.GeoReferenceData.referencePointY
+  nameWithType: GeoReferenceData.referencePointY
+- uid: PLATEAU.CityInfo.GeoReferenceData.referencePointZ
+  name: referencePointZ
+  href: api/PLATEAU.CityInfo.GeoReferenceData.html#PLATEAU_CityInfo_GeoReferenceData_referencePointZ
+  commentId: F:PLATEAU.CityInfo.GeoReferenceData.referencePointZ
+  fullName: PLATEAU.CityInfo.GeoReferenceData.referencePointZ
+  nameWithType: GeoReferenceData.referencePointZ
+- uid: PLATEAU.CityInfo.GeoReferenceData.unitScale
+  name: unitScale
+  href: api/PLATEAU.CityInfo.GeoReferenceData.html#PLATEAU_CityInfo_GeoReferenceData_unitScale
+  commentId: F:PLATEAU.CityInfo.GeoReferenceData.unitScale
+  fullName: PLATEAU.CityInfo.GeoReferenceData.unitScale
+  nameWithType: GeoReferenceData.unitScale
+- uid: PLATEAU.CityInfo.GeoReferenceData.zoneID
+  name: zoneID
+  href: api/PLATEAU.CityInfo.GeoReferenceData.html#PLATEAU_CityInfo_GeoReferenceData_zoneID
+  commentId: F:PLATEAU.CityInfo.GeoReferenceData.zoneID
+  fullName: PLATEAU.CityInfo.GeoReferenceData.zoneID
+  nameWithType: GeoReferenceData.zoneID
 - uid: PLATEAU.CityInfo.PLATEAUCityGmlProxy
   name: PLATEAUCityGmlProxy
   href: api/PLATEAU.CityInfo.PLATEAUCityGmlProxy.html
@@ -2282,61 +2469,87 @@ references:
   isSpec: "True"
   fullName: PLATEAU.CityInfo.PLATEAUInstancedCityModel.GeoReference
   nameWithType: PLATEAUInstancedCityModel.GeoReference
-- uid: PLATEAU.CityInfo.PLATEAUInstancedCityModel.GeoReferenceData
-  name: PLATEAUInstancedCityModel.GeoReferenceData
-  href: api/PLATEAU.CityInfo.PLATEAUInstancedCityModel.GeoReferenceData.html
-  commentId: T:PLATEAU.CityInfo.PLATEAUInstancedCityModel.GeoReferenceData
-  fullName: PLATEAU.CityInfo.PLATEAUInstancedCityModel.GeoReferenceData
-  nameWithType: PLATEAUInstancedCityModel.GeoReferenceData
-- uid: PLATEAU.CityInfo.PLATEAUInstancedCityModel.GeoReferenceData.#ctor(System.Double,System.Double,System.Double,System.Single,CoordinateSystem,System.Int32)
-  name: GeoReferenceData(Double, Double, Double, Single, CoordinateSystem, Int32)
-  href: api/PLATEAU.CityInfo.PLATEAUInstancedCityModel.GeoReferenceData.html#PLATEAU_CityInfo_PLATEAUInstancedCityModel_GeoReferenceData__ctor_System_Double_System_Double_System_Double_System_Single_CoordinateSystem_System_Int32_
-  commentId: M:PLATEAU.CityInfo.PLATEAUInstancedCityModel.GeoReferenceData.#ctor(System.Double,System.Double,System.Double,System.Single,CoordinateSystem,System.Int32)
-  fullName: PLATEAU.CityInfo.PLATEAUInstancedCityModel.GeoReferenceData.GeoReferenceData(System.Double, System.Double, System.Double, System.Single, CoordinateSystem, System.Int32)
-  nameWithType: PLATEAUInstancedCityModel.GeoReferenceData.GeoReferenceData(Double, Double, Double, Single, CoordinateSystem, Int32)
-- uid: PLATEAU.CityInfo.PLATEAUInstancedCityModel.GeoReferenceData.#ctor*
-  name: GeoReferenceData
-  href: api/PLATEAU.CityInfo.PLATEAUInstancedCityModel.GeoReferenceData.html#PLATEAU_CityInfo_PLATEAUInstancedCityModel_GeoReferenceData__ctor_
-  commentId: Overload:PLATEAU.CityInfo.PLATEAUInstancedCityModel.GeoReferenceData.#ctor
+- uid: PLATEAU.CityInfo.PLATEAUInstancedCityModel.GetCityObjects(Transform,System.Int32)
+  name: GetCityObjects(Transform, Int32)
+  href: api/PLATEAU.CityInfo.PLATEAUInstancedCityModel.html#PLATEAU_CityInfo_PLATEAUInstancedCityModel_GetCityObjects_Transform_System_Int32_
+  commentId: M:PLATEAU.CityInfo.PLATEAUInstancedCityModel.GetCityObjects(Transform,System.Int32)
+  fullName: PLATEAU.CityInfo.PLATEAUInstancedCityModel.GetCityObjects(Transform, System.Int32)
+  nameWithType: PLATEAUInstancedCityModel.GetCityObjects(Transform, Int32)
+- uid: PLATEAU.CityInfo.PLATEAUInstancedCityModel.GetCityObjects*
+  name: GetCityObjects
+  href: api/PLATEAU.CityInfo.PLATEAUInstancedCityModel.html#PLATEAU_CityInfo_PLATEAUInstancedCityModel_GetCityObjects_
+  commentId: Overload:PLATEAU.CityInfo.PLATEAUInstancedCityModel.GetCityObjects
   isSpec: "True"
-  fullName: PLATEAU.CityInfo.PLATEAUInstancedCityModel.GeoReferenceData.GeoReferenceData
-  nameWithType: PLATEAUInstancedCityModel.GeoReferenceData.GeoReferenceData
-- uid: PLATEAU.CityInfo.PLATEAUInstancedCityModel.GeoReferenceData.coordinateSystem
-  name: coordinateSystem
-  href: api/PLATEAU.CityInfo.PLATEAUInstancedCityModel.GeoReferenceData.html#PLATEAU_CityInfo_PLATEAUInstancedCityModel_GeoReferenceData_coordinateSystem
-  commentId: F:PLATEAU.CityInfo.PLATEAUInstancedCityModel.GeoReferenceData.coordinateSystem
-  fullName: PLATEAU.CityInfo.PLATEAUInstancedCityModel.GeoReferenceData.coordinateSystem
-  nameWithType: PLATEAUInstancedCityModel.GeoReferenceData.coordinateSystem
-- uid: PLATEAU.CityInfo.PLATEAUInstancedCityModel.GeoReferenceData.referencePointX
-  name: referencePointX
-  href: api/PLATEAU.CityInfo.PLATEAUInstancedCityModel.GeoReferenceData.html#PLATEAU_CityInfo_PLATEAUInstancedCityModel_GeoReferenceData_referencePointX
-  commentId: F:PLATEAU.CityInfo.PLATEAUInstancedCityModel.GeoReferenceData.referencePointX
-  fullName: PLATEAU.CityInfo.PLATEAUInstancedCityModel.GeoReferenceData.referencePointX
-  nameWithType: PLATEAUInstancedCityModel.GeoReferenceData.referencePointX
-- uid: PLATEAU.CityInfo.PLATEAUInstancedCityModel.GeoReferenceData.referencePointY
-  name: referencePointY
-  href: api/PLATEAU.CityInfo.PLATEAUInstancedCityModel.GeoReferenceData.html#PLATEAU_CityInfo_PLATEAUInstancedCityModel_GeoReferenceData_referencePointY
-  commentId: F:PLATEAU.CityInfo.PLATEAUInstancedCityModel.GeoReferenceData.referencePointY
-  fullName: PLATEAU.CityInfo.PLATEAUInstancedCityModel.GeoReferenceData.referencePointY
-  nameWithType: PLATEAUInstancedCityModel.GeoReferenceData.referencePointY
-- uid: PLATEAU.CityInfo.PLATEAUInstancedCityModel.GeoReferenceData.referencePointZ
-  name: referencePointZ
-  href: api/PLATEAU.CityInfo.PLATEAUInstancedCityModel.GeoReferenceData.html#PLATEAU_CityInfo_PLATEAUInstancedCityModel_GeoReferenceData_referencePointZ
-  commentId: F:PLATEAU.CityInfo.PLATEAUInstancedCityModel.GeoReferenceData.referencePointZ
-  fullName: PLATEAU.CityInfo.PLATEAUInstancedCityModel.GeoReferenceData.referencePointZ
-  nameWithType: PLATEAUInstancedCityModel.GeoReferenceData.referencePointZ
-- uid: PLATEAU.CityInfo.PLATEAUInstancedCityModel.GeoReferenceData.unitScale
-  name: unitScale
-  href: api/PLATEAU.CityInfo.PLATEAUInstancedCityModel.GeoReferenceData.html#PLATEAU_CityInfo_PLATEAUInstancedCityModel_GeoReferenceData_unitScale
-  commentId: F:PLATEAU.CityInfo.PLATEAUInstancedCityModel.GeoReferenceData.unitScale
-  fullName: PLATEAU.CityInfo.PLATEAUInstancedCityModel.GeoReferenceData.unitScale
-  nameWithType: PLATEAUInstancedCityModel.GeoReferenceData.unitScale
-- uid: PLATEAU.CityInfo.PLATEAUInstancedCityModel.GeoReferenceData.zoneID
-  name: zoneID
-  href: api/PLATEAU.CityInfo.PLATEAUInstancedCityModel.GeoReferenceData.html#PLATEAU_CityInfo_PLATEAUInstancedCityModel_GeoReferenceData_zoneID
-  commentId: F:PLATEAU.CityInfo.PLATEAUInstancedCityModel.GeoReferenceData.zoneID
-  fullName: PLATEAU.CityInfo.PLATEAUInstancedCityModel.GeoReferenceData.zoneID
-  nameWithType: PLATEAUInstancedCityModel.GeoReferenceData.zoneID
+  fullName: PLATEAU.CityInfo.PLATEAUInstancedCityModel.GetCityObjects
+  nameWithType: PLATEAUInstancedCityModel.GetCityObjects
+- uid: PLATEAU.CityInfo.PLATEAUInstancedCityModel.GetLods(Transform)
+  name: GetLods(Transform)
+  href: api/PLATEAU.CityInfo.PLATEAUInstancedCityModel.html#PLATEAU_CityInfo_PLATEAUInstancedCityModel_GetLods_Transform_
+  commentId: M:PLATEAU.CityInfo.PLATEAUInstancedCityModel.GetLods(Transform)
+  fullName: PLATEAU.CityInfo.PLATEAUInstancedCityModel.GetLods(Transform)
+  nameWithType: PLATEAUInstancedCityModel.GetLods(Transform)
+- uid: PLATEAU.CityInfo.PLATEAUInstancedCityModel.GetLods*
+  name: GetLods
+  href: api/PLATEAU.CityInfo.PLATEAUInstancedCityModel.html#PLATEAU_CityInfo_PLATEAUInstancedCityModel_GetLods_
+  commentId: Overload:PLATEAU.CityInfo.PLATEAUInstancedCityModel.GetLods
+  isSpec: "True"
+  fullName: PLATEAU.CityInfo.PLATEAUInstancedCityModel.GetLods
+  nameWithType: PLATEAUInstancedCityModel.GetLods
+- uid: PLATEAU.CityInfo.PLATEAUInstancedCityModel.GetLodTransforms(Transform)
+  name: GetLodTransforms(Transform)
+  href: api/PLATEAU.CityInfo.PLATEAUInstancedCityModel.html#PLATEAU_CityInfo_PLATEAUInstancedCityModel_GetLodTransforms_Transform_
+  commentId: M:PLATEAU.CityInfo.PLATEAUInstancedCityModel.GetLodTransforms(Transform)
+  fullName: PLATEAU.CityInfo.PLATEAUInstancedCityModel.GetLodTransforms(Transform)
+  nameWithType: PLATEAUInstancedCityModel.GetLodTransforms(Transform)
+- uid: PLATEAU.CityInfo.PLATEAUInstancedCityModel.GetLodTransforms*
+  name: GetLodTransforms
+  href: api/PLATEAU.CityInfo.PLATEAUInstancedCityModel.html#PLATEAU_CityInfo_PLATEAUInstancedCityModel_GetLodTransforms_
+  commentId: Overload:PLATEAU.CityInfo.PLATEAUInstancedCityModel.GetLodTransforms
+  isSpec: "True"
+  fullName: PLATEAU.CityInfo.PLATEAUInstancedCityModel.GetLodTransforms
+  nameWithType: PLATEAUInstancedCityModel.GetLodTransforms
+- uid: PLATEAU.CityInfo.PLATEAUInstancedCityModel.GmlTransforms
+  name: GmlTransforms
+  href: api/PLATEAU.CityInfo.PLATEAUInstancedCityModel.html#PLATEAU_CityInfo_PLATEAUInstancedCityModel_GmlTransforms
+  commentId: P:PLATEAU.CityInfo.PLATEAUInstancedCityModel.GmlTransforms
+  fullName: PLATEAU.CityInfo.PLATEAUInstancedCityModel.GmlTransforms
+  nameWithType: PLATEAUInstancedCityModel.GmlTransforms
+- uid: PLATEAU.CityInfo.PLATEAUInstancedCityModel.GmlTransforms*
+  name: GmlTransforms
+  href: api/PLATEAU.CityInfo.PLATEAUInstancedCityModel.html#PLATEAU_CityInfo_PLATEAUInstancedCityModel_GmlTransforms_
+  commentId: Overload:PLATEAU.CityInfo.PLATEAUInstancedCityModel.GmlTransforms
+  isSpec: "True"
+  fullName: PLATEAU.CityInfo.PLATEAUInstancedCityModel.GmlTransforms
+  nameWithType: PLATEAUInstancedCityModel.GmlTransforms
+- uid: PLATEAU.CityInfo.PLATEAUInstancedCityModel.LoadGmlAsync(Transform)
+  name: LoadGmlAsync(Transform)
+  href: api/PLATEAU.CityInfo.PLATEAUInstancedCityModel.html#PLATEAU_CityInfo_PLATEAUInstancedCityModel_LoadGmlAsync_Transform_
+  commentId: M:PLATEAU.CityInfo.PLATEAUInstancedCityModel.LoadGmlAsync(Transform)
+  fullName: PLATEAU.CityInfo.PLATEAUInstancedCityModel.LoadGmlAsync(Transform)
+  nameWithType: PLATEAUInstancedCityModel.LoadGmlAsync(Transform)
+- uid: PLATEAU.CityInfo.PLATEAUInstancedCityModel.LoadGmlAsync*
+  name: LoadGmlAsync
+  href: api/PLATEAU.CityInfo.PLATEAUInstancedCityModel.html#PLATEAU_CityInfo_PLATEAUInstancedCityModel_LoadGmlAsync_
+  commentId: Overload:PLATEAU.CityInfo.PLATEAUInstancedCityModel.LoadGmlAsync
+  isSpec: "True"
+  fullName: PLATEAU.CityInfo.PLATEAUInstancedCityModel.LoadGmlAsync
+  nameWithType: PLATEAUInstancedCityModel.LoadGmlAsync
+- uid: PLATEAU.CityInfo.PLATEAUInstancedCityModel.TryParseLodGameObjectName(System.String,System.Int32@)
+  name: TryParseLodGameObjectName(String, out Int32)
+  href: api/PLATEAU.CityInfo.PLATEAUInstancedCityModel.html#PLATEAU_CityInfo_PLATEAUInstancedCityModel_TryParseLodGameObjectName_System_String_System_Int32__
+  commentId: M:PLATEAU.CityInfo.PLATEAUInstancedCityModel.TryParseLodGameObjectName(System.String,System.Int32@)
+  name.vb: TryParseLodGameObjectName(String, ByRef Int32)
+  fullName: PLATEAU.CityInfo.PLATEAUInstancedCityModel.TryParseLodGameObjectName(System.String, out System.Int32)
+  fullName.vb: PLATEAU.CityInfo.PLATEAUInstancedCityModel.TryParseLodGameObjectName(System.String, ByRef System.Int32)
+  nameWithType: PLATEAUInstancedCityModel.TryParseLodGameObjectName(String, out Int32)
+  nameWithType.vb: PLATEAUInstancedCityModel.TryParseLodGameObjectName(String, ByRef Int32)
+- uid: PLATEAU.CityInfo.PLATEAUInstancedCityModel.TryParseLodGameObjectName*
+  name: TryParseLodGameObjectName
+  href: api/PLATEAU.CityInfo.PLATEAUInstancedCityModel.html#PLATEAU_CityInfo_PLATEAUInstancedCityModel_TryParseLodGameObjectName_
+  commentId: Overload:PLATEAU.CityInfo.PLATEAUInstancedCityModel.TryParseLodGameObjectName
+  isSpec: "True"
+  fullName: PLATEAU.CityInfo.PLATEAUInstancedCityModel.TryParseLodGameObjectName
+  nameWithType: PLATEAUInstancedCityModel.TryParseLodGameObjectName
 - uid: PLATEAU.Dataset
   name: PLATEAU.Dataset
   href: api/PLATEAU.Dataset.html
@@ -2459,6 +2672,32 @@ references:
   isSpec: "True"
   fullName: PLATEAU.Dataset.DatasetAccessor.DatasetAccessor
   nameWithType: DatasetAccessor.DatasetAccessor
+- uid: PLATEAU.Dataset.DatasetAccessor.CalculateCenterPoint(GeoReference)
+  name: CalculateCenterPoint(GeoReference)
+  href: api/PLATEAU.Dataset.DatasetAccessor.html#PLATEAU_Dataset_DatasetAccessor_CalculateCenterPoint_GeoReference_
+  commentId: M:PLATEAU.Dataset.DatasetAccessor.CalculateCenterPoint(GeoReference)
+  fullName: PLATEAU.Dataset.DatasetAccessor.CalculateCenterPoint(GeoReference)
+  nameWithType: DatasetAccessor.CalculateCenterPoint(GeoReference)
+- uid: PLATEAU.Dataset.DatasetAccessor.CalculateCenterPoint*
+  name: CalculateCenterPoint
+  href: api/PLATEAU.Dataset.DatasetAccessor.html#PLATEAU_Dataset_DatasetAccessor_CalculateCenterPoint_
+  commentId: Overload:PLATEAU.Dataset.DatasetAccessor.CalculateCenterPoint
+  isSpec: "True"
+  fullName: PLATEAU.Dataset.DatasetAccessor.CalculateCenterPoint
+  nameWithType: DatasetAccessor.CalculateCenterPoint
+- uid: PLATEAU.Dataset.DatasetAccessor.DisposeNative
+  name: DisposeNative()
+  href: api/PLATEAU.Dataset.DatasetAccessor.html#PLATEAU_Dataset_DatasetAccessor_DisposeNative
+  commentId: M:PLATEAU.Dataset.DatasetAccessor.DisposeNative
+  fullName: PLATEAU.Dataset.DatasetAccessor.DisposeNative()
+  nameWithType: DatasetAccessor.DisposeNative()
+- uid: PLATEAU.Dataset.DatasetAccessor.DisposeNative*
+  name: DisposeNative
+  href: api/PLATEAU.Dataset.DatasetAccessor.html#PLATEAU_Dataset_DatasetAccessor_DisposeNative_
+  commentId: Overload:PLATEAU.Dataset.DatasetAccessor.DisposeNative
+  isSpec: "True"
+  fullName: PLATEAU.Dataset.DatasetAccessor.DisposeNative
+  nameWithType: DatasetAccessor.DisposeNative
 - uid: PLATEAU.Dataset.DatasetAccessor.FeatureTypeToPackage(System.String)
   name: FeatureTypeToPackage(String)
   href: api/PLATEAU.Dataset.DatasetAccessor.html#PLATEAU_Dataset_DatasetAccessor_FeatureTypeToPackage_System_String_
@@ -2472,12 +2711,28 @@ references:
   isSpec: "True"
   fullName: PLATEAU.Dataset.DatasetAccessor.FeatureTypeToPackage
   nameWithType: DatasetAccessor.FeatureTypeToPackage
-- uid: PLATEAU.Dataset.DatasetAccessor.GetGmlFiles(Extent,PLATEAU.Dataset.PredefinedCityModelPackage)
-  name: GetGmlFiles(Extent, PredefinedCityModelPackage)
-  href: api/PLATEAU.Dataset.DatasetAccessor.html#PLATEAU_Dataset_DatasetAccessor_GetGmlFiles_Extent_PLATEAU_Dataset_PredefinedCityModelPackage_
-  commentId: M:PLATEAU.Dataset.DatasetAccessor.GetGmlFiles(Extent,PLATEAU.Dataset.PredefinedCityModelPackage)
-  fullName: PLATEAU.Dataset.DatasetAccessor.GetGmlFiles(Extent, PLATEAU.Dataset.PredefinedCityModelPackage)
-  nameWithType: DatasetAccessor.GetGmlFiles(Extent, PredefinedCityModelPackage)
+- uid: PLATEAU.Dataset.DatasetAccessor.FilterByMeshCodes(IEnumerable{PLATEAU.Dataset.MeshCode})
+  name: FilterByMeshCodes(IEnumerable<MeshCode>)
+  href: api/PLATEAU.Dataset.DatasetAccessor.html#PLATEAU_Dataset_DatasetAccessor_FilterByMeshCodes_IEnumerable_PLATEAU_Dataset_MeshCode__
+  commentId: M:PLATEAU.Dataset.DatasetAccessor.FilterByMeshCodes(IEnumerable{PLATEAU.Dataset.MeshCode})
+  name.vb: FilterByMeshCodes(IEnumerable(Of MeshCode))
+  fullName: PLATEAU.Dataset.DatasetAccessor.FilterByMeshCodes(IEnumerable<PLATEAU.Dataset.MeshCode>)
+  fullName.vb: PLATEAU.Dataset.DatasetAccessor.FilterByMeshCodes(IEnumerable(Of PLATEAU.Dataset.MeshCode))
+  nameWithType: DatasetAccessor.FilterByMeshCodes(IEnumerable<MeshCode>)
+  nameWithType.vb: DatasetAccessor.FilterByMeshCodes(IEnumerable(Of MeshCode))
+- uid: PLATEAU.Dataset.DatasetAccessor.FilterByMeshCodes*
+  name: FilterByMeshCodes
+  href: api/PLATEAU.Dataset.DatasetAccessor.html#PLATEAU_Dataset_DatasetAccessor_FilterByMeshCodes_
+  commentId: Overload:PLATEAU.Dataset.DatasetAccessor.FilterByMeshCodes
+  isSpec: "True"
+  fullName: PLATEAU.Dataset.DatasetAccessor.FilterByMeshCodes
+  nameWithType: DatasetAccessor.FilterByMeshCodes
+- uid: PLATEAU.Dataset.DatasetAccessor.GetGmlFiles(PLATEAU.Dataset.PredefinedCityModelPackage)
+  name: GetGmlFiles(PredefinedCityModelPackage)
+  href: api/PLATEAU.Dataset.DatasetAccessor.html#PLATEAU_Dataset_DatasetAccessor_GetGmlFiles_PLATEAU_Dataset_PredefinedCityModelPackage_
+  commentId: M:PLATEAU.Dataset.DatasetAccessor.GetGmlFiles(PLATEAU.Dataset.PredefinedCityModelPackage)
+  fullName: PLATEAU.Dataset.DatasetAccessor.GetGmlFiles(PLATEAU.Dataset.PredefinedCityModelPackage)
+  nameWithType: DatasetAccessor.GetGmlFiles(PredefinedCityModelPackage)
 - uid: PLATEAU.Dataset.DatasetAccessor.GetGmlFiles*
   name: GetGmlFiles
   href: api/PLATEAU.Dataset.DatasetAccessor.html#PLATEAU_Dataset_DatasetAccessor_GetGmlFiles_
@@ -2485,32 +2740,6 @@ references:
   isSpec: "True"
   fullName: PLATEAU.Dataset.DatasetAccessor.GetGmlFiles
   nameWithType: DatasetAccessor.GetGmlFiles
-- uid: PLATEAU.Dataset.DatasetAccessor.GetMaxLod(PLATEAU.Dataset.MeshCode,PLATEAU.Dataset.PredefinedCityModelPackage)
-  name: GetMaxLod(MeshCode, PredefinedCityModelPackage)
-  href: api/PLATEAU.Dataset.DatasetAccessor.html#PLATEAU_Dataset_DatasetAccessor_GetMaxLod_PLATEAU_Dataset_MeshCode_PLATEAU_Dataset_PredefinedCityModelPackage_
-  commentId: M:PLATEAU.Dataset.DatasetAccessor.GetMaxLod(PLATEAU.Dataset.MeshCode,PLATEAU.Dataset.PredefinedCityModelPackage)
-  fullName: PLATEAU.Dataset.DatasetAccessor.GetMaxLod(PLATEAU.Dataset.MeshCode, PLATEAU.Dataset.PredefinedCityModelPackage)
-  nameWithType: DatasetAccessor.GetMaxLod(MeshCode, PredefinedCityModelPackage)
-- uid: PLATEAU.Dataset.DatasetAccessor.GetMaxLod*
-  name: GetMaxLod
-  href: api/PLATEAU.Dataset.DatasetAccessor.html#PLATEAU_Dataset_DatasetAccessor_GetMaxLod_
-  commentId: Overload:PLATEAU.Dataset.DatasetAccessor.GetMaxLod
-  isSpec: "True"
-  fullName: PLATEAU.Dataset.DatasetAccessor.GetMaxLod
-  nameWithType: DatasetAccessor.GetMaxLod
-- uid: PLATEAU.Dataset.DatasetAccessor.Handle
-  name: Handle
-  href: api/PLATEAU.Dataset.DatasetAccessor.html#PLATEAU_Dataset_DatasetAccessor_Handle
-  commentId: P:PLATEAU.Dataset.DatasetAccessor.Handle
-  fullName: PLATEAU.Dataset.DatasetAccessor.Handle
-  nameWithType: DatasetAccessor.Handle
-- uid: PLATEAU.Dataset.DatasetAccessor.Handle*
-  name: Handle
-  href: api/PLATEAU.Dataset.DatasetAccessor.html#PLATEAU_Dataset_DatasetAccessor_Handle_
-  commentId: Overload:PLATEAU.Dataset.DatasetAccessor.Handle
-  isSpec: "True"
-  fullName: PLATEAU.Dataset.DatasetAccessor.Handle
-  nameWithType: DatasetAccessor.Handle
 - uid: PLATEAU.Dataset.DatasetAccessor.MeshCodes
   name: MeshCodes
   href: api/PLATEAU.Dataset.DatasetAccessor.html#PLATEAU_Dataset_DatasetAccessor_MeshCodes
@@ -2808,12 +3037,12 @@ references:
   commentId: M:PLATEAU.Dataset.DatasetSource.Create(PLATEAU.Dataset.DatasetSourceConfig)
   fullName: PLATEAU.Dataset.DatasetSource.Create(PLATEAU.Dataset.DatasetSourceConfig)
   nameWithType: DatasetSource.Create(DatasetSourceConfig)
-- uid: PLATEAU.Dataset.DatasetSource.Create(System.Boolean,System.String)
-  name: Create(Boolean, String)
-  href: api/PLATEAU.Dataset.DatasetSource.html#PLATEAU_Dataset_DatasetSource_Create_System_Boolean_System_String_
-  commentId: M:PLATEAU.Dataset.DatasetSource.Create(System.Boolean,System.String)
-  fullName: PLATEAU.Dataset.DatasetSource.Create(System.Boolean, System.String)
-  nameWithType: DatasetSource.Create(Boolean, String)
+- uid: PLATEAU.Dataset.DatasetSource.Create(System.Boolean,System.String,System.String)
+  name: Create(Boolean, String, String)
+  href: api/PLATEAU.Dataset.DatasetSource.html#PLATEAU_Dataset_DatasetSource_Create_System_Boolean_System_String_System_String_
+  commentId: M:PLATEAU.Dataset.DatasetSource.Create(System.Boolean,System.String,System.String)
+  fullName: PLATEAU.Dataset.DatasetSource.Create(System.Boolean, System.String, System.String)
+  nameWithType: DatasetSource.Create(Boolean, String, String)
 - uid: PLATEAU.Dataset.DatasetSource.Create*
   name: Create
   href: api/PLATEAU.Dataset.DatasetSource.html#PLATEAU_Dataset_DatasetSource_Create_
@@ -2840,12 +3069,12 @@ references:
   commentId: T:PLATEAU.Dataset.DatasetSourceConfig
   fullName: PLATEAU.Dataset.DatasetSourceConfig
   nameWithType: DatasetSourceConfig
-- uid: PLATEAU.Dataset.DatasetSourceConfig.#ctor(System.Boolean,System.String)
-  name: DatasetSourceConfig(Boolean, String)
-  href: api/PLATEAU.Dataset.DatasetSourceConfig.html#PLATEAU_Dataset_DatasetSourceConfig__ctor_System_Boolean_System_String_
-  commentId: M:PLATEAU.Dataset.DatasetSourceConfig.#ctor(System.Boolean,System.String)
-  fullName: PLATEAU.Dataset.DatasetSourceConfig.DatasetSourceConfig(System.Boolean, System.String)
-  nameWithType: DatasetSourceConfig.DatasetSourceConfig(Boolean, String)
+- uid: PLATEAU.Dataset.DatasetSourceConfig.#ctor(System.Boolean,System.String,System.String)
+  name: DatasetSourceConfig(Boolean, String, String)
+  href: api/PLATEAU.Dataset.DatasetSourceConfig.html#PLATEAU_Dataset_DatasetSourceConfig__ctor_System_Boolean_System_String_System_String_
+  commentId: M:PLATEAU.Dataset.DatasetSourceConfig.#ctor(System.Boolean,System.String,System.String)
+  fullName: PLATEAU.Dataset.DatasetSourceConfig.DatasetSourceConfig(System.Boolean, System.String, System.String)
+  nameWithType: DatasetSourceConfig.DatasetSourceConfig(Boolean, String, String)
 - uid: PLATEAU.Dataset.DatasetSourceConfig.#ctor*
   name: DatasetSourceConfig
   href: api/PLATEAU.Dataset.DatasetSourceConfig.html#PLATEAU_Dataset_DatasetSourceConfig__ctor_
@@ -2853,19 +3082,6 @@ references:
   isSpec: "True"
   fullName: PLATEAU.Dataset.DatasetSourceConfig.DatasetSourceConfig
   nameWithType: DatasetSourceConfig.DatasetSourceConfig
-- uid: PLATEAU.Dataset.DatasetSourceConfig.DatasetIdOrSourcePath
-  name: DatasetIdOrSourcePath
-  href: api/PLATEAU.Dataset.DatasetSourceConfig.html#PLATEAU_Dataset_DatasetSourceConfig_DatasetIdOrSourcePath
-  commentId: P:PLATEAU.Dataset.DatasetSourceConfig.DatasetIdOrSourcePath
-  fullName: PLATEAU.Dataset.DatasetSourceConfig.DatasetIdOrSourcePath
-  nameWithType: DatasetSourceConfig.DatasetIdOrSourcePath
-- uid: PLATEAU.Dataset.DatasetSourceConfig.DatasetIdOrSourcePath*
-  name: DatasetIdOrSourcePath
-  href: api/PLATEAU.Dataset.DatasetSourceConfig.html#PLATEAU_Dataset_DatasetSourceConfig_DatasetIdOrSourcePath_
-  commentId: Overload:PLATEAU.Dataset.DatasetSourceConfig.DatasetIdOrSourcePath
-  isSpec: "True"
-  fullName: PLATEAU.Dataset.DatasetSourceConfig.DatasetIdOrSourcePath
-  nameWithType: DatasetSourceConfig.DatasetIdOrSourcePath
 - uid: PLATEAU.Dataset.DatasetSourceConfig.IsServer
   name: IsServer
   href: api/PLATEAU.Dataset.DatasetSourceConfig.html#PLATEAU_Dataset_DatasetSourceConfig_IsServer
@@ -2879,19 +3095,32 @@ references:
   isSpec: "True"
   fullName: PLATEAU.Dataset.DatasetSourceConfig.IsServer
   nameWithType: DatasetSourceConfig.IsServer
-- uid: PLATEAU.Dataset.DatasetSourceConfig.RootDirName
-  name: RootDirName
-  href: api/PLATEAU.Dataset.DatasetSourceConfig.html#PLATEAU_Dataset_DatasetSourceConfig_RootDirName
-  commentId: P:PLATEAU.Dataset.DatasetSourceConfig.RootDirName
-  fullName: PLATEAU.Dataset.DatasetSourceConfig.RootDirName
-  nameWithType: DatasetSourceConfig.RootDirName
-- uid: PLATEAU.Dataset.DatasetSourceConfig.RootDirName*
-  name: RootDirName
-  href: api/PLATEAU.Dataset.DatasetSourceConfig.html#PLATEAU_Dataset_DatasetSourceConfig_RootDirName_
-  commentId: Overload:PLATEAU.Dataset.DatasetSourceConfig.RootDirName
+- uid: PLATEAU.Dataset.DatasetSourceConfig.LocalSourcePath
+  name: LocalSourcePath
+  href: api/PLATEAU.Dataset.DatasetSourceConfig.html#PLATEAU_Dataset_DatasetSourceConfig_LocalSourcePath
+  commentId: P:PLATEAU.Dataset.DatasetSourceConfig.LocalSourcePath
+  fullName: PLATEAU.Dataset.DatasetSourceConfig.LocalSourcePath
+  nameWithType: DatasetSourceConfig.LocalSourcePath
+- uid: PLATEAU.Dataset.DatasetSourceConfig.LocalSourcePath*
+  name: LocalSourcePath
+  href: api/PLATEAU.Dataset.DatasetSourceConfig.html#PLATEAU_Dataset_DatasetSourceConfig_LocalSourcePath_
+  commentId: Overload:PLATEAU.Dataset.DatasetSourceConfig.LocalSourcePath
   isSpec: "True"
-  fullName: PLATEAU.Dataset.DatasetSourceConfig.RootDirName
-  nameWithType: DatasetSourceConfig.RootDirName
+  fullName: PLATEAU.Dataset.DatasetSourceConfig.LocalSourcePath
+  nameWithType: DatasetSourceConfig.LocalSourcePath
+- uid: PLATEAU.Dataset.DatasetSourceConfig.ServerDatasetID
+  name: ServerDatasetID
+  href: api/PLATEAU.Dataset.DatasetSourceConfig.html#PLATEAU_Dataset_DatasetSourceConfig_ServerDatasetID
+  commentId: P:PLATEAU.Dataset.DatasetSourceConfig.ServerDatasetID
+  fullName: PLATEAU.Dataset.DatasetSourceConfig.ServerDatasetID
+  nameWithType: DatasetSourceConfig.ServerDatasetID
+- uid: PLATEAU.Dataset.DatasetSourceConfig.ServerDatasetID*
+  name: ServerDatasetID
+  href: api/PLATEAU.Dataset.DatasetSourceConfig.html#PLATEAU_Dataset_DatasetSourceConfig_ServerDatasetID_
+  commentId: Overload:PLATEAU.Dataset.DatasetSourceConfig.ServerDatasetID
+  isSpec: "True"
+  fullName: PLATEAU.Dataset.DatasetSourceConfig.ServerDatasetID
+  nameWithType: DatasetSourceConfig.ServerDatasetID
 - uid: PLATEAU.Dataset.GmlFile
   name: GmlFile
   href: api/PLATEAU.Dataset.GmlFile.html
@@ -2911,6 +3140,19 @@ references:
   isSpec: "True"
   fullName: PLATEAU.Dataset.GmlFile.GmlFile
   nameWithType: GmlFile.GmlFile
+- uid: PLATEAU.Dataset.GmlFile.CityRootPath
+  name: CityRootPath()
+  href: api/PLATEAU.Dataset.GmlFile.html#PLATEAU_Dataset_GmlFile_CityRootPath
+  commentId: M:PLATEAU.Dataset.GmlFile.CityRootPath
+  fullName: PLATEAU.Dataset.GmlFile.CityRootPath()
+  nameWithType: GmlFile.CityRootPath()
+- uid: PLATEAU.Dataset.GmlFile.CityRootPath*
+  name: CityRootPath
+  href: api/PLATEAU.Dataset.GmlFile.html#PLATEAU_Dataset_GmlFile_CityRootPath_
+  commentId: Overload:PLATEAU.Dataset.GmlFile.CityRootPath
+  isSpec: "True"
+  fullName: PLATEAU.Dataset.GmlFile.CityRootPath
+  nameWithType: GmlFile.CityRootPath
 - uid: PLATEAU.Dataset.GmlFile.Create(System.String)
   name: Create(String)
   href: api/PLATEAU.Dataset.GmlFile.html#PLATEAU_Dataset_GmlFile_Create_System_String_
@@ -2963,6 +3205,19 @@ references:
   isSpec: "True"
   fullName: PLATEAU.Dataset.GmlFile.Fetch
   nameWithType: GmlFile.Fetch
+- uid: PLATEAU.Dataset.GmlFile.GetMaxLod
+  name: GetMaxLod()
+  href: api/PLATEAU.Dataset.GmlFile.html#PLATEAU_Dataset_GmlFile_GetMaxLod
+  commentId: M:PLATEAU.Dataset.GmlFile.GetMaxLod
+  fullName: PLATEAU.Dataset.GmlFile.GetMaxLod()
+  nameWithType: GmlFile.GetMaxLod()
+- uid: PLATEAU.Dataset.GmlFile.GetMaxLod*
+  name: GetMaxLod
+  href: api/PLATEAU.Dataset.GmlFile.html#PLATEAU_Dataset_GmlFile_GetMaxLod_
+  commentId: Overload:PLATEAU.Dataset.GmlFile.GetMaxLod
+  isSpec: "True"
+  fullName: PLATEAU.Dataset.GmlFile.GetMaxLod
+  nameWithType: GmlFile.GetMaxLod
 - uid: PLATEAU.Dataset.GmlFile.Handle
   name: Handle
   href: api/PLATEAU.Dataset.GmlFile.html#PLATEAU_Dataset_GmlFile_Handle
@@ -3041,177 +3296,6 @@ references:
   isSpec: "True"
   fullName: PLATEAU.Dataset.GmlFile.SearchAllImagePathsInGml
   nameWithType: GmlFile.SearchAllImagePathsInGml
-- uid: PLATEAU.Dataset.LocalDatasetAccessor
-  name: LocalDatasetAccessor
-  href: api/PLATEAU.Dataset.LocalDatasetAccessor.html
-  commentId: T:PLATEAU.Dataset.LocalDatasetAccessor
-  fullName: PLATEAU.Dataset.LocalDatasetAccessor
-  nameWithType: LocalDatasetAccessor
-- uid: PLATEAU.Dataset.LocalDatasetAccessor.#ctor
-  name: LocalDatasetAccessor()
-  href: api/PLATEAU.Dataset.LocalDatasetAccessor.html#PLATEAU_Dataset_LocalDatasetAccessor__ctor
-  commentId: M:PLATEAU.Dataset.LocalDatasetAccessor.#ctor
-  fullName: PLATEAU.Dataset.LocalDatasetAccessor.LocalDatasetAccessor()
-  nameWithType: LocalDatasetAccessor.LocalDatasetAccessor()
-- uid: PLATEAU.Dataset.LocalDatasetAccessor.#ctor*
-  name: LocalDatasetAccessor
-  href: api/PLATEAU.Dataset.LocalDatasetAccessor.html#PLATEAU_Dataset_LocalDatasetAccessor__ctor_
-  commentId: Overload:PLATEAU.Dataset.LocalDatasetAccessor.#ctor
-  isSpec: "True"
-  fullName: PLATEAU.Dataset.LocalDatasetAccessor.LocalDatasetAccessor
-  nameWithType: LocalDatasetAccessor.LocalDatasetAccessor
-- uid: PLATEAU.Dataset.LocalDatasetAccessor.CalcCenterPoint(GeoReference)
-  name: CalcCenterPoint(GeoReference)
-  href: api/PLATEAU.Dataset.LocalDatasetAccessor.html#PLATEAU_Dataset_LocalDatasetAccessor_CalcCenterPoint_GeoReference_
-  commentId: M:PLATEAU.Dataset.LocalDatasetAccessor.CalcCenterPoint(GeoReference)
-  fullName: PLATEAU.Dataset.LocalDatasetAccessor.CalcCenterPoint(GeoReference)
-  nameWithType: LocalDatasetAccessor.CalcCenterPoint(GeoReference)
-- uid: PLATEAU.Dataset.LocalDatasetAccessor.CalcCenterPoint*
-  name: CalcCenterPoint
-  href: api/PLATEAU.Dataset.LocalDatasetAccessor.html#PLATEAU_Dataset_LocalDatasetAccessor_CalcCenterPoint_
-  commentId: Overload:PLATEAU.Dataset.LocalDatasetAccessor.CalcCenterPoint
-  isSpec: "True"
-  fullName: PLATEAU.Dataset.LocalDatasetAccessor.CalcCenterPoint
-  nameWithType: LocalDatasetAccessor.CalcCenterPoint
-- uid: PLATEAU.Dataset.LocalDatasetAccessor.Dispose
-  name: Dispose()
-  href: api/PLATEAU.Dataset.LocalDatasetAccessor.html#PLATEAU_Dataset_LocalDatasetAccessor_Dispose
-  commentId: M:PLATEAU.Dataset.LocalDatasetAccessor.Dispose
-  fullName: PLATEAU.Dataset.LocalDatasetAccessor.Dispose()
-  nameWithType: LocalDatasetAccessor.Dispose()
-- uid: PLATEAU.Dataset.LocalDatasetAccessor.Dispose*
-  name: Dispose
-  href: api/PLATEAU.Dataset.LocalDatasetAccessor.html#PLATEAU_Dataset_LocalDatasetAccessor_Dispose_
-  commentId: Overload:PLATEAU.Dataset.LocalDatasetAccessor.Dispose
-  isSpec: "True"
-  fullName: PLATEAU.Dataset.LocalDatasetAccessor.Dispose
-  nameWithType: LocalDatasetAccessor.Dispose
-- uid: PLATEAU.Dataset.LocalDatasetAccessor.Filter(Extent)
-  name: Filter(Extent)
-  href: api/PLATEAU.Dataset.LocalDatasetAccessor.html#PLATEAU_Dataset_LocalDatasetAccessor_Filter_Extent_
-  commentId: M:PLATEAU.Dataset.LocalDatasetAccessor.Filter(Extent)
-  fullName: PLATEAU.Dataset.LocalDatasetAccessor.Filter(Extent)
-  nameWithType: LocalDatasetAccessor.Filter(Extent)
-- uid: PLATEAU.Dataset.LocalDatasetAccessor.Filter*
-  name: Filter
-  href: api/PLATEAU.Dataset.LocalDatasetAccessor.html#PLATEAU_Dataset_LocalDatasetAccessor_Filter_
-  commentId: Overload:PLATEAU.Dataset.LocalDatasetAccessor.Filter
-  isSpec: "True"
-  fullName: PLATEAU.Dataset.LocalDatasetAccessor.Filter
-  nameWithType: LocalDatasetAccessor.Filter
-- uid: PLATEAU.Dataset.LocalDatasetAccessor.FilterByMeshCodes(PLATEAU.Dataset.MeshCode[])
-  name: FilterByMeshCodes(MeshCode[])
-  href: api/PLATEAU.Dataset.LocalDatasetAccessor.html#PLATEAU_Dataset_LocalDatasetAccessor_FilterByMeshCodes_PLATEAU_Dataset_MeshCode___
-  commentId: M:PLATEAU.Dataset.LocalDatasetAccessor.FilterByMeshCodes(PLATEAU.Dataset.MeshCode[])
-  name.vb: FilterByMeshCodes(MeshCode())
-  fullName: PLATEAU.Dataset.LocalDatasetAccessor.FilterByMeshCodes(PLATEAU.Dataset.MeshCode[])
-  fullName.vb: PLATEAU.Dataset.LocalDatasetAccessor.FilterByMeshCodes(PLATEAU.Dataset.MeshCode())
-  nameWithType: LocalDatasetAccessor.FilterByMeshCodes(MeshCode[])
-  nameWithType.vb: LocalDatasetAccessor.FilterByMeshCodes(MeshCode())
-- uid: PLATEAU.Dataset.LocalDatasetAccessor.FilterByMeshCodes*
-  name: FilterByMeshCodes
-  href: api/PLATEAU.Dataset.LocalDatasetAccessor.html#PLATEAU_Dataset_LocalDatasetAccessor_FilterByMeshCodes_
-  commentId: Overload:PLATEAU.Dataset.LocalDatasetAccessor.FilterByMeshCodes
-  isSpec: "True"
-  fullName: PLATEAU.Dataset.LocalDatasetAccessor.FilterByMeshCodes
-  nameWithType: LocalDatasetAccessor.FilterByMeshCodes
-- uid: PLATEAU.Dataset.LocalDatasetAccessor.Finalize
-  name: Finalize()
-  href: api/PLATEAU.Dataset.LocalDatasetAccessor.html#PLATEAU_Dataset_LocalDatasetAccessor_Finalize
-  commentId: M:PLATEAU.Dataset.LocalDatasetAccessor.Finalize
-  fullName: PLATEAU.Dataset.LocalDatasetAccessor.Finalize()
-  nameWithType: LocalDatasetAccessor.Finalize()
-- uid: PLATEAU.Dataset.LocalDatasetAccessor.Finalize*
-  name: Finalize
-  href: api/PLATEAU.Dataset.LocalDatasetAccessor.html#PLATEAU_Dataset_LocalDatasetAccessor_Finalize_
-  commentId: Overload:PLATEAU.Dataset.LocalDatasetAccessor.Finalize
-  isSpec: "True"
-  fullName: PLATEAU.Dataset.LocalDatasetAccessor.Finalize
-  nameWithType: LocalDatasetAccessor.Finalize
-- uid: PLATEAU.Dataset.LocalDatasetAccessor.Find(System.String)
-  name: Find(String)
-  href: api/PLATEAU.Dataset.LocalDatasetAccessor.html#PLATEAU_Dataset_LocalDatasetAccessor_Find_System_String_
-  commentId: M:PLATEAU.Dataset.LocalDatasetAccessor.Find(System.String)
-  fullName: PLATEAU.Dataset.LocalDatasetAccessor.Find(System.String)
-  nameWithType: LocalDatasetAccessor.Find(String)
-- uid: PLATEAU.Dataset.LocalDatasetAccessor.Find*
-  name: Find
-  href: api/PLATEAU.Dataset.LocalDatasetAccessor.html#PLATEAU_Dataset_LocalDatasetAccessor_Find_
-  commentId: Overload:PLATEAU.Dataset.LocalDatasetAccessor.Find
-  isSpec: "True"
-  fullName: PLATEAU.Dataset.LocalDatasetAccessor.Find
-  nameWithType: LocalDatasetAccessor.Find
-- uid: PLATEAU.Dataset.LocalDatasetAccessor.GetGmlFiles(PLATEAU.Dataset.PredefinedCityModelPackage)
-  name: GetGmlFiles(PredefinedCityModelPackage)
-  href: api/PLATEAU.Dataset.LocalDatasetAccessor.html#PLATEAU_Dataset_LocalDatasetAccessor_GetGmlFiles_PLATEAU_Dataset_PredefinedCityModelPackage_
-  commentId: M:PLATEAU.Dataset.LocalDatasetAccessor.GetGmlFiles(PLATEAU.Dataset.PredefinedCityModelPackage)
-  fullName: PLATEAU.Dataset.LocalDatasetAccessor.GetGmlFiles(PLATEAU.Dataset.PredefinedCityModelPackage)
-  nameWithType: LocalDatasetAccessor.GetGmlFiles(PredefinedCityModelPackage)
-- uid: PLATEAU.Dataset.LocalDatasetAccessor.GetGmlFiles*
-  name: GetGmlFiles
-  href: api/PLATEAU.Dataset.LocalDatasetAccessor.html#PLATEAU_Dataset_LocalDatasetAccessor_GetGmlFiles_
-  commentId: Overload:PLATEAU.Dataset.LocalDatasetAccessor.GetGmlFiles
-  isSpec: "True"
-  fullName: PLATEAU.Dataset.LocalDatasetAccessor.GetGmlFiles
-  nameWithType: LocalDatasetAccessor.GetGmlFiles
-- uid: PLATEAU.Dataset.LocalDatasetAccessor.Handle
-  name: Handle
-  href: api/PLATEAU.Dataset.LocalDatasetAccessor.html#PLATEAU_Dataset_LocalDatasetAccessor_Handle
-  commentId: P:PLATEAU.Dataset.LocalDatasetAccessor.Handle
-  fullName: PLATEAU.Dataset.LocalDatasetAccessor.Handle
-  nameWithType: LocalDatasetAccessor.Handle
-- uid: PLATEAU.Dataset.LocalDatasetAccessor.Handle*
-  name: Handle
-  href: api/PLATEAU.Dataset.LocalDatasetAccessor.html#PLATEAU_Dataset_LocalDatasetAccessor_Handle_
-  commentId: Overload:PLATEAU.Dataset.LocalDatasetAccessor.Handle
-  isSpec: "True"
-  fullName: PLATEAU.Dataset.LocalDatasetAccessor.Handle
-  nameWithType: LocalDatasetAccessor.Handle
-- uid: PLATEAU.Dataset.LocalDatasetAccessor.MeshCodes
-  name: MeshCodes
-  href: api/PLATEAU.Dataset.LocalDatasetAccessor.html#PLATEAU_Dataset_LocalDatasetAccessor_MeshCodes
-  commentId: P:PLATEAU.Dataset.LocalDatasetAccessor.MeshCodes
-  fullName: PLATEAU.Dataset.LocalDatasetAccessor.MeshCodes
-  nameWithType: LocalDatasetAccessor.MeshCodes
-- uid: PLATEAU.Dataset.LocalDatasetAccessor.MeshCodes*
-  name: MeshCodes
-  href: api/PLATEAU.Dataset.LocalDatasetAccessor.html#PLATEAU_Dataset_LocalDatasetAccessor_MeshCodes_
-  commentId: Overload:PLATEAU.Dataset.LocalDatasetAccessor.MeshCodes
-  isSpec: "True"
-  fullName: PLATEAU.Dataset.LocalDatasetAccessor.MeshCodes
-  nameWithType: LocalDatasetAccessor.MeshCodes
-- uid: PLATEAU.Dataset.LocalDatasetAccessor.Packages
-  name: Packages
-  href: api/PLATEAU.Dataset.LocalDatasetAccessor.html#PLATEAU_Dataset_LocalDatasetAccessor_Packages
-  commentId: P:PLATEAU.Dataset.LocalDatasetAccessor.Packages
-  fullName: PLATEAU.Dataset.LocalDatasetAccessor.Packages
-  nameWithType: LocalDatasetAccessor.Packages
-- uid: PLATEAU.Dataset.LocalDatasetAccessor.Packages*
-  name: Packages
-  href: api/PLATEAU.Dataset.LocalDatasetAccessor.html#PLATEAU_Dataset_LocalDatasetAccessor_Packages_
-  commentId: Overload:PLATEAU.Dataset.LocalDatasetAccessor.Packages
-  isSpec: "True"
-  fullName: PLATEAU.Dataset.LocalDatasetAccessor.Packages
-  nameWithType: LocalDatasetAccessor.Packages
-- uid: PLATEAU.Dataset.LodSearcher
-  name: LodSearcher
-  href: api/PLATEAU.Dataset.LodSearcher.html
-  commentId: T:PLATEAU.Dataset.LodSearcher
-  fullName: PLATEAU.Dataset.LodSearcher
-  nameWithType: LodSearcher
-- uid: PLATEAU.Dataset.LodSearcher.SearchLodsInFile(System.String)
-  name: SearchLodsInFile(String)
-  href: api/PLATEAU.Dataset.LodSearcher.html#PLATEAU_Dataset_LodSearcher_SearchLodsInFile_System_String_
-  commentId: M:PLATEAU.Dataset.LodSearcher.SearchLodsInFile(System.String)
-  fullName: PLATEAU.Dataset.LodSearcher.SearchLodsInFile(System.String)
-  nameWithType: LodSearcher.SearchLodsInFile(String)
-- uid: PLATEAU.Dataset.LodSearcher.SearchLodsInFile*
-  name: SearchLodsInFile
-  href: api/PLATEAU.Dataset.LodSearcher.html#PLATEAU_Dataset_LodSearcher_SearchLodsInFile_
-  commentId: Overload:PLATEAU.Dataset.LodSearcher.SearchLodsInFile
-  isSpec: "True"
-  fullName: PLATEAU.Dataset.LodSearcher.SearchLodsInFile
-  nameWithType: LodSearcher.SearchLodsInFile
 - uid: PLATEAU.Dataset.MeshCode
   name: MeshCode
   href: api/PLATEAU.Dataset.MeshCode.html
@@ -3243,6 +3327,19 @@ references:
   commentId: F:PLATEAU.Dataset.MeshCode.FirstRow
   fullName: PLATEAU.Dataset.MeshCode.FirstRow
   nameWithType: MeshCode.FirstRow
+- uid: PLATEAU.Dataset.MeshCode.IsValid
+  name: IsValid
+  href: api/PLATEAU.Dataset.MeshCode.html#PLATEAU_Dataset_MeshCode_IsValid
+  commentId: P:PLATEAU.Dataset.MeshCode.IsValid
+  fullName: PLATEAU.Dataset.MeshCode.IsValid
+  nameWithType: MeshCode.IsValid
+- uid: PLATEAU.Dataset.MeshCode.IsValid*
+  name: IsValid
+  href: api/PLATEAU.Dataset.MeshCode.html#PLATEAU_Dataset_MeshCode_IsValid_
+  commentId: Overload:PLATEAU.Dataset.MeshCode.IsValid
+  isSpec: "True"
+  fullName: PLATEAU.Dataset.MeshCode.IsValid
+  nameWithType: MeshCode.IsValid
 - uid: PLATEAU.Dataset.MeshCode.Level
   name: Level
   href: api/PLATEAU.Dataset.MeshCode.html#PLATEAU_Dataset_MeshCode_Level
@@ -3397,142 +3494,6 @@ references:
   isSpec: "True"
   fullName: PLATEAU.Dataset.PredefinedCityModelPackageExtension.ToJapaneseName
   nameWithType: PredefinedCityModelPackageExtension.ToJapaneseName
-- uid: PLATEAU.Dataset.ServerDatasetAccessor
-  name: ServerDatasetAccessor
-  href: api/PLATEAU.Dataset.ServerDatasetAccessor.html
-  commentId: T:PLATEAU.Dataset.ServerDatasetAccessor
-  fullName: PLATEAU.Dataset.ServerDatasetAccessor
-  nameWithType: ServerDatasetAccessor
-- uid: PLATEAU.Dataset.ServerDatasetAccessor.#ctor(IntPtr)
-  name: ServerDatasetAccessor(IntPtr)
-  href: api/PLATEAU.Dataset.ServerDatasetAccessor.html#PLATEAU_Dataset_ServerDatasetAccessor__ctor_IntPtr_
-  commentId: M:PLATEAU.Dataset.ServerDatasetAccessor.#ctor(IntPtr)
-  fullName: PLATEAU.Dataset.ServerDatasetAccessor.ServerDatasetAccessor(IntPtr)
-  nameWithType: ServerDatasetAccessor.ServerDatasetAccessor(IntPtr)
-- uid: PLATEAU.Dataset.ServerDatasetAccessor.#ctor*
-  name: ServerDatasetAccessor
-  href: api/PLATEAU.Dataset.ServerDatasetAccessor.html#PLATEAU_Dataset_ServerDatasetAccessor__ctor_
-  commentId: Overload:PLATEAU.Dataset.ServerDatasetAccessor.#ctor
-  isSpec: "True"
-  fullName: PLATEAU.Dataset.ServerDatasetAccessor.ServerDatasetAccessor
-  nameWithType: ServerDatasetAccessor.ServerDatasetAccessor
-- uid: PLATEAU.Dataset.ServerDatasetAccessor.Create(System.String)
-  name: Create(String)
-  href: api/PLATEAU.Dataset.ServerDatasetAccessor.html#PLATEAU_Dataset_ServerDatasetAccessor_Create_System_String_
-  commentId: M:PLATEAU.Dataset.ServerDatasetAccessor.Create(System.String)
-  fullName: PLATEAU.Dataset.ServerDatasetAccessor.Create(System.String)
-  nameWithType: ServerDatasetAccessor.Create(String)
-- uid: PLATEAU.Dataset.ServerDatasetAccessor.Create*
-  name: Create
-  href: api/PLATEAU.Dataset.ServerDatasetAccessor.html#PLATEAU_Dataset_ServerDatasetAccessor_Create_
-  commentId: Overload:PLATEAU.Dataset.ServerDatasetAccessor.Create
-  isSpec: "True"
-  fullName: PLATEAU.Dataset.ServerDatasetAccessor.Create
-  nameWithType: ServerDatasetAccessor.Create
-- uid: PLATEAU.Dataset.ServerDatasetAccessor.Dispose
-  name: Dispose()
-  href: api/PLATEAU.Dataset.ServerDatasetAccessor.html#PLATEAU_Dataset_ServerDatasetAccessor_Dispose
-  commentId: M:PLATEAU.Dataset.ServerDatasetAccessor.Dispose
-  fullName: PLATEAU.Dataset.ServerDatasetAccessor.Dispose()
-  nameWithType: ServerDatasetAccessor.Dispose()
-- uid: PLATEAU.Dataset.ServerDatasetAccessor.Dispose*
-  name: Dispose
-  href: api/PLATEAU.Dataset.ServerDatasetAccessor.html#PLATEAU_Dataset_ServerDatasetAccessor_Dispose_
-  commentId: Overload:PLATEAU.Dataset.ServerDatasetAccessor.Dispose
-  isSpec: "True"
-  fullName: PLATEAU.Dataset.ServerDatasetAccessor.Dispose
-  nameWithType: ServerDatasetAccessor.Dispose
-- uid: PLATEAU.Dataset.ServerDatasetAccessor.GetGmlFiles(Extent,PLATEAU.Dataset.PredefinedCityModelPackage)
-  name: GetGmlFiles(Extent, PredefinedCityModelPackage)
-  href: api/PLATEAU.Dataset.ServerDatasetAccessor.html#PLATEAU_Dataset_ServerDatasetAccessor_GetGmlFiles_Extent_PLATEAU_Dataset_PredefinedCityModelPackage_
-  commentId: M:PLATEAU.Dataset.ServerDatasetAccessor.GetGmlFiles(Extent,PLATEAU.Dataset.PredefinedCityModelPackage)
-  fullName: PLATEAU.Dataset.ServerDatasetAccessor.GetGmlFiles(Extent, PLATEAU.Dataset.PredefinedCityModelPackage)
-  nameWithType: ServerDatasetAccessor.GetGmlFiles(Extent, PredefinedCityModelPackage)
-- uid: PLATEAU.Dataset.ServerDatasetAccessor.GetGmlFiles*
-  name: GetGmlFiles
-  href: api/PLATEAU.Dataset.ServerDatasetAccessor.html#PLATEAU_Dataset_ServerDatasetAccessor_GetGmlFiles_
-  commentId: Overload:PLATEAU.Dataset.ServerDatasetAccessor.GetGmlFiles
-  isSpec: "True"
-  fullName: PLATEAU.Dataset.ServerDatasetAccessor.GetGmlFiles
-  nameWithType: ServerDatasetAccessor.GetGmlFiles
-- uid: PLATEAU.Dataset.ServerDatasetAccessor.GetMaxLod(PLATEAU.Dataset.MeshCode,PLATEAU.Dataset.PredefinedCityModelPackage)
-  name: GetMaxLod(MeshCode, PredefinedCityModelPackage)
-  href: api/PLATEAU.Dataset.ServerDatasetAccessor.html#PLATEAU_Dataset_ServerDatasetAccessor_GetMaxLod_PLATEAU_Dataset_MeshCode_PLATEAU_Dataset_PredefinedCityModelPackage_
-  commentId: M:PLATEAU.Dataset.ServerDatasetAccessor.GetMaxLod(PLATEAU.Dataset.MeshCode,PLATEAU.Dataset.PredefinedCityModelPackage)
-  fullName: PLATEAU.Dataset.ServerDatasetAccessor.GetMaxLod(PLATEAU.Dataset.MeshCode, PLATEAU.Dataset.PredefinedCityModelPackage)
-  nameWithType: ServerDatasetAccessor.GetMaxLod(MeshCode, PredefinedCityModelPackage)
-- uid: PLATEAU.Dataset.ServerDatasetAccessor.GetMaxLod*
-  name: GetMaxLod
-  href: api/PLATEAU.Dataset.ServerDatasetAccessor.html#PLATEAU_Dataset_ServerDatasetAccessor_GetMaxLod_
-  commentId: Overload:PLATEAU.Dataset.ServerDatasetAccessor.GetMaxLod
-  isSpec: "True"
-  fullName: PLATEAU.Dataset.ServerDatasetAccessor.GetMaxLod
-  nameWithType: ServerDatasetAccessor.GetMaxLod
-- uid: PLATEAU.Dataset.ServerDatasetAccessor.GetMetadataGroup
-  name: GetMetadataGroup()
-  href: api/PLATEAU.Dataset.ServerDatasetAccessor.html#PLATEAU_Dataset_ServerDatasetAccessor_GetMetadataGroup
-  commentId: M:PLATEAU.Dataset.ServerDatasetAccessor.GetMetadataGroup
-  fullName: PLATEAU.Dataset.ServerDatasetAccessor.GetMetadataGroup()
-  nameWithType: ServerDatasetAccessor.GetMetadataGroup()
-- uid: PLATEAU.Dataset.ServerDatasetAccessor.GetMetadataGroup*
-  name: GetMetadataGroup
-  href: api/PLATEAU.Dataset.ServerDatasetAccessor.html#PLATEAU_Dataset_ServerDatasetAccessor_GetMetadataGroup_
-  commentId: Overload:PLATEAU.Dataset.ServerDatasetAccessor.GetMetadataGroup
-  isSpec: "True"
-  fullName: PLATEAU.Dataset.ServerDatasetAccessor.GetMetadataGroup
-  nameWithType: ServerDatasetAccessor.GetMetadataGroup
-- uid: PLATEAU.Dataset.ServerDatasetAccessor.Handle
-  name: Handle
-  href: api/PLATEAU.Dataset.ServerDatasetAccessor.html#PLATEAU_Dataset_ServerDatasetAccessor_Handle
-  commentId: P:PLATEAU.Dataset.ServerDatasetAccessor.Handle
-  fullName: PLATEAU.Dataset.ServerDatasetAccessor.Handle
-  nameWithType: ServerDatasetAccessor.Handle
-- uid: PLATEAU.Dataset.ServerDatasetAccessor.Handle*
-  name: Handle
-  href: api/PLATEAU.Dataset.ServerDatasetAccessor.html#PLATEAU_Dataset_ServerDatasetAccessor_Handle_
-  commentId: Overload:PLATEAU.Dataset.ServerDatasetAccessor.Handle
-  isSpec: "True"
-  fullName: PLATEAU.Dataset.ServerDatasetAccessor.Handle
-  nameWithType: ServerDatasetAccessor.Handle
-- uid: PLATEAU.Dataset.ServerDatasetAccessor.MeshCodes
-  name: MeshCodes
-  href: api/PLATEAU.Dataset.ServerDatasetAccessor.html#PLATEAU_Dataset_ServerDatasetAccessor_MeshCodes
-  commentId: P:PLATEAU.Dataset.ServerDatasetAccessor.MeshCodes
-  fullName: PLATEAU.Dataset.ServerDatasetAccessor.MeshCodes
-  nameWithType: ServerDatasetAccessor.MeshCodes
-- uid: PLATEAU.Dataset.ServerDatasetAccessor.MeshCodes*
-  name: MeshCodes
-  href: api/PLATEAU.Dataset.ServerDatasetAccessor.html#PLATEAU_Dataset_ServerDatasetAccessor_MeshCodes_
-  commentId: Overload:PLATEAU.Dataset.ServerDatasetAccessor.MeshCodes
-  isSpec: "True"
-  fullName: PLATEAU.Dataset.ServerDatasetAccessor.MeshCodes
-  nameWithType: ServerDatasetAccessor.MeshCodes
-- uid: PLATEAU.Dataset.ServerDatasetAccessor.Packages
-  name: Packages
-  href: api/PLATEAU.Dataset.ServerDatasetAccessor.html#PLATEAU_Dataset_ServerDatasetAccessor_Packages
-  commentId: P:PLATEAU.Dataset.ServerDatasetAccessor.Packages
-  fullName: PLATEAU.Dataset.ServerDatasetAccessor.Packages
-  nameWithType: ServerDatasetAccessor.Packages
-- uid: PLATEAU.Dataset.ServerDatasetAccessor.Packages*
-  name: Packages
-  href: api/PLATEAU.Dataset.ServerDatasetAccessor.html#PLATEAU_Dataset_ServerDatasetAccessor_Packages_
-  commentId: Overload:PLATEAU.Dataset.ServerDatasetAccessor.Packages
-  isSpec: "True"
-  fullName: PLATEAU.Dataset.ServerDatasetAccessor.Packages
-  nameWithType: ServerDatasetAccessor.Packages
-- uid: PLATEAU.Dataset.ServerDatasetAccessor.SetDatasetID(System.String)
-  name: SetDatasetID(String)
-  href: api/PLATEAU.Dataset.ServerDatasetAccessor.html#PLATEAU_Dataset_ServerDatasetAccessor_SetDatasetID_System_String_
-  commentId: M:PLATEAU.Dataset.ServerDatasetAccessor.SetDatasetID(System.String)
-  fullName: PLATEAU.Dataset.ServerDatasetAccessor.SetDatasetID(System.String)
-  nameWithType: ServerDatasetAccessor.SetDatasetID(String)
-- uid: PLATEAU.Dataset.ServerDatasetAccessor.SetDatasetID*
-  name: SetDatasetID
-  href: api/PLATEAU.Dataset.ServerDatasetAccessor.html#PLATEAU_Dataset_ServerDatasetAccessor_SetDatasetID_
-  commentId: Overload:PLATEAU.Dataset.ServerDatasetAccessor.SetDatasetID
-  isSpec: "True"
-  fullName: PLATEAU.Dataset.ServerDatasetAccessor.SetDatasetID
-  nameWithType: ServerDatasetAccessor.SetDatasetID
 - uid: PLATEAU.Editor.CityInfo
   name: PLATEAU.Editor.CityInfo
   href: api/PLATEAU.Editor.CityInfo.html
@@ -4049,6 +4010,49 @@ references:
   isSpec: "True"
   fullName: PLATEAU.Interop.Extent.ToString
   nameWithType: Extent.ToString
+- uid: PLATEAU.Interop.FbxFileFormat
+  name: FbxFileFormat
+  href: api/PLATEAU.Interop.FbxFileFormat.html
+  commentId: T:PLATEAU.Interop.FbxFileFormat
+  fullName: PLATEAU.Interop.FbxFileFormat
+  nameWithType: FbxFileFormat
+- uid: PLATEAU.Interop.FbxFileFormat.Ascii
+  name: Ascii
+  href: api/PLATEAU.Interop.FbxFileFormat.html#PLATEAU_Interop_FbxFileFormat_Ascii
+  commentId: F:PLATEAU.Interop.FbxFileFormat.Ascii
+  fullName: PLATEAU.Interop.FbxFileFormat.Ascii
+  nameWithType: FbxFileFormat.Ascii
+- uid: PLATEAU.Interop.FbxFileFormat.Binary
+  name: Binary
+  href: api/PLATEAU.Interop.FbxFileFormat.html#PLATEAU_Interop_FbxFileFormat_Binary
+  commentId: F:PLATEAU.Interop.FbxFileFormat.Binary
+  fullName: PLATEAU.Interop.FbxFileFormat.Binary
+  nameWithType: FbxFileFormat.Binary
+- uid: PLATEAU.Interop.FbxWriteOptions
+  name: FbxWriteOptions
+  href: api/PLATEAU.Interop.FbxWriteOptions.html
+  commentId: T:PLATEAU.Interop.FbxWriteOptions
+  fullName: PLATEAU.Interop.FbxWriteOptions
+  nameWithType: FbxWriteOptions
+- uid: PLATEAU.Interop.FbxWriteOptions.#ctor(PLATEAU.Interop.FbxFileFormat)
+  name: FbxWriteOptions(FbxFileFormat)
+  href: api/PLATEAU.Interop.FbxWriteOptions.html#PLATEAU_Interop_FbxWriteOptions__ctor_PLATEAU_Interop_FbxFileFormat_
+  commentId: M:PLATEAU.Interop.FbxWriteOptions.#ctor(PLATEAU.Interop.FbxFileFormat)
+  fullName: PLATEAU.Interop.FbxWriteOptions.FbxWriteOptions(PLATEAU.Interop.FbxFileFormat)
+  nameWithType: FbxWriteOptions.FbxWriteOptions(FbxFileFormat)
+- uid: PLATEAU.Interop.FbxWriteOptions.#ctor*
+  name: FbxWriteOptions
+  href: api/PLATEAU.Interop.FbxWriteOptions.html#PLATEAU_Interop_FbxWriteOptions__ctor_
+  commentId: Overload:PLATEAU.Interop.FbxWriteOptions.#ctor
+  isSpec: "True"
+  fullName: PLATEAU.Interop.FbxWriteOptions.FbxWriteOptions
+  nameWithType: FbxWriteOptions.FbxWriteOptions
+- uid: PLATEAU.Interop.FbxWriteOptions.FileFormat
+  name: FileFormat
+  href: api/PLATEAU.Interop.FbxWriteOptions.html#PLATEAU_Interop_FbxWriteOptions_FileFormat
+  commentId: F:PLATEAU.Interop.FbxWriteOptions.FileFormat
+  fullName: PLATEAU.Interop.FbxWriteOptions.FileFormat
+  nameWithType: FbxWriteOptions.FileFormat
 - uid: PLATEAU.Interop.GeoCoordinate
   name: GeoCoordinate
   href: api/PLATEAU.Interop.GeoCoordinate.html
@@ -4551,6 +4555,12 @@ references:
   commentId: T:PLATEAU.Interop.MeshFileFormat
   fullName: PLATEAU.Interop.MeshFileFormat
   nameWithType: MeshFileFormat
+- uid: PLATEAU.Interop.MeshFileFormat.FBX
+  name: FBX
+  href: api/PLATEAU.Interop.MeshFileFormat.html#PLATEAU_Interop_MeshFileFormat_FBX
+  commentId: F:PLATEAU.Interop.MeshFileFormat.FBX
+  fullName: PLATEAU.Interop.MeshFileFormat.FBX
+  nameWithType: MeshFileFormat.FBX
 - uid: PLATEAU.Interop.MeshFileFormat.GLTF
   name: GLTF
   href: api/PLATEAU.Interop.MeshFileFormat.html#PLATEAU_Interop_MeshFileFormat_GLTF
@@ -5022,6 +5032,19 @@ references:
   commentId: T:PLATEAU.Interop.NativeVectorMeshCode
   fullName: PLATEAU.Interop.NativeVectorMeshCode
   nameWithType: NativeVectorMeshCode
+- uid: PLATEAU.Interop.NativeVectorMeshCode.Add(MeshCode)
+  name: Add(MeshCode)
+  href: api/PLATEAU.Interop.NativeVectorMeshCode.html#PLATEAU_Interop_NativeVectorMeshCode_Add_MeshCode_
+  commentId: M:PLATEAU.Interop.NativeVectorMeshCode.Add(MeshCode)
+  fullName: PLATEAU.Interop.NativeVectorMeshCode.Add(MeshCode)
+  nameWithType: NativeVectorMeshCode.Add(MeshCode)
+- uid: PLATEAU.Interop.NativeVectorMeshCode.Add*
+  name: Add
+  href: api/PLATEAU.Interop.NativeVectorMeshCode.html#PLATEAU_Interop_NativeVectorMeshCode_Add_
+  commentId: Overload:PLATEAU.Interop.NativeVectorMeshCode.Add
+  isSpec: "True"
+  fullName: PLATEAU.Interop.NativeVectorMeshCode.Add
+  nameWithType: NativeVectorMeshCode.Add
 - uid: PLATEAU.Interop.NativeVectorMeshCode.At(System.Int32)
   name: At(Int32)
   href: api/PLATEAU.Interop.NativeVectorMeshCode.html#PLATEAU_Interop_NativeVectorMeshCode_At_System_Int32_
@@ -5444,6 +5467,25 @@ references:
   commentId: N:PLATEAU.MeshWriter
   fullName: PLATEAU.MeshWriter
   nameWithType: PLATEAU.MeshWriter
+- uid: PLATEAU.MeshWriter.FbxWriter
+  name: FbxWriter
+  href: api/PLATEAU.MeshWriter.FbxWriter.html
+  commentId: T:PLATEAU.MeshWriter.FbxWriter
+  fullName: PLATEAU.MeshWriter.FbxWriter
+  nameWithType: FbxWriter
+- uid: PLATEAU.MeshWriter.FbxWriter.Write(System.String,Model,FbxWriteOptions)
+  name: Write(String, Model, FbxWriteOptions)
+  href: api/PLATEAU.MeshWriter.FbxWriter.html#PLATEAU_MeshWriter_FbxWriter_Write_System_String_Model_FbxWriteOptions_
+  commentId: M:PLATEAU.MeshWriter.FbxWriter.Write(System.String,Model,FbxWriteOptions)
+  fullName: PLATEAU.MeshWriter.FbxWriter.Write(System.String, Model, FbxWriteOptions)
+  nameWithType: FbxWriter.Write(String, Model, FbxWriteOptions)
+- uid: PLATEAU.MeshWriter.FbxWriter.Write*
+  name: Write
+  href: api/PLATEAU.MeshWriter.FbxWriter.html#PLATEAU_MeshWriter_FbxWriter_Write_
+  commentId: Overload:PLATEAU.MeshWriter.FbxWriter.Write
+  isSpec: "True"
+  fullName: PLATEAU.MeshWriter.FbxWriter.Write
+  nameWithType: FbxWriter.Write
 - uid: PLATEAU.MeshWriter.GltfWriteOptions
   name: GltfWriteOptions
   href: api/PLATEAU.MeshWriter.GltfWriteOptions.html
@@ -5629,19 +5671,19 @@ references:
   isSpec: "True"
   fullName: PLATEAU.Network.Client.Create
   nameWithType: Client.Create
-- uid: PLATEAU.Network.Client.DisposeNative
-  name: DisposeNative()
-  href: api/PLATEAU.Network.Client.html#PLATEAU_Network_Client_DisposeNative
-  commentId: M:PLATEAU.Network.Client.DisposeNative
-  fullName: PLATEAU.Network.Client.DisposeNative()
-  nameWithType: Client.DisposeNative()
-- uid: PLATEAU.Network.Client.DisposeNative*
-  name: DisposeNative
-  href: api/PLATEAU.Network.Client.html#PLATEAU_Network_Client_DisposeNative_
-  commentId: Overload:PLATEAU.Network.Client.DisposeNative
+- uid: PLATEAU.Network.Client.Dispose
+  name: Dispose()
+  href: api/PLATEAU.Network.Client.html#PLATEAU_Network_Client_Dispose
+  commentId: M:PLATEAU.Network.Client.Dispose
+  fullName: PLATEAU.Network.Client.Dispose()
+  nameWithType: Client.Dispose()
+- uid: PLATEAU.Network.Client.Dispose*
+  name: Dispose
+  href: api/PLATEAU.Network.Client.html#PLATEAU_Network_Client_Dispose_
+  commentId: Overload:PLATEAU.Network.Client.Dispose
   isSpec: "True"
-  fullName: PLATEAU.Network.Client.DisposeNative
-  nameWithType: Client.DisposeNative
+  fullName: PLATEAU.Network.Client.Dispose
+  nameWithType: Client.Dispose
 - uid: PLATEAU.Network.Client.Download(System.String,System.String)
   name: Download(String, String)
   href: api/PLATEAU.Network.Client.html#PLATEAU_Network_Client_Download_System_String_System_String_
@@ -5668,6 +5710,19 @@ references:
   isSpec: "True"
   fullName: PLATEAU.Network.Client.GetDatasetMetadataGroup
   nameWithType: Client.GetDatasetMetadataGroup
+- uid: PLATEAU.Network.Client.Handle
+  name: Handle
+  href: api/PLATEAU.Network.Client.html#PLATEAU_Network_Client_Handle
+  commentId: P:PLATEAU.Network.Client.Handle
+  fullName: PLATEAU.Network.Client.Handle
+  nameWithType: Client.Handle
+- uid: PLATEAU.Network.Client.Handle*
+  name: Handle
+  href: api/PLATEAU.Network.Client.html#PLATEAU_Network_Client_Handle_
+  commentId: Overload:PLATEAU.Network.Client.Handle
+  isSpec: "True"
+  fullName: PLATEAU.Network.Client.Handle
+  nameWithType: Client.Handle
 - uid: PLATEAU.Network.Client.Url
   name: Url
   href: api/PLATEAU.Network.Client.html#PLATEAU_Network_Client_Url
@@ -5687,19 +5742,19 @@ references:
   commentId: T:PLATEAU.Network.NetworkConfig
   fullName: PLATEAU.Network.NetworkConfig
   nameWithType: NetworkConfig
-- uid: PLATEAU.Network.NetworkConfig.MockServerURL
-  name: MockServerURL
-  href: api/PLATEAU.Network.NetworkConfig.html#PLATEAU_Network_NetworkConfig_MockServerURL
-  commentId: P:PLATEAU.Network.NetworkConfig.MockServerURL
-  fullName: PLATEAU.Network.NetworkConfig.MockServerURL
-  nameWithType: NetworkConfig.MockServerURL
-- uid: PLATEAU.Network.NetworkConfig.MockServerURL*
-  name: MockServerURL
-  href: api/PLATEAU.Network.NetworkConfig.html#PLATEAU_Network_NetworkConfig_MockServerURL_
-  commentId: Overload:PLATEAU.Network.NetworkConfig.MockServerURL
+- uid: PLATEAU.Network.NetworkConfig.DefaultApiServerUrl
+  name: DefaultApiServerUrl
+  href: api/PLATEAU.Network.NetworkConfig.html#PLATEAU_Network_NetworkConfig_DefaultApiServerUrl
+  commentId: P:PLATEAU.Network.NetworkConfig.DefaultApiServerUrl
+  fullName: PLATEAU.Network.NetworkConfig.DefaultApiServerUrl
+  nameWithType: NetworkConfig.DefaultApiServerUrl
+- uid: PLATEAU.Network.NetworkConfig.DefaultApiServerUrl*
+  name: DefaultApiServerUrl
+  href: api/PLATEAU.Network.NetworkConfig.html#PLATEAU_Network_NetworkConfig_DefaultApiServerUrl_
+  commentId: Overload:PLATEAU.Network.NetworkConfig.DefaultApiServerUrl
   isSpec: "True"
-  fullName: PLATEAU.Network.NetworkConfig.MockServerURL
-  nameWithType: NetworkConfig.MockServerURL
+  fullName: PLATEAU.Network.NetworkConfig.DefaultApiServerUrl
+  nameWithType: NetworkConfig.DefaultApiServerUrl
 - uid: PLATEAU.PolygonMesh
   name: PLATEAU.PolygonMesh
   href: api/PLATEAU.PolygonMesh.html

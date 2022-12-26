@@ -92,9 +92,10 @@
 </section>
       <h4><a class="xref" href="PLATEAU.Dataset.DatasetAccessor.html">DatasetAccessor</a></h4>
       <section><p>GMLファイル群から利用可能なファイル、メッシュコード、LODを検索します。
-C++側では、IDatasetAccessorは LocalDatasetAccessor と ServerDatasetAccessor の
-基底クラスになっています。
-このクラスは IDatasetAccessor のポインタを保持します。</p>
+C++の内部ではこれは基底クラスとなっており、継承によりローカル向けとサーバー向けの両方に対応しています。
+このクラスのポインタ (Handle) の具体的な型がローカル向けとサーバー向けのどちらであるかは、
+<a class="xref" href="PLATEAU.Dataset.DatasetSource.html">DatasetSource</a> の初期化時に指定し、
+<a class="xref" href="PLATEAU.Dataset.DatasetSource.html#PLATEAU_Dataset_DatasetSource_Accessor">Accessor</a> でその型である DatasetAccessor を取得します。 </p>
 </section>
       <h4><a class="xref" href="PLATEAU.Dataset.DatasetMetadata.html">DatasetMetadata</a></h4>
       <section></section>
@@ -112,15 +113,7 @@ C++側では、IDatasetAccessorは LocalDatasetAccessor と ServerDatasetAccesso
 <see cref="!:NativeVectorGmlFile"></see> の Dispose時、中身の <a class="xref" href="PLATEAU.Dataset.GmlFile.html">GmlFile</a> も自動的に廃棄されます。
 その自動廃棄が呼ばれないケースでのみ、手動で <a class="xref" href="PLATEAU.Dataset.GmlFile.html#PLATEAU_Dataset_GmlFile_Dispose">Dispose()</a> を呼んでください。</p>
 </section>
-      <h4><a class="xref" href="PLATEAU.Dataset.LocalDatasetAccessor.html">LocalDatasetAccessor</a></h4>
-      <section><p>PLATEAUのデータファイルから、GMLファイル群を検索し、結果を保持します。
-条件によりGMLファイルを絞り込む機能と、GMLと関連ファイルをコピーする機能があります。</p>
-</section>
-      <h4><a class="xref" href="PLATEAU.Dataset.LodSearcher.html">LodSearcher</a></h4>
-      <section></section>
       <h4><a class="xref" href="PLATEAU.Dataset.PredefinedCityModelPackageExtension.html">PredefinedCityModelPackageExtension</a></h4>
-      <section></section>
-      <h4><a class="xref" href="PLATEAU.Dataset.ServerDatasetAccessor.html">ServerDatasetAccessor</a></h4>
       <section></section>
     <h3 id="structs">Structs
   </h3>

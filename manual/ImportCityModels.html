@@ -90,9 +90,9 @@
 <li>Unityのメニューバーから <code>PLATEAU → PLATEAU SDK</code> を選択します。<br>表示されるウィンドウの上部に3つのタブ「インポート、モデル調整、エクスポート」があります。<br>このうちインポートを選択します。
 <img src="../resources/manual/importCityModels/plateauWindowImport.png" alt=""></li>
 <li>インポート先でローカル<del>またはサーバー</del>を選択します。<br>(<strong>Coming Soon</strong>: サーバーからのデータ取得は未実装です。)<ul>
-<li>導入したい都市データが自分のコンピュータにある場合はローカルを選択します。<br>3D都市モデルは <a href="https://www.geospatial.jp/ckan/dataset/plateau">G空間情報センターのPLATEAUポータルサイト</a> からダウンロードできます。<ul>
+<li>導入したい都市データが自分のコンピュータにある場合はローカルを選択します。<br>3D都市モデルは <a href="https://www.geospatial.jp/ckan/dataset/plateau">G空間情報センターのPLATEAUポータルサイト</a> からダウンロードできます。<br>CityGML形式のものをダウンロードしてください。<ul>
 <li><code>参照</code>ボタンを押します。都市データのフォルダの選択画面が表示されます。</li>
-<li>都市データのフォルダの中には、<code>udx</code>,<code>codelists</code>という名前のフォルダがあるはずです。<br><code>udx</code>の<strong>1つ上</strong>のフォルダを選択します。</li>
+<li>都市データのフォルダの中には、<code>udx</code>,<code>codelists</code>という名前のフォルダがあるはずです。<br><code>udx</code>から<strong>階層が1つ上</strong>のフォルダを選択します。</li>
 </ul>
 </li>
 <li><code>サーバー</code>では、ローカルの代わりにPLATEAUのデータサーバーから都市データをインポートできます。<ul>
@@ -124,6 +124,12 @@
 <li>地図は国土地理院のサイトから自動でダウンロードされて表示されます。インターネットへの接続が必要です。</li>
 </ul>
 </li>
+</ul>
+<div class="NOTE"><h5>Note</h5><p>範囲選択画面では、通常はガイド線が格子状に並び、地図は隙間無く表示されます。<br>しかし、座標系の選択を誤ると、下図のようにガイド線の配置が歪み、地図に隙間ができます。
+<img src="../resources/manual/importCityModels/invalidCoordinateSystem.png" alt="">
+これは誤った座標系を選択したことによる座標計算の誤差が可視化されたものです。<br>球体の地球を平面の地図で表現する都合上、基準座標点から離れるほど座標計算の誤差は大きくなります。</p>
+</div>
+<ul>
 <li>範囲選択が完了すると、<code>範囲選択</code> ボタンの下に <code>範囲選択:セット済</code> という表示がなされ、<br>その下に<code>地物別設定</code> が表示されるようになります。<br><img src="../resources/manual/importCityModels/areaSelected.png" alt=""></li>
 <li><strong>補足</strong>:<br>地域の区分を確認したい時は、ローカルにダウンロードしたフォルダに付属している <code>indexmap</code> という名前のpdfファイルをご覧ください。<br>下図のように地図上に区分が記載されています。
 <img src="../resources/manual/importCityModels/idmap.png" alt=""></li>
@@ -171,6 +177,9 @@
 </li>
 </ul>
 <div class="NOTE"><h5>Note</h5><p><strong>地物の選択について</strong><br>地物の中にはインポートに時間がかかるものもあるのでご注意ください。<br>例えば 土地起伏 はデータの範囲が 10km × 10km と非常に広く、<br>データ容量が重く処理に時間がかかるのでご注意ください。</p>
+</div>
+<div class="NOTE"><h5>Note</h5><p><strong>現実の景観と異なる地物について</strong><br>地物の種類で「土地利用」と「災害リスク」については、<br>情報の範囲を示す目印として白い板の3Dモデルが表示されます。<br>この白い板はリアルな景観のみを求める際には不要になるので、<br>土地利用と災害リスクに関するデータが不要な場合は<br>インポートしないか、インポート後オフにすることを推奨します。
+<img src="../resources/manual/importCityModels/fldAndLandUse.png" alt=""><br>上図は白い板として現れる災害リスク範囲の目印です。</p>
 </div>
 <h3 id="インポートの実行">インポートの実行</h3>
 <ul>

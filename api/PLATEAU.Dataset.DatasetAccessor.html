@@ -84,9 +84,10 @@
   <h1 id="PLATEAU_Dataset_DatasetAccessor" data-uid="PLATEAU.Dataset.DatasetAccessor" class="text-break">Class DatasetAccessor
   </h1>
   <div class="markdown level0 summary"><p>GMLファイル群から利用可能なファイル、メッシュコード、LODを検索します。
-C++側では、IDatasetAccessorは LocalDatasetAccessor と ServerDatasetAccessor の
-基底クラスになっています。
-このクラスは IDatasetAccessor のポインタを保持します。</p>
+C++の内部ではこれは基底クラスとなっており、継承によりローカル向けとサーバー向けの両方に対応しています。
+このクラスのポインタ (Handle) の具体的な型がローカル向けとサーバー向けのどちらであるかは、
+<a class="xref" href="PLATEAU.Dataset.DatasetSource.html">DatasetSource</a> の初期化時に指定し、
+<a class="xref" href="PLATEAU.Dataset.DatasetSource.html#PLATEAU_Dataset_DatasetSource_Accessor">Accessor</a> でその型である DatasetAccessor を取得します。 </p>
 </div>
   <div class="markdown level0 conceptual"></div>
   <div class="inheritance">
@@ -94,35 +95,11 @@ C++側では、IDatasetAccessorは LocalDatasetAccessor と ServerDatasetAccesso
     <div class="level0"><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">Object</a></div>
     <div class="level1"><span class="xref">DatasetAccessor</span></div>
   </div>
-  <div class="inheritedMembers">
-    <h5>Inherited Members</h5>
-    <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.tostring#system-object-tostring">Object.ToString()</a>
-    </div>
-    <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)">Object.Equals(Object)</a>
-    </div>
-    <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)">Object.Equals(Object, Object)</a>
-    </div>
-    <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.referenceequals#system-object-referenceequals(system-object-system-object)">Object.ReferenceEquals(Object, Object)</a>
-    </div>
-    <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gethashcode#system-object-gethashcode">Object.GetHashCode()</a>
-    </div>
-    <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gettype#system-object-gettype">Object.GetType()</a>
-    </div>
-    <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone#system-object-memberwiseclone">Object.MemberwiseClone()</a>
-    </div>
-  </div>
   <h6><strong>Namespace</strong>: <a class="xref" href="PLATEAU.Dataset.html">PLATEAU.Dataset</a></h6>
   <h6><strong>Assembly</strong>: cs.temp.dll.dll</h6>
   <h5 id="PLATEAU_Dataset_DatasetAccessor_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public class DatasetAccessor</code></pre>
+    <pre><code class="lang-csharp hljs">public class DatasetAccessor : PInvokeDisposable</code></pre>
   </div>
   <h3 id="constructors">Constructors
   </h3>
@@ -130,7 +107,8 @@ C++側では、IDatasetAccessorは LocalDatasetAccessor と ServerDatasetAccesso
   
   <a id="PLATEAU_Dataset_DatasetAccessor__ctor_" data-uid="PLATEAU.Dataset.DatasetAccessor.#ctor*"></a>
   <h4 id="PLATEAU_Dataset_DatasetAccessor__ctor_IntPtr_" data-uid="PLATEAU.Dataset.DatasetAccessor.#ctor(IntPtr)">DatasetAccessor(IntPtr)</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>handle は C++側の基底クラス (IDatasetAccessor) のポインタです。 </p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -155,31 +133,6 @@ C++側では、IDatasetAccessorは LocalDatasetAccessor と ServerDatasetAccesso
   </table>
   <h3 id="properties">Properties
   </h3>
-  
-  
-  <a id="PLATEAU_Dataset_DatasetAccessor_Handle_" data-uid="PLATEAU.Dataset.DatasetAccessor.Handle*"></a>
-  <h4 id="PLATEAU_Dataset_DatasetAccessor_Handle" data-uid="PLATEAU.Dataset.DatasetAccessor.Handle">Handle</h4>
-  <div class="markdown level1 summary"></div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public IntPtr Handle { get; }</code></pre>
-  </div>
-  <h5 class="propertyValue">Property Value</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="xref">IntPtr</span></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
   
   
   <a id="PLATEAU_Dataset_DatasetAccessor_MeshCodes_" data-uid="PLATEAU.Dataset.DatasetAccessor.MeshCodes*"></a>
@@ -209,12 +162,12 @@ C++側では、IDatasetAccessorは LocalDatasetAccessor と ServerDatasetAccesso
   
   <a id="PLATEAU_Dataset_DatasetAccessor_Packages_" data-uid="PLATEAU.Dataset.DatasetAccessor.Packages*"></a>
   <h4 id="PLATEAU_Dataset_DatasetAccessor_Packages" data-uid="PLATEAU.Dataset.DatasetAccessor.Packages">Packages</h4>
-  <div class="markdown level1 summary"><p><a class="xref" href="PLATEAU.Dataset.LocalDatasetAccessor.html">LocalDatasetAccessor</a> の場合:
+  <div class="markdown level1 summary"><p>ローカルの場合:
 存在するパッケージ種をフラグ形式で返します。</p>
-<p><a class="xref" href="PLATEAU.Dataset.ServerDatasetAccessor.html">ServerDatasetAccessor</a> の場合:
-<a class="xref" href="PLATEAU.Dataset.DatasetAccessor.html#PLATEAU_Dataset_DatasetAccessor_GetGmlFiles_Extent_PLATEAU_Dataset_PredefinedCityModelPackage_">GetGmlFiles(Extent, PredefinedCityModelPackage)</a> したことのある <see cref="!:Extent"></see> に関して、
+<p>サーバーの場合:
+<a class="xref" href="PLATEAU.Dataset.DatasetAccessor.html#PLATEAU_Dataset_DatasetAccessor_GetGmlFiles_PLATEAU_Dataset_PredefinedCityModelPackage_">GetGmlFiles(PredefinedCityModelPackage)</a> したことのある <see cref="!:Extent"></see> に関して、
 存在するパッケージ種をフラグ形式で返します。
-<a class="xref" href="PLATEAU.Dataset.DatasetAccessor.html#PLATEAU_Dataset_DatasetAccessor_GetGmlFiles_Extent_PLATEAU_Dataset_PredefinedCityModelPackage_">GetGmlFiles(Extent, PredefinedCityModelPackage)</a> を実行した後でないと None が返ります。</p>
+<a class="xref" href="PLATEAU.Dataset.DatasetAccessor.html#PLATEAU_Dataset_DatasetAccessor_GetGmlFiles_PLATEAU_Dataset_PredefinedCityModelPackage_">GetGmlFiles(PredefinedCityModelPackage)</a> を実行した後でないと None が返ります。</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
@@ -238,6 +191,58 @@ C++側では、IDatasetAccessorは LocalDatasetAccessor と ServerDatasetAccesso
   </table>
   <h3 id="methods">Methods
   </h3>
+  
+  
+  <a id="PLATEAU_Dataset_DatasetAccessor_CalculateCenterPoint_" data-uid="PLATEAU.Dataset.DatasetAccessor.CalculateCenterPoint*"></a>
+  <h4 id="PLATEAU_Dataset_DatasetAccessor_CalculateCenterPoint_GeoReference_" data-uid="PLATEAU.Dataset.DatasetAccessor.CalculateCenterPoint(GeoReference)">CalculateCenterPoint(GeoReference)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public PlateauVector3d CalculateCenterPoint(GeoReference geoReference)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">GeoReference</span></td>
+        <td><span class="parametername">geoReference</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">PlateauVector3d</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
+  <a id="PLATEAU_Dataset_DatasetAccessor_DisposeNative_" data-uid="PLATEAU.Dataset.DatasetAccessor.DisposeNative*"></a>
+  <h4 id="PLATEAU_Dataset_DatasetAccessor_DisposeNative" data-uid="PLATEAU.Dataset.DatasetAccessor.DisposeNative">DisposeNative()</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">protected override void DisposeNative()</code></pre>
+  </div>
   
   
   <a id="PLATEAU_Dataset_DatasetAccessor_FeatureTypeToPackage_" data-uid="PLATEAU.Dataset.DatasetAccessor.FeatureTypeToPackage*"></a>
@@ -284,13 +289,13 @@ C++側では、IDatasetAccessorは LocalDatasetAccessor と ServerDatasetAccesso
   </table>
   
   
-  <a id="PLATEAU_Dataset_DatasetAccessor_GetGmlFiles_" data-uid="PLATEAU.Dataset.DatasetAccessor.GetGmlFiles*"></a>
-  <h4 id="PLATEAU_Dataset_DatasetAccessor_GetGmlFiles_Extent_PLATEAU_Dataset_PredefinedCityModelPackage_" data-uid="PLATEAU.Dataset.DatasetAccessor.GetGmlFiles(Extent,PLATEAU.Dataset.PredefinedCityModelPackage)">GetGmlFiles(Extent, PredefinedCityModelPackage)</h4>
+  <a id="PLATEAU_Dataset_DatasetAccessor_FilterByMeshCodes_" data-uid="PLATEAU.Dataset.DatasetAccessor.FilterByMeshCodes*"></a>
+  <h4 id="PLATEAU_Dataset_DatasetAccessor_FilterByMeshCodes_IEnumerable_PLATEAU_Dataset_MeshCode__" data-uid="PLATEAU.Dataset.DatasetAccessor.FilterByMeshCodes(IEnumerable{PLATEAU.Dataset.MeshCode})">FilterByMeshCodes(IEnumerable&lt;MeshCode&gt;)</h4>
   <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public NativeVectorGmlFile GetGmlFiles(Extent extent, PredefinedCityModelPackage package)</code></pre>
+    <pre><code class="lang-csharp hljs">public DatasetAccessor FilterByMeshCodes(IEnumerable&lt;MeshCode&gt; meshCodes)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -303,10 +308,47 @@ C++側では、IDatasetAccessorは LocalDatasetAccessor と ServerDatasetAccesso
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">Extent</span></td>
-        <td><span class="parametername">extent</span></td>
+        <td><span class="xref">IEnumerable</span>&lt;<a class="xref" href="PLATEAU.Dataset.MeshCode.html">MeshCode</a>&gt;</td>
+        <td><span class="parametername">meshCodes</span></td>
         <td></td>
       </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="PLATEAU.Dataset.DatasetAccessor.html">DatasetAccessor</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
+  <a id="PLATEAU_Dataset_DatasetAccessor_GetGmlFiles_" data-uid="PLATEAU.Dataset.DatasetAccessor.GetGmlFiles*"></a>
+  <h4 id="PLATEAU_Dataset_DatasetAccessor_GetGmlFiles_PLATEAU_Dataset_PredefinedCityModelPackage_" data-uid="PLATEAU.Dataset.DatasetAccessor.GetGmlFiles(PLATEAU.Dataset.PredefinedCityModelPackage)">GetGmlFiles(PredefinedCityModelPackage)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public NativeVectorGmlFile GetGmlFiles(PredefinedCityModelPackage package)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
       <tr>
         <td><a class="xref" href="PLATEAU.Dataset.PredefinedCityModelPackage.html">PredefinedCityModelPackage</a></td>
         <td><span class="parametername">package</span></td>
@@ -325,53 +367,6 @@ C++側では、IDatasetAccessorは LocalDatasetAccessor と ServerDatasetAccesso
     <tbody>
       <tr>
         <td><span class="xref">NativeVectorGmlFile</span></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  
-  
-  <a id="PLATEAU_Dataset_DatasetAccessor_GetMaxLod_" data-uid="PLATEAU.Dataset.DatasetAccessor.GetMaxLod*"></a>
-  <h4 id="PLATEAU_Dataset_DatasetAccessor_GetMaxLod_PLATEAU_Dataset_MeshCode_PLATEAU_Dataset_PredefinedCityModelPackage_" data-uid="PLATEAU.Dataset.DatasetAccessor.GetMaxLod(PLATEAU.Dataset.MeshCode,PLATEAU.Dataset.PredefinedCityModelPackage)">GetMaxLod(MeshCode, PredefinedCityModelPackage)</h4>
-  <div class="markdown level1 summary"></div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public int GetMaxLod(MeshCode meshCode, PredefinedCityModelPackage package)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="PLATEAU.Dataset.MeshCode.html">MeshCode</a></td>
-        <td><span class="parametername">meshCode</span></td>
-        <td></td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="PLATEAU.Dataset.PredefinedCityModelPackage.html">PredefinedCityModelPackage</a></td>
-        <td><span class="parametername">package</span></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">Int32</a></td>
         <td></td>
       </tr>
     </tbody>
