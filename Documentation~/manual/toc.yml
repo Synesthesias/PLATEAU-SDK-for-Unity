@@ -4,11 +4,13 @@
   items:
   - name: インストール
     href: Installation.md
-  - name: チュートリアル
-    href: Tutorial.md
   - name: 都市モデルのインポート
     href: ImportCityModels.md
   - name: 都市モデルのエクスポート
     href: ExportCityModels.md
+  - name: モデル調整
+    href: ModelAdjust.md  
   - name: 都市情報へのアクセス
     href: AccessCityObject.md
+  - name: チュートリアル
+    href: Tutorial.md
