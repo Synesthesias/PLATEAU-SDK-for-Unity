@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Runtime.InteropServices;
 using PLATEAU.Interop;
 
 namespace PLATEAU.Dataset
@@ -83,6 +84,45 @@ namespace PLATEAU.Dataset
         {
             DLLUtil.ExecNativeVoidFunc(Handle,
                 NativeMethods.plateau_delete_dataset_metadata);
+        }
+
+        private static class NativeMethods
+        {
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_create_dataset_metadata(
+                out IntPtr outDatasetMetadataPtr);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_delete_dataset_metadata(
+                [In] IntPtr datasetMetadataPtr);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_dataset_metadata_get_id(
+                [In] IntPtr datasetMetadataPtr,
+                out IntPtr outStrPtr,
+                out int strLength);
+        
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_dataset_metadata_get_title(
+                [In] IntPtr datasetMetadataPtr,
+                out IntPtr outStrPtr,
+                out int strLength);
+        
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_dataset_metadata_get_description(
+                [In] IntPtr datasetMetadataPtr,
+                out IntPtr outStrPtr,
+                out int strLength);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_dataset_metadata_get_max_lod(
+                [In] IntPtr datasetMetadataPtr,
+                out int outMaxLod);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_dataset_metadata_get_feature_types(
+                [In] IntPtr datasetMetadataPtr,
+                [In,Out] IntPtr refNativeVectorStringPtr);
         }
     }
 }

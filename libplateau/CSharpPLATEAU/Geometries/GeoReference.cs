@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 using PLATEAU.Interop;
 
 namespace PLATEAU.Geometries
@@ -136,5 +137,52 @@ namespace PLATEAU.Geometries
             "18: 小笠原諸島",
             "19: 南鳥島"
         };
+
+        private static class NativeMethods
+        {
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_create_geo_reference(
+                out IntPtr outGeoReferencePtr,
+                PlateauVector3d referencePoint,
+                float unitScale,
+                CoordinateSystem coordinateSystem,
+                int zoneId);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_delete_geo_reference(
+                [In] IntPtr geoReferencePtr);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_geo_reference_project(
+                [In] IntPtr geoReferencePtr,
+                out PlateauVector3d outXyz,
+                GeoCoordinate latLon);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_geo_reference_unproject(
+                [In] IntPtr geoReferencePtr,
+                out GeoCoordinate outLatlon,
+                PlateauVector3d point);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_geo_reference_get_reference_point(
+                [In] IntPtr handle,
+                out PlateauVector3d outReferencePoint);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_geo_reference_get_zone_id(
+                [In] IntPtr handle,
+                out int zoneID);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_geo_reference_get_unit_scale(
+                [In] IntPtr handle,
+                out float unitScale);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_geo_reference_get_coordinate_system(
+                [In] IntPtr handle,
+                out CoordinateSystem outCoordinateSystem);
+        }
     }
 }

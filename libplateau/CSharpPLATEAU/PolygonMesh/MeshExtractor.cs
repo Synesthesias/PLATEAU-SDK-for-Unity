@@ -1,4 +1,6 @@
-﻿using PLATEAU.CityGML;
+﻿using System;
+using System.Runtime.InteropServices;
+using PLATEAU.CityGML;
 using PLATEAU.Interop;
 
 namespace PLATEAU.PolygonMesh
@@ -20,6 +22,15 @@ namespace PLATEAU.PolygonMesh
                 cityModel.Handle, options, outModel.Handle
             );
             DLLUtil.CheckDllError(result);
+        }
+
+        private static class NativeMethods
+        {
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_mesh_extractor_extract(
+                [In] IntPtr cityModelPtr,
+                MeshExtractOptions options,
+                [In] IntPtr outModelPtr);
         }
     }
 }

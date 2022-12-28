@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 using PLATEAU.Interop;
 
 namespace PLATEAU.CityGML
@@ -31,5 +32,19 @@ namespace PLATEAU.CityGML
         public TextureWrapMode WrapMode =>
             DLLUtil.GetNativeValue<TextureWrapMode>(Handle,
                 NativeMethods.plateau_texture_get_wrap_mode);
+
+        private static class NativeMethods
+        {
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_texture_get_url(
+                [In] IntPtr handle,
+                out IntPtr strPtr,
+                out int strLength);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_texture_get_wrap_mode(
+                [In] IntPtr handle,
+                out TextureWrapMode outWrapMode);
+        }
     }
 }

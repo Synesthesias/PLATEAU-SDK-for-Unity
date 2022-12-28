@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 using PLATEAU.Dataset;
 
 namespace PLATEAU.Interop
@@ -40,6 +41,28 @@ namespace PLATEAU.Interop
         {
             var result = NativeMethods.plateau_delete_vector_gml_file(Handle);
             DLLUtil.CheckDllError(result);
+        }
+
+        private static class NativeMethods
+        {
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_create_vector_gml_file(
+                out IntPtr outVectorPtr);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_delete_vector_gml_file(
+                [In] IntPtr vectorPtr);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_vector_gml_file_get_pointer(
+                [In] IntPtr vectorPtr,
+                out IntPtr outGmlFilePtr,
+                int index);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_vector_gml_file_count(
+                [In] IntPtr handle,
+                out int outCount);
         }
     }
 }

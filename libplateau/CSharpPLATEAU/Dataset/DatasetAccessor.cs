@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using PLATEAU.Geometries;
 using PLATEAU.Interop;
 
@@ -83,7 +84,7 @@ namespace PLATEAU.Dataset
         public static PredefinedCityModelPackage FeatureTypeToPackage(string featureType)
         {
             var featureTypeUtf8 = DLLUtil.StrToUtf8Bytes(featureType);
-            var result = NativeMethods.plateau_udx_sub_folder_feature_type_to_package(
+            var result = GmlFile.NativeMethods.plateau_udx_sub_folder_feature_type_to_package(
                 featureTypeUtf8, out var package);
             DLLUtil.CheckDllError(result);
             return package;
@@ -93,6 +94,41 @@ namespace PLATEAU.Dataset
         {
             DLLUtil.ExecNativeVoidFunc(Handle,
                 NativeMethods.plateau_delete_i_dataset_accessor);
+        }
+
+        private static class NativeMethods
+        {
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_delete_i_dataset_accessor(
+                [In] IntPtr accessorPtr);
+        
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_i_dataset_accessor_get_gml_files(
+                [In] IntPtr accessorPtr,
+                PredefinedCityModelPackage package,
+                [In] IntPtr refVectorGmlFilePtr);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_i_dataset_accessor_get_mesh_codes(
+                [In] IntPtr accessorPtr,
+                [In,Out] IntPtr refVectorMeshCodePtr);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_i_dataset_accessor_get_packages(
+                [In] IntPtr accessorPtr,
+                out PredefinedCityModelPackage outPackageFlags);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_i_dataset_accessor_calculate_center_point(
+                [In] IntPtr accessorPtr,
+                [In] IntPtr geoReferencePtr,
+                out PlateauVector3d outCenterPoint);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_i_dataset_accessor_filter_by_mesh_codes(
+                [In] IntPtr accessorPtr,
+                [In] IntPtr nativeVectorMeshCodePtr,
+                out IntPtr outFilteredAccessorPtr);
         }
     }
 }

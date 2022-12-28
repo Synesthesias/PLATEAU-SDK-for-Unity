@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Runtime.InteropServices;
 using System.Threading;
 
 namespace PLATEAU.CityGML
@@ -124,6 +125,52 @@ namespace PLATEAU.CityGML
                 DLLUtil.CheckDllError(result);
             }
             GC.SuppressFinalize(this);
+        }
+
+        private static class NativeMethods
+        {
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_delete_city_model(
+                [In] IntPtr cityModel);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_city_model_get_root_city_objects(
+                [In] IntPtr cityModel,
+                [In, Out] IntPtr[] cityObjects,
+                int count);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_city_model_get_root_city_object_count(
+                [In] IntPtr cityModel,
+                out int outCount);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_city_model_get_all_city_object_count_of_type(
+                [In] IntPtr cityModel,
+                out int count,
+                CityObjectType type);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_city_model_get_all_city_objects_of_type(
+                [In] IntPtr cityModel,
+                [In, Out] IntPtr[] cityObjects,
+                CityObjectType type,
+                int count);
+
+            [DllImport(DLLUtil.DllName, CharSet = CharSet.Ansi)]
+            internal static extern APIResult plateau_city_model_get_city_object_by_id(
+                [In] IntPtr handle,
+                out IntPtr cityObjectPtr,
+                [In] string id);
+            
+            // ***************
+            //  geometry_utils_c.cpp
+            // ***************
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_geometry_utils_get_center_point(
+                [In] IntPtr cityModelPtr,
+                out PlateauVector3d outCenterPoint,
+                int coordinateZoneID);
         }
     }
 }

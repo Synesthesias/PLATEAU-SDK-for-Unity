@@ -41,7 +41,7 @@ namespace PLATEAU.Tests.EditModeTests
             var options = new MeshExportOptions(
                 MeshExportOptions.MeshTransformType.Local,
                 true, true, MeshFileFormat.OBJ, CoordinateSystem.ENU,
-                new GltfWriteOptions(GltfFileFormat.GLB, destDirPath), new FbxWriteOptions(FbxFileFormat.Binary));
+                new GltfWriteOptions(GltfFileFormat.GLB, destDirPath), new FbxWriter.FbxWriteOptions(FbxWriter.FbxFileFormat.Binary));
             MeshExporter.Export(destDirPath, instancedCityModel, options);
 
             var expectedObjFiles = TestCityDefinition.MiniTokyo.GmlDefinitions
@@ -64,7 +64,7 @@ namespace PLATEAU.Tests.EditModeTests
             var options = new MeshExportOptions(
                 MeshExportOptions.MeshTransformType.Local,
                 true, false, MeshFileFormat.FBX, CoordinateSystem.ENU,
-                new GltfWriteOptions(GltfFileFormat.GLB, destDirPath), new FbxWriteOptions(FbxFileFormat.Ascii));
+                new GltfWriteOptions(GltfFileFormat.GLB, destDirPath), new FbxWriter.FbxWriteOptions(FbxWriter.FbxFileFormat.Ascii));
             MeshExporter.Export(destDirPath, instancedCityModel, options);
             var expectedFbxFiles = TestCityDefinition.MiniTokyo.GmlDefinitions
                 .Where(def => def.ContainsMesh)
@@ -82,7 +82,7 @@ namespace PLATEAU.Tests.EditModeTests
             var options = new MeshExportOptions(
                 MeshExportOptions.MeshTransformType.Local,
                 true, false, MeshFileFormat.GLTF, CoordinateSystem.ENU,
-                new GltfWriteOptions(GltfFileFormat.GLTF, destDirPath), new FbxWriteOptions(FbxFileFormat.Ascii));
+                new GltfWriteOptions(GltfFileFormat.GLTF, destDirPath), new FbxWriter.FbxWriteOptions(FbxWriter.FbxFileFormat.Ascii));
             MeshExporter.Export(destDirPath, instancedCityModel, options);
             var expectedGltfFiles = TestCityDefinition.MiniTokyo.GmlDefinitions
                 .Where(def => def.ContainsMesh)

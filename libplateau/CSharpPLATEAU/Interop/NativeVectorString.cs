@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Runtime.InteropServices;
 
 namespace PLATEAU.Interop
 {
@@ -51,6 +52,28 @@ namespace PLATEAU.Interop
         public string[] ToCSharpArray()
         {
             return this.Select(nativeStr => nativeStr.ToString()).ToArray();
+        }
+
+        private static class NativeMethods
+        {
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_create_vector_string(
+                out IntPtr outVectorPtr);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_delete_vector_string(
+                [In] IntPtr vectorPtr);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_vector_string_get_pointer(
+                [In] IntPtr vectorPtr,
+                out IntPtr outStringPtr,
+                int index);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_vector_string_count(
+                [In] IntPtr handle,
+                out int outCount);
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using PLATEAU.Interop;
 
 namespace PLATEAU.CityGML
@@ -169,6 +170,58 @@ namespace PLATEAU.CityGML
                     NativeMethods.plateau_geometry_get_srs_name);
                 return srsName;
             }
+        }
+
+        private static class NativeMethods
+        {
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_geometry_get_type(
+                [In] IntPtr geometryHandle,
+                out GeometryType type);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_geometry_get_geometries_count(
+                [In] IntPtr geometryHandle,
+                out int outCount);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_geometry_get_polygons_count(
+                [In] IntPtr geometryHandle,
+                out int outCount);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_geometry_get_child_geometry(
+                [In] IntPtr geometryHandle,
+                out IntPtr childGeomHandle,
+                int index);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_geometry_get_polygon(
+                [In] IntPtr geometryHandle,
+                out IntPtr polygonHandle,
+                int index
+            );
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_geometry_get_lod(
+                [In] IntPtr geometryHandle,
+                out int outLod);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_geometry_get_srs_name(
+                [In] IntPtr geometryHandle,
+                out IntPtr outNameStrPtr,
+                out int outStrLength);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_geometry_get_srs_name_str_length(
+                [In] IntPtr geometryHandle,
+                out int outLength);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_geometry_get_line_string_count(
+                [In] IntPtr handle,
+                out int outCount);
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using PLATEAU.Interop;
 
 namespace PLATEAU.CityGML
@@ -220,6 +221,46 @@ namespace PLATEAU.CityGML
                     yield return r;
                 }
             }
+        }
+
+        private static class NativeMethods
+        {
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_city_object_get_type(
+                [In] IntPtr cityObjectHandle,
+                out CityObjectType outCityObjType);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_city_object_get_geometries_count(
+                [In] IntPtr cityObjectHandle,
+                out int outCount);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_city_object_get_address(
+                [In] IntPtr cityObjectHandle,
+                out IntPtr addressHandle);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_city_object_get_implicit_geometry_count(
+                [In] IntPtr cityObjectHandle,
+                out int outCount);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_city_object_get_child_city_object_count(
+                [In] IntPtr cityObjectHandle,
+                out int outCount);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_city_object_get_child_city_object(
+                [In] IntPtr cityObjectHandle,
+                out IntPtr outChildHandle,
+                int index);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_city_object_get_geometry(
+                [In] IntPtr cityObjectHandle,
+                out IntPtr outGeometryHandle,
+                int index);
         }
     }
 }

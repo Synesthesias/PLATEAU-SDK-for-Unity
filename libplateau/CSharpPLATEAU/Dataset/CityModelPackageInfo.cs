@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 using PLATEAU.Interop;
 
 namespace PLATEAU.Dataset
@@ -51,6 +52,39 @@ namespace PLATEAU.Dataset
         protected override void DisposeNative()
         {
             NativeMethods.plateau_delete_city_model_package_info(Handle);
+        }
+
+        private static class NativeMethods
+        {
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_create_city_model_package_info(
+                out IntPtr outPackageInfoPtr,
+                [MarshalAs(UnmanagedType.U1)] bool hasAppearance, int minLOD, int maxLOD);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_delete_city_model_package_info(
+                [In] IntPtr packageInfoPtr);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_city_model_package_info_get_has_appearance(
+                [In] IntPtr packageInfoPtr,
+                [MarshalAs(UnmanagedType.U1)] out bool outHasAppearance);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_city_model_package_info_get_min_lod(
+                [In] IntPtr packageInfoPtr,
+                out int outMinLOD);
+        
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_city_model_package_info_get_max_lod(
+                [In] IntPtr packageInfoPtr,
+                out int outMaxLOD);
+        
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_city_model_package_info_get_predefined(
+                PredefinedCityModelPackage package,
+                [MarshalAs(UnmanagedType.U1)] out bool outHasAppearance,
+                out int outMinLOD, out int outMaxLOD);
         }
     }
 }

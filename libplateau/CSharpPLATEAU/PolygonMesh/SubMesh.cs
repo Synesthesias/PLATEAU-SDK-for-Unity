@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 using PLATEAU.Interop;
 using PLATEAU.Util;
 
@@ -84,6 +85,36 @@ namespace PLATEAU.PolygonMesh
             {
                 throw new Exception($"{nameof(SubMesh)} is invalid.");
             }
+        }
+
+        private static class NativeMethods
+        {
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_sub_mesh_get_start_index(
+                [In] IntPtr subMeshPtr,
+                out int startIndex);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_sub_mesh_get_end_index(
+                [In] IntPtr subMeshPtr,
+                out int endIndex);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_sub_mesh_get_texture_path(
+                [In] IntPtr subMeshPtr,
+                out IntPtr strPtr,
+                out int strLength);
+
+            [DllImport(DLLUtil.DllName, CharSet = CharSet.Ansi)]
+            internal static extern APIResult plateau_create_sub_mesh(
+                out IntPtr outSubMeshPtr,
+                int startIndex,
+                int endIndex,
+                string texturePath);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_delete_sub_mesh(
+                [In] IntPtr subMeshPtr);
         }
     }
 }

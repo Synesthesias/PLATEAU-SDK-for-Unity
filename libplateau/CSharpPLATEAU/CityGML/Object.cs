@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 using PLATEAU.Interop;
 
 namespace PLATEAU.CityGML
@@ -58,6 +59,26 @@ namespace PLATEAU.CityGML
                 }
                 return this.attributesMap;
             }
+        }
+
+        private static class NativeMethods
+        {
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_object_get_id(
+                [In] IntPtr objHandle,
+                out IntPtr outStrPtr,
+                out int strLength);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_object_get_id_str_length(
+                [In] IntPtr objHandle,
+                out int outLength);
+
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_object_get_attributes_map(
+                [In] IntPtr objHandle,
+                out IntPtr attributesMapPtr);
         }
     }
 }

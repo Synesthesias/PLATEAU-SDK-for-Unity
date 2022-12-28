@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 using PLATEAU.Interop;
 
 namespace PLATEAU.Dataset
@@ -47,6 +48,34 @@ namespace PLATEAU.Dataset
         public void Dispose()
         {
             DLLUtil.ExecNativeVoidFunc(Handle, NativeMethods.plateau_delete_dataset_metadata_group);
+        }
+
+        private static class NativeMethods
+        {
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_create_dataset_metadata_group(
+                out IntPtr outDatasetMetadataGroupPtr);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_delete_dataset_metadata_group(
+                [In] IntPtr datasetMetadataGroupPtr);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_dataset_metadata_group_get_id(
+                [In] IntPtr handle,
+                out IntPtr outStrPtr,
+                out int strLength);
+        
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_dataset_metadata_group_get_title(
+                [In] IntPtr handle,
+                out IntPtr outStrPtr,
+                out int strLength);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_dataset_metadata_group_get_datasets(
+                [In] IntPtr handle,
+                out IntPtr nativeVectorDatasetMetadataPtr);
         }
     }
 }

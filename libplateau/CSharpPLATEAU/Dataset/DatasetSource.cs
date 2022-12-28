@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 using PLATEAU.Interop;
 using PLATEAU.Network;
 
@@ -76,6 +77,29 @@ namespace PLATEAU.Dataset
         {
             var result = NativeMethods.plateau_delete_dataset_source(Handle);
             DLLUtil.CheckDllError(result);
+        }
+
+        private static class NativeMethods
+        {
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_create_dataset_source_local(
+                out IntPtr outDatasetSource,
+                [In] byte[] sourcePathUtf8);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_delete_dataset_source(
+                [In] IntPtr datasetSourcePtr);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_dataset_source_get_accessor(
+                [In] IntPtr datasetSourcePtr,
+                out IntPtr accessorPtr);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_create_dataset_source_server(
+                out IntPtr newDatasetSourcePtr,
+                [In] string datasetID,
+                [In] IntPtr clientPtr);
         }
     }
 }

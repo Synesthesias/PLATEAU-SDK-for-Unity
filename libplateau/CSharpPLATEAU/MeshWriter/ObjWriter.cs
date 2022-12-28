@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 using PLATEAU.Interop;
 using PLATEAU.PolygonMesh;
 
@@ -35,6 +36,22 @@ namespace PLATEAU.MeshWriter
             DLLUtil.ExecNativeVoidFunc(this.handle, NativeMethods.plateau_delete_obj_writer);
             GC.SuppressFinalize(this);
             this.isDisposed = true;
+        }
+
+        private static class NativeMethods
+        {
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_create_obj_writer(out IntPtr outHandle);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_delete_obj_writer([In] IntPtr objWriter);
+
+            [DllImport(DLLUtil.DllName, CharSet = CharSet.Ansi)]
+            internal static extern APIResult plateau_obj_writer_write(
+                [In] IntPtr handle,
+                out bool flg,
+                [In] byte[] objFilePathUtf8,
+                [In] IntPtr modelPtr);
         }
     }
 }

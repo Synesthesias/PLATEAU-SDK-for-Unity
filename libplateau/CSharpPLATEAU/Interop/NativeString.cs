@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 
 namespace PLATEAU.Interop
 {
@@ -37,6 +38,27 @@ namespace PLATEAU.Interop
             var charPtr = DLLUtil.GetNativeValue<IntPtr>(Handle, NativeMethods.plateau_string_get_char_ptr);
             string str = DLLUtil.ReadUtf8Str(charPtr, strSize);
             return str;
+        }
+
+        private static class NativeMethods
+        {
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_create_string(
+                out IntPtr newStringPtr);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_delete_string(
+                [In] IntPtr stringPtr);
+        
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_string_get_size(
+                [In] IntPtr nativeStringPtr,
+                out int outSize);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_string_get_char_ptr(
+                [In] IntPtr nativeStringPtr,
+                out IntPtr outCharPtr);
         }
     }
 }

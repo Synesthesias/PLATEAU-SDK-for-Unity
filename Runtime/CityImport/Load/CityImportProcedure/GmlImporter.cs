@@ -7,6 +7,7 @@ using PLATEAU.CityImport.Setting;
 using PLATEAU.Dataset;
 using PLATEAU.Geometries;
 using PLATEAU.Interop;
+using PLATEAU.PolygonMesh;
 using PLATEAU.Util;
 using UnityEngine;
 

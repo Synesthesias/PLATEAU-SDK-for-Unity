@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 using PLATEAU.Dataset;
 
 namespace PLATEAU.Interop
@@ -47,6 +48,33 @@ namespace PLATEAU.Interop
         {
             var result = NativeMethods.plateau_delete_vector_mesh_code(Handle);
             DLLUtil.CheckDllError(result);
+        }
+
+        private static class NativeMethods
+        {
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_create_vector_mesh_code(
+                out IntPtr outVectorPtr);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_delete_vector_mesh_code(
+                [In] IntPtr vectorPtr);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_vector_mesh_code_get_value(
+                [In] IntPtr vectorPtr,
+                out MeshCode outMeshCode,
+                int index);
+        
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_vector_mesh_code_count(
+                [In] IntPtr handle,
+                out int outCount);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_vector_mesh_code_push_back_value(
+                [In] IntPtr handle,
+                [In] MeshCode meshCode);
         }
     }
 }

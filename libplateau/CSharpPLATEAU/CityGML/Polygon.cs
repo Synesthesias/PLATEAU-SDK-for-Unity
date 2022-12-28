@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using PLATEAU.Interop;
 
 namespace PLATEAU.CityGML
@@ -104,7 +105,7 @@ namespace PLATEAU.CityGML
         /// </summary>
         public int InteriorRingCount =>
             DLLUtil.GetNativeValue<int>(Handle,
-                NativeMethods.plateau_polygon_get_interior_ring_count);
+                LinearRing.NativeMethods.plateau_polygon_get_interior_ring_count);
 
         /// <summary>
         /// 建物の形状の多角形表現のうち、内側にある多角形の1つをインデックス指定で返します。
@@ -114,7 +115,7 @@ namespace PLATEAU.CityGML
             var ring = DLLUtil.ArrayCache(ref this.cachedInteriorRings, index, InteriorRingCount, () =>
             {
                 IntPtr ringHandle = DLLUtil.GetNativeValue<IntPtr>(Handle, index,
-                    NativeMethods.plateau_polygon_get_interior_ring);
+                    LinearRing.NativeMethods.plateau_polygon_get_interior_ring);
                 return new LinearRing(ringHandle);
             });
             return ring;
@@ -138,6 +139,36 @@ namespace PLATEAU.CityGML
         public override string ToString()
         {
             return $"Polygon : ID={ID}, VertexCount={VertexCount}";
+        }
+
+        private static class NativeMethods
+        {
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_polygon_get_vertex_count(
+                [In] IntPtr polygonHandle,
+                out int outVertCount);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_polygon_get_vertex(
+                [In] IntPtr handle,
+                out PlateauVector3d outVertex,
+                int index);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_polygon_get_indices_count(
+                [In] IntPtr handle,
+                out int outCount);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_polygon_get_index_of_indices(
+                [In] IntPtr handle,
+                out int outIndex,
+                int indexOfIndicesList);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_polygon_get_exterior_ring(
+                [In] IntPtr handle,
+                out IntPtr ringHandle);
         }
     }
 }

@@ -10,6 +10,7 @@ namespace PLATEAU.Interop
     /// </summary>
     internal static class DLLUtil
     {
+        public const string DllName = "plateau";
         /// <summary>
         /// NativeMethods で頻出するメソッドの型を delegate で登録しておくことで、delegate で呼び出せるようにします。
         /// ただし、すべてのメソッドがこのような型をしているわけではないので、対応していないメソッドもあります。

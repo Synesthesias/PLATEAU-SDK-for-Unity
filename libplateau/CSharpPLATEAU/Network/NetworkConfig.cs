@@ -9,7 +9,7 @@ namespace PLATEAU.Network
             get
             {
                 var urlNative = NativeString.Create();
-                var result = NativeMethods.plateau_client_get_default_url(urlNative.Handle);
+                var result = Client.NativeMethods.plateau_client_get_default_url(urlNative.Handle);
                 DLLUtil.CheckDllError(result);
                 return urlNative.ToString();
             }

@@ -63,5 +63,22 @@ namespace PLATEAU.Dataset
             if (IsValid) return;
             throw new Exception("Invalid MeshCode. ( MeshCode.Invalid == true)");
         }
+
+        private static class NativeMethods
+        {
+            [DllImport(DLLUtil.DllName)]
+            internal static extern MeshCode plateau_mesh_code_parse(
+                [In] string code);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_mesh_code_get_extent(
+                [In] MeshCode meshCode,
+                [In, Out] ref Extent outExtent);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_mesh_code_is_valid(
+                [In] MeshCode meshCode,
+                [MarshalAs(UnmanagedType.U1)]out bool outIsValid);
+        }
     }
 }

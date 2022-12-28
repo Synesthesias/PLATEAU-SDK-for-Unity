@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 using PLATEAU.Dataset;
 
 namespace PLATEAU.Interop
@@ -33,6 +34,28 @@ namespace PLATEAU.Interop
                     NativeMethods.plateau_vector_dataset_metadata_count);
                 return count;
             }
+        }
+
+        private static class NativeMethods
+        {
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_create_vector_dataset_metadata(
+                out IntPtr outVectorPtr);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_delete_vector_dataset_metadata(
+                [In] IntPtr vectorPtr);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_vector_dataset_metadata_get_pointer(
+                [In] IntPtr vectorPtr,
+                out IntPtr outDatasetMetadataPtr,
+                int index);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_vector_dataset_metadata_count(
+                [In] IntPtr handle,
+                out int outCount);
         }
     }
 }

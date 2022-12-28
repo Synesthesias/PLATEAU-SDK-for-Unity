@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 using PLATEAU.Interop;
 
 namespace PLATEAU.CityGML
@@ -56,6 +57,32 @@ namespace PLATEAU.CityGML
                 Handle, out bool isTarget, ring.Handle);
             DLLUtil.CheckDllError(result);
             return isTarget;
+        }
+
+        private static class NativeMethods
+        {
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_texture_coordinates_get_coordinate(
+                [In] IntPtr handle,
+                [Out] out PlateauVector2f outCoord,
+                int index);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_texture_coordinates_count(
+                [In] IntPtr handle,
+                out int outCount);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_texture_coordinates_get_target_linear_ring_id(
+                [In] IntPtr handle,
+                out IntPtr strPtr,
+                out int strLength);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_texture_coordinates_is_ring_target(
+                [In] IntPtr handle,
+                [MarshalAs(UnmanagedType.U1)] out bool outIsTarget,
+                [In] IntPtr ringHandle);
         }
     }
 }
