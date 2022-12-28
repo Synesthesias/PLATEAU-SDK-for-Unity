@@ -1,4 +1,6 @@
-﻿using PLATEAU.Interop;
+﻿using System;
+using System.Runtime.InteropServices;
+using PLATEAU.Interop;
 
 namespace PLATEAU.Network
 {
@@ -9,10 +11,17 @@ namespace PLATEAU.Network
             get
             {
                 var urlNative = NativeString.Create();
-                var result = Client.NativeMethods.plateau_client_get_default_url(urlNative.Handle);
+                var result = NativeMethods.plateau_client_get_default_url(urlNative.Handle);
                 DLLUtil.CheckDllError(result);
                 return urlNative.ToString();
             }
+        }
+
+        private static class NativeMethods
+        {
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_client_get_default_url(
+                [In, Out] IntPtr nativeStrPtr);
         }
     }
 }

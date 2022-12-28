@@ -169,7 +169,7 @@ namespace PLATEAU.CityGML
             return new MaterialTargetDefinition(matTargetHandle);
         }
 
-        internal static class NativeMethods
+        private static class NativeMethods
         {
             [DllImport(DLLUtil.DllName)]
             internal static extern APIResult plateau_appearance_target_get_all_texture_theme_names_count(
@@ -231,21 +231,6 @@ namespace PLATEAU.CityGML
                 [In] IntPtr handle,
                 out IntPtr outTexTargetDefHandle,
                 int index);
-            
-            // ***************
-            //  appearancetargetdefinition_c.cpp
-            // ***************
-
-            [DllImport(DLLUtil.DllName)]
-            internal static extern APIResult plateau_appearance_target_definition_tex_get_target_id(
-                [In] IntPtr handle,
-                out IntPtr strPtr,
-                out int strLength);
-
-            [DllImport(DLLUtil.DllName)]
-            internal static extern APIResult plateau_appearance_target_definition_tex_get_appearance(
-                [In] IntPtr handle,
-                out IntPtr outTextureHandle);
         }
     }
 }

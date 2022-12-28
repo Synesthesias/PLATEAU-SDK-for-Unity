@@ -105,7 +105,7 @@ namespace PLATEAU.CityGML
         /// </summary>
         public int InteriorRingCount =>
             DLLUtil.GetNativeValue<int>(Handle,
-                LinearRing.NativeMethods.plateau_polygon_get_interior_ring_count);
+                NativeMethods.plateau_polygon_get_interior_ring_count);
 
         /// <summary>
         /// 建物の形状の多角形表現のうち、内側にある多角形の1つをインデックス指定で返します。
@@ -115,7 +115,7 @@ namespace PLATEAU.CityGML
             var ring = DLLUtil.ArrayCache(ref this.cachedInteriorRings, index, InteriorRingCount, () =>
             {
                 IntPtr ringHandle = DLLUtil.GetNativeValue<IntPtr>(Handle, index,
-                    LinearRing.NativeMethods.plateau_polygon_get_interior_ring);
+                    NativeMethods.plateau_polygon_get_interior_ring);
                 return new LinearRing(ringHandle);
             });
             return ring;
@@ -169,6 +169,17 @@ namespace PLATEAU.CityGML
             internal static extern APIResult plateau_polygon_get_exterior_ring(
                 [In] IntPtr handle,
                 out IntPtr ringHandle);
+            
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_polygon_get_interior_ring_count(
+                [In] IntPtr handle,
+                out int outCount);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_polygon_get_interior_ring(
+                [In] IntPtr handle,
+                out IntPtr outRingHandle,
+                int index);
         }
     }
 }

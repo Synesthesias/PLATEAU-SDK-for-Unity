@@ -7,7 +7,7 @@ namespace PLATEAU.Interop
     /// <summary>
     /// C++側の vector{string} を扱います。
     /// </summary>
-    public class NativeVectorString : NativeVectorDisposableBase<NativeString>
+    internal class NativeVectorString : NativeVectorDisposableBase<NativeString>
     {
         public NativeVectorString(IntPtr handle) : base(handle)
         {

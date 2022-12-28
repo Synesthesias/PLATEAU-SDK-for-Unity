@@ -12,7 +12,7 @@ namespace PLATEAU.Interop
     //      そのような面倒な部分を NativeString に置き換えればコード簡略化できそうです。ただし寿命に要注意です。
     //      加えて string の配列となるとさらに複雑になっていますが、こちらも NativeVectorString に置き換えることでシンプルになりそうです。
     
-    public class NativeString
+    internal class NativeString 
     {
         public IntPtr Handle { get; }
 

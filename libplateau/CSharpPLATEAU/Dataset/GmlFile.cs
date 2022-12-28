@@ -91,22 +91,26 @@ namespace PLATEAU.Dataset
             }
         }
 
-        public NativeVectorString SearchAllCodelistPathsInGml()
+        public string[] SearchAllCodelistPathsInGml()
         {
-            var paths = NativeVectorString.Create();
+            var nativePaths = NativeVectorString.Create();
             var result = NativeMethods.plateau_gml_file_search_all_codelist_paths_in_gml(
-                Handle, paths.Handle);
+                Handle, nativePaths.Handle);
             DLLUtil.CheckDllError(result);
-            return paths;
+            var ret = nativePaths.ToCSharpArray();
+            nativePaths.Dispose();
+            return ret;
         }
         
-        public NativeVectorString SearchAllImagePathsInGml()
+        public string[] SearchAllImagePathsInGml()
         {
-            var paths = NativeVectorString.Create();
+            var nativePaths = NativeVectorString.Create();
             var result = NativeMethods.plateau_gml_file_search_all_image_paths_in_gml(
-                Handle, paths.Handle);
+                Handle, nativePaths.Handle);
             DLLUtil.CheckDllError(result);
-            return paths;
+            var ret = nativePaths.ToCSharpArray();
+            nativePaths.Dispose();
+            return ret;
         }
         
         /// <summary>

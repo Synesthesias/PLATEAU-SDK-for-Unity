@@ -48,7 +48,7 @@ namespace PLATEAU.CityGML
             return vert3d;
         }
 
-        internal static class NativeMethods
+        private static class NativeMethods
         {
             [DllImport(DLLUtil.DllName)]
             internal static extern APIResult plateau_linear_ring_get_vertex_count(
@@ -60,17 +60,7 @@ namespace PLATEAU.CityGML
                 [In] IntPtr handle,
                 out PlateauVector3d outVert3d,
                 int index);
-
-            [DllImport(DLLUtil.DllName)]
-            internal static extern APIResult plateau_polygon_get_interior_ring_count(
-                [In] IntPtr handle,
-                out int outCount);
-
-            [DllImport(DLLUtil.DllName)]
-            internal static extern APIResult plateau_polygon_get_interior_ring(
-                [In] IntPtr handle,
-                out IntPtr outRingHandle,
-                int index);
+            
         }
     }
 }

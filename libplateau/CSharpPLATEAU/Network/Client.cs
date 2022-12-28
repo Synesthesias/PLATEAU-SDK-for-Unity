@@ -64,7 +64,7 @@ namespace PLATEAU.Network
                 NativeMethods.plateau_delete_client);
         }
 
-        internal static class NativeMethods
+        private static class NativeMethods
         {
             [DllImport(DLLUtil.DllName)]
             internal static extern APIResult plateau_create_client(
@@ -100,10 +100,6 @@ namespace PLATEAU.Network
                 [In] byte[] destinationDirectoryUtf8,
                 [In] byte[] urlUtf8,
                 [In,Out] IntPtr refNativeStringPtr);
-
-            [DllImport(DLLUtil.DllName)]
-            internal static extern APIResult plateau_client_get_default_url(
-                [In, Out] IntPtr nativeStrPtr);
         }
     }
 }

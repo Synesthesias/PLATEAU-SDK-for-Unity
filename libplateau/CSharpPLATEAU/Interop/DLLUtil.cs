@@ -5,7 +5,7 @@ using System.Text;
 
 namespace PLATEAU.Interop
 {
-    public enum APIResult
+    internal enum APIResult
     {
         Success,
         ErrorUnknown,

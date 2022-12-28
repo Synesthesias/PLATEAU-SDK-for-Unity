@@ -51,15 +51,17 @@ namespace PLATEAU.Dataset
             }
         }
 
-        public NativeVectorString FeatureTypes
+        public string[] FeatureTypes
         {
             get
             {
-                var featureTypes = NativeVectorString.Create();
+                var nativeFeatureTypes = NativeVectorString.Create();
                 var result = NativeMethods.plateau_dataset_metadata_get_feature_types(
-                    Handle, featureTypes.Handle);
+                    Handle, nativeFeatureTypes.Handle);
                 DLLUtil.CheckDllError(result);
-                return featureTypes;
+                var ret = nativeFeatureTypes.ToCSharpArray();
+                nativeFeatureTypes.Dispose();
+                return ret;
             }
         }
 
@@ -68,7 +70,7 @@ namespace PLATEAU.Dataset
             get
             {
                 var packages = FeatureTypes
-                    .Select(f => DatasetAccessor.FeatureTypeToPackage(f.ToString()))
+                    .Select(DatasetAccessor.FeatureTypeToPackage)
                     .Distinct();
                 PredefinedCityModelPackage flags = 0u;
                 foreach (var package in packages)
