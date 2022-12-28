@@ -48,7 +48,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
             }
             referencePoint /= meshCodes.Count;
             referencePoint.Y = 0;
-            outGeoReference = new GeoReference(referencePoint, 1f, CoordinateSystem.EUN, coordinateZoneID);
+            outGeoReference = GeoReference.Create(referencePoint, 1f, CoordinateSystem.EUN, coordinateZoneID);
             var gizmoParent = new GameObject("MeshCodeGizmos").transform;
             foreach (var meshCode in meshCodes)
             {

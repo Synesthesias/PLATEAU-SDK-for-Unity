@@ -31,12 +31,11 @@ namespace PLATEAU.Geometries
     /// 極座標と平面直角座標を変換します。
     /// また座標変換の基準を保持します。
     /// </summary>
-    public class GeoReference : IDisposable
+    public class GeoReference : PInvokeDisposable
     {
-        private readonly IntPtr handle;
-        private bool isDisposed;
-
-        public IntPtr Handle => this.handle;
+        public GeoReference(IntPtr geoReferencePtr) : base(geoReferencePtr)
+        {
+        }
 
         /// <summary>
         /// 
@@ -57,7 +56,7 @@ namespace PLATEAU.Geometries
         /// 詳しくはこちらを参照してください :
         /// https://www.gsi.go.jp/sokuchikijun/jpc.html
         /// </param>
-        public GeoReference(PlateauVector3d referencePoint, float unitScale, CoordinateSystem coordinateSystem,
+        public static GeoReference Create(PlateauVector3d referencePoint, float unitScale, CoordinateSystem coordinateSystem,
             int zoneID)
         {
             var result = NativeMethods.plateau_create_geo_reference(
@@ -65,13 +64,13 @@ namespace PLATEAU.Geometries
                 coordinateSystem, zoneID
             );
             DLLUtil.CheckDllError(result);
-            this.handle = geoReferencePtr;
+            return new GeoReference(geoReferencePtr);
         }
 
         public PlateauVector3d Project(GeoCoordinate geoCoordinate)
         {
             var result = NativeMethods.plateau_geo_reference_project(
-                this.handle, out var outXyz,
+                Handle, out var outXyz,
                 geoCoordinate);
             DLLUtil.CheckDllError(result);
             return outXyz;
@@ -80,7 +79,7 @@ namespace PLATEAU.Geometries
         public GeoCoordinate Unproject(PlateauVector3d point)
         {
             var result = NativeMethods.plateau_geo_reference_unproject(
-                this.handle, out var outLatlon,
+                Handle, out var outLatlon,
                 point);
             DLLUtil.CheckDllError(result);
             return outLatlon;
@@ -102,12 +101,9 @@ namespace PLATEAU.Geometries
             DLLUtil.GetNativeValue<CoordinateSystem>(Handle,
                 NativeMethods.plateau_geo_reference_get_coordinate_system);
 
-        public void Dispose()
+        protected override void DisposeNative()
         {
-            if (this.isDisposed) return;
             DLLUtil.ExecNativeVoidFunc(Handle, NativeMethods.plateau_delete_geo_reference);
-            GC.SuppressFinalize(this);
-            this.isDisposed = true;
         }
 
         ~GeoReference()
