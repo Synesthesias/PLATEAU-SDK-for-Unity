@@ -5,6 +5,27 @@ using PLATEAU.Interop;
 
 namespace PLATEAU.PolygonMesh
 {
+    
+    /// <summary>
+    /// メッシュの結合単位
+    /// </summary>
+    public enum MeshGranularity
+    {
+        /// <summary>
+        /// 最小地物単位(LOD2, LOD3の各部品)
+        /// </summary>
+        PerAtomicFeatureObject,
+        /// <summary>
+        /// 主要地物単位(建築物、道路等)
+        /// </summary>
+        PerPrimaryFeatureObject,
+        /// <summary>
+        /// 都市モデル地域単位(GMLファイル内のすべてを結合)
+        /// </summary>
+        PerCityModelArea
+    }
+    
+    
     /// <summary>
     /// GMLファイルから3Dメッシュを取り出すための設定です。
     /// </summary>

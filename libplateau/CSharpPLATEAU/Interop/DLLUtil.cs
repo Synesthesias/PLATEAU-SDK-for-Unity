@@ -5,6 +5,17 @@ using System.Text;
 
 namespace PLATEAU.Interop
 {
+    public enum APIResult
+    {
+        Success,
+        ErrorUnknown,
+        ErrorValueNotFound,
+        ErrorLoadingCityGml,
+        ErrorIndexOutOfBounds,
+        ErrorFileSystem,
+        ErrorInvalidArgument
+    }
+    
     /// <summary>
     /// DLLとデータをやりとりするためのユーティリティクラスです。
     /// </summary>

@@ -21,6 +21,8 @@ namespace PLATEAU.Interop
     /// </summary>
     public class LogCallbacks
     {
+        public delegate void LogCallbackFuncType(IntPtr textPtr);
+        
         public LogCallbackFuncType LogError { get; set; }
         public LogCallbackFuncType LogWarn { get; set; }
         public LogCallbackFuncType LogInfo { get; set; }

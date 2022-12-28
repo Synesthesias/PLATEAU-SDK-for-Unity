@@ -5,6 +5,22 @@ using PLATEAU.PolygonMesh;
 
 namespace PLATEAU.MeshWriter
 {
+    [StructLayout(LayoutKind.Sequential)]
+    public struct FbxWriteOptions
+    {
+        public FbxFileFormat FileFormat;
+
+        public FbxWriteOptions(FbxFileFormat fileFormat)
+        {
+            this.FileFormat = fileFormat;
+        }
+    }
+    
+    public enum FbxFileFormat : UInt32
+    {
+        Binary, Ascii
+    }
+    
     public static class FbxWriter
     {
         public static bool Write(string fbxPath, Model model, FbxWriteOptions options)
@@ -13,22 +29,6 @@ namespace PLATEAU.MeshWriter
             var result = NativeMethods.plateau_fbx_writer_write(fbxPathUtf8, model.Handle, options, out bool isSucceed);
             DLLUtil.CheckDllError(result);
             return isSucceed;
-        }
-        
-        [StructLayout(LayoutKind.Sequential)]
-        public struct FbxWriteOptions
-        {
-            public FbxFileFormat FileFormat;
-
-            public FbxWriteOptions(FbxFileFormat fileFormat)
-            {
-                this.FileFormat = fileFormat;
-            }
-        }
-
-        public enum FbxFileFormat : UInt32
-        {
-            Binary, Ascii
         }
 
         private static class NativeMethods
