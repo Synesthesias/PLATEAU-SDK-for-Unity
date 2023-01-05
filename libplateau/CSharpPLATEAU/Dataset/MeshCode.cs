@@ -1,6 +1,7 @@
 ﻿using System;
 using PLATEAU.Interop;
 using System.Runtime.InteropServices;
+using PLATEAU.Native;
 
 namespace PLATEAU.Dataset
 {
@@ -20,9 +21,9 @@ namespace PLATEAU.Dataset
         {
             get
             {
-                var result = NativeMethods.plateau_mesh_code_is_valid(this, out bool isValid);
+                var result = NativeMethods.plateau_mesh_code_is_valid(this, out bool resultIsValid);
                 DLLUtil.CheckDllError(result);
-                return isValid;
+                return resultIsValid;
             }
         }
 

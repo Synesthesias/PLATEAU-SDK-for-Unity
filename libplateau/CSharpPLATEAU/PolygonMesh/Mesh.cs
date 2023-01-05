@@ -3,6 +3,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using PLATEAU.Geometries;
 using PLATEAU.Interop;
+using PLATEAU.Native;
 using PLATEAU.Util;
 
 namespace PLATEAU.PolygonMesh

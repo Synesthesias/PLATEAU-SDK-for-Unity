@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 using PLATEAU.Interop;
+using PLATEAU.Native;
 using PLATEAU.Util;
 
 namespace PLATEAU.PolygonMesh

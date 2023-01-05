@@ -60,7 +60,7 @@ namespace PLATEAU.Interop
 
         /// <summary>
         /// DLLから文字列のポインタの配列を受け取り、各ポインタから文字列を読んで string[] で返します。
-        /// 次の2つの <see cref="NativeMethods"/> を引数で受け取り利用します。
+        /// 次の2つの NativeMethods を引数で受け取り利用します。
         /// ・配列の要素数を得るメソッド
         /// ・文字列のポインタの配列と、各文字列のバイト数を int[] で得るメソッド
         /// </summary>
@@ -80,7 +80,7 @@ namespace PLATEAU.Interop
 
         /// <summary>
         /// DLL内の文字列の配列のコピーを受け取ります。
-        /// 次の3つの <see cref="NativeMethods"/> を引数で受け取り利用します。
+        /// 次の3つの NativeMethods を引数で受け取り利用します。
         /// ・配列の要素数を取得するメソッド
         /// ・各文字列のバイト数を配列で取得するメソッド
         /// ・文字列の配列のコピーを受け取るメソッド
@@ -230,10 +230,10 @@ namespace PLATEAU.Interop
 
         /// <summary>
         /// ネイティブ関数から値を受け取り、エラーチェックしてから値を返します。
-        /// <see cref="NativeMethods"/> を呼ぶたびに手動で <see cref="CheckDllError"/> を呼ぶのと同義ですが、それだと冗長なのでこのメソッドにまとめました。
+        /// NativeMethods を呼ぶたびに手動で <see cref="CheckDllError"/> を呼ぶのと同義ですが、それだと冗長なのでこのメソッドにまとめました。
         /// </summary>
         /// <param name="handle">ネイティブ関数に渡すハンドルです。</param>
-        /// <param name="getterMethod"><see cref="NativeMethods"/> のメソッドを指定します。</param>
+        /// <param name="getterMethod"> NativeMethods のメソッドを指定します。</param>
         /// <typeparam name="T">戻り値の型です。</typeparam>
         /// <returns>ネイティブ関数から受け取った値を返します。</returns>
         internal static T GetNativeValue<T>(IntPtr handle, GetterDelegate<T> getterMethod)

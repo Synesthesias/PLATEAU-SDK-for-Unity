@@ -6,6 +6,7 @@ using PLATEAU.CityImport.AreaSelector.SceneObjs;
 using PLATEAU.Geometries;
 using PLATEAU.Interop;
 using PLATEAU.Dataset;
+using PLATEAU.Native;
 using PLATEAU.Util;
 using UnityEngine;
 using UnityEngine.SceneManagement;

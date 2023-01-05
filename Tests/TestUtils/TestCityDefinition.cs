@@ -8,6 +8,7 @@ using PLATEAU.CityImport.Setting;
 using PLATEAU.Editor.EditorWindow.ProgressDisplay;
 using PLATEAU.Interop;
 using PLATEAU.Dataset;
+using PLATEAU.Native;
 
 namespace PLATEAU.Tests.TestUtils
 {

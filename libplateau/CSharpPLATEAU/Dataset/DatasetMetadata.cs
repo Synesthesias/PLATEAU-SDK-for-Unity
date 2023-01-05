@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Runtime.InteropServices;
 using PLATEAU.Interop;
+using PLATEAU.Native;
 
 namespace PLATEAU.Dataset
 {

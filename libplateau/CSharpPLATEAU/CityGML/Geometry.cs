@@ -214,11 +214,6 @@ namespace PLATEAU.CityGML
                 out int outStrLength);
 
             [DllImport(DLLUtil.DllName)]
-            internal static extern APIResult plateau_geometry_get_srs_name_str_length(
-                [In] IntPtr geometryHandle,
-                out int outLength);
-
-            [DllImport(DLLUtil.DllName)]
             internal static extern APIResult plateau_geometry_get_line_string_count(
                 [In] IntPtr handle,
                 out int outCount);

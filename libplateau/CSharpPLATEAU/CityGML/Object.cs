@@ -69,11 +69,6 @@ namespace PLATEAU.CityGML
                 out IntPtr outStrPtr,
                 out int strLength);
 
-            [DllImport(DLLUtil.DllName)]
-            internal static extern APIResult plateau_object_get_id_str_length(
-                [In] IntPtr objHandle,
-                out int outLength);
-
 
             [DllImport(DLLUtil.DllName)]
             internal static extern APIResult plateau_object_get_attributes_map(
