@@ -10,7 +10,7 @@ namespace PLATEAU.Native
     /// </summary>
     public abstract class NativeVectorBase<T> : INativeVector<T>
     {
-        public IntPtr Handle { get; }
+        protected IntPtr Handle { get; }
         protected NativeVectorBase(IntPtr handle)
         {
             Handle = handle;

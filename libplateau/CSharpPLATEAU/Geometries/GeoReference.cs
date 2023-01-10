@@ -34,7 +34,7 @@ namespace PLATEAU.Geometries
     /// </summary>
     public class GeoReference : PInvokeDisposable
     {
-        public GeoReference(IntPtr geoReferencePtr) : base(geoReferencePtr)
+        private GeoReference(IntPtr geoReferencePtr) : base(geoReferencePtr)
         {
         }
 
@@ -80,10 +80,10 @@ namespace PLATEAU.Geometries
         public GeoCoordinate Unproject(PlateauVector3d point)
         {
             var result = NativeMethods.plateau_geo_reference_unproject(
-                Handle, out var outLatlon,
+                Handle, out var outLatLon,
                 point);
             DLLUtil.CheckDllError(result);
-            return outLatlon;
+            return outLatLon;
         }
 
         public PlateauVector3d ReferencePoint =>
@@ -158,7 +158,7 @@ namespace PLATEAU.Geometries
             [DllImport(DLLUtil.DllName)]
             internal static extern APIResult plateau_geo_reference_unproject(
                 [In] IntPtr geoReferencePtr,
-                out GeoCoordinate outLatlon,
+                out GeoCoordinate outLatLon,
                 PlateauVector3d point);
 
             [DllImport(DLLUtil.DllName)]

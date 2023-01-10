@@ -15,7 +15,7 @@ namespace PLATEAU.Native
 
         protected abstract void DisposeNative();
 
-        public PInvokeDisposable(IntPtr handle)
+        protected PInvokeDisposable(IntPtr handle)
         {
             Handle = handle;
         }

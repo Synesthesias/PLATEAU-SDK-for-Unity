@@ -196,7 +196,15 @@ namespace PLATEAU.CityGML
                 this.index = -1;
             }
 
-            AttrPair IEnumerator<AttrPair>.Current => (AttrPair)Current;
+            AttrPair IEnumerator<AttrPair>.Current
+            {
+                get
+                {
+                    object current = Current;
+                    if (current == null) throw new NullReferenceException();
+                    return (AttrPair)current;
+                }
+            }
 
             public object Current
             {

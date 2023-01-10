@@ -135,14 +135,14 @@ namespace PLATEAU.Interop
         /// </summary>
         /// <param name="count">ポインタ配列の要素数です。</param>
         /// <param name="sizes"><see cref="sizes"/>[i] = i番目のポインタの確保バイト数 となるような int配列です。</param>
-        internal static IntPtr AllocPtrArray(int count, int[] sizes)
+        private static IntPtr AllocPtrArray(int count, int[] sizes)
         {
             if (count > sizes.Length)
             {
                 throw new ArgumentException("sizes.Length should not be smaller than count.");
             }
             
-            IntPtr[] managedPtrArray = new IntPtr[count]; // ポインタの配列 (managed)
+            var managedPtrArray = new IntPtr[count]; // ポインタの配列 (managed)
             for (int i = 0; i < count; i++)
             {
                 IntPtr ptr = Marshal.AllocCoTaskMem(sizes[i]); // 配列内の各ポインタについてメモリ確保
@@ -150,7 +150,7 @@ namespace PLATEAU.Interop
             }
             
             int sizeOfPtrArray = Marshal.SizeOf(typeof(IntPtr)) * count;
-            IntPtr unmanagedPtrArray = Marshal.AllocCoTaskMem(sizeOfPtrArray); // ポインタの配列 (unmanaged)
+            var unmanagedPtrArray = Marshal.AllocCoTaskMem(sizeOfPtrArray); // ポインタの配列 (unmanaged)
             Marshal.Copy(managedPtrArray, 0, unmanagedPtrArray, count);
             return unmanagedPtrArray;
         }
@@ -161,12 +161,13 @@ namespace PLATEAU.Interop
         /// </summary>
         /// <param name="ptrOfPtrArray">解放したいポインタ配列を指定します。</param>
         /// <param name="count">ポインタ配列の要素数を指定します。</param>
-        internal static unsafe void FreePtrArray(IntPtr ptrOfPtrArray, int count)
+        private static unsafe void FreePtrArray(IntPtr ptrOfPtrArray, int count)
         {
             for (int i = 0; i < count; i++)
             {
-                
-                var ptr = ((IntPtr*)ptrOfPtrArray)[i];
+                var ptrArray = (IntPtr*)ptrOfPtrArray;
+                if (ptrArray == null) throw new NullReferenceException();
+                var ptr = (ptrArray)[i];
                 Marshal.FreeCoTaskMem(ptr);
             }
             Marshal.FreeCoTaskMem(ptrOfPtrArray);
@@ -177,12 +178,14 @@ namespace PLATEAU.Interop
         /// ポインタ <paramref name="ptrOfStringArray"/> は <see cref="AllocPtrArray"/> で確保したものと同じであることを前提とし、
         /// 引数 <paramref name="count"/>, <paramref name="sizes"/> には <see cref="AllocPtrArray"/> で渡したものと同じ値を渡してください。 
         /// </summary>
-        internal static unsafe string[] PtrToStringArray(IntPtr ptrOfStringArray, int count, int[] sizes)
+        private static unsafe string[] PtrToStringArray(IntPtr ptrOfStringArray, int count, int[] sizes)
         {
             string[] ret = new string[count];
             for (int i = 0; i < count; i++)
             {
-                var stringPtr = ((IntPtr*)ptrOfStringArray)[i];
+                var stringArray = (IntPtr*)ptrOfStringArray;
+                if (stringArray == null) throw new NullReferenceException();
+                var stringPtr = stringArray[i];
                 ret[i] = ReadUtf8Str(stringPtr, sizes[i] - 1);
             }
             return ret;
@@ -296,7 +299,7 @@ namespace PLATEAU.Interop
         /// 文字列のポインタの配列から各ポインタの文字を読み、
         /// string[]で返します。
         /// </summary>
-        public static string[] ReadNativeStrPtrArray(IntPtr[] strPointers, int[] strSizes)
+        private static string[] ReadNativeStrPtrArray(IntPtr[] strPointers, int[] strSizes)
         {
             if (strPointers.Length != strSizes.Length)
             {
@@ -309,11 +312,7 @@ namespace PLATEAU.Interop
             for (int i = 0; i < cnt; i++)
             {
                 // -1 は null終端文字の分です。
-                string str = ReadUtf8Str(strPointers[i], strSizes[i] - 1);
-                if (str == null)
-                {
-                    str = "";
-                }
+                string str = ReadUtf8Str(strPointers[i], strSizes[i] - 1) ?? "";
 
                 ret[i] = str;
             }

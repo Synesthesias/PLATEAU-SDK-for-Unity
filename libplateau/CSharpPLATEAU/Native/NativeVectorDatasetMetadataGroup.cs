@@ -7,7 +7,7 @@ namespace PLATEAU.Native
 {
     public class NativeVectorDatasetMetadataGroup : NativeVectorDisposableBase<DatasetMetadataGroup>
     {
-        public NativeVectorDatasetMetadataGroup(IntPtr handle) : base(handle)
+        private NativeVectorDatasetMetadataGroup(IntPtr handle) : base(handle)
         {
         }
 

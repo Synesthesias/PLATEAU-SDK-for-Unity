@@ -65,7 +65,7 @@ namespace PLATEAU.CityGML
             }
         }
 
-        public int GetIndexOfIndices(int indexOfIndicesList)
+        private int GetIndexOfIndices(int indexOfIndicesList)
         {
             int ret = DLLUtil.GetNativeValue<int>(Handle, indexOfIndicesList,
                 NativeMethods.plateau_polygon_get_index_of_indices);
@@ -111,7 +111,7 @@ namespace PLATEAU.CityGML
         /// <summary>
         /// 建物の形状の多角形表現のうち、内側にある多角形の1つをインデックス指定で返します。
         /// </summary>
-        public LinearRing GetInteriorRing(int index)
+        private LinearRing GetInteriorRing(int index)
         {
             var ring = DLLUtil.ArrayCache(ref this.cachedInteriorRings, index, InteriorRingCount, () =>
             {

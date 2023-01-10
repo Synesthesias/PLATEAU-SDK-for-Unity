@@ -51,7 +51,7 @@ namespace PLATEAU.CityGML
         }
 
         /// <summary> 子の <see cref="Geometry"/> をforeachやLinqで回したい時に利用できます。 </summary>
-        public IEnumerable<Geometry> ChildGeometries
+        IEnumerable<Geometry> ChildGeometries
         {
             get
             {
@@ -100,7 +100,7 @@ namespace PLATEAU.CityGML
         {
             var poly = DLLUtil.ArrayCache(ref this.cachedPolygons, index, PolygonCount, () =>
             {
-                IntPtr polyHandle = DLLUtil.GetNativeValue<IntPtr>(Handle, index,
+                var polyHandle = DLLUtil.GetNativeValue<IntPtr>(Handle, index,
                     NativeMethods.plateau_geometry_get_polygon);
                 return new Polygon(polyHandle);
             });

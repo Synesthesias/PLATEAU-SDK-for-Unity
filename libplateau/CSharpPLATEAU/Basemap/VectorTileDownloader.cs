@@ -10,7 +10,7 @@ namespace PLATEAU.Basemap
     /// </summary>
     public class VectorTileDownloader : PInvokeDisposable
     {
-        public VectorTileDownloader(IntPtr handle) : base(handle)
+        private VectorTileDownloader(IntPtr handle) : base(handle)
         {
         }
 

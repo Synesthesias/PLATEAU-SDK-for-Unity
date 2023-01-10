@@ -31,10 +31,10 @@ namespace PLATEAU.Native
         public IntPtr LogWarnFuncPtr => DelegateToPtr(LogWarn);
         public IntPtr LogInfoFuncPtr => DelegateToPtr(LogInfo);
 
-        public static readonly LogCallbackFuncType StdErrFunc = messagePtr =>
+        private static readonly LogCallbackFuncType StdErrFunc = messagePtr =>
             Console.Error.WriteLine(PtrToStr(messagePtr));
 
-        public static readonly LogCallbackFuncType StdOutFunc = messagePtr => Console.WriteLine(PtrToStr(messagePtr));
+        private static readonly LogCallbackFuncType StdOutFunc = messagePtr => Console.WriteLine(PtrToStr(messagePtr));
 
         public LogCallbacks(LogCallbackFuncType logError, LogCallbackFuncType logWarn, LogCallbackFuncType logInfo)
         {
@@ -68,7 +68,7 @@ namespace PLATEAU.Native
     /// </summary>
     public class DllLogger : IDisposable
     {
-        private IntPtr handle;
+        private readonly IntPtr handle;
         private int disposed;
         private readonly bool hasOwnership;
 

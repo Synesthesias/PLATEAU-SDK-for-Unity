@@ -39,7 +39,7 @@ namespace PLATEAU.PolygonMesh
             return new Model(outModelPtr);
         }
 
-        public Model(IntPtr handle) : base(handle)
+        private Model(IntPtr handle) : base(handle)
         {
             
         }

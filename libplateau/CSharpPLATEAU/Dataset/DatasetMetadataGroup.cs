@@ -7,7 +7,7 @@ namespace PLATEAU.Dataset
 {
     public class DatasetMetadataGroup
     {
-        public IntPtr Handle { get; }
+        private IntPtr Handle { get; }
         public DatasetMetadataGroup(IntPtr ptr)
         {
             Handle = ptr;
@@ -20,21 +20,9 @@ namespace PLATEAU.Dataset
             return new DatasetMetadataGroup(outPtr);
         }
 
-        public string ID
-        {
-            get
-            {
-                return DLLUtil.GetNativeString(Handle, NativeMethods.plateau_dataset_metadata_group_get_id);
-            }
-        }
+        public string ID => DLLUtil.GetNativeString(Handle, NativeMethods.plateau_dataset_metadata_group_get_id);
 
-        public string Title
-        {
-            get
-            {
-                return DLLUtil.GetNativeString(Handle, NativeMethods.plateau_dataset_metadata_group_get_title);
-            }
-        }
+        public string Title => DLLUtil.GetNativeString(Handle, NativeMethods.plateau_dataset_metadata_group_get_title);
 
         public NativeVectorDatasetMetadata Datasets
         {

@@ -9,15 +9,15 @@ namespace PLATEAU.CityGML
     public struct CitygmlParserParams
     {
         [MarshalAs(UnmanagedType.U1)]
-        public bool Optimize;
+        private readonly bool Optimize;
         /// <summary>
         /// <see cref="Tessellate"/> を false に設定すると、 <see cref="Polygon"/> が頂点を保持する代わりに <see cref="LinearRing"/> を保持することがあります。
         /// </summary>
         [MarshalAs(UnmanagedType.U1)]
-        public bool Tessellate;
+        private readonly bool Tessellate;
 
         [MarshalAs(UnmanagedType.U1)]
-        public bool IgnoreGeometries;
+        private readonly bool IgnoreGeometries;
 
         public CitygmlParserParams(bool optimize, bool tessellate, bool ignoreGeometries)
         {

@@ -8,7 +8,7 @@ namespace PLATEAU.Dataset
 {
     public class DatasetMetadata
     {
-        public IntPtr Handle { get; }
+        private IntPtr Handle { get; }
         public DatasetMetadata(IntPtr ptr)
         {
             Handle = ptr;
@@ -20,37 +20,13 @@ namespace PLATEAU.Dataset
                 DLLUtil.PtrOfNewInstance(NativeMethods.plateau_create_dataset_metadata));
         }
 
-        public string ID
-        {
-            get
-            {
-                return DLLUtil.GetNativeString(Handle, NativeMethods.plateau_dataset_metadata_get_id);
-            }
-        }
+        public string ID => DLLUtil.GetNativeString(Handle, NativeMethods.plateau_dataset_metadata_get_id);
 
-        public string Title
-        {
-            get
-            {
-                return DLLUtil.GetNativeString(Handle, NativeMethods.plateau_dataset_metadata_get_title);
-            }
-        }
-        
-        public string Description
-        {
-            get
-            {
-                return DLLUtil.GetNativeString(Handle, NativeMethods.plateau_dataset_metadata_get_description);
-            }
-        }
+        public string Title => DLLUtil.GetNativeString(Handle, NativeMethods.plateau_dataset_metadata_get_title);
 
-        public int MaxLOD
-        {
-            get
-            {
-                return DLLUtil.GetNativeValue<int>(Handle, NativeMethods.plateau_dataset_metadata_get_max_lod);
-            }
-        }
+        public string Description => DLLUtil.GetNativeString(Handle, NativeMethods.plateau_dataset_metadata_get_description);
+
+        public int MaxLOD => DLLUtil.GetNativeValue<int>(Handle, NativeMethods.plateau_dataset_metadata_get_max_lod);
 
         public string[] FeatureTypes
         {

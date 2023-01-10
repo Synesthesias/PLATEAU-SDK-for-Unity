@@ -8,7 +8,7 @@ namespace PLATEAU.Dataset
 {
     public class DatasetSource : PInvokeDisposable
     {
-        public DatasetSource(IntPtr handle) : base(handle)
+        private DatasetSource(IntPtr handle) : base(handle)
         {
         }
         
@@ -28,15 +28,9 @@ namespace PLATEAU.Dataset
         
         public static DatasetSource Create(DatasetSourceConfig config)
         {
-            switch (config.IsServer)
-            {
-                case true:
-                    return CreateServer(config.ServerDatasetID);
-                case false:
-                    return CreateLocal(config.LocalSourcePath);
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
+            return config.IsServer ?
+                CreateServer(config.ServerDatasetID) :
+                CreateLocal(config.LocalSourcePath);
         }
 
         /// <summary>

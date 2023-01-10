@@ -6,13 +6,14 @@ namespace PLATEAU.Basemap
     /// 地理院地図のタイル座標です。
     /// タイル座標については国土地理院のWebサイトを参照してください。
     /// <see href="https://maps.gsi.go.jp/development/siyou.html#siyou-zm"/>
+    /// データ構造は C++側と合わせる必要があります。
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
-    public struct TileCoordinate
+    public readonly struct TileCoordinate
     {
-        public int Column;
-        public int Row;
-        public int ZoomLevel;
+        public readonly int Column;
+        public readonly int Row;
+        public readonly int ZoomLevel;
 
         public TileCoordinate(int column, int row, int zoomLevel)
         {

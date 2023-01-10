@@ -10,7 +10,7 @@ namespace PLATEAU.Native
     /// </summary>
     internal class NativeVectorString : NativeVectorDisposableBase<NativeString>
     {
-        public NativeVectorString(IntPtr handle) : base(handle)
+        private NativeVectorString(IntPtr handle) : base(handle)
         {
         }
 
