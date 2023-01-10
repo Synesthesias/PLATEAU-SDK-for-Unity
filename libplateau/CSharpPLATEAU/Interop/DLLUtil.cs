@@ -13,7 +13,8 @@ namespace PLATEAU.Interop
         ErrorLoadingCityGml,
         ErrorIndexOutOfBounds,
         ErrorFileSystem,
-        ErrorInvalidArgument
+        ErrorInvalidArgument,
+        ErrorValueIsInvalid
     }
     
     /// <summary>

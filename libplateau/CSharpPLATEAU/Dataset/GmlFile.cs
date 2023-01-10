@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Runtime.InteropServices;
 using PLATEAU.Interop;
 using PLATEAU.Native;
@@ -131,6 +132,10 @@ namespace PLATEAU.Dataset
             var apiResult = NativeMethods.plateau_gml_file_fetch(
                 Handle, destinationRootPathUtf8, resultGml.Handle
             );
+            if (apiResult == APIResult.ErrorValueIsInvalid)
+            {
+                throw new InvalidDataException("GmlFile is invalid.");
+            }
             DLLUtil.CheckDllError(apiResult);
             resultGml.Path = resultGml.Path.Replace('\\', '/');
             return resultGml;
