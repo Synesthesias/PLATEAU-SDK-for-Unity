@@ -85,7 +85,7 @@
   </h1>
   <div class="markdown level0 summary"><p>建築物の形状におけるポリゴンです。
 Vertices , Indices を保持します。
-ただし、GMLファイルのパース時に <see cref="!:CitygmlParserParams.Tessellate"></see> を false に設定した時に限り、
+ただし、GMLファイルのパース時に <span class="xref">PLATEAU.CityGML.CitygmlParserParams.Tessellate</span> を false に設定した時に限り、
 Vertices, Indices の代わりに <a class="xref" href="PLATEAU.CityGML.Polygon.html#PLATEAU_CityGML_Polygon_ExteriorRing">ExteriorRing</a> , <a class="xref" href="PLATEAU.CityGML.Polygon.html#PLATEAU_CityGML_Polygon_InteriorRings">InteriorRings</a> を保持することがあります。
 Vertex と Ring を両方保持する場合もあれば、片方だけの場合もあります。
 <a class="xref" href="PLATEAU.CityGML.Polygon.html">Polygon</a> は <a class="xref" href="PLATEAU.CityGML.Geometry.html">Geometry</a> によって保持されます。</p>
@@ -220,7 +220,7 @@ Vertex と Ring を両方保持する場合もあれば、片方だけの場合�
   <a id="PLATEAU_CityGML_Polygon_ExteriorRing_" data-uid="PLATEAU.CityGML.Polygon.ExteriorRing*"></a>
   <h4 id="PLATEAU_CityGML_Polygon_ExteriorRing" data-uid="PLATEAU.CityGML.Polygon.ExteriorRing">ExteriorRing</h4>
   <div class="markdown level1 summary"><p>建物の外周の形状です。
-GMLファイルのパース時の設定で <see cref="!:CitygmlParserParams.Tessellate"></see> が true の場合、この情報は保持されません。
+GMLファイルのパース時の設定で <span class="xref">PLATEAU.CityGML.CitygmlParserParams.Tessellate</span> が true の場合、この情報は保持されません。
 false の場合、 <a class="xref" href="PLATEAU.CityGML.Polygon.html#PLATEAU_CityGML_Polygon_ExteriorRing">ExteriorRing</a>, <a class="xref" href="PLATEAU.CityGML.Polygon.html#PLATEAU_CityGML_Polygon_InteriorRings">InteriorRings</a>が保持される場合があります。</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -373,91 +373,6 @@ false の場合、 <a class="xref" href="PLATEAU.CityGML.Polygon.html#PLATEAU_Ci
   </table>
   <h3 id="methods">Methods
   </h3>
-  
-  
-  <a id="PLATEAU_CityGML_Polygon_GetIndexOfIndices_" data-uid="PLATEAU.CityGML.Polygon.GetIndexOfIndices*"></a>
-  <h4 id="PLATEAU_CityGML_Polygon_GetIndexOfIndices_System_Int32_" data-uid="PLATEAU.CityGML.Polygon.GetIndexOfIndices(System.Int32)">GetIndexOfIndices(Int32)</h4>
-  <div class="markdown level1 summary"></div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public int GetIndexOfIndices(int indexOfIndicesList)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">Int32</a></td>
-        <td><span class="parametername">indexOfIndicesList</span></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">Int32</a></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  
-  
-  <a id="PLATEAU_CityGML_Polygon_GetInteriorRing_" data-uid="PLATEAU.CityGML.Polygon.GetInteriorRing*"></a>
-  <h4 id="PLATEAU_CityGML_Polygon_GetInteriorRing_System_Int32_" data-uid="PLATEAU.CityGML.Polygon.GetInteriorRing(System.Int32)">GetInteriorRing(Int32)</h4>
-  <div class="markdown level1 summary"><p>建物の形状の多角形表現のうち、内側にある多角形の1つをインデックス指定で返します。</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public LinearRing GetInteriorRing(int index)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">Int32</a></td>
-        <td><span class="parametername">index</span></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="PLATEAU.CityGML.LinearRing.html">LinearRing</a></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
   
   
   <a id="PLATEAU_CityGML_Polygon_GetVertex_" data-uid="PLATEAU.CityGML.Polygon.GetVertex*"></a>

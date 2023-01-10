@@ -5,10 +5,10 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>Class NativeVectorDisposableBase&lt;T&gt;
+    <title>Struct TileCoordinate
    | PLATEAU SDK for Unity </title>
     <meta name="viewport" content="width=device-width">
-    <meta name="title" content="Class NativeVectorDisposableBase&lt;T&gt;
+    <meta name="title" content="Struct TileCoordinate
    | PLATEAU SDK for Unity ">
     <meta name="generator" content="docfx 2.59.4.0">
     
@@ -78,76 +78,52 @@
         </div>
         <div class="article row grid-right">
           <div class="col-md-10">
-            <article class="content wrap" id="_content" data-uid="PLATEAU.Interop.NativeVectorDisposableBase`1">
+            <article class="content wrap" id="_content" data-uid="PLATEAU.Basemap.TileCoordinate">
   
   
-  <h1 id="PLATEAU_Interop_NativeVectorDisposableBase_1" data-uid="PLATEAU.Interop.NativeVectorDisposableBase`1" class="text-break">Class NativeVectorDisposableBase&lt;T&gt;
+  <h1 id="PLATEAU_Basemap_TileCoordinate" data-uid="PLATEAU.Basemap.TileCoordinate" class="text-break">Struct TileCoordinate
   </h1>
-  <div class="markdown level0 summary"><p><a class="xref" href="PLATEAU.Interop.NativeVectorBase-1.html">NativeVectorBase&lt;T&gt;</a> の自動で NativeDispose する版です。</p>
+  <div class="markdown level0 summary"><p>地理院地図のタイル座標です。
+タイル座標については国土地理院のWebサイトを参照してください。
+<a href="https://maps.gsi.go.jp/development/siyou.html#siyou-zm">https://maps.gsi.go.jp/development/siyou.html#siyou-zm</a>
+データ構造は C++側と合わせる必要があります。</p>
 </div>
   <div class="markdown level0 conceptual"></div>
-  <div class="inheritance">
-    <h5>Inheritance</h5>
-    <div class="level0"><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">Object</a></div>
-    <div class="level1"><a class="xref" href="PLATEAU.Interop.PInvokeDisposable.html">PInvokeDisposable</a></div>
-    <div class="level2"><span class="xref">NativeVectorDisposableBase&lt;T&gt;</span></div>
-      <div class="level3"><a class="xref" href="PLATEAU.Interop.NativeVectorDatasetMetadataGroup.html">NativeVectorDatasetMetadataGroup</a></div>
-      <div class="level3"><a class="xref" href="PLATEAU.Interop.NativeVectorGmlFile.html">NativeVectorGmlFile</a></div>
-      <div class="level3"><a class="xref" href="PLATEAU.Interop.NativeVectorMeshCode.html">NativeVectorMeshCode</a></div>
-      <div class="level3"><a class="xref" href="PLATEAU.Interop.NativeVectorString.html">NativeVectorString</a></div>
-  </div>
-  <div class="implements">
-    <h5>Implements</h5>
-    <div><a class="xref" href="PLATEAU.Interop.INativeVector-1.html">INativeVector</a>&lt;T&gt;</div>
-    <div><span class="xref">IEnumerable</span>&lt;T&gt;</div>
-  </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
     <div>
-      <a class="xref" href="PLATEAU.Interop.PInvokeDisposable.html#PLATEAU_Interop_PInvokeDisposable_Handle">PInvokeDisposable.Handle</a>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.valuetype.equals#system-valuetype-equals(system-object)">ValueType.Equals(Object)</a>
     </div>
     <div>
-      <a class="xref" href="PLATEAU.Interop.PInvokeDisposable.html#PLATEAU_Interop_PInvokeDisposable_DisposeNative">PInvokeDisposable.DisposeNative()</a>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.valuetype.gethashcode#system-valuetype-gethashcode">ValueType.GetHashCode()</a>
     </div>
     <div>
-      <a class="xref" href="PLATEAU.Interop.PInvokeDisposable.html#PLATEAU_Interop_PInvokeDisposable_Dispose">PInvokeDisposable.Dispose()</a>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)">Object.Equals(Object, Object)</a>
     </div>
     <div>
-      <a class="xref" href="PLATEAU.Interop.PInvokeDisposable.html#PLATEAU_Interop_PInvokeDisposable_ThrowIfDisposed">PInvokeDisposable.ThrowIfDisposed()</a>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.referenceequals#system-object-referenceequals(system-object-system-object)">Object.ReferenceEquals(Object, Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gettype#system-object-gettype">Object.GetType()</a>
     </div>
   </div>
-  <h6><strong>Namespace</strong>: <a class="xref" href="PLATEAU.Interop.html">PLATEAU.Interop</a></h6>
+  <h6><strong>Namespace</strong>: <a class="xref" href="PLATEAU.Basemap.html">PLATEAU.Basemap</a></h6>
   <h6><strong>Assembly</strong>: cs.temp.dll.dll</h6>
-  <h5 id="PLATEAU_Interop_NativeVectorDisposableBase_1_syntax">Syntax</h5>
+  <h5 id="PLATEAU_Basemap_TileCoordinate_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public abstract class NativeVectorDisposableBase&lt;T&gt; : PInvokeDisposable, INativeVector&lt;T&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public readonly struct TileCoordinate</code></pre>
   </div>
-  <h5 class="typeParameters">Type Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="parametername">T</span></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
   <h3 id="constructors">Constructors
   </h3>
   
   
-  <a id="PLATEAU_Interop_NativeVectorDisposableBase_1__ctor_" data-uid="PLATEAU.Interop.NativeVectorDisposableBase`1.#ctor*"></a>
-  <h4 id="PLATEAU_Interop_NativeVectorDisposableBase_1__ctor_IntPtr_" data-uid="PLATEAU.Interop.NativeVectorDisposableBase`1.#ctor(IntPtr)">NativeVectorDisposableBase(IntPtr)</h4>
+  <a id="PLATEAU_Basemap_TileCoordinate__ctor_" data-uid="PLATEAU.Basemap.TileCoordinate.#ctor*"></a>
+  <h4 id="PLATEAU_Basemap_TileCoordinate__ctor_System_Int32_System_Int32_System_Int32_" data-uid="PLATEAU.Basemap.TileCoordinate.#ctor(System.Int32,System.Int32,System.Int32)">TileCoordinate(Int32, Int32, Int32)</h4>
   <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">protected NativeVectorDisposableBase(IntPtr handle)</code></pre>
+    <pre><code class="lang-csharp hljs">public TileCoordinate(int column, int row, int zoomLevel)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -160,25 +136,82 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">IntPtr</span></td>
-        <td><span class="parametername">handle</span></td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><span class="parametername">column</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><span class="parametername">row</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><span class="parametername">zoomLevel</span></td>
         <td></td>
       </tr>
     </tbody>
   </table>
-  <h3 id="properties">Properties
+  <h3 id="fields">Fields
   </h3>
   
   
-  <a id="PLATEAU_Interop_NativeVectorDisposableBase_1_Length_" data-uid="PLATEAU.Interop.NativeVectorDisposableBase`1.Length*"></a>
-  <h4 id="PLATEAU_Interop_NativeVectorDisposableBase_1_Length" data-uid="PLATEAU.Interop.NativeVectorDisposableBase`1.Length">Length</h4>
+  <h4 id="PLATEAU_Basemap_TileCoordinate_Column" data-uid="PLATEAU.Basemap.TileCoordinate.Column">Column</h4>
   <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public abstract int Length { get; }</code></pre>
+    <pre><code class="lang-csharp hljs">public readonly int Column</code></pre>
   </div>
-  <h5 class="propertyValue">Property Value</h5>
+  <h5 class="fieldValue">Field Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
+  <h4 id="PLATEAU_Basemap_TileCoordinate_Row" data-uid="PLATEAU.Basemap.TileCoordinate.Row">Row</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public readonly int Row</code></pre>
+  </div>
+  <h5 class="fieldValue">Field Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
+  <h4 id="PLATEAU_Basemap_TileCoordinate_ZoomLevel" data-uid="PLATEAU.Basemap.TileCoordinate.ZoomLevel">ZoomLevel</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public readonly int ZoomLevel</code></pre>
+  </div>
+  <h5 class="fieldValue">Field Value</h5>
   <table class="table table-bordered table-striped table-condensed">
     <thead>
       <tr>
@@ -197,55 +230,13 @@
   </h3>
   
   
-  <a id="PLATEAU_Interop_NativeVectorDisposableBase_1_At_" data-uid="PLATEAU.Interop.NativeVectorDisposableBase`1.At*"></a>
-  <h4 id="PLATEAU_Interop_NativeVectorDisposableBase_1_At_System_Int32_" data-uid="PLATEAU.Interop.NativeVectorDisposableBase`1.At(System.Int32)">At(Int32)</h4>
+  <a id="PLATEAU_Basemap_TileCoordinate_ToString_" data-uid="PLATEAU.Basemap.TileCoordinate.ToString*"></a>
+  <h4 id="PLATEAU_Basemap_TileCoordinate_ToString" data-uid="PLATEAU.Basemap.TileCoordinate.ToString">ToString()</h4>
   <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public abstract T At(int index)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">Int32</a></td>
-        <td><span class="parametername">index</span></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="xref">T</span></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  
-  
-  <a id="PLATEAU_Interop_NativeVectorDisposableBase_1_GetEnumerator_" data-uid="PLATEAU.Interop.NativeVectorDisposableBase`1.GetEnumerator*"></a>
-  <h4 id="PLATEAU_Interop_NativeVectorDisposableBase_1_GetEnumerator" data-uid="PLATEAU.Interop.NativeVectorDisposableBase`1.GetEnumerator">GetEnumerator()</h4>
-  <div class="markdown level1 summary"></div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public IEnumerator&lt;T&gt; GetEnumerator()</code></pre>
+    <pre><code class="lang-csharp hljs">public override readonly string ToString()</code></pre>
   </div>
   <h5 class="returns">Returns</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -257,18 +248,13 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">IEnumerator</span>&lt;T&gt;</td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">String</a></td>
         <td></td>
       </tr>
     </tbody>
   </table>
-  <h3 id="implements">Implements</h3>
-  <div>
-      <a class="xref" href="PLATEAU.Interop.INativeVector-1.html">INativeVector&lt;T&gt;</a>
-  </div>
-  <div>
-      <span class="xref">IEnumerable&lt;&gt;</span>
-  </div>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.valuetype.tostring#system-valuetype-tostring">ValueType.ToString()</a></div>
 </article>
           </div>
           
