@@ -1,9 +1,10 @@
 ﻿using PLATEAU.Geometries;
-using PLATEAU.Interop;
 using PLATEAU.MeshWriter;
 
 namespace PLATEAU.Editor.CityExport
 {
+    public enum MeshFileFormat{OBJ, GLTF, FBX}
+    
     internal struct MeshExportOptions
     {
         public enum MeshTransformType{Local/*ローカル座標系*/, PlaneCartesian/*平面直角座標系*/}

@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Linq;
+using System.Runtime.InteropServices;
 using PLATEAU.Geometries;
 using PLATEAU.Interop;
+using PLATEAU.Native;
 using PLATEAU.Util;
 
 namespace PLATEAU.PolygonMesh
@@ -17,6 +19,7 @@ namespace PLATEAU.PolygonMesh
     {
         public IntPtr Handle { get; }
         private bool isValid = true;
+
         public Mesh(IntPtr handle)
         {
             Handle = handle;
@@ -75,7 +78,7 @@ namespace PLATEAU.PolygonMesh
             DLLUtil.CheckDllError(result);
             return uv1;
         }
-        
+
         public PlateauVector2f[] GetUv2()
         {
             ThrowIfInvalid();
@@ -84,7 +87,7 @@ namespace PLATEAU.PolygonMesh
             DLLUtil.CheckDllError(result);
             return uv2;
         }
-        
+
         public PlateauVector2f[] GetUv3()
         {
             ThrowIfInvalid();
@@ -104,7 +107,7 @@ namespace PLATEAU.PolygonMesh
                 return numSubMesh;
             }
         }
-        
+
         public SubMesh GetSubMeshAt(int index)
         {
             ThrowIfInvalid();
@@ -123,7 +126,8 @@ namespace PLATEAU.PolygonMesh
         }
 
         public void MergeMeshInfo(PlateauVector3d[] vertices, uint[] indices, PlateauVector2f[] uv1,
-            SubMesh[] subMeshes, CoordinateSystem meshAxisConvertFrom, CoordinateSystem meshAxisConvertTo, bool includeTexture)
+            SubMesh[] subMeshes, CoordinateSystem meshAxisConvertFrom, CoordinateSystem meshAxisConvertTo,
+            bool includeTexture)
         {
             ThrowIfInvalid();
             var subMeshPointers = subMeshes.Select(sm => sm.Handle).ToArray();
@@ -172,7 +176,101 @@ namespace PLATEAU.PolygonMesh
             {
                 GetSubMeshAt(i).DebugPrint(sb);
             }
+
             sb.DecrementIndent();
+        }
+
+        private static class NativeMethods
+        {
+            [DllImport(DLLUtil.DllName, CharSet = CharSet.Ansi)]
+            internal static extern APIResult plateau_create_mesh(
+                out IntPtr newMeshPtr,
+                string meshID);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_delete_mesh(
+                [In] IntPtr handle);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_mesh_get_vertices_count(
+                [In] IntPtr handle,
+                out int outVerticesCount);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_mesh_get_vertex_at_index(
+                [In] IntPtr handle,
+                out PlateauVector3d outVertPos,
+                int index);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_mesh_get_indices_count(
+                [In] IntPtr handle,
+                out int outIndicesCount);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_mesh_get_indice_at_index(
+                [In] IntPtr handle,
+                out int vertexId,
+                int index);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_mesh_get_sub_mesh_count(
+                [In] IntPtr plateauMeshPtr,
+                out int subMeshCount);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_mesh_get_sub_mesh_at_index(
+                [In] IntPtr plateauMeshPtr,
+                out IntPtr plateauSubMeshPtr,
+                int index);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_mesh_get_uv1(
+                [In] IntPtr plateauMeshPtr,
+                [Out] PlateauVector2f[] outUvPosArray);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_mesh_get_uv2(
+                [In] IntPtr plateauMeshPtr,
+                [Out] PlateauVector2f[] outUvPosArray);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_mesh_get_uv3(
+                [In] IntPtr plateauMeshPtr,
+                [Out] PlateauVector2f[] outUvPosArray);
+
+            [DllImport(DLLUtil.DllName, CharSet = CharSet.Ansi)]
+            internal static extern APIResult plateau_mesh_add_sub_mesh(
+                [In] IntPtr meshPtr,
+                [In] string texturePath,
+                int subMeshStartIndex,
+                int subMeshEndIndex);
+            
+            // ***************
+            //  mesh_merger_c.cpp
+            // ***************
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_mesh_merger_merge_mesh(
+                [In] IntPtr meshPtr,
+                [In] IntPtr otherMeshPtr,
+                [MarshalAs(UnmanagedType.U1)] bool invertMeshFrontBack,
+                [MarshalAs(UnmanagedType.U1)] bool includeTexture);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_mesh_merger_mesh_info(
+                [In] IntPtr meshPtr,
+                [In] PlateauVector3d[] vertices,
+                int verticesCount,
+                [In] uint[] indices,
+                int indicesCount,
+                [In] PlateauVector2f[] uv1,
+                int uv1Count,
+                [In] IntPtr[] subMeshPointers,
+                int subMeshCount,
+                CoordinateSystem meshAxisConvertFrom,
+                CoordinateSystem meshAxisConvertTo,
+                [MarshalAs(UnmanagedType.U1)] bool includeTexture);
         }
     }
 }

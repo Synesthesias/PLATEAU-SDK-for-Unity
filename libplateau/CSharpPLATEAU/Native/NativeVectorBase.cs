@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-namespace PLATEAU.Interop
+namespace PLATEAU.Native
 {
     /// <summary>
     /// C++側の vector を扱う基底クラスです。
@@ -10,7 +10,7 @@ namespace PLATEAU.Interop
     /// </summary>
     public abstract class NativeVectorBase<T> : INativeVector<T>
     {
-        public IntPtr Handle { get; }
+        protected IntPtr Handle { get; }
         protected NativeVectorBase(IntPtr handle)
         {
             Handle = handle;

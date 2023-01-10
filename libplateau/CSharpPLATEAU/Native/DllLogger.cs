@@ -1,9 +1,20 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 using System.Threading;
+using PLATEAU.Interop;
 
-namespace PLATEAU.Interop
+namespace PLATEAU.Native
 {
+    
+    public enum DllLogLevel
+    {
+        Error = 4,
+        Warning = 3,
+        Info = 2,
+        Debug = 1,
+        Trace = 0
+    }
+    
     /// <summary>
     /// DLL側のログをC#側でコールバックで受け取ることができますが、
     /// その Error, Warn, Info の3つのコールバックをまとめたクラスです。
@@ -11,6 +22,8 @@ namespace PLATEAU.Interop
     /// </summary>
     public class LogCallbacks
     {
+        public delegate void LogCallbackFuncType(IntPtr textPtr);
+        
         public LogCallbackFuncType LogError { get; set; }
         public LogCallbackFuncType LogWarn { get; set; }
         public LogCallbackFuncType LogInfo { get; set; }
@@ -18,10 +31,10 @@ namespace PLATEAU.Interop
         public IntPtr LogWarnFuncPtr => DelegateToPtr(LogWarn);
         public IntPtr LogInfoFuncPtr => DelegateToPtr(LogInfo);
 
-        public static readonly LogCallbackFuncType StdErrFunc = messagePtr =>
+        private static readonly LogCallbackFuncType StdErrFunc = messagePtr =>
             Console.Error.WriteLine(PtrToStr(messagePtr));
 
-        public static readonly LogCallbackFuncType StdOutFunc = messagePtr => Console.WriteLine(PtrToStr(messagePtr));
+        private static readonly LogCallbackFuncType StdOutFunc = messagePtr => Console.WriteLine(PtrToStr(messagePtr));
 
         public LogCallbacks(LogCallbackFuncType logError, LogCallbackFuncType logWarn, LogCallbackFuncType logInfo)
         {
@@ -55,7 +68,7 @@ namespace PLATEAU.Interop
     /// </summary>
     public class DllLogger : IDisposable
     {
-        private IntPtr handle;
+        private readonly IntPtr handle;
         private int disposed;
         private readonly bool hasOwnership;
 
@@ -125,6 +138,29 @@ namespace PLATEAU.Interop
                 this.handle, logLevel
             );
             DLLUtil.CheckDllError(result);
+        }
+
+        private static class NativeMethods
+        {
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_create_dll_logger(
+                out IntPtr outHandle
+            );
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern void plateau_delete_dll_logger([In] IntPtr dllLogger);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_dll_logger_set_callbacks(
+                [In] IntPtr handle,
+                [In] IntPtr errorCallbackFuncPtr,
+                [In] IntPtr warnCallbackPtrFuncPtr,
+                [In] IntPtr infoCallbackFuncPtr);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_dll_logger_set_log_level(
+                [In] IntPtr handle,
+                DllLogLevel dllLogLevel);
         }
     }
 }

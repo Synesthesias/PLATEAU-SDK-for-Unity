@@ -1,6 +1,7 @@
 ﻿using PLATEAU.Interop;
 using PLATEAU.PolygonMesh;
 using System;
+using System.Runtime.InteropServices;
 
 namespace PLATEAU.MeshWriter
 {
@@ -14,6 +15,12 @@ namespace PLATEAU.MeshWriter
             this.GltfFileFormat = format;
             this.TextureDirectoryPath = path;
         }
+    }
+    
+    public enum GltfFileFormat
+    {
+        GLB,
+        GLTF
     }
 
     public class GltfWriter : IDisposable
@@ -50,6 +57,24 @@ namespace PLATEAU.MeshWriter
             DLLUtil.ExecNativeVoidFunc(this.handle, NativeMethods.plateau_delete_gltf_writer);
             GC.SuppressFinalize(this);
             this.isDisposed = true;
+        }
+
+        private static class NativeMethods
+        {
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_create_gltf_writer(out IntPtr outHandle);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_delete_gltf_writer([In] IntPtr gltfWriter);
+
+            [DllImport(DLLUtil.DllName, CharSet = CharSet.Ansi)]
+            internal static extern APIResult plateau_gltf_writer_write(
+                [In] IntPtr handle,
+                out bool flg,
+                [In] byte[] gltfFilePathUtf8,
+                [In] IntPtr modelPtr,
+                [In] byte[] texPathUtf8,
+                GltfFileFormat format);
         }
     }
 }

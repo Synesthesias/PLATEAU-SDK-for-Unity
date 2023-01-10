@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using PLATEAU.Basemap;
 using PLATEAU.Geometries;
 using PLATEAU.Interop;
+using PLATEAU.Native;
 using PLATEAU.Util.Async;
 using UnityEngine;
 

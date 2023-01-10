@@ -2,6 +2,7 @@
 using System.Linq;
 using PLATEAU.Interop;
 using PLATEAU.Dataset;
+using PLATEAU.Native;
 using UnityEngine.SceneManagement;
 
 #if UNITY_EDITOR

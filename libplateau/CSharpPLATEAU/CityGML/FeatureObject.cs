@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 using PLATEAU.Interop;
 
 namespace PLATEAU.CityGML
@@ -43,6 +44,22 @@ namespace PLATEAU.CityGML
                 lowerX, lowerY, lowerZ, upperX, upperY, upperZ
             );
             DLLUtil.CheckDllError(result);
+        }
+
+        private static class NativeMethods
+        {
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_feature_object_get_envelope(
+                [In] IntPtr featureObject,
+                [Out] double[] outEnvelope
+            );
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_feature_object_set_envelope(
+                [In] IntPtr featureObject,
+                double lowerX, double lowerY, double lowerZ,
+                double upperX, double upperY, double upperZ
+            );
         }
     }
 }

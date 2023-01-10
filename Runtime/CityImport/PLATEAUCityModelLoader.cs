@@ -1,6 +1,7 @@
 ﻿using PLATEAU.CityImport.Setting;
 using PLATEAU.Interop;
 using PLATEAU.Dataset;
+using PLATEAU.Native;
 using UnityEngine;
 
 #if UNITY_EDITOR

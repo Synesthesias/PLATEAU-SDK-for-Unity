@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 using PLATEAU.Interop;
 
 namespace PLATEAU.CityGML
@@ -9,19 +10,18 @@ namespace PLATEAU.CityGML
     /// </summary>
     public class Object
     {
-        private readonly IntPtr handle;
         private AttributesMap attributesMap; // get されるまでは null なので null許容型とします。
         private string id = "";
-
-        internal Object(IntPtr handle)
-        {
-            this.handle = handle;
-        }
-
+        
         /// <summary>
         /// セーフハンドルを取得します。
         /// </summary>
-        public IntPtr Handle => this.handle;
+        public IntPtr Handle { get; }
+
+        internal Object(IntPtr handle)
+        {
+            Handle = handle;
+        }
 
         /// <summary>
         /// オブジェクトのユニークIDを取得します。
@@ -58,6 +58,21 @@ namespace PLATEAU.CityGML
                 }
                 return this.attributesMap;
             }
+        }
+
+        private static class NativeMethods
+        {
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_object_get_id(
+                [In] IntPtr objHandle,
+                out IntPtr outStrPtr,
+                out int strLength);
+
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_object_get_attributes_map(
+                [In] IntPtr objHandle,
+                out IntPtr attributesMapPtr);
         }
     }
 }

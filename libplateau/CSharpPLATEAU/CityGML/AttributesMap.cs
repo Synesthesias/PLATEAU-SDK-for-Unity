@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using PLATEAU.Interop;
 
 // key と value のペアに短縮名を付けます。
@@ -195,7 +196,15 @@ namespace PLATEAU.CityGML
                 this.index = -1;
             }
 
-            AttrPair IEnumerator<AttrPair>.Current => (AttrPair)Current;
+            AttrPair IEnumerator<AttrPair>.Current
+            {
+                get
+                {
+                    object current = Current;
+                    if (current == null) throw new NullReferenceException();
+                    return (AttrPair)current;
+                }
+            }
 
             public object Current
             {
@@ -213,6 +222,43 @@ namespace PLATEAU.CityGML
             public void Dispose()
             {
             }
+        }
+
+        private static class NativeMethods
+        {
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_attributes_map_get_keys_count(
+                [In] IntPtr attributesMap,
+                out int count);
+
+
+            [DllImport(DLLUtil.DllName, CharSet = CharSet.Ansi)]
+            internal static extern APIResult plateau_attributes_map_get_keys(
+                [In] IntPtr attributesMap,
+                [In, Out] IntPtr[] keyHandles,
+                [Out] int[] outKeySizes);
+
+            [DllImport(DLLUtil.DllName, CharSet = CharSet.Ansi)]
+            internal static extern APIResult plateau_attributes_map_get_attribute_value(
+                [In] IntPtr attributesMap,
+                [In] byte[] keyUtf8,
+                [Out] out IntPtr attrValuePtr);
+
+            [DllImport(DLLUtil.DllName, CharSet = CharSet.Ansi)]
+            internal static extern APIResult plateau_attributes_map_do_contains_key(
+                [In] IntPtr attributesMap,
+                [In] byte[] keyUtf8,
+                out bool doContainsKey);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_attributes_map_to_string_size(
+                [In] IntPtr attributesMap,
+                out int size);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_attributes_map_to_string(
+                [In] IntPtr attributesMap,
+                [In, Out] IntPtr outStrPtrUtf8);
         }
     }
 }

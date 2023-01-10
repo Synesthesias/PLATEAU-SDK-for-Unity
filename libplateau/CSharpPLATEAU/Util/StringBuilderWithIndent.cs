@@ -8,7 +8,7 @@ namespace PLATEAU.Util
     /// </summary>
     public class StringBuilderWithIndent
     {
-        private StringBuilder sb;
+        private readonly StringBuilder sb;
         private int indent;
 
         public StringBuilderWithIndent()

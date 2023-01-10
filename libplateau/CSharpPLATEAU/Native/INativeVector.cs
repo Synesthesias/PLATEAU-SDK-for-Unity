@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace PLATEAU.Interop
+namespace PLATEAU.Native
 {
     public interface INativeVector<out T> : IEnumerable<T>
     {

@@ -1,7 +1,7 @@
 ﻿using PLATEAU.CityImport.Setting;
 using PLATEAU.Editor.EditorWindow.Common;
-using PLATEAU.Interop;
 using PLATEAU.Dataset;
+using PLATEAU.PolygonMesh;
 using UnityEditor;
 
 namespace PLATEAU.Editor.CityImport

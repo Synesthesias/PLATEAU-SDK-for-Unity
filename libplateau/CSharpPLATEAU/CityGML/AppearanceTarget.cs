@@ -1,6 +1,6 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using PLATEAU.Interop;
 
 namespace PLATEAU.CityGML
@@ -12,6 +12,7 @@ namespace PLATEAU.CityGML
     public class AppearanceTarget : Object
     {
         private readonly Dictionary<IntPtr, TextureTargetDefinition> cachedTexTargetDefs;
+
         internal AppearanceTarget(IntPtr handle) : base(handle)
         {
             this.cachedTexTargetDefs = new Dictionary<IntPtr, TextureTargetDefinition>();
@@ -29,12 +30,13 @@ namespace PLATEAU.CityGML
         /// </summary>
         public TextureTargetDefinition GetTextureTargetDefinition(int index)
         {
-            IntPtr ptr = DLLUtil.GetNativeValue<IntPtr>(Handle,index,
+            IntPtr ptr = DLLUtil.GetNativeValue<IntPtr>(Handle, index,
                 NativeMethods.plateau_appearance_target_get_texture_target_definition_by_index);
             if (this.cachedTexTargetDefs.ContainsKey(ptr))
             {
                 return this.cachedTexTargetDefs[ptr];
             }
+
             return this.cachedTexTargetDefs[ptr] = new TextureTargetDefinition(ptr);
         }
 
@@ -65,11 +67,13 @@ namespace PLATEAU.CityGML
             {
                 throw new KeyNotFoundException($"themeName: {themeName} is not found.");
             }
+
             DLLUtil.CheckDllError(result);
             if (this.cachedTexTargetDefs.ContainsKey(ptr))
             {
                 return this.cachedTexTargetDefs[ptr];
             }
+
             return this.cachedTexTargetDefs[ptr] = new TextureTargetDefinition(ptr);
         }
 
@@ -99,13 +103,13 @@ namespace PLATEAU.CityGML
                     );
                     return result;
                 },
-                ( handle, strSizes) =>
+                (handle, strSizes) =>
                 {
                     var result = NativeMethods.plateau_appearance_target_get_all_texture_theme_names_str_sizes(
                         handle, strSizes, front);
                     return result;
                 },
-                ( handle, strPtrArrayPtr) =>
+                (handle, strPtrArrayPtr) =>
                 {
                     var result = NativeMethods.plateau_appearance_target_get_all_texture_theme_names(
                         handle, strPtrArrayPtr, front);
@@ -114,7 +118,7 @@ namespace PLATEAU.CityGML
             );
             return ret;
         }
-        
+
         public int MaterialThemesCountByFront(bool front)
         {
             APIResult result = NativeMethods.plateau_appearance_target_get_all_material_theme_names_count(
@@ -122,7 +126,7 @@ namespace PLATEAU.CityGML
             DLLUtil.CheckDllError(result);
             return count;
         }
-        
+
         // TODO 未テスト MaterialTargetDefinition を利用したGMLファイルの例が見当たらないため
         public string[] MaterialThemeNames(bool front)
         {
@@ -135,13 +139,13 @@ namespace PLATEAU.CityGML
                     );
                     return result;
                 },
-                ( handle, strSizes) =>
+                (handle, strSizes) =>
                 {
                     var result = NativeMethods.plateau_appearance_target_get_all_material_theme_names_str_sizes(
                         handle, strSizes, front);
                     return result;
                 },
-                ( handle, strPtrArrayPtr) =>
+                (handle, strPtrArrayPtr) =>
                 {
                     var result = NativeMethods.plateau_appearance_target_get_all_material_theme_names(
                         handle, strPtrArrayPtr, front);
@@ -160,8 +164,73 @@ namespace PLATEAU.CityGML
             {
                 throw new KeyNotFoundException($"themeName: {themeName} is not found.");
             }
+
             DLLUtil.CheckDllError(result);
             return new MaterialTargetDefinition(matTargetHandle);
+        }
+
+        private static class NativeMethods
+        {
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_appearance_target_get_all_texture_theme_names_count(
+                [In] IntPtr handle,
+                out int outCount,
+                [MarshalAs(UnmanagedType.U1)] bool front);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_appearance_target_get_all_texture_theme_names(
+                [In] IntPtr handle,
+                [In, Out] IntPtr outThemeStrArrayHandle,
+                [MarshalAs(UnmanagedType.U1)] bool front);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_appearance_target_get_all_texture_theme_names_str_sizes(
+                [In] IntPtr handle,
+                [Out] int[] outSizeArray,
+                [MarshalAs(UnmanagedType.U1)] bool front);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_appearance_target_get_all_material_theme_names_count(
+                [In] IntPtr handle,
+                out int outCount,
+                [MarshalAs(UnmanagedType.U1)] bool front);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_appearance_target_get_all_material_theme_names(
+                [In] IntPtr handle,
+                [In, Out] IntPtr outThemeStrArrayHandle,
+                [MarshalAs(UnmanagedType.U1)] bool front);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_appearance_target_get_all_material_theme_names_str_sizes(
+                [In] IntPtr handle,
+                [Out] int[] outSizeArray,
+                [MarshalAs(UnmanagedType.U1)] bool front);
+
+            [DllImport(DLLUtil.DllName, CharSet = CharSet.Ansi)]
+            internal static extern APIResult plateau_appearance_target_get_texture_target_definition_by_theme_name(
+                [In] IntPtr handle,
+                [Out] out IntPtr outTextureTargetHandle,
+                [In] byte[] themeUtf8,
+                [MarshalAs(UnmanagedType.U1)] bool front);
+
+            [DllImport(DLLUtil.DllName, CharSet = CharSet.Ansi)]
+            internal static extern APIResult plateau_appearance_target_get_material_target_definition_by_theme_name(
+                [In] IntPtr handle,
+                [Out] out IntPtr outMaterialTargetHandle,
+                [In] byte[] themeNameUtf8,
+                [MarshalAs(UnmanagedType.U1)] bool front);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_appearance_target_get_texture_target_definitions_count(
+                [In] IntPtr handle,
+                out int outCount);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_appearance_target_get_texture_target_definition_by_index(
+                [In] IntPtr handle,
+                out IntPtr outTexTargetDefHandle,
+                int index);
         }
     }
 }

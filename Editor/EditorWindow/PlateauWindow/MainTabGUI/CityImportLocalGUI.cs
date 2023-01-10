@@ -8,6 +8,7 @@ using PLATEAU.Geometries;
 using PLATEAU.Interop;
 using PLATEAU.Dataset;
 using PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts;
+using PLATEAU.Native;
 using UnityEditor;
 
 namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI

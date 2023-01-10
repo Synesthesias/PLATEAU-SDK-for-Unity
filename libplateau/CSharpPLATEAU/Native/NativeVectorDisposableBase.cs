@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-namespace PLATEAU.Interop
+namespace PLATEAU.Native
 {
     /// <summary>
     /// <seealso cref="NativeVectorBase{T}"/> の自動で NativeDispose する版です。

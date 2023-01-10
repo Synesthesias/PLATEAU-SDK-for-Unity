@@ -1,14 +1,16 @@
 ﻿using System;
 using System.Linq;
+using System.Runtime.InteropServices;
+using PLATEAU.Interop;
 
-namespace PLATEAU.Interop
+namespace PLATEAU.Native
 {
     /// <summary>
     /// C++側の vector{string} を扱います。
     /// </summary>
-    public class NativeVectorString : NativeVectorDisposableBase<NativeString>
+    internal class NativeVectorString : NativeVectorDisposableBase<NativeString>
     {
-        public NativeVectorString(IntPtr handle) : base(handle)
+        private NativeVectorString(IntPtr handle) : base(handle)
         {
         }
 
@@ -51,6 +53,28 @@ namespace PLATEAU.Interop
         public string[] ToCSharpArray()
         {
             return this.Select(nativeStr => nativeStr.ToString()).ToArray();
+        }
+
+        private static class NativeMethods
+        {
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_create_vector_string(
+                out IntPtr outVectorPtr);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_delete_vector_string(
+                [In] IntPtr vectorPtr);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_vector_string_get_pointer(
+                [In] IntPtr vectorPtr,
+                out IntPtr outStringPtr,
+                int index);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_vector_string_count(
+                [In] IntPtr handle,
+                out int outCount);
         }
     }
 }

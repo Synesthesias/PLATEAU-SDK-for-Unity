@@ -20,9 +20,9 @@ namespace PLATEAU.Tests.TestUtils
     {
 
         /// <summary> Unityキャッシュフォルダ内のテスト用ディレクトリパスです。 </summary>
-        public static string TempCacheFolderPath => Path.Combine(Application.temporaryCachePath, "UnitTestTemporary");
+        public static string TempCacheFolderPath => Path.Combine(Application.temporaryCachePath, "ユニットテスト一時フォルダ"); // 日本語名を含むパスへの対応をチェックしたいので日本語名にします。
         /// <summary> Unityアセットフォルダ内のテスト用ディレクトリパスです。 </summary>
-        public static string TempAssetFolderPath => Path.Combine(Application.dataPath, "UnitTestTemporary");
+        public static string TempAssetFolderPath => Path.Combine(Application.dataPath, "ユニットテスト一時フォルダ"); // 日本語名を含むパスへの対応をチェックしたいので日本語名にします。
         /// <summary> テストデータが入っている Package 内のフォルダです。 </summary>
         public static string TestDataFolderPath => Path.GetFullPath("Packages/PlateauUnitySDK/Tests/TestData");
 

@@ -1,5 +1,6 @@
 ﻿using PLATEAU.Geometries;
 using PLATEAU.Interop;
+using PLATEAU.Native;
 using UnityEngine;
 
 namespace PLATEAU.Util
@@ -26,7 +27,7 @@ namespace PLATEAU.Util
         /// </summary>
         public static GeoReference UnityStandardGeoReference(int coordinateZoneID)
         {
-            return new GeoReference(new PlateauVector3d(0, 0, 0),
+            return GeoReference.Create(new PlateauVector3d(0, 0, 0),
                 1.0f, CoordinateSystem.EUN, coordinateZoneID);
         }
     }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 using PLATEAU.Interop;
 
 namespace PLATEAU.CityGML{
@@ -42,6 +43,20 @@ namespace PLATEAU.CityGML{
                 return new TextureCoordinates(coordPtr);
             });
             return ret;
+        }
+
+        private static class NativeMethods
+        {
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_texture_target_definition_get_texture_coordinates_count(
+                [In] IntPtr handle,
+                out int count);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_texture_target_definition_get_texture_coordinates(
+                [In] IntPtr handle,
+                out IntPtr outTexCoords,
+                int index);
         }
     }
 }

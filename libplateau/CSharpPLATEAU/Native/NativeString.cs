@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Runtime.InteropServices;
+using PLATEAU.Interop;
 
-namespace PLATEAU.Interop
+namespace PLATEAU.Native
 {
     /// <summary>
     /// C++側の std::string を扱います。
@@ -11,7 +13,7 @@ namespace PLATEAU.Interop
     //      そのような面倒な部分を NativeString に置き換えればコード簡略化できそうです。ただし寿命に要注意です。
     //      加えて string の配列となるとさらに複雑になっていますが、こちらも NativeVectorString に置き換えることでシンプルになりそうです。
     
-    public class NativeString
+    internal class NativeString 
     {
         public IntPtr Handle { get; }
 
@@ -37,6 +39,27 @@ namespace PLATEAU.Interop
             var charPtr = DLLUtil.GetNativeValue<IntPtr>(Handle, NativeMethods.plateau_string_get_char_ptr);
             string str = DLLUtil.ReadUtf8Str(charPtr, strSize);
             return str;
+        }
+
+        private static class NativeMethods
+        {
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_create_string(
+                out IntPtr newStringPtr);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_delete_string(
+                [In] IntPtr stringPtr);
+        
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_string_get_size(
+                [In] IntPtr nativeStringPtr,
+                out int outSize);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_string_get_char_ptr(
+                [In] IntPtr nativeStringPtr,
+                out IntPtr outCharPtr);
         }
     }
 }
