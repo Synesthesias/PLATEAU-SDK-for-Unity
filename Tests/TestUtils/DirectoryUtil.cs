@@ -47,6 +47,7 @@ namespace PLATEAU.Tests.TestUtils
         /// Unityの Assets 内にテスト用フォルダを作ります。
         /// その中身を空にします。
         /// </summary>
+        #if UNITY_EDITOR
         public static void SetUpTempAssetFolder()
         {
             string assetPath = PathUtil.FullPathToAssetsPath(TempAssetFolderPath);
@@ -65,11 +66,13 @@ namespace PLATEAU.Tests.TestUtils
 
             AssetDatabase.Refresh();
         }
+        #endif
 
         /// <summary>
         /// Assets 内のテスト用フォルダを削除します。
         /// 削除の成否を bool で返します。
         /// </summary>
+        #if UNITY_EDITOR
         public static bool DeleteTempAssetFolder()
         {
             string assetPath = PathUtil.FullPathToAssetsPath(TempAssetFolderPath);
@@ -82,6 +85,7 @@ namespace PLATEAU.Tests.TestUtils
             AssetDatabase.Refresh();
             return result;
         }
+        #endif
 
         /// <summary>
         /// Unityキャッシュフォルダ内のテスト用ディレクトリを削除します。
@@ -91,12 +95,14 @@ namespace PLATEAU.Tests.TestUtils
             DeleteAllInDir(TempCacheFolderPath);
         }
 
+        #if UNITY_EDITOR
         public static void CopyFileToTempAssetFolder(string srcFilePath, string destFileName)
         {
             string destPath = Path.Combine(TempAssetFolderPath, destFileName);
             File.Copy(srcFilePath, destPath);
             AssetDatabase.Refresh();
         }
+        #endif
 
         /// <summary>
         /// <paramref name="folderPath"/> にフォルダを作り、

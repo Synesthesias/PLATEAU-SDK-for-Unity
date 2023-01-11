@@ -9,6 +9,7 @@ using PLATEAU.Editor.EditorWindow.ProgressDisplay;
 using PLATEAU.Interop;
 using PLATEAU.Dataset;
 using PLATEAU.Native;
+using PLATEAU.Util;
 
 namespace PLATEAU.Tests.TestUtils
 {
@@ -38,7 +39,13 @@ namespace PLATEAU.Tests.TestUtils
         /// </summary>
         public Task ImportLocal()
         {
+            
+            #if UNITY_EDITOR
             var progressDisplay = new ProgressDisplayGUI(null);
+            #else
+            IProgressDisplay progressDisplay = null;
+            #endif
+            
             var conf = MakeConfig(false);
 
             var task = CityImporter.ImportAsync(conf, progressDisplay);
@@ -50,7 +57,11 @@ namespace PLATEAU.Tests.TestUtils
         /// </summary>
         public Task ImportServer()
         {
+            #if UNITY_EDITOR
             var progressDisplay = new ProgressDisplayGUI(null);
+            #else
+            IProgressDisplay progressDisplay = null;
+            #endif
             var task = CityImporter.ImportAsync(MakeConfig(true), progressDisplay);
             return task;
         }
