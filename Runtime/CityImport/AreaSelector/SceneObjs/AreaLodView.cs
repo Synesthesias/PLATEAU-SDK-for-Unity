@@ -20,7 +20,13 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         private readonly Vector3 meshCodeUnityPositionLowerRight;
         private const string iconDirPath = "Packages/com.synesthesias.plateau-unity-sdk/Images/AreaSelect";
         private const string iconsBoxImagePath = "round-window-wide.png";
+        
+        #if UNITY_EDITOR
         private static readonly float maxIconWidth = 60 * EditorGUIUtility.pixelsPerPoint;
+        #else
+        private static readonly float maxIconWidth = 60;
+        #endif
+        
         /// <summary> 利用可能を意味するアイコンの不透明度です。 </summary>
         private const float iconOpacityAvailable = 0.95f;
         /// <summary> 利用不可を意味するアイコンの不透明度です。 </summary>
