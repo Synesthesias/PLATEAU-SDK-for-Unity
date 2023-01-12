@@ -12,6 +12,7 @@ using PLATEAU.Tests.TestUtils;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;
 using Object = UnityEngine.Object;
 
@@ -28,13 +29,14 @@ namespace PLATEAU.Tests.EditModeTests
         [UnityTest]
         public IEnumerator Components_Exist_In_Area_Select_Scene()
         {
-            EditorSceneManager.OpenScene("Packages/com.synesthesias.plateau-unity-sdk/Tests/EmptySceneForTest.unity");
+            var emptyScene = EditorSceneManager.OpenScene("Packages/com.synesthesias.plateau-unity-sdk/Tests/EmptySceneForTest.unity", OpenSceneMode.Additive);
             yield return null;
+            SceneManager.SetActiveScene(emptyScene);
             // MiniTokyo の範囲選択画面を開始します。
             var testDef = TestCityDefinition.MiniTokyo;
             var datasetConf = new DatasetSourceConfig(false, testDef.SrcRootDirPathLocal, "");
             this.resultReceiver = new DummyAreaSelectResultReceiver();
-
+        
             AreaSelectorStarter.Start(datasetConf, this.resultReceiver, testDef.CoordinateZoneId);
             
             LogAssert.ignoreFailingMessages = true;
@@ -55,7 +57,25 @@ namespace PLATEAU.Tests.EditModeTests
             var oneOfMapTrans = gsiMapsObj.transform.Find("12/1614/3637");
             Assert.IsNotNull(oneOfMapTrans, "東京の地図の一部に相当するゲームオブジェクトが存在します。");
             Assert.IsNotNull(oneOfMapTrans.GetComponent<MeshRenderer>().sharedMaterial.mainTexture, "地図にはテクスチャが割り当てられます。");
+            var areaSelectorBehaviour = Object.FindObjectOfType<AreaSelectorBehaviour>();
+            Assert.IsNotNull(areaSelectorBehaviour, "AreaSelectorBehaviourが存在します。");
             
+            // 終了処理
+            areaSelectorBehaviour.OnSelectButtonPushed();
+            yield return null;
+            var newTestScene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Additive);
+            yield return null;
+            EditorSceneManager.CloseScene(emptyScene, true);
+            yield return null;
+            SceneManager.SetActiveScene(newTestScene);
+            
+            var startT2 = DateTime.Now;
+            while ((DateTime.Now - startT2).TotalMilliseconds < 1000)
+            {
+                yield return null;
+            }
+            // SceneManager.SetActiveScene(prevScene);
+            // yield return null;
         }
     }
 }
