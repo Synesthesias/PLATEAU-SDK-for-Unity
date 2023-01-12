@@ -65,7 +65,10 @@ namespace PLATEAU.Tests.EditModeTests
             yield return null;
             var newTestScene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Additive);
             yield return null;
+            
+            // TODO 複数のユニットテストを実行するとき、なぜかここでシーン EmptySceneForTest が閉じず、開いたまま後続のテストが進行するのを直したほうが良い
             EditorSceneManager.CloseScene(emptyScene, true);
+            
             yield return null;
             SceneManager.SetActiveScene(newTestScene);
             
