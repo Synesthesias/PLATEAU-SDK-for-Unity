@@ -41,7 +41,7 @@ namespace PLATEAU.CityImport.AreaSelector
             EditorSceneManager.sceneOpened += OnBackToPrevScene;
             EditorSceneManager.OpenScene(prevScenePath);
             // MacOSだと、範囲選択のときに PlateauWindow が背面に回ってしまい見失いがちなので再表示します。
-            prevEditorWindow.Show();
+            prevEditorWindow.Focus();
         }
 #endif
 
