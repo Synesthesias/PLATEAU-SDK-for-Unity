@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using PLATEAU.Util;
 using PLATEAU.Util.Async;
 using UnityEngine;
+using UnityEngine.Experimental.Rendering;
 using UnityEngine.Rendering;
 using Mesh = UnityEngine.Mesh;
 
@@ -149,15 +150,38 @@ namespace PLATEAU.CityImport.Load.Convert
                 // この Compress によってテクスチャ容量が 6分の1 になります。
                 // 松山市のLOD2の建物モデルで計測したところ、 テクスチャのメモリ使用量が 2.6GB から 421.3MB になりました。
                 // 画質は下がりますが、メモリ使用量を適正にするために必須と思われます。
-                ((Texture2D)texture).Compress(true);
+                var compressedTex = Compress(texture);
 
                 // 生成したUnityテクスチャへの参照を meshData に追加します。
-                meshData.AddTexture(i, texture);
-                texture.name = relativePath;
-                cachedTexture[relativePath] = texture;
-                
-
+                meshData.AddTexture(i, compressedTex);
+                compressedTex.name = relativePath;
+                cachedTexture[relativePath] = compressedTex;
             }
+        }
+        
+        // テクスチャを圧縮します。
+        private static Texture2D Compress(Texture src)
+        {
+            // Compressメソッドで圧縮する準備として、幅・高さを4の倍数にする必要があります。
+            // 最も近い4の倍数を求めます。
+            var widthX4 = (src.width + 2) / 4 * 4;
+            var heightX4 = (src.height + 2) / 4 * 4;
+            
+            // テクスチャをリサイズします。
+            // 参考: https://light11.hatenadiary.com/entry/2018/04/19/194015
+            var rt = RenderTexture.GetTemporary(widthX4, heightX4);
+            Graphics.Blit(src, rt);
+            var prevRt = RenderTexture.active;
+            RenderTexture.active = rt;
+            var dst = new Texture2D(widthX4, heightX4);
+            dst.ReadPixels(new Rect(0, 0, widthX4, heightX4), 0, 0);
+            dst.Apply();
+            RenderTexture.active = prevRt;
+            RenderTexture.ReleaseTemporary(rt);
+            
+            // 圧縮のキモです。
+            dst.Compress(true);
+            return dst;
         }
     }
 }
