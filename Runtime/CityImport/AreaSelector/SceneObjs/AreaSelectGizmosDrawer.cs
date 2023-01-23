@@ -2,7 +2,6 @@
 using System.Collections.ObjectModel;
 using System.Linq;
 using PLATEAU.Geometries;
-using PLATEAU.Interop;
 using PLATEAU.Dataset;
 using PLATEAU.Native;
 using PLATEAU.Util;

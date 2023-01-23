@@ -1,15 +1,12 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using PLATEAU.CityImport.AreaSelector.SceneObjs;
 using PLATEAU.Geometries;
-using PLATEAU.Interop;
 using PLATEAU.Dataset;
 using PLATEAU.Native;
 using PLATEAU.Util;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -33,21 +30,25 @@ namespace PLATEAU.CityImport.AreaSelector
         private GeoReference geoReference;
         private bool prevSceneCameraRotationLocked;
         private GSIMapLoaderZoomSwitch mapLoader;
+        #if UNITY_EDITOR
+        private EditorWindow prevEditorWindow;
+        #endif
 
 
         public static bool IsAreaSelectEnabled { get; set; }
 
-        public void Init(string prevScenePathArg, DatasetSourceConfig datasetSourceConfigArg, IAreaSelectResultReceiver areaSelectResultReceiverArg, int coordinateZoneIDArg)
+#if UNITY_EDITOR
+        public void Init(string prevScenePathArg, DatasetSourceConfig datasetSourceConfigArg, IAreaSelectResultReceiver areaSelectResultReceiverArg, int coordinateZoneIDArg, EditorWindow prevEditorWindowArg)
         {
             IsAreaSelectEnabled = true;
             this.prevScenePath = prevScenePathArg;
             this.datasetSourceConfig = datasetSourceConfigArg;
             this.areaSelectResultReceiver = areaSelectResultReceiverArg;
             this.coordinateZoneID = coordinateZoneIDArg;
-            #if UNITY_EDITOR
             this.prevSceneCameraRotationLocked = SceneView.lastActiveSceneView.isRotationLocked;
-            #endif
+            this.prevEditorWindow = prevEditorWindowArg;
         }
+#endif
 
         private void Start()
         {
@@ -146,7 +147,9 @@ namespace PLATEAU.CityImport.AreaSelector
             var areaSelectResult = this.gizmosDrawer.SelectedMeshCodes;
             var selectedExtent = this.gizmosDrawer.CursorExtent(this.coordinateZoneID, this.geoReference.ReferencePoint);
             // 無名関数のキャプチャを利用して、シーン終了後も必要なデータが渡るようにします。
-            AreaSelectorDataPass.Exec(this.prevScenePath, areaSelectResult, this.areaSelectResultReceiver, this.availablePackageFlags, selectedExtent);
+            #if UNITY_EDITOR
+            AreaSelectorDataPass.Exec(this.prevScenePath, areaSelectResult, this.areaSelectResultReceiver, this.availablePackageFlags, selectedExtent, this.prevEditorWindow);
+            #endif
         }
 
         public void OnSelectButtonPushed()

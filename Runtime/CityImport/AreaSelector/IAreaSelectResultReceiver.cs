@@ -1,5 +1,4 @@
-﻿using PLATEAU.Interop;
-using PLATEAU.Dataset;
+﻿using PLATEAU.Dataset;
 using PLATEAU.Native;
 
 namespace PLATEAU.CityImport.AreaSelector

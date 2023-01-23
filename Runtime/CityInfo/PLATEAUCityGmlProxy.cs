@@ -3,7 +3,6 @@ using System.Collections.Concurrent;
 using System.IO;
 using System.Threading.Tasks;
 using PLATEAU.CityGML;
-using PLATEAU.Interop;
 using PLATEAU.Dataset;
 using PLATEAU.Util;
 using UnityEngine;

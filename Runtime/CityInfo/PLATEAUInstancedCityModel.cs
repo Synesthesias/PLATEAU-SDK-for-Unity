@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using PLATEAU.CityGML;
 using PLATEAU.Geometries;
-using PLATEAU.Interop;
 using PLATEAU.Native;
 using UnityEngine;
 
