@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using PLATEAU.CityGML;
-using PLATEAU.Interop;
 using PLATEAU.PolygonMesh;
 using PLATEAU.Util;
 using UnityEngine;

@@ -10,7 +10,6 @@ using PLATEAU.CityImport.Load.FileCopy;
 using PLATEAU.CityImport.Setting;
 using PLATEAU.CityInfo;
 using PLATEAU.Geometries;
-using PLATEAU.Interop;
 using PLATEAU.Dataset;
 using PLATEAU.Native;
 using PLATEAU.Util;

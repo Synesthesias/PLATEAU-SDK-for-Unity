@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using PLATEAU.Geometries;
-using PLATEAU.Interop;
 using PLATEAU.Native;
 using PLATEAU.Util;
 using UnityEditor;

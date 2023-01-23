@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using PLATEAU.Interop;
 using PLATEAU.Dataset;
 using PLATEAU.Native;
 using PLATEAU.PolygonMesh;
