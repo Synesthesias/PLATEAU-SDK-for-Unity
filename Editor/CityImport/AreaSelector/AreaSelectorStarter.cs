@@ -43,6 +43,8 @@ namespace PLATEAU.Editor.CityImport.AreaSelector
                 return;
             }
             
+            UnityEditor.EditorWindow.GetWindow<SceneView>().Show();
+            
             SetUpTemporaryScene();
             var behaviour = Object.FindObjectOfType<AreaSelectorBehaviour>();
             behaviour.Init(prevScenePath, datasetSourceConfig, areaSelectResultReceiver, coordinateZoneID, UnityEditor.EditorWindow.GetWindow<PlateauWindow>());
