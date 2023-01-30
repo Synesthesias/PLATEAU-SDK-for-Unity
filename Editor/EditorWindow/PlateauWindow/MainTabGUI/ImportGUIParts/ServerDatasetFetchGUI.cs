@@ -84,7 +84,6 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts
             LoadStatus = LoadStatusEnum.Loading;
             try
             {
-                Debug.Log("サーバーへの問い合わせを開始");
                 DatasetGroups = await Task.Run(() =>
                 {
                     var client = Client.Create();
