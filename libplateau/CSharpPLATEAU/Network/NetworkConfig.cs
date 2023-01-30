@@ -7,6 +7,9 @@ namespace PLATEAU.Network
 {
     public class NetworkConfig
     {
+        /// <summary>
+        /// デフォルトのAPIサーバーのURLを C++ 側から取得します。
+        /// </summary>
         public static string DefaultApiServerUrl
         {
             get

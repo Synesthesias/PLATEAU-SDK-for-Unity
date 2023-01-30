@@ -679,6 +679,15 @@ namespace PLATEAU.Editor.EditorWindow.Common
             }
         }
 
+        public static void RightAlign(Action drawFunc, params GUILayoutOption[] layoutOptions)
+        {
+            using (new EditorGUILayout.HorizontalScope(layoutOptions))
+            {
+                GUILayout.FlexibleSpace();
+                drawFunc();
+            }
+        }
+
         public static void CenterAlignVertical(Action drawFunc, params GUILayoutOption[] layoutOptions)
         {
             using (new EditorGUILayout.VerticalScope(layoutOptions))
