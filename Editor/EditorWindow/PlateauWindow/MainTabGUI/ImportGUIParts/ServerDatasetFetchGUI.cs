@@ -15,11 +15,9 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts
     /// </summary>
     public class ServerDatasetFetchGUI
     {
-        private UnityEditor.EditorWindow parentWindow;
-        private string serverUrl = NetworkConfig.DefaultApiServerUrl;
-        private string serverToken = "";
-        private string lastFetchedServerUrl = "";
-        private string lastFetchedServerToken = "";
+        private readonly UnityEditor.EditorWindow parentWindow;
+        public string ServerUrl { get; private set; } = NetworkConfig.DefaultApiServerUrl;
+        public string ServerToken { get; private set; } = NetworkConfig.DefaultApiToken;
 
         public LoadStatusEnum LoadStatus { get; private set; } = LoadStatusEnum.NotStarted;
         public NativeVectorDatasetMetadataGroup DatasetGroups { get; private set; }
@@ -35,16 +33,26 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts
         {
             PlateauEditorStyle.RightAlign(() =>
             {
-                if (PlateauEditorStyle.MiniButton("デフォルトのURLにする", 150))
+                using (new GUILayout.HorizontalScope())
                 {
-                    GUI.FocusControl(""); // 入力欄にフォーカスがあると変更がGUI上に反映されないため
-                    this.serverUrl = NetworkConfig.DefaultApiServerUrl;
-                    this.serverToken = "";
+                    if (PlateauEditorStyle.MiniButton("デフォルトのURLにする", 150))
+                    {
+                        GUI.FocusControl(""); // 入力欄にフォーカスがあると変更がGUI上に反映されないため
+                        this.ServerUrl = NetworkConfig.DefaultApiServerUrl;
+                        this.ServerToken = NetworkConfig.DefaultApiToken;
+                    }
+                    if(PlateauEditorStyle.MiniButton("(開発者向け)\nモックサーバー", 100))
+                    {
+                        GUI.FocusControl("");
+                        this.ServerUrl = NetworkConfig.MockServerUrl;
+                        this.ServerToken = "";
+                    }
                 }
+
             });
             
-            this.serverUrl = EditorGUILayout.TextField("サーバーURL", this.serverUrl);
-            this.serverToken = EditorGUILayout.TextField("トークン", this.serverToken);
+            this.ServerUrl = EditorGUILayout.TextField("サーバーURL", this.ServerUrl);
+            this.ServerToken = EditorGUILayout.TextField("トークン", this.ServerToken);
 
             if (LoadStatus != LoadStatusEnum.Loading)
             {
@@ -86,8 +94,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts
             {
                 DatasetGroups = await Task.Run(() =>
                 {
-                    var client = Client.Create();
-                    client.Url = this.serverUrl;
+                    var client = Client.Create(this.ServerUrl, this.ServerToken);
                     var ret = client.GetDatasetMetadataGroup();
                     client.Dispose();
                     return ret;
@@ -107,8 +114,6 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts
             }
             
             LoadStatus = LoadStatusEnum.Success;
-            this.lastFetchedServerUrl = this.serverUrl;
-            this.lastFetchedServerToken = this.serverToken;
         }
     }
 }

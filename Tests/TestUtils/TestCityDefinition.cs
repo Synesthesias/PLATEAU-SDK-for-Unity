@@ -9,6 +9,7 @@ using PLATEAU.Editor.EditorWindow.ProgressDisplay;
 using PLATEAU.Interop;
 using PLATEAU.Dataset;
 using PLATEAU.Native;
+using PLATEAU.Network;
 using PLATEAU.Util;
 
 namespace PLATEAU.Tests.TestUtils
@@ -84,7 +85,7 @@ namespace PLATEAU.Tests.TestUtils
                 packageConf.Value.includeTexture = true;
             }
 
-            conf.DatasetSourceConfig = new DatasetSourceConfig(isServer, SrcRootDirPathLocal, this.rootDirName);
+            conf.DatasetSourceConfig = new DatasetSourceConfig(isServer, SrcRootDirPathLocal, this.rootDirName, NetworkConfig.MockServerUrl, "");
             return conf;
         }
 

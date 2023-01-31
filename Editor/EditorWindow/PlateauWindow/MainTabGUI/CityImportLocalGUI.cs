@@ -37,7 +37,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
 
             this.foldOutSourceFolderPath = PlateauEditorStyle.FoldOut(this.foldOutSourceFolderPath, "入力フォルダ", () =>
             {
-                this.config.DatasetSourceConfig ??= new DatasetSourceConfig(false, "", "");
+                this.config.DatasetSourceConfig ??= new DatasetSourceConfig(false, "", "", "", "");
                 this.config.DatasetSourceConfig.LocalSourcePath = this.folderSelector.Draw("フォルダパス");
             });
             
