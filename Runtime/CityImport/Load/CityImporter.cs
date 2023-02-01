@@ -6,7 +6,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using PLATEAU.CityAdjust;
 using PLATEAU.CityImport.Load.CityImportProcedure;
-using PLATEAU.CityImport.Load.FileCopy;
 using PLATEAU.CityImport.Setting;
 using PLATEAU.CityInfo;
 using PLATEAU.Geometries;
@@ -44,11 +43,7 @@ namespace PLATEAU.CityImport.Load
             List<GmlFile> targetGmls = null;
             try
             {
-                using var datasetSource = DatasetSource.Create(datasetSourceConfig);
-                using var datasetAccessor = datasetSource.Accessor;
-                targetGmls = await Task.Run(() => TargetGmlFinder.FindTargetGmls(
-                    datasetAccessor, config
-                ));
+                targetGmls = await Task.Run(config.SearchMatchingGMLList);
             }
             catch (Exception)
             {
@@ -133,6 +128,5 @@ namespace PLATEAU.CityImport.Load
             return geoReference.Project(centerGeo);
         }
 
-        
     }
 }

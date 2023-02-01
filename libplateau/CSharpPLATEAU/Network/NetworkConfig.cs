@@ -17,7 +17,7 @@ namespace PLATEAU.Network
                 return urlNative.ToString();
             }
         }
-        
+
         public static string DefaultApiToken
         {
             get
@@ -39,11 +39,13 @@ namespace PLATEAU.Network
                 return urlNative.ToString();
             }
         }
+
         private static class NativeMethods
         {
             [DllImport(DLLUtil.DllName)]
             internal static extern APIResult plateau_client_get_default_url(
                 [In, Out] IntPtr nativeStrPtr);
+
             [DllImport(DLLUtil.DllName)]
             internal static extern APIResult plateau_client_get_default_api_token(
                 [In, Out] IntPtr nativeStrPtr);
@@ -51,6 +53,7 @@ namespace PLATEAU.Network
             [DllImport(DLLUtil.DllName)]
             internal static extern APIResult plateau_client_get_mock_server_url(
                 [In, Out] IntPtr nativeStrPtr);
+            
         }
     }
 }

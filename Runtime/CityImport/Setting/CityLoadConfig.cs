@@ -59,10 +59,12 @@ namespace PLATEAU.CityImport.Setting
         /// 設定に合うGMLファイルを検索します。
         /// 多数のファイルから検索するので、実行時間が長くなりがちである点にご注意ください。
         /// </summary>
-        /// <param name="datasetAccessor">検索に利用した collection を outで返します。</param>
-        /// <returns>検索にヒットしたGMLをパッケージごとに分けたものです。keyはパッケージ、 valueはそのパッケージに属するgmlファイルのパスのリストです。</returns>
-        public Dictionary<PredefinedCityModelPackage, List<GmlFile>> SearchMatchingGMLList(DatasetAccessor datasetAccessor)
+        /// <returns>検索にヒットしたGMLのリストです。</returns>
+        public List<GmlFile> SearchMatchingGMLList()
         {
+            using var datasetSource = DatasetSource.Create(DatasetSourceConfig);
+            using var datasetAccessor = datasetSource.Accessor;
+            
             // 地域ID(メッシュコード)で絞り込みます。
             var meshCodes = AreaMeshCodes.Select(MeshCode.Parse).Where(code => code.IsValid).ToArray();
 
@@ -72,9 +74,9 @@ namespace PLATEAU.CityImport.Setting
                     .ForEachPackagePair
                     .Where(pair => pair.Value.loadPackage)
                     .Select(pair => pair.Key);
-            var foundGmls = new Dictionary<PredefinedCityModelPackage, List<GmlFile>>();
+            var foundGmls =new List<GmlFile>();
             
-            // 絞り込まれたGMLパスを戻り値の辞書にコピーします。
+            // 絞り込まれたGMLパスを戻り値のリストに追加します。
             foreach (var package in targetPackages)
             {
                 var gmlFiles = datasetAccessor.GetGmlFiles(package);
@@ -82,16 +84,11 @@ namespace PLATEAU.CityImport.Setting
                 for (int i=0; i<gmlCount; i++)
                 {
                     var gml = gmlFiles.At(i);
-                    if (!foundGmls.ContainsKey(package))
-                    {
-                        foundGmls[package] = new List<GmlFile>();
-                    }
 
                     if (!gml.MeshCode.IsValid) continue;
                     // メッシュコードで絞り込みます。
                     if (meshCodes.All(mc => mc.ToString() != gml.MeshCode.ToString())) continue;
-                    foundGmls[package].Add(gml);
-                    Debug.Log($"found gml : {package}, {gml.Path}");
+                    foundGmls.Add(gml);
                 }
             }
             return foundGmls;

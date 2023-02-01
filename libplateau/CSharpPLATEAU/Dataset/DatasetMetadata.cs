@@ -26,6 +26,7 @@ namespace PLATEAU.Dataset
 
         public string Description => DLLUtil.GetNativeString(Handle, NativeMethods.plateau_dataset_metadata_get_description);
 
+
         public string[] FeatureTypes
         {
             get
