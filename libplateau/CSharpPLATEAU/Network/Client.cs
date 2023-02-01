@@ -74,7 +74,6 @@ namespace PLATEAU.Network
 
         private static class NativeMethods
         {
-<<<<<<< HEAD
             [DllImport(DLLUtil.DllName, CharSet = CharSet.Ansi)]
             internal static extern APIResult plateau_create_client(
                 out IntPtr newClientPtr,
@@ -83,10 +82,6 @@ namespace PLATEAU.Network
 
             [DllImport(DLLUtil.DllName)]
             internal static extern APIResult plateau_create_client_for_mock_server(
-=======
-            [DllImport(DLLUtil.DllName)]
-            internal static extern APIResult plateau_create_client(
->>>>>>> main
                 out IntPtr newClientPtr);
 
             [DllImport(DLLUtil.DllName)]

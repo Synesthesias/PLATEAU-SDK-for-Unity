@@ -6,14 +6,9 @@ using NUnit.Framework;
 using PLATEAU.CityImport.Load;
 using PLATEAU.CityImport.Setting;
 using PLATEAU.Editor.EditorWindow.ProgressDisplay;
-using PLATEAU.Interop;
 using PLATEAU.Dataset;
 using PLATEAU.Native;
-<<<<<<< HEAD
 using PLATEAU.Network;
-=======
->>>>>>> main
-using PLATEAU.Util;
 
 namespace PLATEAU.Tests.TestUtils
 {

@@ -31,11 +31,7 @@ namespace PLATEAU.Dataset
         public static DatasetSource Create(DatasetSourceConfig config)
         {
             return config.IsServer ?
-<<<<<<< HEAD
                 CreateServer(config.ServerDatasetID, config.ServerUrl, config.ServerToken) :
-=======
-                CreateServer(config.ServerDatasetID) :
->>>>>>> main
                 CreateLocal(config.LocalSourcePath);
         }
 
