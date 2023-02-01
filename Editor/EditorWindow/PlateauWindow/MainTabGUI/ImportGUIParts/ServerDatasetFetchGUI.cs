@@ -24,49 +24,75 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts
         
         public enum LoadStatusEnum{ Success, Failure, Loading, NotStarted}
 
+        private bool foldOutServerConf = false;
+
         public ServerDatasetFetchGUI(UnityEditor.EditorWindow parentWindow)
         {
             this.parentWindow = parentWindow;
         }
+
+        private bool isFirstDraw = true;
         
         public void Draw()
         {
-            PlateauEditorStyle.RightAlign(() =>
+            // GUIを表示した地点で、デフォルトURLへ接続を試みます。
+            if (this.isFirstDraw)
             {
-                using (new GUILayout.HorizontalScope())
-                {
-                    if (PlateauEditorStyle.MiniButton("デフォルトのURLにする", 150))
-                    {
-                        GUI.FocusControl(""); // 入力欄にフォーカスがあると変更がGUI上に反映されないため
-                        this.ServerUrl = NetworkConfig.DefaultApiServerUrl;
-                        this.ServerToken = NetworkConfig.DefaultApiToken;
-                    }
-                    if(PlateauEditorStyle.MiniButton("(開発者向け)\nモックサーバー", 100))
-                    {
-                        GUI.FocusControl("");
-                        this.ServerUrl = NetworkConfig.MockServerUrl;
-                        this.ServerToken = "";
-                    }
-                }
-
-            });
-            
-            ServerUrl = EditorGUILayout.TextField("サーバーURL", this.ServerUrl);
-            const string defaultTokenDisplay = "(デフォルト トークン)";
-            string tokenDisplay = ServerToken == NetworkConfig.DefaultApiToken ? defaultTokenDisplay : ServerToken;
-            string tokenInputted = EditorGUILayout.TextField("トークン", tokenDisplay);
-            ServerToken = tokenInputted == defaultTokenDisplay ? NetworkConfig.DefaultApiToken : tokenInputted;
-
-            if (LoadStatus != LoadStatusEnum.Loading)
-            {
-                if (PlateauEditorStyle.MainButton("接続"))
-                {
-                    LoadDatasetAsync()
-                        .ContinueWith(_ => this.parentWindow.Repaint(), TaskScheduler.FromCurrentSynchronizationContext())
-                        .ContinueWithErrorCatch();
-                }
+                LoadDatasetAsync().ContinueWithErrorCatch();
             }
             
+            this.foldOutServerConf = EditorGUILayout.Foldout(this.foldOutServerConf, "接続先設定");
+            if (this.foldOutServerConf)
+            {
+                PlateauEditorStyle.RightAlign(() =>
+                {
+                    using (new GUILayout.HorizontalScope())
+                    {
+                        if (PlateauEditorStyle.MiniButton("デフォルトのURLにする", 150))
+                        {
+                            GUI.FocusControl(""); // 入力欄にフォーカスがあると変更がGUI上に反映されないため
+                            ServerUrl = NetworkConfig.DefaultApiServerUrl;
+                            ServerToken = NetworkConfig.DefaultApiToken;
+                        }
+                        if(PlateauEditorStyle.MiniButton("(開発者向け)\nモックサーバー", 100))
+                        {
+                            GUI.FocusControl("");
+                            ServerUrl = NetworkConfig.MockServerUrl;
+                            ServerToken = "";
+                        }
+                    }
+
+                });
+            
+                ServerUrl = EditorGUILayout.TextField("サーバーURL", ServerUrl);
+                const string defaultTokenDisplay = "(デフォルト トークン)";
+                string tokenDisplay = ServerToken == NetworkConfig.DefaultApiToken ? defaultTokenDisplay : ServerToken;
+                string tokenInputted = EditorGUILayout.TextField("トークン", tokenDisplay);
+                ServerToken = tokenInputted == defaultTokenDisplay ? NetworkConfig.DefaultApiToken : tokenInputted;
+                switch (LoadStatus)
+                {
+                    case LoadStatusEnum.NotStarted:
+                    case LoadStatusEnum.Failure:
+                        if (PlateauEditorStyle.MainButton("接続"))
+                        {
+                            LoadDatasetAsync().ContinueWithErrorCatch();
+                        }
+                        break;
+                    case LoadStatusEnum.Success:
+                        PlateauEditorStyle.CenterAlignHorizontal(() =>
+                            PlateauEditorStyle.LabelSizeFit(new GUIContent("接続OK")));
+                        PlateauEditorStyle.CenterAlignHorizontal(() =>
+                        {
+                            if (PlateauEditorStyle.MiniButton("再接続", 60))
+                            {
+                                LoadDatasetAsync().ContinueWithErrorCatch();
+                            }
+                        });
+
+                        break;
+                }
+            }
+
             // ロードのステータスを表示します。
             string loadStatusMessage = LoadStatus switch
             {
@@ -85,12 +111,22 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts
                         }
                     });
             }
+
+            this.isFirstDraw = false;
+        }
+
+        private async Task LoadDatasetAsync()
+        {
+            await LoadDatasetAsyncInner().ContinueWith(
+                _ => this.parentWindow.Repaint(),
+                TaskScheduler.FromCurrentSynchronizationContext()
+            );
         }
         
         /// <summary>
         /// どのようなデータセットが利用可能であるかをサーバーに問い合わせます。
         /// </summary>
-        private async Task LoadDatasetAsync()
+        private async Task LoadDatasetAsyncInner()
         {
             LoadStatus = LoadStatusEnum.Loading;
             try
