@@ -51,8 +51,11 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts
 
             });
             
-            this.ServerUrl = EditorGUILayout.TextField("サーバーURL", this.ServerUrl);
-            this.ServerToken = EditorGUILayout.TextField("トークン", this.ServerToken);
+            ServerUrl = EditorGUILayout.TextField("サーバーURL", this.ServerUrl);
+            const string defaultTokenDisplay = "(デフォルト トークン)";
+            string tokenDisplay = ServerToken == NetworkConfig.DefaultApiToken ? defaultTokenDisplay : ServerToken;
+            string tokenInputted = EditorGUILayout.TextField("トークン", tokenDisplay);
+            ServerToken = tokenInputted == defaultTokenDisplay ? NetworkConfig.DefaultApiToken : tokenInputted;
 
             if (LoadStatus != LoadStatusEnum.Loading)
             {

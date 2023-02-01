@@ -31,7 +31,7 @@ namespace PLATEAU.Dataset
         public static DatasetSource Create(DatasetSourceConfig config)
         {
             return config.IsServer ?
-                CreateServer(config.ServerDatasetID, config.ServerUrl) :
+                CreateServer(config.ServerDatasetID, config.ServerUrl, config.ServerToken) :
                 CreateLocal(config.LocalSourcePath);
         }
 
@@ -49,9 +49,9 @@ namespace PLATEAU.Dataset
          /// <summary>
          /// リモートPCのデータセットを指す <see cref="DatasetSource"/> を作ります。
          /// </summary>
-         public static DatasetSource CreateServer(string datasetID, string serverUrl)
+         public static DatasetSource CreateServer(string datasetID, string serverUrl, string apiToken)
          {
-             Client client = Client.Create(serverUrl, ""); // TODO apiTokenの指定
+             Client client = Client.Create(serverUrl, apiToken);
              var result = NativeMethods.plateau_create_dataset_source_server(
                  out var ptr, datasetID, client.Handle);
              DLLUtil.CheckDllError(result);
@@ -60,7 +60,7 @@ namespace PLATEAU.Dataset
 
          public static DatasetSource CreateForMockServer(string datasetID)
          {
-             return CreateServer(datasetID, NetworkConfig.MockServerUrl);
+             return CreateServer(datasetID, NetworkConfig.MockServerUrl, "");
          }
 
          public DatasetAccessor Accessor
