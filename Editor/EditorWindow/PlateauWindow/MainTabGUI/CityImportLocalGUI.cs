@@ -15,8 +15,8 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
 {
     internal class CityImportLocalGUI : IEditorDrawable, IAreaSelectResultReceiver
     {
-        private readonly PathSelectorFolderPlateauInput folderSelector = new PathSelectorFolderPlateauInput();
-        private readonly CityLoadConfig config = new CityLoadConfig();
+        private readonly PathSelectorFolderPlateauInput folderSelector = new ();
+        private readonly CityLoadConfig config = new ();
         // インポートの処理状況はウィンドウを消しても残しておきたいので static にします。
         private static ProgressDisplayGUI progressGUI;
         private bool foldOutSourceFolderPath = true;

@@ -4,6 +4,7 @@ using PLATEAU.Dataset;
 using PLATEAU.Native;
 using PLATEAU.PolygonMesh;
 using PLATEAU.Util;
+using UnityEngine;
 
 namespace PLATEAU.CityImport.Setting
 {
@@ -17,6 +18,12 @@ namespace PLATEAU.CityImport.Setting
         /// </summary>
         public DatasetSourceConfig DatasetSourceConfig { get; set; }
         public string[] AreaMeshCodes { get; set; }
+        
+        /// <summary>
+        /// 平面直角座標系の番号です。
+        /// 次のサイトで示される平面直角座標系の番号です。
+        /// https://www.gsi.go.jp/sokuchikijun/jpc.html
+        /// </summary>
         public int CoordinateZoneID { get; set; } = 9;
         
         private Extent extent;
@@ -33,10 +40,30 @@ namespace PLATEAU.CityImport.Setting
                     new GeoCoordinate(value.Max.Latitude, value.Max.Longitude, 99999));
         }
 
+        /// <summary>
+        /// 基準点の設定方法です。
+        /// </summary>
+        public enum ReferencePointSetMethodEnum
+        {
+            [InspectorName("範囲の中心")] ExtentCenter,
+            [InspectorName("手動入力")] Custom
+        }
+
+        public ReferencePointSetMethodEnum ReferencePointSetMethod { get; set; } =
+            ReferencePointSetMethodEnum.ExtentCenter;
+        
+        /// <summary>
+        /// 基準点の設定方法が Custom の時の、ユーザーが入力した基準点です。
+        /// </summary>
+        public PlateauVector3d CustomReferencePoint { get; set; }
+
         // 都市モデル読み込みの、パッケージ種ごとの設定です。
         private readonly Dictionary<PredefinedCityModelPackage, PackageLoadSetting> perPackagePairSettings =
             new ();
 
+        /// <summary>
+        /// 値ペア (パッケージ種, そのパッケージに関する設定) を、パッケージごとの IEnumerable にして返します。
+        /// </summary>
         public IEnumerable<KeyValuePair<PredefinedCityModelPackage, PackageLoadSetting>> ForEachPackagePair =>
             this.perPackagePairSettings;
 

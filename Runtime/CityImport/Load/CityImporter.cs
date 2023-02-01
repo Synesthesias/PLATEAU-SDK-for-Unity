@@ -112,7 +112,7 @@ namespace PLATEAU.CityImport.Load
             rootTrans.name = Path.GetFileName(lastFetchedGmlRootPath);
         }
 
-        private static PlateauVector3d CalcCenterPoint(IEnumerable<GmlFile> targetGmls, int coordinateZoneID)
+        public static PlateauVector3d CalcCenterPoint(IEnumerable<GmlFile> targetGmls, int coordinateZoneID)
         {
             using var geoReference = CoordinatesConvertUtil.UnityStandardGeoReference(coordinateZoneID);
             var geoCoordSum = new GeoCoordinate(0, 0, 0);
