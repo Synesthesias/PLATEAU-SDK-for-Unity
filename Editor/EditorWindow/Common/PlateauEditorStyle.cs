@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.AdjustGUIParts;
 using UnityEditor;
 using UnityEngine;
 
@@ -677,6 +676,15 @@ namespace PLATEAU.Editor.EditorWindow.Common
                 GUILayout.FlexibleSpace();
                 drawFunc();
                 GUILayout.FlexibleSpace();
+            }
+        }
+
+        public static void RightAlign(Action drawFunc, params GUILayoutOption[] layoutOptions)
+        {
+            using (new EditorGUILayout.HorizontalScope(layoutOptions))
+            {
+                GUILayout.FlexibleSpace();
+                drawFunc();
             }
         }
 

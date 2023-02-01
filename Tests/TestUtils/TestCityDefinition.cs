@@ -8,6 +8,9 @@ using PLATEAU.CityImport.Setting;
 using PLATEAU.Editor.EditorWindow.ProgressDisplay;
 using PLATEAU.Interop;
 using PLATEAU.Dataset;
+using PLATEAU.Native;
+using PLATEAU.Network;
+using PLATEAU.Util;
 
 namespace PLATEAU.Tests.TestUtils
 {
@@ -19,17 +22,19 @@ namespace PLATEAU.Tests.TestUtils
     {
         public string SrcRootDirPathLocal => Path.GetFullPath(Path.Combine(testDataDir, this.rootDirName));
         public string[] AreaMeshCodes { get; set; }
+        public int CoordinateZoneId { get; set; }
         public TestGmlDefinition[] GmlDefinitions { get; set; }
 
         private string rootDirName;
 
         private const string testDataDir = "Packages/com.synesthesias.plateau-unity-sdk/Tests/TestData/日本語パステスト";
 
-        public TestCityDefinition(string rootDirName, TestGmlDefinition[] gmlDefs, string[] areaMeshCodes)
+        public TestCityDefinition(string rootDirName, TestGmlDefinition[] gmlDefs, string[] areaMeshCodes, int coordinateZoneId)
         {
             this.rootDirName = rootDirName;
             GmlDefinitions = gmlDefs;
             AreaMeshCodes = areaMeshCodes;
+            CoordinateZoneId = coordinateZoneId;
         }
 
         /// <summary>
@@ -37,7 +42,13 @@ namespace PLATEAU.Tests.TestUtils
         /// </summary>
         public Task ImportLocal()
         {
+            
+            #if UNITY_EDITOR
             var progressDisplay = new ProgressDisplayGUI(null);
+            #else
+            IProgressDisplay progressDisplay = null;
+            #endif
+            
             var conf = MakeConfig(false);
 
             var task = CityImporter.ImportAsync(conf, progressDisplay);
@@ -49,13 +60,17 @@ namespace PLATEAU.Tests.TestUtils
         /// </summary>
         public Task ImportServer()
         {
+            #if UNITY_EDITOR
             var progressDisplay = new ProgressDisplayGUI(null);
+            #else
+            IProgressDisplay progressDisplay = null;
+            #endif
             var task = CityImporter.ImportAsync(MakeConfig(true), progressDisplay);
             return task;
         }
 
         /// <summary>
-        /// インポートするための設定をします。
+        /// インポートするための設定を返します。
         /// </summary>
         private CityLoadConfig MakeConfig(bool isServer)
         {
@@ -70,7 +85,7 @@ namespace PLATEAU.Tests.TestUtils
                 packageConf.Value.includeTexture = true;
             }
 
-            conf.DatasetSourceConfig = new DatasetSourceConfig(isServer, SrcRootDirPathLocal, this.rootDirName);
+            conf.DatasetSourceConfig = new DatasetSourceConfig(isServer, SrcRootDirPathLocal, this.rootDirName, NetworkConfig.MockServerUrl, "");
             return conf;
         }
 
@@ -149,7 +164,7 @@ namespace PLATEAU.Tests.TestUtils
             }, new []
             {
                 "53394525", "53392546", "53392547", "533925"
-            });
+            }, 9);
 
         /// <summary>
         /// テストデータ "TestServer23Ku" について、
@@ -164,6 +179,6 @@ namespace PLATEAU.Tests.TestUtils
                     new TestGmlDefinition("udx/bldg/53392670_bldg_6697_2_op.gml", "53392670_bldg_6697_2_op.gml", true, null, 2)
                 }, new[]
                     { "53392642", "53392670" }
-            );
+            , 9);
     }
 }

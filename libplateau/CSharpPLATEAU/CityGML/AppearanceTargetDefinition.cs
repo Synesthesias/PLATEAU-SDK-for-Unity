@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 using PLATEAU.Interop;
 
 namespace PLATEAU.CityGML
@@ -29,7 +30,7 @@ namespace PLATEAU.CityGML
                     case TextureTargetDefinition _:
                         IntPtr ptr = DLLUtil.GetNativeValue<IntPtr>(
                             Handle,
-                            NativeMethods.plateau_appearance_target_definition_tex_get_appearance
+                            AppearanceTargetDefinitionNativeMethods.NativeMethods.plateau_appearance_target_definition_tex_get_appearance
                         );
                         return (T)(Appearance)new Texture(ptr);
                     case MaterialTargetDefinition _:
@@ -48,13 +49,30 @@ namespace PLATEAU.CityGML
                 {
                     case TextureTargetDefinition _:
                         return DLLUtil.GetNativeString(Handle,
-                            NativeMethods.plateau_appearance_target_definition_tex_get_target_id);
+                            AppearanceTargetDefinitionNativeMethods.NativeMethods.plateau_appearance_target_definition_tex_get_target_id);
                     case MaterialTargetDefinition _:
                         throw new NotImplementedException("Material を含むGMLの例が見当たらないため未実装です。");
                     default:
                         throw new Exception("Unknown type.");
                 }
             }
+        }
+    }
+
+    internal static class AppearanceTargetDefinitionNativeMethods
+    {
+        internal static class NativeMethods
+        {
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_appearance_target_definition_tex_get_target_id(
+                [In] IntPtr handle,
+                out IntPtr strPtr,
+                out int strLength);
+            
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_appearance_target_definition_tex_get_appearance(
+                [In] IntPtr handle,
+                out IntPtr outTextureHandle);
         }
     }
 }

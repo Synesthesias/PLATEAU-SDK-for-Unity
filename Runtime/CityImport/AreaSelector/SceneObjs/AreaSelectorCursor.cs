@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using PLATEAU.Geometries;
-using PLATEAU.Interop;
+using PLATEAU.Native;
 using PLATEAU.Util;
 using UnityEditor;
 using UnityEngine;
@@ -49,7 +49,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
 
         public Extent GetExtent(int coordinateZoneID, PlateauVector3d referencePoint)
         {
-            using var geoReference = new GeoReference(referencePoint, 1.0f, CoordinateSystem.EUN, coordinateZoneID);
+            using var geoReference = GeoReference.Create(referencePoint, 1.0f, CoordinateSystem.EUN, coordinateZoneID);
             var (min, max) = CalcMinMaxFromTrans();
             // 直交座標を（緯度・経度・高さ）に変換します。
             var geoMin = geoReference.Unproject(min.ToPlateauVector());

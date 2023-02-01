@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 using PLATEAU.Interop;
+using PLATEAU.Native;
 
 namespace PLATEAU.CityGML
 {
@@ -45,6 +47,21 @@ namespace PLATEAU.CityGML
             var vert3d = DLLUtil.GetNativeValue<PlateauVector3d>(Handle, index,
                 NativeMethods.plateau_linear_ring_get_vertex);
             return vert3d;
+        }
+
+        private static class NativeMethods
+        {
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_linear_ring_get_vertex_count(
+                [In] IntPtr handle,
+                out int outCount);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_linear_ring_get_vertex(
+                [In] IntPtr handle,
+                out PlateauVector3d outVert3d,
+                int index);
+            
         }
     }
 }

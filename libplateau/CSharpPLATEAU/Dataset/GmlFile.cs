@@ -1,5 +1,8 @@
 using System;
+using System.IO;
+using System.Runtime.InteropServices;
 using PLATEAU.Interop;
+using PLATEAU.Native;
 
 namespace PLATEAU.Dataset
 {
@@ -90,22 +93,26 @@ namespace PLATEAU.Dataset
             }
         }
 
-        public NativeVectorString SearchAllCodelistPathsInGml()
+        public string[] SearchAllCodelistPathsInGml()
         {
-            var paths = NativeVectorString.Create();
+            var nativePaths = NativeVectorString.Create();
             var result = NativeMethods.plateau_gml_file_search_all_codelist_paths_in_gml(
-                Handle, paths.Handle);
+                Handle, nativePaths.Handle);
             DLLUtil.CheckDllError(result);
-            return paths;
+            var ret = nativePaths.ToCSharpArray();
+            nativePaths.Dispose();
+            return ret;
         }
         
-        public NativeVectorString SearchAllImagePathsInGml()
+        public string[] SearchAllImagePathsInGml()
         {
-            var paths = NativeVectorString.Create();
+            var nativePaths = NativeVectorString.Create();
             var result = NativeMethods.plateau_gml_file_search_all_image_paths_in_gml(
-                Handle, paths.Handle);
+                Handle, nativePaths.Handle);
             DLLUtil.CheckDllError(result);
-            return paths;
+            var ret = nativePaths.ToCSharpArray();
+            nativePaths.Dispose();
+            return ret;
         }
         
         /// <summary>
@@ -125,6 +132,10 @@ namespace PLATEAU.Dataset
             var apiResult = NativeMethods.plateau_gml_file_fetch(
                 Handle, destinationRootPathUtf8, resultGml.Handle
             );
+            if (apiResult == APIResult.ErrorValueIsInvalid)
+            {
+                throw new InvalidDataException("GmlFile is invalid.");
+            }
             DLLUtil.CheckDllError(apiResult);
             resultGml.Path = resultGml.Path.Replace('\\', '/');
             return resultGml;
@@ -167,6 +178,68 @@ namespace PLATEAU.Dataset
             {
                 throw new ObjectDisposedException("GmlFile is disposed.");
             }
+        }
+
+        internal static class NativeMethods
+        {
+            [DllImport(DLLUtil.DllName, CharSet = CharSet.Ansi)]
+            internal static extern APIResult plateau_create_gml_file(
+                out IntPtr outGmlFilePtr,
+                [In] byte[] pathUtf8);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_delete_gml_file(
+                [In] IntPtr gmlFilePtr);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_gml_file_get_path(
+                [In] IntPtr handle,
+                [In, Out] IntPtr refPathNativeStringPtr);
+            
+            [DllImport(DLLUtil.DllName, CharSet = CharSet.Ansi)]
+            internal static extern APIResult plateau_gml_file_set_path(
+                [In] IntPtr gmlFilePtr,
+                [In] byte[] pathUtf8);
+
+            [DllImport(DLLUtil.DllName, CharSet = CharSet.Ansi)]
+            internal static extern APIResult plateau_gml_file_get_feature_type_str(
+                [In] IntPtr gmlFilePtr,
+                out IntPtr strPtr,
+                out int strLength);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_gml_file_get_mesh_code(
+                [In] IntPtr gmlFilePtr,
+                out MeshCode outMeshCode);
+        
+            [DllImport(DLLUtil.DllName, CharSet = CharSet.Ansi)]
+            internal static extern APIResult plateau_gml_file_fetch(
+                [In] IntPtr gmlFilePtr,
+                [In] byte[] destinationRootPathUtf8,
+                [In, Out] IntPtr outGmlFileInfoPtr);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_gml_file_search_all_codelist_paths_in_gml(
+                [In] IntPtr gmlFilePtr,
+                [In,Out] IntPtr refNativeVectorStringPtr);
+        
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_gml_file_search_all_image_paths_in_gml(
+                [In] IntPtr gmlFilePtr,
+                [In,Out] IntPtr refNativeVectorStringPtr);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_gml_file_get_max_lod(
+                [In] IntPtr gmlFilePtr,
+                out int outMaxLod);
+            
+            // ***************
+            //  udx_sub_folder_c.cpp
+            // ***************
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_udx_sub_folder_feature_type_to_package(
+                [In] byte[] featureTypeStrUtf8,
+                out PredefinedCityModelPackage outPackage);
         }
 
     }

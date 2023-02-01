@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 using PLATEAU.Interop;
+using PLATEAU.Native;
 using PLATEAU.Util;
 
 namespace PLATEAU.PolygonMesh
@@ -37,7 +39,7 @@ namespace PLATEAU.PolygonMesh
             return new Model(outModelPtr);
         }
 
-        public Model(IntPtr handle) : base(handle)
+        private Model(IntPtr handle) : base(handle)
         {
             
         }
@@ -103,6 +105,38 @@ namespace PLATEAU.PolygonMesh
             }
             sb.DecrementIndent();
             return sb.ToString();
+        }
+
+        private static class NativeMethods
+        {
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_create_model(
+                out IntPtr outModelPtr);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_delete_model(
+                [In] IntPtr modelPtr);
+
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_model_get_root_nodes_count(
+                [In] IntPtr handle,
+                out int outCount);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_model_get_root_node_at_index(
+                [In] IntPtr handle,
+                out IntPtr outNode,
+                int index);
+            
+            /// <summary>
+            /// 注意:
+            /// 利用後、元の <see cref="Node"/> は利用不可になります。
+            /// </summary>
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_model_add_node_by_std_move(
+                [In] IntPtr modelPtr,
+                [In] IntPtr nodePtr);
         }
     }
 }

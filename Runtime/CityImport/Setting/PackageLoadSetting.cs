@@ -1,5 +1,5 @@
 ﻿using System;
-using PLATEAU.Interop;
+using PLATEAU.PolygonMesh;
 
 namespace PLATEAU.CityImport.Setting
 {

@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using PLATEAU.CityGML;
 using PLATEAU.Geometries;
-using PLATEAU.Interop;
+using PLATEAU.Native;
 using UnityEngine;
 
 namespace PLATEAU.CityInfo
@@ -136,7 +136,7 @@ namespace PLATEAU.CityInfo
             {
                 var grd = this.geoReferenceData;
                 var gr =
-                    new GeoReference(
+                    GeoReference.Create(
                         new PlateauVector3d(
                             grd.referencePointX,
                             grd.referencePointY,

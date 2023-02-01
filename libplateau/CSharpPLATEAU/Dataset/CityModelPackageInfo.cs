@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 using PLATEAU.Interop;
+using PLATEAU.Native;
 
 namespace PLATEAU.Dataset
 {
@@ -8,7 +10,7 @@ namespace PLATEAU.Dataset
     /// </summary>
     public class CityModelPackageInfo : PInvokeDisposable
     {
-        public CityModelPackageInfo(IntPtr handle) : base(handle)
+        private CityModelPackageInfo(IntPtr handle) : base(handle)
         {
         }
 
@@ -32,25 +34,50 @@ namespace PLATEAU.Dataset
             return (hasAppearance, minLOD, maxLOD);
         } 
 
-        public bool HasAppearance
-        {
-            get => DLLUtil.GetNativeValue<bool>(Handle,
+        public bool HasAppearance =>
+            DLLUtil.GetNativeValue<bool>(Handle,
                 NativeMethods.plateau_city_model_package_info_get_has_appearance);
-        }
 
-        public int MinLOD
-        {
-            get => DLLUtil.GetNativeValue<int>(Handle, NativeMethods.plateau_city_model_package_info_get_min_lod);
-        }
+        public int MinLOD => DLLUtil.GetNativeValue<int>(Handle, NativeMethods.plateau_city_model_package_info_get_min_lod);
 
-        public int MaxLOD
-        {
-            get => DLLUtil.GetNativeValue<int>(Handle, NativeMethods.plateau_city_model_package_info_get_max_lod);
-        }
+        public int MaxLOD => DLLUtil.GetNativeValue<int>(Handle, NativeMethods.plateau_city_model_package_info_get_max_lod);
 
         protected override void DisposeNative()
         {
             NativeMethods.plateau_delete_city_model_package_info(Handle);
+        }
+
+        private static class NativeMethods
+        {
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_create_city_model_package_info(
+                out IntPtr outPackageInfoPtr,
+                [MarshalAs(UnmanagedType.U1)] bool hasAppearance, int minLOD, int maxLOD);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_delete_city_model_package_info(
+                [In] IntPtr packageInfoPtr);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_city_model_package_info_get_has_appearance(
+                [In] IntPtr packageInfoPtr,
+                [MarshalAs(UnmanagedType.U1)] out bool outHasAppearance);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_city_model_package_info_get_min_lod(
+                [In] IntPtr packageInfoPtr,
+                out int outMinLOD);
+        
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_city_model_package_info_get_max_lod(
+                [In] IntPtr packageInfoPtr,
+                out int outMaxLOD);
+        
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_city_model_package_info_get_predefined(
+                PredefinedCityModelPackage package,
+                [MarshalAs(UnmanagedType.U1)] out bool outHasAppearance,
+                out int outMinLOD, out int outMaxLOD);
         }
     }
 }

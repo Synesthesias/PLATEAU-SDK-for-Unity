@@ -1,4 +1,6 @@
-﻿using PLATEAU.Interop;
+﻿using System.Runtime.InteropServices;
+using PLATEAU.Interop;
+using PLATEAU.Native;
 
 namespace PLATEAU.Basemap
 {
@@ -28,6 +30,24 @@ namespace PLATEAU.Basemap
             );
             DLLUtil.CheckDllError(result);
             return extent;
+        }
+
+        private static class NativeMethods
+        {
+            // ***************
+            //  vector_tile_downloader_c.cpp
+            // ***************
+        
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_tile_projection_project(
+                [In] GeoCoordinate geoCoordinate,
+                int zoomLevel,
+                out TileCoordinate outTileCoordinate);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_tile_projection_unproject(
+                [In] TileCoordinate tileCoordinate,
+                out Extent outExtent);
         }
     }
 }

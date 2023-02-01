@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 using PLATEAU.Interop;
 using PLATEAU.Util;
 
@@ -159,6 +160,50 @@ namespace PLATEAU.PolygonMesh
                 GetChildAt(i).DebugString(sb);
             }
             sb.DecrementIndent();
+        }
+
+        private static class NativeMethods
+        {
+            [DllImport(DLLUtil.DllName, CharSet = CharSet.Ansi)]
+            internal static extern APIResult plateau_create_node(
+                out IntPtr outNodePtr,
+                string id);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_delete_node(
+                [In] IntPtr nodePtr);
+        
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_node_get_name(
+                [In] IntPtr handle,
+                out IntPtr strPtr,
+                out int strLength);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_node_get_child_count(
+                [In] IntPtr nodeHandle,
+                out int outChildCount);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_node_get_child_at_index(
+                [In] IntPtr nodeHandle,
+                out IntPtr childNodePtr,
+                int index);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_node_get_mesh(
+                [In] IntPtr nodeHandle,
+                out IntPtr outMeshPtr);
+        
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_node_set_mesh_by_std_move(
+                [In] IntPtr nodePtr,
+                [In] IntPtr meshPtr);
+        
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_node_add_child_node_by_std_move(
+                [In] IntPtr nodePtr,
+                [In] IntPtr childNodePtr);
         }
     }
 }

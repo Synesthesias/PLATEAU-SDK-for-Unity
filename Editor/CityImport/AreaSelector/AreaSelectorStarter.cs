@@ -1,5 +1,6 @@
 ﻿using PLATEAU.CityImport.AreaSelector;
 using PLATEAU.Dataset;
+using PLATEAU.Editor.EditorWindow.PlateauWindow;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -42,9 +43,11 @@ namespace PLATEAU.Editor.CityImport.AreaSelector
                 return;
             }
             
+            UnityEditor.EditorWindow.GetWindow<SceneView>().Show();
+            
             SetUpTemporaryScene();
             var behaviour = Object.FindObjectOfType<AreaSelectorBehaviour>();
-            behaviour.Init(prevScenePath, datasetSourceConfig, areaSelectResultReceiver, coordinateZoneID);
+            behaviour.Init(prevScenePath, datasetSourceConfig, areaSelectResultReceiver, coordinateZoneID, UnityEditor.EditorWindow.GetWindow<PlateauWindow>());
         }
 
         private static void SetUpTemporaryScene()

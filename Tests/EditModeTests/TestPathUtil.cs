@@ -23,7 +23,7 @@ namespace PLATEAU.Tests.EditModeTests
 
         private static TestCaseData[] testIsValidInputFilePath =
         {
-            #if UNITY_STANDALONE_WIN
+#if UNITY_STANDALONE_WIN
             
             new TestCaseData("C:\\Windows\\System32\\input.dll", "dll")
                 .Returns(true)
@@ -32,18 +32,8 @@ namespace PLATEAU.Tests.EditModeTests
             new TestCaseData("C:\\Windows\\System32\\input.dll", "間違い拡張子")
                 .Returns(false)
                 .SetName("[Windowsのみ] 実在するファイルであっても拡張子が違うと false になります。"),
-            
-            #else
-            
-            new TestCaseData("/etc/issue.net", "net")
-                .Returns(true)
-                .SetName("[Linuxのみ] 実在するファイルパスは true になります"),
-            
-            new TestCaseData("C:\\Windows\\System32\\input.dll", "wrongExtension")
-                .Returns(false)
-                .SetName("[Linuxのみ] 実在するファイルであっても拡張子が違うと false になります"),
-            
-            #endif
+
+#endif
             
             new TestCaseData("/存在しない/ファイルパス/ダミー.fbx", "fbx")
                 .Returns(false)

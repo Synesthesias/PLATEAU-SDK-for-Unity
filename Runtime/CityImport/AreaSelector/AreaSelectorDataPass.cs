@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using PLATEAU.Interop;
 using PLATEAU.Dataset;
+using PLATEAU.Native;
 using UnityEngine.SceneManagement;
 
 #if UNITY_EDITOR
+using UnityEditor;
 using UnityEditor.SceneManagement;
 #endif
 
@@ -23,12 +24,13 @@ namespace PLATEAU.CityImport.AreaSelector
         private static PredefinedCityModelPackage availablePackageFlags;
         private static Extent extent;
 
+#if UNITY_EDITOR
         public static void Exec(
             string prevScenePathArg, IEnumerable<MeshCode> selectedMeshCodesArg,
             IAreaSelectResultReceiver areaSelectResultReceiverArg, PredefinedCityModelPackage availablePackageFlagsArg,
-            Extent selectedExtent)
+            Extent selectedExtent, EditorWindow prevEditorWindow)
         {
-#if UNITY_EDITOR
+
 
             prevScenePath = prevScenePathArg;
             selectedMeshCodes = selectedMeshCodesArg;
@@ -38,9 +40,11 @@ namespace PLATEAU.CityImport.AreaSelector
             
             EditorSceneManager.sceneOpened += OnBackToPrevScene;
             EditorSceneManager.OpenScene(prevScenePath);
-#endif
+            // MacOSだと、範囲選択のときに PlateauWindow が背面に回ってしまい見失いがちなので再表示します。
+            prevEditorWindow.Focus();
         }
-        
+#endif
+
 #if UNITY_EDITOR
         private static void OnBackToPrevScene(Scene scene, OpenSceneMode __)
         {

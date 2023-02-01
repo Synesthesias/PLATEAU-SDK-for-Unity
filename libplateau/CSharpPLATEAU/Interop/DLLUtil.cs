@@ -5,11 +5,24 @@ using System.Text;
 
 namespace PLATEAU.Interop
 {
+    internal enum APIResult
+    {
+        Success,
+        ErrorUnknown,
+        ErrorValueNotFound,
+        ErrorLoadingCityGml,
+        ErrorIndexOutOfBounds,
+        ErrorFileSystem,
+        ErrorInvalidArgument,
+        ErrorValueIsInvalid
+    }
+    
     /// <summary>
     /// DLLとデータをやりとりするためのユーティリティクラスです。
     /// </summary>
     internal static class DLLUtil
     {
+        public const string DllName = "plateau";
         /// <summary>
         /// NativeMethods で頻出するメソッドの型を delegate で登録しておくことで、delegate で呼び出せるようにします。
         /// ただし、すべてのメソッドがこのような型をしているわけではないので、対応していないメソッドもあります。
@@ -48,7 +61,7 @@ namespace PLATEAU.Interop
 
         /// <summary>
         /// DLLから文字列のポインタの配列を受け取り、各ポインタから文字列を読んで string[] で返します。
-        /// 次の2つの <see cref="NativeMethods"/> を引数で受け取り利用します。
+        /// 次の2つの NativeMethods を引数で受け取り利用します。
         /// ・配列の要素数を得るメソッド
         /// ・文字列のポインタの配列と、各文字列のバイト数を int[] で得るメソッド
         /// </summary>
@@ -68,7 +81,7 @@ namespace PLATEAU.Interop
 
         /// <summary>
         /// DLL内の文字列の配列のコピーを受け取ります。
-        /// 次の3つの <see cref="NativeMethods"/> を引数で受け取り利用します。
+        /// 次の3つの NativeMethods を引数で受け取り利用します。
         /// ・配列の要素数を取得するメソッド
         /// ・各文字列のバイト数を配列で取得するメソッド
         /// ・文字列の配列のコピーを受け取るメソッド
@@ -123,14 +136,14 @@ namespace PLATEAU.Interop
         /// </summary>
         /// <param name="count">ポインタ配列の要素数です。</param>
         /// <param name="sizes"><see cref="sizes"/>[i] = i番目のポインタの確保バイト数 となるような int配列です。</param>
-        internal static IntPtr AllocPtrArray(int count, int[] sizes)
+        private static IntPtr AllocPtrArray(int count, int[] sizes)
         {
             if (count > sizes.Length)
             {
                 throw new ArgumentException("sizes.Length should not be smaller than count.");
             }
             
-            IntPtr[] managedPtrArray = new IntPtr[count]; // ポインタの配列 (managed)
+            var managedPtrArray = new IntPtr[count]; // ポインタの配列 (managed)
             for (int i = 0; i < count; i++)
             {
                 IntPtr ptr = Marshal.AllocCoTaskMem(sizes[i]); // 配列内の各ポインタについてメモリ確保
@@ -138,7 +151,7 @@ namespace PLATEAU.Interop
             }
             
             int sizeOfPtrArray = Marshal.SizeOf(typeof(IntPtr)) * count;
-            IntPtr unmanagedPtrArray = Marshal.AllocCoTaskMem(sizeOfPtrArray); // ポインタの配列 (unmanaged)
+            var unmanagedPtrArray = Marshal.AllocCoTaskMem(sizeOfPtrArray); // ポインタの配列 (unmanaged)
             Marshal.Copy(managedPtrArray, 0, unmanagedPtrArray, count);
             return unmanagedPtrArray;
         }
@@ -149,12 +162,13 @@ namespace PLATEAU.Interop
         /// </summary>
         /// <param name="ptrOfPtrArray">解放したいポインタ配列を指定します。</param>
         /// <param name="count">ポインタ配列の要素数を指定します。</param>
-        internal static unsafe void FreePtrArray(IntPtr ptrOfPtrArray, int count)
+        private static unsafe void FreePtrArray(IntPtr ptrOfPtrArray, int count)
         {
             for (int i = 0; i < count; i++)
             {
-                
-                var ptr = ((IntPtr*)ptrOfPtrArray)[i];
+                var ptrArray = (IntPtr*)ptrOfPtrArray;
+                if (ptrArray == null) throw new NullReferenceException();
+                var ptr = (ptrArray)[i];
                 Marshal.FreeCoTaskMem(ptr);
             }
             Marshal.FreeCoTaskMem(ptrOfPtrArray);
@@ -165,12 +179,14 @@ namespace PLATEAU.Interop
         /// ポインタ <paramref name="ptrOfStringArray"/> は <see cref="AllocPtrArray"/> で確保したものと同じであることを前提とし、
         /// 引数 <paramref name="count"/>, <paramref name="sizes"/> には <see cref="AllocPtrArray"/> で渡したものと同じ値を渡してください。 
         /// </summary>
-        internal static unsafe string[] PtrToStringArray(IntPtr ptrOfStringArray, int count, int[] sizes)
+        private static unsafe string[] PtrToStringArray(IntPtr ptrOfStringArray, int count, int[] sizes)
         {
             string[] ret = new string[count];
             for (int i = 0; i < count; i++)
             {
-                var stringPtr = ((IntPtr*)ptrOfStringArray)[i];
+                var stringArray = (IntPtr*)ptrOfStringArray;
+                if (stringArray == null) throw new NullReferenceException();
+                var stringPtr = stringArray[i];
                 ret[i] = ReadUtf8Str(stringPtr, sizes[i] - 1);
             }
             return ret;
@@ -218,10 +234,10 @@ namespace PLATEAU.Interop
 
         /// <summary>
         /// ネイティブ関数から値を受け取り、エラーチェックしてから値を返します。
-        /// <see cref="NativeMethods"/> を呼ぶたびに手動で <see cref="CheckDllError"/> を呼ぶのと同義ですが、それだと冗長なのでこのメソッドにまとめました。
+        /// NativeMethods を呼ぶたびに手動で <see cref="CheckDllError"/> を呼ぶのと同義ですが、それだと冗長なのでこのメソッドにまとめました。
         /// </summary>
         /// <param name="handle">ネイティブ関数に渡すハンドルです。</param>
-        /// <param name="getterMethod"><see cref="NativeMethods"/> のメソッドを指定します。</param>
+        /// <param name="getterMethod"> NativeMethods のメソッドを指定します。</param>
         /// <typeparam name="T">戻り値の型です。</typeparam>
         /// <returns>ネイティブ関数から受け取った値を返します。</returns>
         internal static T GetNativeValue<T>(IntPtr handle, GetterDelegate<T> getterMethod)
@@ -284,7 +300,7 @@ namespace PLATEAU.Interop
         /// 文字列のポインタの配列から各ポインタの文字を読み、
         /// string[]で返します。
         /// </summary>
-        public static string[] ReadNativeStrPtrArray(IntPtr[] strPointers, int[] strSizes)
+        private static string[] ReadNativeStrPtrArray(IntPtr[] strPointers, int[] strSizes)
         {
             if (strPointers.Length != strSizes.Length)
             {
@@ -297,11 +313,7 @@ namespace PLATEAU.Interop
             for (int i = 0; i < cnt; i++)
             {
                 // -1 は null終端文字の分です。
-                string str = ReadUtf8Str(strPointers[i], strSizes[i] - 1);
-                if (str == null)
-                {
-                    str = "";
-                }
+                string str = ReadUtf8Str(strPointers[i], strSizes[i] - 1) ?? "";
 
                 ret[i] = str;
             }

@@ -3,7 +3,6 @@ using PLATEAU.Editor.CityExport;
 using PLATEAU.Editor.EditorWindow.Common;
 using PLATEAU.Editor.EditorWindow.Common.PathSelector;
 using PLATEAU.Geometries;
-using PLATEAU.Interop;
 using PLATEAU.MeshWriter;
 using UnityEditor;
 using UnityEngine;

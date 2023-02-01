@@ -1,28 +1,29 @@
 ﻿using System;
 using PLATEAU.Interop;
 using System.Runtime.InteropServices;
+using PLATEAU.Native;
 
 namespace PLATEAU.Dataset
 {
     [StructLayout(LayoutKind.Sequential)]
     public struct MeshCode
     {
-        public int FirstRow;
-        public int FirstCol;
-        public int SecondRow;
-        public int SecondCol;
-        public int ThirdRow;
-        public int ThirdCol;
-        public int Level;
-        [MarshalAs(UnmanagedType.U1)] private bool isValid;
+        private readonly int FirstRow;
+        private readonly int FirstCol;
+        private readonly int SecondRow;
+        private readonly int SecondCol;
+        private readonly int ThirdRow;
+        private readonly int ThirdCol;
+        public readonly int Level;
+        [MarshalAs(UnmanagedType.U1)] private readonly bool isValid;
 
         public bool IsValid
         {
             get
             {
-                var result = NativeMethods.plateau_mesh_code_is_valid(this, out bool isValid);
+                var result = NativeMethods.plateau_mesh_code_is_valid(this, out bool resultIsValid);
                 DLLUtil.CheckDllError(result);
-                return isValid;
+                return resultIsValid;
             }
         }
 
@@ -62,6 +63,23 @@ namespace PLATEAU.Dataset
         {
             if (IsValid) return;
             throw new Exception("Invalid MeshCode. ( MeshCode.Invalid == true)");
+        }
+
+        private static class NativeMethods
+        {
+            [DllImport(DLLUtil.DllName)]
+            internal static extern MeshCode plateau_mesh_code_parse(
+                [In] string code);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_mesh_code_get_extent(
+                [In] MeshCode meshCode,
+                [In, Out] ref Extent outExtent);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_mesh_code_is_valid(
+                [In] MeshCode meshCode,
+                [MarshalAs(UnmanagedType.U1)]out bool outIsValid);
         }
     }
 }

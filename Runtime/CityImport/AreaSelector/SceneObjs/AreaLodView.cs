@@ -20,7 +20,13 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         private readonly Vector3 meshCodeUnityPositionLowerRight;
         private const string iconDirPath = "Packages/com.synesthesias.plateau-unity-sdk/Images/AreaSelect";
         private const string iconsBoxImagePath = "round-window-wide.png";
-        private const float maxIconWidth = 60;
+        
+        #if UNITY_EDITOR
+        private static readonly float maxIconWidth = 60 * EditorGUIUtility.pixelsPerPoint;
+        #else
+        private static readonly float maxIconWidth = 60;
+        #endif
+        
         /// <summary> 利用可能を意味するアイコンの不透明度です。 </summary>
         private const float iconOpacityAvailable = 0.95f;
         /// <summary> 利用不可を意味するアイコンの不透明度です。 </summary>
@@ -75,12 +81,8 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
                 iconsToShow.Add(new IconToShow(iconTex, isAvailable));
             }
             
-            // Windowsの設定で ディスプレイ -> 拡大/縮小 が 100% 以外になっている場合のずれを補正するための変数です。
-            float monitorDpiScalingFactor = 1f;
-#if UNITY_EDITOR_WIN
-            monitorDpiScalingFactor = Screen.dpi / 96f; // 96f は Windowsの標準DPI
-#endif
-            
+            float monitorDpiScalingFactor = EditorGUIUtility.pixelsPerPoint;
+
             float meshCodeScreenWidth =
                 (camera.WorldToScreenPoint(this.meshCodeUnityPositionLowerRight) -
                  camera.WorldToScreenPoint(this.meshCodeUnityPositionUpperLeft))
@@ -137,6 +139,10 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
             #endif
         }
 
+        /// <summary>
+        /// 利用可能なLODをアイコンで表示するためのアイコン画像をロードし、辞書にして返します。
+        /// </summary>
+        /// <returns>キーはパッケージ種とLOD数値の組、値はテクスチャとするアイコン辞書を返します。</returns>
         private static ConcurrentDictionary<(PredefinedCityModelPackage package, uint lod), Texture> LoadIconFiles()
         {
             boxTex = LoadIcon(iconsBoxImagePath);

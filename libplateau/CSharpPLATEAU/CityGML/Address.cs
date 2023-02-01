@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 using PLATEAU.Interop;
 
 namespace PLATEAU.CityGML
@@ -45,5 +46,38 @@ namespace PLATEAU.CityGML
                 this.handle,
                 NativeMethods.plateau_address_get_thoroughfare_number
             );
+
+        private static class NativeMethods
+        {
+            [DllImport(DLLUtil.DllName, CharSet = CharSet.Ansi)]
+            internal static extern APIResult plateau_address_get_country(
+                [In] IntPtr addressHandle,
+                out IntPtr outCountryNamePtr,
+                out int strLength);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_address_get_locality(
+                [In] IntPtr addressHandle,
+                out IntPtr outStrPtr,
+                out int strLength);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_address_get_postal_code(
+                [In] IntPtr addressHandle,
+                out IntPtr outStrPtr,
+                out int strLength);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_address_get_thoroughfare_name(
+                [In] IntPtr addressHandle,
+                out IntPtr outStrPtr,
+                out int strLength);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_address_get_thoroughfare_number(
+                [In] IntPtr addressHandle,
+                out IntPtr outStrPtr,
+                out int strLength);
+        }
     }
 }

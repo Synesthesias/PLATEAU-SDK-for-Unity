@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 using PLATEAU.Interop;
 
 namespace PLATEAU.CityGML
@@ -32,5 +33,30 @@ namespace PLATEAU.CityGML
                 Handle,
                 NativeMethods.plateau_appearance_get_themes_count,
                 NativeMethods.plateau_appearance_get_themes);
+
+        private static class NativeMethods
+        {
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_appearance_get_type(
+                [In] IntPtr handle,
+                out IntPtr strPtr,
+                out int strLength);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_appearance_get_is_front(
+                [In] IntPtr handle,
+                [MarshalAs(UnmanagedType.U1)] out bool outIsFront);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_appearance_get_themes_count(
+                [In] IntPtr handle,
+                out int count);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_appearance_get_themes(
+                [In] IntPtr handle,
+                [In, Out] IntPtr[] outStrPointers,
+                [Out] int[] outStrSizes);
+        }
     }
 }
