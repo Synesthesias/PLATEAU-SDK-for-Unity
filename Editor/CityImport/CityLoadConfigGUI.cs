@@ -1,13 +1,10 @@
-﻿using System.Net.Mime;
-using PLATEAU.CityImport.Load;
+﻿using PLATEAU.CityImport.Load;
 using PLATEAU.CityImport.Setting;
 using PLATEAU.Editor.EditorWindow.Common;
 using PLATEAU.Dataset;
 using PLATEAU.Geometries;
 using PLATEAU.PolygonMesh;
-using PLATEAU.Util;
 using UnityEditor;
-using UnityEditor.Build.Reporting;
 using UnityEngine;
 
 namespace PLATEAU.Editor.CityImport
@@ -69,7 +66,8 @@ namespace PLATEAU.Editor.CityImport
                     using (PlateauEditorStyle.VerticalScopeLevel2())
                     {
                         EditorGUILayout.LabelField("3Dモデルの原点を手動で設定するモードです。");
-                        EditorGUILayout.LabelField($"あなたが選択した平面直角座標系は {GeoReference.ZoneIdExplanation[conf.CoordinateZoneID - 1]} です。");
+                        EditorGUILayout.LabelField($"あなたが選択した平面直角座標系は");
+                        EditorGUILayout.LabelField($"{GeoReference.ZoneIdExplanation[conf.CoordinateZoneID - 1]} です。");
                         EditorGUILayout.LabelField($"その座標系の原点は次のWebサイトで示されます:");
                         if (EditorGUILayout.LinkButton("国土地理院のWebサイトを開く"))
                         {

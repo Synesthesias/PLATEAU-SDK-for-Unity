@@ -5,7 +5,6 @@ using PLATEAU.Editor.EditorWindow.Common;
 using PLATEAU.Editor.EditorWindow.Common.PathSelector;
 using PLATEAU.Editor.EditorWindow.ProgressDisplay;
 using PLATEAU.Geometries;
-using PLATEAU.Interop;
 using PLATEAU.Dataset;
 using PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts;
 using PLATEAU.Native;
