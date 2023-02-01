@@ -18,6 +18,7 @@ namespace PLATEAU.Network
             }
         }
 
+<<<<<<< HEAD
         public static string DefaultApiToken
         {
             get
@@ -40,11 +41,14 @@ namespace PLATEAU.Network
             }
         }
 
+=======
+>>>>>>> main
         private static class NativeMethods
         {
             [DllImport(DLLUtil.DllName)]
             internal static extern APIResult plateau_client_get_default_url(
                 [In, Out] IntPtr nativeStrPtr);
+<<<<<<< HEAD
 
             [DllImport(DLLUtil.DllName)]
             internal static extern APIResult plateau_client_get_default_api_token(
@@ -54,6 +58,8 @@ namespace PLATEAU.Network
             internal static extern APIResult plateau_client_get_mock_server_url(
                 [In, Out] IntPtr nativeStrPtr);
             
+=======
+>>>>>>> main
         }
     }
 }
