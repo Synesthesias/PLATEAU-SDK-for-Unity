@@ -10,7 +10,7 @@ using UnityEngine;
 namespace PLATEAU.CityImport.Setting
 {
     /// <summary>
-    /// <see cref="PLATEAUCityModelLoader"/> の設定です。
+    /// 都市インポートの設定です。
     /// </summary>
     [Serializable]
     internal class CityLoadConfig : ISerializationCallbackReceiver
