@@ -16,8 +16,8 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts
     public class ServerDatasetFetchGUI
     {
         private readonly UnityEditor.EditorWindow parentWindow;
-        public string ServerUrl { get; private set; } = NetworkConfig.DefaultApiServerUrl;
-        public string ServerToken { get; private set; } = NetworkConfig.DefaultApiToken;
+        public string ServerUrl { get; private set; } = "";
+        public string ServerToken { get; private set; } = "";
 
         public LoadStatusEnum LoadStatus { get; private set; } = LoadStatusEnum.NotStarted;
         public NativeVectorDatasetMetadataGroup DatasetGroups { get; private set; }
@@ -51,24 +51,18 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts
                         if (PlateauEditorStyle.MiniButton("デフォルトのURLにする", 150))
                         {
                             GUI.FocusControl(""); // 入力欄にフォーカスがあると変更がGUI上に反映されないため
-                            ServerUrl = NetworkConfig.DefaultApiServerUrl;
-                            ServerToken = NetworkConfig.DefaultApiToken;
-                        }
-                        if(PlateauEditorStyle.MiniButton("(開発者向け)\nモックサーバー", 100))
-                        {
-                            GUI.FocusControl("");
-                            ServerUrl = NetworkConfig.MockServerUrl;
+                            ServerUrl = "";
                             ServerToken = "";
                         }
                     }
 
                 });
-            
-                ServerUrl = EditorGUILayout.TextField("サーバーURL", ServerUrl);
-                const string defaultTokenDisplay = "(デフォルト トークン)";
-                string tokenDisplay = ServerToken == NetworkConfig.DefaultApiToken ? defaultTokenDisplay : ServerToken;
-                string tokenInputted = EditorGUILayout.TextField("トークン", tokenDisplay);
-                ServerToken = tokenInputted == defaultTokenDisplay ? NetworkConfig.DefaultApiToken : tokenInputted;
+
+                // GUIで空文字が入力されている時、接続先はデフォルトになるので空文字の代わりに デフォルト と表示します。
+                ServerUrl = PlateauEditorStyle.TextFieldWithDefaultValue(
+                    "サーバーURL", ServerUrl, "", "(デフォルトURL)");
+                ServerToken = PlateauEditorStyle.TextFieldWithDefaultValue(
+                    "認証トークン", ServerToken, "", "(デフォルトトークン)");
                 switch (LoadStatus)
                 {
                     case LoadStatusEnum.NotStarted:

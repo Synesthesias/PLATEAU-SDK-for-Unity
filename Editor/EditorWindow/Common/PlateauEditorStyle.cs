@@ -699,6 +699,18 @@ namespace PLATEAU.Editor.EditorWindow.Common
         }
 
         /// <summary>
+        /// テキストフィールドを表示します。
+        /// ただし、入力された値が defaultValue の場合、表示上は defaultValueDisplay になり、実際は defaultValue を返します。
+        /// </summary>
+        public static string TextFieldWithDefaultValue(string label, string currentValue, string defaultValue, string defaultValueDisplay)
+        {
+            string display = currentValue == defaultValue ? defaultValueDisplay : currentValue;
+            string nextValue = EditorGUILayout.TextField(label, display);
+            if (nextValue == defaultValueDisplay) return defaultValue;
+            return nextValue;
+        }
+
+        /// <summary>
         /// テクスチャをロードし、キャッシュに追加してから返します。
         /// すでにキャッシュにあれば、ファイルロードの代わりにキャッシュから返します。
         /// 画像ファイルのパスがキャッシュのキーとなります。

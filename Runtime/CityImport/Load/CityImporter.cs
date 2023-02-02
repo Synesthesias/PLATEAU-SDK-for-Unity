@@ -68,8 +68,15 @@ namespace PLATEAU.CityImport.Load
             // ここで指定するゲームオブジェクト名は仮であり、あとからインポートしたGMLファイルパスに応じてふさわしいものに変更します。
             var rootTrans = new GameObject("インポート中です...").transform;
 
-            // 各GMLファイルで共通する設定です。
-            var referencePoint = CalcCenterPoint(targetGmls, config.CoordinateZoneID);
+            // 基準点を設定します。基準点はどのGMLファイルでも共通です。（そうでないと複数のGMLファイル間で位置が合わないため。）
+            var referencePoint = config.ReferencePointSetMethod switch
+            {
+                CityLoadConfig.ReferencePointSetMethodEnum.Custom => config.CustomReferencePoint,
+                CityLoadConfig.ReferencePointSetMethodEnum.ExtentCenter =>
+                    CalcCenterPoint(targetGmls, config.CoordinateZoneID),
+                _ => throw new ArgumentOutOfRangeException(nameof(config),
+                    $"Unknown {nameof(CityLoadConfig.ReferencePointSetMethodEnum)}.")
+            };
             
             // ルートのGameObjectにコンポーネントを付けます。 
             var cityModelComponent = rootTrans.gameObject.AddComponent<PLATEAUInstancedCityModel>();
