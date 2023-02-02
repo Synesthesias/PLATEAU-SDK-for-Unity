@@ -103,7 +103,7 @@ namespace PLATEAU.Editor.EditorWindow.Common
                     fontStyle = FontStyle.Bold
                 };
                 var textContent = new GUIContent(text);
-                var textWidth = textStyle.CalcSize(textContent).x;
+                var textWidth = textStyle.CalcSize(textContent).x + 6;
                 CenterAlignVertical(() =>
                     {
                         EditorGUILayout.LabelField(textContent, textStyle, GUILayout.MaxWidth(textWidth));

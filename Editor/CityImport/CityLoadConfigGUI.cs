@@ -61,19 +61,6 @@ namespace PLATEAU.Editor.CityImport
             using (PlateauEditorStyle.VerticalScopeLevel1())
             {
                 PlateauEditorStyle.Heading("基準座標系からのオフセット値(メートル)", null);
-                using (PlateauEditorStyle.VerticalScopeLevel2())
-                {
-                    EditorGUILayout.LabelField("3Dモデルの原点を手動で設定するモードです。");
-                    EditorGUILayout.LabelField($"あなたが選択した平面直角座標系は");
-                    EditorGUILayout.LabelField($"{GeoReference.ZoneIdExplanation[conf.CoordinateZoneID - 1]} です。");
-                    EditorGUILayout.LabelField($"その座標系の原点は次のWebサイトで示されます:");
-                    if (EditorGUILayout.LinkButton("国土地理院のWebサイトを開く"))
-                    {
-                        Application.OpenURL("https://www.gsi.go.jp/sokuchikijun/jpc.html");
-                    }
-
-                    EditorGUILayout.LabelField("その座標系の原点から東西南北に何メートルの箇所を3Dモデルの原点とするか指定してください。");
-                }
 
                 using (PlateauEditorStyle.VerticalScopeLevel1())
                 {
