@@ -2,7 +2,6 @@
 using System.IO;
 using PLATEAU.CityInfo;
 using PLATEAU.Editor.CityExport.ModelConvert;
-using PLATEAU.Interop;
 using PLATEAU.MeshWriter;
 using PLATEAU.Native;
 using PLATEAU.PolygonMesh;

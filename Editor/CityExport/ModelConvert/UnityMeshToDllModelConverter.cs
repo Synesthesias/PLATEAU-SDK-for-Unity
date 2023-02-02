@@ -2,7 +2,6 @@
 using System.IO;
 using System.Linq;
 using PLATEAU.Geometries;
-using PLATEAU.Interop;
 using PLATEAU.Native;
 using PLATEAU.PolygonMesh;
 using PLATEAU.Util;
