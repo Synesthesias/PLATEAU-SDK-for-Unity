@@ -69,14 +69,7 @@ namespace PLATEAU.CityImport.Load
             var rootTrans = new GameObject("インポート中です...").transform;
 
             // 基準点を設定します。基準点はどのGMLファイルでも共通です。（そうでないと複数のGMLファイル間で位置が合わないため。）
-            var referencePoint = config.ReferencePointSetMethod switch
-            {
-                CityLoadConfig.ReferencePointSetMethodEnum.Custom => config.CustomReferencePoint,
-                CityLoadConfig.ReferencePointSetMethodEnum.ExtentCenter =>
-                    CalcCenterPoint(targetGmls, config.CoordinateZoneID),
-                _ => throw new ArgumentOutOfRangeException(nameof(config),
-                    $"Unknown {nameof(CityLoadConfig.ReferencePointSetMethodEnum)}.")
-            };
+            var referencePoint = config.ReferencePoint;
             
             // ルートのGameObjectにコンポーネントを付けます。 
             var cityModelComponent = rootTrans.gameObject.AddComponent<PLATEAUInstancedCityModel>();
@@ -118,22 +111,5 @@ namespace PLATEAU.CityImport.Load
             CityDuplicateProcessor.EnableOnlyLargestLODInDuplicate(cityModelComponent);
             rootTrans.name = Path.GetFileName(lastFetchedGmlRootPath);
         }
-
-        public static PlateauVector3d CalcCenterPoint(IEnumerable<GmlFile> targetGmls, int coordinateZoneID)
-        {
-            using var geoReference = CoordinatesConvertUtil.UnityStandardGeoReference(coordinateZoneID);
-            var geoCoordSum = new GeoCoordinate(0, 0, 0);
-            int count = 0;
-            foreach (var gml in targetGmls)
-            {
-                geoCoordSum += gml.MeshCode.Extent.Center;
-                count++;
-            }
-
-            if (count == 0) throw new ArgumentException("Target gmls count is zero.");
-            var centerGeo = geoCoordSum / count;
-            return geoReference.Project(centerGeo);
-        }
-
     }
 }

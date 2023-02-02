@@ -108,6 +108,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
             this.config.InitWithPackageFlags((PredefinedCityModelPackage)~0u);
             this.config.AreaMeshCodes = areaMeshCodes;
             this.config.Extent = extent;
+            this.config.SearchCenterPointAndSetAsReferencePoint();
         }
 
     }

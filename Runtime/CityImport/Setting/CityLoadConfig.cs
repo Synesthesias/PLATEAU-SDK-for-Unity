@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using PLATEAU.Dataset;
 using PLATEAU.Native;
@@ -39,23 +40,13 @@ namespace PLATEAU.CityImport.Setting
                     new GeoCoordinate(value.Min.Latitude, value.Min.Longitude, -99999),
                     new GeoCoordinate(value.Max.Latitude, value.Max.Longitude, 99999));
         }
-
-        /// <summary>
-        /// 基準点の設定方法です。
-        /// </summary>
-        public enum ReferencePointSetMethodEnum
-        {
-            [InspectorName("範囲の中心")] ExtentCenter,
-            [InspectorName("手動入力")] Custom
-        }
-
-        public ReferencePointSetMethodEnum ReferencePointSetMethod { get; set; } =
-            ReferencePointSetMethodEnum.ExtentCenter;
+        
         
         /// <summary>
-        /// 基準点の設定方法が Custom の時の、ユーザーが入力した基準点です。
+        /// 基準点です。
+        /// ユーザーが選択した直交座標系の原点から、何メートルの地点を3Dモデルの原点とするかです。
         /// </summary>
-        public PlateauVector3d CustomReferencePoint { get; set; }
+        public PlateauVector3d ReferencePoint { get; set; }
 
         // 都市モデル読み込みの、パッケージ種ごとの設定です。
         private readonly Dictionary<PredefinedCityModelPackage, PackageLoadSetting> perPackagePairSettings =
@@ -124,6 +115,34 @@ namespace PLATEAU.CityImport.Setting
             }
 
             return foundGmls;
+        }
+
+        /// <summary>
+        /// 設定の条件に合うGMLファイルを検索し、その位置の中心を求め、中心を基準点として設定します。
+        /// 中心 == 基準点 を返します。
+        /// </summary>
+        public PlateauVector3d SearchCenterPointAndSetAsReferencePoint()
+        {
+            var gmls = SearchMatchingGMLList();
+            var center = CalcCenterPoint(gmls, CoordinateZoneID);
+            ReferencePoint = center;
+            return center;
+        }
+        
+        public static PlateauVector3d CalcCenterPoint(IEnumerable<GmlFile> targetGmls, int coordinateZoneID)
+        {
+            using var geoReference = CoordinatesConvertUtil.UnityStandardGeoReference(coordinateZoneID);
+            var geoCoordSum = new GeoCoordinate(0, 0, 0);
+            int count = 0;
+            foreach (var gml in targetGmls)
+            {
+                geoCoordSum += gml.MeshCode.Extent.Center;
+                count++;
+            }
+
+            if (count == 0) throw new ArgumentException("Target gmls count is zero.");
+            var centerGeo = geoCoordSum / count;
+            return geoReference.Project(centerGeo);
         }
     }
 }

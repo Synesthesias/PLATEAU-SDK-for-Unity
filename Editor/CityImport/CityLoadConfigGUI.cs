@@ -24,6 +24,7 @@ namespace PLATEAU.Editor.CityImport
             {
                 PerPackageLoadConfGui(package, conf);
             }
+
             // 位置指定
             PositionConfGui(cityLoadConf);
         }
@@ -41,10 +42,12 @@ namespace PLATEAU.Editor.CityImport
                         {
                             var predefined = CityModelPackageInfo.GetPredefined(package);
                             TextureIncludeGUI(conf, predefined.hasAppearance);
-                            conf.doSetMeshCollider = EditorGUILayout.Toggle("Mesh Collider をセットする", conf.doSetMeshCollider);
-                                
-                            PlateauEditorStyle.LODSlider("LOD描画設定", ref conf.minLOD, ref conf.maxLOD, (uint)predefined.minLOD, (uint)predefined.maxLOD);
-                                
+                            conf.doSetMeshCollider =
+                                EditorGUILayout.Toggle("Mesh Collider をセットする", conf.doSetMeshCollider);
+
+                            PlateauEditorStyle.LODSlider("LOD描画設定", ref conf.minLOD, ref conf.maxLOD,
+                                (uint)predefined.minLOD, (uint)predefined.maxLOD);
+
                             conf.meshGranularity = (MeshGranularity)EditorGUILayout.Popup("モデル結合",
                                 (int)conf.meshGranularity, new[] { "最小地物単位(壁面,屋根面等)", "主要地物単位(建築物,道路等)", "地域単位" });
                         }
@@ -57,45 +60,39 @@ namespace PLATEAU.Editor.CityImport
         {
             using (PlateauEditorStyle.VerticalScopeLevel1())
             {
-                PlateauEditorStyle.Heading("位置設定", null);
-                conf.ReferencePointSetMethod = 
-                    (CityLoadConfig.ReferencePointSetMethodEnum)
-                    EditorGUILayout.EnumPopup("3Dモデルの原点", conf.ReferencePointSetMethod);
-                if (conf.ReferencePointSetMethod == CityLoadConfig.ReferencePointSetMethodEnum.Custom)
+                PlateauEditorStyle.Heading("基準座標系からのオフセット値(メートル)", null);
+                using (PlateauEditorStyle.VerticalScopeLevel2())
                 {
-                    using (PlateauEditorStyle.VerticalScopeLevel2())
+                    EditorGUILayout.LabelField("3Dモデルの原点を手動で設定するモードです。");
+                    EditorGUILayout.LabelField($"あなたが選択した平面直角座標系は");
+                    EditorGUILayout.LabelField($"{GeoReference.ZoneIdExplanation[conf.CoordinateZoneID - 1]} です。");
+                    EditorGUILayout.LabelField($"その座標系の原点は次のWebサイトで示されます:");
+                    if (EditorGUILayout.LinkButton("国土地理院のWebサイトを開く"))
                     {
-                        EditorGUILayout.LabelField("3Dモデルの原点を手動で設定するモードです。");
-                        EditorGUILayout.LabelField($"あなたが選択した平面直角座標系は");
-                        EditorGUILayout.LabelField($"{GeoReference.ZoneIdExplanation[conf.CoordinateZoneID - 1]} です。");
-                        EditorGUILayout.LabelField($"その座標系の原点は次のWebサイトで示されます:");
-                        if (EditorGUILayout.LinkButton("国土地理院のWebサイトを開く"))
-                        {
-                            Application.OpenURL("https://www.gsi.go.jp/sokuchikijun/jpc.html");
-                        }
-                        EditorGUILayout.LabelField("その座標系の原点から東西南北に何メートルの箇所を3Dモデルの原点とするか指定してください。");
+                        Application.OpenURL("https://www.gsi.go.jp/sokuchikijun/jpc.html");
                     }
 
-                    using(PlateauEditorStyle.VerticalScopeLevel1())
+                    EditorGUILayout.LabelField("その座標系の原点から東西南北に何メートルの箇所を3Dモデルの原点とするか指定してください。");
+                }
+
+                using (PlateauEditorStyle.VerticalScopeLevel1())
+                {
+                    var refPoint = conf.ReferencePoint;
+                    PlateauEditorStyle.CenterAlignHorizontal(() =>
                     {
-                        var refPoint = conf.CustomReferencePoint;
-                        PlateauEditorStyle.CenterAlignHorizontal(() =>
+                        if (PlateauEditorStyle.MiniButton("範囲の中心点を入力", 140))
                         {
-                            if (PlateauEditorStyle.MiniButton("範囲の中心点を入力", 140))
-                            {
-                                refPoint = CityImporter.CalcCenterPoint(conf.SearchMatchingGMLList(), conf.CoordinateZoneID);
-                            }
-                        });
-                        
-                        refPoint.X = EditorGUILayout.DoubleField("X (正が東,負が西,メートル)", refPoint.X);
-                        refPoint.Y = EditorGUILayout.DoubleField("Y (高さ,メートル)", refPoint.Y);
-                        refPoint.Z = EditorGUILayout.DoubleField("Z (正が北,負が南,メートル)", refPoint.Z);
-                        conf.CustomReferencePoint = refPoint;
-                    }
-                    
+                            GUI.FocusControl("");
+                            refPoint = conf.SearchCenterPointAndSetAsReferencePoint();
+                        }
+                    });
+
+                    refPoint.X = EditorGUILayout.DoubleField("X (東が正方向)", refPoint.X);
+                    refPoint.Y = EditorGUILayout.DoubleField("Y (高さ)", refPoint.Y);
+                    refPoint.Z = EditorGUILayout.DoubleField("Z (北が正方向)", refPoint.Z);
+                    conf.ReferencePoint = refPoint;
                 }
             }
-           
         }
 
         private static void TextureIncludeGUI(PackageLoadSetting conf, bool mayTextureExist)
