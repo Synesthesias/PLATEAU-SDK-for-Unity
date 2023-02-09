@@ -61,7 +61,7 @@ namespace PLATEAU.Tests.EditModeTests
             Assert.IsNotNull(areaSelectorBehaviour, "AreaSelectorBehaviourが存在します。");
             
             // 終了処理
-            areaSelectorBehaviour.OnSelectButtonPushed();
+            areaSelectorBehaviour.EndAreaSelection();
             yield return null;
             var newTestScene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Additive);
             yield return null;

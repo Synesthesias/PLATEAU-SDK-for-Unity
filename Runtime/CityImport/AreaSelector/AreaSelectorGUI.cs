@@ -39,13 +39,12 @@ namespace PLATEAU.CityImport.AreaSelector
             #if UNITY_EDITOR
             if (GUILayout.Button("決定"))
             {
-                areaSelector.OnSelectButtonPushed();
+                areaSelector.EndAreaSelection();
             }
-            // TODO キャンセル未実装　
-            // if (GUILayout.Button("キャンセル"))
-            // {
-            //        areaSelector.OnCancelButtonPushed();
-            // }
+            if (GUILayout.Button("キャンセル"))
+            {
+                areaSelector.CancelAreaSelection();
+            }
             GUI.DragWindow();
             #endif
         }

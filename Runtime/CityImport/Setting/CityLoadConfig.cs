@@ -140,7 +140,7 @@ namespace PLATEAU.CityImport.Setting
                 count++;
             }
 
-            if (count == 0) throw new ArgumentException("Target gmls count is zero.");
+            if (count == 0) return new PlateauVector3d(0,0,0);
             var centerGeo = geoCoordSum / count;
             return geoReference.Project(centerGeo);
         }

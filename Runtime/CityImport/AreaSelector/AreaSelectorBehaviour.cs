@@ -157,8 +157,9 @@ namespace PLATEAU.CityImport.AreaSelector
 
         
 
-        private void EndAreaSelection()
+        internal void EndAreaSelection()
         {
+            IsAreaSelectEnabled = false;
             AreaSelectorGUI.Disable();
             var areaSelectResult = this.gizmosDrawer.SelectedMeshCodes;
             var selectedExtent = this.gizmosDrawer.CursorExtent(this.coordinateZoneID, this.geoReference.ReferencePoint);
@@ -168,20 +169,15 @@ namespace PLATEAU.CityImport.AreaSelector
             #endif
         }
 
-        private void CancelAreaSelection()
+        internal void CancelAreaSelection()
         {
+            AreaSelectorGUI.Disable();
             IsAreaSelectEnabled = false;
             var emptyAreaSelectResult = new MeshCode[] { };
             var dummyExtent = Extent.All;
             #if UNITY_EDITOR
             AreaSelectorDataPass.Exec(this.prevScenePath, emptyAreaSelectResult, this.areaSelectResultReceiver, this.availablePackageFlags, dummyExtent, this.prevEditorWindow);
             #endif
-        }
-
-        public void OnSelectButtonPushed()
-        {
-            IsAreaSelectEnabled = false;
-            EndAreaSelection();
         }
 
         private static void RotateSceneViewCameraDown()
