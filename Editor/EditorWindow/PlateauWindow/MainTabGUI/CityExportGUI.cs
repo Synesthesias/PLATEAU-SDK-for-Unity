@@ -1,4 +1,7 @@
-﻿using PLATEAU.CityInfo;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using PLATEAU.CityInfo;
 using PLATEAU.Editor.CityExport;
 using PLATEAU.Editor.EditorWindow.Common;
 using PLATEAU.Editor.EditorWindow.Common.PathSelector;
@@ -35,6 +38,8 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
         private bool exportHiddenObject;
         private MeshExportOptions.MeshTransformType meshTransformType = MeshExportOptions.MeshTransformType.Local;
         private CoordinateSystem meshAxis = CoordinateSystem.ENU;
+        private static readonly List<CoordinateSystem> meshAxisChoices = ((CoordinateSystem[])Enum.GetValues(typeof(CoordinateSystem))).ToList();
+        private static readonly string[] meshAxisDisplay = meshAxisChoices.Select(axis => axis.ToNaturalLanguage()).ToArray();
         private string exportDirPath = "";
         private bool foldOutOption = true;
         private bool foldOutExportPath = true;
@@ -74,7 +79,9 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
                     this.exportHiddenObject = EditorGUILayout.Toggle("非アクティブオブジェクトを含める", this.exportHiddenObject);
                     this.meshTransformType =
                         (MeshExportOptions.MeshTransformType)EditorGUILayout.EnumPopup("座標変換", this.meshTransformType);
-                    this.meshAxis = (CoordinateSystem)EditorGUILayout.EnumPopup("座標軸", this.meshAxis);
+
+                    
+                    this.meshAxis = meshAxisChoices[EditorGUILayout.Popup("座標軸", meshAxisChoices.IndexOf(this.meshAxis), meshAxisDisplay)];
                 }
             });
 
