@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using PLATEAU.CityImport.AreaSelector.SceneObjs;
@@ -53,7 +54,25 @@ namespace PLATEAU.CityImport.AreaSelector
         private void Start()
         {
             AreaSelectorGUI.Enable(this);
-            GatherMeshCodes(this.datasetSourceConfig, out var meshCodes, out var packageFlags);
+#if UNITY_EDITOR
+            EditorUtility.DisplayProgressBar("", "データファイルを検索中です...", 0f);
+#endif
+            ReadOnlyCollection<MeshCode> meshCodes;
+            PredefinedCityModelPackage packageFlags;
+            try
+            {
+                GatherMeshCodes(this.datasetSourceConfig, out meshCodes, out packageFlags);
+            }
+            catch (Exception e)
+            {
+                const string errorMessage = "メッシュコードの取得に失敗しました。";
+                Debug.LogError($"{errorMessage}\n{e}");
+                EditorUtility.ClearProgressBar();
+                EditorUtility.DisplayDialog("PLATEAU", errorMessage, "OK");
+                CancelAreaSelection();
+                return;
+            }
+
             var drawerObj = new GameObject($"{nameof(AreaSelectGizmosDrawer)}");
             this.gizmosDrawer = drawerObj.AddComponent<AreaSelectGizmosDrawer>();
             this.gizmosDrawer.Init(meshCodes, this.datasetSourceConfig, this.coordinateZoneID, out this.geoReference);
@@ -104,7 +123,7 @@ namespace PLATEAU.CityImport.AreaSelector
 #if UNITY_EDITOR
             SceneView.lastActiveSceneView.isRotationLocked = this.prevSceneCameraRotationLocked;
 #endif
-            this.mapLoader.Dispose();
+            this.mapLoader?.Dispose();
         }
 
         private static Extent CalcExtentCoversAllMeshCodes(IEnumerable<MeshCode> meshCodes)
@@ -125,9 +144,6 @@ namespace PLATEAU.CityImport.AreaSelector
 
         private static void GatherMeshCodes(DatasetSourceConfig datasetSourceConfig, out ReadOnlyCollection<MeshCode> meshCodes, out PredefinedCityModelPackage availablePackageFlags)
         {
-            #if UNITY_EDITOR
-            EditorUtility.DisplayProgressBar("", "データファイルを検索中です...", 0f);
-            #endif
             using var datasetSource = DatasetSource.Create(datasetSourceConfig);
             using var accessor = datasetSource.Accessor;
             // ローカルモードではうまくいきますが、サーバーモードでは Packages は None になります。
@@ -152,16 +168,19 @@ namespace PLATEAU.CityImport.AreaSelector
             #endif
         }
 
+        private void CancelAreaSelection()
+        {
+            IsAreaSelectEnabled = false;
+            var emptyAreaSelectResult = new MeshCode[] { };
+            var dummyExtent = Extent.All;
+            #if UNITY_EDITOR
+            AreaSelectorDataPass.Exec(this.prevScenePath, emptyAreaSelectResult, this.areaSelectResultReceiver, this.availablePackageFlags, dummyExtent, this.prevEditorWindow);
+            #endif
+        }
+
         public void OnSelectButtonPushed()
         {
             IsAreaSelectEnabled = false;
-            EndAreaSelection();
-        }
-        
-        public void OnCancelButtonPushed()
-        {
-            IsAreaSelectEnabled = false;
-            // TODO キャンセルになってない
             EndAreaSelection();
         }
 
