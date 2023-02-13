@@ -27,6 +27,7 @@ namespace PLATEAU.Interop
         #else
             public const string DllName = "plateau";
         #endif
+
         /// <summary>
         /// NativeMethods で頻出するメソッドの型を delegate で登録しておくことで、delegate で呼び出せるようにします。
         /// ただし、すべてのメソッドがこのような型をしているわけではないので、対応していないメソッドもあります。
