@@ -5,6 +5,9 @@ using UnityEngine;
 
 namespace PLATEAU.CityAdjust
 {
+    /// <summary>
+    /// 重複した地物があるか検索し、重複して表示されないようにします。
+    /// </summary>
     public static class CityDuplicateProcessor
     {
         // TODO ヒエラルキー構成が変わったらここも直す必要がある。
@@ -49,36 +52,10 @@ namespace PLATEAU.CityAdjust
             }
         }
 
-        // private static void SetActiveAll(Transform trans, bool isActive)
-        // {
-        //     trans.gameObject.SetActive(isActive);
-        //     int childCount = trans.childCount;
-        //     for (int i = 0; i < childCount; i++)
-        //     {
-        //         var child = trans.GetChild(i);
-        //         SetActiveAll(child, isActive);
-        //     }
-        // }
-        
         private static IEnumerable<Transform> LODTransformsSorted(Transform gmlTrans)
         {
             var lods = PLATEAUInstancedCityModel.GetLodTransforms(gmlTrans);
             return lods.OrderBy(lod => lod.name);
-            // int childCount = gmlTrans.childCount;
-            // var availableLODs = new List<(int lod, Transform trans)>();
-            // for (int i = 0; i < childCount; i++)
-            // {
-            //     var child = gmlTrans.GetChild(i);
-            //     var name = child.name;
-            //     if (!name.StartsWith("LOD")) continue;
-            //     if (!int.TryParse(name.Substring("LOD".Length), out int lod))
-            //         continue;
-            //     availableLODs.Add((lod, child));
-            // }
-            //
-            // return availableLODs
-            //     .OrderBy(tuple => tuple.lod)
-            //     .Select(tuple => tuple.trans);
         }
 
         /// <summary>
