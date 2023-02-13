@@ -67,8 +67,10 @@ namespace PLATEAU.CityImport.AreaSelector
             {
                 const string errorMessage = "メッシュコードの取得に失敗しました。";
                 Debug.LogError($"{errorMessage}\n{e}");
+                #if UNITY_EDITOR
                 EditorUtility.ClearProgressBar();
                 EditorUtility.DisplayDialog("PLATEAU", errorMessage, "OK");
+                #endif
                 CancelAreaSelection();
                 return;
             }
