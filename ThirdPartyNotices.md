@@ -1,3 +1,11 @@
+# NOTICES (権利表記)
+This software incorporates material as listed below or described in the code.  
+このソフトウェアには、次の制作物が含まれています。
+
+## libplateau
+**Source:** [https://github.com/Synesthesias/libplateau](https://github.com/Synesthesias/libplateau)
+### License
+```
 # libplateau
 libplateau は、PLATEAUを扱うライブラリです。  
 libplateau is a library that processes PLATEAU data.  
@@ -512,3 +520,4 @@ necessary.  Here is a sample; alter the names:
   Ty Coon, President of Vice
 
 That's all there is to it!
+```
