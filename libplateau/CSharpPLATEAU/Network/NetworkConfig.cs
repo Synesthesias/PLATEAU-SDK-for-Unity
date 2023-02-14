@@ -7,12 +7,13 @@ namespace PLATEAU.Network
 {
     public class NetworkConfig
     {
-        public static string DefaultApiServerUrl
+
+        public static string MockServerUrl
         {
             get
             {
                 var urlNative = NativeString.Create();
-                var result = NativeMethods.plateau_client_get_default_url(urlNative.Handle);
+                var result = NativeMethods.plateau_client_get_mock_server_url(urlNative.Handle);
                 DLLUtil.CheckDllError(result);
                 return urlNative.ToString();
             }
@@ -20,9 +21,11 @@ namespace PLATEAU.Network
 
         private static class NativeMethods
         {
+
             [DllImport(DLLUtil.DllName)]
-            internal static extern APIResult plateau_client_get_default_url(
+            internal static extern APIResult plateau_client_get_mock_server_url(
                 [In, Out] IntPtr nativeStrPtr);
+            
         }
     }
 }

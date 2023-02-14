@@ -2,6 +2,7 @@
 using System.Linq;
 using PLATEAU.Dataset;
 using PLATEAU.Native;
+using UnityEngine;
 using UnityEngine.SceneManagement;
 
 #if UNITY_EDITOR
@@ -63,6 +64,10 @@ namespace PLATEAU.CityImport.AreaSelector
             var areaMeshCodes = selectedMeshCodes
                 .Select(meshCode => meshCode.ToString())
                 .ToArray();
+            if (areaMeshCodes.Length == 0)
+            {
+                Debug.Log("地域は選択されませんでした。");
+            }
             areaSelectResultReceiver.ReceiveResult(areaMeshCodes, extent, availablePackageFlags);
         }
     }

@@ -1,5 +1,4 @@
 ﻿using System.Linq;
-using System.Threading.Tasks;
 using PLATEAU.CityImport.AreaSelector;
 using PLATEAU.CityImport.Setting;
 using PLATEAU.Dataset;
@@ -8,45 +7,53 @@ using PLATEAU.Editor.EditorWindow.Common;
 using PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts;
 using PLATEAU.Editor.EditorWindow.ProgressDisplay;
 using PLATEAU.Geometries;
-using PLATEAU.Interop;
 using PLATEAU.Native;
-using PLATEAU.Network;
-using PLATEAU.Util.Async;
 using UnityEditor;
 
 namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
 {
+    /// <summary>
+    /// インポート画面で「サーバー」が選択されたときのGUIです。
+    /// </summary>
     internal class CityImportRemoteGUI : IEditorDrawable, IAreaSelectResultReceiver
     {
         private DatasetSource datasetSource;
         private DatasetAccessor accessor;
-        private bool datasetGroupLoaded;
         private int selectedDatasetGroupIndex;
         private int selectedDatasetIndex;
-        private NativeVectorDatasetMetadataGroup datasetGroups;
         private readonly CityLoadConfig config = new CityLoadConfig();
+        private ServerDatasetFetchGUI serverDatasetFetchGUI;
+        
         // インポートの処理状況はウィンドウを消しても残しておきたいので static にします。
         private static ProgressDisplayGUI progressGUI;
 
 
         public CityImportRemoteGUI(UnityEditor.EditorWindow parentEditorWindow)
         {
-            LoadDatasetAsync().ContinueWithErrorCatch();
+            this.serverDatasetFetchGUI = new ServerDatasetFetchGUI(parentEditorWindow);
             progressGUI ??= new ProgressDisplayGUI(parentEditorWindow);
             progressGUI.ParentEditorWindow = parentEditorWindow;
         }
         
         public void Draw()
         {
-            if (!this.datasetGroupLoaded)
+            EditorGUILayout.Space(15);
+            this.serverDatasetFetchGUI.Draw();
+
+
+            if (this.serverDatasetFetchGUI.LoadStatus != ServerDatasetFetchGUI.LoadStatusEnum.Success)
             {
-                EditorGUILayout.LabelField("サーバーに問い合わせ中です...");
                 return;
             }
+            
+            // どのようなデータセットが利用可能であるか、サーバーからの返答があるまでは以下は実行されません。
+            
             PlateauEditorStyle.Heading("データセットの選択", "num1.png");
+
+            var datasetGroups = this.serverDatasetFetchGUI.DatasetGroups;
             using (var groupChangeCheck = new EditorGUI.ChangeCheckScope())
             {
-                var datasetGroupTitles = this.datasetGroups.Select(dg => dg.Title).ToArray();
+                var datasetGroupTitles = datasetGroups.Select(dg => dg.Title).ToArray();
                 this.selectedDatasetGroupIndex = EditorGUILayout.Popup("都道府県", this.selectedDatasetGroupIndex, datasetGroupTitles);
                 if (groupChangeCheck.changed)
                 {
@@ -54,16 +61,18 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
                 }
             }
             
-            var datasetGroup = this.datasetGroups.At(this.selectedDatasetGroupIndex);
+            var datasetGroup = datasetGroups.At(this.selectedDatasetGroupIndex);
             var datasets = datasetGroup.Datasets;
             var datasetTitles = datasets.Select(d => d.Title).ToArray();
             this.selectedDatasetIndex = EditorGUILayout.Popup("データセット", this.selectedDatasetIndex, datasetTitles);
             var dataset = datasets.At(this.selectedDatasetIndex);
-            PlateauEditorStyle.MultiLineLabelWithBox($"タイトル: {dataset.Title}\n説明    : {dataset.Description}\n最大LOD: {dataset.MaxLOD}\n種別: {dataset.PackageFlags.ToJapaneseName()}");
+            PlateauEditorStyle.MultiLineLabelWithBox($"タイトル: {dataset.Title}\n説明    : {dataset.Description}\n種別: {dataset.PackageFlags.ToJapaneseName()}");
             
-            this.config.DatasetSourceConfig ??= new DatasetSourceConfig(true, "", "");
+            this.config.DatasetSourceConfig ??= new DatasetSourceConfig(true, "", "", "", "");
             var sourceConf = this.config.DatasetSourceConfig;
             sourceConf.ServerDatasetID = dataset.ID;
+            sourceConf.ServerUrl = this.serverDatasetFetchGUI.ServerUrl;
+            sourceConf.ServerToken = this.serverDatasetFetchGUI.ServerToken;
 
             this.config.CoordinateZoneID = EditorGUILayout.Popup(
                 "基準座標系", this.config.CoordinateZoneID - 1,
@@ -84,18 +93,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
             progressGUI.Draw();
         }
 
-        private async Task LoadDatasetAsync()
-        {
-            this.datasetGroups = await Task.Run(() =>
-            {
-                var client = Client.Create();
-                client.Url = NetworkConfig.DefaultApiServerUrl;
-                var ret =  client.GetDatasetMetadataGroup();
-                client.Dispose();
-                return ret;
-            });
-            this.datasetGroupLoaded = true;
-        }
+        
 
         public void ReceiveResult(string[] areaMeshCodes, Extent extent,
             PredefinedCityModelPackage availablePackageFlags)
@@ -110,6 +108,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
             this.config.InitWithPackageFlags((PredefinedCityModelPackage)~0u);
             this.config.AreaMeshCodes = areaMeshCodes;
             this.config.Extent = extent;
+            this.config.SearchCenterPointAndSetAsReferencePoint();
         }
 
     }

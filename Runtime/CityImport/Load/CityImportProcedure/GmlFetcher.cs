@@ -42,7 +42,7 @@ namespace PLATEAU.CityImport.Load.CityImportProcedure
             progressDisplay.SetProgress(gmlName, 5f, $"ダウンロード中 :{gmlName}");
             // GMLファイルを StreamingAssets にダウンロードします。
             var downloadedGml = await Task.Run(() => remoteGmlFile.Fetch(destPath));
-            Debug.Log($"downloaded {remoteGmlFile.Path}");
+            Debug.Log($"downloaded {remoteGmlFile.Path}\nto {downloadedGml.Path}");
             return downloadedGml;
         }
 

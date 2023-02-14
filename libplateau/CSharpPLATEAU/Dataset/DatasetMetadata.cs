@@ -26,7 +26,6 @@ namespace PLATEAU.Dataset
 
         public string Description => DLLUtil.GetNativeString(Handle, NativeMethods.plateau_dataset_metadata_get_description);
 
-        public int MaxLOD => DLLUtil.GetNativeValue<int>(Handle, NativeMethods.plateau_dataset_metadata_get_max_lod);
 
         public string[] FeatureTypes
         {
@@ -92,11 +91,6 @@ namespace PLATEAU.Dataset
                 [In] IntPtr datasetMetadataPtr,
                 out IntPtr outStrPtr,
                 out int strLength);
-
-            [DllImport(DLLUtil.DllName)]
-            internal static extern APIResult plateau_dataset_metadata_get_max_lod(
-                [In] IntPtr datasetMetadataPtr,
-                out int outMaxLod);
 
             [DllImport(DLLUtil.DllName)]
             internal static extern APIResult plateau_dataset_metadata_get_feature_types(

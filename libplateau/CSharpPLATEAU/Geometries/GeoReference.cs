@@ -28,6 +28,26 @@ namespace PLATEAU.Geometries
         EUN = 3
     }
 
+    public static class CoordinateSystemExtension
+    {
+        public static string ToNaturalLanguage(this CoordinateSystem system)
+        {
+            switch (system)
+            {
+                case CoordinateSystem.ENU:
+                    return "ENU(PLATEAUでの座標系)";
+                case CoordinateSystem.ESU:
+                    return "ESU(Unreal Engineでの座標系)";
+                case CoordinateSystem.EUN:
+                    return "EUN(Unityでの座標系)";
+                case CoordinateSystem.WUN:
+                    return "WUN(EUNの左右反転補正)";
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(system), "Unknown coordinate system.");
+            }
+        }
+    }
+
     /// <summary>
     /// 極座標と平面直角座標を変換します。
     /// また座標変換の基準を保持します。

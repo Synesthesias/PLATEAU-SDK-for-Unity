@@ -103,7 +103,7 @@ namespace PLATEAU.Editor.EditorWindow.Common
                     fontStyle = FontStyle.Bold
                 };
                 var textContent = new GUIContent(text);
-                var textWidth = textStyle.CalcSize(textContent).x;
+                var textWidth = textStyle.CalcSize(textContent).x + 6;
                 CenterAlignVertical(() =>
                     {
                         EditorGUILayout.LabelField(textContent, textStyle, GUILayout.MaxWidth(textWidth));
@@ -679,6 +679,15 @@ namespace PLATEAU.Editor.EditorWindow.Common
             }
         }
 
+        public static void RightAlign(Action drawFunc, params GUILayoutOption[] layoutOptions)
+        {
+            using (new EditorGUILayout.HorizontalScope(layoutOptions))
+            {
+                GUILayout.FlexibleSpace();
+                drawFunc();
+            }
+        }
+
         public static void CenterAlignVertical(Action drawFunc, params GUILayoutOption[] layoutOptions)
         {
             using (new EditorGUILayout.VerticalScope(layoutOptions))
@@ -687,6 +696,18 @@ namespace PLATEAU.Editor.EditorWindow.Common
                 drawFunc();
                 GUILayout.FlexibleSpace();
             }
+        }
+
+        /// <summary>
+        /// テキストフィールドを表示します。
+        /// ただし、入力された値が defaultValue の場合、表示上は defaultValueDisplay になり、実際は defaultValue を返します。
+        /// </summary>
+        public static string TextFieldWithDefaultValue(string label, string currentValue, string defaultValue, string defaultValueDisplay)
+        {
+            string display = currentValue == defaultValue ? defaultValueDisplay : currentValue;
+            string nextValue = EditorGUILayout.TextField(label, display);
+            if (nextValue == defaultValueDisplay) return defaultValue;
+            return nextValue;
         }
 
         /// <summary>

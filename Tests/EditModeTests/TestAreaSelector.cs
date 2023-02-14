@@ -34,7 +34,7 @@ namespace PLATEAU.Tests.EditModeTests
             SceneManager.SetActiveScene(emptyScene);
             // MiniTokyo の範囲選択画面を開始します。
             var testDef = TestCityDefinition.MiniTokyo;
-            var datasetConf = new DatasetSourceConfig(false, testDef.SrcRootDirPathLocal, "");
+            var datasetConf = new DatasetSourceConfig(false, testDef.SrcRootDirPathLocal, "", "", "");
             this.resultReceiver = new DummyAreaSelectResultReceiver();
         
             AreaSelectorStarter.Start(datasetConf, this.resultReceiver, testDef.CoordinateZoneId);
@@ -61,7 +61,7 @@ namespace PLATEAU.Tests.EditModeTests
             Assert.IsNotNull(areaSelectorBehaviour, "AreaSelectorBehaviourが存在します。");
             
             // 終了処理
-            areaSelectorBehaviour.OnSelectButtonPushed();
+            areaSelectorBehaviour.EndAreaSelection();
             yield return null;
             var newTestScene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Additive);
             yield return null;

@@ -6,7 +6,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using PLATEAU.CityAdjust;
 using PLATEAU.CityImport.Load.CityImportProcedure;
-using PLATEAU.CityImport.Load.FileCopy;
 using PLATEAU.CityImport.Setting;
 using PLATEAU.CityInfo;
 using PLATEAU.Geometries;
@@ -44,11 +43,7 @@ namespace PLATEAU.CityImport.Load
             List<GmlFile> targetGmls = null;
             try
             {
-                using var datasetSource = DatasetSource.Create(datasetSourceConfig);
-                using var datasetAccessor = datasetSource.Accessor;
-                targetGmls = await Task.Run(() => TargetGmlFinder.FindTargetGmls(
-                    datasetAccessor, config
-                ));
+                targetGmls = await Task.Run(config.SearchMatchingGMLList);
             }
             catch (Exception)
             {
@@ -73,8 +68,8 @@ namespace PLATEAU.CityImport.Load
             // ここで指定するゲームオブジェクト名は仮であり、あとからインポートしたGMLファイルパスに応じてふさわしいものに変更します。
             var rootTrans = new GameObject("インポート中です...").transform;
 
-            // 各GMLファイルで共通する設定です。
-            var referencePoint = CalcCenterPoint(targetGmls, config.CoordinateZoneID);
+            // 基準点を設定します。基準点はどのGMLファイルでも共通です。（そうでないと複数のGMLファイル間で位置が合わないため。）
+            var referencePoint = config.ReferencePoint;
             
             // ルートのGameObjectにコンポーネントを付けます。 
             var cityModelComponent = rootTrans.gameObject.AddComponent<PLATEAUInstancedCityModel>();
@@ -116,23 +111,5 @@ namespace PLATEAU.CityImport.Load
             CityDuplicateProcessor.EnableOnlyLargestLODInDuplicate(cityModelComponent);
             rootTrans.name = Path.GetFileName(lastFetchedGmlRootPath);
         }
-
-        private static PlateauVector3d CalcCenterPoint(IEnumerable<GmlFile> targetGmls, int coordinateZoneID)
-        {
-            using var geoReference = CoordinatesConvertUtil.UnityStandardGeoReference(coordinateZoneID);
-            var geoCoordSum = new GeoCoordinate(0, 0, 0);
-            int count = 0;
-            foreach (var gml in targetGmls)
-            {
-                geoCoordSum += gml.MeshCode.Extent.Center;
-                count++;
-            }
-
-            if (count == 0) throw new ArgumentException("Target gmls count is zero.");
-            var centerGeo = geoCoordSum / count;
-            return geoReference.Project(centerGeo);
-        }
-
-        
     }
 }

@@ -5,7 +5,6 @@ using PLATEAU.Editor.EditorWindow.Common;
 using PLATEAU.Editor.EditorWindow.Common.PathSelector;
 using PLATEAU.Editor.EditorWindow.ProgressDisplay;
 using PLATEAU.Geometries;
-using PLATEAU.Interop;
 using PLATEAU.Dataset;
 using PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts;
 using PLATEAU.Native;
@@ -15,8 +14,8 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
 {
     internal class CityImportLocalGUI : IEditorDrawable, IAreaSelectResultReceiver
     {
-        private readonly PathSelectorFolderPlateauInput folderSelector = new PathSelectorFolderPlateauInput();
-        private readonly CityLoadConfig config = new CityLoadConfig();
+        private readonly PathSelectorFolderPlateauInput folderSelector = new ();
+        private readonly CityLoadConfig config = new ();
         // インポートの処理状況はウィンドウを消しても残しておきたいので static にします。
         private static ProgressDisplayGUI progressGUI;
         private bool foldOutSourceFolderPath = true;
@@ -37,7 +36,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
 
             this.foldOutSourceFolderPath = PlateauEditorStyle.FoldOut(this.foldOutSourceFolderPath, "入力フォルダ", () =>
             {
-                this.config.DatasetSourceConfig ??= new DatasetSourceConfig(false, "", "");
+                this.config.DatasetSourceConfig ??= new DatasetSourceConfig(false, "", "", "", "");
                 this.config.DatasetSourceConfig.LocalSourcePath = this.folderSelector.Draw("フォルダパス");
             });
             
@@ -81,6 +80,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
             this.config.InitWithPackageFlags(availablePackageFlags);
             this.config.AreaMeshCodes = areaMeshCodes;
             this.config.Extent = extent;
+            this.config.SearchCenterPointAndSetAsReferencePoint();
         }
     }
 }

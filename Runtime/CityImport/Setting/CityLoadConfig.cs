@@ -10,30 +10,51 @@ using UnityEngine;
 namespace PLATEAU.CityImport.Setting
 {
     /// <summary>
-    /// <see cref="PLATEAUCityModelLoader"/> の設定です。
+    /// 都市インポートの設定です。
     /// </summary>
-    [Serializable]
-    internal class CityLoadConfig : ISerializationCallbackReceiver
+    internal class CityLoadConfig
     {
-        // 都市モデル読み込みの全体設定です。
-        [SerializeField] private DatasetSourceConfig datasetSourceConfig;
-        [SerializeField] private string sourcePathAfterImport;
-        [SerializeField] private string[] areaMeshCodes;
-        [SerializeField] private int coordinateZoneID = 9;
-        // 対象となる緯度経度の範囲です。
-        [SerializeField] private double minLatitude;
-        [SerializeField] private double maxLatitude;
-        [SerializeField] private double minLongitude;
-        [SerializeField] private double maxLongitude;
+        /// <summary>
+        /// 都市モデル読み込みの全体設定です。
+        /// </summary>
+        public DatasetSourceConfig DatasetSourceConfig { get; set; }
+        public string[] AreaMeshCodes { get; set; }
+        
+        /// <summary>
+        /// 平面直角座標系の番号です。
+        /// 次のサイトで示される平面直角座標系の番号です。
+        /// https://www.gsi.go.jp/sokuchikijun/jpc.html
+        /// </summary>
+        public int CoordinateZoneID { get; set; } = 9;
+        
+        private Extent extent;
+        /// <summary>
+        /// 緯度・経度での範囲です。
+        /// ただし、高さの設定は無視され、高さの範囲は必ず -99,999 ～ 99,999 になります。
+        /// </summary>
+        public Extent Extent
+        {
+            get => this.extent;
+            set =>
+                this.extent = new Extent(
+                    new GeoCoordinate(value.Min.Latitude, value.Min.Longitude, -99999),
+                    new GeoCoordinate(value.Max.Latitude, value.Max.Longitude, 99999));
+        }
+        
+        
+        /// <summary>
+        /// 基準点です。
+        /// ユーザーが選択した直交座標系の原点から、何メートルの地点を3Dモデルの原点とするかです。
+        /// </summary>
+        public PlateauVector3d ReferencePoint { get; set; }
 
         // 都市モデル読み込みの、パッケージ種ごとの設定です。
-        private Dictionary<PredefinedCityModelPackage, PackageLoadSetting> perPackagePairSettings = new Dictionary<PredefinedCityModelPackage, PackageLoadSetting>();
-        
-        // Dictionary をシリアライズ化して保存するために Array化して保持するもの です。
-        [SerializeField] private List<PredefinedCityModelPackage> perPackageSettingKeys = new List<PredefinedCityModelPackage>();
-        [SerializeField] private List<PackageLoadSetting> perPackageSettingValues = new List<PackageLoadSetting>();
-        
+        private readonly Dictionary<PredefinedCityModelPackage, PackageLoadSetting> perPackagePairSettings =
+            new ();
 
+        /// <summary>
+        /// 値ペア (パッケージ種, そのパッケージに関する設定) を、パッケージごとの IEnumerable にして返します。
+        /// </summary>
         public IEnumerable<KeyValuePair<PredefinedCityModelPackage, PackageLoadSetting>> ForEachPackagePair =>
             this.perPackagePairSettings;
 
@@ -49,7 +70,8 @@ namespace PLATEAU.CityImport.Setting
             {
                 var predefined = CityModelPackageInfo.GetPredefined(package);
                 // デフォルト値で設定します。
-                var val = new PackageLoadSetting(true, predefined.hasAppearance, (uint)predefined.minLOD, (uint)predefined.maxLOD,
+                var val = new PackageLoadSetting(true, predefined.hasAppearance, (uint)predefined.minLOD,
+                    (uint)predefined.maxLOD,
                     MeshGranularity.PerPrimaryFeatureObject, false);
                 this.perPackagePairSettings.Add(package, val);
             }
@@ -59,10 +81,12 @@ namespace PLATEAU.CityImport.Setting
         /// 設定に合うGMLファイルを検索します。
         /// 多数のファイルから検索するので、実行時間が長くなりがちである点にご注意ください。
         /// </summary>
-        /// <param name="datasetAccessor">検索に利用した collection を outで返します。</param>
-        /// <returns>検索にヒットしたGMLをパッケージごとに分けたものです。keyはパッケージ、 valueはそのパッケージに属するgmlファイルのパスのリストです。</returns>
-        public Dictionary<PredefinedCityModelPackage, List<GmlFile>> SearchMatchingGMLList(DatasetAccessor datasetAccessor)
+        /// <returns>検索にヒットしたGMLのリストです。</returns>
+        public List<GmlFile> SearchMatchingGMLList()
         {
+            using var datasetSource = DatasetSource.Create(DatasetSourceConfig);
+            var datasetAccessor = datasetSource.Accessor;
+
             // 地域ID(メッシュコード)で絞り込みます。
             var meshCodes = AreaMeshCodes.Select(MeshCode.Parse).Where(code => code.IsValid).ToArray();
 
@@ -72,91 +96,53 @@ namespace PLATEAU.CityImport.Setting
                     .ForEachPackagePair
                     .Where(pair => pair.Value.loadPackage)
                     .Select(pair => pair.Key);
-            var foundGmls = new Dictionary<PredefinedCityModelPackage, List<GmlFile>>();
-            
-            // 絞り込まれたGMLパスを戻り値の辞書にコピーします。
+            var foundGmls = new List<GmlFile>();
+
+            // 絞り込まれたGMLパスを戻り値のリストに追加します。
             foreach (var package in targetPackages)
             {
                 var gmlFiles = datasetAccessor.GetGmlFiles(package);
                 int gmlCount = gmlFiles.Length;
-                for (int i=0; i<gmlCount; i++)
+                for (int i = 0; i < gmlCount; i++)
                 {
                     var gml = gmlFiles.At(i);
-                    if (!foundGmls.ContainsKey(package))
-                    {
-                        foundGmls[package] = new List<GmlFile>();
-                    }
 
                     if (!gml.MeshCode.IsValid) continue;
                     // メッシュコードで絞り込みます。
                     if (meshCodes.All(mc => mc.ToString() != gml.MeshCode.ToString())) continue;
-                    foundGmls[package].Add(gml);
-                    Debug.Log($"found gml : {package}, {gml.Path}");
+                    foundGmls.Add(gml);
                 }
             }
+
             return foundGmls;
         }
 
-        public DatasetSourceConfig DatasetSourceConfig
-        {
-            get => this.datasetSourceConfig;
-            set => this.datasetSourceConfig = value;
-        }
-
-        public string SourcePathAfterImport
-        {
-            get => this.sourcePathAfterImport;
-            set => this.sourcePathAfterImport = value;
-        }
-
-        public string[] AreaMeshCodes
-        {
-            get => this.areaMeshCodes;
-            set => this.areaMeshCodes = value;
-        }
-
-        public int CoordinateZoneID
-        {
-            get => this.coordinateZoneID;
-            set => this.coordinateZoneID = value;
-        }
-
-        public void SetExtent(Extent extent)
-        {
-            
-        }
-
         /// <summary>
-        /// 緯度・経度での範囲です。
-        /// ただし、高さの設定は無視され、高さの範囲は必ず -99,999 ～ 99,999 になります。
+        /// 設定の条件に合うGMLファイルを検索し、その位置の中心を求め、中心を基準点として設定します。
+        /// 中心 == 基準点 を返します。
         /// </summary>
-        public Extent Extent
+        public PlateauVector3d SearchCenterPointAndSetAsReferencePoint()
         {
-            get
-            {
-                var geoMin = new GeoCoordinate(this.minLatitude, this.minLongitude, -99999);
-                var geoMax = new GeoCoordinate(this.maxLatitude, this.maxLongitude, 99999);
-                return new Extent(geoMin, geoMax);
-            }
-            set
-            {
-                var geoMin = value.Min;
-                var geoMax = value.Max;
-                this.minLatitude = geoMin.Latitude;
-                this.maxLatitude = geoMax.Latitude;
-                this.minLongitude = geoMin.Longitude;
-                this.maxLongitude = geoMax.Longitude;
-            }
+            var gmls = SearchMatchingGMLList();
+            var center = CalcCenterPoint(gmls, CoordinateZoneID);
+            ReferencePoint = center;
+            return center;
         }
-
-        void ISerializationCallbackReceiver.OnBeforeSerialize()
+        
+        public static PlateauVector3d CalcCenterPoint(IEnumerable<GmlFile> targetGmls, int coordinateZoneID)
         {
-            DictionarySerializer.OnBeforeSerialize(this.perPackagePairSettings, this.perPackageSettingKeys, this.perPackageSettingValues);    
-        }
+            using var geoReference = CoordinatesConvertUtil.UnityStandardGeoReference(coordinateZoneID);
+            var geoCoordSum = new GeoCoordinate(0, 0, 0);
+            int count = 0;
+            foreach (var gml in targetGmls)
+            {
+                geoCoordSum += gml.MeshCode.Extent.Center;
+                count++;
+            }
 
-        void ISerializationCallbackReceiver.OnAfterDeserialize()
-        {
-            this.perPackagePairSettings = DictionarySerializer.OnAfterSerialize(this.perPackageSettingKeys, this.perPackageSettingValues);
+            if (count == 0) return new PlateauVector3d(0,0,0);
+            var centerGeo = geoCoordSum / count;
+            return geoReference.Project(centerGeo);
         }
     }
 }

@@ -6,10 +6,9 @@ using NUnit.Framework;
 using PLATEAU.CityImport.Load;
 using PLATEAU.CityImport.Setting;
 using PLATEAU.Editor.EditorWindow.ProgressDisplay;
-using PLATEAU.Interop;
 using PLATEAU.Dataset;
 using PLATEAU.Native;
-using PLATEAU.Util;
+using PLATEAU.Network;
 
 namespace PLATEAU.Tests.TestUtils
 {
@@ -84,7 +83,7 @@ namespace PLATEAU.Tests.TestUtils
                 packageConf.Value.includeTexture = true;
             }
 
-            conf.DatasetSourceConfig = new DatasetSourceConfig(isServer, SrcRootDirPathLocal, this.rootDirName);
+            conf.DatasetSourceConfig = new DatasetSourceConfig(isServer, SrcRootDirPathLocal, this.rootDirName, NetworkConfig.MockServerUrl, "");
             return conf;
         }
 

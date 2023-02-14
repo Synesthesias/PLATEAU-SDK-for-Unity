@@ -15,9 +15,17 @@ namespace PLATEAU.Network
             Handle = handle;
         }
 
-        public static Client Create()
+        public static Client Create(string serverUrl, string apiToken)
         {
-            var ptr = DLLUtil.PtrOfNewInstance(NativeMethods.plateau_create_client);
+            var result = NativeMethods.plateau_create_client(out var ptr, serverUrl, apiToken);
+            DLLUtil.CheckDllError(result);
+            return new Client(ptr);
+        }
+
+        public static Client CreateForMockServer()
+        {
+            var result = NativeMethods.plateau_create_client_for_mock_server(out var ptr);
+            DLLUtil.CheckDllError(result);
             return new Client(ptr);
         }
 
@@ -66,8 +74,14 @@ namespace PLATEAU.Network
 
         private static class NativeMethods
         {
-            [DllImport(DLLUtil.DllName)]
+            [DllImport(DLLUtil.DllName, CharSet = CharSet.Ansi)]
             internal static extern APIResult plateau_create_client(
+                out IntPtr newClientPtr,
+                [In] string serverUrl,
+                [In] string apiToken);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_create_client_for_mock_server(
                 out IntPtr newClientPtr);
 
             [DllImport(DLLUtil.DllName)]
