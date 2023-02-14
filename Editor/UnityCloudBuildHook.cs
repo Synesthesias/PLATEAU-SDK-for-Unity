@@ -7,7 +7,7 @@ namespace PLATEAU.Editor
     /// <summary>
     /// Unity Cloud Build でのエラーを回避するためのフックです。
     /// </summary>
-    public class UnityCloudBuildHook : MonoBehaviour
+    public class UnityCloudBuildHook
     {
         /// <summary>
         /// ブラウザで Unity Cloud Build にログインし、その MacOS向けビルドの詳細設定で、pre-export にメソッド名を指定できます。
