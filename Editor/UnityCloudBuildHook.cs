@@ -1,4 +1,4 @@
-#if UNITY_CLOUD_BUILD
+
 using UnityEditor;
 using UnityEngine;
 
@@ -16,7 +16,7 @@ namespace PLATEAU.Editor
         /// 参考:
         /// https://forum.unity.com/threads/solved-cloud-build-plugin-is-used-from-several-locations.461372/#post-3001785
         /// </summary>
-        public static void CloudBuildMacPreExport(BuildManifestObject manifest)
+        public static void CloudBuildMacPreExport()
         {
             var allImporters = PluginImporter.GetAllImporters();
             foreach (var importer in allImporters) {
@@ -27,4 +27,3 @@ namespace PLATEAU.Editor
         }
     }
 }
-#endif
