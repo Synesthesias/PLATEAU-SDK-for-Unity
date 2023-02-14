@@ -76,7 +76,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PLATEAU.CityAdjust.CityDuplicateProcessor.html",
-          "hash": "EPePVf55OD+sBgiO31r4LQZs1o+Gw9IM9qynv6kuCrg="
+          "hash": "g6Ept6WsTndBEfk9iVlN0WBOHWQiiwNveBTvBlw8R4s="
         }
       },
       "is_incremental": false,
@@ -88,7 +88,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PLATEAU.CityAdjust.html",
-          "hash": "DyLTSgUwMyH4nH+cfK9lT4ZCD+G9njwUTbaF2IAn2/Y="
+          "hash": "/bNt/UorMwI6yiFVMmiL0byIilrj9LR+smHBqnjK4i8="
         }
       },
       "is_incremental": false,
@@ -592,7 +592,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PLATEAU.Dataset.DatasetMetadata.html",
-          "hash": "JHSicJfK4RYyndxbjt2Tn0pWUP57G9dW1OslFJfTCOY="
+          "hash": "rJoLYMt1S000g53/W+MVReYX4NRhCmeHX4s4OMfBiZ4="
         }
       },
       "is_incremental": false,
@@ -616,7 +616,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PLATEAU.Dataset.DatasetSource.html",
-          "hash": "dlsA2Ukj32P6Ry4Cv7RKhXYpoIz4oTUNyd/ZEYqoAiU="
+          "hash": "+ddNlaeQYgKPozdLJCCScvVfFO/mj2ElQI8cvDfZjE8="
         }
       },
       "is_incremental": false,
@@ -628,7 +628,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PLATEAU.Dataset.DatasetSourceConfig.html",
-          "hash": "EWA8KBO8F2TI5WyryJpTWE5aJbPnYrF/IMYyydR2Syg="
+          "hash": "MtBUlGy3XfqBTaTHYMOVnpRc0GMMF5N3Q9E5Hj6s4vM="
         }
       },
       "is_incremental": false,
@@ -744,11 +744,59 @@
     },
     {
       "type": "ManagedReference",
+      "source_relative_path": "api/PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts.ServerDatasetFetchGUI.LoadStatusEnum.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts.ServerDatasetFetchGUI.LoadStatusEnum.html",
+          "hash": "0RkEa7ofhs79AuQEW9Yn93ChzRzfCLmJqAtQ+8WPSfY="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts.ServerDatasetFetchGUI.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts.ServerDatasetFetchGUI.html",
+          "hash": "H39AZUAEK0Adzf1SnUwImuWeRO6qcwyhy8a5jzc9rWk="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts.html",
+          "hash": "gCuTh7sghmO5II0z8zBvITIbrxqGtFQeT3WBJ5Y/ACo="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
       "source_relative_path": "api/PLATEAU.Geometries.CoordinateSystem.yml",
       "output": {
         ".html": {
           "relative_path": "api/PLATEAU.Geometries.CoordinateSystem.html",
           "hash": "UDah6/Uqcbw8zOXqaYVAiF6MYem2eI7GOMGpm5t8xgE="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/PLATEAU.Geometries.CoordinateSystemExtension.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PLATEAU.Geometries.CoordinateSystemExtension.html",
+          "hash": "rf4fxzNhdEHj3bp2Ibw2Nnii82AlxcrTchZL5Tk+cv0="
         }
       },
       "is_incremental": false,
@@ -772,7 +820,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PLATEAU.Geometries.html",
-          "hash": "lQsEXyfRVMrvJCOwWcwgb2ZdnqOS4zCII+i2Lk+idmo="
+          "hash": "fZEzRn1jQ2zJ2JiS55QEZKheVwGQ7fq3qKbf5ZwNauQ="
         }
       },
       "is_incremental": false,
@@ -1084,7 +1132,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PLATEAU.Network.Client.html",
-          "hash": "ag8dGmrNepLUSvP1KcPXcJsae5hHZDOMF3qvYRhme/c="
+          "hash": "O0ExxnySeb43IGB/HriuYXgokUhkpQJbUK1nI2QFjHk="
         }
       },
       "is_incremental": false,
@@ -1096,7 +1144,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PLATEAU.Network.NetworkConfig.html",
-          "hash": "xt5yPUtEaPWCIBtW8fR/Mb/3RjLpvBRS+LmgvovVwqA="
+          "hash": "RUK02j0NQzMqGEVVeB0uBiZfJp1G5uAaeNiYDE+U4bg="
         }
       },
       "is_incremental": false,
@@ -1336,7 +1384,7 @@
       "output": {
         ".html": {
           "relative_path": "api/toc.html",
-          "hash": "EYB8iQuTusNLSQQx76Y5DkzI9PYGybpi+Sq/I5rFCbk="
+          "hash": "XyJcO5ULVR2aZO0BObUmzlhS/Cu5MaEGdzbgTvjPTzk="
         }
       },
       "is_incremental": false,
@@ -1384,7 +1432,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/ImportCityModels.html",
-          "hash": "joLfI5Tv8L0pZ44gaRuf1GZ71HI/EczPFaIdnDOSC5s="
+          "hash": "V6SS01gukdW3hvO6FauBJjRbtOSLUUHF2NG40CMfZTw="
         }
       },
       "is_incremental": false,
@@ -1726,6 +1774,17 @@
     },
     {
       "type": "Resource",
+      "source_relative_path": "resources/manual/importCityModels/importServer.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/importCityModels/importServer.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
       "source_relative_path": "resources/manual/importCityModels/importWindowAreaSelect.png",
       "output": {
         "resource": {
@@ -1796,6 +1855,17 @@
       "output": {
         "resource": {
           "relative_path": "resources/manual/importCityModels/plateauWindowImport.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/manual/importCityModels/referencePointConfig.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/importCityModels/referencePointConfig.png"
         }
       },
       "is_incremental": false,
@@ -1933,7 +2003,7 @@
         "ManagedReferenceDocumentProcessor": {
           "can_incremental": false,
           "incrementalPhase": "build",
-          "total_file_count": 109,
+          "total_file_count": 113,
           "skipped_file_count": 0
         },
         "ResourceDocumentProcessor": {

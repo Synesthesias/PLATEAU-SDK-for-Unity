@@ -127,13 +127,13 @@
   
   
   <a id="PLATEAU_Dataset_DatasetSourceConfig__ctor_" data-uid="PLATEAU.Dataset.DatasetSourceConfig.#ctor*"></a>
-  <h4 id="PLATEAU_Dataset_DatasetSourceConfig__ctor_System_Boolean_System_String_System_String_" data-uid="PLATEAU.Dataset.DatasetSourceConfig.#ctor(System.Boolean,System.String,System.String)">DatasetSourceConfig(Boolean, String, String)</h4>
+  <h4 id="PLATEAU_Dataset_DatasetSourceConfig__ctor_System_Boolean_System_String_System_String_System_String_System_String_" data-uid="PLATEAU.Dataset.DatasetSourceConfig.#ctor(System.Boolean,System.String,System.String,System.String,System.String)">DatasetSourceConfig(Boolean, String, String, String, String)</h4>
   <div class="markdown level1 summary"><p><a class="xref" href="PLATEAU.Dataset.DatasetSource.html">DatasetSource</a> の初期化のための情報を渡すコンストラクタです。</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public DatasetSourceConfig(bool isServer, string localSourcePath, string serverDatasetID)</code></pre>
+    <pre><code class="lang-csharp hljs">public DatasetSourceConfig(bool isServer, string localSourcePath, string serverDatasetID, string serverUrl, string serverToken)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -162,6 +162,18 @@
         <td><span class="parametername">serverDatasetID</span></td>
         <td><p>サーバーモードでのみ利用します。データセットのIDを渡します。
 そのIDとは、APIサーバーにデータセットの一覧を問い合わせたときに得られるID文字列です。例: 東京23区のデータセットのIDは &quot;23ku&quot;</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">String</a></td>
+        <td><span class="parametername">serverUrl</span></td>
+        <td><p>サーバーモードでのみ利用します。サーバーのURLです。</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">String</a></td>
+        <td><span class="parametername">serverToken</span></td>
+        <td><p>サーバーモードでのみ利用します。サーバー認証のトークンです。</p>
 </td>
       </tr>
     </tbody>
@@ -227,6 +239,56 @@
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public string ServerDatasetID { get; set; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">String</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
+  <a id="PLATEAU_Dataset_DatasetSourceConfig_ServerToken_" data-uid="PLATEAU.Dataset.DatasetSourceConfig.ServerToken*"></a>
+  <h4 id="PLATEAU_Dataset_DatasetSourceConfig_ServerToken" data-uid="PLATEAU.Dataset.DatasetSourceConfig.ServerToken">ServerToken</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public string ServerToken { get; set; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">String</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
+  <a id="PLATEAU_Dataset_DatasetSourceConfig_ServerUrl_" data-uid="PLATEAU.Dataset.DatasetSourceConfig.ServerUrl*"></a>
+  <h4 id="PLATEAU_Dataset_DatasetSourceConfig_ServerUrl" data-uid="PLATEAU.Dataset.DatasetSourceConfig.ServerUrl">ServerUrl</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public string ServerUrl { get; set; }</code></pre>
   </div>
   <h5 class="propertyValue">Property Value</h5>
   <table class="table table-bordered table-striped table-condensed">

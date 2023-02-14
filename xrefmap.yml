@@ -2854,19 +2854,6 @@ references:
   isSpec: "True"
   fullName: PLATEAU.Dataset.DatasetMetadata.ID
   nameWithType: DatasetMetadata.ID
-- uid: PLATEAU.Dataset.DatasetMetadata.MaxLOD
-  name: MaxLOD
-  href: api/PLATEAU.Dataset.DatasetMetadata.html#PLATEAU_Dataset_DatasetMetadata_MaxLOD
-  commentId: P:PLATEAU.Dataset.DatasetMetadata.MaxLOD
-  fullName: PLATEAU.Dataset.DatasetMetadata.MaxLOD
-  nameWithType: DatasetMetadata.MaxLOD
-- uid: PLATEAU.Dataset.DatasetMetadata.MaxLOD*
-  name: MaxLOD
-  href: api/PLATEAU.Dataset.DatasetMetadata.html#PLATEAU_Dataset_DatasetMetadata_MaxLOD_
-  commentId: Overload:PLATEAU.Dataset.DatasetMetadata.MaxLOD
-  isSpec: "True"
-  fullName: PLATEAU.Dataset.DatasetMetadata.MaxLOD
-  nameWithType: DatasetMetadata.MaxLOD
 - uid: PLATEAU.Dataset.DatasetMetadata.PackageFlags
   name: PackageFlags
   href: api/PLATEAU.Dataset.DatasetMetadata.html#PLATEAU_Dataset_DatasetMetadata_PackageFlags
@@ -3002,12 +2989,6 @@ references:
   commentId: M:PLATEAU.Dataset.DatasetSource.Create(PLATEAU.Dataset.DatasetSourceConfig)
   fullName: PLATEAU.Dataset.DatasetSource.Create(PLATEAU.Dataset.DatasetSourceConfig)
   nameWithType: DatasetSource.Create(DatasetSourceConfig)
-- uid: PLATEAU.Dataset.DatasetSource.Create(System.Boolean,System.String,System.String)
-  name: Create(Boolean, String, String)
-  href: api/PLATEAU.Dataset.DatasetSource.html#PLATEAU_Dataset_DatasetSource_Create_System_Boolean_System_String_System_String_
-  commentId: M:PLATEAU.Dataset.DatasetSource.Create(System.Boolean,System.String,System.String)
-  fullName: PLATEAU.Dataset.DatasetSource.Create(System.Boolean, System.String, System.String)
-  nameWithType: DatasetSource.Create(Boolean, String, String)
 - uid: PLATEAU.Dataset.DatasetSource.Create*
   name: Create
   href: api/PLATEAU.Dataset.DatasetSource.html#PLATEAU_Dataset_DatasetSource_Create_
@@ -3015,6 +2996,45 @@ references:
   isSpec: "True"
   fullName: PLATEAU.Dataset.DatasetSource.Create
   nameWithType: DatasetSource.Create
+- uid: PLATEAU.Dataset.DatasetSource.CreateForMockServer(System.String)
+  name: CreateForMockServer(String)
+  href: api/PLATEAU.Dataset.DatasetSource.html#PLATEAU_Dataset_DatasetSource_CreateForMockServer_System_String_
+  commentId: M:PLATEAU.Dataset.DatasetSource.CreateForMockServer(System.String)
+  fullName: PLATEAU.Dataset.DatasetSource.CreateForMockServer(System.String)
+  nameWithType: DatasetSource.CreateForMockServer(String)
+- uid: PLATEAU.Dataset.DatasetSource.CreateForMockServer*
+  name: CreateForMockServer
+  href: api/PLATEAU.Dataset.DatasetSource.html#PLATEAU_Dataset_DatasetSource_CreateForMockServer_
+  commentId: Overload:PLATEAU.Dataset.DatasetSource.CreateForMockServer
+  isSpec: "True"
+  fullName: PLATEAU.Dataset.DatasetSource.CreateForMockServer
+  nameWithType: DatasetSource.CreateForMockServer
+- uid: PLATEAU.Dataset.DatasetSource.CreateLocal(System.String)
+  name: CreateLocal(String)
+  href: api/PLATEAU.Dataset.DatasetSource.html#PLATEAU_Dataset_DatasetSource_CreateLocal_System_String_
+  commentId: M:PLATEAU.Dataset.DatasetSource.CreateLocal(System.String)
+  fullName: PLATEAU.Dataset.DatasetSource.CreateLocal(System.String)
+  nameWithType: DatasetSource.CreateLocal(String)
+- uid: PLATEAU.Dataset.DatasetSource.CreateLocal*
+  name: CreateLocal
+  href: api/PLATEAU.Dataset.DatasetSource.html#PLATEAU_Dataset_DatasetSource_CreateLocal_
+  commentId: Overload:PLATEAU.Dataset.DatasetSource.CreateLocal
+  isSpec: "True"
+  fullName: PLATEAU.Dataset.DatasetSource.CreateLocal
+  nameWithType: DatasetSource.CreateLocal
+- uid: PLATEAU.Dataset.DatasetSource.CreateServer(System.String,System.String,System.String)
+  name: CreateServer(String, String, String)
+  href: api/PLATEAU.Dataset.DatasetSource.html#PLATEAU_Dataset_DatasetSource_CreateServer_System_String_System_String_System_String_
+  commentId: M:PLATEAU.Dataset.DatasetSource.CreateServer(System.String,System.String,System.String)
+  fullName: PLATEAU.Dataset.DatasetSource.CreateServer(System.String, System.String, System.String)
+  nameWithType: DatasetSource.CreateServer(String, String, String)
+- uid: PLATEAU.Dataset.DatasetSource.CreateServer*
+  name: CreateServer
+  href: api/PLATEAU.Dataset.DatasetSource.html#PLATEAU_Dataset_DatasetSource_CreateServer_
+  commentId: Overload:PLATEAU.Dataset.DatasetSource.CreateServer
+  isSpec: "True"
+  fullName: PLATEAU.Dataset.DatasetSource.CreateServer
+  nameWithType: DatasetSource.CreateServer
 - uid: PLATEAU.Dataset.DatasetSource.DisposeNative
   name: DisposeNative()
   href: api/PLATEAU.Dataset.DatasetSource.html#PLATEAU_Dataset_DatasetSource_DisposeNative
@@ -3034,12 +3054,12 @@ references:
   commentId: T:PLATEAU.Dataset.DatasetSourceConfig
   fullName: PLATEAU.Dataset.DatasetSourceConfig
   nameWithType: DatasetSourceConfig
-- uid: PLATEAU.Dataset.DatasetSourceConfig.#ctor(System.Boolean,System.String,System.String)
-  name: DatasetSourceConfig(Boolean, String, String)
-  href: api/PLATEAU.Dataset.DatasetSourceConfig.html#PLATEAU_Dataset_DatasetSourceConfig__ctor_System_Boolean_System_String_System_String_
-  commentId: M:PLATEAU.Dataset.DatasetSourceConfig.#ctor(System.Boolean,System.String,System.String)
-  fullName: PLATEAU.Dataset.DatasetSourceConfig.DatasetSourceConfig(System.Boolean, System.String, System.String)
-  nameWithType: DatasetSourceConfig.DatasetSourceConfig(Boolean, String, String)
+- uid: PLATEAU.Dataset.DatasetSourceConfig.#ctor(System.Boolean,System.String,System.String,System.String,System.String)
+  name: DatasetSourceConfig(Boolean, String, String, String, String)
+  href: api/PLATEAU.Dataset.DatasetSourceConfig.html#PLATEAU_Dataset_DatasetSourceConfig__ctor_System_Boolean_System_String_System_String_System_String_System_String_
+  commentId: M:PLATEAU.Dataset.DatasetSourceConfig.#ctor(System.Boolean,System.String,System.String,System.String,System.String)
+  fullName: PLATEAU.Dataset.DatasetSourceConfig.DatasetSourceConfig(System.Boolean, System.String, System.String, System.String, System.String)
+  nameWithType: DatasetSourceConfig.DatasetSourceConfig(Boolean, String, String, String, String)
 - uid: PLATEAU.Dataset.DatasetSourceConfig.#ctor*
   name: DatasetSourceConfig
   href: api/PLATEAU.Dataset.DatasetSourceConfig.html#PLATEAU_Dataset_DatasetSourceConfig__ctor_
@@ -3086,6 +3106,32 @@ references:
   isSpec: "True"
   fullName: PLATEAU.Dataset.DatasetSourceConfig.ServerDatasetID
   nameWithType: DatasetSourceConfig.ServerDatasetID
+- uid: PLATEAU.Dataset.DatasetSourceConfig.ServerToken
+  name: ServerToken
+  href: api/PLATEAU.Dataset.DatasetSourceConfig.html#PLATEAU_Dataset_DatasetSourceConfig_ServerToken
+  commentId: P:PLATEAU.Dataset.DatasetSourceConfig.ServerToken
+  fullName: PLATEAU.Dataset.DatasetSourceConfig.ServerToken
+  nameWithType: DatasetSourceConfig.ServerToken
+- uid: PLATEAU.Dataset.DatasetSourceConfig.ServerToken*
+  name: ServerToken
+  href: api/PLATEAU.Dataset.DatasetSourceConfig.html#PLATEAU_Dataset_DatasetSourceConfig_ServerToken_
+  commentId: Overload:PLATEAU.Dataset.DatasetSourceConfig.ServerToken
+  isSpec: "True"
+  fullName: PLATEAU.Dataset.DatasetSourceConfig.ServerToken
+  nameWithType: DatasetSourceConfig.ServerToken
+- uid: PLATEAU.Dataset.DatasetSourceConfig.ServerUrl
+  name: ServerUrl
+  href: api/PLATEAU.Dataset.DatasetSourceConfig.html#PLATEAU_Dataset_DatasetSourceConfig_ServerUrl
+  commentId: P:PLATEAU.Dataset.DatasetSourceConfig.ServerUrl
+  fullName: PLATEAU.Dataset.DatasetSourceConfig.ServerUrl
+  nameWithType: DatasetSourceConfig.ServerUrl
+- uid: PLATEAU.Dataset.DatasetSourceConfig.ServerUrl*
+  name: ServerUrl
+  href: api/PLATEAU.Dataset.DatasetSourceConfig.html#PLATEAU_Dataset_DatasetSourceConfig_ServerUrl_
+  commentId: Overload:PLATEAU.Dataset.DatasetSourceConfig.ServerUrl
+  isSpec: "True"
+  fullName: PLATEAU.Dataset.DatasetSourceConfig.ServerUrl
+  nameWithType: DatasetSourceConfig.ServerUrl
 - uid: PLATEAU.Dataset.GmlFile
   name: GmlFile
   href: api/PLATEAU.Dataset.GmlFile.html
@@ -3478,6 +3524,126 @@ references:
   isSpec: "True"
   fullName: PLATEAU.Editor.CityInfo.PLATEAUInstancedCityModelEditor.OnInspectorGUI
   nameWithType: PLATEAUInstancedCityModelEditor.OnInspectorGUI
+- uid: PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts
+  name: PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts
+  href: api/PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts.html
+  commentId: N:PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts
+  fullName: PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts
+  nameWithType: PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts
+- uid: PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts.ServerDatasetFetchGUI
+  name: ServerDatasetFetchGUI
+  href: api/PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts.ServerDatasetFetchGUI.html
+  commentId: T:PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts.ServerDatasetFetchGUI
+  fullName: PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts.ServerDatasetFetchGUI
+  nameWithType: ServerDatasetFetchGUI
+- uid: PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts.ServerDatasetFetchGUI.#ctor(UnityEditor.EditorWindow)
+  name: ServerDatasetFetchGUI(UnityEditor.EditorWindow)
+  href: api/PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts.ServerDatasetFetchGUI.html#PLATEAU_Editor_EditorWindow_PlateauWindow_MainTabGUI_ImportGUIParts_ServerDatasetFetchGUI__ctor_UnityEditor_EditorWindow_
+  commentId: M:PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts.ServerDatasetFetchGUI.#ctor(UnityEditor.EditorWindow)
+  fullName: PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts.ServerDatasetFetchGUI.ServerDatasetFetchGUI(UnityEditor.EditorWindow)
+  nameWithType: ServerDatasetFetchGUI.ServerDatasetFetchGUI(UnityEditor.EditorWindow)
+- uid: PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts.ServerDatasetFetchGUI.#ctor*
+  name: ServerDatasetFetchGUI
+  href: api/PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts.ServerDatasetFetchGUI.html#PLATEAU_Editor_EditorWindow_PlateauWindow_MainTabGUI_ImportGUIParts_ServerDatasetFetchGUI__ctor_
+  commentId: Overload:PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts.ServerDatasetFetchGUI.#ctor
+  isSpec: "True"
+  fullName: PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts.ServerDatasetFetchGUI.ServerDatasetFetchGUI
+  nameWithType: ServerDatasetFetchGUI.ServerDatasetFetchGUI
+- uid: PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts.ServerDatasetFetchGUI.DatasetGroups
+  name: DatasetGroups
+  href: api/PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts.ServerDatasetFetchGUI.html#PLATEAU_Editor_EditorWindow_PlateauWindow_MainTabGUI_ImportGUIParts_ServerDatasetFetchGUI_DatasetGroups
+  commentId: P:PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts.ServerDatasetFetchGUI.DatasetGroups
+  fullName: PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts.ServerDatasetFetchGUI.DatasetGroups
+  nameWithType: ServerDatasetFetchGUI.DatasetGroups
+- uid: PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts.ServerDatasetFetchGUI.DatasetGroups*
+  name: DatasetGroups
+  href: api/PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts.ServerDatasetFetchGUI.html#PLATEAU_Editor_EditorWindow_PlateauWindow_MainTabGUI_ImportGUIParts_ServerDatasetFetchGUI_DatasetGroups_
+  commentId: Overload:PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts.ServerDatasetFetchGUI.DatasetGroups
+  isSpec: "True"
+  fullName: PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts.ServerDatasetFetchGUI.DatasetGroups
+  nameWithType: ServerDatasetFetchGUI.DatasetGroups
+- uid: PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts.ServerDatasetFetchGUI.Draw
+  name: Draw()
+  href: api/PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts.ServerDatasetFetchGUI.html#PLATEAU_Editor_EditorWindow_PlateauWindow_MainTabGUI_ImportGUIParts_ServerDatasetFetchGUI_Draw
+  commentId: M:PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts.ServerDatasetFetchGUI.Draw
+  fullName: PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts.ServerDatasetFetchGUI.Draw()
+  nameWithType: ServerDatasetFetchGUI.Draw()
+- uid: PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts.ServerDatasetFetchGUI.Draw*
+  name: Draw
+  href: api/PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts.ServerDatasetFetchGUI.html#PLATEAU_Editor_EditorWindow_PlateauWindow_MainTabGUI_ImportGUIParts_ServerDatasetFetchGUI_Draw_
+  commentId: Overload:PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts.ServerDatasetFetchGUI.Draw
+  isSpec: "True"
+  fullName: PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts.ServerDatasetFetchGUI.Draw
+  nameWithType: ServerDatasetFetchGUI.Draw
+- uid: PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts.ServerDatasetFetchGUI.LoadStatus
+  name: LoadStatus
+  href: api/PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts.ServerDatasetFetchGUI.html#PLATEAU_Editor_EditorWindow_PlateauWindow_MainTabGUI_ImportGUIParts_ServerDatasetFetchGUI_LoadStatus
+  commentId: P:PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts.ServerDatasetFetchGUI.LoadStatus
+  fullName: PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts.ServerDatasetFetchGUI.LoadStatus
+  nameWithType: ServerDatasetFetchGUI.LoadStatus
+- uid: PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts.ServerDatasetFetchGUI.LoadStatus*
+  name: LoadStatus
+  href: api/PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts.ServerDatasetFetchGUI.html#PLATEAU_Editor_EditorWindow_PlateauWindow_MainTabGUI_ImportGUIParts_ServerDatasetFetchGUI_LoadStatus_
+  commentId: Overload:PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts.ServerDatasetFetchGUI.LoadStatus
+  isSpec: "True"
+  fullName: PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts.ServerDatasetFetchGUI.LoadStatus
+  nameWithType: ServerDatasetFetchGUI.LoadStatus
+- uid: PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts.ServerDatasetFetchGUI.LoadStatusEnum
+  name: ServerDatasetFetchGUI.LoadStatusEnum
+  href: api/PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts.ServerDatasetFetchGUI.LoadStatusEnum.html
+  commentId: T:PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts.ServerDatasetFetchGUI.LoadStatusEnum
+  fullName: PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts.ServerDatasetFetchGUI.LoadStatusEnum
+  nameWithType: ServerDatasetFetchGUI.LoadStatusEnum
+- uid: PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts.ServerDatasetFetchGUI.LoadStatusEnum.Failure
+  name: Failure
+  href: api/PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts.ServerDatasetFetchGUI.LoadStatusEnum.html#PLATEAU_Editor_EditorWindow_PlateauWindow_MainTabGUI_ImportGUIParts_ServerDatasetFetchGUI_LoadStatusEnum_Failure
+  commentId: F:PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts.ServerDatasetFetchGUI.LoadStatusEnum.Failure
+  fullName: PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts.ServerDatasetFetchGUI.LoadStatusEnum.Failure
+  nameWithType: ServerDatasetFetchGUI.LoadStatusEnum.Failure
+- uid: PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts.ServerDatasetFetchGUI.LoadStatusEnum.Loading
+  name: Loading
+  href: api/PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts.ServerDatasetFetchGUI.LoadStatusEnum.html#PLATEAU_Editor_EditorWindow_PlateauWindow_MainTabGUI_ImportGUIParts_ServerDatasetFetchGUI_LoadStatusEnum_Loading
+  commentId: F:PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts.ServerDatasetFetchGUI.LoadStatusEnum.Loading
+  fullName: PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts.ServerDatasetFetchGUI.LoadStatusEnum.Loading
+  nameWithType: ServerDatasetFetchGUI.LoadStatusEnum.Loading
+- uid: PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts.ServerDatasetFetchGUI.LoadStatusEnum.NotStarted
+  name: NotStarted
+  href: api/PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts.ServerDatasetFetchGUI.LoadStatusEnum.html#PLATEAU_Editor_EditorWindow_PlateauWindow_MainTabGUI_ImportGUIParts_ServerDatasetFetchGUI_LoadStatusEnum_NotStarted
+  commentId: F:PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts.ServerDatasetFetchGUI.LoadStatusEnum.NotStarted
+  fullName: PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts.ServerDatasetFetchGUI.LoadStatusEnum.NotStarted
+  nameWithType: ServerDatasetFetchGUI.LoadStatusEnum.NotStarted
+- uid: PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts.ServerDatasetFetchGUI.LoadStatusEnum.Success
+  name: Success
+  href: api/PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts.ServerDatasetFetchGUI.LoadStatusEnum.html#PLATEAU_Editor_EditorWindow_PlateauWindow_MainTabGUI_ImportGUIParts_ServerDatasetFetchGUI_LoadStatusEnum_Success
+  commentId: F:PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts.ServerDatasetFetchGUI.LoadStatusEnum.Success
+  fullName: PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts.ServerDatasetFetchGUI.LoadStatusEnum.Success
+  nameWithType: ServerDatasetFetchGUI.LoadStatusEnum.Success
+- uid: PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts.ServerDatasetFetchGUI.ServerToken
+  name: ServerToken
+  href: api/PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts.ServerDatasetFetchGUI.html#PLATEAU_Editor_EditorWindow_PlateauWindow_MainTabGUI_ImportGUIParts_ServerDatasetFetchGUI_ServerToken
+  commentId: P:PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts.ServerDatasetFetchGUI.ServerToken
+  fullName: PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts.ServerDatasetFetchGUI.ServerToken
+  nameWithType: ServerDatasetFetchGUI.ServerToken
+- uid: PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts.ServerDatasetFetchGUI.ServerToken*
+  name: ServerToken
+  href: api/PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts.ServerDatasetFetchGUI.html#PLATEAU_Editor_EditorWindow_PlateauWindow_MainTabGUI_ImportGUIParts_ServerDatasetFetchGUI_ServerToken_
+  commentId: Overload:PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts.ServerDatasetFetchGUI.ServerToken
+  isSpec: "True"
+  fullName: PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts.ServerDatasetFetchGUI.ServerToken
+  nameWithType: ServerDatasetFetchGUI.ServerToken
+- uid: PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts.ServerDatasetFetchGUI.ServerUrl
+  name: ServerUrl
+  href: api/PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts.ServerDatasetFetchGUI.html#PLATEAU_Editor_EditorWindow_PlateauWindow_MainTabGUI_ImportGUIParts_ServerDatasetFetchGUI_ServerUrl
+  commentId: P:PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts.ServerDatasetFetchGUI.ServerUrl
+  fullName: PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts.ServerDatasetFetchGUI.ServerUrl
+  nameWithType: ServerDatasetFetchGUI.ServerUrl
+- uid: PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts.ServerDatasetFetchGUI.ServerUrl*
+  name: ServerUrl
+  href: api/PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts.ServerDatasetFetchGUI.html#PLATEAU_Editor_EditorWindow_PlateauWindow_MainTabGUI_ImportGUIParts_ServerDatasetFetchGUI_ServerUrl_
+  commentId: Overload:PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts.ServerDatasetFetchGUI.ServerUrl
+  isSpec: "True"
+  fullName: PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts.ServerDatasetFetchGUI.ServerUrl
+  nameWithType: ServerDatasetFetchGUI.ServerUrl
 - uid: PLATEAU.Geometries
   name: PLATEAU.Geometries
   href: api/PLATEAU.Geometries.html
@@ -3514,6 +3680,25 @@ references:
   commentId: F:PLATEAU.Geometries.CoordinateSystem.WUN
   fullName: PLATEAU.Geometries.CoordinateSystem.WUN
   nameWithType: CoordinateSystem.WUN
+- uid: PLATEAU.Geometries.CoordinateSystemExtension
+  name: CoordinateSystemExtension
+  href: api/PLATEAU.Geometries.CoordinateSystemExtension.html
+  commentId: T:PLATEAU.Geometries.CoordinateSystemExtension
+  fullName: PLATEAU.Geometries.CoordinateSystemExtension
+  nameWithType: CoordinateSystemExtension
+- uid: PLATEAU.Geometries.CoordinateSystemExtension.ToNaturalLanguage(PLATEAU.Geometries.CoordinateSystem)
+  name: ToNaturalLanguage(CoordinateSystem)
+  href: api/PLATEAU.Geometries.CoordinateSystemExtension.html#PLATEAU_Geometries_CoordinateSystemExtension_ToNaturalLanguage_PLATEAU_Geometries_CoordinateSystem_
+  commentId: M:PLATEAU.Geometries.CoordinateSystemExtension.ToNaturalLanguage(PLATEAU.Geometries.CoordinateSystem)
+  fullName: PLATEAU.Geometries.CoordinateSystemExtension.ToNaturalLanguage(PLATEAU.Geometries.CoordinateSystem)
+  nameWithType: CoordinateSystemExtension.ToNaturalLanguage(CoordinateSystem)
+- uid: PLATEAU.Geometries.CoordinateSystemExtension.ToNaturalLanguage*
+  name: ToNaturalLanguage
+  href: api/PLATEAU.Geometries.CoordinateSystemExtension.html#PLATEAU_Geometries_CoordinateSystemExtension_ToNaturalLanguage_
+  commentId: Overload:PLATEAU.Geometries.CoordinateSystemExtension.ToNaturalLanguage
+  isSpec: "True"
+  fullName: PLATEAU.Geometries.CoordinateSystemExtension.ToNaturalLanguage
+  nameWithType: CoordinateSystemExtension.ToNaturalLanguage
 - uid: PLATEAU.Geometries.GeoReference
   name: GeoReference
   href: api/PLATEAU.Geometries.GeoReference.html
@@ -5068,12 +5253,12 @@ references:
   commentId: T:PLATEAU.Network.Client
   fullName: PLATEAU.Network.Client
   nameWithType: Client
-- uid: PLATEAU.Network.Client.Create
-  name: Create()
-  href: api/PLATEAU.Network.Client.html#PLATEAU_Network_Client_Create
-  commentId: M:PLATEAU.Network.Client.Create
-  fullName: PLATEAU.Network.Client.Create()
-  nameWithType: Client.Create()
+- uid: PLATEAU.Network.Client.Create(System.String,System.String)
+  name: Create(String, String)
+  href: api/PLATEAU.Network.Client.html#PLATEAU_Network_Client_Create_System_String_System_String_
+  commentId: M:PLATEAU.Network.Client.Create(System.String,System.String)
+  fullName: PLATEAU.Network.Client.Create(System.String, System.String)
+  nameWithType: Client.Create(String, String)
 - uid: PLATEAU.Network.Client.Create*
   name: Create
   href: api/PLATEAU.Network.Client.html#PLATEAU_Network_Client_Create_
@@ -5081,6 +5266,19 @@ references:
   isSpec: "True"
   fullName: PLATEAU.Network.Client.Create
   nameWithType: Client.Create
+- uid: PLATEAU.Network.Client.CreateForMockServer
+  name: CreateForMockServer()
+  href: api/PLATEAU.Network.Client.html#PLATEAU_Network_Client_CreateForMockServer
+  commentId: M:PLATEAU.Network.Client.CreateForMockServer
+  fullName: PLATEAU.Network.Client.CreateForMockServer()
+  nameWithType: Client.CreateForMockServer()
+- uid: PLATEAU.Network.Client.CreateForMockServer*
+  name: CreateForMockServer
+  href: api/PLATEAU.Network.Client.html#PLATEAU_Network_Client_CreateForMockServer_
+  commentId: Overload:PLATEAU.Network.Client.CreateForMockServer
+  isSpec: "True"
+  fullName: PLATEAU.Network.Client.CreateForMockServer
+  nameWithType: Client.CreateForMockServer
 - uid: PLATEAU.Network.Client.Dispose
   name: Dispose()
   href: api/PLATEAU.Network.Client.html#PLATEAU_Network_Client_Dispose
@@ -5152,19 +5350,19 @@ references:
   commentId: T:PLATEAU.Network.NetworkConfig
   fullName: PLATEAU.Network.NetworkConfig
   nameWithType: NetworkConfig
-- uid: PLATEAU.Network.NetworkConfig.DefaultApiServerUrl
-  name: DefaultApiServerUrl
-  href: api/PLATEAU.Network.NetworkConfig.html#PLATEAU_Network_NetworkConfig_DefaultApiServerUrl
-  commentId: P:PLATEAU.Network.NetworkConfig.DefaultApiServerUrl
-  fullName: PLATEAU.Network.NetworkConfig.DefaultApiServerUrl
-  nameWithType: NetworkConfig.DefaultApiServerUrl
-- uid: PLATEAU.Network.NetworkConfig.DefaultApiServerUrl*
-  name: DefaultApiServerUrl
-  href: api/PLATEAU.Network.NetworkConfig.html#PLATEAU_Network_NetworkConfig_DefaultApiServerUrl_
-  commentId: Overload:PLATEAU.Network.NetworkConfig.DefaultApiServerUrl
+- uid: PLATEAU.Network.NetworkConfig.MockServerUrl
+  name: MockServerUrl
+  href: api/PLATEAU.Network.NetworkConfig.html#PLATEAU_Network_NetworkConfig_MockServerUrl
+  commentId: P:PLATEAU.Network.NetworkConfig.MockServerUrl
+  fullName: PLATEAU.Network.NetworkConfig.MockServerUrl
+  nameWithType: NetworkConfig.MockServerUrl
+- uid: PLATEAU.Network.NetworkConfig.MockServerUrl*
+  name: MockServerUrl
+  href: api/PLATEAU.Network.NetworkConfig.html#PLATEAU_Network_NetworkConfig_MockServerUrl_
+  commentId: Overload:PLATEAU.Network.NetworkConfig.MockServerUrl
   isSpec: "True"
-  fullName: PLATEAU.Network.NetworkConfig.DefaultApiServerUrl
-  nameWithType: NetworkConfig.DefaultApiServerUrl
+  fullName: PLATEAU.Network.NetworkConfig.MockServerUrl
+  nameWithType: NetworkConfig.MockServerUrl
 - uid: PLATEAU.PolygonMesh
   name: PLATEAU.PolygonMesh
   href: api/PLATEAU.PolygonMesh.html
