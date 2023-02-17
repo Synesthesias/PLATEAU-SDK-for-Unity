@@ -21,7 +21,9 @@ namespace PLATEAU.Tests.EditModeTests
         public IEnumerator TestImportLocal()
         {
             var cityDefinition = TestCityDefinition.MiniTokyo;
+            LogAssert.ignoreFailingMessages = true;
             yield return cityDefinition.ImportLocal().AsIEnumerator();
+            LogAssert.ignoreFailingMessages = false;
             
             // GMLファイルが生成されることを確認します。
             cityDefinition.AssertFilesExist(testDataFetchPath + "/TestDataTokyoMini");

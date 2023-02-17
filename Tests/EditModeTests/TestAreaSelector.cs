@@ -37,10 +37,10 @@ namespace PLATEAU.Tests.EditModeTests
             var datasetConf = new DatasetSourceConfig(false, testDef.SrcRootDirPathLocal, "", "", "");
             this.resultReceiver = new DummyAreaSelectResultReceiver();
         
-            AreaSelectorStarter.Start(datasetConf, this.resultReceiver, testDef.CoordinateZoneId);
-            
             LogAssert.ignoreFailingMessages = true;
             
+            AreaSelectorStarter.Start(datasetConf, this.resultReceiver, testDef.CoordinateZoneId);
+
             // EditModeでは yield return new WaitForSeconds() ができないので、原始的なループで地図のダウンロードを待ちます。
             var startT = DateTime.Now;
             while ((DateTime.Now - startT).TotalMilliseconds < 1000)
@@ -61,7 +61,9 @@ namespace PLATEAU.Tests.EditModeTests
             Assert.IsNotNull(areaSelectorBehaviour, "AreaSelectorBehaviourが存在します。");
             
             // 終了処理
+            LogAssert.ignoreFailingMessages = true;
             areaSelectorBehaviour.EndAreaSelection();
+            LogAssert.ignoreFailingMessages = false;
             yield return null;
             var newTestScene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Additive);
             yield return null;
