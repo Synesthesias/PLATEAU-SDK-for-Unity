@@ -8,7 +8,9 @@ PLATEAU SDK for Unityを利用することで、実世界を舞台にしたゲ�
 次の環境に対応します。
 - Windows 64bit
 - MacOS (ARM版CPU)
+
 加えて、実行時にgmlファイルからデータを読む用に次のOS向けのバイナリも付属します。
+
 - Android
 - iOS
 
