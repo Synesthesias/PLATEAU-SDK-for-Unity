@@ -31,7 +31,7 @@ namespace PLATEAU.Tests.TestUtils
         /// <summary> テストデータとして利用できるgmlパスです。 </summary>
         public static string TestSimpleGmlFilePath => Path.Combine(TestDataSimplePath, "53392642_bldg_6697_op2.gml");
 
-        public static string TestTokyoSrcPath => Path.Combine(TestDataFolderPath, "TestDataTokyo");
+        // public static string TestTokyoSrcPath => Path.Combine(TestDataFolderPath, "TestDataTokyo");
         public static string TestTokyoMiniSrcPath => Path.Combine(TestDataFolderPath, "TestDataTokyoMini");
 
         /// <summary>

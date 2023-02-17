@@ -1,2 +1,0 @@
-# 東京の一部を切り出したテストデータは重いので、 git lfs の対象とします。
-*.gml filter=lfs diff=lfs merge=lfs -text
