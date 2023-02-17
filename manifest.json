@@ -1510,6 +1510,17 @@
     },
     {
       "type": "Resource",
+      "source_relative_path": "resources/index/eyecatch.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/index/eyecatch.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
       "source_relative_path": "resources/manual.meta",
       "output": {
         "resource": {
