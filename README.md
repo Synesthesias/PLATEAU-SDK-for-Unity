@@ -5,12 +5,10 @@ PLATEAU SDK for Unityを利用することで、実世界を舞台にしたゲ�
 ![](Documentation~/resources/index/eyecatch.png)
 
 ## 動作環境
-次の環境に対応します。
-- Windows 64bit
-- MacOS (ARM版CPU)
-加えて、実行時にgmlファイルからデータを読む用に次のOS向けのバイナリも付属します。
-- Android
-- iOS
+- Windows (x86_64)
+- MacOS (ARM)
+- Android, iOS
+  - モバイル向けには、一部の機能のみ（緯度経度と直交座標の相互変換など）をサポートしています。
 
 ## 使用方法
 - SDKの最新版は本リポジトリの [Release](https://github.com/Synesthesias/PLATEAU-SDK-for-Unity/releases) からダウンロードしてください。  
