@@ -1444,7 +1444,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/Installation.html",
-          "hash": "b6w/BQbXcxtAz2a0dCAlYRkm+vLXSFM0TWXEgHkjsgs="
+          "hash": "iJo0KSkVwfrlxIpsvOW5ev3cmnDyKtnoiSjns/uksJY="
         }
       },
       "is_incremental": false,
@@ -1921,6 +1921,28 @@
       "output": {
         "resource": {
           "relative_path": "resources/manual/installation/packageInstalled.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/manual/installation/packageManagerGitUrl.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/installation/packageManagerGitUrl.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/manual/installation/releaseTag.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/installation/releaseTag.png"
         }
       },
       "is_incremental": false,
