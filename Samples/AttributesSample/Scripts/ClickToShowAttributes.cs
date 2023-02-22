@@ -2,6 +2,7 @@ using System.IO;
 using System.Threading.Tasks;
 using PLATEAU.CityGML;
 using PLATEAU.CityInfo;
+using PLATEAU.Util;
 using PLATEAU.Util.Async;
 using UnityEngine;
 using UnityEngine.Assertions;
@@ -24,14 +25,7 @@ namespace PLATEAU.Samples.Scripts
     {
         [SerializeField] private AttributesDisplay display;
         private Camera mainCamera;
-
-        /// <summary>
-        /// !!! 重要 :
-        /// !!! サンプルデータではなくご自分のデータを使いたい場合は、この値を空文字に変更してください。
-        /// ここを空文字にすると、PLATEAU SDK ウィンドウの操作で都市データをインポートしたときのパスに自動設定されます。
-        /// </summary>
-        private static readonly string cityDataPath = // ""; // ここを空文字にするとインポートしたデータを利用します。
-            Path.GetFullPath("Packages/com.synesthesias.plateau-unity-sdk/Samples~/");
+        private string cityDataPath;
 
         private void Start()
         {
@@ -40,6 +34,12 @@ namespace PLATEAU.Samples.Scripts
             {
                 Debug.LogError("メインカメラがありません。");
             }
+
+            // !!! 重要 :
+            // !!! サンプルデータではなくご自分のデータを使いたい場合は、この値を空文字に変更してください。
+            // ここを空文字にすると、PLATEAU SDK ウィンドウの操作で都市データをインポートしたときのパスに自動設定されます。
+            this.cityDataPath = // ""; // ここを空文字にするとインポートしたデータを利用します。
+                PathUtil.SdkPathToAssetPath("Samples"); // この行は Editorでのみ動きます。
         }
 
         private void Update()
