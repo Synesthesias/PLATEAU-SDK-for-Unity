@@ -1,4 +1,6 @@
-﻿using UnityEditor;
+﻿using System.IO;
+using PLATEAU.Util;
+using UnityEditor;
 using UnityEditor.PackageManager;
 
 namespace PLATEAU.Editor.DebugPlateau
@@ -13,7 +15,7 @@ namespace PLATEAU.Editor.DebugPlateau
         public static void Pack()
         {
             string destDir = EditorUtility.SaveFolderPanel("出力先", "", "");
-            Client.Pack("Packages/com.synesthesias.plateau-unity-sdk", destDir);
+            Client.Pack(PathUtil.SdkBasePath, destDir);
         }
     }
 }

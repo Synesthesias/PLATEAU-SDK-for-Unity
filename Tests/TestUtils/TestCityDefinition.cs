@@ -9,6 +9,7 @@ using PLATEAU.Editor.EditorWindow.ProgressDisplay;
 using PLATEAU.Dataset;
 using PLATEAU.Native;
 using PLATEAU.Network;
+using PLATEAU.Util;
 
 namespace PLATEAU.Tests.TestUtils
 {
@@ -25,7 +26,7 @@ namespace PLATEAU.Tests.TestUtils
 
         private string rootDirName;
 
-        private const string testDataDir = "Packages/com.synesthesias.plateau-unity-sdk/Tests/TestData/日本語パステスト";
+        private static readonly string testDataDir = Path.Combine(PathUtil.SdkBasePath, "./Tests/TestData/日本語パステスト");
 
         public TestCityDefinition(string rootDirName, TestGmlDefinition[] gmlDefs, string[] areaMeshCodes, int coordinateZoneId)
         {

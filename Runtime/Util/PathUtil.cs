@@ -16,7 +16,6 @@ namespace PLATEAU.Util
 
         public static readonly string PLATEAUSrcFetchDir = Path.GetFullPath(Application.streamingAssetsPath + "/.PLATEAU");
         public const string UdxFolderName = "udx";
-        public const string PackagePath = "Packages/com.synesthesias.plateau-unity-sdk";
 
         /// <summary>
         /// 入力ファイル用のパスとして正しければtrue,不適切であればfalseを返します。
@@ -234,5 +233,47 @@ namespace PLATEAU.Util
             if (!basePath.EndsWith("/")) basePath += "/";
             return fullPath.Replace(basePath, "");
         }
+
+        /// <summary>
+        /// PLATEAU SDK のパスは、 GitHub からインポートした場合は Packages 以下になり、
+        /// Unity Asset Store からインポートした場合は Assets 以下になります。
+        /// SDKの基本パスを返します。
+        /// </summary>
+        public static string SdkBasePath
+        {
+            get
+            {
+                return IsInPackageDir ? "Packages/com.synesthesias.plateau-unity-sdk" : "Assets/PLATEAU-SDK-for-Unity";
+            }
+        }
+
+        /// <summary>
+        /// SdkBasePath からの相対パスを受け取り、アセットパスに変換して返します。
+        /// </summary>
+        public static string SdkPathToAssetPath(string sdkPath)
+        {
+            return Path.Combine(SdkBasePath, sdkPath);
+        }
+        
+        #if UNITY_EDITOR
+        private static bool isInPackageDirCalculated;
+        private static bool isInPackageDir;
+        /// <summary>
+        /// PLATEAU SDK が Package フォルダにある場合は true, Asset フォルダにある場合は false を返します。
+        /// 参考 : https://forum.unity.com/threads/how-to-detect-if-we-are-in-a-packager-context-or-in-the-assets-folder.1116505/#post-7182082
+        /// </summary>
+        private static bool IsInPackageDir {
+            get
+            {
+                if (isInPackageDirCalculated) return isInPackageDir;
+                var assembly = System.Reflection.Assembly.GetExecutingAssembly();
+                var packageInfo = UnityEditor.PackageManager.PackageInfo.FindForAssembly(assembly);
+                isInPackageDir = packageInfo != null;
+                isInPackageDirCalculated = true;
+                return isInPackageDir;
+            }
+            
+        }
+        #endif
     }
 }

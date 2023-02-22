@@ -25,7 +25,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
     {
         private static readonly string mapDownloadDest =
             Path.GetFullPath(Path.Combine(Application.temporaryCachePath, "GSIMapImages"));
-        private const string mapMaterialDir = "Packages/com.synesthesias.plateau-unity-sdk/Materials";
+        private static readonly string mapMaterialDir = PathUtil.SdkPathToAssetPath("Materials");
         private const string mapMaterialNameBuiltInRP = "MapUnlitMaterial_BuiltInRP.mat";
         private const string mapMaterialNameURP = "MapUnlitMaterial_URP.mat";
         private const string mapMaterialNameHDRP = "MapUnlitMaterial_HDRP.mat";

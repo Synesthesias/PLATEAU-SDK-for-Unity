@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using PLATEAU.Dataset;
+using PLATEAU.Util;
 using UnityEditor;
 using UnityEngine;
 
@@ -18,7 +19,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         private readonly PackageToLodDict packageToLodDict;
         private readonly Vector3 meshCodeUnityPositionUpperLeft;
         private readonly Vector3 meshCodeUnityPositionLowerRight;
-        private const string iconDirPath = "Packages/com.synesthesias.plateau-unity-sdk/Images/AreaSelect";
+        private static readonly string iconDirPath = PathUtil.SdkPathToAssetPath("Images/AreaSelect");
         private const string iconsBoxImagePath = "round-window-wide.png";
         
         #if UNITY_EDITOR
