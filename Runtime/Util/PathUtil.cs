@@ -234,6 +234,7 @@ namespace PLATEAU.Util
             return fullPath.Replace(basePath, "");
         }
 
+#if UNITY_EDITOR
         /// <summary>
         /// PLATEAU SDK のパスは、 GitHub からインポートした場合は Packages 以下になり、
         /// Unity Asset Store からインポートした場合は Assets 以下になります。
@@ -255,7 +256,6 @@ namespace PLATEAU.Util
             return Path.Combine(SdkBasePath, sdkPath);
         }
         
-        #if UNITY_EDITOR
         private static bool isInPackageDirCalculated;
         private static bool isInPackageDir;
         /// <summary>
