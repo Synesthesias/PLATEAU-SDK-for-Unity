@@ -61,7 +61,7 @@ namespace PLATEAU.CityInfo
                 Debug.LogError("Could not get gmlInfo from gmlName.");
                 return null;
             }
-            string gmlFullPath = Path.GetFullPath(Path.Combine(PathUtil.PLATEAUSrcFetchDir, gmlPath));
+            string gmlFullPath = Path.GetFullPath(gmlPath);
             return await LoadAsync(gmlFullPath);
         }
 

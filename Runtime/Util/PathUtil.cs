@@ -6,9 +6,9 @@ using UnityEngine;
 namespace PLATEAU.Util
 {
     /// <summary>
-    /// ファイルパスが正しいかどうか検証します。
+    /// PLATEAU のファイルパスに関するユーティリティです。
     /// </summary>
-    internal static class PathUtil
+    public static class PathUtil
     {
         // この値はテストのときのみ変更されるのでreadonlyにしないでください。
         // ReSharper disable once FieldCanBeMadeReadOnly.Local
