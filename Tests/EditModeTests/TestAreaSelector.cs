@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
+using System.IO;
 using NUnit.Framework;
 using PLATEAU.CityImport.AreaSelector;
 using PLATEAU.CityImport.AreaSelector.SceneObjs;
@@ -9,6 +10,7 @@ using PLATEAU.Dataset;
 using PLATEAU.Editor.CityImport.AreaSelector;
 using PLATEAU.Tests.EditModeTests.TestDoubles;
 using PLATEAU.Tests.TestUtils;
+using PLATEAU.Util;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -29,7 +31,7 @@ namespace PLATEAU.Tests.EditModeTests
         [UnityTest]
         public IEnumerator Components_Exist_In_Area_Select_Scene()
         {
-            var emptyScene = EditorSceneManager.OpenScene("Packages/com.synesthesias.plateau-unity-sdk/Tests/EmptySceneForTest.unity", OpenSceneMode.Additive);
+            var emptyScene = EditorSceneManager.OpenScene(PathUtil.SdkPathToAssetPath("Tests/EmptySceneForTest.unity"), OpenSceneMode.Additive);
             yield return null;
             SceneManager.SetActiveScene(emptyScene);
             // MiniTokyo の範囲選択画面を開始します。

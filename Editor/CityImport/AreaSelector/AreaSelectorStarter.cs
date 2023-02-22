@@ -1,6 +1,8 @@
-﻿using PLATEAU.CityImport.AreaSelector;
+﻿using System.IO;
+using PLATEAU.CityImport.AreaSelector;
 using PLATEAU.Dataset;
 using PLATEAU.Editor.EditorWindow.PlateauWindow;
+using PLATEAU.Util;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -16,8 +18,8 @@ namespace PLATEAU.Editor.CityImport.AreaSelector
     internal static class AreaSelectorStarter
     {
 
-        private const string areaSelectorPrefabPath =
-            "Packages/com.synesthesias.plateau-unity-sdk/Prefabs/AreaSelectorPrefab.prefab";
+        private static readonly string areaSelectorPrefabPath =
+            PathUtil.SdkPathToAssetPath("Prefabs/AreaSelectorPrefab.prefab");
         
         /// <summary>
         /// 範囲選択の専用シーンを立ち上げます。
