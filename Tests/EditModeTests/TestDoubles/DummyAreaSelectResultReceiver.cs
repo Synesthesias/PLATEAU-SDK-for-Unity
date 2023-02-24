@@ -6,16 +6,11 @@ namespace PLATEAU.Tests.EditModeTests.TestDoubles
 {
     internal class DummyAreaSelectResultReceiver : IAreaSelectResultReceiver
     {
-        // TODO 結果が3つ渡されるけど、1つのクラスにまとめたほうが綺麗になりそう。
-        public string[] ResultMeshCodes { get; set; }
-        public Extent ResultExtent { get; set; }
-        public PackageToLodDict AvailablePackageLods { get; set; }
+        public AreaSelectResult AreaSelectResult { get; private set; }
         
-        public void ReceiveResult(string[] areaMeshCodes, Extent extent, PackageToLodDict availablePackageLods)
+        public void ReceiveResult(AreaSelectResult areaSelectResult)
         {
-            ResultMeshCodes = areaMeshCodes;
-            ResultExtent = extent;
-            AvailablePackageLods = availablePackageLods;
+            AreaSelectResult = areaSelectResult;
         }
     }
 }

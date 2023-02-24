@@ -97,14 +97,10 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
 
         
 
-        public void ReceiveResult(string[] areaMeshCodes, Extent extent,
-            PackageToLodDict availablePackageLods)
+        public void ReceiveResult(AreaSelectResult result)
         {
-            this.config.InitWithPackageLodsDict(availablePackageLods);
-            this.config.AreaMeshCodes = areaMeshCodes;
-            this.config.Extent = extent;
-            this.config.SearchCenterPointAndSetAsReferencePoint();
-            this.cityLoadConfigGUI = new CityLoadConfigGUI(availablePackageLods);
+            this.config.InitWithAreaSelectResult(result);
+            this.cityLoadConfigGUI = new CityLoadConfigGUI(result.PackageToLodDict);
         }
 
     }

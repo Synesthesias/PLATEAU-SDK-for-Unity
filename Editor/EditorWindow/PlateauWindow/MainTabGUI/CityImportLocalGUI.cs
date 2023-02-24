@@ -34,7 +34,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
 
         public void Draw()
         {
-
+            // TODO この実装、CityImportRemoteGUI とかぶってる
             this.foldOutSourceFolderPath = PlateauEditorStyle.FoldOut(this.foldOutSourceFolderPath, "入力フォルダ", () =>
             {
                 this.config.DatasetSourceConfig ??= new DatasetSourceConfig(false, "", "", "", "");
@@ -76,14 +76,12 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
             progressGUI.Draw();
         }
 
-        public void ReceiveResult(string[] areaMeshCodes, Extent extent, PackageToLodDict availablePackageLods)
+        public void ReceiveResult(AreaSelectResult result)
         {
             // TODO ここの実装、Remoteと被ってる。 ReceiveResult の引数を1つのクラスにまとめたうえで、ここも1つのメソッドで済ませたほうが良い。
-            this.config.InitWithPackageLodsDict(availablePackageLods);
-            this.config.AreaMeshCodes = areaMeshCodes;
-            this.config.Extent = extent;
-            this.config.SearchCenterPointAndSetAsReferencePoint();
-            this.cityLoadConfigGUI = new CityLoadConfigGUI(availablePackageLods);
+            
+            this.config.InitWithAreaSelectResult(result);
+            this.cityLoadConfigGUI = new CityLoadConfigGUI(result.PackageToLodDict);
         }
     }
 }

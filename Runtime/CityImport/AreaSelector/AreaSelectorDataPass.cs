@@ -70,7 +70,9 @@ namespace PLATEAU.CityImport.AreaSelector
             {
                 Debug.Log("地域は選択されませんでした。");
             }
-            areaSelectResultReceiver.ReceiveResult(areaMeshCodes, extent, availablePackageLods);
+
+            var areaSelectResult = new AreaSelectResult(areaMeshCodes, extent, availablePackageLods);
+            areaSelectResultReceiver.ReceiveResult(areaSelectResult);
         }
     }
 }

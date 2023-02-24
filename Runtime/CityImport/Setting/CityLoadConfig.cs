@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using PLATEAU.CityImport.AreaSelector;
 using PLATEAU.CityImport.AreaSelector.SceneObjs;
 using PLATEAU.Dataset;
 using PLATEAU.Native;
@@ -143,6 +144,14 @@ namespace PLATEAU.CityImport.Setting
             var center = CalcCenterPoint(gmls, CoordinateZoneID);
             ReferencePoint = center;
             return center;
+        }
+
+        public void InitWithAreaSelectResult(AreaSelectResult result)
+        {
+            InitWithPackageLodsDict(result.PackageToLodDict);
+            AreaMeshCodes = result.AreaMeshCodes;
+            Extent = result.Extent;
+            SearchCenterPointAndSetAsReferencePoint();
         }
         
         public static PlateauVector3d CalcCenterPoint(IEnumerable<GmlFile> targetGmls, int coordinateZoneID)
