@@ -32,7 +32,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         private const string mapMaterialNameURP = "MapUnlitMaterial_URP.mat";
         private const string mapMaterialNameHDRP = "MapUnlitMaterial_HDRP.mat";
         private const int timeOutSec = 10;
-        public const string MapRootObjName = "GSIMaps";
+        public const string MapRootObjName = "Basemap";
         
         /// <summary>
         /// 地理院地図タイルをダウンロードして、シーンに配置します。

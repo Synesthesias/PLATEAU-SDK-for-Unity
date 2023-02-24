@@ -54,9 +54,9 @@ namespace PLATEAU.Tests.EditModeTests
             
             // コンポーネントの存在をチェックします。
             Assert.IsNotNull(Object.FindObjectOfType<AreaSelectGizmosDrawer>(), "AreaSelectGizmosDrawer が存在します。");
-            var gsiMapsObj = GameObject.Find("GSIMaps");
-            Assert.IsNotNull(gsiMapsObj, "GSIMapsというゲームオブジェクトが存在します。");
-            var oneOfMapTrans = gsiMapsObj.transform.Find("12/1614/3637");
+            var basemapObj = GameObject.Find("Basemap");
+            Assert.IsNotNull(basemapObj, "Basemapというゲームオブジェクトが存在します。");
+            var oneOfMapTrans = basemapObj.transform.Find("12/1614/3637");
             Assert.IsNotNull(oneOfMapTrans, "東京の地図の一部に相当するゲームオブジェクトが存在します。");
             Assert.IsNotNull(oneOfMapTrans.GetComponent<MeshRenderer>().sharedMaterial.mainTexture, "地図にはテクスチャが割り当てられます。");
             var areaSelectorBehaviour = Object.FindObjectOfType<AreaSelectorBehaviour>();
