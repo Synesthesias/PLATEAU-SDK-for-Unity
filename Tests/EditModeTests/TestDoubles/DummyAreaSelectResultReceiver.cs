@@ -1,6 +1,5 @@
 ﻿using PLATEAU.CityImport.AreaSelector;
-using PLATEAU.CityImport.AreaSelector.SceneObjs;
-using PLATEAU.Dataset;
+using PLATEAU.CityImport.Setting;
 using PLATEAU.Native;
 
 namespace PLATEAU.Tests.EditModeTests.TestDoubles

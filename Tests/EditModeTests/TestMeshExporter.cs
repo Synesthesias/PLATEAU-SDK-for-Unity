@@ -7,7 +7,6 @@ using NUnit.Framework;
 using PLATEAU.CityInfo;
 using PLATEAU.Editor.CityExport;
 using PLATEAU.Geometries;
-using PLATEAU.Interop;
 using PLATEAU.MeshWriter;
 using PLATEAU.Tests.TestUtils;
 using UnityEngine.TestTools;

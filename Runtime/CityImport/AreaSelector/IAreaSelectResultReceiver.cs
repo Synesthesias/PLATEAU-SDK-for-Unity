@@ -1,4 +1,5 @@
 ﻿using PLATEAU.CityImport.AreaSelector.SceneObjs;
+using PLATEAU.CityImport.Setting;
 using PLATEAU.Dataset;
 using PLATEAU.Native;
 

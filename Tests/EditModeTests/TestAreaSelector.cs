@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Data;
-using System.IO;
 using NUnit.Framework;
 using PLATEAU.CityImport.AreaSelector;
 using PLATEAU.CityImport.AreaSelector.SceneObjs;
@@ -11,7 +8,6 @@ using PLATEAU.Editor.CityImport.AreaSelector;
 using PLATEAU.Tests.EditModeTests.TestDoubles;
 using PLATEAU.Tests.TestUtils;
 using PLATEAU.Util;
-using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
