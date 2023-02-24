@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using PLATEAU.CityImport.AreaSelector;
+using PLATEAU.CityImport.AreaSelector.SceneObjs;
 using PLATEAU.CityImport.Setting;
 using PLATEAU.Dataset;
 using PLATEAU.Editor.CityImport;
@@ -23,6 +24,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
         private int selectedDatasetIndex;
         private readonly CityLoadConfig config = new CityLoadConfig();
         private ServerDatasetFetchGUI serverDatasetFetchGUI;
+        private CityLoadConfigGUI cityLoadConfigGUI;
         
         // インポートの処理状況はウィンドウを消しても残しておきたいので static にします。
         private static ProgressDisplayGUI progressGUI;
@@ -74,9 +76,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
             sourceConf.ServerUrl = this.serverDatasetFetchGUI.ServerUrl;
             sourceConf.ServerToken = this.serverDatasetFetchGUI.ServerToken;
 
-            this.config.CoordinateZoneID = EditorGUILayout.Popup(
-                "基準座標系", this.config.CoordinateZoneID - 1,
-                GeoReference.ZoneIdExplanation) + 1; // 番号は 1 スタート
+            CoordinateZonePopup.DrawAndSet(this.config);
 
             PlateauEditorStyle.Heading("マップ範囲選択", "num2.png");
 
@@ -86,7 +86,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
             if (isAreaSelectComplete)
             {
                 PlateauEditorStyle.Heading("地物別設定", "num3.png");
-                CityLoadConfigGUI.Draw(this.config);
+                this.cityLoadConfigGUI?.Draw(this.config);
                 ImportButton.Draw(this.config, progressGUI);
             }
             PlateauEditorStyle.Separator(0);
@@ -95,20 +95,10 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
 
         
 
-        public void ReceiveResult(string[] areaMeshCodes, Extent extent,
-            PredefinedCityModelPackage availablePackageFlags)
+        public void ReceiveResult(AreaSelectResult result)
         {
-            // TODO availablePackageFlags は、ローカルモードでは動作しますがサーバーモードでは None になります。
-            //      これは、サーバーからメッシュコードの一覧を受け取る段階では存在するパッケージ種が不明だからです。
-            //      そのため PackageFlags はとりあえず全種類として初期化しています。
-            //      これには存在しないパッケージ種の設定GUIまで表示されるという欠点があります。
-            //      しかしGMLファイルをダウンロードするときにはパッケージ種は分かるわけで、
-            //      工夫すればサーバーに余計な負荷をかけることなしに範囲選択直後のこの段階でもパッケージ種を判別できるかもしれません。
-            // this.config.InitWithPackageFlags(availablePackageFlags);
-            this.config.InitWithPackageFlags((PredefinedCityModelPackage)~0u);
-            this.config.AreaMeshCodes = areaMeshCodes;
-            this.config.Extent = extent;
-            this.config.SearchCenterPointAndSetAsReferencePoint();
+            this.config.InitWithAreaSelectResult(result);
+            this.cityLoadConfigGUI = new CityLoadConfigGUI(result.PackageToLodDict);
         }
 
     }
