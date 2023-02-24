@@ -75,8 +75,14 @@ namespace PLATEAU.Tests.TestUtils
         {
             var conf = new CityLoadConfig();
             // TODO どのパッケージと何が対応するかは要テスト
-            uint packageFlagsAll = 0b10000000000000000000000011111111;
-            conf.InitWithPackageFlags((PredefinedCityModelPackage)packageFlagsAll);
+            var allPackages =
+                EnumUtil.EachFlags((PredefinedCityModelPackage)0b10000000000000000000000011111111);
+            var allPackageLods = new PackageToLodDict();
+            foreach (var package in allPackages)
+            {
+                allPackageLods.MergePackage(package, 3);
+            }
+            conf.InitWithPackageLodsDict(allPackageLods);
             conf.Extent = Extent.All;
             conf.AreaMeshCodes = AreaMeshCodes;
             foreach (var packageConf in conf.ForEachPackagePair)

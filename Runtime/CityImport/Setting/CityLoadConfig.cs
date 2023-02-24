@@ -64,22 +64,7 @@ namespace PLATEAU.CityImport.Setting
         {
             return this.perPackagePairSettings[package];
         }
-
-        // TODO あとで消す
-        public void InitWithPackageFlags(PredefinedCityModelPackage packageFlags)
-        {
-            this.perPackagePairSettings.Clear();
-            foreach (var package in EnumUtil.EachFlags(packageFlags))
-            {
-                var predefined = CityModelPackageInfo.GetPredefined(package);
-                // デフォルト値で設定します。
-                var val = new PackageLoadSetting(true, predefined.hasAppearance, (uint)predefined.minLOD,
-                    (uint)predefined.maxLOD,
-                    MeshGranularity.PerPrimaryFeatureObject, false);
-                this.perPackagePairSettings.Add(package, val);
-            }
-        }
-
+        
         public void InitWithPackageLodsDict(PackageToLodDict dict)
         {
             this.perPackagePairSettings.Clear();
