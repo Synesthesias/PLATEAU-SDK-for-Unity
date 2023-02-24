@@ -22,8 +22,7 @@ namespace PLATEAU.Tests.EditModeTests
     [TestFixture]
     public class TestAreaSelector
     {
-        private IAreaSelectResultReceiver resultReceiver;
-        
+
         [UnityTest]
         public IEnumerator Components_Exist_In_Area_Select_Scene()
         {
@@ -33,11 +32,11 @@ namespace PLATEAU.Tests.EditModeTests
             // MiniTokyo の範囲選択画面を開始します。
             var testDef = TestCityDefinition.MiniTokyo;
             var datasetConf = new DatasetSourceConfig(false, testDef.SrcRootDirPathLocal, "", "", "");
-            this.resultReceiver = new DummyAreaSelectResultReceiver();
+            var resultReceiver = new DummyAreaSelectResultReceiver();
         
             LogAssert.ignoreFailingMessages = true;
             
-            AreaSelectorStarter.Start(datasetConf, this.resultReceiver, testDef.CoordinateZoneId);
+            AreaSelectorStarter.Start(datasetConf, resultReceiver, testDef.CoordinateZoneId);
 
             // EditModeでは yield return new WaitForSeconds() ができないので、原始的なループで地図のダウンロードを待ちます。
             var startT = DateTime.Now;
@@ -65,6 +64,11 @@ namespace PLATEAU.Tests.EditModeTests
             yield return null;
             var newTestScene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Additive);
             yield return null;
+            
+            // 終了後チェック
+            var areaSelectResult = resultReceiver.AreaSelectResult;
+            Assert.IsTrue(areaSelectResult.AreaMeshCodes.Length > 0, "範囲選択の結果として、メッシュコードが1つ以上渡されている");
+            // FIXME メッシュコードが渡されることのチェックの他に、PackageToLods が渡されることのチェックもしたほうが良い
             
             // TODO 複数のユニットテストを実行するとき、なぜかここでシーン EmptySceneForTest が閉じず、開いたまま後続のテストが進行するのを直したほうが良い
             EditorSceneManager.CloseScene(emptyScene, true);
