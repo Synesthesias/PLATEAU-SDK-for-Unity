@@ -1,4 +1,5 @@
 ﻿using PLATEAU.CityImport.AreaSelector;
+using PLATEAU.CityImport.AreaSelector.SceneObjs;
 using PLATEAU.CityImport.Setting;
 using PLATEAU.Editor.CityImport;
 using PLATEAU.Editor.EditorWindow.Common;
@@ -19,7 +20,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
         // インポートの処理状況はウィンドウを消しても残しておきたいので static にします。
         private static ProgressDisplayGUI progressGUI;
         private bool foldOutSourceFolderPath = true;
-
+        private CityLoadConfigGUI cityLoadConfigGUI;
         
 
         /// <summary>
@@ -63,7 +64,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
             if (isAreaSelectComplete)
             {
                 PlateauEditorStyle.Heading("地物別設定", "num3.png");
-                CityLoadConfigGUI.Draw(this.config);
+                this.cityLoadConfigGUI?.Draw(this.config);
                 
                 PlateauEditorStyle.Separator(0);
                 PlateauEditorStyle.Separator(0);
@@ -75,12 +76,14 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
             progressGUI.Draw();
         }
 
-        public void ReceiveResult(string[] areaMeshCodes, Extent extent, PredefinedCityModelPackage availablePackageFlags)
+        public void ReceiveResult(string[] areaMeshCodes, Extent extent, PackageToLodDict availablePackageLods)
         {
-            this.config.InitWithPackageFlags(availablePackageFlags);
+            // TODO ここの実装、Remoteと被ってる。 ReceiveResult の引数を1つのクラスにまとめたうえで、ここも1つのメソッドで済ませたほうが良い。
+            this.config.InitWithPackageLodsDict(availablePackageLods);
             this.config.AreaMeshCodes = areaMeshCodes;
             this.config.Extent = extent;
             this.config.SearchCenterPointAndSetAsReferencePoint();
+            this.cityLoadConfigGUI = new CityLoadConfigGUI(availablePackageLods);
         }
     }
 }

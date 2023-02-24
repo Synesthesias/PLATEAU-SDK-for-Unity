@@ -1,4 +1,6 @@
-﻿using PLATEAU.CityImport.Load;
+﻿using System;
+using PLATEAU.CityImport.AreaSelector.SceneObjs;
+using PLATEAU.CityImport.Load;
 using PLATEAU.CityImport.Setting;
 using PLATEAU.Editor.EditorWindow.Common;
 using PLATEAU.Dataset;
@@ -12,24 +14,33 @@ namespace PLATEAU.Editor.CityImport
     /// <summary>
     /// <see cref="CityLoadConfig"/> を設定するGUIです。
     /// </summary>
-    internal static class CityLoadConfigGUI
+    internal class CityLoadConfigGUI
     {
+
+        private PackageToLodDict availablePackageLods;
+
+        public CityLoadConfigGUI(PackageToLodDict availablePackageLods)
+        {
+            this.availablePackageLods = availablePackageLods;
+        }
+        
         /// <summary>
         /// <see cref="CityLoadConfig"/> を設定するGUIを描画します。
         /// </summary>
-        public static void Draw(CityLoadConfig cityLoadConf)
+        public void Draw(CityLoadConfig cityLoadConf)
         {
             // パッケージごとの設定
             foreach (var (package, conf) in cityLoadConf.ForEachPackagePair)
             {
-                PerPackageLoadConfGui(package, conf);
+                if (!this.availablePackageLods.Contains(package)) continue;
+                PerPackageLoadConfGui(package, conf, this.availablePackageLods.GetLod(package));
             }
 
             // 位置指定
             PositionConfGui(cityLoadConf);
         }
 
-        private static void PerPackageLoadConfGui(PredefinedCityModelPackage package, PackageLoadSetting conf)
+        private static void PerPackageLoadConfGui(PredefinedCityModelPackage package, PackageLoadSetting conf, int availableMaxLod)
         {
             conf.GuiFoldOutState = PlateauEditorStyle.FoldOut(conf.GuiFoldOutState, package.ToJapaneseName(), () =>
             {
@@ -46,7 +57,7 @@ namespace PLATEAU.Editor.CityImport
                                 EditorGUILayout.Toggle("Mesh Collider をセットする", conf.doSetMeshCollider);
 
                             PlateauEditorStyle.LODSlider("LOD描画設定", ref conf.minLOD, ref conf.maxLOD,
-                                (uint)predefined.minLOD, (uint)predefined.maxLOD);
+                                (uint)Math.Min(predefined.minLOD, availableMaxLod), (uint)availableMaxLod);
 
                             conf.meshGranularity = (MeshGranularity)EditorGUILayout.Popup("モデル結合",
                                 (int)conf.meshGranularity, new[] { "最小地物単位(壁面,屋根面等)", "主要地物単位(建築物,道路等)", "地域単位" });

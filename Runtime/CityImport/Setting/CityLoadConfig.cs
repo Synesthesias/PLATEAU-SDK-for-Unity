@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using PLATEAU.CityImport.AreaSelector.SceneObjs;
 using PLATEAU.Dataset;
 using PLATEAU.Native;
 using PLATEAU.PolygonMesh;
@@ -63,6 +64,7 @@ namespace PLATEAU.CityImport.Setting
             return this.perPackagePairSettings[package];
         }
 
+        // TODO あとで消す
         public void InitWithPackageFlags(PredefinedCityModelPackage packageFlags)
         {
             this.perPackagePairSettings.Clear();
@@ -73,6 +75,20 @@ namespace PLATEAU.CityImport.Setting
                 var val = new PackageLoadSetting(true, predefined.hasAppearance, (uint)predefined.minLOD,
                     (uint)predefined.maxLOD,
                     MeshGranularity.PerPrimaryFeatureObject, false);
+                this.perPackagePairSettings.Add(package, val);
+            }
+        }
+
+        public void InitWithPackageLodsDict(PackageToLodDict dict)
+        {
+            this.perPackagePairSettings.Clear();
+            foreach (var pair in dict)
+            {
+                var package = pair.Key;
+                var maxLod = pair.Value;
+                var predefined = CityModelPackageInfo.GetPredefined(package);
+                var val = new PackageLoadSetting(true, predefined.hasAppearance, (uint)predefined.minLOD,
+                    (uint)maxLod, MeshGranularity.PerPrimaryFeatureObject, false);
                 this.perPackagePairSettings.Add(package, val);
             }
         }
@@ -101,7 +117,7 @@ namespace PLATEAU.CityImport.Setting
             // 絞り込まれたGMLパスを戻り値のリストに追加します。
             foreach (var package in targetPackages)
             {
-                var gmlFiles = datasetAccessor.GetGmlFiles(package);
+                var gmlFiles = datasetAccessor.GetGmlFilesForPackage(package);
                 int gmlCount = gmlFiles.Length;
                 for (int i = 0; i < gmlCount; i++)
                 {

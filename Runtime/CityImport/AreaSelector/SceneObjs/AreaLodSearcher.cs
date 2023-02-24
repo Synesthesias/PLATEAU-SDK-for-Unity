@@ -37,7 +37,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
                 {
                     if (this.meshCodeToPackageLodDict.TryGetValue(MeshCode.Parse(meshCode).Level2(), out var packageToLodDictLevel2))
                     {
-                        packageToLodDict.Marge(packageToLodDictLevel2);
+                        packageToLodDict.MargeDict(packageToLodDictLevel2);
                     }
                 }
             }
@@ -69,7 +69,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
                 foreach (PredefinedCityModelPackage package in Enum.GetValues(typeof(PredefinedCityModelPackage)))
                 {
                     if (!AreaLodView.HasIconOfPackage(package)) continue; // 地図に表示しないパッケージはスキップします。
-                    var gmls = accessor.GetGmlFiles(package);
+                    var gmls = accessor.GetGmlFilesForPackage(package);
 
                     int maxLod = -1;
                     foreach (var gml in gmls)
@@ -128,16 +128,26 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
             return lod;
         }
 
-        public void Marge(PackageToLodDict other)
+        public void MargeDict(PackageToLodDict other)
         {
             foreach (var pair in other)
             {
                 var package = pair.Key;
                 int otherLod = pair.Value;
-                this.data.AddOrUpdate(package,
-                    _ => otherLod,
-                    (modelPackage, lod) => Math.Max(otherLod, lod));
+                MergePackage(package, otherLod);
             }
+        }
+
+        public void MergePackage(PredefinedCityModelPackage package, int otherLod)
+        {
+            this.data.AddOrUpdate(package,
+                _ => otherLod,
+                (modelPackage, lod) => Math.Max(otherLod, lod));
+        }
+
+        public bool Contains(PredefinedCityModelPackage package)
+        {
+            return this.data.ContainsKey(package);
         }
         
         public IEnumerator<KeyValuePair<PredefinedCityModelPackage, int>> GetEnumerator()

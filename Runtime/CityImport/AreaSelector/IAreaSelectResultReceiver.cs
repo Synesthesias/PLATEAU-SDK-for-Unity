@@ -1,4 +1,5 @@
-﻿using PLATEAU.Dataset;
+﻿using PLATEAU.CityImport.AreaSelector.SceneObjs;
+using PLATEAU.Dataset;
 using PLATEAU.Native;
 
 namespace PLATEAU.CityImport.AreaSelector
@@ -6,6 +7,6 @@ namespace PLATEAU.CityImport.AreaSelector
     internal interface IAreaSelectResultReceiver
     {
         public void ReceiveResult(string[] areaMeshCodes, Extent extent,
-            PredefinedCityModelPackage availablePackageFlags);
+            PackageToLodDict availablePackageLods);
     }
 }

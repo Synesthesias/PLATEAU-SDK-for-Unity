@@ -37,6 +37,21 @@ namespace PLATEAU.Native
             }
         }
 
+        public void AddCopyOf(NativeVectorGmlFile other)
+        {
+            int cnt = other.Length;
+            for (int i = 0; i < cnt; i++)
+            {
+                AddCopyOf(other.At(i));
+            }
+        }
+
+        private void AddCopyOf(GmlFile gmlFile)
+        {
+            var result = NativeMethods.plateau_vector_gml_file_push_back_copy_of_ref(Handle, gmlFile.Handle);
+            DLLUtil.CheckDllError(result);
+        }
+
 
         protected override void DisposeNative()
         {
@@ -64,6 +79,11 @@ namespace PLATEAU.Native
             internal static extern APIResult plateau_vector_gml_file_count(
                 [In] IntPtr handle,
                 out int outCount);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_vector_gml_file_push_back_copy_of_ref(
+                [In] IntPtr handle,
+                IntPtr gmlFilePtr);
         }
     }
 }
