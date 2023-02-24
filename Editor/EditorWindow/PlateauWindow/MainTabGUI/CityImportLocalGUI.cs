@@ -21,7 +21,6 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
         private static ProgressDisplayGUI progressGUI;
         private bool foldOutSourceFolderPath = true;
         private CityLoadConfigGUI cityLoadConfigGUI;
-        
 
         /// <summary>
         /// メインスレッドから呼ばれることを前提とします。
@@ -44,16 +43,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
             PlateauEditorStyle.Separator(0);
             PlateauEditorStyle.SubTitle("モデルデータの配置を行います。");
             PlateauEditorStyle.Heading("基準座標系の選択", "num1.png");
-
-            // 基準座標系についてはこのWebサイトを参照してください。
-            // https://www.gsi.go.jp/sokuchikijun/jpc.html
-            using (PlateauEditorStyle.VerticalScopeLevel1())
-            {
-                this.config.CoordinateZoneID = EditorGUILayout.Popup(
-                    "基準座標系", this.config.CoordinateZoneID - 1, 
-                    GeoReference.ZoneIdExplanation
-                    ) + 1; // 番号は 1 スタート
-            }
+            CoordinateZonePopup.DrawAndSet(this.config);
             
 
             PlateauEditorStyle.Heading("マップ範囲選択", "num2.png");
@@ -78,8 +68,6 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
 
         public void ReceiveResult(AreaSelectResult result)
         {
-            // TODO ここの実装、Remoteと被ってる。 ReceiveResult の引数を1つのクラスにまとめたうえで、ここも1つのメソッドで済ませたほうが良い。
-            
             this.config.InitWithAreaSelectResult(result);
             this.cityLoadConfigGUI = new CityLoadConfigGUI(result.PackageToLodDict);
         }

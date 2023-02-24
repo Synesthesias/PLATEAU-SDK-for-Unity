@@ -76,9 +76,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
             sourceConf.ServerUrl = this.serverDatasetFetchGUI.ServerUrl;
             sourceConf.ServerToken = this.serverDatasetFetchGUI.ServerToken;
 
-            this.config.CoordinateZoneID = EditorGUILayout.Popup(
-                "基準座標系", this.config.CoordinateZoneID - 1,
-                GeoReference.ZoneIdExplanation) + 1; // 番号は 1 スタート
+            CoordinateZonePopup.DrawAndSet(this.config);
 
             PlateauEditorStyle.Heading("マップ範囲選択", "num2.png");
 
