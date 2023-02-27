@@ -3,14 +3,14 @@
 # PLATEAU SDK for Unity
 PLATEAU SDK for Unityは、[PLATEAU](https://www.mlit.go.jp/plateau/)の3D都市モデルデータをUnityで扱うためのツールキットであり、主に以下の機能を提供しています。
 
-- 直感的なCityGMLのインポート
+- CityGMLの直感的なインポート
   - 地図上での範囲選択による3D都市モデルの抽出
-  - PLATEAUのサーバー上で提供される3D都市モデルへのアクセス
-- インポートされた3D都市モデルに含まれる地物のフィルタリング
+  - PLATEAUのサーバーで提供されるCityGMLデータへのアクセス
+- 3D都市モデルに含まれる地物のフィルタリング
 - 3D都市モデルの3Dファイル形式へのエクスポート
 - 3D都市モデルの属性にアクセスするためのC# API
 
-![](Documentation~/resources/index//sdk_outline.png)
+![](Documentation~/resources/index/sdk_outline.png)
 
 PLATEAU SDK for Unityを利用することで、実世界を舞台にしたアプリケーションの開発や、PLATEAUの豊富なデータを活用したシミュレーションを簡単に行うことができます。
 
