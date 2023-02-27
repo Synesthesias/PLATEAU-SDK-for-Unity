@@ -9,7 +9,6 @@ using PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts;
 using PLATEAU.Tests.TestUtils;
 using UnityEditor;
 using UnityEditor.SceneManagement;
-using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;
 using Object = UnityEngine.Object;
 
@@ -79,6 +78,7 @@ namespace PLATEAU.Tests.EditModeTests.GUITests
             Assert.IsTrue(isDatasetFetchSucceed, "リモートインポートの画面を開いてから数秒以内にサーバーからのデータ一覧の取得が完了します。");
 
             EditorSceneManager.CloseScene(testScene, true);
+            EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
         }
 
         [UnityTest]
