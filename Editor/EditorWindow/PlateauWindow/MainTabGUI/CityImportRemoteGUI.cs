@@ -20,7 +20,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
         private int selectedDatasetGroupIndex;
         private int selectedDatasetIndex;
         private readonly CityLoadConfig config = new CityLoadConfig();
-        private ServerDatasetFetchGUI serverDatasetFetchGUI;
+        private readonly ServerDatasetFetchGUI serverDatasetFetchGUI;
         private CityLoadConfigGUI cityLoadConfigGUI;
         
         // インポートの処理状況はウィンドウを消しても残しておきたいので static にします。
@@ -90,7 +90,6 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
             progressGUI.Draw();
         }
 
-        
 
         public void ReceiveResult(AreaSelectResult result)
         {
@@ -98,5 +97,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
             this.cityLoadConfigGUI = new CityLoadConfigGUI(result.PackageToLodDict);
         }
 
+        // テストで使う用です。
+        internal ServerDatasetFetchGUI.LoadStatusEnum DatasetFetchStatus => this.serverDatasetFetchGUI.LoadStatus;
     }
 }

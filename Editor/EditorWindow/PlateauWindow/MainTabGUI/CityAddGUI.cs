@@ -29,5 +29,9 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
             this.importTabIndex = PlateauEditorStyle.Tabs(this.importTabIndex, "ローカル", "サーバー");
             this.importTabGUIArray[this.importTabIndex].Draw();
         }
+
+        /// <summary> テストで使う用です。 </summary>
+        internal const string NameOfImportTabIndex = nameof(importTabIndex);
+        internal const string NameOfImportTabGUIArray = nameof(importTabGUIArray);
     }
 }

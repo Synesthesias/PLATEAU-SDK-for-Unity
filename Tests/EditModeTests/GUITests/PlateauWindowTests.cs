@@ -1,13 +1,16 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using NUnit.Framework;
 using PLATEAU.CityInfo;
 using PLATEAU.Editor.EditorWindow.Common;
 using PLATEAU.Editor.EditorWindow.PlateauWindow;
 using PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI;
+using PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts;
 using PLATEAU.Tests.TestUtils;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.TestTools;
+using Object = UnityEngine.Object;
 
 namespace PLATEAU.Tests.EditModeTests.GUITests
 {
@@ -44,6 +47,37 @@ namespace PLATEAU.Tests.EditModeTests.GUITests
         }
 
         [UnityTest]
+        public IEnumerator OpenCityImportRemoteGuiAndWaitForFewSecondsThenDatasetFetchComplete()
+        {
+            var gui = OpenImportTab();
+            // 初期画面を描画します。
+            this.window.Repaint();
+            yield return null;
+            // サーバーインポートに切り替え、そのGUIを取得します。
+            const int remoteImportTabIndex = 1;
+            ReflectionUtil.SetPrivateFieldVal(typeof(CityAddGUI), gui, CityAddGUI.NameOfImportTabIndex, remoteImportTabIndex);
+            var remoteGui =
+                (CityImportRemoteGUI)ReflectionUtil.GetPrivateFieldVal<IEditorDrawable[]>(typeof(CityAddGUI), gui,
+                    CityAddGUI.NameOfImportTabGUIArray)[remoteImportTabIndex];
+            yield return null;
+            this.window.Repaint();
+
+            // GUIを開いてから数秒以内にサーバーからデータセットの一覧をダウンロードできることを確認します。
+            var startTime = DateTime.Now;
+            bool isDatasetFetchSucceed = false;
+            while ((DateTime.Now - startTime).TotalMilliseconds < 4000)
+            {
+                yield return null;
+                if (remoteGui.DatasetFetchStatus == ServerDatasetFetchGUI.LoadStatusEnum.Success)
+                {
+                    isDatasetFetchSucceed = true;
+                    break;
+                }
+            }
+            Assert.IsTrue(isDatasetFetchSucceed, "リモートインポートの画面を開いてから数秒以内にサーバーからのデータ一覧の取得が完了します。");
+        }
+
+        [UnityTest]
         public IEnumerator TestCityAdjustGui()
         {
             // テストデータをインポートします。
@@ -68,10 +102,9 @@ namespace PLATEAU.Tests.EditModeTests.GUITests
             this.window.Repaint();
             yield return null;
             
-            
         }
 
-        private void OpenImportTab() => SetMainTabIndex(0);
+        private CityAddGUI OpenImportTab() => (CityAddGUI)SetMainTabIndex(0);
 
         private CityAdjustGUI OpenAdjustTab() => (CityAdjustGUI)SetMainTabIndex(1);
         private void OpenExportTab() => SetMainTabIndex(2);
