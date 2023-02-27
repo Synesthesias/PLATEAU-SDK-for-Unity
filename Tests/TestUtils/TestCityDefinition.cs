@@ -9,6 +9,7 @@ using PLATEAU.Editor.EditorWindow.ProgressDisplay;
 using PLATEAU.Dataset;
 using PLATEAU.Native;
 using PLATEAU.Network;
+using PLATEAU.Util;
 
 namespace PLATEAU.Tests.TestUtils
 {
@@ -25,7 +26,7 @@ namespace PLATEAU.Tests.TestUtils
 
         private string rootDirName;
 
-        private const string testDataDir = "Packages/com.synesthesias.plateau-unity-sdk/Tests/TestData/日本語パステスト";
+        private static readonly string testDataDir = Path.Combine(PathUtil.SdkBasePath, "./Tests/TestData/日本語パステスト");
 
         public TestCityDefinition(string rootDirName, TestGmlDefinition[] gmlDefs, string[] areaMeshCodes, int coordinateZoneId)
         {
@@ -74,8 +75,14 @@ namespace PLATEAU.Tests.TestUtils
         {
             var conf = new CityLoadConfig();
             // TODO どのパッケージと何が対応するかは要テスト
-            uint packageFlagsAll = 0b10000000000000000000000011111111;
-            conf.InitWithPackageFlags((PredefinedCityModelPackage)packageFlagsAll);
+            var allPackages =
+                EnumUtil.EachFlags((PredefinedCityModelPackage)0b10000000000000000000000011111111);
+            var allPackageLods = new PackageToLodDict();
+            foreach (var package in allPackages)
+            {
+                allPackageLods.MergePackage(package, 3);
+            }
+            conf.InitWithPackageLodsDict(allPackageLods);
             conf.Extent = Extent.All;
             conf.AreaMeshCodes = AreaMeshCodes;
             foreach (var packageConf in conf.ForEachPackagePair)

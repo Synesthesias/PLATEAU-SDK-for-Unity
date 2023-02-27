@@ -1,11 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using PLATEAU.CityImport.Setting;
 using PLATEAU.Dataset;
 using PLATEAU.Native;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 #if UNITY_EDITOR
+using PLATEAU.CityImport.AreaSelector.SceneObjs;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 #endif
@@ -22,13 +24,13 @@ namespace PLATEAU.CityImport.AreaSelector
         private static string prevScenePath;
         private static IEnumerable<MeshCode> selectedMeshCodes;
         private static IAreaSelectResultReceiver areaSelectResultReceiver;
-        private static PredefinedCityModelPackage availablePackageFlags;
+        private static PackageToLodDict availablePackageLods;
         private static Extent extent;
 
 #if UNITY_EDITOR
         public static void Exec(
             string prevScenePathArg, IEnumerable<MeshCode> selectedMeshCodesArg,
-            IAreaSelectResultReceiver areaSelectResultReceiverArg, PredefinedCityModelPackage availablePackageFlagsArg,
+            IAreaSelectResultReceiver areaSelectResultReceiverArg, PackageToLodDict availablePackageLodsArg,
             Extent selectedExtent, EditorWindow prevEditorWindow)
         {
 
@@ -36,7 +38,7 @@ namespace PLATEAU.CityImport.AreaSelector
             prevScenePath = prevScenePathArg;
             selectedMeshCodes = selectedMeshCodesArg;
             areaSelectResultReceiver = areaSelectResultReceiverArg;
-            availablePackageFlags = availablePackageFlagsArg;
+            availablePackageLods = availablePackageLodsArg;
             extent = selectedExtent;
             
             EditorSceneManager.sceneOpened += OnBackToPrevScene;
@@ -68,7 +70,9 @@ namespace PLATEAU.CityImport.AreaSelector
             {
                 Debug.Log("地域は選択されませんでした。");
             }
-            areaSelectResultReceiver.ReceiveResult(areaMeshCodes, extent, availablePackageFlags);
+
+            var areaSelectResult = new AreaSelectResult(areaMeshCodes, extent, availablePackageLods);
+            areaSelectResultReceiver.ReceiveResult(areaSelectResult);
         }
     }
 }

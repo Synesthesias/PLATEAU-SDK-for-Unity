@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using PLATEAU.CityImport.AreaSelector;
+using PLATEAU.CityImport.AreaSelector.SceneObjs;
 using PLATEAU.Dataset;
 using PLATEAU.Native;
 using PLATEAU.PolygonMesh;
@@ -62,17 +64,17 @@ namespace PLATEAU.CityImport.Setting
         {
             return this.perPackagePairSettings[package];
         }
-
-        public void InitWithPackageFlags(PredefinedCityModelPackage packageFlags)
+        
+        public void InitWithPackageLodsDict(PackageToLodDict dict)
         {
             this.perPackagePairSettings.Clear();
-            foreach (var package in EnumUtil.EachFlags(packageFlags))
+            foreach (var pair in dict)
             {
+                var package = pair.Key;
+                var maxLod = pair.Value;
                 var predefined = CityModelPackageInfo.GetPredefined(package);
-                // デフォルト値で設定します。
                 var val = new PackageLoadSetting(true, predefined.hasAppearance, (uint)predefined.minLOD,
-                    (uint)predefined.maxLOD,
-                    MeshGranularity.PerPrimaryFeatureObject, false);
+                    (uint)maxLod, MeshGranularity.PerPrimaryFeatureObject, false);
                 this.perPackagePairSettings.Add(package, val);
             }
         }
@@ -101,7 +103,7 @@ namespace PLATEAU.CityImport.Setting
             // 絞り込まれたGMLパスを戻り値のリストに追加します。
             foreach (var package in targetPackages)
             {
-                var gmlFiles = datasetAccessor.GetGmlFiles(package);
+                var gmlFiles = datasetAccessor.GetGmlFilesForPackage(package);
                 int gmlCount = gmlFiles.Length;
                 for (int i = 0; i < gmlCount; i++)
                 {
@@ -127,6 +129,14 @@ namespace PLATEAU.CityImport.Setting
             var center = CalcCenterPoint(gmls, CoordinateZoneID);
             ReferencePoint = center;
             return center;
+        }
+
+        public void InitWithAreaSelectResult(AreaSelectResult result)
+        {
+            InitWithPackageLodsDict(result.PackageToLodDict);
+            AreaMeshCodes = result.AreaMeshCodes;
+            Extent = result.Extent;
+            SearchCenterPointAndSetAsReferencePoint();
         }
         
         public static PlateauVector3d CalcCenterPoint(IEnumerable<GmlFile> targetGmls, int coordinateZoneID)

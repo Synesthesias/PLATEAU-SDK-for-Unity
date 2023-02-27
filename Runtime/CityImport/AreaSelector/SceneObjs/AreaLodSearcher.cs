@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using PLATEAU.CityImport.Setting;
 using PLATEAU.Dataset;
 
 namespace PLATEAU.CityImport.AreaSelector.SceneObjs
@@ -37,7 +38,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
                 {
                     if (this.meshCodeToPackageLodDict.TryGetValue(MeshCode.Parse(meshCode).Level2(), out var packageToLodDictLevel2))
                     {
-                        packageToLodDict.Marge(packageToLodDictLevel2);
+                        packageToLodDict.MargeDict(packageToLodDictLevel2);
                     }
                 }
             }
@@ -69,7 +70,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
                 foreach (PredefinedCityModelPackage package in Enum.GetValues(typeof(PredefinedCityModelPackage)))
                 {
                     if (!AreaLodView.HasIconOfPackage(package)) continue; // 地図に表示しないパッケージはスキップします。
-                    var gmls = accessor.GetGmlFiles(package);
+                    var gmls = accessor.GetGmlFilesForPackage(package);
 
                     int maxLod = -1;
                     foreach (var gml in gmls)
@@ -100,51 +101,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         } 
     }
 
-    /// <summary>
-    /// パッケージとそこに含まれる最大LODの組です。
-    /// </summary>
-    public class PackageToLodDict
-    {
-        private readonly ConcurrentDictionary<PredefinedCityModelPackage, int> data = new ConcurrentDictionary<PredefinedCityModelPackage, int>();
-        
-        public void AddOrUpdate(PredefinedCityModelPackage package, int maxLod)
-        {
-            this.data.AddOrUpdate(package,
-                _ => maxLod, 
-                (_, __) => maxLod);
-        }
-
-        /// <summary>
-        /// 引数の <paramref name="package"/> で利用可能な最大LODを返します。
-        /// ない場合は -1 を返します。
-        /// </summary>
-        public int GetLod(PredefinedCityModelPackage package)
-        {
-            if (!this.data.TryGetValue(package, out int lod))
-            {
-                return -1;
-            }
-
-            return lod;
-        }
-
-        public void Marge(PackageToLodDict other)
-        {
-            foreach (var pair in other)
-            {
-                var package = pair.Key;
-                int otherLod = pair.Value;
-                this.data.AddOrUpdate(package,
-                    _ => otherLod,
-                    (modelPackage, lod) => Math.Max(otherLod, lod));
-            }
-        }
-        
-        public IEnumerator<KeyValuePair<PredefinedCityModelPackage, int>> GetEnumerator()
-        {
-            return this.data.GetEnumerator();
-        }
-    }
+    
     
     
 }

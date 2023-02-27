@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using PLATEAU.CityImport.AreaSelector.SceneObjs;
+using PLATEAU.CityImport.Setting;
 using PLATEAU.Geometries;
 using PLATEAU.Dataset;
 using PLATEAU.Native;
@@ -26,7 +27,7 @@ namespace PLATEAU.CityImport.AreaSelector
         [SerializeField] private DatasetSourceConfig datasetSourceConfig;
         private AreaSelectGizmosDrawer gizmosDrawer;
         private IAreaSelectResultReceiver areaSelectResultReceiver;
-        private PredefinedCityModelPackage availablePackageFlags;
+        // private PredefinedCityModelPackage availablePackageFlags;
         private int coordinateZoneID;
         private GeoReference geoReference;
         private bool prevSceneCameraRotationLocked;
@@ -58,10 +59,10 @@ namespace PLATEAU.CityImport.AreaSelector
             EditorUtility.DisplayProgressBar("", "データファイルを検索中です...", 0f);
 #endif
             ReadOnlyCollection<MeshCode> meshCodes;
-            PredefinedCityModelPackage packageFlags;
+            // PredefinedCityModelPackage packageFlags;
             try
             {
-                GatherMeshCodes(this.datasetSourceConfig, out meshCodes, out packageFlags);
+                GatherMeshCodes(this.datasetSourceConfig, out meshCodes);
             }
             catch (Exception e)
             {
@@ -78,7 +79,7 @@ namespace PLATEAU.CityImport.AreaSelector
             var drawerObj = new GameObject($"{nameof(AreaSelectGizmosDrawer)}");
             this.gizmosDrawer = drawerObj.AddComponent<AreaSelectGizmosDrawer>();
             this.gizmosDrawer.Init(meshCodes, this.datasetSourceConfig, this.coordinateZoneID, out this.geoReference);
-            this.availablePackageFlags = packageFlags;
+            // this.availablePackageFlags = packageFlags;
             var entireExtent = CalcExtentCoversAllMeshCodes(meshCodes);
             this.mapLoader = new GSIMapLoaderZoomSwitch(this.geoReference, entireExtent);
             SetInitialCamera(entireExtent);
@@ -144,12 +145,10 @@ namespace PLATEAU.CityImport.AreaSelector
             return entireExtent;
         }
 
-        private static void GatherMeshCodes(DatasetSourceConfig datasetSourceConfig, out ReadOnlyCollection<MeshCode> meshCodes, out PredefinedCityModelPackage availablePackageFlags)
+        private static void GatherMeshCodes(DatasetSourceConfig datasetSourceConfig, out ReadOnlyCollection<MeshCode> meshCodes/*, out PredefinedCityModelPackage availablePackageFlags*/)
         {
             using var datasetSource = DatasetSource.Create(datasetSourceConfig);
-            using var accessor = datasetSource.Accessor;
-            // ローカルモードではうまくいきますが、サーバーモードでは Packages は None になります。
-            availablePackageFlags = accessor.Packages;
+            var accessor = datasetSource.Accessor;
             meshCodes = new ReadOnlyCollection<MeshCode>(accessor.MeshCodes.Where(code => code.IsValid).ToArray());
             if (meshCodes.Count <= 0)
             {
@@ -163,12 +162,32 @@ namespace PLATEAU.CityImport.AreaSelector
         {
             IsAreaSelectEnabled = false;
             AreaSelectorGUI.Disable();
-            var areaSelectResult = this.gizmosDrawer.SelectedMeshCodes;
+            var selectedMeshCodes = this.gizmosDrawer.SelectedMeshCodes.ToArray();
             var selectedExtent = this.gizmosDrawer.CursorExtent(this.coordinateZoneID, this.geoReference.ReferencePoint);
+
+            var availablePackageLods = calcAvailablePackageLodInMeshCodes(selectedMeshCodes, this.datasetSourceConfig);
+
             // 無名関数のキャプチャを利用して、シーン終了後も必要なデータが渡るようにします。
             #if UNITY_EDITOR
-            AreaSelectorDataPass.Exec(this.prevScenePath, areaSelectResult, this.areaSelectResultReceiver, this.availablePackageFlags, selectedExtent, this.prevEditorWindow);
+            AreaSelectorDataPass.Exec(this.prevScenePath, selectedMeshCodes, this.areaSelectResultReceiver, availablePackageLods, selectedExtent, this.prevEditorWindow);
             #endif
+        }
+
+        private static PackageToLodDict calcAvailablePackageLodInMeshCodes(IEnumerable<MeshCode> meshCodes, DatasetSourceConfig datasetSourceConfig)
+        {
+            using var datasetSource = DatasetSource.Create(datasetSourceConfig);
+            var accessorAll = datasetSource.Accessor;
+            using var accessor = accessorAll.FilterByMeshCodes(meshCodes);
+            using var gmlFiles = accessor.GetGmlFiles();
+            var ret = new PackageToLodDict();
+            int gmlCount = gmlFiles.Length;
+            for (int i = 0; i < gmlCount; i++)
+            {
+                var gml = gmlFiles.At(i);
+                ret.MergePackage(gml.Package, gml.GetMaxLod());
+            }
+
+            return ret;
         }
 
         internal void CancelAreaSelection()
@@ -178,7 +197,7 @@ namespace PLATEAU.CityImport.AreaSelector
             var emptyAreaSelectResult = new MeshCode[] { };
             var dummyExtent = Extent.All;
             #if UNITY_EDITOR
-            AreaSelectorDataPass.Exec(this.prevScenePath, emptyAreaSelectResult, this.areaSelectResultReceiver, this.availablePackageFlags, dummyExtent, this.prevEditorWindow);
+            AreaSelectorDataPass.Exec(this.prevScenePath, emptyAreaSelectResult, this.areaSelectResultReceiver, new PackageToLodDict(), dummyExtent, this.prevEditorWindow);
             #endif
         }
 

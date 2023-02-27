@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using PLATEAU.Util;
 using UnityEditor;
 using UnityEngine;
 
@@ -24,7 +25,7 @@ namespace PLATEAU.Editor.EditorWindow.Common
         // label からボタンっぽい見た目にするには、 alignment = TextAnchor.MiddleCenter に設定すれば良いです。
 
 
-        private const string imageDirPath = "Packages/com.synesthesias.plateau-unity-sdk/Images";
+        private static readonly string imageDirPath = PathUtil.SdkPathToAssetPath("Images");
         private const string cyanBackgroundDark = "#292e30";
         private const string cyanBackgroundLight = "#abc4c9";
         private static readonly ColorLightDark colorDarkBoxBackground = new ColorLightDark("#515151", "#191919");
