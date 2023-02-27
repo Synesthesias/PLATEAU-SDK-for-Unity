@@ -1,12 +1,14 @@
-﻿using PLATEAU.MeshWriter;
+﻿using System.IO;
+using PLATEAU.MeshWriter;
+using PLATEAU.PolygonMesh;
 using UnityEditor;
 
 namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ExportGUIParts
 {
     /// <summary>
-    /// 都市エクスポート設定のうち、ファイル形式にFBXを選択したときに固有のインポート設定です。
+    /// Model(中間形式)をFBXファイルに出力します。
     /// </summary>
-    internal class FbxExportConfig : PlateauModelExporter
+    internal class FbxModelExporter : IPlateauModelExporter
     {
         public FbxFileFormat FbxFileFormat { get; set; } = FbxFileFormat.Binary;
         
@@ -15,6 +17,10 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ExportGUIParts
             FbxFileFormat = (FbxFileFormat)EditorGUILayout.EnumPopup("FBXフォーマット", FbxFileFormat);
         }
 
-        
+        public void Export(string destDir, string fileNameWithoutExtension, Model model)
+        {
+            string destPath = Path.Combine(destDir, fileNameWithoutExtension + ".fbx");
+            FbxWriter.Write(destPath, model, new FbxWriteOptions(FbxFileFormat));
+        }
     }
 }

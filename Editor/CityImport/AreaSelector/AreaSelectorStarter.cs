@@ -1,5 +1,4 @@
-﻿using System.IO;
-using PLATEAU.CityImport.AreaSelector;
+﻿using PLATEAU.CityImport.AreaSelector;
 using PLATEAU.Dataset;
 using PLATEAU.Editor.EditorWindow.PlateauWindow;
 using PLATEAU.Util;

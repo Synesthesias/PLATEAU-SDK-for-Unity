@@ -1,10 +1,7 @@
 ﻿using System;
-using PLATEAU.CityImport.AreaSelector.SceneObjs;
-using PLATEAU.CityImport.Load;
 using PLATEAU.CityImport.Setting;
 using PLATEAU.Editor.EditorWindow.Common;
 using PLATEAU.Dataset;
-using PLATEAU.Geometries;
 using PLATEAU.PolygonMesh;
 using UnityEditor;
 using UnityEngine;
