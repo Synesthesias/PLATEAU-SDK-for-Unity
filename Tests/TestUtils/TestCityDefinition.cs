@@ -144,6 +144,20 @@ namespace PLATEAU.Tests.TestUtils
         }
 
         /// <summary>
+        /// テストデータ "Simple" について、
+        /// その内容を <see cref="TestCityDefinition"/> 形式で説明したものです。
+        /// </summary>
+        public static readonly TestCityDefinition Simple =
+            new TestCityDefinition("TestDataSimpleGml", new[]
+            {
+                new TestGmlDefinition("udx/bldg/53392642_bldg_6697_op2.gml", "53392642_bldg_6697_op2.gml", true, null,
+                    2)
+            }, new[]
+            {
+                "53392642"
+            }, 9);
+
+        /// <summary>
         /// テストデータ "MiniTokyo" について、
         /// その内容を <see cref="TestCityDefinition"/> 形式で説明したものです。 
         /// </summary>

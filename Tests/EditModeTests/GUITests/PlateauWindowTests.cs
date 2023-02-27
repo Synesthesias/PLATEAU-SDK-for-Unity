@@ -80,9 +80,8 @@ namespace PLATEAU.Tests.EditModeTests.GUITests
         public IEnumerator TestCityAdjustGui()
         {
             // テストデータをインポートします。
-            // TODO このデータは別に空でも良いのに、時間がかかるテストデータを使ってしまっている。
             yield return null;
-            var cityDefinition = TestCityDefinition.MiniTokyo;
+            var cityDefinition = TestCityDefinition.Simple;
             LogAssert.ignoreFailingMessages = true;
             yield return cityDefinition.ImportLocal().AsIEnumerator();
             LogAssert.ignoreFailingMessages = false;
