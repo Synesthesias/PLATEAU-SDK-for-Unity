@@ -14,6 +14,12 @@ PLATEAU SDK for Unityは、[PLATEAU](https://www.mlit.go.jp/plateau/)の3D都市
 
 PLATEAU SDK for Unityを利用することで、実世界を舞台にしたアプリケーションの開発や、PLATEAUの豊富なデータを活用したシミュレーションを簡単に行うことができます。
 
+# サンプルプロジェクト
+本SDKを使用して作成されたサンプルプロジェクトを[こちら](https://github.com/Project-PLATEAU/PLATEAU-SDK-for-Unity-Samples)で配布しています。
+
+<img src="Documentation~/resources/index/gissample.png" width="48%" />&nbsp;
+<img src="Documentation~/resources/index/gamesample.png" width="48%" /></a>&nbsp;
+
 # 動作環境
 - Windows（x86_64）
 - MacOS（ARM）
