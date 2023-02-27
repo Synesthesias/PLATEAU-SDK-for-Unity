@@ -26,7 +26,9 @@ namespace PLATEAU.Tests.EditModeTests
         [UnityTest]
         public IEnumerator Components_Exist_In_Area_Select_Scene()
         {
-            var emptyScene = EditorSceneManager.OpenScene(PathUtil.SdkPathToAssetPath("Tests/EmptySceneForTest.unity"), OpenSceneMode.Additive);
+            // 保存済みのシーンが開いている状況でないと範囲選択画面に遷移できないので、ここでアセットフォルダ内の保存済みの空のシーンを利用します。
+            // このシーンは空であるはずであり、空でない状態で上書き保存するのは避けてください。（ただしシーンに最初からあるライトとカメラはあって良いです。）
+            var emptyScene = EditorSceneManager.OpenScene(PathUtil.SdkPathToAssetPath("Tests/EmptySceneForTest.unity"), OpenSceneMode.Single);
             yield return null;
             SceneManager.SetActiveScene(emptyScene);
             // MiniTokyo の範囲選択画面を開始します。

@@ -50,6 +50,7 @@ namespace PLATEAU.Tests.EditModeTests.GUITests
         [UnityTest]
         public IEnumerator OpenCityImportRemoteGuiAndWaitForFewSecondsThenDatasetFetchComplete()
         {
+            var testScene = EditorSceneManager.NewScene(NewSceneSetup.DefaultGameObjects, NewSceneMode.Single);
             var gui = OpenImportTab();
             // 初期画面を描画します。
             this.window.Repaint();
@@ -77,7 +78,7 @@ namespace PLATEAU.Tests.EditModeTests.GUITests
             }
             Assert.IsTrue(isDatasetFetchSucceed, "リモートインポートの画面を開いてから数秒以内にサーバーからのデータ一覧の取得が完了します。");
 
-            EditorSceneManager.CloseScene(SceneManager.GetActiveScene(), true);
+            EditorSceneManager.CloseScene(testScene, true);
         }
 
         [UnityTest]
