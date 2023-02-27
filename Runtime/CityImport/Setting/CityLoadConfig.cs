@@ -87,7 +87,7 @@ namespace PLATEAU.CityImport.Setting
         public List<GmlFile> SearchMatchingGMLList()
         {
             using var datasetSource = DatasetSource.Create(DatasetSourceConfig);
-            var datasetAccessor = datasetSource.Accessor;
+            using var datasetAccessor = datasetSource.Accessor;
 
             // 地域ID(メッシュコード)で絞り込みます。
             var meshCodes = AreaMeshCodes.Select(MeshCode.Parse).Where(code => code.IsValid).ToArray();

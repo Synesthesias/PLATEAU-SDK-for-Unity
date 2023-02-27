@@ -148,7 +148,7 @@ namespace PLATEAU.CityImport.AreaSelector
         private static void GatherMeshCodes(DatasetSourceConfig datasetSourceConfig, out ReadOnlyCollection<MeshCode> meshCodes/*, out PredefinedCityModelPackage availablePackageFlags*/)
         {
             using var datasetSource = DatasetSource.Create(datasetSourceConfig);
-            var accessor = datasetSource.Accessor;
+            using var accessor = datasetSource.Accessor;
             meshCodes = new ReadOnlyCollection<MeshCode>(accessor.MeshCodes.Where(code => code.IsValid).ToArray());
             if (meshCodes.Count <= 0)
             {
@@ -176,7 +176,7 @@ namespace PLATEAU.CityImport.AreaSelector
         private static PackageToLodDict calcAvailablePackageLodInMeshCodes(IEnumerable<MeshCode> meshCodes, DatasetSourceConfig datasetSourceConfig)
         {
             using var datasetSource = DatasetSource.Create(datasetSourceConfig);
-            var accessorAll = datasetSource.Accessor;
+            using var accessorAll = datasetSource.Accessor;
             using var accessor = accessorAll.FilterByMeshCodes(meshCodes);
             using var gmlFiles = accessor.GetGmlFiles();
             var ret = new PackageToLodDict();

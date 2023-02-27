@@ -43,6 +43,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.AdjustGUIParts
             }
             // ルートノードを除いて、ノードごとのトグルを描画します。
             var rootNode = Hierarchy.RootNode;
+            if (rootNode == null) throw new NullReferenceException("RootNode is not initialized.");
             foreach (var node in rootNode.Children)
             {
                 DrawNodeRecursive(node, packageToLodMinMax, 0);

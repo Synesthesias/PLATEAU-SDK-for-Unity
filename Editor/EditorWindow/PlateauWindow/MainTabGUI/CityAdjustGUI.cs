@@ -110,6 +110,9 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
             this.filterConditionGUI.RefreshPackageAndLods(this.packageToLodMinMax);
         }
 
+        /// <summary> テストで利用する用 </summary>
+        internal const string NameOfOnChangeTargetCityModel = nameof(OnChangeTargetCityModel);
+
         public class PackageToLodMinMax
         {
             private readonly Dictionary<PredefinedCityModelPackage, (uint minLod, uint maxLod)> data =
@@ -139,5 +142,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
             public PredefinedCityModelPackage[] Packages => this.data.Keys.ToArray();
 
         }
+
+        public const string NameOfAdjustTarget = nameof(adjustTarget);
     }
 }
