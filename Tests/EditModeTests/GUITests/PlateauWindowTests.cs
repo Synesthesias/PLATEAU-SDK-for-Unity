@@ -8,7 +8,6 @@ using PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI;
 using PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts;
 using PLATEAU.Tests.TestUtils;
 using UnityEditor;
-using UnityEngine;
 using UnityEngine.TestTools;
 using Object = UnityEngine.Object;
 
