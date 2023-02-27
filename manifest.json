@@ -1557,6 +1557,28 @@
     },
     {
       "type": "Resource",
+      "source_relative_path": "resources/index/gamesample.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/index/gamesample.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/index/gissample.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/index/gissample.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
       "source_relative_path": "resources/index/sdk_outline.png",
       "output": {
         "resource": {
