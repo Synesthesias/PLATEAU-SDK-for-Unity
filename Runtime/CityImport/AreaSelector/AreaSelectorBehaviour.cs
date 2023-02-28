@@ -76,6 +76,16 @@ namespace PLATEAU.CityImport.AreaSelector
                 return;
             }
 
+            if (meshCodes.Count == 0)
+            {
+                #if UNITY_EDITOR
+                EditorUtility.ClearProgressBar();
+                EditorUtility.DisplayDialog("PLATEAU", "該当のデータがありません。", "OK");
+                #endif
+                CancelAreaSelection();
+                return;
+            }
+
             var drawerObj = new GameObject($"{nameof(AreaSelectGizmosDrawer)}");
             this.gizmosDrawer = drawerObj.AddComponent<AreaSelectGizmosDrawer>();
             this.gizmosDrawer.Init(meshCodes, this.datasetSourceConfig, this.coordinateZoneID, out this.geoReference);
@@ -145,15 +155,11 @@ namespace PLATEAU.CityImport.AreaSelector
             return entireExtent;
         }
 
-        private static void GatherMeshCodes(DatasetSourceConfig datasetSourceConfig, out ReadOnlyCollection<MeshCode> meshCodes/*, out PredefinedCityModelPackage availablePackageFlags*/)
+        private static void GatherMeshCodes(DatasetSourceConfig datasetSourceConfig, out ReadOnlyCollection<MeshCode> meshCodes)
         {
             using var datasetSource = DatasetSource.Create(datasetSourceConfig);
             using var accessor = datasetSource.Accessor;
             meshCodes = new ReadOnlyCollection<MeshCode>(accessor.MeshCodes.Where(code => code.IsValid).ToArray());
-            if (meshCodes.Count <= 0)
-            {
-                Debug.LogError("No MeshCode found.");
-            }
         }
 
         
@@ -165,7 +171,7 @@ namespace PLATEAU.CityImport.AreaSelector
             var selectedMeshCodes = this.gizmosDrawer.SelectedMeshCodes.ToArray();
             var selectedExtent = this.gizmosDrawer.CursorExtent(this.coordinateZoneID, this.geoReference.ReferencePoint);
 
-            var availablePackageLods = calcAvailablePackageLodInMeshCodes(selectedMeshCodes, this.datasetSourceConfig);
+            var availablePackageLods = CalcAvailablePackageLodInMeshCodes(selectedMeshCodes, this.datasetSourceConfig);
 
             // 無名関数のキャプチャを利用して、シーン終了後も必要なデータが渡るようにします。
             #if UNITY_EDITOR
@@ -173,7 +179,7 @@ namespace PLATEAU.CityImport.AreaSelector
             #endif
         }
 
-        private static PackageToLodDict calcAvailablePackageLodInMeshCodes(IEnumerable<MeshCode> meshCodes, DatasetSourceConfig datasetSourceConfig)
+        private static PackageToLodDict CalcAvailablePackageLodInMeshCodes(IEnumerable<MeshCode> meshCodes, DatasetSourceConfig datasetSourceConfig)
         {
             using var datasetSource = DatasetSource.Create(datasetSourceConfig);
             using var accessorAll = datasetSource.Accessor;
