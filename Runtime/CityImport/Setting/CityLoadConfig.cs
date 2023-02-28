@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using PLATEAU.CityImport.AreaSelector;
-using PLATEAU.CityImport.AreaSelector.SceneObjs;
 using PLATEAU.Dataset;
 using PLATEAU.Native;
 using PLATEAU.PolygonMesh;
 using PLATEAU.Util;
-using UnityEngine;
 
 namespace PLATEAU.CityImport.Setting
 {
@@ -119,40 +116,23 @@ namespace PLATEAU.CityImport.Setting
             return foundGmls;
         }
 
-        /// <summary>
-        /// 設定の条件に合うGMLファイルを検索し、その位置の中心を求め、中心を基準点として設定します。
-        /// 中心 == 基準点 を返します。
-        /// </summary>
-        public PlateauVector3d SearchCenterPointAndSetAsReferencePoint()
-        {
-            var gmls = SearchMatchingGMLList();
-            var center = CalcCenterPoint(gmls, CoordinateZoneID);
-            ReferencePoint = center;
-            return center;
-        }
-
         public void InitWithAreaSelectResult(AreaSelectResult result)
         {
             InitWithPackageLodsDict(result.PackageToLodDict);
             AreaMeshCodes = result.AreaMeshCodes;
             Extent = result.Extent;
-            SearchCenterPointAndSetAsReferencePoint();
+            SetReferencePointToExtentCenter();
         }
-        
-        public static PlateauVector3d CalcCenterPoint(IEnumerable<GmlFile> targetGmls, int coordinateZoneID)
-        {
-            using var geoReference = CoordinatesConvertUtil.UnityStandardGeoReference(coordinateZoneID);
-            var geoCoordSum = new GeoCoordinate(0, 0, 0);
-            int count = 0;
-            foreach (var gml in targetGmls)
-            {
-                geoCoordSum += gml.MeshCode.Extent.Center;
-                count++;
-            }
 
-            if (count == 0) return new PlateauVector3d(0,0,0);
-            var centerGeo = geoCoordSum / count;
-            return geoReference.Project(centerGeo);
+        /// <summary>
+        /// 範囲の中心を基準点として設定します。
+        /// </summary>
+        public PlateauVector3d SetReferencePointToExtentCenter()
+        {
+            using var geoReference = CoordinatesConvertUtil.UnityStandardGeoReference(CoordinateZoneID);
+            var center = geoReference.Project(Extent.Center);
+            ReferencePoint = center;
+            return center;
         }
     }
 }

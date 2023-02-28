@@ -77,6 +77,9 @@ namespace PLATEAU.Tests.EditModeTests
             
             yield return null;
             SceneManager.SetActiveScene(newTestScene);
+
+            yield return null;
+            EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
             
             var startT2 = DateTime.Now;
             while ((DateTime.Now - startT2).TotalMilliseconds < 1000)

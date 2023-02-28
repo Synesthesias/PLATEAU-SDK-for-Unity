@@ -78,7 +78,7 @@ namespace PLATEAU.Editor.CityImport
                         if (PlateauEditorStyle.MiniButton("範囲の中心点を入力", 140))
                         {
                             GUI.FocusControl("");
-                            refPoint = conf.SearchCenterPointAndSetAsReferencePoint();
+                            refPoint = conf.SetReferencePointToExtentCenter();
                         }
                     });
 
