@@ -1,15 +1,11 @@
 ﻿using PLATEAU.CityImport.AreaSelector;
-using PLATEAU.CityImport.AreaSelector.SceneObjs;
 using PLATEAU.CityImport.Setting;
 using PLATEAU.Editor.CityImport;
 using PLATEAU.Editor.EditorWindow.Common;
 using PLATEAU.Editor.EditorWindow.Common.PathSelector;
 using PLATEAU.Editor.EditorWindow.ProgressDisplay;
-using PLATEAU.Geometries;
 using PLATEAU.Dataset;
 using PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts;
-using PLATEAU.Native;
-using UnityEditor;
 
 namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
 {
@@ -33,7 +29,6 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
 
         public void Draw()
         {
-            // TODO この実装、CityImportRemoteGUI とかぶってる
             this.foldOutSourceFolderPath = PlateauEditorStyle.FoldOut(this.foldOutSourceFolderPath, "入力フォルダ", () =>
             {
                 this.config.DatasetSourceConfig ??= new DatasetSourceConfig(false, "", "", "", "");

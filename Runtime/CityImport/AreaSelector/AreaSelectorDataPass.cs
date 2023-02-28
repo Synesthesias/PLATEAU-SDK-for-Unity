@@ -7,7 +7,6 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 #if UNITY_EDITOR
-using PLATEAU.CityImport.AreaSelector.SceneObjs;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 #endif

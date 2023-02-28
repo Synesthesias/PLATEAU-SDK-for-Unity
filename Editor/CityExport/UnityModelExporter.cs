@@ -2,14 +2,15 @@
 using System.IO;
 using PLATEAU.CityInfo;
 using PLATEAU.Editor.CityExport.ModelConvert;
-using PLATEAU.MeshWriter;
 using PLATEAU.Native;
-using PLATEAU.PolygonMesh;
 using UnityEngine;
 
 namespace PLATEAU.Editor.CityExport
 {
-    internal static class MeshExporter
+    /// <summary>
+    /// Unityのモデルを <see cref="PolygonMesh.Model"/> (中間形式) にしてから 3Dモデルファイルに出力します。
+    /// </summary>
+    internal static class UnityModelExporter
     {
         public static void Export(string destDir, PLATEAUInstancedCityModel instancedCityModel, MeshExportOptions options)
         {
@@ -63,47 +64,9 @@ namespace PLATEAU.Editor.CityExport
                 using var model = UnityMeshToDllModelConverter.Convert(childTrans.gameObject, options.ExportTextures, options.ExportHiddenObjects, false, options.MeshAxis, vertexConvertFunc);
                 
                 // Model をファイルにして出力します。
-                ModelToFile(destDir, Path.GetFileNameWithoutExtension(childName), model, options);
-            }
-        }
-
-        private static void ModelToFile(string destDir, string fileNameWithoutExtension, Model model,
-            MeshExportOptions options)
-        {
-            switch (options.FileFormat)
-            {
-                // TODO このへんのcase列挙、スマートにならないか？
-                // TODO gltf出力、fbx出力のテストを書く
-                case MeshFileFormat.OBJ:
-                    string filePathWithoutExtension = Path.Combine(destDir, fileNameWithoutExtension).Replace('\\', '/');
-                    using (var objWriter = new ObjWriter())
-                    {
-                        objWriter.Write(filePathWithoutExtension + ".obj", model);
-                    }
-                    break;
-                case MeshFileFormat.GLTF:
-                    using (var gltfWriter = new GltfWriter())
-                    {
-                        string fileExtension = options.GltfWriteOptions.GltfFileFormat switch
-                        {
-                            GltfFileFormat.GLB => ".glb",
-                            GltfFileFormat.GLTF => ".gltf",
-                            _ => throw new ArgumentException("Unknown gltf file format.")
-                        };
-                        string dirPath = Path.Combine(destDir, fileNameWithoutExtension);
-                        Directory.CreateDirectory(dirPath);
-                        string gltfFilePath = Path.Combine(dirPath, fileNameWithoutExtension + fileExtension);
-                        options.GltfWriteOptions.TextureDirectoryPath = Path.Combine(dirPath, "textures");
-                        
-                        gltfWriter.Write(gltfFilePath, model, options.GltfWriteOptions);
-                    }
-                    break;
-                case MeshFileFormat.FBX:
-                    string destPath = Path.Combine(destDir, fileNameWithoutExtension + ".fbx");
-                    FbxWriter.Write(destPath, model, options.FbxWriteOptions);
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(options), "Unknown FileFormat to export.");
+                // options.PlateauModelExporter は、ファイルフォーマットに応じて FbxModelExporter, GltfModelExporter, ObjModelExporter のいずれかです。
+                string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(childName);
+                options.PlateauModelExporter.Export(destDir, fileNameWithoutExtension, model);
             }
         }
     }

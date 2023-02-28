@@ -22,7 +22,11 @@ namespace PLATEAU.Dataset
         {
         }
 
-        public NativeVectorGmlFile GetGmlFilesForPackage(PredefinedCityModelPackage package)
+        /// <summary>
+        /// 引数のパッケージに対応する <see cref="GmlFile"/> を取得して vector で返します。
+        /// 引数のパッケージは、複数のビットを立てることで複数指定可能です。 
+        /// </summary>
+        public NativeVectorGmlFile GetGmlFiles(PredefinedCityModelPackage package)
         {
             var gmlFiles = NativeVectorGmlFile.Create();
             var result = NativeMethods.plateau_i_dataset_accessor_get_gml_files(
@@ -31,21 +35,10 @@ namespace PLATEAU.Dataset
             return gmlFiles;
         }
 
-        public NativeVectorGmlFile GetGmlFiles()
+        public NativeVectorGmlFile GetAllGmlFiles()
         {
-            // GetGmlFilesForPackages を各パッケージごとに呼びだすことで全GmlFileを取得します。
-            var packages = Enum.GetValues(typeof(PredefinedCityModelPackage)).OfType<PredefinedCityModelPackage>();
-            var ret = NativeVectorGmlFile.Create();
-            foreach (var package in packages)
-            {
-                if (package == PredefinedCityModelPackage.None) continue;
-                using (var gmlFiles = GetGmlFilesForPackage(package))
-                {
-                    ret.AddCopyOf(gmlFiles);
-                }
-            }
-
-            return ret;
+            var allPackages = ~0u;
+            return GetGmlFiles((PredefinedCityModelPackage)allPackages);
         }
 
         public NativeVectorMeshCode MeshCodes

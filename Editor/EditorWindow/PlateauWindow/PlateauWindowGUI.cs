@@ -29,5 +29,10 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow
             PlateauEditorStyle.MainLogo();
             this.tabGUIArray[this.tabIndex].Draw();
         }
+
+        /// <summary> テストからアクセスする用 </summary>
+        internal const string NameOfTabIndex = nameof(tabIndex);
+
+        internal const string NameOfTabGUIArray = nameof(tabGUIArray);
     }
 }

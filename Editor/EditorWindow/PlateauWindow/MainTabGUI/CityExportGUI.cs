@@ -5,8 +5,8 @@ using PLATEAU.CityInfo;
 using PLATEAU.Editor.CityExport;
 using PLATEAU.Editor.EditorWindow.Common;
 using PLATEAU.Editor.EditorWindow.Common.PathSelector;
+using PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ExportGUIParts;
 using PLATEAU.Geometries;
-using PLATEAU.MeshWriter;
 using UnityEditor;
 using UnityEngine;
 using Directory = System.IO.Directory;
@@ -32,8 +32,14 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
     {
         private PLATEAUInstancedCityModel exportTarget;
         private MeshFileFormat meshFileFormat = MeshFileFormat.OBJ;
-        private GltfFileFormat gltfFileFormat = GltfFileFormat.GLB;
-        private FbxFileFormat fbxFileformat = FbxFileFormat.Binary;
+
+        private Dictionary<MeshFileFormat, IPlateauModelExporter> formatToExporter = new()
+        {
+            { MeshFileFormat.OBJ, new ObjModelExporter() },
+            { MeshFileFormat.FBX, new FbxModelExporter() },
+            { MeshFileFormat.GLTF, new GltfModelExporter() }
+        };
+        
         private bool exportTextures;
         private bool exportHiddenObject;
         private MeshExportOptions.MeshTransformType meshTransformType = MeshExportOptions.MeshTransformType.Local;
@@ -65,15 +71,8 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
             {
                 using (PlateauEditorStyle.VerticalScopeLevel1())
                 {
-                    if (this.meshFileFormat == MeshFileFormat.GLTF)
-                    {
-                        this.gltfFileFormat = (GltfFileFormat)EditorGUILayout.EnumPopup("GLTFフォーマット", this.gltfFileFormat);
-                    }
-
-                    if (this.meshFileFormat == MeshFileFormat.FBX)
-                    {
-                        this.fbxFileformat = (FbxFileFormat)EditorGUILayout.EnumPopup("FBXフォーマット", this.fbxFileformat);
-                    }
+                    // 選択した出力設定に固有の設定
+                    this.formatToExporter[this.meshFileFormat].DrawConfigGUI();
 
                     this.exportTextures = EditorGUILayout.Toggle("テクスチャ", this.exportTextures);
                     this.exportHiddenObject = EditorGUILayout.Toggle("非アクティブオブジェクトを含める", this.exportHiddenObject);
@@ -118,8 +117,8 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
                 return;
             }
             var meshExportOptions = new MeshExportOptions(this.meshTransformType, this.exportTextures, this.exportHiddenObject,
-                this.meshFileFormat, this.meshAxis, new GltfWriteOptions(this.gltfFileFormat, destinationDir), new FbxWriteOptions(this.fbxFileformat));
-            MeshExporter.Export(destinationDir, target,  meshExportOptions);
+                this.meshFileFormat, this.meshAxis, this.formatToExporter[this.meshFileFormat]);
+            UnityModelExporter.Export(destinationDir, target,  meshExportOptions);
         }
     }
 }

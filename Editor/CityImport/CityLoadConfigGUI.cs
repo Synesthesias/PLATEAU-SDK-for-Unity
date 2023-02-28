@@ -1,10 +1,7 @@
 ﻿using System;
-using PLATEAU.CityImport.AreaSelector.SceneObjs;
-using PLATEAU.CityImport.Load;
 using PLATEAU.CityImport.Setting;
 using PLATEAU.Editor.EditorWindow.Common;
 using PLATEAU.Dataset;
-using PLATEAU.Geometries;
 using PLATEAU.PolygonMesh;
 using UnityEditor;
 using UnityEngine;
@@ -81,7 +78,7 @@ namespace PLATEAU.Editor.CityImport
                         if (PlateauEditorStyle.MiniButton("範囲の中心点を入力", 140))
                         {
                             GUI.FocusControl("");
-                            refPoint = conf.SearchCenterPointAndSetAsReferencePoint();
+                            refPoint = conf.SetReferencePointToExtentCenter();
                         }
                     });
 

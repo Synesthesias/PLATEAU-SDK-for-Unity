@@ -27,5 +27,8 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow
             PlateauEditorStyle.SetCurrentWindow(this);
             this.gui.Draw();
         }
+
+        /// <summary> テストからアクセスする用 </summary>
+        internal const string NameOfInnerGuiField = nameof(gui);
     }
 }
