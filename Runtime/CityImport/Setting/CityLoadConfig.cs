@@ -100,7 +100,7 @@ namespace PLATEAU.CityImport.Setting
             // 絞り込まれたGMLパスを戻り値のリストに追加します。
             foreach (var package in targetPackages)
             {
-                var gmlFiles = datasetAccessor.GetGmlFilesForPackage(package);
+                var gmlFiles = datasetAccessor.GetGmlFiles(package);
                 int gmlCount = gmlFiles.Length;
                 for (int i = 0; i < gmlCount; i++)
                 {

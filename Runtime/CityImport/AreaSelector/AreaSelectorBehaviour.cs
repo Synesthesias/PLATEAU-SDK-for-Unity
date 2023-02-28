@@ -178,7 +178,7 @@ namespace PLATEAU.CityImport.AreaSelector
             using var datasetSource = DatasetSource.Create(datasetSourceConfig);
             using var accessorAll = datasetSource.Accessor;
             using var accessor = accessorAll.FilterByMeshCodes(meshCodes);
-            using var gmlFiles = accessor.GetGmlFiles();
+            using var gmlFiles = accessor.GetAllGmlFiles();
             var ret = new PackageToLodDict();
             int gmlCount = gmlFiles.Length;
             for (int i = 0; i < gmlCount; i++)
