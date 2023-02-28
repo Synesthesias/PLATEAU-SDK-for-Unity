@@ -52,6 +52,14 @@ namespace PLATEAU.Tests.TestUtils
             return (TField)info.GetValue(targetObj);
         }
 
+        public static void InvokePrivateMethod(Type targetType, object targetObj, string methodName, params object[] parameters)
+        {
+            var method = targetType.GetMethod(methodName,
+                BindingFlags.InvokeMethod | BindingFlags.NonPublic | BindingFlags.Instance);
+            if (method == null) throw new NullReferenceException("method is not found.");
+            method.Invoke(targetObj, parameters);
+        }
+
         /// <summary>
         /// privateフィールドの値を更新します。(非static)
         /// 型 <paramref name="targetType"/> である <see cref="targetObj"/> の

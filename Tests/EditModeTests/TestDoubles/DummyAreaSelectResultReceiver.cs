@@ -1,6 +1,4 @@
 ﻿using PLATEAU.CityImport.AreaSelector;
-using PLATEAU.CityImport.Setting;
-using PLATEAU.Native;
 
 namespace PLATEAU.Tests.EditModeTests.TestDoubles
 {

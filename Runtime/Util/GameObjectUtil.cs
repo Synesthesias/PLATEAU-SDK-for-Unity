@@ -7,39 +7,6 @@ namespace PLATEAU.Util
 {
     internal static class GameObjectUtil
     {
-        /// <summary>
-        /// <paramref name="parent"/> とその子を再帰的に検索し、
-        /// 名前が <paramref name="searchName"/> であるものを探して返します。
-        /// なければ null を返します。
-        /// </summary>
-        public static Transform FindRecursive(Transform parent, string searchName)
-        {
-            if (parent.name == searchName) return parent;
-            foreach (Transform child in parent)
-            {
-                var found = FindRecursive(child, searchName);
-                if (found != null)
-                {
-                    return found;
-                }
-            }
-
-            return null;
-        }
-
-        /// <summary>
-        /// <paramref name="parent"/> の子（孫以下は含まない）であり、
-        /// 名前が <paramref name="targetName"/> であるものを即座に削除します。
-        /// そのような GameObject が存在しない場合は何もしません。
-        /// </summary>
-        public static void DestroyChildOf(Transform parent, string targetName)
-        {
-            var oldObj = parent.Find(targetName);
-            if (oldObj != null)
-            {
-                Object.DestroyImmediate(oldObj.gameObject);
-            }
-        }
 
 
         /// <summary>
@@ -93,21 +60,7 @@ namespace PLATEAU.Util
             };
             return newObj;
         }
-
-        /// <summary>
-        /// <paramref name="obj"/> の子をすべて削除します。
-        /// </summary>
-        public static void DestroyChildOf(GameObject obj)
-        {
-            var trans = obj.transform;
-            int cnt = trans.childCount;
-            var destroyList = new List<GameObject>();
-            for (int i = 0; i < cnt; i++)
-            {
-                destroyList.Add(trans.GetChild(i).gameObject);
-            }
-            foreach (var d in destroyList) Object.DestroyImmediate(d);
-        }
+        
 
         public static List<GameObject> ListGameObjsInScene(Scene scene)
         {

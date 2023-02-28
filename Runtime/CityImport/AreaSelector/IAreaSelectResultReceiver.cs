@@ -1,6 +1,4 @@
-﻿using PLATEAU.CityImport.AreaSelector.SceneObjs;
-using PLATEAU.CityImport.Setting;
-using PLATEAU.Dataset;
+﻿using PLATEAU.CityImport.Setting;
 using PLATEAU.Native;
 
 namespace PLATEAU.CityImport.AreaSelector

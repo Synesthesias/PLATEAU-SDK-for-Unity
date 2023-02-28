@@ -10,7 +10,6 @@ using PLATEAU.CityImport.Setting;
 using PLATEAU.CityInfo;
 using PLATEAU.Geometries;
 using PLATEAU.Dataset;
-using PLATEAU.Native;
 using PLATEAU.Util;
 using UnityEngine;
 

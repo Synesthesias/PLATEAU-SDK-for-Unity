@@ -1,5 +1,5 @@
-﻿using PLATEAU.Geometries;
-using PLATEAU.MeshWriter;
+﻿using PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ExportGUIParts;
+using PLATEAU.Geometries;
 
 namespace PLATEAU.Editor.CityExport
 {
@@ -9,25 +9,22 @@ namespace PLATEAU.Editor.CityExport
     {
         public enum MeshTransformType{Local/*ローカル座標系*/, PlaneCartesian/*平面直角座標系*/}
 
-        public MeshTransformType TransformType;
-        public bool ExportTextures;
-        public bool ExportHiddenObjects;
-        public MeshFileFormat FileFormat;
-        public CoordinateSystem MeshAxis;
-        public GltfWriteOptions GltfWriteOptions; // Gltf形式のときのみ利用します。
-        public FbxWriteOptions FbxWriteOptions; // fbx形式のときのみ利用します。
+        public MeshTransformType TransformType { get; }
+        public bool ExportTextures { get; }
+        public bool ExportHiddenObjects { get; }
+        public MeshFileFormat FileFormat { get; }
+        public CoordinateSystem MeshAxis { get; }
 
-        public MeshExportOptions(MeshTransformType transformType, bool exportTextures, bool exportHiddenObjects, MeshFileFormat fileFormat, CoordinateSystem meshAxis, GltfWriteOptions gltfWriteOptions, FbxWriteOptions fbxWriteOptions)
+        public IPlateauModelExporter PlateauModelExporter { get; }
+
+        public MeshExportOptions(MeshTransformType transformType, bool exportTextures, bool exportHiddenObjects, MeshFileFormat fileFormat, CoordinateSystem meshAxis, IPlateauModelExporter plateauModelExporter)
         {
-            this.TransformType = transformType;
-            this.ExportTextures = exportTextures;
-            this.ExportHiddenObjects = exportHiddenObjects;
-            this.FileFormat = fileFormat;
-            this.MeshAxis = meshAxis;
-            
-            // TODO GltfWriteOptions と FbxWriteOptions は出力形式が gltf, fbx でなければ不要なのにいちいち渡している。スマートに書けないか？
-            this.GltfWriteOptions = gltfWriteOptions;
-            this.FbxWriteOptions = fbxWriteOptions;
+            TransformType = transformType;
+            ExportTextures = exportTextures;
+            ExportHiddenObjects = exportHiddenObjects;
+            FileFormat = fileFormat;
+            MeshAxis = meshAxis;
+            PlateauModelExporter = plateauModelExporter;
         }
     }
 }

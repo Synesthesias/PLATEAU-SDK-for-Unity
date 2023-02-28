@@ -6,6 +6,7 @@ using System.Text.RegularExpressions;
 using NUnit.Framework;
 using PLATEAU.CityInfo;
 using PLATEAU.Editor.CityExport;
+using PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ExportGUIParts;
 using PLATEAU.Geometries;
 using PLATEAU.MeshWriter;
 using PLATEAU.Tests.TestUtils;
@@ -40,8 +41,8 @@ namespace PLATEAU.Tests.EditModeTests
             var options = new MeshExportOptions(
                 MeshExportOptions.MeshTransformType.Local,
                 true, true, MeshFileFormat.OBJ, CoordinateSystem.ENU,
-                new GltfWriteOptions(GltfFileFormat.GLB, destDirPath), new FbxWriteOptions(FbxFileFormat.Binary));
-            MeshExporter.Export(destDirPath, instancedCityModel, options);
+                new ObjModelExporter());
+            UnityModelExporter.Export(destDirPath, instancedCityModel, options);
 
             var expectedObjFiles = TestCityDefinition.MiniTokyo.GmlDefinitions
                 .Where(def => def.ContainsMesh)
@@ -63,8 +64,8 @@ namespace PLATEAU.Tests.EditModeTests
             var options = new MeshExportOptions(
                 MeshExportOptions.MeshTransformType.Local,
                 true, false, MeshFileFormat.FBX, CoordinateSystem.ENU,
-                new GltfWriteOptions(GltfFileFormat.GLB, destDirPath), new FbxWriteOptions(FbxFileFormat.Ascii));
-            MeshExporter.Export(destDirPath, instancedCityModel, options);
+                new FbxModelExporter());
+            UnityModelExporter.Export(destDirPath, instancedCityModel, options);
             var expectedFbxFiles = TestCityDefinition.MiniTokyo.GmlDefinitions
                 .Where(def => def.ContainsMesh)
                 .Select(def => Path.GetFileNameWithoutExtension(def.GmlPath) + ".fbx")
@@ -81,8 +82,8 @@ namespace PLATEAU.Tests.EditModeTests
             var options = new MeshExportOptions(
                 MeshExportOptions.MeshTransformType.Local,
                 true, false, MeshFileFormat.GLTF, CoordinateSystem.ENU,
-                new GltfWriteOptions(GltfFileFormat.GLTF, destDirPath), new FbxWriteOptions(FbxFileFormat.Ascii));
-            MeshExporter.Export(destDirPath, instancedCityModel, options);
+                new GltfModelExporter{GltfFileFormat = GltfFileFormat.GLTF});
+            UnityModelExporter.Export(destDirPath, instancedCityModel, options);
             var expectedGltfFiles = TestCityDefinition.MiniTokyo.GmlDefinitions
                 .Where(def => def.ContainsMesh)
                 .Select(def =>
