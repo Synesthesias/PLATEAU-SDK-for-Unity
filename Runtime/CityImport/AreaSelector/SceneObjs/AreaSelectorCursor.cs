@@ -10,12 +10,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
 {
     internal class AreaSelectorCursor : BoxGizmoDrawer
     {
-        
-        // TODO boxに bottomHeight と upperHeight があるのは、ギズモが箱型だったときの名残。今は二次元的な四角形なので高さは1つで良い。
-        public const float BoxUpperHeight = 30f; // なんとなく見やすそうな高さ
-        public const float BoxBottomHeight = 1f; // カーソルの線が地面と重なって隠れない程度の高さ
-        public const float BoxCenterHeight = (BoxUpperHeight + BoxBottomHeight) / 2.0f;
-        private const float boxSizeY = BoxUpperHeight - BoxBottomHeight;
+        public const float BoxY = 15f;
         private const float slider2DHandleSize = 0.35f;
         private const float lineWidth = 2;
         private static readonly Color handleColor = new Color(1f, 72f / 255f, 0f);
@@ -25,8 +20,8 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
 
         public AreaSelectorCursor()
         {
-            this.CenterPos = new Vector3(0, BoxCenterHeight, 0);
-            this.Size = new Vector3(1000, boxSizeY, 1000);
+            this.CenterPos = new Vector3(0, BoxY, 0);
+            this.Size = new Vector3(1000, 1, 1000);
             LineWidth = lineWidth;
             BoxColor = selectOutlineColor;
         }
@@ -89,7 +84,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
 
         private static Vector3 CenterPointHandle(Vector3 centerPos)
         {
-            var handlePos = new Vector3(centerPos.x, BoxUpperHeight, centerPos.z);
+            var handlePos = new Vector3(centerPos.x, BoxY, centerPos.z);
             EditorGUI.BeginChangeCheck();
 
             // 中心点ハンドル
@@ -101,7 +96,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
             
             if (EditorGUI.EndChangeCheck())
             {
-                centerPos = new Vector3(handlePos.x, BoxCenterHeight, handlePos.z);
+                centerPos = new Vector3(handlePos.x, BoxY, handlePos.z);
             }
 
             return centerPos;
@@ -118,21 +113,21 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
             var nextPosMax = Slider2D(prevPosMax);
 
             // 最小点のハンドル
-            var minHandlePos = new Vector3(prevPosMin.x, BoxUpperHeight, prevPosMin.z);
+            var minHandlePos = new Vector3(prevPosMin.x, BoxY, prevPosMin.z);
             var minHandlePosNext = Slider2D(minHandlePos);
-            var nextPosMin = new Vector3(minHandlePosNext.x, BoxBottomHeight, minHandlePosNext.z);
+            var nextPosMin = new Vector3(minHandlePosNext.x, BoxY, minHandlePosNext.z);
             
             // Xが最小、Zが最大の点のハンドル
-            var minMaxHandlePos = new Vector3(nextPosMin.x, BoxUpperHeight, nextPosMax.z);
+            var minMaxHandlePos = new Vector3(nextPosMin.x, BoxY, nextPosMax.z);
             var minMaxHandlePosNext = Slider2D(minMaxHandlePos);
-            nextPosMin = new Vector3(minMaxHandlePosNext.x, nextPosMin.y, nextPosMin.z);
-            nextPosMax = new Vector3(nextPosMax.x, nextPosMax.y, minMaxHandlePosNext.z);
+            nextPosMin = new Vector3(minMaxHandlePosNext.x, BoxY, nextPosMin.z);
+            nextPosMax = new Vector3(nextPosMax.x, BoxY, minMaxHandlePosNext.z);
             
             // Xが最大、Zが最小の点のハンドル
-            var maxMinHandlePos = new Vector3(nextPosMax.x, BoxUpperHeight, nextPosMin.z);
+            var maxMinHandlePos = new Vector3(nextPosMax.x, BoxY, nextPosMin.z);
             var maxMinHandlePosNext = Slider2D(maxMinHandlePos);
-            nextPosMin = new Vector3(nextPosMin.x, nextPosMin.y, maxMinHandlePosNext.z);
-            nextPosMax = new Vector3(maxMinHandlePosNext.x, nextPosMax.y, nextPosMax.z);
+            nextPosMin = new Vector3(nextPosMin.x, BoxY, maxMinHandlePosNext.z);
+            nextPosMax = new Vector3(maxMinHandlePosNext.x, BoxY, nextPosMax.z);
 
             nextCenterPos = centerPos;
             nextSize = size;
