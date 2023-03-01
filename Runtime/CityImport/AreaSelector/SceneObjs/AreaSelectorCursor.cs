@@ -114,8 +114,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
 
             // 最小点のハンドル
             var minHandlePos = new Vector3(prevPosMin.x, BoxY, prevPosMin.z);
-            var minHandlePosNext = Slider2D(minHandlePos);
-            var nextPosMin = new Vector3(minHandlePosNext.x, BoxY, minHandlePosNext.z);
+            var nextPosMin = Slider2D(minHandlePos);
             
             // Xが最小、Zが最大の点のハンドル
             var minMaxHandlePos = new Vector3(nextPosMin.x, BoxY, nextPosMax.z);
