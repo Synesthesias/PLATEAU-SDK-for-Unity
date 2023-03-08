@@ -40,12 +40,15 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         private static readonly Color boxColor = new Color(0.25f, 0.25f, 0.25f, 0.35f);
         private static ConcurrentDictionary<(PredefinedCityModelPackage package, uint lod), Texture> iconDict;
         private static Texture boxTex;
+        public static float meshCodeScreenWidthArea = 1f;
+        public string meshCodeString = string.Empty;
 
-        public AreaLodView(PackageToLodDict packageToLodDict, Vector3 meshCodeUnityPositionUpperLeft, Vector3 meshCodeUnityPositionLowerRight)
+        public AreaLodView(PackageToLodDict packageToLodDict, Vector3 meshCodeUnityPositionUpperLeft, Vector3 meshCodeUnityPositionLowerRight,string meshCodeString)
         {
             this.packageToLodDict = packageToLodDict;
             this.meshCodeUnityPositionUpperLeft = meshCodeUnityPositionUpperLeft;
             this.meshCodeUnityPositionLowerRight = meshCodeUnityPositionLowerRight;
+            this.meshCodeString = meshCodeString;
         }
 
         /// <summary>
@@ -89,6 +92,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
                 (camera.WorldToScreenPoint(this.meshCodeUnityPositionLowerRight) -
                  camera.WorldToScreenPoint(this.meshCodeUnityPositionUpperLeft))
                 .x;
+            meshCodeScreenWidthArea = meshCodeScreenWidth;
 
             // 地域メッシュコードの枠内にアイコンが5つ並ぶ程度の大きさ
             float iconWidth = Mathf.Min(maxIconWidth, meshCodeScreenWidth / iconWidthDivider) / monitorDpiScalingFactor;
@@ -117,8 +121,11 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
             
             // アイコンを表示します。
             var iconPos = iconsUpperLeft;
+            int i = 0;
+            Vector3 labelPos = iconPos;
             foreach (var iconToShow in iconsToShow)
             {
+                i++;
                 var prevBackgroundColor = GUI.contentColor;
                 GUI.contentColor = new Color(1f, 1f, 1f, iconToShow.IsAvailable ? iconOpacityAvailable : iconOpacityNotAvailable);
                 var style = new GUIStyle(EditorStyles.label)
@@ -137,8 +144,23 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
                 var distance = Mathf.Abs(camera.transform.position.y - iconPos.y);
                 var iconWorldPosRight = camera.ScreenToWorldPoint(new Vector3(iconScreenPosRight.x, iconScreenPosRight.y, distance));
                 iconPos += new Vector3(iconWorldPosRight.x - iconPos.x, 0, 0);
+                if(i==2)
+                    labelPos = new Vector3(iconPos.x, iconPos.y , iconPos.z - 250);
             }
-            #endif
+
+            // Show meshcode number
+            if (meshCodeScreenWidthArea >= 60f)
+            {
+                var meshStyle = new GUIStyle(EditorStyles.label)
+                {
+                    alignment = TextAnchor.UpperCenter,
+                    fontSize = (int)(iconWidth*2f/3f)
+                };
+                GUI.contentColor = Color.blue;
+                Handles.Label(labelPos, this.meshCodeString, meshStyle);
+            }
+            
+#endif
         }
 
         /// <summary>

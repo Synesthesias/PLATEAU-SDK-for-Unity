@@ -16,10 +16,12 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         protected float LineWidth { get; set; } = 1f;
         public int Priority { get; set; }
 
-        protected void Init(Vector3 centerPosArg, Vector3 sizeArg)
+        string meshCodeString = string.Empty;
+        protected void Init(Vector3 centerPosArg, Vector3 sizeArg,string meshcodeStr)
         {
             this.CenterPos = centerPosArg;
             this.Size = sizeArg;
+            meshCodeString = meshcodeStr;
         }
 
         public static void DrawWithPriority(IEnumerable<BoxGizmoDrawer> drawers)
@@ -35,6 +37,9 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         public virtual void DrawGizmos()
         {
 #if UNITY_EDITOR
+
+
+
             var prevColor = Gizmos.color;
             Gizmos.color = this.BoxColor;
             var max = AreaMax;
@@ -43,13 +48,37 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
             var p2 = new Vector3(min.x, max.y, max.z);
             var p3 = new Vector3(max.x, max.y, max.z);
             var p4 = new Vector3(max.x, max.y, min.z);
+
+            Vector3 worldPos = new Vector3((p2.x + p3.x) / 2f, 0f, (p1.z + p2.z) / 2f);
+            if (this.BoxColor == Color.black)
+            {
+                DrawString(meshCodeString, worldPos, this.BoxColor, 30);
+            }
+
             DrawThickLine(p1, p2, LineWidth);
             DrawThickLine(p2, p3, LineWidth);
             DrawThickLine(p3, p4, LineWidth);
-            DrawThickLine(p4, p1, LineWidth);
+            DrawThickLine(p4, p1, LineWidth);            
+
             AdditionalGizmo();
             Gizmos.color = prevColor;
 #endif
+        }
+
+        static void DrawString(string text, Vector3 worldPos, Color? colour = null,int fontSize = 20)
+        {
+            UnityEditor.Handles.BeginGUI();
+            //if (colour.HasValue) 
+            GUI.color = colour.Value;
+            var view = UnityEditor.SceneView.currentDrawingSceneView;
+            Vector3 screenPos = view.camera.WorldToScreenPoint(worldPos);
+            Vector2 size = GUI.skin.label.CalcSize(new GUIContent(text));
+            
+            GUIStyle style = new GUIStyle();
+            style.fontSize = fontSize;
+
+            GUI.Label(new Rect(screenPos.x - (size.x / 2), -screenPos.y + view.position.height , size.x * style.fontSize, size.y * style.fontSize), text,style);
+            UnityEditor.Handles.EndGUI();
         }
 
         public virtual void DrawSceneGUI()
