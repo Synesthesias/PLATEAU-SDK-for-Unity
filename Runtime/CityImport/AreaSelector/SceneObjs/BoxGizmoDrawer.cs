@@ -49,11 +49,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
             var p3 = new Vector3(max.x, max.y, max.z);
             var p4 = new Vector3(max.x, max.y, min.z);
 
-            Vector3 worldPos = new Vector3((p2.x + p3.x) / 2f, 0f, (p1.z + p2.z) / 2f);
-            if (this.BoxColor == Color.black)
-            {
-                DrawString(meshCodeString, worldPos, this.BoxColor, 30);
-            }
+
 
             DrawThickLine(p1, p2, LineWidth);
             DrawThickLine(p2, p3, LineWidth);
@@ -61,8 +57,20 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
             DrawThickLine(p4, p1, LineWidth);            
 
             AdditionalGizmo();
+
+            Vector3 worldPos = new Vector3((p2.x + p3.x) / 2f, max.y, (p1.z + p2.z) / 2f);
+            if (this.BoxColor == Color.black)
+            {
+                DrawString(meshCodeString, worldPos, this.BoxColor, ReturnFontSize());
+            }
+
             Gizmos.color = prevColor;
 #endif
+        }
+
+        int ReturnFontSize()
+        {
+            return (int)(Mathf.Clamp(AreaLodView.meshCodeScreenWidthArea, 15f, 30f));
         }
 
         static void DrawString(string text, Vector3 worldPos, Color? colour = null,int fontSize = 20)
@@ -76,8 +84,9 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
             
             GUIStyle style = new GUIStyle();
             style.fontSize = fontSize;
+            style.fontStyle = FontStyle.Bold;
 
-            GUI.Label(new Rect(screenPos.x - (size.x / 2), -screenPos.y + view.position.height , size.x * style.fontSize, size.y * style.fontSize), text,style);
+            GUI.Label(new Rect(screenPos.x - (size.x / 2), -screenPos.y + view.position.height - size.y, size.x * style.fontSize, size.y * style.fontSize), text, style);
             UnityEditor.Handles.EndGUI();
         }
 
