@@ -33,11 +33,11 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
             var max = geoReference.Project(extent.Max);
             var centerPosTmp = new Vector3(
                 (float)(min.X + max.X) / 2.0f,
-                AreaSelectorCursor.BoxCenterHeight,
+                AreaSelectorCursor.BoxY,
                 (float)(min.Z + max.Z) / 2.0f);
             var sizeTmp = new Vector3(
                 (float)Math.Abs(max.X - min.X),
-                AreaSelectorCursor.BoxUpperHeight - AreaSelectorCursor.BoxBottomHeight,
+                1,
                 (float)Math.Abs(max.Z - min.Z));
             Init(centerPosTmp, sizeTmp, meshCode.ToString());
             MeshCode = meshCode;
