@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEditor;
 
 namespace PLATEAU.CityImport.AreaSelector.SceneObjs
 {
@@ -58,13 +59,16 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
 
             AdditionalGizmo();
 
-            Vector3 worldPos = new Vector3((p2.x + p3.x) / 2f, max.y, (p1.z + p2.z) / 2f);
-            if (this.BoxColor == Color.black)
-            {
-                DrawString(meshCodeString, worldPos, this.BoxColor, ReturnFontSize());
-            }
+            Vector3 worldPos = new Vector3((p2.x + p3.x) / 2f - 500f, max.y, (p1.z + p2.z) / 2f + 2000f);
+            float meshCodeScreenWidth = (UnityEditor.SceneView.currentDrawingSceneView.camera.WorldToScreenPoint(p2) - UnityEditor.SceneView.currentDrawingSceneView.camera.WorldToScreenPoint(p3)).x;
+            //Debug.Log("mesh code: " + meshCodeScreenWidth);
 
-            Gizmos.color = prevColor;
+            if (this.BoxColor == Color.black && meshCodeScreenWidth <= -60)
+            {
+                float monitorDpiScalingFactor = EditorGUIUtility.pixelsPerPoint;
+
+                DrawString(meshCodeString, worldPos / monitorDpiScalingFactor, this.BoxColor, ReturnFontSize());
+            }
 #endif
         }
 
