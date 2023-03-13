@@ -18,7 +18,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         public int Priority { get; set; }
 
         string meshCodeString = string.Empty;
-        protected void Init(Vector3 centerPosArg, Vector3 sizeArg,string meshcodeStr)
+        protected void Init(Vector3 centerPosArg, Vector3 sizeArg, string meshcodeStr)
         {
             this.CenterPos = centerPosArg;
             this.Size = sizeArg;
@@ -33,7 +33,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
                 d.DrawGizmos();
             }
         }
-        
+
 
         public virtual void DrawGizmos()
         {
@@ -50,24 +50,23 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
             var p3 = new Vector3(max.x, max.y, max.z);
             var p4 = new Vector3(max.x, max.y, min.z);
 
-
-
             DrawThickLine(p1, p2, LineWidth);
             DrawThickLine(p2, p3, LineWidth);
             DrawThickLine(p3, p4, LineWidth);
-            DrawThickLine(p4, p1, LineWidth);            
+            DrawThickLine(p4, p1, LineWidth);
 
             AdditionalGizmo();
 
             Vector3 worldPos = new Vector3((p2.x + p3.x) / 2f - 500f, max.y, (p1.z + p2.z) / 2f + 2000f);
+            //Vector3 worldPos = new Vector3((p2.x + p3.x) / 2f, max.y, (p1.z + p2.z) / 2f);
             float meshCodeScreenWidth = (UnityEditor.SceneView.currentDrawingSceneView.camera.WorldToScreenPoint(p2) - UnityEditor.SceneView.currentDrawingSceneView.camera.WorldToScreenPoint(p3)).x;
             //Debug.Log("mesh code: " + meshCodeScreenWidth);
 
-            if (this.BoxColor == Color.black && meshCodeScreenWidth <= -60)
+            float monitorDpiScalingFactor = EditorGUIUtility.pixelsPerPoint;
+            if (this.BoxColor == Color.black && meshCodeScreenWidth <= -60 * monitorDpiScalingFactor)
             {
-                float monitorDpiScalingFactor = EditorGUIUtility.pixelsPerPoint;
-
-                DrawString(meshCodeString, worldPos / monitorDpiScalingFactor, this.BoxColor, ReturnFontSize());
+                //Debug.Log("scale: " + monitorDpiScalingFactor);
+                DrawString(meshCodeString, worldPos, monitorDpiScalingFactor, this.BoxColor, ReturnFontSize());
             }
 #endif
         }
@@ -77,15 +76,16 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
             return (int)(Mathf.Clamp(AreaLodView.meshCodeScreenWidthArea, 15f, 30f));
         }
 
-        static void DrawString(string text, Vector3 worldPos, Color? colour = null,int fontSize = 20)
+        static void DrawString(string text, Vector3 worldPos, float scaler, Color? colour = null, int fontSize = 20)
         {
             UnityEditor.Handles.BeginGUI();
             //if (colour.HasValue) 
             GUI.color = colour.Value;
             var view = UnityEditor.SceneView.currentDrawingSceneView;
-            Vector3 screenPos = view.camera.WorldToScreenPoint(worldPos);
+            fontSize /= (int)scaler;
+            Vector3 screenPos = view.camera.WorldToScreenPoint(worldPos) / scaler;
             Vector2 size = GUI.skin.label.CalcSize(new GUIContent(text));
-            
+
             GUIStyle style = new GUIStyle();
             style.fontSize = fontSize;
             style.fontStyle = FontStyle.Bold;
@@ -96,7 +96,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
 
         public virtual void DrawSceneGUI()
         {
-            
+
         }
 
         /// <summary>
@@ -104,10 +104,10 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         /// </summary>
         protected virtual void AdditionalGizmo()
         {
-            
+
         }
 
-        protected Vector3 AreaMax => CalcAreaMax(this.CenterPos ,this.Size);
+        protected Vector3 AreaMax => CalcAreaMax(this.CenterPos, this.Size);
 
         protected Vector3 AreaMin => CalcAreaMin(this.CenterPos, this.Size);
 
@@ -115,12 +115,12 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         {
             return center + size / 2.0f;
         }
-        
+
         protected static Vector3 CalcAreaMin(Vector3 center, Vector3 size)
         {
             return center - size / 2.0f;
         }
-        
+
         /// <summary>
         /// Y軸の値は無視して、XとZの値で箱同士が重なる箇所があるかどうかを bool で返します。
         /// </summary>
@@ -156,10 +156,10 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
                 }
                 var scp1 = c.WorldToScreenPoint(p1);
                 var scp2 = c.WorldToScreenPoint(p2);
- 
+
                 Vector3 v1 = (scp2 - scp1).normalized; // 線の方向
                 Vector3 n = Vector3.Cross(v1, Vector3.forward); // 法線ベクトル
- 
+
                 for (int i = 0; i < count; i++)
                 {
                     Vector3 o = 0.99f * n * width * ((float)i / (count - 1) - 0.5f);
