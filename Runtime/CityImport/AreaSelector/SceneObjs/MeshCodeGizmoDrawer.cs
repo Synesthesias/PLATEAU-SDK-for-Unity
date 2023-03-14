@@ -17,7 +17,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
 
         private static readonly Color boxColorNormalLevel2 = Color.black;
         private static readonly Color boxColorNormalLevel3 = new Color(0f, 84f / 255f, 1f);
-        private static readonly Color boxColorSelected = new Color(1f, 162f / 255f, 62f / 255f);
+        public static readonly Color boxColorSelected = new Color(1f, 162f / 255f, 62f / 255f);
         private const int lineWidthLevel2 = 3;
         private const int lineWidthLevel3 = 2;
 

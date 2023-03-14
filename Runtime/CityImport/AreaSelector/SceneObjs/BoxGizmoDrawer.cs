@@ -63,7 +63,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
             //Debug.Log("mesh code: " + meshCodeScreenWidth);
 
             float monitorDpiScalingFactor = EditorGUIUtility.pixelsPerPoint;
-            if (this.BoxColor == Color.black && meshCodeScreenWidth <= -60 * monitorDpiScalingFactor)
+            if ((this.BoxColor == Color.black || this.BoxColor == MeshCodeGizmoDrawer.boxColorSelected) && meshCodeScreenWidth <= -60 * monitorDpiScalingFactor)
             {
                 //Debug.Log("scale: " + monitorDpiScalingFactor);
                 DrawString(meshCodeString, worldPos, monitorDpiScalingFactor, this.BoxColor, ReturnFontSize());
