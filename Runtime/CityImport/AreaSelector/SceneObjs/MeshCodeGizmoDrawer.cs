@@ -39,7 +39,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
                 (float)Math.Abs(max.X - min.X),
                 1,
                 (float)Math.Abs(max.Z - min.Z));
-            Init(centerPosTmp, sizeTmp, meshCode.ToString());
+            Init(centerPosTmp, sizeTmp, meshCode);
             MeshCode = meshCode;
         }
 
