@@ -84,28 +84,27 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
             DrawMeshCodeId(worldPosBoxGizmos, (AreaMin + AreaMax) / 2f);
 #endif
         }
-
+        
         public void DrawMeshCodeId(Vector3 worldPosLevel2,Vector3 worldPosLevel1)
         {
             if(MeshCode.IsValid)
             {
-                if(MeshCode.Level == 2) // black
+                if(MeshCode.Level == 2 && meshBoxWidth <= -60 * EditorGUIUtility.pixelsPerPoint) // black
                 {
                     DrawString(MeshCode.ToString(), worldPosLevel2, EditorGUIUtility.pixelsPerPoint, boxColorNormalLevel2, ReturnFontSize());
                 }
                 else // blue
                 {
                     if (AreaLodView.meshCodeScreenWidthArea >= 45f && AreaLodView.meshCodeScreenWidthArea <= 145f)
-                        DrawString(MeshCode.ToString(), worldPosLevel1, EditorGUIUtility.pixelsPerPoint, boxColorNormalLevel3, ReturnFontSizeBlue());
+                        DrawString(MeshCode.ToString(), new Vector3(worldPosLevel1.x + 100f, worldPosLevel1.y, worldPosLevel1.z), EditorGUIUtility.pixelsPerPoint, boxColorNormalLevel3, ReturnFontSizeBlue());
                 }
             }
         }
 
-        static void DrawString(string text, Vector3 worldPos, float scaler, Color? colour = null, int fontSize = 20)
+        static void DrawString(string text, Vector3 worldPos, float scaler, Color color, int fontSize = 20)
         {
             UnityEditor.Handles.BeginGUI();
-            //if (colour.HasValue) 
-            GUI.color = colour.Value;
+
             var view = UnityEditor.SceneView.currentDrawingSceneView;
             fontSize /= (int)scaler;
             Vector3 screenPos = view.camera.WorldToScreenPoint(worldPos) / scaler;
@@ -113,7 +112,8 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
 
             GUIStyle style = new GUIStyle();
             style.fontSize = fontSize;
-            style.fontStyle = FontStyle.Bold;     
+            style.fontStyle = FontStyle.Bold;
+            style.normal.textColor = color;
 
             GUI.Label(new Rect(screenPos.x - (size.x / 2), -screenPos.y + view.position.height - size.y, size.x * style.fontSize, size.y * style.fontSize), text, style);
             UnityEditor.Handles.EndGUI();

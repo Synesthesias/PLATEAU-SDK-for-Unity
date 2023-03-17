@@ -19,6 +19,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         public int Priority { get; set; }
 
         public Vector3 worldPosBoxGizmos { get; set; }
+        public float meshBoxWidth { get; set; }
 
         MeshCode meshCode;
         protected void Init(Vector3 centerPosArg, Vector3 sizeArg, MeshCode _meshCode)
@@ -62,8 +63,9 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
             AdditionalGizmo();
 
             worldPosBoxGizmos = new Vector3((p2.x + p3.x) / 2f - 500f, max.y, (p1.z + p2.z) / 2f + 2000f);
+            meshBoxWidth = (UnityEditor.SceneView.currentDrawingSceneView.camera.WorldToScreenPoint(p2) - UnityEditor.SceneView.currentDrawingSceneView.camera.WorldToScreenPoint(p3)).x;
             ////Vector3 worldPos = new Vector3((p2.x + p3.x) / 2f, max.y, (p1.z + p2.z) / 2f);
-            //float meshCodeScreenWidth = (UnityEditor.SceneView.currentDrawingSceneView.camera.WorldToScreenPoint(p2) - UnityEditor.SceneView.currentDrawingSceneView.camera.WorldToScreenPoint(p3)).x;
+
 
             //float monitorDpiScalingFactor = EditorGUIUtility.pixelsPerPoint;
 
