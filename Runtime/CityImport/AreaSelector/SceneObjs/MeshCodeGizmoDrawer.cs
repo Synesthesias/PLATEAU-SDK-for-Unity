@@ -18,7 +18,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
 
         private static readonly Color boxColorNormalLevel2 = Color.black;
         private static readonly Color boxColorNormalLevel3 = new Color(0f, 84f / 255f, 1f);
-        public static readonly Color boxColorSelected = new Color(1f, 162f / 255f, 62f / 255f);
+        private static readonly Color boxColorSelected = new Color(1f, 162f / 255f, 62f / 255f);
         private const int lineWidthLevel2 = 3;
         private const int lineWidthLevel3 = 2;
 
@@ -103,6 +103,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
 
         static void DrawString(string text, Vector3 worldPos, float scaler, Color color, int fontSize = 20)
         {
+#if UNITY_EDITOR
             UnityEditor.Handles.BeginGUI();
 
             var view = UnityEditor.SceneView.currentDrawingSceneView;
@@ -117,6 +118,8 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
 
             GUI.Label(new Rect(screenPos.x - (size.x / 2), -screenPos.y + view.position.height - size.y, size.x * style.fontSize, size.y * style.fontSize), text, style);
             UnityEditor.Handles.EndGUI();
+#endif
+
         }
 
         int ReturnFontSize()

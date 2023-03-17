@@ -41,15 +41,12 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         private static ConcurrentDictionary<(PredefinedCityModelPackage package, uint lod), Texture> iconDict;
         private static Texture boxTex;
         public static float meshCodeScreenWidthArea = 1f;
-        public string meshCodeString = string.Empty;
-        public static Vector3 numberWorldPos = Vector3.zero;
 
-        public AreaLodView(PackageToLodDict packageToLodDict, Vector3 meshCodeUnityPositionUpperLeft, Vector3 meshCodeUnityPositionLowerRight,string meshCodeString)
+        public AreaLodView(PackageToLodDict packageToLodDict, Vector3 meshCodeUnityPositionUpperLeft, Vector3 meshCodeUnityPositionLowerRight)
         {
             this.packageToLodDict = packageToLodDict;
             this.meshCodeUnityPositionUpperLeft = meshCodeUnityPositionUpperLeft;
             this.meshCodeUnityPositionLowerRight = meshCodeUnityPositionLowerRight;
-            this.meshCodeString = meshCodeString;
         }
 
         /// <summary>
@@ -145,8 +142,6 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
                 var distance = Mathf.Abs(camera.transform.position.y - iconPos.y);
                 var iconWorldPosRight = camera.ScreenToWorldPoint(new Vector3(iconScreenPosRight.x, iconScreenPosRight.y, distance));
                 iconPos += new Vector3(iconWorldPosRight.x - iconPos.x, 0, 0);
-                if(i==2)
-                    numberWorldPos = new Vector3(iconPos.x, iconPos.y , iconPos.z - 250);
             }
             
 #endif

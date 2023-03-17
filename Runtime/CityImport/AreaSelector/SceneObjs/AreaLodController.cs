@@ -92,8 +92,8 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
             if (meshCode.Level >= 3)
             {
                 this.viewDict.AddOrUpdate(meshCode,
-                    code => new AreaLodView(packageLods, positionUpperLeft, positionLowerRight,meshCode.ToString()),
-                    (code, view) => new AreaLodView(packageLods, positionUpperLeft, positionLowerRight, meshCode.ToString()));
+                    code => new AreaLodView(packageLods, positionUpperLeft, positionLowerRight),
+                    (code, view) => new AreaLodView(packageLods, positionUpperLeft, positionLowerRight));
             }
         }
 
