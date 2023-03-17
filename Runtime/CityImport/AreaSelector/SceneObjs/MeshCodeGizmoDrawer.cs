@@ -84,7 +84,8 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
             DrawMeshCodeId(worldPosBoxGizmos, (AreaMin + AreaMax) / 2f);
 #endif
         }
-        
+
+#if UNITY_EDITOR
         public void DrawMeshCodeId(Vector3 worldPosLevel2,Vector3 worldPosLevel1)
         {
             if(MeshCode.IsValid)
@@ -103,7 +104,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
 
         static void DrawString(string text, Vector3 worldPos, float scaler, Color color, int fontSize = 20)
         {
-#if UNITY_EDITOR
+
             UnityEditor.Handles.BeginGUI();
 
             var view = UnityEditor.SceneView.currentDrawingSceneView;
@@ -118,7 +119,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
 
             GUI.Label(new Rect(screenPos.x - (size.x / 2), -screenPos.y + view.position.height - size.y, size.x * style.fontSize, size.y * style.fontSize), text, style);
             UnityEditor.Handles.EndGUI();
-#endif
+
 
         }
 
@@ -130,5 +131,6 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         {
             return (int)(Mathf.Clamp(8f+8f*(AreaLodView.meshCodeScreenWidthArea - 45f)/100f, 8f, 16f));
         }
+#endif
     }
 }
