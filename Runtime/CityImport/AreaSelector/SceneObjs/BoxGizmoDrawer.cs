@@ -18,6 +18,8 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         protected float LineWidth { get; set; } = 1f;
         public int Priority { get; set; }
 
+        public Vector3 worldPosBoxGizmos { get; set; }
+
         MeshCode meshCode;
         protected void Init(Vector3 centerPosArg, Vector3 sizeArg, MeshCode _meshCode)
         {
@@ -59,22 +61,17 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
 
             AdditionalGizmo();
 
-            Vector3 worldPos = new Vector3((p2.x + p3.x) / 2f - 500f, max.y, (p1.z + p2.z) / 2f + 2000f);
-            //Vector3 worldPos = new Vector3((p2.x + p3.x) / 2f, max.y, (p1.z + p2.z) / 2f);
-            float meshCodeScreenWidth = (UnityEditor.SceneView.currentDrawingSceneView.camera.WorldToScreenPoint(p2) - UnityEditor.SceneView.currentDrawingSceneView.camera.WorldToScreenPoint(p3)).x;
+            worldPosBoxGizmos = new Vector3((p2.x + p3.x) / 2f - 500f, max.y, (p1.z + p2.z) / 2f + 2000f);
+            ////Vector3 worldPos = new Vector3((p2.x + p3.x) / 2f, max.y, (p1.z + p2.z) / 2f);
+            //float meshCodeScreenWidth = (UnityEditor.SceneView.currentDrawingSceneView.camera.WorldToScreenPoint(p2) - UnityEditor.SceneView.currentDrawingSceneView.camera.WorldToScreenPoint(p3)).x;
 
-            float monitorDpiScalingFactor = EditorGUIUtility.pixelsPerPoint;
+            //float monitorDpiScalingFactor = EditorGUIUtility.pixelsPerPoint;
 
-            if (meshCode.IsValid && LargeGizmos(meshCode.ToString()) && (this.BoxColor == Color.black || this.BoxColor == MeshCodeGizmoDrawer.boxColorSelected) && meshCodeScreenWidth <= -60 * monitorDpiScalingFactor)
-            {
-                DrawString(meshCode.ToString(), worldPos, monitorDpiScalingFactor, this.BoxColor, ReturnFontSize());
-            }
+            //if (meshCode.IsValid && meshCode.Level == 2 && (this.BoxColor == Color.black || this.BoxColor == MeshCodeGizmoDrawer.boxColorSelected) && meshCodeScreenWidth <= -60 * monitorDpiScalingFactor)
+            //{
+            //    DrawString(meshCode.ToString(), worldPos, monitorDpiScalingFactor, this.BoxColor, ReturnFontSize());
+            //}
 #endif
-        }
-
-        bool LargeGizmos(string meshCodeString)
-        {
-            return meshCodeString.ToCharArray().Length <= 6;
         }
 
         int ReturnFontSize()

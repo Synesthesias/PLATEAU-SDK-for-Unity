@@ -2,6 +2,7 @@
 using PLATEAU.Geometries;
 using PLATEAU.Dataset;
 using UnityEngine;
+using UnityEditor;
 
 namespace PLATEAU.CityImport.AreaSelector.SceneObjs
 {
@@ -79,7 +80,52 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
                 Gizmos.DrawLine(linePosLeft, linePosLeft + Vector3.right * this.Size.x);
                 linePosLeft += Vector3.forward * zDiff;
             }
+
+            DrawMeshCodeId(worldPosBoxGizmos, (AreaMin + AreaMax) / 2f);
 #endif
+        }
+
+        public void DrawMeshCodeId(Vector3 worldPosLevel2,Vector3 worldPosLevel1)
+        {
+            if(MeshCode.IsValid)
+            {
+                if(MeshCode.Level == 2) // black
+                {
+                    DrawString(MeshCode.ToString(), worldPosLevel2, EditorGUIUtility.pixelsPerPoint, boxColorNormalLevel2, ReturnFontSize());
+                }
+                else // blue
+                {
+                    if (AreaLodView.meshCodeScreenWidthArea >= 45f && AreaLodView.meshCodeScreenWidthArea <= 145f)
+                        DrawString(MeshCode.ToString(), worldPosLevel1, EditorGUIUtility.pixelsPerPoint, boxColorNormalLevel3, ReturnFontSizeBlue());
+                }
+            }
+        }
+
+        static void DrawString(string text, Vector3 worldPos, float scaler, Color? colour = null, int fontSize = 20)
+        {
+            UnityEditor.Handles.BeginGUI();
+            //if (colour.HasValue) 
+            GUI.color = colour.Value;
+            var view = UnityEditor.SceneView.currentDrawingSceneView;
+            fontSize /= (int)scaler;
+            Vector3 screenPos = view.camera.WorldToScreenPoint(worldPos) / scaler;
+            Vector2 size = GUI.skin.label.CalcSize(new GUIContent(text));
+
+            GUIStyle style = new GUIStyle();
+            style.fontSize = fontSize;
+            style.fontStyle = FontStyle.Bold;     
+
+            GUI.Label(new Rect(screenPos.x - (size.x / 2), -screenPos.y + view.position.height - size.y, size.x * style.fontSize, size.y * style.fontSize), text, style);
+            UnityEditor.Handles.EndGUI();
+        }
+
+        int ReturnFontSize()
+        {
+            return (int)(Mathf.Clamp(AreaLodView.meshCodeScreenWidthArea, 15f, 30f));
+        }
+        int ReturnFontSizeBlue()
+        {
+            return (int)(Mathf.Clamp(8f+6f*(AreaLodView.meshCodeScreenWidthArea - 45f)/100f, 8f, 16f));
         }
     }
 }

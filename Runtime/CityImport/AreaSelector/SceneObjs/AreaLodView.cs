@@ -42,6 +42,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         private static Texture boxTex;
         public static float meshCodeScreenWidthArea = 1f;
         public string meshCodeString = string.Empty;
+        public static Vector3 numberWorldPos = Vector3.zero;
 
         public AreaLodView(PackageToLodDict packageToLodDict, Vector3 meshCodeUnityPositionUpperLeft, Vector3 meshCodeUnityPositionLowerRight,string meshCodeString)
         {
@@ -93,6 +94,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
                  camera.WorldToScreenPoint(this.meshCodeUnityPositionUpperLeft))
                 .x;
             meshCodeScreenWidthArea = meshCodeScreenWidth;
+            Debug.LogError(meshCodeScreenWidthArea);
 
             // 地域メッシュコードの枠内にアイコンが5つ並ぶ程度の大きさ
             float iconWidth = Mathf.Min(maxIconWidth, meshCodeScreenWidth / iconWidthDivider) / monitorDpiScalingFactor;
@@ -122,7 +124,6 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
             // アイコンを表示します。
             var iconPos = iconsUpperLeft;
             int i = 0;
-            Vector3 labelPos = iconPos;
             foreach (var iconToShow in iconsToShow)
             {
                 i++;
@@ -145,20 +146,20 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
                 var iconWorldPosRight = camera.ScreenToWorldPoint(new Vector3(iconScreenPosRight.x, iconScreenPosRight.y, distance));
                 iconPos += new Vector3(iconWorldPosRight.x - iconPos.x, 0, 0);
                 if(i==2)
-                    labelPos = new Vector3(iconPos.x, iconPos.y , iconPos.z - 250);
+                    numberWorldPos = new Vector3(iconPos.x, iconPos.y , iconPos.z - 250);
             }
 
             // Show meshcode number
-            if (meshCodeScreenWidthArea >= 60f)
-            {
-                var meshStyle = new GUIStyle(EditorStyles.label)
-                {
-                    alignment = TextAnchor.UpperCenter,
-                    fontSize = (int)(iconWidth*2f/3f)
-                };
-                GUI.contentColor = Color.blue;
-                Handles.Label(labelPos, this.meshCodeString, meshStyle);
-            }
+            //if (meshCodeScreenWidthArea >= 60f)
+            //{
+            //    var meshStyle = new GUIStyle(EditorStyles.label)
+            //    {
+            //        alignment = TextAnchor.UpperCenter,
+            //        fontSize = (int)(iconWidth*2f/3f)
+            //    };
+            //    GUI.contentColor = Color.blue;
+            //    Handles.Label(labelPos, this.meshCodeString, meshStyle);
+            //}
             
 #endif
         }
