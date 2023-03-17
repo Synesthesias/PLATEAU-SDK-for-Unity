@@ -148,18 +148,6 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
                 if(i==2)
                     numberWorldPos = new Vector3(iconPos.x, iconPos.y , iconPos.z - 250);
             }
-
-            // Show meshcode number
-            //if (meshCodeScreenWidthArea >= 60f)
-            //{
-            //    var meshStyle = new GUIStyle(EditorStyles.label)
-            //    {
-            //        alignment = TextAnchor.UpperCenter,
-            //        fontSize = (int)(iconWidth*2f/3f)
-            //    };
-            //    GUI.contentColor = Color.blue;
-            //    Handles.Label(labelPos, this.meshCodeString, meshStyle);
-            //}
             
 #endif
         }

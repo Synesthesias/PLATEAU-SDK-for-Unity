@@ -113,7 +113,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
             GUIStyle style = new GUIStyle();
             style.fontSize = fontSize;
             style.fontStyle = FontStyle.Bold;
-            style.normal.textColor = color;
+            style.normal.textColor = color;            
 
             GUI.Label(new Rect(screenPos.x - (size.x / 2), -screenPos.y + view.position.height - size.y, size.x * style.fontSize, size.y * style.fontSize), text, style);
             UnityEditor.Handles.EndGUI();
@@ -125,7 +125,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         }
         int ReturnFontSizeBlue()
         {
-            return (int)(Mathf.Clamp(8f+6f*(AreaLodView.meshCodeScreenWidthArea - 45f)/100f, 8f, 16f));
+            return (int)(Mathf.Clamp(8f+8f*(AreaLodView.meshCodeScreenWidthArea - 45f)/100f, 8f, 16f));
         }
     }
 }

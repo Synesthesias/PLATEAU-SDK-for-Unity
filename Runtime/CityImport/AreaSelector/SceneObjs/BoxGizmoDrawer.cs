@@ -64,39 +64,8 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
 
             worldPosBoxGizmos = new Vector3((p2.x + p3.x) / 2f - 500f, max.y, (p1.z + p2.z) / 2f + 2000f);
             meshBoxWidth = (UnityEditor.SceneView.currentDrawingSceneView.camera.WorldToScreenPoint(p2) - UnityEditor.SceneView.currentDrawingSceneView.camera.WorldToScreenPoint(p3)).x;
-            ////Vector3 worldPos = new Vector3((p2.x + p3.x) / 2f, max.y, (p1.z + p2.z) / 2f);
 
-
-            //float monitorDpiScalingFactor = EditorGUIUtility.pixelsPerPoint;
-
-            //if (meshCode.IsValid && meshCode.Level == 2 && (this.BoxColor == Color.black || this.BoxColor == MeshCodeGizmoDrawer.boxColorSelected) && meshCodeScreenWidth <= -60 * monitorDpiScalingFactor)
-            //{
-            //    DrawString(meshCode.ToString(), worldPos, monitorDpiScalingFactor, this.BoxColor, ReturnFontSize());
-            //}
 #endif
-        }
-
-        int ReturnFontSize()
-        {
-            return (int)(Mathf.Clamp(AreaLodView.meshCodeScreenWidthArea, 15f, 30f));
-        }
-
-        static void DrawString(string text, Vector3 worldPos, float scaler, Color? colour = null, int fontSize = 20)
-        {
-            UnityEditor.Handles.BeginGUI();
-            //if (colour.HasValue) 
-            GUI.color = colour.Value;
-            var view = UnityEditor.SceneView.currentDrawingSceneView;
-            fontSize /= (int)scaler;
-            Vector3 screenPos = view.camera.WorldToScreenPoint(worldPos) / scaler;
-            Vector2 size = GUI.skin.label.CalcSize(new GUIContent(text));
-
-            GUIStyle style = new GUIStyle();
-            style.fontSize = fontSize;
-            style.fontStyle = FontStyle.Bold;
-
-            GUI.Label(new Rect(screenPos.x - (size.x / 2), -screenPos.y + view.position.height - size.y, size.x * style.fontSize, size.y * style.fontSize), text, style);
-            UnityEditor.Handles.EndGUI();
         }
 
         public virtual void DrawSceneGUI()
