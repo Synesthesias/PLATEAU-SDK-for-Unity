@@ -91,7 +91,6 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
                  camera.WorldToScreenPoint(this.meshCodeUnityPositionUpperLeft))
                 .x;
             meshCodeScreenWidthArea = meshCodeScreenWidth;
-            Debug.LogError(meshCodeScreenWidthArea);
 
             // 地域メッシュコードの枠内にアイコンが5つ並ぶ程度の大きさ
             float iconWidth = Mathf.Min(maxIconWidth, meshCodeScreenWidth / iconWidthDivider) / monitorDpiScalingFactor;
