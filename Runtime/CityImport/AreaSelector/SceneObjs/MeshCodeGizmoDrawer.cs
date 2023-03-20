@@ -3,6 +3,8 @@ using PLATEAU.Geometries;
 using PLATEAU.Dataset;
 using UnityEngine;
 using UnityEditor;
+using PLATEAU.Native;
+using PLATEAU.Util;
 
 namespace PLATEAU.CityImport.AreaSelector.SceneObjs
 {
@@ -21,7 +23,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         private static readonly Color boxColorSelected = new Color(1f, 162f / 255f, 62f / 255f);
         private const int lineWidthLevel2 = 3;
         private const int lineWidthLevel3 = 2;
-
+        private GeoReference geoReference;
 
         /// <summary>
         /// メッシュコードに対応したギズモを表示するようにします。
@@ -29,6 +31,9 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         public void SetUp(MeshCode meshCode, GeoReference geoReference)
         {
             var extent = meshCode.Extent; // extent は緯度,経度,高さ
+
+            this.geoReference = geoReference;
+
             // min, max は xyz の平面直行座標系に変換したもの
             var min = geoReference.Project(extent.Min);
             var max = geoReference.Project(extent.Max);
@@ -96,7 +101,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
                 }
                 else // blue
                 {
-                    if (AreaLodView.meshCodeScreenWidthArea >= 45f && AreaLodView.meshCodeScreenWidthArea <= 145f)
+                    if (CalcMeshCodeScreenWidth() >= 45f && CalcMeshCodeScreenWidth() <= 145f)
                         DrawString(MeshCode.ToString(), new Vector3(worldPosLevel1.x + 100f, worldPosLevel1.y, worldPosLevel1.z), EditorGUIUtility.pixelsPerPoint, boxColorNormalLevel3, ReturnFontSizeBlue());
                 }
             }
@@ -125,11 +130,21 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
 
         int ReturnFontSize()
         {
-            return (int)(Mathf.Clamp(AreaLodView.meshCodeScreenWidthArea, 15f, 30f));
+            return (int)(Mathf.Clamp(CalcMeshCodeScreenWidth(), 15f, 30f));
         }
         int ReturnFontSizeBlue()
         {
-            return (int)(Mathf.Clamp(8f+8f*(AreaLodView.meshCodeScreenWidthArea - 45f)/100f, 8f, 16f));
+            return (int)(Mathf.Clamp(8f+8f*(CalcMeshCodeScreenWidth() - 45f)/100f, 8f, 16f));
+        }
+
+        private float CalcMeshCodeScreenWidth()
+        {
+            var camera = SceneView.currentDrawingSceneView.camera;
+            var extent = MeshCode.Extent;
+            // geoReference is passed in constructor.
+            var positionUpperLeft = this.geoReference.Project(new GeoCoordinate(extent.Max.Latitude, extent.Min.Longitude, 0)).ToUnityVector();
+            var positionLowerRight = this.geoReference.Project(new GeoCoordinate(extent.Min.Latitude, extent.Max.Longitude, 0)).ToUnityVector();
+            return (camera.WorldToScreenPoint(positionLowerRight) - camera.WorldToScreenPoint(positionUpperLeft)).x;
         }
 #endif
     }

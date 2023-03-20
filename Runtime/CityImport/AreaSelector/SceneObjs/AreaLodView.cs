@@ -40,7 +40,6 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         private static readonly Color boxColor = new Color(0.25f, 0.25f, 0.25f, 0.35f);
         private static ConcurrentDictionary<(PredefinedCityModelPackage package, uint lod), Texture> iconDict;
         private static Texture boxTex;
-        public static float meshCodeScreenWidthArea = 1f;
 
         public AreaLodView(PackageToLodDict packageToLodDict, Vector3 meshCodeUnityPositionUpperLeft, Vector3 meshCodeUnityPositionLowerRight)
         {
@@ -90,7 +89,6 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
                 (camera.WorldToScreenPoint(this.meshCodeUnityPositionLowerRight) -
                  camera.WorldToScreenPoint(this.meshCodeUnityPositionUpperLeft))
                 .x;
-            meshCodeScreenWidthArea = meshCodeScreenWidth;
 
             // 地域メッシュコードの枠内にアイコンが5つ並ぶ程度の大きさ
             float iconWidth = Mathf.Min(maxIconWidth, meshCodeScreenWidth / iconWidthDivider) / monitorDpiScalingFactor;
