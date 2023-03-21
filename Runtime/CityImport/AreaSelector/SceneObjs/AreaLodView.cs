@@ -117,8 +117,10 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
             
             // アイコンを表示します。
             var iconPos = iconsUpperLeft;
+            int i = 0;
             foreach (var iconToShow in iconsToShow)
             {
+                i++;
                 var prevBackgroundColor = GUI.contentColor;
                 GUI.contentColor = new Color(1f, 1f, 1f, iconToShow.IsAvailable ? iconOpacityAvailable : iconOpacityNotAvailable);
                 var style = new GUIStyle(EditorStyles.label)
@@ -138,7 +140,8 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
                 var iconWorldPosRight = camera.ScreenToWorldPoint(new Vector3(iconScreenPosRight.x, iconScreenPosRight.y, distance));
                 iconPos += new Vector3(iconWorldPosRight.x - iconPos.x, 0, 0);
             }
-            #endif
+            
+#endif
         }
 
         /// <summary>

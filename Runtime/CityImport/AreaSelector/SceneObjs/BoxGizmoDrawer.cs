@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEditor;
+using PLATEAU.Dataset;
 
 namespace PLATEAU.CityImport.AreaSelector.SceneObjs
 {
@@ -16,10 +18,13 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         protected float LineWidth { get; set; } = 1f;
         public int Priority { get; set; }
 
-        protected void Init(Vector3 centerPosArg, Vector3 sizeArg)
+        MeshCode meshCode;
+        protected void Init(Vector3 centerPosArg, Vector3 sizeArg, MeshCode _meshCode)
         {
             this.CenterPos = centerPosArg;
             this.Size = sizeArg;
+            meshCode = _meshCode;
+            
         }
 
         public static void DrawWithPriority(IEnumerable<BoxGizmoDrawer> drawers)
@@ -30,11 +35,14 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
                 d.DrawGizmos();
             }
         }
-        
+
 
         public virtual void DrawGizmos()
         {
 #if UNITY_EDITOR
+
+
+
             var prevColor = Gizmos.color;
             Gizmos.color = this.BoxColor;
             var max = AreaMax;
@@ -43,18 +51,20 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
             var p2 = new Vector3(min.x, max.y, max.z);
             var p3 = new Vector3(max.x, max.y, max.z);
             var p4 = new Vector3(max.x, max.y, min.z);
+
             DrawThickLine(p1, p2, LineWidth);
             DrawThickLine(p2, p3, LineWidth);
             DrawThickLine(p3, p4, LineWidth);
             DrawThickLine(p4, p1, LineWidth);
+
             AdditionalGizmo();
-            Gizmos.color = prevColor;
+
 #endif
         }
 
         public virtual void DrawSceneGUI()
         {
-            
+
         }
 
         /// <summary>
@@ -62,10 +72,10 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         /// </summary>
         protected virtual void AdditionalGizmo()
         {
-            
+
         }
 
-        protected Vector3 AreaMax => CalcAreaMax(this.CenterPos ,this.Size);
+        protected Vector3 AreaMax => CalcAreaMax(this.CenterPos, this.Size);
 
         protected Vector3 AreaMin => CalcAreaMin(this.CenterPos, this.Size);
 
@@ -73,12 +83,12 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         {
             return center + size / 2.0f;
         }
-        
+
         protected static Vector3 CalcAreaMin(Vector3 center, Vector3 size)
         {
             return center - size / 2.0f;
         }
-        
+
         /// <summary>
         /// Y軸の値は無視して、XとZの値で箱同士が重なる箇所があるかどうかを bool で返します。
         /// </summary>
@@ -114,10 +124,10 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
                 }
                 var scp1 = c.WorldToScreenPoint(p1);
                 var scp2 = c.WorldToScreenPoint(p2);
- 
+
                 Vector3 v1 = (scp2 - scp1).normalized; // 線の方向
                 Vector3 n = Vector3.Cross(v1, Vector3.forward); // 法線ベクトル
- 
+
                 for (int i = 0; i < count; i++)
                 {
                     Vector3 o = 0.99f * n * width * ((float)i / (count - 1) - 0.5f);
