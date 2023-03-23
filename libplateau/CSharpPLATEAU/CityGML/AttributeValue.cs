@@ -46,6 +46,9 @@ namespace PLATEAU.CityGML
         /// <summary> 属性値を int にパースして返します。 </summary>
         public int AsInt => int.Parse(AsString);
 
+        /// <summary> 属性値を bool にパースして返します。 </summary>
+        public bool AsBool => bool.Parse(AsString);
+
         /// <summary>
         /// 属性の値の想定形式です。<see cref="AttributeType"/> 型で返します。
         /// </summary>
