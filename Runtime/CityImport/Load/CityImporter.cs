@@ -75,38 +75,37 @@ namespace PLATEAU.CityImport.Load
             cityModelComponent.GeoReference =
                 GeoReference.Create(referencePoint, GmlImporter.UnitScale, GmlImporter.MeshAxes, config.CoordinateZoneID);
             
+            
+            // GMLファイルを fetch します。これは同期処理にします。
+            // なぜなら、ファイルコピー が並列で動くのはトラブルの元(特に同じ codelist を同時にコピーしようとしがち) だからです。
+
+            List<GmlFile> fetchedGmls = new List<GmlFile>();
+            foreach (var gml in targetGmls)
+            {
+                string gmlName = Path.GetFileName(gml.Path);
+                try
+                {
+                    
+                    fetchedGmls.Add(await GmlImporter.Fetch(gml, destPath, config, progressDisplay));
+                    progressDisplay.SetProgress(gmlName, 15f, "GMLファイル取得完了");
+                }
+                catch (Exception e)
+                {
+                    Debug.LogError(e);
+                    progressDisplay.SetProgress(gmlName, 0f, "GMLファイルの取得に失敗しました。");
+                }
+            }
+
             // GMLファイルを同時に処理する最大数です。
             // 並列数が 4 くらいだと、1つずつ処理するよりも、全部同時に処理するよりも速いという経験則です。
             // ただしメモリ使用量が増えます。
             var semGmlProcess = new SemaphoreSlim(4);
-            // 上記に関わらず、fetch処理に関しては同時に動くのは 1 つのみとします。
-            // なぜなら、ファイルコピー が並列で動くのはトラブルの元(特に同じ codelist を同時にコピーしようとしがち) だからです。
-            var semGmlFetch = new SemaphoreSlim(1);
-            await Task.WhenAll(targetGmls.Select(async gmlInfo =>
+            await Task.WhenAll(fetchedGmls.Select(async fetchedGml =>
             {
                 await semGmlProcess.WaitAsync(); 
                 try
                 {
-                    GmlFile fetchedGml;
-                    // GMLを1つ fetch します。同時に走らないようにします。
-                    await semGmlFetch.WaitAsync();
-                    try
-                    {
-                        fetchedGml = await GmlImporter.Fetch(gmlInfo, destPath, config, progressDisplay);
-                    }
-                    catch (Exception e)
-                    {
-                        Debug.LogError(e);
-                        progressDisplay.SetProgress(Path.GetFileName(gmlInfo.Path), 0f, "GMLファイルの取得に失敗しました。");
-                        fetchedGml = null;
-                    }
-                    finally
-                    {
-                        semGmlFetch.Release();
-                    }
-                    
-                    
-                    
+
                     if (fetchedGml != null && !string.IsNullOrEmpty(fetchedGml.Path))
                     {
                         // GMLを1つインポートします。
