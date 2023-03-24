@@ -49,7 +49,6 @@ namespace PLATEAU.Tests.TestUtils
             #endif
             
             var conf = MakeConfig(false);
-
             var task = CityImporter.ImportAsync(conf, progressDisplay);
             return task;
         }
