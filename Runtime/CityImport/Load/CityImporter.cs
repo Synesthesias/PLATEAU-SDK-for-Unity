@@ -111,6 +111,7 @@ namespace PLATEAU.CityImport.Load
                         // GMLを1つインポートします。
                         // ここはメインスレッドで呼ぶ必要があります。
                         await GmlImporter.Import(fetchedGml, config, rootTrans, progressDisplay, referencePoint);
+                        
                         lock (lastFetchedGmlRootPath)
                         {
                             lastFetchedGmlRootPath = fetchedGml.CityRootPath();

@@ -74,11 +74,19 @@ namespace PLATEAU.CityImport.Load.CityImportProcedure
             var package = fetchedGmlFile.Package;
             var packageConf = conf.GetConfigForPackage(package);
             var meshExtractOptions = MeshExtractOptions.DefaultValue();
+            int maxLod = packageConf.maxLOD;
+            int minLod = packageConf.minLOD;
+            // TODO LodPair.IsValid みたいな struct を作った方が綺麗に書けそう
+            if (minLod > 5 || maxLod > 5 || minLod > maxLod || minLod < 0 || maxLod < 0)
+            {
+                Debug.Log("LODの設定値が不正です。");
+                return;
+            }
             meshExtractOptions.ReferencePoint = referencePoint;
             meshExtractOptions.MeshAxes = MeshAxes;
             meshExtractOptions.MeshGranularity = packageConf.meshGranularity;
-            meshExtractOptions.MaxLOD = packageConf.maxLOD;
-            meshExtractOptions.MinLOD = packageConf.minLOD;
+            meshExtractOptions.MaxLOD = (uint)maxLod;
+            meshExtractOptions.MinLOD = (uint)minLod;
             meshExtractOptions.ExportAppearance = packageConf.includeTexture;
             meshExtractOptions.GridCountOfSide = 10; // TODO gridCountOfSideはユーザーが設定できるようにしたほうが良い
             meshExtractOptions.UnitScale = UnitScale;

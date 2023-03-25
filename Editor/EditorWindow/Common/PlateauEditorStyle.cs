@@ -299,7 +299,7 @@ namespace PLATEAU.Editor.EditorWindow.Common
         /// <param name="maxVal">ユーザーが選択したスライダーの最大値を ref で返します。</param>
         /// <param name="minLODLimit">選択可能な範囲の最小値です。</param>
         /// <param name="maxLODLimit">選択可能な範囲の最大値です。</param>
-        public static void LODSlider(string label, ref uint minVal, ref uint maxVal, uint minLODLimit, uint maxLODLimit)
+        public static void LODSlider(string label, ref int minVal, ref int maxVal, int minLODLimit, int maxLODLimit)
         {
             if (minLODLimit == maxLODLimit)
             {
@@ -316,8 +316,8 @@ namespace PLATEAU.Editor.EditorWindow.Common
                 NumberDisplay((int)maxVal);
             }
 
-            minVal = (uint)Mathf.Round(sliderValMin);
-            maxVal = (uint)Mathf.Round(sliderValMax);
+            minVal = (int)Mathf.Round(sliderValMin);
+            maxVal = (int)Mathf.Round(sliderValMax);
         }
 
         /// <summary>

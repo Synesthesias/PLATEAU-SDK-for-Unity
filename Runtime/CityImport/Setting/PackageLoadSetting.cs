@@ -12,14 +12,14 @@ namespace PLATEAU.CityImport.Setting
     {
         public bool loadPackage;
         public bool includeTexture;
-        public uint minLOD;
-        public uint maxLOD;
+        public int minLOD;
+        public int maxLOD;
         public MeshGranularity meshGranularity;
         public bool doSetMeshCollider;
         /// <summary> GUIで設定を表示する(true)か、折りたたむ(false)か </summary>
         [NonSerialized] public bool GuiFoldOutState = true;
 
-        public PackageLoadSetting(bool loadPackage, bool includeTexture, uint minLOD, uint maxLOD, MeshGranularity meshGranularity, bool doSetMeshCollider)
+        public PackageLoadSetting(bool loadPackage, bool includeTexture, int minLOD, int maxLOD, MeshGranularity meshGranularity, bool doSetMeshCollider)
         {
             this.loadPackage = loadPackage;
             this.includeTexture = includeTexture;
