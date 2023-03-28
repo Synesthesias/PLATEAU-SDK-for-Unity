@@ -137,8 +137,8 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.AdjustGUIParts
             foreach (PredefinedCityModelPackage package in packages)
             {
                 if (!packageToLodMinMax.Contains(package)) continue;
-                uint availableMinLod = packageToLodMinMax.GetMinLod(package);
-                uint availableMaxLod = packageToLodMinMax.GetMaxLod(package);
+                int availableMinLod = packageToLodMinMax.GetMinLod(package);
+                int availableMaxLod = packageToLodMinMax.GetMaxLod(package);
                 this.sliderPackageLod.Add(package, new LodSliderConfig(availableMinLod, availableMaxLod, availableMinLod, availableMaxLod));
             }
         }
@@ -146,29 +146,29 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.AdjustGUIParts
         /// <summary>
         /// パッケージごとのLODスライダーに関して、ユーザーの選択結果を返します。
         /// </summary>
-        public ReadOnlyDictionary<PredefinedCityModelPackage, (uint minLod, uint maxLod)> PackageLodSliderResult {
+        public ReadOnlyDictionary<PredefinedCityModelPackage, (int minLod, int maxLod)> PackageLodSliderResult {
              get
              {
-                 var ret = new Dictionary<PredefinedCityModelPackage, (uint minLod, uint maxLod)>();
+                 var ret = new Dictionary<PredefinedCityModelPackage, (int minLod, int maxLod)>();
                  foreach (var pair in this.sliderPackageLod)
                  {
                      var package = pair.Key;
                      var lodConf = pair.Value;
                      ret.Add(package, (lodConf.UserMinLod, lodConf.UserMaxLod));
                  }
-                 return new ReadOnlyDictionary<PredefinedCityModelPackage, (uint minLod, uint maxLod)>(ret);
+                 return new ReadOnlyDictionary<PredefinedCityModelPackage, (int minLod, int maxLod)>(ret);
              }
          }
         
         public struct LodSliderConfig
         {
             // シーン中に存在するの最大・最小LOD と、その範囲内でユーザーがGUIで選択した最大・最小LODです。
-            public readonly uint AvailableMinLod;
-            public readonly uint AvailableMaxLod;
-            public uint UserMinLod;
-            public uint UserMaxLod;
+            public readonly int AvailableMinLod;
+            public readonly int AvailableMaxLod;
+            public int UserMinLod;
+            public int UserMaxLod;
 
-            public LodSliderConfig(uint availableMinLod, uint availableMaxLod, uint userMinLod, uint userMaxLod)
+            public LodSliderConfig(int availableMinLod, int availableMaxLod, int userMinLod, int userMaxLod)
             {
                 this.AvailableMinLod = availableMinLod;
                 this.AvailableMaxLod = availableMaxLod;

@@ -30,7 +30,15 @@ namespace PLATEAU.Editor.CityImport
             foreach (var (package, conf) in cityLoadConf.ForEachPackagePair)
             {
                 if (!this.availablePackageLods.Contains(package)) continue;
-                PerPackageLoadConfGui(package, conf, this.availablePackageLods.GetLod(package));
+                int availableMaxLod = this.availablePackageLods.GetLod(package);
+                if (availableMaxLod >= 0)
+                {
+                    PerPackageLoadConfGui(package, conf, availableMaxLod);
+                }
+                else
+                {
+                    conf.loadPackage = false;
+                }
             }
 
             // 位置指定
@@ -54,7 +62,7 @@ namespace PLATEAU.Editor.CityImport
                                 EditorGUILayout.Toggle("Mesh Collider をセットする", conf.doSetMeshCollider);
 
                             PlateauEditorStyle.LODSlider("LOD描画設定", ref conf.minLOD, ref conf.maxLOD,
-                                (uint)Math.Min(predefined.minLOD, availableMaxLod), (uint)availableMaxLod);
+                                Math.Min(predefined.minLOD, availableMaxLod), availableMaxLod);
 
                             conf.meshGranularity = (MeshGranularity)EditorGUILayout.Popup("モデル結合",
                                 (int)conf.meshGranularity, new[] { "最小地物単位(壁面,屋根面等)", "主要地物単位(建築物,道路等)", "地域単位" });

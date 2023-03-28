@@ -87,9 +87,9 @@ namespace PLATEAU.PolygonMesh
         public bool Validate(out string failureMessage)
         {
             failureMessage = "";
-            if (this.MinLOD > this.MaxLOD)
+            if (this.MinLOD > 5 || this.MaxLOD > 5 || this.MinLOD > this.MaxLOD)
             {
-                failureMessage = $"Validate failed : {nameof(this.MinLOD)} should not greater than {nameof(this.MaxLOD)}.";
+                failureMessage = $"Invalid LOD.";
                 return false;
             }
 
