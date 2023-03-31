@@ -54,7 +54,7 @@ namespace PLATEAU.CityImport.Load.Convert
         /// ゲームオブジェクト、メッシュ、テクスチャの実体を作ってシーンに配置します。
         /// 頂点がない場合は nullが返ります。
         /// </summary>
-        public async Task<GameObject> PlaceToScene(Transform parentTrans, Dictionary<string, Texture> cachedTexture)
+        public async Task<GameObject> PlaceToScene(Transform parentTrans, Dictionary<string, Texture> cachedTexture, Texture includedTexture)
         {
             var mesh = GenerateUnityMesh();
             if (mesh.vertexCount <= 0) return null;
@@ -69,10 +69,17 @@ namespace PLATEAU.CityImport.Load.Convert
             for (int i = 0; i < mesh.subMeshCount; i++)
             {
                 materials[i] = new Material(RenderUtil.DefaultMaterial);
-                if (this.subMeshIdToTexture.TryGetValue(i, out var tex))
+                if (includedTexture != null)
+                {
+                    materials[i].mainTexture = includedTexture;
+                    materials[i].color = Color.red;
+                    //materials[i].name = tex.name;
+                }
+                else if (this.subMeshIdToTexture.TryGetValue(i, out var tex))
                 {
                     if (tex != null)
                     {
+                       
                         materials[i].mainTexture = tex;
                         materials[i].name = tex.name;
                     }

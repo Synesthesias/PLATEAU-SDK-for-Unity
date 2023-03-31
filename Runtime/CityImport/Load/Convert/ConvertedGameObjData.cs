@@ -57,7 +57,7 @@ namespace PLATEAU.CityImport.Load.Convert
         /// ゲームオブジェクト、メッシュ、テクスチャの実体を作ってシーンに配置します。
         /// 再帰によって子も配置します。
         /// </summary>
-        public async Task PlaceToScene(Transform parent, Dictionary<string, Texture> cachedTexture, bool skipRoot, bool doSetMeshCollider)
+        public async Task PlaceToScene(Transform parent, Dictionary<string, Texture> cachedTexture, bool skipRoot, bool doSetMeshCollider, Texture includedTexture)
         {
 
             var nextParent = parent;
@@ -78,7 +78,7 @@ namespace PLATEAU.CityImport.Load.Convert
                 else
                 {
                     // メッシュがあれば、それを配置します。（ただし頂点数が0の場合は配置しません。）
-                    var placedObj = await this.meshData.PlaceToScene(parent, cachedTexture);
+                    var placedObj = await this.meshData.PlaceToScene(parent, cachedTexture, includedTexture);
                     if (placedObj != null)
                     {
                         nextParent = placedObj.transform;
@@ -93,7 +93,7 @@ namespace PLATEAU.CityImport.Load.Convert
             // 子を再帰的に配置します。
             foreach (var child in this.children)
             {
-                await child.PlaceToScene(nextParent.transform, cachedTexture, false, doSetMeshCollider);
+                await child.PlaceToScene(nextParent.transform, cachedTexture, false, doSetMeshCollider, includedTexture);
             }
         }
     }
