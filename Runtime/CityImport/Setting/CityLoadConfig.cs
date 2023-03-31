@@ -70,8 +70,8 @@ namespace PLATEAU.CityImport.Setting
                 var package = pair.Key;
                 var maxLod = pair.Value;
                 var predefined = CityModelPackageInfo.GetPredefined(package);
-                var val = new PackageLoadSetting(true, predefined.hasAppearance, (uint)predefined.minLOD,
-                    (uint)maxLod, MeshGranularity.PerPrimaryFeatureObject, false);
+                var val = new PackageLoadSetting(true, predefined.hasAppearance, predefined.minLOD,
+                    maxLod, MeshGranularity.PerPrimaryFeatureObject, false);
                 this.perPackagePairSettings.Add(package, val);
             }
         }

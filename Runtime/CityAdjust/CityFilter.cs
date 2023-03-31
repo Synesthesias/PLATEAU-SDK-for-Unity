@@ -74,7 +74,7 @@ namespace PLATEAU.CityAdjust
         }
 
         public static void FilterByLod(this PLATEAUInstancedCityModel cityModel,
-            ReadOnlyDictionary<PredefinedCityModelPackage, (uint minLod, uint maxLod)> packageToLodRangeDict)
+            ReadOnlyDictionary<PredefinedCityModelPackage, (int minLod, int maxLod)> packageToLodRangeDict)
         {
             foreach (var gmlTrans in cityModel.GmlTransforms)
             {
@@ -87,8 +87,8 @@ namespace PLATEAU.CityAdjust
                     
                     if (PLATEAUInstancedCityModel.TryParseLodGameObjectName(lodTrans.name, out int lodInt))
                     {
-                        uint min = packageToLodRangeDict[gmlPackage].minLod;
-                        uint max = packageToLodRangeDict[gmlPackage].maxLod;
+                        int min = packageToLodRangeDict[gmlPackage].minLod;
+                        int max = packageToLodRangeDict[gmlPackage].maxLod;
                         bool shouldActive = min <= lodInt && lodInt <= max;
                         lodTrans.gameObject.SetActive(shouldActive);
                     }

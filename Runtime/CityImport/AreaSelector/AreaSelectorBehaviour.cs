@@ -190,7 +190,8 @@ namespace PLATEAU.CityImport.AreaSelector
             for (int i = 0; i < gmlCount; i++)
             {
                 var gml = gmlFiles.At(i);
-                ret.MergePackage(gml.Package, gml.GetMaxLod());
+                int maxLod = gml.GetMaxLod();
+                ret.MergePackage(gml.Package, maxLod);
             }
 
             return ret;
