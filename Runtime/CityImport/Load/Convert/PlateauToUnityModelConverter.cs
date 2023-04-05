@@ -28,7 +28,7 @@ namespace PLATEAU.CityImport.Load.Convert
         public static async Task<bool> ConvertAndPlaceToScene(
             CityModel cityModel, MeshExtractOptions meshExtractOptions,
             Transform parentTrans, IProgressDisplay progressDisplay, string progressName,
-            bool doSetMeshCollider, Texture includedTexture
+            bool doSetMeshCollider, UnityEngine.Material includedMaterial
             )
         {
             Debug.Log($"load started");
@@ -71,7 +71,7 @@ namespace PLATEAU.CityImport.Load.Convert
 
             try
             {
-                await meshObjsData.PlaceToScene(parentTrans, cachedTexture, true, doSetMeshCollider, includedTexture);
+                await meshObjsData.PlaceToScene(parentTrans, cachedTexture, true, doSetMeshCollider, includedMaterial);
             }
             catch (Exception e)
             {
