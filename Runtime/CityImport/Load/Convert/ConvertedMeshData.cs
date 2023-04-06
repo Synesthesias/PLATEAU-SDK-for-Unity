@@ -69,15 +69,16 @@ namespace PLATEAU.CityImport.Load.Convert
             for (int i = 0; i < mesh.subMeshCount; i++)
             {
                 materials[i] = new Material(RenderUtil.DefaultMaterial);
+
                 if (this.subMeshIdToTexture.TryGetValue(i, out var tex))
                 {
                     if (tex != null)
                     {
-                       
+
                         materials[i].mainTexture = tex;
                         materials[i].name = tex.name;
                     }
-                    else
+                    else if(includedMaterial != null)
                     {
                         materials[i] = includedMaterial;
                     }
