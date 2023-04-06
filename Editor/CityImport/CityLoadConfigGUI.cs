@@ -58,8 +58,8 @@ namespace PLATEAU.Editor.CityImport
 
                             conf.meshGranularity = (MeshGranularity)EditorGUILayout.Popup("モデル結合",
                                 (int)conf.meshGranularity, new[] { "最小地物単位(壁面,屋根面等)", "主要地物単位(建築物,道路等)", "地域単位" });
-                            EditorGUILayout.LabelField("テクスチャのインポート (オプション)", GUILayout.Width(400));
-                            conf.includedMaterial = (Material)EditorGUILayout.ObjectField(conf.includedMaterial, typeof(Material), false);
+                            EditorGUILayout.LabelField("テクスチャなし部のマテリアル", GUILayout.Width(400));
+                            conf.fallbackMaterial = (Material)EditorGUILayout.ObjectField(conf.fallbackMaterial, typeof(Material), false);
 
                         }
                     }
