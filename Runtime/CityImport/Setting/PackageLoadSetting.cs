@@ -2,6 +2,7 @@
 using PLATEAU.Dataset;
 using PLATEAU.PolygonMesh;
 using PLATEAU.Util;
+using UnityEditor;
 using UnityEngine;
 
 namespace PLATEAU.CityImport.Setting
@@ -35,40 +36,52 @@ namespace PLATEAU.CityImport.Setting
 
         public Material GetFallbackMaterial(PredefinedCityModelPackage pack)
         {
+            const string defaultMatPath = "Materials/DefaultModule/#mdl";
             if (fallbackMaterial == null)
             {
-                Material newMat = new Material(RenderUtil.DefaultMaterial);
+                string assetPath = "";
                 switch (pack)
                 {
                     case PredefinedCityModelPackage.Building:
-                        newMat.name = "Building-looking material";
+                       assetPath = defaultMatPath.Replace("#mdl", "DefaultBuildingMat.mat");
                         break;
                     case PredefinedCityModelPackage.CityFurniture:
-                        newMat.name = "CityFurniture-looking material";
+                        assetPath = defaultMatPath.Replace("#mdl", "DefaultCityFurnitureMat.mat");
                         break;
                     case PredefinedCityModelPackage.DisasterRisk:
-                        newMat.name = "DisasterRisk-looking material";
+                        assetPath = defaultMatPath.Replace("#mdl", "DefaultDisasterRiskMat.mat");
                         break;
                     case PredefinedCityModelPackage.LandUse:
-                        newMat.name = "LandUse-looking material";
+                        assetPath = defaultMatPath.Replace("#mdl", "DefaultLandUseMat.mat");
                         break;
                     case PredefinedCityModelPackage.Relief:
-                        newMat.name = "Relief-looking material";
+                        assetPath = defaultMatPath.Replace("#mdl", "DefaultReliefMat.mat");
                         break;
                     case PredefinedCityModelPackage.Road:
-                        newMat.name = "Road-looking material";
+                        assetPath = defaultMatPath.Replace("#mdl", "DefaultRoadMat.mat");
                         break;
                     case PredefinedCityModelPackage.Unknown:
-                        newMat.name = "Unknown-looking material";
+                        assetPath = defaultMatPath.Replace("#mdl", "DefaultUnknownMat.mat");
                         break;
                     case PredefinedCityModelPackage.UrbanPlanningDecision:
-                        newMat.name = "UrbanPlanningDecision-looking material";
+                        assetPath = defaultMatPath.Replace("#mdl", "DefaultUrbanPlanningDecisionMat.mat");
                         break;
                     case PredefinedCityModelPackage.Vegetation:
-                        newMat.name = "Vegetation-looking material";
+                        assetPath = defaultMatPath.Replace("#mdl", "DefaultVegetationMat.mat");
                         break;
                 }
-                fallbackMaterial = newMat;
+
+                if (!assetPath.Equals(""))
+                {
+                    assetPath = PathUtil.SdkPathToAssetPath(assetPath);
+                    Material mat = AssetDatabase.LoadAssetAtPath<Material>(assetPath);
+                    if (mat != null)
+                    {
+                        fallbackMaterial = mat;
+                    }
+                    else fallbackMaterial = new Material(RenderUtil.DefaultMaterial);
+                }
+                else fallbackMaterial = new Material(RenderUtil.DefaultMaterial);
             }
 
             return fallbackMaterial;
