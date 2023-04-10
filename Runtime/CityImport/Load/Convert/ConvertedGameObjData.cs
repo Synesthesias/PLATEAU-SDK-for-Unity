@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using PLATEAU.PolygonMesh;
 using UnityEngine;
@@ -57,8 +58,9 @@ namespace PLATEAU.CityImport.Load.Convert
         /// ゲームオブジェクト、メッシュ、テクスチャの実体を作ってシーンに配置します。
         /// 再帰によって子も配置します。
         /// </summary>
-        public async Task PlaceToScene(Transform parent, Dictionary<string, Texture> cachedTexture, bool skipRoot, bool doSetMeshCollider)
+        public async Task PlaceToScene(Transform parent, Dictionary<string, Texture> cachedTexture, bool skipRoot, bool doSetMeshCollider, CancellationToken token)
         {
+            if (token.IsCancellationRequested) return;
 
             var nextParent = parent;
             if (!skipRoot)
@@ -93,7 +95,7 @@ namespace PLATEAU.CityImport.Load.Convert
             // 子を再帰的に配置します。
             foreach (var child in this.children)
             {
-                await child.PlaceToScene(nextParent.transform, cachedTexture, false, doSetMeshCollider);
+                await child.PlaceToScene(nextParent.transform, cachedTexture, false, doSetMeshCollider, token);
             }
         }
     }

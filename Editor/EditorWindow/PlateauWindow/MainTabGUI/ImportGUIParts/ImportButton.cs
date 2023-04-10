@@ -14,6 +14,12 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts
     /// </summary>
     internal static class ImportButton
     {
+        /// <summary>
+        /// 「モデルをインポート」のキャンセル用Tokenソース
+        /// インポートタスクは1本なので発行するトークンも１つ
+        /// </summary>
+        private static CancellationTokenSource cancellationTokenSrc;
+
         private static int numCurrentRunningTasks;
         
         /// <summary>
@@ -23,28 +29,53 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts
         {
             using (PlateauEditorStyle.VerticalScopeLevel1())
             {
-                // ボタンを描画します。
-                if (PlateauEditorStyle.MainButton("モデルをインポート"))
+
+                if(numCurrentRunningTasks <= 0)
                 {
-                    // すでにインポートタスクが動いている場合、追加で処理に加えるか尋ねるダイアログを出します。
-                    if (numCurrentRunningTasks > 0)
+                    // ボタンを描画します。
+                    if (PlateauEditorStyle.MainButton("モデルをインポート"))
                     {
-                        bool dialogueResult = EditorUtility.DisplayDialog("PLATEAU SDK", $"すでに {numCurrentRunningTasks}つのインポート処理を実行中です。\n追加で処理に加えますか？", "はい", "いいえ");
-                        if (!dialogueResult)
+                        /*
+                        // すでにインポートタスクが動いている場合、追加で処理に加えるか尋ねるダイアログを出します。
+                        if (numCurrentRunningTasks > 0)
                         {
-                            // 「いいえ」ならキャンセルします。
-                            GUIUtility.ExitGUI();
-                            return;
+                            bool dialogueResult = EditorUtility.DisplayDialog("PLATEAU SDK", $"すでに {numCurrentRunningTasks}つのインポート処理を実行中です。\n追加で処理に加えますか？", "はい", "いいえ");
+                            if (!dialogueResult)
+                            {
+                                // 「いいえ」ならキャンセルします。
+                                GUIUtility.ExitGUI();
+                                return;
+                            }
+                        }
+                        */
+                        // ボタンを実行します。
+                        Interlocked.Increment(ref numCurrentRunningTasks);
+
+                        cancellationTokenSrc = new CancellationTokenSource();
+
+                        // ここでインポートします。
+                        var task = CityImporter.ImportAsync(config, progressDisplay, cancellationTokenSrc.Token);
+
+                        task.ContinueWith((t) => { Interlocked.Decrement(ref numCurrentRunningTasks); Debug.Log($"<color=red>Task 終了</color>");  });
+                        task.ContinueWithErrorCatch();
+                    }
+                }
+                else if (cancellationTokenSrc?.Token != null && cancellationTokenSrc.Token.IsCancellationRequested)
+                {
+                    if (PlateauEditorStyle.CancelButton("キャンセル中…")){}
+                }
+                else
+                {
+                    //Cancel ボタンを描画します。
+                    if (PlateauEditorStyle.CancelButton("インポートをキャンセルする"))
+                    {
+                        bool dialogueResult = EditorUtility.DisplayDialog("PLATEAU SDK", $"インポートをキャンセルしますか？", "はい", "いいえ");
+                        if (dialogueResult)
+                        {
+                            Debug.Log($"<color=yellow>キャンセル</color>");
+                            cancellationTokenSrc.Cancel();
                         }
                     }
-                    // ボタンを実行します。
-                    Interlocked.Increment(ref numCurrentRunningTasks);
-                    
-                    // ここでインポートします。
-                    var task = CityImporter.ImportAsync(config, progressDisplay);
-                    
-                    task.ContinueWith((t) => { Interlocked.Decrement(ref numCurrentRunningTasks); });
-                    task.ContinueWithErrorCatch();
                 }
             }
         }        

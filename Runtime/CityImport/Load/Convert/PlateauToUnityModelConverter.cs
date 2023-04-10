@@ -7,6 +7,7 @@ using PLATEAU.Util;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Texture = UnityEngine.Texture;
+using System.Threading;
 
 #if UNITY_EDITOR
 using UnityEditor.SceneManagement;
@@ -28,10 +29,12 @@ namespace PLATEAU.CityImport.Load.Convert
         public static async Task<bool> ConvertAndPlaceToScene(
             CityModel cityModel, MeshExtractOptions meshExtractOptions,
             Transform parentTrans, IProgressDisplay progressDisplay, string progressName,
-            bool doSetMeshCollider
+            bool doSetMeshCollider, CancellationToken token
             )
         {
             Debug.Log($"load started");
+
+            if (token.IsCancellationRequested) return false;
 
             // ここの処理は 処理A と 処理B に分割されています。
             // Unityのメッシュデータを操作するのは 処理B のみであり、
@@ -49,7 +52,7 @@ namespace PLATEAU.CityImport.Load.Convert
             {
                 meshObjsData = await Task.Run(() =>
                 {
-                    using var plateauModel = ExtractMeshes(cityModel, meshExtractOptions);
+                    using var plateauModel = ExtractMeshes(cityModel, meshExtractOptions, token);
                     var convertedObjData = new ConvertedGameObjData(plateauModel);
                     return convertedObjData;
                 });
@@ -71,7 +74,7 @@ namespace PLATEAU.CityImport.Load.Convert
 
             try
             {
-                await meshObjsData.PlaceToScene(parentTrans, cachedTexture, true, doSetMeshCollider);
+                await meshObjsData.PlaceToScene(parentTrans, cachedTexture, true, doSetMeshCollider, token);
             }
             catch (Exception e)
             {
@@ -87,7 +90,6 @@ namespace PLATEAU.CityImport.Load.Convert
                 EditorSceneManager.MarkSceneDirty(SceneManager.GetActiveScene());
             }
 #endif
-
             Debug.Log("Gml model placed.");
             return true;
         }
@@ -98,7 +100,7 @@ namespace PLATEAU.CityImport.Load.Convert
         /// メインスレッドでなくても動作します。
         /// </summary>
         private static Model ExtractMeshes(
-            CityModel cityModel, MeshExtractOptions meshExtractOptions)
+            CityModel cityModel, MeshExtractOptions meshExtractOptions, CancellationToken token)
         {
             var model = Model.Create();
             if (cityModel == null) return model;

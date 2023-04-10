@@ -26,7 +26,7 @@ namespace PLATEAU.CityImport.Load
         /// GMLファイルから都市モデルを読み、そのメッシュをUnity向けに変換してシーンに配置します。
         /// メインスレッドで呼ぶ必要があります。
         /// </summary>
-        public static async Task ImportAsync(CityLoadConfig config, IProgressDisplay progressDisplay)
+        public static async Task ImportAsync(CityLoadConfig config, IProgressDisplay progressDisplay, CancellationToken token)
         {
             var datasetSourceConfig = config.DatasetSourceConfig;
             string destPath = PathUtil.PLATEAUSrcFetchDir;
@@ -42,7 +42,7 @@ namespace PLATEAU.CityImport.Load
             List<GmlFile> targetGmls = null;
             try
             {
-                targetGmls = await Task.Run(config.SearchMatchingGMLList);
+                targetGmls = await Task.Run(() => config.SearchMatchingGMLList(token));
             }
             catch (Exception)
             {
@@ -62,7 +62,7 @@ namespace PLATEAU.CityImport.Load
             {
                 progressDisplay.SetProgress(Path.GetFileName(gml.Path), 0f, "未処理");
             }
-            
+
             // 都市ゲームオブジェクト階層のルートを生成します。
             // ここで指定するゲームオブジェクト名は仮であり、あとからインポートしたGMLファイルパスに応じてふさわしいものに変更します。
             var rootTrans = new GameObject("インポート中です...").transform;
@@ -74,8 +74,7 @@ namespace PLATEAU.CityImport.Load
             var cityModelComponent = rootTrans.gameObject.AddComponent<PLATEAUInstancedCityModel>();
             cityModelComponent.GeoReference =
                 GeoReference.Create(referencePoint, GmlImporter.UnitScale, GmlImporter.MeshAxes, config.CoordinateZoneID);
-            
-            
+
             // GMLファイルを fetch します。これは同期処理にします。
             // なぜなら、ファイルコピー が並列で動くのはトラブルの元(特に同じ codelist を同時にコピーしようとしがち) だからです。
 
@@ -86,7 +85,7 @@ namespace PLATEAU.CityImport.Load
                 try
                 {
                     
-                    fetchedGmls.Add(await GmlImporter.Fetch(gml, destPath, config, progressDisplay));
+                    fetchedGmls.Add(await GmlImporter.Fetch(gml, destPath, config, progressDisplay, token));
                     progressDisplay.SetProgress(gmlName, 15f, "GMLファイル取得完了");
                 }
                 catch (Exception e)
@@ -110,7 +109,7 @@ namespace PLATEAU.CityImport.Load
                     {
                         // GMLを1つインポートします。
                         // ここはメインスレッドで呼ぶ必要があります。
-                        await GmlImporter.Import(fetchedGml, config, rootTrans, progressDisplay, referencePoint);
+                        await GmlImporter.Import(fetchedGml, config, rootTrans, progressDisplay, referencePoint, token);
                         
                         lock (lastFetchedGmlRootPath)
                         {
@@ -128,7 +127,7 @@ namespace PLATEAU.CityImport.Load
                 }
 
             }));
-            
+
             // インポート完了後の処理
             CityDuplicateProcessor.EnableOnlyLargestLODInDuplicate(cityModelComponent);
             rootTrans.name = Path.GetFileName(lastFetchedGmlRootPath);

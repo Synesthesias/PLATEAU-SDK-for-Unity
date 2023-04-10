@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using PLATEAU.CityGML;
 using PLATEAU.CityImport.Load.Convert;
@@ -25,8 +26,10 @@ namespace PLATEAU.CityImport.Load.CityImportProcedure
         /// <summary>
         /// GMLファイルを1つ fetch (ローカルならコピー、サーバーならダウンロード)し、fetch先の <see cref="GmlFile"/> を返します。
         /// </summary>
-        internal static async Task<GmlFile> Fetch(GmlFile gmlFile, string destPath, CityLoadConfig conf, IProgressDisplay progressDisplay)
+        internal static async Task<GmlFile> Fetch(GmlFile gmlFile, string destPath, CityLoadConfig conf, IProgressDisplay progressDisplay, CancellationToken token)
         {
+            if (token.IsCancellationRequested) return null;
+
             if (gmlFile.Path == null)
             {
                 return null;
@@ -36,7 +39,8 @@ namespace PLATEAU.CityImport.Load.CityImportProcedure
             destPath = destPath.Replace('\\', '/');
             if (!destPath.EndsWith("/")) destPath += "/";
             
-            var fetchedGmlFile = await GmlFetcher.FetchAsync(gmlFile, destPath, gmlName, progressDisplay, conf.DatasetSourceConfig.IsServer);
+            var fetchedGmlFile = await GmlFetcher.FetchAsync(gmlFile, destPath, gmlName, progressDisplay, conf.DatasetSourceConfig.IsServer, token);
+
             return fetchedGmlFile;
         }
         
@@ -46,15 +50,18 @@ namespace PLATEAU.CityImport.Load.CityImportProcedure
         /// </summary>
         internal static async Task Import(GmlFile fetchedGmlFile , CityLoadConfig conf,
             Transform rootTrans, IProgressDisplay progressDisplay,
-            PlateauVector3d referencePoint)
+            PlateauVector3d referencePoint, CancellationToken token)
         {
+            if (token.IsCancellationRequested) return;
+
             string gmlName = Path.GetFileName(fetchedGmlFile.Path);
 
             progressDisplay.SetProgress(gmlName, 20f, "GMLファイルをロード中");
             string gmlPathAfter = fetchedGmlFile.Path;
             if (gmlPathAfter == null) return;
 
-            using var cityModel = await LoadGmlAsync(fetchedGmlFile);
+            using var cityModel = await LoadGmlAsync(fetchedGmlFile, token);
+
             if (cityModel == null)
             {
                 progressDisplay.SetProgress(gmlName, 0f, "失敗 : GMLファイルのパースに失敗しました。");
@@ -97,8 +104,9 @@ namespace PLATEAU.CityImport.Load.CityImportProcedure
 
             // ここはメインスレッドで呼ぶ必要があります。
             bool placingSucceed = await PlateauToUnityModelConverter.ConvertAndPlaceToScene(
-                cityModel, meshExtractOptions, gmlTrans, progressDisplay, gmlName, packageConf.doSetMeshCollider
+                cityModel, meshExtractOptions, gmlTrans, progressDisplay, gmlName, packageConf.doSetMeshCollider, token
             );
+
             if (placingSucceed)
             {
                 progressDisplay.SetProgress(gmlName, 100f, "完了");
@@ -109,12 +117,12 @@ namespace PLATEAU.CityImport.Load.CityImportProcedure
             }
         }
         
-        private static async Task<CityModel> LoadGmlAsync(GmlFile gmlInfo)
+        private static async Task<CityModel> LoadGmlAsync(GmlFile gmlInfo, CancellationToken token)
         {
             string gmlPath = gmlInfo.Path.Replace('\\', '/');
 
             // GMLをパースした結果を返しますが、失敗した時は null を返します。
-            var cityModel = await Task.Run(() => ParseGML(gmlPath));
+            var cityModel = await Task.Run(() => ParseGML(gmlPath, token));
 
             return cityModel;
 
@@ -123,8 +131,13 @@ namespace PLATEAU.CityImport.Load.CityImportProcedure
         /// <summary> gmlファイルをパースします。 </summary>
         /// <param name="gmlAbsolutePath"> gmlファイルのパスです。 </param>
         /// <returns><see cref="CityGML.CityModel"/> を返します。ロードに問題があった場合は null を返します。</returns>
-        private static CityModel ParseGML(string gmlAbsolutePath)
+        private static CityModel ParseGML(string gmlAbsolutePath, CancellationToken token)
         {
+            if(token.IsCancellationRequested)
+            {
+                return null;
+            }
+
             if (!File.Exists(gmlAbsolutePath))
             {
                 Debug.LogError($"GMLファイルが存在しません。 : {gmlAbsolutePath}");

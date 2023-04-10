@@ -194,6 +194,26 @@ namespace PLATEAU.Editor.EditorWindow.Common
             return isButtonPushed;
         }
 
+        public static bool CancelButton(string text)
+        {
+            var buttonStyle = new GUIStyle(EditorStyles.label)
+            {
+                normal =
+                {
+                    background = LoadTexture(imageRoundWindowWide),
+                    textColor = colorDefaultFont.Dark
+                },
+                alignment = TextAnchor.MiddleCenter
+            };
+            Color cancelButtonColor = new Color(0.8f, 0f, 0f);
+            bool isButtonPushed = false;
+            CenterAlignHorizontal(() =>
+            {
+                isButtonPushed = ButtonWithColorTint(new GUIContent(text), cancelButtonColor, buttonStyle, GUILayout.Height(60), GUILayout.MaxWidth(240));
+            });
+            return isButtonPushed;
+        }
+
         public static bool MiniButton(string text, int width)
         {
             var buttonStyle = new GUIStyle(EditorStyles.label)
