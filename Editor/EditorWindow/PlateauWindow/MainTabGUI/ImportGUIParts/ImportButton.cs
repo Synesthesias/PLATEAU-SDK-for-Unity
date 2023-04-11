@@ -29,25 +29,11 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts
         {
             using (PlateauEditorStyle.VerticalScopeLevel1())
             {
-
-                if(numCurrentRunningTasks <= 0)
+                if (numCurrentRunningTasks <= 0)
                 {
                     // ボタンを描画します。
                     if (PlateauEditorStyle.MainButton("モデルをインポート"))
                     {
-                        /*
-                        // すでにインポートタスクが動いている場合、追加で処理に加えるか尋ねるダイアログを出します。
-                        if (numCurrentRunningTasks > 0)
-                        {
-                            bool dialogueResult = EditorUtility.DisplayDialog("PLATEAU SDK", $"すでに {numCurrentRunningTasks}つのインポート処理を実行中です。\n追加で処理に加えますか？", "はい", "いいえ");
-                            if (!dialogueResult)
-                            {
-                                // 「いいえ」ならキャンセルします。
-                                GUIUtility.ExitGUI();
-                                return;
-                            }
-                        }
-                        */
                         // ボタンを実行します。
                         Interlocked.Increment(ref numCurrentRunningTasks);
 
@@ -56,7 +42,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts
                         // ここでインポートします。
                         var task = CityImporter.ImportAsync(config, progressDisplay, cancellationTokenSrc.Token);
 
-                        task.ContinueWith((t) => { Interlocked.Decrement(ref numCurrentRunningTasks); Debug.Log($"<color=red>Task 終了</color>");  });
+                        task.ContinueWith((t) => { Interlocked.Decrement(ref numCurrentRunningTasks); });
                         task.ContinueWithErrorCatch();
                     }
                 }
@@ -72,7 +58,6 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts
                         bool dialogueResult = EditorUtility.DisplayDialog("PLATEAU SDK", $"インポートをキャンセルしますか？", "はい", "いいえ");
                         if (dialogueResult)
                         {
-                            Debug.Log($"<color=yellow>キャンセル</color>");
                             cancellationTokenSrc.Cancel();
                         }
                     }

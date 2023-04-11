@@ -44,6 +44,10 @@ namespace PLATEAU.CityImport.Load
             {
                 targetGmls = await Task.Run(() => config.SearchMatchingGMLList(token));
             }
+            catch (OperationCanceledException)
+            {
+                progressDisplay.SetProgress("GMLファイル検索", 0f, "キャンセルされました");
+            }
             catch (Exception)
             {
                 progressDisplay.SetProgress("GMLファイル検索", 0f, "失敗 : GMLファイルを検索できませんでした。");
@@ -88,6 +92,10 @@ namespace PLATEAU.CityImport.Load
                     fetchedGmls.Add(await GmlImporter.Fetch(gml, destPath, config, progressDisplay, token));
                     progressDisplay.SetProgress(gmlName, 15f, "GMLファイル取得完了");
                 }
+                catch (OperationCanceledException)
+                {
+                    progressDisplay.SetProgress(gmlName, 0f, "キャンセルされました");
+                }
                 catch (Exception e)
                 {
                     Debug.LogError(e);
@@ -107,10 +115,22 @@ namespace PLATEAU.CityImport.Load
 
                     if (fetchedGml != null && !string.IsNullOrEmpty(fetchedGml.Path))
                     {
-                        // GMLを1つインポートします。
-                        // ここはメインスレッドで呼ぶ必要があります。
-                        await GmlImporter.Import(fetchedGml, config, rootTrans, progressDisplay, referencePoint, token);
-                        
+                        try
+                        {
+                            // GMLを1つインポートします。
+                            // ここはメインスレッドで呼ぶ必要があります。
+                            await GmlImporter.Import(fetchedGml, config, rootTrans, progressDisplay, referencePoint, token);
+                        }
+                        catch(OperationCanceledException)
+                        {
+                            progressDisplay.SetProgress(Path.GetFileName(fetchedGml.Path), 0f, "キャンセルされました");
+                        }
+                        catch (Exception e)
+                        {
+                            Debug.LogError(e);
+                        }
+
+
                         lock (lastFetchedGmlRootPath)
                         {
                             lastFetchedGmlRootPath = fetchedGml.CityRootPath();

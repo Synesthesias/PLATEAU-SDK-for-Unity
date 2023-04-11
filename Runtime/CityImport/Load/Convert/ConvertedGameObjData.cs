@@ -60,7 +60,7 @@ namespace PLATEAU.CityImport.Load.Convert
         /// </summary>
         public async Task PlaceToScene(Transform parent, Dictionary<string, Texture> cachedTexture, bool skipRoot, bool doSetMeshCollider, CancellationToken token)
         {
-            if (token.IsCancellationRequested) return;
+            token.ThrowIfCancellationRequested();
 
             var nextParent = parent;
             if (!skipRoot)

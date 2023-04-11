@@ -28,7 +28,7 @@ namespace PLATEAU.CityImport.Load.CityImportProcedure
         /// </summary>
         internal static async Task<GmlFile> Fetch(GmlFile gmlFile, string destPath, CityLoadConfig conf, IProgressDisplay progressDisplay, CancellationToken token)
         {
-            if (token.IsCancellationRequested) return null;
+            token.ThrowIfCancellationRequested();
 
             if (gmlFile.Path == null)
             {
@@ -52,7 +52,7 @@ namespace PLATEAU.CityImport.Load.CityImportProcedure
             Transform rootTrans, IProgressDisplay progressDisplay,
             PlateauVector3d referencePoint, CancellationToken token)
         {
-            if (token.IsCancellationRequested) return;
+            token.ThrowIfCancellationRequested();
 
             string gmlName = Path.GetFileName(fetchedGmlFile.Path);
 
@@ -133,10 +133,7 @@ namespace PLATEAU.CityImport.Load.CityImportProcedure
         /// <returns><see cref="CityGML.CityModel"/> を返します。ロードに問題があった場合は null を返します。</returns>
         private static CityModel ParseGML(string gmlAbsolutePath, CancellationToken token)
         {
-            if(token.IsCancellationRequested)
-            {
-                return null;
-            }
+            token.ThrowIfCancellationRequested();
 
             if (!File.Exists(gmlAbsolutePath))
             {

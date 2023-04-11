@@ -84,6 +84,8 @@ namespace PLATEAU.CityImport.Setting
         /// <returns>検索にヒットしたGMLのリストです。</returns>
         public List<GmlFile> SearchMatchingGMLList( CancellationToken token )
         {
+            token.ThrowIfCancellationRequested();
+
             using var datasetSource = DatasetSource.Create(DatasetSourceConfig);
             using var datasetAccessor = datasetSource.Accessor;
 

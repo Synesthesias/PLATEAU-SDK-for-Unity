@@ -34,7 +34,7 @@ namespace PLATEAU.CityImport.Load.Convert
         {
             Debug.Log($"load started");
 
-            if (token.IsCancellationRequested) return false;
+            token.ThrowIfCancellationRequested();
 
             // ここの処理は 処理A と 処理B に分割されています。
             // Unityのメッシュデータを操作するのは 処理B のみであり、
