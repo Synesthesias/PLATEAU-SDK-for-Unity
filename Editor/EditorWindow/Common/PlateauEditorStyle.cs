@@ -30,6 +30,7 @@ namespace PLATEAU.Editor.EditorWindow.Common
         private const string cyanBackgroundLight = "#abc4c9";
         private static readonly ColorLightDark colorDarkBoxBackground = new ColorLightDark("#515151", "#191919");
         private static readonly ColorLightDark colorButtonMain = new ColorLightDark("#005858", "#005858");
+        private static readonly ColorLightDark colorButtonCancel = new ColorLightDark("#B70000", "#960000");
         private static readonly ColorLightDark colorButtonSub = new ColorLightDark("#E4E4E4", "#676767");
         private static readonly ColorLightDark colorDefaultFont = new ColorLightDark("#090909", "#C4C4C4");
         private static readonly ColorLightDark colorDefaultBackground = new ColorLightDark("#C8C8C8", "#383838");
@@ -190,6 +191,25 @@ namespace PLATEAU.Editor.EditorWindow.Common
             CenterAlignHorizontal(() =>
             {
                 isButtonPushed = ButtonWithColorTint(new GUIContent(text), colorButtonMain.Color, buttonStyle, GUILayout.Height(60), GUILayout.MaxWidth(240));
+            });
+            return isButtonPushed;
+        }
+
+        public static bool CancelButton(string text)
+        {
+            var buttonStyle = new GUIStyle(EditorStyles.label)
+            {
+                normal =
+                {
+                    background = LoadTexture(imageRoundWindowWide),
+                    textColor = colorDefaultFont.Dark
+                },
+                alignment = TextAnchor.MiddleCenter
+            };
+            bool isButtonPushed = false;
+            CenterAlignHorizontal(() =>
+            {
+                isButtonPushed = ButtonWithColorTint(new GUIContent(text), colorButtonCancel.Color, buttonStyle, GUILayout.Height(60), GUILayout.MaxWidth(240));
             });
             return isButtonPushed;
         }
