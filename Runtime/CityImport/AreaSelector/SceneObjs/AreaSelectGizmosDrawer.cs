@@ -6,7 +6,6 @@ using PLATEAU.Dataset;
 using PLATEAU.Native;
 using PLATEAU.Util;
 using UnityEditor;
-using UnityEngine;
 
 namespace PLATEAU.CityImport.AreaSelector.SceneObjs
 {
@@ -49,7 +48,6 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
             referencePoint /= meshCodes.Count;
             referencePoint.Y = 0;
             outGeoReference = GeoReference.Create(referencePoint, 1f, CoordinateSystem.EUN, coordinateZoneID);
-            var gizmoParent = new GameObject("MeshCodeGizmos").transform;
             foreach (var meshCode in meshCodes)
             {
                 var drawer = new MeshCodeGizmoDrawer();
@@ -90,7 +88,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         {
             foreach (var mcDrawer in this.meshCodeDrawers)
             {
-                mcDrawer.ApplyStyle(false);
+                mcDrawer.ApplyStyle();
                 // 大きな粒度の線は優先して表示されるようにします。
                 mcDrawer.Priority = mcDrawer.MeshCode.Level switch
                 {
@@ -98,13 +96,6 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
                     3 => 0,
                     _ => 0
                 };
-            }
-            var selected = this.cursor.SelectedMeshCodes(this.meshCodeDrawers);
-            foreach (var select in selected)
-            {
-                select.ApplyStyle(true);
-                // 選択されたエリアの線は上に（優先して）表示されるようにします。
-                select.Priority += 10;
             }
 
             var gizmosToDraw = new List<BoxGizmoDrawer>();

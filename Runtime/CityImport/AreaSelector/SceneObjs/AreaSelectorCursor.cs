@@ -8,10 +8,15 @@ using Vector3 = UnityEngine.Vector3;
 
 namespace PLATEAU.CityImport.AreaSelector.SceneObjs
 {
+    /// <summary>
+    /// 範囲選択画面のカーソルを描画します。
+    /// </summary>
     internal class AreaSelectorCursor : BoxGizmoDrawer
     {
         public const float BoxY = 15f;
-        private const float slider2DHandleSize = 0.35f;
+        private const float slider2DHandleSizeWorld = 300f;
+        private const float handleSizeMinScreenSpace = 15f;
+        private const float handleSizeMaxScreenSpace = 30f;
         private const float lineWidth = 2;
         private static readonly Color handleColor = new Color(1f, 72f / 255f, 0f);
         private static readonly Color selectOutlineColor = new Color(1f, 72f / 255f, 0f);
@@ -42,6 +47,9 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
             return selected;
         }
 
+        /// <summary>
+        /// カーソルで選択中の緯度経度の範囲を返します。
+        /// </summary>
         public Extent GetExtent(int coordinateZoneID, PlateauVector3d referencePoint)
         {
             using var geoReference = GeoReference.Create(referencePoint, 1.0f, CoordinateSystem.EUN, coordinateZoneID);
@@ -82,6 +90,9 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
             Handles.color = prevColor;
         }
 
+        /// <summary>
+        /// 選択範囲中心の、ドラッグ可能なハンドルを描画します。
+        /// </summary>
         private static Vector3 CenterPointHandle(Vector3 centerPos)
         {
             var handlePos = new Vector3(centerPos.x, BoxY, centerPos.z);
@@ -102,6 +113,9 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
             return centerPos;
         }
 
+        /// <summary>
+        /// 選択範囲の四隅の、ドラッグ可能なハンドルを描画します。
+        /// </summary>
         private static void CornerPointHandle(Vector3 centerPos, Vector3 size, out Vector3 nextCenterPos, out Vector3 nextSize)
         {
             var prevPosMax = CalcAreaMax(centerPos, size);
@@ -137,11 +151,30 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
             }
         }
 
+        /// <summary>
+        /// ドラッグ可能な丸を描画します。
+        /// </summary>
         private static Vector3 Slider2D(Vector3 sliderPos)
         {
+            // 丸の大きさを決めます。
+            // 基本はワールド座標で slider2DHandleSizeWorld の大きさにします。
+            // ただし、スクリーン座標で最小・最大の範囲外であれば、その範囲内に収めます。
+            var cam = Camera.current;
+            float distance = Vector3.Distance(sliderPos, cam.transform.position);
+            float meterPerPixel = Vector3.Distance(
+                                      cam.ViewportToWorldPoint(new Vector3(1, 0.5f, distance)),
+                                      cam.ViewportToWorldPoint(new Vector3(0, 0.5f, distance))
+                                  )
+                                  / cam.pixelWidth;
+            float handleSizeScreenSpace = slider2DHandleSizeWorld / meterPerPixel;
+            float clampedSizeScreenSpace =
+                Mathf.Clamp(handleSizeScreenSpace, handleSizeMinScreenSpace, handleSizeMaxScreenSpace);
+            float handleSizeWorldSpace = clampedSizeScreenSpace * meterPerPixel;
+            
+            // 丸を描画します。
             return Handles.Slider2D(
                 sliderPos, Vector3.up, Vector3.forward,
-                Vector3.right, HandleUtility.GetHandleSize(sliderPos) * slider2DHandleSize,
+                Vector3.right, handleSizeWorldSpace,
                 Handles.SphereHandleCap, 15
             );
         }
