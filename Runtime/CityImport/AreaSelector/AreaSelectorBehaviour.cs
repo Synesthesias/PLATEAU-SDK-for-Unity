@@ -192,8 +192,12 @@ namespace PLATEAU.CityImport.AreaSelector
                 var gml = gmlFiles.At(i);
                 int maxLod = gml.GetMaxLod();
                 ret.MergePackage(gml.Package, maxLod);
-            }
 
+                //Progress表示
+                float progress = (float)i / gmlCount;
+                EditorUtility.DisplayProgressBar("PLATEAU", "利用可能なデータを検索中です......", progress);
+            }
+            EditorUtility.ClearProgressBar();
             return ret;
         }
 
