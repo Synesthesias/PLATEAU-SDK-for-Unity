@@ -8,7 +8,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: DefaultDisasterRiskMat
-  m_Shader: {fileID: 4800000, guid: e4be71837c1c849fda6e7e18d331e612, type: 3}
+  m_Shader: {fileID: 4800000, guid: 01ab7ce9f08b84a5c96c6efcbd9e3f24, type: 3}
   m_ValidKeywords: []
   m_InvalidKeywords: []
   m_LightmapFlags: 4
@@ -41,7 +41,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: 2800000, guid: cdc6c9ca7d5b34dc08e2ef8c3b8e273e, type: 3}
+        m_Texture: {fileID: 2800000, guid: f0382e027546b463396225d8daf08063, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MetallicGlossMap:

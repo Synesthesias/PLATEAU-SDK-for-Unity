@@ -8,7 +8,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: DefaultCityFurnitureMat
-  m_Shader: {fileID: 4800000, guid: e4be71837c1c849fda6e7e18d331e612, type: 3}
+  m_Shader: {fileID: 4800000, guid: 01ab7ce9f08b84a5c96c6efcbd9e3f24, type: 3}
   m_ValidKeywords: []
   m_InvalidKeywords: []
   m_LightmapFlags: 4
@@ -41,7 +41,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: 2800000, guid: ff0f35315b1d44e29b980a78a78f915d, type: 3}
+        m_Texture: {fileID: 2800000, guid: fc6fa633a491f4327a6cd0bd7f55341f, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MetallicGlossMap:
