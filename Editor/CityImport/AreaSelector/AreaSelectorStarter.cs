@@ -58,8 +58,9 @@ namespace PLATEAU.Editor.CityImport.AreaSelector
             SceneManager.SetActiveScene(scene);
             var prefab =
                 AssetDatabase.LoadAssetAtPath<GameObject>(areaSelectorPrefabPath);
-            Object.Instantiate(prefab);
-            prefab.transform.position = Vector3.zero;
+            var gameObj = Object.Instantiate(prefab);
+            gameObj.transform.position = Vector3.zero;
+
             SetUpEventSystem();
         }
 
