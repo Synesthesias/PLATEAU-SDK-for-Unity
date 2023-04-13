@@ -93,6 +93,9 @@ namespace PLATEAU.CityImport.AreaSelector
             var entireExtent = CalcExtentCoversAllMeshCodes(meshCodes);
             this.mapLoader = new GSIMapLoaderZoomSwitch(this.geoReference, entireExtent);
             SetInitialCamera(entireExtent);
+#if (UNITY_EDITOR && UNITY_2019_2_OR_NEWER)
+            SceneVisibilityManager.instance.DisableAllPicking();
+#endif
         }
 
         private void SetInitialCamera(Extent entireExtent)
