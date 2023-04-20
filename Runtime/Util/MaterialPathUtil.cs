@@ -17,7 +17,7 @@ namespace PLATEAU.Util
         const string mapMaterialNameHDRP = "MapUnlitMaterial_HDRP.mat";
         // fallback path
         const string fallbackFolderName = "Fallback";
-        const string buildInFallBackFolder = "BusildInMaterials";
+        const string buildInFallBackFolder = "BuildInMaterials";
         const string uRPFallbackFolder = "URPMaterials";
         const string hDRPFallbackFolder = "HDRPMaterials";
 
