@@ -25,12 +25,6 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
     {
         private static readonly string mapDownloadDest =
             Path.GetFullPath(Path.Combine(Application.temporaryCachePath, "GSIMapImages"));
-        #if UNITY_EDITOR
-        private static readonly string mapMaterialDir = PathUtil.SdkPathToAssetPath("Materials");
-        #endif
-        private const string mapMaterialNameBuiltInRP = "MapUnlitMaterial_BuiltInRP.mat";
-        private const string mapMaterialNameURP = "MapUnlitMaterial_URP.mat";
-        private const string mapMaterialNameHDRP = "MapUnlitMaterial_HDRP.mat";
         private const int timeOutSec = 10;
         public const string MapRootObjName = "Basemap";
         
@@ -111,24 +105,9 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
 
         private static Material LoadMapMaterial()
         {
-            string matFileName;
-            var pipelineAsset = GraphicsSettings.renderPipelineAsset;
-            if (pipelineAsset == null) 
-            {   // Built-in Render Pipeline のとき
-                matFileName = mapMaterialNameBuiltInRP;
-            }
-            else
-            {   // URP または HDRP のとき
-                var pipelineName = pipelineAsset.GetType().Name;
-                matFileName = pipelineName switch
-                {
-                    "UniversalRenderPipelineAsset" => mapMaterialNameURP,
-                    "HDRenderPipelineAsset" => mapMaterialNameHDRP,
-                    _ => throw new InvalidDataException("Unknown material for pipeline.")
-                };
-            }
+
 #if UNITY_EDITOR
-            string matFilePath = Path.Combine(mapMaterialDir, matFileName);
+            string matFilePath = MaterialPathUtil.GetDefaultMatPath();
             var material = AssetDatabase.LoadAssetAtPath<Material>(matFilePath);
             return material;
 #else
