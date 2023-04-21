@@ -54,13 +54,14 @@ namespace PLATEAU.Util
             else
             {
                 var pipelineName = pipelineAsset.GetType().Name;
-                matPath = pipelineName switch
+                var matFolder = pipelineName switch
                 {
 
                     "UniversalRenderPipelineAsset" => uRPFallbackFolder,
                     "HDRenderPipelineAsset" => hDRPFallbackFolder,
                     _ => throw new InvalidDataException("Unknown material for pipeline.")
                 };
+                matPath = Path.Combine(matPath, matFolder);
             }
             switch (pack)
             {
