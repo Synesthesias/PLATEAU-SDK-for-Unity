@@ -23,6 +23,7 @@ Material:
   m_Name: DefaultRoadMat
   m_Shader: {fileID: -6465566751694194690, guid: aff85e3532d6c4d1489cce2e6c2762d5, type: 3}
   m_ValidKeywords:
+  - _ALPHAPREMULTIPLY_ON
   - _DISABLE_SSR_TRANSPARENT
   - _SURFACE_TYPE_TRANSPARENT
   m_InvalidKeywords: []
@@ -125,7 +126,7 @@ Material:
     - _BUILTIN_ZTest: 4
     - _BUILTIN_ZWrite: 1
     - _BUILTIN_ZWriteControl: 0
-    - _Blend: 0
+    - _Blend: 1
     - _BlendMode: 0
     - _BumpScale: 1
     - _CastShadows: 1
@@ -146,14 +147,14 @@ Material:
     - _EnableBlendModePreserveSpecularLighting: 1
     - _EnableFogOnTransparent: 1
     - _EnvironmentReflections: 1
-    - _Gloss: 0
+    - _Gloss: 0.25
     - _GlossMapScale: 0
     - _Glossiness: 0
     - _GlossyReflections: 0
     - _Metallic: 0
     - _NormalStrength: 0
     - _OcclusionStrength: 1
-    - _Opaciy: 0.9
+    - _Opaciy: 0.85
     - _OpaqueCullMode: 2
     - _Parallax: 0.005
     - _QueueControl: 0
@@ -168,7 +169,7 @@ Material:
     - _Smoothness: 0.5
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
-    - _SrcBlend: 5
+    - _SrcBlend: 1
     - _StencilRef: 0
     - _StencilRefDepth: 8
     - _StencilRefDistortionVec: 4
@@ -182,7 +183,7 @@ Material:
     - _SupportDecals: 1
     - _Surface: 1
     - _SurfaceType: 0
-    - _Titling: 0.22
+    - _Titling: 0.0075
     - _TransparentBackfaceEnable: 0
     - _TransparentCullMode: 2
     - _TransparentDepthPostpassEnable: 0
