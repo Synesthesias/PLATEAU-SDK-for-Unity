@@ -277,7 +277,7 @@ Material:
     - _StencilWriteMask: 6
     - _StencilWriteMaskDepth: 8
     - _StencilWriteMaskGBuffer: 14
-    - _StencilWriteMaskMV: 40
+    - _StencilWriteMaskMV: 42
     - _SubsurfaceMask: 1
     - _SupportDecals: 1
     - _Surface: 1
