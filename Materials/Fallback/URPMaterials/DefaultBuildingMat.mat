@@ -20,7 +20,6 @@ Material:
   m_CustomRenderQueue: 3003
   stringTagMap:
     MotionVector: User
-    RenderType: Transparent
   disabledShaderPasses:
   - TransparentDepthPrepass
   - TransparentDepthPostpass
@@ -146,7 +145,7 @@ Material:
     - _OpaqueCullMode: 2
     - _Parallax: 0.005
     - _QueueControl: 0
-    - _QueueOffset: 0
+    - _QueueOffset: 3
     - _RayTracing: 0
     - _ReceiveShadows: 1
     - _ReceivesSSR: 1
@@ -169,7 +168,7 @@ Material:
     - _StencilWriteMaskGBuffer: 14
     - _StencilWriteMaskMV: 40
     - _SupportDecals: 1
-    - _Surface: 0
+    - _Surface: 1
     - _SurfaceType: 1
     - _Titling: 0.0008
     - _TransparentBackfaceEnable: 0
