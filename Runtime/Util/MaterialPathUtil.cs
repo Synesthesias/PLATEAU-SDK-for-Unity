@@ -7,6 +7,13 @@ using UnityEngine.Rendering;
 
 namespace PLATEAU.Util
 {
+    public enum PipeLineType
+    {
+        BuildIn,
+        UniversalRenderPipelineAsset,
+        HDRenderPipelineAsset
+    }
+
     public class MaterialPathUtil
     {
         // base paths
@@ -21,23 +28,40 @@ namespace PLATEAU.Util
         const string uRPFallbackFolder = "URPMaterials";
         const string hDRPFallbackFolder = "HDRPMaterials";
 
-        public static string GetDefaultMatPath()
+        public static PipeLineType GetRenderPipelineType()
         {
-            var rtMat = "";
             var pipelineAsset = GraphicsSettings.renderPipelineAsset;
             if (pipelineAsset == null)
             {   // Built-in Render Pipeline ???
-                rtMat = mapMaterialNameBuiltInRP;
+                return PipeLineType.BuildIn;
             }
             else
             {   // URP ??? HDRP ???
                 var pipelineName = pipelineAsset.GetType().Name;
-                rtMat = pipelineName switch
+                return pipelineName switch
                 {
-                    "UniversalRenderPipelineAsset" => mapMaterialNameURP,
-                    "HDRenderPipelineAsset" => mapMaterialNameHDRP,
+                    "UniversalRenderPipelineAsset" => PipeLineType.UniversalRenderPipelineAsset,
+                    "HDRenderPipelineAsset" => PipeLineType.HDRenderPipelineAsset,
                     _ => throw new InvalidDataException("Unknown material for pipeline.")
                 };
+            }
+        }
+
+        public static string GetDefaultMatPath()
+        {
+            var plt = GetRenderPipelineType();
+            var rtMat = "";
+            if(plt == PipeLineType.BuildIn)
+            {
+                rtMat = mapMaterialNameBuiltInRP;
+            }
+            else if (plt == PipeLineType.UniversalRenderPipelineAsset)
+            {
+                rtMat = mapMaterialNameURP;
+            }
+            else if(plt == PipeLineType.HDRenderPipelineAsset)
+            {
+                rtMat = mapMaterialNameHDRP;
             }
 
             return Path.Combine(mapMaterialDir, rtMat);
@@ -46,23 +70,24 @@ namespace PLATEAU.Util
         public static string GetFallbackMaterialPath(PredefinedCityModelPackage pack)
         {
             string matPath = Path.Combine(mapMaterialDir, fallbackFolderName);
-            var pipelineAsset = GraphicsSettings.renderPipelineAsset;
-            if(pipelineAsset == null)
-            {
-                matPath = Path.Combine(matPath, buildInFallBackFolder);
-            }
-            else
-            {
-                var pipelineName = pipelineAsset.GetType().Name;
-                var matFolder = pipelineName switch
-                {
+            var plt = GetRenderPipelineType();
+            var fbp = "";
 
-                    "UniversalRenderPipelineAsset" => uRPFallbackFolder,
-                    "HDRenderPipelineAsset" => hDRPFallbackFolder,
-                    _ => throw new InvalidDataException("Unknown material for pipeline.")
-                };
-                matPath = Path.Combine(matPath, matFolder);
+            if (plt == PipeLineType.BuildIn)
+            {
+                fbp = buildInFallBackFolder;
             }
+            else if (plt == PipeLineType.UniversalRenderPipelineAsset)
+            {
+                fbp = uRPFallbackFolder;
+            }
+            else if (plt == PipeLineType.HDRenderPipelineAsset)
+            {
+                fbp = hDRPFallbackFolder;
+            }
+
+            matPath = Path.Combine(matPath, fbp);
+
             switch (pack)
             {
                 case PredefinedCityModelPackage.Building:

@@ -49,13 +49,11 @@ Material:
   m_CustomRenderQueue: 3000
   stringTagMap:
     MotionVector: User
-    RenderType: Transparent
   disabledShaderPasses:
   - TransparentDepthPrepass
   - TransparentDepthPostpass
   - TransparentBackface
   - RayTracingPrepass
-  - DepthOnly
   - MOTIONVECTORS
   m_SavedProperties:
     serializedVersion: 3
