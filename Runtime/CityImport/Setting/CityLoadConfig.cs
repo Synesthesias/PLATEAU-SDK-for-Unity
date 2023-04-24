@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using PLATEAU.CityImport.AreaSelector;
 using PLATEAU.Dataset;
 using PLATEAU.Native;
@@ -81,8 +82,10 @@ namespace PLATEAU.CityImport.Setting
         /// 多数のファイルから検索するので、実行時間が長くなりがちである点にご注意ください。
         /// </summary>
         /// <returns>検索にヒットしたGMLのリストです。</returns>
-        public List<GmlFile> SearchMatchingGMLList()
+        public List<GmlFile> SearchMatchingGMLList( CancellationToken token )
         {
+            token.ThrowIfCancellationRequested();
+
             using var datasetSource = DatasetSource.Create(DatasetSourceConfig);
             using var datasetAccessor = datasetSource.Accessor;
 

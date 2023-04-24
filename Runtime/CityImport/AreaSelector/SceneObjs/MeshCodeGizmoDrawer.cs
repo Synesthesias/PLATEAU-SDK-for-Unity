@@ -49,17 +49,17 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
             MeshCode = meshCode;
         }
 
-        public void ApplyStyle(bool selected)
+        public void ApplyStyle()
         {
             switch (MeshCode.Level)
             {
                 case 2:
                     LineWidth = lineWidthLevel2;
-                    BoxColor = selected ? boxColorSelected : boxColorNormalLevel2;
+                    BoxColor = boxColorNormalLevel2;
                     break;
                 default:
                     LineWidth = lineWidthLevel3;
-                    BoxColor = selected ? boxColorSelected : boxColorNormalLevel3;
+                    BoxColor = boxColorNormalLevel3;
                     break;
             }
         }

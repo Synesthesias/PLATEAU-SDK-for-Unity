@@ -93,6 +93,9 @@ namespace PLATEAU.CityImport.AreaSelector
             var entireExtent = CalcExtentCoversAllMeshCodes(meshCodes);
             this.mapLoader = new GSIMapLoaderZoomSwitch(this.geoReference, entireExtent);
             SetInitialCamera(entireExtent);
+#if (UNITY_EDITOR && UNITY_2019_2_OR_NEWER)
+            SceneVisibilityManager.instance.DisableAllPicking();
+#endif
         }
 
         private void SetInitialCamera(Extent entireExtent)
@@ -192,8 +195,12 @@ namespace PLATEAU.CityImport.AreaSelector
                 var gml = gmlFiles.At(i);
                 int maxLod = gml.GetMaxLod();
                 ret.MergePackage(gml.Package, maxLod);
-            }
 
+                //Progress表示
+                float progress = (float)i / gmlCount;
+                EditorUtility.DisplayProgressBar("PLATEAU", "利用可能なデータを検索中です......", progress);
+            }
+            EditorUtility.ClearProgressBar();
             return ret;
         }
 
