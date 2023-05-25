@@ -78,7 +78,7 @@ namespace PLATEAU.CityImport.Load.Convert
             }
             catch (Exception e)
             {
-                Debug.Log("メッシュデータの配置に失敗しました。\n" + e);
+                Debug.LogError("メッシュデータの配置に失敗しました。\n" + e);
                 return false;
             }
 
