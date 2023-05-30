@@ -14,7 +14,7 @@ namespace PLATEAU.Util.Async
         /// コルーチンを使うので、メインスレッドで行われる必要があります。
         /// 失敗した場合は null を返します。
         /// </summary>
-        public static async Task<Texture> LoadAsync(string url, int timeOutSec)
+        public static async Task<Texture2D> LoadAsync(string url, int timeOutSec)
         {
             var request = UnityWebRequestTexture.GetTexture(url);
             request.timeout = timeOutSec;
@@ -29,7 +29,7 @@ namespace PLATEAU.Util.Async
                 return null;
             }
 
-            Texture texture = ((DownloadHandlerTexture)request.downloadHandler).texture;
+            var texture = ((DownloadHandlerTexture)request.downloadHandler).texture;
             return texture;
         }
     }
