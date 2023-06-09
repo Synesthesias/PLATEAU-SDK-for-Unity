@@ -1431,10 +1431,10 @@
                 "m_Id": "e2ddf753f1c0439d86dae066ce799918"
             },
             {
-                "m_Id": "6fd5ad570aa84b09af3647d3d577843e"
+                "m_Id": "4db81519909545e983593497fd1ef93c"
             },
             {
-                "m_Id": "4db81519909545e983593497fd1ef93c"
+                "m_Id": "6fd5ad570aa84b09af3647d3d577843e"
             },
             {
                 "m_Id": "1457708094434b9a86e9d3b0589a45ca"
@@ -2697,7 +2697,7 @@
         "m_Id": "fc072534a4094ee88a5e17f2eba7bce4"
     },
     "m_AllowMaterialOverride": false,
-    "m_SurfaceType": 1,
+    "m_SurfaceType": 0,
     "m_ZWriteControl": 0,
     "m_ZTestMode": 4,
     "m_AlphaMode": 0,
@@ -4316,11 +4316,11 @@
     "overrideHLSLDeclaration": true,
     "hlslDeclarationOverride": 2,
     "m_Hidden": false,
-    "m_Value": 0.0,
+    "m_Value": 30.0,
     "m_FloatType": 1,
     "m_RangeValues": {
-        "x": 0.0,
-        "y": 1.0
+        "x": 0.009999999776482582,
+        "y": 30.0
     }
 }
 

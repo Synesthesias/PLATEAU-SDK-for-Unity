@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: PlateauTriplanerTest
+  m_Name: PlateauTriplanerShaderTest
   m_Shader: {fileID: -6465566751694194690, guid: aff85e3532d6c4d1489cce2e6c2762d5, type: 3}
   m_ValidKeywords: []
   m_InvalidKeywords: []
@@ -105,7 +105,7 @@ Material:
     - _AmbientOcclusion: 1
     - _BUILTIN_QueueControl: 0
     - _BUILTIN_QueueOffset: 0
-    - _Blend: 0.341
+    - _Blend: 30
     - _BumpScale: 1
     - _Cutoff: 0.5
     - _DetailNormalMapScale: 1
