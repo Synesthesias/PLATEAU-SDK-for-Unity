@@ -26,7 +26,7 @@ namespace PLATEAU.CityImport.Load
         /// GMLファイルから都市モデルを読み、そのメッシュをUnity向けに変換してシーンに配置します。
         /// メインスレッドで呼ぶ必要があります。
         /// </summary>
-        public static async Task ImportAsync(CityLoadConfig config, IProgressDisplay progressDisplay)
+        public static async Task ImportAsync(CityLoadConfig config, IProgressDisplay progressDisplay, CancellationToken token)
         {
             var datasetSourceConfig = config.DatasetSourceConfig;
             string destPath = PathUtil.PLATEAUSrcFetchDir;
@@ -42,7 +42,11 @@ namespace PLATEAU.CityImport.Load
             List<GmlFile> targetGmls = null;
             try
             {
-                targetGmls = await Task.Run(config.SearchMatchingGMLList);
+                targetGmls = await Task.Run(() => config.SearchMatchingGMLList(token));
+            }
+            catch (OperationCanceledException)
+            {
+                progressDisplay.SetProgress("GMLファイル検索", 0f, "キャンセルされました");
             }
             catch (Exception)
             {
@@ -62,7 +66,7 @@ namespace PLATEAU.CityImport.Load
             {
                 progressDisplay.SetProgress(Path.GetFileName(gml.Path), 0f, "未処理");
             }
-            
+
             // 都市ゲームオブジェクト階層のルートを生成します。
             // ここで指定するゲームオブジェクト名は仮であり、あとからインポートしたGMLファイルパスに応じてふさわしいものに変更します。
             var rootTrans = new GameObject("インポート中です...").transform;
@@ -74,24 +78,62 @@ namespace PLATEAU.CityImport.Load
             var cityModelComponent = rootTrans.gameObject.AddComponent<PLATEAUInstancedCityModel>();
             cityModelComponent.GeoReference =
                 GeoReference.Create(referencePoint, GmlImporter.UnitScale, GmlImporter.MeshAxes, config.CoordinateZoneID);
-            
-            // GMLファイルを同時に処理する最大数です。
-            // 並列数が 4 くらいだと、1つずつ処理するよりも、全部同時に処理するよりも速いという経験則です。
-            var sem = new SemaphoreSlim(4);
-            await Task.WhenAll(targetGmls.Select(async gmlInfo =>
+
+            // GMLファイルを fetch します。これは同期処理にします。
+            // なぜなら、ファイルコピー が並列で動くのはトラブルの元(特に同じ codelist を同時にコピーしようとしがち) だからです。
+
+            List<GmlFile> fetchedGmls = new List<GmlFile>();
+            foreach (var gml in targetGmls)
             {
-                await sem.WaitAsync(); 
+                string gmlName = Path.GetFileName(gml.Path);
                 try
                 {
-                    // GMLインポートの主たるメソッドです。
-                    // ここはメインスレッドで呼ぶ必要があります。
-                    var gml = await GmlImporter.Import(gmlInfo, destPath, config, rootTrans, progressDisplay, referencePoint);
                     
-                    if (gml != null && !string.IsNullOrEmpty(gml.Path))
+                    fetchedGmls.Add(await GmlImporter.Fetch(gml, destPath, config, progressDisplay, token));
+                    progressDisplay.SetProgress(gmlName, 15f, "GMLファイル取得完了");
+                }
+                catch (OperationCanceledException)
+                {
+                    progressDisplay.SetProgress(gmlName, 0f, "キャンセルされました");
+                }
+                catch (Exception e)
+                {
+                    Debug.LogError(e);
+                    progressDisplay.SetProgress(gmlName, 0f, "GMLファイルの取得に失敗しました。");
+                }
+            }
+
+            // GMLファイルを同時に処理する最大数です。
+            // 並列数が 4 くらいだと、1つずつ処理するよりも、全部同時に処理するよりも速いという経験則です。
+            // ただしメモリ使用量が増えます。
+            var semGmlProcess = new SemaphoreSlim(4);
+            await Task.WhenAll(fetchedGmls.Select(async fetchedGml =>
+            {
+                await semGmlProcess.WaitAsync(); 
+                try
+                {
+
+                    if (fetchedGml != null && !string.IsNullOrEmpty(fetchedGml.Path))
                     {
+                        try
+                        {
+                            // GMLを1つインポートします。
+                            // ここはメインスレッドで呼ぶ必要があります。
+                            await GmlImporter.Import(fetchedGml, config, rootTrans, progressDisplay, referencePoint, token);
+                        }
+                        catch(OperationCanceledException)
+                        {
+                            progressDisplay.SetProgress(Path.GetFileName(fetchedGml.Path), 0f, "キャンセルされました");
+                        }
+                        catch (Exception e)
+                        {
+                            Debug.LogError(e);
+                        }
+
+
                         lock (lastFetchedGmlRootPath)
                         {
-                            lastFetchedGmlRootPath = gml.CityRootPath();
+                            lastFetchedGmlRootPath = fetchedGml.CityRootPath();
                         }
                     }
                 }
@@ -101,11 +143,11 @@ namespace PLATEAU.CityImport.Load
                 }
                 finally
                 {
-                    sem.Release();
+                    semGmlProcess.Release();
                 }
 
             }));
-            
+
             // インポート完了後の処理
             CityDuplicateProcessor.EnableOnlyLargestLODInDuplicate(cityModelComponent);
             rootTrans.name = Path.GetFileName(lastFetchedGmlRootPath);

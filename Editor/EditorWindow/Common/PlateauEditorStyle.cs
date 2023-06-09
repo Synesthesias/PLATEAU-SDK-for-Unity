@@ -30,6 +30,7 @@ namespace PLATEAU.Editor.EditorWindow.Common
         private const string cyanBackgroundLight = "#abc4c9";
         private static readonly ColorLightDark colorDarkBoxBackground = new ColorLightDark("#515151", "#191919");
         private static readonly ColorLightDark colorButtonMain = new ColorLightDark("#005858", "#005858");
+        private static readonly ColorLightDark colorButtonCancel = new ColorLightDark("#B70000", "#960000");
         private static readonly ColorLightDark colorButtonSub = new ColorLightDark("#E4E4E4", "#676767");
         private static readonly ColorLightDark colorDefaultFont = new ColorLightDark("#090909", "#C4C4C4");
         private static readonly ColorLightDark colorDefaultBackground = new ColorLightDark("#C8C8C8", "#383838");
@@ -194,6 +195,25 @@ namespace PLATEAU.Editor.EditorWindow.Common
             return isButtonPushed;
         }
 
+        public static bool CancelButton(string text)
+        {
+            var buttonStyle = new GUIStyle(EditorStyles.label)
+            {
+                normal =
+                {
+                    background = LoadTexture(imageRoundWindowWide),
+                    textColor = colorDefaultFont.Dark
+                },
+                alignment = TextAnchor.MiddleCenter
+            };
+            bool isButtonPushed = false;
+            CenterAlignHorizontal(() =>
+            {
+                isButtonPushed = ButtonWithColorTint(new GUIContent(text), colorButtonCancel.Color, buttonStyle, GUILayout.Height(60), GUILayout.MaxWidth(240));
+            });
+            return isButtonPushed;
+        }
+
         public static bool MiniButton(string text, int width)
         {
             var buttonStyle = new GUIStyle(EditorStyles.label)
@@ -299,7 +319,7 @@ namespace PLATEAU.Editor.EditorWindow.Common
         /// <param name="maxVal">ユーザーが選択したスライダーの最大値を ref で返します。</param>
         /// <param name="minLODLimit">選択可能な範囲の最小値です。</param>
         /// <param name="maxLODLimit">選択可能な範囲の最大値です。</param>
-        public static void LODSlider(string label, ref uint minVal, ref uint maxVal, uint minLODLimit, uint maxLODLimit)
+        public static void LODSlider(string label, ref int minVal, ref int maxVal, int minLODLimit, int maxLODLimit)
         {
             if (minLODLimit == maxLODLimit)
             {
@@ -316,8 +336,8 @@ namespace PLATEAU.Editor.EditorWindow.Common
                 NumberDisplay((int)maxVal);
             }
 
-            minVal = (uint)Mathf.Round(sliderValMin);
-            maxVal = (uint)Mathf.Round(sliderValMax);
+            minVal = (int)Mathf.Round(sliderValMin);
+            maxVal = (int)Mathf.Round(sliderValMax);
         }
 
         /// <summary>

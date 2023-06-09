@@ -1,4 +1,5 @@
-﻿using System.Collections.ObjectModel;
+﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using PLATEAU.CityInfo;
 using PLATEAU.Dataset;
@@ -36,14 +37,23 @@ namespace PLATEAU.CityAdjust
                     // 都市オブジェクトごとのループ
                     foreach (var cityObjTrans in cityObjTransforms)
                     {
-                        var cityObj = gmlModel.GetCityObjectById(cityObjTrans.name);
-                        // 都市オブジェクト分類は階層構造のノードになっています。
-                        // それを下位から上位へたどり、
-                        // 1つでも GUI上で選択されていないものがあればそのオブジェクトは非表示、
-                        // そうでなければ表示します。
-                        var typeNode = CityObjectTypeHierarchy.GetNodeByType(cityObj.Type)
-                                       ?? CityObjectTypeHierarchy.GetNodeByPackage(gmlPackage);
-                        
+                        var typeNode = CityObjectTypeHierarchy.GetNodeByPackage(gmlPackage);
+                        try
+                        {
+                            var cityObj = gmlModel.GetCityObjectById(cityObjTrans.name);
+                            // 都市オブジェクト分類は階層構造のノードになっています。
+                            // それを下位から上位へたどり、
+                            // 1つでも GUI上で選択されていないものがあればそのオブジェクトは非表示、
+                            // そうでなければ表示します。
+
+                            typeNode = CityObjectTypeHierarchy.GetNodeByType(cityObj.Type)
+                                        ?? CityObjectTypeHierarchy.GetNodeByPackage(gmlPackage);
+                        }
+                        catch(KeyNotFoundException e)
+                        {
+                            Debug.LogError(e.Message);
+                        }
+
                         bool shouldObjEnabled = true;
                         // 分類の階層構造をたどるループ
                         while (typeNode.Parent != null)
@@ -74,7 +84,7 @@ namespace PLATEAU.CityAdjust
         }
 
         public static void FilterByLod(this PLATEAUInstancedCityModel cityModel,
-            ReadOnlyDictionary<PredefinedCityModelPackage, (uint minLod, uint maxLod)> packageToLodRangeDict)
+            ReadOnlyDictionary<PredefinedCityModelPackage, (int minLod, int maxLod)> packageToLodRangeDict)
         {
             foreach (var gmlTrans in cityModel.GmlTransforms)
             {
@@ -87,8 +97,8 @@ namespace PLATEAU.CityAdjust
                     
                     if (PLATEAUInstancedCityModel.TryParseLodGameObjectName(lodTrans.name, out int lodInt))
                     {
-                        uint min = packageToLodRangeDict[gmlPackage].minLod;
-                        uint max = packageToLodRangeDict[gmlPackage].maxLod;
+                        int min = packageToLodRangeDict[gmlPackage].minLod;
+                        int max = packageToLodRangeDict[gmlPackage].maxLod;
                         bool shouldActive = min <= lodInt && lodInt <= max;
                         lodTrans.gameObject.SetActive(shouldActive);
                     }

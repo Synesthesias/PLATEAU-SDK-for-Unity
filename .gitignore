@@ -4,3 +4,4 @@ Documentation~/api
 .docs/obj
 Documentation~/obj
 *.pdb
+*.pdb.meta

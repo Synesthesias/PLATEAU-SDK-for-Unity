@@ -131,6 +131,9 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
             
             var gameObj = GameObject.CreatePrimitive(PrimitiveType.Plane);
             gameObj.name = mapObjName;
+#if (UNITY_EDITOR && UNITY_2019_2_OR_NEWER)
+            SceneVisibilityManager.instance.DisablePicking(gameObj, true);
+#endif
             var trans = gameObj.transform;
             trans.position = mapTile.UnityCenter(geoReference);
             // UnityのPlaneは 10m×10m なので 0.1倍します。

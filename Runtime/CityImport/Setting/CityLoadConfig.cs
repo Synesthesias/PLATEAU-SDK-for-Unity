@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using PLATEAU.CityImport.AreaSelector;
 using PLATEAU.Dataset;
 using PLATEAU.Native;
@@ -70,8 +71,8 @@ namespace PLATEAU.CityImport.Setting
                 var package = pair.Key;
                 var maxLod = pair.Value;
                 var predefined = CityModelPackageInfo.GetPredefined(package);
-                var val = new PackageLoadSetting(true, predefined.hasAppearance, (uint)predefined.minLOD,
-                    (uint)maxLod, MeshGranularity.PerPrimaryFeatureObject, false);
+                var val = new PackageLoadSetting(true, predefined.hasAppearance, predefined.minLOD,
+                    maxLod, MeshGranularity.PerPrimaryFeatureObject, false);
                 this.perPackagePairSettings.Add(package, val);
             }
         }
@@ -81,8 +82,10 @@ namespace PLATEAU.CityImport.Setting
         /// 多数のファイルから検索するので、実行時間が長くなりがちである点にご注意ください。
         /// </summary>
         /// <returns>検索にヒットしたGMLのリストです。</returns>
-        public List<GmlFile> SearchMatchingGMLList()
+        public List<GmlFile> SearchMatchingGMLList( CancellationToken token )
         {
+            token.ThrowIfCancellationRequested();
+
             using var datasetSource = DatasetSource.Create(DatasetSourceConfig);
             using var datasetAccessor = datasetSource.Accessor;
 

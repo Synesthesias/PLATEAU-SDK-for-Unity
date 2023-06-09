@@ -14,7 +14,7 @@ namespace PLATEAU.Util
         HDRenderPipelineAsset
     }
 
-    public class MaterialPathUtil
+    public static class MaterialPathUtil
     {
         // base paths
         static readonly string mapMaterialDir = PathUtil.SdkPathToAssetPath("Materials");

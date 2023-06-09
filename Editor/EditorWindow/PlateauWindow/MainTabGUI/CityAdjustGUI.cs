@@ -102,7 +102,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
                 var lods = PLATEAUInstancedCityModel.GetLods(gml);
                 if (lods.Count > 0)
                 {
-                    this.packageToLodMinMax.AddOrMerge(package, (uint)lods.Min(), (uint)lods.Max());
+                    this.packageToLodMinMax.AddOrMerge(package, lods.Min(), lods.Max());
                 }
                 gmlFile.Dispose();
             }
@@ -115,27 +115,27 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
 
         public class PackageToLodMinMax
         {
-            private readonly Dictionary<PredefinedCityModelPackage, (uint minLod, uint maxLod)> data =
-                new Dictionary<PredefinedCityModelPackage, (uint minLod, uint maxLod)>();
+            private readonly Dictionary<PredefinedCityModelPackage, (int minLod, int maxLod)> data =
+                new Dictionary<PredefinedCityModelPackage, (int minLod, int maxLod)>();
 
             /// <summary>
             /// 与えられたパッケージに対して、最小・最大LODを登録します。
             /// すでにそのパッケージに関するデータがある場合は、以前のLOD範囲と引数のLOD範囲の和集合にします。
             /// </summary>
-            public void AddOrMerge(PredefinedCityModelPackage package, uint minLod, uint maxLod)
+            public void AddOrMerge(PredefinedCityModelPackage package, int minLod, int maxLod)
             {
                 if (this.data.ContainsKey(package))
                 {
-                    uint nextMinLod = Math.Min(minLod, this.data[package].minLod);
-                    uint nextMaxLod = Math.Max(maxLod, this.data[package].maxLod);
+                    int nextMinLod = Math.Min(minLod, this.data[package].minLod);
+                    int nextMaxLod = Math.Max(maxLod, this.data[package].maxLod);
                     this.data[package] = (nextMinLod, nextMaxLod);
                     return;
                 }
                 this.data.Add(package, (minLod, maxLod));
             }
 
-            public uint GetMinLod(PredefinedCityModelPackage package) => this.data[package].minLod;
-            public uint GetMaxLod(PredefinedCityModelPackage package) => this.data[package].maxLod;
+            public int GetMinLod(PredefinedCityModelPackage package) => this.data[package].minLod;
+            public int GetMaxLod(PredefinedCityModelPackage package) => this.data[package].maxLod;
 
             public bool Contains(PredefinedCityModelPackage package) => this.data.ContainsKey(package);
 

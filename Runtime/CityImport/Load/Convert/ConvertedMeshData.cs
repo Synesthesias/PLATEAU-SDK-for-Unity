@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using PLATEAU.Util;
 using PLATEAU.Util.Async;
@@ -148,7 +149,7 @@ namespace PLATEAU.CityImport.Load.Convert
                 Debug.Log($"Loading Texture : {textureFullPath}");
 
                 // 非同期でテクスチャをロードします。
-                Texture texture = await TextureLoader.LoadAsync($"file://{textureFullPath}", 3);
+                var texture = await TextureLoader.LoadAsync($"file://{textureFullPath}", 3);
 
                 if (texture == null) continue;
 
@@ -165,13 +166,15 @@ namespace PLATEAU.CityImport.Load.Convert
         }
         
         // テクスチャを圧縮します。
-        private static Texture2D Compress(Texture src)
+        private static Texture2D Compress(Texture2D src)
         {
             // Compressメソッドで圧縮する準備として、幅・高さを4の倍数にする必要があります。
             // 最も近い4の倍数を求めます。
             var widthX4 = (src.width + 2) / 4 * 4;
             var heightX4 = (src.height + 2) / 4 * 4;
-            
+            widthX4 = Math.Max(4, widthX4); // 幅・高さが 1ピクセルのケースで 0 に丸められてしまうのを防止します。
+            heightX4 = Math.Max(4, heightX4);
+
             // テクスチャをリサイズします。
             // 参考: https://light11.hatenadiary.com/entry/2018/04/19/194015
             var rt = RenderTexture.GetTemporary(widthX4, heightX4);

@@ -49,8 +49,7 @@ namespace PLATEAU.Tests.TestUtils
             #endif
             
             var conf = MakeConfig(false);
-
-            var task = CityImporter.ImportAsync(conf, progressDisplay);
+            var task = CityImporter.ImportAsync(conf, progressDisplay, new System.Threading.CancellationTokenSource().Token );
             return task;
         }
 
@@ -64,7 +63,7 @@ namespace PLATEAU.Tests.TestUtils
             #else
             IProgressDisplay progressDisplay = null;
             #endif
-            var task = CityImporter.ImportAsync(MakeConfig(true), progressDisplay);
+            var task = CityImporter.ImportAsync(MakeConfig(true), progressDisplay, new System.Threading.CancellationTokenSource().Token);
             return task;
         }
 
