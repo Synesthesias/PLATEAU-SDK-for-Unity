@@ -45,6 +45,18 @@ namespace PLATEAU.CityInfo
                 }),
                 new Node("植生 (Vegetation)", Package.Vegetation, null, null),
                 new Node("災害リスク (DisasterRisk)", Package.DisasterRisk, null, null),
+                new Node("鉄道 (Railway)", Package.Railway, null, null),
+                new Node("航路 (Waterway)", Package.Waterway, null, null),
+                new Node("水部 (WaterBody)", Package.WaterBody, null, null),
+                new Node("橋梁 (Bridge)", Package.Bridge, null, null),
+                new Node("徒歩道 (Track)", Package.Track, null, null),
+                new Node("広場 (Square)", Package.Square, null, null),
+                new Node("トンネル (Tunnel)", Package.Tunnel, null, null),
+                new Node("地下埋設物 (UndergroundFacility)", Package.UndergroundFacility, null, null),
+                new Node("地下街 (UndergroundBuilding)", Package.UndergroundBuilding, null, null),
+                new Node("区域 (Area)", Package.Area, null, null),
+                new Node("その他の構造物 (OtherConstruction)", Package.OtherConstruction, null, null),
+                new Node("汎用都市 (Generic)", Package.Generic, null, null),
                 new Node("その他 (Unknown)", Package.Unknown, null, null)
                 }
             );

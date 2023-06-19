@@ -75,7 +75,7 @@ namespace PLATEAU.Tests.TestUtils
             var conf = new CityLoadConfig();
             // TODO どのパッケージと何が対応するかは要テスト
             var allPackages =
-                EnumUtil.EachFlags((PredefinedCityModelPackage)0b10000000000000000000000011111111);
+                EnumUtil.EachFlags(PredefinedCityModelPackageExtension.All());
             var allPackageLods = new PackageToLodDict();
             foreach (var package in allPackages)
             {
