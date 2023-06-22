@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 namespace PLATEAU.Dataset
 {
+    // ここを変更したら、PredefinedCityModelPackage.All() も変更する必要があることに注意してください。
     [Flags]
     public enum PredefinedCityModelPackage : uint
     {
@@ -53,6 +54,12 @@ namespace PLATEAU.Dataset
 
     public static class PredefinedCityModelPackageExtension
     {
+        public static PredefinedCityModelPackage All()
+        {
+            uint ret = ~(~0u << 20); // 0～19桁目のフラグを立てます。 (0から数えて)
+            ret |= (uint)PredefinedCityModelPackage.Unknown; // Unknownのフラグを立てます。
+            return (PredefinedCityModelPackage)ret;
+        }
         /// <summary>
         /// Package を日本語名にして返します。
         /// Package として複数のフラグが立っている場合、それらの日本語名を "," で繋いで返します。
