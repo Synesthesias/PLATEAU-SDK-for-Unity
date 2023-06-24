@@ -35,12 +35,15 @@ namespace PLATEAU.Samples.Scripts
                 Debug.LogError("メインカメラがありません。");
             }
 
+            string samplePath = PathUtil.SdkPathToAssetPath("Samples");
+            if (!Directory.Exists(samplePath)) samplePath = PathUtil.SdkPathToAssetPath("Samples~/");
+
             // !!! 重要 :
             // !!! サンプルデータではなくご自分のデータを使いたい場合は、この値を空文字に変更してください。
             // ここを空文字にすると、PLATEAU SDK ウィンドウの操作で都市データをインポートしたときのパスに自動設定されます。
             #if UNITY_EDITOR
             this.cityDataPath = // ""; // ここを空文字にするとインポートしたデータを利用します。
-                PathUtil.SdkPathToAssetPath("Samples"); // この行は Editorでのみ動きます。
+                samplePath; // この行は Editorでのみ動きます。
             #endif
         }
 
