@@ -16,7 +16,9 @@ namespace PLATEAU.Util.Async
         /// </summary>
         public static async Task<Texture2D> LoadAsync(string url, int timeOutSec)
         {
-            var request = UnityWebRequestTexture.GetTexture(url);
+            System.Uri uri = new System.Uri(url); 
+            var request = UnityWebRequestTexture.GetTexture(uri);
+
             request.timeout = timeOutSec;
             // 注意 :
             // 下の SendWebRequest は、見た目に反してメインスレッドで行われ、Unityのコルーチンによって await します。
