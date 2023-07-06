@@ -140,7 +140,7 @@ namespace PLATEAU.CityImport.Load.CityImportProcedure
                 Debug.LogError($"GMLファイルが存在しません。 : {gmlAbsolutePath}");
                 return null;
             }
-            var parserParams = new CitygmlParserParams(true, true, false);
+            var parserParams = new CitygmlParserParams(true, false, true, false);
             
             CityModel cityModel = null;
             try

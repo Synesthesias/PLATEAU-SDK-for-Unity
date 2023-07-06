@@ -1,0 +1,12 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <!-- Unity向けにクロスプラットフォームで動かしたいので net standard 2.0 を採用します -->
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <!--<ImplicitUsings>enable</ImplicitUsings>-->
+    <!--<Nullable>enable</Nullable>-->
+	<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+	<RootNamespace>PLATEAU</RootNamespace>
+  </PropertyGroup>
+
+</Project>

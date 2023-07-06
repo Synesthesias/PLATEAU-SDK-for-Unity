@@ -98,7 +98,7 @@ namespace PLATEAU.CityInfo
             }
             
             // 3Dモデルはすでに配置済みという前提で、GMLパース時に3Dモデル部分を省略することで高速化します。
-            var parserParams = new CitygmlParserParams(true, false, ignoreGeometries: true);
+            var parserParams = new CitygmlParserParams(true, true, false, ignoreGeometries: true);
             
             CityModel cityModel = null;
             try
