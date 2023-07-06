@@ -54,6 +54,17 @@ namespace PLATEAU.PolygonMesh
             }
         }
 
+        public CityObjectList CityObjectList
+        {
+            get
+            {
+                ThrowIfInvalid();
+                var result = NativeMethods.plateau_mesh_get_city_object_list(Handle, out var cityObjectListPtr);
+                DLLUtil.CheckDllError(result);
+                return new CityObjectList(cityObjectListPtr);
+            }
+        }
+
         public PlateauVector3d GetVertexAt(int index)
         {
             ThrowIfInvalid();
@@ -79,22 +90,13 @@ namespace PLATEAU.PolygonMesh
             return uv1;
         }
 
-        public PlateauVector2f[] GetUv2()
+        public PlateauVector2f[] GetUv4()
         {
             ThrowIfInvalid();
-            var uv2 = new PlateauVector2f[VerticesCount];
-            var result = NativeMethods.plateau_mesh_get_uv2(Handle, uv2);
+            var uv4 = new PlateauVector2f[VerticesCount];
+            var result = NativeMethods.plateau_mesh_get_uv4(Handle, uv4);
             DLLUtil.CheckDllError(result);
-            return uv2;
-        }
-
-        public PlateauVector2f[] GetUv3()
-        {
-            ThrowIfInvalid();
-            var uv3 = new PlateauVector2f[VerticesCount];
-            var result = NativeMethods.plateau_mesh_get_uv3(Handle, uv3);
-            DLLUtil.CheckDllError(result);
-            return uv3;
+            return uv4;
         }
 
         public int SubMeshCount
@@ -225,17 +227,17 @@ namespace PLATEAU.PolygonMesh
                 int index);
 
             [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_mesh_get_city_object_list(
+                [In] IntPtr plateauMeshPtr,
+                out IntPtr cityObjectListPtr);
+
+            [DllImport(DLLUtil.DllName)]
             internal static extern APIResult plateau_mesh_get_uv1(
                 [In] IntPtr plateauMeshPtr,
                 [Out] PlateauVector2f[] outUvPosArray);
-
+            
             [DllImport(DLLUtil.DllName)]
-            internal static extern APIResult plateau_mesh_get_uv2(
-                [In] IntPtr plateauMeshPtr,
-                [Out] PlateauVector2f[] outUvPosArray);
-
-            [DllImport(DLLUtil.DllName)]
-            internal static extern APIResult plateau_mesh_get_uv3(
+            internal static extern APIResult plateau_mesh_get_uv4(
                 [In] IntPtr plateauMeshPtr,
                 [Out] PlateauVector2f[] outUvPosArray);
 

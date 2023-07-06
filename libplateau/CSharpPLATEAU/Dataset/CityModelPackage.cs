@@ -54,12 +54,16 @@ namespace PLATEAU.Dataset
 
     public static class PredefinedCityModelPackageExtension
     {
+        /// <summary>
+        /// <see cref="PredefinedCityModelPackage"/> の各パッケージのビットを立てたものを返します。
+        /// </summary>
         public static PredefinedCityModelPackage All()
         {
             uint ret = ~(~0u << 20); // 0～19桁目のフラグを立てます。 (0から数えて)
             ret |= (uint)PredefinedCityModelPackage.Unknown; // Unknownのフラグを立てます。
             return (PredefinedCityModelPackage)ret;
         }
+        
         /// <summary>
         /// Package を日本語名にして返します。
         /// Package として複数のフラグが立っている場合、それらの日本語名を "," で繋いで返します。
