@@ -1,6 +1,14 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Runtime.ConstrainedExecution;
 using System.Threading;
 using System.Threading.Tasks;
+using Codice.Client.BaseCommands;
+using Codice.Client.Common.FsNodeReaders;
+using JetBrains.Annotations;
+using Palmmedia.ReportGenerator.Core.Parser.Analysis;
+using PLATEAU.CityGML;
+using PLATEAU.CityInfo;
 using PLATEAU.PolygonMesh;
 using UnityEngine;
 
@@ -19,21 +27,33 @@ namespace PLATEAU.CityImport.Load.Convert
         private readonly string name;
         private readonly List<ConvertedGameObjData> children = new List<ConvertedGameObjData>();
 
+        private readonly PLATEAU.CityGML.CityModel cityModel;
+        private readonly MeshGranularity meshGranularity;
+        private readonly List<CityObjectListID> cityObjectListId = new List<CityObjectListID>();
+        class CityObjectListID
+        {
+            public CityObjectIndex Index;
+            public string AtomicID;
+            public string PrimaryID;
+        }
+
         /// <summary>
         /// C++側の <see cref="PolygonMesh.Model"/> から変換して
         /// <see cref="ConvertedGameObjData"/> を作ります。
         /// 子も再帰的に作ります。
         /// </summary>
         /// <param name="plateauModel"></param>
-        public ConvertedGameObjData(Model plateauModel)
+        public ConvertedGameObjData(Model plateauModel, PLATEAU.CityGML.CityModel cityModel, MeshGranularity granularity)
         {
             this.meshData = null;
             this.name = "CityRoot";
+            this.cityModel = cityModel;
+            this.meshGranularity = granularity;
             for (int i = 0; i < plateauModel.RootNodesCount; i++)
             {
                 var rootNode = plateauModel.GetRootNodeAt(i);
                 // 再帰的な子の生成です。
-                this.children.Add(new ConvertedGameObjData(rootNode));
+                this.children.Add(new ConvertedGameObjData(rootNode, cityModel, granularity));
             }
             Debug.Log("converted plateau model.");
         }
@@ -43,14 +63,30 @@ namespace PLATEAU.CityImport.Load.Convert
         /// <see cref="ConvertedGameObjData"/> を作ります。
         /// 子も再帰的に作ります。
         /// </summary>
-        public ConvertedGameObjData(Node plateauNode)
+        public ConvertedGameObjData(Node plateauNode, PLATEAU.CityGML.CityModel cityModel, MeshGranularity granularity)
         {
             this.meshData = MeshConverter.Convert(plateauNode.Mesh, plateauNode.Name);
             this.name = plateauNode.Name;
+            this.cityModel = cityModel;
+            this.meshGranularity = granularity;
             for (int i = 0; i < plateauNode.ChildCount; i++)
             {
                 var child = plateauNode.GetChildAt(i);
-                this.children.Add(new ConvertedGameObjData(child));
+                this.children.Add(new ConvertedGameObjData(child, cityModel, granularity));
+            }
+
+            if(meshData != null)
+            {
+                var cityObjectList = plateauNode.Mesh.CityObjectList;
+                foreach (var key in cityObjectList.GetAllKeys())
+                {
+                    var atomicGmlID = cityObjectList.GetAtomicID(key);
+                    var primaryGmlID = cityObjectList.GetPrimaryID(key.PrimaryIndex);
+
+                    if( granularity == MeshGranularity.PerCityModelArea || 
+                        ( granularity == MeshGranularity.PerPrimaryFeatureObject && primaryGmlID == this.name ))
+                        cityObjectListId.Add(new CityObjectListID { Index = key,  AtomicID = atomicGmlID, PrimaryID = primaryGmlID });
+                }
             }
         }
 
@@ -58,7 +94,7 @@ namespace PLATEAU.CityImport.Load.Convert
         /// ゲームオブジェクト、メッシュ、テクスチャの実体を作ってシーンに配置します。
         /// 再帰によって子も配置します。
         /// </summary>
-        public async Task PlaceToScene(Transform parent, Dictionary<string, Texture> cachedTexture, bool skipRoot, bool doSetMeshCollider, CancellationToken token)
+        public async Task PlaceToScene(Transform parent, Dictionary<string, UnityEngine.Texture> cachedTexture, bool skipRoot, bool doSetMeshCollider, CancellationToken token)
         {
             token.ThrowIfCancellationRequested();
 
@@ -84,6 +120,11 @@ namespace PLATEAU.CityImport.Load.Convert
                     if (placedObj != null)
                     {
                         nextParent = placedObj.transform;
+
+                        //　属性情報表示コンポーネントを追加します。
+                        var attrInfo = placedObj.AddComponent<PLATEAUCityObjectGroup>();
+                        attrInfo.SetSerializableCityObject(GetSerializableCityObject());
+
                         if (doSetMeshCollider)
                         {
                             placedObj.AddComponent<MeshCollider>();
@@ -97,6 +138,86 @@ namespace PLATEAU.CityImport.Load.Convert
             {
                 await child.PlaceToScene(nextParent.transform, cachedTexture, false, doSetMeshCollider, token);
             }
+        }
+
+        /// <summary>
+        /// 各CityObjectの属性情報を取得してシリアライズ可能なデータに変換します
+        /// </summary>
+        public CityInfo.CityObject GetSerializableCityObject()
+        {
+            if (this.meshGranularity == MeshGranularity.PerCityModelArea)
+                return GetSerializableCityObjectForArea();
+
+            CityInfo.CityObject cityObjSer = new CityInfo.CityObject();
+            var cityObj = GetCityObjectById(this.name);
+            if (cityObj != null)
+            {
+                var ser = CityObjectSerializableConvert.FromCityGMLCityObject<CityInfo.CityObject.CityObjectParam>(cityObj);
+                foreach (var id in cityObjectListId)
+                {
+                    if (id.PrimaryID == id.AtomicID) continue;
+                    var childCityObj = GetCityObjectById(id.AtomicID);
+                    if (childCityObj == null) continue;
+                    ser.children.Add(CityObjectSerializableConvert.FromCityGMLCityObject<CityInfo.CityObject.CityObjectChildParam> (childCityObj, id.Index));
+                }
+                cityObjSer.cityObjects.Add(ser);
+            }
+            return cityObjSer;
+        }
+
+        //地域単位結合モデルの場合のシリアライザブルデータへの変換です
+        public CityInfo.CityObject GetSerializableCityObjectForArea()
+        {
+            CityInfo.CityObject cityObjSer = new CityInfo.CityObject();
+
+            List<string> cityObjList = new List<string>(); 
+            Dictionary<string, List<CityObjectListID>> chidrenMap = new Dictionary<string, List<CityObjectListID>>();
+
+            foreach (var id in cityObjectListId)
+            {
+                Debug.Log($"<color=magenta>[{id.Index.PrimaryIndex},{id.Index.AtomicIndex}] , Pri:{id.PrimaryID}, Atm:{id.AtomicID} </color>");
+
+                if (string.IsNullOrEmpty(id.PrimaryID))
+                    cityObjList.Add(id.AtomicID);
+                else
+                {
+                    if (chidrenMap.ContainsKey(id.PrimaryID))
+                        chidrenMap[id.PrimaryID].Add(id);
+                    else
+                        chidrenMap.Add(id.PrimaryID, new List<CityObjectListID>() {id});
+                }
+            }
+
+            foreach (var id in cityObjectListId)
+            {
+                var cityObj = GetCityObjectById(id.AtomicID);
+                if (cityObj == null) continue;
+                var ser = CityObjectSerializableConvert.FromCityGMLCityObject<CityInfo.CityObject.CityObjectParam>(cityObj, id.Index);
+                if (!chidrenMap.ContainsKey(id.AtomicID)) continue;
+                var childrenId = chidrenMap[id.AtomicID];
+                foreach(var c in childrenId)
+                {
+                    if (c.PrimaryID == c.AtomicID) continue;
+                    var childCityObj = GetCityObjectById(c.AtomicID);
+                    if (childCityObj == null) continue;
+                    ser.children.Add(CityObjectSerializableConvert.FromCityGMLCityObject<CityInfo.CityObject.CityObjectChildParam>(childCityObj, c.Index));
+                }
+                cityObjSer.cityObjects.Add(ser);
+            }
+            return cityObjSer;
+        }
+
+        public PLATEAU.CityGML.CityObject GetCityObjectById(string id)
+        {
+            try
+            {
+                return cityModel.GetCityObjectById(id);
+            }
+            catch (Exception ex)
+            {
+                Debug.LogWarning(ex.Message);
+            }
+            return null;
         }
     }
 }
