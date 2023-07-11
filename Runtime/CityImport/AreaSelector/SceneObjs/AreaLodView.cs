@@ -31,12 +31,10 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         
         /// <summary> 利用可能を意味するアイコンの不透明度です。 </summary>
         private const float iconOpacityAvailable = 0.95f;
-        /// <summary> 利用不可を意味するアイコンの不透明度です。 </summary>
-        private const float iconOpacityNotAvailable = 0.2f;
         /// <summary> アイコンを包むボックスについて、そのパディング幅がアイコンの何倍であるかです。 </summary>
         private const float boxPaddingRatio = 0.05f;
         /// <summary> アイコンの幅がメッシュコード幅の何分の1であるかです。 </summary>
-        private const float iconWidthDivider = 5;
+        private const float iconWidthDivider = 4;
         private static readonly Color boxColor = new Color(0.25f, 0.25f, 0.25f, 0.35f);
         private static ConcurrentDictionary<(PredefinedCityModelPackage package, uint lod), Texture> iconDict;
         private static Texture boxTex;
@@ -67,44 +65,39 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
             }
 
             // アイコンが存在するパッケージ種について、表示すべきアイコンを求めます。
-            var iconAvailableForPackages =
-                iconDict.Keys
-                    .Select(tuple => tuple.package)
-                    .Distinct();
-            var iconsToShow = new List<IconToShow>();
+            var iconAvailableForPackages = iconDict.Keys.Select(tuple => tuple.package).Distinct();
+            var iconTextures = new List<Texture>();
             foreach(var package in iconAvailableForPackages)
             {
-                int maxLod = this.packageToLodDict.GetLod(package); // パッケージが存在しないときは -1 になります。
-                uint iconLod = (uint)Math.Max(maxLod, 0); // 存在しない時は「LOD0」アイコンを半透明で表示します。
-                bool isAvailable = maxLod >= 0;
-                // パッケージとLODに対応するテクスチャを求めます。
-                if (!iconDict.TryGetValue((package, iconLod), out var iconTex)) continue;
+                // パッケージが存在しないときは -1 になります
+                var maxLod = this.packageToLodDict.GetLod(package);
+                if (maxLod < 0)
+                    continue;
                 
-                iconsToShow.Add(new IconToShow(iconTex, isAvailable));
+                // パッケージとLODに対応するテクスチャを求めます。
+                if (!iconDict.TryGetValue((package, (uint)maxLod), out var iconTex)) continue;
+                iconTextures.Add(iconTex);
             }
             
-            float monitorDpiScalingFactor = EditorGUIUtility.pixelsPerPoint;
+            var monitorDpiScalingFactor = EditorGUIUtility.pixelsPerPoint;
+            var meshCodeScreenWidth = (camera.WorldToScreenPoint(this.meshCodeUnityPositionLowerRight) - camera.WorldToScreenPoint(this.meshCodeUnityPositionUpperLeft)).x;
 
-            float meshCodeScreenWidth =
-                (camera.WorldToScreenPoint(this.meshCodeUnityPositionLowerRight) -
-                 camera.WorldToScreenPoint(this.meshCodeUnityPositionUpperLeft))
-                .x;
-
-            // 地域メッシュコードの枠内にアイコンが5つ並ぶ程度の大きさ
-            float iconWidth = Mathf.Min(maxIconWidth, meshCodeScreenWidth / iconWidthDivider) / monitorDpiScalingFactor;
+            // 地域メッシュコードの枠内にアイコンが4つ並ぶ程度の大きさ
+            var iconWidth = Mathf.Min(maxIconWidth, meshCodeScreenWidth / iconWidthDivider) / monitorDpiScalingFactor;
+            var iconMaxCnt = Math.Clamp(iconTextures.Count, 1, 8);
             
             // アイコンを中央揃えで左から右に並べたとき、左上の座標を求めます。
             var meshCodeCenterUnityPos = (this.meshCodeUnityPositionUpperLeft + this.meshCodeUnityPositionLowerRight) * 0.5f;
-            var posOffsetScreenSpace = new Vector3(-iconWidth * iconsToShow.Count * 0.5f, iconWidth * 0.5f, 0) * monitorDpiScalingFactor;  
-            var iconsUpperLeft = camera.ScreenToWorldPoint(camera.WorldToScreenPoint(meshCodeCenterUnityPos) + posOffsetScreenSpace);
 
             // アイコンを包むボックスを表示します。
+            var boxColCount = 4 < iconMaxCnt ? 4 : iconMaxCnt;
+            var boxRowCount = 4 < iconMaxCnt ? 2 : 1;
             var iconsBoxPaddingScreen = iconWidth * boxPaddingRatio;
-            var boxSizeScreen = new Vector2(
-                iconWidth * iconsToShow.Count + iconsBoxPaddingScreen * 2,
-                iconWidth + iconsBoxPaddingScreen * 2
-                );
-            var boxPosScreen = camera.WorldToScreenPoint(iconsUpperLeft) + new Vector3(-1,1,0) * iconsBoxPaddingScreen;
+            var boxSizeScreen = new Vector2(iconWidth * boxColCount + iconsBoxPaddingScreen * 2, iconWidth * boxRowCount + iconsBoxPaddingScreen * 2);
+            var boxUpperLeft = new Vector3(-boxSizeScreen.x * 0.5f - iconsBoxPaddingScreen * 0.5f, boxSizeScreen.y * 0.5f + iconsBoxPaddingScreen * 0.5f, 0) * monitorDpiScalingFactor;
+            var iconsUpperLeft = camera.ScreenToWorldPoint(camera.WorldToScreenPoint(meshCodeCenterUnityPos) + boxUpperLeft);
+            var boxPosScreen = camera.WorldToScreenPoint(iconsUpperLeft);
+
             Handles.BeginGUI();
             var prevColor = GUI.color;
             GUI.color = boxColor;
@@ -116,13 +109,23 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
             Handles.EndGUI();
             
             // アイコンを表示します。
-            var iconPos = iconsUpperLeft;
-            int i = 0;
-            foreach (var iconToShow in iconsToShow)
-            {
-                i++;
+            var offsetVec = Vector3.zero;
+            for (var i = 0; i < iconMaxCnt; ++i) {
+                var colIndex = i % 4;
+                var rowIndex = i / 4;
+                var colCount = 0 < (iconMaxCnt - rowIndex * 4) / 4 ? 4 : (iconMaxCnt - rowIndex * 4) % 4;
+                var rowCount = 4 < iconMaxCnt ? 2 : 1;
+                var xOffset = iconMaxCnt is > 4 and <= 8 && 0 < rowIndex
+                    ? iconWidth * colIndex - iconWidth * 2
+                    : iconWidth * colIndex - iconWidth * colCount * 0.5f;
+                var yOffset = 1 < rowCount ? iconWidth - iconWidth * rowIndex : iconWidth * 0.5f;
+
+                offsetVec.x = xOffset * monitorDpiScalingFactor;
+                offsetVec.y = yOffset * monitorDpiScalingFactor;
+                var iconPos = camera.ScreenToWorldPoint(camera.WorldToScreenPoint(meshCodeCenterUnityPos) + offsetVec);
+
                 var prevBackgroundColor = GUI.contentColor;
-                GUI.contentColor = new Color(1f, 1f, 1f, iconToShow.IsAvailable ? iconOpacityAvailable : iconOpacityNotAvailable);
+                GUI.contentColor = new Color(1f, 1f, 1f, iconOpacityAvailable);
                 var style = new GUIStyle(EditorStyles.label)
                 {
                     fixedHeight = iconWidth,
@@ -130,7 +133,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
                     alignment = TextAnchor.UpperLeft,
                     stretchWidth = true
                 };
-                var content = new GUIContent(iconToShow.Texture);
+                var content = new GUIContent(iconTextures[i]);
                 Handles.Label(iconPos, content, style);
                 GUI.contentColor = prevBackgroundColor;
 
@@ -138,12 +141,37 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
                 var iconScreenPosRight = iconScreenPosLeft + new Vector3(iconWidth * monitorDpiScalingFactor, 0, 0);
                 var distance = Mathf.Abs(camera.transform.position.y - iconPos.y);
                 var iconWorldPosRight = camera.ScreenToWorldPoint(new Vector3(iconScreenPosRight.x, iconScreenPosRight.y, distance));
-                iconPos += new Vector3(iconWorldPosRight.x - iconPos.x, 0, 0);
             }
-            
 #endif
         }
 
+        private static string GetIconFileName(PredefinedCityModelPackage package) {
+            return package switch {
+                PredefinedCityModelPackage.Building => "building.png",
+                PredefinedCityModelPackage.Road => "traffic.png",
+                PredefinedCityModelPackage.UrbanPlanningDecision => "other.png",
+                PredefinedCityModelPackage.LandUse => "other.png",
+                PredefinedCityModelPackage.CityFurniture => "props.png",
+                PredefinedCityModelPackage.Vegetation => "plants.png",
+                PredefinedCityModelPackage.Relief => "terrain.png",
+                PredefinedCityModelPackage.DisasterRisk => "other.png",
+                PredefinedCityModelPackage.Railway => "other.png",
+                PredefinedCityModelPackage.Waterway => "other.png",
+                PredefinedCityModelPackage.WaterBody => "other.png",
+                PredefinedCityModelPackage.Bridge => "bridge.png",
+                PredefinedCityModelPackage.Track => "other.png",
+                PredefinedCityModelPackage.Square => "other.png",
+                PredefinedCityModelPackage.Tunnel => "bridge.png",
+                PredefinedCityModelPackage.UndergroundFacility => "underground.png",
+                PredefinedCityModelPackage.UndergroundBuilding => "underground.png",
+                PredefinedCityModelPackage.Area => "terrain.png",
+                PredefinedCityModelPackage.OtherConstruction => "other.png",
+                PredefinedCityModelPackage.Generic => "other.png",
+                PredefinedCityModelPackage.Unknown => "other.png",
+                _ => "other.png"
+            };
+        }
+        
         /// <summary>
         /// 利用可能なLODをアイコンで表示するためのアイコン画像をロードし、辞書にして返します。
         /// </summary>
@@ -151,26 +179,16 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         private static ConcurrentDictionary<(PredefinedCityModelPackage package, uint lod), Texture> LoadIconFiles()
         {
             boxTex = LoadIcon(iconsBoxImagePath);
-            return new ConcurrentDictionary<(PredefinedCityModelPackage package, uint lod), Texture>(
-                new Dictionary<(PredefinedCityModelPackage package, uint lod), Texture>
-                {
-                    {(PredefinedCityModelPackage.Building, 0), LoadIcon("icon_building_lod1.png")},
-                    {(PredefinedCityModelPackage.Building, 1), LoadIcon("icon_building_lod1.png")},
-                    {(PredefinedCityModelPackage.Building, 2), LoadIcon("icon_building_lod2.png")},
-                    {(PredefinedCityModelPackage.Building, 3), LoadIcon("icon_building_lod3.png")},
-                    {(PredefinedCityModelPackage.CityFurniture, 0), LoadIcon("icon_cityfurniture_lod1.png")},
-                    {(PredefinedCityModelPackage.CityFurniture, 1), LoadIcon("icon_cityfurniture_lod1.png")},
-                    {(PredefinedCityModelPackage.CityFurniture, 2), LoadIcon("icon_cityfurniture_lod2.png")},
-                    {(PredefinedCityModelPackage.CityFurniture, 3), LoadIcon("icon_cityfurniture_lod3.png")},
-                    {(PredefinedCityModelPackage.Road, 0), LoadIcon("icon_road_lod1.png")},
-                    {(PredefinedCityModelPackage.Road, 1), LoadIcon("icon_road_lod1.png")},
-                    {(PredefinedCityModelPackage.Road, 2), LoadIcon("icon_road_lod2.png")},
-                    {(PredefinedCityModelPackage.Road, 3), LoadIcon("icon_road_lod3.png")},
-                    {(PredefinedCityModelPackage.Vegetation, 0), LoadIcon("icon_vegetation_lod1.png")},
-                    {(PredefinedCityModelPackage.Vegetation, 1), LoadIcon("icon_vegetation_lod1.png")},
-                    {(PredefinedCityModelPackage.Vegetation, 2), LoadIcon("icon_vegetation_lod2.png")},
-                    {(PredefinedCityModelPackage.Vegetation, 3), LoadIcon("icon_vegetation_lod3.png")},
-                });
+            var concurrentDict = new ConcurrentDictionary<(PredefinedCityModelPackage package, uint lod), Texture>();
+            var allPackages = EnumUtil.EachFlags(PredefinedCityModelPackageExtension.All());
+            var lodDirNames = new List<string> {"LOD1", "LOD1", "LOD2", "LOD3", "LOD4"};
+            foreach (var package in allPackages) {
+                for (uint i = 0; i <= 4; i++) {
+                    concurrentDict.AddOrUpdate((package, i), LoadIcon($"{lodDirNames[(int)i]}/{GetIconFileName(package)}"), (_, texture) => texture);
+                }
+            }
+
+            return concurrentDict;
         }
 
         /// <summary>
@@ -195,18 +213,6 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
             #else
             return null;
             #endif
-        }
-
-        private class IconToShow
-        {
-            public Texture Texture;
-            public bool IsAvailable; // falseだと半透明表示にします。
-
-            public IconToShow(Texture texture, bool isAvailable)
-            {
-                this.Texture = texture;
-                this.IsAvailable = isAvailable;
-            }
         }
     }
 }
