@@ -149,7 +149,7 @@ namespace PLATEAU.CityImport.Load.Convert
                 Debug.Log($"Loading Texture : {textureFullPath}");
 
                 // 非同期でテクスチャをロードします。
-                var texture = await TextureLoader.LoadAsync($"file://{textureFullPath}", 3);
+                var texture = await TextureLoader.LoadAsync(textureFullPath, 3);
 
                 if (texture == null) continue;
 

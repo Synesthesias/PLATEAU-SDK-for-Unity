@@ -125,10 +125,10 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
             }
 
             var mapMaterial = LoadMapMaterial();
-            
+
             // ダウンロードしたテクスチャファイルをロードします。
-            var texture = await TextureLoader.LoadAsync($"file://{mapTile.Path}", timeOutSec);
-            
+            var texture = await TextureLoader.LoadAsync(mapTile.Path, timeOutSec);
+
             var gameObj = GameObject.CreatePrimitive(PrimitiveType.Plane);
             gameObj.name = mapObjName;
 #if (UNITY_EDITOR && UNITY_2019_2_OR_NEWER)
