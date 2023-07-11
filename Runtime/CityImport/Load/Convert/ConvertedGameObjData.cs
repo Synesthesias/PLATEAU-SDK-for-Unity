@@ -29,6 +29,7 @@ namespace PLATEAU.CityImport.Load.Convert
 
         private readonly PLATEAU.CityGML.CityModel cityModel;
         private readonly MeshGranularity meshGranularity;
+        private readonly string parant;
         private readonly List<CityObjectListID> cityObjectListId = new List<CityObjectListID>();
         class CityObjectListID
         {
@@ -83,9 +84,12 @@ namespace PLATEAU.CityImport.Load.Convert
                     var atomicGmlID = cityObjectList.GetAtomicID(key);
                     var primaryGmlID = cityObjectList.GetPrimaryID(key.PrimaryIndex);
 
-                    if( granularity == MeshGranularity.PerCityModelArea || 
-                        ( granularity == MeshGranularity.PerPrimaryFeatureObject && primaryGmlID == this.name ))
+                    if(granularity == MeshGranularity.PerCityModelArea || 
+                        (granularity == MeshGranularity.PerPrimaryFeatureObject && primaryGmlID == this.name))
                         cityObjectListId.Add(new CityObjectListID { Index = key,  AtomicID = atomicGmlID, PrimaryID = primaryGmlID });
+
+                    if (granularity == MeshGranularity.PerAtomicFeatureObject && atomicGmlID == this.name)
+                        this.parant = primaryGmlID;
                 }
             }
         }
@@ -149,6 +153,10 @@ namespace PLATEAU.CityImport.Load.Convert
                 return GetSerializableCityObjectForArea();
 
             CityInfo.CityObject cityObjSer = new CityInfo.CityObject();
+
+            if (!string.IsNullOrEmpty(parant))
+                cityObjSer.parent = parant;
+
             var cityObj = GetCityObjectById(this.name);
             if (cityObj != null)
             {
@@ -165,7 +173,7 @@ namespace PLATEAU.CityImport.Load.Convert
             return cityObjSer;
         }
 
-        //地域単位結合モデルの場合のシリアライザブルデータへの変換です
+        //地域単位結合モデルの場合のシリアライズ可能なデータへの変換です
         public CityInfo.CityObject GetSerializableCityObjectForArea()
         {
             CityInfo.CityObject cityObjSer = new CityInfo.CityObject();

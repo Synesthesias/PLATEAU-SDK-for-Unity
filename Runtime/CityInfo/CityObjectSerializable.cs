@@ -33,7 +33,7 @@ namespace PLATEAU.CityInfo
         public class CityObjectChildParam
         {
             public string gmlID = "";
-            public int[] CityObjectIndex = new int[0];
+            public int[] cityObjectIndex = new int[0];
             public ulong cityObjectType;
             public List<Attribute> attributes = new List<Attribute>();
 
@@ -62,10 +62,10 @@ namespace PLATEAU.CityInfo
                 get
                 {
                     var idx = new CityObjectIndex();
-                    if (CityObjectIndex.Length > 1)
+                    if (cityObjectIndex.Length > 1)
                     {
-                        idx.PrimaryIndex = CityObjectIndex[0];
-                        idx.AtomicIndex = CityObjectIndex[1];
+                        idx.PrimaryIndex = cityObjectIndex[0];
+                        idx.AtomicIndex = cityObjectIndex[1];
                     }
                     return idx;
                 }
@@ -93,7 +93,7 @@ namespace PLATEAU.CityInfo
             co.gmlID = obj.ID;
             co.cityObjectType = (ulong)obj.Type;
             if( idx != null )
-                co.CityObjectIndex = new int[] { idx.Value.PrimaryIndex, idx.Value.AtomicIndex };
+                co.cityObjectIndex = new int[] { idx.Value.PrimaryIndex, idx.Value.AtomicIndex };
             foreach (var m in obj.AttributesMap)
             {
                 CityInfo.CityObject.Attribute att = FromAttributesMap(m);
