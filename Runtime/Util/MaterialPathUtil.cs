@@ -1,7 +1,9 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using PLATEAU.Dataset;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -16,27 +18,28 @@ namespace PLATEAU.Util
 
     public static class MaterialPathUtil
     {
-        // base paths
-        static readonly string mapMaterialDir = PathUtil.SdkPathToAssetPath("Materials");
-        // default path
-        const string mapMaterialNameBuiltInRP = "MapUnlitMaterial_BuiltInRP.mat";
-        const string mapMaterialNameURP = "MapUnlitMaterial_URP.mat";
-        const string mapMaterialNameHDRP = "MapUnlitMaterial_HDRP.mat";
-        // fallback path
-        const string fallbackFolderName = "Fallback";
-        const string buildInFallBackFolder = "BuildInMaterials";
-        const string uRPFallbackFolder = "URPMaterials";
-        const string hDRPFallbackFolder = "HDRPMaterials";
+        //ベースパス
+        private static readonly string baseMaterialDir = PathUtil.SdkPathToAssetPath("Materials");
+        // 地図表示用のデフォルトマテリアルパス
+        private const string MapMaterialNameBuiltInRP = "MapUnlitMaterial_BuiltInRP.mat";
+        private const string MapMaterialNameUrp = "MapUnlitMaterial_URP.mat";
+
+        private const string MapMaterialNameHdrp = "MapUnlitMaterial_HDRP.mat";
+        // フォールバックマテリアルのパス
+        private const string FallbackFolderName = "Fallback";
+        private const string BuildInFallBackFolder = "BuildInMaterials";
+        private const string URPFallbackFolder = "URPMaterials";
+        private const string HDRPFallbackFolder = "HDRPMaterials";
 
         public static PipeLineType GetRenderPipelineType()
         {
             var pipelineAsset = GraphicsSettings.renderPipelineAsset;
             if (pipelineAsset == null)
-            {   // Built-in Render Pipeline ???
+            {   // Built-in Render Pipeline
                 return PipeLineType.BuildIn;
             }
             else
-            {   // URP ??? HDRP ???
+            {   // URP or HDRP
                 var pipelineName = pipelineAsset.GetType().Name;
                 return pipelineName switch
                 {
@@ -47,79 +50,56 @@ namespace PLATEAU.Util
             }
         }
 
-        public static string GetDefaultMatPath()
+        public static string GetMapMatPath()
         {
-            var plt = GetRenderPipelineType();
-            var rtMat = "";
-            if(plt == PipeLineType.BuildIn)
+            var pipeline = GetRenderPipelineType();
+            var materialFileName = pipeline switch
             {
-                rtMat = mapMaterialNameBuiltInRP;
-            }
-            else if (plt == PipeLineType.UniversalRenderPipelineAsset)
-            {
-                rtMat = mapMaterialNameURP;
-            }
-            else if(plt == PipeLineType.HDRenderPipelineAsset)
-            {
-                rtMat = mapMaterialNameHDRP;
-            }
+                PipeLineType.BuildIn => MapMaterialNameBuiltInRP,
+                PipeLineType.UniversalRenderPipelineAsset => MapMaterialNameUrp,
+                PipeLineType.HDRenderPipelineAsset => MapMaterialNameHdrp,
+                _ => throw new Exception("Unknown pipeline type.")
+            };
 
-            return Path.Combine(mapMaterialDir, rtMat);
+            return Path.Combine(baseMaterialDir, materialFileName);
         }
 
-        public static string GetFallbackMaterialPath(PredefinedCityModelPackage pack)
+        /// <summary>
+        /// 引数のパッケージ種に対応するデフォルトフォールバックマテリアルをロードして返します。
+        /// 引数に対応するものがない、またはロードに失敗した場合はUnityのデフォルトマテリアルを返します。
+        /// </summary>
+        public static Material LoadDefaultFallbackMaterial(PredefinedCityModelPackage pack)
         {
-            string matPath = Path.Combine(mapMaterialDir, fallbackFolderName);
-            var plt = GetRenderPipelineType();
-            var fbp = "";
+            var pipeline = GetRenderPipelineType();
 
-            if (plt == PipeLineType.BuildIn)
+            var folderNamePipeline = pipeline switch
             {
-                fbp = buildInFallBackFolder;
-            }
-            else if (plt == PipeLineType.UniversalRenderPipelineAsset)
-            {
-                fbp = uRPFallbackFolder;
-            }
-            else if (plt == PipeLineType.HDRenderPipelineAsset)
-            {
-                fbp = hDRPFallbackFolder;
-            }
+                PipeLineType.BuildIn => BuildInFallBackFolder,
+                PipeLineType.UniversalRenderPipelineAsset => URPFallbackFolder,
+                PipeLineType.HDRenderPipelineAsset => HDRPFallbackFolder,
+                _ => throw new Exception("Unknown pipeline type.")
+            };
 
-            matPath = Path.Combine(matPath, fbp);
-
-            switch (pack)
+            string matFileName = pack switch
             {
-                case PredefinedCityModelPackage.Building:
-                    matPath = Path.Combine(matPath, "DefaultBuildingMat.mat");
-                    break;
-                case PredefinedCityModelPackage.CityFurniture:
-                    matPath = Path.Combine(matPath, "DefaultCityFurnitureMat.mat");
-                    break;
-                case PredefinedCityModelPackage.DisasterRisk:
-                    matPath = Path.Combine(matPath, "DefaultDisasterRiskMat.mat");
-                    break;
-                case PredefinedCityModelPackage.LandUse:
-                    matPath = Path.Combine(matPath, "DefaultLandUseMat.mat");
-                    break;
-                case PredefinedCityModelPackage.Relief:
-                    matPath = Path.Combine(matPath, "DefaultReliefMat.mat");
-                    break;
-                case PredefinedCityModelPackage.Road:
-                    matPath = Path.Combine(matPath, "DefaultRoadMat.mat");
-                    break;
-                case PredefinedCityModelPackage.Unknown:
-                    matPath = Path.Combine(matPath, "DefaultUnknownMat.mat");
-                    break;
-                case PredefinedCityModelPackage.UrbanPlanningDecision:
-                    matPath = Path.Combine(matPath, "DefaultUrbanPlanningDecisionMat.mat");
-                    break;
-                case PredefinedCityModelPackage.Vegetation:
-                    matPath = Path.Combine(matPath, "DefaultVegetationMat.mat");
-                    break;
+                PredefinedCityModelPackage.Building => "DefaultBuildingMat.mat",
+                PredefinedCityModelPackage.CityFurniture => "DefaultCityFurnitureMat.mat",
+                PredefinedCityModelPackage.DisasterRisk => "DefaultDisasterRiskMat.mat",
+                PredefinedCityModelPackage.LandUse => "DefaultLandUseMat.mat",
+                PredefinedCityModelPackage.Relief => "DefaultReliefMat.mat",
+                PredefinedCityModelPackage.Road => "DefaultRoadMat.mat",
+                PredefinedCityModelPackage.Unknown => "DefaultUnknownMat.mat",
+                PredefinedCityModelPackage.UrbanPlanningDecision => "DefaultUrbanPlanningDecisionMat.mat",
+                PredefinedCityModelPackage.Vegetation => "DefaultVegetationMat.mat",
+                _ => ""
+            };
+            if (matFileName == "")
+            {
+                return new Material(RenderUtil.DefaultMaterial);
             }
-
-            return matPath;
+            string matPath = Path.Combine(baseMaterialDir, FallbackFolderName, folderNamePipeline, matFileName);
+            var mat = AssetDatabase.LoadAssetAtPath<Material>(matPath);
+            return mat ? mat : new Material(RenderUtil.DefaultMaterial);
         }
     }
 }

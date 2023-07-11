@@ -33,22 +33,6 @@ namespace PLATEAU.CityImport.Setting
             this.meshGranularity = meshGranularity;
             this.doSetMeshCollider = doSetMeshCollider;
         }
-
-        public Material GetFallbackMaterial(PredefinedCityModelPackage pack)
-        {
-            var assetPath = MaterialPathUtil.GetFallbackMaterialPath(pack);
-            if (!assetPath.Equals(""))
-            {
-                Material mat = AssetDatabase.LoadAssetAtPath<Material>(assetPath);
-                if (mat != null)
-                {
-                    fallbackMaterial = mat;
-                }
-                else fallbackMaterial = new Material(RenderUtil.DefaultMaterial);
-            }
-            else fallbackMaterial = new Material(RenderUtil.DefaultMaterial);
-
-            return fallbackMaterial;
-        }
+        
     }
 }

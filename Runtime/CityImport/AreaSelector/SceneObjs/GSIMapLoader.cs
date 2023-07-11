@@ -107,7 +107,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         {
 
 #if UNITY_EDITOR
-            string matFilePath = MaterialPathUtil.GetDefaultMatPath();
+            string matFilePath = MaterialPathUtil.GetMapMatPath();
             var material = AssetDatabase.LoadAssetAtPath<Material>(matFilePath);
             return material;
 #else

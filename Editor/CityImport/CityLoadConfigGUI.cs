@@ -3,6 +3,7 @@ using PLATEAU.CityImport.Setting;
 using PLATEAU.Editor.EditorWindow.Common;
 using PLATEAU.Dataset;
 using PLATEAU.PolygonMesh;
+using PLATEAU.Util;
 using UnityEditor;
 using UnityEngine;
 
@@ -69,7 +70,7 @@ namespace PLATEAU.Editor.CityImport
                             EditorGUILayout.LabelField("デフォルトマテリアル", GUILayout.Width(400));
                             if(conf.fallbackMaterial == null)
                             {
-                                conf.fallbackMaterial = conf.GetFallbackMaterial(package);
+                                conf.fallbackMaterial = MaterialPathUtil.LoadDefaultFallbackMaterial(package);
                             }
                             conf.fallbackMaterial = (Material)EditorGUILayout.ObjectField(conf.fallbackMaterial, typeof(Material), false);
 
