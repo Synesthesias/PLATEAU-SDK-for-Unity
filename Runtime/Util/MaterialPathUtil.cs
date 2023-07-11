@@ -27,9 +27,6 @@ namespace PLATEAU.Util
         private const string MapMaterialNameHdrp = "MapUnlitMaterial_HDRP.mat";
         // フォールバックマテリアルのパス
         private const string FallbackFolderName = "Fallback";
-        private const string BuildInFallBackFolder = "BuildInMaterials";
-        private const string URPFallbackFolder = "URPMaterials";
-        private const string HDRPFallbackFolder = "HDRPMaterials";
 
         public static PipeLineType GetRenderPipelineType()
         {
@@ -70,34 +67,34 @@ namespace PLATEAU.Util
         /// </summary>
         public static Material LoadDefaultFallbackMaterial(PredefinedCityModelPackage pack)
         {
-            var pipeline = GetRenderPipelineType();
-
-            var folderNamePipeline = pipeline switch
-            {
-                PipeLineType.BuildIn => BuildInFallBackFolder,
-                PipeLineType.UniversalRenderPipelineAsset => URPFallbackFolder,
-                PipeLineType.HDRenderPipelineAsset => HDRPFallbackFolder,
-                _ => throw new Exception("Unknown pipeline type.")
-            };
-
             string matFileName = pack switch
             {
-                PredefinedCityModelPackage.Building => "DefaultBuildingMat.mat",
-                PredefinedCityModelPackage.CityFurniture => "DefaultCityFurnitureMat.mat",
-                PredefinedCityModelPackage.DisasterRisk => "DefaultDisasterRiskMat.mat",
-                PredefinedCityModelPackage.LandUse => "DefaultLandUseMat.mat",
-                PredefinedCityModelPackage.Relief => "DefaultReliefMat.mat",
-                PredefinedCityModelPackage.Road => "DefaultRoadMat.mat",
-                PredefinedCityModelPackage.Unknown => "DefaultUnknownMat.mat",
-                PredefinedCityModelPackage.UrbanPlanningDecision => "DefaultUrbanPlanningDecisionMat.mat",
-                PredefinedCityModelPackage.Vegetation => "DefaultVegetationMat.mat",
+                PredefinedCityModelPackage.Building => "PlateauDefaultBuilding.mat",
+                PredefinedCityModelPackage.Road => "PlateauDefaultRoad.mat",
+                PredefinedCityModelPackage.UrbanPlanningDecision => "PlateauDefaultUrbanPlanningDecision.mat",
+                PredefinedCityModelPackage.LandUse => "PlateauDefaultLandUse.mat",
+                PredefinedCityModelPackage.CityFurniture => "PlateauDefaultCityFurniture.mat",
+                PredefinedCityModelPackage.Vegetation => "PlateauDefaultVegetation.mat",
+                PredefinedCityModelPackage.Relief => "PlateauDefaultRelief.mat",
+                PredefinedCityModelPackage.DisasterRisk => "PlateauDefaultDisasterRisk.mat",
+                PredefinedCityModelPackage.Railway => "PlateauDefaultRailway.mat",
+                PredefinedCityModelPackage.Waterway => "PlateauDefaultWaterway.mat",
+                PredefinedCityModelPackage.WaterBody => "PlateauDefaultWaterBody.mat",
+                PredefinedCityModelPackage.Bridge => "PlateauDefaultBridge.mat",
+                PredefinedCityModelPackage.Track => "PlateauDefaultTrack.mat",
+                PredefinedCityModelPackage.Square => "PlateauDefaultSquare.mat",
+                PredefinedCityModelPackage.Tunnel => "PlateauDefaultTunnel.mat",
+                PredefinedCityModelPackage.UndergroundFacility => "PlateauDefaultUndergroundFacility.mat",
+                PredefinedCityModelPackage.UndergroundBuilding => "PlateauDefaultUndergroundBuilding.mat",
+                PredefinedCityModelPackage.Area => "PlateauDefaultLandUse.mat", // 土地利用を流用
+                PredefinedCityModelPackage.Unknown => "PlateauDefaultUnknown.mat",
                 _ => ""
             };
             if (matFileName == "")
             {
                 return new Material(RenderUtil.DefaultMaterial);
             }
-            string matPath = Path.Combine(baseMaterialDir, FallbackFolderName, folderNamePipeline, matFileName);
+            string matPath = Path.Combine(baseMaterialDir, FallbackFolderName, matFileName);
             var mat = AssetDatabase.LoadAssetAtPath<Material>(matPath);
             return mat ? mat : new Material(RenderUtil.DefaultMaterial);
         }
