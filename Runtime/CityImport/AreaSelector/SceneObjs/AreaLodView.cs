@@ -110,7 +110,8 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
             
             // アイコンを表示します。
             var offsetVec = Vector3.zero;
-            for (var i = 0; i < iconMaxCnt; ++i) {
+            for (var i = 0; i < iconMaxCnt; ++i) 
+            {
                 var colIndex = i % 4;
                 var rowIndex = i / 4;
                 var colCount = 0 < (iconMaxCnt - rowIndex * 4) / 4 ? 4 : (iconMaxCnt - rowIndex * 4) % 4;
@@ -145,8 +146,10 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
 #endif
         }
 
-        private static string GetIconFileName(PredefinedCityModelPackage package) {
-            return package switch {
+        private static string GetIconFileName(PredefinedCityModelPackage package) 
+        {
+            return package switch 
+            {
                 PredefinedCityModelPackage.Building => "building.png",
                 PredefinedCityModelPackage.Road => "traffic.png",
                 PredefinedCityModelPackage.UrbanPlanningDecision => "other.png",
