@@ -53,7 +53,7 @@ namespace PLATEAU.CityImport.Load.Convert
                 meshObjsData = await Task.Run(() =>
                 {
                     using var plateauModel = ExtractMeshes(cityModel, meshExtractOptions, token);
-                    var convertedObjData = new ConvertedGameObjData(plateauModel, cityModel, meshExtractOptions.MeshGranularity);
+                    var convertedObjData = new ConvertedGameObjData(plateauModel, new AttributeDataHelper(cityModel, meshExtractOptions.MeshGranularity));
                     return convertedObjData;
                 });
             }

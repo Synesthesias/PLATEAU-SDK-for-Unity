@@ -1,3 +1,4 @@
+using Newtonsoft.Json;
 using PLATEAU.CityInfo;
 using PLATEAU.Editor.EditorWindow.Common;
 using PLATEAU.Geometries;
@@ -38,6 +39,26 @@ namespace PLATEAU
             using (new EditorGUI.DisabledScope(true))
             {
                 base.OnInspectorGUI();
+            }
+        }
+
+        void OnSceneGUI()
+        {
+            //RaycastƒeƒXƒg
+            if (Event.current.type == EventType.MouseDown && Event.current.button == 0)
+            {
+                Ray ray = HandleUtility.GUIPointToWorldRay(Event.current.mousePosition);
+                if (Physics.Raycast(ray, out var hit, 100000.0f))
+                {
+                    if(hit.transform.TryGetComponent<PLATEAUCityObjectGroup>(out var cog))
+                    {
+                        var obj = cog.GetCityObject(hit);
+                        var json = JsonConvert.SerializeObject(obj, Formatting.Indented);
+                        Debug.Log(json);
+                    }
+                }
+                else
+                    Debug.Log("no hit");
             }
         }
     }

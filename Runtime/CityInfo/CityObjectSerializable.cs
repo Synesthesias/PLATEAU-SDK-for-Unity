@@ -27,6 +27,17 @@ namespace PLATEAU.CityInfo
         {
             [JsonProperty(Order = 5)]
             public List<CityObjectChildParam> children = new List<CityObjectChildParam>();
+
+            new public CityObjectParam Clone()
+            {
+                var param = new CityObjectParam();
+                param.gmlID = gmlID;
+                param.cityObjectIndex = cityObjectIndex;
+                param.cityObjectType = cityObjectType;
+                param.attributes = new List<Attribute>(attributes);
+                param.children = new List<CityObjectChildParam>(children);
+                return param;
+            }
         }
 
         [Serializable]
@@ -70,6 +81,16 @@ namespace PLATEAU.CityInfo
                     return idx;
                 }
             }
+
+            public CityObjectChildParam Clone()
+            {
+                var param = new CityObjectChildParam();
+                param.gmlID = gmlID;
+                param.cityObjectIndex = cityObjectIndex;
+                param.cityObjectType = cityObjectType;
+                param.attributes = new List<Attribute>(attributes);
+                return param;
+            }
         }
 
         [Serializable]
@@ -85,7 +106,7 @@ namespace PLATEAU.CityInfo
     /// <summary>
     /// GML.CityObjectからシリアライズ可能なCityInfo.CityObjectデータを生成します
     /// </summary>
-    public class CityObjectSerializableConvert
+    internal static class CityObjectSerializableConvert
     {
         public static T FromCityGMLCityObject<T>(CityGML.CityObject  obj, CityObjectIndex? idx = null) where T : CityObjectChildParam, new()
         {
