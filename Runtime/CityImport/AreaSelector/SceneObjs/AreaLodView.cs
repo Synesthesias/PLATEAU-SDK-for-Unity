@@ -137,11 +137,6 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
                 var content = new GUIContent(iconTextures[i]);
                 Handles.Label(iconPos, content, style);
                 GUI.contentColor = prevBackgroundColor;
-
-                var iconScreenPosLeft = camera.WorldToScreenPoint(iconPos);
-                var iconScreenPosRight = iconScreenPosLeft + new Vector3(iconWidth * monitorDpiScalingFactor, 0, 0);
-                var distance = Mathf.Abs(camera.transform.position.y - iconPos.y);
-                var iconWorldPosRight = camera.ScreenToWorldPoint(new Vector3(iconScreenPosRight.x, iconScreenPosRight.y, distance));
             }
 #endif
         }
