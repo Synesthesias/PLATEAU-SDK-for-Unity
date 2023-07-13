@@ -15,6 +15,7 @@ namespace PLATEAU.CityImport.Load.Convert
         private readonly MeshGranularity meshGranularity; 
         private readonly List<CityObjectID> indexList = new List<CityObjectID>();
         private string id;
+        private CityObjectIndex index;
         private string parant;
 
         class CityObjectID
@@ -55,6 +56,7 @@ namespace PLATEAU.CityImport.Load.Convert
                 if (meshGranularity == MeshGranularity.PerAtomicFeatureObject && atomicGmlID == this.id)
                     this.parant = primaryGmlID;
             }
+            this.index =  cityObjectList.GetCityObjectIndex(this.id);         
         }
 
         /// <summary>
@@ -73,7 +75,7 @@ namespace PLATEAU.CityImport.Load.Convert
             var cityObj = GetCityObjectById(this.id);
             if (cityObj != null)
             {
-                var ser = CityObjectSerializableConvert.FromCityGMLCityObject<CityInfo.CityObject.CityObjectParam>(cityObj);
+                var ser = CityObjectSerializableConvert.FromCityGMLCityObject<CityInfo.CityObject.CityObjectParam>(cityObj, this.index);
                 foreach (var id in indexList)
                 {
                     if (id.PrimaryID == id.AtomicID) continue;
