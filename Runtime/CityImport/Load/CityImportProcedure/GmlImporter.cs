@@ -93,7 +93,7 @@ namespace PLATEAU.CityImport.Load.CityImportProcedure
             meshExtractOptions.UnitScale = UnitScale;
             meshExtractOptions.CoordinateZoneID = conf.CoordinateZoneID;
             meshExtractOptions.ExcludeCityObjectOutsideExtent = ShouldExcludeCityObjectOutsideExtent(package);
-            meshExtractOptions.ExcludeTrianglesOutsideExtent = ShouldExcludeTrianglesOutsideExtent(package);
+            meshExtractOptions.ExcludePolygonsOutsideExtent = ShouldExcludePolygonsOutsideExtent(package);
             meshExtractOptions.Extent = conf.Extent;
 
             if (!meshExtractOptions.Validate(out var failureMessage))
@@ -161,7 +161,7 @@ namespace PLATEAU.CityImport.Load.CityImportProcedure
             return true;
         }
 
-        private static bool ShouldExcludeTrianglesOutsideExtent(PredefinedCityModelPackage package)
+        private static bool ShouldExcludePolygonsOutsideExtent(PredefinedCityModelPackage package)
         {
             return !ShouldExcludeCityObjectOutsideExtent(package);
         }
