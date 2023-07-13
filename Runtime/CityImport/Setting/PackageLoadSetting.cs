@@ -1,5 +1,9 @@
 ﻿using System;
+using PLATEAU.Dataset;
 using PLATEAU.PolygonMesh;
+using PLATEAU.Util;
+using UnityEditor;
+using UnityEngine;
 
 namespace PLATEAU.CityImport.Setting
 {
@@ -16,6 +20,7 @@ namespace PLATEAU.CityImport.Setting
         public int maxLOD;
         public MeshGranularity meshGranularity;
         public bool doSetMeshCollider;
+        public Material fallbackMaterial;
         /// <summary> GUIで設定を表示する(true)か、折りたたむ(false)か </summary>
         [NonSerialized] public bool GuiFoldOutState = true;
 
@@ -28,5 +33,6 @@ namespace PLATEAU.CityImport.Setting
             this.meshGranularity = meshGranularity;
             this.doSetMeshCollider = doSetMeshCollider;
         }
+        
     }
 }
