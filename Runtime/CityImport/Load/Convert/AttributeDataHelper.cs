@@ -2,10 +2,6 @@
 using PLATEAU.PolygonMesh;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Unity.VisualScripting.YamlDotNet.Core.Tokens;
 using UnityEngine;
 
 namespace PLATEAU.CityImport.Load.Convert
@@ -17,11 +13,11 @@ namespace PLATEAU.CityImport.Load.Convert
     {
         private readonly PLATEAU.CityGML.CityModel cityModel;
         private readonly MeshGranularity meshGranularity; 
-        private readonly List<CityObjecID> indexList = new List<CityObjecID>();
+        private readonly List<CityObjectID> indexList = new List<CityObjectID>();
         private string id;
         private string parant;
 
-        class CityObjecID
+        class CityObjectID
         {
             public CityObjectIndex Index;
             public string AtomicID;
@@ -54,7 +50,7 @@ namespace PLATEAU.CityImport.Load.Convert
 
                 if (meshGranularity == MeshGranularity.PerCityModelArea ||
                     (meshGranularity == MeshGranularity.PerPrimaryFeatureObject && primaryGmlID == this.id))
-                        indexList.Add(new CityObjecID {Index = key, AtomicID = atomicGmlID, PrimaryID = primaryGmlID});
+                        indexList.Add(new CityObjectID { Index = key, AtomicID = atomicGmlID, PrimaryID = primaryGmlID});
                         
                 if (meshGranularity == MeshGranularity.PerAtomicFeatureObject && atomicGmlID == this.id)
                     this.parant = primaryGmlID;
@@ -95,7 +91,7 @@ namespace PLATEAU.CityImport.Load.Convert
         {
             CityInfo.CityObject cityObjSer = new CityInfo.CityObject();
             List<string> cityObjList = new List<string>();
-            Dictionary<string, List<CityObjecID>> chidrenMap = new Dictionary<string, List<CityObjecID>>();
+            Dictionary<string, List<CityObjectID>> chidrenMap = new Dictionary<string, List<CityObjectID>>();
 
             foreach (var id in indexList)
             {
@@ -106,7 +102,7 @@ namespace PLATEAU.CityImport.Load.Convert
                     if (chidrenMap.ContainsKey(id.PrimaryID))
                         chidrenMap[id.PrimaryID].Add(id);
                     else
-                        chidrenMap.Add(id.PrimaryID, new List<CityObjecID>(){id});
+                        chidrenMap.Add(id.PrimaryID, new List<CityObjectID>(){id});
                 }
             }
 

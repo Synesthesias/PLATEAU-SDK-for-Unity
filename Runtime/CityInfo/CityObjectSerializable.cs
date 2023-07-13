@@ -1,10 +1,5 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Codice.Client.BaseCommands;
 using Newtonsoft.Json;
 using PLATEAU.CityGML;
 using PLATEAU.PolygonMesh;

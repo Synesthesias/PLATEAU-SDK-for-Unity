@@ -1,14 +1,8 @@
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using PLATEAU.CityInfo;
 using PLATEAU.Editor.EditorWindow.Common;
-using PLATEAU.Geometries;
-using PLATEAU.Native;
-using System.Collections;
-using System.Collections.Generic;
-using System.ComponentModel;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 namespace PLATEAU
 {
@@ -28,7 +22,7 @@ namespace PLATEAU
             if (cog == null) return;
             var json = cog.SerializedCityObjects;
 
-            PlateauEditorStyle.Heading("�������", null);
+            PlateauEditorStyle.Heading("属性情報", null);
             using (PlateauEditorStyle.VerticalScopeLevel1())
             {
                 scroll = EditorGUILayout.BeginScrollView(scroll, GUILayout.MaxHeight(400));
@@ -44,7 +38,9 @@ namespace PLATEAU
 
         void OnSceneGUI()
         {
-            //Raycast�e�X�g
+            #region Raycastテスト
+            //今のところあくまでテストで、今後はクリック箇所の属性情報を表示する専用のモードが実装される予定です
+
             if (Event.current.type == EventType.MouseDown && Event.current.button == 0)
             {
                 Ray ray = HandleUtility.GUIPointToWorldRay(Event.current.mousePosition);
@@ -60,6 +56,8 @@ namespace PLATEAU
                 else
                     Debug.Log("no hit");
             }
+
+            #endregion Raycastテスト
         }
     }
 }

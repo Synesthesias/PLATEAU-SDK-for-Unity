@@ -1,13 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Runtime.ConstrainedExecution;
+﻿using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Codice.Client.BaseCommands;
-using Codice.Client.Common.FsNodeReaders;
-using JetBrains.Annotations;
-using Palmmedia.ReportGenerator.Core.Parser.Analysis;
-using PLATEAU.CityGML;
 using PLATEAU.CityInfo;
 using PLATEAU.PolygonMesh;
 using UnityEngine;

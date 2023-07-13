@@ -1,20 +1,21 @@
-using System.Collections;
-using System.Collections.Generic;
+ï»¿using System.Collections.Generic;
 using UnityEngine;
 using Newtonsoft.Json;
-using PLATEAU.CityGML;
 using System;
 using PLATEAU.PolygonMesh;
 
 namespace PLATEAU.CityInfo
 {
     /// <summary>
-    /// ƒVƒŠƒAƒ‰ƒCƒY‰Â”\‚ÈCityObjectƒf[ƒ^‚ÌŠÇ——pƒRƒ“ƒ|[ƒlƒ“ƒg‚Å‚·
+    /// ã‚·ãƒªã‚¢ãƒ©ã‚¤ã‚ºå¯èƒ½ãªCityObjectãƒ‡ãƒ¼ã‚¿ã®ç®¡ç†ç”¨ã‚³ãƒ³ãƒãƒ¼ãƒãƒ³ãƒˆã§ã™
     /// </summary>
     public class PLATEAUCityObjectGroup : MonoBehaviour
     {
-        public string SerializedCityObjects { get; private set; }
-        public CityInfo.CityObject DeserializedCityObjects { get; private set; }
+        [HideInInspector]
+        public string SerializedCityObjects;
+
+        [HideInInspector]
+        public CityInfo.CityObject DeserializedCityObjects;
 
         public void SetSerializableCityObject(CityInfo.CityObject cityObjectSerializable)
         {
@@ -33,8 +34,8 @@ namespace PLATEAU.CityInfo
         public CityInfo.CityObject GetCityObject(Vector2 uv)
         {
             CityObjectIndex index = new CityObjectIndex();
-            index.PrimaryIndex = (int)uv.x;
-            index.AtomicIndex = (int)uv.y;
+            index.PrimaryIndex = (int)Mathf.Round(uv.x);
+            index.AtomicIndex = (int)Mathf.Round(uv.y);
             return GetCityObject(index);
         }
 
