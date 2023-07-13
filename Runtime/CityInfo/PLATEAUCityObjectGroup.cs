@@ -42,9 +42,10 @@ namespace PLATEAU.CityInfo
         public CityInfo.CityObject GetCityObject(CityObjectIndex index)
         {
             CityObject obj = new CityObject();
-            obj.parent = DeserializedCityObjects.parent;
+            var des = DeserializedCityObjects.DeepCopy();
+            obj.parent = des.parent;
 
-            foreach (var co in DeserializedCityObjects.cityObjects)
+            foreach (var co in des.cityObjects)
             {
                 if (co.IndexInMesh.PrimaryIndex == index.PrimaryIndex && co.IndexInMesh.AtomicIndex == index.AtomicIndex)
                 {
@@ -78,7 +79,8 @@ namespace PLATEAU.CityInfo
         public IEnumerable<CityInfo.CityObject.CityObjectChildParam> GetAllCityObjects()
         {
             List<CityObject.CityObjectChildParam> objs = new List<CityObject.CityObjectChildParam> ();
-            foreach (var co in DeserializedCityObjects.cityObjects)
+            var des = DeserializedCityObjects.DeepCopy();
+            foreach (var co in des.cityObjects)
             {
                 objs.Add(co.Clone());
                 foreach (var ch in co.children)

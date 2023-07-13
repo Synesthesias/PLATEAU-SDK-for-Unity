@@ -148,5 +148,16 @@ namespace PLATEAU.CityInfo
                 _ => val.AsString,
             };
         }
+
+        public static T DeepCopy<T>(this T src) where T : class
+        {
+            using (var ms = new System.IO.MemoryStream())
+            {
+                var bf = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
+                bf.Serialize(ms, src);
+                ms.Position = 0;
+                return (T)bf.Deserialize(ms);
+            }
+        }
     }
 }
