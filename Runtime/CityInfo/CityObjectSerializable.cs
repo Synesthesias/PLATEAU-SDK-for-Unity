@@ -22,17 +22,6 @@ namespace PLATEAU.CityInfo
         {
             [JsonProperty(Order = 5)]
             public List<CityObjectChildParam> children = new List<CityObjectChildParam>();
-
-            new public CityObjectParam Clone()
-            {
-                var param = new CityObjectParam();
-                param.gmlID = gmlID;
-                param.cityObjectIndex = cityObjectIndex;
-                param.cityObjectType = cityObjectType;
-                param.attributes = new List<Attribute>(attributes);
-                param.children = new List<CityObjectChildParam>(children);
-                return param;
-            }
         }
 
         [Serializable]
@@ -75,16 +64,6 @@ namespace PLATEAU.CityInfo
                     }
                     return idx;
                 }
-            }
-
-            public CityObjectChildParam Clone()
-            {
-                var param = new CityObjectChildParam();
-                param.gmlID = gmlID;
-                param.cityObjectIndex = cityObjectIndex;
-                param.cityObjectType = cityObjectType;
-                param.attributes = new List<Attribute>(attributes);
-                return param;
             }
         }
 
@@ -143,21 +122,9 @@ namespace PLATEAU.CityInfo
             return val.Type switch
             {
                 AttributeType.Integer => val.AsInt,
-                AttributeType.Double => val.AsDouble,
-                
+                AttributeType.Double => val.AsDouble,     
                 _ => val.AsString,
             };
-        }
-
-        public static T DeepCopy<T>(this T src) where T : class
-        {
-            using (var ms = new System.IO.MemoryStream())
-            {
-                var bf = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
-                bf.Serialize(ms, src);
-                ms.Position = 0;
-                return (T)bf.Deserialize(ms);
-            }
         }
     }
 }
