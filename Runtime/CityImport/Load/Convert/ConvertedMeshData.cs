@@ -16,20 +16,18 @@ namespace PLATEAU.CityImport.Load.Convert
     {
         private readonly Vector3[] vertices;
         private readonly Vector2[] uv1;
-        private readonly Vector2[] uv2;
-        private readonly Vector2[] uv3;
+        private readonly Vector2[] uv4;
         private readonly List<List<int>> subMeshTriangles;
         private readonly List<string> textureUrls;
         private string Name { get; }
         private readonly Dictionary<int, Texture> subMeshIdToTexture;
         private int SubMeshCount => this.subMeshTriangles.Count;
 
-        public ConvertedMeshData(Vector3[] vertices, Vector2[] uv1, Vector2[] uv2, Vector2[] uv3, List<List<int>> subMeshTriangles, List<string> textureUrls, string name)
+        public ConvertedMeshData(Vector3[] vertices, Vector2[] uv1, Vector2[] uv4, List<List<int>> subMeshTriangles, List<string> textureUrls, string name)
         {
             this.vertices = vertices;
             this.uv1 = uv1;
-            this.uv2 = uv2;
-            this.uv3 = uv3;
+            this.uv4 = uv4;
             this.subMeshTriangles = subMeshTriangles;
             this.textureUrls = textureUrls;
             Name = name;
@@ -101,8 +99,7 @@ namespace PLATEAU.CityImport.Load.Convert
                 indexFormat = IndexFormat.UInt32,
                 vertices = this.vertices,
                 uv = this.uv1,
-                uv2 = this.uv2,
-                uv3 = this.uv3,
+                uv4 = this.uv4,
                 subMeshCount = this.subMeshTriangles.Count
             };
 

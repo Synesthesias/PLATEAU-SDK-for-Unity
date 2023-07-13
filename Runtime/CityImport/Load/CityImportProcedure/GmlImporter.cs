@@ -93,7 +93,7 @@ namespace PLATEAU.CityImport.Load.CityImportProcedure
             meshExtractOptions.UnitScale = UnitScale;
             meshExtractOptions.CoordinateZoneID = conf.CoordinateZoneID;
             meshExtractOptions.ExcludeCityObjectOutsideExtent = ShouldExcludeCityObjectOutsideExtent(package);
-            meshExtractOptions.ExcludeTrianglesOutsideExtent = ShouldExcludeTrianglesOutsideExtent(package);
+            meshExtractOptions.ExcludePolygonsOutsideExtent = ShouldExcludePolygonsOutsideExtent(package);
             meshExtractOptions.Extent = conf.Extent;
 
             if (!meshExtractOptions.Validate(out var failureMessage))
@@ -141,7 +141,7 @@ namespace PLATEAU.CityImport.Load.CityImportProcedure
                 Debug.LogError($"GMLファイルが存在しません。 : {gmlAbsolutePath}");
                 return null;
             }
-            var parserParams = new CitygmlParserParams(true, true, false);
+            var parserParams = new CitygmlParserParams(true, false, true, false);
             
             CityModel cityModel = null;
             try
@@ -162,7 +162,7 @@ namespace PLATEAU.CityImport.Load.CityImportProcedure
             return true;
         }
 
-        private static bool ShouldExcludeTrianglesOutsideExtent(PredefinedCityModelPackage package)
+        private static bool ShouldExcludePolygonsOutsideExtent(PredefinedCityModelPackage package)
         {
             return !ShouldExcludeCityObjectOutsideExtent(package);
         }
