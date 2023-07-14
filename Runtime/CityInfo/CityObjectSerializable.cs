@@ -71,7 +71,7 @@ namespace PLATEAU.CityInfo
                 return this;
             }
             
-            // TODO AttributesMapにキーとキーバリューペアを保存しているのはキーがダブって無駄。Attribute自体をDictionaryとして扱えるように対応すべき。
+            // TODO AttributesMapにキーとキーバリューペアを保存しているのはキーがダブって無駄。AttributeMapを独自クラスとし、それ自体をDictionaryとして扱えるように対応すべき。
             // TODO CityObjectParam からのみAttributesがDictionary形式で扱えるようになるのは不自然。 Attributesの入れ子構造を手軽に扱うことができない。
             [JsonIgnore]
             public Dictionary<string, Attribute> AttributesMap
