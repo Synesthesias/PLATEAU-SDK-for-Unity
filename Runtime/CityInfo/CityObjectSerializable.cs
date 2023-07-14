@@ -20,6 +20,10 @@ namespace PLATEAU.CityInfo
         public string parent = "";
         public List<CityObjectParam> cityObjects = new List<CityObjectParam>();
 
+        // TODO CityObjectChildParam と CityObjectParam の2つの異なる型にする必要があったのか？
+        // TODO Childのほうが基底型であるというのも混乱する、継承の通常の使い方ではないように見える。この場合は継承ではなく親が子を持つというコンポジション関係にしたほうが自然。
+        // TODO 親でも子でも children を持っていて、childrenが空である場合はjsonに含めないようにすればクラスを分ける必要はないのでは。
+        // TODO または、「jsonにchildrenを表示しない」処理が面倒なら、json上で子が空のchildrenを持っていても問題ない。
         [Serializable]
         public class CityObjectParam: CityObjectChildParam
         {
