@@ -50,10 +50,15 @@ namespace PLATEAU
                     if(hit.transform.TryGetComponent<PLATEAUCityObjectGroup>(out var cog))
                     {
                         var obj = cog.GetCityObject(hit);
+                        if (obj == null)
+                        {
+                            Debug.Log("no matching CityObject.");
+                            return;
+                        }
                         var logAttribute = new StringBuilder();
                         foreach (var o in obj.cityObjects)
                         {
-                            foreach (var a in o.attributes)
+                            foreach (var a in o.Attributes)
                             {
                                 logAttribute.Append($"attribute: key = {a.key}, value = {a.value}\n");
                             }

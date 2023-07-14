@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 using Newtonsoft.Json;
 using PLATEAU.CityGML;
 using PLATEAU.PolygonMesh;
+using PLATEAU.Util;
+using UnityEngine;
 using static PLATEAU.CityInfo.CityObject;
 
 namespace PLATEAU.CityInfo
@@ -20,6 +23,7 @@ namespace PLATEAU.CityInfo
         [Serializable]
         public class CityObjectParam: CityObjectChildParam
         {
+
             [JsonProperty(Order = 5)]
             public List<CityObjectChildParam> children = new List<CityObjectChildParam>();
         }
@@ -27,14 +31,28 @@ namespace PLATEAU.CityInfo
         [Serializable]
         public class CityObjectChildParam
         {
-            public string gmlID = "";
-            public int[] cityObjectIndex = new int[0];
-            public ulong cityObjectType;
-            public List<Attribute> attributes = new List<Attribute>();
+            [JsonProperty] [SerializeField] private string gmlID = "";
+            [JsonProperty] [SerializeField] private int[] cityObjectIndex = {-1, -1};
+            [JsonProperty] [SerializeField] private ulong cityObjectType;
+            [JsonProperty] [SerializeField] private List<Attribute> attributes = new();
 
-            /// <summary>
-            /// Getters/Setters
-            /// </summary>
+            // Getters/Setters
+            [JsonIgnore] public string GmlID => gmlID;
+            
+            [JsonIgnore] public int[] CityObjectIndex => cityObjectIndex;
+            [JsonIgnore] public CityObjectType CityObjectType => (CityObjectType)cityObjectType;
+            [JsonIgnore] public List<Attribute> Attributes => attributes;
+
+            public CityObjectChildParam Init(string gmlIDArg, int[] cityObjectIndexArg, ulong cityObjectTypeArg,
+                List<Attribute> attributesArg)
+            {
+                gmlID = gmlIDArg;
+                cityObjectIndex = cityObjectIndexArg;
+                cityObjectType = cityObjectTypeArg;
+                attributes = attributesArg;
+                return this;
+            }
+            
             [JsonIgnore]
             public Dictionary<string, Attribute> AttributesMap
             {
@@ -65,6 +83,20 @@ namespace PLATEAU.CityInfo
                     return idx;
                 }
             }
+            
+            /// <summary>
+            /// デバッグ用に自身の情報をstringで返します。
+            /// </summary>
+            public string DebugString()
+            {
+                var sb = new StringBuilder();
+                sb.Append($"gmlID : {gmlID}\n");
+                sb.Append($"cityObjectIndex : [{cityObjectIndex[0]} , {cityObjectIndex[1]}]\n");
+                sb.Append(
+                    $"cityObjectType : {string.Join(", ", EnumUtil.EachFlags((CityObjectType)cityObjectType))}\n");
+
+                return sb.ToString();
+            }
         }
 
         [Serializable]
@@ -84,17 +116,21 @@ namespace PLATEAU.CityInfo
     {
         public static T FromCityGMLCityObject<T>(CityGML.CityObject  obj, CityObjectIndex? idx = null) where T : CityObjectChildParam, new()
         {
-            T co = new T();
-            co.gmlID = obj.ID;
-            co.cityObjectType = (ulong)obj.Type;
+            string gmlID = obj.ID;
+            ulong cityObjectType = (ulong)obj.Type;
+            int[] cityObjectIndex = { -1, -1 };
+            List<CityObject.Attribute> attributes = new List<CityObject.Attribute>();
             if( idx != null )
-                co.cityObjectIndex = new int[] { idx.Value.PrimaryIndex, idx.Value.AtomicIndex };
+                cityObjectIndex = new[] { idx.Value.PrimaryIndex, idx.Value.AtomicIndex };
             foreach (var m in obj.AttributesMap)
             {
-                CityInfo.CityObject.Attribute att = FromAttributesMap(m);
-                co.attributes.Add(att);
+                CityObject.Attribute att = FromAttributesMap(m);
+                attributes.Add(att);
             }
-            return co;
+
+            var ret = new T();
+            ret.Init(gmlID, cityObjectIndex, cityObjectType, attributes);
+            return ret;
         }
 
         public static CityObject.Attribute FromAttributesMap(KeyValuePair<string, AttributeValue> map)

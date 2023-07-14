@@ -29,7 +29,7 @@ namespace PLATEAU.CityInfo
             serializedCityObjects = JsonConvert.SerializeObject(cityObjectSerializable, Formatting.Indented);
         }
 
-        public CityInfo.CityObject GetCityObject(RaycastHit hit)
+        public CityObject GetCityObject(RaycastHit hit)
         {
             if(GetUV4FromTriangleIndex(hit.triangleIndex, out var vec))
             {
@@ -54,7 +54,7 @@ namespace PLATEAU.CityInfo
             {
                 if (co.IndexInMesh.PrimaryIndex == index.PrimaryIndex && co.IndexInMesh.AtomicIndex == index.AtomicIndex)
                 {
-                    Debug.Log($"<color=magenta>Selected : {co.gmlID} : [{co.IndexInMesh.PrimaryIndex},{co.IndexInMesh.AtomicIndex}]</color>");
+                    Debug.Log($"<color=magenta>Selected : {co.GmlID} : [{co.IndexInMesh.PrimaryIndex},{co.IndexInMesh.AtomicIndex}]</color>");
                     co.children.Clear();
                     obj.cityObjects.Add(co);
                     return obj;
@@ -66,7 +66,7 @@ namespace PLATEAU.CityInfo
                     {
                         if (ch.IndexInMesh.PrimaryIndex == index.PrimaryIndex && ch.IndexInMesh.AtomicIndex == index.AtomicIndex)
                         {
-                            Debug.Log($"<color=magenta>Selected child : {ch.gmlID} : [{ch.IndexInMesh.PrimaryIndex},{ch.IndexInMesh.AtomicIndex}] \nparent: {co.gmlID}</color>");
+                            Debug.Log($"<color=magenta>Selected child : {ch.GmlID} : [{ch.IndexInMesh.PrimaryIndex},{ch.IndexInMesh.AtomicIndex}] \nparent: {co.GmlID}</color>");
                             co.children.Clear();
                             co.children.Add(ch);
                             obj.cityObjects.Add(co);
