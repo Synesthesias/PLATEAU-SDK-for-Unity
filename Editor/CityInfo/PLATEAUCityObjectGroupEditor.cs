@@ -50,8 +50,6 @@ namespace PLATEAU
                     if(hit.transform.TryGetComponent<PLATEAUCityObjectGroup>(out var cog))
                     {
                         var obj = cog.GetCityObject(hit);
-                        // var json = JsonConvert.SerializeObject(obj, Formatting.Indented);
-                        // Debug.Log(json);
                         var logAttribute = new StringBuilder();
                         foreach (var o in obj.cityObjects)
                         {
