@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text;
+using Newtonsoft.Json;
 using PLATEAU.CityInfo;
 using PLATEAU.Editor.EditorWindow.Common;
 using UnityEditor;
@@ -20,7 +21,7 @@ namespace PLATEAU
         {
             var cog = target as PLATEAUCityObjectGroup;
             if (cog == null) return;
-            var json = cog.SerializedCityObjects;
+            var json = cog.serializedCityObjects;
 
             PlateauEditorStyle.Heading("属性情報", null);
             using (PlateauEditorStyle.VerticalScopeLevel1())
@@ -49,8 +50,17 @@ namespace PLATEAU
                     if(hit.transform.TryGetComponent<PLATEAUCityObjectGroup>(out var cog))
                     {
                         var obj = cog.GetCityObject(hit);
-                        var json = JsonConvert.SerializeObject(obj, Formatting.Indented);
-                        Debug.Log(json);
+                        // var json = JsonConvert.SerializeObject(obj, Formatting.Indented);
+                        // Debug.Log(json);
+                        var logAttribute = new StringBuilder();
+                        foreach (var o in obj.cityObjects)
+                        {
+                            foreach (var a in o.attributes)
+                            {
+                                logAttribute.Append($"attribute: key = {a.key}, value = {a.value}\n");
+                            }
+                        }
+                        Debug.Log(logAttribute);
                     }
                 }
                 else
