@@ -45,6 +45,7 @@ namespace PLATEAU.CityInfo
             }
         }
 
+        // TODO このあたりのSerializable、本当に必要か？
         [Serializable]
         public class CityObjectChildParam
         {
@@ -125,9 +126,9 @@ namespace PLATEAU.CityInfo
                     sb.Append(attr);
                     sb.Append("\n}\n");
                 }
-                else if(value is object val)
+                else if(value is Attribute val)
                 {
-                    sb.Append(val);
+                    sb.Append(val.DebugString());
                     sb.Append("\n");
                 }
 

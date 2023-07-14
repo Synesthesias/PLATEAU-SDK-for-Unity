@@ -35,7 +35,8 @@ namespace PLATEAU.Samples.Scripts
             if (Input.GetMouseButtonDown(0)) // 左クリックで
             {
                 var ray = this.mainCamera.ScreenPointToRay(Input.mousePosition); // クリック位置に
-                if (Physics.Raycast(ray, out var hit)) // レイキャストして当たったとき
+                bool isOverUI = UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject();
+                if (Physics.Raycast(ray, out var hit) & !isOverUI) // レイキャストして当たったとき
                 {
                     var cityObjGroup = hit.transform.GetComponent<PLATEAUCityObjectGroup>(); // その都市オブジェクトを取得します。
                     if (cityObjGroup != null)
