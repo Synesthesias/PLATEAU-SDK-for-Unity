@@ -71,6 +71,22 @@ namespace PLATEAU.CityInfo
                 return this;
             }
             
+            // TODO AttributesMapにキーとキーバリューペアを保存しているのはキーがダブって無駄。Attribute自体をDictionaryとして扱えるように対応すべき。
+            // TODO CityObjectParam からのみAttributesがDictionary形式で扱えるようになるのは不自然。 Attributesの入れ子構造を手軽に扱うことができない。
+            [JsonIgnore]
+            public Dictionary<string, Attribute> AttributesMap
+            {
+                get
+                {
+                    var attrMap = new Dictionary<string, Attribute>();
+                    foreach( var attr in attributes)
+                    {
+                        if (!attrMap.ContainsKey(attr.key))
+                            attrMap.Add(attr.key, attr);
+                    }
+                    return attrMap;
+                }
+            }
             
             [JsonIgnore]
             public CityObjectType type => (CityObjectType)cityObjectType;
@@ -119,17 +135,23 @@ namespace PLATEAU.CityInfo
             public string DebugString()
             {
                 var sb = new StringBuilder();
-                sb.Append($"key: {key}, value: ");
-                if (value is Attribute attr)
+                sb.Append($"key: {key}, ");
+                // TODO valueの値を見るためにこのような変換をするのはユーザーにとってわかりにくい。
+                // TODO 属性情報を便利に見れるよう、AttributeMapという型を作るべき。
+                if (value is List<Attribute> attrs)
                 {
-                    sb.Append(" {\n");
-                    sb.Append(attr);
+                    sb.AppendLine("value: {");
+                    foreach (var attr in attrs)
+                    {
+                        sb.AppendLine(attr.DebugString());
+                    }
+                    
                     sb.Append("\n}\n");
                 }
-                else if(value is Attribute val)
+                else
                 {
-                    sb.Append(val.DebugString());
-                    sb.Append("\n");
+                    sb.Append("value: ");
+                    sb.AppendLine(Convert.ToString(value));
                 }
 
                 return sb.ToString();

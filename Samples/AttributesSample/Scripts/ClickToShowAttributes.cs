@@ -1,12 +1,12 @@
+using System;
 using System.IO;
+using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using PLATEAU.CityGML;
 using PLATEAU.CityInfo;
 using PLATEAU.Util;
-using PLATEAU.Util.Async;
 using UnityEngine;
-using UnityEngine.Assertions;
+using CityObject = PLATEAU.CityInfo.CityObject;
 
 namespace PLATEAU.Samples.Scripts
 {
@@ -17,6 +17,9 @@ namespace PLATEAU.Samples.Scripts
     {
         [SerializeField] private AttributesDisplay display;
         private Camera mainCamera;
+
+        /// <summary> これ以上の文字数は省略して表示します </summary>
+        private const int CharacterLimit = 15000;
 
         private void Start()
         {
@@ -64,10 +67,45 @@ namespace PLATEAU.Samples.Scripts
                 attributesSb.Append(cityObjParam.DebugString());
                 attributesSb.Append("\n\n");
             }
+            
 
-            this.display.AttributesText = attributesSb.ToString();
+            // 最大文字数の範囲内で属性情報を表示します。
+            string displayText = attributesSb.Length > CharacterLimit
+                ? attributesSb.ToString()[..CharacterLimit] + "\n\n(最大文字数に達しました)"
+                : attributesSb.ToString();
+            this.display.AttributesText = displayText;
+
+            // クリックしたゲームオブジェクトの、最初の主要地物の情報をヘッダーとして表示します。
+            var headerSb = new StringBuilder();
+            var firstPrimaryObj = cityObjGroup.PrimaryCityObjects.FirstOrDefault();
+            if (firstPrimaryObj != null)
+            {
+                // 主要地物のGmlIDを取得します。
+                headerSb.Append(firstPrimaryObj.GmlID);
+                headerSb.Append("\n");
+                // 高さを取得します。
+                var attributesMap = firstPrimaryObj.AttributesMap;
+                if (attributesMap.TryGetValue("bldg:measuredheight", out var attribute))
+                {
+                    // TODO このコード、Unity設定で Api Conpatibility Level が .NET Standard 2.1 だと動かなくて、 .NET Framework にしてようやく動く。
+                    // TODO ユーザーにそのような設定を強制させたくはない。attribute.value をstringで取得する良い方法は？　そもそも本当に dynamic型を利用すべき？ 静的型システムの範囲内でなんとかならないか？
+                    // TODO PLATEAUのAttributeMapでは、メンバー変数に string と AttributeMap があってどっちか片方に値が入っているという方法をとっていた。 
+                    headerSb.Append($"高さ: {Convert.ToString(attribute.value)}"); // valueは動的型であり、具体的な型は Attribute(入れ子), string, double などがあります。
+                };
+                // 住所を取得します。
+                if (attributesMap.TryGetValue("uro:buildingDetails", out var buildingAttr))
+                {
+                    // TODO uro:buildingDetails 属性に入れ子構造になっている uro:city 属性を取得したいが、そのような手軽な方法がないことに気づいた。Attributeを直接Dictionaryのように扱うことができれば、入れ子構造でも簡単にアクセスできる。
+                    // TODO 住所 (uro:buildingDetails/uro:city) を取得して headerSBにAppendする処理をここに書く
+                }
+
+            }
+
+            this.display.TitleText = headerSb.ToString();
 
 
+
+            // TODO 上記のTODOがうまくいったら以下の古いコードを消す
             // // 住所の市を取得します。
             // // AttributesMap.GetValueOrNull を使うと、属性のキーに対応する値である AttributeValue を取得できます。
             // // AttributeValue は、値として 文字列 または 子のAttributesMap のどちらか1つを保持します。

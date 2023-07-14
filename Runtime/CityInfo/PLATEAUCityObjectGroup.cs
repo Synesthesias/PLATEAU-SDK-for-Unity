@@ -2,6 +2,7 @@
 using UnityEngine;
 using Newtonsoft.Json;
 using System;
+using System.Linq;
 using PLATEAU.PolygonMesh;
 
 namespace PLATEAU.CityInfo
@@ -11,6 +12,9 @@ namespace PLATEAU.CityInfo
     /// </summary>
     public class PLATEAUCityObjectGroup : MonoBehaviour
     {
+        // TODO ここでpublicにするものはユーザーが使う関数になるので分かりやすさに注意を払うべき。その観点でいうと、 serializedCityObjects と deserializedCityObjects が公開されているのはわかりにくい。
+        // TODO ユーザーから見たら、シリアライズされているか、デシリアライズされているかは興味がないので、そのような違いは秘匿しなければいけない。
+        // TODO serializedCityObjectsはprivateにし、DeserializedCityObjectsは単に CityObjects にリネームすべき。
         [HideInInspector]
         public string serializedCityObjects;
 
@@ -37,6 +41,15 @@ namespace PLATEAU.CityInfo
             }
             return null;
         }
+
+        public IEnumerable<CityObject.CityObjectChildParam> PrimaryCityObjects
+        {
+            get
+            {
+                return GetAllCityObjects().Where(obj => obj.CityObjectIndex[1] < 0);
+            }
+        }
+
         public CityInfo.CityObject GetCityObject(Vector2 uv)
         {
             CityObjectIndex index = new CityObjectIndex();
