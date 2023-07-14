@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using PLATEAU.CityInfo;
 using PLATEAU.PolygonMesh;
 using UnityEngine;
 
@@ -18,6 +19,7 @@ namespace PLATEAU.CityImport.Load.Convert
         private readonly ConvertedMeshData meshData;
         private readonly string name;
         private readonly List<ConvertedGameObjData> children = new List<ConvertedGameObjData>();
+        private readonly AttributeDataHelper attributeDataHelper;
 
         /// <summary>
         /// C++側の <see cref="PolygonMesh.Model"/> から変換して
@@ -25,15 +27,17 @@ namespace PLATEAU.CityImport.Load.Convert
         /// 子も再帰的に作ります。
         /// </summary>
         /// <param name="plateauModel"></param>
-        public ConvertedGameObjData(Model plateauModel)
+        public ConvertedGameObjData(Model plateauModel, AttributeDataHelper attributeDataHelper)
         {
             this.meshData = null;
             this.name = "CityRoot";
+            this.attributeDataHelper = attributeDataHelper;
+            this.attributeDataHelper.SetId(this.name);
             for (int i = 0; i < plateauModel.RootNodesCount; i++)
             {
                 var rootNode = plateauModel.GetRootNodeAt(i);
                 // 再帰的な子の生成です。
-                this.children.Add(new ConvertedGameObjData(rootNode));
+                this.children.Add(new ConvertedGameObjData(rootNode, new AttributeDataHelper(attributeDataHelper)));
             }
             Debug.Log("converted plateau model.");
         }
@@ -43,14 +47,19 @@ namespace PLATEAU.CityImport.Load.Convert
         /// <see cref="ConvertedGameObjData"/> を作ります。
         /// 子も再帰的に作ります。
         /// </summary>
-        public ConvertedGameObjData(Node plateauNode)
+        public ConvertedGameObjData(Node plateauNode, AttributeDataHelper attributeDataHelper)
         {
             this.meshData = MeshConverter.Convert(plateauNode.Mesh, plateauNode.Name);
             this.name = plateauNode.Name;
+            this.attributeDataHelper = attributeDataHelper;
+            this.attributeDataHelper.SetId(this.name);
+            if (meshData != null)
+                this.attributeDataHelper.SetCityObjectList(plateauNode.Mesh.CityObjectList);
+
             for (int i = 0; i < plateauNode.ChildCount; i++)
             {
                 var child = plateauNode.GetChildAt(i);
-                this.children.Add(new ConvertedGameObjData(child));
+                this.children.Add(new ConvertedGameObjData(child, new AttributeDataHelper(attributeDataHelper)));
             }
         }
 
@@ -84,6 +93,11 @@ namespace PLATEAU.CityImport.Load.Convert
                     if (placedObj != null)
                     {
                         nextParent = placedObj.transform;
+
+                        //　属性情報表示コンポーネントを追加します。
+                        var attrInfo = placedObj.AddComponent<PLATEAUCityObjectGroup>();
+                        attrInfo.SetSerializableCityObject(this.attributeDataHelper.GetSerializableCityObject());
+
                         if (doSetMeshCollider)
                         {
                             placedObj.AddComponent<MeshCollider>();
