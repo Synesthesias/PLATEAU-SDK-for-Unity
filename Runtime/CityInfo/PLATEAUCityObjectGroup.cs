@@ -3,7 +3,6 @@ using UnityEngine;
 using Newtonsoft.Json;
 using System;
 using PLATEAU.PolygonMesh;
-using Unity.VisualScripting.YamlDotNet.Serialization;
 
 namespace PLATEAU.CityInfo
 {
@@ -13,21 +12,21 @@ namespace PLATEAU.CityInfo
     public class PLATEAUCityObjectGroup : MonoBehaviour
     {
         [HideInInspector]
-        public string SerializedCityObjects;
+        public string serializedCityObjects;
 
         public CityInfo.CityObject DeserializedCityObjects
         {
             get
             {
-                if (!string.IsNullOrEmpty(SerializedCityObjects))
-                    return JsonConvert.DeserializeObject<CityInfo.CityObject>(SerializedCityObjects);
+                if (!string.IsNullOrEmpty(serializedCityObjects))
+                    return JsonConvert.DeserializeObject<CityInfo.CityObject>(serializedCityObjects);
                 return new CityInfo.CityObject();
             }
         }
 
         public void SetSerializableCityObject(CityInfo.CityObject cityObjectSerializable)
         {
-            SerializedCityObjects = JsonConvert.SerializeObject(cityObjectSerializable, Formatting.Indented);
+            serializedCityObjects = JsonConvert.SerializeObject(cityObjectSerializable, Formatting.Indented);
         }
 
         public CityInfo.CityObject GetCityObject(RaycastHit hit)
