@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using PLATEAU.CityInfo;
 using PLATEAU.PolygonMesh;
 using UnityEngine;
 
@@ -19,7 +18,6 @@ namespace PLATEAU.CityImport.Load.Convert
         private readonly ConvertedMeshData meshData;
         private readonly string name;
         private readonly List<ConvertedGameObjData> children = new List<ConvertedGameObjData>();
-        private readonly AttributeDataHelper attributeDataHelper;
 
         /// <summary>
         /// C++側の <see cref="PolygonMesh.Model"/> から変換して
@@ -27,17 +25,15 @@ namespace PLATEAU.CityImport.Load.Convert
         /// 子も再帰的に作ります。
         /// </summary>
         /// <param name="plateauModel"></param>
-        public ConvertedGameObjData(Model plateauModel, AttributeDataHelper attributeDataHelper)
+        public ConvertedGameObjData(Model plateauModel)
         {
             this.meshData = null;
             this.name = "CityRoot";
-            this.attributeDataHelper = attributeDataHelper;
-            this.attributeDataHelper.SetId(this.name);
             for (int i = 0; i < plateauModel.RootNodesCount; i++)
             {
                 var rootNode = plateauModel.GetRootNodeAt(i);
                 // 再帰的な子の生成です。
-                this.children.Add(new ConvertedGameObjData(rootNode, new AttributeDataHelper(attributeDataHelper)));
+                this.children.Add(new ConvertedGameObjData(rootNode));
             }
             Debug.Log("converted plateau model.");
         }
@@ -47,19 +43,14 @@ namespace PLATEAU.CityImport.Load.Convert
         /// <see cref="ConvertedGameObjData"/> を作ります。
         /// 子も再帰的に作ります。
         /// </summary>
-        public ConvertedGameObjData(Node plateauNode, AttributeDataHelper attributeDataHelper)
+        public ConvertedGameObjData(Node plateauNode)
         {
             this.meshData = MeshConverter.Convert(plateauNode.Mesh, plateauNode.Name);
             this.name = plateauNode.Name;
-            this.attributeDataHelper = attributeDataHelper;
-            this.attributeDataHelper.SetId(this.name);
-            if (meshData != null)
-                this.attributeDataHelper.SetCityObjectList(plateauNode.Mesh.CityObjectList);
-
             for (int i = 0; i < plateauNode.ChildCount; i++)
             {
                 var child = plateauNode.GetChildAt(i);
-                this.children.Add(new ConvertedGameObjData(child, new AttributeDataHelper(attributeDataHelper)));
+                this.children.Add(new ConvertedGameObjData(child));
             }
         }
 
@@ -67,7 +58,7 @@ namespace PLATEAU.CityImport.Load.Convert
         /// ゲームオブジェクト、メッシュ、テクスチャの実体を作ってシーンに配置します。
         /// 再帰によって子も配置します。
         /// </summary>
-        public async Task PlaceToScene(Transform parent, Dictionary<string, UnityEngine.Texture> cachedTexture, bool skipRoot, bool doSetMeshCollider, CancellationToken token)
+        public async Task PlaceToScene(Transform parent, Dictionary<string, Texture> cachedTexture, bool skipRoot, bool doSetMeshCollider, CancellationToken token, Material fallbackMaterial)
         {
             token.ThrowIfCancellationRequested();
 
@@ -89,15 +80,10 @@ namespace PLATEAU.CityImport.Load.Convert
                 else
                 {
                     // メッシュがあれば、それを配置します。（ただし頂点数が0の場合は配置しません。）
-                    var placedObj = await this.meshData.PlaceToScene(parent, cachedTexture);
+                    var placedObj = await this.meshData.PlaceToScene(parent, cachedTexture, fallbackMaterial);
                     if (placedObj != null)
                     {
                         nextParent = placedObj.transform;
-
-                        //　属性情報表示コンポーネントを追加します。
-                        var attrInfo = placedObj.AddComponent<PLATEAUCityObjectGroup>();
-                        attrInfo.SetSerializableCityObject(this.attributeDataHelper.GetSerializableCityObject());
-
                         if (doSetMeshCollider)
                         {
                             placedObj.AddComponent<MeshCollider>();
@@ -109,7 +95,7 @@ namespace PLATEAU.CityImport.Load.Convert
             // 子を再帰的に配置します。
             foreach (var child in this.children)
             {
-                await child.PlaceToScene(nextParent.transform, cachedTexture, false, doSetMeshCollider, token);
+                await child.PlaceToScene(nextParent.transform, cachedTexture, false, doSetMeshCollider, token, fallbackMaterial);
             }
         }
     }
