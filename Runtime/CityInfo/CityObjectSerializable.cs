@@ -26,6 +26,23 @@ namespace PLATEAU.CityInfo
 
             [JsonProperty(Order = 5)]
             public List<CityObjectChildParam> children = new List<CityObjectChildParam>();
+
+            /// <summary>
+            /// デバッグ用に自身の情報をstringで返します。
+            /// </summary>
+            public override string DebugString()
+            {
+                var sb = new StringBuilder();
+                sb.Append(base.DebugString());
+                sb.Append("children:\n");
+                foreach (var child in children)
+                {
+                    sb.Append("\n\n");
+                    sb.Append(child.DebugString());
+                }
+
+                return sb.ToString();
+            }
         }
 
         [Serializable]
@@ -53,20 +70,7 @@ namespace PLATEAU.CityInfo
                 return this;
             }
             
-            [JsonIgnore]
-            public Dictionary<string, Attribute> AttributesMap
-            {
-                get
-                {
-                    var attrMap = new Dictionary<string, Attribute>();
-                    foreach( var attr in attributes)
-                    {
-                        if (!attrMap.ContainsKey(attr.key))
-                            attrMap.Add(attr.key, attr);
-                    }
-                    return attrMap;
-                }
-            }
+            
             [JsonIgnore]
             public CityObjectType type => (CityObjectType)cityObjectType;
             [JsonIgnore]
@@ -87,14 +91,18 @@ namespace PLATEAU.CityInfo
             /// <summary>
             /// デバッグ用に自身の情報をstringで返します。
             /// </summary>
-            public string DebugString()
+            public virtual string DebugString()
             {
                 var sb = new StringBuilder();
-                sb.Append($"gmlID : {gmlID}\n");
-                sb.Append($"cityObjectIndex : [{cityObjectIndex[0]} , {cityObjectIndex[1]}]\n");
+                sb.Append($"GmlID : {GmlID}\n");
+                sb.Append($"CityObjectIndex : [{CityObjectIndex[0]} , {CityObjectIndex[1]}]\n");
                 sb.Append(
-                    $"cityObjectType : {string.Join(", ", EnumUtil.EachFlags((CityObjectType)cityObjectType))}\n");
-
+                    $"CityObjectType : {string.Join(", ", EnumUtil.EachFlags(CityObjectType))}\n");
+                sb.Append($"Attributes:\n");
+                foreach (var attr in Attributes)
+                {
+                    sb.Append(attr.DebugString());
+                }
                 return sb.ToString();
             }
         }
@@ -106,6 +114,25 @@ namespace PLATEAU.CityInfo
             public string key = "";
             public string type = "";
             public dynamic value = "";
+
+            public string DebugString()
+            {
+                var sb = new StringBuilder();
+                sb.Append($"key: {key}, value: ");
+                if (value is Attribute attr)
+                {
+                    sb.Append(" {\n");
+                    sb.Append(attr);
+                    sb.Append("\n}\n");
+                }
+                else if(value is object val)
+                {
+                    sb.Append(val);
+                    sb.Append("\n");
+                }
+
+                return sb.ToString();
+            }
         }
     }
 

@@ -61,7 +61,7 @@ namespace PLATEAU.Samples.Scripts
             foreach (var cityObjParam in cityObjParams)
             {
                 attributesSb.Append(cityObjParam.DebugString());
-                attributesSb.Append("\n");
+                attributesSb.Append("\n\n");
             }
 
             this.display.AttributesText = attributesSb.ToString();
