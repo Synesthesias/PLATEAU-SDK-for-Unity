@@ -41,6 +41,10 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         private static readonly Color boxColor = new Color(0.25f, 0.25f, 0.25f, 0.35f);
         private static ConcurrentDictionary<(PredefinedCityModelPackage package, uint lod), Texture> iconDict;
         private static Texture boxTex;
+        private struct FPLATEAUFeatureInfoMaterialKey {
+            public int Lod;
+            public Texture IconTexture;
+        }
 
         public AreaLodView(PackageToLodDict packageToLodDict, Vector3 meshCodeUnityPositionUpperLeft, Vector3 meshCodeUnityPositionLowerRight)
         {
@@ -66,10 +70,10 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
                 Debug.LogError("Failed to load icons.");
                 return;
             }
-
+            
             // アイコンが存在するパッケージ種について、表示すべきアイコンを求めます。
             var iconAvailableForPackages = iconDict.Keys.Select(tuple => tuple.package).Distinct();
-            var iconTextures = new List<Texture>();
+            var maxLodIconDict = new Dictionary<string, FPLATEAUFeatureInfoMaterialKey>();
             foreach(var package in iconAvailableForPackages)
             {
                 // パッケージが存在しないときは -1 になります
@@ -77,14 +81,31 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
                 if (maxLod < 0)
                     continue;
                 
-                // パッケージとLODに対応するテクスチャを求めます。
+                // パッケージとLODに対応するテクスチャを求めます
                 if (!iconDict.TryGetValue((package, (uint)maxLod), out var iconTex)) continue;
-                iconTextures.Add(iconTex);
+                var key = new FPLATEAUFeatureInfoMaterialKey {
+                    Lod = maxLod,
+                    IconTexture = iconTex
+                };
+
+                // アイコンはパッケージ毎に割当てられているが、同名のアイコンファイルが利用されるのは防ぐ
+                var iconFileName = GetIconFileName(package);
+                if (maxLodIconDict.ContainsKey(iconFileName))
+                {
+                    if (maxLodIconDict[iconFileName].Lod < maxLod) 
+                    {
+                        maxLodIconDict[iconFileName] = key;
+                    }
+                } 
+                else 
+                {
+                    maxLodIconDict.Add(iconFileName, key);
+                } 
             }
 
-            if (iconTextures.Count <= 0)
+            if (maxLodIconDict.Count <= 0)
             {
-                Debug.LogError("iconTextures.Count <= 0");
+                Debug.LogError("maxLodIconDict.Count <= 0");
                 return;
             }
 
@@ -93,13 +114,14 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
 
             // 地域メッシュコードの枠内にアイコンが4つ並ぶ程度の大きさ
             var iconWidth = Mathf.Min(maxIconWidth, meshCodeScreenWidth / iconWidthDivider) / monitorDpiScalingFactor;
-            var iconCnt = Math.Min(iconTextures.Count, maxIconCnt);
+            var iconCnt = Math.Min(maxLodIconDict.Count, maxIconCnt);
             
             // アイコンを中央揃えで左から右に並べたとき、左上の座標を求めます。
             var meshCodeCenterUnityPos = (this.meshCodeUnityPositionUpperLeft + this.meshCodeUnityPositionLowerRight) * 0.5f;
 
             // アイコンを表示します。
             var offsetVec = Vector3.zero;
+            var materialKeys = maxLodIconDict.Values.ToList();
             for (var i = 0; i < iconCnt; ++i) 
             {
                 var colIndex = i % maxIconCol;
@@ -128,7 +150,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
                     alignment = TextAnchor.UpperLeft,
                     stretchWidth = true
                 };
-                var content = new GUIContent(iconTextures[i]);
+                var content = new GUIContent(materialKeys[i].IconTexture);
                 Handles.Label(iconPos, content, style);
                 GUI.contentColor = prevBackgroundColor;
             }
