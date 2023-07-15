@@ -35,6 +35,9 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         private const float boxPaddingRatio = 0.05f;
         /// <summary> アイコンの幅がメッシュコード幅の何分の1であるかです。 </summary>
         private const float iconWidthDivider = 4;
+        private const int maxIconCnt = 8;
+        private const int maxIconCol = 4;
+        private const int maxIconRow = 2;
         private static readonly Color boxColor = new Color(0.25f, 0.25f, 0.25f, 0.35f);
         private static ConcurrentDictionary<(PredefinedCityModelPackage package, uint lod), Texture> iconDict;
         private static Texture boxTex;
@@ -78,46 +81,37 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
                 if (!iconDict.TryGetValue((package, (uint)maxLod), out var iconTex)) continue;
                 iconTextures.Add(iconTex);
             }
-            
+
+            if (iconTextures.Count <= 0)
+            {
+                Debug.LogError("iconTextures.Count <= 0");
+                return;
+            }
+
             var monitorDpiScalingFactor = EditorGUIUtility.pixelsPerPoint;
             var meshCodeScreenWidth = (camera.WorldToScreenPoint(this.meshCodeUnityPositionLowerRight) - camera.WorldToScreenPoint(this.meshCodeUnityPositionUpperLeft)).x;
 
             // 地域メッシュコードの枠内にアイコンが4つ並ぶ程度の大きさ
             var iconWidth = Mathf.Min(maxIconWidth, meshCodeScreenWidth / iconWidthDivider) / monitorDpiScalingFactor;
-            var iconMaxCnt = Math.Clamp(iconTextures.Count, 1, 8);
+            var iconCnt = Math.Min(iconTextures.Count, maxIconCnt);
             
             // アイコンを中央揃えで左から右に並べたとき、左上の座標を求めます。
             var meshCodeCenterUnityPos = (this.meshCodeUnityPositionUpperLeft + this.meshCodeUnityPositionLowerRight) * 0.5f;
 
-            // アイコンを包むボックスを表示します。
-            var boxColCount = 4 < iconMaxCnt ? 4 : iconMaxCnt;
-            var boxRowCount = 4 < iconMaxCnt ? 2 : 1;
-            var iconsBoxPaddingScreen = iconWidth * boxPaddingRatio;
-            var boxSizeScreen = new Vector2(iconWidth * boxColCount + iconsBoxPaddingScreen * 2, iconWidth * boxRowCount + iconsBoxPaddingScreen * 2);
-            var boxUpperLeft = new Vector3(-boxSizeScreen.x * 0.5f - iconsBoxPaddingScreen * 0.5f, boxSizeScreen.y * 0.5f + iconsBoxPaddingScreen * 0.5f, 0) * monitorDpiScalingFactor;
-            var iconsUpperLeft = camera.ScreenToWorldPoint(camera.WorldToScreenPoint(meshCodeCenterUnityPos) + boxUpperLeft);
-            var boxPosScreen = camera.WorldToScreenPoint(iconsUpperLeft);
-
-            Handles.BeginGUI();
-            var prevColor = GUI.color;
-            GUI.color = boxColor;
-            // ボックスを描画します。ただし、Handles.BeginGUI(); の中では座標系が異なる（特にスクリーン座標系における y座標の向きが異なる）ので変換します。
-            var boxRect = new Rect(new Vector2(boxPosScreen.x, boxPosScreen.y * -1 + camera.pixelHeight), boxSizeScreen);
-            boxRect.position /= monitorDpiScalingFactor;
-            GUI.DrawTexture(boxRect, boxTex, ScaleMode.StretchToFill);
-            GUI.color = prevColor;
-            Handles.EndGUI();
-            
             // アイコンを表示します。
             var offsetVec = Vector3.zero;
-            for (var i = 0; i < iconMaxCnt; ++i) 
+            for (var i = 0; i < iconCnt; ++i) 
             {
-                var colIndex = i % 4;
-                var rowIndex = i / 4;
-                var colCount = 0 < (iconMaxCnt - rowIndex * 4) / 4 ? 4 : (iconMaxCnt - rowIndex * 4) % 4;
-                var rowCount = 4 < iconMaxCnt ? 2 : 1;
-                var xOffset = iconMaxCnt is > 4 and <= 8 && 0 < rowIndex
+                var colIndex = i % maxIconCol;
+                var rowIndex = i / maxIconCol;
+                // 表示するアイコン数に応じて現在の行において最大何個のアイコンを表示するか求める
+                var colCount = 0 < (iconCnt - rowIndex * maxIconCol) / maxIconCol ? maxIconCol : (iconCnt - rowIndex * maxIconCol) % maxIconCol;
+                // 表示するアイコン数に応じて最大の行数を求める
+                var rowCount = maxIconCol < iconCnt ? maxIconRow : 1;
+                var xOffset = iconCnt is > maxIconCol and <= maxIconCnt && 0 < rowIndex
+                    // 2行目のオフセット値
                     ? iconWidth * colIndex - iconWidth * 2
+                    // 1行目のオフセット値
                     : iconWidth * colIndex - iconWidth * colCount * 0.5f;
                 var yOffset = 1 < rowCount ? iconWidth - iconWidth * rowIndex : iconWidth * 0.5f;
 
