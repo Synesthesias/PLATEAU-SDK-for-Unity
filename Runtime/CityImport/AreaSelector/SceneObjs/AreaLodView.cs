@@ -34,7 +34,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         /// <summary> アイコンを包むボックスについて、そのパディング幅がアイコンの何倍であるかです。 </summary>
         private const float boxPaddingRatio = 0.05f;
         /// <summary> アイコンの幅がメッシュコード幅の何分の1であるかです。 </summary>
-        private const float iconWidthDivider = 4;
+        private const float iconWidthDivider = 4.3f;
         private const int maxIconCnt = 8;
         private const int maxIconCol = 4;
         private const int maxIconRow = 2;
