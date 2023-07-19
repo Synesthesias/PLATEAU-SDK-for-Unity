@@ -87,17 +87,20 @@ namespace PLATEAU.Samples.Scripts
                 var attributesMap = firstPrimaryObj.AttributesMap;
                 if (attributesMap.TryGetValue("bldg:measuredheight", out var attribute))
                 {
-                    // TODO このコード、Unity設定で Api Conpatibility Level が .NET Standard 2.1 だと動かなくて、 .NET Framework にしてようやく動く。
-                    // TODO ユーザーにそのような設定を強制させたくはない。attribute.value をstringで取得する良い方法は？　そもそも本当に dynamic型を利用すべき？ 静的型システムの範囲内でなんとかならないか？
-                    // TODO PLATEAUのAttributeMapでは、メンバー変数に string と AttributeMap があってどっちか片方に値が入っているという方法をとっていた。 
-                    //headerSb.Append($"高さ: {Convert.ToString(attribute.value)}"); // valueは動的型であり、具体的な型は Attribute(入れ子), string, double などがあります。
-                    headerSb.Append($"高さ: {Convert.ToString(attribute.StringValue)}"); // valueは動的型であり、具体的な型は Attribute(入れ子), string, double などがあります。
+                    // 属性は keyとvalue のペアですが、valueの型は string,double,attribute(入れ子)などいくつかパターンがあります。
+                    // attribute.Type で型を判別し、型に応じたゲッターを使って値を取得できます。例えば valueの型が文字列に変換可能であれば attribute.StringValue で値を取得できます。
+                    headerSb.Append($"高さ: {Convert.ToString(attribute.StringValue)}"); 
                 };
                 // 住所を取得します。
-                if (attributesMap.TryGetValue("uro:buildingDetails", out var buildingAttr))
+                if (attributesMap.TryGetValue("uro:buildingIDAttribute", out var buildingAttr))
                 {
-                    // TODO uro:buildingDetails 属性に入れ子構造になっている uro:city 属性を取得したいが、そのような手軽な方法がないことに気づいた。Attributeを直接Dictionaryのように扱うことができれば、入れ子構造でも簡単にアクセスできる。
-                    // TODO 住所 (uro:buildingDetails/uro:city) を取得して headerSBにAppendする処理をここに書く
+                    // 属性のキーバリューペア(Attributes)で入れ子になっているものを取得します。
+                    // キー uro:buildingIDAttribute の中に入れ子で0個以上のキーバリューペアがあり、
+                    // そのキー uro:city からバリュー（住所）を取得します。
+                    if(buildingAttr.AttributesMapValue.TryGetValue("uro:city", out var addressAttr))
+                    {
+                        headerSb.Append($"  住所: {addressAttr.StringValue}");
+                    }
                 }
 
             }
@@ -114,7 +117,7 @@ namespace PLATEAU.Samples.Scripts
             // // AsDouble, AsInt というメソッドもあります。これは内部的には文字列であるものをパースしたものを返します。
             // string cityName = cityObj
             //     .AttributesMap // 属性の辞書を取得します。
-            //     .GetValueOrNull("uro:buildingDetails") // 辞書のうち キーに対応する AttributeValue を取得します。 
+            //     .GetValueOrNull("uro:buildingIDAttribute") // 辞書のうち キーに対応する AttributeValue を取得します。 
             //     ?.AsAttrSet // AttributeValue のデータの実体は AsString か AsAttrSet のどちらかで取得できます。今回は子の属性辞書を取得します。
             //     ?.GetValueOrNull("uro:city") // 子AttributesMap について、キーに対応する AttributeValue を取得します。
             //     ?.AsString; // 値として市の名称が入っているので取得します。
@@ -131,7 +134,7 @@ namespace PLATEAU.Samples.Scripts
             // // AttributeValue には 文字列 または 子のAttributesMap のどちらか1つが入っていることを上述しました。
             // // ではどちらを取得すれば良いのかというと、 AttributeValue.Type で判別できます。
             // // Type が AttributeSet であれば AsAttrSet で取得でき、それ以外であれば AsString で取得できます。
-            // var detailAttr = cityObj.AttributesMap.GetValueOrNull("uro:buildingDetails");
+            // var detailAttr = cityObj.AttributesMap.GetValueOrNull("uro:buildingIDAttribute");
             // if (detailAttr != null)
             // {
             //     Assert.AreEqual(AttributeType.AttributeSet ,detailAttr.Type);

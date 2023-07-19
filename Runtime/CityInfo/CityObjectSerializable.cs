@@ -73,11 +73,7 @@ namespace PLATEAU.CityInfo
                 sb.Append(
                     $"CityObjectType : {string.Join(", ", EnumUtil.EachFlags(CityObjectType))}\n");
                 sb.Append($"Attributes:\n");
-                foreach (var kv in attributesMap)
-                {
-                    sb.Append($"key: {kv.Key}, ");
-                    sb.Append(kv.Value.DebugString());
-                }
+                sb.AppendLine(attributesMap.DebugString());
 
                 return sb.ToString();
             }
@@ -113,6 +109,17 @@ namespace PLATEAU.CityInfo
             public void SetAttribute(string key, AttributeType type, object value)
             {
                 attrMap.Add(key, new Value(type, value));
+            }
+
+            public string DebugString()
+            {
+                var sb = new StringBuilder();
+                foreach (var pair in attrMap)
+                {
+                    sb.AppendLine($"key: {pair.Key}, value: {pair.Value.DebugString()}");
+                }
+
+                return sb.ToString();
             }
 
             public class Value
@@ -180,17 +187,17 @@ namespace PLATEAU.CityInfo
                     var sb = new StringBuilder();
                     if (Type == AttributeType.AttributeSet)
                     {
-                        sb.AppendLine("value: {");
-                        foreach (var key in AttributesMapValue.Keys)
+                        sb.AppendLine("{");
+                        foreach (var pair in AttributesMapValue)
                         {
-                            sb.AppendLine(AttributesMapValue[key].DebugString());
+                            sb.Append($"key: {pair.Key}, value: ");
+                            sb.AppendLine(pair.Value.DebugString());
                         }
 
-                        sb.Append("\n}\n");
+                        sb.Append("}");
                     }
                     else
                     {
-                        sb.Append("value: ");
                         sb.AppendLine(Convert.ToString(StringValue));
                     }
 

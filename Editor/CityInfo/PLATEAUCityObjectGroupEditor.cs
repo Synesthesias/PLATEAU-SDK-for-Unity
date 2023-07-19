@@ -58,10 +58,7 @@ namespace PLATEAU
                         var logAttribute = new StringBuilder();
                         foreach (var o in obj.cityObjects)
                         {
-                            foreach (var kv in o.AttributesMap)
-                            {
-                                logAttribute.Append($"attribute: key = {kv.Key}, value = {kv.Value.DebugString()}\n");
-                            }
+                            o.DebugString();
                         }
                         Debug.Log(logAttribute);
                     }
