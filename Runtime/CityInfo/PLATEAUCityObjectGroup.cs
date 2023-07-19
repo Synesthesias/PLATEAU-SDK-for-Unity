@@ -2,6 +2,7 @@
 using UnityEngine;
 using Newtonsoft.Json;
 using System;
+using System.Linq;
 using PLATEAU.PolygonMesh;
 
 namespace PLATEAU.CityInfo
@@ -11,10 +12,9 @@ namespace PLATEAU.CityInfo
     /// </summary>
     public class PLATEAUCityObjectGroup : MonoBehaviour
     {
-        [HideInInspector]
-        public string serializedCityObjects;
+        [HideInInspector][SerializeField] private string serializedCityObjects;
 
-        public CityInfo.CityObject DeserializedCityObjects
+        public CityInfo.CityObject CityObjects
         {
             get
             {
@@ -29,7 +29,7 @@ namespace PLATEAU.CityInfo
             serializedCityObjects = JsonConvert.SerializeObject(cityObjectSerializable, Formatting.Indented);
         }
 
-        public CityInfo.CityObject GetCityObject(RaycastHit hit)
+        public CityObject GetCityObject(RaycastHit hit)
         {
             if(GetUV4FromTriangleIndex(hit.triangleIndex, out var vec))
             {
@@ -37,6 +37,15 @@ namespace PLATEAU.CityInfo
             }
             return null;
         }
+
+        public IEnumerable<CityObject.CityObjectParam> PrimaryCityObjects
+        {
+            get
+            {
+                return GetAllCityObjects().Where(obj => obj.CityObjectIndex[1] < 0);
+            }
+        }
+
         public CityInfo.CityObject GetCityObject(Vector2 uv)
         {
             CityObjectIndex index = new CityObjectIndex();
@@ -48,13 +57,13 @@ namespace PLATEAU.CityInfo
         public CityInfo.CityObject GetCityObject(CityObjectIndex index)
         {
             CityObject obj = new CityObject();
-            var des = DeserializedCityObjects;
+            var des = CityObjects;
             obj.parent = des.parent;
             foreach (var co in des.cityObjects)
             {
                 if (co.IndexInMesh.PrimaryIndex == index.PrimaryIndex && co.IndexInMesh.AtomicIndex == index.AtomicIndex)
                 {
-                    Debug.Log($"<color=magenta>Selected : {co.gmlID} : [{co.IndexInMesh.PrimaryIndex},{co.IndexInMesh.AtomicIndex}]</color>");
+                    Debug.Log($"<color=magenta>Selected : {co.GmlID} : [{co.IndexInMesh.PrimaryIndex},{co.IndexInMesh.AtomicIndex}]</color>");
                     co.children.Clear();
                     obj.cityObjects.Add(co);
                     return obj;
@@ -66,7 +75,7 @@ namespace PLATEAU.CityInfo
                     {
                         if (ch.IndexInMesh.PrimaryIndex == index.PrimaryIndex && ch.IndexInMesh.AtomicIndex == index.AtomicIndex)
                         {
-                            Debug.Log($"<color=magenta>Selected child : {ch.gmlID} : [{ch.IndexInMesh.PrimaryIndex},{ch.IndexInMesh.AtomicIndex}] \nparent: {co.gmlID}</color>");
+                            Debug.Log($"<color=magenta>Selected child : {ch.GmlID} : [{ch.IndexInMesh.PrimaryIndex},{ch.IndexInMesh.AtomicIndex}] \nparent: {co.GmlID}</color>");
                             co.children.Clear();
                             co.children.Add(ch);
                             obj.cityObjects.Add(co);
@@ -78,10 +87,10 @@ namespace PLATEAU.CityInfo
             return null;
         }
 
-        public IEnumerable<CityInfo.CityObject.CityObjectChildParam> GetAllCityObjects()
+        public IEnumerable<CityInfo.CityObject.CityObjectParam> GetAllCityObjects()
         {
-            List<CityObject.CityObjectChildParam> objs = new List<CityObject.CityObjectChildParam>();
-            var des = DeserializedCityObjects;
+            List<CityObject.CityObjectParam> objs = new List<CityObject.CityObjectParam>();
+            var des = CityObjects;
             foreach (var co in des.cityObjects)
             {
                 objs.Add(co);
