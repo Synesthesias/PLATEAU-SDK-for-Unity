@@ -3,6 +3,7 @@ using Newtonsoft.Json.Linq;
 using PLATEAU.CityGML;
 using System;
 using System.Collections.Generic;
+using static PLATEAU.CityInfo.CityObject;
 
 namespace PLATEAU.CityInfo
 {
@@ -18,7 +19,7 @@ namespace PLATEAU.CityInfo
         {
             throw new NotImplementedException();
         }
-        
+
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
             var attr = value as CityObject;
@@ -32,7 +33,7 @@ namespace PLATEAU.CityInfo
             else
                 writer.WriteValue("");
 
-            if (attr.cityObjects !=null && attr.cityObjects.Count > 0)
+            if (attr.cityObjects != null && attr.cityObjects.Count > 0)
             {
                 writer.WritePropertyName("cityObjects");
                 JToken.FromObject(attr.cityObjects).WriteTo(writer);
@@ -42,15 +43,15 @@ namespace PLATEAU.CityInfo
     }
 
     /// <summary>
-    /// PLATEAU.CityInfo.CityObject.Attribute用のJsonConverterです。
+    /// PLATEAU.CityInfo.CityObject.CityObjectParam用のJsonConverterです。
     /// </summary>
-    internal class CityObjectSerializable_AttributeJsonConverter : JsonConverter
+    internal class CityObjectSerializable_CityObjectParamJsonConverter : JsonConverter
     {
-        public override bool CanConvert(Type objectType) => objectType == typeof(CityInfo.CityObject.Attribute);
+        public override bool CanConvert(Type objectType) => objectType == typeof(CityInfo.CityObject.CityObjectParam);
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
-            var attr = new CityInfo.CityObject.Attribute();
+            var param = new CityInfo.CityObject.CityObjectParam();
 
             while (reader.Read())
             {
@@ -62,34 +63,126 @@ namespace PLATEAU.CityInfo
 
                     switch (prop)
                     {
-                        case "key":
-                            attr.key = reader.Value.ToString();
+                        case "gmlID":
+                            param.gmlID = reader.Value.ToString();
                             break;
-                        case "type":
-                            attr.type = reader.Value.ToString();
+                        case "cityObjectIndex":
+                            param.cityObjectIndex = new JsonSerializer().Deserialize<int[]>(reader);
                             break;
-                        case "value":
-                            if (attr.type == AttributeType.Integer.ToString())
-                                attr.value = Int32.Parse(reader.Value.ToString());
-                            else if (attr.type == AttributeType.Double.ToString())
-                                attr.value = Double.Parse(reader.Value.ToString());
-                            else if (attr.type == AttributeType.AttributeSet.ToString())
-                                attr.value = new JsonSerializer().Deserialize<IList<CityInfo.CityObject.Attribute>>(reader);
-                            else
-                                attr.value = reader.Value;
-
+                        case "cityObjectType":
+                            param.cityObjectType = Convert.ToUInt64(reader.Value);
+                            break;
+                        case "children":
+                            param.children = new JsonSerializer().Deserialize<List<CityObjectParam>>(reader);
+                            break;
+                        case "attributes":
+                            param.attributesMap = new JsonSerializer().Deserialize<Attributes>(reader);
                             break;
                     }
                 }
             }
-            return attr;
+            return param;
         }
-        
-        public override bool CanWrite { get { return false; } }
+
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
-            throw new NotImplementedException();
+            var param = value as CityObjectParam;
+            if (param == null) return;
+
+            writer.WriteStartObject();
+
+            writer.WritePropertyName("gmlID");
+            writer.WriteValue(param.gmlID);
+            writer.WritePropertyName("cityObjectIndex");
+            JToken.FromObject(param.cityObjectIndex).WriteTo(writer);
+            writer.WritePropertyName("cityObjectType");
+            writer.WriteValue(param.cityObjectType.ToString());
+            if (param.children != null && param.children.Count > 0)
+            {
+                writer.WritePropertyName("children");
+                JToken.FromObject(param.children).WriteTo(writer);
+            }
+            if(param.attributesMap.Count > 0)
+            {
+                writer.WritePropertyName("attributes");
+                JToken.FromObject(param.attributesMap).WriteTo(writer);
+            }
+
+            writer.WriteEndObject();
+        }
+
+        /// <summary>
+        /// PLATEAU.CityInfo.CityObject.Attributes用のJsonConverterです。
+        /// </summary>
+        internal class CityObjectSerializable_AttributesJsonConverter : JsonConverter
+        {
+            public override bool CanConvert(Type objectType) => objectType == typeof(CityInfo.CityObject.Attributes);
+
+            public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+            {
+                var attr = new CityInfo.CityObject.Attributes();
+
+                while (reader.Read())
+                {
+                    if (reader.TokenType == JsonToken.EndArray) break;
+
+                    JObject jObject = JObject.Load(reader);
+                    string key = jObject["key"]?.ToString();
+                    string type = jObject["type"]?.ToString();
+                    if(!string.IsNullOrEmpty(key) && !string.IsNullOrEmpty(type))
+                    {
+                        if (type == AttributeType.Integer.ToString())
+                            attr.SetAttribute(key, AttributeType.Integer, Int32.Parse(jObject["value"].ToString()));
+                        else if (type == AttributeType.Double.ToString())
+                            attr.SetAttribute(key, AttributeType.Double, Double.Parse(jObject["value"].ToString()));
+                        else if (type == AttributeType.AttributeSet.ToString())
+                            attr.SetAttribute(key, AttributeType.AttributeSet, jObject["value"].ToObject<Attributes>());
+                        else
+                            attr.SetAttribute(key, (AttributeType)Enum.Parse(typeof(AttributeType), type), jObject["value"].ToString());
+                    }
+                }
+                return attr;
+            }
+
+            public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+            {
+                var attr = value as CityInfo.CityObject.Attributes;
+                if (attr == null) return;
+
+                writer.WriteStartArray();
+
+                foreach (var kv in attr)
+                {
+                    writer.WriteStartObject();
+
+                    writer.WritePropertyName("key");
+                    writer.WriteValue(kv.Key);
+                    writer.WritePropertyName("type");
+                    writer.WriteValue(kv.Value.Type.ToString());
+                    writer.WritePropertyName("value");
+                    switch (kv.Value.Type)
+                    {
+                        case AttributeType.AttributeSet:
+                            JToken.FromObject(kv.Value.AttributesMapValue).WriteTo(writer);
+                            break;
+                        case AttributeType.Integer:
+                            writer.WriteValue(kv.Value.IntValue.ToString());
+                            break;
+                        case AttributeType.Double:
+                            writer.WriteValue(kv.Value.DoubleValue.ToString());
+                            break;
+                        default:
+                            writer.WriteValue(kv.Value.StringValue);
+                            break;
+                    }
+                    writer.WriteEndObject();
+                }
+
+                writer.WriteEndArray();
+            }
         }
     }
 }
+
+
 

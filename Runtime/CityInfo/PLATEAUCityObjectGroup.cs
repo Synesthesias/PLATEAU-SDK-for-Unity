@@ -12,13 +12,9 @@ namespace PLATEAU.CityInfo
     /// </summary>
     public class PLATEAUCityObjectGroup : MonoBehaviour
     {
-        // TODO ここでpublicにするものはユーザーが使う関数になるので分かりやすさに注意を払うべき。その観点でいうと、 serializedCityObjects と deserializedCityObjects が公開されているのはわかりにくい。
-        // TODO ユーザーから見たら、シリアライズされているか、デシリアライズされているかは興味がないので、そのような違いは秘匿しなければいけない。
-        // TODO serializedCityObjectsはprivateにし、DeserializedCityObjectsは単に CityObjects にリネームすべき。
-        [HideInInspector]
-        public string serializedCityObjects;
+        [HideInInspector][SerializeField] private string serializedCityObjects;
 
-        public CityInfo.CityObject DeserializedCityObjects
+        public CityInfo.CityObject CityObjects
         {
             get
             {
@@ -42,7 +38,7 @@ namespace PLATEAU.CityInfo
             return null;
         }
 
-        public IEnumerable<CityObject.CityObjectChildParam> PrimaryCityObjects
+        public IEnumerable<CityObject.CityObjectParam> PrimaryCityObjects
         {
             get
             {
@@ -61,7 +57,7 @@ namespace PLATEAU.CityInfo
         public CityInfo.CityObject GetCityObject(CityObjectIndex index)
         {
             CityObject obj = new CityObject();
-            var des = DeserializedCityObjects;
+            var des = CityObjects;
             obj.parent = des.parent;
             foreach (var co in des.cityObjects)
             {
@@ -91,10 +87,10 @@ namespace PLATEAU.CityInfo
             return null;
         }
 
-        public IEnumerable<CityInfo.CityObject.CityObjectChildParam> GetAllCityObjects()
+        public IEnumerable<CityInfo.CityObject.CityObjectParam> GetAllCityObjects()
         {
-            List<CityObject.CityObjectChildParam> objs = new List<CityObject.CityObjectChildParam>();
-            var des = DeserializedCityObjects;
+            List<CityObject.CityObjectParam> objs = new List<CityObject.CityObjectParam>();
+            var des = CityObjects;
             foreach (var co in des.cityObjects)
             {
                 objs.Add(co);

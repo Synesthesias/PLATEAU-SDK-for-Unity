@@ -57,7 +57,7 @@ namespace PLATEAU.Samples.Scripts
         {
             // インポートされた各ゲームオブジェクトには PLATEAUCityObjectGroup コンポーネントがアタッチされており、
             // その中に属性情報が json で保存されています。 json をデシリアライズします。
-            var deserializedObjs = cityObjGroup.DeserializedCityObjects;
+            var deserializedObjs = cityObjGroup.CityObjects;
             // 複数の PLATEAU 地物が結合されて1つのゲームオブジェクトになっている場合があるため、
             // 1つのゲームオブジェクトから取得できる cityObjects の数は1つまたは複数になっています。
             var cityObjParams = deserializedObjs.cityObjects;
@@ -90,7 +90,8 @@ namespace PLATEAU.Samples.Scripts
                     // TODO このコード、Unity設定で Api Conpatibility Level が .NET Standard 2.1 だと動かなくて、 .NET Framework にしてようやく動く。
                     // TODO ユーザーにそのような設定を強制させたくはない。attribute.value をstringで取得する良い方法は？　そもそも本当に dynamic型を利用すべき？ 静的型システムの範囲内でなんとかならないか？
                     // TODO PLATEAUのAttributeMapでは、メンバー変数に string と AttributeMap があってどっちか片方に値が入っているという方法をとっていた。 
-                    headerSb.Append($"高さ: {Convert.ToString(attribute.value)}"); // valueは動的型であり、具体的な型は Attribute(入れ子), string, double などがあります。
+                    //headerSb.Append($"高さ: {Convert.ToString(attribute.value)}"); // valueは動的型であり、具体的な型は Attribute(入れ子), string, double などがあります。
+                    headerSb.Append($"高さ: {Convert.ToString(attribute.StringValue)}"); // valueは動的型であり、具体的な型は Attribute(入れ子), string, double などがあります。
                 };
                 // 住所を取得します。
                 if (attributesMap.TryGetValue("uro:buildingDetails", out var buildingAttr))

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using Newtonsoft.Json;
 using PLATEAU.CityGML;
@@ -7,91 +8,43 @@ using PLATEAU.PolygonMesh;
 using PLATEAU.Util;
 using UnityEngine;
 using static PLATEAU.CityInfo.CityObject;
+using static PLATEAU.CityInfo.CityObjectSerializable_CityObjectParamJsonConverter;
 
 namespace PLATEAU.CityInfo
 {
     /// <summary>
     /// シリアライズ可能なCityObjectデータです。
     /// </summary>
-    [Serializable]
     [JsonConverter(typeof(CityObjectSerializableJsonConverter))]
     public class CityObject
     {
         public string parent = "";
         public List<CityObjectParam> cityObjects = new List<CityObjectParam>();
 
-        // TODO CityObjectChildParam と CityObjectParam の2つの異なる型にする必要があったのか？
-        // TODO Childのほうが基底型であるというのも混乱する、継承の通常の使い方ではないように見える。この場合は継承ではなく親が子を持つというコンポジション関係にしたほうが自然。
-        // TODO 親でも子でも children を持っていて、childrenが空である場合はjsonに含めないようにすればクラスを分ける必要はないのでは。
-        // TODO または、「jsonにchildrenを表示しない」処理が面倒なら、json上で子が空のchildrenを持っていても問題ない。
-        [Serializable]
-        public class CityObjectParam: CityObjectChildParam
+        [JsonConverter(typeof(CityObjectSerializable_CityObjectParamJsonConverter))]
+        public class CityObjectParam
         {
-
-            [JsonProperty(Order = 5)]
-            public List<CityObjectChildParam> children = new List<CityObjectChildParam>();
-
-            /// <summary>
-            /// デバッグ用に自身の情報をstringで返します。
-            /// </summary>
-            public override string DebugString()
-            {
-                var sb = new StringBuilder();
-                sb.Append(base.DebugString());
-                sb.Append("children:\n");
-                foreach (var child in children)
-                {
-                    sb.Append("\n\n");
-                    sb.Append(child.DebugString());
-                }
-
-                return sb.ToString();
-            }
-        }
-
-        // TODO このあたりのSerializable、本当に必要か？
-        [Serializable]
-        public class CityObjectChildParam
-        {
-            [JsonProperty] [SerializeField] private string gmlID = "";
-            [JsonProperty] [SerializeField] private int[] cityObjectIndex = {-1, -1};
-            [JsonProperty] [SerializeField] private ulong cityObjectType;
-            [JsonProperty] [SerializeField] private List<Attribute> attributes = new();
+            [JsonProperty][SerializeField] internal string gmlID = "";
+            [JsonProperty][SerializeField] internal int[] cityObjectIndex = {-1, -1};
+            [JsonProperty][SerializeField] internal ulong cityObjectType;
+            [JsonProperty][SerializeField] internal List<CityObjectParam> children = new List<CityObjectParam>();
+            [JsonProperty][SerializeField] internal Attributes attributesMap = new Attributes();
 
             // Getters/Setters
             [JsonIgnore] public string GmlID => gmlID;
-            
             [JsonIgnore] public int[] CityObjectIndex => cityObjectIndex;
             [JsonIgnore] public CityObjectType CityObjectType => (CityObjectType)cityObjectType;
-            [JsonIgnore] public List<Attribute> Attributes => attributes;
+            [JsonIgnore] public Attributes AttributesMap => attributesMap;
 
-            public CityObjectChildParam Init(string gmlIDArg, int[] cityObjectIndexArg, ulong cityObjectTypeArg,
-                List<Attribute> attributesArg)
+            public CityObjectParam Init(string gmlIDArg, int[] cityObjectIndexArg, ulong cityObjectTypeArg, Attributes attributesMapArg )
             {
                 gmlID = gmlIDArg;
                 cityObjectIndex = cityObjectIndexArg;
                 cityObjectType = cityObjectTypeArg;
-                attributes = attributesArg;
+                attributesMap = attributesMapArg;
                 return this;
             }
-            
-            // TODO AttributesMapにキーとキーバリューペアを保存しているのはキーがダブって無駄。AttributeMapを独自クラスとし、それ自体をDictionaryとして扱えるように対応すべき。
-            // TODO CityObjectParam からのみAttributesがDictionary形式で扱えるようになるのは不自然。 Attributesの入れ子構造を手軽に扱うことができない。
-            [JsonIgnore]
-            public Dictionary<string, Attribute> AttributesMap
-            {
-                get
-                {
-                    var attrMap = new Dictionary<string, Attribute>();
-                    foreach( var attr in attributes)
-                    {
-                        if (!attrMap.ContainsKey(attr.key))
-                            attrMap.Add(attr.key, attr);
-                    }
-                    return attrMap;
-                }
-            }
-            
+
             [JsonIgnore]
             public CityObjectType type => (CityObjectType)cityObjectType;
             [JsonIgnore]
@@ -120,45 +73,129 @@ namespace PLATEAU.CityInfo
                 sb.Append(
                     $"CityObjectType : {string.Join(", ", EnumUtil.EachFlags(CityObjectType))}\n");
                 sb.Append($"Attributes:\n");
-                foreach (var attr in Attributes)
+                foreach (var kv in attributesMap)
                 {
-                    sb.Append(attr.DebugString());
+                    sb.Append($"key: {kv.Key}, ");
+                    sb.Append(kv.Value.DebugString());
                 }
+
                 return sb.ToString();
             }
         }
 
-        [Serializable]
-        [JsonConverter(typeof(CityObjectSerializable_AttributeJsonConverter))]
-        public class Attribute
+        /// <summary>
+        /// シリアライズ可能なAttributeMapデータです。
+        /// </summary>
+        [JsonConverter(typeof(CityObjectSerializable_AttributesJsonConverter))]
+        public class Attributes
         {
-            public string key = "";
-            public string type = "";
-            public dynamic value = "";
+            private Dictionary<string, Value> attrMap = new Dictionary<string, Value>();
 
-            public string DebugString()
+            public int Count => attrMap.Count;
+            
+            public Value this[string key] => attrMap[key];
+
+            public IEnumerable<string> Keys => attrMap.Keys;
+
+            public IEnumerable<Value> Values => attrMap.Values;
+
+            public IEnumerator<KeyValuePair<string, Value>> GetEnumerator() { return this.attrMap.GetEnumerator(); }
+
+            public bool TryGetValue(string key, out Value val)
             {
-                var sb = new StringBuilder();
-                sb.Append($"key: {key}, ");
-                // TODO valueの値を見るためにこのような変換をするのはユーザーにとってわかりにくい。
-                // TODO 属性情報を便利に見れるよう、AttributeMapという型を作るべき。
-                if (value is List<Attribute> attrs)
+                return attrMap.TryGetValue(key, out val);
+            }
+
+            public void SetAttribute(string key, AttributeValue value)
+            {
+                attrMap.Add(key, new Value(value));
+            }
+            public void SetAttribute(string key, AttributeType type, object value)
+            {
+                attrMap.Add(key, new Value(type, value));
+            }
+
+            public class Value
+            {
+                public AttributeType Type   { get; private set; }
+                public string StringValue   { get; private set; }
+                public int IntValue         { get; private set; }
+                public double DoubleValue   { get; private set; }
+
+                public CityObject.Attributes AttributesMapValue = new CityObject.Attributes();
+
+                public Value(AttributeValue value)
                 {
-                    sb.AppendLine("value: {");
-                    foreach (var attr in attrs)
+                    this.Type = value.Type;
+
+                    if (value.Type == AttributeType.AttributeSet)
                     {
-                        sb.AppendLine(attr.DebugString());
+                        var map = value.AsAttrSet;
+                        foreach (var attr in map)
+                            AttributesMapValue.SetAttribute(attr.Key, attr.Value);
                     }
-                    
-                    sb.Append("\n}\n");
-                }
-                else
-                {
-                    sb.Append("value: ");
-                    sb.AppendLine(Convert.ToString(value));
+                    else
+                    {
+                        switch(value.Type)
+                        {
+                            case AttributeType.Integer:
+                                IntValue = value.AsInt;
+                                StringValue = IntValue.ToString();
+                                break;
+                            case AttributeType.Double:
+                                DoubleValue = value.AsDouble;
+                                StringValue = DoubleValue.ToString();
+                                break;
+                            default:
+                                StringValue = value.AsString;
+                                break;
+                        }
+                    }
                 }
 
-                return sb.ToString();
+                public Value(AttributeType type, object value)
+                {
+                    this.Type = type;
+                    switch (type)
+                    {
+                        case AttributeType.Integer:
+                            IntValue = (int)value;
+                            StringValue = IntValue.ToString();
+                            break;
+                        case AttributeType.Double:
+                            DoubleValue = (Double)value;
+                            StringValue = DoubleValue.ToString();
+                            break;
+                        case AttributeType.AttributeSet:
+                            AttributesMapValue = value as Attributes;
+                            break;
+                        default:
+                            StringValue = value as string;
+                            break;
+                    }
+                }
+
+                public string DebugString()
+                {
+                    var sb = new StringBuilder();
+                    if (Type == AttributeType.AttributeSet)
+                    {
+                        sb.AppendLine("value: {");
+                        foreach (var key in AttributesMapValue.Keys)
+                        {
+                            sb.AppendLine(AttributesMapValue[key].DebugString());
+                        }
+
+                        sb.Append("\n}\n");
+                    }
+                    else
+                    {
+                        sb.Append("value: ");
+                        sb.AppendLine(Convert.ToString(StringValue));
+                    }
+
+                    return sb.ToString();
+                }
             }
         }
     }
@@ -168,53 +205,23 @@ namespace PLATEAU.CityInfo
     /// </summary>
     internal static class CityObjectSerializableConvert
     {
-        public static T FromCityGMLCityObject<T>(CityGML.CityObject  obj, CityObjectIndex? idx = null) where T : CityObjectChildParam, new()
+        public static CityObjectParam FromCityGMLCityObject(CityGML.CityObject obj, CityObjectIndex? idx = null)
         {
             string gmlID = obj.ID;
             ulong cityObjectType = (ulong)obj.Type;
             int[] cityObjectIndex = { -1, -1 };
-            List<CityObject.Attribute> attributes = new List<CityObject.Attribute>();
+            CityObject.Attributes map = new Attributes();
+
             if( idx != null )
                 cityObjectIndex = new[] { idx.Value.PrimaryIndex, idx.Value.AtomicIndex };
             foreach (var m in obj.AttributesMap)
             {
-                CityObject.Attribute att = FromAttributesMap(m);
-                attributes.Add(att);
+                map.SetAttribute(m.Key, m.Value);
             }
 
-            var ret = new T();
-            ret.Init(gmlID, cityObjectIndex, cityObjectType, attributes);
+            var ret = new CityObjectParam();
+            ret.Init(gmlID, cityObjectIndex, cityObjectType, map);
             return ret;
-        }
-
-        public static CityObject.Attribute FromAttributesMap(KeyValuePair<string, AttributeValue> map)
-        {
-            CityObject.Attribute attr = new CityObject.Attribute();
-            attr.key = map.Key;
-            attr.type = map.Value.Type.ToString();
-            attr.value = AttributeValueByType(map.Value);
-            return attr;
-        }
-
-        public static dynamic AttributeValueByType(AttributeValue val )
-        {
-            if(val.Type == AttributeType.AttributeSet)
-            {
-                List<CityObject.Attribute> set = new List<CityObject.Attribute>();
-                AttributesMap map = val.AsAttrSet;
-                foreach(var m in map)
-                {
-                    CityObject.Attribute attr = FromAttributesMap(m);
-                    set.Add(attr);
-                }
-                return set;
-            }
-            return val.Type switch
-            {
-                AttributeType.Integer => val.AsInt,
-                AttributeType.Double => val.AsDouble,     
-                _ => val.AsString,
-            };
         }
     }
 }

@@ -75,13 +75,13 @@ namespace PLATEAU.CityImport.Load.Convert
             var cityObj = GetCityObjectById(this.id);
             if (cityObj != null)
             {
-                var ser = CityObjectSerializableConvert.FromCityGMLCityObject<CityInfo.CityObject.CityObjectParam>(cityObj, this.index);
+                var ser = CityObjectSerializableConvert.FromCityGMLCityObject(cityObj, this.index);
                 foreach (var id in indexList)
                 {
                     if (id.PrimaryID == id.AtomicID) continue;
                     var childCityObj = GetCityObjectById(id.AtomicID);
                     if (childCityObj == null) continue;
-                    ser.children.Add(CityObjectSerializableConvert.FromCityGMLCityObject<CityInfo.CityObject.CityObjectChildParam>(childCityObj, id.Index));
+                    ser.children.Add(CityObjectSerializableConvert.FromCityGMLCityObject(childCityObj, id.Index));
                 }
                 cityObjSer.cityObjects.Add(ser);
             }
@@ -112,7 +112,7 @@ namespace PLATEAU.CityImport.Load.Convert
             {
                 var cityObj = GetCityObjectById(id.AtomicID);
                 if (cityObj == null) continue;
-                var ser = CityObjectSerializableConvert.FromCityGMLCityObject<CityInfo.CityObject.CityObjectParam>(cityObj, id.Index);
+                var ser = CityObjectSerializableConvert.FromCityGMLCityObject(cityObj, id.Index);
                 if (!chidrenMap.ContainsKey(id.AtomicID)) continue;
                 var childrenId = chidrenMap[id.AtomicID];
                 foreach (var c in childrenId)
@@ -120,7 +120,7 @@ namespace PLATEAU.CityImport.Load.Convert
                     if (c.PrimaryID == c.AtomicID) continue;
                     var childCityObj = GetCityObjectById(c.AtomicID);
                     if (childCityObj == null) continue;
-                    ser.children.Add(CityObjectSerializableConvert.FromCityGMLCityObject<CityInfo.CityObject.CityObjectChildParam>(childCityObj, c.Index));
+                    ser.children.Add(CityObjectSerializableConvert.FromCityGMLCityObject(childCityObj, c.Index));
                 }
                 cityObjSer.cityObjects.Add(ser);
             }
