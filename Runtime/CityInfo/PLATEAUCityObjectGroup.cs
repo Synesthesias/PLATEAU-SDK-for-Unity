@@ -14,17 +14,17 @@ namespace PLATEAU.CityInfo
     {
         [HideInInspector][SerializeField] private string serializedCityObjects;
 
-        public CityInfo.CityObject CityObjects
+        public CityObject CityObjects
         {
             get
             {
                 if (!string.IsNullOrEmpty(serializedCityObjects))
-                    return JsonConvert.DeserializeObject<CityInfo.CityObject>(serializedCityObjects);
-                return new CityInfo.CityObject();
+                    return JsonConvert.DeserializeObject<CityObject>(serializedCityObjects);
+                return new CityObject();
             }
         }
 
-        public void SetSerializableCityObject(CityInfo.CityObject cityObjectSerializable)
+        public void SetSerializableCityObject(CityObject cityObjectSerializable)
         {
             serializedCityObjects = JsonConvert.SerializeObject(cityObjectSerializable, Formatting.Indented);
         }
@@ -46,7 +46,7 @@ namespace PLATEAU.CityInfo
             }
         }
 
-        public CityInfo.CityObject GetCityObject(Vector2 uv)
+        public CityObject GetCityObject(Vector2 uv)
         {
             CityObjectIndex index = new CityObjectIndex();
             index.PrimaryIndex = (int)Mathf.Round(uv.x);
@@ -54,7 +54,7 @@ namespace PLATEAU.CityInfo
             return GetCityObject(index);
         }
 
-        public CityInfo.CityObject GetCityObject(CityObjectIndex index)
+        public CityObject GetCityObject(CityObjectIndex index)
         {
             CityObject obj = new CityObject();
             var des = CityObjects;
@@ -87,7 +87,7 @@ namespace PLATEAU.CityInfo
             return null;
         }
 
-        public IEnumerable<CityInfo.CityObject.CityObjectParam> GetAllCityObjects()
+        public IEnumerable<CityObject.CityObjectParam> GetAllCityObjects()
         {
             List<CityObject.CityObjectParam> objs = new List<CityObject.CityObjectParam>();
             var des = CityObjects;

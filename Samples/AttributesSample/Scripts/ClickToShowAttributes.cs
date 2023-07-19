@@ -2,11 +2,9 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Text;
-using PLATEAU.CityGML;
 using PLATEAU.CityInfo;
 using PLATEAU.Util;
 using UnityEngine;
-using CityObject = PLATEAU.CityInfo.CityObject;
 
 namespace PLATEAU.Samples.Scripts
 {
@@ -106,41 +104,6 @@ namespace PLATEAU.Samples.Scripts
             }
 
             this.display.TitleText = headerSb.ToString();
-
-
-
-            // TODO 上記のTODOがうまくいったら以下の古いコードを消す
-            // // 住所の市を取得します。
-            // // AttributesMap.GetValueOrNull を使うと、属性のキーに対応する値である AttributeValue を取得できます。
-            // // AttributeValue は、値として 文字列 または 子のAttributesMap のどちらか1つを保持します。
-            // // AsAttrSet で 子AttributesMap を取得します。 AsString で文字列を取得します。
-            // // AsDouble, AsInt というメソッドもあります。これは内部的には文字列であるものをパースしたものを返します。
-            // string cityName = cityObj
-            //     .AttributesMap // 属性の辞書を取得します。
-            //     .GetValueOrNull("uro:buildingIDAttribute") // 辞書のうち キーに対応する AttributeValue を取得します。 
-            //     ?.AsAttrSet // AttributeValue のデータの実体は AsString か AsAttrSet のどちらかで取得できます。今回は子の属性辞書を取得します。
-            //     ?.GetValueOrNull("uro:city") // 子AttributesMap について、キーに対応する AttributeValue を取得します。
-            //     ?.AsString; // 値として市の名称が入っているので取得します。
-            //
-            // // 属性から高さを取得します。
-            // double? height = cityObj.AttributesMap
-            //     .GetValueOrNull("高さ")
-            //     ?.AsDouble; // AttributeValue.AsString を double にパースしたものを返します。
-            //
-            // // 取得した属性値を表示します。
-            // this.display.TitleText = $"[{cityName ?? "No data"}]   高さ: {height?.ToString() ?? "No data"}\nID: {cityObjID}";
-            //
-            //
-            // // AttributeValue には 文字列 または 子のAttributesMap のどちらか1つが入っていることを上述しました。
-            // // ではどちらを取得すれば良いのかというと、 AttributeValue.Type で判別できます。
-            // // Type が AttributeSet であれば AsAttrSet で取得でき、それ以外であれば AsString で取得できます。
-            // var detailAttr = cityObj.AttributesMap.GetValueOrNull("uro:buildingIDAttribute");
-            // if (detailAttr != null)
-            // {
-            //     Assert.AreEqual(AttributeType.AttributeSet ,detailAttr.Type);
-            // }
-            //
-            // return true;
         }
 
         private void NotifyLoadFailure()

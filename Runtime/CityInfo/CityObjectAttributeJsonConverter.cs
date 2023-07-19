@@ -12,7 +12,7 @@ namespace PLATEAU.CityInfo
     /// </summary>
     internal class CityObjectSerializableJsonConverter : JsonConverter
     {
-        public override bool CanConvert(Type objectType) => objectType == typeof(CityInfo.CityObject);
+        public override bool CanConvert(Type objectType) => objectType == typeof(CityObject);
 
         public override bool CanRead { get { return false; } }
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
@@ -47,11 +47,11 @@ namespace PLATEAU.CityInfo
     /// </summary>
     internal class CityObjectSerializable_CityObjectParamJsonConverter : JsonConverter
     {
-        public override bool CanConvert(Type objectType) => objectType == typeof(CityInfo.CityObject.CityObjectParam);
+        public override bool CanConvert(Type objectType) => objectType == typeof(CityObjectParam);
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
-            var param = new CityInfo.CityObject.CityObjectParam();
+            var param = new CityObjectParam();
 
             while (reader.Read())
             {
@@ -116,11 +116,11 @@ namespace PLATEAU.CityInfo
         /// </summary>
         internal class CityObjectSerializable_AttributesJsonConverter : JsonConverter
         {
-            public override bool CanConvert(Type objectType) => objectType == typeof(CityInfo.CityObject.Attributes);
+            public override bool CanConvert(Type objectType) => objectType == typeof(Attributes);
 
             public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
             {
-                var attr = new CityInfo.CityObject.Attributes();
+                var attr = new Attributes();
 
                 while (reader.Read())
                 {
@@ -146,7 +146,7 @@ namespace PLATEAU.CityInfo
 
             public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
             {
-                var attr = value as CityInfo.CityObject.Attributes;
+                var attr = value as Attributes;
                 if (attr == null) return;
 
                 writer.WriteStartArray();

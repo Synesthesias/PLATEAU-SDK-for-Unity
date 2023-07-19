@@ -2,6 +2,7 @@
 using PLATEAU.CityInfo;
 using PLATEAU.Editor.EditorWindow.Common;
 using UnityEditor;
+using UnityEditorInternal;
 using UnityEngine;
 
 namespace PLATEAU
@@ -13,7 +14,7 @@ namespace PLATEAU
 
         public void OnEnable()
         {
-            UnityEditorInternal.ComponentUtility.MoveComponentUp(target as UnityEngine.Component);
+            ComponentUtility.MoveComponentUp(target as Component);
         }
 
         public override void OnInspectorGUI()

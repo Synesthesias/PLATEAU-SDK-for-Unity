@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using Newtonsoft.Json;
 using PLATEAU.CityGML;
 using PLATEAU.PolygonMesh;
 using PLATEAU.Util;
-using UnityEngine;
 using static PLATEAU.CityInfo.CityObject;
 using static PLATEAU.CityInfo.CityObjectSerializable_CityObjectParamJsonConverter;
 
@@ -24,11 +22,11 @@ namespace PLATEAU.CityInfo
         [JsonConverter(typeof(CityObjectSerializable_CityObjectParamJsonConverter))]
         public class CityObjectParam
         {
-            [JsonProperty][SerializeField] internal string gmlID = "";
-            [JsonProperty][SerializeField] internal int[] cityObjectIndex = {-1, -1};
-            [JsonProperty][SerializeField] internal ulong cityObjectType;
-            [JsonProperty][SerializeField] internal List<CityObjectParam> children = new List<CityObjectParam>();
-            [JsonProperty][SerializeField] internal Attributes attributesMap = new Attributes();
+            [JsonProperty] internal string gmlID = "";
+            [JsonProperty] internal int[] cityObjectIndex = {-1, -1};
+            [JsonProperty] internal ulong cityObjectType;
+            [JsonProperty] internal List<CityObjectParam> children = new List<CityObjectParam>();
+            [JsonProperty] internal Attributes attributesMap = new Attributes();
 
             // Getters/Setters
             [JsonIgnore] public string GmlID => gmlID;
@@ -95,7 +93,7 @@ namespace PLATEAU.CityInfo
 
             public IEnumerable<Value> Values => attrMap.Values;
 
-            public IEnumerator<KeyValuePair<string, Value>> GetEnumerator() { return this.attrMap.GetEnumerator(); }
+            public IEnumerator<KeyValuePair<string, Value>> GetEnumerator() { return attrMap.GetEnumerator(); }
 
             public bool TryGetValue(string key, out Value val)
             {
@@ -129,11 +127,11 @@ namespace PLATEAU.CityInfo
                 public int IntValue         { get; private set; }
                 public double DoubleValue   { get; private set; }
 
-                public CityObject.Attributes AttributesMapValue = new CityObject.Attributes();
+                public Attributes AttributesMapValue = new Attributes();
 
                 public Value(AttributeValue value)
                 {
-                    this.Type = value.Type;
+                    Type = value.Type;
 
                     if (value.Type == AttributeType.AttributeSet)
                     {
@@ -162,7 +160,7 @@ namespace PLATEAU.CityInfo
 
                 public Value(AttributeType type, object value)
                 {
-                    this.Type = type;
+                    Type = type;
                     switch (type)
                     {
                         case AttributeType.Integer:
@@ -217,7 +215,7 @@ namespace PLATEAU.CityInfo
             string gmlID = obj.ID;
             ulong cityObjectType = (ulong)obj.Type;
             int[] cityObjectIndex = { -1, -1 };
-            CityObject.Attributes map = new Attributes();
+            Attributes map = new Attributes();
 
             if( idx != null )
                 cityObjectIndex = new[] { idx.Value.PrimaryIndex, idx.Value.AtomicIndex };
