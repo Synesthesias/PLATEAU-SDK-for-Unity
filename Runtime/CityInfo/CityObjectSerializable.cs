@@ -71,7 +71,7 @@ namespace PLATEAU.CityInfo
                 sb.Append(
                     $"CityObjectType : {string.Join(", ", EnumUtil.EachFlags(CityObjectType))}\n");
                 sb.Append($"Attributes:\n");
-                sb.AppendLine(attributesMap.DebugString());
+                sb.AppendLine(attributesMap.DebugString(1));
 
                 return sb.ToString();
             }
@@ -109,12 +109,13 @@ namespace PLATEAU.CityInfo
                 attrMap.Add(key, new Value(type, value));
             }
 
-            public string DebugString()
+            public string DebugString(int indent)
             {
                 var sb = new StringBuilder();
                 foreach (var pair in attrMap)
                 {
-                    sb.AppendLine($"key: {pair.Key}, value: {pair.Value.DebugString()}");
+                    Indent(sb, indent + 1);
+                    sb.AppendLine($"key: {pair.Key}, value: {pair.Value.DebugString(indent + 1)}");
                 }
 
                 return sb.ToString();
@@ -180,7 +181,7 @@ namespace PLATEAU.CityInfo
                     }
                 }
 
-                public string DebugString()
+                public string DebugString(int indent)
                 {
                     var sb = new StringBuilder();
                     if (Type == AttributeType.AttributeSet)
@@ -188,18 +189,30 @@ namespace PLATEAU.CityInfo
                         sb.AppendLine("{");
                         foreach (var pair in AttributesMapValue)
                         {
+                            Indent(sb, indent + 1);
                             sb.Append($"key: {pair.Key}, value: ");
-                            sb.AppendLine(pair.Value.DebugString());
+                            sb.AppendLine(pair.Value.DebugString(indent + 1));
                         }
-
+                        Indent(sb, indent);
                         sb.Append("}");
                     }
                     else
                     {
-                        sb.AppendLine(Convert.ToString(StringValue));
+                        sb.Append(Convert.ToString(StringValue));
                     }
 
                     return sb.ToString();
+                }
+            }
+
+            /// <summary>
+            /// <paramref name="indent"/> × 4個の半角スペースを <paramref name="sb"/> に追加します。
+            /// </summary>
+            private static void Indent(StringBuilder sb, int indent)
+            {
+                for (int i = 0; i < indent; i++)
+                {
+                    sb.Append("    ");
                 }
             }
         }
