@@ -24,22 +24,27 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         
         #if UNITY_EDITOR
         private static readonly string iconDirPath = PathUtil.SdkPathToAssetPath("Images/AreaSelect");
-        private static readonly float maxIconWidth = 60 * EditorGUIUtility.pixelsPerPoint;
+        private static readonly float maxIconWidth = 50 * EditorGUIUtility.pixelsPerPoint;
         #else
-        private static readonly float maxIconWidth = 60;
+        private static readonly float maxIconWidth = 50;
         #endif
         
         /// <summary> 利用可能を意味するアイコンの不透明度です。 </summary>
         private const float iconOpacityAvailable = 0.95f;
-        /// <summary> 利用不可を意味するアイコンの不透明度です。 </summary>
-        private const float iconOpacityNotAvailable = 0.2f;
         /// <summary> アイコンを包むボックスについて、そのパディング幅がアイコンの何倍であるかです。 </summary>
         private const float boxPaddingRatio = 0.05f;
         /// <summary> アイコンの幅がメッシュコード幅の何分の1であるかです。 </summary>
-        private const float iconWidthDivider = 5;
+        private const float iconWidthDivider = 4.3f;
+        private const int maxIconCnt = 8;
+        private const int maxIconCol = 4;
+        private const int maxIconRow = 2;
         private static readonly Color boxColor = new Color(0.25f, 0.25f, 0.25f, 0.35f);
         private static ConcurrentDictionary<(PredefinedCityModelPackage package, uint lod), Texture> iconDict;
         private static Texture boxTex;
+        private struct LodTexturePair {
+            public int Lod;
+            public Texture IconTexture;
+        }
 
         public AreaLodView(PackageToLodDict packageToLodDict, Vector3 meshCodeUnityPositionUpperLeft, Vector3 meshCodeUnityPositionLowerRight)
         {
@@ -65,64 +70,77 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
                 Debug.LogError("Failed to load icons.");
                 return;
             }
-
-            // アイコンが存在するパッケージ種について、表示すべきアイコンを求めます。
-            var iconAvailableForPackages =
-                iconDict.Keys
-                    .Select(tuple => tuple.package)
-                    .Distinct();
-            var iconsToShow = new List<IconToShow>();
+            
+            // アイコンが存在するパッケージ種について、表示すべきアイコンを求めます
+            var iconAvailableForPackages = iconDict.Keys.Select(tuple => tuple.package).Distinct();
+            var iconInfoDict = new Dictionary<string, LodTexturePair>();
             foreach(var package in iconAvailableForPackages)
             {
-                int maxLod = this.packageToLodDict.GetLod(package); // パッケージが存在しないときは -1 になります。
-                uint iconLod = (uint)Math.Max(maxLod, 0); // 存在しない時は「LOD0」アイコンを半透明で表示します。
-                bool isAvailable = maxLod >= 0;
-                // パッケージとLODに対応するテクスチャを求めます。
-                if (!iconDict.TryGetValue((package, iconLod), out var iconTex)) continue;
+                // パッケージが存在しないときは -1 になります
+                var maxLod = this.packageToLodDict.GetLod(package);
+                if (maxLod < 0)
+                    continue;
                 
-                iconsToShow.Add(new IconToShow(iconTex, isAvailable));
+                // パッケージとLODに対応するテクスチャを求めます
+                if (!iconDict.TryGetValue((package, (uint)maxLod), out var iconTex)) continue;
+
+                // アイコンはパッケージ毎に割当てられているが、同名のアイコンファイルが利用されるのは防ぐ
+                var lodTexturePair = new LodTexturePair { Lod = maxLod, IconTexture = iconTex };
+                var iconFileName = GetIconFileName(package);
+                if (iconInfoDict.ContainsKey(iconFileName))
+                {
+                    if (iconInfoDict[iconFileName].Lod < maxLod) 
+                    {
+                        iconInfoDict[iconFileName] = lodTexturePair;
+                    }
+                } 
+                else 
+                {
+                    iconInfoDict.Add(iconFileName, lodTexturePair);
+                }
             }
-            
-            float monitorDpiScalingFactor = EditorGUIUtility.pixelsPerPoint;
 
-            float meshCodeScreenWidth =
-                (camera.WorldToScreenPoint(this.meshCodeUnityPositionLowerRight) -
-                 camera.WorldToScreenPoint(this.meshCodeUnityPositionUpperLeft))
-                .x;
+            // 範囲選択画面に表示する順番に並び替える
+            var lodTexturePairList = (from iconFileName in GetIconFileNameList() where iconInfoDict.ContainsKey(iconFileName) select iconInfoDict[iconFileName]).ToList();
+            if (lodTexturePairList.Count <= 0)
+            {
+                Debug.LogError("lodTexturePairList.Count <= 0");
+                return;
+            }
 
-            // 地域メッシュコードの枠内にアイコンが5つ並ぶ程度の大きさ
-            float iconWidth = Mathf.Min(maxIconWidth, meshCodeScreenWidth / iconWidthDivider) / monitorDpiScalingFactor;
+            var monitorDpiScalingFactor = EditorGUIUtility.pixelsPerPoint;
+            var meshCodeScreenWidth = (camera.WorldToScreenPoint(this.meshCodeUnityPositionLowerRight) - camera.WorldToScreenPoint(this.meshCodeUnityPositionUpperLeft)).x;
+
+            // 地域メッシュコードの枠内にアイコンが4つ並ぶ程度の大きさ
+            var iconWidth = Mathf.Min(maxIconWidth, meshCodeScreenWidth / iconWidthDivider) / monitorDpiScalingFactor;
+            var iconCnt = Math.Min(lodTexturePairList.Count, maxIconCnt);
             
             // アイコンを中央揃えで左から右に並べたとき、左上の座標を求めます。
             var meshCodeCenterUnityPos = (this.meshCodeUnityPositionUpperLeft + this.meshCodeUnityPositionLowerRight) * 0.5f;
-            var posOffsetScreenSpace = new Vector3(-iconWidth * iconsToShow.Count * 0.5f, iconWidth * 0.5f, 0) * monitorDpiScalingFactor;  
-            var iconsUpperLeft = camera.ScreenToWorldPoint(camera.WorldToScreenPoint(meshCodeCenterUnityPos) + posOffsetScreenSpace);
 
-            // アイコンを包むボックスを表示します。
-            var iconsBoxPaddingScreen = iconWidth * boxPaddingRatio;
-            var boxSizeScreen = new Vector2(
-                iconWidth * iconsToShow.Count + iconsBoxPaddingScreen * 2,
-                iconWidth + iconsBoxPaddingScreen * 2
-                );
-            var boxPosScreen = camera.WorldToScreenPoint(iconsUpperLeft) + new Vector3(-1,1,0) * iconsBoxPaddingScreen;
-            Handles.BeginGUI();
-            var prevColor = GUI.color;
-            GUI.color = boxColor;
-            // ボックスを描画します。ただし、Handles.BeginGUI(); の中では座標系が異なる（特にスクリーン座標系における y座標の向きが異なる）ので変換します。
-            var boxRect = new Rect(new Vector2(boxPosScreen.x, boxPosScreen.y * -1 + camera.pixelHeight), boxSizeScreen);
-            boxRect.position /= monitorDpiScalingFactor;
-            GUI.DrawTexture(boxRect, boxTex, ScaleMode.StretchToFill);
-            GUI.color = prevColor;
-            Handles.EndGUI();
-            
             // アイコンを表示します。
-            var iconPos = iconsUpperLeft;
-            int i = 0;
-            foreach (var iconToShow in iconsToShow)
+            var offsetVec = Vector3.zero;
+            for (var i = 0; i < iconCnt; ++i) 
             {
-                i++;
+                var colIndex = i % maxIconCol;
+                var rowIndex = i / maxIconCol;
+                // 表示するアイコン数に応じて現在の行において最大何個のアイコンを表示するか求める
+                var colCount = 0 < (iconCnt - rowIndex * maxIconCol) / maxIconCol ? maxIconCol : (iconCnt - rowIndex * maxIconCol) % maxIconCol;
+                // 表示するアイコン数に応じて最大の行数を求める
+                var rowCount = maxIconCol < iconCnt ? maxIconRow : 1;
+                var xOffset = iconCnt is > maxIconCol and <= maxIconCnt && 0 < rowIndex
+                    // 2行目のオフセット値
+                    ? iconWidth * colIndex - iconWidth * 2
+                    // 1行目のオフセット値
+                    : iconWidth * colIndex - iconWidth * colCount * 0.5f;
+                var yOffset = 1 < rowCount ? iconWidth - iconWidth * rowIndex : iconWidth * 0.5f;
+
+                offsetVec.x = xOffset * monitorDpiScalingFactor;
+                offsetVec.y = yOffset * monitorDpiScalingFactor;
+                var iconPos = camera.ScreenToWorldPoint(camera.WorldToScreenPoint(meshCodeCenterUnityPos) + offsetVec);
+
                 var prevBackgroundColor = GUI.contentColor;
-                GUI.contentColor = new Color(1f, 1f, 1f, iconToShow.IsAvailable ? iconOpacityAvailable : iconOpacityNotAvailable);
+                GUI.contentColor = new Color(1f, 1f, 1f, iconOpacityAvailable);
                 var style = new GUIStyle(EditorStyles.label)
                 {
                     fixedHeight = iconWidth,
@@ -130,20 +148,55 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
                     alignment = TextAnchor.UpperLeft,
                     stretchWidth = true
                 };
-                var content = new GUIContent(iconToShow.Texture);
+                var content = new GUIContent(lodTexturePairList[i].IconTexture);
                 Handles.Label(iconPos, content, style);
                 GUI.contentColor = prevBackgroundColor;
-
-                var iconScreenPosLeft = camera.WorldToScreenPoint(iconPos);
-                var iconScreenPosRight = iconScreenPosLeft + new Vector3(iconWidth * monitorDpiScalingFactor, 0, 0);
-                var distance = Mathf.Abs(camera.transform.position.y - iconPos.y);
-                var iconWorldPosRight = camera.ScreenToWorldPoint(new Vector3(iconScreenPosRight.x, iconScreenPosRight.y, distance));
-                iconPos += new Vector3(iconWorldPosRight.x - iconPos.x, 0, 0);
             }
-            
 #endif
         }
 
+        /// <summary>
+        /// 指定パッケージで表示するアイコンファイル名を取得
+        /// </summary>
+        /// <param name="package">対応するアイコンファイル名を知りたいパッケージ</param>
+        /// <returns>アイコンファイル名</returns>
+        private static string GetIconFileName(PredefinedCityModelPackage package) 
+        {
+            return package switch 
+            {
+                PredefinedCityModelPackage.Building => "building.png",
+                PredefinedCityModelPackage.Road => "traffic.png",
+                PredefinedCityModelPackage.UrbanPlanningDecision => "other.png",
+                PredefinedCityModelPackage.LandUse => "other.png",
+                PredefinedCityModelPackage.CityFurniture => "props.png",
+                PredefinedCityModelPackage.Vegetation => "plants.png",
+                PredefinedCityModelPackage.Relief => "terrain.png",
+                PredefinedCityModelPackage.DisasterRisk => "other.png",
+                PredefinedCityModelPackage.Railway => "traffic.png",
+                PredefinedCityModelPackage.Waterway => "traffic.png",
+                PredefinedCityModelPackage.WaterBody => "other.png",
+                PredefinedCityModelPackage.Bridge => "bridge.png",
+                PredefinedCityModelPackage.Track => "traffic.png",
+                PredefinedCityModelPackage.Square => "traffic.png",
+                PredefinedCityModelPackage.Tunnel => "bridge.png",
+                PredefinedCityModelPackage.UndergroundFacility => "underground.png",
+                PredefinedCityModelPackage.UndergroundBuilding => "underground.png",
+                PredefinedCityModelPackage.Area => "other.png",
+                PredefinedCityModelPackage.OtherConstruction => "other.png",
+                PredefinedCityModelPackage.Generic => "other.png",
+                PredefinedCityModelPackage.Unknown => "other.png",
+                _ => "other.png"
+            };
+        }
+
+        /// <summary>
+        /// 範囲選択画面に表示する順番でアイコンファイル名リストを返す
+        /// </summary>
+        /// <returns>アイコンファイル名リスト</returns>
+        private static IEnumerable<string> GetIconFileNameList() {
+            return new List<string> { "building.png", "plants.png", "props.png", "traffic.png", "underground.png", "bridge.png", "terrain.png", "other.png" };
+        }
+        
         /// <summary>
         /// 利用可能なLODをアイコンで表示するためのアイコン画像をロードし、辞書にして返します。
         /// </summary>
@@ -151,26 +204,16 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         private static ConcurrentDictionary<(PredefinedCityModelPackage package, uint lod), Texture> LoadIconFiles()
         {
             boxTex = LoadIcon(iconsBoxImagePath);
-            return new ConcurrentDictionary<(PredefinedCityModelPackage package, uint lod), Texture>(
-                new Dictionary<(PredefinedCityModelPackage package, uint lod), Texture>
-                {
-                    {(PredefinedCityModelPackage.Building, 0), LoadIcon("icon_building_lod1.png")},
-                    {(PredefinedCityModelPackage.Building, 1), LoadIcon("icon_building_lod1.png")},
-                    {(PredefinedCityModelPackage.Building, 2), LoadIcon("icon_building_lod2.png")},
-                    {(PredefinedCityModelPackage.Building, 3), LoadIcon("icon_building_lod3.png")},
-                    {(PredefinedCityModelPackage.CityFurniture, 0), LoadIcon("icon_cityfurniture_lod1.png")},
-                    {(PredefinedCityModelPackage.CityFurniture, 1), LoadIcon("icon_cityfurniture_lod1.png")},
-                    {(PredefinedCityModelPackage.CityFurniture, 2), LoadIcon("icon_cityfurniture_lod2.png")},
-                    {(PredefinedCityModelPackage.CityFurniture, 3), LoadIcon("icon_cityfurniture_lod3.png")},
-                    {(PredefinedCityModelPackage.Road, 0), LoadIcon("icon_road_lod1.png")},
-                    {(PredefinedCityModelPackage.Road, 1), LoadIcon("icon_road_lod1.png")},
-                    {(PredefinedCityModelPackage.Road, 2), LoadIcon("icon_road_lod2.png")},
-                    {(PredefinedCityModelPackage.Road, 3), LoadIcon("icon_road_lod3.png")},
-                    {(PredefinedCityModelPackage.Vegetation, 0), LoadIcon("icon_vegetation_lod1.png")},
-                    {(PredefinedCityModelPackage.Vegetation, 1), LoadIcon("icon_vegetation_lod1.png")},
-                    {(PredefinedCityModelPackage.Vegetation, 2), LoadIcon("icon_vegetation_lod2.png")},
-                    {(PredefinedCityModelPackage.Vegetation, 3), LoadIcon("icon_vegetation_lod3.png")},
-                });
+            var concurrentDict = new ConcurrentDictionary<(PredefinedCityModelPackage package, uint lod), Texture>();
+            var allPackages = EnumUtil.EachFlags(PredefinedCityModelPackageExtension.All());
+            var lodDirNames = new List<string> {"LOD1", "LOD1", "LOD2", "LOD3", "LOD4"};
+            foreach (var package in allPackages) {
+                for (uint i = 0; i <= 4; i++) {
+                    concurrentDict.AddOrUpdate((package, i), LoadIcon($"{lodDirNames[(int)i]}/{GetIconFileName(package)}"), (_, texture) => texture);
+                }
+            }
+
+            return concurrentDict;
         }
 
         /// <summary>
@@ -195,18 +238,6 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
             #else
             return null;
             #endif
-        }
-
-        private class IconToShow
-        {
-            public Texture Texture;
-            public bool IsAvailable; // falseだと半透明表示にします。
-
-            public IconToShow(Texture texture, bool isAvailable)
-            {
-                this.Texture = texture;
-                this.IsAvailable = isAvailable;
-            }
         }
     }
 }
