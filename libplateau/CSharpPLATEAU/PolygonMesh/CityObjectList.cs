@@ -62,7 +62,7 @@ namespace PLATEAU.PolygonMesh
         /// </summary>
         public CityObjectIndex GetCityObjectIndex(string gmlID)
         {
-            var result = NativeMethods.plateau_city_object_list_get_city_gml_index(Handle, out var index, gmlID);
+            var result = NativeMethods.plateau_city_object_list_get_city_object_index(Handle, out var index, gmlID);
             DLLUtil.CheckDllError(result);
             return index;
         }
@@ -88,7 +88,7 @@ namespace PLATEAU.PolygonMesh
                 [In] CityObjectIndex index);
 
             [DllImport(DLLUtil.DllName)]
-            internal static extern APIResult plateau_city_object_list_get_city_gml_index(
+            internal static extern APIResult plateau_city_object_list_get_city_object_index(
                 [In] IntPtr handle,
                 out CityObjectIndex index,
                 [In] string gmlID);
