@@ -198,9 +198,13 @@ namespace PLATEAU.CityImport.AreaSelector
 
                 //Progress表示
                 float progress = (float)i / gmlCount;
+                #if UNITY_EDITOR
                 EditorUtility.DisplayProgressBar("PLATEAU", "利用可能なデータを検索中です......", progress);
+                #endif
             }
+            #if UNITY_EDITOR
             EditorUtility.ClearProgressBar();
+            #endif
             return ret;
         }
 
