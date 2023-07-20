@@ -15,15 +15,18 @@ C# APIによって都市オブジェクトの情報を取得できます。
   ![](../resources/manual/accessCityObject/attributeDisplay.png)
 - ソースコード `ClickToShowAttributes.cs` の中に、この実装とコメントでの説明が記載されています。
 
-## 都市モデルのロード
-  
-都市に関するデータは、GMLファイルをパースすることで得られます。  
-`PLATEAUCityGmlProxy.LoadAsync` によってGMLファイルがパースされ、  
-パース結果が `CityModel` 型で返ります。  
-`CityModel` の中には `CityObject` が木構造で格納されています。  
-木構造をたどるか `CityModel.GetCityObjectById` メソッドによって `CityObject`を取得できます。  
-このメソッドに渡すべきIDは、インポート時にメッシュ結合単位を "最小地物単位" または "主要地物単位" にすることでゲームオブジェクト名に記載されます。  
-`CityObject`の属性を取得することで地物（建物など）の情報を取得できます。
+## ロードした都市モデルの情報を表示
+
+PlateauSDKでインポートした都市オブジェクトには属性等の情報が含まれています。  
+情報にアクセスするには、都市オブジェクトであるGameObjectにアタッチされた`PLATEAUCityObjectGroup`コンポーネントを使用します。  
+`PLATEAUCityObjectGroup`コンポーネントには都市オブジェクトの持つ個別の情報がJson形式で表示されています。  
+
+  ![](../resources/manual/accessCityObject/cityObjectGroup.png)
+
+このJsonの内容は、`PLATEAUCityObjectGroup.CityObjects`から利用可能なデータ`CityObject`として取得できます。  
+`CityObject.cityObjects`リストには、通常は１つの`CityObjectParam`が格納されていて、`CityObjectParam`の属性を取得することで地物（建物など）の情報を取得できます。  
+インポート時のメッシュ粒度設定が `地域単位`だった場合のみ`CityObject.cityObjects`リストに複数の`CityObjectParam`が格納されます。  
+`CityObjectParam.Children`には、都市オブジェクトの階層の子に当たる`CityObjectParam`が格納されます。  
 
 ## 属性とは
 
@@ -36,10 +39,10 @@ C# APIによって都市オブジェクトの情報を取得できます。
 ```
   
 のように、キーと値のペアからなる辞書形式の情報です。  
-属性辞書は `CityObject.AttributesSet` メソッドで取得できます。  
-`AttributesSet.ToString()` をコールすると、属性情報をすべて文字列にして返します。　　
-`AttributesSet.GetValueOrNull("key")` によってキーに対応する`AttributeValue` を取得できます。  
-`AttributeValue` の具体的な値は文字列型として取得できるか、または  
+属性辞書`Attributes`は `CityObjectParam.AttributesMap` メソッドで取得できます。  
+`Attributes.DebugString()` をコールすると、属性情報をすべて文字列にして返します。　　
+`Attributes.TryGetValue("key", out value)` によってキーに対応する`Attributes.Value` を取得できます。  
+`Attributes.Value` の具体的な値は文字列型として取得できるか、または  
 子の属性（属性は入れ子になることもあります）として取得できるかのいずれかです。  
 属性が入れ子になっている例は次のとおりです。
 
@@ -56,25 +59,9 @@ C# APIによって都市オブジェクトの情報を取得できます。
 属性値は次の型があります。:  
 `AttributeSet, String, Double, Integer, Data, Uri, Measure`  
 AttributeSet以外の型はすべて内部的には文字列型であり、  
-`AttributeValue.AsString` で値を取得できます。  
-入れ子AttributeSetの値は `AsString` ではなく `AttributeValue.AsAttrSet`で取得できます。  
-属性値の型は `AttributeValue.Type` で取得でき、この値が `AttributeSet` である場合は　　
-`AttributeValue.AsAttrSet`で子の `AttributesMap` を取得できます。  
-`AttributeValue.Type` がそれ以外 (String, Doubleなど) である場合は `AttributeValue.AsString` で文字列を取得できます。
+`Attributes.Value.StringValue` で値を取得できます。  
+入れ子AttributeSetの値は `StringValue` ではなく `Attributes.Value.AttributesMapValue`で取得できます。  
+属性値の型は `Attributes.Value.Type` で取得でき、この値が `AttributeSet` である場合は　　
+`Attributes.Value.AttributesMapValue`で子の `Attributes` を取得できます。  
+`Attributes.Value.Type` がそれ以外 (String, Doubleなど) である場合は `Attributes.Value.StringValue` で文字列を取得できます。
 
-
-### シーンのヒエラルキー
-PlateauデータをUnityにインポートすると、  
-サンプルシーンにあるとおり、次の階層構造でオブジェクトが配置されます。
-
-```text
- 都市モデルルート( PLATEAUInstancedCityObject がアタッチされます )
-   → 子 : GMLファイルに対応するゲームオブジェクト
-       → 子 : LODに対応するゲームオブジェクト
-           → 子 : CityObject に対応するゲームオブジェクト
-```
-
-![](../resources/manual/accessCityObject/hierarchy.png)
-
-ただし、インポート時のメッシュ粒度設定が `地域単位` だった場合、  
-メッシュは結合されて出力されるので CityObject とは対応しません。
