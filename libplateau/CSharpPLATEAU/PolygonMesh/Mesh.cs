@@ -20,14 +20,27 @@ namespace PLATEAU.PolygonMesh
         public IntPtr Handle { get; }
         private bool isValid = true;
 
-        public Mesh(IntPtr handle)
+        internal Mesh(IntPtr handle)
         {
             Handle = handle;
         }
 
         public static Mesh Create(string meshID)
         {
-            var result = NativeMethods.plateau_create_mesh(out var newMeshPtr, meshID);
+            var result = NativeMethods.plateau_create_mesh(out var newMeshPtr);
+            DLLUtil.CheckDllError(result);
+            return new Mesh(newMeshPtr);
+        }
+
+        public static Mesh Create(PlateauVector3d[] vertices, uint[] indices, PlateauVector2f[] uv1,
+            SubMesh[] subMeshes)
+        {
+            var subMeshPointers = subMeshes.Select(sm => sm.Handle).ToArray();
+            var result = NativeMethods.plateau_create_mesh_9(
+                out var newMeshPtr,
+                vertices, vertices.Length, indices, indices.Length, uv1, uv1.Length,
+                subMeshPointers, subMeshes.Length
+            );
             DLLUtil.CheckDllError(result);
             return new Mesh(newMeshPtr);
         }
@@ -51,6 +64,17 @@ namespace PLATEAU.PolygonMesh
                 int indicesCount = DLLUtil.GetNativeValue<int>(Handle,
                     NativeMethods.plateau_mesh_get_indices_count);
                 return indicesCount;
+            }
+        }
+
+        public CityObjectList CityObjectList
+        {
+            get
+            {
+                ThrowIfInvalid();
+                var result = NativeMethods.plateau_mesh_get_city_object_list(Handle, out var cityObjectListPtr);
+                DLLUtil.CheckDllError(result);
+                return new CityObjectList(cityObjectListPtr);
             }
         }
 
@@ -79,22 +103,13 @@ namespace PLATEAU.PolygonMesh
             return uv1;
         }
 
-        public PlateauVector2f[] GetUv2()
+        public PlateauVector2f[] GetUv4()
         {
             ThrowIfInvalid();
-            var uv2 = new PlateauVector2f[VerticesCount];
-            var result = NativeMethods.plateau_mesh_get_uv2(Handle, uv2);
+            var uv4 = new PlateauVector2f[VerticesCount];
+            var result = NativeMethods.plateau_mesh_get_uv4(Handle, uv4);
             DLLUtil.CheckDllError(result);
-            return uv2;
-        }
-
-        public PlateauVector2f[] GetUv3()
-        {
-            ThrowIfInvalid();
-            var uv3 = new PlateauVector2f[VerticesCount];
-            var result = NativeMethods.plateau_mesh_get_uv3(Handle, uv3);
-            DLLUtil.CheckDllError(result);
-            return uv3;
+            return uv4;
         }
 
         public int SubMeshCount
@@ -121,21 +136,6 @@ namespace PLATEAU.PolygonMesh
             ThrowIfInvalid();
             var result = NativeMethods.plateau_mesh_merger_merge_mesh(
                 Handle, otherMesh.Handle, false, includeTexture
-            );
-            DLLUtil.CheckDllError(result);
-        }
-
-        public void MergeMeshInfo(PlateauVector3d[] vertices, uint[] indices, PlateauVector2f[] uv1,
-            SubMesh[] subMeshes, CoordinateSystem meshAxisConvertFrom, CoordinateSystem meshAxisConvertTo,
-            bool includeTexture)
-        {
-            ThrowIfInvalid();
-            var subMeshPointers = subMeshes.Select(sm => sm.Handle).ToArray();
-            var result = NativeMethods.plateau_mesh_merger_mesh_info(
-                Handle,
-                vertices, vertices.Length, indices, indices.Length, uv1, uv1.Length,
-                subMeshPointers, subMeshes.Length,
-                meshAxisConvertFrom, meshAxisConvertTo, includeTexture
             );
             DLLUtil.CheckDllError(result);
         }
@@ -182,10 +182,23 @@ namespace PLATEAU.PolygonMesh
 
         private static class NativeMethods
         {
-            [DllImport(DLLUtil.DllName, CharSet = CharSet.Ansi)]
+            [DllImport(DLLUtil.DllName)]
             internal static extern APIResult plateau_create_mesh(
-                out IntPtr newMeshPtr,
-                string meshID);
+                out IntPtr newMeshPtr);
+
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_create_mesh_9(
+                out IntPtr meshPtr,
+                [In] PlateauVector3d[] vertices,
+                int verticesCount,
+                [In] uint[] indices,
+                int indicesCount,
+                [In] PlateauVector2f[] uv1,
+                int uv1Count,
+                [In] IntPtr[] subMeshPointers,
+                int subMeshCount
+                );
 
             [DllImport(DLLUtil.DllName)]
             internal static extern APIResult plateau_delete_mesh(
@@ -225,17 +238,17 @@ namespace PLATEAU.PolygonMesh
                 int index);
 
             [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_mesh_get_city_object_list(
+                [In] IntPtr plateauMeshPtr,
+                out IntPtr cityObjectListPtr);
+
+            [DllImport(DLLUtil.DllName)]
             internal static extern APIResult plateau_mesh_get_uv1(
                 [In] IntPtr plateauMeshPtr,
                 [Out] PlateauVector2f[] outUvPosArray);
 
             [DllImport(DLLUtil.DllName)]
-            internal static extern APIResult plateau_mesh_get_uv2(
-                [In] IntPtr plateauMeshPtr,
-                [Out] PlateauVector2f[] outUvPosArray);
-
-            [DllImport(DLLUtil.DllName)]
-            internal static extern APIResult plateau_mesh_get_uv3(
+            internal static extern APIResult plateau_mesh_get_uv4(
                 [In] IntPtr plateauMeshPtr,
                 [Out] PlateauVector2f[] outUvPosArray);
 
@@ -245,7 +258,7 @@ namespace PLATEAU.PolygonMesh
                 [In] string texturePath,
                 int subMeshStartIndex,
                 int subMeshEndIndex);
-            
+
             // ***************
             //  mesh_merger_c.cpp
             // ***************
@@ -255,21 +268,6 @@ namespace PLATEAU.PolygonMesh
                 [In] IntPtr meshPtr,
                 [In] IntPtr otherMeshPtr,
                 [MarshalAs(UnmanagedType.U1)] bool invertMeshFrontBack,
-                [MarshalAs(UnmanagedType.U1)] bool includeTexture);
-
-            [DllImport(DLLUtil.DllName)]
-            internal static extern APIResult plateau_mesh_merger_mesh_info(
-                [In] IntPtr meshPtr,
-                [In] PlateauVector3d[] vertices,
-                int verticesCount,
-                [In] uint[] indices,
-                int indicesCount,
-                [In] PlateauVector2f[] uv1,
-                int uv1Count,
-                [In] IntPtr[] subMeshPointers,
-                int subMeshCount,
-                CoordinateSystem meshAxisConvertFrom,
-                CoordinateSystem meshAxisConvertTo,
                 [MarshalAs(UnmanagedType.U1)] bool includeTexture);
         }
     }
