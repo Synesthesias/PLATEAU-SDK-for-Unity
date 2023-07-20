@@ -168,11 +168,9 @@ namespace PLATEAU.Editor.CityExport.ModelConvert
             
             Assert.AreEqual(uv1.Length, vertices.Length);
 
-            var dllMesh = PolygonMesh.Mesh.Create(unityMesh.name);
-            dllMesh.MergeMeshInfo(
+            var dllMesh = PolygonMesh.Mesh.Create(
                 vertices, indices, uv1,
-                dllSubMeshes.ToArray(),
-                CoordinateSystem.EUN, meshAxis, true);
+                dllSubMeshes.ToArray());
             // 補足:
             // 上の行で MergeMeshInfo に渡す実引数 includeTexture が常に true になっていますが、それで良いです。
             // 上の処理で テクスチャを含める/含めない の設定に即した SubMesh がすでにできているので、

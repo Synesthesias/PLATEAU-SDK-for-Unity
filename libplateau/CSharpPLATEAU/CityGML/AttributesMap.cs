@@ -12,7 +12,7 @@ namespace PLATEAU.CityGML
 {
     /// <summary>
     /// 属性の値の想定形式です。
-    /// 形式が String, Double, Integer, Data, Uri, Measure である場合、内部的にはデータは string です。
+    /// 形式が String, Double, Integer, Date, Uri, Measure である場合、内部的にはデータは string です。
     /// AttributeSet である場合、内部的にはデータは <see cref="AttributesMap"/> への参照です。
     /// </summary>
     public enum AttributeType
@@ -20,7 +20,7 @@ namespace PLATEAU.CityGML
         String,
         Double,
         Integer,
-        Data,
+        Date,
         Uri,
         Measure,
         AttributeSet

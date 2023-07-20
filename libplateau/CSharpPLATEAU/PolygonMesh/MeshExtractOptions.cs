@@ -68,7 +68,7 @@ namespace PLATEAU.PolygonMesh
         /// その方法とは、メッシュ操作によって、範囲外に存在するポリゴンを除外します。
         /// この方法であれば 10km×10km の地形など巨大なオブジェクトにも対応できます。
         /// </summary>
-        [MarshalAs(UnmanagedType.U1)] public bool ExcludeTrianglesOutsideExtent;
+        [MarshalAs(UnmanagedType.U1)] public bool ExcludePolygonsOutsideExtent;
         /// <summary>  対象範囲を緯度・経度・高さで指定します。 </summary>
          public Extent Extent;
         
