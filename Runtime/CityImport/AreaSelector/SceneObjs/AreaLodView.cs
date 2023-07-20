@@ -41,10 +41,9 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         private static readonly Color boxColor = new Color(0.25f, 0.25f, 0.25f, 0.35f);
         private static ConcurrentDictionary<(PredefinedCityModelPackage package, uint lod), Texture> iconDict;
         private static Texture boxTex;
-        private struct IconInfoData {
+        private struct LodTexturePair {
             public int Lod;
             public Texture IconTexture;
-            public PredefinedCityModelPackage Package;
         }
 
         public AreaLodView(PackageToLodDict packageToLodDict, Vector3 meshCodeUnityPositionUpperLeft, Vector3 meshCodeUnityPositionLowerRight)
@@ -74,7 +73,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
             
             // アイコンが存在するパッケージ種について、表示すべきアイコンを求めます
             var iconAvailableForPackages = iconDict.Keys.Select(tuple => tuple.package).Distinct();
-            var iconInfoDataDict = new Dictionary<string, IconInfoData>();
+            var iconInfoDict = new Dictionary<string, LodTexturePair>();
             foreach(var package in iconAvailableForPackages)
             {
                 // パッケージが存在しないときは -1 になります
@@ -86,26 +85,26 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
                 if (!iconDict.TryGetValue((package, (uint)maxLod), out var iconTex)) continue;
 
                 // アイコンはパッケージ毎に割当てられているが、同名のアイコンファイルが利用されるのは防ぐ
-                var iconInfoData = new IconInfoData { Lod = maxLod, IconTexture = iconTex, Package = package };
+                var lodTexturePair = new LodTexturePair { Lod = maxLod, IconTexture = iconTex };
                 var iconFileName = GetIconFileName(package);
-                if (iconInfoDataDict.ContainsKey(iconFileName))
+                if (iconInfoDict.ContainsKey(iconFileName))
                 {
-                    if (iconInfoDataDict[iconFileName].Lod < maxLod) 
+                    if (iconInfoDict[iconFileName].Lod < maxLod) 
                     {
-                        iconInfoDataDict[iconFileName] = iconInfoData;
+                        iconInfoDict[iconFileName] = lodTexturePair;
                     }
                 } 
                 else 
                 {
-                    iconInfoDataDict.Add(iconFileName, iconInfoData);
+                    iconInfoDict.Add(iconFileName, lodTexturePair);
                 }
             }
 
             // 範囲選択画面に表示する順番に並び替える
-            var iconInfoDataList = (from iconFileName in GetIconFileNameList() where iconInfoDataDict.ContainsKey(iconFileName) select iconInfoDataDict[iconFileName]).ToList();
-            if (iconInfoDataList.Count <= 0)
+            var lodTexturePairList = (from iconFileName in GetIconFileNameList() where iconInfoDict.ContainsKey(iconFileName) select iconInfoDict[iconFileName]).ToList();
+            if (lodTexturePairList.Count <= 0)
             {
-                Debug.LogError("maxLodIconDict.Count <= 0");
+                Debug.LogError("lodTexturePairList.Count <= 0");
                 return;
             }
 
@@ -114,7 +113,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
 
             // 地域メッシュコードの枠内にアイコンが4つ並ぶ程度の大きさ
             var iconWidth = Mathf.Min(maxIconWidth, meshCodeScreenWidth / iconWidthDivider) / monitorDpiScalingFactor;
-            var iconCnt = Math.Min(iconInfoDataList.Count, maxIconCnt);
+            var iconCnt = Math.Min(lodTexturePairList.Count, maxIconCnt);
             
             // アイコンを中央揃えで左から右に並べたとき、左上の座標を求めます。
             var meshCodeCenterUnityPos = (this.meshCodeUnityPositionUpperLeft + this.meshCodeUnityPositionLowerRight) * 0.5f;
@@ -149,7 +148,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
                     alignment = TextAnchor.UpperLeft,
                     stretchWidth = true
                 };
-                var content = new GUIContent(iconInfoDataList[i].IconTexture);
+                var content = new GUIContent(lodTexturePairList[i].IconTexture);
                 Handles.Label(iconPos, content, style);
                 GUI.contentColor = prevBackgroundColor;
             }
