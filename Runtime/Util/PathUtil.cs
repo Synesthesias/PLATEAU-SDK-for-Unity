@@ -156,10 +156,12 @@ namespace PLATEAU.Util
         /// <summary>
         /// SdkBasePath からの相対パスを受け取り、アセットパスに変換して返します。
         /// </summary>
+        #if UNITY_EDITOR
         public static string SdkPathToAssetPath(string sdkPath)
         {
             return Path.Combine(SdkBasePath, sdkPath);
         }
+        #endif
         
         private static bool isInPackageDirCalculated;
         private static bool isInPackageDir;
