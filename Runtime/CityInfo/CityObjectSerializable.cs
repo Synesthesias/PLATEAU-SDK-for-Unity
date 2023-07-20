@@ -22,30 +22,32 @@ namespace PLATEAU.CityInfo
         [JsonConverter(typeof(CityObjectSerializable_CityObjectParamJsonConverter))]
         public class CityObjectParam
         {
-            [JsonProperty] internal string gmlID = "";
-            [JsonProperty] internal int[] cityObjectIndex = {-1, -1};
-            [JsonProperty] internal ulong cityObjectType;
-            [JsonProperty] internal List<CityObjectParam> children = new List<CityObjectParam>();
-            [JsonProperty] internal Attributes attributesMap = new Attributes();
+            private string gmlID = "";
+            private int[] cityObjectIndex = {-1, -1};
+            private ulong cityObjectType;
+            private List<CityObjectParam> children = new List<CityObjectParam>();
+            private Attributes attributesMap = new Attributes();
 
             // Getters/Setters
-            [JsonIgnore] public string GmlID => gmlID;
-            [JsonIgnore] public int[] CityObjectIndex => cityObjectIndex;
-            [JsonIgnore] public CityObjectType CityObjectType => (CityObjectType)cityObjectType;
-            [JsonIgnore] public Attributes AttributesMap => attributesMap;
+            public string GmlID => gmlID;
+            public int[] CityObjectIndex => cityObjectIndex;
+            public CityObjectType CityObjectType => (CityObjectType)cityObjectType;
+            public List<CityObjectParam> Children => children;
+            public Attributes AttributesMap => attributesMap;
 
-            public CityObjectParam Init(string gmlIDArg, int[] cityObjectIndexArg, ulong cityObjectTypeArg, Attributes attributesMapArg )
+            public CityObjectParam Init(string gmlIDArg, int[] cityObjectIndexArg, ulong cityObjectTypeArg, Attributes attributesMapArg, List<CityObjectParam> childrenArg = null )
             {
                 gmlID = gmlIDArg;
                 cityObjectIndex = cityObjectIndexArg;
                 cityObjectType = cityObjectTypeArg;
                 attributesMap = attributesMapArg;
+                if( childrenArg != null )
+                    children = childrenArg;
                 return this;
             }
 
-            [JsonIgnore]
             public CityObjectType type => (CityObjectType)cityObjectType;
-            [JsonIgnore]
+
             public CityObjectIndex IndexInMesh
             {
                 get

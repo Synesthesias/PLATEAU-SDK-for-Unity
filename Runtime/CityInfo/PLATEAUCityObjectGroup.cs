@@ -64,20 +64,20 @@ namespace PLATEAU.CityInfo
                 if (co.IndexInMesh.PrimaryIndex == index.PrimaryIndex && co.IndexInMesh.AtomicIndex == index.AtomicIndex)
                 {
                     Debug.Log($"<color=magenta>Selected : {co.GmlID} : [{co.IndexInMesh.PrimaryIndex},{co.IndexInMesh.AtomicIndex}]</color>");
-                    co.children.Clear();
+                    co.Children.Clear();
                     obj.cityObjects.Add(co);
                     return obj;
                 }
 
                 if (co.IndexInMesh.PrimaryIndex == index.PrimaryIndex)
                 {
-                    foreach (var ch in co.children)
+                    foreach (var ch in co.Children)
                     {
                         if (ch.IndexInMesh.PrimaryIndex == index.PrimaryIndex && ch.IndexInMesh.AtomicIndex == index.AtomicIndex)
                         {
                             Debug.Log($"<color=magenta>Selected child : {ch.GmlID} : [{ch.IndexInMesh.PrimaryIndex},{ch.IndexInMesh.AtomicIndex}] \nparent: {co.GmlID}</color>");
-                            co.children.Clear();
-                            co.children.Add(ch);
+                            co.Children.Clear();
+                            co.Children.Add(ch);
                             obj.cityObjects.Add(co);
                             return obj;
                         }
@@ -94,7 +94,7 @@ namespace PLATEAU.CityInfo
             foreach (var co in des.cityObjects)
             {
                 objs.Add(co);
-                foreach (var ch in co.children)
+                foreach (var ch in co.Children)
                     objs.Add(ch);
             }
             return objs;

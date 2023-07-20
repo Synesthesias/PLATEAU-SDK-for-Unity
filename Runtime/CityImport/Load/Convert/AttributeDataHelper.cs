@@ -83,7 +83,7 @@ namespace PLATEAU.CityImport.Load.Convert
                     if (id.PrimaryID == id.AtomicID) continue;
                     var childCityObj = GetCityObjectById(id.AtomicID);
                     if (childCityObj == null) continue;
-                    ser.children.Add(CityObjectSerializableConvert.FromCityGMLCityObject(childCityObj, id.Index));
+                    ser.Children.Add(CityObjectSerializableConvert.FromCityGMLCityObject(childCityObj, id.Index));
                 }
                 cityObjSer.cityObjects.Add(ser);
             }
@@ -122,7 +122,7 @@ namespace PLATEAU.CityImport.Load.Convert
                     if (c.PrimaryID == c.AtomicID) continue;
                     var childCityObj = GetCityObjectById(c.AtomicID);
                     if (childCityObj == null) continue;
-                    ser.children.Add(CityObjectSerializableConvert.FromCityGMLCityObject(childCityObj, c.Index));
+                    ser.Children.Add(CityObjectSerializableConvert.FromCityGMLCityObject(childCityObj, c.Index));
                 }
                 cityObjSer.cityObjects.Add(ser);
             }

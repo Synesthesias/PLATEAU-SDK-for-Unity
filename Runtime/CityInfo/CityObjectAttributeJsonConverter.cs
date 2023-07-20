@@ -52,35 +52,16 @@ namespace PLATEAU.CityInfo
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
             var param = new CityObjectParam();
+            
+            JObject jObject = JObject.Load(reader);
+            string gmlID = jObject["gmlID"]?.ToString();
+            ulong cityObjectType = (ulong)jObject["cityObjectType"];
+            int[] cityObjectIndex = jObject["cityObjectIndex"]?.ToObject<int[]>();
+            List<CityObjectParam> children = jObject["children"]?.ToObject<List<CityObjectParam>>();
+            Attributes attributesMap = jObject["attributes"]?.ToObject<Attributes>() ?? new Attributes();
 
-            while (reader.Read())
-            {
-                if (reader.TokenType == JsonToken.EndObject) break;
-                if (reader.TokenType == JsonToken.PropertyName)
-                {
-                    var prop = reader.Value?.ToString();
-                    reader.Read();
-
-                    switch (prop)
-                    {
-                        case "gmlID":
-                            param.gmlID = reader.Value.ToString();
-                            break;
-                        case "cityObjectIndex":
-                            param.cityObjectIndex = new JsonSerializer().Deserialize<int[]>(reader);
-                            break;
-                        case "cityObjectType":
-                            param.cityObjectType = Convert.ToUInt64(reader.Value);
-                            break;
-                        case "children":
-                            param.children = new JsonSerializer().Deserialize<List<CityObjectParam>>(reader);
-                            break;
-                        case "attributes":
-                            param.attributesMap = new JsonSerializer().Deserialize<Attributes>(reader);
-                            break;
-                    }
-                }
-            }
+            param.Init(gmlID, cityObjectIndex, cityObjectType, attributesMap, children );
+           
             return param;
         }
 
@@ -92,20 +73,20 @@ namespace PLATEAU.CityInfo
             writer.WriteStartObject();
 
             writer.WritePropertyName("gmlID");
-            writer.WriteValue(param.gmlID);
+            writer.WriteValue(param.GmlID);
             writer.WritePropertyName("cityObjectIndex");
-            JToken.FromObject(param.cityObjectIndex).WriteTo(writer);
+            JToken.FromObject(param.CityObjectIndex).WriteTo(writer);
             writer.WritePropertyName("cityObjectType");
-            writer.WriteValue(param.cityObjectType.ToString());
-            if (param.children != null && param.children.Count > 0)
+            writer.WriteValue((ulong)param.CityObjectType);
+            if (param.Children != null && param.Children.Count > 0)
             {
                 writer.WritePropertyName("children");
-                JToken.FromObject(param.children).WriteTo(writer);
+                JToken.FromObject(param.Children).WriteTo(writer);
             }
-            if(param.attributesMap.Count > 0)
+            if(param.AttributesMap.Count > 0)
             {
                 writer.WritePropertyName("attributes");
-                JToken.FromObject(param.attributesMap).WriteTo(writer);
+                JToken.FromObject(param.AttributesMap).WriteTo(writer);
             }
 
             writer.WriteEndObject();

@@ -59,7 +59,7 @@ namespace PLATEAU
                         var logAttribute = new StringBuilder();
                         foreach (var o in obj.cityObjects)
                         {
-                            o.DebugString();
+                            logAttribute.Append(o.DebugString());
                         }
                         Debug.Log(logAttribute);
                     }
