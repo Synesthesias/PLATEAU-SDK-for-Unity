@@ -26,9 +26,6 @@ namespace PLATEAU.Samples.Scripts
             {
                 Debug.LogError("メインカメラがありません。");
             }
-
-            string samplePath = PathUtil.SdkPathToAssetPath("Samples");
-            if (!Directory.Exists(samplePath)) samplePath = PathUtil.SdkPathToAssetPath("Samples~/");
         }
 
         private void Update()
