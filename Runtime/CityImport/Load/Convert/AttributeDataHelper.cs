@@ -1,8 +1,10 @@
-﻿using PLATEAU.CityInfo;
-using PLATEAU.PolygonMesh;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using PLATEAU.CityGML;
+using PLATEAU.CityInfo;
+using PLATEAU.PolygonMesh;
 using UnityEngine;
+using CityObject = PLATEAU.CityInfo.CityObject;
 
 namespace PLATEAU.CityImport.Load.Convert
 {
@@ -11,9 +13,9 @@ namespace PLATEAU.CityImport.Load.Convert
     /// </summary>
     internal class AttributeDataHelper
     {
-        private readonly PLATEAU.CityGML.CityModel cityModel;
+        private readonly CityModel cityModel;
         private readonly MeshGranularity meshGranularity; 
-        private readonly List<CityObjectID> indexList = new List<CityObjectID>();
+        private readonly List<CityObjectID> indexList = new();
         private string id;
         private CityObjectIndex index;
         private string parant;
@@ -25,10 +27,10 @@ namespace PLATEAU.CityImport.Load.Convert
             public string PrimaryID;
         }
 
-        public AttributeDataHelper(PLATEAU.CityGML.CityModel cityModel, MeshGranularity granularity)
+        public AttributeDataHelper(CityModel cityModel, MeshGranularity granularity)
         {
             this.cityModel = cityModel;
-            this.meshGranularity = granularity;
+            meshGranularity = granularity;
         }
 
         public AttributeDataHelper(AttributeDataHelper attributeDataHelper) : this(attributeDataHelper.cityModel, attributeDataHelper.meshGranularity) { }
@@ -50,24 +52,24 @@ namespace PLATEAU.CityImport.Load.Convert
                 var primaryGmlID = cityObjectList.GetPrimaryID(key.PrimaryIndex);
 
                 if (meshGranularity == MeshGranularity.PerCityModelArea ||
-                    (meshGranularity == MeshGranularity.PerPrimaryFeatureObject && primaryGmlID == this.id))
+                    (meshGranularity == MeshGranularity.PerPrimaryFeatureObject && primaryGmlID == id))
                         indexList.Add(new CityObjectID { Index = key, AtomicID = atomicGmlID, PrimaryID = primaryGmlID});
                         
-                if (meshGranularity == MeshGranularity.PerAtomicFeatureObject && atomicGmlID == this.id)
-                    this.parant = primaryGmlID;
+                if (meshGranularity == MeshGranularity.PerAtomicFeatureObject && atomicGmlID == id)
+                    parant = primaryGmlID;
             }
-            this.index =  cityObjectList.GetCityObjectIndex(this.id);         
+            index =  cityObjectList.GetCityObjectIndex(id);         
         }
 
         /// <summary>
         /// 各CityObjectの属性情報を取得してシリアライズ可能なデータに変換します
         /// </summary>
-        public CityInfo.CityObject GetSerializableCityObject()
+        public CityObject GetSerializableCityObject()
         {
-            if (this.meshGranularity == MeshGranularity.PerCityModelArea)
+            if (meshGranularity == MeshGranularity.PerCityModelArea)
                 return GetSerializableCityObjectForArea();
 
-            CityInfo.CityObject cityObjSer = new CityInfo.CityObject();
+            CityObject cityObjSer = new CityObject();
 
             if (!string.IsNullOrEmpty(parant))
                 cityObjSer.parent = parant;
@@ -75,13 +77,13 @@ namespace PLATEAU.CityImport.Load.Convert
             var cityObj = GetCityObjectById(this.id);
             if (cityObj != null)
             {
-                var ser = CityObjectSerializableConvert.FromCityGMLCityObject<CityInfo.CityObject.CityObjectParam>(cityObj, this.index);
+                var ser = CityObjectSerializableConvert.FromCityGMLCityObject(cityObj, index);
                 foreach (var id in indexList)
                 {
                     if (id.PrimaryID == id.AtomicID) continue;
                     var childCityObj = GetCityObjectById(id.AtomicID);
                     if (childCityObj == null) continue;
-                    ser.children.Add(CityObjectSerializableConvert.FromCityGMLCityObject<CityInfo.CityObject.CityObjectChildParam>(childCityObj, id.Index));
+                    ser.Children.Add(CityObjectSerializableConvert.FromCityGMLCityObject(childCityObj, id.Index));
                 }
                 cityObjSer.cityObjects.Add(ser);
             }
@@ -89,9 +91,9 @@ namespace PLATEAU.CityImport.Load.Convert
         }
 
         //地域単位結合モデルの場合のシリアライズ可能なデータへの変換です
-        public CityInfo.CityObject GetSerializableCityObjectForArea()
+        public CityObject GetSerializableCityObjectForArea()
         {
-            CityInfo.CityObject cityObjSer = new CityInfo.CityObject();
+            CityObject cityObjSer = new CityObject();
             List<string> cityObjList = new List<string>();
             Dictionary<string, List<CityObjectID>> chidrenMap = new Dictionary<string, List<CityObjectID>>();
 
@@ -104,7 +106,7 @@ namespace PLATEAU.CityImport.Load.Convert
                     if (chidrenMap.ContainsKey(id.PrimaryID))
                         chidrenMap[id.PrimaryID].Add(id);
                     else
-                        chidrenMap.Add(id.PrimaryID, new List<CityObjectID>(){id});
+                        chidrenMap.Add(id.PrimaryID, new List<CityObjectID> {id});
                 }
             }
 
@@ -112,7 +114,7 @@ namespace PLATEAU.CityImport.Load.Convert
             {
                 var cityObj = GetCityObjectById(id.AtomicID);
                 if (cityObj == null) continue;
-                var ser = CityObjectSerializableConvert.FromCityGMLCityObject<CityInfo.CityObject.CityObjectParam>(cityObj, id.Index);
+                var ser = CityObjectSerializableConvert.FromCityGMLCityObject(cityObj, id.Index);
                 if (!chidrenMap.ContainsKey(id.AtomicID)) continue;
                 var childrenId = chidrenMap[id.AtomicID];
                 foreach (var c in childrenId)
@@ -120,14 +122,14 @@ namespace PLATEAU.CityImport.Load.Convert
                     if (c.PrimaryID == c.AtomicID) continue;
                     var childCityObj = GetCityObjectById(c.AtomicID);
                     if (childCityObj == null) continue;
-                    ser.children.Add(CityObjectSerializableConvert.FromCityGMLCityObject<CityInfo.CityObject.CityObjectChildParam>(childCityObj, c.Index));
+                    ser.Children.Add(CityObjectSerializableConvert.FromCityGMLCityObject(childCityObj, c.Index));
                 }
                 cityObjSer.cityObjects.Add(ser);
             }
             return cityObjSer;
         }
 
-        public PLATEAU.CityGML.CityObject GetCityObjectById(string id)
+        public CityGML.CityObject GetCityObjectById(string id)
         {
             try
             {

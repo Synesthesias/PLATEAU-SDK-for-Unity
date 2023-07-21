@@ -1,7 +1,8 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text;
 using PLATEAU.CityInfo;
 using PLATEAU.Editor.EditorWindow.Common;
 using UnityEditor;
+using UnityEditorInternal;
 using UnityEngine;
 
 namespace PLATEAU
@@ -13,14 +14,15 @@ namespace PLATEAU
 
         public void OnEnable()
         {
-            UnityEditorInternal.ComponentUtility.MoveComponentUp(target as UnityEngine.Component);
+            ComponentUtility.MoveComponentUp(target as Component);
         }
 
         public override void OnInspectorGUI()
         {
             var cog = target as PLATEAUCityObjectGroup;
             if (cog == null) return;
-            var json = cog.SerializedCityObjects;
+            SerializedProperty prop = serializedObject.FindProperty("serializedCityObjects");
+            var json = prop.stringValue;
 
             PlateauEditorStyle.Heading("属性情報", null);
             using (PlateauEditorStyle.VerticalScopeLevel1())
@@ -38,7 +40,6 @@ namespace PLATEAU
 
         void OnSceneGUI()
         {
-            /*
             #region Raycastテスト
             //今のところあくまでテストで、今後はクリック箇所の属性情報を表示する専用のモードが実装される予定です
 
@@ -50,8 +51,17 @@ namespace PLATEAU
                     if(hit.transform.TryGetComponent<PLATEAUCityObjectGroup>(out var cog))
                     {
                         var obj = cog.GetCityObject(hit);
-                        var json = JsonConvert.SerializeObject(obj, Formatting.Indented);
-                        Debug.Log(json);
+                        if (obj == null)
+                        {
+                            Debug.Log("no matching CityObject.");
+                            return;
+                        }
+                        var logAttribute = new StringBuilder();
+                        foreach (var o in obj.cityObjects)
+                        {
+                            logAttribute.Append(o.DebugString());
+                        }
+                        Debug.Log(logAttribute);
                     }
                 }
                 else
@@ -59,7 +69,6 @@ namespace PLATEAU
             }
 
             #endregion Raycastテスト
-            */
         }
     }
 }
