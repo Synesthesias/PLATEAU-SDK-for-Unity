@@ -14,22 +14,22 @@ namespace PLATEAU.CityInfo
     {
         [HideInInspector][SerializeField] private string serializedCityObjects;
 
-        public CityObject CityObjects
+        public CityObjectList CityObjects
         {
             get
             {
                 if (!string.IsNullOrEmpty(serializedCityObjects))
-                    return JsonConvert.DeserializeObject<CityObject>(serializedCityObjects);
-                return new CityObject();
+                    return JsonConvert.DeserializeObject<CityObjectList>(serializedCityObjects);
+                return new CityObjectList();
             }
         }
 
-        public void SetSerializableCityObject(CityObject cityObjectSerializable)
+        public void SetSerializableCityObject(CityObjectList cityObjectSerializable)
         {
             serializedCityObjects = JsonConvert.SerializeObject(cityObjectSerializable, Formatting.Indented);
         }
 
-        public CityObject GetCityObject(RaycastHit hit)
+        public CityObjectList GetCityObject(RaycastHit hit)
         {
             if(GetUV4FromTriangleIndex(hit.triangleIndex, out var vec))
             {
@@ -38,7 +38,7 @@ namespace PLATEAU.CityInfo
             return null;
         }
 
-        public IEnumerable<CityObject.CityObjectParam> PrimaryCityObjects
+        public IEnumerable<CityObjectList.CityObject> PrimaryCityObjects
         {
             get
             {
@@ -46,7 +46,7 @@ namespace PLATEAU.CityInfo
             }
         }
 
-        public CityObject GetCityObject(Vector2 uv)
+        public CityObjectList GetCityObject(Vector2 uv)
         {
             CityObjectIndex index = new CityObjectIndex();
             index.PrimaryIndex = (int)Mathf.Round(uv.x);
@@ -54,18 +54,18 @@ namespace PLATEAU.CityInfo
             return GetCityObject(index);
         }
 
-        public CityObject GetCityObject(CityObjectIndex index)
+        public CityObjectList GetCityObject(CityObjectIndex index)
         {
-            CityObject obj = new CityObject();
+            CityObjectList obj = new CityObjectList();
             var des = CityObjects;
-            obj.parent = des.parent;
-            foreach (var co in des.cityObjects)
+            obj.outsideParent = des.outsideParent;
+            foreach (var co in des.rootCityObjects)
             {
                 if (co.IndexInMesh.PrimaryIndex == index.PrimaryIndex && co.IndexInMesh.AtomicIndex == index.AtomicIndex)
                 {
                     Debug.Log($"<color=magenta>Selected : {co.GmlID} : [{co.IndexInMesh.PrimaryIndex},{co.IndexInMesh.AtomicIndex}]</color>");
                     co.Children.Clear();
-                    obj.cityObjects.Add(co);
+                    obj.rootCityObjects.Add(co);
                     return obj;
                 }
 
@@ -78,7 +78,7 @@ namespace PLATEAU.CityInfo
                             Debug.Log($"<color=magenta>Selected child : {ch.GmlID} : [{ch.IndexInMesh.PrimaryIndex},{ch.IndexInMesh.AtomicIndex}] \nparent: {co.GmlID}</color>");
                             co.Children.Clear();
                             co.Children.Add(ch);
-                            obj.cityObjects.Add(co);
+                            obj.rootCityObjects.Add(co);
                             return obj;
                         }
                     }
@@ -87,11 +87,11 @@ namespace PLATEAU.CityInfo
             return null;
         }
 
-        public IEnumerable<CityObject.CityObjectParam> GetAllCityObjects()
+        public IEnumerable<CityObjectList.CityObject> GetAllCityObjects()
         {
-            List<CityObject.CityObjectParam> objs = new List<CityObject.CityObjectParam>();
+            List<CityObjectList.CityObject> objs = new List<CityObjectList.CityObject>();
             var des = CityObjects;
-            foreach (var co in des.cityObjects)
+            foreach (var co in des.rootCityObjects)
             {
                 objs.Add(co);
                 foreach (var ch in co.Children)

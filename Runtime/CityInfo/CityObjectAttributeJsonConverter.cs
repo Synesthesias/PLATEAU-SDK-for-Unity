@@ -3,16 +3,17 @@ using Newtonsoft.Json.Linq;
 using PLATEAU.CityGML;
 using System;
 using System.Collections.Generic;
-using static PLATEAU.CityInfo.CityObject;
+using static PLATEAU.CityInfo.CityObjectList;
+using CityObject = PLATEAU.CityInfo.CityObjectList.CityObject;
 
 namespace PLATEAU.CityInfo
 {
     /// <summary>
     /// PLATEAU.CityInfo.CityObject用のJsonConverterです。
     /// </summary>
-    internal class CityObjectSerializableJsonConverter : JsonConverter
+    internal class CityObjectSerializable_CityObjectListJsonConverter : JsonConverter
     {
-        public override bool CanConvert(Type objectType) => objectType == typeof(CityObject);
+        public override bool CanConvert(Type objectType) => objectType == typeof(CityObjectList);
 
         public override bool CanRead { get { return false; } }
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
@@ -22,42 +23,48 @@ namespace PLATEAU.CityInfo
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
-            var attr = value as CityObject;
+            var attr = value as CityObjectList;
             if (attr == null) return;
 
             writer.WriteStartObject();
 
-            writer.WritePropertyName("parent");
-            if (!string.IsNullOrEmpty(attr.parent))
-                writer.WriteValue(attr.parent);
+            writer.WritePropertyName("outsideParent");
+            if (!string.IsNullOrEmpty(attr.outsideParent))
+                writer.WriteValue(attr.outsideParent);
             else
                 writer.WriteValue("");
 
-            if (attr.cityObjects != null && attr.cityObjects.Count > 0)
+            if(attr.outsideChildren != null && attr.outsideChildren.Count > 0)
             {
-                writer.WritePropertyName("cityObjects");
-                JToken.FromObject(attr.cityObjects).WriteTo(writer);
+                writer.WritePropertyName("outsideChildren");
+                JToken.FromObject(attr.outsideChildren).WriteTo(writer);
+            }
+
+            if (attr.rootCityObjects != null && attr.rootCityObjects.Count > 0)
+            {
+                writer.WritePropertyName("rootCityObjects");
+                JToken.FromObject(attr.rootCityObjects).WriteTo(writer);
             }
             writer.WriteEndObject();
         }
     }
 
     /// <summary>
-    /// PLATEAU.CityInfo.CityObject.CityObjectParam用のJsonConverterです。
+    /// PLATEAU.CityInfo.CityObjectList.CityObject用のJsonConverterです。
     /// </summary>
-    internal class CityObjectSerializable_CityObjectParamJsonConverter : JsonConverter
+    internal class CityObjectSerializable_CityObjectJsonConverter : JsonConverter
     {
-        public override bool CanConvert(Type objectType) => objectType == typeof(CityObjectParam);
+        public override bool CanConvert(Type objectType) => objectType == typeof(CityObject);
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
-            var param = new CityObjectParam();
+            var param = new CityObject();
             
             JObject jObject = JObject.Load(reader);
             string gmlID = jObject["gmlID"]?.ToString();
             ulong cityObjectType = (ulong)jObject["cityObjectType"];
             int[] cityObjectIndex = jObject["cityObjectIndex"]?.ToObject<int[]>();
-            List<CityObjectParam> children = jObject["children"]?.ToObject<List<CityObjectParam>>();
+            List<CityObject> children = jObject["children"]?.ToObject<List<CityObject>>();
             Attributes attributesMap = jObject["attributes"]?.ToObject<Attributes>() ?? new Attributes();
 
             param.Init(gmlID, cityObjectIndex, cityObjectType, attributesMap, children );
@@ -67,7 +74,7 @@ namespace PLATEAU.CityInfo
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
-            var param = value as CityObjectParam;
+            var param = value as CityObject;
             if (param == null) return;
 
             writer.WriteStartObject();
