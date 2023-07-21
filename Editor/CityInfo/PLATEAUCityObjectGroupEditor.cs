@@ -38,6 +38,7 @@ namespace PLATEAU
 
         void OnSceneGUI()
         {
+            /*
             #region Raycastテスト
             //今のところあくまでテストで、今後はクリック箇所の属性情報を表示する専用のモードが実装される予定です
 
@@ -58,6 +59,7 @@ namespace PLATEAU
             }
 
             #endregion Raycastテスト
+            */
         }
     }
 }

@@ -2,8 +2,9 @@
 using UnityEngine;
 using Newtonsoft.Json;
 using System;
+using System.Linq;
 using PLATEAU.PolygonMesh;
-using Unity.VisualScripting.YamlDotNet.Serialization;
+using UnityEditor;
 
 namespace PLATEAU.CityInfo
 {
@@ -90,6 +91,163 @@ namespace PLATEAU.CityInfo
                     objs.Add(ch);
             }
             return objs;
+        }
+
+        public void ShowSelected(CityObjectIndex index)
+        {
+            Debug.Log($"ShowSelected {index.PrimaryIndex}, {index.AtomicIndex}");
+
+            var mesh = CurrentMesh;
+            if (mesh == null) return;
+
+            //Vector2[] selection = Array.FindAll<Vector2>(mesh.uv4, vec => (int)Mathf.Round(vec.x) == index.PrimaryIndex && (int)Mathf.Round(vec.y) == index.AtomicIndex);
+            //Debug.Log($"selection : {selection.Length}");
+
+
+            List<Vector2> uv = new List<Vector2>();
+            mesh.GetUVs(3, uv);
+
+            List<Vector2> selection = uv.FindAll(vec => (int)Mathf.Round(vec.x) == index.PrimaryIndex && (int)Mathf.Round(vec.y) == index.AtomicIndex);
+            Debug.Log($"selection : {selection.Count}");
+            Debug.Log($"uv : {uv.Count} vertex : {mesh.vertexCount}");
+
+
+            //UVのIndex
+            List<int> indices = new List<int>();
+            //var vertindex = new List<int>();
+            //List<Vector3> vertices = new List<Vector3>();
+            vertices.Clear();
+            normals.Clear();
+            triangles.Clear();
+            //int triIndex = 0; 
+            foreach (var (vec,i) in uv.Select((vec, i) => (vec, i)))
+            {
+                if((int)Mathf.Round(vec.x) == index.PrimaryIndex && (int)Mathf.Round(vec.y) == index.AtomicIndex)
+                {
+                    indices.Add(i);
+                    vertices.Add(mesh.vertices[i]);
+                    normals.Add(mesh.normals[i]);
+                    
+                    if(i <  uv.Count -1)
+                    {
+                        /* */
+                        triangles.Add(mesh.triangles[i * 3]);
+                        triangles.Add(mesh.triangles[i * 3 + 1]);
+                        triangles.Add(mesh.triangles[i * 3 + 2]);
+                        
+                        /*
+                        triangles.Add(mesh.triangles[triIndex * 3]);
+                        triangles.Add(mesh.triangles[triIndex * 3 + 1]);
+                        triangles.Add(mesh.triangles[triIndex * 3 + 2]);
+                        */
+
+                        //vertindex.Add(triIndex);
+                        //triIndex++;
+                        
+                    }
+                    
+                }        
+            }
+
+            //Triangles index を 0スタートに書き換える
+            ConvertTriangleIndexes(ref triangles);
+
+            //triangles.Clear();
+
+            //sDebug.Log($"vertindex : {JsonConvert.SerializeObject(vertindex)} ");
+            /*
+            for (int i = 0; i * 3 < vertindex.Count; i++)
+            {
+                if ((3 * i) < vertindex.Count)
+                    triangles.Add(vertindex[3 * i]);
+                if ((3 * i + 1) < vertindex.Count)
+                    triangles.Add(vertindex[3 * i + 1]);
+                if((3 * i + 2) < vertindex.Count)
+                    triangles.Add(vertindex[3 * i + 2]);
+            }
+            */
+
+            //Dammy
+            //triangles = new List<int>() { 0, 2, 1, 2, 3, 1, 0, 2, 1, 2, 3, 1 };
+            triangles = new List<int>() { 2, 1, 0, 3, 2, 0, 1, 3, 0, 1, 2, 0 };
+
+
+            Debug.Log($"indices : {JsonConvert.SerializeObject(indices)} ");
+
+            Debug.Log($"triangles : {JsonConvert.SerializeObject(triangles)} ");
+#if UNITY_EDITOR
+            Handles.DrawLines(vertices.ToArray());
+#endif
+            selectedMesh = new UnityEngine.Mesh();
+            selectedMesh.SetVertices(vertices.ToArray());
+            selectedMesh.SetNormals(normals.ToArray());
+            selectedMesh.SetIndices(triangles.ToArray(), MeshTopology.Triangles, 0);
+            selectedMesh.RecalculateBounds();
+            selectedMesh.RecalculateNormals();
+
+            /*
+            Gizmos.color = Color.blue;
+            for (int i = 0; i < vertices.Count; i++)
+            {
+                if (i > vertices.Count - 1)
+                    //Handles.DrawLine(vertices[i], vertices[i + 1], 5.0f);
+                    Gizmos.DrawLine(vertices[i], vertices[i + 1]);
+
+                // Debug.Log($"vertices: {vertices[i].ToString()} ");
+            }
+
+            Gizmos.DrawLine(Vector3.zero, new Vector3(0,0,300));
+            */
+        }
+
+        //Trianglesの各 indexの値を　０スタート (0,1,2,3..)に置き換える
+        private void ConvertTriangleIndexes (ref List<int> triangles)
+        {
+            IEnumerable<int> distinct = triangles.Distinct(); //重複削除
+            List<int> sorted = distinct.ToList<int>();
+            sorted.Sort(); //少ない方から並べる
+
+            Debug.Log($"sorted : {JsonConvert.SerializeObject(sorted)} ");
+
+            for(int i =0; i < triangles.Count; i++)
+            {
+                triangles[i] = sorted.IndexOf(triangles[i]);
+            }
+        }
+
+
+        List<Vector3> vertices = new List<Vector3>();
+        List<Vector3> normals = new List<Vector3>();
+        List<int> triangles = new List<int>();
+
+        UnityEngine.Mesh selectedMesh;
+        private void OnDrawGizmos()
+        {
+            Gizmos.color = Color.blue;
+
+            for (int i = 0; i < vertices.Count; i++)
+            {
+                if (i < vertices.Count - 1)
+                {
+                    //Handles.DrawLine(vertices[i], vertices[i + 1], 1.0f);
+                    Gizmos.DrawLine(vertices[i], vertices[i + 1]);
+                }    
+                 //Debug.Log($"vertices: {vertices[i].ToString()} ");
+            }
+
+            /*
+            UnityEngine.Mesh m  = new UnityEngine.Mesh();
+            m.SetVertices(vertices.ToArray());
+            m.SetNormals(normals.ToArray());
+            m.SetTriangles(triangles.ToArray(), 0);
+            m.RecalculateBounds();
+            m.RecalculateNormals();
+            Gizmos.DrawMesh(m);
+            */
+
+            Gizmos.color = Color.red;
+            Gizmos.DrawMesh(selectedMesh);
+            //Gizmos.DrawMesh(currentMesh);
         }
 
         private UnityEngine.Mesh currentMesh;
