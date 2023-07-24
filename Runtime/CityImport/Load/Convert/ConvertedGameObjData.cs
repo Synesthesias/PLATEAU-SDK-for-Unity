@@ -60,6 +60,7 @@ namespace PLATEAU.CityImport.Load.Convert
             {
                 var child = plateauNode.GetChildAt(i);
                 this.children.Add(new ConvertedGameObjData(child, new AttributeDataHelper(attributeDataHelper)));
+                this.attributeDataHelper.AddOutsideChildren(child?.Name);
             }
         }
 
@@ -94,16 +95,20 @@ namespace PLATEAU.CityImport.Load.Convert
                     {
                         nextParent = placedObj.transform;
 
-                        //　属性情報表示コンポーネントを追加します。
-                        var attrInfo = placedObj.AddComponent<PLATEAUCityObjectGroup>();
-                        attrInfo.SetSerializableCityObject(this.attributeDataHelper.GetSerializableCityObject());
-
                         if (doSetMeshCollider)
                         {
                             placedObj.AddComponent<MeshCollider>();
                         }
                     }
                 }
+
+                //　属性情報表示コンポーネントを追加します。
+                var serialized = this.attributeDataHelper.GetSerializableCityObject();
+                if (serialized != null )
+                {
+                    var attrInfo = nextParent.gameObject.AddComponent<PLATEAUCityObjectGroup>();
+                    attrInfo.SetSerializableCityObject(serialized);
+                }  
             }
             
             // 子を再帰的に配置します。
