@@ -57,7 +57,7 @@ namespace PLATEAU
                             return;
                         }
                         var logAttribute = new StringBuilder();
-                        foreach (var o in obj.cityObjects)
+                        foreach (var o in obj.rootCityObjects)
                         {
                             logAttribute.Append(o.DebugString());
                         }
