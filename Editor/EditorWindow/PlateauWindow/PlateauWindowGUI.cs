@@ -1,13 +1,22 @@
 ﻿using PLATEAU.Editor.EditorWindow.Common;
 using PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI;
+using System;
 
 namespace PLATEAU.Editor.EditorWindow.PlateauWindow
 {
     internal class PlateauWindowGUI : IEditorDrawable
     {
-        public int tabIndex { get; private set; }
+        public Action<int> OnTabChange;
+        public int tabIndex { get => _tabIndex; 
+            private set { 
+                if(value != _tabIndex)
+                    OnTabChange?.Invoke(value);  
+                _tabIndex = value;
+            } 
+        }
+        private int _tabIndex = 0;
         private readonly IEditorDrawable[] tabGUIArray;
-
+       
         private readonly string[] tabImages =
             { "dark_icon_import.png", "dark_icon_adjust.png", "dark_icon_export.png", "dark_icon_information.png" };
 

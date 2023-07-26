@@ -8,12 +8,13 @@ namespace PLATEAU.CityImport.AreaSelector
 {
     internal static class LodLegendGUI
     {
+#if UNITY_EDITOR
         private static Rect currentLodLegendWindowRect;
         private static readonly Rect LodLegendWindowRect = new(15f, Screen.height - 340f, 50f, 0f);
         private static readonly string IconDirPath = PathUtil.SdkPathToAssetPath("Images/AreaSelect");
         private static readonly List<Texture> LodLegendIcons = new();
         private static readonly GUIStyle IconStyle = new(EditorStyles.label) { fixedHeight = 30f, fixedWidth = 30f };
-
+#endif
         public static void Enable()
         {
 #if UNITY_EDITOR
