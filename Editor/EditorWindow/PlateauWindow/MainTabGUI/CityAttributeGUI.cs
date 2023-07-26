@@ -125,8 +125,6 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
                                 {
                                     GetGizmoDrawer().ShowParentSelection(parentTrans, parent.IndexInMesh, GetIdAndAttributeString(parent));
                                 }
-                                else
-                                    Debug.Log($"parent is null");
                             }
                             else
                             {
