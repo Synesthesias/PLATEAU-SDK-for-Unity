@@ -157,7 +157,6 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
             if (index!= THIS_TAB_INDEX)
             {
                 Clear();
-                parentEditorWindow.Repaint();
                 SceneView.duringSceneGui -= OnSceneGUI;
                 parentGUI.OnTabChange -= OnParentTabChanged;
                 isActive = false;
