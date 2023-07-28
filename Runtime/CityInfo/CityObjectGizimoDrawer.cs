@@ -25,15 +25,15 @@ namespace PLATEAU
 #if UNITY_EDITOR
         private void OnDrawGizmos()
         {
-            GUIStyle gizmoLableStyle = new GUIStyle() { fontStyle = FontStyle.Bold, fontSize = 12 };
+            GUIStyle gizmoLabelStyle = new GUIStyle() { fontStyle = FontStyle.Bold, fontSize = 12 };
 
-            Gizmos.color = gizmoLableStyle.normal.textColor =　Color.green;
+            Gizmos.color = gizmoLabelStyle.normal.textColor =　Color.green;
             Gizmos.DrawWireCube(childBounds.center, childBounds.size);
-            Handles.Label(childBounds.center, childId, gizmoLableStyle);
+            Handles.Label(childBounds.center, childId, gizmoLabelStyle);
 
-            Gizmos.color = gizmoLableStyle.normal.textColor = Color.magenta;
+            Gizmos.color = gizmoLabelStyle.normal.textColor = Color.magenta;
             Gizmos.DrawWireCube(parentBounds.center, parentBounds.size);
-            Handles.Label(parentBounds.center, panrentId, gizmoLableStyle);            
+            Handles.Label(parentBounds.center, panrentId, gizmoLabelStyle);            
         }
 #endif
 
@@ -99,7 +99,7 @@ namespace PLATEAU
                 }
                 token.ThrowIfCancellationRequested();
             }
-            this.mainThreadContext.Post(_ =>
+            this.mainThreadContext?.Post(_ =>
             {
                 callback.Invoke(vertices.ToArray());
             }, null);
@@ -123,7 +123,7 @@ namespace PLATEAU
         private void OnDestroy()
         {
             mainThreadContext = null;
-            cancellationTokenSource.Cancel();
+            cancellationTokenSource?.Cancel();
         }
     }
 }
