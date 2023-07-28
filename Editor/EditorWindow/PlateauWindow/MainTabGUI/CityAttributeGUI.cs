@@ -61,7 +61,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
                     PlateauEditorStyle.Heading("属性情報", null);
                 }
 
-                if (!string.IsNullOrEmpty(parentJson))
+                if (!string.IsNullOrEmpty(parentJson) && parent != null)
                 {
                     using (PlateauEditorStyle.VerticalScopeLevel1())
                     {
@@ -72,7 +72,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
                     }
                 }
 
-                if (!string.IsNullOrEmpty(childJson))
+                if (!string.IsNullOrEmpty(childJson) && child != null)
                 {
                     using (PlateauEditorStyle.VerticalScopeLevel1())
                     {
@@ -96,41 +96,62 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
         {
             if (Event.current.type == EventType.MouseDown && Event.current.button == 0)
             {
+                
                 Ray ray = HandleUtility.GUIPointToWorldRay(Event.current.mousePosition);
                 if (Physics.Raycast(ray, out var hit, 100000.0f))
                 {
                     if (hit.transform.TryGetComponent<PLATEAUCityObjectGroup>(out var cog))
-                    {
+                    {     
                         errorMessage = null;
                         parent = cog.GetPrimaryCityObject(hit);
                         child = cog.GetAtomicCityObject(hit);
-
-                        if(parent == null || child == null)
+                        
+                        if (parent == null && child == null) 
                         {
                             errorMessage = $"{hit.transform.gameObject.name}:\r\n地物がクリックされましたが、属性情報が見つかりませんでした。\r\nインポート時に属性情報を含める設定になっているか確認してください。";
                         }
                         else
                         {
-                            //Json表示
-                            parentJson = JsonConvert.SerializeObject(parent, Formatting.Indented);
-                            childJson = JsonConvert.SerializeObject(child, Formatting.Indented);
-                            
                             targetObjectName = hit.transform.root.name;
+                            
+                            //PrimaryとAtomicが同一であった場合片方だけ表示
+                            if (parent?.GmlID == child?.GmlID)
+                                child = null;
 
-                            //最小値物
-                            if (!string.IsNullOrEmpty(cog.CityObjects.outsideParent))
+                            if (parent!=null)
                             {
-                                Transform parentTrans = (hit.transform.parent.gameObject.name == cog.CityObjects.outsideParent ) ? hit.transform.parent : GameObject.Find(cog.CityObjects.outsideParent)?.transform;
-                                if (parentTrans != null)
+                                parentJson = JsonConvert.SerializeObject(parent, Formatting.Indented);
+                                
+                                //最小値物
+                                if (!string.IsNullOrEmpty(cog.CityObjects.outsideParent))
                                 {
-                                    GetGizmoDrawer().ShowParentSelection(parentTrans, parent.IndexInMesh, GetIdAndAttributeString(parent));
+                                    Transform parentTrans = (hit.transform.parent.gameObject.name == cog.CityObjects.outsideParent) ? hit.transform.parent : GameObject.Find(cog.CityObjects.outsideParent)?.transform;
+                                    if (parentTrans != null)
+                                    {
+                                        GetGizmoDrawer().ShowParentSelection(parentTrans, parent.IndexInMesh, GetIdAndAttributeString(parent)); 
+                                    }
+                                }
+                                else
+                                {
+                                    GetGizmoDrawer().ShowParentSelection(hit.transform, parent.IndexInMesh, GetIdAndAttributeString(parent));
                                 }
                             }
                             else
                             {
-                                GetGizmoDrawer().ShowParentSelection(hit.transform, parent.IndexInMesh, GetIdAndAttributeString(parent));
+                                parentJson = null;
+                                GetGizmoDrawer().ClearParentSelection();
                             }
-                            GetGizmoDrawer().ShowChildSelection(hit.transform, child.IndexInMesh, GetIdAndAttributeString(child));
+
+                            if(child != null)
+                            {
+                                childJson = JsonConvert.SerializeObject(child, Formatting.Indented);
+                                GetGizmoDrawer().ShowChildSelection(hit.transform, child.IndexInMesh, GetIdAndAttributeString(child));
+                            } 
+                            else
+                            {
+                                childJson = null;
+                                GetGizmoDrawer().ClearChildSelection();
+                            }
                         }
                     }
                     else
@@ -164,6 +185,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
         private string GetIdAndAttributeString(CityObject obj)
         {
             var id = obj.GmlID;
+
             var attr = obj.AttributesMap.DebugString(0);
             if(attr.Length > 50)
             {

@@ -104,6 +104,7 @@ namespace PLATEAU.CityInfo
                     }
                 }
             }
+            Debug.LogError($"GetCityObject index Not Found [{index.PrimaryIndex}:{index.AtomicIndex}]");
             return null;
         }
 
