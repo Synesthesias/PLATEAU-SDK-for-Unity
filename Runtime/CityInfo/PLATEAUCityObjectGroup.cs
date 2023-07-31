@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using System;
 using System.Linq;
 using PLATEAU.PolygonMesh;
+using static PLATEAU.CityInfo.CityObjectList;
 
 namespace PLATEAU.CityInfo
 {
@@ -14,36 +15,40 @@ namespace PLATEAU.CityInfo
     {
         [HideInInspector][SerializeField] private string serializedCityObjects;
 
-        public CityObject CityObjects
+        public CityObjectList CityObjects
         {
             get
             {
                 if (!string.IsNullOrEmpty(serializedCityObjects))
-                    return JsonConvert.DeserializeObject<CityObject>(serializedCityObjects);
-                return new CityObject();
+                    return JsonConvert.DeserializeObject<CityObjectList>(serializedCityObjects);
+                return new CityObjectList();
             }
         }
 
-        public void SetSerializableCityObject(CityObject cityObjectSerializable)
+        public void SetSerializableCityObject(CityObjectList cityObjectSerializable)
         {
             serializedCityObjects = JsonConvert.SerializeObject(cityObjectSerializable, Formatting.Indented);
         }
 
-        public CityObject GetCityObject(RaycastHit hit)
+        public CityObject GetPrimaryCityObject(RaycastHit hit)
         {
-            if(GetUV4FromTriangleIndex(hit.triangleIndex, out var vec))
+            if (GetUV4FromTriangleIndex(hit.triangleIndex, out var uv))
             {
-                return GetCityObject(vec);
+                CityObjectIndex index = new CityObjectIndex();
+                index.PrimaryIndex = (int)Mathf.Round(uv.x);
+                index.AtomicIndex = -1;
+                return GetCityObject(index);
             }
             return null;
         }
 
-        public IEnumerable<CityObject.CityObjectParam> PrimaryCityObjects
+        public CityObject GetAtomicCityObject(RaycastHit hit)
         {
-            get
+            if (GetUV4FromTriangleIndex(hit.triangleIndex, out var vec))
             {
-                return GetAllCityObjects().Where(obj => obj.CityObjectIndex[1] < 0);
+                return GetCityObject(vec);
             }
+            return null;
         }
 
         public CityObject GetCityObject(Vector2 uv)
@@ -56,42 +61,66 @@ namespace PLATEAU.CityInfo
 
         public CityObject GetCityObject(CityObjectIndex index)
         {
-            CityObject obj = new CityObject();
             var des = CityObjects;
-            obj.parent = des.parent;
-            foreach (var co in des.cityObjects)
+            //最小値物時の outsideParent 設定
+            if (index.AtomicIndex == -1 && !string.IsNullOrEmpty(des.outsideParent))
             {
+                GameObject parentObj = (transform.parent.gameObject.name == des.outsideParent) ? transform.parent.gameObject : GameObject.Find(des.outsideParent);
+                PLATEAUCityObjectGroup parentComp = parentObj?.GetComponent<PLATEAUCityObjectGroup>();   
+                if (parentComp != null)
+                {
+                    var parent = parentComp.CityObjects.rootCityObjects[0];
+
+                    //outsideChildrenをchildrenとしてセット
+                    foreach (var id in parentComp.CityObjects.outsideChildren)
+                    {
+                        var child = parentComp.transform.Find(id);
+                        if (child != null && child.TryGetComponent<PLATEAUCityObjectGroup>(out var childCityObj))
+                        {
+                            parent.Children.AddRange(childCityObj.CityObjects.rootCityObjects);
+                        }   
+                    }
+                    return parent;
+                }
+            }
+
+            foreach (var co in des.rootCityObjects)
+            {
+                //Primary/最小値物時のAtomic
                 if (co.IndexInMesh.PrimaryIndex == index.PrimaryIndex && co.IndexInMesh.AtomicIndex == index.AtomicIndex)
                 {
-                    Debug.Log($"<color=magenta>Selected : {co.GmlID} : [{co.IndexInMesh.PrimaryIndex},{co.IndexInMesh.AtomicIndex}]</color>");
-                    co.Children.Clear();
-                    obj.cityObjects.Add(co);
-                    return obj;
+                    return co;
                 }
 
+                //主要、範囲時はchildrenのindexから検索
                 if (co.IndexInMesh.PrimaryIndex == index.PrimaryIndex)
                 {
                     foreach (var ch in co.Children)
                     {
                         if (ch.IndexInMesh.PrimaryIndex == index.PrimaryIndex && ch.IndexInMesh.AtomicIndex == index.AtomicIndex)
                         {
-                            Debug.Log($"<color=magenta>Selected child : {ch.GmlID} : [{ch.IndexInMesh.PrimaryIndex},{ch.IndexInMesh.AtomicIndex}] \nparent: {co.GmlID}</color>");
-                            co.Children.Clear();
-                            co.Children.Add(ch);
-                            obj.cityObjects.Add(co);
-                            return obj;
+                            return ch;
                         }
                     }
                 }
             }
+            Debug.LogError($"GetCityObject index Not Found [{index.PrimaryIndex}:{index.AtomicIndex}]");
             return null;
         }
 
-        public IEnumerable<CityObject.CityObjectParam> GetAllCityObjects()
+        public IEnumerable<CityObjectList.CityObject> PrimaryCityObjects
         {
-            List<CityObject.CityObjectParam> objs = new List<CityObject.CityObjectParam>();
+            get
+            {
+                return GetAllCityObjects().Where(obj => obj.CityObjectIndex[1] < 0);
+            }
+        }
+
+        public IEnumerable<CityObjectList.CityObject> GetAllCityObjects()
+        {
+            List<CityObjectList.CityObject> objs = new List<CityObjectList.CityObject>();
             var des = CityObjects;
-            foreach (var co in des.cityObjects)
+            foreach (var co in des.rootCityObjects)
             {
                 objs.Add(co);
                 foreach (var ch in co.Children)

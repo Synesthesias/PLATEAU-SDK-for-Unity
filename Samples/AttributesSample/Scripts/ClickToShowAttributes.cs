@@ -26,9 +26,6 @@ namespace PLATEAU.Samples.Scripts
             {
                 Debug.LogError("メインカメラがありません。");
             }
-
-            string samplePath = PathUtil.SdkPathToAssetPath("Samples");
-            if (!Directory.Exists(samplePath)) samplePath = PathUtil.SdkPathToAssetPath("Samples~/");
         }
 
         private void Update()
@@ -58,7 +55,7 @@ namespace PLATEAU.Samples.Scripts
             var deserializedObjs = cityObjGroup.CityObjects;
             // 複数の PLATEAU 地物が結合されて1つのゲームオブジェクトになっている場合があるため、
             // 1つのゲームオブジェクトから取得できる cityObjects の数は1つまたは複数になっています。
-            var cityObjParams = deserializedObjs.cityObjects;
+            var cityObjParams = deserializedObjs.rootCityObjects;
             var attributesSb = new StringBuilder();
             foreach (var cityObjParam in cityObjParams)
             {
