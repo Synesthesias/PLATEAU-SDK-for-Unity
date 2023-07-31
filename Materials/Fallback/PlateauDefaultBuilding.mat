@@ -8,19 +8,15 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: PlateauDefaultBuilding
-  m_Shader: {fileID: -6465566751694194690, guid: aff85e3532d6c4d1489cce2e6c2762d5, type: 3}
+  m_Shader: {fileID: -6465566751694194690, guid: 3435b4a85b3a83d40a3708fc958943d7, type: 3}
   m_ValidKeywords: []
-  m_InvalidKeywords:
-  - _DISABLE_SSR_TRANSPARENT
-  - _ENABLE_FOG_ON_TRANSPARENT
-  - _SURFACE_TYPE_TRANSPARENT
+  m_InvalidKeywords: []
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
-  m_CustomRenderQueue: 3003
+  m_CustomRenderQueue: -1
   stringTagMap:
     MotionVector: User
-    RenderType: Transparent
   disabledShaderPasses:
   - TransparentDepthPrepass
   - TransparentDepthPostpass
@@ -95,12 +91,60 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _Side_AmbientOcclusionTexture:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Side_EmissionTexture:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Side_MainTexture:
+        m_Texture: {fileID: 2800000, guid: 57c31c02478459241b46c0ec0c135335, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Side_MetallicTexture:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Side_NormalMap:
+        m_Texture: {fileID: 2800000, guid: d24b0cd10bc572c489514716f68a60c4, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Side_RoughnessTexture:
+        m_Texture: {fileID: 2800000, guid: 0b221249439099b4b99d25015932ddc6, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _SpecGlossMap:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Texture:
         m_Texture: {fileID: 2800000, guid: 7adc357cb4e51485f8389c2490008263, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Top_AmbientOcclusionTexture:
+        m_Texture: {fileID: 2800000, guid: 2a05467b169e931478f1162fcc29d0c3, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Top_EmissionTexture:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Top_MainTexture:
+        m_Texture: {fileID: 2800000, guid: 8ec517e9f3d1066488e1b29a543fc4bb, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Top_MetallicTexture:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Top_NormalMap:
+        m_Texture: {fileID: 2800000, guid: 5c96391aedb32c646b027b6d57b4c079, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Top_RoughnessTexture:
+        m_Texture: {fileID: 2800000, guid: 3353ccd75a45a1f4bab5c8dcb77c418f, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - unity_Lightmaps:
@@ -178,6 +222,12 @@ Material:
     - _RenderQueueType: 4
     - _RequireSplitLighting: 0
     - _Roughness: 1
+    - _Side_AmbientOcclusion: 1
+    - _Side_Blend: 30
+    - _Side_Metallic: 0
+    - _Side_NormalStrength: 1
+    - _Side_Roughness: 1
+    - _Side_Titling: 0.05
     - _Smoothness: 0.5
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
@@ -196,6 +246,12 @@ Material:
     - _Surface: 1
     - _SurfaceType: 1
     - _Titling: 0.0008
+    - _Top_AmbientOcclusion: 1
+    - _Top_Blend: 30
+    - _Top_Metallic: 0
+    - _Top_NormalStrength: 1
+    - _Top_Roughness: 1
+    - _Top_Titling: 0.05
     - _TransparentBackfaceEnable: 0
     - _TransparentCullMode: 2
     - _TransparentDepthPostpassEnable: 0
@@ -216,7 +272,9 @@ Material:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _DoubleSidedConstants: {r: 1, g: 1, b: -1, a: 0}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+    - _Side_EmissionColor: {r: 0, g: 0, b: 0, a: 0}
     - _SpecColor: {r: 0.2, g: 0.2, b: 0.2, a: 1}
+    - _Top_EmissionColor: {r: 0, g: 0, b: 0, a: 0}
   m_BuildTextureStacks: []
 --- !u!114 &3048457389349167087
 MonoBehaviour:
