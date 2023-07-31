@@ -28,6 +28,12 @@ namespace PLATEAU.CityInfo
 
             writer.WriteStartObject();
 
+            if (attr.rootCityObjects != null && attr.rootCityObjects.Count > 0)
+            {
+                writer.WritePropertyName("rootCityObjects");
+                JToken.FromObject(attr.rootCityObjects).WriteTo(writer);
+            }
+
             writer.WritePropertyName("outsideParent");
             if (!string.IsNullOrEmpty(attr.outsideParent))
                 writer.WriteValue(attr.outsideParent);
@@ -40,11 +46,6 @@ namespace PLATEAU.CityInfo
                 JToken.FromObject(attr.outsideChildren).WriteTo(writer);
             }
 
-            if (attr.rootCityObjects != null && attr.rootCityObjects.Count > 0)
-            {
-                writer.WritePropertyName("rootCityObjects");
-                JToken.FromObject(attr.rootCityObjects).WriteTo(writer);
-            }
             writer.WriteEndObject();
         }
     }
