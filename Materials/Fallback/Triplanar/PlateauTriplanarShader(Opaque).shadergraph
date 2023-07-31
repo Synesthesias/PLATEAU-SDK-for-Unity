@@ -121,9 +121,6 @@
             "m_Id": "17b69ed30ecd4055b9582b566c1f35de"
         },
         {
-            "m_Id": "72ab649f8fb84fd69bb37da615c41bb4"
-        },
-        {
             "m_Id": "67519c5748a545069fb358afab5785b9"
         },
         {
@@ -221,20 +218,6 @@
                     "m_Id": "cf74a36942e448688134fc97ed42e8f3"
                 },
                 "m_SlotId": -1293761813
-            }
-        },
-        {
-            "m_OutputSlot": {
-                "m_Node": {
-                    "m_Id": "72ab649f8fb84fd69bb37da615c41bb4"
-                },
-                "m_SlotId": 0
-            },
-            "m_InputSlot": {
-                "m_Node": {
-                    "m_Id": "cf74a36942e448688134fc97ed42e8f3"
-                },
-                "m_SlotId": -1544983347
             }
         },
         {
@@ -1296,7 +1279,7 @@
     "m_Hidden": false,
     "m_ShaderOutputName": "_Opacity",
     "m_StageCapability": 2,
-    "m_Value": 0.0,
+    "m_Value": 1.0,
     "m_DefaultValue": 0.0,
     "m_Labels": []
 }
@@ -1778,41 +1761,6 @@
     },
     "m_Labels": [],
     "m_Space": 0
-}
-
-{
-    "m_SGVersion": 0,
-    "m_Type": "UnityEditor.ShaderGraph.PropertyNode",
-    "m_ObjectId": "72ab649f8fb84fd69bb37da615c41bb4",
-    "m_Group": {
-        "m_Id": ""
-    },
-    "m_Name": "Property",
-    "m_DrawState": {
-        "m_Expanded": true,
-        "m_Position": {
-            "serializedVersion": "2",
-            "x": -8.800053596496582,
-            "y": -239.1999969482422,
-            "width": 116.00006866455078,
-            "height": 33.60002136230469
-        }
-    },
-    "m_Slots": [
-        {
-            "m_Id": "ebcad21a4e7344d5a33040f30511b629"
-        }
-    ],
-    "synonyms": [],
-    "m_Precision": 0,
-    "m_PreviewExpanded": true,
-    "m_PreviewMode": 0,
-    "m_CustomColors": {
-        "m_SerializableColors": []
-    },
-    "m_Property": {
-        "m_Id": "0828ba16c4ab43d195b0fc8d1d88ee88"
-    }
 }
 
 {
@@ -2856,21 +2804,6 @@
     "m_ObjectId": "e749aa2070e740c3bdd5d88c6a1ec616",
     "m_Id": 0,
     "m_DisplayName": "Roughness",
-    "m_SlotType": 1,
-    "m_Hidden": false,
-    "m_ShaderOutputName": "Out",
-    "m_StageCapability": 3,
-    "m_Value": 0.0,
-    "m_DefaultValue": 0.0,
-    "m_Labels": []
-}
-
-{
-    "m_SGVersion": 0,
-    "m_Type": "UnityEditor.ShaderGraph.Vector1MaterialSlot",
-    "m_ObjectId": "ebcad21a4e7344d5a33040f30511b629",
-    "m_Id": 0,
-    "m_DisplayName": "Opacity",
     "m_SlotType": 1,
     "m_Hidden": false,
     "m_ShaderOutputName": "Out",
