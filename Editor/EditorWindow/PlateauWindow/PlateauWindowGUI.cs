@@ -40,7 +40,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow
         }
 
         /// <summary> テストからアクセスする用 </summary>
-        internal const string NameOfTabIndex = nameof(tabIndex);
+        internal const string NameOfTabIndex = nameof(_tabIndex);
 
         internal const string NameOfTabGUIArray = nameof(tabGUIArray);
     }

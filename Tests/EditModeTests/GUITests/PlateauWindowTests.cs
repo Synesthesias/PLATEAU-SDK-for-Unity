@@ -113,7 +113,7 @@ namespace PLATEAU.Tests.EditModeTests.GUITests
         private void OpenExportTab() => SetMainTabIndex(2);
         private IEditorDrawable SetMainTabIndex(int index)
         {
-            // PlateauWindow.tabIndex をリフレクションで設定します。
+            // PlateauWindow.tabIndex をリフレクションを用いて設定します。
             var innerGui = ReflectionUtil.GetPrivateFieldVal<PlateauWindowGUI>(
                 typeof(PlateauWindow), this.window, PlateauWindow.NameOfInnerGuiField);
             ReflectionUtil.SetPrivateFieldVal(typeof(PlateauWindowGUI), innerGui, PlateauWindowGUI.NameOfTabIndex, index);
