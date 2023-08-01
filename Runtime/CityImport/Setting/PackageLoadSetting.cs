@@ -5,6 +5,16 @@ using PLATEAU.PolygonMesh;
 namespace PLATEAU.CityImport.Setting
 {
     /// <summary>
+    /// テクスチャ結合後の解像度です。
+    /// </summary>
+    internal enum TexturePackingResolution : int
+    {
+        W2048H2048 = 0,
+        W4096H4096 = 1,
+        W8192H8192 = 2,
+    }
+
+    /// <summary>
     /// <see cref="PLATEAUCityModelLoader"/> の設定のうち、パッケージごとの設定です。
     /// <see cref="CityLoadConfig"/> によって保持されます。
     /// </summary>
@@ -26,8 +36,10 @@ namespace PLATEAU.CityImport.Setting
         public MeshGranularity MeshGranularity;
         public bool DoSetMeshCollider;
         public bool DoSetAttrInfo;
+        public bool EnableTexturePacking;
+        public TexturePackingResolution TexturePackingResolution;
 
-        public PackageLoadSetting(PredefinedCityModelPackage package, bool loadPackage, bool includeTexture, int minLOD, int maxLOD, int availableMaxLOD, MeshGranularity meshGranularity, bool doSetMeshCollider, bool doSetAttrInfo)
+        public PackageLoadSetting(PredefinedCityModelPackage package, bool loadPackage, bool includeTexture, int minLOD, int maxLOD, int availableMaxLOD, MeshGranularity meshGranularity, bool doSetMeshCollider, bool doSetAttrInfo, bool enableTexturePacking, TexturePackingResolution texturePackingResolution)
         {
             Package = package;
             this.LoadPackage = loadPackage;
@@ -38,6 +50,23 @@ namespace PLATEAU.CityImport.Setting
             this.MeshGranularity = meshGranularity;
             this.DoSetMeshCollider = doSetMeshCollider;
             this.DoSetAttrInfo = doSetAttrInfo;
+            this.EnableTexturePacking = enableTexturePacking;
+            this.TexturePackingResolution = texturePackingResolution;
+        }
+        
+        public uint GetTexturePackingResolution()
+        {
+            switch (TexturePackingResolution)
+            {
+                case TexturePackingResolution.W2048H2048:
+                    return 2048;
+                case TexturePackingResolution.W4096H4096:
+                    return 4096;
+                case TexturePackingResolution.W8192H8192:
+                    return 8192;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
         }
     }
 

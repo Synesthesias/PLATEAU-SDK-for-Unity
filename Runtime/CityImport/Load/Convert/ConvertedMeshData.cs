@@ -19,8 +19,8 @@ namespace PLATEAU.CityImport.Load.Convert
         private readonly Vector2[] uv4;
         private readonly List<List<int>> subMeshTriangles;
         private readonly List<string> textureUrls;
+
         private string Name { get; }
-        private readonly Dictionary<int, Texture> subMeshIdToTexture;
         private int SubMeshCount => this.subMeshTriangles.Count;
 
         public ConvertedMeshData(Vector3[] vertices, Vector2[] uv1, Vector2[] uv4, List<List<int>> subMeshTriangles, List<string> textureUrls, string name)
@@ -31,12 +31,6 @@ namespace PLATEAU.CityImport.Load.Convert
             this.subMeshTriangles = subMeshTriangles;
             this.textureUrls = textureUrls;
             Name = name;
-            this.subMeshIdToTexture = new Dictionary<int, Texture>();
-        }
-
-        private void AddTexture(int subMeshId, Texture tex)
-        {
-            this.subMeshIdToTexture.Add(subMeshId, tex);
         }
 
         /// <summary>
@@ -53,7 +47,7 @@ namespace PLATEAU.CityImport.Load.Convert
         /// ゲームオブジェクト、メッシュ、テクスチャの実体を作ってシーンに配置します。
         /// 頂点がない場合は nullが返ります。
         /// </summary>
-        public async Task<GameObject> PlaceToScene(Transform parentTrans, Dictionary<string, Texture> cachedTexture)
+        public async Task<GameObject> PlaceToScene(Transform parentTrans, Dictionary<string, Material> cachedMaterials)
         {
             var mesh = GenerateUnityMesh();
             if (mesh.vertexCount <= 0) return null;
@@ -62,20 +56,31 @@ namespace PLATEAU.CityImport.Load.Convert
             meshFilter.mesh = mesh;
             var renderer = GameObjectUtil.AssureComponent<MeshRenderer>(meshObj);
 
-            await LoadTextures(this, this.textureUrls, cachedTexture);
-
             var materials = new Material[mesh.subMeshCount];
             for (int i = 0; i < mesh.subMeshCount; i++)
             {
-                materials[i] = new Material(RenderUtil.DefaultMaterial);
-                if (this.subMeshIdToTexture.TryGetValue(i, out var tex))
+                var texturePath = textureUrls[i];
+                // マテリアルがキャッシュ済みの場合はキャッシュを使用
+                if (cachedMaterials.TryGetValue(texturePath, out var cachedMaterial))
                 {
-                    if (tex != null)
-                    {
-                        materials[i].mainTexture = tex;
-                        materials[i].name = tex.name;
-                    }
+                    materials[i] = cachedMaterial;
+                    continue;
                 }
+
+                var material = new Material(RenderUtil.DefaultMaterial)
+                {
+                    enableInstancing = true
+                };
+
+                var texture = await LoadTexture(texturePath);
+                if (texture != null)
+                {
+                    material.mainTexture = texture;
+                    material.name = texture.name;
+                }
+
+                materials[i] = material;
+                cachedMaterials.Add(texturePath, material);
             }
             renderer.materials = materials;
             return meshObj;
@@ -112,50 +117,32 @@ namespace PLATEAU.CityImport.Load.Convert
         /// テクスチャのURL（パス） から、テクスチャを非同期でロードします。
         /// 生成した Unity の Textureインスタンスへの参照を <paramref name="meshData"/> に追加します。
         /// </summary>
-        private static async Task LoadTextures(ConvertedMeshData meshData, IReadOnlyList<string> textureUrls,
-            Dictionary<string, Texture> cachedTexture)
+        private static async Task<Texture2D> LoadTexture(string texturePath)
         {
-            for (int i = 0; i < meshData.SubMeshCount; i++)
-            {
-                // TODO テクスチャを返すのが素直な実装であって、返す代わりに meshData.AddTexture で結果を格納するという今のやり方は分かりにくい
-                // テクスチャURLを取得します。
-                string textureFullPath = textureUrls[i];
-                if (string.IsNullOrEmpty(textureFullPath)) 
-                {
-                    meshData.AddTexture(i, null);
-                    continue;
-                }
-                
-                // .PLATEAU からの相対パスを求めます。
-                string pathToReplace = PathUtil.PLATEAUSrcFetchDir + "/";
-                string relativePath = (textureFullPath.Replace('\\', '/')).Replace(pathToReplace, "");
+            if (string.IsNullOrEmpty(texturePath))
+                return null;
 
-                // キャッシュにあればそれを使います
-                if (cachedTexture.TryGetValue(relativePath, out var tex))
-                {
-                    meshData.AddTexture(i, tex);
-                    continue;
-                }
-                
-                Debug.Log($"Loading Texture : {textureFullPath}");
+            // .PLATEAU からの相対パスを求めます。
+            string pathToReplace = PathUtil.PLATEAUSrcFetchDir + "/";
+            string relativePath = (texturePath.Replace('\\', '/')).Replace(pathToReplace, "");
 
-                // 非同期でテクスチャをロードします。
-                var texture = await TextureLoader.LoadAsync(textureFullPath, 3);
+            Debug.Log($"Loading Texture : {texturePath}");
 
-                if (texture == null) continue;
+            // 非同期でテクスチャをロードします。
+            var texture = await TextureLoader.LoadAsync(texturePath, 3);
 
-                // この Compress によってテクスチャ容量が 6分の1 になります。
-                // 松山市のLOD2の建物モデルで計測したところ、 テクスチャのメモリ使用量が 2.6GB から 421.3MB になりました。
-                // 画質は下がりますが、メモリ使用量を適正にするために必須と思われます。
-                var compressedTex = Compress(texture);
+            if (texture == null)
+                return null;
 
-                // 生成したUnityテクスチャへの参照を meshData に追加します。
-                meshData.AddTexture(i, compressedTex);
-                compressedTex.name = relativePath;
-                cachedTexture[relativePath] = compressedTex;
-            }
+            // この Compress によってテクスチャ容量が 6分の1 になります。
+            // 松山市のLOD2の建物モデルで計測したところ、 テクスチャのメモリ使用量が 2.6GB から 421.3MB になりました。
+            // 画質は下がりますが、メモリ使用量を適正にするために必須と思われます。
+            var compressedTex = Compress(texture);
+
+            compressedTex.name = relativePath;
+            return compressedTex;
         }
-        
+
         // テクスチャを圧縮します。
         private static Texture2D Compress(Texture2D src)
         {
@@ -177,7 +164,7 @@ namespace PLATEAU.CityImport.Load.Convert
             dst.Apply();
             RenderTexture.active = prevRt;
             RenderTexture.ReleaseTemporary(rt);
-            
+
             // 圧縮のキモです。
             dst.Compress(true);
             return dst;

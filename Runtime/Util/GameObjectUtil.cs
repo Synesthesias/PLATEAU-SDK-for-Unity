@@ -56,7 +56,8 @@ namespace PLATEAU.Util
                 transform =
                 {
                     parent = parent
-                }
+                },
+                isStatic = true
             };
             return newObj;
         }
