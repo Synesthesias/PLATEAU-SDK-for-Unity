@@ -1,5 +1,4 @@
 ﻿using PLATEAU.PolygonMesh;
-using PLATEAU.Util.Async;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +10,7 @@ using UnityEngine;
 namespace PLATEAU
 {
     /// <summary>
-    /// 属性情報パネル表示時にシーン上に選択中値物の情報を表示します
+    /// 属性情報パネル表示時にシーン上に選択中地物の情報を表示します
     /// </summary>
     public class CityObjectGizmoDrawer : MonoBehaviour
     {
@@ -19,7 +18,6 @@ namespace PLATEAU
         private Bounds childBounds;
         private string panrentId;
         private string childId;
-        private SynchronizationContext mainThreadContext;
         private CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
 
 #if UNITY_EDITOR
@@ -33,44 +31,58 @@ namespace PLATEAU
 
             Gizmos.color = gizmoLabelStyle.normal.textColor = Color.magenta;
             Gizmos.DrawWireCube(parentBounds.center, parentBounds.size);
-            Handles.Label(parentBounds.center, panrentId, gizmoLabelStyle);            
+            Handles.Label(parentBounds.center, panrentId, gizmoLabelStyle);
         }
 #endif
 
-        public void ShowParentSelection(Transform trans, CityObjectIndex index, string id)
+        public async Task ShowParentSelection(Transform trans, CityObjectIndex index, string id)
         {
             panrentId = id;
-            if(trans.gameObject.TryGetComponent<MeshFilter>(out var meshFilter))
+            if (trans.gameObject.TryGetComponent<MeshFilter>(out var meshFilter))
             {
                 var mesh = meshFilter.sharedMesh;
-                if (mesh == null) return;   
+                if (mesh == null) return;
                 List<Vector2> uv = new List<Vector2>();
                 mesh.GetUVs(3, uv);
-                var verts = mesh.vertices;
-                mainThreadContext = SynchronizationContext.Current;
-                Task.Run(() => FindSelectionTask(true, index, uv, verts, (v) => {
-                    parentBounds = GeometryUtility.CalculateBounds(v, trans.localToWorldMatrix);
-                },cancellationTokenSource.Token)).ContinueWithErrorCatch();
+                var v = await FindSelection(true, index, uv, mesh.vertices, cancellationTokenSource.Token);
+                parentBounds = GeometryUtility.CalculateBounds(v, trans.localToWorldMatrix);
             }
             else
             {
-                //最小値物の場合
+                //最小地物の場合
                 parentBounds = GetBounds(trans);
             }
         }
 
-        public void ShowChildSelection(Transform trans, CityObjectIndex index, string id)
+        public async Task ShowChildSelection(Transform trans, CityObjectIndex index, string id)
         {
             childId = id;
             var mesh = trans.gameObject.GetComponent<MeshFilter>()?.sharedMesh;
             if (mesh == null) return;
             List<Vector2> uv = new List<Vector2>();
             mesh.GetUVs(3, uv);
-            var verts = mesh.vertices;
-            mainThreadContext = SynchronizationContext.Current;
-            Task.Run(() => FindSelectionTask(false, index, uv, verts, (v) => {
-                childBounds = GeometryUtility.CalculateBounds(v, trans.localToWorldMatrix);
-            },cancellationTokenSource.Token)).ContinueWithErrorCatch();
+            var v = await FindSelection(false, index, uv, mesh.vertices, cancellationTokenSource.Token);
+            childBounds = GeometryUtility.CalculateBounds(v, trans.localToWorldMatrix);
+        }
+
+        private async Task<Vector3[]> FindSelection(bool primaryOnly, CityObjectIndex index, List<Vector2> uv, Vector3[] verts, CancellationToken token)
+        {
+            bool primaryCheck(Vector2 vec) { return (int)Mathf.Round(vec.x) == index.PrimaryIndex; }
+            bool atomicCheck(Vector2 vec) { return (int)Mathf.Round(vec.x) == index.PrimaryIndex && (int)Mathf.Round(vec.y) == index.AtomicIndex; }
+            Func<Vector2, bool> indexCheck = primaryOnly ? primaryCheck : atomicCheck;
+            List<Vector3> vertices = new List<Vector3>();
+            return await Task.Run(() =>
+            {
+                foreach (var (vec, i) in uv.Select((vec, i) => (vec, i)))
+                {
+                    if (indexCheck(vec))
+                    {
+                        vertices.Add(verts[i]);
+                    }
+                    token.ThrowIfCancellationRequested();
+                }
+                return vertices.ToArray();
+            });
         }
 
         public void ClearParentSelection()
@@ -83,26 +95,6 @@ namespace PLATEAU
         {
             childBounds.size = Vector3.zero;
             childId = null;
-        }
-
-        private void FindSelectionTask(bool primaryOnly, CityObjectIndex index, List<Vector2> uv, Vector3[] verts, Action<Vector3[]> callback, CancellationToken token)
-        {
-            bool primaryCheck(Vector2 vec) { return (int)Mathf.Round(vec.x) == index.PrimaryIndex; }
-            bool atomicCheck(Vector2 vec) { return (int)Mathf.Round(vec.x) == index.PrimaryIndex && (int)Mathf.Round(vec.y) == index.AtomicIndex; }
-            Func<Vector2, bool> indexCheck = primaryOnly ? primaryCheck : atomicCheck;
-            List<Vector3> vertices = new List<Vector3>();
-            foreach (var (vec, i) in uv.Select((vec, i) => (vec, i)))
-            {
-                if (indexCheck(vec))
-                {
-                    vertices.Add(verts[i]);
-                }
-                token.ThrowIfCancellationRequested();
-            }
-            this.mainThreadContext?.Post(_ =>
-            {
-                callback.Invoke(vertices.ToArray());
-            }, null);
         }
 
         private Bounds GetBounds(Transform transform)
@@ -122,7 +114,6 @@ namespace PLATEAU
 
         private void OnDestroy()
         {
-            mainThreadContext = null;
             cancellationTokenSource?.Cancel();
         }
     }
