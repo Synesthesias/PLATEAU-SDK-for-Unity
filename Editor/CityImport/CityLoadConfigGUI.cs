@@ -61,6 +61,9 @@ namespace PLATEAU.Editor.CityImport
                             conf.doSetMeshCollider =
                                 EditorGUILayout.Toggle("Mesh Collider をセットする", conf.doSetMeshCollider);
 
+                            conf.doSetAttrInfo =
+                                EditorGUILayout.Toggle("属性情報を含める", conf.doSetAttrInfo);
+
                             PlateauEditorStyle.LODSlider("LOD描画設定", ref conf.minLOD, ref conf.maxLOD,
                                 Math.Min(predefined.minLOD, availableMaxLod), availableMaxLod);
 
