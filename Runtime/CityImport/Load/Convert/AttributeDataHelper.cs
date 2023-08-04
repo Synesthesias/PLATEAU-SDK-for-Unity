@@ -12,15 +12,16 @@ namespace PLATEAU.CityImport.Load.Convert
     /// <summary>
     /// PLATEAU の属性情報を Unity の GameObjectで扱えるようにするためのHelperクラスです
     /// </summary>
-    internal class AttributeDataHelper
+    internal class AttributeDataHelper : IDisposable
     {
-        private readonly CityModel cityModel;
         private readonly MeshGranularity meshGranularity; 
         private readonly List<CityObjectID> indexList = new();
         private readonly List<string> outsideChildrenList = new();
+        private CityModel cityModel;
         private string id;
         private CityObjectIndex index;
         private string parant;
+        private bool doSetAttrInfo;
 
         class CityObjectID
         {
@@ -29,13 +30,14 @@ namespace PLATEAU.CityImport.Load.Convert
             public string PrimaryID;
         }
 
-        public AttributeDataHelper(CityModel cityModel, MeshGranularity granularity)
+        public AttributeDataHelper(CityModel cityModel, MeshGranularity granularity, bool doSetAttrInfo)
         {
             this.cityModel = cityModel;
             meshGranularity = granularity;
+            this.doSetAttrInfo = doSetAttrInfo;
         }
 
-        public AttributeDataHelper(AttributeDataHelper attributeDataHelper) : this(attributeDataHelper.cityModel, attributeDataHelper.meshGranularity) { }
+        public AttributeDataHelper(AttributeDataHelper attributeDataHelper) : this(attributeDataHelper.cityModel, attributeDataHelper.meshGranularity, attributeDataHelper.doSetAttrInfo) { }
 
         public void SetId(string id)
         {
@@ -47,6 +49,7 @@ namespace PLATEAU.CityImport.Load.Convert
         /// </summary>
         public void SetCityObjectList(PLATEAUCityObjectList cityObjectList)
         {
+            if (!doSetAttrInfo) return;
             indexList.Clear();
             foreach (var key in cityObjectList.GetAllKeys())
             {
@@ -68,7 +71,8 @@ namespace PLATEAU.CityImport.Load.Convert
         /// </summary>
         public void AddOutsideChildren(string childId)
         {
-            if(meshGranularity == MeshGranularity.PerAtomicFeatureObject && 
+            if (!doSetAttrInfo) return;
+            if (meshGranularity == MeshGranularity.PerAtomicFeatureObject && 
                 !string.IsNullOrEmpty(childId) && 
                 !outsideChildrenList.Contains(childId))
                 outsideChildrenList.Add(childId);
@@ -80,6 +84,7 @@ namespace PLATEAU.CityImport.Load.Convert
         /// </summary>
         public CityObjectList GetSerializableCityObject()
         {
+            if (!doSetAttrInfo) return null;
             if (meshGranularity == MeshGranularity.PerCityModelArea)
                 return GetSerializableCityObjectForArea();
 
@@ -151,7 +156,7 @@ namespace PLATEAU.CityImport.Load.Convert
             return cityObjSer;
         }
 
-        public CityGML.CityObject GetCityObjectById(string id)
+        private CityGML.CityObject GetCityObjectById(string id)
         {
             try
             {
@@ -162,6 +167,11 @@ namespace PLATEAU.CityImport.Load.Convert
                 Debug.LogWarning(ex.Message);
             }
             return null;
+        }
+
+        public void Dispose()
+        {
+            cityModel = null;
         }
     }
 }

@@ -104,11 +104,12 @@ namespace PLATEAU.CityImport.Load.Convert
 
                 //　属性情報表示コンポーネントを追加します。
                 var serialized = this.attributeDataHelper.GetSerializableCityObject();
-                if (serialized != null )
+                if (serialized != null)
                 {
                     var attrInfo = nextParent.gameObject.AddComponent<PLATEAUCityObjectGroup>();
                     attrInfo.SetSerializableCityObject(serialized);
-                }  
+                }
+                this.attributeDataHelper.Dispose();
             }
             
             // 子を再帰的に配置します。
