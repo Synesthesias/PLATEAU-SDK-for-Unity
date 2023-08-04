@@ -172,7 +172,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
                     }
                     else
                     {
-                        errorMessage = $"{hit.transform.gameObject.name}:\r\n地物ではありません";
+                        errorMessage = $"{hit.transform.gameObject.name}:\r\n地物がクリックされましたが、属性情報が見つかりませんでした。\r\nインポート時に属性情報を含める設定になっているか確認してください。";
                     }
                 }
                 else
