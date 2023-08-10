@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using PLATEAU.CityInfo;
 using PLATEAU.Editor.EditorWindow.Common;
+using System.Threading.Tasks;
 using UnityEditor;
 using UnityEngine;
 using static PLATEAU.CityInfo.CityObjectList;
@@ -37,7 +38,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
         {
             PlateauEditorStyle.SubTitle("クリックした地物の情報を表示します。");
 
-            if(!string.IsNullOrEmpty(errorMessage))
+            if (!string.IsNullOrEmpty(errorMessage))
             {
                 using (PlateauEditorStyle.VerticalScopeLevel1())
                 {
@@ -92,20 +93,29 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
             }
         }
 
-        void OnSceneGUI(SceneView scene)
+        private async void OnSceneGUI(SceneView scene)
         {
             if (Event.current.type == EventType.MouseDown && Event.current.button == 0)
             {
-                
                 Ray ray = HandleUtility.GUIPointToWorldRay(Event.current.mousePosition);
                 if (Physics.Raycast(ray, out var hit, 100000.0f))
                 {
                     if (hit.transform.TryGetComponent<PLATEAUCityObjectGroup>(out var cog))
-                    {     
-                        errorMessage = null;
-                        parent = cog.GetPrimaryCityObject(hit);
-                        child = cog.GetAtomicCityObject(hit);
-                        
+                    {
+                        ShowProgress(0.0f);
+
+                        parent = child = null;
+                        parentJson = childJson = targetObjectName = errorMessage = null;
+                        parentEditorWindow.Repaint();
+
+                        var selected = await cog.GetPrimaryAndAtomicCityObjectsAsync(hit);
+                        if (selected != null)
+                        {
+                            parent = selected[0];
+                            child = selected[1];
+                        }
+                        ShowProgress(0.2f);
+
                         if (parent == null && child == null) 
                         {
                             errorMessage = $"{hit.transform.gameObject.name}:\r\n地物がクリックされましたが、属性情報が見つかりませんでした。\r\nインポート時に属性情報を含める設定になっているか確認してください。";
@@ -120,20 +130,23 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
 
                             if (parent!=null)
                             {
-                                parentJson = JsonConvert.SerializeObject(parent, Formatting.Indented);
-                                
+                                parentJson = await Task.Run(() => JsonConvert.SerializeObject(parent, Formatting.Indented));
+                                ShowProgress(0.4f);
+
                                 //最小値物
                                 if (!string.IsNullOrEmpty(cog.CityObjects.outsideParent))
                                 {
                                     Transform parentTrans = (hit.transform.parent.gameObject.name == cog.CityObjects.outsideParent) ? hit.transform.parent : GameObject.Find(cog.CityObjects.outsideParent)?.transform;
                                     if (parentTrans != null)
                                     {
-                                        GetGizmoDrawer().ShowParentSelection(parentTrans, parent.IndexInMesh, GetIdAndAttributeString(parent)); 
+                                        await GetGizmoDrawer().ShowParentSelection(parentTrans, parent.IndexInMesh, GetIdAndAttributeString(parent));
+                                        ShowProgress(0.6f);
                                     }
                                 }
                                 else
                                 {
-                                    GetGizmoDrawer().ShowParentSelection(hit.transform, parent.IndexInMesh, GetIdAndAttributeString(parent));
+                                    await GetGizmoDrawer().ShowParentSelection(hit.transform, parent.IndexInMesh, GetIdAndAttributeString(parent));
+                                    ShowProgress(0.6f);
                                 }
                             }
                             else
@@ -141,11 +154,14 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
                                 parentJson = null;
                                 GetGizmoDrawer().ClearParentSelection();
                             }
-
+                            
                             if(child != null)
                             {
-                                childJson = JsonConvert.SerializeObject(child, Formatting.Indented);
-                                GetGizmoDrawer().ShowChildSelection(hit.transform, child.IndexInMesh, GetIdAndAttributeString(child));
+                                childJson = await Task.Run(() =>  JsonConvert.SerializeObject(child, Formatting.Indented));
+                                ShowProgress(0.8f);
+
+                                await GetGizmoDrawer().ShowChildSelection(hit.transform, child.IndexInMesh, GetIdAndAttributeString(child));
+                                ShowProgress(0.99f);
                             } 
                             else
                             {
@@ -156,7 +172,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
                     }
                     else
                     {
-                        errorMessage = $"{hit.transform.gameObject.name}:\r\n地物ではありません";
+                        errorMessage = $"{hit.transform.gameObject.name}:\r\n地物がクリックされましたが、属性情報が見つかりませんでした。\r\nインポート時に属性情報を含める設定になっているか確認してください。";
                     }
                 }
                 else
@@ -165,8 +181,9 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
                     errorMessage = "クリック箇所のレイキャストがコライダーにヒットしませんでした。\r\nコライダーがセットされているか確認してください。";  
                 }
 
-                scene.Repaint();
                 parentEditorWindow.Repaint();
+                scene.Repaint();
+                ShowProgress(1.0f);
             }
         }
 
@@ -194,10 +211,18 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
             return $"{id}\n{attr}";
         }
 
+        private void ShowProgress(float progress)
+        {
+           if(progress >= 1.0f )
+                EditorUtility.ClearProgressBar();
+           else
+                EditorUtility.DisplayProgressBar("PLATEAU", "クリックした地物の情報を取得中です...", progress);
+        }
+
         private void Clear()
         {
-            parentJson = childJson = targetObjectName = errorMessage = null;
             parent = child = null;
+            parentJson = childJson = targetObjectName = errorMessage = null;
             DestroyGizmoDrawer();
         }
 

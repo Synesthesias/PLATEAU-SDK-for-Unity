@@ -104,8 +104,7 @@ namespace PLATEAU.CityImport.Load.CityImportProcedure
 
             // ここはメインスレッドで呼ぶ必要があります。
             bool placingSucceed = await PlateauToUnityModelConverter.ConvertAndPlaceToScene(
-                cityModel, meshExtractOptions, gmlTrans, progressDisplay, gmlName, packageConf.doSetMeshCollider, token,
-                packageConf.fallbackMaterial
+                cityModel, meshExtractOptions, gmlTrans, progressDisplay, gmlName, packageConf.doSetMeshCollider, packageConf.doSetAttrInfo, token, packageConf.fallbackMaterial
             );
 
             if (placingSucceed)

@@ -29,7 +29,7 @@ namespace PLATEAU.CityImport.Load.Convert
         public static async Task<bool> ConvertAndPlaceToScene(
             CityModel cityModel, MeshExtractOptions meshExtractOptions,
             Transform parentTrans, IProgressDisplay progressDisplay, string progressName,
-            bool doSetMeshCollider, CancellationToken token,  UnityEngine.Material fallbackMaterial
+            bool doSetMeshCollider, bool doSetAttrInfo, CancellationToken token,  UnityEngine.Material fallbackMaterial
             )
         {
             Debug.Log($"load started");
@@ -53,7 +53,7 @@ namespace PLATEAU.CityImport.Load.Convert
                 meshObjsData = await Task.Run(() =>
                 {
                     using var plateauModel = ExtractMeshes(cityModel, meshExtractOptions, token);
-                    var convertedObjData = new ConvertedGameObjData(plateauModel, new AttributeDataHelper(cityModel, meshExtractOptions.MeshGranularity));
+                    var convertedObjData = new ConvertedGameObjData(plateauModel, new AttributeDataHelper(cityModel, meshExtractOptions.MeshGranularity, doSetAttrInfo));
                     return convertedObjData;
                 });
             }

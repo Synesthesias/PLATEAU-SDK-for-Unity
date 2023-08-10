@@ -21,10 +21,11 @@ namespace PLATEAU.CityImport.Setting
         public MeshGranularity meshGranularity;
         public bool doSetMeshCollider;
         public Material fallbackMaterial;
+        public bool doSetAttrInfo;
         /// <summary> GUIで設定を表示する(true)か、折りたたむ(false)か </summary>
         [NonSerialized] public bool GuiFoldOutState = true;
 
-        public PackageLoadSetting(bool loadPackage, bool includeTexture, int minLOD, int maxLOD, MeshGranularity meshGranularity, bool doSetMeshCollider)
+        public PackageLoadSetting(bool loadPackage, bool includeTexture, int minLOD, int maxLOD, MeshGranularity meshGranularity, bool doSetMeshCollider, bool doSetAttrInfo)
         {
             this.loadPackage = loadPackage;
             this.includeTexture = includeTexture;
@@ -32,6 +33,7 @@ namespace PLATEAU.CityImport.Setting
             this.maxLOD = maxLOD;
             this.meshGranularity = meshGranularity;
             this.doSetMeshCollider = doSetMeshCollider;
+            this.doSetAttrInfo = doSetAttrInfo;
         }
         
     }
