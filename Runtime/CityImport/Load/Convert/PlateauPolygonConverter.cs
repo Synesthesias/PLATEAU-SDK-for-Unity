@@ -67,10 +67,5 @@ namespace PLATEAU.CityImport.Load.Convert
                 materials.Add(subMesh.Material);
             }
         }
-
-
     }
-
-
-
 }

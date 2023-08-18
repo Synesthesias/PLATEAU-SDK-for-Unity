@@ -81,7 +81,6 @@ namespace PLATEAU.CityImport.Load.Convert
                     {
                         material = RenderUtil.GetPLATEAUX3DMaterialByCityGMLMaterial(rawMat);
                         materialValueToMaterial.Add(rawMat.StructValue, material);
-                        Debug.Log($"<color=cyan>Material Added : {rawMat.ID} => {materialValueToMaterial.Count}</color>");
                     }
                     material.name = rawMat.ID;
                 }

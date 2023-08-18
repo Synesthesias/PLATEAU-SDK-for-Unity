@@ -47,7 +47,6 @@ namespace PLATEAU.Util
             }
         }
 
-
         /// <summary>
         /// CityGML.MaterialとRenderPipelineによりShaderを判別しMaterialを返します
         /// </summary>
@@ -90,45 +89,6 @@ namespace PLATEAU.Util
             }
 
             var material = transparency < 1f ? PLATEAUX3DMaterial_Transparent : PLATEAUX3DMaterial;
-            /*
-            var material = PLATEAUX3DMaterial; 
-            if( transparency < 1f)
-            {
-                material.SetOverrideTag("RenderType", "Transparent");
-
-                //Builtin
-                material.SetFloat("_BUILTIN_Surface", 1f);
-                material.SetInt("_BUILTIN_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
-                material.SetInt("_BUILTIN_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
-                material.SetInt("_BUILTIN_ZWrite", 0);
-                material.DisableKeyword("_BUILTIN_ALPHATEST_ON");
-                material.EnableKeyword("_BUILTIN_SURFACE_TYPE_TRANSPARENT");
-
-                //URP
-                material.SetFloat("_Surface", 1f);
-                material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
-                material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
-                material.SetInt("_ZWrite", 0);
-                material.DisableKeyword("_ALPHATEST_ON");
-                material.EnableKeyword("_SURFACE_TYPE_TRANSPARENT");
-          
-                //HDRP
-                material.SetFloat("_SurfaceType", 1f);
-                material.SetInt("_AlphaSrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
-                material.SetInt("_AlphaDstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
-                material.SetInt("_TransparentZWrite", 0);
-                material.SetFloat("_RenderQueueType", 5);
-                material.SetFloat("_BlendMode", 0);
-                material.SetFloat("_AlphaCutoffEnable", 0);
-                material.SetFloat("_ZTestDepthEqualForOpaque", 4f);  
-                material.EnableKeyword("_ENABLE_FOG_ON_TRANSPARENT");
-                //material.EnableKeyword("_BLENDMODE_ALPHA");
-                //material.DisableKeyword("_BLENDMODE_ADD");
-                //material.DisableKeyword("_BLENDMODE_PRE_MULTIPLY");
-
-                material.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Transparent;
-            }
-            */
 
             material.SetVector("_Diffuse", new Vector3(rawMaterial.Diffuse.X, rawMaterial.Diffuse.Y, rawMaterial.Diffuse.Z));
             material.SetVector("_Specular", new Vector3(rawMaterial.Specular.X, rawMaterial.Specular.Y, rawMaterial.Specular.Z));
