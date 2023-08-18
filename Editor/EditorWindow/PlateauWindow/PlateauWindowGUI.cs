@@ -1,16 +1,24 @@
 ﻿using PLATEAU.Editor.EditorWindow.Common;
 using PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI;
+using System;
 
 namespace PLATEAU.Editor.EditorWindow.PlateauWindow
 {
     internal class PlateauWindowGUI : IEditorDrawable
     {
-        private int tabIndex;
+        public Action<int> OnTabChange;
+        public int tabIndex { get => _tabIndex; 
+            private set { 
+                if(value != _tabIndex)
+                    OnTabChange?.Invoke(value);  
+                _tabIndex = value;
+            } 
+        }
+        private int _tabIndex = 0;
         private readonly IEditorDrawable[] tabGUIArray;
-
+       
         private readonly string[] tabImages =
-            { "dark_icon_import.png", "dark_icon_adjust.png", "dark_icon_export.png" };
-
+            { "dark_icon_import.png", "dark_icon_adjust.png", "dark_icon_export.png", "dark_icon_information.png" };
 
         public PlateauWindowGUI(UnityEditor.EditorWindow parentEditorWindow)
         {
@@ -18,7 +26,8 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow
             {
                 new CityAddGUI(parentEditorWindow),
                 new CityAdjustGUI(),
-                new CityExportGUI()
+                new CityExportGUI(),
+                new CityAttributeGUI(parentEditorWindow, this)
             };
         }
 
@@ -31,7 +40,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow
         }
 
         /// <summary> テストからアクセスする用 </summary>
-        internal const string NameOfTabIndex = nameof(tabIndex);
+        internal const string NameOfTabIndex = nameof(_tabIndex);
 
         internal const string NameOfTabGUIArray = nameof(tabGUIArray);
     }

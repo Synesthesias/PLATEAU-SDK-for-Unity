@@ -26,9 +26,6 @@ namespace PLATEAU.Samples.Scripts
             {
                 Debug.LogError("メインカメラがありません。");
             }
-
-            string samplePath = PathUtil.SdkPathToAssetPath("Samples");
-            if (!Directory.Exists(samplePath)) samplePath = PathUtil.SdkPathToAssetPath("Samples~/");
         }
 
         private void Update()
@@ -55,13 +52,14 @@ namespace PLATEAU.Samples.Scripts
         {
             // インポートされた各ゲームオブジェクトには PLATEAUCityObjectGroup コンポーネントがアタッチされており、
             // その中に属性情報が json で保存されています。 json をデシリアライズします。
-            var deserializedObjs = cityObjGroup.CityObjects;
+            var cityObjectList = cityObjGroup.CityObjects;
             // 複数の PLATEAU 地物が結合されて1つのゲームオブジェクトになっている場合があるため、
             // 1つのゲームオブジェクトから取得できる cityObjects の数は1つまたは複数になっています。
-            var cityObjParams = deserializedObjs.cityObjects;
+            var rootCityObjects = cityObjectList.rootCityObjects;
             var attributesSb = new StringBuilder();
-            foreach (var cityObjParam in cityObjParams)
+            foreach (var cityObjParam in rootCityObjects)
             {
+                // 属性情報を見やすい形式の文字列にします。
                 attributesSb.Append(cityObjParam.DebugString());
                 attributesSb.Append("\n\n");
             }
@@ -73,7 +71,7 @@ namespace PLATEAU.Samples.Scripts
                 : attributesSb.ToString();
             this.display.AttributesText = displayText;
 
-            // クリックしたゲームオブジェクトの、最初の主要地物の情報をヘッダーとして表示します。
+            // クリックしたゲームオブジェクトの、最初の主要地物のGmlIDと高さと住所をヘッダーUIに表示します。
             var headerSb = new StringBuilder();
             var firstPrimaryObj = cityObjGroup.PrimaryCityObjects.FirstOrDefault();
             if (firstPrimaryObj != null)
@@ -83,6 +81,7 @@ namespace PLATEAU.Samples.Scripts
                 headerSb.Append("\n");
                 // 高さを取得します。
                 var attributesMap = firstPrimaryObj.AttributesMap;
+                // 高さは、PLATEAUの属性情報の中では "bldg:measuredheight" というキーで格納されています。
                 if (attributesMap.TryGetValue("bldg:measuredheight", out var attribute))
                 {
                     // 属性は keyとvalue のペアですが、valueの型は string,double,attribute(入れ子)などいくつかパターンがあります。
@@ -90,12 +89,13 @@ namespace PLATEAU.Samples.Scripts
                     headerSb.Append($"高さ: {Convert.ToString(attribute.StringValue)}"); 
                 };
                 // 住所を取得します。
-                if (attributesMap.TryGetValue("uro:buildingIDAttribute", out var buildingAttr))
+                // 住所は、PLATEAUの属性情報では "uro:buildingIDAttribute"というキーの中で、キーバリュー辞書が入れ子になっている中の "uro:city" というキーで取得できます。
+                if (attributesMap.TryGetValue("uro:buildingIDAttribute", out var buildingAttr)) // 入れ子キーの外側です
                 {
                     // 属性のキーバリューペア(Attributes)で入れ子になっているものを取得します。
                     // キー uro:buildingIDAttribute の中に入れ子で0個以上のキーバリューペアがあり、
                     // そのキー uro:city からバリュー（住所）を取得します。
-                    if(buildingAttr.AttributesMapValue.TryGetValue("uro:city", out var addressAttr))
+                    if(buildingAttr.AttributesMapValue.TryGetValue("uro:city", out var addressAttr)) // 入れ子キーの内側です
                     {
                         headerSb.Append($"  住所: {addressAttr.StringValue}");
                     }

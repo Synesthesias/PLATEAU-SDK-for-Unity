@@ -5,38 +5,39 @@ namespace PLATEAU.CityImport.AreaSelector
 {
     internal static class AreaSelectorGUI
     {
-        private static Rect windowRect;
-        private static readonly Rect initialWindowRect = new Rect(15f, 30f, 150f, 90f);
+        private static Rect currentAreaSelectionWindowRect;
+        private static readonly Rect AreaSelectionWindowRect = new(15f, 15f, 150f, 0f);
         private static AreaSelectorBehaviour areaSelector;
 
         public static void Enable(AreaSelectorBehaviour areaSelectorArg)
         {
-            #if UNITY_EDITOR
+#if UNITY_EDITOR
             SceneView.duringSceneGui += OnGUI;
-            windowRect = initialWindowRect;
+            currentAreaSelectionWindowRect = AreaSelectionWindowRect;
             areaSelector = areaSelectorArg;
-            #endif
+#endif
         }
 
         public static void Disable()
         {
-            #if UNITY_EDITOR
+#if UNITY_EDITOR
             SceneView.duringSceneGui -= OnGUI;
-            #endif
+#endif
         }
 
 #if UNITY_EDITOR
         private static void OnGUI(SceneView sceneView)
         {
             Handles.BeginGUI();
-            windowRect = GUILayout.Window(1, windowRect, DrawInsideWindow, "範囲選択");
+            currentAreaSelectionWindowRect = GUILayout.Window(1, currentAreaSelectionWindowRect, DrawAreaSelectionInsideWindow, "範囲選択");
             Handles.EndGUI();
         }
 #endif
 
-        private static void DrawInsideWindow(int id)
+        private static void DrawAreaSelectionInsideWindow(int id)
         {
-            #if UNITY_EDITOR
+#if UNITY_EDITOR
+            GUILayout.Space(5f);
             if (GUILayout.Button("決定"))
             {
                 areaSelector.EndAreaSelection();
@@ -45,8 +46,9 @@ namespace PLATEAU.CityImport.AreaSelector
             {
                 areaSelector.CancelAreaSelection();
             }
+            GUILayout.Space(5f);
             GUI.DragWindow();
-            #endif
-        }
+#endif
+        }        
     }
 }

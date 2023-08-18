@@ -5,37 +5,40 @@ using Newtonsoft.Json;
 using PLATEAU.CityGML;
 using PLATEAU.PolygonMesh;
 using PLATEAU.Util;
-using static PLATEAU.CityInfo.CityObject;
-using static PLATEAU.CityInfo.CityObjectSerializable_CityObjectParamJsonConverter;
+using PLATEAUCityObject = PLATEAU.CityGML.CityObject;
+using CityObject = PLATEAU.CityInfo.CityObjectList.CityObject;
+using static PLATEAU.CityInfo.CityObjectList;
+using static PLATEAU.CityInfo.CityObjectSerializable_CityObjectJsonConverter;
 
 namespace PLATEAU.CityInfo
 {
     /// <summary>
     /// シリアライズ可能なCityObjectデータです。
     /// </summary>
-    [JsonConverter(typeof(CityObjectSerializableJsonConverter))]
-    public class CityObject
+    [JsonConverter(typeof(CityObjectSerializable_CityObjectListJsonConverter))]
+    public class CityObjectList
     {
-        public string parent = "";
-        public List<CityObjectParam> cityObjects = new List<CityObjectParam>();
+        public string outsideParent = "";
+        public List<string> outsideChildren = new List<string>();
+        public List<CityObject> rootCityObjects = new List<CityObject>();
 
-        [JsonConverter(typeof(CityObjectSerializable_CityObjectParamJsonConverter))]
-        public class CityObjectParam
+        [JsonConverter(typeof(CityObjectSerializable_CityObjectJsonConverter))]
+        public class CityObject
         {
             private string gmlID = "";
             private int[] cityObjectIndex = {-1, -1};
             private ulong cityObjectType;
-            private List<CityObjectParam> children = new List<CityObjectParam>();
+            private List<CityObject> children = new List<CityObject>();
             private Attributes attributesMap = new Attributes();
 
             // Getters/Setters
             public string GmlID => gmlID;
             public int[] CityObjectIndex => cityObjectIndex;
             public CityObjectType CityObjectType => (CityObjectType)cityObjectType;
-            public List<CityObjectParam> Children => children;
+            public List<CityObject> Children => children;
             public Attributes AttributesMap => attributesMap;
 
-            public CityObjectParam Init(string gmlIDArg, int[] cityObjectIndexArg, ulong cityObjectTypeArg, Attributes attributesMapArg, List<CityObjectParam> childrenArg = null )
+            public CityObject Init(string gmlIDArg, int[] cityObjectIndexArg, ulong cityObjectTypeArg, Attributes attributesMapArg, List<CityObject> childrenArg = null )
             {
                 gmlID = gmlIDArg;
                 cityObjectIndex = cityObjectIndexArg;
@@ -147,8 +150,18 @@ namespace PLATEAU.CityInfo
                         switch(value.Type)
                         {
                             case AttributeType.Integer:
-                                IntValue = value.AsInt;
-                                StringValue = IntValue.ToString();
+                                try
+                                {
+                                    IntValue = value.AsInt;
+                                    StringValue = IntValue.ToString();
+                                }
+                                catch (OverflowException)
+                                {
+                                    // 沼津市のLOD3の道路でTypeがIntegerなのにintの範囲を超えることがあったので対応
+                                    IntValue = 0;
+                                    StringValue = value.AsString;
+                                }
+
                                 break;
                             case AttributeType.Double:
                                 DoubleValue = value.AsDouble;
@@ -225,7 +238,7 @@ namespace PLATEAU.CityInfo
     /// </summary>
     internal static class CityObjectSerializableConvert
     {
-        public static CityObjectParam FromCityGMLCityObject(CityGML.CityObject obj, CityObjectIndex? idx = null)
+        public static CityObject FromCityGMLCityObject(PLATEAUCityObject obj, CityObjectIndex? idx = null)
         {
             string gmlID = obj.ID;
             ulong cityObjectType = (ulong)obj.Type;
@@ -239,7 +252,7 @@ namespace PLATEAU.CityInfo
                 map.SetAttribute(m.Key, m.Value);
             }
 
-            var ret = new CityObjectParam();
+            var ret = new CityObject();
             ret.Init(gmlID, cityObjectIndex, cityObjectType, map);
             return ret;
         }
