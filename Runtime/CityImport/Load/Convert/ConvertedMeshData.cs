@@ -19,19 +19,24 @@ namespace PLATEAU.CityImport.Load.Convert
         private readonly Vector2[] uv4;
         private readonly List<List<int>> subMeshTriangles;
         private readonly List<string> textureUrls;
+        private readonly List<CityGML.Material> rawMaterials;
         private string Name { get; }
         private readonly Dictionary<int, Texture> subMeshIdToTexture;
+        private readonly Dictionary<PLATEAU.CityGML.Material.MaterialStruct, Material> materialValueToMaterial;
+        private Material defaultMaterial;
         private int SubMeshCount => this.subMeshTriangles.Count;
 
-        public ConvertedMeshData(Vector3[] vertices, Vector2[] uv1, Vector2[] uv4, List<List<int>> subMeshTriangles, List<string> textureUrls, string name)
+        public ConvertedMeshData(Vector3[] vertices, Vector2[] uv1, Vector2[] uv4, List<List<int>> subMeshTriangles, List<string> textureUrls, List<CityGML.Material> materials, string name)
         {
             this.vertices = vertices;
             this.uv1 = uv1;
             this.uv4 = uv4;
             this.subMeshTriangles = subMeshTriangles;
             this.textureUrls = textureUrls;
+            this.rawMaterials = materials;
             Name = name;
             this.subMeshIdToTexture = new Dictionary<int, Texture>();
+            this.materialValueToMaterial = new Dictionary<PLATEAU.CityGML.Material.MaterialStruct, Material>();
         }
 
         private void AddTexture(int subMeshId, Texture tex)
@@ -67,15 +72,37 @@ namespace PLATEAU.CityImport.Load.Convert
             var materials = new Material[mesh.subMeshCount];
             for (int i = 0; i < mesh.subMeshCount; i++)
             {
-                materials[i] = new Material(RenderUtil.DefaultMaterial);
+                //Material設定
+                Material material = null;
+                if (rawMaterials[i] != null)
+                { 
+                    var rawMat = rawMaterials[i];
+                    if (!materialValueToMaterial.TryGetValue(rawMat.StructValue, out material))
+                    {
+                        material = RenderUtil.GetPLATEAUX3DMaterialByCityGMLMaterial(rawMat);
+                        materialValueToMaterial.Add(rawMat.StructValue, material);
+                        Debug.Log($"<color=cyan>Material Added : {rawMat.ID} => {materialValueToMaterial.Count}</color>");
+                    }
+                    material.name = rawMat.ID;
+                }
+                else
+                {
+                    if( defaultMaterial == null )
+                        defaultMaterial = new Material(RenderUtil.DefaultMaterial);
+                    material = defaultMaterial;
+                    material.name = "DefaultMaterial";
+                }
+                //Texture設定
                 if (this.subMeshIdToTexture.TryGetValue(i, out var tex))
                 {
                     if (tex != null)
                     {
-                        materials[i].mainTexture = tex;
-                        materials[i].name = tex.name;
+                        material = new Material(material);
+                        material.mainTexture = tex;
+                        material.name = tex.name;
                     }
                 }
+                materials[i] = material;
             }
             renderer.materials = materials;
             return meshObj;
