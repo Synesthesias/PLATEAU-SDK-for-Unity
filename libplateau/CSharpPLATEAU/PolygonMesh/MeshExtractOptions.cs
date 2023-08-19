@@ -33,8 +33,31 @@ namespace PLATEAU.PolygonMesh
     [StructLayout(LayoutKind.Sequential)]
     public struct MeshExtractOptions
     {
+        public MeshExtractOptions(PlateauVector3d referencePoint, CoordinateSystem meshAxes, MeshGranularity meshGranularity, uint minLOD, uint maxLOD, bool exportAppearance, int gridCountOfSide, float unitScale, int coordinateZoneID, bool excludeCityObjectOutsideExtent, bool excludePolygonsOutsideExtent, Extent extent, bool attachMapTile, int mapTileZoomLevel)
+        {
+            this.ReferencePoint = referencePoint;
+            this.MeshAxes = meshAxes;
+            this.MeshGranularity = meshGranularity;
+            this.ExportAppearance = exportAppearance;
+            this.CoordinateZoneID = coordinateZoneID;
+            this.ExcludeCityObjectOutsideExtent = excludeCityObjectOutsideExtent;
+            this.ExcludePolygonsOutsideExtent = excludePolygonsOutsideExtent;
+            this.Extent = extent;
+            this.AttachMapTile = attachMapTile;
+            this.MapTileZoomLevel = mapTileZoomLevel;
+            this.minLOD = minLOD;
+            this.maxLOD = maxLOD;
+            this.unitScale = unitScale;
+            this.gridCountOfSide = gridCountOfSide;
+            
+            // 上で全てのメンバー変数を設定できてますが、バリデーションをするため念のためメソッドやプロパティも呼びます。
+            SetLODRange(minLOD, maxLOD);
+            UnitScale = unitScale;
+            GridCountOfSide = gridCountOfSide;
+        }
+
         /// <summary> 直交座標系における座標で、3Dモデルの原点をどこに設定するかです。 </summary>
-        public PlateauVector3d ReferencePoint;
+        public  PlateauVector3d ReferencePoint;
         
         /// <summary> 座標軸の向きです。 </summary>
         public CoordinateSystem MeshAxes;
@@ -132,7 +155,7 @@ namespace PLATEAU.PolygonMesh
         public int MapTileZoomLevel;
         
         /// <summary> デフォルト値の設定を返します。 </summary>
-        public static MeshExtractOptions DefaultValue()
+        internal static MeshExtractOptions DefaultValue()
         {
             var apiResult = NativeMethods.plateau_mesh_extract_options_default_value(out var defaultOptions);
             DLLUtil.CheckDllError(apiResult);

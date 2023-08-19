@@ -76,25 +76,28 @@ namespace PLATEAU.CityImport.Load.CityImportProcedure
             // gmlファイルに対応するゲームオブジェクトの名称は、地物タイプフォルダからの相対パスにします。
             string gmlObjName = relativeGmlPathFromFeature;
             var gmlTrans = new GameObject(gmlObjName).transform;
-            var meshExtractOptions = MeshExtractOptions.DefaultValue();
             var package = fetchedGmlFile.Package;
             var packageConf = conf.GetConfigForPackage(package);
+            MeshExtractOptions meshExtractOptions;
             try
             {
                 gmlTrans.parent = rootTrans;
-                int maxLod = packageConf.maxLOD;
-                int minLod = packageConf.minLOD;
-                meshExtractOptions.ReferencePoint = referencePoint;
-                meshExtractOptions.MeshAxes = MeshAxes;
-                meshExtractOptions.MeshGranularity = packageConf.meshGranularity;
-                meshExtractOptions.SetLODRange((uint)minLod, (uint)maxLod);
-                meshExtractOptions.ExportAppearance = packageConf.includeTexture;
-                meshExtractOptions.GridCountOfSide = 10; // TODO gridCountOfSideはユーザーが設定できるようにしたほうが良い
-                meshExtractOptions.UnitScale = UnitScale;
-                meshExtractOptions.CoordinateZoneID = conf.CoordinateZoneID;
-                meshExtractOptions.ExcludeCityObjectOutsideExtent = ShouldExcludeCityObjectOutsideExtent(package);
-                meshExtractOptions.ExcludePolygonsOutsideExtent = ShouldExcludePolygonsOutsideExtent(package);
-                meshExtractOptions.Extent = conf.Extent;
+                // ユーザーが選択したインポート設定について、C#のclassからC++のstructに変換します。
+                meshExtractOptions = new MeshExtractOptions(
+                    referencePoint: referencePoint,
+                    meshAxes: MeshAxes,
+                    meshGranularity: packageConf.meshGranularity,
+                    minLOD: (uint)packageConf.minLOD,
+                    maxLOD: (uint)packageConf.maxLOD,
+                    exportAppearance: packageConf.includeTexture,
+                    gridCountOfSide: 10,
+                    unitScale: UnitScale,
+                    coordinateZoneID: conf.CoordinateZoneID,
+                    excludeCityObjectOutsideExtent: ShouldExcludeCityObjectOutsideExtent(package),
+                    excludePolygonsOutsideExtent: ShouldExcludePolygonsOutsideExtent(package),
+                    extent: conf.Extent,
+                    attachMapTile: true,
+                    mapTileZoomLevel: 15); // TODO ここで定数で決め打っている部分は、ユーザーが選択できるようにすると良い
             }
             catch (Exception e)
             {
