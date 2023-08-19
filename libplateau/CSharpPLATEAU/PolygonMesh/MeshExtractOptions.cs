@@ -43,19 +43,55 @@ namespace PLATEAU.PolygonMesh
         public MeshGranularity MeshGranularity;
         
         /// <summary> 出力するLODの範囲上限です。 </summary>
-        public uint MaxLOD;
+        private uint maxLOD;
         
         /// <summary> 出力するLODの範囲の下限です。 </summary>
-        public uint MinLOD;
+        private uint minLOD;
+
+        public void SetLODRange(uint minLODArg, uint maxLODArg)
+        {
+            if (minLODArg > maxLODArg)
+            {
+                throw new ArgumentException($"Invalid LOD Range: {nameof(this.minLOD)} should not greater than {nameof(this.maxLOD)}.");
+            }
+            this.maxLOD = maxLODArg;
+            this.minLOD = minLODArg;
+        }
         
         /// <summary> テクスチャを含めるかどうかです。 </summary>
         [MarshalAs(UnmanagedType.U1)] public bool ExportAppearance;
         
         /// <summary> メッシュ結合の粒度が「都市モデル単位」の時のみ有効で、この設定では都市を格子状のグリッドに分割するので、その1辺あたりの分割数(縦の数 = 横の数)です。</summary>
-        public int GridCountOfSide;
+        private int gridCountOfSide;
+
+        public int GridCountOfSide
+        {
+            get => this.gridCountOfSide;
+            set
+            {
+                if (value <= 0 || value > 999) // 999の理由は、普通に考えればこれ以上に分割する理由はないだろうという大雑把な数。
+                {
+                    throw new Exception($"Invalid number : {nameof(this.gridCountOfSide)} should be positive number and below 1000.");
+                }
+                this.gridCountOfSide = value;
+            }
+        }
         
         /// <summary>  大きさ補正です。  </summary>
-        public float UnitScale;
+        private float unitScale;
+
+        public float UnitScale
+        {
+            get => this.unitScale;
+            set
+            {
+                if (Math.Abs(this.UnitScale) < 0.00000001)
+                {
+                    throw new ArgumentException($"Validate failed : {nameof(this.UnitScale)} is too small.");
+                }
+                this.unitScale = value;
+            }
+        }
         
         /// <summary>
         /// 国土交通省が規定する、日本の平面直角座標系の基準点の番号です。
@@ -103,35 +139,7 @@ namespace PLATEAU.PolygonMesh
             return defaultOptions;
         }
 
-         /// <summary>
-        /// 設定の値が正常なら true, 異常な点があれば false を返します。
-         /// <param name="failureMessage">異常な点があれば、それを説明する文字列が入ります。正常なら空文字列になります。</param>
-        /// </summary>
-        public bool Validate(out string failureMessage)
-        {
-            failureMessage = "";
-            if (this.MinLOD > this.MaxLOD)
-            {
-                failureMessage = $"Validate failed : {nameof(this.MinLOD)} should not greater than {nameof(this.MaxLOD)}.";
-                return false;
-            }
-
-            if (this.GridCountOfSide <= 0)
-            {
-                failureMessage = $"Validate failed : {nameof(this.GridCountOfSide)} should be positive number.";
-                return false;
-            }
-
-            if (Math.Abs(this.UnitScale) < 0.00000001)
-            {
-                failureMessage = $"Validate failed : {nameof(this.UnitScale)} is too small.";
-                return false;
-            }
-
-            return true;
-        }
-         
-         private static class NativeMethods
+        private static class NativeMethods
          {
              [DllImport(DLLUtil.DllName)]
              internal static extern APIResult plateau_mesh_extract_options_default_value(

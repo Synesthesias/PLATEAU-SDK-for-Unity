@@ -76,29 +76,29 @@ namespace PLATEAU.CityImport.Load.CityImportProcedure
             // gmlファイルに対応するゲームオブジェクトの名称は、地物タイプフォルダからの相対パスにします。
             string gmlObjName = relativeGmlPathFromFeature;
             var gmlTrans = new GameObject(gmlObjName).transform;
-            
-            gmlTrans.parent = rootTrans;
+            var meshExtractOptions = MeshExtractOptions.DefaultValue();
             var package = fetchedGmlFile.Package;
             var packageConf = conf.GetConfigForPackage(package);
-            var meshExtractOptions = MeshExtractOptions.DefaultValue();
-            int maxLod = packageConf.maxLOD;
-            int minLod = packageConf.minLOD;
-            meshExtractOptions.ReferencePoint = referencePoint;
-            meshExtractOptions.MeshAxes = MeshAxes;
-            meshExtractOptions.MeshGranularity = packageConf.meshGranularity;
-            meshExtractOptions.MaxLOD = (uint)maxLod;
-            meshExtractOptions.MinLOD = (uint)minLod;
-            meshExtractOptions.ExportAppearance = packageConf.includeTexture;
-            meshExtractOptions.GridCountOfSide = 10; // TODO gridCountOfSideはユーザーが設定できるようにしたほうが良い
-            meshExtractOptions.UnitScale = UnitScale;
-            meshExtractOptions.CoordinateZoneID = conf.CoordinateZoneID;
-            meshExtractOptions.ExcludeCityObjectOutsideExtent = ShouldExcludeCityObjectOutsideExtent(package);
-            meshExtractOptions.ExcludePolygonsOutsideExtent = ShouldExcludePolygonsOutsideExtent(package);
-            meshExtractOptions.Extent = conf.Extent;
-
-            if (!meshExtractOptions.Validate(out var failureMessage))
+            try
             {
-                progressDisplay.SetProgress(gmlName, 0f, $"失敗 : メッシュ設定に不正な点があります。 : {failureMessage}");
+                gmlTrans.parent = rootTrans;
+                int maxLod = packageConf.maxLOD;
+                int minLod = packageConf.minLOD;
+                meshExtractOptions.ReferencePoint = referencePoint;
+                meshExtractOptions.MeshAxes = MeshAxes;
+                meshExtractOptions.MeshGranularity = packageConf.meshGranularity;
+                meshExtractOptions.SetLODRange((uint)minLod, (uint)maxLod);
+                meshExtractOptions.ExportAppearance = packageConf.includeTexture;
+                meshExtractOptions.GridCountOfSide = 10; // TODO gridCountOfSideはユーザーが設定できるようにしたほうが良い
+                meshExtractOptions.UnitScale = UnitScale;
+                meshExtractOptions.CoordinateZoneID = conf.CoordinateZoneID;
+                meshExtractOptions.ExcludeCityObjectOutsideExtent = ShouldExcludeCityObjectOutsideExtent(package);
+                meshExtractOptions.ExcludePolygonsOutsideExtent = ShouldExcludePolygonsOutsideExtent(package);
+                meshExtractOptions.Extent = conf.Extent;
+            }
+            catch (Exception e)
+            {
+                progressDisplay.SetProgress(gmlName, 0f, $"失敗 : メッシュインポートの設定に失敗しました。\n{e.Message}");
                 return;
             }
 
