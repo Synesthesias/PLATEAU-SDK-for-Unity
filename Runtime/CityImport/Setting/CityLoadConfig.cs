@@ -11,6 +11,7 @@ namespace PLATEAU.CityImport.Setting
 {
     /// <summary>
     /// 都市インポートの設定です。
+    /// インポート画面の設定GUIでユーザーはこの設定値を書き換えていくことになります。
     /// </summary>
     internal class CityLoadConfig
     {
@@ -47,8 +48,10 @@ namespace PLATEAU.CityImport.Setting
         /// ユーザーが選択した直交座標系の原点から、何メートルの地点を3Dモデルの原点とするかです。
         /// </summary>
         public PlateauVector3d ReferencePoint { get; set; }
-
-        // 都市モデル読み込みの、パッケージ種ごとの設定です。
+        
+        /// <summary>
+        /// 都市モデル読み込みの、パッケージ種ごとの設定です。
+        /// </summary>
         private readonly Dictionary<PredefinedCityModelPackage, PackageLoadSetting> perPackagePairSettings =
             new ();
 
@@ -61,20 +64,6 @@ namespace PLATEAU.CityImport.Setting
         public PackageLoadSetting GetConfigForPackage(PredefinedCityModelPackage package)
         {
             return this.perPackagePairSettings[package];
-        }
-        
-        public void InitWithPackageLodsDict(PackageToLodDict dict)
-        {
-            this.perPackagePairSettings.Clear();
-            foreach (var pair in dict)
-            {
-                var package = pair.Key;
-                var maxLod = pair.Value;
-                var predefined = CityModelPackageInfo.GetPredefined(package);
-                var val = new PackageLoadSetting(true, predefined.hasAppearance, predefined.minLOD,
-                    maxLod, MeshGranularity.PerPrimaryFeatureObject, true, true);
-                this.perPackagePairSettings.Add(package, val);
-            }
         }
 
         /// <summary>
@@ -119,6 +108,11 @@ namespace PLATEAU.CityImport.Setting
             return foundGmls;
         }
 
+        /// <summary>
+        /// 範囲選択画面の結果から設定値を作ります。
+        /// ここで設定する値は、範囲選択後にインポート設定GUIで表示される初期値となります。
+        /// このあと、ユーザーのGUI操作によって設定値を書き換えていくことになります。
+        /// </summary>
         public void InitWithAreaSelectResult(AreaSelectResult result)
         {
             InitWithPackageLodsDict(result.PackageToLodDict);
@@ -126,9 +120,27 @@ namespace PLATEAU.CityImport.Setting
             Extent = result.Extent;
             SetReferencePointToExtentCenter();
         }
+        
+        /// <summary>
+        /// パッケージ種とLODの組から設定値を作ります。
+        /// </summary>
+        private void InitWithPackageLodsDict(PackageToLodDict dict)
+        {
+            this.perPackagePairSettings.Clear();
+            foreach (var pair in dict)
+            {
+                var package = pair.Key;
+                var maxLod = pair.Value;
+                var predefined = CityModelPackageInfo.GetPredefined(package);
+                var val = new PackageLoadSetting(true, predefined.hasAppearance, predefined.minLOD,
+                    maxLod, MeshGranularity.PerPrimaryFeatureObject, true, true);
+                this.perPackagePairSettings.Add(package, val);
+            }
+        }
 
         /// <summary>
         /// 範囲の中心を基準点として設定します。
+        /// これは基準点設定GUIに表示される初期値であり、ユーザーが「範囲の中心を入力」ボタンを押したときに設定される値でもあります。
         /// </summary>
         public PlateauVector3d SetReferencePointToExtentCenter()
         {

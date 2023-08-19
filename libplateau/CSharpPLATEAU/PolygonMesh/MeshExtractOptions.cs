@@ -35,26 +35,35 @@ namespace PLATEAU.PolygonMesh
     {
         /// <summary> 直交座標系における座標で、3Dモデルの原点をどこに設定するかです。 </summary>
         public PlateauVector3d ReferencePoint;
+        
         /// <summary> 座標軸の向きです。 </summary>
         public CoordinateSystem MeshAxes;
+        
         /// <summary> メッシュ結合の粒度です。 </summary>
         public MeshGranularity MeshGranularity;
+        
         /// <summary> 出力するLODの範囲上限です。 </summary>
         public uint MaxLOD;
+        
         /// <summary> 出力するLODの範囲の下限です。 </summary>
         public uint MinLOD;
+        
         /// <summary> テクスチャを含めるかどうかです。 </summary>
         [MarshalAs(UnmanagedType.U1)] public bool ExportAppearance;
+        
         /// <summary> メッシュ結合の粒度が「都市モデル単位」の時のみ有効で、この設定では都市を格子状のグリッドに分割するので、その1辺あたりの分割数(縦の数 = 横の数)です。</summary>
         public int GridCountOfSide;
+        
         /// <summary>  大きさ補正です。  </summary>
         public float UnitScale;
+        
         /// <summary>
         /// 国土交通省が規定する、日本の平面直角座標系の基準点の番号です。
         /// 詳しくは次の国土地理院のサイトをご覧ください。
         /// <see href="https://www.gsi.go.jp/sokuchikijun/jpc.html"/>
         /// </summary>
         public int CoordinateZoneID;
+        
         /// <summary>
         /// 範囲外の3Dモデルを出力から除外するための、2つの方法のうち1つを有効にするかどうかを bool で指定します。
         /// その方法とは、都市オブジェクトの最初の頂点の位置が範囲外のとき、そのオブジェクトはすべて範囲外とみなして出力から除外します。
@@ -63,14 +72,28 @@ namespace PLATEAU.PolygonMesh
         /// したがって、この値は建物では true, 地形では false となるべきです。
         /// </summary>
         [MarshalAs(UnmanagedType.U1)] public bool ExcludeCityObjectOutsideExtent;
+        
         /// <summary>
         /// 範囲外の3Dモデルを出力から除外するための、2つの方法のうち1つを有効にするかどうかを bool で指定します。
         /// その方法とは、メッシュ操作によって、範囲外に存在するポリゴンを除外します。
         /// この方法であれば 10km×10km の地形など巨大なオブジェクトにも対応できます。
         /// </summary>
         [MarshalAs(UnmanagedType.U1)] public bool ExcludePolygonsOutsideExtent;
+        
         /// <summary>  対象範囲を緯度・経度・高さで指定します。 </summary>
-         public Extent Extent;
+        public Extent Extent;
+
+        /// <summary>
+        /// 土地でのみ利用します。
+        /// 地図タイルを貼り付けるかどうかです。
+        /// </summary>
+        [MarshalAs(UnmanagedType.U1)] public bool AttachMapTile;
+
+        /// <summary>
+        /// 土地でのみ利用します。
+        /// URLで地図タイルをダウンロードする場合のズームレベルです。
+        /// </summary>
+        public int MapTileZoomLevel;
         
         /// <summary> デフォルト値の設定を返します。 </summary>
         public static MeshExtractOptions DefaultValue()
