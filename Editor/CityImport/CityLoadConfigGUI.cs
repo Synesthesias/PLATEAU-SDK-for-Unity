@@ -37,7 +37,7 @@ namespace PLATEAU.Editor.CityImport
                 }
                 else
                 {
-                    conf.loadPackage = false;
+                    conf.LoadPackage = false;
                 }
             }
 
@@ -51,24 +51,24 @@ namespace PLATEAU.Editor.CityImport
             {
                 using (PlateauEditorStyle.VerticalScopeLevel1())
                 {
-                    conf.loadPackage = EditorGUILayout.Toggle("インポートする", conf.loadPackage);
-                    if (conf.loadPackage)
+                    conf.LoadPackage = EditorGUILayout.Toggle("インポートする", conf.LoadPackage);
+                    if (conf.LoadPackage)
                     {
                         using (PlateauEditorStyle.VerticalScopeLevel1(1))
                         {
                             var predefined = CityModelPackageInfo.GetPredefined(package);
                             TextureIncludeGUI(conf, predefined.hasAppearance);
-                            conf.doSetMeshCollider =
-                                EditorGUILayout.Toggle("Mesh Collider をセットする", conf.doSetMeshCollider);
+                            conf.DoSetMeshCollider =
+                                EditorGUILayout.Toggle("Mesh Collider をセットする", conf.DoSetMeshCollider);
 
-                            conf.doSetAttrInfo =
-                                EditorGUILayout.Toggle("属性情報を含める", conf.doSetAttrInfo);
+                            conf.DoSetAttrInfo =
+                                EditorGUILayout.Toggle("属性情報を含める", conf.DoSetAttrInfo);
 
-                            PlateauEditorStyle.LODSlider("LOD描画設定", ref conf.minLOD, ref conf.maxLOD,
+                            PlateauEditorStyle.LODSlider("LOD描画設定", ref conf.MinLOD, ref conf.MaxLOD,
                                 Math.Min(predefined.minLOD, availableMaxLod), availableMaxLod);
 
-                            conf.meshGranularity = (MeshGranularity)EditorGUILayout.Popup("モデル結合",
-                                (int)conf.meshGranularity, new[] { "最小地物単位(壁面,屋根面等)", "主要地物単位(建築物,道路等)", "地域単位" });
+                            conf.MeshGranularity = (MeshGranularity)EditorGUILayout.Popup("モデル結合",
+                                (int)conf.MeshGranularity, new[] { "最小地物単位(壁面,屋根面等)", "主要地物単位(建築物,道路等)", "地域単位" });
                         }
                     }
                 }
@@ -104,7 +104,7 @@ namespace PLATEAU.Editor.CityImport
         private static void TextureIncludeGUI(PackageLoadSetting conf, bool mayTextureExist)
         {
             if (!mayTextureExist) return; // 仕様上、テクスチャの存在可能性がない場合
-            conf.includeTexture = EditorGUILayout.Toggle("テクスチャを含める", conf.includeTexture);
+            conf.IncludeTexture = EditorGUILayout.Toggle("テクスチャを含める", conf.IncludeTexture);
         }
     }
 }

@@ -19,9 +19,6 @@ namespace PLATEAU.CityImport.Load.CityImportProcedure
     /// </summary>
     internal static class GmlImporter
     {
-        // インポート設定のうち、Unityでは必ずこうなるという定数部分です。
-        public const CoordinateSystem MeshAxes = CoordinateSystem.EUN;
-        public const float UnitScale = 1.0f;
 
         /// <summary>
         /// GMLファイルを1つ fetch (ローカルならコピー、サーバーならダウンロード)し、fetch先の <see cref="GmlFile"/> を返します。
@@ -50,7 +47,7 @@ namespace PLATEAU.CityImport.Load.CityImportProcedure
         /// </summary>
         internal static async Task Import(GmlFile fetchedGmlFile , CityLoadConfig conf,
             Transform rootTrans, IProgressDisplay progressDisplay,
-            PlateauVector3d referencePoint, CancellationToken token)
+            CancellationToken token)
         {
             token.ThrowIfCancellationRequested();
 
@@ -77,27 +74,11 @@ namespace PLATEAU.CityImport.Load.CityImportProcedure
             string gmlObjName = relativeGmlPathFromFeature;
             var gmlTrans = new GameObject(gmlObjName).transform;
             var package = fetchedGmlFile.Package;
-            var packageConf = conf.GetConfigForPackage(package);
             MeshExtractOptions meshExtractOptions;
             try
             {
                 gmlTrans.parent = rootTrans;
-                // ユーザーが選択したインポート設定について、C#のclassからC++のstructに変換します。
-                meshExtractOptions = new MeshExtractOptions(
-                    referencePoint: referencePoint,
-                    meshAxes: MeshAxes,
-                    meshGranularity: packageConf.meshGranularity,
-                    minLOD: (uint)packageConf.minLOD,
-                    maxLOD: (uint)packageConf.maxLOD,
-                    exportAppearance: packageConf.includeTexture,
-                    gridCountOfSide: 10,
-                    unitScale: UnitScale,
-                    coordinateZoneID: conf.CoordinateZoneID,
-                    excludeCityObjectOutsideExtent: ShouldExcludeCityObjectOutsideExtent(package),
-                    excludePolygonsOutsideExtent: ShouldExcludePolygonsOutsideExtent(package),
-                    extent: conf.Extent,
-                    attachMapTile: true,
-                    mapTileZoomLevel: 15); // TODO ここで定数で決め打っている部分は、ユーザーが選択できるようにすると良い
+                meshExtractOptions = conf.CreateNativeConfigFor(package);
             }
             catch (Exception e)
             {
@@ -105,9 +86,10 @@ namespace PLATEAU.CityImport.Load.CityImportProcedure
                 return;
             }
 
+            var packageConf = conf.GetConfigForPackage(package);
             // ここはメインスレッドで呼ぶ必要があります。
             bool placingSucceed = await PlateauToUnityModelConverter.ConvertAndPlaceToScene(
-                cityModel, meshExtractOptions, gmlTrans, progressDisplay, gmlName, packageConf.doSetMeshCollider, packageConf.doSetAttrInfo, token
+                cityModel, meshExtractOptions, gmlTrans, progressDisplay, gmlName, packageConf.DoSetMeshCollider, packageConf.DoSetAttrInfo, token
             );
 
             if (placingSucceed)
@@ -156,17 +138,6 @@ namespace PLATEAU.CityImport.Load.CityImportProcedure
             }
 
             return cityModel;
-        }
-        
-        private static bool ShouldExcludeCityObjectOutsideExtent(PredefinedCityModelPackage package)
-        {
-            if (package == PredefinedCityModelPackage.Relief) return false;
-            return true;
-        }
-
-        private static bool ShouldExcludePolygonsOutsideExtent(PredefinedCityModelPackage package)
-        {
-            return !ShouldExcludeCityObjectOutsideExtent(package);
         }
     }
 }

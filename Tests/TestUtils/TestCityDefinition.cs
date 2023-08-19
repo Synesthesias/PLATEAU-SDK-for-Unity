@@ -94,7 +94,7 @@ namespace PLATEAU.Tests.TestUtils
             
             foreach (var packageConf in conf.ForEachPackagePair)
             {
-                packageConf.Value.includeTexture = true;
+                packageConf.Value.IncludeTexture = true;
             }
 
             conf.DatasetSourceConfig = new DatasetSourceConfig(isServer, SrcRootDirPathLocal, this.rootDirName, NetworkConfig.MockServerUrl, "");

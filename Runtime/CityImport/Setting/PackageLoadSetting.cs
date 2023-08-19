@@ -7,28 +7,28 @@ namespace PLATEAU.CityImport.Setting
     /// <see cref="PLATEAUCityModelLoader"/> の設定のうち、パッケージごとの設定です。
     /// <see cref="CityLoadConfig"/> によって保持されます。
     /// </summary>
-    [Serializable]
     internal class PackageLoadSetting
     {
-        public bool loadPackage;
-        public bool includeTexture;
-        public int minLOD;
-        public int maxLOD;
-        public MeshGranularity meshGranularity;
-        public bool doSetMeshCollider;
-        public bool doSetAttrInfo;
+        public bool LoadPackage;
+        public bool IncludeTexture;
+        public int MinLOD;
+        public int MaxLOD;
+        public MeshGranularity MeshGranularity;
+        public bool DoSetMeshCollider;
+        public bool DoSetAttrInfo;
         /// <summary> GUIで設定を表示する(true)か、折りたたむ(false)か </summary>
         [NonSerialized] public bool GuiFoldOutState = true;
 
         public PackageLoadSetting(bool loadPackage, bool includeTexture, int minLOD, int maxLOD, MeshGranularity meshGranularity, bool doSetMeshCollider, bool doSetAttrInfo)
         {
-            this.loadPackage = loadPackage;
-            this.includeTexture = includeTexture;
-            this.minLOD = minLOD;
-            this.maxLOD = maxLOD;
-            this.meshGranularity = meshGranularity;
-            this.doSetMeshCollider = doSetMeshCollider;
-            this.doSetAttrInfo = doSetAttrInfo;
+            this.LoadPackage = loadPackage;
+            this.IncludeTexture = includeTexture;
+            this.MinLOD = minLOD;
+            this.MaxLOD = maxLOD;
+            this.MeshGranularity = meshGranularity;
+            this.DoSetMeshCollider = doSetMeshCollider;
+            this.DoSetAttrInfo = doSetAttrInfo;
         }
     }
+
 }

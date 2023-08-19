@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading;
 using PLATEAU.CityImport.AreaSelector;
 using PLATEAU.Dataset;
+using PLATEAU.Geometries;
 using PLATEAU.Native;
 using PLATEAU.PolygonMesh;
 using PLATEAU.Util;
@@ -85,7 +86,7 @@ namespace PLATEAU.CityImport.Setting
             var targetPackages =
                 this
                     .ForEachPackagePair
-                    .Where(pair => pair.Value.loadPackage)
+                    .Where(pair => pair.Value.LoadPackage)
                     .Select(pair => pair.Key);
             var foundGmls = new List<GmlFile>();
 
@@ -148,6 +149,45 @@ namespace PLATEAU.CityImport.Setting
             var center = geoReference.Project(Extent.Center);
             ReferencePoint = center;
             return center;
+        }
+
+        // インポート設定のうち、Unityでは必ずこうなるという定数部分です。
+        internal const CoordinateSystem MeshAxes = CoordinateSystem.EUN;
+        internal const float UnitScale = 1.0f;
+        
+        
+        /// <summary>
+        /// インポート設定について、C++のstructに変換します。
+        /// </summary>
+        internal MeshExtractOptions CreateNativeConfigFor(PredefinedCityModelPackage package)
+        {
+            var packageConf = GetConfigForPackage(package);
+            return new MeshExtractOptions(
+                referencePoint: ReferencePoint,
+                meshAxes: MeshAxes,
+                meshGranularity: packageConf.MeshGranularity,
+                minLOD: (uint)packageConf.MinLOD,
+                maxLOD: (uint)packageConf.MaxLOD,
+                exportAppearance: packageConf.IncludeTexture,
+                gridCountOfSide: 10,
+                unitScale: UnitScale,
+                coordinateZoneID: CoordinateZoneID,
+                excludeCityObjectOutsideExtent: ShouldExcludeCityObjectOutsideExtent(package),
+                excludePolygonsOutsideExtent: ShouldExcludePolygonsOutsideExtent(package),
+                extent: Extent,
+                attachMapTile: true,
+                mapTileZoomLevel: 15); // TODO ここで定数で決め打っている部分は、ユーザーが選択できるようにすると良い
+        } 
+        
+        private static bool ShouldExcludeCityObjectOutsideExtent(PredefinedCityModelPackage package)
+        {
+            if (package == PredefinedCityModelPackage.Relief) return false;
+            return true;
+        }
+
+        private static bool ShouldExcludePolygonsOutsideExtent(PredefinedCityModelPackage package)
+        {
+            return !ShouldExcludeCityObjectOutsideExtent(package);
         }
     }
 }
