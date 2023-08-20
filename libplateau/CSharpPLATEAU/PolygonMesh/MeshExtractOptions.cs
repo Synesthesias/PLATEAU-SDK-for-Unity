@@ -43,8 +43,6 @@ namespace PLATEAU.PolygonMesh
             this.ExcludeCityObjectOutsideExtent = excludeCityObjectOutsideExtent;
             this.ExcludePolygonsOutsideExtent = excludePolygonsOutsideExtent;
             this.Extent = extent;
-            this.AttachMapTile = attachMapTile;
-            this.MapTileZoomLevel = mapTileZoomLevel;
             this.minLOD = minLOD;
             this.maxLOD = maxLOD;
             this.unitScale = unitScale;
@@ -142,18 +140,6 @@ namespace PLATEAU.PolygonMesh
         /// <summary>  対象範囲を緯度・経度・高さで指定します。 </summary>
         public Extent Extent;
 
-        /// <summary>
-        /// 土地でのみ利用します。
-        /// 地図タイルを貼り付けるかどうかです。
-        /// </summary>
-        [MarshalAs(UnmanagedType.U1)] public bool AttachMapTile;
-
-        /// <summary>
-        /// 土地でのみ利用します。
-        /// URLで地図タイルをダウンロードする場合のズームレベルです。
-        /// </summary>
-        public int MapTileZoomLevel;
-        
         /// <summary> デフォルト値の設定を返します。 </summary>
         internal static MeshExtractOptions DefaultValue()
         {
