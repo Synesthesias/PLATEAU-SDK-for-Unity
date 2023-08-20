@@ -83,7 +83,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
             if (isAreaSelectComplete)
             {
                 PlateauEditorStyle.Heading("地物別設定", "num3.png");
-                this.cityLoadConfigGUI?.Draw(this.config);
+                this.cityLoadConfigGUI?.Draw();
                 ImportButton.Draw(this.config, progressGUI);
             }
             PlateauEditorStyle.Separator(0);
@@ -94,7 +94,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
         public void ReceiveResult(AreaSelectResult result)
         {
             this.config.InitWithAreaSelectResult(result);
-            this.cityLoadConfigGUI = new CityLoadConfigGUI(result.PackageToLodDict);
+            this.cityLoadConfigGUI = new CityLoadConfigGUI(this.config, result.PackageToLodDict);
         }
 
         // テストで使う用です。

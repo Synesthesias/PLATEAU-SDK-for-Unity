@@ -1,4 +1,5 @@
 ﻿using System;
+using PLATEAU.Dataset;
 using PLATEAU.PolygonMesh;
 
 namespace PLATEAU.CityImport.Setting
@@ -9,6 +10,7 @@ namespace PLATEAU.CityImport.Setting
     /// </summary>
     internal class PackageLoadSetting
     {
+        public PredefinedCityModelPackage Package { get; }
         public bool LoadPackage;
         public bool IncludeTexture;
         public int MinLOD;
@@ -19,8 +21,9 @@ namespace PLATEAU.CityImport.Setting
         /// <summary> GUIで設定を表示する(true)か、折りたたむ(false)か </summary>
         [NonSerialized] public bool GuiFoldOutState = true;
 
-        public PackageLoadSetting(bool loadPackage, bool includeTexture, int minLOD, int maxLOD, MeshGranularity meshGranularity, bool doSetMeshCollider, bool doSetAttrInfo)
+        public PackageLoadSetting(PredefinedCityModelPackage package, bool loadPackage, bool includeTexture, int minLOD, int maxLOD, MeshGranularity meshGranularity, bool doSetMeshCollider, bool doSetAttrInfo)
         {
+            Package = package;
             this.LoadPackage = loadPackage;
             this.IncludeTexture = includeTexture;
             this.MinLOD = minLOD;

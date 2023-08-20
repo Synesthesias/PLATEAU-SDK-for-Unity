@@ -13,6 +13,8 @@ namespace PLATEAU.CityImport.Setting
     /// <summary>
     /// 都市インポートの設定です。
     /// インポート画面の設定GUIでユーザーはこの設定値を書き換えていくことになります。
+    /// パッケージごとのインポート設定については<see cref="PackageLoadSetting"/>を参照してください。
+    /// 設定GUIについてはCityAddGUIおよびCityLoadConfigGUIを参照してください。
     /// </summary>
     internal class CityLoadConfig
     {
@@ -133,7 +135,7 @@ namespace PLATEAU.CityImport.Setting
                 var package = pair.Key;
                 var maxLod = pair.Value;
                 var predefined = CityModelPackageInfo.GetPredefined(package);
-                var val = new PackageLoadSetting(true, predefined.hasAppearance, predefined.minLOD,
+                var val = new PackageLoadSetting(package, true, predefined.hasAppearance, predefined.minLOD,
                     maxLod, MeshGranularity.PerPrimaryFeatureObject, true, true);
                 this.perPackagePairSettings.Add(package, val);
             }
