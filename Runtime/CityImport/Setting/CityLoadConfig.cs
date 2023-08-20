@@ -130,13 +130,19 @@ namespace PLATEAU.CityImport.Setting
         private void InitWithPackageLodsDict(PackageToLodDict dict)
         {
             this.perPackagePairSettings.Clear();
-            foreach (var pair in dict)
+            foreach (var (package, availableMaxLOD) in dict)
             {
-                var package = pair.Key;
-                var maxLod = pair.Value;
                 var predefined = CityModelPackageInfo.GetPredefined(package);
-                var val = new PackageLoadSetting(package, true, predefined.hasAppearance, predefined.minLOD,
-                    maxLod, MeshGranularity.PerPrimaryFeatureObject, true, true);
+                var val = new PackageLoadSetting(
+                    package: package,
+                    loadPackage: true,
+                    includeTexture: predefined.hasAppearance,
+                    minLOD: predefined.minLOD,
+                    maxLOD: availableMaxLOD,
+                    availableMaxLOD: availableMaxLOD,
+                    MeshGranularity.PerPrimaryFeatureObject, 
+                    doSetMeshCollider: true,
+                    doSetAttrInfo: true);
                 this.perPackagePairSettings.Add(package, val);
             }
         }
