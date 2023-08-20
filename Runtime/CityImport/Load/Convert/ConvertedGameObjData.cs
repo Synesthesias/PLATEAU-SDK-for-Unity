@@ -101,13 +101,16 @@ namespace PLATEAU.CityImport.Load.Convert
                         }
                     }
                 }
-
-                //　属性情報表示コンポーネントを追加します。
-                var serialized = this.attributeDataHelper.GetSerializableCityObject();
-                if (serialized != null)
+ 
+                if(nextParent.gameObject.GetComponent<PLATEAUCityObjectGroup>() == null && nextParent.gameObject.name == this.name)
                 {
-                    var attrInfo = nextParent.gameObject.AddComponent<PLATEAUCityObjectGroup>();
-                    attrInfo.SetSerializableCityObject(serialized);
+                    //　属性情報表示コンポーネントを追加します。
+                    var serialized = this.attributeDataHelper.GetSerializableCityObject();
+                    if (serialized != null)
+                    {
+                        var attrInfo = nextParent.gameObject.AddComponent<PLATEAUCityObjectGroup>();
+                        attrInfo.SetSerializableCityObject(serialized);
+                    }
                 }
                 this.attributeDataHelper.Dispose();
             }
