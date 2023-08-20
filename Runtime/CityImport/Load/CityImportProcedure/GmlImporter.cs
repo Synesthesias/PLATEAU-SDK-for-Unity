@@ -19,9 +19,6 @@ namespace PLATEAU.CityImport.Load.CityImportProcedure
     /// </summary>
     internal static class GmlImporter
     {
-        // インポート設定のうち、Unityでは必ずこうなるという定数部分です。
-        public const CoordinateSystem MeshAxes = CoordinateSystem.EUN;
-        public const float UnitScale = 1.0f;
 
         /// <summary>
         /// GMLファイルを1つ fetch (ローカルならコピー、サーバーならダウンロード)し、fetch先の <see cref="GmlFile"/> を返します。
@@ -50,7 +47,7 @@ namespace PLATEAU.CityImport.Load.CityImportProcedure
         /// </summary>
         internal static async Task Import(GmlFile fetchedGmlFile , CityLoadConfig conf,
             Transform rootTrans, IProgressDisplay progressDisplay,
-            PlateauVector3d referencePoint, CancellationToken token)
+            CancellationToken token)
         {
             token.ThrowIfCancellationRequested();
 
@@ -76,35 +73,23 @@ namespace PLATEAU.CityImport.Load.CityImportProcedure
             // gmlファイルに対応するゲームオブジェクトの名称は、地物タイプフォルダからの相対パスにします。
             string gmlObjName = relativeGmlPathFromFeature;
             var gmlTrans = new GameObject(gmlObjName).transform;
-            
-            gmlTrans.parent = rootTrans;
             var package = fetchedGmlFile.Package;
-            var packageConf = conf.GetConfigForPackage(package);
-            var meshExtractOptions = MeshExtractOptions.DefaultValue();
-            int maxLod = packageConf.maxLOD;
-            int minLod = packageConf.minLOD;
-            meshExtractOptions.ReferencePoint = referencePoint;
-            meshExtractOptions.MeshAxes = MeshAxes;
-            meshExtractOptions.MeshGranularity = packageConf.meshGranularity;
-            meshExtractOptions.MaxLOD = (uint)maxLod;
-            meshExtractOptions.MinLOD = (uint)minLod;
-            meshExtractOptions.ExportAppearance = packageConf.includeTexture;
-            meshExtractOptions.GridCountOfSide = 10; // TODO gridCountOfSideはユーザーが設定できるようにしたほうが良い
-            meshExtractOptions.UnitScale = UnitScale;
-            meshExtractOptions.CoordinateZoneID = conf.CoordinateZoneID;
-            meshExtractOptions.ExcludeCityObjectOutsideExtent = ShouldExcludeCityObjectOutsideExtent(package);
-            meshExtractOptions.ExcludePolygonsOutsideExtent = ShouldExcludePolygonsOutsideExtent(package);
-            meshExtractOptions.Extent = conf.Extent;
-
-            if (!meshExtractOptions.Validate(out var failureMessage))
+            MeshExtractOptions meshExtractOptions;
+            try
             {
-                progressDisplay.SetProgress(gmlName, 0f, $"失敗 : メッシュ設定に不正な点があります。 : {failureMessage}");
+                gmlTrans.parent = rootTrans;
+                meshExtractOptions = conf.CreateNativeConfigFor(package);
+            }
+            catch (Exception e)
+            {
+                progressDisplay.SetProgress(gmlName, 0f, $"失敗 : メッシュインポートの設定に失敗しました。\n{e.Message}");
                 return;
             }
 
+            var packageConf = conf.GetConfigForPackage(package);
             // ここはメインスレッドで呼ぶ必要があります。
             bool placingSucceed = await PlateauToUnityModelConverter.ConvertAndPlaceToScene(
-                cityModel, meshExtractOptions, gmlTrans, progressDisplay, gmlName, packageConf.doSetMeshCollider, packageConf.doSetAttrInfo, token
+                cityModel, meshExtractOptions, gmlTrans, progressDisplay, gmlName, packageConf.DoSetMeshCollider, packageConf.DoSetAttrInfo, token
             );
 
             if (placingSucceed)
@@ -153,17 +138,6 @@ namespace PLATEAU.CityImport.Load.CityImportProcedure
             }
 
             return cityModel;
-        }
-        
-        private static bool ShouldExcludeCityObjectOutsideExtent(PredefinedCityModelPackage package)
-        {
-            if (package == PredefinedCityModelPackage.Relief) return false;
-            return true;
-        }
-
-        private static bool ShouldExcludePolygonsOutsideExtent(PredefinedCityModelPackage package)
-        {
-            return !ShouldExcludeCityObjectOutsideExtent(package);
         }
     }
 }

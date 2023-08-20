@@ -1,4 +1,5 @@
 ﻿using System;
+using PLATEAU.Dataset;
 using PLATEAU.PolygonMesh;
 
 namespace PLATEAU.CityImport.Setting
@@ -7,28 +8,37 @@ namespace PLATEAU.CityImport.Setting
     /// <see cref="PLATEAUCityModelLoader"/> の設定のうち、パッケージごとの設定です。
     /// <see cref="CityLoadConfig"/> によって保持されます。
     /// </summary>
-    [Serializable]
     internal class PackageLoadSetting
     {
-        public bool loadPackage;
-        public bool includeTexture;
-        public int minLOD;
-        public int maxLOD;
-        public MeshGranularity meshGranularity;
-        public bool doSetMeshCollider;
-        public bool doSetAttrInfo;
-        /// <summary> GUIで設定を表示する(true)か、折りたたむ(false)か </summary>
-        [NonSerialized] public bool GuiFoldOutState = true;
+        public PredefinedCityModelPackage Package { get; }
+        public bool LoadPackage;
+        public bool IncludeTexture;
+        
+        /// <summary> ユーザーが選択したLOD範囲の下限 </summary>
+        public int MinLOD;
+        
+        /// <summary> ユーザーが選択したLODの上限 </summary>
+        public int MaxLOD;
 
-        public PackageLoadSetting(bool loadPackage, bool includeTexture, int minLOD, int maxLOD, MeshGranularity meshGranularity, bool doSetMeshCollider, bool doSetAttrInfo)
+        /// <summary> ユーザーが選択した範囲のなかで存在するLODの最大値 </summary>
+        public readonly int AvailableMaxLOD;
+        
+        public MeshGranularity MeshGranularity;
+        public bool DoSetMeshCollider;
+        public bool DoSetAttrInfo;
+
+        public PackageLoadSetting(PredefinedCityModelPackage package, bool loadPackage, bool includeTexture, int minLOD, int maxLOD, int availableMaxLOD, MeshGranularity meshGranularity, bool doSetMeshCollider, bool doSetAttrInfo)
         {
-            this.loadPackage = loadPackage;
-            this.includeTexture = includeTexture;
-            this.minLOD = minLOD;
-            this.maxLOD = maxLOD;
-            this.meshGranularity = meshGranularity;
-            this.doSetMeshCollider = doSetMeshCollider;
-            this.doSetAttrInfo = doSetAttrInfo;
+            Package = package;
+            this.LoadPackage = loadPackage;
+            this.IncludeTexture = includeTexture;
+            this.MinLOD = minLOD;
+            this.MaxLOD = maxLOD;
+            this.AvailableMaxLOD = availableMaxLOD;
+            this.MeshGranularity = meshGranularity;
+            this.DoSetMeshCollider = doSetMeshCollider;
+            this.DoSetAttrInfo = doSetAttrInfo;
         }
     }
+
 }

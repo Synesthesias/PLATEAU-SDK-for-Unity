@@ -30,6 +30,8 @@ namespace PLATEAU.Editor.EditorWindow.ProgressDisplay
 
         public void Draw()
         {
+            PlateauEditorStyle.Separator(0);
+            
             if (IsEmpty) return;
             
             PlateauEditorStyle.CenterAlignHorizontal(() =>
