@@ -27,6 +27,9 @@ namespace PLATEAU.Editor.CityImport
                 }
 
                 var packageConf = cityLoadConf.GetConfigForPackage(package);
+                
+                // パッケージ種による場合分けです。
+                // これと似たロジックが PackageLoadSetting.CreateSettingFor にあるので、変更時はそちらも合わせて変更をお願いします。
                 var gui = package switch
                 {
                     PredefinedCityModelPackage.Relief => new ReliefLoadSettingGUI((ReliefLoadSetting)packageConf),
@@ -61,7 +64,7 @@ namespace PLATEAU.Editor.CityImport
                 this.config = conf;
             }
 
-            public virtual void Draw()
+            public void Draw()
             {
                 var conf = this.config;
                 var package = conf.Package;
@@ -73,6 +76,7 @@ namespace PLATEAU.Editor.CityImport
                         if (!conf.LoadPackage) return;
                         using (PlateauEditorStyle.VerticalScopeLevel1(1))
                         {
+                            AdditionalSettingGUI();
                             var predefined = CityModelPackageInfo.GetPredefined(package);
                             TextureIncludeGUI(conf, predefined.hasAppearance);
                             conf.DoSetMeshCollider =
@@ -95,6 +99,14 @@ namespace PLATEAU.Editor.CityImport
                 });
             }
 
+            /// <summary>
+            /// パッケージによって追加のGUIがある場合、サブクラスでこのメソッドをオーバーライドして実装します。
+            /// </summary>
+            protected virtual void AdditionalSettingGUI()
+            {
+                // サブクラスで実装しない限り何もしません
+            }
+
             private static void TextureIncludeGUI(PackageLoadSetting conf, bool mayTextureExist)
             {
                 if (!mayTextureExist) return; // 仕様上、テクスチャの存在可能性がない場合
@@ -114,12 +126,18 @@ namespace PLATEAU.Editor.CityImport
                 this.conf = setting;
             }
 
-            public override void Draw()
+            /// <summary> インポート設定GUIのうち土地専用の部分です。 </summary>
+            protected override void AdditionalSettingGUI()
             {
-                this.conf.AttachMapTile = EditorGUILayout.Toggle("航空写真または地図を貼り付ける", this.conf.AttachMapTile);
-                base.Draw();
-
-            }
+                using (PlateauEditorStyle.VerticalScopeLevel1())
+                {
+                    EditorGUILayout.LabelField("土地起伏の設定");
+                    using (PlateauEditorStyle.VerticalScopeLevel2())
+                    {
+                        this.conf.AttachMapTile = EditorGUILayout.Toggle("航空写真または地図を貼り付ける", this.conf.AttachMapTile);
+                    }
+                }
+            } 
         }
     }
     

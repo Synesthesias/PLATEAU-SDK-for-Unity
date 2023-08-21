@@ -58,6 +58,8 @@ namespace PLATEAU.CityImport.Setting
         /// </summary>
         public static PackageLoadSetting CreateSettingFor(PredefinedCityModelPackage package, PackageLoadSetting baseSetting)
         {
+            // パッケージ種による場合分けです。
+            // これと似たロジックが PackageLoadSettingGUI.PackageLoadSettingGUIList にあるので、変更時はそちらも合わせて変更をお願いします。
             return package switch
             {
                 PredefinedCityModelPackage.Relief => new ReliefLoadSetting(true, baseSetting),
