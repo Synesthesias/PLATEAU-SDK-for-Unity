@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using PLATEAU.Util;
 using PLATEAU.Util.Async;
@@ -22,7 +23,7 @@ namespace PLATEAU.CityImport.Load.Convert
         private readonly List<CityGML.Material> rawMaterials;
         private string Name { get; }
         private readonly Dictionary<int, Texture> subMeshIdToTexture;
-        private readonly Dictionary<PLATEAU.CityGML.Material.MaterialStruct, Material> materialValueToMaterial;
+        private readonly Dictionary<CityGML.Material, Material> gmlMaterialToUnityMaterial;
         private Material defaultMaterial;
         private int SubMeshCount => this.subMeshTriangles.Count;
 
@@ -34,9 +35,9 @@ namespace PLATEAU.CityImport.Load.Convert
             this.subMeshTriangles = subMeshTriangles;
             this.textureUrls = textureUrls;
             this.rawMaterials = materials;
-            Name = name;
+            this.gmlMaterialToUnityMaterial = new Dictionary<CityGML.Material, Material>();
             this.subMeshIdToTexture = new Dictionary<int, Texture>();
-            this.materialValueToMaterial = new Dictionary<PLATEAU.CityGML.Material.MaterialStruct, Material>();
+            Name = name;         
         }
 
         private void AddTexture(int subMeshId, Texture tex)
@@ -77,11 +78,11 @@ namespace PLATEAU.CityImport.Load.Convert
                 if (rawMaterials[i] != null)
                 { 
                     var rawMat = rawMaterials[i];
-                    if (!materialValueToMaterial.TryGetValue(rawMat.StructValue, out material))
+                    if (!gmlMaterialToUnityMaterial.TryGetValue(rawMat, out material))
                     {
                         material = RenderUtil.GetPLATEAUX3DMaterialByCityGMLMaterial(rawMat);
-                        materialValueToMaterial.Add(rawMat.StructValue, material);
-                    }
+                        gmlMaterialToUnityMaterial.Add(rawMat, material);
+                    }        
                     material.name = rawMat.ID;
                 }
                 else
