@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using Codice.CM.Common;
 using PLATEAU.CityImport.Setting;
 using PLATEAU.Dataset;
 using PLATEAU.Editor.EditorWindow.Common;
 using PLATEAU.PolygonMesh;
 using UnityEditor;
+using UnityEngine;
 
 namespace PLATEAU.Editor.CityImport
 {
@@ -27,7 +29,7 @@ namespace PLATEAU.Editor.CityImport
                 }
 
                 var packageConf = cityLoadConf.GetConfigForPackage(package);
-                
+
                 // パッケージ種による場合分けです。
                 // これと似たロジックが PackageLoadSetting.CreateSettingFor にあるので、変更時はそちらも合わせて変更をお願いします。
                 var gui = package switch
@@ -120,25 +122,44 @@ namespace PLATEAU.Editor.CityImport
         /// </summary>
         private class ReliefLoadSettingGUI : PackageLoadSettingGUI
         {
-            private readonly ReliefLoadSetting conf;
+            private readonly ReliefLoadSetting config;
+            private string mapTileURLOnGUI;
+
             public ReliefLoadSettingGUI(ReliefLoadSetting setting) : base(setting)
             {
-                this.conf = setting;
+                this.config = setting;
+                this.mapTileURLOnGUI = setting.MapTileURL;
             }
 
             /// <summary> インポート設定GUIのうち土地専用の部分です。 </summary>
             protected override void AdditionalSettingGUI()
             {
+                EditorGUILayout.LabelField("土地起伏の設定：");
                 using (PlateauEditorStyle.VerticalScopeLevel1())
                 {
-                    EditorGUILayout.LabelField("土地起伏の設定");
-                    using (PlateauEditorStyle.VerticalScopeLevel2())
+                    var conf = this.config;
+                    conf.AttachMapTile = EditorGUILayout.Toggle("航空写真または地図を貼り付ける", conf.AttachMapTile);
+                    if (conf.AttachMapTile)
                     {
-                        this.conf.AttachMapTile = EditorGUILayout.Toggle("航空写真または地図を貼り付ける", this.conf.AttachMapTile);
+                        using (PlateauEditorStyle.VerticalScopeLevel2())
+                        {
+                            this.mapTileURLOnGUI = EditorGUILayout.TextField("URL", this.mapTileURLOnGUI);
+                            try
+                            {
+                                conf.MapTileURL = this.mapTileURLOnGUI;
+                            }
+                            catch (ArgumentException)
+                            {
+                                EditorGUILayout.HelpBox("URLが正しくありません。", MessageType.Error);
+                            }
+                            int zoomLevel = EditorGUILayout.IntField("ズームレベル", conf.MapTileZoomLevel);
+                            zoomLevel = Math.Min(zoomLevel, ReliefLoadSetting.MaxZoomLevel);
+                            zoomLevel = Math.Max(zoomLevel, ReliefLoadSetting.MinZoomLevel);
+                            conf.MapTileZoomLevel = zoomLevel;
+                        }
                     }
                 }
-            } 
+            }
         }
     }
-    
 }

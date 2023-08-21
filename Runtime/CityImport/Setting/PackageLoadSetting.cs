@@ -3,14 +3,19 @@ using PLATEAU.Dataset;
 using PLATEAU.Geometries;
 using PLATEAU.Native;
 using PLATEAU.PolygonMesh;
-using UnityEngine.UI;
 
 namespace PLATEAU.CityImport.Setting
 {
     /// <summary>
-    /// <see cref="PLATEAUCityModelLoader"/> の設定のうち、パッケージごとの設定です。
+    /// インポート設定のうち、パッケージごとの設定です。
+    ///
+    /// 他クラスとの関係：
     /// <see cref="CityLoadConfig"/> によって保持されます。
     /// このクラスに対応するGUIクラスは PackageLoadSettingGUI です。
+    ///
+    /// 実装上の注意：
+    /// ・特定のパッケージ種で追加の設定項目がある場合はサブクラスで実装します。
+    /// ・この設定項目を追加・削除する場合、<see cref="ConvertToNativeOption"/>も合わせて実装しないと反映されないことに注意してください。 
     /// </summary>
     internal class PackageLoadSetting
     {
@@ -35,7 +40,8 @@ namespace PLATEAU.CityImport.Setting
             DoSetAttrInfo = doSetAttrInfo;
         }
 
-        public PackageLoadSetting(PackageLoadSetting src)
+        /// <summary> コピーコンストラクタ </summary>
+        protected PackageLoadSetting(PackageLoadSetting src)
         {
             Package = src.Package;
             LoadPackage = src.LoadPackage;
@@ -72,7 +78,7 @@ namespace PLATEAU.CityImport.Setting
         /// </summary>
         public virtual MeshExtractOptions ConvertToNativeOption(PlateauVector3d referencePoint, int coordinateZoneID, Extent extent)
         {
-            
+
             return new MeshExtractOptions(
                 referencePoint: referencePoint,
                 meshAxes: MeshAxes,
@@ -86,8 +92,9 @@ namespace PLATEAU.CityImport.Setting
                 excludeCityObjectOutsideExtent: ShouldExcludeCityObjectOutsideExtent(Package),
                 excludePolygonsOutsideExtent: ShouldExcludePolygonsOutsideExtent(Package),
                 extent: extent,
-                attachMapTile: true,
-                mapTileZoomLevel: 15); // TODO ここで定数で決め打っている部分は、ユーザーが選択できるようにすると良い
+                attachMapTile: false, // 土地専用の設定は ReliefLoadSetting で行うので、ここでは false に固定します。
+                mapTileZoomLevel: 15,
+                mapTileURL: ReliefLoadSetting.DefaultMapTileUrl);
         }
         
         private static bool ShouldExcludeCityObjectOutsideExtent(PredefinedCityModelPackage package)
@@ -105,20 +112,59 @@ namespace PLATEAU.CityImport.Setting
 
     /// <summary>
     /// パッケージごとの設定項目に、土地特有の設定項目を追加したクラスです。
+    /// これに対応するGUIクラスは ReliefLoadSettingGUI を参照してください。
     /// </summary>
     internal class ReliefLoadSetting : PackageLoadSetting
     {
         public bool AttachMapTile { get; set; }
+
+        private int mapTileZoomLevel;
+        public const int MinZoomLevel = 1;
+        
+        /// <summary> 地理院地図やGoogleMapPlatformで存在するズームレベルの最大値です。2023年8月に調べたところ18でした。 </summary>
+        public const int MaxZoomLevel = 18;
+
+        public const string DefaultMapTileUrl = "https://cyberjapandata.gsi.go.jp/xyz/seamlessphoto/{z}/{x}/{y}.jpg";
+
+        public int MapTileZoomLevel
+        {
+            get => this.mapTileZoomLevel;
+            set
+            {
+                if (value < MinZoomLevel || value > MaxZoomLevel)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(MapTileZoomLevel));
+                }
+                this.mapTileZoomLevel = value;
+            }
+        }
+
+        private string mapTileURL;
+        public string MapTileURL
+        {
+            get => this.mapTileURL;
+            set
+            {
+                if ((!value.StartsWith("http://")) && (!value.StartsWith("https://"))) throw new ArgumentException("URL must start with https:// or http://.");
+                this.mapTileURL = value;
+            }
+        }
+
         public ReliefLoadSetting(bool attachMapTile, PackageLoadSetting baseSetting) :
             base(baseSetting)
         {
+            // 初期値を決めます。
             AttachMapTile = attachMapTile;
+            MapTileZoomLevel = 15;
+            MapTileURL = DefaultMapTileUrl;
         }
 
         public override MeshExtractOptions ConvertToNativeOption(PlateauVector3d referencePoint, int coordinateZoneID, Extent extent)
         {
             var nativeOption = base.ConvertToNativeOption(referencePoint, coordinateZoneID, extent);
             nativeOption.AttachMapTile = AttachMapTile;
+            nativeOption.MapTileZoomLevel = MapTileZoomLevel;
+            nativeOption.MapTileURL = MapTileURL;
             return nativeOption;
         }
     }

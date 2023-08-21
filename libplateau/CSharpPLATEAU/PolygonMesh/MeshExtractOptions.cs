@@ -30,10 +30,10 @@ namespace PLATEAU.PolygonMesh
     /// <summary>
     /// GMLファイルから3Dメッシュを取り出すための設定です。
     /// </summary>
-    [StructLayout(LayoutKind.Sequential)]
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
     public struct MeshExtractOptions
     {
-        public MeshExtractOptions(PlateauVector3d referencePoint, CoordinateSystem meshAxes, MeshGranularity meshGranularity, uint minLOD, uint maxLOD, bool exportAppearance, int gridCountOfSide, float unitScale, int coordinateZoneID, bool excludeCityObjectOutsideExtent, bool excludePolygonsOutsideExtent, Extent extent, bool attachMapTile, int mapTileZoomLevel)
+        public MeshExtractOptions(PlateauVector3d referencePoint, CoordinateSystem meshAxes, MeshGranularity meshGranularity, uint minLOD, uint maxLOD, bool exportAppearance, int gridCountOfSide, float unitScale, int coordinateZoneID, bool excludeCityObjectOutsideExtent, bool excludePolygonsOutsideExtent, Extent extent, bool attachMapTile, int mapTileZoomLevel, string mapTileURL)
         {
             this.ReferencePoint = referencePoint;
             this.MeshAxes = meshAxes;
@@ -49,15 +49,17 @@ namespace PLATEAU.PolygonMesh
             this.maxLOD = maxLOD;
             this.unitScale = unitScale;
             this.gridCountOfSide = gridCountOfSide;
+            this.mapTileURL = mapTileURL;
             
             // 上で全てのメンバー変数を設定できてますが、バリデーションをするため念のためメソッドやプロパティも呼びます。
             SetLODRange(minLOD, maxLOD);
             UnitScale = unitScale;
             GridCountOfSide = gridCountOfSide;
+            MapTileURL = mapTileURL;
         }
 
         /// <summary> 直交座標系における座標で、3Dモデルの原点をどこに設定するかです。 </summary>
-        public  PlateauVector3d ReferencePoint;
+        public PlateauVector3d ReferencePoint;
         
         /// <summary> 座標軸の向きです。 </summary>
         public CoordinateSystem MeshAxes;
@@ -82,7 +84,7 @@ namespace PLATEAU.PolygonMesh
         }
         
         /// <summary> テクスチャを含めるかどうかです。 </summary>
-        [MarshalAs(UnmanagedType.U1)] public bool ExportAppearance;
+        [MarshalAs(UnmanagedType.U1)] private bool ExportAppearance;
         
         /// <summary> メッシュ結合の粒度が「都市モデル単位」の時のみ有効で、この設定では都市を格子状のグリッドに分割するので、その1辺あたりの分割数(縦の数 = 横の数)です。</summary>
         private int gridCountOfSide;
@@ -153,7 +155,30 @@ namespace PLATEAU.PolygonMesh
         /// URLで地図タイルをダウンロードする場合のズームレベルです。
         /// </summary>
         public int MapTileZoomLevel;
-        
+
+        /// <summary>
+        /// 土地でのみ利用します。
+        /// URLで地図タイルをダウンロードする場合のURLであり、文字列として"{x}","{y}","{z}"を含むものです。
+        /// C#とC++でマーシャリングする関係上、charの固定長配列である必要があります。
+        /// 配列長を変更する場合、C++の mesh_extract_options.h にも変更を加える必要があります。
+        /// </summary>
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 1000)]
+        private string mapTileURL;
+
+        public string MapTileURL
+        {
+            get => this.mapTileURL;
+            set
+            {
+                if (!value.StartsWith("http"))
+                {
+                    throw new ArgumentException("URL must start with http.");
+                }
+                this.mapTileURL = value;
+            }
+        }
+
+
         /// <summary> デフォルト値の設定を返します。 </summary>
         internal static MeshExtractOptions DefaultValue()
         {
