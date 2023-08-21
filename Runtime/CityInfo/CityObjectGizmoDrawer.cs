@@ -16,9 +16,9 @@ namespace PLATEAU
     {
         private Bounds parentBounds;
         private Bounds childBounds;
-        private string panrentId;
+        private string parentId;
         private string childId;
-        private CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+        private readonly CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
 
 #if UNITY_EDITOR
         private void OnDrawGizmos()
@@ -31,13 +31,13 @@ namespace PLATEAU
 
             Gizmos.color = gizmoLabelStyle.normal.textColor = Color.magenta;
             Gizmos.DrawWireCube(parentBounds.center, parentBounds.size);
-            Handles.Label(parentBounds.center, panrentId, gizmoLabelStyle);
+            Handles.Label(parentBounds.center, this.parentId, gizmoLabelStyle);
         }
 #endif
 
         public async Task ShowParentSelection(Transform trans, CityObjectIndex index, string id)
         {
-            panrentId = id;
+            this.parentId = id;
             if (trans.gameObject.TryGetComponent<MeshFilter>(out var meshFilter))
             {
                 var mesh = meshFilter.sharedMesh;
@@ -88,7 +88,7 @@ namespace PLATEAU
         public void ClearParentSelection()
         {
             parentBounds.size = Vector3.zero;
-            panrentId = null;
+            this.parentId = null;
         }
 
         public void ClearChildSelection()
@@ -97,17 +97,17 @@ namespace PLATEAU
             childId = null;
         }
 
-        private Bounds GetBounds(Transform transform)
+        private Bounds GetBounds(Transform transformArg)
         {
             Bounds bounds = new Bounds(Vector3.zero, Vector3.zero);
-            var filters = transform.GetComponentsInChildren<MeshFilter>();
+            var filters = transformArg.GetComponentsInChildren<MeshFilter>();
             foreach (var filter in filters)
             {
                 if (filter.sharedMesh == null) continue;
                 if (bounds.center == Vector3.zero && bounds.size == Vector3.zero)
-                    bounds = GeometryUtility.CalculateBounds(filter.sharedMesh.vertices, transform.localToWorldMatrix);
+                    bounds = GeometryUtility.CalculateBounds(filter.sharedMesh.vertices, transformArg.localToWorldMatrix);
                 else
-                    bounds.Encapsulate(GeometryUtility.CalculateBounds(filter.sharedMesh.vertices, transform.localToWorldMatrix));
+                    bounds.Encapsulate(GeometryUtility.CalculateBounds(filter.sharedMesh.vertices, transformArg.localToWorldMatrix));
             }
             return bounds;
         }

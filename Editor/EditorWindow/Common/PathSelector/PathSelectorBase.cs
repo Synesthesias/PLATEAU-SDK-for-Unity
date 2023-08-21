@@ -9,14 +9,14 @@ namespace PLATEAU.Editor.EditorWindow.Common.PathSelector
     /// </summary>
     internal abstract class PathSelectorBase
     {
-        protected string SelectedPath { get; set; }
+        protected string SelectedPath { get; private set; }
         public virtual string Draw(string labelText)
         {
-            const int height = 50;
+            const int Height = 50;
             bool isButtonPressed = false;
             using (PlateauEditorStyle.VerticalScopeLevel1())
             {
-                using(new EditorGUILayout.HorizontalScope(GUILayout.Height(height)))
+                using(new EditorGUILayout.HorizontalScope(GUILayout.Height(Height)))
                 {
                     // 表題ラベル
                     var labelContent = new GUIContent(labelText);
@@ -26,19 +26,19 @@ namespace PLATEAU.Editor.EditorWindow.Common.PathSelector
                     {
                         PlateauEditorStyle.LabelSizeFit(labelContent,
                                 new GUIStyle(EditorStyles.label));
-                    }, GUILayout.Width(labelSize.x), GUILayout.Height(height));
+                    }, GUILayout.Width(labelSize.x), GUILayout.Height(Height));
                     // パス表示
                     string displayFolderPath = string.IsNullOrEmpty(SelectedPath) ? "未選択" : SelectedPath;
-                    PlateauEditorStyle.MultiLineLabelWithBox(displayFolderPath, GUILayout.Height(height));
+                    PlateauEditorStyle.MultiLineLabelWithBox(displayFolderPath, GUILayout.Height(Height));
                     // 「参照」ボタン
-                    const int buttonWidth = 80;
+                    const int ButtonWidth = 80;
                     PlateauEditorStyle.CenterAlignVertical(() =>
                     {
-                        if (PlateauEditorStyle.MiniButton("参照...", buttonWidth))
+                        if (PlateauEditorStyle.MiniButton("参照...", ButtonWidth))
                         {
                             isButtonPressed = true;
                         }
-                    }, GUILayout.Width(buttonWidth), GUILayout.Height(height));
+                    }, GUILayout.Width(ButtonWidth), GUILayout.Height(Height));
                     
                 }
 

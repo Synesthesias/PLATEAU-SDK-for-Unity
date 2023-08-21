@@ -47,7 +47,7 @@ namespace PLATEAU.CityImport.Load.Convert
         /// <see cref="ConvertedGameObjData"/> を作ります。
         /// 子も再帰的に作ります。
         /// </summary>
-        public ConvertedGameObjData(Node plateauNode, AttributeDataHelper attributeDataHelper)
+        private ConvertedGameObjData(Node plateauNode, AttributeDataHelper attributeDataHelper)
         {
             this.meshData = MeshConverter.Convert(plateauNode.Mesh, plateauNode.Name);
             this.name = plateauNode.Name;

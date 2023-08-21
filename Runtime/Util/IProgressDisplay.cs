@@ -13,7 +13,7 @@
     
     public class DisplayedProgress
     {
-        public string Name;
+        public readonly string Name;
         public float Percentage;
         public string Message;
         public string PercentageStr => this.Percentage.ToString("00") + "%";

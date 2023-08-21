@@ -22,7 +22,7 @@ namespace PLATEAU.CityImport.Setting
         /// 都市モデル読み込みの全体設定です。
         /// </summary>
         public DatasetSourceConfig DatasetSourceConfig { get; set; }
-        public string[] AreaMeshCodes { get; set; }
+        public string[] AreaMeshCodes { get; private set; }
         
         /// <summary>
         /// 平面直角座標系の番号です。
@@ -36,7 +36,7 @@ namespace PLATEAU.CityImport.Setting
         /// 緯度・経度での範囲です。
         /// ただし、高さの設定は無視され、高さの範囲は必ず -99,999 ～ 99,999 になります。
         /// </summary>
-        public Extent Extent
+        private Extent Extent
         {
             get => this.extent;
             set =>

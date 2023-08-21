@@ -24,7 +24,7 @@ namespace PLATEAU.Editor.EditorWindow.Common.PathSelector
         /// 与えられたパスが Plateau元データのRootフォルダ であるかどうか判別します。
         /// Root直下に udx という名前のフォルダがあればOKとみなします。
         /// </summary>
-        public bool IsPathPlateauRoot()
+        private bool IsPathPlateauRoot()
         {
             if (string.IsNullOrEmpty(SelectedPath)) return false;
             string udxPath = Path.Combine(SelectedPath, "udx");

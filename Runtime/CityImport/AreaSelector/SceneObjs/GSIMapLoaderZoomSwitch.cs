@@ -16,15 +16,15 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
     /// </summary>
     public class GSIMapLoaderZoomSwitch : IDisposable
     {
-        private const int minZoomLevel = 3;
-        private const int maxZoomLevel = 16;
-        private const float updateIntervalMilliSec = 500;
+        private const int MinZoomLevel = 3;
+        private const int MaxZoomLevel = 16;
+        private const float UpdateIntervalMilliSec = 500;
         
         
         /// <summary>
         /// 画面に同時に映る地図タイルの枚数がこの枚数以下になるようにズームレベルが調整されます。
         /// </summary>
-        private const int maxMapCountInScreen = 30;
+        private const int MaxMapCountInScreen = 30;
         
         private readonly GeoReference geoReference;
         private Task mapUpdateTask;
@@ -32,7 +32,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         private int prevZoomLevel = -1;
         private CancellationTokenSource zoomLoadCancel;
         private DateTime lastUpdateTime = DateTime.MinValue;
-        private Extent mapAvailableExtent;
+        private readonly Extent mapAvailableExtent;
 
         public GSIMapLoaderZoomSwitch(GeoReference geoReference, Extent entireExtent)
         {
@@ -46,7 +46,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
 
         public void Update(Camera cam)
         {
-            if ((DateTime.Now - this.lastUpdateTime).Milliseconds <= updateIntervalMilliSec)
+            if ((DateTime.Now - this.lastUpdateTime).Milliseconds <= UpdateIntervalMilliSec)
             {
                 var extent = Extent.Intersection(
                     CalcCameraExtent(cam, this.geoReference),
@@ -114,7 +114,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
 
         private static int CalcZoomLevel(Extent cameraExtent)
         {
-            for (int zoom = maxZoomLevel; zoom >= minZoomLevel; zoom--)
+            for (int zoom = MaxZoomLevel; zoom >= MinZoomLevel; zoom--)
             {
                 var tile = TileProjection.Project(cameraExtent.Center, zoom);
                 var tileExtent = TileProjection.Unproject(tile);
@@ -124,20 +124,20 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
                 double tileCountY =
                     (cameraExtent.Max.Latitude - cameraExtent.Min.Latitude) /
                     (tileExtent.Max.Latitude - tileExtent.Min.Latitude);
-                if (tileCountX * tileCountY <= maxMapCountInScreen)
+                if (tileCountX * tileCountY <= MaxMapCountInScreen)
                 {
                     return zoom;
                 }
             }
 
-            return maxZoomLevel;
+            return MaxZoomLevel;
         }
 
         private static void DisableExceptZoomLevel(int zoomLevel)
         {
             var mapRoot = GameObject.Find(GSIMapLoader.MapRootObjName);
             if (mapRoot == null) return;
-            for (int zoom = minZoomLevel; zoom <= maxZoomLevel; zoom++)
+            for (int zoom = MinZoomLevel; zoom <= MaxZoomLevel; zoom++)
             {
 
                 // GameObject を SetActiveします。       
