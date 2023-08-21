@@ -103,7 +103,7 @@ namespace PLATEAU.Util
             throw new IOException($"File must exist in Assets folder, but the path is outside Assets folder.\filePath = {filePath}");
         }
 
-        public static bool IsSubDirectoryOfAssets(string filePath)
+        private static bool IsSubDirectoryOfAssets(string filePath)
         {
             if (!filePath.EndsWith(Path.DirectorySeparatorChar.ToString()))
             {
@@ -145,13 +145,7 @@ namespace PLATEAU.Util
         /// Unity Asset Store からインポートした場合は Assets 以下になります。
         /// SDKの基本パスを返します。
         /// </summary>
-        public static string SdkBasePath
-        {
-            get
-            {
-                return IsInPackageDir ? "Packages/com.synesthesias.plateau-unity-sdk" : "Assets/PLATEAU-SDK-for-Unity";
-            }
-        }
+        public static string SdkBasePath => IsInPackageDir ? "Packages/com.synesthesias.plateau-unity-sdk" : "Assets/PLATEAU-SDK-for-Unity";
 
         /// <summary>
         /// SdkBasePath からの相対パスを受け取り、アセットパスに変換して返します。

@@ -16,7 +16,7 @@ namespace PLATEAU.CityImport.Setting
         {
             this.data.AddOrUpdate(package,
                 _ => maxLod, 
-                (_, __) => maxLod);
+                (_, _) => maxLod);
         }
 
         /// <summary>
@@ -47,7 +47,7 @@ namespace PLATEAU.CityImport.Setting
         {
             this.data.AddOrUpdate(package,
                 _ => otherLod,
-                (modelPackage, lod) => Math.Max(otherLod, lod));
+                (_, lod) => Math.Max(otherLod, lod));
         }
 
         public bool Contains(PredefinedCityModelPackage package)

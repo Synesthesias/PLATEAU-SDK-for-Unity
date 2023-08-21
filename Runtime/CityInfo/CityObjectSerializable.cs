@@ -20,7 +20,7 @@ namespace PLATEAU.CityInfo
     {
         public string outsideParent = "";
         public List<string> outsideChildren = new List<string>();
-        public List<CityObject> rootCityObjects = new List<CityObject>();
+        public readonly List<CityObject> rootCityObjects = new List<CityObject>();
 
         [JsonConverter(typeof(CityObjectSerializable_CityObjectJsonConverter))]
         public class CityObject
