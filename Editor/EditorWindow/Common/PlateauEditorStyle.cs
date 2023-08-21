@@ -26,8 +26,8 @@ namespace PLATEAU.Editor.EditorWindow.Common
 
 
         private static readonly string imageDirPath = PathUtil.SdkPathToAssetPath("Images");
-        private const string cyanBackgroundDark = "#292e30";
-        private const string cyanBackgroundLight = "#abc4c9";
+        private const string CyanBackgroundDark = "#292e30";
+        private const string CyanBackgroundLight = "#abc4c9";
         private static readonly ColorLightDark colorDarkBoxBackground = new ColorLightDark("#515151", "#191919");
         private static readonly ColorLightDark colorButtonMain = new ColorLightDark("#005858", "#005858");
         private static readonly ColorLightDark colorButtonCancel = new ColorLightDark("#B70000", "#960000");
@@ -36,11 +36,11 @@ namespace PLATEAU.Editor.EditorWindow.Common
         private static readonly ColorLightDark colorDefaultBackground = new ColorLightDark("#C8C8C8", "#383838");
         private static readonly ColorLightDark colorFoldOutBackground = new ColorLightDark("#BBBBBB", "#3E3E3E");
         private static readonly ColorLightDark colorNumberDisplayBackground = new ColorLightDark("#E4E4E4", "#191919");
-        private const string colorDarkBoxSelectedElement = "#676767";
-        private const string colorDarkBoxClickedElement = "#303030";
-        private const string colorLogoBackground = "#676767";
-        private const string colorLogoLine = "#D2D2D2";
-        private const string imageNameLogo = "logo_for_unity.png";
+        private const string ColorDarkBoxSelectedElement = "#676767";
+        private const string ColorDarkBoxClickedElement = "#303030";
+        private const string ColorLogoBackground = "#676767";
+        private const string ColorLogoLine = "#D2D2D2";
+        private const string ImageNameLogo = "logo_for_unity.png";
 
         private static readonly ImagePathLightDark imageGradationLong =
             new ImagePathLightDark("light_gradation_long.png", "dark_gradation_long.png");
@@ -54,8 +54,8 @@ namespace PLATEAU.Editor.EditorWindow.Common
         private static readonly ImagePathLightDark imageIconBuilding =
             new ImagePathLightDark("light_icon_building.png", "dark_icon_building.png");
 
-        private const string imageRoundButton = "round-button.png";
-        private const string imageRoundWindowWide = "round-window-wide.png";
+        private const string ImageRoundButton = "round-button.png";
+        private const string ImageRoundWindowWide = "round-window-wide.png";
 
         public static readonly Color AreaGizmoBoxColor = new Color(0f, 84f / 255f, 1f);
         
@@ -78,21 +78,21 @@ namespace PLATEAU.Editor.EditorWindow.Common
         /// </summary>
         public static void Heading(string text, string imageIconRelativePath)
         {
-            const float height = 40;
+            const float Height = 40;
             var boxStyle = new GUIStyle(EditorStyles.label)
             {
                 margin = new RectOffset(5, 5, 5, 5)
             };
-            using (new EditorGUILayout.HorizontalScope(boxStyle, GUILayout.Height(height)))
+            using (new EditorGUILayout.HorizontalScope(boxStyle, GUILayout.Height(Height)))
             {
                 // 行頭のアイコン
                 if (imageIconRelativePath != null)
                 {
                     var imageIcon = LoadTexture(imageIconRelativePath);
-                    var iconWidth = imageIcon.width * height / imageIcon.height;
+                    var iconWidth = imageIcon.width * Height / imageIcon.height;
                     var iconStyle = new GUIStyle(EditorStyles.label)
                     {
-                        fixedHeight = height,
+                        fixedHeight = Height,
                         fixedWidth = iconWidth,
                     };
                     var iconContent = new GUIContent(imageIcon);
@@ -110,7 +110,7 @@ namespace PLATEAU.Editor.EditorWindow.Common
                     {
                         EditorGUILayout.LabelField(textContent, textStyle, GUILayout.MaxWidth(textWidth));
                     }
-                    , GUILayout.Height(height), GUILayout.Width(textWidth)
+                    , GUILayout.Height(Height), GUILayout.Width(textWidth)
                 );
                 // 行末の線の画像
                 CenterAlignVertical(() =>
@@ -118,7 +118,7 @@ namespace PLATEAU.Editor.EditorWindow.Common
                         var imageLine = LoadTexture(imageGradationLong.RelativePath);
                         EditorGUILayout.LabelField(new GUIContent(imageLine));
                     }
-                    , GUILayout.Height(height)
+                    , GUILayout.Height(Height)
                 );
 
             }
@@ -134,13 +134,13 @@ namespace PLATEAU.Editor.EditorWindow.Common
             EditorGUILayout.LabelField(content, style, GUILayout.Width(width));
         }
 
-        public static void NumberDisplay(int num)
+        private static void NumberDisplay(int num)
         {
             var style = new GUIStyle(EditorStyles.label)
             {
                 normal =
                 {
-                    background = LoadTexture(imageRoundButton)
+                    background = LoadTexture(ImageRoundButton)
                 },
                 fontStyle = FontStyle.Bold
             };
@@ -154,11 +154,11 @@ namespace PLATEAU.Editor.EditorWindow.Common
 
         public static void Separator(int indentLevel)
         {
-            const float lineWidth = 1;
-            const int marginY = 15;
+            const float LineWidth = 1;
+            const int MarginY = 15;
             var horizontalStyle = new GUIStyle
             {
-                margin = new RectOffset(0, 0, marginY, marginY)
+                margin = new RectOffset(0, 0, MarginY, MarginY)
             };
             using (new GUILayout.HorizontalScope(horizontalStyle))
             {
@@ -167,11 +167,11 @@ namespace PLATEAU.Editor.EditorWindow.Common
                 {
                     normal =
                     {
-                        background = ColoredTexture(colorDarkBoxSelectedElement)
+                        background = ColoredTexture(ColorDarkBoxSelectedElement)
                     },
                     margin = new RectOffset(0, 0, 0, 0) 
                 };
-                GUILayout.Box("", boxStyle, GUILayout.ExpandWidth(true), GUILayout.Height(lineWidth));
+                GUILayout.Box("", boxStyle, GUILayout.ExpandWidth(true), GUILayout.Height(LineWidth));
             }
         }
 
@@ -182,7 +182,7 @@ namespace PLATEAU.Editor.EditorWindow.Common
             {
                 normal =
                 {
-                    background = LoadTexture(imageRoundWindowWide),
+                    background = LoadTexture(ImageRoundWindowWide),
                     textColor = colorDefaultFont.Dark
                 },
                 alignment = TextAnchor.MiddleCenter
@@ -201,7 +201,7 @@ namespace PLATEAU.Editor.EditorWindow.Common
             {
                 normal =
                 {
-                    background = LoadTexture(imageRoundWindowWide),
+                    background = LoadTexture(ImageRoundWindowWide),
                     textColor = colorDefaultFont.Dark
                 },
                 alignment = TextAnchor.MiddleCenter
@@ -220,7 +220,7 @@ namespace PLATEAU.Editor.EditorWindow.Common
             {
                 normal =
                 {
-                    background = LoadTexture(imageRoundWindowWide),
+                    background = LoadTexture(ImageRoundWindowWide),
                     textColor = colorDefaultFont.Dark
                 },
                 alignment = TextAnchor.MiddleCenter
@@ -331,9 +331,9 @@ namespace PLATEAU.Editor.EditorWindow.Common
             using (new EditorGUILayout.HorizontalScope())
             {
                 EditorGUILayout.LabelField(label, GUILayout.Width(150));
-                NumberDisplay((int)minVal);
+                NumberDisplay(minVal);
                 EditorGUILayout.MinMaxSlider("", ref sliderValMin, ref sliderValMax, minLODLimit, maxLODLimit);
-                NumberDisplay((int)maxVal);
+                NumberDisplay(maxVal);
             }
 
             minVal = (int)Mathf.Round(sliderValMin);
@@ -370,7 +370,7 @@ namespace PLATEAU.Editor.EditorWindow.Common
         {
             normal =
             {
-                background = ColoredTexture(EditorGUIUtility.isProSkin ? cyanBackgroundDark : cyanBackgroundLight)
+                background = ColoredTexture(EditorGUIUtility.isProSkin ? CyanBackgroundDark : CyanBackgroundLight)
             },
             margin =
             {
@@ -387,7 +387,7 @@ namespace PLATEAU.Editor.EditorWindow.Common
         {
             normal =
             {
-                background = LoadTexture(imageRoundWindowWide),
+                background = LoadTexture(ImageRoundWindowWide),
             },
             margin = new RectOffset(15, 15, 15, 15),
             padding = new RectOffset(5, 5, 15, 15)
@@ -398,7 +398,7 @@ namespace PLATEAU.Editor.EditorWindow.Common
         {
             normal =
             {
-                background = ColoredTexture(colorLogoBackground)
+                background = ColoredTexture(ColorLogoBackground)
             },
             margin = new RectOffset(0, 0, 15, 15)
         };
@@ -420,7 +420,7 @@ namespace PLATEAU.Editor.EditorWindow.Common
             var buttonIcons = imagePathsRelative
                 .Select(path => (Texture)LoadTexture(path))
                 .ToArray();
-            var buttonBackground = LoadTexture(imageRoundButton);
+            var buttonBackground = LoadTexture(ImageRoundButton);
             float toolbarButtonHeight = buttonBackground.height * buttonWidth / buttonBackground.width;
 
             var iconContents = new GUIContent[tabCount];
@@ -460,7 +460,7 @@ namespace PLATEAU.Editor.EditorWindow.Common
                     if (i == currentTabIndex)
                     {
                         
-                        ColorUtility.TryParseHtmlString(colorDarkBoxSelectedElement, out var selectedColorTint);
+                        ColorUtility.TryParseHtmlString(ColorDarkBoxSelectedElement, out var selectedColorTint);
                         buttonBackgroundColorTint = selectedColorTint;
                         buttonStyle.normal.background = buttonBackground;
                         
@@ -468,7 +468,7 @@ namespace PLATEAU.Editor.EditorWindow.Common
                     else
                     {
                         buttonBackgroundColorTint = colorDarkBoxBackground.Color;
-                        buttonStyle.active.background = ColoredTexture(colorDarkBoxClickedElement);
+                        buttonStyle.active.background = ColoredTexture(ColorDarkBoxClickedElement);
                     }
 
                     if (ButtonWithColorTint(iconContents[i], buttonBackgroundColorTint, buttonStyle,
@@ -493,27 +493,27 @@ namespace PLATEAU.Editor.EditorWindow.Common
         /// </summary>
         public static int Tabs(int currentTabIndex, params string[] tabNames)
         {
-            const int height = 40;
+            const int Height = 40;
             int tabCount = tabNames.Length;
             int nextTabIndex = currentTabIndex;
             var boxStyle = new GUIStyle(EditorStyles.label)
             {
                 padding = new RectOffset(30, 30, 0, 0)
             };
-            using (new EditorGUILayout.HorizontalScope(boxStyle,  GUILayout.Height(height)))
+            using (new EditorGUILayout.HorizontalScope(boxStyle,  GUILayout.Height(Height)))
             {
                 var baseStyle = new GUIStyle(EditorStyles.label)
                 {
                     normal =
                     {
-                        background = LoadTexture(imageRoundWindowWide)
+                        background = LoadTexture(ImageRoundWindowWide)
                     },
                     margin =
                     {
                         left = -5,
                         right = -5
                     },
-                    fixedHeight = height,
+                    fixedHeight = Height,
                     fontSize = 14,
                     fontStyle = FontStyle.Bold,
                     alignment = TextAnchor.MiddleCenter
@@ -528,7 +528,7 @@ namespace PLATEAU.Editor.EditorWindow.Common
                         buttonStyle.normal.textColor = colorDefaultFont.Dark;
                     }
                     var backgroundColorTint = i == currentTabIndex ? colorButtonMain.Color : colorButtonSub.Color;
-                    if (ButtonWithColorTint(new GUIContent(tabNames[i]), backgroundColorTint, buttonStyle, GUILayout.Height(height)))
+                    if (ButtonWithColorTint(new GUIContent(tabNames[i]), backgroundColorTint, buttonStyle, GUILayout.Height(Height)))
                     {
                         nextTabIndex = i;
                     }
@@ -647,21 +647,21 @@ namespace PLATEAU.Editor.EditorWindow.Common
 
         public static void MainLogo()
         {
-            const int logoMaxWidth = 300;
-            var tex = LoadTexture(imageNameLogo);
+            const int LogoMaxWidth = 300;
+            var tex = LoadTexture(ImageNameLogo);
             if (tex == null) return;
-            float width = Math.Min(Math.Min(tex.width, ScreenDrawableWidth), logoMaxWidth);
+            float width = Math.Min(Math.Min(tex.width, ScreenDrawableWidth), LogoMaxWidth);
             float height = tex.height * width / tex.width;
             using (new EditorGUILayout.VerticalScope(new GUIStyle(StyleLogoBackground)))
             {
                 LogoLine();
-                const int imageTopMargin = 10;
-                const int imageBottomMargin = 0;
+                const int ImageTopMargin = 10;
+                const int ImageBottomMargin = 0;
                 var imageStyle = new GUIStyle(EditorStyles.label)
                 {
                     fixedHeight = height,
                     fixedWidth = width - 15,
-                    margin = new RectOffset(0, 0, imageTopMargin, imageBottomMargin)
+                    margin = new RectOffset(0, 0, ImageTopMargin, ImageBottomMargin)
                 };
                 var imageContent = new GUIContent(tex);
                 var logoSize = imageStyle.CalcSize(imageContent);
@@ -669,7 +669,7 @@ namespace PLATEAU.Editor.EditorWindow.Common
                     {
                         EditorGUILayout.LabelField(imageContent, imageStyle, GUILayout.MaxWidth(width), GUILayout.MaxHeight(height));
                     }
-                    , GUILayout.Height(logoSize.y + imageTopMargin + imageBottomMargin)
+                    , GUILayout.Height(logoSize.y + ImageTopMargin + ImageBottomMargin)
                     , GUILayout.Width(ScreenDrawableWidth)
                 );
                 LogoLine();
@@ -681,7 +681,7 @@ namespace PLATEAU.Editor.EditorWindow.Common
                 {
                     normal =
                     {
-                        background = ColoredTexture(colorLogoLine)
+                        background = ColoredTexture(ColorLogoLine)
                     },
                     margin = new RectOffset(0,0,0,0),
                     fixedHeight = 1

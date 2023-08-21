@@ -14,8 +14,8 @@ namespace PLATEAU.Editor.EditorWindow.ProgressDisplay
     internal class ProgressDisplayGUI : IProgressDisplay
     {
         private readonly ConcurrentBag<DisplayedProgress> progressBag = new ConcurrentBag<DisplayedProgress>();
-        private SynchronizationContext mainThreadContext;
-        public UnityEditor.EditorWindow ParentEditorWindow { get; set; }
+        private readonly SynchronizationContext mainThreadContext;
+        private UnityEditor.EditorWindow ParentEditorWindow { get; set; }
 
         /// <summary>
         /// メインスレッドから読んでください。
