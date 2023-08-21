@@ -17,7 +17,7 @@ namespace PLATEAU.Editor.CityImport
 
         public PackageLoadSettingGUIList(PackageToLodDict availablePackageLODDict, CityLoadConfig cityLoadConf)
         {
-            packageGUIList = new();
+            this.packageGUIList = new();
             foreach (var (package, maxLOD) in availablePackageLODDict)
             {
                 if (maxLOD < 0)
@@ -26,13 +26,19 @@ namespace PLATEAU.Editor.CityImport
                     continue;
                 }
 
-                packageGUIList.Add(new PackageLoadSettingGUI(cityLoadConf.GetConfigForPackage(package)));
+                var packageConf = cityLoadConf.GetConfigForPackage(package);
+                var gui = package switch
+                {
+                    PredefinedCityModelPackage.Relief => new ReliefLoadSettingGUI((ReliefLoadSetting)packageConf),
+                    _ => new PackageLoadSettingGUI(packageConf)
+                };
+                this.packageGUIList.Add(gui);
             }
         }
 
         public void Draw()
         {
-            foreach (var gui in packageGUIList)
+            foreach (var gui in this.packageGUIList)
             {
                 gui.Draw();
             }
@@ -45,42 +51,45 @@ namespace PLATEAU.Editor.CityImport
         /// </summary>
         private class PackageLoadSettingGUI
         {
-            private readonly PackageLoadSetting conf;
+            private readonly PackageLoadSetting config;
 
             /// <summary> GUIで設定を表示する(true)か、折りたたむ(false)か </summary>
             private bool guiFoldOutState = true;
 
             public PackageLoadSettingGUI(PackageLoadSetting conf)
             {
-                this.conf = conf;
+                this.config = conf;
             }
 
-            public void Draw()
+            public virtual void Draw()
             {
+                var conf = this.config;
                 var package = conf.Package;
-                guiFoldOutState = PlateauEditorStyle.FoldOut(guiFoldOutState, package.ToJapaneseName(), () =>
+                this.guiFoldOutState = PlateauEditorStyle.FoldOut(this.guiFoldOutState, package.ToJapaneseName(), () =>
                 {
                     using (PlateauEditorStyle.VerticalScopeLevel1())
                     {
                         conf.LoadPackage = EditorGUILayout.Toggle("インポートする", conf.LoadPackage);
-                        if (conf.LoadPackage)
+                        if (!conf.LoadPackage) return;
+                        using (PlateauEditorStyle.VerticalScopeLevel1(1))
                         {
-                            using (PlateauEditorStyle.VerticalScopeLevel1(1))
-                            {
-                                var predefined = CityModelPackageInfo.GetPredefined(package);
-                                TextureIncludeGUI(conf, predefined.hasAppearance);
-                                conf.DoSetMeshCollider =
-                                    EditorGUILayout.Toggle("Mesh Collider をセットする", conf.DoSetMeshCollider);
+                            var predefined = CityModelPackageInfo.GetPredefined(package);
+                            TextureIncludeGUI(conf, predefined.hasAppearance);
+                            conf.DoSetMeshCollider =
+                                EditorGUILayout.Toggle("Mesh Collider をセットする", conf.DoSetMeshCollider);
 
-                                conf.DoSetAttrInfo =
-                                    EditorGUILayout.Toggle("属性情報を含める", conf.DoSetAttrInfo);
+                            conf.DoSetAttrInfo =
+                                EditorGUILayout.Toggle("属性情報を含める", conf.DoSetAttrInfo);
 
-                                PlateauEditorStyle.LODSlider("LOD描画設定", ref conf.MinLOD, ref conf.MaxLOD,
-                                    Math.Min(predefined.minLOD, conf.AvailableMaxLOD), conf.AvailableMaxLOD);
+                            int minLOD = conf.LODRange.MinLOD;
+                            int maxLOD = conf.LODRange.MaxLOD;
+                            int availableMaxLOD = conf.LODRange.AvailableMaxLOD;
+                            PlateauEditorStyle.LODSlider("LOD描画設定", ref minLOD, ref maxLOD,
+                                Math.Min(predefined.minLOD, availableMaxLOD), availableMaxLOD);
+                            conf.LODRange = new LODRange(minLOD, maxLOD, availableMaxLOD);
 
-                                conf.MeshGranularity = (MeshGranularity)EditorGUILayout.Popup("モデル結合",
-                                    (int)conf.MeshGranularity, new[] { "最小地物単位(壁面,屋根面等)", "主要地物単位(建築物,道路等)", "地域単位" });
-                            }
+                            conf.MeshGranularity = (MeshGranularity)EditorGUILayout.Popup("モデル結合",
+                                (int)conf.MeshGranularity, new[] { "最小地物単位(壁面,屋根面等)", "主要地物単位(建築物,道路等)", "地域単位" });
                         }
                     }
                 });
@@ -92,5 +101,26 @@ namespace PLATEAU.Editor.CityImport
                 conf.IncludeTexture = EditorGUILayout.Toggle("テクスチャを含める", conf.IncludeTexture);
             }
         }
+
+        /// <summary>
+        /// <see cref="ReliefLoadSetting"/> に対応するGUIクラスです。
+        /// <see cref="PackageLoadSetting"/> に対して、土地特有の設定GUIを追加したクラスです。
+        /// </summary>
+        private class ReliefLoadSettingGUI : PackageLoadSettingGUI
+        {
+            private readonly ReliefLoadSetting conf;
+            public ReliefLoadSettingGUI(ReliefLoadSetting setting) : base(setting)
+            {
+                this.conf = setting;
+            }
+
+            public override void Draw()
+            {
+                this.conf.AttachMapTile = EditorGUILayout.Toggle("航空写真または地図を貼り付ける", this.conf.AttachMapTile);
+                base.Draw();
+
+            }
+        }
     }
+    
 }

@@ -137,13 +137,11 @@ namespace PLATEAU.CityImport.Setting
                     package: package,
                     loadPackage: true,
                     includeTexture: predefined.hasAppearance,
-                    minLOD: predefined.minLOD,
-                    maxLOD: availableMaxLOD,
-                    availableMaxLOD: availableMaxLOD,
+                    lodRange: new LODRange(predefined.minLOD, availableMaxLOD, availableMaxLOD),
                     MeshGranularity.PerPrimaryFeatureObject, 
                     doSetMeshCollider: true,
                     doSetAttrInfo: true);
-                this.perPackagePairSettings.Add(package, val);
+                this.perPackagePairSettings.Add(package, PackageLoadSetting.CreateSettingFor(package, val));
             }
         }
 
@@ -158,44 +156,13 @@ namespace PLATEAU.CityImport.Setting
             ReferencePoint = center;
             return center;
         }
-
-        // インポート設定のうち、Unityでは必ずこうなるという定数部分です。
-        internal const CoordinateSystem MeshAxes = CoordinateSystem.EUN;
-        internal const float UnitScale = 1.0f;
-        
-        
         /// <summary>
         /// インポート設定について、C++のstructに変換します。
         /// </summary>
         internal MeshExtractOptions CreateNativeConfigFor(PredefinedCityModelPackage package)
         {
             var packageConf = GetConfigForPackage(package);
-            return new MeshExtractOptions(
-                referencePoint: ReferencePoint,
-                meshAxes: MeshAxes,
-                meshGranularity: packageConf.MeshGranularity,
-                minLOD: (uint)packageConf.MinLOD,
-                maxLOD: (uint)packageConf.MaxLOD,
-                exportAppearance: packageConf.IncludeTexture,
-                gridCountOfSide: 10,
-                unitScale: UnitScale,
-                coordinateZoneID: CoordinateZoneID,
-                excludeCityObjectOutsideExtent: ShouldExcludeCityObjectOutsideExtent(package),
-                excludePolygonsOutsideExtent: ShouldExcludePolygonsOutsideExtent(package),
-                extent: Extent,
-                attachMapTile: true,
-                mapTileZoomLevel: 15); // TODO ここで定数で決め打っている部分は、ユーザーが選択できるようにすると良い
-        } 
-        
-        private static bool ShouldExcludeCityObjectOutsideExtent(PredefinedCityModelPackage package)
-        {
-            if (package == PredefinedCityModelPackage.Relief) return false;
-            return true;
-        }
-
-        private static bool ShouldExcludePolygonsOutsideExtent(PredefinedCityModelPackage package)
-        {
-            return !ShouldExcludeCityObjectOutsideExtent(package);
+            return packageConf.ConvertToNativeOption(ReferencePoint, CoordinateZoneID, Extent);
         }
     }
 }

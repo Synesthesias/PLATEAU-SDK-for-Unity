@@ -76,7 +76,7 @@ namespace PLATEAU.CityImport.Load
             // ルートのGameObjectにコンポーネントを付けます。 
             var cityModelComponent = rootTrans.gameObject.AddComponent<PLATEAUInstancedCityModel>();
             cityModelComponent.GeoReference =
-                GeoReference.Create(referencePoint, CityLoadConfig.UnitScale, CityLoadConfig.MeshAxes, config.CoordinateZoneID);
+                GeoReference.Create(referencePoint, PackageLoadSetting.UnitScale, PackageLoadSetting.MeshAxes, config.CoordinateZoneID);
 
             // GMLファイルを fetch します。これは同期処理にします。
             // なぜなら、ファイルコピー が並列で動くのはトラブルの元(特に同じ codelist を同時にコピーしようとしがち) だからです。

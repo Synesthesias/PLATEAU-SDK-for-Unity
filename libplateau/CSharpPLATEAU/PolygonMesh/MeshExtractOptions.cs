@@ -138,7 +138,7 @@ namespace PLATEAU.PolygonMesh
         /// この方法であれば 10km×10km の地形など巨大なオブジェクトにも対応できます。
         /// </summary>
         [MarshalAs(UnmanagedType.U1)] public bool ExcludePolygonsOutsideExtent;
-
+        
         /// <summary>  対象範囲を緯度・経度・高さで指定します。 </summary>
         public Extent Extent;
 
@@ -153,7 +153,7 @@ namespace PLATEAU.PolygonMesh
         /// URLで地図タイルをダウンロードする場合のズームレベルです。
         /// </summary>
         public int MapTileZoomLevel;
-
+        
         /// <summary> デフォルト値の設定を返します。 </summary>
         internal static MeshExtractOptions DefaultValue()
         {
