@@ -23,7 +23,7 @@ namespace PLATEAU.Editor.CityImport
                 new PositionConfGUI(cityLoadConf)
             };
         }
-        
+
         /// <summary>
         /// <see cref="CityLoadConfig"/> を設定するGUIを描画します。
         /// </summary>

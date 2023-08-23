@@ -33,7 +33,7 @@ namespace PLATEAU.PolygonMesh
     [StructLayout(LayoutKind.Sequential)]
     public struct MeshExtractOptions
     {
-        public MeshExtractOptions(PlateauVector3d referencePoint, CoordinateSystem meshAxes, MeshGranularity meshGranularity, uint minLOD, uint maxLOD, bool exportAppearance, int gridCountOfSide, float unitScale, int coordinateZoneID, bool excludeCityObjectOutsideExtent, bool excludePolygonsOutsideExtent, Extent extent, bool attachMapTile, int mapTileZoomLevel)
+        public MeshExtractOptions(PlateauVector3d referencePoint, CoordinateSystem meshAxes, MeshGranularity meshGranularity, uint minLOD, uint maxLOD, bool exportAppearance, int gridCountOfSide, float unitScale, int coordinateZoneID, bool excludeCityObjectOutsideExtent, bool excludePolygonsOutsideExtent, bool enableTexturePacking, uint texturePackingResolution, Extent extent)
         {
             this.ReferencePoint = referencePoint;
             this.MeshAxes = meshAxes;
@@ -47,6 +47,8 @@ namespace PLATEAU.PolygonMesh
             this.maxLOD = maxLOD;
             this.unitScale = unitScale;
             this.gridCountOfSide = gridCountOfSide;
+            this.EnableTexturePacking = enableTexturePacking; 
+            this.TexturePackingResolution = texturePackingResolution; 
             
             // 上で全てのメンバー変数を設定できてますが、バリデーションをするため念のためメソッドやプロパティも呼びます。
             SetLODRange(minLOD, maxLOD);
@@ -136,6 +138,14 @@ namespace PLATEAU.PolygonMesh
         /// この方法であれば 10km×10km の地形など巨大なオブジェクトにも対応できます。
         /// </summary>
         [MarshalAs(UnmanagedType.U1)] public bool ExcludePolygonsOutsideExtent;
+        
+        /// <summary>
+        /// テクスチャ結合（複数のテクスチャ画像を結合する機能）を有効にするかどうかを bool で指定します。
+        /// </summary>
+        [MarshalAs(UnmanagedType.U1)] public bool EnableTexturePacking;
+
+        /// <summary> テクスチャ結合時の結合先のテクスチャ画像の解像度（縦：texture_packing_resolution x 横:texture_packing_resolution） </summary>
+        public uint TexturePackingResolution;
         
         /// <summary>  対象範囲を緯度・経度・高さで指定します。 </summary>
         public Extent Extent;
