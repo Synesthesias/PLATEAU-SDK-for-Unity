@@ -125,7 +125,7 @@ namespace PLATEAU.CityImport.Load.Convert
             // .PLATEAU からの相対パスを求めます。
             string pathToReplace = (PathUtil.PLATEAUSrcFetchDir + "/").Replace('\\', '/');
             string relativePath = (texturePath.Replace('\\', '/')).Replace(pathToReplace, "");
-
+            
             Debug.Log($"Loading Texture : {texturePath}");
 
             // 非同期でテクスチャをロードします。
