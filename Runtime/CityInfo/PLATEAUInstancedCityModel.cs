@@ -134,7 +134,7 @@ namespace PLATEAU.CityInfo
         {
             get
             {
-                var grd = this.geoReferenceData;
+                var grd = geoReferenceData;
                 var gr =
                     GeoReference.Create(
                         new PlateauVector3d(
@@ -154,7 +154,7 @@ namespace PLATEAU.CityInfo
                         point.X, point.Y, point.Z, value.UnitScale,
                         value.CoordinateSystem, value.ZoneID
                     );
-                this.geoReferenceData = data;
+                geoReferenceData = data;
             }
         }
     }

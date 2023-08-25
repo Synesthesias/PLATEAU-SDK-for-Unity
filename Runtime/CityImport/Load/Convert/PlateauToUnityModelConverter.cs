@@ -29,7 +29,7 @@ namespace PLATEAU.CityImport.Load.Convert
         public static async Task<bool> ConvertAndPlaceToScene(
             CityModel cityModel, MeshExtractOptions meshExtractOptions,
             Transform parentTrans, IProgressDisplay progressDisplay, string progressName,
-            bool doSetMeshCollider, CancellationToken token
+            bool doSetMeshCollider, bool doSetAttrInfo, CancellationToken token
             )
         {
             Debug.Log($"load started");
@@ -53,7 +53,7 @@ namespace PLATEAU.CityImport.Load.Convert
                 meshObjsData = await Task.Run(() =>
                 {
                     using var plateauModel = ExtractMeshes(cityModel, meshExtractOptions, token);
-                    var convertedObjData = new ConvertedGameObjData(plateauModel);
+                    var convertedObjData = new ConvertedGameObjData(plateauModel, new AttributeDataHelper(cityModel, meshExtractOptions.MeshGranularity, doSetAttrInfo));
                     return convertedObjData;
                 });
             }
@@ -67,14 +67,14 @@ namespace PLATEAU.CityImport.Load.Convert
             // 実際にメッシュを操作してシーンに配置します。
             // こちらはメインスレッドでのみ実行可能なので、Loadメソッドはメインスレッドから呼ぶ必要があります。
             
-            // テクスチャパス と テクスチャを紐付ける辞書です。同じテクスチャが繰り返しロードされることを防ぎます。
-            Dictionary<string, Texture> cachedTexture = new Dictionary<string, Texture>();
+            // テクスチャパス と マテリアルを紐付ける辞書です。同じマテリアルが重複して生成されることを防ぎます。
+            Dictionary<string, UnityEngine.Material> cachedMaterials = new Dictionary<string, UnityEngine.Material>();
             
             progressDisplay.SetProgress(progressName, 80f, "シーンに配置中");
 
             try
             {
-                await meshObjsData.PlaceToScene(parentTrans, cachedTexture, true, doSetMeshCollider, token);
+                await meshObjsData.PlaceToScene(parentTrans, cachedMaterials, true, doSetMeshCollider, token);
             }
             catch (Exception e)
             {

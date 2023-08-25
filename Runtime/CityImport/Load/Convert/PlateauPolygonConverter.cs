@@ -18,29 +18,27 @@ namespace PLATEAU.CityImport.Load.Convert
         public static ConvertedMeshData Convert(PolygonMesh.Mesh plateauMesh, string meshName)
         {
             if (plateauMesh == null) return null;
-            CopyVerticesAndUV(plateauMesh, out var unityVerts, out var unityUV1, out var unityUV2, out var unityUV3);
+            CopyVerticesAndUV(plateauMesh, out var unityVerts, out var unityUV1, out var unityUV4);
             CopySubMeshInfo(plateauMesh, out var subMeshTriangles, out var texturePaths);
-            var meshData = new ConvertedMeshData(unityVerts, unityUV1, unityUV2, unityUV3, subMeshTriangles, texturePaths, meshName);
+            var meshData = new ConvertedMeshData(unityVerts, unityUV1, unityUV4, subMeshTriangles, texturePaths, meshName);
             return meshData;
         }
 
-        private static void CopyVerticesAndUV(PolygonMesh.Mesh plateauMesh, out Vector3[] unityVerts, out Vector2[] unityUV1, out Vector2[] unityUV2, out Vector2[] unityUV3)
+        private static void CopyVerticesAndUV(PolygonMesh.Mesh plateauMesh, out Vector3[] unityVerts, out Vector2[] unityUV1, out Vector2[] unityUV4)
         {
             int numVerts = plateauMesh.VerticesCount;
             var plateauUv1 = plateauMesh.GetUv1();
-            var plateauUv2 = plateauMesh.GetUv2();
-            var plateauUv3 = plateauMesh.GetUv3();
+            var plateauUv4 = plateauMesh.GetUv4();
             unityVerts = new Vector3[numVerts];
             unityUV1 = new Vector2[numVerts];
-            unityUV2 = new Vector2[numVerts];
-            unityUV3 = new Vector2[numVerts];
+            unityUV4 = new Vector2[numVerts];
+
             for (int i = 0; i < numVerts; i++)
             {
                 var vert = plateauMesh.GetVertexAt(i);
                 unityVerts[i] = new Vector3((float)vert.X, (float)vert.Y, (float)vert.Z);
                 unityUV1[i] = new Vector2(plateauUv1[i].X, plateauUv1[i].Y);
-                unityUV2[i] = new Vector2(plateauUv2[i].X, plateauUv2[i].Y);
-                unityUV3[i] = new Vector2(plateauUv3[i].X, plateauUv3[i].Y);
+                unityUV4[i] = new Vector2(plateauUv4[i].X, plateauUv4[i].Y);
             }
         }
 

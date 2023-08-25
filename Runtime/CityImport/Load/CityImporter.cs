@@ -30,7 +30,6 @@ namespace PLATEAU.CityImport.Load
         {
             var datasetSourceConfig = config.DatasetSourceConfig;
             string destPath = PathUtil.PLATEAUSrcFetchDir;
-            // string destFolderName = datasetSourceConfig.RootDirName;
 
             if ((!datasetSourceConfig.IsServer) && (!Directory.Exists(datasetSourceConfig.LocalSourcePath)))
             {
@@ -77,7 +76,7 @@ namespace PLATEAU.CityImport.Load
             // ルートのGameObjectにコンポーネントを付けます。 
             var cityModelComponent = rootTrans.gameObject.AddComponent<PLATEAUInstancedCityModel>();
             cityModelComponent.GeoReference =
-                GeoReference.Create(referencePoint, GmlImporter.UnitScale, GmlImporter.MeshAxes, config.CoordinateZoneID);
+                GeoReference.Create(referencePoint, CityLoadConfig.UnitScale, CityLoadConfig.MeshAxes, config.CoordinateZoneID);
 
             // GMLファイルを fetch します。これは同期処理にします。
             // なぜなら、ファイルコピー が並列で動くのはトラブルの元(特に同じ codelist を同時にコピーしようとしがち) だからです。
@@ -119,7 +118,7 @@ namespace PLATEAU.CityImport.Load
                         {
                             // GMLを1つインポートします。
                             // ここはメインスレッドで呼ぶ必要があります。
-                            await GmlImporter.Import(fetchedGml, config, rootTrans, progressDisplay, referencePoint, token);
+                            await GmlImporter.Import(fetchedGml, config, rootTrans, progressDisplay, token);
                         }
                         catch(OperationCanceledException)
                         {

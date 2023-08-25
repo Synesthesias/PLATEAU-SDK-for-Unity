@@ -13,26 +13,25 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
     /// </summary>
     internal class MeshCodeGizmoDrawer : BoxGizmoDrawer
     {
-        public MeshCode MeshCode { get; set; }
+        public MeshCode MeshCode { get; private set; }
 
         /// <summary> メッシュコードの中の縦横に弾かれる細かい線について、、縦横それぞれメッシュコードを何分割するかです。 </summary>
-        private const int innerDivideCount = 4;
+        private const int InnerDivideCount = 4;
 
         private static readonly Color boxColorNormalLevel2 = Color.black;
         private static readonly Color boxColorNormalLevel3 = new Color(0f, 84f / 255f, 1f);
-        private static readonly Color boxColorSelected = new Color(1f, 162f / 255f, 62f / 255f);
-        private const int lineWidthLevel2 = 3;
-        private const int lineWidthLevel3 = 2;
+        private const int LineWidthLevel2 = 3;
+        private const int LineWidthLevel3 = 2;
         private GeoReference geoReference;
 
         /// <summary>
         /// メッシュコードに対応したギズモを表示するようにします。
         /// </summary>
-        public void SetUp(MeshCode meshCode, GeoReference geoReference)
+        public void SetUp(MeshCode meshCode, GeoReference geoReferenceArg)
         {
             var extent = meshCode.Extent; // extent は緯度,経度,高さ
 
-            this.geoReference = geoReference;
+            this.geoReference = geoReferenceArg;
 
             // min, max は xyz の平面直行座標系に変換したもの
             var min = geoReference.Project(extent.Min);
@@ -54,11 +53,11 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
             switch (MeshCode.Level)
             {
                 case 2:
-                    LineWidth = lineWidthLevel2;
+                    LineWidth = LineWidthLevel2;
                     BoxColor = boxColorNormalLevel2;
                     break;
                 default:
-                    LineWidth = lineWidthLevel3;
+                    LineWidth = LineWidthLevel3;
                     BoxColor = boxColorNormalLevel3;
                     break;
             }
@@ -69,18 +68,18 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
 #if UNITY_EDITOR
             // 追加でボックスの中を分割するラインを引きます。
             var min = AreaMin;
-            var xDiff = this.Size.x / innerDivideCount;
+            var xDiff = this.Size.x / InnerDivideCount;
             var linePosUp = min + Vector3.right * xDiff;
             // 縦のライン
-            for (int i = 0; i < innerDivideCount-1; i++)
+            for (int i = 0; i < InnerDivideCount-1; i++)
             {
                 Gizmos.DrawLine(linePosUp, linePosUp + Vector3.forward * this.Size.z);
                 linePosUp += Vector3.right * xDiff;
             }
             // 横のライン
-            var zDiff = this.Size.z / innerDivideCount;
+            var zDiff = this.Size.z / InnerDivideCount;
             var linePosLeft = min + Vector3.forward * zDiff;
-            for (int i = 0; i < innerDivideCount - 1; i++)
+            for (int i = 0; i < InnerDivideCount - 1; i++)
             {
                 Gizmos.DrawLine(linePosLeft, linePosLeft + Vector3.right * this.Size.x);
                 linePosLeft += Vector3.forward * zDiff;

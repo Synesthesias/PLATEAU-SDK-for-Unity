@@ -36,7 +36,7 @@ namespace PLATEAU.Editor.CityExport.ModelConvert
             for (int i = 0; i < childCount; i++)
             {
                 var childTrans = trans.GetChild(i);
-                ConvertRecursive(null, childTrans, model, includeTexture, exportDisabledGameObj, doInvertTriangles, meshAxis, vertexConvertFunc);
+                ConvertRecursive(null, childTrans, model, includeTexture, exportDisabledGameObj, doInvertTriangles, vertexConvertFunc);
             }
             
             return model;
@@ -52,14 +52,14 @@ namespace PLATEAU.Editor.CityExport.ModelConvert
         /// <param name="includeTexture"></param>
         /// <param name="exportDisabledGameObj">false のとき、ActiveでないGameObjectは対象から除外します。</param>
         /// <param name="doInvertTriangles"></param>
-        /// <param name="meshAxis"></param>
         /// <param name="vertexConvertFunc"></param>
-        private static void ConvertRecursive(Node parentNode, Transform trans, Model model, bool includeTexture, bool exportDisabledGameObj, bool doInvertTriangles, CoordinateSystem meshAxis, VertexConvertFunc vertexConvertFunc)
+        private static void ConvertRecursive(Node parentNode, Transform trans, Model model, bool includeTexture,
+            bool exportDisabledGameObj, bool doInvertTriangles, VertexConvertFunc vertexConvertFunc)
         {
             if ((!trans.gameObject.activeInHierarchy) && (!exportDisabledGameObj)) return;
 
             // メッシュを変換して Node を作ります。
-            var node = GameObjToNode(trans, includeTexture, doInvertTriangles, meshAxis, vertexConvertFunc);
+            var node = GameObjToNode(trans, includeTexture, doInvertTriangles, vertexConvertFunc);
 
             if (parentNode == null)
             {
@@ -81,11 +81,12 @@ namespace PLATEAU.Editor.CityExport.ModelConvert
             for (int i = 0; i < numChild; i++)
             {
                 var childTrans = trans.GetChild(i);
-                ConvertRecursive(node, childTrans, model, includeTexture, exportDisabledGameObj, doInvertTriangles, meshAxis, vertexConvertFunc);
+                ConvertRecursive(node, childTrans, model, includeTexture, exportDisabledGameObj, doInvertTriangles, vertexConvertFunc);
             }
         }
 
-        private static Node GameObjToNode(Transform trans, bool includeTexture, bool doInvertTriangles, CoordinateSystem meshAxis, VertexConvertFunc vertexConvertFunc)
+        private static Node GameObjToNode(Transform trans, bool includeTexture, bool doInvertTriangles,
+            VertexConvertFunc vertexConvertFunc)
         {
             var node = Node.Create(trans.name);
             var meshFilter = trans.GetComponent<MeshFilter>();
@@ -94,7 +95,7 @@ namespace PLATEAU.Editor.CityExport.ModelConvert
             if (unityMesh == null) return node;
             if (unityMesh.vertexCount <= 0 || unityMesh.subMeshCount <= 0 || unityMesh.triangles.Length <= 0) return node;
 
-            var dllMesh = ConvertMesh(unityMesh, trans.GetComponent<MeshRenderer>(), includeTexture, doInvertTriangles, meshAxis, vertexConvertFunc);
+            var dllMesh = ConvertMesh(unityMesh, trans.GetComponent<MeshRenderer>(), includeTexture, doInvertTriangles, vertexConvertFunc);
             
             int subMeshCount = unityMesh.subMeshCount;
             for (int i = 0; i < subMeshCount; i++)
@@ -111,7 +112,8 @@ namespace PLATEAU.Editor.CityExport.ModelConvert
             return node;
         }
 
-        private static PolygonMesh.Mesh ConvertMesh(Mesh unityMesh, MeshRenderer meshRenderer, bool includeTexture, bool doInvertTriangles, CoordinateSystem meshAxis, VertexConvertFunc vertexConvertFunc)
+        private static PolygonMesh.Mesh ConvertMesh(Mesh unityMesh, MeshRenderer meshRenderer, bool includeTexture,
+            bool doInvertTriangles, VertexConvertFunc vertexConvertFunc)
         {
             var vertices =
                 unityMesh
@@ -168,11 +170,9 @@ namespace PLATEAU.Editor.CityExport.ModelConvert
             
             Assert.AreEqual(uv1.Length, vertices.Length);
 
-            var dllMesh = PolygonMesh.Mesh.Create(unityMesh.name);
-            dllMesh.MergeMeshInfo(
+            var dllMesh = PolygonMesh.Mesh.Create(
                 vertices, indices, uv1,
-                dllSubMeshes.ToArray(),
-                CoordinateSystem.EUN, meshAxis, true);
+                dllSubMeshes.ToArray());
             // 補足:
             // 上の行で MergeMeshInfo に渡す実引数 includeTexture が常に true になっていますが、それで良いです。
             // 上の処理で テクスチャを含める/含めない の設定に即した SubMesh がすでにできているので、
