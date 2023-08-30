@@ -10,7 +10,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ExportGUIParts
     /// </summary>
     internal class FbxModelExporter : IPlateauModelExporter
     {
-        public FbxFileFormat FbxFileFormat { get; set; } = FbxFileFormat.Binary;
+        private FbxFileFormat FbxFileFormat { get; set; } = FbxFileFormat.Binary;
         
         public void DrawConfigGUI()
         {

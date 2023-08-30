@@ -1,8 +1,6 @@
 ﻿using System;
 using PLATEAU.CityImport.Setting;
 using PLATEAU.Editor.EditorWindow.Common;
-using PLATEAU.Dataset;
-using PLATEAU.PolygonMesh;
 using UnityEditor;
 using UnityEngine;
 
@@ -13,98 +11,66 @@ namespace PLATEAU.Editor.CityImport
     /// </summary>
     internal class CityLoadConfigGUI
     {
+        private readonly IEditorDrawable[] guiComponents;
 
-        private PackageToLodDict availablePackageLods;
-
-        public CityLoadConfigGUI(PackageToLodDict availablePackageLods)
+        public CityLoadConfigGUI(CityLoadConfig cityLoadConf, PackageToLodDict availablePackageLodsArg)
         {
-            this.availablePackageLods = availablePackageLods;
+            if(cityLoadConf == null) throw new ArgumentNullException(nameof(cityLoadConf));
+            // パッケージ種ごとの設定GUI、その下に基準座標設定GUIが表示されるようにGUIコンポーネントを置きます。
+            guiComponents = new IEditorDrawable[]
+            {
+                new PackageLoadSettingGUIList(availablePackageLodsArg, cityLoadConf),
+                new PositionConfGUI(cityLoadConf)
+            };
         }
-        
+
         /// <summary>
         /// <see cref="CityLoadConfig"/> を設定するGUIを描画します。
         /// </summary>
-        public void Draw(CityLoadConfig cityLoadConf)
+        public void Draw()
         {
-            // パッケージごとの設定
-            foreach (var (package, conf) in cityLoadConf.ForEachPackagePair)
+            foreach (var guiComponent in guiComponents)
             {
-                if (!this.availablePackageLods.Contains(package)) continue;
-                int availableMaxLod = this.availablePackageLods.GetLod(package);
-                if (availableMaxLod >= 0)
-                {
-                    PerPackageLoadConfGui(package, conf, availableMaxLod);
-                }
-                else
-                {
-                    conf.loadPackage = false;
-                }
+                guiComponent.Draw();
             }
-
-            // 位置指定
-            PositionConfGui(cityLoadConf);
         }
 
-        private static void PerPackageLoadConfGui(PredefinedCityModelPackage package, PackageLoadSetting conf, int availableMaxLod)
+        /// <summary>
+        /// インポートの基準座標を選択するGUIです。
+        /// </summary>
+        private class PositionConfGUI : IEditorDrawable
         {
-            conf.GuiFoldOutState = PlateauEditorStyle.FoldOut(conf.GuiFoldOutState, package.ToJapaneseName(), () =>
+            private CityLoadConfig conf;
+            public PositionConfGUI(CityLoadConfig conf)
+            {
+                this.conf = conf;
+            }
+            
+            public void Draw()
             {
                 using (PlateauEditorStyle.VerticalScopeLevel1())
                 {
-                    conf.loadPackage = EditorGUILayout.Toggle("インポートする", conf.loadPackage);
-                    if (conf.loadPackage)
+                    PlateauEditorStyle.Heading("基準座標系からのオフセット値(メートル)", null);
+
+                    using (PlateauEditorStyle.VerticalScopeLevel1())
                     {
-                        using (PlateauEditorStyle.VerticalScopeLevel1(1))
+                        var refPoint = conf.ReferencePoint;
+                        PlateauEditorStyle.CenterAlignHorizontal(() =>
                         {
-                            var predefined = CityModelPackageInfo.GetPredefined(package);
-                            TextureIncludeGUI(conf, predefined.hasAppearance);
-                            conf.doSetMeshCollider =
-                                EditorGUILayout.Toggle("Mesh Collider をセットする", conf.doSetMeshCollider);
+                            if (PlateauEditorStyle.MiniButton("範囲の中心点を入力", 140))
+                            {
+                                GUI.FocusControl("");
+                                refPoint = conf.SetReferencePointToExtentCenter();
+                            }
+                        });
 
-                            conf.doSetAttrInfo =
-                                EditorGUILayout.Toggle("属性情報を含める", conf.doSetAttrInfo);
-
-                            PlateauEditorStyle.LODSlider("LOD描画設定", ref conf.minLOD, ref conf.maxLOD,
-                                Math.Min(predefined.minLOD, availableMaxLod), availableMaxLod);
-
-                            conf.meshGranularity = (MeshGranularity)EditorGUILayout.Popup("モデル結合",
-                                (int)conf.meshGranularity, new[] { "最小地物単位(壁面,屋根面等)", "主要地物単位(建築物,道路等)", "地域単位" });
-                        }
+                        refPoint.X = EditorGUILayout.DoubleField("X (東が正方向)", refPoint.X);
+                        refPoint.Y = EditorGUILayout.DoubleField("Y (高さ)", refPoint.Y);
+                        refPoint.Z = EditorGUILayout.DoubleField("Z (北が正方向)", refPoint.Z);
+                        conf.ReferencePoint = refPoint;
                     }
                 }
-            });
-        }
-
-        private static void PositionConfGui(CityLoadConfig conf)
-        {
-            using (PlateauEditorStyle.VerticalScopeLevel1())
-            {
-                PlateauEditorStyle.Heading("基準座標系からのオフセット値(メートル)", null);
-
-                using (PlateauEditorStyle.VerticalScopeLevel1())
-                {
-                    var refPoint = conf.ReferencePoint;
-                    PlateauEditorStyle.CenterAlignHorizontal(() =>
-                    {
-                        if (PlateauEditorStyle.MiniButton("範囲の中心点を入力", 140))
-                        {
-                            GUI.FocusControl("");
-                            refPoint = conf.SetReferencePointToExtentCenter();
-                        }
-                    });
-
-                    refPoint.X = EditorGUILayout.DoubleField("X (東が正方向)", refPoint.X);
-                    refPoint.Y = EditorGUILayout.DoubleField("Y (高さ)", refPoint.Y);
-                    refPoint.Z = EditorGUILayout.DoubleField("Z (北が正方向)", refPoint.Z);
-                    conf.ReferencePoint = refPoint;
-                }
             }
-        }
-
-        private static void TextureIncludeGUI(PackageLoadSetting conf, bool mayTextureExist)
-        {
-            if (!mayTextureExist) return; // 仕様上、テクスチャの存在可能性がない場合
-            conf.includeTexture = EditorGUILayout.Toggle("テクスチャを含める", conf.includeTexture);
         }
     }
 }

@@ -20,8 +20,8 @@ namespace PLATEAU.CityImport.Load.Convert
         private CityModel cityModel;
         private string id;
         private CityObjectIndex index;
-        private string parant;
-        private bool doSetAttrInfo;
+        private string parent;
+        private readonly bool doSetAttrInfo;
 
         class CityObjectID
         {
@@ -61,7 +61,7 @@ namespace PLATEAU.CityImport.Load.Convert
                         indexList.Add(new CityObjectID { Index = key, AtomicID = atomicGmlID, PrimaryID = primaryGmlID});
                         
                 if (meshGranularity == MeshGranularity.PerAtomicFeatureObject && atomicGmlID == id)
-                    parant = primaryGmlID;
+                    this.parent = primaryGmlID;
             }
             index =  cityObjectList.GetCityObjectIndex(id);         
         }
@@ -94,8 +94,8 @@ namespace PLATEAU.CityImport.Load.Convert
 
             CityObjectList cityObjSer = new CityObjectList();
 
-            if (!string.IsNullOrEmpty(parant))
-                cityObjSer.outsideParent = parant;
+            if (!string.IsNullOrEmpty(this.parent))
+                cityObjSer.outsideParent = this.parent;
 
             var ser = CityObjectSerializableConvert.FromCityGMLCityObject(cityObj, index);
             foreach (var id in indexList)
@@ -115,7 +115,7 @@ namespace PLATEAU.CityImport.Load.Convert
         /// rootCityObjectsが空の場合はnullを返します
         /// </summary>
         /// <returns></returns>
-        public CityObjectList GetSerializableCityObjectForArea()
+        private CityObjectList GetSerializableCityObjectForArea()
         {
             if (indexList.Count <= 0) 
                 return null;

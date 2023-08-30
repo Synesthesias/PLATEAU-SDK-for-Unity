@@ -20,7 +20,7 @@ namespace PLATEAU.CityInfo
     {
         public string outsideParent = "";
         public List<string> outsideChildren = new List<string>();
-        public List<CityObject> rootCityObjects = new List<CityObject>();
+        public readonly List<CityObject> rootCityObjects = new List<CityObject>();
 
         [JsonConverter(typeof(CityObjectSerializable_CityObjectJsonConverter))]
         public class CityObject
@@ -150,8 +150,18 @@ namespace PLATEAU.CityInfo
                         switch(value.Type)
                         {
                             case AttributeType.Integer:
-                                IntValue = value.AsInt;
-                                StringValue = IntValue.ToString();
+                                try
+                                {
+                                    IntValue = value.AsInt;
+                                    StringValue = IntValue.ToString();
+                                }
+                                catch (OverflowException)
+                                {
+                                    // 沼津市のLOD3の道路でTypeがIntegerなのにintの範囲を超えることがあったので対応
+                                    IntValue = 0;
+                                    StringValue = value.AsString;
+                                }
+
                                 break;
                             case AttributeType.Double:
                                 DoubleValue = value.AsDouble;

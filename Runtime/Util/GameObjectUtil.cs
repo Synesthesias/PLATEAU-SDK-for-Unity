@@ -56,7 +56,8 @@ namespace PLATEAU.Util
                 transform =
                 {
                     parent = parent
-                }
+                },
+                isStatic = true
             };
             return newObj;
         }
@@ -74,7 +75,7 @@ namespace PLATEAU.Util
             return list;
         }
 
-        public static void ListGameObjsRecursive(GameObject targetGameObj, List<GameObject> list)
+        private static void ListGameObjsRecursive(GameObject targetGameObj, List<GameObject> list)
         {
             list.Add(targetGameObj);
             foreach (Transform childTrans in targetGameObj.transform)

@@ -3,10 +3,12 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using NUnit.Framework;
+using PLATEAU.CityImport.AreaSelector;
 using PLATEAU.CityImport.Load;
 using PLATEAU.CityImport.Setting;
 using PLATEAU.Editor.EditorWindow.ProgressDisplay;
 using PLATEAU.Dataset;
+using PLATEAU.Geometries;
 using PLATEAU.Native;
 using PLATEAU.Network;
 using PLATEAU.Util;
@@ -81,12 +83,18 @@ namespace PLATEAU.Tests.TestUtils
             {
                 allPackageLods.MergePackage(package, 3);
             }
-            conf.InitWithPackageLodsDict(allPackageLods);
-            conf.Extent = Extent.All;
-            conf.AreaMeshCodes = AreaMeshCodes;
+
+            var dummyAreaSelectResult = new AreaSelectResult(AreaMeshCodes, Extent.All, allPackageLods);
+            conf.InitWithAreaSelectResult(dummyAreaSelectResult);
+            
+            // メッシュコードがあるあたりに基準点を設定します。 Extent.Allの中心を基準点にすると極端な座標になるため。  
+            using var geoRef = GeoReference.Create(new PlateauVector3d(0, 0, 0), 1.0f, CoordinateSystem.EUN,
+                conf.CoordinateZoneID);
+            conf.ReferencePoint = geoRef.Project(MeshCode.Parse(AreaMeshCodes[0]).Extent.Center);
+            
             foreach (var packageConf in conf.ForEachPackagePair)
             {
-                packageConf.Value.includeTexture = true;
+                packageConf.Value.IncludeTexture = true;
             }
 
             conf.DatasetSourceConfig = new DatasetSourceConfig(isServer, SrcRootDirPathLocal, this.rootDirName, NetworkConfig.MockServerUrl, "");

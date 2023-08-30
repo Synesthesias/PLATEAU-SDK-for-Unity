@@ -24,7 +24,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts
         
         public enum LoadStatusEnum{ Success, Failure, Loading, NotStarted}
 
-        private bool foldOutServerConf = false;
+        private bool foldOutServerConf;
 
         public ServerDatasetFetchGUI(UnityEditor.EditorWindow parentWindow)
         {

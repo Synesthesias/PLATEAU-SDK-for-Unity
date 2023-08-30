@@ -5,7 +5,6 @@ using PLATEAU.Editor.EditorWindow.Common;
 using PLATEAU.Util;
 using PLATEAU.Util.Async;
 using UnityEditor;
-using UnityEngine;
 
 namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts
 {
@@ -42,7 +41,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts
                         // ここでインポートします。
                         var task = CityImporter.ImportAsync(config, progressDisplay, cancellationTokenSrc.Token);
 
-                        task.ContinueWith((t) => { Interlocked.Decrement(ref numCurrentRunningTasks); });
+                        task.ContinueWith((_) => { Interlocked.Decrement(ref numCurrentRunningTasks); });
                         task.ContinueWithErrorCatch();
                     }
                 }

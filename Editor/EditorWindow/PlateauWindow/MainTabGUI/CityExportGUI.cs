@@ -33,7 +33,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
         private PLATEAUInstancedCityModel exportTarget;
         private MeshFileFormat meshFileFormat = MeshFileFormat.OBJ;
 
-        private Dictionary<MeshFileFormat, IPlateauModelExporter> formatToExporter = new()
+        private readonly Dictionary<MeshFileFormat, IPlateauModelExporter> formatToExporter = new()
         {
             { MeshFileFormat.OBJ, new ObjModelExporter() },
             { MeshFileFormat.FBX, new FbxModelExporter() },
@@ -49,7 +49,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
         private string exportDirPath = "";
         private bool foldOutOption = true;
         private bool foldOutExportPath = true;
-        private PathSelectorFolder exportDirSelector = new PathSelectorFolder();
+        private readonly PathSelectorFolder exportDirSelector = new PathSelectorFolder();
         public void Draw()
         {
             PlateauEditorStyle.SubTitle("モデルデータのエクスポートを行います。");

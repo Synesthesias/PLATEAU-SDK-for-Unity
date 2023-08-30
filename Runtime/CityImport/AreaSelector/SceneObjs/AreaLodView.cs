@@ -20,7 +20,6 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         private readonly PackageToLodDict packageToLodDict;
         private readonly Vector3 meshCodeUnityPositionUpperLeft;
         private readonly Vector3 meshCodeUnityPositionLowerRight;
-        private const string iconsBoxImagePath = "round-window-wide.png";
         
         #if UNITY_EDITOR
         private static readonly string iconDirPath = PathUtil.SdkPathToAssetPath("Images/AreaSelect");
@@ -30,17 +29,13 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         #endif
         
         /// <summary> 利用可能を意味するアイコンの不透明度です。 </summary>
-        private const float iconOpacityAvailable = 0.95f;
-        /// <summary> アイコンを包むボックスについて、そのパディング幅がアイコンの何倍であるかです。 </summary>
-        private const float boxPaddingRatio = 0.05f;
+        private const float IconOpacityAvailable = 0.95f;
         /// <summary> アイコンの幅がメッシュコード幅の何分の1であるかです。 </summary>
-        private const float iconWidthDivider = 4.3f;
-        private const int maxIconCnt = 8;
-        private const int maxIconCol = 4;
-        private const int maxIconRow = 2;
-        private static readonly Color boxColor = new Color(0.25f, 0.25f, 0.25f, 0.35f);
+        private const float IconWidthDivider = 4.3f;
+        private const int MaxIconCnt = 8;
+        private const int MaxIconCol = 4;
+        private const int MaxIconRow = 2;
         private static ConcurrentDictionary<(PredefinedCityModelPackage package, uint lod), Texture> iconDict;
-        private static Texture boxTex;
         private struct LodTexturePair {
             public int Lod;
             public Texture IconTexture;
@@ -112,8 +107,8 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
             var meshCodeScreenWidth = (camera.WorldToScreenPoint(this.meshCodeUnityPositionLowerRight) - camera.WorldToScreenPoint(this.meshCodeUnityPositionUpperLeft)).x;
 
             // 地域メッシュコードの枠内にアイコンが4つ並ぶ程度の大きさ
-            var iconWidth = Mathf.Min(maxIconWidth, meshCodeScreenWidth / iconWidthDivider) / monitorDpiScalingFactor;
-            var iconCnt = Math.Min(lodTexturePairList.Count, maxIconCnt);
+            var iconWidth = Mathf.Min(maxIconWidth, meshCodeScreenWidth / IconWidthDivider) / monitorDpiScalingFactor;
+            var iconCnt = Math.Min(lodTexturePairList.Count, MaxIconCnt);
             
             // アイコンを中央揃えで左から右に並べたとき、左上の座標を求めます。
             var meshCodeCenterUnityPos = (this.meshCodeUnityPositionUpperLeft + this.meshCodeUnityPositionLowerRight) * 0.5f;
@@ -122,13 +117,13 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
             var offsetVec = Vector3.zero;
             for (var i = 0; i < iconCnt; ++i) 
             {
-                var colIndex = i % maxIconCol;
-                var rowIndex = i / maxIconCol;
+                var colIndex = i % MaxIconCol;
+                var rowIndex = i / MaxIconCol;
                 // 表示するアイコン数に応じて現在の行において最大何個のアイコンを表示するか求める
-                var colCount = 0 < (iconCnt - rowIndex * maxIconCol) / maxIconCol ? maxIconCol : (iconCnt - rowIndex * maxIconCol) % maxIconCol;
+                var colCount = 0 < (iconCnt - rowIndex * MaxIconCol) / MaxIconCol ? MaxIconCol : (iconCnt - rowIndex * MaxIconCol) % MaxIconCol;
                 // 表示するアイコン数に応じて最大の行数を求める
-                var rowCount = maxIconCol < iconCnt ? maxIconRow : 1;
-                var xOffset = iconCnt is > maxIconCol and <= maxIconCnt && 0 < rowIndex
+                var rowCount = MaxIconCol < iconCnt ? MaxIconRow : 1;
+                var xOffset = iconCnt is > MaxIconCol and <= MaxIconCnt && 0 < rowIndex
                     // 2行目のオフセット値
                     ? iconWidth * colIndex - iconWidth * 2
                     // 1行目のオフセット値
@@ -140,7 +135,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
                 var iconPos = camera.ScreenToWorldPoint(camera.WorldToScreenPoint(meshCodeCenterUnityPos) + offsetVec);
 
                 var prevBackgroundColor = GUI.contentColor;
-                GUI.contentColor = new Color(1f, 1f, 1f, iconOpacityAvailable);
+                GUI.contentColor = new Color(1f, 1f, 1f, IconOpacityAvailable);
                 var style = new GUIStyle(EditorStyles.label)
                 {
                     fixedHeight = iconWidth,
@@ -203,7 +198,6 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         /// <returns>キーはパッケージ種とLOD数値の組、値はテクスチャとするアイコン辞書を返します。</returns>
         private static ConcurrentDictionary<(PredefinedCityModelPackage package, uint lod), Texture> LoadIconFiles()
         {
-            boxTex = LoadIcon(iconsBoxImagePath);
             var concurrentDict = new ConcurrentDictionary<(PredefinedCityModelPackage package, uint lod), Texture>();
             var allPackages = EnumUtil.EachFlags(PredefinedCityModelPackageExtension.All());
             var lodDirNames = new List<string> {"LOD1", "LOD1", "LOD2", "LOD3", "LOD4"};
