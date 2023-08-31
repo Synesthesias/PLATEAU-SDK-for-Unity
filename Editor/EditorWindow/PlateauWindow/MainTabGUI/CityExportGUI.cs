@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
+using System.Windows.Forms;
 using PLATEAU.CityInfo;
 using PLATEAU.Editor.CityExport;
 using PLATEAU.Editor.EditorWindow.Common;
@@ -9,6 +11,7 @@ using PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ExportGUIParts;
 using PLATEAU.Geometries;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.UI;
 using Directory = System.IO.Directory;
 
 namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
@@ -33,7 +36,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
         private PLATEAUInstancedCityModel exportTarget;
         private MeshFileFormat meshFileFormat = MeshFileFormat.OBJ;
 
-        private readonly Dictionary<MeshFileFormat, IPlateauModelExporter> formatToExporter = new()
+        private Dictionary<MeshFileFormat, IPlateauModelExporter> formatToExporter = new()
         {
             { MeshFileFormat.OBJ, new ObjModelExporter() },
             { MeshFileFormat.FBX, new FbxModelExporter() },
@@ -49,7 +52,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
         private string exportDirPath = "";
         private bool foldOutOption = true;
         private bool foldOutExportPath = true;
-        private readonly PathSelectorFolder exportDirSelector = new PathSelectorFolder();
+        private PathSelectorFolder exportDirSelector = new PathSelectorFolder();
         public void Draw()
         {
             PlateauEditorStyle.SubTitle("モデルデータのエクスポートを行います。");
@@ -116,9 +119,19 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
                 Debug.LogError("エクスポート先フォルダが実在しません。");
                 return;
             }
+
+            if (Directory.Exists(destinationDir))
+            {
+                Debug.LogError("エクスポート先フォルダが既に存在しています。");
+
+                // Export のエラーモーダルダイアログを表示
+                EditorUtility.DisplayDialog("確認", "エクスポート先フォルダが既に存在しています。", "OK");
+                return;
+            }
             var meshExportOptions = new MeshExportOptions(this.meshTransformType, this.exportTextures, this.exportHiddenObject,
                 this.meshFileFormat, this.meshAxis, this.formatToExporter[this.meshFileFormat]);
             UnityModelExporter.Export(destinationDir, target,  meshExportOptions);
         }
     }
 }
+
