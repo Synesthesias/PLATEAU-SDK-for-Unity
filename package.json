@@ -6,6 +6,7 @@
     "unity": "2021.3",
     "dependencies": {
 		"com.unity.nuget.newtonsoft-json" : "3.0.2",
+		"com.unity.shadergraph" : "12.1.11",
         "com.unity.formats.fbx" : "4.1.2",
         "com.unity.test-framework" : "1.1.31"
     },
