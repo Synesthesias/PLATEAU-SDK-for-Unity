@@ -105,18 +105,27 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
             if (target == null)
             {
                 Debug.LogError("エクスポート対象が指定されていません。");
+
+                // Export のエラーモーダルダイアログを表示
+                EditorUtility.DisplayDialog("PLATEAU SDK", "エクスポート対象が指定されていません。", "OK");
                 return;
             }
 
             if (string.IsNullOrEmpty(destinationDir))
             {
                 Debug.LogError("エクスポート先が指定されていません。");
+
+                // Export のエラーモーダルダイアログを表示
+                EditorUtility.DisplayDialog("PLATEAU SDK", "エクスポート先が指定されていません。", "OK");
                 return;
             }
 
             if (!Directory.Exists(destinationDir))
             {
                 Debug.LogError("エクスポート先フォルダが実在しません。");
+
+                // Export のエラーモーダルダイアログを表示
+                EditorUtility.DisplayDialog("PLATEAU SDK", "エクスポート先フォルダが実在しません。", "OK");
                 return;
             }
 
@@ -125,8 +134,11 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
                 Debug.LogError("エクスポート先フォルダが既に存在しています。");
 
                 // Export のエラーモーダルダイアログを表示
-                EditorUtility.DisplayDialog("確認", "エクスポート先フォルダが既に存在しています。", "OK");
-                return;
+                bool result = EditorUtility.DisplayDialog("PLATEAU SDK", "同名のファイルを上書きしますか？", "OK", "キャンセル");
+                if (result == false)
+                {
+                    return;
+                }
             }
             var meshExportOptions = new MeshExportOptions(this.meshTransformType, this.exportTextures, this.exportHiddenObject,
                 this.meshFileFormat, this.meshAxis, this.formatToExporter[this.meshFileFormat]);
