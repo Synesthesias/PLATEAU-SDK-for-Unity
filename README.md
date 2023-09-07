@@ -30,8 +30,8 @@ PLATEAU SDK for Unityを利用することで、実世界を舞台にしたア�
 - SDKの最新版は[Releaseページ](https://github.com/Project-PLATEAU/PLATEAU-SDK-for-Unity/releases)からダウンロードしてください。
 - 詳しい利用方法については、こちらの[マニュアル](https://Project-PLATEAU.github.io/PLATEAU-SDK-for-Unity/index.html) をご覧ください。
 - PLATEAU公式ウェブサイトでは当SDKの [チュートリアル記事](https://www.mlit.go.jp/plateau/learning/tpc17-1/) も公開しています。
-- PLATEAUで好きな都市を爆走するミニゲームを作るハンズオン動画
-  - [<img src=https://github.com/Synesthesias/PLATEAU-SDK-for-Unity/assets/1321932/ecb140f3-c49b-4e83-9b6b-acf773457361 width=60%>](https://youtu.be/jXWqIb2nGtk?si=bJMsFKpX-hZjb260)
+- [PLATEAUで好きな都市を爆走するミニゲームを作るハンズオン動画](https://www.youtube.com/watch?v=jXWqIb2nGtk)  
+[![動画リンク](https://img.youtube.com/vi/jXWqIb2nGtk/0.jpg)](https://www.youtube.com/watch?v=jXWqIb2nGtk)
 
 # 注意点
 - 現在、この SDKとドキュメントは日本語のみ対応しています。
