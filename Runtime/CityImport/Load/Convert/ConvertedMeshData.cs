@@ -19,17 +19,19 @@ namespace PLATEAU.CityImport.Load.Convert
         private readonly Vector2[] uv4;
         private readonly List<List<int>> subMeshTriangles;
         private readonly List<string> textureUrls;
+        private readonly List<CityGML.Material> gmlMaterials;
 
         private string Name { get; }
         private int SubMeshCount => this.subMeshTriangles.Count;
 
-        public ConvertedMeshData(Vector3[] vertices, Vector2[] uv1, Vector2[] uv4, List<List<int>> subMeshTriangles, List<string> textureUrls, string name)
+        public ConvertedMeshData(Vector3[] vertices, Vector2[] uv1, Vector2[] uv4, List<List<int>> subMeshTriangles, List<string> textureUrls, List<CityGML.Material> materials, string name)
         {
             this.vertices = vertices;
             this.uv1 = uv1;
             this.uv4 = uv4;
             this.subMeshTriangles = subMeshTriangles;
             this.textureUrls = textureUrls;
+            this.gmlMaterials = materials;
             Name = name;
         }
 
@@ -46,8 +48,7 @@ namespace PLATEAU.CityImport.Load.Convert
         /// <summary>
         /// ゲームオブジェクト、メッシュ、テクスチャの実体を作ってシーンに配置します。
         /// 頂点がない場合は nullが返ります。
-        /// </summary>
-        public async Task<GameObject> PlaceToScene(Transform parentTrans, Dictionary<string, Material> cachedMaterials)
+        public async Task<GameObject> PlaceToScene(Transform parentTrans, Dictionary<MaterialSet, Material> cachedMaterials)
         {
             var mesh = GenerateUnityMesh();
             if (mesh.vertexCount <= 0) return null;
@@ -59,33 +60,46 @@ namespace PLATEAU.CityImport.Load.Convert
             var materials = new Material[mesh.subMeshCount];
             for (int i = 0; i < mesh.subMeshCount; i++)
             {
+                //Material設定
                 var texturePath = textureUrls[i];
+                var gmlMaterial = gmlMaterials[i];
+                MaterialSet materialSet = new MaterialSet(gmlMaterial, texturePath);
+
                 // マテリアルがキャッシュ済みの場合はキャッシュを使用
-                if (cachedMaterials.TryGetValue(texturePath, out var cachedMaterial))
+                if (cachedMaterials.TryGetValue(materialSet, out var cachedMaterial))
                 {
                     materials[i] = cachedMaterial;
                     continue;
                 }
 
-                var material = new Material(RenderUtil.DefaultMaterial)
+                Material material = null;
+                if (gmlMaterial != null)
                 {
-                    enableInstancing = true
-                };
+                    material = RenderUtil.GetPLATEAUX3DMaterialByCityGMLMaterial(gmlMaterial);
+                    material.name = gmlMaterial.ID;
+                }
+                else
+                {
+                    material = new Material(RenderUtil.DefaultMaterial)
+                    {
+                        enableInstancing = true
+                    };
+                }
 
+                //Texture設定
                 var texture = await LoadTexture(texturePath);
                 if (texture != null)
                 {
                     material.mainTexture = texture;
                     material.name = texture.name;
                 }
-
                 materials[i] = material;
-                cachedMaterials.Add(texturePath, material);
+                cachedMaterials.Add(materialSet, material);
             }
             renderer.materials = materials;
             return meshObj;
         }
-
+        
         public int VerticesCount => this.vertices.Length;
 
         /// <summary>
@@ -168,6 +182,64 @@ namespace PLATEAU.CityImport.Load.Convert
             // 圧縮のキモです。
             dst.Compress(true);
             return dst;
+        }
+    }
+
+    /// <summary>
+    /// マテリアルとテクスチャのセットをDictionary Keyとして使用するための構造体です。
+    /// </summary>
+    internal struct MaterialSet : IEquatable<MaterialSet>
+    {
+        public MaterialSet(CityGML.Material mat, string texturePath)
+        {
+            if (mat == null)
+            {
+                Diffuse = Emissive = Specular = Vector3.zero;
+                AmbientIntensity = Shininess = Transparency = 0f;
+                IsSmooth = false;
+                Texture = texturePath;
+                HasMaterial = false;
+            }
+            else
+            {
+                Diffuse = new Vector3(mat.Diffuse.X, mat.Diffuse.Y, mat.Diffuse.Z);
+                Emissive = new Vector3(mat.Emissive.X, mat.Emissive.Y, mat.Emissive.Z);
+                Specular = new Vector3(mat.Specular.X, mat.Specular.Y, mat.Specular.Z);
+                AmbientIntensity = mat.AmbientIntensity;
+                Shininess = mat.Shininess;
+                Transparency = mat.Transparency;
+                IsSmooth = mat.IsSmooth;
+                Texture = texturePath;
+                HasMaterial = true;
+            }
+        }
+
+        public Vector3 Diffuse { get; }
+        public Vector3 Emissive { get; }
+        public Vector3 Specular { get; }
+        public float AmbientIntensity { get; }
+        public float Shininess { get; }
+        public float Transparency { get; }
+        public bool IsSmooth { get; }
+        public string Texture { get; }
+        public bool HasMaterial { get; }
+
+        public bool Equals(MaterialSet other)
+        {
+            return Diffuse.Equals(other.Diffuse) &&
+                Emissive.Equals(other.Emissive) &&
+                Specular.Equals(other.Specular) &&
+                AmbientIntensity.Equals(other.AmbientIntensity) &&
+                Shininess.Equals(other.Shininess) &&
+                Transparency.Equals(other.Transparency) &&
+                IsSmooth.Equals(other.IsSmooth) &&
+                Texture.Equals(other.Texture) &&
+                HasMaterial.Equals(other.HasMaterial);
+        }
+
+        public override int GetHashCode()
+        {
+            return new { Diffuse, Emissive, Specular, AmbientIntensity, Shininess, Transparency, IsSmooth, Texture, HasMaterial }.GetHashCode(); ;
         }
     }
 }

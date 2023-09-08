@@ -68,7 +68,7 @@ namespace PLATEAU.CityImport.Load.Convert
         /// ゲームオブジェクト、メッシュ、テクスチャの実体を作ってシーンに配置します。
         /// 再帰によって子も配置します。
         /// </summary>
-        public async Task PlaceToScene(Transform parent, Dictionary<string, Material> cachedMaterials, bool skipRoot, bool doSetMeshCollider, CancellationToken token)
+        public async Task PlaceToScene(Transform parent, Dictionary<MaterialSet, Material> cachedMaterials, bool skipRoot, bool doSetMeshCollider, CancellationToken token)
         {
             token.ThrowIfCancellationRequested();
 
