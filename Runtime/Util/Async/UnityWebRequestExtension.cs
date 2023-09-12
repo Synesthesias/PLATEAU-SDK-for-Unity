@@ -18,7 +18,7 @@ namespace PLATEAU.Util.Async
 
         public class UnityWebRequestAwaitable : INotifyCompletion
         {
-            private UnityWebRequestAsyncOperation operation;
+            private readonly UnityWebRequestAsyncOperation operation;
             private Action continuation;
 
             public UnityWebRequestAwaitable(UnityWebRequestAsyncOperation operation)

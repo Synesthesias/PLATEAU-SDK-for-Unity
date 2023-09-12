@@ -19,7 +19,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
             DisableHandles();
         }
 
-        protected void EnableHandles()
+        private void EnableHandles()
         {
 #if UNITY_EDITOR
             SceneView.duringSceneGui -= OnSceneGUI;
@@ -27,7 +27,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
 #endif
         }
 
-        protected void DisableHandles()
+        private void DisableHandles()
         {
 #if UNITY_EDITOR
             SceneView.duringSceneGui -= OnSceneGUI;

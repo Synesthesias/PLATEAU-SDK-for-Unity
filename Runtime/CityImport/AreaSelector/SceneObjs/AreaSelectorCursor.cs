@@ -14,10 +14,10 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
     internal class AreaSelectorCursor : BoxGizmoDrawer
     {
         public const float BoxY = 15f;
-        private const float slider2DHandleSizeWorld = 300f;
-        private const float handleSizeMinScreenSpace = 15f;
-        private const float handleSizeMaxScreenSpace = 30f;
-        private const float lineWidth = 2;
+        private const float Slider2DHandleSizeWorld = 300f;
+        private const float HandleSizeMinScreenSpace = 15f;
+        private const float HandleSizeMaxScreenSpace = 30f;
+        private const float CursorLineWidth = 2;
         private static readonly Color handleColor = new Color(1f, 72f / 255f, 0f);
         private static readonly Color selectOutlineColor = new Color(1f, 72f / 255f, 0f);
         private static readonly Color selectFaceColor = new Color(250f / 255, 160f / 255f, 75f / 255f, 0.3f);
@@ -27,7 +27,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         {
             this.CenterPos = new Vector3(0, BoxY, 0);
             this.Size = new Vector3(1000, 1, 1000);
-            LineWidth = lineWidth;
+            LineWidth = CursorLineWidth;
             BoxColor = selectOutlineColor;
         }
 
@@ -166,9 +166,9 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
                                       cam.ViewportToWorldPoint(new Vector3(0, 0.5f, distance))
                                   )
                                   / cam.pixelWidth;
-            float handleSizeScreenSpace = slider2DHandleSizeWorld / meterPerPixel;
+            float handleSizeScreenSpace = Slider2DHandleSizeWorld / meterPerPixel;
             float clampedSizeScreenSpace =
-                Mathf.Clamp(handleSizeScreenSpace, handleSizeMinScreenSpace, handleSizeMaxScreenSpace);
+                Mathf.Clamp(handleSizeScreenSpace, HandleSizeMinScreenSpace, HandleSizeMaxScreenSpace);
             float handleSizeWorldSpace = clampedSizeScreenSpace * meterPerPixel;
             
             // 丸を描画します。

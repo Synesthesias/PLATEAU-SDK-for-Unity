@@ -22,7 +22,7 @@ namespace PLATEAU.CityImport.Setting
         /// 都市モデル読み込みの全体設定です。
         /// </summary>
         public DatasetSourceConfig DatasetSourceConfig { get; set; }
-        public string[] AreaMeshCodes { get; set; }
+        public string[] AreaMeshCodes { get; private set; }
         
         /// <summary>
         /// 平面直角座標系の番号です。
@@ -36,7 +36,7 @@ namespace PLATEAU.CityImport.Setting
         /// 緯度・経度での範囲です。
         /// ただし、高さの設定は無視され、高さの範囲は必ず -99,999 ～ 99,999 になります。
         /// </summary>
-        public Extent Extent
+        private Extent Extent
         {
             get => this.extent;
             set =>
@@ -68,7 +68,7 @@ namespace PLATEAU.CityImport.Setting
         {
             return this.perPackagePairSettings[package];
         }
-
+        
         /// <summary>
         /// 設定に合うGMLファイルを検索します。
         /// 多数のファイルから検索するので、実行時間が長くなりがちである点にご注意ください。
@@ -142,7 +142,9 @@ namespace PLATEAU.CityImport.Setting
                     availableMaxLOD: availableMaxLOD,
                     MeshGranularity.PerPrimaryFeatureObject, 
                     doSetMeshCollider: true,
-                    doSetAttrInfo: true);
+                    doSetAttrInfo: true,
+                    enableTexturePacking: true,
+                    texturePackingResolution: TexturePackingResolution.W4096H4096);
                 this.perPackagePairSettings.Add(package, val);
             }
         }
@@ -183,8 +185,8 @@ namespace PLATEAU.CityImport.Setting
                 excludeCityObjectOutsideExtent: ShouldExcludeCityObjectOutsideExtent(package),
                 excludePolygonsOutsideExtent: ShouldExcludePolygonsOutsideExtent(package),
                 extent: Extent,
-                attachMapTile: true,
-                mapTileZoomLevel: 15); // TODO ここで定数で決め打っている部分は、ユーザーが選択できるようにすると良い
+                enableTexturePacking: packageConf.EnableTexturePacking,
+                texturePackingResolution: packageConf.GetTexturePackingResolution()); // TODO ここで定数で決め打っている部分は、ユーザーが選択できるようにすると良い
         } 
         
         private static bool ShouldExcludeCityObjectOutsideExtent(PredefinedCityModelPackage package)

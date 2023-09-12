@@ -108,6 +108,12 @@ namespace PLATEAU.Editor.CityImport
             {
                 if (!mayTextureExist) return; // 仕様上、テクスチャの存在可能性がない場合
                 conf.IncludeTexture = EditorGUILayout.Toggle("テクスチャを含める", conf.IncludeTexture);
+
+                if (!conf.IncludeTexture) return;
+                conf.EnableTexturePacking = EditorGUILayout.Toggle("テクスチャを結合する", conf.EnableTexturePacking);
+                if (!conf.EnableTexturePacking) return;
+                conf.TexturePackingResolution = (TexturePackingResolution)EditorGUILayout.Popup("テクスチャ解像度",
+                    (int)conf.TexturePackingResolution, new[] { "2048x2048", "4096x4096", "8192x8192" });
             }
         }
     }
