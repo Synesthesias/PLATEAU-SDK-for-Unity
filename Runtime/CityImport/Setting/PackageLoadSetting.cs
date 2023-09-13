@@ -56,6 +56,7 @@ namespace PLATEAU.CityImport.Setting
             this.DoSetAttrInfo = doSetAttrInfo;
             this.EnableTexturePacking = enableTexturePacking;
             this.TexturePackingResolution = texturePackingResolution;
+            this.FallbackMaterial = MaterialPathUtil.LoadDefaultFallbackMaterial(package);;
         }
         
         public uint GetTexturePackingResolution()

@@ -92,10 +92,6 @@ namespace PLATEAU.Editor.CityImport
                                 conf.MeshGranularity = (MeshGranularity)EditorGUILayout.Popup("モデル結合",
                                     (int)conf.MeshGranularity, new[] { "最小地物単位(壁面,屋根面等)", "主要地物単位(建築物,道路等)", "地域単位" });
                                 EditorGUILayout.LabelField("デフォルトマテリアル", GUILayout.Width(400));
-                                if(conf.FallbackMaterial == null)
-                                {
-                                    conf.FallbackMaterial = MaterialPathUtil.LoadDefaultFallbackMaterial(package);
-                                }
                                 conf.FallbackMaterial = (Material)EditorGUILayout.ObjectField(conf.FallbackMaterial, typeof(Material), false);
                             }
                             

@@ -79,8 +79,15 @@ namespace PLATEAU.CityImport.Load.Convert
                 // マテリアルを決めるための場合分けです。
                 if (gmlMaterial == null && texture == null)
                 {
-                    // マテリアル指定もテクスチャ指定もない場合、fallbackMaterialを使います。
-                    material = fallbackMaterial;
+                    // マテリアル指定もテクスチャ指定もない場合、fallbackMaterialを使います。それもない場合、デフォルトマテリアルを使います。
+                    if (fallbackMaterial == null)
+                    {
+                        material = RenderUtil.CreateDefaultMaterial();
+                    }
+                    else
+                    {
+                        material = fallbackMaterial;
+                    }
                 }
                 else
                 {
@@ -92,10 +99,7 @@ namespace PLATEAU.CityImport.Load.Convert
                     }
                     else
                     {
-                        material = new Material(RenderUtil.DefaultMaterial)
-                        {
-                            enableInstancing = true
-                        };
+                        material = RenderUtil.CreateDefaultMaterial();
                     }
 
                     //Textureがあればそれを使います。

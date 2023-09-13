@@ -19,6 +19,14 @@ namespace PLATEAU.Util
             }
         }
 
+        public static Material CreateDefaultMaterial()
+        {
+            return new Material(RenderUtil.DefaultMaterial)
+            {
+                enableInstancing = true
+            };
+        }
+
         /// <summary>
         /// Material用シェーダー付きのOpaqueマテリアル
         /// </summary>
