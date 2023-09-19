@@ -132,7 +132,6 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
             return material;
 #else
             throw new NotImplementedException("Map Load in PlayMode is not implemented.");
-            return null;
 #endif
         }
 
