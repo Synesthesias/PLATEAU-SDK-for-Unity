@@ -1,6 +1,9 @@
 ﻿using System;
 using PLATEAU.CityImport.Setting;
 using PLATEAU.Editor.EditorWindow.Common;
+using PLATEAU.Dataset;
+using PLATEAU.PolygonMesh;
+using PLATEAU.Util;
 using UnityEditor;
 using UnityEngine;
 
@@ -23,7 +26,7 @@ namespace PLATEAU.Editor.CityImport
                 new PositionConfGUI(cityLoadConf)
             };
         }
-        
+
         /// <summary>
         /// <see cref="CityLoadConfig"/> を設定するGUIを描画します。
         /// </summary>

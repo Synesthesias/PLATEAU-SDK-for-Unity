@@ -3,13 +3,22 @@ using PLATEAU.Dataset;
 using PLATEAU.Geometries;
 using PLATEAU.Native;
 using PLATEAU.PolygonMesh;
+using UnityEngine;
 
 namespace PLATEAU.CityImport.Setting
 {
     /// <summary>
-    /// インポート設定のうち、パッケージごとの設定です。
-    ///
-    /// 他クラスとの関係：
+    /// テクスチャ結合後の解像度です。
+    /// </summary>
+    internal enum TexturePackingResolution : int
+    {
+        W2048H2048 = 0,
+        W4096H4096 = 1,
+        W8192H8192 = 2,
+    }
+
+    /// <summary>
+    /// <see cref="PLATEAUCityModelLoader"/> の設定のうち、パッケージごとの設定です。
     /// <see cref="CityLoadConfig"/> によって保持されます。
     /// このクラスに対応するGUIクラスは PackageLoadSettingGUI です。
     ///
@@ -28,8 +37,11 @@ namespace PLATEAU.CityImport.Setting
         public MeshGranularity MeshGranularity { get; set; }
         public bool DoSetMeshCollider { get; set; }
         public bool DoSetAttrInfo { get; set; }
-
-        public PackageLoadSetting(PredefinedCityModelPackage package, bool loadPackage, bool includeTexture, LODRange lodRange, MeshGranularity meshGranularity, bool doSetMeshCollider, bool doSetAttrInfo)
+        public Material FallbackMaterial { get; set; }
+        public bool EnableTexturePacking { get; set; }
+        public TexturePackingResolution TexturePackingResolution { get; set; }
+        
+        public PackageLoadSetting(PredefinedCityModelPackage package, bool loadPackage, bool includeTexture, LODRange lodRange, MeshGranularity meshGranularity, bool doSetMeshCollider, bool doSetAttrInfo, Material fallbackMaterial, bool enableTexturePacking, TexturePackingResolution texturePackingResolution)
         {
             Package = package;
             LoadPackage = loadPackage;
@@ -38,18 +50,16 @@ namespace PLATEAU.CityImport.Setting
             MeshGranularity = meshGranularity;
             DoSetMeshCollider = doSetMeshCollider;
             DoSetAttrInfo = doSetAttrInfo;
+            EnableTexturePacking = enableTexturePacking;
+            TexturePackingResolution = texturePackingResolution;
+            FallbackMaterial = fallbackMaterial;
         }
 
         /// <summary> コピーコンストラクタ </summary>
-        protected PackageLoadSetting(PackageLoadSetting src)
+        protected PackageLoadSetting(PackageLoadSetting src) : this(
+            src.Package, src.LoadPackage, src.IncludeTexture, src.LODRange, src.MeshGranularity, src.DoSetMeshCollider, src.DoSetAttrInfo, src.FallbackMaterial, src.EnableTexturePacking, src.TexturePackingResolution
+            )
         {
-            Package = src.Package;
-            LoadPackage = src.LoadPackage;
-            IncludeTexture = src.IncludeTexture;
-            LODRange = src.LODRange;
-            MeshGranularity = src.MeshGranularity;
-            DoSetMeshCollider = src.DoSetMeshCollider;
-            DoSetAttrInfo = src.DoSetAttrInfo;
         }
         
         // インポート設定のうち、Unityでは必ずこうなるという定数部分です。
@@ -91,6 +101,8 @@ namespace PLATEAU.CityImport.Setting
                 coordinateZoneID: coordinateZoneID,
                 excludeCityObjectOutsideExtent: ShouldExcludeCityObjectOutsideExtent(Package),
                 excludePolygonsOutsideExtent: ShouldExcludePolygonsOutsideExtent(Package),
+                enableTexturePacking: EnableTexturePacking,
+                texturePackingResolution: 1, // 土地専用の設定は ReliefLoadSetting で行うので、ここでは仮の値にします。
                 extent: extent,
                 attachMapTile: false, // 土地専用の設定は ReliefLoadSetting で行うので、ここでは false に固定します。
                 mapTileZoomLevel: 15,
@@ -165,7 +177,19 @@ namespace PLATEAU.CityImport.Setting
             nativeOption.AttachMapTile = AttachMapTile;
             nativeOption.MapTileZoomLevel = MapTileZoomLevel;
             nativeOption.MapTileURL = MapTileURL;
+            nativeOption.TexturePackingResolution = GetTexturePackingResolution();
             return nativeOption;
+        }
+        
+        private uint GetTexturePackingResolution()
+        {
+            return TexturePackingResolution switch
+            {
+                TexturePackingResolution.W2048H2048 => 2048,
+                TexturePackingResolution.W4096H4096 => 4096,
+                TexturePackingResolution.W8192H8192 => 8192,
+                _ => throw new ArgumentOutOfRangeException()
+            };
         }
     }
     
@@ -184,7 +208,34 @@ namespace PLATEAU.CityImport.Setting
             MinLOD = minLOD;
             MaxLOD = maxLOD;
             AvailableMaxLOD = availableMaxLOD;
+// =======
+//         /// <summary> ユーザーが選択した範囲のなかで存在するLODの最大値 </summary>
+//         public readonly int AvailableMaxLOD;
+//         
+//         public MeshGranularity MeshGranularity;
+//         public bool DoSetMeshCollider;
+//         public bool DoSetAttrInfo;
+//         public Material FallbackMaterial;
+//         public bool EnableTexturePacking;
+//         public TexturePackingResolution TexturePackingResolution;
+//
+//         public PackageLoadSetting(PredefinedCityModelPackage package, bool loadPackage, bool includeTexture, int minLOD, int maxLOD, int availableMaxLOD, MeshGranularity meshGranularity, bool doSetMeshCollider, bool doSetAttrInfo, bool enableTexturePacking, TexturePackingResolution texturePackingResolution)
+//         {
+//             Package = package;
+//             this.LoadPackage = loadPackage;
+//             this.IncludeTexture = includeTexture;
+//             this.MinLOD = minLOD;
+//             this.MaxLOD = maxLOD;
+//             this.AvailableMaxLOD = availableMaxLOD;
+//             this.MeshGranularity = meshGranularity;
+//             this.DoSetMeshCollider = doSetMeshCollider;
+//             this.DoSetAttrInfo = doSetAttrInfo;
+//             this.EnableTexturePacking = enableTexturePacking;
+//             this.TexturePackingResolution = texturePackingResolution;
+//             this.FallbackMaterial = MaterialPathUtil.LoadDefaultFallbackMaterial(package);;
+// >>>>>>> dev/v2
         }
+
     }
 
 }

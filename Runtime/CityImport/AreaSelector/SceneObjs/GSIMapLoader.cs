@@ -25,6 +25,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
     {
         private static readonly string mapDownloadDest =
             Path.GetFullPath(Path.Combine(Application.temporaryCachePath, "GSIMapImages"));
+
         #if UNITY_EDITOR
         private static readonly string mapMaterialDir = PathUtil.SdkPathToAssetPath("Materials");
         #endif
@@ -124,13 +125,13 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
                     _ => throw new InvalidDataException("Unknown material for pipeline.")
                 };
             }
+
 #if UNITY_EDITOR
-            string matFilePath = Path.Combine(mapMaterialDir, matFileName);
+            string matFilePath = MaterialPathUtil.GetMapMatPath();
             var material = AssetDatabase.LoadAssetAtPath<Material>(matFilePath);
             return material;
 #else
             throw new NotImplementedException("Map Load in PlayMode is not implemented.");
-            return null;
 #endif
         }
 

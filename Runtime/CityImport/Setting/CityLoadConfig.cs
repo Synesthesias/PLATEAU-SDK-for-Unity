@@ -68,7 +68,7 @@ namespace PLATEAU.CityImport.Setting
         {
             return this.perPackagePairSettings[package];
         }
-
+        
         /// <summary>
         /// 設定に合うGMLファイルを検索します。
         /// 多数のファイルから検索するので、実行時間が長くなりがちである点にご注意ください。
@@ -140,8 +140,11 @@ namespace PLATEAU.CityImport.Setting
                     lodRange: new LODRange(predefined.minLOD, availableMaxLOD, availableMaxLOD),
                     MeshGranularity.PerPrimaryFeatureObject, 
                     doSetMeshCollider: true,
-                    doSetAttrInfo: true);
-                this.perPackagePairSettings.Add(package, PackageLoadSetting.CreateSettingFor(package, val));
+                    doSetAttrInfo: true,
+                    enableTexturePacking: true,
+                    texturePackingResolution: TexturePackingResolution.W4096H4096,
+                    fallbackMaterial: MaterialPathUtil.LoadDefaultFallbackMaterial(package));
+                this.perPackagePairSettings.Add(package, val);
             }
         }
 
@@ -163,6 +166,17 @@ namespace PLATEAU.CityImport.Setting
         {
             var packageConf = GetConfigForPackage(package);
             return packageConf.ConvertToNativeOption(ReferencePoint, CoordinateZoneID, Extent);
+        } 
+        
+        private static bool ShouldExcludeCityObjectOutsideExtent(PredefinedCityModelPackage package)
+        {
+            if (package == PredefinedCityModelPackage.Relief) return false;
+            return true;
+        }
+
+        private static bool ShouldExcludePolygonsOutsideExtent(PredefinedCityModelPackage package)
+        {
+            return !ShouldExcludeCityObjectOutsideExtent(package);
         }
     }
 }

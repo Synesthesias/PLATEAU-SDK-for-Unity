@@ -24,8 +24,6 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         #if UNITY_EDITOR
         private static readonly string iconDirPath = PathUtil.SdkPathToAssetPath("Images/AreaSelect");
         private static readonly float maxIconWidth = 50 * EditorGUIUtility.pixelsPerPoint;
-        #else
-        private static readonly float maxIconWidth = 50;
         #endif
         
         /// <summary> 利用可能を意味するアイコンの不透明度です。 </summary>

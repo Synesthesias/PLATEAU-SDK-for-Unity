@@ -19,8 +19,8 @@ namespace PLATEAU.CityImport.Load.Convert
         {
             if (plateauMesh == null) return null;
             CopyVerticesAndUV(plateauMesh, out var unityVerts, out var unityUV1, out var unityUV4);
-            CopySubMeshInfo(plateauMesh, out var subMeshTriangles, out var texturePaths);
-            var meshData = new ConvertedMeshData(unityVerts, unityUV1, unityUV4, subMeshTriangles, texturePaths, meshName);
+            CopySubMeshInfo(plateauMesh, out var subMeshTriangles, out var texturePaths, out var materials);
+            var meshData = new ConvertedMeshData(unityVerts, unityUV1, unityUV4, subMeshTriangles, texturePaths, materials, meshName);
             return meshData;
         }
 
@@ -42,10 +42,11 @@ namespace PLATEAU.CityImport.Load.Convert
             }
         }
 
-        private static void CopySubMeshInfo(PolygonMesh.Mesh plateauMesh, out List<List<int>> subMeshTriangles, out List<string> texturePaths)
+        private static void CopySubMeshInfo(PolygonMesh.Mesh plateauMesh, out List<List<int>> subMeshTriangles, out List<string> texturePaths, out List<CityGML.Material> materials)
         {
             subMeshTriangles = new List<List<int>>();
             texturePaths = new List<string>();
+            materials = new List<CityGML.Material>();
             int numSubMesh = plateauMesh.SubMeshCount;
             for (int i = 0; i < numSubMesh; i++)
             {
@@ -62,12 +63,8 @@ namespace PLATEAU.CityImport.Load.Convert
                 }
                 subMeshTriangles.Add(subMeshIndices);
                 texturePaths.Add(subMesh.TexturePath);
+                materials.Add(subMesh.Material);
             }
         }
-
-
     }
-
-
-
 }

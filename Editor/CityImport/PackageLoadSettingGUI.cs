@@ -96,6 +96,12 @@ namespace PLATEAU.Editor.CityImport
 
                             conf.MeshGranularity = (MeshGranularity)EditorGUILayout.Popup("モデル結合",
                                 (int)conf.MeshGranularity, new[] { "最小地物単位(壁面,屋根面等)", "主要地物単位(建築物,道路等)", "地域単位" });
+
+                            conf.DoSetAttrInfo =
+                                EditorGUILayout.Toggle("属性情報を含める", conf.DoSetAttrInfo);
+
+                            conf.FallbackMaterial = (Material)EditorGUILayout.ObjectField("デフォルトマテリアル",
+                                conf.FallbackMaterial, typeof(Material), false);
                         }
                     }
                 });
@@ -113,6 +119,12 @@ namespace PLATEAU.Editor.CityImport
             {
                 if (!mayTextureExist) return; // 仕様上、テクスチャの存在可能性がない場合
                 conf.IncludeTexture = EditorGUILayout.Toggle("テクスチャを含める", conf.IncludeTexture);
+
+                if (!conf.IncludeTexture) return;
+                conf.EnableTexturePacking = EditorGUILayout.Toggle("テクスチャを結合する", conf.EnableTexturePacking);
+                if (!conf.EnableTexturePacking) return;
+                conf.TexturePackingResolution = (TexturePackingResolution)EditorGUILayout.Popup("テクスチャ解像度",
+                    (int)conf.TexturePackingResolution, new[] { "2048x2048", "4096x4096", "8192x8192" });
             }
         }
 
