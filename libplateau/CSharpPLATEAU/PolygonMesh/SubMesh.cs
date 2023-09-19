@@ -2,6 +2,7 @@
 using System.Runtime.InteropServices;
 using PLATEAU.Interop;
 using PLATEAU.Util;
+using PLATEAU.CityGML;
 
 namespace PLATEAU.PolygonMesh
 {
@@ -60,6 +61,19 @@ namespace PLATEAU.PolygonMesh
             }
         }
 
+        public PLATEAU.CityGML.Material Material
+        {
+            get
+            {
+                ThrowIfInvalid();
+                var matHandle = DLLUtil.GetNativeValue<IntPtr>(Handle,
+                    NativeMethods.plateau_sub_mesh_get_material);
+                if (matHandle != IntPtr.Zero)
+                    return new Material(matHandle);
+                return null;
+            }
+        }
+
         /// <summary>
         /// 取扱注意:
         /// 通常は <see cref="Mesh"/> が廃棄されるときに C++側で <see cref="SubMesh"/> も廃棄されるので、
@@ -104,6 +118,11 @@ namespace PLATEAU.PolygonMesh
                 [In] IntPtr subMeshPtr,
                 out IntPtr strPtr,
                 out int strLength);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_sub_mesh_get_material(
+                [In] IntPtr subMeshPtr,
+                out IntPtr matPtr);
 
             [DllImport(DLLUtil.DllName, CharSet = CharSet.Ansi)]
             internal static extern APIResult plateau_create_sub_mesh(

@@ -18,14 +18,14 @@ namespace PLATEAU.CityInfo
         {
             get
             {
-                if (_CityObjects != null)
-                    return _CityObjects;
+                if (this.cityObjects != null)
+                    return this.cityObjects;
 
                 if (!string.IsNullOrEmpty(serializedCityObjects))
-                    _CityObjects = JsonConvert.DeserializeObject<CityObjectList>(serializedCityObjects);
+                    this.cityObjects = JsonConvert.DeserializeObject<CityObjectList>(serializedCityObjects);
                 else
-                    _CityObjects = new CityObjectList();
-                return _CityObjects;               
+                    this.cityObjects = new CityObjectList();
+                return this.cityObjects;               
             }
         }
 
@@ -261,7 +261,7 @@ namespace PLATEAU.CityInfo
             }
         }
 
-        public IEnumerable<CityObjectList.CityObject> GetAllCityObjects()
+        private IEnumerable<CityObjectList.CityObject> GetAllCityObjects()
         {
             List<CityObjectList.CityObject> objs = new List<CityObjectList.CityObject>();
             var des = CityObjects;
@@ -276,8 +276,8 @@ namespace PLATEAU.CityInfo
 
         [HideInInspector][SerializeField] private string serializedCityObjects;
 
-        private CityObjectList _CityObjects;
-        private CityObject _OutsideParent;
+        private CityObjectList cityObjects;
+        private CityObject outsideParent;
         private UnityEngine.Mesh currentMesh;
 
         /// <summary>
@@ -285,10 +285,11 @@ namespace PLATEAU.CityInfo
         /// </summary>  
         private CityObject GetOutsideParent(string parentId)
         {
-            if (_OutsideParent != null) return _OutsideParent;
+            if (this.outsideParent != null) return this.outsideParent;
 
             GameObject parentObj = (transform.parent.gameObject.name == parentId) ? transform.parent.gameObject : GameObject.Find(parentId);
-            PLATEAUCityObjectGroup parentComp = parentObj?.GetComponent<PLATEAUCityObjectGroup>();
+            if (parentObj == null) return null;
+            PLATEAUCityObjectGroup parentComp = parentObj.GetComponent<PLATEAUCityObjectGroup>();
             if (parentComp != null)
             {
                 var parent = parentComp.CityObjects.rootCityObjects[0];
@@ -302,7 +303,7 @@ namespace PLATEAU.CityInfo
                         parent.Children.AddRange(childCityObj.CityObjects.rootCityObjects);
                     }
                 }
-                _OutsideParent = parent;
+                this.outsideParent = parent;
                 return parent;
             }
             return null;

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEditor;
 using PLATEAU.Dataset;
 
 namespace PLATEAU.CityImport.AreaSelector.SceneObjs
@@ -19,11 +18,11 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         public int Priority { get; set; }
 
         MeshCode meshCode;
-        protected void Init(Vector3 centerPosArg, Vector3 sizeArg, MeshCode _meshCode)
+        protected void Init(Vector3 centerPosArg, Vector3 sizeArg, MeshCode meshCodeArg)
         {
             this.CenterPos = centerPosArg;
             this.Size = sizeArg;
-            meshCode = _meshCode;
+            this.meshCode = meshCodeArg;
             
         }
 
@@ -37,7 +36,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         }
 
 
-        public virtual void DrawGizmos()
+        protected virtual void DrawGizmos()
         {
 #if UNITY_EDITOR
 
@@ -92,7 +91,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         /// <summary>
         /// Y軸の値は無視して、XとZの値で箱同士が重なる箇所があるかどうかを bool で返します。
         /// </summary>
-        public bool IsBoxIntersectXZ(MeshCodeGizmoDrawer other)
+        protected bool IsBoxIntersectXZ(MeshCodeGizmoDrawer other)
         {
             var otherPos = other.CenterPos;
             var otherSize = other.Size;
