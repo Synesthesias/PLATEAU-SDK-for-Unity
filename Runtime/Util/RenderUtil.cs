@@ -26,10 +26,15 @@ namespace PLATEAU.Util
         {
             get
             {
+#if UNITY_EDITOR
                 return new Material(
                     (Material)AssetDatabase.LoadAssetAtPath(
                         PathUtil.SdkPathToAssetPath("Materials/PLATEAUX3DMaterial.mat"),
                         typeof(Material)));
+#else
+return null;
+#endif
+
             }
         }
 
@@ -40,10 +45,14 @@ namespace PLATEAU.Util
         {
             get
             {
+#if UNITY_EDITOR
                 return new Material(
                     (Material)AssetDatabase.LoadAssetAtPath(
                         PathUtil.SdkPathToAssetPath("Materials/PLATEAUX3DMaterial_Transparent.mat"),
                         typeof(Material)));
+#else
+return null;
+#endif
             }
         }
 
