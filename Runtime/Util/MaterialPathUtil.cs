@@ -1,6 +1,4 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.IO;
 using PLATEAU.Dataset;
 using UnityEditor;
@@ -95,8 +93,12 @@ namespace PLATEAU.Util
                 return new Material(RenderUtil.DefaultMaterial);
             }
             string matPath = Path.Combine(baseMaterialDir, FallbackFolderName, matFileName);
+            #if UNITY_EDITOR
             var mat = AssetDatabase.LoadAssetAtPath<Material>(matPath);
             return mat ? mat : new Material(RenderUtil.DefaultMaterial);
+            #else
+            throw new NotImplementedException("This function is only supported in editor."); 
+            #endif
         }
     }
 }

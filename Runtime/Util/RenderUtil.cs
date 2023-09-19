@@ -34,10 +34,14 @@ namespace PLATEAU.Util
         {
             get
             {
+                #if UNITY_EDITOR
                 return new Material(
                     (Material)AssetDatabase.LoadAssetAtPath(
                         PathUtil.SdkPathToAssetPath("Materials/PLATEAUX3DMaterial.mat"),
                         typeof(Material)));
+                #else
+                throw new NotImplementedException("This function is only supported in editor.");
+                #endif
             }
         }
 
@@ -48,10 +52,14 @@ namespace PLATEAU.Util
         {
             get
             {
+                #if UNITY_EDITOR
                 return new Material(
                     (Material)AssetDatabase.LoadAssetAtPath(
                         PathUtil.SdkPathToAssetPath("Materials/PLATEAUX3DMaterial_Transparent.mat"),
                         typeof(Material)));
+                #else
+                throw new NotImplementedException("This function is only supported in editor.");
+                #endif
             }
         }
 

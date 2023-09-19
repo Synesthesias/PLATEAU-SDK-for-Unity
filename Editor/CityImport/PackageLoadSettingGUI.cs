@@ -4,7 +4,6 @@ using PLATEAU.CityImport.Setting;
 using PLATEAU.Dataset;
 using PLATEAU.Editor.EditorWindow.Common;
 using PLATEAU.PolygonMesh;
-using PLATEAU.Util;
 using UnityEditor;
 using UnityEngine;
 
@@ -91,8 +90,7 @@ namespace PLATEAU.Editor.CityImport
 
                                 conf.MeshGranularity = (MeshGranularity)EditorGUILayout.Popup("モデル結合",
                                     (int)conf.MeshGranularity, new[] { "最小地物単位(壁面,屋根面等)", "主要地物単位(建築物,道路等)", "地域単位" });
-                                EditorGUILayout.LabelField("デフォルトマテリアル", GUILayout.Width(400));
-                                conf.FallbackMaterial = (Material)EditorGUILayout.ObjectField(conf.FallbackMaterial, typeof(Material), false);
+                                conf.FallbackMaterial = (Material)EditorGUILayout.ObjectField("デフォルトマテリアル", conf.FallbackMaterial, typeof(Material), false);
                             }
                             
                         }
