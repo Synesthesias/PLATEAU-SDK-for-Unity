@@ -26,10 +26,15 @@ namespace PLATEAU.Util
         {
             get
             {
+#if UNITY_EDITOR
                 return new Material(
                     (Material)AssetDatabase.LoadAssetAtPath(
                         PathUtil.SdkPathToAssetPath("Materials/PLATEAUX3DMaterial.mat"),
                         typeof(Material)));
+#else
+return null;
+#endif
+
             }
         }
 
@@ -40,10 +45,14 @@ namespace PLATEAU.Util
         {
             get
             {
+#if UNITY_EDITOR
                 return new Material(
                     (Material)AssetDatabase.LoadAssetAtPath(
                         PathUtil.SdkPathToAssetPath("Materials/PLATEAUX3DMaterial_Transparent.mat"),
                         typeof(Material)));
+#else
+return null;
+#endif
             }
         }
 
@@ -79,6 +88,9 @@ namespace PLATEAU.Util
 
                     stdMat.SetColor("_Color", new Color(rawMaterial.Diffuse.X, rawMaterial.Diffuse.Y, rawMaterial.Diffuse.Z, transparency));
                     stdMat.SetColor("_SpecColor", new Color(rawMaterial.Specular.X, rawMaterial.Specular.Y, rawMaterial.Specular.Z));
+
+                    if(rawMaterial.Emissive.X > 0 || rawMaterial.Emissive.Y > 0 || rawMaterial.Emissive.Z > 0 )
+                        stdMat.EnableKeyword("_EMISSION");
                     stdMat.SetColor("_EmissionColor", new Color(rawMaterial.Emissive.X, rawMaterial.Emissive.Y, rawMaterial.Emissive.Z));
 
                     stdMat.SetFloat("_OcclusionStrength", rawMaterial.AmbientIntensity);
@@ -99,6 +111,13 @@ namespace PLATEAU.Util
             material.SetFloat("_Shininess", rawMaterial.Shininess);
             material.SetInt("_IsSmooth", rawMaterial.IsSmooth ? 1 : 0);
 
+            if (pipelineAsset != null)
+            {
+                string pipelineName = UnityEngine.Rendering.GraphicsSettings.renderPipelineAsset.GetType().Name;
+                bool isHDRP = pipelineName == "HDRenderPipelineAsset";
+                material.SetInt("_IsHDRP", isHDRP ? 1 : 0);
+            }
+            
             return material;
         }
     }
