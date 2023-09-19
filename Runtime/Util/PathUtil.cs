@@ -138,8 +138,7 @@ namespace PLATEAU.Util
             return assetsPath;
         }
         
-
-#if UNITY_EDITOR
+        
         /// <summary>
         /// PLATEAU SDK のパスは、 GitHub からインポートした場合は Packages 以下になり、
         /// Unity Asset Store からインポートした場合は Assets 以下になります。
@@ -150,13 +149,15 @@ namespace PLATEAU.Util
         /// <summary>
         /// SdkBasePath からの相対パスを受け取り、アセットパスに変換して返します。
         /// </summary>
-        #if UNITY_EDITOR
         public static string SdkPathToAssetPath(string sdkPath)
         {
+            #if UNITY_EDITOR
             return Path.Combine(SdkBasePath, sdkPath);
+            #else
+            throw new NotImplementedException("This function is only supported in editor.");
+            #endif
         }
-        #endif
-        
+
         private static bool isInPackageDirCalculated;
         private static bool isInPackageDir;
         /// <summary>
@@ -166,15 +167,18 @@ namespace PLATEAU.Util
         private static bool IsInPackageDir {
             get
             {
+                #if UNITY_EDITOR
                 if (isInPackageDirCalculated) return isInPackageDir;
                 var assembly = System.Reflection.Assembly.GetExecutingAssembly();
                 var packageInfo = UnityEditor.PackageManager.PackageInfo.FindForAssembly(assembly);
                 isInPackageDir = packageInfo != null;
                 isInPackageDirCalculated = true;
                 return isInPackageDir;
+                #else
+                throw new NotImplementedException("This function is only supported in editor.");
+                #endif
             }
             
         }
-        #endif
     }
 }

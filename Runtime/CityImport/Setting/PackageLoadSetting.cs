@@ -1,6 +1,9 @@
 ﻿using System;
 using PLATEAU.Dataset;
 using PLATEAU.PolygonMesh;
+using PLATEAU.Util;
+using UnityEditor;
+using UnityEngine;
 
 namespace PLATEAU.CityImport.Setting
 {
@@ -36,6 +39,7 @@ namespace PLATEAU.CityImport.Setting
         public MeshGranularity MeshGranularity;
         public bool DoSetMeshCollider;
         public bool DoSetAttrInfo;
+        public Material FallbackMaterial;
         public bool EnableTexturePacking;
         public TexturePackingResolution TexturePackingResolution;
 
@@ -52,6 +56,7 @@ namespace PLATEAU.CityImport.Setting
             this.DoSetAttrInfo = doSetAttrInfo;
             this.EnableTexturePacking = enableTexturePacking;
             this.TexturePackingResolution = texturePackingResolution;
+            this.FallbackMaterial = MaterialPathUtil.LoadDefaultFallbackMaterial(package);;
         }
         
         public uint GetTexturePackingResolution()
@@ -68,6 +73,7 @@ namespace PLATEAU.CityImport.Setting
                     throw new ArgumentOutOfRangeException();
             }
         }
+        
     }
 
 }

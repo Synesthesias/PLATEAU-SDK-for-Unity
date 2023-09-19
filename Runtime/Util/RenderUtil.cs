@@ -19,6 +19,14 @@ namespace PLATEAU.Util
             }
         }
 
+        public static Material CreateDefaultMaterial()
+        {
+            return new Material(RenderUtil.DefaultMaterial)
+            {
+                enableInstancing = true
+            };
+        }
+
         /// <summary>
         /// Material用シェーダー付きのOpaqueマテリアル
         /// </summary>
@@ -26,15 +34,14 @@ namespace PLATEAU.Util
         {
             get
             {
-#if UNITY_EDITOR
+                #if UNITY_EDITOR
                 return new Material(
                     (Material)AssetDatabase.LoadAssetAtPath(
                         PathUtil.SdkPathToAssetPath("Materials/PLATEAUX3DMaterial.mat"),
                         typeof(Material)));
-#else
-return null;
-#endif
-
+                #else
+                throw new NotImplementedException("This function is only supported in editor.");
+                #endif
             }
         }
 
@@ -45,14 +52,14 @@ return null;
         {
             get
             {
-#if UNITY_EDITOR
+                #if UNITY_EDITOR
                 return new Material(
                     (Material)AssetDatabase.LoadAssetAtPath(
                         PathUtil.SdkPathToAssetPath("Materials/PLATEAUX3DMaterial_Transparent.mat"),
                         typeof(Material)));
-#else
-return null;
-#endif
+                #else
+                throw new NotImplementedException("This function is only supported in editor.");
+                #endif
             }
         }
 

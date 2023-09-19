@@ -5,6 +5,7 @@ using PLATEAU.Dataset;
 using PLATEAU.Editor.EditorWindow.Common;
 using PLATEAU.PolygonMesh;
 using UnityEditor;
+using UnityEngine;
 
 namespace PLATEAU.Editor.CityImport
 {
@@ -80,7 +81,18 @@ namespace PLATEAU.Editor.CityImport
 
                                 conf.MeshGranularity = (MeshGranularity)EditorGUILayout.Popup("モデル結合",
                                     (int)conf.MeshGranularity, new[] { "最小地物単位(壁面,屋根面等)", "主要地物単位(建築物,道路等)", "地域単位" });
+                                
+                                conf.DoSetAttrInfo =
+                                    EditorGUILayout.Toggle("属性情報を含める", conf.DoSetAttrInfo);
+
+                                PlateauEditorStyle.LODSlider("LOD描画設定", ref conf.MinLOD, ref conf.MaxLOD,
+                                    Math.Min(predefined.minLOD, conf.AvailableMaxLOD), conf.AvailableMaxLOD);
+
+                                conf.MeshGranularity = (MeshGranularity)EditorGUILayout.Popup("モデル結合",
+                                    (int)conf.MeshGranularity, new[] { "最小地物単位(壁面,屋根面等)", "主要地物単位(建築物,道路等)", "地域単位" });
+                                conf.FallbackMaterial = (Material)EditorGUILayout.ObjectField("デフォルトマテリアル", conf.FallbackMaterial, typeof(Material), false);
                             }
+                            
                         }
                     }
                 });
