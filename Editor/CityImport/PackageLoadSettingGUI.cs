@@ -164,6 +164,19 @@ namespace PLATEAU.Editor.CityImport
                             {
                                 EditorGUILayout.HelpBox("URLが正しくありません。", MessageType.Error);
                             }
+                            if (this.mapTileURLOnGUI != ReliefLoadSetting.DefaultMapTileUrl)
+                            {
+                                PlateauEditorStyle.CenterAlignHorizontal(() =>
+                                {
+                                    if (PlateauEditorStyle.MiniButton("デフォルトURLに戻す", 150))
+                                    {
+                                        this.mapTileURLOnGUI = ReliefLoadSetting.DefaultMapTileUrl;
+                                        conf.MapTileURL = ReliefLoadSetting.DefaultMapTileUrl;
+                                        GUI.FocusControl("");
+                                    }
+                                });
+
+                            }
                             int zoomLevel = EditorGUILayout.IntField("ズームレベル", conf.MapTileZoomLevel);
                             zoomLevel = Math.Min(zoomLevel, ReliefLoadSetting.MaxZoomLevel);
                             zoomLevel = Math.Max(zoomLevel, ReliefLoadSetting.MinZoomLevel);
