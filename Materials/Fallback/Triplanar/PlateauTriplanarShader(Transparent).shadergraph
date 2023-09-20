@@ -508,9 +508,6 @@
         },
         {
             "m_Id": "3e0ca608ab9546ab986eba15e3721665"
-        },
-        {
-            "m_Id": "8a48b0db2ec24c6195cc88612d5ae80d"
         }
     ]
 }
@@ -707,10 +704,10 @@
     "m_Guid": {
         "m_GuidSerialized": "ba3b16dd-dafb-4b11-b63b-4ec727ea178e"
     },
-    "m_Name": "AmbientOcclusionTexture",
+    "m_Name": "AmbientOcclusionTex",
     "m_DefaultRefNameVersion": 1,
-    "m_RefNameGeneratedByDisplayName": "AmbientOcclusionTexture",
-    "m_DefaultReferenceName": "_AmbientOcclusionTexture",
+    "m_RefNameGeneratedByDisplayName": "AmbientOcclusionTex",
+    "m_DefaultReferenceName": "_AmbientOcclusionTex",
     "m_OverrideReferenceName": "",
     "m_GeneratePropertyBlock": true,
     "m_UseCustomSlotLabel": false,
@@ -859,10 +856,10 @@
     "m_Type": "UnityEditor.ShaderGraph.Texture2DInputMaterialSlot",
     "m_ObjectId": "1710c96416f8462cbe2641fde43f2af9",
     "m_Id": 1110280483,
-    "m_DisplayName": "AmbientOcclusionTexture",
+    "m_DisplayName": "AmbientOcclusionTextureSubGraph",
     "m_SlotType": 0,
     "m_Hidden": false,
-    "m_ShaderOutputName": "_AmbientOcclusionTexture",
+    "m_ShaderOutputName": "_AmbientOcclusionTextureSubGraph",
     "m_StageCapability": 2,
     "m_BareResource": false,
     "m_Texture": {
@@ -930,7 +927,7 @@
     "m_Type": "UnityEditor.ShaderGraph.Texture2DMaterialSlot",
     "m_ObjectId": "1dbd4c77cdbf4a02b8e146dd20a1157a",
     "m_Id": 0,
-    "m_DisplayName": "AmbientOcclusionTexture",
+    "m_DisplayName": "AmbientOcclusionTex",
     "m_SlotType": 1,
     "m_Hidden": false,
     "m_ShaderOutputName": "Out",
@@ -2091,14 +2088,6 @@
     "m_Value": 0.0,
     "m_DefaultValue": 0.0,
     "m_Labels": []
-}
-
-{
-    "m_SGVersion": 0,
-    "m_Type": "UnityEditor.ShaderGraph.VFXTarget",
-    "m_ObjectId": "8a48b0db2ec24c6195cc88612d5ae80d",
-    "m_Lit": false,
-    "m_AlphaTest": false
 }
 
 {
