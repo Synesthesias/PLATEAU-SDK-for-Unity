@@ -3,7 +3,6 @@ using System.Linq;
 using System.Threading;
 using PLATEAU.CityImport.AreaSelector;
 using PLATEAU.Dataset;
-using PLATEAU.Geometries;
 using PLATEAU.Native;
 using PLATEAU.PolygonMesh;
 using PLATEAU.Util;
@@ -132,19 +131,7 @@ namespace PLATEAU.CityImport.Setting
             this.perPackagePairSettings.Clear();
             foreach (var (package, availableMaxLOD) in dict)
             {
-                var predefined = CityModelPackageInfo.GetPredefined(package);
-                var val = new PackageLoadSetting(
-                    package: package,
-                    loadPackage: true,
-                    includeTexture: predefined.hasAppearance,
-                    lodRange: new LODRange(predefined.minLOD, availableMaxLOD, availableMaxLOD),
-                    MeshGranularity.PerPrimaryFeatureObject, 
-                    doSetMeshCollider: true,
-                    doSetAttrInfo: true,
-                    enableTexturePacking: true,
-                    texturePackingResolution: TexturePackingResolution.W4096H4096,
-                    fallbackMaterial: MaterialPathUtil.LoadDefaultFallbackMaterial(package));
-                this.perPackagePairSettings.Add(package, val);
+                this.perPackagePairSettings.Add(package, PackageLoadSetting.CreateSettingFor(package, availableMaxLOD));
             }
         }
 

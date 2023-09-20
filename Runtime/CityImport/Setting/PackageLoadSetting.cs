@@ -3,6 +3,7 @@ using PLATEAU.Dataset;
 using PLATEAU.Geometries;
 using PLATEAU.Native;
 using PLATEAU.PolygonMesh;
+using PLATEAU.Util;
 using UnityEngine;
 
 namespace PLATEAU.CityImport.Setting
@@ -18,7 +19,7 @@ namespace PLATEAU.CityImport.Setting
     }
 
     /// <summary>
-    /// <see cref="PLATEAUCityModelLoader"/> の設定のうち、パッケージごとの設定です。
+    /// PLATEAUCityModelLoader の設定のうち、パッケージごとの設定です。
     /// <see cref="CityLoadConfig"/> によって保持されます。
     /// このクラスに対応するGUIクラスは PackageLoadSettingGUI です。
     ///
@@ -41,7 +42,7 @@ namespace PLATEAU.CityImport.Setting
         public bool EnableTexturePacking { get; set; }
         public TexturePackingResolution TexturePackingResolution { get; set; }
         
-        public PackageLoadSetting(PredefinedCityModelPackage package, bool loadPackage, bool includeTexture, LODRange lodRange, MeshGranularity meshGranularity, bool doSetMeshCollider, bool doSetAttrInfo, Material fallbackMaterial, bool enableTexturePacking, TexturePackingResolution texturePackingResolution)
+        private PackageLoadSetting(PredefinedCityModelPackage package, bool loadPackage, bool includeTexture, LODRange lodRange, MeshGranularity meshGranularity, bool doSetMeshCollider, bool doSetAttrInfo, Material fallbackMaterial, bool enableTexturePacking, TexturePackingResolution texturePackingResolution)
         {
             Package = package;
             LoadPackage = loadPackage;
@@ -72,14 +73,28 @@ namespace PLATEAU.CityImport.Setting
         /// 土地以外の場合は<see cref="PackageLoadSetting"/>を返します。
         /// 土地の場合は追加の設定項目があるので、<see cref="PackageLoadSetting"/>のサブクラスである<see cref="ReliefLoadSetting"/>を返します。
         /// </summary>
-        public static PackageLoadSetting CreateSettingFor(PredefinedCityModelPackage package, PackageLoadSetting baseSetting)
+        public static PackageLoadSetting CreateSettingFor(PredefinedCityModelPackage package, int availableMaxLOD)
         {
-            // パッケージ種による場合分けです。
+            // 範囲選択の結果が引数に入っているので、それをもとに初期値を決めます。
+            var predefined = CityModelPackageInfo.GetPredefined(package);
+            var val = new PackageLoadSetting(
+                package: package,
+                loadPackage: true,
+                includeTexture: predefined.hasAppearance,
+                lodRange: new LODRange(predefined.minLOD, availableMaxLOD, availableMaxLOD),
+                MeshGranularity.PerPrimaryFeatureObject, 
+                doSetMeshCollider: true,
+                doSetAttrInfo: true,
+                enableTexturePacking: true,
+                texturePackingResolution: TexturePackingResolution.W4096H4096,
+                fallbackMaterial: MaterialPathUtil.LoadDefaultFallbackMaterial(package));
+            
+            // パッケージ種に応じてクラスを分けます。
             // これと似たロジックが PackageLoadSettingGUI.PackageLoadSettingGUIList にあるので、変更時はそちらも合わせて変更をお願いします。
             return package switch
             {
-                PredefinedCityModelPackage.Relief => new ReliefLoadSetting(true, baseSetting),
-                _ => new PackageLoadSetting(baseSetting)
+                PredefinedCityModelPackage.Relief => new ReliefLoadSetting(val),
+                _ => new PackageLoadSetting(val)
             };
         }
 
@@ -162,12 +177,12 @@ namespace PLATEAU.CityImport.Setting
             }
         }
 
-        public ReliefLoadSetting(bool attachMapTile, PackageLoadSetting baseSetting) :
+        public ReliefLoadSetting(PackageLoadSetting baseSetting) :
             base(baseSetting)
         {
             // 初期値を決めます。
-            AttachMapTile = attachMapTile;
-            MapTileZoomLevel = 15;
+            AttachMapTile = true;
+            MapTileZoomLevel = 17;
             MapTileURL = DefaultMapTileUrl;
         }
 
@@ -208,32 +223,6 @@ namespace PLATEAU.CityImport.Setting
             MinLOD = minLOD;
             MaxLOD = maxLOD;
             AvailableMaxLOD = availableMaxLOD;
-// =======
-//         /// <summary> ユーザーが選択した範囲のなかで存在するLODの最大値 </summary>
-//         public readonly int AvailableMaxLOD;
-//         
-//         public MeshGranularity MeshGranularity;
-//         public bool DoSetMeshCollider;
-//         public bool DoSetAttrInfo;
-//         public Material FallbackMaterial;
-//         public bool EnableTexturePacking;
-//         public TexturePackingResolution TexturePackingResolution;
-//
-//         public PackageLoadSetting(PredefinedCityModelPackage package, bool loadPackage, bool includeTexture, int minLOD, int maxLOD, int availableMaxLOD, MeshGranularity meshGranularity, bool doSetMeshCollider, bool doSetAttrInfo, bool enableTexturePacking, TexturePackingResolution texturePackingResolution)
-//         {
-//             Package = package;
-//             this.LoadPackage = loadPackage;
-//             this.IncludeTexture = includeTexture;
-//             this.MinLOD = minLOD;
-//             this.MaxLOD = maxLOD;
-//             this.AvailableMaxLOD = availableMaxLOD;
-//             this.MeshGranularity = meshGranularity;
-//             this.DoSetMeshCollider = doSetMeshCollider;
-//             this.DoSetAttrInfo = doSetAttrInfo;
-//             this.EnableTexturePacking = enableTexturePacking;
-//             this.TexturePackingResolution = texturePackingResolution;
-//             this.FallbackMaterial = MaterialPathUtil.LoadDefaultFallbackMaterial(package);;
-// >>>>>>> dev/v2
         }
 
     }
