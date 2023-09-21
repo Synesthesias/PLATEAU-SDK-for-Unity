@@ -3,7 +3,6 @@ using System.Linq;
 using System.Threading;
 using PLATEAU.CityImport.AreaSelector;
 using PLATEAU.Dataset;
-using PLATEAU.Geometries;
 using PLATEAU.Native;
 using PLATEAU.PolygonMesh;
 using PLATEAU.Util;
@@ -132,20 +131,7 @@ namespace PLATEAU.CityImport.Setting
             this.perPackagePairSettings.Clear();
             foreach (var (package, availableMaxLOD) in dict)
             {
-                var predefined = CityModelPackageInfo.GetPredefined(package);
-                var val = new PackageLoadSetting(
-                    package: package,
-                    loadPackage: true,
-                    includeTexture: predefined.hasAppearance,
-                    minLOD: predefined.minLOD,
-                    maxLOD: availableMaxLOD,
-                    availableMaxLOD: availableMaxLOD,
-                    MeshGranularity.PerPrimaryFeatureObject, 
-                    doSetMeshCollider: true,
-                    doSetAttrInfo: true,
-                    enableTexturePacking: true,
-                    texturePackingResolution: TexturePackingResolution.W4096H4096);
-                this.perPackagePairSettings.Add(package, val);
+                this.perPackagePairSettings.Add(package, PackageLoadSetting.CreateSettingFor(package, availableMaxLOD));
             }
         }
 
@@ -160,33 +146,13 @@ namespace PLATEAU.CityImport.Setting
             ReferencePoint = center;
             return center;
         }
-
-        // インポート設定のうち、Unityでは必ずこうなるという定数部分です。
-        internal const CoordinateSystem MeshAxes = CoordinateSystem.EUN;
-        internal const float UnitScale = 1.0f;
-        
-        
         /// <summary>
         /// インポート設定について、C++のstructに変換します。
         /// </summary>
         internal MeshExtractOptions CreateNativeConfigFor(PredefinedCityModelPackage package)
         {
             var packageConf = GetConfigForPackage(package);
-            return new MeshExtractOptions(
-                referencePoint: ReferencePoint,
-                meshAxes: MeshAxes,
-                meshGranularity: packageConf.MeshGranularity,
-                minLOD: (uint)packageConf.MinLOD,
-                maxLOD: (uint)packageConf.MaxLOD,
-                exportAppearance: packageConf.IncludeTexture,
-                gridCountOfSide: 10,
-                unitScale: UnitScale,
-                coordinateZoneID: CoordinateZoneID,
-                excludeCityObjectOutsideExtent: ShouldExcludeCityObjectOutsideExtent(package),
-                excludePolygonsOutsideExtent: ShouldExcludePolygonsOutsideExtent(package),
-                extent: Extent,
-                enableTexturePacking: packageConf.EnableTexturePacking,
-                texturePackingResolution: packageConf.GetTexturePackingResolution()); // TODO ここで定数で決め打っている部分は、ユーザーが選択できるようにすると良い
+            return packageConf.ConvertToNativeOption(ReferencePoint, CoordinateZoneID, Extent);
         } 
         
         private static bool ShouldExcludeCityObjectOutsideExtent(PredefinedCityModelPackage package)

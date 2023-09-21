@@ -30,10 +30,10 @@ namespace PLATEAU.PolygonMesh
     /// <summary>
     /// GMLファイルから3Dメッシュを取り出すための設定です。
     /// </summary>
-    [StructLayout(LayoutKind.Sequential)]
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
     public struct MeshExtractOptions
     {
-        public MeshExtractOptions(PlateauVector3d referencePoint, CoordinateSystem meshAxes, MeshGranularity meshGranularity, uint minLOD, uint maxLOD, bool exportAppearance, int gridCountOfSide, float unitScale, int coordinateZoneID, bool excludeCityObjectOutsideExtent, bool excludePolygonsOutsideExtent, bool enableTexturePacking, uint texturePackingResolution, Extent extent)
+        public MeshExtractOptions(PlateauVector3d referencePoint, CoordinateSystem meshAxes, MeshGranularity meshGranularity, uint minLOD, uint maxLOD, bool exportAppearance, int gridCountOfSide, float unitScale, int coordinateZoneID, bool excludeCityObjectOutsideExtent, bool excludePolygonsOutsideExtent, bool enableTexturePacking, uint texturePackingResolution, Extent extent, bool attachMapTile, int mapTileZoomLevel, string mapTileURL)
         {
             this.ReferencePoint = referencePoint;
             this.MeshAxes = meshAxes;
@@ -42,22 +42,27 @@ namespace PLATEAU.PolygonMesh
             this.CoordinateZoneID = coordinateZoneID;
             this.ExcludeCityObjectOutsideExtent = excludeCityObjectOutsideExtent;
             this.ExcludePolygonsOutsideExtent = excludePolygonsOutsideExtent;
+            this.EnableTexturePacking = enableTexturePacking; 
+            this.TexturePackingResolution = texturePackingResolution; 
             this.Extent = extent;
             this.minLOD = minLOD;
             this.maxLOD = maxLOD;
             this.unitScale = unitScale;
             this.gridCountOfSide = gridCountOfSide;
-            this.EnableTexturePacking = enableTexturePacking; 
-            this.TexturePackingResolution = texturePackingResolution; 
+            this.AttachMapTile = attachMapTile;
+            this.MapTileZoomLevel = mapTileZoomLevel;
+            this.mapTileURL = mapTileURL;
             
             // 上で全てのメンバー変数を設定できてますが、バリデーションをするため念のためメソッドやプロパティも呼びます。
             SetLODRange(minLOD, maxLOD);
             UnitScale = unitScale;
             GridCountOfSide = gridCountOfSide;
+            MapTileURL = mapTileURL;
         }
 
         /// <summary> 直交座標系における座標で、3Dモデルの原点をどこに設定するかです。 </summary>
-        public  PlateauVector3d ReferencePoint;
+        public PlateauVector3d ReferencePoint;
+
         
         /// <summary> 座標軸の向きです。 </summary>
         public CoordinateSystem MeshAxes;
@@ -138,7 +143,7 @@ namespace PLATEAU.PolygonMesh
         /// この方法であれば 10km×10km の地形など巨大なオブジェクトにも対応できます。
         /// </summary>
         [MarshalAs(UnmanagedType.U1)] public bool ExcludePolygonsOutsideExtent;
-        
+
         /// <summary>
         /// テクスチャ結合（複数のテクスチャ画像を結合する機能）を有効にするかどうかを bool で指定します。
         /// </summary>
@@ -150,6 +155,40 @@ namespace PLATEAU.PolygonMesh
         /// <summary>  対象範囲を緯度・経度・高さで指定します。 </summary>
         public Extent Extent;
 
+        /// <summary>
+        /// 土地でのみ利用します。
+        /// 地図タイルを貼り付けるかどうかです。
+        /// </summary>
+        [MarshalAs(UnmanagedType.U1)] public bool AttachMapTile;
+
+        /// <summary>
+        /// 土地でのみ利用します。
+        /// URLで地図タイルをダウンロードする場合のズームレベルです。
+        /// </summary>
+        public int MapTileZoomLevel;
+
+        /// <summary>
+        /// 土地でのみ利用します。
+        /// URLで地図タイルをダウンロードする場合のURLであり、文字列として"{x}","{y}","{z}"を含むものです。
+        /// C#とC++でマーシャリングする関係上、charの固定長配列である必要があります。
+        /// 配列長を変更する場合、C++の mesh_extract_options.h にも変更を加える必要があります。
+        /// </summary>
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 1000)]
+        private string mapTileURL;
+
+        public string MapTileURL
+        {
+            get => this.mapTileURL;
+            set
+            {
+                if (!value.StartsWith("http"))
+                {
+                    throw new ArgumentException("URL must start with http.");
+                }
+                this.mapTileURL = value;
+            }
+        }
+        
         /// <summary> デフォルト値の設定を返します。 </summary>
         internal static MeshExtractOptions DefaultValue()
         {
