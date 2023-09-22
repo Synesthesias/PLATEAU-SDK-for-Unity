@@ -86,6 +86,7 @@ namespace PLATEAU.Util
                 PredefinedCityModelPackage.UndergroundBuilding => "PlateauDefaultUndergroundBuilding.mat",
                 PredefinedCityModelPackage.Area => "PlateauDefaultLandUse.mat", // 土地利用を流用
                 PredefinedCityModelPackage.Unknown => "PlateauDefaultUnknown.mat",
+                PredefinedCityModelPackage.OtherConstruction => "PlateauDefaultUnknown.mat",
                 _ => ""
             };
             if (matFileName == "")
