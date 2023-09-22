@@ -7,6 +7,8 @@ namespace PLATEAU.Util
 {
     public static class RenderUtil
     {
+        private static readonly int GlossinessPropertyId = Shader.PropertyToID("_Glossiness");
+
         public static Material DefaultMaterial
         {
             get
@@ -21,10 +23,12 @@ namespace PLATEAU.Util
 
         public static Material CreateDefaultMaterial()
         {
-            return new Material(RenderUtil.DefaultMaterial)
+            var mat =  new Material(RenderUtil.DefaultMaterial)
             {
-                enableInstancing = true
+                enableInstancing = true,
             };
+            mat.SetFloat(GlossinessPropertyId, 0f); // 感覚的だが、航空写真が貼り付けられた土地などはSmoothnessが0のほうが、それらしい見た目になると思った
+            return mat;
         }
 
         /// <summary>
