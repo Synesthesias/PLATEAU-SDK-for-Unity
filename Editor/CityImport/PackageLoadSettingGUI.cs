@@ -139,6 +139,8 @@ namespace PLATEAU.Editor.CityImport
             private readonly ReliefLoadSetting config;
             private string mapTileURLOnGUI;
             private GeoCoordinate geoCoord;
+            private MapZoomLevelSearchResult zoomLevelSearchResult = new MapZoomLevelSearchResult{AvailableZoomLevelMax = -1, AvailableZoomLevelMin = -1, IsValid = false};
+            private bool zoomLevelSearchButtonPushed;
 
             public ReliefLoadSettingGUI(ReliefLoadSetting setting, MeshCode firstMeshCode) : base(setting)
             {
@@ -182,25 +184,74 @@ namespace PLATEAU.Editor.CityImport
                                 });
 
                             }
-                            int zoomLevel = EditorGUILayout.IntField("ズームレベル", conf.MapTileZoomLevel);
-                            zoomLevel = Math.Min(zoomLevel, ReliefLoadSetting.MaxZoomLevel);
-                            zoomLevel = Math.Max(zoomLevel, ReliefLoadSetting.MinZoomLevel);
+                            int zoomLevel = conf.MapTileZoomLevel;
+                            if (zoomLevelSearchButtonPushed)
+                            {
+                                if (zoomLevelSearchResult.IsValid)
+                                {
+                                    var zoomChoicesStr = new List<string>();
+                                    var zoomChoicesInt = new List<int>();
+                                    for (int i = zoomLevelSearchResult.AvailableZoomLevelMin;
+                                         i <= zoomLevelSearchResult.AvailableZoomLevelMax;
+                                         i++)
+                                    {
+                                        zoomChoicesStr.Add(i.ToString());
+                                        zoomChoicesInt.Add(i);
+                                    }
+
+                                    zoomLevel = EditorGUILayout.IntPopup("ズームレベル", zoomLevel, zoomChoicesStr.ToArray(),
+                                        zoomChoicesInt.ToArray());
+                                }
+                            }
+                            else
+                            {
+                                zoomLevel = EditorGUILayout.IntField("ズームレベル", conf.MapTileZoomLevel);
+                                zoomLevel = Math.Min(zoomLevel, ReliefLoadSetting.MaxZoomLevel);
+                                zoomLevel = Math.Max(zoomLevel, ReliefLoadSetting.MinZoomLevel);
+                            }
+                            
                             conf.MapTileZoomLevel = zoomLevel;
                             PlateauEditorStyle.CenterAlignHorizontal(() =>
                             {
                                 if (PlateauEditorStyle.MiniButton("利用可能ズームレベルを検索", 180))
                                 {
-                                    #if UNITY_EDITOR
+#if UNITY_EDITOR
                                     EditorUtility.DisplayProgressBar("PLATEAU", "利用可能ズームレベルを検索中...", 0.1f);
-                                    #endif
-                                    var zoomSearchResult = new MapZoomLevelSearcher().Search(mapTileURLOnGUI, geoCoord.Latitude, geoCoord.Longitude);
-                                    Debug.Log($"min={zoomSearchResult.AvailableZoomLevelMin}, max={zoomSearchResult.AvailableZoomLevelMax}, valid={zoomSearchResult.IsValid}");
+#endif
+
+                                    try
+                                    {
+                                        zoomLevelSearchResult = new MapZoomLevelSearcher().Search(mapTileURLOnGUI,
+                                            geoCoord.Latitude, geoCoord.Longitude);
+                                        zoomLevelSearchButtonPushed = true;
+                                        conf.MapTileZoomLevel = zoomLevelSearchResult.AvailableZoomLevelMax;
+                                    }
+                                    catch (Exception)
+                                    {
+                                        Debug.LogError("Failed to load map zoom level.");
+                                        zoomLevelSearchResult.IsValid = false;
+                                    }
                                     
-                                    #if UNITY_EDITOR
+
+#if UNITY_EDITOR
                                     EditorUtility.ClearProgressBar();
-                                    #endif
+#endif
                                 }
                             });
+
+                            if (zoomLevelSearchButtonPushed)
+                            {
+                                if (zoomLevelSearchResult.IsValid)
+                                {
+                                    EditorGUILayout.HelpBox(
+                                        $"ズームレベルは {zoomLevelSearchResult.AvailableZoomLevelMin} から {zoomLevelSearchResult.AvailableZoomLevelMax} まで利用可能です",
+                                        MessageType.Info);
+                                }
+                                else
+                                {
+                                    EditorGUILayout.HelpBox("URLに誤りがあります", MessageType.Error);
+                                }
+                            }
                         }
                     }
                 }
