@@ -1,12 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using Codice.CM.Common;
 using PLATEAU.CityImport.Setting;
 using PLATEAU.Dataset;
 using PLATEAU.Editor.EditorWindow.Common;
+using PLATEAU.Native;
 using PLATEAU.PolygonMesh;
-using UnityEditor;
+using PLATEAU.Texture;
 using UnityEngine;
+
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
+
 
 namespace PLATEAU.Editor.CityImport
 {
@@ -34,7 +39,7 @@ namespace PLATEAU.Editor.CityImport
                 // これと似たロジックが PackageLoadSetting.CreateSettingFor にあるので、変更時はそちらも合わせて変更をお願いします。
                 var gui = package switch
                 {
-                    PredefinedCityModelPackage.Relief => new ReliefLoadSettingGUI((ReliefLoadSetting)packageConf),
+                    PredefinedCityModelPackage.Relief => new ReliefLoadSettingGUI((ReliefLoadSetting)packageConf, MeshCode.Parse(cityLoadConf.AreaMeshCodes[0])),
                     _ => new PackageLoadSettingGUI(packageConf)
                 };
                 this.packageGUIList.Add(gui);
@@ -133,11 +138,14 @@ namespace PLATEAU.Editor.CityImport
         {
             private readonly ReliefLoadSetting config;
             private string mapTileURLOnGUI;
+            private GeoCoordinate geoCoord;
 
-            public ReliefLoadSettingGUI(ReliefLoadSetting setting) : base(setting)
+            public ReliefLoadSettingGUI(ReliefLoadSetting setting, MeshCode firstMeshCode) : base(setting)
             {
                 this.config = setting;
                 this.mapTileURLOnGUI = setting.MapTileURL;
+                geoCoord = firstMeshCode.Extent.Center;
+
             }
 
             /// <summary> インポート設定GUIのうち土地専用の部分です。 </summary>
@@ -178,6 +186,21 @@ namespace PLATEAU.Editor.CityImport
                             zoomLevel = Math.Min(zoomLevel, ReliefLoadSetting.MaxZoomLevel);
                             zoomLevel = Math.Max(zoomLevel, ReliefLoadSetting.MinZoomLevel);
                             conf.MapTileZoomLevel = zoomLevel;
+                            PlateauEditorStyle.CenterAlignHorizontal(() =>
+                            {
+                                if (PlateauEditorStyle.MiniButton("利用可能ズームレベルを検索", 180))
+                                {
+                                    #if UNITY_EDITOR
+                                    EditorUtility.DisplayProgressBar("PLATEAU", "利用可能ズームレベルを検索中...", 0.1f);
+                                    #endif
+                                    var zoomSearchResult = new MapZoomLevelSearcher().Search(mapTileURLOnGUI, geoCoord.Latitude, geoCoord.Longitude);
+                                    Debug.Log($"min={zoomSearchResult.AvailableZoomLevelMin}, max={zoomSearchResult.AvailableZoomLevelMax}, valid={zoomSearchResult.IsValid}");
+                                    
+                                    #if UNITY_EDITOR
+                                    EditorUtility.ClearProgressBar();
+                                    #endif
+                                }
+                            });
                         }
                     }
                 }
