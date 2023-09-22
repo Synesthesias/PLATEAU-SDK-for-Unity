@@ -18,14 +18,15 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow
         private readonly IEditorDrawable[] tabGUIArray;
        
         private readonly string[] tabImages =
-            { "dark_icon_import.png", "dark_icon_adjust.png", "dark_icon_export.png", "dark_icon_information.png" };
+            { "dark_icon_import.png", "dark_icon_modify.png", "dark_icon_export.png", "dark_icon_information.png" };
 
         public PlateauWindowGUI(UnityEditor.EditorWindow parentEditorWindow)
         {
             this.tabGUIArray = new IEditorDrawable[]
             {
                 new CityAddGUI(parentEditorWindow),
-                new CityAdjustGUI(),
+                //new CityAdjustGUI(),
+                new CityModifyGUI(parentEditorWindow),
                 new CityExportGUI(),
                 new CityAttributeGUI(parentEditorWindow, this)
             };

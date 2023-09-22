@@ -306,6 +306,14 @@ namespace PLATEAU.Editor.EditorWindow.Common
             return new EditorGUILayout.VerticalScope(ContentStyleLevel3);
         }
 
+        /// <summary>
+        /// 中のGUIコンテンツを白線 で囲みます。
+        /// </summary>
+        public static EditorGUILayout.VerticalScope VerticalScopeLevel4()
+        {
+            return new EditorGUILayout.VerticalScope(ContentStyleLevel4);
+        }
+
         public static EditorGUILayout.VerticalScope VerticalScopeDarkBox()
         {
             return new EditorGUILayout.VerticalScope(new GUIStyle(StyleDarkBox));
@@ -381,6 +389,16 @@ namespace PLATEAU.Editor.EditorWindow.Common
                 top = 10,
                 bottom = 10
             }
+        };
+
+        private static GUIStyle ContentStyleLevel4 => new GUIStyle(GUI.skin.box)
+        {
+            normal =
+            {
+                background = ColoredTexture("#444444")
+            },
+            padding = new RectOffset(8, 8, 8, 8),
+            margin = new RectOffset(8, 8, 0, 0),
         };
 
         private static GUIStyle StyleDarkBox => new GUIStyle
@@ -537,13 +555,83 @@ namespace PLATEAU.Editor.EditorWindow.Common
 
             return nextTabIndex;
         }
-        
+
+        public static int TabsWithHeight(int currentTabIndex,int height, params string[] tabNames)
+        {
+            int tabCount = tabNames.Length;
+            int nextTabIndex = currentTabIndex;
+            var boxStyle = new GUIStyle(EditorStyles.label)
+            {
+                padding = new RectOffset(30, 30, 0, 0),
+            };
+            using (new EditorGUILayout.HorizontalScope(boxStyle, GUILayout.Height(height)))
+            {
+                var baseStyle = new GUIStyle(EditorStyles.label)
+                {
+                    normal =
+                    {
+                        background = LoadTexture(ImageRoundWindowWide)
+                    },
+                    margin =
+                    {
+                        left = 5,
+                        right = 5, 
+                    },
+                    fixedHeight = height,
+                    fontSize = 12,
+                    fontStyle = FontStyle.Bold,
+                    alignment = TextAnchor.MiddleCenter
+                };
+                // ボタンごとのループ
+                for (int i = 0; i < tabCount; i++)
+                {
+                    var buttonStyle = new GUIStyle(baseStyle);
+                    if (i == currentTabIndex)
+                    {
+                        // 選択中のボタンは背景が暗いので、テキストは白っぽい色にします。
+                        buttonStyle.normal.textColor = colorDefaultFont.Dark;
+                    }
+                    var backgroundColorTint = i == currentTabIndex ? colorButtonMain.Color : colorButtonSub.Color;
+                    if (ButtonWithColorTint(new GUIContent(tabNames[i]), backgroundColorTint, buttonStyle, GUILayout.Height(height)))
+                    {
+                        nextTabIndex = i;
+                    }
+                }
+            }
+
+            return nextTabIndex;
+        }
+
         public static bool FoldOut(bool foldOutState, string headerText, Action drawInner)
         {
             // ヘッダーを描画します。
             var style = new GUIStyle(EditorStyles.foldoutHeader)
             {
                 fixedWidth = ScreenDrawableWidth,
+            };
+            var textContent = new GUIContent(headerText);
+            var colorTint = new Color(
+                colorFoldOutBackground.Color.r / colorDefaultBackground.Color.r,
+                colorFoldOutBackground.Color.g / colorDefaultBackground.Color.g,
+                colorFoldOutBackground.Color.b / colorDefaultBackground.Color.b);
+            var prevBackgroundColor = GUI.backgroundColor;
+            GUI.backgroundColor = colorTint;
+            foldOutState = EditorGUILayout.Foldout(foldOutState, textContent, true, style);
+            GUI.backgroundColor = prevBackgroundColor;
+
+            // 折りたたみ可能な中身を表示します。
+            if (foldOutState)
+            {
+                drawInner();
+            }
+            return foldOutState;
+        }
+        public static bool FoldOutSmall(bool foldOutState, string headerText, Action drawInner)
+        {
+            // ヘッダーを描画します。
+            var style = new GUIStyle(EditorStyles.foldoutHeader)
+            {
+                fixedWidth = ScreenDrawableWidth - 30
             };
             var textContent = new GUIContent(headerText);
             var colorTint = new Color(
