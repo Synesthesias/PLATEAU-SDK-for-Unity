@@ -55,6 +55,7 @@ namespace PLATEAU.CityImport.AreaSelector
         private void Start()
         {
             AreaSelectorGUI.Enable(this);
+            AreaSelectorGuideGUI.Enable();
             LodLegendGUI.Enable();
 #if UNITY_EDITOR
             EditorUtility.DisplayProgressBar("", "データファイルを検索中です...", 0f);
@@ -180,6 +181,7 @@ namespace PLATEAU.CityImport.AreaSelector
         {
             IsAreaSelectEnabled = false;
             AreaSelectorGUI.Disable();
+            AreaSelectorGuideGUI.Disable();
             LodLegendGUI.Disable();
             var selectedMeshCodes = this.gizmosDrawer.SelectedMeshCodes.ToArray();
             var selectedExtent = this.gizmosDrawer.CursorExtent(this.coordinateZoneID, this.geoReference.ReferencePoint);
@@ -221,6 +223,7 @@ namespace PLATEAU.CityImport.AreaSelector
         internal void CancelAreaSelection()
         {
             AreaSelectorGUI.Disable();
+            AreaSelectorGuideGUI.Disable();
             LodLegendGUI.Disable();
             IsAreaSelectEnabled = false;
             var emptyAreaSelectResult = new MeshCode[] { };
