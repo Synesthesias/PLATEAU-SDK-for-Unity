@@ -166,7 +166,15 @@ namespace PLATEAU.CityImport.AreaSelector
             meshCodes = new ReadOnlyCollection<MeshCode>(accessor.MeshCodes.Where(code => code.IsValid).ToArray());
         }
 
-        
+        internal void ResetSelectedArea()
+        {
+            this.gizmosDrawer.ResetSelectedArea();
+        }
+
+        internal bool IsSelectedArea()
+        {
+            return this.gizmosDrawer.IsSelectedArea();
+        }
 
         internal void EndAreaSelection()
         {

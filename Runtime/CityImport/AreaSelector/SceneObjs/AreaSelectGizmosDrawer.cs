@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using PLATEAU.Geometries;
@@ -6,6 +7,7 @@ using PLATEAU.Dataset;
 using PLATEAU.Native;
 using PLATEAU.Util;
 using UnityEditor;
+using UnityEngine;
 
 namespace PLATEAU.CityImport.AreaSelector.SceneObjs
 {
@@ -15,13 +17,18 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
     /// </summary>
     internal class AreaSelectGizmosDrawer : HandlesBase
     {
+        private const int MouseLeftButton = 0;
         /// <summary> 地域メッシュの範囲表示です。 </summary>
-        private readonly List<MeshCodeGizmoDrawer> meshCodeDrawers = new List<MeshCodeGizmoDrawer>();
-        /// <summary> 範囲選択カーソルです。 </summary>
-        private AreaSelectorCursor cursor;
+        private readonly List<MeshCodeGizmoDrawer> meshCodeDrawers = new();
         /// <summary> 地域メッシュごとの利用可能LOD表示です。 </summary>
         private AreaLodController areaLod;
         private GeoReference geoReference;
+        private AreaSelectionGizmoDrawer areaSelectionGizmoDrawer;
+        private bool isShiftButtonPressed;
+        private bool isLeftMouseButtonPressed;
+        private bool isLeftMouseAndShiftButtonPressed;
+        private bool isLeftMouseButtonMoved;
+        private bool isLeftMouseAndShiftButtonMoved;
         
         public void Init(
             ReadOnlyCollection<MeshCode> meshCodes, DatasetSourceConfig datasetSourceConfig,
@@ -30,7 +37,6 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
 #if UNITY_EDITOR
             EditorUtility.DisplayProgressBar("", "範囲座標を計算中です...", 0.5f);
 #endif
-            this.cursor = new AreaSelectorCursor();
             // 仮に (0,0,0) を referencePoint とする geoReference を作成
             using var geoReferenceTmp = CoordinatesConvertUtil.UnityStandardGeoReference(coordinateZoneID);
             // 中心を計算し、そこを基準点として geoReference を再設定します。
@@ -57,40 +63,63 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
 
             this.areaLod = new AreaLodController(datasetSourceConfig, outGeoReference, meshCodes);
             this.geoReference = outGeoReference;
+            this.areaSelectionGizmoDrawer = new AreaSelectionGizmoDrawer();
+            this.areaSelectionGizmoDrawer.SetUp();
 #if UNITY_EDITOR
             EditorUtility.ClearProgressBar();
 #endif
         }
         
-        public IEnumerable<MeshCode> SelectedMeshCodes {
-            get
+        public IEnumerable<MeshCode> SelectedMeshCodes
+        {
+            get 
             {
-                return this.cursor.SelectedMeshCodes(this.meshCodeDrawers)
-                    .Select(drawer => drawer.MeshCode);
+                return new List<MeshCode>();
             }
         }
 
+        public void ResetSelectedArea()
+        {
+            foreach (var meshCodeGizmoDrawer in this.meshCodeDrawers)
+            {
+                meshCodeGizmoDrawer.ResetSelectedArea();
+            }
+        }
+
+        public bool IsSelectedArea()
+        {
+            return 0 < this.meshCodeDrawers.Where(meshCodeDrawer => meshCodeDrawer.IsSelectedArea()).ToList().Count;
+        }
+        
         public Extent CursorExtent(int coordinateZoneID, PlateauVector3d referencePoint)
         {
-            return this.cursor.GetExtent(coordinateZoneID, referencePoint);
+            return new Extent();
+            // return this.cursor.GetExtent(coordinateZoneID, referencePoint);
         }
 
         #if UNITY_EDITOR
+
         protected override void OnSceneGUI(SceneView sceneView)
         {
-            this.cursor.DrawSceneGUI();
+            UpdateMousePressedStatus();
+            
             this.areaLod.Update(GSIMapLoaderZoomSwitch.CalcCameraExtent(sceneView.camera, this.geoReference));
             this.areaLod.DrawSceneGUI(sceneView.camera);
+
+            foreach (var meshCodeGizmoDrawer in this.meshCodeDrawers)
+            {
+                meshCodeGizmoDrawer.DrawSceneGUI();
+            }
         }
         #endif
 
         private void OnDrawGizmos()
         {
-            foreach (var mcDrawer in this.meshCodeDrawers)
+            foreach (var meshCodeGizmoDrawer in this.meshCodeDrawers)
             {
-                mcDrawer.ApplyStyle();
+                meshCodeGizmoDrawer.ApplyStyle();
                 // 大きな粒度の線は優先して表示されるようにします。
-                mcDrawer.Priority = mcDrawer.MeshCode.Level switch
+                meshCodeGizmoDrawer.Priority = meshCodeGizmoDrawer.MeshCode.Level switch
                 {
                     2 => 1,
                     3 => 0,
@@ -100,8 +129,116 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
 
             var gizmosToDraw = new List<BoxGizmoDrawer>();
             gizmosToDraw.AddRange(this.meshCodeDrawers);
-            gizmosToDraw.Add(this.cursor);
+            gizmosToDraw.Add(this.areaSelectionGizmoDrawer);
             BoxGizmoDrawer.DrawWithPriority(gizmosToDraw);
+        }
+
+        private void UpdateMousePressedStatus()
+        {
+            // 左クリックのMouseUpのイベントを受け取るためにデフォルトコントロールに追加
+            HandleUtility.AddDefaultControl(GUIUtility.GetControlID(FocusType.Passive));
+            
+            var currentEvent = Event.current;
+            if (currentEvent == null)
+                return;
+            
+            switch (currentEvent.type)
+            {
+                case EventType.MouseDown:
+                    if (currentEvent.button == MouseLeftButton)
+                    {
+                        if (this.isLeftMouseButtonMoved || this.isLeftMouseAndShiftButtonMoved)
+                            return;
+
+                        if (this.isShiftButtonPressed)
+                        {
+                            this.isLeftMouseAndShiftButtonPressed = true;
+                            this.areaSelectionGizmoDrawer.SetTrackingStartedPosition(currentEvent.mousePosition);
+                        }
+                        else
+                        {
+                            this.isLeftMouseButtonPressed = true;
+                            this.areaSelectionGizmoDrawer.SetTrackingStartedPosition(currentEvent.mousePosition);
+                        }
+                    }
+
+                    break;
+                case EventType.MouseUp:
+                    if (currentEvent.button == MouseLeftButton)
+                    {
+                        if (this.isLeftMouseButtonPressed)
+                        {
+                            foreach (var meshCodeGizmoDrawer in this.meshCodeDrawers) 
+                            {
+                                meshCodeGizmoDrawer.ToggleSelectArea(currentEvent.mousePosition);
+                            }
+                        }
+                        else if (this.isLeftMouseButtonMoved || this.isLeftMouseAndShiftButtonMoved)
+                        {
+                            foreach (var meshCodeGizmoDrawer in this.meshCodeDrawers) 
+                            {
+                                meshCodeGizmoDrawer.SetSelectArea(this.areaSelectionGizmoDrawer.AreaSelectionMin, this.areaSelectionGizmoDrawer.AreaSelectionMax, this.isLeftMouseButtonMoved);
+                            }
+                        }
+                        
+                        this.areaSelectionGizmoDrawer.ClearAreaSelectionGizmo();
+
+                        this.isLeftMouseButtonPressed = false;
+                        this.isLeftMouseAndShiftButtonPressed = false;
+                        this.isLeftMouseButtonMoved = false;
+                        this.isLeftMouseAndShiftButtonMoved = false;
+                    }
+
+                    break;
+                case EventType.MouseDrag:
+                    if (currentEvent.button == MouseLeftButton)
+                    {
+                        if (this.isLeftMouseAndShiftButtonPressed)
+                        {
+                            this.isLeftMouseButtonPressed = false;
+                            this.isLeftMouseAndShiftButtonPressed = false;
+                            this.isLeftMouseAndShiftButtonMoved = true;
+                        }
+                        else if (this.isLeftMouseButtonPressed)
+                        {
+                            this.isLeftMouseButtonPressed = false;
+                            this.isLeftMouseAndShiftButtonPressed = false;
+                            this.isLeftMouseButtonMoved = true;
+                        }
+ 
+
+                        if (this.isLeftMouseButtonMoved || this.isLeftMouseAndShiftButtonMoved)
+                        {
+                            this.areaSelectionGizmoDrawer.UpdateAreaSelectionGizmo(currentEvent.mousePosition, this.isLeftMouseButtonMoved);
+                        }
+                    }
+
+                    break;
+                case EventType.KeyDown:
+                    if (currentEvent.keyCode == KeyCode.LeftShift)
+                    {
+                        if (this.isLeftMouseButtonMoved || this.isLeftMouseAndShiftButtonMoved)
+                            return;
+
+                        if (this.isLeftMouseButtonPressed)
+                        {
+                            this.isLeftMouseAndShiftButtonPressed = true;
+                        }
+                        else
+                        {
+                            this.isShiftButtonPressed = true;
+                        }
+                    }
+
+                    break;
+                case EventType.KeyUp:
+                    if (currentEvent.keyCode == KeyCode.LeftShift)
+                    {
+                        this.isShiftButtonPressed = false;
+                    }
+
+                    break;
+            }
         }
     }
 }

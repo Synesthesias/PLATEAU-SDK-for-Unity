@@ -38,10 +38,16 @@ namespace PLATEAU.CityImport.AreaSelector
         {
 #if UNITY_EDITOR
             GUILayout.Space(5f);
+            if (GUILayout.Button("全選択解除"))
+            {
+                areaSelector.ResetSelectedArea();
+            }
+            EditorGUI.BeginDisabledGroup(!areaSelector.IsSelectedArea());
             if (GUILayout.Button("決定"))
             {
                 areaSelector.EndAreaSelection();
             }
+            EditorGUI.EndDisabledGroup();
             if (GUILayout.Button("キャンセル"))
             {
                 areaSelector.CancelAreaSelection();
