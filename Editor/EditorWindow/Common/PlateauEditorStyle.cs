@@ -418,7 +418,7 @@ namespace PLATEAU.Editor.EditorWindow.Common
             if (tabCount <= 0) return nextTabIndex;
             
             var buttonIcons = imagePathsRelative
-                .Select(path => (Texture)LoadTexture(path))
+                .Select(path => (UnityEngine.Texture)LoadTexture(path))
                 .ToArray();
             var buttonBackground = LoadTexture(ImageRoundButton);
             float toolbarButtonHeight = buttonBackground.height * buttonWidth / buttonBackground.width;
