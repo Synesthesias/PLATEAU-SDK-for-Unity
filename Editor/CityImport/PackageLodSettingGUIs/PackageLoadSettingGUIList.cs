@@ -48,6 +48,6 @@ namespace PLATEAU.Editor.CityImport.PackageLodSettingGUIs
             }
         }
 
-        
+        public void Dispose() { }
     }
 }

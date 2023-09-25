@@ -88,6 +88,7 @@ namespace PLATEAU.Editor.CityImport.PackageLodSettingGUIs
             Conf = conf;
         }
         public abstract void Draw();
+        public void Dispose() { }
     }
 
 

@@ -108,5 +108,7 @@ namespace PLATEAU.Editor.CityImport.GUIParts
                                 }
                             }
         }
+
+        public void Dispose() {}
     }
 }
