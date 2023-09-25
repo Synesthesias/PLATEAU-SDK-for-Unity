@@ -18,6 +18,20 @@ namespace PLATEAU.CityImport.Setting
         W8192H8192 = 2,
     }
 
+    internal static class TexturePackingResolutionExtension
+    {
+        public static int ToPixelCount(this TexturePackingResolution op)
+        {
+            return op switch
+            {
+                TexturePackingResolution.W2048H2048 => 2048,
+                TexturePackingResolution.W4096H4096 => 4096,
+                TexturePackingResolution.W8192H8192 => 8192,
+                _ => throw new ArgumentOutOfRangeException()
+            };
+        }
+    }
+
     /// <summary>
     /// PLATEAUCityModelLoader の設定のうち、パッケージごとの設定です。
     /// <see cref="CityLoadConfig"/> によって保持されます。
@@ -117,11 +131,11 @@ namespace PLATEAU.CityImport.Setting
                 excludeCityObjectOutsideExtent: ShouldExcludeCityObjectOutsideExtent(Package),
                 excludePolygonsOutsideExtent: ShouldExcludePolygonsOutsideExtent(Package),
                 enableTexturePacking: EnableTexturePacking,
-                texturePackingResolution: 1, // 土地専用の設定は ReliefLoadSetting で行うので、ここでは仮の値にします。
+                texturePackingResolution: (uint)TexturePackingResolution.ToPixelCount(), 
                 extent: extent,
                 attachMapTile: false, // 土地専用の設定は ReliefLoadSetting で行うので、ここでは false に固定します。
-                mapTileZoomLevel: 15,
-                mapTileURL: ReliefLoadSetting.DefaultMapTileUrl);
+                mapTileZoomLevel: 15, // 土地専用の設定は ReliefLoadSetting で行うので、ここでは仮の値にします。
+                mapTileURL: ReliefLoadSetting.DefaultMapTileUrl); // 土地専用の設定
         }
         
         private static bool ShouldExcludeCityObjectOutsideExtent(PredefinedCityModelPackage package)
