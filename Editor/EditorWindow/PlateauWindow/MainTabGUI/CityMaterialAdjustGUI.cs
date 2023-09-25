@@ -58,36 +58,37 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
                 EditorGUILayout.EndScrollView();
             }
 
-            using (PlateauEditorStyle.VerticalScopeLevel1())
+
+            PlateauEditorStyle.Heading("マテリアル分類", null);
+
+            using (PlateauEditorStyle.VerticalScopeWithPadding(16, 0, 8, 8))
             {
-                PlateauEditorStyle.Heading("マテリアル分類", null);
+                EditorGUIUtility.labelWidth = 50;
+                this.selectedType = EditorGUILayout.Popup("分類", this.selectedType, typeOptions);
+            }
 
-                using (PlateauEditorStyle.VerticalScopeWithPadding(16, 0, 8, 8))
-                {
-                    EditorGUIUtility.labelWidth = 50;
-                    this.selectedType = EditorGUILayout.Popup("分類", this.selectedType, typeOptions);
-                }
-
-                if(selectedType == 0)
+            if(selectedType == 0)
+            {
+                using (PlateauEditorStyle.VerticalScopeWithPadding(8, 0, 8, 8))
                 {
                     EditorGUIUtility.labelWidth = 100;
                     attrKey = EditorGUILayout.TextField("属性情報キー", attrKey);
                 }
+            }
 
-                using (PlateauEditorStyle.VerticalScopeWithPadding(0, 0, 15, 0))
+            using (PlateauEditorStyle.VerticalScopeWithPadding(0, 0, 15, 0))
+            {
+                PlateauEditorStyle.CenterAlignHorizontal(() =>
                 {
-                    PlateauEditorStyle.CenterAlignHorizontal(() =>
+                    using (new EditorGUI.DisabledScope(isSearchTaskRunning))
                     {
-                        using (new EditorGUI.DisabledScope(isSearchTaskRunning))
+                        if (PlateauEditorStyle.MiniButton(isSearchTaskRunning ? "処理中..." : "検索", 150))
                         {
-                            if (PlateauEditorStyle.MiniButton(isSearchTaskRunning ? "処理中..." : "検索", 150))
-                            {
-                                //isSearchTaskRunning = true;
-                                //TODO: 検索処理
-                            }
+                            //isSearchTaskRunning = true;
+                            //TODO: 検索処理
                         }
-                    });
-                }
+                    }
+                });
             }
 
             using (PlateauEditorStyle.VerticalScopeLevel1())

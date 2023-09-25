@@ -54,37 +54,33 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
                 EditorGUILayout.EndScrollView();
             }
 
-            
-            using (PlateauEditorStyle.VerticalScopeLevel1())
+            PlateauEditorStyle.Heading("結合・分離単位", null);
+
+            using (PlateauEditorStyle.VerticalScopeWithPadding(16, 0, 8, 16))
             {
-                PlateauEditorStyle.Heading("結合・分離単位", null);
+                EditorGUIUtility.labelWidth = 50;
+                this.selectedUnit = EditorGUILayout.Popup("単位", this.selectedUnit, unitOptions);
+            };
 
-                using (PlateauEditorStyle.VerticalScopeWithPadding(16, 0, 8, 16))
+            if(selectedUnit == 0 )
+            {
+                this.foldOutOption = PlateauEditorStyle.FoldOut(this.foldOutOption, "Option", () =>
                 {
-                    EditorGUIUtility.labelWidth = 50;
-                    this.selectedUnit = EditorGUILayout.Popup("単位", this.selectedUnit, unitOptions);
-                };
-
-                if(selectedUnit == 0 )
-                {
-                    this.foldOutOption = PlateauEditorStyle.FoldOut(this.foldOutOption, "Option", () =>
+                    using (PlateauEditorStyle.VerticalScopeWithPadding(16, 0, 8, 16))
                     {
-                        using (PlateauEditorStyle.VerticalScopeWithPadding(16, 0, 8, 16))
-                        {
-                            toggleMaxSize = EditorGUILayout.ToggleLeft("メッシュが最大サイズを超える場合はグリッド分割する", toggleMaxSize);
-                        }
-                    }, 30);
-                }
-
-                PlateauEditorStyle.Separator(0);
-
-                using (new EditorGUI.DisabledScope(isExecTaskRunning))
-                {
-                    if (PlateauEditorStyle.MainButton(isExecTaskRunning ? "処理中..." : "実行"))
-                    {
-                        //isExecTaskRunning = true;
-                        //TODO: 実行処理
+                        toggleMaxSize = EditorGUILayout.ToggleLeft("メッシュが最大サイズを超える場合はグリッド分割する", toggleMaxSize);
                     }
+                }, 30);
+            }
+
+            PlateauEditorStyle.Separator(0);
+
+            using (new EditorGUI.DisabledScope(isExecTaskRunning))
+            {
+                if (PlateauEditorStyle.MainButton(isExecTaskRunning ? "処理中..." : "実行"))
+                {
+                    //isExecTaskRunning = true;
+                    //TODO: 実行処理
                 }
             }
         }
