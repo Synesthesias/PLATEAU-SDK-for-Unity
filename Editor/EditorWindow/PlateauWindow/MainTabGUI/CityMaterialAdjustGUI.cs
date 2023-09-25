@@ -26,11 +26,10 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
         private bool isSearchTaskRunning = false;
         private bool isExecTaskRunning = false;
 
-        private void OnSelectionChanged()
+        public CityMaterialAdjustGUI(UnityEditor.EditorWindow parentEditorWindow)
         {
-            //Selected = Selection.gameObjects.Where(x => x.GetComponent<PLATEAUCityObjectGroup>() != null).ToArray<GameObject>();
-            Selected = Selection.gameObjects;
-            parentEditorWindow.Repaint();
+            this.parentEditorWindow = parentEditorWindow;
+            Selection.selectionChanged += OnSelectionChanged;
         }
 
         public void Dispose()
@@ -38,10 +37,11 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
             Selection.selectionChanged -= OnSelectionChanged;
         }
 
-        public CityMaterialAdjustGUI(UnityEditor.EditorWindow parentEditorWindow)
+        private void OnSelectionChanged()
         {
-            this.parentEditorWindow = parentEditorWindow;
-            Selection.selectionChanged += OnSelectionChanged;
+            //Selected = Selection.gameObjects.Where(x => x.GetComponent<PLATEAUCityObjectGroup>() != null).ToArray<GameObject>();
+            Selected = Selection.gameObjects;
+            parentEditorWindow.Repaint();
         }
 
         public void Draw()
@@ -81,7 +81,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
                             if (PlateauEditorStyle.MiniButton(isSearchTaskRunning ? "処理中..." : "検索", 150))
                             {
                                 //isSearchTaskRunning = true;
-                                //検索処理
+                                //TODO: 検索処理
                             }
                         }
                     });
@@ -93,7 +93,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
                 PlateauEditorStyle.CategoryTitle("属性情報①");
                 using (PlateauEditorStyle.VerticalScopeWithPadding(16, 0, 8, 0))
                 {
-                    changeMat2 = EditorGUILayout.ToggleLeft("マテリアルを変更する", changeMat1);
+                    changeMat1 = EditorGUILayout.ToggleLeft("マテリアルを変更する", changeMat1);
                     mat1 = (Material)EditorGUILayout.ObjectField("マテリアル",
                                     mat1, typeof(Material), false);
                 }    
@@ -117,7 +117,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
                 if (PlateauEditorStyle.MainButton(isExecTaskRunning ? "処理中..." : "実行"))
                 {
                     //isExecTaskRunning = true;
-                    //実行処理
+                    //TODO: 実行処理
                 }
             }
         }

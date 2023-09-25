@@ -20,14 +20,8 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
         private int selectedUnit;
         private string[] unitOptions = { "最小地物単位(壁面,屋根面等)", "主要地物単位(建築物,道路等)", "地域単位" };
         private bool foldOutOption = true;
-        private bool toggleMaxSize;
+        private bool toggleMaxSize = true;
         private bool isExecTaskRunning = false;
-
-        private void OnSelectionChanged()
-        {
-            Selected = Selection.gameObjects.Where(x => x.GetComponent<PLATEAUCityObjectGroup>() != null).ToArray<GameObject>();
-            parentEditorWindow.Repaint();
-        }
 
         public CityCombineSeparateGUI(UnityEditor.EditorWindow parentEditorWindow)
         {
@@ -38,6 +32,12 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
         public void Dispose()
         {
             Selection.selectionChanged -= OnSelectionChanged;
+        }
+
+        private void OnSelectionChanged()
+        {
+            Selected = Selection.gameObjects.Where(x => x.GetComponent<PLATEAUCityObjectGroup>() != null).ToArray<GameObject>();
+            parentEditorWindow.Repaint();
         }
 
         public void Draw()
@@ -80,7 +80,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
                     if (PlateauEditorStyle.MainButton(isExecTaskRunning ? "処理中..." : "実行"))
                     {
                         //isExecTaskRunning = true;
-                        //実行処理
+                        //TODO: 実行処理
                     }
                 }
             }
