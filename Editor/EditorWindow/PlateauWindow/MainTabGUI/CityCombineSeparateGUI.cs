@@ -18,7 +18,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
         private GameObject[] Selected = new GameObject[0];
         private Vector2 scrollSelected;
         private int selectedUnit;
-        private string[] unitOptions = { "最小地物単位(壁面,屋根面等)", "主要地物単位(建築物,道路等)", "地域単位" };
+        private string[] unitOptions = { "地域単位", "最小地物単位(壁面,屋根面等)", "主要地物単位(建築物,道路等)" };
         private bool foldOutOption = true;
         private bool toggleMaxSize = true;
         private bool isExecTaskRunning = false;
@@ -65,13 +65,16 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
                     this.selectedUnit = EditorGUILayout.Popup("単位", this.selectedUnit, unitOptions);
                 };
 
-                this.foldOutOption = PlateauEditorStyle.FoldOut(this.foldOutOption, "Option", () =>
+                if(selectedUnit == 0 )
                 {
-                    using (PlateauEditorStyle.VerticalScopeWithPadding(16, 0, 8, 16))
+                    this.foldOutOption = PlateauEditorStyle.FoldOut(this.foldOutOption, "Option", () =>
                     {
-                        toggleMaxSize = EditorGUILayout.ToggleLeft("メッシュが最大サイズを超える場合はグリッド分割する", toggleMaxSize);
-                    }
-                }, 30);
+                        using (PlateauEditorStyle.VerticalScopeWithPadding(16, 0, 8, 16))
+                        {
+                            toggleMaxSize = EditorGUILayout.ToggleLeft("メッシュが最大サイズを超える場合はグリッド分割する", toggleMaxSize);
+                        }
+                    }, 30);
+                }
 
                 PlateauEditorStyle.Separator(0);
 

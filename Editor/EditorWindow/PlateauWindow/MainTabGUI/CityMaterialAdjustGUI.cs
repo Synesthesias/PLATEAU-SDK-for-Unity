@@ -68,9 +68,11 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
                     this.selectedType = EditorGUILayout.Popup("分類", this.selectedType, typeOptions);
                 }
 
-                EditorGUIUtility.labelWidth = 100;
-                attrKey = EditorGUILayout.TextField("属性情報キー", attrKey);
-                
+                if(selectedType == 0)
+                {
+                    EditorGUIUtility.labelWidth = 100;
+                    attrKey = EditorGUILayout.TextField("属性情報キー", attrKey);
+                }
 
                 using (PlateauEditorStyle.VerticalScopeWithPadding(0, 0, 15, 0))
                 {

@@ -17,6 +17,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
         private int tabIndex;
         private readonly IEditorDrawable[] tabGUIArray;
         private string[] tabNames = { "ゲームオブジェクト\nON/OFF" , "マテリアル分け", "結合/分離" };
+
         public CityModifyGUI(UnityEditor.EditorWindow parentEditorWindow)
         {
             this.tabGUIArray = new IEditorDrawable[]
