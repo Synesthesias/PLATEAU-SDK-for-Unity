@@ -323,11 +323,11 @@ namespace PLATEAU.Editor.EditorWindow.Common
 
         public static EditorGUILayout.VerticalScope VerticalScopeWithPadding(int left, int right, int top, int bottom)
         {
-            GUIStyle ContentStyleLeftPadding = new GUIStyle()
+            GUIStyle ContentStylePadding = new GUIStyle()
             {
                 padding = new RectOffset(left, right, top, bottom),
             };
-            return new EditorGUILayout.VerticalScope(new GUIStyle(ContentStyleLeftPadding));
+            return new EditorGUILayout.VerticalScope(new GUIStyle(ContentStylePadding));
         }
 
         /// <summary>
