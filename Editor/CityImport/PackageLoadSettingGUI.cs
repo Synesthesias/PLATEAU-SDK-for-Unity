@@ -49,6 +49,7 @@ namespace PLATEAU.Editor.CityImport
             }
         }
 
+        public void Dispose() { }
 
         /// <summary>
         /// インポート設定のうち、パッケージ種1つの設定GUIです。
@@ -182,6 +183,7 @@ namespace PLATEAU.Editor.CityImport
                     }
                 }
             }
+            public void Dispose() {}
         }
     }
 }

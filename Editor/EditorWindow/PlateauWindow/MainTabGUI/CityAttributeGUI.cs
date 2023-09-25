@@ -247,5 +247,12 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
                 GameObject.DestroyImmediate(gizmoDrawer.gameObject);
             }
         }
+
+        public void Dispose() 
+        {
+            Clear();
+            SceneView.duringSceneGui -= OnSceneGUI;
+            parentGUI.OnTabChange -= OnParentTabChanged;
+        }
     }
 }

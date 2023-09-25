@@ -35,5 +35,11 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
                 this.tabGUIArray[this.tabIndex].Draw();
             }  
         }
+
+        public void Dispose() 
+        {
+            foreach (var gui in tabGUIArray)
+                gui.Dispose();
+        }
     }
 }

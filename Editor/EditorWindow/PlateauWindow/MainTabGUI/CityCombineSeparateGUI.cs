@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using PLATEAU.CityInfo;
-using PLATEAU.Dataset;
-using PLATEAU.Editor.CityExport;
 using PLATEAU.Editor.EditorWindow.Common;
 using UnityEditor;
 using UnityEngine;
@@ -16,6 +14,8 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
     /// </summary>
     internal class CityCombineSeparateGUI : IEditorDrawable
     {
+        private UnityEditor.EditorWindow parentEditorWindow;
+        private GameObject[] Selected = new GameObject[0];
         private Vector2 scrollSelected;
         private int selectedUnit;
         private string[] unitOptions = { "最小地物単位(壁面,屋根面等)", "主要地物単位(建築物,道路等)", "地域単位" };
@@ -23,11 +23,21 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
         private bool toggleMaxSize;
         private bool isExecTaskRunning = false;
 
+        private void OnSelectionChanged()
+        {
+            Selected = Selection.gameObjects.Where(x => x.GetComponent<PLATEAUCityObjectGroup>() != null).ToArray<GameObject>();
+            parentEditorWindow.Repaint();
+        }
+
         public CityCombineSeparateGUI(UnityEditor.EditorWindow parentEditorWindow)
         {
-            Selection.selectionChanged += () => { 
-                parentEditorWindow.Repaint();
-            };           
+            this.parentEditorWindow = parentEditorWindow;
+            Selection.selectionChanged += OnSelectionChanged;           
+        }
+
+        public void Dispose()
+        {
+            Selection.selectionChanged -= OnSelectionChanged;
         }
 
         public void Draw()
@@ -37,12 +47,9 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
             using (PlateauEditorStyle.VerticalScopeLevel2())
             {
                 scrollSelected = EditorGUILayout.BeginScrollView(scrollSelected, GUILayout.MaxHeight(100));
-                foreach (GameObject obj in Selection.gameObjects)
+                foreach (GameObject obj in Selected)
                 {
-                    if (obj.GetComponent<PLATEAUCityObjectGroup>() != null)
-                    {
-                        EditorGUILayout.LabelField(obj.name);
-                    }
+                    EditorGUILayout.LabelField(obj.name);
                 }
                 EditorGUILayout.EndScrollView();
             }
@@ -72,7 +79,6 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
                     }
                 }
             }
-
         }
     }
 }

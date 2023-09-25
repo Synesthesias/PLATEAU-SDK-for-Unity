@@ -74,6 +74,7 @@ namespace PLATEAU.Editor.CityImport
                     }
                 }
             }
+            public void Dispose() { }
         }
     }
 }

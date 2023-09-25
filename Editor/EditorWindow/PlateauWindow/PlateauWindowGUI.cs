@@ -40,6 +40,12 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow
             this.tabGUIArray[this.TabIndex].Draw();
         }
 
+        public void Dispose()
+        {
+            foreach (var gui in tabGUIArray)
+                gui.Dispose();
+        }
+
         /// <summary> テストからアクセスする用 </summary>
         internal const string NameOfTabIndex = nameof(tabIndex);
 

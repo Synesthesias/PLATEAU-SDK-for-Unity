@@ -30,5 +30,10 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow
 
         /// <summary> テストからアクセスする用 </summary>
         internal const string NameOfInnerGuiField = nameof(gui);
+
+        private void OnDestroy()
+        {
+            gui.Dispose();
+        }
     }
 }

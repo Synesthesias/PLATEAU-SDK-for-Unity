@@ -2,13 +2,9 @@
 using System.Collections.Generic;
 using System.Drawing.Printing;
 using System.Linq;
-using System.Security.Cryptography;
-using System.Threading.Tasks;
-using PLATEAU.CityInfo;
 using PLATEAU.Editor.EditorWindow.Common;
 using UnityEditor;
 using UnityEngine;
-using static Codice.Client.BaseCommands.UndoCmdImpl;
 
 namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
 {
@@ -17,6 +13,8 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
     /// </summary>
     internal class CityMaterialAdjustGUI : IEditorDrawable
     {
+        private UnityEditor.EditorWindow parentEditorWindow;
+        private GameObject[] Selected = new GameObject[0];
         private Vector2 scrollSelected;
         private int selectedType;
         private string[] typeOptions = { "属性情報", "地物型" };
@@ -25,15 +23,25 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
         private bool changeMat2 = false;
         private Material mat1 = null;
         private Material mat2 = null;
-
         private bool isSearchTaskRunning = false;
         private bool isExecTaskRunning = false;
 
+        private void OnSelectionChanged()
+        {
+            //Selected = Selection.gameObjects.Where(x => x.GetComponent<PLATEAUCityObjectGroup>() != null).ToArray<GameObject>();
+            Selected = Selection.gameObjects;
+            parentEditorWindow.Repaint();
+        }
+
+        public void Dispose()
+        {
+            Selection.selectionChanged -= OnSelectionChanged;
+        }
+
         public CityMaterialAdjustGUI(UnityEditor.EditorWindow parentEditorWindow)
         {
-            Selection.selectionChanged += () => {
-                parentEditorWindow.Repaint();
-            };
+            this.parentEditorWindow = parentEditorWindow;
+            Selection.selectionChanged += OnSelectionChanged;
         }
 
         public void Draw()
@@ -43,16 +51,9 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
             using (PlateauEditorStyle.VerticalScopeLevel2())
             {
                 scrollSelected = EditorGUILayout.BeginScrollView(scrollSelected, GUILayout.MaxHeight(100));
-                foreach (GameObject obj in Selection.gameObjects)
+                foreach (GameObject obj in Selected)
                 {
-
-                    //if (obj.GetComponent<PLATEAUCityObjectGroup>() != null)
-                    {
-
-                        EditorGUILayout.LabelField(obj.name);
-
-                    }
-
+                    EditorGUILayout.LabelField(obj.name);
                 }
                 EditorGUILayout.EndScrollView();
             }
@@ -110,5 +111,6 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
                 }
             }
         }
+
     }
 }

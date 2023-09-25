@@ -30,6 +30,8 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
             this.importTabGUIArray[this.importTabIndex].Draw();
         }
 
+        public void Dispose() {}
+
         /// <summary> テストで使う用です。 </summary>
         internal const string NameOfImportTabIndex = nameof(importTabIndex);
         internal const string NameOfImportTabGUIArray = nameof(importTabGUIArray);
