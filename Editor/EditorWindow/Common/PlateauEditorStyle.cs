@@ -321,6 +321,15 @@ namespace PLATEAU.Editor.EditorWindow.Common
             return new EditorGUILayout.VerticalScope(new GUIStyle(StyleDarkBox));
         }
 
+        public static EditorGUILayout.VerticalScope VerticalScopeWithPadding(int left, int right, int top, int bottom)
+        {
+            GUIStyle ContentStyleLeftPadding = new GUIStyle()
+            {
+                padding = new RectOffset(left, right, top, bottom),
+            };
+            return new EditorGUILayout.VerticalScope(new GUIStyle(ContentStyleLeftPadding));
+        }
+
         /// <summary>
         /// LOD選択スライダーを描画します。
         /// </summary>

@@ -61,14 +61,18 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
             using (PlateauEditorStyle.VerticalScopeLevel1())
             {
                 PlateauEditorStyle.Heading("マテリアル分類", null);
-                this.selectedType = EditorGUILayout.Popup("分類", this.selectedType, typeOptions);
-                attrKey = EditorGUILayout.TextField("属性情報キー", attrKey);
 
-                var horizontalStyle = new GUIStyle
+                using (PlateauEditorStyle.VerticalScopeWithPadding(16, 0, 8, 8))
                 {
-                    margin = new RectOffset(0, 0, 15, 0) ,
-                };
-                using (new EditorGUILayout.VerticalScope(new GUIStyle(horizontalStyle)))
+                    EditorGUIUtility.labelWidth = 50;
+                    this.selectedType = EditorGUILayout.Popup("分類", this.selectedType, typeOptions);
+                }
+
+                EditorGUIUtility.labelWidth = 100;
+                attrKey = EditorGUILayout.TextField("属性情報キー", attrKey);
+                
+
+                using (PlateauEditorStyle.VerticalScopeWithPadding(0, 0, 15, 0))
                 {
                     PlateauEditorStyle.CenterAlignHorizontal(() =>
                     {
@@ -87,17 +91,23 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
             using (PlateauEditorStyle.VerticalScopeLevel1())
             {
                 PlateauEditorStyle.CategoryTitle("属性情報①");
-                changeMat2 = EditorGUILayout.ToggleLeft("マテリアルを変更する", changeMat1);
-                mat1 = (Material)EditorGUILayout.ObjectField("マテリアル",
-                                mat1, typeof(Material), false);
+                using (PlateauEditorStyle.VerticalScopeWithPadding(16, 0, 8, 0))
+                {
+                    changeMat2 = EditorGUILayout.ToggleLeft("マテリアルを変更する", changeMat1);
+                    mat1 = (Material)EditorGUILayout.ObjectField("マテリアル",
+                                    mat1, typeof(Material), false);
+                }    
             }
 
             using (PlateauEditorStyle.VerticalScopeLevel1())
             {
                 PlateauEditorStyle.CategoryTitle("属性情報②");
-                changeMat2 = EditorGUILayout.ToggleLeft("マテリアルを変更する", changeMat2);
-                mat2 = (Material)EditorGUILayout.ObjectField("マテリアル",
-                                mat2, typeof(Material), false);
+                using (PlateauEditorStyle.VerticalScopeWithPadding(16, 0, 8, 0))
+                {
+                    changeMat2 = EditorGUILayout.ToggleLeft("マテリアルを変更する", changeMat2);
+                    mat2 = (Material)EditorGUILayout.ObjectField("マテリアル",
+                                    mat2, typeof(Material), false);
+                }
             }
 
             PlateauEditorStyle.Separator(0);

@@ -58,11 +58,16 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
             using (PlateauEditorStyle.VerticalScopeLevel1())
             {
                 PlateauEditorStyle.Heading("結合・分離単位", null);
-                this.selectedUnit = EditorGUILayout.Popup("単位",this.selectedUnit, unitOptions);
+
+                using (PlateauEditorStyle.VerticalScopeWithPadding(16, 0, 8, 16))
+                {
+                    EditorGUIUtility.labelWidth = 50;
+                    this.selectedUnit = EditorGUILayout.Popup("単位", this.selectedUnit, unitOptions);
+                };
 
                 this.foldOutOption = PlateauEditorStyle.FoldOut(this.foldOutOption, "Option", () =>
                 {
-                    using (PlateauEditorStyle.VerticalScopeLevel1())
+                    using (PlateauEditorStyle.VerticalScopeWithPadding(16, 0, 8, 16))
                     {
                         toggleMaxSize = EditorGUILayout.ToggleLeft("メッシュが最大サイズを超える場合はグリッド分割する", toggleMaxSize);
                     }
