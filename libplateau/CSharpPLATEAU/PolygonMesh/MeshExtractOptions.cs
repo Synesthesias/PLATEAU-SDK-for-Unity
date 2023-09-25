@@ -30,6 +30,11 @@ namespace PLATEAU.PolygonMesh
     /// <summary>
     /// GMLファイルから3Dメッシュを取り出すための設定です。
     /// </summary>
+    /// 
+    /// 実装上の注意：
+    /// このクラスのフィールド定義は、型から定義の順番にいたるまで厳密にC++と合わせる必要があり、
+    /// マーシャリングも考慮する必要があります。
+    /// しかし、追加でプロパティを定義する分には問題ないため、プロパティで値の整合性チェックをしています。
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
     public struct MeshExtractOptions
     {

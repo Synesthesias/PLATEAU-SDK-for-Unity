@@ -33,10 +33,10 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         private const int MaxIconCnt = 8;
         private const int MaxIconCol = 4;
         private const int MaxIconRow = 2;
-        private static ConcurrentDictionary<(PredefinedCityModelPackage package, uint lod), Texture> iconDict;
+        private static ConcurrentDictionary<(PredefinedCityModelPackage package, uint lod), UnityEngine.Texture> iconDict;
         private struct LodTexturePair {
             public int Lod;
-            public Texture IconTexture;
+            public UnityEngine.Texture IconTexture;
         }
 
         public AreaLodView(PackageToLodDict packageToLodDict, Vector3 meshCodeUnityPositionUpperLeft, Vector3 meshCodeUnityPositionLowerRight)
@@ -194,9 +194,9 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         /// 利用可能なLODをアイコンで表示するためのアイコン画像をロードし、辞書にして返します。
         /// </summary>
         /// <returns>キーはパッケージ種とLOD数値の組、値はテクスチャとするアイコン辞書を返します。</returns>
-        private static ConcurrentDictionary<(PredefinedCityModelPackage package, uint lod), Texture> LoadIconFiles()
+        private static ConcurrentDictionary<(PredefinedCityModelPackage package, uint lod), UnityEngine.Texture> LoadIconFiles()
         {
-            var concurrentDict = new ConcurrentDictionary<(PredefinedCityModelPackage package, uint lod), Texture>();
+            var concurrentDict = new ConcurrentDictionary<(PredefinedCityModelPackage package, uint lod), UnityEngine.Texture>();
             var allPackages = EnumUtil.EachFlags(PredefinedCityModelPackageExtension.All());
             var lodDirNames = new List<string> {"LOD1", "LOD1", "LOD2", "LOD3", "LOD4"};
             foreach (var package in allPackages) {
@@ -217,11 +217,11 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
             return iconDict.ContainsKey((package, 1));
         }
 
-        private static Texture LoadIcon(string relativePath)
+        private static UnityEngine.Texture LoadIcon(string relativePath)
         {
             #if UNITY_EDITOR
             string path = Path.Combine(iconDirPath, relativePath).Replace('\\', '/');
-            var texture =  AssetDatabase.LoadAssetAtPath<Texture>(path);
+            var texture =  AssetDatabase.LoadAssetAtPath<UnityEngine.Texture>(path);
             if (texture == null)
             {
                 Debug.LogError($"Icon image file is not found : {path}");
