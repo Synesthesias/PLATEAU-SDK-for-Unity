@@ -79,7 +79,7 @@ namespace PLATEAU.CityImport.Setting
             var predefined = CityModelPackageInfo.GetPredefined(package);
             var val = new PackageLoadSetting(
                 package: package,
-                loadPackage: true,
+                loadPackage: availableMaxLOD >= 0, // 存在しないものはロードしません
                 includeTexture: predefined.hasAppearance,
                 lodRange: new LODRange(predefined.minLOD, availableMaxLOD, availableMaxLOD),
                 MeshGranularity.PerPrimaryFeatureObject, 
