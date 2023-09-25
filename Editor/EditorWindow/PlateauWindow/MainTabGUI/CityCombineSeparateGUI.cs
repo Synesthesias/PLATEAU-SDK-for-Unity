@@ -27,11 +27,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
         {
             Selection.selectionChanged += () => { 
                 parentEditorWindow.Repaint();
-
-                Debug.Log($"Selection changed.");
-            
-            };
-            
+            };           
         }
 
         public void Draw()
@@ -43,14 +39,10 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
                 scrollSelected = EditorGUILayout.BeginScrollView(scrollSelected, GUILayout.MaxHeight(100));
                 foreach (GameObject obj in Selection.gameObjects)
                 {
-
                     if (obj.GetComponent<PLATEAUCityObjectGroup>() != null)
                     {
-
                         EditorGUILayout.LabelField(obj.name);
-
                     }
-
                 }
                 EditorGUILayout.EndScrollView();
             }
@@ -61,13 +53,13 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
                 PlateauEditorStyle.Heading("結合・分離単位", null);
                 this.selectedUnit = EditorGUILayout.Popup("単位",this.selectedUnit, unitOptions);
 
-                this.foldOutOption = PlateauEditorStyle.FoldOutSmall(this.foldOutOption, "Option", () =>
+                this.foldOutOption = PlateauEditorStyle.FoldOut(this.foldOutOption, "Option", () =>
                 {
                     using (PlateauEditorStyle.VerticalScopeLevel1())
                     {
                         toggleMaxSize = EditorGUILayout.ToggleLeft("メッシュが最大サイズを超える場合はグリッド分割する", toggleMaxSize);
                     }
-                });
+                }, 30);
 
                 PlateauEditorStyle.Separator(0);
 
@@ -80,7 +72,6 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
                     }
                 }
             }
-
 
         }
     }

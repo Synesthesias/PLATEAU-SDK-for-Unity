@@ -56,6 +56,8 @@ namespace PLATEAU.Editor.EditorWindow.Common
 
         private const string ImageRoundButton = "round-button.png";
         private const string ImageRoundWindowWide = "round-window-wide.png";
+        private const string ImageRoundTab = "round-tab.png";     
+        private const string ImageRoundLineFrame = "round_line_frame.png";
 
         public static readonly Color AreaGizmoBoxColor = new Color(0f, 84f / 255f, 1f);
         
@@ -309,9 +311,9 @@ namespace PLATEAU.Editor.EditorWindow.Common
         /// <summary>
         /// 中のGUIコンテンツを白線 で囲みます。
         /// </summary>
-        public static EditorGUILayout.VerticalScope VerticalScopeLevel4()
+        public static EditorGUILayout.VerticalScope VerticalLineFrame()
         {
-            return new EditorGUILayout.VerticalScope(ContentStyleLevel4);
+            return new EditorGUILayout.VerticalScope(ContentStyleLineFrame);
         }
 
         public static EditorGUILayout.VerticalScope VerticalScopeDarkBox()
@@ -391,14 +393,15 @@ namespace PLATEAU.Editor.EditorWindow.Common
             }
         };
 
-        private static GUIStyle ContentStyleLevel4 => new GUIStyle(GUI.skin.box)
+        private static GUIStyle ContentStyleLineFrame => new GUIStyle(GUI.skin.box)
         {
             normal =
             {
-                background = ColoredTexture("#444444")
+                background = LoadTexture(ImageRoundLineFrame),
             },
             padding = new RectOffset(8, 8, 8, 8),
             margin = new RectOffset(8, 8, 0, 0),
+            border = new RectOffset(5, 5, 5, 5),
         };
 
         private static GUIStyle StyleDarkBox => new GUIStyle
@@ -556,31 +559,43 @@ namespace PLATEAU.Editor.EditorWindow.Common
             return nextTabIndex;
         }
 
-        public static int TabsWithHeight(int currentTabIndex,int height, params string[] tabNames)
+        public static int TabsForFrame(int currentTabIndex, params string[] tabNames)
         {
+            const int Height = 41;
             int tabCount = tabNames.Length;
             int nextTabIndex = currentTabIndex;
             var boxStyle = new GUIStyle(EditorStyles.label)
             {
-                padding = new RectOffset(30, 30, 0, 0),
+                padding = new RectOffset(15, 15, 0, 0),
+                margin = new RectOffset(0, 0, 0, 0),
             };
-            using (new EditorGUILayout.HorizontalScope(boxStyle, GUILayout.Height(height)))
+            using (new EditorGUILayout.HorizontalScope(boxStyle, GUILayout.Height(Height)))
             {
                 var baseStyle = new GUIStyle(EditorStyles.label)
                 {
                     normal =
                     {
-                        background = LoadTexture(ImageRoundWindowWide)
+                        background = LoadTexture(ImageRoundTab)
                     },
                     margin =
                     {
                         left = 5,
                         right = 5, 
                     },
-                    fixedHeight = height,
-                    fontSize = 12,
+                    border =
+                    {
+                        left =3,
+                        right =3,
+                        top = 4,
+                    },
+                    padding =
+                    {
+                        top = 3,
+                    },
+                    fixedHeight = Height,
+                    fontSize = 11,
                     fontStyle = FontStyle.Bold,
-                    alignment = TextAnchor.MiddleCenter
+                    alignment = TextAnchor.MiddleCenter,
                 };
                 // ボタンごとのループ
                 for (int i = 0; i < tabCount; i++)
@@ -592,7 +607,7 @@ namespace PLATEAU.Editor.EditorWindow.Common
                         buttonStyle.normal.textColor = colorDefaultFont.Dark;
                     }
                     var backgroundColorTint = i == currentTabIndex ? colorButtonMain.Color : colorButtonSub.Color;
-                    if (ButtonWithColorTint(new GUIContent(tabNames[i]), backgroundColorTint, buttonStyle, GUILayout.Height(height)))
+                    if (ButtonWithColorTint(new GUIContent(tabNames[i]), backgroundColorTint, buttonStyle, GUILayout.Height(Height-2)))
                     {
                         nextTabIndex = i;
                     }
@@ -602,36 +617,12 @@ namespace PLATEAU.Editor.EditorWindow.Common
             return nextTabIndex;
         }
 
-        public static bool FoldOut(bool foldOutState, string headerText, Action drawInner)
+        public static bool FoldOut(bool foldOutState, string headerText, Action drawInner, float offsetWidth = 0)
         {
             // ヘッダーを描画します。
             var style = new GUIStyle(EditorStyles.foldoutHeader)
             {
-                fixedWidth = ScreenDrawableWidth,
-            };
-            var textContent = new GUIContent(headerText);
-            var colorTint = new Color(
-                colorFoldOutBackground.Color.r / colorDefaultBackground.Color.r,
-                colorFoldOutBackground.Color.g / colorDefaultBackground.Color.g,
-                colorFoldOutBackground.Color.b / colorDefaultBackground.Color.b);
-            var prevBackgroundColor = GUI.backgroundColor;
-            GUI.backgroundColor = colorTint;
-            foldOutState = EditorGUILayout.Foldout(foldOutState, textContent, true, style);
-            GUI.backgroundColor = prevBackgroundColor;
-
-            // 折りたたみ可能な中身を表示します。
-            if (foldOutState)
-            {
-                drawInner();
-            }
-            return foldOutState;
-        }
-        public static bool FoldOutSmall(bool foldOutState, string headerText, Action drawInner)
-        {
-            // ヘッダーを描画します。
-            var style = new GUIStyle(EditorStyles.foldoutHeader)
-            {
-                fixedWidth = ScreenDrawableWidth - 30
+                fixedWidth = ScreenDrawableWidth - offsetWidth,
             };
             var textContent = new GUIContent(headerText);
             var colorTint = new Color(
@@ -700,7 +691,25 @@ namespace PLATEAU.Editor.EditorWindow.Common
                 EditorGUILayout.LabelField(new GUIContent(lineImageR), GUILayout.MaxWidth(lineImageR.width));
             });
         }
-        
+
+        public static void CategoryTitle(string text) 
+        {
+            var contentStyle = new GUIStyle(GUI.skin.box)
+            {
+                padding = new RectOffset(8, 8, 8, 8),
+                margin = new RectOffset(0, 0, 0, 0)
+            };
+            using (new EditorGUILayout.VerticalScope(contentStyle))
+            {
+                var textContent = new GUIContent(text);
+                var textStyle = new GUIStyle(EditorStyles.label)
+                {
+                    fontSize = 14,
+                    fontStyle = FontStyle.Bold
+                };
+                EditorGUILayout.LabelField(text, textStyle);
+            }
+        }  
 
         /// <summary>
         /// 背景用に単色のテクスチャを作ります。

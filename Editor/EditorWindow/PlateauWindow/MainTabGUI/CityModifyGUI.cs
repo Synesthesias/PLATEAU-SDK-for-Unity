@@ -22,19 +22,18 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
             this.tabGUIArray = new IEditorDrawable[]
             {
                 new CityAdjustGUI(),
-                new CityMaterialAdjustGUI(),
+                new CityMaterialAdjustGUI(parentEditorWindow),
                 new CityCombineSeparateGUI(parentEditorWindow)
             };
         }
 
         public void Draw()
         {
-            this.tabIndex = PlateauEditorStyle.TabsWithHeight(this.tabIndex, 60, tabNames);
-
-            using (PlateauEditorStyle.VerticalScopeLevel4())
+            this.tabIndex = PlateauEditorStyle.TabsForFrame(this.tabIndex, tabNames);
+            using (PlateauEditorStyle.VerticalLineFrame())
             {
                 this.tabGUIArray[this.tabIndex].Draw();
-            }
+            }  
         }
     }
 }
