@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using PLATEAU.CityInfo;
 using PLATEAU.Editor.EditorWindow.Common;
 using UnityEditor;
@@ -12,7 +10,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
     /// <summary>
     /// PLATEAU SDK ウィンドウで「結合/分離」タブが選択されている時のGUIです。
     /// </summary>
-    internal class CityCombineSeparateGUI : IEditorDrawable
+    internal class CityReconstructGUI : IEditorDrawable
     {
         private UnityEditor.EditorWindow parentEditorWindow;
         private GameObject[] Selected = new GameObject[0];
@@ -23,7 +21,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
         private bool toggleMaxSize = true;
         private bool isExecTaskRunning = false;
 
-        public CityCombineSeparateGUI(UnityEditor.EditorWindow parentEditorWindow)
+        public CityReconstructGUI(UnityEditor.EditorWindow parentEditorWindow)
         {
             this.parentEditorWindow = parentEditorWindow;
             Selection.selectionChanged += OnSelectionChanged;           
@@ -32,10 +30,12 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
         public void Dispose()
         {
             Selection.selectionChanged -= OnSelectionChanged;
+            Array.Clear(Selected,0, Selected.Length);
         }
 
         private void OnSelectionChanged()
         {
+            //選択アイテムのフィルタリング処理
             Selected = Selection.gameObjects.Where(x => x.GetComponent<PLATEAUCityObjectGroup>() != null).ToArray<GameObject>();
             parentEditorWindow.Repaint();
         }
@@ -81,6 +81,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
                 {
                     //isExecTaskRunning = true;
                     //TODO: 実行処理
+
                 }
             }
         }

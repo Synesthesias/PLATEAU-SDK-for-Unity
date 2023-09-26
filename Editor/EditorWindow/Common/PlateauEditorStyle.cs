@@ -321,6 +321,9 @@ namespace PLATEAU.Editor.EditorWindow.Common
             return new EditorGUILayout.VerticalScope(new GUIStyle(StyleDarkBox));
         }
 
+        /// <summary>
+        /// Padding付きのGUIコンテンツを　作成します
+        /// </summary>
         public static EditorGUILayout.VerticalScope VerticalScopeWithPadding(int left, int right, int top, int bottom)
         {
             GUIStyle ContentStylePadding = new GUIStyle()
@@ -568,6 +571,10 @@ namespace PLATEAU.Editor.EditorWindow.Common
             return nextTabIndex;
         }
 
+        /// <summary>
+        /// フレーム上部に配置するタブを表示します。
+        /// 選択されたタブの番号を返します。
+        /// </summary>
         public static int TabsForFrame(int currentTabIndex, params string[] tabNames)
         {
             const int Height = 41;
@@ -622,7 +629,6 @@ namespace PLATEAU.Editor.EditorWindow.Common
                     }
                 }
             }
-
             return nextTabIndex;
         }
 

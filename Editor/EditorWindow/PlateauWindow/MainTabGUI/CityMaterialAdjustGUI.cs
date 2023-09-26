@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Drawing.Printing;
-using System.Linq;
 using PLATEAU.Editor.EditorWindow.Common;
 using UnityEditor;
 using UnityEngine;
@@ -35,10 +32,12 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
         public void Dispose()
         {
             Selection.selectionChanged -= OnSelectionChanged;
+            Array.Clear(Selected, 0, Selected.Length);
         }
 
         private void OnSelectionChanged()
         {
+            //選択アイテムのフィルタリング処理
             //Selected = Selection.gameObjects.Where(x => x.GetComponent<PLATEAUCityObjectGroup>() != null).ToArray<GameObject>();
             Selected = Selection.gameObjects;
             parentEditorWindow.Repaint();
@@ -57,7 +56,6 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
                 }
                 EditorGUILayout.EndScrollView();
             }
-
 
             PlateauEditorStyle.Heading("マテリアル分類", null);
 
@@ -86,6 +84,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
                         {
                             //isSearchTaskRunning = true;
                             //TODO: 検索処理
+
                         }
                     }
                 });
@@ -121,6 +120,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
                 {
                     //isExecTaskRunning = true;
                     //TODO: 実行処理
+
                 }
             }
         }
