@@ -53,7 +53,14 @@ namespace PLATEAU.CityImport.Load.Convert
         {
             var mesh = GenerateUnityMesh();
             if (mesh.vertexCount <= 0) return null;
-            var meshObj = GameObjectUtil.AssureGameObjectInChild(Name, parentTrans);
+            var meshObj = new GameObject(Name)
+            {
+                transform =
+                {
+                    parent = parentTrans
+                },
+                isStatic = true
+            };
             var meshFilter = GameObjectUtil.AssureComponent<MeshFilter>(meshObj);
             meshFilter.mesh = mesh;
             var renderer = GameObjectUtil.AssureComponent<MeshRenderer>(meshObj);
