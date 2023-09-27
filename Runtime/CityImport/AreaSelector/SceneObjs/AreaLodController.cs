@@ -20,6 +20,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         private readonly ConcurrentDictionary<MeshCode, AreaLodView> viewDict = new ConcurrentDictionary<MeshCode, AreaLodView>();
         private Task loadTask;
         private readonly GeoReference geoReference;
+        private readonly HashSet<int> showLods;
 
         public AreaLodController(DatasetSourceConfig datasetSourceConfig, GeoReference geoReference, IEnumerable<MeshCode> allMeshCodes)
         {
@@ -29,6 +30,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
             {
                 this.viewDict.TryAdd(meshCode, null);
             }
+            showLods = new HashSet<int> { 1, 2, 3, 4 };
             AreaLodView.Init();
         }
 
@@ -104,7 +106,24 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         {
             foreach (var view in this.viewDict.Values)
             {
-                view?.DrawHandles(camera);
+                view?.DrawHandles(camera, showLods);
+            }
+        }
+
+        /// <summary>
+        /// 表示するLODアイコンを切り替える
+        /// </summary>
+        /// <param name="lod"></param>
+        /// <param name="isCheck"></param>
+        public void SwitchLodIcon(int lod, bool isCheck)
+        {
+            if (isCheck)
+            {
+                showLods.Add(lod);
+            }
+            else
+            {
+                showLods.Remove(lod);
             }
         }
     }

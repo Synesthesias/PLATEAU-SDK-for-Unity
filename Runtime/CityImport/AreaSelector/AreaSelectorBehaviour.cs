@@ -56,7 +56,7 @@ namespace PLATEAU.CityImport.AreaSelector
         {
             AreaSelectorGUI.Enable(this);
             AreaSelectorGuideGUI.Enable();
-            LodLegendGUI.Enable();
+            LodLegendGUI.Enable(this);
 #if UNITY_EDITOR
             EditorUtility.DisplayProgressBar("", "データファイルを検索中です...", 0f);
 #endif
@@ -231,6 +231,11 @@ namespace PLATEAU.CityImport.AreaSelector
             #if UNITY_EDITOR
             AreaSelectorDataPass.Exec(this.prevScenePath, emptyAreaSelectResult, this.areaSelectResultReceiver, new PackageToLodDict(), dummyExtent, this.prevEditorWindow);
             #endif
+        }
+
+        internal void SwitchLodIcon(int lod, bool isCheck)
+        {
+            this.gizmosDrawer.SwitchLodIcon(lod, isCheck);
         }
 
         private static void RotateSceneViewCameraDown()

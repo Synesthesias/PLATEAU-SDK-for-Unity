@@ -78,6 +78,12 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
             }
         }
 
+        public Extent CursorExtent(int coordinateZoneID, PlateauVector3d referencePoint)
+        {
+            return new Extent();
+            // return this.cursor.GetExtent(coordinateZoneID, referencePoint);
+        }
+        
         public void ResetSelectedArea()
         {
             foreach (var meshCodeGizmoDrawer in this.meshCodeDrawers)
@@ -90,11 +96,10 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         {
             return 0 < this.meshCodeDrawers.Where(meshCodeDrawer => meshCodeDrawer.IsSelectedArea()).ToList().Count;
         }
-        
-        public Extent CursorExtent(int coordinateZoneID, PlateauVector3d referencePoint)
+
+        public void SwitchLodIcon(int lod, bool isCheck)
         {
-            return new Extent();
-            // return this.cursor.GetExtent(coordinateZoneID, referencePoint);
+            this.areaLod.SwitchLodIcon(lod, isCheck);
         }
 
         #if UNITY_EDITOR

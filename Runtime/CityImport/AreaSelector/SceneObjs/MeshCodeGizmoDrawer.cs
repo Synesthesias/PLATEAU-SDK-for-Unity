@@ -21,6 +21,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         private const int NumAreaRow = 4;
         private const int LineWidthLevel2 = 3;
         private const int LineWidthLevel3 = 2;
+        private const float CenterPosY = 15f;
         private const float RayCastMaxDistance = 100000.0f;
         private static readonly Color BoxColorNormalLevel2 = Color.black;
         private static readonly Color BoxColorNormalLevel3 = new(0f, 84f / 255f, 1f);
@@ -79,7 +80,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
             var max = geoReference.Project(extent.Max);
             var centerPosTmp = new Vector3(
                 (float)(min.X + max.X) / 2.0f,
-                AreaSelectorCursor.BoxY,
+                CenterPosY,
                 (float)(min.Z + max.Z) / 2.0f);
             var sizeTmp = new Vector3(
                 (float)Math.Abs(max.X - min.X),

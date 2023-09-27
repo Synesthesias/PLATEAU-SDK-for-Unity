@@ -22,8 +22,8 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         private readonly Vector3 meshCodeUnityPositionLowerRight;
         
         #if UNITY_EDITOR
-        private static readonly string iconDirPath = PathUtil.SdkPathToAssetPath("Images/AreaSelect");
-        private static readonly float maxIconWidth = 50 * EditorGUIUtility.pixelsPerPoint;
+        private static readonly string IconDirPath = PathUtil.SdkPathToAssetPath("Images/AreaSelect");
+        private static readonly float MaxIconWidth = 50 * EditorGUIUtility.pixelsPerPoint;
         #endif
         
         /// <summary> 利用可能を意味するアイコンの不透明度です。 </summary>
@@ -34,9 +34,20 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         private const int MaxIconCol = 4;
         private const int MaxIconRow = 2;
         private static ConcurrentDictionary<(PredefinedCityModelPackage package, uint lod), UnityEngine.Texture> iconDict;
+        private static float meshCodeScreenWidth;
+        private static float monitorDpiScalingFactor;
+        private List<LodViewParam> lodViewParams = new();
+
         private struct LodTexturePair {
             public int Lod;
             public UnityEngine.Texture IconTexture;
+        }
+        
+        private struct LodViewParam
+        {
+            public Vector3 IconPosition;
+            public GUIContent Icon;
+            public GUIStyle IconStyle;
         }
 
         public AreaLodView(PackageToLodDict packageToLodDict, Vector3 meshCodeUnityPositionUpperLeft, Vector3 meshCodeUnityPositionLowerRight)
@@ -52,28 +63,58 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         public static void Init()
         {
             iconDict = LoadIconFiles();
+            monitorDpiScalingFactor = EditorGUIUtility.pixelsPerPoint;
         }
 
-        public void DrawHandles(Camera camera)
+        public void DrawHandles(Camera camera, HashSet<int> showLods)
         {
             #if UNITY_EDITOR
-            if (this.packageToLodDict == null) return;
+            if (this.packageToLodDict == null)
+            {
+                Debug.LogError("packageToLodDict is null.");
+                return;
+            }
+            
             if (iconDict == null)
             {
                 Debug.LogError("Failed to load icons.");
                 return;
             }
-            
+
+            var newMeshCodeScreenWidth = (camera.WorldToScreenPoint(this.meshCodeUnityPositionLowerRight) - camera.WorldToScreenPoint(this.meshCodeUnityPositionUpperLeft)).x;
+            if (this.lodViewParams.Count <= 0 || 
+                float.Epsilon < Math.Abs(monitorDpiScalingFactor - EditorGUIUtility.pixelsPerPoint) ||
+                float.Epsilon < Math.Abs(meshCodeScreenWidth - newMeshCodeScreenWidth))
+            {
+                monitorDpiScalingFactor = EditorGUIUtility.pixelsPerPoint;
+                meshCodeScreenWidth = newMeshCodeScreenWidth;
+                CalculateLodViewParam(camera, showLods);
+            }
+
+            var prevBackgroundColor = GUI.contentColor;
+            GUI.contentColor = new Color(1f, 1f, 1f, IconOpacityAvailable);
+            foreach (var handleLabelParam in this.lodViewParams)
+            {
+                Handles.Label(handleLabelParam.IconPosition, handleLabelParam.Icon, handleLabelParam.IconStyle);
+            }
+            GUI.contentColor = prevBackgroundColor;
+#endif
+        }
+
+        private void CalculateLodViewParam(Camera camera, ICollection<int> showLods)
+        {
+            this.lodViewParams.Clear();
+
             // アイコンが存在するパッケージ種について、表示すべきアイコンを求めます
             var iconAvailableForPackages = iconDict.Keys.Select(tuple => tuple.package).Distinct();
             var iconInfoDict = new Dictionary<string, LodTexturePair>();
-            foreach(var package in iconAvailableForPackages)
+            foreach (var package in iconAvailableForPackages)
             {
                 // パッケージが存在しないときは -1 になります
                 var maxLod = this.packageToLodDict.GetLod(package);
                 if (maxLod < 0)
                     continue;
-                
+
                 // パッケージとLODに対応するテクスチャを求めます
                 if (!iconDict.TryGetValue((package, (uint)maxLod), out var iconTex)) continue;
 
@@ -82,12 +123,12 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
                 var iconFileName = GetIconFileName(package);
                 if (iconInfoDict.ContainsKey(iconFileName))
                 {
-                    if (iconInfoDict[iconFileName].Lod < maxLod) 
+                    if (iconInfoDict[iconFileName].Lod < maxLod)
                     {
                         iconInfoDict[iconFileName] = lodTexturePair;
                     }
-                } 
-                else 
+                }
+                else
                 {
                     iconInfoDict.Add(iconFileName, lodTexturePair);
                 }
@@ -95,28 +136,27 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
 
             // 範囲選択画面に表示する順番に並び替える
             var lodTexturePairList = (from iconFileName in GetIconFileNameList() where iconInfoDict.ContainsKey(iconFileName) select iconInfoDict[iconFileName]).ToList();
-            if (lodTexturePairList.Count <= 0)
-            {
-                Debug.LogError("lodTexturePairList.Count <= 0");
-                return;
-            }
-
-            var monitorDpiScalingFactor = EditorGUIUtility.pixelsPerPoint;
-            var meshCodeScreenWidth = (camera.WorldToScreenPoint(this.meshCodeUnityPositionLowerRight) - camera.WorldToScreenPoint(this.meshCodeUnityPositionUpperLeft)).x;
-
-            // 地域メッシュコードの枠内にアイコンが4つ並ぶ程度の大きさ
-            var iconWidth = Mathf.Min(maxIconWidth, meshCodeScreenWidth / IconWidthDivider) / monitorDpiScalingFactor;
-            var iconCnt = Math.Min(lodTexturePairList.Count, MaxIconCnt);
             
+            // 地域メッシュコードの枠内にアイコンが4つ並ぶ程度の大きさ
+            var iconWidth = Mathf.Min(MaxIconWidth, meshCodeScreenWidth / IconWidthDivider) / monitorDpiScalingFactor;
+
             // アイコンを中央揃えで左から右に並べたとき、左上の座標を求めます。
             var meshCodeCenterUnityPos = (this.meshCodeUnityPositionUpperLeft + this.meshCodeUnityPositionLowerRight) * 0.5f;
 
+            // 表示するアイコン数を取得
+            var showIcons = lodTexturePairList.Where(lodTexturePair => showLods.Contains(lodTexturePair.Lod)).ToList();
+            var iconCnt = Math.Min(showIcons.Count, MaxIconCnt);
+
             // アイコンを表示します。
             var offsetVec = Vector3.zero;
+            var showIconCnt = 0;
             for (var i = 0; i < iconCnt; ++i) 
             {
-                var colIndex = i % MaxIconCol;
-                var rowIndex = i / MaxIconCol;
+                if (!showLods.Contains(lodTexturePairList[i].Lod))
+                    continue;
+
+                var colIndex = showIconCnt % MaxIconCol;
+                var rowIndex = showIconCnt / MaxIconCol;
                 // 表示するアイコン数に応じて現在の行において最大何個のアイコンを表示するか求める
                 var colCount = 0 < (iconCnt - rowIndex * MaxIconCol) / MaxIconCol ? MaxIconCol : (iconCnt - rowIndex * MaxIconCol) % MaxIconCol;
                 // 表示するアイコン数に応じて最大の行数を求める
@@ -131,9 +171,6 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
                 offsetVec.x = xOffset * monitorDpiScalingFactor;
                 offsetVec.y = yOffset * monitorDpiScalingFactor;
                 var iconPos = camera.ScreenToWorldPoint(camera.WorldToScreenPoint(meshCodeCenterUnityPos) + offsetVec);
-
-                var prevBackgroundColor = GUI.contentColor;
-                GUI.contentColor = new Color(1f, 1f, 1f, IconOpacityAvailable);
                 var style = new GUIStyle(EditorStyles.label)
                 {
                     fixedHeight = iconWidth,
@@ -142,10 +179,9 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
                     stretchWidth = true
                 };
                 var content = new GUIContent(lodTexturePairList[i].IconTexture);
-                Handles.Label(iconPos, content, style);
-                GUI.contentColor = prevBackgroundColor;
+                this.lodViewParams.Add(new LodViewParam{ IconPosition = iconPos, Icon = content, IconStyle = style});
+                showIconCnt++;
             }
-#endif
         }
 
         /// <summary>
@@ -220,7 +256,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         private static UnityEngine.Texture LoadIcon(string relativePath)
         {
             #if UNITY_EDITOR
-            string path = Path.Combine(iconDirPath, relativePath).Replace('\\', '/');
+            string path = Path.Combine(IconDirPath, relativePath).Replace('\\', '/');
             var texture =  AssetDatabase.LoadAssetAtPath<UnityEngine.Texture>(path);
             if (texture == null)
             {
