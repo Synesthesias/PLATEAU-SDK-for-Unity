@@ -27,8 +27,15 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         private static readonly Color BoxColorNormalLevel3 = new(0f, 84f / 255f, 1f);
         private static readonly Color HandleColor = new(1f, 72f / 255f, 0f);
         private static readonly Color SelectedFaceColor = new(1f, 204f / 255f, 153f / 255f, 0.5f);
-        private static readonly Color TransparentColor = new(0f, 0f, 0f, 0f);        
-
+        private static readonly Color TransparentColor = new(0f, 0f, 0f, 0f);
+        private static readonly List<string> SuffixMeshIds = new()
+        {
+            "11", "12", "21", "22",
+            "13", "14", "23", "24",
+            "31", "32", "41", "42",
+            "33", "34", "43", "44",
+        };
+        
         public MeshCode MeshCode { get; private set; }
         private GeoReference geoReference;
         private List<bool> selectedAreaList;
@@ -120,6 +127,23 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
                     BoxColor = BoxColorNormalLevel3;
                     break;
             }
+        }
+
+        public List<string> GetSelectedMeshIds()
+        {
+            List<string> meshIds = new();
+            for (var col = 0; col < NumAreaColumn; col++)
+            {
+                for (var row = 0; row < NumAreaRow; row++)
+                {
+                    if (selectedAreaList[row + col * NumAreaColumn])
+                    {
+                        meshIds.Add($"{MeshCode.ToString()}{SuffixMeshIds[row + col * NumAreaColumn]}");
+                    }
+                }
+            }
+
+            return meshIds;
         }
 
 #if UNITY_EDITOR
