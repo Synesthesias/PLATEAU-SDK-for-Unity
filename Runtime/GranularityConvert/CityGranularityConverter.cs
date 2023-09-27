@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using PLATEAU.CityExport.ModelConvert;
 using PLATEAU.CityImport.Load.Convert;
 using PLATEAU.Geometries;
@@ -12,13 +13,14 @@ namespace PLATEAU.GranularityConvert
 {
     public class CityGranularityConverter
     {
-        public async void ConvertAsync(IReadOnlyList<GameObject> srcGameObjs, GranularityConvertOption option)
+        public async Task ConvertAsync(IReadOnlyList<GameObject> srcGameObjs, GranularityConvertOption option)
         {
             using var srcModel = UnityMeshToDllModelConverter.Convert(srcGameObjs, true, true, ConvertVertex);
             var converter = new GranularityConverter();
             using var dstModel = converter.Convert(srcModel, option);
             bool result = await PlateauToUnityModelConverter.PlateauModelToScene(
-                null, new DummyProgressDisplay(), "", true, null, null, dstModel, new DummyAttributeDataHelper());
+                null, new DummyProgressDisplay(), "", true,
+                null, null, dstModel, new DummyAttributeDataHelper(), false);
             if (!result)
             {
                 throw new Exception("Failed to covert plateau model to scene game objects.");

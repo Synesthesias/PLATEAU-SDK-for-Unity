@@ -50,12 +50,12 @@ namespace PLATEAU.CityImport.Load.Convert
                 return false;
             }
 
-            return await PlateauModelToScene(parentTrans, progressDisplay, progressName, doSetMeshCollider, token, fallbackMaterial, plateauModel, attributeDataHelper);
+            return await PlateauModelToScene(parentTrans, progressDisplay, progressName, doSetMeshCollider, token, fallbackMaterial, plateauModel, attributeDataHelper, true);
         }
 
         public static async Task<bool> PlateauModelToScene(Transform parentTrans, IProgressDisplay progressDisplay,
             string progressName, bool doSetMeshCollider, CancellationToken? token, Material fallbackMaterial, Model plateauModel,
-            IAttributeDataHelper attributeDataHelper)
+            IAttributeDataHelper attributeDataHelper, bool skipRoot)
         {
             // ここの処理は 処理A と 処理B に分割されています。
             // Unityのメッシュデータを操作するのは 処理B のみであり、
@@ -94,7 +94,7 @@ namespace PLATEAU.CityImport.Load.Convert
 
             try
             {
-                await meshObjsData.PlaceToScene(parentTrans, cachedMaterials, true, doSetMeshCollider, token, fallbackMaterial);
+                await meshObjsData.PlaceToScene(parentTrans, cachedMaterials, skipRoot, doSetMeshCollider, token, fallbackMaterial);
             }
             catch (Exception e)
             {

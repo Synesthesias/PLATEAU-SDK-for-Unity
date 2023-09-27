@@ -40,7 +40,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
         private void OnSelectionChanged()
         {
             //選択アイテムのフィルタリング処理
-            selected = Selection.gameObjects.Where(x => x.GetComponent<PLATEAUCityObjectGroup>() != null).ToArray<GameObject>();
+            selected = Selection.gameObjects;
             parentEditorWindow.Repaint();
         }
 
@@ -83,15 +83,17 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
             {
                 if (PlateauEditorStyle.MainButton(isExecTaskRunning ? "処理中..." : "実行"))
                 {
-                    // ここに実行処理を書きます
-                    var option = new GranularityConvertOption((MeshGranularity)this.selectedUnit, 1);
-                    Task.Run(() =>
-                    {
-                        new CityGranularityConverter().ConvertAsync(selected, option);
-                    }).ContinueWithErrorCatch();
-
+                    Exec().ContinueWithErrorCatch();
                 }
             }
+        }
+
+        private async Task Exec()
+        {
+            Debug.Log("変換開始");
+            var option = new GranularityConvertOption((MeshGranularity)this.selectedUnit, 1);
+            var converter = new CityGranularityConverter();
+            await converter.ConvertAsync(selected, option);
         }
     }
 }
