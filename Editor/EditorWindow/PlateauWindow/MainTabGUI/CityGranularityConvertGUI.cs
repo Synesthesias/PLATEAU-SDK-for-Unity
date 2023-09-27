@@ -20,7 +20,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
         private GameObject[] selected = Array.Empty<GameObject>();
         private Vector2 scrollSelected;
         private int selectedUnit;
-        private static readonly string[] UnitOptions = { "地域単位", "最小地物単位(壁面,屋根面等)", "主要地物単位(建築物,道路等)" };
+        private static readonly string[] UnitOptions = { "最小地物単位(壁面,屋根面等)", "主要地物単位(建築物,道路等)", "地域単位" };
         private bool foldOutOption = true;
         private bool toggleMaxSize = true;
         private bool isExecTaskRunning = false;
