@@ -128,6 +128,11 @@ namespace PLATEAU.CityExport.ModelConvert
                     .uv
                     .Select(uv => new PlateauVector2f(uv.x, uv.y))
                     .ToArray();
+            var uv4 =
+                unityMesh
+                    .uv4
+                    .Select(uv => new PlateauVector2f(uv.x, uv.y))
+                    .ToArray();
 
             Material[] materials = null;
             if (meshRenderer != null) materials = meshRenderer.sharedMaterials;
@@ -166,7 +171,7 @@ namespace PLATEAU.CityExport.ModelConvert
             Assert.AreEqual(uv1.Length, vertices.Length);
 
             var dllMesh = PolygonMesh.Mesh.Create(
-                vertices, indices, uv1,
+                vertices, indices, uv1, uv4,
                 dllSubMeshes.ToArray());
             // 補足:
             // 上の行で MergeMeshInfo に渡す実引数 includeTexture が常に true になっていますが、それで良いです。
