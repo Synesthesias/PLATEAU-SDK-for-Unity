@@ -10,18 +10,18 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
     /// <summary>
     /// PLATEAU SDK ウィンドウで「結合/分離」タブが選択されている時のGUIです。
     /// </summary>
-    internal class CityReconstructGUI : IEditorDrawable
+    internal class CityGranularityConvertGUI : IEditorDrawable
     {
         private UnityEditor.EditorWindow parentEditorWindow;
-        private GameObject[] Selected = new GameObject[0];
+        private GameObject[] selected = Array.Empty<GameObject>();
         private Vector2 scrollSelected;
         private int selectedUnit;
-        private string[] unitOptions = { "地域単位", "最小地物単位(壁面,屋根面等)", "主要地物単位(建築物,道路等)" };
+        private static readonly string[] UnitOptions = { "地域単位", "最小地物単位(壁面,屋根面等)", "主要地物単位(建築物,道路等)" };
         private bool foldOutOption = true;
         private bool toggleMaxSize = true;
         private bool isExecTaskRunning = false;
 
-        public CityReconstructGUI(UnityEditor.EditorWindow parentEditorWindow)
+        public CityGranularityConvertGUI(UnityEditor.EditorWindow parentEditorWindow)
         {
             this.parentEditorWindow = parentEditorWindow;
             Selection.selectionChanged += OnSelectionChanged;           
@@ -30,13 +30,13 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
         public void Dispose()
         {
             Selection.selectionChanged -= OnSelectionChanged;
-            Array.Clear(Selected,0, Selected.Length);
+            Array.Clear(selected,0, selected.Length);
         }
 
         private void OnSelectionChanged()
         {
             //選択アイテムのフィルタリング処理
-            Selected = Selection.gameObjects.Where(x => x.GetComponent<PLATEAUCityObjectGroup>() != null).ToArray<GameObject>();
+            selected = Selection.gameObjects.Where(x => x.GetComponent<PLATEAUCityObjectGroup>() != null).ToArray<GameObject>();
             parentEditorWindow.Repaint();
         }
 
@@ -47,7 +47,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
             using (PlateauEditorStyle.VerticalScopeLevel2())
             {
                 scrollSelected = EditorGUILayout.BeginScrollView(scrollSelected, GUILayout.MaxHeight(100));
-                foreach (GameObject obj in Selected)
+                foreach (GameObject obj in selected)
                 {
                     EditorGUILayout.LabelField(obj.name);
                 }
@@ -59,7 +59,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
             using (PlateauEditorStyle.VerticalScopeWithPadding(16, 0, 8, 16))
             {
                 EditorGUIUtility.labelWidth = 50;
-                this.selectedUnit = EditorGUILayout.Popup("単位", this.selectedUnit, unitOptions);
+                this.selectedUnit = EditorGUILayout.Popup("単位", this.selectedUnit, UnitOptions);
             };
 
             if(selectedUnit == 0 )
@@ -79,9 +79,8 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
             {
                 if (PlateauEditorStyle.MainButton(isExecTaskRunning ? "処理中..." : "実行"))
                 {
-                    //isExecTaskRunning = true;
-                    //TODO: 実行処理
-
+                    // ここに実行処理を書きます
+                    
                 }
             }
         }

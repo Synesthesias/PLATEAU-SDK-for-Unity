@@ -17,7 +17,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
             {
                 new CityAdjustGUI(),
                 new CityMaterialAdjustGUI(parentEditorWindow),
-                new CityReconstructGUI(parentEditorWindow)
+                new CityGranularityConvertGUI(parentEditorWindow)
             };
         }
 
