@@ -80,36 +80,11 @@ namespace PLATEAU.Tests.EditModeTests.GUITests
             EditorSceneManager.CloseScene(testScene, true);
             EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
         }
-
-        [UnityTest]
-        public IEnumerator TestCityAdjustGui()
-        {
-            // テストデータをインポートします。
-            yield return null;
-            var cityDefinition = TestCityDefinition.Simple;
-            LogAssert.ignoreFailingMessages = true;
-            yield return cityDefinition.ImportLocal().AsIEnumerator();
-            LogAssert.ignoreFailingMessages = false;
-            yield return null;
-            
-            var adjustGui = OpenAdjustTab();
-            var cityModel = Object.FindObjectOfType<PLATEAUInstancedCityModel>();
-            Assert.IsNotNull(cityModel, "インポート後に PLATEAUInstancedCityModelが存在する");
-            // GUIの設定対象にインポートした都市モデルを設定
-            ReflectionUtil.SetPrivateFieldVal(typeof(CityAdjustGUI), adjustGui, CityAdjustGUI.NameOfAdjustTarget, cityModel);
-            // 対象が変わったことを通知
-            ReflectionUtil.InvokePrivateMethod(typeof(CityAdjustGUI), adjustGui,
-                CityAdjustGUI.NameOfOnChangeTargetCityModel, cityModel);
-            yield return null;
-            // 都市の調整GUIがエラーなく描画されることを確認
-            this.window.Repaint();
-            yield return null;
-            
-        }
+        
 
         private CityAddGUI OpenImportTab() => (CityAddGUI)SetMainTabIndex(0);
 
-        private CityAdjustGUI OpenAdjustTab() => (CityAdjustGUI)SetMainTabIndex(1);
+        private CityModificationFrameGUI OpenAdjustTab() => (CityModificationFrameGUI)SetMainTabIndex(1);
         private void OpenExportTab() => SetMainTabIndex(2);
         private IEditorDrawable SetMainTabIndex(int index)
         {

@@ -8,6 +8,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using Texture = UnityEngine.Texture;
 using System.Threading;
+using Material = UnityEngine.Material;
 
 #if UNITY_EDITOR
 using UnityEditor.SceneManagement;
@@ -35,7 +36,27 @@ namespace PLATEAU.CityImport.Load.Convert
             Debug.Log($"load started");
 
             token.ThrowIfCancellationRequested();
+            IAttributeDataHelper attributeDataHelper =
+                new AttributeDataHelper(cityModel, meshExtractOptions.MeshGranularity, doSetAttrInfo);
 
+            Model plateauModel;
+            try
+            {
+                plateauModel = await Task.Run(() => ExtractMeshes(cityModel, meshExtractOptions));
+            }
+            catch (Exception e)
+            {
+                Debug.LogError("メッシュデータの抽出に失敗しました。\n" + e);
+                return false;
+            }
+
+            return await PlateauModelToScene(parentTrans, progressDisplay, progressName, doSetMeshCollider, token, fallbackMaterial, plateauModel, attributeDataHelper);
+        }
+
+        public static async Task<bool> PlateauModelToScene(Transform parentTrans, IProgressDisplay progressDisplay,
+            string progressName, bool doSetMeshCollider, CancellationToken? token, Material fallbackMaterial, Model plateauModel,
+            IAttributeDataHelper attributeDataHelper)
+        {
             // ここの処理は 処理A と 処理B に分割されています。
             // Unityのメッシュデータを操作するのは 処理B のみであり、
             // 処理A はメッシュ構築のための準備(データを List, 配列などで保持する)を
@@ -52,8 +73,7 @@ namespace PLATEAU.CityImport.Load.Convert
             {
                 meshObjsData = await Task.Run(() =>
                 {
-                    using var plateauModel = ExtractMeshes(cityModel, meshExtractOptions, token);
-                    var convertedObjData = new ConvertedGameObjData(plateauModel, new AttributeDataHelper(cityModel, meshExtractOptions.MeshGranularity, doSetAttrInfo));
+                    var convertedObjData = new ConvertedGameObjData(plateauModel, attributeDataHelper);
                     return convertedObjData;
                 });
             }
@@ -100,7 +120,7 @@ namespace PLATEAU.CityImport.Load.Convert
         /// メインスレッドでなくても動作します。
         /// </summary>
         private static Model ExtractMeshes(
-            CityModel cityModel, MeshExtractOptions meshExtractOptions, CancellationToken token)
+            CityModel cityModel, MeshExtractOptions meshExtractOptions)
         {
             var model = Model.Create();
             if (cityModel == null) return model;
