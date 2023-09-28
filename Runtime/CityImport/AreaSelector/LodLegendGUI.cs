@@ -27,7 +27,15 @@ namespace PLATEAU.CityImport.AreaSelector
             areaSelector = areaSelectorArg;
 
             if (0 < LodLegendTextures.Count)
+            {
+                LodLegendCheckStates.Clear();
+                for (var i = 0; i < LodLegendTextures.Count; i++)
+                {
+                    LodLegendCheckStates.Add(true);
+                }
+
                 return;
+            }
                 
             foreach (var iconName in new List<string>{"lod01.png", "lod02.png", "lod03.png", "lod04.png"})
             {
@@ -38,6 +46,7 @@ namespace PLATEAU.CityImport.AreaSelector
                     Debug.LogError($"Icon image file is not found : {path}");
                     continue;
                 }
+
                 LodLegendCheckStates.Add(true);
                 LodLegendTextures.Add(texture);
             }
