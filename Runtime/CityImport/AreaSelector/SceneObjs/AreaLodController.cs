@@ -6,6 +6,7 @@ using PLATEAU.Dataset;
 using PLATEAU.Native;
 using PLATEAU.Util;
 using PLATEAU.Util.Async;
+using UnityEditor;
 using UnityEngine;
 
 namespace PLATEAU.CityImport.AreaSelector.SceneObjs
@@ -124,6 +125,11 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
             else
             {
                 showLods.Remove(lod);
+            }
+            
+            foreach (var view in this.viewDict)
+            {
+                view.Value?.CalculateLodViewParam(SceneView.lastActiveSceneView.camera, showLods);
             }
         }
     }

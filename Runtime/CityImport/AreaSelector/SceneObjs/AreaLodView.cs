@@ -68,7 +68,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
 
         public void DrawHandles(Camera camera, HashSet<int> showLods)
         {
-            #if UNITY_EDITOR
+#if UNITY_EDITOR
             if (this.packageToLodDict == null)
             {
                 Debug.LogError("packageToLodDict is null.");
@@ -101,7 +101,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
 #endif
         }
 
-        private void CalculateLodViewParam(Camera camera, ICollection<int> showLods)
+        public void CalculateLodViewParam(Camera camera, ICollection<int> showLods)
         {
             this.lodViewParams.Clear();
 
