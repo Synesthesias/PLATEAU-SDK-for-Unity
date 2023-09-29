@@ -184,13 +184,11 @@ namespace PLATEAU.CityImport.AreaSelector
             AreaSelectorGuideGUI.Disable();
             LodLegendGUI.Disable();
             var selectedMeshCodes = this.gizmosDrawer.SelectedMeshCodes.ToArray();
-            var selectedExtent = this.gizmosDrawer.CursorExtent(this.coordinateZoneID, this.geoReference.ReferencePoint);
-
             var availablePackageLods = CalcAvailablePackageLodInMeshCodes(selectedMeshCodes, this.datasetSourceConfig);
 
             // 無名関数のキャプチャを利用して、シーン終了後も必要なデータが渡るようにします。
             #if UNITY_EDITOR
-            AreaSelectorDataPass.Exec(this.prevScenePath, selectedMeshCodes, this.areaSelectResultReceiver, availablePackageLods, selectedExtent, this.prevEditorWindow);
+            AreaSelectorDataPass.Exec(this.prevScenePath, selectedMeshCodes, this.areaSelectResultReceiver, availablePackageLods, this.prevEditorWindow);
             #endif
         }
 
@@ -227,9 +225,8 @@ namespace PLATEAU.CityImport.AreaSelector
             LodLegendGUI.Disable();
             IsAreaSelectEnabled = false;
             var emptyAreaSelectResult = new MeshCode[] { };
-            var dummyExtent = Extent.All;
             #if UNITY_EDITOR
-            AreaSelectorDataPass.Exec(this.prevScenePath, emptyAreaSelectResult, this.areaSelectResultReceiver, new PackageToLodDict(), dummyExtent, this.prevEditorWindow);
+            AreaSelectorDataPass.Exec(this.prevScenePath, emptyAreaSelectResult, this.areaSelectResultReceiver, new PackageToLodDict(), this.prevEditorWindow);
             #endif
         }
 

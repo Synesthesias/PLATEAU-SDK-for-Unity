@@ -45,7 +45,7 @@ namespace PLATEAU.CityImport.AreaSelector
             EditorGUI.BeginDisabledGroup(!areaSelector.IsSelectedArea());
             if (GUILayout.Button("決定"))
             {
-                areaSelector.EndAreaSelection();
+                areaSelector.EndAreaSelection(); 
             }
             EditorGUI.EndDisabledGroup();
             if (GUILayout.Button("キャンセル"))
