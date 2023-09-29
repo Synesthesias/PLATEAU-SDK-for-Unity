@@ -15,7 +15,7 @@ namespace PLATEAU.GranularityConvert
     {
         public async Task ConvertAsync(IReadOnlyList<GameObject> srcGameObjs, GranularityConvertOption option)
         {
-            using var srcModel = UnityMeshToDllModelConverter.Convert(srcGameObjs, true, true, ConvertVertex);
+            using var srcModel = UnityMeshToDllModelConverter.Convert(srcGameObjs, true, false, ConvertVertex);
             var converter = new GranularityConverter();
             using var dstModel = converter.Convert(srcModel, option);
             bool result = await PlateauToUnityModelConverter.PlateauModelToScene(
