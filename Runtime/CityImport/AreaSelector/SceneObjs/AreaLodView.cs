@@ -159,7 +159,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
             // アイコンを表示します。
             var offsetVec = Vector3.zero;
             var showIconCnt = 0;
-            for (var i = 0; i < iconCnt; ++i) 
+            for (var i = 0; i < lodTexturePairList.Count; ++i) 
             {
                 if (!showLods.Contains(lodTexturePairList[i].Lod))
                     continue;
