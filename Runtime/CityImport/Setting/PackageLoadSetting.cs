@@ -115,7 +115,7 @@ namespace PLATEAU.CityImport.Setting
         /// <summary>
         /// インポート設定について、C++のstructに変換します。
         /// </summary>
-        public virtual MeshExtractOptions ConvertToNativeOption(PlateauVector3d referencePoint, int coordinateZoneID, Extent extent)
+        public virtual MeshExtractOptions ConvertToNativeOption(PlateauVector3d referencePoint, int coordinateZoneID)
         {
 
             return new MeshExtractOptions(
@@ -132,7 +132,6 @@ namespace PLATEAU.CityImport.Setting
                 excludePolygonsOutsideExtent: ShouldExcludePolygonsOutsideExtent(Package),
                 enableTexturePacking: EnableTexturePacking,
                 texturePackingResolution: (uint)TexturePackingResolution.ToPixelCount(), 
-                extent: extent,
                 attachMapTile: false, // 土地専用の設定は ReliefLoadSetting で行うので、ここでは false に固定します。
                 mapTileZoomLevel: 15, // 土地専用の設定は ReliefLoadSetting で行うので、ここでは仮の値にします。
                 mapTileURL: ReliefLoadSetting.DefaultMapTileUrl); // 土地専用の設定
@@ -200,9 +199,9 @@ namespace PLATEAU.CityImport.Setting
             MapTileURL = DefaultMapTileUrl;
         }
 
-        public override MeshExtractOptions ConvertToNativeOption(PlateauVector3d referencePoint, int coordinateZoneID, Extent extent)
+        public override MeshExtractOptions ConvertToNativeOption(PlateauVector3d referencePoint, int coordinateZoneID)
         {
-            var nativeOption = base.ConvertToNativeOption(referencePoint, coordinateZoneID, extent);
+            var nativeOption = base.ConvertToNativeOption(referencePoint, coordinateZoneID);
             nativeOption.AttachMapTile = AttachMapTile;
             nativeOption.MapTileZoomLevel = MapTileZoomLevel;
             nativeOption.MapTileURL = MapTileURL;

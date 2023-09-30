@@ -6,7 +6,7 @@ using PLATEAU.Native;
 
 namespace PLATEAU.PolygonMesh
 {
-    
+
     /// <summary>
     /// メッシュの結合単位
     /// </summary>
@@ -25,8 +25,8 @@ namespace PLATEAU.PolygonMesh
         /// </summary>
         PerCityModelArea
     }
-    
-    
+
+
     /// <summary>
     /// GMLファイルから3Dメッシュを取り出すための設定です。
     /// </summary>
@@ -38,7 +38,7 @@ namespace PLATEAU.PolygonMesh
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
     public struct MeshExtractOptions
     {
-        public MeshExtractOptions(PlateauVector3d referencePoint, CoordinateSystem meshAxes, MeshGranularity meshGranularity, uint minLOD, uint maxLOD, bool exportAppearance, int gridCountOfSide, float unitScale, int coordinateZoneID, bool excludeCityObjectOutsideExtent, bool excludePolygonsOutsideExtent, bool enableTexturePacking, uint texturePackingResolution, Extent extent, bool attachMapTile, int mapTileZoomLevel, string mapTileURL)
+        public MeshExtractOptions(PlateauVector3d referencePoint, CoordinateSystem meshAxes, MeshGranularity meshGranularity, uint minLOD, uint maxLOD, bool exportAppearance, int gridCountOfSide, float unitScale, int coordinateZoneID, bool excludeCityObjectOutsideExtent, bool excludePolygonsOutsideExtent, bool enableTexturePacking, uint texturePackingResolution, bool attachMapTile, int mapTileZoomLevel, string mapTileURL)
         {
             this.ReferencePoint = referencePoint;
             this.MeshAxes = meshAxes;
@@ -47,9 +47,8 @@ namespace PLATEAU.PolygonMesh
             this.CoordinateZoneID = coordinateZoneID;
             this.ExcludeCityObjectOutsideExtent = excludeCityObjectOutsideExtent;
             this.ExcludePolygonsOutsideExtent = excludePolygonsOutsideExtent;
-            this.EnableTexturePacking = enableTexturePacking; 
-            this.TexturePackingResolution = texturePackingResolution; 
-            this.Extent = extent;
+            this.EnableTexturePacking = enableTexturePacking;
+            this.TexturePackingResolution = texturePackingResolution;
             this.minLOD = minLOD;
             this.maxLOD = maxLOD;
             this.unitScale = unitScale;
@@ -57,7 +56,7 @@ namespace PLATEAU.PolygonMesh
             this.AttachMapTile = attachMapTile;
             this.MapTileZoomLevel = mapTileZoomLevel;
             this.mapTileURL = mapTileURL;
-            
+
             // 上で全てのメンバー変数を設定できてますが、バリデーションをするため念のためメソッドやプロパティも呼びます。
             SetLODRange(minLOD, maxLOD);
             UnitScale = unitScale;
@@ -68,16 +67,16 @@ namespace PLATEAU.PolygonMesh
         /// <summary> 直交座標系における座標で、3Dモデルの原点をどこに設定するかです。 </summary>
         public PlateauVector3d ReferencePoint;
 
-        
+
         /// <summary> 座標軸の向きです。 </summary>
         public CoordinateSystem MeshAxes;
-        
+
         /// <summary> メッシュ結合の粒度です。 </summary>
         public MeshGranularity MeshGranularity;
-        
+
         /// <summary> 出力するLODの範囲上限です。 </summary>
         private uint maxLOD;
-        
+
         /// <summary> 出力するLODの範囲の下限です。 </summary>
         private uint minLOD;
 
@@ -90,10 +89,10 @@ namespace PLATEAU.PolygonMesh
             this.maxLOD = maxLODArg;
             this.minLOD = minLODArg;
         }
-        
+
         /// <summary> テクスチャを含めるかどうかです。 </summary>
         [MarshalAs(UnmanagedType.U1)] public bool ExportAppearance;
-        
+
         /// <summary> メッシュ結合の粒度が「都市モデル単位」の時のみ有効で、この設定では都市を格子状のグリッドに分割するので、その1辺あたりの分割数(縦の数 = 横の数)です。</summary>
         private int gridCountOfSide;
 
@@ -109,7 +108,7 @@ namespace PLATEAU.PolygonMesh
                 this.gridCountOfSide = value;
             }
         }
-        
+
         /// <summary>  大きさ補正です。  </summary>
         private float unitScale;
 
@@ -125,14 +124,14 @@ namespace PLATEAU.PolygonMesh
                 this.unitScale = value;
             }
         }
-        
+
         /// <summary>
         /// 国土交通省が規定する、日本の平面直角座標系の基準点の番号です。
         /// 詳しくは次の国土地理院のサイトをご覧ください。
         /// <see href="https://www.gsi.go.jp/sokuchikijun/jpc.html"/>
         /// </summary>
         public int CoordinateZoneID;
-        
+
         /// <summary>
         /// 範囲外の3Dモデルを出力から除外するための、2つの方法のうち1つを有効にするかどうかを bool で指定します。
         /// その方法とは、都市オブジェクトの最初の頂点の位置が範囲外のとき、そのオブジェクトはすべて範囲外とみなして出力から除外します。
@@ -141,7 +140,7 @@ namespace PLATEAU.PolygonMesh
         /// したがって、この値は建物では true, 地形では false となるべきです。
         /// </summary>
         [MarshalAs(UnmanagedType.U1)] public bool ExcludeCityObjectOutsideExtent;
-        
+
         /// <summary>
         /// 範囲外の3Dモデルを出力から除外するための、2つの方法のうち1つを有効にするかどうかを bool で指定します。
         /// その方法とは、メッシュ操作によって、範囲外に存在するポリゴンを除外します。
@@ -156,9 +155,6 @@ namespace PLATEAU.PolygonMesh
 
         /// <summary> テクスチャ結合時の結合先のテクスチャ画像の解像度（縦：texture_packing_resolution x 横:texture_packing_resolution） </summary>
         public uint TexturePackingResolution;
-        
-        /// <summary>  対象範囲を緯度・経度・高さで指定します。 </summary>
-        public Extent Extent;
 
         /// <summary>
         /// 土地でのみ利用します。
@@ -193,7 +189,7 @@ namespace PLATEAU.PolygonMesh
                 this.mapTileURL = value;
             }
         }
-        
+
         /// <summary> デフォルト値の設定を返します。 </summary>
         internal static MeshExtractOptions DefaultValue()
         {
@@ -203,10 +199,10 @@ namespace PLATEAU.PolygonMesh
         }
 
         private static class NativeMethods
-         {
-             [DllImport(DLLUtil.DllName)]
-             internal static extern APIResult plateau_mesh_extract_options_default_value(
-                 out MeshExtractOptions outDefaultOptions);
-         }
+        {
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_mesh_extract_options_default_value(
+                out MeshExtractOptions outDefaultOptions);
+        }
     }
 }

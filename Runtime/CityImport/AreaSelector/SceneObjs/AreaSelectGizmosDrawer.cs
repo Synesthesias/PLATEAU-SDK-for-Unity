@@ -74,16 +74,15 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         {
             get 
             {
-                return new List<MeshCode>();
+                List<MeshCode> meshCodes = new List<MeshCode>();
+                foreach (var meshCodeGizmoDrawer in this.meshCodeDrawers)
+                {
+                    meshCodes.AddRange(meshCodeGizmoDrawer.GetSelectedMeshIds().Select(id => MeshCode.Parse(id)).ToList());
+                }
+                return meshCodes;
             }
         }
 
-        public Extent CursorExtent(int coordinateZoneID, PlateauVector3d referencePoint)
-        {
-            return new Extent();
-            // return this.cursor.GetExtent(coordinateZoneID, referencePoint);
-        }
-        
         public void ResetSelectedArea()
         {
             foreach (var meshCodeGizmoDrawer in this.meshCodeDrawers)
