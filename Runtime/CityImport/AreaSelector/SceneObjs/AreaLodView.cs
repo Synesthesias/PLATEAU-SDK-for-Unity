@@ -26,6 +26,15 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         private static readonly float MaxIconWidth = 50 * EditorGUIUtility.pixelsPerPoint;
         #endif
         
+        /// <summary> 範囲選択画面に表示する画像名 </summary>
+        private const string BuildingIconName = "building.png";
+        private const string TrafficIconName = "traffic.png";
+        private const string PropsIconName = "props.png";
+        private const string BridgeIconName = "bridge.png";
+        private const string PlantsIconName = "plants.png";
+        private const string UndergroundIconName = "underground.png";
+        private const string TerrainIconName = "terrain.png";
+        private const string OtherIconName = "other.png";
         /// <summary> 利用可能を意味するアイコンの不透明度です。 </summary>
         private const float IconOpacityAvailable = 0.95f;
         /// <summary> アイコンの幅がメッシュコード幅の何分の1であるかです。 </summary>
@@ -193,28 +202,28 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         {
             return package switch 
             {
-                PredefinedCityModelPackage.Building => "building.png",
-                PredefinedCityModelPackage.Road => "traffic.png",
-                PredefinedCityModelPackage.UrbanPlanningDecision => "other.png",
-                PredefinedCityModelPackage.LandUse => "other.png",
-                PredefinedCityModelPackage.CityFurniture => "props.png",
-                PredefinedCityModelPackage.Vegetation => "plants.png",
-                PredefinedCityModelPackage.Relief => "terrain.png",
-                PredefinedCityModelPackage.DisasterRisk => "other.png",
-                PredefinedCityModelPackage.Railway => "traffic.png",
-                PredefinedCityModelPackage.Waterway => "traffic.png",
-                PredefinedCityModelPackage.WaterBody => "other.png",
-                PredefinedCityModelPackage.Bridge => "bridge.png",
-                PredefinedCityModelPackage.Track => "traffic.png",
-                PredefinedCityModelPackage.Square => "traffic.png",
-                PredefinedCityModelPackage.Tunnel => "bridge.png",
-                PredefinedCityModelPackage.UndergroundFacility => "underground.png",
-                PredefinedCityModelPackage.UndergroundBuilding => "underground.png",
-                PredefinedCityModelPackage.Area => "other.png",
-                PredefinedCityModelPackage.OtherConstruction => "other.png",
-                PredefinedCityModelPackage.Generic => "other.png",
-                PredefinedCityModelPackage.Unknown => "other.png",
-                _ => "other.png"
+                PredefinedCityModelPackage.Building => BuildingIconName,
+                PredefinedCityModelPackage.Road => TrafficIconName,
+                PredefinedCityModelPackage.UrbanPlanningDecision => OtherIconName,
+                PredefinedCityModelPackage.LandUse => OtherIconName,
+                PredefinedCityModelPackage.CityFurniture => PropsIconName,
+                PredefinedCityModelPackage.Vegetation => PlantsIconName,
+                PredefinedCityModelPackage.Relief => TerrainIconName,
+                PredefinedCityModelPackage.DisasterRisk => OtherIconName,
+                PredefinedCityModelPackage.Railway => TrafficIconName,
+                PredefinedCityModelPackage.Waterway => TrafficIconName,
+                PredefinedCityModelPackage.WaterBody => OtherIconName,
+                PredefinedCityModelPackage.Bridge => BridgeIconName,
+                PredefinedCityModelPackage.Track => TrafficIconName,
+                PredefinedCityModelPackage.Square => TrafficIconName,
+                PredefinedCityModelPackage.Tunnel => BridgeIconName,
+                PredefinedCityModelPackage.UndergroundFacility => UndergroundIconName,
+                PredefinedCityModelPackage.UndergroundBuilding => UndergroundIconName,
+                PredefinedCityModelPackage.Area => OtherIconName,
+                PredefinedCityModelPackage.OtherConstruction => OtherIconName,
+                PredefinedCityModelPackage.Generic => OtherIconName,
+                PredefinedCityModelPackage.Unknown => OtherIconName,
+                _ => OtherIconName
             };
         }
 
@@ -223,7 +232,17 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         /// </summary>
         /// <returns>アイコンファイル名リスト</returns>
         private static IEnumerable<string> GetIconFileNameList() {
-            return new List<string> { "building.png", "plants.png", "props.png", "traffic.png", "underground.png", "bridge.png", "terrain.png", "other.png" };
+            return new List<string>
+            {
+                BuildingIconName,
+                TrafficIconName,
+                PropsIconName,
+                BridgeIconName,
+                PlantsIconName,
+                UndergroundIconName, 
+                TerrainIconName, 
+                OtherIconName
+            };
         }
         
         /// <summary>
