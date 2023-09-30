@@ -36,8 +36,8 @@ namespace PLATEAU.CityImport.AreaSelector
             };
             
             Handles.BeginGUI();
-            currentAreaSelectorGuideWindowRect.x = sceneView.position.size.x + 15f - currentAreaSelectorGuideWindowRect.width * EditorGUIUtility.pixelsPerPoint;
-            currentAreaSelectorGuideWindowRect.y = sceneView.position.size.y - 12f - currentAreaSelectorGuideWindowRect.height * EditorGUIUtility.pixelsPerPoint;
+            currentAreaSelectorGuideWindowRect.x = sceneView.position.size.x - currentAreaSelectorGuideWindowRect.width - 15;
+            currentAreaSelectorGuideWindowRect.y = sceneView.position.size.y - currentAreaSelectorGuideWindowRect.height - 40;
             currentAreaSelectorGuideWindowRect = GUILayout.Window(3, currentAreaSelectorGuideWindowRect, DrawAreaSelectorGuideInsideWindow, "操作方法", windowStyle);
             Handles.EndGUI();
         }

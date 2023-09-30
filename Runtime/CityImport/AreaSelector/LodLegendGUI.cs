@@ -64,7 +64,7 @@ namespace PLATEAU.CityImport.AreaSelector
         private static void OnGUI(SceneView sceneView)
         {
             Handles.BeginGUI();
-            currentLodLegendWindowRect.y = sceneView.position.size.y - currentLodLegendWindowRect.height * EditorGUIUtility.pixelsPerPoint;
+            currentLodLegendWindowRect.y = sceneView.position.height - currentLodLegendWindowRect.height - 40;
             currentLodLegendWindowRect = GUILayout.Window(2, currentLodLegendWindowRect, DrawLodLegendInsideWindow, "LOD");
             Handles.EndGUI();
         }
