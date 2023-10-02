@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using PLATEAU.Geometries;
 using PLATEAU.Native;
 using PLATEAU.PolygonMesh;
@@ -32,12 +33,7 @@ namespace PLATEAU.CityExport.ModelConvert
             foreach(var go in gameObjs)
             {
                 var trans = go.transform;
-                int childCount = trans.childCount;
-                for (int i = 0; i < childCount; i++)
-                {
-                    var childTrans = trans.GetChild(i);
-                    ConvertRecursive(null, childTrans, model, includeTexture, exportDisabledGameObj, vertexConvertFunc);
-                }
+                ConvertRecursive(null, trans, model, includeTexture, exportDisabledGameObj, vertexConvertFunc);
             }
             return model;
         }
