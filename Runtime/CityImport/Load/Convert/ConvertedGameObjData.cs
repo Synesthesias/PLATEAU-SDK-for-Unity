@@ -102,7 +102,7 @@ namespace PLATEAU.CityImport.Load.Convert
                     }
                 }
  
-                if(nextParent.gameObject.GetComponent<PLATEAUCityObjectGroup>() == null && nextParent.gameObject.name == this.name)
+                if(nextParent != null && nextParent.gameObject.GetComponent<PLATEAUCityObjectGroup>() == null && nextParent.gameObject.name == this.name)
                 {
                     //　属性情報表示コンポーネントを追加します。
                     var serialized = this.attributeDataHelper.GetSerializableCityObject();
@@ -118,7 +118,7 @@ namespace PLATEAU.CityImport.Load.Convert
             // 子を再帰的に配置します。
             foreach (var child in this.children)
             {
-                await child.PlaceToScene(nextParent.transform, cachedMaterials, false, doSetMeshCollider, token, fallbackMaterial);
+                await child.PlaceToScene(nextParent, cachedMaterials, false, doSetMeshCollider, token, fallbackMaterial);
             }
         }
     }

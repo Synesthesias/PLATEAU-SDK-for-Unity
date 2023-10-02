@@ -20,7 +20,7 @@ namespace PLATEAU.GranularityConvert
             using var dstModel = converter.Convert(srcModel, option);
             bool result = await PlateauToUnityModelConverter.PlateauModelToScene(
                 null, new DummyProgressDisplay(), "", true,
-                null, null, dstModel, new DummyAttributeDataHelper(), false);
+                null, null, dstModel, new DummyAttributeDataHelper(), true);
             if (!result)
             {
                 throw new Exception("Failed to covert plateau model to scene game objects.");
