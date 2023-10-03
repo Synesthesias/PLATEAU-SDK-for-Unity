@@ -35,14 +35,9 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
             }
         }
 
-
         protected virtual void DrawGizmos()
         {
 #if UNITY_EDITOR
-
-
-
-            var prevColor = Gizmos.color;
             Gizmos.color = this.BoxColor;
             var max = AreaMax;
             var min = AreaMin;
@@ -57,7 +52,6 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
             DrawThickLine(p4, p1, LineWidth);
 
             AdditionalGizmo();
-
 #endif
         }
 
