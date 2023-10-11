@@ -55,7 +55,8 @@ namespace PLATEAU.CityImport.AreaSelector
         private void Start()
         {
             AreaSelectorGUI.Enable(this);
-            LodLegendGUI.Enable();
+            AreaSelectorGuideGUI.Enable();
+            LodLegendGUI.Enable(this);
 #if UNITY_EDITOR
             EditorUtility.DisplayProgressBar("", "データファイルを検索中です...", 0f);
 #endif
@@ -67,11 +68,11 @@ namespace PLATEAU.CityImport.AreaSelector
             }
             catch (Exception e)
             {
-                const string errorMessage = "メッシュコードの取得に失敗しました。";
-                Debug.LogError($"{errorMessage}\n{e}");
+                const string ErrorMessage = "メッシュコードの取得に失敗しました。";
+                Debug.LogError($"{ErrorMessage}\n{e}");
                 #if UNITY_EDITOR
                 EditorUtility.ClearProgressBar();
-                EditorUtility.DisplayDialog("PLATEAU", errorMessage, "OK");
+                EditorUtility.DisplayDialog("PLATEAU", ErrorMessage, "OK");
                 #endif
                 CancelAreaSelection();
                 return;
@@ -166,21 +167,28 @@ namespace PLATEAU.CityImport.AreaSelector
             meshCodes = new ReadOnlyCollection<MeshCode>(accessor.MeshCodes.Where(code => code.IsValid).ToArray());
         }
 
-        
+        internal void ResetSelectedArea()
+        {
+            this.gizmosDrawer.ResetSelectedArea();
+        }
+
+        internal bool IsSelectedArea()
+        {
+            return this.gizmosDrawer.IsSelectedArea();
+        }
 
         internal void EndAreaSelection()
         {
             IsAreaSelectEnabled = false;
             AreaSelectorGUI.Disable();
+            AreaSelectorGuideGUI.Disable();
             LodLegendGUI.Disable();
             var selectedMeshCodes = this.gizmosDrawer.SelectedMeshCodes.ToArray();
-            var selectedExtent = this.gizmosDrawer.CursorExtent(this.coordinateZoneID, this.geoReference.ReferencePoint);
-
             var availablePackageLods = CalcAvailablePackageLodInMeshCodes(selectedMeshCodes, this.datasetSourceConfig);
 
             // 無名関数のキャプチャを利用して、シーン終了後も必要なデータが渡るようにします。
             #if UNITY_EDITOR
-            AreaSelectorDataPass.Exec(this.prevScenePath, selectedMeshCodes, this.areaSelectResultReceiver, availablePackageLods, selectedExtent, this.prevEditorWindow);
+            AreaSelectorDataPass.Exec(this.prevScenePath, selectedMeshCodes, this.areaSelectResultReceiver, availablePackageLods, this.prevEditorWindow);
             #endif
         }
 
@@ -213,13 +221,18 @@ namespace PLATEAU.CityImport.AreaSelector
         internal void CancelAreaSelection()
         {
             AreaSelectorGUI.Disable();
+            AreaSelectorGuideGUI.Disable();
             LodLegendGUI.Disable();
             IsAreaSelectEnabled = false;
             var emptyAreaSelectResult = new MeshCode[] { };
-            var dummyExtent = Extent.All;
             #if UNITY_EDITOR
-            AreaSelectorDataPass.Exec(this.prevScenePath, emptyAreaSelectResult, this.areaSelectResultReceiver, new PackageToLodDict(), dummyExtent, this.prevEditorWindow);
+            AreaSelectorDataPass.Exec(this.prevScenePath, emptyAreaSelectResult, this.areaSelectResultReceiver, new PackageToLodDict(), this.prevEditorWindow);
             #endif
+        }
+
+        internal void SwitchLodIcon(int lod, bool isCheck)
+        {
+            this.gizmosDrawer.SwitchLodIcon(lod, isCheck);
         }
 
         private static void RotateSceneViewCameraDown()

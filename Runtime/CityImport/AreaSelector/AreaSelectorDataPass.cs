@@ -24,21 +24,17 @@ namespace PLATEAU.CityImport.AreaSelector
         private static IEnumerable<MeshCode> selectedMeshCodes;
         private static IAreaSelectResultReceiver areaSelectResultReceiver;
         private static PackageToLodDict availablePackageLods;
-        private static Extent extent;
 
 #if UNITY_EDITOR
         public static void Exec(
             string prevScenePathArg, IEnumerable<MeshCode> selectedMeshCodesArg,
             IAreaSelectResultReceiver areaSelectResultReceiverArg, PackageToLodDict availablePackageLodsArg,
-            Extent selectedExtent, EditorWindow prevEditorWindow)
+            EditorWindow prevEditorWindow)
         {
-
-
             prevScenePath = prevScenePathArg;
             selectedMeshCodes = selectedMeshCodesArg;
             areaSelectResultReceiver = areaSelectResultReceiverArg;
             availablePackageLods = availablePackageLodsArg;
-            extent = selectedExtent;
             
             EditorSceneManager.sceneOpened += OnBackToPrevScene;
             EditorSceneManager.OpenScene(prevScenePath);
@@ -70,7 +66,7 @@ namespace PLATEAU.CityImport.AreaSelector
                 Debug.Log("地域は選択されませんでした。");
             }
 
-            var areaSelectResult = new AreaSelectResult(areaMeshCodes, extent, availablePackageLods);
+            var areaSelectResult = new AreaSelectResult(areaMeshCodes, availablePackageLods);
             areaSelectResultReceiver.ReceiveResult(areaSelectResult);
         }
     }

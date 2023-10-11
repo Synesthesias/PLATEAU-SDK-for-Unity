@@ -6,8 +6,6 @@ using PLATEAU.CityGML;
 using PLATEAU.CityImport.Load.Convert;
 using PLATEAU.CityImport.Setting;
 using PLATEAU.Dataset;
-using PLATEAU.Geometries;
-using PLATEAU.Native;
 using PLATEAU.PolygonMesh;
 using PLATEAU.Util;
 using UnityEngine;
@@ -89,7 +87,7 @@ namespace PLATEAU.CityImport.Load.CityImportProcedure
             var packageConf = conf.GetConfigForPackage(package);
             // ここはメインスレッドで呼ぶ必要があります。
             bool placingSucceed = await PlateauToUnityModelConverter.ConvertAndPlaceToScene(
-                cityModel, meshExtractOptions, gmlTrans, progressDisplay, gmlName, packageConf.DoSetMeshCollider, packageConf.DoSetAttrInfo, token
+                cityModel, meshExtractOptions, conf.AreaMeshCodes, gmlTrans, progressDisplay, gmlName, packageConf.DoSetMeshCollider, packageConf.DoSetAttrInfo, token, packageConf.FallbackMaterial
             );
 
             if (placingSucceed)

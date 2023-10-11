@@ -17,21 +17,11 @@ namespace PLATEAU.Util
         private static readonly LogCallbacks.LogCallbackFuncType logInfo = (messagePtr) => Debug.Log(PtrToStr(messagePtr));
 
         // 上の3つをまとめたものです。
-        public static readonly LogCallbacks UnityLogCallbacks = new LogCallbacks(logError, logWarn, logInfo);
+        public static readonly LogCallbacks UnityLogCallbacks = new (logError, logWarn, logInfo);
 
         private static string PtrToStr(IntPtr ptr)
         {
             return Marshal.PtrToStringAnsi(ptr);
-        }
-    }
-
-    internal static class DllUnityLogger
-    {
-        public static DllLogger Create()
-        {
-            var logger = new DllLogger();
-            logger.SetLogCallbacks(DllLogCallback.UnityLogCallbacks);
-            return logger;
         }
     }
 }

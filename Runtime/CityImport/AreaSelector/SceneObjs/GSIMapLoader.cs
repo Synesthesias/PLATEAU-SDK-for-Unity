@@ -25,13 +25,14 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
     {
         private static readonly string mapDownloadDest =
             Path.GetFullPath(Path.Combine(Application.temporaryCachePath, "GSIMapImages"));
+
         #if UNITY_EDITOR
         private static readonly string mapMaterialDir = PathUtil.SdkPathToAssetPath("Materials");
         #endif
-        private const string mapMaterialNameBuiltInRP = "MapUnlitMaterial_BuiltInRP.mat";
-        private const string mapMaterialNameURP = "MapUnlitMaterial_URP.mat";
-        private const string mapMaterialNameHDRP = "MapUnlitMaterial_HDRP.mat";
-        private const int timeOutSec = 10;
+        private const string MapMaterialNameBuiltInRP = "MapUnlitMaterial_BuiltInRP.mat";
+        private const string MapMaterialNameURP = "MapUnlitMaterial_URP.mat";
+        private const string MapMaterialNameHDRP = "MapUnlitMaterial_HDRP.mat";
+        private const int TimeOutSec = 10;
         public const string MapRootObjName = "Basemap";
         
         /// <summary>
@@ -64,10 +65,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
                 }
 
                 var mapTile = new MapTile(mapFilePath, tileCoord);
-                bool isSucceed = await Task.Run(() =>
-                {
-                    return DownloadFileIfNotExist(downloader, i, mapFilePath);
-                });
+                bool isSucceed = await Task.Run(() => DownloadFileIfNotExist(downloader, i, mapFilePath));
                 if (isSucceed)
                 {
                     await PlaceAsGameObj(mapTile, geoReference, rowTrans, mapName, generatedMaterials);
@@ -115,25 +113,25 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
             var pipelineAsset = GraphicsSettings.renderPipelineAsset;
             if (pipelineAsset == null) 
             {   // Built-in Render Pipeline のとき
-                matFileName = mapMaterialNameBuiltInRP;
+                matFileName = MapMaterialNameBuiltInRP;
             }
             else
             {   // URP または HDRP のとき
                 var pipelineName = pipelineAsset.GetType().Name;
                 matFileName = pipelineName switch
                 {
-                    "UniversalRenderPipelineAsset" => mapMaterialNameURP,
-                    "HDRenderPipelineAsset" => mapMaterialNameHDRP,
+                    "UniversalRenderPipelineAsset" => MapMaterialNameURP,
+                    "HDRenderPipelineAsset" => MapMaterialNameHDRP,
                     _ => throw new InvalidDataException("Unknown material for pipeline.")
                 };
             }
+
 #if UNITY_EDITOR
-            string matFilePath = Path.Combine(mapMaterialDir, matFileName);
+            string matFilePath = MaterialPathUtil.GetMapMatPath();
             var material = AssetDatabase.LoadAssetAtPath<Material>(matFilePath);
             return material;
 #else
             throw new NotImplementedException("Map Load in PlayMode is not implemented.");
-            return null;
 #endif
         }
 
@@ -148,7 +146,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
             var mapMaterial = LoadMapMaterial();
 
             // ダウンロードしたテクスチャファイルをロードします。
-            var texture = await TextureLoader.LoadAsync(mapTile.Path, timeOutSec);
+            var texture = await TextureLoader.LoadAsync(mapTile.Path, TimeOutSec);
 
             var gameObj = GameObject.CreatePrimitive(PrimitiveType.Plane);
             gameObj.name = mapObjName;
@@ -176,10 +174,8 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         {
             try
             {
-                using (FileStream fs = file.Open(FileMode.Open, FileAccess.ReadWrite, FileShare.None))
-                {
-                    fs.Close();
-                }
+                using FileStream fs = file.Open(FileMode.Open, FileAccess.ReadWrite, FileShare.None);
+                fs.Close();
             }
             catch (IOException)
             {
@@ -191,13 +187,13 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
 
         private class MapTile
         {
-            public string Path;
-            public TileCoordinate TileCoordinate;
+            public readonly string Path;
+            private readonly TileCoordinate tileCoordinate;
 
             public MapTile(string path, TileCoordinate tileCoordinate)
             {
                 this.Path = path;
-                this.TileCoordinate = tileCoordinate;
+                this.tileCoordinate = tileCoordinate;
             }
 
             /// <summary>
@@ -205,7 +201,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
             /// </summary>
             public (Vector3 min, Vector3 max) ToUnityRange(GeoReference geoReference)
             {
-                var extent = TileProjection.Unproject(this.TileCoordinate);
+                var extent = TileProjection.Unproject(this.tileCoordinate);
                 var min = geoReference.Project(extent.Min).ToUnityVector();
                 var max = geoReference.Project(extent.Max).ToUnityVector();
                 return (min, max);

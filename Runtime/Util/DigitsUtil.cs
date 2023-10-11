@@ -19,7 +19,7 @@
         /// <summary>
         /// <paramref name="num"/> の桁数を数えます。
         /// </summary>
-        public static int NumDigits(int num)
+        private static int NumDigits(int num)
         {
             if (num < 0) num *= -1;
 
