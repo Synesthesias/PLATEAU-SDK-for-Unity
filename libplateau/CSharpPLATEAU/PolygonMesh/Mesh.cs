@@ -77,6 +77,12 @@ namespace PLATEAU.PolygonMesh
                 DLLUtil.CheckDllError(result);
                 return new CityObjectList(cityObjectListPtr);
             }
+            set
+            {
+                ThrowIfInvalid();
+                var result = NativeMethods.plateau_mesh_set_city_object_list(Handle, value.Handle);
+                DLLUtil.CheckDllError(result);
+            }
         }
 
         public PlateauVector3d GetVertexAt(int index)
@@ -261,6 +267,12 @@ namespace PLATEAU.PolygonMesh
                 [In] string texturePath,
                 int subMeshStartIndex,
                 int subMeshEndIndex);
+
+            [DllImport(DLLUtil.DllName, CharSet = CharSet.Ansi)]
+            internal static extern APIResult plateau_mesh_set_city_object_list(
+                [In] IntPtr meshPtr,
+                [In] IntPtr cityObjListPtr
+            );
 
             // ***************
             //  mesh_merger_c.cpp

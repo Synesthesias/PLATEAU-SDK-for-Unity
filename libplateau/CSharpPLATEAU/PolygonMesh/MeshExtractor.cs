@@ -25,7 +25,8 @@ namespace PLATEAU.PolygonMesh
             );
             DLLUtil.CheckDllError(result);
         }
-        
+
+
         /// <summary>
         /// <see cref="CityModel"/> から範囲内の <see cref="Model"/> を抽出します。
         /// 結果は <paramref name="outModel"/> に格納されます。
