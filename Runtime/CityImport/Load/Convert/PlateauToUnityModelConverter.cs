@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using PLATEAU.CityGML;
 using PLATEAU.PolygonMesh;
+using PLATEAU.Dataset;
 using PLATEAU.Util;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -11,6 +12,7 @@ using Texture = UnityEngine.Texture;
 using System.Threading;
 using PLATEAU.Dataset;
 using Material = UnityEngine.Material;
+using System.Linq;
 
 #if UNITY_EDITOR
 using UnityEditor.SceneManagement;
@@ -56,7 +58,7 @@ namespace PLATEAU.CityImport.Load.Convert
         }
 
         public static async Task<bool> PlateauModelToScene(Transform parentTrans, IProgressDisplay progressDisplay,
-            string progressName, bool doSetMeshCollider, CancellationToken? token, Material fallbackMaterial, Model plateauModel,
+            string progressName, bool doSetMeshCollider, CancellationToken? token, Material fallbackMaterial, Model plateauModel, 
             IAttributeDataHelper attributeDataHelper, bool skipRoot)
         {
             // ここの処理は 処理A と 処理B に分割されています。

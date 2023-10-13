@@ -52,7 +52,7 @@ namespace PLATEAU.PolygonMesh
                 [In] IntPtr cityModelPtr,
                 MeshExtractOptions options,
                 [In] IntPtr outModelPtr);
-            
+
             [DllImport(DLLUtil.DllName)]
             internal static extern APIResult plateau_mesh_extractor_extract_in_extents(
                 [In] IntPtr cityModelPtr,

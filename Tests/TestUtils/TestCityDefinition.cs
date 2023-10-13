@@ -84,7 +84,7 @@ namespace PLATEAU.Tests.TestUtils
                 allPackageLods.MergePackage(package, 3);
             }
 
-            var dummyAreaSelectResult = new AreaSelectResult(AreaMeshCodes, Extent.All, allPackageLods);
+            var dummyAreaSelectResult = new AreaSelectResult(AreaMeshCodes, allPackageLods);
             conf.InitWithAreaSelectResult(dummyAreaSelectResult);
             
             // メッシュコードがあるあたりに基準点を設定します。 Extent.Allの中心を基準点にすると極端な座標になるため。  

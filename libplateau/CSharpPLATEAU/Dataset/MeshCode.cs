@@ -14,6 +14,10 @@ namespace PLATEAU.Dataset
         private readonly int SecondCol;
         private readonly int ThirdRow;
         private readonly int ThirdCol;
+        private readonly int FourthRow;
+        private readonly int FourthCol;
+        private readonly int FifthRow;
+        private readonly int FifthCol;
         public readonly int Level;
         [MarshalAs(UnmanagedType.U1)] private readonly bool isValid;
 
@@ -44,13 +48,40 @@ namespace PLATEAU.Dataset
             return NativeMethods.plateau_mesh_code_parse(code);
         }
 
+
+        private static bool getHalfMeshNumber(out int num, int row, int col)
+        {
+            if (row < 0 || row > 1 ||
+                col < 0 || col > 1)
+            {
+                num = 0;
+                return false;
+            }
+
+            // 番号順に左下→右下→左上→右上
+            num = row * 2 + col + 1;
+            return true;
+        }
+
         public override string ToString()
         {
             ThrowIfInvalid();
             string secondString = Level2();
             if (this.Level == 2)
                 return secondString;
-            return secondString + $"{this.ThirdRow | 0}{this.ThirdCol | 0}";
+
+            string thirdString = secondString + $"{this.ThirdRow | 0}{this.ThirdCol | 0}";
+            if (this.Level == 3)
+                return thirdString;
+
+            getHalfMeshNumber(out int fourthNum, this.FourthRow, this.FourthCol);
+            string fourthString = thirdString + $"{fourthNum}";
+            if (this.Level == 4)
+                return fourthString;
+
+            getHalfMeshNumber(out int fifthNum, this.FifthRow, this.FifthCol);
+            string fifthString = fourthString + $"{fifthNum}";
+            return fifthString;
         }
 
         public string Level2()
@@ -79,7 +110,7 @@ namespace PLATEAU.Dataset
             [DllImport(DLLUtil.DllName)]
             internal static extern APIResult plateau_mesh_code_is_valid(
                 [In] MeshCode meshCode,
-                [MarshalAs(UnmanagedType.U1)]out bool outIsValid);
+                [MarshalAs(UnmanagedType.U1)] out bool outIsValid);
         }
     }
 }
