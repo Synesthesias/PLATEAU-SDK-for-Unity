@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using PLATEAU.CityGML;
 using PLATEAU.PolygonMesh;
@@ -8,6 +9,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using Texture = UnityEngine.Texture;
 using System.Threading;
+using PLATEAU.Dataset;
 using Material = UnityEngine.Material;
 
 #if UNITY_EDITOR
@@ -28,7 +30,7 @@ namespace PLATEAU.CityImport.Load.Convert
         /// 成否を bool で返します。
         /// </summary>
         public static async Task<bool> CityModelToScene(
-            CityModel cityModel, MeshExtractOptions meshExtractOptions,
+            CityModel cityModel, MeshExtractOptions meshExtractOptions, string[] selectedMeshCodes,
             Transform parentTrans, IProgressDisplay progressDisplay, string progressName,
             bool doSetMeshCollider, bool doSetAttrInfo, CancellationToken token,  UnityEngine.Material fallbackMaterial
             )
@@ -42,7 +44,7 @@ namespace PLATEAU.CityImport.Load.Convert
             Model plateauModel;
             try
             {
-                plateauModel = await Task.Run(() => ExtractMeshes(cityModel, meshExtractOptions));
+                plateauModel = await Task.Run(() => ExtractMeshes(cityModel, meshExtractOptions, selectedMeshCodes, token));
             }
             catch (Exception e)
             {
@@ -120,11 +122,17 @@ namespace PLATEAU.CityImport.Load.Convert
         /// メインスレッドでなくても動作します。
         /// </summary>
         private static Model ExtractMeshes(
-            CityModel cityModel, MeshExtractOptions meshExtractOptions)
+            CityModel cityModel, MeshExtractOptions meshExtractOptions, string[] selectedMeshCodes, CancellationToken token)
         {
             var model = Model.Create();
             if (cityModel == null) return model;
-            MeshExtractor.Extract(ref model, cityModel, meshExtractOptions);
+            var extents = selectedMeshCodes.Select(code => {
+                var extent = MeshCode.Parse(code).Extent;
+                extent.Min.Height = -999999.0;
+                extent.Max.Height = 999999.0;
+                return extent;
+            }).ToList();
+            MeshExtractor.ExtractInExtents(ref model, cityModel, meshExtractOptions, extents);
             Debug.Log("model extracted.");
             return model;
         }
