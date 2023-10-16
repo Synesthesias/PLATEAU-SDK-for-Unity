@@ -34,8 +34,8 @@ namespace PLATEAU.CityImport.AreaSelector
         private GSIMapLoaderZoomSwitch mapLoader;
         #if UNITY_EDITOR
         private EditorWindow prevEditorWindow;
+        MeshCodeSearchWindow meshSearchwindow;
         #endif
-
 
         public static bool IsAreaSelectEnabled { get; set; }
 
@@ -140,6 +140,7 @@ namespace PLATEAU.CityImport.AreaSelector
         {
 #if UNITY_EDITOR
             SceneView.lastActiveSceneView.isRotationLocked = this.prevSceneCameraRotationLocked;
+            meshSearchwindow?.Close();
 #endif
             this.mapLoader?.Dispose();
         }
@@ -244,5 +245,42 @@ namespace PLATEAU.CityImport.AreaSelector
             scene.rotation = Quaternion.Euler(90, 0, 0);
             #endif
         }
+
+        internal void ShowMeshCodeSearchWindow()
+        {
+            #if UNITY_EDITOR
+            meshSearchwindow = MeshCodeSearchWindow.ShowWindow();
+            meshSearchwindow.Init(this);
+            #endif
+        }
+
+        internal bool SearchByMeshCode(string code)
+        {
+            #if UNITY_EDITOR
+            try
+            {
+                MeshCode meshCode = MeshCode.Parse(code);
+                var extent = meshCode.Extent;
+                var min = geoReference.Project(extent.Min);
+                var max = geoReference.Project(extent.Max);
+                var center = geoReference.Project(extent.Center);
+                var centerPos = center.ToUnityVector();
+                var initialCameraPos = new Vector3(centerPos.x, 0, centerPos.z);
+                SceneView.lastActiveSceneView.pivot = initialCameraPos;
+                // シーンビューのカメラが全体を映すようにします。
+                SceneView.lastActiveSceneView.size = Mathf.Abs((float)(max.Z - min.Z) / 2f);
+            }
+            catch(Exception e)
+            {
+                Debug.LogError($"code:{code} Error:{e.Message}");
+                return false;
+            }
+            
+            meshSearchwindow?.Close();
+            meshSearchwindow = null;
+            #endif
+            return true;
+        }
+
     }
 }
