@@ -126,11 +126,12 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
             {
                 showLods.Remove(lod);
             }
-            
+#if UNITY_EDITOR
             foreach (var view in this.viewDict)
             {
                 view.Value?.CalculateLodViewParam(SceneView.lastActiveSceneView.camera, showLods);
             }
+#endif
         }
     }
 }

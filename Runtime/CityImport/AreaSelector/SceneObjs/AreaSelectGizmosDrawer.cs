@@ -139,9 +139,11 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
 
         private void UpdateMousePressedStatus()
         {
+#if UNITY_EDITOR
             // 左クリックのMouseUpのイベントを受け取るためにデフォルトコントロールに追加
             HandleUtility.AddDefaultControl(GUIUtility.GetControlID(FocusType.Passive));
-            
+#endif
+
             var currentEvent = Event.current;
             if (currentEvent == null)
                 return;
@@ -170,12 +172,15 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
                 case EventType.MouseUp:
                     if (currentEvent.button == MouseLeftButton)
                     {
+#if UNITY_EDITOR
                         if (this.isLeftMouseButtonPressed)
                         {
+                            
                             foreach (var meshCodeGizmoDrawer in this.meshCodeDrawers) 
                             {
                                 meshCodeGizmoDrawer.ToggleSelectArea(currentEvent.mousePosition);
                             }
+                            
                         }
                         else if (this.isLeftMouseButtonMoved || this.isLeftMouseAndShiftButtonMoved)
                         {
@@ -184,7 +189,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
                                 meshCodeGizmoDrawer.SetSelectArea(this.areaSelectionGizmoDrawer.AreaSelectionMin, this.areaSelectionGizmoDrawer.AreaSelectionMax, this.isLeftMouseButtonMoved);
                             }
                         }
-                        
+#endif
                         this.areaSelectionGizmoDrawer.ClearAreaSelectionGizmo();
 
                         this.isLeftMouseButtonPressed = false;
