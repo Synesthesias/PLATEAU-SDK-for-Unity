@@ -105,13 +105,25 @@ namespace PLATEAU.CityInfo
                 return attrMap.TryGetValue(key, out val);
             }
 
-            public void SetAttribute(string key, NativeAttributeValue value)
+            public void AddAttribute(string key, NativeAttributeValue value)
             {
                 attrMap.Add(key, new Value(value));
             }
-            public void SetAttribute(string key, AttributeType type, object value)
+            public void AddAttribute(string key, AttributeType type, object value)
             {
                 attrMap.Add(key, new Value(type, value));
+            }
+
+            /// <summary>
+            /// AttributesにAttributesを追加します。
+            /// すでに存在するキーは無視されます。
+            /// </summary>
+            public void AddAttributes(Attributes attrs)
+            {
+                foreach (var attr in attrs)
+                {
+                    attrMap.TryAdd(attr.Key, attr.Value);
+                }
             }
 
             public string DebugString(int indent)
@@ -143,7 +155,7 @@ namespace PLATEAU.CityInfo
                     {
                         var map = value.AsAttrSet;
                         foreach (var attr in map)
-                            AttributesMapValue.SetAttribute(attr.Key, attr.Value);
+                            AttributesMapValue.AddAttribute(attr.Key, attr.Value);
                     }
                     else
                     {
@@ -249,7 +261,7 @@ namespace PLATEAU.CityInfo
                 cityObjectIndex = new[] { idx.Value.PrimaryIndex, idx.Value.AtomicIndex };
             foreach (var m in obj.NativeAttributesMap)
             {
-                map.SetAttribute(m.Key, m.Value);
+                map.AddAttribute(m.Key, m.Value);
             }
 
             var ret = new CityObject();

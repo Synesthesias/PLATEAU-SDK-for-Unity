@@ -269,7 +269,10 @@ namespace PLATEAU.CityInfo
             {
                 objs.Add(co);
                 foreach (var ch in co.Children)
-                    objs.Add(ch);
+                {
+                    objs.Add(ch); 
+                }
+                    
             }
             return objs;
         }

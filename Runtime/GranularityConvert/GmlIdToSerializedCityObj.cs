@@ -28,7 +28,7 @@ namespace PLATEAU.GranularityConvert
             while (queue.Count > 0)
             {
                 var trans = queue.Dequeue();
-                if (!trans.gameObject.activeInHierarchy) continue; // 非アクティブはスキップします
+                // if (!trans.gameObject.activeInHierarchy) continue; // 非アクティブはスキップします
                 var cityObjGroup = trans.GetComponent<PLATEAUCityObjectGroup>();
                 if (cityObjGroup != null)
                 {
@@ -55,9 +55,14 @@ namespace PLATEAU.GranularityConvert
 
         private void Add(string gmlId, CityInfo.CityObjectList.CityObject serializedCityObj)
         {
-            if (!data.TryAdd(gmlId, serializedCityObj))
+            if (data.ContainsKey(gmlId))
             {
-                Debug.LogWarning($"Duplicate gmlID : ${gmlId}");
+                var attributes = serializedCityObj.AttributesMap;
+                data[gmlId].AttributesMap.AddAttributes(attributes);
+            }
+            else
+            {
+                data.Add(gmlId, serializedCityObj);
             }
         }
 
