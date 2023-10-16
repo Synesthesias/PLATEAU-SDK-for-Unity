@@ -7,32 +7,32 @@ using PLATEAU.CityInfo;
 namespace PLATEAU.GranularityConvert
 {
     /// <summary>
-    /// GML IDとその属性情報の辞書です。
+    /// GML IDと、シリアライズ化された地物情報の辞書です。
     /// </summary>
-    public class GmlIdToAttributes
+    public class GmlIdToSerializedCityObj
     {
-        private Dictionary<string, CityObjectList.Attributes> data;
+        private Dictionary<string, CityInfo.CityObjectList.CityObject> data;
         
         /// <summary>
         /// 引数に含まれるGmlIDと属性情報をすべて取得して記憶したインスタンスを返します。
         /// </summary>
-        public static GmlIdToAttributes ComposeFrom(IEnumerable<PLATEAUCityObjectGroup> cityObjGroups)
+        public static GmlIdToSerializedCityObj ComposeFrom(IEnumerable<PLATEAUCityObjectGroup> cityObjGroups)
         {
-            var ret = new GmlIdToAttributes();
+            var ret = new GmlIdToSerializedCityObj();
             foreach(var cityObjs in cityObjGroups)
             {
                 foreach (var cityObj in cityObjs.GetAllCityObjects())
                 {
-                    ret.Add(cityObj.GmlID, cityObj.AttributesMap);
+                    ret.Add(cityObj.GmlID, cityObj);
                 }
             }
 
             return ret;
         }
 
-        private void Add(string gmlId, CityObjectList.Attributes attr)
+        private void Add(string gmlId, CityInfo.CityObjectList.CityObject serializedCityObj)
         {
-            data.Add(gmlId, attr);
+            data.Add(gmlId, serializedCityObj);
         }
     }
 }

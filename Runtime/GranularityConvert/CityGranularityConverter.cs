@@ -22,7 +22,7 @@ namespace PLATEAU.GranularityConvert
             var cityObjectGroups = srcGameObjs
                 .Select(go => go.GetComponent<PLATEAUCityObjectGroup>())
                 .Where(cityObj => cityObj != null);
-            var attributes = GmlIdToAttributes.ComposeFrom(cityObjectGroups);
+            var attributes = GmlIdToSerializedCityObj.ComposeFrom(cityObjectGroups);
             
             // ゲームオブジェクトを共通ライブラリのModelに変換します。
             using var srcModel = UnityMeshToDllModelConverter.Convert(srcGameObjs, true, false, ConvertVertex);
