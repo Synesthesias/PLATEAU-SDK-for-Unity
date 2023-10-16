@@ -23,7 +23,12 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         
         #if UNITY_EDITOR
         private static readonly string IconDirPath = PathUtil.SdkPathToAssetPath("Images/AreaSelect");
+        #endif
+        
+        #if UNITY_EDITOR
         private static readonly float MaxIconWidth = 50 * EditorGUIUtility.pixelsPerPoint;
+        #else
+        private static readonly float MaxIconWidth = 50;
         #endif
         
         /// <summary> 範囲選択画面に表示する画像名 </summary>
@@ -72,7 +77,11 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         public static void Init()
         {
             iconDict = LoadIconFiles();
+            #if UNITY_EDITOR
             monitorDpiScalingFactor = EditorGUIUtility.pixelsPerPoint;
+            #else
+            monitorDpiScalingFactor = 1.0f;
+            #endif
         }
 
         public void DrawHandles(Camera camera, HashSet<int> showLods)
@@ -180,7 +189,11 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
                 offsetVec.x = xOffset * monitorDpiScalingFactor;
                 offsetVec.y = yOffset * monitorDpiScalingFactor;
                 var iconPos = camera.ScreenToWorldPoint(camera.WorldToScreenPoint(meshCodeCenterUnityPos) + offsetVec);
-                var style = new GUIStyle(EditorStyles.label)
+                var style = new GUIStyle(
+                    #if UNITY_EDITOR
+                    EditorStyles.label
+                    #endif
+                    )
                 {
                     fixedHeight = iconWidth,
                     fixedWidth = iconWidth,
