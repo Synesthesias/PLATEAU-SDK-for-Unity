@@ -66,16 +66,16 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
                 this.selectedUnit = EditorGUILayout.Popup("単位", this.selectedUnit, UnitOptions);
             };
 
-            if(selectedUnit == 0 )
-            {
-                this.foldOutOption = PlateauEditorStyle.FoldOut(this.foldOutOption, "Option", () =>
-                {
-                    using (PlateauEditorStyle.VerticalScopeWithPadding(16, 0, 8, 16))
-                    {
-                        toggleMaxSize = EditorGUILayout.ToggleLeft("メッシュが最大サイズを超える場合はグリッド分割する", toggleMaxSize);
-                    }
-                }, 30);
-            }
+            // if(selectedUnit == 0 )
+            // {
+            //     this.foldOutOption = PlateauEditorStyle.FoldOut(this.foldOutOption, "Option", () =>
+            //     {
+            //         using (PlateauEditorStyle.VerticalScopeWithPadding(16, 0, 8, 16))
+            //         {
+            //             toggleMaxSize = EditorGUILayout.ToggleLeft("メッシュが最大サイズを超える場合はグリッド分割する", toggleMaxSize);
+            //         }
+            //     }, 30);
+            // }
 
             PlateauEditorStyle.Separator(0);
 

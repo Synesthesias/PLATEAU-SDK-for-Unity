@@ -124,7 +124,6 @@ namespace PLATEAU.CityImport.Load.Convert
                         attrInfo.SetSerializableCityObject(serialized);
                     }
                 }
-                this.attributeDataHelper.Dispose();
             }
             
             // 子を再帰的に配置します。

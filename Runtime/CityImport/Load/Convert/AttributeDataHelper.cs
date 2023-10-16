@@ -225,7 +225,7 @@ namespace PLATEAU.CityImport.Load.Convert
             }
             catch (Exception ex)
             {
-                Debug.LogWarning(ex.Message);
+                Debug.LogWarning($"{ex.Message}\n{ex.StackTrace}");
             }
             return null;
         }

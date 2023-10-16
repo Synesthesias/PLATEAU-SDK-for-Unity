@@ -79,18 +79,8 @@ namespace PLATEAU.GranularityConvert
                         true), true);
                 if (!result)
                 {
-                    throw new Exception("Failed to covert plateau model to scene game objects.");
+                    throw new Exception("Failed to convert plateau model to scene game objects.");
                 }
-
-                // 覚えておいた属性情報を再構成します。
-                // foreach (var gameObj in generatedObjs)
-                // {
-                //     var component = gameObj.AddComponent<PLATEAUCityObjectGroup>();
-                //     var rootCityObjs = component.CityObjects.rootCityObjects;
-                //     
-                //     
-                //     component.SetSerializableCityObject();
-                // }
             }
             catch (Exception e)
             {
