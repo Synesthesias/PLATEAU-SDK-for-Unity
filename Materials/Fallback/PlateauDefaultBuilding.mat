@@ -22,11 +22,11 @@ Material:
   m_PrefabAsset: {fileID: 0}
   m_Name: PlateauDefaultBuilding
   m_Shader: {fileID: -6465566751694194690, guid: 3435b4a85b3a83d40a3708fc958943d7, type: 3}
-  m_ValidKeywords:
+  m_ValidKeywords: []
+  m_InvalidKeywords:
   - _DISABLE_SSR_TRANSPARENT
   - _ENABLE_FOG_ON_TRANSPARENT
   - _SURFACE_TYPE_TRANSPARENT
-  m_InvalidKeywords: []
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -76,6 +76,10 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _Side_AmbientOcclusionTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _Side_AmbientOcclusionTexture:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -98,6 +102,10 @@ Material:
         m_Offset: {x: 0, y: 0}
     - _Side_RoughnessTexture:
         m_Texture: {fileID: 2800000, guid: 057b902f75009f14ea8519a9804c8579, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Top_AmbientOcclusionTex:
+        m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Top_AmbientOcclusionTexture:
@@ -178,7 +186,7 @@ Material:
     - _RequireSplitLighting: 0
     - _Side_AmbientOcclusion: 1
     - _Side_Blend: 30
-    - _Side_Metallic: 0.47
+    - _Side_Metallic: 0
     - _Side_NormalStrength: 1
     - _Side_Roughness: 1
     - _Side_Titling: 0.4
@@ -202,7 +210,7 @@ Material:
     - _Top_Metallic: 0
     - _Top_NormalStrength: 1
     - _Top_Roughness: 1
-    - _Top_Titling: 0.2
+    - _Top_Titling: 0.3
     - _TransparentBackfaceEnable: 0
     - _TransparentCullMode: 2
     - _TransparentDepthPostpassEnable: 0
