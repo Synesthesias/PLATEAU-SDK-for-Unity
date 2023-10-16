@@ -129,7 +129,9 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
             
             foreach (var view in this.viewDict)
             {
+                #if UNITY_EDITOR
                 view.Value?.CalculateLodViewParam(SceneView.lastActiveSceneView.camera, showLods);
+                #endif
             }
         }
     }

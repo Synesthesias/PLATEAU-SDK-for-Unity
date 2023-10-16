@@ -32,6 +32,7 @@ PLATEAU SDK for Unity の導入方法は2通りあります。
 
 ### tgzファイルから導入する方法
 - [PLATEAU SDK for Unity のリリースページ](https://github.com/Project-PLATEAU/PLATEAU-SDK-for-Unity/releases) から tgzファイルをダウンロードします。
+  - ファイルは解凍せず、そのまま利用します。
 - Unityのメニューバーから `Window` → `Package Manager` を選択します。
 - Package Manager ウィンドウの左上の＋ボタンから `Add pacakge from tarball...` を選択します。
   ![](../resources/manual/installation/addPackageFromTarball.png)
