@@ -23,11 +23,14 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         
         #if UNITY_EDITOR
         private static readonly string IconDirPath = PathUtil.SdkPathToAssetPath("Images/AreaSelect");
+        #endif
+        
+        #if UNITY_EDITOR
         private static readonly float MaxIconWidth = 50 * EditorGUIUtility.pixelsPerPoint;
         #else
-        private static readonly float MaxIconWidth = 0f;
+        private static readonly float MaxIconWidth = 50;
         #endif
-
+        
         /// <summary> 範囲選択画面に表示する画像名 </summary>
         private const string BuildingIconName = "building.png";
         private const string TrafficIconName = "traffic.png";
@@ -74,9 +77,11 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         public static void Init()
         {
             iconDict = LoadIconFiles();
-        #if UNITY_EDITOR
+            #if UNITY_EDITOR
             monitorDpiScalingFactor = EditorGUIUtility.pixelsPerPoint;
-        #endif
+            #else
+            monitorDpiScalingFactor = 1.0f;
+            #endif
         }
 
         public void DrawHandles(Camera camera, HashSet<int> showLods)
@@ -159,7 +164,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
             // 表示するアイコン数を取得
             var showIcons = lodTexturePairList.Where(lodTexturePair => showLods.Contains(lodTexturePair.Lod)).ToList();
             var iconCnt = Math.Min(showIcons.Count, MaxIconCnt);
-#if UNITY_EDITOR
+
             // アイコンを表示します。
             var offsetVec = Vector3.zero;
             var showIconCnt = 0;
@@ -184,7 +189,11 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
                 offsetVec.x = xOffset * monitorDpiScalingFactor;
                 offsetVec.y = yOffset * monitorDpiScalingFactor;
                 var iconPos = camera.ScreenToWorldPoint(camera.WorldToScreenPoint(meshCodeCenterUnityPos) + offsetVec);
-                var style = new GUIStyle(EditorStyles.label)
+                var style = new GUIStyle(
+                    #if UNITY_EDITOR
+                    EditorStyles.label
+                    #endif
+                    )
                 {
                     fixedHeight = iconWidth,
                     fixedWidth = iconWidth,
@@ -195,7 +204,6 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
                 this.lodViewParams.Add(new LodViewParam{ IconPosition = iconPos, Icon = content, IconStyle = style});
                 showIconCnt++;
             }
-#endif
         }
 
         /// <summary>

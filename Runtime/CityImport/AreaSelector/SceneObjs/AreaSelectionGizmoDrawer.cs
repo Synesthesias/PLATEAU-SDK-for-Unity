@@ -25,18 +25,18 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         
         public void SetTrackingStartedPosition(Vector2 mousePosition)
         {
-#if UNITY_EDITOR
+            #if UNITY_EDITOR
             var ray = HandleUtility.GUIPointToWorldRay(mousePosition);
             if (Physics.Raycast(ray, out var hit, RayCastMaxDistance))
             {
                 this.trackingStartedMousePosition = hit.point;
             }
-#endif
+            #endif
         }
 
         public void UpdateAreaSelectionGizmo(Vector2 mousePosition, bool isLeftMouseButtonMoved)
         {
-#if UNITY_EDITOR
+            #if UNITY_EDITOR
             var ray = HandleUtility.GUIPointToWorldRay(mousePosition);
             if (Physics.Raycast(ray, out var hit, RayCastMaxDistance))
             {
@@ -56,7 +56,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
                 this.AreaSelectionMax = new Vector3((float)maxX, CenterPositionY, (float)maxZ);
                 Init(centerPosition, size, this.meshCode);
             }
-#endif
+            #endif
         }
 
         public void ClearAreaSelectionGizmo()
