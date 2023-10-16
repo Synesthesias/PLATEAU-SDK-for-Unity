@@ -41,7 +41,7 @@ namespace PLATEAU.CityImport.Load.Convert
 
             token.ThrowIfCancellationRequested();
             IAttributeDataHelper attributeDataHelper =
-                new AttributeDataHelper(cityModel, meshExtractOptions.MeshGranularity, doSetAttrInfo);
+                new AttributeDataHelper(new SerializedCityObjectGetterFromCityModel(cityModel), meshExtractOptions.MeshGranularity, doSetAttrInfo);
 
             Model plateauModel;
             try

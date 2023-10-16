@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -18,10 +19,23 @@ namespace PLATEAU.GranularityConvert
     {
         public async Task ConvertAsync(IReadOnlyList<GameObject> srcGameObjs, GranularityConvertOption option)
         {
-            // 属性情報を覚えておきます。
-            var cityObjectGroups = srcGameObjs
-                .Select(go => go.GetComponent<PLATEAUCityObjectGroup>())
-                .Where(cityObj => cityObj != null);
+            // 属性情報を覚えておきます。幅優先探索で子の属性情報も集めます。
+            var cityObjectGroups = new List<PLATEAUCityObjectGroup>();
+            var queue = new Queue<Transform>(srcGameObjs.Select(obj => obj.transform));
+            while (queue.Count > 0)
+            {
+                var trans = queue.Dequeue();
+                var cityObjGroup = trans.GetComponent<PLATEAUCityObjectGroup>();
+                if (cityObjGroup != null)
+                {
+                    cityObjectGroups.Add(cityObjGroup);
+                }
+
+                for (int i = 0; i < trans.childCount; i++)
+                {
+                    queue.Enqueue(trans.GetChild(i));
+                }
+            }
             var attributes = GmlIdToSerializedCityObj.ComposeFrom(cityObjectGroups);
             
             // ゲームオブジェクトを共通ライブラリのModelに変換します。
@@ -35,7 +49,7 @@ namespace PLATEAU.GranularityConvert
             var generatedObjs = new List<GameObject>();
             bool result = await PlateauToUnityModelConverter.PlateauModelToScene(generatedObjs,
                 null, new DummyProgressDisplay(), "", true,
-                null, null, dstModel, new DummyAttributeDataHelper(), true);
+                null, null, dstModel, new AttributeDataHelper(new SerializedCityObjectGetterFromDict(attributes), option.Granularity, true), true);
             if (!result)
             {
                 throw new Exception("Failed to covert plateau model to scene game objects.");
@@ -56,5 +70,34 @@ namespace PLATEAU.GranularityConvert
         {
             return new PlateauVector3d(src.x, src.y, src.z);
         } 
+    }
+
+
+    public class SerializedCityObjectGetterFromDict : ISerializedCityObjectGetter
+    {
+        private GmlIdToSerializedCityObj data;
+
+        public SerializedCityObjectGetterFromDict(GmlIdToSerializedCityObj dict)
+        {
+            data = dict;
+        }
+
+        public CityInfo.CityObjectList.CityObject GetByID(string gmlID, CityObjectIndex? _)
+        {
+            if (data.TryGet(gmlID, out var serializedCityObj))
+            {
+                return serializedCityObj;
+            }
+            else
+            {
+                Debug.LogWarning($"gmlID not found : {gmlID}");
+                return null;
+            }
+        }
+
+        public void Dispose()
+        {
+            // NOP
+        }
     }
 }

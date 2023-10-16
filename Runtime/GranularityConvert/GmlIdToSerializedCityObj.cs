@@ -1,8 +1,10 @@
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using PlasticGui.Configuration.CloudEdition;
 using PLATEAU.CityGML;
 using PLATEAU.CityInfo;
+using Debug = UnityEngine.Debug;
 
 namespace PLATEAU.GranularityConvert
 {
@@ -11,7 +13,7 @@ namespace PLATEAU.GranularityConvert
     /// </summary>
     public class GmlIdToSerializedCityObj
     {
-        private Dictionary<string, CityInfo.CityObjectList.CityObject> data;
+        private Dictionary<string, CityInfo.CityObjectList.CityObject> data = new Dictionary<string, CityObjectList.CityObject>();
         
         /// <summary>
         /// 引数に含まれるGmlIDと属性情報をすべて取得して記憶したインスタンスを返します。
@@ -32,7 +34,20 @@ namespace PLATEAU.GranularityConvert
 
         private void Add(string gmlId, CityInfo.CityObjectList.CityObject serializedCityObj)
         {
-            data.Add(gmlId, serializedCityObj);
+            if (!data.TryAdd(gmlId, serializedCityObj))
+            {
+                Debug.LogWarning($"failed to add ${gmlId}");
+            }
+        }
+
+        public bool TryGet(string gmlID, out CityObjectList.CityObject outSerializedCityObj)
+        {
+            if (data.TryGetValue(gmlID, out outSerializedCityObj))
+            {
+                return true;
+            }
+            outSerializedCityObj = null;
+            return false;
         }
     }
 }

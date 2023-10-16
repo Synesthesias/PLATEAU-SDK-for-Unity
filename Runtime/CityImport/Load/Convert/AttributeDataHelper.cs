@@ -17,7 +17,6 @@ namespace PLATEAU.CityImport.Load.Convert
         private readonly MeshGranularity meshGranularity; 
         private readonly List<CityObjectID> indexList = new();
         private readonly List<string> outsideChildrenList = new();
-        private CityModel cityModel;
         private ISerializedCityObjectGetter serializedCityObjectGetter;
         private string id;
         private CityObjectIndex index;
@@ -31,17 +30,16 @@ namespace PLATEAU.CityImport.Load.Convert
             public string PrimaryID;
         }
 
-        public AttributeDataHelper(CityModel cityModel, MeshGranularity granularity, bool doSetAttrInfo)
+        public AttributeDataHelper(ISerializedCityObjectGetter serializedCityObjectGetter, MeshGranularity granularity, bool doSetAttrInfo)
         {
-            this.cityModel = cityModel;
             meshGranularity = granularity;
             this.doSetAttrInfo = doSetAttrInfo;
-            serializedCityObjectGetter = new SerializedCityObjectGetterFromCityModel(cityModel);
+            this.serializedCityObjectGetter = serializedCityObjectGetter;
         }
 
         public IAttributeDataHelper Copy()
         {
-            return new AttributeDataHelper(cityModel, meshGranularity, doSetAttrInfo);
+            return new AttributeDataHelper(serializedCityObjectGetter, meshGranularity, doSetAttrInfo);
         }
 
         public void SetId(string id)
@@ -161,7 +159,7 @@ namespace PLATEAU.CityImport.Load.Convert
 
         public void Dispose()
         {
-            cityModel = null;
+            serializedCityObjectGetter.Dispose();
         }
     }
 
@@ -213,6 +211,11 @@ namespace PLATEAU.CityImport.Load.Convert
             var ser = CityObjectSerializableConvert.FromCityGMLCityObject(cityObj, index);
             return ser;
         }
+
+        public void Dispose()
+        {
+            cityModel = null;
+        }
         
         private CityGML.CityObject GetByIDInner(string id)
         {
@@ -231,5 +234,6 @@ namespace PLATEAU.CityImport.Load.Convert
     internal interface ISerializedCityObjectGetter
     {
         CityObjectList.CityObject GetByID(string gmlID, CityObjectIndex? index);
+        void Dispose();
     }
 }

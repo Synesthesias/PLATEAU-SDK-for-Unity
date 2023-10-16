@@ -35,6 +35,7 @@ namespace PLATEAU.GranularityConvert
         private MeshGranularity granularity;
         private int gridCount; // 地域単位でのみ利用
 
+        public MeshGranularity Granularity => granularity;
 
         public GranularityConvertOption(MeshGranularity granularity, int gridCount)
         {
