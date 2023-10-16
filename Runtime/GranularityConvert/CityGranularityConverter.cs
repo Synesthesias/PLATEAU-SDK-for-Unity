@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using PLATEAU.CityExport.ModelConvert;
@@ -12,6 +13,11 @@ using PLATEAU.PolygonMesh;
 using PLATEAU.Util;
 using UnityEngine;
 using CityObjectList = PLATEAU.PolygonMesh.CityObjectList;
+using Debug = UnityEngine.Debug;
+
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 namespace PLATEAU.GranularityConvert
 {
@@ -19,51 +25,82 @@ namespace PLATEAU.GranularityConvert
     {
         public async Task ConvertAsync(IReadOnlyList<GameObject> srcGameObjs, GranularityConvertOption option)
         {
-            // 属性情報を覚えておきます。幅優先探索で子の属性情報も集めます。
-            var cityObjectGroups = new List<PLATEAUCityObjectGroup>();
-            var queue = new Queue<Transform>(srcGameObjs.Select(obj => obj.transform));
-            while (queue.Count > 0)
+            try
             {
-                var trans = queue.Dequeue();
-                var cityObjGroup = trans.GetComponent<PLATEAUCityObjectGroup>();
-                if (cityObjGroup != null)
+#if UNITY_EDITOR
+                EditorUtility.DisplayProgressBar("PLATEAU", "属性情報を取得中...", 0.1f);
+#endif
+
+                // 属性情報を覚えておきます。幅優先探索で子の属性情報も集めます。
+                var cityObjectGroups = new List<PLATEAUCityObjectGroup>();
+                var queue = new Queue<Transform>(srcGameObjs.Select(obj => obj.transform));
+                while (queue.Count > 0)
                 {
-                    cityObjectGroups.Add(cityObjGroup);
+                    var trans = queue.Dequeue();
+                    var cityObjGroup = trans.GetComponent<PLATEAUCityObjectGroup>();
+                    if (cityObjGroup != null)
+                    {
+                        cityObjectGroups.Add(cityObjGroup);
+                    }
+
+                    for (int i = 0; i < trans.childCount; i++)
+                    {
+                        queue.Enqueue(trans.GetChild(i));
+                    }
                 }
 
-                for (int i = 0; i < trans.childCount; i++)
+                var attributes = GmlIdToSerializedCityObj.ComposeFrom(cityObjectGroups);
+
+#if UNITY_EDITOR
+                EditorUtility.DisplayProgressBar("PLATEAU", "3Dモデルを出力中...", 0.25f);
+#endif
+
+                // ゲームオブジェクトを共通ライブラリのModelに変換します。
+                using var srcModel = UnityMeshToDllModelConverter.Convert(srcGameObjs, true, false, ConvertVertex);
+
+#if UNITY_EDITOR
+                EditorUtility.DisplayProgressBar("PLATEAU", "3Dモデルの変換中...", 0.5f);
+#endif
+
+                // 共通ライブラリの機能でモデルを分割・結合します。
+                var converter = new GranularityConverter();
+                using var dstModel = converter.Convert(srcModel, option);
+
+#if UNITY_EDITOR
+                EditorUtility.DisplayProgressBar("PLATEAU", "変換後の3Dモデルを配置中...", 0.8f);
+#endif
+
+                // Modelをゲームオブジェクトに変換して配置します。
+                var generatedObjs = new List<GameObject>();
+                bool result = await PlateauToUnityModelConverter.PlateauModelToScene(generatedObjs,
+                    null, new DummyProgressDisplay(), "", true,
+                    null, null, dstModel,
+                    new AttributeDataHelper(new SerializedCityObjectGetterFromDict(attributes), option.Granularity,
+                        true), true);
+                if (!result)
                 {
-                    queue.Enqueue(trans.GetChild(i));
+                    throw new Exception("Failed to covert plateau model to scene game objects.");
                 }
+
+                // 覚えておいた属性情報を再構成します。
+                // foreach (var gameObj in generatedObjs)
+                // {
+                //     var component = gameObj.AddComponent<PLATEAUCityObjectGroup>();
+                //     var rootCityObjs = component.CityObjects.rootCityObjects;
+                //     
+                //     
+                //     component.SetSerializableCityObject();
+                // }
             }
-            var attributes = GmlIdToSerializedCityObj.ComposeFrom(cityObjectGroups);
-            
-            // ゲームオブジェクトを共通ライブラリのModelに変換します。
-            using var srcModel = UnityMeshToDllModelConverter.Convert(srcGameObjs, true, false, ConvertVertex);
-            
-            // 共通ライブラリの機能でモデルを分割・結合します。
-            var converter = new GranularityConverter();
-            using var dstModel = converter.Convert(srcModel, option);
-            
-            // Modelをゲームオブジェクトに変換して配置します。
-            var generatedObjs = new List<GameObject>();
-            bool result = await PlateauToUnityModelConverter.PlateauModelToScene(generatedObjs,
-                null, new DummyProgressDisplay(), "", true,
-                null, null, dstModel, new AttributeDataHelper(new SerializedCityObjectGetterFromDict(attributes), option.Granularity, true), true);
-            if (!result)
+            catch (Exception e)
             {
-                throw new Exception("Failed to covert plateau model to scene game objects.");
+                Debug.LogError($"{e.Message}\n{e.StackTrace}");
             }
             
-            // 覚えておいた属性情報を再構成します。
-            // foreach (var gameObj in generatedObjs)
-            // {
-            //     var component = gameObj.AddComponent<PLATEAUCityObjectGroup>();
-            //     var rootCityObjs = component.CityObjects.rootCityObjects;
-            //     
-            //     
-            //     component.SetSerializableCityObject();
-            // }
+            #if UNITY_EDITOR
+            EditorUtility.ClearProgressBar();
+            #endif
+            
         }
         
         private static PlateauVector3d ConvertVertex(Vector3 src)
