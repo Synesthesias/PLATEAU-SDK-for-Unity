@@ -1,9 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using PLATEAU.CityImport.AreaSelector;
 using PLATEAU.Dataset;
-using PLATEAU.Geometries;
 using PLATEAU.Native;
 using PLATEAU.PolygonMesh;
 using PLATEAU.Util;
@@ -30,21 +30,6 @@ namespace PLATEAU.CityImport.Setting
         /// https://www.gsi.go.jp/sokuchikijun/jpc.html
         /// </summary>
         public int CoordinateZoneID { get; set; } = 9;
-        
-        private Extent extent;
-        /// <summary>
-        /// 緯度・経度での範囲です。
-        /// ただし、高さの設定は無視され、高さの範囲は必ず -99,999 ～ 99,999 になります。
-        /// </summary>
-        private Extent Extent
-        {
-            get => this.extent;
-            set =>
-                this.extent = new Extent(
-                    new GeoCoordinate(value.Min.Latitude, value.Min.Longitude, -99999),
-                    new GeoCoordinate(value.Max.Latitude, value.Max.Longitude, 99999));
-        }
-        
         
         /// <summary>
         /// 基準点です。
@@ -78,11 +63,12 @@ namespace PLATEAU.CityImport.Setting
         {
             token.ThrowIfCancellationRequested();
 
-            using var datasetSource = DatasetSource.Create(DatasetSourceConfig);
-            using var datasetAccessor = datasetSource.Accessor;
 
             // 地域ID(メッシュコード)で絞り込みます。
             var meshCodes = AreaMeshCodes.Select(MeshCode.Parse).Where(code => code.IsValid).ToArray();
+
+            using var datasetSource = DatasetSource.Create(DatasetSourceConfig);
+            using var datasetAccessor = datasetSource.Accessor.FilterByMeshCodes(meshCodes);
 
             // パッケージ種ごとの設定で「ロードする」にチェックが入っているパッケージ種で絞り込みます。
             var targetPackages =
@@ -100,10 +86,6 @@ namespace PLATEAU.CityImport.Setting
                 for (int i = 0; i < gmlCount; i++)
                 {
                     var gml = gmlFiles.At(i);
-
-                    if (!gml.MeshCode.IsValid) continue;
-                    // メッシュコードで絞り込みます。
-                    if (meshCodes.All(mc => mc.ToString() != gml.MeshCode.ToString())) continue;
                     foundGmls.Add(gml);
                 }
             }
@@ -120,7 +102,6 @@ namespace PLATEAU.CityImport.Setting
         {
             InitWithPackageLodsDict(result.PackageToLodDict);
             AreaMeshCodes = result.AreaMeshCodes;
-            Extent = result.Extent;
             SetReferencePointToExtentCenter();
         }
         
@@ -132,20 +113,7 @@ namespace PLATEAU.CityImport.Setting
             this.perPackagePairSettings.Clear();
             foreach (var (package, availableMaxLOD) in dict)
             {
-                var predefined = CityModelPackageInfo.GetPredefined(package);
-                var val = new PackageLoadSetting(
-                    package: package,
-                    loadPackage: true,
-                    includeTexture: predefined.hasAppearance,
-                    minLOD: predefined.minLOD,
-                    maxLOD: availableMaxLOD,
-                    availableMaxLOD: availableMaxLOD,
-                    MeshGranularity.PerPrimaryFeatureObject, 
-                    doSetMeshCollider: true,
-                    doSetAttrInfo: true,
-                    enableTexturePacking: true,
-                    texturePackingResolution: TexturePackingResolution.W4096H4096);
-                this.perPackagePairSettings.Add(package, val);
+                this.perPackagePairSettings.Add(package, PackageLoadSetting.CreateSettingFor(package, availableMaxLOD));
             }
         }
 
@@ -156,37 +124,31 @@ namespace PLATEAU.CityImport.Setting
         public PlateauVector3d SetReferencePointToExtentCenter()
         {
             using var geoReference = CoordinatesConvertUtil.UnityStandardGeoReference(CoordinateZoneID);
+
+            // 選択エリアを囲むExtentを計算
+            var Extent = new Extent();
+            Extent.Min = new GeoCoordinate(180.0, 180.0, 0.0);
+            Extent.Max = new GeoCoordinate(-180.0, -180.0, 0.0);
+            for (var i = 0; i < AreaMeshCodes.Length; ++i)
+            {
+                var PartialExtent = MeshCode.Parse(AreaMeshCodes[i]).Extent;
+                Extent.Min.Latitude = Math.Min(PartialExtent.Min.Latitude, Extent.Min.Latitude);
+                Extent.Min.Longitude = Math.Min(PartialExtent.Min.Longitude, Extent.Min.Longitude);
+                Extent.Max.Latitude = Math.Max(PartialExtent.Max.Latitude, Extent.Max.Latitude);
+                Extent.Max.Longitude = Math.Max(PartialExtent.Max.Longitude, Extent.Max.Longitude);
+            }
+
             var center = geoReference.Project(Extent.Center);
             ReferencePoint = center;
             return center;
         }
-
-        // インポート設定のうち、Unityでは必ずこうなるという定数部分です。
-        internal const CoordinateSystem MeshAxes = CoordinateSystem.EUN;
-        internal const float UnitScale = 1.0f;
-        
-        
         /// <summary>
         /// インポート設定について、C++のstructに変換します。
         /// </summary>
         internal MeshExtractOptions CreateNativeConfigFor(PredefinedCityModelPackage package)
         {
             var packageConf = GetConfigForPackage(package);
-            return new MeshExtractOptions(
-                referencePoint: ReferencePoint,
-                meshAxes: MeshAxes,
-                meshGranularity: packageConf.MeshGranularity,
-                minLOD: (uint)packageConf.MinLOD,
-                maxLOD: (uint)packageConf.MaxLOD,
-                exportAppearance: packageConf.IncludeTexture,
-                gridCountOfSide: 10,
-                unitScale: UnitScale,
-                coordinateZoneID: CoordinateZoneID,
-                excludeCityObjectOutsideExtent: ShouldExcludeCityObjectOutsideExtent(package),
-                excludePolygonsOutsideExtent: ShouldExcludePolygonsOutsideExtent(package),
-                extent: Extent,
-                enableTexturePacking: packageConf.EnableTexturePacking,
-                texturePackingResolution: packageConf.GetTexturePackingResolution()); // TODO ここで定数で決め打っている部分は、ユーザーが選択できるようにすると良い
+            return packageConf.ConvertToNativeOption(ReferencePoint, CoordinateZoneID);
         } 
         
         private static bool ShouldExcludeCityObjectOutsideExtent(PredefinedCityModelPackage package)

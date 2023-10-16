@@ -7,6 +7,8 @@ namespace PLATEAU.Util
 {
     public static class RenderUtil
     {
+        private static readonly int GlossinessPropertyId = Shader.PropertyToID("_Glossiness");
+
         public static Material DefaultMaterial
         {
             get
@@ -19,6 +21,16 @@ namespace PLATEAU.Util
             }
         }
 
+        public static Material CreateDefaultMaterial()
+        {
+            var mat =  new Material(RenderUtil.DefaultMaterial)
+            {
+                enableInstancing = true,
+            };
+            mat.SetFloat(GlossinessPropertyId, 0f); // 感覚的だが、航空写真が貼り付けられた土地などはSmoothnessが0のほうが、それらしい見た目になると思った
+            return mat;
+        }
+
         /// <summary>
         /// Material用シェーダー付きのOpaqueマテリアル
         /// </summary>
@@ -26,15 +38,14 @@ namespace PLATEAU.Util
         {
             get
             {
-#if UNITY_EDITOR
+                #if UNITY_EDITOR
                 return new Material(
                     (Material)AssetDatabase.LoadAssetAtPath(
                         PathUtil.SdkPathToAssetPath("Materials/PLATEAUX3DMaterial.mat"),
                         typeof(Material)));
-#else
-return null;
-#endif
-
+                #else
+                throw new NotImplementedException("This function is only supported in editor.");
+                #endif
             }
         }
 
@@ -45,14 +56,14 @@ return null;
         {
             get
             {
-#if UNITY_EDITOR
+                #if UNITY_EDITOR
                 return new Material(
                     (Material)AssetDatabase.LoadAssetAtPath(
                         PathUtil.SdkPathToAssetPath("Materials/PLATEAUX3DMaterial_Transparent.mat"),
                         typeof(Material)));
-#else
-return null;
-#endif
+                #else
+                throw new NotImplementedException("This function is only supported in editor.");
+                #endif
             }
         }
 

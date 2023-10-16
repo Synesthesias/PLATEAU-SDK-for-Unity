@@ -1,9 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-
-namespace PLATEAU.Editor.DebugPlateau
+﻿namespace PLATEAU.Editor.DebugPlateau
 {
     /// <summary>
     /// 処理時間を計測するためのクラスです。

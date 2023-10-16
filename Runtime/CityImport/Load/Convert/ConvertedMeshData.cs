@@ -48,7 +48,8 @@ namespace PLATEAU.CityImport.Load.Convert
         /// <summary>
         /// ゲームオブジェクト、メッシュ、テクスチャの実体を作ってシーンに配置します。
         /// 頂点がない場合は nullが返ります。
-        public async Task<GameObject> PlaceToScene(Transform parentTrans, Dictionary<MaterialSet, Material> cachedMaterials)
+        /// </summary>
+        public async Task<GameObject> PlaceToScene(Transform parentTrans, Dictionary<MaterialSet, Material> cachedMaterials, Material fallbackMaterial)
         {
             var mesh = GenerateUnityMesh();
             if (mesh.vertexCount <= 0) return null;
@@ -60,6 +61,7 @@ namespace PLATEAU.CityImport.Load.Convert
             var materials = new Material[mesh.subMeshCount];
             for (int i = 0; i < mesh.subMeshCount; i++)
             {
+
                 //Material設定
                 var texturePath = textureUrls[i];
                 var gmlMaterial = gmlMaterials[i];
@@ -73,25 +75,40 @@ namespace PLATEAU.CityImport.Load.Convert
                 }
 
                 Material material = null;
-                if (gmlMaterial != null)
+                var texture = await LoadTexture(texturePath);
+                // マテリアルを決めるための場合分けです。
+                if (gmlMaterial == null && texture == null)
                 {
-                    material = RenderUtil.GetPLATEAUX3DMaterialByCityGMLMaterial(gmlMaterial);
-                    material.name = gmlMaterial.ID;
+                    // マテリアル指定もテクスチャ指定もない場合、fallbackMaterialを使います。それもない場合、デフォルトマテリアルを使います。
+                    if (fallbackMaterial == null)
+                    {
+                        material = RenderUtil.CreateDefaultMaterial();
+                    }
+                    else
+                    {
+                        material = fallbackMaterial;
+                    }
                 }
                 else
                 {
-                    material = new Material(RenderUtil.DefaultMaterial)
+                    // マテリアル指定があればそれを使い、なければデフォルトマテリアルを使います。
+                    if (gmlMaterial != null)
                     {
-                        enableInstancing = true
-                    };
-                }
+                        material = RenderUtil.GetPLATEAUX3DMaterialByCityGMLMaterial(gmlMaterial);
+                        material.name = gmlMaterial.ID;
+                    }
+                    else
+                    {
+                        material = RenderUtil.CreateDefaultMaterial();
+                    }
 
-                //Texture設定
-                var texture = await LoadTexture(texturePath);
-                if (texture != null)
-                {
-                    material.mainTexture = texture;
-                    material.name = texture.name;
+                    //Textureがあればそれを使います。
+                    if (texture != null)
+                    {
+                        material.mainTexture = texture;
+                        material.name = texture.name;
+                    }
+                    
                 }
                 materials[i] = material;
                 cachedMaterials.Add(materialSet, material);
