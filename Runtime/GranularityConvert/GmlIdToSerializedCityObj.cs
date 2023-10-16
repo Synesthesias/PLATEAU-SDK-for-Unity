@@ -1,9 +1,11 @@
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using PlasticGui.Configuration.CloudEdition;
 using PLATEAU.CityGML;
 using PLATEAU.CityInfo;
+using UnityEngine;
 using Debug = UnityEngine.Debug;
 
 namespace PLATEAU.GranularityConvert
@@ -17,9 +19,28 @@ namespace PLATEAU.GranularityConvert
         
         /// <summary>
         /// 引数に含まれるGmlIDと属性情報をすべて取得して記憶したインスタンスを返します。
+        /// 子の属性情報も再帰的に取得します。
         /// </summary>
-        public static GmlIdToSerializedCityObj ComposeFrom(IEnumerable<PLATEAUCityObjectGroup> cityObjGroups)
+        public static GmlIdToSerializedCityObj ComposeFrom(IEnumerable<GameObject> srcGameObjs)
         {
+            var cityObjGroups = new List<PLATEAUCityObjectGroup>();
+            var queue = new Queue<Transform>(srcGameObjs.Select(obj => obj.transform));
+            while (queue.Count > 0)
+            {
+                var trans = queue.Dequeue();
+                if (!trans.gameObject.activeInHierarchy) continue; // 非アクティブはスキップします
+                var cityObjGroup = trans.GetComponent<PLATEAUCityObjectGroup>();
+                if (cityObjGroup != null)
+                {
+                    cityObjGroups.Add(cityObjGroup);
+                }
+
+                for (int i = 0; i < trans.childCount; i++)
+                {
+                    queue.Enqueue(trans.GetChild(i));
+                }
+            }
+            
             var ret = new GmlIdToSerializedCityObj();
             foreach(var cityObjs in cityObjGroups)
             {
@@ -36,7 +57,7 @@ namespace PLATEAU.GranularityConvert
         {
             if (!data.TryAdd(gmlId, serializedCityObj))
             {
-                Debug.LogWarning($"failed to add ${gmlId}");
+                Debug.LogWarning($"Duplicate gmlID : ${gmlId}");
             }
         }
 

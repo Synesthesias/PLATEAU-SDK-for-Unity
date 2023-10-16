@@ -125,7 +125,7 @@ namespace PLATEAU.CityImport.Setting
                 minLOD: (uint)LODRange.MinLOD,
                 maxLOD: (uint)LODRange.MaxLOD,
                 exportAppearance: IncludeTexture,
-                gridCountOfSide: 10,
+                gridCountOfSide: 1,
                 unitScale: UnitScale,
                 coordinateZoneID: coordinateZoneID,
                 excludeCityObjectOutsideExtent: ShouldExcludeCityObjectOutsideExtent(Package),

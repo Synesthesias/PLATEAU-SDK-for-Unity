@@ -31,25 +31,8 @@ namespace PLATEAU.GranularityConvert
                 EditorUtility.DisplayProgressBar("PLATEAU", "属性情報を取得中...", 0.1f);
 #endif
 
-                // 属性情報を覚えておきます。幅優先探索で子の属性情報も集めます。
-                var cityObjectGroups = new List<PLATEAUCityObjectGroup>();
-                var queue = new Queue<Transform>(srcGameObjs.Select(obj => obj.transform));
-                while (queue.Count > 0)
-                {
-                    var trans = queue.Dequeue();
-                    var cityObjGroup = trans.GetComponent<PLATEAUCityObjectGroup>();
-                    if (cityObjGroup != null)
-                    {
-                        cityObjectGroups.Add(cityObjGroup);
-                    }
-
-                    for (int i = 0; i < trans.childCount; i++)
-                    {
-                        queue.Enqueue(trans.GetChild(i));
-                    }
-                }
-
-                var attributes = GmlIdToSerializedCityObj.ComposeFrom(cityObjectGroups);
+                // 属性情報を覚えておきます。
+                var attributes = GmlIdToSerializedCityObj.ComposeFrom(srcGameObjs);
 
 #if UNITY_EDITOR
                 EditorUtility.DisplayProgressBar("PLATEAU", "3Dモデルを出力中...", 0.25f);
