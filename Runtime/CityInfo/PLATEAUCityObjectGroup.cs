@@ -78,7 +78,7 @@ namespace PLATEAU.CityInfo
         public CityObject GetCityObject(CityObjectIndex index)
         {
             var des = CityObjects;
-            //最小値物時の outsideParent 設定
+            //最小地物時の outsideParent 設定
             if (index.AtomicIndex == -1 && !string.IsNullOrEmpty(des.outsideParent))
             {
                 var parent = GetOutsideParent(des.outsideParent);
@@ -261,7 +261,7 @@ namespace PLATEAU.CityInfo
             }
         }
 
-        private IEnumerable<CityObjectList.CityObject> GetAllCityObjects()
+        public IEnumerable<CityObjectList.CityObject> GetAllCityObjects()
         {
             List<CityObjectList.CityObject> objs = new List<CityObjectList.CityObject>();
             var des = CityObjects;

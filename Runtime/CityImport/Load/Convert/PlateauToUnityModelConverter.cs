@@ -54,10 +54,15 @@ namespace PLATEAU.CityImport.Load.Convert
                 return false;
             }
 
-            return await PlateauModelToScene(parentTrans, progressDisplay, progressName, doSetMeshCollider, token, fallbackMaterial, plateauModel, attributeDataHelper, true);
+            var dummy = new List<GameObject>();
+            return await PlateauModelToScene(dummy, parentTrans, progressDisplay, progressName, doSetMeshCollider, token, fallbackMaterial, plateauModel, attributeDataHelper, true);
         }
 
-        public static async Task<bool> PlateauModelToScene(Transform parentTrans, IProgressDisplay progressDisplay,
+        /// <summary>
+        /// 共通ライブラリのModelをUnityのゲームオブジェクトに変換してシーンに配置します。
+        /// これにより配置されたゲームオブジェクトを引数 <paramref name="outGeneratedObjs"/> に追加します。
+        /// </summary>
+        public static async Task<bool> PlateauModelToScene(List<GameObject> outGeneratedObjs, Transform parentTrans, IProgressDisplay progressDisplay,
             string progressName, bool doSetMeshCollider, CancellationToken? token, Material fallbackMaterial, Model plateauModel, 
             IAttributeDataHelper attributeDataHelper, bool skipRoot)
         {
@@ -98,7 +103,8 @@ namespace PLATEAU.CityImport.Load.Convert
 
             try
             {
-                await meshObjsData.PlaceToScene(parentTrans, cachedMaterials, skipRoot, doSetMeshCollider, token, fallbackMaterial);
+                var generatedObjs = await meshObjsData.PlaceToScene(parentTrans, cachedMaterials, skipRoot, doSetMeshCollider, token, fallbackMaterial);
+                outGeneratedObjs.AddRange(generatedObjs);
             }
             catch (Exception e)
             {

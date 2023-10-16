@@ -2,12 +2,14 @@
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using PLATEAU.CityInfo;
 using PLATEAU.Geometries;
 using PLATEAU.Native;
 using PLATEAU.PolygonMesh;
 using PLATEAU.Util;
 using UnityEngine;
 using UnityEngine.Assertions;
+using CityObjectList = PLATEAU.PolygonMesh.CityObjectList;
 using Mesh = UnityEngine.Mesh;
 
 namespace PLATEAU.CityExport.ModelConvert
@@ -83,13 +85,17 @@ namespace PLATEAU.CityExport.ModelConvert
         private static Node GameObjToNode(Transform trans, bool includeTexture,
             VertexConvertFunc vertexConvertFunc)
         {
+            // ノード生成します。
             var node = Node.Create(trans.name);
+            
+            // メッシュがなければreturnします。
             var meshFilter = trans.GetComponent<MeshFilter>();
             if (meshFilter == null) return node;
             var unityMesh = meshFilter.sharedMesh;
             if (unityMesh == null) return node;
             if (unityMesh.vertexCount <= 0 || unityMesh.subMeshCount <= 0 || unityMesh.triangles.Length <= 0) return node;
 
+            // メッシュを変換します。
             var dllMesh = ConvertMesh(unityMesh, trans.GetComponent<MeshRenderer>(), includeTexture, vertexConvertFunc);
             
             int subMeshCount = unityMesh.subMeshCount;
@@ -102,8 +108,23 @@ namespace PLATEAU.CityExport.ModelConvert
                 Assert.IsTrue(startId < endId);
                 Assert.IsTrue(endId < dllMesh.IndicesCount);
             }
-            node.SetMeshByCppMove(dllMesh);
             
+            
+            // CityObjectListを作って渡します。
+            var cityObjGroup = trans.GetComponent<PLATEAUCityObjectGroup>();
+            if (cityObjGroup != null)
+            {
+                using var cityObjList = CityObjectList.Create();
+                foreach (var cityObj in cityObjGroup.GetAllCityObjects())
+                {
+                    int primaryID = cityObj.CityObjectIndex[0];
+                    int atomicID = cityObj.CityObjectIndex[1];
+                    cityObjList.Add(new CityObjectIndex(primaryID, atomicID), cityObj.GmlID);
+                }
+                dllMesh.CityObjectList = cityObjList;
+            }
+            
+            node.SetMeshByCppMove(dllMesh);
             return node;
         }
 

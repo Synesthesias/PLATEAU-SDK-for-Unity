@@ -66,8 +66,18 @@ namespace PLATEAU.CityImport.Load.Convert
         /// <summary>
         /// ゲームオブジェクト、メッシュ、テクスチャの実体を作ってシーンに配置します。
         /// 再帰によって子も配置します。
+        /// 配置したゲームオブジェクトのリストを返します。
         /// </summary>
-        public async Task PlaceToScene(Transform parent, Dictionary<MaterialSet, Material> cachedMaterials, bool skipRoot, bool doSetMeshCollider, CancellationToken? token, Material fallbackMaterial)
+        public async Task<List<GameObject>> PlaceToScene(Transform parent, Dictionary<MaterialSet, Material> cachedMaterials, bool skipRoot, bool doSetMeshCollider, CancellationToken? token, Material fallbackMaterial)
+        {
+            var ret = new List<GameObject>();
+            await PlaceToSceneRecursive(ret, parent, cachedMaterials, skipRoot, doSetMeshCollider, token, fallbackMaterial);
+            return ret;
+        }
+
+        private async Task PlaceToSceneRecursive(List<GameObject> generatedObjs, Transform parent,
+            Dictionary<MaterialSet, Material> cachedMaterials, bool skipRoot, bool doSetMeshCollider,
+            CancellationToken? token, Material fallbackMaterial)
         {
             token?.ThrowIfCancellationRequested();
 
@@ -86,6 +96,7 @@ namespace PLATEAU.CityImport.Load.Convert
                         name = this.name,
                         isStatic = true
                     }.transform;
+                    generatedObjs.Add(nextParent.gameObject);
                 }
                 else
                 {
@@ -99,6 +110,7 @@ namespace PLATEAU.CityImport.Load.Convert
                         {
                             placedObj.AddComponent<MeshCollider>();
                         }
+                        generatedObjs.Add(placedObj);
                     }
                 }
  
@@ -118,7 +130,7 @@ namespace PLATEAU.CityImport.Load.Convert
             // 子を再帰的に配置します。
             foreach (var child in this.children)
             {
-                await child.PlaceToScene(nextParent, cachedMaterials, false, doSetMeshCollider, token, fallbackMaterial);
+                await child.PlaceToSceneRecursive(generatedObjs, nextParent, cachedMaterials, false, doSetMeshCollider, token, fallbackMaterial);
             }
         }
     }
