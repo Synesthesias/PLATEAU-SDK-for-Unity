@@ -21,11 +21,11 @@ namespace PLATEAU.CityGML
     /// <see cref="Type"/> が <see cref="AttributeType.AttributeSet"/> である場合、 この属性の子に属性セットがあることを意味します。
     /// この場合は <see cref="AsString"/> は意味を成さず、代わりに <see cref="AsAttrSet" /> で子の属性セットを取得できます。</para>
     /// </summary>
-    public class AttributeValue
+    public class NativeAttributeValue
     {
         private readonly IntPtr handle;
 
-        public AttributeValue(IntPtr handle)
+        public NativeAttributeValue(IntPtr handle)
         {
             this.handle = handle;
         }
@@ -64,16 +64,16 @@ namespace PLATEAU.CityGML
 
         /// <summary>
         /// <see cref="Type"/> が <see cref="AttributeType.AttributeSet"/> であることを前提に、
-        /// 子の <see cref="AttributesMap"/> を返します。
+        /// 子の <see cref="NativeAttributesMap"/> を返します。
         /// <see cref="Type"/> がその他である場合は意味を成しません。
         /// </summary>
-        public AttributesMap AsAttrSet
+        public NativeAttributesMap AsAttrSet
         {
             get
             {
                 IntPtr attributesHandle = DLLUtil.GetNativeValue<IntPtr>(this.handle,
                     NativeMethods.plateau_attribute_as_attribute_set);
-                return new AttributesMap(attributesHandle);
+                return new NativeAttributesMap(attributesHandle);
             }
         }
 

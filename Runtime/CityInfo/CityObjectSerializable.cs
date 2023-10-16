@@ -105,7 +105,7 @@ namespace PLATEAU.CityInfo
                 return attrMap.TryGetValue(key, out val);
             }
 
-            public void SetAttribute(string key, AttributeValue value)
+            public void SetAttribute(string key, NativeAttributeValue value)
             {
                 attrMap.Add(key, new Value(value));
             }
@@ -135,7 +135,7 @@ namespace PLATEAU.CityInfo
 
                 public Attributes AttributesMapValue = new Attributes();
 
-                public Value(AttributeValue value)
+                public Value(NativeAttributeValue value)
                 {
                     Type = value.Type;
 
@@ -247,7 +247,7 @@ namespace PLATEAU.CityInfo
 
             if( idx != null )
                 cityObjectIndex = new[] { idx.Value.PrimaryIndex, idx.Value.AtomicIndex };
-            foreach (var m in obj.AttributesMap)
+            foreach (var m in obj.NativeAttributesMap)
             {
                 map.SetAttribute(m.Key, m.Value);
             }

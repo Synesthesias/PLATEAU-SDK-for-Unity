@@ -6,14 +6,14 @@ using System.Runtime.InteropServices;
 using PLATEAU.Interop;
 
 // key と value のペアに短縮名を付けます。
-using AttrPair = System.Collections.Generic.KeyValuePair<string, PLATEAU.CityGML.AttributeValue>;
+using AttrPair = System.Collections.Generic.KeyValuePair<string, PLATEAU.CityGML.NativeAttributeValue>;
 
 namespace PLATEAU.CityGML
 {
     /// <summary>
     /// 属性の値の想定形式です。
     /// 形式が String, Double, Integer, Date, Uri, Measure である場合、内部的にはデータは string です。
-    /// AttributeSet である場合、内部的にはデータは <see cref="AttributesMap"/> への参照です。
+    /// AttributeSet である場合、内部的にはデータは <see cref="NativeAttributesMap"/> への参照です。
     /// </summary>
     public enum AttributeType
     {
@@ -30,15 +30,15 @@ namespace PLATEAU.CityGML
     /// <summary>
     /// 属性の辞書です。
     /// <see cref="IReadOnlyDictionary{TKey,TValue}"/> を実装します。
-    /// string をキーとし、 <see cref="AttributeValue"/> が値になります。
-    /// this[key] で <see cref="AttributeValue"/> が返ります。
+    /// string をキーとし、 <see cref="NativeAttributeValue"/> が値になります。
+    /// this[key] で <see cref="NativeAttributeValue"/> が返ります。
     /// </summary>
-    public class AttributesMap : IReadOnlyDictionary<string, AttributeValue>
+    public class NativeAttributesMap : IReadOnlyDictionary<string, NativeAttributeValue>
     {
         private readonly IntPtr handle;
         private string[] cachedKeys; // キャッシュの初期状態は null とするので null許容型にします。
 
-        internal AttributesMap(IntPtr handle)
+        internal NativeAttributesMap(IntPtr handle)
         {
             this.handle = handle;
         }
@@ -74,9 +74,9 @@ namespace PLATEAU.CityGML
         }
 
         /// <summary>
-        /// (key, value) のペアのうち value (<see cref="AttributeValue"/>) をすべて返します。
+        /// (key, value) のペアのうち value (<see cref="NativeAttributeValue"/>) をすべて返します。
         /// </summary>
-        public IEnumerable<AttributeValue> Values
+        public IEnumerable<NativeAttributeValue> Values
         {
             get
             {
@@ -89,7 +89,7 @@ namespace PLATEAU.CityGML
         /// 属性のキーから値を返します。
         /// <paramref name="key"/> が存在しない場合は <see cref="KeyNotFoundException"/> を投げます。
         /// </summary>
-        public AttributeValue this[string key]
+        public NativeAttributeValue this[string key]
         {
             get
             {
@@ -103,7 +103,7 @@ namespace PLATEAU.CityGML
 
                 // その他のエラー(Exception)
                 DLLUtil.CheckDllError(result);
-                return new AttributeValue(valueHandle);
+                return new NativeAttributeValue(valueHandle);
             }
         }
 
@@ -123,7 +123,7 @@ namespace PLATEAU.CityGML
         /// 属性辞書の中に <paramref name="key"/> が存在すればその値を <paramref name="value"/> に代入して true を返します。
         /// <paramref name="key"/> が存在しなければ <paramref name="value"/> に null を代入して false を返します。
         /// </summary>
-        public bool TryGetValue(string key, out AttributeValue value)
+        public bool TryGetValue(string key, out NativeAttributeValue value)
         {
             if (ContainsKey(key))
             {
@@ -136,10 +136,10 @@ namespace PLATEAU.CityGML
         }
 
         /// <summary>
-        /// <paramref name="key"/> に対応する値 <see cref="AttributeValue"/> を返します。
+        /// <paramref name="key"/> に対応する値 <see cref="NativeAttributeValue"/> を返します。
         /// なければ null を返します。
         /// </summary>
-        public AttributeValue GetValueOrNull(string key)
+        public NativeAttributeValue GetValueOrNull(string key)
         {
             if (ContainsKey(key)) return this[key];
             return null;
@@ -147,7 +147,7 @@ namespace PLATEAU.CityGML
 
         public IEnumerator<AttrPair> GetEnumerator()
         {
-            return new AttributesMapEnumerator(this);
+            return new NativeAttributesMapEnumerator(this);
         }
         
         
@@ -171,15 +171,15 @@ namespace PLATEAU.CityGML
 
         /// <summary>
         /// インナークラスです。
-        /// <see cref="AttributesMap"/> に関する <see cref="IEnumerator"/> であり、
+        /// <see cref="NativeAttributesMap"/> に関する <see cref="IEnumerator"/> であり、
         /// foreachで回せるようにするための機能です。
         /// </summary>
-        private class AttributesMapEnumerator : IEnumerator<AttrPair>
+        private class NativeAttributesMapEnumerator : IEnumerator<AttrPair>
         {
-            private readonly AttributesMap map;
+            private readonly NativeAttributesMap map;
             private int index;
 
-            public AttributesMapEnumerator(AttributesMap map)
+            public NativeAttributesMapEnumerator(NativeAttributesMap map)
             {
                 this.map = map;
                 Reset();
@@ -215,7 +215,7 @@ namespace PLATEAU.CityGML
                         this.map.cachedKeys = this.map.Keys.ToArray();
                     }
                     string key = this.map.cachedKeys[this.index];
-                    return new KeyValuePair<string, AttributeValue>(key, this.map[key]);
+                    return new KeyValuePair<string, NativeAttributeValue>(key, this.map[key]);
                 }
             }
             
