@@ -32,16 +32,15 @@ namespace PLATEAU.GranularityConvert
     [StructLayout(LayoutKind.Sequential)]
     public struct GranularityConvertOption
     {
-        private MeshGranularity granularity;
-        private int gridCount; // 地域単位でのみ利用
+        public MeshGranularity Granularity;
+        public int GridCount; // 地域単位でのみ利用
 
-        public MeshGranularity Granularity => granularity;
 
         public GranularityConvertOption(MeshGranularity granularity, int gridCount)
         {
             if (gridCount < 0) throw new ArgumentOutOfRangeException();
-            this.granularity = granularity;
-            this.gridCount = gridCount;
+            this.Granularity = granularity;
+            this.GridCount = gridCount;
         }
     }
 }

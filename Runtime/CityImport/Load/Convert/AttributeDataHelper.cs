@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using PLATEAU.CityGML;
 using PLATEAU.CityInfo;
 using PLATEAU.PolygonMesh;
-using UnityEngine;
 using CityObjectList = PLATEAU.CityInfo.CityObjectList;
+using Debug = UnityEngine.Debug;
 using PLATEAUCityObjectList = PLATEAU.PolygonMesh.CityObjectList;
 
 namespace PLATEAU.CityImport.Load.Convert
@@ -54,7 +55,8 @@ namespace PLATEAU.CityImport.Load.Convert
         {
             if (!doSetAttrInfo) return;
             indexList.Clear();
-            foreach (var key in cityObjectList.GetAllKeys())
+            var allKeys = cityObjectList.GetAllKeys();
+            foreach (var key in allKeys)
             {
                 var atomicGmlID = cityObjectList.GetAtomicID(key);
                 var primaryGmlID = cityObjectList.GetPrimaryID(key.PrimaryIndex);
@@ -62,8 +64,8 @@ namespace PLATEAU.CityImport.Load.Convert
                 bool shouldAddIDWhenAreaGranularity = meshGranularity == MeshGranularity.PerCityModelArea;
                 bool shouldAddIDWhenPrimaryGranularity =
                     meshGranularity == MeshGranularity.PerPrimaryFeatureObject &&
-                    (primaryGmlID == id || // 主要地物単位のインポート時
-                     primaryGmlID == null); // 主要地物単位へ結合分解時
+                    (primaryGmlID == id /*|| // 主要地物単位のインポート時
+                      primaryGmlID == null*/); // 主要地物単位へ結合分解時
                 bool shouldAddID = shouldAddIDWhenAreaGranularity || shouldAddIDWhenPrimaryGranularity;
                 if (shouldAddID)
                         indexList.Add(new CityObjectID { Index = key, AtomicID = atomicGmlID, PrimaryID = primaryGmlID});
@@ -94,9 +96,23 @@ namespace PLATEAU.CityImport.Load.Convert
         public CityObjectList GetSerializableCityObject()
         {
             if (!doSetAttrInfo) return null;
-            if (meshGranularity == MeshGranularity.PerCityModelArea)
-                return GetSerializableCityObjectForArea();
+            switch (meshGranularity)
+            {
+                case MeshGranularity.PerCityModelArea:
+                    return GetSerializableCityObjectForArea();
+                case MeshGranularity.PerPrimaryFeatureObject:
+                case MeshGranularity.PerAtomicFeatureObject:
+                    return GetSerializableCityObjectForAtomicOrPrimary();
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
 
+        /// <summary>
+        /// 最小地物単位または主要地物単位のモデルの場合の、シリアライズ可能なデータへの変換です。
+        /// </summary>
+        private CityObjectList GetSerializableCityObjectForAtomicOrPrimary()
+        {
             var cityObjSer = serializedCityObjectGetter.GetByID(this.id, index);
             if (cityObjSer == null) return null;
             CityObjectList cityObjList = new CityObjectList();
@@ -229,9 +245,9 @@ namespace PLATEAU.CityImport.Load.Convert
             {
                 return cityModel.GetCityObjectById(id);
             }
-            catch (Exception ex)
+            catch (KeyNotFoundException ex)
             {
-                Debug.LogWarning($"{ex.Message}\n{ex.StackTrace}");
+                // Debug.LogWarning($"{ex.Message}\n{ex.StackTrace}");
             }
             return null;
         }

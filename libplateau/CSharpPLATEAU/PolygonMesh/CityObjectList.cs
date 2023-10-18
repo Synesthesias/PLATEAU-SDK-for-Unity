@@ -93,6 +93,16 @@ namespace PLATEAU.PolygonMesh
             var result = NativeMethods.plateau_city_object_list_add(Handle, cityObjIndex, gmlID);
             DLLUtil.CheckDllError(result);
         }
+
+        public int Length
+        {
+            get
+            {
+                var result = NativeMethods.plateau_city_object_list_get_size(Handle, out int length);
+                DLLUtil.CheckDllError(result);
+                return length;
+            }
+        }
         
         public void Dispose()
         {
@@ -161,6 +171,11 @@ namespace PLATEAU.PolygonMesh
                 [Out] out IntPtr outGmlIDStrPtr,
                 [Out] out int strLength
             );
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_city_object_list_get_size(
+                [In] IntPtr cityObjectIndexPtr,
+                out int outSize);
         }
     }
 }
