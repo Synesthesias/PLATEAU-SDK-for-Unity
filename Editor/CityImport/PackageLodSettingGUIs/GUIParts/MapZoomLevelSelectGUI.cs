@@ -5,6 +5,7 @@ using PLATEAU.Dataset;
 using PLATEAU.Editor.EditorWindow.Common;
 using PLATEAU.Native;
 using PLATEAU.Texture;
+using PLATEAU.Util;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -68,9 +69,8 @@ namespace PLATEAU.Editor.CityImport.GUIParts
                             {
                                 if (PlateauEditorStyle.MiniButton("利用可能ズームレベルを検索", 180))
                                 {
-#if UNITY_EDITOR
-                                    EditorUtility.DisplayProgressBar("PLATEAU", "利用可能ズームレベルを検索中...", 0.1f);
-#endif
+                                    using var progressBar = new ProgressBar();
+                                    progressBar.Display("利用可能ズームレベルを検索中...", 0.1f);
 
                                     try
                                     {
@@ -86,11 +86,6 @@ namespace PLATEAU.Editor.CityImport.GUIParts
                                         #endif
                                         zoomLevelSearchResult.IsValid = false;
                                     }
-                                    
-
-#if UNITY_EDITOR
-                                    EditorUtility.ClearProgressBar();
-#endif
                                 }
                             });
 

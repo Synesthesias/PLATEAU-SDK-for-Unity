@@ -2,6 +2,7 @@
 using PLATEAU.CityInfo;
 using PLATEAU.Editor.EditorWindow.Common;
 using System.Threading.Tasks;
+using PLATEAU.Util;
 using UnityEditor;
 using UnityEngine;
 using static PLATEAU.CityInfo.CityObjectList;
@@ -102,7 +103,8 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
                 {
                     if (hit.transform.TryGetComponent<PLATEAUCityObjectGroup>(out var cog))
                     {
-                        ShowProgress(0.0f);
+                        using var progressBar = new ProgressBar("クリックした地物の情報を取得中です...");
+                        progressBar.Display(0f);
 
                         parent = child = null;
                         parentJson = childJson = targetObjectName = errorMessage = null;
@@ -114,7 +116,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
                             parent = selected[0];
                             child = selected[1];
                         }
-                        ShowProgress(0.2f);
+                        progressBar.Display(0.2f);
 
                         if (parent == null && child == null) 
                         {
@@ -131,7 +133,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
                             if (parent!=null)
                             {
                                 parentJson = await Task.Run(() => JsonConvert.SerializeObject(parent, Formatting.Indented));
-                                ShowProgress(0.4f);
+                                progressBar.Display(0.4f);
 
                                 //最小値物
                                 if (!string.IsNullOrEmpty(cog.CityObjects.outsideParent))
@@ -140,13 +142,13 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
                                     if (parentTrans != null)
                                     {
                                         await GetGizmoDrawer().ShowParentSelection(parentTrans, parent.IndexInMesh, GetIdAndAttributeString(parent));
-                                        ShowProgress(0.6f);
+                                        progressBar.Display(0.6f);
                                     }
                                 }
                                 else
                                 {
                                     await GetGizmoDrawer().ShowParentSelection(hit.transform, parent.IndexInMesh, GetIdAndAttributeString(parent));
-                                    ShowProgress(0.6f);
+                                    progressBar.Display(0.6f);
                                 }
                             }
                             else
@@ -158,10 +160,10 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
                             if(child != null)
                             {
                                 childJson = await Task.Run(() =>  JsonConvert.SerializeObject(child, Formatting.Indented));
-                                ShowProgress(0.8f);
+                                progressBar.Display(0.8f);
 
                                 await GetGizmoDrawer().ShowChildSelection(hit.transform, child.IndexInMesh, GetIdAndAttributeString(child));
-                                ShowProgress(0.99f);
+                                progressBar.Display(0.99f);
                             } 
                             else
                             {
@@ -183,7 +185,6 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
 
                 parentEditorWindow.Repaint();
                 scene.Repaint();
-                ShowProgress(1.0f);
             }
         }
 
@@ -209,14 +210,6 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
                 attr = attr.Substring(0, 50);
             }
             return $"{id}\n{attr}";
-        }
-
-        private void ShowProgress(float progress)
-        {
-           if(progress >= 1.0f )
-                EditorUtility.ClearProgressBar();
-           else
-                EditorUtility.DisplayProgressBar("PLATEAU", "クリックした地物の情報を取得中です...", progress);
         }
 
         private void Clear()
