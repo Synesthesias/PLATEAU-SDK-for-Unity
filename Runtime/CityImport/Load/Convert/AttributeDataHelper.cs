@@ -59,8 +59,13 @@ namespace PLATEAU.CityImport.Load.Convert
                 var atomicGmlID = cityObjectList.GetAtomicID(key);
                 var primaryGmlID = cityObjectList.GetPrimaryID(key.PrimaryIndex);
 
-                if (meshGranularity == MeshGranularity.PerCityModelArea ||
-                    (meshGranularity == MeshGranularity.PerPrimaryFeatureObject && primaryGmlID == id))
+                bool shouldAddIDWhenAreaGranularity = meshGranularity == MeshGranularity.PerCityModelArea;
+                bool shouldAddIDWhenPrimaryGranularity =
+                    meshGranularity == MeshGranularity.PerPrimaryFeatureObject &&
+                    (primaryGmlID == id || // 主要地物単位のインポート時
+                     primaryGmlID == null); // 主要地物単位へ結合分解時
+                bool shouldAddID = shouldAddIDWhenAreaGranularity || shouldAddIDWhenPrimaryGranularity;
+                if (shouldAddID)
                         indexList.Add(new CityObjectID { Index = key, AtomicID = atomicGmlID, PrimaryID = primaryGmlID});
                         
                 if (meshGranularity == MeshGranularity.PerAtomicFeatureObject && atomicGmlID == id)
@@ -104,6 +109,7 @@ namespace PLATEAU.CityImport.Load.Convert
                 if (id.PrimaryID == id.AtomicID) continue;
                 var childCityObj = serializedCityObjectGetter.GetByID(id.AtomicID, id.Index);
                 if (childCityObj == null) continue;
+                childCityObj.CityObjectIndex = new int[]{id.Index.PrimaryIndex, id.Index.AtomicIndex}; // 分割結合時に必要
                 cityObjSer.Children.Add(childCityObj);
             }
             cityObjList.rootCityObjects.Add(cityObjSer);

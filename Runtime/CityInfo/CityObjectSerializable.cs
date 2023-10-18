@@ -33,7 +33,12 @@ namespace PLATEAU.CityInfo
 
             // Getters/Setters
             public string GmlID => gmlID;
-            public int[] CityObjectIndex => cityObjectIndex;
+
+            public int[] CityObjectIndex
+            {
+                get => cityObjectIndex;
+                set => cityObjectIndex = value;
+            }
             public CityObjectType CityObjectType => (CityObjectType)cityObjectType;
             public List<CityObject> Children => children;
             public Attributes AttributesMap => attributesMap;
