@@ -1,22 +1,15 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
 using System.Threading.Tasks;
 using PLATEAU.CityExport.ModelConvert;
 using PLATEAU.CityImport.Load.Convert;
-using PLATEAU.CityInfo;
-using PLATEAU.Geometries;
 using PLATEAU.Native;
 using PLATEAU.PolygonMesh;
 using PLATEAU.Util;
 using UnityEngine;
-using CityObjectList = PLATEAU.PolygonMesh.CityObjectList;
 using Debug = UnityEngine.Debug;
 
 #if UNITY_EDITOR
-using UnityEditor;
 #endif
 
 namespace PLATEAU.GranularityConvert

@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using PLATEAU.CityGML;
 using PLATEAU.CityInfo;
 using PLATEAU.PolygonMesh;
 using CityObjectList = PLATEAU.CityInfo.CityObjectList;
-using Debug = UnityEngine.Debug;
 using PLATEAUCityObjectList = PLATEAU.PolygonMesh.CityObjectList;
 
 namespace PLATEAU.CityImport.Load.Convert

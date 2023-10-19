@@ -8,11 +8,8 @@ using PLATEAU.Dataset;
 using PLATEAU.Util;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using Texture = UnityEngine.Texture;
 using System.Threading;
-using PLATEAU.Dataset;
 using Material = UnityEngine.Material;
-using System.Linq;
 
 #if UNITY_EDITOR
 using UnityEditor.SceneManagement;

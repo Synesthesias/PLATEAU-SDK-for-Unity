@@ -1,12 +1,7 @@
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using PlasticGui.Configuration.CloudEdition;
-using PLATEAU.CityGML;
 using PLATEAU.CityInfo;
 using UnityEngine;
-using Debug = UnityEngine.Debug;
 
 namespace PLATEAU.GranularityConvert
 {
