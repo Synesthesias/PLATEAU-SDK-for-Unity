@@ -162,6 +162,10 @@ namespace PLATEAU.CityImport.Load.Convert
             {
                 var cityObj = serializedCityObjectGetter.GetByID(id.AtomicID, id.Index);
                 if (cityObj == null) continue;
+                
+                // TODO 下の処理は GetByIDメソッド内にまとめられそう？
+                cityObj.CityObjectIndex = new int[]{id.Index.PrimaryIndex, id.Index.AtomicIndex}; // 分割結合時に必要
+                
                 // var ser = CityObjectSerializableConvert.FromCityGMLCityObject(cityObj, id.Index);
                 if (!chidrenMap.ContainsKey(id.AtomicID)) continue;
                 var childrenId = chidrenMap[id.AtomicID];
@@ -170,6 +174,7 @@ namespace PLATEAU.CityImport.Load.Convert
                     if (c.PrimaryID == c.AtomicID) continue;
                     var childCityObj = serializedCityObjectGetter.GetByID(c.AtomicID, c.Index);
                     if (childCityObj == null) continue;
+                    childCityObj.CityObjectIndex = new int[]{c.Index.PrimaryIndex, c.Index.AtomicIndex}; // 分割結合時に必要
                     cityObj.Children.Add(childCityObj);
                 }
                 cityObjSer.rootCityObjects.Add(cityObj);
