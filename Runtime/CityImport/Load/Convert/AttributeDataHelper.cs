@@ -113,6 +113,7 @@ namespace PLATEAU.CityImport.Load.Convert
         {
             var cityObjSer = serializedCityObjectGetter.GetByID(this.id, index);
             if (cityObjSer == null) return null;
+            cityObjSer.CityObjectIndex = new int[]{index.PrimaryIndex, index.AtomicIndex}; // 分割結合時に必要
             CityObjectList cityObjList = new CityObjectList();
 
             if (!string.IsNullOrEmpty(this.parent))

@@ -26,12 +26,12 @@ namespace PLATEAU.GranularityConvert
                 // 属性情報を覚えておきます。
                 var attributes = GmlIdToSerializedCityObj.ComposeFrom(srcGameObjs);
 
-                progressBar.Display("3Dモデルを出力中...", 0.2f);
+                progressBar.Display("ゲームオブジェクトを共通モデルに変換中...", 0.2f);
 
                 // ゲームオブジェクトを共通ライブラリのModelに変換します。
                 using var srcModel = UnityMeshToDllModelConverter.Convert(srcGameObjs, true, false, ConvertVertex);
 
-                progressBar.Display("3Dモデルの変換中...", 0.5f);
+                progressBar.Display("共通モデルの変換中...", 0.5f);
 
                 // 共通ライブラリの機能でモデルを分割・結合します。
                 var converter = new GranularityConverter();
