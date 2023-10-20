@@ -1,4 +1,4 @@
-using PLATEAU.Dataset;
+ï»¿using PLATEAU.Dataset;
 using PLATEAU.Geometries;
 using PLATEAU.Native;
 using PLATEAU.Util;
@@ -21,8 +21,8 @@ namespace PLATEAU.CityImport.AreaSelector
         internal static MeshCodeSearchWindow ShowWindow()
         {
             MeshCodeSearchWindow wnd = GetWindow<MeshCodeSearchWindow>();
-            wnd.titleContent = new GUIContent("ƒƒbƒVƒ…ƒR[ƒh“ü—Í");
-            wnd.maxSize = new Vector2(380,220);
+            wnd.titleContent = new GUIContent("ãƒ¡ãƒƒã‚·ãƒ¥ã‚³ãƒ¼ãƒ‰å…¥åŠ›");
+            wnd.minSize = wnd.maxSize = new Vector2(380, 140); 
             return wnd;
         }
 
@@ -49,14 +49,17 @@ namespace PLATEAU.CityImport.AreaSelector
             };
 
             EditorGUILayout.BeginVertical(style);
-            EditorGUILayout.LabelField("ƒƒbƒVƒ…ƒR[ƒh‚ğ“ü—Í‚µ‚Ä‚­‚¾‚³‚¢B");
-            EditorGUILayout.LabelField("i6Œ…‚Ü‚½‚Í‚WŒ…‚Ì”šj");
+            EditorGUILayout.LabelField("ãƒ¡ãƒƒã‚·ãƒ¥ã‚³ãƒ¼ãƒ‰ã‚’å…¥åŠ›ã—ã¦ãã ã•ã„ã€‚");
+            EditorGUILayout.LabelField("ï¼ˆ6æ¡ã¾ãŸã¯ï¼˜æ¡ã®æ•°å­—ï¼‰");
+            EditorGUILayout.EndVertical();
+
+            EditorGUILayout.BeginVertical(style);
             code = EditorGUILayout.TextField("", code);
             EditorGUILayout.LabelField(errorText, errorLabelStyle);
             EditorGUILayout.EndVertical();
 
             EditorGUILayout.BeginHorizontal(style);
-            if (GUILayout.Button("ƒLƒƒƒ“ƒZƒ‹", GUILayout.Height(20), GUILayout.MaxWidth(80)))
+            if (GUILayout.Button("ã‚­ãƒ£ãƒ³ã‚»ãƒ«", GUILayout.Height(20), GUILayout.MaxWidth(80)))
             {
                 this.Close();
             }
@@ -65,15 +68,15 @@ namespace PLATEAU.CityImport.AreaSelector
             {
                 if (!int.TryParse(code, out var res))
                 {
-                    errorText = "”š‚ğ“ü—Í‚µ‚Ä‚­‚¾‚³‚¢";
+                    errorText = "æ•°å­—ã‚’å…¥åŠ›ã—ã¦ãã ã•ã„";
                 }
                 else if (code.Length != 6 && code.Length != 8)
                 {
-                    errorText = "6Œ…‚Ü‚½‚Í‚WŒ…‚Ì”š‚ğ“ü—Í‚µ‚Ä‚­‚¾‚³‚¢";
+                    errorText = "6æ¡ã¾ãŸã¯ï¼˜æ¡ã®æ•°å­—ã‚’å…¥åŠ›ã—ã¦ãã ã•ã„";
                 }   
                 else if(!areaSelector.SearchByMeshCode(code))
                 {
-                    errorText = "ƒƒbƒVƒ…ƒR[ƒh‚ªŠÔˆá‚Á‚Ä‚¢‚Ü‚·";
+                    errorText = "ç¯„å›²å¤–ã‹ã€ãƒ¡ãƒƒã‚·ãƒ¥ã‚³ãƒ¼ãƒ‰ãŒé–“é•ã£ã¦ã„ã¾ã™";
                 }
                 else
                 {
