@@ -144,7 +144,8 @@ namespace PLATEAU.CityExport.ModelConvert
         private static void AttachCityObjectGroupToNativeMesh(PLATEAUCityObjectGroup cityObjGroup, PolygonMesh.Mesh nativeMesh)
         {
             using var cityObjList = CityObjectList.Create();
-            foreach (var cityObj in cityObjGroup.GetAllCityObjects())
+            var allCityObjs = cityObjGroup.GetAllCityObjects();
+            foreach (var cityObj in allCityObjs)
             {
                 int primaryID = cityObj.CityObjectIndex[0];
                 int atomicID = cityObj.CityObjectIndex[1];
