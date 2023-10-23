@@ -60,7 +60,6 @@ namespace PLATEAU.CityExport.ModelConvert
             {
                 // ルートのときは Model に Node を追加します。
                 model.AddNodeByCppMove(node);
-                node.Dispose();
                 node = model.GetRootNodeAt(model.RootNodesCount - 1);
                 
             }
@@ -68,7 +67,6 @@ namespace PLATEAU.CityExport.ModelConvert
             {
                 // ルートでないときは Node に Node を追加します。
                 parentNode.AddChildNodeByCppMove(node);
-                node.Dispose();
                 node = parentNode.GetChildAt(parentNode.ChildCount - 1);
             }
 
