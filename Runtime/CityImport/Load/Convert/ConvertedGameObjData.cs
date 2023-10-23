@@ -84,7 +84,7 @@ namespace PLATEAU.CityImport.Load.Convert
             var nextParent = parent;
             if (!skipRoot)
             {
-                if (this.meshData == null)
+                if (this.meshData == null || this.meshData.VerticesCount <= 0)
                 {
                     // メッシュがなければ、中身のないゲームオブジェクトを作成します。
                     nextParent = new GameObject
