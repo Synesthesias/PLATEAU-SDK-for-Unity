@@ -85,45 +85,73 @@ namespace PLATEAU.CityExport.ModelConvert
         {
             // ノード生成します。
             var node = Node.Create(trans.name);
-            
-            // メッシュがなければreturnします。
-            var meshFilter = trans.GetComponent<MeshFilter>();
-            if (meshFilter == null) return node;
-            var unityMesh = meshFilter.sharedMesh;
-            if (unityMesh == null) return node;
-            if (unityMesh.vertexCount <= 0 || unityMesh.subMeshCount <= 0 || unityMesh.triangles.Length <= 0) return node;
 
-            // メッシュを変換します。
-            var dllMesh = ConvertMesh(unityMesh, trans.GetComponent<MeshRenderer>(), includeTexture, vertexConvertFunc);
-            
-            int subMeshCount = unityMesh.subMeshCount;
-            for (int i = 0; i < subMeshCount; i++)
+            // ゲームオブジェクトにメッシュがあるかどうか判定します。
+            bool hasMesh = false;
+            Mesh unityMesh = null;
+            var meshFilter = trans.GetComponent<MeshFilter>();
+            if (meshFilter != null)
             {
-                var subMesh = unityMesh.GetSubMesh(i);
-                if (subMesh.indexCount == 0) continue;
-                int startId = subMesh.indexStart;
-                int endId = startId + subMesh.indexCount - 1;
-                Assert.IsTrue(startId < endId);
-                Assert.IsTrue(endId < dllMesh.IndicesCount);
+                unityMesh = meshFilter.sharedMesh;
+                if (unityMesh != null)
+                {
+                    hasMesh = true;
+                }
+            }
+
+            PolygonMesh.Mesh nativeMesh = null;
+            if (hasMesh)
+            {
+                // メッシュを変換します。
+                nativeMesh = ConvertMesh(unityMesh, trans.GetComponent<MeshRenderer>(), includeTexture, vertexConvertFunc);
+            
+                int subMeshCount = unityMesh.subMeshCount;
+                for (int i = 0; i < subMeshCount; i++)
+                {
+                    var subMesh = unityMesh.GetSubMesh(i);
+                    if (subMesh.indexCount == 0) continue;
+                    int startId = subMesh.indexStart;
+                    int endId = startId + subMesh.indexCount - 1;
+                    Assert.IsTrue(startId < endId);
+                    Assert.IsTrue(endId < nativeMesh.IndicesCount);
+                }
             }
             
+            // メッシュがなくとも、PLATEAUCityObjectGroupがあれば、CityObjectListを付与するための空のメッシュを用意します。
+            var cityObjGroup = trans.GetComponent<PLATEAUCityObjectGroup>();
+            if ((!hasMesh) && cityObjGroup != null)
+            {
+                nativeMesh = PolygonMesh.Mesh.Create("");
+            }
             
             // CityObjectListを作って渡します。
-            var cityObjGroup = trans.GetComponent<PLATEAUCityObjectGroup>();
-            if (cityObjGroup != null)
+            if (cityObjGroup != null && nativeMesh != null)
             {
-                using var cityObjList = CityObjectList.Create();
-                foreach (var cityObj in cityObjGroup.GetAllCityObjects())
-                {
-                    int primaryID = cityObj.CityObjectIndex[0];
-                    int atomicID = cityObj.CityObjectIndex[1];
-                    cityObjList.Add(new CityObjectIndex(primaryID, atomicID), cityObj.GmlID);
-                }
-                dllMesh.CityObjectList = cityObjList;
+                AttachCityObjectGroupToNativeMesh(cityObjGroup, nativeMesh);
             }
             
-            node.SetMeshByCppMove(dllMesh);
+            if (nativeMesh != null)
+            {
+                node.SetMeshByCppMove(nativeMesh);
+            }
+            
             return node;
+        }
+
+        /// <summary>
+        /// <see cref="PLATEAUCityObjectGroup"/>を<see cref="CityObjectList"/>に変換し、それをnativeMeshに追加します。
+        /// </summary>
+        private static void AttachCityObjectGroupToNativeMesh(PLATEAUCityObjectGroup cityObjGroup, PolygonMesh.Mesh nativeMesh)
+        {
+            using var cityObjList = CityObjectList.Create();
+            foreach (var cityObj in cityObjGroup.GetAllCityObjects())
+            {
+                int primaryID = cityObj.CityObjectIndex[0];
+                int atomicID = cityObj.CityObjectIndex[1];
+                cityObjList.Add(new CityObjectIndex(primaryID, atomicID), cityObj.GmlID);
+            }
+
+            nativeMesh.CityObjectList = cityObjList;
         }
 
         private static PolygonMesh.Mesh ConvertMesh(Mesh unityMesh, MeshRenderer meshRenderer, bool includeTexture,
