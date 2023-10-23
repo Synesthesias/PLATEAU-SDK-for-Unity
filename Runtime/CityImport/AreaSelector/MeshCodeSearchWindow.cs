@@ -76,7 +76,7 @@ namespace PLATEAU.CityImport.AreaSelector
                 }   
                 else if(!areaSelector.SearchByMeshCode(code))
                 {
-                    errorText = "範囲外か、メッシュコードが間違っています";
+                    errorText = "メッシュコードが範囲外です";
                 }
                 else
                 {
