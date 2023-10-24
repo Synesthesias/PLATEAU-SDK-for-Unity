@@ -32,10 +32,11 @@ namespace PLATEAU.CityImport.AreaSelector
         private GeoReference geoReference;
         private bool prevSceneCameraRotationLocked;
         private GSIMapLoaderZoomSwitch mapLoader;
+        private Extent EntireExtent;
         #if UNITY_EDITOR
         private EditorWindow prevEditorWindow;
+        MeshCodeSearchWindow meshSearchwindow;
         #endif
-
 
         public static bool IsAreaSelectEnabled { get; set; }
 
@@ -92,9 +93,9 @@ namespace PLATEAU.CityImport.AreaSelector
             this.gizmosDrawer = drawerObj.AddComponent<AreaSelectGizmosDrawer>();
             this.gizmosDrawer.Init(meshCodes, this.datasetSourceConfig, this.coordinateZoneID, out this.geoReference);
             // this.availablePackageFlags = packageFlags;
-            var entireExtent = CalcExtentCoversAllMeshCodes(meshCodes);
-            this.mapLoader = new GSIMapLoaderZoomSwitch(this.geoReference, entireExtent);
-            SetInitialCamera(entireExtent);
+            EntireExtent = CalcExtentCoversAllMeshCodes(meshCodes);
+            this.mapLoader = new GSIMapLoaderZoomSwitch(this.geoReference, EntireExtent);
+            SetInitialCamera(EntireExtent);
 #if (UNITY_EDITOR && UNITY_2019_2_OR_NEWER)
             SceneVisibilityManager.instance.DisableAllPicking();
 #endif
@@ -140,6 +141,7 @@ namespace PLATEAU.CityImport.AreaSelector
         {
 #if UNITY_EDITOR
             SceneView.lastActiveSceneView.isRotationLocked = this.prevSceneCameraRotationLocked;
+            meshSearchwindow?.Close();
 #endif
             this.mapLoader?.Dispose();
         }
@@ -244,5 +246,51 @@ namespace PLATEAU.CityImport.AreaSelector
             scene.rotation = Quaternion.Euler(90, 0, 0);
             #endif
         }
+
+        internal void ShowMeshCodeSearchWindow()
+        {
+            #if UNITY_EDITOR
+            meshSearchwindow = MeshCodeSearchWindow.ShowWindow();
+            meshSearchwindow.Init(this);
+            #endif
+        }
+
+        internal bool SearchByMeshCode(string code)
+        {
+            #if UNITY_EDITOR
+            try
+            {
+                MeshCode meshCode = MeshCode.Parse(code);
+                var extent = meshCode.Extent;
+                var min = geoReference.Project(extent.Min);
+                var max = geoReference.Project(extent.Max);
+                var center = geoReference.Project(extent.Center);
+                var centerPos = center.ToUnityVector();
+                var initialCameraPos = new Vector3(centerPos.x, 0, centerPos.z);
+
+                //範囲チェック
+                var intersection = Extent.Intersection(extent, EntireExtent, true);
+                var failedCoord = new GeoCoordinate(-99, -99, -99);
+                if (intersection.Min.Equals(failedCoord) && intersection.Max.Equals(failedCoord))
+                {
+                    return false;
+                }
+
+                SceneView.lastActiveSceneView.pivot = initialCameraPos;
+                // シーンビューのカメラが全体を映すようにします。
+                SceneView.lastActiveSceneView.size = Mathf.Abs((float)(max.Z - min.Z) / 2f);
+            }
+            catch(Exception e)
+            {
+                Debug.LogError($"code:{code} Error:{e.Message}");
+                return false;
+            }
+            
+            meshSearchwindow?.Close();
+            meshSearchwindow = null;
+            #endif
+            return true;
+        }
+
     }
 }

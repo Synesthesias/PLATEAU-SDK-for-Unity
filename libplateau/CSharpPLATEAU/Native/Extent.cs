@@ -27,13 +27,14 @@ namespace PLATEAU.Native
         /// <summary>
         /// 共通部分を返します。
         /// なければ (-99, -99, -99), (-99, -99, -99)を返します。
+        /// 高さを考慮しない場合は、ignoreHeightをtrueにします。
         /// </summary>
-        public static Extent Intersection(Extent op1, Extent op2)
+        public static Extent Intersection(Extent op1, Extent op2, bool ignoreHeight = false)
         {
             var max = GeoCoordinate.Max(op1.Max, op2.Max);
             var min = GeoCoordinate.Min(op1.Min, op2.Min);
             var intersectSize = op1.Size() + op2.Size() - (max - min);
-            if (intersectSize.Latitude <= 0 || intersectSize.Latitude <= 0 || intersectSize.Height <= 0)
+            if (intersectSize.Latitude <= 0 || intersectSize.Latitude <= 0 || (!ignoreHeight && intersectSize.Height <= 0))
                 return new Extent(new GeoCoordinate(-99,-99,-99), new GeoCoordinate(-99, -99, -99));
             var minMax = GeoCoordinate.Min(op1.Max, op2.Max);
             var maxMin = GeoCoordinate.Max(op1.Min, op2.Min);
