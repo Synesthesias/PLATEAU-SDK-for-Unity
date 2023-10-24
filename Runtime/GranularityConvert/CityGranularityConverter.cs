@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using PLATEAU.CityExport.ModelConvert;
 using PLATEAU.CityImport.Load.Convert;
+using PLATEAU.CityInfo;
 using PLATEAU.Native;
 using PLATEAU.PolygonMesh;
 using PLATEAU.Util;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
+using Object = UnityEngine.Object;
 
 #if UNITY_EDITOR
 #endif
@@ -29,7 +31,7 @@ namespace PLATEAU.GranularityConvert
                 progressBar.Display("ゲームオブジェクトを共通モデルに変換中...", 0.2f);
 
                 // ゲームオブジェクトを共通ライブラリのModelに変換します。
-                using var srcModel = UnityMeshToDllModelConverter.Convert(srcGameObjs, true, false, ConvertVertex);
+                using var srcModel = UnityMeshToDllModelConverter.ConvertIncludingParents(srcGameObjs, true, false, ConvertVertex);
 
                 progressBar.Display("共通モデルの変換中...", 0.5f);
 
@@ -37,12 +39,24 @@ namespace PLATEAU.GranularityConvert
                 var converter = new GranularityConverter();
                 using var dstModel = converter.Convert(srcModel, option);
 
+                Transform parentTransform = srcGameObjs[0].transform;
+                while (parentTransform != null && parentTransform.GetComponent<PLATEAUInstancedCityModel>() == null)
+                {
+                    parentTransform = parentTransform.parent;
+                }
+
+                progressBar.Display("変換前の3Dモデルを削除中...", 0.6f);
+                foreach (var obj in srcGameObjs)
+                {
+                    Object.DestroyImmediate(obj);
+                }
+
                 progressBar.Display("変換後の3Dモデルを配置中...", 0.8f);
 
                 // Modelをゲームオブジェクトに変換して配置します。
                 var generatedObjs = new List<GameObject>();
                 bool result = await PlateauToUnityModelConverter.PlateauModelToScene(generatedObjs,
-                    null, new DummyProgressDisplay(), "", true,
+                    parentTransform, new DummyProgressDisplay(), "", true,
                     null, null, dstModel,
                     new AttributeDataHelper(new SerializedCityObjectGetterFromDict(attributes), option.Granularity,
                         true), true);

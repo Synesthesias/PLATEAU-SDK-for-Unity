@@ -1,8 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using PLATEAU.CityInfo;
+using PLATEAU.Dataset;
 using PLATEAU.PolygonMesh;
+using PLATEAU.Util;
 using UnityEngine;
 
 namespace PLATEAU.CityImport.Load.Convert
@@ -81,22 +84,48 @@ namespace PLATEAU.CityImport.Load.Convert
         {
             token?.ThrowIfCancellationRequested();
 
+            // 分割・結合用の対応
+            if (fallbackMaterial == null)
+            {
+                if (name.Contains(".gml"))
+                    fallbackMaterial = MaterialPathUtil.LoadDefaultFallbackMaterial(GmlFile.Create(name).Package);
+            }
+
             var nextParent = parent;
             if (!skipRoot)
             {
                 if (this.meshData == null || this.meshData.VerticesCount <= 0)
                 {
-                    // メッシュがなければ、中身のないゲームオブジェクトを作成します。
-                    nextParent = new GameObject
+
+                    Transform existingTransform = null;
+                    for (var i = 0; i < parent.childCount; ++i)
                     {
-                        transform =
+                        if (parent.GetChild(i).name != this.name)
+                            continue;
+
+                        existingTransform = parent.GetChild(i);
+                        break;
+                    }
+
+                    if (existingTransform != null)
+                    {
+                        // メッシュが無くかつすでに同名のオブジェクトが存在する場合再利用します。
+                        nextParent = existingTransform;
+                    }
+                    else
+                    {
+                        // メッシュがなければ、中身のないゲームオブジェクトを作成します。
+                        nextParent = new GameObject
                         {
-                            parent = parent
-                        },
-                        name = this.name,
-                        isStatic = true
-                    }.transform;
-                    generatedObjs.Add(nextParent.gameObject);
+                            transform =
+                            {
+                                parent = parent
+                            },
+                            name = this.name,
+                            isStatic = true
+                        }.transform;
+                        generatedObjs.Add(nextParent.gameObject);
+                    }
                 }
                 else
                 {
