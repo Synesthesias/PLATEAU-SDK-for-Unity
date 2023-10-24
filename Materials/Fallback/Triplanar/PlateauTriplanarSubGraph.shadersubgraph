@@ -245,6 +245,9 @@
         },
         {
             "m_Id": "5312e92891ae4848950a17f446994e6d"
+        },
+        {
+            "m_Id": "f6d9ebf53dca441688949307a3a1fb8e"
         }
     ],
     "m_GroupDatas": [],
@@ -749,7 +752,7 @@
             },
             "m_InputSlot": {
                 "m_Node": {
-                    "m_Id": "a0e6b62c476d4ec4a40fd8835912b7cc"
+                    "m_Id": "f6d9ebf53dca441688949307a3a1fb8e"
                 },
                 "m_SlotId": 0
             }
@@ -1410,6 +1413,20 @@
                     "m_Id": "4cf3b060d70a4e479620dd28b5d9ff96"
                 },
                 "m_SlotId": 1
+            }
+        },
+        {
+            "m_OutputSlot": {
+                "m_Node": {
+                    "m_Id": "f6d9ebf53dca441688949307a3a1fb8e"
+                },
+                "m_SlotId": 1
+            },
+            "m_InputSlot": {
+                "m_Node": {
+                    "m_Id": "a0e6b62c476d4ec4a40fd8835912b7cc"
+                },
+                "m_SlotId": 0
             }
         },
         {
@@ -3704,6 +3721,29 @@
 
 {
     "m_SGVersion": 0,
+    "m_Type": "UnityEditor.ShaderGraph.Vector3MaterialSlot",
+    "m_ObjectId": "4695845f204f4de186921e0443bae930",
+    "m_Id": 1,
+    "m_DisplayName": "_out",
+    "m_SlotType": 1,
+    "m_Hidden": false,
+    "m_ShaderOutputName": "_out",
+    "m_StageCapability": 3,
+    "m_Value": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+    },
+    "m_DefaultValue": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+    },
+    "m_Labels": []
+}
+
+{
+    "m_SGVersion": 0,
     "m_Type": "UnityEditor.ShaderGraph.SubtractNode",
     "m_ObjectId": "4cf3b060d70a4e479620dd28b5d9ff96",
     "m_Group": {
@@ -3992,9 +4032,9 @@
         "m_Expanded": true,
         "m_Position": {
             "serializedVersion": "2",
-            "x": 51.199981689453128,
-            "y": -1826.39990234375,
-            "width": 208.00003051757813,
+            "x": 4.800036430358887,
+            "y": -1936.0001220703125,
+            "width": 208.00001525878907,
             "height": 301.5999755859375
         }
     },
@@ -4309,6 +4349,29 @@
 
 {
     "m_SGVersion": 0,
+    "m_Type": "UnityEditor.ShaderGraph.Vector3MaterialSlot",
+    "m_ObjectId": "5de3bc0c0ff940c1b9af38782eb2f7c7",
+    "m_Id": 0,
+    "m_DisplayName": "_in",
+    "m_SlotType": 0,
+    "m_Hidden": false,
+    "m_ShaderOutputName": "_in",
+    "m_StageCapability": 3,
+    "m_Value": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+    },
+    "m_DefaultValue": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+    },
+    "m_Labels": []
+}
+
+{
+    "m_SGVersion": 0,
     "m_Type": "UnityEditor.ShaderGraph.PropertyNode",
     "m_ObjectId": "5f34e8a564c34431914f28e03fd19c44",
     "m_Group": {
@@ -4378,9 +4441,9 @@
         "m_Expanded": true,
         "m_Position": {
             "serializedVersion": "2",
-            "x": -174.40000915527345,
-            "y": -1779.1998291015625,
-            "width": 129.60000610351563,
+            "x": -215.2000274658203,
+            "y": -2035.2000732421875,
+            "width": 130.40000915527345,
             "height": 33.5999755859375
         }
     },
@@ -5900,8 +5963,8 @@
         "m_Expanded": true,
         "m_Position": {
             "serializedVersion": "2",
-            "x": 783.6000366210938,
-            "y": -1636.0,
+            "x": 1036.0,
+            "y": -1832.0,
             "width": 56.0,
             "height": 24.0
         }
@@ -7639,9 +7702,9 @@
         "m_Expanded": true,
         "m_Position": {
             "serializedVersion": "2",
-            "x": -677.6000366210938,
-            "y": -1725.5999755859375,
-            "width": 149.60003662109376,
+            "x": -1064.0,
+            "y": -1936.0,
+            "width": 149.60009765625,
             "height": 33.5999755859375
         }
     },
@@ -7859,6 +7922,48 @@
     "m_CustomColors": {
         "m_SerializableColors": []
     }
+}
+
+{
+    "m_SGVersion": 1,
+    "m_Type": "UnityEditor.ShaderGraph.CustomFunctionNode",
+    "m_ObjectId": "f6d9ebf53dca441688949307a3a1fb8e",
+    "m_Group": {
+        "m_Id": ""
+    },
+    "m_Name": "LinearToSRGB (Custom Function)",
+    "m_DrawState": {
+        "m_Expanded": true,
+        "m_Position": {
+            "serializedVersion": "2",
+            "x": 388.0,
+            "y": -1936.0001220703125,
+            "width": 237.5999755859375,
+            "height": 277.60009765625
+        }
+    },
+    "m_Slots": [
+        {
+            "m_Id": "5de3bc0c0ff940c1b9af38782eb2f7c7"
+        },
+        {
+            "m_Id": "4695845f204f4de186921e0443bae930"
+        }
+    ],
+    "synonyms": [
+        "code",
+        "HLSL"
+    ],
+    "m_Precision": 0,
+    "m_PreviewExpanded": true,
+    "m_PreviewMode": 0,
+    "m_CustomColors": {
+        "m_SerializableColors": []
+    },
+    "m_SourceType": 0,
+    "m_FunctionName": "LinearToSRGB",
+    "m_FunctionSource": "4cbcf2d2180c60840b3cf5c44573a436",
+    "m_FunctionBody": "#include \"ColorSpaceSRGB.cginc\"\n\n#if UNITY_COLOR_SPACE_GAMMA\n_out = _in;\n#else\n_out = LinearToSRGB(_in);\n#endif"
 }
 
 {
