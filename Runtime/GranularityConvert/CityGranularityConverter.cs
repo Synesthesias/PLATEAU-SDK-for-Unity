@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using PLATEAU.CityExport.ModelConvert;
 using PLATEAU.CityImport.Load.Convert;
@@ -8,6 +9,7 @@ using PLATEAU.PolygonMesh;
 using PLATEAU.Util;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
+using Object = UnityEngine.Object;
 
 #if UNITY_EDITOR
 #endif
@@ -40,8 +42,9 @@ namespace PLATEAU.GranularityConvert
                 progressBar.Display("変換後の3Dモデルを配置中...", 0.8f);
 
                 // Modelをゲームオブジェクトに変換して配置します。
+                var commonParent = CalcCommonParent(srcGameObjs.Select(obj => obj.transform).ToArray());
                 var result = await PlateauToUnityModelConverter.PlateauModelToScene(
-                    null, new DummyProgressDisplay(), "", true,
+                    commonParent, new DummyProgressDisplay(), "", true,
                     null, null, dstModel,
                     new AttributeDataHelper(new SerializedCityObjectGetterFromDict(attributes), option.Granularity,
                         true), true);
@@ -50,10 +53,18 @@ namespace PLATEAU.GranularityConvert
                     throw new Exception("Failed to convert plateau model to scene game objects.");
                 }
 
-                if (result.GeneratedObjs.Count <= 0)
+                if (result.RootObjs.Count <= 0)
                 {
                     Dialogue.Display("変換対象がありません。\nアクティブなオブジェクトを選択してください。", "OK");
                     return;
+                }
+
+                if (Dialogue.Display("変換前のゲームオブジェクトを削除しますか？", "削除", "残す"))
+                {
+                    foreach (var srcObj in srcGameObjs)
+                    {
+                        Object.DestroyImmediate(srcObj);
+                    }
                 }
             }
             catch (Exception e)
@@ -66,7 +77,62 @@ namespace PLATEAU.GranularityConvert
         private static PlateauVector3d ConvertVertex(Vector3 src)
         {
             return new PlateauVector3d(src.x, src.y, src.z);
-        } 
+        }
+
+         /// <summary>
+         /// 引数の共通の親を探し、親のうちもっとも階層上の子であるものを返します。
+         /// 共通の親がない場合、nullを返します。
+         /// </summary>
+        private static Transform CalcCommonParent(IReadOnlyList<Transform> srcList)
+         {
+             // 各親が、srcListのうちいくつの親であるかを数えます。
+             Dictionary<Transform, int> descendantCountDict = new();
+             foreach (var src in srcList)
+             {
+                 var parent = src.parent;
+                 // 親をたどりながら子孫カウントをインクリメントします。
+                 while (parent != null)
+                 {
+                     if (descendantCountDict.ContainsKey(parent))
+                     {
+                         descendantCountDict[parent]++;
+                     }
+                     else
+                     {
+                         descendantCountDict.Add(parent, 1);
+                     }
+                     parent = parent.parent;
+                 }
+             }
+             
+             if (descendantCountDict.Count == 0) return null;
+             
+             var commonParents = descendantCountDict
+                 .Where(pair => pair.Value == srcList.Count)
+                 .Select(pair => pair.Key)
+                 .ToArray();
+             if (commonParents.Length == 0) return null;
+             
+             // 共通の親のうち、もっとも子であるものを探します。
+             for (int i = 0; i < commonParents.Length; i++)
+             {
+                 var trans1 = commonParents[i];
+                 bool isTrans1Parented = false;
+                 for (int j = i + 1; j < commonParents.Length; j++)
+                 {
+                     var trans2 = commonParents[j];
+                     if (trans2.IsChildOf(trans1))
+                     {
+                         isTrans1Parented = true;
+                         break;
+                     }
+                 }
+
+                 if (!isTrans1Parented) return trans1;
+             }
+
+             throw new Exception("Failed to search common parent.");
+         }
     }
 
 

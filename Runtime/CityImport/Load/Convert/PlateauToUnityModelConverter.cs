@@ -99,16 +99,19 @@ namespace PLATEAU.CityImport.Load.Convert
 
             var result = new ConvertResult();
 
-            try
+            var innerResult = await meshObjsData.PlaceToScene(parentTrans, cachedMaterials, skipRoot, doSetMeshCollider,
+                token, fallbackMaterial);
+            if (innerResult.IsSucceed)
             {
-                var generatedObjs = await meshObjsData.PlaceToScene(parentTrans, cachedMaterials, skipRoot, doSetMeshCollider, token, fallbackMaterial);
-                result.GeneratedObjs.AddRange(generatedObjs);
+                result.Merge(innerResult);
             }
-            catch (Exception e)
+            else
             {
-                Debug.LogError("メッシュデータの配置に失敗しました。\n" + e);
+                Debug.LogError("メッシュデータの配置に失敗しました。");
                 return ConvertResult.Fail();
             }
+            
+            
 
             // エディター内での実行であれば、生成したメッシュ,テクスチャ等をシーンに保存したいので
             // シーンにダーティフラグを付けます。
@@ -143,17 +146,41 @@ namespace PLATEAU.CityImport.Load.Convert
             return model;
         }
 
+        /// <summary>
+        /// 変換してシーンに配置した結果です。
+        /// </summary>
         public class ConvertResult
         {
             public bool IsSucceed { get; set; } = true;
 
             /// <summary> 変換によってシーンに配置したゲームオブジェクトのリスト </summary>
-            public List<GameObject> GeneratedObjs { get; set; } = new ();
+            public List<GameObject> GeneratedObjs { get; } = new ();
+            
+            /// <summary>
+            /// 変換によってシーンに配置したゲームオブジェクトのうち、ヒエラルキーが最上位であるもののリスト
+            /// </summary>
+            public List<GameObject> RootObjs { get; } = new();
+
+            /// <summary> 結果のゲームオブジェクトの一覧に追加します。</summary>
+            public void Add(GameObject obj, bool isRoot)
+            {
+                GeneratedObjs.Add(obj);
+                if(isRoot) RootObjs.Add(obj);
+            }
+
+            /// <summary> 複数の<see cref="ConvertResult"/>を統合します。 </summary>
+            public void Merge(ConvertResult other)
+            {
+                IsSucceed &= other.IsSucceed;
+                GeneratedObjs.AddRange(other.GeneratedObjs);
+                RootObjs.AddRange(other.RootObjs);
+            }
 
             public static ConvertResult Fail()
             {
                 return new ConvertResult() { IsSucceed = false };
             }
+            
         }
     }
 }

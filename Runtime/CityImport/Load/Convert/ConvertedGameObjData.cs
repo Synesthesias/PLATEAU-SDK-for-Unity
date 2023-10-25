@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using PLATEAU.CityInfo;
@@ -68,16 +69,26 @@ namespace PLATEAU.CityImport.Load.Convert
         /// 再帰によって子も配置します。
         /// 配置したゲームオブジェクトのリストを返します。
         /// </summary>
-        public async Task<List<GameObject>> PlaceToScene(Transform parent, Dictionary<MaterialSet, Material> cachedMaterials, bool skipRoot, bool doSetMeshCollider, CancellationToken? token, Material fallbackMaterial)
+        public async Task<PlateauToUnityModelConverter.ConvertResult> PlaceToScene(Transform parent, Dictionary<MaterialSet, Material> cachedMaterials, bool skipRoot, bool doSetMeshCollider, CancellationToken? token, Material fallbackMaterial)
         {
-            var ret = new List<GameObject>();
-            await PlaceToSceneRecursive(ret, parent, cachedMaterials, skipRoot, doSetMeshCollider, token, fallbackMaterial);
-            return ret;
+            var result = new PlateauToUnityModelConverter.ConvertResult();
+            try
+            {
+                await PlaceToSceneRecursive(result, parent, cachedMaterials, skipRoot, doSetMeshCollider, token,
+                    fallbackMaterial, 0);
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"Failed to placing to scene.\n{e.Message}\n{e.StackTrace}");
+                result = PlateauToUnityModelConverter.ConvertResult.Fail();
+            }
+
+            return result;
         }
 
-        private async Task PlaceToSceneRecursive(List<GameObject> generatedObjs, Transform parent,
+        private async Task PlaceToSceneRecursive(PlateauToUnityModelConverter.ConvertResult result, Transform parent,
             Dictionary<MaterialSet, Material> cachedMaterials, bool skipRoot, bool doSetMeshCollider,
-            CancellationToken? token, Material fallbackMaterial)
+            CancellationToken? token, Material fallbackMaterial, int recursiveDepth)
         {
             token?.ThrowIfCancellationRequested();
 
@@ -96,7 +107,7 @@ namespace PLATEAU.CityImport.Load.Convert
                         name = this.name,
                         isStatic = true
                     }.transform;
-                    generatedObjs.Add(nextParent.gameObject);
+                    result.Add(nextParent.gameObject, recursiveDepth == 0);
                 }
                 else
                 {
@@ -110,7 +121,7 @@ namespace PLATEAU.CityImport.Load.Convert
                         {
                             placedObj.AddComponent<MeshCollider>();
                         }
-                        generatedObjs.Add(placedObj);
+                        result.Add(nextParent.gameObject, recursiveDepth == 0);
                     }
                 }
  
@@ -125,11 +136,12 @@ namespace PLATEAU.CityImport.Load.Convert
                     }
                 }
             }
-            
+
+            int nextRecursiveDepth = skipRoot ? 0 : recursiveDepth + 1;
             // 子を再帰的に配置します。
             foreach (var child in this.children)
             {
-                await child.PlaceToSceneRecursive(generatedObjs, nextParent, cachedMaterials, false, doSetMeshCollider, token, fallbackMaterial);
+                await child.PlaceToSceneRecursive(result, nextParent, cachedMaterials, false, doSetMeshCollider, token, fallbackMaterial, nextRecursiveDepth);
             }
         }
     }
