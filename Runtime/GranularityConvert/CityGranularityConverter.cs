@@ -7,6 +7,7 @@ using PLATEAU.CityImport.Load.Convert;
 using PLATEAU.Native;
 using PLATEAU.PolygonMesh;
 using PLATEAU.Util;
+using UnityEditor;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
 using Object = UnityEngine.Object;
@@ -66,6 +67,11 @@ namespace PLATEAU.GranularityConvert
                         Object.DestroyImmediate(srcObj);
                     }
                 }
+                
+#if UNITY_EDITOR
+                // 変換後のゲームオブジェクトを選択状態にします。
+                Selection.objects = result.RootObjs.Select(go => (Object)go).ToArray();
+#endif
             }
             catch (Exception e)
             {
