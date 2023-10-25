@@ -60,7 +60,7 @@ namespace PLATEAU.GranularityConvert
                     return;
                 }
 
-                if (Dialogue.Display("変換前のゲームオブジェクトを削除しますか？", "削除", "残す"))
+                if (Dialogue.Display("変換前のゲームオブジェクトを削除しますか？ 残しますか？", "削除", "残す"))
                 {
                     foreach (var srcObj in srcGameObjs)
                     {
