@@ -101,7 +101,7 @@ namespace PLATEAU.CityImport.Setting
                 doSetAttrInfo: true,
                 enableTexturePacking: true,
                 texturePackingResolution: TexturePackingResolution.W4096H4096,
-                fallbackMaterial: MaterialPathUtil.LoadDefaultFallbackMaterial(package));
+                fallbackMaterial: Util.FallbackMaterial.LoadByPackage(package));
             
             // パッケージ種に応じてクラスを分けます。
             // これと似たロジックが PackageLoadSettingGUI.PackageLoadSettingGUIList にあるので、変更時はそちらも合わせて変更をお願いします。

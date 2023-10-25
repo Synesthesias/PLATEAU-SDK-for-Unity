@@ -92,6 +92,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
             var option = new GranularityConvertOption((MeshGranularity)this.selectedUnit, 1);
             var converter = new CityGranularityConverter();
             await converter.ConvertAsync(selected, option);
+            selected = new GameObject[] { };
         }
     }
 }

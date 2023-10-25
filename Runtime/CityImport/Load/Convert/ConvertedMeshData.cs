@@ -73,6 +73,14 @@ namespace PLATEAU.CityImport.Load.Convert
                 var texturePath = textureUrls[i];
                 var gmlMaterial = gmlMaterials[i];
                 MaterialSet materialSet = new MaterialSet(gmlMaterial, texturePath);
+                
+                // テクスチャがフォールバックマテリアルのものである場合は、フォールバックマテリアルにします。
+                Material fallbackMat = FallbackMaterial.ByMainTextureName(texturePath);
+                if (fallbackMat != null)
+                {
+                    materials[i] = fallbackMat;
+                    continue;
+                }
 
                 // マテリアルがキャッシュ済みの場合はキャッシュを使用
                 if (cachedMaterials.TryGetValue(materialSet, out var cachedMaterial))
