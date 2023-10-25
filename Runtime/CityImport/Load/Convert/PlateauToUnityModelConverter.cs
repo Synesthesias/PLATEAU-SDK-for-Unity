@@ -28,7 +28,7 @@ namespace PLATEAU.CityImport.Load.Convert
         /// 非同期処理です。必ずメインスレッドで呼ぶ必要があります。
         /// 成否を bool で返します。
         /// </summary>
-        public static async Task<bool> CityModelToScene(
+        public static async Task<ConvertResult> CityModelToScene(
             CityModel cityModel, MeshExtractOptions meshExtractOptions, string[] selectedMeshCodes,
             Transform parentTrans, IProgressDisplay progressDisplay, string progressName,
             bool doSetMeshCollider, bool doSetAttrInfo, CancellationToken token,  UnityEngine.Material fallbackMaterial
@@ -48,18 +48,17 @@ namespace PLATEAU.CityImport.Load.Convert
             catch (Exception e)
             {
                 Debug.LogError("メッシュデータの抽出に失敗しました。\n" + e);
-                return false;
+                return ConvertResult.Fail();
             }
 
-            var dummy = new List<GameObject>();
-            return await PlateauModelToScene(dummy, parentTrans, progressDisplay, progressName, doSetMeshCollider, token, fallbackMaterial, plateauModel, attributeDataHelper, true);
+            return await PlateauModelToScene(parentTrans, progressDisplay, progressName, doSetMeshCollider, token, fallbackMaterial, plateauModel, attributeDataHelper, true);
         }
 
         /// <summary>
         /// 共通ライブラリのModelをUnityのゲームオブジェクトに変換してシーンに配置します。
         /// これにより配置されたゲームオブジェクトを引数 <paramref name="outGeneratedObjs"/> に追加します。
         /// </summary>
-        public static async Task<bool> PlateauModelToScene(List<GameObject> outGeneratedObjs, Transform parentTrans, IProgressDisplay progressDisplay,
+        public static async Task<ConvertResult> PlateauModelToScene(Transform parentTrans, IProgressDisplay progressDisplay,
             string progressName, bool doSetMeshCollider, CancellationToken? token, Material fallbackMaterial, Model plateauModel, 
             IAttributeDataHelper attributeDataHelper, bool skipRoot)
         {
@@ -86,7 +85,7 @@ namespace PLATEAU.CityImport.Load.Convert
             catch (Exception e)
             {
                 Debug.LogError("メッシュデータの取得に失敗しました。\n" + e);
-                return false;
+                return ConvertResult.Fail();
             }
 
             // 処理B :
@@ -98,15 +97,17 @@ namespace PLATEAU.CityImport.Load.Convert
 
             progressDisplay.SetProgress(progressName, 80f, "シーンに配置中");
 
+            var result = new ConvertResult();
+
             try
             {
                 var generatedObjs = await meshObjsData.PlaceToScene(parentTrans, cachedMaterials, skipRoot, doSetMeshCollider, token, fallbackMaterial);
-                outGeneratedObjs.AddRange(generatedObjs);
+                result.GeneratedObjs.AddRange(generatedObjs);
             }
             catch (Exception e)
             {
                 Debug.LogError("メッシュデータの配置に失敗しました。\n" + e);
-                return false;
+                return ConvertResult.Fail();
             }
 
             // エディター内での実行であれば、生成したメッシュ,テクスチャ等をシーンに保存したいので
@@ -118,7 +119,7 @@ namespace PLATEAU.CityImport.Load.Convert
             }
 #endif
             Debug.Log("Gml model placed.");
-            return true;
+            return result;
         }
 
         /// <summary>
@@ -140,6 +141,19 @@ namespace PLATEAU.CityImport.Load.Convert
             MeshExtractor.ExtractInExtents(ref model, cityModel, meshExtractOptions, extents);
             Debug.Log("model extracted.");
             return model;
+        }
+
+        public class ConvertResult
+        {
+            public bool IsSucceed { get; set; } = true;
+
+            /// <summary> 変換によってシーンに配置したゲームオブジェクトのリスト </summary>
+            public List<GameObject> GeneratedObjs { get; set; } = new ();
+
+            public static ConvertResult Fail()
+            {
+                return new ConvertResult() { IsSucceed = false };
+            }
         }
     }
 }

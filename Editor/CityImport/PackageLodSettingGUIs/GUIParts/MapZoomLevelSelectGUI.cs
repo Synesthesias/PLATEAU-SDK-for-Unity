@@ -9,7 +9,6 @@ using PLATEAU.Util;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
-using UnityEngine;
 
 namespace PLATEAU.Editor.CityImport.GUIParts
 {
@@ -81,9 +80,7 @@ namespace PLATEAU.Editor.CityImport.GUIParts
                                     }
                                     catch (Exception)
                                     {
-                                        #if UNITY_EDITOR
-                                        EditorUtility.DisplayDialog("PLATEAU", "ズームレベルを検索できませんでした。地図URLを確認してください。", "OK");
-                                        #endif
+                                        Dialogue.Display("ズームレベルを検索できませんでした。地図URLを確認してください。", "OK");
                                         zoomLevelSearchResult.IsValid = false;
                                     }
                                 }

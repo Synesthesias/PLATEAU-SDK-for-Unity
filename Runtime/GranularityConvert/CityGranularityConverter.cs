@@ -40,15 +40,20 @@ namespace PLATEAU.GranularityConvert
                 progressBar.Display("変換後の3Dモデルを配置中...", 0.8f);
 
                 // Modelをゲームオブジェクトに変換して配置します。
-                var generatedObjs = new List<GameObject>();
-                bool result = await PlateauToUnityModelConverter.PlateauModelToScene(generatedObjs,
+                var result = await PlateauToUnityModelConverter.PlateauModelToScene(
                     null, new DummyProgressDisplay(), "", true,
                     null, null, dstModel,
                     new AttributeDataHelper(new SerializedCityObjectGetterFromDict(attributes), option.Granularity,
                         true), true);
-                if (!result)
+                if (!result.IsSucceed)
                 {
                     throw new Exception("Failed to convert plateau model to scene game objects.");
+                }
+
+                if (result.GeneratedObjs.Count <= 0)
+                {
+                    Dialogue.Display("変換対象がありません。\nアクティブなオブジェクトを選択してください。", "OK");
+                    return;
                 }
             }
             catch (Exception e)

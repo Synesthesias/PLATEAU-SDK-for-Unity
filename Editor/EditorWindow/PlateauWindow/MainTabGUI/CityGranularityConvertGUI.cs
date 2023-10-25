@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Linq;
 using System.Threading.Tasks;
-using PLATEAU.CityInfo;
 using PLATEAU.Editor.EditorWindow.Common;
 using PLATEAU.GranularityConvert;
 using PLATEAU.PolygonMesh;
@@ -19,10 +17,10 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
         private UnityEditor.EditorWindow parentEditorWindow;
         private GameObject[] selected = Array.Empty<GameObject>();
         private Vector2 scrollSelected;
-        private int selectedUnit;
+        private int selectedUnit = 2;
         private static readonly string[] UnitOptions = { "最小地物単位(壁面,屋根面等)", "主要地物単位(建築物,道路等)", "地域単位" };
-        private bool foldOutOption = true;
-        private bool toggleMaxSize = true;
+        // private bool foldOutOption = true;
+        // private bool toggleMaxSize = true;
         private bool isExecTaskRunning = false;
 
         public CityGranularityConvertGUI(UnityEditor.EditorWindow parentEditorWindow)

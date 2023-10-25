@@ -33,14 +33,14 @@ namespace PLATEAU.Editor.CityImport.AreaSelector
 
             if (AreaSelectorBehaviour.IsAreaSelectEnabled)
             {
-                EditorUtility.DisplayDialog("PLATEAU SDK", "範囲選択画面がすでに開いています。\nシーンビュー左上の決定ボタンを押して選択を確定してください。", "OK");
+                Dialogue.Display( "範囲選択画面がすでに開いています。\nシーンビュー左上の決定ボタンを押して選択を確定してください。", "OK");
                 return;
             }
 
             string prevScenePath = SceneManager.GetActiveScene().path;
             if (string.IsNullOrEmpty(prevScenePath))
             {
-                EditorUtility.DisplayDialog("PLATEAU SDK", "シーンが未保存です。\n保存してから再度実行してください。", "OK");
+                Dialogue.Display("シーンが未保存です。\n保存してから再度実行してください。", "OK");
                 return;
             }
             

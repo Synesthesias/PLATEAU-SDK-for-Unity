@@ -86,11 +86,11 @@ namespace PLATEAU.CityImport.Load.CityImportProcedure
 
             var packageConf = conf.GetConfigForPackage(package);
             // ここはメインスレッドで呼ぶ必要があります。
-            bool placingSucceed = await PlateauToUnityModelConverter.CityModelToScene(
+            var placingResult = await PlateauToUnityModelConverter.CityModelToScene(
                 cityModel, meshExtractOptions, conf.AreaMeshCodes, gmlTrans, progressDisplay, gmlName, packageConf.DoSetMeshCollider, packageConf.DoSetAttrInfo, token, packageConf.FallbackMaterial
             );
 
-            if (placingSucceed)
+            if (placingResult.IsSucceed)
             {
                 progressDisplay.SetProgress(gmlName, 100f, "完了");
             }

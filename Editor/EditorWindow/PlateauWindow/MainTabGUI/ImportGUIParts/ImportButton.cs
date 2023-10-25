@@ -54,7 +54,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts
                     //Cancel ボタンを描画します。
                     if (PlateauEditorStyle.CancelButton("インポートをキャンセルする"))
                     {
-                        bool dialogueResult = EditorUtility.DisplayDialog("PLATEAU SDK", $"インポートをキャンセルしますか？", "はい", "いいえ");
+                        bool dialogueResult = Dialogue.Display($"インポートをキャンセルしますか？", "はい", "いいえ");
                         if (dialogueResult)
                         {
                             cancellationTokenSrc.Cancel();
