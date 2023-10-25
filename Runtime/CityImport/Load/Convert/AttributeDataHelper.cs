@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using PLATEAU.CityGML;
 using PLATEAU.CityInfo;
 using PLATEAU.PolygonMesh;
-using UnityEngine;
 using CityObjectList = PLATEAU.CityInfo.CityObjectList;
 using PLATEAUCityObjectList = PLATEAU.PolygonMesh.CityObjectList;
 
@@ -12,12 +11,12 @@ namespace PLATEAU.CityImport.Load.Convert
     /// <summary>
     /// PLATEAU の属性情報を Unity の GameObjectで扱えるようにするためのHelperクラスです
     /// </summary>
-    internal class AttributeDataHelper : IDisposable
+    internal class AttributeDataHelper : IDisposable, IAttributeDataHelper
     {
         private readonly MeshGranularity meshGranularity; 
         private readonly List<CityObjectID> indexList = new();
         private readonly List<string> outsideChildrenList = new();
-        private CityModel cityModel;
+        private ISerializedCityObjectGetter serializedCityObjectGetter;
         private string id;
         private CityObjectIndex index;
         private string parent;
@@ -30,14 +29,17 @@ namespace PLATEAU.CityImport.Load.Convert
             public string PrimaryID;
         }
 
-        public AttributeDataHelper(CityModel cityModel, MeshGranularity granularity, bool doSetAttrInfo)
+        public AttributeDataHelper(ISerializedCityObjectGetter serializedCityObjectGetter, MeshGranularity granularity, bool doSetAttrInfo)
         {
-            this.cityModel = cityModel;
             meshGranularity = granularity;
             this.doSetAttrInfo = doSetAttrInfo;
+            this.serializedCityObjectGetter = serializedCityObjectGetter;
         }
 
-        public AttributeDataHelper(AttributeDataHelper attributeDataHelper) : this(attributeDataHelper.cityModel, attributeDataHelper.meshGranularity, attributeDataHelper.doSetAttrInfo) { }
+        public IAttributeDataHelper Copy()
+        {
+            return new AttributeDataHelper(serializedCityObjectGetter, meshGranularity, doSetAttrInfo);
+        }
 
         public void SetId(string id)
         {
@@ -51,13 +53,19 @@ namespace PLATEAU.CityImport.Load.Convert
         {
             if (!doSetAttrInfo) return;
             indexList.Clear();
-            foreach (var key in cityObjectList.GetAllKeys())
+            var allKeys = cityObjectList.GetAllKeys();
+            foreach (var key in allKeys)
             {
                 var atomicGmlID = cityObjectList.GetAtomicID(key);
                 var primaryGmlID = cityObjectList.GetPrimaryID(key.PrimaryIndex);
 
-                if (meshGranularity == MeshGranularity.PerCityModelArea ||
-                    (meshGranularity == MeshGranularity.PerPrimaryFeatureObject && primaryGmlID == id))
+                bool shouldAddIDWhenAreaGranularity = meshGranularity == MeshGranularity.PerCityModelArea;
+                bool shouldAddIDWhenPrimaryGranularity =
+                    meshGranularity == MeshGranularity.PerPrimaryFeatureObject &&
+                    (primaryGmlID == id /*|| // 主要地物単位のインポート時
+                      primaryGmlID == null*/); // 主要地物単位へ結合分解時
+                bool shouldAddID = shouldAddIDWhenAreaGranularity || shouldAddIDWhenPrimaryGranularity;
+                if (shouldAddID)
                         indexList.Add(new CityObjectID { Index = key, AtomicID = atomicGmlID, PrimaryID = primaryGmlID});
                         
                 if (meshGranularity == MeshGranularity.PerAtomicFeatureObject && atomicGmlID == id)
@@ -77,6 +85,7 @@ namespace PLATEAU.CityImport.Load.Convert
                 !outsideChildrenList.Contains(childId))
                 outsideChildrenList.Add(childId);
         }
+        
 
         /// <summary>
         /// 各CityObjectの属性情報を取得してシリアライズ可能なデータに変換します
@@ -85,29 +94,42 @@ namespace PLATEAU.CityImport.Load.Convert
         public CityObjectList GetSerializableCityObject()
         {
             if (!doSetAttrInfo) return null;
-            if (meshGranularity == MeshGranularity.PerCityModelArea)
-                return GetSerializableCityObjectForArea();
+            switch (meshGranularity)
+            {
+                case MeshGranularity.PerCityModelArea:
+                    return GetSerializableCityObjectForArea();
+                case MeshGranularity.PerPrimaryFeatureObject:
+                case MeshGranularity.PerAtomicFeatureObject:
+                    return GetSerializableCityObjectForAtomicOrPrimary();
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
 
-            var cityObj = GetCityObjectById(this.id);
-            if (cityObj == null)
-                return null;
-
-            CityObjectList cityObjSer = new CityObjectList();
+        /// <summary>
+        /// 最小地物単位または主要地物単位のモデルの場合の、シリアライズ可能なデータへの変換です。
+        /// </summary>
+        private CityObjectList GetSerializableCityObjectForAtomicOrPrimary()
+        {
+            var cityObjSer = serializedCityObjectGetter.GetByID(this.id, index);
+            if (cityObjSer == null) return null;
+            cityObjSer.CityObjectIndex = new int[]{index.PrimaryIndex, index.AtomicIndex}; // 分割結合時に必要
+            CityObjectList cityObjList = new CityObjectList();
 
             if (!string.IsNullOrEmpty(this.parent))
-                cityObjSer.outsideParent = this.parent;
-
-            var ser = CityObjectSerializableConvert.FromCityGMLCityObject(cityObj, index);
+                cityObjList.outsideParent = this.parent;
+            
             foreach (var id in indexList)
             {
                 if (id.PrimaryID == id.AtomicID) continue;
-                var childCityObj = GetCityObjectById(id.AtomicID);
+                var childCityObj = serializedCityObjectGetter.GetByID(id.AtomicID, id.Index);
                 if (childCityObj == null) continue;
-                ser.Children.Add(CityObjectSerializableConvert.FromCityGMLCityObject(childCityObj, id.Index));
+                childCityObj.CityObjectIndex = new int[]{id.Index.PrimaryIndex, id.Index.AtomicIndex}; // 分割結合時に必要
+                cityObjSer.Children.Add(childCityObj);
             }
-            cityObjSer.rootCityObjects.Add(ser);
-            cityObjSer.outsideChildren = outsideChildrenList;
-            return cityObjSer;
+            cityObjList.rootCityObjects.Add(cityObjSer);
+            cityObjList.outsideChildren = outsideChildrenList;
+            return cityObjList;
         }
 
         /// <summary>
@@ -139,39 +161,105 @@ namespace PLATEAU.CityImport.Load.Convert
 
             foreach (var id in indexList)
             {
-                var cityObj = GetCityObjectById(id.AtomicID);
+                var cityObj = serializedCityObjectGetter.GetByID(id.AtomicID, id.Index);
                 if (cityObj == null) continue;
-                var ser = CityObjectSerializableConvert.FromCityGMLCityObject(cityObj, id.Index);
+                
+                // TODO 下の処理は GetByIDメソッド内にまとめられそう？
+                cityObj.CityObjectIndex = new int[]{id.Index.PrimaryIndex, id.Index.AtomicIndex}; // 分割結合時に必要
+                
+                // var ser = CityObjectSerializableConvert.FromCityGMLCityObject(cityObj, id.Index);
                 if (!chidrenMap.ContainsKey(id.AtomicID)) continue;
                 var childrenId = chidrenMap[id.AtomicID];
                 foreach (var c in childrenId)
                 {
                     if (c.PrimaryID == c.AtomicID) continue;
-                    var childCityObj = GetCityObjectById(c.AtomicID);
+                    var childCityObj = serializedCityObjectGetter.GetByID(c.AtomicID, c.Index);
                     if (childCityObj == null) continue;
-                    ser.Children.Add(CityObjectSerializableConvert.FromCityGMLCityObject(childCityObj, c.Index));
+                    childCityObj.CityObjectIndex = new int[]{c.Index.PrimaryIndex, c.Index.AtomicIndex}; // 分割結合時に必要
+                    cityObj.Children.Add(childCityObj);
                 }
-                cityObjSer.rootCityObjects.Add(ser);
+                cityObjSer.rootCityObjects.Add(cityObj);
             }   
             return cityObjSer;
         }
 
-        private CityGML.CityObject GetCityObjectById(string id)
+        public void Dispose()
         {
-            try
-            {
-                return cityModel.GetCityObjectById(id);
-            }
-            catch (Exception ex)
-            {
-                Debug.LogWarning(ex.Message);
-            }
+            serializedCityObjectGetter.Dispose();
+        }
+    }
+
+    internal interface IAttributeDataHelper
+    {
+        public void SetId(string id);
+        public void SetCityObjectList(PLATEAUCityObjectList cityObjectList);
+        public void AddOutsideChildren(string childId);
+        public IAttributeDataHelper Copy();
+        public CityObjectList GetSerializableCityObject();
+        public void Dispose();
+    }
+
+    internal class DummyAttributeDataHelper : IAttributeDataHelper
+    {
+        public void SetId(string id){}
+        public void SetCityObjectList(PLATEAUCityObjectList cityObjectList){}
+        public void AddOutsideChildren(string childId){}
+
+        public IAttributeDataHelper Copy()
+        {
+            return new DummyAttributeDataHelper();
+            
+        }
+        public void Dispose(){}
+
+        public CityObjectList GetSerializableCityObject()
+        {
             return null;
+        }
+                
+    }
+
+    internal class SerializedCityObjectGetterFromCityModel : ISerializedCityObjectGetter
+    {
+        private CityModel cityModel;
+
+        public SerializedCityObjectGetterFromCityModel(CityModel cityModel)
+        {
+            this.cityModel = cityModel;
+        }
+        
+        public CityObjectList.CityObject GetByID(string gmlID, CityObjectIndex? index)
+        {
+            var cityObj = GetByIDInner(gmlID);
+            if (cityObj == null)
+                return null;
+
+            var ser = CityObjectSerializableConvert.FromCityGMLCityObject(cityObj, index);
+            return ser;
         }
 
         public void Dispose()
         {
             cityModel = null;
         }
+        
+        private CityGML.CityObject GetByIDInner(string id)
+        {
+            try
+            {
+                return cityModel.GetCityObjectById(id);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                // Debug.LogWarning($"{ex.Message}\n{ex.StackTrace}");
+            }
+            return null;
+        }
+    }
+
+    internal interface ISerializedCityObjectGetter
+    {
+        CityObjectList.CityObject GetByID(string gmlID, CityObjectIndex? index);
+        void Dispose();
     }
 }

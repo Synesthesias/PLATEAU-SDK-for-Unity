@@ -18,14 +18,14 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow
         private readonly IEditorDrawable[] tabGUIArray;
        
         private readonly string[] tabImages =
-            { "dark_icon_import.png", "dark_icon_adjust.png", "dark_icon_export.png", "dark_icon_information.png" };
+            { "dark_icon_import.png", "dark_icon_modify.png", "dark_icon_export.png", "dark_icon_information.png" };
 
         public PlateauWindowGUI(UnityEditor.EditorWindow parentEditorWindow)
         {
             this.tabGUIArray = new IEditorDrawable[]
             {
                 new CityAddGUI(parentEditorWindow),
-                new CityAdjustGUI(),
+                new CityModificationFrameGUI(parentEditorWindow),
                 new CityExportGUI(),
                 new CityAttributeGUI(parentEditorWindow, this)
             };
@@ -37,6 +37,12 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow
             this.TabIndex = PlateauEditorStyle.TabWithImages(this.TabIndex, this.tabImages, 80);
             PlateauEditorStyle.MainLogo();
             this.tabGUIArray[this.TabIndex].Draw();
+        }
+
+        public void Dispose()
+        {
+            foreach (var gui in tabGUIArray)
+                gui.Dispose();
         }
 
         /// <summary> テストからアクセスする用 </summary>

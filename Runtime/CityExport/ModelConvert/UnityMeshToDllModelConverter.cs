@@ -1,15 +1,16 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using PLATEAU.Geometries;
+using PLATEAU.CityInfo;
 using PLATEAU.Native;
 using PLATEAU.PolygonMesh;
 using PLATEAU.Util;
 using UnityEngine;
 using UnityEngine.Assertions;
+using CityObjectList = PLATEAU.PolygonMesh.CityObjectList;
 using Mesh = UnityEngine.Mesh;
 
-namespace PLATEAU.Editor.CityExport.ModelConvert
+namespace PLATEAU.CityExport.ModelConvert
 {
     /// <summary>
     /// Unityのシーンに配置されたモデルを <see cref="Model"/> に変換します。
@@ -22,23 +23,18 @@ namespace PLATEAU.Editor.CityExport.ModelConvert
         /// <summary>
         /// 引数で与えられたゲームオブジェクトとその子(再帰的)を <see cref="Model"/> に変換して返します。
         /// </summary>
-        /// <param name="go">変換対象ゲームオブジェクトのルートです。</param>
+        /// <param name="gameObjs">変換対象ゲームオブジェクトのルートです。</param>
         /// <param name="includeTexture"></param>
         /// <param name="exportDisabledGameObj">false のとき、非Activeのものは対象外とします。</param>
-        /// <param name="doInvertTriangles">ポリゴン内の頂点番号の配置を逆転させることで、ポリゴンの表裏を逆転させます。</param>
-        /// <param name="meshAxis">座標系です。</param>
         /// <param name="vertexConvertFunc">頂点座標を変換するメソッドで、 Vector3 から PlateauVector3d に変換する方法を指定します。</param>
-        public static Model Convert(GameObject go, bool includeTexture, bool exportDisabledGameObj, bool doInvertTriangles, CoordinateSystem meshAxis, VertexConvertFunc vertexConvertFunc)
+        public static Model Convert(IEnumerable<GameObject> gameObjs, bool includeTexture, bool exportDisabledGameObj, VertexConvertFunc vertexConvertFunc)
         {
-            var trans = go.transform;
             var model = Model.Create();
-            int childCount = trans.childCount;
-            for (int i = 0; i < childCount; i++)
+            foreach(var go in gameObjs)
             {
-                var childTrans = trans.GetChild(i);
-                ConvertRecursive(null, childTrans, model, includeTexture, exportDisabledGameObj, doInvertTriangles, vertexConvertFunc);
+                var trans = go.transform;
+                ConvertRecursive(null, trans, model, includeTexture, exportDisabledGameObj, vertexConvertFunc);
             }
-            
             return model;
         }
 
@@ -51,21 +47,19 @@ namespace PLATEAU.Editor.CityExport.ModelConvert
         /// <param name="model"> <paramref name="parentNode"/> が null のとき、<see cref="Node"/> は <paramref name="model"/> に追加されます。</param>
         /// <param name="includeTexture"></param>
         /// <param name="exportDisabledGameObj">false のとき、ActiveでないGameObjectは対象から除外します。</param>
-        /// <param name="doInvertTriangles"></param>
         /// <param name="vertexConvertFunc"></param>
         private static void ConvertRecursive(Node parentNode, Transform trans, Model model, bool includeTexture,
-            bool exportDisabledGameObj, bool doInvertTriangles, VertexConvertFunc vertexConvertFunc)
+            bool exportDisabledGameObj, VertexConvertFunc vertexConvertFunc)
         {
             if ((!trans.gameObject.activeInHierarchy) && (!exportDisabledGameObj)) return;
 
             // メッシュを変換して Node を作ります。
-            var node = GameObjToNode(trans, includeTexture, doInvertTriangles, vertexConvertFunc);
+            var node = GameObjToNode(trans, includeTexture, vertexConvertFunc);
 
             if (parentNode == null)
             {
                 // ルートのときは Model に Node を追加します。
                 model.AddNodeByCppMove(node);
-                node.Dispose();
                 node = model.GetRootNodeAt(model.RootNodesCount - 1);
                 
             }
@@ -73,7 +67,6 @@ namespace PLATEAU.Editor.CityExport.ModelConvert
             {
                 // ルートでないときは Node に Node を追加します。
                 parentNode.AddChildNodeByCppMove(node);
-                node.Dispose();
                 node = parentNode.GetChildAt(parentNode.ChildCount - 1);
             }
 
@@ -81,39 +74,87 @@ namespace PLATEAU.Editor.CityExport.ModelConvert
             for (int i = 0; i < numChild; i++)
             {
                 var childTrans = trans.GetChild(i);
-                ConvertRecursive(node, childTrans, model, includeTexture, exportDisabledGameObj, doInvertTriangles, vertexConvertFunc);
+                ConvertRecursive(node, childTrans, model, includeTexture, exportDisabledGameObj, vertexConvertFunc);
             }
         }
 
-        private static Node GameObjToNode(Transform trans, bool includeTexture, bool doInvertTriangles,
+        private static Node GameObjToNode(Transform trans, bool includeTexture,
             VertexConvertFunc vertexConvertFunc)
         {
+            // ノード生成します。
             var node = Node.Create(trans.name);
-            var meshFilter = trans.GetComponent<MeshFilter>();
-            if (meshFilter == null) return node;
-            var unityMesh = meshFilter.sharedMesh;
-            if (unityMesh == null) return node;
-            if (unityMesh.vertexCount <= 0 || unityMesh.subMeshCount <= 0 || unityMesh.triangles.Length <= 0) return node;
 
-            var dllMesh = ConvertMesh(unityMesh, trans.GetComponent<MeshRenderer>(), includeTexture, doInvertTriangles, vertexConvertFunc);
-            
-            int subMeshCount = unityMesh.subMeshCount;
-            for (int i = 0; i < subMeshCount; i++)
+            // ゲームオブジェクトにメッシュがあるかどうか判定します。
+            bool hasMesh = false;
+            Mesh unityMesh = null;
+            var meshFilter = trans.GetComponent<MeshFilter>();
+            if (meshFilter != null)
             {
-                var subMesh = unityMesh.GetSubMesh(i);
-                if (subMesh.indexCount == 0) continue;
-                int startId = subMesh.indexStart;
-                int endId = startId + subMesh.indexCount - 1;
-                Assert.IsTrue(startId < endId);
-                Assert.IsTrue(endId < dllMesh.IndicesCount);
+                unityMesh = meshFilter.sharedMesh;
+                if (unityMesh != null)
+                {
+                    hasMesh = true;
+                }
             }
-            node.SetMeshByCppMove(dllMesh);
+
+            PolygonMesh.Mesh nativeMesh = null;
+            if (hasMesh)
+            {
+                // メッシュを変換します。
+                nativeMesh = ConvertMesh(unityMesh, trans.GetComponent<MeshRenderer>(), includeTexture, vertexConvertFunc);
+            
+                int subMeshCount = unityMesh.subMeshCount;
+                for (int i = 0; i < subMeshCount; i++)
+                {
+                    var subMesh = unityMesh.GetSubMesh(i);
+                    if (subMesh.indexCount == 0) continue;
+                    int startId = subMesh.indexStart;
+                    int endId = startId + subMesh.indexCount - 1;
+                    Assert.IsTrue(startId < endId);
+                    Assert.IsTrue(endId < nativeMesh.IndicesCount);
+                }
+            }
+            
+            // メッシュがなくとも、PLATEAUCityObjectGroupがあれば、CityObjectListを付与するための空のメッシュを用意します。
+            var cityObjGroup = trans.GetComponent<PLATEAUCityObjectGroup>();
+            if ((!hasMesh) && cityObjGroup != null)
+            {
+                nativeMesh = PolygonMesh.Mesh.Create("");
+            }
+            
+            // CityObjectListを作って渡します。
+            if (cityObjGroup != null && nativeMesh != null)
+            {
+                AttachCityObjectGroupToNativeMesh(cityObjGroup, nativeMesh);
+            }
+            
+            if (nativeMesh != null)
+            {
+                node.SetMeshByCppMove(nativeMesh);
+            }
             
             return node;
         }
 
+        /// <summary>
+        /// <see cref="PLATEAUCityObjectGroup"/>を<see cref="CityObjectList"/>に変換し、それをnativeMeshに追加します。
+        /// </summary>
+        private static void AttachCityObjectGroupToNativeMesh(PLATEAUCityObjectGroup cityObjGroup, PolygonMesh.Mesh nativeMesh)
+        {
+            using var cityObjList = CityObjectList.Create();
+            var allCityObjs = cityObjGroup.GetAllCityObjects();
+            foreach (var cityObj in allCityObjs)
+            {
+                int primaryID = cityObj.CityObjectIndex[0];
+                int atomicID = cityObj.CityObjectIndex[1];
+                cityObjList.Add(new CityObjectIndex(primaryID, atomicID), cityObj.GmlID);
+            }
+
+            nativeMesh.CityObjectList = cityObjList;
+        }
+
         private static PolygonMesh.Mesh ConvertMesh(Mesh unityMesh, MeshRenderer meshRenderer, bool includeTexture,
-            bool doInvertTriangles, VertexConvertFunc vertexConvertFunc)
+            VertexConvertFunc vertexConvertFunc)
         {
             var vertices =
                 unityMesh
@@ -124,13 +165,14 @@ namespace PLATEAU.Editor.CityExport.ModelConvert
                 unityMesh.triangles
                     .Select(id => (uint)id)
                     .ToArray();
-            if (doInvertTriangles)
-            {
-                InvertTriangles(indices);
-            }
             var uv1 =
                 unityMesh
                     .uv
+                    .Select(uv => new PlateauVector2f(uv.x, uv.y))
+                    .ToArray();
+            var uv4 =
+                unityMesh
+                    .uv4
                     .Select(uv => new PlateauVector2f(uv.x, uv.y))
                     .ToArray();
 
@@ -171,7 +213,7 @@ namespace PLATEAU.Editor.CityExport.ModelConvert
             Assert.AreEqual(uv1.Length, vertices.Length);
 
             var dllMesh = PolygonMesh.Mesh.Create(
-                vertices, indices, uv1,
+                vertices, indices, uv1, uv4,
                 dllSubMeshes.ToArray());
             // 補足:
             // 上の行で MergeMeshInfo に渡す実引数 includeTexture が常に true になっていますが、それで良いです。
@@ -187,17 +229,6 @@ namespace PLATEAU.Editor.CityExport.ModelConvert
             var tex = mat.mainTexture;
             if (tex == null) return "";
             return Path.Combine(PathUtil.PLATEAUSrcFetchDir, tex.name);
-        }
-
-        private static void InvertTriangles(IList<uint> indices)
-        {
-            Assert.IsTrue(indices.Count % 3 == 0);
-            int numTriangle = indices.Count / 3;
-            for (int i = 0; i < numTriangle; i++)
-            {
-                // ポリゴン内の順番をスワップ
-                (indices[3 * i], indices[3 * i + 2]) = (indices[3 * i + 2], indices[3 * i]);
-            }
         }
     }
 }

@@ -84,6 +84,10 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
                 IsAreaSelectComplete = AreaSelectButton.Draw(this.config.AreaMeshCodes, this.config.DatasetSourceConfig,
                     areaSelectResultReceiver, this.config.CoordinateZoneID);
             }
+
+            public void Dispose() { }
         }
+
+        public void Dispose() { }
     }
 }

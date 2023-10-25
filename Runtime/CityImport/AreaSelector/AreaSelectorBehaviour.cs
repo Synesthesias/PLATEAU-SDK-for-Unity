@@ -71,20 +71,21 @@ namespace PLATEAU.CityImport.AreaSelector
             {
                 const string ErrorMessage = "メッシュコードの取得に失敗しました。";
                 Debug.LogError($"{ErrorMessage}\n{e}");
-                #if UNITY_EDITOR
+#if UNITY_EDITOR
                 EditorUtility.ClearProgressBar();
-                EditorUtility.DisplayDialog("PLATEAU", ErrorMessage, "OK");
-                #endif
+#endif
+                Dialogue.Display(ErrorMessage, "OK");
                 CancelAreaSelection();
                 return;
             }
 
             if (meshCodes.Count == 0)
             {
-                #if UNITY_EDITOR
+#if UNITY_EDITOR
                 EditorUtility.ClearProgressBar();
-                EditorUtility.DisplayDialog("PLATEAU", "該当のデータがありません。", "OK");
-                #endif
+#endif
+                Dialogue.Display("PLATEAU", "該当のデータがありません。", "OK");
+                
                 CancelAreaSelection();
                 return;
             }

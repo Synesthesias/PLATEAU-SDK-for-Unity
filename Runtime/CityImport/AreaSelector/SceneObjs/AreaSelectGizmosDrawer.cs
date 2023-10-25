@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using PLATEAU.Geometries;
@@ -34,9 +33,9 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
             ReadOnlyCollection<MeshCode> meshCodes, DatasetSourceConfig datasetSourceConfig,
             int coordinateZoneID, out GeoReference outGeoReference)
         {
-#if UNITY_EDITOR
-            EditorUtility.DisplayProgressBar("", "範囲座標を計算中です...", 0.5f);
-#endif
+            using var progressBar = new ProgressBar();
+            progressBar.Display("範囲座標を計算中です...", 0.5f);
+            
             // 仮に (0,0,0) を referencePoint とする geoReference を作成
             using var geoReferenceTmp = CoordinatesConvertUtil.UnityStandardGeoReference(coordinateZoneID);
             // 中心を計算し、そこを基準点として geoReference を再設定します。
@@ -65,9 +64,6 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
             this.geoReference = outGeoReference;
             this.areaSelectionGizmoDrawer = new AreaSelectionGizmoDrawer();
             this.areaSelectionGizmoDrawer.SetUp();
-#if UNITY_EDITOR
-            EditorUtility.ClearProgressBar();
-#endif
         }
         
         public IEnumerable<MeshCode> SelectedMeshCodes

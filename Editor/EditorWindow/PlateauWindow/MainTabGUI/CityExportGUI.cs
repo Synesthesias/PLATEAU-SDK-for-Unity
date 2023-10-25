@@ -120,5 +120,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
                 this.meshFileFormat, this.meshAxis, this.formatToExporter[this.meshFileFormat]);
             UnityModelExporter.Export(destinationDir, target,  meshExportOptions);
         }
+
+        public void Dispose() { }
     }
 }

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
+using PLATEAU.CityExport.ModelConvert;
 using PLATEAU.CityInfo;
-using PLATEAU.Editor.CityExport.ModelConvert;
 using PLATEAU.Native;
 using UnityEngine;
 
@@ -61,7 +61,12 @@ namespace PLATEAU.Editor.CityExport
                 };
                 
                 // Unity のメッシュを中間データ構造(Model)に変換します。
-                using var model = UnityMeshToDllModelConverter.Convert(childTrans.gameObject, options.ExportTextures, options.ExportHiddenObjects, false, options.MeshAxis, vertexConvertFunc);
+                var convertTargets = new GameObject[childTrans.childCount];
+                for (int j = 0; j < childTrans.childCount; j++)
+                {
+                    convertTargets[j] = childTrans.GetChild(j).gameObject;
+                }
+                using var model = UnityMeshToDllModelConverter.Convert(convertTargets, options.ExportTextures, options.ExportHiddenObjects, vertexConvertFunc);
                 
                 // Model をファイルにして出力します。
                 // options.PlateauModelExporter は、ファイルフォーマットに応じて FbxModelExporter, GltfModelExporter, ObjModelExporter のいずれかです。

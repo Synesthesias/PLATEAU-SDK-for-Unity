@@ -5,10 +5,10 @@ using PLATEAU.Dataset;
 using PLATEAU.Editor.EditorWindow.Common;
 using PLATEAU.Native;
 using PLATEAU.Texture;
+using PLATEAU.Util;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
-using UnityEngine;
 
 namespace PLATEAU.Editor.CityImport.GUIParts
 {
@@ -68,9 +68,8 @@ namespace PLATEAU.Editor.CityImport.GUIParts
                             {
                                 if (PlateauEditorStyle.MiniButton("利用可能ズームレベルを検索", 180))
                                 {
-#if UNITY_EDITOR
-                                    EditorUtility.DisplayProgressBar("PLATEAU", "利用可能ズームレベルを検索中...", 0.1f);
-#endif
+                                    using var progressBar = new ProgressBar();
+                                    progressBar.Display("利用可能ズームレベルを検索中...", 0.1f);
 
                                     try
                                     {
@@ -81,16 +80,9 @@ namespace PLATEAU.Editor.CityImport.GUIParts
                                     }
                                     catch (Exception)
                                     {
-                                        #if UNITY_EDITOR
-                                        EditorUtility.DisplayDialog("PLATEAU", "ズームレベルを検索できませんでした。地図URLを確認してください。", "OK");
-                                        #endif
+                                        Dialogue.Display("ズームレベルを検索できませんでした。地図URLを確認してください。", "OK");
                                         zoomLevelSearchResult.IsValid = false;
                                     }
-                                    
-
-#if UNITY_EDITOR
-                                    EditorUtility.ClearProgressBar();
-#endif
                                 }
                             });
 
@@ -108,5 +100,7 @@ namespace PLATEAU.Editor.CityImport.GUIParts
                                 }
                             }
         }
+
+        public void Dispose() {}
     }
 }
