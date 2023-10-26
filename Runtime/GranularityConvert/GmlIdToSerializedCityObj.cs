@@ -7,10 +7,12 @@ namespace PLATEAU.GranularityConvert
 {
     /// <summary>
     /// GML IDと、シリアライズ化された地物情報の辞書です。
+    /// 用途：分割結合機能において、変換前の属性情報を覚えておいて変換後に適用するために利用します。
+    /// 参照： <see cref="CityGranularityConverter"/>
     /// </summary>
     public class GmlIdToSerializedCityObj
     {
-        private Dictionary<string, CityInfo.CityObjectList.CityObject> data = new Dictionary<string, CityObjectList.CityObject>();
+        private Dictionary<string, CityObjectList.CityObject> data = new ();
         
         /// <summary>
         /// 引数に含まれるGmlIDと属性情報をすべて取得して記憶したインスタンスを返します。
@@ -19,22 +21,15 @@ namespace PLATEAU.GranularityConvert
         public static GmlIdToSerializedCityObj ComposeFrom(IEnumerable<GameObject> srcGameObjs)
         {
             var cityObjGroups = new List<PLATEAUCityObjectGroup>();
-            var queue = new Queue<Transform>(srcGameObjs.Select(obj => obj.transform));
-            while (queue.Count > 0)
-            {
-                var trans = queue.Dequeue();
-                // if (!trans.gameObject.activeInHierarchy) continue; // 非アクティブはスキップします
-                var cityObjGroup = trans.GetComponent<PLATEAUCityObjectGroup>();
-                if (cityObjGroup != null)
+            TransformBFS.Exec(srcGameObjs.Select(obj => obj.transform),
+                trans =>
                 {
-                    cityObjGroups.Add(cityObjGroup);
-                }
+                    var cityObjGroup = trans.GetComponent<PLATEAUCityObjectGroup>();
+                    if (cityObjGroup == null) return true;
 
-                for (int i = 0; i < trans.childCount; i++)
-                {
-                    queue.Enqueue(trans.GetChild(i));
-                }
-            }
+                    cityObjGroups.Add(cityObjGroup);
+                    return true;
+                });
             
             var ret = new GmlIdToSerializedCityObj();
             foreach(var cityObjs in cityObjGroups)
@@ -48,7 +43,7 @@ namespace PLATEAU.GranularityConvert
             return ret;
         }
 
-        private void Add(string gmlId, CityInfo.CityObjectList.CityObject serializedCityObj)
+        private void Add(string gmlId, CityObjectList.CityObject serializedCityObj)
         {
             if (data.ContainsKey(gmlId))
             {
