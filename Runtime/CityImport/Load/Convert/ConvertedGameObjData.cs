@@ -20,14 +20,14 @@ namespace PLATEAU.CityImport.Load.Convert
         private readonly ConvertedMeshData meshData;
         private readonly string name;
         private readonly List<ConvertedGameObjData> children = new List<ConvertedGameObjData>();
-        private readonly IAttributeDataHelper attributeDataHelper;
+        private readonly AttributeDataHelper attributeDataHelper;
 
         /// <summary>
         /// C++側の <see cref="PolygonMesh.Model"/> から変換して
         /// <see cref="ConvertedGameObjData"/> を作ります。
         /// 子も再帰的に作ります。
         /// </summary>
-        public ConvertedGameObjData(Model plateauModel, IAttributeDataHelper attributeDataHelper)
+        public ConvertedGameObjData(Model plateauModel, AttributeDataHelper attributeDataHelper)
         {
             this.meshData = null;
             this.name = "CityRoot";
@@ -47,7 +47,7 @@ namespace PLATEAU.CityImport.Load.Convert
         /// <see cref="ConvertedGameObjData"/> を作ります。
         /// 子も再帰的に作ります。
         /// </summary>
-        private ConvertedGameObjData(Node plateauNode, IAttributeDataHelper attributeDataHelper)
+        private ConvertedGameObjData(Node plateauNode, AttributeDataHelper attributeDataHelper)
         {
             this.meshData = MeshConverter.Convert(plateauNode.Mesh, plateauNode.Name);
             this.name = plateauNode.Name;
