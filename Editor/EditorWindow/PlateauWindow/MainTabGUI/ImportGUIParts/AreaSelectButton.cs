@@ -3,6 +3,7 @@ using PLATEAU.CityImport.AreaSelector;
 using PLATEAU.Dataset;
 using PLATEAU.Editor.CityImport.AreaSelector;
 using PLATEAU.Editor.EditorWindow.Common;
+using PLATEAU.Util;
 using UnityEditor;
 using UnityEngine;
 
@@ -44,7 +45,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts
         {
             if ((!datasetSourceConfig.IsServer) && (!Directory.Exists(datasetSourceConfig.LocalSourcePath)))
             {
-                EditorUtility.DisplayDialog("PLATEAU SDK", $"入力フォルダが存在しません。\nフォルダを指定してください。", "OK");
+                Dialogue.Display($"入力フォルダが存在しません。\nフォルダを指定してください。", "OK");
                 return;
             }
             AreaSelectorStarter.Start(datasetSourceConfig, resultReceiver, coordinateZoneID);

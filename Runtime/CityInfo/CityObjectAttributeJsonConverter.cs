@@ -121,13 +121,13 @@ namespace PLATEAU.CityInfo
                     if(!string.IsNullOrEmpty(key) && !string.IsNullOrEmpty(type))
                     {
                         if (type == AttributeType.Integer.ToString())
-                            attr.SetAttribute(key, AttributeType.Integer, Int32.Parse(jObject["value"].ToString()));
+                            attr.AddAttribute(key, AttributeType.Integer, Int32.Parse(jObject["value"].ToString()));
                         else if (type == AttributeType.Double.ToString())
-                            attr.SetAttribute(key, AttributeType.Double, Double.Parse(jObject["value"].ToString()));
+                            attr.AddAttribute(key, AttributeType.Double, Double.Parse(jObject["value"].ToString()));
                         else if (type == AttributeType.AttributeSet.ToString())
-                            attr.SetAttribute(key, AttributeType.AttributeSet, jObject["value"].ToObject<Attributes>());
+                            attr.AddAttribute(key, AttributeType.AttributeSet, jObject["value"].ToObject<Attributes>());
                         else
-                            attr.SetAttribute(key, (AttributeType)Enum.Parse(typeof(AttributeType), type), jObject["value"].ToString());
+                            attr.AddAttribute(key, (AttributeType)Enum.Parse(typeof(AttributeType), type), jObject["value"].ToString());
                     }
                 }
                 return attr;

@@ -48,6 +48,11 @@ namespace PLATEAU.CityImport.AreaSelector
                 areaSelector.EndAreaSelection(); 
             }
             EditorGUI.EndDisabledGroup();
+            if (GUILayout.Button("メッシュコード検索"))
+            {
+                //Meshcode
+                areaSelector.ShowMeshCodeSearchWindow();
+            }
             if (GUILayout.Button("キャンセル"))
             {
                 areaSelector.CancelAreaSelection();

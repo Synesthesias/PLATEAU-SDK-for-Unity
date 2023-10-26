@@ -157,5 +157,10 @@ namespace PLATEAU.CityInfo
                 geoReferenceData = data;
             }
         }
+
+        public void CopyFrom(PLATEAUInstancedCityModel src)
+        {
+            this.GeoReference = src.GeoReference;
+        }
     }
 }

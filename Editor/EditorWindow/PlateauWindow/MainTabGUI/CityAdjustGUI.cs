@@ -143,6 +143,8 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
 
         }
 
+        public void Dispose() { }
+
         public const string NameOfAdjustTarget = nameof(adjustTarget);
     }
 }

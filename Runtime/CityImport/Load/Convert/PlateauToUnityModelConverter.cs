@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using PLATEAU.CityGML;
 using PLATEAU.PolygonMesh;
@@ -7,9 +8,8 @@ using PLATEAU.Dataset;
 using PLATEAU.Util;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using Texture = UnityEngine.Texture;
 using System.Threading;
-using System.Linq;
+using Material = UnityEngine.Material;
 
 #if UNITY_EDITOR
 using UnityEditor.SceneManagement;
@@ -28,7 +28,7 @@ namespace PLATEAU.CityImport.Load.Convert
         /// 非同期処理です。必ずメインスレッドで呼ぶ必要があります。
         /// 成否を bool で返します。
         /// </summary>
-        public static async Task<bool> ConvertAndPlaceToScene(
+        public static async Task<ConvertResult> CityModelToScene(
             CityModel cityModel, MeshExtractOptions meshExtractOptions, string[] selectedMeshCodes,
             Transform parentTrans, IProgressDisplay progressDisplay, string progressName,
             bool doSetMeshCollider, bool doSetAttrInfo, CancellationToken token,  UnityEngine.Material fallbackMaterial
@@ -37,7 +37,31 @@ namespace PLATEAU.CityImport.Load.Convert
             Debug.Log($"load started");
 
             token.ThrowIfCancellationRequested();
+            AttributeDataHelper attributeDataHelper =
+                new AttributeDataHelper(new SerializedCityObjectGetterFromCityModel(cityModel), meshExtractOptions.MeshGranularity, doSetAttrInfo);
 
+            Model plateauModel;
+            try
+            {
+                plateauModel = await Task.Run(() => ExtractMeshes(cityModel, meshExtractOptions, selectedMeshCodes, token));
+            }
+            catch (Exception e)
+            {
+                Debug.LogError("メッシュデータの抽出に失敗しました。\n" + e);
+                return ConvertResult.Fail();
+            }
+
+            return await PlateauModelToScene(parentTrans, progressDisplay, progressName, doSetMeshCollider, token, fallbackMaterial, plateauModel, attributeDataHelper, true);
+        }
+
+        /// <summary>
+        /// 共通ライブラリのModelをUnityのゲームオブジェクトに変換してシーンに配置します。
+        /// これにより配置されたゲームオブジェクトを引数 <paramref name="outGeneratedObjs"/> に追加します。
+        /// </summary>
+        public static async Task<ConvertResult> PlateauModelToScene(Transform parentTrans, IProgressDisplay progressDisplay,
+            string progressName, bool doSetMeshCollider, CancellationToken? token, Material fallbackMaterial, Model plateauModel, 
+            AttributeDataHelper attributeDataHelper, bool skipRoot)
+        {
             // ここの処理は 処理A と 処理B に分割されています。
             // Unityのメッシュデータを操作するのは 処理B のみであり、
             // 処理A はメッシュ構築のための準備(データを List, 配列などで保持する)を
@@ -54,15 +78,14 @@ namespace PLATEAU.CityImport.Load.Convert
             {
                 meshObjsData = await Task.Run(() =>
                 {
-                    using var plateauModel = ExtractMeshes(cityModel, meshExtractOptions, selectedMeshCodes, token);
-                    var convertedObjData = new ConvertedGameObjData(plateauModel, new AttributeDataHelper(cityModel, meshExtractOptions.MeshGranularity, doSetAttrInfo));
+                    var convertedObjData = new ConvertedGameObjData(plateauModel, attributeDataHelper);
                     return convertedObjData;
                 });
             }
             catch (Exception e)
             {
                 Debug.LogError("メッシュデータの取得に失敗しました。\n" + e);
-                return false;
+                return ConvertResult.Fail();
             }
 
             // 処理B :
@@ -74,15 +97,21 @@ namespace PLATEAU.CityImport.Load.Convert
 
             progressDisplay.SetProgress(progressName, 80f, "シーンに配置中");
 
-            try
+            var result = new ConvertResult();
+
+            var innerResult = await meshObjsData.PlaceToScene(parentTrans, cachedMaterials, skipRoot, doSetMeshCollider,
+                token, fallbackMaterial);
+            if (innerResult.IsSucceed)
             {
-                await meshObjsData.PlaceToScene(parentTrans, cachedMaterials, true, doSetMeshCollider, token, fallbackMaterial);
+                result.Merge(innerResult);
             }
-            catch (Exception e)
+            else
             {
-                Debug.LogError("メッシュデータの配置に失敗しました。\n" + e);
-                return false;
+                Debug.LogError("メッシュデータの配置に失敗しました。");
+                return ConvertResult.Fail();
             }
+            
+            
 
             // エディター内での実行であれば、生成したメッシュ,テクスチャ等をシーンに保存したいので
             // シーンにダーティフラグを付けます。
@@ -93,7 +122,7 @@ namespace PLATEAU.CityImport.Load.Convert
             }
 #endif
             Debug.Log("Gml model placed.");
-            return true;
+            return result;
         }
 
         /// <summary>
@@ -115,6 +144,43 @@ namespace PLATEAU.CityImport.Load.Convert
             MeshExtractor.ExtractInExtents(ref model, cityModel, meshExtractOptions, extents);
             Debug.Log("model extracted.");
             return model;
+        }
+
+        /// <summary>
+        /// 変換してシーンに配置した結果です。
+        /// </summary>
+        public class ConvertResult
+        {
+            public bool IsSucceed { get; set; } = true;
+
+            /// <summary> 変換によってシーンに配置したゲームオブジェクトのリスト </summary>
+            public List<GameObject> GeneratedObjs { get; } = new ();
+            
+            /// <summary>
+            /// 変換によってシーンに配置したゲームオブジェクトのうち、ヒエラルキーが最上位であるもののリスト
+            /// </summary>
+            public List<GameObject> RootObjs { get; } = new();
+
+            /// <summary> 結果のゲームオブジェクトの一覧に追加します。</summary>
+            public void Add(GameObject obj, bool isRoot)
+            {
+                GeneratedObjs.Add(obj);
+                if(isRoot) RootObjs.Add(obj);
+            }
+
+            /// <summary> 複数の<see cref="ConvertResult"/>を統合します。 </summary>
+            public void Merge(ConvertResult other)
+            {
+                IsSucceed &= other.IsSucceed;
+                GeneratedObjs.AddRange(other.GeneratedObjs);
+                RootObjs.AddRange(other.RootObjs);
+            }
+
+            public static ConvertResult Fail()
+            {
+                return new ConvertResult() { IsSucceed = false };
+            }
+            
         }
     }
 }

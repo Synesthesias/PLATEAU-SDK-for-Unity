@@ -6,11 +6,11 @@ namespace PLATEAU.CityGML
 {
     /// <summary>
     /// CityGMLにおける全てのオブジェクトのベースクラスです。
-    /// ユニークIDと0個以上の属性ペアを持ち、属性ペアはすべて <see cref="CityGML.AttributesMap"/> に格納されています。
+    /// ユニークIDと0個以上の属性ペアを持ち、属性ペアはすべて <see cref="NativeAttributesMap"/> に格納されています。
     /// </summary>
     public class Object
     {
-        private AttributesMap attributesMap; // get されるまでは null なので null許容型とします。
+        private NativeAttributesMap nativeAttributesMap; // get されるまでは null なので null許容型とします。
         private string id = "";
         
         /// <summary>
@@ -44,19 +44,19 @@ namespace PLATEAU.CityGML
         }
 
         /// <summary> 属性の辞書を取得します。 </summary>
-        /// <returns> <see cref="CityGML.AttributesMap"/> 型で返します。</returns>
-        public virtual AttributesMap AttributesMap
+        /// <returns> <see cref="NativeAttributesMap"/> 型で返します。</returns>
+        public virtual NativeAttributesMap NativeAttributesMap
         {
             get
             {
-                if (this.attributesMap == null)
+                if (this.nativeAttributesMap == null)
                 {
                     IntPtr mapPtr = DLLUtil.GetNativeValue<IntPtr>(Handle,
                         NativeMethods.plateau_object_get_attributes_map);
-                    var map = new AttributesMap(mapPtr);
-                    this.attributesMap = map;
+                    var map = new NativeAttributesMap(mapPtr);
+                    this.nativeAttributesMap = map;
                 }
-                return this.attributesMap;
+                return this.nativeAttributesMap;
             }
         }
 

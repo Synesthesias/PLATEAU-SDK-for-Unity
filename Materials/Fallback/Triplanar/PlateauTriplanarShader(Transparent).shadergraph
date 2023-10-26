@@ -1662,6 +1662,31 @@
 
 {
     "m_SGVersion": 0,
+    "m_Type": "UnityEditor.ShaderGraph.Vector4MaterialSlot",
+    "m_ObjectId": "67d47f0615554a4c94d4aaf7e1f376d0",
+    "m_Id": 2012498569,
+    "m_DisplayName": "MainColor",
+    "m_SlotType": 0,
+    "m_Hidden": false,
+    "m_ShaderOutputName": "_MainColor",
+    "m_StageCapability": 2,
+    "m_Value": {
+        "x": 1.0,
+        "y": 1.0,
+        "z": 1.0,
+        "w": 1.0
+    },
+    "m_DefaultValue": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0,
+        "w": 0.0
+    },
+    "m_Labels": []
+}
+
+{
+    "m_SGVersion": 0,
     "m_Type": "UnityEditor.ShaderGraph.BlockNode",
     "m_ObjectId": "681de6c7023e413789f8493dcba336cc",
     "m_Group": {
@@ -2379,7 +2404,7 @@
         "m_SerializedTexture": "{\"texture\":{\"instanceID\":0}}",
         "m_Guid": ""
     },
-    "isMainTexture": false,
+    "isMainTexture": true,
     "useTilingAndOffset": false,
     "m_Modifiable": true,
     "m_DefaultType": 0
@@ -2522,6 +2547,9 @@
             "m_Id": "b01223afea844951a4b8983b8b4dbedb"
         },
         {
+            "m_Id": "67d47f0615554a4c94d4aaf7e1f376d0"
+        },
+        {
             "m_Id": "84d77aa4326f475c88b0293b5f6c396f"
         },
         {
@@ -2606,7 +2634,8 @@
         "d8116ffb-418b-4779-a571-b4883e9d3ea5",
         "c36822fb-30b0-4dc5-8044-272dc1973185",
         "e3441f47-38b9-49e3-92ec-459822f271bd",
-        "cb4b7516-fb80-4a12-b302-57b3a5325169"
+        "cb4b7516-fb80-4a12-b302-57b3a5325169",
+        "25eedff7-c215-4e91-8c20-a707e7772c1b"
     ],
     "m_PropertyIds": [
         1248713756,
@@ -2624,7 +2653,8 @@
         -1293761813,
         649838858,
         -1886176946,
-        1533001344
+        1533001344,
+        2012498569
     ],
     "m_Dropdowns": [],
     "m_DropdownSelectedEntries": []
