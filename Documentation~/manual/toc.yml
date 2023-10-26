@@ -8,7 +8,7 @@
     href: ImportCityModels.md
   - name: 都市モデルのエクスポート
     href: ExportCityModels.md
-  - name: モデル調整
+  - name: モデル修正
     href: ModelAdjust.md  
   - name: 都市情報へのアクセス
     href: AccessCityObject.md

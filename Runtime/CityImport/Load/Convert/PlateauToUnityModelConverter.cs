@@ -37,7 +37,7 @@ namespace PLATEAU.CityImport.Load.Convert
             Debug.Log($"load started");
 
             token.ThrowIfCancellationRequested();
-            IAttributeDataHelper attributeDataHelper =
+            AttributeDataHelper attributeDataHelper =
                 new AttributeDataHelper(new SerializedCityObjectGetterFromCityModel(cityModel), meshExtractOptions.MeshGranularity, doSetAttrInfo);
 
             Model plateauModel;
@@ -60,7 +60,7 @@ namespace PLATEAU.CityImport.Load.Convert
         /// </summary>
         public static async Task<ConvertResult> PlateauModelToScene(Transform parentTrans, IProgressDisplay progressDisplay,
             string progressName, bool doSetMeshCollider, CancellationToken? token, Material fallbackMaterial, Model plateauModel, 
-            IAttributeDataHelper attributeDataHelper, bool skipRoot)
+            AttributeDataHelper attributeDataHelper, bool skipRoot)
         {
             // ここの処理は 処理A と 処理B に分割されています。
             // Unityのメッシュデータを操作するのは 処理B のみであり、

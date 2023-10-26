@@ -28,6 +28,10 @@ namespace PLATEAU.GranularityConvert
 
                 // 属性情報を覚えておきます。
                 var attributes = GmlIdToSerializedCityObj.ComposeFrom(srcGameObjs);
+                
+                // PLATEAUInstancedCityModel が含まれる場合、これもコピーしたいので覚えておきます。
+                var instancedCityModelDict = InstancedCityModelDict.ComposeFrom(srcGameObjs); 
+                
 
                 progressBar.Display("ゲームオブジェクトを共通モデルに変換中...", 0.2f);
 
@@ -59,6 +63,9 @@ namespace PLATEAU.GranularityConvert
                     Dialogue.Display("変換対象がありません。\nアクティブなオブジェクトを選択してください。", "OK");
                     return;
                 }
+                
+                // PLATEAUInstancedCityModelを復元します。
+                instancedCityModelDict.Restore(result.RootObjs);
 
                 if (Dialogue.Display("変換前のゲームオブジェクトを削除しますか？ 残しますか？", "削除", "残す"))
                 {

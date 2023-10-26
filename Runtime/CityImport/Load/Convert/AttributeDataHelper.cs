@@ -11,7 +11,7 @@ namespace PLATEAU.CityImport.Load.Convert
     /// <summary>
     /// PLATEAU の属性情報を Unity の GameObjectで扱えるようにするためのHelperクラスです
     /// </summary>
-    internal class AttributeDataHelper : IDisposable, IAttributeDataHelper
+    internal class AttributeDataHelper : IDisposable
     {
         private readonly MeshGranularity meshGranularity; 
         private readonly List<CityObjectID> indexList = new();
@@ -36,7 +36,7 @@ namespace PLATEAU.CityImport.Load.Convert
             this.serializedCityObjectGetter = serializedCityObjectGetter;
         }
 
-        public IAttributeDataHelper Copy()
+        public AttributeDataHelper Copy()
         {
             return new AttributeDataHelper(serializedCityObjectGetter, meshGranularity, doSetAttrInfo);
         }
@@ -187,36 +187,6 @@ namespace PLATEAU.CityImport.Load.Convert
         {
             serializedCityObjectGetter.Dispose();
         }
-    }
-
-    internal interface IAttributeDataHelper
-    {
-        public void SetId(string id);
-        public void SetCityObjectList(PLATEAUCityObjectList cityObjectList);
-        public void AddOutsideChildren(string childId);
-        public IAttributeDataHelper Copy();
-        public CityObjectList GetSerializableCityObject();
-        public void Dispose();
-    }
-
-    internal class DummyAttributeDataHelper : IAttributeDataHelper
-    {
-        public void SetId(string id){}
-        public void SetCityObjectList(PLATEAUCityObjectList cityObjectList){}
-        public void AddOutsideChildren(string childId){}
-
-        public IAttributeDataHelper Copy()
-        {
-            return new DummyAttributeDataHelper();
-            
-        }
-        public void Dispose(){}
-
-        public CityObjectList GetSerializableCityObject()
-        {
-            return null;
-        }
-                
     }
 
     internal class SerializedCityObjectGetterFromCityModel : ISerializedCityObjectGetter
