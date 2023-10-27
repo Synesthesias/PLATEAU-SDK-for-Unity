@@ -1,4 +1,4 @@
-﻿using PLATEAU.CityImport.Setting;
+﻿using PLATEAU.CityImport.Config;
 using PLATEAU.Editor.CityImport;
 using PLATEAU.Editor.EditorWindow.Common;
 using PLATEAU.Editor.EditorWindow.ProgressDisplay;

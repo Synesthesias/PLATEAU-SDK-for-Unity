@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using PLATEAU.CityImport.AreaSelector.SceneObjs;
-using PLATEAU.CityImport.Setting;
+using PLATEAU.CityImport.Config;
 using PLATEAU.Geometries;
 using PLATEAU.Dataset;
 using PLATEAU.Native;

@@ -1,5 +1,5 @@
 using System;
-using PLATEAU.CityImport.Setting;
+using PLATEAU.CityImport.Config;
 using PLATEAU.Dataset;
 using PLATEAU.Editor.CityImport.GUIParts;
 using PLATEAU.Editor.EditorWindow.Common;
@@ -11,21 +11,21 @@ using UnityEngine;
 namespace PLATEAU.Editor.CityImport.PackageLodSettingGUIs
 {
     /// <summary>
-    /// <see cref="ReliefLoadSetting"/> に対応するGUIクラスです。
-    /// <see cref="PackageLoadSetting"/> を継承し、土地特有の設定GUIを追加したクラスです。
+    /// <see cref="ReliefLoadConfig"/> に対応するGUIクラスです。
+    /// <see cref="PackageLoadConfig"/> を継承し、土地特有の設定GUIを追加したクラスです。
     /// </summary>
-    internal class ReliefLoadSettingGUI : PackageLoadSettingGUI
+    internal class ReliefLoadConfigGUI : PackageLoadConfigGUI
     {
-        private readonly ReliefLoadSetting config;
+        private readonly ReliefLoadConfig config;
         private readonly MapZoomLevelSelectGUI zoomLevelSelectGUI;
         private string mapTileURLOnGUI;
 
 
-        public ReliefLoadSettingGUI(ReliefLoadSetting setting, MeshCode firstMeshCode) : base(setting)
+        public ReliefLoadConfigGUI(ReliefLoadConfig config, MeshCode firstMeshCode) : base(config)
         {
-            this.config = setting;
-            this.mapTileURLOnGUI = setting.MapTileURL;
-            zoomLevelSelectGUI = new MapZoomLevelSelectGUI(setting, mapTileURLOnGUI, firstMeshCode);
+            this.config = config;
+            this.mapTileURLOnGUI = config.MapTileURL;
+            zoomLevelSelectGUI = new MapZoomLevelSelectGUI(config, mapTileURLOnGUI, firstMeshCode);
         }
 
         /// <summary> インポート設定GUIのうち土地専用の部分です。 </summary>
@@ -55,13 +55,13 @@ namespace PLATEAU.Editor.CityImport.PackageLodSettingGUIs
                             EditorGUILayout.HelpBox("URLが正しくありません。", MessageType.Error);
                         }
 
-                        if (this.mapTileURLOnGUI != ReliefLoadSetting.DefaultMapTileUrl)
+                        if (this.mapTileURLOnGUI != ReliefLoadConfig.DefaultMapTileUrl)
                         {
                             PlateauEditorStyle.CenterAlignHorizontal(() =>
                             {
                                 if (PlateauEditorStyle.MiniButton("デフォルトURLに戻す", 150))
                                 {
-                                    string defaultURL = ReliefLoadSetting.DefaultMapTileUrl;
+                                    string defaultURL = ReliefLoadConfig.DefaultMapTileUrl;
                                     this.mapTileURLOnGUI = defaultURL;
                                     conf.MapTileURL = defaultURL;
                                     zoomLevelSelectGUI.OnMapTileUrlChanged(defaultURL);

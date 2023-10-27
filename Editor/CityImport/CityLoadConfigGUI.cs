@@ -1,5 +1,5 @@
 ﻿using System;
-using PLATEAU.CityImport.Setting;
+using PLATEAU.CityImport.Config;
 using PLATEAU.Editor.CityImport.PackageLodSettingGUIs;
 using PLATEAU.Editor.EditorWindow.Common;
 using UnityEditor;
@@ -20,7 +20,7 @@ namespace PLATEAU.Editor.CityImport
             // パッケージ種ごとの設定GUI、その下に基準座標設定GUIが表示されるようにGUIコンポーネントを置きます。
             guiComponents = new IEditorDrawable[]
             {
-                new PackageLoadSettingGUIList(availablePackageLodsArg, cityLoadConf),
+                new PackageLoadConfigGUIList(availablePackageLodsArg, cityLoadConf),
                 new PositionConfGUI(cityLoadConf)
             };
         }

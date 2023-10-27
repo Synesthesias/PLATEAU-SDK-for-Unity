@@ -1,6 +1,6 @@
 ﻿using System.Threading;
 using PLATEAU.CityImport.Load;
-using PLATEAU.CityImport.Setting;
+using PLATEAU.CityImport.Config;
 using PLATEAU.Editor.EditorWindow.Common;
 using PLATEAU.Util;
 using PLATEAU.Util.Async;

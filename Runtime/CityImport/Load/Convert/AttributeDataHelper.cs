@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using PLATEAU.CityGML;
 using PLATEAU.CityInfo;
 using PLATEAU.PolygonMesh;
+using UnityEngine;
 using CityObjectList = PLATEAU.CityInfo.CityObjectList;
 using PLATEAUCityObjectList = PLATEAU.PolygonMesh.CityObjectList;
 
@@ -221,7 +222,7 @@ namespace PLATEAU.CityImport.Load.Convert
             }
             catch (KeyNotFoundException ex)
             {
-                // Debug.LogWarning($"{ex.Message}\n{ex.StackTrace}");
+                Debug.LogWarning($"{ex.Message}\n{ex.StackTrace}");
             }
             return null;
         }

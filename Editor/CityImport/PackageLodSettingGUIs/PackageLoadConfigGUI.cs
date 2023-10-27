@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
-using PLATEAU.CityImport.Setting;
+using PLATEAU.CityImport.Config;
 using PLATEAU.Dataset;
+using PLATEAU.Editor.CityImport.GUIParts;
 using PLATEAU.Editor.EditorWindow.Common;
-using PLATEAU.PolygonMesh;
 using UnityEditor;
 using UnityEngine;
 
@@ -11,31 +11,28 @@ namespace PLATEAU.Editor.CityImport.PackageLodSettingGUIs
 {
     /// <summary>
     /// インポート設定のうち、パッケージ種1つの設定GUIです。
-    /// 具体的には、<see cref="PackageLoadSetting"/>を1つ設定するGUIです。
+    /// 具体的には、<see cref="PackageLoadConfig"/>を1つ設定するGUIです。
     /// 他クラスとの関係:
-    /// パッケージ設定GUIを、利用可能な全種類について集めたクラスが <see cref="PackageLoadSettingGUIList"/> です。
+    /// パッケージ設定GUIを、利用可能な全種類について集めたクラスが <see cref="PackageLoadConfigGUIList"/> です。
     /// </summary>
-    internal class PackageLoadSettingGUI
+    internal class PackageLoadConfigGUI
     {
-        private readonly PackageLoadSetting config;
+        private readonly PackageLoadConfig config;
         
         /// <summary> 設定GUIのリスト </summary>
-        private readonly List<PackageLoadSettingGUIComponent> guisForInclude;
+        private readonly List<PackageLoadConfigGUIComponent> guisForInclude;
 
         /// <summary> GUIで設定を表示する(true)か、折りたたむ(false)か </summary>
         private bool guiFoldOutState = true;
 
-        public PackageLoadSettingGUI(PackageLoadSetting conf)
+        public PackageLoadConfigGUI(PackageLoadConfig conf)
         {
             config = conf;
-            guisForInclude = new List<PackageLoadSettingGUIComponent>
+            guisForInclude = new List<PackageLoadConfigGUIComponent>
             {
                 // ここに設定項目を列挙します
-                new TextureIncludeGUI(conf),
-                new MeshColliderSetGUI(conf),
+                new PackageLoadConfigExtendableGUI(conf),
                 new LodGUI(conf),
-                new MeshGranularityGUI(conf),
-                new SetAttrInfoGUI(conf),
                 new FallbackMaterialGUI(conf)
             };
         }
@@ -79,11 +76,11 @@ namespace PLATEAU.Editor.CityImport.PackageLodSettingGUIs
     /// その中でユーザーのGUI操作に応じて設定値を変更します。
     /// そのコンポーネントという概念を抽象化したものがこのクラスです。
     /// </summary>
-    internal abstract class PackageLoadSettingGUIComponent : IEditorDrawable
+    internal abstract class PackageLoadConfigGUIComponent : IEditorDrawable
     {
-        protected readonly PackageLoadSetting Conf;
+        protected readonly PackageLoadConfig Conf;
 
-        protected PackageLoadSettingGUIComponent(PackageLoadSetting conf)
+        protected PackageLoadConfigGUIComponent(PackageLoadConfig conf)
         {
             Conf = conf;
         }
@@ -91,45 +88,13 @@ namespace PLATEAU.Editor.CityImport.PackageLodSettingGUIs
         public void Dispose() { }
     }
 
-
-    internal class TextureIncludeGUI : PackageLoadSettingGUIComponent
+    
+    /// <summary>
+    /// LOD範囲の設定GUIです。
+    /// </summary>
+    internal class LodGUI : PackageLoadConfigGUIComponent
     {
-
-        public TextureIncludeGUI(PackageLoadSetting conf) : base(conf)
-        {
-        
-        }
-
-        public override void Draw()
-        {
-            bool mayTextureExist = CityModelPackageInfo.GetPredefined(Conf.Package).hasAppearance;
-            if (!mayTextureExist) return; // 仕様上、テクスチャの存在可能性がない場合
-            Conf.IncludeTexture = EditorGUILayout.Toggle("テクスチャを含める", Conf.IncludeTexture);
-
-            if (!Conf.IncludeTexture) return;
-            Conf.EnableTexturePacking = EditorGUILayout.Toggle("テクスチャを結合する", Conf.EnableTexturePacking);
-            if (!Conf.EnableTexturePacking) return;
-            Conf.TexturePackingResolution = (TexturePackingResolution)EditorGUILayout.Popup("テクスチャ解像度",
-                (int)Conf.TexturePackingResolution, new[] { "2048x2048", "4096x4096", "8192x8192" });
-        }
-    }
-
-    internal class MeshColliderSetGUI : PackageLoadSettingGUIComponent
-    {
-        public MeshColliderSetGUI(PackageLoadSetting conf) : base(conf)
-        {
-        }
-
-        public override void Draw()
-        {
-            Conf.DoSetMeshCollider =
-                EditorGUILayout.Toggle("Mesh Collider をセットする", Conf.DoSetMeshCollider);
-        }
-    }
-
-    internal class LodGUI : PackageLoadSettingGUIComponent
-    {
-        public LodGUI(PackageLoadSetting conf) : base(conf)
+        public LodGUI(PackageLoadConfig conf) : base(conf)
         {
         }
 
@@ -145,36 +110,12 @@ namespace PLATEAU.Editor.CityImport.PackageLodSettingGUIs
         }
     }
 
-    internal class MeshGranularityGUI : PackageLoadSettingGUIComponent
+    /// <summary>
+    /// デフォルトマテリアルの設定GUIです。
+    /// </summary>
+    internal class FallbackMaterialGUI : PackageLoadConfigGUIComponent
     {
-
-        public MeshGranularityGUI(PackageLoadSetting conf) : base(conf)
-        {
-        }
-
-        public override void Draw()
-        {
-            Conf.MeshGranularity = (MeshGranularity)EditorGUILayout.Popup("モデル結合",
-                (int)Conf.MeshGranularity, new[] { "最小地物単位(壁面,屋根面等)", "主要地物単位(建築物,道路等)", "地域単位" });
-        }
-    }
-
-    internal class SetAttrInfoGUI : PackageLoadSettingGUIComponent
-    {
-        public SetAttrInfoGUI(PackageLoadSetting conf) : base(conf)
-        {
-        }
-
-        public override void Draw()
-        {
-            Conf.DoSetAttrInfo =
-                EditorGUILayout.Toggle("属性情報を含める", Conf.DoSetAttrInfo);
-        }
-    }
-
-    internal class FallbackMaterialGUI : PackageLoadSettingGUIComponent
-    {
-        public FallbackMaterialGUI(PackageLoadSetting conf) : base(conf)
+        public FallbackMaterialGUI(PackageLoadConfig conf) : base(conf)
         {
         }
 
