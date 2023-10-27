@@ -15,6 +15,10 @@ namespace PLATEAU.CityImport.Config
         public bool EnableTexturePacking { get; set; }
         public TexturePackingResolution TexturePackingResolution { get; set; }
 
+        public PackageLoadConfigExtendable()
+            : this(true, MeshGranularity.PerPrimaryFeatureObject, true, true, true,
+                TexturePackingResolution.W2048H2048){}
+
         public PackageLoadConfigExtendable(
             bool includeTexture, MeshGranularity meshGranularity,
             bool doSetMeshCollider, bool doSetAttrInfo,
@@ -26,6 +30,16 @@ namespace PLATEAU.CityImport.Config
             DoSetAttrInfo = doSetAttrInfo;
             EnableTexturePacking = enableTexturePacking;
             TexturePackingResolution = texturePackingResolution;
+        }
+
+        public void CopyFrom(PackageLoadConfigExtendable other)
+        {
+            IncludeTexture = other.IncludeTexture;
+            MeshGranularity = other.MeshGranularity;
+            DoSetMeshCollider = other.DoSetMeshCollider;
+            DoSetAttrInfo = other.DoSetAttrInfo;
+            EnableTexturePacking = other.EnableTexturePacking;
+            TexturePackingResolution = other.TexturePackingResolution;
         }
         
 

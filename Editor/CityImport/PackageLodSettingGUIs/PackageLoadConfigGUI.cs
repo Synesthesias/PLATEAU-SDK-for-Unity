@@ -25,15 +25,15 @@ namespace PLATEAU.Editor.CityImport.PackageLodSettingGUIs
         /// <summary> GUIで設定を表示する(true)か、折りたたむ(false)か </summary>
         private bool guiFoldOutState = true;
 
-        public PackageLoadConfigGUI(PackageLoadConfig conf)
+        public PackageLoadConfigGUI(PackageLoadConfig packageConf, PackageLoadConfigExtendable parentConf)
         {
-            config = conf;
+            config = packageConf;
             guisForInclude = new List<PackageLoadConfigGUIComponent>
             {
                 // ここに設定項目を列挙します
-                new PackageLoadConfigExtendableGUI(conf),
-                new LodGUI(conf),
-                new FallbackMaterialGUI(conf)
+                new PackageLoadConfigOverrideGUI(packageConf, parentConf),
+                new LodGUI(packageConf),
+                new FallbackMaterialGUI(packageConf)
             };
         }
 

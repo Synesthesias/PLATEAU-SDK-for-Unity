@@ -21,7 +21,8 @@ namespace PLATEAU.Editor.CityImport.PackageLodSettingGUIs
         private string mapTileURLOnGUI;
 
 
-        public ReliefLoadConfigGUI(ReliefLoadConfig config, MeshCode firstMeshCode) : base(config)
+        public ReliefLoadConfigGUI(ReliefLoadConfig config, PackageLoadConfigExtendable parentConf,
+            MeshCode firstMeshCode) : base(config, parentConf)
         {
             this.config = config;
             this.mapTileURLOnGUI = config.MapTileURL;
@@ -45,6 +46,7 @@ namespace PLATEAU.Editor.CityImport.PackageLodSettingGUIs
                         {
                             zoomLevelSelectGUI.OnMapTileUrlChanged(inputtedUrl);
                         }
+
                         mapTileURLOnGUI = inputtedUrl;
                         try
                         {
