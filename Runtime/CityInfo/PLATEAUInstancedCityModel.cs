@@ -158,6 +158,22 @@ namespace PLATEAU.CityInfo
             }
         }
 
+        /// <summary>
+        /// 緯度を取得します
+        /// </summary>
+        public double Latitude
+        {
+            get => GeoReference.Unproject(new PlateauVector3d(0, 0, 0)).Latitude;
+        }
+
+        /// <summary>
+        /// 経度を取得します
+        /// </summary>
+        public double Longitude
+        {
+            get => GeoReference.Unproject(new PlateauVector3d(0, 0, 0)).Longitude;
+        }
+
         public void CopyFrom(PLATEAUInstancedCityModel src)
         {
             this.GeoReference = src.GeoReference;
