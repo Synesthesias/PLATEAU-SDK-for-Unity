@@ -84,7 +84,7 @@ namespace PLATEAU.Editor.CityImport.GUIParts
             else
             {
                 // チェックが入っていないなら、設定をオーバーライドするためのGUIを表示します。
-                using (PlateauEditorStyle.VerticalScopeLevel1())
+                using (PlateauEditorStyle.VerticalScopeLevel2())
                 {
                     gui.Draw();
                 }
@@ -119,7 +119,7 @@ namespace PLATEAU.Editor.CityImport.GUIParts
         /// <summary>
         /// 仕様上、テクスチャが存在する可能性があるか（パッケージ種によってはない）
         /// </summary>
-        public bool MayTextureExist { get; set; }
+        public bool MayTextureExist { get; set; } = true;
         public TextureIncludeGUI(PackageLoadConfigExtendable conf) : base(conf)
         {
         }

@@ -54,7 +54,12 @@ namespace PLATEAU.Editor.CityImport.PackageLodSettingGUIs
 
         public void Draw()
         {
-            masterConfGUI.Draw();
+            // todo 折りたたみ可能にする
+            PlateauEditorStyle.FoldOut(true, "一括設定", () =>
+            {
+                masterConfGUI.Draw();
+            });
+            
             foreach (var gui in this.packageGUIList)
             {
                 gui.Draw();
