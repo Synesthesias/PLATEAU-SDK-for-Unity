@@ -25,6 +25,7 @@ namespace PLATEAU.Editor.CityImport.PackageLodSettingGUIs
         private PackageLoadConfigExtendableGUI masterConfGUI;
 
         private readonly PackageLoadConfigExtendable masterConf = new PackageLoadConfigExtendable();
+        private bool masterConfFoldOut = true;
 
         public PackageLoadConfigGUIList(PackageToLodDict availablePackageLODDict, CityLoadConfig cityLoadConf)
         {
@@ -54,10 +55,12 @@ namespace PLATEAU.Editor.CityImport.PackageLodSettingGUIs
 
         public void Draw()
         {
-            // todo 折りたたみ可能にする
-            PlateauEditorStyle.FoldOut(true, "一括設定", () =>
+            masterConfFoldOut = PlateauEditorStyle.FoldOut(masterConfFoldOut, "一括設定", () =>
             {
-                masterConfGUI.Draw();
+                using (PlateauEditorStyle.VerticalScopeLevel1())
+                {
+                    masterConfGUI.Draw(); 
+                }
             });
             
             foreach (var gui in this.packageGUIList)
