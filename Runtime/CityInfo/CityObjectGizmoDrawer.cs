@@ -1,13 +1,13 @@
-﻿using PLATEAU.PolygonMesh;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using PLATEAU.PolygonMesh;
 using UnityEditor;
 using UnityEngine;
 
-namespace PLATEAU
+namespace PLATEAU.CityInfo
 {
     /// <summary>
     /// 属性情報パネル表示時にシーン上に選択中地物の情報を表示します

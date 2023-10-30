@@ -4,7 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using PLATEAU.CityGML;
 using PLATEAU.CityImport.Load.Convert;
-using PLATEAU.CityImport.Setting;
+using PLATEAU.CityImport.Config;
 using PLATEAU.Dataset;
 using PLATEAU.PolygonMesh;
 using PLATEAU.Util;

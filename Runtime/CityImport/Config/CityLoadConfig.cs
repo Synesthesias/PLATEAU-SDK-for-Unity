@@ -3,25 +3,30 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using PLATEAU.CityImport.AreaSelector;
+using PLATEAU.CityImport.Config.PackageLoadConfigs;
 using PLATEAU.Dataset;
 using PLATEAU.Native;
 using PLATEAU.PolygonMesh;
 using PLATEAU.Util;
 
-namespace PLATEAU.CityImport.Setting
+namespace PLATEAU.CityImport.Config
 {
     /// <summary>
     /// 都市インポートの設定です。
     /// インポート画面の設定GUIでユーザーはこの設定値を書き換えていくことになります。
-    /// パッケージごとのインポート設定については<see cref="PackageLoadSetting"/>を参照してください。
+    /// パッケージごとのインポート設定については<see cref="PackageLoadConfigDict"/>を参照してください。
     /// 設定GUIについてはCityAddGUIおよびCityLoadConfigGUIを参照してください。
     /// </summary>
     internal class CityLoadConfig
     {
         /// <summary>
-        /// 都市モデル読み込みの全体設定です。
+        /// 都市モデル読み込み元に関する設定です。
         /// </summary>
         public DatasetSourceConfig DatasetSourceConfig { get; set; }
+        
+        /// <summary>
+        /// 範囲選択で選択された範囲です。
+        /// </summary>
         public string[] AreaMeshCodes { get; private set; }
         
         /// <summary>
@@ -36,22 +41,17 @@ namespace PLATEAU.CityImport.Setting
         /// ユーザーが選択した直交座標系の原点から、何メートルの地点を3Dモデルの原点とするかです。
         /// </summary>
         public PlateauVector3d ReferencePoint { get; set; }
-        
+
         /// <summary>
         /// 都市モデル読み込みの、パッケージ種ごとの設定です。
         /// </summary>
-        private readonly Dictionary<PredefinedCityModelPackage, PackageLoadSetting> perPackagePairSettings =
-            new ();
+        public PackageLoadConfigDict PackageLoadConfigDict { get; private set; }
 
-        /// <summary>
-        /// 値ペア (パッケージ種, そのパッケージに関する設定) を、パッケージごとの IEnumerable にして返します。
-        /// </summary>
-        public IEnumerable<KeyValuePair<PredefinedCityModelPackage, PackageLoadSetting>> ForEachPackagePair =>
-            this.perPackagePairSettings;
+        
 
-        public PackageLoadSetting GetConfigForPackage(PredefinedCityModelPackage package)
+        public PackageLoadConfig GetConfigForPackage(PredefinedCityModelPackage package)
         {
-            return this.perPackagePairSettings[package];
+            return PackageLoadConfigDict.GetConfigForPackage(package);
         }
         
         /// <summary>
@@ -71,12 +71,8 @@ namespace PLATEAU.CityImport.Setting
             using var datasetAccessor = datasetSource.Accessor.FilterByMeshCodes(meshCodes);
 
             // パッケージ種ごとの設定で「ロードする」にチェックが入っているパッケージ種で絞り込みます。
-            var targetPackages =
-                this
-                    .ForEachPackagePair
-                    .Where(pair => pair.Value.LoadPackage)
-                    .Select(pair => pair.Key);
-            var foundGmls = new List<GmlFile>();
+            var targetPackages = PackageLoadConfigDict.PackagesToLoad();
+            var foundGMLList = new List<GmlFile>();
 
             // 絞り込まれたGMLパスを戻り値のリストに追加します。
             foreach (var package in targetPackages)
@@ -86,11 +82,11 @@ namespace PLATEAU.CityImport.Setting
                 for (int i = 0; i < gmlCount; i++)
                 {
                     var gml = gmlFiles.At(i);
-                    foundGmls.Add(gml);
+                    foundGMLList.Add(gml);
                 }
             }
 
-            return foundGmls;
+            return foundGMLList;
         }
 
         /// <summary>
@@ -110,11 +106,7 @@ namespace PLATEAU.CityImport.Setting
         /// </summary>
         private void InitWithPackageLodsDict(PackageToLodDict dict)
         {
-            this.perPackagePairSettings.Clear();
-            foreach (var (package, availableMaxLOD) in dict)
-            {
-                this.perPackagePairSettings.Add(package, PackageLoadSetting.CreateSettingFor(package, availableMaxLOD));
-            }
+            PackageLoadConfigDict = new PackageLoadConfigDict(dict);
         }
 
         /// <summary>
@@ -126,19 +118,21 @@ namespace PLATEAU.CityImport.Setting
             using var geoReference = CoordinatesConvertUtil.UnityStandardGeoReference(CoordinateZoneID);
 
             // 選択エリアを囲むExtentを計算
-            var Extent = new Extent();
-            Extent.Min = new GeoCoordinate(180.0, 180.0, 0.0);
-            Extent.Max = new GeoCoordinate(-180.0, -180.0, 0.0);
-            for (var i = 0; i < AreaMeshCodes.Length; ++i)
+            var extent = new Extent
             {
-                var PartialExtent = MeshCode.Parse(AreaMeshCodes[i]).Extent;
-                Extent.Min.Latitude = Math.Min(PartialExtent.Min.Latitude, Extent.Min.Latitude);
-                Extent.Min.Longitude = Math.Min(PartialExtent.Min.Longitude, Extent.Min.Longitude);
-                Extent.Max.Latitude = Math.Max(PartialExtent.Max.Latitude, Extent.Max.Latitude);
-                Extent.Max.Longitude = Math.Max(PartialExtent.Max.Longitude, Extent.Max.Longitude);
+                Min = new GeoCoordinate(180.0, 180.0, 0.0),
+                Max = new GeoCoordinate(-180.0, -180.0, 0.0)
+            };
+            foreach (var meshCode in AreaMeshCodes)
+            {
+                var partialExtent = MeshCode.Parse(meshCode).Extent;
+                extent.Min.Latitude = Math.Min(partialExtent.Min.Latitude, extent.Min.Latitude);
+                extent.Min.Longitude = Math.Min(partialExtent.Min.Longitude, extent.Min.Longitude);
+                extent.Max.Latitude = Math.Max(partialExtent.Max.Latitude, extent.Max.Latitude);
+                extent.Max.Longitude = Math.Max(partialExtent.Max.Longitude, extent.Max.Longitude);
             }
 
-            var center = geoReference.Project(Extent.Center);
+            var center = geoReference.Project(extent.Center);
             ReferencePoint = center;
             return center;
         }
@@ -153,13 +147,8 @@ namespace PLATEAU.CityImport.Setting
         
         private static bool ShouldExcludeCityObjectOutsideExtent(PredefinedCityModelPackage package)
         {
-            if (package == PredefinedCityModelPackage.Relief) return false;
-            return true;
+            return package != PredefinedCityModelPackage.Relief;
         }
-
-        private static bool ShouldExcludePolygonsOutsideExtent(PredefinedCityModelPackage package)
-        {
-            return !ShouldExcludeCityObjectOutsideExtent(package);
-        }
+        
     }
 }
