@@ -1,13 +1,14 @@
 ﻿using System.Collections.Generic;
 using PLATEAU.CityImport.Config;
+using PLATEAU.CityImport.Config.PackageLoadConfigs;
 using PLATEAU.Dataset;
-using PLATEAU.Editor.CityImport.GUIParts;
+using PLATEAU.Editor.CityImport.PackageLoadConfigGUIs.GUIParts;
 using PLATEAU.Editor.EditorWindow.Common;
 #if UNITY_EDITOR
 #endif
 
 
-namespace PLATEAU.Editor.CityImport.PackageLodSettingGUIs
+namespace PLATEAU.Editor.CityImport.PackageLoadConfigGUIs
 {
     /// <summary>
     /// インポート設定GUIのうち、パッケージ種ごとの設定GUI <see cref="PackageLoadConfigGUI"/>を、利用可能パッケージ分だけ集めたものです。

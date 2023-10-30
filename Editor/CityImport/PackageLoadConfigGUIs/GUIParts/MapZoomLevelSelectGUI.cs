@@ -6,11 +6,9 @@ using PLATEAU.Editor.EditorWindow.Common;
 using PLATEAU.Native;
 using PLATEAU.Texture;
 using PLATEAU.Util;
-#if UNITY_EDITOR
 using UnityEditor;
-#endif
 
-namespace PLATEAU.Editor.CityImport.GUIParts
+namespace PLATEAU.Editor.CityImport.PackageLoadConfigGUIs.GUIParts
 {
     /// <summary>
     /// 地図タイルのズームレベルを選択するGUIです。

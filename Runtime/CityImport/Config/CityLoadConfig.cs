@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using PLATEAU.CityImport.AreaSelector;
+using PLATEAU.CityImport.Config.PackageLoadConfigs;
 using PLATEAU.Dataset;
 using PLATEAU.Native;
 using PLATEAU.PolygonMesh;
@@ -117,12 +118,14 @@ namespace PLATEAU.CityImport.Config
             using var geoReference = CoordinatesConvertUtil.UnityStandardGeoReference(CoordinateZoneID);
 
             // 選択エリアを囲むExtentを計算
-            var extent = new Extent();
-            extent.Min = new GeoCoordinate(180.0, 180.0, 0.0);
-            extent.Max = new GeoCoordinate(-180.0, -180.0, 0.0);
-            for (var i = 0; i < AreaMeshCodes.Length; ++i)
+            var extent = new Extent
             {
-                var partialExtent = MeshCode.Parse(AreaMeshCodes[i]).Extent;
+                Min = new GeoCoordinate(180.0, 180.0, 0.0),
+                Max = new GeoCoordinate(-180.0, -180.0, 0.0)
+            };
+            foreach (var meshCode in AreaMeshCodes)
+            {
+                var partialExtent = MeshCode.Parse(meshCode).Extent;
                 extent.Min.Latitude = Math.Min(partialExtent.Min.Latitude, extent.Min.Latitude);
                 extent.Min.Longitude = Math.Min(partialExtent.Min.Longitude, extent.Min.Longitude);
                 extent.Max.Latitude = Math.Max(partialExtent.Max.Latitude, extent.Max.Latitude);

@@ -4,7 +4,7 @@ using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
 
-namespace PLATEAU
+namespace PLATEAU.Editor.CityInfo
 {
     [CustomEditor(typeof(PLATEAUCityObjectGroup))]
     public class PLATEAUCityObjectGroupEditor : UnityEditor.Editor

@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using PLATEAU.Dataset;
 
-namespace PLATEAU.CityImport.Config
+namespace PLATEAU.CityImport.Config.PackageLoadConfigs
 {
     /// <summary>
     /// 都市インポートの設定のうち、パッケージごとのインポート設定をまとめたクラスです。

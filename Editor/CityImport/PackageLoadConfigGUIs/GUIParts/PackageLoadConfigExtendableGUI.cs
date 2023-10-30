@@ -1,13 +1,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using PLATEAU.CityImport.Config;
+using PLATEAU.CityImport.Config.PackageLoadConfigs;
 using PLATEAU.Dataset;
-using PLATEAU.Editor.CityImport.PackageLodSettingGUIs;
 using PLATEAU.Editor.EditorWindow.Common;
 using PLATEAU.PolygonMesh;
 using UnityEditor;
 
-namespace PLATEAU.Editor.CityImport.GUIParts
+namespace PLATEAU.Editor.CityImport.PackageLoadConfigGUIs.GUIParts
 {
     /// <summary>
     /// インポートのパッケージごとの設定GUIのうち、一括設定の部分です。

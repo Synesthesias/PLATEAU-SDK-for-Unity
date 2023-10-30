@@ -3,7 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using PLATEAU.Dataset;
 
-namespace PLATEAU.CityImport.Config
+namespace PLATEAU.CityImport.Config.PackageLoadConfigs
 {
     /// <summary>
     /// パッケージとそこに含まれる最大LODの組です。

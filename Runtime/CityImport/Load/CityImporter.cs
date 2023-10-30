@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using PLATEAU.CityAdjust;
 using PLATEAU.CityImport.Load.CityImportProcedure;
 using PLATEAU.CityImport.Config;
+using PLATEAU.CityImport.Config.PackageLoadConfigs;
 using PLATEAU.CityInfo;
 using PLATEAU.Geometries;
 using PLATEAU.Dataset;
