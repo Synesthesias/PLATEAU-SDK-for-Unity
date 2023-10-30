@@ -53,7 +53,7 @@ namespace PLATEAU.CityImport.Config
         {
             // 初期値を決めます。
             AttachMapTile = true;
-            MapTileZoomLevel = 17;
+            MapTileZoomLevel = 18;
             MapTileURL = DefaultMapTileUrl;
         }
 

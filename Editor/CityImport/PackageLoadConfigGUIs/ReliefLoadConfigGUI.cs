@@ -6,8 +6,6 @@ using PLATEAU.Editor.CityImport.PackageLoadConfigGUIs.Components;
 using PLATEAU.Editor.EditorWindow.Common;
 using UnityEditor;
 using UnityEngine;
-#if UNITY_EDITOR
-#endif
 
 namespace PLATEAU.Editor.CityImport.PackageLoadConfigGUIs
 {
@@ -22,8 +20,8 @@ namespace PLATEAU.Editor.CityImport.PackageLoadConfigGUIs
         private string mapTileURLOnGUI;
 
 
-        public ReliefLoadConfigGUI(ReliefLoadConfig config, PackageLoadConfigExtendable parentConf,
-            MeshCode firstMeshCode) : base(config, parentConf)
+        public ReliefLoadConfigGUI(ReliefLoadConfig config, PackageLoadConfigExtendable masterConf,
+            MeshCode firstMeshCode) : base(config, masterConf)
         {
             this.config = config;
             this.mapTileURLOnGUI = config.MapTileURL;

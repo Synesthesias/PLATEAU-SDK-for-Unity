@@ -8,9 +8,9 @@ namespace PLATEAU.Editor.CityImport.PackageLoadConfigGUIs.Extendables
     /// </summary>
     internal abstract class ExtendableConfigGUIBase
     {
-        protected PackageLoadConfigExtendable Conf;
+        protected readonly PackageLoadConfigExtendable Conf;
 
-        public ExtendableConfigGUIBase(PackageLoadConfigExtendable conf)
+        protected ExtendableConfigGUIBase(PackageLoadConfigExtendable conf)
         {
             Conf = conf;
         }

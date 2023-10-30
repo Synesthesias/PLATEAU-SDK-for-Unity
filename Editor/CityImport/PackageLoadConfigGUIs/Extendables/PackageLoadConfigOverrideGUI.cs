@@ -13,30 +13,30 @@ namespace PLATEAU.Editor.CityImport.PackageLoadConfigGUIs.Extendables
     internal class PackageLoadConfigOverrideGUI : PackageLoadConfigGUIComponent
     {
         private readonly PackageLoadConfigExtendableGUI gui;
-        private PackageLoadConfigExtendable ParentConf { get; set; }
+        private bool DoUseMasterConfig { get; set; } = true;
+        /// <summary> 「一括設定と同じ」場合に使用する一括設定への参照です。 </summary>
+        private PackageLoadConfigExtendable MasterConf { get; }
 
         public PackageLoadConfigOverrideGUI(
-            PackageLoadConfig packageConf, PackageLoadConfigExtendable parentConf)
+            PackageLoadConfig packageConf, PackageLoadConfigExtendable masterConf)
             : base(packageConf)
         {
-            ParentConf = parentConf;
+            MasterConf = masterConf;
             gui = new PackageLoadConfigExtendableGUI(packageConf.ConfExtendable);
             
             bool mayTextureExist = CityModelPackageInfo.GetPredefined(Conf.Package).hasAppearance;
             gui.GetGUIByType<TextureIncludeGUI>().MayTextureExist = mayTextureExist;
 
         }
-        
-        private bool DoUseParentConfig { get; set; } = true;
 
 
         public override void Draw()
         {
-            DoUseParentConfig = EditorGUILayout.Toggle("一括設定と同じ", DoUseParentConfig);
-            if (DoUseParentConfig)
+            DoUseMasterConfig = EditorGUILayout.Toggle("一括設定と同じ", DoUseMasterConfig);
+            if (DoUseMasterConfig)
             {
                 // 「一括設定と同じ」にチェックが入っているなら、一括設定を適用します。
-                gui.Conf.CopyFrom(ParentConf);
+                gui.Conf.CopyFrom(MasterConf);
             }
             else
             {
