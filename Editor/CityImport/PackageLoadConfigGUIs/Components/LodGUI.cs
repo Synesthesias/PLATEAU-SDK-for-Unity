@@ -3,7 +3,7 @@ using PLATEAU.CityImport.Config.PackageLoadConfigs;
 using PLATEAU.Dataset;
 using PLATEAU.Editor.EditorWindow.Common;
 
-namespace PLATEAU.Editor.CityImport.PackageLoadConfigGUIs.GUIParts
+namespace PLATEAU.Editor.CityImport.PackageLoadConfigGUIs.Components
 {
     /// <summary>
     /// LOD範囲の設定GUIです。

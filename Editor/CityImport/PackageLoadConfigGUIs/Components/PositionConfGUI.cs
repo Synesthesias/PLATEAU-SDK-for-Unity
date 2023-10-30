@@ -3,7 +3,7 @@ using PLATEAU.Editor.EditorWindow.Common;
 using UnityEditor;
 using UnityEngine;
 
-namespace PLATEAU.Editor.CityImport.PackageLoadConfigGUIs.GUIParts
+namespace PLATEAU.Editor.CityImport.PackageLoadConfigGUIs.Components
 {
     /// <summary>
     /// インポートの基準座標を選択するGUIです。

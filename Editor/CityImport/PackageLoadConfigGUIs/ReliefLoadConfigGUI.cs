@@ -2,7 +2,7 @@ using System;
 using PLATEAU.CityImport.Config;
 using PLATEAU.CityImport.Config.PackageLoadConfigs;
 using PLATEAU.Dataset;
-using PLATEAU.Editor.CityImport.PackageLoadConfigGUIs.GUIParts;
+using PLATEAU.Editor.CityImport.PackageLoadConfigGUIs.Components;
 using PLATEAU.Editor.EditorWindow.Common;
 using UnityEditor;
 using UnityEngine;

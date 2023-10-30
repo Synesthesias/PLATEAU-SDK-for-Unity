@@ -2,10 +2,8 @@
 using PLATEAU.CityImport.Config;
 using PLATEAU.CityImport.Config.PackageLoadConfigs;
 using PLATEAU.Dataset;
-using PLATEAU.Editor.CityImport.PackageLoadConfigGUIs.GUIParts;
+using PLATEAU.Editor.CityImport.PackageLoadConfigGUIs.Extendables;
 using PLATEAU.Editor.EditorWindow.Common;
-#if UNITY_EDITOR
-#endif
 
 
 namespace PLATEAU.Editor.CityImport.PackageLoadConfigGUIs
@@ -23,7 +21,7 @@ namespace PLATEAU.Editor.CityImport.PackageLoadConfigGUIs
         private readonly List<PackageLoadConfigGUI> packageGUIList;
         
         /// <summary> 一括設定のGUIです。 </summary>
-        private PackageLoadConfigExtendableGUI masterConfGUI;
+        private readonly PackageLoadConfigExtendableGUI masterConfGUI;
 
         private readonly PackageLoadConfigExtendable masterConf = new PackageLoadConfigExtendable();
         private bool masterConfFoldOut = true;

@@ -8,7 +8,7 @@ using PLATEAU.Texture;
 using PLATEAU.Util;
 using UnityEditor;
 
-namespace PLATEAU.Editor.CityImport.PackageLoadConfigGUIs.GUIParts
+namespace PLATEAU.Editor.CityImport.PackageLoadConfigGUIs.Components
 {
     /// <summary>
     /// 地図タイルのズームレベルを選択するGUIです。
@@ -17,7 +17,7 @@ namespace PLATEAU.Editor.CityImport.PackageLoadConfigGUIs.GUIParts
     {
         private readonly ReliefLoadConfig config;
         private bool zoomLevelSearchButtonPushed;
-        private GeoCoordinate geoCoord;
+        private readonly GeoCoordinate geoCoord;
         private MapZoomLevelSearchResult zoomLevelSearchResult = new MapZoomLevelSearchResult{AvailableZoomLevelMax = -1, AvailableZoomLevelMin = -1, IsValid = false};
         private string mapTileUrl;
         public MapZoomLevelSelectGUI(ReliefLoadConfig conf, string mapTileUrl, MeshCode firstMeshCode)

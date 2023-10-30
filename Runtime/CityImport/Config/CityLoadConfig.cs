@@ -14,7 +14,7 @@ namespace PLATEAU.CityImport.Config
     /// <summary>
     /// 都市インポートの設定です。
     /// インポート画面の設定GUIでユーザーはこの設定値を書き換えていくことになります。
-    /// パッケージごとのインポート設定については<see cref="Setting.PackageLoadConfigDict"/>を参照してください。
+    /// パッケージごとのインポート設定については<see cref="PackageLoadConfigDict"/>を参照してください。
     /// 設定GUIについてはCityAddGUIおよびCityLoadConfigGUIを参照してください。
     /// </summary>
     internal class CityLoadConfig
@@ -72,7 +72,7 @@ namespace PLATEAU.CityImport.Config
 
             // パッケージ種ごとの設定で「ロードする」にチェックが入っているパッケージ種で絞り込みます。
             var targetPackages = PackageLoadConfigDict.PackagesToLoad();
-            var foundGmls = new List<GmlFile>();
+            var foundGMLList = new List<GmlFile>();
 
             // 絞り込まれたGMLパスを戻り値のリストに追加します。
             foreach (var package in targetPackages)
@@ -82,11 +82,11 @@ namespace PLATEAU.CityImport.Config
                 for (int i = 0; i < gmlCount; i++)
                 {
                     var gml = gmlFiles.At(i);
-                    foundGmls.Add(gml);
+                    foundGMLList.Add(gml);
                 }
             }
 
-            return foundGmls;
+            return foundGMLList;
         }
 
         /// <summary>
@@ -147,13 +147,8 @@ namespace PLATEAU.CityImport.Config
         
         private static bool ShouldExcludeCityObjectOutsideExtent(PredefinedCityModelPackage package)
         {
-            if (package == PredefinedCityModelPackage.Relief) return false;
-            return true;
+            return package != PredefinedCityModelPackage.Relief;
         }
-
-        private static bool ShouldExcludePolygonsOutsideExtent(PredefinedCityModelPackage package)
-        {
-            return !ShouldExcludeCityObjectOutsideExtent(package);
-        }
+        
     }
 }

@@ -1,8 +1,7 @@
 using System;
-using PLATEAU.CityImport.Config.PackageLoadConfigs;
 using PLATEAU.PolygonMesh;
 
-namespace PLATEAU.CityImport.Config
+namespace PLATEAU.CityImport.Config.PackageLoadConfigs
 {
     /// <summary>
     /// <see cref="PackageLoadConfig"/>のうち、一括設定から設定を引き継ぐことが可能な部分の設定値クラスです。

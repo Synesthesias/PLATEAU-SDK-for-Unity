@@ -2,7 +2,7 @@ using PLATEAU.CityImport.Config.PackageLoadConfigs;
 using UnityEditor;
 using UnityEngine;
 
-namespace PLATEAU.Editor.CityImport.PackageLoadConfigGUIs.GUIParts
+namespace PLATEAU.Editor.CityImport.PackageLoadConfigGUIs.Components
 {
     /// <summary>
     /// デフォルトマテリアルの設定GUIです。

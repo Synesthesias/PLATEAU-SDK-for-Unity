@@ -12,7 +12,7 @@ namespace PLATEAU.CityImport.Config.PackageLoadConfigs
     /// </summary>
     internal class PackageLoadConfigDict
     {
-        private Dictionary<PredefinedCityModelPackage, PackageLoadConfig> data;
+        private readonly Dictionary<PredefinedCityModelPackage, PackageLoadConfig> data;
 
         /// <summary>
         /// パッケージ種とLODの組から設定値を作ります。
