@@ -42,6 +42,7 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos.AreaRectangles
         private List<bool> selectedAreaList;
         
         
+        // FIXME RowがXでColumnがZって直感に反する気がする。逆では？
         private int GetRowIndex(double minX, double maxX, int numGrid, double value)
         {
             var gridSize = (maxX - minX) / numGrid;
@@ -161,7 +162,7 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos.AreaRectangles
                     {
                         if (selectedAreaList[i])
                         {
-                            meshIds.Add($"{MeshCode.ToString()}{i.ToString()}");
+                            meshIds.Add($"{MeshCode.ToString()}{(i+1).ToString()}");
                         }
                     }
                     break;
@@ -301,6 +302,7 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos.AreaRectangles
                 
                 var rowIndex = GetRowIndex(AreaMin.x, AreaMax.x, divideNumRow, hit.point.x);
                 var columnIndex = GetColumnIndex(AreaMin.z, AreaMax.z, divideNumColumn, hit.point.z);
+                // FIXME 同じ式の繰り返し
                 selectedAreaList[rowIndex + columnIndex * divideNumColumn] = !selectedAreaList[rowIndex + columnIndex * divideNumColumn];
             }
         }
