@@ -58,6 +58,12 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos
             outGeoReference = GeoReference.Create(referencePoint, 1f, CoordinateSystem.EUN, coordinateZoneID);
             foreach (var meshCode in meshCodes)
             {
+                // Level4以上のMeshCodeであって、別のLevel3の範囲に含まれているものは重複のため除外します。
+                if (meshCode.Level >= 4 && meshCodes.Any(other => other.Level == 3 && other.Level3() == meshCode.Level3()))
+                {
+                    continue;
+                }
+                
                 var drawer = new MeshCodeGizmoDrawer();
                 drawer.SetUp(meshCode, outGeoReference);
                 this.meshCodeDrawers.Add(drawer);
@@ -120,7 +126,6 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos
         {
             foreach (var meshCodeGizmoDrawer in this.meshCodeDrawers)
             {
-                meshCodeGizmoDrawer.ApplyStyle();
                 // 大きな粒度の線は優先して表示されるようにします。
                 meshCodeGizmoDrawer.Priority = 999 - meshCodeGizmoDrawer.MeshCode.Level;
             }

@@ -15,10 +15,9 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos.AreaRectangles
     /// </summary>
     internal class MeshCodeGizmoDrawer : BoxGizmoDrawer
     {
-        private const int ThirdMeshCodeLength = 8;
         
-        private const int NumAreaColumn = 4;
-        private const int NumAreaRow = 4;
+        private int divideNumColumn;
+        private int divideNumRow;
         private const int LineWidthLevel2 = 3;
         private const int LineWidthLevel3 = 2;
         private const int LineWidthLevel4 = 1;
@@ -42,13 +41,6 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos.AreaRectangles
         private GeoReference geoReference;
         private List<bool> selectedAreaList;
         
-        /// <summary> メッシュコード1エリアの四角形を、縦と横にそれぞれこの数だけ分割するような細い線を引きます。 </summary>
-        private int innerDivideCount = 4;
-
-        private bool IsThirdMeshCode()
-        {
-            return MeshCode.ToString().Length == ThirdMeshCodeLength;
-        }
         
         private int GetRowIndex(double minX, double maxX, int numGrid, double value)
         {
@@ -100,15 +92,18 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos.AreaRectangles
                 (float)Math.Abs(max.Z - min.Z));
             Init(centerPosTmp, sizeTmp, meshCode);
             MeshCode = meshCode;
+            
+            ApplyStyle();
 
             // デフォルトの選択状態を設定
             ResetSelectedArea();
+            
         }
 
         public void ResetSelectedArea()
         {
             selectedAreaList = new List<bool>();
-            for (var i = 0; i < NumAreaRow * NumAreaColumn; i++)
+            for (var i = 0; i < divideNumRow * divideNumColumn; i++)
             {
                 selectedAreaList.Add(false);
             }
@@ -119,22 +114,27 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos.AreaRectangles
             return 0 < selectedAreaList.Where(selectedArea => selectedArea).ToList().Count;
         }
         
-        public void ApplyStyle()
+        private void ApplyStyle()
         {
             switch (MeshCode.Level)
             {
                 case 2:
                     LineWidth = LineWidthLevel2;
                     BoxColor = BoxColorNormalLevel2;
+                    divideNumColumn = 4;
+                    divideNumRow = 4;
                     break;
                 case 3:
                     LineWidth = LineWidthLevel3;
                     BoxColor = BoxColorNormalLevel3;
+                    divideNumColumn = 4;
+                    divideNumRow = 4;
                     break;
                 default:
                     LineWidth = LineWidthLevel4;
                     BoxColor = BoxColorNormalLevel4;
-                    innerDivideCount = 2; // 小さい範囲なので、中の分割線の数を減らします。
+                    divideNumColumn = 2;
+                    divideNumRow = 2;
                     break;
             }
         }
@@ -142,16 +142,37 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos.AreaRectangles
         public List<string> GetSelectedMeshIds()
         {
             List<string> meshIds = new();
-            for (var col = 0; col < NumAreaColumn; col++)
+            switch (MeshCode.Level)
             {
-                for (var row = 0; row < NumAreaRow; row++)
-                {
-                    if (selectedAreaList[row + col * NumAreaColumn])
+                case 3:
+                    for (var col = 0; col < divideNumColumn; col++)
                     {
-                        meshIds.Add($"{MeshCode.ToString()}{SuffixMeshIds[row + col * NumAreaColumn]}");
+                        for (var row = 0; row < divideNumRow; row++)
+                        {
+                            if (selectedAreaList[row + col * divideNumColumn])
+                            {
+                                meshIds.Add($"{MeshCode.ToString()}{SuffixMeshIds[row + col * divideNumColumn]}");
+                            }
+                        }
                     }
-                }
+                    break;
+                case 4:
+                    for (int i = 0; i < 4; i++)
+                    {
+                        if (selectedAreaList[i])
+                        {
+                            meshIds.Add($"{MeshCode.ToString()}{i.ToString()}");
+                        }
+                    }
+                    break;
+                case 2:
+                    // 上の処理で十分
+                    break;
+                default:
+                    Debug.LogError($"Not implemented for this mesh code level {MeshCode.Level}");
+                    break;
             }
+            
 
             return meshIds;
         }
@@ -170,32 +191,32 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos.AreaRectangles
             var max = AreaMax;
 
             // 追加でボックスの中を分割するラインを引きます。
-            var xDiff = this.Size.x / innerDivideCount;
+            var xDiff = this.Size.x / divideNumColumn;
             var linePosUp = min + Vector3.right * xDiff;
             // 縦のライン
-            for (int i = 0; i < innerDivideCount - 1; i++)
+            for (int i = 0; i < divideNumColumn - 1; i++)
             {
                 UnityEngine.Gizmos.DrawLine(linePosUp, linePosUp + Vector3.forward * this.Size.z);
                 linePosUp += Vector3.right * xDiff;
             }
 
             // 横のライン
-            var zDiff = this.Size.z / innerDivideCount;
+            var zDiff = this.Size.z / divideNumRow;
             var linePosLeft = min + Vector3.forward * zDiff;
-            for (int i = 0; i < innerDivideCount - 1; i++)
+            for (int i = 0; i < divideNumRow - 1; i++)
             {
                 UnityEngine.Gizmos.DrawLine(linePosLeft, linePosLeft + Vector3.right * this.Size.x);
                 linePosLeft += Vector3.forward * zDiff;
             }
 
             // エリア塗りつぶし
-            var cellWidth = (max.x - min.x) / NumAreaColumn;
-            var cellHeight = (max.z - min.z) / NumAreaRow;
-            for (var col = 0; col < NumAreaColumn; col++)
+            var cellWidth = (max.x - min.x) / divideNumColumn;
+            var cellHeight = (max.z - min.z) / divideNumRow;
+            for (var col = 0; col < divideNumColumn; col++)
             {
-                for (var row = 0; row < NumAreaRow; row++)
+                for (var row = 0; row < divideNumRow; row++)
                 {
-                    if (selectedAreaList[row + col * NumAreaColumn])
+                    if (selectedAreaList[row + col * divideNumColumn])
                     {
                         var rectVerts = new[]
                         {
@@ -262,10 +283,15 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos.AreaRectangles
             UnityEditor.Handles.EndGUI();
         }
 
+        private bool IsSelectable()
+        {
+            if (MeshCode.Level <= 2) return false;
+            return true;
+        }
+
         public void ToggleSelectArea(Vector2 mousePos)
         {
-            if (!IsThirdMeshCode())
-                return;
+            if (!IsSelectable()) return;
             
             var ray = HandleUtility.GUIPointToWorldRay(mousePos);
             if (Physics.Raycast(ray, out var hit, RayCastMaxDistance))
@@ -273,24 +299,23 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos.AreaRectangles
                 if ((AreaMin.x <= hit.point.x && hit.point.x <= AreaMax.x && AreaMin.z <= hit.point.z && hit.point.z <= AreaMax.z) == false)
                     return;
                 
-                var rowIndex = GetRowIndex(AreaMin.x, AreaMax.x, NumAreaRow, hit.point.x);
-                var columnIndex = GetColumnIndex(AreaMin.z, AreaMax.z, NumAreaColumn, hit.point.z);
-                selectedAreaList[rowIndex + columnIndex * NumAreaColumn] = !selectedAreaList[rowIndex + columnIndex * NumAreaColumn];
+                var rowIndex = GetRowIndex(AreaMin.x, AreaMax.x, divideNumRow, hit.point.x);
+                var columnIndex = GetColumnIndex(AreaMin.z, AreaMax.z, divideNumColumn, hit.point.z);
+                selectedAreaList[rowIndex + columnIndex * divideNumColumn] = !selectedAreaList[rowIndex + columnIndex * divideNumColumn];
             }
         }
 
         public void SetSelectArea(Vector3 areaSelectionMin, Vector3 areaSelectionMax, bool selectValue)
         {
-            if (!IsThirdMeshCode())
-                return;
+            if (!IsSelectable()) return;
             
             var min = AreaMin;
             var max = AreaMax;
-            var cellWidth = (max.x - min.x) / NumAreaColumn;
-            var cellHeight = (max.z - min.z) / NumAreaRow;
-            for (var col = 0; col < NumAreaColumn; col++)
+            var cellWidth = (max.x - min.x) / divideNumColumn;
+            var cellHeight = (max.z - min.z) / divideNumRow;
+            for (var col = 0; col < divideNumColumn; col++)
             {
-                for (var row = 0; row < NumAreaRow; row++)
+                for (var row = 0; row < divideNumRow; row++)
                 {
                     var rectMinX = min.x + cellWidth * row;
                     var rectMaxX = min.x + cellWidth * (row + 1);
@@ -301,7 +326,7 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos.AreaRectangles
                         continue;
                     }
 
-                    selectedAreaList[row + col * NumAreaColumn] = selectValue;
+                    selectedAreaList[row + col * divideNumColumn] = selectValue;
                 }
             }
         }
