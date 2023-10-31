@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using PLATEAU.CityImport.AreaSelector.SceneObjs;
-using PLATEAU.CityImport.Config;
 using PLATEAU.CityImport.Config.PackageLoadConfigs;
 using PLATEAU.Geometries;
 using PLATEAU.Dataset;
@@ -28,15 +27,14 @@ namespace PLATEAU.CityImport.AreaSelector
         [SerializeField] private DatasetSourceConfig datasetSourceConfig;
         private AreaSelectGizmosDrawer gizmosDrawer;
         private IAreaSelectResultReceiver areaSelectResultReceiver;
-        // private PredefinedCityModelPackage availablePackageFlags;
         private int coordinateZoneID;
         private GeoReference geoReference;
         private bool prevSceneCameraRotationLocked;
         private GSIMapLoaderZoomSwitch mapLoader;
-        private Extent EntireExtent;
+        private Extent entireExtent;
         #if UNITY_EDITOR
         private EditorWindow prevEditorWindow;
-        MeshCodeSearchWindow meshSearchwindow;
+        private MeshCodeSearchWindow meshSearchWindow;
         #endif
 
         public static bool IsAreaSelectEnabled { get; set; }
@@ -59,11 +57,9 @@ namespace PLATEAU.CityImport.AreaSelector
             AreaSelectorGUI.Enable(this);
             AreaSelectorGuideGUI.Enable();
             LodLegendGUI.Enable(this);
-#if UNITY_EDITOR
-            EditorUtility.DisplayProgressBar("", "データファイルを検索中です...", 0f);
-#endif
+            using var progressBar = new ProgressBar();
+            progressBar.Display("データファイルを検索中です...", 0f);
             ReadOnlyCollection<MeshCode> meshCodes;
-            // PredefinedCityModelPackage packageFlags;
             try
             {
                 GatherMeshCodes(this.datasetSourceConfig, out meshCodes);
@@ -72,9 +68,6 @@ namespace PLATEAU.CityImport.AreaSelector
             {
                 const string ErrorMessage = "メッシュコードの取得に失敗しました。";
                 Debug.LogError($"{ErrorMessage}\n{e}");
-#if UNITY_EDITOR
-                EditorUtility.ClearProgressBar();
-#endif
                 Dialogue.Display(ErrorMessage, "OK");
                 CancelAreaSelection();
                 return;
@@ -82,9 +75,6 @@ namespace PLATEAU.CityImport.AreaSelector
 
             if (meshCodes.Count == 0)
             {
-#if UNITY_EDITOR
-                EditorUtility.ClearProgressBar();
-#endif
                 Dialogue.Display("PLATEAU", "該当のデータがありません。", "OK");
                 
                 CancelAreaSelection();
@@ -94,24 +84,23 @@ namespace PLATEAU.CityImport.AreaSelector
             var drawerObj = new GameObject($"{nameof(AreaSelectGizmosDrawer)}");
             this.gizmosDrawer = drawerObj.AddComponent<AreaSelectGizmosDrawer>();
             this.gizmosDrawer.Init(meshCodes, this.datasetSourceConfig, this.coordinateZoneID, out this.geoReference);
-            // this.availablePackageFlags = packageFlags;
-            EntireExtent = CalcExtentCoversAllMeshCodes(meshCodes);
-            this.mapLoader = new GSIMapLoaderZoomSwitch(this.geoReference, EntireExtent);
-            SetInitialCamera(EntireExtent);
+            entireExtent = CalcExtentCoversAllMeshCodes(meshCodes);
+            this.mapLoader = new GSIMapLoaderZoomSwitch(this.geoReference, entireExtent);
+            SetInitialCamera(entireExtent);
 #if (UNITY_EDITOR && UNITY_2019_2_OR_NEWER)
             SceneVisibilityManager.instance.DisableAllPicking();
 #endif
         }
 
-        private void SetInitialCamera(Extent entireExtent)
+        private void SetInitialCamera(Extent entireExtentArg)
         {
             #if UNITY_EDITOR
             RotateSceneViewCameraDown();
-            var centerPos = this.geoReference.Project(entireExtent.Center).ToUnityVector();
+            var centerPos = this.geoReference.Project(entireExtentArg.Center).ToUnityVector();
             var initialCameraPos = new Vector3(centerPos.x, 0, centerPos.z);
             SceneView.lastActiveSceneView.pivot = initialCameraPos;
             // シーンビューのカメラが全体を映すようにします。
-            SceneView.lastActiveSceneView.size = Mathf.Abs((float)(this.geoReference.Project(entireExtent.Max).Z - this.geoReference.Project(entireExtent.Min).Z) / 2f);
+            SceneView.lastActiveSceneView.size = Mathf.Abs((float)(this.geoReference.Project(entireExtentArg.Max).Z - this.geoReference.Project(entireExtentArg.Min).Z) / 2f);
             #endif
         }
 
@@ -143,7 +132,10 @@ namespace PLATEAU.CityImport.AreaSelector
         {
 #if UNITY_EDITOR
             SceneView.lastActiveSceneView.isRotationLocked = this.prevSceneCameraRotationLocked;
-            meshSearchwindow?.Close();
+            if (meshSearchWindow != null)
+            {
+                meshSearchWindow.Close();
+            }
 #endif
             this.mapLoader?.Dispose();
         }
@@ -204,6 +196,7 @@ namespace PLATEAU.CityImport.AreaSelector
             using var gmlFiles = accessor.GetAllGmlFiles();
             var ret = new PackageToLodDict();
             int gmlCount = gmlFiles.Length;
+            using var progressBar = new ProgressBar();
             for (int i = 0; i < gmlCount; i++)
             {
                 var gml = gmlFiles.At(i);
@@ -212,13 +205,8 @@ namespace PLATEAU.CityImport.AreaSelector
 
                 //Progress表示
                 float progress = (float)i / gmlCount;
-                #if UNITY_EDITOR
-                EditorUtility.DisplayProgressBar("PLATEAU", "利用可能なデータを検索中です......", progress);
-                #endif
+                progressBar.Display("利用可能なデータを検索中です...", progress);
             }
-            #if UNITY_EDITOR
-            EditorUtility.ClearProgressBar();
-            #endif
             return ret;
         }
 
@@ -252,8 +240,8 @@ namespace PLATEAU.CityImport.AreaSelector
         internal void ShowMeshCodeSearchWindow()
         {
             #if UNITY_EDITOR
-            meshSearchwindow = MeshCodeSearchWindow.ShowWindow();
-            meshSearchwindow.Init(this);
+            meshSearchWindow = MeshCodeSearchWindow.ShowWindow();
+            meshSearchWindow.Init(this);
             #endif
         }
 
@@ -271,7 +259,7 @@ namespace PLATEAU.CityImport.AreaSelector
                 var initialCameraPos = new Vector3(centerPos.x, 0, centerPos.z);
 
                 //範囲チェック
-                var intersection = Extent.Intersection(extent, EntireExtent, true);
+                var intersection = Extent.Intersection(extent, entireExtent, true);
                 var failedCoord = new GeoCoordinate(-99, -99, -99);
                 if (intersection.Min.Equals(failedCoord) && intersection.Max.Equals(failedCoord))
                 {
@@ -287,9 +275,12 @@ namespace PLATEAU.CityImport.AreaSelector
                 Debug.LogError($"code:{code} Error:{e.Message}");
                 return false;
             }
-            
-            meshSearchwindow?.Close();
-            meshSearchwindow = null;
+
+            if (meshSearchWindow != null)
+            {
+                meshSearchWindow.Close();
+            }
+            meshSearchWindow = null;
             #endif
             return true;
         }

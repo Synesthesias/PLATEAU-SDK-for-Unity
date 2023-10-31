@@ -1,10 +1,7 @@
 using System;
 using System.IO;
-using PLATEAU.Dataset;
 #if UNITY_EDITOR
-using UnityEditor;
 #endif
-using UnityEngine;
 using UnityEngine.Rendering;
 
 namespace PLATEAU.Util
