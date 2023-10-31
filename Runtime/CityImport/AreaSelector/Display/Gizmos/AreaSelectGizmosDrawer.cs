@@ -1,14 +1,17 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using PLATEAU.Geometries;
+using PLATEAU.CityImport.AreaSelector.Display.Gizmos.AreaRectangles;
+using PLATEAU.CityImport.AreaSelector.Display.Gizmos.LODIcons;
+using PLATEAU.CityImport.AreaSelector.Display.Maps;
 using PLATEAU.Dataset;
+using PLATEAU.Geometries;
 using PLATEAU.Native;
 using PLATEAU.Util;
 using UnityEditor;
 using UnityEngine;
 
-namespace PLATEAU.CityImport.AreaSelector.SceneObjs
+namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos
 {
     /// <summary>
     /// 範囲選択に関するギズモを表示する MonoBehaviour です。

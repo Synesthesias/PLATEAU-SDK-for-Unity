@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using PLATEAU.CityImport.AreaSelector.SceneObjs;
+using PLATEAU.CityImport.AreaSelector.Display.Gizmos;
+using PLATEAU.CityImport.AreaSelector.Display.Maps;
+using PLATEAU.CityImport.AreaSelector.Display.Windows;
 using PLATEAU.CityImport.Config.PackageLoadConfigs;
 using PLATEAU.Geometries;
 using PLATEAU.Dataset;
@@ -54,8 +56,8 @@ namespace PLATEAU.CityImport.AreaSelector
 
         private void Start()
         {
-            AreaSelectorGUI.Enable(this);
-            AreaSelectorGuideGUI.Enable();
+            AreaSelectorMenuWindow.Enable(this);
+            AreaSelectorGuideWindow.Enable();
             LodLegendGUI.Enable(this);
             using var progressBar = new ProgressBar();
             progressBar.Display("データファイルを検索中です...", 0f);
@@ -176,8 +178,8 @@ namespace PLATEAU.CityImport.AreaSelector
         internal void EndAreaSelection()
         {
             IsAreaSelectEnabled = false;
-            AreaSelectorGUI.Disable();
-            AreaSelectorGuideGUI.Disable();
+            AreaSelectorMenuWindow.Disable();
+            AreaSelectorGuideWindow.Disable();
             LodLegendGUI.Disable();
             var selectedMeshCodes = this.gizmosDrawer.SelectedMeshCodes.ToArray();
             var availablePackageLods = CalcAvailablePackageLodInMeshCodes(selectedMeshCodes, this.datasetSourceConfig);
@@ -212,8 +214,8 @@ namespace PLATEAU.CityImport.AreaSelector
 
         internal void CancelAreaSelection()
         {
-            AreaSelectorGUI.Disable();
-            AreaSelectorGuideGUI.Disable();
+            AreaSelectorMenuWindow.Disable();
+            AreaSelectorGuideWindow.Disable();
             LodLegendGUI.Disable();
             IsAreaSelectEnabled = false;
             var emptyAreaSelectResult = new MeshCode[] { };

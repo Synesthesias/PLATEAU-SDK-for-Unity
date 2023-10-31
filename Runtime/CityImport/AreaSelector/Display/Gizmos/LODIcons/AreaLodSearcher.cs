@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using PLATEAU.CityImport.Config.PackageLoadConfigs;
 using PLATEAU.Dataset;
 
-namespace PLATEAU.CityImport.AreaSelector.SceneObjs
+namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos.LODIcons
 {
     /// <summary>
     /// メッシュコード内で利用可能なLODを検索します。

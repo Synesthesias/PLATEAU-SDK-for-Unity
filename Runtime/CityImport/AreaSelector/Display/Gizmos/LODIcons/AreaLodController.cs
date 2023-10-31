@@ -1,15 +1,15 @@
 ﻿using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using PLATEAU.Geometries;
 using PLATEAU.Dataset;
+using PLATEAU.Geometries;
 using PLATEAU.Native;
 using PLATEAU.Util;
 using PLATEAU.Util.Async;
 using UnityEditor;
 using UnityEngine;
 
-namespace PLATEAU.CityImport.AreaSelector.SceneObjs
+namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos.LODIcons
 {
     /// <summary>
     /// 範囲選択画面で、利用可能なLODをメッシュコードごとに検索して表示します。<br />

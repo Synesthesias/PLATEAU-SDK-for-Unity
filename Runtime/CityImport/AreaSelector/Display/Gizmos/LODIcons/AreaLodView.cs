@@ -9,7 +9,7 @@ using PLATEAU.Util;
 using UnityEditor;
 using UnityEngine;
 
-namespace PLATEAU.CityImport.AreaSelector.SceneObjs
+namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos.LODIcons
 {
     /// <summary>
     /// 範囲選択画面で、メッシュコードごとに利用可能なLODを表示します。

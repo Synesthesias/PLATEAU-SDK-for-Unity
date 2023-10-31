@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using PLATEAU.Geometries;
 using PLATEAU.Dataset;
-using UnityEngine;
-using UnityEditor;
+using PLATEAU.Geometries;
 using PLATEAU.Native;
 using PLATEAU.Util;
+using UnityEditor;
+using UnityEngine;
 
-namespace PLATEAU.CityImport.AreaSelector.SceneObjs
+namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos.AreaRectangles
 {
     /// <summary>
     /// <see cref="MeshCode"/> に応じた四角形のギズモを表示します。
@@ -165,7 +165,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
             // 縦のライン
             for (int i = 0; i < InnerDivideCount - 1; i++)
             {
-                Gizmos.DrawLine(linePosUp, linePosUp + Vector3.forward * this.Size.z);
+                UnityEngine.Gizmos.DrawLine(linePosUp, linePosUp + Vector3.forward * this.Size.z);
                 linePosUp += Vector3.right * xDiff;
             }
 
@@ -174,7 +174,7 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
             var linePosLeft = min + Vector3.forward * zDiff;
             for (int i = 0; i < InnerDivideCount - 1; i++)
             {
-                Gizmos.DrawLine(linePosLeft, linePosLeft + Vector3.right * this.Size.x);
+                UnityEngine.Gizmos.DrawLine(linePosLeft, linePosLeft + Vector3.right * this.Size.x);
                 linePosLeft += Vector3.forward * zDiff;
             }
 
