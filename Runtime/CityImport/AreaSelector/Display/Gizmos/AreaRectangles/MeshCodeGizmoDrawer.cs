@@ -16,15 +16,17 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos.AreaRectangles
     internal class MeshCodeGizmoDrawer : BoxGizmoDrawer
     {
         private const int ThirdMeshCodeLength = 8;
-        private const int InnerDivideCount = 4;
+        
         private const int NumAreaColumn = 4;
         private const int NumAreaRow = 4;
         private const int LineWidthLevel2 = 3;
         private const int LineWidthLevel3 = 2;
+        private const int LineWidthLevel4 = 1;
         private const float CenterPosY = 15f;
         private const float RayCastMaxDistance = 100000.0f;
         private static readonly Color BoxColorNormalLevel2 = Color.black;
         private static readonly Color BoxColorNormalLevel3 = new(0f, 84f / 255f, 1f);
+        private static readonly Color BoxColorNormalLevel4 = Color.green;
         private static readonly Color HandleColor = new(1f, 72f / 255f, 0f);
         private static readonly Color SelectedFaceColor = new(1f, 204f / 255f, 153f / 255f, 0.5f);
         private static readonly Color TransparentColor = new(0f, 0f, 0f, 0f);
@@ -39,6 +41,9 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos.AreaRectangles
         public MeshCode MeshCode { get; private set; }
         private GeoReference geoReference;
         private List<bool> selectedAreaList;
+        
+        /// <summary> メッシュコード1エリアの四角形を、縦と横にそれぞれこの数だけ分割するような細い線を引きます。 </summary>
+        private int innerDivideCount = 4;
 
         private bool IsThirdMeshCode()
         {
@@ -122,9 +127,14 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos.AreaRectangles
                     LineWidth = LineWidthLevel2;
                     BoxColor = BoxColorNormalLevel2;
                     break;
-                default:
+                case 3:
                     LineWidth = LineWidthLevel3;
                     BoxColor = BoxColorNormalLevel3;
+                    break;
+                default:
+                    LineWidth = LineWidthLevel4;
+                    BoxColor = BoxColorNormalLevel4;
+                    innerDivideCount = 2; // 小さい範囲なので、中の分割線の数を減らします。
                     break;
             }
         }
@@ -160,19 +170,19 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos.AreaRectangles
             var max = AreaMax;
 
             // 追加でボックスの中を分割するラインを引きます。
-            var xDiff = this.Size.x / InnerDivideCount;
+            var xDiff = this.Size.x / innerDivideCount;
             var linePosUp = min + Vector3.right * xDiff;
             // 縦のライン
-            for (int i = 0; i < InnerDivideCount - 1; i++)
+            for (int i = 0; i < innerDivideCount - 1; i++)
             {
                 UnityEngine.Gizmos.DrawLine(linePosUp, linePosUp + Vector3.forward * this.Size.z);
                 linePosUp += Vector3.right * xDiff;
             }
 
             // 横のライン
-            var zDiff = this.Size.z / InnerDivideCount;
+            var zDiff = this.Size.z / innerDivideCount;
             var linePosLeft = min + Vector3.forward * zDiff;
-            for (int i = 0; i < InnerDivideCount - 1; i++)
+            for (int i = 0; i < innerDivideCount - 1; i++)
             {
                 UnityEngine.Gizmos.DrawLine(linePosLeft, linePosLeft + Vector3.right * this.Size.x);
                 linePosLeft += Vector3.forward * zDiff;

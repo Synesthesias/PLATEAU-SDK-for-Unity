@@ -122,12 +122,7 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos
             {
                 meshCodeGizmoDrawer.ApplyStyle();
                 // 大きな粒度の線は優先して表示されるようにします。
-                meshCodeGizmoDrawer.Priority = meshCodeGizmoDrawer.MeshCode.Level switch
-                {
-                    2 => 1,
-                    3 => 0,
-                    _ => 0
-                };
+                meshCodeGizmoDrawer.Priority = 999 - meshCodeGizmoDrawer.MeshCode.Level;
             }
 
             var gizmosToDraw = new List<BoxGizmoDrawer>();
