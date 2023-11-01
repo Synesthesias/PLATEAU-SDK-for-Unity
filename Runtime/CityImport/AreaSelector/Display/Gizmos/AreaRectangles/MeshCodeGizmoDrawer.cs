@@ -25,7 +25,7 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos.AreaRectangles
         private const float RayCastMaxDistance = 100000.0f;
         private static readonly Color BoxColorNormalLevel2 = Color.black;
         private static readonly Color BoxColorNormalLevel3 = new(0f, 84f / 255f, 1f);
-        private static readonly Color BoxColorNormalLevel4 = Color.green;
+        private static readonly Color BoxColorNormalLevel4 = new(0f, 84f / 255f, 1f);
         private static readonly Color HandleColor = new(1f, 72f / 255f, 0f);
         private static readonly Color SelectedFaceColor = new(1f, 204f / 255f, 153f / 255f, 0.5f);
         private static readonly Color TransparentColor = new(0f, 0f, 0f, 0f);

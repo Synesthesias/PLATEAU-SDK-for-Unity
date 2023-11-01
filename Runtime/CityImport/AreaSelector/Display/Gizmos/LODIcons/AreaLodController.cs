@@ -52,16 +52,16 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos.LODIcons
         }
 
         /// <summary>
-        /// またLODを検索していないメッシュコードで、地域レベルが与えられたもののうち、
+        /// またLODを検索していないメッシュコードで、地域レベルが引数で与えられたもの以上のもののうち、
         /// <paramref name="geoCoordinate"/> に最も近い（補正あり）ものを返します。
         /// </summary>
-        private MeshCode? CalcNearestUnloadMeshCode(GeoCoordinate geoCoordinate, int level)
+        private MeshCode? CalcNearestUnloadMeshCode(GeoCoordinate geoCoordinate, int minLevel)
         {
             double minSqrDist = double.MaxValue;
             MeshCode? nearestMeshCode = null;
             foreach (var meshCode in this.viewDict.Keys)
             {
-                if (meshCode.Level != level) continue;
+                if (meshCode.Level < minLevel) continue;
                 // 読込済みのものは飛ばします
                 if (this.viewDict.TryGetValue(meshCode, out var areaLodView) && areaLodView != null) continue;
 
