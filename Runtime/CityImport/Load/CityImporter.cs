@@ -6,7 +6,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using PLATEAU.CityAdjust;
 using PLATEAU.CityImport.Load.CityImportProcedure;
-using PLATEAU.CityImport.Setting;
+using PLATEAU.CityImport.Config;
+using PLATEAU.CityImport.Config.PackageLoadConfigs;
 using PLATEAU.CityInfo;
 using PLATEAU.Geometries;
 using PLATEAU.Dataset;
@@ -76,7 +77,7 @@ namespace PLATEAU.CityImport.Load
             // ルートのGameObjectにコンポーネントを付けます。 
             var cityModelComponent = rootTrans.gameObject.AddComponent<PLATEAUInstancedCityModel>();
             cityModelComponent.GeoReference =
-                GeoReference.Create(referencePoint, PackageLoadSetting.UnitScale, PackageLoadSetting.MeshAxes, config.CoordinateZoneID);
+                GeoReference.Create(referencePoint, PackageLoadConfig.UnitScale, PackageLoadConfig.MeshAxes, config.CoordinateZoneID);
 
             // GMLファイルを fetch します。これは同期処理にします。
             // なぜなら、ファイルコピー が並列で動くのはトラブルの元(特に同じ codelist を同時にコピーしようとしがち) だからです。

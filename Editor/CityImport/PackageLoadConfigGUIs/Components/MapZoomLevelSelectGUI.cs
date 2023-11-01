@@ -1,28 +1,26 @@
 using System;
 using System.Collections.Generic;
-using PLATEAU.CityImport.Setting;
+using PLATEAU.CityImport.Config;
 using PLATEAU.Dataset;
 using PLATEAU.Editor.EditorWindow.Common;
 using PLATEAU.Native;
 using PLATEAU.Texture;
 using PLATEAU.Util;
-#if UNITY_EDITOR
 using UnityEditor;
-#endif
 
-namespace PLATEAU.Editor.CityImport.GUIParts
+namespace PLATEAU.Editor.CityImport.PackageLoadConfigGUIs.Components
 {
     /// <summary>
     /// 地図タイルのズームレベルを選択するGUIです。
     /// </summary>
     internal class MapZoomLevelSelectGUI : IEditorDrawable
     {
-        private readonly ReliefLoadSetting config;
+        private readonly ReliefLoadConfig config;
         private bool zoomLevelSearchButtonPushed;
-        private GeoCoordinate geoCoord;
+        private readonly GeoCoordinate geoCoord;
         private MapZoomLevelSearchResult zoomLevelSearchResult = new MapZoomLevelSearchResult{AvailableZoomLevelMax = -1, AvailableZoomLevelMin = -1, IsValid = false};
         private string mapTileUrl;
-        public MapZoomLevelSelectGUI(ReliefLoadSetting conf, string mapTileUrl, MeshCode firstMeshCode)
+        public MapZoomLevelSelectGUI(ReliefLoadConfig conf, string mapTileUrl, MeshCode firstMeshCode)
         {
             config = conf;
             geoCoord = firstMeshCode.Extent.Center;
@@ -59,8 +57,8 @@ namespace PLATEAU.Editor.CityImport.GUIParts
                             else
                             {
                                 zoomLevel = EditorGUILayout.IntField("ズームレベル", config.MapTileZoomLevel);
-                                zoomLevel = Math.Min(zoomLevel, ReliefLoadSetting.MaxZoomLevel);
-                                zoomLevel = Math.Max(zoomLevel, ReliefLoadSetting.MinZoomLevel);
+                                zoomLevel = Math.Min(zoomLevel, ReliefLoadConfig.MaxZoomLevel);
+                                zoomLevel = Math.Max(zoomLevel, ReliefLoadConfig.MinZoomLevel);
                             }
                             
                             config.MapTileZoomLevel = zoomLevel;

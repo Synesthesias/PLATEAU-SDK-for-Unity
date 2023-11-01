@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using PLATEAU.CityImport.Setting;
+using PLATEAU.CityImport.Config;
+using PLATEAU.CityImport.Config.PackageLoadConfigs;
 using PLATEAU.Dataset;
 
 namespace PLATEAU.CityImport.AreaSelector.SceneObjs
