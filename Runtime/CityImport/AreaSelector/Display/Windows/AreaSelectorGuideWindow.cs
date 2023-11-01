@@ -1,14 +1,20 @@
 ﻿using UnityEditor;
 using UnityEngine;
 
-namespace PLATEAU.CityImport.AreaSelector
+namespace PLATEAU.CityImport.AreaSelector.Display.Windows
 {
-    internal static class AreaSelectorGuideGUI
+    /// <summary>
+    /// 範囲選択画面で操作方法を表示するウィンドウです。
+    /// </summary>
+    internal static class AreaSelectorGuideWindow
     {
 #if UNITY_EDITOR
         private static Rect currentAreaSelectorGuideWindowRect;
         private static readonly Rect AreaSelectorGuideWindowRect = new(0, 0, 300f, 0);
-        private static readonly GUIStyle LabelStyle = new(EditorStyles.label) { fontSize = 14, fontStyle = FontStyle.Bold, alignment = TextAnchor.MiddleCenter };
+
+        private static readonly GUIStyle LabelStyle = new(EditorStyles.label)
+            { fontSize = 14, fontStyle = FontStyle.Bold, alignment = TextAnchor.MiddleCenter };
+
         private static GUIStyle windowStyle;
 #endif
         public static void Enable()
@@ -34,11 +40,14 @@ namespace PLATEAU.CityImport.AreaSelector
                 fontSize = 14,
                 fontStyle = FontStyle.Bold
             };
-            
+
             Handles.BeginGUI();
-            currentAreaSelectorGuideWindowRect.x = sceneView.position.size.x - currentAreaSelectorGuideWindowRect.width - 15;
-            currentAreaSelectorGuideWindowRect.y = sceneView.position.size.y - currentAreaSelectorGuideWindowRect.height - 40;
-            currentAreaSelectorGuideWindowRect = GUILayout.Window(3, currentAreaSelectorGuideWindowRect, DrawAreaSelectorGuideInsideWindow, "操作方法", windowStyle);
+            currentAreaSelectorGuideWindowRect.x =
+                sceneView.position.size.x - currentAreaSelectorGuideWindowRect.width - 15;
+            currentAreaSelectorGuideWindowRect.y =
+                sceneView.position.size.y - currentAreaSelectorGuideWindowRect.height - 40;
+            currentAreaSelectorGuideWindowRect = GUILayout.Window(3, currentAreaSelectorGuideWindowRect,
+                DrawAreaSelectorGuideInsideWindow, "操作方法", windowStyle);
             Handles.EndGUI();
         }
 #endif

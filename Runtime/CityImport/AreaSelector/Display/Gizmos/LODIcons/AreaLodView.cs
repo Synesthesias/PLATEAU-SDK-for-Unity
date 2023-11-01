@@ -3,14 +3,13 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using PLATEAU.CityImport.Config;
 using PLATEAU.CityImport.Config.PackageLoadConfigs;
 using PLATEAU.Dataset;
 using PLATEAU.Util;
 using UnityEditor;
 using UnityEngine;
 
-namespace PLATEAU.CityImport.AreaSelector.SceneObjs
+namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos.LODIcons
 {
     /// <summary>
     /// 範囲選択画面で、メッシュコードごとに利用可能なLODを表示します。

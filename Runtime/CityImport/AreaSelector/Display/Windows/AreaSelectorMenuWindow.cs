@@ -1,9 +1,12 @@
 ﻿using UnityEditor;
 using UnityEngine;
 
-namespace PLATEAU.CityImport.AreaSelector
+namespace PLATEAU.CityImport.AreaSelector.Display.Windows
 {
-    internal static class AreaSelectorGUI
+    /// <summary>
+    /// 範囲選択画面で、「決定」「キャンセル」などのボタンを有するメニューウィンドウのクラスです。
+    /// </summary>
+    internal static class AreaSelectorMenuWindow
     {
         private static Rect currentAreaSelectionWindowRect;
         private static readonly Rect AreaSelectionWindowRect = new(15f, 15f, 150f, 0f);

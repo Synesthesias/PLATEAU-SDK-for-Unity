@@ -1,12 +1,5 @@
-﻿using PLATEAU.Dataset;
-using PLATEAU.Geometries;
-using PLATEAU.Native;
-using PLATEAU.Util;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEditor;
+﻿using UnityEditor;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 namespace PLATEAU.CityImport.AreaSelector
 {

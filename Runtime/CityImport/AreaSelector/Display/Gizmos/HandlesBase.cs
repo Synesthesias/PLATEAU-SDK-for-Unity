@@ -1,7 +1,7 @@
 ﻿using UnityEditor;
 using UnityEngine;
 
-namespace PLATEAU.CityImport.AreaSelector.SceneObjs
+namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos
 {
     /// <summary>
     /// シーンビューにハンドルを表示する MonoBehaviour の基底クラスです。

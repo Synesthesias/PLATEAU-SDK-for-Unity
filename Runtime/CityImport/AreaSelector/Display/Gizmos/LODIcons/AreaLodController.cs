@@ -1,15 +1,15 @@
 ﻿using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using PLATEAU.Geometries;
 using PLATEAU.Dataset;
+using PLATEAU.Geometries;
 using PLATEAU.Native;
 using PLATEAU.Util;
 using PLATEAU.Util.Async;
 using UnityEditor;
 using UnityEngine;
 
-namespace PLATEAU.CityImport.AreaSelector.SceneObjs
+namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos.LODIcons
 {
     /// <summary>
     /// 範囲選択画面で、利用可能なLODをメッシュコードごとに検索して表示します。<br />
@@ -52,16 +52,16 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         }
 
         /// <summary>
-        /// またLODを検索していないメッシュコードで、地域レベルが与えられたもののうち、
+        /// またLODを検索していないメッシュコードで、地域レベルが引数で与えられたもの以上のもののうち、
         /// <paramref name="geoCoordinate"/> に最も近い（補正あり）ものを返します。
         /// </summary>
-        private MeshCode? CalcNearestUnloadMeshCode(GeoCoordinate geoCoordinate, int level)
+        private MeshCode? CalcNearestUnloadMeshCode(GeoCoordinate geoCoordinate, int minLevel)
         {
             double minSqrDist = double.MaxValue;
             MeshCode? nearestMeshCode = null;
             foreach (var meshCode in this.viewDict.Keys)
             {
-                if (meshCode.Level != level) continue;
+                if (meshCode.Level < minLevel) continue;
                 // 読込済みのものは飛ばします
                 if (this.viewDict.TryGetValue(meshCode, out var areaLodView) && areaLodView != null) continue;
 

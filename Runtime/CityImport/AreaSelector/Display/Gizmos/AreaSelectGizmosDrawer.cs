@@ -1,14 +1,17 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using PLATEAU.Geometries;
+using PLATEAU.CityImport.AreaSelector.Display.Gizmos.AreaRectangles;
+using PLATEAU.CityImport.AreaSelector.Display.Gizmos.LODIcons;
+using PLATEAU.CityImport.AreaSelector.Display.Maps;
 using PLATEAU.Dataset;
+using PLATEAU.Geometries;
 using PLATEAU.Native;
 using PLATEAU.Util;
 using UnityEditor;
 using UnityEngine;
 
-namespace PLATEAU.CityImport.AreaSelector.SceneObjs
+namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos
 {
     /// <summary>
     /// 範囲選択に関するギズモを表示する MonoBehaviour です。
@@ -55,6 +58,12 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
             outGeoReference = GeoReference.Create(referencePoint, 1f, CoordinateSystem.EUN, coordinateZoneID);
             foreach (var meshCode in meshCodes)
             {
+                // Level4以上のMeshCodeであって、別のLevel3の範囲に含まれているものは重複のため除外します。
+                if (meshCode.Level >= 4 && meshCodes.Any(other => other.Level == 3 && other.Level3() == meshCode.Level3()))
+                {
+                    continue;
+                }
+                
                 var drawer = new MeshCodeGizmoDrawer();
                 drawer.SetUp(meshCode, outGeoReference);
                 this.meshCodeDrawers.Add(drawer);
@@ -117,14 +126,8 @@ namespace PLATEAU.CityImport.AreaSelector.SceneObjs
         {
             foreach (var meshCodeGizmoDrawer in this.meshCodeDrawers)
             {
-                meshCodeGizmoDrawer.ApplyStyle();
                 // 大きな粒度の線は優先して表示されるようにします。
-                meshCodeGizmoDrawer.Priority = meshCodeGizmoDrawer.MeshCode.Level switch
-                {
-                    2 => 1,
-                    3 => 0,
-                    _ => 0
-                };
+                meshCodeGizmoDrawer.Priority = 999 - meshCodeGizmoDrawer.MeshCode.Level;
             }
 
             var gizmosToDraw = new List<BoxGizmoDrawer>();

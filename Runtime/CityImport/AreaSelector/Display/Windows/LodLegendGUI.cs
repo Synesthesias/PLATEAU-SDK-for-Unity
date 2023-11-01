@@ -1,11 +1,14 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using PLATEAU.Util;
 using UnityEditor;
 using UnityEngine;
-using PLATEAU.Util;
 
-namespace PLATEAU.CityImport.AreaSelector
+namespace PLATEAU.CityImport.AreaSelector.Display.Windows
 {
+    /// <summary>
+    /// 範囲選択画面で、凡例としてLODと色の対応関係を表示するウィンドウのクラスです。
+    /// </summary>
     internal static class LodLegendGUI
     {
 #if UNITY_EDITOR

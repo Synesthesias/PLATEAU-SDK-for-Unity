@@ -1,8 +1,8 @@
-﻿using UnityEngine;
-using PLATEAU.Dataset;
+﻿using PLATEAU.Dataset;
 using UnityEditor;
+using UnityEngine;
 
-namespace PLATEAU.CityImport.AreaSelector.SceneObjs
+namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos.AreaRectangles
 {
     /// <summary>
     /// 範囲選択用の箱型ギズモを表示します。

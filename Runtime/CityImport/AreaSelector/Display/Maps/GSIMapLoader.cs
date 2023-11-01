@@ -16,7 +16,7 @@ using UnityEngine.Rendering;
 using System;
 #endif
 
-namespace PLATEAU.CityImport.AreaSelector.SceneObjs
+namespace PLATEAU.CityImport.AreaSelector.Display.Maps
 {
     /// <summary>
     /// 地理院地図タイルをダウンロードしてシーンに配置します。

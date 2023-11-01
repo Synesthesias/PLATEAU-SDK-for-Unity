@@ -8,7 +8,7 @@ using PLATEAU.Native;
 using PLATEAU.Util.Async;
 using UnityEngine;
 
-namespace PLATEAU.CityImport.AreaSelector.SceneObjs
+namespace PLATEAU.CityImport.AreaSelector.Display.Maps
 {
     /// <summary>
     /// <see cref="GSIMapLoader"/> に次の機能を追加したものです:

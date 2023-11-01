@@ -90,6 +90,12 @@ namespace PLATEAU.Dataset
             return $"{this.FirstRow | 00}{this.FirstCol | 00}{this.SecondRow | 0}{this.SecondCol | 0}";
         }
 
+        public string Level3()
+        {
+            ThrowIfInvalid();
+            return $"{Level2()}{this.ThirdRow | 0}{this.ThirdCol | 0}";
+        }
+
         private void ThrowIfInvalid()
         {
             if (IsValid) return;
