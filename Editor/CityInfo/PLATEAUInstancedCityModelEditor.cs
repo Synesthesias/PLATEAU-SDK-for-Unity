@@ -3,6 +3,7 @@ using PLATEAU.Editor.EditorWindow.Common;
 using PLATEAU.Geometries;
 using PLATEAU.Native;
 using UnityEditor;
+using UnityEngine;
 
 namespace PLATEAU.Editor.CityInfo
 {
@@ -20,10 +21,18 @@ namespace PLATEAU.Editor.CityInfo
             
             PlateauEditorStyle.Heading("位置", null);
             using (PlateauEditorStyle.VerticalScopeLevel1())
-            {
-                EditorGUILayout.LabelField($"緯度: {geoCoord.Latitude}");
-                EditorGUILayout.LabelField($"経度: {geoCoord.Longitude}");
-                
+            { 
+                using (new EditorGUILayout.HorizontalScope())
+                {
+                    EditorGUILayout.LabelField($"緯度:", GUILayout.Width(40));
+                    EditorGUILayout.TextField(geoCoord.Latitude.ToString());
+                }
+                using (new EditorGUILayout.HorizontalScope())
+                {
+                    EditorGUILayout.LabelField($"経度:", GUILayout.Width(40));
+                    EditorGUILayout.TextField(geoCoord.Longitude.ToString());
+                }
+
                 // TODO 3Dモデルの原点は、東京湾海水面基準で 0m になると思っていましたが、何か違う可能性があります。
                 //      SDK利用者の声で「高さが合わない。この高さでは AR Toolkit と合わない。」という声が多発のため、とりあえず高さは不明として非表示にします。
                 //      参考: https://qiita.com/MR_IdTe/items/93fe776b9be0127e9c47
