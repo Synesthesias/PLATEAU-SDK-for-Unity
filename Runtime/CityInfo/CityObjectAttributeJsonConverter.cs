@@ -64,7 +64,6 @@ namespace PLATEAU.CityInfo
             JObject jObject = JObject.Load(reader);
             string gmlID = jObject["gmlID"]?.ToString();
             ulong cityObjectType = (ulong)Enum.Parse(typeof(CityObjectType), jObject["cityObjectType"].ToString());
-
             int[] cityObjectIndex = jObject["cityObjectIndex"]?.ToObject<int[]>();
             List<CityObject> children = jObject["children"]?.ToObject<List<CityObject>>();
             Attributes attributesMap = jObject["attributes"]?.ToObject<Attributes>() ?? new Attributes();
