@@ -24,11 +24,6 @@ namespace PLATEAU.CityGML
         COT_SolitaryVegetationObject = 1ul << 13,
         COT_WaterBody = 1ul << 14,
         COT_ReliefFeature = 1ul << 15,
-        COT_ReliefComponent = 1ul << 35,
-        COT_TINRelief = 1ul << 36,
-        COT_MassPointRelief = 1ul << 37,
-        COT_BreaklineRelief = 1ul << 38,
-        COT_RasterRelief = 1ul << 39,
         COT_LandUse = 1ul << 16,
         COT_Tunnel = 1ul << 17,
         COT_Bridge = 1ul << 18,
@@ -48,13 +43,22 @@ namespace PLATEAU.CityGML
         COT_OuterCeilingSurface = 1ul << 31,
         COT_OuterFloorSurface = 1ul << 32,
 
-
         // covers all supertypes of tran::_TransportationObject that are not Track, Road, Railway or Square...
         // there are to many for to few bits to explicitly enumerate them. However Track, Road, Railway or Square should be used most of the time
         COT_TransportationObject = 1ul << 33,
 
         // ADD Building model 
         COT_IntBuildingInstallation = 1ul << 34,
+
+        COT_WaterSurface = 1ul << 35,
+
+        COT_ReliefComponent = 1ul << 36,
+        COT_TINRelief = 1ul << 37,
+        COT_MassPointRelief = 1ul << 38,
+        COT_BreaklineRelief = 1ul << 39,
+        COT_RasterRelief = 1ul << 40,
+
+        COT_Unknown = 1ul << 41,
 
         COT_All = 0xFFFFFFFFFFFFFFFFul
     };
