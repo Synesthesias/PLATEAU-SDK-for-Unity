@@ -57,10 +57,10 @@ namespace PLATEAU.Samples.Scripts
             // 1つのゲームオブジェクトから取得できる cityObjects の数は1つまたは複数になっています。
             var rootCityObjects = cityObjectList.rootCityObjects;
             var attributesSb = new StringBuilder();
-            foreach (var cityObjParam in rootCityObjects)
+            foreach (var cityObj in rootCityObjects)
             {
                 // 属性情報を見やすい形式の文字列にします。
-                attributesSb.Append(cityObjParam.DebugString());
+                attributesSb.Append(cityObj.DebugString());
                 attributesSb.Append("\n\n");
             }
             

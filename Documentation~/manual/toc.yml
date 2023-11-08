@@ -12,7 +12,9 @@
     href: ModelAdjust.md  
   - name: 都市情報へのアクセス
     href: AccessCityObject.md
-- name: チュートリアル
+- name: サンプル
   items:
-    - name: ランタイムで属性情報によって色分けする
+    - name: 属性情報によって色分けする
       href: ChangeColorByAttrs.md
+    - name: 属性情報を表示する
+      href: DisplayAttrs.md
