@@ -1,6 +1,6 @@
 - name: PLATEAU SDK for Unity
   href: ../index.md
-- name: 利用を開始する
+- name: SDKの使い方
   items:
   - name: インストール
     href: Installation.md
@@ -12,3 +12,9 @@
     href: ModelAdjust.md  
   - name: 都市情報へのアクセス
     href: AccessCityObject.md
+- name: サンプル
+  items:
+    - name: 属性情報によって色分けする
+      href: ChangeColorByAttrs.md
+    - name: 属性情報を表示する
+      href: DisplayAttrs.md
