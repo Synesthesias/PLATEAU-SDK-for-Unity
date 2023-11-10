@@ -17,9 +17,9 @@ using Object = UnityEngine.Object;
 
 namespace PLATEAU.GranularityConvert
 {
-    public class CityGranularityConverter
+    internal class CityGranularityConverter
     {
-        public async Task ConvertAsync(IReadOnlyList<GameObject> srcGameObjs, GranularityConvertOption option)
+        public async Task<PlateauToUnityModelConverter.ConvertResult> ConvertAsync(IReadOnlyList<GameObject> srcGameObjs, GranularityConvertOption option)
         {
             try
             {
@@ -61,7 +61,7 @@ namespace PLATEAU.GranularityConvert
                 if (result.RootObjs.Count <= 0)
                 {
                     Dialogue.Display("変換対象がありません。\nアクティブなオブジェクトを選択してください。", "OK");
-                    return;
+                    return PlateauToUnityModelConverter.ConvertResult.Fail();
                 }
                 
                 // PLATEAUInstancedCityModelを復元します。
@@ -79,10 +79,12 @@ namespace PLATEAU.GranularityConvert
                 // 変換後のゲームオブジェクトを選択状態にします。
                 Selection.objects = result.RootObjs.Select(go => (Object)go).ToArray();
 #endif
+                return result;
             }
             catch (Exception e)
             {
                 Debug.LogError($"{e.Message}\n{e.StackTrace}");
+                return PlateauToUnityModelConverter.ConvertResult.Fail();
             }
             
         }

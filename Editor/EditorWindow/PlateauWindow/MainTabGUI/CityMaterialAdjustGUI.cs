@@ -1,8 +1,8 @@
 ﻿using System;
 using PLATEAU.CityAdjust.MaterialAdjust;
-using PLATEAU.CityGML;
-using PLATEAU.CityInfo;
 using PLATEAU.Editor.EditorWindow.Common;
+using PLATEAU.Util;
+using PLATEAU.Util.Async;
 using UnityEditor;
 using UnityEngine;
 using Material = UnityEngine.Material;
@@ -20,12 +20,6 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
         private int selectedType;
         private string[] typeOptions = { "地物型"/*, "属性情報"*/ };
         private string attrKey = "";
-        private bool changeMat1 = false;
-        private bool changeMat2 = false;
-        private Material mat1 = null;
-        private Material mat2 = null;
-        private bool isSearchTaskRunning = false;
-        private bool isExecTaskRunning = false;
 
         private CityMaterialAdjuster adjuster;
 
@@ -84,14 +78,12 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
             {
                 PlateauEditorStyle.CenterAlignHorizontal(() =>
                 {
-                    using (new EditorGUI.DisabledScope(isSearchTaskRunning))
+                    if (PlateauEditorStyle.MiniButton("検索", 150))
                     {
-                        if (PlateauEditorStyle.MiniButton(isSearchTaskRunning ? "処理中..." : "検索", 150))
-                        {
-                            //isSearchTaskRunning = true;
-                            //TODO: 検索処理
-                            adjuster = new CityMaterialAdjuster(selectedObjs);
-                        }
+                        using var progressBar = new ProgressBar("検索中です...");
+                        progressBar.Display(0.4f);
+                        adjuster = new CityMaterialAdjuster(selectedObjs);
+                        parentEditorWindow.Repaint();
                     }
                 });
             }
@@ -119,16 +111,11 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
             }
 
             PlateauEditorStyle.Separator(0);
-
-            using (new EditorGUI.DisabledScope(isExecTaskRunning))
-            {
-                if (PlateauEditorStyle.MainButton(isExecTaskRunning ? "処理中..." : "実行"))
+            
+                if (PlateauEditorStyle.MainButton("実行"))
                 {
-                    //isExecTaskRunning = true;
-                    //TODO: 実行処理
-
+                    adjuster.Exec().ContinueWithErrorCatch();
                 }
-            }
         }
 
     }
