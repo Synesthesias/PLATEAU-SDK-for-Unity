@@ -9,15 +9,14 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
     {
         private int tabIndex;
         private readonly IEditorDrawable[] tabGUIArray;
-        //private string[] tabNames = { "ゲームオブジェクト\nON/OFF" , "マテリアル分け", "結合/分離" };
-        private string[] tabNames = { "ゲームオブジェクト\nON/OFF", "結合/分離" };
+        private string[] tabNames = { "ゲームオブジェクト\nON/OFF" , "マテリアル分け", "結合/分離" };
 
         public CityModificationFrameGUI(UnityEditor.EditorWindow parentEditorWindow)
         {
             this.tabGUIArray = new IEditorDrawable[]
             {
-                new CityAdjustGUI(),
-                //new CityMaterialAdjustGUI(parentEditorWindow),
+                new CityChangeActiveGUI(),
+                new CityMaterialAdjustGUI(parentEditorWindow),
                 new CityGranularityConvertGUI(parentEditorWindow)
             };
         }

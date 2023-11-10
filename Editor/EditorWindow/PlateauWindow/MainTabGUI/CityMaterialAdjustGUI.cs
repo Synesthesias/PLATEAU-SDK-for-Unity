@@ -1,7 +1,11 @@
 ﻿using System;
+using PLATEAU.CityAdjust.MaterialAdjust;
+using PLATEAU.CityGML;
+using PLATEAU.CityInfo;
 using PLATEAU.Editor.EditorWindow.Common;
 using UnityEditor;
 using UnityEngine;
+using Material = UnityEngine.Material;
 
 namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
 {
@@ -11,10 +15,10 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
     internal class CityMaterialAdjustGUI : IEditorDrawable
     {
         private UnityEditor.EditorWindow parentEditorWindow;
-        private GameObject[] Selected = new GameObject[0];
+        private GameObject[] selectedObjs = new GameObject[0];
         private Vector2 scrollSelected;
         private int selectedType;
-        private string[] typeOptions = { "属性情報", "地物型" };
+        private string[] typeOptions = { "地物型"/*, "属性情報"*/ };
         private string attrKey = "";
         private bool changeMat1 = false;
         private bool changeMat2 = false;
@@ -22,6 +26,8 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
         private Material mat2 = null;
         private bool isSearchTaskRunning = false;
         private bool isExecTaskRunning = false;
+
+        private CityMaterialAdjuster adjuster;
 
         public CityMaterialAdjustGUI(UnityEditor.EditorWindow parentEditorWindow)
         {
@@ -32,14 +38,14 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
         public void Dispose()
         {
             Selection.selectionChanged -= OnSelectionChanged;
-            Array.Clear(Selected, 0, Selected.Length);
+            Array.Clear(selectedObjs, 0, selectedObjs.Length);
         }
 
         private void OnSelectionChanged()
         {
             //選択アイテムのフィルタリング処理
             //Selected = Selection.gameObjects.Where(x => x.GetComponent<PLATEAUCityObjectGroup>() != null).ToArray<GameObject>();
-            Selected = Selection.gameObjects;
+            selectedObjs = Selection.gameObjects;
             parentEditorWindow.Repaint();
         }
 
@@ -50,7 +56,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
             using (PlateauEditorStyle.VerticalScopeLevel2())
             {
                 scrollSelected = EditorGUILayout.BeginScrollView(scrollSelected, GUILayout.MaxHeight(100));
-                foreach (GameObject obj in Selected)
+                foreach (GameObject obj in selectedObjs)
                 {
                     EditorGUILayout.LabelField(obj.name);
                 }
@@ -65,7 +71,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
                 this.selectedType = EditorGUILayout.Popup("分類", this.selectedType, typeOptions);
             }
 
-            if(selectedType == 0)
+            if(selectedType == 1)
             {
                 using (PlateauEditorStyle.VerticalScopeWithPadding(8, 0, 8, 8))
                 {
@@ -84,32 +90,32 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
                         {
                             //isSearchTaskRunning = true;
                             //TODO: 検索処理
-
+                            adjuster = new CityMaterialAdjuster(selectedObjs);
                         }
                     }
                 });
             }
 
-            using (PlateauEditorStyle.VerticalScopeLevel1())
-            {
-                PlateauEditorStyle.CategoryTitle("属性情報①");
-                using (PlateauEditorStyle.VerticalScopeWithPadding(16, 0, 8, 0))
-                {
-                    changeMat1 = EditorGUILayout.ToggleLeft("マテリアルを変更する", changeMat1);
-                    mat1 = (Material)EditorGUILayout.ObjectField("マテリアル",
-                                    mat1, typeof(Material), false);
-                }    
-            }
+            if (adjuster == null) return;
+            
+            // 検索後にのみ以下を表示します
 
-            using (PlateauEditorStyle.VerticalScopeLevel1())
+            var conf = adjuster.MaterialAdjustConf;
+            int displayIndex = 1;
+            foreach (var (typeNode, typeConf) in conf)
             {
-                PlateauEditorStyle.CategoryTitle("属性情報②");
-                using (PlateauEditorStyle.VerticalScopeWithPadding(16, 0, 8, 0))
+                using (PlateauEditorStyle.VerticalScopeLevel1())
                 {
-                    changeMat2 = EditorGUILayout.ToggleLeft("マテリアルを変更する", changeMat2);
-                    mat2 = (Material)EditorGUILayout.ObjectField("マテリアル",
-                                    mat2, typeof(Material), false);
+                    PlateauEditorStyle.CategoryTitle(
+                        $"地物型{displayIndex} : {typeNode.GetDisplayName()}");
+                    typeConf.ChangeMaterial = EditorGUILayout.ToggleLeft("マテリアルを変更する", typeConf.ChangeMaterial);
+                    if (typeConf.ChangeMaterial)
+                    {
+                        typeConf.Material = (Material)EditorGUILayout.ObjectField("マテリアル",
+                            typeConf.Material, typeof(Material), false);
+                    }
                 }
+                displayIndex++;
             }
 
             PlateauEditorStyle.Separator(0);
