@@ -14,6 +14,20 @@ namespace PLATEAU.CityInfo
     /// </summary>
     public class PLATEAUCityObjectGroup : MonoBehaviour
     {
+        
+        /// <summary>
+        /// <see cref="CityObject"/>に関する情報はここに収められます。
+        /// </summary>
+        [HideInInspector][SerializeField] private string serializedCityObjects;
+        
+        private CityObjectList cityObjects;
+        private CityObject outsideParent;
+        private UnityEngine.Mesh currentMesh;
+        
+        /// <summary> Toolkits向けの情報です。 </summary>
+        [SerializeField] private CityObjectGroupInfoForToolkits infoForToolkits;
+        public CityObjectGroupInfoForToolkits InfoForToolkits => infoForToolkits;
+        
         public CityObjectList CityObjects
         {
             get
@@ -28,10 +42,11 @@ namespace PLATEAU.CityInfo
                 return this.cityObjects;               
             }
         }
-
-        public void SetSerializableCityObject(CityObjectList cityObjectSerializable)
+        
+        public void Init(CityObjectList cityObjectSerializable, CityObjectGroupInfoForToolkits cogInfoForToolkits)
         {
             serializedCityObjects = JsonConvert.SerializeObject(cityObjectSerializable, Formatting.Indented);
+            infoForToolkits = cogInfoForToolkits;
         }
 
         /// <summary>
@@ -277,11 +292,7 @@ namespace PLATEAU.CityInfo
             return objs;
         }
 
-        [HideInInspector][SerializeField] private string serializedCityObjects;
-
-        private CityObjectList cityObjects;
-        private CityObject outsideParent;
-        private UnityEngine.Mesh currentMesh;
+        
 
         /// <summary>
         /// 最小地物の場合、親となるPLATEAUCityObjectGroupを検索しCityObjectを取得します
