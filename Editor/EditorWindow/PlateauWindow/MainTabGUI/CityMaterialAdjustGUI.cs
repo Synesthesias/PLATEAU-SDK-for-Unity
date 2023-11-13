@@ -37,6 +37,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
 
         private void OnSelectionChanged()
         {
+            // TODO 「検索」したあとに選択を変更できるとまずい。検索したら固定すべき。
             //選択アイテムのフィルタリング処理
             //Selected = Selection.gameObjects.Where(x => x.GetComponent<PLATEAUCityObjectGroup>() != null).ToArray<GameObject>();
             selectedObjs = Selection.gameObjects;
