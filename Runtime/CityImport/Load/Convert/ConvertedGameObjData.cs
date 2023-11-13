@@ -69,13 +69,15 @@ namespace PLATEAU.CityImport.Load.Convert
         /// 再帰によって子も配置します。
         /// 配置したゲームオブジェクトのリストを返します。
         /// </summary>
-        public async Task<PlateauToUnityModelConverter.ConvertResult> PlaceToScene(Transform parent, Dictionary<MaterialSet, Material> cachedMaterials, bool skipRoot, bool doSetMeshCollider, CancellationToken? token, Material fallbackMaterial)
+        public async Task<PlateauToUnityModelConverter.ConvertResult> PlaceToScene(
+            Transform parent, Dictionary<MaterialSet, Material> cachedMaterials, bool skipRoot, bool doSetMeshCollider,
+            CancellationToken? token, Material fallbackMaterial, CityObjectGroupInfoForToolkits infoForToolkits)
         {
             var result = new PlateauToUnityModelConverter.ConvertResult();
             try
             {
                 await PlaceToSceneRecursive(result, parent, cachedMaterials, skipRoot, doSetMeshCollider, token,
-                    fallbackMaterial, 0);
+                    fallbackMaterial, 0, infoForToolkits);
             }
             catch (Exception e)
             {
@@ -88,7 +90,8 @@ namespace PLATEAU.CityImport.Load.Convert
 
         private async Task PlaceToSceneRecursive(PlateauToUnityModelConverter.ConvertResult result, Transform parent,
             Dictionary<MaterialSet, Material> cachedMaterials, bool skipRoot, bool doSetMeshCollider,
-            CancellationToken? token, Material fallbackMaterial, int recursiveDepth)
+            CancellationToken? token, Material fallbackMaterial, int recursiveDepth,
+            CityObjectGroupInfoForToolkits infoForToolkits)
         {
             token?.ThrowIfCancellationRequested();
 
@@ -132,7 +135,7 @@ namespace PLATEAU.CityImport.Load.Convert
                     if (serialized != null)
                     {
                         var attrInfo = nextParent.gameObject.AddComponent<PLATEAUCityObjectGroup>();
-                        attrInfo.SetSerializableCityObject(serialized);
+                        attrInfo.Init(serialized, infoForToolkits);
                     }
                 }
             }
@@ -141,7 +144,7 @@ namespace PLATEAU.CityImport.Load.Convert
             // 子を再帰的に配置します。
             foreach (var child in this.children)
             {
-                await child.PlaceToSceneRecursive(result, nextParent, cachedMaterials, false, doSetMeshCollider, token, fallbackMaterial, nextRecursiveDepth);
+                await child.PlaceToSceneRecursive(result, nextParent, cachedMaterials, false, doSetMeshCollider, token, fallbackMaterial, nextRecursiveDepth, infoForToolkits);
             }
         }
     }
