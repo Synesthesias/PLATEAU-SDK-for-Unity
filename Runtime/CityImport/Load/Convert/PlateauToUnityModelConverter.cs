@@ -9,6 +9,7 @@ using PLATEAU.Util;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using System.Threading;
+using PLATEAU.CityInfo;
 using Material = UnityEngine.Material;
 
 #if UNITY_EDITOR
@@ -31,7 +32,8 @@ namespace PLATEAU.CityImport.Load.Convert
         public static async Task<ConvertResult> CityModelToScene(
             CityModel cityModel, MeshExtractOptions meshExtractOptions, string[] selectedMeshCodes,
             Transform parentTrans, IProgressDisplay progressDisplay, string progressName,
-            bool doSetMeshCollider, bool doSetAttrInfo, CancellationToken token,  UnityEngine.Material fallbackMaterial
+            bool doSetMeshCollider, bool doSetAttrInfo, CancellationToken token,  UnityEngine.Material fallbackMaterial,
+            CityObjectGroupInfoForToolkits infoForToolkits
             )
         {
             Debug.Log($"load started");
@@ -51,7 +53,9 @@ namespace PLATEAU.CityImport.Load.Convert
                 return ConvertResult.Fail();
             }
 
-            return await PlateauModelToScene(parentTrans, progressDisplay, progressName, doSetMeshCollider, token, fallbackMaterial, plateauModel, attributeDataHelper, true);
+            return await PlateauModelToScene(
+                parentTrans, progressDisplay, progressName, doSetMeshCollider, token, 
+                fallbackMaterial, plateauModel, attributeDataHelper, true, infoForToolkits);
         }
 
         /// <summary>
@@ -60,7 +64,7 @@ namespace PLATEAU.CityImport.Load.Convert
         /// </summary>
         public static async Task<ConvertResult> PlateauModelToScene(Transform parentTrans, IProgressDisplay progressDisplay,
             string progressName, bool doSetMeshCollider, CancellationToken? token, Material fallbackMaterial, Model plateauModel, 
-            AttributeDataHelper attributeDataHelper, bool skipRoot)
+            AttributeDataHelper attributeDataHelper, bool skipRoot, CityObjectGroupInfoForToolkits infoForToolkits)
         {
             // ここの処理は 処理A と 処理B に分割されています。
             // Unityのメッシュデータを操作するのは 処理B のみであり、
@@ -100,7 +104,7 @@ namespace PLATEAU.CityImport.Load.Convert
             var result = new ConvertResult();
 
             var innerResult = await meshObjsData.PlaceToScene(parentTrans, cachedMaterials, skipRoot, doSetMeshCollider,
-                token, fallbackMaterial);
+                token, fallbackMaterial, infoForToolkits);
             if (innerResult.IsSucceed)
             {
                 result.Merge(innerResult);
