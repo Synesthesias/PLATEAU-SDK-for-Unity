@@ -18,5 +18,6 @@ namespace PLATEAU.CityInfo
         /// Toolkitsのテクスチャ生成の動作に影響します。
         /// </summary>
         private bool isTextureCombinedOrGranularityConverted;
+        public bool IsTextureCombinedOrGranularityConverted => isTextureCombinedOrGranularityConverted;
     }
 }
