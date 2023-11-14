@@ -1,4 +1,5 @@
-﻿using PLATEAU.Dataset;
+﻿using System;
+using PLATEAU.Dataset;
 using PLATEAU.Geometries;
 using PLATEAU.Native;
 using PLATEAU.PolygonMesh;
@@ -104,11 +105,15 @@ namespace PLATEAU.CityImport.Config.PackageLoadConfigs
         {
             // 範囲選択の結果が引数に入っているので、それをもとに初期値を決めます。
             var predefined = CityModelPackageInfo.GetPredefined(package);
+            int minLOD = predefined.minLOD;
+            var lodRange = availableMaxLOD >= 0
+                ? new LODRange(minLOD, Math.Max(availableMaxLOD, minLOD), Math.Max(availableMaxLOD, minLOD))
+                : new LODRange(0, 0, 0);
             var val = new PackageLoadConfig(
                 package: package,
                 loadPackage: availableMaxLOD >= 0, // 存在しないものはロードしません
                 includeTexture: predefined.hasAppearance,
-                lodRange: new LODRange(predefined.minLOD, availableMaxLOD, availableMaxLOD),
+                lodRange: lodRange,
                 MeshGranularity.PerPrimaryFeatureObject,
                 doSetMeshCollider: true,
                 doSetAttrInfo: true,
