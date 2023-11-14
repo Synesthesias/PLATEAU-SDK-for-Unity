@@ -5,6 +5,7 @@ using PLATEAU.CityInfo;
 using PLATEAU.Native;
 using PLATEAU.PolygonMesh;
 using PLATEAU.Util;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Assertions;
 using CityObjectList = PLATEAU.PolygonMesh.CityObjectList;
@@ -228,7 +229,19 @@ namespace PLATEAU.CityExport.ModelConvert
             if (mat == null) return "";
             var tex = mat.mainTexture;
             if (tex == null) return "";
+            
+            #if UNITY_EDITOR
+            // デフォルトマテリアルのテクスチャは、GetAssetPathでパスを取得できます。
+            string texAssetPath = AssetDatabase.GetAssetPath(tex);
+            if (texAssetPath != "")
+            {
+                return Path.GetFullPath(texAssetPath);
+            }
+            #endif
+            
+            // PLATEAUのテクスチャは、テクスチャ名がパスを表すこととしています。
             return Path.Combine(PathUtil.PLATEAUSrcFetchDir, tex.name);
+            
         }
     }
 }
