@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using PLATEAU.CityExport.ModelConvert;
 using PLATEAU.CityImport.Load.Convert;
+using PLATEAU.CityInfo;
 using PLATEAU.Native;
 using PLATEAU.PolygonMesh;
 using PLATEAU.Util;
@@ -48,11 +49,12 @@ namespace PLATEAU.GranularityConvert
 
                 // Modelをゲームオブジェクトに変換して配置します。
                 var commonParent = CalcCommonParent(srcGameObjs.Select(obj => obj.transform).ToArray());
+                var infoForToolkits = new CityObjectGroupInfoForToolkits(true);
                 var result = await PlateauToUnityModelConverter.PlateauModelToScene(
                     commonParent, new DummyProgressDisplay(), "", true,
                     null, null, dstModel,
                     new AttributeDataHelper(new SerializedCityObjectGetterFromDict(attributes), option.Granularity,
-                        true), true);
+                        true), true, infoForToolkits);
                 if (!result.IsSucceed)
                 {
                     throw new Exception("Failed to convert plateau model to scene game objects.");
