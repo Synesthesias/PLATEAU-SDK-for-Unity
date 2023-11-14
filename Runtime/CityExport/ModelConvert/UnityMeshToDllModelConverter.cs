@@ -240,6 +240,7 @@ namespace PLATEAU.CityExport.ModelConvert
             #endif
             
             // PLATEAUのテクスチャは、テクスチャ名がパスを表すこととしています。
+            // 土地の航空写真もこのケースに含まれます。
             return Path.Combine(PathUtil.PLATEAUSrcFetchDir, tex.name);
             
         }
