@@ -3,6 +3,9 @@ using System.IO;
 using PLATEAU.Dataset;
 using UnityEditor;
 using UnityEngine;
+#if !UNITY_EDITOR
+using System;
+#endif
 
 namespace PLATEAU.Util
 {
