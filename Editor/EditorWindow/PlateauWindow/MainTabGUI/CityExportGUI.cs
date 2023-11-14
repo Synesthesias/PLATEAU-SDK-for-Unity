@@ -40,7 +40,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
             { MeshFileFormat.GLTF, new GltfModelExporter() }
         };
         
-        private bool exportTextures;
+        private bool exportTextures = true;
         private bool exportHiddenObject;
         private MeshExportOptions.MeshTransformType meshTransformType = MeshExportOptions.MeshTransformType.Local;
         private CoordinateSystem meshAxis = CoordinateSystem.ENU;
