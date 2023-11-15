@@ -70,7 +70,7 @@ namespace PLATEAU.CityImport.Load.Convert
         /// 配置したゲームオブジェクトのリストを返します。
         /// </summary>
         public async Task<PlateauToUnityModelConverter.ConvertResult> PlaceToScene(
-            Transform parent, Dictionary<MaterialSet, Material> cachedMaterials, bool skipRoot, bool doSetMeshCollider,
+            Transform parent, Dictionary<ConvertedMeshData.MaterialSet, Material> cachedMaterials, bool skipRoot, bool doSetMeshCollider,
             CancellationToken? token, Material fallbackMaterial, CityObjectGroupInfoForToolkits infoForToolkits)
         {
             var result = new PlateauToUnityModelConverter.ConvertResult();
@@ -89,7 +89,7 @@ namespace PLATEAU.CityImport.Load.Convert
         }
 
         private async Task PlaceToSceneRecursive(PlateauToUnityModelConverter.ConvertResult result, Transform parent,
-            Dictionary<MaterialSet, Material> cachedMaterials, bool skipRoot, bool doSetMeshCollider,
+            Dictionary<ConvertedMeshData.MaterialSet, Material> cachedMaterials, bool skipRoot, bool doSetMeshCollider,
             CancellationToken? token, Material fallbackMaterial, int recursiveDepth,
             CityObjectGroupInfoForToolkits infoForToolkits)
         {

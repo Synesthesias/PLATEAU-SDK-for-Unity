@@ -97,7 +97,7 @@ namespace PLATEAU.CityImport.Load.Convert
             // こちらはメインスレッドでのみ実行可能なので、Loadメソッドはメインスレッドから呼ぶ必要があります。
 
             //GMLマテリアル、 テクスチャパス と マテリアルを紐付ける辞書です。同じマテリアルが重複して生成されることを防ぎます。
-            Dictionary<MaterialSet, UnityEngine.Material> cachedMaterials = new Dictionary<MaterialSet, UnityEngine.Material>();
+            Dictionary<ConvertedMeshData.MaterialSet, UnityEngine.Material> cachedMaterials = new Dictionary<ConvertedMeshData.MaterialSet, UnityEngine.Material>();
 
             progressDisplay.SetProgress(progressName, 80f, "シーンに配置中");
 

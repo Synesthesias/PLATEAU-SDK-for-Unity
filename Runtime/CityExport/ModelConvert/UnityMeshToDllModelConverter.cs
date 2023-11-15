@@ -1,11 +1,9 @@
 ﻿using System.Collections.Generic;
-using System.IO;
 using System.Linq;
+using PLATEAU.CityConvertCommon;
 using PLATEAU.CityInfo;
 using PLATEAU.Native;
 using PLATEAU.PolygonMesh;
-using PLATEAU.Util;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.Assertions;
 using CityObjectList = PLATEAU.PolygonMesh.CityObjectList;
@@ -199,7 +197,7 @@ namespace PLATEAU.CityExport.ModelConvert
                     string texturePath = "";
                     if (materials != null && i < materials.Length)
                     {
-                        texturePath = GetTexturePathFromMaterialName(materials[i]);
+                        texturePath = MaterialConverter.MaterialToSubMeshTexturePath(materials[i]);
                     }
                     dllSubMeshes.Add(SubMesh.Create(startIndex, endIndex, texturePath));
                 
@@ -222,27 +220,6 @@ namespace PLATEAU.CityExport.ModelConvert
             // C++側で特別にテクスチャを除く処理は不必要だからです。
             
             return dllMesh;
-        }
-        
-        private static string GetTexturePathFromMaterialName(Material mat)
-        {
-            if (mat == null) return "";
-            var tex = mat.mainTexture;
-            if (tex == null) return "";
-            
-            #if UNITY_EDITOR
-            // デフォルトマテリアルのテクスチャは、GetAssetPathでパスを取得できます。
-            string texAssetPath = AssetDatabase.GetAssetPath(tex);
-            if (texAssetPath != "")
-            {
-                return Path.GetFullPath(texAssetPath);
-            }
-            #endif
-            
-            // PLATEAUのテクスチャは、テクスチャ名がパスを表すこととしています。
-            // 土地の航空写真もこのケースに含まれます。
-            return Path.Combine(PathUtil.PLATEAUSrcFetchDir, tex.name);
-            
         }
     }
 }
