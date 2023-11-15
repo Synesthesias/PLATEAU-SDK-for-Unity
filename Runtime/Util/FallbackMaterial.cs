@@ -67,7 +67,7 @@ namespace PLATEAU.Util
         /// </summary>
         public static Material ByMainTextureName(string mainTexNameArg)
         {
-            string mainTexName = Path.GetFileName(mainTexNameArg);
+            string mainTexName = Path.GetFileNameWithoutExtension(mainTexNameArg);
             if (mainTexNameToMaterial == null)
             {
                 // テクスチャ名をキー、マテリアルをバリューとする辞書を作ります。
