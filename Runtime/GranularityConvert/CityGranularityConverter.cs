@@ -20,7 +20,7 @@ namespace PLATEAU.GranularityConvert
 {
     internal class CityGranularityConverter
     {
-        public async Task<PlateauToUnityModelConverter.ConvertResult> ConvertAsync(IReadOnlyList<GameObject> srcGameObjs, GranularityConvertOption option)
+        public async Task<PlateauToUnityModelConverter.ConvertResult> ConvertAsync(GranularityConvertOptionUnity conf)
         {
             try
             {
@@ -28,32 +28,32 @@ namespace PLATEAU.GranularityConvert
                 progressBar.Display("属性情報を取得中...", 0.1f);
 
                 // 属性情報を覚えておきます。
-                var attributes = GmlIdToSerializedCityObj.ComposeFrom(srcGameObjs);
+                var attributes = GmlIdToSerializedCityObj.ComposeFrom(conf.SrcGameObjs);
                 
                 // PLATEAUInstancedCityModel が含まれる場合、これもコピーしたいので覚えておきます。
-                var instancedCityModelDict = InstancedCityModelDict.ComposeFrom(srcGameObjs); 
+                var instancedCityModelDict = InstancedCityModelDict.ComposeFrom(conf.SrcGameObjs); 
                 
 
                 progressBar.Display("ゲームオブジェクトを共通モデルに変換中...", 0.2f);
 
                 // ゲームオブジェクトを共通ライブラリのModelに変換します。
-                using var srcModel = UnityMeshToDllModelConverter.Convert(srcGameObjs, true, false, ConvertVertex);
+                using var srcModel = UnityMeshToDllModelConverter.Convert(conf.SrcGameObjs, true, false, ConvertVertex);
 
                 progressBar.Display("共通モデルの変換中...", 0.5f);
 
                 // 共通ライブラリの機能でモデルを分割・結合します。
                 var converter = new GranularityConverter();
-                using var dstModel = converter.Convert(srcModel, option);
+                using var dstModel = converter.Convert(srcModel, conf.NativeOption);
 
                 progressBar.Display("変換後の3Dモデルを配置中...", 0.8f);
 
                 // Modelをゲームオブジェクトに変換して配置します。
-                var commonParent = CalcCommonParent(srcGameObjs.Select(obj => obj.transform).ToArray());
+                var commonParent = CalcCommonParent(conf.SrcGameObjs.Select(obj => obj.transform).ToArray());
                 var infoForToolkits = new CityObjectGroupInfoForToolkits(true);
                 var result = await PlateauToUnityModelConverter.PlateauModelToScene(
                     commonParent, new DummyProgressDisplay(), "", true,
                     null, null, dstModel,
-                    new AttributeDataHelper(new SerializedCityObjectGetterFromDict(attributes), option.Granularity,
+                    new AttributeDataHelper(new SerializedCityObjectGetterFromDict(attributes), conf.NativeOption.Granularity,
                         true), true, infoForToolkits);
                 if (!result.IsSucceed)
                 {
@@ -69,9 +69,9 @@ namespace PLATEAU.GranularityConvert
                 // PLATEAUInstancedCityModelを復元します。
                 instancedCityModelDict.Restore(result.RootObjs);
 
-                if (Dialogue.Display("変換前のゲームオブジェクトを削除しますか？ 残しますか？", "削除", "残す"))
+                if (conf.DoDestroySrcObjs)
                 {
-                    foreach (var srcObj in srcGameObjs)
+                    foreach (var srcObj in conf.SrcGameObjs)
                     {
                         Object.DestroyImmediate(srcObj);
                     }

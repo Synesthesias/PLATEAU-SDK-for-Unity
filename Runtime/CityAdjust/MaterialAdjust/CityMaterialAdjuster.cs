@@ -28,8 +28,11 @@ namespace PLATEAU.CityAdjust.MaterialAdjust
         {
             // 地物タイプに応じてマテリアルを変える下準備として、都市オブジェクトを最小地物単位に分解します。
             var granularityConverter = new CityGranularityConverter();
-            var granularityConf = new GranularityConvertOption(MeshGranularity.PerAtomicFeatureObject, 1);
-            var result = await granularityConverter.ConvertAsync(targetObjs.ToList(), granularityConf);
+            var granularityConvertConf = new GranularityConvertOptionUnity(
+                new GranularityConvertOption(MeshGranularity.PerAtomicFeatureObject, 1),
+                targetObjs.ToArray(), false
+            );
+            var result = await granularityConverter.ConvertAsync(granularityConvertConf);
             if (!result.IsSucceed)
             {
                 Debug.LogError("ゲームオブジェクトの分解に失敗しました。");

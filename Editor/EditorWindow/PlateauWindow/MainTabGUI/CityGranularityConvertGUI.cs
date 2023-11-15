@@ -19,8 +19,8 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
         private Vector2 scrollSelected;
         private int selectedUnit = 2;
         private static readonly string[] UnitOptions = { "最小地物単位(壁面,屋根面等)", "主要地物単位(建築物,道路等)", "地域単位" };
-        // private bool foldOutOption = true;
-        // private bool toggleMaxSize = true;
+        private int selectedDestroySrcOptions;
+        private static readonly string[] DestroySrcOptions = { "残す", "削除する" };
         private bool isExecTaskRunning = false;
 
         public CityGranularityConvertGUI(UnityEditor.EditorWindow parentEditorWindow)
@@ -56,12 +56,17 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
                 EditorGUILayout.EndScrollView();
             }
 
-            PlateauEditorStyle.Heading("結合・分離単位", null);
+            PlateauEditorStyle.Heading("設定", null);
 
             using (PlateauEditorStyle.VerticalScopeWithPadding(16, 0, 8, 16))
             {
                 EditorGUIUtility.labelWidth = 50;
-                this.selectedUnit = EditorGUILayout.Popup("単位", this.selectedUnit, UnitOptions);
+                this.selectedUnit =
+                    PlateauEditorStyle.PopupWithLabelWidth(
+                    "分割・結合単位", this.selectedUnit, UnitOptions, 90);
+                this.selectedDestroySrcOptions =
+                    PlateauEditorStyle.PopupWithLabelWidth(
+                        "元のオブジェクトを", selectedDestroySrcOptions, DestroySrcOptions, 90);
             };
 
             // if(selectedUnit == 0 )
@@ -89,9 +94,13 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
         private async Task Exec()
         {
             Debug.Log("変換開始");
-            var option = new GranularityConvertOption((MeshGranularity)this.selectedUnit, 1);
             var converter = new CityGranularityConverter();
-            await converter.ConvertAsync(selected, option);
+            var convertConf = new GranularityConvertOptionUnity(
+                new GranularityConvertOption((MeshGranularity)selectedUnit, 1),
+                selected,
+                selectedDestroySrcOptions == 1
+            );
+            await converter.ConvertAsync(convertConf);
             selected = new GameObject[] { };
         }
     }
