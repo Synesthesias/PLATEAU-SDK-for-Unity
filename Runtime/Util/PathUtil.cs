@@ -15,6 +15,8 @@ namespace PLATEAU.Util
 
         public static readonly string PLATEAUSrcFetchDir = Path.GetFullPath(Application.streamingAssetsPath + "/.PLATEAU");
         public const string UdxFolderName = "udx";
+        private static readonly string packageFormalName = "com.synesthesias.plateau-unity-sdk";
+        private static readonly string packageDirName = "PLATEAU-SDK-for-Unity";
 
         /// <summary>
         /// 入力ファイル用のパスとして正しければtrue,不適切であればfalseを返します。
@@ -144,7 +146,7 @@ namespace PLATEAU.Util
         /// Unity Asset Store からインポートした場合は Assets 以下になります。
         /// SDKの基本パスを返します。
         /// </summary>
-        public static string SdkBasePath => IsInPackageDir ? "Packages/com.synesthesias.plateau-unity-sdk" : "Assets/PLATEAU-SDK-for-Unity";
+        public static string SdkBasePath => IsInPackageDir ? $"Packages/{packageFormalName}" : $"Assets/{packageDirName}";
 
         /// <summary>
         /// SdkBasePath からの相対パスを受け取り、アセットパスに変換して返します。
@@ -157,7 +159,7 @@ namespace PLATEAU.Util
             throw new NotImplementedException("This function is only supported in editor.");
             #endif
         }
-
+        
         private static bool isInPackageDirCalculated;
         private static bool isInPackageDir;
         /// <summary>
