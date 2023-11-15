@@ -1,4 +1,6 @@
-﻿using System;
+﻿#if  !UNITY_EDITOR
+using System;
+#endif
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Rendering;

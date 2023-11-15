@@ -1,5 +1,5 @@
 ﻿using PLATEAU.CityImport.AreaSelector;
-using PLATEAU.CityImport.Setting;
+using PLATEAU.CityImport.Config;
 using PLATEAU.Editor.EditorWindow.Common;
 using PLATEAU.Editor.EditorWindow.Common.PathSelector;
 using PLATEAU.Editor.EditorWindow.ProgressDisplay;
@@ -84,6 +84,10 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
                 IsAreaSelectComplete = AreaSelectButton.Draw(this.config.AreaMeshCodes, this.config.DatasetSourceConfig,
                     areaSelectResultReceiver, this.config.CoordinateZoneID);
             }
+
+            public void Dispose() { }
         }
+
+        public void Dispose() { }
     }
 }

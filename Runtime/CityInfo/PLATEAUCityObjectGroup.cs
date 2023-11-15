@@ -14,6 +14,20 @@ namespace PLATEAU.CityInfo
     /// </summary>
     public class PLATEAUCityObjectGroup : MonoBehaviour
     {
+        
+        /// <summary>
+        /// <see cref="CityObject"/>に関する情報はここに収められます。
+        /// </summary>
+        [HideInInspector][SerializeField] private string serializedCityObjects;
+        
+        private CityObjectList cityObjects;
+        private CityObject outsideParent;
+        private UnityEngine.Mesh currentMesh;
+        
+        /// <summary> Toolkits向けの情報です。 </summary>
+        [SerializeField] private CityObjectGroupInfoForToolkits infoForToolkits;
+        public CityObjectGroupInfoForToolkits InfoForToolkits => infoForToolkits;
+        
         public CityObjectList CityObjects
         {
             get
@@ -28,10 +42,11 @@ namespace PLATEAU.CityInfo
                 return this.cityObjects;               
             }
         }
-
-        public void SetSerializableCityObject(CityObjectList cityObjectSerializable)
+        
+        public void Init(CityObjectList cityObjectSerializable, CityObjectGroupInfoForToolkits cogInfoForToolkits)
         {
             serializedCityObjects = JsonConvert.SerializeObject(cityObjectSerializable, Formatting.Indented);
+            infoForToolkits = cogInfoForToolkits;
         }
 
         /// <summary>
@@ -78,7 +93,7 @@ namespace PLATEAU.CityInfo
         public CityObject GetCityObject(CityObjectIndex index)
         {
             var des = CityObjects;
-            //最小値物時の outsideParent 設定
+            //最小地物時の outsideParent 設定
             if (index.AtomicIndex == -1 && !string.IsNullOrEmpty(des.outsideParent))
             {
                 var parent = GetOutsideParent(des.outsideParent);
@@ -261,7 +276,7 @@ namespace PLATEAU.CityInfo
             }
         }
 
-        private IEnumerable<CityObjectList.CityObject> GetAllCityObjects()
+        public IEnumerable<CityObjectList.CityObject> GetAllCityObjects()
         {
             List<CityObjectList.CityObject> objs = new List<CityObjectList.CityObject>();
             var des = CityObjects;
@@ -269,16 +284,15 @@ namespace PLATEAU.CityInfo
             {
                 objs.Add(co);
                 foreach (var ch in co.Children)
-                    objs.Add(ch);
+                {
+                    objs.Add(ch); 
+                }
+                    
             }
             return objs;
         }
 
-        [HideInInspector][SerializeField] private string serializedCityObjects;
-
-        private CityObjectList cityObjects;
-        private CityObject outsideParent;
-        private UnityEngine.Mesh currentMesh;
+        
 
         /// <summary>
         /// 最小地物の場合、親となるPLATEAUCityObjectGroupを検索しCityObjectを取得します

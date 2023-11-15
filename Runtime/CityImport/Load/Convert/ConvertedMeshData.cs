@@ -53,7 +53,14 @@ namespace PLATEAU.CityImport.Load.Convert
         {
             var mesh = GenerateUnityMesh();
             if (mesh.vertexCount <= 0) return null;
-            var meshObj = GameObjectUtil.AssureGameObjectInChild(Name, parentTrans);
+            var meshObj = new GameObject(Name)
+            {
+                transform =
+                {
+                    parent = parentTrans
+                },
+                isStatic = true
+            };
             var meshFilter = GameObjectUtil.AssureComponent<MeshFilter>(meshObj);
             meshFilter.mesh = mesh;
             var renderer = GameObjectUtil.AssureComponent<MeshRenderer>(meshObj);
@@ -66,6 +73,14 @@ namespace PLATEAU.CityImport.Load.Convert
                 var texturePath = textureUrls[i];
                 var gmlMaterial = gmlMaterials[i];
                 MaterialSet materialSet = new MaterialSet(gmlMaterial, texturePath);
+                
+                // テクスチャがフォールバックマテリアルのものである場合は、フォールバックマテリアルにします。
+                Material fallbackMat = FallbackMaterial.ByMainTextureName(texturePath);
+                if (fallbackMat != null)
+                {
+                    materials[i] = fallbackMat;
+                    continue;
+                }
 
                 // マテリアルがキャッシュ済みの場合はキャッシュを使用
                 if (cachedMaterials.TryGetValue(materialSet, out var cachedMaterial))

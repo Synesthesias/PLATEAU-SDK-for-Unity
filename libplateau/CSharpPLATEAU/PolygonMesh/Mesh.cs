@@ -33,12 +33,13 @@ namespace PLATEAU.PolygonMesh
         }
 
         public static Mesh Create(PlateauVector3d[] vertices, uint[] indices, PlateauVector2f[] uv1,
-            SubMesh[] subMeshes)
+            PlateauVector2f[] uv4, SubMesh[] subMeshes)
         {
             var subMeshPointers = subMeshes.Select(sm => sm.Handle).ToArray();
             var result = NativeMethods.plateau_create_mesh_9(
                 out var newMeshPtr,
                 vertices, vertices.Length, indices, indices.Length, uv1, uv1.Length,
+                uv4, uv4.Length,
                 subMeshPointers, subMeshes.Length
             );
             DLLUtil.CheckDllError(result);
@@ -75,6 +76,12 @@ namespace PLATEAU.PolygonMesh
                 var result = NativeMethods.plateau_mesh_get_city_object_list(Handle, out var cityObjectListPtr);
                 DLLUtil.CheckDllError(result);
                 return new CityObjectList(cityObjectListPtr);
+            }
+            set
+            {
+                ThrowIfInvalid();
+                var result = NativeMethods.plateau_mesh_set_city_object_list(Handle, value.Handle);
+                DLLUtil.CheckDllError(result);
             }
         }
 
@@ -196,6 +203,8 @@ namespace PLATEAU.PolygonMesh
                 int indicesCount,
                 [In] PlateauVector2f[] uv1,
                 int uv1Count,
+                [In] PlateauVector2f[] uv4,
+                int uv4Count,
                 [In] IntPtr[] subMeshPointers,
                 int subMeshCount
                 );
@@ -258,6 +267,12 @@ namespace PLATEAU.PolygonMesh
                 [In] string texturePath,
                 int subMeshStartIndex,
                 int subMeshEndIndex);
+
+            [DllImport(DLLUtil.DllName, CharSet = CharSet.Ansi)]
+            internal static extern APIResult plateau_mesh_set_city_object_list(
+                [In] IntPtr meshPtr,
+                [In] IntPtr cityObjListPtr
+            );
 
             // ***************
             //  mesh_merger_c.cpp

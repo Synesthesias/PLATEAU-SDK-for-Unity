@@ -24,6 +24,7 @@ PLATEAU SDK for Unityを利用することで、実世界を舞台にしたア�
 # 動作環境
 - Windows（x86_64）
 - MacOS（ARM）
+- MacOS (Intel) (v2.2.0-alphaから対応)
 - Android、iOS
   - モバイル向けには、一部の機能のみ（緯度経度と直交座標の相互変換など）をサポートしています。
 

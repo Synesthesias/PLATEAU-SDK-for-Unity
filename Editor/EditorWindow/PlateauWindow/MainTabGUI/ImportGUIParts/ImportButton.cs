@@ -1,10 +1,9 @@
 ﻿using System.Threading;
 using PLATEAU.CityImport.Load;
-using PLATEAU.CityImport.Setting;
+using PLATEAU.CityImport.Config;
 using PLATEAU.Editor.EditorWindow.Common;
 using PLATEAU.Util;
 using PLATEAU.Util.Async;
-using UnityEditor;
 
 namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts
 {
@@ -54,10 +53,10 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts
                     //Cancel ボタンを描画します。
                     if (PlateauEditorStyle.CancelButton("インポートをキャンセルする"))
                     {
-                        bool dialogueResult = EditorUtility.DisplayDialog("PLATEAU SDK", $"インポートをキャンセルしますか？", "はい", "いいえ");
+                        bool dialogueResult = Dialogue.Display($"インポートをキャンセルしますか？", "はい", "いいえ");
                         if (dialogueResult)
                         {
-                            cancellationTokenSrc.Cancel();
+                            cancellationTokenSrc?.Cancel();
                         }
                     }
                 }

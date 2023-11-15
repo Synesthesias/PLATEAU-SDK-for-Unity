@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using PLATEAU.CityInfo;
@@ -26,7 +27,6 @@ namespace PLATEAU.CityImport.Load.Convert
         /// <see cref="ConvertedGameObjData"/> を作ります。
         /// 子も再帰的に作ります。
         /// </summary>
-        /// <param name="plateauModel"></param>
         public ConvertedGameObjData(Model plateauModel, AttributeDataHelper attributeDataHelper)
         {
             this.meshData = null;
@@ -37,7 +37,7 @@ namespace PLATEAU.CityImport.Load.Convert
             {
                 var rootNode = plateauModel.GetRootNodeAt(i);
                 // 再帰的な子の生成です。
-                this.children.Add(new ConvertedGameObjData(rootNode, new AttributeDataHelper(attributeDataHelper)));
+                this.children.Add(new ConvertedGameObjData(rootNode, attributeDataHelper.Copy()));
             }
             Debug.Log("converted plateau model.");
         }
@@ -59,7 +59,7 @@ namespace PLATEAU.CityImport.Load.Convert
             for (int i = 0; i < plateauNode.ChildCount; i++)
             {
                 var child = plateauNode.GetChildAt(i);
-                this.children.Add(new ConvertedGameObjData(child, new AttributeDataHelper(attributeDataHelper)));
+                this.children.Add(new ConvertedGameObjData(child, attributeDataHelper.Copy()));
                 this.attributeDataHelper.AddOutsideChildren(child?.Name);
             }
         }
@@ -67,15 +67,38 @@ namespace PLATEAU.CityImport.Load.Convert
         /// <summary>
         /// ゲームオブジェクト、メッシュ、テクスチャの実体を作ってシーンに配置します。
         /// 再帰によって子も配置します。
+        /// 配置したゲームオブジェクトのリストを返します。
         /// </summary>
-        public async Task PlaceToScene(Transform parent, Dictionary<MaterialSet, Material> cachedMaterials, bool skipRoot, bool doSetMeshCollider, CancellationToken token, Material fallbackMaterial)
+        public async Task<PlateauToUnityModelConverter.ConvertResult> PlaceToScene(
+            Transform parent, Dictionary<MaterialSet, Material> cachedMaterials, bool skipRoot, bool doSetMeshCollider,
+            CancellationToken? token, Material fallbackMaterial, CityObjectGroupInfoForToolkits infoForToolkits)
         {
-            token.ThrowIfCancellationRequested();
+            var result = new PlateauToUnityModelConverter.ConvertResult();
+            try
+            {
+                await PlaceToSceneRecursive(result, parent, cachedMaterials, skipRoot, doSetMeshCollider, token,
+                    fallbackMaterial, 0, infoForToolkits);
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"Failed to placing to scene.\n{e.Message}\n{e.StackTrace}");
+                result = PlateauToUnityModelConverter.ConvertResult.Fail();
+            }
+
+            return result;
+        }
+
+        private async Task PlaceToSceneRecursive(PlateauToUnityModelConverter.ConvertResult result, Transform parent,
+            Dictionary<MaterialSet, Material> cachedMaterials, bool skipRoot, bool doSetMeshCollider,
+            CancellationToken? token, Material fallbackMaterial, int recursiveDepth,
+            CityObjectGroupInfoForToolkits infoForToolkits)
+        {
+            token?.ThrowIfCancellationRequested();
 
             var nextParent = parent;
             if (!skipRoot)
             {
-                if (this.meshData == null)
+                if (this.meshData == null || this.meshData.VerticesCount <= 0)
                 {
                     // メッシュがなければ、中身のないゲームオブジェクトを作成します。
                     nextParent = new GameObject
@@ -87,6 +110,7 @@ namespace PLATEAU.CityImport.Load.Convert
                         name = this.name,
                         isStatic = true
                     }.transform;
+                    result.Add(nextParent.gameObject, recursiveDepth == 0);
                 }
                 else
                 {
@@ -100,26 +124,27 @@ namespace PLATEAU.CityImport.Load.Convert
                         {
                             placedObj.AddComponent<MeshCollider>();
                         }
+                        result.Add(nextParent.gameObject, recursiveDepth == 0);
                     }
                 }
  
-                if(nextParent.gameObject.GetComponent<PLATEAUCityObjectGroup>() == null && nextParent.gameObject.name == this.name)
+                if(nextParent != null && nextParent.gameObject.GetComponent<PLATEAUCityObjectGroup>() == null && nextParent.gameObject.name == this.name)
                 {
                     //　属性情報表示コンポーネントを追加します。
                     var serialized = this.attributeDataHelper.GetSerializableCityObject();
                     if (serialized != null)
                     {
                         var attrInfo = nextParent.gameObject.AddComponent<PLATEAUCityObjectGroup>();
-                        attrInfo.SetSerializableCityObject(serialized);
+                        attrInfo.Init(serialized, infoForToolkits);
                     }
                 }
-                this.attributeDataHelper.Dispose();
             }
-            
+
+            int nextRecursiveDepth = skipRoot ? 0 : recursiveDepth + 1;
             // 子を再帰的に配置します。
             foreach (var child in this.children)
             {
-                await child.PlaceToScene(nextParent.transform, cachedMaterials, false, doSetMeshCollider, token, fallbackMaterial);
+                await child.PlaceToSceneRecursive(result, nextParent, cachedMaterials, false, doSetMeshCollider, token, fallbackMaterial, nextRecursiveDepth, infoForToolkits);
             }
         }
     }

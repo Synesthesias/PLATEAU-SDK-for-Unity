@@ -63,7 +63,7 @@ namespace PLATEAU.CityInfo
             
             JObject jObject = JObject.Load(reader);
             string gmlID = jObject["gmlID"]?.ToString();
-            ulong cityObjectType = (ulong)jObject["cityObjectType"];
+            ulong cityObjectType = (ulong)Enum.Parse(typeof(CityObjectType), jObject["cityObjectType"].ToString());
             int[] cityObjectIndex = jObject["cityObjectIndex"]?.ToObject<int[]>();
             List<CityObject> children = jObject["children"]?.ToObject<List<CityObject>>();
             Attributes attributesMap = jObject["attributes"]?.ToObject<Attributes>() ?? new Attributes();
@@ -85,7 +85,8 @@ namespace PLATEAU.CityInfo
             writer.WritePropertyName("cityObjectIndex");
             JToken.FromObject(param.CityObjectIndex).WriteTo(writer);
             writer.WritePropertyName("cityObjectType");
-            writer.WriteValue((ulong)param.CityObjectType);
+            writer.WriteValue(param.CityObjectType.ToString());
+
             if (param.Children != null && param.Children.Count > 0)
             {
                 writer.WritePropertyName("children");
@@ -121,13 +122,13 @@ namespace PLATEAU.CityInfo
                     if(!string.IsNullOrEmpty(key) && !string.IsNullOrEmpty(type))
                     {
                         if (type == AttributeType.Integer.ToString())
-                            attr.SetAttribute(key, AttributeType.Integer, Int32.Parse(jObject["value"].ToString()));
+                            attr.AddAttribute(key, AttributeType.Integer, Int32.Parse(jObject["value"].ToString()));
                         else if (type == AttributeType.Double.ToString())
-                            attr.SetAttribute(key, AttributeType.Double, Double.Parse(jObject["value"].ToString()));
+                            attr.AddAttribute(key, AttributeType.Double, Double.Parse(jObject["value"].ToString()));
                         else if (type == AttributeType.AttributeSet.ToString())
-                            attr.SetAttribute(key, AttributeType.AttributeSet, jObject["value"].ToObject<Attributes>());
+                            attr.AddAttribute(key, AttributeType.AttributeSet, jObject["value"].ToObject<Attributes>());
                         else
-                            attr.SetAttribute(key, (AttributeType)Enum.Parse(typeof(AttributeType), type), jObject["value"].ToString());
+                            attr.AddAttribute(key, (AttributeType)Enum.Parse(typeof(AttributeType), type), jObject["value"].ToString());
                     }
                 }
                 return attr;

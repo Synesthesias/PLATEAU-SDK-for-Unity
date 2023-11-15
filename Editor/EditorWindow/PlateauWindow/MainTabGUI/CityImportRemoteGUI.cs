@@ -1,6 +1,6 @@
 ﻿using System.Linq;
 using PLATEAU.CityImport.AreaSelector;
-using PLATEAU.CityImport.Setting;
+using PLATEAU.CityImport.Config;
 using PLATEAU.Dataset;
 using PLATEAU.Editor.EditorWindow.Common;
 using PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts;
@@ -40,6 +40,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
             progressGUI.Draw();
         }
 
+        public void Dispose() { }
 
         public void ReceiveResult(AreaSelectResult result)
         {
@@ -120,6 +121,8 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
                 IsAreaSelectComplete = AreaSelectButton.Draw(this.cityLoadConfig.AreaMeshCodes, sourceConf,
                     this.areaSelectResultReceiver, this.cityLoadConfig.CoordinateZoneID);
             }
+
+            public void Dispose() { }
         }
     }
 }

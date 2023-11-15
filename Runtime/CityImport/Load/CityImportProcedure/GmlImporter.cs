@@ -4,7 +4,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using PLATEAU.CityGML;
 using PLATEAU.CityImport.Load.Convert;
-using PLATEAU.CityImport.Setting;
+using PLATEAU.CityImport.Config;
+using PLATEAU.CityInfo;
 using PLATEAU.Dataset;
 using PLATEAU.PolygonMesh;
 using PLATEAU.Util;
@@ -85,12 +86,15 @@ namespace PLATEAU.CityImport.Load.CityImportProcedure
             }
 
             var packageConf = conf.GetConfigForPackage(package);
+            var infoForToolkits = new CityObjectGroupInfoForToolkits(packageConf.EnableTexturePacking);
             // ここはメインスレッドで呼ぶ必要があります。
-            bool placingSucceed = await PlateauToUnityModelConverter.ConvertAndPlaceToScene(
-                cityModel, meshExtractOptions, conf.AreaMeshCodes, gmlTrans, progressDisplay, gmlName, packageConf.DoSetMeshCollider, packageConf.DoSetAttrInfo, token, packageConf.FallbackMaterial
+            var placingResult = await PlateauToUnityModelConverter.CityModelToScene(
+                cityModel, meshExtractOptions, conf.AreaMeshCodes, gmlTrans, progressDisplay, gmlName,
+                packageConf.DoSetMeshCollider, packageConf.DoSetAttrInfo, token, packageConf.FallbackMaterial,
+                infoForToolkits
             );
 
-            if (placingSucceed)
+            if (placingResult.IsSucceed)
             {
                 progressDisplay.SetProgress(gmlName, 100f, "完了");
             }

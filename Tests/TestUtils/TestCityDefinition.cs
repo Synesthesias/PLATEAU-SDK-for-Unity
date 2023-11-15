@@ -4,8 +4,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using PLATEAU.CityImport.AreaSelector;
+using PLATEAU.CityImport.Config;
+using PLATEAU.CityImport.Config.PackageLoadConfigs;
 using PLATEAU.CityImport.Load;
-using PLATEAU.CityImport.Setting;
 using PLATEAU.Editor.EditorWindow.ProgressDisplay;
 using PLATEAU.Dataset;
 using PLATEAU.Geometries;
@@ -92,7 +93,7 @@ namespace PLATEAU.Tests.TestUtils
                 conf.CoordinateZoneID);
             conf.ReferencePoint = geoRef.Project(MeshCode.Parse(AreaMeshCodes[0]).Extent.Center);
             
-            foreach (var packageConf in conf.ForEachPackagePair)
+            foreach (var packageConf in conf.PackageLoadConfigDict.ForEachPackagePair)
             {
                 packageConf.Value.IncludeTexture = true;
             }

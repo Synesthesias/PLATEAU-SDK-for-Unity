@@ -1,6 +1,4 @@
-﻿using PLATEAU.CityImport.Setting;
-using PLATEAU.Dataset;
-using PLATEAU.Native;
+﻿using PLATEAU.CityImport.Config.PackageLoadConfigs;
 
 namespace PLATEAU.CityImport.AreaSelector
 {

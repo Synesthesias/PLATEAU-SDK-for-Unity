@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using PLATEAU.CityImport.Setting;
+using PLATEAU.CityImport.Config.PackageLoadConfigs;
 using PLATEAU.Dataset;
-using PLATEAU.Native;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 

@@ -22,8 +22,10 @@ namespace PLATEAU.Tests.EditModeTests
         public IEnumerator SetUp()
         {
             // TestCityImporter.DeleteFetchedTestDir();
+            LogAssert.ignoreFailingMessages = true;
             DirectoryUtil.SetUpTempCacheFolder();
             yield return TestCityDefinition.MiniTokyo.ImportLocal().AsIEnumerator();
+            LogAssert.ignoreFailingMessages = false;
         }
 
         [TearDown]

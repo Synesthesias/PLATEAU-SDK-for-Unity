@@ -26,4 +26,9 @@
         }
     }
     
+    public class DummyProgressDisplay : IProgressDisplay
+    {
+        public void SetProgress(string progressName, float percentage, string message){}
+    }
+    
 }
