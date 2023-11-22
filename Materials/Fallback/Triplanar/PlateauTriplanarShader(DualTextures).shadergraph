@@ -80,6 +80,9 @@
         },
         {
             "m_Id": "0c0be7daa10342c6aff28f43aee7aa5f"
+        },
+        {
+            "m_Id": "ccfa37ab475e488885de689bb5317843"
         }
     ],
     "m_Keywords": [],
@@ -263,6 +266,9 @@
         },
         {
             "m_Id": "289646f8418d4fe4a78fd2afa4c6d294"
+        },
+        {
+            "m_Id": "69926adf34e8480f9796736684bc312c"
         }
     ],
     "m_GroupDatas": [],
@@ -574,6 +580,34 @@
                     "m_Id": "cf74a36942e448688134fc97ed42e8f3"
                 },
                 "m_SlotId": -1293761813
+            }
+        },
+        {
+            "m_OutputSlot": {
+                "m_Node": {
+                    "m_Id": "69926adf34e8480f9796736684bc312c"
+                },
+                "m_SlotId": 0
+            },
+            "m_InputSlot": {
+                "m_Node": {
+                    "m_Id": "0b3bd9b12c034826a62022da4179a6d0"
+                },
+                "m_SlotId": 2012498569
+            }
+        },
+        {
+            "m_OutputSlot": {
+                "m_Node": {
+                    "m_Id": "69926adf34e8480f9796736684bc312c"
+                },
+                "m_SlotId": 0
+            },
+            "m_InputSlot": {
+                "m_Node": {
+                    "m_Id": "cf74a36942e448688134fc97ed42e8f3"
+                },
+                "m_SlotId": 2012498569
             }
         },
         {
@@ -3132,6 +3166,31 @@
 
 {
     "m_SGVersion": 0,
+    "m_Type": "UnityEditor.ShaderGraph.Vector4MaterialSlot",
+    "m_ObjectId": "4fca2c7aa1db40ab91edbd6bbcd32316",
+    "m_Id": 0,
+    "m_DisplayName": "MainColor",
+    "m_SlotType": 1,
+    "m_Hidden": false,
+    "m_ShaderOutputName": "Out",
+    "m_StageCapability": 3,
+    "m_Value": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0,
+        "w": 0.0
+    },
+    "m_DefaultValue": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0,
+        "w": 0.0
+    },
+    "m_Labels": []
+}
+
+{
+    "m_SGVersion": 0,
     "m_Type": "UnityEditor.ShaderGraph.Vector1MaterialSlot",
     "m_ObjectId": "504e406237734a18b0970dc9d8e5f611",
     "m_Id": 2,
@@ -3835,6 +3894,41 @@
         "m_SerializableColors": []
     },
     "m_SerializedDescriptor": "SurfaceDescription.BaseColor"
+}
+
+{
+    "m_SGVersion": 0,
+    "m_Type": "UnityEditor.ShaderGraph.PropertyNode",
+    "m_ObjectId": "69926adf34e8480f9796736684bc312c",
+    "m_Group": {
+        "m_Id": ""
+    },
+    "m_Name": "Property",
+    "m_DrawState": {
+        "m_Expanded": true,
+        "m_Position": {
+            "serializedVersion": "2",
+            "x": -1104.0,
+            "y": -981.0,
+            "width": 130.0,
+            "height": 34.0
+        }
+    },
+    "m_Slots": [
+        {
+            "m_Id": "4fca2c7aa1db40ab91edbd6bbcd32316"
+        }
+    ],
+    "synonyms": [],
+    "m_Precision": 0,
+    "m_PreviewExpanded": true,
+    "m_PreviewMode": 0,
+    "m_CustomColors": {
+        "m_SerializableColors": []
+    },
+    "m_Property": {
+        "m_Id": "ccfa37ab475e488885de689bb5317843"
+    }
 }
 
 {
@@ -4772,6 +4866,9 @@
         },
         {
             "m_Id": "46538845c8b34d3da68ac575c70d574b"
+        },
+        {
+            "m_Id": "ccfa37ab475e488885de689bb5317843"
         }
     ]
 }
@@ -6084,6 +6181,35 @@
     "m_Value": 0.0,
     "m_DefaultValue": 0.0,
     "m_Labels": []
+}
+
+{
+    "m_SGVersion": 3,
+    "m_Type": "UnityEditor.ShaderGraph.Internal.ColorShaderProperty",
+    "m_ObjectId": "ccfa37ab475e488885de689bb5317843",
+    "m_Guid": {
+        "m_GuidSerialized": "e8551225-9ccd-47b3-9b92-1a6d5271e964"
+    },
+    "m_Name": "MainColor",
+    "m_DefaultRefNameVersion": 1,
+    "m_RefNameGeneratedByDisplayName": "MainColor",
+    "m_DefaultReferenceName": "_MainColor",
+    "m_OverrideReferenceName": "",
+    "m_GeneratePropertyBlock": true,
+    "m_UseCustomSlotLabel": false,
+    "m_CustomSlotLabel": "",
+    "m_Precision": 0,
+    "overrideHLSLDeclaration": false,
+    "hlslDeclarationOverride": 0,
+    "m_Hidden": false,
+    "m_Value": {
+        "r": 1.0,
+        "g": 1.0,
+        "b": 1.0,
+        "a": 1.0
+    },
+    "isMainColor": true,
+    "m_ColorMode": 0
 }
 
 {
