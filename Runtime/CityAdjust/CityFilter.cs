@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading.Tasks;
 using PLATEAU.CityInfo;
 using PLATEAU.Dataset;
@@ -16,16 +17,6 @@ namespace PLATEAU.CityAdjust
             // GMLごとのループ
             foreach (var gmlTrans in gmlTransforms)
             {
-                
-                // TODO GMLの中身をロードして CityObjectType を調べなくとも、パッケージ種だけで Activeにすべきか判断できる場合がある。
-                //      建築物と植生以外はパッケージ種でしか分岐しないので、ロードを省いて高速化することができるはず。
-                var gmlModel = await cityModel.LoadGmlAsync(gmlTrans);
-                if (gmlModel == null)
-                {
-                    Debug.LogError($"GMLファイルのロードに失敗しました: {gmlTrans.name}");
-                    return;
-                }
-
                 var gmlInfo = GmlFile.Create(gmlTrans.name);
                 var gmlPackage = gmlInfo.Package;
 
@@ -37,16 +28,48 @@ namespace PLATEAU.CityAdjust
                     // 都市オブジェクトごとのループ
                     foreach (var cityObjTrans in cityObjTransforms)
                     {
+                        CityGML.CityObjectType cityObjType = 0;
+                        var cityObjGrp = cityObjTrans.GetComponent<PLATEAUCityObjectGroup>();
+
+                        // PLATEAUCityObjectGroupが存在する場合、属性情報を利用してタイプ判定
+                        if (cityObjGrp != null)
+                        {
+                            List<CityObjectList.CityObject> cityObjList = (List<CityObjectList.CityObject>)cityObjGrp.GetAllCityObjects();
+                            // 最小地物のみ処理
+                            if (cityObjList.Count == 1)
+                                cityObjType = cityObjList.First().CityObjectType;
+                        }
+                        // PLATEAUCityObjectGroupが存在しない場合、Modelを利用してタイプ判定
+                        else
+                        {
+                            // TODO GMLの中身をロードして CityObjectType を調べなくとも、パッケージ種だけで Activeにすべきか判断できる場合がある。
+                            //      建築物と植生以外はパッケージ種でしか分岐しないので、ロードを省いて高速化することができるはず。
+                            var gmlModel = await cityModel.LoadGmlAsync(gmlTrans);
+                            if (gmlModel == null)
+                            {
+                                Debug.LogError($"GMLファイルのロードに失敗しました: {gmlTrans.name}");
+                                return;
+                            }
+
+                            try
+                            {
+                                var cityObj = gmlModel.GetCityObjectById(cityObjTrans.name);
+                                cityObjType = cityObj.Type;
+                            }
+                            catch (KeyNotFoundException e)
+                            {
+                                Debug.LogError(e.Message);
+                            }
+                        }
+
                         var typeNode = CityObjectTypeHierarchy.GetNodeByPackage(gmlPackage);
                         try
                         {
-                            var cityObj = gmlModel.GetCityObjectById(cityObjTrans.name);
                             // 都市オブジェクト分類は階層構造のノードになっています。
                             // それを下位から上位へたどり、
                             // 1つでも GUI上で選択されていないものがあればそのオブジェクトは非表示、
                             // そうでなければ表示します。
-
-                            typeNode = CityObjectTypeHierarchy.GetNodeByType(cityObj.Type)
+                            typeNode = CityObjectTypeHierarchy.GetNodeByType(cityObjType)
                                         ?? CityObjectTypeHierarchy.GetNodeByPackage(gmlPackage);
                         }
                         catch(KeyNotFoundException e)

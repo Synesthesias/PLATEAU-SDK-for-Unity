@@ -86,7 +86,7 @@ namespace PLATEAU.CityImport.Load.CityImportProcedure
             }
 
             var packageConf = conf.GetConfigForPackage(package);
-            var infoForToolkits = new CityObjectGroupInfoForToolkits(packageConf.EnableTexturePacking);
+            var infoForToolkits = new CityObjectGroupInfoForToolkits(packageConf.EnableTexturePacking, false);
             // ここはメインスレッドで呼ぶ必要があります。
             var placingResult = await PlateauToUnityModelConverter.CityModelToScene(
                 cityModel, meshExtractOptions, conf.AreaMeshCodes, gmlTrans, progressDisplay, gmlName,

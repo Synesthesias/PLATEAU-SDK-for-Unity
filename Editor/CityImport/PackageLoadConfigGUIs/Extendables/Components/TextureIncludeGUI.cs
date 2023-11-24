@@ -1,4 +1,5 @@
 using PLATEAU.CityImport.Config.PackageLoadConfigs;
+using PLATEAU.Editor.EditorWindow.Common;
 using UnityEditor;
 
 namespace PLATEAU.Editor.CityImport.PackageLoadConfigGUIs.Extendables.Components
@@ -22,8 +23,15 @@ namespace PLATEAU.Editor.CityImport.PackageLoadConfigGUIs.Extendables.Components
             Conf.IncludeTexture = EditorGUILayout.Toggle("テクスチャを含める", Conf.IncludeTexture);
 
             if (!Conf.IncludeTexture) return;
+            
             Conf.EnableTexturePacking = EditorGUILayout.Toggle("テクスチャを結合する", Conf.EnableTexturePacking);
             if (!Conf.EnableTexturePacking) return;
+
+            using (PlateauEditorStyle.VerticalScopeLevel1())
+            {
+                EditorGUILayout.HelpBox("現在、テクスチャ結合後に、別途PLATEAU-SDK-Toolkits-for-Unityの自動テクスチャ機能を使った場合、意図しない結果になる場合があります。", MessageType.Info);
+            }
+            
             Conf.TexturePackingResolution = (TexturePackingResolution)EditorGUILayout.Popup("テクスチャ解像度",
                 (int)Conf.TexturePackingResolution, new[] { "2048x2048", "4096x4096", "8192x8192" });
         }
