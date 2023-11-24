@@ -8,16 +8,23 @@ namespace PLATEAU.CityInfo
     [Serializable]
     public struct CityObjectGroupInfoForToolkits
     {
-        public CityObjectGroupInfoForToolkits(bool isTextureCombinedOrGranularityConverted)
+        public CityObjectGroupInfoForToolkits(bool isTextureCombined, bool isGranularityConverted)
         {
-            this.isTextureCombinedOrGranularityConverted = isTextureCombinedOrGranularityConverted;
+            this.isTextureCombined = isTextureCombined;
+            this.isGranularityConverted = isGranularityConverted;
         }
+
         /// <summary>
-        /// インポート時の設定で、テクスチャ結合にチェックが入っていたとき、または、
-        /// 分割結合機能を利用したときにtrueになります。
+        /// インポート時の設定で、テクスチャ結合にチェックが入っていたときにtrueになります。
         /// Toolkitsのテクスチャ生成の動作に影響します。
         /// </summary>
-        private bool isTextureCombinedOrGranularityConverted;
-        public bool IsTextureCombinedOrGranularityConverted => isTextureCombinedOrGranularityConverted;
+        private bool isTextureCombined;
+        
+        /// <summary>
+        /// 分割結合機能を利用したときにtrueになります。
+        /// </summary>
+        private bool isGranularityConverted;
+        public bool IsTextureCombined => isTextureCombined;
+        public bool IsGranularityConverted => isGranularityConverted;
     }
 }
