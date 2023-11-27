@@ -19,12 +19,28 @@ public class AttributesColorSample : MonoBehaviour
             var target = cityObjGroup.transform;
             foreach (var cityObj in cityObjGroup.GetAllCityObjects())
             {
-                // 属性情報（キーバリューペア）を取得します。
+                // 属性情報（キーバリューペアが集まったもの）を取得します。
                 var attributes = cityObj.AttributesMap;
-                if (!attributes.TryGetValue("urf:function", out var landFuncAttr)) continue;
-                string landFuncName = landFuncAttr.StringValue;
-                var color = ColorByLandFuncName(landFuncName);
-                ChangeMaterialByColor(target, color);
+                
+                // 属性情報のうち、土地計画上の区分を取得して色分けします。
+                if (attributes.TryGetValue("urf:function", out var landFuncAttr))
+                {
+                    string landFuncName = landFuncAttr.StringValue;
+                    var color = ColorByLandFuncName(landFuncName);
+                    ChangeMaterialByColor(target, color);
+                }
+                
+                // 属性情報のうち、水害時の想定浸水高さを取得します。
+                if (attributes.TryGetValue("uro:buildingDisasterRiskAttribute", out var disasterRiskAttr))
+                {
+                    if (disasterRiskAttr.AttributesMapValue.TryGetValue("uro:depth", out var depthValue))
+                    {
+                        var depth = depthValue.DoubleValue;
+                        var color = ColorByDepth(depth);
+                        ChangeMaterialByColor(target, color);
+                    }
+                }
+                
             }
         }
     }
@@ -63,6 +79,12 @@ public class AttributesColorSample : MonoBehaviour
         }
 
         return matColor;
+    }
+
+    private Color ColorByDepth(double depth)
+    {
+        float t = (float)depth / 3f;
+        return Color.Lerp(Color.blue, Color.red, t);
     }
 
     private void ChangeMaterialByColor(Transform target, Color color)
