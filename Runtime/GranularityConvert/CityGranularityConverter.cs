@@ -46,10 +46,14 @@ namespace PLATEAU.GranularityConvert
                 using var dstModel = converter.Convert(srcModel, conf.NativeOption);
 
                 progressBar.Display("変換後の3Dモデルを配置中...", 0.8f);
+                
+                // Toolkits向けの処理です
+                bool isTextureCombined = SearchFirstCityObjGroup(conf.SrcGameObjs).InfoForToolkits.IsTextureCombined;
+                var infoForToolkits = new CityObjectGroupInfoForToolkits(isTextureCombined, true);
 
                 // Modelをゲームオブジェクトに変換して配置します。
                 var commonParent = CalcCommonParent(conf.SrcGameObjs.Select(obj => obj.transform).ToArray());
-                var infoForToolkits = new CityObjectGroupInfoForToolkits(true);
+
                 var result = await PlateauToUnityModelConverter.PlateauModelToScene(
                     commonParent, new DummyProgressDisplay(), "", true,
                     null, null, dstModel,
@@ -150,12 +154,26 @@ namespace PLATEAU.GranularityConvert
 
              throw new Exception("Failed to search common parent.");
          }
+         
+         private PLATEAUCityObjectGroup SearchFirstCityObjGroup(IReadOnlyList<GameObject> gameObjs)
+         {
+             foreach(var go in gameObjs)
+             {
+                 var cityObjGroups = go.GetComponentsInChildren<PLATEAUCityObjectGroup>();
+                 if (cityObjGroups.Length > 0)
+                 {
+                     return cityObjGroups[0];
+                 }
+             }
+
+             return null;
+         }
     }
 
 
     public class SerializedCityObjectGetterFromDict : ISerializedCityObjectGetter
     {
-        private GmlIdToSerializedCityObj data;
+        private readonly GmlIdToSerializedCityObj data;
 
         public SerializedCityObjectGetterFromDict(GmlIdToSerializedCityObj dict)
         {

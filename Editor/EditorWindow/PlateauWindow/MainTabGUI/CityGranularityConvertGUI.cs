@@ -14,14 +14,14 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
     /// </summary>
     internal class CityGranularityConvertGUI : IEditorDrawable
     {
-        private UnityEditor.EditorWindow parentEditorWindow;
+        private readonly UnityEditor.EditorWindow parentEditorWindow;
         private GameObject[] selected = Array.Empty<GameObject>();
         private Vector2 scrollSelected;
         private int selectedUnit = 2;
         private static readonly string[] UnitOptions = { "最小地物単位(壁面,屋根面等)", "主要地物単位(建築物,道路等)", "地域単位" };
         private int selectedDestroySrcOptions;
         private static readonly string[] DestroySrcOptions = { "残す", "削除する" };
-        private bool isExecTaskRunning = false;
+        private readonly bool isExecTaskRunning = false;
 
         public CityGranularityConvertGUI(UnityEditor.EditorWindow parentEditorWindow)
         {
@@ -67,7 +67,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
                 this.selectedDestroySrcOptions =
                     PlateauEditorStyle.PopupWithLabelWidth(
                         "元のオブジェクトを", selectedDestroySrcOptions, DestroySrcOptions, 90);
-            };
+            }
 
             // if(selectedUnit == 0 )
             // {
