@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using PLATEAU.CityExport.ModelConvert;
+using PLATEAU.CityExport.ModelConvert.SubMeshConvert;
 using PLATEAU.CityImport.Load.Convert;
 using PLATEAU.CityInfo;
 using PLATEAU.Native;
@@ -36,8 +37,10 @@ namespace PLATEAU.GranularityConvert
 
                 progressBar.Display("ゲームオブジェクトを共通モデルに変換中...", 0.2f);
 
+                var unityMeshToDllSubMeshConverter = new UnityMeshToDllSubMeshWithGameMaterial();
+
                 // ゲームオブジェクトを共通ライブラリのModelに変換します。
-                using var srcModel = UnityMeshToDllModelConverter.Convert(conf.SrcGameObjs, true, false, ConvertVertex);
+                using var srcModel = UnityMeshToDllModelConverter.Convert(conf.SrcGameObjs, unityMeshToDllSubMeshConverter, false, ConvertVertex);
 
                 progressBar.Display("共通モデルの変換中...", 0.5f);
 

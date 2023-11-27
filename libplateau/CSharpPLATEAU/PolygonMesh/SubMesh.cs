@@ -75,6 +75,29 @@ namespace PLATEAU.PolygonMesh
         }
 
         /// <summary>
+        /// <see cref="GameMaterialID"/>は、<see cref="SubMesh"/>にゲームエンジンのマテリアルを持たせたい場合に、
+        /// <see cref="TexturePath"/>や<see cref="Material"/>の代わりに利用するIDです。
+        /// 特に分割結合でゲームエンジンのマテリアルを維持するために利用します。
+        /// IDがどのマテリアルを指すかはゲームエンジンが決めます。
+        /// </summary>
+        public int GameMaterialID
+        {
+            get
+            {
+                ThrowIfInvalid();
+                int gameMaterialID =
+                    DLLUtil.GetNativeValue<int>(Handle, NativeMethods.plateau_sub_mesh_get_game_material_id);
+                return gameMaterialID;
+            }
+            set
+            {
+                ThrowIfInvalid();
+                var result = NativeMethods.plateau_sub_mesh_set_game_material_id(Handle, value);
+                DLLUtil.CheckDllError(result);
+            }
+        }
+
+        /// <summary>
         /// 取扱注意:
         /// 通常は <see cref="Mesh"/> が廃棄されるときに C++側で <see cref="SubMesh"/> も廃棄されるので、
         /// このメソッドを呼ぶ必要はありません。
@@ -123,6 +146,17 @@ namespace PLATEAU.PolygonMesh
             internal static extern APIResult plateau_sub_mesh_get_material(
                 [In] IntPtr subMeshPtr,
                 out IntPtr matPtr);
+            
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_sub_mesh_set_game_material_id(
+                [In] IntPtr subMeshPtr,
+                int gameMaterialID);
+            
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_sub_mesh_get_game_material_id(
+                [In] IntPtr subMeshPtr,
+                out int outGameMaterialID);
+            
 
             [DllImport(DLLUtil.DllName, CharSet = CharSet.Ansi)]
             internal static extern APIResult plateau_create_sub_mesh(
