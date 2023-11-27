@@ -70,14 +70,14 @@ namespace PLATEAU.GranularityConvert
                     throw new Exception("Failed to convert plateau model to scene game objects.");
                 }
 
-                if (result.RootObjs.Count <= 0)
+                if (result.GeneratedRootObjs.Count <= 0)
                 {
                     Dialogue.Display("変換対象がありません。\nアクティブなオブジェクトを選択してください。", "OK");
                     return PlateauToUnityModelConverter.ConvertResult.Fail();
                 }
                 
                 // PLATEAUInstancedCityModelを復元します。
-                instancedCityModelDict.Restore(result.RootObjs);
+                instancedCityModelDict.Restore(result.GeneratedRootObjs);
 
                 if (conf.DoDestroySrcObjs)
                 {
@@ -89,7 +89,7 @@ namespace PLATEAU.GranularityConvert
                 
 #if UNITY_EDITOR
                 // 変換後のゲームオブジェクトを選択状態にします。
-                Selection.objects = result.RootObjs.Select(go => (Object)go).ToArray();
+                Selection.objects = result.GeneratedRootObjs.Select(go => (Object)go).ToArray();
 #endif
                 return result;
             }

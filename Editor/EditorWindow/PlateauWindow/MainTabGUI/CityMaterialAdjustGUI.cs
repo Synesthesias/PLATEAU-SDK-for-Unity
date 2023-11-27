@@ -1,6 +1,8 @@
 ﻿using System;
 using PLATEAU.CityAdjust.MaterialAdjust;
+using PLATEAU.Editor.CityImport.PackageLoadConfigGUIs.Extendables.Components;
 using PLATEAU.Editor.EditorWindow.Common;
+using PLATEAU.PolygonMesh;
 using PLATEAU.Util;
 using PLATEAU.Util.Async;
 using UnityEditor;
@@ -92,9 +94,13 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
             if (adjuster == null) return;
             
             // 検索後にのみ以下を表示します
+            
+            adjuster.granularity = GranularityGUI.Draw("実行後の粒度", adjuster.granularity);
 
             var conf = adjuster.MaterialAdjustConf;
             int displayIndex = 1;
+            
+            // 存在する地物型を列挙します 
             foreach (var (typeNode, typeConf) in conf)
             {
                 using (PlateauEditorStyle.VerticalScopeLevel1())
@@ -110,6 +116,8 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
                 }
                 displayIndex++;
             }
+            
+            
 
             PlateauEditorStyle.Separator(0);
             

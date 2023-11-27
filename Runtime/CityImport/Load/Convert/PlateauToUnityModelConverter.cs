@@ -164,13 +164,13 @@ namespace PLATEAU.CityImport.Load.Convert
             /// <summary>
             /// 変換によってシーンに配置したゲームオブジェクトのうち、ヒエラルキーが最上位であるもののリスト
             /// </summary>
-            public List<GameObject> RootObjs { get; } = new();
+            public List<GameObject> GeneratedRootObjs { get; } = new();
 
             /// <summary> 結果のゲームオブジェクトの一覧に追加します。</summary>
             public void Add(GameObject obj, bool isRoot)
             {
                 GeneratedObjs.Add(obj);
-                if(isRoot) RootObjs.Add(obj);
+                if(isRoot) GeneratedRootObjs.Add(obj);
             }
 
             /// <summary> 複数の<see cref="ConvertResult"/>を統合します。 </summary>
@@ -178,7 +178,7 @@ namespace PLATEAU.CityImport.Load.Convert
             {
                 IsSucceed &= other.IsSucceed;
                 GeneratedObjs.AddRange(other.GeneratedObjs);
-                RootObjs.AddRange(other.RootObjs);
+                GeneratedRootObjs.AddRange(other.GeneratedRootObjs);
             }
 
             public static ConvertResult Fail()

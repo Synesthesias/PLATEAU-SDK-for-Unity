@@ -14,6 +14,7 @@ namespace PLATEAU.CityAdjust.MaterialAdjust
     internal class CityMaterialAdjuster
     {
         private readonly IReadOnlyCollection<GameObject> targetObjs;
+        public MeshGranularity granularity = MeshGranularity.PerPrimaryFeatureObject;
         public MaterialAdjustConf MaterialAdjustConf { get; }
 
         public CityMaterialAdjuster(IReadOnlyCollection<GameObject> targetObjs)
@@ -57,6 +58,19 @@ namespace PLATEAU.CityAdjust.MaterialAdjust
                     materials[i] = materialConf;
                 }
                 renderer.sharedMaterials = materials;
+            }
+            
+            // 結合し直します。
+            var granularityConverterAfter = new CityGranularityConverter();
+            var granularityConvertConfAfter = new GranularityConvertOptionUnity(
+                new GranularityConvertOption(granularity, 1),
+                result.GeneratedRootObjs.ToArray(), true
+            );
+            var resultAfter = await granularityConverterAfter.ConvertAsync(granularityConvertConfAfter);
+            if (!resultAfter.IsSucceed)
+            {
+                Debug.LogError("ゲームオブジェクトの結合に失敗しました。");
+                return;
             }
         }
     }
