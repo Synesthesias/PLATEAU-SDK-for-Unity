@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using PLATEAU.CityConvertCommon;
+using PLATEAU.CityImport.Load.Convert.MaterialConvert;
 using PLATEAU.PolygonMesh;
 using UnityEngine;
 using UnityEngine.Assertions;
@@ -48,14 +48,6 @@ namespace PLATEAU.CityExport.ModelConvert.SubMeshConvert
                 var dllSubMesh = predicate(startIndex, endIndex, materials?[i]);
                 
                 dllSubMeshes.Add(dllSubMesh);
-
-                // テクスチャパスは、Unityシーン内のテクスチャの名前に記載してあるので取得します。
-                string texturePath = "";
-                if (materials != null && i < materials.Length)
-                {
-                    texturePath = MaterialConverter.MaterialToSubMeshTexturePath(materials[i]);
-                }
-                dllSubMeshes.Add(SubMesh.Create(startIndex, endIndex, texturePath));
                 
             }
 

@@ -1,53 +1,26 @@
 using System.Collections.Generic;
-using System.IO;
 using System.Threading.Tasks;
-using PLATEAU.CityImport.Load.Convert;
 using PLATEAU.Util;
 using PLATEAU.Util.Async;
 using UnityEngine;
-#if UNITY_EDITOR
-using UnityEditor;
-#endif
 
-namespace PLATEAU.CityConvertCommon
+namespace PLATEAU.CityImport.Load.Convert.MaterialConvert
 {
-    /// <summary>
-    /// Unityのマテリアルと、DLLのSubMesh情報を相互変換します。
-    /// </summary>
-    internal static class MaterialConverter
+    internal class DllSubMeshToUnityMaterialByTextureMaterial : IDllSubMeshToUnityMaterialConverter
     {
-        /// <summary>
-        /// Unityのマテリアルを、DLLのSubMeshのTexturePathに変換します。
-        /// </summary>
-        public static string MaterialToSubMeshTexturePath(Material mat)
-        {
-            if (mat == null) return "";
-            var tex = mat.mainTexture;
-            if (tex == null) return "";
-            
-#if UNITY_EDITOR
-            // デフォルトマテリアルのテクスチャは、GetAssetPathでパスを取得できます。
-            string texAssetPath = AssetDatabase.GetAssetPath(tex);
-            if (texAssetPath != "")
-            {
-                return Path.GetFullPath(texAssetPath);
-            }
-#endif
-            // PLATEAUのテクスチャは、テクスチャ名がパスを表すこととしています。
-            // 土地の航空写真もこのケースに含まれます。
-            return Path.Combine(PathUtil.PLATEAUSrcFetchDir, tex.name);
-        }
-
+        //GMLマテリアル、 テクスチャパス と マテリアルを紐付ける辞書です。同じマテリアルが重複して生成されることを防ぎます。
+        private readonly Dictionary<ConvertedMeshData.MaterialSet, UnityEngine.Material> cachedMaterials = new ();
         
         /// <summary>
         /// DLLのSubMesh情報をUnityのマテリアルに変換します。
         /// 追加可能なら結果をキャッシュにも追加します。
         /// </summary>
-        public static async Task<Material> SubMeshInfoToMaterialAsync(
-            string texturePath, CityGML.Material gmlMaterial, Material fallbackMaterial,
-            Dictionary<ConvertedMeshData.MaterialSet, Material> cachedMaterials)
+        public async Task<Material> ConvertAsync(
+            ConvertedMeshData meshData, int subMeshIndex, Material fallbackMaterial)
         {
             // テクスチャがフォールバックマテリアルのものである場合は、フォールバックマテリアルにします。
+            var texturePath = meshData.TextureUrls[subMeshIndex];
+            var gmlMaterial = meshData.GmlMaterials[subMeshIndex];
             Material fallbackMat = FallbackMaterial.ByMainTextureName(texturePath);
             if (fallbackMat != null)
             {
@@ -101,6 +74,5 @@ namespace PLATEAU.CityConvertCommon
             cachedMaterials.Add(materialSet, material);
             return material;
         }
-        
     }
 }

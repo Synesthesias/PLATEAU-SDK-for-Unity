@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using PLATEAU.CityImport.Load.Convert.MaterialConvert;
 using PLATEAU.CityInfo;
 using PLATEAU.PolygonMesh;
 using UnityEngine;
@@ -70,13 +71,13 @@ namespace PLATEAU.CityImport.Load.Convert
         /// 配置したゲームオブジェクトのリストを返します。
         /// </summary>
         public async Task<PlateauToUnityModelConverter.ConvertResult> PlaceToScene(
-            Transform parent, Dictionary<ConvertedMeshData.MaterialSet, Material> cachedMaterials, bool skipRoot, bool doSetMeshCollider,
+            Transform parent, IDllSubMeshToUnityMaterialConverter materialConverter, bool skipRoot, bool doSetMeshCollider,
             CancellationToken? token, Material fallbackMaterial, CityObjectGroupInfoForToolkits infoForToolkits)
         {
             var result = new PlateauToUnityModelConverter.ConvertResult();
             try
             {
-                await PlaceToSceneRecursive(result, parent, cachedMaterials, skipRoot, doSetMeshCollider, token,
+                await PlaceToSceneRecursive(result, parent, materialConverter, skipRoot, doSetMeshCollider, token,
                     fallbackMaterial, 0, infoForToolkits);
             }
             catch (Exception e)
@@ -89,7 +90,7 @@ namespace PLATEAU.CityImport.Load.Convert
         }
 
         private async Task PlaceToSceneRecursive(PlateauToUnityModelConverter.ConvertResult result, Transform parent,
-            Dictionary<ConvertedMeshData.MaterialSet, Material> cachedMaterials, bool skipRoot, bool doSetMeshCollider,
+            IDllSubMeshToUnityMaterialConverter materialConverter, bool skipRoot, bool doSetMeshCollider,
             CancellationToken? token, Material fallbackMaterial, int recursiveDepth,
             CityObjectGroupInfoForToolkits infoForToolkits)
         {
@@ -115,7 +116,7 @@ namespace PLATEAU.CityImport.Load.Convert
                 else
                 {
                     // メッシュがあれば、それを配置します。（ただし頂点数が0の場合は配置しません。）
-                    var placedObj = await this.meshData.PlaceToScene(parent, cachedMaterials, fallbackMaterial);
+                    var placedObj = await this.meshData.PlaceToScene(parent, materialConverter, fallbackMaterial);
                     if (placedObj != null)
                     {
                         nextParent = placedObj.transform;
@@ -144,7 +145,7 @@ namespace PLATEAU.CityImport.Load.Convert
             // 子を再帰的に配置します。
             foreach (var child in this.children)
             {
-                await child.PlaceToSceneRecursive(result, nextParent, cachedMaterials, false, doSetMeshCollider, token, fallbackMaterial, nextRecursiveDepth, infoForToolkits);
+                await child.PlaceToSceneRecursive(result, nextParent, materialConverter, false, doSetMeshCollider, token, fallbackMaterial, nextRecursiveDepth, infoForToolkits);
             }
         }
     }

@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using PLATEAU.CityConvertCommon;
+using System.Linq;
 using PLATEAU.PolygonMesh;
 using UnityEngine;
 using UnityEngine.Assertions;
@@ -22,9 +22,14 @@ namespace PLATEAU.CityExport.ModelConvert.SubMeshConvert
                 unityMesh, renderer,
                 (int startIndex, int endIndex, Material material) =>
                 {
-                    GameMaterials.Add(material);
                     var dllSubMesh = SubMesh.Create(startIndex, endIndex, "");
-                    dllSubMesh.GameMaterialID = GameMaterials.Count - 1;
+                    int found = GameMaterials.IndexOf(material);
+                    if (found < 0)
+                    {
+                        GameMaterials.Add(material);
+                        found = GameMaterials.Count - 1;
+                    }
+                    dllSubMesh.GameMaterialID = found;
                     return dllSubMesh;
                 });
             return dllSubMeshes;

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using PLATEAU.CityConvertCommon;
+using PLATEAU.CityImport.Load.Convert.MaterialConvert;
 using PLATEAU.Util;
 using PLATEAU.Util.Async;
 using UnityEngine;
@@ -19,21 +19,23 @@ namespace PLATEAU.CityImport.Load.Convert
         private readonly Vector2[] uv1;
         private readonly Vector2[] uv4;
         private readonly List<List<int>> subMeshTriangles;
-        private readonly List<string> textureUrls;
-        private readonly List<CityGML.Material> gmlMaterials;
+        public List<string> TextureUrls { get; }
+        public List<CityGML.Material> GmlMaterials { get; }
+        public List<int> GameMaterialIDs { get; }
 
         private string Name { get; }
         private int SubMeshCount => this.subMeshTriangles.Count;
 
         public ConvertedMeshData(Vector3[] vertices, Vector2[] uv1, Vector2[] uv4, List<List<int>> subMeshTriangles,
-            List<string> textureUrls, List<CityGML.Material> materials, string name)
+            List<string> textureUrls, List<CityGML.Material> materials, List<int> gameMaterialIDs, string name)
         {
             this.vertices = vertices;
             this.uv1 = uv1;
             this.uv4 = uv4;
             this.subMeshTriangles = subMeshTriangles;
-            this.textureUrls = textureUrls;
-            this.gmlMaterials = materials;
+            TextureUrls = textureUrls;
+            GmlMaterials = materials;
+            GameMaterialIDs = gameMaterialIDs;
             Name = name;
         }
 
@@ -52,7 +54,7 @@ namespace PLATEAU.CityImport.Load.Convert
         /// 頂点がない場合は nullが返ります。
         /// </summary>
         public async Task<GameObject> PlaceToScene(Transform parentTrans,
-            Dictionary<MaterialSet, Material> cachedMaterials, Material fallbackMaterial)
+            IDllSubMeshToUnityMaterialConverter materialConverter, Material fallbackMaterial)
         {
             var mesh = GenerateUnityMesh();
             if (mesh.vertexCount <= 0) return null;
@@ -73,10 +75,8 @@ namespace PLATEAU.CityImport.Load.Convert
             {
 
                 //Material設定
-                var texturePath = textureUrls[i];
-                var gmlMaterial = gmlMaterials[i];
-                materials[i] = await MaterialConverter.SubMeshInfoToMaterialAsync(
-                    texturePath, gmlMaterial, fallbackMaterial, cachedMaterials);
+                materials[i] = await materialConverter.ConvertAsync(
+                    this, i, fallbackMaterial);
             }
 
             renderer.materials = materials;
