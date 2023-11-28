@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using PLATEAU.Editor.EditorWindow.Common;
+using PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.AdjustGUIParts;
 using PLATEAU.GranularityConvert;
 using PLATEAU.PolygonMesh;
 using PLATEAU.Util.Async;
@@ -19,8 +20,8 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
         private Vector2 scrollSelected;
         private int selectedUnit = 2;
         private static readonly string[] UnitOptions = { "最小地物単位(壁面,屋根面等)", "主要地物単位(建築物,道路等)", "地域単位" };
-        private int selectedDestroySrcOptions;
-        private static readonly string[] DestroySrcOptions = { "残す", "削除する" };
+        private readonly DestroyOrPreserveSrcGUI destroyOrPreserveGUI = new();
+        
         private readonly bool isExecTaskRunning = false;
 
         public CityGranularityConvertGUI(UnityEditor.EditorWindow parentEditorWindow)
@@ -64,9 +65,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
                 this.selectedUnit =
                     PlateauEditorStyle.PopupWithLabelWidth(
                     "分割・結合単位", this.selectedUnit, UnitOptions, 90);
-                this.selectedDestroySrcOptions =
-                    PlateauEditorStyle.PopupWithLabelWidth(
-                        "元のオブジェクトを", selectedDestroySrcOptions, DestroySrcOptions, 90);
+                destroyOrPreserveGUI.Draw();
             }
 
             // if(selectedUnit == 0 )
@@ -98,7 +97,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
             var convertConf = new GranularityConvertOptionUnity(
                 new GranularityConvertOption((MeshGranularity)selectedUnit, 1),
                 selected,
-                selectedDestroySrcOptions == 1
+                destroyOrPreserveGUI.Current == DestroyOrPreserveSrcGUI.PreserveOrDestroy.Destroy
             );
             await converter.ConvertAsync(convertConf);
             selected = new GameObject[] { };

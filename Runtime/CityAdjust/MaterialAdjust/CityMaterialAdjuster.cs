@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using PLATEAU.CityInfo;
 using PLATEAU.GranularityConvert;
 using PLATEAU.PolygonMesh;
+using PLATEAU.Util;
 using UnityEngine;
 
 namespace PLATEAU.CityAdjust.MaterialAdjust
@@ -16,6 +17,7 @@ namespace PLATEAU.CityAdjust.MaterialAdjust
         private readonly IReadOnlyCollection<GameObject> targetObjs;
         public MeshGranularity granularity = MeshGranularity.PerPrimaryFeatureObject;
         public MaterialAdjustConf MaterialAdjustConf { get; }
+        public bool DoDestroySrcObjects { get; set; }
 
         public CityMaterialAdjuster(IReadOnlyCollection<GameObject> targetObjs)
         {
@@ -27,11 +29,17 @@ namespace PLATEAU.CityAdjust.MaterialAdjust
 
         public async Task Exec()
         {
+            if (targetObjs.Any(obj => obj == null))
+            {
+                Dialogue.Display("対象に削除されたゲームオブジェクトが含まれています。\n選択し直してください。", "OK");
+                return;
+            }
+            
             // 地物タイプに応じてマテリアルを変える下準備として、都市オブジェクトを最小地物単位に分解します。
             var granularityConverter = new CityGranularityConverter();
             var granularityConvertConf = new GranularityConvertOptionUnity(
                 new GranularityConvertOption(MeshGranularity.PerAtomicFeatureObject, 1),
-                targetObjs.ToArray(), false
+                targetObjs.ToArray(), DoDestroySrcObjects
             );
             var result = await granularityConverter.ConvertAsync(granularityConvertConf);
             if (!result.IsSucceed)

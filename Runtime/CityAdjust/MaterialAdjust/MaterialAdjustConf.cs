@@ -40,6 +40,9 @@ namespace PLATEAU.CityAdjust.MaterialAdjust
             return null;
         }
 
+        /// <summary> 対象の地物型の種類数です。 </summary>
+        public int Length => data.Count;
+
         /// <summary> foreachで回せるようにします </summary>
         public IEnumerator<KeyValuePair<CityObjectTypeHierarchy.Node, MaterialAdjustConfPerType>> GetEnumerator()
         {
