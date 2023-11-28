@@ -276,6 +276,10 @@ namespace PLATEAU.CityInfo
             }
         }
 
+        /// <summary>
+        /// コンポーネントが保持する<see cref="CityObjectList"/>から、
+        /// すべての<see cref="CityObject"/>を返します。
+        /// </summary>
         public IEnumerable<CityObjectList.CityObject> GetAllCityObjects()
         {
             List<CityObjectList.CityObject> objs = new List<CityObjectList.CityObject>();

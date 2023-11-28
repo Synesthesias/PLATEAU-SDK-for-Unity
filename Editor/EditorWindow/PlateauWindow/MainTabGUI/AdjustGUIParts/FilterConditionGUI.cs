@@ -26,7 +26,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.AdjustGUIParts
         private PackageLod sliderPackageLod;
 
 
-        public void Draw(CityAdjustGUI.PackageToLodMinMax packageToLodMinMax)
+        public void Draw(CityChangeActiveGUI.PackageToLodMinMax packageToLodMinMax)
         {
 
             using (new EditorGUILayout.HorizontalScope())
@@ -50,7 +50,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.AdjustGUIParts
             }
         }
 
-        private void DrawNodeRecursive(Hierarchy.Node node, CityAdjustGUI.PackageToLodMinMax packageToLodMinMax, int depth)
+        private void DrawNodeRecursive(Hierarchy.Node node, CityChangeActiveGUI.PackageToLodMinMax packageToLodMinMax, int depth)
         {
             if (!this.selectionDict.ContainsKey(node))
             {
@@ -129,7 +129,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.AdjustGUIParts
         /// <summary>
         /// 初期化時と対象の都市モデルが変わったときに呼びます。
         /// </summary>
-        public void RefreshPackageAndLods(CityAdjustGUI.PackageToLodMinMax packageToLodMinMax)
+        public void RefreshPackageAndLods(CityChangeActiveGUI.PackageToLodMinMax packageToLodMinMax)
         {
             // data を初期化します。
             this.sliderPackageLod = new Dictionary<PredefinedCityModelPackage, LodSliderConfig>();

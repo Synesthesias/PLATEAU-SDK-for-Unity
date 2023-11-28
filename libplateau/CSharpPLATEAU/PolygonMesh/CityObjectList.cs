@@ -26,6 +26,18 @@ namespace PLATEAU.PolygonMesh
                 AtomicIndex = (int)Math.Round(uv.Y)
             };
         }
+
+        public override int GetHashCode()
+        {
+            return PrimaryIndex * 10000 + AtomicIndex;
+        }
+
+        public override bool Equals(object obj)
+        {
+            var other = obj as CityObjectIndex?;
+            if (other == null) return false;
+            return PrimaryIndex == other.Value.PrimaryIndex && AtomicIndex == other.Value.AtomicIndex;
+        }
     }
 
 

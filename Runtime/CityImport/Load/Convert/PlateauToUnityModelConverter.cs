@@ -9,6 +9,7 @@ using PLATEAU.Util;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using System.Threading;
+using PLATEAU.CityImport.Load.Convert.MaterialConvert;
 using PLATEAU.CityInfo;
 using Material = UnityEngine.Material;
 
@@ -52,10 +53,12 @@ namespace PLATEAU.CityImport.Load.Convert
                 Debug.LogError("メッシュデータの抽出に失敗しました。\n" + e);
                 return ConvertResult.Fail();
             }
+            
+            var materialConverter = new DllSubMeshToUnityMaterialByTextureMaterial();
 
             return await PlateauModelToScene(
                 parentTrans, progressDisplay, progressName, doSetMeshCollider, token, 
-                fallbackMaterial, plateauModel, attributeDataHelper, true, infoForToolkits);
+                fallbackMaterial, plateauModel, attributeDataHelper, true, infoForToolkits, materialConverter);
         }
 
         /// <summary>
@@ -64,7 +67,8 @@ namespace PLATEAU.CityImport.Load.Convert
         /// </summary>
         public static async Task<ConvertResult> PlateauModelToScene(Transform parentTrans, IProgressDisplay progressDisplay,
             string progressName, bool doSetMeshCollider, CancellationToken? token, Material fallbackMaterial, Model plateauModel, 
-            AttributeDataHelper attributeDataHelper, bool skipRoot, CityObjectGroupInfoForToolkits infoForToolkits)
+            AttributeDataHelper attributeDataHelper, bool skipRoot, CityObjectGroupInfoForToolkits infoForToolkits,
+            IDllSubMeshToUnityMaterialConverter materialConverter)
         {
             // ここの処理は 処理A と 処理B に分割されています。
             // Unityのメッシュデータを操作するのは 処理B のみであり、
@@ -96,14 +100,11 @@ namespace PLATEAU.CityImport.Load.Convert
             // 実際にメッシュを操作してシーンに配置します。
             // こちらはメインスレッドでのみ実行可能なので、Loadメソッドはメインスレッドから呼ぶ必要があります。
 
-            //GMLマテリアル、 テクスチャパス と マテリアルを紐付ける辞書です。同じマテリアルが重複して生成されることを防ぎます。
-            Dictionary<MaterialSet, UnityEngine.Material> cachedMaterials = new Dictionary<MaterialSet, UnityEngine.Material>();
-
             progressDisplay.SetProgress(progressName, 80f, "シーンに配置中");
 
             var result = new ConvertResult();
 
-            var innerResult = await meshObjsData.PlaceToScene(parentTrans, cachedMaterials, skipRoot, doSetMeshCollider,
+            var innerResult = await meshObjsData.PlaceToScene(parentTrans, materialConverter, skipRoot, doSetMeshCollider,
                 token, fallbackMaterial, infoForToolkits);
             if (innerResult.IsSucceed)
             {
@@ -163,13 +164,13 @@ namespace PLATEAU.CityImport.Load.Convert
             /// <summary>
             /// 変換によってシーンに配置したゲームオブジェクトのうち、ヒエラルキーが最上位であるもののリスト
             /// </summary>
-            public List<GameObject> RootObjs { get; } = new();
+            public List<GameObject> GeneratedRootObjs { get; } = new();
 
             /// <summary> 結果のゲームオブジェクトの一覧に追加します。</summary>
             public void Add(GameObject obj, bool isRoot)
             {
                 GeneratedObjs.Add(obj);
-                if(isRoot) RootObjs.Add(obj);
+                if(isRoot) GeneratedRootObjs.Add(obj);
             }
 
             /// <summary> 複数の<see cref="ConvertResult"/>を統合します。 </summary>
@@ -177,7 +178,7 @@ namespace PLATEAU.CityImport.Load.Convert
             {
                 IsSucceed &= other.IsSucceed;
                 GeneratedObjs.AddRange(other.GeneratedObjs);
-                RootObjs.AddRange(other.RootObjs);
+                GeneratedRootObjs.AddRange(other.GeneratedRootObjs);
             }
 
             public static ConvertResult Fail()

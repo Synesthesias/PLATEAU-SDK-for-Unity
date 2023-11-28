@@ -16,7 +16,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
     /// <summary>
     /// PLATEAU SDK ウィンドウで「モデル調整」タブが選択されている時のGUIです。
     /// </summary>
-    internal class CityAdjustGUI : IEditorDrawable
+    internal class CityChangeActiveGUI : IEditorDrawable
     {
         private PLATEAUInstancedCityModel adjustTarget;
         private readonly FilterConditionGUI filterConditionGUI = new FilterConditionGUI();

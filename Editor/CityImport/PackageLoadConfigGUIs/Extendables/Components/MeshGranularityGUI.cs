@@ -14,8 +14,16 @@ namespace PLATEAU.Editor.CityImport.PackageLoadConfigGUIs.Extendables.Components
 
         public override void Draw()
         {
-            Conf.MeshGranularity = (MeshGranularity)EditorGUILayout.Popup("モデル結合",
-                (int)Conf.MeshGranularity, new[] { "最小地物単位(壁面,屋根面等)", "主要地物単位(建築物,道路等)", "地域単位" });
+            Conf.MeshGranularity = GranularityGUI.Draw("モデル結合", Conf.MeshGranularity);
+        }
+    }
+
+    internal static class GranularityGUI
+    {
+        public static MeshGranularity Draw(string label, MeshGranularity current)
+        {
+            return (MeshGranularity)EditorGUILayout.Popup(label,
+                (int)current, new[] { "最小地物単位(壁面,屋根面等)", "主要地物単位(建築物,道路等)", "地域単位" });
         }
     }
 }
