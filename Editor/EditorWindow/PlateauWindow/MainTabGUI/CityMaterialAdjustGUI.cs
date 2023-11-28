@@ -30,6 +30,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
         {
             this.parentEditorWindow = parentEditorWindow;
             Selection.selectionChanged += OnSelectionChanged;
+            OnSelectionChanged();
         }
 
         public void Dispose()
@@ -148,6 +149,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
                         if (PlateauEditorStyle.MiniButton("再選択", 150))
                         {
                             adjuster = null;
+                            OnSelectionChanged();
                         }
                     }
                 });
