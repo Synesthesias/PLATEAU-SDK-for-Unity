@@ -30,7 +30,7 @@ namespace PLATEAU.CityImport.Load.Convert
         /// 非同期処理です。必ずメインスレッドで呼ぶ必要があります。
         /// 成否を bool で返します。
         /// </summary>
-        public static async Task<ConvertResult> CityModelToScene(
+        public static async Task<GranularityConvertResult> CityModelToScene(
             CityModel cityModel, MeshExtractOptions meshExtractOptions, string[] selectedMeshCodes,
             Transform parentTrans, IProgressDisplay progressDisplay, string progressName,
             bool doSetMeshCollider, bool doSetAttrInfo, CancellationToken token,  UnityEngine.Material fallbackMaterial,
@@ -51,7 +51,7 @@ namespace PLATEAU.CityImport.Load.Convert
             catch (Exception e)
             {
                 Debug.LogError("メッシュデータの抽出に失敗しました。\n" + e);
-                return ConvertResult.Fail();
+                return GranularityConvertResult.Fail();
             }
             
             var materialConverter = new DllSubMeshToUnityMaterialByTextureMaterial();
@@ -65,7 +65,7 @@ namespace PLATEAU.CityImport.Load.Convert
         /// 共通ライブラリのModelをUnityのゲームオブジェクトに変換してシーンに配置します。
         /// これにより配置されたゲームオブジェクトを引数 <paramref name="outGeneratedObjs"/> に追加します。
         /// </summary>
-        public static async Task<ConvertResult> PlateauModelToScene(Transform parentTrans, IProgressDisplay progressDisplay,
+        public static async Task<GranularityConvertResult> PlateauModelToScene(Transform parentTrans, IProgressDisplay progressDisplay,
             string progressName, bool doSetMeshCollider, CancellationToken? token, Material fallbackMaterial, Model plateauModel, 
             AttributeDataHelper attributeDataHelper, bool skipRoot, CityObjectGroupInfoForToolkits infoForToolkits,
             IDllSubMeshToUnityMaterialConverter materialConverter)
@@ -93,7 +93,7 @@ namespace PLATEAU.CityImport.Load.Convert
             catch (Exception e)
             {
                 Debug.LogError("メッシュデータの取得に失敗しました。\n" + e);
-                return ConvertResult.Fail();
+                return GranularityConvertResult.Fail();
             }
 
             // 処理B :
@@ -102,7 +102,7 @@ namespace PLATEAU.CityImport.Load.Convert
 
             progressDisplay.SetProgress(progressName, 80f, "シーンに配置中");
 
-            var result = new ConvertResult();
+            var result = new GranularityConvertResult();
 
             var innerResult = await meshObjsData.PlaceToScene(parentTrans, materialConverter, skipRoot, doSetMeshCollider,
                 token, fallbackMaterial, infoForToolkits);
@@ -113,7 +113,7 @@ namespace PLATEAU.CityImport.Load.Convert
             else
             {
                 Debug.LogError("メッシュデータの配置に失敗しました。");
-                return ConvertResult.Fail();
+                return GranularityConvertResult.Fail();
             }
             
             
@@ -150,42 +150,42 @@ namespace PLATEAU.CityImport.Load.Convert
             Debug.Log("model extracted.");
             return model;
         }
+    }
+    
+    /// <summary>
+    /// 粒度変換（分割結合）してシーンに配置した結果が格納されるクラスです。
+    /// </summary>
+    public class GranularityConvertResult
+    {
+        public bool IsSucceed { get; set; } = true;
 
+        /// <summary> 変換によってシーンに配置したゲームオブジェクトのリスト </summary>
+        public List<GameObject> GeneratedObjs { get; } = new ();
+            
         /// <summary>
-        /// 変換してシーンに配置した結果です。
+        /// 変換によってシーンに配置したゲームオブジェクトのうち、ヒエラルキーが最上位であるもののリスト
         /// </summary>
-        public class ConvertResult
+        public List<GameObject> GeneratedRootObjs { get; } = new();
+
+        /// <summary> 結果のゲームオブジェクトの一覧に追加します。</summary>
+        public void Add(GameObject obj, bool isRoot)
         {
-            public bool IsSucceed { get; set; } = true;
-
-            /// <summary> 変換によってシーンに配置したゲームオブジェクトのリスト </summary>
-            public List<GameObject> GeneratedObjs { get; } = new ();
-            
-            /// <summary>
-            /// 変換によってシーンに配置したゲームオブジェクトのうち、ヒエラルキーが最上位であるもののリスト
-            /// </summary>
-            public List<GameObject> GeneratedRootObjs { get; } = new();
-
-            /// <summary> 結果のゲームオブジェクトの一覧に追加します。</summary>
-            public void Add(GameObject obj, bool isRoot)
-            {
-                GeneratedObjs.Add(obj);
-                if(isRoot) GeneratedRootObjs.Add(obj);
-            }
-
-            /// <summary> 複数の<see cref="ConvertResult"/>を統合します。 </summary>
-            public void Merge(ConvertResult other)
-            {
-                IsSucceed &= other.IsSucceed;
-                GeneratedObjs.AddRange(other.GeneratedObjs);
-                GeneratedRootObjs.AddRange(other.GeneratedRootObjs);
-            }
-
-            public static ConvertResult Fail()
-            {
-                return new ConvertResult() { IsSucceed = false };
-            }
-            
+            GeneratedObjs.Add(obj);
+            if(isRoot) GeneratedRootObjs.Add(obj);
         }
+
+        /// <summary> 複数の<see cref="GranularityConvertResult"/>を統合します。 </summary>
+        public void Merge(GranularityConvertResult other)
+        {
+            IsSucceed &= other.IsSucceed;
+            GeneratedObjs.AddRange(other.GeneratedObjs);
+            GeneratedRootObjs.AddRange(other.GeneratedRootObjs);
+        }
+
+        public static GranularityConvertResult Fail()
+        {
+            return new GranularityConvertResult() { IsSucceed = false };
+        }
+            
     }
 }

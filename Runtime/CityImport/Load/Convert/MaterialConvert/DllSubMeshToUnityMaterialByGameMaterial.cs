@@ -21,19 +21,21 @@ namespace PLATEAU.CityImport.Load.Convert.MaterialConvert
             this.toDllMatConverter = toDllMatConverter;
         }
         
-        public async Task<Material> ConvertAsync(ConvertedMeshData meshData, int subMeshIndex, Material fallbackMaterial)
+        public Task<Material> ConvertAsync(ConvertedMeshData meshData, int subMeshIndex, Material fallbackMaterial)
         {
+            // このメソッドは同期的に実行可能ですが、インターフェイスの戻り値型に合わせるために戻り値をTaskにします。
+            
             if (subMeshIndex < 0 || subMeshIndex >= meshData.GameMaterialIDs.Count)
             {
-                return RenderUtil.CreateDefaultMaterial();
+                return Task.FromResult(RenderUtil.CreateDefaultMaterial());
             }
             int gameMaterialID = meshData.GameMaterialIDs[subMeshIndex];
             
             if (gameMaterialID < 0)
             {
-                return RenderUtil.CreateDefaultMaterial();
+                return Task.FromResult(RenderUtil.CreateDefaultMaterial());
             }
-            return toDllMatConverter.GameMaterials[gameMaterialID];
+            return Task.FromResult(toDllMatConverter.GameMaterials[gameMaterialID]);
         }
     }
 }
