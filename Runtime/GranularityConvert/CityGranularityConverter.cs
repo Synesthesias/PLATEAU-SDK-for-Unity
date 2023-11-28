@@ -20,6 +20,9 @@ using Object = UnityEngine.Object;
 
 namespace PLATEAU.GranularityConvert
 {
+    /// <summary>
+    /// オブジェクトの分割と結合を行います。
+    /// </summary>
     internal class CityGranularityConverter
     {
         public async Task<PlateauToUnityModelConverter.ConvertResult> ConvertAsync(GranularityConvertOptionUnity conf)

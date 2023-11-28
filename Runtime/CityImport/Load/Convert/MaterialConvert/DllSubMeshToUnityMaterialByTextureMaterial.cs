@@ -6,6 +6,10 @@ using UnityEngine;
 
 namespace PLATEAU.CityImport.Load.Convert.MaterialConvert
 {
+    /// <summary>
+    /// 共通ライブラリのSubMeshをUnityのマテリアルに変換する方法の1つを提供します。
+    /// その方法とは、CityGMLに記載されているテクスチャパスとマテリアルからUnityのマテリアルを生成します。
+    /// </summary>
     internal class DllSubMeshToUnityMaterialByTextureMaterial : IDllSubMeshToUnityMaterialConverter
     {
         //GMLマテリアル、 テクスチャパス と マテリアルを紐付ける辞書です。同じマテリアルが重複して生成されることを防ぎます。

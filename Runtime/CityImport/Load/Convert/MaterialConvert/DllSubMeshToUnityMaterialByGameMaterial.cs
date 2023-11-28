@@ -5,6 +5,10 @@ using UnityEngine;
 
 namespace PLATEAU.CityImport.Load.Convert.MaterialConvert
 {
+    /// <summary>
+    /// 共通ライブラリのSubMeshをUnityのマテリアルに変換する方法の1つを提供します。
+    /// その方法とは、事前に記録したUnityのマテリアルをインデックスから復元します。
+    /// </summary>
     internal class DllSubMeshToUnityMaterialByGameMaterial : IDllSubMeshToUnityMaterialConverter
     {
         /// <summary>

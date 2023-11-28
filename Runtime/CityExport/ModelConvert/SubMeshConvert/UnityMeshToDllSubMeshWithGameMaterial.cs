@@ -22,6 +22,7 @@ namespace PLATEAU.CityExport.ModelConvert.SubMeshConvert
                 unityMesh, renderer,
                 (int startIndex, int endIndex, Material material) =>
                 {
+                    // 各Unity SubMeshについて、マテリアルを記録しながらそのインデックスをDLL SubMeshに送ります。
                     var dllSubMesh = SubMesh.Create(startIndex, endIndex, "");
                     int found = GameMaterials.IndexOf(material);
                     if (found < 0)

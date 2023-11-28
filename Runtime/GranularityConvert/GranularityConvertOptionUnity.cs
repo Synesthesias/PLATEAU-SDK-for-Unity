@@ -9,13 +9,13 @@ namespace PLATEAU.GranularityConvert
     /// </summary>
     internal class GranularityConvertOptionUnity
     {
-        /// <summary> DLL向けの設定 </summary>
+        /// <summary> DLL向けの設定です。 </summary>
         public GranularityConvertOption NativeOption { get; }
         public GameObject[] SrcGameObjs { get; }
         public bool DoDestroySrcObjs { get; }
 
         public GranularityConvertOptionUnity(
-            GranularityConvertOption nativeOption,
+            GranularityConvertOption nativeOption, // 注意: GranularityConvertOption.GridCountの設定は未実装であり、何の値に設定しても動作に影響しません。
             GameObject[] srcGameObjs,
             bool doDestroySrcObjs)
         {
