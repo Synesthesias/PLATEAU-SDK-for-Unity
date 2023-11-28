@@ -15,17 +15,15 @@ using UnityEngine;
 using Debug = UnityEngine.Debug;
 using Object = UnityEngine.Object;
 
-#if UNITY_EDITOR
-#endif
 
 namespace PLATEAU.GranularityConvert
 {
     /// <summary>
     /// オブジェクトの分割と結合を行います。
     /// </summary>
-    internal class CityGranularityConverter
+    public class CityGranularityConverter
     {
-        public async Task<PlateauToUnityModelConverter.ConvertResult> ConvertAsync(GranularityConvertOptionUnity conf)
+        public async Task<GranularityConvertResult> ConvertAsync(GranularityConvertOptionUnity conf)
         {
             try
             {
@@ -76,7 +74,7 @@ namespace PLATEAU.GranularityConvert
                 if (result.GeneratedRootObjs.Count <= 0)
                 {
                     Dialogue.Display("変換対象がありません。\nアクティブなオブジェクトを選択してください。", "OK");
-                    return PlateauToUnityModelConverter.ConvertResult.Fail();
+                    return GranularityConvertResult.Fail();
                 }
                 
                 // PLATEAUInstancedCityModelを復元します。
@@ -99,7 +97,7 @@ namespace PLATEAU.GranularityConvert
             catch (Exception e)
             {
                 Debug.LogError($"{e.Message}\n{e.StackTrace}");
-                return PlateauToUnityModelConverter.ConvertResult.Fail();
+                return GranularityConvertResult.Fail();
             }
             
         }

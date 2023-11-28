@@ -70,11 +70,11 @@ namespace PLATEAU.CityImport.Load.Convert
         /// 再帰によって子も配置します。
         /// 配置したゲームオブジェクトのリストを返します。
         /// </summary>
-        public async Task<PlateauToUnityModelConverter.ConvertResult> PlaceToScene(
+        public async Task<GranularityConvertResult> PlaceToScene(
             Transform parent, IDllSubMeshToUnityMaterialConverter materialConverter, bool skipRoot, bool doSetMeshCollider,
             CancellationToken? token, Material fallbackMaterial, CityObjectGroupInfoForToolkits infoForToolkits)
         {
-            var result = new PlateauToUnityModelConverter.ConvertResult();
+            var result = new GranularityConvertResult();
             try
             {
                 await PlaceToSceneRecursive(result, parent, materialConverter, skipRoot, doSetMeshCollider, token,
@@ -83,13 +83,13 @@ namespace PLATEAU.CityImport.Load.Convert
             catch (Exception e)
             {
                 Debug.LogError($"Failed to placing to scene.\n{e.Message}\n{e.StackTrace}");
-                result = PlateauToUnityModelConverter.ConvertResult.Fail();
+                result = GranularityConvertResult.Fail();
             }
 
             return result;
         }
 
-        private async Task PlaceToSceneRecursive(PlateauToUnityModelConverter.ConvertResult result, Transform parent,
+        private async Task PlaceToSceneRecursive(GranularityConvertResult result, Transform parent,
             IDllSubMeshToUnityMaterialConverter materialConverter, bool skipRoot, bool doSetMeshCollider,
             CancellationToken? token, Material fallbackMaterial, int recursiveDepth,
             CityObjectGroupInfoForToolkits infoForToolkits)

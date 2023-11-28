@@ -7,7 +7,7 @@ namespace PLATEAU.GranularityConvert
     /// 分割結合の設定値です。
     /// DLL向けの設定とUnity向けの設定をまとめたものです。
     /// </summary>
-    internal class GranularityConvertOptionUnity
+    public class GranularityConvertOptionUnity
     {
         /// <summary> DLL向けの設定です。 </summary>
         public GranularityConvertOption NativeOption { get; }
