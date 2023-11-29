@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using PLATEAU.CityInfo;
 using UnityEngine;
 
@@ -10,7 +8,7 @@ public class AttributesColorSample : MonoBehaviour
 {
     /// <summary> 色分けしたいターゲットを指定します。 </summary>
     [SerializeField] private Transform targetParent;
-    private void Start()
+    private void Awake()
     {
         // PLATEAUCityObjectGroupコンポーネントに属性情報が格納されており、ランタイムで読み込むことができます。
         var cityObjGroups = targetParent.GetComponentsInChildren<PLATEAUCityObjectGroup>();
@@ -31,12 +29,12 @@ public class AttributesColorSample : MonoBehaviour
                 }
                 
                 // 属性情報のうち、水害時の想定浸水高さを取得します。
-                if (attributes.TryGetValue("uro:buildingDisasterRiskAttribute", out var disasterRiskAttr))
+                if (attributes.TryGetValue("uro:floodingRiskAttribute", out var disasterRiskAttr))
                 {
-                    if (disasterRiskAttr.AttributesMapValue.TryGetValue("uro:depth", out var depthValue))
+                    if (disasterRiskAttr.AttributesMapValue.TryGetValue("uro:rank", out var depthValue))
                     {
-                        var depth = depthValue.DoubleValue;
-                        var color = ColorByDepth(depth);
+                        var rank = depthValue.StringValue;
+                        var color = ColorByFloodingRank(rank);
                         ChangeMaterialByColor(target, color);
                     }
                 }
@@ -81,10 +79,23 @@ public class AttributesColorSample : MonoBehaviour
         return matColor;
     }
 
-    private Color ColorByDepth(double depth)
+    private Color ColorByFloodingRank(string rank)
     {
-        float t = (float)depth / 3f;
-        return Color.Lerp(Color.blue, Color.red, t);
+        Color matColor = Color.white;
+        if (rank == "0.5m未満")
+        {
+            matColor = new Color(0f, 0f, 1f);
+        }
+        else if (rank == "0.5m以上3m未満")
+        {
+            matColor = new Color(1.0f, 1.0f, 0f);
+        }
+        else if (rank == "3m以上5m未満")
+        {
+            matColor = new Color(1.0f, 0f, 0f);
+        }
+
+        return matColor;
     }
 
     private void ChangeMaterialByColor(Transform target, Color color)
