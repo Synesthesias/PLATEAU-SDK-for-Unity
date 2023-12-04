@@ -1,9 +1,24 @@
-﻿using PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ExportGUIParts;
+﻿using System;
+using PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ExportGUIParts;
 using PLATEAU.Geometries;
 
 namespace PLATEAU.Editor.CityExport
 {
     public enum MeshFileFormat{OBJ, GLTF, FBX}
+
+    public static class MeshFileFormatExtension
+    {
+        public static string[] ToExtensions(this MeshFileFormat format)
+        {
+            return format switch
+            {
+                MeshFileFormat.OBJ => new[] { ".obj" },
+                MeshFileFormat.GLTF => new[] { ".glb", ".gltf"},
+                MeshFileFormat.FBX => new[] {".fbx"},
+                _ => throw new ArgumentOutOfRangeException(nameof(format), "Unknown format.")
+            };
+        }
+    }
     
     internal struct MeshExportOptions
     {
