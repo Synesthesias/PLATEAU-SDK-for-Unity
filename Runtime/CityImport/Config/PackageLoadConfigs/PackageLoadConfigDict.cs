@@ -10,7 +10,7 @@ namespace PLATEAU.CityImport.Config.PackageLoadConfigs
     /// 具体的な設定については <see cref="PackageLoadConfig"/>を参照してください。
     /// GUIについては PackageLoadConfigGUIList を参照してください。
     /// </summary>
-    internal class PackageLoadConfigDict
+    public class PackageLoadConfigDict
     {
         private readonly Dictionary<PredefinedCityModelPackage, PackageLoadConfig> data;
 

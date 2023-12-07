@@ -8,6 +8,9 @@ using PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts;
 
 namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
 {
+    /// <summary>
+    /// インポートのGUIで、ローカルインポートに関する部分です。
+    /// </summary>
     internal class CityImportLocalGUI : IEditorDrawable, IAreaSelectResultReceiver
     {
         

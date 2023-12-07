@@ -23,7 +23,7 @@ namespace PLATEAU.CityImport.AreaSelector
     /// 別途 AreaSelectorBehaviourEditor も参照してください。
     /// </summary>
     [ExecuteAlways]
-    internal class AreaSelectorBehaviour : MonoBehaviour
+    public class AreaSelectorBehaviour : MonoBehaviour
     {
         [SerializeField] private string prevScenePath;
         [SerializeField] private DatasetSourceConfig datasetSourceConfig;
@@ -190,7 +190,7 @@ namespace PLATEAU.CityImport.AreaSelector
             #endif
         }
 
-        private static PackageToLodDict CalcAvailablePackageLodInMeshCodes(IEnumerable<MeshCode> meshCodes, DatasetSourceConfig datasetSourceConfig)
+        public static PackageToLodDict CalcAvailablePackageLodInMeshCodes(IEnumerable<MeshCode> meshCodes, DatasetSourceConfig datasetSourceConfig)
         {
             using var datasetSource = DatasetSource.Create(datasetSourceConfig);
             using var accessorAll = datasetSource.Accessor;

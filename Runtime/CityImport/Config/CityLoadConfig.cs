@@ -17,7 +17,7 @@ namespace PLATEAU.CityImport.Config
     /// パッケージごとのインポート設定については<see cref="PackageLoadConfigDict"/>を参照してください。
     /// 設定GUIについてはCityAddGUIおよびCityLoadConfigGUIを参照してください。
     /// </summary>
-    internal class CityLoadConfig
+    public class CityLoadConfig
     {
         /// <summary>
         /// 都市モデル読み込み元に関する設定です。
@@ -59,9 +59,9 @@ namespace PLATEAU.CityImport.Config
         /// 多数のファイルから検索するので、実行時間が長くなりがちである点にご注意ください。
         /// </summary>
         /// <returns>検索にヒットしたGMLのリストです。</returns>
-        public List<GmlFile> SearchMatchingGMLList( CancellationToken token )
+        public List<GmlFile> SearchMatchingGMLList( CancellationToken? token )
         {
-            token.ThrowIfCancellationRequested();
+            token?.ThrowIfCancellationRequested();
 
 
             // 地域ID(メッシュコード)で絞り込みます。

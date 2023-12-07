@@ -1,8 +1,10 @@
-﻿using PLATEAU.CityImport.Config.PackageLoadConfigs;
+﻿using System.Collections.Generic;
+using System.Linq;
+using PLATEAU.CityImport.Config.PackageLoadConfigs;
 
 namespace PLATEAU.CityImport.AreaSelector
 {
-    internal interface IAreaSelectResultReceiver
+    public interface IAreaSelectResultReceiver
     {
         public void ReceiveResult(AreaSelectResult areaSelectResult);
     }
@@ -12,9 +14,9 @@ namespace PLATEAU.CityImport.AreaSelector
         public string[] AreaMeshCodes { get; }
         public PackageToLodDict PackageToLodDict { get; }
 
-        public AreaSelectResult(string[] areaMeshCodes, PackageToLodDict packageToLodDict)
+        public AreaSelectResult(IEnumerable<string> areaMeshCodes, PackageToLodDict packageToLodDict)
         {
-            AreaMeshCodes = areaMeshCodes;
+            AreaMeshCodes = areaMeshCodes.ToArray();
             PackageToLodDict = packageToLodDict;
         }
     }

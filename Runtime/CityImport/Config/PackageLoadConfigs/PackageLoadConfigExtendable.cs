@@ -6,7 +6,7 @@ namespace PLATEAU.CityImport.Config.PackageLoadConfigs
     /// <summary>
     /// <see cref="PackageLoadConfig"/>のうち、一括設定から設定を引き継ぐことが可能な部分の設定値クラスです。
     /// </summary>
-    internal class PackageLoadConfigExtendable
+    public class PackageLoadConfigExtendable
     {
         public bool IncludeTexture { get; set; }
         public MeshGranularity MeshGranularity { get; set; }
@@ -58,7 +58,7 @@ namespace PLATEAU.CityImport.Config.PackageLoadConfigs
     /// <summary>
     /// テクスチャ結合後の解像度です。
     /// </summary>
-    internal enum TexturePackingResolution : int
+    public enum TexturePackingResolution : int
     {
         W2048H2048 = 0,
         W4096H4096 = 1,

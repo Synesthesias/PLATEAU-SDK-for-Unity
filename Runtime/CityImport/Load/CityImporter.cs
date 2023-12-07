@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using JetBrains.Annotations;
 using PLATEAU.CityAdjust;
 using PLATEAU.CityImport.Load.CityImportProcedure;
 using PLATEAU.CityImport.Config;
@@ -19,7 +20,7 @@ namespace PLATEAU.CityImport.Load
     /// <summary>
     /// GMLファイルに記載された都市モデルを Unity にインポートします。
     /// </summary>
-    internal static class CityImporter
+    public static class CityImporter
     {
         static string  lastFetchedGmlRootPath = "";
         /// <summary>
@@ -27,8 +28,9 @@ namespace PLATEAU.CityImport.Load
         /// GMLファイルから都市モデルを読み、そのメッシュをUnity向けに変換してシーンに配置します。
         /// メインスレッドで呼ぶ必要があります。
         /// </summary>
-        public static async Task ImportAsync(CityLoadConfig config, IProgressDisplay progressDisplay, CancellationToken token)
+        public static async Task ImportAsync(CityLoadConfig config, IProgressDisplay progressDisplay, CancellationToken? token)
         {
+            progressDisplay ??= new DummyProgressDisplay();
             var datasetSourceConfig = config.DatasetSourceConfig;
             string destPath = PathUtil.PLATEAUSrcFetchDir;
 
@@ -56,7 +58,7 @@ namespace PLATEAU.CityImport.Load
 
             progressDisplay.SetProgress("GMLファイル検索", 100f, "完了");
             
-            if (targetGmls.Count <= 0)
+            if (targetGmls == null || targetGmls.Count <= 0)
             {
                 Debug.LogError("該当するGMLファイルがありません。");
                 return;

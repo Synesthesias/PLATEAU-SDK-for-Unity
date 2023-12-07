@@ -9,11 +9,13 @@ using PLATEAU.Util;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using System.Threading;
+using JetBrains.Annotations;
 using PLATEAU.CityImport.Load.Convert.MaterialConvert;
 using PLATEAU.CityInfo;
 using Material = UnityEngine.Material;
 
 #if UNITY_EDITOR
+using UnityEditor;
 using UnityEditor.SceneManagement;
 #endif
 
@@ -33,20 +35,20 @@ namespace PLATEAU.CityImport.Load.Convert
         public static async Task<GranularityConvertResult> CityModelToScene(
             CityModel cityModel, MeshExtractOptions meshExtractOptions, string[] selectedMeshCodes,
             Transform parentTrans, IProgressDisplay progressDisplay, string progressName,
-            bool doSetMeshCollider, bool doSetAttrInfo, CancellationToken token,  UnityEngine.Material fallbackMaterial,
+            bool doSetMeshCollider, bool doSetAttrInfo, CancellationToken? token,  UnityEngine.Material fallbackMaterial,
             CityObjectGroupInfoForToolkits infoForToolkits
             )
         {
             Debug.Log($"load started");
 
-            token.ThrowIfCancellationRequested();
+            token?.ThrowIfCancellationRequested();
             AttributeDataHelper attributeDataHelper =
                 new AttributeDataHelper(new SerializedCityObjectGetterFromCityModel(cityModel), meshExtractOptions.MeshGranularity, doSetAttrInfo);
 
             Model plateauModel;
             try
             {
-                plateauModel = await Task.Run(() => ExtractMeshes(cityModel, meshExtractOptions, selectedMeshCodes, token));
+                plateauModel = await Task.Run(() => ExtractMeshes(cityModel, meshExtractOptions, selectedMeshCodes));
             }
             catch (Exception e)
             {
@@ -121,7 +123,7 @@ namespace PLATEAU.CityImport.Load.Convert
             // エディター内での実行であれば、生成したメッシュ,テクスチャ等をシーンに保存したいので
             // シーンにダーティフラグを付けます。
 #if UNITY_EDITOR
-            if (Application.isEditor)
+            if (Application.isEditor && !EditorApplication.isPlaying)
             {
                 EditorSceneManager.MarkSceneDirty(SceneManager.GetActiveScene());
             }
@@ -136,7 +138,7 @@ namespace PLATEAU.CityImport.Load.Convert
         /// メインスレッドでなくても動作します。
         /// </summary>
         private static Model ExtractMeshes(
-            CityModel cityModel, MeshExtractOptions meshExtractOptions, string[] selectedMeshCodes, CancellationToken token)
+            CityModel cityModel, MeshExtractOptions meshExtractOptions, string[] selectedMeshCodes)
         {
             var model = Model.Create();
             if (cityModel == null) return model;
