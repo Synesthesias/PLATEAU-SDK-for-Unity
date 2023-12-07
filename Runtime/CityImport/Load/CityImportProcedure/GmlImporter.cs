@@ -2,7 +2,6 @@
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using JetBrains.Annotations;
 using PLATEAU.CityGML;
 using PLATEAU.CityImport.Load.Convert;
 using PLATEAU.CityImport.Config;

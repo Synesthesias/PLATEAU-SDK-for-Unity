@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Threading;
 using PLATEAU.CityImport.AreaSelector;
 using PLATEAU.CityImport.Config.PackageLoadConfigs;
 using PLATEAU.Dataset;
 using PLATEAU.Native;
 using PLATEAU.PolygonMesh;
-using PLATEAU.Util;
 
 namespace PLATEAU.CityImport.Config
 {
@@ -27,7 +24,7 @@ namespace PLATEAU.CityImport.Config
         /// <summary>
         /// 範囲選択で選択された範囲です。
         /// </summary>
-        public string[] AreaMeshCodes { get; private set; }
+        public MeshCodeList AreaMeshCodes { get; private set; }
         
         /// <summary>
         /// 平面直角座標系の番号です。
@@ -65,10 +62,9 @@ namespace PLATEAU.CityImport.Config
 
 
             // 地域ID(メッシュコード)で絞り込みます。
-            var meshCodes = AreaMeshCodes.Select(MeshCode.Parse).Where(code => code.IsValid).ToArray();
 
             using var datasetSource = DatasetSource.Create(DatasetSourceConfig);
-            using var datasetAccessor = datasetSource.Accessor.FilterByMeshCodes(meshCodes);
+            using var datasetAccessor = datasetSource.Accessor.FilterByMeshCodes(AreaMeshCodes.Data);
 
             // パッケージ種ごとの設定で「ロードする」にチェックが入っているパッケージ種で絞り込みます。
             var targetPackages = PackageLoadConfigDict.PackagesToLoad();
@@ -98,7 +94,7 @@ namespace PLATEAU.CityImport.Config
         {
             InitWithPackageLodsDict(result.PackageToLodDict);
             AreaMeshCodes = result.AreaMeshCodes;
-            SetReferencePointToExtentCenter();
+            ReferencePoint = AreaMeshCodes.ExtentCenter(CoordinateZoneID);
         }
         
         /// <summary>
@@ -109,33 +105,7 @@ namespace PLATEAU.CityImport.Config
             PackageLoadConfigDict = new PackageLoadConfigDict(dict);
         }
 
-        /// <summary>
-        /// 範囲の中心を基準点として設定します。
-        /// これは基準点設定GUIに表示される初期値であり、ユーザーが「範囲の中心を入力」ボタンを押したときに設定される値でもあります。
-        /// </summary>
-        public PlateauVector3d SetReferencePointToExtentCenter()
-        {
-            using var geoReference = CoordinatesConvertUtil.UnityStandardGeoReference(CoordinateZoneID);
 
-            // 選択エリアを囲むExtentを計算
-            var extent = new Extent
-            {
-                Min = new GeoCoordinate(180.0, 180.0, 0.0),
-                Max = new GeoCoordinate(-180.0, -180.0, 0.0)
-            };
-            foreach (var meshCode in AreaMeshCodes)
-            {
-                var partialExtent = MeshCode.Parse(meshCode).Extent;
-                extent.Min.Latitude = Math.Min(partialExtent.Min.Latitude, extent.Min.Latitude);
-                extent.Min.Longitude = Math.Min(partialExtent.Min.Longitude, extent.Min.Longitude);
-                extent.Max.Latitude = Math.Max(partialExtent.Max.Latitude, extent.Max.Latitude);
-                extent.Max.Longitude = Math.Max(partialExtent.Max.Longitude, extent.Max.Longitude);
-            }
-
-            var center = geoReference.Project(extent.Center);
-            ReferencePoint = center;
-            return center;
-        }
         /// <summary>
         /// インポート設定について、C++のstructに変換します。
         /// </summary>

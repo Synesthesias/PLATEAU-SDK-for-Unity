@@ -1,22 +1,21 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using PLATEAU.CityImport.Config;
 using PLATEAU.CityImport.Config.PackageLoadConfigs;
 
 namespace PLATEAU.CityImport.AreaSelector
 {
-    public interface IAreaSelectResultReceiver
+    internal interface IAreaSelectResultReceiver
     {
         public void ReceiveResult(AreaSelectResult areaSelectResult);
     }
     
     public class AreaSelectResult
     {
-        public string[] AreaMeshCodes { get; }
+        public MeshCodeList AreaMeshCodes { get; }
         public PackageToLodDict PackageToLodDict { get; }
 
-        public AreaSelectResult(IEnumerable<string> areaMeshCodes, PackageToLodDict packageToLodDict)
+        public AreaSelectResult(MeshCodeList areaMeshCodes, PackageToLodDict packageToLodDict)
         {
-            AreaMeshCodes = areaMeshCodes.ToArray();
+            AreaMeshCodes = areaMeshCodes;
             PackageToLodDict = packageToLodDict;
         }
     }

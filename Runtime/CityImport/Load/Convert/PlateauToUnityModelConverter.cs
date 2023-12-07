@@ -4,12 +4,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using PLATEAU.CityGML;
 using PLATEAU.PolygonMesh;
-using PLATEAU.Dataset;
 using PLATEAU.Util;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using System.Threading;
-using JetBrains.Annotations;
+using PLATEAU.CityImport.Config;
 using PLATEAU.CityImport.Load.Convert.MaterialConvert;
 using PLATEAU.CityInfo;
 using Material = UnityEngine.Material;
@@ -33,7 +32,7 @@ namespace PLATEAU.CityImport.Load.Convert
         /// 成否を bool で返します。
         /// </summary>
         public static async Task<GranularityConvertResult> CityModelToScene(
-            CityModel cityModel, MeshExtractOptions meshExtractOptions, string[] selectedMeshCodes,
+            CityModel cityModel, MeshExtractOptions meshExtractOptions, MeshCodeList selectedMeshCodes,
             Transform parentTrans, IProgressDisplay progressDisplay, string progressName,
             bool doSetMeshCollider, bool doSetAttrInfo, CancellationToken? token,  UnityEngine.Material fallbackMaterial,
             CityObjectGroupInfoForToolkits infoForToolkits
@@ -138,12 +137,12 @@ namespace PLATEAU.CityImport.Load.Convert
         /// メインスレッドでなくても動作します。
         /// </summary>
         private static Model ExtractMeshes(
-            CityModel cityModel, MeshExtractOptions meshExtractOptions, string[] selectedMeshCodes)
+            CityModel cityModel, MeshExtractOptions meshExtractOptions, MeshCodeList selectedMeshCodes)
         {
             var model = Model.Create();
             if (cityModel == null) return model;
-            var extents = selectedMeshCodes.Select(code => {
-                var extent = MeshCode.Parse(code).Extent;
+            var extents = selectedMeshCodes.Data.Select(code => {
+                var extent = code.Extent;
                 extent.Min.Height = -999999.0;
                 extent.Max.Height = 999999.0;
                 return extent;

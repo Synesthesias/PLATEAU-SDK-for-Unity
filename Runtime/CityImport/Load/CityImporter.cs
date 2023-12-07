@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using JetBrains.Annotations;
 using PLATEAU.CityAdjust;
 using PLATEAU.CityImport.Load.CityImportProcedure;
 using PLATEAU.CityImport.Config;

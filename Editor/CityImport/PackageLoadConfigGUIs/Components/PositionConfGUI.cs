@@ -24,16 +24,16 @@ namespace PLATEAU.Editor.CityImport.PackageLoadConfigGUIs.Components
 
                 using (PlateauEditorStyle.VerticalScopeLevel1())
                 {
-                    var refPoint = conf.ReferencePoint;
                     PlateauEditorStyle.CenterAlignHorizontal(() =>
                     {
                         if (PlateauEditorStyle.MiniButton("範囲の中心点を入力", 140))
                         {
                             GUI.FocusControl("");
-                            refPoint = conf.SetReferencePointToExtentCenter();
+                            var extentCenter =  conf.AreaMeshCodes.ExtentCenter(conf.CoordinateZoneID);
+                            conf.ReferencePoint = extentCenter;
                         }
                     });
-
+                    var refPoint = conf.ReferencePoint;
                     refPoint.X = EditorGUILayout.DoubleField("X (東が正方向)", refPoint.X);
                     refPoint.Y = EditorGUILayout.DoubleField("Y (高さ)", refPoint.Y);
                     refPoint.Z = EditorGUILayout.DoubleField("Z (北が正方向)", refPoint.Z);
