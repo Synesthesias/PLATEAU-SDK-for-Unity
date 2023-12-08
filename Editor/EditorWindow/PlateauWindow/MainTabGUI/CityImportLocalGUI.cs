@@ -80,7 +80,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
                 PlateauEditorStyle.Separator(0);
                 PlateauEditorStyle.SubTitle("モデルデータの配置を行います。");
                 PlateauEditorStyle.Heading("基準座標系の選択", "num1.png");
-                CoordinateZonePopup.DrawAndSet(this.config);
+                config.ConfBeforeAreaSelect.CoordinateZoneID = CoordinateZonePopup.Draw(config.ConfBeforeAreaSelect.CoordinateZoneID);
             
 
                 PlateauEditorStyle.Heading("マップ範囲選択", "num2.png");

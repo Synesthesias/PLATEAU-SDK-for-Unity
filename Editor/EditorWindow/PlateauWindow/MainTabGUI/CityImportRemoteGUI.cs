@@ -24,15 +24,21 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
 
         public CityImportRemoteGUI(UnityEditor.EditorWindow parentEditorWindow)
         {
-            this.guiBeforeAreaSelect = new GUIBeforeAreaSelect(parentEditorWindow, config, this);
+            this.guiBeforeAreaSelect = new GUIBeforeAreaSelect(parentEditorWindow);
             progressGUI = new ProgressDisplayGUI(parentEditorWindow);
         }
 
         public void Draw()
         {
-            this.guiBeforeAreaSelect.Draw();
+            config.ConfBeforeAreaSelect = this.guiBeforeAreaSelect.Draw();
+            
+            PlateauEditorStyle.Heading("マップ範囲選択", "num2.png");
 
-            if (this.guiBeforeAreaSelect.IsAreaSelectComplete)
+            bool isAreaSelectComplete = AreaSelectButton.Draw(this.config.AreaMeshCodes, 
+                (DatasetSourceConfigRemote)this.config.ConfBeforeAreaSelect.DatasetSourceConfig,
+                this, config.ConfBeforeAreaSelect.CoordinateZoneID);
+
+            if (isAreaSelectComplete)
             {
                 this.guiAfterAreaSelect.Draw();
             }
@@ -55,25 +61,21 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
         /// <summary>
         /// リモートインポートGUIのうち、範囲選択前に表示する部分です。
         /// </summary>
-        private class GUIBeforeAreaSelect : IEditorDrawable
+        private class GUIBeforeAreaSelect
         {
+            private readonly CityLoadConfigBeforeAreaSelect confBeforeAreaSelect;
             private readonly ServerDatasetFetchGUI serverDatasetFetchGUI;
             private int selectedDatasetGroupIndex;
             private int selectedDatasetIndex;
-            private readonly CityLoadConfig cityLoadConfig;
-            private readonly IAreaSelectResultReceiver areaSelectResultReceiver;
-            public bool IsAreaSelectComplete { get; private set; }
             public ServerDatasetFetchGUI.LoadStatusEnum DatasetFetchStatus => this.serverDatasetFetchGUI.LoadStatus;
 
-            public GUIBeforeAreaSelect(UnityEditor.EditorWindow parentEditorWindow, CityLoadConfig config,
-                IAreaSelectResultReceiver areaSelectResultReceiver)
+            public GUIBeforeAreaSelect(UnityEditor.EditorWindow parentEditorWindow)
             {
-                this.serverDatasetFetchGUI = new ServerDatasetFetchGUI(parentEditorWindow);
-                this.cityLoadConfig = config;
-                this.areaSelectResultReceiver = areaSelectResultReceiver;
+                serverDatasetFetchGUI = new ServerDatasetFetchGUI(parentEditorWindow);
+                confBeforeAreaSelect = new CityLoadConfigBeforeAreaSelect();
             }
 
-            public void Draw()
+            public CityLoadConfigBeforeAreaSelect Draw()
             {
                 EditorGUILayout.Space(15);
                 this.serverDatasetFetchGUI.Draw();
@@ -81,7 +83,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
 
                 if (this.serverDatasetFetchGUI.LoadStatus != ServerDatasetFetchGUI.LoadStatusEnum.Success)
                 {
-                    return;
+                    return confBeforeAreaSelect;
                 }
 
                 // どのようなデータセットが利用可能であるか、サーバーからの返答があるまでは以下は実行されません。
@@ -108,18 +110,15 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
                 PlateauEditorStyle.MultiLineLabelWithBox(
                     $"タイトル: {dataset.Title}\n説明    : {dataset.Description}\n種別: {dataset.PackageFlags.ToJapaneseName()}");
 
-                this.cityLoadConfig.ConfBeforeAreaSelect.DatasetSourceConfig ??= new DatasetSourceConfigRemote("", "", "");
-                var sourceConf = (DatasetSourceConfigRemote)this.cityLoadConfig.ConfBeforeAreaSelect.DatasetSourceConfig;
+                this.confBeforeAreaSelect.DatasetSourceConfig ??= new DatasetSourceConfigRemote("", "", "");
+                var sourceConf = (DatasetSourceConfigRemote)this.confBeforeAreaSelect.DatasetSourceConfig;
                 sourceConf.ServerDatasetID = dataset.ID;
                 sourceConf.ServerUrl = this.serverDatasetFetchGUI.ServerUrl;
                 sourceConf.ServerToken = this.serverDatasetFetchGUI.ServerToken;
 
-                CoordinateZonePopup.DrawAndSet(this.cityLoadConfig);
+                confBeforeAreaSelect.CoordinateZoneID = CoordinateZonePopup.Draw(confBeforeAreaSelect.CoordinateZoneID);
+                return confBeforeAreaSelect;
 
-                PlateauEditorStyle.Heading("マップ範囲選択", "num2.png");
-
-                IsAreaSelectComplete = AreaSelectButton.Draw(this.cityLoadConfig.AreaMeshCodes, sourceConf,
-                    this.areaSelectResultReceiver, this.cityLoadConfig.ConfBeforeAreaSelect.CoordinateZoneID);
             }
 
             public void Dispose() { }
