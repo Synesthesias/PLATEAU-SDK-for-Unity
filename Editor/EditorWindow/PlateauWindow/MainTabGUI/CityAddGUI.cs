@@ -1,4 +1,5 @@
 ﻿using PLATEAU.Editor.EditorWindow.Common;
+using PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts;
 using UnityEditor;
 using UnityEngine;
 
@@ -13,8 +14,8 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
         {
             this.importTabGUIArray = new IEditorDrawable[]
             {
-                new CityImportLocalGUI(parentEditorWindow),
-                new CityImportRemoteGUI(parentEditorWindow)
+                CityImportConfigGUI.CreateLocal(parentEditorWindow),
+                CityImportConfigGUI.CreateRemote(parentEditorWindow) 
             };
         }
         

@@ -16,7 +16,7 @@ namespace PLATEAU.CityImport.Config
     /// </summary>
     public class CityLoadConfig
     {
-        public CityLoadConfigBeforeAreaSelect ConfBeforeAreaSelect { get; set; } = new CityLoadConfigBeforeAreaSelect();
+        public ConfigBeforeAreaSelect ConfBeforeAreaSelect { get; set; } = new ConfigBeforeAreaSelect();
         
         /// <summary>
         /// 範囲選択で選択された範囲です。

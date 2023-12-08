@@ -5,15 +5,15 @@ namespace PLATEAU.CityImport.Config
     /// <summary>
     /// インポート設定のうち、範囲選択より前に行う部分です。
     /// </summary>
-    public class CityLoadConfigBeforeAreaSelect
+    public class ConfigBeforeAreaSelect
     {
-        private CityLoadConfigBeforeAreaSelect(IDatasetSourceConfig datasetSourceConfig, int coordinateZoneID)
+        private ConfigBeforeAreaSelect(IDatasetSourceConfig datasetSourceConfig, int coordinateZoneID)
         {
             DatasetSourceConfig = datasetSourceConfig;
             CoordinateZoneID = coordinateZoneID;
         }
 
-        public CityLoadConfigBeforeAreaSelect(){}
+        public ConfigBeforeAreaSelect(){}
         
         /// <summary>
         /// 都市モデル読み込み元に関する設定です。

@@ -8,14 +8,14 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts
     /// <summary>
     /// ローカルインポートのGUIのうち、範囲選択前に表示するものです。
     /// </summary>
-    internal class ConfigGUIBeforeAreaSelectLocal
+    internal class ConfigGUIBeforeAreaSelectLocal : IConfigGUIBeforeAreaSelect
     {
         
-        private readonly CityLoadConfigBeforeAreaSelect confBeforeAreaSelect = new();
+        private readonly ConfigBeforeAreaSelect confBeforeAreaSelect = new();
         private readonly PathSelectorFolderPlateauInput folderSelector = new ();
         private bool foldOutSourceFolderPath = true;
 
-        public CityLoadConfigBeforeAreaSelect Draw()
+        public ConfigBeforeAreaSelect Draw()
         {
             this.foldOutSourceFolderPath = PlateauEditorStyle.FoldOut(this.foldOutSourceFolderPath, "入力フォルダ", () =>
             {
