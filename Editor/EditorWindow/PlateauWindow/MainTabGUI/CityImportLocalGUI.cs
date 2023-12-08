@@ -31,14 +31,19 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
         public CityImportLocalGUI(UnityEditor.EditorWindow parentEditorWindow)
         { 
             progressGUI = new ProgressDisplayGUI(parentEditorWindow);
-            guiBeforeAreaSelect = new GUIBeforeAreaSelect(this.config, this);
+            guiBeforeAreaSelect = new GUIBeforeAreaSelect();
         }
 
         public void Draw()
         {
-            guiBeforeAreaSelect.Draw();
+            config.ConfBeforeAreaSelect = guiBeforeAreaSelect.Draw();
+            
+            
+            PlateauEditorStyle.Heading("マップ範囲選択", "num2.png");
+            bool isAreaSelectComplete = AreaSelectButton.Draw(this.config.AreaMeshCodes, this.config.ConfBeforeAreaSelect.DatasetSourceConfig,
+                this, this.config.ConfBeforeAreaSelect.CoordinateZoneID);
 
-            if (guiBeforeAreaSelect.IsAreaSelectComplete)
+            if (isAreaSelectComplete)
             {
                 guiAfterAreaSelect.Draw();
             }
@@ -55,37 +60,25 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
         /// <summary>
         /// ローカルインポートのGUIのうち、範囲選択前に表示するものです。
         /// </summary>
-        private class GUIBeforeAreaSelect : IEditorDrawable
+        private class GUIBeforeAreaSelect
         {
-            public bool IsAreaSelectComplete { get; private set; }
+            private readonly CityLoadConfigBeforeAreaSelect confBeforeAreaSelect = new();
             private readonly PathSelectorFolderPlateauInput folderSelector = new ();
             private bool foldOutSourceFolderPath = true;
-            private readonly CityLoadConfig config;
-            private readonly IAreaSelectResultReceiver areaSelectResultReceiver;
 
-            public GUIBeforeAreaSelect(CityLoadConfig config, IAreaSelectResultReceiver areaSelectResultReceiver)
-            {
-                this.config = config;
-                this.areaSelectResultReceiver = areaSelectResultReceiver;
-            }
-
-            public void Draw()
+            public CityLoadConfigBeforeAreaSelect Draw()
             {
                 this.foldOutSourceFolderPath = PlateauEditorStyle.FoldOut(this.foldOutSourceFolderPath, "入力フォルダ", () =>
                 {
-                    this.config.ConfBeforeAreaSelect.DatasetSourceConfig ??= new DatasetSourceConfigLocal("");
-                    ((DatasetSourceConfigLocal)this.config.ConfBeforeAreaSelect.DatasetSourceConfig).LocalSourcePath = this.folderSelector.Draw("フォルダパス");
+                    this.confBeforeAreaSelect.DatasetSourceConfig ??= new DatasetSourceConfigLocal("");
+                    ((DatasetSourceConfigLocal)confBeforeAreaSelect.DatasetSourceConfig).LocalSourcePath = this.folderSelector.Draw("フォルダパス");
                 });
             
                 PlateauEditorStyle.Separator(0);
                 PlateauEditorStyle.SubTitle("モデルデータの配置を行います。");
                 PlateauEditorStyle.Heading("基準座標系の選択", "num1.png");
-                config.ConfBeforeAreaSelect.CoordinateZoneID = CoordinateZonePopup.Draw(config.ConfBeforeAreaSelect.CoordinateZoneID);
-            
-
-                PlateauEditorStyle.Heading("マップ範囲選択", "num2.png");
-                IsAreaSelectComplete = AreaSelectButton.Draw(this.config.AreaMeshCodes, this.config.ConfBeforeAreaSelect.DatasetSourceConfig,
-                    areaSelectResultReceiver, this.config.ConfBeforeAreaSelect.CoordinateZoneID);
+                confBeforeAreaSelect.CoordinateZoneID = CoordinateZonePopup.Draw(confBeforeAreaSelect.CoordinateZoneID);
+                return confBeforeAreaSelect;
             }
 
             public void Dispose() { }
