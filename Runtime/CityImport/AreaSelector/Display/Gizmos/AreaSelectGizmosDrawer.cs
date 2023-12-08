@@ -34,7 +34,7 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos
         private bool isLeftMouseAndShiftButtonMoved;
         
         public void Init(
-            ReadOnlyCollection<MeshCode> meshCodes, DatasetSourceConfig datasetSourceConfig,
+            ReadOnlyCollection<MeshCode> meshCodes, IDatasetSourceConfig datasetSourceConfig,
             int coordinateZoneID, out GeoReference outGeoReference)
         {
             using var progressBar = new ProgressBar();

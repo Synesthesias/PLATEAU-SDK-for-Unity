@@ -33,9 +33,9 @@ namespace PLATEAU.CityImport.Load
             var datasetSourceConfig = config.DatasetSourceConfig;
             string destPath = PathUtil.PLATEAUSrcFetchDir;
 
-            if ((!datasetSourceConfig.IsServer) && (!Directory.Exists(datasetSourceConfig.LocalSourcePath)))
+            if ((datasetSourceConfig is DatasetSourceConfigLocal localConf) && (!Directory.Exists(localConf.LocalSourcePath)))
             {
-                Debug.LogError($"インポート元パスが存在しません。 sourcePath = {datasetSourceConfig.LocalSourcePath}");
+                Debug.LogError($"インポート元パスが存在しません。 sourcePath = {localConf.LocalSourcePath}");
                 return;
             }
             

@@ -108,8 +108,8 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
                 PlateauEditorStyle.MultiLineLabelWithBox(
                     $"タイトル: {dataset.Title}\n説明    : {dataset.Description}\n種別: {dataset.PackageFlags.ToJapaneseName()}");
 
-                this.cityLoadConfig.DatasetSourceConfig ??= new DatasetSourceConfig(true, "", "", "", "");
-                var sourceConf = this.cityLoadConfig.DatasetSourceConfig;
+                this.cityLoadConfig.DatasetSourceConfig ??= new DatasetSourceConfigRemote("", "", "");
+                var sourceConf = (DatasetSourceConfigRemote)this.cityLoadConfig.DatasetSourceConfig;
                 sourceConf.ServerDatasetID = dataset.ID;
                 sourceConf.ServerUrl = this.serverDatasetFetchGUI.ServerUrl;
                 sourceConf.ServerToken = this.serverDatasetFetchGUI.ServerToken;

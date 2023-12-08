@@ -19,7 +19,7 @@ namespace PLATEAU.CityImport.Config
         /// <summary>
         /// 都市モデル読み込み元に関する設定です。
         /// </summary>
-        public DatasetSourceConfig DatasetSourceConfig { get; set; }
+        public IDatasetSourceConfig DatasetSourceConfig { get; set; }
         
         /// <summary>
         /// 範囲選択で選択された範囲です。

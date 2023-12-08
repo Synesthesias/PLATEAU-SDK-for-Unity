@@ -23,7 +23,7 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos.LODIcons
         private readonly GeoReference geoReference;
         private readonly HashSet<int> showLods;
 
-        public AreaLodController(DatasetSourceConfig datasetSourceConfig, GeoReference geoReference, IEnumerable<MeshCode> allMeshCodes)
+        public AreaLodController(IDatasetSourceConfig datasetSourceConfig, GeoReference geoReference, IEnumerable<MeshCode> allMeshCodes)
         {
             this.searcher = new AreaLodSearcher(datasetSourceConfig);
             this.geoReference = geoReference;

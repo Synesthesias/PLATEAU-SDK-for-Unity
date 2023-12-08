@@ -27,7 +27,7 @@ namespace PLATEAU.CityImport.AreaSelector
     internal class AreaSelectorBehaviour : MonoBehaviour
     {
         [SerializeField] private string prevScenePath;
-        [SerializeField] private DatasetSourceConfig datasetSourceConfig;
+        private IDatasetSourceConfig datasetSourceConfig;
         private AreaSelectGizmosDrawer gizmosDrawer;
         private IAreaSelectResultReceiver areaSelectResultReceiver;
         private int coordinateZoneID;
@@ -43,7 +43,7 @@ namespace PLATEAU.CityImport.AreaSelector
         public static bool IsAreaSelectEnabled { get; set; }
 
 #if UNITY_EDITOR
-        public void Init(string prevScenePathArg, DatasetSourceConfig datasetSourceConfigArg, IAreaSelectResultReceiver areaSelectResultReceiverArg, int coordinateZoneIDArg, EditorWindow prevEditorWindowArg)
+        public void Init(string prevScenePathArg, IDatasetSourceConfig datasetSourceConfigArg, IAreaSelectResultReceiver areaSelectResultReceiverArg, int coordinateZoneIDArg, EditorWindow prevEditorWindowArg)
         {
             IsAreaSelectEnabled = true;
             this.prevScenePath = prevScenePathArg;
@@ -159,7 +159,7 @@ namespace PLATEAU.CityImport.AreaSelector
             return entireExtent;
         }
 
-        private static void GatherMeshCodes(DatasetSourceConfig datasetSourceConfig, out ReadOnlyCollection<MeshCode> meshCodes)
+        private static void GatherMeshCodes(IDatasetSourceConfig datasetSourceConfig, out ReadOnlyCollection<MeshCode> meshCodes)
         {
             using var datasetSource = DatasetSource.Create(datasetSourceConfig);
             using var accessor = datasetSource.Accessor;

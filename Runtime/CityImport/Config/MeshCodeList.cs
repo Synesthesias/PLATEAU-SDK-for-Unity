@@ -58,7 +58,7 @@ namespace PLATEAU.CityImport.Config
         /// <summary>
         /// データセットのうち範囲を取り出したとき、利用可能なパッケージとそのLODを求めます。
         /// </summary>
-        public PackageToLodDict CalcAvailablePackageLodInMeshCodes(DatasetSourceConfig datasetSourceConfig)
+        public PackageToLodDict CalcAvailablePackageLodInMeshCodes(IDatasetSourceConfig datasetSourceConfig)
         {
             using var datasetSource = DatasetSource.Create(datasetSourceConfig);
             using var accessorAll = datasetSource.Accessor;

@@ -98,7 +98,12 @@ namespace PLATEAU.Tests.TestUtils
                 packageConf.Value.IncludeTexture = true;
             }
 
-            conf.DatasetSourceConfig = new DatasetSourceConfig(isServer, SrcRootDirPathLocal, this.rootDirName, NetworkConfig.MockServerUrl, "");
+            IDatasetSourceConfig datasetSourceConfig =
+                isServer
+                    ? new DatasetSourceConfigRemote(this.rootDirName, NetworkConfig.MockServerUrl, "")
+                    : new DatasetSourceConfigLocal(SrcRootDirPathLocal);
+
+            conf.DatasetSourceConfig = datasetSourceConfig;
             return conf;
         }
 
