@@ -43,7 +43,7 @@ namespace PLATEAU.Editor.CityImport.PackageLoadConfigGUIs
                 // これと似たロジックが PackageLoadSetting.CreateSettingFor にあるので、変更時はそちらも合わせて変更をお願いします。
                 var gui = package switch
                 {
-                    PredefinedCityModelPackage.Relief => new ReliefLoadConfigGUI((ReliefLoadConfig)packageConf, masterConf, MeshCode.Parse(cityLoadConf.AreaMeshCodes[0])),
+                    PredefinedCityModelPackage.Relief => new ReliefLoadConfigGUI((ReliefLoadConfig)packageConf, masterConf, cityLoadConf.AreaMeshCodes.At(0)),
                     _ => new PackageLoadConfigGUI(packageConf, masterConf)
                 };
                 this.packageGUIList.Add(gui);

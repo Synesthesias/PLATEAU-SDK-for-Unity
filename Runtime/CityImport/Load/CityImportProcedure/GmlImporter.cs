@@ -22,9 +22,9 @@ namespace PLATEAU.CityImport.Load.CityImportProcedure
         /// <summary>
         /// GMLファイルを1つ fetch (ローカルならコピー、サーバーならダウンロード)し、fetch先の <see cref="GmlFile"/> を返します。
         /// </summary>
-        internal static async Task<GmlFile> Fetch(GmlFile gmlFile, string destPath, CityLoadConfig conf, IProgressDisplay progressDisplay, CancellationToken token)
+        internal static async Task<GmlFile> Fetch(GmlFile gmlFile, string destPath, CityLoadConfig conf, IProgressDisplay progressDisplay, CancellationToken? token)
         {
-            token.ThrowIfCancellationRequested();
+            token?.ThrowIfCancellationRequested();
 
             if (gmlFile.Path == null)
             {
@@ -35,7 +35,7 @@ namespace PLATEAU.CityImport.Load.CityImportProcedure
             destPath = destPath.Replace('\\', '/');
             if (!destPath.EndsWith("/")) destPath += "/";
             
-            var fetchedGmlFile = await GmlFetcher.FetchAsync(gmlFile, destPath, gmlName, progressDisplay, conf.DatasetSourceConfig.IsServer, token);
+            var fetchedGmlFile = await GmlFetcher.FetchAsync(gmlFile, destPath, gmlName, progressDisplay, conf.ConfBeforeAreaSelect.DatasetSourceConfig is DatasetSourceConfigRemote);
 
             return fetchedGmlFile;
         }
@@ -46,9 +46,9 @@ namespace PLATEAU.CityImport.Load.CityImportProcedure
         /// </summary>
         internal static async Task Import(GmlFile fetchedGmlFile , CityLoadConfig conf,
             Transform rootTrans, IProgressDisplay progressDisplay,
-            CancellationToken token)
+            CancellationToken? token)
         {
-            token.ThrowIfCancellationRequested();
+            token?.ThrowIfCancellationRequested();
 
             string gmlName = Path.GetFileName(fetchedGmlFile.Path);
 
@@ -104,7 +104,7 @@ namespace PLATEAU.CityImport.Load.CityImportProcedure
             }
         }
         
-        private static async Task<CityModel> LoadGmlAsync(GmlFile gmlInfo, CancellationToken token)
+        private static async Task<CityModel> LoadGmlAsync(GmlFile gmlInfo, CancellationToken? token)
         {
             string gmlPath = gmlInfo.Path.Replace('\\', '/');
 
@@ -118,9 +118,9 @@ namespace PLATEAU.CityImport.Load.CityImportProcedure
         /// <summary> gmlファイルをパースします。 </summary>
         /// <param name="gmlAbsolutePath"> gmlファイルのパスです。 </param>
         /// <returns><see cref="CityGML.CityModel"/> を返します。ロードに問題があった場合は null を返します。</returns>
-        private static CityModel ParseGML(string gmlAbsolutePath, CancellationToken token)
+        private static CityModel ParseGML(string gmlAbsolutePath, CancellationToken? token)
         {
-            token.ThrowIfCancellationRequested();
+            token?.ThrowIfCancellationRequested();
 
             if (!File.Exists(gmlAbsolutePath))
             {

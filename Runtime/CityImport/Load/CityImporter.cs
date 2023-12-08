@@ -19,7 +19,7 @@ namespace PLATEAU.CityImport.Load
     /// <summary>
     /// GMLファイルに記載された都市モデルを Unity にインポートします。
     /// </summary>
-    internal static class CityImporter
+    public static class CityImporter
     {
         static string  lastFetchedGmlRootPath = "";
         /// <summary>
@@ -27,14 +27,15 @@ namespace PLATEAU.CityImport.Load
         /// GMLファイルから都市モデルを読み、そのメッシュをUnity向けに変換してシーンに配置します。
         /// メインスレッドで呼ぶ必要があります。
         /// </summary>
-        public static async Task ImportAsync(CityLoadConfig config, IProgressDisplay progressDisplay, CancellationToken token)
+        public static async Task ImportAsync(CityLoadConfig config, IProgressDisplay progressDisplay, CancellationToken? token)
         {
-            var datasetSourceConfig = config.DatasetSourceConfig;
+            progressDisplay ??= new DummyProgressDisplay();
+            var datasetSourceConfig = config.ConfBeforeAreaSelect.DatasetSourceConfig;
             string destPath = PathUtil.PLATEAUSrcFetchDir;
 
-            if ((!datasetSourceConfig.IsServer) && (!Directory.Exists(datasetSourceConfig.LocalSourcePath)))
+            if ((datasetSourceConfig is DatasetSourceConfigLocal localConf) && (!Directory.Exists(localConf.LocalSourcePath)))
             {
-                Debug.LogError($"インポート元パスが存在しません。 sourcePath = {datasetSourceConfig.LocalSourcePath}");
+                Debug.LogError($"インポート元パスが存在しません。 sourcePath = {localConf.LocalSourcePath}");
                 return;
             }
             
@@ -56,7 +57,7 @@ namespace PLATEAU.CityImport.Load
 
             progressDisplay.SetProgress("GMLファイル検索", 100f, "完了");
             
-            if (targetGmls.Count <= 0)
+            if (targetGmls == null || targetGmls.Count <= 0)
             {
                 Debug.LogError("該当するGMLファイルがありません。");
                 return;
@@ -77,7 +78,7 @@ namespace PLATEAU.CityImport.Load
             // ルートのGameObjectにコンポーネントを付けます。 
             var cityModelComponent = rootTrans.gameObject.AddComponent<PLATEAUInstancedCityModel>();
             cityModelComponent.GeoReference =
-                GeoReference.Create(referencePoint, PackageLoadConfig.UnitScale, PackageLoadConfig.MeshAxes, config.CoordinateZoneID);
+                GeoReference.Create(referencePoint, PackageLoadConfig.UnitScale, PackageLoadConfig.MeshAxes, config.ConfBeforeAreaSelect.CoordinateZoneID);
 
             // GMLファイルを fetch します。これは同期処理にします。
             // なぜなら、ファイルコピー が並列で動くのはトラブルの元(特に同じ codelist を同時にコピーしようとしがち) だからです。

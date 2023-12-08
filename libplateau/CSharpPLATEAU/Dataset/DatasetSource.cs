@@ -11,56 +11,52 @@ namespace PLATEAU.Dataset
         private DatasetSource(IntPtr handle) : base(handle)
         {
         }
-        
-        /// <summary>
-        /// <see cref="DatasetSource"/> を生成します。
-        /// </summary>
-        /// <param name="isServer">データの場所は true ならサーバー、falseならローカルです。</param>
-        /// <param name="localSourcePath">ローカルモードでのみ利用します。インポート元のパスを渡します。</param>
-        /// <param name="serverDatasetID">
-        /// サーバーモードでのみ利用します。データセットのIDを渡します。
-        /// そのIDとは、APIサーバーにデータセットの一覧を問い合わせたときに得られるID文字列です。例: 東京23区のデータセットのIDは "23ku"
-        /// </param>
-        /// <param name="serverUrl">サーバーモードでのみ利用します。サーバーのURLです。</param>
-        private static DatasetSource Create(bool isServer, string localSourcePath, string serverDatasetID, string serverUrl)
-        {
-            return Create(new DatasetSourceConfig(isServer, localSourcePath, serverDatasetID, serverUrl, ""));
-        }
-        
-        
-        public static DatasetSource Create(DatasetSourceConfig config)
-        {
-            return config.IsServer ?
-                CreateServer(config.ServerDatasetID, config.ServerUrl, config.ServerToken) :
-                CreateLocal(config.LocalSourcePath);
-        }
 
         /// <summary>
-         /// ローカルPCのデータセットを指す <see cref="DatasetSource"/> を作ります。
-         /// </summary>
-        public static DatasetSource CreateLocal(string path)
-         {
-             var pathUtf8 = DLLUtil.StrToUtf8Bytes(path);
-             var result = NativeMethods.plateau_create_dataset_source_local(out var datasetSourcePtr, pathUtf8);
-             DLLUtil.CheckDllError(result);
-             return new DatasetSource(datasetSourcePtr);
-         }
+        /// <see cref="DatasetSource"/>を生成します。
+        /// ローカルかサーバーかは、引数の型によって判別します。
+        /// </summary>
+        public static DatasetSource Create(IDatasetSourceConfig conf)
+        {
+            switch (conf)
+            {
+                case DatasetSourceConfigLocal localConf:
+                    return CreateLocal(localConf);
+                case DatasetSourceConfigRemote remoteConf:
+                    return CreateServer(remoteConf);
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(conf));
+            }
+        }
+
+
+        /// <summary>
+        /// ローカルPCのデータセットを指す <see cref="DatasetSource"/> を作ります。
+        /// </summary>
+        private static DatasetSource CreateLocal(DatasetSourceConfigLocal conf)
+        {
+            var pathUtf8 = DLLUtil.StrToUtf8Bytes(conf.LocalSourcePath);
+            var result = NativeMethods.plateau_create_dataset_source_local(out var datasetSourcePtr, pathUtf8);
+            DLLUtil.CheckDllError(result);
+            return new DatasetSource(datasetSourcePtr);
+        }
 
          /// <summary>
          /// リモートPCのデータセットを指す <see cref="DatasetSource"/> を作ります。
          /// </summary>
-         public static DatasetSource CreateServer(string datasetID, string serverUrl, string apiToken)
+         private static DatasetSource CreateServer(DatasetSourceConfigRemote conf)
          {
-             Client client = Client.Create(serverUrl, apiToken);
+             Client client = Client.Create(conf.ServerUrl, conf.ServerToken);
              var result = NativeMethods.plateau_create_dataset_source_server(
-                 out var ptr, datasetID, client.Handle);
+                 out var ptr, conf.ServerDatasetID, client.Handle);
              DLLUtil.CheckDllError(result);
              return new DatasetSource(ptr);
          }
 
          public static DatasetSource CreateForMockServer(string datasetID)
          {
-             return CreateServer(datasetID, NetworkConfig.MockServerUrl, "");
+             var conf = new DatasetSourceConfigRemote(datasetID, NetworkConfig.MockServerUrl, "");
+             return CreateServer(conf);
          }
 
          public DatasetAccessor Accessor

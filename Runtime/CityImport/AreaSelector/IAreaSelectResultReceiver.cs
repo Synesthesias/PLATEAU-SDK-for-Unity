@@ -1,4 +1,5 @@
-﻿using PLATEAU.CityImport.Config.PackageLoadConfigs;
+﻿using PLATEAU.CityImport.Config;
+using PLATEAU.CityImport.Config.PackageLoadConfigs;
 
 namespace PLATEAU.CityImport.AreaSelector
 {
@@ -9,10 +10,10 @@ namespace PLATEAU.CityImport.AreaSelector
     
     public class AreaSelectResult
     {
-        public string[] AreaMeshCodes { get; }
+        public MeshCodeList AreaMeshCodes { get; }
         public PackageToLodDict PackageToLodDict { get; }
 
-        public AreaSelectResult(string[] areaMeshCodes, PackageToLodDict packageToLodDict)
+        public AreaSelectResult(MeshCodeList areaMeshCodes, PackageToLodDict packageToLodDict)
         {
             AreaMeshCodes = areaMeshCodes;
             PackageToLodDict = packageToLodDict;

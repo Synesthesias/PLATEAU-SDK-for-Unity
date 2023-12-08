@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using PLATEAU.CityImport.Load.Convert.MaterialConvert;
 using PLATEAU.Util;
-using PLATEAU.Util.Async;
 using UnityEngine;
 using UnityEngine.Rendering;
 using Mesh = UnityEngine.Mesh;

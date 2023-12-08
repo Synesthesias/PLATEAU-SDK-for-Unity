@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using PLATEAU.CityImport.AreaSelector;
+using PLATEAU.CityImport.Config;
 using PLATEAU.Dataset;
 using PLATEAU.Editor.CityImport.AreaSelector;
 using PLATEAU.Editor.EditorWindow.Common;
@@ -18,7 +19,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts
         /// 「範囲選択」ボタンを表示し、押された時に範囲選択を開始します。
         /// 範囲が選択されているかどうかをboolで返します。
         /// </summary>
-        public static bool Draw(string[] areaMeshCodes, DatasetSourceConfig datasetSourceConfig, IAreaSelectResultReceiver resultReceiver, int coordinateZoneID)
+        public static bool Draw(MeshCodeList areaMeshCodes, IDatasetSourceConfig datasetSourceConfig, IAreaSelectResultReceiver resultReceiver, int coordinateZoneID)
         {
             using (PlateauEditorStyle.VerticalScopeLevel1())
             {
@@ -31,7 +32,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts
                 }
             
                 // 範囲選択が済かどうかを表示します。
-                bool isAreaSelectComplete = areaMeshCodes != null && areaMeshCodes.Length > 0;
+                bool isAreaSelectComplete = areaMeshCodes != null && areaMeshCodes.Count > 0;
                 PlateauEditorStyle.CenterAlignHorizontal(() =>
                 {
                     string str = isAreaSelectComplete ? "範囲選択 : セット済" : "範囲選択 : 未";
@@ -41,9 +42,9 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts
             }
         }
 
-        private static void StartAreaSelect(DatasetSourceConfig datasetSourceConfig, IAreaSelectResultReceiver resultReceiver, int coordinateZoneID)
+        private static void StartAreaSelect(IDatasetSourceConfig datasetSourceConfig, IAreaSelectResultReceiver resultReceiver, int coordinateZoneID)
         {
-            if ((!datasetSourceConfig.IsServer) && (!Directory.Exists(datasetSourceConfig.LocalSourcePath)))
+            if ((datasetSourceConfig is DatasetSourceConfigLocal localConf) && (!Directory.Exists(localConf.LocalSourcePath)))
             {
                 Dialogue.Display($"入力フォルダが存在しません。\nフォルダを指定してください。", "OK");
                 return;

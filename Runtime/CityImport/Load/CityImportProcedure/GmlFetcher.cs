@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using PLATEAU.Dataset;
 using PLATEAU.Util;
@@ -19,17 +18,17 @@ namespace PLATEAU.CityImport.Load.CityImportProcedure
         /// GMLと関連ファイルを StreamingAssets フォルダにコピー(サーバーの場合はダウンロード)します。
         /// </summary>
         /// <returns>Fetch後のGMLファイルの情報を返します。</returns>
-        public static async Task<GmlFile> FetchAsync(GmlFile gmlFileBeforeFetch, string destPath, string gmlName, IProgressDisplay progressDisplay, bool isServer, CancellationToken token)
+        public static async Task<GmlFile> FetchAsync(GmlFile gmlFileBeforeFetch, string destPath, string gmlName, IProgressDisplay progressDisplay, bool isServer)
         {
             var fetchedGmlFile = isServer switch
             {
-                false => await FetchLocalAsync(gmlFileBeforeFetch, destPath, gmlName, progressDisplay, token),
-                true => await FetchRemoteAsync(gmlFileBeforeFetch, destPath, gmlName, progressDisplay, token)
+                false => await FetchLocalAsync(gmlFileBeforeFetch, destPath, gmlName, progressDisplay),
+                true => await FetchRemoteAsync(gmlFileBeforeFetch, destPath, gmlName, progressDisplay)
             };
             return fetchedGmlFile;
         } 
         
-        private static async Task<GmlFile> FetchLocalAsync(GmlFile gmlFile, string destPath, string gmlName, IProgressDisplay progressDisplay, CancellationToken token)
+        private static async Task<GmlFile> FetchLocalAsync(GmlFile gmlFile, string destPath, string gmlName, IProgressDisplay progressDisplay)
         {
             progressDisplay.SetProgress(gmlName, 5f, "ファイルコピー中");
 
@@ -38,7 +37,7 @@ namespace PLATEAU.CityImport.Load.CityImportProcedure
             return fetchedGml;
         }
 
-        private static async Task<GmlFile> FetchRemoteAsync(GmlFile remoteGmlFile, string destPath, string gmlName, IProgressDisplay progressDisplay, CancellationToken token)
+        private static async Task<GmlFile> FetchRemoteAsync(GmlFile remoteGmlFile, string destPath, string gmlName, IProgressDisplay progressDisplay)
         {
             progressDisplay.SetProgress(gmlName, 5f, $"ダウンロード中 :{gmlName}");
             // GMLファイルを StreamingAssets にダウンロードします。

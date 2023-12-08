@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.IO;
 using PLATEAU.Dataset;
-using UnityEditor;
 using UnityEngine;
 #if !UNITY_EDITOR
 using System;
@@ -17,26 +16,26 @@ namespace PLATEAU.Util
         private static readonly IReadOnlyDictionary<PredefinedCityModelPackage, string> PackageToMaterialFileName =
             new Dictionary<PredefinedCityModelPackage, string>
             {
-                {PredefinedCityModelPackage.Building, "PlateauDefaultBuilding.mat"},
-                {PredefinedCityModelPackage.Road, "PlateauDefaultRoad.mat"},
-                {PredefinedCityModelPackage.UrbanPlanningDecision, "PlateauDefaultUrbanPlanningDecision.mat"},
-                {PredefinedCityModelPackage.LandUse, "PlateauDefaultLandUse.mat"},
-                {PredefinedCityModelPackage.CityFurniture, "PlateauDefaultCityFurniture.mat"},
-                {PredefinedCityModelPackage.Vegetation, "PlateauDefaultVegetation.mat"},
-                {PredefinedCityModelPackage.Relief, "PlateauDefaultRelief.mat"},
-                {PredefinedCityModelPackage.DisasterRisk, "PlateauDefaultDisasterRisk.mat"},
-                {PredefinedCityModelPackage.Railway, "PlateauDefaultRailway.mat"},
-                {PredefinedCityModelPackage.Waterway, "PlateauDefaultWaterway.mat"},
-                {PredefinedCityModelPackage.WaterBody, "PlateauDefaultWaterBody.mat"},
-                {PredefinedCityModelPackage.Bridge, "PlateauDefaultBridge.mat"},
-                {PredefinedCityModelPackage.Track, "PlateauDefaultTrack.mat"},
-                {PredefinedCityModelPackage.Square, "PlateauDefaultSquare.mat"},
-                {PredefinedCityModelPackage.Tunnel, "PlateauDefaultTunnel.mat"},
-                {PredefinedCityModelPackage.UndergroundFacility, "PlateauDefaultUndergroundFacility.mat"},
-                {PredefinedCityModelPackage.UndergroundBuilding, "PlateauDefaultUndergroundBuilding.mat"},
-                {PredefinedCityModelPackage.Area, "PlateauDefaultLandUse.mat"}, // 土地利用を流用
-                {PredefinedCityModelPackage.Unknown, "PlateauDefaultUnknown.mat"},
-                {PredefinedCityModelPackage.OtherConstruction, "PlateauDefaultUnknown.mat"}
+                {PredefinedCityModelPackage.Building, "PlateauDefaultBuilding"},
+                {PredefinedCityModelPackage.Road, "PlateauDefaultRoad"},
+                {PredefinedCityModelPackage.UrbanPlanningDecision, "PlateauDefaultUrbanPlanningDecision"},
+                {PredefinedCityModelPackage.LandUse, "PlateauDefaultLandUse"},
+                {PredefinedCityModelPackage.CityFurniture, "PlateauDefaultCityFurniture"},
+                {PredefinedCityModelPackage.Vegetation, "PlateauDefaultVegetation"},
+                {PredefinedCityModelPackage.Relief, "PlateauDefaultRelief"},
+                {PredefinedCityModelPackage.DisasterRisk, "PlateauDefaultDisasterRisk"},
+                {PredefinedCityModelPackage.Railway, "PlateauDefaultRailway"},
+                {PredefinedCityModelPackage.Waterway, "PlateauDefaultWaterway"},
+                {PredefinedCityModelPackage.WaterBody, "PlateauDefaultWaterBody"},
+                {PredefinedCityModelPackage.Bridge, "PlateauDefaultBridge"},
+                {PredefinedCityModelPackage.Track, "PlateauDefaultTrack"},
+                {PredefinedCityModelPackage.Square, "PlateauDefaultSquare"},
+                {PredefinedCityModelPackage.Tunnel, "PlateauDefaultTunnel"},
+                {PredefinedCityModelPackage.UndergroundFacility, "PlateauDefaultUndergroundFacility"},
+                {PredefinedCityModelPackage.UndergroundBuilding, "PlateauDefaultUndergroundBuilding"},
+                {PredefinedCityModelPackage.Area, "PlateauDefaultLandUse"}, // 土地利用を流用
+                {PredefinedCityModelPackage.Unknown, "PlateauDefaultUnknown"},
+                {PredefinedCityModelPackage.OtherConstruction, "PlateauDefaultUnknown"}
             };
 
         private static Dictionary<string, Material> mainTexNameToMaterial = null;
@@ -52,13 +51,15 @@ namespace PLATEAU.Util
                 return new Material(RenderUtil.DefaultMaterial);
             }
             
-            string matPath = Path.Combine(MaterialPathUtil.BaseMaterialDir, FallbackFolderName, matFileName);
-            #if UNITY_EDITOR
-            var mat = AssetDatabase.LoadAssetAtPath<Material>(matPath);
+            // string matPath = Path.Combine(MaterialPathUtil.BaseMaterialDir, FallbackFolderName, matFileName);
+            // #if UNITY_EDITOR
+            // var mat = AssetDatabase.LoadAssetAtPath<Material>(matPath);
+            // return mat ? mat : new Material(RenderUtil.DefaultMaterial);
+            // #else
+            // throw new NotImplementedException("This function is only supported in editor."); 
+            // #endif
+            var mat = Resources.Load<Material>("PlateauSdkDefaultMaterials/" + matFileName);
             return mat ? mat : new Material(RenderUtil.DefaultMaterial);
-            #else
-            throw new NotImplementedException("This function is only supported in editor."); 
-            #endif
         }
 
         /// <summary>

@@ -16,7 +16,7 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos.LODIcons
         private readonly ConcurrentDictionary<string, PackageToLodDict> meshCodeToPackageLodDict;
         private readonly DatasetSource datasetSource;
 
-        public AreaLodSearcher(DatasetSourceConfig datasetSourceConfig)
+        public AreaLodSearcher(IDatasetSourceConfig datasetSourceConfig)
         {
             this.meshCodeToPackageLodDict = new ConcurrentDictionary<string, PackageToLodDict>();
             this.datasetSource = DatasetSource.Create(datasetSourceConfig);

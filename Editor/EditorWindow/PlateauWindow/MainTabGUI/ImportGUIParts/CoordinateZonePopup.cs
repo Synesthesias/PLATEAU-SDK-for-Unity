@@ -1,5 +1,4 @@
-﻿using PLATEAU.CityImport.Config;
-using PLATEAU.Editor.EditorWindow.Common;
+﻿using PLATEAU.Editor.EditorWindow.Common;
 using PLATEAU.Geometries;
 using UnityEditor;
 
@@ -14,14 +13,14 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts
     internal static class CoordinateZonePopup
     {
         /// <summary>
-        /// 基準座標系を選択するGUIを表示し、結果を <see cref="CityLoadConfig"/> にセットします。
+        /// 基準座標系を選択するGUIを表示し、結果をintで返します。
         /// </summary>
-        public static void DrawAndSet(CityLoadConfig conf)
+        public static int Draw(int current)
         {
             using (PlateauEditorStyle.VerticalScopeLevel1())
             {
-                conf.CoordinateZoneID = EditorGUILayout.Popup(
-                    "基準座標系", conf.CoordinateZoneID - 1, 
+                return EditorGUILayout.Popup(
+                    "基準座標系", current - 1, 
                     GeoReference.ZoneIdExplanation
                 ) + 1; // 番号は 1 スタート
             }

@@ -5,6 +5,7 @@ using System.Linq;
 using PLATEAU.CityImport.AreaSelector.Display.Gizmos;
 using PLATEAU.CityImport.AreaSelector.Display.Maps;
 using PLATEAU.CityImport.AreaSelector.Display.Windows;
+using PLATEAU.CityImport.Config;
 using PLATEAU.CityImport.Config.PackageLoadConfigs;
 using PLATEAU.Geometries;
 using PLATEAU.Dataset;
@@ -26,7 +27,7 @@ namespace PLATEAU.CityImport.AreaSelector
     internal class AreaSelectorBehaviour : MonoBehaviour
     {
         [SerializeField] private string prevScenePath;
-        [SerializeField] private DatasetSourceConfig datasetSourceConfig;
+        private IDatasetSourceConfig datasetSourceConfig;
         private AreaSelectGizmosDrawer gizmosDrawer;
         private IAreaSelectResultReceiver areaSelectResultReceiver;
         private int coordinateZoneID;
@@ -42,7 +43,7 @@ namespace PLATEAU.CityImport.AreaSelector
         public static bool IsAreaSelectEnabled { get; set; }
 
 #if UNITY_EDITOR
-        public void Init(string prevScenePathArg, DatasetSourceConfig datasetSourceConfigArg, IAreaSelectResultReceiver areaSelectResultReceiverArg, int coordinateZoneIDArg, EditorWindow prevEditorWindowArg)
+        public void Init(string prevScenePathArg, IDatasetSourceConfig datasetSourceConfigArg, IAreaSelectResultReceiver areaSelectResultReceiverArg, int coordinateZoneIDArg, EditorWindow prevEditorWindowArg)
         {
             IsAreaSelectEnabled = true;
             this.prevScenePath = prevScenePathArg;
@@ -158,7 +159,7 @@ namespace PLATEAU.CityImport.AreaSelector
             return entireExtent;
         }
 
-        private static void GatherMeshCodes(DatasetSourceConfig datasetSourceConfig, out ReadOnlyCollection<MeshCode> meshCodes)
+        private static void GatherMeshCodes(IDatasetSourceConfig datasetSourceConfig, out ReadOnlyCollection<MeshCode> meshCodes)
         {
             using var datasetSource = DatasetSource.Create(datasetSourceConfig);
             using var accessor = datasetSource.Accessor;
@@ -181,35 +182,13 @@ namespace PLATEAU.CityImport.AreaSelector
             AreaSelectorMenuWindow.Disable();
             AreaSelectorGuideWindow.Disable();
             LodLegendGUI.Disable();
-            var selectedMeshCodes = this.gizmosDrawer.SelectedMeshCodes.ToArray();
-            var availablePackageLods = CalcAvailablePackageLodInMeshCodes(selectedMeshCodes, this.datasetSourceConfig);
+            var selectedMeshCodes = this.gizmosDrawer.SelectedMeshCodes;
+            var availablePackageLods = selectedMeshCodes.CalcAvailablePackageLodInMeshCodes(this.datasetSourceConfig);
 
             // 無名関数のキャプチャを利用して、シーン終了後も必要なデータが渡るようにします。
             #if UNITY_EDITOR
             AreaSelectorDataPass.Exec(this.prevScenePath, selectedMeshCodes, this.areaSelectResultReceiver, availablePackageLods, this.prevEditorWindow);
             #endif
-        }
-
-        private static PackageToLodDict CalcAvailablePackageLodInMeshCodes(IEnumerable<MeshCode> meshCodes, DatasetSourceConfig datasetSourceConfig)
-        {
-            using var datasetSource = DatasetSource.Create(datasetSourceConfig);
-            using var accessorAll = datasetSource.Accessor;
-            using var accessor = accessorAll.FilterByMeshCodes(meshCodes);
-            using var gmlFiles = accessor.GetAllGmlFiles();
-            var ret = new PackageToLodDict();
-            int gmlCount = gmlFiles.Length;
-            using var progressBar = new ProgressBar();
-            for (int i = 0; i < gmlCount; i++)
-            {
-                var gml = gmlFiles.At(i);
-                int maxLod = gml.GetMaxLod();
-                ret.MergePackage(gml.Package, maxLod);
-
-                //Progress表示
-                float progress = (float)i / gmlCount;
-                progressBar.Display("利用可能なデータを検索中です...", progress);
-            }
-            return ret;
         }
 
         internal void CancelAreaSelection()
@@ -218,7 +197,7 @@ namespace PLATEAU.CityImport.AreaSelector
             AreaSelectorGuideWindow.Disable();
             LodLegendGUI.Disable();
             IsAreaSelectEnabled = false;
-            var emptyAreaSelectResult = new MeshCode[] { };
+            var emptyAreaSelectResult = MeshCodeList.Empty;
             #if UNITY_EDITOR
             AreaSelectorDataPass.Exec(this.prevScenePath, emptyAreaSelectResult, this.areaSelectResultReceiver, new PackageToLodDict(), this.prevEditorWindow);
             #endif

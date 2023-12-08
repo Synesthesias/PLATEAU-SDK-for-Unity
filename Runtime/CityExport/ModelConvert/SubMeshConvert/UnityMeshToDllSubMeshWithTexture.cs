@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using PLATEAU.CityImport.Load.Convert.MaterialConvert;
 using PLATEAU.PolygonMesh;
 using UnityEngine;
-using UnityEngine.Assertions;
 using Mesh = UnityEngine.Mesh;
 
 namespace PLATEAU.CityExport.ModelConvert.SubMeshConvert

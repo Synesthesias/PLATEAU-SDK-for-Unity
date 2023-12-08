@@ -18,7 +18,7 @@ namespace PLATEAU.CityImport.Config.PackageLoadConfigs
     /// ・特定のパッケージ種で追加の設定項目がある場合はサブクラスで実装します。
     /// ・この設定項目を追加・削除する場合、<see cref="ConvertToNativeOption"/>も合わせて実装しないと反映されないことに注意してください。 
     /// </summary>
-    internal class PackageLoadConfig
+    public class PackageLoadConfig
     {
         public PredefinedCityModelPackage Package { get; }
         public PackageLoadConfigExtendable ConfExtendable { get; }

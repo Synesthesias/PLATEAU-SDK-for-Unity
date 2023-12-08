@@ -1,7 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using PLATEAU.CityImport.Config;
 using PLATEAU.CityImport.Config.PackageLoadConfigs;
-using PLATEAU.Dataset;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -20,13 +18,13 @@ namespace PLATEAU.CityImport.AreaSelector
     {
         // シーンをまたいで渡したいデータ
         private static string prevScenePath;
-        private static IEnumerable<MeshCode> selectedMeshCodes;
+        private static MeshCodeList selectedMeshCodes;
         private static IAreaSelectResultReceiver areaSelectResultReceiver;
         private static PackageToLodDict availablePackageLods;
 
 #if UNITY_EDITOR
         public static void Exec(
-            string prevScenePathArg, IEnumerable<MeshCode> selectedMeshCodesArg,
+            string prevScenePathArg, MeshCodeList selectedMeshCodesArg,
             IAreaSelectResultReceiver areaSelectResultReceiverArg, PackageToLodDict availablePackageLodsArg,
             EditorWindow prevEditorWindow)
         {
@@ -57,15 +55,12 @@ namespace PLATEAU.CityImport.AreaSelector
         /// </summary>
         private static void PassAreaSelectDataToBehaviour()
         {
-            var areaMeshCodes = selectedMeshCodes
-                .Select(meshCode => meshCode.ToString())
-                .ToArray();
-            if (areaMeshCodes.Length == 0)
+            if (selectedMeshCodes.Count == 0)
             {
                 Debug.Log("地域は選択されませんでした。");
             }
 
-            var areaSelectResult = new AreaSelectResult(areaMeshCodes, availablePackageLods);
+            var areaSelectResult = new AreaSelectResult(selectedMeshCodes, availablePackageLods);
             areaSelectResultReceiver.ReceiveResult(areaSelectResult);
         }
     }

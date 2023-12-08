@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Threading;
 using PLATEAU.CityImport.AreaSelector;
 using PLATEAU.CityImport.Config.PackageLoadConfigs;
 using PLATEAU.Dataset;
 using PLATEAU.Native;
 using PLATEAU.PolygonMesh;
-using PLATEAU.Util;
 
 namespace PLATEAU.CityImport.Config
 {
@@ -17,24 +14,15 @@ namespace PLATEAU.CityImport.Config
     /// パッケージごとのインポート設定については<see cref="PackageLoadConfigDict"/>を参照してください。
     /// 設定GUIについてはCityAddGUIおよびCityLoadConfigGUIを参照してください。
     /// </summary>
-    internal class CityLoadConfig
+    public class CityLoadConfig
     {
-        /// <summary>
-        /// 都市モデル読み込み元に関する設定です。
-        /// </summary>
-        public DatasetSourceConfig DatasetSourceConfig { get; set; }
+        public ConfigBeforeAreaSelect ConfBeforeAreaSelect { get; set; } = new ConfigBeforeAreaSelect();
         
         /// <summary>
         /// 範囲選択で選択された範囲です。
         /// </summary>
-        public string[] AreaMeshCodes { get; private set; }
+        public MeshCodeList AreaMeshCodes { get; private set; }
         
-        /// <summary>
-        /// 平面直角座標系の番号です。
-        /// 次のサイトで示される平面直角座標系の番号です。
-        /// https://www.gsi.go.jp/sokuchikijun/jpc.html
-        /// </summary>
-        public int CoordinateZoneID { get; set; } = 9;
         
         /// <summary>
         /// 基準点です。
@@ -59,16 +47,15 @@ namespace PLATEAU.CityImport.Config
         /// 多数のファイルから検索するので、実行時間が長くなりがちである点にご注意ください。
         /// </summary>
         /// <returns>検索にヒットしたGMLのリストです。</returns>
-        public List<GmlFile> SearchMatchingGMLList( CancellationToken token )
+        public List<GmlFile> SearchMatchingGMLList( CancellationToken? token )
         {
-            token.ThrowIfCancellationRequested();
+            token?.ThrowIfCancellationRequested();
 
 
             // 地域ID(メッシュコード)で絞り込みます。
-            var meshCodes = AreaMeshCodes.Select(MeshCode.Parse).Where(code => code.IsValid).ToArray();
 
-            using var datasetSource = DatasetSource.Create(DatasetSourceConfig);
-            using var datasetAccessor = datasetSource.Accessor.FilterByMeshCodes(meshCodes);
+            using var datasetSource = DatasetSource.Create(ConfBeforeAreaSelect.DatasetSourceConfig);
+            using var datasetAccessor = datasetSource.Accessor.FilterByMeshCodes(AreaMeshCodes.Data);
 
             // パッケージ種ごとの設定で「ロードする」にチェックが入っているパッケージ種で絞り込みます。
             var targetPackages = PackageLoadConfigDict.PackagesToLoad();
@@ -98,7 +85,7 @@ namespace PLATEAU.CityImport.Config
         {
             InitWithPackageLodsDict(result.PackageToLodDict);
             AreaMeshCodes = result.AreaMeshCodes;
-            SetReferencePointToExtentCenter();
+            ReferencePoint = AreaMeshCodes.ExtentCenter(ConfBeforeAreaSelect.CoordinateZoneID);
         }
         
         /// <summary>
@@ -109,40 +96,14 @@ namespace PLATEAU.CityImport.Config
             PackageLoadConfigDict = new PackageLoadConfigDict(dict);
         }
 
-        /// <summary>
-        /// 範囲の中心を基準点として設定します。
-        /// これは基準点設定GUIに表示される初期値であり、ユーザーが「範囲の中心を入力」ボタンを押したときに設定される値でもあります。
-        /// </summary>
-        public PlateauVector3d SetReferencePointToExtentCenter()
-        {
-            using var geoReference = CoordinatesConvertUtil.UnityStandardGeoReference(CoordinateZoneID);
 
-            // 選択エリアを囲むExtentを計算
-            var extent = new Extent
-            {
-                Min = new GeoCoordinate(180.0, 180.0, 0.0),
-                Max = new GeoCoordinate(-180.0, -180.0, 0.0)
-            };
-            foreach (var meshCode in AreaMeshCodes)
-            {
-                var partialExtent = MeshCode.Parse(meshCode).Extent;
-                extent.Min.Latitude = Math.Min(partialExtent.Min.Latitude, extent.Min.Latitude);
-                extent.Min.Longitude = Math.Min(partialExtent.Min.Longitude, extent.Min.Longitude);
-                extent.Max.Latitude = Math.Max(partialExtent.Max.Latitude, extent.Max.Latitude);
-                extent.Max.Longitude = Math.Max(partialExtent.Max.Longitude, extent.Max.Longitude);
-            }
-
-            var center = geoReference.Project(extent.Center);
-            ReferencePoint = center;
-            return center;
-        }
         /// <summary>
         /// インポート設定について、C++のstructに変換します。
         /// </summary>
         internal MeshExtractOptions CreateNativeConfigFor(PredefinedCityModelPackage package)
         {
             var packageConf = GetConfigForPackage(package);
-            return packageConf.ConvertToNativeOption(ReferencePoint, CoordinateZoneID);
+            return packageConf.ConvertToNativeOption(ReferencePoint, ConfBeforeAreaSelect.CoordinateZoneID);
         } 
         
         private static bool ShouldExcludeCityObjectOutsideExtent(PredefinedCityModelPackage package)

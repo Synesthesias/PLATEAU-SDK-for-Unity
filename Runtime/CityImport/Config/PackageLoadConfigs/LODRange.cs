@@ -2,7 +2,7 @@ using System;
 
 namespace PLATEAU.CityImport.Config.PackageLoadConfigs
 {
-    internal struct LODRange
+    public struct LODRange
     {
         /// <summary> ユーザーが選択したLOD範囲の下限 </summary>
         public int MinLOD { get; }

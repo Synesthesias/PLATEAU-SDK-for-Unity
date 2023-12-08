@@ -34,7 +34,7 @@ namespace PLATEAU.Tests.EditModeTests
             SceneManager.SetActiveScene(emptyScene);
             // MiniTokyo の範囲選択画面を開始します。
             var testDef = TestCityDefinition.MiniTokyo;
-            var datasetConf = new DatasetSourceConfig(false, testDef.SrcRootDirPathLocal, "", "", "");
+            var datasetConf = new DatasetSourceConfigLocal(testDef.SrcRootDirPathLocal);
             var resultReceiver = new DummyAreaSelectResultReceiver();
         
             LogAssert.ignoreFailingMessages = true;
