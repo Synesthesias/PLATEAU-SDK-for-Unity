@@ -20,8 +20,8 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts
         {
             using (PlateauEditorStyle.VerticalScopeLevel1())
             {
-                conf.CoordinateZoneID = EditorGUILayout.Popup(
-                    "基準座標系", conf.CoordinateZoneID - 1, 
+                conf.ConfBeforeAreaSelect.CoordinateZoneID = EditorGUILayout.Popup(
+                    "基準座標系", conf.ConfBeforeAreaSelect.CoordinateZoneID - 1, 
                     GeoReference.ZoneIdExplanation
                 ) + 1; // 番号は 1 スタート
             }

@@ -73,8 +73,8 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
             {
                 this.foldOutSourceFolderPath = PlateauEditorStyle.FoldOut(this.foldOutSourceFolderPath, "入力フォルダ", () =>
                 {
-                    this.config.DatasetSourceConfig ??= new DatasetSourceConfigLocal("");
-                    ((DatasetSourceConfigLocal)this.config.DatasetSourceConfig).LocalSourcePath = this.folderSelector.Draw("フォルダパス");
+                    this.config.ConfBeforeAreaSelect.DatasetSourceConfig ??= new DatasetSourceConfigLocal("");
+                    ((DatasetSourceConfigLocal)this.config.ConfBeforeAreaSelect.DatasetSourceConfig).LocalSourcePath = this.folderSelector.Draw("フォルダパス");
                 });
             
                 PlateauEditorStyle.Separator(0);
@@ -84,8 +84,8 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
             
 
                 PlateauEditorStyle.Heading("マップ範囲選択", "num2.png");
-                IsAreaSelectComplete = AreaSelectButton.Draw(this.config.AreaMeshCodes, this.config.DatasetSourceConfig,
-                    areaSelectResultReceiver, this.config.CoordinateZoneID);
+                IsAreaSelectComplete = AreaSelectButton.Draw(this.config.AreaMeshCodes, this.config.ConfBeforeAreaSelect.DatasetSourceConfig,
+                    areaSelectResultReceiver, this.config.ConfBeforeAreaSelect.CoordinateZoneID);
             }
 
             public void Dispose() { }

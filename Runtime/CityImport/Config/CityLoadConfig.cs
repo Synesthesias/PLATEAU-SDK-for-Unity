@@ -16,22 +16,13 @@ namespace PLATEAU.CityImport.Config
     /// </summary>
     public class CityLoadConfig
     {
-        /// <summary>
-        /// 都市モデル読み込み元に関する設定です。
-        /// </summary>
-        public IDatasetSourceConfig DatasetSourceConfig { get; set; }
+        public CityLoadConfigBeforeAreaSelect ConfBeforeAreaSelect { get; set; } = new CityLoadConfigBeforeAreaSelect();
         
         /// <summary>
         /// 範囲選択で選択された範囲です。
         /// </summary>
         public MeshCodeList AreaMeshCodes { get; private set; }
         
-        /// <summary>
-        /// 平面直角座標系の番号です。
-        /// 次のサイトで示される平面直角座標系の番号です。
-        /// https://www.gsi.go.jp/sokuchikijun/jpc.html
-        /// </summary>
-        public int CoordinateZoneID { get; set; } = 9;
         
         /// <summary>
         /// 基準点です。
@@ -63,7 +54,7 @@ namespace PLATEAU.CityImport.Config
 
             // 地域ID(メッシュコード)で絞り込みます。
 
-            using var datasetSource = DatasetSource.Create(DatasetSourceConfig);
+            using var datasetSource = DatasetSource.Create(ConfBeforeAreaSelect.DatasetSourceConfig);
             using var datasetAccessor = datasetSource.Accessor.FilterByMeshCodes(AreaMeshCodes.Data);
 
             // パッケージ種ごとの設定で「ロードする」にチェックが入っているパッケージ種で絞り込みます。
@@ -94,7 +85,7 @@ namespace PLATEAU.CityImport.Config
         {
             InitWithPackageLodsDict(result.PackageToLodDict);
             AreaMeshCodes = result.AreaMeshCodes;
-            ReferencePoint = AreaMeshCodes.ExtentCenter(CoordinateZoneID);
+            ReferencePoint = AreaMeshCodes.ExtentCenter(ConfBeforeAreaSelect.CoordinateZoneID);
         }
         
         /// <summary>
@@ -112,7 +103,7 @@ namespace PLATEAU.CityImport.Config
         internal MeshExtractOptions CreateNativeConfigFor(PredefinedCityModelPackage package)
         {
             var packageConf = GetConfigForPackage(package);
-            return packageConf.ConvertToNativeOption(ReferencePoint, CoordinateZoneID);
+            return packageConf.ConvertToNativeOption(ReferencePoint, ConfBeforeAreaSelect.CoordinateZoneID);
         } 
         
         private static bool ShouldExcludeCityObjectOutsideExtent(PredefinedCityModelPackage package)

@@ -29,7 +29,7 @@ namespace PLATEAU.Editor.CityImport.PackageLoadConfigGUIs.Components
                         if (PlateauEditorStyle.MiniButton("範囲の中心点を入力", 140))
                         {
                             GUI.FocusControl("");
-                            var extentCenter =  conf.AreaMeshCodes.ExtentCenter(conf.CoordinateZoneID);
+                            var extentCenter =  conf.AreaMeshCodes.ExtentCenter(conf.ConfBeforeAreaSelect.CoordinateZoneID);
                             conf.ReferencePoint = extentCenter;
                         }
                     });

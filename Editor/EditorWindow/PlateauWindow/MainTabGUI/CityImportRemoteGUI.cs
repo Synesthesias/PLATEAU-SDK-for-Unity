@@ -108,8 +108,8 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
                 PlateauEditorStyle.MultiLineLabelWithBox(
                     $"タイトル: {dataset.Title}\n説明    : {dataset.Description}\n種別: {dataset.PackageFlags.ToJapaneseName()}");
 
-                this.cityLoadConfig.DatasetSourceConfig ??= new DatasetSourceConfigRemote("", "", "");
-                var sourceConf = (DatasetSourceConfigRemote)this.cityLoadConfig.DatasetSourceConfig;
+                this.cityLoadConfig.ConfBeforeAreaSelect.DatasetSourceConfig ??= new DatasetSourceConfigRemote("", "", "");
+                var sourceConf = (DatasetSourceConfigRemote)this.cityLoadConfig.ConfBeforeAreaSelect.DatasetSourceConfig;
                 sourceConf.ServerDatasetID = dataset.ID;
                 sourceConf.ServerUrl = this.serverDatasetFetchGUI.ServerUrl;
                 sourceConf.ServerToken = this.serverDatasetFetchGUI.ServerToken;
@@ -119,7 +119,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
                 PlateauEditorStyle.Heading("マップ範囲選択", "num2.png");
 
                 IsAreaSelectComplete = AreaSelectButton.Draw(this.cityLoadConfig.AreaMeshCodes, sourceConf,
-                    this.areaSelectResultReceiver, this.cityLoadConfig.CoordinateZoneID);
+                    this.areaSelectResultReceiver, this.cityLoadConfig.ConfBeforeAreaSelect.CoordinateZoneID);
             }
 
             public void Dispose() { }

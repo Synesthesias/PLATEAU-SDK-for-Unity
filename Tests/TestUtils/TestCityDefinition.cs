@@ -90,7 +90,7 @@ namespace PLATEAU.Tests.TestUtils
             
             // メッシュコードがあるあたりに基準点を設定します。 Extent.Allの中心を基準点にすると極端な座標になるため。  
             using var geoRef = GeoReference.Create(new PlateauVector3d(0, 0, 0), 1.0f, CoordinateSystem.EUN,
-                conf.CoordinateZoneID);
+                conf.ConfBeforeAreaSelect.CoordinateZoneID);
             conf.ReferencePoint = geoRef.Project(AreaMeshCodes.At(0).Extent.Center);
             
             foreach (var packageConf in conf.PackageLoadConfigDict.ForEachPackagePair)
@@ -103,7 +103,7 @@ namespace PLATEAU.Tests.TestUtils
                     ? new DatasetSourceConfigRemote(this.rootDirName, NetworkConfig.MockServerUrl, "")
                     : new DatasetSourceConfigLocal(SrcRootDirPathLocal);
 
-            conf.DatasetSourceConfig = datasetSourceConfig;
+            conf.ConfBeforeAreaSelect.DatasetSourceConfig = datasetSourceConfig;
             return conf;
         }
 

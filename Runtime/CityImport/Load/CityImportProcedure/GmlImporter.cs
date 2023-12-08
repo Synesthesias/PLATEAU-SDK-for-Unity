@@ -35,7 +35,7 @@ namespace PLATEAU.CityImport.Load.CityImportProcedure
             destPath = destPath.Replace('\\', '/');
             if (!destPath.EndsWith("/")) destPath += "/";
             
-            var fetchedGmlFile = await GmlFetcher.FetchAsync(gmlFile, destPath, gmlName, progressDisplay, conf.DatasetSourceConfig is DatasetSourceConfigRemote);
+            var fetchedGmlFile = await GmlFetcher.FetchAsync(gmlFile, destPath, gmlName, progressDisplay, conf.ConfBeforeAreaSelect.DatasetSourceConfig is DatasetSourceConfigRemote);
 
             return fetchedGmlFile;
         }
