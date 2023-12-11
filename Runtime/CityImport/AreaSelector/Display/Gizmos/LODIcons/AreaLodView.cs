@@ -3,7 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using PLATEAU.CityImport.Config.PackageLoadConfigs;
+using PLATEAU.CityImport.Config.PackageImportConfigs;
 using PLATEAU.Dataset;
 using PLATEAU.Util;
 using UnityEditor;

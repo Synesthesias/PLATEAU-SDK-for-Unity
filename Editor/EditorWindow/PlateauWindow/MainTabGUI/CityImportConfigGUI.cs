@@ -12,7 +12,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
     /// </summary>
     public class CityImportConfigGUI : IAreaSelectResultReceiver, IEditorDrawable
     {
-        private CityLoadConfig config = CityLoadConfig.CreateDefault();
+        private CityImportConfig config = CityImportConfig.CreateDefault();
         private readonly IConfigGUIBeforeAreaSelect configGUIBeforeAreaSelect;
 
         /// <summary> GUIのうち、範囲選択後に表示する部分です。 </summary>
@@ -71,7 +71,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
 
         public void ReceiveResult(AreaSelectResult result)
         {
-            this.config = CityLoadConfig.CreateWithAreaSelectResult(result);
+            this.config = CityImportConfig.CreateWithAreaSelectResult(result);
             this.guiAfterAreaSelect = new ImportGUIAfterAreaSelect(this.config, result.PackageToLodDict, progressGUI);
         }
 

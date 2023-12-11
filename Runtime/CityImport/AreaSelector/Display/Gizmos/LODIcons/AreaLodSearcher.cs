@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using PLATEAU.CityImport.Config.PackageLoadConfigs;
+using PLATEAU.CityImport.Config.PackageImportConfigs;
 using PLATEAU.Dataset;
 
 namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos.LODIcons

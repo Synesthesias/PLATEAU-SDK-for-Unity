@@ -6,7 +6,7 @@ using PLATEAU.CityInfo;
 using PLATEAU.Dataset;
 using UnityEngine;
 
-namespace PLATEAU.CityAdjust
+namespace PLATEAU.CityAdjust.ChangeActive
 {
     internal static class CityFilter
     {

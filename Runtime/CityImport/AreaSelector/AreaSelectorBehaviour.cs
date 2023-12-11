@@ -6,7 +6,7 @@ using PLATEAU.CityImport.AreaSelector.Display.Gizmos;
 using PLATEAU.CityImport.AreaSelector.Display.Maps;
 using PLATEAU.CityImport.AreaSelector.Display.Windows;
 using PLATEAU.CityImport.Config;
-using PLATEAU.CityImport.Config.PackageLoadConfigs;
+using PLATEAU.CityImport.Config.PackageImportConfigs;
 using PLATEAU.Geometries;
 using PLATEAU.Dataset;
 using PLATEAU.Native;

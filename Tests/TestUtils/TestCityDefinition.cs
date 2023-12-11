@@ -5,8 +5,8 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 using PLATEAU.CityImport.AreaSelector;
 using PLATEAU.CityImport.Config;
-using PLATEAU.CityImport.Config.PackageLoadConfigs;
-using PLATEAU.CityImport.Load;
+using PLATEAU.CityImport.Config.PackageImportConfigs;
+using PLATEAU.CityImport.Import;
 using PLATEAU.Editor.EditorWindow.ProgressDisplay;
 using PLATEAU.Dataset;
 using PLATEAU.Geometries;
@@ -73,7 +73,7 @@ namespace PLATEAU.Tests.TestUtils
         /// <summary>
         /// インポートするための設定を返します。
         /// </summary>
-        private CityLoadConfig MakeConfig(bool isServer)
+        private CityImportConfig MakeConfig(bool isServer)
         {
             // TODO どのパッケージと何が対応するかは要テスト
             var allPackages =
@@ -90,7 +90,7 @@ namespace PLATEAU.Tests.TestUtils
                     : new DatasetSourceConfigLocal(SrcRootDirPathLocal);
             
             var dummyAreaSelectResult = new AreaSelectResult(new ConfigBeforeAreaSelect(datasetSourceConfig, 9), AreaMeshCodes, allPackageLods);
-            var conf = CityLoadConfig.CreateWithAreaSelectResult(dummyAreaSelectResult);
+            var conf = CityImportConfig.CreateWithAreaSelectResult(dummyAreaSelectResult);
             
             
             // メッシュコードがあるあたりに基準点を設定します。 Extent.Allの中心を基準点にすると極端な座標になるため。  
@@ -98,7 +98,7 @@ namespace PLATEAU.Tests.TestUtils
                 conf.ConfBeforeAreaSelect.CoordinateZoneID);
             conf.ReferencePoint = geoRef.Project(AreaMeshCodes.At(0).Extent.Center);
             
-            foreach (var packageConf in conf.PackageLoadConfigDict.ForEachPackagePair)
+            foreach (var packageConf in conf.PackageImportConfigDict.ForEachPackagePair)
             {
                 packageConf.Value.IncludeTexture = true;
             }

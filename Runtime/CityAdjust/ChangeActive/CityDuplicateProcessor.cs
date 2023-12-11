@@ -3,7 +3,7 @@ using System.Linq;
 using PLATEAU.CityInfo;
 using UnityEngine;
 
-namespace PLATEAU.CityAdjust
+namespace PLATEAU.CityAdjust.ChangeActive
 {
     /// <summary>
     /// 重複した地物があるか検索し、重複して表示されないようにします。

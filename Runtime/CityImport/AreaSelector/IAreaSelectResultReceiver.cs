@@ -1,5 +1,5 @@
 ﻿using PLATEAU.CityImport.Config;
-using PLATEAU.CityImport.Config.PackageLoadConfigs;
+using PLATEAU.CityImport.Config.PackageImportConfigs;
 
 namespace PLATEAU.CityImport.AreaSelector
 {

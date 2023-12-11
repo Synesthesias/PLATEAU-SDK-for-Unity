@@ -1,6 +1,6 @@
 ﻿using System;
 using PLATEAU.CityAdjust.MaterialAdjust;
-using PLATEAU.Editor.CityImport.PackageLoadConfigGUIs.Extendables.Components;
+using PLATEAU.Editor.CityImport.PackageImportConfigGUIs.Extendables.Components;
 using PLATEAU.Editor.EditorWindow.Common;
 using PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.AdjustGUIParts;
 using PLATEAU.Util;
