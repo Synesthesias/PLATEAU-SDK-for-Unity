@@ -6,12 +6,12 @@ using PLATEAU.CityInfo;
 using PLATEAU.Native;
 using UnityEngine;
 
-namespace PLATEAU.Editor.CityExport
+namespace PLATEAU.CityExport
 {
     /// <summary>
     /// Unityのモデルを <see cref="PolygonMesh.Model"/> (中間形式) にしてから 3Dモデルファイルに出力します。
     /// </summary>
-    internal static class UnityModelExporter
+    public static class UnityModelExporter
     {
         public static void Export(string destDir, PLATEAUInstancedCityModel instancedCityModel, MeshExportOptions options)
         {

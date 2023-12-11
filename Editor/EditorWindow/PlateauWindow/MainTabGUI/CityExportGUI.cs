@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using PLATEAU.CityExport;
 using PLATEAU.CityInfo;
-using PLATEAU.Editor.CityExport;
 using PLATEAU.Editor.EditorWindow.Common;
 using PLATEAU.Editor.EditorWindow.Common.PathSelector;
 using PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ExportGUIParts;

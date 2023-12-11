@@ -1,9 +1,8 @@
 ﻿using System;
 using PLATEAU.CityExport.Exporters;
-using PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ExportGUIParts;
 using PLATEAU.Geometries;
 
-namespace PLATEAU.Editor.CityExport
+namespace PLATEAU.CityExport
 {
     public enum MeshFileFormat{OBJ, GLTF, FBX}
 
@@ -21,7 +20,7 @@ namespace PLATEAU.Editor.CityExport
         }
     }
     
-    internal struct MeshExportOptions
+    public struct MeshExportOptions
     {
         public enum MeshTransformType{Local/*ローカル座標系*/, PlaneCartesian/*平面直角座標系*/}
 
