@@ -35,7 +35,31 @@ namespace PLATEAU.CityImport.Config
         /// </summary>
         public PackageLoadConfigDict PackageLoadConfigDict { get; private set; }
 
+        private CityLoadConfig(){}
+
+        /// <summary>
+        /// デフォルト設定の<see cref="CityLoadConfig"/>を作ります。
+        /// </summary>
+        public static CityLoadConfig CreateDefault()
+        {
+            return new CityLoadConfig();
+        }
         
+        /// <summary>
+        /// 範囲選択画面の結果から設定値を作ります。
+        /// ユーザーがGUIでインポート設定する場合：
+        /// ここで設定する値は、範囲選択後にインポート設定GUIで表示される初期値となります。
+        /// このあと、ユーザーのGUI操作によって設定値を書き換えていくことになります。
+        /// </summary>
+        public static CityLoadConfig CreateWithAreaSelectResult(AreaSelectResult result)
+        {
+            var ret = CityLoadConfig.CreateDefault();
+            ret.ConfBeforeAreaSelect = result.ConfBeforeAreaSelect;
+            ret.InitWithPackageLodsDict(result.PackageToLodDict);
+            ret.AreaMeshCodes = result.AreaMeshCodes;
+            ret.ReferencePoint = ret.AreaMeshCodes.ExtentCenter(ret.ConfBeforeAreaSelect.CoordinateZoneID);
+            return ret;
+        }
 
         public PackageLoadConfig GetConfigForPackage(PredefinedCityModelPackage package)
         {
@@ -74,18 +98,6 @@ namespace PLATEAU.CityImport.Config
             }
 
             return foundGMLList;
-        }
-
-        /// <summary>
-        /// 範囲選択画面の結果から設定値を作ります。
-        /// ここで設定する値は、範囲選択後にインポート設定GUIで表示される初期値となります。
-        /// このあと、ユーザーのGUI操作によって設定値を書き換えていくことになります。
-        /// </summary>
-        public void InitWithAreaSelectResult(AreaSelectResult result)
-        {
-            InitWithPackageLodsDict(result.PackageToLodDict);
-            AreaMeshCodes = result.AreaMeshCodes;
-            ReferencePoint = AreaMeshCodes.ExtentCenter(ConfBeforeAreaSelect.CoordinateZoneID);
         }
         
         /// <summary>

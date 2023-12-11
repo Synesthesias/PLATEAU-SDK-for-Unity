@@ -7,7 +7,10 @@ namespace PLATEAU.CityImport.Config
     /// </summary>
     public class ConfigBeforeAreaSelect
     {
-        private ConfigBeforeAreaSelect(IDatasetSourceConfig datasetSourceConfig, int coordinateZoneID)
+        /// <summary>
+        /// ローカルかサーバーかは、<see cref="IDatasetSourceConfig"/>の型によって処理が分かれます。
+        /// </summary>
+        public ConfigBeforeAreaSelect(IDatasetSourceConfig datasetSourceConfig, int coordinateZoneID)
         {
             DatasetSourceConfig = datasetSourceConfig;
             CoordinateZoneID = coordinateZoneID;

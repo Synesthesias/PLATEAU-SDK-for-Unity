@@ -75,7 +75,6 @@ namespace PLATEAU.Tests.TestUtils
         /// </summary>
         private CityLoadConfig MakeConfig(bool isServer)
         {
-            var conf = new CityLoadConfig();
             // TODO どのパッケージと何が対応するかは要テスト
             var allPackages =
                 EnumUtil.EachFlags(PredefinedCityModelPackageExtension.All());
@@ -84,9 +83,15 @@ namespace PLATEAU.Tests.TestUtils
             {
                 allPackageLods.MergePackage(package, 3);
             }
-
-            var dummyAreaSelectResult = new AreaSelectResult(AreaMeshCodes, allPackageLods);
-            conf.InitWithAreaSelectResult(dummyAreaSelectResult);
+            
+            IDatasetSourceConfig datasetSourceConfig =
+                isServer
+                    ? new DatasetSourceConfigRemote(this.rootDirName, NetworkConfig.MockServerUrl, "")
+                    : new DatasetSourceConfigLocal(SrcRootDirPathLocal);
+            
+            var dummyAreaSelectResult = new AreaSelectResult(new ConfigBeforeAreaSelect(datasetSourceConfig, 9), AreaMeshCodes, allPackageLods);
+            var conf = CityLoadConfig.CreateWithAreaSelectResult(dummyAreaSelectResult);
+            
             
             // メッシュコードがあるあたりに基準点を設定します。 Extent.Allの中心を基準点にすると極端な座標になるため。  
             using var geoRef = GeoReference.Create(new PlateauVector3d(0, 0, 0), 1.0f, CoordinateSystem.EUN,
@@ -97,13 +102,6 @@ namespace PLATEAU.Tests.TestUtils
             {
                 packageConf.Value.IncludeTexture = true;
             }
-
-            IDatasetSourceConfig datasetSourceConfig =
-                isServer
-                    ? new DatasetSourceConfigRemote(this.rootDirName, NetworkConfig.MockServerUrl, "")
-                    : new DatasetSourceConfigLocal(SrcRootDirPathLocal);
-
-            conf.ConfBeforeAreaSelect.DatasetSourceConfig = datasetSourceConfig;
             return conf;
         }
 
