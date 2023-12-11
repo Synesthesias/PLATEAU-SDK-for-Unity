@@ -2,6 +2,11 @@ using PLATEAU.PolygonMesh;
 
 namespace PLATEAU.CityExport.Exporters
 {
+    /// <summary>
+    /// <see cref="Model"/>(中間形式) をファイルにエクスポートするインターフェイスです。
+    /// 対応ファイルフォーマットである FBX, GLTF, OBJ ごとにクラスを作ってこのインターフェイスを実装することで、
+    /// ファイルフォーマットごとのエクスポート方法の差異を吸収します。
+    /// </summary>
     public interface ICityExporter
     {
         /// <summary>

@@ -4,6 +4,9 @@ using PLATEAU.PolygonMesh;
 
 namespace PLATEAU.CityExport.Exporters
 {
+    /// <summary>
+    /// <see cref="Model"/>をOBJ形式のファイルにします。
+    /// </summary>
     public class CityExporterObj : ICityExporter
     {
         public void Export(string destDir, string fileNameWithoutExtension, Model model)

@@ -6,7 +6,7 @@ using PLATEAU.PolygonMesh;
 namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ExportGUIParts
 {
     /// <summary>
-    /// Model(中間形式)をOBJファイルにエクスポートします。
+    /// OBJ形式でエクスポートする設定GUIとエクスポーターです。（なお設定GUIは、今のところOBJ固有の項目がないので空です。）
     /// </summary>
     internal class ExportConfigGuiObj : IExportConfigGUI
     {

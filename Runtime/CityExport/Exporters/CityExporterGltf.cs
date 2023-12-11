@@ -5,6 +5,9 @@ using PLATEAU.PolygonMesh;
 
 namespace PLATEAU.CityExport.Exporters
 {
+    /// <summary>
+    /// <see cref="Model"/>をGLTF形式のファイルにします。
+    /// </summary>
     public class CityExporterGltf : ICityExporter
     {
         public GltfFileFormat GltfFileFormat { get; set; } = GltfFileFormat.GLB;

@@ -4,9 +4,9 @@ using PLATEAU.PolygonMesh;
 namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ExportGUIParts
 {
     /// <summary>
-    /// <see cref="Model"/>(中間形式) をファイルにエクスポートするインターフェイスです。
-    /// 対応ファイルフォーマットである FBX, GLTF, OBJ ごとにクラスを作ってこのインターフェイスを実装することで、
-    /// ファイルフォーマットごとの設定項目の差異とエクスポート方法の差異を吸収します。
+    /// あるエクスポート形式について、その形式固有のエクスポート設定とエクスポーターを保持するインターフェイスです。
+    /// OBJ, FBX, GLTFのファイル形式ごとにこのインターフェイスを実装します。
+    /// それにより形式による設定の差異を吸収します。
     /// </summary>
     internal interface IExportConfigGUI
     {
