@@ -1,24 +1,14 @@
-﻿using System;
+using System;
 using System.IO;
 using PLATEAU.MeshWriter;
 using PLATEAU.PolygonMesh;
-using UnityEditor;
 
-namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ExportGUIParts
+namespace PLATEAU.CityExport.Exporters
 {
-    /// <summary>
-    /// Model(中間形式)をGLTFファイルにエクスポートします。
-    /// </summary>
-    internal class GltfModelExporter : IPlateauModelExporter
+    public class CityExporterGltf : ICityExporter
     {
         public GltfFileFormat GltfFileFormat { get; set; } = GltfFileFormat.GLB;
         
-        
-        public void DrawConfigGUI()
-        {
-            GltfFileFormat = (GltfFileFormat)EditorGUILayout.EnumPopup("Gltfフォーマット", GltfFileFormat);
-        }
-
         public void Export(string destDir, string fileNameWithoutExtension, Model model)
         {
             using var gltfWriter = new GltfWriter();
@@ -35,5 +25,6 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ExportGUIParts
                         
             gltfWriter.Write(gltfFilePath, model, new GltfWriteOptions(GltfFileFormat, textureDir));
         }
+
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using PLATEAU.CityExport.Exporters;
 using PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ExportGUIParts;
 using PLATEAU.Geometries;
 
@@ -30,16 +31,16 @@ namespace PLATEAU.Editor.CityExport
         public MeshFileFormat FileFormat { get; }
         public CoordinateSystem MeshAxis { get; }
 
-        public IPlateauModelExporter PlateauModelExporter { get; }
+        public ICityExporter Exporter { get; }
 
-        public MeshExportOptions(MeshTransformType transformType, bool exportTextures, bool exportHiddenObjects, MeshFileFormat fileFormat, CoordinateSystem meshAxis, IPlateauModelExporter plateauModelExporter)
+        public MeshExportOptions(MeshTransformType transformType, bool exportTextures, bool exportHiddenObjects, MeshFileFormat fileFormat, CoordinateSystem meshAxis, ICityExporter exporter)
         {
             TransformType = transformType;
             ExportTextures = exportTextures;
             ExportHiddenObjects = exportHiddenObjects;
             FileFormat = fileFormat;
             MeshAxis = meshAxis;
-            PlateauModelExporter = plateauModelExporter;
+            Exporter = exporter;
         }
     }
 }

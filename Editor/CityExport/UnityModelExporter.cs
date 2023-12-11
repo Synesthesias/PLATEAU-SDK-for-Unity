@@ -77,7 +77,7 @@ namespace PLATEAU.Editor.CityExport
                 // Model をファイルにして出力します。
                 // options.PlateauModelExporter は、ファイルフォーマットに応じて FbxModelExporter, GltfModelExporter, ObjModelExporter のいずれかです。
                 string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(childName);
-                options.PlateauModelExporter.Export(destDir, fileNameWithoutExtension, model);
+                options.Exporter.Export(destDir, fileNameWithoutExtension, model);
             }
         }
     }

@@ -34,11 +34,11 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
         private PLATEAUInstancedCityModel exportTarget;
         private MeshFileFormat meshFileFormat = MeshFileFormat.OBJ;
 
-        private readonly Dictionary<MeshFileFormat, IPlateauModelExporter> formatToExporter = new()
+        private readonly Dictionary<MeshFileFormat, IExportConfigGUI> formatToExporterGUI = new()
         {
-            { MeshFileFormat.OBJ, new ObjModelExporter() },
-            { MeshFileFormat.FBX, new FbxModelExporter() },
-            { MeshFileFormat.GLTF, new GltfModelExporter() }
+            { MeshFileFormat.OBJ, new ExportConfigGuiObj() },
+            { MeshFileFormat.FBX, new ExportConfigGuiFbx() },
+            { MeshFileFormat.GLTF, new ExportConfigGuiGltf() }
         };
         
         private bool exportTextures = true;
@@ -73,7 +73,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
                 using (PlateauEditorStyle.VerticalScopeLevel1())
                 {
                     // 選択した出力設定に固有の設定
-                    this.formatToExporter[this.meshFileFormat].DrawConfigGUI();
+                    this.formatToExporterGUI[this.meshFileFormat].Draw();
 
                     this.exportTextures = EditorGUILayout.Toggle("テクスチャ", this.exportTextures);
                     this.exportHiddenObject = EditorGUILayout.Toggle("非アクティブオブジェクトを含める", this.exportHiddenObject);
@@ -122,7 +122,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
                 return;
             }
             var meshExportOptions = new MeshExportOptions(this.meshTransformType, this.exportTextures, this.exportHiddenObject,
-                this.meshFileFormat, this.meshAxis, this.formatToExporter[this.meshFileFormat]);
+                this.meshFileFormat, this.meshAxis, this.formatToExporterGUI[this.meshFileFormat].GetExporter());
             using (var progress = new ProgressBar("エクスポート中..."))
             {
                 progress.Display(0.5f);

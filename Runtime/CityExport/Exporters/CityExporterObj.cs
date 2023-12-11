@@ -1,19 +1,11 @@
-﻿using System.IO;
+using System.IO;
 using PLATEAU.MeshWriter;
 using PLATEAU.PolygonMesh;
 
-namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ExportGUIParts
+namespace PLATEAU.CityExport.Exporters
 {
-    /// <summary>
-    /// Model(中間形式)をOBJファイルにエクスポートします。
-    /// </summary>
-    internal class ObjModelExporter : IPlateauModelExporter
+    public class CityExporterObj : ICityExporter
     {
-        public void DrawConfigGUI()
-        {
-            // OBJファイルに固有の設定項目はありません。
-        }
-
         public void Export(string destDir, string fileNameWithoutExtension, Model model)
         {
             string filePathWithoutExtension = Path.Combine(destDir, fileNameWithoutExtension).Replace('\\', '/');
