@@ -181,8 +181,7 @@ namespace PLATEAU.CityImport.AreaSelector
             AreaSelectorGuideWindow.Disable();
             LodLegendGUI.Disable();
             var selectedMeshCodes = this.gizmosDrawer.SelectedMeshCodes;
-            var availablePackageLods = selectedMeshCodes.CalcAvailablePackageLodInMeshCodes(this.confBeforeAreaSelect.DatasetSourceConfig);
-            var areaSelectResult = new AreaSelectResult(confBeforeAreaSelect, selectedMeshCodes, availablePackageLods);
+            var areaSelectResult = new AreaSelectResult(confBeforeAreaSelect, selectedMeshCodes);
 
             // 無名関数のキャプチャを利用して、シーン終了後も必要なデータが渡るようにします。
             #if UNITY_EDITOR
@@ -196,7 +195,7 @@ namespace PLATEAU.CityImport.AreaSelector
             AreaSelectorGuideWindow.Disable();
             LodLegendGUI.Disable();
             IsAreaSelectEnabled = false;
-            var emptyAreaSelectResult = new AreaSelectResult(confBeforeAreaSelect, MeshCodeList.Empty, new PackageToLodDict());
+            var emptyAreaSelectResult = new AreaSelectResult(confBeforeAreaSelect, MeshCodeList.Empty);
             #if UNITY_EDITOR
             AreaSelectorDataPass.Exec(this.prevScenePath, emptyAreaSelectResult, this.areaSelectResultReceiver, this.prevEditorWindow);
             #endif

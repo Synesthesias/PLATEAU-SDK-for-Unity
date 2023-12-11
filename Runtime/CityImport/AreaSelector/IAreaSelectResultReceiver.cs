@@ -20,11 +20,11 @@ namespace PLATEAU.CityImport.AreaSelector
         public MeshCodeList AreaMeshCodes { get; }
         public PackageToLodDict PackageToLodDict { get; }
 
-        public AreaSelectResult(ConfigBeforeAreaSelect confBeforeAreaSelect, MeshCodeList areaMeshCodes, PackageToLodDict packageToLodDict)
+        public AreaSelectResult(ConfigBeforeAreaSelect confBeforeAreaSelect, MeshCodeList areaMeshCodes)
         {
             ConfBeforeAreaSelect = confBeforeAreaSelect;
             AreaMeshCodes = areaMeshCodes;
-            PackageToLodDict = packageToLodDict;
+            PackageToLodDict = areaMeshCodes.CalcAvailablePackageLodInMeshCodes(ConfBeforeAreaSelect.DatasetSourceConfig);
         }
 
     }
