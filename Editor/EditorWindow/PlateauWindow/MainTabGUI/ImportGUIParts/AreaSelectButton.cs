@@ -19,7 +19,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts
         /// 「範囲選択」ボタンを表示し、押された時に範囲選択を開始します。
         /// 範囲が選択されているかどうかをboolで返します。
         /// </summary>
-        public static bool Draw(MeshCodeList areaMeshCodes, IDatasetSourceConfig datasetSourceConfig, IAreaSelectResultReceiver resultReceiver, int coordinateZoneID)
+        public static bool Draw(MeshCodeList areaMeshCodes, ConfigBeforeAreaSelect confBeforeAreaSelect, IAreaSelectResultReceiver resultReceiver)
         {
             using (PlateauEditorStyle.VerticalScopeLevel1())
             {
@@ -27,7 +27,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts
                 if (PlateauEditorStyle.MainButton("範囲選択"))
                 { 
                     // ボタンを実行します。
-                    StartAreaSelect(datasetSourceConfig, resultReceiver, coordinateZoneID);
+                    StartAreaSelect(confBeforeAreaSelect, resultReceiver);
                     GUIUtility.ExitGUI();
                 }
             
@@ -42,14 +42,14 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts
             }
         }
 
-        private static void StartAreaSelect(IDatasetSourceConfig datasetSourceConfig, IAreaSelectResultReceiver resultReceiver, int coordinateZoneID)
+        private static void StartAreaSelect(ConfigBeforeAreaSelect confBeforeAreaSelect, IAreaSelectResultReceiver resultReceiver)
         {
-            if ((datasetSourceConfig is DatasetSourceConfigLocal localConf) && (!Directory.Exists(localConf.LocalSourcePath)))
+            if ((confBeforeAreaSelect.DatasetSourceConfig is DatasetSourceConfigLocal localConf) && (!Directory.Exists(localConf.LocalSourcePath)))
             {
                 Dialogue.Display($"入力フォルダが存在しません。\nフォルダを指定してください。", "OK");
                 return;
             }
-            AreaSelectorStarter.Start(datasetSourceConfig, resultReceiver, coordinateZoneID);
+            AreaSelectorStarter.Start(confBeforeAreaSelect, resultReceiver);
         }
     }
 }

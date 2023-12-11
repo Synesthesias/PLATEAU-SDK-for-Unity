@@ -1,5 +1,4 @@
 ﻿using PLATEAU.CityImport.Config;
-using PLATEAU.CityImport.Config.PackageLoadConfigs;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -18,20 +17,18 @@ namespace PLATEAU.CityImport.AreaSelector
     {
         // シーンをまたいで渡したいデータ
         private static string prevScenePath;
-        private static MeshCodeList selectedMeshCodes;
+        private static AreaSelectResult areaSelectResult;
         private static IAreaSelectResultReceiver areaSelectResultReceiver;
-        private static PackageToLodDict availablePackageLods;
 
 #if UNITY_EDITOR
         public static void Exec(
-            string prevScenePathArg, MeshCodeList selectedMeshCodesArg,
-            IAreaSelectResultReceiver areaSelectResultReceiverArg, PackageToLodDict availablePackageLodsArg,
+            string prevScenePathArg, AreaSelectResult areaSelectResultArg,
+            IAreaSelectResultReceiver areaSelectResultReceiverArg,
             EditorWindow prevEditorWindow)
         {
             prevScenePath = prevScenePathArg;
-            selectedMeshCodes = selectedMeshCodesArg;
+            areaSelectResult = areaSelectResultArg;
             areaSelectResultReceiver = areaSelectResultReceiverArg;
-            availablePackageLods = availablePackageLodsArg;
             
             EditorSceneManager.sceneOpened += OnBackToPrevScene;
             EditorSceneManager.OpenScene(prevScenePath);
@@ -55,12 +52,10 @@ namespace PLATEAU.CityImport.AreaSelector
         /// </summary>
         private static void PassAreaSelectDataToBehaviour()
         {
-            if (selectedMeshCodes.Count == 0)
+            if (areaSelectResult.AreaMeshCodes.Count == 0)
             {
                 Debug.Log("地域は選択されませんでした。");
             }
-
-            var areaSelectResult = new AreaSelectResult(selectedMeshCodes, availablePackageLods);
             areaSelectResultReceiver.ReceiveResult(areaSelectResult);
         }
     }

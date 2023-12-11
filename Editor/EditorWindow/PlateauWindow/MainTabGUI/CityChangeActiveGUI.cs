@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using PLATEAU.CityAdjust;
+using PLATEAU.CityAdjust.ChangeActive;
 using PLATEAU.CityInfo;
 using PLATEAU.Dataset;
 using PLATEAU.Editor.EditorWindow.Common;

@@ -12,7 +12,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
     /// </summary>
     public class CityImportConfigGUI : IAreaSelectResultReceiver, IEditorDrawable
     {
-        private readonly CityLoadConfig config = new CityLoadConfig();
+        private CityImportConfig config = CityImportConfig.CreateDefault();
         private readonly IConfigGUIBeforeAreaSelect configGUIBeforeAreaSelect;
 
         /// <summary> GUIのうち、範囲選択後に表示する部分です。 </summary>
@@ -21,7 +21,10 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
         // インポートの処理状況はウィンドウを消しても残しておきたいので static にします。
         private static ProgressDisplayGUI progressGUI;
 
-        
+        /// <summary>
+        /// コンストラクタです。、
+        /// 範囲選択するより前のインポート設定GUIはローカルかリモートかによって異なるので、引数によって処理を分けます。
+        /// </summary>
         private CityImportConfigGUI(IConfigGUIBeforeAreaSelect configGUIBeforeAreaSelect, UnityEditor.EditorWindow parentEditorWindow)
         {
             this.configGUIBeforeAreaSelect = configGUIBeforeAreaSelect;
@@ -51,8 +54,8 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
             PlateauEditorStyle.Heading("マップ範囲選択", "num2.png");
 
             bool isAreaSelectComplete = AreaSelectButton.Draw(this.config.AreaMeshCodes,
-                this.config.ConfBeforeAreaSelect.DatasetSourceConfig,
-                this, config.ConfBeforeAreaSelect.CoordinateZoneID);
+                this.config.ConfBeforeAreaSelect,
+                this);
 
             if (isAreaSelectComplete)
             {
@@ -68,7 +71,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
 
         public void ReceiveResult(AreaSelectResult result)
         {
-            this.config.InitWithAreaSelectResult(result);
+            this.config = CityImportConfig.CreateWithAreaSelectResult(result);
             this.guiAfterAreaSelect = new ImportGUIAfterAreaSelect(this.config, result.PackageToLodDict, progressGUI);
         }
 

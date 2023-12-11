@@ -5,8 +5,8 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 using PLATEAU.CityImport.AreaSelector;
 using PLATEAU.CityImport.Config;
-using PLATEAU.CityImport.Config.PackageLoadConfigs;
-using PLATEAU.CityImport.Load;
+using PLATEAU.CityImport.Config.PackageImportConfigs;
+using PLATEAU.CityImport.Import;
 using PLATEAU.Editor.EditorWindow.ProgressDisplay;
 using PLATEAU.Dataset;
 using PLATEAU.Geometries;
@@ -73,9 +73,8 @@ namespace PLATEAU.Tests.TestUtils
         /// <summary>
         /// インポートするための設定を返します。
         /// </summary>
-        private CityLoadConfig MakeConfig(bool isServer)
+        private CityImportConfig MakeConfig(bool isServer)
         {
-            var conf = new CityLoadConfig();
             // TODO どのパッケージと何が対応するかは要テスト
             var allPackages =
                 EnumUtil.EachFlags(PredefinedCityModelPackageExtension.All());
@@ -84,26 +83,25 @@ namespace PLATEAU.Tests.TestUtils
             {
                 allPackageLods.MergePackage(package, 3);
             }
-
-            var dummyAreaSelectResult = new AreaSelectResult(AreaMeshCodes, allPackageLods);
-            conf.InitWithAreaSelectResult(dummyAreaSelectResult);
+            
+            IDatasetSourceConfig datasetSourceConfig =
+                isServer
+                    ? new DatasetSourceConfigRemote(this.rootDirName, NetworkConfig.MockServerUrl, "")
+                    : new DatasetSourceConfigLocal(SrcRootDirPathLocal);
+            
+            var dummyAreaSelectResult = new AreaSelectResult(new ConfigBeforeAreaSelect(datasetSourceConfig, 9), AreaMeshCodes);
+            var conf = CityImportConfig.CreateWithAreaSelectResult(dummyAreaSelectResult);
+            
             
             // メッシュコードがあるあたりに基準点を設定します。 Extent.Allの中心を基準点にすると極端な座標になるため。  
             using var geoRef = GeoReference.Create(new PlateauVector3d(0, 0, 0), 1.0f, CoordinateSystem.EUN,
                 conf.ConfBeforeAreaSelect.CoordinateZoneID);
             conf.ReferencePoint = geoRef.Project(AreaMeshCodes.At(0).Extent.Center);
             
-            foreach (var packageConf in conf.PackageLoadConfigDict.ForEachPackagePair)
+            foreach (var packageConf in conf.PackageImportConfigDict.ForEachPackagePair)
             {
                 packageConf.Value.IncludeTexture = true;
             }
-
-            IDatasetSourceConfig datasetSourceConfig =
-                isServer
-                    ? new DatasetSourceConfigRemote(this.rootDirName, NetworkConfig.MockServerUrl, "")
-                    : new DatasetSourceConfigLocal(SrcRootDirPathLocal);
-
-            conf.ConfBeforeAreaSelect.DatasetSourceConfig = datasetSourceConfig;
             return conf;
         }
 

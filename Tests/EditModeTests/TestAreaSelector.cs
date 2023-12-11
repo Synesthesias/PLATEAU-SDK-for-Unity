@@ -4,6 +4,7 @@ using NUnit.Framework;
 using PLATEAU.CityImport.AreaSelector;
 using PLATEAU.CityImport.AreaSelector.Display;
 using PLATEAU.CityImport.AreaSelector.Display.Gizmos;
+using PLATEAU.CityImport.Config;
 using PLATEAU.Dataset;
 using PLATEAU.Editor.CityImport.AreaSelector;
 using PLATEAU.Tests.EditModeTests.TestDoubles;
@@ -39,7 +40,7 @@ namespace PLATEAU.Tests.EditModeTests
         
             LogAssert.ignoreFailingMessages = true;
             
-            AreaSelectorStarter.Start(datasetConf, resultReceiver, testDef.CoordinateZoneId);
+            AreaSelectorStarter.Start(new ConfigBeforeAreaSelect(datasetConf, testDef.CoordinateZoneId), resultReceiver);
 
             // EditModeでは yield return new WaitForSeconds() ができないので、原始的なループで地図のダウンロードを待ちます。
             var startT = DateTime.Now;
