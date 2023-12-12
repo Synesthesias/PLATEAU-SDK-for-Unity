@@ -50,7 +50,8 @@ namespace PLATEAU.CityExport.ModelConvert
         private static void ConvertRecursive(Node parentNode, Transform trans, Model model, IUnityMeshToDllSubMeshConverter unityMeshToDllSubMeshConverter,
             bool exportDisabledGameObj, VertexConvertFunc vertexConvertFunc)
         {
-            if ((!trans.gameObject.activeInHierarchy) && (!exportDisabledGameObj)) return;
+            bool activeInHierarchy = trans.gameObject.activeInHierarchy;
+            if ((!activeInHierarchy) && (!exportDisabledGameObj)) return;
 
             // メッシュを変換して Node を作ります。
             var node = GameObjToNode(trans, unityMeshToDllSubMeshConverter, vertexConvertFunc);
@@ -69,6 +70,8 @@ namespace PLATEAU.CityExport.ModelConvert
                 node = parentNode.GetChildAt(parentNode.ChildCount - 1);
             }
 
+            node.IsActive = activeInHierarchy; 
+
             int numChild = trans.childCount;
             for (int i = 0; i < numChild; i++)
             {
@@ -82,7 +85,8 @@ namespace PLATEAU.CityExport.ModelConvert
         {
             // ノード生成します。
             var node = Node.Create(trans.name);
-
+            node.IsActive = trans.gameObject.activeInHierarchy;
+                
             // ゲームオブジェクトにメッシュがあるかどうか判定します。
             bool hasMesh = false;
             Mesh unityMesh = null;

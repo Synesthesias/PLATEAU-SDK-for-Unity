@@ -93,6 +93,25 @@ namespace PLATEAU.PolygonMesh
             }
         }
 
+        public bool IsActive
+        {
+            get
+            {
+                ThrowIfInvalid();
+                bool isActive = DLLUtil.GetNativeValue<bool>(
+                    this.Handle,
+                    NativeMethods.plateau_node_get_is_active);
+                return isActive;
+            }
+
+            set
+            {
+                ThrowIfInvalid();
+                var result = NativeMethods.plateau_node_set_is_active(this.Handle, value);
+                DLLUtil.CheckDllError(result);
+            }
+        }
+
         /// <summary>
         /// <see cref="Mesh"/> を <see cref="Node"/>にセットします。
         /// 取扱注意:
@@ -183,6 +202,18 @@ namespace PLATEAU.PolygonMesh
             internal static extern APIResult plateau_node_get_child_count(
                 [In] IntPtr nodeHandle,
                 out int outChildCount);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_node_get_is_active(
+                [In] IntPtr nodePtr,
+                [MarshalAs(UnmanagedType.U1)] out bool outIsActive
+            );
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_node_set_is_active(
+                [In] IntPtr nodePtr,
+                [MarshalAs(UnmanagedType.U1)] bool isActive
+            );
 
             [DllImport(DLLUtil.DllName)]
             internal static extern APIResult plateau_node_get_child_at_index(

@@ -20,8 +20,12 @@ namespace PLATEAU.CityImport.Import.Convert
     {
         private readonly ConvertedMeshData meshData;
         private readonly string name;
+        
+        /// <summary> 再帰的な子です。 </summary>
         private readonly List<ConvertedGameObjData> children = new List<ConvertedGameObjData>();
+        
         private readonly AttributeDataHelper attributeDataHelper;
+        private bool isActive;
 
         /// <summary>
         /// C++側の <see cref="PolygonMesh.Model"/> から変換して
@@ -34,6 +38,7 @@ namespace PLATEAU.CityImport.Import.Convert
             this.name = "CityRoot";
             this.attributeDataHelper = attributeDataHelper;
             this.attributeDataHelper.SetId(this.name);
+            this.isActive = true; // RootはActive
             for (int i = 0; i < plateauModel.RootNodesCount; i++)
             {
                 var rootNode = plateauModel.GetRootNodeAt(i);
@@ -52,6 +57,7 @@ namespace PLATEAU.CityImport.Import.Convert
         {
             this.meshData = MeshConverter.Convert(plateauNode.Mesh, plateauNode.Name);
             this.name = plateauNode.Name;
+            this.isActive = plateauNode.IsActive;
             this.attributeDataHelper = attributeDataHelper;
             this.attributeDataHelper.SetId(this.name);
             if (meshData != null)
@@ -97,21 +103,23 @@ namespace PLATEAU.CityImport.Import.Convert
                 if (this.meshData == null || this.meshData.VerticesCount <= 0)
                 {
                     // メッシュがなければ、中身のないゲームオブジェクトを作成します。
-                    nextParent = new GameObject
+                    var obj = new GameObject
                     {
                         transform =
                         {
                             parent = parent
                         },
                         name = this.name,
-                        isStatic = true
-                    }.transform;
+                        isStatic = true,
+                    };
+                    obj.SetActive(isActive);
+                    nextParent = obj.transform;
                     result.Add(nextParent.gameObject, recursiveDepth == 0);
                 }
                 else
                 {
                     // メッシュがあれば、それを配置します。（ただし頂点数が0の場合は配置しません。）
-                    var placedObj = await this.meshData.PlaceToScene(parent, conf.MaterialConverter, conf.FallbackMaterial);
+                    var placedObj = await this.meshData.PlaceToScene(parent, conf.MaterialConverter, conf.FallbackMaterial, isActive);
                     if (placedObj != null)
                     {
                         nextParent = placedObj.transform;

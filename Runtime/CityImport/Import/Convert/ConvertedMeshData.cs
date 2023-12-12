@@ -53,7 +53,7 @@ namespace PLATEAU.CityImport.Import.Convert
         /// 頂点がない場合は nullが返ります。
         /// </summary>
         public async Task<GameObject> PlaceToScene(Transform parentTrans,
-            IDllSubMeshToUnityMaterialConverter materialConverter, Material fallbackMaterial)
+            IDllSubMeshToUnityMaterialConverter materialConverter, Material fallbackMaterial, bool isActive)
         {
             var mesh = GenerateUnityMesh();
             if (mesh.vertexCount <= 0) return null;
@@ -65,6 +65,7 @@ namespace PLATEAU.CityImport.Import.Convert
                 },
                 isStatic = true
             };
+            meshObj.SetActive(isActive);
             var meshFilter = GameObjectUtil.AssureComponent<MeshFilter>(meshObj);
             meshFilter.mesh = mesh;
             var renderer = GameObjectUtil.AssureComponent<MeshRenderer>(meshObj);
