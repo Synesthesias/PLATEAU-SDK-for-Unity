@@ -100,10 +100,12 @@ namespace PLATEAU.CityImport.Import.Convert
 
             progressDisplay.SetProgress(progressName, 80f, "シーンに配置中");
 
+            var placeToSceneConf = new PlaceToSceneConfig(materialConverter, doSetMeshCollider, token, fallbackMaterial,
+                infoForToolkits);
+
             var result = new GranularityConvertResult();
 
-            var innerResult = await meshObjsData.PlaceToScene(parentTrans, materialConverter, skipRoot, doSetMeshCollider,
-                token, fallbackMaterial, infoForToolkits);
+            var innerResult = await meshObjsData.PlaceToScene(parentTrans, placeToSceneConf, skipRoot);
             if (innerResult.IsSucceed)
             {
                 result.Merge(innerResult);
