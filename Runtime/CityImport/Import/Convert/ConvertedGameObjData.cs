@@ -131,7 +131,7 @@ namespace PLATEAU.CityImport.Import.Convert
                     if (serialized != null)
                     {
                         var attrInfo = nextParent.gameObject.AddComponent<PLATEAUCityObjectGroup>();
-                        attrInfo.Init(serialized, conf.InfoForToolkits);
+                        attrInfo.Init(serialized, conf.InfoForToolkits, conf.Granularity);
                     }
                 }
             }

@@ -32,7 +32,7 @@ namespace PLATEAU.CityImport.Import.Convert
             CityModel cityModel, MeshExtractOptions meshExtractOptions, MeshCodeList selectedMeshCodes,
             Transform parentTrans, IProgressDisplay progressDisplay, string progressName,
             bool doSetMeshCollider, bool doSetAttrInfo, CancellationToken? token,  UnityEngine.Material fallbackMaterial,
-            CityObjectGroupInfoForToolkits infoForToolkits
+            CityObjectGroupInfoForToolkits infoForToolkits, MeshGranularity granularity
             )
         {
             Debug.Log($"load started");
@@ -53,10 +53,12 @@ namespace PLATEAU.CityImport.Import.Convert
             }
             
             var materialConverter = new DllSubMeshToUnityMaterialByTextureMaterial();
+            var placeToSceneConf = new PlaceToSceneConfig(materialConverter, doSetMeshCollider, token, fallbackMaterial,
+                infoForToolkits, granularity);
 
             return await PlateauModelToScene(
-                parentTrans, progressDisplay, progressName, doSetMeshCollider, token, 
-                fallbackMaterial, plateauModel, attributeDataHelper, true, infoForToolkits, materialConverter);
+                parentTrans, progressDisplay, progressName, placeToSceneConf, 
+                plateauModel, attributeDataHelper, true);
         }
 
         /// <summary>
@@ -64,9 +66,8 @@ namespace PLATEAU.CityImport.Import.Convert
         /// これにより配置されたゲームオブジェクトを引数 <paramref name="outGeneratedObjs"/> に追加します。
         /// </summary>
         public static async Task<GranularityConvertResult> PlateauModelToScene(Transform parentTrans, IProgressDisplay progressDisplay,
-            string progressName, bool doSetMeshCollider, CancellationToken? token, Material fallbackMaterial, Model plateauModel, 
-            AttributeDataHelper attributeDataHelper, bool skipRoot, CityObjectGroupInfoForToolkits infoForToolkits,
-            IDllSubMeshToUnityMaterialConverter materialConverter)
+            string progressName, PlaceToSceneConfig placeToSceneConf, Model plateauModel, 
+            AttributeDataHelper attributeDataHelper, bool skipRoot)
         {
             // ここの処理は 処理A と 処理B に分割されています。
             // Unityのメッシュデータを操作するのは 処理B のみであり、
@@ -99,9 +100,6 @@ namespace PLATEAU.CityImport.Import.Convert
             // こちらはメインスレッドでのみ実行可能なので、Loadメソッドはメインスレッドから呼ぶ必要があります。
 
             progressDisplay.SetProgress(progressName, 80f, "シーンに配置中");
-
-            var placeToSceneConf = new PlaceToSceneConfig(materialConverter, doSetMeshCollider, token, fallbackMaterial,
-                infoForToolkits);
 
             var result = new GranularityConvertResult();
 

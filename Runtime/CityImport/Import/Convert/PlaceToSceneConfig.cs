@@ -2,6 +2,7 @@ using System.Threading;
 using PLATEAU.CityGML;
 using PLATEAU.CityImport.Import.Convert.MaterialConvert;
 using PLATEAU.CityInfo;
+using PLATEAU.PolygonMesh;
 
 namespace PLATEAU.CityImport.Import.Convert
 {
@@ -24,15 +25,18 @@ namespace PLATEAU.CityImport.Import.Convert
         
         /// <summary> PLATEAU SDK Toolkits for Unityとの連携のために必要となるデータです。 </summary>
         public CityObjectGroupInfoForToolkits InfoForToolkits { get; }
+
+        public MeshGranularity Granularity { get; }
         
 
-        public PlaceToSceneConfig(IDllSubMeshToUnityMaterialConverter materialConverter, bool doSetMeshCollider, CancellationToken? cancellationToken, UnityEngine.Material fallbackMaterial, CityObjectGroupInfoForToolkits infoForToolkits)
+        public PlaceToSceneConfig(IDllSubMeshToUnityMaterialConverter materialConverter, bool doSetMeshCollider, CancellationToken? cancellationToken, UnityEngine.Material fallbackMaterial, CityObjectGroupInfoForToolkits infoForToolkits, MeshGranularity granularity)
         {
             MaterialConverter = materialConverter;
             DoSetMeshCollider = doSetMeshCollider;
             CancellationToken = cancellationToken;
             FallbackMaterial = fallbackMaterial;
             InfoForToolkits = infoForToolkits;
+            Granularity = granularity;
         }
     }
 }

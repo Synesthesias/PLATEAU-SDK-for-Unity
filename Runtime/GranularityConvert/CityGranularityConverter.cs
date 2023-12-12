@@ -60,12 +60,13 @@ namespace PLATEAU.GranularityConvert
                 var commonParent = CalcCommonParent(conf.SrcGameObjs.Select(obj => obj.transform).ToArray());
 
                 var materialConverterToUnity = new DllSubMeshToUnityMaterialByGameMaterial(unityMeshToDllSubMeshConverter);
+                var placeToSceneConf =
+                    new PlaceToSceneConfig(materialConverterToUnity, true, null, null, infoForToolkits, conf.NativeOption.Granularity);
 
                 var result = await PlateauToUnityModelConverter.PlateauModelToScene(
-                    commonParent, new DummyProgressDisplay(), "", true,
-                    null, null, dstModel,
+                    commonParent, new DummyProgressDisplay(), "", placeToSceneConf, dstModel,
                     new AttributeDataHelper(new SerializedCityObjectGetterFromDict(attributes), conf.NativeOption.Granularity,
-                        true), true, infoForToolkits, materialConverterToUnity);
+                        true), true);
                 if (!result.IsSucceed)
                 {
                     throw new Exception("Failed to convert plateau model to scene game objects.");
