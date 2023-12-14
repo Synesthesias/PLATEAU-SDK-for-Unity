@@ -27,6 +27,11 @@ namespace PLATEAU.GranularityConvert
         {
             try
             {
+                if (!conf.IsValid())
+                {
+                    return GranularityConvertResult.Fail();
+                }
+                
                 using var progressBar = new ProgressBar();
                 progressBar.Display("属性情報を取得中...", 0.1f);
 
