@@ -1,3 +1,5 @@
+using PLATEAU.CityInfo;
+using PLATEAU.Util;
 using UnityEngine;
 
 namespace PLATEAU.GranularityConvert
@@ -23,5 +25,32 @@ namespace PLATEAU.GranularityConvert
             DoDestroySrcObjs = doDestroySrcObjs;
         }
 
+        public bool IsValid()
+        {
+            if (SrcGameObjs.Length == 0)
+            {
+                Dialogue.Display("ゲームオブジェクトが選択されていません。\n選択してから実行してください。", "OK");
+                return false;
+            }
+            
+            bool containsCog = false;
+            foreach (var srcObj in SrcGameObjs)
+            {
+                if (srcObj.GetComponentInChildren<PLATEAUCityObjectGroup>() != null)
+                {
+                    containsCog = true;
+                    break;
+                }
+            }
+
+            if (!containsCog)
+            {
+                Dialogue.Display(
+                    "選択されたゲームオブジェクトまたはその子に地物情報が含まれていないため分割結合できません。\nPLATEAUInstancedCityObjectまたはその親を選択してください。", "OK");
+                return false;
+            }
+
+            return true;
+        } 
     }
 }

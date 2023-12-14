@@ -26,6 +26,25 @@ namespace PLATEAU.PolygonMesh
         PerCityModelArea
     }
 
+    public static class MeshGranularityExtension
+    {
+        public static string ToJapaneseString(this MeshGranularity granularity)
+        {
+            switch (granularity)
+            {
+                case MeshGranularity.PerAtomicFeatureObject:
+                    return "最小地物単位";
+                case MeshGranularity.PerPrimaryFeatureObject:
+                    return "主要地物単位";
+                case MeshGranularity.PerCityModelArea:
+                    return "地域単位";
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(granularity));
+            }
+        }
+    }
+        
+
 
     /// <summary>
     /// GMLファイルから3Dメッシュを取り出すための設定です。

@@ -26,7 +26,10 @@ namespace PLATEAU.CityInfo
         
         /// <summary> Toolkits向けの情報です。 </summary>
         [SerializeField] private CityObjectGroupInfoForToolkits infoForToolkits;
+
+        [SerializeField] private MeshGranularity granularity;
         public CityObjectGroupInfoForToolkits InfoForToolkits => infoForToolkits;
+        public MeshGranularity Granularity => granularity;
         
         public CityObjectList CityObjects
         {
@@ -43,10 +46,11 @@ namespace PLATEAU.CityInfo
             }
         }
         
-        public void Init(CityObjectList cityObjectSerializable, CityObjectGroupInfoForToolkits cogInfoForToolkits)
+        public void Init(CityObjectList cityObjectSerializable, CityObjectGroupInfoForToolkits cogInfoForToolkits, MeshGranularity granularityArg)
         {
             serializedCityObjects = JsonConvert.SerializeObject(cityObjectSerializable, Formatting.Indented);
-            infoForToolkits = cogInfoForToolkits;
+            infoForToolkits = cogInfoForToolkits; 
+            granularity = granularityArg;
         }
 
         /// <summary>

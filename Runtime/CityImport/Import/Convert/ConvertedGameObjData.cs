@@ -20,8 +20,12 @@ namespace PLATEAU.CityImport.Import.Convert
     {
         private readonly ConvertedMeshData meshData;
         private readonly string name;
+        
+        /// <summary> 再帰的な子です。 </summary>
         private readonly List<ConvertedGameObjData> children = new List<ConvertedGameObjData>();
+        
         private readonly AttributeDataHelper attributeDataHelper;
+        private bool isActive;
 
         /// <summary>
         /// C++側の <see cref="PolygonMesh.Model"/> から変換して
@@ -34,6 +38,7 @@ namespace PLATEAU.CityImport.Import.Convert
             this.name = "CityRoot";
             this.attributeDataHelper = attributeDataHelper;
             this.attributeDataHelper.SetId(this.name);
+            this.isActive = true; // RootはActive
             for (int i = 0; i < plateauModel.RootNodesCount; i++)
             {
                 var rootNode = plateauModel.GetRootNodeAt(i);
@@ -52,6 +57,7 @@ namespace PLATEAU.CityImport.Import.Convert
         {
             this.meshData = MeshConverter.Convert(plateauNode.Mesh, plateauNode.Name);
             this.name = plateauNode.Name;
+            this.isActive = plateauNode.IsActive;
             this.attributeDataHelper = attributeDataHelper;
             this.attributeDataHelper.SetId(this.name);
             if (meshData != null)
@@ -70,15 +76,12 @@ namespace PLATEAU.CityImport.Import.Convert
         /// 再帰によって子も配置します。
         /// 配置したゲームオブジェクトのリストを返します。
         /// </summary>
-        public async Task<GranularityConvertResult> PlaceToScene(
-            Transform parent, IDllSubMeshToUnityMaterialConverter materialConverter, bool skipRoot, bool doSetMeshCollider,
-            CancellationToken? token, Material fallbackMaterial, CityObjectGroupInfoForToolkits infoForToolkits)
+        public async Task<GranularityConvertResult> PlaceToScene(Transform parent, PlaceToSceneConfig conf, bool skipRoot)
         {
             var result = new GranularityConvertResult();
             try
             {
-                await PlaceToSceneRecursive(result, parent, materialConverter, skipRoot, doSetMeshCollider, token,
-                    fallbackMaterial, 0, infoForToolkits);
+                await PlaceToSceneRecursive(result, parent, conf, skipRoot, 0);
             }
             catch (Exception e)
             {
@@ -90,11 +93,9 @@ namespace PLATEAU.CityImport.Import.Convert
         }
 
         private async Task PlaceToSceneRecursive(GranularityConvertResult result, Transform parent,
-            IDllSubMeshToUnityMaterialConverter materialConverter, bool skipRoot, bool doSetMeshCollider,
-            CancellationToken? token, Material fallbackMaterial, int recursiveDepth,
-            CityObjectGroupInfoForToolkits infoForToolkits)
+            PlaceToSceneConfig conf, bool skipRoot, int recursiveDepth)
         {
-            token?.ThrowIfCancellationRequested();
+            conf.CancellationToken?.ThrowIfCancellationRequested();
 
             var nextParent = parent;
             if (!skipRoot)
@@ -102,26 +103,28 @@ namespace PLATEAU.CityImport.Import.Convert
                 if (this.meshData == null || this.meshData.VerticesCount <= 0)
                 {
                     // メッシュがなければ、中身のないゲームオブジェクトを作成します。
-                    nextParent = new GameObject
+                    var obj = new GameObject
                     {
                         transform =
                         {
                             parent = parent
                         },
                         name = this.name,
-                        isStatic = true
-                    }.transform;
+                        isStatic = true,
+                    };
+                    obj.SetActive(isActive);
+                    nextParent = obj.transform;
                     result.Add(nextParent.gameObject, recursiveDepth == 0);
                 }
                 else
                 {
                     // メッシュがあれば、それを配置します。（ただし頂点数が0の場合は配置しません。）
-                    var placedObj = await this.meshData.PlaceToScene(parent, materialConverter, fallbackMaterial);
+                    var placedObj = await this.meshData.PlaceToScene(parent, conf.MaterialConverter, conf.FallbackMaterial, isActive);
                     if (placedObj != null)
                     {
                         nextParent = placedObj.transform;
 
-                        if (doSetMeshCollider)
+                        if (conf.DoSetMeshCollider)
                         {
                             placedObj.AddComponent<MeshCollider>();
                         }
@@ -136,7 +139,7 @@ namespace PLATEAU.CityImport.Import.Convert
                     if (serialized != null)
                     {
                         var attrInfo = nextParent.gameObject.AddComponent<PLATEAUCityObjectGroup>();
-                        attrInfo.Init(serialized, infoForToolkits);
+                        attrInfo.Init(serialized, conf.InfoForToolkits, conf.Granularity);
                     }
                 }
             }
@@ -145,7 +148,7 @@ namespace PLATEAU.CityImport.Import.Convert
             // 子を再帰的に配置します。
             foreach (var child in this.children)
             {
-                await child.PlaceToSceneRecursive(result, nextParent, materialConverter, false, doSetMeshCollider, token, fallbackMaterial, nextRecursiveDepth, infoForToolkits);
+                await child.PlaceToSceneRecursive(result, nextParent, conf, false, nextRecursiveDepth);
             }
         }
     }

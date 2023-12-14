@@ -91,7 +91,7 @@ namespace PLATEAU.CityImport.Import.CityImportProcedure
             var placingResult = await PlateauToUnityModelConverter.CityModelToScene(
                 cityModel, meshExtractOptions, conf.AreaMeshCodes, gmlTrans, progressDisplay, gmlName,
                 packageConf.DoSetMeshCollider, packageConf.DoSetAttrInfo, token, packageConf.FallbackMaterial,
-                infoForToolkits
+                infoForToolkits, packageConf.MeshGranularity
             );
 
             if (placingResult.IsSucceed)

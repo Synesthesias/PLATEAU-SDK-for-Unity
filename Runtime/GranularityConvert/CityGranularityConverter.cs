@@ -27,6 +27,11 @@ namespace PLATEAU.GranularityConvert
         {
             try
             {
+                if (!conf.IsValid())
+                {
+                    return GranularityConvertResult.Fail();
+                }
+                
                 using var progressBar = new ProgressBar();
                 progressBar.Display("属性情報を取得中...", 0.1f);
 
@@ -42,7 +47,11 @@ namespace PLATEAU.GranularityConvert
                 var unityMeshToDllSubMeshConverter = new UnityMeshToDllSubMeshWithGameMaterial();
 
                 // ゲームオブジェクトを共通ライブラリのModelに変換します。
-                using var srcModel = UnityMeshToDllModelConverter.Convert(conf.SrcGameObjs, unityMeshToDllSubMeshConverter, false, ConvertVertex);
+                using var srcModel = UnityMeshToDllModelConverter.Convert(
+                    conf.SrcGameObjs,
+                    unityMeshToDllSubMeshConverter,
+                    true, // 非表示のゲームオブジェクトも対象に含めます。なぜなら、LOD0とLOD1のうちLOD1だけがActiveになっているという状況で、変換後もToolkitsのLOD機能を使えるようにするためです。
+                    ConvertVertex);
 
                 progressBar.Display("共通モデルの変換中...", 0.5f);
 
@@ -60,12 +69,13 @@ namespace PLATEAU.GranularityConvert
                 var commonParent = CalcCommonParent(conf.SrcGameObjs.Select(obj => obj.transform).ToArray());
 
                 var materialConverterToUnity = new DllSubMeshToUnityMaterialByGameMaterial(unityMeshToDllSubMeshConverter);
+                var placeToSceneConf =
+                    new PlaceToSceneConfig(materialConverterToUnity, true, null, null, infoForToolkits, conf.NativeOption.Granularity);
 
                 var result = await PlateauToUnityModelConverter.PlateauModelToScene(
-                    commonParent, new DummyProgressDisplay(), "", true,
-                    null, null, dstModel,
+                    commonParent, new DummyProgressDisplay(), "", placeToSceneConf, dstModel,
                     new AttributeDataHelper(new SerializedCityObjectGetterFromDict(attributes), conf.NativeOption.Granularity,
-                        true), true, infoForToolkits, materialConverterToUnity);
+                        true), true);
                 if (!result.IsSucceed)
                 {
                     throw new Exception("Failed to convert plateau model to scene game objects.");
