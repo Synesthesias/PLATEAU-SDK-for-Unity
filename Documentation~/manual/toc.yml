@@ -20,3 +20,7 @@
       href: ChangeColorByAttrs.md
     - name: 属性情報を表示する
       href: DisplayAttrs.md
+- name: API
+  items:
+    - name: ランタイムAPI
+      href: runtimeAPI.md
