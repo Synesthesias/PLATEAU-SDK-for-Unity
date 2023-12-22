@@ -51,7 +51,7 @@ namespace PLATEAU.GranularityConvert
                     conf.SrcGameObjs,
                     unityMeshToDllSubMeshConverter,
                     true, // 非表示のゲームオブジェクトも対象に含めます。なぜなら、LOD0とLOD1のうちLOD1だけがActiveになっているという状況で、変換後もToolkitsのLOD機能を使えるようにするためです。
-                    ConvertVertex);
+                    UnityMeshToDllModelConverter.ConvertVertexPass);
 
                 progressBar.Display("共通モデルの変換中...", 0.5f);
 
@@ -110,11 +110,6 @@ namespace PLATEAU.GranularityConvert
                 return GranularityConvertResult.Fail();
             }
             
-        }
-        
-        private static PlateauVector3d ConvertVertex(Vector3 src)
-        {
-            return new PlateauVector3d(src.x, src.y, src.z);
         }
 
          /// <summary>

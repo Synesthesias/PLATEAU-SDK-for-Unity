@@ -38,6 +38,14 @@ namespace PLATEAU.CityExport.ModelConvert
         }
 
         /// <summary>
+        /// 特に座標変換のない最小限のコンバートメソッドです。
+        /// </summary>
+        internal static PlateauVector3d ConvertVertexPass(Vector3 src)
+        {
+            return new PlateauVector3d(src.x, src.y, src.z);
+        }
+
+        /// <summary>
         /// Transform とその子を再帰的に <see cref="Node"/> に変換します。
         /// Unityのゲームオブエジェクトのヒエラルキーと <see cref="Node"/> の木構造が対応するようにします。
         /// </summary>
