@@ -51,7 +51,7 @@ namespace PLATEAU.CityExport
                     MeshExportOptions.MeshTransformType.Local => src =>
                     {
                         // instancedCityModel を基準とする座標にします。
-                        var pos = (options.MeshAxis == CoordinateSystem.ENU || options.MeshAxis == CoordinateSystem.WUN) ? rootPos - src : src - rootPos;
+                        var pos = src - rootPos;
                         var Vertex = GeoReference.ConvertAxisToENU(CoordinateSystem.EUN, new PlateauVector3d(pos.x, pos.y, pos.z));
                         Vertex = GeoReference.ConvertAxisFromENUTo(options.MeshAxis, Vertex);
                         return Vertex;
@@ -60,9 +60,7 @@ namespace PLATEAU.CityExport
                     MeshExportOptions.MeshTransformType.PlaneCartesian => src =>
                     {
                         // 変換時の referencePoint をオフセットします。
-                        var pos = (options.MeshAxis == CoordinateSystem.ENU || options.MeshAxis == CoordinateSystem.WUN) ?
-                            referencePoint - new PlateauVector3d(src.x - rootPos.x, src.y - rootPos.y, src.z - rootPos.z) :
-                            referencePoint + new PlateauVector3d(src.x - rootPos.x, src.y - rootPos.y, src.z - rootPos.z);
+                        var pos = referencePoint + new PlateauVector3d(src.x - rootPos.x, src.y - rootPos.y, src.z - rootPos.z);
                         var Vertex = GeoReference.ConvertAxisToENU(CoordinateSystem.EUN, pos);
                         Vertex = GeoReference.ConvertAxisFromENUTo(options.MeshAxis, Vertex);
                         return Vertex;
@@ -81,8 +79,9 @@ namespace PLATEAU.CityExport
                 IUnityMeshToDllSubMeshConverter unityMeshToDllSubMeshConverter = options.ExportTextures
                     ? new UnityMeshToDllSubMeshWithTexture()
                     : new UnityMeshToDllSubMeshWithEmptyMaterial();
-                
-                using var model = UnityMeshToDllModelConverter.Convert(convertTargets, unityMeshToDllSubMeshConverter, options.ExportHiddenObjects, vertexConvertFunc);
+
+                bool InvertMesh = (options.MeshAxis == CoordinateSystem.ENU || options.MeshAxis == CoordinateSystem.WUN);
+                using var model = UnityMeshToDllModelConverter.Convert(convertTargets, unityMeshToDllSubMeshConverter, options.ExportHiddenObjects, vertexConvertFunc, InvertMesh);
                 
                 // Model をファイルにして出力します。
                 // options.PlateauModelExporter は、ファイルフォーマットに応じて FbxModelExporter, GltfModelExporter, ObjModelExporter のいずれかです。
