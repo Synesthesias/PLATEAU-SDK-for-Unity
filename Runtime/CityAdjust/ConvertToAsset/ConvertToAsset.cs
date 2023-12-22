@@ -40,6 +40,7 @@ namespace PLATEAU.CityAdjust.ConvertToAsset
             if (modelImporter != null)
             {
                 modelImporter.globalScale = 100;
+                modelImporter.isReadable = true;
                 modelImporter.SaveAndReimport();
             }
             
@@ -111,6 +112,11 @@ namespace PLATEAU.CityAdjust.ConvertToAsset
                 else
                 {
                     Debug.LogWarning("PLATEAUCityObjectGroup is already attached.");
+                }
+
+                foreach (Transform child in target)
+                {
+                    RestoreTo(child);
                 }
             }
             
