@@ -57,9 +57,13 @@ namespace PLATEAU.Tests.EditModeTests.GUITests
             // サーバーインポートに切り替え、そのGUIを取得します。
             const int remoteImportTabIndex = 1;
             ReflectionUtil.SetPrivateFieldVal(typeof(CityAddGUI), gui, CityAddGUI.NameOfImportTabIndex, remoteImportTabIndex);
-            var remoteGui =
-                (CityImportRemoteGUI)ReflectionUtil.GetPrivateFieldVal<IEditorDrawable[]>(typeof(CityAddGUI), gui,
+            var confGUI =
+                (CityImportConfigGUI)ReflectionUtil.GetPrivateFieldVal<IEditorDrawable[]>(typeof(CityAddGUI), gui,
                     CityAddGUI.NameOfImportTabGUIArray)[remoteImportTabIndex];
+            var remoteGUI =
+                (ConfigGUIBeforeAreaSelectRemote)ReflectionUtil.GetPrivateFieldVal<IConfigGUIBeforeAreaSelect>(
+                    typeof(CityImportConfigGUI), confGUI,
+                    CityImportConfigGUI.NameOfConfigGUIBeforeAreaSelect);
             yield return null;
             this.window.Repaint();
 
@@ -69,7 +73,7 @@ namespace PLATEAU.Tests.EditModeTests.GUITests
             while ((DateTime.Now - startTime).TotalMilliseconds < 4000)
             {
                 yield return null;
-                if (remoteGui.DatasetFetchStatus == ServerDatasetFetchGUI.LoadStatusEnum.Success)
+                if (remoteGUI.DatasetFetchStatus == ServerDatasetFetchGUI.LoadStatusEnum.Success)
                 {
                     isDatasetFetchSucceed = true;
                     break;

@@ -1,5 +1,6 @@
 ﻿using PLATEAU.CityInfo;
 using PLATEAU.Editor.EditorWindow.Common;
+using PLATEAU.PolygonMesh;
 using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
@@ -20,6 +21,10 @@ namespace PLATEAU.Editor.CityInfo
         {
             var cog = target as PLATEAUCityObjectGroup;
             if (cog == null) return;
+            
+            PlateauEditorStyle.Heading("粒度", null);
+            EditorGUILayout.LabelField(cog.Granularity.ToJapaneseString());
+            
             SerializedProperty prop = serializedObject.FindProperty("serializedCityObjects");
             var json = prop.stringValue;
 

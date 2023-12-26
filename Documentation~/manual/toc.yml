@@ -12,9 +12,15 @@
     href: ModelAdjust.md  
   - name: 都市情報へのアクセス
     href: AccessCityObject.md
+  - name: SDKのマテリアルについて
+    href: sdkMaterial.md
 - name: チュートリアル
   items:
     - name: 属性情報によって色分けする
       href: ChangeColorByAttrs.md
     - name: 属性情報を表示する
       href: DisplayAttrs.md
+- name: API
+  items:
+    - name: ランタイムAPI
+      href: runtimeAPI.md

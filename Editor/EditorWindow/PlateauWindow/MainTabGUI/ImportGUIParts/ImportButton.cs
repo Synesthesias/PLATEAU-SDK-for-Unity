@@ -1,6 +1,6 @@
 ﻿using System.Threading;
-using PLATEAU.CityImport.Load;
 using PLATEAU.CityImport.Config;
+using PLATEAU.CityImport.Import;
 using PLATEAU.Editor.EditorWindow.Common;
 using PLATEAU.Util;
 using PLATEAU.Util.Async;
@@ -23,7 +23,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts
         /// <summary>
         /// 「モデルをインポート」ボタンの描画と実行を行います。
         /// </summary>
-        public static void Draw(CityLoadConfig config, IProgressDisplay progressDisplay)
+        public static void Draw(CityImportConfig config, IProgressDisplay progressDisplay)
         {
             using (PlateauEditorStyle.VerticalScopeLevel1())
             {

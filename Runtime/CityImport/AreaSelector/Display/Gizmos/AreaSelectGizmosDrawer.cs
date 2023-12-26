@@ -4,6 +4,7 @@ using System.Linq;
 using PLATEAU.CityImport.AreaSelector.Display.Gizmos.AreaRectangles;
 using PLATEAU.CityImport.AreaSelector.Display.Gizmos.LODIcons;
 using PLATEAU.CityImport.AreaSelector.Display.Maps;
+using PLATEAU.CityImport.Config;
 using PLATEAU.Dataset;
 using PLATEAU.Geometries;
 using PLATEAU.Native;
@@ -33,7 +34,7 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos
         private bool isLeftMouseAndShiftButtonMoved;
         
         public void Init(
-            ReadOnlyCollection<MeshCode> meshCodes, DatasetSourceConfig datasetSourceConfig,
+            ReadOnlyCollection<MeshCode> meshCodes, IDatasetSourceConfig datasetSourceConfig,
             int coordinateZoneID, out GeoReference outGeoReference)
         {
             using var progressBar = new ProgressBar();
@@ -75,18 +76,7 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos
             this.areaSelectionGizmoDrawer.SetUp();
         }
         
-        public IEnumerable<MeshCode> SelectedMeshCodes
-        {
-            get 
-            {
-                List<MeshCode> meshCodes = new List<MeshCode>();
-                foreach (var meshCodeGizmoDrawer in this.meshCodeDrawers)
-                {
-                    meshCodes.AddRange(meshCodeGizmoDrawer.GetSelectedMeshIds().Select(id => MeshCode.Parse(id)).ToList());
-                }
-                return meshCodes;
-            }
-        }
+        public MeshCodeList SelectedMeshCodes => MeshCodeList.CreateFromMeshCodeDrawers(this.meshCodeDrawers);
 
         public void ResetSelectedArea()
         {

@@ -1,14 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using PLATEAU.CityExport;
 using PLATEAU.CityInfo;
-using PLATEAU.Editor.CityExport;
 using PLATEAU.Editor.EditorWindow.Common;
 using PLATEAU.Editor.EditorWindow.Common.PathSelector;
 using PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ExportGUIParts;
 using PLATEAU.Geometries;
+using PLATEAU.Util;
 using UnityEditor;
-using UnityEngine;
 using Directory = System.IO.Directory;
 
 namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
@@ -33,11 +34,11 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
         private PLATEAUInstancedCityModel exportTarget;
         private MeshFileFormat meshFileFormat = MeshFileFormat.OBJ;
 
-        private readonly Dictionary<MeshFileFormat, IPlateauModelExporter> formatToExporter = new()
+        private readonly Dictionary<MeshFileFormat, IExportConfigGUI> formatToExporterGUI = new()
         {
-            { MeshFileFormat.OBJ, new ObjModelExporter() },
-            { MeshFileFormat.FBX, new FbxModelExporter() },
-            { MeshFileFormat.GLTF, new GltfModelExporter() }
+            { MeshFileFormat.OBJ, new ExportConfigGuiObj() },
+            { MeshFileFormat.FBX, new ExportConfigGuiFbx() },
+            { MeshFileFormat.GLTF, new ExportConfigGuiGltf() }
         };
         
         private bool exportTextures = true;
@@ -72,7 +73,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
                 using (PlateauEditorStyle.VerticalScopeLevel1())
                 {
                     // 選択した出力設定に固有の設定
-                    this.formatToExporter[this.meshFileFormat].DrawConfigGUI();
+                    this.formatToExporterGUI[this.meshFileFormat].Draw();
 
                     this.exportTextures = EditorGUILayout.Toggle("テクスチャ", this.exportTextures);
                     this.exportHiddenObject = EditorGUILayout.Toggle("非アクティブオブジェクトを含める", this.exportHiddenObject);
@@ -96,29 +97,81 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
             }
         }
 
-        // FIXME 出力したファイルパスのリストを返すようにできるか？
         private void Export(string destinationDir, PLATEAUInstancedCityModel target)
         {
             if (target == null)
             {
-                Debug.LogError("エクスポート対象が指定されていません。");
+                Dialogue.Display("エクスポート失敗：\nエクスポート対象を指定してください。", "OK");
                 return;
             }
 
             if (string.IsNullOrEmpty(destinationDir))
             {
-                Debug.LogError("エクスポート先が指定されていません。");
+                Dialogue.Display("エクスポート失敗：\nエクスポート先を指定してください。", "OK");
                 return;
             }
 
             if (!Directory.Exists(destinationDir))
             {
-                Debug.LogError("エクスポート先フォルダが実在しません。");
+                Dialogue.Display("エクスポート失敗：\nエクスポート先フォルダが実在しません。\n再度エクスポート先を指定してください。", "OK");
+                return;
+            }
+
+            if (!WarnIfFileExist(destinationDir))
+            {
                 return;
             }
             var meshExportOptions = new MeshExportOptions(this.meshTransformType, this.exportTextures, this.exportHiddenObject,
-                this.meshFileFormat, this.meshAxis, this.formatToExporter[this.meshFileFormat]);
-            UnityModelExporter.Export(destinationDir, target,  meshExportOptions);
+                this.meshFileFormat, this.meshAxis, this.formatToExporterGUI[this.meshFileFormat].GetExporter());
+            using (var progress = new ProgressBar("エクスポート中..."))
+            {
+                progress.Display(0.5f);
+                UnityModelExporter.Export(destinationDir, target, meshExportOptions);
+                EditorUtility.RevealInFinder(destinationDir +"/");
+            }
+
+            Dialogue.Display("エクスポートが完了しました。", "OK");
+        }
+
+        /// <summary>
+        /// フォルダ内に、出力しようとしているファイルと同じ拡張子のものがあれば上書きの警告を出します。
+        /// ユーザーが警告に了承すればtrueを、拒否すればfalseを返します。
+        /// </summary>
+        private bool WarnIfFileExist(string destinationDir)
+        {
+            // 厳密には、拡張子チェックだけするよりも、出力しようとしているファイル名をすべて調べるのがベストです。
+            // しかし、エクスポートを共通ライブラリに任せている都合上それは難しいので、拡張子のみのチェックとします。
+            bool found = meshFileFormat.ToExtensions().Any(extension => FileExistsWithinDepth1(destinationDir, extension, 0));
+
+            if (found)
+            {
+                return Dialogue.Display("同名のファイルは上書きされます。よろしいですか？", "OK", "キャンセル");
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// ディレクトリを再帰探索したとき、再帰の深さが0をトップとして1以内に指定拡張子のファイルがあるかを調べます。
+        /// エクスポートの上書きチェックの用途なら、深さは1以内で探せば十分です。
+        /// </summary>
+        private bool FileExistsWithinDepth1(string destinationDir, string extension, int depth)
+        {
+            if (depth > 1) return false;
+            var files =
+                Directory.EnumerateFiles(destinationDir, "*" + extension, SearchOption.TopDirectoryOnly);
+            if (files.Any())
+            {
+                return true;
+            }
+
+            foreach (var dir in Directory.EnumerateDirectories(destinationDir))
+            {
+                bool result = FileExistsWithinDepth1(dir, extension, depth + 1);
+                if (result) return true;
+            }
+
+            return false;
         }
 
         public void Dispose() { }

@@ -5,7 +5,8 @@ using System.Linq;
 using PLATEAU.CityImport.AreaSelector.Display.Gizmos;
 using PLATEAU.CityImport.AreaSelector.Display.Maps;
 using PLATEAU.CityImport.AreaSelector.Display.Windows;
-using PLATEAU.CityImport.Config.PackageLoadConfigs;
+using PLATEAU.CityImport.Config;
+using PLATEAU.CityImport.Config.PackageImportConfigs;
 using PLATEAU.Geometries;
 using PLATEAU.Dataset;
 using PLATEAU.Native;
@@ -26,10 +27,9 @@ namespace PLATEAU.CityImport.AreaSelector
     internal class AreaSelectorBehaviour : MonoBehaviour
     {
         [SerializeField] private string prevScenePath;
-        [SerializeField] private DatasetSourceConfig datasetSourceConfig;
+        private ConfigBeforeAreaSelect confBeforeAreaSelect;
         private AreaSelectGizmosDrawer gizmosDrawer;
         private IAreaSelectResultReceiver areaSelectResultReceiver;
-        private int coordinateZoneID;
         private GeoReference geoReference;
         private bool prevSceneCameraRotationLocked;
         private GSIMapLoaderZoomSwitch mapLoader;
@@ -42,13 +42,12 @@ namespace PLATEAU.CityImport.AreaSelector
         public static bool IsAreaSelectEnabled { get; set; }
 
 #if UNITY_EDITOR
-        public void Init(string prevScenePathArg, DatasetSourceConfig datasetSourceConfigArg, IAreaSelectResultReceiver areaSelectResultReceiverArg, int coordinateZoneIDArg, EditorWindow prevEditorWindowArg)
+        public void Init(string prevScenePathArg, ConfigBeforeAreaSelect confBeforeAreaSelectArg, IAreaSelectResultReceiver areaSelectResultReceiverArg, EditorWindow prevEditorWindowArg)
         {
             IsAreaSelectEnabled = true;
             this.prevScenePath = prevScenePathArg;
-            this.datasetSourceConfig = datasetSourceConfigArg;
+            this.confBeforeAreaSelect = confBeforeAreaSelectArg;
             this.areaSelectResultReceiver = areaSelectResultReceiverArg;
-            this.coordinateZoneID = coordinateZoneIDArg;
             this.prevSceneCameraRotationLocked = SceneView.lastActiveSceneView.isRotationLocked;
             this.prevEditorWindow = prevEditorWindowArg;
         }
@@ -64,7 +63,7 @@ namespace PLATEAU.CityImport.AreaSelector
             ReadOnlyCollection<MeshCode> meshCodes;
             try
             {
-                GatherMeshCodes(this.datasetSourceConfig, out meshCodes);
+                GatherMeshCodes(this.confBeforeAreaSelect.DatasetSourceConfig, out meshCodes);
             }
             catch (Exception e)
             {
@@ -85,7 +84,7 @@ namespace PLATEAU.CityImport.AreaSelector
 
             var drawerObj = new GameObject($"{nameof(AreaSelectGizmosDrawer)}");
             this.gizmosDrawer = drawerObj.AddComponent<AreaSelectGizmosDrawer>();
-            this.gizmosDrawer.Init(meshCodes, this.datasetSourceConfig, this.coordinateZoneID, out this.geoReference);
+            this.gizmosDrawer.Init(meshCodes, this.confBeforeAreaSelect.DatasetSourceConfig, this.confBeforeAreaSelect.CoordinateZoneID, out this.geoReference);
             entireExtent = CalcExtentCoversAllMeshCodes(meshCodes);
             this.mapLoader = new GSIMapLoaderZoomSwitch(this.geoReference, entireExtent);
             SetInitialCamera(entireExtent);
@@ -158,7 +157,7 @@ namespace PLATEAU.CityImport.AreaSelector
             return entireExtent;
         }
 
-        private static void GatherMeshCodes(DatasetSourceConfig datasetSourceConfig, out ReadOnlyCollection<MeshCode> meshCodes)
+        private static void GatherMeshCodes(IDatasetSourceConfig datasetSourceConfig, out ReadOnlyCollection<MeshCode> meshCodes)
         {
             using var datasetSource = DatasetSource.Create(datasetSourceConfig);
             using var accessor = datasetSource.Accessor;
@@ -181,35 +180,13 @@ namespace PLATEAU.CityImport.AreaSelector
             AreaSelectorMenuWindow.Disable();
             AreaSelectorGuideWindow.Disable();
             LodLegendGUI.Disable();
-            var selectedMeshCodes = this.gizmosDrawer.SelectedMeshCodes.ToArray();
-            var availablePackageLods = CalcAvailablePackageLodInMeshCodes(selectedMeshCodes, this.datasetSourceConfig);
+            var selectedMeshCodes = this.gizmosDrawer.SelectedMeshCodes;
+            var areaSelectResult = new AreaSelectResult(confBeforeAreaSelect, selectedMeshCodes);
 
             // 無名関数のキャプチャを利用して、シーン終了後も必要なデータが渡るようにします。
             #if UNITY_EDITOR
-            AreaSelectorDataPass.Exec(this.prevScenePath, selectedMeshCodes, this.areaSelectResultReceiver, availablePackageLods, this.prevEditorWindow);
+            AreaSelectorDataPass.Exec(this.prevScenePath, areaSelectResult, this.areaSelectResultReceiver, this.prevEditorWindow);
             #endif
-        }
-
-        private static PackageToLodDict CalcAvailablePackageLodInMeshCodes(IEnumerable<MeshCode> meshCodes, DatasetSourceConfig datasetSourceConfig)
-        {
-            using var datasetSource = DatasetSource.Create(datasetSourceConfig);
-            using var accessorAll = datasetSource.Accessor;
-            using var accessor = accessorAll.FilterByMeshCodes(meshCodes);
-            using var gmlFiles = accessor.GetAllGmlFiles();
-            var ret = new PackageToLodDict();
-            int gmlCount = gmlFiles.Length;
-            using var progressBar = new ProgressBar();
-            for (int i = 0; i < gmlCount; i++)
-            {
-                var gml = gmlFiles.At(i);
-                int maxLod = gml.GetMaxLod();
-                ret.MergePackage(gml.Package, maxLod);
-
-                //Progress表示
-                float progress = (float)i / gmlCount;
-                progressBar.Display("利用可能なデータを検索中です...", progress);
-            }
-            return ret;
         }
 
         internal void CancelAreaSelection()
@@ -218,9 +195,9 @@ namespace PLATEAU.CityImport.AreaSelector
             AreaSelectorGuideWindow.Disable();
             LodLegendGUI.Disable();
             IsAreaSelectEnabled = false;
-            var emptyAreaSelectResult = new MeshCode[] { };
+            var emptyAreaSelectResult = new AreaSelectResult(confBeforeAreaSelect, MeshCodeList.Empty);
             #if UNITY_EDITOR
-            AreaSelectorDataPass.Exec(this.prevScenePath, emptyAreaSelectResult, this.areaSelectResultReceiver, new PackageToLodDict(), this.prevEditorWindow);
+            AreaSelectorDataPass.Exec(this.prevScenePath, emptyAreaSelectResult, this.areaSelectResultReceiver, this.prevEditorWindow);
             #endif
         }
 

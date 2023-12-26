@@ -844,6 +844,19 @@ namespace PLATEAU.Editor.EditorWindow.Common
         }
 
         /// <summary>
+        /// EditorGUILayout.Popup の、
+        /// ラベルの幅を指定できる版です。
+        /// </summary>
+        public static int PopupWithLabelWidth(string label, int selectedIndex, string[] displayedOptions, int labelWidth)
+        {
+            var prevWidth = EditorGUIUtility.labelWidth;
+            EditorGUIUtility.labelWidth = labelWidth;
+            var ret = EditorGUILayout.Popup(label, selectedIndex, displayedOptions);
+            EditorGUIUtility.labelWidth = prevWidth;
+            return ret;
+        }
+
+        /// <summary>
         /// テクスチャをロードし、キャッシュに追加してから返します。
         /// すでにキャッシュにあれば、ファイルロードの代わりにキャッシュから返します。
         /// 画像ファイルのパスがキャッシュのキーとなります。

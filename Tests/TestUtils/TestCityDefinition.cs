@@ -5,8 +5,8 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 using PLATEAU.CityImport.AreaSelector;
 using PLATEAU.CityImport.Config;
-using PLATEAU.CityImport.Config.PackageLoadConfigs;
-using PLATEAU.CityImport.Load;
+using PLATEAU.CityImport.Config.PackageImportConfigs;
+using PLATEAU.CityImport.Import;
 using PLATEAU.Editor.EditorWindow.ProgressDisplay;
 using PLATEAU.Dataset;
 using PLATEAU.Geometries;
@@ -23,7 +23,7 @@ namespace PLATEAU.Tests.TestUtils
     internal class TestCityDefinition
     {
         public string SrcRootDirPathLocal => Path.GetFullPath(Path.Combine(testDataDir, this.rootDirName));
-        public string[] AreaMeshCodes { get; set; }
+        public MeshCodeList AreaMeshCodes { get; set; }
         public int CoordinateZoneId { get; set; }
         public TestGmlDefinition[] GmlDefinitions { get; set; }
 
@@ -31,7 +31,7 @@ namespace PLATEAU.Tests.TestUtils
 
         private static readonly string testDataDir = Path.Combine(PathUtil.SdkBasePath, "./Tests/TestData/日本語パステスト");
 
-        public TestCityDefinition(string rootDirName, TestGmlDefinition[] gmlDefs, string[] areaMeshCodes, int coordinateZoneId)
+        public TestCityDefinition(string rootDirName, TestGmlDefinition[] gmlDefs, MeshCodeList areaMeshCodes, int coordinateZoneId)
         {
             this.rootDirName = rootDirName;
             GmlDefinitions = gmlDefs;
@@ -73,9 +73,8 @@ namespace PLATEAU.Tests.TestUtils
         /// <summary>
         /// インポートするための設定を返します。
         /// </summary>
-        private CityLoadConfig MakeConfig(bool isServer)
+        private CityImportConfig MakeConfig(bool isServer)
         {
-            var conf = new CityLoadConfig();
             // TODO どのパッケージと何が対応するかは要テスト
             var allPackages =
                 EnumUtil.EachFlags(PredefinedCityModelPackageExtension.All());
@@ -84,21 +83,25 @@ namespace PLATEAU.Tests.TestUtils
             {
                 allPackageLods.MergePackage(package, 3);
             }
-
-            var dummyAreaSelectResult = new AreaSelectResult(AreaMeshCodes, allPackageLods);
-            conf.InitWithAreaSelectResult(dummyAreaSelectResult);
+            
+            IDatasetSourceConfig datasetSourceConfig =
+                isServer
+                    ? new DatasetSourceConfigRemote(this.rootDirName, NetworkConfig.MockServerUrl, "")
+                    : new DatasetSourceConfigLocal(SrcRootDirPathLocal);
+            
+            var dummyAreaSelectResult = new AreaSelectResult(new ConfigBeforeAreaSelect(datasetSourceConfig, 9), AreaMeshCodes);
+            var conf = CityImportConfig.CreateWithAreaSelectResult(dummyAreaSelectResult);
+            
             
             // メッシュコードがあるあたりに基準点を設定します。 Extent.Allの中心を基準点にすると極端な座標になるため。  
             using var geoRef = GeoReference.Create(new PlateauVector3d(0, 0, 0), 1.0f, CoordinateSystem.EUN,
-                conf.CoordinateZoneID);
-            conf.ReferencePoint = geoRef.Project(MeshCode.Parse(AreaMeshCodes[0]).Extent.Center);
+                conf.ConfBeforeAreaSelect.CoordinateZoneID);
+            conf.ReferencePoint = geoRef.Project(AreaMeshCodes.At(0).Extent.Center);
             
-            foreach (var packageConf in conf.PackageLoadConfigDict.ForEachPackagePair)
+            foreach (var packageConf in conf.PackageImportConfigDict.ForEachPackagePair)
             {
                 packageConf.Value.IncludeTexture = true;
             }
-
-            conf.DatasetSourceConfig = new DatasetSourceConfig(isServer, SrcRootDirPathLocal, this.rootDirName, NetworkConfig.MockServerUrl, "");
             return conf;
         }
 
@@ -156,14 +159,18 @@ namespace PLATEAU.Tests.TestUtils
         /// その内容を <see cref="TestCityDefinition"/> 形式で説明したものです。
         /// </summary>
         public static readonly TestCityDefinition Simple =
-            new TestCityDefinition("TestDataSimpleGml", new[]
-            {
-                new TestGmlDefinition("udx/bldg/53392642_bldg_6697_op2.gml", "53392642_bldg_6697_op2.gml", true, null,
-                    2)
-            }, new[]
-            {
-                "53392642"
-            }, 9);
+            new TestCityDefinition(
+                "TestDataSimpleGml",
+                new[]
+                {
+                    new TestGmlDefinition("udx/bldg/53392642_bldg_6697_op2.gml", "53392642_bldg_6697_op2.gml", true,
+                        null,
+                        2)
+                }, MeshCodeList.CreateFromMeshCodesStr(new string[]
+                {
+                    "53392642"
+                }),
+                9);
 
         /// <summary>
         /// テストデータ "MiniTokyo" について、
@@ -188,10 +195,10 @@ namespace PLATEAU.Tests.TestUtils
                 new TestGmlDefinition("udx/urf/533925_urf_6668_yoto_op.gml", "533925_urf_6668_yoto_op.gml", false, null, 0),
                 new TestGmlDefinition("udx/fld/natl/tamagawa_tamagawa-asakawa-etc/53392547_fld_6697_l1_op.gml", "natl/tamagawa_tamagawa-asakawa-etc/53392547_fld_6697_l1_op.gml", true, null, 1),
                 new TestGmlDefinition("udx/fld/natl/tamagawa_tamagawa-asakawa-etc/53392547_fld_6697_l2_op.gml", "natl/tamagawa_tamagawa-asakawa-etc/53392547_fld_6697_l2_op.gml", true, null, 1),
-            }, new []
+            }, MeshCodeList.CreateFromMeshCodesStr(new string[]
             {
                 "53394525", "53392546", "53392547", "533925"
-            }, 9);
+            }), 9);
 
         /// <summary>
         /// テストデータ "TestServer23Ku" について、
@@ -204,8 +211,8 @@ namespace PLATEAU.Tests.TestUtils
                         null,
                         2),
                     new TestGmlDefinition("udx/bldg/53392670_bldg_6697_2_op.gml", "53392670_bldg_6697_2_op.gml", true, null, 2)
-                }, new[]
+                }, MeshCodeList.CreateFromMeshCodesStr(new string[]
                     { "53392642", "53392670" }
-            , 9);
+            ), 9);
     }
 }

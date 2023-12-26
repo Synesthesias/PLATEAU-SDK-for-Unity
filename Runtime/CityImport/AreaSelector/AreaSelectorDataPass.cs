@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using PLATEAU.CityImport.Config.PackageLoadConfigs;
-using PLATEAU.Dataset;
+﻿using PLATEAU.CityImport.Config;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -20,20 +17,18 @@ namespace PLATEAU.CityImport.AreaSelector
     {
         // シーンをまたいで渡したいデータ
         private static string prevScenePath;
-        private static IEnumerable<MeshCode> selectedMeshCodes;
+        private static AreaSelectResult areaSelectResult;
         private static IAreaSelectResultReceiver areaSelectResultReceiver;
-        private static PackageToLodDict availablePackageLods;
 
 #if UNITY_EDITOR
         public static void Exec(
-            string prevScenePathArg, IEnumerable<MeshCode> selectedMeshCodesArg,
-            IAreaSelectResultReceiver areaSelectResultReceiverArg, PackageToLodDict availablePackageLodsArg,
+            string prevScenePathArg, AreaSelectResult areaSelectResultArg,
+            IAreaSelectResultReceiver areaSelectResultReceiverArg,
             EditorWindow prevEditorWindow)
         {
             prevScenePath = prevScenePathArg;
-            selectedMeshCodes = selectedMeshCodesArg;
+            areaSelectResult = areaSelectResultArg;
             areaSelectResultReceiver = areaSelectResultReceiverArg;
-            availablePackageLods = availablePackageLodsArg;
             
             EditorSceneManager.sceneOpened += OnBackToPrevScene;
             EditorSceneManager.OpenScene(prevScenePath);
@@ -57,15 +52,10 @@ namespace PLATEAU.CityImport.AreaSelector
         /// </summary>
         private static void PassAreaSelectDataToBehaviour()
         {
-            var areaMeshCodes = selectedMeshCodes
-                .Select(meshCode => meshCode.ToString())
-                .ToArray();
-            if (areaMeshCodes.Length == 0)
+            if (areaSelectResult.AreaMeshCodes.Count == 0)
             {
                 Debug.Log("地域は選択されませんでした。");
             }
-
-            var areaSelectResult = new AreaSelectResult(areaMeshCodes, availablePackageLods);
             areaSelectResultReceiver.ReceiveResult(areaSelectResult);
         }
     }

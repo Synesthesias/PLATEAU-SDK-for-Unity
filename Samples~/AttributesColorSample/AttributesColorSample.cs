@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using PLATEAU.CityInfo;
 using UnityEngine;
 
@@ -10,7 +8,7 @@ public class AttributesColorSample : MonoBehaviour
 {
     /// <summary> 色分けしたいターゲットを指定します。 </summary>
     [SerializeField] private Transform targetParent;
-    private void Start()
+    private void Awake()
     {
         // PLATEAUCityObjectGroupコンポーネントに属性情報が格納されており、ランタイムで読み込むことができます。
         var cityObjGroups = targetParent.GetComponentsInChildren<PLATEAUCityObjectGroup>();
@@ -19,12 +17,28 @@ public class AttributesColorSample : MonoBehaviour
             var target = cityObjGroup.transform;
             foreach (var cityObj in cityObjGroup.GetAllCityObjects())
             {
-                // 属性情報（キーバリューペア）を取得します。
+                // 属性情報（キーバリューペアが集まったもの）を取得します。
                 var attributes = cityObj.AttributesMap;
-                if (!attributes.TryGetValue("urf:function", out var landFuncAttr)) continue;
-                string landFuncName = landFuncAttr.StringValue;
-                var color = ColorByLandFuncName(landFuncName);
-                ChangeMaterialByColor(target, color);
+                
+                // 属性情報のうち、土地計画上の区分を取得して色分けします。
+                if (attributes.TryGetValue("urf:function", out var landFuncAttr))
+                {
+                    string landFuncName = landFuncAttr.StringValue;
+                    var color = ColorByLandFuncName(landFuncName);
+                    ChangeMaterialByColor(target, color);
+                }
+                
+                // 属性情報のうち、水害時の想定浸水高さを取得します。
+                if (attributes.TryGetValue("uro:floodingRiskAttribute", out var disasterRiskAttr))
+                {
+                    if (disasterRiskAttr.AttributesMapValue.TryGetValue("uro:rank", out var depthValue))
+                    {
+                        var rank = depthValue.StringValue;
+                        var color = ColorByFloodingRank(rank);
+                        ChangeMaterialByColor(target, color);
+                    }
+                }
+                
             }
         }
     }
@@ -60,6 +74,25 @@ public class AttributesColorSample : MonoBehaviour
         else if (landFuncName.Contains("防火地域"))
         {
             matColor = new Color(0.9f, 0.2f, 0.2f);
+        }
+
+        return matColor;
+    }
+
+    private Color ColorByFloodingRank(string rank)
+    {
+        Color matColor = Color.white;
+        if (rank == "0.5m未満")
+        {
+            matColor = new Color(0f, 0f, 1f);
+        }
+        else if (rank == "0.5m以上3m未満")
+        {
+            matColor = new Color(1.0f, 1.0f, 0f);
+        }
+        else if (rank == "3m以上5m未満")
+        {
+            matColor = new Color(1.0f, 0f, 0f);
         }
 
         return matColor;
