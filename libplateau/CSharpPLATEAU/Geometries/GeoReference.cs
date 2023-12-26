@@ -106,6 +106,20 @@ namespace PLATEAU.Geometries
             return outLatLon;
         }
 
+        public static PlateauVector3d ConvertAxisToENU(CoordinateSystem axis, PlateauVector3d vertex)
+        {
+            var result = NativeMethods.plateau_geo_reference_convert_axis_to_enu(axis, vertex, out var outVertex);
+            DLLUtil.CheckDllError(result);
+            return outVertex;
+        }
+
+        public static PlateauVector3d ConvertAxisFromENUTo(CoordinateSystem axis, PlateauVector3d vertex)
+        {
+            var result = NativeMethods.plateau_geo_reference_convert_axis_from_enu_to(axis, vertex, out var outVertex);
+            DLLUtil.CheckDllError(result);
+            return outVertex;
+        }
+
         public PlateauVector3d ReferencePoint =>
             DLLUtil.GetNativeValue<PlateauVector3d>(Handle,
                 NativeMethods.plateau_geo_reference_get_reference_point);
@@ -200,6 +214,20 @@ namespace PLATEAU.Geometries
             internal static extern APIResult plateau_geo_reference_get_coordinate_system(
                 [In] IntPtr handle,
                 out CoordinateSystem outCoordinateSystem);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_geo_reference_convert_axis_to_enu(
+                CoordinateSystem axis,
+                PlateauVector3d vertex, 
+                out PlateauVector3d outVertex);
+
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_geo_reference_convert_axis_from_enu_to(
+                CoordinateSystem axis,
+                PlateauVector3d vertex, 
+                out PlateauVector3d outVertex);
+
         }
     }
 }
