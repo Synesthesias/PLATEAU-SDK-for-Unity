@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using PLATEAU.CityGML;
@@ -21,6 +22,11 @@ namespace PLATEAU.CityAdjust.MaterialAdjust
             data = new();
             foreach (var type in types)
             {
+                var typeNode = CityObjectTypeHierarchy.GetNodeByType(type);
+                if (typeNode == null)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(types), $"Unknown Type: {type.ToString()}");
+                }
                 data.TryAdd(CityObjectTypeHierarchy.GetNodeByType(type), new MaterialAdjustConfPerType());
             }
         }
@@ -32,7 +38,7 @@ namespace PLATEAU.CityAdjust.MaterialAdjust
         public MaterialAdjustConfPerType GetConfFor(CityObjectType type)
         {
             var typeNode = CityObjectTypeHierarchy.GetNodeByType(type);
-            if (data.TryGetValue(typeNode, out var typeConf))
+            if (typeNode != null && data.TryGetValue(typeNode, out var typeConf))
             {
                 return typeConf;
             }

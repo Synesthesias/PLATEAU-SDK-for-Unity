@@ -7,9 +7,12 @@ PLATEAU SDK for Unityは、[PLATEAU](https://www.mlit.go.jp/plateau/)の3D都市
   - 地図上での範囲選択による3D都市モデルの抽出
   - PLATEAUのサーバーで提供されるCityGMLデータへのアクセス
   - 地形3Dモデルへの航空写真および地図の貼り付け
+  - テクスチャの自動結合
 - 3D都市モデルに含まれる地物のフィルタリング
 - 3D都市モデルの3Dファイル形式へのエクスポート
 - 3D都市モデルの属性にアクセスするためのC# API、およびエディタ上での確認
+- 3D都市モデルに含まれる地物の分割・結合
+- 地物型によるマテリアル分割
 
 ![](Documentation~/resources/index/sdk_outline.png)
 

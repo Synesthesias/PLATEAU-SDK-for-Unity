@@ -34,7 +34,13 @@ namespace PLATEAU.CityInfo
                     new Node("接地面 (GroundSurface)", Package.None, new[] { COType.COT_GroundSurface }, null),
                     new Node("開口部 (ClosureSurface)", Package.None, new[] { COType.COT_ClosureSurface }, null),
                     new Node("外側の天井 (OuterCeilingSurface)", Package.None, new[] { COType.COT_OuterCeilingSurface }, null),
-                    new Node("屋根の通行可能部分 (OuterFloorSurface)", Package.None, new[] { COType.COT_OuterFloorSurface }, null)
+                    new Node("屋根の通行可能部分 (OuterFloorSurface)", Package.None, new[] { COType.COT_OuterFloorSurface }, null),
+                    new Node("部屋(Room)", Package.None, new[]{COType.COT_Room}, null),
+                    new Node("天井(CeilingSurface)", Package.None, new[]{COType.COT_CeilingSurface}, null),
+                    new Node("床(FloorSurface)", Package.None, new[]{COType.COT_FloorSurface}, null),
+                    new Node("内装壁(InteriorWallSurface)", Package.None, new[]{COType.COT_InteriorWallSurface}, null),
+                    new Node("内装付属設備(IntBuildingInstallation)", Package.None, new[]{COType.COT_IntBuildingInstallation}, null),
+                    
                 }),
                 new Node("道路 (Road)", Package.Road, new[] { COType.COT_Road }, null),
                 new Node("都市設備 (CityFurniture)", Package.CityFurniture, new[] { COType.COT_CityFurniture }, null),
