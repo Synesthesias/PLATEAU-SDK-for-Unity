@@ -4,6 +4,7 @@ using PLATEAU.CityExport;
 using PLATEAU.CityExport.Exporters;
 using PLATEAU.CityExport.ModelConvert;
 using PLATEAU.CityExport.ModelConvert.SubMeshConvert;
+using PLATEAU.CityImport.Import.Convert.MaterialConvert;
 using PLATEAU.CityInfo;
 using PLATEAU.Geometries;
 using PLATEAU.GranularityConvert;
@@ -178,12 +179,25 @@ namespace PLATEAU.CityAdjust.ConvertToAsset
                     {
                         for (int i = 0; i < renderer.sharedMaterials.Length && i < materials.Length; i++)
                         {
-                            var srcTexPath = AssetDatabase.GetAssetPath(materials[i].mainTexture);
+                            var srcMat = materials[i];
                             
-                            // 元のテクスチャがシーン内に保存されているなら、FBXに出力されたマテリアルを利用します。
-                            if (srcTexPath == "") continue;
-                            // 元のテクスチャがシーン外に保存されているなら、元のマテリアルを利用します。
-                            nextMaterials[i] = materials[i];
+                            // trueならFBXのマテリアルを利用し、falseなら元のマテリアルを利用します。
+                            bool shouldUseFbxMaterial = false;
+
+                            // mainTextureがないシェーダーなら、元のマテリアルを利用します。
+                            if (!srcMat.HasMainTextureAttribute())
+                            {
+                                shouldUseFbxMaterial = false;
+                            }
+                            else
+                            {
+                                var srcTexPath = AssetDatabase.GetAssetPath(srcMat.mainTexture);
+                                // 元のテクスチャがシーン内に保存されているなら、FBXに出力されたマテリアルを利用します。
+                                // 元のテクスチャがシーン外に保存されているなら、元のマテリアルを利用します。
+                                shouldUseFbxMaterial = srcTexPath == "";
+                            }
+                            
+                            if(!shouldUseFbxMaterial) nextMaterials[i] = srcMat;
                         }
                     }
 
