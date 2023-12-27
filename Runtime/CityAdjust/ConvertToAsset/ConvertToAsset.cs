@@ -39,7 +39,8 @@ namespace PLATEAU.CityAdjust.ConvertToAsset
                 srcGameObjs,
                 new UnityMeshToDllSubMeshWithTexture(),
                 false,
-                UnityModelExporter.LocalVertexConvertFunc(CoordinateSystem.WUN, srcTrans.position));
+                UnityModelExporter.LocalVertexConvertFunc(CoordinateSystem.WUN, srcTrans.position),
+                true);
             
             // FBXに出力します。
             var fullPath = Path.GetFullPath(conf.AssetPath);
