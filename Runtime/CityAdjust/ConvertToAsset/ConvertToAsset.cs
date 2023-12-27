@@ -99,10 +99,16 @@ namespace PLATEAU.CityAdjust.ConvertToAsset
 
         }
 
+        /// <summary>
+        /// ゲームオブジェクト名と属性情報の辞書です。
+        /// </summary>
         internal class NameToAttrsDict
         {
             private Dictionary<string, PLATEAUCityObjectGroup> data = new();
 
+            /// <summary>
+            /// ゲームオブジェクトとその子から属性情報の辞書を構築します。
+            /// </summary>
             public static NameToAttrsDict ComposeFrom(GameObject src)
             {
                 var ret = new NameToAttrsDict();
@@ -115,6 +121,10 @@ namespace PLATEAU.CityAdjust.ConvertToAsset
                 return ret;
             }
 
+            /// <summary>
+            /// <paramref name="target"/>とその子に対して、
+            /// ゲームオブジェクト名を元に覚えておいた属性情報を復元します。
+            /// </summary>
             public void RestoreTo(Transform target)
             {
                 var existingAttr = target.GetComponent<PLATEAUCityObjectGroup>();
@@ -140,17 +150,23 @@ namespace PLATEAU.CityAdjust.ConvertToAsset
             
         }
 
+        /// <summary>
+        /// ゲームオブジェクト名とマテリアルの辞書です。
+        /// </summary>
         internal class NameToMaterialsDict
         {
             private Dictionary<string,Material[]> data = new();
 
+            /// <summary>
+            /// ゲームオブジェクトとその子から、マテリアルの辞書を構築します。
+            /// </summary>
             public static NameToMaterialsDict ComposeFrom(GameObject src)
             {
                 var ret = new NameToMaterialsDict();
                 ComposeRecursive(ret, src);
                 return ret;
             }
-
+            
             private static void ComposeRecursive(NameToMaterialsDict dict, GameObject src)
             {
                 var renderer = src.GetComponent<Renderer>();
@@ -170,6 +186,10 @@ namespace PLATEAU.CityAdjust.ConvertToAsset
                 data.TryAdd(name, materials);
             }
 
+            /// <summary>
+            /// <paramref name="dst"/>とその子に対して、ゲームオブジェクト名からマテリアルを復元します。
+            /// ただし、FBXのマテリアルを使った方が良い状況ではそれを使います。
+            /// </summary>
             public void RestoreTo(Transform dst)
             {
                 var renderer = dst.GetComponent<MeshRenderer>();
