@@ -12,6 +12,9 @@ using UnityEngine;
 
 namespace PLATEAU.CityAdjust.ConvertToAsset
 {
+    /// <summary>
+    /// シーン内に保存された都市モデルを、属性情報等を保ったままFBXに出力します。
+    /// </summary>
     public class ConvertToAsset
     {
         public void Convert(ConvertToAssetConfig conf)
@@ -22,19 +25,27 @@ namespace PLATEAU.CityAdjust.ConvertToAsset
                 return;
             }
             var srcGameObjs = new GameObject[] { conf.SrcGameObj };
+            
+            // 属性情報、都市情報、マテリアルを覚えておきます。
             var attributes = NameToAttrsDict.ComposeFrom(conf.SrcGameObj);
             var instancedCityModelDict = InstancedCityModelDict.ComposeFrom(srcGameObjs);
             var nameToMaterialsDict = NameToMaterialsDict.ComposeFrom(conf.SrcGameObj);
+            
+            // 共通ライブラリのModelに変換します。
             using var model = UnityMeshToDllModelConverter.Convert(
                 srcGameObjs,
                 new UnityMeshToDllSubMeshWithTexture(),
                 false,
                 UnityMeshToDllModelConverter.ConvertVertexPass);
+            
+            // FBXに出力します。
             var fullPath = Path.GetFullPath(conf.AssetPath);
             string fbxNameWithoutExtension = conf.SrcGameObj.name;
+            
             new CityExporterFbx().Export(Path.GetFullPath(conf.AssetPath), fbxNameWithoutExtension, model);
             AssetDatabase.Refresh();
-            // FBXのインポート設定
+            
+            // FBXのインポート設定をします。
             string fbxPath = Path.Combine(conf.AssetPath, fbxNameWithoutExtension + ".fbx");
             ModelImporter modelImporter = AssetImporter.GetAtPath(fbxPath)  as ModelImporter;
             if (modelImporter != null)
@@ -44,6 +55,7 @@ namespace PLATEAU.CityAdjust.ConvertToAsset
                 modelImporter.SaveAndReimport();
             }
             
+            // FBXをシーンに配置します。
             var fbxs = Directory.GetFiles(fullPath, "*.fbx", SearchOption.TopDirectoryOnly);
 
             if (fbxs.Length == 0)
@@ -64,6 +76,7 @@ namespace PLATEAU.CityAdjust.ConvertToAsset
                 newObjs.Add(newObj);
             }
 
+            // 覚えておいたマテリアル、属性情報、都市情報を復元します。
             var newRenderers = new List<Renderer>();
             foreach (var newObj in newObjs)
             {
