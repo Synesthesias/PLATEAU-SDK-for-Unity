@@ -8,7 +8,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow
 {
     internal class ConvertToAssetGUI : IEditorDrawable
     {
-        private ConvertToAssetConfig conf = new ConvertToAssetConfig(null, "Assets/");
+        private ConvertToAssetConfig conf = ConvertToAssetConfig.DefaultValue;
         
         // 設定のバリデーションによるエラーメッセージは、ユーザーが1度でも設定を編集したあとに出すようにします。
         // 設定してもないのにエラーアイコンが出ると邪魔なので。
@@ -85,7 +85,9 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow
                 {
                     if (isReadyToConvert && isSrcGameObjModified && isAssetPathModified)
                     {
-                        new ConvertToAsset().Convert(conf); 
+                        // ここで実行します
+                        new ConvertToAsset().Convert(conf);
+                        ResetGUI();
                     }
                     else
                     {
@@ -99,6 +101,13 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow
 
         public void Dispose()
         {
+        }
+
+        private void ResetGUI()
+        {
+            conf = ConvertToAssetConfig.DefaultValue;
+            isAssetPathModified = false;
+            isSrcGameObjModified = false;
         }
     }
 }

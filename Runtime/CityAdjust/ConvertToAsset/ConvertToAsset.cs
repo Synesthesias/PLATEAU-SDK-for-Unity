@@ -26,13 +26,20 @@ namespace PLATEAU.CityAdjust.ConvertToAsset
                 Debug.LogError("失敗：出力先は空のディレクトリを指定してください");
                 return;
             }
+
+            using var progress = new ProgressBar();
+            
             var srcGameObjs = new GameObject[] { conf.SrcGameObj };
             var srcTrans = conf.SrcGameObj.transform;
+            
+            progress.Display("都市モデルの情報を記録中...", 0.1f);
             
             // 属性情報、都市情報、マテリアルを覚えておきます。
             var attributes = NameToAttrsDict.ComposeFrom(conf.SrcGameObj);
             var instancedCityModelDict = InstancedCityModelDict.ComposeFrom(srcGameObjs);
             var nameToMaterialsDict = NameToMaterialsDict.ComposeFrom(conf.SrcGameObj);
+            
+            progress.Display("共通ライブラリのモデルに変換中...", 0.35f);
             
             // 共通ライブラリのModelに変換します。
             using var model = UnityMeshToDllModelConverter.Convert(
@@ -42,6 +49,7 @@ namespace PLATEAU.CityAdjust.ConvertToAsset
                 UnityModelExporter.LocalVertexConvertFunc(CoordinateSystem.WUN, srcTrans.position),
                 true);
             
+            progress.Display("FBXに出力中...", 0.6f);
             // FBXに出力します。
             var fullPath = Path.GetFullPath(conf.AssetPath);
             string fbxNameWithoutExtension = conf.SrcGameObj.name;
@@ -58,6 +66,8 @@ namespace PLATEAU.CityAdjust.ConvertToAsset
                 modelImporter.isReadable = true;
                 modelImporter.SaveAndReimport();
             }
+            
+            progress.Display("FBXをシーンに配置中...", 0.8f);
             
             // FBXをシーンに配置します。
             var fbxs = Directory.GetFiles(fullPath, "*.fbx", SearchOption.TopDirectoryOnly);
@@ -79,6 +89,8 @@ namespace PLATEAU.CityAdjust.ConvertToAsset
                 newObj.name = srcObj.name;
                 newObjs.Add(newObj);
             }
+            
+            progress.Display("都市の情報を復元中...", 0.9f);
 
             // 覚えておいたマテリアル、属性情報、都市情報を復元します。
             var newRenderers = new List<Renderer>();
@@ -95,8 +107,7 @@ namespace PLATEAU.CityAdjust.ConvertToAsset
                 r.gameObject.AddComponent<MeshCollider>();
             }
 
-            
-
+            Dialogue.Display("Assetsへの保存が完了しました！", "OK");
         }
 
         /// <summary>

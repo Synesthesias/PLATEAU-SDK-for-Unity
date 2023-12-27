@@ -22,6 +22,14 @@ namespace PLATEAU.CityAdjust.ConvertToAsset
             AssetPath = assetPath;
         }
 
+        public static ConvertToAssetConfig DefaultValue
+        {
+            get
+            {
+                return new ConvertToAssetConfig(null, "Assets/");
+            }
+        }
+
         /// <summary>
         /// フルパスから<see cref="AssetPath"/>を設定します。
         /// ただし、フルパスがAssets以下でない場合は設定を中止してエラーダイアログを表示します。
