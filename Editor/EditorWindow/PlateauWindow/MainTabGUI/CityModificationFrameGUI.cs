@@ -9,7 +9,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
     {
         private int tabIndex;
         private readonly IEditorDrawable[] tabGUIArray;
-        private string[] tabNames = { "Assetに出力","ゲームオブジェクト\nON/OFF" , "マテリアル分け", "結合/分離" };
+        private string[] tabNames = { "Assetsに保存","ゲームオブジェクト\nON/OFF" , "マテリアル分け", "結合/分離" };
 
         public CityModificationFrameGUI(UnityEditor.EditorWindow parentEditorWindow)
         {
