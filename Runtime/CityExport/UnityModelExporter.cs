@@ -48,15 +48,7 @@ namespace PLATEAU.CityExport
 
                 UnityMeshToDllModelConverter.VertexConvertFunc vertexConvertFunc = options.TransformType switch
                 {
-                    MeshExportOptions.MeshTransformType.Local => src =>
-                    {
-                        // instancedCityModel を基準とする座標にします。
-                        var pos = src - rootPos;
-                        var Vertex = GeoReference.ConvertAxisToENU(CoordinateSystem.EUN, new PlateauVector3d(pos.x, pos.y, pos.z));
-                        Vertex = GeoReference.ConvertAxisFromENUTo(options.MeshAxis, Vertex);
-                        return Vertex;
-                    }
-                    ,
+                    MeshExportOptions.MeshTransformType.Local => LocalVertexConvertFunc(options.MeshAxis, rootPos),
                     MeshExportOptions.MeshTransformType.PlaneCartesian => src =>
                     {
                         // 変換時の referencePoint をオフセットします。
@@ -89,5 +81,17 @@ namespace PLATEAU.CityExport
                 options.Exporter.Export(destDir, fileNameWithoutExtension, model);
             }
         }
+
+        internal static UnityMeshToDllModelConverter.VertexConvertFunc LocalVertexConvertFunc(
+            CoordinateSystem targetMeshAxis, Vector3 srcPosition) =>
+            src =>
+            {
+                // instancedCityModel を基準とする座標にします。
+                var pos = src - srcPosition;
+                var vertex =
+                    GeoReference.ConvertAxisToENU(CoordinateSystem.EUN, new PlateauVector3d(pos.x, pos.y, pos.z));
+                vertex = GeoReference.ConvertAxisFromENUTo(targetMeshAxis, vertex);
+                return vertex;
+            };
     }
 }

@@ -5,6 +5,7 @@ using PLATEAU.CityExport.Exporters;
 using PLATEAU.CityExport.ModelConvert;
 using PLATEAU.CityExport.ModelConvert.SubMeshConvert;
 using PLATEAU.CityInfo;
+using PLATEAU.Geometries;
 using PLATEAU.GranularityConvert;
 using PLATEAU.Util;
 using UnityEditor;
@@ -25,6 +26,7 @@ namespace PLATEAU.CityAdjust.ConvertToAsset
                 return;
             }
             var srcGameObjs = new GameObject[] { conf.SrcGameObj };
+            var srcTrans = conf.SrcGameObj.transform;
             
             // 属性情報、都市情報、マテリアルを覚えておきます。
             var attributes = NameToAttrsDict.ComposeFrom(conf.SrcGameObj);
@@ -36,7 +38,7 @@ namespace PLATEAU.CityAdjust.ConvertToAsset
                 srcGameObjs,
                 new UnityMeshToDllSubMeshWithTexture(),
                 false,
-                UnityMeshToDllModelConverter.ConvertVertexPass);
+                UnityModelExporter.LocalVertexConvertFunc(CoordinateSystem.WUN, srcTrans.position));
             
             // FBXに出力します。
             var fullPath = Path.GetFullPath(conf.AssetPath);
@@ -65,12 +67,12 @@ namespace PLATEAU.CityAdjust.ConvertToAsset
             }
             var dstParent = new GameObject("Asset_" + conf.SrcGameObj.name);
             dstParent.transform.parent = conf.SrcGameObj.transform.parent;
+            dstParent.transform.SetPositionAndRotation(srcTrans.position, srcTrans.rotation);
             List<GameObject> newObjs = new List<GameObject>();
             foreach (var fbx in fbxs)
             {
                 var srcObj = AssetDatabase.LoadAssetAtPath<GameObject>(PathUtil.FullPathToAssetsPath(fbx));
                 if (srcObj == null) continue;
-                var srcTrans = conf.SrcGameObj.transform;
                 var newObj = Object.Instantiate(srcObj, srcTrans.position, srcTrans.rotation, dstParent.transform);
                 newObj.name = srcObj.name;
                 newObjs.Add(newObj);
