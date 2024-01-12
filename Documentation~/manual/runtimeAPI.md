@@ -22,6 +22,9 @@
 `Assets/Samples/PLATEAU SDK for Unity/(バージョン)/PLATEAU Samples/APISample/RuntimeAPISample.cs`
   
 以下にそのコードを解説します。  
+
+### ランタイムAPI利用の下準備
+
   
 ### インポート
 ```csharp
@@ -116,3 +119,13 @@ public async void GranularityConvert()
 `new GranularityConvertOptionUnity(new GranularityConvertOption(ここに粒度を入れる, 1),
 ここに変換対象の配列を入れる, 元のオブジェクトを消すならtrueで残すならfalse);`  
 なお`new GranularityConvertOption`の2つ目の引数である`1`は、未実装の設定項目のためどの数値をいれても動作に影響しません。
+
+## Assembly Definition Assetを利用する場合
+Assembly Definition Assetをご利用の場合、  
+PLATEAUのAPIを利用するためには次のように設定する必要があります。
+
+- ご利用のAssembly Definition Assetのうち、PLATEAUのAPIを利用したいものを選択します。
+- インスペクタからAssembly Definition Referencesに次を追加します。
+  - PLATEAU.Runtime
+  - libplateau
+- Applyを押します。
