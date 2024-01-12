@@ -58,6 +58,15 @@ PLATEAU SDK for Unity の導入方法は2通りあります。
 - ウィンドウのパッケージ一覧に `Plateau Unity SDK` が表示されたら完了です。
   ![](../resources/manual/installation/packageInstalled.png)
 
+### Android向けにビルドする場合
+Android向けにビルドする場合、次のようにUnityプロジェクトを設定してください。
+- メニューバーから Edit → Project Settingsを選びます。
+- 表示されたウィンドウの左パネルからPlayerを選びます。
+- Other Settingsを開きます。
+- Scripting BackendをIL2CPPにします。
+- Target ArchitecturesはARM64だけがチェックが入っているようにします。
+
 ### トラブルシューティング
 うまく導入できない場合、次のことをご確認ください。
 - お使いのウイルス対策ソフトによっては、SDKに含まれるバイナリファイルが削除されることがあります。ウィルス対策ソフトによってSDKのファイルが削除されないよう設定をお願いします。
+
