@@ -1,4 +1,5 @@
 using System;
+using UnityEngine;
 
 namespace PLATEAU.CityInfo
 {
@@ -18,12 +19,12 @@ namespace PLATEAU.CityInfo
         /// インポート時の設定で、テクスチャ結合にチェックが入っていたときにtrueになります。
         /// Toolkitsのテクスチャ生成の動作に影響します。
         /// </summary>
-        private bool isTextureCombined;
+        [SerializeField] private bool isTextureCombined;
         
         /// <summary>
         /// 分割結合機能を利用したときにtrueになります。
         /// </summary>
-        private bool isGranularityConverted;
+        [SerializeField] private bool isGranularityConverted;
         public bool IsTextureCombined => isTextureCombined;
         public bool IsGranularityConverted => isGranularityConverted;
     }
