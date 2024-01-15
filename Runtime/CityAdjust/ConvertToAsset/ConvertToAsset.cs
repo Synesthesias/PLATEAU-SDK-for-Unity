@@ -170,6 +170,7 @@ namespace PLATEAU.CityAdjust.ConvertToAsset
 
             /// <summary>
             /// ゲームオブジェクトとその子から、マテリアルの辞書を構築します。
+            /// ただしヒエラルキー上で非アクティブのものは対象外とします。
             /// </summary>
             public static NameToMaterialsDict ComposeFrom(GameObject src)
             {
@@ -180,6 +181,7 @@ namespace PLATEAU.CityAdjust.ConvertToAsset
             
             private static void ComposeRecursive(NameToMaterialsDict dict, GameObject src)
             {
+                if (!src.activeInHierarchy) return;
                 var renderer = src.GetComponent<Renderer>();
                 if (renderer != null)
                 {
@@ -194,7 +196,10 @@ namespace PLATEAU.CityAdjust.ConvertToAsset
 
             private void Add(string name, Material[] materials)
             {
-                data.TryAdd(name, materials);
+                if (!data.TryAdd(name, materials))
+                {
+                    Debug.LogError($"Duplicate game object name: {name}");
+                };
             }
 
             /// <summary>
