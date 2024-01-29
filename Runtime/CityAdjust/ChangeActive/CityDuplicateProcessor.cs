@@ -27,25 +27,29 @@ namespace PLATEAU.CityAdjust.ChangeActive
             {
                 var sortedLods = LODTransformsSorted(gmlTrans).ToArray();
                 // LODの高い方から
-                for (int l = sortedLods.Length - 1; l >= 0; l--)
+                for (int higherLodIndex = sortedLods.Length - 1; higherLodIndex >= 0; higherLodIndex--)
                 {
-                    var lodTrans = sortedLods[l];
-                    if (!lodTrans.gameObject.activeInHierarchy) continue;
-                    int objCount = lodTrans.childCount;
-                    for (int o = 0; o < objCount; o++)
+                    var higherLodTrans = sortedLods[higherLodIndex];
+                    if (!higherLodTrans.gameObject.activeInHierarchy) continue;
+                    int objCount = higherLodTrans.childCount;
+                    for (int higherObjIndex = 0; higherObjIndex < objCount; higherObjIndex++)
                     {
-                        var objTrans = lodTrans.GetChild(o);
-                        if (!objTrans.gameObject.activeInHierarchy) continue;
-                        if (IsAllChildrenDisabled(objTrans)) continue; // LOD2以上で、自身はActiveでも子はすべて非Activeになっているというケースに対応します。
-                        var objId = objTrans.name;
-                        var gmlIdsHigher = GetCityObjs(objTrans);
+                        var higherObjTrans = higherLodTrans.GetChild(higherObjIndex);
+                        if (!higherObjTrans.gameObject.activeInHierarchy) continue;
+                        if (IsAllChildrenDisabled(higherObjTrans)) continue; // LOD2以上で、自身はActiveでも子はすべて非Activeになっているというケースに対応します。
+                        var higherObjId = higherObjTrans.name;
+                        var higherGmlIds = GetCityObjs(higherObjTrans);
                         // LODの低いほうへ見て、重複があれば低いほうを非表示にします。
-                        for (int searchLod = l-1; searchLod >= 0; searchLod--)
+                        for (int lowerLodIndex = higherLodIndex-1; lowerLodIndex >= 0; lowerLodIndex--)
                         {
-                            var searchLodTrans = sortedLods[searchLod].transform;
+                            var lowerLodTrans = sortedLods[lowerLodIndex].transform;
                             
                             // 重複判定1 : 同名のゲームオブジェクトがあるか。
-                            var foundByName = searchLodTrans.Find(objId);
+                            // 例
+                            // LOD1 -> bldg_A
+                            // LOD2 -> bldg_A
+                            // というケースでは、LOD1 の bldg_A を非表示にする。
+                            var foundByName = lowerLodTrans.Find(higherObjId);
                             if (foundByName != null)
                             {
                                 foundByName.gameObject.SetActive(false);
@@ -53,11 +57,17 @@ namespace PLATEAU.CityAdjust.ChangeActive
                             }
                             
                             // 重複判定2 : LODの低いほうが単位が細かい状況で、LODの低いほうのゲームオブジェクトが高いほうのGML IDに含まれるケース
-                            if (gmlIdsHigher.Count > 0)
+                            // 例
+                            // LOD1 -> bldg_A, bldg_B
+                            // LOD2 -> group1
+                            // ただし、bldg_A が group1 の gmlID に含まれている
+                            // というケースでは、bldg_A を非表示にする。
+                            // インポート時にはこのケースはないが、分割結合機能を使うとこのケースはありうる。
+                            if (higherGmlIds.Count > 0)
                             {
-                                foreach (var gmlId in gmlIdsHigher)
+                                foreach (var higherGmlId in higherGmlIds)
                                 {
-                                    var foundByGmlId = searchLodTrans.Find(gmlId);
+                                    var foundByGmlId = lowerLodTrans.Find(higherGmlId);
                                     if (foundByGmlId != null)
                                     {
                                         foundByGmlId.gameObject.SetActive(false);
@@ -66,16 +76,22 @@ namespace PLATEAU.CityAdjust.ChangeActive
                                 
                             }
                             
-                            // 重複判定3 : LODの低い方が単位が粗い状況で、LODの低いほうのGML IDを高いほうがすべて含むケース
-                            foreach (Transform searchObjTrans in searchLodTrans)
+                            // 重複判定3 : LODの低い方が単位が粗い状況で、LODの低いほうのGML IDを、高いほうがすべて含むケース
+                            // 例
+                            // LOD1 -> area1
+                            // LOD2 -> bldg_A, bldg_B
+                            // ただし、area1 の gmlID を列挙すると bldg_A, bldg_B となり、そのすべてが LOD2 に含まれている
+                            // というケースでは、area1を非表示にする。
+                            // インポート時にはこのケースはないが、分割結合機能を使うとこのケースはありうる。
+                            foreach (Transform lowerObjTrans in lowerLodTrans)
                             {
-                                var searchGmls = GetCityObjs(searchObjTrans);
-                                if (searchGmls.Count > 0)
+                                var lowerGmls = GetCityObjs(lowerObjTrans);
+                                if (lowerGmls.Count > 0)
                                 {
                                     bool upperLodContainsAllLowerLodGmlId = true;
-                                    foreach (var searchGml in searchGmls)
+                                    foreach (var lowerGml in lowerGmls)
                                     {
-                                        if (lodTrans.Find(searchGml) == null)
+                                        if (higherLodTrans.Find(lowerGml) == null)
                                         {
                                             upperLodContainsAllLowerLodGmlId = false;
                                             break;
@@ -84,7 +100,7 @@ namespace PLATEAU.CityAdjust.ChangeActive
 
                                     if (upperLodContainsAllLowerLodGmlId)
                                     {
-                                        searchObjTrans.gameObject.SetActive(false);
+                                        lowerObjTrans.gameObject.SetActive(false);
                                     }
                                 }
                             }
