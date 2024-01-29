@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using PLATEAU.CityExport;
@@ -9,8 +10,11 @@ using PLATEAU.CityInfo;
 using PLATEAU.Geometries;
 using PLATEAU.GranularityConvert;
 using PLATEAU.Util;
-using UnityEditor;
 using UnityEngine;
+using Object = UnityEngine.Object;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 namespace PLATEAU.CityAdjust.ConvertToAsset
 {
@@ -21,6 +25,8 @@ namespace PLATEAU.CityAdjust.ConvertToAsset
     {
         public void Convert(ConvertToAssetConfig conf)
         {
+#if UNITY_EDITOR
+            
             if (Directory.GetFileSystemEntries(Path.GetFullPath(conf.AssetPath)).Length > 0)
             {
                 Debug.LogError("失敗：出力先は空のディレクトリを指定してください");
@@ -108,7 +114,13 @@ namespace PLATEAU.CityAdjust.ConvertToAsset
             }
 
             Dialogue.Display("Assetsへの保存が完了しました！", "OK");
+            
+#else
+            throw new NotImplementedException("ConvertToAssetはランタイムでの実行には未対応です。");
+#endif
         }
+        
+#if UNITY_EDITOR
 
         /// <summary>
         /// ゲームオブジェクト名と属性情報の辞書です。
@@ -249,5 +261,6 @@ namespace PLATEAU.CityAdjust.ConvertToAsset
             }
 
         }
+#endif
     }
 }
