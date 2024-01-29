@@ -38,14 +38,57 @@ namespace PLATEAU.CityAdjust.ChangeActive
                         if (!objTrans.gameObject.activeInHierarchy) continue;
                         if (IsAllChildrenDisabled(objTrans)) continue; // LOD2以上で、自身はActiveでも子はすべて非Activeになっているというケースに対応します。
                         var objId = objTrans.name;
+                        var gmlIdsHigher = GetCityObjs(objTrans);
                         // LODの低いほうへ見て、重複があれば低いほうを非表示にします。
                         for (int searchLod = l-1; searchLod >= 0; searchLod--)
                         {
-                            var found = sortedLods[searchLod].transform.Find(objId);
-                            if (found != null)
+                            var searchLodTrans = sortedLods[searchLod].transform;
+                            
+                            // 重複判定1 : 同名のゲームオブジェクトがあるか。
+                            var foundByName = searchLodTrans.Find(objId);
+                            if (foundByName != null)
                             {
-                                found.gameObject.SetActive(false);
+                                foundByName.gameObject.SetActive(false);
+                                continue;
                             }
+                            
+                            // 重複判定2 : LODの低いほうが単位が細かい状況で、LODの低いほうのゲームオブジェクトが高いほうのGML IDに含まれるケース
+                            if (gmlIdsHigher.Count > 0)
+                            {
+                                foreach (var gmlId in gmlIdsHigher)
+                                {
+                                    var foundByGmlId = searchLodTrans.Find(gmlId);
+                                    if (foundByGmlId != null)
+                                    {
+                                        foundByGmlId.gameObject.SetActive(false);
+                                    }
+                                }
+                                
+                            }
+                            
+                            // 重複判定3 : LODの低い方が単位が粗い状況で、LODの低いほうのGML IDを高いほうがすべて含むケース
+                            foreach (Transform searchObjTrans in searchLodTrans)
+                            {
+                                var searchGmls = GetCityObjs(searchObjTrans);
+                                if (searchGmls.Count > 0)
+                                {
+                                    bool upperLodContainsAllLowerLodGmlId = true;
+                                    foreach (var searchGml in searchGmls)
+                                    {
+                                        if (lodTrans.Find(searchGml) == null)
+                                        {
+                                            upperLodContainsAllLowerLodGmlId = false;
+                                            break;
+                                        }
+                                    }
+
+                                    if (upperLodContainsAllLowerLodGmlId)
+                                    {
+                                        searchObjTrans.gameObject.SetActive(false);
+                                    }
+                                }
+                            }
+                            
                         }
                     }
                 }
@@ -56,6 +99,23 @@ namespace PLATEAU.CityAdjust.ChangeActive
         {
             var lods = PLATEAUInstancedCityModel.GetLodTransforms(gmlTrans);
             return lods.OrderBy(lod => lod.name);
+        }
+
+        private static List<string> GetCityObjs(Transform trans)
+        {
+            // 重複判定2,3向けのメソッドです。
+            var components = trans.GetComponentsInChildren<PLATEAUCityObjectGroup>();
+            var gmlIds = new List<string>();
+            // コンポーネントが見つからない場合は空配列とします。
+            if (components.Length == 0) return gmlIds;
+            foreach (var c in components)
+            {
+                // 下の式において、rootCityObjects の children までは見なくて良いです。
+                // なぜなら、それは最小地物であり、最小単位で disable したい状況は重複判定1で拾えており、重複判定2,3ではないからです。
+                gmlIds.AddRange(c.CityObjects.rootCityObjects.Select(cityObj => cityObj.GmlID));
+            }
+
+            return gmlIds;
         }
 
         /// <summary>
