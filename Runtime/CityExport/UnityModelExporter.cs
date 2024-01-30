@@ -69,7 +69,7 @@ namespace PLATEAU.CityExport
                 }
 
                 IUnityMeshToDllSubMeshConverter unityMeshToDllSubMeshConverter = options.ExportTextures
-                    ? new UnityMeshToDllSubMeshWithTexture()
+                    ? new UnityMeshToDllSubMeshWithTexture(options.ExportDefaultTextures)
                     : new UnityMeshToDllSubMeshWithEmptyMaterial();
 
                 bool InvertMesh = (options.MeshAxis == CoordinateSystem.ENU || options.MeshAxis == CoordinateSystem.WUN);

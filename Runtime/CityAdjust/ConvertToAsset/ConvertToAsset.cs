@@ -50,7 +50,7 @@ namespace PLATEAU.CityAdjust.ConvertToAsset
             // 共通ライブラリのModelに変換します。
             using var model = UnityMeshToDllModelConverter.Convert(
                 srcGameObjs,
-                new UnityMeshToDllSubMeshWithTexture(),
+                new UnityMeshToDllSubMeshWithTexture(true),
                 false,
                 UnityModelExporter.LocalVertexConvertFunc(CoordinateSystem.WUN, srcTrans.position),
                 true);
