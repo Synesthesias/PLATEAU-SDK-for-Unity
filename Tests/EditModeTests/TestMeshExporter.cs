@@ -43,7 +43,7 @@ namespace PLATEAU.Tests.EditModeTests
             var instancedCityModel = Object.FindObjectOfType<PLATEAUInstancedCityModel>();
             var options = new MeshExportOptions(
                 MeshExportOptions.MeshTransformType.Local,
-                true, true, MeshFileFormat.OBJ, CoordinateSystem.ENU,
+                exportTextures: true, exportDefaultTextures: true, true, MeshFileFormat.OBJ, CoordinateSystem.ENU,
                 new ExportConfigGuiObj().GetExporter());
             UnityModelExporter.Export(destDirPath, instancedCityModel, options);
 
@@ -66,7 +66,7 @@ namespace PLATEAU.Tests.EditModeTests
             var instancedCityModel = Object.FindObjectOfType<PLATEAUInstancedCityModel>();
             var options = new MeshExportOptions(
                 MeshExportOptions.MeshTransformType.Local,
-                true, false, MeshFileFormat.FBX, CoordinateSystem.ENU,
+                exportTextures: true, exportDefaultTextures: true, false, MeshFileFormat.FBX, CoordinateSystem.ENU,
                 new ExportConfigGuiFbx().GetExporter());
             UnityModelExporter.Export(destDirPath, instancedCityModel, options);
             var expectedFbxFiles = TestCityDefinition.MiniTokyo.GmlDefinitions
@@ -86,7 +86,7 @@ namespace PLATEAU.Tests.EditModeTests
             ((CityExporterGltf)gltfExportGui.GetExporter()).GltfFileFormat = GltfFileFormat.GLTF;
             var options = new MeshExportOptions(
                 MeshExportOptions.MeshTransformType.Local,
-                true, false, MeshFileFormat.GLTF, CoordinateSystem.ENU,
+                exportTextures: true, exportDefaultTextures: true, false, MeshFileFormat.GLTF, CoordinateSystem.ENU,
                 gltfExportGui.GetExporter());
             UnityModelExporter.Export(destDirPath, instancedCityModel, options);
             var expectedGltfFiles = TestCityDefinition.MiniTokyo.GmlDefinitions

@@ -10,6 +10,7 @@ using PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ExportGUIParts;
 using PLATEAU.Geometries;
 using PLATEAU.Util;
 using UnityEditor;
+using UnityEngine;
 using Directory = System.IO.Directory;
 
 namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
@@ -42,6 +43,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
         };
         
         private bool exportTextures = true;
+        private bool exportDefaultTextures;
         private bool exportHiddenObject;
         private MeshExportOptions.MeshTransformType meshTransformType = MeshExportOptions.MeshTransformType.Local;
         private CoordinateSystem meshAxis = CoordinateSystem.ENU;
@@ -75,7 +77,18 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
                     // 選択した出力設定に固有の設定
                     this.formatToExporterGUI[this.meshFileFormat].Draw();
 
-                    this.exportTextures = EditorGUILayout.Toggle("テクスチャ", this.exportTextures);
+                    this.exportTextures = EditorGUILayout.Toggle("テクスチャを含める", this.exportTextures);
+                    if (exportTextures)
+                    {
+                        using (PlateauEditorStyle.VerticalScopeLevel2())
+                        {
+                            float prevLabelWidth = EditorGUIUtility.labelWidth;
+                            EditorGUIUtility.labelWidth = 200;
+                            exportDefaultTextures =
+                                EditorGUILayout.Toggle("SDK付属のデフォルトテクスチャを含める", exportDefaultTextures);
+                            EditorGUIUtility.labelWidth = prevLabelWidth;
+                        }
+                    }
                     this.exportHiddenObject = EditorGUILayout.Toggle("非アクティブオブジェクトを含める", this.exportHiddenObject);
                     this.meshTransformType =
                         (MeshExportOptions.MeshTransformType)EditorGUILayout.EnumPopup("座標変換", this.meshTransformType);
@@ -121,7 +134,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
             {
                 return;
             }
-            var meshExportOptions = new MeshExportOptions(this.meshTransformType, this.exportTextures, this.exportHiddenObject,
+            var meshExportOptions = new MeshExportOptions(this.meshTransformType, this.exportTextures, exportDefaultTextures, this.exportHiddenObject,
                 this.meshFileFormat, this.meshAxis, this.formatToExporterGUI[this.meshFileFormat].GetExporter());
             using (var progress = new ProgressBar("エクスポート中..."))
             {

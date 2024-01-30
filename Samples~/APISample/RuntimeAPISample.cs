@@ -49,7 +49,7 @@ namespace PLATEAU.Samples.APISample
             // エクスポート先をUnityのテキストフィールドから取得します。
             string exportDir = exportPathInputField.text;
             // エクスポート設定です。
-            var option = new MeshExportOptions(MeshExportOptions.MeshTransformType.Local, true, false,
+            var option = new MeshExportOptions(MeshExportOptions.MeshTransformType.Local, true, true, false,
                 MeshFileFormat.FBX, CoordinateSystem.ENU, new CityExporterFbx());
             // 都市モデルを取得します。
             var target = FindObjectOfType<PLATEAUInstancedCityModel>();
