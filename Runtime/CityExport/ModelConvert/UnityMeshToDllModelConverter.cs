@@ -189,6 +189,11 @@ namespace PLATEAU.CityExport.ModelConvert
                     .uv4
                     .Select(uv => new PlateauVector2f(uv.x, uv.y))
                     .ToArray();
+            var vertexColors =
+                unityMesh
+                    .colors
+                    .Select(color => new PlateauVector3d(color.r, color.g, color.b))
+                    .ToArray();
 
             if (invertMesh)
             {
@@ -216,6 +221,8 @@ namespace PLATEAU.CityExport.ModelConvert
             // 上の行で MergeMeshInfo に渡す実引数 includeTexture が常に true になっていますが、それで良いです。
             // 上の処理で テクスチャを含める/含めない の設定に即した SubMesh がすでにできているので、
             // C++側で特別にテクスチャを除く処理は不必要だからです。
+            
+            dllMesh.SetVertexColors(vertexColors);
             
             return dllMesh;
         }
