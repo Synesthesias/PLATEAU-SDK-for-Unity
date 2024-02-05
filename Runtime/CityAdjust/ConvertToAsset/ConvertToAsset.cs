@@ -229,6 +229,12 @@ namespace PLATEAU.CityAdjust.ConvertToAsset
                         for (int i = 0; i < renderer.sharedMaterials.Length && i < materials.Length; i++)
                         {
                             var srcMat = materials[i];
+
+                            if (srcMat == null)
+                            {
+                                nextMaterials[i] = null;
+                                continue;
+                            }
                             
                             // trueならFBXのマテリアルを利用し、falseなら元のマテリアルを利用します。
                             bool shouldUseFbxMaterial = false;
