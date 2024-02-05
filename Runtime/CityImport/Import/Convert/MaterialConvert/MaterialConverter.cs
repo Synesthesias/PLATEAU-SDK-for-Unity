@@ -61,8 +61,8 @@ namespace PLATEAU.CityImport.Import.Convert.MaterialConvert
             int nameIdByAttribute = (int)propIdGetMethod.Invoke(mat, new object[] { ShaderPropertyFlags.MainTexture });
             if (nameIdByAttribute >= 0) return true;
             
-            // _MainTexがあるかをチェックします。
-            return mat.HasProperty("_MainTex");
+            // プロパティ名でチェックします。
+            return mat.HasProperty("_MainTex") || mat.HasProperty("_BaseMap");
         }
     }
 }
