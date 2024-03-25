@@ -212,7 +212,11 @@ namespace PLATEAU.CityAdjust.ConvertToAsset
             {
                 if (!data.TryAdd(name, materials))
                 {
-                    Debug.LogError($"Duplicate game object name: {name}");
+                    // 重複時はログを出します。ただし、ToolkitsのAutoTexturingで多数出てくる名前はよしとします。
+                    if (name != "FloorEmission" && name != "ObstacleLight")
+                    {
+                        Debug.LogError($"Duplicate game object name: {name}");
+                    }
                 };
             }
 
