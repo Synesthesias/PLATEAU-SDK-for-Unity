@@ -23,6 +23,8 @@ namespace PLATEAU.CityAdjust.ConvertToAsset
     /// </summary>
     public class ConvertToAsset
     {
+        private static readonly int PropIdBaseMap = Shader.PropertyToID("_BaseMap");
+
         public void Convert(ConvertToAssetConfig conf)
         {
 #if UNITY_EDITOR
@@ -236,21 +238,39 @@ namespace PLATEAU.CityAdjust.ConvertToAsset
                                 continue;
                             }
                             
+                            // マテリアル復元の分岐
+                            
                             // trueならFBXのマテリアルを利用し、falseなら元のマテリアルを利用します。
                             bool shouldUseFbxMaterial = false;
 
-                            // mainTextureがないシェーダーなら、元のマテリアルを利用します。
-                            if (!srcMat.HasMainTextureAttribute())
+                            
+                            if (srcMat.shader.name == "Weather/Building_URP")
                             {
+                                // Rendering ToolkitのAuto Textureを利用している場合
+                                // マテリアルは元からコピーします、ただしテクスチャはfbxのものに差し替えます。
                                 shouldUseFbxMaterial = false;
+                                var nextMaterial = new Material(srcMat);
+                                var fbxTex = nextMaterials[i].mainTexture;
+                                nextMaterial.SetTexture(PropIdBaseMap, fbxTex);
                             }
                             else
                             {
-                                var srcTexPath = AssetDatabase.GetAssetPath(srcMat.mainTexture);
-                                // 元のテクスチャがシーン内に保存されているなら、FBXに出力されたマテリアルを利用します。
-                                // 元のテクスチャがシーン外に保存されているなら、元のマテリアルを利用します。
-                                shouldUseFbxMaterial = srcTexPath == "";
+                                // Rendering Toolkitでない場合
+                                
+                                // mainTextureがないシェーダーなら、元のマテリアルを利用します。
+                                if (!srcMat.HasMainTextureAttribute())
+                                {
+                                    shouldUseFbxMaterial = false;
+                                }
+                                else
+                                {
+                                    var srcTexPath = AssetDatabase.GetAssetPath(srcMat.mainTexture);
+                                    // 元のテクスチャがシーン内に保存されているなら、FBXに出力されたマテリアルを利用します。
+                                    // 元のテクスチャがシーン外に保存されているなら、元のマテリアルを利用します。
+                                    shouldUseFbxMaterial = srcTexPath == "";
+                                }
                             }
+                            
                             
                             if(!shouldUseFbxMaterial) nextMaterials[i] = srcMat;
                         }

@@ -23,6 +23,10 @@ namespace PLATEAU.CityImport.Import.Convert.MaterialConvert
             if (mat == null) return "";
             if (!mat.HasMainTextureAttribute()) return "";
             var tex = mat.mainTexture;
+            if (tex == null)
+            {
+                tex = mat.GetTexture("_BaseMap");
+            }
             if (tex == null) return "";
             
 #if UNITY_EDITOR
