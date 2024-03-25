@@ -18,12 +18,19 @@ PLATEAU SDK for Unityは、[PLATEAU](https://www.mlit.go.jp/plateau/)の3D都市
 
 PLATEAU SDK for Unityを利用することで、実世界を舞台にしたアプリケーションの開発や、PLATEAUの豊富なデータを活用したシミュレーションを簡単に行うことができます。
 
-PLATEAU SDK for Unityは利用者アンケートを実施しています。
+◆PLATEAU SDK for Unityは利用者アンケートを実施しています。
 今後の開発の参考にするため、ユーザーの皆様の忌憚ないご意見をお聞かせください。
 [アンケートはこちら](https://docs.google.com/forms/d/e/1FAIpQLSeICxDJd6eQ311_rDbCudc2c8UUZ8A0oE6LXppKoHgT2mwYQQ/viewform)
 
+◆PLATEAU SLackコミュニティはどなたでもご参加いただけます。
+参加希望の方は、[お問い合わせページ](https://www.mlit.go.jp/plateau/contact/)よりお気軽にお問い合わせください。
+
 # サンプルプロジェクト
-本SDKを使用して作成されたサンプルプロジェクトを[こちら](https://github.com/Project-PLATEAU/PLATEAU-SDK-for-Unity-Samples)で配布しています。
+本SDKを使用して作成されたサンプルプロジェクトを配布しています。
+- [2024年のGISサンプル](https://github.com/Project-PLATEAU/PLATEAU-SDK-for-Unity-GISSample)
+  - 都市の情報を視覚的に表示するサンプルです。
+- [2023年のサンプル](https://github.com/Project-PLATEAU/PLATEAU-SDK-for-Unity-Samples)
+  - 都市の情報を表示するサンプルと、都市を車で走行するサンプルです。
 
 <img src="Documentation~/resources/index/gissample.png" width="48%" />&nbsp;
 <img src="Documentation~/resources/index/gamesample.png" width="48%" /></a>&nbsp;
