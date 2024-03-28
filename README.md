@@ -29,8 +29,10 @@ PLATEAU SDK for Unityを利用することで、実世界を舞台にしたア�
 本SDKを使用して作成されたサンプルプロジェクトを配布しています。
 - [2024年のGISサンプル](https://github.com/Project-PLATEAU/PLATEAU-SDK-for-Unity-GISSample)
   - 都市の情報を視覚的に表示するサンプルです。
+- [2024年のゲームサンプル](https://github.com/Project-PLATEAU/PLATEAU-SDK-for-Unity-GameSample)
+  - 都市を舞台に遊ぶゲームのサンプルです。
 - [2023年のサンプル](https://github.com/Project-PLATEAU/PLATEAU-SDK-for-Unity-Samples)
-  - 都市の情報を表示するサンプルと、都市を車で走行するサンプルです。
+  - 都市の情報を表示するサンプルと、都市を車で走行するサンプルです。2023年のサンプルなので情報が古い箇所があります。
 
 <img src="Documentation~/resources/index/gissample.png" width="48%" />&nbsp;
 <img src="Documentation~/resources/index/gamesample.png" width="48%" /></a>&nbsp;
