@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 using PLATEAU.Interop;
+using PLATEAU.Native;
 using PLATEAU.Util;
 
 namespace PLATEAU.PolygonMesh
@@ -112,6 +113,26 @@ namespace PLATEAU.PolygonMesh
             }
         }
 
+        public PlateauVector3d Position
+        {
+            get
+            {
+                ThrowIfInvalid();
+                PlateauVector3d pos = DLLUtil.GetNativeValue<PlateauVector3d>(
+                    this.Handle,
+                    NativeMethods.plateau_node_get_position
+                );
+                return pos;
+            }
+
+            set
+            {
+                ThrowIfInvalid();
+                var result = NativeMethods.plateau_node_set_position(this.Handle, value);
+                DLLUtil.CheckDllError(result);
+            }
+        }
+
         /// <summary>
         /// <see cref="Mesh"/> を <see cref="Node"/>にセットします。
         /// 取扱注意:
@@ -213,6 +234,17 @@ namespace PLATEAU.PolygonMesh
             internal static extern APIResult plateau_node_set_is_active(
                 [In] IntPtr nodePtr,
                 [MarshalAs(UnmanagedType.U1)] bool isActive
+            );
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_node_get_position(
+                [In] IntPtr nodePtr,
+                out PlateauVector3d outPosition);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_node_set_position(
+                [In] IntPtr nodePtr,
+                [In] PlateauVector3d position
             );
 
             [DllImport(DLLUtil.DllName)]

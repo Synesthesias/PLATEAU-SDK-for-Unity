@@ -96,6 +96,8 @@ namespace PLATEAU.CityExport.ModelConvert
             // ノード生成します。
             var node = Node.Create(trans.name);
             node.IsActive = trans.gameObject.activeInHierarchy;
+            var localPos = vertexConvertFunc(trans.localPosition);
+            node.Position = localPos;
                 
             // ゲームオブジェクトにメッシュがあるかどうか判定します。
             bool hasMesh = false;
