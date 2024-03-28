@@ -226,6 +226,16 @@ namespace PLATEAU.CityAdjust.ConvertToAsset
             /// </summary>
             public void RestoreTo(Transform dst)
             {
+                
+                // Plateau ToolkitのAutoTexturingで生成されるObstacleLight向けの特別処理です。
+                // 複数の"ObstacleLight"を含むFBXをインポートするとUnityの仕様で"ObstacleLight 1" "ObstacleLight 2"... という名前に変わってしまいますが、
+                // 名前が変わると以下のマテリアルを当てる処理で問題となるので名前を戻します。
+                if (dst.name is "ObstacleLight 1" or "ObstacleLight 2" or "ObstacleLight 3")
+                {
+                    dst.name = "ObstacleLight";
+                }
+                
+                // 以下、マテリアルを当てる処理
                 var renderer = dst.GetComponent<MeshRenderer>();
                 if (renderer != null)
                 {
@@ -247,8 +257,9 @@ namespace PLATEAU.CityAdjust.ConvertToAsset
                             // trueならFBXのマテリアルを利用し、falseなら元のマテリアルを利用します。
                             bool shouldUseFbxMaterial = false;
 
-                            
-                            if (srcMat.shader.name == "Weather/Building_URP")
+
+                            string shaderName = srcMat.shader.name;
+                            if (shaderName is "Weather/Building_URP" or "Weather/Building_HDRP")
                             {
                                 // Rendering ToolkitのAuto Textureを利用している場合
                                 // マテリアルは元からコピーします、ただしテクスチャはfbxのものに差し替えます。
@@ -256,6 +267,11 @@ namespace PLATEAU.CityAdjust.ConvertToAsset
                                 var nextMaterial = new Material(srcMat);
                                 var fbxTex = nextMaterials[i].mainTexture;
                                 nextMaterial.SetTexture(PropIdBaseMap, fbxTex);
+                            }else if (shaderName is "Shader Graphs/ObstacleLight_URP" or "Shader Graphs/ObstacleLight_HDRP")
+                            {
+                                // Rendering ToolkitのAuto Textureで生成されるライトの場合
+                                shouldUseFbxMaterial = false;
+                                nextMaterials[i] = new Material(srcMat);
                             }
                             else
                             {
