@@ -94,7 +94,7 @@ namespace PLATEAU.CityExport.ModelConvert
             
             // スケールの座標変換の考え方
             // 例えば、UnityでLocalScaleが(2,3,4)だったとする。これをWUNに変換するとき、XYZの値を入れ替えて(2,4,3)としたい。
-            // そこで単純に座標変換処理をかけると(-2,4,3)となり、マイナスが余計である。
+            // そこで単純に座標系変換処理をかけると(-2,4,3)となり、マイナスが余計である。
             // 余計なマイナスを取り除くために、(1,1,1)を同じ座標系に変換して(-1,1,1)とし、それでアダマール積をとることで座標変換のマイナスを除く。
             node.LocalScale = vertexConverter.ConvertOnlyCoordinateSystem(trans.localScale).ToPlateauVector() *
                               vertexConverter.ConvertOnlyCoordinateSystem(Vector3.one).ToPlateauVector();
