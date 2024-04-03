@@ -113,14 +113,14 @@ namespace PLATEAU.PolygonMesh
             }
         }
 
-        public PlateauVector3d Position
+        public PlateauVector3d LocalPosition
         {
             get
             {
                 ThrowIfInvalid();
                 PlateauVector3d pos = DLLUtil.GetNativeValue<PlateauVector3d>(
                     this.Handle,
-                    NativeMethods.plateau_node_get_position
+                    NativeMethods.plateau_node_get_local_position
                 );
                 return pos;
             }
@@ -128,7 +128,27 @@ namespace PLATEAU.PolygonMesh
             set
             {
                 ThrowIfInvalid();
-                var result = NativeMethods.plateau_node_set_position(this.Handle, value);
+                var result = NativeMethods.plateau_node_set_local_position(this.Handle, value);
+                DLLUtil.CheckDllError(result);
+            }
+        }
+        
+        public PlateauVector3d LocalScale
+        {
+            get
+            {
+                ThrowIfInvalid();
+                PlateauVector3d scale = DLLUtil.GetNativeValue<PlateauVector3d>(
+                    this.Handle,
+                    NativeMethods.plateau_node_get_local_scale
+                );
+                return scale;
+            }
+
+            set
+            {
+                ThrowIfInvalid();
+                var result = NativeMethods.plateau_node_set_local_scale(this.Handle, value);
                 DLLUtil.CheckDllError(result);
             }
         }
@@ -237,14 +257,25 @@ namespace PLATEAU.PolygonMesh
             );
 
             [DllImport(DLLUtil.DllName)]
-            internal static extern APIResult plateau_node_get_position(
+            internal static extern APIResult plateau_node_get_local_position(
                 [In] IntPtr nodePtr,
                 out PlateauVector3d outPosition);
 
             [DllImport(DLLUtil.DllName)]
-            internal static extern APIResult plateau_node_set_position(
+            internal static extern APIResult plateau_node_set_local_position(
                 [In] IntPtr nodePtr,
                 [In] PlateauVector3d position
+            );
+            
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_node_get_local_scale(
+                [In] IntPtr nodePtr,
+                out PlateauVector3d outScale);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_node_set_local_scale(
+                [In] IntPtr nodePtr,
+                [In] PlateauVector3d scale
             );
 
             [DllImport(DLLUtil.DllName)]

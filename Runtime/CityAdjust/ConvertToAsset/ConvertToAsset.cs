@@ -54,7 +54,7 @@ namespace PLATEAU.CityAdjust.ConvertToAsset
                 srcGameObjs,
                 new UnityMeshToDllSubMeshWithTexture(true),
                 false,
-                UnityModelExporter.LocalVertexConvertFunc(CoordinateSystem.WUN, srcTrans.position),
+                VertexConverterFactory.LocalCoordinateSystemConverter(CoordinateSystem.WUN, srcTrans.position),
                 true);
             
             progress.Display("FBXに出力中...", 0.6f);
