@@ -44,15 +44,10 @@ namespace PLATEAU.CityExport
 
                 using var geoReference = instancedCityModel.GeoReference;
 
-                var referencePoint = geoReference.ReferencePoint;
-                var rootPos = trans.position;
 
-                VertexConverterBase vertexConverter = options.TransformType switch
-                {
-                    MeshExportOptions.MeshTransformType.Local => VertexConverterFactory.LocalCoordinateSystemConverter(options.MeshAxis, rootPos),
-                    MeshExportOptions.MeshTransformType.PlaneCartesian => VertexConverterFactory.PlaneCartesianCoordinateSystemConverter(options.MeshAxis, referencePoint.ToUnityVector(), rootPos),
-                    _ => throw new Exception("Unknown transform type.")
-                };
+                var vertexConverter = VertexConverterFactory.CreateByExportOptions(
+                    options, geoReference.ReferencePoint, trans.position
+                );
                 
                 // Unity のメッシュを中間データ構造(Model)に変換します。
                 var convertTargets = new GameObject[childTrans.childCount];
@@ -66,7 +61,8 @@ namespace PLATEAU.CityExport
                     : new UnityMeshToDllSubMeshWithEmptyMaterial();
 
                 bool InvertMesh = (options.MeshAxis == CoordinateSystem.ENU || options.MeshAxis == CoordinateSystem.WUN);
-                using var model = UnityMeshToDllModelConverter.Convert(convertTargets, unityMeshToDllSubMeshConverter, options.ExportHiddenObjects, vertexConverter, InvertMesh);
+                using var model = UnityMeshToDllModelConverter.Convert(convertTargets, unityMeshToDllSubMeshConverter,
+                    options.ExportHiddenObjects, vertexConverter, InvertMesh);
                 
                 // Model をファイルにして出力します。
                 // options.PlateauModelExporter は、ファイルフォーマットに応じて FbxModelExporter, GltfModelExporter, ObjModelExporter のいずれかです。

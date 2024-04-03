@@ -28,7 +28,7 @@ namespace PLATEAU.CityExport.ModelConvert
         /// <param name="vertexConverter">頂点座標を変換するメソッドで、 Vector3 から PlateauVector3d に変換する方法を指定します。</param>
         /// /// <param name="invertMesh">true : Mesh Normalを反転します</param>
         public static Model Convert(IEnumerable<GameObject> gameObjs, IUnityMeshToDllSubMeshConverter unityMeshToDllSubMeshConverter,
-            bool exportDisabledGameObj, VertexConverterBase vertexConverter, bool InvertMesh = false)
+            bool exportDisabledGameObj, AdderAndCoordinateSystemConverter vertexConverter, bool InvertMesh = false)
         {
             var model = Model.Create();
             foreach(var go in gameObjs)
@@ -51,7 +51,7 @@ namespace PLATEAU.CityExport.ModelConvert
         /// <param name="vertexConverter"></param>
         /// <param name="invertMesh">true : Mesh Normalを反転します</param>
         private static void ConvertRecursive(Node parentNode, Transform trans, Model model, IUnityMeshToDllSubMeshConverter unityMeshToDllSubMeshConverter,
-            bool exportDisabledGameObj, VertexConverterBase vertexConverter, bool invertMesh)
+            bool exportDisabledGameObj, AdderAndCoordinateSystemConverter vertexConverter, bool invertMesh)
         {
             bool activeInHierarchy = trans.gameObject.activeInHierarchy;
             if ((!activeInHierarchy) && (!exportDisabledGameObj)) return;
@@ -84,14 +84,20 @@ namespace PLATEAU.CityExport.ModelConvert
         }
 
         private static Node GameObjToNode(Transform trans, IUnityMeshToDllSubMeshConverter unityMeshToDllSubMeshConverter,
-            VertexConverterBase vertexConverter, bool invertMesh)
+            AdderAndCoordinateSystemConverter vertexConverter, bool invertMesh)
         {
             // ノード生成します。
             var node = Node.Create(trans.name);
             node.IsActive = trans.gameObject.activeInHierarchy;
             var localPos = vertexConverter.Convert(trans.localPosition).ToPlateauVector();
             node.LocalPosition = localPos;
-            // TODO ここにscaleを追加
+            
+            // スケールの座標変換の考え方
+            // 例えば、UnityでLocalScaleが(2,3,4)だったとする。これをWUNに変換するとき、XYZの値を入れ替えて(2,4,3)としたい。
+            // そこで単純に座標変換処理をかけると(-2,4,3)となり、マイナスが余計である。
+            // 余計なマイナスを取り除くために、(1,1,1)を同じ座標系に変換して(-1,1,1)とし、それでアダマール積をとることで座標変換のマイナスを除く。
+            node.LocalScale = vertexConverter.ConvertOnlyCoordinateSystem(trans.localScale).ToPlateauVector() *
+                              vertexConverter.ConvertOnlyCoordinateSystem(Vector3.one).ToPlateauVector();
                 
             // ゲームオブジェクトにメッシュがあるかどうか判定します。
             bool hasMesh = false;
