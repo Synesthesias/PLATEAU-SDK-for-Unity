@@ -116,7 +116,9 @@ namespace PLATEAU.CityExport.ModelConvert
             if (hasMesh)
             {
                 // メッシュを変換します。
-                nativeMesh = ConvertMesh(unityMesh, trans.GetComponent<MeshRenderer>(), unityMeshToDllSubMeshConverter, vertexConvertFunc, invertMesh);
+                nativeMesh = ConvertMesh(
+                    unityMesh, trans.GetComponent<MeshRenderer>(), unityMeshToDllSubMeshConverter,
+                    vertexConvertFunc, invertMesh, trans.lossyScale);
             
                 int subMeshCount = unityMesh.subMeshCount;
                 for (int i = 0; i < subMeshCount; i++)
@@ -170,12 +172,12 @@ namespace PLATEAU.CityExport.ModelConvert
 
         private static PolygonMesh.Mesh ConvertMesh(Mesh unityMesh, MeshRenderer meshRenderer,
             IUnityMeshToDllSubMeshConverter unityMeshToDllSubMeshConverter,
-            VertexConvertFunc vertexConvertFunc, bool invertMesh)
+            VertexConvertFunc vertexConvertFunc, bool invertMesh, Vector3 worldScale)
         {
             var vertices =
                 unityMesh
                     .vertices
-                    .Select(vert => vertexConvertFunc(vert))
+                    .Select(vert => vertexConvertFunc(new Vector3(vert.x * worldScale.x, vert.y * worldScale.y, vert.z * worldScale.z)))
                     .ToArray();
             var indices =
                 unityMesh.triangles
