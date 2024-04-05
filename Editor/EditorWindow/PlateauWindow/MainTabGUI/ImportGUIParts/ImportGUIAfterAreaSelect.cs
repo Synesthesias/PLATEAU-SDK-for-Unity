@@ -1,6 +1,5 @@
 ﻿using PLATEAU.CityImport.Config;
 using PLATEAU.CityImport.Config.PackageImportConfigs;
-using PLATEAU.Editor.CityImport;
 using PLATEAU.Editor.EditorWindow.Common;
 using PLATEAU.Editor.EditorWindow.ProgressDisplay;
 

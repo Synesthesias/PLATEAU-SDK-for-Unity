@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using PLATEAU.CityExport;
@@ -7,10 +6,8 @@ using PLATEAU.CityInfo;
 using PLATEAU.Editor.EditorWindow.Common;
 using PLATEAU.Editor.EditorWindow.Common.PathSelector;
 using PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ExportGUIParts;
-using PLATEAU.Geometries;
 using PLATEAU.Util;
 using UnityEditor;
-using UnityEngine;
 using Directory = System.IO.Directory;
 
 namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
@@ -34,6 +31,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
     {
         private PLATEAUInstancedCityModel exportTarget;
         private MeshFileFormat meshFileFormat = MeshFileFormat.OBJ;
+        private readonly CoordinateSystemGui coordinateSystemGui = new CoordinateSystemGui();
 
         private readonly Dictionary<MeshFileFormat, IExportConfigGUI> formatToExporterGUI = new()
         {
@@ -46,9 +44,6 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
         private bool exportDefaultTextures;
         private bool exportHiddenObject;
         private MeshExportOptions.MeshTransformType meshTransformType = MeshExportOptions.MeshTransformType.Local;
-        private CoordinateSystem meshAxis = CoordinateSystem.ENU;
-        private static readonly List<CoordinateSystem> meshAxisChoices = ((CoordinateSystem[])Enum.GetValues(typeof(CoordinateSystem))).ToList();
-        private static readonly string[] meshAxisDisplay = meshAxisChoices.Select(axis => axis.ToNaturalLanguage()).ToArray();
         private string exportDirPath = "";
         private bool foldOutOption = true;
         private bool foldOutExportPath = true;
@@ -93,8 +88,8 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
                     this.meshTransformType =
                         (MeshExportOptions.MeshTransformType)EditorGUILayout.EnumPopup("座標変換", this.meshTransformType);
 
+                    coordinateSystemGui.Draw();
                     
-                    this.meshAxis = meshAxisChoices[EditorGUILayout.Popup("座標軸", meshAxisChoices.IndexOf(this.meshAxis), meshAxisDisplay)];
                 }
             });
 
@@ -135,7 +130,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
                 return;
             }
             var meshExportOptions = new MeshExportOptions(this.meshTransformType, this.exportTextures, exportDefaultTextures, this.exportHiddenObject,
-                this.meshFileFormat, this.meshAxis, this.formatToExporterGUI[this.meshFileFormat].GetExporter());
+                this.meshFileFormat, coordinateSystemGui.SelectedCoordinateSystem, this.formatToExporterGUI[this.meshFileFormat].GetExporter());
             using (var progress = new ProgressBar("エクスポート中..."))
             {
                 progress.Display(0.5f);
