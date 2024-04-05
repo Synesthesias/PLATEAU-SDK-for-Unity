@@ -35,7 +35,6 @@ namespace PLATEAU.CityExport
             {
                 var childTrans = trans.GetChild(i);
                 var childName = childTrans.name;
-                if (!childName.EndsWith(".gml")) continue;
 
                 if ((!options.ExportHiddenObjects) && (!childTrans.gameObject.activeInHierarchy))
                 {
