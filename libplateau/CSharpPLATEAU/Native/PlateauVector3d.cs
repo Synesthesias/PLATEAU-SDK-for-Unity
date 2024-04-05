@@ -5,6 +5,7 @@ namespace PLATEAU.Native
     [StructLayout(LayoutKind.Sequential)]
     public struct PlateauVector3d
     {
+        // フィールドの定義順はC++と完全に一致する必要があります。
         public double X;
         public double Y;
         public double Z;

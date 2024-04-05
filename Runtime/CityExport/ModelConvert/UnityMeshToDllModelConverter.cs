@@ -98,6 +98,15 @@ namespace PLATEAU.CityExport.ModelConvert
             // 余計なマイナスを取り除くために、(1,1,1)を同じ座標系に変換して(-1,1,1)とし、それでアダマール積をとることで座標変換のマイナスを除く。
             node.LocalScale = vertexConverter.ConvertOnlyCoordinateSystem(trans.localScale).ToPlateauVector() *
                               vertexConverter.ConvertOnlyCoordinateSystem(Vector3.one).ToPlateauVector();
+
+            var srcEuler = trans.localRotation.eulerAngles;
+            var convertedEuler = vertexConverter.ConvertOnlyCoordinateSystem(srcEuler);
+            if (invertMesh)
+            {
+                // メッシュが裏返るような座標軸に変換する場合、Rotationを反転します。
+                convertedEuler *= -1;
+            }
+            node.LocalRotation = Quaternion.Euler(convertedEuler).ToPlateauQuaternion();
                 
             // ゲームオブジェクトにメッシュがあるかどうか判定します。
             bool hasMesh = false;

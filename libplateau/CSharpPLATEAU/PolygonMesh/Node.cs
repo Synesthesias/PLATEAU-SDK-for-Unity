@@ -153,6 +153,26 @@ namespace PLATEAU.PolygonMesh
             }
         }
 
+        public PlateauQuaternion LocalRotation
+        {
+            get
+            {
+                ThrowIfInvalid();
+                var quaternion = DLLUtil.GetNativeValue<PlateauQuaternion>(
+                    this.Handle,
+                    NativeMethods.plateau_node_get_local_rotation
+                );
+                return quaternion;
+            }
+
+            set
+            {
+                ThrowIfInvalid();
+                var result = NativeMethods.plateau_node_set_local_rotation(this.Handle, value);
+                DLLUtil.CheckDllError(result);
+            }
+        }
+
         /// <summary>
         /// <see cref="Mesh"/> を <see cref="Node"/>にセットします。
         /// 取扱注意:
@@ -276,6 +296,18 @@ namespace PLATEAU.PolygonMesh
             internal static extern APIResult plateau_node_set_local_scale(
                 [In] IntPtr nodePtr,
                 [In] PlateauVector3d scale
+            );
+            
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_node_set_local_rotation(
+                [In] IntPtr nodePtr,
+                [In] PlateauQuaternion quaternion
+            );
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_node_get_local_rotation(
+                [In] IntPtr nodePtr,
+                out PlateauQuaternion outQuaternion
             );
 
             [DllImport(DLLUtil.DllName)]
