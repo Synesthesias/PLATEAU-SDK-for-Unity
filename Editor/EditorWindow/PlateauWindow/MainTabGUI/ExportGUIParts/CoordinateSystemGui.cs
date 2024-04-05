@@ -11,7 +11,11 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ExportGUIParts
     /// </summary>
     public class CoordinateSystemGui
     {
-        private static readonly List<CoordinateSystem> MeshAxisChoices = ((CoordinateSystem[])Enum.GetValues(typeof(CoordinateSystem))).ToList();
+        // obj, fbx, gltf形式は、仕様に従うと右手座標系で扱うべきなので、左手座標系は選択肢から除外します。
+        private static readonly List<CoordinateSystem> MeshAxisChoices =
+            ((CoordinateSystem[])Enum.GetValues(typeof(CoordinateSystem)))
+            .Where(sys => sys.IsRightHanded())
+            .ToList();
         public CoordinateSystem SelectedCoordinateSystem { get; private set; } = CoordinateSystem.ENU;
         private static readonly string[] MeshAxisDisplay = MeshAxisChoices.Select(axis => axis.ToNaturalLanguage()).ToArray();
 
