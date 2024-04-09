@@ -50,14 +50,19 @@ namespace PLATEAU.Geometries
         /// <summary> 右手座標系ならtrue、左手座標系ならfalseを返します。 </summary>
         public static bool IsRightHanded(this CoordinateSystem system)
         {
-            return system switch
+            switch (system)
             {
-                CoordinateSystem.ENU => true,
-                CoordinateSystem.ESU => false,
-                CoordinateSystem.EUN => false,
-                CoordinateSystem.WUN => true,
-                _ => throw new ArgumentOutOfRangeException(nameof(system), "Unknown coordinate system.")
-            };
+                case CoordinateSystem.ENU:
+                    return true;
+                case CoordinateSystem.ESU:
+                    return false;
+                case CoordinateSystem.EUN:
+                    return false;
+                case CoordinateSystem.WUN:
+                    return true;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(system), system, null);
+            }
         }
     }
 
