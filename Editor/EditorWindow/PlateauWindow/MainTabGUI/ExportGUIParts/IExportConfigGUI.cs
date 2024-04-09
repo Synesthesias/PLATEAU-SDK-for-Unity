@@ -1,5 +1,4 @@
 ﻿using PLATEAU.CityExport.Exporters;
-using PLATEAU.PolygonMesh;
 
 namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ExportGUIParts
 {

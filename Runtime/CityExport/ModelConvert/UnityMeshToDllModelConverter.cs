@@ -4,6 +4,7 @@ using PLATEAU.CityExport.ModelConvert.SubMeshConvert;
 using PLATEAU.CityInfo;
 using PLATEAU.Native;
 using PLATEAU.PolygonMesh;
+using PLATEAU.Util;
 using UnityEngine;
 using UnityEngine.Assertions;
 using CityObjectList = PLATEAU.PolygonMesh.CityObjectList;
@@ -17,7 +18,6 @@ namespace PLATEAU.CityExport.ModelConvert
     /// </summary>
     internal static class UnityMeshToDllModelConverter
     {
-        public delegate PlateauVector3d VertexConvertFunc(Vector3 src);
         
         /// <summary>
         /// 引数で与えられたゲームオブジェクトとその子(再帰的)を <see cref="Model"/> に変換して返します。
@@ -25,25 +25,18 @@ namespace PLATEAU.CityExport.ModelConvert
         /// <param name="gameObjs">変換対象ゲームオブジェクトのルートです。</param>
         /// <param name="unityMeshToDllSubMeshConverter"></param>
         /// <param name="exportDisabledGameObj">false のとき、非Activeのものは対象外とします。</param>
-        /// <param name="vertexConvertFunc">頂点座標を変換するメソッドで、 Vector3 から PlateauVector3d に変換する方法を指定します。</param>
+        /// <param name="vertexConverter">頂点座標を変換するメソッドで、 Vector3 から PlateauVector3d に変換する方法を指定します。</param>
         /// /// <param name="invertMesh">true : Mesh Normalを反転します</param>
-        public static Model Convert(IEnumerable<GameObject> gameObjs, IUnityMeshToDllSubMeshConverter unityMeshToDllSubMeshConverter, bool exportDisabledGameObj, VertexConvertFunc vertexConvertFunc, bool InvertMesh = false)
+        public static Model Convert(IEnumerable<GameObject> gameObjs, IUnityMeshToDllSubMeshConverter unityMeshToDllSubMeshConverter,
+            bool exportDisabledGameObj, AdderAndCoordinateSystemConverter vertexConverter, bool InvertMesh = false)
         {
             var model = Model.Create();
             foreach(var go in gameObjs)
             {
                 var trans = go.transform;
-                ConvertRecursive(null, trans, model, unityMeshToDllSubMeshConverter , exportDisabledGameObj, vertexConvertFunc, InvertMesh);
+                ConvertRecursive(null, trans, model, unityMeshToDllSubMeshConverter , exportDisabledGameObj, vertexConverter, InvertMesh);
             }
             return model;
-        }
-
-        /// <summary>
-        /// 特に座標変換のない最小限のコンバートメソッドです。
-        /// </summary>
-        internal static PlateauVector3d ConvertVertexPass(Vector3 src)
-        {
-            return new PlateauVector3d(src.x, src.y, src.z);
         }
 
         /// <summary>
@@ -55,16 +48,16 @@ namespace PLATEAU.CityExport.ModelConvert
         /// <param name="model"> <paramref name="parentNode"/> が null のとき、<see cref="Node"/> は <paramref name="model"/> に追加されます。</param>
         /// <param name="unityMeshToDllSubMeshConverter"></param>
         /// <param name="exportDisabledGameObj">false のとき、ActiveでないGameObjectは対象から除外します。</param>
-        /// <param name="vertexConvertFunc"></param>
+        /// <param name="vertexConverter"></param>
         /// <param name="invertMesh">true : Mesh Normalを反転します</param>
         private static void ConvertRecursive(Node parentNode, Transform trans, Model model, IUnityMeshToDllSubMeshConverter unityMeshToDllSubMeshConverter,
-            bool exportDisabledGameObj, VertexConvertFunc vertexConvertFunc, bool invertMesh)
+            bool exportDisabledGameObj, AdderAndCoordinateSystemConverter vertexConverter, bool invertMesh)
         {
             bool activeInHierarchy = trans.gameObject.activeInHierarchy;
             if ((!activeInHierarchy) && (!exportDisabledGameObj)) return;
 
             // メッシュを変換して Node を作ります。
-            var node = GameObjToNode(trans, unityMeshToDllSubMeshConverter, vertexConvertFunc, invertMesh);
+            var node = GameObjToNode(trans, unityMeshToDllSubMeshConverter, vertexConverter, invertMesh);
 
             if (parentNode == null)
             {
@@ -86,16 +79,34 @@ namespace PLATEAU.CityExport.ModelConvert
             for (int i = 0; i < numChild; i++)
             {
                 var childTrans = trans.GetChild(i);
-                ConvertRecursive(node, childTrans, model, unityMeshToDllSubMeshConverter, exportDisabledGameObj, vertexConvertFunc, invertMesh);
+                ConvertRecursive(node, childTrans, model, unityMeshToDllSubMeshConverter, exportDisabledGameObj, vertexConverter, invertMesh);
             }
         }
 
         private static Node GameObjToNode(Transform trans, IUnityMeshToDllSubMeshConverter unityMeshToDllSubMeshConverter,
-            VertexConvertFunc vertexConvertFunc, bool invertMesh)
+            AdderAndCoordinateSystemConverter vertexConverter, bool invertMesh)
         {
             // ノード生成します。
             var node = Node.Create(trans.name);
             node.IsActive = trans.gameObject.activeInHierarchy;
+            var localPos = vertexConverter.Convert(trans.localPosition).ToPlateauVector();
+            node.LocalPosition = localPos;
+            
+            // スケールの座標変換の考え方
+            // 例えば、UnityでLocalScaleが(2,3,4)だったとする。これをWUNに変換するとき、XYZの値を入れ替えて(2,4,3)としたい。
+            // そこで単純に座標系変換処理をかけると(-2,4,3)となり、マイナスが余計である。
+            // 余計なマイナスを取り除くために、(1,1,1)を同じ座標系に変換して(-1,1,1)とし、それでアダマール積をとることで座標変換のマイナスを除く。
+            node.LocalScale = vertexConverter.ConvertOnlyCoordinateSystem(trans.localScale).ToPlateauVector() *
+                              vertexConverter.ConvertOnlyCoordinateSystem(Vector3.one).ToPlateauVector();
+
+            var srcEuler = trans.localRotation.eulerAngles;
+            var convertedEuler = vertexConverter.ConvertOnlyCoordinateSystem(srcEuler);
+            if (invertMesh)
+            {
+                // メッシュが裏返るような座標軸に変換する場合、Rotationを反転します。
+                convertedEuler *= -1;
+            }
+            node.LocalRotation = Quaternion.Euler(convertedEuler).ToPlateauQuaternion();
                 
             // ゲームオブジェクトにメッシュがあるかどうか判定します。
             bool hasMesh = false;
@@ -114,7 +125,9 @@ namespace PLATEAU.CityExport.ModelConvert
             if (hasMesh)
             {
                 // メッシュを変換します。
-                nativeMesh = ConvertMesh(unityMesh, trans.GetComponent<MeshRenderer>(), unityMeshToDllSubMeshConverter, vertexConvertFunc, invertMesh);
+                nativeMesh = ConvertMesh(
+                    unityMesh, trans.GetComponent<MeshRenderer>(), unityMeshToDllSubMeshConverter,
+                    vertexConverter, invertMesh);
             
                 int subMeshCount = unityMesh.subMeshCount;
                 for (int i = 0; i < subMeshCount; i++)
@@ -168,12 +181,12 @@ namespace PLATEAU.CityExport.ModelConvert
 
         private static PolygonMesh.Mesh ConvertMesh(Mesh unityMesh, MeshRenderer meshRenderer,
             IUnityMeshToDllSubMeshConverter unityMeshToDllSubMeshConverter,
-            VertexConvertFunc vertexConvertFunc, bool invertMesh)
+            VertexConverterBase vertexConverter, bool invertMesh)
         {
             var vertices =
                 unityMesh
                     .vertices
-                    .Select(vert => vertexConvertFunc(vert))
+                    .Select(vert => vertexConverter.Convert(new Vector3(vert.x, vert.y, vert.z)).ToPlateauVector())
                     .ToArray();
             var indices =
                 unityMesh.triangles
@@ -188,6 +201,11 @@ namespace PLATEAU.CityExport.ModelConvert
                 unityMesh
                     .uv4
                     .Select(uv => new PlateauVector2f(uv.x, uv.y))
+                    .ToArray();
+            var vertexColors =
+                unityMesh
+                    .colors
+                    .Select(color => new PlateauVector3d(color.r, color.g, color.b))
                     .ToArray();
 
             if (invertMesh)
@@ -216,6 +234,8 @@ namespace PLATEAU.CityExport.ModelConvert
             // 上の行で MergeMeshInfo に渡す実引数 includeTexture が常に true になっていますが、それで良いです。
             // 上の処理で テクスチャを含める/含めない の設定に即した SubMesh がすでにできているので、
             // C++側で特別にテクスチャを除く処理は不必要だからです。
+            
+            dllMesh.SetVertexColors(vertexColors);
             
             return dllMesh;
         }

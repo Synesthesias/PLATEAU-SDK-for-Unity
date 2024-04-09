@@ -5,6 +5,7 @@ namespace PLATEAU.Native
     [StructLayout(LayoutKind.Sequential)]
     public struct PlateauVector3d
     {
+        // フィールドの定義順はC++と完全に一致する必要があります。
         public double X;
         public double Y;
         public double Z;
@@ -36,9 +37,20 @@ namespace PLATEAU.Native
             return new PlateauVector3d(vec.X * scalar, vec.Y * scalar, vec.Z * scalar);
         }
 
+        /// <summary> アダマール積(各要素ごとの積) </summary>
+        public static PlateauVector3d operator *(PlateauVector3d op1, PlateauVector3d op2)
+        {
+            return new PlateauVector3d(op1.X * op2.X, op1.Y * op2.Y, op1.Z * op2.Z);
+        }
+
         public static PlateauVector3d operator /(PlateauVector3d vec, double scalar)
         {
             return new PlateauVector3d(vec.X / scalar, vec.Y / scalar, vec.Z / scalar);
+        }
+
+        public static PlateauVector3d operator /(PlateauVector3d op1, PlateauVector3d op2)
+        {
+            return new PlateauVector3d(op1.X / op2.X, op1.Y / op2.Y, op1.Z / op2.Z);
         }
     }
 }

@@ -1,7 +1,4 @@
-﻿using System.IO;
-using PLATEAU.CityExport.Exporters;
-using PLATEAU.MeshWriter;
-using PLATEAU.PolygonMesh;
+﻿using PLATEAU.CityExport.Exporters;
 
 namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ExportGUIParts
 {

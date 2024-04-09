@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using PLATEAU.CityExport;
@@ -10,7 +9,6 @@ using PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ExportGUIParts;
 using PLATEAU.Geometries;
 using PLATEAU.Util;
 using UnityEditor;
-using UnityEngine;
 using Directory = System.IO.Directory;
 
 namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
@@ -33,7 +31,8 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
     internal class CityExportGUI : IEditorDrawable
     {
         private PLATEAUInstancedCityModel exportTarget;
-        private MeshFileFormat meshFileFormat = MeshFileFormat.OBJ;
+        private CoordinateSystemGui coordinateSystemGui;
+        private readonly MeshFileFormatGui meshFileFormatGui;
 
         private readonly Dictionary<MeshFileFormat, IExportConfigGUI> formatToExporterGUI = new()
         {
@@ -46,13 +45,23 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
         private bool exportDefaultTextures;
         private bool exportHiddenObject;
         private MeshExportOptions.MeshTransformType meshTransformType = MeshExportOptions.MeshTransformType.Local;
-        private CoordinateSystem meshAxis = CoordinateSystem.ENU;
-        private static readonly List<CoordinateSystem> meshAxisChoices = ((CoordinateSystem[])Enum.GetValues(typeof(CoordinateSystem))).ToList();
-        private static readonly string[] meshAxisDisplay = meshAxisChoices.Select(axis => axis.ToNaturalLanguage()).ToArray();
         private string exportDirPath = "";
         private bool foldOutOption = true;
         private bool foldOutExportPath = true;
         private readonly PathSelectorFolder exportDirSelector = new PathSelectorFolder();
+
+        public CityExportGUI()
+        {
+            // フォーマット選択に応じて、座標軸の選択肢が変わるようにイベントを設定します。
+            meshFileFormatGui = new MeshFileFormatGui();
+            meshFileFormatGui.OnFormatChanged += (format) =>
+            {
+                var selectedSystem = coordinateSystemGui?.SelectedCoordinateSystem ?? CoordinateSystem.WUN;
+                coordinateSystemGui = new CoordinateSystemGui(format, selectedSystem);
+            };
+            meshFileFormatGui.InvokeOnFormatChanged();
+        }
+        
         public void Draw()
         {
             PlateauEditorStyle.SubTitle("モデルデータのエクスポートを行います。");
@@ -65,17 +74,14 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
                         typeof(PLATEAUInstancedCityModel), true);
             }
             PlateauEditorStyle.Heading("出力形式", "num2.png");
-            using (PlateauEditorStyle.VerticalScopeLevel1())
-            {
-                this.meshFileFormat = (MeshFileFormat)EditorGUILayout.EnumPopup("出力形式", this.meshFileFormat);
-            }
+            meshFileFormatGui.Draw();
             
             this.foldOutOption = PlateauEditorStyle.FoldOut(this.foldOutOption, "Option", () =>
             {
                 using (PlateauEditorStyle.VerticalScopeLevel1())
                 {
                     // 選択した出力設定に固有の設定
-                    this.formatToExporterGUI[this.meshFileFormat].Draw();
+                    this.formatToExporterGUI[meshFileFormatGui.SelectedFormat].Draw();
 
                     this.exportTextures = EditorGUILayout.Toggle("テクスチャを含める", this.exportTextures);
                     if (exportTextures)
@@ -93,8 +99,8 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
                     this.meshTransformType =
                         (MeshExportOptions.MeshTransformType)EditorGUILayout.EnumPopup("座標変換", this.meshTransformType);
 
+                    coordinateSystemGui.Draw();
                     
-                    this.meshAxis = meshAxisChoices[EditorGUILayout.Popup("座標軸", meshAxisChoices.IndexOf(this.meshAxis), meshAxisDisplay)];
                 }
             });
 
@@ -134,8 +140,10 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
             {
                 return;
             }
+
+            var format = meshFileFormatGui.SelectedFormat;
             var meshExportOptions = new MeshExportOptions(this.meshTransformType, this.exportTextures, exportDefaultTextures, this.exportHiddenObject,
-                this.meshFileFormat, this.meshAxis, this.formatToExporterGUI[this.meshFileFormat].GetExporter());
+                format, coordinateSystemGui.SelectedCoordinateSystem, this.formatToExporterGUI[format].GetExporter());
             using (var progress = new ProgressBar("エクスポート中..."))
             {
                 progress.Display(0.5f);
@@ -154,7 +162,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
         {
             // 厳密には、拡張子チェックだけするよりも、出力しようとしているファイル名をすべて調べるのがベストです。
             // しかし、エクスポートを共通ライブラリに任せている都合上それは難しいので、拡張子のみのチェックとします。
-            bool found = meshFileFormat.ToExtensions().Any(extension => FileExistsWithinDepth1(destinationDir, extension, 0));
+            bool found = meshFileFormatGui.SelectedFormat.ToExtensions().Any(extension => FileExistsWithinDepth1(destinationDir, extension, 0));
 
             if (found)
             {

@@ -23,6 +23,10 @@ namespace PLATEAU.CityImport.Import.Convert.MaterialConvert
             if (mat == null) return "";
             if (!mat.HasMainTextureAttribute()) return "";
             var tex = mat.mainTexture;
+            if (tex == null)
+            {
+                tex = mat.GetTexture("_BaseMap");
+            }
             if (tex == null) return "";
             
 #if UNITY_EDITOR
@@ -61,8 +65,8 @@ namespace PLATEAU.CityImport.Import.Convert.MaterialConvert
             int nameIdByAttribute = (int)propIdGetMethod.Invoke(mat, new object[] { ShaderPropertyFlags.MainTexture });
             if (nameIdByAttribute >= 0) return true;
             
-            // _MainTexがあるかをチェックします。
-            return mat.HasProperty("_MainTex");
+            // プロパティ名でチェックします。
+            return mat.HasProperty("_MainTex") || mat.HasProperty("_BaseMap");
         }
     }
 }
