@@ -39,22 +39,10 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow
             // 出力先選択
             using (PlateauEditorStyle.VerticalScopeLevel2())
             {
-                EditorGUI.BeginDisabledGroup(true);
-                EditorGUILayout.TextField("出力先Assetsフォルダ", conf.AssetPath);
-                EditorGUI.EndDisabledGroup();
+                
                 using (PlateauEditorStyle.VerticalScopeLevel1())
                 {
-                    PlateauEditorStyle.CenterAlignHorizontal(() =>
-                    {
-                        if (conf.ValidateAssetPath(out var _))
-                        {
-                            EditorGUILayout.LabelField("OK", GUILayout.Width(50));
-                        }
-                        else
-                        {
-                            EditorGUILayout.LabelField("Assets以下の空のフォルダを指定してください。", GUILayout.Width(220));
-                        }
-                    });
+                    
                     PlateauEditorStyle.CenterAlignHorizontal(() =>
                     {
                         if (PlateauEditorStyle.MiniButton("出力先選択", 100))
@@ -67,7 +55,21 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow
                             }
                         }
                     });
+                    PlateauEditorStyle.CenterAlignHorizontal(() =>
+                    {
+                        if (conf.ValidateAssetPath(out var _))
+                        {
+                            EditorGUILayout.LabelField("OK", GUILayout.Width(50));
+                        }
+                        else
+                        {
+                            EditorGUILayout.LabelField("Assets以下の空のフォルダを指定してください。", GUILayout.Width(220));
+                        }
+                    });
                 }
+                EditorGUI.BeginDisabledGroup(true);
+                EditorGUILayout.TextField("出力先Assetsフォルダ", conf.AssetPath);
+                EditorGUI.EndDisabledGroup();
                 
 
                 if (!conf.ValidateAssetPath(out string errorMessage) && isAssetPathModified)
