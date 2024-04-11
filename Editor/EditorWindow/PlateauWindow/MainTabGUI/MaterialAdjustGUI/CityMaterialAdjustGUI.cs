@@ -3,6 +3,7 @@ using PLATEAU.CityAdjust.MaterialAdjust;
 using PLATEAU.Editor.CityImport.PackageImportConfigGUIs.Extendables.Components;
 using PLATEAU.Editor.EditorWindow.Common;
 using PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.AdjustGUIParts;
+using PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.MaterialAdjustGUI.GUIParts;
 using PLATEAU.Util;
 using PLATEAU.Util.Async;
 using UnityEditor;
@@ -20,11 +21,11 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
         private GameObject[] selectedObjs = new GameObject[0];
         private Vector2 scrollSelected;
         private int selectedType;
-        private string[] typeOptions = { "地物型" /*, "属性情報"*/ };
+        private string[] typeOptions = { "地物型" , "属性情報" };
         private string attrKey = "";
         private readonly DestroyOrPreserveSrcGUI destroyOrPreserveSrcGUI = new();
-
-        private CityMaterialAdjuster adjuster; // 「検索」ボタンを押すまでこれはnullになります。
+        private MaterialByTypeGui byTypeGui = new MaterialByTypeGui();
+        private bool isTargetDetermined;
 
         public CityMaterialAdjustGUI(UnityEditor.EditorWindow parentEditorWindow)
         {
@@ -41,7 +42,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
 
         private void OnSelectionChanged()
         {
-            if (adjuster != null) return; // 「検索」ボタンを押したら対象は変更できないようにします。
+            if (isTargetDetermined) return; // 「検索」ボタンを押したら対象は変更できないようにします。
             selectedObjs = Selection.gameObjects;
             parentEditorWindow.Repaint();
         }
@@ -64,27 +65,19 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
 
             DisplayCityObjTypeSearchButton();
 
-            if (adjuster == null) return;
+            if (!isTargetDetermined) return;
 
             // 検索後にのみ以下を表示します
-
             using (PlateauEditorStyle.VerticalScopeLevel1())
             {
-                adjuster.granularity = GranularityGUI.Draw("粒度", adjuster.granularity);
+                var granularity = GranularityGUI.Draw("粒度", byTypeGui.GetGranularity());
                 destroyOrPreserveSrcGUI.Draw();
-                adjuster.DoDestroySrcObjects = destroyOrPreserveSrcGUI.Current ==
+                bool doDestroySrcObjects = destroyOrPreserveSrcGUI.Current ==
                                                DestroyOrPreserveSrcGUI.PreserveOrDestroy.Destroy;
+                byTypeGui.SetConfig(granularity, doDestroySrcObjects);
             }
-
-            DisplayCityObjectTypeMaterialConfGUI();
-
-
-            PlateauEditorStyle.Separator(0);
-
-            if (PlateauEditorStyle.MainButton("実行"))
-            {
-                adjuster.Exec().ContinueWithErrorCatch(); // ここで実行します。
-            }
+            byTypeGui.DrawAfterTargetSelect();
+            
         }
 
         private void DisplaySelectedObjects()
@@ -128,18 +121,14 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
             {
                 PlateauEditorStyle.CenterAlignHorizontal(() =>
                 {
-                    if (adjuster == null)
+                    if (!isTargetDetermined)
                     {
                         if (PlateauEditorStyle.MiniButton("検索", 150))
                         {
+                            isTargetDetermined = true;
                             using var progressBar = new ProgressBar("検索中です...");
                             progressBar.Display(0.4f);
-                            adjuster = new CityMaterialAdjuster(selectedObjs); // ここで検索します。
-                            if (adjuster.MaterialAdjustConf.Length <= 0)
-                            {
-                                Dialogue.Display("地物型が見つかりませんでした。\n属性情報を含む都市オブジェクトかその親を選択してください。", "OK");
-                                adjuster = null;
-                            }
+                            byTypeGui.Search(selectedObjs);
 
                             parentEditorWindow.Repaint();
                         }
@@ -148,7 +137,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
                     {
                         if (PlateauEditorStyle.MiniButton("再選択", 150))
                         {
-                            adjuster = null;
+                            isTargetDetermined = false;
                             OnSelectionChanged();
                         }
                     }
@@ -156,28 +145,6 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
             }
         }
 
-        private void DisplayCityObjectTypeMaterialConfGUI()
-        {
-            var conf = adjuster.MaterialAdjustConf;
-            int displayIndex = 1;
-
-            // 存在する地物型を列挙します 
-            foreach (var (typeNode, typeConf) in conf)
-            {
-                using (PlateauEditorStyle.VerticalScopeLevel1())
-                {
-                    PlateauEditorStyle.CategoryTitle(
-                        $"地物型{displayIndex} : {typeNode.GetDisplayName()}");
-                    typeConf.ChangeMaterial = EditorGUILayout.ToggleLeft("マテリアルを変更する", typeConf.ChangeMaterial);
-                    if (typeConf.ChangeMaterial)
-                    {
-                        typeConf.Material = (Material)EditorGUILayout.ObjectField("マテリアル",
-                            typeConf.Material, typeof(Material), false);
-                    }
-                }
-
-                displayIndex++;
-            }
-        }
+        
     }
 }

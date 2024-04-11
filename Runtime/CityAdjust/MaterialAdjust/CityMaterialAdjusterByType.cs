@@ -12,14 +12,14 @@ namespace PLATEAU.CityAdjust.MaterialAdjust
     /// <summary>
     /// SDKのモデル調整のマテリアル分けに関する機能を担います。
     /// </summary>
-    internal class CityMaterialAdjuster
+    internal class CityMaterialAdjusterByType
     {
         private readonly IReadOnlyCollection<GameObject> targetObjs;
         public MeshGranularity granularity = MeshGranularity.PerPrimaryFeatureObject;
         public MaterialAdjustConf MaterialAdjustConf { get; }
         public bool DoDestroySrcObjects { get; set; }
 
-        public CityMaterialAdjuster(IReadOnlyCollection<GameObject> targetObjs)
+        public CityMaterialAdjusterByType(IReadOnlyCollection<GameObject> targetObjs)
         {
             this.targetObjs = targetObjs;
             var targetTransforms = targetObjs.Select(obj => obj.transform).ToArray();
