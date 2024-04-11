@@ -1,7 +1,5 @@
 using PLATEAU.CityAdjust.MaterialAdjust;
-using PLATEAU.Editor.CityImport.PackageImportConfigGUIs.Extendables.Components;
 using PLATEAU.Editor.EditorWindow.Common;
-using PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.AdjustGUIParts;
 using PLATEAU.PolygonMesh;
 using PLATEAU.Util;
 using PLATEAU.Util.Async;
@@ -13,14 +11,13 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.MaterialAdjustGUI
     /// <summary>
     /// 地物型によるマテリアル分けのGUIです。
     /// </summary>
-    internal class MaterialByTypeGui : IMaterialGui
+    internal class MaterialByTypeGui : MaterialGuiBase
     {
-        private CityMaterialAdjusterByType adjuster;
 
         
-        public void Search(GameObject[] selectedObjs)
+        public override void Search(GameObject[] selectedObjs)
         {
-            adjuster = new CityMaterialAdjusterByType(selectedObjs); // ここで検索します。
+            adjuster = new MaterialAdjusterByType(selectedObjs); // ここで検索します。
             if (adjuster.MaterialAdjustConf.Length <= 0)
             {
                 Dialogue.Display("地物型が見つかりませんでした。\n属性情報を含む都市オブジェクトかその親を選択してください。", "OK");
@@ -29,16 +26,12 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.MaterialAdjustGUI
             
         }
 
-        public void SetConfig(MeshGranularity granularity, bool doDestroySrcObjs)
+        public override void DrawBeforeTargetSelect()
         {
-            adjuster.granularity = granularity;
-            adjuster.DoDestroySrcObjects = doDestroySrcObjs;
+            // 何もしません
         }
-
-        public MeshGranularity GetGranularity() => adjuster.granularity;
         
-        
-        public void DrawAfterTargetSelect()
+        public override void DrawAfterTargetSelect()
         {
             DisplayCityObjectTypeMaterialConfGUI();
 

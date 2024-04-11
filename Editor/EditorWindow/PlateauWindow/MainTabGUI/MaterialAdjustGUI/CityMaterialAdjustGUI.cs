@@ -20,12 +20,16 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
         private UnityEditor.EditorWindow parentEditorWindow;
         private GameObject[] selectedObjs = new GameObject[0];
         private Vector2 scrollSelected;
-        private int selectedType;
-        private string[] typeOptions = { "地物型" , "属性情報" };
+        
         private string attrKey = "";
         private readonly DestroyOrPreserveSrcGUI destroyOrPreserveSrcGUI = new();
-        private IMaterialGui materialGui = new MaterialByTypeGui();
         private bool isTargetDetermined;
+        
+        // 分類基準が地物型か属性情報かでGUIと処理が変わるので、2つのGUIを用意します。
+        private MaterialGuiBase CurrentGui => materialGuis[selectedCriterion];
+        private int selectedCriterion;
+        private readonly string[] criterionOptions = { "地物型" , "属性情報" };
+        private MaterialGuiBase[] materialGuis = { new MaterialByTypeGui(), new MaterialByAttrGui() };
 
         public CityMaterialAdjustGUI(UnityEditor.EditorWindow parentEditorWindow)
         {
@@ -53,15 +57,8 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
 
             DisplaySelectedObjects();
             DisplayClassificationChoice();
-
-            if (selectedType == 1)
-            {
-                using (PlateauEditorStyle.VerticalScopeWithPadding(8, 0, 8, 8))
-                {
-                    EditorGUIUtility.labelWidth = 100;
-                    attrKey = EditorGUILayout.TextField("属性情報キー", attrKey);
-                }
-            }
+            
+            CurrentGui.DrawBeforeTargetSelect();
 
             DisplayCityObjTypeSearchButton();
 
@@ -70,13 +67,13 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
             // 検索後にのみ以下を表示します
             using (PlateauEditorStyle.VerticalScopeLevel1())
             {
-                var granularity = GranularityGUI.Draw("粒度", materialGui.GetGranularity());
+                var granularity = GranularityGUI.Draw("粒度", CurrentGui.GetGranularity());
                 destroyOrPreserveSrcGUI.Draw();
                 bool doDestroySrcObjects = destroyOrPreserveSrcGUI.Current ==
                                                DestroyOrPreserveSrcGUI.PreserveOrDestroy.Destroy;
-                materialGui.SetConfig(granularity, doDestroySrcObjects);
+                CurrentGui.SetConfig(granularity, doDestroySrcObjects);
             }
-            materialGui.DrawAfterTargetSelect();
+            CurrentGui.DrawAfterTargetSelect();
             
         }
 
@@ -109,7 +106,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
             using (PlateauEditorStyle.VerticalScopeWithPadding(16, 0, 8, 8))
             {
                 EditorGUIUtility.labelWidth = 50;
-                this.selectedType = EditorGUILayout.Popup("分類", this.selectedType, typeOptions);
+                selectedCriterion = EditorGUILayout.Popup("分類", selectedCriterion, criterionOptions);
             }
 
             ;
@@ -128,7 +125,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
                             isTargetDetermined = true;
                             using var progressBar = new ProgressBar("検索中です...");
                             progressBar.Display(0.4f);
-                            materialGui.Search(selectedObjs);
+                            CurrentGui.Search(selectedObjs);
 
                             parentEditorWindow.Repaint();
                         }

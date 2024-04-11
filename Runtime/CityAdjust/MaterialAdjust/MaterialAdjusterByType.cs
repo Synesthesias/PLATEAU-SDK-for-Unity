@@ -10,16 +10,14 @@ using UnityEngine;
 namespace PLATEAU.CityAdjust.MaterialAdjust
 {
     /// <summary>
-    /// SDKのモデル調整のマテリアル分けに関する機能を担います。
+    /// SDKのモデル調整のマテリアル分けに関する機能で、地物型によるマテリアル分けを担当します。
+    /// 属性情報によるマテリアル分けは<see cref="MaterialAdjusterByAttr"/>を参照してください。
     /// </summary>
-    internal class CityMaterialAdjusterByType
+    internal class MaterialAdjusterByType : MaterialAdjusterBase
     {
-        private readonly IReadOnlyCollection<GameObject> targetObjs;
-        public MeshGranularity granularity = MeshGranularity.PerPrimaryFeatureObject;
-        public MaterialAdjustConf MaterialAdjustConf { get; }
-        public bool DoDestroySrcObjects { get; set; }
+        
 
-        public CityMaterialAdjusterByType(IReadOnlyCollection<GameObject> targetObjs)
+        public MaterialAdjusterByType(IReadOnlyCollection<GameObject> targetObjs)
         {
             this.targetObjs = targetObjs;
             var targetTransforms = targetObjs.Select(obj => obj.transform).ToArray();
@@ -27,7 +25,7 @@ namespace PLATEAU.CityAdjust.MaterialAdjust
             MaterialAdjustConf = new MaterialAdjustConf(foundTypes);
         }
 
-        public async Task Exec()
+        public override async Task Exec()
         {
             if (targetObjs.Any(obj => obj == null))
             {
@@ -71,7 +69,7 @@ namespace PLATEAU.CityAdjust.MaterialAdjust
             // 結合し直します。
             var granularityConverterAfter = new CityGranularityConverter();
             var granularityConvertConfAfter = new GranularityConvertOptionUnity(
-                new GranularityConvertOption(granularity, 1),
+                new GranularityConvertOption(Granularity, 1),
                 result.GeneratedRootObjs.ToArray(), true
             );
             var resultAfter = await granularityConverterAfter.ConvertAsync(granularityConvertConfAfter);
