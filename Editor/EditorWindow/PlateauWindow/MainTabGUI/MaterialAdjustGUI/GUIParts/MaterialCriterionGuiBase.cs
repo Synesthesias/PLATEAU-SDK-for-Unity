@@ -7,12 +7,12 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.MaterialAdjustGUI
     /// <summary>
     /// マテリアル分けGuiの共通クラスです。
     /// </summary>
-    internal abstract class MaterialGuiBase
+    internal abstract class MaterialCriterionGuiBase
     {
         protected MaterialAdjusterBase adjuster;
         
-        /// <summary> 対象を選択して「検索」ボタンを押したときの処理です。 </summary>
-        public abstract void Search(GameObject[] selectedObjs);
+        /// <summary> 対象を選択して「検索」ボタンを押したときの処理です。成功したかどうかをboolで返します。 </summary>
+        public abstract bool Search(GameObject[] selectedObjs);
 
         /// <summary> マテリアル変換の設定をセットします。 </summary>
         public void SetConfig(MeshGranularity granularity, bool doDestroySrcObjs)

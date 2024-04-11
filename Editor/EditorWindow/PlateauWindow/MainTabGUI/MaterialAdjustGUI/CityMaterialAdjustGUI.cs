@@ -1,16 +1,13 @@
 ﻿using System;
-using PLATEAU.CityAdjust.MaterialAdjust;
 using PLATEAU.Editor.CityImport.PackageImportConfigGUIs.Extendables.Components;
 using PLATEAU.Editor.EditorWindow.Common;
 using PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.AdjustGUIParts;
 using PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.MaterialAdjustGUI.GUIParts;
 using PLATEAU.Util;
-using PLATEAU.Util.Async;
 using UnityEditor;
 using UnityEngine;
-using Material = UnityEngine.Material;
 
-namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
+namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.MaterialAdjustGUI
 {
     /// <summary>
     /// PLATEAU SDK ウィンドウで「マテリアル分け」タブが選択されている時のGUIです。
@@ -26,10 +23,10 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
         private bool isTargetDetermined;
         
         // 分類基準が地物型か属性情報かでGUIと処理が変わるので、2つのGUIを用意します。
-        private MaterialGuiBase CurrentGui => materialGuis[selectedCriterion];
+        private MaterialCriterionGuiBase CurrentGui => materialGuis[selectedCriterion];
         private int selectedCriterion;
         private readonly string[] criterionOptions = { "地物型" , "属性情報" };
-        private MaterialGuiBase[] materialGuis = { new MaterialByTypeGui(), new MaterialByAttrGui() };
+        private MaterialCriterionGuiBase[] materialGuis = { new MaterialCriterionTypeGui(), new MaterialCriterionAttrGui() };
 
         public CityMaterialAdjustGUI(UnityEditor.EditorWindow parentEditorWindow)
         {
@@ -122,11 +119,10 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
                     {
                         if (PlateauEditorStyle.MiniButton("検索", 150))
                         {
-                            isTargetDetermined = true;
                             using var progressBar = new ProgressBar("検索中です...");
                             progressBar.Display(0.4f);
-                            CurrentGui.Search(selectedObjs);
-
+                            bool searchSucceed = CurrentGui.Search(selectedObjs);
+                            isTargetDetermined = searchSucceed;
                             parentEditorWindow.Repaint();
                         }
                     }

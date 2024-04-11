@@ -23,6 +23,7 @@ namespace PLATEAU.CityAdjust.MaterialAdjust
             var targetTransforms = targetObjs.Select(obj => obj.transform).ToArray();
             var foundTypes = new CityTypeSearcher().Search(targetTransforms);
             MaterialAdjustConf = new MaterialAdjustConf(foundTypes);
+            
         }
 
         public override async Task Exec()

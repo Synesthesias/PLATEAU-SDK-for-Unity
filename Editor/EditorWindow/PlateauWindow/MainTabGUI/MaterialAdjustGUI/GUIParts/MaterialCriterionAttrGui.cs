@@ -8,11 +8,12 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.MaterialAdjustGUI
     /// <summary>
     /// 属性情報によるマテリアル分けのGuiです。
     /// </summary>
-    internal class MaterialByAttrGui : MaterialGuiBase
+    internal class MaterialCriterionAttrGui : MaterialCriterionGuiBase
     {
         public string AttrKey { get; private set; }
-        public override void Search(GameObject[] selectedObjs)
+        public override bool Search(GameObject[] selectedObjs)
         {
+            throw new System.NotImplementedException();
         }
 
         public override void DrawBeforeTargetSelect()

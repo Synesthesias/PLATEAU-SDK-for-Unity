@@ -1,4 +1,5 @@
 ﻿using PLATEAU.Editor.EditorWindow.Common;
+using PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.MaterialAdjustGUI;
 
 namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
 {
