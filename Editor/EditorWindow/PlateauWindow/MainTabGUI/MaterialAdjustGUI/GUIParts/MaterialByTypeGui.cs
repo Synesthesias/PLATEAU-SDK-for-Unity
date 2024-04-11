@@ -13,13 +13,11 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.MaterialAdjustGUI
     /// <summary>
     /// 地物型によるマテリアル分けのGUIです。
     /// </summary>
-    public class MaterialByTypeGui
+    internal class MaterialByTypeGui : IMaterialGui
     {
         private CityMaterialAdjusterByType adjuster;
 
-        /// <summary>
-        /// 対象を選択して「検索」ボタンを押したときの処理です。
-        /// </summary>
+        
         public void Search(GameObject[] selectedObjs)
         {
             adjuster = new CityMaterialAdjusterByType(selectedObjs); // ここで検索します。
@@ -39,9 +37,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.MaterialAdjustGUI
 
         public MeshGranularity GetGranularity() => adjuster.granularity;
         
-        /// <summary>
-        /// 対象を選択して「検索」ボタンを押したあとのGUIです。
-        /// </summary>
+        
         public void DrawAfterTargetSelect()
         {
             DisplayCityObjectTypeMaterialConfGUI();

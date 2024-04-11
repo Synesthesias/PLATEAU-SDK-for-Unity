@@ -24,7 +24,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
         private string[] typeOptions = { "地物型" , "属性情報" };
         private string attrKey = "";
         private readonly DestroyOrPreserveSrcGUI destroyOrPreserveSrcGUI = new();
-        private MaterialByTypeGui byTypeGui = new MaterialByTypeGui();
+        private IMaterialGui materialGui = new MaterialByTypeGui();
         private bool isTargetDetermined;
 
         public CityMaterialAdjustGUI(UnityEditor.EditorWindow parentEditorWindow)
@@ -70,13 +70,13 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
             // 検索後にのみ以下を表示します
             using (PlateauEditorStyle.VerticalScopeLevel1())
             {
-                var granularity = GranularityGUI.Draw("粒度", byTypeGui.GetGranularity());
+                var granularity = GranularityGUI.Draw("粒度", materialGui.GetGranularity());
                 destroyOrPreserveSrcGUI.Draw();
                 bool doDestroySrcObjects = destroyOrPreserveSrcGUI.Current ==
                                                DestroyOrPreserveSrcGUI.PreserveOrDestroy.Destroy;
-                byTypeGui.SetConfig(granularity, doDestroySrcObjects);
+                materialGui.SetConfig(granularity, doDestroySrcObjects);
             }
-            byTypeGui.DrawAfterTargetSelect();
+            materialGui.DrawAfterTargetSelect();
             
         }
 
@@ -128,7 +128,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
                             isTargetDetermined = true;
                             using var progressBar = new ProgressBar("検索中です...");
                             progressBar.Display(0.4f);
-                            byTypeGui.Search(selectedObjs);
+                            materialGui.Search(selectedObjs);
 
                             parentEditorWindow.Repaint();
                         }
