@@ -14,6 +14,11 @@ namespace PLATEAU.CityAdjust.MaterialAdjust
     {
         
         protected IReadOnlyCollection<GameObject> targetObjs;
+        
+        /// <summary>
+        /// 対象を検索し、分類可能なマテリアルを探すことによって初期化します。
+        /// </summary>
+        public abstract void InitBySearch(IReadOnlyCollection<GameObject> targetObjsArg);
         public MeshGranularity Granularity = MeshGranularity.PerPrimaryFeatureObject;
         public MaterialAdjustConf MaterialAdjustConf { get; protected set; }
         public bool DoDestroySrcObjects { get; set; }
