@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using PLATEAU.CityInfo;
 using PLATEAU.PolygonMesh;
 using UnityEngine;
 
@@ -18,11 +19,22 @@ namespace PLATEAU.CityAdjust.MaterialAdjust
         /// <summary>
         /// 対象を検索し、分類可能なマテリアルを探すことによって初期化します。
         /// </summary>
-        public abstract void InitBySearch(IReadOnlyCollection<GameObject> targetObjsArg);
+        public abstract void InitBySearch(SearchArg searchArg);
         public MeshGranularity Granularity = MeshGranularity.PerPrimaryFeatureObject;
-        public MaterialAdjustConf MaterialAdjustConf { get; protected set; }
+        public IMaterialAdjustConf MaterialAdjustConf { get; protected set; }
         public bool DoDestroySrcObjects { get; set; }
 
         public abstract Task Exec();
+
+        public class SearchArg
+        {
+            public IReadOnlyCollection<GameObject> TargetObjs;
+        }
+
+        public class SearchArgByArr : SearchArg
+        {
+            public string AttrKey;
+        }
+        
     }
 }

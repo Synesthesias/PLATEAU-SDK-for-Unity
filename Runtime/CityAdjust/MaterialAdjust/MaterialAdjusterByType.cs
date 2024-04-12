@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -17,12 +18,19 @@ namespace PLATEAU.CityAdjust.MaterialAdjust
     {
         
 
-        public override void InitBySearch(IReadOnlyCollection<GameObject> targetObjsArg)
+        public override void InitBySearch(SearchArg searchArg)
         {
+            var targetObjsArg = searchArg.TargetObjs;
             this.targetObjs = targetObjsArg;
             var targetTransforms = targetObjsArg.Select(obj => obj.transform).ToArray();
             var foundTypes = new CityTypeSearcher().Search(targetTransforms);
-            MaterialAdjustConf = new MaterialAdjustConf(foundTypes);
+            var foundTypeNodes = foundTypes.Select((t) =>
+            {
+                var typeNode = CityObjectTypeHierarchy.GetNodeByType(t);
+                if (typeNode == null) throw new ArgumentOutOfRangeException(nameof(t), $"Unknown Type: {t.ToString()}");
+                return typeNode;
+            }).ToArray();
+            MaterialAdjustConf = new MaterialAdjustConf<CityObjectTypeHierarchy.Node>(foundTypeNodes);
         }
 
         public override async Task Exec()
@@ -53,11 +61,12 @@ namespace PLATEAU.CityAdjust.MaterialAdjust
                 if (cityObjGroups == null || cityObjGroups.CityObjects.rootCityObjects.Count == 0) continue;
                 // 最小地物単位にしたので、rootCityObjectsの数は1つのはずです。
                 var cityObj = cityObjGroups.CityObjects.rootCityObjects[0];
-                var typeConf = MaterialAdjustConf.GetConfFor(cityObj.type);
-                if (typeConf == null || !typeConf.ShouldChangeMaterial) continue;
+                var matConf = (MaterialAdjustConf<CityObjectTypeHierarchy.Node>)(MaterialAdjustConf);
+                var matChangeConf = matConf.GetConfFor(CityObjectTypeHierarchy.GetNodeByType(cityObj.type));
+                if (matChangeConf == null || !matChangeConf.ShouldChangeMaterial) continue;
                 var renderer = obj.GetComponent<Renderer>();
                 if (renderer == null) continue;
-                var materialConf = typeConf.Material;
+                var materialConf = matChangeConf.Material;
                 var materials = renderer.sharedMaterials;
                 for (int i = 0; i < materials.Length; i++)
                 {

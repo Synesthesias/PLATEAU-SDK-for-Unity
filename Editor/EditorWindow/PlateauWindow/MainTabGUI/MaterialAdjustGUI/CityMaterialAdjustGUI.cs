@@ -1,4 +1,5 @@
 ﻿using System;
+using PLATEAU.CityAdjust.MaterialAdjust;
 using PLATEAU.Editor.CityImport.PackageImportConfigGUIs.Extendables.Components;
 using PLATEAU.Editor.EditorWindow.Common;
 using PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.AdjustGUIParts;
@@ -18,9 +19,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.MaterialAdjustGUI
         private GameObject[] selectedObjs = new GameObject[0];
         private Vector2 scrollSelected;
         
-        private string attrKey = "";
         private readonly DestroyOrPreserveSrcGUI destroyOrPreserveSrcGUI = new();
-        private bool isTargetDetermined;
         
         // 分類基準が地物型か属性情報かでGUIと処理が変わるので、2つのGUIを用意します。
         private MaterialCriterionGuiBase CurrentGui => materialGuis[selectedCriterion];
@@ -43,11 +42,14 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.MaterialAdjustGUI
 
         private void OnSelectionChanged()
         {
-            if (isTargetDetermined) return; // 「検索」ボタンを押したら対象は変更できないようにします。
+            if (CurrentGui.IsSearched) return; // 「検索」ボタンを押したら対象は変更できないようにします。
             selectedObjs = Selection.gameObjects;
             parentEditorWindow.Repaint();
         }
 
+        /// <summary>
+        /// GUIを描画します
+        /// </summary>
         public void Draw()
         {
             PlateauEditorStyle.SubTitle("分類に応じたマテリアル分けを行います。");
@@ -59,7 +61,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.MaterialAdjustGUI
 
             DisplayCityObjTypeSearchButton();
 
-            if (!isTargetDetermined) return;
+            if (!CurrentGui.IsSearched) return;
 
             // 検索後にのみ以下を表示します
             using (PlateauEditorStyle.VerticalScopeLevel1())
@@ -109,20 +111,29 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.MaterialAdjustGUI
             ;
         }
 
+        /// <summary>
+        /// 検索ボタンを表示します。
+        /// </summary>
         private void DisplayCityObjTypeSearchButton()
         {
             using (PlateauEditorStyle.VerticalScopeWithPadding(0, 0, 15, 0))
             {
                 PlateauEditorStyle.CenterAlignHorizontal(() =>
                 {
-                    if (!isTargetDetermined)
+                    if (!CurrentGui.IsSearched)
                     {
                         if (PlateauEditorStyle.MiniButton("検索", 150))
                         {
                             using var progressBar = new ProgressBar("検索中です...");
                             progressBar.Display(0.4f);
-                            bool searchSucceed = CurrentGui.Search(selectedObjs);
-                            isTargetDetermined = searchSucceed;
+                            MaterialAdjusterBase.SearchArg searchArg = selectedCriterion switch
+                            {
+                                0 => new MaterialAdjusterBase.SearchArg {TargetObjs = selectedObjs},
+                                1 => new MaterialAdjusterBase.SearchArgByArr {TargetObjs = selectedObjs, AttrKey = ((MaterialCriterionAttrGui)CurrentGui).AttrKey},
+                                _ => throw new ArgumentOutOfRangeException()
+                            };
+                            bool searchSucceed = CurrentGui.Search(searchArg);
+                            CurrentGui.IsSearched = searchSucceed;
                             parentEditorWindow.Repaint();
                         }
                     }
@@ -130,7 +141,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.MaterialAdjustGUI
                     {
                         if (PlateauEditorStyle.MiniButton("再選択", 150))
                         {
-                            isTargetDetermined = false;
+                            CurrentGui.IsSearched = false;
                             OnSelectionChanged();
                         }
                     }

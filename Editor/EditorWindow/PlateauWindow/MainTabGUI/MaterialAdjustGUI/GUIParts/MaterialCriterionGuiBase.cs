@@ -13,6 +13,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.MaterialAdjustGUI
     internal abstract class MaterialCriterionGuiBase
     {
         private MaterialAdjusterBase adjuster;
+        public bool IsSearched { get; set; }
 
         public MaterialCriterionGuiBase(MaterialAdjusterBase adjuster)
         {
@@ -20,15 +21,15 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.MaterialAdjustGUI
         }
         
         /// <summary> 対象を選択して「検索」ボタンを押したときの処理です。成功したかどうかをboolで返します。 </summary>
-        public bool Search(GameObject[] selectedObjs)
+        public bool Search(MaterialAdjusterBase.SearchArg searchArg)
         {
-            adjuster.InitBySearch(selectedObjs); // ここで検索します。
+            adjuster.InitBySearch(searchArg); // ここで検索します。
             if (adjuster.MaterialAdjustConf.Length <= 0)
             {
-                Dialogue.Display("地物型が見つかりませんでした。\n属性情報を含む都市オブジェクトかその親を選択してください。", "OK");
+                Dialogue.Display("対象が見つかりませんでした。\n属性情報を含む都市オブジェクトかその親を選択してください。", "OK");
                 return false;
             }
-
+            IsSearched = true;
             return true;
         }
 
@@ -47,7 +48,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.MaterialAdjustGUI
         /// <summary> 対象を選択して「検索」ボタンを押したあとのGUIです。  </summary>
         public void DrawAfterTargetSelect()
         {
-            MaterialByTypeConfGui.Draw(adjuster.MaterialAdjustConf);
+            MaterialConfGui.Draw(adjuster.MaterialAdjustConf);
 
             PlateauEditorStyle.Separator(0);
 
