@@ -20,6 +20,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.MaterialAdjustGUI
         private Vector2 scrollSelected;
         
         private readonly DestroyOrPreserveSrcGUI destroyOrPreserveSrcGUI = new();
+        private string attrKey = "";
         
         // 分類基準が地物型か属性情報かでGUIと処理が変わるので、2つのGUIを用意します。
         private MaterialCriterionGuiBase CurrentGui => materialGuis[selectedCriterion];
@@ -56,8 +57,15 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.MaterialAdjustGUI
 
             DisplaySelectedObjects();
             DisplayClassificationChoice();
-            
-            CurrentGui.DrawBeforeTargetSelect();
+
+            if (CurrentGui is MaterialCriterionAttrGui)
+            {
+                using (PlateauEditorStyle.VerticalScopeWithPadding(8, 0, 8, 8))
+                {
+                    EditorGUIUtility.labelWidth = 100;
+                    attrKey = EditorGUILayout.TextField("属性情報キー", attrKey);
+                }
+            }
 
             DisplayCityObjTypeSearchButton();
 
@@ -129,7 +137,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.MaterialAdjustGUI
                             MaterialAdjusterBase.SearchArg searchArg = selectedCriterion switch
                             {
                                 0 => new MaterialAdjusterBase.SearchArg {TargetObjs = selectedObjs},
-                                1 => new MaterialAdjusterBase.SearchArgByArr {TargetObjs = selectedObjs, AttrKey = ((MaterialCriterionAttrGui)CurrentGui).AttrKey},
+                                1 => new MaterialAdjusterBase.SearchArgByArr {TargetObjs = selectedObjs, AttrKey = attrKey},
                                 _ => throw new ArgumentOutOfRangeException()
                             };
                             bool searchSucceed = CurrentGui.Search(searchArg);

@@ -3,7 +3,6 @@ using PLATEAU.Editor.EditorWindow.Common;
 using PLATEAU.PolygonMesh;
 using PLATEAU.Util;
 using PLATEAU.Util.Async;
-using UnityEngine;
 
 namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.MaterialAdjustGUI.GUIParts
 {
@@ -41,9 +40,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.MaterialAdjustGUI
         }
 
         public MeshGranularity GetGranularity() => adjuster.Granularity;
-
-        /// <summary> 「検索」ボタンを押す前のGUIです。 </summary>
-        public abstract void DrawBeforeTargetSelect();
+        
 
         /// <summary> 対象を選択して「検索」ボタンを押したあとのGUIです。  </summary>
         public void DrawAfterTargetSelect()

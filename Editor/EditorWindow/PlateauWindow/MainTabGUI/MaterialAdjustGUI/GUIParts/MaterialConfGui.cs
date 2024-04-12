@@ -1,5 +1,4 @@
 using PLATEAU.CityAdjust.MaterialAdjust;
-using PLATEAU.CityInfo;
 using PLATEAU.Editor.EditorWindow.Common;
 using UnityEditor;
 using UnityEngine;
