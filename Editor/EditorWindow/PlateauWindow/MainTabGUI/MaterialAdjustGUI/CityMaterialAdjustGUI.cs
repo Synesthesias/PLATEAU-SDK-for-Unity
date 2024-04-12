@@ -15,7 +15,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.MaterialAdjustGUI
     /// </summary>
     internal class CityMaterialAdjustGUI : IEditorDrawable
     {
-        private UnityEditor.EditorWindow parentEditorWindow;
+        private readonly UnityEditor.EditorWindow parentEditorWindow;
         private GameObject[] selectedObjs = new GameObject[0];
         private Vector2 scrollSelected;
         
@@ -23,13 +23,19 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.MaterialAdjustGUI
         private string attrKey = "";
         
         // 分類基準が地物型か属性情報かでGUIと処理が変わるので、2つのGUIを用意します。
-        private MaterialCriterionGuiBase CurrentGui => materialGuis[selectedCriterion];
+        private MaterialSearchAndExecGui CurrentGui => materialGuis[selectedCriterion];
         private int selectedCriterion;
         private readonly string[] criterionOptions = { "地物型" , "属性情報" };
-        private MaterialCriterionGuiBase[] materialGuis = { new MaterialCriterionTypeGui(), new MaterialCriterionAttrGui() };
+        private readonly MaterialSearchAndExecGui materialGuiByType = new (new MaterialAdjusterByType());
+        private readonly MaterialSearchAndExecGui materialGuiByAttr = new (new MaterialAdjusterByAttr());
+        private readonly MaterialSearchAndExecGui[] materialGuis;
+        
 
         public CityMaterialAdjustGUI(UnityEditor.EditorWindow parentEditorWindow)
         {
+            materialGuis = new []{
+                materialGuiByType, materialGuiByAttr
+            };
             this.parentEditorWindow = parentEditorWindow;
             Selection.selectionChanged += OnSelectionChanged;
             OnSelectionChanged();
@@ -58,7 +64,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.MaterialAdjustGUI
             DisplaySelectedObjects();
             DisplayClassificationChoice();
 
-            if (CurrentGui is MaterialCriterionAttrGui)
+            if (CurrentGui == materialGuiByAttr)
             {
                 using (PlateauEditorStyle.VerticalScopeWithPadding(8, 0, 8, 8))
                 {

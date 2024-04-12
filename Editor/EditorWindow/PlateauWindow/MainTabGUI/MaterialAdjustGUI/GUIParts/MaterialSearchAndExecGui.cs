@@ -7,14 +7,17 @@ using PLATEAU.Util.Async;
 namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.MaterialAdjustGUI.GUIParts
 {
     /// <summary>
-    /// マテリアル分けGuiの共通クラスです。
+    /// マテリアル分けの対象検索と設定、実行を行うGUIです。
+    /// 検索の基準は、コンストラクタへの注入によって指定します。具体的には:
+    /// 地物型で検索する場合はコンストラクタに<see cref="MaterialAdjusterByType"/>を渡し、
+    /// 属性情報で検索する場合はコンストラクタに<see cref="MaterialAdjusterByAttr"/>を渡します。
     /// </summary>
-    internal abstract class MaterialCriterionGuiBase
+    internal class MaterialSearchAndExecGui
     {
         private MaterialAdjusterBase adjuster;
         public bool IsSearched { get; set; }
 
-        public MaterialCriterionGuiBase(MaterialAdjusterBase adjuster)
+        public MaterialSearchAndExecGui(MaterialAdjusterBase adjuster)
         {
             this.adjuster = adjuster;
         }
