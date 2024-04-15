@@ -1,6 +1,8 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using PLATEAU.PolygonMesh;
+using PLATEAU.Util;
 using UnityEngine;
 
 namespace PLATEAU.CityAdjust.MaterialAdjust
@@ -18,6 +20,7 @@ namespace PLATEAU.CityAdjust.MaterialAdjust
 
     /// <summary>
     /// <see cref="IMaterialAdjustExecutor"/>の実行に必要な設定項目です。
+    /// 属性情報でのマテリアル分けの場合は、これの代わりにサブクラスである<see cref="AdjustExecutorConfByAttr"/>を使います。
     /// </summary>
     internal class AdjustExecutorConf
     {
@@ -32,6 +35,38 @@ namespace PLATEAU.CityAdjust.MaterialAdjust
             this.TargetObjs = targetObjs;
             this.MeshGranularity = meshGranularity;
             this.DoDestroySrcObjs = doDestroySrcObjs;
+        }
+
+        /// <summary>
+        /// 設定が妥当ならtrueを返します。
+        /// 不当ならダイアログを出してfalseを返します。
+        /// </summary>
+        public bool Validate()
+        {
+            if (TargetObjs.Count == 0)
+            {
+                Dialogue.Display("対象が選択されていません。\n対象を選択してください。", "OK");
+                return false;
+            }
+            
+            if (TargetObjs.Any(obj => obj == null))
+            {
+                Dialogue.Display("対象に削除されたゲームオブジェクトが含まれています。\n選択し直してください。", "OK");
+                return false;
+            }
+
+            return true;
+        }
+    }
+
+    internal class AdjustExecutorConfByAttr : AdjustExecutorConf
+    {
+        public string AttrKey;
+        public AdjustExecutorConfByAttr(IMaterialAdjustConf materialAdjustConf, IReadOnlyCollection<GameObject> targetObjs,
+            MeshGranularity meshGranularity, bool doDestroySrcObjs, string attrKey)
+        :base(materialAdjustConf, targetObjs, meshGranularity, doDestroySrcObjs)
+        {
+            AttrKey = attrKey;
         }
     }
 }

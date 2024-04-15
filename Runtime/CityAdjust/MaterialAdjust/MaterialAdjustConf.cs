@@ -27,7 +27,7 @@ namespace PLATEAU.CityAdjust.MaterialAdjust
         }
 
         /// <summary>
-        /// 引数の<see cref="CityObjectType"/>に応じた設定を返します。
+        /// 引数の<see cref="KeyT"/>に対応した設定を返します。
         /// なければnullを返します。
         /// </summary>
         public ChangeConfPerMaterial GetConfFor(KeyT key)

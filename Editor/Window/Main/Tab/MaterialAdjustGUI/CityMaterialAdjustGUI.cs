@@ -88,11 +88,24 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
             // 実行ボタン
             if (PlateauEditorStyle.MainButton("実行"))
             {
-                var executorConf = new AdjustExecutorConf(
-                    CurrentAdjuster.MaterialAdjustConf,
-                    objectSelectGui.SelectedObjs,
-                    meshGranularity,
-                    doDestroySrcObjs);
+                var executorConf = SelectedCriterion switch
+                {
+                    MaterialCriterion.ByType => new AdjustExecutorConf(
+                        CurrentAdjuster.MaterialAdjustConf,
+                        objectSelectGui.SelectedObjs,
+                        meshGranularity,
+                        doDestroySrcObjs),
+                    
+                    MaterialCriterion.ByAttribute => new AdjustExecutorConfByAttr(
+                        CurrentAdjuster.MaterialAdjustConf,
+                        objectSelectGui.SelectedObjs,
+                        meshGranularity,
+                        doDestroySrcObjs,
+                        attrKey),
+                    
+                    _ => throw new ArgumentOutOfRangeException()
+                };
+                
                 CurrentAdjuster.AdjustExecutor.Exec(executorConf).ContinueWithErrorCatch(); // ここで実行します。
             }
             

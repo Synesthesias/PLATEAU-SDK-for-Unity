@@ -19,12 +19,7 @@ namespace PLATEAU.CityAdjust.MaterialAdjust
 
         public async Task Exec(AdjustExecutorConf conf)
         {
-            
-            if (conf.TargetObjs.Any(obj => obj == null))
-            {
-                Dialogue.Display("対象に削除されたゲームオブジェクトが含まれています。\n選択し直してください。", "OK");
-                return;
-            }
+            if (!conf.Validate()) return;
             
             // 地物タイプに応じてマテリアルを変える下準備として、都市オブジェクトを最小地物単位に分解します。
             var granularityConverter = new CityGranularityConverter();
