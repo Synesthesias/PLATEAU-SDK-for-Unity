@@ -1,5 +1,3 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using PLATEAU.CityGML;
 using PLATEAU.CityInfo;
@@ -14,7 +12,7 @@ namespace PLATEAU.CityAdjust.MaterialAdjust
         // : IEnumerable<KeyValuePair<KeyT, MaterialChangeConf>>
         where KeyT : class
     {
-        private readonly SortedList<KeyT, MaterialChangeConf> data;
+        private readonly SortedList<KeyT, ChangeConfPerMaterial> data;
 
         /// <summary>
         /// 分類項目の配列をキーとして初期化します。
@@ -24,7 +22,7 @@ namespace PLATEAU.CityAdjust.MaterialAdjust
             data = new();
             foreach (var key in keys)
             {
-                data.TryAdd(key, new MaterialChangeConf());
+                data.TryAdd(key, new ChangeConfPerMaterial());
             }
         }
 
@@ -32,7 +30,7 @@ namespace PLATEAU.CityAdjust.MaterialAdjust
         /// 引数の<see cref="CityObjectType"/>に応じた設定を返します。
         /// なければnullを返します。
         /// </summary>
-        public MaterialChangeConf GetConfFor(KeyT key)
+        public ChangeConfPerMaterial GetConfFor(KeyT key)
         {
             if (key != null && data.TryGetValue(key, out var typeConf))
             {
@@ -55,34 +53,23 @@ namespace PLATEAU.CityAdjust.MaterialAdjust
             return data.Keys[i].ToString();
         }
 
-        public MaterialChangeConf GetMaterialChangeConfAt(int i)
+        public ChangeConfPerMaterial GetMaterialChangeConfAt(int i)
         {
             return data.Values[i];
         }
-
-        /// <summary> foreachで回せるようにします </summary>
-        // public IEnumerator<KeyValuePair<KeyT, MaterialChangeConf>> GetEnumerator()
-        // {
-        //     return data.GetEnumerator();
-        // }
-        //
-        // IEnumerator IEnumerable.GetEnumerator()
-        // {
-        //     return GetEnumerator();
-        // }
     }
     
     internal interface IMaterialAdjustConf
     {
         public string GetKeyNameAt(int i);
-        public MaterialChangeConf GetMaterialChangeConfAt(int i);
+        public ChangeConfPerMaterial GetMaterialChangeConfAt(int i);
         public int Length { get; }
     }
 
     /// <summary>
     /// 各分類に対してマテリアルをどのように変更するかの設定値です。
     /// </summary>
-    internal class MaterialChangeConf
+    internal class ChangeConfPerMaterial
     {
         public bool ChangeMaterial { get; set; }
         public Material Material { get; set; }

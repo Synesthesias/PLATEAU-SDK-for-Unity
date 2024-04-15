@@ -2,10 +2,10 @@
 using System.Collections;
 using NUnit.Framework;
 using PLATEAU.CityInfo;
-using PLATEAU.Editor.EditorWindow.Common;
-using PLATEAU.Editor.EditorWindow.PlateauWindow;
-using PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI;
-using PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ImportGUIParts;
+using PLATEAU.Editor.Window.Common;
+using PLATEAU.Editor.Window.Main;
+using PLATEAU.Editor.Window.Main.Tab;
+using PLATEAU.Editor.Window.Main.Tab.ImportGUIParts;
 using PLATEAU.Tests.TestUtils;
 using UnityEditor;
 using UnityEditor.SceneManagement;

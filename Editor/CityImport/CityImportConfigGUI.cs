@@ -3,7 +3,7 @@ using PLATEAU.CityImport.Config;
 using PLATEAU.CityImport.Config.PackageImportConfigs;
 using PLATEAU.Editor.CityImport.PackageImportConfigGUIs;
 using PLATEAU.Editor.CityImport.PackageImportConfigGUIs.Components;
-using PLATEAU.Editor.EditorWindow.Common;
+using PLATEAU.Editor.Window.Common;
 
 namespace PLATEAU.Editor.CityImport
 {
