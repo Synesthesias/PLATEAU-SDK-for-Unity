@@ -5,7 +5,6 @@ using PLATEAU.Editor.Window.Common;
 using PLATEAU.Editor.Window.Main.Tab.AdjustGUIParts;
 using PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI.Parts;
 using PLATEAU.PolygonMesh;
-using PLATEAU.Util;
 using PLATEAU.Util.Async;
 using UnityEditor;
 using UnityEngine;
@@ -23,19 +22,26 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
         private string attrKey = "";
 
         private readonly MaterialCriterionGui materialCriterionGui = new MaterialCriterionGui();
+        private readonly SearchButton searchButton;
         public MaterialAdjustByCriterion CurrentAdjuster => materialCriterionGui.CurrentAdjuster;
         private MaterialCriterion SelectedCriterion => materialCriterionGui.SelectedCriterion;
         private MeshGranularity meshGranularity = MeshGranularity.PerPrimaryFeatureObject;
         private GameObject[] SelectedObjs => objectSelectGui.SelectedObjs;
+
+        public bool IsSearched
+        {
+            get => CurrentAdjuster.IsSearched;
+            set => CurrentAdjuster.IsSearched = value;
+        }
+
         private bool doDestroySrcObjs;
-        private readonly EditorWindow parentEditorWindow;
         
         
 
         public CityMaterialAdjustGUI(EditorWindow parentEditorWindow)
         {
             objectSelectGui = new ObjectSelectGui(this, parentEditorWindow);
-            this.parentEditorWindow = parentEditorWindow;
+            searchButton = new SearchButton(this, parentEditorWindow);
         }
 
         /// <summary>
@@ -45,9 +51,10 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
         {
             PlateauEditorStyle.SubTitle("分類に応じたマテリアル分けを行います。");
 
-            objectSelectGui.Draw();
-            materialCriterionGui.Draw();
+            objectSelectGui.Draw(); // 選択オブジェクトの表示
+            materialCriterionGui.Draw(); // マテリアル分け基準の選択
 
+            // 属性情報キーの入力
             if (SelectedCriterion == MaterialCriterion.ByAttribute)
             {
                 using (PlateauEditorStyle.VerticalScopeWithPadding(8, 0, 8, 8))
@@ -57,11 +64,14 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
                 }
             }
 
-            DisplayCityObjTypeSearchButton();
+            // 検索ボタンの描画
+            searchButton.Draw(CurrentAdjuster);
 
-            if (!CurrentAdjuster.IsSearched) return;
+            if (!IsSearched) return;
 
-            // 検索後にのみ以下を表示します
+            // 検索後にのみ以下を表示します。
+            
+            // 全般的な設定
             using (PlateauEditorStyle.VerticalScopeLevel1())
             {
                 meshGranularity = GranularityGUI.Draw("粒度", meshGranularity);
@@ -69,10 +79,13 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
                 doDestroySrcObjs = destroyOrPreserveSrcGUI.Current ==
                                                DestroyOrPreserveSrcGUI.PreserveOrDestroy.Destroy;
             }
+            
+            // 各分類キーごとのマテリアル設定 
             MaterialConfGui.Draw(CurrentAdjuster.MaterialAdjustConf);
 
             PlateauEditorStyle.Separator(0);
 
+            // 実行ボタン
             if (PlateauEditorStyle.MainButton("実行"))
             {
                 var executorConf = new AdjustExecutorConf(
@@ -86,41 +99,22 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
         }
 
         /// <summary>
-        /// 検索ボタンを表示します。
+        /// 現在のGUIの設定で検索条件を生成します。
         /// </summary>
-        private void DisplayCityObjTypeSearchButton()
+        public SearchArg GenerateSearchArg()
         {
-            using (PlateauEditorStyle.VerticalScopeWithPadding(0, 0, 15, 0))
+            SearchArg searchArg = SelectedCriterion switch
             {
-                PlateauEditorStyle.CenterAlignHorizontal(() =>
-                {
-                    if (!CurrentAdjuster.IsSearched)
-                    {
-                        if (PlateauEditorStyle.MiniButton("検索", 150))
-                        {
-                            using var progressBar = new ProgressBar("検索中です...");
-                            progressBar.Display(0.4f);
-                            SearchArg searchArg = SelectedCriterion switch
-                            {
-                                MaterialCriterion.ByType => new SearchArg(SelectedObjs),
-                                MaterialCriterion.ByAttribute => new SearchArgByArr(SelectedObjs, attrKey),
-                                _ => throw new ArgumentOutOfRangeException()
-                            };
-                            bool searchSucceed = CurrentAdjuster.Search(searchArg);
-                            CurrentAdjuster.IsSearched = searchSucceed;
-                            parentEditorWindow.Repaint();
-                        }
-                    }
-                    else
-                    {
-                        if (PlateauEditorStyle.MiniButton("再選択", 150))
-                        {
-                            CurrentAdjuster.IsSearched = false;
-                            objectSelectGui.OnSelectionChanged();
-                        }
-                    }
-                });
-            }
+                MaterialCriterion.ByType => new SearchArg(SelectedObjs),
+                MaterialCriterion.ByAttribute => new SearchArgByArr(SelectedObjs, attrKey),
+                _ => throw new ArgumentOutOfRangeException()
+            };
+            return searchArg;
+        }
+
+        public void UpdateObjectSelection()
+        {
+            objectSelectGui.UpdateSelection();
         }
 
         public void Dispose()
