@@ -14,11 +14,11 @@ namespace PLATEAU.CityAdjust.MaterialAdjust
     /// </summary>
     internal class MaterialAdjustByCriterion
     {
-        public MaterialAdjustExecutorBase AdjustExecutor { get; }
+        public IMaterialAdjustExecutor AdjustExecutor { get; }
         public IMaterialAdjustConf MaterialAdjustConf { get; private set; }
         public bool IsSearched { get; set; }
 
-        public MaterialAdjustByCriterion(MaterialAdjustExecutorBase adjustExecutor)
+        public MaterialAdjustByCriterion(IMaterialAdjustExecutor adjustExecutor)
         {
             this.AdjustExecutor = adjustExecutor;
         }

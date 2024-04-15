@@ -4,10 +4,10 @@ using UnityEngine;
 
 namespace PLATEAU.CityAdjust.MaterialAdjust
 {
-    internal class MaterialAdjustExecutorByAttr : MaterialAdjustExecutorBase
+    internal class MaterialAdjustExecutorByAttr : IMaterialAdjustExecutor
     {
 
-        public override Task Exec(AdjustExecutorConf conf)
+        public Task Exec(AdjustExecutorConf conf)
         {
             throw new System.NotImplementedException();
         }

@@ -6,18 +6,18 @@ using UnityEngine;
 namespace PLATEAU.CityAdjust.MaterialAdjust
 {
     /// <summary>
-    /// SDKのモデル調整のマテリアル分け機能を提供する基底クラスです。
+    /// SDKのモデル調整のマテリアル分け機能を提供するインターフェイスです。
     /// 地物型によるマテリアル分け<see cref="MaterialAdjustExecutorByType"/>と、
-    /// 属性情報によるマテリアル分け<see cref="MaterialAdjustExecutorByAttr"/>の共通部分を定義します。
+    /// 属性情報によるマテリアル分け<see cref="MaterialAdjustExecutorByAttr"/>の2つの実装があります。
     /// </summary>
-    internal abstract class MaterialAdjustExecutorBase
+    internal interface IMaterialAdjustExecutor
     {
-        public abstract Task Exec(AdjustExecutorConf conf);
+        public Task Exec(AdjustExecutorConf conf);
         
     }
 
     /// <summary>
-    /// <see cref="MaterialAdjustExecutorBase"/>の実行に必要な設定項目です。
+    /// <see cref="IMaterialAdjustExecutor"/>の実行に必要な設定項目です。
     /// </summary>
     internal class AdjustExecutorConf
     {

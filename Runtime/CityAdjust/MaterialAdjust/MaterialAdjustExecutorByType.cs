@@ -13,11 +13,11 @@ namespace PLATEAU.CityAdjust.MaterialAdjust
     /// SDKのモデル調整のマテリアル分けに関する機能で、地物型によるマテリアル分けを担当します。
     /// 属性情報によるマテリアル分けは<see cref="MaterialAdjustExecutorByAttr"/>を参照してください。
     /// </summary>
-    internal class MaterialAdjustExecutorByType : MaterialAdjustExecutorBase
+    internal class MaterialAdjustExecutorByType : IMaterialAdjustExecutor
     {
         
 
-        public override async Task Exec(AdjustExecutorConf conf)
+        public async Task Exec(AdjustExecutorConf conf)
         {
             
             if (conf.TargetObjs.Any(obj => obj == null))
