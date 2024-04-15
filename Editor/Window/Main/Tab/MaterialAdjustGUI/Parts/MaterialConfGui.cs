@@ -3,7 +3,7 @@ using PLATEAU.Editor.Window.Common;
 using UnityEditor;
 using UnityEngine;
 
-namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI.GUIParts
+namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI.Parts
 { 
     /// <summary>
     /// 地物型ごとにマテリアルを設定するGUIです。

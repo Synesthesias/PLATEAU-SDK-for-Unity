@@ -4,7 +4,7 @@ using PLATEAU.CityAdjust.MaterialAdjust;
 using PLATEAU.Editor.Window.Common;
 using UnityEditor;
 
-namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI.GUIParts
+namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI.Parts
 {
     /// <summary>
     /// マテリアル分けの基準（属性情報で分ける、地物型で分ける）を選択するGUIを表示し、

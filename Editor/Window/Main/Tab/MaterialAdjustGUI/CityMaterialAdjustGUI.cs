@@ -3,7 +3,7 @@ using PLATEAU.CityAdjust.MaterialAdjust;
 using PLATEAU.Editor.CityImport.PackageImportConfigGUIs.Extendables.Components;
 using PLATEAU.Editor.Window.Common;
 using PLATEAU.Editor.Window.Main.Tab.AdjustGUIParts;
-using PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI.GUIParts;
+using PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI.Parts;
 using PLATEAU.PolygonMesh;
 using PLATEAU.Util;
 using PLATEAU.Util.Async;
@@ -17,26 +17,25 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
     /// </summary>
     internal class CityMaterialAdjustGUI : IEditorDrawable
     {
-        private readonly UnityEditor.EditorWindow parentEditorWindow;
-        private GameObject[] selectedObjs = Array.Empty<GameObject>();
-        private Vector2 scrollSelected;
+        private readonly ObjectSelectGui objectSelectGui;
         
         private readonly DestroyOrPreserveSrcGUI destroyOrPreserveSrcGUI = new();
         private string attrKey = "";
 
         private readonly MaterialCriterionGui materialCriterionGui = new MaterialCriterionGui();
-        private MaterialAdjustByCriterion CurrentAdjuster => materialCriterionGui.CurrentAdjuster;
+        public MaterialAdjustByCriterion CurrentAdjuster => materialCriterionGui.CurrentAdjuster;
         private MaterialCriterion SelectedCriterion => materialCriterionGui.SelectedCriterion;
         private MeshGranularity meshGranularity = MeshGranularity.PerPrimaryFeatureObject;
+        private GameObject[] SelectedObjs => objectSelectGui.SelectedObjs;
         private bool doDestroySrcObjs;
+        private readonly EditorWindow parentEditorWindow;
         
         
 
-        public CityMaterialAdjustGUI(UnityEditor.EditorWindow parentEditorWindow)
+        public CityMaterialAdjustGUI(EditorWindow parentEditorWindow)
         {
+            objectSelectGui = new ObjectSelectGui(this, parentEditorWindow);
             this.parentEditorWindow = parentEditorWindow;
-            Selection.selectionChanged += OnSelectionChanged;
-            OnSelectionChanged();
         }
 
         /// <summary>
@@ -46,7 +45,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
         {
             PlateauEditorStyle.SubTitle("分類に応じたマテリアル分けを行います。");
 
-            DisplaySelectedObjects();
+            objectSelectGui.Draw();
             materialCriterionGui.Draw();
 
             if (SelectedCriterion == MaterialCriterion.ByAttribute)
@@ -78,34 +77,12 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
             {
                 var executorConf = new AdjustExecutorConf(
                     CurrentAdjuster.MaterialAdjustConf,
-                    selectedObjs,
+                    objectSelectGui.SelectedObjs,
                     meshGranularity,
                     doDestroySrcObjs);
                 CurrentAdjuster.AdjustExecutor.Exec(executorConf).ContinueWithErrorCatch(); // ここで実行します。
             }
             
-        }
-
-        private void DisplaySelectedObjects()
-        {
-            PlateauEditorStyle.Heading("選択オブジェクト", null);
-            using (PlateauEditorStyle.VerticalScopeLevel2())
-            {
-                scrollSelected = EditorGUILayout.BeginScrollView(scrollSelected, GUILayout.MaxHeight(100));
-                foreach (GameObject obj in selectedObjs)
-                {
-                    if (obj == null)
-                    {
-                        EditorGUILayout.LabelField("(削除されたゲームオブジェクト)");
-                    }
-                    else
-                    {
-                        EditorGUILayout.LabelField(obj.name);
-                    }
-                }
-
-                EditorGUILayout.EndScrollView();
-            }
         }
 
         /// <summary>
@@ -125,8 +102,8 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
                             progressBar.Display(0.4f);
                             SearchArg searchArg = SelectedCriterion switch
                             {
-                                MaterialCriterion.ByType => new SearchArg(selectedObjs),
-                                MaterialCriterion.ByAttribute => new SearchArgByArr(selectedObjs, attrKey),
+                                MaterialCriterion.ByType => new SearchArg(SelectedObjs),
+                                MaterialCriterion.ByAttribute => new SearchArgByArr(SelectedObjs, attrKey),
                                 _ => throw new ArgumentOutOfRangeException()
                             };
                             bool searchSucceed = CurrentAdjuster.Search(searchArg);
@@ -139,26 +116,16 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
                         if (PlateauEditorStyle.MiniButton("再選択", 150))
                         {
                             CurrentAdjuster.IsSearched = false;
-                            OnSelectionChanged();
+                            objectSelectGui.OnSelectionChanged();
                         }
                     }
                 });
             }
         }
-        
+
         public void Dispose()
         {
-            Selection.selectionChanged -= OnSelectionChanged;
-            Array.Clear(selectedObjs, 0, selectedObjs.Length);
+            objectSelectGui.Dispose();
         }
-
-        private void OnSelectionChanged()
-        {
-            if (CurrentAdjuster.IsSearched) return; // 「検索」ボタンを押したら対象は変更できないようにします。
-            selectedObjs = Selection.gameObjects;
-            parentEditorWindow.Repaint();
-        }
-
-        
     }
 }
