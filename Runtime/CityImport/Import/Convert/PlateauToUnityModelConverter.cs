@@ -12,6 +12,8 @@ using PLATEAU.Util;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Material = UnityEngine.Material;
+using PLATEAU.Texture;
+
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -59,10 +61,47 @@ namespace PLATEAU.CityImport.Import.Convert
             var placeToSceneConf = new PlaceToSceneConfig(materialConverter, doSetMeshCollider, token, fallbackMaterial,
                 infoForToolkits, granularity);
 
+
+            
+            //Terrain 生成処理
+            if (cityModel.GetCityObjectsByType(CityObjectType.COT_TINRelief) != null)
+            {
+                Debug.Log($"CityModel has Dem {cityModel}");
+
+                await PlateauTerrainToScene(parentTrans, progressDisplay, progressName, placeToSceneConf,
+                plateauModel, attributeDataHelper, true);
+            }
+            
+
             return await PlateauModelToScene(
                 parentTrans, progressDisplay, progressName, placeToSceneConf, 
                 plateauModel, attributeDataHelper, true);
         }
+
+        
+        public static async Task PlateauTerrainToScene(Transform parentTrans, IProgressDisplay progressDisplay,
+        string progressName, PlaceToSceneConfig placeToSceneConf, Model plateauModel,
+        AttributeDataHelper attributeDataHelper, bool skipRoot)
+        {
+            ConvertedTerrainData terrainData;
+            try
+            {
+                terrainData = await Task.Run(() =>
+                {
+                    var convertedTerrainData = new ConvertedTerrainData(plateauModel);
+                    return convertedTerrainData;
+                });
+            }
+            catch (Exception e)
+            {
+                Debug.LogError("Terrainデータの取得に失敗しました。\n" + e);
+                return;
+            }
+
+
+            terrainData.PlaceToScene(parentTrans, placeToSceneConf, skipRoot);
+        }
+        
 
         /// <summary>
         /// 共通ライブラリのModelをUnityのゲームオブジェクトに変換してシーンに配置します。
