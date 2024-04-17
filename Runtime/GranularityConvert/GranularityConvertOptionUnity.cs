@@ -12,31 +12,31 @@ namespace PLATEAU.GranularityConvert
     {
         /// <summary> DLL向けの設定です。 </summary>
         public GranularityConvertOption NativeOption { get; }
-        public GameObject[] SrcGameObjs { get; }
+        public UniqueParentTransformList SrcTransforms { get; }
         public bool DoDestroySrcObjs { get; }
 
         public GranularityConvertOptionUnity(
             GranularityConvertOption nativeOption, // 注意: GranularityConvertOption.GridCountの設定は未実装であり、何の値に設定しても動作に影響しません。
-            GameObject[] srcGameObjs,
+            UniqueParentTransformList srcTransforms,
             bool doDestroySrcObjs)
         {
             NativeOption = nativeOption;
-            SrcGameObjs = srcGameObjs;
+            SrcTransforms = srcTransforms;
             DoDestroySrcObjs = doDestroySrcObjs;
         }
 
         public bool IsValid()
         {
-            if (SrcGameObjs.Length == 0)
+            if (SrcTransforms.Count == 0)
             {
                 Dialogue.Display("ゲームオブジェクトが選択されていません。\n選択してから実行してください。", "OK");
                 return false;
             }
             
             bool containsCog = false;
-            foreach (var srcObj in SrcGameObjs)
+            foreach (var srcTrans in SrcTransforms.Get)
             {
-                if (srcObj.GetComponentInChildren<PLATEAUCityObjectGroup>() != null)
+                if (srcTrans.GetComponentInChildren<PLATEAUCityObjectGroup>() != null)
                 {
                     containsCog = true;
                     break;

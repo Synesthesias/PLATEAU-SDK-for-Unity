@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using PLATEAU.Util;
 using UnityEngine;
 
 namespace PLATEAU.CityAdjust.MaterialAdjust
@@ -8,11 +9,11 @@ namespace PLATEAU.CityAdjust.MaterialAdjust
     /// </summary>
     internal class SearchArg
     {
-        public SearchArg(IReadOnlyCollection<GameObject> targetObjs)
+        public SearchArg(UniqueParentTransformList targetTransforms)
         {
-            TargetObjs = targetObjs;
+            TargetTransforms = targetTransforms;
         }
-        public IReadOnlyCollection<GameObject> TargetObjs;
+        public UniqueParentTransformList TargetTransforms;
     }
 
     /// <summary>
@@ -20,8 +21,8 @@ namespace PLATEAU.CityAdjust.MaterialAdjust
     /// </summary>
     internal class SearchArgByArr : SearchArg
     {
-        public SearchArgByArr(IReadOnlyCollection<GameObject> targetObjs, string attrKey)
-            : base(targetObjs)
+        public SearchArgByArr(UniqueParentTransformList targetTransforms, string attrKey)
+            : base(targetTransforms)
         {
             AttrKey = attrKey;
         }

@@ -22,7 +22,7 @@ namespace PLATEAU.CityAdjust.MaterialAdjust
             var granularityConverter = new CityGranularityConverter();
             var granularityConvertConf = new GranularityConvertOptionUnity(
                 new GranularityConvertOption(MeshGranularity.PerAtomicFeatureObject, 1),
-                conf.TargetObjs.ToArray(), conf.DoDestroySrcObjs
+                conf.TargetTransforms, conf.DoDestroySrcObjs
             );
             var result = await granularityConverter.ConvertAsync(granularityConvertConf);
             if (!result.IsSucceed)
@@ -63,7 +63,7 @@ namespace PLATEAU.CityAdjust.MaterialAdjust
             var granularityConverterAfter = new CityGranularityConverter();
             var granularityConvertConfAfter = new GranularityConvertOptionUnity(
                 new GranularityConvertOption(conf.MeshGranularity, 1),
-                result.GeneratedRootObjs.ToArray(), true
+                result.GeneratedRootTransforms, true
             );
             var resultAfter = await granularityConverterAfter.ConvertAsync(granularityConvertConfAfter);
             if (!resultAfter.IsSucceed)

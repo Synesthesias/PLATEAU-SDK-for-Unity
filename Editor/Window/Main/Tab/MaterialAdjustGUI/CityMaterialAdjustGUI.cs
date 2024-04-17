@@ -5,6 +5,7 @@ using PLATEAU.Editor.Window.Common;
 using PLATEAU.Editor.Window.Main.Tab.AdjustGUIParts;
 using PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI.Parts;
 using PLATEAU.PolygonMesh;
+using PLATEAU.Util;
 using PLATEAU.Util.Async;
 using UnityEditor;
 using UnityEngine;
@@ -26,7 +27,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
         public MaterialAdjustByCriterion CurrentAdjuster => materialCriterionGui.CurrentAdjuster;
         private MaterialCriterion SelectedCriterion => materialCriterionGui.SelectedCriterion;
         private MeshGranularity meshGranularity = MeshGranularity.PerPrimaryFeatureObject;
-        private GameObject[] SelectedObjs => objectSelectGui.SelectedObjs;
+        private UniqueParentTransformList SelectedTransforms => objectSelectGui.SelectedTransforms;
 
         public bool IsSearched
         {
@@ -92,13 +93,13 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
                 {
                     MaterialCriterion.ByType => new AdjustExecutorConf(
                         CurrentAdjuster.MaterialAdjustConf,
-                        objectSelectGui.SelectedObjs,
+                        objectSelectGui.SelectedTransforms,
                         meshGranularity,
                         doDestroySrcObjs),
                     
                     MaterialCriterion.ByAttribute => new AdjustExecutorConfByAttr(
                         CurrentAdjuster.MaterialAdjustConf,
-                        objectSelectGui.SelectedObjs,
+                        objectSelectGui.SelectedTransforms,
                         meshGranularity,
                         doDestroySrcObjs,
                         attrKey),
@@ -118,8 +119,8 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
         {
             SearchArg searchArg = SelectedCriterion switch
             {
-                MaterialCriterion.ByType => new SearchArg(SelectedObjs),
-                MaterialCriterion.ByAttribute => new SearchArgByArr(SelectedObjs, attrKey),
+                MaterialCriterion.ByType => new SearchArg(SelectedTransforms),
+                MaterialCriterion.ByAttribute => new SearchArgByArr(SelectedTransforms, attrKey),
                 _ => throw new ArgumentOutOfRangeException()
             };
             return searchArg;

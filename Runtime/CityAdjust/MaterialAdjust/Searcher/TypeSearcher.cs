@@ -26,7 +26,7 @@ namespace PLATEAU.CityAdjust.MaterialAdjust
         public CityObjectTypeHierarchy.Node[] Search()
         {
             HashSet<CityObjectType> found = new();
-            foreach(var target in searchArg.TargetObjs.Select(obj => obj.transform))
+            foreach(var target in searchArg.TargetTransforms.Get)
             {
                 var cityObjGroups = target.GetComponentsInChildren<PLATEAUCityObjectGroup>();
                 foreach (var cityObjGroup in cityObjGroups)

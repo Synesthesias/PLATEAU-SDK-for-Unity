@@ -1,5 +1,6 @@
 using System;
 using PLATEAU.Editor.Window.Common;
+using PLATEAU.Util;
 using UnityEditor;
 using UnityEngine;
 
@@ -7,7 +8,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI.Parts
 {
     internal class ObjectSelectGui
     {
-        public GameObject[] SelectedObjs { get; private set; } = Array.Empty<GameObject>();
+        public UniqueParentTransformList SelectedTransforms { get; private set; } = new UniqueParentTransformList();
         private Vector2 scrollSelected;
         private EditorWindow parentEditorWindow;
         private CityMaterialAdjustGUI materialAdjustGUI;
@@ -26,15 +27,15 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI.Parts
             using (PlateauEditorStyle.VerticalScopeLevel2())
             {
                 scrollSelected = EditorGUILayout.BeginScrollView(scrollSelected, GUILayout.MaxHeight(100));
-                foreach (GameObject obj in SelectedObjs)
+                foreach (Transform trans in SelectedTransforms.Get)
                 {
-                    if (obj == null)
+                    if (trans == null)
                     {
                         EditorGUILayout.LabelField("(削除されたゲームオブジェクト)");
                     }
                     else
                     {
-                        EditorGUILayout.LabelField(obj.name);
+                        EditorGUILayout.LabelField(trans.name);
                     }
                 }
 
@@ -51,14 +52,14 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI.Parts
 
         public void UpdateSelection()
         {
-            SelectedObjs = Selection.gameObjects;
+            SelectedTransforms = new UniqueParentTransformList(Selection.transforms);
             parentEditorWindow.Repaint();
         }
         
         public void Dispose()
         {
             Selection.selectionChanged -= OnSelectionChanged;
-            Array.Clear(SelectedObjs, 0, SelectedObjs.Length);
+            SelectedTransforms.Reset();
         }
         
     }

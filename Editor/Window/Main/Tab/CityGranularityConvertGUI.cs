@@ -4,6 +4,7 @@ using PLATEAU.Editor.Window.Common;
 using PLATEAU.Editor.Window.Main.Tab.AdjustGUIParts;
 using PLATEAU.GranularityConvert;
 using PLATEAU.PolygonMesh;
+using PLATEAU.Util;
 using PLATEAU.Util.Async;
 using UnityEditor;
 using UnityEngine;
@@ -16,7 +17,7 @@ namespace PLATEAU.Editor.Window.Main.Tab
     internal class CityGranularityConvertGUI : IEditorDrawable
     {
         private readonly UnityEditor.EditorWindow parentEditorWindow;
-        private GameObject[] selected = Array.Empty<GameObject>();
+        private UniqueParentTransformList selected = new();
         private Vector2 scrollSelected;
         private int selectedUnit = 2;
         private static readonly string[] UnitOptions = { "最小地物単位(壁面,屋根面等)", "主要地物単位(建築物,道路等)", "地域単位" };
@@ -33,13 +34,13 @@ namespace PLATEAU.Editor.Window.Main.Tab
         public void Dispose()
         {
             Selection.selectionChanged -= OnSelectionChanged;
-            Array.Clear(selected,0, selected.Length);
+            selected.Reset();
         }
 
         private void OnSelectionChanged()
         {
             //選択アイテムのフィルタリング処理
-            selected = Selection.gameObjects;
+            selected.Init(Selection.transforms);
             parentEditorWindow.Repaint();
         }
 
@@ -50,9 +51,9 @@ namespace PLATEAU.Editor.Window.Main.Tab
             using (PlateauEditorStyle.VerticalScopeLevel2())
             {
                 scrollSelected = EditorGUILayout.BeginScrollView(scrollSelected, GUILayout.MaxHeight(100));
-                foreach (GameObject obj in selected)
+                foreach (var trans in selected.Get)
                 {
-                    EditorGUILayout.LabelField(obj.name);
+                    EditorGUILayout.LabelField(trans.name);
                 }
                 EditorGUILayout.EndScrollView();
             }
@@ -67,17 +68,6 @@ namespace PLATEAU.Editor.Window.Main.Tab
                     "分割・結合単位", this.selectedUnit, UnitOptions, 90);
                 destroyOrPreserveGUI.Draw();
             }
-
-            // if(selectedUnit == 0 )
-            // {
-            //     this.foldOutOption = PlateauEditorStyle.FoldOut(this.foldOutOption, "Option", () =>
-            //     {
-            //         using (PlateauEditorStyle.VerticalScopeWithPadding(16, 0, 8, 16))
-            //         {
-            //             toggleMaxSize = EditorGUILayout.ToggleLeft("メッシュが最大サイズを超える場合はグリッド分割する", toggleMaxSize);
-            //         }
-            //     }, 30);
-            // }
 
             PlateauEditorStyle.Separator(0);
 
@@ -100,7 +90,7 @@ namespace PLATEAU.Editor.Window.Main.Tab
                 destroyOrPreserveGUI.Current == DestroyOrPreserveSrcGUI.PreserveOrDestroy.Destroy
             );
             await converter.ConvertAsync(convertConf);
-            selected = new GameObject[] { };
+            selected.Reset();
         }
     }
 }

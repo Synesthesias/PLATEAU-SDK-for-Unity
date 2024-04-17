@@ -22,19 +22,18 @@ namespace PLATEAU.CityExport.ModelConvert
         /// <summary>
         /// 引数で与えられたゲームオブジェクトとその子(再帰的)を <see cref="Model"/> に変換して返します。
         /// </summary>
-        /// <param name="gameObjs">変換対象ゲームオブジェクトのルートです。</param>
+        /// <param name="srcTransforms">変換対象ゲームオブジェクトのルートです。</param>
         /// <param name="unityMeshToDllSubMeshConverter"></param>
         /// <param name="exportDisabledGameObj">false のとき、非Activeのものは対象外とします。</param>
         /// <param name="vertexConverter">頂点座標を変換するメソッドで、 Vector3 から PlateauVector3d に変換する方法を指定します。</param>
         /// /// <param name="invertMesh">true : Mesh Normalを反転します</param>
-        public static Model Convert(IEnumerable<GameObject> gameObjs, IUnityMeshToDllSubMeshConverter unityMeshToDllSubMeshConverter,
-            bool exportDisabledGameObj, AdderAndCoordinateSystemConverter vertexConverter, bool InvertMesh = false)
+        public static Model Convert(UniqueParentTransformList srcTransforms, IUnityMeshToDllSubMeshConverter unityMeshToDllSubMeshConverter,
+            bool exportDisabledGameObj, AdderAndCoordinateSystemConverter vertexConverter, bool invertMesh = false)
         {
             var model = Model.Create();
-            foreach(var go in gameObjs)
+            foreach(var trans in srcTransforms.Get)
             {
-                var trans = go.transform;
-                ConvertRecursive(null, trans, model, unityMeshToDllSubMeshConverter , exportDisabledGameObj, vertexConverter, InvertMesh);
+                ConvertRecursive(null, trans, model, unityMeshToDllSubMeshConverter , exportDisabledGameObj, vertexConverter, invertMesh);
             }
             return model;
         }

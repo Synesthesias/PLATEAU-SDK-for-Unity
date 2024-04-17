@@ -25,14 +25,14 @@ namespace PLATEAU.CityAdjust.MaterialAdjust
     internal class AdjustExecutorConf
     {
         public IMaterialAdjustConf MaterialAdjustConf { get; }
-        public IReadOnlyCollection<GameObject> TargetObjs { get; }
+        public UniqueParentTransformList TargetTransforms { get; }
         public MeshGranularity MeshGranularity { get; }
         public bool DoDestroySrcObjs { get; }
 
-        public AdjustExecutorConf(IMaterialAdjustConf materialAdjustConf, IReadOnlyCollection<GameObject> targetObjs, MeshGranularity meshGranularity, bool doDestroySrcObjs)
+        public AdjustExecutorConf(IMaterialAdjustConf materialAdjustConf, UniqueParentTransformList targetTransforms, MeshGranularity meshGranularity, bool doDestroySrcObjs)
         {
             this.MaterialAdjustConf = materialAdjustConf;
-            this.TargetObjs = targetObjs;
+            this.TargetTransforms = targetTransforms;
             this.MeshGranularity = meshGranularity;
             this.DoDestroySrcObjs = doDestroySrcObjs;
         }
@@ -43,15 +43,9 @@ namespace PLATEAU.CityAdjust.MaterialAdjust
         /// </summary>
         public bool Validate()
         {
-            if (TargetObjs.Count == 0)
+            if (TargetTransforms.Count == 0)
             {
                 Dialogue.Display("対象が選択されていません。\n対象を選択してください。", "OK");
-                return false;
-            }
-            
-            if (TargetObjs.Any(obj => obj == null))
-            {
-                Dialogue.Display("対象に削除されたゲームオブジェクトが含まれています。\n選択し直してください。", "OK");
                 return false;
             }
 
@@ -62,9 +56,9 @@ namespace PLATEAU.CityAdjust.MaterialAdjust
     internal class AdjustExecutorConfByAttr : AdjustExecutorConf
     {
         public string AttrKey;
-        public AdjustExecutorConfByAttr(IMaterialAdjustConf materialAdjustConf, IReadOnlyCollection<GameObject> targetObjs,
+        public AdjustExecutorConfByAttr(IMaterialAdjustConf materialAdjustConf, UniqueParentTransformList targetTransforms,
             MeshGranularity meshGranularity, bool doDestroySrcObjs, string attrKey)
-        :base(materialAdjustConf, targetObjs, meshGranularity, doDestroySrcObjs)
+        :base(materialAdjustConf, targetTransforms, meshGranularity, doDestroySrcObjs)
         {
             AttrKey = attrKey;
         }

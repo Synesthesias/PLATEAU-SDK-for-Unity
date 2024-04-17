@@ -37,21 +37,21 @@ namespace PLATEAU.CityAdjust.ConvertToAsset
 
             using var progress = new ProgressBar();
             
-            var srcGameObjs = new GameObject[] { conf.SrcGameObj };
+            var srcTransforms = new UniqueParentTransformList(new [] {conf.SrcGameObj.transform});
             var srcTrans = conf.SrcGameObj.transform;
             
             progress.Display("都市モデルの情報を記録中...", 0.1f);
             
             // 属性情報、都市情報、マテリアルを覚えておきます。
             var attributes = NameToAttrsDict.ComposeFrom(conf.SrcGameObj);
-            var instancedCityModelDict = InstancedCityModelDict.ComposeFrom(srcGameObjs);
+            var instancedCityModelDict = InstancedCityModelDict.ComposeFrom(srcTransforms);
             var nameToMaterialsDict = NameToMaterialsDict.ComposeFrom(conf.SrcGameObj);
             
             progress.Display("共通ライブラリのモデルに変換中...", 0.35f);
             
             // 共通ライブラリのModelに変換します。
             using var model = UnityMeshToDllModelConverter.Convert(
-                srcGameObjs,
+                srcTransforms,
                 new UnityMeshToDllSubMeshWithTexture(true),
                 false,
                 VertexConverterFactory.LocalCoordinateSystemConverter(CoordinateSystem.WUN, srcTrans.position),
@@ -88,27 +88,27 @@ namespace PLATEAU.CityAdjust.ConvertToAsset
             var dstParent = new GameObject("Asset_" + conf.SrcGameObj.name);
             dstParent.transform.parent = conf.SrcGameObj.transform.parent;
             dstParent.transform.SetPositionAndRotation(srcTrans.position, srcTrans.rotation);
-            List<GameObject> newObjs = new List<GameObject>();
+            var newTransforms = new UniqueParentTransformList();
             foreach (var fbx in fbxs)
             {
                 var srcObj = AssetDatabase.LoadAssetAtPath<GameObject>(PathUtil.FullPathToAssetsPath(fbx));
                 if (srcObj == null) continue;
                 var newObj = Object.Instantiate(srcObj, srcTrans.position, srcTrans.rotation, dstParent.transform);
                 newObj.name = srcObj.name;
-                newObjs.Add(newObj);
+                newTransforms.Add(newObj.transform);
             }
             
             progress.Display("都市の情報を復元中...", 0.9f);
 
             // 覚えておいたマテリアル、属性情報、都市情報を復元します。
             var newRenderers = new List<Renderer>();
-            foreach (var newObj in newObjs)
+            foreach (var newTrans in newTransforms.Get)
             {
-                nameToMaterialsDict.RestoreTo(newObj.transform);
-                attributes.RestoreTo(newObj.transform);
-                newRenderers.AddRange(newObj.transform.GetComponentsInChildren<Renderer>());
+                nameToMaterialsDict.RestoreTo(newTrans);
+                attributes.RestoreTo(newTrans);
+                newRenderers.AddRange(newTrans.GetComponentsInChildren<Renderer>());
             }
-            instancedCityModelDict.Restore(newObjs);
+            instancedCityModelDict.Restore(newTransforms);
             foreach (var r in newRenderers)
             {
                 if (r.GetComponent<MeshCollider>() != null) continue;

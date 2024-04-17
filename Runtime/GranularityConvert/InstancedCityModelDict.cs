@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using PLATEAU.CityInfo;
+using PLATEAU.Util;
 using UnityEngine;
 
 namespace PLATEAU.GranularityConvert
@@ -21,10 +22,10 @@ namespace PLATEAU.GranularityConvert
         /// <paramref name="srcGameObjs"/> とその子に含まれる<see cref="PLATEAUInstancedCityModel"/>を
         /// 記憶したインスタンスを返します。
         /// </summary>
-        public static InstancedCityModelDict ComposeFrom(IEnumerable<GameObject> srcGameObjs)
+        public static InstancedCityModelDict ComposeFrom(UniqueParentTransformList srcTransforms)
         {
             var dict = new InstancedCityModelDict();
-            TransformBFS.Exec(srcGameObjs.Select(obj => obj.transform),
+            srcTransforms.BfsExec(
                 trans =>
                 {
                     var cityModel = trans.GetComponent<PLATEAUInstancedCityModel>();
@@ -39,10 +40,10 @@ namespace PLATEAU.GranularityConvert
         /// 記憶した<see cref="PLATEAUInstancedCityModel"/>を復元します。
         /// 復元先は、<paramref name="rootGameObjs"/>とその子を探し、名前が一致した箇所で復元します。
         /// </summary>
-        public void Restore(IEnumerable<GameObject> rootGameObjs)
+        public void Restore(UniqueParentTransformList rootTransforms)
         {
             var remaining = new Dictionary<string, PLATEAUInstancedCityModel>(data);
-            TransformBFS.Exec(rootGameObjs.Select(obj => obj.transform),
+            rootTransforms.BfsExec(
                 trans =>
                 {
                     string name = trans.name;

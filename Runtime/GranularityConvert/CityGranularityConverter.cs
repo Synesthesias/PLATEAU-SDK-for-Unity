@@ -23,6 +23,7 @@ namespace PLATEAU.GranularityConvert
     /// </summary>
     public class CityGranularityConverter
     {
+        
         public async Task<GranularityConvertResult> ConvertAsync(GranularityConvertOptionUnity conf)
         {
             try
@@ -36,10 +37,10 @@ namespace PLATEAU.GranularityConvert
                 progressBar.Display("属性情報を取得中...", 0.1f);
 
                 // 属性情報を覚えておきます。
-                var attributes = GmlIdToSerializedCityObj.ComposeFrom(conf.SrcGameObjs);
+                var attributes = GmlIdToSerializedCityObj.ComposeFrom(conf.SrcTransforms);
                 
                 // PLATEAUInstancedCityModel が含まれる場合、これもコピーしたいので覚えておきます。
-                var instancedCityModelDict = InstancedCityModelDict.ComposeFrom(conf.SrcGameObjs); 
+                var instancedCityModelDict = InstancedCityModelDict.ComposeFrom(conf.SrcTransforms); 
                 
 
                 progressBar.Display("ゲームオブジェクトを共通モデルに変換中...", 0.2f);
@@ -48,7 +49,7 @@ namespace PLATEAU.GranularityConvert
 
                 // ゲームオブジェクトを共通ライブラリのModelに変換します。
                 using var srcModel = UnityMeshToDllModelConverter.Convert(
-                    conf.SrcGameObjs,
+                    conf.SrcTransforms,
                     unityMeshToDllSubMeshConverter,
                     true, // 非表示のゲームオブジェクトも対象に含めます。なぜなら、LOD0とLOD1のうちLOD1だけがActiveになっているという状況で、変換後もToolkitsのLOD機能を使えるようにするためです。
                     VertexConverterFactory.NoopConverter());
@@ -62,11 +63,11 @@ namespace PLATEAU.GranularityConvert
                 progressBar.Display("変換後の3Dモデルを配置中...", 0.8f);
                 
                 // Toolkits向けの処理です
-                bool isTextureCombined = SearchFirstCityObjGroup(conf.SrcGameObjs).InfoForToolkits.IsTextureCombined;
+                bool isTextureCombined = SearchFirstCityObjGroup(conf.SrcTransforms).InfoForToolkits.IsTextureCombined;
                 var infoForToolkits = new CityObjectGroupInfoForToolkits(isTextureCombined, true);
 
                 // Modelをゲームオブジェクトに変換して配置します。
-                var commonParent = CalcCommonParent(conf.SrcGameObjs.Select(obj => obj.transform).ToArray());
+                var commonParent = CalcCommonParent(conf.SrcTransforms.Get.ToArray());
 
                 var materialConverterToUnity = new DllSubMeshToUnityMaterialByGameMaterial(unityMeshToDllSubMeshConverter);
                 var placeToSceneConf =
@@ -81,26 +82,26 @@ namespace PLATEAU.GranularityConvert
                     throw new Exception("Failed to convert plateau model to scene game objects.");
                 }
 
-                if (result.GeneratedRootObjs.Count <= 0)
+                if (result.GeneratedRootTransforms.Count <= 0)
                 {
                     Dialogue.Display("変換対象がありません。\nアクティブなオブジェクトを選択してください。", "OK");
                     return GranularityConvertResult.Fail();
                 }
                 
                 // PLATEAUInstancedCityModelを復元します。
-                instancedCityModelDict.Restore(result.GeneratedRootObjs);
+                instancedCityModelDict.Restore(result.GeneratedRootTransforms);
 
                 if (conf.DoDestroySrcObjs)
                 {
-                    foreach (var srcObj in conf.SrcGameObjs)
+                    foreach (var srcTrans in conf.SrcTransforms.Get)
                     {
-                        Object.DestroyImmediate(srcObj);
+                        Object.DestroyImmediate(srcTrans.gameObject);
                     }
                 }
                 
 #if UNITY_EDITOR
                 // 変換後のゲームオブジェクトを選択状態にします。
-                Selection.objects = result.GeneratedRootObjs.Select(go => (Object)go).ToArray();
+                Selection.objects = result.GeneratedRootTransforms.Get.Select(trans => (Object)trans.gameObject).ToArray();
 #endif
                 return result;
             }
@@ -167,11 +168,11 @@ namespace PLATEAU.GranularityConvert
              throw new Exception("Failed to search common parent.");
          }
          
-         private PLATEAUCityObjectGroup SearchFirstCityObjGroup(IReadOnlyList<GameObject> gameObjs)
+         private PLATEAUCityObjectGroup SearchFirstCityObjGroup(UniqueParentTransformList transforms)
          {
-             foreach(var go in gameObjs)
+             foreach(var t in transforms.Get)
              {
-                 var cityObjGroups = go.GetComponentsInChildren<PLATEAUCityObjectGroup>();
+                 var cityObjGroups = t.GetComponentsInChildren<PLATEAUCityObjectGroup>();
                  if (cityObjGroups.Length > 0)
                  {
                      return cityObjGroups[0];
