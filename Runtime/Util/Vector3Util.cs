@@ -70,6 +70,37 @@ namespace PLATEAU.Util
         }
 
         /// <summary>
+        /// new Vector2(self.x, self.y);
+        /// </summary>
+        /// <param name="self"></param>
+        /// <returns></returns>
+        public static Vector2 Xy(this Vector3 self)
+        {
+            return new Vector2(self.x, self.y);
+        }
+
+        /// <summary>
+        /// new Vector2(self.x, self.z);
+        /// </summary>
+        /// <param name="self"></param>
+        /// <returns></returns>
+        public static Vector2 Xz(this Vector3 self)
+        {
+            return new Vector2(self.x, self.z);
+        }
+
+
+        /// <summary>
+        /// new Vector2(self.x, self.z);
+        /// </summary>
+        /// <param name="self"></param>
+        /// <returns></returns>
+        public static Vector2 Yz(this Vector3 self)
+        {
+            return new Vector2(self.y, self.z);
+        }
+
+        /// <summary>
         /// Mathf.Min(self.z, Mathf.Min(self.x, self.y))
         /// </summary>
         /// <param name="self"></param>
@@ -154,6 +185,11 @@ namespace PLATEAU.Util
         public static Vector3 RevScale(Vector3 a, Vector3 b)
         {
             return new Vector3(a.x / b.x, a.y / b.y, a.z / b.z);
+        }
+
+        public static Vector3Int ToVector3Int(this Vector3 self)
+        {
+            return new Vector3Int((int)self.x, (int)self.y, (int)self.z);
         }
     }
 }

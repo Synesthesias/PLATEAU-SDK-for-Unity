@@ -230,5 +230,11 @@ namespace PLATEAU.Util
         {
             return float.IsNaN(self.x) || float.IsNaN(self.y) || float.IsInfinity(self.x) || float.IsInfinity(self.y);
         }
+
+
+        public static Vector2 ToVector2Int(this Vector2 self)
+        {
+            return new Vector2((int)self.x, (int)self.y);
+        }
     }
 }
