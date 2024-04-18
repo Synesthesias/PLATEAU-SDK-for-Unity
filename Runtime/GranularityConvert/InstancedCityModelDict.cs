@@ -1,8 +1,6 @@
 using System.Collections.Generic;
-using System.Linq;
 using PLATEAU.CityInfo;
 using PLATEAU.Util;
-using UnityEngine;
 
 namespace PLATEAU.GranularityConvert
 {
@@ -29,16 +27,16 @@ namespace PLATEAU.GranularityConvert
                 trans =>
                 {
                     var cityModel = trans.GetComponent<PLATEAUInstancedCityModel>();
-                    if (cityModel == null) return true;
+                    if (cityModel == null) return NextSearchFlow.Continue;
                     dict.data.Add(trans.name, cityModel);
-                    return true;
+                    return NextSearchFlow.Continue;
                 });
             return dict;
         }
         
         /// <summary>
         /// 記憶した<see cref="PLATEAUInstancedCityModel"/>を復元します。
-        /// 復元先は、<paramref name="rootGameObjs"/>とその子を探し、名前が一致した箇所で復元します。
+        /// 復元先は、<paramref name="rootTransforms"/>とその子を探し、名前が一致した箇所で復元します。
         /// </summary>
         public void Restore(UniqueParentTransformList rootTransforms)
         {
@@ -47,12 +45,12 @@ namespace PLATEAU.GranularityConvert
                 trans =>
                 {
                     string name = trans.name;
-                    if (!remaining.ContainsKey(name)) return true;
+                    if (!remaining.ContainsKey(name)) return NextSearchFlow.Continue;
                     var newModel = trans.gameObject.AddComponent<PLATEAUInstancedCityModel>();
                     newModel.CopyFrom(remaining[name]);
                     remaining.Remove(name);
-                    if (remaining.Count == 0) return false;
-                    return true;
+                    if (remaining.Count == 0) return NextSearchFlow.Abort;
+                    return NextSearchFlow.Continue;
                 });
             
         }

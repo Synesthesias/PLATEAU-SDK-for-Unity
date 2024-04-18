@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using PLATEAU.CityGML;
 using PLATEAU.CityInfo;
 using Material = UnityEngine.Material;
 
@@ -9,7 +8,6 @@ namespace PLATEAU.CityAdjust.MaterialAdjust
     /// 検索で見つかった各分類項目に対して、そのマテリアルをどのように変更するかの設定値の辞書です。
     /// </summary>
     internal class MaterialAdjustConf<KeyT> : IMaterialAdjustConf
-        // : IEnumerable<KeyValuePair<KeyT, MaterialChangeConf>>
         where KeyT : class
     {
         private readonly SortedList<KeyT, ChangeConfPerMaterial> data;
@@ -59,6 +57,11 @@ namespace PLATEAU.CityAdjust.MaterialAdjust
         }
     }
     
+    /// <summary>
+    /// マテリアル分け設定のうち、実際に各キーに対してどのマテリアルを設定するかを保持します。
+    /// キーの型に関する処理はサブクラス<see cref="MaterialAdjustConf{KeyT}"/>で実装する一方で、
+    /// キーの型に依存しない処理をこのインターフェイスに切り出すことで処理を共通化しています。
+    /// </summary>
     internal interface IMaterialAdjustConf
     {
         public string GetKeyNameAt(int i);

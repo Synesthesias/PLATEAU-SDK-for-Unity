@@ -45,7 +45,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI.Parts
         
         public void OnSelectionChanged()
         {
-            if (materialAdjustGUI.CurrentAdjuster.IsSearched) return; // 「検索」ボタンを押したら対象は変更できないようにします。
+            if (materialAdjustGUI.CurrentSearcher.IsSearched) return; // 「検索」ボタンを押したら対象は変更できないようにします。
             UpdateSelection();
             
         }

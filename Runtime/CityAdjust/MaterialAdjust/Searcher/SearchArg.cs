@@ -1,6 +1,4 @@
-using System.Collections.Generic;
 using PLATEAU.Util;
-using UnityEngine;
 
 namespace PLATEAU.CityAdjust.MaterialAdjust
 {

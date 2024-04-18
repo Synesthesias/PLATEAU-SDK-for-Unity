@@ -20,7 +20,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI.Parts
             this.parentEditorWindow = parentEditorWindow;
         }
         
-        public void Draw(MaterialAdjustByCriterion currentAdjuster)
+        public void Draw(MAKeySearcher currentAdjuster)
         {
             using (PlateauEditorStyle.VerticalScopeWithPadding(0, 0, 15, 0))
             {

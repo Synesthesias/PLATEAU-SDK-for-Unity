@@ -1,5 +1,6 @@
 ﻿using System;
 using PLATEAU.CityAdjust.MaterialAdjust;
+using PLATEAU.CityAdjust.MaterialAdjust.Executor;
 using PLATEAU.Editor.CityImport.PackageImportConfigGUIs.Extendables.Components;
 using PLATEAU.Editor.Window.Common;
 using PLATEAU.Editor.Window.Main.Tab.AdjustGUIParts;
@@ -24,15 +25,15 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
 
         private readonly MaterialCriterionGui materialCriterionGui = new MaterialCriterionGui();
         private readonly SearchButton searchButton;
-        public MaterialAdjustByCriterion CurrentAdjuster => materialCriterionGui.CurrentAdjuster;
+        public MAKeySearcher CurrentSearcher => materialCriterionGui.CurrentSearcher;
         private MaterialCriterion SelectedCriterion => materialCriterionGui.SelectedCriterion;
         private MeshGranularity meshGranularity = MeshGranularity.PerPrimaryFeatureObject;
         private UniqueParentTransformList SelectedTransforms => objectSelectGui.SelectedTransforms;
 
         public bool IsSearched
         {
-            get => CurrentAdjuster.IsSearched;
-            set => CurrentAdjuster.IsSearched = value;
+            get => CurrentSearcher.IsSearched;
+            set => CurrentSearcher.IsSearched = value;
         }
 
         private bool doDestroySrcObjs;
@@ -66,7 +67,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
             }
 
             // 検索ボタンの描画
-            searchButton.Draw(CurrentAdjuster);
+            searchButton.Draw(CurrentSearcher);
 
             if (!IsSearched) return;
 
@@ -82,7 +83,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
             }
             
             // 各分類キーごとのマテリアル設定 
-            MaterialConfGui.Draw(CurrentAdjuster.MaterialAdjustConf);
+            MaterialConfGui.Draw(CurrentSearcher.MaterialAdjustConf);
 
             PlateauEditorStyle.Separator(0);
 
@@ -91,14 +92,14 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
             {
                 var executorConf = SelectedCriterion switch
                 {
-                    MaterialCriterion.ByType => new AdjustExecutorConf(
-                        CurrentAdjuster.MaterialAdjustConf,
+                    MaterialCriterion.ByType => new MAExecutorConf(
+                        CurrentSearcher.MaterialAdjustConf,
                         objectSelectGui.SelectedTransforms,
                         meshGranularity,
                         doDestroySrcObjs),
                     
-                    MaterialCriterion.ByAttribute => new AdjustExecutorConfByAttr(
-                        CurrentAdjuster.MaterialAdjustConf,
+                    MaterialCriterion.ByAttribute => new MAExecutorConfByAttr(
+                        CurrentSearcher.MaterialAdjustConf,
                         objectSelectGui.SelectedTransforms,
                         meshGranularity,
                         doDestroySrcObjs,
@@ -107,7 +108,13 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
                     _ => throw new ArgumentOutOfRangeException()
                 };
                 
-                CurrentAdjuster.AdjustExecutor.Exec(executorConf).ContinueWithErrorCatch(); // ここで実行します。
+                var executor = SelectedCriterion switch
+                {
+                    MaterialCriterion.ByType => MAExecutorFactory.CreateTypeExecutor(executorConf),
+                    MaterialCriterion.ByAttribute => MAExecutorFactory.CreateAttrExecutor((MAExecutorConfByAttr)executorConf),
+                    _ => throw new ArgumentOutOfRangeException()
+                };
+                executor.Exec().ContinueWithErrorCatch();
             }
             
         }

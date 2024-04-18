@@ -11,7 +11,6 @@ using PLATEAU.PolygonMesh;
 using PLATEAU.Util;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using Material = UnityEngine.Material;
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -127,7 +126,6 @@ namespace PLATEAU.CityImport.Import.Convert
                 EditorSceneManager.MarkSceneDirty(SceneManager.GetActiveScene());
             }
 #endif
-            Debug.Log("Gml model placed.");
             return result;
         }
 

@@ -7,7 +7,6 @@ using PLATEAU.CityExport.ModelConvert.SubMeshConvert;
 using PLATEAU.CityImport.Import.Convert;
 using PLATEAU.CityImport.Import.Convert.MaterialConvert;
 using PLATEAU.CityInfo;
-using PLATEAU.Native;
 using PLATEAU.PolygonMesh;
 using PLATEAU.Util;
 using UnityEditor;
@@ -23,6 +22,93 @@ namespace PLATEAU.GranularityConvert
     /// </summary>
     public class CityGranularityConverter
     {
+        public async Task<GranularityConvertResult> ConvertProgressiveAsync(GranularityConvertOptionUnity conf)
+        {
+            var dstGranularity = conf.NativeOption.Granularity;
+            var result = new GranularityConvertResult();
+
+            // 幅優先探索で、分解が必要なゲームオブジェクトを1つ見つけるごとに分解します。
+            await conf.SrcTransforms.BfsExecAsync(async trans =>
+            {
+                var cityObjGroup = trans.GetComponent<PLATEAUCityObjectGroup>();
+                if (cityObjGroup == null) return NextSearchFlow.Continue;
+                var srcGranularity = cityObjGroup.Granularity;
+                if (dstGranularity >= srcGranularity) return NextSearchFlow.Continue;
+                // 分解
+                GranularityConvertOptionUnity currentConf = new GranularityConvertOptionUnity(
+                    new GranularityConvertOption(dstGranularity, 0),
+                    new UniqueParentTransformList(trans),
+                    conf.DoDestroySrcObjs);
+                var currentResult = await ConvertAsync(currentConf);
+                result.Merge(currentResult);
+                if (result.IsSucceed)
+                {
+                    Debug.Log($"分解: {trans.name} , {srcGranularity} -> {dstGranularity}");
+                }
+                if (!result.IsSucceed)
+                {
+                    Debug.LogError($"{trans.name}の分解に失敗したため処理を中断しました。");
+                    return NextSearchFlow.Abort;
+                }
+
+                return NextSearchFlow.SkipChildren; // 分解後、子は望みの粒度になったはずなのでスキップ
+
+            });
+
+            // 深さ優先探索で、結合が必要なゲームオブジェクトを見つけて1つづつ結合します。
+            
+            // 結合すべきものをここに記録
+            Dictionary<Transform, List<Transform>> combineDict = new(); // key: 親Transform, value: その親のもとで結合すべきTransformのリスト
+            
+            await conf.SrcTransforms.DfsExecAsync(async trans =>
+            {
+                // この4行は上とほぼ同じ
+                var cityObjGroup = trans.GetComponent<PLATEAUCityObjectGroup>();
+                if (cityObjGroup == null) return NextSearchFlow.Continue;
+                var srcGranularity = cityObjGroup.Granularity;
+                if (dstGranularity <= srcGranularity) return NextSearchFlow.Continue;
+                
+                // 結合リストに追加
+                var parentTrans = trans.parent;
+                if (combineDict.TryGetValue(parentTrans, out var listToCombine))
+                {
+                    listToCombine.Add(trans);
+                }
+                else
+                {
+                    combineDict.Add(parentTrans, new List<Transform>{trans});
+                }
+
+                return NextSearchFlow.SkipChildren; // 明示せずとも子は結合対象になるのでスキップ
+
+            });
+            
+            // 実際の結合処理
+            foreach(var (parent, combineList) in combineDict)
+            {
+                GranularityConvertOptionUnity currentConf = new GranularityConvertOptionUnity(
+                    new GranularityConvertOption(dstGranularity, 0),
+                    new UniqueParentTransformList(combineList),
+                    conf.DoDestroySrcObjs);
+                var currentResult = await ConvertAsync(currentConf);
+                foreach (var generated in currentResult.GeneratedRootTransforms.Get)
+                {
+                    generated.parent = parent;
+                }
+                result.Merge(currentResult);
+                if (result.IsSucceed)
+                {
+                    Debug.Log($"結合");
+                }
+                if (!result.IsSucceed)
+                {
+                    Debug.LogError($"結合失敗");
+                }
+            }
+            
+            return result;
+        }
+
         
         public async Task<GranularityConvertResult> ConvertAsync(GranularityConvertOptionUnity conf)
         {

@@ -1,14 +1,14 @@
 using System;
 using System.Linq;
 using PLATEAU.CityAdjust.MaterialAdjust;
+using PLATEAU.CityAdjust.MaterialAdjust.Executor;
 using PLATEAU.Editor.Window.Common;
 using UnityEditor;
 
 namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI.Parts
 {
     /// <summary>
-    /// マテリアル分けの基準（属性情報で分ける、地物型で分ける）を選択するGUIを表示し、
-    /// 選択に応じて対応するマテリアル分けインスタンスを返します。
+    /// マテリアル分けの基準（属性情報で分ける、地物型で分ける）を選択するGUIを表示します。
     /// </summary>
     internal class MaterialCriterionGui
     {
@@ -17,15 +17,15 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI.Parts
         private readonly string[] criterionOptionsDisplay;
         
         // マテリアル分けの基準が属性情報の場合と地物型の場合で、2つのインスタンスを用意します。
-        private readonly MaterialAdjustByCriterion materialGuiByType = new(new MaterialAdjustExecutorByType());
-        private readonly MaterialAdjustByCriterion materialGuiByAttr = new(new MaterialAdjustExecutorByAttr());
+        private readonly MAKeySearcher materialGuiByType = new MAKeySearcher(MaterialCriterion.ByType);
+        private readonly MAKeySearcher materialGuiByAttr = new MAKeySearcher(MaterialCriterion.ByAttribute);
         
         public MaterialCriterion SelectedCriterion => criterionOptions[selectedCriterionId];
 
         /// <summary>
         /// 選択中のマテリアル分け基準に応じた、マテリアル分けインスタンスを返します。
         /// </summary>
-        public MaterialAdjustByCriterion CurrentAdjuster
+        public MAKeySearcher CurrentSearcher
         {
             get
             {
@@ -56,14 +56,6 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI.Parts
                 selectedCriterionId = EditorGUILayout.Popup("分類", selectedCriterionId, criterionOptionsDisplay);
             }
         }
-    }
-
-    /// <summary>
-    /// マテリアル分けの基準です。
-    /// </summary>
-    internal enum MaterialCriterion
-    {
-        ByType, ByAttribute
     }
 
     internal static class MaterialCriterionExtension

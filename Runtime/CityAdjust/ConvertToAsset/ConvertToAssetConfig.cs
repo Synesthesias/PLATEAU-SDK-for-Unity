@@ -1,6 +1,5 @@
 using System.IO;
 using System.Linq;
-using PLATEAU.CityInfo;
 using PLATEAU.Util;
 using UnityEngine;
 

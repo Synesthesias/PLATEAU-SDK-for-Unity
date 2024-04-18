@@ -1,8 +1,6 @@
 using System.Collections.Generic;
-using System.Linq;
 using PLATEAU.CityInfo;
 using PLATEAU.Util;
-using UnityEngine;
 
 namespace PLATEAU.GranularityConvert
 {
@@ -26,10 +24,10 @@ namespace PLATEAU.GranularityConvert
                 trans =>
                 {
                     var cityObjGroup = trans.GetComponent<PLATEAUCityObjectGroup>();
-                    if (cityObjGroup == null) return true;
+                    if (cityObjGroup == null) return NextSearchFlow.Continue;
 
                     cityObjGroups.Add(cityObjGroup);
-                    return true;
+                    return NextSearchFlow.Continue;
                 });
             
             var ret = new GmlIdToSerializedCityObj();

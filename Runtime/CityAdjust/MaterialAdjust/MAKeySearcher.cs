@@ -1,35 +1,31 @@
 using System;
+using PLATEAU.CityAdjust.MaterialAdjust.Executor;
 using PLATEAU.CityInfo;
-using PLATEAU.PolygonMesh;
 using PLATEAU.Util;
 
 namespace PLATEAU.CityAdjust.MaterialAdjust
 {
     /// <summary>
-    /// マテリアル分けの対象検索と設定、実行を行います。
-    /// 検索の基準が地物型であるか、属性情報であるかの違いを吸収するため、
-    /// コンストラクタで注入された型によって処理を分けます。具体的には:
-    /// 地物型で検索する場合はコンストラクタに<see cref="MaterialAdjustExecutorByType"/>を渡し、
-    /// 属性情報で検索する場合はコンストラクタに<see cref="MaterialAdjustExecutorByAttr"/>を渡します。
+    /// マテリアル分けの基準となるキーを対象から探し、マテリアル設定を構築します。
     /// </summary>
-    internal class MaterialAdjustByCriterion
+    internal class MAKeySearcher
     {
-        public IMaterialAdjustExecutor AdjustExecutor { get; }
+        public MaterialCriterion Criterion { get; private set; }
         public IMaterialAdjustConf MaterialAdjustConf { get; private set; }
         public bool IsSearched { get; set; }
 
-        public MaterialAdjustByCriterion(IMaterialAdjustExecutor adjustExecutor)
+        public MAKeySearcher(MaterialCriterion criterion)
         {
-            this.AdjustExecutor = adjustExecutor;
+            Criterion = criterion;
         }
         
         /// <summary> 対象を選択して「検索」ボタンを押したときの処理です。成功したかどうかをboolで返します。 </summary>
         public bool Search(SearchArg searchArg)
         {
-            ISearcher<object> searcher = AdjustExecutor switch
+            ISearcher<object> searcher = Criterion switch
             {
-                MaterialAdjustExecutorByAttr => new AttrSearcher((SearchArgByArr)searchArg),
-                MaterialAdjustExecutorByType => new TypeSearcher(searchArg),
+                MaterialCriterion.ByAttribute => new AttrSearcher((SearchArgByArr)searchArg),
+                MaterialCriterion.ByType => new TypeSearcher(searchArg),
                 _ => throw new ArgumentException()
             };
             var searchResult = searcher.Search();
@@ -48,5 +44,13 @@ namespace PLATEAU.CityAdjust.MaterialAdjust
             IsSearched = true;
             return true;
         }
+    }
+    
+    /// <summary>
+    /// マテリアル分けの基準です。
+    /// </summary>
+    internal enum MaterialCriterion
+    {
+        ByType, ByAttribute
     }
 }
