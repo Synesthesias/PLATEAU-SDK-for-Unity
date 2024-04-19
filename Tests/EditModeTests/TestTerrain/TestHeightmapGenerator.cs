@@ -17,7 +17,7 @@ namespace PLATEAU.Tests.EditModeTests
     [TestFixture]
     public class TestHeightmapGenerator
     {
-        public string ImageDirPath => Path.GetFullPath(Path.Combine(testDataDir, "TestDataImages"));
+        public string ImageDirPath => Path.GetFullPath(Path.Combine(testDataDir, "日本語パステスト/TestDataImages"));
         private static readonly string testDataDir = Path.Combine(PathUtil.SdkBasePath, "./Tests/TestData");
 
         [Test]
