@@ -27,6 +27,9 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos
         private AreaLodController areaLod;
         private GeoReference geoReference;
         private AreaSelectionGizmoDrawer areaSelectionGizmoDrawer;
+        #if UNITY_EDITOR
+        private readonly GizmoActiveChecker gizmoActiveChecker = new GizmoActiveChecker();
+        #endif
         private bool isShiftButtonPressed;
         private bool isLeftMouseButtonPressed;
         private bool isLeftMouseAndShiftButtonPressed;
@@ -100,6 +103,7 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos
 
         protected override void OnSceneGUI(SceneView sceneView)
         {
+            gizmoActiveChecker.CheckAndShow(sceneView);
             UpdateMousePressedStatus();
             
             this.areaLod.Update(GSIMapLoaderZoomSwitch.CalcCameraExtent(sceneView.camera, this.geoReference));
