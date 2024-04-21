@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEditor.Graphs;
 using UnityEngine;
 
@@ -74,6 +75,28 @@ namespace PLATEAU.Util
             if (isLoop && first.HasValue)
             {
                 DrawArrow(current.Value, first.Value, arrowSize, arrowUp, color, duration, depthTest);
+            }
+        }
+
+
+
+        public static void DrawCenters(IEnumerable<Vector3> vertices
+            , bool isLoop = false
+            , float arrowSize = 0.5f
+            , Vector3? arrowUp = null
+            , Color? color = null
+            , float duration = 0f
+            , bool depthTest = true)
+        {
+            var polygon = vertices.ToList();
+
+            for (var i = 0; i < polygon.Count; i++)
+            {
+                var v1 = polygon[i];
+                var v2 = polygon[(i + 1) % polygon.Count];
+
+                var dir = v2 - v1;
+
             }
         }
     }
