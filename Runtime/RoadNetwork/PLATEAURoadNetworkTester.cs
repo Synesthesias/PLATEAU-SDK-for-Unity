@@ -8,16 +8,20 @@ using UnityEngine;
 namespace PLATEAU.RoadNetwork
 {
     [RequireComponent(typeof(PLATEAURoadNetwork))]
-    public class PLATEAURoadNetworkFactorySample : MonoBehaviour
+    public class PLATEAURoadNetworkTester : MonoBehaviour
     {
         public List<PLATEAUCityObjectGroup> targets = new List<PLATEAUCityObjectGroup>();
 
+        public List<PLATEAUCityObjectGroup> tmp = new List<PLATEAUCityObjectGroup>();
+
         private PLATEAURoadNetwork Network => GetComponent<PLATEAURoadNetwork>();
+
+        [SerializeField]
+        private PLATEAURoadNetworkDrawerDebug drawer = new PLATEAURoadNetworkDrawerDebug();
 
         public void OnDrawGizmos()
         {
-            var drawer = new PLATEAURoadNetworkDrawerDebug(Network);
-            drawer.Draw();
+            drawer.Draw(Network);
         }
 
         public void Draw(PLATEAUCityObjectGroup cityObjectGroup)

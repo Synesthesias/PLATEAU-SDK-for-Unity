@@ -1,5 +1,7 @@
 ﻿using PLATEAU.CityGML;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace PLATEAU.Util
@@ -87,22 +89,49 @@ namespace PLATEAU.Util
             return (cn % 2) == 1;
         }
 
-        // 線分の交差判定
-        private static bool IsCrossing(Vector2 startPoint1, Vector2 endPoint1, Vector2 startPoint2, Vector2 endPoint2)
+        /// <summary>
+        /// verticesで構成された線分の長さを求める
+        /// </summary>
+        /// <param name="vertices"></param>
+        /// <returns></returns>
+        public static float GetLineSegmentLength(IEnumerable<Vector3> vertices)
         {
-            // ベクトルP1Q1
-            var vector1 = endPoint1 - startPoint1;
-            // ベクトルP2Q2
-            var vector2 = endPoint2 - startPoint2;
-            //
-            // 以下条件をすべて満たすときが交差となる
-            //
-            //    P1Q1 x P1P2 と P1Q1 x P1Q2 が異符号
-            //                かつ
-            //    P2Q2 x P2P1 と P2Q2 x P2Q1 が異符号
-            //
-            return Vector2Util.Cross(vector1, startPoint2 - startPoint1) * Vector2Util.Cross(vector1, endPoint2 - startPoint1) < 0 &&
-                   Vector2Util.Cross(vector2, startPoint1 - startPoint2) * Vector2Util.Cross(vector2, endPoint1 - startPoint2) < 0;
+            var ret = vertices.Aggregate(new Tuple<float, Vector3>(-1, Vector3.zero), (a, v) =>
+            {
+                if (a.Item1 < 0)
+                    return new Tuple<float, Vector3>(0f, v);
+                return new Tuple<float, Vector3>(a.Item1 + (a.Item2 - v).magnitude, v);
+            });
+            return Math.Max(0f, ret.Item1);
+        }
+
+        /// <summary>
+        /// verticesで表される線分の中央地点を返す
+        /// </summary>
+        /// <param name="vertices"></param>
+        /// <param name="midPoint"></param>
+        /// <returns></returns>
+        public static bool TryGetLineSegmentMidPoint(IList<Vector3> vertices, out Vector3 midPoint)
+        {
+            var halfLength = PolygonUtil.GetLineSegmentLength(vertices) * 0.5f;
+
+            var len = 0f;
+            for (var i = 0; i < vertices.Count - 1; ++i)
+            {
+                var p0 = vertices[i];
+                var p1 = vertices[i + 1];
+                var l = (p1 - p0).magnitude;
+                len += l;
+                if (len >= halfLength && l > float.Epsilon)
+                {
+                    var f = (len - halfLength) / l;
+                    midPoint = Vector3.Lerp(p0, p1, f);
+                    return true;
+                }
+            }
+
+            midPoint = Vector3.zero;
+            return false;
         }
     }
 }

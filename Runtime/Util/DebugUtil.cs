@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using UnityEditor.Graphs;
 using UnityEngine;
+using Debug = UnityEngine.Debug;
 
 namespace PLATEAU.Util
 {
@@ -14,7 +16,8 @@ namespace PLATEAU.Util
         /// <param name="end"></param>
         /// <param name="arrowSize"></param>
         /// <param name="arrowUp"></param>
-        /// <param name="color"></param>
+        /// <param name="bodyColor"></param>
+        /// <param name="arrowColor">矢印部分だけの色. nullの場合はcolorと同じ</param>
         /// <param name="duration"></param>
         /// <param name="depthTest"></param>
         public static void DrawArrow(
@@ -22,12 +25,16 @@ namespace PLATEAU.Util
             , Vector3 end
             , float arrowSize = 0.5f
             , Vector3? arrowUp = null
-            , Color? color = null
+            , Color? bodyColor = null
+            , Color? arrowColor = null
             , float duration = 0f
             , bool depthTest = true)
         {
             Vector3 up = arrowUp ?? Vector3.up;
-            Debug.DrawLine(start, end, color ?? Color.white, duration, depthTest);
+
+            var bodyColorImpl = bodyColor ?? Color.white;
+
+            Debug.DrawLine(start, end, bodyColorImpl, duration, depthTest);
             up = Vector3.Cross(end - start, Vector3.Cross(end - start, up)).normalized;
 
             var a1 = Quaternion.AngleAxis(45f, up) * (start - end);
@@ -35,8 +42,9 @@ namespace PLATEAU.Util
 
             a1 = a1.normalized;
             a2 = a2.normalized;
-            Debug.DrawLine(end + a1 * arrowSize, end);
-            Debug.DrawLine(end + a2 * arrowSize, end);
+            var arrowColorImpl = arrowColor ?? bodyColorImpl;
+            Debug.DrawLine(end + a1 * arrowSize, end, arrowColorImpl);
+            Debug.DrawLine(end + a2 * arrowSize, end, arrowColorImpl);
         }
 
         /// <summary>
@@ -47,6 +55,7 @@ namespace PLATEAU.Util
         /// <param name="arrowSize"></param>
         /// <param name="arrowUp"></param>
         /// <param name="color"></param>
+        /// <param name="arrowColor">矢印部分だけの色. nullの場合はcolorと同じ</param>
         /// <param name="duration"></param>
         /// <param name="depthTest"></param>
         public static void DrawArrows(
@@ -55,8 +64,10 @@ namespace PLATEAU.Util
             , float arrowSize = 0.5f
             , Vector3? arrowUp = null
             , Color? color = null
+            , Color? arrowColor = null
             , float duration = 0f
-            , bool depthTest = true)
+            , bool depthTest = true
+            )
         {
             Vector3? first = null;
             Vector3? current = null;
@@ -68,13 +79,13 @@ namespace PLATEAU.Util
                     continue;
                 }
 
-                DrawArrow(current.Value, v, arrowSize, arrowUp, color, duration, depthTest);
+                DrawArrow(current.Value, v, arrowSize, arrowUp, color, arrowColor, duration, depthTest);
                 current = v;
             }
 
             if (isLoop && first.HasValue)
             {
-                DrawArrow(current.Value, first.Value, arrowSize, arrowUp, color, duration, depthTest);
+                DrawArrow(current.Value, first.Value, arrowSize, arrowUp, color, arrowColor, duration, depthTest);
             }
         }
 
@@ -98,6 +109,54 @@ namespace PLATEAU.Util
                 var dir = v2 - v1;
 
             }
+        }
+
+        /// <summary>
+        /// デバッグ文字列を3D空間上に表示する(Editor限定)
+        /// </summary>
+        /// <param name="text"></param>
+        /// <param name="worldPos"></param>
+        /// <param name="oX"></param>
+        /// <param name="oY"></param>
+        /// <param name="color"></param>
+        [Conditional("UNITY_EDITOR")]
+        public static void DrawString(string text, Vector3 worldPos, Vector2? screenOffset = null, Color? color = null)
+        {
+            // https://discussions.unity.com/t/how-to-draw-debug-text-into-scene/14023/6
+#if UNITY_EDITOR
+            UnityEditor.Handles.BeginGUI();
+
+            var restoreColor = GUI.color;
+
+            if (color.HasValue) GUI.color = color.Value;
+            var view = UnityEditor.SceneView.currentDrawingSceneView;
+            Vector3 screenPos = view.camera.WorldToScreenPoint(worldPos);
+
+            if (screenPos.y < 0 || screenPos.y > Screen.height || screenPos.x < 0 || screenPos.x > Screen.width || screenPos.z < 0)
+            {
+                GUI.color = restoreColor;
+                UnityEditor.Handles.EndGUI();
+                return;
+            }
+
+            UnityEditor.Handles.Label(TransformByPixel(worldPos, screenOffset ?? Vector2.zero), text);
+            GUI.color = restoreColor;
+            UnityEditor.Handles.EndGUI();
+#endif
+        }
+
+        private static Vector3 TransformByPixel(Vector3 position, Vector2 screenOffset)
+        {
+            return TransformByPixel(position, new Vector3(screenOffset.x, screenOffset.y));
+        }
+
+        private static Vector3 TransformByPixel(Vector3 position, Vector3 screenOffset)
+        {
+            Camera cam = UnityEditor.SceneView.currentDrawingSceneView.camera;
+            if (cam)
+                return cam.ScreenToWorldPoint(cam.WorldToScreenPoint(position) + screenOffset);
+            else
+                return position;
         }
     }
 }

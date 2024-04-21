@@ -4,12 +4,12 @@ using UnityEngine;
 
 namespace PLATEAU.Editor.RoadNetwork
 {
-    [CustomEditor(typeof(PLATEAURoadNetworkFactorySample))]
-    public class PLATEAURoadNetworkFactorySampleEditor : UnityEditor.Editor
+    [CustomEditor(typeof(PLATEAURoadNetworkTester))]
+    public class PLATEAURoadNetworkTesterEditor : UnityEditor.Editor
     {
         public override void OnInspectorGUI()
         {
-            var cog = target as PLATEAURoadNetworkFactorySample;
+            var cog = target as PLATEAURoadNetworkTester;
             if (!cog)
                 return;
 
