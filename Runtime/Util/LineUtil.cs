@@ -32,7 +32,7 @@ namespace PLATEAU.Util
             intersection = Vector2.zero;
 
             var deno = Vector2Util.Cross(b - a, d - c);
-            if (deno < float.Epsilon)
+            if (Mathf.Abs(deno) < float.Epsilon)
                 return false;
 
             t1 = Vector2Util.Cross(c - a, d - c) / deno;
@@ -54,26 +54,33 @@ namespace PLATEAU.Util
         /// <returns></returns>
         public static bool HalfLineSegmentIntersection(Ray2D halfLine, Vector2 p1, Vector2 p2, out Vector2 intersection, out float t1, out float t2)
         {
-            LineIntersection(halfLine.origin, halfLine.origin + halfLine.direction, p1, p2, out intersection, out t1,
+            var ret = LineIntersection(halfLine.origin, halfLine.origin + halfLine.direction, p1, p2, out intersection, out t1,
                 out t2);
             // halfLineは半直線なので後ろになければOK
             // p1,p2は線分なので0~1の範囲内ならOK
-            return t1 >= 0f && t2 is >= 0f and <= 1f;
+            return ret && t1 >= 0f && t2 is >= 0f and <= 1f;
         }
 
         /// <summary>
-        /// 半直線halfLineと線分(p1, p2)の交点を返す.
+        /// 線分h(s1St, s1En)と線分(s2St, s2En)の交点を返す.
         /// 交わらない場合はfalseが返る
         /// </summary>
-        /// <param name="halfLine"></param>
-        /// <param name="p1">線分を構成する点1</param>
-        /// <param name="p2">線分を構成する点2</param>
+        /// <param name="s1St">線分1を構成する点1</param>
+        /// <param name="s1En">線分1を構成する点2</param>
+        /// <param name="s2St">線分2を構成する点1</param>
+        /// <param name="s2En">線分2を構成する点2</param>
         /// <param name="intersection"></param>
-        /// <param name="t1"></param>
-        /// <param name="t2"></param>
-        public static bool HalfLineSegmentIntersection(Ray2D halfLine, Vector2 p1, Vector2 p2, out Vector2 intersection)
+        /// <param name="t1">intersection = halfLine.origin + halfLine.direction * t1となるt1が入る</param>
+        /// <param name="t2">intersection = Vector2.Lerp(p1, p2, t2)となるt2が入る</param>
+        /// <returns></returns>
+        public static bool SegmentIntersection(Vector2 s1St, Vector2 s1En, Vector2 s2St, Vector2 s2En,
+            out Vector2 intersection, out float t1, out float t2)
         {
-            return HalfLineSegmentIntersection(halfLine, p1, p2, out intersection, out var t1, out var t2);
+            var ret = LineIntersection(s1St, s1En, s2St, s2En, out intersection, out t1,
+                out t2);
+            // halfLineは半直線なので後ろになければOK
+            // p1,p2は線分なので0~1の範囲内ならOK
+            return ret && t1 is >= 0f and <= 1f && t2 is >= 0f and <= 1f;
         }
     }
 }
