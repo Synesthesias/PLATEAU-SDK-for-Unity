@@ -40,6 +40,15 @@ namespace PLATEAU.RoadNetwork
         // 交差点かどうか
         public bool IsIntersection => edges.Count > 2;
 
+        // 行き止まり
+        public bool IsDeadEnd => edges.Count == 1;
+
+        // 孤立状態(どこともつながっていない)
+        public bool IsIsolated => edges.Count == 0;
+
+        //
+        public bool isValid = true;
+
         // #TODO : 左側/右側の判断ができるのか
         // 左側Way
         public PLATEAURoadNetworkWay Left { get; set; }
@@ -119,100 +128,106 @@ namespace PLATEAU.RoadNetwork
         {
             centerLine.Clear();
             HashSet<int> visitedEdge = new HashSet<int>();
-            for (var edgeIndex = 0; edgeIndex < 1; edgeIndex++)
+            for (var edgeIndex = 0; edgeIndex < edges.Count; edgeIndex++)
             {
                 if (visitedEdge.Contains(edgeIndex))
                     continue;
                 visitedEdge.Add(edgeIndex);
                 var edge = edges[edgeIndex];
-                // edgeを開始地点にする
+                // 不正なEdgeかどうかの判定を入れておく
                 Assert.IsTrue(edge.neighborLaneIndex >= 0, $"edge.neighborLaneIndex {edge.neighborLaneIndex} >= 0");
                 if (edge.neighborLaneIndex < 0)
                     continue;
+                // Edgeの中心を開始点とする
+                if (edge.TryGetEdgeCenter(out Vector3 startPoint) == false)
+                    continue;
+                centerLine.Add(startPoint);
 
-                // 
-                if (edge.TryGetEdgeCenter(out Vector3 srcPoint))
+                // このEdgeから出ていくWayすべてを使って中心線を書く
+                var targetWays = ways.Where(w => w.prevLaneIndex == edge.neighborLaneIndex).ToList();
+
+                // #TODO : 一旦prev/nextが一致しているものだけが対象. (枝分かれしているような交差点のレーンは対象外)
+                if (targetWays.Count != 2 || targetWays[0].nextLaneIndex != targetWays[1].nextLaneIndex)
+                    continue;
+
+                // Edgeに対してWayが2つないと中心線が取れないので無視する
+                // #TODO : 3本以上ある場合が想像できないが要対応
+                if (targetWays.Count != 2)
+                    continue;
+
+                visitedEdge.Add(targetWays[0].nextLaneIndex);
+
+                // 0とCount-1はedge上なので1番からスタート
+                //var indices = Enumerable.Repeat(1, targetWays.Count).ToList();
+
+                bool TryGetNearestIntersection(PLATEAURoadNetworkWay way, int vertexIndex, out Vector3 intersection)
                 {
-                    centerLine.Add(srcPoint);
-                    var targetWays = ways.Where(w => w.prevLaneIndex == edge.neighborLaneIndex).ToList();
-
-                    // #TODO : 一旦prev/nextが一致しているものだけが対象. (枝分かれしているような交差点のレーンは対象外)
-                    if (targetWays.Count != 2 || targetWays[0].nextLaneIndex != targetWays[1].nextLaneIndex)
-                        continue;
-
-                    visitedEdge.Add(targetWays[0].nextLaneIndex);
-
-                    // 0とCount-1はedge上なので1番からスタート
-                    //var indices = Enumerable.Repeat(1, targetWays.Count).ToList();
-
-                    bool TryGetNearestIntersection(PLATEAURoadNetworkWay way, int vertexIndex, out Vector3 intersection)
-                    {
-                        var v = way.vertices[vertexIndex];
-                        var n1 = -way.GetOutsizeNormal(vertexIndex - 1).normalized;
-                        var n2 = -way.GetOutsizeNormal(vertexIndex).normalized;
-                        var n = (n1 + n2) / 2;
-                        var ray = new Ray(v, n);
-                        var found = targetWays
-                            .Where(w => w != way)
-                            .Select(w =>
-                            {
-                                var ret = w.HalfLineIntersectionXz(ray, out Vector3 inter);
-                                return new { success = ret, inter = inter };
-                            })
-                            .Where(a => a.success)
-                            .TryFindMin(a => (a.inter - ray.origin).sqrMagnitude, out var item);
-                        intersection = Vector3.Lerp(v, item.inter, 0.5f);
-                        return found;
-                    }
-
-                    var candidates = new List<Vector3>();
-                    foreach (var way in targetWays)
-                    {
-                        for (var i = 1; i < way.vertices.Count - 1; ++i)
+                    intersection = Vector3.zero;
+                    var v = way.vertices[vertexIndex];
+                    var n1 = -way.GetOutsizeNormal(vertexIndex - 1).normalized;
+                    var n2 = -way.GetOutsizeNormal(vertexIndex).normalized;
+                    var n = (n1 + n2) / 2;
+                    var ray = new Ray(v, n);
+                    var found = targetWays
+                        .Where(w => w != way)
+                        .Select(w =>
                         {
-                            if (TryGetNearestIntersection(way, i, out var inter))
-                                candidates.Add(inter);
-                        }
-                    }
-
-                    while (candidates.Count > 0)
+                            var ret = w.HalfLineIntersectionXz(ray, out Vector3 inter);
+                            return new { success = ret, inter = inter };
+                        })
+                        .Where(a => a.success)
+                        .TryFindMin(a => (a.inter - ray.origin).sqrMagnitude, out var item);
+                    if (!found)
+                        return false;
+                    intersection = Vector3.Lerp(v, item.inter, 0.5f);
+                    return true;
+                }
+                var candidates = new List<Vector3>();
+                foreach (var way in targetWays)
+                {
+                    for (var i = 1; i < way.vertices.Count - 1; ++i)
                     {
-                        var before = centerLine.Last();
-                        candidates.TryFindMin(x => (x - before).sqrMagnitude, out var nearPoint);
-                        centerLine.Add(nearPoint);
-                        candidates.Remove(nearPoint);
+                        if (TryGetNearestIntersection(way, i, out var inter))
+                            candidates.Add(inter);
+                    }
+                }
+
+                while (candidates.Count > 0)
+                {
+                    var before = centerLine.Last();
+                    var found = candidates
+                        // LaneがものすごいUターンしていたりする時の対応
+                        // beforeから直接いけないものは無視
+                        .Where(c => targetWays.All(w => w.SegmentIntersectionXz(before, c, out var _) == false))
+                        .TryFindMin(x => (x - before).sqrMagnitude, out var nearPoint);
+                    if (found == false)
+                    {
+                        //Assert.IsTrue(found, "center point not found");
+                        DebugUtil.DrawArrow(before, before + Vector3.up * 2, arrowSize: 1f, duration: 30f, bodyColor: Color.blue);
+
+                        foreach (var c in candidates)
+                            DebugUtil.DrawArrow(c, c + Vector3.up * 100, arrowSize: 1f, duration: 30f, bodyColor: Color.red);
+                        isValid = false;
+                        break;
                     }
 
+                    centerLine.Add(nearPoint);
+                    candidates.RemoveAll(x => (x - nearPoint).sqrMagnitude <= float.Epsilon);
+                }
+
+                // 構築するwayがすべて目的地が同じ場合、中心線に目的地のEdgeを追加する
+                if (targetWays.All(t => t.nextLaneIndex == targetWays[0].nextLaneIndex))
+                {
                     var lastEdge = edges.FirstOrDefault(e => e.neighborLaneIndex == targetWays[0].nextLaneIndex);
                     if (lastEdge != null)
                     {
                         if (lastEdge.TryGetEdgeCenter(out var end))
                             centerLine.Add(end);
                     }
-                    //while (wayIndices
-                    //       // Count-1は次のEdge上なので無視
-                    //       .Where(i => indices[i] < targetWays[i].vertices.Count - 1)
-                    //       .TryFindMin(i => (targetWays[i].vertices[indices[i]] - srcPoint).sqrMagnitude, out int wayIndex))
-                    //{
-                    //    var vertexIndex = indices[wayIndex]++;
-                    //    List<Vector3> interSections = new List<Vector3>();
 
-
-                    //    if (TryGetNearestIntersection(wayIndex, vertexIndex,  out var prevInter))
-                    //    {
-                    //        interSections.Add(prevInter);
-                    //    }
-
-                    //    if (interSections.Any() == false)
-                    //        continue;
-                    //    interSections.Sort((v1, v2) => Comparer<float>.Default.Compare((v1 - srcPoint).sqrMagnitude,
-                    //        (v2 - srcPoint).sqrMagnitude));
-                    //    centerLine.AddRange(interSections);
-                    //    srcPoint = interSections.Last();
-                    //}
-
-
+                    visitedEdge.Add(targetWays[0].nextLaneIndex);
                 }
+
             }
         }
     }

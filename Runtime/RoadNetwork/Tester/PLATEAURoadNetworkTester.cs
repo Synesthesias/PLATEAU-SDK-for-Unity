@@ -1,9 +1,11 @@
+using PLATEAU.CityGML;
 using PLATEAU.CityInfo;
 using PLATEAU.RoadNetwork.Drawer;
 using PLATEAU.Util;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 namespace PLATEAU.RoadNetwork
 {
@@ -15,6 +17,8 @@ namespace PLATEAU.RoadNetwork
         public List<PLATEAUCityObjectGroup> tmp = new List<PLATEAUCityObjectGroup>();
 
         private PLATEAURoadNetwork Network => GetComponent<PLATEAURoadNetwork>();
+
+        [SerializeField] private bool targetAll = false;
 
         [SerializeField]
         private PLATEAURoadNetworkDrawerDebug drawer = new PLATEAURoadNetworkDrawerDebug();
@@ -41,7 +45,20 @@ namespace PLATEAU.RoadNetwork
 
         public void CreateNetwork()
         {
-            Network.CreateNetwork(targets);
+            if (targetAll)
+            {
+                var allTargets = GameObject.FindObjectsOfType<PLATEAUCityObjectGroup>()
+                    .Where(c => c.CityObjects.rootCityObjects.Any(a => a.CityObjectType == CityObjectType.COT_Road))
+                    .ToList();
+
+                Network.CreateNetwork(allTargets);
+            }
+            else
+            {
+                // èdï°ÇÕîrèúÇ∑ÇÈ
+                targets = targets.Distinct().ToList();
+                Network.CreateNetwork(targets);
+            }
         }
     }
 }

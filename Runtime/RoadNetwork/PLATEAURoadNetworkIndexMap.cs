@@ -7,9 +7,5 @@ using UnityEngine;
 namespace PLATEAU.RoadNetwork
 {
     [Serializable]
-    public class PLATEAURoadNetworkIndexMap : SerializableHashSet<int>
-    {
-
-    }
-
+    public class PLATEAURoadNetworkIndexMap : SerializableHashSet<int> { }
 }

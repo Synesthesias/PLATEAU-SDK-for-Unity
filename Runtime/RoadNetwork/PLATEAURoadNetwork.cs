@@ -193,12 +193,12 @@ namespace PLATEAU.RoadNetwork
                 }
                 else
                 {
-
-                    Assert.IsTrue(fromNeighbors.Count == 1, $"fromNeighborsCount {fromNeighbors.Count}");
-                    Assert.IsTrue(toNeighbor.Count == 1, $"toNeighborCount {toNeighbor.Count}");
+                    // 孤立した状態だとneighborsが0の時もあり得る
+                    Assert.IsTrue(fromNeighbors.Count <= 1, $"fromNeighborsCount {fromNeighbors.Count}");
+                    Assert.IsTrue(toNeighbor.Count <= 1, $"toNeighborCount {toNeighbor.Count}");
                     var way = new PLATEAURoadNetworkWay();
-                    way.prevLaneIndex = fromNeighbors[0].LaneIndex;
-                    way.nextLaneIndex = toNeighbor[0].LaneIndex;
+                    way.prevLaneIndex = fromNeighbors.FirstOrDefault()?.LaneIndex ?? -1;
+                    way.nextLaneIndex = toNeighbor.FirstOrDefault()?.LaneIndex ?? -1;
                     way.vertices.AddRange(wayVertexIndices.Select(a => lane.vertices[a]));
                     lane.ways.Add(way);
                 }

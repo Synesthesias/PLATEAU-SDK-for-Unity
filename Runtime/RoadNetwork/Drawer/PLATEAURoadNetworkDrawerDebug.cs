@@ -41,14 +41,14 @@ namespace PLATEAU.RoadNetwork.Drawer
 
                 foreach (var way in l.ways)
                 {
-                    DebugUtil.DrawArrows(way.vertices.Select(x => x.PutY(x.y + 0.3f)), false, color: Color.green, arrowColor: way.isRightSide ? Color.red : Color.blue);
+                    DebugUtil.DrawArrows(way.vertices.Select(x => x.PutY(x.y + 0.3f)), false, color: l.isValid ? Color.green : Color.blue, arrowColor: way.isRightSide ? Color.cyan : Color.blue);
 
 
                 }
 
                 foreach (var edge in l.edges)
                 {
-                    DebugUtil.DrawArrows(edge.vertices.Select(x => x.PutY(x.y + 0.5f)), false, color: Color.red);
+                    DebugUtil.DrawArrows(edge.vertices.Select(x => x.PutY(x.y + 0.5f)), false, color: Color.red, arrowSize: 0f);
 
                 }
             }
