@@ -319,15 +319,6 @@ namespace PLATEAU.GranularityConvert
                 Debug.LogWarning($"gmlID not found : {gmlID}");
                 return null;
             }
-            // try
-            // {
-            //     return CityObjectSerializableConvert.FromCityGMLCityObject(srcCityObj);
-            // }
-            // catch (KeyNotFoundException ex)
-            // {
-            //     Debug.LogWarning($"{ex.Message}\n{ex.StackTrace}");
-            //     return null;
-            // }
         }
 
         public void Dispose()
