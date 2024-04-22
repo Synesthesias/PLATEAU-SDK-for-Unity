@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Emit;
 using UnityEngine;
 
 namespace PLATEAU.Util
@@ -9,46 +10,53 @@ namespace PLATEAU.Util
     public static class PolygonUtil
     {
         /// <summary>
+        /// 頂点verticesで構成される多角形の辺を返す. isLoop=trueの時は最後の用途と最初の要素を繋ぐ辺も返す
+        /// Item1 : 始点, Item2 : 終点
+        /// </summary>
+        /// <param name="vertices"></param>
+        /// <param name="isLoop"></param>
+        /// <returns></returns>
+        private static IEnumerable<Tuple<T, T>> GetEdges<T>(IEnumerable<T> vertices, bool isLoop) where T : struct
+        {
+            T? first = null;
+            T? current = null;
+            foreach (var v in vertices)
+            {
+                if (current == null)
+                {
+                    first = current = v;
+                    continue;
+                }
+                yield return new Tuple<T, T>(current.Value, v);
+                current = v;
+            }
+
+            if (isLoop && first.HasValue)
+                yield return new Tuple<T, T>(current.Value, first.Value);
+        }
+
+        /// <summary>
         /// ポリゴンを構成する頂点配列を渡すと, そのポリゴンが時計回りなのか反時計回りなのかを返す
         /// </summary>
         /// <param name="vertices"></param>
         /// <returns></returns>
         public static bool IsClockwise(IEnumerable<Vector2> vertices)
         {
-            var total = 0f;
-            Vector2? first = null;
-            Vector2? current = null;
-            foreach (var v in vertices)
-            {
-                if (current == null)
-                {
-                    first = v;
-                    current = v;
-                    continue;
-                }
-
-                total += Vector2Util.Cross(v, current.Value);
-                current = v;
-            }
-
-            if (first != null)
-            {
-                total += Vector2Util.Cross(first.Value, current.Value);
-            }
-
-            return total < 0;
+            var total = GetEdges(vertices, true).Sum(item => Vector2Util.Cross(item.Item1, item.Item2));
+            return total >= 0;
         }
 
+        /// <summary>
+        /// verticesで表される多角形が点pを内包するかどうか
+        /// </summary>
+        /// <param name="vertices"></param>
+        /// <param name="p"></param>
+        /// <returns></returns>
         public static bool Contains(IEnumerable<Vector2> vertices, Vector2 p)
         {
-            Vector2? first = null;
-            Vector2? current = null;
-            bool? isClockwise = null;
-            var cn = 0;
-
+            // https://www.nttpc.co.jp/technology/number_algorithm.html
             bool Check(Vector2 c, Vector2 v)
             {
-
                 // 上向きの辺。点Pがy軸方向について、始点と終点の間にある。ただし、終点は含まない。(ルール1)
                 // 下向きの辺。点Pがy軸方向について、始点と終点の間にある。ただし、始点は含まない。(ルール2)
                 if (((c.y <= p.y) && (v.y > p.y)) || ((c.y > p.y) && (v.y <= p.y)))
@@ -66,27 +74,8 @@ namespace PLATEAU.Util
                 return false;
             }
 
-            foreach (var v in vertices)
-            {
-                if (current == null)
-                {
-                    first = v;
-                    current = v;
-                    continue;
-                }
-
-                if (Check(current.Value, v))
-                    cn++;
-
-                current = v;
-            }
-
-            if (first != null)
-            {
-                if (Check(current.Value, first.Value))
-                    cn++;
-            }
-            return (cn % 2) == 1;
+            var cnt = GetEdges(vertices, true).Count(item => Check(item.Item1, item.Item2));
+            return (cnt % 2) == 1;
         }
 
         /// <summary>
@@ -96,13 +85,7 @@ namespace PLATEAU.Util
         /// <returns></returns>
         public static float GetLineSegmentLength(IEnumerable<Vector3> vertices)
         {
-            var ret = vertices.Aggregate(new Tuple<float, Vector3>(-1, Vector3.zero), (a, v) =>
-            {
-                if (a.Item1 < 0)
-                    return new Tuple<float, Vector3>(0f, v);
-                return new Tuple<float, Vector3>(a.Item1 + (a.Item2 - v).magnitude, v);
-            });
-            return Math.Max(0f, ret.Item1);
+            return GetEdges(vertices, false).Sum(item => (item.Item2 - item.Item1).magnitude);
         }
 
         /// <summary>
@@ -113,7 +96,7 @@ namespace PLATEAU.Util
         /// <returns></returns>
         public static bool TryGetLineSegmentMidPoint(IList<Vector3> vertices, out Vector3 midPoint)
         {
-            var halfLength = PolygonUtil.GetLineSegmentLength(vertices) * 0.5f;
+            var halfLength = GetLineSegmentLength(vertices) * 0.5f;
 
             var len = 0f;
             for (var i = 0; i < vertices.Count - 1; ++i)
@@ -132,6 +115,118 @@ namespace PLATEAU.Util
 
             midPoint = Vector3.zero;
             return false;
+        }
+
+        /// <summary>
+        /// 頂点verticesで構成されるポリゴン(isLoop = falseの時は開いている)と半直線rayとの交点を返す
+        /// </summary>
+        /// <param name="vertices"></param>
+        /// <param name="ray"></param>
+        /// <param name="intersection"></param>
+        /// <param name="t"></param>
+        /// <param name="isLoop"></param>
+        /// <returns></returns>
+        public static bool PolygonHalfLineIntersection(IEnumerable<Vector2> vertices, Ray2D ray, out Vector2 intersection, out float t, bool isLoop = true)
+        {
+            var ret = GetEdges(vertices, isLoop)
+                .Select(p =>
+                {
+                    var success = LineUtil.HalfLineSegmentIntersection(ray, p.Item1, p.Item2, out Vector2 intersection,
+                        out float f1,
+                        out float f2);
+                    return new { success, intersection, f1, f2 };
+                })
+                .Where(p => p.success)
+                .TryFindMin(p => p.f1, out var o);
+
+            intersection = o.intersection;
+            t = o.f1;
+            return ret;
+        }
+
+        /// <summary>
+        /// 頂点verticesで構成されるポリゴン(isLoop = falseの時は開いている)と半直線rayとの交点を返す.
+        /// ただし、y座標は無視してXz平面だけで当たり判定を行う
+        /// </summary>
+        /// <param name="vertices"></param>
+        /// <param name="ray"></param>
+        /// <param name="intersection"></param>
+        /// <param name="t"></param>
+        /// <param name="isLoop"></param>
+        /// <returns></returns>
+        public static bool PolygonHalfLineIntersectionXZ(IEnumerable<Vector3> vertices, Ray ray,
+            out Vector3 intersection, out float t, bool isLoop = true)
+        {
+            var ret = PolygonHalfLineIntersection(vertices.Select(v => v.Xz()),
+                new Ray2D(ray.origin.Xz(), ray.direction.Xz()), out Vector2 _, out float f1, isLoop);
+            if (ret == false)
+            {
+                intersection = Vector3.zero;
+                t = 0f;
+            }
+            else
+            {
+                intersection = ray.origin + ray.direction * f1;
+                t = f1;
+            }
+            return ret;
+        }
+
+
+        /// <summary>
+        /// 頂点verticesで構成されるポリゴン(isLoop = falseの時は開いている)と半直線rayとの交点を返す
+        /// </summary>
+        /// <param name="vertices"></param>
+        /// <param name="ray"></param>
+        /// <param name="intersection"></param>
+        /// <param name="t"></param>
+        /// <param name="isLoop"></param>
+        /// <returns></returns>
+        public static bool PolygonSegmentIntersection(IEnumerable<Vector2> vertices, Vector2 st, Vector2 en, out Vector2 intersection, out float t, bool isLoop = true)
+        {
+            var ret = GetEdges(vertices, isLoop)
+                .Select(p =>
+                {
+                    var success = LineUtil.SegmentIntersection(st, en, p.Item1, p.Item2, out Vector2 intersection,
+                        out float f1,
+                        out float f2);
+                    return new { success, intersection, f1, f2 };
+                })
+                .Where(p => p.success)
+                .TryFindMin(p => p.f1, out var o);
+
+            intersection = o.intersection;
+            t = o.f1;
+            return ret;
+        }
+
+        /// <summary>
+        /// 頂点verticesで構成されるポリゴン(isLoop = falseの時は開いている)と半直線rayとの交点を返す.
+        /// ただし、y座標は無視してXz平面だけで当たり判定を行う
+        /// </summary>
+        /// <param name="vertices"></param>
+        /// <param name="en"></param>
+        /// <param name="intersection"></param>
+        /// <param name="t"></param>
+        /// <param name="isLoop"></param>
+        /// <param name="st"></param>
+        /// <returns></returns>
+        public static bool PolygonSegmentIntersectionXZ(IEnumerable<Vector3> vertices, Vector3 st, Vector3 en,
+            out Vector3 intersection, out float t, bool isLoop = true)
+        {
+            var ret = PolygonHalfLineIntersection(vertices.Select(v => v.Xz()),
+                new Ray2D(st.Xz(), en.Xz()), out Vector2 _, out float f1, isLoop);
+            if (ret == false)
+            {
+                intersection = Vector3.zero;
+                t = 0f;
+            }
+            else
+            {
+                intersection = Vector3.Lerp(st, en, f1);
+                t = f1;
+            }
+            return ret;
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using PLATEAU.Util;
+﻿using PlasticPipe.PlasticProtocol.Messages;
+using PLATEAU.Util;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -6,7 +7,7 @@ using UnityEngine;
 namespace PLATEAU.RoadNetwork
 {
     /// <summary>
-    /// レーンを構成する１車線を表す
+    /// レーンを構成する左右の道の一つ
     /// </summary>
     [Serializable]
     public class PLATEAURoadNetworkWay
@@ -18,16 +19,25 @@ namespace PLATEAU.RoadNetwork
         public bool isRightSide = false;
 
         /// <summary>
-        /// 頂点 vertexIndex, vertexIndex + 1の方向に対して
-        /// 道の外側を向いている法線ベクトルを返す.正規化はされていない
+        /// 頂点 vertexIndex -> vertexIndex, vertexIndex -> vertexIndex + 1の方向に対して
+        /// 道の外側を向いている法線ベクトルの平均を返す.正規化はされていない
         /// </summary>
         /// <param name="vertexIndex"></param>
         /// <returns></returns>
-        public Vector3 GetOutsizeNormal(int vertexIndex)
+        public Vector3 GetVertexNormal(int vertexIndex)
         {
-            var dir = vertices[vertexIndex + 1] - vertices[vertexIndex];
+            var next = Math.Min(vertexIndex + 1, vertices.Count - 1);
+            var prev = Math.Max(vertexIndex - 1, 0);
             // Vector3.Crossは左手系
-            var ret = Vector3.Cross(Vector3.up, dir);
+            var n1 = Vector3.Cross(Vector3.up, vertices[next] - vertices[vertexIndex]).normalized;
+            var n2 = Vector3.Cross(Vector3.up, vertices[vertexIndex] - vertices[prev]).normalized;
+
+            // 境界地の時はそのままの値を使うようにする. vertexIndex自体が範囲外の時は例外にする
+            if (vertexIndex == next)
+                return n2;
+            if (vertexIndex == prev)
+                return n1;
+            var ret = (n1 + n2) / 2;
             return isRightSide ? ret : -ret;
         }
 

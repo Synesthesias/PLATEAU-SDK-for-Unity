@@ -3,8 +3,13 @@ using PLATEAU.Util;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
+using UnityEditor.Overlays;
 using UnityEngine;
 using UnityEngine.Assertions;
+using UnityEngine.Serialization;
+using Vector2 = UnityEngine.Vector2;
+using Vector3 = UnityEngine.Vector3;
 
 namespace PLATEAU.RoadNetwork
 {
@@ -27,24 +32,26 @@ namespace PLATEAU.RoadNetwork
         [SerializeField]
         public PLATEAURoadNetworkIndexMap connectedLaneIndices = new PLATEAURoadNetworkIndexMap();
 
+        // レーンを構成する道
         [SerializeField]
         public List<PLATEAURoadNetworkWay> ways = new List<PLATEAURoadNetworkWay>();
 
+        // 他レーンとの境界線
         [SerializeField]
-        public List<PLATEAURoadNetworkEdge> edges = new List<PLATEAURoadNetworkEdge>();
+        public List<PLATEAURoadNetworkBorder> borders = new List<PLATEAURoadNetworkBorder>();
 
         // 中央線
         [SerializeField]
         public List<Vector3> centerLine = new List<Vector3>();
 
         // 交差点かどうか
-        public bool IsIntersection => edges.Count > 2;
+        public bool IsIntersection => borders.Count > 2;
 
         // 行き止まり
-        public bool IsDeadEnd => edges.Count == 1;
+        public bool IsDeadEnd => borders.Count == 1;
 
         // 孤立状態(どこともつながっていない)
-        public bool IsIsolated => edges.Count == 0;
+        public bool IsIsolated => borders.Count == 0;
 
         //
         public bool isValid = true;
@@ -79,9 +86,9 @@ namespace PLATEAU.RoadNetwork
             connectedLaneIndices.Add(laneIndex);
         }
 
-        // 頂点 startVertexIndex, startVertexIndex + 1の方向に対して
-        // 道の外側を向いている法線ベクトルを返す. 正規化はされていない
-        public Vector3 GetOutsizeNormal(int startVertexIndex)
+        // 頂点 startVertexIndex, startVertexIndex + 1で構成される辺の法線ベクトルを返す
+        // 道の外側を向いている. 正規化はされていない
+        public Vector3 GetEdgeNormal(int startVertexIndex)
         {
             var p0 = vertices[startVertexIndex];
             var p1 = vertices[(startVertexIndex + 1) % vertices.Count];
@@ -89,27 +96,38 @@ namespace PLATEAU.RoadNetwork
             return -Vector3.Cross(Vector3.up, p1 - p0);
         }
 
-
+        /// <summary>
+        /// Laneを構成する頂点の法線ベクトル(外側向き)を返す.
+        /// vertices[i-1] -> vertices[i]の辺とvertices[i] -> vertices[i+1]の辺の平均が返る
+        /// </summary>
+        /// <param name="index"></param>
+        /// <returns></returns>
+        public Vector3 GetVertexNormal(int index)
+        {
+            var n1 = GetEdgeNormal((index - 1 + vertices.Count) % vertices.Count).normalized;
+            var n2 = GetEdgeNormal(index).normalized;
+            return (n1 + n2) * 0.5f;
+        }
 
         /// <summary>
         /// 道路の左右で方向をそろえる
         /// </summary>
         public void AlignWayDirection()
         {
-            // Edgeを基準にそこを開始点にする
+            // borderを基準にそこを開始点にする
             // ただし、1度変更したWayは無視する(next/prevで必ず2回反転してしまうので)
             // #TODO : 通常の道だと2つのwayはprevLaneIndex/nextLaneIndexは同じ組だが交差点などwayが3つ以上ある場合に正しく同じ方向を向くかは検証できていない
-            HashSet<int> visitedEdge = new HashSet<int>();
-            foreach (var edge in edges)
+            HashSet<int> visitedBorder = new HashSet<int>();
+            foreach (var border in borders)
             {
-                // edgeを開始地点にする
-                Assert.IsTrue(edge.neighborLaneIndex >= 0, $"edge.neighborLaneIndex {edge.neighborLaneIndex} >= 0");
-                if (edge.neighborLaneIndex < 0)
+                // borderを開始地点にする
+                Assert.IsTrue(border.neighborLaneIndex >= 0, $"border.neighborLaneIndex {border.neighborLaneIndex} >= 0");
+                if (border.neighborLaneIndex < 0)
                     continue;
 
-                // edgeが次になっているWayを反転させる
+                // borderが次になっているWayを反転させる
                 foreach (var way in ways
-                             .Where(w => w.nextLaneIndex == edge.neighborLaneIndex && !visitedEdge
+                             .Where(w => w.nextLaneIndex == border.neighborLaneIndex && !visitedBorder
                                  .Contains(w.prevLaneIndex))
                         )
                 {
@@ -117,8 +135,30 @@ namespace PLATEAU.RoadNetwork
                     (way.nextLaneIndex, way.prevLaneIndex) = (way.prevLaneIndex, way.nextLaneIndex);
                     way.isRightSide = !way.isRightSide;
                 }
-                visitedEdge.Add(edge.neighborLaneIndex);
+                visitedBorder.Add(border.neighborLaneIndex);
             }
+        }
+        /// <summary>
+        /// Xz平面だけで見たときの, 半直線rayの最も近い交点を返す
+        /// </summary>
+        /// <param name="ray"></param>
+        /// <param name="intersection"></param>
+        /// <returns></returns>
+        public bool HalfLineIntersectionXz(Ray ray, out Vector3 intersection)
+        {
+            return PolygonUtil.PolygonHalfLineIntersectionXZ(vertices, ray, out intersection, out var t);
+        }
+
+        /// <summary>
+        /// Xz平面だけで見たときの, 線分(st, en)との最も近い交点を返す
+        /// </summary>
+        /// <param name="st"></param>
+        /// <param name="en"></param>
+        /// <param name="intersection"></param>
+        /// <returns></returns>
+        public bool SegmentIntersectionXz(Vector3 st, Vector3 en, out Vector3 intersection)
+        {
+            return PolygonUtil.PolygonSegmentIntersectionXZ(vertices, st, en, out intersection, out var t);
         }
 
         /// <summary>
@@ -127,68 +167,46 @@ namespace PLATEAU.RoadNetwork
         public void BuildCenterLine()
         {
             centerLine.Clear();
-            HashSet<int> visitedEdge = new HashSet<int>();
-            for (var edgeIndex = 0; edgeIndex < edges.Count; edgeIndex++)
+            HashSet<int> visitedBorder = new HashSet<int>();
+            for (var borderIndex = 0; borderIndex < borders.Count; borderIndex++)
             {
-                if (visitedEdge.Contains(edgeIndex))
+                if (visitedBorder.Contains(borderIndex))
                     continue;
-                visitedEdge.Add(edgeIndex);
-                var edge = edges[edgeIndex];
-                // 不正なEdgeかどうかの判定を入れておく
-                Assert.IsTrue(edge.neighborLaneIndex >= 0, $"edge.neighborLaneIndex {edge.neighborLaneIndex} >= 0");
-                if (edge.neighborLaneIndex < 0)
+                visitedBorder.Add(borderIndex);
+                var border = borders[borderIndex];
+                // 不正なBorderかどうかの判定を入れておく
+                Assert.IsTrue(border.neighborLaneIndex >= 0, $"border.neighborLaneIndex {border.neighborLaneIndex} >= 0");
+                if (border.neighborLaneIndex < 0)
                     continue;
-                // Edgeの中心を開始点とする
-                if (edge.TryGetEdgeCenter(out Vector3 startPoint) == false)
+                // Borderの中心を開始点とする
+                if (border.TryGetCenterVertex(out Vector3 startPoint) == false)
                     continue;
                 centerLine.Add(startPoint);
 
-                // このEdgeから出ていくWayすべてを使って中心線を書く
-                var targetWays = ways.Where(w => w.prevLaneIndex == edge.neighborLaneIndex).ToList();
+                // このBorderから出ていくWayすべてを使って中心線を書く
+                var targetWays = ways.Where(w => w.prevLaneIndex == border.neighborLaneIndex).ToList();
 
                 // #TODO : 一旦prev/nextが一致しているものだけが対象. (枝分かれしているような交差点のレーンは対象外)
                 if (targetWays.Count != 2 || targetWays[0].nextLaneIndex != targetWays[1].nextLaneIndex)
                     continue;
 
-                // Edgeに対してWayが2つないと中心線が取れないので無視する
+                // Borderに対してWayが2つないと中心線が取れないので無視する
                 // #TODO : 3本以上ある場合が想像できないが要対応
                 if (targetWays.Count != 2)
                     continue;
 
-                visitedEdge.Add(targetWays[0].nextLaneIndex);
+                visitedBorder.Add(targetWays[0].nextLaneIndex);
 
-                // 0とCount-1はedge上なので1番からスタート
-                //var indices = Enumerable.Repeat(1, targetWays.Count).ToList();
-
-                bool TryGetNearestIntersection(PLATEAURoadNetworkWay way, int vertexIndex, out Vector3 intersection)
-                {
-                    intersection = Vector3.zero;
-                    var v = way.vertices[vertexIndex];
-                    var n1 = -way.GetOutsizeNormal(vertexIndex - 1).normalized;
-                    var n2 = -way.GetOutsizeNormal(vertexIndex).normalized;
-                    var n = (n1 + n2) / 2;
-                    var ray = new Ray(v, n);
-                    var found = targetWays
-                        .Where(w => w != way)
-                        .Select(w =>
-                        {
-                            var ret = w.HalfLineIntersectionXz(ray, out Vector3 inter);
-                            return new { success = ret, inter = inter };
-                        })
-                        .Where(a => a.success)
-                        .TryFindMin(a => (a.inter - ray.origin).sqrMagnitude, out var item);
-                    if (!found)
-                        return false;
-                    intersection = Vector3.Lerp(v, item.inter, 0.5f);
-                    return true;
-                }
                 var candidates = new List<Vector3>();
                 foreach (var way in targetWays)
                 {
                     for (var i = 1; i < way.vertices.Count - 1; ++i)
                     {
-                        if (TryGetNearestIntersection(way, i, out var inter))
-                            candidates.Add(inter);
+                        var v = way.vertices[i];
+                        var n = -way.GetVertexNormal(i).normalized;
+                        var ray = new Ray(v + n * 0.01f, n);
+                        if (HalfLineIntersectionXz(ray, out var inter))
+                            candidates.Add(Vector3.Lerp(v, inter, 0.5f));
                     }
                 }
 
@@ -215,17 +233,17 @@ namespace PLATEAU.RoadNetwork
                     candidates.RemoveAll(x => (x - nearPoint).sqrMagnitude <= float.Epsilon);
                 }
 
-                // 構築するwayがすべて目的地が同じ場合、中心線に目的地のEdgeを追加する
+                // 構築するwayがすべて目的地が同じ場合、中心線に目的地のBorderを追加する
                 if (targetWays.All(t => t.nextLaneIndex == targetWays[0].nextLaneIndex))
                 {
-                    var lastEdge = edges.FirstOrDefault(e => e.neighborLaneIndex == targetWays[0].nextLaneIndex);
-                    if (lastEdge != null)
+                    var lastBorder = borders.FirstOrDefault(e => e.neighborLaneIndex == targetWays[0].nextLaneIndex);
+                    if (lastBorder != null)
                     {
-                        if (lastEdge.TryGetEdgeCenter(out var end))
+                        if (lastBorder.TryGetCenterVertex(out var end))
                             centerLine.Add(end);
                     }
 
-                    visitedEdge.Add(targetWays[0].nextLaneIndex);
+                    visitedBorder.Add(targetWays[0].nextLaneIndex);
                 }
 
             }

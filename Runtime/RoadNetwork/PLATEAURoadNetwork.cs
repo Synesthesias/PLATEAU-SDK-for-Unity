@@ -166,30 +166,30 @@ namespace PLATEAU.RoadNetwork
                 var fromNeighbors = vertex2Neighbors[fromIndex];
                 var neighbor = toNeighbor.FirstOrDefault(n => fromNeighbors.Contains(n));
 
-                bool isEdge = false;
+                bool isBorder = false;
                 if (neighbor != null)
                 {
                     // 共通の隣接レーンがあるとエッジ
                     // ただし、行き止まり(1つのレーンとしか隣接していない)場合
-                    //       全WayがEdge扱いになるので、道の外側が隣接レーンのポリゴンの範囲内かどうかもチェックする
+                    //       全WayがBorder扱いになるので、道の外側が隣接レーンのポリゴンの範囲内かどうかもチェックする
                     var p0 = lane.vertices[wayVertexIndices[0]];
                     var p1 = lane.vertices[wayVertexIndices[1]];
                     var cp = (p0 + p1) * 0.5f;
 
-                    var n = lane.GetOutsizeNormal(wayVertexIndices[0]).normalized;
+                    var n = lane.GetEdgeNormal(wayVertexIndices[0]).normalized;
                     // 微小にずらして確認する
                     var p = cp + n * 0.1f;
-                    isEdge = PolygonUtil.Contains(neighbor.vertices.Select(x => x.Xz()), p.Xz());
+                    isBorder = PolygonUtil.Contains(neighbor.vertices.Select(x => x.Xz()), p.Xz());
                 }
 
-                if (isEdge)
+                if (isBorder)
                 {
-                    var edge = new PLATEAURoadNetworkEdge
+                    var border = new PLATEAURoadNetworkBorder
                     {
                         neighborLaneIndex = neighbor.LaneIndex
                     };
-                    edge.vertices.AddRange(wayVertexIndices.Select(a => lane.vertices[a]));
-                    lane.edges.Add(edge);
+                    border.vertices.AddRange(wayVertexIndices.Select(a => lane.vertices[a]));
+                    lane.borders.Add(border);
                 }
                 else
                 {

@@ -5,14 +5,22 @@ using UnityEngine;
 
 namespace PLATEAU.RoadNetwork
 {
+    /// <summary>
+    /// レーンとの境界線
+    /// </summary>
     [Serializable]
-    public class PLATEAURoadNetworkEdge
+    public class PLATEAURoadNetworkBorder
     {
         public List<Vector3> vertices = new List<Vector3>();
 
         public int neighborLaneIndex = -1;
 
-        public bool TryGetEdgeCenter(out Vector3 midPoint)
+        /// <summary>
+        /// 境界線の中央の点を返す
+        /// </summary>
+        /// <param name="midPoint"></param>
+        /// <returns></returns>
+        public bool TryGetCenterVertex(out Vector3 midPoint)
         {
             return PolygonUtil.TryGetLineSegmentMidPoint(vertices, out midPoint);
         }

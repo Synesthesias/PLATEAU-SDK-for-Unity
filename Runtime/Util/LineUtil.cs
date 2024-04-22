@@ -48,7 +48,7 @@ namespace PLATEAU.Util
         /// <param name="halfLine"></param>
         /// <param name="p1">線分を構成する点1</param>
         /// <param name="p2">線分を構成する点2</param>
-        /// <param name="intersection"></param>
+        /// <param name="intersection">交点</param>
         /// <param name="t1">intersection = halfLine.origin + halfLine.direction * t1となるt1が入る</param>
         /// <param name="t2">intersection = Vector2.Lerp(p1, p2, t2)となるt2が入る</param>
         /// <returns></returns>

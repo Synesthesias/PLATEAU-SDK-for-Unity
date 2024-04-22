@@ -12,6 +12,8 @@ namespace PLATEAU.RoadNetwork.Drawer
 
         [SerializeField] private bool showLineCenter = true;
 
+        // Laneの頂点の内側を向くベクトルの中央点を表示する
+        [SerializeField] private bool showInsideNormalMidPoint = false;
 
         public void Draw(PLATEAURoadNetwork network)
         {
@@ -25,18 +27,26 @@ namespace PLATEAU.RoadNetwork.Drawer
                     foreach (var c in l.centerLine.Select((v, i) => new { v, i }))
                     {
                         DebugUtil.DrawString(c.i.ToString(), c.v + Vector3.up * c.i * 0.2f);
-                        //DebugTextDrawer.DrawText3D(c.v, c.i.ToString());
                     }
                 }
 
                 foreach (var i in Enumerable.Range(0, l.vertices.Count))
                 {
                     var v = l.vertices[i];
-                    var n = l.GetOutsizeNormal(i).normalized;
+                    var n = l.GetVertexNormal(i).normalized;
                     if (showNormal)
                     {
                         Debug.DrawLine(v, v + n * 0.3f, color: Color.yellow);
                     }
+
+                    if (showInsideNormalMidPoint)
+                    {
+                        if (l.HalfLineIntersectionXz(new Ray(v - n * 0.01f, -n), out var intersection))
+                        {
+                            DebugUtil.DrawArrow(v, (v + intersection) * 0.5f);
+                        }
+                    }
+
                 }
 
                 foreach (var way in l.ways)
@@ -46,9 +56,9 @@ namespace PLATEAU.RoadNetwork.Drawer
 
                 }
 
-                foreach (var edge in l.edges)
+                foreach (var border in l.borders)
                 {
-                    DebugUtil.DrawArrows(edge.vertices.Select(x => x.PutY(x.y + 0.5f)), false, color: Color.red, arrowSize: 0f);
+                    DebugUtil.DrawArrows(border.vertices.Select(x => x.PutY(x.y + 0.5f)), false, color: Color.red, arrowSize: 0f);
 
                 }
             }
