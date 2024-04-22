@@ -55,6 +55,13 @@ namespace PLATEAU.CityInfo
                 return this;
             }
 
+            public CityObject Copy()
+            {
+                var copy = new CityObject();
+                copy.Init(gmlID, cityObjectIndex, cityObjectType, attributesMap, children);
+                return copy;
+            }
+
             public CityObjectType type => (CityObjectType)cityObjectType;
 
             public CityObjectIndex IndexInMesh

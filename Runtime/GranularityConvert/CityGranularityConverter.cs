@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using PLATEAU.CityExport.ModelConvert;
 using PLATEAU.CityExport.ModelConvert.SubMeshConvert;
+using PLATEAU.CityGML;
 using PLATEAU.CityImport.Import.Convert;
 using PLATEAU.CityImport.Import.Convert.MaterialConvert;
 using PLATEAU.CityInfo;
@@ -11,6 +12,7 @@ using PLATEAU.PolygonMesh;
 using PLATEAU.Util;
 using UnityEditor;
 using UnityEngine;
+using CityObjectList = PLATEAU.CityInfo.CityObjectList;
 using Debug = UnityEngine.Debug;
 using Object = UnityEngine.Object;
 
@@ -176,9 +178,17 @@ namespace PLATEAU.GranularityConvert
                     new PlaceToSceneConfig(materialConverterToUnity, true, null, null, infoForToolkits, conf.NativeOption.Granularity);
 
                 var result = await PlateauToUnityModelConverter.PlateauModelToScene(
-                    commonParent, new DummyProgressDisplay(), "", placeToSceneConf, dstModel,
-                    new AttributeDataHelper(new SerializedCityObjectGetterFromDict(attributes), conf.NativeOption.Granularity,
-                        true), true);
+                    commonParent,
+                    new DummyProgressDisplay(),
+                    "",
+                    placeToSceneConf,
+                    dstModel,
+                    new AttributeDataHelper(
+                        new SerializedCityObjectGetterFromDict(attributes, dstModel),
+                        conf.NativeOption.Granularity,
+                        true
+                        ),
+                    true);
                 if (!result.IsSucceed)
                 {
                     throw new Exception("Failed to convert plateau model to scene game objects.");
@@ -282,26 +292,42 @@ namespace PLATEAU.GranularityConvert
     }
 
 
+    /// <summary>
+    /// 辞書からCityObjectを取得します。
+    /// 分割結合で利用します。
+    /// </summary>
     public class SerializedCityObjectGetterFromDict : ISerializedCityObjectGetter
     {
-        private readonly GmlIdToSerializedCityObj data;
+        private readonly GmlIdToSerializedCityObj srcData;
+        private readonly Model dstModel;
 
-        public SerializedCityObjectGetterFromDict(GmlIdToSerializedCityObj dict)
+        public SerializedCityObjectGetterFromDict(GmlIdToSerializedCityObj srcDict, Model dstModel)
         {
-            data = dict;
+            srcData = srcDict;
+            this.dstModel = dstModel;
         }
 
-        public CityInfo.CityObjectList.CityObject GetByID(string gmlID, CityObjectIndex? _)
+        public CityInfo.CityObjectList.CityObject GetDstCityObjectByID(string gmlID, CityObjectIndex? _)
         {
-            if (data.TryGet(gmlID, out var serializedCityObj))
+            if (srcData.TryGet(gmlID, out var serializedCityObj))
             {
-                return serializedCityObj;
+                var srcCityObj =  serializedCityObj;
+                return srcCityObj.Copy();
             }
             else
             {
                 Debug.LogWarning($"gmlID not found : {gmlID}");
                 return null;
             }
+            // try
+            // {
+            //     return CityObjectSerializableConvert.FromCityGMLCityObject(srcCityObj);
+            // }
+            // catch (KeyNotFoundException ex)
+            // {
+            //     Debug.LogWarning($"{ex.Message}\n{ex.StackTrace}");
+            //     return null;
+            // }
         }
 
         public void Dispose()

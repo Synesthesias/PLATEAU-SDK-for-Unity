@@ -112,7 +112,7 @@ namespace PLATEAU.CityImport.Import.Convert
         /// </summary>
         private CityObjectList GetSerializableCityObjectForAtomicOrPrimary()
         {
-            var cityObjSer = serializedCityObjectGetter.GetByID(this.id, index);
+            var cityObjSer = serializedCityObjectGetter.GetDstCityObjectByID(this.id, index);
             if (cityObjSer == null) return null;
             cityObjSer.CityObjectIndex = new int[]{index.PrimaryIndex, index.AtomicIndex}; // 分割結合時に必要
             CityObjectList cityObjList = new CityObjectList();
@@ -123,7 +123,7 @@ namespace PLATEAU.CityImport.Import.Convert
             foreach (var id in indexList)
             {
                 if (id.PrimaryID == id.AtomicID) continue;
-                var childCityObj = serializedCityObjectGetter.GetByID(id.AtomicID, id.Index);
+                var childCityObj = serializedCityObjectGetter.GetDstCityObjectByID(id.AtomicID, id.Index);
                 if (childCityObj == null) continue;
                 childCityObj.CityObjectIndex = new int[]{id.Index.PrimaryIndex, id.Index.AtomicIndex}; // 分割結合時に必要
                 cityObjSer.Children.Add(childCityObj);
@@ -162,7 +162,7 @@ namespace PLATEAU.CityImport.Import.Convert
 
             foreach (var id in indexList)
             {
-                var cityObj = serializedCityObjectGetter.GetByID(id.AtomicID, id.Index);
+                var cityObj = serializedCityObjectGetter.GetDstCityObjectByID(id.AtomicID, id.Index);
                 if (cityObj == null) continue;
                 
                 // TODO 下の処理は GetByIDメソッド内にまとめられそう？
@@ -174,7 +174,7 @@ namespace PLATEAU.CityImport.Import.Convert
                 foreach (var c in childrenId)
                 {
                     if (c.PrimaryID == c.AtomicID) continue;
-                    var childCityObj = serializedCityObjectGetter.GetByID(c.AtomicID, c.Index);
+                    var childCityObj = serializedCityObjectGetter.GetDstCityObjectByID(c.AtomicID, c.Index);
                     if (childCityObj == null) continue;
                     childCityObj.CityObjectIndex = new int[]{c.Index.PrimaryIndex, c.Index.AtomicIndex}; // 分割結合時に必要
                     cityObj.Children.Add(childCityObj);
@@ -190,6 +190,10 @@ namespace PLATEAU.CityImport.Import.Convert
         }
     }
 
+    /// <summary>
+    /// <see cref="CityModel"/>から<see cref="CityObject"/>を取得します。
+    /// インポート時に利用します。
+    /// </summary>
     internal class SerializedCityObjectGetterFromCityModel : ISerializedCityObjectGetter
     {
         private CityModel cityModel;
@@ -199,7 +203,7 @@ namespace PLATEAU.CityImport.Import.Convert
             this.cityModel = cityModel;
         }
         
-        public CityObjectList.CityObject GetByID(string gmlID, CityObjectIndex? index)
+        public CityObjectList.CityObject GetDstCityObjectByID(string gmlID, CityObjectIndex? index)
         {
             var cityObj = GetByIDInner(gmlID);
             if (cityObj == null)
@@ -228,9 +232,12 @@ namespace PLATEAU.CityImport.Import.Convert
         }
     }
 
+    /// <summary>
+    /// <see cref="AttributeDataHelper"/>が、属性情報を設定するためにどうやってgmlIDから<see cref="CityObject"/>を得るかの違いを吸収します。
+    /// </summary>
     internal interface ISerializedCityObjectGetter
     {
-        CityObjectList.CityObject GetByID(string gmlID, CityObjectIndex? index);
+        CityObjectList.CityObject GetDstCityObjectByID(string gmlID, CityObjectIndex? index);
         void Dispose();
     }
 }
