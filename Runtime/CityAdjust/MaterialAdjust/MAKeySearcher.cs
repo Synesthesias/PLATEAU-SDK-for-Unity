@@ -11,7 +11,7 @@ namespace PLATEAU.CityAdjust.MaterialAdjust
     internal class MAKeySearcher
     {
         public MaterialCriterion Criterion { get; private set; }
-        public IMaterialAdjustConf MaterialAdjustConf { get; private set; }
+        public ImaConfig MaterialAdjustConf { get; private set; }
         public bool IsSearched { get; set; }
 
         public MAKeySearcher(MaterialCriterion criterion)
@@ -37,8 +37,8 @@ namespace PLATEAU.CityAdjust.MaterialAdjust
 
             MaterialAdjustConf = searchResult switch
             {
-                CityObjectTypeHierarchy.Node[] nodes => new MaterialAdjustConf<CityObjectTypeHierarchy.Node>(nodes),
-                string[] strings => new MaterialAdjustConf<string>(strings),
+                CityObjectTypeHierarchy.Node[] nodes => new MAMaterialConfig<CityObjectTypeHierarchy.Node>(nodes),
+                string[] strings => new MAMaterialConfig<string>(strings),
                 _ => throw new ArgumentException()
             };
             IsSearched = true;

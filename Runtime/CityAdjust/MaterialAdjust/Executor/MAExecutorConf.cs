@@ -10,12 +10,12 @@ namespace PLATEAU.CityAdjust.MaterialAdjust.Executor
     /// </summary>
     internal class MAExecutorConf
     {
-        public IMaterialAdjustConf MaterialAdjustConf { get; }
+        public ImaConfig MaterialAdjustConf { get; }
         public UniqueParentTransformList TargetTransforms { get; }
         public MeshGranularity MeshGranularity { get; }
         public bool DoDestroySrcObjs { get; }
 
-        public MAExecutorConf(IMaterialAdjustConf materialAdjustConf, UniqueParentTransformList targetTransforms,
+        public MAExecutorConf(ImaConfig materialAdjustConf, UniqueParentTransformList targetTransforms,
             MeshGranularity meshGranularity, bool doDestroySrcObjs)
         {
             this.MaterialAdjustConf = materialAdjustConf;
@@ -44,7 +44,7 @@ namespace PLATEAU.CityAdjust.MaterialAdjust.Executor
     {
         public string AttrKey;
 
-        public MAExecutorConfByAttr(IMaterialAdjustConf materialAdjustConf,
+        public MAExecutorConfByAttr(ImaConfig materialAdjustConf,
             UniqueParentTransformList targetTransforms,
             MeshGranularity meshGranularity, bool doDestroySrcObjs, string attrKey)
             : base(materialAdjustConf, targetTransforms, meshGranularity, doDestroySrcObjs)

@@ -11,7 +11,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI.Parts
     internal class MaterialConfGui
     {
 
-        public static void Draw(IMaterialAdjustConf conf)
+        public static void Draw(ImaConfig conf)
         {
             int displayIndex = 1;
 

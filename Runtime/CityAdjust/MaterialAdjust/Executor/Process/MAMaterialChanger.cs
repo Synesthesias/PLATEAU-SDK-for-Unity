@@ -12,10 +12,10 @@ namespace PLATEAU.CityAdjust.MaterialAdjust.Executor.Process
     /// </summary>
     internal class MAMaterialChanger
     {
-        private IMaterialAdjustConf materialAdjustConf;
+        private ImaConfig materialAdjustConf;
         private IMAMaterialSelector materialSelector;
         
-        public MAMaterialChanger(IMaterialAdjustConf materialAdjustConf, IMAMaterialSelector materialSelector)
+        public MAMaterialChanger(ImaConfig materialAdjustConf, IMAMaterialSelector materialSelector)
         {
             this.materialAdjustConf = materialAdjustConf;
             this.materialSelector = materialSelector;
