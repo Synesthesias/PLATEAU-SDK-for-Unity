@@ -26,6 +26,7 @@ namespace PLATEAU.GranularityConvert
         {
             var dstGranularity = conf.NativeOption.Granularity;
             var result = new GranularityConvertResult();
+            using var progressBar = new ProgressBar();
 
             // 幅優先探索で、分解が必要なゲームオブジェクトを1つ見つけるごとに分解します。
             await conf.SrcTransforms.BfsExecAsync(async trans =>
@@ -39,11 +40,11 @@ namespace PLATEAU.GranularityConvert
                     new GranularityConvertOption(dstGranularity, 0),
                     new UniqueParentTransformList(trans),
                     conf.DoDestroySrcObjs);
-                var currentResult = await ConvertAsync(currentConf);
+                var currentResult = await ConvertAsync(currentConf, new DummyProgressBar());
                 result.Merge(currentResult);
                 if (result.IsSucceed)
                 {
-                    Debug.Log($"分解: {trans.name} , {srcGranularity} -> {dstGranularity}");
+                    progressBar.Display($"分解中 : {trans.name}", 0.3f);
                 }
                 if (!result.IsSucceed)
                 {
@@ -60,6 +61,11 @@ namespace PLATEAU.GranularityConvert
             // 結合すべきものをここに記録
             Dictionary<Transform, List<Transform>> combineDict = new(); // key: 親Transform, value: その親のもとで結合すべきTransformのリスト
             
+            // 親Transformがnull(すなわちroot)のとき、combineDictのkeyをnullとしたいが、
+            // Dictionaryのキーにnullは指定できないのでroot用の一時ゲームオブジェクトを作成
+            var tmpRoot = new GameObject("tmpRoot");
+            
+            
             await conf.SrcTransforms.DfsExecAsync(async trans =>
             {
                 // この4行は上とほぼ同じ
@@ -70,6 +76,7 @@ namespace PLATEAU.GranularityConvert
                 
                 // 結合リストに追加
                 var parentTrans = trans.parent;
+                if(parentTrans == null) parentTrans = tmpRoot.transform;
                 if (combineDict.TryGetValue(parentTrans, out var listToCombine))
                 {
                     listToCombine.Add(trans);
@@ -86,11 +93,12 @@ namespace PLATEAU.GranularityConvert
             // 実際の結合処理
             foreach(var (parent, combineList) in combineDict)
             {
+                if (combineList.Count <= 0) continue;
                 GranularityConvertOptionUnity currentConf = new GranularityConvertOptionUnity(
                     new GranularityConvertOption(dstGranularity, 0),
                     new UniqueParentTransformList(combineList),
                     conf.DoDestroySrcObjs);
-                var currentResult = await ConvertAsync(currentConf);
+                var currentResult = await ConvertAsync(currentConf, new DummyProgressBar());
                 foreach (var generated in currentResult.GeneratedRootTransforms.Get)
                 {
                     generated.parent = parent;
@@ -98,19 +106,28 @@ namespace PLATEAU.GranularityConvert
                 result.Merge(currentResult);
                 if (result.IsSucceed)
                 {
-                    Debug.Log($"結合");
+                    progressBar.Display($"結合中 : {parent.name}の子", 0.3f);
                 }
                 if (!result.IsSucceed)
                 {
-                    Debug.LogError($"結合失敗");
+                    Debug.LogError($"結合失敗 :");
                 }
             }
+            
+            // tmpRootの子をrootに
+            foreach (Transform root in tmpRoot.transform)
+            {
+                root.parent = null;
+            }
+            Object.DestroyImmediate(tmpRoot);
             
             return result;
         }
 
-        
-        public async Task<GranularityConvertResult> ConvertAsync(GranularityConvertOptionUnity conf)
+        /// <summary>
+        /// 指定オブジェクトとその子を一括でまとめて共通ライブラリに渡して変換します。
+        /// </summary>
+        public async Task<GranularityConvertResult> ConvertAsync(GranularityConvertOptionUnity conf, IProgressBar progressBar)
         {
             try
             {
@@ -119,7 +136,6 @@ namespace PLATEAU.GranularityConvert
                     return GranularityConvertResult.Fail();
                 }
                 
-                using var progressBar = new ProgressBar();
                 progressBar.Display("属性情報を取得中...", 0.1f);
 
                 // 属性情報を覚えておきます。
@@ -185,10 +201,6 @@ namespace PLATEAU.GranularityConvert
                     }
                 }
                 
-#if UNITY_EDITOR
-                // 変換後のゲームオブジェクトを選択状態にします。
-                Selection.objects = result.GeneratedRootTransforms.Get.Select(trans => (Object)trans.gameObject).ToArray();
-#endif
                 return result;
             }
             catch (Exception e)

@@ -12,7 +12,7 @@ namespace PLATEAU.Util
     /// <see cref="Display"/>にinfo文字列を与えない場合に表示されるデフォルト文字列をコンストラクタで指定できます。
     /// 指定しない場合は空文字列がデフォルトになります。
     /// </summary>
-    public class ProgressBar : IDisposable
+    public class ProgressBar : IProgressBar
     {
         private string defaultInfo;
 
@@ -41,5 +41,22 @@ namespace PLATEAU.Util
             EditorUtility.ClearProgressBar();
             #endif
         }
+    }
+
+    /// <summary>
+    /// 処理の進行状況を表示するためのインターフェイスです。
+    /// </summary>
+    public interface IProgressBar : IDisposable
+    {
+        public void Display(string info, float progress);
+    }
+
+    /// <summary>
+    /// プログレスバーを表示したくない場合に使う、空のプログレスバー実装です。
+    /// </summary>
+    public class DummyProgressBar : IProgressBar
+    {
+        public void Display(string info, float progress){}
+        public void Dispose(){}
     }
 }

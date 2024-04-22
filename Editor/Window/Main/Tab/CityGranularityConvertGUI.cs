@@ -82,14 +82,14 @@ namespace PLATEAU.Editor.Window.Main.Tab
 
         private async Task Exec()
         {
-            Debug.Log("変換開始");
             var converter = new CityGranularityConverter();
             var convertConf = new GranularityConvertOptionUnity(
                 new GranularityConvertOption((MeshGranularity)selectedUnit, 1),
                 selected,
                 destroyOrPreserveGUI.Current == DestroyOrPreserveSrcGUI.PreserveOrDestroy.Destroy
             );
-            await converter.ConvertAsync(convertConf);
+            using var progressBar = new ProgressBar();
+            await converter.ConvertAsync(convertConf, progressBar);
             selected.Reset();
         }
     }
