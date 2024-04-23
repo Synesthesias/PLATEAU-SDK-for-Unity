@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using PLATEAU.Editor.Window.Common;
 using PLATEAU.Editor.Window.Main.Tab.AdjustGUIParts;
 using PLATEAU.GranularityConvert;
@@ -14,14 +13,14 @@ namespace PLATEAU.Editor.Window.Main.Tab
     /// <summary>
     /// PLATEAU SDK ウィンドウで「結合/分離」タブが選択されている時のGUIです。
     /// </summary>
-    internal class CityGranularityConvertGUI : IEditorDrawable
+    internal class CityGranularityConvertGUI : ITabContent
     {
         private readonly UnityEditor.EditorWindow parentEditorWindow;
         private UniqueParentTransformList selected = new();
         private Vector2 scrollSelected;
         private int selectedUnit = 2;
         private static readonly string[] UnitOptions = { "最小地物単位(壁面,屋根面等)", "主要地物単位(建築物,道路等)", "地域単位" };
-        private readonly DestroyOrPreserveSrcGUI destroyOrPreserveGUI = new();
+        private readonly DestroyOrPreserveSrcGui destroyOrPreserveGUI = new();
         
         private readonly bool isExecTaskRunning = false;
 
@@ -86,11 +85,15 @@ namespace PLATEAU.Editor.Window.Main.Tab
             var convertConf = new GranularityConvertOptionUnity(
                 new GranularityConvertOption((MeshGranularity)selectedUnit, 1),
                 selected,
-                destroyOrPreserveGUI.Current == DestroyOrPreserveSrcGUI.PreserveOrDestroy.Destroy
+                destroyOrPreserveGUI.Current == DestroyOrPreserveSrcGui.PreserveOrDestroy.Destroy
             );
             using var progressBar = new ProgressBar();
             await converter.ConvertAsync(convertConf, progressBar);
             selected.Reset();
+        }
+        
+        public void OnTabUnselect()
+        {
         }
     }
 }

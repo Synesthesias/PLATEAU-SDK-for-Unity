@@ -5,13 +5,13 @@ using UnityEngine;
 
 namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI.Parts
 {
-    internal class ObjectSelectGui
+    internal class ObjectSelectGui : Element
     {
         public UniqueParentTransformList SelectedTransforms { get; private set; } = new UniqueParentTransformList();
         private readonly EditorWindow parentEditorWindow;
         private readonly CityMaterialAdjustGUI materialAdjustGUI;
         private readonly ScrollView scrollView = new (GUILayout.MaxHeight(100));
-        
+
         public ObjectSelectGui(CityMaterialAdjustGUI materialAdjustGUI, EditorWindow parentEditorWindow)
         {
             this.parentEditorWindow = parentEditorWindow;
@@ -20,7 +20,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI.Parts
             OnSelectionChanged();
         }
 
-        public void Draw()
+        public override void DrawContent()
         {
             PlateauEditorStyle.Heading("選択オブジェクト", null);
             using (PlateauEditorStyle.VerticalScopeLevel2())
@@ -38,7 +38,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI.Parts
         
         private void OnSelectionChanged()
         {
-            if (materialAdjustGUI.CurrentSearcher.IsSearched) return; // 「検索」ボタンを押したら対象は変更できないようにします。
+            if (materialAdjustGUI?.CurrentSearcher?.IsSearched is true) return; // 「検索」ボタンを押したら対象は変更できないようにします。
             UpdateSelection();
             
         }
@@ -49,7 +49,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI.Parts
             parentEditorWindow.Repaint();
         }
         
-        public void Dispose()
+        public override void Dispose()
         {
             Selection.selectionChanged -= OnSelectionChanged;
             SelectedTransforms.Reset();

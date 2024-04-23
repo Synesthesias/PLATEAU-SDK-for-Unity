@@ -1,4 +1,3 @@
-using PLATEAU.CityAdjust.MaterialAdjust;
 using PLATEAU.Editor.Window.Common;
 using UnityEditor;
 using UnityEngine;
@@ -8,11 +7,19 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI.Parts
     /// <summary>
     /// 地物型ごとにマテリアルを設定するGUIです。
     /// </summary>
-    internal class MaterialConfGui
+    internal class MaterialConfGui : Element
     {
-
-        public static void Draw(ImaConfig conf)
+        private readonly CityMaterialAdjustGUI adjustGui;
+        
+        public MaterialConfGui(CityMaterialAdjustGUI adjustGui)
         {
+            this.adjustGui = adjustGui;
+        }
+
+        public override void DrawContent()
+        {
+            var conf = adjustGui?.CurrentSearcher?.MaterialAdjustConf;
+            if (conf == null) return;
             int displayIndex = 1;
 
             // 存在する地物型を列挙します 
@@ -33,6 +40,10 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI.Parts
 
                 displayIndex++;
             }
+            
+            PlateauEditorStyle.Separator(0);
         }
+        
+        public override void Dispose(){}
     }
 }

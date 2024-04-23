@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace PLATEAU.Editor.Window.Main.Tab
 {
-    internal class CityAddGUI : IEditorDrawable
+    internal class CityAddGUI : ITabContent
     {
         private int importTabIndex;
         private readonly IEditorDrawable[] importTabGUIArray;
@@ -30,6 +30,7 @@ namespace PLATEAU.Editor.Window.Main.Tab
             this.importTabGUIArray[this.importTabIndex].Draw();
         }
 
+        public void OnTabUnselect() {} 
         public void Dispose() {}
 
         /// <summary> テストで使う用です。 </summary>

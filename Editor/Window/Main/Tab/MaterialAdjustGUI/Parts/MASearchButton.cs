@@ -8,20 +8,22 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI.Parts
     /// <summary>
     /// マテリアル分けの検索ボタンです。
     /// ただし、検索済みの場合は代わりに「再選択」ボタンを描画します。
+    /// MAはMaterialAdjustの略です。
     /// </summary>
-    internal class SearchButton
+    internal class MASearchButton : Element
     {
         private readonly CityMaterialAdjustGUI adjustGui;
         private readonly EditorWindow parentEditorWindow;
 
-        public SearchButton(CityMaterialAdjustGUI adjustGui, EditorWindow parentEditorWindow)
+        public MASearchButton(CityMaterialAdjustGUI adjustGui, EditorWindow parentEditorWindow)
         {
             this.adjustGui = adjustGui;
             this.parentEditorWindow = parentEditorWindow;
         }
         
-        public void Draw(MAKeySearcher currentAdjuster)
+        public override void DrawContent()
         {
+            var currentAdjuster = adjustGui.CurrentSearcher;
             using (PlateauEditorStyle.VerticalScopeWithPadding(0, 0, 15, 0))
             {
                 PlateauEditorStyle.CenterAlignHorizontal(() =>
@@ -49,5 +51,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI.Parts
                 });
             }
         }
+        
+        public override void Dispose(){}
     }
 }

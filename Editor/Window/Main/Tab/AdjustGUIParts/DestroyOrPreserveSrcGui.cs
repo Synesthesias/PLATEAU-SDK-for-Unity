@@ -5,7 +5,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.AdjustGUIParts
     /// <summary>
     /// 元のオブジェクトを削除するか残すか選択するGUIを描画します。
     /// </summary>
-    internal class DestroyOrPreserveSrcGUI
+    internal class DestroyOrPreserveSrcGui
     {
         public enum PreserveOrDestroy
         {

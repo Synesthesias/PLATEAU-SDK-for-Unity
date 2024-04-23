@@ -12,13 +12,11 @@ namespace PLATEAU.Editor.Window.Main.Tab
     /// <summary>
     /// PLATEAU SDK ウィンドウで「属性情報」タブが選択されている時のGUIです。
     /// </summary>
-    internal class CityAttributeGUI : IEditorDrawable
+    internal class CityAttributeGUI : ITabContent
     {
-        private static readonly int THIS_TAB_INDEX = 3;
         private static readonly string GIZMO_GAMEOBJECT_NAME = "PLATEAUCityObjectGroup_GizmoGameObject";
         private bool isActive = false;
-        private PlateauWindowGUI parentGUI;
-        private UnityEditor.EditorWindow parentEditorWindow;
+        private readonly EditorWindow parentEditorWindow;
         private CityObject parent;
         private CityObject child;
         private string parentJson;
@@ -29,9 +27,8 @@ namespace PLATEAU.Editor.Window.Main.Tab
         private Vector2 scrollChild;
         private CityObjectGizmoDrawer gizmoDrawer;
 
-        public CityAttributeGUI(UnityEditor.EditorWindow parentEditorWindow, PlateauWindowGUI parent)
+        public CityAttributeGUI(EditorWindow parentEditorWindow)
         {
-            this.parentGUI = parent;
             this.parentEditorWindow = parentEditorWindow;
         }
         
@@ -88,7 +85,6 @@ namespace PLATEAU.Editor.Window.Main.Tab
 
             if(!isActive)
             {
-                parentGUI.OnTabChange += OnParentTabChanged;
                 SceneView.duringSceneGui += OnSceneGUI;
                 isActive = true;
             }
@@ -188,18 +184,6 @@ namespace PLATEAU.Editor.Window.Main.Tab
             }
         }
 
-        private void OnParentTabChanged(int index)
-        {
-            //タブ変更時に削除
-            if (index!= THIS_TAB_INDEX)
-            {
-                Clear();
-                SceneView.duringSceneGui -= OnSceneGUI;
-                parentGUI.OnTabChange -= OnParentTabChanged;
-                isActive = false;
-            }
-        }
-
         private string GetIdAndAttributeString(CityObject obj)
         {
             var id = obj.GmlID;
@@ -245,7 +229,13 @@ namespace PLATEAU.Editor.Window.Main.Tab
         {
             Clear();
             SceneView.duringSceneGui -= OnSceneGUI;
-            parentGUI.OnTabChange -= OnParentTabChanged;
+        }
+
+        public void OnTabUnselect()
+        {
+            Clear();
+            SceneView.duringSceneGui -= OnSceneGUI;
+            isActive = false;
         }
     }
 }

@@ -7,14 +7,14 @@ using PLATEAU.Dataset;
 using PLATEAU.Editor.Window.Common;
 using UnityEditor;
 using Hierarchy = PLATEAU.CityInfo.CityObjectTypeHierarchy;
-using PackageLod = System.Collections.Generic.Dictionary<PLATEAU.Dataset.PredefinedCityModelPackage, PLATEAU.Editor.Window.Main.Tab.AdjustGUIParts.FilterConditionGUI.LodSliderConfig>;
+using PackageLod = System.Collections.Generic.Dictionary<PLATEAU.Dataset.PredefinedCityModelPackage, PLATEAU.Editor.Window.Main.Tab.AdjustGUIParts.FilterConditionGui.LodSliderConfig>;
 
 namespace PLATEAU.Editor.Window.Main.Tab.AdjustGUIParts
 {
     /// <summary>
     /// 都市モデル調整でフィルターの条件のGUIを描画します。
     /// </summary>
-    internal class FilterConditionGUI
+    internal class FilterConditionGui
     {
         /// <summary> フィルター条件のうち、地物タイプごとに有効にするかの選択状況を格納します。 </summary>
         private readonly Dictionary<Hierarchy.Node, bool> selectionDict = new Dictionary<Hierarchy.Node, bool>();

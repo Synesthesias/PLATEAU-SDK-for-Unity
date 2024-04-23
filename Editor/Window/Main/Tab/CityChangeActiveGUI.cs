@@ -16,10 +16,10 @@ namespace PLATEAU.Editor.Window.Main.Tab
     /// <summary>
     /// PLATEAU SDK ウィンドウで「モデル調整」タブが選択されている時のGUIです。
     /// </summary>
-    internal class CityChangeActiveGUI : IEditorDrawable
+    internal class CityChangeActiveGUI : ITabContent
     {
         private PLATEAUInstancedCityModel adjustTarget;
-        private readonly FilterConditionGUI filterConditionGUI = new FilterConditionGUI();
+        private readonly FilterConditionGui filterConditionGUI = new FilterConditionGui();
         // private readonly AdjustPackageLodGUI adjustPackageLodGUI = new AdjustPackageLodGUI();
         private bool disableDuplicate = true;
         private static bool isFilterTaskRunning;
@@ -85,7 +85,7 @@ namespace PLATEAU.Editor.Window.Main.Tab
                 }
             }
         }
-        
+
         /// <summary>
         /// GUI上で調整対象の都市モデルが新たに選択されたときに呼ばれます。
         /// </summary>
@@ -144,6 +144,9 @@ namespace PLATEAU.Editor.Window.Main.Tab
         }
 
         public void Dispose() { }
+        public void OnTabUnselect()
+        {
+        }
 
         public const string NameOfAdjustTarget = nameof(adjustTarget);
     }

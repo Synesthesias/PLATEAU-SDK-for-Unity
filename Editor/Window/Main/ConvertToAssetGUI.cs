@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace PLATEAU.Editor.Window.Main
 {
-    internal class ConvertToAssetGUI : IEditorDrawable
+    internal class ConvertToAssetGUI : ITabContent
     {
         private ConvertToAssetConfig conf = ConvertToAssetConfig.DefaultValue;
         
@@ -102,6 +102,10 @@ namespace PLATEAU.Editor.Window.Main
         }
 
         public void Dispose()
+        {
+        }
+        
+        public void OnTabUnselect()
         {
         }
 

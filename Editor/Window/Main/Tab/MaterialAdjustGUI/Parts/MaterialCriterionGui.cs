@@ -9,7 +9,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI.Parts
     /// <summary>
     /// マテリアル分けの基準（属性情報で分ける、地物型で分ける）を選択するGUIを表示します。
     /// </summary>
-    internal class MaterialCriterionGui
+    internal class MaterialCriterionGui : Element
     {
         private int selectedCriterionId;
         private readonly MaterialCriterion[] criterionOptions = (MaterialCriterion[])Enum.GetValues(typeof(MaterialCriterion));
@@ -45,7 +45,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI.Parts
         /// <summary>
         /// マテリアル分け基準の選択GUIを描画します。
         /// </summary>
-        public void Draw()
+        public override void DrawContent()
         {
             PlateauEditorStyle.Heading("マテリアル分類", null);
 
@@ -54,6 +54,11 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI.Parts
                 EditorGUIUtility.labelWidth = 50;
                 selectedCriterionId = EditorGUILayout.Popup("分類", selectedCriterionId, criterionOptionsDisplay);
             }
+        }
+
+        public override void Dispose()
+        {
+            
         }
     }
 

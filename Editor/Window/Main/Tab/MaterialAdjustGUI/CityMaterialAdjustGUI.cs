@@ -1,49 +1,46 @@
 ﻿using System;
 using PLATEAU.CityAdjust.MaterialAdjust;
-using PLATEAU.CityAdjust.MaterialAdjust.Executor;
-using PLATEAU.Editor.CityImport.PackageImportConfigGUIs.Extendables.Components;
 using PLATEAU.Editor.Window.Common;
 using PLATEAU.Editor.Window.Main.Tab.AdjustGUIParts;
 using PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI.Parts;
-using PLATEAU.PolygonMesh;
-using PLATEAU.Util;
-using PLATEAU.Util.Async;
 using UnityEditor;
-using UnityEngine;
 
 namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
 {
     /// <summary>
     /// PLATEAU SDK ウィンドウで「マテリアル分け」タブが選択されている時のGUIです。
     /// </summary>
-    internal class CityMaterialAdjustGUI : IEditorDrawable
+    internal class CityMaterialAdjustGUI : ITabContent
     {
-        private readonly ObjectSelectGui objectSelectGui;
+        public ElementGroup Guis { get; }
         
-        private readonly DestroyOrPreserveSrcGUI destroyOrPreserveSrcGUI = new();
-        private string attrKey = "";
-
-        private readonly MaterialCriterionGui materialCriterionGui = new MaterialCriterionGui();
-        private readonly SearchButton searchButton;
-        public MAKeySearcher CurrentSearcher => materialCriterionGui.CurrentSearcher;
-        private MaterialCriterion SelectedCriterion => materialCriterionGui.SelectedCriterion;
-        private MeshGranularity meshGranularity = MeshGranularity.PerPrimaryFeatureObject;
-        private UniqueParentTransformList SelectedTransforms => objectSelectGui.SelectedTransforms;
+        public MAKeySearcher CurrentSearcher => Guis?.Get<MaterialCriterionGui>()?.CurrentSearcher;
+        public MaterialCriterion SelectedCriterion => Guis.Get<MaterialCriterionGui>().SelectedCriterion;
 
         public bool IsSearched
         {
             get => CurrentSearcher.IsSearched;
             set => CurrentSearcher.IsSearched = value;
         }
-
-        private bool doDestroySrcObjs;
         
         
 
         public CityMaterialAdjustGUI(EditorWindow parentEditorWindow)
         {
-            objectSelectGui = new ObjectSelectGui(this, parentEditorWindow);
-            searchButton = new SearchButton(this, parentEditorWindow);
+            Guis =
+                new ElementGroup("",
+                    new ElementGroup("MAGuiBeforeSearch", // *** 検索前のUI ***
+                        new ObjectSelectGui(this, parentEditorWindow), // 対象オブジェクト選択
+                        new MaterialCriterionGui(), // マテリアル分け基準選択
+                        new AttributeKeyGui(), // 属性情報キー選択
+                        new MASearchButton(this, parentEditorWindow) // 検索ボタン
+                    ),
+                    new ElementGroup("MAGuiAfterSearch", // *** 検索後のUI ***
+                        new MAGranularityGui(), // 分割結合に関する一般設定
+                        new MaterialConfGui(this), // マテリアル設定
+                        new MAExecButton(this) // 実行ボタン
+                    )
+                );
         }
 
         /// <summary>
@@ -53,69 +50,11 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
         {
             PlateauEditorStyle.SubTitle("分類に応じたマテリアル分けを行います。");
 
-            objectSelectGui.Draw(); // 選択オブジェクトの表示
-            materialCriterionGui.Draw(); // マテリアル分け基準の選択
+            Guis.Draw();
 
-            // 属性情報キーの入力
-            if (SelectedCriterion == MaterialCriterion.ByAttribute)
-            {
-                using (PlateauEditorStyle.VerticalScopeWithPadding(8, 0, 8, 8))
-                {
-                    EditorGUIUtility.labelWidth = 100;
-                    attrKey = EditorGUILayout.TextField("属性情報キー", attrKey);
-                }
-            }
-
-            // 検索ボタンの描画
-            searchButton.Draw(CurrentSearcher);
-
-            if (!IsSearched) return;
-
-            // 検索後にのみ以下を表示します。
-            
-            // 全般的な設定
-            using (PlateauEditorStyle.VerticalScopeLevel1())
-            {
-                meshGranularity = GranularityGUI.Draw("粒度", meshGranularity);
-                destroyOrPreserveSrcGUI.Draw();
-                doDestroySrcObjs = destroyOrPreserveSrcGUI.Current ==
-                                               DestroyOrPreserveSrcGUI.PreserveOrDestroy.Destroy;
-            }
-            
-            // 各分類キーごとのマテリアル設定 
-            MaterialConfGui.Draw(CurrentSearcher.MaterialAdjustConf);
-
-            PlateauEditorStyle.Separator(0);
-
-            // 実行ボタン
-            if (PlateauEditorStyle.MainButton("実行"))
-            {
-                var executorConf = SelectedCriterion switch
-                {
-                    MaterialCriterion.ByType => new MAExecutorConf(
-                        CurrentSearcher.MaterialAdjustConf,
-                        objectSelectGui.SelectedTransforms,
-                        meshGranularity,
-                        doDestroySrcObjs),
-                    
-                    MaterialCriterion.ByAttribute => new MAExecutorConfByAttr(
-                        CurrentSearcher.MaterialAdjustConf,
-                        objectSelectGui.SelectedTransforms,
-                        meshGranularity,
-                        doDestroySrcObjs,
-                        attrKey),
-                    
-                    _ => throw new ArgumentOutOfRangeException()
-                };
-                
-                var executor = SelectedCriterion switch
-                {
-                    MaterialCriterion.ByType => MAExecutorFactory.CreateTypeExecutor(executorConf),
-                    MaterialCriterion.ByAttribute => MAExecutorFactory.CreateAttrExecutor((MAExecutorConfByAttr)executorConf),
-                    _ => throw new ArgumentOutOfRangeException()
-                };
-                executor.Exec().ContinueWithErrorCatch();
-            }
+            // 不要な設定項目を隠します
+            Guis.Get<AttributeKeyGui>().IsVisible = SelectedCriterion == MaterialCriterion.ByAttribute;
+            Guis.Get("MAGuiAfterSearch").IsVisible = IsSearched;
             
         }
 
@@ -126,8 +65,8 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
         {
             SearchArg searchArg = SelectedCriterion switch
             {
-                MaterialCriterion.ByType => new SearchArg(SelectedTransforms),
-                MaterialCriterion.ByAttribute => new SearchArgByArr(SelectedTransforms, attrKey),
+                MaterialCriterion.ByType => new SearchArg(Guis.Get<ObjectSelectGui>().SelectedTransforms),
+                MaterialCriterion.ByAttribute => new SearchArgByArr(Guis.Get<ObjectSelectGui>().SelectedTransforms, Guis.Get<AttributeKeyGui>().AttrKey),
                 _ => throw new ArgumentOutOfRangeException()
             };
             return searchArg;
@@ -135,12 +74,16 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
 
         public void UpdateObjectSelection()
         {
-            objectSelectGui.UpdateSelection();
+            Guis.Get<ObjectSelectGui>().UpdateSelection();
         }
 
         public void Dispose()
         {
-            objectSelectGui.Dispose();
+            Guis.Dispose();
+        }
+        
+        public void OnTabUnselect()
+        {
         }
     }
 }
