@@ -9,7 +9,7 @@ namespace PLATEAU.Editor.Window.Main
     /// </summary>
     internal class PlateauWindow : UnityEditor.EditorWindow
     {
-        private Vector2 scrollPosition;
+        private ScrollView scrollView = new ScrollView();
         private PlateauWindowGUI gui;
 
         [MenuItem("PLATEAU/PLATEAU SDK")]
@@ -21,11 +21,11 @@ namespace PLATEAU.Editor.Window.Main
 
         private void OnGUI()
         {
-            this.gui ??= new PlateauWindowGUI(this);
-            using var scrollView = new EditorGUILayout.ScrollViewScope(this.scrollPosition);
-            this.scrollPosition = scrollView.scrollPosition;
+            gui ??= new PlateauWindowGUI(this);
             PlateauEditorStyle.SetCurrentWindow(this);
-            this.gui.Draw();
+            scrollView.Draw(
+                gui.Draw
+            );
         }
 
         /// <summary> テストからアクセスする用 </summary>

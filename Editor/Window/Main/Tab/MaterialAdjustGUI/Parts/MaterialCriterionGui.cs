@@ -1,7 +1,6 @@
 using System;
 using System.Linq;
 using PLATEAU.CityAdjust.MaterialAdjust;
-using PLATEAU.CityAdjust.MaterialAdjust.Executor;
 using PLATEAU.Editor.Window.Common;
 using UnityEditor;
 

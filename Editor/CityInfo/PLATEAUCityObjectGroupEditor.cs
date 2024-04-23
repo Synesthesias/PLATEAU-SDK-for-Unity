@@ -10,7 +10,7 @@ namespace PLATEAU.Editor.CityInfo
     [CustomEditor(typeof(PLATEAUCityObjectGroup))]
     public class PLATEAUCityObjectGroupEditor : UnityEditor.Editor
     {
-        Vector2 scroll;
+        private readonly ScrollView scrollView = new (GUILayout.MaxHeight(400));
 
         public void OnEnable()
         {
@@ -31,9 +31,10 @@ namespace PLATEAU.Editor.CityInfo
             PlateauEditorStyle.Heading("属性情報", null);
             using (PlateauEditorStyle.VerticalScopeLevel1())
             {
-                scroll = EditorGUILayout.BeginScrollView(scroll, GUILayout.MaxHeight(400));
-                EditorGUILayout.TextArea(json);
-                EditorGUILayout.EndScrollView();
+                scrollView.Draw(() =>
+                {
+                    EditorGUILayout.TextArea(json);
+                });
             }
            
             using (new EditorGUI.DisabledScope(true))

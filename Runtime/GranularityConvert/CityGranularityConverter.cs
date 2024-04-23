@@ -30,13 +30,22 @@ namespace PLATEAU.GranularityConvert
             var result = new GranularityConvertResult();
             using var progressBar = new ProgressBar();
 
+            // 分解すべきオブジェクトを数える
+            int objCountToDeconstruct = 0;
+            conf.SrcTransforms
+                .BfsExec(
+                    trans =>
+                    {
+                        if (ShouldDeconstruct(trans, dstGranularity)) objCountToDeconstruct++;
+                        return NextSearchFlow.Continue;
+                    });
+            int countDeconstructed = 0;
+
             // 幅優先探索で、分解が必要なゲームオブジェクトを1つ見つけるごとに分解します。
             await conf.SrcTransforms.BfsExecAsync(async trans =>
             {
-                var cityObjGroup = trans.GetComponent<PLATEAUCityObjectGroup>();
-                if (cityObjGroup == null) return NextSearchFlow.Continue;
-                var srcGranularity = cityObjGroup.Granularity;
-                if (dstGranularity >= srcGranularity) return NextSearchFlow.Continue;
+                if (!ShouldDeconstruct(trans, dstGranularity)) return NextSearchFlow.Continue;
+                progressBar.Display($"分解中 : {countDeconstructed+1}/{objCountToDeconstruct} : {trans.name}", 0.3f);
                 // 分解
                 GranularityConvertOptionUnity currentConf = new GranularityConvertOptionUnity(
                     new GranularityConvertOption(dstGranularity, 0),
@@ -44,16 +53,13 @@ namespace PLATEAU.GranularityConvert
                     conf.DoDestroySrcObjs);
                 var currentResult = await ConvertAsync(currentConf, new DummyProgressBar());
                 result.Merge(currentResult);
-                if (result.IsSucceed)
-                {
-                    progressBar.Display($"分解中 : {trans.name}", 0.3f);
-                }
                 if (!result.IsSucceed)
                 {
                     Debug.LogError($"{trans.name}の分解に失敗したため処理を中断しました。");
                     return NextSearchFlow.Abort;
                 }
 
+                countDeconstructed++;
                 return NextSearchFlow.SkipChildren; // 分解後、子は望みの粒度になったはずなのでスキップ
 
             });
@@ -70,11 +76,7 @@ namespace PLATEAU.GranularityConvert
             
             await conf.SrcTransforms.DfsExecAsync(async trans =>
             {
-                // この4行は上とほぼ同じ
-                var cityObjGroup = trans.GetComponent<PLATEAUCityObjectGroup>();
-                if (cityObjGroup == null) return NextSearchFlow.Continue;
-                var srcGranularity = cityObjGroup.Granularity;
-                if (dstGranularity <= srcGranularity) return NextSearchFlow.Continue;
+                if (!ShouldConstruct(trans, dstGranularity)) return NextSearchFlow.Continue;
                 
                 // 結合リストに追加
                 var parentTrans = trans.parent;
@@ -91,7 +93,8 @@ namespace PLATEAU.GranularityConvert
                 return NextSearchFlow.SkipChildren; // 明示せずとも子は結合対象になるのでスキップ
 
             });
-            
+
+            int countCombined = 0;
             // 実際の結合処理
             foreach(var (parent, combineList) in combineDict)
             {
@@ -100,20 +103,19 @@ namespace PLATEAU.GranularityConvert
                     new GranularityConvertOption(dstGranularity, 0),
                     new UniqueParentTransformList(combineList),
                     conf.DoDestroySrcObjs);
+                progressBar.Display($"結合中 : {countCombined+1}/{combineDict.Count} : {parent.name}の子", 0.3f);
                 var currentResult = await ConvertAsync(currentConf, new DummyProgressBar());
                 foreach (var generated in currentResult.GeneratedRootTransforms.Get)
                 {
                     generated.parent = parent;
                 }
                 result.Merge(currentResult);
-                if (result.IsSucceed)
-                {
-                    progressBar.Display($"結合中 : {parent.name}の子", 0.3f);
-                }
                 if (!result.IsSucceed)
                 {
                     Debug.LogError($"結合失敗 :");
                 }
+
+                countCombined++;
             }
             
             // tmpRootの子をrootに
@@ -124,6 +126,25 @@ namespace PLATEAU.GranularityConvert
             Object.DestroyImmediate(tmpRoot);
             
             return result;
+        }
+
+        private bool ShouldDeconstruct(Transform trans, MeshGranularity dstGranularity)
+        {
+            var cityObjGroup = trans.GetComponent<PLATEAUCityObjectGroup>();
+            if (cityObjGroup == null) return false;
+            var srcGranularity = cityObjGroup.Granularity;
+            if (dstGranularity >= srcGranularity) return false;
+            return true;
+        }
+
+        private bool ShouldConstruct(Transform trans, MeshGranularity dstGranularity)
+        {
+            // 上のメソッドとほぼ同じ
+            var cityObjGroup = trans.GetComponent<PLATEAUCityObjectGroup>();
+            if (cityObjGroup == null) return false;
+            var srcGranularity = cityObjGroup.Granularity;
+            if (dstGranularity <= srcGranularity) return false;
+            return true;
         }
 
         /// <summary>
