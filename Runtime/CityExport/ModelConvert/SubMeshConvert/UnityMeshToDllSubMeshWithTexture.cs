@@ -43,7 +43,7 @@ namespace PLATEAU.CityExport.ModelConvert.SubMeshConvert
                         
                     }
                     // パスのチェック
-                    if (!File.Exists(texturePath))
+                    if ((!string.IsNullOrEmpty(texturePath)) && (!File.Exists(texturePath)))
                     {
                         throw new FileNotFoundException($"テクスチャファイルが存在しません： {texturePath}");
                     }
