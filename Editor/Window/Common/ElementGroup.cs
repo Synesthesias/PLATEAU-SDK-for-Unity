@@ -65,6 +65,28 @@ namespace PLATEAU.Editor.Window.Common
             return null;
         }
 
+        /// <summary>
+        /// 型と名前の両方一致検索です。
+        /// </summary>
+        public T Get<T>(string name) where T : Element
+        {
+            foreach (var d in Elements)
+            {
+                if (d.Name == name && d is T ret) return ret;
+            }
+
+            foreach (var d in Elements)
+            {
+                if (d is ElementGroup child)
+                {
+                    var hit = child.Get<T>(name);
+                    if (hit != null) return hit;
+                }
+            }
+
+            return null;
+        }
+
         public override void Dispose()
         {
             foreach (var d in Elements)

@@ -1,3 +1,4 @@
+using PLATEAU.CityAdjust.MaterialAdjust.Executor.Process;
 using PLATEAU.PolygonMesh;
 using PLATEAU.Util;
 
@@ -8,20 +9,38 @@ namespace PLATEAU.CityAdjust.MaterialAdjust.Executor
     /// 属性情報でのマテリアル分けの場合は、これの代わりにサブクラスである<see cref="MAExecutorConfByAttr"/>を使います。
     /// なおMAとはMaterialAdjustの略です。
     /// </summary>
-    internal class MAExecutorConf
+    public class MAExecutorConf
     {
-        public ImaConfig MaterialAdjustConf { get; }
+        public IMAConfig MaterialAdjustConf { get; }
         public UniqueParentTransformList TargetTransforms { get; }
-        public MeshGranularity MeshGranularity { get; }
-        public bool DoDestroySrcObjs { get; }
+        public MAGranularity MeshGranularity { get; set; }
+        public bool DoDestroySrcObjs { get; set; }
+        public string DstObjName { get; }
+        
+        /// <summary> マテリアルを変更しない箇所は、分割結合をスキップするか </summary>
+        public bool SkipNotChangingMaterial { get; }
+        public IMACondition Condition { get; }
 
-        public MAExecutorConf(ImaConfig materialAdjustConf, UniqueParentTransformList targetTransforms,
-            MeshGranularity meshGranularity, bool doDestroySrcObjs)
+        /// <summary>
+        /// 地物型でのマテリアル分けの設定です。
+        /// </summary>
+        public MAExecutorConf(IMAConfig materialAdjustConf, UniqueParentTransformList targetTransforms,
+            MAGranularity meshGranularity, bool doDestroySrcObjs, string dstObjName, bool skipNotChangingMaterial,
+            IMACondition condition)
         {
-            this.MaterialAdjustConf = materialAdjustConf;
-            this.TargetTransforms = targetTransforms;
-            this.MeshGranularity = meshGranularity;
-            this.DoDestroySrcObjs = doDestroySrcObjs;
+            MaterialAdjustConf = materialAdjustConf;
+            TargetTransforms = targetTransforms;
+            MeshGranularity = meshGranularity;
+            DoDestroySrcObjs = doDestroySrcObjs;
+            DstObjName = dstObjName;
+            SkipNotChangingMaterial = skipNotChangingMaterial;
+            Condition = condition;
+        }
+
+        public virtual MAExecutorConf Copy()
+        {
+            return new MAExecutorConf(MaterialAdjustConf, TargetTransforms, MeshGranularity, DoDestroySrcObjs,
+                DstObjName, SkipNotChangingMaterial, Condition);
         }
 
         /// <summary>
@@ -40,16 +59,28 @@ namespace PLATEAU.CityAdjust.MaterialAdjust.Executor
         }
     }
 
+    /// <summary>
+    /// 属性情報でのマテリアル分けの設定です。
+    /// </summary>
     internal class MAExecutorConfByAttr : MAExecutorConf
     {
         public string AttrKey;
 
-        public MAExecutorConfByAttr(ImaConfig materialAdjustConf,
+        public MAExecutorConfByAttr(IMAConfig materialAdjustConf,
             UniqueParentTransformList targetTransforms,
-            MeshGranularity meshGranularity, bool doDestroySrcObjs, string attrKey)
-            : base(materialAdjustConf, targetTransforms, meshGranularity, doDestroySrcObjs)
+            MAGranularity meshGranularity, bool doDestroySrcObjs, string dstObjName, bool skipNotChangingMaterial, IMACondition condition,
+            string attrKey
+            )
+            : base(materialAdjustConf, targetTransforms, meshGranularity, doDestroySrcObjs, dstObjName, skipNotChangingMaterial, condition)
         {
             AttrKey = attrKey;
+        }
+
+        public override MAExecutorConf Copy()
+        {
+            var conf = (MAExecutorConfByAttr)base.Copy();
+            conf.AttrKey = AttrKey;
+            return conf;
         }
     }
 }

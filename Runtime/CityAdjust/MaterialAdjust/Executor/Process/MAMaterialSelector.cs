@@ -10,7 +10,7 @@ namespace PLATEAU.CityAdjust.MaterialAdjust.Executor.Process
     /// </summary>
     internal interface IMAMaterialSelector
     {
-        public Result<Material> Get(CityObjectList.CityObject cityObj, ImaConfig materialAdjustConf);
+        public Result<Material> Get(CityObjectList.CityObject cityObj, IMAConfig materialAdjustConf);
     }
         
     /// <summary>
@@ -18,7 +18,7 @@ namespace PLATEAU.CityAdjust.MaterialAdjust.Executor.Process
     /// </summary>
     internal class MAMaterialSelectorByType : IMAMaterialSelector
     {
-        public Result<Material> Get(CityObjectList.CityObject cityObj, ImaConfig materialAdjustConf)
+        public Result<Material> Get(CityObjectList.CityObject cityObj, IMAConfig materialAdjustConf)
         {
             var matChangeConf = ((MAMaterialConfig<CityObjectTypeHierarchy.Node>)materialAdjustConf).GetConfFor(CityObjectTypeHierarchy.GetNodeByType(cityObj.type));
             if (matChangeConf == null || !matChangeConf.ShouldChangeMaterial) return new Result<Material>(false, null);
@@ -39,7 +39,7 @@ namespace PLATEAU.CityAdjust.MaterialAdjust.Executor.Process
             this.attrKey = attrKey;
         }
             
-        public Result<Material> Get(CityObjectList.CityObject cityObj, ImaConfig materialAdjustConf)
+        public Result<Material> Get(CityObjectList.CityObject cityObj, IMAConfig materialAdjustConf)
         {
             var matConf = (MAMaterialConfig<string>)materialAdjustConf;
             if (!cityObj.AttributesMap.TryGetValueWithSlash(attrKey, out var attrValue))

@@ -1,5 +1,7 @@
 using PLATEAU.CityInfo;
 using PLATEAU.Util;
+using System.Linq;
+using UnityEngine;
 
 namespace PLATEAU.GranularityConvert
 {
@@ -22,6 +24,17 @@ namespace PLATEAU.GranularityConvert
             NativeOption = nativeOption;
             SrcTransforms = srcTransforms;
             DoDestroySrcObjs = doDestroySrcObjs;
+        }
+
+        // 前バージョンとの互換性のために残しておくコンストラクタです。
+        public GranularityConvertOptionUnity(
+            GranularityConvertOption nativeOption,
+            GameObject[] srcTransforms,
+            bool doDestroySrcObjs
+        ) : this(nativeOption, new UniqueParentTransformList(srcTransforms.Select(go => go.transform).ToArray()),
+            doDestroySrcObjs)
+        {
+            
         }
 
         public bool IsValid()

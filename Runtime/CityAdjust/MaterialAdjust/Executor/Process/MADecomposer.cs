@@ -24,7 +24,9 @@ namespace PLATEAU.CityAdjust.MaterialAdjust.Executor.Process
                 new GranularityConvertOption(MeshGranularity.PerAtomicFeatureObject, 1),
                 conf.TargetTransforms, conf.DoDestroySrcObjs
             );
-            var result = await granularityConverter.ConvertProgressiveAsync(granularityConvertConf);
+            var decomposeConf = conf.Copy();
+            decomposeConf.MeshGranularity = MAGranularity.PerAtomicFeatureObject;
+            var result = await granularityConverter.ConvertProgressiveAsync(decomposeConf);
             if (!result.IsSucceed)
             {
                 Debug.LogError("ゲームオブジェクトの分解に失敗しました。");

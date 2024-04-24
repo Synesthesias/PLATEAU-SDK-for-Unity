@@ -11,7 +11,7 @@ namespace PLATEAU.CityAdjust.MaterialAdjust
     internal class MAKeySearcher
     {
         public MaterialCriterion Criterion { get; private set; }
-        public ImaConfig MaterialAdjustConf { get; private set; }
+        public IMAConfig MaterialAdjustConf { get; private set; }
         public bool IsSearched { get; set; }
 
         public MAKeySearcher(MaterialCriterion criterion)

@@ -1,6 +1,10 @@
 using System.Threading.Tasks;
 using PLATEAU.CityImport.Import.Convert;
 using PLATEAU.GranularityConvert;
+using PLATEAU.PolygonMesh;
+using System;
+using System.Linq;
+using UnityEditor;
 using UnityEngine;
 
 namespace PLATEAU.CityAdjust.MaterialAdjust.Executor.Process
@@ -20,16 +24,34 @@ namespace PLATEAU.CityAdjust.MaterialAdjust.Executor.Process
         
         public async Task<Result<GranularityConvertResult>> ExecAsync(GranularityConvertResult decomposeResult)
         {
+            
+                
             var granularityConverterAfter = new CityGranularityConverter();
-            var granularityConvertConfAfter = new GranularityConvertOptionUnity(
-                new GranularityConvertOption(conf.MeshGranularity, 1),
-                decomposeResult.GeneratedRootTransforms, true
-            );
-            var composeResult = await granularityConverterAfter.ConvertProgressiveAsync(granularityConvertConfAfter);
+            
+            var composeConf = conf.Copy();
+            composeConf.DoDestroySrcObjs = true;
+            
+            var composeResult = await granularityConverterAfter.ConvertProgressiveAsync(composeConf);
             if (!composeResult.IsSucceed)
             {
                 Debug.LogError("ゲームオブジェクトの結合に失敗しました。");
             }
+            if(!composeResult.GeneratedRootTransforms.Get.Any())
+            {
+                Debug.LogWarning("結合後のゲームオブジェクトが存在しません。");
+                return new Result<GranularityConvertResult>(false, composeResult);
+            }
+
+            // 親を付け替え
+            var parent = new GameObject(conf.DstObjName).transform;
+            parent.parent = composeResult.GeneratedRootTransforms.Get.First().parent;
+            foreach (var trans in composeResult.GeneratedRootTransforms.Get)
+            {
+                trans.parent = parent;
+            }
+            #if UNITY_EDITOR
+            Selection.activeTransform = parent;
+            #endif
 
             return new Result<GranularityConvertResult>(composeResult.IsSucceed, composeResult);
         }

@@ -1,3 +1,5 @@
+using PLATEAU.CityAdjust.MaterialAdjust.Executor;
+using PLATEAU.CityAdjust.MaterialAdjust.Executor.Process;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,31 +26,31 @@ namespace PLATEAU.GranularityConvert
     /// </summary>
     public class CityGranularityConverter
     {
-        public async Task<GranularityConvertResult> ConvertProgressiveAsync(GranularityConvertOptionUnity conf)
+        public async Task<GranularityConvertResult> ConvertProgressiveAsync(MAExecutorConf conf)
         {
-            var dstGranularity = conf.NativeOption.Granularity;
+            var dstGranularity = conf.MeshGranularity;
             var result = new GranularityConvertResult();
             using var progressBar = new ProgressBar();
 
             // 分解すべきオブジェクトを数える
             int objCountToDeconstruct = 0;
-            conf.SrcTransforms
+            conf.TargetTransforms
                 .BfsExec(
                     trans =>
                     {
-                        if (ShouldDeconstruct(trans, dstGranularity)) objCountToDeconstruct++;
+                        if (conf.Condition.ShouldDeconstruct(trans)) objCountToDeconstruct++;
                         return NextSearchFlow.Continue;
                     });
             int countDeconstructed = 0;
 
             // 幅優先探索で、分解が必要なゲームオブジェクトを1つ見つけるごとに分解します。
-            await conf.SrcTransforms.BfsExecAsync(async trans =>
+            await conf.TargetTransforms.BfsExecAsync(async trans =>
             {
-                if (!ShouldDeconstruct(trans, dstGranularity)) return NextSearchFlow.Continue;
+                if (!conf.Condition.ShouldDeconstruct(trans)) return NextSearchFlow.Continue;
                 progressBar.Display($"分解中 : {countDeconstructed+1}/{objCountToDeconstruct} : {trans.name}", 0.3f);
                 // 分解
                 GranularityConvertOptionUnity currentConf = new GranularityConvertOptionUnity(
-                    new GranularityConvertOption(dstGranularity, 0),
+                    new GranularityConvertOption(conf.MeshGranularity.ToNativeGranularity(), 0),
                     new UniqueParentTransformList(trans),
                     conf.DoDestroySrcObjs);
                 var currentResult = await ConvertAsync(currentConf, new DummyProgressBar());
@@ -74,9 +76,9 @@ namespace PLATEAU.GranularityConvert
             var tmpRoot = new GameObject("tmpRoot");
             
             
-            await conf.SrcTransforms.DfsExecAsync(async trans =>
+            conf.TargetTransforms.DfsExec(trans =>
             {
-                if (!ShouldConstruct(trans, dstGranularity)) return NextSearchFlow.Continue;
+                if (!conf.Condition.ShouldConstruct(trans)) return NextSearchFlow.Continue;
                 
                 // 結合リストに追加
                 var parentTrans = trans.parent;
@@ -100,7 +102,7 @@ namespace PLATEAU.GranularityConvert
             {
                 if (combineList.Count <= 0) continue;
                 GranularityConvertOptionUnity currentConf = new GranularityConvertOptionUnity(
-                    new GranularityConvertOption(dstGranularity, 0),
+                    new GranularityConvertOption(dstGranularity.ToNativeGranularity(), 0),
                     new UniqueParentTransformList(combineList),
                     conf.DoDestroySrcObjs);
                 progressBar.Display($"結合中 : {countCombined+1}/{combineDict.Count} : {parent.name}の子", 0.3f);
@@ -127,25 +129,7 @@ namespace PLATEAU.GranularityConvert
             
             return result;
         }
-
-        private bool ShouldDeconstruct(Transform trans, MeshGranularity dstGranularity)
-        {
-            var cityObjGroup = trans.GetComponent<PLATEAUCityObjectGroup>();
-            if (cityObjGroup == null) return false;
-            var srcGranularity = cityObjGroup.Granularity;
-            if (dstGranularity >= srcGranularity) return false;
-            return true;
-        }
-
-        private bool ShouldConstruct(Transform trans, MeshGranularity dstGranularity)
-        {
-            // 上のメソッドとほぼ同じ
-            var cityObjGroup = trans.GetComponent<PLATEAUCityObjectGroup>();
-            if (cityObjGroup == null) return false;
-            var srcGranularity = cityObjGroup.Granularity;
-            if (dstGranularity <= srcGranularity) return false;
-            return true;
-        }
+        
 
         /// <summary>
         /// 指定オブジェクトとその子を一括でまとめて共通ライブラリに渡して変換します。
@@ -240,6 +224,13 @@ namespace PLATEAU.GranularityConvert
                 return GranularityConvertResult.Fail();
             }
             
+        }
+
+
+        /// <summary> 前バージョンとの互換性のために残しておきます </summary>
+        public async Task<GranularityConvertResult> ConvertAsync(GranularityConvertOptionUnity conf)
+        {
+            return await ConvertAsync(conf, new ProgressBar(""));
         }
 
          /// <summary>
