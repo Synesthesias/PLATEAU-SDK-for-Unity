@@ -8,7 +8,9 @@ using PLATEAU.Editor.EditorWindow.Common.PathSelector;
 using PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ExportGUIParts;
 using PLATEAU.Geometries;
 using PLATEAU.Util;
+using System;
 using UnityEditor;
+using UnityEngine;
 using Directory = System.IO.Directory;
 
 namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
@@ -147,7 +149,17 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
             using (var progress = new ProgressBar("エクスポート中..."))
             {
                 progress.Display(0.5f);
-                UnityModelExporter.Export(destinationDir, target, meshExportOptions);
+                try
+                {
+                    UnityModelExporter.Export(destinationDir, target, meshExportOptions);
+                }
+                catch (Exception e)
+                {
+                    Dialogue.Display("エラーによりエクスポートを中止しました。", "OK");
+                    Debug.LogError(e);
+                    return;
+                }
+
                 EditorUtility.RevealInFinder(destinationDir +"/");
             }
 
