@@ -44,11 +44,11 @@ namespace PLATEAU.CityImport.AreaSelector
         public void Init(string prevScenePathArg, ConfigBeforeAreaSelect confBeforeAreaSelectArg, IAreaSelectResultReceiver areaSelectResultReceiverArg, EditorWindow prevEditorWindowArg)
         {
             IsAreaSelectEnabled = true;
-            this.prevScenePath = prevScenePathArg;
-            this.confBeforeAreaSelect = confBeforeAreaSelectArg;
-            this.areaSelectResultReceiver = areaSelectResultReceiverArg;
-            this.prevSceneCameraRotationLocked = SceneView.lastActiveSceneView.isRotationLocked;
-            this.prevEditorWindow = prevEditorWindowArg;
+            prevScenePath = prevScenePathArg;
+            confBeforeAreaSelect = confBeforeAreaSelectArg;
+            areaSelectResultReceiver = areaSelectResultReceiverArg;
+            prevSceneCameraRotationLocked = SceneView.lastActiveSceneView.isRotationLocked;
+            prevEditorWindow = prevEditorWindowArg;
         }
 #endif
 
@@ -110,7 +110,8 @@ namespace PLATEAU.CityImport.AreaSelector
             RotateSceneViewCameraDown();
 
 #if UNITY_EDITOR
-            this.mapLoader.Update(SceneView.lastActiveSceneView.camera);
+            var sceneView = SceneView.lastActiveSceneView;
+            mapLoader.Update(sceneView.camera);
 #endif
         }
 
