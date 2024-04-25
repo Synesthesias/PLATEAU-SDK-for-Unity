@@ -1,6 +1,7 @@
 using PLATEAU.CityGML;
 using PLATEAU.CityImport.Import.Convert;
 using PLATEAU.CityInfo;
+using PLATEAU.Util;
 using UnityEngine;
 using Material = UnityEngine.Material;
 
@@ -21,27 +22,39 @@ namespace PLATEAU.CityAdjust.MaterialAdjust.Executor.Process
             this.materialSelector = materialSelector;
         }
         
-        public void Exec(GranularityConvertResult decomposeReturned)
+        /// <summary>
+        /// 再帰的にマテリアルを変更します
+        /// </summary>
+        public void ExecRecursive(UniqueParentTransformList targetTrans)
         {
-            foreach (var obj in decomposeReturned.GeneratedObjs)
+            targetTrans.BfsExec(trans =>
             {
-                var cityObjGroups = obj.GetComponent<PLATEAUCityObjectGroup>();
-                if (cityObjGroups == null || cityObjGroups.CityObjects.rootCityObjects.Count == 0) continue;
-                // 最小地物単位にしたので、rootCityObjectsの数は1つのはずです。
-                var cityObj = cityObjGroups.CityObjects.rootCityObjects[0];
-                var materialResult = materialSelector.Get(cityObj, materialAdjustConf);
-                if (!materialResult.IsSucceed) continue;
+                Exec(trans);
+                return NextSearchFlow.Continue;
+            });
+        }
+
+        /// <summary>
+        /// 非再帰的にマテリアルを変更します
+        /// </summary>
+        public void Exec(Transform trans)
+        {
+            var cityObjGroups = trans.GetComponent<PLATEAUCityObjectGroup>();
+            if (cityObjGroups == null || cityObjGroups.CityObjects.rootCityObjects.Count == 0) return;
+            // 最小地物単位にしたので、rootCityObjectsの数は1つのはずです。
+            var cityObj = cityObjGroups.CityObjects.rootCityObjects[0];
+            var materialResult = materialSelector.Get(cityObj, materialAdjustConf);
+            if (!materialResult.IsSucceed) return;
                 
-                var renderer = obj.GetComponent<Renderer>();
-                if (renderer == null) continue;
+            var renderer = trans.GetComponent<Renderer>();
+            if (renderer == null) return;
                 
-                var materials = renderer.sharedMaterials;
-                for (int i = 0; i < materials.Length; i++)
-                {
-                    materials[i] = materialResult.Get;
-                }
-                renderer.sharedMaterials = materials;
+            var materials = renderer.sharedMaterials;
+            for (int i = 0; i < materials.Length; i++)
+            {
+                materials[i] = materialResult.Get;
             }
+            renderer.sharedMaterials = materials;
         }
         
     }

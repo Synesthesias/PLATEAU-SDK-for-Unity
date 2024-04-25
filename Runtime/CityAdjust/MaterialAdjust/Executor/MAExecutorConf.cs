@@ -12,7 +12,7 @@ namespace PLATEAU.CityAdjust.MaterialAdjust.Executor
     public class MAExecutorConf
     {
         public IMAConfig MaterialAdjustConf { get; }
-        public UniqueParentTransformList TargetTransforms { get; }
+        public UniqueParentTransformList TargetTransforms { get; set; }
         public MAGranularity MeshGranularity { get; set; }
         public bool DoDestroySrcObjs { get; set; }
         public string DstObjName { get; }

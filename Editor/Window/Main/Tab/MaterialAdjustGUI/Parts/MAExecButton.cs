@@ -37,7 +37,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI.Parts
                         adjustGui.Guis.Get<DestroyOrPreserveSrcGui>().DoDestroySrcObjs,
                         adjustGui.Guis.Get<NameSelectGui>().Name,
                         adjustGui.Guis.Get<ToggleLeftElement>("skipNotChangingMaterial").Value,
-                        new MAConditionSimple(granularity)),
+                        new MAConditionSimple()),
                     
                     MaterialCriterion.ByAttribute => new MAExecutorConfByAttr(
                         adjustGui.CurrentSearcher.MaterialAdjustConf,
@@ -46,7 +46,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI.Parts
                         adjustGui.Guis.Get<DestroyOrPreserveSrcGui>().DoDestroySrcObjs,
                         adjustGui.Guis.Get<NameSelectGui>().Name,
                         adjustGui.Guis.Get<ToggleLeftElement>("skipNotChangingMaterial").Value,
-                        new MAConditionSimple(granularity),
+                        new MAConditionSimple(),
                         adjustGui.Guis.Get<AttributeKeyGui>().AttrKey
                         ),
                     

@@ -1,5 +1,11 @@
 using System.Threading.Tasks;
 using PLATEAU.CityAdjust.MaterialAdjust.Executor.Process;
+using PLATEAU.CityImport.Import.Convert;
+using PLATEAU.CityInfo;
+using PLATEAU.GranularityConvert;
+using PLATEAU.PolygonMesh;
+using PLATEAU.Util;
+using UnityEngine;
 
 namespace PLATEAU.CityAdjust.MaterialAdjust.Executor
 {
@@ -19,7 +25,8 @@ namespace PLATEAU.CityAdjust.MaterialAdjust.Executor
                 new MADecomposer(),
                 new MAMaterialChanger(conf.MaterialAdjustConf,
                     new MAMaterialSelectorByAttr(conf.AttrKey)),
-                new MAComposer(conf)
+                new MAComposer(conf),
+                conf.Condition
             );
         }
         
@@ -31,7 +38,8 @@ namespace PLATEAU.CityAdjust.MaterialAdjust.Executor
                 new MADecomposer(),
                 new MAMaterialChanger(conf.MaterialAdjustConf,
                     new MAMaterialSelectorByType()),
-                new MAComposer(conf)
+                new MAComposer(conf),
+                conf.Condition
             );
         }
     }
@@ -42,12 +50,13 @@ namespace PLATEAU.CityAdjust.MaterialAdjust.Executor
     /// </summary>
     internal class MAExecutor
     {
-        
+
         private readonly MAExecutorConf conf;
         private readonly MADecomposer maDecomposer;
         private readonly MAMaterialChanger maMaterialChanger;
         private readonly MAComposer maComposer;
-        
+        private readonly IMACondition maCondition;
+
 
         /// <summary>
         /// 設計方針:
@@ -58,26 +67,64 @@ namespace PLATEAU.CityAdjust.MaterialAdjust.Executor
         ///
         /// これらの各処理をコンストラクタで注入するために<see cref="MAExecutorFactory"/>を利用してください。
         /// </summary>
-        public MAExecutor(MAExecutorConf conf, MADecomposer maDecomposer, MAMaterialChanger maMaterialChanger, MAComposer maComposer)
+        public MAExecutor(MAExecutorConf conf, MADecomposer maDecomposer, MAMaterialChanger maMaterialChanger,
+            MAComposer maComposer, IMACondition maCondition)
         {
             this.conf = conf;
             this.maDecomposer = maDecomposer;
             this.maMaterialChanger = maMaterialChanger;
             this.maComposer = maComposer;
+            this.maCondition = maCondition;
         }
 
         public async Task Exec()
         {
-            // 分解します
-            var decomposeResult = await maDecomposer.ExecAsync(conf);
-            if (!decomposeResult.IsSucceed) return;
-            var decomposeReturned = decomposeResult.Get;
-            
-            // マテリアルを変更します。
-            maMaterialChanger.Exec(decomposeReturned);
-            
-            // 結合し直します。
-            await maComposer.ExecAsync(decomposeReturned);
+            if (!conf.Validate())
+            {
+                Debug.LogError("設定値が不正です。");
+                return;
+            }
+
+            await conf.TargetTransforms.BfsExecAsync(async trans =>
+            {
+                // 分解が必要な場合
+                if (maCondition.ShouldDeconstruct(trans, MAGranularity.PerAtomicFeatureObject))
+                {
+                    // 分解
+                    var decomposeResult = await maDecomposer.ExecAsync(conf, trans);
+                    if (!decomposeResult.IsSucceed) return NextSearchFlow.Continue;
+                    var decomposed = decomposeResult.Get.GeneratedRootTransforms;
+                    
+                    // 分解したものについて、再帰的にマテリアル変更
+                    maMaterialChanger.ExecRecursive(decomposed);
+
+                    // 分解したものについて、再帰的に結合
+                    await decomposed.DfsExecAsync(async innerTrans =>
+                    {
+                        if (!maCondition.ShouldConstruct(innerTrans, conf.MeshGranularity))
+                        {
+                            return NextSearchFlow.Continue;
+                        }
+
+                        await maComposer.ExecAsync(innerTrans);
+                        return NextSearchFlow.SkipChildren;
+                    });
+
+                    // transとその子は完了
+                    return NextSearchFlow.SkipChildren;
+                }
+                // 結合が必要な場合
+                if (maCondition.ShouldConstruct(trans, conf.MeshGranularity))
+                {
+                    maMaterialChanger.ExecRecursive(new UniqueParentTransformList(trans));
+                    await maComposer.ExecAsync(trans);
+                    return NextSearchFlow.SkipChildren;
+                }
+                // 分解も結合も不要な場合
+                maMaterialChanger.Exec(trans);
+                return NextSearchFlow.Continue;
+            });
         }
+
     }
 }

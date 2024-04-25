@@ -8,8 +8,8 @@ namespace PLATEAU.CityAdjust.MaterialAdjust.Executor.Process
     /// </summary>
     public interface IMACondition
     {
-        public bool ShouldDeconstruct(Transform trans);
-        public bool ShouldConstruct(Transform tarns);
+        public bool ShouldDeconstruct(Transform trans, MAGranularity dstGranularity);
+        public bool ShouldConstruct(Transform tarns, MAGranularity dstGranularity);
     }
 
     /// <summary>
@@ -17,14 +17,12 @@ namespace PLATEAU.CityAdjust.MaterialAdjust.Executor.Process
     /// </summary>
     public class MAConditionSimple : IMACondition
     {
-        private readonly MAGranularity dstGranularity;
 
-        public MAConditionSimple(MAGranularity dstGranularity)
+        public MAConditionSimple()
         {
-            this.dstGranularity = dstGranularity;
         }
         
-        public bool ShouldDeconstruct(Transform trans)
+        public bool ShouldDeconstruct(Transform trans, MAGranularity dstGranularity)
         {
             var cityObjGroup = trans.GetComponent<PLATEAUCityObjectGroup>();
             if (cityObjGroup == null) return false;
@@ -33,7 +31,7 @@ namespace PLATEAU.CityAdjust.MaterialAdjust.Executor.Process
             return true;
         }
 
-        public bool ShouldConstruct(Transform trans)
+        public bool ShouldConstruct(Transform trans, MAGranularity dstGranularity)
         {
             // 上のメソッドとほぼ同じ
             var cityObjGroup = trans.GetComponent<PLATEAUCityObjectGroup>();

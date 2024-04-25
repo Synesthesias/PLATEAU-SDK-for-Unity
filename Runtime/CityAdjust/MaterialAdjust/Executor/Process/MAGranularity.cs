@@ -55,7 +55,7 @@ namespace PLATEAU.CityAdjust.MaterialAdjust.Executor.Process
             return granularity switch
             {
                 MAGranularity.CombineAll => MeshGranularity.PerCityModelArea,
-                MAGranularity.PerPrimaryFeatureObject => MeshGranularity.PerAtomicFeatureObject,
+                MAGranularity.PerPrimaryFeatureObject => MeshGranularity.PerPrimaryFeatureObject,
                 MAGranularity.PerAtomicFeatureObject => MeshGranularity.PerAtomicFeatureObject,
                 MAGranularity.DoNotChange => throw new NotImplementedException("未実装"), // TODO
                 _ => throw new Exception("unknown granularity.")

@@ -38,7 +38,7 @@ namespace PLATEAU.GranularityConvert
                 .BfsExec(
                     trans =>
                     {
-                        if (conf.Condition.ShouldDeconstruct(trans)) objCountToDeconstruct++;
+                        if (conf.Condition.ShouldDeconstruct(trans, MAGranularity.PerAtomicFeatureObject)) objCountToDeconstruct++;
                         return NextSearchFlow.Continue;
                     });
             int countDeconstructed = 0;
@@ -46,7 +46,7 @@ namespace PLATEAU.GranularityConvert
             // 幅優先探索で、分解が必要なゲームオブジェクトを1つ見つけるごとに分解します。
             await conf.TargetTransforms.BfsExecAsync(async trans =>
             {
-                if (!conf.Condition.ShouldDeconstruct(trans)) return NextSearchFlow.Continue;
+                if (!conf.Condition.ShouldDeconstruct(trans, conf.MeshGranularity)) return NextSearchFlow.Continue;
                 progressBar.Display($"分解中 : {countDeconstructed+1}/{objCountToDeconstruct} : {trans.name}", 0.3f);
                 // 分解
                 GranularityConvertOptionUnity currentConf = new GranularityConvertOptionUnity(
@@ -78,7 +78,7 @@ namespace PLATEAU.GranularityConvert
             
             conf.TargetTransforms.DfsExec(trans =>
             {
-                if (!conf.Condition.ShouldConstruct(trans)) return NextSearchFlow.Continue;
+                if (!conf.Condition.ShouldConstruct(trans, conf.MeshGranularity)) return NextSearchFlow.Continue;
                 
                 // 結合リストに追加
                 var parentTrans = trans.parent;

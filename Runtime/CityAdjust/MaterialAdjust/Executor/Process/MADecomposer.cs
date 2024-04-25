@@ -2,6 +2,7 @@ using System.Threading.Tasks;
 using PLATEAU.CityImport.Import.Convert;
 using PLATEAU.GranularityConvert;
 using PLATEAU.PolygonMesh;
+using PLATEAU.Util;
 using UnityEngine;
 
 namespace PLATEAU.CityAdjust.MaterialAdjust.Executor.Process
@@ -13,26 +14,19 @@ namespace PLATEAU.CityAdjust.MaterialAdjust.Executor.Process
     /// </summary>
     internal class MADecomposer
     {
-        public async Task<Result<GranularityConvertResult>> ExecAsync(MAExecutorConf conf)
+        public async Task<Result<GranularityConvertResult>> ExecAsync(MAExecutorConf conf, Transform currentTarget)
         {
-            // 事前チェック
-            if (!conf.Validate()) return new Result<GranularityConvertResult>(false, null);
-            
-            // 分解
-            var granularityConverter = new CityGranularityConverter();
-            var granularityConvertConf = new GranularityConvertOptionUnity(
-                new GranularityConvertOption(MeshGranularity.PerAtomicFeatureObject, 1),
-                conf.TargetTransforms, conf.DoDestroySrcObjs
-            );
+            var decomposer = new CityGranularityConverter();
             var decomposeConf = conf.Copy();
             decomposeConf.MeshGranularity = MAGranularity.PerAtomicFeatureObject;
-            var result = await granularityConverter.ConvertProgressiveAsync(decomposeConf);
-            if (!result.IsSucceed)
+            decomposeConf.TargetTransforms = new UniqueParentTransformList(currentTarget);
+            var decomposeResult = await decomposer.ConvertProgressiveAsync(decomposeConf);
+            if (!decomposeResult.IsSucceed)
             {
-                Debug.LogError("ゲームオブジェクトの分解に失敗しました。");
+                Debug.LogError("ゲームオブジェクトの分解に失敗しました");
+                return new Result<GranularityConvertResult>(false, null);
             }
-
-            return new Result<GranularityConvertResult>(result.IsSucceed, result);
+            return new Result<GranularityConvertResult>(true, decomposeResult);
         }
     }
 }
