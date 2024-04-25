@@ -14,7 +14,16 @@ namespace PLATEAU.CityImport.Import.Convert
     /// </summary>
     internal class AttributeDataHelper : IDisposable
     {
-        private readonly MeshGranularity meshGranularity; 
+        /// <summary> インポート時の粒度設定 </summary>
+        private readonly MeshGranularity importedGranularity;
+
+        /// <summary>
+        /// 注目オブジェクトの粒度設定です。
+        /// 例： 最小地物でインポートした場合、最小地物の親は主要地物になります。
+        /// ここで主要地物に着目したとき、importedGranularityは最小地物で、currentGranularityは主要地物です。
+        /// </summary>
+        public MeshGranularity CurrentGranularity { get; private set; }
+        
         private readonly List<CityObjectID> indexList = new();
         private readonly List<string> outsideChildrenList = new();
         private ISerializedCityObjectGetter serializedCityObjectGetter;
@@ -30,16 +39,16 @@ namespace PLATEAU.CityImport.Import.Convert
             public string PrimaryID;
         }
 
-        public AttributeDataHelper(ISerializedCityObjectGetter serializedCityObjectGetter, MeshGranularity granularity, bool doSetAttrInfo)
+        public AttributeDataHelper(ISerializedCityObjectGetter serializedCityObjectGetter, MeshGranularity importedGranularity, bool doSetAttrInfo)
         {
-            meshGranularity = granularity;
+            this.importedGranularity = importedGranularity;
             this.doSetAttrInfo = doSetAttrInfo;
             this.serializedCityObjectGetter = serializedCityObjectGetter;
         }
 
         public AttributeDataHelper Copy()
         {
-            return new AttributeDataHelper(serializedCityObjectGetter, meshGranularity, doSetAttrInfo);
+            return new AttributeDataHelper(serializedCityObjectGetter, importedGranularity, doSetAttrInfo);
         }
 
         public void SetId(string id)
@@ -60,17 +69,24 @@ namespace PLATEAU.CityImport.Import.Convert
                 var atomicGmlID = cityObjectList.GetAtomicID(key);
                 var primaryGmlID = cityObjectList.GetPrimaryID(key.PrimaryIndex);
 
-                bool shouldAddIDWhenAreaGranularity = meshGranularity == MeshGranularity.PerCityModelArea;
+                bool shouldAddIDWhenAreaGranularity = importedGranularity == MeshGranularity.PerCityModelArea;
                 bool shouldAddIDWhenPrimaryGranularity =
-                    meshGranularity == MeshGranularity.PerPrimaryFeatureObject &&
+                    importedGranularity == MeshGranularity.PerPrimaryFeatureObject &&
                     (primaryGmlID == id /*|| // 主要地物単位のインポート時
                       primaryGmlID == null*/); // 主要地物単位へ結合分解時
                 bool shouldAddID = shouldAddIDWhenAreaGranularity || shouldAddIDWhenPrimaryGranularity;
                 if (shouldAddID)
                         indexList.Add(new CityObjectID { Index = key, AtomicID = atomicGmlID, PrimaryID = primaryGmlID});
                         
-                if (meshGranularity == MeshGranularity.PerAtomicFeatureObject && atomicGmlID == id)
+                if (importedGranularity == MeshGranularity.PerAtomicFeatureObject && atomicGmlID == id)
                     this.parent = primaryGmlID;
+                
+                // 最小地物でインポートしているけど、最小地物の親は主要地物としたいケースに対応します。
+                CurrentGranularity =
+                    importedGranularity != MeshGranularity.PerAtomicFeatureObject ? importedGranularity :
+                    (primaryGmlID == id) ? MeshGranularity.PerPrimaryFeatureObject :
+                    MeshGranularity.PerAtomicFeatureObject;
+
             }
             index =  cityObjectList.GetCityObjectIndex(id);         
         }
@@ -81,10 +97,16 @@ namespace PLATEAU.CityImport.Import.Convert
         public void AddOutsideChildren(string childId)
         {
             if (!doSetAttrInfo) return;
-            if (meshGranularity == MeshGranularity.PerAtomicFeatureObject && 
-                !string.IsNullOrEmpty(childId) && 
+            if (importedGranularity == MeshGranularity.PerAtomicFeatureObject &&
+                !string.IsNullOrEmpty(childId) &&
                 !outsideChildrenList.Contains(childId))
+            {
                 outsideChildrenList.Add(childId);
+                // 最小地物でインポートしている場合でも、最小地物の親は主要地物とします。
+                // 最小地物でインポートしていて、OutsideChildrenが存在するということは主要地物のはずです。
+                CurrentGranularity = MeshGranularity.PerPrimaryFeatureObject;
+            }
+            
         }
         
 
@@ -95,7 +117,7 @@ namespace PLATEAU.CityImport.Import.Convert
         public CityObjectList GetSerializableCityObject()
         {
             if (!doSetAttrInfo) return null;
-            switch (meshGranularity)
+            switch (importedGranularity)
             {
                 case MeshGranularity.PerCityModelArea:
                     return GetSerializableCityObjectForArea();

@@ -35,7 +35,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI.Parts
                         adjustGui.Guis.Get<ObjectSelectGui>().SelectedTransforms,
                         granularity,
                         adjustGui.Guis.Get<DestroyOrPreserveSrcGui>().DoDestroySrcObjs,
-                        adjustGui.Guis.Get<NameSelectGui>().Name,
+                        adjustGui.Guis.Get<NameSelectGui>().EnteredName,
                         adjustGui.Guis.Get<ToggleLeftElement>("skipNotChangingMaterial").Value,
                         new MAConditionSimple()),
                     
@@ -44,7 +44,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI.Parts
                         adjustGui.Guis.Get<ObjectSelectGui>().SelectedTransforms,
                         granularity,
                         adjustGui.Guis.Get<DestroyOrPreserveSrcGui>().DoDestroySrcObjs,
-                        adjustGui.Guis.Get<NameSelectGui>().Name,
+                        adjustGui.Guis.Get<NameSelectGui>().EnteredName,
                         adjustGui.Guis.Get<ToggleLeftElement>("skipNotChangingMaterial").Value,
                         new MAConditionSimple(),
                         adjustGui.Guis.Get<AttributeKeyGui>().AttrKey

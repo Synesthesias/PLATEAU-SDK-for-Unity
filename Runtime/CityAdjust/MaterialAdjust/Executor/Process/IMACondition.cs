@@ -1,4 +1,5 @@
 using PLATEAU.CityInfo;
+using System.Linq;
 using UnityEngine;
 
 namespace PLATEAU.CityAdjust.MaterialAdjust.Executor.Process
@@ -26,19 +27,29 @@ namespace PLATEAU.CityAdjust.MaterialAdjust.Executor.Process
         {
             var cityObjGroup = trans.GetComponent<PLATEAUCityObjectGroup>();
             if (cityObjGroup == null) return false;
+            if (trans.GetComponent<MeshFilter>() == null) return false;
             var srcGranularity = cityObjGroup.Granularity;
-            if (dstGranularity.ToNativeGranularity() >= srcGranularity) return false;
-            return true;
+            return dstGranularity.ToNativeGranularity() < srcGranularity;
         }
 
         public bool ShouldConstruct(Transform trans, MAGranularity dstGranularity)
         {
-            // 上のメソッドとほぼ同じ
+            // 自身、または非再帰的な子に目標粒度よりも細かい粒度があるかチェックします
+            bool hasLowerGranularityInChildren = false;
+            for (int i = 0; i < trans.childCount; i++)
+            {
+                if (hasLowerGranularityInChildren) break;
+                var child = trans.GetChild(i);
+                var childCog = child.GetComponent<PLATEAUCityObjectGroup>();
+                if (childCog == null) continue;
+                hasLowerGranularityInChildren |= childCog.Granularity < dstGranularity.ToNativeGranularity();
+            }
+            
             var cityObjGroup = trans.GetComponent<PLATEAUCityObjectGroup>();
             if (cityObjGroup == null) return false;
-            var srcGranularity = cityObjGroup.Granularity;
-            if (dstGranularity.ToNativeGranularity() <= srcGranularity) return false;
-            return true;
+            hasLowerGranularityInChildren |= cityObjGroup.Granularity < dstGranularity.ToNativeGranularity();
+            
+            return hasLowerGranularityInChildren;
         }
     }
 

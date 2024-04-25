@@ -111,7 +111,7 @@ namespace PLATEAU.CityImport.Import.Convert
                     };
                     obj.SetActive(isActive);
                     nextParent = obj.transform;
-                    result.Add(nextParent.gameObject, recursiveDepth == 0);
+                    result.Add(nextParent.gameObject);
                 }
                 else
                 {
@@ -125,7 +125,7 @@ namespace PLATEAU.CityImport.Import.Convert
                         {
                             placedObj.AddComponent<MeshCollider>();
                         }
-                        result.Add(nextParent.gameObject, recursiveDepth == 0);
+                        result.Add(nextParent.gameObject);
                     }
                 }
  
@@ -136,7 +136,7 @@ namespace PLATEAU.CityImport.Import.Convert
                     if (serialized != null)
                     {
                         var attrInfo = nextParent.gameObject.AddComponent<PLATEAUCityObjectGroup>();
-                        attrInfo.Init(serialized, conf.InfoForToolkits, conf.Granularity);
+                        attrInfo.Init(serialized, conf.InfoForToolkits, attributeDataHelper.CurrentGranularity);
                     }
                 }
             }

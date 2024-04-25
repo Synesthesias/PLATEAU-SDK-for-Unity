@@ -23,7 +23,7 @@ namespace PLATEAU.CityAdjust.MaterialAdjust.Executor.Process
             this.conf = conf;
         }
         
-        public async Task<Result<GranularityConvertResult>> ExecAsync(Transform targetTrans)
+        public async Task<Result<GranularityConvertResult>> ExecAsync(UniqueParentTransformList targetTrans, MAGranularity dstGranularity)
         {
             
                 
@@ -31,7 +31,8 @@ namespace PLATEAU.CityAdjust.MaterialAdjust.Executor.Process
             
             var composeConf = conf.Copy();
             composeConf.DoDestroySrcObjs = true;
-            composeConf.TargetTransforms = new UniqueParentTransformList(targetTrans);
+            composeConf.TargetTransforms = new UniqueParentTransformList(targetTrans.Get);
+            composeConf.MeshGranularity = dstGranularity;
             
             var composeResult = await granularityConverterAfter.ConvertProgressiveAsync(composeConf);
             if (!composeResult.IsSucceed)

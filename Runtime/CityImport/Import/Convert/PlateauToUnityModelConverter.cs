@@ -167,10 +167,10 @@ namespace PLATEAU.CityImport.Import.Convert
         public UniqueParentTransformList GeneratedRootTransforms { get; } = new();
 
         /// <summary> 結果のゲームオブジェクトの一覧に追加します。</summary>
-        public void Add(GameObject obj, bool isRoot)
+        public void Add(GameObject obj)
         {
             GeneratedObjs.Add(obj);
-            if(isRoot) GeneratedRootTransforms.Add(obj.transform);
+            GeneratedRootTransforms.Add(obj.transform);
         }
 
         /// <summary> 複数の<see cref="GranularityConvertResult"/>を統合します。 </summary>

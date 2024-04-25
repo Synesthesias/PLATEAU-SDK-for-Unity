@@ -61,5 +61,19 @@ namespace PLATEAU.CityAdjust.MaterialAdjust.Executor.Process
                 _ => throw new Exception("unknown granularity.")
             };
         }
+
+        /// <summary>
+        /// <see cref="MeshGranularity"/>を<see cref="MAGranularity"/>に変換
+        /// </summary>
+        public static MAGranularity ToMAGranularity(this MeshGranularity granularity)
+        {
+            return granularity switch
+            {
+                MeshGranularity.PerAtomicFeatureObject => MAGranularity.PerAtomicFeatureObject,
+                MeshGranularity.PerPrimaryFeatureObject => MAGranularity.PerPrimaryFeatureObject,
+                MeshGranularity.PerCityModelArea => MAGranularity.CombineAll,
+                _ => throw new Exception("unknown granularity.")
+            };
+        }
     }
 }

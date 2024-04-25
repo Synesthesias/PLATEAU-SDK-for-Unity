@@ -53,6 +53,13 @@ namespace PLATEAU.CityInfo
             granularity = granularityArg;
         }
 
+        public void CopyFrom(PLATEAUCityObjectGroup other)
+        {
+            serializedCityObjects = other.serializedCityObjects;
+            infoForToolkits = other.infoForToolkits;
+            granularity = other.granularity;
+        }
+        
         /// <summary>
         /// RaycastHitからPrimary CityObjectを取得します
         /// </summary>
