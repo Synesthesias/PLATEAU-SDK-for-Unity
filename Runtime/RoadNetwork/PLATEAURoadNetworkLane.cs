@@ -33,6 +33,7 @@ namespace PLATEAU.RoadNetwork
         public PLATEAURoadNetworkIndexMap connectedLaneIndices = new PLATEAURoadNetworkIndexMap();
 
         // レーンを構成する道
+        // 左側が若いインデックスになる
         [SerializeField]
         public List<PLATEAURoadNetworkWay> ways = new List<PLATEAURoadNetworkWay>();
 
@@ -53,22 +54,56 @@ namespace PLATEAU.RoadNetwork
         // 孤立状態(どこともつながっていない)
         public bool IsIsolated => borders.Count == 0;
 
-        //
-        public bool isValid = true;
+        // 不完全な状態かどうか
+        public bool isPartial = false;
 
-        // #TODO : 左側/右側の判断ができるのか
         // 左側Way
-        public PLATEAURoadNetworkWay Left { get; set; }
+        public PLATEAURoadNetworkWay LeftWay
+        {
+            get
+            {
+                var ret = ways.FirstOrDefault();
+                // 最初が右側のWayだったら左側のWayは存在しない
+                if (ret?.isRightSide ?? false)
+                    ret = null;
+                return ret;
+            }
+        }
+
         // 右側Way
-        public PLATEAURoadNetworkWay Right { get; set; }
+        public PLATEAURoadNetworkWay RightWay
+        {
+            get
+            {
+                var ret = ways.LastOrDefault();
+                // 最後が左側だったら右側のWayは存在しない
+                if ((ret?.isRightSide ?? true) == false)
+                    ret = null;
+                return ret;
+            }
+
+        }
 
         // #TODO : 連結先/連結元の判断ができるのか？
 
         // 連結先レーン
-        public List<PLATEAURoadNetworkLane> NextLanes { get; } = new List<PLATEAURoadNetworkLane>();
+        public IEnumerable<int> NextLaneIndices
+        {
+            get
+            {
+                return ways.Select(w => w.nextLaneIndex).Where(index => index >= 0).Distinct();
+            }
+        }
 
         // 連結元レーン
-        public List<PLATEAURoadNetworkLane> PrevLanes { get; } = new List<PLATEAURoadNetworkLane>();
+        public IEnumerable<int> PrevLanes
+        {
+            get
+            {
+                return ways.Select(w => w.prevLaneIndex).Where(index => index >= 0).Distinct();
+
+            }
+        }
 
         public PLATEAURoadNetworkLane(int index, PLATEAUCityObjectGroup src)
         {
@@ -137,6 +172,13 @@ namespace PLATEAU.RoadNetwork
                 }
                 visitedBorder.Add(border.neighborLaneIndex);
             }
+
+            ways.Sort((a, b) =>
+            {
+                if (a.isRightSide == b.isRightSide)
+                    return 0;
+                return a.isRightSide ? 1 : -1;
+            });
         }
         /// <summary>
         /// Xz平面だけで見たときの, 半直線rayの最も近い交点を返す
@@ -225,7 +267,7 @@ namespace PLATEAU.RoadNetwork
 
                         foreach (var c in candidates)
                             DebugUtil.DrawArrow(c, c + Vector3.up * 100, arrowSize: 1f, duration: 30f, bodyColor: Color.red);
-                        isValid = false;
+                        isPartial = true;
                         break;
                     }
 
@@ -245,8 +287,9 @@ namespace PLATEAU.RoadNetwork
 
                     visitedBorder.Add(targetWays[0].nextLaneIndex);
                 }
-
             }
+            // 自己交差があれば削除する
+            PolygonUtil.RemoveSelfCrossing(centerLine, t => t.Xz(), (p1, p2, p3, p4, inter, f1, f2) => Vector3.Lerp(p1, p2, f1));
         }
     }
 

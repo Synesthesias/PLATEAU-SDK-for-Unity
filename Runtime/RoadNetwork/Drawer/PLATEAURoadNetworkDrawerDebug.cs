@@ -15,6 +15,8 @@ namespace PLATEAU.RoadNetwork.Drawer
         // Laneの頂点の内側を向くベクトルの中央点を表示する
         [SerializeField] private bool showInsideNormalMidPoint = false;
 
+        [SerializeField] private bool showVertexIndex = false;
+
         public void Draw(PLATEAURoadNetwork network)
         {
             if (!network)
@@ -26,7 +28,7 @@ namespace PLATEAU.RoadNetwork.Drawer
                     DebugUtil.DrawArrows(l.centerLine, color: Color.yellow);
                     foreach (var c in l.centerLine.Select((v, i) => new { v, i }))
                     {
-                        DebugUtil.DrawString(c.i.ToString(), c.v + Vector3.up * c.i * 0.2f);
+                        DebugUtil.DrawString(c.i.ToString(), c.v + Vector3.up * 0.1f);
                     }
                 }
 
@@ -51,7 +53,7 @@ namespace PLATEAU.RoadNetwork.Drawer
 
                 foreach (var way in l.ways)
                 {
-                    DebugUtil.DrawArrows(way.vertices.Select(x => x.PutY(x.y + 0.3f)), false, color: l.isValid ? Color.green : Color.blue, arrowColor: way.isRightSide ? Color.cyan : Color.blue);
+                    DebugUtil.DrawArrows(way.vertices.Select(x => x.PutY(x.y + 0.3f)), false, color: l.isPartial ? Color.blue : Color.green, arrowColor: way.isRightSide ? Color.cyan : Color.blue);
 
 
                 }

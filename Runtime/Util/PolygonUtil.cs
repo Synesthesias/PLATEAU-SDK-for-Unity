@@ -1,8 +1,6 @@
-﻿using PLATEAU.CityGML;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection.Emit;
 using UnityEngine;
 
 namespace PLATEAU.Util
@@ -227,6 +225,33 @@ namespace PLATEAU.Util
                 t = f1;
             }
             return ret;
+        }
+
+        public static void RemoveSelfCrossing<T>(List<T> self, Func<T, Vector2> selector, Func<T, T, T, T, Vector2, float, float, T> creater)
+        {
+            for (var i = 0; i < self.Count - 2; ++i)
+            {
+                var p1 = selector(self[i]);
+                var p2 = selector(self[i + 1]);
+                for (var j = i + 2; j < self.Count - 1;)
+                {
+                    var p3 = selector(self[j]);
+                    var p4 = selector(self[j + 1]);
+
+                    if (LineUtil.SegmentIntersection(p1, p2, p3, p4, out var intersection, out var f1, out var f2))
+                    {
+                        var newNode = creater(self[i], self[i + 1], self[j], self[j + 1], intersection, f1, 2);
+                        self.RemoveRange(i + 1, j - i);
+                        self.Insert(i + 1, newNode);
+                        // もう一回最初から検索しなおす
+                        j = i + 2;
+                    }
+                    else
+                    {
+                        ++j;
+                    }
+                }
+            }
         }
     }
 }
