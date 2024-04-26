@@ -31,7 +31,7 @@ namespace PLATEAU.Tests.EditModeTests
             PlateauVector2d margin = new PlateauVector2d(0, 0);
 
             HeightmapGenerator Gen = new HeightmapGenerator();
-            Gen.GenerateFromMesh(mesh, TextureWidth, TextureHeight, margin, out var Min, out var Max, out var outData);
+            Gen.GenerateFromMesh(mesh, TextureWidth, TextureHeight, margin, out var Min, out var Max, out var MinUV, out var MaxUV, out var outData);
             Assert.AreEqual(TextureWidth * TextureHeight, outData.Length);
         }
 

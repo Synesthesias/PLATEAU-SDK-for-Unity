@@ -8,11 +8,13 @@ namespace PLATEAU.Texture
 {
     public class HeightmapGenerator
     {
-        public void GenerateFromMesh(PolygonMesh.Mesh InMesh, int TextureWidth, int TextureHeight, PlateauVector2d Margin, out PlateauVector3d Min, out PlateauVector3d Max, out UInt16[] HeightData )
+        public void GenerateFromMesh(PolygonMesh.Mesh InMesh, int TextureWidth, int TextureHeight, 
+            PlateauVector2d Margin, out PlateauVector3d Min, out PlateauVector3d Max, 
+            out PlateauVector2f MinUV, out PlateauVector2f MaxUV, out UInt16[] HeightData )
         {
             var apiResult =
                 NativeMethods.heightmap_generator_generate_from_mesh(InMesh.Handle, TextureWidth, TextureHeight, Margin, CoordinateSystem.EUN, 
-                out Min, out Max , out IntPtr HeightmapDataPtr, out int DataSize);
+                out Min, out Max , out MinUV, out MaxUV, out IntPtr HeightmapDataPtr, out int DataSize);
             DLLUtil.CheckDllError(apiResult);
 
             byte[] outData = DLLUtil.PtrToBytes(HeightmapDataPtr, sizeof(UInt16) * DataSize);
@@ -136,6 +138,8 @@ namespace PLATEAU.Texture
                 [In] CoordinateSystem Coordinate,
                 out PlateauVector3d Min,
                 out PlateauVector3d Max,
+                out PlateauVector2f MinUV,
+                out PlateauVector2f MaxUV,
                 out IntPtr HeightmapDataPtr,
                 out int DataSize
             );
@@ -149,6 +153,8 @@ namespace PLATEAU.Texture
             [In] CoordinateSystem Coordinate,
             out PlateauVector3d Min,
             out PlateauVector3d Max,
+            out PlateauVector2f MinUV,
+            out PlateauVector2f MaxUV,
             out IntPtr HeightmapDataPtr,
             out int DataSize
             );
