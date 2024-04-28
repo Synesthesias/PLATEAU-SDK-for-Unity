@@ -63,8 +63,8 @@ namespace PLATEAU.RoadNetwork
         public TrafficRegulationStorage TrafficRegulationStorage { get => trafficRegulationStorage; }
         public PrimitiveDataStorage PrimitiveDataStorage { get => primitiveDataStorage; }
 
-        [SerializeField, PersistentAmongPlayMode] private TrafficRegulationStorage trafficRegulationStorage;
-        [SerializeField, PersistentAmongPlayMode] private PrimitiveDataStorage primitiveDataStorage;
+        [SerializeField/*, PersistentAmongPlayMode*/] private TrafficRegulationStorage trafficRegulationStorage;
+        [SerializeField/*, PersistentAmongPlayMode*/] private PrimitiveDataStorage primitiveDataStorage;
         private PrimitiveDataHandleManager primitiveDataHandleManager;
 
         private PointHandle[] initHandles;
