@@ -3,34 +3,48 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-namespace PLATEAU.Util
+namespace PLATEAU.Util.GeoGraph
 {
-    public static class PolygonUtil
+    public static class GeoGraph2d
     {
         /// <summary>
-        /// 頂点verticesで構成される多角形の辺を返す. isLoop=trueの時は最後の用途と最初の要素を繋ぐ辺も返す
-        /// Item1 : 始点, Item2 : 終点
+        /// 凸多角形を計算して返す
         /// </summary>
         /// <param name="vertices"></param>
-        /// <param name="isLoop"></param>
         /// <returns></returns>
-        private static IEnumerable<Tuple<T, T>> GetEdges<T>(IEnumerable<T> vertices, bool isLoop) where T : struct
+        public static List<Vector2> ComputeConvexVolume(IEnumerable<Vector2> vertices)
         {
-            T? first = null;
-            T? current = null;
-            foreach (var v in vertices)
+            // リストの最後の辺が時計回りになっているかを確認
+            bool IsLastClockwise(List<Vector2> list)
             {
-                if (current == null)
-                {
-                    first = current = v;
-                    continue;
-                }
-                yield return new Tuple<T, T>(current.Value, v);
-                current = v;
+                if (list.Count <= 2)
+                    return true;
+                return Vector2Util.Cross(list[^1] - list[^2], list[^2] - list[^3]) > 0;
             }
 
-            if (isLoop && first.HasValue)
-                yield return new Tuple<T, T>(current.Value, first.Value);
+            var sortedVertices = vertices.OrderBy(v => v.x).ThenBy(v => v.y).ToList();
+            if (sortedVertices.Count <= 2)
+                return new List<Vector2>();
+
+            // 上方の凸形状計算
+            var ret = new List<Vector2> { sortedVertices[0], sortedVertices[1] };
+            for (var i = 2; i < sortedVertices.Count; i++)
+            {
+                ret.Add(sortedVertices[i]);
+                while (IsLastClockwise(ret) == false)
+                    ret.RemoveAt(ret.Count - 2);
+            }
+
+            // 下方の凸形状計算
+            ret.Add(sortedVertices[^2]);
+            for (var i = sortedVertices.Count - 3; i >= 0; --i)
+            {
+                ret.Add(sortedVertices[i]);
+                while (IsLastClockwise(ret) == false)
+                    ret.RemoveAt(ret.Count - 2);
+            }
+
+            return ret;
         }
 
         /// <summary>
@@ -40,7 +54,7 @@ namespace PLATEAU.Util
         /// <returns></returns>
         public static bool IsClockwise(IEnumerable<Vector2> vertices)
         {
-            var total = GetEdges(vertices, true).Sum(item => Vector2Util.Cross(item.Item1, item.Item2));
+            var total = GeoGraphEx.GetEdges(vertices, true).Sum(item => Vector2Util.Cross(item.Item1, item.Item2));
             return total >= 0;
         }
 
@@ -72,7 +86,7 @@ namespace PLATEAU.Util
                 return false;
             }
 
-            var cnt = GetEdges(vertices, true).Count(item => Check(item.Item1, item.Item2));
+            var cnt = GeoGraphEx.GetEdges(vertices, true).Count(item => Check(item.Item1, item.Item2));
             return (cnt % 2) == 1;
         }
 
@@ -83,7 +97,7 @@ namespace PLATEAU.Util
         /// <returns></returns>
         public static float GetLineSegmentLength(IEnumerable<Vector3> vertices)
         {
-            return GetEdges(vertices, false).Sum(item => (item.Item2 - item.Item1).magnitude);
+            return GeoGraphEx.GetEdges(vertices, false).Sum(item => (item.Item2 - item.Item1).magnitude);
         }
 
         /// <summary>
@@ -126,7 +140,7 @@ namespace PLATEAU.Util
         /// <returns></returns>
         public static bool PolygonHalfLineIntersection(IEnumerable<Vector2> vertices, Ray2D ray, out Vector2 intersection, out float t, bool isLoop = true)
         {
-            var ret = GetEdges(vertices, isLoop)
+            var ret = GeoGraphEx.GetEdges(vertices, isLoop)
                 .Select(p =>
                 {
                     var success = LineUtil.HalfLineSegmentIntersection(ray, p.Item1, p.Item2, out Vector2 intersection,
@@ -182,7 +196,7 @@ namespace PLATEAU.Util
         /// <returns></returns>
         public static bool PolygonSegmentIntersection(IEnumerable<Vector2> vertices, Vector2 st, Vector2 en, out Vector2 intersection, out float t, bool isLoop = true)
         {
-            var ret = GetEdges(vertices, isLoop)
+            var ret = GeoGraphEx.GetEdges(vertices, isLoop)
                 .Select(p =>
                 {
                     var success = LineUtil.SegmentIntersection(st, en, p.Item1, p.Item2, out Vector2 intersection,
@@ -252,6 +266,62 @@ namespace PLATEAU.Util
                     }
                 }
             }
+        }
+
+        public static Dictionary<Vector2, List<Tuple<Vector2, Vector2>>> ComputeIntersections(IEnumerable<Tuple<Vector2, Vector2>> originalSegments)
+        {
+            // key   : index
+            // value : 線分
+            var segments = originalSegments
+                .Distinct()
+                .Select((v, i) => new { v, i })
+                .ToDictionary(x => x.i, x => x.v);
+
+            var comparer = new Vector2Comparer();
+            // key   : 端点 or 交点
+            // value : keyを上端に持つ線分のリスト
+            var eventQueue = new SortedDictionary<Vector2, List<int>>(comparer);
+            foreach (var x in segments)
+            {
+                var refer = eventQueue.GetValueOrCreate(x.Value.Item1);
+                refer.Add(x.Key);
+
+                eventQueue.GetValueOrCreate(x.Value.Item2);
+            }
+
+            var lastP = Vector2.zero;
+
+            float GetInterY(Tuple<Vector2, Vector2> a)
+            {
+                var p = (a.Item2.x - lastP.x) / (a.Item2.x - a.Item1.x);
+                return Vector2.Lerp(a.Item1, a.Item2, p).y;
+            }
+
+            var tauComparer = Comparer<int>.Create(new Comparison<int>((x, y) => GetInterY(segments[x]).CompareTo(GetInterY(segments[y]))));
+            var states = new SortedList<int, int>(tauComparer);
+            var lowers = new HashSet<int>();
+            var combines = new HashSet<int>();
+            while (eventQueue.Count > 0)
+            {
+                var q = eventQueue.First();
+
+
+                lastP = q.Key;
+                foreach (var c in combines)
+                    states.Remove(c);
+
+                foreach (var l in lowers)
+                    states.Remove(l);
+
+                foreach (var u in q.Value)
+                    states.Remove(u);
+
+                while (true)
+                {
+
+                }
+            }
+
         }
     }
 }

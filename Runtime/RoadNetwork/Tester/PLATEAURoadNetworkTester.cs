@@ -2,6 +2,7 @@ using PLATEAU.CityGML;
 using PLATEAU.CityInfo;
 using PLATEAU.RoadNetwork.Drawer;
 using PLATEAU.Util;
+using PLATEAU.Util.GeoGraph;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -23,16 +24,32 @@ namespace PLATEAU.RoadNetwork
         [SerializeField]
         private PLATEAURoadNetworkDrawerDebug drawer = new PLATEAURoadNetworkDrawerDebug();
 
+        [SerializeField]
+        public List<PLATEAUCityObjectGroup> geoTestTargets = new List<PLATEAUCityObjectGroup>();
+
+        [SerializeField] private bool showGeoTest = false;
+
         public void OnDrawGizmos()
         {
             drawer.Draw(Network);
+
+            if (showGeoTest)
+            {
+                var vertices = geoTestTargets
+                    .Select(x => x.GetComponent<MeshCollider>())
+                    .Where(x => x)
+                    .SelectMany(x => x.sharedMesh.vertices.Select(a => a.Xz()))
+                    .ToList();
+                var convex = GeoGraph2d.ComputeConvexVolume(vertices);
+                DebugUtil.DrawArrows(convex.Select(x => x.Xay()));
+            }
         }
 
         public void Draw(PLATEAUCityObjectGroup cityObjectGroup)
         {
             var collider = cityObjectGroup.GetComponent<MeshCollider>();
             var cMesh = collider.sharedMesh;
-            var isClockwise = PolygonUtil.IsClockwise(cMesh.vertices.Select(v => new Vector2(v.x, v.y)));
+            var isClockwise = GeoGraph2d.IsClockwise(cMesh.vertices.Select(v => new Vector2(v.x, v.y)));
             if (isClockwise)
             {
                 DebugUtil.DrawArrows(cMesh.vertices.Select(v => v + Vector3.up * 0.2f));

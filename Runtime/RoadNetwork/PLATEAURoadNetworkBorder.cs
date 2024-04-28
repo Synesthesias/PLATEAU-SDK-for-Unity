@@ -1,4 +1,5 @@
 ﻿using PLATEAU.Util;
+using PLATEAU.Util.GeoGraph;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -22,7 +23,7 @@ namespace PLATEAU.RoadNetwork
         /// <returns></returns>
         public bool TryGetCenterVertex(out Vector3 midPoint)
         {
-            return PolygonUtil.TryGetLineSegmentMidPoint(vertices, out midPoint);
+            return GeoGraph2d.TryGetLineSegmentMidPoint(vertices, out midPoint);
         }
     }
 }

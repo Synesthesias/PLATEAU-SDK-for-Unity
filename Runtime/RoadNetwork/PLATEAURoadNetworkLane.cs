@@ -1,5 +1,6 @@
 ﻿using PLATEAU.CityInfo;
 using PLATEAU.Util;
+using PLATEAU.Util.GeoGraph;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,7 +19,7 @@ namespace PLATEAU.RoadNetwork
     public class PLATEAURoadNetworkLane
     {
         // 自分自身を表すインデックス
-        [SerializeField] private int laneIndex = -1;
+        [SerializeField] private int laneIndex;
         public int LaneIndex => laneIndex;
 
         [SerializeField] public PLATEAUCityObjectGroup cityObjectGroup;
@@ -188,7 +189,7 @@ namespace PLATEAU.RoadNetwork
         /// <returns></returns>
         public bool HalfLineIntersectionXz(Ray ray, out Vector3 intersection)
         {
-            return PolygonUtil.PolygonHalfLineIntersectionXZ(vertices, ray, out intersection, out var t);
+            return GeoGraph2d.PolygonHalfLineIntersectionXZ(vertices, ray, out intersection, out var t);
         }
 
         /// <summary>
@@ -200,7 +201,7 @@ namespace PLATEAU.RoadNetwork
         /// <returns></returns>
         public bool SegmentIntersectionXz(Vector3 st, Vector3 en, out Vector3 intersection)
         {
-            return PolygonUtil.PolygonSegmentIntersectionXZ(vertices, st, en, out intersection, out var t);
+            return GeoGraph2d.PolygonSegmentIntersectionXZ(vertices, st, en, out intersection, out var t);
         }
 
         /// <summary>
@@ -289,7 +290,7 @@ namespace PLATEAU.RoadNetwork
                 }
             }
             // 自己交差があれば削除する
-            PolygonUtil.RemoveSelfCrossing(centerLine, t => t.Xz(), (p1, p2, p3, p4, inter, f1, f2) => Vector3.Lerp(p1, p2, f1));
+            GeoGraph2d.RemoveSelfCrossing(centerLine, t => t.Xz(), (p1, p2, p3, p4, inter, f1, f2) => Vector3.Lerp(p1, p2, f1));
         }
     }
 

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using PLATEAU.Util.GeoGraph;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using UnityEditor.Graphs;
@@ -69,24 +70,19 @@ namespace PLATEAU.Util
             , bool depthTest = true
             )
         {
-            Vector3? first = null;
-            Vector3? current = null;
-            foreach (var v in vertices)
-            {
-                if (first == null)
-                {
-                    first = current = v;
-                    continue;
-                }
+            foreach (var e in GeoGraphEx.GetEdges(vertices, isLoop))
+                DrawArrow(e.Item1, e.Item2, arrowSize, arrowUp, color, arrowColor, duration, depthTest);
+        }
 
-                DrawArrow(current.Value, v, arrowSize, arrowUp, color, arrowColor, duration, depthTest);
-                current = v;
-            }
-
-            if (isLoop && first.HasValue)
-            {
-                DrawArrow(current.Value, first.Value, arrowSize, arrowUp, color, arrowColor, duration, depthTest);
-            }
+        public static void DrawLines(
+            IEnumerable<Vector3> vertices
+            , bool isLoop = false
+            , Color? color = null
+            , float duration = 0f
+            , bool depthTest = true)
+        {
+            foreach (var e in GeoGraphEx.GetEdges(vertices, isLoop))
+                Debug.DrawLine(e.Item1, e.Item2, color ?? Color.white, duration, depthTest);
         }
 
 

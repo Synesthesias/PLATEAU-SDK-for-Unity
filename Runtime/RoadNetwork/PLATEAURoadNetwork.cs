@@ -1,5 +1,6 @@
 ﻿using PLATEAU.CityInfo;
 using PLATEAU.Util;
+using PLATEAU.Util.GeoGraph;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -19,7 +20,6 @@ namespace PLATEAU.RoadNetwork
             public Vector3Int cellNo;
 
             // このセルを参照するレーン一覧
-            // #TODO : SortedListかHashSetを使いたいがシリアライズできないので仮
             public PLATEAURoadNetworkIndexMap lanes = new PLATEAURoadNetworkIndexMap();
         }
 
@@ -49,7 +49,7 @@ namespace PLATEAU.RoadNetwork
                 var comp = lane.cityObjectGroup.GetComponent<MeshCollider>();
                 if (!comp)
                     continue;
-                if (PolygonUtil.IsClockwise(comp.sharedMesh.vertices.Select(x => x.Xz())) == false)
+                if (GeoGraph2d.IsClockwise(comp.sharedMesh.vertices.Select(x => x.Xz())) == false)
                 {
                     lane.vertices.AddRange(comp.sharedMesh.vertices);
                 }
@@ -179,7 +179,7 @@ namespace PLATEAU.RoadNetwork
                     var n = lane.GetEdgeNormal(wayVertexIndices[0]).normalized;
                     // 微小にずらして確認する
                     var p = cp + n * 0.1f;
-                    isBorder = PolygonUtil.Contains(neighbor.vertices.Select(x => x.Xz()), p.Xz());
+                    isBorder = GeoGraph2d.Contains(neighbor.vertices.Select(x => x.Xz()), p.Xz());
                 }
 
                 if (isBorder)

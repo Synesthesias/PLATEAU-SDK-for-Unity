@@ -36,7 +36,7 @@ namespace PLATEAU.Util
         }
 
         /// <summary>
-        /// Vector2の外積.
+        /// Vector2の外積. ret = a.x * b.y - a.y * b.x
         /// </summary>
         /// <param name="a"></param>
         /// <param name="b"></param>
@@ -94,6 +94,30 @@ namespace PLATEAU.Util
         {
             self.y = y;
             return self;
+        }
+
+        /// <summary>
+        /// yを指定してVector3にする
+        /// return new Vector3(self.x, y, self.y);
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="y"></param>
+        /// <returns></returns>
+        public static Vector3 Xay(this Vector2 self, float y = 0f)
+        {
+            return new Vector3(self.x, y, self.y);
+        }
+
+        /// <summary>
+        /// zを指定してVector3にする
+        /// return new Vector3(self.x, self.y, z);
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="z"></param>
+        /// <returns></returns>
+        public static Vector3 Xya(this Vector2 self, float z = 0f)
+        {
+            return new Vector3(self.x, self.y, z);
         }
 
         /// <summary>

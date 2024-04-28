@@ -26,7 +26,7 @@ namespace PLATEAU.Util
         }
 
         /// <summary>
-        /// TryGetValueして存在しない場合にfactoryで新規オブジェクトを生成して追加したうえで返す
+        /// TryGetValueして存在しない場合にnew TValue()で生成して追加したうえで返す
         /// </summary>
         /// <typeparam name="TKey"></typeparam>
         /// <typeparam name="TValue"></typeparam>
