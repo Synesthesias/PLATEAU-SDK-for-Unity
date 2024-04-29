@@ -10,7 +10,7 @@ namespace PLATEAU.RoadNetwork
     /// レーンを構成する左右の道の一つ
     /// </summary>
     [Serializable]
-    public class PLATEAURoadNetworkWay
+    public class RoadNetworkWay : IPrimitiveData
     {
         public List<Vector3> vertices = new List<Vector3>();
         public int nextLaneIndex = -1;

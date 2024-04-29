@@ -20,7 +20,8 @@ namespace PLATEAU.RoadNetwork
             public Vector3Int cellNo;
 
             // このセルを参照するレーン一覧
-            public PLATEAURoadNetworkIndexMap lanes = new PLATEAURoadNetworkIndexMap();
+            public SerializableHashSet<RnLaneId> lanes = new SerializableHashSet<RnLaneId>();
+
         }
 
         [SerializeField] private float cellSize = 0.01f;
@@ -28,20 +29,43 @@ namespace PLATEAU.RoadNetwork
         [SerializeField] private List<Cell> cell2Groups = new List<Cell>();
 
         // レーンリスト
-        [SerializeField] private List<PLATEAURoadNetworkLane> lanes = new List<PLATEAURoadNetworkLane>();
+        [SerializeField] private List<RoadNetworkLane> lanes = new List<RoadNetworkLane>();
 
-        public IEnumerable<PLATEAURoadNetworkLane> Lanes => lanes;
+
+        public IEnumerable<RoadNetworkLane> Lanes => lanes;
 
         private void BuildCellMap(IList<PLATEAUCityObjectGroup> cityObjectGroups)
         {
+
+            var cSize = Vector3.one * cellSize;
+
+            Dictionary<Vector3Int, RnPointId> cell2PointId = new Dictionary<Vector3Int, RnPointId>();
+            List<RoadNetworkPoint> vertices = new List<RoadNetworkPoint>();
+
+            foreach (var g in cityObjectGroups
+                         .Select(c => c.GetComponent<MeshCollider>())
+                         .SelectMany(c => c.sharedMesh.vertices)
+                         .GroupBy(v => v.RevScaled(cSize).ToVector3Int()))
+            {
+                var key = g.Key;
+                // とりあえずマージした頂点の平均を代表頂点にする
+                var vertex = g.Aggregate(Vector3.zero, (a, v) => a + v) / g.Count();
+                cell2PointId[key] = new RnPointId(vertices.Count);
+                vertices.Add(new RoadNetworkPoint(vertex));
+            }
+
+
+
+
             // 頂点の一致判定のためにセル単位に切り捨て
             // #TODO : 近いけど隣のセルになる場合を考慮
 
             // レーンの初期化
-            lanes = cityObjectGroups.Select((c, i) => new PLATEAURoadNetworkLane(i, c)).ToList();
+            lanes = cityObjectGroups.Select((c, i) => new RoadNetworkLane(i, c)).ToList();
 
-            var cSize = Vector3.one * cellSize;
             cell2Groups.Clear();
+
+
 
             // レーンの頂点情報を構築
             foreach (var lane in lanes)
@@ -49,13 +73,16 @@ namespace PLATEAU.RoadNetwork
                 var comp = lane.cityObjectGroup.GetComponent<MeshCollider>();
                 if (!comp)
                     continue;
+                var cells = comp.sharedMesh.vertices.Select(v => v.RevScaled(cSize).ToVector3Int())
+                    .Select(v => cell2PointId[v])
+                    .ToList();
                 if (GeoGraph2d.IsClockwise(comp.sharedMesh.vertices.Select(x => x.Xz())) == false)
                 {
-                    lane.vertices.AddRange(comp.sharedMesh.vertices);
+                    lane.vertices.AddRange(cells);
                 }
                 else
                 {
-                    lane.vertices.AddRange(comp.sharedMesh.vertices.Reverse());
+                    lane.vertices.AddRange(((IEnumerable<RnPointId>)cells).Reverse());
                 }
 
                 foreach (var v in lane.vertices)
@@ -106,10 +133,10 @@ namespace PLATEAU.RoadNetwork
             }
 
         }
-        public void BuildLane(PLATEAURoadNetworkLane lane)
+        public void BuildLane(RoadNetworkLane lane)
         {
             var cSize = Vector3.one * cellSize;
-            List<PLATEAURoadNetworkLane> GetNeighborLane(Vector3 v)
+            List<RoadNetworkLane> GetNeighborLane(Vector3 v)
             {
                 var cellNo = v.RevScaled(cSize).ToVector3Int();
                 var c = cell2Groups.First(x => x.cellNo == cellNo);
@@ -140,7 +167,7 @@ namespace PLATEAU.RoadNetwork
             // 隣接レーンが一つもない場合は孤立
             if (vertex2Neighbors.Any(n => n.Any()) == false)
             {
-                var way = new PLATEAURoadNetworkWay();
+                var way = new RoadNetworkWay();
                 way.vertices.AddRange(lane.vertices);
                 lane.ways.Add(way);
                 return;
@@ -184,7 +211,7 @@ namespace PLATEAU.RoadNetwork
 
                 if (isBorder)
                 {
-                    var border = new PLATEAURoadNetworkBorder
+                    var border = new RoadNetworkBorder
                     {
                         neighborLaneIndex = neighbor.LaneIndex
                     };
@@ -196,7 +223,7 @@ namespace PLATEAU.RoadNetwork
                     // 孤立した状態だとneighborsが0の時もあり得る
                     Assert.IsTrue(fromNeighbors.Count <= 1, $"fromNeighborsCount {fromNeighbors.Count}");
                     Assert.IsTrue(toNeighbor.Count <= 1, $"toNeighborCount {toNeighbor.Count}");
-                    var way = new PLATEAURoadNetworkWay();
+                    var way = new RoadNetworkWay();
                     way.prevLaneIndex = fromNeighbors.FirstOrDefault()?.LaneIndex ?? -1;
                     way.nextLaneIndex = toNeighbor.FirstOrDefault()?.LaneIndex ?? -1;
                     way.vertices.AddRange(wayVertexIndices.Select(a => lane.vertices[a]));

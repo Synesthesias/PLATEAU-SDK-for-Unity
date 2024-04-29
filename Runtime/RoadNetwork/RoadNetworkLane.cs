@@ -16,31 +16,38 @@ namespace PLATEAU.RoadNetwork
 {
 
     [Serializable]
-    public class PLATEAURoadNetworkLane
+    public class RoadNetworkLane : IPrimitiveData
     {
         // 自分自身を表すインデックス
-        [SerializeField] private int laneIndex;
-        public int LaneIndex => laneIndex;
+        [SerializeField] private RnLaneId laneIndex;
+        public RnLaneId LaneIndex => laneIndex;
 
         [SerializeField] public PLATEAUCityObjectGroup cityObjectGroup;
 
         // 構成する頂点
         // ポリゴン的に時計回りの順に格納されている
         [SerializeField]
-        public List<Vector3> vertices = new List<Vector3>();
+        public List<RnPointId> vertices = new List<RnPointId>();
+
+        [SerializeField]
+        private RnLineStringId leftWayId = RnLineStringId.Undefined;
+
+        [SerializeField]
+        private RnLineStringId rightWayId = RnLineStringId.Undefined;
 
         // 連結しているレーン
-        [SerializeField]
-        public PLATEAURoadNetworkIndexMap connectedLaneIndices = new PLATEAURoadNetworkIndexMap();
+        [SerializeField] private SerializableHashSet<RnLaneId> nextLaneIds = new SerializableHashSet<RnLaneId>();
 
-        // レーンを構成する道
-        // 左側が若いインデックスになる
-        [SerializeField]
-        public List<PLATEAURoadNetworkWay> ways = new List<PLATEAURoadNetworkWay>();
+        [SerializeField] private SerializableHashSet<RnLaneId> prevLaneIds = new SerializableHashSet<RnLaneId>();
+
+        //// レーンを構成する道
+        //// 左側が若いインデックスになる
+        //[SerializeField]
+        //public List<RnLineStringId> ways = new List<RnLineStringId>();
 
         // 他レーンとの境界線
         [SerializeField]
-        public List<PLATEAURoadNetworkBorder> borders = new List<PLATEAURoadNetworkBorder>();
+        public List<RoadNetworkBorder> borders = new List<RoadNetworkBorder>();
 
         // 中央線
         [SerializeField]
@@ -58,55 +65,55 @@ namespace PLATEAU.RoadNetwork
         // 不完全な状態かどうか
         public bool isPartial = false;
 
-        // 左側Way
-        public PLATEAURoadNetworkWay LeftWay
-        {
-            get
-            {
-                var ret = ways.FirstOrDefault();
-                // 最初が右側のWayだったら左側のWayは存在しない
-                if (ret?.isRightSide ?? false)
-                    ret = null;
-                return ret;
-            }
-        }
+        //// 左側Way
+        //public PLATEAURoadNetworkWay LeftWay
+        //{
+        //    get
+        //    {
+        //        var ret = ways.FirstOrDefault();
+        //        // 最初が右側のWayだったら左側のWayは存在しない
+        //        if (ret?.isRightSide ?? false)
+        //            ret = null;
+        //        return ret;
+        //    }
+        //}
 
-        // 右側Way
-        public PLATEAURoadNetworkWay RightWay
-        {
-            get
-            {
-                var ret = ways.LastOrDefault();
-                // 最後が左側だったら右側のWayは存在しない
-                if ((ret?.isRightSide ?? true) == false)
-                    ret = null;
-                return ret;
-            }
+        //// 右側Way
+        //public PLATEAURoadNetworkWay RightWay
+        //{
+        //    get
+        //    {
+        //        var ret = ways.LastOrDefault();
+        //        // 最後が左側だったら右側のWayは存在しない
+        //        if ((ret?.isRightSide ?? true) == false)
+        //            ret = null;
+        //        return ret;
+        //    }
 
-        }
+        //}
 
         // #TODO : 連結先/連結元の判断ができるのか？
 
         // 連結先レーン
-        public IEnumerable<int> NextLaneIndices
-        {
-            get
-            {
-                return ways.Select(w => w.nextLaneIndex).Where(index => index >= 0).Distinct();
-            }
-        }
+        //public IEnumerable<int> NextLaneIndices
+        //{
+        //    get
+        //    {
+        //        return ways.Select(w => w.nextLaneIndex).Where(index => index >= 0).Distinct();
+        //    }
+        //}
 
-        // 連結元レーン
-        public IEnumerable<int> PrevLanes
-        {
-            get
-            {
-                return ways.Select(w => w.prevLaneIndex).Where(index => index >= 0).Distinct();
+        //// 連結元レーン
+        //public IEnumerable<int> PrevLanes
+        //{
+        //    get
+        //    {
+        //        return ways.Select(w => w.prevLaneIndex).Where(index => index >= 0).Distinct();
 
-            }
-        }
+        //    }
+        //}
 
-        public PLATEAURoadNetworkLane(int index, PLATEAUCityObjectGroup src)
+        public RoadNetworkLane(int index, PLATEAUCityObjectGroup src)
         {
             laneIndex = index;
             cityObjectGroup = src;
@@ -119,7 +126,7 @@ namespace PLATEAU.RoadNetwork
 
         public void AddConnectedLane(int laneIndex)
         {
-            connectedLaneIndices.Add(laneIndex);
+            nextLaneIds.Add(laneIndex);
         }
 
         // 頂点 startVertexIndex, startVertexIndex + 1で構成される辺の法線ベクトルを返す

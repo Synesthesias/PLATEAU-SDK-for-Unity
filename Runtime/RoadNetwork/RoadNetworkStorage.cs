@@ -20,8 +20,8 @@ namespace PLATEAU.RoadNetwork
     /// </summary>
     public interface IRoadNetworkEditable
     {
-        public PointHandle GetRef(in RoadNetworkPrimID<Point> id);
-        public ILineStringsHandle GetRef(in RoadNetworkPrimID<LineStrings> id);
+        public PointHandle GetRef(in RoadNetworkID<RoadNetworkPoint> id);
+        public ILineStringsHandle GetRef(in RoadNetworkID<RoadNetworkLineString> id);
 
         public void RelaseHandle(ref PointHandle hnd);
 
@@ -40,9 +40,9 @@ namespace PLATEAU.RoadNetwork
         /// </summary>
         /// <param name="size"></param>
         /// <returns></returns>
-        public PointHandle[] WriteNewPoints(in Point[] points);
+        public PointHandle[] WriteNewPoints(in RoadNetworkPoint[] points);
 
-        public ILineStringsHandle[] WriteNewLineStrings(in LineStrings[] lineStrings);
+        public ILineStringsHandle[] WriteNewLineStrings(in RoadNetworkLineString[] lineStrings);
 
 
         public void ClearAll();
@@ -57,14 +57,32 @@ namespace PLATEAU.RoadNetwork
 
     }
 
-    public class RoadNetworkStorage : MonoBehaviour,
-         IRoadNetworkEditable, IRoadNetworkDynamicEditable
+    [Serializable]
+    public class RoadNetworkStorage : IRoadNetworkEditable, IRoadNetworkDynamicEditable
     {
         public TrafficRegulationStorage TrafficRegulationStorage { get => trafficRegulationStorage; }
         public PrimitiveDataStorage PrimitiveDataStorage { get => primitiveDataStorage; }
 
+        public IEnumerable<RoadNetworkLane> Lanes => lanes;
+
+        // 頂点情報
+        [SerializeField] private List<RoadNetworkPoint> points = new List<RoadNetworkPoint>();
+
+        [SerializeField] private List<RoadNetworkLineString> lineStrings = new List<RoadNetworkLineString>();
+
+        // レーンリスト
+        [SerializeField] private List<RoadNetworkLane> lanes = new List<RoadNetworkLane>();
+
+        [SerializeField] private List<RoadNetworkBlock> blocks = new List<RoadNetworkBlock>();
+
+        [SerializeField] private List<RoadNetworkLink> links = new List<RoadNetworkLink>();
+
+        [SerializeField] private List<RoadNetworkNode> nodes = new List<RoadNetworkNode>();
+
+
         [SerializeField/*, PersistentAmongPlayMode*/] private TrafficRegulationStorage trafficRegulationStorage;
         [SerializeField/*, PersistentAmongPlayMode*/] private PrimitiveDataStorage primitiveDataStorage;
+
         private PrimitiveDataHandleManager primitiveDataHandleManager;
 
         private PointHandle[] initHandles;
@@ -92,13 +110,13 @@ namespace PLATEAU.RoadNetwork
         public void InitializeStorage()
         {
             // ストレージの初期化  ←　たぶん必要ない シリアライズされたデータが読み込めていればok
-            
+
             // ハンドルマネージャーの初期化
             var pointIds = primitiveDataStorage.Points.GetIds();
-            var lineStringsIds = new RoadNetworkPrimID<LineStrings>[0];
+            var lineStringsIds = new RoadNetworkID<RoadNetworkLineString>[0];
             primitiveDataHandleManager =
                 new PrimitiveDataHandleManager(this, pointIds.Length, lineStringsIds.Length);
-            
+
             // ハンドルマネージャーのハンドルのインスタンス化
             initHandles = new PointHandle[pointIds.Length];
             int initHandlesOffset = 0;
@@ -123,12 +141,12 @@ namespace PLATEAU.RoadNetwork
             // ストレージの終了処理
         }
 
-        PointHandle IRoadNetworkEditable.GetRef(in RoadNetworkPrimID<Point> id)
+        PointHandle IRoadNetworkEditable.GetRef(in RoadNetworkID<RoadNetworkPoint> id)
         {
             return primitiveDataHandleManager.RequestHandle(id);
         }
 
-        ILineStringsHandle IRoadNetworkEditable.GetRef(in RoadNetworkPrimID<LineStrings> id)
+        ILineStringsHandle IRoadNetworkEditable.GetRef(in RoadNetworkID<RoadNetworkLineString> id)
         {
             return primitiveDataHandleManager.RequestHandle(id);
         }
@@ -143,7 +161,7 @@ namespace PLATEAU.RoadNetwork
             primitiveDataHandleManager.ReleaseHandle(hnd);
         }
 
-        PointHandle[] IRoadNetworkDynamicEditable.WriteNewPoints(in Point[] points)
+        PointHandle[] IRoadNetworkDynamicEditable.WriteNewPoints(in RoadNetworkPoint[] points)
         {
             //PointHandle[] ret = null;
             //Point[] newPoints = null;
@@ -208,7 +226,7 @@ namespace PLATEAU.RoadNetwork
 
         }
 
-        ILineStringsHandle[] IRoadNetworkDynamicEditable.WriteNewLineStrings(in LineStrings[] lineStrings)
+        ILineStringsHandle[] IRoadNetworkDynamicEditable.WriteNewLineStrings(in RoadNetworkLineString[] lineStrings)
         {
             var ids = primitiveDataStorage.LineStrings.WriteNew(lineStrings);
             var hnds = primitiveDataHandleManager.RequestHandle(ids);
@@ -260,26 +278,26 @@ namespace PLATEAU.RoadNetwork
 
             this.storage = storage;
 
-            pointHandles = new Dictionary<RoadNetworkPrimID<Point>, PointHandle>(pointHandlesCapacity);
+            pointHandles = new Dictionary<RoadNetworkID<RoadNetworkPoint>, PointHandle>(pointHandlesCapacity);
             freePointHandles = new List<PointHandle>(pointHandlesCapacity);
 
             lineStringsHandles =
-                new Dictionary<RoadNetworkPrimID<LineStrings>, LineStringsHandle>(lineStringsHandlesCapacity);
-            freeLineStringsHandles = new List<LineStrings>(lineStringsHandlesCapacity);
+                new Dictionary<RoadNetworkID<RoadNetworkLineString>, LineStringsHandle>(lineStringsHandlesCapacity);
+            freeLineStringsHandles = new List<RoadNetworkLineString>(lineStringsHandlesCapacity);
         }
 
         private RoadNetworkStorage storage;
-        private Dictionary<RoadNetworkPrimID<Point>, PointHandle> pointHandles;
+        private Dictionary<RoadNetworkID<RoadNetworkPoint>, PointHandle> pointHandles;
         private List<PointHandle> freePointHandles;
-        private Dictionary<RoadNetworkPrimID<LineStrings>, LineStringsHandle> lineStringsHandles;
-        private List<LineStrings> freeLineStringsHandles;
+        private Dictionary<RoadNetworkID<RoadNetworkLineString>, LineStringsHandle> lineStringsHandles;
+        private List<RoadNetworkLineString> freeLineStringsHandles;
 
         /// <summary>
         /// Handleの生成or取得を行う
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public PointHandle RequestHandle(in RoadNetworkPrimID<Point> id)
+        public PointHandle RequestHandle(in RoadNetworkID<RoadNetworkPoint> id)
         {
             PointHandle pointHnd = null;
             if (pointHandles.TryGetValue(id, out pointHnd) == false)
@@ -290,7 +308,7 @@ namespace PLATEAU.RoadNetwork
             return pointHnd;
         }
 
-        public PointHandle[] RequestHandle(in RoadNetworkPrimID<Point>[] ids)
+        public PointHandle[] RequestHandle(in RoadNetworkID<RoadNetworkPoint>[] ids)
         {
             var ret = new PointHandle[ids.Length];
             for (int i = 0; i < ids.Length; i++)
@@ -301,7 +319,7 @@ namespace PLATEAU.RoadNetwork
             return ret;
         }
 
-        public ILineStringsHandle RequestHandle(in RoadNetworkPrimID<LineStrings> id)
+        public ILineStringsHandle RequestHandle(in RoadNetworkID<RoadNetworkLineString> id)
         {
             LineStringsHandle lineStringsHnd = null;
             if (lineStringsHandles.TryGetValue(id, out lineStringsHnd) == false)
@@ -311,7 +329,7 @@ namespace PLATEAU.RoadNetwork
             }
             return lineStringsHnd;
         }
-        public ILineStringsHandle[] RequestHandle(in RoadNetworkPrimID<LineStrings>[] ids)
+        public ILineStringsHandle[] RequestHandle(in RoadNetworkID<RoadNetworkLineString>[] ids)
         {
             var ret = new ILineStringsHandle[ids.Length];
             for (int i = 0; i < ids.Length; i++)
@@ -366,29 +384,30 @@ namespace PLATEAU.RoadNetwork
         // 大きくメモリを確保してそこから切り出す形に修正する
         // Listで確保しているストレージは配列にして初期化処理、解放処理の最適化
 
-        public PrimitiveStorage<Point> Points { get => points; }
-        public PrimitiveStorage<LineStrings> LineStrings { get => lineStrings; }
+        public PrimitiveStorage<RoadNetworkPoint> Points { get => points; }
+        public PrimitiveStorage<RoadNetworkLineString> LineStrings { get => lineStrings; }
 
-        [SerializeField] PrimitiveStorage<Point> points;
-        [SerializeField] PrimitiveStorage<LineStrings> lineStrings;
+        [SerializeField] private PrimitiveStorage<RoadNetworkPoint> points;
+        [SerializeField] private PrimitiveStorage<RoadNetworkLineString> lineStrings;
 
         [System.Serializable]
-        public struct PrimitiveStorage<_PrimType> where _PrimType : struct, IPrimitiveData
+        public struct PrimitiveStorage<TPrimType>
+            where TPrimType : IPrimitiveData
         {
-            [SerializeField] private List<_PrimType> dataList;
+            [SerializeField] private List<TPrimType> dataList;
             // 未使用のデータインデックス アプリを次回起動した際にインデックスを利用できるように残す
-            [SerializeField] private List<int> freeDataIndices;  
+            [SerializeField] private List<int> freeDataIndices;
 
             /// <summary>
             /// ストレージのID群を取得
             /// </summary>
             /// <returns></returns>
-            public RoadNetworkPrimID<_PrimType>[] GetIds()
+            public RoadNetworkID<TPrimType>[] GetIds()
             {
-                var ids = new RoadNetworkPrimID<_PrimType>[dataList.Count];
-                for (int i = 0; i < ids.Length; i++)
+                var ids = new RoadNetworkID<TPrimType>[dataList.Count];
+                for (uint i = 0; i < ids.Length; i++)
                 {
-                    ids[i] = new RoadNetworkPrimID<_PrimType>()
+                    ids[i] = new RoadNetworkID<TPrimType>()
                     {
                         id = i
                     };
@@ -402,13 +421,13 @@ namespace PLATEAU.RoadNetwork
             /// </summary>
             /// <param name="values"></param>
             /// <returns></returns>
-            public RoadNetworkPrimID<_PrimType>[] WriteNew(in _PrimType[] values)
+            public RoadNetworkID<TPrimType>[] WriteNew(in TPrimType[] values)
             {
                 var start = dataList.Count;
                 dataList.AddRange(values);
-                var ret = new RoadNetworkPrimID<_PrimType>[values.Length];
-                for (int i = 0; i < ret.Length; i++)
-                    ret[i] = new RoadNetworkPrimID<_PrimType>()
+                var ret = new RoadNetworkID<TPrimType>[values.Length];
+                for (uint i = 0; i < ret.Length; i++)
+                    ret[i] = new RoadNetworkID<TPrimType>()
                     {
                         id = start + i
                     };
@@ -431,7 +450,7 @@ namespace PLATEAU.RoadNetwork
             /// </summary>
             /// <param name="id"></param>
             /// <returns></returns>
-            public _PrimType Read(in RoadNetworkPrimID<_PrimType> id)
+            public TPrimType Read(in RoadNetworkID<TPrimType> id)
             {
                 return dataList[id.id];
             }
@@ -441,7 +460,7 @@ namespace PLATEAU.RoadNetwork
             /// </summary>
             /// <param name="id"></param>
             /// <param name="val"></param>
-            public void Write(in RoadNetworkPrimID<_PrimType> id, in _PrimType val)
+            public void Write(in RoadNetworkID<TPrimType> id, in TPrimType val)
             {
                 dataList[id.id] = val;
             }
@@ -451,7 +470,7 @@ namespace PLATEAU.RoadNetwork
             /// 未使用のデータIDは未登録である必要がある
             /// </summary>
             /// <param name="ids"></param>
-            public void RegisterFreeIDs(in RoadNetworkPrimID<_PrimType>[] ids)
+            public void RegisterFreeIDs(in RoadNetworkID<TPrimType>[] ids)
             {
                 Assert.IsNull(freeDataIndices);
                 freeDataIndices = new List<int>(ids.Length);
@@ -466,11 +485,11 @@ namespace PLATEAU.RoadNetwork
             /// 未使用のデータIDのリストが無効になる
             /// </summary>
             /// <returns></returns>
-            public RoadNetworkPrimID<_PrimType>[] RequestFreeIDs()
+            public RoadNetworkID<TPrimType>[] RequestFreeIDs()
             {
                 Assert.IsNotNull(freeDataIndices);
                 var numFree = freeDataIndices.Count;
-                var ret = new RoadNetworkPrimID<_PrimType>[numFree];
+                var ret = new RoadNetworkID<TPrimType>[numFree];
                 int i = 0;
                 foreach (var item in freeDataIndices)
                 {
@@ -492,30 +511,29 @@ namespace PLATEAU.RoadNetwork
         }
     }
 
-    public abstract class PrimitiveDataHandle<_PrimType>
-        where _PrimType : struct, IPrimitiveData
+    public abstract class PrimitiveDataHandle<TPrimType>
+        where TPrimType : IPrimitiveData
     {
         protected RoadNetworkStorage storage;
-        protected RoadNetworkPrimID<_PrimType> id;
+        protected RoadNetworkID<TPrimType> id;
     }
 
     /// <summary>
     /// Pointデータへの参照
     /// 読み書き機能を提供
     /// </summary>
-    public class PointHandle : PrimitiveDataHandle<Point>
+    public class PointHandle : PrimitiveDataHandle<RoadNetworkPoint>
     {
-        public PointHandle(RoadNetworkStorage storage, RoadNetworkPrimID<Point> id)
+        public PointHandle(RoadNetworkStorage storage, RoadNetworkID<RoadNetworkPoint> id)
         {
             Assert.IsNotNull(storage);
-            Assert.IsTrue(id.id >= 0);
             this.storage = storage;
             this.id = id;
         }
 
-        public RoadNetworkPrimID<Point> ID { get { return id; } }
+        public RoadNetworkID<RoadNetworkPoint> ID { get { return id; } }
 
-        public Point Val
+        public RoadNetworkPoint Val
         {
             get
             {
@@ -526,7 +544,6 @@ namespace PLATEAU.RoadNetwork
                 storage.PrimitiveDataStorage.Points.Write(id, value);
             }
         }
-
     }
 
     /// <summary>
@@ -535,23 +552,23 @@ namespace PLATEAU.RoadNetwork
     /// </summary>
     public interface ILineStringsHandle
     {
-        public Point this[RoadNetworkPrimID<Point> id] { get; set; }
-        public RoadNetworkPrimID<Point> this[int index] { get; set; }
-        public LineStrings Val { get; set; }
+        public RoadNetworkPoint this[RoadNetworkID<RoadNetworkPoint> id] { get; set; }
+        public RoadNetworkID<RoadNetworkPoint> this[int index] { get; set; }
+        public RoadNetworkLineString Val { get; set; }
     }
 
-    public class LineStringsHandle : PrimitiveDataHandle<LineStrings>, ILineStringsHandle
+    public class LineStringsHandle : PrimitiveDataHandle<RoadNetworkLineString>, ILineStringsHandle
     {
-        public LineStringsHandle(RoadNetworkStorage storage, RoadNetworkPrimID<LineStrings> id)
+        public LineStringsHandle(RoadNetworkStorage storage, RoadNetworkID<RoadNetworkLineString> id)
         {
             Assert.IsNotNull(storage);
             Assert.IsTrue(id.id >= 0);
             this.storage = storage;
             this.id = id;
         }
-        public RoadNetworkPrimID<LineStrings> ID { get { return id; } }
+        public RoadNetworkID<RoadNetworkLineString> ID { get { return id; } }
 
-        public Point this[RoadNetworkPrimID<Point> id]
+        public RoadNetworkPoint this[RoadNetworkID<RoadNetworkPoint> id]
         {
             get
             {
@@ -564,19 +581,19 @@ namespace PLATEAU.RoadNetwork
                 storage.PrimitiveDataStorage.Points.Write(pointId, value);
             }
         }
-        RoadNetworkPrimID<Point> ILineStringsHandle.this[int index] 
-        { 
+        RoadNetworkID<RoadNetworkPoint> ILineStringsHandle.this[int index]
+        {
             get
             {
                 return storage.PrimitiveDataStorage.LineStrings.Read(this.id).points[index];
             }
-            set 
+            set
             {
                 storage.PrimitiveDataStorage.LineStrings.Read(this.id).points[index] = value;
             }
         }
 
-        public LineStrings Val
+        public RoadNetworkLineString Val
         {
             get
             {
@@ -589,34 +606,4 @@ namespace PLATEAU.RoadNetwork
         }
 
     }
-
-    //[Serializable]
-    //public struct LinkedLineStrings
-    //{
-    //    public Point[] Points
-    //    {
-    //        get => throw new NotImplementedException();
-    //        set => throw new NotImplementedException();
-    //    }
-
-    //    [SerializeField] private RoadNetworkPrimID<ILineStrings>[] lineStringsIDs;
-
-
-    //    public IEnumerator<Point> GetEnumerator()
-    //    {
-    //        for (int i = 0; i < lineStringsIDs.Length; i++)
-    //        {
-    //            for (int j = 0; j < length; j++)
-    //            {
-
-    //            }
-    //        }
-    //    }
-
-    //    IEnumerator IEnumerable.GetEnumerator()
-    //    {
-    //        throw new NotImplementedException();
-    //    }
-    //}
-
 }

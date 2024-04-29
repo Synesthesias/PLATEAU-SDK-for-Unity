@@ -306,7 +306,13 @@ namespace PLATEAU.Util.GeoGraph
                 var q = eventQueue.First();
 
 
+                var upper = q.Value;
+
                 lastP = q.Key;
+
+                //states.IndexOfKey()
+
+
                 foreach (var c in combines)
                     states.Remove(c);
 

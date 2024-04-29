@@ -10,7 +10,7 @@ namespace PLATEAU.RoadNetwork
     /// レーンとの境界線
     /// </summary>
     [Serializable]
-    public class PLATEAURoadNetworkBorder
+    public class RoadNetworkBorder : IPrimitiveData
     {
         public List<Vector3> vertices = new List<Vector3>();
 

@@ -27,17 +27,17 @@ namespace PLATEAU.RoadNetwork
         /// <summary>
         /// 優先道路
         /// </summary>
-        public RoadNetworkPrimID<LineStrings> yields;
+        public RoadNetworkID<RoadNetworkLineString> yields;
     }
 
     [System.Serializable]
     public struct StopLine
     {
-        public RoadNetworkPrimID<LineStrings> line;
+        public RoadNetworkID<RoadNetworkLineString> line;
         public TrafficLight trafficLight;
         public bool bHasStopSign;
     }
-    
+
     [System.Serializable]
     public struct TrafficLight
     {
