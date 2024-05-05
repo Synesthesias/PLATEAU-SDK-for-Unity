@@ -91,45 +91,6 @@ namespace PLATEAU.Util.GeoGraph
         }
 
         /// <summary>
-        /// verticesで構成された線分の長さを求める
-        /// </summary>
-        /// <param name="vertices"></param>
-        /// <returns></returns>
-        public static float GetLineSegmentLength(IEnumerable<Vector3> vertices)
-        {
-            return GeoGraphEx.GetEdges(vertices, false).Sum(item => (item.Item2 - item.Item1).magnitude);
-        }
-
-        /// <summary>
-        /// verticesで表される線分の中央地点を返す
-        /// </summary>
-        /// <param name="vertices"></param>
-        /// <param name="midPoint"></param>
-        /// <returns></returns>
-        public static bool TryGetLineSegmentMidPoint(IList<Vector3> vertices, out Vector3 midPoint)
-        {
-            var halfLength = GetLineSegmentLength(vertices) * 0.5f;
-
-            var len = 0f;
-            for (var i = 0; i < vertices.Count - 1; ++i)
-            {
-                var p0 = vertices[i];
-                var p1 = vertices[i + 1];
-                var l = (p1 - p0).magnitude;
-                len += l;
-                if (len >= halfLength && l > float.Epsilon)
-                {
-                    var f = (len - halfLength) / l;
-                    midPoint = Vector3.Lerp(p0, p1, f);
-                    return true;
-                }
-            }
-
-            midPoint = Vector3.zero;
-            return false;
-        }
-
-        /// <summary>
         /// 頂点verticesで構成されるポリゴン(isLoop = falseの時は開いている)と半直線rayとの交点を返す
         /// </summary>
         /// <param name="vertices"></param>
@@ -151,8 +112,8 @@ namespace PLATEAU.Util.GeoGraph
                 .Where(p => p.success)
                 .TryFindMin(p => p.f1, out var o);
 
-            intersection = o.intersection;
-            t = o.f1;
+            intersection = o?.intersection ?? Vector2.zero;
+            t = o?.f1 ?? 0f;
             return ret;
         }
 
@@ -268,6 +229,7 @@ namespace PLATEAU.Util.GeoGraph
             }
         }
 
+#if false
         public static Dictionary<Vector2, List<Tuple<Vector2, Vector2>>> ComputeIntersections(IEnumerable<Tuple<Vector2, Vector2>> originalSegments)
         {
             // key   : index
@@ -329,5 +291,6 @@ namespace PLATEAU.Util.GeoGraph
             }
 
         }
+#endif
     }
 }

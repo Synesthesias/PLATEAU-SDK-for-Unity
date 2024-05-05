@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace PLATEAU.RoadNetwork
+namespace PLATEAU.RoadNetwork.Data
 {
     public interface IPoint : IPrimitiveData
     {

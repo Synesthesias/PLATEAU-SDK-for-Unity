@@ -1,6 +1,8 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
 
-namespace PLATEAU.Util
+namespace PLATEAU.Util.GeoGraph
 {
     public class LineSegment2D
     {
@@ -8,6 +10,9 @@ namespace PLATEAU.Util
         public Vector2 end;
     }
 
+    /// <summary>
+    /// 直線に関する便利関数
+    /// </summary>
     public static class LineUtil
     {
         /// <summary>
@@ -81,6 +86,75 @@ namespace PLATEAU.Util
             // halfLineは半直線なので後ろになければOK
             // p1,p2は線分なので0~1の範囲内ならOK
             return ret && t1 is >= 0f and <= 1f && t2 is >= 0f and <= 1f;
+        }
+
+
+        /// <summary>
+        /// verticesで構成された線分の長さを求める
+        /// </summary>
+        /// <param name="vertices"></param>
+        /// <returns></returns>
+        public static float GetLineSegmentLength(IEnumerable<Vector3> vertices)
+        {
+            return GeoGraphEx.GetEdges(vertices, false).Sum(item => (item.Item2 - item.Item1).magnitude);
+        }
+
+        /// <summary>
+        /// verticesで表される線分の中央地点を返す.
+        /// 戻り値はvertices[i] ~ vertices[i+1]に中央地点があるときのi
+        /// verticesが空の時は-1が返る
+        /// </summary>
+        /// <param name="vertices"></param>
+        /// <param name="midPoint"></param>
+        /// <returns></returns>
+        public static int TryGetLineSegmentMidPoint(IList<Vector3> vertices, out Vector3 midPoint)
+        {
+            var halfLength = GetLineSegmentLength(vertices) * 0.5f;
+
+
+            midPoint = Vector3.zero;
+            return -1;
+        }
+
+        /// <summary>
+        /// verticesで表される線分をsplitNumで等分する
+        /// </summary>
+        /// <param name="vertices"></param>
+        /// <param name="num"></param>
+        /// <returns></returns>
+        public static IEnumerable<List<Vector3>> SplitLineSegments(IReadOnlyList<Vector3> vertices, int num)
+        {
+            if (vertices.Count == 0)
+                yield break;
+            var length = GetLineSegmentLength(vertices) / num;
+            var len = 0f;
+            List<Vector3> subVertices = new List<Vector3> { vertices[0] };
+            for (var i = 0; i < vertices.Count - 1; ++i)
+            {
+                var p0 = vertices[i];
+                var p1 = vertices[i + 1];
+                var l = (p1 - p0).magnitude;
+                len += l;
+                if (len >= length && l > float.Epsilon)
+                {
+                    var f = (len - length) / l;
+                    var end = Vector3.Lerp(p0, p1, f);
+                    var ret = subVertices;
+                    if (f >= float.Epsilon)
+                        ret.Add(end);
+                    subVertices = new List<Vector3> { end };
+                    len = 0f;
+                    yield return ret;
+                }
+                else
+                {
+                    subVertices.Add(p1);
+                }
+            }
+
+            // 最後の要素は無条件で返す
+            if (subVertices.Any())
+                yield return subVertices;
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PLATEAU.RoadNetwork.Data;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -58,7 +59,7 @@ namespace PLATEAU.RoadNetwork
 
             // LineStringsのテストデータ
             int numLineStrigns = numPoint / 10;
-            List<RoadNetworkLineString> lineStrings = new List<RoadNetworkLineString>(numLineStrigns);
+            List<RoadNetworkDataLineString> lineStrings = new List<RoadNetworkDataLineString>(numLineStrigns);
             for (int i = 0; i < numLineStrigns; i++)
             {
                 int numData = (numLineStrigns + 1) - i;
@@ -70,7 +71,7 @@ namespace PLATEAU.RoadNetwork
                     listStringsData.Add(pointHandles[j].ID);
                 };
 
-                lineStrings.Add(new RoadNetworkLineString()
+                lineStrings.Add(new RoadNetworkDataLineString()
                 {
                     points = listStringsData
                 });

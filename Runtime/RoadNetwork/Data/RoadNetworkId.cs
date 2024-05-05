@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace PLATEAU.RoadNetwork
+namespace PLATEAU.RoadNetwork.Data
 {
     [Serializable]
     public struct RoadNetworkID<TPrimDataType> where TPrimDataType : IPrimitiveData
@@ -61,25 +61,25 @@ namespace PLATEAU.RoadNetwork
 
     public readonly struct RnLineStringId
     {
-        public static readonly RnLineStringId Undefined = new RnLineStringId(RoadNetworkID<RoadNetworkLineString>.Undefined);
-        private readonly RoadNetworkID<RoadNetworkLineString> id;
+        public static readonly RnLineStringId Undefined = new RnLineStringId(RoadNetworkID<RoadNetworkDataLineString>.Undefined);
+        private readonly RoadNetworkID<RoadNetworkDataLineString> id;
 
         public bool IsValid => id.IsValid;
 
         public int Id => id.Id;
 
         // RnLineStringId -> RoadNetworkID<RoadNetworkLineString>の型変換
-        public static implicit operator RoadNetworkID<RoadNetworkLineString>(RnLineStringId id) => id.id;
+        public static implicit operator RoadNetworkID<RoadNetworkDataLineString>(RnLineStringId id) => id.id;
 
         // RoadNetworkID<RoadNetworkLineString> -> RnLineStringIdの型変換
-        public static implicit operator RnLineStringId(RoadNetworkID<RoadNetworkLineString> id) => new(id);
+        public static implicit operator RnLineStringId(RoadNetworkID<RoadNetworkDataLineString> id) => new(id);
 
         public RnLineStringId(int id)
         {
-            this.id = new RoadNetworkID<RoadNetworkLineString>(id);
+            this.id = new RoadNetworkID<RoadNetworkDataLineString>(id);
         }
 
-        public RnLineStringId(RoadNetworkID<RoadNetworkLineString> id)
+        public RnLineStringId(RoadNetworkID<RoadNetworkDataLineString> id)
         {
             this.id = id;
         }
@@ -87,25 +87,25 @@ namespace PLATEAU.RoadNetwork
 
     public readonly struct RnLinkId
     {
-        public static readonly RnLinkId Undefined = new RnLinkId(RoadNetworkID<RoadNetworkLink>.Undefined);
-        private readonly RoadNetworkID<RoadNetworkLink> id;
+        public static readonly RnLinkId Undefined = new RnLinkId(RoadNetworkID<RoadNetworkDataLink>.Undefined);
+        private readonly RoadNetworkID<RoadNetworkDataLink> id;
 
         public bool IsValid => id.IsValid;
 
         public int Id => id.Id;
 
         // RnLinkId -> RoadNetworkID<RoadNetworkLink>の型変換
-        public static implicit operator RoadNetworkID<RoadNetworkLink>(RnLinkId id) => id.id;
+        public static implicit operator RoadNetworkID<RoadNetworkDataLink>(RnLinkId id) => id.id;
 
         // RoadNetworkID<RoadNetworkLink> -> RnLinkIdの型変換
-        public static implicit operator RnLinkId(RoadNetworkID<RoadNetworkLink> id) => new(id);
+        public static implicit operator RnLinkId(RoadNetworkID<RoadNetworkDataLink> id) => new(id);
 
         public RnLinkId(int id)
         {
-            this.id = new RoadNetworkID<RoadNetworkLink>(id);
+            this.id = new RoadNetworkID<RoadNetworkDataLink>(id);
         }
 
-        public RnLinkId(RoadNetworkID<RoadNetworkLink> id)
+        public RnLinkId(RoadNetworkID<RoadNetworkDataLink> id)
         {
             this.id = id;
         }
@@ -113,25 +113,25 @@ namespace PLATEAU.RoadNetwork
 
     public readonly struct RnBlockId
     {
-        public static readonly RnBlockId Undefined = new RnBlockId(RoadNetworkID<RoadNetworkBlock>.Undefined);
-        private readonly RoadNetworkID<RoadNetworkBlock> id;
+        public static readonly RnBlockId Undefined = new RnBlockId(RoadNetworkID<RoadNetworkDataBlock>.Undefined);
+        private readonly RoadNetworkID<RoadNetworkDataBlock> id;
 
         public bool IsValid => id.IsValid;
 
         public int Id => id.Id;
 
         // RnBlockId -> RoadNetworkID<RoadNetworkBlock>の型変換
-        public static implicit operator RoadNetworkID<RoadNetworkBlock>(RnBlockId id) => id.id;
+        public static implicit operator RoadNetworkID<RoadNetworkDataBlock>(RnBlockId id) => id.id;
 
         // RoadNetworkID<RoadNetworkBlock> -> RnBlockIdの型変換
-        public static implicit operator RnBlockId(RoadNetworkID<RoadNetworkBlock> id) => new(id);
+        public static implicit operator RnBlockId(RoadNetworkID<RoadNetworkDataBlock> id) => new(id);
 
         public RnBlockId(int id)
         {
-            this.id = new RoadNetworkID<RoadNetworkBlock>(id);
+            this.id = new RoadNetworkID<RoadNetworkDataBlock>(id);
         }
 
-        public RnBlockId(RoadNetworkID<RoadNetworkBlock> id)
+        public RnBlockId(RoadNetworkID<RoadNetworkDataBlock> id)
         {
             this.id = id;
         }
@@ -139,25 +139,25 @@ namespace PLATEAU.RoadNetwork
 
     public readonly struct RnTrackId
     {
-        public static readonly RnTrackId Undefined = new RnTrackId(RoadNetworkID<RoadNetworkTrack>.Undefined);
-        private readonly RoadNetworkID<RoadNetworkTrack> id;
+        public static readonly RnTrackId Undefined = new RnTrackId(RoadNetworkID<RoadNetworkDataTrack>.Undefined);
+        private readonly RoadNetworkID<RoadNetworkDataTrack> id;
 
         public bool IsValid => id.IsValid;
 
         public int Id => id.Id;
 
         // RnTrackId -> RoadNetworkID<RoadNetworkTrack>の型変換
-        public static implicit operator RoadNetworkID<RoadNetworkTrack>(RnTrackId id) => id.id;
+        public static implicit operator RoadNetworkID<RoadNetworkDataTrack>(RnTrackId id) => id.id;
 
         // RoadNetworkID<RoadNetworkTrack> -> RnTrackIdの型変換
-        public static implicit operator RnTrackId(RoadNetworkID<RoadNetworkTrack> id) => new(id);
+        public static implicit operator RnTrackId(RoadNetworkID<RoadNetworkDataTrack> id) => new(id);
 
         public RnTrackId(int id)
         {
-            this.id = new RoadNetworkID<RoadNetworkTrack>(id);
+            this.id = new RoadNetworkID<RoadNetworkDataTrack>(id);
         }
 
-        public RnTrackId(RoadNetworkID<RoadNetworkTrack> id)
+        public RnTrackId(RoadNetworkID<RoadNetworkDataTrack> id)
         {
             this.id = id;
         }
@@ -165,25 +165,25 @@ namespace PLATEAU.RoadNetwork
 
     public readonly struct RnNodeId
     {
-        public static readonly RnNodeId Undefined = new RnNodeId(RoadNetworkID<RoadNetworkNode>.Undefined);
-        private readonly RoadNetworkID<RoadNetworkNode> id;
+        public static readonly RnNodeId Undefined = new RnNodeId(RoadNetworkID<RoadNetworkDataNode>.Undefined);
+        private readonly RoadNetworkID<RoadNetworkDataNode> id;
 
         public bool IsValid => id.IsValid;
 
         public int Id => id.Id;
 
         // RnNodeId -> RoadNetworkID<RoadNetworkNode>の型変換
-        public static implicit operator RoadNetworkID<RoadNetworkNode>(RnNodeId id) => id.id;
+        public static implicit operator RoadNetworkID<RoadNetworkDataNode>(RnNodeId id) => id.id;
 
         // RoadNetworkID<RoadNetworkNode> -> RnNodeIdの型変換
-        public static implicit operator RnNodeId(RoadNetworkID<RoadNetworkNode> id) => new(id);
+        public static implicit operator RnNodeId(RoadNetworkID<RoadNetworkDataNode> id) => new(id);
 
         public RnNodeId(int id)
         {
-            this.id = new RoadNetworkID<RoadNetworkNode>(id);
+            this.id = new RoadNetworkID<RoadNetworkDataNode>(id);
         }
 
-        public RnNodeId(RoadNetworkID<RoadNetworkNode> id)
+        public RnNodeId(RoadNetworkID<RoadNetworkDataNode> id)
         {
             this.id = id;
         }
@@ -191,25 +191,25 @@ namespace PLATEAU.RoadNetwork
 
     public readonly struct RnLaneId
     {
-        public static readonly RnLaneId Undefined = new RnLaneId(RoadNetworkID<RoadNetworkLane>.Undefined);
-        private readonly RoadNetworkID<RoadNetworkLane> id;
+        public static readonly RnLaneId Undefined = new RnLaneId(RoadNetworkID<RoadNetworkDataLane>.Undefined);
+        private readonly RoadNetworkID<RoadNetworkDataLane> id;
 
         public bool IsValid => id.IsValid;
 
         public int Id => id.Id;
 
-        // RnLaneId -> RoadNetworkID<RoadNetworkLane>の型変換
-        public static implicit operator RoadNetworkID<RoadNetworkLane>(RnLaneId id) => id.id;
+        // RnLaneId -> RoadNetworkID<RoadNetworkDataLane>の型変換
+        public static implicit operator RoadNetworkID<RoadNetworkDataLane>(RnLaneId id) => id.id;
 
-        // RoadNetworkID<RoadNetworkLane> -> RnLaneIdの型変換
-        public static implicit operator RnLaneId(RoadNetworkID<RoadNetworkLane> id) => new(id);
+        // RoadNetworkID<RoadNetworkDataLane> -> RnLaneIdの型変換
+        public static implicit operator RnLaneId(RoadNetworkID<RoadNetworkDataLane> id) => new(id);
 
         public RnLaneId(int id)
         {
-            this.id = new RoadNetworkID<RoadNetworkLane>(id);
+            this.id = new RoadNetworkID<RoadNetworkDataLane>(id);
         }
 
-        public RnLaneId(RoadNetworkID<RoadNetworkLane> id)
+        public RnLaneId(RoadNetworkID<RoadNetworkDataLane> id)
         {
             this.id = id;
         }

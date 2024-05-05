@@ -1,37 +1,53 @@
 using PLATEAU.CityGML;
 using PLATEAU.CityInfo;
 using PLATEAU.RoadNetwork.Drawer;
+using PLATEAU.RoadNetwork.Factory;
 using PLATEAU.Util;
 using PLATEAU.Util.GeoGraph;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Serialization;
 using static UnityEngine.GraphicsBuffer;
 
 namespace PLATEAU.RoadNetwork
 {
-    [RequireComponent(typeof(PLATEAURoadNetwork))]
     public class PLATEAURoadNetworkTester : MonoBehaviour
     {
         public List<PLATEAUCityObjectGroup> targets = new List<PLATEAUCityObjectGroup>();
 
         public List<PLATEAUCityObjectGroup> tmp = new List<PLATEAUCityObjectGroup>();
 
-        private PLATEAURoadNetwork Network => GetComponent<PLATEAURoadNetwork>();
 
         [SerializeField] private bool targetAll = false;
 
         [SerializeField]
-        private PLATEAURoadNetworkDrawerDebug drawer = new PLATEAURoadNetworkDrawerDebug();
+        private RoadNetworkDrawerDebug drawer = new RoadNetworkDrawerDebug();
 
         [SerializeField]
         public List<PLATEAUCityObjectGroup> geoTestTargets = new List<PLATEAUCityObjectGroup>();
 
+        [Serializable]
+        public class TestTargetPresets
+        {
+            public string name;
+            public List<PLATEAUCityObjectGroup> targets = new List<PLATEAUCityObjectGroup>();
+        }
+
+        public List<TestTargetPresets> savedTargets = new List<TestTargetPresets>();
+
+        public string newTargetName = "";
+
         [SerializeField] private bool showGeoTest = false;
+
+        [SerializeField] private RoadNetworkFactory factory = new RoadNetworkFactory();
+
+        public RoadNetworkModel roadNetwork = null;
 
         public void OnDrawGizmos()
         {
-            drawer.Draw(Network);
+            drawer.Draw(roadNetwork);
 
             if (showGeoTest)
             {
@@ -62,19 +78,21 @@ namespace PLATEAU.RoadNetwork
 
         public void CreateNetwork()
         {
+            var factory = new RoadNetworkFactory();
+
             if (targetAll)
             {
                 var allTargets = GameObject.FindObjectsOfType<PLATEAUCityObjectGroup>()
                     .Where(c => c.CityObjects.rootCityObjects.Any(a => a.CityObjectType == CityObjectType.COT_Road))
                     .ToList();
 
-                Network.CreateNetwork(allTargets);
+                roadNetwork = factory.CreateNetwork(allTargets);
             }
             else
             {
                 // èdï°ÇÕîrèúÇ∑ÇÈ
                 targets = targets.Distinct().ToList();
-                Network.CreateNetwork(targets);
+                roadNetwork = factory.CreateNetwork(targets);
             }
         }
     }

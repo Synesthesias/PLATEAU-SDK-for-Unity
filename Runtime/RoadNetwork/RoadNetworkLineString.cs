@@ -1,78 +1,34 @@
-﻿using System;
-using System.Collections;
+﻿using PLATEAU.Util.GeoGraph;
+using System;
 using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
 
 namespace PLATEAU.RoadNetwork
 {
-
-    public interface ILineString : IPrimitiveData, ICollection<RnPointId>
-    {
-
-    }
-
-    // 線分を表す
     [Serializable]
-    public class RoadNetworkLineString : ILineString
+    public class RoadNetworkLineString
     {
-        public List<RnPointId> points;
+        public List<Vector3> Vertices { get; } = new List<Vector3>();
 
-        public int Count => ((ICollection<RnPointId>)points).Count;
+        public int Count => Vertices.Count;
 
-        public bool IsReadOnly => ((ICollection<RnPointId>)points).IsReadOnly;
-
-        public void Add(RnPointId item)
+        public static RoadNetworkLineString Create(IEnumerable<Vector3> vertices)
         {
-            ((ICollection<RnPointId>)points).Add(item);
+            var ret = new RoadNetworkLineString();
+            ret.Vertices.AddRange(vertices);
+            return ret;
         }
 
-        public void Clear()
+        /// <summary>
+        /// 自身をnum分割して返す. 分割できない(頂点空）の時は空リストを返す
+        /// </summary>
+        /// <returns></returns>
+        public List<RoadNetworkLineString> Split(int num)
         {
-            ((ICollection<RnPointId>)points).Clear();
+            // 分割できない時は空を返す
+            var splitLines = LineUtil.SplitLineSegments(Vertices, num).ToList();
+            return splitLines.Select(Create).ToList();
         }
-
-        public bool Contains(RnPointId item)
-        {
-            return ((ICollection<RnPointId>)points).Contains(item);
-        }
-
-        public void CopyTo(RnPointId[] array, int arrayIndex)
-        {
-            ((ICollection<RnPointId>)points).CopyTo(array, arrayIndex);
-        }
-
-        public IEnumerator<RnPointId> GetEnumerator()
-        {
-            return ((IEnumerable<RnPointId>)points).GetEnumerator();
-        }
-
-        public bool Remove(RnPointId item)
-        {
-            return ((ICollection<RnPointId>)points).Remove(item);
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return ((IEnumerable)points).GetEnumerator();
-        }
-
-        //public Point this[int index]
-        //{
-        //    get => Points[index];
-        //    set => Points[index] = value;
-        //}
-
-        //public IEnumerator<Point> GetEnumerator()
-        //{
-        //    for (int i = 0; i < Points.Length; i++)
-        //    {
-        //        yield return this[i];
-        //    }
-        //}
-
-        //IEnumerator IEnumerable.GetEnumerator()
-        //{
-        //    return GetEnumerator();
-        //}
     }
-
 }

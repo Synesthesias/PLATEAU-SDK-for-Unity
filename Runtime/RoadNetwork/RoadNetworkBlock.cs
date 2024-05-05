@@ -1,7 +1,15 @@
-﻿namespace PLATEAU.RoadNetwork
+﻿using System;
+
+namespace PLATEAU.RoadNetwork
 {
-    public class RoadNetworkBlock : IPrimitiveData
+    [Serializable]
+    public class RoadNetworkBlock
     {
+        // 親リンク
+        public RoadNetworkLink ParentLink { get; set; }
+
+        // 所属レーンタイプ(0:レーン, 1:トラック)
+        public int LaneType { get; set; }
 
     }
 }

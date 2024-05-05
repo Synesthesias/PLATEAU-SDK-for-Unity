@@ -1,6 +1,9 @@
-﻿namespace PLATEAU.RoadNetwork
+﻿using System;
+
+namespace PLATEAU.RoadNetwork
 {
-    public class RoadNetworkTrack : IPrimitiveData
+    [Serializable]
+    public class RoadNetworkTrack
     {
 
     }
