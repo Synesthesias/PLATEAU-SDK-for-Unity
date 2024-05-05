@@ -9,6 +9,9 @@ namespace PLATEAU.RoadNetwork
     [Serializable]
     public class RoadNetworkLineString
     {
+        // 識別Id(負数の場合は設定されていない). デバッグ用なので参照ポインタが割にはしないこと
+        public int DebugId { get; set; } = -1;
+
         public List<Vector3> Vertices { get; } = new List<Vector3>();
 
         public int Count => Vertices.Count;

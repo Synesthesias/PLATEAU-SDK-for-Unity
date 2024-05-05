@@ -17,16 +17,11 @@ namespace PLATEAU.RoadNetwork
     {
         public List<PLATEAUCityObjectGroup> targets = new List<PLATEAUCityObjectGroup>();
 
-        public List<PLATEAUCityObjectGroup> tmp = new List<PLATEAUCityObjectGroup>();
-
-
         [SerializeField] private bool targetAll = false;
 
-        [SerializeField]
-        private RoadNetworkDrawerDebug drawer = new RoadNetworkDrawerDebug();
+        [SerializeField] private RoadNetworkDrawerDebug drawer = new RoadNetworkDrawerDebug();
 
-        [SerializeField]
-        public List<PLATEAUCityObjectGroup> geoTestTargets = new List<PLATEAUCityObjectGroup>();
+        [SerializeField] public List<PLATEAUCityObjectGroup> geoTestTargets = new List<PLATEAUCityObjectGroup>();
 
         [Serializable]
         public class TestTargetPresets
@@ -78,8 +73,6 @@ namespace PLATEAU.RoadNetwork
 
         public void CreateNetwork()
         {
-            var factory = new RoadNetworkFactory();
-
             if (targetAll)
             {
                 var allTargets = GameObject.FindObjectsOfType<PLATEAUCityObjectGroup>()

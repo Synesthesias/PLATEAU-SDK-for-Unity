@@ -122,10 +122,11 @@ namespace PLATEAU.Util.GeoGraph
         /// <param name="vertices"></param>
         /// <param name="num"></param>
         /// <returns></returns>
-        public static IEnumerable<List<Vector3>> SplitLineSegments(IReadOnlyList<Vector3> vertices, int num)
+        public static List<List<Vector3>> SplitLineSegments(IReadOnlyList<Vector3> vertices, int num)
         {
             if (vertices.Count == 0)
-                yield break;
+                return new List<List<Vector3>>();
+            var ret = new List<List<Vector3>>();
             var length = GetLineSegmentLength(vertices) / num;
             var len = 0f;
             List<Vector3> subVertices = new List<Vector3> { vertices[0] };
@@ -139,12 +140,11 @@ namespace PLATEAU.Util.GeoGraph
                 {
                     var f = (len - length) / l;
                     var end = Vector3.Lerp(p0, p1, f);
-                    var ret = subVertices;
                     if (f >= float.Epsilon)
-                        ret.Add(end);
+                        subVertices.Add(end);
+                    ret.Add(subVertices);
                     subVertices = new List<Vector3> { end };
                     len = 0f;
-                    yield return ret;
                 }
                 else
                 {
@@ -154,7 +154,12 @@ namespace PLATEAU.Util.GeoGraph
 
             // 最後の要素は無条件で返す
             if (subVertices.Any())
-                yield return subVertices;
+            {
+                subVertices.Add(vertices.Last());
+                ret.Add(subVertices);
+            }
+
+            return ret;
         }
     }
 }

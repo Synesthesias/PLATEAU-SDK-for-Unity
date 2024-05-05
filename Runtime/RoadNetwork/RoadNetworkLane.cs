@@ -19,12 +19,15 @@ namespace PLATEAU.RoadNetwork
     [Serializable]
     public class RoadNetworkLane
     {
+        // 識別Id(負数の場合は設定されていない). デバッグ用なので参照ポインタが割にはしないこと
+        public int DebugId { get; set; } = -1;
+
         public RoadNetworkLink ParentLink { get; set; }
 
         // 連結しているレーン
-        public HashSet<RoadNetworkLane> NextLanes { get; } = new HashSet<RoadNetworkLane>();
+        public HashSet<RoadNetworkLane> NextLanes { get; private set; } = new HashSet<RoadNetworkLane>();
 
-        public HashSet<RoadNetworkLane> PrevLanes { get; } = new HashSet<RoadNetworkLane>();
+        public HashSet<RoadNetworkLane> PrevLanes { get; private set; } = new HashSet<RoadNetworkLane>();
 
         // 道の開始の横線
         public RoadNetworkWay StartBorder { get; set; }
@@ -32,9 +35,9 @@ namespace PLATEAU.RoadNetwork
         // 道の終わりの横線
         public RoadNetworkWay EndBorder { get; set; }
 
-        public RoadNetworkWay LeftWay { get; }
+        public RoadNetworkWay LeftWay { get; private set; }
 
-        public RoadNetworkWay RightWay { get; }
+        public RoadNetworkWay RightWay { get; private set; }
 
         // 左右両方のWayを返す
         public IEnumerable<RoadNetworkWay> BothWays
@@ -87,9 +90,14 @@ namespace PLATEAU.RoadNetwork
             EndBorder = endBorder;
         }
 
-        public static RoadNetworkLane CreateOneWayLane(RoadNetworkWay way)
+        // 向き反転させる
+        public void Reverse()
         {
-            return new RoadNetworkLane(way, null, null, null);
+            (StartBorder, EndBorder) = (EndBorder?.ReversedWay(), StartBorder?.ReversedWay());
+            (LeftWay, RightWay) = (RightWay?.ReversedWay(), LeftWay?.ReversedWay());
+
+            (NextLanes, PrevLanes) = (PrevLanes, NextLanes);
+
         }
 
         /// <summary>
@@ -114,7 +122,6 @@ namespace PLATEAU.RoadNetwork
             var endSubWays = EndBorder.Split(2);
             if (endSubWays.Any() == false)
                 return null;
-
             // #TODO : とりあえず２分割のみ対応
             var startPoint = startSubWays[0].Last();
             var endPoint = endSubWays[0].Last();
@@ -165,11 +172,9 @@ namespace PLATEAU.RoadNetwork
 
             var centerLine = new RoadNetworkLineString();
             centerLine.Vertices.AddRange(centerLineVertices);
-            var centerWay = new RoadNetworkWay(centerLine);
 
-            var leftLane = new RoadNetworkLane(LeftWay, centerWay, startSubWays[0], endSubWays[0]);
-            // 向き反対だから逆転させる
-            var rightLane = new RoadNetworkLane(RightWay.ReversedWay(), centerWay.ReversedWay(), endSubWays[1].ReversedWay(), startSubWays[1].ReversedWay());
+            var leftLane = new RoadNetworkLane(LeftWay, new RoadNetworkWay(centerLine, false, true), startSubWays[0], endSubWays[0]);
+            var rightLane = new RoadNetworkLane(new RoadNetworkWay(centerLine, false, false), RightWay, startSubWays[1], endSubWays[1]);
 
             return new List<RoadNetworkLane> { leftLane, rightLane };
         }
@@ -184,6 +189,11 @@ namespace PLATEAU.RoadNetwork
         public bool SegmentIntersectionXz(Vector3 st, Vector3 en, out Vector3 intersection)
         {
             return GeoGraph2d.PolygonSegmentIntersectionXZ(Vertices, st, en, out intersection, out var t);
+        }
+
+        public static RoadNetworkLane CreateOneWayLane(RoadNetworkWay way)
+        {
+            return new RoadNetworkLane(way, null, null, null);
         }
 
     }

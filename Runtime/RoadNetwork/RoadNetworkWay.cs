@@ -16,8 +16,14 @@ namespace PLATEAU.RoadNetwork
     [Serializable]
     public class RoadNetworkWay : IReadOnlyList<Vector3>
     {
+        // 識別Id(負数の場合は設定されていない). デバッグ用なので参照ポインタが割にはしないこと
+        public int DebugId { get; set; } = -1;
+
         // LineStringの向きが逆かどうか
         public bool IsReversed { get; set; } = false;
+
+        // 法線計算用. 進行方向左側が道かどうか
+        public bool IsRightSide { get; set; } = false;
 
         // 頂点
         public RoadNetworkLineString LineString { get; private set; }
@@ -34,15 +40,16 @@ namespace PLATEAU.RoadNetwork
         // 頂点数
         public int Count => LineString?.Count ?? 0;
 
-        public RoadNetworkWay(RoadNetworkLineString lineString, bool isReversed = false)
+        public RoadNetworkWay(RoadNetworkLineString lineString, bool isReversed = false, bool isRightSide = false)
         {
             LineString = lineString;
             IsReversed = isReversed;
+            IsRightSide = isRightSide;
         }
 
         public RoadNetworkWay ReversedWay()
         {
-            return new RoadNetworkWay(LineString, !IsReversed);
+            return new RoadNetworkWay(LineString, !IsReversed, !IsRightSide);
         }
 
         /// <summary>
@@ -80,7 +87,7 @@ namespace PLATEAU.RoadNetwork
                 ret = n1;
             else
                 ret = (n1 + n2) / 2;
-            return ret;
+            return IsRightSide ? -ret : ret;
         }
 
         /// <summary>

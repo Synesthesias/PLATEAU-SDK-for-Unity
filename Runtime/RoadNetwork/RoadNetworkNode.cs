@@ -10,6 +10,9 @@ namespace PLATEAU.RoadNetwork
     [Serializable]
     public class RoadNetworkNode
     {
+        // 識別Id(負数の場合は設定されていない). デバッグ用なので参照ポインタが割にはしないこと
+        public int DebugId { get; set; } = -1;
+
         // 構成する頂点
         // ポリゴン的に時計回りの順に格納されている
         public List<Vector3> vertices = new List<Vector3>();

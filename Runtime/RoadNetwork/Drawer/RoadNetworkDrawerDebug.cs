@@ -21,7 +21,7 @@ namespace PLATEAU.RoadNetwork.Drawer
 
         [SerializeField] private float edgeOffset = 10f;
 
-        static Color GetEdgeColor(RoadNetworkLane self)
+        private static Color GetEdgeColor(RoadNetworkLane self)
         {
             if (self.IsBothConnectedLane)
                 return Color.green;

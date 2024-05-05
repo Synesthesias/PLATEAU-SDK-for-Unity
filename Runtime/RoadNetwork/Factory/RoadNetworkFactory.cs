@@ -115,7 +115,7 @@ namespace PLATEAU.RoadNetwork.Factory
             /// </summary>
             public void Reverse()
             {
-                Way.IsReversed = !Way.IsReversed;
+                Way = Way.ReversedWay();
                 (FromLaneWorks, ToLaneWorks) = (ToLaneWorks, FromLaneWorks);
                 (FromBorder, ToBorder) = (ToBorder, FromBorder);
             }
@@ -341,7 +341,12 @@ namespace PLATEAU.RoadNetwork.Factory
                     var link = new RoadNetworkLink();
                     if (l.IsBothConnectedLane && splitCenterLine)
                     {
-                        link.MainLanes.AddRange(l.SplitLane(2));
+                        var lanes = l.SplitLane(2);
+                        if (lanes.Count > 1)
+                        {
+                            lanes[1].Reverse();
+                        }
+                        link.MainLanes.AddRange(lanes);
                     }
                     else
                     {
@@ -365,90 +370,9 @@ namespace PLATEAU.RoadNetwork.Factory
                 }
             }
 
+            ret.DebugIdentify();
             return ret;
         }
 
-        ///// <summary>
-        ///// 中央線の構築
-        ///// </summary>
-        //private List<Vector3> ComputeCenterLine(List<Vector3> vertices, List<RoadNetworkBorder> borders, List<RoadNetworkWay> ways, out bool isPartial)
-        //{
-        //    isPartial = false;
-        //    var ret = new List<Vector3>();
-        //    var visitedBorder = new HashSet<RoadNetworkBorder>();
-        //    foreach (var border in borders)
-        //    {
-        //        if (visitedBorder.Contains(border))
-        //            continue;
-        //        visitedBorder.Add(border);
-        //        // Borderの中心を開始点とする
-        //        if (border.TryGetCenterVertex(out Vector3 startPoint) == false)
-        //            continue;
-        //        ret.Add(startPoint);
-
-        //        // このBorderから出ていくWayすべてを使って中心線を書く
-        //        var border1 = border;
-        //        var targetWays = ways.Where(w => w.prevLane == border1.NeighborLane).ToList();
-
-        //        // #TODO : 一旦prev/nextが一致しているものだけが対象. (枝分かれしているような交差点のレーンは対象外)
-        //        if (targetWays.Count != 2 || targetWays[0].nextLane != targetWays[1].nextLane)
-        //            continue;
-
-        //        // Borderに対してWayが2つないと中心線が取れないので無視する
-        //        // #TODO : 3本以上ある場合が想像できないが要対応
-        //        if (targetWays.Count != 2)
-        //            continue;
-
-        //        var candidates = new List<Vector3>();
-        //        foreach (var way in targetWays)
-        //        {
-        //            for (var i = 1; i < way.vertices.Count - 1; ++i)
-        //            {
-        //                var v = way.vertices[i];
-        //                var n = -way.GetVertexNormal(i).normalized;
-        //                var ray = new Ray(v + n * 0.01f, n);
-        //                if (GeoGraph2d.PolygonHalfLineIntersectionXZ(vertices, ray, out var inter, out var t))
-        //                    candidates.Add(Vector3.Lerp(v, inter, 0.5f));
-        //            }
-        //        }
-
-        //        while (candidates.Count > 0)
-        //        {
-        //            var before = ret.Last();
-        //            var found = candidates
-        //                // LaneがものすごいUターンしていたりする時の対応
-        //                // beforeから直接いけないものは無視
-        //                .Where(c => targetWays.All(w => w.SegmentIntersectionXz(before, c, out var _) == false))
-        //                .TryFindMin(x => (x - before).sqrMagnitude, out var nearPoint);
-        //            if (found == false)
-        //            {
-        //                //Assert.IsTrue(found, "center point not found");
-        //                DebugUtil.DrawArrow(before, before + Vector3.up * 2, arrowSize: 1f, duration: 30f, bodyColor: Color.blue);
-
-        //                foreach (var c in candidates)
-        //                    DebugUtil.DrawArrow(c, c + Vector3.up * 100, arrowSize: 1f, duration: 30f, bodyColor: Color.red);
-        //                isPartial = true;
-        //                break;
-        //            }
-
-        //            ret.Add(nearPoint);
-        //            candidates.RemoveAll(x => (x - nearPoint).sqrMagnitude <= float.Epsilon);
-        //        }
-
-        //        // 構築するwayがすべて目的地が同じ場合、中心線に目的地のBorderを追加する
-        //        if (targetWays.All(t => t.nextLane == targetWays[0].nextLane))
-        //        {
-        //            var lastBorder = borders.FirstOrDefault(e => e.NeighborLane == targetWays[0].nextLane);
-        //            if (lastBorder != null)
-        //            {
-        //                if (lastBorder.TryGetCenterVertex(out var end))
-        //                    ret.Add(end);
-        //            }
-        //        }
-        //    }
-        //    // 自己交差があれば削除する
-        //    GeoGraph2d.RemoveSelfCrossing(ret, t => t.Xz(), (p1, p2, p3, p4, inter, f1, f2) => Vector3.Lerp(p1, p2, f1));
-        //    return ret;
-        //}
     }
 }
