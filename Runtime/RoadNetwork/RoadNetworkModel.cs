@@ -20,6 +20,24 @@ namespace PLATEAU.RoadNetwork
 
         public List<RoadNetworkNode> Nodes { get; } = new List<RoadNetworkNode>();
 
+        // #TODO : 実際はもっとある
+        public IEnumerable<RoadNetworkLane> CollectAllLanes()
+        {
+            return Links.SelectMany(l => l.AllLanes).Distinct();
+        }
+
+        // #TODO : 実際はもっとある
+        public IEnumerable<RoadNetworkWay> CollectAllWays()
+        {
+            return CollectAllLanes().SelectMany(l => l.AllBorders.Concat(l.BothWays)).Distinct();
+        }
+
+        // #TODO : 実際はもっとある
+        public IEnumerable<RoadNetworkLineString> CollectAllLineStrings()
+        {
+            return CollectAllWays().Select(w => w.LineString).Distinct();
+        }
+
         public void DebugIdentify()
         {
             for (var i = 0; i < Nodes.Count; i++)
@@ -28,15 +46,15 @@ namespace PLATEAU.RoadNetwork
             for (var i = 0; i < Links.Count; i++)
                 Links[i].DebugId = i;
 
-            var allLanes = Links.SelectMany(l => l.AllLanes).Distinct().ToList();
+            var allLanes = CollectAllLanes().ToList();
             for (var i = 0; i < allLanes.Count; i++)
                 allLanes[i].DebugId = i;
 
-            var allWays = allLanes.SelectMany(l => l.AllBorders.Concat(l.BothWays)).Distinct().ToList();
+            var allWays = CollectAllWays().ToList();
             for (var i = 0; i < allWays.Count; i++)
                 allWays[i].DebugId = i;
 
-            var allLineStrings = allWays.Select(w => w.LineString).Distinct().ToList();
+            var allLineStrings = CollectAllLineStrings().ToList();
             for (var i = 0; i < allLineStrings.Count; i++)
                 allLineStrings[i].DebugId = i;
         }
