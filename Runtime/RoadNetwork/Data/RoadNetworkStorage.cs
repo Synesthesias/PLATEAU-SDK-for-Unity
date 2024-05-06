@@ -106,6 +106,10 @@ namespace PLATEAU.RoadNetwork.Data
         public void InitializeStorage()
         {
             // ストレージの初期化  ←　たぶん必要ない シリアライズされたデータが読み込めていればok
+            if (primitiveDataStorage == null)
+            {
+                primitiveDataStorage = new PrimitiveDataStorage();
+            }
 
             // ハンドルマネージャーの初期化
             var pointIds = primitiveDataStorage.Points.GetIds();
@@ -374,11 +378,17 @@ namespace PLATEAU.RoadNetwork.Data
     /// 
     /// </summary>
     [System.Serializable]
-    public struct PrimitiveDataStorage
+    public class PrimitiveDataStorage
     {
         // 最適化方法案
         // 大きくメモリを確保してそこから切り出す形に修正する
         // Listで確保しているストレージは配列にして初期化処理、解放処理の最適化
+
+        public PrimitiveDataStorage()
+        {
+            points = new PrimitiveStorage<RoadNetworkPoint>();
+            lineStrings = new PrimitiveStorage<RoadNetworkDataLineString>();
+        }
 
         public PrimitiveStorage<RoadNetworkPoint> Points { get => points; }
         public PrimitiveStorage<RoadNetworkDataLineString> LineStrings { get => lineStrings; }
@@ -387,7 +397,7 @@ namespace PLATEAU.RoadNetwork.Data
         [SerializeField] private PrimitiveStorage<RoadNetworkDataLineString> lineStrings;
 
         [System.Serializable]
-        public struct PrimitiveStorage<TPrimType>
+        public class PrimitiveStorage<TPrimType>
             where TPrimType : IPrimitiveData
         {
             [SerializeField] private List<TPrimType> dataList;
