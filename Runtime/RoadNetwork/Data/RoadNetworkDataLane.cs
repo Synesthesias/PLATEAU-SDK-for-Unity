@@ -7,50 +7,46 @@ using Vector3 = UnityEngine.Vector3;
 namespace PLATEAU.RoadNetwork.Data
 {
 
-    [Serializable]
+    [Serializable, RoadNetworkSerializeData(typeof(RoadNetworkLane))]
     public class RoadNetworkDataLane : IPrimitiveData
     {
         // 自分自身を表すId
-        [SerializeField] private RnLaneId myId;
+        [field: SerializeField]
+        [RoadNetworkSerializeMember(nameof(RoadNetworkLane.MyId))]
+        public RnId<RoadNetworkDataLane> MyId { get; set; }
 
-        // 構成する頂点
-        // ポリゴン的に時計回りの順に格納されている
-        [SerializeField]
-        private List<RnPointId> vertices = new List<RnPointId>();
+        [field: SerializeField]
+        [RoadNetworkSerializeMember(nameof(RoadNetworkLane.ParentLink))]
+        public RnId<RoadNetworkDataLink> ParentLink { get; set; }
 
-        [SerializeField]
-        private RnLineStringId leftWayId = RnLineStringId.Undefined;
+        // 連結しているレーン(上流)
+        [field: SerializeField]
+        [RoadNetworkSerializeMember(nameof(RoadNetworkLane.NextLanes))]
+        public List<RnId<RoadNetworkDataLane>> NextLanes { get; set; } = new List<RnId<RoadNetworkDataLane>>();
 
-        [SerializeField]
-        private RnLineStringId rightWayId = RnLineStringId.Undefined;
+        // 連結しているレーン(下流)
+        [field: SerializeField]
+        [RoadNetworkSerializeMember(nameof(RoadNetworkLane.PrevLanes))]
+        public List<RnId<RoadNetworkDataLane>> PrevLanes { get; set; } = new List<RnId<RoadNetworkDataLane>>();
 
-        // 連結しているレーン
-        [SerializeField] private SerializableHashSet<RnLaneId> nextLaneIds = new SerializableHashSet<RnLaneId>();
+        // 境界線(下流)
+        [field: SerializeField]
+        [RoadNetworkSerializeMember(nameof(RoadNetworkLane.PrevBorder))]
+        public RnId<RoadNetworkDataWay> PrevBorder { get; set; }
 
-        [SerializeField] private SerializableHashSet<RnLaneId> prevLaneIds = new SerializableHashSet<RnLaneId>();
+        // 境界線(上流)
+        [field: SerializeField]
+        [RoadNetworkSerializeMember(nameof(RoadNetworkLane.NextBorder))]
+        public RnId<RoadNetworkDataWay> NextBorder { get; set; }
 
-        // 他レーンとの境界線
-        [SerializeField]
-        private List<RnLineStringId> borderIds = new List<RnLineStringId>();
+        [field: SerializeField]
+        [RoadNetworkSerializeMember(nameof(RoadNetworkLane.LeftWay))]
+        public RnId<RoadNetworkDataWay> LeftWay { get; set; }
 
-        // 中央線
-        [SerializeField]
+        [field: SerializeField]
+        [RoadNetworkSerializeMember(nameof(RoadNetworkLane.RightWay))]
+        public RnId<RoadNetworkDataWay> RightWay { get; set; }
 
-        public List<Vector3> centerLine = new List<Vector3>();
-
-        public RnLaneId MyId => myId;
-
-        // 孤立状態(どこともつながっていない)
-        public bool IsIsolated => borderIds.Count == 0;
-
-        // 不完全な状態かどうか
-        public bool isPartial = false;
-
-
-        public RoadNetworkDataLane(RnLaneId myId)
-        {
-            this.myId = myId;
-        }
     }
 
 }

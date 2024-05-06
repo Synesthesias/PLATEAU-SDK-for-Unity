@@ -1,5 +1,6 @@
 using PLATEAU.CityGML;
 using PLATEAU.CityInfo;
+using PLATEAU.RoadNetwork.Data;
 using PLATEAU.RoadNetwork.Drawer;
 using PLATEAU.RoadNetwork.Factory;
 using PLATEAU.Util;
@@ -15,14 +16,6 @@ namespace PLATEAU.RoadNetwork
 {
     public class PLATEAURoadNetworkTester : MonoBehaviour
     {
-        public List<PLATEAUCityObjectGroup> targets = new List<PLATEAUCityObjectGroup>();
-
-        [SerializeField] private bool targetAll = false;
-
-        [SerializeField] private RoadNetworkDrawerDebug drawer = new RoadNetworkDrawerDebug();
-
-        [SerializeField] public List<PLATEAUCityObjectGroup> geoTestTargets = new List<PLATEAUCityObjectGroup>();
-
         [Serializable]
         public class TestTargetPresets
         {
@@ -30,15 +23,26 @@ namespace PLATEAU.RoadNetwork
             public List<PLATEAUCityObjectGroup> targets = new List<PLATEAUCityObjectGroup>();
         }
 
+        public List<PLATEAUCityObjectGroup> targets = new List<PLATEAUCityObjectGroup>();
+
         public List<TestTargetPresets> savedTargets = new List<TestTargetPresets>();
 
-        public string newTargetName = "";
+        [SerializeField] private bool targetAll = false;
+
+        [SerializeField] private RoadNetworkDrawerDebug drawer = new RoadNetworkDrawerDebug();
+
+        [SerializeField] public List<PLATEAUCityObjectGroup> geoTestTargets = new List<PLATEAUCityObjectGroup>();
+
+
+        public string loadPresetName = "";
 
         [SerializeField] private bool showGeoTest = false;
 
-        [SerializeField] private RoadNetworkFactory factory = new RoadNetworkFactory();
+        [field: SerializeField] private RoadNetworkFactory Factory { get; set; } = new RoadNetworkFactory();
 
         public RoadNetworkModel roadNetwork = null;
+
+        [field: SerializeField] private RoadNetworkStorage Storage;
 
         public void OnDrawGizmos()
         {
@@ -79,14 +83,22 @@ namespace PLATEAU.RoadNetwork
                     .Where(c => c.CityObjects.rootCityObjects.Any(a => a.CityObjectType == CityObjectType.COT_Road))
                     .ToList();
 
-                roadNetwork = factory.CreateNetwork(allTargets);
+                roadNetwork = Factory.CreateNetwork(allTargets);
             }
             else
             {
                 // èdï°ÇÕîrèúÇ∑ÇÈ
                 targets = targets.Distinct().ToList();
-                roadNetwork = factory.CreateNetwork(targets);
+                roadNetwork = Factory.CreateNetwork(targets);
             }
+        }
+
+        public void Serialize()
+        {
+            if (roadNetwork == null)
+                return;
+            var serializer = new RoadNetworkSerializer();
+            Storage = serializer.Serialize(roadNetwork);
         }
     }
 }

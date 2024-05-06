@@ -1,4 +1,5 @@
 ﻿using PLATEAU.CityInfo;
+using PLATEAU.RoadNetwork.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,8 +10,12 @@ namespace PLATEAU.RoadNetwork
     [Serializable]
     public class RoadNetworkLink
     {
-        // 識別Id(負数の場合は設定されていない). デバッグ用なので参照ポインタが割にはしないこと
-        public int DebugId { get; set; } = -1;
+        //----------------------------------
+        // start: フィールド
+        //----------------------------------
+
+        // 識別Id. シリアライズ用.ランタイムでは使用しないこと
+        public RnId<RoadNetworkDataLink> MyId { get; set; }
 
         public RoadNetworkNode NextNode { get; private set; }
 
@@ -24,6 +29,10 @@ namespace PLATEAU.RoadNetwork
 
         // 左折レーン
         public List<RoadNetworkLane> LeftLanes { get; } = new List<RoadNetworkLane>();
+
+        //----------------------------------
+        // end: フィールド
+        //----------------------------------
 
         // 全レーン
         public IEnumerable<RoadNetworkLane> AllLanes => MainLanes.Concat(LeftLanes).Concat(RightLanes);

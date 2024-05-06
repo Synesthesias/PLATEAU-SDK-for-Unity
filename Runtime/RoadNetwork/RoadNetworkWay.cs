@@ -16,8 +16,11 @@ namespace PLATEAU.RoadNetwork
     [Serializable]
     public class RoadNetworkWay : IReadOnlyList<Vector3>
     {
-        // 識別Id(負数の場合は設定されていない). デバッグ用なので参照ポインタが割にはしないこと
-        public int DebugId { get; set; } = -1;
+        //----------------------------------
+        // start: フィールド
+        //----------------------------------
+        // 識別Id. シリアライズ用.ランタイムでは使用しないこと
+        public RnId<RoadNetworkDataWay> MyId { get; set; }
 
         // LineStringの向きが逆かどうか
         public bool IsReversed { get; set; } = false;
@@ -27,6 +30,10 @@ namespace PLATEAU.RoadNetwork
 
         // 頂点
         public RoadNetworkLineString LineString { get; private set; }
+
+        //----------------------------------
+        // end: フィールド
+        //----------------------------------
 
         public IEnumerable<Vector3> Vertices
         {

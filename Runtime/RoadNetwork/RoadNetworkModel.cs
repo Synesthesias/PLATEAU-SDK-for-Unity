@@ -1,4 +1,5 @@
 ﻿using PLATEAU.CityInfo;
+using PLATEAU.RoadNetwork.Data;
 using PLATEAU.Util;
 using PLATEAU.Util.GeoGraph;
 using System;
@@ -16,9 +17,17 @@ namespace PLATEAU.RoadNetwork
     {
         public const float Epsilon = float.Epsilon;
 
+        //----------------------------------
+        // start: フィールド
+        //----------------------------------
+
         public List<RoadNetworkLink> Links { get; } = new List<RoadNetworkLink>();
 
         public List<RoadNetworkNode> Nodes { get; } = new List<RoadNetworkNode>();
+
+        //----------------------------------
+        // end: フィールド
+        //----------------------------------
 
         // #TODO : 実際はもっとある
         public IEnumerable<RoadNetworkLane> CollectAllLanes()
@@ -41,22 +50,22 @@ namespace PLATEAU.RoadNetwork
         public void DebugIdentify()
         {
             for (var i = 0; i < Nodes.Count; i++)
-                Nodes[i].DebugId = i;
+                Nodes[i].MyId = new RnId<RoadNetworkDataNode>(i);
 
             for (var i = 0; i < Links.Count; i++)
-                Links[i].DebugId = i;
+                Links[i].MyId = new RnId<RoadNetworkDataLink>(i);
 
             var allLanes = CollectAllLanes().ToList();
             for (var i = 0; i < allLanes.Count; i++)
-                allLanes[i].DebugId = i;
+                allLanes[i].MyId = new RnId<RoadNetworkDataLane>(i);
 
             var allWays = CollectAllWays().ToList();
             for (var i = 0; i < allWays.Count; i++)
-                allWays[i].DebugId = i;
+                allWays[i].MyId = new RnId<RoadNetworkDataWay>(i);
 
             var allLineStrings = CollectAllLineStrings().ToList();
             for (var i = 0; i < allLineStrings.Count; i++)
-                allLineStrings[i].DebugId = i;
+                allLineStrings[i].MyId = new RnId<RoadNetworkDataLineString>(i);
         }
     }
 }

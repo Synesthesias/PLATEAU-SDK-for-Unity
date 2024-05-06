@@ -19,25 +19,36 @@ namespace PLATEAU.RoadNetwork
     [Serializable]
     public class RoadNetworkLane
     {
-        // 識別Id(負数の場合は設定されていない). デバッグ用なので参照ポインタが割にはしないこと
-        public int DebugId { get; set; } = -1;
+        //----------------------------------
+        // start: フィールド
+        //----------------------------------
+        // 識別Id. シリアライズ用.ランタイムでは使用しないこと
+        public RnId<RoadNetworkDataLane> MyId { get; set; }
 
+        // 親リンク
         public RoadNetworkLink ParentLink { get; set; }
 
-        // 連結しているレーン
-        public HashSet<RoadNetworkLane> NextLanes { get; private set; } = new HashSet<RoadNetworkLane>();
+        // 連結しているレーン(上流)
+        public List<RoadNetworkLane> NextLanes { get; private set; } = new List<RoadNetworkLane>();
 
-        public HashSet<RoadNetworkLane> PrevLanes { get; private set; } = new HashSet<RoadNetworkLane>();
+        // 連結しているレーン(下流)
+        public List<RoadNetworkLane> PrevLanes { get; private set; } = new List<RoadNetworkLane>();
 
-        // 道の開始の横線
-        public RoadNetworkWay StartBorder { get; set; }
+        // 境界線(下流)
+        public RoadNetworkWay PrevBorder { get; set; }
 
-        // 道の終わりの横線
-        public RoadNetworkWay EndBorder { get; set; }
+        // 境界線(上流)
+        public RoadNetworkWay NextBorder { get; set; }
 
+        // 車線(左)
         public RoadNetworkWay LeftWay { get; private set; }
 
+        // 車線(右)
         public RoadNetworkWay RightWay { get; private set; }
+
+        //----------------------------------
+        // end: フィールド
+        //----------------------------------
 
         // 左右両方のWayを返す
         public IEnumerable<RoadNetworkWay> BothWays
@@ -52,7 +63,7 @@ namespace PLATEAU.RoadNetwork
         {
             get
             {
-                return Enumerable.Repeat(StartBorder, 1).Concat(Enumerable.Repeat(EndBorder, 1)).Where(w => w != null);
+                return Enumerable.Repeat(PrevBorder, 1).Concat(Enumerable.Repeat(NextBorder, 1)).Where(w => w != null);
             }
         }
 
@@ -61,19 +72,19 @@ namespace PLATEAU.RoadNetwork
         /// <summary>
         /// 道の両方に接続先があるかどうか
         /// </summary>
-        public bool IsBothConnectedLane => IsValidWay && StartBorder != null && EndBorder != null;
+        public bool IsBothConnectedLane => IsValidWay && PrevBorder != null && NextBorder != null;
 
         public IEnumerable<Vector3> Vertices
         {
             get
             {
-                foreach (var v in StartBorder?.LineString?.Vertices ?? new List<Vector3>())
+                foreach (var v in PrevBorder?.LineString?.Vertices ?? new List<Vector3>())
                     yield return v;
 
                 foreach (var v in LeftWay?.LineString?.Vertices ?? new List<Vector3>())
                     yield return v;
 
-                foreach (var v in EndBorder?.LineString?.Vertices ?? new List<Vector3>())
+                foreach (var v in NextBorder?.LineString?.Vertices ?? new List<Vector3>())
                     yield return v;
 
                 foreach (var v in RightWay?.LineString?.Vertices ?? new List<Vector3>())
@@ -86,14 +97,14 @@ namespace PLATEAU.RoadNetwork
         {
             LeftWay = leftWay;
             RightWay = rightWay;
-            StartBorder = startBorder;
-            EndBorder = endBorder;
+            PrevBorder = startBorder;
+            NextBorder = endBorder;
         }
 
         // 向き反転させる
         public void Reverse()
         {
-            (StartBorder, EndBorder) = (EndBorder?.ReversedWay(), StartBorder?.ReversedWay());
+            (PrevBorder, NextBorder) = (NextBorder?.ReversedWay(), PrevBorder?.ReversedWay());
             (LeftWay, RightWay) = (RightWay?.ReversedWay(), LeftWay?.ReversedWay());
 
             (NextLanes, PrevLanes) = (PrevLanes, NextLanes);
@@ -115,11 +126,11 @@ namespace PLATEAU.RoadNetwork
 
             // #TODO : とりあえず２分割のみ対応
             // Borderの中心を開始点とする
-            var startSubWays = StartBorder.Split(2);
+            var startSubWays = PrevBorder.Split(2);
             if (startSubWays.Any() == false)
                 return null;
 
-            var endSubWays = EndBorder.Split(2);
+            var endSubWays = NextBorder.Split(2);
             if (endSubWays.Any() == false)
                 return null;
             // #TODO : とりあえず２分割のみ対応

@@ -19,6 +19,8 @@ namespace PLATEAU.Editor.RoadNetwork
             if (GUILayout.Button("Create"))
                 cog.CreateNetwork();
 
+            if (GUILayout.Button("Serialize"))
+                cog.Serialize();
             if (GUILayout.Button("Save as presets"))
             {
                 cog.savedTargets.Add(new PLATEAURoadNetworkTester.TestTargetPresets
@@ -27,9 +29,7 @@ namespace PLATEAU.Editor.RoadNetwork
                     targets = cog.targets.ToList()
                 });
             }
-
-            GUILayout.TextField(cog.newTargetName);
-            var preset = cog.savedTargets.FirstOrDefault(c => c.name == cog.newTargetName);
+            var preset = cog.savedTargets.FirstOrDefault(c => c.name == cog.loadPresetName);
             if (preset != null && GUILayout.Button("Load from presets"))
             {
                 cog.targets = preset.targets.ToList();

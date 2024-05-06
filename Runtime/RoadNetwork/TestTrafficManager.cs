@@ -19,8 +19,8 @@ namespace PLATEAU.RoadNetwork
         private ILineStringsHandle[] lineStringsHandles;
 
         bool isApply = false;
-        public RoadNetworkPoint[] newPostion;
-        public List<Debug2DArrayElement<RoadNetworkID<RoadNetworkPoint>>> newPointIds;
+        public RoadNetworkDataPoint[] newPostion;
+        public List<Debug2DArrayElement<RnId<RoadNetworkDataPoint>>> newPointIds;
 
         private void Start()
         {
@@ -37,10 +37,10 @@ namespace PLATEAU.RoadNetwork
 
             // デバッグ用のデータを作成
             int numPoint = 100;
-            List<RoadNetworkPoint> points = new List<RoadNetworkPoint>(numPoint);
+            List<RoadNetworkDataPoint> points = new List<RoadNetworkDataPoint>(numPoint);
             for (int i = 0; i < numPoint; i++)
             {
-                points.Add(new RoadNetworkPoint(new Vector3(i / (numPoint / 2), 0, i * 0.5f)));
+                points.Add(new RoadNetworkDataPoint(new Vector3(i / (numPoint / 2), 0, i * 0.5f)));
             }
 
             // ストレージの初期化
@@ -50,7 +50,7 @@ namespace PLATEAU.RoadNetwork
             pointHandles = dynamicEditable.WriteNewPoints(points.ToArray());
 
             // Pointの値の取得テスト
-            newPostion = new RoadNetworkPoint[numPoint];
+            newPostion = new RoadNetworkDataPoint[numPoint];
             for (int i = 0; i < numPoint; i++)
             {
                 newPostion[i] = pointHandles[i].Val;
@@ -65,7 +65,7 @@ namespace PLATEAU.RoadNetwork
                 int numData = (numLineStrigns + 1) - i;
                 //int numData = 10;
                 Assert.IsTrue(numData < numPoint);
-                var listStringsData = new List<RoadNetworkID<RoadNetworkPoint>>(numData);
+                var listStringsData = new List<RnId<RoadNetworkDataPoint>>(numData);
                 for (int j = 0; j < numData; j++)
                 {
                     listStringsData.Add(pointHandles[j].ID);
@@ -82,11 +82,11 @@ namespace PLATEAU.RoadNetwork
             lineStringsHandles = dynamicEditable.WriteNewLineStrings(lineStrings.ToArray());
 
             // テスト　LineStringsからPointを表示する
-            newPointIds = new List<Debug2DArrayElement<RoadNetworkID<RoadNetworkPoint>>>(lineStringsHandles.Length);
+            newPointIds = new List<Debug2DArrayElement<RnId<RoadNetworkDataPoint>>>(lineStringsHandles.Length);
             int idxOffset = 0;
             foreach (var lineStringsHnd in lineStringsHandles)
             {
-                var idsBuf = new Debug2DArrayElement<RoadNetworkID<RoadNetworkPoint>>(lineStringsHnd.Val.Count);
+                var idsBuf = new Debug2DArrayElement<RnId<RoadNetworkDataPoint>>(lineStringsHnd.Val.Count);
                 newPointIds.Add(idsBuf);
                 int i = 0;
                 foreach (var pointID in lineStringsHnd.Val)

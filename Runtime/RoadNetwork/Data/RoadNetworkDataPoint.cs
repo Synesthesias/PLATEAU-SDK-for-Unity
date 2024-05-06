@@ -9,9 +9,9 @@ namespace PLATEAU.RoadNetwork.Data
     }
 
     [Serializable]
-    public struct RoadNetworkPoint : IPrimitiveData
+    public struct RoadNetworkDataPoint : IPrimitiveData
     {
-        public RoadNetworkPoint(Vector3 val)
+        public RoadNetworkDataPoint(Vector3 val)
         {
             value = val;
         }

@@ -1,4 +1,5 @@
-﻿using PLATEAU.Util.GeoGraph;
+﻿using PLATEAU.RoadNetwork.Data;
+using PLATEAU.Util.GeoGraph;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,10 +10,17 @@ namespace PLATEAU.RoadNetwork
     [Serializable]
     public class RoadNetworkLineString
     {
-        // 識別Id(負数の場合は設定されていない). デバッグ用なので参照ポインタが割にはしないこと
-        public int DebugId { get; set; } = -1;
+        //----------------------------------
+        // start: フィールド
+        //----------------------------------
+        // 識別Id. シリアライズ用.ランタイムでは使用しないこと
+        public RnId<RoadNetworkDataLineString> MyId { get; set; }
 
         public List<Vector3> Vertices { get; } = new List<Vector3>();
+
+        //----------------------------------
+        // end: フィールド
+        //----------------------------------
 
         public int Count => Vertices.Count;
 

@@ -1,6 +1,8 @@
-﻿using System;
+﻿using PLATEAU.RoadNetwork.Data;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace PLATEAU.RoadNetwork
 {
@@ -10,23 +12,25 @@ namespace PLATEAU.RoadNetwork
     [Serializable]
     public class RoadNetworkNode
     {
-        // 識別Id(負数の場合は設定されていない). デバッグ用なので参照ポインタが割にはしないこと
-        public int DebugId { get; set; } = -1;
-
-        // 構成する頂点
-        // ポリゴン的に時計回りの順に格納されている
-        public List<Vector3> vertices = new List<Vector3>();
+        //----------------------------------
+        // start: フィールド
+        //----------------------------------
+        // 識別Id. シリアライズ用.ランタイムでは使用しないこと
+        public RnId<RoadNetworkDataNode> MyId { get; set; }
 
         //// レーンを構成する道
         //// 左側が若いインデックスになる
         //[SerializeField]
-        public List<RoadNetworkWay> ways = new List<RoadNetworkWay>();
+        public List<RoadNetworkWay> Ways { get; set; } = new List<RoadNetworkWay>();
 
         // 他レーンとの境界線
-        public List<RoadNetworkWay> borders = new List<RoadNetworkWay>();
+        public List<RoadNetworkWay> Borders { get; set; } = new List<RoadNetworkWay>();
 
         // 車線
-        public List<RoadNetworkLane> lanes = new List<RoadNetworkLane>();
+        public List<RoadNetworkLane> Lanes { get; set; } = new List<RoadNetworkLane>();
 
+        //----------------------------------
+        // end: フィールド
+        //----------------------------------
     }
 }

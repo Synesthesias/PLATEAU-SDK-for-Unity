@@ -1,23 +1,45 @@
-﻿namespace PLATEAU.RoadNetwork.Data
+﻿using System;
+using UnityEngine;
+
+namespace PLATEAU.RoadNetwork.Data
 {
+    [Serializable]
     public class RoadNetworkDataTrack : IPrimitiveData
     {
         //識別用ID：TrackID
-        public RnTrackId id;
+        [field: SerializeField]
+        [RoadNetworkSerializeMember(nameof(RoadNetworkTrack.MyId))]
+
+        public RnId<RoadNetworkDataTrack> MyId { get; set; }
 
         //接続上流リンク識別用ID：LinkID
-        public RnLinkId nextLinkId;
+        [field: SerializeField]
+        [RoadNetworkSerializeMember(nameof(RoadNetworkTrack.NextLink))]
+
+        public RnId<RoadNetworkDataLink> NextLink { get; set; }
 
         //接続上流レーン識別用ID：LaneID
-        public RnLaneId nextLaneId;
+        [field: SerializeField]
+        [RoadNetworkSerializeMember(nameof(RoadNetworkTrack.NextLane))]
+
+        public RnId<RoadNetworkDataLane> NextLane { get; set; }
 
         //接続上流リンク下流端からの距離[m] : double
         //public double distanceFromNextLink;
 
         //接続下流リンク識別用ID : LinkID
-        public RnLinkId prevLinkId;
+
+        [field: SerializeField]
+        [RoadNetworkSerializeMember(nameof(RoadNetworkTrack.PrevLink))]
+
+        public RnId<RoadNetworkDataLink> PrevLink { get; set; }
+
         //接続下流レーン識別用ID: LaneID
-        public RnLaneId prevLaneId;
+
+        [field: SerializeField]
+        [RoadNetworkSerializeMember(nameof(RoadNetworkTrack.PrevLane))]
+
+        public RnId<RoadNetworkDataLane> PrevLane { get; set; }
         //接続下流リンク下流端からの距離[m] : double
         //public double distanceFromPrevLink;
 

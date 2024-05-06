@@ -5,7 +5,7 @@ using System.Collections.Generic;
 namespace PLATEAU.RoadNetwork.Data
 {
 
-    public interface ILineString : IPrimitiveData, ICollection<RoadNetworkID<RoadNetworkPoint>>
+    public interface ILineString : IPrimitiveData, ICollection<RnId<RoadNetworkDataPoint>>
     {
 
     }
@@ -14,40 +14,40 @@ namespace PLATEAU.RoadNetwork.Data
     [Serializable]
     public class RoadNetworkDataLineString : ILineString
     {
-        public List<RoadNetworkID<RoadNetworkPoint>> points;
+        public List<RnId<RoadNetworkDataPoint>> points;
 
-        public int Count => ((ICollection<RoadNetworkID<RoadNetworkPoint>>)points).Count;
+        public int Count => ((ICollection<RnId<RoadNetworkDataPoint>>)points).Count;
 
-        public bool IsReadOnly => ((ICollection<RoadNetworkID<RoadNetworkPoint>>)points).IsReadOnly;
+        public bool IsReadOnly => ((ICollection<RnId<RoadNetworkDataPoint>>)points).IsReadOnly;
 
-        public void Add(RoadNetworkID<RoadNetworkPoint> item)
+        public void Add(RnId<RoadNetworkDataPoint> item)
         {
-            ((ICollection<RoadNetworkID<RoadNetworkPoint>>)points).Add(item);
+            ((ICollection<RnId<RoadNetworkDataPoint>>)points).Add(item);
         }
 
         public void Clear()
         {
-            ((ICollection<RoadNetworkID<RoadNetworkPoint>>)points).Clear();
+            ((ICollection<RnId<RoadNetworkDataPoint>>)points).Clear();
         }
 
-        public bool Contains(RoadNetworkID<RoadNetworkPoint> item)
+        public bool Contains(RnId<RoadNetworkDataPoint> item)
         {
-            return ((ICollection<RoadNetworkID<RoadNetworkPoint>>)points).Contains(item);
+            return ((ICollection<RnId<RoadNetworkDataPoint>>)points).Contains(item);
         }
 
-        public void CopyTo(RoadNetworkID<RoadNetworkPoint>[] array, int arrayIndex)
+        public void CopyTo(RnId<RoadNetworkDataPoint>[] array, int arrayIndex)
         {
-            ((ICollection<RoadNetworkID<RoadNetworkPoint>>)points).CopyTo(array, arrayIndex);
+            ((ICollection<RnId<RoadNetworkDataPoint>>)points).CopyTo(array, arrayIndex);
         }
 
-        public IEnumerator<RoadNetworkID<RoadNetworkPoint>> GetEnumerator()
+        public IEnumerator<RnId<RoadNetworkDataPoint>> GetEnumerator()
         {
-            return ((IEnumerable<RoadNetworkID<RoadNetworkPoint>>)points).GetEnumerator();
+            return ((IEnumerable<RnId<RoadNetworkDataPoint>>)points).GetEnumerator();
         }
 
-        public bool Remove(RoadNetworkID<RoadNetworkPoint> item)
+        public bool Remove(RnId<RoadNetworkDataPoint> item)
         {
-            return ((ICollection<RoadNetworkID<RoadNetworkPoint>>)points).Remove(item);
+            return ((ICollection<RnId<RoadNetworkDataPoint>>)points).Remove(item);
         }
 
         IEnumerator IEnumerable.GetEnumerator()
