@@ -1,5 +1,8 @@
 using PLATEAU.Editor.Window.Common;
 using PLATEAU.Util;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
@@ -7,52 +10,127 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI.Parts
 {
     internal class ObjectSelectGui : Element
     {
-        public UniqueParentTransformList SelectedTransforms { get; private set; } = new UniqueParentTransformList();
+        private readonly List<GameObject> selectedGameObjs = new();
+        public UniqueParentTransformList UniqueSelected => new UniqueParentTransformList(selectedGameObjs.Select(obj => obj.transform));
+
+        public bool LockChange { get; set; }
         private readonly EditorWindow parentEditorWindow;
         private readonly CityMaterialAdjustGUI materialAdjustGUI;
-        private readonly ScrollView scrollView = new (GUILayout.MaxHeight(100));
+        private readonly ScrollView scrollView = new (GUILayout.Height(160));
 
         public ObjectSelectGui(CityMaterialAdjustGUI materialAdjustGUI, EditorWindow parentEditorWindow)
         {
             this.parentEditorWindow = parentEditorWindow;
-            Selection.selectionChanged += OnSelectionChanged;
             this.materialAdjustGUI = materialAdjustGUI;
-            OnSelectionChanged();
         }
 
         public override void DrawContent()
         {
-            PlateauEditorStyle.Heading("選択オブジェクト", null);
+            PlateauEditorStyle.Heading("対象選択", null);
+            using (PlateauEditorStyle.VerticalScopeLevel1())
+            {
+                // 追加用のスロットを描画
+                using (new EditorGUILayout.HorizontalScope())
+                {
+                    EditorGUILayout.LabelField("追加:", GUILayout.Width(30));
+                    var added = (GameObject)EditorGUILayout.ObjectField(null, typeof(GameObject), true);
+                    if (added != null)
+                    {
+                        // 追加
+                        if (EditorUtility.IsPersistent(added))
+                        {
+                            Dialogue.Display("シーン外のゲームオブジェクトは選択できません。シーン内から選択してください。", "OK");
+                        }
+                        else if(AskUnlock())
+                        {
+                            selectedGameObjs.Add(added);
+                        }
+                    }
+                }
+                
+                PlateauEditorStyle.CenterAlignHorizontal(() =>
+                {
+                    ButtonAddFromSelection(); // 「選択中のn個を追加」ボタン
+                
+                    // 地物タイプから選択ボタン
+                    if (PlateauEditorStyle.MiniButton("地物タイプから選択", 150))
+                    {
+                        throw new NotImplementedException("未実装");
+                    }
+                });
+            }
+            
             using (PlateauEditorStyle.VerticalScopeLevel2())
             {
                 scrollView.Draw(() =>
                 {
-                    foreach (Transform trans in SelectedTransforms.Get)
+                    if (selectedGameObjs.Count == 0)
                     {
-                        EditorGUILayout.LabelField(trans == null ? "(削除されたゲームオブジェクト)" : trans.name);
+                        EditorGUILayout.LabelField("（未選択）");                        
                     }
-                });
-
+                    
+                    int indexToDelete = -1;
+                    // 各選択オブジェクトのスロットを描画
+                    for (var i = 0; i < selectedGameObjs.Count; i++)
+                    {
+                        using (new EditorGUILayout.HorizontalScope())
+                        {
+                            EditorGUILayout.LabelField($"{i+1}:", GUILayout.Width(30));
+                            var obj = selectedGameObjs[i];
+                            var nextObj = (GameObject)EditorGUILayout.ObjectField(obj, typeof(GameObject), true, GUILayout.ExpandWidth(true));
+                            
+                            if (nextObj != obj && AskUnlock())
+                            {
+                                selectedGameObjs[i] = nextObj;
+                            }
+                            if (PlateauEditorStyle.TinyButton("除く", 30))
+                            {
+                                indexToDelete = i;
+                            }
+                        }
+                        
+                    }
+                    // 削除ボタンが押された時
+                    if (indexToDelete >= 0 && AskUnlock())
+                    {
+                        selectedGameObjs.RemoveAt(indexToDelete);
+                    }
+                });// end scrollView
+                
             }
         }
-        
-        private void OnSelectionChanged()
-        {
-            if (materialAdjustGUI?.CurrentSearcher?.IsSearched is true) return; // 「検索」ボタンを押したら対象は変更できないようにします。
-            UpdateSelection();
-            
-        }
 
-        public void UpdateSelection()
+        /// <summary>
+        /// 変更がロックされているのに変更しようとする場合に呼んでください。
+        /// アンロックして良いかユーザーに尋ね、OKならアンロックしてtrueを返します。そうでなければfalseを返します。
+        /// </summary>
+        private bool AskUnlock()
         {
-            SelectedTransforms = new UniqueParentTransformList(Selection.transforms);
-            parentEditorWindow.Repaint();
+            if (!LockChange) return true;
+            if (Dialogue.Display("対象を変更すると、この画面でなされた設定の一部がリセットされます。\nよろしいですか？", "変更を続行", "キャンセル"))
+            {
+                LockChange = false;
+                materialAdjustGUI.NotifyTargetChange();
+                return true;
+            }
+            return false;
         }
         
         public override void Dispose()
         {
-            Selection.selectionChanged -= OnSelectionChanged;
-            SelectedTransforms.Reset();
+        }
+
+        private void ButtonAddFromSelection()
+        {
+            // 選択から追加ボタン
+            int count = Selection.gameObjects.Length;
+            using (new EditorGUI.DisabledScope(count == 0))
+            {
+                if (PlateauEditorStyle.MiniButton($"選択中の {count} 個を追加", 150) && AskUnlock())
+                {
+                    selectedGameObjs.AddRange(Selection.gameObjects);
+                }
+            }
         }
         
     }

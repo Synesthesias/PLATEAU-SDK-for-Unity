@@ -199,26 +199,30 @@ namespace PLATEAU.Editor.Window.Common
 
         public static bool CancelButton(string text)
         {
-            var buttonStyle = new GUIStyle(EditorStyles.label)
-            {
-                normal =
-                {
-                    background = LoadTexture(ImageRoundWindowWide),
-                    textColor = colorDefaultFont.Dark
-                },
-                alignment = TextAnchor.MiddleCenter
-            };
             bool isButtonPushed = false;
             CenterAlignHorizontal(() =>
             {
-                isButtonPushed = ButtonWithColorTint(new GUIContent(text), colorButtonCancel.Color, buttonStyle, GUILayout.Height(60), GUILayout.MaxWidth(240));
+                isButtonPushed = ButtonWithColorTint(new GUIContent(text), colorButtonCancel.Color, ButtonStyle(), GUILayout.Height(60), GUILayout.MaxWidth(240));
             });
             return isButtonPushed;
         }
 
         public static bool MiniButton(string text, int width)
         {
-            var buttonStyle = new GUIStyle(EditorStyles.label)
+            bool isButtonPushed = ButtonWithColorTint(new GUIContent(text), colorButtonMain.Color, ButtonStyle(),
+                GUILayout.Height(40), GUILayout.MaxWidth(width));
+            return isButtonPushed;
+        }
+
+        public static bool TinyButton(string text, int width)
+        {
+            return ButtonWithColorTint(new GUIContent(text), colorButtonMain.Color, ButtonStyle(),
+                GUILayout.Height(22 /*ObjectFiled 1行相当の高さ*/), GUILayout.MaxWidth(width));
+        }
+
+        private static GUIStyle ButtonStyle()
+        {
+            return new GUIStyle(EditorStyles.label)
             {
                 normal =
                 {
@@ -227,9 +231,6 @@ namespace PLATEAU.Editor.Window.Common
                 },
                 alignment = TextAnchor.MiddleCenter
             };
-            bool isButtonPushed = ButtonWithColorTint(new GUIContent(text), colorButtonMain.Color, buttonStyle,
-                GUILayout.Height(40), GUILayout.MaxWidth(width));
-            return isButtonPushed;
         }
 
         /// <summary> 複数行のラベルを表示します。 </summary>
@@ -660,7 +661,7 @@ namespace PLATEAU.Editor.Window.Common
         /// <summary>
         /// 背景色をベースに対する乗算で指定するボタンです。
         /// </summary>
-        private static bool ButtonWithColorTint(GUIContent buttonContent, Color backgroundColorTint, GUIStyle buttonStyle, params GUILayoutOption[] options)
+        public static bool ButtonWithColorTint(GUIContent buttonContent, Color backgroundColorTint, GUIStyle buttonStyle, params GUILayoutOption[] options)
         {
             var prevBackgroundColor = GUI.backgroundColor;
             GUI.backgroundColor = backgroundColorTint;

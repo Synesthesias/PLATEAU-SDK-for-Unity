@@ -42,17 +42,6 @@ namespace PLATEAU.CityAdjust.MaterialAdjust.Executor.Process
                 return new Result<GranularityConvertResult>(false, composeResult);
             }
 
-            // 親を付け替え
-            // var parent = new GameObject(conf.DstObjName).transform;
-            // parent.parent = composeResult.GeneratedRootTransforms.Get.First().parent;
-            // foreach (var trans in composeResult.GeneratedRootTransforms.Get)
-            // {
-            //     trans.parent = parent;
-            // }
-            // #if UNITY_EDITOR
-            // Selection.activeTransform = parent;
-            // #endif
-
             return new Result<GranularityConvertResult>(composeResult.IsSucceed, composeResult);
         }
     }

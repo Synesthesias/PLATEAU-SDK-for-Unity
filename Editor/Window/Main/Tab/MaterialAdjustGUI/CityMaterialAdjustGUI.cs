@@ -18,10 +18,21 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
         public MAKeySearcher CurrentSearcher => Guis?.Get<MaterialCriterionGui>()?.CurrentSearcher;
         public MaterialCriterion SelectedCriterion => Guis.Get<MaterialCriterionGui>().SelectedCriterion;
 
+        /// <summary>
+        /// マテリアル分けの選択画面を出すために、利用可能な分類項目を検索したかどうかです。
+        /// falseにすることで検索をリセットできます。
+        /// </summary>
         public bool IsSearched
         {
             get => CurrentSearcher.IsSearched;
-            set => CurrentSearcher.IsSearched = value;
+            set
+            {
+                CurrentSearcher.IsSearched = value;
+                if (value)
+                {
+                    Guis.Get<ObjectSelectGui>().LockChange = true;
+                }
+            }
         }
 
 
@@ -77,16 +88,16 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
         {
             SearchArg searchArg = SelectedCriterion switch
             {
-                MaterialCriterion.ByType => new SearchArg(Guis.Get<ObjectSelectGui>().SelectedTransforms),
-                MaterialCriterion.ByAttribute => new SearchArgByArr(Guis.Get<ObjectSelectGui>().SelectedTransforms, Guis.Get<AttributeKeyGui>().AttrKey),
+                MaterialCriterion.ByType => new SearchArg(Guis.Get<ObjectSelectGui>().UniqueSelected),
+                MaterialCriterion.ByAttribute => new SearchArgByArr(Guis.Get<ObjectSelectGui>().UniqueSelected, Guis.Get<AttributeKeyGui>().AttrKey),
                 _ => throw new ArgumentOutOfRangeException()
             };
             return searchArg;
         }
 
-        public void UpdateObjectSelection()
+        public void NotifyTargetChange()
         {
-            Guis.Get<ObjectSelectGui>().UpdateSelection();
+            IsSearched = false;
         }
 
         public void Dispose()

@@ -40,14 +40,6 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI.Parts
                             parentEditorWindow.Repaint();
                         }
                     }
-                    else
-                    {
-                        if (PlateauEditorStyle.MiniButton("再選択", 150))
-                        {
-                            currentAdjuster.IsSearched = false;
-                            adjustGui.UpdateObjectSelection();
-                        }
-                    }
                 });
             }
         }

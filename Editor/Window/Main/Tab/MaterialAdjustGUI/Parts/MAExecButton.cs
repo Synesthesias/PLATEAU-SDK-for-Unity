@@ -33,7 +33,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI.Parts
                 
                     MaterialCriterion.ByType => new MAExecutorConf(
                         adjustGui.CurrentSearcher.MaterialAdjustConf,
-                        adjustGui.Guis.Get<ObjectSelectGui>().SelectedTransforms,
+                        adjustGui.Guis.Get<ObjectSelectGui>().UniqueSelected,
                         granularity,
                         adjustGui.Guis.Get<DestroyOrPreserveSrcGui>().DoDestroySrcObjs,
                         adjustGui.Guis.Get<NameSelectGui>().EnteredName,
@@ -42,7 +42,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI.Parts
                     
                     MaterialCriterion.ByAttribute => new MAExecutorConfByAttr(
                         adjustGui.CurrentSearcher.MaterialAdjustConf,
-                        adjustGui.Guis.Get<ObjectSelectGui>().SelectedTransforms,
+                        adjustGui.Guis.Get<ObjectSelectGui>().UniqueSelected,
                         granularity,
                         adjustGui.Guis.Get<DestroyOrPreserveSrcGui>().DoDestroySrcObjs,
                         adjustGui.Guis.Get<NameSelectGui>().EnteredName,
