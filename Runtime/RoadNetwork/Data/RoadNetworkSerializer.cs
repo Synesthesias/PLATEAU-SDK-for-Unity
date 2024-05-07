@@ -3,8 +3,10 @@ using PLATEAU.Util;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices.WindowsRuntime;
 
 namespace PLATEAU.RoadNetwork.Data
 {
@@ -48,213 +50,333 @@ namespace PLATEAU.RoadNetwork.Data
 
             // key : dst MemberInfo
             // value : src member info
-            public Dictionary<MemberInfo, MemberInfo> Dst2SrcMemberTable { get; set; }
+            public Dictionary<FieldInfo, FieldInfo> Dst2SrcMemberTable { get; set; }
 
-
-            public MemberReference(Type srcType, Type dstType)
+            private MemberReference(Type srcType, Type dstType, Dictionary<FieldInfo, FieldInfo> dst2SrcMemberTable)
             {
                 SrcType = srcType;
                 DstType = dstType;
+                Dst2SrcMemberTable = dst2SrcMemberTable;
+            }
 
+            public static MemberReference Create(Type dstType)
+            {
+                var srcType = dstType.GetCustomAttribute<RoadNetworkSerializeDataAttribute>()?.DataType;
+                if (srcType == null)
+                    throw new ArgumentException(
+                        $"{dstType} has not attribute {nameof(RoadNetworkSerializeDataAttribute)}");
                 var flags = BindingFlags.Instance | BindingFlags.Public;
-                Dst2SrcMemberTable
+                var dst2Src
                     // #NOTE : Field or Propertyのみ対応
-                    = DstType.GetProperties(flags).Concat(DstType.GetFields(flags).Cast<MemberInfo>())
-                    // アトリビュート指定されている物を抽出
-                    .Select(p => new { member = p, attr = p.GetCustomAttribute<RoadNetworkSerializeMemberAttribute>() })
-                    .Where(p => p.attr != null)
-                    .ToDictionary(p => p.member, p =>
-                    {
-                        var prop = srcType.GetProperty(p.attr.FieldName);
-                        if (prop != null)
-                            return (MemberInfo)prop;
-                        var field = srcType.GetField(p.attr.FieldName);
-                        if (field != null)
-                            return field;
-                        return null;
-                    });
+                    = dstType.GetProperties(flags)
+                        .Concat(dstType.GetFields(flags).Cast<MemberInfo>())
+                        // アトリビュート指定されている物を抽出
+                        .Select(p => new { member = p, attr = p.GetCustomAttribute<RoadNetworkSerializeMemberAttribute>() })
+                        .Where(p => p.attr != null)
+                        .ToDictionary(m =>
+                        {
+                            if (m.member is PropertyInfo p)
+                                return TypeUtil.GetPropertyBackingField(dstType, p);
+                            return m.member as FieldInfo;
+                        }, p =>
+                        {
+                            var prop = srcType.GetProperty(p.attr.FieldName);
+                            if (prop != null)
+                            {
+                                var ret = TypeUtil.GetPropertyBackingField(srcType, prop);
+                                if (ret == null)
+                                    throw new InvalidDataException($"Property {prop.Name} has no field info");
+                                return ret;
+                            }
+                            var field = srcType.GetField(p.attr.FieldName);
+                            if (field != null)
+                                return field;
+                            return null;
+                        });
+                return new MemberReference(srcType, dstType, dst2Src);
+            }
+
+            public MemberReference GetReversed()
+            {
+                return new MemberReference(DstType, SrcType, Dst2SrcMemberTable.ToDictionary(i => i.Value, i => i.Key));
             }
         }
 
-        private class MemberSerializer
+        private interface IDataConverter
         {
-            public Dictionary<Type, MemberReference> MemberReferences { get; set; } =
-                new Dictionary<Type, MemberReference>();
+            /// <summary>
+            /// typeがコンバート可能かどうか
+            /// </summary>
+            /// <param name="type"></param>
+            /// <returns></returns>
+            bool Contains(Type type);
 
-            public void Serialize(object src, object dst, ReferenceTable table)
-            {
-
-            }
+            // 
+            /// <summary>
+            /// コンバート. srcはtype型である必要がある.
+            /// srcがnullの事を考えてtypeも別途渡す
+            /// </summary>
+            /// <param name="type"></param>
+            /// <param name="src"></param>
+            /// <returns></returns>
+            object Convert(Type type, object src);
         }
 
-
-        private abstract class DataTable
+        private interface IValueConverter
         {
-            public MemberReference MemberTable { get; }
-
-            protected DataTable(MemberReference table)
-            {
-                MemberTable = table;
-            }
-
-            public abstract void Serialize(ReferenceTable table);
-
-            public abstract object GetId(object s);
+            object Convert(object val);
         }
 
-        private class Table<TSrc, TData> : DataTable where TData : IPrimitiveData where TSrc : class
+        private class Object2RnIdConverter<TData> : IValueConverter
+            where TData : IPrimitiveData
         {
-            public Dictionary<TSrc, Tuple<TData, RnId<TData>>> DataTable { get; set; }
+            private Dictionary<object, RnId<TData>> Table { get; }
 
-            public Table(MemberReference table, Dictionary<TSrc, Tuple<TData, RnId<TData>>> data) :
-                base(table)
+            public Object2RnIdConverter(Dictionary<object, RnId<TData>> table)
             {
-                DataTable = data;
+                Table = table;
             }
 
-            public override object GetId(object s)
+            public object Convert(object val)
             {
-                var src = s as TSrc;
-                if (src == null)
+                if (val == null)
                 {
                     return new RnId<TData>();
                 }
 
-                return DataTable[src].Item2;
+                return Table[val];
+            }
+        }
+
+        /// <summary>
+        /// RnIdから元のデータを引っ張ってくる
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="TData"></typeparam>
+        private class RnId2ObjectConverter<TData> : IValueConverter
+            where TData : IPrimitiveData
+        {
+            private Dictionary<RnId<TData>, object> Table { get; }
+
+            public RnId2ObjectConverter(Dictionary<RnId<TData>, object> table)
+            {
+                Table = table;
             }
 
+            public object Convert(object val)
+            {
+                if (val is RnId<TData> id)
+                {
+                    if (id.IsValid == false)
+                        return null;
+                    return Table[id];
+                }
 
-            public override void Serialize(ReferenceTable table)
+                return null;
+            }
+        }
+
+        private interface IDataStorage
+        {
+            void ConvertAll(IDataConverter converter);
+        }
+
+        private class DataStorage : IDataStorage
+        {
+            private Dictionary<object, object> DataTable { get; set; }
+
+            public MemberReference MemberTable { get; }
+
+            public DataStorage(Dictionary<object, object> dataTable, MemberReference memberReference)
+            {
+                DataTable = dataTable;
+                MemberTable = memberReference;
+            }
+
+            public void ConvertAll(IDataConverter converter)
             {
                 foreach (var item in DataTable)
                 {
-                    var src = item.Key;
-                    var dst = item.Value.Item1;
-
-                    foreach (var m in MemberTable.Dst2SrcMemberTable)
-                    {
-                        var dstMemberInfo = m.Key;
-                        var srcMemberInfo = m.Value; ;
-                        var srcMemberType = TypeUtil.GetMemberType(srcMemberInfo);
-                        var dstMemberType = TypeUtil.GetMemberType(dstMemberInfo);
-
-                        var srcValue = TypeUtil.GetValue(srcMemberInfo, src);
-                        if (srcMemberType == dstMemberType)
-                        {
-                            TypeUtil.SetValue(dstMemberInfo, dst, srcValue);
-                        }
-                        else if (table.IdConverter.ContainsKey(srcMemberType))
-                        {
-                            var dstValue = table.IdConverter[srcMemberType](srcValue);
-                            TypeUtil.SetValue(dstMemberInfo, dst, dstValue);
-                        }
-                        // 配列
-                        else if (srcMemberType.IsArray && dstMemberType.IsArray)
-                        {
-                            var srcArray = srcValue as Array;
-                            var f = srcMemberInfo as FieldInfo;
-                            //var obj = dstMemberType.Assembly.CreateInstance(dstMemberType.FullName, args: new[] { srcArray.Length }) as Array;
-
-                        }
-                        // List
-                        else if (srcMemberType.GetGenericTypeDefinition() == typeof(List<>))
-                        {
-                            var dstObj = dstMemberType.Assembly.CreateInstance(dstMemberType.FullName);
-                            var addMethod = dstMemberType.GetMethod(nameof(List<int>.Add));
-                            if (srcValue is IEnumerable enumerable)
-                            {
-                                foreach (var srcV in enumerable)
-                                {
-                                    var dstValue = table.IdConverter[srcMemberType.GenericTypeArguments[0]](srcV);
-                                    addMethod.Invoke(dstObj, new[] { dstValue });
-                                }
-                            }
-                            TypeUtil.SetValue(dstMemberInfo, dst, dstObj);
-                        }
-                        else
-                        {
-                            throw new NotSupportedException($"{srcMemberType.FullName} is not supported serialize");
-                        }
-                    }
+                    Convert(item.Key, item.Value, MemberTable, converter);
                 }
             }
         }
 
-        private class ReferenceTable
+
+        private class ReferenceTable : IDataConverter
         {
-            public Dictionary<RoadNetworkDataPoint, RnId<RoadNetworkDataPoint>> PointTable { get; set; }
+            private Dictionary<Type, IValueConverter> IdConverter { get; } = new();
 
-            // Key : 
-            public Dictionary<Type, Func<object, object>> IdConverter { get; set; } = new Dictionary<Type, Func<object, object>>();
+            private List<DataStorage> Storage { get; } = new List<DataStorage>();
 
-            public List<DataTable> DataList { get; } = new List<DataTable>();
 
-            public void Add(DataTable table)
+            public void AddStorage(DataStorage dataStorage)
             {
-                DataList.Add(table);
-                IdConverter[table.MemberTable.SrcType] = table.GetId;
+                Storage.Add(dataStorage);
+            }
+
+            public void AddConverter(Type srcType, IValueConverter valueConverter)
+            {
+                IdConverter[srcType] = valueConverter;
             }
 
             /// <summary>
             /// src -> dstへデータ変換
             /// </summary>
-            public void Serialize()
+            public void ConvertAll()
             {
-                foreach (var d in DataList)
-                    d.Serialize(this);
+                foreach (var d in Storage)
+                    d.ConvertAll(this);
+            }
+
+            public bool Contains(Type type)
+            {
+                return IdConverter.ContainsKey(type);
+            }
+
+            public object Convert(Type type, object src)
+            {
+                var idConverter = IdConverter[type];
+                return idConverter.Convert(src);
             }
         }
 
-        private Table<TSrc, TData> Collect<TSrc, TData>(RoadNetworkModel model, PrimitiveDataStorage.PrimitiveStorage<TData> storage)
-            where TData : IPrimitiveData, new()
-            where TSrc : class
+
+        private static void Convert(object src, object dst, MemberReference memberReference, IDataConverter converter)
         {
+            foreach (var m in memberReference.Dst2SrcMemberTable)
+            {
+                var dstMemberInfo = m.Key;
+                var srcMemberInfo = m.Value; ;
+                var srcMemberType = TypeUtil.GetMemberType(srcMemberInfo);
+                var dstMemberType = TypeUtil.GetMemberType(dstMemberInfo);
+
+                var srcValue = TypeUtil.GetValue(srcMemberInfo, src);
+                if (srcMemberType == dstMemberType)
+                {
+                    TypeUtil.SetValue(dstMemberInfo, dst, srcValue);
+                }
+                else if (converter.Contains(srcMemberType))
+                {
+                    var dstValue = converter.Convert(srcMemberType, srcValue);
+                    TypeUtil.SetValue(dstMemberInfo, dst, dstValue);
+                }
+                // #TODO
+                // 配列は一旦サポート外
+                else if (srcMemberType.IsArray && dstMemberType.IsArray)
+                {
+                    throw new NotSupportedException($"{srcMemberType.FullName} is not supported serialize");
+                }
+                // List
+                else if (srcMemberType.GetGenericTypeDefinition() == typeof(List<>))
+                {
+                    var dstObj = dstMemberType.Assembly.CreateInstance(dstMemberType.FullName);
+                    var addMethod = dstMemberType.GetMethod(nameof(List<int>.Add));
+                    if (srcValue is IEnumerable enumerable)
+                    {
+                        foreach (var srcV in enumerable)
+                        {
+                            var dstValue = converter.Convert(srcMemberType.GenericTypeArguments[0], srcV);
+                            addMethod.Invoke(dstObj, new[] { dstValue });
+                        }
+                    }
+                    TypeUtil.SetValue(dstMemberInfo, dst, dstObj);
+
+                }
+                else
+                {
+                    throw new NotSupportedException($"{srcMemberType.FullName} is not supported serialize");
+                }
+            }
+        }
+
+        private void Collect<TData>(ReferenceTable refTable, RoadNetworkModel model, PrimitiveDataStorage.PrimitiveStorage<TData> storage)
+            where TData : IPrimitiveData, new()
+        {
+            var memberReference = MemberReference.Create(typeof(TData));
+
             // TSrcの型のインスタンスを全部探してくる
             var src = TypeUtil
-                .GetAllMembersRecursively<TSrc>(model, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
+                .GetAllMembersRecursively(model, memberReference.SrcType, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
                 .Select(x => x.Item2)
                 .Where(x => x != null)
                 .Distinct()
                 .ToList();
 
             // 変換後のデータのnewだけ行う
-            var datas = Enumerable.Range(0, src.Count).Select(x => new TData()).ToArray();
+            var dataList = Enumerable.Range(0, src.Count).Select(x => new TData()).ToArray();
 
-            var ids = storage.WriteNew(datas);
-            var table = Enumerable.Range(0, ids.Length).ToDictionary(i => src[i], i => new Tuple<TData, RnId<TData>>(datas[i], ids[i]));
-            return new Table<TSrc, TData>(new MemberReference(typeof(TSrc), typeof(TData)), table);
-        }
+            var ids = storage.WriteNew(dataList);
 
+            var obj2Id = Enumerable.Range(0, ids.Length)
+                .ToDictionary(i => src[i], i => ids[i]);
 
+            var valueConverter =
+                new Object2RnIdConverter<TData>(obj2Id);
 
-        private void Serialize<TSrc, TData>(TSrc src, TData dst, ReferenceTable refTable, Table<TSrc, TData> table)
-            where TData : class, IPrimitiveData, new()
-            where TSrc : class
-        {
+            var obj2Data = Enumerable.Range(0, src.Count)
+                .ToDictionary(i => src[i], i => dataList[i] as object);
 
+            var dataStorage = new DataStorage(obj2Data, memberReference);
+            refTable.AddStorage(dataStorage);
+            refTable.AddConverter(memberReference.SrcType, valueConverter);
         }
 
         public RoadNetworkStorage Serialize(RoadNetworkModel roadNetworkModel)
         {
             var ret = new RoadNetworkStorage();
             var refTable = new ReferenceTable();
-            refTable.Add(Collect<RoadNetworkLink, RoadNetworkDataLink>(roadNetworkModel, ret.PrimitiveDataStorage.Links));
-            refTable.Add(Collect<RoadNetworkLane, RoadNetworkDataLane>(roadNetworkModel, ret.PrimitiveDataStorage.Lanes));
-            refTable.Add(Collect<RoadNetworkTrack, RoadNetworkDataTrack>(roadNetworkModel, ret.PrimitiveDataStorage.Tracks));
-            refTable.Add(Collect<RoadNetworkBlock, RoadNetworkDataBlock>(roadNetworkModel, ret.PrimitiveDataStorage.Blocks));
-            refTable.Add(Collect<RoadNetworkNode, RoadNetworkDataNode>(roadNetworkModel, ret.PrimitiveDataStorage.Nodes));
-            refTable.Add(Collect<RoadNetworkWay, RoadNetworkDataWay>(roadNetworkModel, ret.PrimitiveDataStorage.Ways));
+            Collect(refTable, roadNetworkModel, ret.PrimitiveDataStorage.Points);
+            Collect(refTable, roadNetworkModel, ret.PrimitiveDataStorage.LineStrings);
+            Collect(refTable, roadNetworkModel, ret.PrimitiveDataStorage.Links);
+            Collect(refTable, roadNetworkModel, ret.PrimitiveDataStorage.Lanes);
+            Collect(refTable, roadNetworkModel, ret.PrimitiveDataStorage.Tracks);
+            Collect(refTable, roadNetworkModel, ret.PrimitiveDataStorage.Blocks);
+            Collect(refTable, roadNetworkModel, ret.PrimitiveDataStorage.Nodes);
+            Collect(refTable, roadNetworkModel, ret.PrimitiveDataStorage.Ways);
 
-            var lineStrings =
-                Collect<RoadNetworkLineString, RoadNetworkDataLineString>(roadNetworkModel,
-                    ret.PrimitiveDataStorage.LineStrings);
-            refTable.Add(lineStrings);
-
-
-            refTable.Serialize();
+            refTable.ConvertAll();
             return ret;
         }
 
+        private List<T> Collect<TData, T>(ReferenceTable refTable, PrimitiveDataStorage.PrimitiveStorage<TData> storage)
+            where TData : IPrimitiveData
+            where T : new()
+        {
+            var memberReference = MemberReference.Create(typeof(TData)).GetReversed();
+            // 先にデータを作成する
+            var objList = Enumerable.Range(0, storage.DataList.Count).Select(i => new T()).ToList();
 
+            var id2Obj = Enumerable.Range(0, storage.DataList.Count)
+                .ToDictionary(i => new RnId<TData>(i), i => objList[i] as object);
+
+            var idConverter = new RnId2ObjectConverter<TData>(id2Obj);
+
+            var data2Obj = Enumerable.Range(0, storage.DataList.Count)
+                .ToDictionary(i => storage.DataList[i] as object, i => objList[i] as object);
+            var dataStorage = new DataStorage(data2Obj, memberReference);
+            refTable.AddStorage(dataStorage);
+            refTable.AddConverter(typeof(RnId<TData>), idConverter);
+            return objList;
+        }
+
+        public RoadNetworkModel Deserialize(RoadNetworkStorage roadNetworkStorage)
+        {
+            var refTable = new ReferenceTable();
+            var points = Collect<RoadNetworkDataPoint, RoadNetworkPoint>(refTable, roadNetworkStorage.PrimitiveDataStorage.Points);
+            var tracks = Collect<RoadNetworkDataTrack, RoadNetworkTrack>(refTable, roadNetworkStorage.PrimitiveDataStorage.Tracks);
+            var nodes = Collect<RoadNetworkDataNode, RoadNetworkNode>(refTable, roadNetworkStorage.PrimitiveDataStorage.Nodes);
+            var links = Collect<RoadNetworkDataLink, RoadNetworkLink>(refTable, roadNetworkStorage.PrimitiveDataStorage.Links);
+            var lineStrings = Collect<RoadNetworkDataLineString, RoadNetworkLineString>(refTable, roadNetworkStorage.PrimitiveDataStorage.LineStrings);
+            var blocks = Collect<RoadNetworkDataBlock, RoadNetworkBlock>(refTable, roadNetworkStorage.PrimitiveDataStorage.Blocks);
+            var ways = Collect<RoadNetworkDataWay, RoadNetworkWay>(refTable, roadNetworkStorage.PrimitiveDataStorage.Ways);
+            var lanes = Collect<RoadNetworkDataLane, RoadNetworkLane>(refTable, roadNetworkStorage.PrimitiveDataStorage.Lanes);
+
+            refTable.ConvertAll();
+            var ret = new RoadNetworkModel();
+            ret.Links.AddRange(links);
+            ret.Nodes.AddRange(nodes);
+            return ret;
+        }
     }
 }

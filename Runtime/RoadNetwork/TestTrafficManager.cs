@@ -73,7 +73,7 @@ namespace PLATEAU.RoadNetwork
 
                 lineStrings.Add(new RoadNetworkDataLineString()
                 {
-                    points = listStringsData
+                    Points = listStringsData
                 });
 
             }

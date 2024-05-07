@@ -27,7 +27,7 @@ namespace PLATEAU.RoadNetwork.Factory
         private class LaneWork
         {
             public int id;
-            public RoadNetworkLineString LineString { get; } = new RoadNetworkLineString();
+            public RoadNetworkLineString LineString { get; set; } = new RoadNetworkLineString();
 
             public HashSet<LaneWork> ConnectedLanes { get; } = new HashSet<LaneWork>();
         }
@@ -95,7 +95,7 @@ namespace PLATEAU.RoadNetwork.Factory
                             var n = Way.GetEdgeNormal(0);
                             // 微小にずらして確認する
                             var p = cp + n * 0.1f;
-                            cachedIsBorder = GeoGraph2d.Contains(neighbor.LineString.Vertices.Select(x => x.Xz()), p.Xz());
+                            cachedIsBorder = GeoGraph2d.Contains(neighbor.LineString.Select(x => x.Xz()), p.Xz());
                         }
                     }
 
@@ -159,7 +159,8 @@ namespace PLATEAU.RoadNetwork.Factory
             {
                 var laneWork = new LaneWork { id = laneWorks.Count, };
 
-                var vertices = laneWork.LineString.Vertices;
+                //var vertices = laneWork.LineString.Vertices;
+                var vertices = new List<Vector3>();
                 // 時計回りになるように順番チェック
                 if (GeoGraph2d.IsClockwise(polygon.Select(x => x.Xz())) == false)
                 {
@@ -176,7 +177,7 @@ namespace PLATEAU.RoadNetwork.Factory
                     var cell = cell2Groups.GetValueOrCreate(cellNo, v => new Cell { });
                     cell.lanes.Add(laneWork);
                 }
-
+                laneWork.LineString = RoadNetworkLineString.Create(vertices);
                 laneWorks.Add(laneWork);
             }
 
@@ -207,7 +208,7 @@ namespace PLATEAU.RoadNetwork.Factory
                 }
 
                 // index番目の頂点と隣接しているレーン
-                var vertex2Neighbors = laneWork.LineString.Vertices.Select(GetNeighborLane).ToList();
+                var vertex2Neighbors = laneWork.LineString.Select(GetNeighborLane).ToList();
 
                 // 1頂点でしかつながっていないレーンは隣接していないので削除
                 // 交差点で隣り合う道路道路は１頂点でつながっているが実際は中央の交差点
@@ -272,7 +273,7 @@ namespace PLATEAU.RoadNetwork.Factory
                 var wayWorks = new List<WayWork>();
                 foreach (var wayVertexIndices in splitWays)
                 {
-                    var lineString = RoadNetworkLineString.Create(wayVertexIndices.Select(v => laneWork.LineString.Vertices[v]));
+                    var lineString = RoadNetworkLineString.Create(wayVertexIndices.Select(v => laneWork.LineString.Points[v]));
                     var way = new RoadNetworkWay(lineString);
 
                     var toNeighbor = vertex2Neighbors[wayVertexIndices.Last()];

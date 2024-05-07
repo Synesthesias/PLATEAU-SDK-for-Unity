@@ -107,10 +107,23 @@ namespace PLATEAU.Util.GeoGraph
         /// <param name="vertices"></param>
         /// <param name="midPoint"></param>
         /// <returns></returns>
-        public static int TryGetLineSegmentMidPoint(IList<Vector3> vertices, out Vector3 midPoint)
+        public static int TryGetLineSegmentMidPoint(IReadOnlyList<Vector3> vertices, out Vector3 midPoint)
         {
-            var halfLength = GetLineSegmentLength(vertices) * 0.5f;
-
+            var length = GetLineSegmentLength(vertices) * 0.5f;
+            var len = 0f;
+            for (var i = 0; i < vertices.Count - 1; ++i)
+            {
+                var p0 = vertices[i];
+                var p1 = vertices[i + 1];
+                var l = (p1 - p0).magnitude;
+                len += l;
+                if (len >= length && l > float.Epsilon)
+                {
+                    var f = (len - length) / l;
+                    midPoint = Vector3.Lerp(p0, p1, f);
+                    return i;
+                }
+            }
 
             midPoint = Vector3.zero;
             return -1;

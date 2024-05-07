@@ -54,6 +54,9 @@ namespace PLATEAU.RoadNetwork
             IsRightSide = isRightSide;
         }
 
+        // デシリアライズのために必要
+        public RoadNetworkWay() { }
+
         public RoadNetworkWay ReversedWay()
         {
             return new RoadNetworkWay(LineString, !IsReversed, !IsRightSide);
@@ -69,9 +72,9 @@ namespace PLATEAU.RoadNetwork
             get
             {
                 if (IsReversed == false)
-                    return LineString.Vertices[index];
+                    return LineString[index];
                 // 0 <= index < LineString.Vertices.Count前提なのでmodとったりしない
-                return LineString.Vertices[LineString.Vertices.Count - 1 - index];
+                return LineString[LineString.Points.Count - 1 - index];
             }
         }
 
@@ -181,7 +184,7 @@ namespace PLATEAU.RoadNetwork
         /// <returns></returns>
         public int TryGetCenterVertex(out Vector3 midPoint)
         {
-            return LineUtil.TryGetLineSegmentMidPoint(LineString?.Vertices ?? new List<Vector3>(), out midPoint);
+            return LineUtil.TryGetLineSegmentMidPoint(LineString, out midPoint);
         }
 
         /// <summary>

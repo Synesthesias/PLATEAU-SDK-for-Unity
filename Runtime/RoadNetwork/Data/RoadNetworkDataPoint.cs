@@ -1,5 +1,6 @@
 ﻿using System;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace PLATEAU.RoadNetwork.Data
 {
@@ -8,14 +9,23 @@ namespace PLATEAU.RoadNetwork.Data
 
     }
 
-    [Serializable]
-    public struct RoadNetworkDataPoint : IPrimitiveData
+    [Serializable, RoadNetworkSerializeData(typeof(RoadNetworkPoint))]
+    public class RoadNetworkDataPoint : IPrimitiveData
     {
+        [field: SerializeField]
+        [RoadNetworkSerializeMember(nameof(RoadNetworkPoint.Vertex))]
+        public Vector3 Vertex { get; set; }
+
         public RoadNetworkDataPoint(Vector3 val)
         {
-            value = val;
+            Vertex = val;
         }
-        public Vector3 value;
+
+        public RoadNetworkDataPoint()
+        {
+
+        }
+
     }
 
 

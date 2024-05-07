@@ -21,6 +21,9 @@ namespace PLATEAU.Editor.RoadNetwork
 
             if (GUILayout.Button("Serialize"))
                 cog.Serialize();
+
+            if (GUILayout.Button("Deserialize"))
+                cog.Deserialize();
             if (GUILayout.Button("Save as presets"))
             {
                 cog.savedTargets.Add(new PLATEAURoadNetworkTester.TestTargetPresets

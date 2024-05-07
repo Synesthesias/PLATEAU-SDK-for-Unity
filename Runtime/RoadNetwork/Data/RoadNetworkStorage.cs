@@ -56,8 +56,11 @@ namespace PLATEAU.RoadNetwork.Data
         public TrafficRegulationStorage TrafficRegulationStorage { get => trafficRegulationStorage; }
         public PrimitiveDataStorage PrimitiveDataStorage { get => primitiveDataStorage; }
 
-        [SerializeField/*, PersistentAmongPlayMode*/] private TrafficRegulationStorage trafficRegulationStorage;
-        [SerializeField/*, PersistentAmongPlayMode*/] private PrimitiveDataStorage primitiveDataStorage = new PrimitiveDataStorage();
+        [SerializeField /*, PersistentAmongPlayMode*/]
+        private TrafficRegulationStorage trafficRegulationStorage;
+
+        [SerializeField /*, PersistentAmongPlayMode*/]
+        private PrimitiveDataStorage primitiveDataStorage = new PrimitiveDataStorage();
 
         private PrimitiveDataHandleManager primitiveDataHandleManager;
 
@@ -71,6 +74,7 @@ namespace PLATEAU.RoadNetwork.Data
         {
 
         }
+
         // Start is called before the first frame update
         private void Start()
         {
@@ -154,6 +158,7 @@ namespace PLATEAU.RoadNetwork.Data
                 {
                     freeHandles[i].Val = points[i];
                 }
+
                 return freeHandles.ToArray();
             }
             else
@@ -214,81 +219,6 @@ namespace PLATEAU.RoadNetwork.Data
             primitiveDataStorage.Points.ClearAll();
             primitiveDataStorage.LineStrings.ClearAll();
         }
-
-        public void Serialize(RoadNetworkModel model, float cellSize)
-        {
-            var allLinks = model.Links.Distinct().ToList();
-            var allNodes = model.Nodes.Distinct().ToList();
-            var allLineStrings = model.CollectAllLineStrings().Distinct().ToList();
-            var allLanes = model.CollectAllLanes().Distinct().ToList();
-            var allWays = model.CollectAllWays().Distinct().ToList();
-
-            // 低レイヤのものから順にシリアライズする
-
-            // Vertex
-            var vertexData = allLineStrings.SelectMany(s => s.Vertices).Distinct().Select(v => new RoadNetworkDataPoint { value = v }).ToArray();
-            var pointIds = PrimitiveDataStorage.Points.WriteNew(vertexData);
-
-            // 逆引きの辞書を作る
-            var pointTable = new Dictionary<Vector3, RnId<RoadNetworkDataPoint>>();
-            foreach (var id in pointIds)
-                pointTable[PrimitiveDataStorage.Points.Read(id).value] = id;
-
-            // LineString
-            var lineStringData = allLineStrings.Select(l =>
-            {
-                var ret = new RoadNetworkDataLineString();
-                ret.points.AddRange(l.Vertices.Select(v => pointTable[v]));
-                return ret;
-            }).ToArray();
-
-            var lineStringIds = PrimitiveDataStorage.LineStrings.WriteNew(lineStringData);
-
-            var lineStringTable = new Dictionary<RoadNetworkLineString, RnId<RoadNetworkDataLineString>>();
-            foreach (var i in Enumerable.Range(0, lineStringIds.Length))
-            {
-                lineStringTable[allLineStrings[i]] = lineStringIds[i];
-            }
-
-            // Way
-            var wayData = allWays.Select(w => new RoadNetworkDataWay
-            {
-                LineString = lineStringTable[w.LineString],
-                IsReversed = w.IsReversed,
-                IsRightSide = w.IsRightSide,
-
-            }).ToArray();
-            var wayIds = PrimitiveDataStorage.Ways.WriteNew(wayData);
-            var wayTable = new Dictionary<RoadNetworkWay, RnId<RoadNetworkDataWay>>();
-            foreach (var i in Enumerable.Range(0, wayIds.Length))
-            {
-                wayTable[allWays[i]] = wayIds[i];
-                wayData[i].MyId = wayIds[i];
-            }
-
-            TValue FindId<TKey, TValue>(Dictionary<TKey, TValue> table, TKey key)
-                where TKey : class
-                where TValue : new()
-            {
-                if (key == null)
-                    return default(TValue);
-                // 存在しないのにテーブル化されていないのはテーブル化にバグがあるのでここではContainsKeyチェックは行わない
-                return table[key];
-            }
-
-
-        }
-
-        //bool IRoadNetworkDynamicEditable.FitPointStorage()
-        //{
-        //    throw new NotImplementedException();
-        //}
-
-        //bool IRoadNetworkDynamicEditable.FitLineStringsStorage()
-        //{
-        //    throw new NotImplementedException();
-        //}
-
     }
 
     [System.Serializable]
@@ -464,6 +394,8 @@ namespace PLATEAU.RoadNetwork.Data
             // 未使用のデータインデックス アプリを次回起動した際にインデックスを利用できるように残す
             [SerializeField] private List<int> freeDataIndices = new List<int>();
 
+            public IReadOnlyList<TPrimType> DataList => dataList;
+
             /// <summary>
             /// ストレージのID群を取得
             /// </summary>
@@ -632,12 +564,12 @@ namespace PLATEAU.RoadNetwork.Data
         {
             get
             {
-                var pointId = storage.PrimitiveDataStorage.LineStrings.Read(this.id).points[id.Id];
+                var pointId = storage.PrimitiveDataStorage.LineStrings.Read(this.id).Points[id.Id];
                 return storage.PrimitiveDataStorage.Points.Read(pointId);
             }
             set
             {
-                var pointId = storage.PrimitiveDataStorage.LineStrings.Read(this.id).points[id.Id];
+                var pointId = storage.PrimitiveDataStorage.LineStrings.Read(this.id).Points[id.Id];
                 storage.PrimitiveDataStorage.Points.Write(pointId, value);
             }
         }
@@ -645,11 +577,11 @@ namespace PLATEAU.RoadNetwork.Data
         {
             get
             {
-                return storage.PrimitiveDataStorage.LineStrings.Read(this.id).points[index];
+                return storage.PrimitiveDataStorage.LineStrings.Read(this.id).Points[index];
             }
             set
             {
-                storage.PrimitiveDataStorage.LineStrings.Read(this.id).points[index] = value;
+                storage.PrimitiveDataStorage.LineStrings.Read(this.id).Points[index] = value;
             }
         }
 

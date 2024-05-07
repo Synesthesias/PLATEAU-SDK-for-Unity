@@ -1,9 +1,11 @@
 using NUnit.Framework;
 using PLATEAU.RoadNetwork;
 using PLATEAU.Util;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using UnityEngine;
 using UnityEngine.TestTools;
 
@@ -24,9 +26,10 @@ namespace PLATEAU.Tests.TestUtils
             }
             {
                 var ret = TypeUtil.GetAllMembersRecursively<Vector3>(obj).ToList();
-                Assert.IsTrue(lineString.Vertices[0] == ret.FirstOrDefault()?.Item2, "lineString == ret.FirstOrDefault()?.Item2");
+                Assert.IsTrue(lineString[0] == ret.FirstOrDefault()?.Item2, "lineString == ret.FirstOrDefault()?.Item2");
             }
         }
+
         [Test()]
         public void GenericListMemberTest()
         {
@@ -37,14 +40,27 @@ namespace PLATEAU.Tests.TestUtils
 
             Assert.IsTrue(genType == typeof(List<>), "genType == typeof(List<>)");
         }
-        // A UnityTest behaves like a coroutine in Play Mode. In Edit Mode you can use
-        // `yield return null;` to skip a frame.
-        [UnityTest]
-        public IEnumerator TypeUtilTestWithEnumeratorPasses()
+
+        [Test()]
+        public void ObjectKeyTableTest()
         {
-            // Use the Assert class to test conditions.
-            // Use yield to skip a frame.
-            yield return null;
+            var table = new Dictionary<object, object>();
+
+            table[1] = 10;
+
+            object key = 1;
+            Console.WriteLine(table[key]);
+        }
+
+        [Test()]
+        public void GetPropertyFieldInfoTest()
+        {
+            var props = typeof(RoadNetworkLink).GetProperty(nameof(RoadNetworkLink.MainLanes));
+            var getter = props.GetGetMethod(true);
+            var memberInfo = (System.Reflection.MemberInfo)getter;
+            var fieldInfo = memberInfo as FieldInfo;
+
+            Console.WriteLine(fieldInfo.DeclaringType);
         }
     }
 }

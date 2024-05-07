@@ -40,13 +40,13 @@ namespace PLATEAU.RoadNetwork
 
         [field: SerializeField] private RoadNetworkFactory Factory { get; set; } = new RoadNetworkFactory();
 
-        public RoadNetworkModel roadNetwork = null;
+        [field: SerializeField] public RoadNetworkModel RoadNetwork { get; set; }
 
-        [field: SerializeField] private RoadNetworkStorage Storage;
+        [field: SerializeField] private RoadNetworkStorage Storage { get; set; }
 
         public void OnDrawGizmos()
         {
-            drawer.Draw(roadNetwork);
+            drawer.Draw(RoadNetwork);
 
             if (showGeoTest)
             {
@@ -83,22 +83,31 @@ namespace PLATEAU.RoadNetwork
                     .Where(c => c.CityObjects.rootCityObjects.Any(a => a.CityObjectType == CityObjectType.COT_Road))
                     .ToList();
 
-                roadNetwork = Factory.CreateNetwork(allTargets);
+                RoadNetwork = Factory.CreateNetwork(allTargets);
             }
             else
             {
                 // èdï°ÇÕîrèúÇ∑ÇÈ
                 targets = targets.Distinct().ToList();
-                roadNetwork = Factory.CreateNetwork(targets);
+                RoadNetwork = Factory.CreateNetwork(targets);
             }
         }
 
         public void Serialize()
         {
-            if (roadNetwork == null)
+            if (RoadNetwork == null)
                 return;
             var serializer = new RoadNetworkSerializer();
-            Storage = serializer.Serialize(roadNetwork);
+            Storage = serializer.Serialize(RoadNetwork);
+        }
+
+        public void Deserialize()
+        {
+            if (Storage == null)
+                return;
+
+            var serializer = new RoadNetworkSerializer();
+            RoadNetwork = serializer.Deserialize(Storage);
         }
     }
 }

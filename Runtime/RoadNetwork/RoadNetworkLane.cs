@@ -78,18 +78,17 @@ namespace PLATEAU.RoadNetwork
         {
             get
             {
-                foreach (var v in PrevBorder?.LineString?.Vertices ?? new List<Vector3>())
+                foreach (var v in PrevBorder?.LineString?.Points?.Select(x => x.Vertex) ?? new List<Vector3>())
                     yield return v;
 
-                foreach (var v in LeftWay?.LineString?.Vertices ?? new List<Vector3>())
+                foreach (var v in LeftWay?.LineString?.Points?.Select(x => x.Vertex) ?? new List<Vector3>())
                     yield return v;
 
-                foreach (var v in NextBorder?.LineString?.Vertices ?? new List<Vector3>())
+                foreach (var v in NextBorder?.LineString?.Points?.Select(x => x.Vertex) ?? new List<Vector3>())
                     yield return v;
 
-                foreach (var v in RightWay?.LineString?.Vertices ?? new List<Vector3>())
+                foreach (var v in RightWay?.LineString?.Points?.Select(x => x.Vertex) ?? new List<Vector3>())
                     yield return v;
-
             }
         }
 
@@ -100,6 +99,9 @@ namespace PLATEAU.RoadNetwork
             PrevBorder = startBorder;
             NextBorder = endBorder;
         }
+
+        //デシリアライズの為に必要
+        public RoadNetworkLane() { }
 
         // 向き反転させる
         public void Reverse()
@@ -181,8 +183,7 @@ namespace PLATEAU.RoadNetwork
             // 自己交差があれば削除する
             GeoGraph2d.RemoveSelfCrossing(centerLineVertices, t => t.Xz(), (p1, p2, p3, p4, inter, f1, f2) => Vector3.Lerp(p1, p2, f1));
 
-            var centerLine = new RoadNetworkLineString();
-            centerLine.Vertices.AddRange(centerLineVertices);
+            var centerLine = RoadNetworkLineString.Create(centerLineVertices);
 
             var leftLane = new RoadNetworkLane(LeftWay, new RoadNetworkWay(centerLine, false, true), startSubWays[0], endSubWays[0]);
             var rightLane = new RoadNetworkLane(new RoadNetworkWay(centerLine, false, false), RightWay, startSubWays[1], endSubWays[1]);

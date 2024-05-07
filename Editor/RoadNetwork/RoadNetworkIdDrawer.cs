@@ -50,6 +50,12 @@ namespace PLATEAU.Editor.RoadNetwork
 
     }
 
+    [CustomPropertyDrawer(typeof(RnId<RoadNetworkDataPoint>))]
+    public class RnPointIdDrawer : RoadNetworkIdDrawer<RoadNetworkDataPoint>
+    {
+
+    }
+
 
     [CustomPropertyDrawer(typeof(RnId<RoadNetworkDataBlock>))]
     public class RnBlockIdDrawer : RoadNetworkIdDrawer<RoadNetworkDataBlock>

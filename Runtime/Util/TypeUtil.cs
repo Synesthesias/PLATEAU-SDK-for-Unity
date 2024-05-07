@@ -53,7 +53,7 @@ namespace PLATEAU.Util
                 return f.FieldType;
             if (m is PropertyInfo p)
                 return p.PropertyType;
-            throw new InvalidOperationException($"GetValue MemberInfo {m.Name} is nor FieldInfo or PropertyInfo");
+            throw new InvalidOperationException($"GetValue MemberInfo {m?.Name} is nor FieldInfo or PropertyInfo");
         }
 
 
@@ -133,6 +133,19 @@ namespace PLATEAU.Util
         public static IEnumerable<Tuple<FieldInfo, T>> GetAllMembersRecursively<T>(object obj, BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
         {
             return GetAllMembersRecursively(obj, typeof(T), flags).Select(item => new Tuple<FieldInfo, T>(item.Item1, (T)(item.Item2)));
+        }
+
+        /// <summary>
+        /// 自動生成されたプロパティが内部で持っているフィールドのFieldInfoを取得する
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="propertyInfo"></param>
+        /// <returns></returns>
+        public static FieldInfo GetPropertyBackingField(Type type, PropertyInfo propertyInfo)
+        {
+            // https://learn.microsoft.com/en-us/ef/core/modeling/backing-field?tabs=data-annotations
+            // type = propertyInfo.ReflectedTypeでも良さそうだけど確実じゃないので外部から渡す形式にする
+            return type?.GetField($"<{propertyInfo.Name}>k__BackingField", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
         }
     }
 }

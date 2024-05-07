@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace PLATEAU.RoadNetwork.Data
 {
-    [Serializable]
+    [Serializable, RoadNetworkSerializeData(typeof(RoadNetworkWay))]
     public class RoadNetworkDataWay : IPrimitiveData
     {
         // 自分自身を表すId
