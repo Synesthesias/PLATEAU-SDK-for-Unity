@@ -145,6 +145,7 @@ namespace PLATEAU.Util
         {
             // https://learn.microsoft.com/en-us/ef/core/modeling/backing-field?tabs=data-annotations
             // type = propertyInfo.ReflectedTypeでも良さそうだけど確実じゃないので外部から渡す形式にする
+            // #TODO : すべてのコンパイラがk_BackingFieldという名前にする保証があるのか？
             return type?.GetField($"<{propertyInfo.Name}>k__BackingField", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
         }
     }
