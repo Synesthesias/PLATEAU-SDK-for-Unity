@@ -1,11 +1,8 @@
 using System.Threading.Tasks;
 using PLATEAU.CityImport.Import.Convert;
 using PLATEAU.GranularityConvert;
-using PLATEAU.PolygonMesh;
 using PLATEAU.Util;
-using System;
 using System.Linq;
-using UnityEditor;
 using UnityEngine;
 
 namespace PLATEAU.CityAdjust.MaterialAdjust.Executor.Process
@@ -23,7 +20,7 @@ namespace PLATEAU.CityAdjust.MaterialAdjust.Executor.Process
             this.conf = conf;
         }
         
-        public async Task<Result<GranularityConvertResult>> ExecAsync(UniqueParentTransformList targetTrans, MAGranularity dstGranularity)
+        public async Task<Result<GranularityConvertResult>> ExecAsync(UniqueParentTransformList targetTrans, MAGranularity dstGranularity, IMACondition maCondition)
         {
             
                 
@@ -34,7 +31,7 @@ namespace PLATEAU.CityAdjust.MaterialAdjust.Executor.Process
             composeConf.TargetTransforms = new UniqueParentTransformList(targetTrans.Get);
             composeConf.MeshGranularity = dstGranularity;
             
-            var composeResult = await granularityConverterAfter.ConvertProgressiveAsync(composeConf);
+            var composeResult = await granularityConverterAfter.ConvertProgressiveAsync(composeConf, maCondition);
             if (!composeResult.IsSucceed)
             {
                 Debug.LogError("ゲームオブジェクトの結合に失敗しました。");

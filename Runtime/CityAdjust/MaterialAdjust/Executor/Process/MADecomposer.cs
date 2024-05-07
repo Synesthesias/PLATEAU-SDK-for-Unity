@@ -1,7 +1,6 @@
 using System.Threading.Tasks;
 using PLATEAU.CityImport.Import.Convert;
 using PLATEAU.GranularityConvert;
-using PLATEAU.PolygonMesh;
 using PLATEAU.Util;
 using UnityEngine;
 
@@ -14,13 +13,13 @@ namespace PLATEAU.CityAdjust.MaterialAdjust.Executor.Process
     /// </summary>
     internal class MADecomposer
     {
-        public async Task<Result<GranularityConvertResult>> ExecAsync(MAExecutorConf conf, Transform currentTarget)
+        public async Task<Result<GranularityConvertResult>> ExecAsync(MAExecutorConf conf, Transform currentTarget, IMACondition maCondition)
         {
             var decomposer = new CityGranularityConverter();
             var decomposeConf = conf.Copy();
             decomposeConf.MeshGranularity = MAGranularity.PerAtomicFeatureObject;
             decomposeConf.TargetTransforms = new UniqueParentTransformList(currentTarget);
-            var decomposeResult = await decomposer.ConvertProgressiveAsync(decomposeConf);
+            var decomposeResult = await decomposer.ConvertProgressiveAsync(decomposeConf, maCondition);
             if (!decomposeResult.IsSucceed)
             {
                 Debug.LogError("ゲームオブジェクトの分解に失敗しました");

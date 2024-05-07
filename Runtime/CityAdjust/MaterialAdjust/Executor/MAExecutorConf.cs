@@ -19,14 +19,13 @@ namespace PLATEAU.CityAdjust.MaterialAdjust.Executor
         
         /// <summary> マテリアルを変更しない箇所は、分割結合をスキップするか </summary>
         public bool SkipNotChangingMaterial { get; }
-        public IMACondition Condition { get; }
 
         /// <summary>
         /// 地物型でのマテリアル分けの設定です。
         /// </summary>
         public MAExecutorConf(IMAConfig materialAdjustConf, UniqueParentTransformList targetTransforms,
-            MAGranularity meshGranularity, bool doDestroySrcObjs, string dstObjName, bool skipNotChangingMaterial,
-            IMACondition condition)
+            MAGranularity meshGranularity, bool doDestroySrcObjs, string dstObjName, bool skipNotChangingMaterial
+            )
         {
             MaterialAdjustConf = materialAdjustConf;
             TargetTransforms = targetTransforms;
@@ -34,13 +33,12 @@ namespace PLATEAU.CityAdjust.MaterialAdjust.Executor
             DoDestroySrcObjs = doDestroySrcObjs;
             DstObjName = dstObjName;
             SkipNotChangingMaterial = skipNotChangingMaterial;
-            Condition = condition;
         }
 
         public virtual MAExecutorConf Copy()
         {
             return new MAExecutorConf(MaterialAdjustConf, TargetTransforms, MeshGranularity, DoDestroySrcObjs,
-                DstObjName, SkipNotChangingMaterial, Condition);
+                DstObjName, SkipNotChangingMaterial);
         }
 
         /// <summary>
@@ -68,10 +66,10 @@ namespace PLATEAU.CityAdjust.MaterialAdjust.Executor
 
         public MAExecutorConfByAttr(IMAConfig materialAdjustConf,
             UniqueParentTransformList targetTransforms,
-            MAGranularity meshGranularity, bool doDestroySrcObjs, string dstObjName, bool skipNotChangingMaterial, IMACondition condition,
+            MAGranularity meshGranularity, bool doDestroySrcObjs, string dstObjName, bool skipNotChangingMaterial,
             string attrKey
             )
-            : base(materialAdjustConf, targetTransforms, meshGranularity, doDestroySrcObjs, dstObjName, skipNotChangingMaterial, condition)
+            : base(materialAdjustConf, targetTransforms, meshGranularity, doDestroySrcObjs, dstObjName, skipNotChangingMaterial)
         {
             AttrKey = attrKey;
         }

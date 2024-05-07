@@ -33,6 +33,11 @@ namespace PLATEAU.Util
             Init(src);
         }
 
+        public UniqueParentTransformList(UniqueParentTransformList copyFrom)
+        {
+            Init(copyFrom.Get);
+        }
+
         /// <summary> 汎用初期化メソッド </summary>
         public void Init(IEnumerable<Transform> src)
         {

@@ -1,5 +1,3 @@
-using PLATEAU.CityGML;
-using PLATEAU.CityImport.Import.Convert;
 using PLATEAU.CityInfo;
 using PLATEAU.Util;
 using UnityEngine;
@@ -11,7 +9,7 @@ namespace PLATEAU.CityAdjust.MaterialAdjust.Executor.Process
     /// マテリアル分け機能の3手順、分解 → マテリアル変更 → 結合のうち、マテリアル変更です。
     /// MAはMaterialAdjustの略とします。
     /// </summary>
-    internal class MAMaterialChanger
+    public class MAMaterialChanger
     {
         private IMAConfig materialAdjustConf;
         private IMAMaterialSelector materialSelector;
@@ -23,7 +21,8 @@ namespace PLATEAU.CityAdjust.MaterialAdjust.Executor.Process
         }
         
         /// <summary>
-        /// 再帰的にマテリアルを変更します
+        /// 再帰的にマテリアルを変更します。
+        /// 引数は最小地物単位であることが前提です。
         /// </summary>
         public void ExecRecursive(UniqueParentTransformList targetTrans)
         {
@@ -35,15 +34,12 @@ namespace PLATEAU.CityAdjust.MaterialAdjust.Executor.Process
         }
 
         /// <summary>
-        /// 非再帰的にマテリアルを変更します
+        /// 非再帰的にマテリアルを変更します。
+        /// 引数は最小地物単位であることが前提です。
         /// </summary>
         public void Exec(Transform trans)
         {
-            var cityObjGroups = trans.GetComponent<PLATEAUCityObjectGroup>();
-            if (cityObjGroups == null || cityObjGroups.CityObjects.rootCityObjects.Count == 0) return;
-            // 最小地物単位にしたので、rootCityObjectsの数は1つのはずです。
-            var cityObj = cityObjGroups.CityObjects.rootCityObjects[0];
-            var materialResult = materialSelector.Get(cityObj, materialAdjustConf);
+            var materialResult = GetMaterial(trans);
             if (!materialResult.IsSucceed) return;
                 
             var renderer = trans.GetComponent<Renderer>();
@@ -55,6 +51,36 @@ namespace PLATEAU.CityAdjust.MaterialAdjust.Executor.Process
                 materials[i] = materialResult.Get;
             }
             renderer.sharedMaterials = materials;
+        }
+
+        /// <summary>
+        /// <paramref name="trans"/>に対応する、変更用のマテリアルの有無と、ある場合はそのマテリアルを返します。
+        /// 引数は最小地物単位であることが前提です。
+        /// </summary>
+        private Result<Material> GetMaterial(Transform trans)
+        {
+            var cityObjGroups = trans.GetComponent<PLATEAUCityObjectGroup>();
+            if (cityObjGroups == null || cityObjGroups.CityObjects.rootCityObjects.Count == 0) return new Result<Material>(false, null);
+            // 最小地物単位にしたので、rootCityObjectsの数は1つのはずです。
+            var cityObj = cityObjGroups.CityObjects.rootCityObjects[0];
+            return materialSelector.Get(cityObj, materialAdjustConf);
+        }
+
+        /// <summary>
+        /// <paramref name="trans"/>がマテリアル分けの対象となるかどうかを返します。
+        /// 引数の結合単位は問いません。また、子までは確認しません。
+        /// </summary>
+        public bool ShouldChange(Transform trans)
+        {
+            var cityObjGroups = trans.GetComponent<PLATEAUCityObjectGroup>();
+            if (cityObjGroups == null) return false;
+            var cityObjs = cityObjGroups.GetAllCityObjects();
+            foreach (var co in cityObjs)
+            {
+                if (materialSelector.Get(co, materialAdjustConf).IsSucceed) return true;
+            }
+
+            return false;
         }
         
     }

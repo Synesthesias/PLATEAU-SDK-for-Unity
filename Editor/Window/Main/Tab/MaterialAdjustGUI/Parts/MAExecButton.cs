@@ -25,6 +25,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI.Parts
             if (PlateauEditorStyle.MainButton("実行"))
             {
                 var granularity = adjustGui.Guis.Get<MAGranularityGui>().Granularity;
+                bool skipNotChangingMaterial = adjustGui.Guis.Get<ToggleLeftElement>("skipNotChangingMaterial").Value;
                 
                 // GUIから設定値を取得します。
                 var executorConf = adjustGui.SelectedCriterion switch
@@ -36,8 +37,8 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI.Parts
                         granularity,
                         adjustGui.Guis.Get<DestroyOrPreserveSrcGui>().DoDestroySrcObjs,
                         adjustGui.Guis.Get<NameSelectGui>().EnteredName,
-                        adjustGui.Guis.Get<ToggleLeftElement>("skipNotChangingMaterial").Value,
-                        new MAConditionSimple()),
+                        skipNotChangingMaterial
+                        ),
                     
                     MaterialCriterion.ByAttribute => new MAExecutorConfByAttr(
                         adjustGui.CurrentSearcher.MaterialAdjustConf,
@@ -45,8 +46,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI.Parts
                         granularity,
                         adjustGui.Guis.Get<DestroyOrPreserveSrcGui>().DoDestroySrcObjs,
                         adjustGui.Guis.Get<NameSelectGui>().EnteredName,
-                        adjustGui.Guis.Get<ToggleLeftElement>("skipNotChangingMaterial").Value,
-                        new MAConditionSimple(),
+                        skipNotChangingMaterial,
                         adjustGui.Guis.Get<AttributeKeyGui>().AttrKey
                         ),
                     

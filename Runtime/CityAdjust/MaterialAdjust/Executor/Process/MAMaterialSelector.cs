@@ -8,7 +8,7 @@ namespace PLATEAU.CityAdjust.MaterialAdjust.Executor.Process
     /// そのCityObjectにふさわしいマテリアルを選択します。
     /// 設定のキーの型による差を吸収する目的のインターフェイスです。
     /// </summary>
-    internal interface IMAMaterialSelector
+    public interface IMAMaterialSelector
     {
         public Result<Material> Get(CityObjectList.CityObject cityObj, IMAConfig materialAdjustConf);
     }
