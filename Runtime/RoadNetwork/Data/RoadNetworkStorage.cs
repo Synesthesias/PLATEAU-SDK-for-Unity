@@ -6,6 +6,16 @@ using UnityEngine.Assertions;
 namespace PLATEAU.RoadNetwork.Data
 {
     /// <summary>
+    /// ノード、リンク、レーン、ブロックなどのデータを所持するオブジェクトが継承するインターフェイス
+    /// 道路ネットワークエディタのパラメータで型指定するために作成
+    /// （仮でこのファイルに配置している）
+    /// </summary>
+    public class RoadNetworkObject : MonoBehaviour
+    {
+
+    }
+
+    /// <summary>
     /// 道路ネットワークの変更機能を提供する
     /// </summary>
     public interface IRoadNetworkEditable
