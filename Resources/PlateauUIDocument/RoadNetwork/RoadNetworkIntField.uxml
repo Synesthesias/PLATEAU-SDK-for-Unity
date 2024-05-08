@@ -1,0 +1,3 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="True">
+    <ui:SliderInt show-input-field="true" direction="Horizontal" label="整数入力" name="IntField" inverted="false" />
+</ui:UXML>
