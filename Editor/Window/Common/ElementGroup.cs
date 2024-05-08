@@ -6,7 +6,7 @@ namespace PLATEAU.Editor.Window.Common
     /// </summary>
     internal class ElementGroup : Element
     {
-        private Element[] Elements { get; }
+        protected Element[] Elements { get; set; }
         
         public ElementGroup(string name, params Element[] elements) : base(name)
         {

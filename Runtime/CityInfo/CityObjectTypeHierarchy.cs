@@ -81,6 +81,12 @@ namespace PLATEAU.CityInfo
             throw new ArgumentOutOfRangeException(nameof(p), $"Package {p} is not found in the hierarchy.");
         }
 
+        /// <summary> <see cref="CityObjectType"/>をパッケージ種に変換します。 </summary>
+        public static PredefinedCityModelPackage ToPackage(this COType t)
+        {
+            return typeToNode[t].Package;
+        }
+
         /// <summary>
         /// タイプ分類の中で、引数の<see cref="Node"/>は何番目かを計算します。
         /// 順番はヒエラルキーの深さ優先探索の順とします。

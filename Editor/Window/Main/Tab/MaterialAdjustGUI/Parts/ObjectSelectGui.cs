@@ -1,3 +1,4 @@
+using PLATEAU.CityInfo;
 using PLATEAU.Editor.Window.Common;
 using PLATEAU.Util;
 using System;
@@ -8,7 +9,7 @@ using UnityEngine;
 
 namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI.Parts
 {
-    internal class ObjectSelectGui : Element
+    internal class ObjectSelectGui : Element, IPackageSelectResultReceiver
     {
         private readonly List<GameObject> selectedGameObjs = new();
         public UniqueParentTransformList UniqueSelected => new UniqueParentTransformList(selectedGameObjs.Select(obj => obj.transform));
@@ -51,11 +52,10 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI.Parts
                 PlateauEditorStyle.CenterAlignHorizontal(() =>
                 {
                     ButtonAddFromSelection(); // 「選択中のn個を追加」ボタン
-                
-                    // 地物タイプから選択ボタン
-                    if (PlateauEditorStyle.MiniButton("地物タイプから選択", 150))
+                    
+                    if (PlateauEditorStyle.MiniButton("パッケージ種から選択", 150))
                     {
-                        throw new NotImplementedException("未実装");
+                        PackageSelectWindow.Open(this);
                     }
                 });
             }
@@ -131,6 +131,24 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI.Parts
                     selectedGameObjs.AddRange(Selection.gameObjects);
                 }
             }
+        }
+
+        /// <summary>
+        /// パッケージ種選択ウィンドウの結果を反映させます。
+        /// 該当Model中の該当パッケージ種に該当するものをすべて追加します。
+        /// </summary>
+        public void ReceivePackageSelectResult(PackageSelectResult result)
+        {
+            var added = new UniqueParentTransformList();
+            foreach (var cog in result.Dataset.GetComponentsInChildren<PLATEAUCityObjectGroup>())
+            {
+                var package = cog.Package;
+                if (result.SelectedDict.TryGetValue(package, out bool isTarget) && isTarget)
+                {
+                    added.Add(cog.transform);
+                }
+            }
+            selectedGameObjs.AddRange(added.Get.Select(trans => trans.gameObject));
         }
         
     }

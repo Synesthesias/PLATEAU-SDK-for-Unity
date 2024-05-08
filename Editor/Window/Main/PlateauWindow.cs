@@ -8,7 +8,7 @@ namespace PLATEAU.Editor.Window.Main
     /// <summary>
     /// PLATEAU SDK ウィンドウのエントリーポイントです。
     /// </summary>
-    internal class PlateauWindow : EditorWindow
+    internal class PlateauWindow : PlateauWindowBase
     {
         private readonly ScrollView scrollView = new ();
         private PlateauWindowGUI gui;
@@ -20,7 +20,7 @@ namespace PLATEAU.Editor.Window.Main
             window.Show();
         }
         
-        private PlateauWindowGUI InitGui()
+        protected override IEditorDrawable InitGui()
         {
             // タブの内容を依存性注入により定義します。
             var tabs = new TabWithImage(
@@ -43,23 +43,9 @@ namespace PLATEAU.Editor.Window.Main
             );
             return new PlateauWindowGUI(tabs);
         }
-
-        private void OnGUI()
-        {
-            gui ??= InitGui();
-            PlateauEditorStyle.SetCurrentWindow(this);
-            scrollView.Draw(
-                gui.Draw
-            );
-        }
         
 
         /// <summary> テストからアクセスする用 </summary>
         internal const string NameOfInnerGuiField = nameof(gui);
-
-        private void OnDestroy()
-        {
-            gui.Dispose();
-        }
     }
 }

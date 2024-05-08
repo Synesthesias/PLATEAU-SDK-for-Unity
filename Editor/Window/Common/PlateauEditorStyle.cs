@@ -178,34 +178,20 @@ namespace PLATEAU.Editor.Window.Common
         }
 
         /// <summary> ボタンのスタイルです。押されたときにtrueを返します。 </summary>
-        public static bool MainButton(string text)
-        {
-            var buttonStyle = new GUIStyle(EditorStyles.label)
-            {
-                normal =
-                {
-                    background = LoadTexture(ImageRoundWindowWide),
-                    textColor = colorDefaultFont.Dark
-                },
-                alignment = TextAnchor.MiddleCenter
-            };
-            bool isButtonPushed = false;
-            CenterAlignHorizontal(() =>
-            {
-                isButtonPushed = ButtonWithColorTint(new GUIContent(text), colorButtonMain.Color, buttonStyle, GUILayout.Height(60), GUILayout.MaxWidth(240));
-            });
-            return isButtonPushed;
-        }
+        public static bool MainButton(string text) => ButtonWithColorTintCenter(text, colorButtonMain, 240);
+        
+        public static bool CancelButton(string text) => ButtonWithColorTintCenter(text, colorButtonCancel, 240);
+        public static bool ButtonSubColor(string text, int width) => ButtonWithColorTintCenter(text, colorButtonSub, width);
 
-        public static bool CancelButton(string text)
+        private static bool ButtonWithColorTintCenter(string text, ColorLightDark color, int width)
         {
             bool isButtonPushed = false;
             CenterAlignHorizontal(() =>
             {
-                isButtonPushed = ButtonWithColorTint(new GUIContent(text), colorButtonCancel.Color, ButtonStyle(), GUILayout.Height(60), GUILayout.MaxWidth(240));
+                isButtonPushed = ButtonWithColorTint(new GUIContent(text), color.Color, ButtonStyle(), GUILayout.Height(60), GUILayout.MaxWidth(width));
             });
             return isButtonPushed;
-        }
+        } 
 
         public static bool MiniButton(string text, int width)
         {

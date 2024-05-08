@@ -1,3 +1,6 @@
+using UnityEditor;
+using UnityEngine;
+
 namespace PLATEAU.Editor.Window.Common
 {
     /// <summary>
@@ -7,8 +10,11 @@ namespace PLATEAU.Editor.Window.Common
     /// </summary>
     internal abstract class Element : IEditorDrawable
     {
-        /// <summary> falseのとき、<see cref="Draw"/>が呼ばれても何もしません </summary>
+        /// <summary> falseのとき、<see cref="Draw"/>が呼ばれても描画しません </summary>
         public bool IsVisible { get; set; } = true;
+
+        /// <summary> falseのとき、Disabled(灰色で操作不可の状態)にします </summary>
+        public bool IsEnabled { get; set; } = true;
         
         /// <summary> 検索用の名前です。 </summary>
         public string Name { get; }
@@ -29,7 +35,10 @@ namespace PLATEAU.Editor.Window.Common
         public void Draw()
         {
             if (!IsVisible) return;
-            DrawContent();
+            using (new EditorGUI.DisabledScope(!IsEnabled))
+            {
+                DrawContent();
+            }
         }
 
         public abstract void DrawContent();

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 using Newtonsoft.Json;
+using PLATEAU.Dataset;
 using System;
 using System.Linq;
 using PLATEAU.PolygonMesh;
@@ -307,6 +308,15 @@ namespace PLATEAU.CityInfo
             return objs;
         }
 
+        /// <summary> パッケージ種を返します。 </summary>
+        public PredefinedCityModelPackage Package
+        {
+            get
+            {
+                // パッケージ種は1つのCityObjectGroup内で同じなので、最初の1つだけ見れば十分です。
+                return CityObjects.rootCityObjects[0].type.ToPackage();
+            }
+        }
         
 
         /// <summary>
