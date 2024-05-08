@@ -167,7 +167,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI.Parts
         {
             // 検索します
             var foundPackages = new HashSet<PredefinedCityModelPackage>();
-            var cogs = dataset.GetComponentsInChildren<PLATEAUCityObjectGroup>();
+            var cogs = dataset.GetComponentsInChildren<PLATEAUCityObjectGroup>(true);
             foreach (var cog in cogs)
             {
                 foundPackages.Add(cog.Package);

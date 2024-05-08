@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
 
@@ -56,20 +57,33 @@ namespace PLATEAU.Util
         public void Add(Transform op)
         {
             if (op == null) return; // nullは無視
-            foreach (var d in data)
+            Transform newParent = null;
+            foreach (var d in data.ToArray())
             {
-                if (d == op) return; // 重複は無視
-                else if (d.IsChildOf(op))  // 親が渡されたら、子と入れ替える
+                if (d == op) return; // ケースA:重複は無視
+                if (d.IsChildOf(op))  // ケースB:親が渡された場合
                 {
                     int id = data.IndexOf(d);
-                    data[id] = op;
-                    return;
-                }else if (op.IsChildOf(d)) // 子が渡されたら無視
+                    data[id] = op; // とりあえず子を全部親で置き換えて、重複をあとで処理する。
+                    newParent = op;
+                }else if (op.IsChildOf(d)) // ケースC:子が渡されたら無視
                 {
                     return;
                 }
             }
-            data.Add(op); // ユニークな親なら追加
+
+            if (newParent != null)
+            {
+                // 上述のケースBの後処理、重複排除。
+                var itemsToDelete = data.Where(t => t == newParent).Skip(1);
+                foreach (var del in itemsToDelete.ToArray())
+                {
+                    data.Remove(del);
+                }
+                return; // ケースBはここまで
+            }
+            
+            data.Add(op); // ケースD: ユニークな親なら追加
         }
 
         /// <summary> <see cref="Add"/>の複数渡す版 </summary>
@@ -177,6 +191,40 @@ namespace PLATEAU.Util
         public void Reset()
         {
             data.Clear();
+        }
+
+        /// <summary>
+        /// 複数の選択を親にまとめられるとき、まとめます。
+        /// 例えばAの子がすべてリストにあるとき、Aの子の代わりにAを選択します。
+        /// </summary>
+        public void ParentalShift()
+        {
+            bool isShifted;
+            do
+            {
+                isShifted = false;
+                var childCountDict = new Dictionary<Transform, int>();
+                // 親の子がすべて網羅されているか数えます
+                foreach (var trans in data)
+                {
+                    var parent = trans.parent;
+                    if (parent == null) continue;
+                    if (!childCountDict.TryAdd(parent, 1))
+                    {
+                        childCountDict[parent]++;
+                    }
+                }
+
+                foreach (var (parent, count) in childCountDict)
+                {
+                    if (count == parent.childCount) // 親の子がすべて網羅されているとき
+                    {
+                        Add(parent);
+                        isShifted = true;
+                    }
+                }
+            } while (isShifted); // ParentalShiftできなくなるまで繰り返し
+
         }
     }
 

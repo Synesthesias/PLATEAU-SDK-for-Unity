@@ -140,7 +140,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI.Parts
         public void ReceivePackageSelectResult(PackageSelectResult result)
         {
             var added = new UniqueParentTransformList();
-            foreach (var cog in result.Dataset.GetComponentsInChildren<PLATEAUCityObjectGroup>())
+            foreach (var cog in result.Dataset.GetComponentsInChildren<PLATEAUCityObjectGroup>(true))
             {
                 var package = cog.Package;
                 if (result.SelectedDict.TryGetValue(package, out bool isTarget) && isTarget)
@@ -148,6 +148,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI.Parts
                     added.Add(cog.transform);
                 }
             }
+            added.ParentalShift();
             selectedGameObjs.AddRange(added.Get.Select(trans => trans.gameObject));
         }
         
