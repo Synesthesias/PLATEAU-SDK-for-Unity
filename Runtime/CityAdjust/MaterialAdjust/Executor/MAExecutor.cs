@@ -22,6 +22,19 @@ namespace PLATEAU.CityAdjust.MaterialAdjust.Executor
     /// </summary>
     internal static class MAExecutorFactory
     {
+        /// <summary> マテリアル分けせず、分割結合のみ行うインスタンスを返します。 </summary>
+        public static MAExecutor CreateGranularityExecutor(MAExecutorConf conf)
+        {
+            var materialChanger = new MADummyMaterialChanger();
+            return new MAExecutor(
+                conf,
+                new MADecomposer(),
+                materialChanger,
+                new MAComposer(conf),
+                MAConditionFactory.Create(conf.SkipNotChangingMaterial, materialChanger)
+            );
+        }
+        
         /// <summary> 属性情報によってマテリアル分けするインスタンスを返します </summary>
         public static MAExecutor CreateAttrExecutor(MAExecutorConf confBase)
         {
@@ -63,7 +76,7 @@ namespace PLATEAU.CityAdjust.MaterialAdjust.Executor
 
         private readonly MAExecutorConf conf;
         private readonly MADecomposer maDecomposer;
-        private readonly MAMaterialChanger maMaterialChanger;
+        private readonly IMAMaterialChanger maMaterialChanger;
         private readonly MAComposer maComposer;
         private readonly IMACondition maCondition;
 
@@ -77,7 +90,7 @@ namespace PLATEAU.CityAdjust.MaterialAdjust.Executor
         ///
         /// これらの各処理をコンストラクタで注入するために<see cref="MAExecutorFactory"/>を利用してください。
         /// </summary>
-        public MAExecutor(MAExecutorConf conf, MADecomposer maDecomposer, MAMaterialChanger maMaterialChanger,
+        public MAExecutor(MAExecutorConf conf, MADecomposer maDecomposer, IMAMaterialChanger maMaterialChanger,
             MAComposer maComposer, IMACondition maCondition)
         {
             this.conf = conf;

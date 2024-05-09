@@ -1,17 +1,21 @@
 ﻿using System;
 using PLATEAU.CityAdjust.MaterialAdjust;
+using PLATEAU.CityAdjust.MaterialAdjust.Executor;
+using PLATEAU.CityAdjust.MaterialAdjust.Executor.Process;
 using PLATEAU.Editor.Window.Common;
 using PLATEAU.Editor.Window.Main.Tab.AdjustGUIParts;
 using PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI.Parts;
+using PLATEAU.GranularityConvert;
+using PLATEAU.Util.Async;
+using System.Threading.Tasks;
 using UnityEditor;
-using UnityEngine.UIElements;
 
 namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
 {
     /// <summary>
     /// PLATEAU SDK ウィンドウで「マテリアル分け」タブが選択されている時のGUIです。
     /// </summary>
-    internal class CityMaterialAdjustGUI : ITabContent
+    internal class CityMaterialAdjustGUI : ITabContent, IGranularityConvertExecutor
     {
         public ElementGroup Guis { get; }
         
@@ -48,7 +52,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
                             new NameSelectGui("処理後の親オブジェクト名", "Converted") // 名前入力
                         ),
                         new HeaderElementGroup("", "分割/結合", HeaderType.Header,
-                            new MAGranularityGui() // 分割結合に関する一般設定
+                            new MAGranularityGui(this) // 分割結合に関する一般設定
                         ),
                         new HeaderElementGroup("", "マテリアル分け", HeaderType.Header,
                             new ToggleLeftElement("doMaterialAdjust", "マテリアルを条件指定で変更する", false),
@@ -76,7 +80,8 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
             Guis.Draw();
 
             // 不要な設定項目を隠します
-            Guis.Get<AttributeKeyGui>().IsVisible = SelectedCriterion == MaterialCriterion.ByAttribute;
+            Guis.Get<AttributeKeyGui>().IsVisible = SelectedCriterion == MaterialCriterion.ByAttribute; // 属性情報による分類をするときのみ属性情報キー入力欄を表示
+            Guis.Get<MAGranularityGui>().IsExecButtonVisible = !Guis.Get<ToggleLeftElement>("doMaterialAdjust").Value; // マテリアル分けか分割結合が、ボタンはどちらか1つ
             Guis.Get("MAGuiAfterSearch").IsVisible = IsSearched;
             Guis.Get("materialConf").IsVisible = Guis.Get<ToggleLeftElement>("doMaterialAdjust").Value;
         }
@@ -107,6 +112,73 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
         
         public void OnTabUnselect()
         {
+        }
+
+        /// <summary>
+        /// マテリアル分けをせず、分割結合のみ行う場合に呼びます。
+        /// </summary>
+        public void ExecGranularityConvert()
+        {
+            ExecGranularityConvertAsync().ContinueWithErrorCatch();
+        }
+
+        private async Task ExecGranularityConvertAsync()
+        {
+            await new CityGranularityConverter().ConvertProgressiveAsync(GenerateConf(), new MAConditionSimple());
+        }
+
+        /// <summary>
+        /// GUIをもとに設定値インスタンスを生成します。
+        /// </summary>
+        private MAExecutorConf GenerateConf()
+        {
+            var granularity = Guis.Get<MAGranularityGui>().Granularity;
+            bool skipNotChangingMaterial = Guis.Get<ToggleLeftElement>("skipNotChangingMaterial").Value;
+            
+            return SelectedCriterion switch
+            {
+                MaterialCriterion.None => new MAExecutorConf(
+                    CurrentSearcher.MaterialAdjustConf,
+                    Guis.Get<ObjectSelectGui>().UniqueSelected,
+                    granularity,
+                    Guis.Get<DestroyOrPreserveSrcGui>().DoDestroySrcObjs,
+                    Guis.Get<NameSelectGui>().EnteredName,
+                    false
+                ),
+                
+                MaterialCriterion.ByType => new MAExecutorConf(
+                    CurrentSearcher.MaterialAdjustConf,
+                    Guis.Get<ObjectSelectGui>().UniqueSelected,
+                    granularity,
+                    Guis.Get<DestroyOrPreserveSrcGui>().DoDestroySrcObjs,
+                    Guis.Get<NameSelectGui>().EnteredName,
+                    skipNotChangingMaterial
+                ),
+                    
+                MaterialCriterion.ByAttribute => new MAExecutorConfByAttr(
+                    CurrentSearcher.MaterialAdjustConf,
+                    Guis.Get<ObjectSelectGui>().UniqueSelected,
+                    granularity,
+                    Guis.Get<DestroyOrPreserveSrcGui>().DoDestroySrcObjs,
+                    Guis.Get<NameSelectGui>().EnteredName,
+                    skipNotChangingMaterial,
+                    Guis.Get<AttributeKeyGui>().AttrKey
+                ),
+                    
+                _ => throw new ArgumentOutOfRangeException()
+            };
+        }
+
+        public MAExecutor GenerateExecutor()
+        {
+            var executorConf = GenerateConf();
+            return SelectedCriterion switch
+            {
+                MaterialCriterion.None => MAExecutorFactory.CreateGranularityExecutor(executorConf),
+                MaterialCriterion.ByType => MAExecutorFactory.CreateTypeExecutor(executorConf),
+                MaterialCriterion.ByAttribute => MAExecutorFactory.CreateAttrExecutor((MAExecutorConfByAttr)executorConf),
+                _ => throw new ArgumentOutOfRangeException()
+            };
         }
     }
 }

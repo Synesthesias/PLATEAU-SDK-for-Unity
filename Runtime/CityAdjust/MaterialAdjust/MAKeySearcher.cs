@@ -51,6 +51,11 @@ namespace PLATEAU.CityAdjust.MaterialAdjust
     /// </summary>
     internal enum MaterialCriterion
     {
-        ByType, ByAttribute
+        /// <summary> マテリアル分けしない </summary>
+        None,
+        /// <summary> 地物型 </summary>
+        ByType,
+        /// <summary> 属性情報 </summary>
+        ByAttribute
     }
 }

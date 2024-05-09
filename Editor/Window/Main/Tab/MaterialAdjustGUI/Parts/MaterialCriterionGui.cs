@@ -12,7 +12,10 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI.Parts
     internal class MaterialCriterionGui : Element
     {
         private int selectedCriterionId;
-        private readonly MaterialCriterion[] criterionOptions = (MaterialCriterion[])Enum.GetValues(typeof(MaterialCriterion));
+        private readonly MaterialCriterion[] criterionOptions =
+            ((MaterialCriterion[])Enum.GetValues(typeof(MaterialCriterion)))
+            .Where(c => c!=MaterialCriterion.None)
+            .ToArray();
         private readonly string[] criterionOptionsDisplay;
         
         // マテリアル分けの基準が属性情報の場合と地物型の場合で、2つのインスタンスを用意します。

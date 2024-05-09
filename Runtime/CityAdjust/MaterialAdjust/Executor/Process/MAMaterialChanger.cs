@@ -5,11 +5,18 @@ using Material = UnityEngine.Material;
 
 namespace PLATEAU.CityAdjust.MaterialAdjust.Executor.Process
 {
+    public interface IMAMaterialChanger
+    {
+        void ExecRecursive(UniqueParentTransformList targetTrans);
+        void Exec(Transform trans);
+        bool ShouldChange(Transform trans);
+    }
+    
     /// <summary>
     /// マテリアル分け機能の3手順、分解 → マテリアル変更 → 結合のうち、マテリアル変更です。
     /// MAはMaterialAdjustの略とします。
     /// </summary>
-    public class MAMaterialChanger
+    public class MAMaterialChanger : IMAMaterialChanger
     {
         private IMAConfig materialAdjustConf;
         private IMAMaterialSelector materialSelector;
@@ -83,5 +90,24 @@ namespace PLATEAU.CityAdjust.MaterialAdjust.Executor.Process
             return false;
         }
         
+    }
+
+    /// <summary>
+    /// マテリアル分けを行わないときに使うダミーです。
+    /// </summary>
+    public class MADummyMaterialChanger : IMAMaterialChanger
+    {
+        public void ExecRecursive(UniqueParentTransformList targetTrans)
+        { // nop
+        }
+
+        public void Exec(Transform trans)
+        { // nop
+        }
+
+        public bool ShouldChange(Transform trans)
+        {
+            return false;
+        }
     }
 }

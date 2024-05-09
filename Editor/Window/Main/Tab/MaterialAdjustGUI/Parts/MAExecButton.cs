@@ -24,42 +24,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI.Parts
         {
             if (PlateauEditorStyle.MainButton("実行"))
             {
-                var granularity = adjustGui.Guis.Get<MAGranularityGui>().Granularity;
-                bool skipNotChangingMaterial = adjustGui.Guis.Get<ToggleLeftElement>("skipNotChangingMaterial").Value;
-                
-                // GUIから設定値を取得します。
-                var executorConf = adjustGui.SelectedCriterion switch
-                {
-                
-                    MaterialCriterion.ByType => new MAExecutorConf(
-                        adjustGui.CurrentSearcher.MaterialAdjustConf,
-                        adjustGui.Guis.Get<ObjectSelectGui>().UniqueSelected,
-                        granularity,
-                        adjustGui.Guis.Get<DestroyOrPreserveSrcGui>().DoDestroySrcObjs,
-                        adjustGui.Guis.Get<NameSelectGui>().EnteredName,
-                        skipNotChangingMaterial
-                        ),
-                    
-                    MaterialCriterion.ByAttribute => new MAExecutorConfByAttr(
-                        adjustGui.CurrentSearcher.MaterialAdjustConf,
-                        adjustGui.Guis.Get<ObjectSelectGui>().UniqueSelected,
-                        granularity,
-                        adjustGui.Guis.Get<DestroyOrPreserveSrcGui>().DoDestroySrcObjs,
-                        adjustGui.Guis.Get<NameSelectGui>().EnteredName,
-                        skipNotChangingMaterial,
-                        adjustGui.Guis.Get<AttributeKeyGui>().AttrKey
-                        ),
-                    
-                    _ => throw new ArgumentOutOfRangeException()
-                };
-                
-                // マテリアル分けインスタンスを作ります。
-                var executor = adjustGui.SelectedCriterion switch
-                {
-                    MaterialCriterion.ByType => MAExecutorFactory.CreateTypeExecutor(executorConf),
-                    MaterialCriterion.ByAttribute => MAExecutorFactory.CreateAttrExecutor((MAExecutorConfByAttr)executorConf),
-                    _ => throw new ArgumentOutOfRangeException()
-                };
+                var executor = adjustGui.GenerateExecutor();
                 
                 // 実行
                 executor.Exec().ContinueWithErrorCatch();

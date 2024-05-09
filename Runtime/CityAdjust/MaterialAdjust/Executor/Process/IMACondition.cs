@@ -21,7 +21,7 @@ namespace PLATEAU.CityAdjust.MaterialAdjust.Executor.Process
         /// <summary>
         /// 設定によって応じて返す<see cref="MAConditionSimple"/>のファクトリです。
         /// </summary>
-        public static MAConditionSimple Create(bool skipNotChangingMaterial, MAMaterialChanger maMatChanger)
+        public static MAConditionSimple Create(bool skipNotChangingMaterial, IMAMaterialChanger maMatChanger)
         {
             return skipNotChangingMaterial switch
             {
@@ -88,12 +88,12 @@ namespace PLATEAU.CityAdjust.MaterialAdjust.Executor.Process
     /// </summary>
     public class MAConditionMatChange : MAConditionSimple
     {
-        private MAMaterialChanger matChanger;
+        private IMAMaterialChanger matChanger;
         
         /// マテリアルの観点から、Transformキーを変換対象とするかどうかの辞書
         private Dictionary<Transform, bool> targetDict = new Dictionary<Transform, bool>();
 
-        public MAConditionMatChange(MAMaterialChanger matChanger)
+        public MAConditionMatChange(IMAMaterialChanger matChanger)
         {
             this.matChanger = matChanger;
         }
