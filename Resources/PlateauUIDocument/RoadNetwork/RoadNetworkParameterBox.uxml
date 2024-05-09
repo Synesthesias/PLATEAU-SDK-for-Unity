@@ -1,0 +1,12 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="True">
+    <ui:GroupBox name="ParameterBox" style="flex-direction: row;">
+        <ui:Label tabindex="-1" text="Label" parse-escape-sequences="true" display-tooltip-when-elided="true" name="GroupBoxLabel" />
+        <ui:VisualElement style="flex-grow: 1;">
+            <ui:VisualElement name="VisualElement" style="flex-grow: 1; flex-direction: row;">
+                <ui:Button text="＋" parse-escape-sequences="true" display-tooltip-when-elided="true" name="AddElementBtn" />
+                <ui:Button text="ー" parse-escape-sequences="true" display-tooltip-when-elided="true" name="RemoveElementBtn" />
+            </ui:VisualElement>
+            <ui:ScrollView name="ElementFolder" />
+        </ui:VisualElement>
+    </ui:GroupBox>
+</ui:UXML>

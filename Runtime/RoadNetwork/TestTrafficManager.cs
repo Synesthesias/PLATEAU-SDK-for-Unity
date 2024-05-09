@@ -13,6 +13,9 @@ namespace PLATEAU.RoadNetwork
     public class TestTrafficManager : MonoBehaviour
     {
         [SerializeField]
+        private RoadNetworkStorage storage = new RoadNetworkStorage();
+
+        [SerializeField]
         private GameObject testObj;
 
         private PointHandle[] pointHandles;
@@ -28,7 +31,6 @@ namespace PLATEAU.RoadNetwork
                 return;
 
             // テスト対象のデータを取得
-            var storage = testObj.GetComponent<RoadNetworkStorage>();
             var editable = storage as IRoadNetworkEditable;
             var dynamicEditable = storage as IRoadNetworkDynamicEditable;
 
