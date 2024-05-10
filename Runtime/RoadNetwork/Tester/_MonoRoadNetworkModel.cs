@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace PLATEAU
+namespace PLATEAU.RoadNetwork
 {
     public class _MonoRoadNetworkModel : RoadNetworkObject
     {
