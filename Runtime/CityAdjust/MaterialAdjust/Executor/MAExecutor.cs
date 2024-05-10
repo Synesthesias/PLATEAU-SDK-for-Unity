@@ -123,7 +123,8 @@ namespace PLATEAU.CityAdjust.MaterialAdjust.Executor
                 !(maCondition.ShouldDeconstruct(srcTrans, dstGranularity)))
             {
                 Debug.Log("通常コピー  " + srcTrans.name);
-                CopyGameObjAsResult(srcTrans, converted, srcDstDict);
+                var copied = CopyGameObjAsResult(srcTrans, converted, srcDstDict);
+                copied.transform.parent = srcDstDict[srcTrans].parent;
                 return NextSearchFlow.Continue;
             }
             
@@ -145,7 +146,10 @@ namespace PLATEAU.CityAdjust.MaterialAdjust.Executor
                         return NextSearchFlow.Continue;
                     }
                     decomposed = decomposeResult.Get.GeneratedRootTransforms;
-                    foreach(var dec in decomposed.Get) srcDstDict.Add(srcTrans, dec);
+                    foreach (var dec in decomposed.Get)
+                    {
+                        srcDstDict.Add(srcTrans, dec);
+                    }
                 }
                 else
                 {
@@ -182,7 +186,7 @@ namespace PLATEAU.CityAdjust.MaterialAdjust.Executor
                         if (!composeCondition.ShouldConstruct(innerTransSrc, dstGranularity))
                         {
                             Debug.Log("結合フェイズ：再帰的結合：コピー" + srcTrans.name);
-                            CopyGameObjAsResult(innerTransSrc, converted, srcDstDict);
+                            var copied = CopyGameObjAsResult(innerTransSrc, converted, srcDstDict);
                             Object.DestroyImmediate(innerTransSrc);
                             return NextSearchFlow.SkipChildren;
                         }
@@ -272,12 +276,23 @@ namespace PLATEAU.CityAdjust.MaterialAdjust.Executor
             foreach(var obj in objsToDestroy) Object.DestroyImmediate(obj);
 
             var srcParent = srcTrans.parent;
-            if ( srcParent != null && srcDstDict.TryGetValue(srcParent, out var dstParent))
+            if ( srcParent != null)
             {
-                copied.transform.parent = dstParent;
+                if (srcDstDict.TryGetValue(srcParent, out var dstParent))
+                {
+                    // すでに配置済みのdstの子の場合、親はdst側に合わせる
+                    copied.transform.parent = dstParent;
+                }
+                else
+                {
+                    // dstの中ではrootの場合、親はsrcに合わせる
+                    copied.transform.parent = srcTrans.parent;
+                }
+                
             }
             converted.Add(copied.transform);
             srcDstDict.Add(srcTrans, copied.transform);
+            copied.name = copied.name.Replace("(Clone)", "");
             return copied;
         }
 
@@ -290,6 +305,7 @@ namespace PLATEAU.CityAdjust.MaterialAdjust.Executor
                 copied.transform.parent = dstParent;
             }
             srcDstDict.Add(srcTrans, copied.transform);
+            copied.name = copied.name.Replace("(Clone)", "");
             return copied;
         }
 
@@ -329,5 +345,6 @@ namespace PLATEAU.CityAdjust.MaterialAdjust.Executor
             return !cond.IsTargetRecursive(srcTrans);
 
         }
+
     }
 }
