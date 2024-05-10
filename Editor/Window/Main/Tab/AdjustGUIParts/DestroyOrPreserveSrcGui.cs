@@ -12,14 +12,14 @@ namespace PLATEAU.Editor.Window.Main.Tab.AdjustGUIParts
             Preserve, Destroy
         }
         
-        private static readonly string[] DestroySrcOptions = { "残す", "削除する" };
-        public PreserveOrDestroy Current { get; private set; } = PreserveOrDestroy.Preserve;
+        private static readonly string[] DestroySrcOptions = { "新規追加（元オブジェクトは残す）", "置き換える（元オブジェクトは削除）" };
+        public PreserveOrDestroy Current { get; private set; } = PreserveOrDestroy.Destroy;
 
         public override void DrawContent()
         {
             Current = (PreserveOrDestroy)
                 PlateauEditorStyle.PopupWithLabelWidth(
-                    "元のオブジェクトを", (int)Current, DestroySrcOptions, 90);
+                    "オブジェクト配置", (int)Current, DestroySrcOptions, 90);
         }
 
         public bool DoDestroySrcObjs => Current == PreserveOrDestroy.Destroy;

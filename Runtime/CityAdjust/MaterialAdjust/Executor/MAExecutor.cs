@@ -28,7 +28,7 @@ namespace PLATEAU.CityAdjust.MaterialAdjust.Executor
         private readonly IMACondition maCondition;
         
         // デバッグ時は下をtrueにしてログを出し、デバッグが終わったらfalseにしてログを隠してください。
-        private readonly ConditionalLogger logger = new ConditionalLogger(()=>false);
+        private readonly ConditionalLogger logger = new ConditionalLogger(()=>true);
 
 
         /// <summary>
@@ -75,7 +75,7 @@ namespace PLATEAU.CityAdjust.MaterialAdjust.Executor
                 !(maCondition.ShouldDeconstruct(srcTrans, dstGranularity)))
             {
                 logger.Log("通常コピー  " + srcTrans.name);
-                var copied = CopyGameObjAsResult(srcTrans, converted, srcDstDict);
+                var copied = CopyGameObjAsResult(srcTrans, converted, srcDstDict, true);
                 copied.transform.parent = srcDstDict[srcTrans].parent;
                 return NextSearchFlow.Continue;
             }
@@ -137,12 +137,12 @@ namespace PLATEAU.CityAdjust.MaterialAdjust.Executor
                         
                         if (!composeCondition.ShouldConstruct(innerTransSrc, dstGranularity))
                         {
-                            logger.Log("結合フェイズ：再帰的結合：コピー" + srcTrans.name);
-                            var copied = CopyGameObjAsResult(innerTransSrc, converted, srcDstDict);
-                            Object.DestroyImmediate(innerTransSrc);
+                            logger.Log("結合フェイズ：再帰的結合：コピー" + innerTransSrc.name);
+                            var copied = CopyGameObjAsResult(innerTransSrc, converted, srcDstDict, false);
+                            Object.DestroyImmediate(innerTransSrc.gameObject);
                             return NextSearchFlow.SkipChildren;
                         }
-                        logger.Log("結合フェイズ：再帰的結合：結合 "  + srcTrans.name);
+                        logger.Log("結合フェイズ：再帰的結合：結合 "  + innerTransSrc.name);
                         var innerSrcParent = innerTransSrc.parent;
                         var parentOfComposed = innerSrcParent == null ? null : innerTransSrc.parent;
                         var result = await maComposer.ExecAsync(new UniqueParentTransformList(innerTransSrc), dstGranularity, maCondition);
@@ -196,7 +196,7 @@ namespace PLATEAU.CityAdjust.MaterialAdjust.Executor
             if (!ShouldSkipDueToMaterial(srcTrans))
             {
                 logger.Log("コピー：　分解結合不要： " + srcTrans.name);
-                var copy = CopyGameObjAsResult(srcTrans, converted, srcDstDict);
+                var copy = CopyGameObjAsResult(srcTrans, converted, srcDstDict, false);
                 maMaterialChanger.Exec(copy.transform);
                 return NextSearchFlow.Continue;
             }
@@ -224,16 +224,20 @@ namespace PLATEAU.CityAdjust.MaterialAdjust.Executor
         /// ゲームオブジェクト(子を除く)をコピーし、
         /// それを成果物として中間データ構造に追加します。
         /// </summary>
-        private GameObject CopyGameObjAsResult(Transform srcTrans, UniqueParentTransformList converted, Dictionary<Transform, Transform> srcDstDict)
+        private GameObject CopyGameObjAsResult(Transform srcTrans, UniqueParentTransformList converted, Dictionary<Transform, Transform> srcDstDict, bool withoutChild)
         {
             var copied = Object.Instantiate(srcTrans.gameObject);
-            // 子まではコピーしない
-            var objsToDestroy = new List<GameObject>();
-            foreach (Transform child in copied.transform)
+            if (withoutChild)
             {
-                objsToDestroy.Add(child.gameObject);
+                // 子まではコピーしない
+                var objsToDestroy = new List<GameObject>();
+                foreach (Transform child in copied.transform)
+                {
+                    objsToDestroy.Add(child.gameObject);
+                }
+                foreach(var obj in objsToDestroy) Object.DestroyImmediate(obj);
             }
-            foreach(var obj in objsToDestroy) Object.DestroyImmediate(obj);
+            
 
             var srcParent = srcTrans.parent;
             if ( srcParent != null)

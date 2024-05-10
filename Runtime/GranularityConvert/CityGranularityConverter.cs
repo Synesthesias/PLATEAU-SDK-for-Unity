@@ -71,10 +71,17 @@ namespace PLATEAU.GranularityConvert
             // 親Transformがnull(すなわちroot)のとき、combineDictのkeyをnullとしたいが、
             // Dictionaryのキーにnullは指定できないのでroot用の一時ゲームオブジェクトを作成
             var tmpRoot = new GameObject("tmpRoot");
-            
-            
-            conf.TargetTransforms.DfsExec(trans =>
+
+
+            if (countDeconstructed == 0) // 結合と分割は通常どちらかだけで良い
             {
+                conf.TargetTransforms.DfsExec(trans =>
+            {
+                if (trans == null)
+                {
+                    Debug.LogError($"{trans.name} is null.");
+                    return NextSearchFlow.SkipChildren;
+                }
                 // maConditionを使わず意図的にSimpleのメソッドを呼ぶ
                 if (!new MAConditionSimple().ShouldConstruct(trans, conf.MeshGranularity)) return NextSearchFlow.Continue;
                 
@@ -117,6 +124,8 @@ namespace PLATEAU.GranularityConvert
 
                 countCombined++;
             }
+            }
+            
             
             // tmpRootの子をrootに
             foreach (Transform root in tmpRoot.transform)

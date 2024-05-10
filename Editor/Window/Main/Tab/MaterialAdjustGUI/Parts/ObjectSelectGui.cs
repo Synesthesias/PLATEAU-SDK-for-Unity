@@ -11,7 +11,12 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI.Parts
     internal class ObjectSelectGui : Element, IPackageSelectResultReceiver
     {
         private readonly List<GameObject> selectedGameObjs = new();
-        public UniqueParentTransformList UniqueSelected => new UniqueParentTransformList(selectedGameObjs.Select(obj => obj.transform));
+        public UniqueParentTransformList UniqueSelected => 
+            new (
+                selectedGameObjs
+                    .Where(obj => obj != null)
+                    .Select(obj => obj.transform)
+                );
 
         public bool LockChange { get; set; }
         private readonly EditorWindow parentEditorWindow;
