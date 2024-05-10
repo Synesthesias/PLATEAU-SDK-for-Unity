@@ -35,12 +35,30 @@ namespace PLATEAU.RoadNetwork
         // end: フィールド
         //----------------------------------
 
+        /// <summary>
+        /// 頂点情報を返す
+        /// </summary>
         public IEnumerable<Vector3> Vertices
         {
             get
             {
                 for (var i = 0; i < Count; i++)
                     yield return this[i];
+            }
+        }
+
+        /// <summary>
+        /// 頂点情報をPoint型で返す(頂点変更できるように)
+        /// </summary>
+        public IEnumerable<RoadNetworkPoint> Points
+        {
+            get
+            {
+                if (IsReversed == false)
+                    return LineString.Points;
+
+                // 逆順
+                return Enumerable.Range(0, Count).Select(i => LineString.Points[Count - 1 - i]);
             }
         }
 
