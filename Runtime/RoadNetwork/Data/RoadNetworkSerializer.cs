@@ -130,9 +130,9 @@ namespace PLATEAU.RoadNetwork.Data
         private class Object2RnIdConverter<TData> : IValueConverter
             where TData : IPrimitiveData
         {
-            private Dictionary<object, RnId<TData>> Table { get; }
+            private Dictionary<object, RnID<TData>> Table { get; }
 
-            public Object2RnIdConverter(Dictionary<object, RnId<TData>> table)
+            public Object2RnIdConverter(Dictionary<object, RnID<TData>> table)
             {
                 Table = table;
             }
@@ -141,7 +141,7 @@ namespace PLATEAU.RoadNetwork.Data
             {
                 if (val == null)
                 {
-                    return new RnId<TData>();
+                    return new RnID<TData>();
                 }
 
                 return Table[val];
@@ -156,16 +156,16 @@ namespace PLATEAU.RoadNetwork.Data
         private class RnId2ObjectConverter<TData> : IValueConverter
             where TData : IPrimitiveData
         {
-            private Dictionary<RnId<TData>, object> Table { get; }
+            private Dictionary<RnID<TData>, object> Table { get; }
 
-            public RnId2ObjectConverter(Dictionary<RnId<TData>, object> table)
+            public RnId2ObjectConverter(Dictionary<RnID<TData>, object> table)
             {
                 Table = table;
             }
 
             public object Convert(object val)
             {
-                if (val is RnId<TData> id)
+                if (val is RnID<TData> id)
                 {
                     if (id.IsValid == false)
                         return null;
@@ -348,7 +348,7 @@ namespace PLATEAU.RoadNetwork.Data
             var objList = Enumerable.Range(0, storage.DataList.Count).Select(i => new T()).ToList();
 
             var id2Obj = Enumerable.Range(0, storage.DataList.Count)
-                .ToDictionary(i => new RnId<TData>(i), i => objList[i] as object);
+                .ToDictionary(i => new RnID<TData>(i), i => objList[i] as object);
 
             var idConverter = new RnId2ObjectConverter<TData>(id2Obj);
 
@@ -356,7 +356,7 @@ namespace PLATEAU.RoadNetwork.Data
                 .ToDictionary(i => storage.DataList[i] as object, i => objList[i] as object);
             var dataStorage = new DataStorage(data2Obj, memberReference);
             refTable.AddStorage(dataStorage);
-            refTable.AddConverter(typeof(RnId<TData>), idConverter);
+            refTable.AddConverter(typeof(RnID<TData>), idConverter);
             return objList;
         }
 

@@ -50,22 +50,22 @@ namespace PLATEAU.RoadNetwork
         public void DebugIdentify()
         {
             for (var i = 0; i < Nodes.Count; i++)
-                Nodes[i].MyId = new RnId<RoadNetworkDataNode>(i);
+                Nodes[i].MyId = new RnID<RoadNetworkDataNode>(i);
 
             for (var i = 0; i < Links.Count; i++)
-                Links[i].MyId = new RnId<RoadNetworkDataLink>(i);
+                Links[i].MyId = new RnID<RoadNetworkDataLink>(i);
 
             var allLanes = CollectAllLanes().ToList();
             for (var i = 0; i < allLanes.Count; i++)
-                allLanes[i].MyId = new RnId<RoadNetworkDataLane>(i);
+                allLanes[i].MyId = new RnID<RoadNetworkDataLane>(i);
 
             var allWays = CollectAllWays().ToList();
             for (var i = 0; i < allWays.Count; i++)
-                allWays[i].MyId = new RnId<RoadNetworkDataWay>(i);
+                allWays[i].MyId = new RnID<RoadNetworkDataWay>(i);
 
             var allLineStrings = CollectAllLineStrings().ToList();
             for (var i = 0; i < allLineStrings.Count; i++)
-                allLineStrings[i].MyId = new RnId<RoadNetworkDataLineString>(i);
+                allLineStrings[i].MyId = new RnID<RoadNetworkDataLineString>(i);
         }
     }
 }

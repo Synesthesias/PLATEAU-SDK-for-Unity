@@ -20,7 +20,7 @@ namespace PLATEAU.RoadNetwork
         // start: フィールド
         //----------------------------------
         // 識別Id. シリアライズ用.ランタイムでは使用しないこと
-        public RnId<RoadNetworkDataWay> MyId { get; set; }
+        public RnID<RoadNetworkDataWay> MyId { get; set; }
 
         // LineStringの向きが逆かどうか
         public bool IsReversed { get; set; } = false;

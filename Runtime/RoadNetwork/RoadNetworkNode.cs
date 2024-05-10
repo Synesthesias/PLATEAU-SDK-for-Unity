@@ -16,7 +16,7 @@ namespace PLATEAU.RoadNetwork
         // start: フィールド
         //----------------------------------
         // 識別Id. シリアライズ用.ランタイムでは使用しないこと
-        public RnId<RoadNetworkDataNode> MyId { get; set; }
+        public RnID<RoadNetworkDataNode> MyId { get; set; }
 
         //// レーンを構成する道
         //// 左側が若いインデックスになる

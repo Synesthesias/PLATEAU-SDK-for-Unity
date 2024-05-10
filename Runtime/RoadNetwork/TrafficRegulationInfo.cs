@@ -20,13 +20,13 @@ namespace PLATEAU.RoadNetwork
         /// <summary>
         /// 優先道路
         /// </summary>
-        public RnId<RoadNetworkDataLineString> yields;
+        public RnID<RoadNetworkDataLineString> yields;
     }
 
     [System.Serializable]
     public struct StopLine
     {
-        public RnId<RoadNetworkDataLineString> line;
+        public RnID<RoadNetworkDataLineString> line;
         public TrafficLight trafficLight;
         public bool bHasStopSign;
     }

@@ -15,7 +15,7 @@ namespace PLATEAU.RoadNetwork
         // start: フィールド
         //----------------------------------
         // 識別Id. シリアライズ用.ランタイムでは使用しないこと
-        public RnId<RoadNetworkDataLineString> MyId { get; set; }
+        public RnID<RoadNetworkDataLineString> MyId { get; set; }
 
         public List<RoadNetworkPoint> Points { get; } = new List<RoadNetworkPoint>();
 

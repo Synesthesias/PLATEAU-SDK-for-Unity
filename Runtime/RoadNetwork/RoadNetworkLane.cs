@@ -23,7 +23,7 @@ namespace PLATEAU.RoadNetwork
         // start: フィールド
         //----------------------------------
         // 識別Id. シリアライズ用.ランタイムでは使用しないこと
-        public RnId<RoadNetworkDataLane> MyId { get; set; }
+        public RnID<RoadNetworkDataLane> MyId { get; set; }
 
         // 親リンク
         public RoadNetworkLink ParentLink { get; set; }

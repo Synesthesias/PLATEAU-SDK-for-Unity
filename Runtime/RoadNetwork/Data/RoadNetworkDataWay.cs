@@ -9,7 +9,7 @@ namespace PLATEAU.RoadNetwork.Data
         // 自分自身を表すId
         [field: SerializeField]
         [RoadNetworkSerializeMember(nameof(RoadNetworkWay.MyId))]
-        public RnId<RoadNetworkDataWay> MyId { get; set; }
+        public RnID<RoadNetworkDataWay> MyId { get; set; }
 
         // LineStringの向きが逆かどうか
         [field: SerializeField]
@@ -24,7 +24,7 @@ namespace PLATEAU.RoadNetwork.Data
         // 頂点
         [field: SerializeField]
         [RoadNetworkSerializeMember(nameof(RoadNetworkWay.LineString))]
-        public RnId<RoadNetworkDataLineString> LineString { get; set; }
+        public RnID<RoadNetworkDataLineString> LineString { get; set; }
 
     }
 }

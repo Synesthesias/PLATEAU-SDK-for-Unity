@@ -15,7 +15,7 @@ namespace PLATEAU.RoadNetwork
         //----------------------------------
 
         // 識別Id. シリアライズ用.ランタイムでは使用しないこと
-        public RnId<RoadNetworkDataLink> MyId { get; set; }
+        public RnID<RoadNetworkDataLink> MyId { get; set; }
 
         public RoadNetworkNode NextNode { get; private set; }
 

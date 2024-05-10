@@ -10,29 +10,29 @@ namespace PLATEAU.RoadNetwork.Data
         // 自分自身を表すId
         [field: SerializeField]
         [RoadNetworkSerializeMember(nameof(RoadNetworkLink.MyId))]
-        public RnId<RoadNetworkDataLink> MyId { get; set; }
+        public RnID<RoadNetworkDataLink> MyId { get; set; }
 
         [field: SerializeField]
         [RoadNetworkSerializeMember(nameof(RoadNetworkLink.NextNode))]
-        public RnId<RoadNetworkDataNode> NextNode { get; set; }
+        public RnID<RoadNetworkDataNode> NextNode { get; set; }
 
         [field: SerializeField]
         [RoadNetworkSerializeMember(nameof(RoadNetworkLink.PrevNode))]
-        public RnId<RoadNetworkDataNode> PrevNode { get; set; }
+        public RnID<RoadNetworkDataNode> PrevNode { get; set; }
 
         // 本線レーン
         [field: SerializeField]
         [RoadNetworkSerializeMember(nameof(RoadNetworkLink.MainLanes))]
-        public List<RnId<RoadNetworkDataLane>> MainLanes { get; set; } = new List<RnId<RoadNetworkDataLane>>();
+        public List<RnID<RoadNetworkDataLane>> MainLanes { get; set; } = new List<RnID<RoadNetworkDataLane>>();
 
         // 右折レーン
         [field: SerializeField]
         [RoadNetworkSerializeMember(nameof(RoadNetworkLink.RightLanes))]
-        public List<RnId<RoadNetworkDataLane>> RightLanes { get; set; } = new List<RnId<RoadNetworkDataLane>>();
+        public List<RnID<RoadNetworkDataLane>> RightLanes { get; set; } = new List<RnID<RoadNetworkDataLane>>();
 
         // 左折レーン
         [field: SerializeField]
         [RoadNetworkSerializeMember(nameof(RoadNetworkLink.LeftLanes))]
-        public List<RnId<RoadNetworkDataLane>> LeftLanes { get; set; } = new List<RnId<RoadNetworkDataLane>>();
+        public List<RnID<RoadNetworkDataLane>> LeftLanes { get; set; } = new List<RnID<RoadNetworkDataLane>>();
     }
 }

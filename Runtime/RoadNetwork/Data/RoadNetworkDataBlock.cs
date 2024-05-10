@@ -9,11 +9,11 @@ namespace PLATEAU.RoadNetwork.Data
         // 自分自身を表すId
         [field: SerializeField]
         [RoadNetworkSerializeMember(nameof(RoadNetworkBlock.MyId))]
-        public RnId<RoadNetworkDataBlock> MyId { get; set; }
+        public RnID<RoadNetworkDataBlock> MyId { get; set; }
 
         [field: SerializeField]
         [RoadNetworkSerializeMember(nameof(RoadNetworkBlock.ParentLink))]
-        public RnId<RoadNetworkDataLink> ParentLink { get; set; }
+        public RnID<RoadNetworkDataLink> ParentLink { get; set; }
 
         [field: SerializeField]
         [RoadNetworkSerializeMember(nameof(RoadNetworkBlock.LaneType))]

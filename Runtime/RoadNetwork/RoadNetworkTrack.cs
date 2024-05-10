@@ -12,7 +12,7 @@ namespace PLATEAU.RoadNetwork
         //----------------------------------
 
         //識別用ID：TrackID
-        public RnId<RoadNetworkDataTrack> MyId { get; set; }
+        public RnID<RoadNetworkDataTrack> MyId { get; set; }
 
         //接続上流リンク識別用ID：LinkID
         public RoadNetworkLink NextLink { get; set; }

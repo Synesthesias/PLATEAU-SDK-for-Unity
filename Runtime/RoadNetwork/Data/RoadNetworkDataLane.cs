@@ -13,39 +13,39 @@ namespace PLATEAU.RoadNetwork.Data
         // 自分自身を表すId
         [field: SerializeField]
         [RoadNetworkSerializeMember(nameof(RoadNetworkLane.MyId))]
-        public RnId<RoadNetworkDataLane> MyId { get; set; }
+        public RnID<RoadNetworkDataLane> MyId { get; set; }
 
         [field: SerializeField]
         [RoadNetworkSerializeMember(nameof(RoadNetworkLane.ParentLink))]
-        public RnId<RoadNetworkDataLink> ParentLink { get; set; }
+        public RnID<RoadNetworkDataLink> ParentLink { get; set; }
 
         // 連結しているレーン(上流)
         [field: SerializeField]
         [RoadNetworkSerializeMember(nameof(RoadNetworkLane.NextLanes))]
-        public List<RnId<RoadNetworkDataLane>> NextLanes { get; set; } = new List<RnId<RoadNetworkDataLane>>();
+        public List<RnID<RoadNetworkDataLane>> NextLanes { get; set; } = new List<RnID<RoadNetworkDataLane>>();
 
         // 連結しているレーン(下流)
         [field: SerializeField]
         [RoadNetworkSerializeMember(nameof(RoadNetworkLane.PrevLanes))]
-        public List<RnId<RoadNetworkDataLane>> PrevLanes { get; set; } = new List<RnId<RoadNetworkDataLane>>();
+        public List<RnID<RoadNetworkDataLane>> PrevLanes { get; set; } = new List<RnID<RoadNetworkDataLane>>();
 
         // 境界線(下流)
         [field: SerializeField]
         [RoadNetworkSerializeMember(nameof(RoadNetworkLane.PrevBorder))]
-        public RnId<RoadNetworkDataWay> PrevBorder { get; set; }
+        public RnID<RoadNetworkDataWay> PrevBorder { get; set; }
 
         // 境界線(上流)
         [field: SerializeField]
         [RoadNetworkSerializeMember(nameof(RoadNetworkLane.NextBorder))]
-        public RnId<RoadNetworkDataWay> NextBorder { get; set; }
+        public RnID<RoadNetworkDataWay> NextBorder { get; set; }
 
         [field: SerializeField]
         [RoadNetworkSerializeMember(nameof(RoadNetworkLane.LeftWay))]
-        public RnId<RoadNetworkDataWay> LeftWay { get; set; }
+        public RnID<RoadNetworkDataWay> LeftWay { get; set; }
 
         [field: SerializeField]
         [RoadNetworkSerializeMember(nameof(RoadNetworkLane.RightWay))]
-        public RnId<RoadNetworkDataWay> RightWay { get; set; }
+        public RnID<RoadNetworkDataWay> RightWay { get; set; }
 
     }
 
