@@ -77,6 +77,9 @@ namespace PLATEAU.CityAdjust.MaterialAdjust.Executor
         private readonly IMAMaterialChanger maMaterialChanger;
         private readonly MAComposer maComposer;
         private readonly IMACondition maCondition;
+        
+        // デバッグ時は下をtrueにしてログを出し、デバッグが終わったらfalseにしてログを隠してください。
+        private readonly ConditionalLogger logger = new ConditionalLogger(()=>false);
 
 
         /// <summary>
@@ -122,7 +125,7 @@ namespace PLATEAU.CityAdjust.MaterialAdjust.Executor
                 !(maCondition.ShouldConstruct(srcTrans, dstGranularity)) &&
                 !(maCondition.ShouldDeconstruct(srcTrans, dstGranularity)))
             {
-                Debug.Log("通常コピー  " + srcTrans.name);
+                logger.Log("通常コピー  " + srcTrans.name);
                 var copied = CopyGameObjAsResult(srcTrans, converted, srcDstDict);
                 copied.transform.parent = srcDstDict[srcTrans].parent;
                 return NextSearchFlow.Continue;
@@ -138,7 +141,7 @@ namespace PLATEAU.CityAdjust.MaterialAdjust.Executor
                 UniqueParentTransformList decomposed;
                 if (shouldDeconstruct)
                 {
-                    Debug.Log("分解フェイズ：分解 " + srcTrans.name);
+                    logger.Log("分解フェイズ：分解 " + srcTrans.name);
                     var decomposeResult = await maDecomposer.ExecAsync(conf, srcTrans, maCondition);
                     if (!decomposeResult.IsSucceed)
                     {
@@ -154,7 +157,7 @@ namespace PLATEAU.CityAdjust.MaterialAdjust.Executor
                 else
                 {
                     // 分解不要なら代わりにコピー
-                    Debug.Log("分解フェイズ：コピー " + srcTrans.name);
+                    logger.Log("分解フェイズ：コピー " + srcTrans.name);
                     var copied = CopyGameObjWithChildren(srcTrans, srcDstDict);
                     decomposed = new UniqueParentTransformList(copied.transform);
                 }
@@ -185,12 +188,12 @@ namespace PLATEAU.CityAdjust.MaterialAdjust.Executor
                         
                         if (!composeCondition.ShouldConstruct(innerTransSrc, dstGranularity))
                         {
-                            Debug.Log("結合フェイズ：再帰的結合：コピー" + srcTrans.name);
+                            logger.Log("結合フェイズ：再帰的結合：コピー" + srcTrans.name);
                             var copied = CopyGameObjAsResult(innerTransSrc, converted, srcDstDict);
                             Object.DestroyImmediate(innerTransSrc);
                             return NextSearchFlow.SkipChildren;
                         }
-                        Debug.Log("結合フェイズ：再帰的結合：結合 "  + srcTrans.name);
+                        logger.Log("結合フェイズ：再帰的結合：結合 "  + srcTrans.name);
                         var innerSrcParent = innerTransSrc.parent;
                         var parentOfComposed = innerSrcParent == null ? null : innerTransSrc.parent;
                         var result = await maComposer.ExecAsync(new UniqueParentTransformList(innerTransSrc), dstGranularity, maCondition);
@@ -206,7 +209,7 @@ namespace PLATEAU.CityAdjust.MaterialAdjust.Executor
                 else
                 {
                     // 分解してから全結合の場合
-                    Debug.Log("結合フェイズ：一括結合" + srcTrans.name);
+                    logger.Log("結合フェイズ：一括結合" + srcTrans.name);
                     var parentOfComposed = srcDstDict[srcTrans.parent];
                     var result = await maComposer.ExecAsync(decomposed, dstGranularity, composeCondition);
                     foreach (var r in result.Get.GeneratedRootTransforms.Get)
@@ -243,13 +246,13 @@ namespace PLATEAU.CityAdjust.MaterialAdjust.Executor
             // 分解も結合も不要だがコピーを作りたい場合（srcもdstも最小地物）
             if (!ShouldSkipDueToMaterial(srcTrans))
             {
-                Debug.Log("コピー：　分解結合不要： " + srcTrans.name);
+                logger.Log("コピー：　分解結合不要： " + srcTrans.name);
                 var copy = CopyGameObjAsResult(srcTrans, converted, srcDstDict);
                 maMaterialChanger.Exec(copy.transform);
                 return NextSearchFlow.Continue;
             }
             
-            Debug.Log("どのケースにも当てはまらない " + srcTrans.name);
+            Debug.LogError("マテリアル分け： どのケースにも当てはまらない未知のケース： " + srcTrans.name);
             return NextSearchFlow.Continue;
             }); // END Transformごとの変換処理
             
