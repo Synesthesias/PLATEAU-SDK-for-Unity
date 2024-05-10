@@ -1,10 +1,5 @@
-using PLATEAU.CityAdjust.MaterialAdjust;
-using PLATEAU.CityAdjust.MaterialAdjust.Executor;
-using PLATEAU.CityAdjust.MaterialAdjust.Executor.Process;
 using PLATEAU.Editor.Window.Common;
-using PLATEAU.Editor.Window.Main.Tab.AdjustGUIParts;
 using PLATEAU.Util.Async;
-using System;
 
 namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI.Parts
 {
@@ -22,7 +17,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI.Parts
         
         public override void DrawContent()
         {
-            if (PlateauEditorStyle.MainButton("実行"))
+            if (PlateauEditorStyle.MainButton("マテリアル分けを実行"))
             {
                 var executor = adjustGui.GenerateExecutor();
                 

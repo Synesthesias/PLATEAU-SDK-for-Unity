@@ -1,5 +1,4 @@
 using System;
-using PLATEAU.CityAdjust.MaterialAdjust.Executor;
 using PLATEAU.CityInfo;
 using PLATEAU.Util;
 

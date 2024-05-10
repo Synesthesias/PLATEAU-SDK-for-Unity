@@ -6,15 +6,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using PLATEAU.CityExport.ModelConvert;
 using PLATEAU.CityExport.ModelConvert.SubMeshConvert;
-using PLATEAU.CityGML;
 using PLATEAU.CityImport.Import.Convert;
 using PLATEAU.CityImport.Import.Convert.MaterialConvert;
 using PLATEAU.CityInfo;
 using PLATEAU.PolygonMesh;
 using PLATEAU.Util;
-using UnityEditor;
 using UnityEngine;
-using CityObjectList = PLATEAU.CityInfo.CityObjectList;
 using Debug = UnityEngine.Debug;
 using Object = UnityEngine.Object;
 

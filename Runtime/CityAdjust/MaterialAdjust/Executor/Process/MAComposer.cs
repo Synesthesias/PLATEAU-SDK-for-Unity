@@ -27,7 +27,7 @@ namespace PLATEAU.CityAdjust.MaterialAdjust.Executor.Process
             var granularityConverterAfter = new CityGranularityConverter();
             
             var composeConf = conf.Copy();
-            composeConf.DoDestroySrcObjs = true;
+            composeConf.DoDestroySrcObjs = true; // 中間生成物を削除
             composeConf.TargetTransforms = new UniqueParentTransformList(targetTrans.Get);
             composeConf.MeshGranularity = dstGranularity;
             

@@ -15,7 +15,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
     /// <summary>
     /// PLATEAU SDK ウィンドウで「マテリアル分け」タブが選択されている時のGUIです。
     /// </summary>
-    internal class CityMaterialAdjustGUI : ITabContent, IGranularityConvertExecutor
+    internal class CityMaterialAdjustGUI : ITabContent
     {
         public ElementGroup Guis { get; }
         
@@ -42,24 +42,23 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
 
         public CityMaterialAdjustGUI(EditorWindow parentEditorWindow)
         {
+            // UIの内容をここで定義します。
             Guis =
                 new ElementGroup("",
                     new HeaderElementGroup("", "分類に応じたマテリアル分けを行います。", HeaderType.Subtitle),
                     new ElementGroup("MAGuiBeforeSearch", // *** 検索前のUI ***
                         new ObjectSelectGui(this, parentEditorWindow), // 対象オブジェクト選択
                         new HeaderElementGroup("commonConf", "共通設定", HeaderType.Header,
-                            new DestroyOrPreserveSrcGui(), // 元のオブジェクトを削除するか残すか
-                            new NameSelectGui("処理後の親オブジェクト名", "Converted") // 名前入力
+                            new DestroyOrPreserveSrcGui() // 元のオブジェクトを削除するか残すか
                         ),
                         new HeaderElementGroup("", "分割/結合", HeaderType.Header,
-                            new MAGranularityGui(this) // 分割結合に関する一般設定
+                            new MAGranularityGui() // 分割結合に関する一般設定
                         ),
                         new HeaderElementGroup("", "マテリアル分け", HeaderType.Header,
                             new ToggleLeftElement("doMaterialAdjust", "マテリアルを条件指定で変更する", false),
                             new ElementGroup("materialConf", 
                                 new MaterialCriterionGui(), // マテリアル分け基準選択
                                 new AttributeKeyGui(), // 属性情報キー選択
-                                new ToggleLeftElement("skipNotChangingMaterial", "マテリアル変更対象外のものは分割結合をスキップ", true),
                                 new MASearchButton(this, parentEditorWindow) // 検索ボタン
                             )
                         )
@@ -67,7 +66,8 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
                     new ElementGroup("MAGuiAfterSearch", // *** 検索後のUI ***
                         new MaterialConfGui(this), // マテリアル設定
                         new MAExecButton(this) // 実行ボタン
-                    )
+                    ),
+                    new ButtonElement("", "粒度変更を実行", ExecGranularityConvert)
                 );
         }
 
@@ -80,9 +80,11 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
             Guis.Draw();
 
             // 不要な設定項目を隠します
+            bool doMaterialAdjust = Guis.Get<ToggleLeftElement>("doMaterialAdjust").Value;
             Guis.Get<AttributeKeyGui>().IsVisible = SelectedCriterion == MaterialCriterion.ByAttribute; // 属性情報による分類をするときのみ属性情報キー入力欄を表示
-            Guis.Get<MAGranularityGui>().IsExecButtonVisible = !Guis.Get<ToggleLeftElement>("doMaterialAdjust").Value; // マテリアル分けか分割結合が、ボタンはどちらか1つ
-            Guis.Get("MAGuiAfterSearch").IsVisible = IsSearched;
+            Guis.Get<ButtonElement>().IsVisible = !doMaterialAdjust &&
+                                                  Guis.Get<MAGranularityGui>().Granularity != MAGranularity.DoNotChange;// マテリアル分けをせず粒度変更のみのとき表示するボタン
+            Guis.Get("MAGuiAfterSearch").IsVisible = IsSearched && doMaterialAdjust;
             Guis.Get("materialConf").IsVisible = Guis.Get<ToggleLeftElement>("doMaterialAdjust").Value;
         }
 
@@ -133,7 +135,6 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
         private MAExecutorConf GenerateConf()
         {
             var granularity = Guis.Get<MAGranularityGui>().Granularity;
-            bool skipNotChangingMaterial = Guis.Get<ToggleLeftElement>("skipNotChangingMaterial").Value;
             
             return SelectedCriterion switch
             {
@@ -142,7 +143,6 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
                     Guis.Get<ObjectSelectGui>().UniqueSelected,
                     granularity,
                     Guis.Get<DestroyOrPreserveSrcGui>().DoDestroySrcObjs,
-                    Guis.Get<NameSelectGui>().EnteredName,
                     false
                 ),
                 
@@ -151,8 +151,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
                     Guis.Get<ObjectSelectGui>().UniqueSelected,
                     granularity,
                     Guis.Get<DestroyOrPreserveSrcGui>().DoDestroySrcObjs,
-                    Guis.Get<NameSelectGui>().EnteredName,
-                    skipNotChangingMaterial
+                    true
                 ),
                     
                 MaterialCriterion.ByAttribute => new MAExecutorConfByAttr(
@@ -160,8 +159,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
                     Guis.Get<ObjectSelectGui>().UniqueSelected,
                     granularity,
                     Guis.Get<DestroyOrPreserveSrcGui>().DoDestroySrcObjs,
-                    Guis.Get<NameSelectGui>().EnteredName,
-                    skipNotChangingMaterial,
+                    true,
                     Guis.Get<AttributeKeyGui>().AttrKey
                 ),
                     
