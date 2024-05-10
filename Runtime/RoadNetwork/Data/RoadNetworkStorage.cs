@@ -66,10 +66,10 @@ namespace PLATEAU.RoadNetwork.Data
         public TrafficRegulationStorage TrafficRegulationStorage { get => trafficRegulationStorage; }
         public PrimitiveDataStorage PrimitiveDataStorage { get => primitiveDataStorage; }
 
-        [SerializeField /*, PersistentAmongPlayMode*/]
+        [SerializeField]
         private TrafficRegulationStorage trafficRegulationStorage;
 
-        [SerializeField /*, PersistentAmongPlayMode*/]
+        [SerializeField]
         private PrimitiveDataStorage primitiveDataStorage = new PrimitiveDataStorage();
 
         private PrimitiveDataHandleManager primitiveDataHandleManager;
@@ -97,6 +97,9 @@ namespace PLATEAU.RoadNetwork.Data
 
         }
 
+        /// <summary>
+        /// ストレージの初期化
+        /// </summary>
         public void InitializeStorage()
         {
             // ストレージの初期化  ←　たぶん必要ない シリアライズされたデータが読み込めていればok
@@ -244,6 +247,8 @@ namespace PLATEAU.RoadNetwork.Data
     /// <summary>
     /// シリアライズしない
     /// それぞれの道路モデルネットワークの初期化される際に再構築されるはず
+    /// 
+    /// 削除予定　renさんの実装方法に合わせて修正予定
     /// </summary>
     public class PrimitiveDataHandleManager
     {

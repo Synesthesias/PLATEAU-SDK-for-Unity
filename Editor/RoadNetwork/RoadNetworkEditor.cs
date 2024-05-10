@@ -14,15 +14,17 @@ using GenerateParameterFunc = System.Action<PLATEAU.Editor.RoadNetwork.RoadNetwo
 
 namespace PLATEAU.Editor.RoadNetwork
 {
+    /// <summary>
+    /// 道路ネットワーク手動編集機能を提供するエディタウィンドウ
+    /// 実際の処理を行うRoadNetworkEditorクラスのインスタンス化に専念する
+    /// </summary>
     public class RoadNetworkEditorWindow : UnityEditor.EditorWindow
     {
         RoadNetworkEditor editor;
         RoadNetworkEditorAssets assets;
         private static readonly string WindowName = "PLATEAU RoadNetwork Editor";
 
-
-
-        [MenuItem("PLATEAU/PLATEAU RoadNetwork Editor")]
+        [MenuItem("PLATEAU_Dev/PLATEAU RoadNetwork Editor")]
         public static void ShowWindow()
         {
             GetWindow<RoadNetworkEditorWindow>(WindowName);
@@ -49,8 +51,14 @@ namespace PLATEAU.Editor.RoadNetwork
         }
     }
 
+    /// <summary>
+    /// 道路ネットワーク手動編集機能を構成するアセットを管理するクラス
+    /// </summary>
     public class RoadNetworkEditorAssets
     {
+        /// <summary>
+        /// 
+        /// </summary>
         public RoadNetworkEditorAssets()
         {
             LoadAsset();
@@ -80,7 +88,7 @@ namespace PLATEAU.Editor.RoadNetwork
         private Dictionary<string, VisualTreeAsset> visualTreeAssets;
 
         /// <summary>
-        /// アセットの取得‘
+        /// アセットの取得
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
@@ -89,11 +97,18 @@ namespace PLATEAU.Editor.RoadNetwork
             return visualTreeAssets[name];
         }
 
+        /// <summary>
+        /// アセットが読み込まれているか
+        /// </summary>
+        /// <returns></returns>
         private bool IsLoaded()
         {
             return visualTreeAssets?.Count > 0;
         }
 
+        /// <summary>
+        /// アセットを読み込む
+        /// </summary>
         private void LoadAsset()
         {
             if (IsLoaded())
@@ -140,6 +155,8 @@ namespace PLATEAU.Editor.RoadNetwork
     /// 道路ネットワークエディタのUIDocumentを扱うクラス
     /// インスペクター、エディタ、ランタイムでも利用できるように汎用化する
     /// (エディタ専用のUIを使用してるため現状はランタイム使用不可)
+    /// 
+    /// 未完成のクラス　大きく改装予定　役割は変えない
     /// </summary>
     public class RoadNetworkEditor
     {

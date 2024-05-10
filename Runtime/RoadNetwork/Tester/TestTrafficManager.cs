@@ -10,6 +10,11 @@ using UnityEngine.Assertions;
 
 namespace PLATEAU.RoadNetwork
 {
+    /// <summary>
+    /// 道路ネットワーク関係のテスト用クラス
+    /// ストレージ周りのテスト向けに利用していた
+    /// 他の道路ネットワークのテストが記載されたところに移植する予定
+    /// </summary>
     public class TestTrafficManager : MonoBehaviour
     {
         [SerializeField]
