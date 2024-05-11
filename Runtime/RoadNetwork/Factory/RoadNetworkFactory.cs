@@ -27,6 +27,8 @@ namespace PLATEAU.RoadNetwork.Factory
         private class LaneWork
         {
             public int id;
+            public PLATEAUCityObjectGroup TargetTran { get; set; }
+
             public RoadNetworkLineString LineString { get; set; } = new RoadNetworkLineString();
 
             public HashSet<LaneWork> ConnectedLanes { get; } = new HashSet<LaneWork>();
@@ -129,10 +131,9 @@ namespace PLATEAU.RoadNetwork.Factory
         public RoadNetworkModel CreateNetwork(IList<PLATEAUCityObjectGroup> targets)
         {
             var meshes = targets
-                .Select(c => c.GetComponent<MeshCollider>())
-                .Where(c => c)
-                .Select(c => c.sharedMesh.vertices)
-                .Cast<IList<Vector3>>()
+                .Select(c => new { c = c, col = c.GetComponent<MeshCollider>() })
+                .Where(c => c.col)
+                .Select(c => new Tuple<PLATEAUCityObjectGroup, IList<Vector3>>(c.c, c.col.sharedMesh.vertices))
                 .ToList();
             return CreateNetwork(meshes);
         }
@@ -142,7 +143,7 @@ namespace PLATEAU.RoadNetwork.Factory
         /// </summary>
         /// <param name="targets"></param>
         /// <returns></returns>
-        public RoadNetworkModel CreateNetwork(IList<IList<Vector3>> targets)
+        public RoadNetworkModel CreateNetwork(IList<Tuple<PLATEAUCityObjectGroup, IList<Vector3>>> targets)
         {
             var cSize = Vector3.one * cellSize;
             // 頂点の一致判定のためにセル単位に切り捨て
@@ -155,9 +156,11 @@ namespace PLATEAU.RoadNetwork.Factory
 
             // レーンの頂点情報を構築
             var laneWorks = new List<LaneWork>();
-            foreach (var polygon in targets)
+            foreach (var item in targets)
             {
-                var laneWork = new LaneWork { id = laneWorks.Count, };
+                var cityObject = item.Item1;
+                var polygon = item.Item2;
+                var laneWork = new LaneWork { TargetTran = cityObject, id = laneWorks.Count, };
 
                 //var vertices = laneWork.LineString.Vertices;
                 var vertices = new List<Vector3>();
@@ -235,7 +238,7 @@ namespace PLATEAU.RoadNetwork.Factory
                 // 隣接レーンが一つもない場合は孤立
                 if (vertex2Neighbors.Any(n => n.Any()) == false)
                 {
-                    ret.Links.Add(RoadNetworkLink.CreateIsolatedLink(laneWork.LineString));
+                    ret.Links.Add(RoadNetworkLink.CreateIsolatedLink(laneWork.TargetTran, laneWork.LineString));
                     continue;
                 }
 
@@ -339,7 +342,7 @@ namespace PLATEAU.RoadNetwork.Factory
                     var startBorderWay = leftWay?.FromBorder?.Way;
                     var endBorderWay = leftWay?.ToBorder?.Way;
                     var l = new RoadNetworkLane(leftWay?.Way, rightWay?.Way, startBorderWay, endBorderWay);
-                    var link = new RoadNetworkLink();
+                    var link = new RoadNetworkLink(laneWork.TargetTran);
                     if (l.IsBothConnectedLane && splitCenterLine)
                     {
                         var lanes = l.SplitLane(2);
@@ -361,12 +364,12 @@ namespace PLATEAU.RoadNetwork.Factory
                     var startBorderWay = leftWay?.FromBorder?.Way;
                     var endBorderWay = leftWay?.ToBorder?.Way;
                     var l = new RoadNetworkLane(leftWay?.Way, rightWay?.Way, startBorderWay, endBorderWay);
-                    ret.Links.Add(RoadNetworkLink.CreateOneLaneLink(l));
+                    ret.Links.Add(RoadNetworkLink.CreateOneLaneLink(laneWork.TargetTran, l));
                 }
                 // 交差点
                 else if (laneWork.ConnectedLanes.Count >= 3)
                 {
-                    var node = new RoadNetworkNode();
+                    var node = new RoadNetworkNode(laneWork.TargetTran);
                     ret.Nodes.Add(node);
                 }
             }
