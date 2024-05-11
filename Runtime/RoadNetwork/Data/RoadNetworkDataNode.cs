@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PLATEAU.CityInfo;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -12,24 +13,19 @@ namespace PLATEAU.RoadNetwork.Data
         [RoadNetworkSerializeMember(nameof(RoadNetworkNode.MyId))]
         public RnID<RoadNetworkDataNode> MyId { get; set; }
 
-
-        //// レーンを構成する道
-        //// 左側が若いインデックスになる
+        // 対象のtranオブジェクト
         [field: SerializeField]
-        [RoadNetworkSerializeMember(nameof(RoadNetworkNode.Ways))]
-
-        public List<RnID<RoadNetworkDataWay>> Ways { get; set; } = new List<RnID<RoadNetworkDataWay>>();
+        [RoadNetworkSerializeMember(nameof(RoadNetworkNode.TargetTran))]
+        public PLATEAUCityObjectGroup TargetTran { get; set; }
 
         // 他レーンとの境界線
         [field: SerializeField]
         [RoadNetworkSerializeMember(nameof(RoadNetworkNode.Borders))]
-
         public List<RnID<RoadNetworkDataWay>> Borders { get; set; } = new List<RnID<RoadNetworkDataWay>>();
 
         // 車線
         [field: SerializeField]
         [RoadNetworkSerializeMember(nameof(RoadNetworkNode.Lanes))]
-
         public List<RnID<RoadNetworkDataLane>> Lanes { get; set; } = new List<RnID<RoadNetworkDataLane>>();
     }
 }
