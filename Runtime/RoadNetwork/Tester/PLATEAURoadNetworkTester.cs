@@ -60,20 +60,6 @@ namespace PLATEAU.RoadNetwork
             }
         }
 
-        public void Draw(PLATEAUCityObjectGroup cityObjectGroup)
-        {
-            var collider = cityObjectGroup.GetComponent<MeshCollider>();
-            var cMesh = collider.sharedMesh;
-            var isClockwise = GeoGraph2d.IsClockwise(cMesh.vertices.Select(v => new Vector2(v.x, v.y)));
-            if (isClockwise)
-            {
-                DebugUtil.DrawArrows(cMesh.vertices.Select(v => v + Vector3.up * 0.2f));
-            }
-            else
-            {
-                DebugUtil.DrawArrows(cMesh.vertices.Reverse().Select(v => v + Vector3.up * 0.2f));
-            }
-        }
 
         public void CreateNetwork()
         {
