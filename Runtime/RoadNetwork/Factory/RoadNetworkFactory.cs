@@ -3,6 +3,7 @@ using PLATEAU.CityInfo;
 using PLATEAU.Util;
 using PLATEAU.Util.GeoGraph;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -15,22 +16,53 @@ namespace PLATEAU.RoadNetwork.Factory
     public class RoadNetworkFactory
     {
         [Serializable]
-        private class Cell
+        private class Cell : IReadOnlyList<TranWork>
         {
             // このセルを参照するレーン一覧
-            public HashSet<LinkOrNodeWork> lanes = new HashSet<LinkOrNodeWork>();
+            private List<TranWork> trans = new List<TranWork>();
+
+            public void Add(TranWork tran)
+            {
+                if (trans.Contains(tran))
+                    return;
+                trans.Add(tran);
+            }
+
+            public TranWork this[int index]
+            {
+                get
+                {
+                    return trans[index];
+                }
+            }
+
+            public IEnumerator<TranWork> GetEnumerator()
+            {
+                return trans.GetEnumerator();
+            }
+
+            IEnumerator IEnumerable.GetEnumerator()
+            {
+                return GetEnumerator();
+            }
+
+            public int Count => trans.Count;
         }
 
         /// <summary>
-        /// レーン情報
+        /// tranオブジェクトに紐づく Link or Node情報
         /// </summary>
-        private class LinkOrNodeWork
+        private class TranWork
         {
             public PLATEAUCityObjectGroup TargetTran { get; set; }
 
             public RoadNetworkLineString LineString { get; set; } = new RoadNetworkLineString();
 
-            public HashSet<LinkOrNodeWork> Connected { get; } = new HashSet<LinkOrNodeWork>();
+            public IEnumerable<TranWork> Connected => Vertex2Connected.SelectMany(v => v.Value).Distinct();
+
+            // 頂点 -> 接続TranWork情報
+            public Dictionary<RoadNetworkPoint, List<TranWork>> Vertex2Connected { get; } =
+                new Dictionary<RoadNetworkPoint, List<TranWork>>();
         }
 
         private class WayWork
@@ -40,12 +72,12 @@ namespace PLATEAU.RoadNetwork.Factory
             /// <summary>
             /// 開始地点と隣接しているレーン
             /// </summary>
-            public List<LinkOrNodeWork> FromLaneWorks { get; private set; }
+            public List<TranWork> FromLaneWorks { get; private set; }
 
             /// <summary>
             /// 終了地点と隣接しているレーン
             /// </summary>
-            public List<LinkOrNodeWork> ToLaneWorks { get; private set; }
+            public List<TranWork> ToLaneWorks { get; private set; }
 
             public WayWork FromBorder { get; set; }
 
@@ -54,7 +86,7 @@ namespace PLATEAU.RoadNetwork.Factory
             /// <summary>
             /// From/Toどっちにも含まれているレーン(接しているレーン)
             /// </summary>
-            public IEnumerable<LinkOrNodeWork> BothConnectedLanes
+            public IEnumerable<TranWork> BothConnectedLanes
             {
                 get
                 {
@@ -69,7 +101,7 @@ namespace PLATEAU.RoadNetwork.Factory
             /// <summary>
             /// From/Toどっちかに含まれているレーン
             /// </summary>
-            public IEnumerable<LinkOrNodeWork> AnyConnectedLanes => FromLaneWorks.Concat(ToLaneWorks).Distinct();
+            public IEnumerable<TranWork> AnyConnectedLanes => FromLaneWorks.Concat(ToLaneWorks).Distinct();
 
 
             private bool? cachedIsBorder = null;
@@ -104,7 +136,7 @@ namespace PLATEAU.RoadNetwork.Factory
                 }
             }
 
-            public WayWork(RoadNetworkWay way, List<LinkOrNodeWork> fromLaneWorks, List<LinkOrNodeWork> toLaneWorks)
+            public WayWork(RoadNetworkWay way, List<TranWork> fromLaneWorks, List<TranWork> toLaneWorks)
             {
                 Way = way;
                 FromLaneWorks = fromLaneWorks.ToList();
@@ -134,6 +166,8 @@ namespace PLATEAU.RoadNetwork.Factory
 
             public Vertex2PointTable(float cellSize, IEnumerable<Vector3> vertices)
             {
+                // 頂点の一致判定のためにセル単位に切り捨て
+                // #TODO : 近いけど隣のセルになる場合を考慮
                 CellSize = cellSize;
                 var cSize = Vector3.one * cellSize;
 
@@ -179,21 +213,16 @@ namespace PLATEAU.RoadNetwork.Factory
         /// <returns></returns>
         public RoadNetworkModel CreateNetwork(IList<Tuple<PLATEAUCityObjectGroup, IList<Vector3>>> targets)
         {
-            var cSize = Vector3.one * cellSize;
-            // 頂点の一致判定のためにセル単位に切り捨て
-            // #TODO : 近いけど隣のセルになる場合を考慮
-
             // レーンの初期化
-
             var ret = new RoadNetworkModel();
             var cell2Groups = new Dictionary<RoadNetworkPoint, Cell>();
             var vertex2Points = new Vertex2PointTable(cellSize, targets.SelectMany(v => v.Item2));
             // レーンの頂点情報を構築
-            var linkOrNodeWorks = new List<LinkOrNodeWork>();
+            var tranWorks = new List<TranWork>();
             foreach (var item in targets)
             {
                 var cityObject = item.Item1;
-                var linkOrNodeWork = new LinkOrNodeWork { TargetTran = cityObject };
+                var linkOrNodeWork = new TranWork { TargetTran = cityObject };
 
                 //var vertices = laneWork.LineString.Vertices;
                 var vertices = item.Item2.Select(v => vertex2Points[v]).ToList();
@@ -204,44 +233,26 @@ namespace PLATEAU.RoadNetwork.Factory
                 foreach (var v in vertices)
                 {
                     var cell = cell2Groups.GetValueOrCreate(v, v => new Cell { });
-                    cell.lanes.Add(linkOrNodeWork);
+                    cell.Add(linkOrNodeWork);
                 }
                 linkOrNodeWork.LineString = RoadNetworkLineString.Create(vertices);
-                linkOrNodeWorks.Add(linkOrNodeWork);
-            }
-
-            // linkOrNodeWorkと頂点vで隣接している物を取得
-            List<LinkOrNodeWork> GetNeighbor(LinkOrNodeWork linkOrNodeWork, RoadNetworkPoint v)
-            {
-                var c = cell2Groups[v];
-                return c.lanes.Where(l => l != linkOrNodeWork).ToList();
+                tranWorks.Add(linkOrNodeWork);
             }
 
             // laneのConnectedを構築
-            foreach (var c in cell2Groups.Values)
+            // 特定頂点につながっているLinkNodeは接続情報を付与する
+            foreach (var tranWork in tranWorks)
             {
-                if (c.lanes.Count <= 1)
-                    continue;
-                foreach (var a in c.lanes)
+                // 頂点に対してつながっているTranを追加
+                foreach (var p in tranWork.LineString.Points)
                 {
-                    foreach (var b in c.lanes)
-                    {
-                        if (a == b)
-                            continue;
-                        a.Connected.Add(b);
-                        b.Connected.Add(a);
-                    }
+                    var connected = cell2Groups[p];
+                    tranWork.Vertex2Connected[p] = connected.Where(x => x != tranWork).ToList();
                 }
-            }
-
-            foreach (var linkOrNodeWork in linkOrNodeWorks)
-            {
-                // index番目の頂点と隣接しているレーン
-                var vertex2Neighbors = linkOrNodeWork.LineString.Points.Select(p => GetNeighbor(linkOrNodeWork, p)).ToList();
 
                 // 1頂点でしかつながっていないレーンは隣接していないので削除
                 // 交差点で隣り合う道路道路は１頂点でつながっているが実際は中央の交差点
-                // 以下のようにAとBは共通する1頂点があるが実際はそれぞれEとしかつながっていないので削除する
+                // 以下のようにAとBは共通する1頂点があるが実際はそれぞれEとしかつながっていない
                 //        A
                 //       | |
                 //       | |
@@ -251,18 +262,30 @@ namespace PLATEAU.RoadNetwork.Factory
                 //       | |
                 //       | |
                 //        D
-                linkOrNodeWork.Connected
-                    .RemoveWhere(c => vertex2Neighbors.Count(n => n.Any(l => l == c)) <= 1);
 
-                foreach (var n in vertex2Neighbors)
-                {
-                    n.RemoveAll(a => linkOrNodeWork.Connected.Contains(a) == false);
-                }
+                // 1頂点以下でしか接していないtranは削除
+                var removeNeighbor = tranWork.Vertex2Connected.SelectMany(v => v.Value)
+                    .GroupBy(v => v)
+                    .Where(v => v.Count() <= 1)
+                    .Select(v => v.Key)
+                    .ToList();
+                foreach (var n in tranWork.Vertex2Connected)
+                    n.Value.RemoveAll(x => removeNeighbor.Contains(x));
+            }
+
+            foreach (var tranWork in tranWorks)
+            {
+                // index番目の頂点と隣接しているレーン
+                var vertex2Neighbors = tranWork
+                    .LineString
+                    .Points
+                    .Select(p => tranWork.Vertex2Connected[p])
+                    .ToList();
 
                 // 隣接レーンが一つもない場合は孤立
                 if (vertex2Neighbors.Any(n => n.Any()) == false)
                 {
-                    ret.Links.Add(RoadNetworkLink.CreateIsolatedLink(linkOrNodeWork.TargetTran, linkOrNodeWork.LineString));
+                    ret.Links.Add(RoadNetworkLink.CreateIsolatedLink(tranWork.TargetTran, tranWork.LineString));
                     continue;
                 }
 
@@ -291,7 +314,6 @@ namespace PLATEAU.RoadNetwork.Factory
                 }
 
                 // wayを構成する頂点インデックスリスト
-                // List<int> wayVertexIndices = new List<int> { startIndex };
                 var splitWays = SplitWay();
 
                 // 境界線
@@ -300,7 +322,7 @@ namespace PLATEAU.RoadNetwork.Factory
                 var wayWorks = new List<WayWork>();
                 foreach (var wayVertexIndices in splitWays)
                 {
-                    var lineString = RoadNetworkLineString.Create(wayVertexIndices.Select(v => linkOrNodeWork.LineString.Points[v]));
+                    var lineString = RoadNetworkLineString.Create(wayVertexIndices.Select(v => tranWork.LineString.Points[v]));
                     var way = new RoadNetworkWay(lineString);
                     var toNeighbor = vertex2Neighbors[wayVertexIndices.Last()];
                     var fromNeighbors = vertex2Neighbors[wayVertexIndices.First()];
@@ -364,7 +386,7 @@ namespace PLATEAU.RoadNetwork.Factory
                     var startBorderWay = leftWay?.FromBorder?.Way;
                     var endBorderWay = leftWay?.ToBorder?.Way;
                     var l = new RoadNetworkLane(leftWay?.Way, rightWay?.Way, startBorderWay, endBorderWay);
-                    var link = new RoadNetworkLink(linkOrNodeWork.TargetTran);
+                    var link = new RoadNetworkLink(tranWork.TargetTran);
                     if (l.IsBothConnectedLane && splitCenterLine)
                     {
                         var lanes = l.SplitLane(2);
@@ -381,17 +403,17 @@ namespace PLATEAU.RoadNetwork.Factory
                     ret.Links.Add(link);
                 }
                 // 行き止まり
-                else if (linkOrNodeWork.Connected.Count == 1)
+                else if (tranWork.Connected.Count() == 1)
                 {
                     var startBorderWay = leftWay?.FromBorder?.Way;
                     var endBorderWay = leftWay?.ToBorder?.Way;
                     var l = new RoadNetworkLane(leftWay?.Way, rightWay?.Way, startBorderWay, endBorderWay);
-                    ret.Links.Add(RoadNetworkLink.CreateOneLaneLink(linkOrNodeWork.TargetTran, l));
+                    ret.Links.Add(RoadNetworkLink.CreateOneLaneLink(tranWork.TargetTran, l));
                 }
                 // 交差点
-                else if (linkOrNodeWork.Connected.Count >= 3)
+                else if (tranWork.Connected.Count() >= 3)
                 {
-                    var node = new RoadNetworkNode(linkOrNodeWork.TargetTran);
+                    var node = new RoadNetworkNode(tranWork.TargetTran);
                     ret.Nodes.Add(node);
                 }
             }
