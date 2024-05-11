@@ -55,7 +55,7 @@ namespace PLATEAU.Util.GeoGraph
         public static bool IsClockwise(IEnumerable<Vector2> vertices)
         {
             var total = GeoGraphEx.GetEdges(vertices, true).Sum(item => Vector2Util.Cross(item.Item1, item.Item2));
-            return total >= 0;
+            return total < 0;
         }
 
         /// <summary>

@@ -1,4 +1,4 @@
-ï»¿using PLATEAU.CityGML;
+using PLATEAU.CityGML;
 using PLATEAU.CityInfo;
 using PLATEAU.RoadNetwork.Data;
 using PLATEAU.RoadNetwork.Drawer;
@@ -60,20 +60,6 @@ namespace PLATEAU.RoadNetwork
             }
         }
 
-        public void Draw(PLATEAUCityObjectGroup cityObjectGroup)
-        {
-            var collider = cityObjectGroup.GetComponent<MeshCollider>();
-            var cMesh = collider.sharedMesh;
-            var isClockwise = GeoGraph2d.IsClockwise(cMesh.vertices.Select(v => new Vector2(v.x, v.y)));
-            if (isClockwise)
-            {
-                PLATEAUDebugUtil.DrawArrows(cMesh.vertices.Select(v => v + Vector3.up * 0.2f));
-            }
-            else
-            {
-                PLATEAUDebugUtil.DrawArrows(cMesh.vertices.Reverse().Select(v => v + Vector3.up * 0.2f));
-            }
-        }
 
         public void CreateNetwork()
         {
@@ -87,7 +73,7 @@ namespace PLATEAU.RoadNetwork
             }
             else
             {
-                // é‡è¤‡ã¯æ’é™¤ã™ã‚‹
+                // d•¡‚Í”rœ‚·‚é
                 targets = targets.Distinct().ToList();
                 RoadNetwork = Factory.CreateNetwork(targets);
             }
@@ -114,9 +100,9 @@ namespace PLATEAU.RoadNetwork
         {
             if (Storage == null)
             {
-                // ã“ã“ã®ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã¯ä»®
+                // ‚±‚±‚ÌƒƒbƒZ[ƒW‚Í‰¼
                 Debug.Log("Storage is null.");
-                Debug.Log("Serializeãƒœã‚¿ãƒ³ã‚’æŠ¼ã—ã¦ã„ãªã„ã‹ã‚‚(public void Serialize()ãŒå‘¼ã°ã‚Œã¦ã„ãªã„)");
+                Debug.Log("Serializeƒ{ƒ^ƒ“‚ğ‰Ÿ‚µ‚Ä‚¢‚È‚¢‚©‚à(public void Serialize()‚ªŒÄ‚Î‚ê‚Ä‚¢‚È‚¢)");
             }
 
             return new RoadNetworkDataGetter(this.Storage);
