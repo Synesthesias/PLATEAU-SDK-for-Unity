@@ -128,7 +128,7 @@ namespace PLATEAU.RoadNetwork.Factory
                             var n = Way.GetEdgeNormal(0);
                             // 微小にずらして確認する
                             var p = cp + n * 0.1f;
-                            cachedIsBorder = GeoGraph2d.Contains(neighbor.LineString.Select(x => x.Xz()), p.Xz());
+                            cachedIsBorder = GeoGraph2D.Contains(neighbor.LineString.Select(x => x.Xz()), p.Xz());
                         }
                     }
 
@@ -227,7 +227,7 @@ namespace PLATEAU.RoadNetwork.Factory
                 //var vertices = laneWork.LineString.Vertices;
                 var vertices = item.Item2.Select(v => vertex2Points[v]).ToList();
                 // 時計回りになるように順番チェック
-                if (GeoGraph2d.IsClockwise(vertices.Select(x => x.Vertex.Xz())) == false)
+                if (GeoGraph2D.IsClockwise(vertices.Select(x => x.Vertex.Xz())) == false)
                     vertices.Reverse();
 
                 foreach (var v in vertices)

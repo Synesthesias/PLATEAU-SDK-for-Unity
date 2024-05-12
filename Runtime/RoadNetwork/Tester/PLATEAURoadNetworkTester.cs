@@ -55,7 +55,7 @@ namespace PLATEAU.RoadNetwork
                     .Where(x => x)
                     .SelectMany(x => x.sharedMesh.vertices.Select(a => a.Xz()))
                     .ToList();
-                var convex = GeoGraph2d.ComputeConvexVolume(vertices);
+                var convex = GeoGraph2D.ComputeConvexVolume(vertices);
                 DebugUtil.DrawArrows(convex.Select(x => x.Xay()));
             }
         }
