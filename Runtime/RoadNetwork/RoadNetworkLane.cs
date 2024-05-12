@@ -148,7 +148,7 @@ namespace PLATEAU.RoadNetwork
                     var v = way[i];
                     var n = -way.GetVertexNormal(i).normalized;
                     var ray = new Ray(v + n * 0.01f, n);
-                    if (GeoGraph2d.PolygonHalfLineIntersectionXZ(Vertices, ray, out var inter, out var t))
+                    if (GeoGraph2D.PolygonHalfLineIntersectionXZ(Vertices, ray, out var inter, out var t))
                         candidates.Add(Vector3.Lerp(v, inter, 0.5f));
                 }
             }
@@ -179,7 +179,7 @@ namespace PLATEAU.RoadNetwork
             centerLineVertices.Add(endPoint);
 
             // 自己交差があれば削除する
-            GeoGraph2d.RemoveSelfCrossing(centerLineVertices, t => t.Xz(), (p1, p2, p3, p4, inter, f1, f2) => Vector3.Lerp(p1, p2, f1));
+            GeoGraph2D.RemoveSelfCrossing(centerLineVertices, t => t.Xz(), (p1, p2, p3, p4, inter, f1, f2) => Vector3.Lerp(p1, p2, f1));
 
             var centerLine = RoadNetworkLineString.Create(centerLineVertices);
 
@@ -198,7 +198,7 @@ namespace PLATEAU.RoadNetwork
         /// <returns></returns>
         public bool SegmentIntersectionXz(Vector3 st, Vector3 en, out Vector3 intersection)
         {
-            return GeoGraph2d.PolygonSegmentIntersectionXZ(Vertices, st, en, out intersection, out var t);
+            return GeoGraph2D.PolygonSegmentIntersectionXZ(Vertices, st, en, out intersection, out var t);
         }
 
         public static RoadNetworkLane CreateOneWayLane(RoadNetworkWay way)

@@ -1,4 +1,4 @@
-using PLATEAU.CityGML;
+ï»¿using PLATEAU.CityGML;
 using PLATEAU.CityInfo;
 using PLATEAU.RoadNetwork.Data;
 using PLATEAU.RoadNetwork.Drawer;
@@ -55,7 +55,8 @@ namespace PLATEAU.RoadNetwork
                     .Where(x => x)
                     .SelectMany(x => x.sharedMesh.vertices.Select(a => a.Xz()))
                     .ToList();
-                var convex = GeoGraph2d.ComputeConvexVolume(vertices);
+
+                var convex = GeoGraph2D.ComputeConvexVolume(vertices);
                 PLATEAUDebugUtil.DrawArrows(convex.Select(x => x.Xay()));
             }
         }
@@ -73,7 +74,7 @@ namespace PLATEAU.RoadNetwork
             }
             else
             {
-                // d•¡‚Í”rœ‚·‚é
+                // é‡è¤‡ã¯æ’é™¤ã™ã‚‹
                 targets = targets.Distinct().ToList();
                 RoadNetwork = Factory.CreateNetwork(targets);
             }
@@ -100,9 +101,9 @@ namespace PLATEAU.RoadNetwork
         {
             if (Storage == null)
             {
-                // ‚±‚±‚ÌƒƒbƒZ[ƒW‚Í‰¼
+                // ã“ã“ã®ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã¯ä»®
                 Debug.Log("Storage is null.");
-                Debug.Log("Serializeƒ{ƒ^ƒ“‚ğ‰Ÿ‚µ‚Ä‚¢‚È‚¢‚©‚à(public void Serialize()‚ªŒÄ‚Î‚ê‚Ä‚¢‚È‚¢)");
+                Debug.Log("Serializeãƒœã‚¿ãƒ³ã‚’æŠ¼ã—ã¦ã„ãªã„ã‹ã‚‚(public void Serialize()ãŒå‘¼ã°ã‚Œã¦ã„ãªã„)");
             }
 
             return new RoadNetworkDataGetter(this.Storage);

@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace PLATEAU.Util.GeoGraph
 {
-    public static class GeoGraph2d
+    public static class GeoGraph2D
     {
         /// <summary>
         /// 凸多角形を計算して返す
