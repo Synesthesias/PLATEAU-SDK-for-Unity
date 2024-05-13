@@ -1,5 +1,4 @@
-﻿using Codice.Client.ChangeTrackerService;
-using PLATEAU.Util;
+﻿using PLATEAU.Util;
 using System;
 using System.Collections;
 using System.Collections.Generic;

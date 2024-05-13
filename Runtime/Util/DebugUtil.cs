@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using UnityEditor.Graphs;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
 
@@ -148,11 +147,15 @@ namespace PLATEAU.Util
 
         private static Vector3 TransformByPixel(Vector3 position, Vector3 screenOffset)
         {
+#if UNITY_EDITOR
             Camera cam = UnityEditor.SceneView.currentDrawingSceneView.camera;
             if (cam)
                 return cam.ScreenToWorldPoint(cam.WorldToScreenPoint(position) + screenOffset);
             else
                 return position;
+#else
+            return position;
+#endif
         }
     }
 }

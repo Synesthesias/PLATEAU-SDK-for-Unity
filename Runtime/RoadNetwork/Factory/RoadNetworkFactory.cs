@@ -1,5 +1,4 @@
-﻿using Codice.Client.BaseCommands.Differences;
-using PLATEAU.CityInfo;
+﻿using PLATEAU.CityInfo;
 using PLATEAU.Util;
 using PLATEAU.Util.GeoGraph;
 using System;
