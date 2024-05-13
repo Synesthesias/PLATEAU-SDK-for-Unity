@@ -1,0 +1,3 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="True">
+    <uie:EnumFlagsField label="状態指定(複数)" type="UnityEngine.UIElements.UsageHints, UnityEngine.UIElementsModule" value="DynamicTransform" name="StatusMultiSelector" />
+</ui:UXML>
