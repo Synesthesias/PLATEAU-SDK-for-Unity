@@ -67,18 +67,9 @@ namespace PLATEAU.TerrainConvert
                 return null;
 
             PlateauVector2d Margin = new PlateauVector2d(0,0);
-
             HeightmapGenerator gen = new();
-
-            Debug.Log($"GenerateFromMesh ======================================");
-
             gen.GenerateFromMesh(mesh, TextureWidth, TextureHeight, Margin, out PlateauVector3d Min, out PlateauVector3d Max, out PlateauVector2f MinUV, out PlateauVector2f MaxUV, out UInt16[] HeightData);
-
-            Debug.Log($"<color=yellow>HeightData Length:{HeightData.Length}</color>");
-
             float[,] HeightMapTexture = HeightmapGenerator.ConvertTo2DFloatArray(HeightData, TextureWidth, TextureHeight);
-
-            Debug.Log($"<color=green>HeightMapTexture Length:{HeightMapTexture.Length}</color>");
 
             HeightmapData data = new();
             data.Name = NodeName;

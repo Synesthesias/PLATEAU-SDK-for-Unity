@@ -61,8 +61,9 @@ namespace PLATEAU.Texture
             }
   
             Marshal.Copy(outData, 0, HeightmapDataPtr ,sizeof(UInt16) * data.Length);
+            var fileNameUtf8 = DLLUtil.StrToUtf8Bytes(FileName);
             var apiResult =
-                NativeMethods.heightmap_save_png_file(FileName, width, height, HeightmapDataPtr);         
+                NativeMethods.heightmap_save_png_file(fileNameUtf8, width, height, HeightmapDataPtr);         
 
             Marshal.FreeHGlobal(HeightmapDataPtr);
             DLLUtil.CheckDllError(apiResult);
@@ -70,8 +71,9 @@ namespace PLATEAU.Texture
 
         static public void ReadPngFile(string FileName, int width, int height, out UInt16[] data)
         {
+            var fileNameUtf8 = DLLUtil.StrToUtf8Bytes(FileName);
             var apiResult =
-                NativeMethods.heightmap_read_png_file(FileName, width, height, out IntPtr HeightmapDataPtr, out int DataSize);
+                NativeMethods.heightmap_read_png_file(fileNameUtf8, width, height, out IntPtr HeightmapDataPtr, out int DataSize);
             DLLUtil.CheckDllError(apiResult);
 
             byte[] outData = DLLUtil.PtrToBytes(HeightmapDataPtr, sizeof(UInt16) * DataSize);
@@ -105,8 +107,9 @@ namespace PLATEAU.Texture
             }
 
             Marshal.Copy(outData, 0, HeightmapDataPtr, sizeof(UInt16) * data.Length);
+            var fileNameUtf8 = DLLUtil.StrToUtf8Bytes(FileName);
             var apiResult =
-                NativeMethods.heightmap_save_raw_file(FileName, width, height, HeightmapDataPtr);
+                NativeMethods.heightmap_save_raw_file(fileNameUtf8, width, height, HeightmapDataPtr);
 
             Marshal.FreeHGlobal(HeightmapDataPtr);
             DLLUtil.CheckDllError(apiResult);
@@ -114,8 +117,9 @@ namespace PLATEAU.Texture
 
         static public void ReadRawFile(string FileName, int width, int height, out UInt16[] data)
         {
+            var fileNameUtf8 = DLLUtil.StrToUtf8Bytes(FileName);
             var apiResult =
-                NativeMethods.heightmap_read_raw_file(FileName, width, height, out IntPtr HeightmapDataPtr, out int DataSize);
+                NativeMethods.heightmap_read_raw_file(fileNameUtf8, width, height, out IntPtr HeightmapDataPtr, out int DataSize);
             DLLUtil.CheckDllError(apiResult);
 
             byte[] outData = DLLUtil.PtrToBytes(HeightmapDataPtr, sizeof(UInt16) * DataSize);
@@ -128,7 +132,6 @@ namespace PLATEAU.Texture
                 data[i] = BitConverter.ToUInt16(outData, byteIndex);
                 byteIndex += 2;
             }
-
         }
 
         private static class NativeMethods
@@ -150,7 +153,7 @@ namespace PLATEAU.Texture
 
             [DllImport(DLLUtil.DllName)]
             internal static extern APIResult heightmap_save_png_file(
-             [In] string FileName,
+             [In] byte[] FileName,
              [In] int Width,
              [In] int Height,
              [In] IntPtr Data
@@ -158,7 +161,7 @@ namespace PLATEAU.Texture
 
             [DllImport(DLLUtil.DllName)]
             internal static extern APIResult heightmap_read_png_file(
-             [In] string FileName,
+             [In] byte[] FileName,
              [In] int Width,
              [In] int Height,
              out IntPtr OutData,
@@ -167,7 +170,7 @@ namespace PLATEAU.Texture
 
             [DllImport(DLLUtil.DllName)]
             internal static extern APIResult heightmap_save_raw_file(
-             [In] string FileName,
+             [In] byte[] FileName,
              [In] int Width,
              [In] int Height,
              [In] IntPtr Data
@@ -175,7 +178,7 @@ namespace PLATEAU.Texture
 
             [DllImport(DLLUtil.DllName)]
             internal static extern APIResult heightmap_read_raw_file(
-             [In] string FileName,
+             [In] byte[] FileName,
              [In] int Width,
              [In] int Height,
              out IntPtr OutData,
