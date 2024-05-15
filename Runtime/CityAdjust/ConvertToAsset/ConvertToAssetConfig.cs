@@ -1,4 +1,4 @@
-using System.IO;
+﻿using System.IO;
 using System.Linq;
 using PLATEAU.CityInfo;
 using PLATEAU.Util;
@@ -40,7 +40,7 @@ namespace PLATEAU.CityAdjust.ConvertToAsset
             {
                 AssetPath = PathUtil.FullPathToAssetsPath(fullPath);
             }
-            catch (IOException e)
+            catch (IOException)
             {
                 Dialogue.Display("Assets外のフォルダが指定されました。\nUnityプロジェクトのAssets以下の空のフォルダを指定してください。", "OK");
             }

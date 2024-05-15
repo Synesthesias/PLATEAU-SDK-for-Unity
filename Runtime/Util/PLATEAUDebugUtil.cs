@@ -7,7 +7,7 @@ using Debug = UnityEngine.Debug;
 
 namespace PLATEAU.Util
 {
-    public static class DebugUtil
+    public static class PLATEAUDebugUtil
     {
         /// <summary>
         /// start -> endの方向に矢印を描画する
