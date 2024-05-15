@@ -17,7 +17,7 @@ namespace PLATEAU.RoadNetwork.Drawer
         // Laneの頂点の内側を向くベクトルの中央点を表示する
         [SerializeField] private bool showInsideNormalMidPoint = false;
 
-        [SerializeField] private bool showVertexIndex = false;
+        //[SerializeField] private bool showVertexIndex = false;
 
         [SerializeField] private float edgeOffset = 10f;
 
@@ -42,7 +42,7 @@ namespace PLATEAU.RoadNetwork.Drawer
                     // 道描画
                     foreach (var way in lane.BothWays)
                     {
-                        DebugUtil.DrawArrows(way.Vertices.Select((v, i) => v + -edgeOffset * way.GetVertexNormal(i)), false, color: GetEdgeColor(lane), arrowColor: way.IsReversed ? Color.cyan : Color.blue);
+                        PLATEAUDebugUtil.DrawArrows(way.Vertices.Select((v, i) => v + -edgeOffset * way.GetVertexNormal(i)), false, color: GetEdgeColor(lane), arrowColor: way.IsReversed ? Color.cyan : Color.blue);
 
 
                         foreach (var i in Enumerable.Range(0, way.Count))
@@ -59,7 +59,7 @@ namespace PLATEAU.RoadNetwork.Drawer
                             {
                                 if (way.HalfLineIntersectionXz(new Ray(v - n * 0.01f, -n), out var intersection))
                                 {
-                                    DebugUtil.DrawArrow(v, (v + intersection) * 0.5f);
+                                    PLATEAUDebugUtil.DrawArrow(v, (v + intersection) * 0.5f);
                                 }
                             }
                         }
@@ -69,7 +69,7 @@ namespace PLATEAU.RoadNetwork.Drawer
                     {
                         if (showBorder)
                         {
-                            DebugUtil.DrawArrows(border.Vertices, false, color: Color.blue, arrowColor: border.IsReversed ? Color.yellow : Color.red);
+                            PLATEAUDebugUtil.DrawArrows(border.Vertices, false, color: Color.blue, arrowColor: border.IsReversed ? Color.yellow : Color.red);
                         }
                     }
                 }

@@ -166,9 +166,9 @@ namespace PLATEAU.RoadNetwork
                 if (found == false)
                 {
                     //Assert.IsTrue(found, "center point not found");
-                    DebugUtil.DrawArrow(before, before + Vector3.up * 2, arrowSize: 1f, duration: 30f, bodyColor: Color.blue);
+                    PLATEAUDebugUtil.DrawArrow(before, before + Vector3.up * 2, arrowSize: 1f, duration: 30f, bodyColor: Color.blue);
                     foreach (var c in candidates)
-                        DebugUtil.DrawArrow(c, c + Vector3.up * 100, arrowSize: 1f, duration: 30f, bodyColor: Color.red);
+                        PLATEAUDebugUtil.DrawArrow(c, c + Vector3.up * 100, arrowSize: 1f, duration: 30f, bodyColor: Color.red);
                     break;
                 }
 

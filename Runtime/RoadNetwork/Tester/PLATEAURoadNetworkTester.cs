@@ -1,4 +1,4 @@
-using PLATEAU.CityGML;
+﻿using PLATEAU.CityGML;
 using PLATEAU.CityInfo;
 using PLATEAU.RoadNetwork.Data;
 using PLATEAU.RoadNetwork.Drawer;
@@ -56,7 +56,7 @@ namespace PLATEAU.RoadNetwork
                     .SelectMany(x => x.sharedMesh.vertices.Select(a => a.Xz()))
                     .ToList();
                 var convex = GeoGraph2d.ComputeConvexVolume(vertices);
-                DebugUtil.DrawArrows(convex.Select(x => x.Xay()));
+                PLATEAUDebugUtil.DrawArrows(convex.Select(x => x.Xay()));
             }
         }
 
@@ -67,11 +67,11 @@ namespace PLATEAU.RoadNetwork
             var isClockwise = GeoGraph2d.IsClockwise(cMesh.vertices.Select(v => new Vector2(v.x, v.y)));
             if (isClockwise)
             {
-                DebugUtil.DrawArrows(cMesh.vertices.Select(v => v + Vector3.up * 0.2f));
+                PLATEAUDebugUtil.DrawArrows(cMesh.vertices.Select(v => v + Vector3.up * 0.2f));
             }
             else
             {
-                DebugUtil.DrawArrows(cMesh.vertices.Reverse().Select(v => v + Vector3.up * 0.2f));
+                PLATEAUDebugUtil.DrawArrows(cMesh.vertices.Reverse().Select(v => v + Vector3.up * 0.2f));
             }
         }
 
