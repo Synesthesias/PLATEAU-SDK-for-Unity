@@ -16,13 +16,11 @@ namespace PLATEAU.RoadNetwork.Data
         [SerializeField]
         private int id;
 
-        public int Id => id - 1;
+        //[Obsolete("使用しないでください。ストレージ内でのみ参照出来るように修正予定。")]
+        public int _Val => id - 1;
 
         // 有効なIdかどうか
         public bool IsValid => id > 0;
-
-        // int型への暗黙の型変換
-        public static implicit operator int(RnID<TPrimDataType> id) => id.Id;
 
         public RnID(int id)
         {
