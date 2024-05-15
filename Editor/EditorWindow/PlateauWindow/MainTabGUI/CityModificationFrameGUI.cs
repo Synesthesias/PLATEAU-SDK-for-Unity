@@ -9,7 +9,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
     {
         private int tabIndex;
         private readonly IEditorDrawable[] tabGUIArray;
-        private string[] tabNames = { "Assetsに保存","ゲームオブジェクト\nON/OFF" , "マテリアル分け", "結合/分離" };
+        private string[] tabNames = { "Assetsに保存","ゲームオブジェクト\nON/OFF" , "マテリアル分け", "結合/分離", "地形変換" };
 
         public CityModificationFrameGUI(UnityEditor.EditorWindow parentEditorWindow)
         {
@@ -18,7 +18,8 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
                 new ConvertToAssetGUI(),
                 new CityChangeActiveGUI(),
                 new CityMaterialAdjustGUI(parentEditorWindow),
-                new CityGranularityConvertGUI(parentEditorWindow)
+                new CityGranularityConvertGUI(parentEditorWindow),
+                new CityTerrainConvertGUI(parentEditorWindow)
             };
         }
 

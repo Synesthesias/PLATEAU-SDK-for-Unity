@@ -18,6 +18,7 @@ namespace PLATEAU.Texture
             DLLUtil.CheckDllError(apiResult);
 
             byte[] outData = DLLUtil.PtrToBytes(HeightmapDataPtr, sizeof(UInt16) * DataSize);
+            NativeMethods.release_heightmap_data(HeightmapDataPtr);
 
             HeightData = new UInt16[DataSize];
             int byteIndex = 0;
@@ -74,6 +75,7 @@ namespace PLATEAU.Texture
             DLLUtil.CheckDllError(apiResult);
 
             byte[] outData = DLLUtil.PtrToBytes(HeightmapDataPtr, sizeof(UInt16) * DataSize);
+            NativeMethods.release_heightmap_data(HeightmapDataPtr);
 
             data = new UInt16[DataSize];
             
@@ -83,7 +85,7 @@ namespace PLATEAU.Texture
                 data[i] = BitConverter.ToUInt16(outData, byteIndex);
                 byteIndex += 2;
             }
-            
+
         }
 
         static public void SaveRawFile(string FileName, int width, int height, UInt16[] data)
@@ -117,6 +119,7 @@ namespace PLATEAU.Texture
             DLLUtil.CheckDllError(apiResult);
 
             byte[] outData = DLLUtil.PtrToBytes(HeightmapDataPtr, sizeof(UInt16) * DataSize);
+            NativeMethods.release_heightmap_data(HeightmapDataPtr);
 
             data = new UInt16[DataSize];
             int byteIndex = 0;
@@ -125,6 +128,7 @@ namespace PLATEAU.Texture
                 data[i] = BitConverter.ToUInt16(outData, byteIndex);
                 byteIndex += 2;
             }
+
         }
 
         private static class NativeMethods
@@ -143,22 +147,6 @@ namespace PLATEAU.Texture
                 out IntPtr HeightmapDataPtr,
                 out int DataSize
             );
-
-            [DllImport(DLLUtil.DllName)]
-            internal static extern APIResult heightmap_generator_generate_from_mesh2(
-            [In] IntPtr srcMeshPtr,
-            [In] int TextureWidth,
-            [In] int TextureHeight,
-            [In] PlateauVector2d Margin,
-            [In] CoordinateSystem Coordinate,
-            out PlateauVector3d Min,
-            out PlateauVector3d Max,
-            out PlateauVector2f MinUV,
-            out PlateauVector2f MaxUV,
-            out IntPtr HeightmapDataPtr,
-            out int DataSize
-            );
-
 
             [DllImport(DLLUtil.DllName)]
             internal static extern APIResult heightmap_save_png_file(
@@ -192,6 +180,11 @@ namespace PLATEAU.Texture
              [In] int Height,
              out IntPtr OutData,
              out int DataSize
+            );
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult release_heightmap_data(
+             [In] IntPtr Data
             );
         }
     }

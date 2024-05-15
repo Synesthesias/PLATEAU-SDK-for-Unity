@@ -40,14 +40,14 @@ namespace PLATEAU.Tests.EditModeTests
         public void TestReadWritePng()
         {
             Assert.IsTrue(Directory.Exists(ImageDirPath), "Directory Exists");
-            Assert.IsTrue(File.Exists(Path.Combine(ImageDirPath, "HeightMap.png")), "File Exists");
+            Assert.IsTrue(File.Exists(Path.Combine(ImageDirPath, "test_heightmap.png")), "File Exists");
             //Read
             int TextureWidth = 513;
             int TextureHeight = 513;
-            HeightmapGenerator.ReadPngFile(Path.Combine(ImageDirPath, "HeightMap.png"), TextureWidth, TextureHeight, out var imageData);
+            HeightmapGenerator.ReadPngFile(Path.Combine(ImageDirPath, "test_heightmap.png"), TextureWidth, TextureHeight, out var imageData);
             Assert.AreEqual(TextureWidth * TextureHeight, imageData.Length);
             //Write
-            HeightmapGenerator.SavePngFile(Path.Combine(ImageDirPath, "HeightMapSaved.png"), TextureWidth, TextureHeight, imageData);
+            HeightmapGenerator.SavePngFile(Path.Combine(ImageDirPath, "test_heightmap_saved.png"), TextureWidth, TextureHeight, imageData);
         }
 
         [Test]
@@ -57,11 +57,11 @@ namespace PLATEAU.Tests.EditModeTests
             //Read
             int TextureWidth = 513;
             int TextureHeight = 513;
-            HeightmapGenerator.ReadRawFile(Path.Combine(ImageDirPath, "HeightMap.raw"), TextureWidth, TextureHeight, out var imageData);
+            HeightmapGenerator.ReadRawFile(Path.Combine(ImageDirPath, "test_heightmap.raw"), TextureWidth, TextureHeight, out var imageData);
             Assert.AreEqual(TextureWidth * TextureHeight, imageData.Length);
 
             //Write
-            HeightmapGenerator.SaveRawFile(Path.Combine(ImageDirPath, "HeightMapSaved.raw"), TextureWidth, TextureHeight, imageData);
+            HeightmapGenerator.SaveRawFile(Path.Combine(ImageDirPath, "test_heightmap_saved.raw"), TextureWidth, TextureHeight, imageData);
         }
 
         [Test]
