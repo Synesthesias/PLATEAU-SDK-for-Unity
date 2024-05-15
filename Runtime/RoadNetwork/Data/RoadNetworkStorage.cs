@@ -204,7 +204,7 @@ namespace PLATEAU.RoadNetwork.Data
             /// <returns></returns>
             public TPrimType Read(in RnID<TPrimType> id)
             {
-                return dataList[id];
+                return dataList[id._Val];
             }
 
             /// <summary>
@@ -214,7 +214,7 @@ namespace PLATEAU.RoadNetwork.Data
             /// <param name="val"></param>
             public void Write(in RnID<TPrimType> id, in TPrimType val)
             {
-                dataList[id] = val;
+                dataList[id._Val] = val;
             }
 
             /// <summary>
@@ -228,7 +228,7 @@ namespace PLATEAU.RoadNetwork.Data
                 freeDataIndices = new List<int>(ids.Length);
                 foreach (var item in ids)
                 {
-                    freeDataIndices.Add(item);
+                    freeDataIndices.Add(item._Val);
                 }
             }
 
