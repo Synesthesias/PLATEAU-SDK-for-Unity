@@ -19,7 +19,7 @@ namespace PLATEAU.TerrainConvert
         /// 非同期処理です。必ずメインスレッドで呼ぶ必要があります。
         /// 成否を bool で返します。
         /// </summary>
-        public static async Task<TerrainConvertResult> PlateauTerrainToScene(Transform parentTrans, IProgressDisplay progressDisplay,
+        public static async Task<TerrainConvertResult> PlateauTerrainToScene(GameObject[] srcGameObjs, IProgressDisplay progressDisplay,
         string progressName, TerrainConvertOption convertOption, Model plateauModel, bool skipRoot)
         {
             ConvertedTerrainData terrainData;
@@ -36,7 +36,7 @@ namespace PLATEAU.TerrainConvert
                 Debug.LogError("Terrainデータの取得に失敗しました。\n" + e);
                 return TerrainConvertResult.Fail();
             }
-           return await terrainData.PlaceToScene(parentTrans, convertOption, skipRoot);
+           return await terrainData.PlaceToScene(srcGameObjs, convertOption, skipRoot);
         }
     }
 
@@ -87,7 +87,7 @@ namespace PLATEAU.TerrainConvert
             GeneratedObjs.Add(obj);
         }
 
-        /// <summary> 複数の<see cref="GranularityConvertResult"/>を統合します。 </summary>
+        /// <summary> 複数の<see cref="TerrainConvertResult"/>を統合します。 </summary>
         public void Merge(TerrainConvertResult other)
         {
             IsSucceed &= other.IsSucceed;

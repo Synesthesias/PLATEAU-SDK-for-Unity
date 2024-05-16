@@ -1,8 +1,11 @@
-﻿using PLATEAU.Native;
+﻿using PLATEAU.CityInfo;
+using PLATEAU.Native;
 using PLATEAU.PolygonMesh;
 using PLATEAU.Texture;
+using PLATEAU.Util;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
 
@@ -102,27 +105,32 @@ namespace PLATEAU.TerrainConvert
             return null;
         }
 
-        public async Task<TerrainConvertResult> PlaceToScene(Transform parent, TerrainConvertOption option, bool skipRoot)
+        //同名のGameObjectのTransformを取得
+        private Transform GetTransformByName(GameObject[] gameObjects, string name)
+        {
+            var found = gameObjects.First(x => x.name == name);
+            if (found != null)
+                return found.transform;
+            return gameObjects.First().transform.root;
+        }
+
+        public async Task<TerrainConvertResult> PlaceToScene(GameObject[] srcGameObjs, TerrainConvertOption option, bool skipRoot)
         {
             var result = new TerrainConvertResult();
-            PlaceToSceneRecursive(result, parent, option, skipRoot, 0);
+            PlaceToSceneRecursive(result, srcGameObjs, option, skipRoot, 0);
             return await Task.FromResult<TerrainConvertResult>(result);
         }
 
-        private void PlaceToSceneRecursive(TerrainConvertResult result, Transform parent,
+        private void PlaceToSceneRecursive(TerrainConvertResult result, GameObject[] srcGameObjs,
             TerrainConvertOption option, bool skipRoot, int recursiveDepth)
         {
-            var nextParent = parent;
             if (!skipRoot)
             {
                 if (this.heightmapData != null)
                 {
+                    //Terrain Data
                     TerrainData _terraindata = new TerrainData();
                     _terraindata.heightmapResolution = this.heightmapData.TextureHeight;
-                    //TODO:
-                    //_terraindata.baseMapResolution = 1024;
-                    //_terraindata.SetDetailResolution(1024, 32);
-
                     var terrainWidth = (float)Math.Abs(this.heightmapData.Max.X - this.heightmapData.Min.X);
                     var terrainLength = (float)Math.Abs(this.heightmapData.Max.Z - this.heightmapData.Min.Z);
                     var terrainHeight = (float)Math.Abs(this.heightmapData.Max.Y - this.heightmapData.Min.Y);
@@ -130,43 +138,40 @@ namespace PLATEAU.TerrainConvert
                     _terraindata.SetHeights(0, 0, this.heightmapData.HeightMapTexture);
                     _terraindata.size = new Vector3(terrainWidth, terrainHeight, terrainLength);
 
-                    //Material
-                    if(!string.IsNullOrEmpty(this.heightmapData.DiffuseTexturePath))
-                    {
-                        var DiffuseTexture = new Texture2D(1, 1);
-                        var rawData = System.IO.File.ReadAllBytes(this.heightmapData.DiffuseTexturePath);
-                        DiffuseTexture.LoadImage(rawData);
+                    //Terrain Material
+                    TerrainLayer _materialLayer = new TerrainLayer();
+                    var DiffuseTexture = new Texture2D(1, 1);
+                    var TexturePath = this.heightmapData.DiffuseTexturePath;
+                    if (string.IsNullOrEmpty(TexturePath))
+                        TexturePath = PathUtil.SdkPathToAssetPath("Materials/Textures/White.PNG");
 
-                        TerrainLayer _materialLayer = new TerrainLayer();
-                        _materialLayer.diffuseTexture = DiffuseTexture;
+                    var rawData = System.IO.File.ReadAllBytes(TexturePath);
+                    DiffuseTexture.LoadImage(rawData);
+                    _materialLayer.diffuseTexture = DiffuseTexture;
+                    var UVSize = new Vector2(
+                        terrainWidth / (this.heightmapData.MaxUV.X - this.heightmapData.MinUV.X),
+                        terrainLength / (this.heightmapData.MaxUV.Y - this.heightmapData.MinUV.Y));
 
-                        var UVSize = new Vector2(
-                            terrainWidth / (this.heightmapData.MaxUV.X - this.heightmapData.MinUV.X),
-                            terrainLength / (this.heightmapData.MaxUV.Y - this.heightmapData.MinUV.Y));
+                    _materialLayer.tileSize = new Vector2(UVSize.x, UVSize.y);
+                    _materialLayer.tileOffset = new Vector2(
+                        UVSize.x * this.heightmapData.MinUV.X,
+                        UVSize.y * this.heightmapData.MinUV.Y);
 
-                        _materialLayer.tileSize = new Vector2(UVSize.x, UVSize.y);
-                        _materialLayer.tileOffset = new Vector2(
-                            UVSize.x * this.heightmapData.MinUV.X,
-                            UVSize.y * this.heightmapData.MinUV.Y);
+                    _terraindata.terrainLayers = new TerrainLayer[] { _materialLayer };
 
-                        _terraindata.terrainLayers = new TerrainLayer[] { _materialLayer };
-                    }
-
+                    //Terrain GameObject
                     GameObject terrain = Terrain.CreateTerrainGameObject(_terraindata);
-                    terrain.name = this.heightmapData.Name;
+                    terrain.name = $"TERRAIN_{this.heightmapData.Name}";
                     terrain.transform.position = new Vector3((float)this.heightmapData.Min.X, (float)this.heightmapData.Min.Y, (float)this.heightmapData.Min.Z);
+                    terrain.transform.SetParent(GetTransformByName(srcGameObjs, this.heightmapData.Name).parent);
+
+                    result.Add(terrain);
 
                     //Debug Image Output
-                    if(option.HeightmapImageOutput == TerrainConvertOption.ImageOutput.PNG || option.HeightmapImageOutput == TerrainConvertOption.ImageOutput.PNG_RAW)
+                    if (option.HeightmapImageOutput == TerrainConvertOption.ImageOutput.PNG || option.HeightmapImageOutput == TerrainConvertOption.ImageOutput.PNG_RAW)
                         HeightmapGenerator.SavePngFile($"{Application.dataPath}/HM_{this.heightmapData.Name}_{this.heightmapData.TextureWidth}_{this.heightmapData.TextureHeight}.png", this.heightmapData.TextureWidth, this.heightmapData.TextureHeight, this.heightmapData.HeightData);
                     if (option.HeightmapImageOutput == TerrainConvertOption.ImageOutput.RAW || option.HeightmapImageOutput == TerrainConvertOption.ImageOutput.PNG_RAW)
                         HeightmapGenerator.SaveRawFile($"{Application.dataPath}/HM_{this.heightmapData.Name}_{this.heightmapData.TextureWidth}_{this.heightmapData.TextureHeight}.raw", this.heightmapData.TextureWidth, this.heightmapData.TextureHeight, this.heightmapData.HeightData);
-
-                    if (terrain != null)
-                    {
-                        result.Add(terrain);
-                        nextParent = terrain.transform;
-                    } 
                 }
             }
 
@@ -174,7 +179,7 @@ namespace PLATEAU.TerrainConvert
             // 子を再帰的に配置します。
             foreach (var child in this.children)
             {
-                child.PlaceToSceneRecursive(result, nextParent, option, false, nextRecursiveDepth);
+                child.PlaceToSceneRecursive(result, srcGameObjs, option, false, nextRecursiveDepth);
             }
         }
     }

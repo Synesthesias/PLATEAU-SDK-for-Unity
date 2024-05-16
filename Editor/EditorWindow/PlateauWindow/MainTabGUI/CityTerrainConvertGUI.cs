@@ -2,12 +2,13 @@
 using System.Threading.Tasks;
 using PLATEAU.Editor.EditorWindow.Common;
 using PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.AdjustGUIParts;
-using PLATEAU.GranularityConvert;
-using PLATEAU.PolygonMesh;
 using PLATEAU.TerrainConvert;
 using PLATEAU.Util.Async;
 using UnityEditor;
 using UnityEngine;
+using System.Linq;
+using PLATEAU.CityInfo;
+using System.Collections.Generic;
 
 namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
 {
@@ -40,8 +41,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
 
         private void OnSelectionChanged()
         {
-            //選択アイテムのフィルタリング処理
-            selected = Selection.gameObjects;
+            selected = FilterItemsContainDemChildren(Selection.gameObjects);
             parentEditorWindow.Repaint();
         }
 
@@ -81,13 +81,46 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
             }
         }
 
+        //選択アイテムのフィルタリング処理 (子にTINReliefを含む）
+        private GameObject[] FilterItemsContainDemChildren(GameObject[] selection)
+        {
+            var selectionList = new HashSet<GameObject>();
+            foreach (var gameObj in selection)
+            {
+                var components = gameObj.transform.GetComponentsInChildren<PLATEAUCityObjectGroup>();
+                foreach (var grp in components)
+                {
+                    if (grp.CityObjects.rootCityObjects.Exists(x => x.type == CityGML.CityObjectType.COT_TINRelief))
+                    {
+                        selectionList.Add(gameObj); break;
+                    }
+                }
+            }
+            return selectionList.ToArray();
+        }
+
+        //選択アイテムのフィルタリング処理 (TINReliefのアイテム）
+        private GameObject[] FilterDemItems(GameObject[] selection)
+        {
+            var selectionList = new HashSet<GameObject>();
+            foreach (var gameObj in selection)
+            {
+                var components = gameObj.transform.GetComponentsInChildren<PLATEAUCityObjectGroup>();
+                foreach (var grp in components)
+                {
+                    if (grp.CityObjects.rootCityObjects.Exists(x => x.type == CityGML.CityObjectType.COT_TINRelief))
+                        selectionList.Add(grp.gameObject);
+                }
+            }
+            return selectionList.ToArray();
+        }
+
         private async Task Exec()
         {
-            Debug.Log("変換開始");
             isExecTaskRunning = true;
             var converter = new CityTerrainConverter();
             var convertOption = new TerrainConvertOption(
-                selected,
+                FilterDemItems(selected),
                 (int)SizeValues.GetValue(selectedSize),
                 destroyOrPreserveGUI.Current == DestroyOrPreserveSrcGUI.PreserveOrDestroy.Destroy
                 ,TerrainConvertOption.ImageOutput.PNG

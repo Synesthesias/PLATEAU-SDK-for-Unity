@@ -4,10 +4,8 @@ using PLATEAU.CityImport.Import.Convert;
 using PLATEAU.Util;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using UnityEditor;
-using static PLATEAU.CityInfo.CityObjectList;
 using UnityEngine;
 using System;
 
@@ -29,10 +27,11 @@ namespace PLATEAU.TerrainConvert
                     unityMeshToDllSubMeshConverter,
                     false, 
                     VertexConverterFactory.NoopConverter());
-                
+
                 progressBar.Display("モデルを配置中...", 0.7f);
                 var result = await PlateauToUnityTerrainConverter.PlateauTerrainToScene(
-                    option.SrcGameObjs.First().transform.root, new DummyProgressDisplay(), "", option, srcModel,true);
+                    option.SrcGameObjs,
+                    new DummyProgressDisplay(), "", option, srcModel,true);
 
                 if (!result.IsSucceed)
                 {
