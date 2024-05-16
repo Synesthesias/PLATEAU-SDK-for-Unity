@@ -123,7 +123,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
                 FilterDemItems(selected),
                 (int)SizeValues.GetValue(selectedSize),
                 destroyOrPreserveGUI.Current == DestroyOrPreserveSrcGUI.PreserveOrDestroy.Destroy
-                ,TerrainConvertOption.ImageOutput.PNG
+                //,TerrainConvertOption.ImageOutput.PNG_RAW
             );
 
             await converter.ConvertAsync(convertOption);

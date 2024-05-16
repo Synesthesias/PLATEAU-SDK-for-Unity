@@ -9,15 +9,12 @@ using UnityEngine;
 namespace PLATEAU.TerrainConvert
 {
     /// <summary>
-    /// 都市の3Dモデルを PLATEAU から Unity に変換してシーンに配置します。
+    /// 地形モデル から Terrainに変換してシーンに配置します。
     /// </summary>
     public static class PlateauToUnityTerrainConverter
     {
-        // TODO 処理をキャンセルする機能が未実装
         /// <summary>
-        /// 引数の cityModel を Unity向けに変換し、シーンに配置します。
-        /// 非同期処理です。必ずメインスレッドで呼ぶ必要があります。
-        /// 成否を bool で返します。
+        /// 引数の cityModel を Terrainに変換し、シーンに配置します。
         /// </summary>
         public static async Task<TerrainConvertResult> PlateauTerrainToScene(GameObject[] srcGameObjs, IProgressDisplay progressDisplay,
         string progressName, TerrainConvertOption convertOption, Model plateauModel, bool skipRoot)
