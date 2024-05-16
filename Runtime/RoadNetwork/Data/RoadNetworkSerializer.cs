@@ -140,7 +140,7 @@ namespace PLATEAU.RoadNetwork.Data
             {
                 if (val == null)
                 {
-                    return new RnID<TData>();
+                    return RnID<TData>.Undefind; 
                 }
 
                 return Table[val];
@@ -347,7 +347,7 @@ namespace PLATEAU.RoadNetwork.Data
             var objList = Enumerable.Range(0, storage.DataList.Count).Select(i => new T()).ToList();
 
             var id2Obj = Enumerable.Range(0, storage.DataList.Count)
-                .ToDictionary(i => new RnID<TData>(i), i => objList[i] as object);
+                .ToDictionary(i => storage.RequsetID(i), i => objList[i] as object);
 
             var idConverter = new RnId2ObjectConverter<TData>(id2Obj);
 

@@ -157,6 +157,17 @@ namespace PLATEAU.RoadNetwork.Data
             public IReadOnlyList<TPrimType> DataList => dataList;
 
             /// <summary>
+            /// IDの要求
+            /// 同一のhandleIndexを渡した時　同じIDが返ることを保証する
+            /// </summary>
+            /// <param name="handleIndex"></param>
+            /// <returns></returns>
+            public RnID<TPrimType> RequsetID(int handleIndex)
+            {
+                return new ImplRnID<TPrimType>(handleIndex);
+            }
+
+            /// <summary>
             /// ストレージのID群を取得
             /// </summary>
             /// <returns></returns>
@@ -165,7 +176,7 @@ namespace PLATEAU.RoadNetwork.Data
                 var ids = new RnID<TPrimType>[dataList.Count];
                 for (int i = 0; i < ids.Length; i++)
                 {
-                    ids[i] = new RnID<TPrimType>(i);
+                    ids[i] = RequsetID(i);
                 }
                 return ids;
             }
@@ -182,7 +193,7 @@ namespace PLATEAU.RoadNetwork.Data
                 dataList.AddRange(values);
                 var ret = new RnID<TPrimType>[values.Length];
                 for (int i = 0; i < ret.Length; i++)
-                    ret[i] = new RnID<TPrimType>(start + i);
+                    ret[i] = RequsetID(start + i);
                 return ret;
             }
 
@@ -245,7 +256,7 @@ namespace PLATEAU.RoadNetwork.Data
                 int i = 0;
                 foreach (var item in freeDataIndices)
                 {
-                    ret[i++] = new RnID<TPrimType>(freeDataIndices[i]);
+                    ret[i++] = RequsetID(freeDataIndices[i]);
                 }
                 freeDataIndices.Clear();
                 return ret;
@@ -259,13 +270,34 @@ namespace PLATEAU.RoadNetwork.Data
             {
                 dataList.Clear();
             }
-        }
-    }
 
-    public abstract class PrimitiveDataHandle<TPrimType>
-        where TPrimType : IPrimitiveData
-    {
-        protected RoadNetworkStorage storage;
-        protected RnID<TPrimType> id;
+            [Serializable]
+            private struct ImplRnID<TPrimDataType> : RnID<TPrimDataType>
+                where TPrimDataType : IPrimitiveData
+            {
+                // PropertyDrawerでアクセスするため
+                public string IdFieldName { get => idFieldName; }
+                private const string idFieldName = nameof(id);
+
+                // 不正値
+                public static ImplRnID<TPrimDataType> Undefined => new ImplRnID<TPrimDataType>(-1);
+
+                // Listのindexアクセスがintなのでuintじゃなくてintにしておく
+                // structなので初期値は基本0. その時に不正値扱いにするために0は不正値とする
+                [SerializeField]
+                private int id;
+
+
+                // 有効なIdかどうか
+                public bool IsValid => id > 0;
+
+                public int _Val => id - 1;
+
+                public ImplRnID(int id)
+                {
+                    this.id = id + 1;
+                }
+            }
+        }
     }
 }
