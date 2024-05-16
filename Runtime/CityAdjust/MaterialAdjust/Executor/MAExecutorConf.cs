@@ -73,9 +73,8 @@ namespace PLATEAU.CityAdjust.MaterialAdjust.Executor
 
         public override MAExecutorConf Copy()
         {
-            var conf = (MAExecutorConfByAttr)base.Copy();
-            conf.AttrKey = AttrKey;
-            return conf;
+            return new MAExecutorConfByAttr(MaterialAdjustConf, TargetTransforms, MeshGranularity, DoDestroySrcObjs,
+                SkipNotChangingMaterial, AttrKey);
         }
     }
 }

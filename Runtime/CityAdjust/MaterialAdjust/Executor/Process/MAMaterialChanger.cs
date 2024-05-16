@@ -66,11 +66,11 @@ namespace PLATEAU.CityAdjust.MaterialAdjust.Executor.Process
         /// </summary>
         private Result<Material> GetMaterial(Transform trans)
         {
-            var cityObjGroups = trans.GetComponent<PLATEAUCityObjectGroup>();
-            if (cityObjGroups == null || cityObjGroups.CityObjects.rootCityObjects.Count == 0) return new Result<Material>(false, null);
+            var cityObjGroup = trans.GetComponent<PLATEAUCityObjectGroup>();
+            if (cityObjGroup == null || cityObjGroup.CityObjects.rootCityObjects.Count == 0) return new Result<Material>(false, null);
             // 最小地物単位にしたので、rootCityObjectsの数は1つのはずです。
-            var cityObj = cityObjGroups.CityObjects.rootCityObjects[0];
-            return materialSelector.Get(cityObj, materialAdjustConf);
+            var cityObj = cityObjGroup.CityObjects.rootCityObjects[0];
+            return materialSelector.Get(cityObjGroup, cityObj, materialAdjustConf);
         }
 
         /// <summary>
@@ -79,12 +79,12 @@ namespace PLATEAU.CityAdjust.MaterialAdjust.Executor.Process
         /// </summary>
         public bool ShouldChange(Transform trans)
         {
-            var cityObjGroups = trans.GetComponent<PLATEAUCityObjectGroup>();
-            if (cityObjGroups == null) return false;
-            var cityObjs = cityObjGroups.GetAllCityObjects();
+            var cityObjGroup = trans.GetComponent<PLATEAUCityObjectGroup>();
+            if (cityObjGroup == null) return false;
+            var cityObjs = cityObjGroup.GetAllCityObjects();
             foreach (var co in cityObjs)
             {
-                if (materialSelector.Get(co, materialAdjustConf).IsSucceed) return true;
+                if (materialSelector.Get(cityObjGroup, co, materialAdjustConf).IsSucceed) return true;
             }
 
             return false;

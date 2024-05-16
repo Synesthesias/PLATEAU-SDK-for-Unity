@@ -42,7 +42,10 @@ namespace PLATEAU.CityInfo
                     new Node("内装付属設備(IntBuildingInstallation)", Package.None, new[]{COType.COT_IntBuildingInstallation}, null),
                     
                 }),
-                new Node("道路 (Road)", Package.Road, new[] { COType.COT_Road }, null),
+                new Node("道路 (Road)", Package.Road, new[] { COType.COT_Road }, new[]
+                {
+                    new Node("交通オブジェクト(TransportationObject)", Package.None, new[]{COType.COT_TransportationObject}, null)
+                }),
                 new Node("都市設備 (CityFurniture)", Package.CityFurniture, new[] { COType.COT_CityFurniture }, null),
                 new Node("都市計画決定情報 (UrbanPlanningDecision)", Package.UrbanPlanningDecision, null, null),
                 new Node("土地利用 (LandUse)", Package.LandUse, new[] { COType.COT_LandUse }, null),

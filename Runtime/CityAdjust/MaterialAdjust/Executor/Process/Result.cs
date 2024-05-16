@@ -13,5 +13,7 @@ namespace PLATEAU.CityAdjust.MaterialAdjust.Executor.Process
             IsSucceed = isSucceed;
             Get = returnValue;
         }
+
+        public static Result<T> Fail => new Result<T>(false, default(T));
     }
 }

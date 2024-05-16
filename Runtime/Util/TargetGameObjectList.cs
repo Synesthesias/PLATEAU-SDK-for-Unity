@@ -60,6 +60,7 @@ namespace PLATEAU.Util
             Transform newParent = null;
             foreach (var d in data.ToArray())
             {
+                if (d == null) continue;
                 if (d == op) return; // ケースA:重複は無視
                 if (d.IsChildOf(op))  // ケースB:親が渡された場合
                 {
@@ -144,6 +145,7 @@ namespace PLATEAU.Util
             while (queue.Count > 0)
             {
                 var trans = queue.Dequeue();
+                if (trans == null) continue;
                 var nextSearchFlow = isAsync ? await forEachTransform(trans) : forEachTransform(trans).Result;
                 if (nextSearchFlow == NextSearchFlow.Abort)
                 {

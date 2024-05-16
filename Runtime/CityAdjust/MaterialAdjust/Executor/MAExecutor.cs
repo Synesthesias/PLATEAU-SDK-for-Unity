@@ -57,165 +57,209 @@ namespace PLATEAU.CityAdjust.MaterialAdjust.Executor
                 Debug.LogError("設定値が不正です。");
                 return;
             }
-            
+
             maCondition.Init(conf.TargetTransforms);
-            
+
             // 変更対象となったゲームオブジェクトの一覧を格納する
+            var srcMeshes = new UniqueParentTransformList(); // 変換の対象となったsrcを後で消すために記憶する
             var converted = new UniqueParentTransformList();
             var srcDstDict = new Dictionary<Transform, Transform>(); // src -> dst の対応の一部を記録する
 
             await conf.TargetTransforms.BfsExecAsync(async srcTrans =>
             {
-            var dstGranularity = GranularityFor(srcTrans);
-            
-            // メッシュがなく、分解結合の必要もない場合、属性情報だけコピーして次へ
-            if (srcTrans.GetComponent<MeshFilter>() == null &&
-                !(ShouldSkipDueToMaterial(srcTrans)) &&
-                !(maCondition.ShouldConstruct(srcTrans, dstGranularity)) &&
-                !(maCondition.ShouldDeconstruct(srcTrans, dstGranularity)))
-            {
-                logger.Log("通常コピー  " + srcTrans.name);
-                var copied = CopyGameObjAsResult(srcTrans, converted, srcDstDict, true);
-                copied.transform.parent = srcDstDict[srcTrans].parent;
-                return NextSearchFlow.Continue;
-            }
-            
-            
-            // 分解結合が必要な場合
-            bool shouldDeconstruct = maCondition.ShouldDeconstruct(srcTrans, MAGranularity.PerAtomicFeatureObject);
-            bool shouldConstruct = maCondition.ShouldConstruct(srcTrans, dstGranularity);
-            if (shouldDeconstruct || shouldConstruct)
-            {
-                // 分解
-                UniqueParentTransformList decomposed;
-                if (shouldDeconstruct)
+                var dstGranularity = GranularityFor(srcTrans);
+
+                // メッシュがなく、分解結合の必要もない場合、属性情報だけコピーして次へ
+                if (srcTrans.GetComponent<MeshFilter>() == null &&
+                    !(ShouldSkipDueToMaterial(srcTrans)) &&
+                    !(maCondition.ShouldConstruct(srcTrans, dstGranularity)) &&
+                    !(maCondition.ShouldDeconstruct(srcTrans, dstGranularity)))
                 {
-                    logger.Log("分解フェイズ：分解 " + srcTrans.name);
-                    var decomposeResult = await maDecomposer.ExecAsync(conf, srcTrans, maCondition);
-                    if (!decomposeResult.IsSucceed)
-                    {
-                        Debug.LogError($"分解失敗: {srcTrans.name}");
-                        return NextSearchFlow.Continue;
-                    }
-                    decomposed = decomposeResult.Get.GeneratedRootTransforms;
-                    foreach (var dec in decomposed.Get)
-                    {
-                        srcDstDict.Add(srcTrans, dec);
-                    }
+                    logger.Log("通常コピー  " + srcTrans.name);
+                    var copied = CopyGameObjAsResult(srcTrans, converted, srcDstDict, true);
+                    copied.transform.parent = srcDstDict[srcTrans].parent;
+                    return NextSearchFlow.Continue;
                 }
-                else
+
+
+                // 分解結合が必要な場合
+                bool shouldDeconstruct = maCondition.ShouldDeconstruct(srcTrans, MAGranularity.PerAtomicFeatureObject);
+                bool shouldConstruct = maCondition.ShouldConstruct(srcTrans, dstGranularity);
+                if (shouldDeconstruct || shouldConstruct)
                 {
-                    // 分解不要なら代わりにコピー
-                    logger.Log("分解フェイズ：コピー " + srcTrans.name);
-                    var copied = CopyGameObjWithChildren(srcTrans, srcDstDict);
-                    decomposed = new UniqueParentTransformList(copied.transform);
-                }
-                
-                
-                // 分解したものについて、再帰的にマテリアル変更
-                maMaterialChanger.ExecRecursive(decomposed);
-                
-                // 条件を結合向けに再設定
-                IMACondition composeCondition;
-                switch (maCondition)
-                {
-                    case MAConditionMatChange:
-                        composeCondition = new MAConditionMatChange(maMaterialChanger);
-                        composeCondition.Init(new UniqueParentTransformList(decomposed.Get));
-                        break; 
-                    default:
-                        composeCondition = maCondition;
-                        break;
-                }
-            
-                // 分解したものについて結合します。
-                if (dstGranularity != MAGranularity.CombineAll)
-                {
-                    // 全結合でなければ、再帰的に結合します。
-                    await decomposed.DfsExecAsync(async innerTransSrc =>
+                    // 分解
+                    srcMeshes.Add(srcTrans);
+                    UniqueParentTransformList decomposed;
+                    if (shouldDeconstruct)
                     {
-                        
-                        if (!composeCondition.ShouldConstruct(innerTransSrc, dstGranularity))
+                        logger.Log("分解フェイズ：分解 " + srcTrans.name);
+                        var decomposeResult = await maDecomposer.ExecAsync(conf, srcTrans, maCondition);
+                        if (!decomposeResult.IsSucceed)
                         {
-                            logger.Log("結合フェイズ：再帰的結合：コピー" + innerTransSrc.name);
-                            var copied = CopyGameObjAsResult(innerTransSrc, converted, srcDstDict, false);
-                            Object.DestroyImmediate(innerTransSrc.gameObject);
+                            Debug.LogError($"分解失敗: {srcTrans.name}");
+                            return NextSearchFlow.Continue;
+                        }
+
+                        decomposed = decomposeResult.Get.GeneratedRootTransforms;
+                        foreach (var dec in decomposed.Get)
+                        {
+                            srcDstDict.Add(srcTrans, dec);
+                        }
+                    }
+                    else
+                    {
+                        // 分解不要なら代わりにコピー
+                        logger.Log("分解フェイズ：コピー " + srcTrans.name);
+                        var copied = CopyGameObjWithChildren(srcTrans, srcDstDict);
+                        decomposed = new UniqueParentTransformList(copied.transform);
+                    }
+
+
+                    // 分解したものについて、再帰的にマテリアル変更
+                    maMaterialChanger.ExecRecursive(decomposed);
+
+                    // 条件を結合向けに再設定
+                    IMACondition composeCondition;
+                    switch (maCondition)
+                    {
+                        case MAConditionMatChange:
+                            composeCondition = new MAConditionMatChange(maMaterialChanger);
+                            composeCondition.Init(new UniqueParentTransformList(decomposed.Get));
+                            break;
+                        default:
+                            composeCondition = maCondition;
+                            break;
+                    }
+
+                    // 分解したものについて結合します。
+                    if (dstGranularity != MAGranularity.CombineAll)
+                    {
+                        // 全結合でなければ、再帰的に結合します。
+                        await decomposed.DfsExecAsync(async innerTransSrc =>
+                        {
+                            if (!composeCondition.ShouldConstruct(innerTransSrc, dstGranularity))
+                            {
+                                logger.Log("結合フェイズ：再帰的結合：コピー" + innerTransSrc.name);
+                                var copied = CopyGameObjAsResult(innerTransSrc, converted, srcDstDict, false);
+                                Object.DestroyImmediate(innerTransSrc.gameObject);
+                                return NextSearchFlow.SkipChildren;
+                            }
+
+                            logger.Log("結合フェイズ：再帰的結合：結合 " + innerTransSrc.name);
+                            var innerSrcParent = innerTransSrc.parent;
+                            var parentOfComposed = innerSrcParent == null ? null : innerTransSrc.parent;
+                            var result = await maComposer.ExecAsync(new UniqueParentTransformList(innerTransSrc),
+                                dstGranularity, maCondition);
+                            var resultTransforms = result.Get.GeneratedRootTransforms;
+                            foreach (var t in resultTransforms.Get)
+                            {
+                                t.parent = parentOfComposed;
+                            }
+
+                            converted.AddRange(resultTransforms.Get);
                             return NextSearchFlow.SkipChildren;
-                        }
-                        logger.Log("結合フェイズ：再帰的結合：結合 "  + innerTransSrc.name);
-                        var innerSrcParent = innerTransSrc.parent;
-                        var parentOfComposed = innerSrcParent == null ? null : innerTransSrc.parent;
-                        var result = await maComposer.ExecAsync(new UniqueParentTransformList(innerTransSrc), dstGranularity, maCondition);
-                        var resultTransforms = result.Get.GeneratedRootTransforms;
-                        foreach (var t in resultTransforms.Get)
-                        {
-                            t.parent = parentOfComposed;
-                        }
-                        converted.AddRange(resultTransforms.Get);
-                        return NextSearchFlow.SkipChildren;
-                    });
-                }
-                else
-                {
-                    // 分解してから全結合の場合
-                    logger.Log("結合フェイズ：一括結合" + srcTrans.name);
-                    var parentOfComposed = srcDstDict[srcTrans.parent];
-                    var result = await maComposer.ExecAsync(decomposed, dstGranularity, composeCondition);
-                    foreach (var r in result.Get.GeneratedRootTransforms.Get)
-                    {
-                        r.parent = parentOfComposed;
+                        });
                     }
-                    converted.AddRange(result.Get.GeneratedRootTransforms.Get);
+                    else
+                    {
+                        // 分解してから全結合の場合
+                        logger.Log("結合フェイズ：一括結合" + srcTrans.name);
+                        var parentOfComposed = srcDstDict[srcTrans.parent];
+                        var result = await maComposer.ExecAsync(decomposed, dstGranularity, composeCondition);
+                        foreach (var r in result.Get.GeneratedRootTransforms.Get)
+                        {
+                            r.parent = parentOfComposed;
+                        }
+
+                        converted.AddRange(result.Get.GeneratedRootTransforms.Get);
+                        return NextSearchFlow.SkipChildren;
+                    }
+
+
+                    // transとその子は完了
                     return NextSearchFlow.SkipChildren;
                 }
-                
-            
-                // transとその子は完了
-                return NextSearchFlow.SkipChildren;
-            }
-            // 分解せずに結合が必要な場合（srcが最小地物でdstがそれより粗い粒度）
-            // if (maCondition.ShouldConstruct(srcTrans, dstGranularity)) // 最小地物の親である主要地物の場合
-            // {
-            //     // 
-            //     var copied = Object.Instantiate(srcTrans.gameObject); // 子も含めてコピー
-            //     var copiedTrans = copied.transform;
-            //     copiedTrans.parent = srcDstDict.GetValueOrDefault(srcTrans.parent);
-            //     maMaterialChanger.ExecRecursive(new UniqueParentTransformList(copiedTrans));
-            //     var result = await maComposer.ExecAsync(new UniqueParentTransformList(copiedTrans), dstGranularity, maCondition);
-            //     converted.AddRange(result.Get.GeneratedRootTransforms.Get);
-            //     return NextSearchFlow.SkipChildren;
-            // }
-            
-            // マテリアル変更が不要のためスキップする場合
-            if (ShouldSkipDueToMaterial(srcTrans))
-            {
-                return NextSearchFlow.Continue;
-            }
-            
-            // 分解も結合も不要だがコピーを作りたい場合（srcもdstも最小地物）
-            if (!ShouldSkipDueToMaterial(srcTrans))
-            {
-                logger.Log("コピー：　分解結合不要： " + srcTrans.name);
-                var copy = CopyGameObjAsResult(srcTrans, converted, srcDstDict, false);
-                maMaterialChanger.Exec(copy.transform);
-                return NextSearchFlow.Continue;
-            }
-            
-            Debug.LogError("マテリアル分け： どのケースにも当てはまらない未知のケース： " + srcTrans.name);
-            return NextSearchFlow.Continue;
-            }); // END Transformごとの変換処理
+                // 分解せずに結合が必要な場合（srcが最小地物でdstがそれより粗い粒度）
+                // if (maCondition.ShouldConstruct(srcTrans, dstGranularity)) // 最小地物の親である主要地物の場合
+                // {
+                //     // 
+                //     var copied = Object.Instantiate(srcTrans.gameObject); // 子も含めてコピー
+                //     var copiedTrans = copied.transform;
+                //     copiedTrans.parent = srcDstDict.GetValueOrDefault(srcTrans.parent);
+                //     maMaterialChanger.ExecRecursive(new UniqueParentTransformList(copiedTrans));
+                //     var result = await maComposer.ExecAsync(new UniqueParentTransformList(copiedTrans), dstGranularity, maCondition);
+                //     converted.AddRange(result.Get.GeneratedRootTransforms.Get);
+                //     return NextSearchFlow.SkipChildren;
+                // }
 
+                // マテリアル変更が不要のためスキップする場合
+                if (ShouldSkipDueToMaterial(srcTrans))
+                {
+                    return NextSearchFlow.Continue;
+                }
+
+                // 分解も結合も不要だがコピーを作りたい場合（srcもdstも最小地物）
+                if (!ShouldSkipDueToMaterial(srcTrans))
+                {
+                    logger.Log("コピー：　分解結合不要： " + srcTrans.name);
+                    srcMeshes.Add(srcTrans);
+                    var copy = CopyGameObjAsResult(srcTrans, converted, srcDstDict, false);
+                    maMaterialChanger.Exec(copy.transform);
+                    return NextSearchFlow.Continue;
+                }
+
+                Debug.LogError("マテリアル分け： どのケースにも当てはまらない未知のケース： " + srcTrans.name);
+                return NextSearchFlow.Continue;
+            }); // END Transformごとの変換処理
+            
+            
+            // 変換結果のうち、子にメッシュを1つも持たないものを削除
+            var toDestroy = converted.Get
+                .Where(c => c != null && c.GetComponentInChildren<MeshRenderer>() == null)
+                .ToArray();
+            foreach (var d in toDestroy)
+            {
+                Object.DestroyImmediate(d.gameObject);
+            }
+            var result = new UniqueParentTransformList(converted.Get.Where(t => t != null));
+            
+            // 変換元を削除する設定なら削除
             if (conf.DoDestroySrcObjs)
             {
-                foreach (var t in conf.TargetTransforms.Get.ToArray())
+                var srcToDestroy = new UniqueParentTransformList();
+                srcMeshes.BfsExec(t =>
                 {
-                    if(t!=null) Object.DestroyImmediate(t.gameObject);
+                    if (t == null) return NextSearchFlow.Continue;
+                    
+                    // dstが含まれるものを削除対象から除外する
+                    bool shouldDestroy = true;
+                    foreach (var r in result.Get)
+                    {
+                        if (r.IsChildOf(t))
+                        {
+                            shouldDestroy = false;
+                            break;
+                        }
+                    }
+
+                    if (shouldDestroy)
+                    {
+                        srcToDestroy.Add(t);
+                        return NextSearchFlow.SkipChildren;
+                    }
+
+                    return NextSearchFlow.Continue;
+                });
+
+
+                foreach (var d in srcToDestroy.Get)
+                {
+                    Object.DestroyImmediate(d.gameObject);
                 }
             }
             
-            
             #if UNITY_EDITOR
-            Selection.objects = converted.Get.Select(trans => (Object)trans.gameObject).ToArray();
+            Selection.objects = result.Get.Select(trans => (Object)trans.gameObject).ToArray();
             #endif
 
         }

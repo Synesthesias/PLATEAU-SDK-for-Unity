@@ -87,7 +87,7 @@ namespace PLATEAU.RoadNetwork
             }
             else
             {
-                // d•¡‚Í”rœ‚·‚é
+                // é‡è¤‡ã¯æ’é™¤ã™ã‚‹
                 targets = targets.Distinct().ToList();
                 RoadNetwork = Factory.CreateNetwork(targets);
             }
