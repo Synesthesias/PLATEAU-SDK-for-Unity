@@ -47,25 +47,25 @@ namespace PLATEAU.RoadNetwork
             return CollectAllWays().Select(w => w.LineString).Distinct();
         }
 
-        public void DebugIdentify()
-        {
-            for (var i = 0; i < Nodes.Count; i++)
-                Nodes[i].MyId = new RnID<RoadNetworkDataNode>(i);
+        //public void DebugIdentify()
+        //{
+        //    for (var i = 0; i < Nodes.Count; i++)
+        //        Nodes[i].MyId = new RnID<RoadNetworkDataNode>(i);
 
-            for (var i = 0; i < Links.Count; i++)
-                Links[i].MyId = new RnID<RoadNetworkDataLink>(i);
+        //    for (var i = 0; i < Links.Count; i++)
+        //        Links[i].MyId = new RnID<RoadNetworkDataLink>(i);
 
-            var allLanes = CollectAllLanes().ToList();
-            for (var i = 0; i < allLanes.Count; i++)
-                allLanes[i].MyId = new RnID<RoadNetworkDataLane>(i);
+        //    var allLanes = CollectAllLanes().ToList();
+        //    for (var i = 0; i < allLanes.Count; i++)
+        //        allLanes[i].MyId = new RnID<RoadNetworkDataLane>(i);
 
-            var allWays = CollectAllWays().ToList();
-            for (var i = 0; i < allWays.Count; i++)
-                allWays[i].MyId = new RnID<RoadNetworkDataWay>(i);
+        //    var allWays = CollectAllWays().ToList();
+        //    for (var i = 0; i < allWays.Count; i++)
+        //        allWays[i].MyId = new RnID<RoadNetworkDataWay>(i);
 
-            var allLineStrings = CollectAllLineStrings().ToList();
-            for (var i = 0; i < allLineStrings.Count; i++)
-                allLineStrings[i].MyId = new RnID<RoadNetworkDataLineString>(i);
-        }
+        //    var allLineStrings = CollectAllLineStrings().ToList();
+        //    for (var i = 0; i < allLineStrings.Count; i++)
+        //        allLineStrings[i].MyId = new RnID<RoadNetworkDataLineString>(i);
+        //}
     }
 }
