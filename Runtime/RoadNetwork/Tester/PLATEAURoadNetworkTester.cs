@@ -31,12 +31,8 @@ namespace PLATEAU.RoadNetwork
 
         [SerializeField] private RoadNetworkDrawerDebug drawer = new RoadNetworkDrawerDebug();
 
-        [SerializeField] public List<PLATEAUCityObjectGroup> geoTestTargets = new List<PLATEAUCityObjectGroup>();
-
-
         public string loadPresetName = "";
 
-        [SerializeField] private bool showGeoTest = false;
 
         [field: SerializeField] private RoadNetworkFactory Factory { get; set; } = new RoadNetworkFactory();
 
@@ -47,17 +43,6 @@ namespace PLATEAU.RoadNetwork
         public void OnDrawGizmos()
         {
             drawer.Draw(RoadNetwork);
-
-            if (showGeoTest)
-            {
-                var vertices = geoTestTargets
-                    .Select(x => x.GetComponent<MeshCollider>())
-                    .Where(x => x)
-                    .SelectMany(x => x.sharedMesh.vertices.Select(a => a.Xz()))
-                    .ToList();
-                var convex = GeoGraph2D.ComputeConvexVolume(vertices);
-                DebugUtil.DrawArrows(convex.Select(x => x.Xay()));
-            }
         }
 
 

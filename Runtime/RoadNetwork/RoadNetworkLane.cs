@@ -11,6 +11,7 @@ using UnityEditor.Overlays;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.Serialization;
+using static Codice.Client.Commands.WkTree.WorkspaceTreeNode;
 using Vector2 = UnityEngine.Vector2;
 using Vector3 = UnityEngine.Vector3;
 
@@ -207,7 +208,84 @@ namespace PLATEAU.RoadNetwork
         {
             return new RoadNetworkLane(way, null, null, null);
         }
-
     }
 
+    /// <summary>
+    /// ROadNetworkLaneの拡張関数
+    /// </summary>
+    public static class RoadNetworkLaneEx
+    {
+        public static List<Vector2> GetSplitEdges(this RoadNetworkLane self, float p)
+        {
+            if (self.IsValidWay == false)
+                return new List<Vector2>();
+
+
+            var segments = new List<LineSegment2D>();
+
+            var lefts = self.LeftWay.GetEdges2D().ToList();
+            var rights = self.RightWay.GetEdges2D().ToList();
+            var rightIndex = 0;
+            for (var i = 0; i < lefts.Count; ++i)
+            {
+                while (rightIndex < rights.Count)
+                {
+                    var l = lefts[i];
+                    var r = rights[rightIndex];
+                    var dot = Vector2.Dot(l.Direction, r.Direction);
+                    var ray = GeoGraph2D.LerpRay(l.Ray, r.Ray, p);
+
+                    var v0 = ray.GetNearestPoint(l.Start, out var t0);
+                    var v1 = ray.GetNearestPoint(l.End, out var t1);
+                    var v2 = ray.GetNearestPoint(r.Start, out var t2);
+                    var v3 = ray.GetNearestPoint(r.End, out var t3);
+
+                    var points = new List<Tuple<Vector2, float, int>>
+                    {
+                        // left
+                        new(v0, t0, 0),
+                        new(v1, t1, 1),
+                        // right
+                        new(v2, t2, 2),
+                        new(v3, t3, 3),
+                    };
+                    points.Sort((a, b) => Comparer<float>.Default.Compare(a.Item2, b.Item2));
+                    if ((points[0].Item3 / 2) != (points[1].Item3 / 2))
+                    {
+                        var segment = new LineSegment2D(points[1].Item1, points[2].Item1);
+                        segments.Add(segment);
+                        //DebugUtil.DrawString($"[{segments.Count}] {i}-{rightIndex}({segment.Magnitude})", segment.Start.Xay(), color: Color.red);
+                        DebugUtil.DrawLineSegment2D(segment);
+                    }
+
+                    if (points[3].Item3 == 1)
+                    {
+                        rightIndex++;
+                        continue;
+                    }
+
+                    break;
+                }
+
+            }
+
+            var ret = new List<Vector2>();
+
+            void Add(Vector2 point)
+            {
+                if (ret.Any() && (ret.Last() - point).sqrMagnitude < 0.01f)
+                    return;
+                ret.Add(point);
+            }
+            foreach (var x in segments)
+            {
+                Add(x.Start);
+                //Add(x.End);
+            }
+            // 自己交差があれば削除する
+            GeoGraph2D.RemoveSelfCrossing(ret, t => t, (p1, p2, p3, p4, inter, f1, f2) => Vector3.Lerp(p1, p2, f1));
+
+            return ret;
+        }
+    }
 }

@@ -7,6 +7,7 @@ namespace PLATEAU.Util.GeoGraph
 {
     public static class GeoGraph2D
     {
+        public const float Epsilon = 1e-5f;
         /// <summary>
         /// 凸多角形を計算して返す
         /// </summary>
@@ -229,6 +230,68 @@ namespace PLATEAU.Util.GeoGraph
             }
         }
 
+        //public static Ray2D LerpRay2(LineSegment2D segA, LineSegment2D segB, float p)
+        //{
+        //    // segAの直線に射影する
+        //    Vector2 Convert(Vector2 v)
+        //    {
+        //        var d = v - segA.Start;
+        //        var x = Vector2.Dot(d, segA.Direction);
+        //        var y = Mathf.Sqrt(d.sqrMagnitude - x * x);
+        //        return new Vector2(x, y) / segA.Magnitude;
+        //    }
+        //    var bS = Convert(segB.Start);
+        //    var bE = Convert(segB.End);
+
+        //    var points = new List<Vector2> { Vector2.zero, bS, bE, Vector2.right };
+        //    points.Sort((a, b) => Comparer<float>.Default.Compare(a.x, b.x));
+        //    var p1 = points[1];
+        //    var p2 = points[2];
+
+        //    p1
+        //}
+
+        /// <summary>
+        /// 直線l上の点から直線a,bへの距離がp : 1-pとなるような直線lを返す
+        /// 0.5だと中間の角度が返る
+        /// \ p  |1-p /
+        ///  \   |   /
+        ///   \  |  / 
+        ///  a \ | / b
+        ///     \ /
+        /// </summary>
+        /// <param name="rayA"></param>
+        /// <param name="rayB"></param>
+        /// <param name="p"></param>
+        /// <returns></returns>
+        public static Ray2D LerpRay(Ray2D rayA, Ray2D rayB, float p)
+        {
+            // 2線が平行の時は交点が無いので特別処理
+            if (LineUtil.LineIntersection(rayA, rayB, out var intersection, out var t1, out var t2) == false)
+            {
+                var aPos = Vector2.Dot(rayB.origin - rayA.origin, rayA.direction) * rayA.direction + rayA.origin;
+                var origin = Vector2.Lerp(aPos, rayB.origin, p);
+                return new Ray2D(origin, rayA.direction);
+            }
+
+            var dirA = rayA.direction;
+            var dirB = rayB.direction;
+
+            var radX = Mathf.Deg2Rad * Vector2.Angle(dirA, dirB);
+            var siX = Mathf.Sin(radX);
+            var coX = Mathf.Cos(radX);
+            // a-l間の角度A
+            // l-b間の角度(x - A)
+            // sin(A) : sin(B) = p : (1-p)
+            // B = X - A
+            // sin(A) : sin(X - A) = p : (1-p)
+            // Sin(A) : sin(X)cos(A) - cos(X)sin(A) = p : (1-p)
+            // (1-p)Sin(A) = p ( sin(X)cos(A) - cos(X)sin(A))
+            // ((1-p) + p * cos(X))sin(A) = p*sin(X)cos(A)
+            // tan(A) = p*sin(X) / ((1-p) + p * cos(X))
+            var radA = Mathf.Atan2(p * siX, 1 - p + p * coX);
+            return new Ray2D(intersection, Vector2Util.RotateTo(dirA, dirB, radA));
+        }
 #if false
         public static Dictionary<Vector2, List<Tuple<Vector2, Vector2>>> ComputeIntersections(IEnumerable<Tuple<Vector2, Vector2>> originalSegments)
         {
