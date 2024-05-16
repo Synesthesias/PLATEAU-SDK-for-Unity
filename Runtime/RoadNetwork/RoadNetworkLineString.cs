@@ -1,4 +1,5 @@
 ﻿using PLATEAU.RoadNetwork.Data;
+using PLATEAU.Util;
 using PLATEAU.Util.GeoGraph;
 using System;
 using System.Collections;
@@ -59,5 +60,14 @@ namespace PLATEAU.RoadNetwork
         }
 
         public Vector3 this[int index] => Points[index].Vertex;
+    }
+
+    public static class RoadNetworkLineStringEx
+    {
+        public static IEnumerable<LineSegment2D> GetEdges2D(this RoadNetworkLineString self)
+        {
+            foreach (var e in GeoGraphEx.GetEdges(self.Points.Select(x => x.Vertex.Xz()), false))
+                yield return new LineSegment2D(e.Item1, e.Item2);
+        }
     }
 }
