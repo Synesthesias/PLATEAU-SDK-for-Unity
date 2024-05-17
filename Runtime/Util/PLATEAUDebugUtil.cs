@@ -140,6 +140,13 @@ namespace PLATEAU.Util
 #endif
         }
 
+        public static void DrawLineSegment2D(LineSegment2D segment, bool showXz = true, Color? color = null)
+        {
+            var start = showXz ? segment.Start.Xay() : segment.Start.Xya();
+            var end = showXz ? segment.End.Xay() : segment.End.Xya();
+            Debug.DrawLine(start, end, color ?? Color.white);
+        }
+
         private static Vector3 TransformByPixel(Vector3 position, Vector2 screenOffset)
         {
             return TransformByPixel(position, new Vector3(screenOffset.x, screenOffset.y));

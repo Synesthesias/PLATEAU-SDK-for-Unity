@@ -1,14 +1,10 @@
-﻿using PLATEAU.CityInfo;
-using PLATEAU.RoadNetwork.Data;
+﻿using PLATEAU.RoadNetwork.Data;
 using PLATEAU.Util;
 using PLATEAU.Util.GeoGraph;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Numerics;
 using UnityEngine;
-using UnityEngine.Assertions;
-using UnityEngine.Serialization;
 using Vector2 = UnityEngine.Vector2;
 using Vector3 = UnityEngine.Vector3;
 
@@ -148,7 +144,7 @@ namespace PLATEAU.RoadNetwork
                     var v = way[i];
                     var n = -way.GetVertexNormal(i).normalized;
                     var ray = new Ray(v + n * 0.01f, n);
-                    if (GeoGraph2d.PolygonHalfLineIntersectionXZ(Vertices, ray, out var inter, out var t))
+                    if (GeoGraph2D.PolygonHalfLineIntersectionXZ(Vertices, ray, out var inter, out var t))
                         candidates.Add(Vector3.Lerp(v, inter, 0.5f));
                 }
             }
@@ -179,7 +175,7 @@ namespace PLATEAU.RoadNetwork
             centerLineVertices.Add(endPoint);
 
             // 自己交差があれば削除する
-            GeoGraph2d.RemoveSelfCrossing(centerLineVertices, t => t.Xz(), (p1, p2, p3, p4, inter, f1, f2) => Vector3.Lerp(p1, p2, f1));
+            GeoGraph2D.RemoveSelfCrossing(centerLineVertices, t => t.Xz(), (p1, p2, p3, p4, inter, f1, f2) => Vector3.Lerp(p1, p2, f1));
 
             var centerLine = RoadNetworkLineString.Create(centerLineVertices);
 
@@ -198,14 +194,111 @@ namespace PLATEAU.RoadNetwork
         /// <returns></returns>
         public bool SegmentIntersectionXz(Vector3 st, Vector3 en, out Vector3 intersection)
         {
-            return GeoGraph2d.PolygonSegmentIntersectionXZ(Vertices, st, en, out intersection, out var t);
+            return GeoGraph2D.PolygonSegmentIntersectionXZ(Vertices, st, en, out intersection, out var t);
         }
 
         public static RoadNetworkLane CreateOneWayLane(RoadNetworkWay way)
         {
             return new RoadNetworkLane(way, null, null, null);
         }
-
     }
 
+    /// <summary>
+    /// ROadNetworkLaneの拡張関数
+    /// </summary>
+    public static class RoadNetworkLaneEx
+    {
+        public static List<Vector2> GetSplitEdges(this RoadNetworkLane self, float p)
+        {
+            if (self.IsValidWay == false)
+                return new List<Vector2>();
+
+
+            var segments = new List<LineSegment2D>();
+
+            var lefts = self.LeftWay.GetEdges2D().ToList();
+            var rights = self.RightWay.GetEdges2D().ToList();
+            var rightIndex = 0;
+            for (var i = 0; i < lefts.Count; ++i)
+            {
+                while (rightIndex < rights.Count)
+                {
+                    var l = lefts[i];
+                    var r = rights[rightIndex];
+
+                    var ray = GeoGraph2D.LerpRay(l.Ray, r.Ray, p);
+                    var points = new List<Tuple<Vector2, float, int>>();
+
+                    bool AddInter(Ray2D ray2, int index)
+                    {
+                        var hit = LineUtil.LineIntersection(ray, ray2, out var inter, out var t1, out var t2);
+                        if (!hit)
+                            return false;
+                        points.Add(new(inter, t1, index));
+                        return true;
+                    }
+
+                    var ldir = new Vector2(l.Direction.y, -l.Direction.x);
+                    var rdir = new Vector2(r.Direction.y, -r.Direction.x);
+                    AddInter(new Ray2D(l.Start, ldir), 0);
+                    AddInter(new Ray2D(l.End, ldir), 1);
+                    AddInter(new Ray2D(r.Start, rdir), 2);
+                    AddInter(new Ray2D(r.End, rdir), 3);
+
+                    if (points.Count != 4)
+                    {
+                        rightIndex++;
+                        continue;
+                    }
+
+                    points.Sort((a, b) => Comparer<float>.Default.Compare(a.Item2, b.Item2));
+                    if ((points[0].Item3 / 2) != (points[1].Item3 / 2))
+                    {
+                        var segment = new LineSegment2D(points[1].Item1, points[2].Item1);
+                        if (segments.Any())
+                        {
+                            var last = segments[^1];
+                            if (LineUtil.SegmentIntersection(last.Start, last.End, segment.Start, segment.End,
+                                    out var inter, out var _t1, out var _t2))
+                            {
+                                last.End = inter;
+                                segments[^1] = last;
+                                segment.Start = inter;
+                            }
+                        }
+                        segments.Add(segment);
+                        PLATEAUDebugUtil.DrawString($"[{segments.Count}] {i}-{rightIndex}({segment.Magnitude})", segment.Start.Xay(), color: Color.red);
+                        PLATEAUDebugUtil.DrawLineSegment2D(segment);
+                    }
+
+                    if (points[3].Item3 == 1)
+                    {
+                        rightIndex++;
+                        continue;
+                    }
+
+                    break;
+                }
+
+            }
+
+            var ret = new List<Vector2>();
+
+            void Add(Vector2 point)
+            {
+                if (ret.Any() && (ret.Last() - point).sqrMagnitude < 0.01f)
+                    return;
+                ret.Add(point);
+            }
+            foreach (var x in segments)
+            {
+                Add(x.Start);
+                //Add(x.End);
+            }
+            // 自己交差があれば削除する
+            GeoGraph2D.RemoveSelfCrossing(ret, t => t, (p1, p2, p3, p4, inter, f1, f2) => Vector3.Lerp(p1, p2, f1));
+
+            return ret;
+        }
+    }
 }

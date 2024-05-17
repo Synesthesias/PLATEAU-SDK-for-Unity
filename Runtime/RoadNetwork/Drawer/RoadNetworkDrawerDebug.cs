@@ -2,6 +2,7 @@
 using PLATEAU.Util;
 using System;
 using System.Linq;
+using System.Runtime.InteropServices;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -17,9 +18,12 @@ namespace PLATEAU.RoadNetwork.Drawer
         // Laneの頂点の内側を向くベクトルの中央点を表示する
         [SerializeField] private bool showInsideNormalMidPoint = false;
 
-        //[SerializeField] private bool showVertexIndex = false;
+        [SerializeField] private bool showVertexIndex = false;
 
         [SerializeField] private float edgeOffset = 10f;
+
+        [SerializeField] private bool showSplitLane = false;
+        [SerializeField] private float splitLaneRate = 0.5f;
 
         private static Color GetEdgeColor(RoadNetworkLane self)
         {
@@ -40,10 +44,23 @@ namespace PLATEAU.RoadNetwork.Drawer
                 foreach (var lane in link.AllLanes)
                 {
                     // 道描画
+
+                    void DrawWay(RoadNetworkWay way, Color color, Color arrowColor)
+                    {
+                        if (way == null)
+                            return;
+
+                        PLATEAUDebugUtil.DrawArrows(way.Vertices.Select((v, i) => v + -edgeOffset * way.GetVertexNormal(i)), false, color: color, arrowColor: arrowColor);
+
+                        if (showVertexIndex)
+                        {
+                            foreach (var item in way.Vertices.Select((v, i) => new { v, i }))
+                                PLATEAUDebugUtil.DrawString(item.i.ToString(), item.v, color: Color.red);
+                        }
+                    }
                     foreach (var way in lane.BothWays)
                     {
-                        PLATEAUDebugUtil.DrawArrows(way.Vertices.Select((v, i) => v + -edgeOffset * way.GetVertexNormal(i)), false, color: GetEdgeColor(lane), arrowColor: way.IsReversed ? Color.cyan : Color.blue);
-
+                        DrawWay(way, color: GetEdgeColor(lane), arrowColor: way.IsReversed ? Color.cyan : Color.blue);
 
                         foreach (var i in Enumerable.Range(0, way.Count))
                         {
@@ -65,12 +82,17 @@ namespace PLATEAU.RoadNetwork.Drawer
                         }
                     }
 
-                    foreach (var border in lane.AllBorders)
+                    if (showBorder)
                     {
-                        if (showBorder)
-                        {
-                            PLATEAUDebugUtil.DrawArrows(border.Vertices, false, color: Color.blue, arrowColor: border.IsReversed ? Color.yellow : Color.red);
-                        }
+                        DrawWay(lane.PrevBorder, color: Color.blue, arrowColor: Color.blue);
+                        DrawWay(lane.NextBorder, color: Color.red, arrowColor: Color.red);
+
+                    }
+
+                    if (showSplitLane && lane.IsBothConnectedLane)
+                    {
+                        var vers = lane.GetSplitEdges(splitLaneRate);
+                        //DebugUtil.DrawArrows(vers.Select(v => v.Xay()), false, color: Color.red, arrowSize: 0.1f);
                     }
                 }
 
@@ -94,11 +116,6 @@ namespace PLATEAU.RoadNetwork.Drawer
                 //}
 
 
-                //foreach (var border in l.borders)
-                //{
-                //    DebugUtil.DrawArrows(border.vertices.Select(x => x.PutY(x.y + 0.5f)), false, color: Color.red, arrowSize: 0f);
-
-                //}
             }
         }
     }

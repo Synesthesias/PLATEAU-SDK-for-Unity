@@ -1,4 +1,5 @@
-﻿using PLATEAU.RoadNetwork.Data;
+﻿using PLATEAU.CityInfo;
+using PLATEAU.RoadNetwork.Data;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -18,10 +19,8 @@ namespace PLATEAU.RoadNetwork
         // 識別Id. シリアライズ用.ランタイムでは使用しないこと
         public RnID<RoadNetworkDataNode> MyId { get; set; }
 
-        //// レーンを構成する道
-        //// 左側が若いインデックスになる
-        //[SerializeField]
-        public List<RoadNetworkWay> Ways { get; set; } = new List<RoadNetworkWay>();
+        // 対象のtranオブジェクト
+        public PLATEAUCityObjectGroup TargetTran { get; set; }
 
         // 他レーンとの境界線
         public List<RoadNetworkWay> Borders { get; set; } = new List<RoadNetworkWay>();
@@ -32,5 +31,12 @@ namespace PLATEAU.RoadNetwork
         //----------------------------------
         // end: フィールド
         //----------------------------------
+
+        public RoadNetworkNode() { }
+
+        public RoadNetworkNode(PLATEAUCityObjectGroup targetTran)
+        {
+            TargetTran = targetTran;
+        }
     }
 }
