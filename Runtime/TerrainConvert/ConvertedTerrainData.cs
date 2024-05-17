@@ -1,5 +1,4 @@
-﻿using PLATEAU.CityInfo;
-using PLATEAU.Native;
+﻿using PLATEAU.Native;
 using PLATEAU.PolygonMesh;
 using PLATEAU.Texture;
 using PLATEAU.Util;

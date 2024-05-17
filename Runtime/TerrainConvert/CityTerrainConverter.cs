@@ -1,8 +1,6 @@
 ﻿using PLATEAU.CityExport.ModelConvert.SubMeshConvert;
 using PLATEAU.CityExport.ModelConvert;
-using PLATEAU.CityImport.Import.Convert;
 using PLATEAU.Util;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using UnityEditor;
