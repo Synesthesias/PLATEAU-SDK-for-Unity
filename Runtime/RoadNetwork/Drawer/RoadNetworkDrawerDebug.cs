@@ -55,7 +55,7 @@ namespace PLATEAU.RoadNetwork.Drawer
                         if (showVertexIndex)
                         {
                             foreach (var item in way.Vertices.Select((v, i) => new { v, i }))
-                                DebugUtil.DrawString(item.i.ToString(), item.v);
+                                DebugUtil.DrawString(item.i.ToString(), item.v, color: Color.red);
                         }
                     }
                     foreach (var way in lane.BothWays)
