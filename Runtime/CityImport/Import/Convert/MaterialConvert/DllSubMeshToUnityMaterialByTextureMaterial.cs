@@ -64,6 +64,7 @@ namespace PLATEAU.CityImport.Import.Convert.MaterialConvert
                 else
                 {
                     material = RenderUtil.CreateDefaultMaterial();
+                    material.color = Color.white;
                 }
 
                 //Textureがあればそれを使います。

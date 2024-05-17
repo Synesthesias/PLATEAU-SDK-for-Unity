@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using PLATEAU.CityImport.Import.Convert.MaterialConvert;
 using PLATEAU.PolygonMesh;
 using PLATEAU.Util;
+using System.IO;
 using UnityEngine;
 using Mesh = UnityEngine.Mesh;
 
@@ -41,6 +42,12 @@ namespace PLATEAU.CityExport.ModelConvert.SubMeshConvert
                         }
                         
                     }
+                    // パスのチェック
+                    if ((!string.IsNullOrEmpty(texturePath)) && (!File.Exists(texturePath)))
+                    {
+                        throw new FileNotFoundException($"テクスチャファイルが存在しません： {texturePath}");
+                    }
+                    
                     return SubMesh.Create(startIndex, endIndex, texturePath);
                 }
             );

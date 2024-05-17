@@ -1,5 +1,4 @@
-﻿using PLATEAU.CityImport.Config;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.SceneManagement;
 
 #if UNITY_EDITOR

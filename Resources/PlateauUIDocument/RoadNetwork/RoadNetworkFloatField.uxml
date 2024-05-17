@@ -1,0 +1,3 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <ui:Slider label="小数入力" high-value="100" show-input-field="true" name="FloatField" />
+</ui:UXML>
