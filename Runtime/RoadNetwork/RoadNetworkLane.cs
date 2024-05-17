@@ -230,29 +230,49 @@ namespace PLATEAU.RoadNetwork
                 {
                     var l = lefts[i];
                     var r = rights[rightIndex];
-                    var dot = Vector2.Dot(l.Direction, r.Direction);
+
                     var ray = GeoGraph2D.LerpRay(l.Ray, r.Ray, p);
+                    var points = new List<Tuple<Vector2, float, int>>();
 
-                    var v0 = ray.GetNearestPoint(l.Start, out var t0);
-                    var v1 = ray.GetNearestPoint(l.End, out var t1);
-                    var v2 = ray.GetNearestPoint(r.Start, out var t2);
-                    var v3 = ray.GetNearestPoint(r.End, out var t3);
-
-                    var points = new List<Tuple<Vector2, float, int>>
+                    bool AddInter(Ray2D ray2, int index)
                     {
-                        // left
-                        new(v0, t0, 0),
-                        new(v1, t1, 1),
-                        // right
-                        new(v2, t2, 2),
-                        new(v3, t3, 3),
-                    };
+                        var hit = LineUtil.LineIntersection(ray, ray2, out var inter, out var t1, out var t2);
+                        if (!hit)
+                            return false;
+                        points.Add(new(inter, t1, index));
+                        return true;
+                    }
+
+                    var ldir = new Vector2(l.Direction.y, -l.Direction.x);
+                    var rdir = new Vector2(r.Direction.y, -r.Direction.x);
+                    AddInter(new Ray2D(l.Start, ldir), 0);
+                    AddInter(new Ray2D(l.End, ldir), 1);
+                    AddInter(new Ray2D(r.Start, rdir), 2);
+                    AddInter(new Ray2D(r.End, rdir), 3);
+
+                    if (points.Count != 4)
+                    {
+                        rightIndex++;
+                        continue;
+                    }
+
                     points.Sort((a, b) => Comparer<float>.Default.Compare(a.Item2, b.Item2));
                     if ((points[0].Item3 / 2) != (points[1].Item3 / 2))
                     {
                         var segment = new LineSegment2D(points[1].Item1, points[2].Item1);
+                        if (segments.Any())
+                        {
+                            var last = segments[^1];
+                            if (LineUtil.SegmentIntersection(last.Start, last.End, segment.Start, segment.End,
+                                    out var inter, out var _t1, out var _t2))
+                            {
+                                last.End = inter;
+                                segments[^1] = last;
+                                segment.Start = inter;
+                            }
+                        }
                         segments.Add(segment);
-                        //DebugUtil.DrawString($"[{segments.Count}] {i}-{rightIndex}({segment.Magnitude})", segment.Start.Xay(), color: Color.red);
+                        DebugUtil.DrawString($"[{segments.Count}] {i}-{rightIndex}({segment.Magnitude})", segment.Start.Xay(), color: Color.red);
                         DebugUtil.DrawLineSegment2D(segment);
                     }
 
