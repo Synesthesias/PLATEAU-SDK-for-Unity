@@ -17,6 +17,9 @@ namespace PLATEAU.RoadNetwork
         // 識別Id. シリアライズ用.ランタイムでは使用しないこと
         public RnID<RoadNetworkDataLink> MyId { get; set; }
 
+        // 対象のtranオブジェクト
+        public PLATEAUCityObjectGroup TargetTran { get; set; }
+
         public RoadNetworkNode NextNode { get; private set; }
 
         public RoadNetworkNode PrevNode { get; private set; }
@@ -37,23 +40,31 @@ namespace PLATEAU.RoadNetwork
         // 全レーン
         public IEnumerable<RoadNetworkLane> AllLanes => MainLanes.Concat(LeftLanes).Concat(RightLanes);
 
+        public RoadNetworkLink() { }
+
+        public RoadNetworkLink(PLATEAUCityObjectGroup targetTran)
+        {
+            TargetTran = targetTran;
+        }
+
         /// <summary>
         /// 完全に孤立したリンクを作成
         /// </summary>
+        /// <param name="targetTran"></param>
         /// <param name="lineString"></param>
         /// <returns></returns>
-        public static RoadNetworkLink CreateIsolatedLink(RoadNetworkLineString lineString)
+        public static RoadNetworkLink CreateIsolatedLink(PLATEAUCityObjectGroup targetTran, RoadNetworkLineString lineString)
         {
             var way = new RoadNetworkWay(lineString);
             var lane = RoadNetworkLane.CreateOneWayLane(way);
-            var ret = new RoadNetworkLink();
+            var ret = new RoadNetworkLink(targetTran);
             ret.MainLanes.Add(lane);
             return ret;
         }
 
-        public static RoadNetworkLink CreateOneLaneLink(RoadNetworkLane lane)
+        public static RoadNetworkLink CreateOneLaneLink(PLATEAUCityObjectGroup targetTran, RoadNetworkLane lane)
         {
-            var ret = new RoadNetworkLink();
+            var ret = new RoadNetworkLink(targetTran);
             ret.MainLanes.Add(lane);
             return ret;
         }

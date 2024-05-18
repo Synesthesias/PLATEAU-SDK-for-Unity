@@ -1,4 +1,5 @@
-﻿using PLATEAU.RoadNetwork.Data;
+﻿using PlasticPipe.PlasticProtocol.Messages;
+using PLATEAU.RoadNetwork.Data;
 using PLATEAU.Util;
 using PLATEAU.Util.GeoGraph;
 using System;
@@ -53,12 +54,14 @@ namespace PLATEAU.RoadNetwork
         {
             get
             {
-                if (IsReversed == false)
-                    return LineString.Points;
-
-                // 逆順
-                return Enumerable.Range(0, Count).Select(i => LineString.Points[Count - 1 - i]);
+                for (var i = 0; i < Count; i++)
+                    yield return GetPoint(i);
             }
+        }
+
+        public RoadNetworkPoint GetPoint(int index)
+        {
+            return LineString.Points[ToRawIndex(index)];
         }
 
         // 頂点数
@@ -80,6 +83,16 @@ namespace PLATEAU.RoadNetwork
         }
 
         /// <summary>
+        /// Reversedを考慮したインデックスへ変換する
+        /// </summary>
+        /// <param name="index"></param>
+        /// <returns></returns>
+        private int ToRawIndex(int index)
+        {
+            return IsReversed ? Count - 1 - index : index;
+        }
+
+        /// <summary>
         /// 頂点アクセス
         /// </summary>
         /// <param name="index"></param>
@@ -88,10 +101,7 @@ namespace PLATEAU.RoadNetwork
         {
             get
             {
-                if (IsReversed == false)
-                    return LineString[index];
-                // 0 <= index < LineString.Vertices.Count前提なのでmodとったりしない
-                return LineString[LineString.Points.Count - 1 - index];
+                return LineString[ToRawIndex(index)];
             }
         }
 
@@ -221,6 +231,18 @@ namespace PLATEAU.RoadNetwork
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
+        }
+    }
+
+
+    public static class RoadNetworkWayEx
+    {
+        public static IEnumerable<LineSegment2D> GetEdges2D(this RoadNetworkWay self)
+        {
+            if (self == null)
+                yield break;
+            foreach (var e in GeoGraphEx.GetEdges(self.Vertices.Select(x => x.Xz()), false))
+                yield return new LineSegment2D(e.Item1, e.Item2);
         }
     }
 }

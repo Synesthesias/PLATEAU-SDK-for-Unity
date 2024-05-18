@@ -1,4 +1,4 @@
-Ôªøusing PLATEAU.CityGML;
+using PLATEAU.CityGML;
 using PLATEAU.CityInfo;
 using PLATEAU.RoadNetwork.Data;
 using PLATEAU.RoadNetwork.Drawer;
@@ -31,12 +31,8 @@ namespace PLATEAU.RoadNetwork
 
         [SerializeField] private RoadNetworkDrawerDebug drawer = new RoadNetworkDrawerDebug();
 
-        [SerializeField] public List<PLATEAUCityObjectGroup> geoTestTargets = new List<PLATEAUCityObjectGroup>();
-
-
         public string loadPresetName = "";
 
-        [SerializeField] private bool showGeoTest = false;
 
         [field: SerializeField] private RoadNetworkFactory Factory { get; set; } = new RoadNetworkFactory();
 
@@ -47,33 +43,8 @@ namespace PLATEAU.RoadNetwork
         public void OnDrawGizmos()
         {
             drawer.Draw(RoadNetwork);
-
-            if (showGeoTest)
-            {
-                var vertices = geoTestTargets
-                    .Select(x => x.GetComponent<MeshCollider>())
-                    .Where(x => x)
-                    .SelectMany(x => x.sharedMesh.vertices.Select(a => a.Xz()))
-                    .ToList();
-                var convex = GeoGraph2d.ComputeConvexVolume(vertices);
-                PLATEAUDebugUtil.DrawArrows(convex.Select(x => x.Xay()));
-            }
         }
 
-        public void Draw(PLATEAUCityObjectGroup cityObjectGroup)
-        {
-            var collider = cityObjectGroup.GetComponent<MeshCollider>();
-            var cMesh = collider.sharedMesh;
-            var isClockwise = GeoGraph2d.IsClockwise(cMesh.vertices.Select(v => new Vector2(v.x, v.y)));
-            if (isClockwise)
-            {
-                PLATEAUDebugUtil.DrawArrows(cMesh.vertices.Select(v => v + Vector3.up * 0.2f));
-            }
-            else
-            {
-                PLATEAUDebugUtil.DrawArrows(cMesh.vertices.Reverse().Select(v => v + Vector3.up * 0.2f));
-            }
-        }
 
         public void CreateNetwork()
         {
@@ -87,7 +58,7 @@ namespace PLATEAU.RoadNetwork
             }
             else
             {
-                // ÈáçË§á„ÅØÊéíÈô§„Åô„Çã
+                // èdï°ÇÕîrèúÇ∑ÇÈ
                 targets = targets.Distinct().ToList();
                 RoadNetwork = Factory.CreateNetwork(targets);
             }

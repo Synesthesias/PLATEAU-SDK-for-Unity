@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PLATEAU.CityInfo;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -11,6 +12,11 @@ namespace PLATEAU.RoadNetwork.Data
         [field: SerializeField]
         [RoadNetworkSerializeMember(nameof(RoadNetworkLink.MyId))]
         public RnID<RoadNetworkDataLink> MyId { get; set; }
+
+        // 対象のtranオブジェクト
+        [field: SerializeField]
+        [RoadNetworkSerializeMember(nameof(RoadNetworkNode.TargetTran))]
+        public PLATEAUCityObjectGroup TargetTran { get; set; }
 
         [field: SerializeField]
         [RoadNetworkSerializeMember(nameof(RoadNetworkLink.NextNode))]
