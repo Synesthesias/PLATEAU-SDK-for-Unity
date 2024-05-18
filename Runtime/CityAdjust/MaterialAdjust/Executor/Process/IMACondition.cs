@@ -2,6 +2,7 @@ using PLATEAU.CityInfo;
 using PLATEAU.PolygonMesh;
 using PLATEAU.Util;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace PLATEAU.CityAdjust.MaterialAdjust.Executor.Process
@@ -50,12 +51,30 @@ namespace PLATEAU.CityAdjust.MaterialAdjust.Executor.Process
         public virtual bool ShouldDeconstruct(Transform trans, MAGranularity dstGranularity)
         {
             var cityObjGroup = trans.GetComponent<PLATEAUCityObjectGroup>();
-            if (cityObjGroup == null) return false;
-            if (trans.GetComponent<MeshFilter>() == null) return false;
-            var srcGranularity = cityObjGroup.Granularity;
+            if (cityObjGroup == null)
+            {
+                return false;
+            }
+
+            var mf = trans.GetComponent<MeshFilter>();
+            if (mf == null || mf.sharedMesh == null)
+            {
+                return false;
+            }
+            var primaries = cityObjGroup.PrimaryCityObjects.ToArray();
+            if (primaries.Length == 0) return false; // 主要地物がなければ分解しようがない
             
-            // srcが主要地物、地域単位の場合は、マテリアル分けのために最小地物まで分解する
-            return srcGranularity > MeshGranularity.PerAtomicFeatureObject;
+            // 主要から最小に変換するとき、最小が存在しなければ分解しようがない
+            if (cityObjGroup.Granularity == MeshGranularity.PerPrimaryFeatureObject &&
+                dstGranularity == MAGranularity.PerAtomicFeatureObject)
+            {
+                if (!cityObjGroup.PrimaryCityObjects.Any(primary => primary.Children.Any()))
+                {
+                    return false;
+                }
+            }
+            var srcGranularity = cityObjGroup.Granularity;
+            return srcGranularity > dstGranularity.ToNativeGranularity();
         }
 
         /// <summary>

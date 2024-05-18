@@ -23,7 +23,8 @@ namespace PLATEAU.GranularityConvert
     /// </summary>
     public class CityGranularityConverter
     {
-        public async Task<GranularityConvertResult> ConvertProgressiveAsync(MAExecutorConf conf, IMACondition maCondition)
+        public async Task<GranularityConvertResult> ConvertProgressiveAsync(MAExecutorConf conf,
+            IMACondition maCondition)
         {
             var dstGranularity = conf.MeshGranularity;
             var result = new GranularityConvertResult();
@@ -35,7 +36,7 @@ namespace PLATEAU.GranularityConvert
                 .BfsExec(
                     trans =>
                     {
-                        if (maCondition.ShouldDeconstruct(trans, MAGranularity.PerAtomicFeatureObject)) objCountToDeconstruct++;
+                        if (maCondition.ShouldDeconstruct(trans, conf.MeshGranularity)) objCountToDeconstruct++;
                         return NextSearchFlow.Continue;
                     });
             int countDeconstructed = 0;
@@ -44,7 +45,7 @@ namespace PLATEAU.GranularityConvert
             await conf.TargetTransforms.BfsExecAsync(async trans =>
             {
                 if (!maCondition.ShouldDeconstruct(trans, conf.MeshGranularity)) return NextSearchFlow.Continue;
-                progressBar.Display($"分解中 : {countDeconstructed+1}/{objCountToDeconstruct} : {trans.name}", 0.3f);
+                progressBar.Display($"分解中 : {countDeconstructed + 1}/{objCountToDeconstruct} : {trans.name}", 0.3f);
                 // 分解
                 GranularityConvertOptionUnity currentConf = new GranularityConvertOptionUnity(
                     new GranularityConvertOption(conf.MeshGranularity.ToNativeGranularity(), 0),
@@ -60,14 +61,14 @@ namespace PLATEAU.GranularityConvert
 
                 countDeconstructed++;
                 return NextSearchFlow.SkipChildren; // 分解後、子は望みの粒度になったはずなのでスキップ
-
             });
 
             // 深さ優先探索で、結合が必要なゲームオブジェクトを見つけて1つづつ結合します。
-            
+
             // 結合すべきものをここに記録
-            Dictionary<Transform, List<Transform>> combineDict = new(); // key: 親Transform, value: その親のもとで結合すべきTransformのリスト
-            
+            Dictionary<Transform, List<Transform>>
+                combineDict = new(); // key: 親Transform, value: その親のもとで結合すべきTransformのリスト
+
             // 親Transformがnull(すなわちroot)のとき、combineDictのkeyをnullとしたいが、
             // Dictionaryのキーにnullは指定できないのでroot用の一時ゲームオブジェクトを作成
             var tmpRoot = new GameObject("tmpRoot");
@@ -76,72 +77,76 @@ namespace PLATEAU.GranularityConvert
             if (countDeconstructed == 0) // 結合と分割は通常どちらかだけで良い
             {
                 conf.TargetTransforms.DfsExec(trans =>
-            {
-                if (trans == null)
                 {
-                    Debug.LogError($"{trans.name} is null.");
-                    return NextSearchFlow.SkipChildren;
-                }
-                // maConditionを使わず意図的にSimpleのメソッドを呼ぶ
-                if (!new MAConditionSimple().ShouldConstruct(trans, conf.MeshGranularity)) return NextSearchFlow.Continue;
-                
-                // 結合リストに追加
-                var parentTrans = trans.parent;
-                if(parentTrans == null) parentTrans = tmpRoot.transform;
-                if (combineDict.TryGetValue(parentTrans, out var listToCombine))
-                {
-                    listToCombine.Add(trans);
-                }
-                else
-                {
-                    combineDict.Add(parentTrans, new List<Transform>{trans});
-                }
+                    if (trans == null)
+                    {
+                        Debug.LogError($"{trans.name} is null.");
+                        return NextSearchFlow.SkipChildren;
+                    }
 
-                return NextSearchFlow.SkipChildren; // 明示せずとも子は結合対象になるのでスキップ
+                    // maConditionを使わず意図的にSimpleのメソッドを呼ぶ
+                    if (!new MAConditionSimple().ShouldConstruct(trans, conf.MeshGranularity))
+                        return NextSearchFlow.Continue;
 
-            });
+                    // 結合リストに追加
+                    var parentTrans = trans.parent;
+                    if (parentTrans == null) parentTrans = tmpRoot.transform;
+                    if (combineDict.TryGetValue(parentTrans, out var listToCombine))
+                    {
+                        listToCombine.Add(trans);
+                    }
+                    else
+                    {
+                        combineDict.Add(parentTrans, new List<Transform> { trans });
+                    }
 
-            int countCombined = 0;
-            // 実際の結合処理
-            foreach(var (parent, combineList) in combineDict)
-            {
-                if (combineList.Count <= 0) continue;
-                GranularityConvertOptionUnity currentConf = new GranularityConvertOptionUnity(
-                    new GranularityConvertOption(dstGranularity.ToNativeGranularity(), 0),
-                    new UniqueParentTransformList(combineList),
-                    conf.DoDestroySrcObjs);
-                progressBar.Display($"結合中 : {countCombined+1}/{combineDict.Count} : {parent.name}の子", 0.3f);
-                var currentResult = await ConvertAsync(currentConf, new DummyProgressBar());
-                foreach (var generated in currentResult.GeneratedRootTransforms.Get)
+                    return NextSearchFlow.SkipChildren; // 明示せずとも子は結合対象になるのでスキップ
+                });
+
+                int countCombined = 0;
+                // 実際の結合処理
+                foreach (var (parent, combineList) in combineDict)
                 {
-                    generated.parent = parent;
-                }
-                result.Merge(currentResult);
-                if (!result.IsSucceed)
-                {
-                    Debug.LogError($"結合失敗 :");
-                }
+                    if (combineList.Count <= 0) continue;
+                    GranularityConvertOptionUnity currentConf = new GranularityConvertOptionUnity(
+                        new GranularityConvertOption(dstGranularity.ToNativeGranularity(), 0),
+                        new UniqueParentTransformList(combineList),
+                        conf.DoDestroySrcObjs);
+                    progressBar.Display($"結合中 : {countCombined + 1}/{combineDict.Count} : {parent.name}の子", 0.3f);
+                    var currentResult = await ConvertAsync(currentConf, new DummyProgressBar());
+                    foreach (var generated in currentResult.GeneratedRootTransforms.Get)
+                    {
+                        generated.parent = parent;
+                    }
 
-                countCombined++;
+                    result.Merge(currentResult);
+                    if (!result.IsSucceed)
+                    {
+                        Debug.LogError($"結合失敗 :");
+                    }
+
+                    countCombined++;
+                }
             }
-            }
-            
-            
+
+
             // tmpRootの子をrootに
             foreach (Transform root in tmpRoot.transform)
             {
                 root.parent = null;
             }
+
             Object.DestroyImmediate(tmpRoot);
-            
+
             return result;
         }
-        
+
 
         /// <summary>
         /// 指定オブジェクトとその子を一括でまとめて共通ライブラリに渡して変換します。
         /// </summary>
-        public async Task<GranularityConvertResult> ConvertAsync(GranularityConvertOptionUnity conf, IProgressBar progressBar)
+        public async Task<GranularityConvertResult> ConvertAsync(GranularityConvertOptionUnity conf,
+            IProgressBar progressBar)
         {
             try
             {
@@ -149,15 +154,15 @@ namespace PLATEAU.GranularityConvert
                 {
                     return GranularityConvertResult.Fail();
                 }
-                
+
                 progressBar.Display("属性情報を取得中...", 0.1f);
 
                 // 属性情報を覚えておきます。
                 var attributes = GmlIdToSerializedCityObj.ComposeFrom(conf.SrcTransforms);
-                
+
                 // PLATEAUInstancedCityModel が含まれる場合、これもコピーしたいので覚えておきます。
-                var instancedCityModelDict = InstancedCityModelDict.ComposeFrom(conf.SrcTransforms); 
-                
+                var instancedCityModelDict = InstancedCityModelDict.ComposeFrom(conf.SrcTransforms);
+
 
                 progressBar.Display("ゲームオブジェクトを共通モデルに変換中...", 0.2f);
 
@@ -177,7 +182,7 @@ namespace PLATEAU.GranularityConvert
                 using var dstModel = converter.Convert(srcModel, conf.NativeOption);
 
                 progressBar.Display("変換後の3Dモデルを配置中...", 0.8f);
-                
+
                 // Toolkits向けの処理です
                 bool isTextureCombined = SearchFirstCityObjGroup(conf.SrcTransforms).InfoForToolkits.IsTextureCombined;
                 var infoForToolkits = new CityObjectGroupInfoForToolkits(isTextureCombined, true);
@@ -185,9 +190,11 @@ namespace PLATEAU.GranularityConvert
                 // Modelをゲームオブジェクトに変換して配置します。
                 var commonParent = CalcCommonParent(conf.SrcTransforms.Get.ToArray());
 
-                var materialConverterToUnity = new DllSubMeshToUnityMaterialByGameMaterial(unityMeshToDllSubMeshConverter);
+                var materialConverterToUnity =
+                    new DllSubMeshToUnityMaterialByGameMaterial(unityMeshToDllSubMeshConverter);
                 var placeToSceneConf =
-                    new PlaceToSceneConfig(materialConverterToUnity, true, null, null, infoForToolkits, conf.NativeOption.Granularity);
+                    new PlaceToSceneConfig(materialConverterToUnity, true, null, null, infoForToolkits,
+                        conf.NativeOption.Granularity);
 
                 var result = await PlateauToUnityModelConverter.PlateauModelToScene(
                     commonParent,
@@ -199,7 +206,7 @@ namespace PLATEAU.GranularityConvert
                         new SerializedCityObjectGetterFromDict(attributes, dstModel),
                         conf.NativeOption.Granularity,
                         true
-                        ),
+                    ),
                     true);
                 if (!result.IsSucceed)
                 {
@@ -211,7 +218,7 @@ namespace PLATEAU.GranularityConvert
                     Dialogue.Display("変換対象がありません。\nアクティブなオブジェクトを選択してください。", "OK");
                     return GranularityConvertResult.Fail();
                 }
-                
+
                 // PLATEAUInstancedCityModelを復元します。
                 instancedCityModelDict.Restore(result.GeneratedRootTransforms);
 
@@ -222,7 +229,7 @@ namespace PLATEAU.GranularityConvert
                         Object.DestroyImmediate(srcTrans.gameObject);
                     }
                 }
-                
+
                 return result;
             }
             catch (Exception e)
@@ -230,7 +237,6 @@ namespace PLATEAU.GranularityConvert
                 Debug.LogError($"{e.Message}\n{e.StackTrace}");
                 return GranularityConvertResult.Fail();
             }
-            
         }
 
 
@@ -240,74 +246,75 @@ namespace PLATEAU.GranularityConvert
             return await ConvertAsync(conf, new ProgressBar(""));
         }
 
-         /// <summary>
-         /// 引数の共通の親を探し、親のうちもっとも階層上の子であるものを返します。
-         /// 共通の親がない場合、nullを返します。
-         /// </summary>
+        /// <summary>
+        /// 引数の共通の親を探し、親のうちもっとも階層上の子であるものを返します。
+        /// 共通の親がない場合、nullを返します。
+        /// </summary>
         private static Transform CalcCommonParent(IReadOnlyList<Transform> srcList)
-         {
-             // 各親が、srcListのうちいくつの親であるかを数えます。
-             Dictionary<Transform, int> descendantCountDict = new();
-             foreach (var src in srcList)
-             {
-                 var parent = src.parent;
-                 // 親をたどりながら子孫カウントをインクリメントします。
-                 while (parent != null)
-                 {
-                     if (descendantCountDict.ContainsKey(parent))
-                     {
-                         descendantCountDict[parent]++;
-                     }
-                     else
-                     {
-                         descendantCountDict.Add(parent, 1);
-                     }
-                     parent = parent.parent;
-                 }
-             }
-             
-             if (descendantCountDict.Count == 0) return null;
-             
-             var commonParents = descendantCountDict
-                 .Where(pair => pair.Value == srcList.Count)
-                 .Select(pair => pair.Key)
-                 .ToArray();
-             if (commonParents.Length == 0) return null;
-             
-             // 共通の親のうち、もっとも子であるものを探します。
-             for (int i = 0; i < commonParents.Length; i++)
-             {
-                 var trans1 = commonParents[i];
-                 bool isTrans1Parented = false;
-                 for (int j = i + 1; j < commonParents.Length; j++)
-                 {
-                     var trans2 = commonParents[j];
-                     if (trans2.IsChildOf(trans1))
-                     {
-                         isTrans1Parented = true;
-                         break;
-                     }
-                 }
+        {
+            // 各親が、srcListのうちいくつの親であるかを数えます。
+            Dictionary<Transform, int> descendantCountDict = new();
+            foreach (var src in srcList)
+            {
+                var parent = src.parent;
+                // 親をたどりながら子孫カウントをインクリメントします。
+                while (parent != null)
+                {
+                    if (descendantCountDict.ContainsKey(parent))
+                    {
+                        descendantCountDict[parent]++;
+                    }
+                    else
+                    {
+                        descendantCountDict.Add(parent, 1);
+                    }
 
-                 if (!isTrans1Parented) return trans1;
-             }
+                    parent = parent.parent;
+                }
+            }
 
-             throw new Exception("Failed to search common parent.");
-         }
-         
-         private PLATEAUCityObjectGroup SearchFirstCityObjGroup(UniqueParentTransformList transforms)
-         {
-             foreach(var t in transforms.Get)
-             {
-                 var cityObjGroups = t.GetComponentsInChildren<PLATEAUCityObjectGroup>();
-                 if (cityObjGroups.Length > 0)
-                 {
-                     return cityObjGroups[0];
-                 }
-             }
+            if (descendantCountDict.Count == 0) return null;
 
-             return null;
-         }
+            var commonParents = descendantCountDict
+                .Where(pair => pair.Value == srcList.Count)
+                .Select(pair => pair.Key)
+                .ToArray();
+            if (commonParents.Length == 0) return null;
+
+            // 共通の親のうち、もっとも子であるものを探します。
+            for (int i = 0; i < commonParents.Length; i++)
+            {
+                var trans1 = commonParents[i];
+                bool isTrans1Parented = false;
+                for (int j = i + 1; j < commonParents.Length; j++)
+                {
+                    var trans2 = commonParents[j];
+                    if (trans2.IsChildOf(trans1))
+                    {
+                        isTrans1Parented = true;
+                        break;
+                    }
+                }
+
+                if (!isTrans1Parented) return trans1;
+            }
+
+            throw new Exception("Failed to search common parent.");
+        }
+
+        private PLATEAUCityObjectGroup SearchFirstCityObjGroup(UniqueParentTransformList transforms)
+        {
+            foreach (var t in transforms.Get)
+            {
+                var cityObjGroups = t.GetComponentsInChildren<PLATEAUCityObjectGroup>();
+                if (cityObjGroups.Length > 0)
+                {
+                    return cityObjGroups[0];
+                }
+            }
+
+            return null;
+        }
     }
 
 
@@ -330,7 +337,7 @@ namespace PLATEAU.GranularityConvert
         {
             if (srcData.TryGet(gmlID, out var serializedCityObj))
             {
-                var srcCityObj =  serializedCityObj;
+                var srcCityObj = serializedCityObj;
                 return srcCityObj.Copy();
             }
             else

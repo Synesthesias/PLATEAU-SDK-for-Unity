@@ -169,7 +169,8 @@ namespace PLATEAU.Util
         /// </summary>
         private async Task DfsExec(bool isAsync, ForEachTransformAsync forEachTransform)
         {
-            var stack = new Stack<Transform>(data);
+            // スタックから取り出すときにヒエラルキーの上から順になってほしいので逆順に積む
+            var stack = new Stack<Transform>(data.ToArray().Reverse());
             while (stack.Count > 0)
             {
                 var trans = stack.Pop();
@@ -182,8 +183,8 @@ namespace PLATEAU.Util
                 {
                     continue; // 子をスタックに入れない
                 }
-
-                for (int i = 0; i < trans.childCount; i++)
+                
+                for (int i = trans.childCount - 1; i >= 0; i--)
                 {
                     stack.Push(trans.GetChild(i));
                 }

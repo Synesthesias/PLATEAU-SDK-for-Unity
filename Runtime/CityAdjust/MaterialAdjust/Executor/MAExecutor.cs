@@ -28,7 +28,7 @@ namespace PLATEAU.CityAdjust.MaterialAdjust.Executor
         private readonly IMACondition maCondition;
         
         // デバッグ時は下をtrueにしてログを出し、デバッグが終わったらfalseにしてログを隠してください。
-        private readonly ConditionalLogger logger = new ConditionalLogger(()=>true);
+        private readonly ConditionalLogger logger = new ConditionalLogger(()=>false);
 
 
         /// <summary>
@@ -50,12 +50,12 @@ namespace PLATEAU.CityAdjust.MaterialAdjust.Executor
             this.maCondition = maCondition;
         }
 
-        public async Task Exec()
+        public async Task<UniqueParentTransformList> Exec()
         {
             if (!conf.Validate())
             {
                 Debug.LogError("設定値が不正です。");
-                return;
+                return null;
             }
 
             maCondition.Init(conf.TargetTransforms);
@@ -103,7 +103,10 @@ namespace PLATEAU.CityAdjust.MaterialAdjust.Executor
                         decomposed = decomposeResult.Get.GeneratedRootTransforms;
                         foreach (var dec in decomposed.Get)
                         {
-                            srcDstDict.Add(srcTrans, dec);
+                            if (!srcDstDict.TryAdd(srcTrans, dec))
+                            {
+                                Debug.LogWarning($"{nameof(srcDstDict)} : ${srcTrans.name} is already exists. ignoring.");
+                            };
                         }
                     }
                     else
@@ -198,14 +201,14 @@ namespace PLATEAU.CityAdjust.MaterialAdjust.Executor
                     return NextSearchFlow.Continue;
                 }
 
-                // 分解も結合も不要だがコピーを作りたい場合（srcもdstも最小地物）
+                // 分解も結合も不要だがコピーを作りたい場合
                 if (!ShouldSkipDueToMaterial(srcTrans))
                 {
                     logger.Log("コピー：　分解結合不要： " + srcTrans.name);
                     srcMeshes.Add(srcTrans);
                     var copy = CopyGameObjAsResult(srcTrans, converted, srcDstDict, false);
                     maMaterialChanger.Exec(copy.transform);
-                    return NextSearchFlow.Continue;
+                    return NextSearchFlow.SkipChildren;
                 }
 
                 Debug.LogError("マテリアル分け： どのケースにも当てはまらない未知のケース： " + srcTrans.name);
@@ -235,7 +238,7 @@ namespace PLATEAU.CityAdjust.MaterialAdjust.Executor
                     bool shouldDestroy = true;
                     foreach (var r in result.Get)
                     {
-                        if (r.IsChildOf(t))
+                        if (r.IsChildOf(t) || r == t)
                         {
                             shouldDestroy = false;
                             break;
@@ -254,6 +257,7 @@ namespace PLATEAU.CityAdjust.MaterialAdjust.Executor
 
                 foreach (var d in srcToDestroy.Get)
                 {
+                    if (d == null) continue;
                     Object.DestroyImmediate(d.gameObject);
                 }
             }
@@ -262,6 +266,7 @@ namespace PLATEAU.CityAdjust.MaterialAdjust.Executor
             Selection.objects = result.Get.Select(trans => (Object)trans.gameObject).ToArray();
             #endif
 
+            return result;
         }
 
         /// <summary>

@@ -138,13 +138,14 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
             
             return SelectedCriterion switch
             {
-                MaterialCriterion.None => new MAExecutorConf(
-                    CurrentSearcher.MaterialAdjustConf,
-                    Guis.Get<ObjectSelectGui>().UniqueSelected,
-                    granularity,
-                    Guis.Get<DestroyOrPreserveSrcGui>().DoDestroySrcObjs,
-                    false
-                ),
+                // MaterialCriterion.None => new MAExecutorConf(
+                //     null,
+                //     Guis.Get<ObjectSelectGui>().UniqueSelected,
+                //     granularity,
+                //     Guis.Get<DestroyOrPreserveSrcGui>().DoDestroySrcObjs,
+                //     false
+                // ),
+                MaterialCriterion.None => throw new Exception("分割結合のみのときはCityGranularityConverterを使ってください"),
                 
                 MaterialCriterion.ByType => new MAExecutorConf(
                     CurrentSearcher.MaterialAdjustConf,
