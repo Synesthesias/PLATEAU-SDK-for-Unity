@@ -215,7 +215,7 @@ namespace PLATEAU.RoadNetwork.Data
             /// <returns></returns>
             public TPrimType Read(in RnID<TPrimType> id)
             {
-                return dataList[id._Val];
+                return dataList[id.ID];
             }
 
             /// <summary>
@@ -225,7 +225,7 @@ namespace PLATEAU.RoadNetwork.Data
             /// <param name="val"></param>
             public void Write(in RnID<TPrimType> id, in TPrimType val)
             {
-                dataList[id._Val] = val;
+                dataList[id.ID] = val;
             }
 
             /// <summary>
@@ -239,7 +239,7 @@ namespace PLATEAU.RoadNetwork.Data
                 freeDataIndices = new List<int>(ids.Length);
                 foreach (var item in ids)
                 {
-                    freeDataIndices.Add(item._Val);
+                    freeDataIndices.Add(item.ID);
                 }
             }
 
@@ -275,23 +275,15 @@ namespace PLATEAU.RoadNetwork.Data
             private struct ImplRnID<TPrimDataType> : RnID<TPrimDataType>
                 where TPrimDataType : IPrimitiveData
             {
-                // PropertyDrawerでアクセスするため
-                public string IdFieldName { get => idFieldName; }
-                private const string idFieldName = nameof(id);
-
-                // 不正値
-                public static ImplRnID<TPrimDataType> Undefined => new ImplRnID<TPrimDataType>(-1);
-
                 // Listのindexアクセスがintなのでuintじゃなくてintにしておく
                 // structなので初期値は基本0. その時に不正値扱いにするために0は不正値とする
                 [SerializeField]
                 private int id;
 
-
                 // 有効なIdかどうか
                 public bool IsValid => id > 0;
 
-                public int _Val => id - 1;
+                public int ID => id - 1;
 
                 public ImplRnID(int id)
                 {

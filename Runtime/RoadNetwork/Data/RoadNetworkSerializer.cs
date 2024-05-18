@@ -140,7 +140,7 @@ namespace PLATEAU.RoadNetwork.Data
             {
                 if (val == null)
                 {
-                    return RnID<TData>.Undefind; 
+                    return new InvalidRnID<TData>(); 
                 }
 
                 return Table[val];
