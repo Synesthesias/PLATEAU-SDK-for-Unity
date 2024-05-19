@@ -10,6 +10,18 @@ namespace PLATEAU.Util
     public static class DebugEx
     {
         /// <summary>
+        /// num段階に分けたうちi番目の色を返す
+        /// </summary>
+        /// <param name="i"></param>
+        /// <param name="num"></param>
+        /// <returns></returns>
+        public static Color GetDebugColor(int i, int num = 8)
+        {
+            var h = 1f * (i % num) / num;
+            return Color.HSVToRGB(h, 1f, 1f);
+        }
+
+        /// <summary>
         /// start -> endの方向に矢印を描画する
         /// </summary>
         /// <param name="start"></param>
@@ -130,8 +142,9 @@ namespace PLATEAU.Util
         /// <param name="oX"></param>
         /// <param name="oY"></param>
         /// <param name="color"></param>
+        /// <param name="fontSize"></param>
         [Conditional("UNITY_EDITOR")]
-        public static void DrawString(string text, Vector3 worldPos, Vector2? screenOffset = null, Color? color = null)
+        public static void DrawString(string text, Vector3 worldPos, Vector2? screenOffset = null, Color? color = null, int? fontSize = null)
         {
             // https://discussions.unity.com/t/how-to-draw-debug-text-into-scene/14023/6
 #if UNITY_EDITOR
@@ -149,11 +162,51 @@ namespace PLATEAU.Util
                 UnityEditor.Handles.EndGUI();
                 return;
             }
-
-            UnityEditor.Handles.Label(TransformByPixel(worldPos, screenOffset ?? Vector2.zero), text);
+            var style = new GUIStyle(GUI.skin.label);
+            if (fontSize != null)
+                style.fontSize = fontSize.Value;
+            UnityEditor.Handles.Label(TransformByPixel(worldPos, screenOffset ?? Vector2.zero), text, style);
             GUI.color = restoreColor;
             UnityEditor.Handles.EndGUI();
 #endif
+        }
+
+        /// <summary>
+        /// 線分のデバッグ描画
+        /// </summary>
+        /// <param name="segment"></param>
+        /// <param name="showXz"></param>
+        /// <param name="color"></param>
+        public static void DrawLineSegment2D(LineSegment2D segment, bool showXz = true, Color? color = null)
+        {
+            var start = showXz ? segment.Start.Xay() : segment.Start.Xya();
+            var end = showXz ? segment.End.Xay() : segment.End.Xya();
+            Debug.DrawLine(start, end, color ?? Color.white);
+        }
+
+        /// <summary>
+        /// 放物線のデバッグ描画
+        /// </summary>
+        /// <param name="parabola"></param>
+        /// <param name="beginX"></param>
+        /// <param name="endX"></param>
+        /// <param name="splitX"></param>
+        /// <param name="showXz"></param>
+        /// <param name="color"></param>
+        public static void DrawParabola2D(Parabola2D parabola, float beginX, float endX, float splitX = 0.1f,
+            bool showXz = true, Color? color = null)
+        {
+            var n = Mathf.CeilToInt((endX - beginX) / splitX);
+            var d = (endX - beginX) / n;
+            for (var i = 0; i < n; ++i)
+            {
+                var x0 = beginX + d * i;
+                var x1 = x0 + d;
+
+                var y0 = parabola.GetY(x0);
+                var y1 = parabola.GetY(x1);
+                DrawLineSegment2D(new LineSegment2D(new Vector2(x0, y0), new Vector2(x1, y1)), showXz, color);
+            }
         }
 
         private static Vector3 TransformByPixel(Vector3 position, Vector2 screenOffset)
