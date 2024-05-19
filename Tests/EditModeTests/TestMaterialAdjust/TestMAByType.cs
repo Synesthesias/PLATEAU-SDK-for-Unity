@@ -29,62 +29,66 @@ namespace PLATEAU.Tests.EditModeTests.TestMaterialAdjust
         [UnityTest]
         public IEnumerator Test_AtomicToAtomic()
         {
-            yield return AssertMA(MAGranularity.PerAtomicFeatureObject, MAGranularity.PerAtomicFeatureObject);
+            yield return AssertMA(MAGranularity.PerAtomicFeatureObject, MAGranularity.PerAtomicFeatureObject, 0);
         }
         
         [UnityTest]
         public IEnumerator Test_AtomicToPrimary()
         {
-            yield return AssertMA(MAGranularity.PerAtomicFeatureObject, MAGranularity.PerPrimaryFeatureObject);
+            yield return AssertMA(MAGranularity.PerAtomicFeatureObject, MAGranularity.PerPrimaryFeatureObject, 0);
         }
         
         [UnityTest]
         public IEnumerator Test_AtomicToArea()
         {
-            yield return AssertMA(MAGranularity.PerAtomicFeatureObject, MAGranularity.CombineAll);
+            yield return AssertMA(MAGranularity.PerAtomicFeatureObject, MAGranularity.CombineAll, 1);
         }
         
         [UnityTest]
         public IEnumerator Test_PrimaryToAtomic()
         {
-            yield return AssertMA(MAGranularity.PerPrimaryFeatureObject, MAGranularity.PerAtomicFeatureObject);
+            yield return AssertMA(MAGranularity.PerPrimaryFeatureObject, MAGranularity.PerAtomicFeatureObject, 0);
         }
         
         [UnityTest]
         public IEnumerator Test_PrimaryToPrimary()
         {
-            yield return AssertMA(MAGranularity.PerPrimaryFeatureObject, MAGranularity.PerPrimaryFeatureObject);
+            yield return AssertMA(MAGranularity.PerPrimaryFeatureObject, MAGranularity.PerPrimaryFeatureObject, 0);
         }
         
         [UnityTest]
         public IEnumerator Test_PrimaryToArea()
         {
-            yield return AssertMA(MAGranularity.PerPrimaryFeatureObject, MAGranularity.CombineAll);
+            yield return AssertMA(MAGranularity.PerPrimaryFeatureObject, MAGranularity.CombineAll, 1);
         }
         
         [UnityTest]
         public IEnumerator Test_AreaToAtomic()
         {
-            yield return AssertMA(MAGranularity.CombineAll, MAGranularity.PerAtomicFeatureObject);
+            yield return AssertMA(MAGranularity.CombineAll, MAGranularity.PerAtomicFeatureObject, 1);
         }
         
         [UnityTest]
         public IEnumerator Test_AreaToPrimary()
         {
-            yield return AssertMA(MAGranularity.CombineAll, MAGranularity.PerPrimaryFeatureObject);
+            yield return AssertMA(MAGranularity.CombineAll, MAGranularity.PerPrimaryFeatureObject, 1);
         }
         
         [UnityTest]
         public IEnumerator Test_AreaToArea()
         {
-            yield return AssertMA(MAGranularity.CombineAll, MAGranularity.CombineAll);
+            yield return AssertMA(MAGranularity.CombineAll, MAGranularity.CombineAll, 0);
         }
         
-        private IEnumerator AssertMA(MAGranularity srcGran, MAGranularity dstGran)
+        /// <summary>
+        /// <paramref name="srcGran"/>から<paramref name="dstGran"/>への地物タイプマテリアル分けをチェック。
+        /// <paramref name="dstDataId"/>は、成果テストデータの番号
+        /// </summary>
+        private IEnumerator AssertMA(MAGranularity srcGran, MAGranularity dstGran, int dstDataId)
         {
             yield return ExecConvert(srcGran, dstGran);
             var actual = retSrcObj.transform;
-            var expect = testData.CopyMATypeDstOf(dstGran).transform;
+            var expect = testData.CopyMATypeDstOf(dstGran, dstDataId).transform;
             // ルートの名前だけは違っても良い
             actual.name = expect.name;
             MAAssert.AreSameSetRecursive(expect, actual);
@@ -132,10 +136,8 @@ namespace PLATEAU.Tests.EditModeTests.TestMaterialAdjust
                 dstGran, true, true
             );
 
-            var matChanger = new MAMaterialChanger(matConf, new MAMaterialSelectorByType());
-            yield return new CityGranularityConverter()
-                .ConvertProgressiveAsync(executorConf, new MAConditionMatChange(matChanger))
-                .AsIEnumerator();
+            var executor = MAExecutorFactory.CreateTypeExecutor(executorConf);
+            yield return executor.Exec().AsIEnumerator();
         }
     }
 }

@@ -19,9 +19,12 @@ namespace PLATEAU.Tests.EditModeTests.TestMaterialAdjust
         private static readonly string pathBldgSrcAtomic = PathBase + "/BldgAtomic.prefab";
         private static readonly string pathBldgSrcPrimary = PathBase + "/BldgPrimary.prefab";
         private static readonly string pathBldgSrcArea = PathBase + "/BldgArea.prefab";
-        private static readonly string pathBldgTypeAtomic = PathBase + "/BldgAtomic_MAType.prefab";
+        private static readonly string pathBldgTypeAtomicFromArea = PathBase + "/BldgAtomicFromArea_MAType.prefab";
+        private static readonly string pathBldgTypeAtomicFromNonArea = PathBase + "/BldgAtomic_MAType.prefab";
         private static readonly string pathBldgTypePrimary = PathBase + "/BldgPrimary_MAType.prefab";
-        private static readonly string pathBldgTypeArea = PathBase + "/BldgArea_MAType.prefab";
+        private static readonly string pathBldgTypePrimaryFromArea = PathBase + "/BldgPrimaryFromArea_MAType.prefab";
+        private static readonly string pathBldgTypeAreaFromArea = PathBase + "/BldgAreaFromArea_MAType.prefab";
+        private static readonly string pathBldgTypeNonAreaFromNonArea = PathBase + "/BldgAreaFromNonArea_MAType.prefab";
         private static readonly string pathMaterial1 = PathBase + "/TestMatGreen.mat";
         private static readonly string pathMaterial2 = PathBase + "/TestMatBlue.mat";
         
@@ -53,20 +56,32 @@ namespace PLATEAU.Tests.EditModeTests.TestMaterialAdjust
         /// <summary>
         /// 粒度とそれに対応する地物でのマテリアル分けのデータの辞書です
         /// </summary>
-        private readonly Dictionary<MeshGranularity, GameObject> granTypeDict =
-            new Dictionary<MeshGranularity, GameObject>{
+        private readonly Dictionary<MeshGranularity, GameObject[]> granTypeDict =
+            new Dictionary<MeshGranularity, GameObject[]>{
                 {
                     MeshGranularity.PerAtomicFeatureObject,
-                    AssetDatabase.LoadAssetAtPath<GameObject>(pathBldgTypeAtomic)
+                    new[]
+                    {
+                        AssetDatabase.LoadAssetAtPath<GameObject>(pathBldgTypeAtomicFromNonArea),
+                        AssetDatabase.LoadAssetAtPath<GameObject>(pathBldgTypeAtomicFromArea)
+                        
+                    }
                 },
                 {
                     MeshGranularity.PerPrimaryFeatureObject,
-                    AssetDatabase.LoadAssetAtPath<GameObject>(pathBldgTypePrimary)
+                    new[]
+                    {
+                        AssetDatabase.LoadAssetAtPath<GameObject>(pathBldgTypePrimary),
+                        AssetDatabase.LoadAssetAtPath<GameObject>(pathBldgTypePrimaryFromArea)
+                    }
                 },
                 {
                     MeshGranularity.PerCityModelArea,
-                    // AssetDatabase.LoadAssetAtPath<GameObject>(pathBldgTypeArea)
-                    null
+                    new[]
+                    {
+                        AssetDatabase.LoadAssetAtPath<GameObject>(pathBldgTypeAreaFromArea),
+                        AssetDatabase.LoadAssetAtPath<GameObject>(pathBldgTypeNonAreaFromNonArea)
+                    }
                 }
             };
 
@@ -81,9 +96,9 @@ namespace PLATEAU.Tests.EditModeTests.TestMaterialAdjust
         /// <summary>
         /// 指定粒度であり、マテリアル分け結果としてexpectされるものをコピーして返します。
         /// </summary>
-        public GameObject CopyMATypeDstOf(MAGranularity gran)
+        public GameObject CopyMATypeDstOf(MAGranularity gran, int dataId)
         {
-            return Copy(granTypeDict[gran.ToNativeGranularity()]);
+            return Copy(granTypeDict[gran.ToNativeGranularity()][dataId]);
         }
 
         public Material Material(int id)
