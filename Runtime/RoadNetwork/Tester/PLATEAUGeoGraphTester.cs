@@ -37,7 +37,7 @@ namespace PLATEAU.RoadNetwork
                     .SelectMany(x => x.sharedMesh.vertices.Select(a => a.Xz()))
                     .ToList();
                 var convex = GeoGraph2D.ComputeConvexVolume(vertices);
-                PLATEAUDebugUtil.DrawArrows(convex.Select(x => x.Xay()));
+                DebugEx.DrawArrows(convex.Select(x => x.Xay()));
             }
 
             if ((lerpLineTest?.showLerpLineTest ?? false) && lerpLineTest.target)
@@ -58,8 +58,8 @@ namespace PLATEAU.RoadNetwork
                 var rayA = new Ray2D(GetVertex(p.indexA), GetEdge(p.indexA));
                 var rayB = new Ray2D(GetVertex(p.indexA), -GetEdge(p.indexA - 1));
 
-                PLATEAUDebugUtil.DrawArrow(GetVertex(p.indexA).Xay(), GetVertex(p.indexA + 1).Xay(), bodyColor: Color.red);
-                PLATEAUDebugUtil.DrawArrow(GetVertex(p.indexA).Xay(), GetVertex(p.indexA - 1).Xay(), bodyColor: Color.blue);
+                DebugEx.DrawArrow(GetVertex(p.indexA).Xay(), GetVertex(p.indexA + 1).Xay(), bodyColor: Color.red);
+                DebugEx.DrawArrow(GetVertex(p.indexA).Xay(), GetVertex(p.indexA - 1).Xay(), bodyColor: Color.blue);
 
                 var ray = GeoGraph2D.LerpRay(rayA, rayB, p.p);
                 Debug.DrawRay(ray.origin.Xay(), ray.direction.Xay(), Color.green);
