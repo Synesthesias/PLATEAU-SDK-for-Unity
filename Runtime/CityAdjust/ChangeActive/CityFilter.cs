@@ -69,7 +69,7 @@ namespace PLATEAU.CityAdjust.ChangeActive
                             // それを下位から上位へたどり、
                             // 1つでも GUI上で選択されていないものがあればそのオブジェクトは非表示、
                             // そうでなければ表示します。
-                            typeNode = CityObjectTypeHierarchy.GetNodeByType(cityObjType)
+                            typeNode = cityObjType.ToTypeNode()
                                         ?? CityObjectTypeHierarchy.GetNodeByPackage(gmlPackage);
                         }
                         catch(KeyNotFoundException e)

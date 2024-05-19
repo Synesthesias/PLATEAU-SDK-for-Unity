@@ -106,7 +106,7 @@ namespace PLATEAU.PolygonMesh
             sb.DecrementIndent();
             return sb.ToString();
         }
-        
+
         private static class NativeMethods
         {
             [DllImport(DLLUtil.DllName)]

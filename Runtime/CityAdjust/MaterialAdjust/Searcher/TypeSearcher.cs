@@ -53,7 +53,7 @@ namespace PLATEAU.CityAdjust.MaterialAdjust
             
             return found.Select((t) =>
             {
-                var typeNode = CityObjectTypeHierarchy.GetNodeByType(t);
+                var typeNode = t.ToTypeNode();
                 if (typeNode == null) throw new ArgumentOutOfRangeException(nameof(t), $"Unknown Type: {t.ToString()}");
                 return typeNode;
             }).ToArray();

@@ -291,18 +291,18 @@ namespace PLATEAU.CityAdjust.MaterialAdjust.Executor
             var srcParent = srcTrans.parent;
             if ( srcParent != null)
             {
-                if (srcDstDict.TryGetValue(srcParent, out var dstParent))
-                {
-                    // すでに配置済みのdstの子の場合、親はdst側に合わせる
-                    copied.transform.parent = dstParent;
-                }
-                else
-                {
+                // if (srcDstDict.TryGetValue(srcParent, out var dstParent))
+                // {
+                //     // すでに配置済みのdstの子の場合、親はdst側に合わせる
+                //     copied.transform.parent = dstParent;
+                // }
+                // else
+                // {
                     // dstの中ではrootの場合、親はsrcに合わせる
                     var copiedTran = copied.transform;
                     copiedTran.parent = srcTrans.parent;
                     copiedTran.SetSiblingIndex(srcTrans.GetSiblingIndex());                    
-                }
+                // }
                 
             }
             converted.Add(copied.transform);
@@ -314,11 +314,11 @@ namespace PLATEAU.CityAdjust.MaterialAdjust.Executor
         private GameObject CopyGameObjWithChildren(Transform srcTrans, Dictionary<Transform, Transform> srcDstDict)
         {
             var copied = Object.Instantiate(srcTrans.gameObject);
-            var srcParent = srcTrans.parent;
-            if ( srcParent != null && srcDstDict.TryGetValue(srcParent, out var dstParent))
-            {
-                copied.transform.parent = dstParent;
-            }
+            // var srcParent = srcTrans.parent;
+            // if ( srcParent != null && srcDstDict.TryGetValue(srcParent, out var dstParent))
+            // {
+            //     copied.transform.parent = dstParent;
+            // }
             srcDstDict.Add(srcTrans, copied.transform);
             copied.name = copied.name.Replace("(Clone)", "");
             return copied;

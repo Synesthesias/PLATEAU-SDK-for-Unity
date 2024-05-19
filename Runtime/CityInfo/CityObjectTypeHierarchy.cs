@@ -72,10 +72,9 @@ namespace PLATEAU.CityInfo
                 }
             );
 
-        public static Node GetNodeByType(COType t)
+        public static Node ToTypeNode(this COType t)
         {
-            if (typeToNode.TryGetValue(t, out var node)) return node;
-            return null;
+            return typeToNode.GetValueOrDefault(t);
         }
 
         public static Node GetNodeByPackage(Package p)

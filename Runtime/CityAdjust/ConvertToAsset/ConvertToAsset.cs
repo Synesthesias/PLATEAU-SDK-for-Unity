@@ -276,8 +276,8 @@ namespace PLATEAU.CityAdjust.ConvertToAsset
                             {
                                 // Rendering Toolkitでない場合
                                 
-                                // mainTextureがないシェーダーなら、元のマテリアルを利用します。
-                                if (!srcMat.HasMainTextureAttribute())
+                                // mainTextureがないシェーダー、またはmainTextureがないなら、元のマテリアルを利用します。
+                                if (!srcMat.HasMainTextureAttribute() || srcMat.mainTexture == null)
                                 {
                                     shouldUseFbxMaterial = false;
                                 }

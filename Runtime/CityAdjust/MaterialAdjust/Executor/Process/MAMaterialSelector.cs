@@ -23,7 +23,7 @@ namespace PLATEAU.CityAdjust.MaterialAdjust.Executor.Process
     {
         public Result<Material> Get(PLATEAUCityObjectGroup cog, CityObjectList.CityObject cityObj, IMAConfig materialAdjustConf)
         {
-            var matChangeConf = ((MAMaterialConfig<CityObjectTypeHierarchy.Node>)materialAdjustConf).GetConfFor(CityObjectTypeHierarchy.GetNodeByType(cityObj.type));
+            var matChangeConf = ((MAMaterialConfig<CityObjectTypeHierarchy.Node>)materialAdjustConf).GetConfFor(cityObj.type.ToTypeNode());
             if (matChangeConf == null || !matChangeConf.ShouldChangeMaterial) return new Result<Material>(false, null);
             var material = matChangeConf.Material;
             return new Result<Material>(true, material);
