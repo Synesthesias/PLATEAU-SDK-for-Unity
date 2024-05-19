@@ -1,9 +1,15 @@
+using PLATEAU.CityAdjust.MaterialAdjust;
 using PLATEAU.CityAdjust.MaterialAdjust.Executor.Process;
+using PLATEAU.CityGML;
+using PLATEAU.CityInfo;
 using PLATEAU.PolygonMesh;
 using PLATEAU.Util;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
+using Material = UnityEngine.Material;
+using Object = UnityEngine.Object;
 
 namespace PLATEAU.Tests.EditModeTests.TestMaterialAdjust
 {
@@ -104,6 +110,31 @@ namespace PLATEAU.Tests.EditModeTests.TestMaterialAdjust
         public Material Material(int id)
         {
             return testMaterials[id];
+        }
+        
+        public MAMaterialConfig<CityObjectTypeHierarchy.Node> MaterialConfig()
+        {
+            // テストデータに含まれる地物型を記述
+            var types = new CityObjectType[]
+                {
+                    CityObjectType.COT_Building,
+                    CityObjectType.COT_WallSurface,
+                    CityObjectType.COT_RoofSurface,
+                    CityObjectType.COT_GroundSurface,
+                    CityObjectType.COT_OuterCeilingSurface
+                }
+                .Select(type => type.ToTypeNode())
+                .ToArray();
+            
+            // 地物型ををもとに壁面を緑、屋根面を青とする設定にします
+            var matConf = new MAMaterialConfig<CityObjectTypeHierarchy.Node>(types);
+            var wall = matConf.GetConfFor(CityObjectType.COT_WallSurface.ToTypeNode());
+            var roof = matConf.GetConfFor(CityObjectType.COT_RoofSurface.ToTypeNode());
+            wall.ChangeMaterial = true;
+            roof.ChangeMaterial = true;
+            wall.Material = Material(0);
+            roof.Material = Material(1);
+            return matConf;
         }
 
         private GameObject Copy(GameObject src)

@@ -8,7 +8,7 @@ namespace PLATEAU.CityAdjust.MaterialAdjust
     /// 検索で見つかった各分類項目に対して、そのマテリアルをどのように変更するかの設定値の辞書です。
     /// MAはMaterialAdjustの略です。
     /// </summary>
-    internal class MAMaterialConfig<KeyT> : IMAConfig
+    public class MAMaterialConfig<KeyT> : IMAConfig
         where KeyT : class
     {
         private readonly SortedList<KeyT, MAChangeConfPerMaterial> data;

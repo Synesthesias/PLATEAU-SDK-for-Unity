@@ -2,7 +2,6 @@ using NUnit.Framework;
 using PLATEAU.CityAdjust.MaterialAdjust.Executor;
 using PLATEAU.CityAdjust.MaterialAdjust.Executor.Process;
 using PLATEAU.GranularityConvert;
-using PLATEAU.PolygonMesh;
 using PLATEAU.Tests.TestUtils;
 using PLATEAU.Util;
 using System.Collections;
@@ -96,11 +95,11 @@ namespace PLATEAU.Tests.EditModeTests.TestMaterialAdjust
             // ここでsrcObjは変換後になっているはず
             if (assertOrder)
             {
-                MAAssert.AreSameRecursive(expectTrans, srcTrans);
+                MAAssert.AreSameRecursive(expectTrans, srcTrans, dstGran);
             }
             else
             {
-                MAAssert.AreSameSetRecursive(expectTrans, srcTrans);
+                MAAssert.AreSameSetRecursive(expectTrans, srcTrans, dstGran);
             }
         }
 
