@@ -140,10 +140,14 @@ namespace PLATEAU.RoadNetwork
             var leftWay = LeftWay;
             foreach (var i in Enumerable.Range(0, splitNum))
             {
-                var p2 = (i + 1) / splitNum;
-                var line = this.GetInnerLerpSegments(p2);
-                var centerLine = RoadNetworkLineString.Create(line.Select(p => new RoadNetworkPoint(p)));
-                var r = new RoadNetworkWay(centerLine, false, true);
+                var p2 = (i + 1f) / splitNum;
+                RoadNetworkWay r = RightWay;
+                if (i != splitNum - 1)
+                {
+                    var line = this.GetInnerLerpSegments(p2);
+                    var centerLine = RoadNetworkLineString.Create(line.Select(p => new RoadNetworkPoint(p.Xay())));
+                    r = new RoadNetworkWay(centerLine, false, true);
+                }
                 var l = new RoadNetworkWay(leftWay.LineString, leftWay.IsReversed, false);
                 var lane = new RoadNetworkLane(l, r, startSubWays[i], endSubWays[i]);
                 leftWay = r;
@@ -287,7 +291,7 @@ namespace PLATEAU.RoadNetwork
             }
         }
 
-        private static new Tuple<Vector2, Vector2> GetAxis(LineSegment2D axis)
+        private static Tuple<Vector2, Vector2> GetAxis(LineSegment2D axis)
         {
             return new Tuple<Vector2, Vector2>(axis.Direction, new Vector2(axis.Direction.y, -axis.Direction.x));
         }
@@ -344,46 +348,48 @@ namespace PLATEAU.RoadNetwork
             var leftIndex = 0;
             var rightIndex = 0;
 
-            var debugIndex = 0;
-
-            LineSegment2D Get(Reference refer)
-            {
-                return refer.IsLeftWay ? lefts[refer.Index] : rights[refer.Index];
-            }
+            //LineSegment2D Get(Reference refer)
+            //{
+            //    return refer.IsLeftWay ? lefts[refer.Index] : rights[refer.Index];
+            //}
 
             void Flush(Reference refer)
             {
                 var tmp = new List<LineSegment2D>();
+                var debugIndex = 0;
                 foreach (var s in eventPoints)
                 {
                     var (l, r) = (lefts[s.LeftIndex], rights[s.RightIndex]);
                     var (b, t) = refer.IsLeftWay ? (l, r) : (r, l);
 
                     var m = b.GetNearestPoint(t.Start);
-                    tmp.Add(new LineSegment2D(Vector2.Lerp(m, t.Start, p), s.Segment.Start));
+                    var parabola = new LineSegment2D(Vector2.Lerp(m, t.Start, p), s.Segment.Start);
+                    //tmp.Add(parabola);
                     tmp.Add(s.Segment);
+                    void Draw(LineSegment2D seg)
+                    {
+                        DebugEx.DrawString($"[{debugIndex++}] {s.LeftIndex}-{s.RightIndex}({seg.Magnitude:F2})", seg.Start.Xay(), color: Color.red, fontSize: 20);
+                        DebugEx.DrawLineSegment2D(seg, color: DebugEx.GetDebugColor(debugIndex, 8));
+                    }
+                    Draw(s.Segment);
+                    //Draw(parabola);
                 }
 
-                float Y(LineSegment2D s, float x)
-                {
-                    if (Mathf.Abs(s.End.x - s.Start.x) < GeoGraph2D.Epsilon)
-                        return s.Start.y;
-                    var t = (x - s.Start.x) / (s.End.x - s.Start.x);
-                    return s.Start.y + (s.End.y - s.Start.y) * t;
-                }
-                tmp.Sort((a, b) =>
-                {
-                    var ret = floatComparer.Compare(a.Start.x, b.Start.x);
-                    if (ret != 0) return ret;
-                    return floatComparer.Compare(a.Start.y, b.Start.y);
-                });
-                foreach (var seg in tmp)
-                {
-                    //DebugEx.DrawString($"[{segments.Count}] {leftIndex}-{rightIndex}({segment.Magnitude})", segment.Start.Xay(), color: Color.red, fontSize: 20);
-                    DebugEx.DrawLineSegment2D(seg, color: DebugEx.GetDebugColor(debugIndex++, 8));
-                }
-
+                //float Y(LineSegment2D s, float x)
+                //{
+                //    if (Mathf.Abs(s.End.x - s.Start.x) < GeoGraph2D.Epsilon)
+                //        return s.Start.y;
+                //    var t = (x - s.Start.x) / (s.End.x - s.Start.x);
+                //    return s.Start.y + (s.End.y - s.Start.y) * t;
+                //}
+                //tmp.Sort((a, b) =>
+                //{
+                //    var ret = floatComparer.Compare(a.Start.x, b.Start.x);
+                //    if (ret != 0) return ret;
+                //    return floatComparer.Compare(a.Start.y, b.Start.y);
+                //});
                 segments.AddRange(tmp);
+                eventPoints.Clear();
             }
 
             while (leftIndex < lefts.Count && rightIndex < rights.Count)
@@ -453,15 +459,16 @@ namespace PLATEAU.RoadNetwork
                 ret.Add(point);
             }
 
-            if (self.PrevBorder.GetLerpPoint(p, out var prevCp) >= 0)
-                Add(prevCp);
+            //if (self.PrevBorder.GetLerpPoint(p, out var prevCp) >= 0)
+            //    Add(prevCp);
             foreach (var x in segments)
             {
                 Add(x.Start);
+                Add(x.End);
             }
 
-            if (self.NextBorder.GetLerpPoint(p, out var nextCp) >= 0)
-                Add(nextCp);
+            //if (self.NextBorder.GetLerpPoint(p, out var nextCp) >= 0)
+            //    Add(nextCp);
 
             // 自己交差があれば削除する
             //GeoGraph2D.RemoveSelfCrossing(ret, t => t, (p1, p2, p3, p4, inter, f1, f2) => Vector3.Lerp(p1, p2, f1));

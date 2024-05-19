@@ -154,8 +154,9 @@ namespace PLATEAU.Util
 
             if (color.HasValue) GUI.color = color.Value;
             var view = UnityEditor.SceneView.currentDrawingSceneView;
+            if (!view || !view.camera)
+                return;
             Vector3 screenPos = view.camera.WorldToScreenPoint(worldPos);
-
             if (screenPos.y < 0 || screenPos.y > Screen.height || screenPos.x < 0 || screenPos.x > Screen.width || screenPos.z < 0)
             {
                 GUI.color = restoreColor;
@@ -181,7 +182,7 @@ namespace PLATEAU.Util
         {
             var start = showXz ? segment.Start.Xay() : segment.Start.Xya();
             var end = showXz ? segment.End.Xay() : segment.End.Xya();
-            Debug.DrawLine(start, end, color ?? Color.white);
+            DebugEx.DrawArrow(start, end, bodyColor: color ?? Color.white);
         }
 
         /// <summary>
