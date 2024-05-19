@@ -50,13 +50,12 @@ namespace PLATEAU.RoadNetwork.Drawer
                         if (way == null)
                             return;
 
-                        //PLATEAUDebugUtil.DrawArrows(way.Vertices.Select((v, i) => v + -edgeOffset * way.GetVertexNormal(i)), false, color: GetEdgeColor(lane), arrowColor: way.IsReversed ? Color.cyan : Color.blue);
-                        PLATEAUDebugUtil.DrawArrows(way.Vertices.Select((v, i) => v + -edgeOffset * way.GetVertexNormal(i)), false, color: color, arrowColor: arrowColor);
+                        DebugEx.DrawArrows(way.Vertices.Select((v, i) => v + -edgeOffset * way.GetVertexNormal(i)), false, color: color, arrowColor: arrowColor);
 
                         if (showVertexIndex)
                         {
                             foreach (var item in way.Vertices.Select((v, i) => new { v, i }))
-                                PLATEAUDebugUtil.DrawString(item.i.ToString(), item.v, color: Color.red);
+                                DebugEx.DrawString(item.i.ToString(), item.v, color: Color.red);
                         }
                     }
                     foreach (var way in lane.BothWays)
@@ -77,7 +76,7 @@ namespace PLATEAU.RoadNetwork.Drawer
                             {
                                 if (way.HalfLineIntersectionXz(new Ray(v - n * 0.01f, -n), out var intersection))
                                 {
-                                    PLATEAUDebugUtil.DrawArrow(v, (v + intersection) * 0.5f);
+                                    DebugEx.DrawArrow(v, (v + intersection) * 0.5f);
                                 }
                             }
                         }

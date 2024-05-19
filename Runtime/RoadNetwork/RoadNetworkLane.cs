@@ -167,9 +167,9 @@ namespace PLATEAU.RoadNetwork
                 if (found == false)
                 {
                     //Assert.IsTrue(found, "center point not found");
-                    PLATEAUDebugUtil.DrawArrow(before, before + Vector3.up * 2, arrowSize: 1f, duration: 30f, bodyColor: Color.blue);
+                    DebugEx.DrawArrow(before, before + Vector3.up * 2, arrowSize: 1f, duration: 30f, bodyColor: Color.blue);
                     foreach (var c in candidates)
-                        PLATEAUDebugUtil.DrawArrow(c, c + Vector3.up * 100, arrowSize: 1f, duration: 30f, bodyColor: Color.red);
+                        DebugEx.DrawArrow(c, c + Vector3.up * 100, arrowSize: 1f, duration: 30f, bodyColor: Color.red);
                     break;
                 }
 
@@ -272,8 +272,8 @@ namespace PLATEAU.RoadNetwork
                             }
                         }
                         segments.Add(segment);
-                        DebugUtil.DrawString($"[{segments.Count}] {i}-{rightIndex}({segment.Magnitude})", segment.Start.Xay(), color: Color.red);
-                        DebugUtil.DrawLineSegment2D(segment);
+                        DebugEx.DrawString($"[{segments.Count}] {i}-{rightIndex}({segment.Magnitude})", segment.Start.Xay(), color: Color.red);
+                        DebugEx.DrawLineSegment2D(segment);
                     }
 
                     if (points[3].Item3 == 1)
