@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace PLATEAU.Util.GeoGraph
 {
@@ -102,6 +103,21 @@ namespace PLATEAU.Util.GeoGraph
             out float t2)
         {
             return LineUtil.LineSegmentIntersection(new Ray2D(origin, dir), Start, End, out intersection, out t1, out t2);
+        }
+
+        /// <summary>
+        /// 点vから線分に対して最も近い点を返す
+        /// </summary>
+        /// <param name="v"></param>
+        /// <returns></returns>
+        public Vector2 GetNearestPoint(Vector2 v)
+        {
+            var t = Vector3.Dot(Direction, v) - Vector3.Dot(Start, v);
+            if (t < 0)
+                return Start;
+            if (t > 1)
+                return End;
+            return Start + t * Direction;
         }
     }
 }

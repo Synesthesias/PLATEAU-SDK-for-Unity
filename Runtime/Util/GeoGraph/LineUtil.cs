@@ -121,17 +121,12 @@ namespace PLATEAU.Util.GeoGraph
             return GeoGraphEx.GetEdges(vertices, false).Sum(item => (item.Item2 - item.Item1).magnitude);
         }
 
-        /// <summary>
-        /// verticesで表される線分の中央地点を返す.
-        /// 戻り値はvertices[i] ~ vertices[i+1]に中央地点があるときのi
-        /// verticesが空の時は-1が返る
-        /// </summary>
-        /// <param name="vertices"></param>
-        /// <param name="midPoint"></param>
-        /// <returns></returns>
-        public static int TryGetLineSegmentMidPoint(IReadOnlyList<Vector3> vertices, out Vector3 midPoint)
+        public static int GetLineSegmentLerpPoint(IReadOnlyList<Vector3> vertices, float p, out Vector3 midPoint)
         {
-            var length = GetLineSegmentLength(vertices) * 0.5f;
+            // 0 ~ 1の間でClampする
+            p = Mathf.Clamp(p, 0, 1);
+
+            var length = GetLineSegmentLength(vertices) * p;
             var len = 0f;
             for (var i = 0; i < vertices.Count - 1; ++i)
             {
@@ -149,6 +144,19 @@ namespace PLATEAU.Util.GeoGraph
 
             midPoint = Vector3.zero;
             return -1;
+        }
+
+        /// <summary>
+        /// verticesで表される線分の中央地点を返す.
+        /// 戻り値はvertices[i] ~ vertices[i+1]に中央地点があるときのi
+        /// verticesが空の時は-1が返る
+        /// </summary>
+        /// <param name="vertices"></param>
+        /// <param name="midPoint"></param>
+        /// <returns></returns>
+        public static int GetLineSegmentMidPoint(IReadOnlyList<Vector3> vertices, out Vector3 midPoint)
+        {
+            return GetLineSegmentLerpPoint(vertices, 0.5f, out midPoint);
         }
 
         /// <summary>

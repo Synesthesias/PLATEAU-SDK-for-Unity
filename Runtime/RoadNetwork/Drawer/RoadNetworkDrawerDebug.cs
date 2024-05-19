@@ -19,6 +19,9 @@ namespace PLATEAU.RoadNetwork.Drawer
         [SerializeField] private bool showInsideNormalMidPoint = false;
 
         [SerializeField] private bool showVertexIndex = false;
+        // 頂点の座標を表示する
+        [SerializeField] private bool showVertexPos = false;
+        [SerializeField] private int showVertexFontSize = 20;
 
         [SerializeField] private float edgeOffset = 10f;
 
@@ -55,7 +58,13 @@ namespace PLATEAU.RoadNetwork.Drawer
                         if (showVertexIndex)
                         {
                             foreach (var item in way.Vertices.Select((v, i) => new { v, i }))
-                                DebugEx.DrawString(item.i.ToString(), item.v, color: Color.red);
+                                DebugEx.DrawString(item.i.ToString(), item.v, color: Color.red, fontSize: showVertexFontSize);
+                        }
+
+                        if (showVertexPos)
+                        {
+                            foreach (var item in way.Vertices.Select((v, i) => new { v, i }))
+                                DebugEx.DrawString(item.v.ToString(), item.v, color: Color.red, fontSize: showVertexFontSize);
                         }
                     }
                     foreach (var way in lane.BothWays)
@@ -91,7 +100,7 @@ namespace PLATEAU.RoadNetwork.Drawer
 
                     if (showSplitLane && lane.IsBothConnectedLane)
                     {
-                        var vers = lane.GetSplitEdges(splitLaneRate);
+                        var vers = lane.GetInnerLerpSegments(splitLaneRate);
                         //DebugUtil.DrawArrows(vers.Select(v => v.Xay()), false, color: Color.red, arrowSize: 0.1f);
                     }
                 }

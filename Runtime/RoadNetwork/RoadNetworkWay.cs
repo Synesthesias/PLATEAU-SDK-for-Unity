@@ -209,9 +209,9 @@ namespace PLATEAU.RoadNetwork
         /// </summary>
         /// <param name="midPoint"></param>
         /// <returns></returns>
-        public int TryGetCenterVertex(out Vector3 midPoint)
+        public int GetLerpPoint(float p, out Vector3 midPoint)
         {
-            return LineUtil.TryGetLineSegmentMidPoint(LineString, out midPoint);
+            return LineUtil.GetLineSegmentLerpPoint(this, p, out midPoint);
         }
 
         /// <summary>
