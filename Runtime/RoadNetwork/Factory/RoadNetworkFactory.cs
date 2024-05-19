@@ -193,7 +193,7 @@ namespace PLATEAU.RoadNetwork.Factory
         [SerializeField] private float cellSize = 0.01f;
 
         // 中心線で分離するかどうか
-        [SerializeField] private bool splitCenterLine = false;
+        [SerializeField] private int splitLaneNum = 1;
 
 
         public RoadNetworkModel CreateNetwork(IList<PLATEAUCityObjectGroup> targets)
@@ -387,13 +387,9 @@ namespace PLATEAU.RoadNetwork.Factory
                     var endBorderWay = leftWay?.ToBorder?.Way;
                     var l = new RoadNetworkLane(leftWay?.Way, rightWay?.Way, startBorderWay, endBorderWay);
                     var link = new RoadNetworkLink(tranWork.TargetTran);
-                    if (l.IsBothConnectedLane && splitCenterLine)
+                    if (l.IsBothConnectedLane && splitLaneNum > 1)
                     {
-                        var lanes = l.SplitLane(2);
-                        if (lanes.Count > 1)
-                        {
-                            lanes[1].Reverse();
-                        }
+                        var lanes = l.SplitLane(splitLaneNum);
                         link.MainLanes.AddRange(lanes);
                     }
                     else

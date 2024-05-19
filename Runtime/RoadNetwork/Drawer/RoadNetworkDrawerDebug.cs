@@ -26,6 +26,7 @@ namespace PLATEAU.RoadNetwork.Drawer
         [SerializeField] private float edgeOffset = 10f;
 
         [SerializeField] private bool showSplitLane = false;
+        [SerializeField] private bool showSplitLane2 = false;
         [SerializeField] private float splitLaneRate = 0.5f;
 
         private static Color GetEdgeColor(RoadNetworkLane self)
@@ -101,7 +102,8 @@ namespace PLATEAU.RoadNetwork.Drawer
                     if (showSplitLane && lane.IsBothConnectedLane)
                     {
                         var vers = lane.GetInnerLerpSegments(splitLaneRate);
-                        //DebugUtil.DrawArrows(vers.Select(v => v.Xay()), false, color: Color.red, arrowSize: 0.1f);
+                        if (showSplitLane2)
+                            DebugEx.DrawArrows(vers.Select(v => v.Xay()), false, color: Color.red, arrowSize: 0.1f);
                     }
                 }
 

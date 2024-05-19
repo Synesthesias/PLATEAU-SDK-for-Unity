@@ -173,26 +173,24 @@ namespace PLATEAU.Util.GeoGraph
             var length = GetLineSegmentLength(vertices) / num;
             var len = 0f;
             List<Vector3> subVertices = new List<Vector3> { vertices[0] };
-            for (var i = 0; i < vertices.Count - 1; ++i)
+            for (var i = 1; i < vertices.Count; ++i)
             {
-                var p0 = vertices[i];
-                var p1 = vertices[i + 1];
+                var p0 = subVertices.Last();
+                var p1 = vertices[i];
                 var l = (p1 - p0).magnitude;
                 len += l;
-                if (len >= length && l > float.Epsilon)
+                while (len >= length && l > Epsilon)
                 {
                     var f = (len - length) / l;
                     var end = Vector3.Lerp(p0, p1, f);
                     if (f >= float.Epsilon)
                         subVertices.Add(end);
                     ret.Add(subVertices);
-                    subVertices = new List<Vector3> { end };
-                    len = 0f;
+                    len -= length;
+                    p1 = end;
                 }
-                else
-                {
-                    subVertices.Add(p1);
-                }
+
+                subVertices.Add(p1);
             }
 
             // 最後の要素は無条件で返す
