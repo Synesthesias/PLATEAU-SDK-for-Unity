@@ -371,9 +371,11 @@ namespace PLATEAU.Editor.RoadNetwork
         /// </summary>
         public void Initialize()
         {
-            //　memo 自分でモードを変えた時と外部から変更された時のルートを用意する
+            //　parameterの変更は必ずシステムを介して行う
 
-            system.OnChangeEditMode += UpdateMode;
+            system.OnChangedRoadNetworkObject += UpdateMode;
+            system.OnChangedEditMode += UpdateMode;
+
             modeSelector.RegisterCallback<ChangeEvent<Enum>>((evt) =>
             {
                 var mode = (RoadNetworkEditMode)evt.newValue;
