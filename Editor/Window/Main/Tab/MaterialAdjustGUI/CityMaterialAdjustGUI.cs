@@ -6,9 +6,11 @@ using PLATEAU.Editor.Window.Common;
 using PLATEAU.Editor.Window.Main.Tab.AdjustGUIParts;
 using PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI.Parts;
 using PLATEAU.GranularityConvert;
+using PLATEAU.Util;
 using PLATEAU.Util.Async;
 using System.Threading.Tasks;
 using UnityEditor;
+using UnityEngine;
 
 namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
 {
@@ -21,6 +23,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
         
         public MAKeySearcher CurrentSearcher => Guis?.Get<MaterialCriterionGui>()?.CurrentSearcher;
         public MaterialCriterion SelectedCriterion => Guis.Get<MaterialCriterionGui>().SelectedCriterion;
+        public UniqueParentTransformList SelectedObjects => Guis.Get<ObjectSelectGui>().UniqueSelected;
 
         /// <summary>
         /// マテリアル分けの選択画面を出すために、利用可能な分類項目を検索したかどうかです。
@@ -58,7 +61,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
                             new ToggleLeftElement("doMaterialAdjust", "マテリアルを条件指定で変更する", false),
                             new ElementGroup("materialConf", 
                                 new MaterialCriterionGui(), // マテリアル分け基準選択
-                                new AttributeKeyGui(), // 属性情報キー選択
+                                new AttributeKeyGui(this, parentEditorWindow), // 属性情報キー選択
                                 new MASearchButton(this, parentEditorWindow) // 検索ボタン
                             )
                         )
@@ -138,13 +141,6 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
             
             return SelectedCriterion switch
             {
-                // MaterialCriterion.None => new MAExecutorConf(
-                //     null,
-                //     Guis.Get<ObjectSelectGui>().UniqueSelected,
-                //     granularity,
-                //     Guis.Get<DestroyOrPreserveSrcGui>().DoDestroySrcObjs,
-                //     false
-                // ),
                 MaterialCriterion.None => throw new Exception("分割結合のみのときはCityGranularityConverterを使ってください"),
                 
                 MaterialCriterion.ByType => new MAExecutorConf(
