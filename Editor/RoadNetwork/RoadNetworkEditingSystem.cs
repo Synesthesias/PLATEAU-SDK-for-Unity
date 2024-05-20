@@ -101,9 +101,11 @@ namespace PLATEAU.Editor.RoadNetwork
         public interface IRoadNetworkEditingSystem
         {
             UnityEngine.Object RoadNetworkObject { get; set; }
+            event EventHandler OnChangedRoadNetworkObject;
+
             RoadNetworkModel RoadNetwork { get; }
             RoadNetworkEditMode CurrentEditMode { get; set; }
-            event EventHandler OnChangeEditMode;
+            event EventHandler OnChangedEditMode;
             IRoadNetworkEditOperation EditOperation { get; }
         }
 
@@ -128,6 +130,9 @@ namespace PLATEAU.Editor.RoadNetwork
                 get => system.roadNetworkObject;
                 set 
                 {
+                    if (system.roadNetworkObject == value)
+                        return;
+
                     var roadNetworkObj = value as IRoadNetworkObject;
                     Assert.IsNotNull(roadNetworkObj);
                     if (roadNetworkObj == null)
@@ -138,9 +143,11 @@ namespace PLATEAU.Editor.RoadNetwork
 
                     system.roadNetworkObject = value;
                     system.roadNetworkModel = roadNetwork;
+                    OnChangedRoadNetworkObject?.Invoke(this, EventArgs.Empty);
                 }
 
             }
+            public event EventHandler OnChangedRoadNetworkObject;
 
             public RoadNetworkModel RoadNetwork 
             { 
@@ -155,10 +162,10 @@ namespace PLATEAU.Editor.RoadNetwork
                     if (system.editingMode == value)
                         return;
                     system.editingMode = value;
-                    OnChangeEditMode.Invoke(this, EventArgs.Empty);
+                    OnChangedEditMode.Invoke(this, EventArgs.Empty);
                 }
             }
-            public event EventHandler OnChangeEditMode;
+            public event EventHandler OnChangedEditMode;
 
             public IRoadNetworkEditOperation EditOperation => system.editOperation;
         }
