@@ -30,8 +30,18 @@ namespace PLATEAU.CityInfo
 
         [SerializeField] private MeshGranularity granularity;
         public CityObjectGroupInfoForToolkits InfoForToolkits => infoForToolkits;
-        public MeshGranularity Granularity => granularity;
-        
+        public MeshGranularity Granularity
+        {
+            get
+            {
+                return granularity;
+            }
+            internal set
+            {
+                granularity = value;
+            }
+        }
+
         public CityObjectList CityObjects
         {
             get

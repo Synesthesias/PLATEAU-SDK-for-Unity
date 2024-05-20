@@ -26,7 +26,7 @@ namespace PLATEAU.CityAdjust.MaterialAdjust.Executor
         private readonly IMACondition maCondition;
 
         // デバッグ時は下をtrueにしてログを出し、デバッグが終わったらfalseにしてログを隠してください。
-        private readonly ConditionalLogger logger = new (() => false);
+        private readonly ConditionalLogger logger = new (() => true);
 
 
         /// <summary>
@@ -144,10 +144,14 @@ namespace PLATEAU.CityAdjust.MaterialAdjust.Executor
                             var result = await maComposer.ExecAsync(new UniqueParentTransformList(innerTransSrc),
                                 dstGranularity, maCondition);
                             var resultTransforms = result.Get.GeneratedRootTransforms;
-                            foreach (var t in resultTransforms.Get)
+                            if (dstGranularity != MAGranularity.PerMaterialInPrimary) // PerMaterialInPrimaryのときはCityGranularityConverter内ですでに親変更済み
                             {
-                                t.parent = parentOfComposed;
+                                foreach (var t in resultTransforms.Get)
+                                {
+                                    t.parent = parentOfComposed;
+                                }
                             }
+                            
 
                             converted.AddRange(resultTransforms.Get);
                             return NextSearchFlow.SkipChildren;

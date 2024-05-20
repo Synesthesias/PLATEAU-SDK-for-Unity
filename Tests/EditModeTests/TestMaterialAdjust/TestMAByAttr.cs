@@ -22,6 +22,12 @@ namespace PLATEAU.Tests.EditModeTests.TestMaterialAdjust
         }
         
         [UnityTest]
+        public IEnumerator Test_AtomicToMaterialInPrimary()
+        {
+            yield return AssertMA(MAGranularity.PerAtomicFeatureObject, MAGranularity.PerMaterialInPrimary, 0, false);
+        }
+        
+        [UnityTest]
         public IEnumerator Test_AtomicToPrimary()
         {
             yield return AssertMA(MAGranularity.PerAtomicFeatureObject, MAGranularity.PerPrimaryFeatureObject, 0, false);
@@ -40,6 +46,12 @@ namespace PLATEAU.Tests.EditModeTests.TestMaterialAdjust
         }
         
         [UnityTest]
+        public IEnumerator Test_PrimaryToMaterialInPrimary()
+        {
+            yield return AssertMA(MAGranularity.PerMaterialInPrimary, MAGranularity.PerMaterialInPrimary, 0, false);
+        }
+        
+        [UnityTest]
         public IEnumerator Test_PrimaryToPrimary()
         {
             yield return AssertMA(MAGranularity.PerPrimaryFeatureObject, MAGranularity.PerPrimaryFeatureObject, 0, false);
@@ -55,6 +67,12 @@ namespace PLATEAU.Tests.EditModeTests.TestMaterialAdjust
         public IEnumerator Test_AreaToAtomic()
         {
             yield return AssertMA(MAGranularity.CombineAll, MAGranularity.PerAtomicFeatureObject, 0, false);
+        }
+        
+        [UnityTest]
+        public IEnumerator Test_AreaToMaterialInPrimary()
+        {
+            yield return AssertMA(MAGranularity.CombineAll, MAGranularity.PerMaterialInPrimary, 0, false);
         }
         
         [UnityTest]

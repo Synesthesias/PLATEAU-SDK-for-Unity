@@ -65,17 +65,18 @@ namespace PLATEAU.GranularityConvert
 
             // 深さ優先探索で、結合が必要なゲームオブジェクトを見つけて1つづつ結合します。
 
-            // 結合すべきものをここに記録
-            Dictionary<Transform, List<Transform>>
-                combineDict = new(); // key: 親Transform, value: その親のもとで結合すべきTransformのリスト
-
-            // 親Transformがnull(すなわちroot)のとき、combineDictのkeyをnullとしたいが、
-            // Dictionaryのキーにnullは指定できないのでroot用の一時ゲームオブジェクトを作成
-            var tmpRoot = new GameObject("tmpRoot");
-
 
             if (countDeconstructed == 0) // 結合と分割は通常どちらかだけで良い
             {
+                
+                // 結合すべきものをここに記録します。
+                var combineDict = new CombineDict();
+
+                // 親Transformがnull(すなわちroot)のとき、combineDictのkeyをnullとしたいが、
+                // Dictionaryのキーにnullは指定できないのでroot用の一時ゲームオブジェクトを作成
+                var tmpRoot = new GameObject("tmpRoot");
+                
+                
                 conf.TargetTransforms.DfsExec(trans =>
                 {
                     if (trans == null)
@@ -88,35 +89,57 @@ namespace PLATEAU.GranularityConvert
                     if (!new MAConditionSimple().ShouldConstruct(trans, conf.MeshGranularity))
                         return NextSearchFlow.Continue;
 
+
+                    // 主要内マテリアルごとの設定の場合、主要の結合はせず最小へと処理を回す
+                    if (dstGranularity == MAGranularity.PerMaterialInPrimary)
+                    {
+                        var cog = trans.GetComponent<PLATEAUCityObjectGroup>();
+                        if (cog != null && cog.Granularity == MeshGranularity.PerPrimaryFeatureObject)
+                        {
+                            return NextSearchFlow.Continue;
+                        }
+                    }
+
                     // 結合リストに追加
                     var parentTrans = trans.parent;
                     if (parentTrans == null) parentTrans = tmpRoot.transform;
-                    if (combineDict.TryGetValue(parentTrans, out var listToCombine))
+                    Material[] materialKey = null;
+                    if (dstGranularity == MAGranularity.PerMaterialInPrimary)
                     {
-                        listToCombine.Add(trans);
+                        var mr = trans.GetComponent<MeshRenderer>();
+                        if (mr != null)
+                        {
+                            materialKey = mr.sharedMaterials;
+                        }
                     }
-                    else
-                    {
-                        combineDict.Add(parentTrans, new List<Transform> { trans });
-                    }
+                    combineDict.Add(new CombineKey(parentTrans, materialKey), trans);
 
                     return NextSearchFlow.SkipChildren; // 明示せずとも子は結合対象になるのでスキップ
                 });
 
                 int countCombined = 0;
                 // 実際の結合処理
-                foreach (var (parent, combineList) in combineDict)
+                foreach (var (key, combineList) in combineDict.Data)
                 {
                     if (combineList.Count <= 0) continue;
+                    MeshGranularity convertGran = dstGranularity == MAGranularity.PerMaterialInPrimary
+                        ? MeshGranularity.PerCityModelArea // 指定のもの（マテリアルを同じくするもの）を全部結合したい
+                        : dstGranularity.ToNativeGranularity();
                     GranularityConvertOptionUnity currentConf = new GranularityConvertOptionUnity(
-                        new GranularityConvertOption(dstGranularity.ToNativeGranularity(), 0),
+                        new GranularityConvertOption(convertGran, 1),
                         new UniqueParentTransformList(combineList),
                         conf.DoDestroySrcObjs);
-                    progressBar.Display($"結合中 : {countCombined + 1}/{combineDict.Count} : {parent.name}の子", 0.3f);
+                    progressBar.Display($"結合中 : {countCombined + 1}/{combineDict.Data.Count} : {key.Parent.name}の子", 0.3f);
                     var currentResult = await ConvertAsync(currentConf, new DummyProgressBar());
                     foreach (var generated in currentResult.GeneratedRootTransforms.Get)
                     {
-                        generated.parent = parent;
+                        generated.parent = key.Parent;
+                        if (dstGranularity == MAGranularity.PerMaterialInPrimary)
+                        {
+                            generated.name = key.Materials[0] == null ? "null material" : key.Materials[0].name;
+                            generated.GetComponent<PLATEAUCityObjectGroup>().Granularity =
+                                MeshGranularity.PerAtomicFeatureObject;
+                        }
                     }
 
                     result.Merge(currentResult);
@@ -127,16 +150,15 @@ namespace PLATEAU.GranularityConvert
 
                     countCombined++;
                 }
+                
+                // tmpRootの子をrootに
+                foreach (Transform root in tmpRoot.transform)
+                {
+                    root.parent = null;
+                }
+
+                Object.DestroyImmediate(tmpRoot);
             }
-
-
-            // tmpRootの子をrootに
-            foreach (Transform root in tmpRoot.transform)
-            {
-                root.parent = null;
-            }
-
-            Object.DestroyImmediate(tmpRoot);
 
             return result;
         }
@@ -352,4 +374,72 @@ namespace PLATEAU.GranularityConvert
             // NOP
         }
     }
+
+
+    /// <summary>
+    /// 結合対象を記録するための辞書です。
+    /// キーバリューペアは1つの結合を示し、キーは結合条件、バリューはその条件に合致する結合対象のリストを示します。
+    /// </summary>
+    internal class CombineDict
+    {
+        public Dictionary<CombineKey, List<Transform>> Data { get; } = new();
+        
+        public void Add(CombineKey key, Transform target)
+        {
+            var list = Data.GetValueOrCreate(key);
+            list.Add(target);
+        }
+
+    }
+
+    /// <summary>
+    /// 1つの結合処理について、何を結合するかを表したキーです。
+    /// <see cref="Parent"/>を親とし、マテリアルごとに結合する場合は<see cref="Material"/>を持つものを結合対象とします。
+    /// マテリアルごとの結合でない場合は<see cref="Material"/>はnullとしてください。
+    /// </summary>
+    internal class CombineKey
+    {
+        public Transform Parent { get; }
+        public Material[] Materials { get; }
+
+        public CombineKey(Transform parent, Material[] materials)
+        {
+            Parent = parent;
+            Materials = materials;
+        }
+
+        // Materialに関しては名前が合っていれば同値とします。
+        public override bool Equals(object obj)
+        {
+            if (obj == null || GetType() != obj.GetType()) return false;
+            var other = (CombineKey)obj;
+            if (Parent != other.Parent) return false;
+            if ((Materials == null) != (other.Materials == null)) return false;
+            if (Materials == null || other.Materials == null) return true;
+            if (Materials.Length != other.Materials.Length) return false;
+            for (int i = 0; i < Materials.Length; i++)
+            {
+                if (Materials[i].name != other.Materials[i].name) return false;
+            }
+
+            return true;
+        }
+
+        public override int GetHashCode()
+        {
+            var hash = new HashCode();
+            hash.Add(Parent);
+            if (Materials != null)
+            {
+                foreach (var m in Materials)
+                {
+                    // マテリアルは名前のみ確認
+                    hash.Add(m.name);
+                }
+            }
+            return hash.ToHashCode();
+        }
+
+    }
+
 }

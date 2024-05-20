@@ -84,19 +84,20 @@ namespace PLATEAU.CityAdjust.MaterialAdjust.Executor.Process
         {
             // 自身のチェック
             var cityObjGroup = trans.GetComponent<PLATEAUCityObjectGroup>();
-            if (cityObjGroup != null && cityObjGroup.Granularity < dstGranularity.ToNativeGranularity())
+            if (cityObjGroup != null && cityObjGroup.Granularity.ToMAGranularity() < dstGranularity)
             {
                 return true;
             }
-            
-            // 子のチェック
+
+            // 子のチェック。
             for (int i = 0; i < trans.childCount; i++)
             {
                 var child = trans.GetChild(i);
                 var childCog = child.GetComponent<PLATEAUCityObjectGroup>();
                 if (childCog == null) continue;
-                if (childCog.Granularity < dstGranularity.ToNativeGranularity()) return true;
-            } 
+                if (childCog.Granularity.ToMAGranularity() < dstGranularity) return true;
+            }
+            
             return false;
         }
     }

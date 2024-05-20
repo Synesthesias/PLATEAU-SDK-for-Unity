@@ -19,6 +19,10 @@ namespace PLATEAU.CityAdjust.MaterialAdjust.Executor.Process
         /// </summary>
         PerAtomicFeatureObject,
         /// <summary>
+        /// 主要地物の中でマテリアルごと
+        /// </summary>
+        PerMaterialInPrimary,
+        /// <summary>
         /// 主要地物単位(建築物、道路等)
         /// </summary>
         PerPrimaryFeatureObject,
@@ -38,6 +42,8 @@ namespace PLATEAU.CityAdjust.MaterialAdjust.Executor.Process
                     return "変更しない";
                 case MAGranularity.PerAtomicFeatureObject:
                     return "最小地物単位(壁面,屋根面等)";
+                case MAGranularity.PerMaterialInPrimary:
+                    return "主要地物内のマテリアルごと";
                 case MAGranularity.PerPrimaryFeatureObject:
                     return "主要地物単位(建築物,道路等)";
                 case MAGranularity.CombineAll:
@@ -56,6 +62,7 @@ namespace PLATEAU.CityAdjust.MaterialAdjust.Executor.Process
             {
                 MAGranularity.CombineAll => MeshGranularity.PerCityModelArea,
                 MAGranularity.PerPrimaryFeatureObject => MeshGranularity.PerPrimaryFeatureObject,
+                MAGranularity.PerMaterialInPrimary => MeshGranularity.PerAtomicFeatureObject,
                 MAGranularity.PerAtomicFeatureObject => MeshGranularity.PerAtomicFeatureObject,
                 MAGranularity.DoNotChange => throw new Exception("DoNotChangeが具体的な別の値になるべきときになっていません"),
                 _ => throw new Exception("unknown granularity.")

@@ -36,12 +36,14 @@ namespace PLATEAU.Tests.EditModeTests.TestMaterialAdjust
         private static readonly string pathTranAttrAtomic = PathBase + "/TranAtomic_MAAttr.prefab";
         private static readonly string pathTranAttrPrimary = PathBase + "/TranPrimary_MAAttr.prefab";
         private static readonly string pathTranAttrArea = PathBase + "/TranArea_MAAttr.prefab";
+        private static readonly string pathTranAttrMaterialInPrimary =
+            PathBase + "/TranMaterialInPrimary_MAAttr.prefab";
         private static readonly string pathTranSrcArea = PathBase + "/TranArea.prefab";
         private static readonly string pathMaterial1 = PathBase + "/TestMatGreen.mat";
         private static readonly string pathMaterial2 = PathBase + "/TestMatBlue.mat";
 
         /// <summary>
-        /// 粒度とそれに対応するインポートデータの辞書です
+        /// 粒度とそれに対応するインポートデータの辞書です（建物）
         /// </summary>
         private readonly Dictionary<MeshGranularity, GameObject> granSrcDictBldg =
             new Dictionary<MeshGranularity, GameObject>
@@ -56,6 +58,9 @@ namespace PLATEAU.Tests.EditModeTests.TestMaterialAdjust
                 { MeshGranularity.PerCityModelArea, AssetDatabase.LoadAssetAtPath<GameObject>(pathBldgSrcArea) }
             };
 
+        /// <summary>
+        /// 粒度とそれに対応するインポートデータの辞書です（道路）
+        /// </summary>
         private readonly Dictionary<MeshGranularity, GameObject> granSrcDictTran =
             new Dictionary<MeshGranularity, GameObject>()
             {
@@ -77,7 +82,7 @@ namespace PLATEAU.Tests.EditModeTests.TestMaterialAdjust
         };
         
         /// <summary>
-        /// 粒度とそれに対応する地物でのマテリアル分けのデータの辞書です
+        /// 粒度とそれに対応する地物のマテリアル分けのデータの辞書です
         /// </summary>
         private readonly Dictionary<MeshGranularity, GameObject[]> granTypeDict =
             new Dictionary<MeshGranularity, GameObject[]>{
@@ -111,10 +116,10 @@ namespace PLATEAU.Tests.EditModeTests.TestMaterialAdjust
         /// <summary>
         /// 粒度とそれに対応する属性情報でのマテリアル分けのデータの辞書です
         /// </summary>
-        private readonly Dictionary<MeshGranularity, GameObject[]> granAttrDict =
-            new Dictionary<MeshGranularity, GameObject[]>{
+        private readonly Dictionary<MAGranularity, GameObject[]> granAttrDict =
+            new Dictionary<MAGranularity, GameObject[]>{
                 {
-                    MeshGranularity.PerAtomicFeatureObject,
+                    MAGranularity.PerAtomicFeatureObject,
                     new[]
                     {
                         AssetDatabase.LoadAssetAtPath<GameObject>(pathTranAttrAtomic),
@@ -122,14 +127,21 @@ namespace PLATEAU.Tests.EditModeTests.TestMaterialAdjust
                     }
                 },
                 {
-                    MeshGranularity.PerPrimaryFeatureObject,
+                    MAGranularity.PerMaterialInPrimary,
+                    new[]
+                    {
+                        AssetDatabase.LoadAssetAtPath<GameObject>(pathTranAttrMaterialInPrimary)
+                    }
+                },
+                {
+                    MAGranularity.PerPrimaryFeatureObject,
                     new[]
                     {
                         AssetDatabase.LoadAssetAtPath<GameObject>(pathTranAttrPrimary),
                     }
                 },
                 {
-                    MeshGranularity.PerCityModelArea,
+                    MAGranularity.CombineAll,
                     new[]
                     {
                         AssetDatabase.LoadAssetAtPath<GameObject>(pathTranAttrArea),
@@ -167,7 +179,7 @@ namespace PLATEAU.Tests.EditModeTests.TestMaterialAdjust
         /// </summary>
         public GameObject CopyMAAttrDstOf(MAGranularity gran, int dataId)
         {
-            return Copy(granAttrDict[gran.ToNativeGranularity()][dataId]);
+            return Copy(granAttrDict[gran][dataId]);
         }
 
         public Material Material(int id)

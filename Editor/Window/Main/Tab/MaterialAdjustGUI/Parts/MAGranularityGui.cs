@@ -22,7 +22,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI.Parts
             .Select(g => g.ToJapaneseString())
             .ToArray();
 
-        private int selectedGranularityIndex = 1;
+        private int selectedGranularityIndex = 2;
 
         public MAGranularityGui() : base("")
         {

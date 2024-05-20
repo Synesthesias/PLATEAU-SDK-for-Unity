@@ -17,6 +17,8 @@ namespace PLATEAU.Tests.EditModeTests.TestMaterialAdjust
         /// </summary>
         public static void AreSameRecursive(Transform op1, Transform op2, MAGranularity dstGranularity)
         {
+            Assert.NotNull(op1);
+            Assert.NotNull(op2);
             AreSame(op1, op2, dstGranularity);
             // 再帰処理
             for (int i = 0; i < op1.childCount; i++)
@@ -30,17 +32,22 @@ namespace PLATEAU.Tests.EditModeTests.TestMaterialAdjust
         /// </summary>
         public static void AreSameSetRecursive(Transform op1, Transform op2, MAGranularity dstGranularity)
         {
+            Assert.NotNull(op1);
+            Assert.NotNull(op2);
             AreSame(op1, op2, dstGranularity);
             for (int i = 0; i < op1.childCount; i++)
             {
                 var op1Child = op1.GetChild(i);
                 var op2Child = op2.Find(op1Child.name);
+                Assert.IsNotNull(op2Child, $"op1に存在する{op1Child.name}がop2に見つかる");
                 AreSameSetRecursive(op1Child, op2Child, dstGranularity);
             }
         }
         
         private static void AreSame(Transform op1, Transform op2, MAGranularity dstGranularity)
         {
+            Assert.IsNotNull(op1);
+            Assert.IsNotNull(op2);
             // 名前の同一をチェックします。ただし、地域単位に変換するときは名前がgroupとcombineで一致しないのでそこだけはOKとします。
             if (!(op1.name.Contains("group") && op2.name == "combined"))
             {
