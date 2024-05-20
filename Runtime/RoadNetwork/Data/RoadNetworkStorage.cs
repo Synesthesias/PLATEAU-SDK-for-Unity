@@ -8,13 +8,11 @@ using UnityEngine.Serialization;
 namespace PLATEAU.RoadNetwork.Data
 {
     /// <summary>
-    /// ノード、リンク、レーン、ブロックなどのデータを所持するオブジェクトが継承するインターフェイス
-    /// 道路ネットワークエディタのパラメータで型指定するために作成
-    /// （仮でこのファイルに配置している）
+    /// 道路ネットワークを所持したオブジェクトが継承するクラス
     /// </summary>
-    public class RoadNetworkObject : MonoBehaviour
+    public interface IRoadNetworkObject
     {
-
+        public RoadNetworkModel RoadNetwork { get; }
     }
 
     /// <summary>

@@ -1,4 +1,4 @@
-using PLATEAU.CityGML;
+ï»¿using PLATEAU.CityGML;
 using PLATEAU.CityInfo;
 using PLATEAU.RoadNetwork.Data;
 using PLATEAU.RoadNetwork.Drawer;
@@ -14,7 +14,12 @@ using static UnityEngine.GraphicsBuffer;
 
 namespace PLATEAU.RoadNetwork
 {
-    public class PLATEAURoadNetworkTester : MonoBehaviour
+    public class _TestMono : MonoBehaviour
+    {
+
+    }
+
+    public class PLATEAURoadNetworkTester : MonoBehaviour, IRoadNetworkObject
     {
         [Serializable]
         public class TestTargetPresets
@@ -40,6 +45,8 @@ namespace PLATEAU.RoadNetwork
 
         [field: SerializeField] private RoadNetworkStorage Storage { get; set; }
 
+        //RoadNetworkModel IRoadNetworkObject.RoadNetwork { get => RoadNetwork; }
+
         public void OnDrawGizmos()
         {
             drawer.Draw(RoadNetwork);
@@ -58,7 +65,7 @@ namespace PLATEAU.RoadNetwork
             }
             else
             {
-                // d•¡‚Í”rœ‚·‚é
+                // é‡è¤‡ã¯æ’é™¤ã™ã‚‹
                 targets = targets.Distinct().ToList();
                 RoadNetwork = Factory.CreateNetwork(targets);
             }
