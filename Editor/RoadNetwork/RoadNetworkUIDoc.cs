@@ -1,51 +1,93 @@
 ﻿using NUnit.Framework;
+using PLATEAU.RoadNetwork;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
+
+using static PLATEAU.Editor.RoadNetwork.RoadNetworkEditingSystem;
 
 using GenerateParameterFunc = System.Action<PLATEAU.Editor.RoadNetwork.RoadNetworkEditorAssets, UnityEngine.UIElements.VisualElement>;
 
 
 namespace PLATEAU.Editor.RoadNetwork
 {
-    /// <summary>
-    /// 道路ネットワーク手動編集機能を提供するエディタウィンドウ
-    /// 実際の処理を行うRoadNetworkEditorクラスのインスタンス化に専念する
-    /// </summary>
-    public class RoadNetworkEditorWindow : UnityEditor.EditorWindow
+    public enum RoadNetworkEditingResultType
     {
-        RoadNetworkEditor editor;
-        RoadNetworkEditorAssets assets;
-        private static readonly string WindowName = "PLATEAU RoadNetwork Editor";
+        _Undefind        = 0xfffffff,
+        Success          = 0x0000000,
+        InvalidNewValue  = 1 << 0,      // 適切な変更値ではない
+        InvalidTarget    = 1 << 1,      // 適切な変更対象ではない(主に第1引数のLink,Laneなどについて)         
+        CantApplyEditing = 1 << 2,      // 適用できない編集。リンクの幅員を小さくしすぎて一部のレーンの幅員が0になるなど
+        InvalidArgs      = 1 << 3,      // 適切な引数ではない。(主に第2引数以降　Wayのポイントを削除する際に渡したポイントが存在しないなど)
+        _UndefindError   = 1 << 256,
+        //Faild // 失敗原因を明確にするために未使用
+    }
 
-        [MenuItem("PLATEAU_Dev/PLATEAU RoadNetwork Editor")]
-        public static void ShowWindow()
+    public struct RoadNetworkEditingResult
+    {
+        public readonly RoadNetworkEditingResultType Result;
+        public readonly string Msg;
+
+        public bool IsSuccess { get => Result == RoadNetworkEditingResultType.Success; }
+        public RoadNetworkEditingResult(RoadNetworkEditingResultType result, string msg = "")
         {
-            GetWindow<RoadNetworkEditorWindow>(WindowName);
-        }
-
-
-        private void OnEnable()
-        {         
-            var window = GetWindow<RoadNetworkEditorWindow>(WindowName);
-            if (window.editor == null)
-            {
-                assets = new RoadNetworkEditorAssets();
-
-                var visualTree = assets.GetAsset(RoadNetworkEditorAssets.EditorAssetName);
-                var root = rootVisualElement;
-                visualTree.CloneTree(root);
-                
-
-                window.editor = new RoadNetworkEditor(root, assets);
-                window.editor.Initialize();
-
-
-            }
+            this.Result = result;
+            this.Msg = msg;
         }
     }
+
+    public struct _RoadNetworkRegulation
+    {
+
+    }
+
+    public interface IRoadNetworkEditOperation
+    {
+        /// <summary>
+        /// ポイントの追加、削除、移動
+        /// </summary>
+        /// <param name="way"></param>
+        /// <param name="idx"></param>
+        /// <param name="point"></param>
+        /// <returns></returns>
+        RoadNetworkEditingResult AddPoint(RoadNetworkWay way, int idx, RoadNetworkPoint point);
+        RoadNetworkEditingResult RemovePoint(RoadNetworkWay way, RoadNetworkPoint point);
+        RoadNetworkEditingResult MovePoint(RoadNetworkPoint point, in Vector3 newPos);
+
+        /// <summary>
+        /// 幅員のスケーリング
+        /// </summary>
+        /// <param name="lane"></param>
+        /// <param name="factor"></param>
+        /// <returns></returns>
+        RoadNetworkEditingResult ScaleRoadWidth(RoadNetworkLane lane, float factor);
+        RoadNetworkEditingResult ScaleRoadWidth(RoadNetworkLink link, float factor);
+
+        /// <summary>
+        /// 射線を増やす、減らす
+        /// </summary>
+        /// <param name="link"></param>
+        /// <param name="idx"></param>
+        /// <param name="newLane"></param>
+        /// <returns></returns>
+        RoadNetworkEditingResult AddMainLane(RoadNetworkLink link, int idx, RoadNetworkLane newLane);
+        RoadNetworkEditingResult RemoveLane(RoadNetworkLink link, RoadNetworkLane lane);
+
+        /// <summary>
+        /// 交通規制情報の登録
+        /// </summary>
+        /// <param name="link"></param>
+        /// <param name="newRegulation"></param>
+        /// <returns></returns>
+        RoadNetworkEditingResult RegisterRegulation(RoadNetworkLink link, _RoadNetworkRegulation newRegulation);
+        RoadNetworkEditingResult RegisterRegulation(RoadNetworkLane lane, _RoadNetworkRegulation newRegulation);
+        RoadNetworkEditingResult RegisterRegulation(RoadNetworkBlock block, _RoadNetworkRegulation newRegulation);
+        RoadNetworkEditingResult RegisterRegulation(RoadNetworkTrack track, _RoadNetworkRegulation newRegulation);
+    }
+
 
     /// <summary>
     /// 道路ネットワーク手動編集機能を構成するアセットを管理するクラス
@@ -145,6 +187,8 @@ namespace PLATEAU.Editor.RoadNetwork
         DebugLane,
         DebugBlock,
         DebugTrack,
+        EditLaneShape,
+        EditLaneStructure,
     }
 
     /// <summary>
@@ -154,11 +198,19 @@ namespace PLATEAU.Editor.RoadNetwork
     /// 
     /// 未完成のクラス　大きく改装予定　役割は変えない
     /// </summary>
-    public class RoadNetworkEditor
+    public class RoadNetworkUIDoc
     {
+        // RoadNetworkUIDoc内に隠したい, 依存部分をこのクラスの下層に配置する？
+        //public RoadNetworkEditMode CurrentMode { get => (RoadNetworkEditMode)modeSelector.value; }
+        public RoadNetworkEditMode CurrentMode { 
+            get => system.CurrentEditMode; 
+            set => system.CurrentEditMode = value;
+        }
+
         private EnumField modeSelector;
         private ScrollView parameterView;
 
+        private readonly IRoadNetworkEditingSystem system;
         private readonly RoadNetworkEditorAssets assets;
 
         private readonly Dictionary<RoadNetworkEditMode, GenerateParameterFunc> ParamterLayoutSet =
@@ -173,6 +225,8 @@ namespace PLATEAU.Editor.RoadNetwork
             { RoadNetworkEditMode.DebugLane, CreateDebugLaneLayout },
             { RoadNetworkEditMode.DebugBlock, CreateDebugBlockLayout },
             { RoadNetworkEditMode.DebugTrack, CreateDebugTrackLayout },
+            { RoadNetworkEditMode.EditLaneShape, CreateEditLaneShapeLayout },
+            { RoadNetworkEditMode.EditLaneStructure, CreateEditLaneStructure },
 
         };
 
@@ -284,13 +338,24 @@ namespace PLATEAU.Editor.RoadNetwork
         {
         }
 
-        public RoadNetworkEditor(VisualElement editorRoot, in RoadNetworkEditorAssets assets) 
+        private static void CreateEditLaneShapeLayout(RoadNetworkEditorAssets assets, VisualElement root)
+        {
+            
+        }
+
+        private static void CreateEditLaneStructure(RoadNetworkEditorAssets assets, VisualElement root)
+        {
+
+        }
+
+        public RoadNetworkUIDoc(IRoadNetworkEditingSystem system, VisualElement editorRoot, in RoadNetworkEditorAssets assets) 
         {
             // 正当性チェック 最低限の初期化
+            Assert.IsNotNull(system);
             Assert.IsNotNull(editorRoot); 
             Assert.IsNotNull(assets);
-            Debug.Log(editorRoot.name);
-            
+
+            this.system = system;
             this.assets = assets;
 
             modeSelector = editorRoot.Q<EnumField>("ModeSelector");
@@ -306,14 +371,19 @@ namespace PLATEAU.Editor.RoadNetwork
         /// </summary>
         public void Initialize()
         {
+            //　memo 自分でモードを変えた時と外部から変更された時のルートを用意する
+
+            system.OnChangeEditMode += UpdateMode;
             modeSelector.RegisterCallback<ChangeEvent<Enum>>((evt) =>
             {
                 var mode = (RoadNetworkEditMode)evt.newValue;
-                ChangeMode(mode);
+                CurrentMode = (RoadNetworkEditMode)modeSelector.value;
             });
+        }
 
-            ChangeMode((RoadNetworkEditMode)modeSelector.value);
-
+        public void PostInitialize()
+        {
+            CurrentMode = (RoadNetworkEditMode)modeSelector.value;
         }
 
         /// <summary>
@@ -324,15 +394,12 @@ namespace PLATEAU.Editor.RoadNetwork
 
         }
 
-        /// <summary>
-        /// モードの変更
-        /// </summary>
-        /// <param name="mode"></param>
-        public void ChangeMode(RoadNetworkEditMode mode)
+        private void UpdateMode(object _, EventArgs _1)
         {
+            var mode = system.CurrentEditMode;
             parameterView.Clear();
             ParamterLayoutSet[mode](assets, parameterView);
         }
-
     }
+
 }
