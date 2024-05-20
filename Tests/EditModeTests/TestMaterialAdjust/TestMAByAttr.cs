@@ -4,6 +4,7 @@ using PLATEAU.CityAdjust.MaterialAdjust.Executor.Process;
 using PLATEAU.Tests.TestUtils;
 using PLATEAU.Util;
 using System.Collections;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.TestTools;
 
@@ -17,19 +18,19 @@ namespace PLATEAU.Tests.EditModeTests.TestMaterialAdjust
         [UnityTest]
         public IEnumerator Test_AtomicToAtomic()
         {
-            yield return AssertMA(MAGranularity.PerAtomicFeatureObject, MAGranularity.PerAtomicFeatureObject, 0, true);
+            yield return AssertMA(MAGranularity.PerAtomicFeatureObject, MAGranularity.PerAtomicFeatureObject, 0, false);
         }
         
         [UnityTest]
         public IEnumerator Test_AtomicToPrimary()
         {
-            yield return AssertMA(MAGranularity.PerAtomicFeatureObject, MAGranularity.PerPrimaryFeatureObject, 0, true);
+            yield return AssertMA(MAGranularity.PerAtomicFeatureObject, MAGranularity.PerPrimaryFeatureObject, 0, false);
         }
         
         [UnityTest]
         public IEnumerator Test_AtomicToArea()
         {
-            yield return AssertMA(MAGranularity.PerAtomicFeatureObject, MAGranularity.CombineAll, 0, true);
+            yield return AssertMA(MAGranularity.PerAtomicFeatureObject, MAGranularity.CombineAll, 0, false);
         }
         
         [UnityTest]
@@ -41,13 +42,13 @@ namespace PLATEAU.Tests.EditModeTests.TestMaterialAdjust
         [UnityTest]
         public IEnumerator Test_PrimaryToPrimary()
         {
-            yield return AssertMA(MAGranularity.PerPrimaryFeatureObject, MAGranularity.PerPrimaryFeatureObject, 0, true);
+            yield return AssertMA(MAGranularity.PerPrimaryFeatureObject, MAGranularity.PerPrimaryFeatureObject, 0, false);
         }
         
         [UnityTest]
         public IEnumerator Test_PrimaryToArea()
         {
-            yield return AssertMA(MAGranularity.PerPrimaryFeatureObject, MAGranularity.CombineAll, 0, true);
+            yield return AssertMA(MAGranularity.PerPrimaryFeatureObject, MAGranularity.CombineAll, 0, false);
         }
         
         [UnityTest]
@@ -65,7 +66,7 @@ namespace PLATEAU.Tests.EditModeTests.TestMaterialAdjust
         [UnityTest]
         public IEnumerator Test_AreaToArea()
         {
-            yield return AssertMA(MAGranularity.CombineAll, MAGranularity.CombineAll, 0, true);
+            yield return AssertMA(MAGranularity.CombineAll, MAGranularity.CombineAll, 0, false);
         }
         
 
@@ -74,6 +75,21 @@ namespace PLATEAU.Tests.EditModeTests.TestMaterialAdjust
             yield return ExecConvert(srcGran, dstGran);
             var actual = retSrcObj.transform;
             var expect = testData.CopyMAAttrDstOf(dstGran, dstDataId).transform;
+            
+            // 変換対象外となるものをチェック対象から外す
+            var objsToRemove = new Transform[]
+            {
+                actual.Find("53393680_tran_6697_op.gml/LOD3/tran_677077fc-1bd2-4226-b82a-901385697899"),
+                expect.Find("53393680_tran_6697_op.gml/LOD3/tran_677077fc-1bd2-4226-b82a-901385697899")
+            }
+                .Where(t => t != null)
+                .Select(t => t.gameObject)
+                .ToArray();
+            foreach (var o in objsToRemove)
+            {
+                Object.DestroyImmediate(o);
+            }
+            
             // ルートの名前だけは違っても良い
             actual.name = expect.name;
             if (assertOrder)

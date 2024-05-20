@@ -13,22 +13,20 @@ using UnityEditor;
 
 namespace PLATEAU.CityAdjust.MaterialAdjust.Executor
 {
-
     /// <summary>
     /// マテリアル分けを実行します。
     /// このインスタンスを作成するには<see cref="MAExecutorFactory"/>を利用してください。
     /// </summary>
     internal class MAExecutor
     {
-
         private readonly MAExecutorConf conf;
         private readonly MADecomposer maDecomposer;
         private readonly IMAMaterialChanger maMaterialChanger;
         private readonly MAComposer maComposer;
         private readonly IMACondition maCondition;
-        
+
         // デバッグ時は下をtrueにしてログを出し、デバッグが終わったらfalseにしてログを隠してください。
-        private readonly ConditionalLogger logger = new ConditionalLogger(()=>true);
+        private readonly ConditionalLogger logger = new (() => false);
 
 
         /// <summary>
@@ -63,7 +61,6 @@ namespace PLATEAU.CityAdjust.MaterialAdjust.Executor
             // 変更対象となったゲームオブジェクトの一覧を格納する
             var srcMeshes = new UniqueParentTransformList(); // 変換の対象となったsrcを後で消すために記憶する
             var converted = new UniqueParentTransformList();
-            // var srcDstDict = new Dictionary<Transform, Transform>(); // src -> dst の対応の一部を記録する
 
             await conf.TargetTransforms.BfsExecAsync(async srcTrans =>
             {
@@ -136,7 +133,7 @@ namespace PLATEAU.CityAdjust.MaterialAdjust.Executor
                             if (!composeCondition.ShouldConstruct(innerTransSrc, dstGranularity))
                             {
                                 logger.Log("結合フェイズ：再帰的結合：コピー" + innerTransSrc.name);
-                                var copied = CopyGameObjAsResult(innerTransSrc, converted, false);
+                                CopyGameObjAsResult(innerTransSrc, converted, false);
                                 Object.DestroyImmediate(innerTransSrc.gameObject);
                                 return NextSearchFlow.SkipChildren;
                             }
@@ -158,15 +155,7 @@ namespace PLATEAU.CityAdjust.MaterialAdjust.Executor
                     }
                     else
                     {
-                        // 分解してから全結合の場合
-                        // logger.Log("結合フェイズ：一括結合" + srcTrans.name);
-                        // var parentOfComposed = srcTrans.parent;
                         var result = await maComposer.ExecAsync(decomposed, dstGranularity, composeCondition);
-                        foreach (var r in result.Get.GeneratedRootTransforms.Get)
-                        {
-                            // r.parent = parentOfComposed;
-                        }
-
                         converted.AddRange(result.Get.GeneratedRootTransforms.Get);
                         return NextSearchFlow.SkipChildren;
                     }
@@ -175,18 +164,6 @@ namespace PLATEAU.CityAdjust.MaterialAdjust.Executor
                     // transとその子は完了
                     return NextSearchFlow.SkipChildren;
                 }
-                // 分解せずに結合が必要な場合（srcが最小地物でdstがそれより粗い粒度）
-                // if (maCondition.ShouldConstruct(srcTrans, dstGranularity)) // 最小地物の親である主要地物の場合
-                // {
-                //     // 
-                //     var copied = Object.Instantiate(srcTrans.gameObject); // 子も含めてコピー
-                //     var copiedTrans = copied.transform;
-                //     copiedTrans.parent = srcDstDict.GetValueOrDefault(srcTrans.parent);
-                //     maMaterialChanger.ExecRecursive(new UniqueParentTransformList(copiedTrans));
-                //     var result = await maComposer.ExecAsync(new UniqueParentTransformList(copiedTrans), dstGranularity, maCondition);
-                //     converted.AddRange(result.Get.GeneratedRootTransforms.Get);
-                //     return NextSearchFlow.SkipChildren;
-                // }
 
                 // マテリアル変更が不要のためスキップする場合
                 if (ShouldSkipDueToMaterial(srcTrans))
@@ -200,15 +177,15 @@ namespace PLATEAU.CityAdjust.MaterialAdjust.Executor
                     logger.Log("コピー：　分解結合不要： " + srcTrans.name);
                     srcMeshes.Add(srcTrans);
                     var copy = CopyGameObjAsResult(srcTrans, converted, false);
-                    maMaterialChanger.Exec(copy.transform);
+                    maMaterialChanger.ExecRecursive(new UniqueParentTransformList(copy.transform));
                     return NextSearchFlow.SkipChildren;
                 }
 
                 Debug.LogError("マテリアル分け： どのケースにも当てはまらない未知のケース： " + srcTrans.name);
                 return NextSearchFlow.Continue;
             }); // END Transformごとの変換処理
-            
-            
+
+
             // 変換結果のうち、子にメッシュを1つも持たないものを削除
             var toDestroy = converted.Get
                 .Where(c => c != null && c.GetComponentInChildren<MeshRenderer>() == null)
@@ -217,8 +194,9 @@ namespace PLATEAU.CityAdjust.MaterialAdjust.Executor
             {
                 Object.DestroyImmediate(d.gameObject);
             }
+
             var result = new UniqueParentTransformList(converted.Get.Where(t => t != null));
-            
+
             // 変換元を削除する設定なら削除
             if (conf.DoDestroySrcObjs)
             {
@@ -226,7 +204,7 @@ namespace PLATEAU.CityAdjust.MaterialAdjust.Executor
                 srcMeshes.BfsExec(t =>
                 {
                     if (t == null) return NextSearchFlow.Continue;
-                    
+
                     // dstが含まれるものを削除対象から除外する
                     bool shouldDestroy = true;
                     foreach (var r in result.Get)
@@ -254,10 +232,10 @@ namespace PLATEAU.CityAdjust.MaterialAdjust.Executor
                     Object.DestroyImmediate(d.gameObject);
                 }
             }
-            
-            #if UNITY_EDITOR
+
+#if UNITY_EDITOR
             Selection.objects = result.Get.Select(trans => (Object)trans.gameObject).ToArray();
-            #endif
+#endif
 
             return result;
         }
@@ -266,7 +244,8 @@ namespace PLATEAU.CityAdjust.MaterialAdjust.Executor
         /// ゲームオブジェクト(子を除く)をコピーし、
         /// それを成果物として中間データ構造に追加します。
         /// </summary>
-        private GameObject CopyGameObjAsResult(Transform srcTrans, UniqueParentTransformList converted, bool withoutChild)
+        private GameObject CopyGameObjAsResult(Transform srcTrans, UniqueParentTransformList converted,
+            bool withoutChild)
         {
             var copied = Object.Instantiate(srcTrans.gameObject);
             if (withoutChild)
@@ -277,29 +256,20 @@ namespace PLATEAU.CityAdjust.MaterialAdjust.Executor
                 {
                     objsToDestroy.Add(child.gameObject);
                 }
-                foreach(var obj in objsToDestroy) Object.DestroyImmediate(obj);
+
+                foreach (var obj in objsToDestroy) Object.DestroyImmediate(obj);
             }
-            
 
             var srcParent = srcTrans.parent;
-            if ( srcParent != null)
+            if (srcParent != null)
             {
-                // if (srcDstDict.TryGetValue(srcParent, out var dstParent))
-                // {
-                //     // すでに配置済みのdstの子の場合、親はdst側に合わせる
-                //     copied.transform.parent = dstParent;
-                // }
-                // else
-                // {
-                    // dstの中ではrootの場合、親はsrcに合わせる
-                    var copiedTran = copied.transform;
-                    copiedTran.parent = srcTrans.parent;
-                    copiedTran.SetSiblingIndex(srcTrans.GetSiblingIndex());                    
-                // }
-                
+                // dstの中ではrootの場合、親はsrcに合わせる
+                var copiedTran = copied.transform;
+                copiedTran.parent = srcTrans.parent;
+                copiedTran.SetSiblingIndex(srcTrans.GetSiblingIndex());
             }
+
             converted.Add(copied.transform);
-            // srcDstDict.Add(srcTrans, copied.transform);
             copied.name = copied.name.Replace("(Clone)", "");
             return copied;
         }
@@ -308,11 +278,6 @@ namespace PLATEAU.CityAdjust.MaterialAdjust.Executor
         {
             var srcParent = srcTrans.parent;
             var copied = Object.Instantiate(srcTrans.gameObject, srcParent, true);
-            
-            // if ( srcParent != null && srcDstDict.TryGetValue(srcParent, out var dstParent))
-            // {
-            // }
-            // srcDstDict.Add(srcTrans, copied.transform);
             copied.name = copied.name.Replace("(Clone)", "");
             return copied;
         }
@@ -332,6 +297,7 @@ namespace PLATEAU.CityAdjust.MaterialAdjust.Executor
                 {
                     return cog.Granularity.ToMAGranularity();
                 }
+
                 // 自身になければ子から探します。
                 for (int i = 0; i < srcTrans.childCount; i++)
                 {
@@ -341,6 +307,7 @@ namespace PLATEAU.CityAdjust.MaterialAdjust.Executor
                         return childCog.Granularity.ToMAGranularity();
                     }
                 }
+
                 throw new Exception("Could not determine src granularity.");
             }
 
@@ -351,8 +318,6 @@ namespace PLATEAU.CityAdjust.MaterialAdjust.Executor
         {
             if (maCondition is not MAConditionMatChange cond) return false;
             return !cond.IsTargetRecursive(srcTrans);
-
         }
-
     }
 }

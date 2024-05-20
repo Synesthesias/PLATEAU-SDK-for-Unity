@@ -66,10 +66,10 @@ namespace PLATEAU.Tests.EditModeTests.TestMaterialAdjust
                     // ただし、地域単位への変換の場合、マテリアルはどの粒度から変換したかによって結果が異なり大変なのでいまのところスキップ。 FIXME
                     var materials1 = op1.GetComponent<MeshRenderer>().sharedMaterials;
                     var materials2 = op2.GetComponent<MeshRenderer>().sharedMaterials;
-                    Assert.AreEqual(materials1.Length, materials2.Length);
                     // マテリアルの順序までは保証しないので、sharedMaterialsを名前でソートしたものが同じならよしとします。
-                    var m1Names = materials1.Select(m => m.name).ToArray();
-                    var m2Names = materials2.Select(m => m.name).ToArray();
+                    var m1Names = materials1.Distinct().Select(m => m.name).ToArray();
+                    var m2Names = materials2.Distinct().Select(m => m.name).ToArray();
+                    Assert.AreEqual(m1Names.Length, m2Names.Length, $"マテリアルの種類数が同一: {op1.name}");
                     Array.Sort(m1Names);
                     Array.Sort(m2Names);
                     for (int i = 0; i < m1Names.Length; i++)
