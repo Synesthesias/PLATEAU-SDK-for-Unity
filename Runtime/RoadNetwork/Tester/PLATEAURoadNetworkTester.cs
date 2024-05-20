@@ -15,7 +15,7 @@ using static UnityEngine.GraphicsBuffer;
 namespace PLATEAU.RoadNetwork
 {
     [Serializable]
-    public class PLATEAURoadNetworkTester : MonoBehaviour
+    public class PLATEAURoadNetworkTester : MonoBehaviour, IRoadNetworkObject
     {
         [SerializeField] private RoadNetworkDrawerDebug drawer = new RoadNetworkDrawerDebug();
 
