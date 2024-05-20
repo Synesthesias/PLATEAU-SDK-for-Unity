@@ -1,37 +1,37 @@
-﻿using System;
+﻿using PlasticPipe.PlasticProtocol.Messages;
+using System;
 using UnityEngine;
+using static PLATEAU.RoadNetwork.Data.PrimitiveDataStorage;
 
 namespace PLATEAU.RoadNetwork.Data
 {
-    public interface RnID<TPrimDataType> where TPrimDataType : IPrimitiveData
+    /// <summary>
+    /// RnIDを生成可能なクラスをマークするための空インターフェイス
+    /// ただしRnIDのデフォルトコンストラクタの呼び出しは制限していない（技術的に諦めました　C#10.0仕様的に出来るらしい）
+    /// </summary>
+    public interface IRnIDGeneratable {}
+
+    public struct RnID<TPrimDataType> where TPrimDataType : IPrimitiveData
     {
         // PropertyDrawerでアクセスするため
         public const string IdFieldName = nameof(ID);
 
-        //[Obsolete("使用しないでください。ストレージ内でのみ参照出来るように修正予定。")]
-        public int ID { get; }
+        public readonly static RnID<TPrimDataType> Undefind = new RnID<TPrimDataType> { id = -1 };
 
-        // 有効なIdかどうか
-        public bool IsValid { get; }
-
-    }
-
-    /// <summary>
-    /// 不正値、無効な値
-    /// </summary>
-    /// <typeparam name="TPrimDataType"></typeparam>
-    public struct InvalidRnID<TPrimDataType> : RnID<TPrimDataType> where TPrimDataType : IPrimitiveData
-    {
         // Listのindexアクセスがintなのでuintじゃなくてintにしておく
         // structなので初期値は基本0. その時に不正値扱いにするために0は不正値とする
         [SerializeField]
-        private const int id = 0;
+        private int id;
 
         // 有効なIdかどうか
-        public bool IsValid => false;
+        public bool IsValid => id > 0;
 
         public int ID => id - 1;
 
-    }
+        public RnID(int id, in IRnIDGeneratable _)
+        {
+            this.id = id + 1;
+        }
 
+    }
 }
