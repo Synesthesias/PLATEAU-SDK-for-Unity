@@ -50,7 +50,7 @@ namespace PLATEAU.Tests.EditModeTests.TestMaterialAdjust
         {
             yield return ExecConvert(gran, gran);
             var actual = retSrcObj.transform;
-            var src = testData.CopySrcOf(gran).transform;
+            var src = testData.CopyBldgSrcOf(gran).transform;
             
             // 同じ粒度で追加する設定なので、ヒエラルキーの各階層ごとにMeshRendererの数は2倍になっていることをチェックします。
             // ただし、LOD0と1は変換対象外で数は変わらないのでLOD2以下のみチェックします。
@@ -106,10 +106,10 @@ namespace PLATEAU.Tests.EditModeTests.TestMaterialAdjust
         private IEnumerator ExecConvert(MAGranularity srcGran, MAGranularity dstGran)
         {
             // テスト用ゲームオブジェクトのコピー
-            retSrcObj = testData.CopySrcOf(srcGran);
+            retSrcObj = testData.CopyBldgSrcOf(srcGran);
             
             var executorConf = new MAExecutorConf(
-                testData.MaterialConfig(),
+                testData.MaterialConfigByType(),
                 new UniqueParentTransformList(retSrcObj.transform),
                 dstGran, false, true
             );

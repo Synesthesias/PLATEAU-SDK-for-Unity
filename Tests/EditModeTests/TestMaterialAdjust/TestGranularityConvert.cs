@@ -90,7 +90,7 @@ namespace PLATEAU.Tests.EditModeTests.TestMaterialAdjust
         {
             yield return ConvertGranularity(srcGran, dstGran);
             var srcTrans = retSrcObj.transform;
-            var expectTrans = testData.CopySrcOf(dstGran).transform;
+            var expectTrans = testData.CopyBldgSrcOf(dstGran).transform;
             srcTrans.name = expectTrans.name;
             // ここでsrcObjは変換後になっているはず
             if (assertOrder)
@@ -108,7 +108,7 @@ namespace PLATEAU.Tests.EditModeTests.TestMaterialAdjust
         private IEnumerator ConvertGranularity(MAGranularity srcGran, MAGranularity dstGran)
         {
             Debug.Log($"Checking {srcGran} to {dstGran}");
-            retSrcObj = testData.CopySrcOf(srcGran);
+            retSrcObj = testData.CopyBldgSrcOf(srcGran);
             var conf = new MAExecutorConf(
                 null,
                 new UniqueParentTransformList(retSrcObj.transform),
