@@ -147,7 +147,7 @@ namespace PLATEAU.RoadNetwork.Data
 
         // #NOTE : structだとgetterでとってきたときにコピーが返る -> それに対してWriteしても元データが書き換わらないのでclassにする
         [Serializable]
-        public class PrimitiveStorage<TPrimType>
+        public class PrimitiveStorage<TPrimType> : IRnIDGeneratable
             where TPrimType : IPrimitiveData
         {
             [SerializeField] private List<TPrimType> dataList = new List<TPrimType>();
@@ -164,7 +164,7 @@ namespace PLATEAU.RoadNetwork.Data
             /// <returns></returns>
             public RnID<TPrimType> RequsetID(int handleIndex)
             {
-                return new ImplRnID<TPrimType>(handleIndex);
+                return new RnID<TPrimType>(handleIndex, this);
             }
 
             /// <summary>
@@ -269,26 +269,6 @@ namespace PLATEAU.RoadNetwork.Data
             public void ClearAll()
             {
                 dataList.Clear();
-            }
-
-            [Serializable]
-            private struct ImplRnID<TPrimDataType> : RnID<TPrimDataType>
-                where TPrimDataType : IPrimitiveData
-            {
-                // Listのindexアクセスがintなのでuintじゃなくてintにしておく
-                // structなので初期値は基本0. その時に不正値扱いにするために0は不正値とする
-                [SerializeField]
-                private int id;
-
-                // 有効なIdかどうか
-                public bool IsValid => id > 0;
-
-                public int ID => id - 1;
-
-                public ImplRnID(int id)
-                {
-                    this.id = id + 1;
-                }
             }
         }
     }
