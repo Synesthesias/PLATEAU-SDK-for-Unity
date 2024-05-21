@@ -40,6 +40,16 @@ namespace PLATEAU.RoadNetwork.Data
         [RoadNetworkSerializeMember(nameof(RoadNetworkTrack.PrevLane))]
 
         public RnID<RoadNetworkDataLane> PrevLane { get; set; }
+
+
+        // 車線(左)
+        [field: SerializeField, RoadNetworkSerializeMember]
+        public RnID<RoadNetworkDataWay> LeftWay { get; private set; }
+
+        // 車線(右)
+        [field: SerializeField, RoadNetworkSerializeMember]
+        public RnID<RoadNetworkDataWay> RightWay { get; private set; }
+
         //接続下流リンク下流端からの距離[m] : double
         //public double distanceFromPrevLink;
 

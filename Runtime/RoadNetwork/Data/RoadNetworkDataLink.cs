@@ -15,7 +15,7 @@ namespace PLATEAU.RoadNetwork.Data
 
         // 対象のtranオブジェクト
         [field: SerializeField]
-        [RoadNetworkSerializeMember(nameof(RoadNetworkNode.TargetTran))]
+        [RoadNetworkSerializeMember()]
         public PLATEAUCityObjectGroup TargetTran { get; set; }
 
         [field: SerializeField]

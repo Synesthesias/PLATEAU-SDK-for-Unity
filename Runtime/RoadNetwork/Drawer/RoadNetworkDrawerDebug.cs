@@ -43,31 +43,46 @@ namespace PLATEAU.RoadNetwork.Drawer
             if (roadNetwork == null)
                 return;
 
+            // 道描画
+
+            void DrawWay(RoadNetworkWay way, Color color, Color arrowColor)
+            {
+                if (way == null)
+                    return;
+
+                DebugEx.DrawArrows(way.Vertices.Select((v, i) => v + -edgeOffset * way.GetVertexNormal(i)), false, color: color, arrowColor: arrowColor);
+
+                if (showVertexIndex)
+                {
+                    foreach (var item in way.Vertices.Select((v, i) => new { v, i }))
+                        DebugEx.DrawString(item.i.ToString(), item.v, color: Color.red, fontSize: showVertexFontSize);
+                }
+
+                if (showVertexPos)
+                {
+                    foreach (var item in way.Vertices.Select((v, i) => new { v, i }))
+                        DebugEx.DrawString(item.v.ToString(), item.v, color: Color.red, fontSize: showVertexFontSize);
+                }
+            }
+
+            foreach (var node in roadNetwork.Nodes)
+            {
+                foreach (var n in node.Neighbors)
+                {
+                    DrawWay(n.Border, Color.magenta, Color.magenta);
+                }
+
+                foreach (var l in node.Tracks)
+                {
+                    foreach (var w in l.BothWays)
+                        DrawWay(w, Color.cyan, Color.cyan);
+                }
+            }
+
             foreach (var link in roadNetwork.Links)
             {
                 foreach (var lane in link.AllLanes)
                 {
-                    // 道描画
-
-                    void DrawWay(RoadNetworkWay way, Color color, Color arrowColor)
-                    {
-                        if (way == null)
-                            return;
-
-                        DebugEx.DrawArrows(way.Vertices.Select((v, i) => v + -edgeOffset * way.GetVertexNormal(i)), false, color: color, arrowColor: arrowColor);
-
-                        if (showVertexIndex)
-                        {
-                            foreach (var item in way.Vertices.Select((v, i) => new { v, i }))
-                                DebugEx.DrawString(item.i.ToString(), item.v, color: Color.red, fontSize: showVertexFontSize);
-                        }
-
-                        if (showVertexPos)
-                        {
-                            foreach (var item in way.Vertices.Select((v, i) => new { v, i }))
-                                DebugEx.DrawString(item.v.ToString(), item.v, color: Color.red, fontSize: showVertexFontSize);
-                        }
-                    }
                     foreach (var way in lane.BothWays)
                     {
                         DrawWay(way, color: GetEdgeColor(lane), arrowColor: way.IsReversed ? Color.cyan : Color.blue);

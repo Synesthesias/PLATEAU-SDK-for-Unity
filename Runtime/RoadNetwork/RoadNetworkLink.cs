@@ -20,9 +20,9 @@ namespace PLATEAU.RoadNetwork
         // 対象のtranオブジェクト
         public PLATEAUCityObjectGroup TargetTran { get; set; }
 
-        public RoadNetworkNode NextNode { get; private set; }
+        public RoadNetworkNode NextNode { get; set; }
 
-        public RoadNetworkNode PrevNode { get; private set; }
+        public RoadNetworkNode PrevNode { get; set; }
 
         // 本線レーン
         public List<RoadNetworkLane> MainLanes { get; } = new List<RoadNetworkLane>();
