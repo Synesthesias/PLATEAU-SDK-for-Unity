@@ -1,4 +1,4 @@
-ï»¿using PLATEAU.CityGML;
+using PLATEAU.CityGML;
 using PLATEAU.CityInfo;
 using PLATEAU.RoadNetwork.Data;
 using PLATEAU.RoadNetwork.Drawer;
@@ -14,6 +14,7 @@ using static UnityEngine.GraphicsBuffer;
 
 namespace PLATEAU.RoadNetwork
 {
+    [Serializable]
     public class PLATEAURoadNetworkTester : MonoBehaviour
     {
         [Serializable]
@@ -33,12 +34,9 @@ namespace PLATEAU.RoadNetwork
 
         public string loadPresetName = "";
 
-
         [field: SerializeField] private RoadNetworkFactory Factory { get; set; } = new RoadNetworkFactory();
 
         [field: SerializeField] public RoadNetworkModel RoadNetwork { get; set; }
-
-        [field: SerializeField] private RoadNetworkStorage Storage { get; set; }
 
         public void OnDrawGizmos()
         {
@@ -58,36 +56,20 @@ namespace PLATEAU.RoadNetwork
             }
             else
             {
-                // é‡è¤‡ã¯æ’é™¤ã™ã‚‹
+                // d•¡‚Í”rœ‚·‚é
                 targets = targets.Distinct().ToList();
                 RoadNetwork = Factory.CreateNetwork(targets);
             }
         }
 
-        public void Serialize()
-        {
-            if (RoadNetwork == null)
-                return;
-            var serializer = new RoadNetworkSerializer();
-            Storage = serializer.Serialize(RoadNetwork);
-        }
-
-        public void Deserialize()
-        {
-            if (Storage == null)
-                return;
-
-            var serializer = new RoadNetworkSerializer();
-            RoadNetwork = serializer.Deserialize(Storage);
-        }
 
         public RoadNetworkDataGetter CreateRoadNetworkDataGetter() 
         {
             if (Storage == null)
             {
-                // ã“ã“ã®ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã¯ä»®
+                // ‚±‚±‚ÌƒƒbƒZ[ƒW‚Í‰¼
                 Debug.Log("Storage is null.");
-                Debug.Log("Serializeãƒœã‚¿ãƒ³ã‚’æŠ¼ã—ã¦ã„ãªã„ã‹ã‚‚(public void Serialize()ãŒå‘¼ã°ã‚Œã¦ã„ãªã„)");
+                Debug.Log("Serializeƒ{ƒ^ƒ“‚ğ‰Ÿ‚µ‚Ä‚¢‚È‚¢‚©‚à(public void Serialize()‚ªŒÄ‚Î‚ê‚Ä‚¢‚È‚¢)");
             }
 
             return new RoadNetworkDataGetter(this.Storage);

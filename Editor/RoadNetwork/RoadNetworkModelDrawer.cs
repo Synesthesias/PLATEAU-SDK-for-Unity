@@ -5,9 +5,11 @@ using UnityEngine.UIElements;
 
 namespace PLATEAU.Editor.RoadNetwork
 {
+#if false
     [CustomPropertyDrawer(typeof(RoadNetworkModel))]
     public class RoadNetworkModelDrawer : PropertyDrawer
     {
+
         public override VisualElement CreatePropertyGUI(SerializedProperty property)
         {
             return base.CreatePropertyGUI(property);
@@ -26,4 +28,5 @@ namespace PLATEAU.Editor.RoadNetwork
             //EditorGUI.EndProperty();
         }
     }
+#endif
 }

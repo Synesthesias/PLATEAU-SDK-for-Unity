@@ -110,8 +110,8 @@ namespace PLATEAU.RoadNetwork.Factory
             {
                 if (Link != null)
                 {
-                    var nextTrans = Ways.SelectMany(w => w.NextBorder.BothConnectedTrans).Distinct().ToList();
-                    var prevTrans = Ways.SelectMany(w => w.PrevBorder.BothConnectedTrans).Distinct().ToList();
+                    var nextTrans = Ways.Select(w => w.NextBorder).Where(b => b != null).SelectMany(w => w.BothConnectedTrans).Distinct().ToList();
+                    var prevTrans = Ways.Select(w => w.PrevBorder).Where(b => b != null).SelectMany(w => w.BothConnectedTrans).Distinct().ToList();
                     Link.NextNode = nextTrans.FirstOrDefault(t => t.Node != null)?.Node;
                     Link.PrevNode = prevTrans.FirstOrDefault(t => t.Node != null)?.Node;
                 }
