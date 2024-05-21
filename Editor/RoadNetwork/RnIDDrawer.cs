@@ -6,7 +6,7 @@ using UnityEngine.UIElements;
 
 namespace PLATEAU.Editor.RoadNetwork
 {
-    public class RoadNetworkIdDrawer<T> : PropertyDrawer where T : IPrimitiveData
+    public class RnIDDrawer<T> : PropertyDrawer where T : IPrimitiveData
     {
         private static readonly string typeName = typeof(T).Name.Replace("RoadNetworkData", "");
 
@@ -27,56 +27,32 @@ namespace PLATEAU.Editor.RoadNetwork
     }
 
     [CustomPropertyDrawer(typeof(RnID<RoadNetworkDataTrack>))]
-    public class RnTrackIdDrawer : RoadNetworkIdDrawer<RoadNetworkDataTrack>
-    {
-
-    }
+    public class RnTrackIDDrawer : RnIDDrawer<RoadNetworkDataTrack> { }
 
 
     [CustomPropertyDrawer(typeof(RnID<RoadNetworkDataNode>))]
-    public class RnNodeIdDrawer : RoadNetworkIdDrawer<RoadNetworkDataNode>
-    {
-
-    }
+    public class RnNodeIDDrawer : RnIDDrawer<RoadNetworkDataNode> { }
 
 
     [CustomPropertyDrawer(typeof(RnID<RoadNetworkDataLink>))]
-    public class RnLinkIdDrawer : RoadNetworkIdDrawer<RoadNetworkDataLink>
-    {
-
-    }
+    public class RnLinkIDDrawer : RnIDDrawer<RoadNetworkDataLink> { }
 
 
     [CustomPropertyDrawer(typeof(RnID<RoadNetworkDataLineString>))]
-    public class RnLineStringIdDrawer : RoadNetworkIdDrawer<RoadNetworkDataLineString>
-    {
-
-    }
+    public class RnLineStringIDDrawer : RnIDDrawer<RoadNetworkDataLineString> { }
 
     [CustomPropertyDrawer(typeof(RnID<RoadNetworkDataPoint>))]
-    public class RnPointIdDrawer : RoadNetworkIdDrawer<RoadNetworkDataPoint>
-    {
-
-    }
+    public class RnPointIDDrawer : RnIDDrawer<RoadNetworkDataPoint> { }
 
 
     [CustomPropertyDrawer(typeof(RnID<RoadNetworkDataBlock>))]
-    public class RnBlockIdDrawer : RoadNetworkIdDrawer<RoadNetworkDataBlock>
-    {
-
-    }
+    public class RnBlockIDDrawer : RnIDDrawer<RoadNetworkDataBlock> { }
 
 
     [CustomPropertyDrawer(typeof(RnID<RoadNetworkDataWay>))]
-    public class RnWayIdDrawer : RoadNetworkIdDrawer<RoadNetworkDataWay>
-    {
-
-    }
+    public class RnWayIDDrawer : RnIDDrawer<RoadNetworkDataWay> { }
 
 
     [CustomPropertyDrawer(typeof(RnID<RoadNetworkDataLane>))]
-    public class RnLaneIdDrawer : RoadNetworkIdDrawer<RoadNetworkDataLane>
-    {
-
-    }
+    public class RnLaneIDDrawer : RnIDDrawer<RoadNetworkDataLane> { }
 }
