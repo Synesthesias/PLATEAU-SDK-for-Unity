@@ -1,15 +1,14 @@
 using NUnit.Framework;
 using PLATEAU.RoadNetwork;
+using PLATEAU.RoadNetwork.Data;
 using PLATEAU.Util;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using UnityEngine;
-using UnityEngine.TestTools;
 
-namespace PLATEAU.Tests.TestUtils
+namespace Tests.RoadNetworkTest
 {
     public class TypeUtilTest
     {
@@ -39,6 +38,19 @@ namespace PLATEAU.Tests.TestUtils
             var genType = type.GetGenericTypeDefinition();
 
             Assert.IsTrue(genType == typeof(List<>), "genType == typeof(List<>)");
+        }
+
+        [Test()]
+        public void SerializeFieldTest()
+        {
+            var a = new List<int>();
+            var type = typeof(RoadNetworkDataLink);
+            var flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
+            var properties = type.GetProperties(flags);
+            var fields = type.GetFields(flags);
+            var propAttributes = properties.Select(p => p.CustomAttributes.ToList()).ToList();
+            var fieldAttributes = fields.Select(p => p.CustomAttributes.ToList()).ToList();
+
         }
 
         [Test()]
