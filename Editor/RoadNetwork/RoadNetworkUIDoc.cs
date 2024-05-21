@@ -7,6 +7,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
+using UnityEditor.UIElements;
 using UnityEditor.VersionControl;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -213,6 +214,7 @@ namespace PLATEAU.Editor.RoadNetwork
 
         private EnumField modeSelector;
         private ScrollView parameterView;
+        private ObjectField objSelecter;
 
         private readonly IRoadNetworkEditingSystem system;
         private readonly RoadNetworkEditorAssets assets;
@@ -365,6 +367,9 @@ namespace PLATEAU.Editor.RoadNetwork
             modeSelector = editorRoot.Q<EnumField>("ModeSelector");
             Assert.IsNotNull(modeSelector);
 
+            objSelecter = editorRoot.Q<ObjectField>("EditingTargetSelecter");
+            Assert.IsNotNull(objSelecter);
+
             parameterView = editorRoot.Q<ScrollView>("ParameterView");
             Assert.IsNotNull(parameterView);
 
@@ -377,7 +382,7 @@ namespace PLATEAU.Editor.RoadNetwork
         {
             //　parameterの変更は必ずシステムを介して行う
 
-            system.OnChangedRoadNetworkObject += UpdateMode;
+            system.OnChangedRoadNetworkObject += SelectRoadNetwrokObject;
             system.OnChangedEditMode += UpdateMode;
 
             modeSelector.RegisterCallback<ChangeEvent<Enum>>((evt) =>
@@ -405,6 +410,12 @@ namespace PLATEAU.Editor.RoadNetwork
             var mode = system.CurrentEditMode;
             parameterView.Clear();
             ParamterLayoutSet[mode](assets, parameterView);
+        }
+
+        private void SelectRoadNetwrokObject(object _, EventArgs _1)
+        {
+            objSelecter.value = system.RoadNetworkObject;
+            UpdateMode(null, null);
         }
     }
 
