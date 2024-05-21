@@ -72,7 +72,24 @@ namespace PLATEAU.Editor.RoadNetwork
             SceneGUIState state;
             systemState.Init(out state);
 
-            // 要素数を変化させない値変更、遅延実行用のコマンド生成を行う
+            // 編集モードの状態表示
+            // 2D GUI
+            var sceneViewPixelRect = SceneView.currentDrawingSceneView.camera.pixelRect;
+            var guiLayoutRect = new Rect(sceneViewPixelRect.position + sceneViewPixelRect.center, sceneViewPixelRect.size / 2.0f);
+            Handles.BeginGUI();
+            GUILayout.BeginArea(guiLayoutRect);
+            GUILayout.Box("道路ネットワーク編集モード");
+            GUILayout.EndArea();
+            Handles.EndGUI();
+
+            // 編集モードの状態表示
+            //var currentMouse2DPos = Event.current.mousePosition;
+            //// guicontext,guistyle
+            //var mouse3DPos = SceneView.currentDrawingSceneView.camera.ScreenToWorldPoint(currentMouse2DPos);
+            //Handles.Label(mouse3DPos)
+
+            // ハンドルの配置、要素数を変化させない値変更、遅延実行用のコマンド生成を行う
+            // 遅延実行用のコマンドは1フレームにつき一つまで実行できるとする(要素削除順の管理などが面倒なため)
             foreach (var link in network.Links)
             {
                 // リンク内のレーンの幅員を増やす
