@@ -25,6 +25,9 @@ namespace PLATEAU.RoadNetwork
         // 他レーンとの境界線
         public List<RoadNetworkWay> Borders { get; set; } = new List<RoadNetworkWay>();
 
+        // 隣接情報
+        public List<RoadNetworkNeighbor> Neighbors { get; set; } = new List<RoadNetworkNeighbor>();
+
         // 車線
         public List<RoadNetworkLane> Lanes { get; set; } = new List<RoadNetworkLane>();
 

@@ -23,6 +23,11 @@ namespace PLATEAU.RoadNetwork.Data
         [RoadNetworkSerializeMember(nameof(RoadNetworkNode.Borders))]
         public List<RnID<RoadNetworkDataWay>> Borders { get; set; } = new List<RnID<RoadNetworkDataWay>>();
 
+        // 隣接情報
+        [field: SerializeField]
+        [RoadNetworkSerializeMember(nameof(RoadNetworkNode.Neighbors))]
+        public List<RoadNetworkDataNeighbor> Neighbors { get; set; } = new List<RoadNetworkDataNeighbor>();
+
         // 車線
         [field: SerializeField]
         [RoadNetworkSerializeMember(nameof(RoadNetworkNode.Lanes))]
