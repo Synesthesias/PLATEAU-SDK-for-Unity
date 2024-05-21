@@ -9,12 +9,13 @@ namespace PLATEAU.RoadNetwork.Data
     /// RnIDを生成可能なクラスをマークするための空インターフェイス
     /// ただしRnIDのデフォルトコンストラクタの呼び出しは制限していない（技術的に諦めました　C#10.0仕様的に出来るらしい）
     /// </summary>
-    public interface IRnIDGeneratable {}
+    public interface IRnIDGeneratable { }
 
+    [Serializable]
     public struct RnID<TPrimDataType> where TPrimDataType : IPrimitiveData
     {
         // PropertyDrawerでアクセスするため
-        public const string IdFieldName = nameof(ID);
+        public const string IdFieldName = nameof(id);
 
         public readonly static RnID<TPrimDataType> Undefind = new RnID<TPrimDataType> { id = -1 };
 
