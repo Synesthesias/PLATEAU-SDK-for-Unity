@@ -13,7 +13,7 @@ namespace PLATEAU.Editor.RoadNetwork
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
             var id = property.FindPropertyRelative(RnID<T>.IdFieldName);
-            var val = id.intValue;
+            var val = id?.intValue ?? -1;
             // 編集不可にする
             EditorGUI.BeginDisabledGroup(true);
             EditorGUI.IntField(new Rect(position.x, position.y, position.width, EditorGUIUtility.singleLineHeight), $"{label.text}[{typeName}]", val);
