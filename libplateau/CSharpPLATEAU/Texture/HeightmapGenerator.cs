@@ -13,7 +13,7 @@ namespace PLATEAU.Texture
             out PlateauVector2f MinUV, out PlateauVector2f MaxUV, out UInt16[] HeightData )
         {
             var apiResult =
-                NativeMethods.heightmap_generator_generate_from_mesh(InMesh.Handle, TextureWidth, TextureHeight, Margin, CoordinateSystem.EUN, 
+                NativeMethods.heightmap_generator_generate_from_mesh(InMesh.Handle, TextureWidth, TextureHeight, new PlateauVector3d(Margin.X, Margin.Y, 0), CoordinateSystem.EUN, 
                 out Min, out Max , out MinUV, out MaxUV, out IntPtr HeightmapDataPtr, out int DataSize);
             DLLUtil.CheckDllError(apiResult);
 
@@ -141,7 +141,7 @@ namespace PLATEAU.Texture
                 [In] IntPtr srcMeshPtr,
                 [In] int TextureWidth,
                 [In] int TextureHeight,
-                [In] PlateauVector2d Margin,
+                [In] PlateauVector3d Margin,
                 [In] CoordinateSystem Coordinate,
                 out PlateauVector3d Min,
                 out PlateauVector3d Max,
