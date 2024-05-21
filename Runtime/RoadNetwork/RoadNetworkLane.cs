@@ -156,8 +156,6 @@ namespace PLATEAU.RoadNetwork
             return ret;
 
             //// #TODO : とりあえず２分割のみ対応
-
-            //// #TODO : とりあえず２分割のみ対応
             //var startPoint = startSubWays[0].Last();
             //var endPoint = endSubWays[0].Last();
 

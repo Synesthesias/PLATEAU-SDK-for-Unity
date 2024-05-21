@@ -14,6 +14,7 @@ using static UnityEngine.GraphicsBuffer;
 
 namespace PLATEAU.RoadNetwork
 {
+    [Serializable]
     public class PLATEAURoadNetworkTester : MonoBehaviour
     {
         [Serializable]
@@ -33,12 +34,9 @@ namespace PLATEAU.RoadNetwork
 
         public string loadPresetName = "";
 
-
         [field: SerializeField] private RoadNetworkFactory Factory { get; set; } = new RoadNetworkFactory();
 
         [field: SerializeField] public RoadNetworkModel RoadNetwork { get; set; }
-
-        [field: SerializeField] private RoadNetworkStorage Storage { get; set; }
 
         public void OnDrawGizmos()
         {
@@ -64,21 +62,5 @@ namespace PLATEAU.RoadNetwork
             }
         }
 
-        public void Serialize()
-        {
-            if (RoadNetwork == null)
-                return;
-            var serializer = new RoadNetworkSerializer();
-            Storage = serializer.Serialize(RoadNetwork);
-        }
-
-        public void Deserialize()
-        {
-            if (Storage == null)
-                return;
-
-            var serializer = new RoadNetworkSerializer();
-            RoadNetwork = serializer.Deserialize(Storage);
-        }
     }
 }

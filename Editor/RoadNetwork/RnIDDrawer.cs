@@ -6,6 +6,7 @@ using UnityEngine.UIElements;
 
 namespace PLATEAU.Editor.RoadNetwork
 {
+#if false
     public class RnIDDrawer<T> : PropertyDrawer where T : IPrimitiveData
     {
         private static readonly string typeName = typeof(T).Name.Replace("RoadNetworkData", "");
@@ -55,4 +56,6 @@ namespace PLATEAU.Editor.RoadNetwork
 
     [CustomPropertyDrawer(typeof(RnID<RoadNetworkDataLane>))]
     public class RnLaneIDDrawer : RnIDDrawer<RoadNetworkDataLane> { }
+
+#endif
 }

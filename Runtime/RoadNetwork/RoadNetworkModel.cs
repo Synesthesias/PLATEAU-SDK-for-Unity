@@ -13,7 +13,7 @@ using UnityEngine.Serialization;
 namespace PLATEAU.RoadNetwork
 {
     [Serializable]
-    public class RoadNetworkModel
+    public class RoadNetworkModel : ISerializationCallbackReceiver
     {
         public const float Epsilon = float.Epsilon;
 
@@ -25,6 +25,9 @@ namespace PLATEAU.RoadNetwork
 
         public List<RoadNetworkNode> Nodes { get; } = new List<RoadNetworkNode>();
 
+        // #TODO : 一時的にモデル内部に用意する(ビルドするたびにリセットされないように)
+        // シリアライズ用フィールド
+        [field: SerializeField] private RoadNetworkStorage Storage { get; set; }
         //----------------------------------
         // end: フィールド
         //----------------------------------
@@ -67,5 +70,28 @@ namespace PLATEAU.RoadNetwork
         //    for (var i = 0; i < allLineStrings.Count; i++)
         //        allLineStrings[i].MyId = new RnID<RoadNetworkDataLineString>(i);
         //}
+        public void Serialize()
+        {
+            var serializer = new RoadNetworkSerializer();
+            Storage = serializer.Serialize(this);
+        }
+
+        public void Deserialize()
+        {
+            var serializer = new RoadNetworkSerializer();
+            var model = serializer.Deserialize(Storage);
+            Links.AddRange(model.Links);
+            Nodes.AddRange(model.Nodes);
+        }
+
+        public void OnBeforeSerialize()
+        {
+            //Serialize();
+        }
+
+        public void OnAfterDeserialize()
+        {
+            //Deserialize();
+        }
     }
 }
