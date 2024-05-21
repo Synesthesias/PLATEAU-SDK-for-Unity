@@ -42,6 +42,7 @@ namespace PLATEAU.Editor.RoadNetwork
         private UnityEngine.Object roadNetworkObject;
         private RoadNetworkModel roadNetworkModel;
         private RoadNetworkEditMode editingMode;
+        private readonly string defaultRoadNetworkObjectName = "RoadNetworkTester";
 
         private bool TryInitialize(VisualElement rootVisualElement)
         {
@@ -84,6 +85,13 @@ namespace PLATEAU.Editor.RoadNetwork
 
             // その他 初期化
 
+            // 道路ネットワークの取得を試みる　自動設定機能
+            var roadNetworkObj = GameObject.Find(defaultRoadNetworkObjectName);
+            if (roadNetworkObj != null)
+            {
+                this.roadNetworkObject = roadNetworkObj;
+                Selection.activeGameObject = roadNetworkObj;
+            }
             return true;
         }
 
