@@ -73,8 +73,9 @@ namespace PLATEAU.RoadNetwork.Factory
             public Dictionary<RoadNetworkPoint, List<TranWork>> Vertex2Connected { get; } =
                 new Dictionary<RoadNetworkPoint, List<TranWork>>();
 
-            // 対応するレーン
+            // 対応するLink
             RoadNetworkLink Link { get; set; }
+            // 対応するNode
             RoadNetworkNode Node { get; set; }
 
             public List<WayWork> Borders { get; } = new List<WayWork>();
@@ -109,7 +110,10 @@ namespace PLATEAU.RoadNetwork.Factory
             {
                 if (Link != null)
                 {
-
+                    var nextTrans = Ways.SelectMany(w => w.NextBorder.BothConnectedTrans).Distinct().ToList();
+                    var prevTrans = Ways.SelectMany(w => w.PrevBorder.BothConnectedTrans).Distinct().ToList();
+                    Link.NextNode = nextTrans.FirstOrDefault(t => t.Node != null)?.Node;
+                    Link.PrevNode = prevTrans.FirstOrDefault(t => t.Node != null)?.Node;
                 }
                 else if (Node != null)
                 {
@@ -438,6 +442,7 @@ namespace PLATEAU.RoadNetwork.Factory
             else if (tranWork.Connected.Count() >= 3)
             {
                 var node = new RoadNetworkNode(tranWork.TargetTran);
+                node.Tracks.AddRange(tranWork.Ways.Select(w => new RoadNetworkTrack(w.Way, null)));
                 tranWork.Bind(node);
                 ret.Nodes.Add(node);
             }

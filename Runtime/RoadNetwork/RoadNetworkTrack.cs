@@ -1,5 +1,7 @@
 ﻿using PLATEAU.RoadNetwork.Data;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace PLATEAU.RoadNetwork
@@ -30,8 +32,30 @@ namespace PLATEAU.RoadNetwork
         //接続下流レーン識別用ID: LaneID
 
         public RoadNetworkLane PrevLane { get; set; }
+
+
+        // 車線(左)
+        public RoadNetworkWay LeftWay { get; private set; }
+
+        // 車線(右)
+        public RoadNetworkWay RightWay { get; private set; }
         //----------------------------------
         // end: フィールド
         //----------------------------------
+        public RoadNetworkTrack() { }
+
+        public RoadNetworkTrack(RoadNetworkWay leftWay, RoadNetworkWay rightWay)
+        {
+            LeftWay = leftWay;
+            RightWay = rightWay;
+        }
+        // 左右両方のWayを返す
+        public IEnumerable<RoadNetworkWay> BothWays
+        {
+            get
+            {
+                return Enumerable.Repeat(LeftWay, 1).Concat(Enumerable.Repeat(RightWay, 1)).Where(w => w != null);
+            }
+        }
     }
 }
