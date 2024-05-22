@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 using Newtonsoft.Json;
+using PLATEAU.Dataset;
 using System;
 using System.Linq;
 using PLATEAU.PolygonMesh;
@@ -29,8 +30,18 @@ namespace PLATEAU.CityInfo
 
         [SerializeField] private MeshGranularity granularity;
         public CityObjectGroupInfoForToolkits InfoForToolkits => infoForToolkits;
-        public MeshGranularity Granularity => granularity;
-        
+        public MeshGranularity Granularity
+        {
+            get
+            {
+                return granularity;
+            }
+            internal set
+            {
+                granularity = value;
+            }
+        }
+
         public CityObjectList CityObjects
         {
             get
@@ -53,6 +64,13 @@ namespace PLATEAU.CityInfo
             granularity = granularityArg;
         }
 
+        public void CopyFrom(PLATEAUCityObjectGroup other)
+        {
+            serializedCityObjects = other.serializedCityObjects;
+            infoForToolkits = other.infoForToolkits;
+            granularity = other.granularity;
+        }
+        
         /// <summary>
         /// RaycastHitからPrimary CityObjectを取得します
         /// </summary>
@@ -300,6 +318,15 @@ namespace PLATEAU.CityInfo
             return objs;
         }
 
+        /// <summary> パッケージ種を返します。 </summary>
+        public PredefinedCityModelPackage Package
+        {
+            get
+            {
+                // パッケージ種は1つのCityObjectGroup内で同じなので、最初の1つだけ見れば十分です。
+                return CityObjects.rootCityObjects[0].type.ToPackage();
+            }
+        }
         
 
         /// <summary>

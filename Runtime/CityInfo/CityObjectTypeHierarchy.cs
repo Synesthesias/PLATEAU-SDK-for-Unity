@@ -42,7 +42,10 @@ namespace PLATEAU.CityInfo
                     new Node("内装付属設備(IntBuildingInstallation)", Package.None, new[]{COType.COT_IntBuildingInstallation}, null),
                     
                 }),
-                new Node("道路 (Road)", Package.Road, new[] { COType.COT_Road }, null),
+                new Node("道路 (Road)", Package.Road, new[] { COType.COT_Road }, new[]
+                {
+                    new Node("交通オブジェクト(TransportationObject)", Package.None, new[]{COType.COT_TransportationObject}, null)
+                }),
                 new Node("都市設備 (CityFurniture)", Package.CityFurniture, new[] { COType.COT_CityFurniture }, null),
                 new Node("都市計画決定情報 (UrbanPlanningDecision)", Package.UrbanPlanningDecision, null, null),
                 new Node("土地利用 (LandUse)", Package.LandUse, new[] { COType.COT_LandUse }, null),
@@ -69,16 +72,21 @@ namespace PLATEAU.CityInfo
                 }
             );
 
-        public static Node GetNodeByType(COType t)
+        public static Node ToTypeNode(this COType t)
         {
-            if (typeToNode.TryGetValue(t, out var node)) return node;
-            return null;
+            return typeToNode.GetValueOrDefault(t);
         }
 
         public static Node GetNodeByPackage(Package p)
         {
             if (packageToNode.TryGetValue(p, out var node)) return node;
             throw new ArgumentOutOfRangeException(nameof(p), $"Package {p} is not found in the hierarchy.");
+        }
+
+        /// <summary> <see cref="CityObjectType"/>をパッケージ種に変換します。 </summary>
+        public static PredefinedCityModelPackage ToPackage(this COType t)
+        {
+            return typeToNode[t].Package;
         }
 
         /// <summary>

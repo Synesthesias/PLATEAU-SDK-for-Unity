@@ -1,5 +1,5 @@
 using PLATEAU.CityImport.Config.PackageImportConfigs;
-using PLATEAU.Editor.EditorWindow.Common;
+using PLATEAU.Editor.Window.Common;
 using UnityEditor;
 
 namespace PLATEAU.Editor.CityImport.PackageImportConfigGUIs.Extendables.Components
