@@ -10,10 +10,11 @@
     <ui:Template name="RoadNetworkFloatField" src="project://database/Packages/com.synesthesias.plateau-unity-sdk/Resources/PlateauUIDocument/RoadNetwork/RoadNetworkFloatField.uxml?fileID=9197481963319205126&amp;guid=6b99df95683749e4881c7556e013ef1a&amp;type=3#RoadNetworkFloatField" />
     <ui:Template name="RoadNetworkParameterBox" src="project://database/Packages/com.synesthesias.plateau-unity-sdk/Resources/PlateauUIDocument/RoadNetwork/RoadNetworkParameterBox.uxml?fileID=9197481963319205126&amp;guid=4e148ffdea838b94b871325b7430bf69&amp;type=3#RoadNetworkParameterBox" />
     <ui:Label tabindex="-1" text="道路ネットワーク編集" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Title" />
+    <ui:Button text="Refresh" parse-escape-sequences="true" display-tooltip-when-elided="true" name="RefreshBtn" />
     <ui:EnumField label="操作モード" type="PLATEAU.Editor.RoadNetwork.RoadNetworkEditMode, PLATEAU.Editor" name="ModeSelector" />
     <ui:GroupBox name="EditingSelecterGroupBox" style="flex-direction: row;">
         <ui:VisualElement style="flex-grow: 1;">
-            <uie:ObjectField label="道路モデル" type="PLATEAU.RoadNetwork.Data.RoadNetworkObject, PLATEAU.Runtime" name="EditingTargetSelecter" />
+            <uie:ObjectField label="道路モデル" name="EditingTargetSelecter" />
             <ui:IntegerField label="ID" value="-1" readonly="false" is-delayed="false" name="DataID" style="display: none;" />
         </ui:VisualElement>
         <ui:Label tabindex="-1" text="表示してるデータ名" parse-escape-sequences="true" display-tooltip-when-elided="true" name="SelectedDataLabel" style="justify-content: flex-start; -unity-text-align: middle-left; display: none;" />
