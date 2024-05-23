@@ -2,6 +2,7 @@
 using PLATEAU.RoadNetwork.Data;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -37,6 +38,13 @@ namespace PLATEAU.RoadNetwork
         public RoadNetworkNode(PLATEAUCityObjectGroup targetTran)
         {
             TargetTran = targetTran;
+        }
+
+        public Vector3 GetCenterPoint()
+        {
+            var ret = Neighbors.SelectMany(n => n.Border.Vertices).Aggregate(Vector3.zero, (a, b) => a + b);
+            var cnt = Neighbors.Sum(n => n.Border.Count);
+            return ret / cnt;
         }
     }
 }
