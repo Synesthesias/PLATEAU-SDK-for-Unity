@@ -270,6 +270,8 @@ namespace PLATEAU.RoadNetwork.Factory
         // 中心線で分離するかどうか
         [SerializeField] private int splitLaneNum = 1;
 
+        // 道路サイズ
+        [SerializeField] private float roadSize = 3f;
 
         public RoadNetworkModel CreateNetwork(IList<PLATEAUCityObjectGroup> targets)
         {
@@ -415,14 +417,20 @@ namespace PLATEAU.RoadNetwork.Factory
                 var endBorderWay = leftWay?.NextBorder?.Way;
                 var l = new RoadNetworkLane(leftWay?.Way, rightWay?.Way, startBorderWay, endBorderWay);
                 var link = new RoadNetworkLink(tranWork.TargetTran);
-                if (l.IsBothConnectedLane && splitLaneNum > 1)
+                var startBorderLength = GeoGraphEx.GetEdges(startBorderWay?.Vertices ?? new List<Vector3>(), false)
+                    .Sum(e => (e.Item2 - e.Item1).magnitude);
+                var endBorderLength = GeoGraphEx.GetEdges(endBorderWay?.Vertices ?? new List<Vector3>(), false)
+                    .Sum(e => (e.Item2 - e.Item1).magnitude);
+                var num = (int)(Mathf.Min(startBorderLength, endBorderLength) / roadSize);
+                if (l.IsBothConnectedLane && num > 1)
                 {
-                    var lanes = l.SplitLane(splitLaneNum);
-                    link.MainLanes.AddRange(lanes);
+                    var lanes = l.SplitLane(num);
+                    foreach (var lane in lanes)
+                        link.AddMainLane(lane);
                 }
                 else
                 {
-                    link.MainLanes.Add(l);
+                    link.AddMainLane(l);
                 }
 
                 tranWork.Bind(link);
