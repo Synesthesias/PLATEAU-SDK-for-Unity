@@ -10,13 +10,24 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI.Parts
 {
     internal class ObjectSelectGui : Element, IPackageSelectResultReceiver
     {
-        private readonly List<GameObject> selectedGameObjs = new();
-        public UniqueParentTransformList UniqueSelected => 
-            new (
-                selectedGameObjs
-                    .Where(obj => obj != null)
-                    .Select(obj => obj.transform)
+        private List<GameObject> selectedGameObjs = new();
+        public UniqueParentTransformList UniqueSelected  {
+            get
+            {
+                return new (
+                    selectedGameObjs
+                        .Where(obj => obj != null)
+                        .Select(obj => obj.transform)
                 );
+            }
+            set
+            {
+                var val = new UniqueParentTransformList(value.Get.Where(tran => tran != null));
+                val.ParentalShift();
+                selectedGameObjs = val.Get.Select(t => t.gameObject).ToList();
+            }
+        }
+            
 
         public bool LockChange { get; set; }
         private readonly EditorWindow parentEditorWindow;
@@ -100,6 +111,18 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI.Parts
                         selectedGameObjs.RemoveAt(indexToDelete);
                     }
                 });// end scrollView
+
+                PlateauEditorStyle.RightAlign(() =>
+                {
+                    if (PlateauEditorStyle.TinyButton("全て除く", 75))
+                    {
+                        selectedGameObjs.Clear();
+                    }
+                    if(PlateauEditorStyle.TinyButton("対象をヒエラルキー上で選択", 150))
+                    {
+                        Selection.objects = selectedGameObjs.Cast<Object>().ToArray();
+                    }
+                });
                 
             }
         }
