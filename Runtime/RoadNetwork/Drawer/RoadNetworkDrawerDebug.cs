@@ -67,9 +67,14 @@ namespace PLATEAU.RoadNetwork.Drawer
 
             foreach (var node in roadNetwork.Nodes)
             {
+                var center = node.GetCenterPoint();
+                Debug.DrawLine(center, center + Vector3.up);
+
                 foreach (var n in node.Neighbors)
                 {
                     DrawWay(n.Border, Color.magenta, Color.magenta);
+                    n.Border.GetLerpPoint(0.5f, out var c);
+                    Debug.DrawLine(center, c, color: Color.red);
                 }
 
                 foreach (var l in node.Tracks)
