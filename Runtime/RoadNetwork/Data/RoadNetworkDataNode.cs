@@ -25,6 +25,6 @@ namespace PLATEAU.RoadNetwork.Data
 
         // 車線
         [field: SerializeField, RoadNetworkSerializeMember]
-        public List<RnID<RoadNetworkDataTrack>> Lanes { get; set; } = new List<RnID<RoadNetworkDataTrack>>();
+        public List<RnID<RoadNetworkDataTrack>> Tracks { get; set; } = new List<RnID<RoadNetworkDataTrack>>();
     }
 }
