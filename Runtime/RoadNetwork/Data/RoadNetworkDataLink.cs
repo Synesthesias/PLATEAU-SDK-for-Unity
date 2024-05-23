@@ -28,17 +28,17 @@ namespace PLATEAU.RoadNetwork.Data
 
         // 本線レーン
         [field: SerializeField]
-        [RoadNetworkSerializeMember(nameof(RoadNetworkLink.MainLanes))]
+        [RoadNetworkSerializeMember("mainLanes")]
         public List<RnID<RoadNetworkDataLane>> MainLanes { get; set; } = new List<RnID<RoadNetworkDataLane>>();
 
         // 右折レーン
         [field: SerializeField]
-        [RoadNetworkSerializeMember(nameof(RoadNetworkLink.RightLanes))]
+        [RoadNetworkSerializeMember("rightLanes")]
         public List<RnID<RoadNetworkDataLane>> RightLanes { get; set; } = new List<RnID<RoadNetworkDataLane>>();
 
         // 左折レーン
         [field: SerializeField]
-        [RoadNetworkSerializeMember(nameof(RoadNetworkLink.LeftLanes))]
+        [RoadNetworkSerializeMember("leftLanes")]
         public List<RnID<RoadNetworkDataLane>> LeftLanes { get; set; } = new List<RnID<RoadNetworkDataLane>>();
     }
 }

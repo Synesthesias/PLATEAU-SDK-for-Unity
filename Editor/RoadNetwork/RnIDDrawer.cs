@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace PLATEAU.Editor.RoadNetwork
 {
-#if false
+#if true
     public class RnIDDrawer<T> : PropertyDrawer where T : IPrimitiveData
     {
         private static readonly string typeName = typeof(T).Name.Replace("RoadNetworkData", "");

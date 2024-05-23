@@ -65,7 +65,7 @@ namespace PLATEAU.RoadNetwork.Data
                 if (srcType == null)
                     throw new ArgumentException(
                         $"{dstType?.Name} has no attribute {nameof(RoadNetworkSerializeDataAttribute)}");
-                var flags = BindingFlags.Instance | BindingFlags.Public;
+                var flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
                 var dst2Src
                     // #NOTE : Field or Propertyのみ対応
                     = dstType.GetProperties(flags)
@@ -81,7 +81,7 @@ namespace PLATEAU.RoadNetwork.Data
                         }, p =>
                         {
                             var fieldName = string.IsNullOrEmpty(p.attr.FieldName) ? p.member.Name : p.attr.FieldName;
-                            var prop = srcType.GetProperty(fieldName);
+                            var prop = srcType.GetProperty(fieldName, flags);
                             if (prop != null)
                             {
                                 var ret = TypeUtil.GetPropertyBackingField(srcType, prop);
@@ -89,7 +89,7 @@ namespace PLATEAU.RoadNetwork.Data
                                     throw new InvalidDataException($"Property {prop.Name} has no field info");
                                 return ret;
                             }
-                            var field = srcType.GetField(fieldName);
+                            var field = srcType.GetField(fieldName, flags);
                             if (field != null)
                                 return field;
                             return null;
