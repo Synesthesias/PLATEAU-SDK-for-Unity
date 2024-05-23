@@ -182,14 +182,15 @@ namespace PLATEAU.Editor.RoadNetwork
     /// </summary>
     public enum RoadNetworkEditMode
     {
+        EditLaneShape,
+        EditLaneStructure,
+        EditTrafficRegulation,
         DebugNone,
         DebugNode,
         DebugLink,
         DebugLane,
         DebugBlock,
         DebugTrack,
-        EditLaneShape,
-        EditLaneStructure,
     }
 
     /// <summary>
@@ -208,6 +209,7 @@ namespace PLATEAU.Editor.RoadNetwork
             set => system.CurrentEditMode = value;
         }
 
+        private Button refreshButton;
         private EnumField modeSelector;
         private ScrollView parameterView;
         private ObjectField objSelecter;
@@ -222,13 +224,14 @@ namespace PLATEAU.Editor.RoadNetwork
 
                     }
                 } ,
+            { RoadNetworkEditMode.EditLaneShape, CreateEditLaneShapeLayout },
+            { RoadNetworkEditMode.EditLaneStructure, CreateEditLaneStructureLayout },
+            { RoadNetworkEditMode.EditTrafficRegulation, CreateTrafficRegulationLayout },
             { RoadNetworkEditMode.DebugNode, CreateDebugNodeLayout },
             { RoadNetworkEditMode.DebugLink, CreateDebugLinkLayout },
             { RoadNetworkEditMode.DebugLane, CreateDebugLaneLayout },
             { RoadNetworkEditMode.DebugBlock, CreateDebugBlockLayout },
             { RoadNetworkEditMode.DebugTrack, CreateDebugTrackLayout },
-            { RoadNetworkEditMode.EditLaneShape, CreateEditLaneShapeLayout },
-            { RoadNetworkEditMode.EditLaneStructure, CreateEditLaneStructure },
 
         };
 
@@ -345,7 +348,12 @@ namespace PLATEAU.Editor.RoadNetwork
             
         }
 
-        private static void CreateEditLaneStructure(RoadNetworkEditorAssets assets, VisualElement root)
+        private static void CreateEditLaneStructureLayout(RoadNetworkEditorAssets assets, VisualElement root)
+        {
+
+        }
+
+        private static void CreateTrafficRegulationLayout(RoadNetworkEditorAssets assets, VisualElement root)
         {
 
         }
@@ -359,6 +367,9 @@ namespace PLATEAU.Editor.RoadNetwork
 
             this.system = system;
             this.assets = assets;
+
+            refreshButton = editorRoot.Q<Button>("RefreshBtn");
+            Assert.IsNotNull(refreshButton);
 
             modeSelector = editorRoot.Q<EnumField>("ModeSelector");
             Assert.IsNotNull(modeSelector);
@@ -377,6 +388,11 @@ namespace PLATEAU.Editor.RoadNetwork
         public void Initialize()
         {
             //　parameterの変更は必ずシステムを介して行う
+
+            refreshButton.RegisterCallback<MouseUpEvent>((evt) =>
+            {
+                system.EditorInstance.RequestReinitialize();
+            });
 
             system.OnChangedRoadNetworkObject += SelectRoadNetwrokObject;
             system.OnChangedEditMode += UpdateMode;
