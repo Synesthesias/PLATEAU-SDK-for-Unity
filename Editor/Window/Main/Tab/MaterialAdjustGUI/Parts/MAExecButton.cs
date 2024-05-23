@@ -1,5 +1,8 @@
 using PLATEAU.Editor.Window.Common;
+using PLATEAU.Util;
 using PLATEAU.Util.Async;
+using System.CodeDom.Compiler;
+using System.Threading.Tasks;
 
 namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI.Parts
 {
@@ -19,11 +22,16 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI.Parts
         {
             if (PlateauEditorStyle.MainButton("マテリアル分けを実行"))
             {
-                var executor = adjustGui.GenerateExecutor();
-                
-                // 実行
-                executor.Exec().ContinueWithErrorCatch();
+                Exec().ContinueWithErrorCatch();
             }
+        }
+
+        /// <summary> 実行 </summary>
+        private async Task Exec()
+        {
+            var executor = adjustGui.GenerateExecutor();
+            var result = await executor.Exec();
+            adjustGui.ReceiveMAResult(result);
         }
 
         public override void Dispose()

@@ -19,7 +19,7 @@ namespace PLATEAU.Util.Async
                 }
             });
         }
-
+        
         private static void LogInnerExceptions(AggregateException age)
         {
             var innerExceptions = age.InnerExceptions;

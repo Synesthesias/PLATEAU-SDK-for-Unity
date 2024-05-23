@@ -23,7 +23,19 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
         
         public MAKeySearcher CurrentSearcher => Guis?.Get<MaterialCriterionGui>()?.CurrentSearcher;
         public MaterialCriterion SelectedCriterion => Guis.Get<MaterialCriterionGui>().SelectedCriterion;
-        public UniqueParentTransformList SelectedObjects => Guis.Get<ObjectSelectGui>().UniqueSelected;
+        public UniqueParentTransformList SelectedObjects
+        {
+            get
+            {
+                return Guis.Get<ObjectSelectGui>().UniqueSelected;
+            }
+            set
+            {
+                Guis.Get<ObjectSelectGui>().UniqueSelected = value;
+            }
+        }
+
+        public bool DoDestroySrcObjs => Guis.Get<DestroyOrPreserveSrcGui>().DoDestroySrcObjs;
 
         /// <summary>
         /// マテリアル分けの選択画面を出すために、利用可能な分類項目を検索したかどうかです。
@@ -98,8 +110,8 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
         {
             SearchArg searchArg = SelectedCriterion switch
             {
-                MaterialCriterion.ByType => new SearchArg(Guis.Get<ObjectSelectGui>().UniqueSelected),
-                MaterialCriterion.ByAttribute => new SearchArgByArr(Guis.Get<ObjectSelectGui>().UniqueSelected, Guis.Get<AttributeKeyGui>().AttrKey),
+                MaterialCriterion.ByType => new SearchArg(SelectedObjects),
+                MaterialCriterion.ByAttribute => new SearchArgByArr(SelectedObjects, Guis.Get<AttributeKeyGui>().AttrKey),
                 _ => throw new ArgumentOutOfRangeException()
             };
             return searchArg;
@@ -145,17 +157,17 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
                 
                 MaterialCriterion.ByType => new MAExecutorConf(
                     CurrentSearcher.MaterialAdjustConf,
-                    Guis.Get<ObjectSelectGui>().UniqueSelected,
+                    SelectedObjects,
                     granularity,
-                    Guis.Get<DestroyOrPreserveSrcGui>().DoDestroySrcObjs,
+                    DoDestroySrcObjs,
                     true
                 ),
                     
                 MaterialCriterion.ByAttribute => new MAExecutorConfByAttr(
                     CurrentSearcher.MaterialAdjustConf,
-                    Guis.Get<ObjectSelectGui>().UniqueSelected,
+                    SelectedObjects,
                     granularity,
-                    Guis.Get<DestroyOrPreserveSrcGui>().DoDestroySrcObjs,
+                    DoDestroySrcObjs,
                     true,
                     Guis.Get<AttributeKeyGui>().AttrKey
                 ),
@@ -174,6 +186,17 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
                 MaterialCriterion.ByAttribute => MAExecutorFactory.CreateAttrExecutor((MAExecutorConfByAttr)executorConf),
                 _ => throw new ArgumentOutOfRangeException()
             };
+        }
+
+        /// <summary>
+        /// 処理が完了したとき
+        /// </summary>
+        public void ReceiveMAResult(UniqueParentTransformList converted)
+        {
+            if (DoDestroySrcObjs)
+            {
+                SelectedObjects = converted;
+            }
         }
     }
 }
