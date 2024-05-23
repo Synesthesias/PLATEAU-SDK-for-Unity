@@ -59,7 +59,10 @@ namespace PLATEAU.CityInfo
                 new Node("鉄道 (Railway)", Package.Railway, new[]{COType.COT_Railway}, null),
                 new Node("航路 (Waterway)", Package.Waterway, null, null),
                 new Node("水部 (WaterBody)", Package.WaterBody, new[]{COType.COT_WaterBody}, null),
-                new Node("橋梁 (Bridge)", Package.Bridge, new[]{COType.COT_Bridge}, null),
+                new Node("橋梁 (Bridge)", Package.Bridge, new[]{COType.COT_Bridge}, new[]
+                {
+                    new Node("橋梁構成要素 (BridgeConstructionElement)", Package.None, new[] {COType.COT_BridgeConstructionElement}, null)
+                }),
                 new Node("徒歩道 (Track)", Package.Track, new[]{COType.COT_Track}, null),
                 new Node("広場 (Square)", Package.Square, new[]{COType.COT_Square}, null),
                 new Node("トンネル (Tunnel)", Package.Tunnel, new[]{COType.COT_Tunnel}, null),
