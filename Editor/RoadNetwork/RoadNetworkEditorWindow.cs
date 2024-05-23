@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-namespace PLATEAU
+namespace PLATEAU.Editor.RoadNetwork
 {
     /// <summary>
     /// 道路ネットワーク手動編集機能を提供するエディタウィンドウ
@@ -40,13 +40,26 @@ namespace PLATEAU
         {
             GetWindow(true);
         }
-        private void OnEnable()
+
+        public void Reinitialize()
+        {
+            EditorInterface = null;
+            // 初期化
+            Initialize();
+        }
+
+        private void Initialize()
         {
             // 初期化
             if (EditorInterface == null)
             {
-                EditorInterface = new RoadNetworkEditingSystem(rootVisualElement);
+                EditorInterface = new RoadNetworkEditingSystem(new EditorInstance(this), rootVisualElement);
             }
+        }
+
+        private void OnEnable()
+        {
+            Initialize();
         }
 
         /// <summary>
@@ -58,6 +71,20 @@ namespace PLATEAU
         private static RoadNetworkEditorWindow GetWindow(bool focus)
         {
             return GetWindow<RoadNetworkEditorWindow>(WindowName, focus);
+        }
+
+        private class EditorInstance : RoadNetworkEditingSystem.IEditorInstance
+        {
+            public EditorInstance(RoadNetworkEditorWindow window)
+            {
+                this.window = window;
+            }
+            RoadNetworkEditorWindow window;
+
+            public void RequestReinitialize()
+            {
+                window.Reinitialize();
+            }
         }
 
     }

@@ -2,7 +2,9 @@
 using PLATEAU.RoadNetwork;
 using PLATEAU.RoadNetwork.Data;
 using System;
+using System.Linq;
 using UnityEditor;
+using UnityEditor.Search;
 using UnityEngine;
 using UnityEngine.Rendering.VirtualTexturing;
 using UnityEngine.UIElements;
@@ -28,8 +30,18 @@ namespace PLATEAU.Editor.RoadNetwork
     /// </summary>
     public class RoadNetworkEditingSystem : IRoadNetworkEditingSystemInterface
     {
-        public RoadNetworkEditingSystem(VisualElement rootVisualElement)
+        public interface IEditorInstance
         {
+            void RequestReinitialize();
+        }
+
+        public RoadNetworkEditingSystem(IEditorInstance editorInstance, VisualElement rootVisualElement)
+        {
+            Assert.IsNotNull(editorInstance);
+            this.editorInstance = new EditorInstance(this, editorInstance);
+
+            Assert.IsNotNull(rootVisualElement);
+            this.rootVisualElement = rootVisualElement;
             system = new EditingSystem(this);
             TryInitialize(rootVisualElement);
         }
@@ -39,10 +51,19 @@ namespace PLATEAU.Editor.RoadNetwork
         public IRoadNetworkEditOperation NetworkOperator => editOperation;
         public RoadNetworkSceneGUISystem SceneGUISystem => sceneGUISystem;
 
-        private UnityEngine.Object roadNetworkObject;
-        private RoadNetworkModel roadNetworkModel;
-        private RoadNetworkEditMode editingMode;
+        private readonly IEditorInstance editorInstance;
+        private readonly VisualElement rootVisualElement;
         private readonly string defaultRoadNetworkObjectName = "RoadNetworkTester";
+
+        // 選択している道路ネットワークを所持したオブジェクト
+        private UnityEngine.Object roadNetworkObject;
+        // 選択している道路ネットワーク
+        private RoadNetworkModel roadNetworkModel;
+        // 現在の編集モード
+        private RoadNetworkEditMode editingMode;
+
+        // 選択中の道路ネットワーク要素 Link,Lane,Block...etc
+        private System.Object selectedRoadNetworkElement;
 
         private bool TryInitialize(VisualElement rootVisualElement)
         {
@@ -63,11 +84,11 @@ namespace PLATEAU.Editor.RoadNetwork
                 assets = new RoadNetworkEditorAssets();
 
                 var visualTree = assets.GetAsset(RoadNetworkEditorAssets.EditorAssetName);
-                var root = rootVisualElement;
-                visualTree.CloneTree(root);
+                var inst = visualTree.Instantiate();
+                rootVisualElement.Add(inst);
+                //visualTree.CloneTree(rootVisualElement);
 
-
-                editor = new RoadNetworkUIDoc(system, root, assets);
+                editor = new RoadNetworkUIDoc(system, rootVisualElement, assets);
                 editor.Initialize();
 
             }
@@ -108,6 +129,8 @@ namespace PLATEAU.Editor.RoadNetwork
         /// </summary>
         public interface IRoadNetworkEditingSystem
         {
+            IEditorInstance EditorInstance { get; }
+
             UnityEngine.Object RoadNetworkObject { get; set; }
             event EventHandler OnChangedRoadNetworkObject;
 
@@ -115,6 +138,9 @@ namespace PLATEAU.Editor.RoadNetwork
             RoadNetworkEditMode CurrentEditMode { get; set; }
             event EventHandler OnChangedEditMode;
             IRoadNetworkEditOperation EditOperation { get; }
+
+            System.Object SelectedRoadNetworkElement { get; set; }
+            event EventHandler OnChangedSelectRoadNetworkElement;
         }
 
         /// <summary>
@@ -170,12 +196,27 @@ namespace PLATEAU.Editor.RoadNetwork
                     if (system.editingMode == value)
                         return;
                     system.editingMode = value;
-                    OnChangedEditMode.Invoke(this, EventArgs.Empty);
+                    OnChangedEditMode?.Invoke(this, EventArgs.Empty);
                 }
             }
             public event EventHandler OnChangedEditMode;
+            public event EventHandler OnChangedSelectRoadNetworkElement;
 
             public IRoadNetworkEditOperation EditOperation => system.editOperation;
+
+            public object SelectedRoadNetworkElement 
+            { 
+                get => system.selectedRoadNetworkElement; 
+                set 
+                {
+                    if (system.selectedRoadNetworkElement == value)
+                        return;
+                    system.selectedRoadNetworkElement = value;
+                    OnChangedSelectRoadNetworkElement?.Invoke(this, EventArgs.Empty);
+                } 
+            }
+
+            public IEditorInstance EditorInstance => system.editorInstance;
         }
 
         /// <summary>
@@ -261,6 +302,32 @@ namespace PLATEAU.Editor.RoadNetwork
                 throw new NotImplementedException();
             }
 
+        }
+
+        public class EditorInstance : IEditorInstance
+        {            
+            public EditorInstance(RoadNetworkEditingSystem system, IEditorInstance editorInstance)
+            {
+                this.system = system;
+                this.editorInstance = editorInstance;
+            }
+
+            private RoadNetworkEditingSystem system;
+            private IEditorInstance editorInstance;
+
+            public void RequestReinitialize()
+            {
+                //system.rootVisualElement.RemoveFromHierarchy();
+                //editorInstance.RequestReinitialize();
+                //return;
+                var children = system.rootVisualElement.Children().ToArray();
+                foreach (var item in children)
+                {
+                    item.RemoveFromHierarchy();
+                }
+                editorInstance.RequestReinitialize();
+
+            }
         }
     }
 
