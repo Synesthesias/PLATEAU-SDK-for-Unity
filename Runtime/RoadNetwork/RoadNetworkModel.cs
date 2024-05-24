@@ -25,6 +25,9 @@ namespace PLATEAU.RoadNetwork
 
         public List<RoadNetworkNode> Nodes { get; } = new List<RoadNetworkNode>();
 
+        public List<SignalController> SignalControllers { get; } = new List<SignalController>();
+        public List<SignalLight> SignalLihgts { get; } = new List<SignalLight>();
+
         //----------------------------------
         // end: フィールド
         //----------------------------------
