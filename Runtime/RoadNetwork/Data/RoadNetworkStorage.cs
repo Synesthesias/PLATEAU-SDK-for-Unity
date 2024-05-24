@@ -40,11 +40,7 @@ namespace PLATEAU.RoadNetwork.Data
     [Serializable]
     public class RoadNetworkStorage : IRoadNetworkDynamicEditable
     {
-        public TrafficRegulationStorage TrafficRegulationStorage { get => trafficRegulationStorage; }
         public PrimitiveDataStorage PrimitiveDataStorage { get => primitiveDataStorage; }
-
-        [SerializeField]
-        private TrafficRegulationStorage trafficRegulationStorage;
 
         [SerializeField]
         private PrimitiveDataStorage primitiveDataStorage = new PrimitiveDataStorage();
@@ -96,11 +92,11 @@ namespace PLATEAU.RoadNetwork.Data
         }
     }
 
-    [System.Serializable]
-    public struct TrafficRegulationStorage
-    {
-        public TrafficRegulationInfo[] regulationCollection;
-    }
+    //[System.Serializable]
+    //public struct TrafficRegulationStorage
+    //{
+    //    public TrafficRegulationInfo[] regulationCollection;
+    //}
 
     /// <summary>
     /// 
@@ -112,13 +108,19 @@ namespace PLATEAU.RoadNetwork.Data
         // 大きくメモリを確保してそこから切り出す形に修正する
         // Listで確保しているストレージは配列にして初期化処理、解放処理の最適化
 
+        public PrimitiveStorage<TrafficRegulationInfoData> RegulationCollection { get => regulationCollection; }
+
         public PrimitiveStorage<RoadNetworkDataPoint> Points { get => points; }
         public PrimitiveStorage<RoadNetworkDataLineString> LineStrings { get => lineStrings; }
 
 
-        [SerializeField] private PrimitiveStorage<RoadNetworkDataPoint> points = new PrimitiveStorage<RoadNetworkDataPoint>();
+        [field: SerializeField]
+        public PrimitiveStorage<TrafficRegulationInfoData> regulationCollection =
+            new PrimitiveStorage<TrafficRegulationInfoData>();
 
-        [SerializeField]
+        [field: SerializeField] private PrimitiveStorage<RoadNetworkDataPoint> points = new PrimitiveStorage<RoadNetworkDataPoint>();
+
+        [field: SerializeField]
         private PrimitiveStorage<RoadNetworkDataLineString> lineStrings =
             new PrimitiveStorage<RoadNetworkDataLineString>();
 

@@ -8,6 +8,7 @@ using UnityEditor;
 using UnityEngine.Assertions;
 using System.Linq;
 using static PLATEAU.Editor.RoadNetwork.RoadNetworkEditingSystem;
+using static Codice.Client.Commands.WkTree.WorkspaceTreeNode;
 
 namespace PLATEAU.Editor.RoadNetwork
 {
@@ -103,6 +104,33 @@ namespace PLATEAU.Editor.RoadNetwork
                 //        }
                 //    }
                 //}
+            }
+
+            if (editorSystem.CurrentEditMode == RoadNetworkEditMode.EditTrafficRegulation) {
+                foreach (var signalController in network.SignalControllers)
+                {
+                    //var size = HandleUtility.GetHandleSize(signalController.position);
+                    EditorGUI.BeginChangeCheck();
+                    var pos = Handles.PositionHandle(signalController.position, Quaternion.identity);
+                    if (EditorGUI.EndChangeCheck())
+                    {
+                        signalController.position = pos;
+                        state.isDirtyTarget = true;
+                    }
+                    
+                }
+
+                foreach (var signalLight in network.SignalLihgts)
+                {
+                    //var size = HandleUtility.GetHandleSize(signalController.position);
+                    EditorGUI.BeginChangeCheck();
+                    var pos = Handles.PositionHandle(signalLight.position, Quaternion.identity);
+                    if (EditorGUI.EndChangeCheck())
+                    {
+                        signalLight.position = pos;
+                        state.isDirtyTarget = true;
+                    }
+                }
             }
 
             // 編集モードの状態表示
