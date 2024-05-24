@@ -1,131 +1,56 @@
-ï»¿using PLATEAU.RoadNetwork.Data;
+using PLATEAU.RoadNetwork;
+using PLATEAU.RoadNetwork.Data;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace PLATEAU.RoadNetwork
+namespace PLATEAU.RoadNetwork.Data
 {
     /// <summary>
-    /// äº¤é€šè¦åˆ¶ã®ç”Ÿæˆè£œåŠ©ã‚¯ãƒ©ã‚¹
+    /// Œğ’Ê‹K§î•ñ
     /// </summary>
-    public class TrafficRegulationInfoCreateHelper
-    {
-
-    }
-
-    public class SignalController
-    {
-        public List<SignalLight> signalLights = new List<SignalLight>();
-        public List<SignalStepSet> signalStepSets = new List<SignalStepSet>();
-
-        public Vector3 position;
-    }
-
-    public class SignalLight
-    {
-        public void SetStatus(TrafficLight.Status status)
-        {
-
-        }
-
-        /// <summary>
-        /// å¯¾å¿œã™ã‚‹åœæ­¢ç·š
-        /// </summary>
-        public StopLine stopLine;
-
-        public Vector3 position;
-    }
-
-    public class SignalStepSet 
-    {
-        public float TimeOffset = 0;
-        public List<SignalStep> steps;
-    }
-
-    public class SignalStep
-    {
-        public float DuringStep = 0;
-
-        public struct SignalPattern
-        {
-            TrafficLight.Status status;
-            List<SignalLight> lights;
-        }
-        public List<SignalPattern> patterns;
-    }
-
-    /// <summary>
-    /// äº¤é€šè¦åˆ¶æƒ…å ±
-    /// </summary>
-    public class TrafficRegulationInfo
+    [Serializable, RoadNetworkSerializeData(typeof(TrafficRegulationInfoData))]
+    public class TrafficRegulationInfoData : IPrimitiveData
     {
         /// <summary>
-        /// åœæ­¢ç·š
+        /// ’â~ü
         /// </summary>
         public StopLine stopLine;
         /// <summary>
-        /// é€Ÿåº¦åˆ¶é™
+        /// ‘¬“x§ŒÀ
         /// </summary>
         public float speedLimit;
         /// <summary>
-        /// å„ªå…ˆé“è·¯
+        /// —Dæ“¹˜H
         /// </summary>
         public RnID<RoadNetworkDataLineString> yields;
     }
 
     /// <summary>
-    /// åœæ­¢ç·š
+    /// ’â~ü
     /// </summary>
     [System.Serializable]
     public class StopLine
     {
-        public RoadNetworkDataLineString line;
+        public RnID<RoadNetworkDataLineString> line;
         public TrafficLight trafficLight;
         public bool bHasStopSign;
     }
 
     /// <summary>
-    /// ä¿¡å·æ©Ÿã®é›»çƒï¼ˆæ¦‚å¿µï¼‰
-    /// ä¿¡å·æ©Ÿã¯ä½•è‰²ã§ã™ã‹ã¨èã‹ã‚ŒãŸã‚‰ã“ã‚Œã‚’è¿”ã™
+    /// M†‹@‚Ì“d‹…iŠT”Oj
+    /// ¡‚ÌM†‹@‚Í‰½F‚Å‚·‚©‚Æ•·‚©‚ê‚½‚ç‚±‚ê‚ğ•Ô‚·
     /// </summary>
     [System.Serializable]
     public class TrafficLight
     {
         public LightBulb[] LightBulbs => lightBulbs;
         [SerializeField] private LightBulb[] lightBulbs;
-
-        public enum Status
-        {
-            // 0
-            Undefind = 0,
-
-            // 0x0000000X
-            Stop            = 0x0001,
-            Attention       = 0x00000002,
-            Go              = 0x0003,
-
-            // 0x000000X0
-            Flashing        = 0x00000010,
-
-            // 0x00000X00
-            BlueArrow       = 0x000000100,
-            YellowArrow     = 0x000000200,
-
-            //...
-
-            // 0x0X000000
-            UserDefind1 = 0x01000000,
-            UserDefind2 = 0x02000000,
-            UserDefind3 = 0x03000000,
-            UserDefind4 = 0x04000000,
-            UserDefind5 = 0x05000000,
-            UserDefind6 = 0x06000000,
-            //...
-        }
     }
 
     /// <summary>
-    /// ä¿¡å·æ©Ÿã®é›»çƒ
+    /// M†‹@‚Ì“d‹…
     /// </summary>
     [System.Serializable]
     public class LightBulb
