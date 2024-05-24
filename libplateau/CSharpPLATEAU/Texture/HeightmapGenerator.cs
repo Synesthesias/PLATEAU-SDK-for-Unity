@@ -31,28 +31,28 @@ namespace PLATEAU.Texture
 
         static public float[,] ConvertTo2DFloatArray(UInt16[] HeightData, int TextureWidth, int TextureHeight)
         {
-            float[,] TextureData = new float[TextureWidth, TextureHeight];
+            float[,] textureData = new float[TextureWidth, TextureHeight];
             int index = 0;
             for (int y = TextureHeight - 1; y >=0; y--)
             {
                 for (int x = 0; x < TextureWidth; x++)
                 {
-                    TextureData[y, x] = (float)(HeightData[index] / 65535f);
+                    textureData[y, x] = (float)(HeightData[index] / 65535f);
                     index++;
                 }
             }
-            return TextureData; ;
+            return textureData; ;
         }
 
-        static public void SavePngFile(string FileName, int width, int height, UInt16[] data)
+        static public void SavePngFile(string FileName, int Width, int Height, UInt16[] Data)
         {
-            IntPtr HeightmapDataPtr = Marshal.AllocHGlobal(sizeof(UInt16) * data.Length);
+            IntPtr heightmapDataPtr = Marshal.AllocHGlobal(sizeof(UInt16) * Data.Length);
 
-            byte[] outData = new byte[sizeof(UInt16) * data.Length];
+            byte[] outData = new byte[sizeof(UInt16) * Data.Length];
             int byteIndex = 0;
-            for (int i = 0; i < data.Length; i++)
+            for (int i = 0; i < Data.Length; i++)
             {
-                byte[] datasets = BitConverter.GetBytes(data[i]);
+                byte[] datasets = BitConverter.GetBytes(Data[i]);
                 for(int j = 0; j < datasets.Length; j++)
                 {
                     outData[byteIndex] = datasets[j];
@@ -60,45 +60,45 @@ namespace PLATEAU.Texture
                 }
             }
   
-            Marshal.Copy(outData, 0, HeightmapDataPtr ,sizeof(UInt16) * data.Length);
+            Marshal.Copy(outData, 0, heightmapDataPtr, sizeof(UInt16) * Data.Length);
             var fileNameUtf8 = DLLUtil.StrToUtf8Bytes(FileName);
             var apiResult =
-                NativeMethods.heightmap_save_png_file(fileNameUtf8, width, height, HeightmapDataPtr);         
+                NativeMethods.heightmap_save_png_file(fileNameUtf8, Width, Height, heightmapDataPtr);         
 
-            Marshal.FreeHGlobal(HeightmapDataPtr);
+            Marshal.FreeHGlobal(heightmapDataPtr);
             DLLUtil.CheckDllError(apiResult);
         }
 
-        static public void ReadPngFile(string FileName, int width, int height, out UInt16[] data)
+        static public void ReadPngFile(string FileName, int Width, int Height, out UInt16[] Data)
         {
             var fileNameUtf8 = DLLUtil.StrToUtf8Bytes(FileName);
             var apiResult =
-                NativeMethods.heightmap_read_png_file(fileNameUtf8, width, height, out IntPtr HeightmapDataPtr, out int DataSize);
+                NativeMethods.heightmap_read_png_file(fileNameUtf8, Width, Height, out IntPtr heightmapDataPtr, out int dataSize);
             DLLUtil.CheckDllError(apiResult);
 
-            byte[] outData = DLLUtil.PtrToBytes(HeightmapDataPtr, sizeof(UInt16) * DataSize);
-            NativeMethods.release_heightmap_data(HeightmapDataPtr);
+            byte[] outData = DLLUtil.PtrToBytes(heightmapDataPtr, sizeof(UInt16) * dataSize);
+            NativeMethods.release_heightmap_data(heightmapDataPtr);
 
-            data = new UInt16[DataSize];
+            Data = new UInt16[dataSize];
             
             int byteIndex = 0;
-            for(int i = 0; i < data.Length; i++)
+            for(int i = 0; i < Data.Length; i++)
             {
-                data[i] = BitConverter.ToUInt16(outData, byteIndex);
+                Data[i] = BitConverter.ToUInt16(outData, byteIndex);
                 byteIndex += 2;
             }
 
         }
 
-        static public void SaveRawFile(string FileName, int width, int height, UInt16[] data)
+        static public void SaveRawFile(string FileName, int Width, int Height, UInt16[] Data)
         {
-            IntPtr HeightmapDataPtr = Marshal.AllocHGlobal(sizeof(UInt16) * data.Length);
+            IntPtr heightmapDataPtr = Marshal.AllocHGlobal(sizeof(UInt16) * Data.Length);
 
-            byte[] outData = new byte[sizeof(UInt16) * data.Length];
+            byte[] outData = new byte[sizeof(UInt16) * Data.Length];
             int byteIndex = 0;
-            for (int i = 0; i < data.Length; i++)
+            for (int i = 0; i < Data.Length; i++)
             {
-                byte[] datasets = BitConverter.GetBytes(data[i]);
+                byte[] datasets = BitConverter.GetBytes(Data[i]);
                 for (int j = 0; j < datasets.Length; j++)
                 {
                     outData[byteIndex] = datasets[j];
@@ -106,30 +106,30 @@ namespace PLATEAU.Texture
                 }
             }
 
-            Marshal.Copy(outData, 0, HeightmapDataPtr, sizeof(UInt16) * data.Length);
+            Marshal.Copy(outData, 0, heightmapDataPtr, sizeof(UInt16) * Data.Length);
             var fileNameUtf8 = DLLUtil.StrToUtf8Bytes(FileName);
             var apiResult =
-                NativeMethods.heightmap_save_raw_file(fileNameUtf8, width, height, HeightmapDataPtr);
+                NativeMethods.heightmap_save_raw_file(fileNameUtf8, Width, Height, heightmapDataPtr);
 
-            Marshal.FreeHGlobal(HeightmapDataPtr);
+            Marshal.FreeHGlobal(heightmapDataPtr);
             DLLUtil.CheckDllError(apiResult);
         }
 
-        static public void ReadRawFile(string FileName, int width, int height, out UInt16[] data)
+        static public void ReadRawFile(string FileName, int Width, int Height, out UInt16[] Data)
         {
             var fileNameUtf8 = DLLUtil.StrToUtf8Bytes(FileName);
             var apiResult =
-                NativeMethods.heightmap_read_raw_file(fileNameUtf8, width, height, out IntPtr HeightmapDataPtr, out int DataSize);
+                NativeMethods.heightmap_read_raw_file(fileNameUtf8, Width, Height, out IntPtr heightmapDataPtr, out int DataSize);
             DLLUtil.CheckDllError(apiResult);
 
-            byte[] outData = DLLUtil.PtrToBytes(HeightmapDataPtr, sizeof(UInt16) * DataSize);
-            NativeMethods.release_heightmap_data(HeightmapDataPtr);
+            byte[] outData = DLLUtil.PtrToBytes(heightmapDataPtr, sizeof(UInt16) * DataSize);
+            NativeMethods.release_heightmap_data(heightmapDataPtr);
 
-            data = new UInt16[DataSize];
+            Data = new UInt16[DataSize];
             int byteIndex = 0;
-            for (int i = 0; i < data.Length; i++)
+            for (int i = 0; i < Data.Length; i++)
             {
-                data[i] = BitConverter.ToUInt16(outData, byteIndex);
+                Data[i] = BitConverter.ToUInt16(outData, byteIndex);
                 byteIndex += 2;
             }
         }

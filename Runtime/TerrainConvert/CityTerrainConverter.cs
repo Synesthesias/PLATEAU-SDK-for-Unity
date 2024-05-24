@@ -18,10 +18,14 @@ namespace PLATEAU.TerrainConvert
                 using var progressBar = new ProgressBar();
                 progressBar.Display("地形モデルを変換中...", 0.1f);
                 var unityMeshToDllSubMeshConverter = new UnityMeshToDllSubMeshWithTexture(true);
-
+                var srcTransforms = new UniqueParentTransformList() ;
+                foreach(var obj in option.SrcGameObjs)
+                {
+                    srcTransforms.Add(obj.transform);
+                }
                 // ゲームオブジェクトを共通ライブラリのModelに変換します。
                 using var srcModel = UnityMeshToDllModelConverter.Convert(
-                    option.SrcGameObjs,
+                    srcTransforms,
                     unityMeshToDllSubMeshConverter,
                     false, 
                     VertexConverterFactory.NoopConverter());

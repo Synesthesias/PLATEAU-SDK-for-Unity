@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
-using PLATEAU.Editor.EditorWindow.Common;
-using PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.AdjustGUIParts;
+using PLATEAU.Editor.Window.Common;
+using PLATEAU.Editor.Window.Main.Tab.AdjustGUIParts;
 using PLATEAU.TerrainConvert;
 using PLATEAU.Util.Async;
 using UnityEditor;
@@ -10,12 +10,12 @@ using System.Linq;
 using PLATEAU.CityInfo;
 using System.Collections.Generic;
 
-namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
+namespace PLATEAU.Editor.Window.Main.Tab
 {
     /// <summary>
     /// PLATEAU SDK ウィンドウで「地形変換」タブが選択されている時のGUIです。
     /// </summary>
-    internal class CityTerrainConvertGUI : IEditorDrawable
+    internal class CityTerrainConvertGUI : ITabContent
     {
         private readonly UnityEditor.EditorWindow parentEditorWindow;
         private GameObject[] selected = Array.Empty<GameObject>();
@@ -23,7 +23,7 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
         private int selectedSize = 4;
         private static readonly string[] SizeOptions = { "33 x 33", "65 x 65", "129 x 129", "257 x 257", "513 x 513", "1025 x 1025", "2049 x 2049", "4097 x 4097" };
         private static readonly int[] SizeValues = { 33, 65, 129, 257, 513, 1025, 2049, 4097 };
-        private readonly DestroyOrPreserveSrcGUI destroyOrPreserveGUI = new();
+        private readonly DestroyOrPreserveSrcGui destroyOrPreserveGUI = new();
         
         private bool isExecTaskRunning = false;
 
@@ -54,7 +54,8 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
                 scrollSelected = EditorGUILayout.BeginScrollView(scrollSelected, GUILayout.MaxHeight(100));
                 foreach (GameObject obj in selected)
                 {
-                    EditorGUILayout.LabelField(obj.name);
+                    if (obj != null)
+                        EditorGUILayout.LabelField(obj.name);
                 }
                 EditorGUILayout.EndScrollView();
             }
@@ -122,13 +123,17 @@ namespace PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI
             var convertOption = new TerrainConvertOption(
                 FilterDemItems(selected),
                 (int)SizeValues.GetValue(selectedSize),
-                destroyOrPreserveGUI.Current == DestroyOrPreserveSrcGUI.PreserveOrDestroy.Destroy
+                destroyOrPreserveGUI.Current == DestroyOrPreserveSrcGui.PreserveOrDestroy.Destroy
                 //,TerrainConvertOption.ImageOutput.PNG_RAW
             );
 
             await converter.ConvertAsync(convertOption);
             selected = new GameObject[] { };
             isExecTaskRunning = false;
+        }
+
+        public void OnTabUnselect()
+        {
         }
     }
 }

@@ -33,7 +33,8 @@ namespace PLATEAU.Editor.Window.Main
                     new TabWithFrame(
                         new TabElement("Assetsに保存", new ConvertToAssetGUI()),
                         new TabElement("ゲームオブジェクト\nON/OFF", new CityChangeActiveGUI()),
-                        new TabElement("分割/結合/マテリアル分け", new CityMaterialAdjustGUI(this))
+                        new TabElement("分割/結合/マテリアル分け", new CityMaterialAdjustGUI(this)),
+                        new TabElement("地形変換", new CityTerrainConvertGUI(this))
                     )
                 ),
                 // エクスポート
