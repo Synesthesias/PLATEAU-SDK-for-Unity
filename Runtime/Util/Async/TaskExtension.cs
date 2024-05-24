@@ -19,7 +19,7 @@ namespace PLATEAU.Util.Async
                 }
             });
         }
-
+        
         private static void LogInnerExceptions(AggregateException age)
         {
             var innerExceptions = age.InnerExceptions;
@@ -31,7 +31,7 @@ namespace PLATEAU.Util.Async
                 }
                 else
                 {
-                    Debug.LogError($"{inner.Message}\n{inner.StackTrace}");
+                    Debug.LogError(inner);
                 }
                 
             }

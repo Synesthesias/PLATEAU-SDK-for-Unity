@@ -16,6 +16,7 @@ namespace PLATEAU.CityExport.ModelConvert.SubMeshConvert
     public class UnityMeshToDllSubMeshWithTexture : IUnityMeshToDllSubMeshConverter
     {
         private bool exportDefaultTextures;
+        public List<Material> GameMaterials { get; } = new();
 
         public UnityMeshToDllSubMeshWithTexture(bool exportDefaultTextures)
         {
@@ -48,7 +49,12 @@ namespace PLATEAU.CityExport.ModelConvert.SubMeshConvert
                         throw new FileNotFoundException($"テクスチャファイルが存在しません： {texturePath}");
                     }
                     
-                    return SubMesh.Create(startIndex, endIndex, texturePath);
+                    var dllSubMesh = SubMesh.Create(startIndex, endIndex, texturePath);
+                    
+                    // Assetsへの変換機能では、GameMaterialを考慮する必要があります
+                    UnityMeshToDllSubMeshWithGameMaterial.SetGameMaterialId(dllSubMesh, GameMaterials, material);
+
+                    return dllSubMesh;
                 }
             );
 

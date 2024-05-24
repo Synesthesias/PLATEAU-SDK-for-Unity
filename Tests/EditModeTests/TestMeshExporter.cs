@@ -7,7 +7,7 @@ using NUnit.Framework;
 using PLATEAU.CityExport;
 using PLATEAU.CityExport.Exporters;
 using PLATEAU.CityInfo;
-using PLATEAU.Editor.EditorWindow.PlateauWindow.MainTabGUI.ExportGUIParts;
+using PLATEAU.Editor.Window.Main.Tab.ExportGUIParts;
 using PLATEAU.Geometries;
 using PLATEAU.MeshWriter;
 using PLATEAU.Tests.TestUtils;

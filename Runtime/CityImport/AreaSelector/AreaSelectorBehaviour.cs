@@ -203,7 +203,7 @@ namespace PLATEAU.CityImport.AreaSelector
 
         internal void SwitchLodIcon(int lod, bool isCheck)
         {
-            this.gizmosDrawer.SwitchLodIcon(lod, isCheck);
+            gizmosDrawer.SwitchLodIcon(lod, isCheck);
         }
 
         private static void RotateSceneViewCameraDown()

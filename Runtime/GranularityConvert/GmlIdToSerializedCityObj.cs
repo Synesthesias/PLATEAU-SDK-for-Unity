@@ -1,7 +1,6 @@
 using System.Collections.Generic;
-using System.Linq;
 using PLATEAU.CityInfo;
-using UnityEngine;
+using PLATEAU.Util;
 
 namespace PLATEAU.GranularityConvert
 {
@@ -18,17 +17,17 @@ namespace PLATEAU.GranularityConvert
         /// 引数に含まれるGmlIDと属性情報をすべて取得して記憶したインスタンスを返します。
         /// 子の属性情報も再帰的に取得します。
         /// </summary>
-        public static GmlIdToSerializedCityObj ComposeFrom(IEnumerable<GameObject> srcGameObjs)
+        public static GmlIdToSerializedCityObj ComposeFrom(UniqueParentTransformList srcTransforms)
         {
             var cityObjGroups = new List<PLATEAUCityObjectGroup>();
-            TransformBFS.Exec(srcGameObjs.Select(obj => obj.transform),
+            srcTransforms.BfsExec(
                 trans =>
                 {
                     var cityObjGroup = trans.GetComponent<PLATEAUCityObjectGroup>();
-                    if (cityObjGroup == null) return true;
+                    if (cityObjGroup == null) return NextSearchFlow.Continue;
 
                     cityObjGroups.Add(cityObjGroup);
-                    return true;
+                    return NextSearchFlow.Continue;
                 });
             
             var ret = new GmlIdToSerializedCityObj();

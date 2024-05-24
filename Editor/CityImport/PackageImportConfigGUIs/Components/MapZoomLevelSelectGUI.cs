@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using PLATEAU.CityImport.Config;
 using PLATEAU.Dataset;
-using PLATEAU.Editor.EditorWindow.Common;
+using PLATEAU.Editor.Window.Common;
 using PLATEAU.Native;
 using PLATEAU.Texture;
 using PLATEAU.Util;

@@ -1,5 +1,4 @@
 using System.Threading;
-using PLATEAU.CityGML;
 using PLATEAU.CityImport.Import.Convert.MaterialConvert;
 using PLATEAU.CityInfo;
 using PLATEAU.PolygonMesh;

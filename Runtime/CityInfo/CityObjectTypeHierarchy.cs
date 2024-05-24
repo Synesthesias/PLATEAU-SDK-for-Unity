@@ -42,7 +42,10 @@ namespace PLATEAU.CityInfo
                     new Node("内装付属設備(IntBuildingInstallation)", Package.None, new[]{COType.COT_IntBuildingInstallation}, null),
                     
                 }),
-                new Node("道路 (Road)", Package.Road, new[] { COType.COT_Road }, null),
+                new Node("道路 (Road)", Package.Road, new[] { COType.COT_Road }, new[]
+                {
+                    new Node("交通オブジェクト(TransportationObject)", Package.None, new[]{COType.COT_TransportationObject}, null)
+                }),
                 new Node("都市設備 (CityFurniture)", Package.CityFurniture, new[] { COType.COT_CityFurniture }, null),
                 new Node("都市計画決定情報 (UrbanPlanningDecision)", Package.UrbanPlanningDecision, null, null),
                 new Node("土地利用 (LandUse)", Package.LandUse, new[] { COType.COT_LandUse }, null),
@@ -56,7 +59,10 @@ namespace PLATEAU.CityInfo
                 new Node("鉄道 (Railway)", Package.Railway, new[]{COType.COT_Railway}, null),
                 new Node("航路 (Waterway)", Package.Waterway, null, null),
                 new Node("水部 (WaterBody)", Package.WaterBody, new[]{COType.COT_WaterBody}, null),
-                new Node("橋梁 (Bridge)", Package.Bridge, new[]{COType.COT_Bridge}, null),
+                new Node("橋梁 (Bridge)", Package.Bridge, new[]{COType.COT_Bridge}, new[]
+                {
+                    new Node("橋梁構成要素 (BridgeConstructionElement)", Package.None, new[] {COType.COT_BridgeConstructionElement}, null)
+                }),
                 new Node("徒歩道 (Track)", Package.Track, new[]{COType.COT_Track}, null),
                 new Node("広場 (Square)", Package.Square, new[]{COType.COT_Square}, null),
                 new Node("トンネル (Tunnel)", Package.Tunnel, new[]{COType.COT_Tunnel}, null),
@@ -69,16 +75,21 @@ namespace PLATEAU.CityInfo
                 }
             );
 
-        public static Node GetNodeByType(COType t)
+        public static Node ToTypeNode(this COType t)
         {
-            if (typeToNode.TryGetValue(t, out var node)) return node;
-            return null;
+            return typeToNode.GetValueOrDefault(t);
         }
 
         public static Node GetNodeByPackage(Package p)
         {
             if (packageToNode.TryGetValue(p, out var node)) return node;
             throw new ArgumentOutOfRangeException(nameof(p), $"Package {p} is not found in the hierarchy.");
+        }
+
+        /// <summary> <see cref="CityObjectType"/>をパッケージ種に変換します。 </summary>
+        public static PredefinedCityModelPackage ToPackage(this COType t)
+        {
+            return typeToNode[t].Package;
         }
 
         /// <summary>

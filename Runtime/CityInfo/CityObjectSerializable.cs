@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using Newtonsoft.Json;
 using PLATEAU.CityGML;
@@ -54,6 +55,13 @@ namespace PLATEAU.CityInfo
                 return this;
             }
 
+            public CityObject Copy()
+            {
+                var copy = new CityObject();
+                copy.Init(gmlID, cityObjectIndex, cityObjectType, attributesMap, children);
+                return copy;
+            }
+
             public CityObjectType type => (CityObjectType)cityObjectType;
 
             public CityObjectIndex IndexInMesh
@@ -105,9 +113,46 @@ namespace PLATEAU.CityInfo
 
             public IEnumerator<KeyValuePair<string, Value>> GetEnumerator() { return attrMap.GetEnumerator(); }
 
+            /// <summary>
+            /// 属性情報のキーバリューペアのうち、キーを指定してバリューを得ます。
+            /// 成否をboolで返します。
+            /// </summary>
             public bool TryGetValue(string key, out Value val)
             {
                 return attrMap.TryGetValue(key, out val);
+            }
+
+            /// <summary>
+            /// 属性情報のキーバリューペアのうち、キーを指定してバリューを得ます。
+            /// キーにスラッシュ"/"を含む場合、属性情報が入れ子になっていると見なし、再帰的にキーを探索してバリューを取得します。
+            /// 成否をboolで返します。
+            /// </summary>
+            public bool TryGetValueWithSlash(string keyWithSlash, out Value val)
+            {
+                var keys = keyWithSlash.Split("/");
+                string firstKey = keys[0];
+                // "/"がないならそのまま属性値を返します。
+                if (keys.Length == 1)
+                {
+                    return TryGetValue(firstKey, out val);
+                }
+
+                // "/"があるなら、最初のキーで取得し、残りのキーで再帰します。
+                if (TryGetValue(firstKey, out var firstValue))
+                {
+                    // 後続のキーがあるということは、最初のValueは入れ子(AttributeSet型)であるはずです。
+                    // そうでない場合は、見つからなかったとします。
+                    if (firstValue.Type == AttributeType.AttributeSet)
+                    {
+                        var nextKeys = keys.Skip(1);
+                        var nextKeysWithSlash = string.Join("/", nextKeys);
+                        return firstValue.AttributesMapValue.TryGetValueWithSlash(nextKeysWithSlash, out val);
+                    }
+                }
+
+                // 見つからない場合
+                val = null;
+                return false;
             }
 
             public void AddAttribute(string key, NativeAttributeValue value)

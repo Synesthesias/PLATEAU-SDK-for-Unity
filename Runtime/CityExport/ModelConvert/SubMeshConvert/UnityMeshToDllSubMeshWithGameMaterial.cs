@@ -22,16 +22,21 @@ namespace PLATEAU.CityExport.ModelConvert.SubMeshConvert
                 {
                     // 各Unity SubMeshについて、マテリアルを記録しながらそのインデックスをDLL SubMeshに送ります。
                     var dllSubMesh = SubMesh.Create(startIndex, endIndex, "");
-                    int found = GameMaterials.IndexOf(material);
-                    if (found < 0)
-                    {
-                        GameMaterials.Add(material);
-                        found = GameMaterials.Count - 1;
-                    }
-                    dllSubMesh.GameMaterialID = found;
+                    SetGameMaterialId(dllSubMesh, GameMaterials, material);
                     return dllSubMesh;
                 });
             return dllSubMeshes;
+        }
+
+        public static void SetGameMaterialId(SubMesh dllSubMesh, List<Material> gameMaterials, Material material)
+        {
+            int found = gameMaterials.IndexOf(material);
+            if (found < 0)
+            {
+                gameMaterials.Add(material);
+                found = gameMaterials.Count - 1;
+            }
+            dllSubMesh.GameMaterialID = found;
         }
     }
 }

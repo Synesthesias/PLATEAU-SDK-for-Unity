@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading;
 using System.Threading.Tasks;
-using PLATEAU.CityImport.Import.Convert.MaterialConvert;
 using PLATEAU.CityInfo;
 using PLATEAU.PolygonMesh;
 using UnityEngine;
@@ -45,7 +43,6 @@ namespace PLATEAU.CityImport.Import.Convert
                 // 再帰的な子の生成です。
                 this.children.Add(new ConvertedGameObjData(rootNode, attributeDataHelper.Copy()));
             }
-            Debug.Log("converted plateau model.");
         }
 
         /// <summary>
@@ -114,7 +111,7 @@ namespace PLATEAU.CityImport.Import.Convert
                     };
                     obj.SetActive(isActive);
                     nextParent = obj.transform;
-                    result.Add(nextParent.gameObject, recursiveDepth == 0);
+                    result.Add(nextParent.gameObject);
                 }
                 else
                 {
@@ -128,7 +125,7 @@ namespace PLATEAU.CityImport.Import.Convert
                         {
                             placedObj.AddComponent<MeshCollider>();
                         }
-                        result.Add(nextParent.gameObject, recursiveDepth == 0);
+                        result.Add(nextParent.gameObject);
                     }
                 }
  
@@ -139,7 +136,7 @@ namespace PLATEAU.CityImport.Import.Convert
                     if (serialized != null)
                     {
                         var attrInfo = nextParent.gameObject.AddComponent<PLATEAUCityObjectGroup>();
-                        attrInfo.Init(serialized, conf.InfoForToolkits, conf.Granularity);
+                        attrInfo.Init(serialized, conf.InfoForToolkits, attributeDataHelper.CurrentGranularity);
                     }
                 }
             }

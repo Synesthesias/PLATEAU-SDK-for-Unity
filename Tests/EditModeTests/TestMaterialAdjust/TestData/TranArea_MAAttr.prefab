@@ -1,0 +1,1940 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &1556805438098016205
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 9110747594321524088}
+  m_Layer: 0
+  m_Name: LOD2
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &9110747594321524088
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1556805438098016205}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 2919533133401333559}
+  m_Father: {fileID: 2420555677323904739}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &3119269762954157094
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 559828634989291369}
+  - component: {fileID: 1042044554443056388}
+  m_Layer: 0
+  m_Name: TranArea_MAAttr
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &559828634989291369
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3119269762954157094}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 2420555677323904739}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1042044554443056388
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3119269762954157094}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8ac1170e6ed34304b59efe3b774555b3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  geoReferenceData:
+    referencePointX: -6696.85360824696
+    referencePointY: 0
+    referencePointZ: -38596.98563991487
+    unitScale: 1
+    coordinateSystem: 3
+    zoneID: 9
+--- !u!1 &4617121807339823326
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5399408419010861547}
+  - component: {fileID: 6220309370484622766}
+  - component: {fileID: 5368231566553344143}
+  - component: {fileID: 3293079939603486380}
+  - component: {fileID: 5016302157953848080}
+  m_Layer: 0
+  m_Name: combined
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5399408419010861547
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4617121807339823326}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2907987149293774975}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!33 &6220309370484622766
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4617121807339823326}
+  m_Mesh: {fileID: -3096979462119086769, guid: a801590f329a4a6418bfb8aba5478354, type: 3}
+--- !u!23 &5368231566553344143
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4617121807339823326}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: 47fd897fa48363a47afeb048c5f569b6, type: 2}
+  - {fileID: 2100000, guid: 6927aa6681831fa4a9f96c25f724affb, type: 2}
+  - {fileID: 2100000, guid: 47fd897fa48363a47afeb048c5f569b6, type: 2}
+  - {fileID: 2100000, guid: 6927aa6681831fa4a9f96c25f724affb, type: 2}
+  - {fileID: 2100000, guid: 47fd897fa48363a47afeb048c5f569b6, type: 2}
+  - {fileID: 2100000, guid: eb0564957984e9346bb7f4589a105533, type: 2}
+  - {fileID: 2100000, guid: 47fd897fa48363a47afeb048c5f569b6, type: 2}
+  - {fileID: 2100000, guid: 6927aa6681831fa4a9f96c25f724affb, type: 2}
+  - {fileID: 2100000, guid: 47fd897fa48363a47afeb048c5f569b6, type: 2}
+  - {fileID: 2100000, guid: 6927aa6681831fa4a9f96c25f724affb, type: 2}
+  - {fileID: 2100000, guid: 47fd897fa48363a47afeb048c5f569b6, type: 2}
+  - {fileID: 2100000, guid: eb0564957984e9346bb7f4589a105533, type: 2}
+  - {fileID: 2100000, guid: 6927aa6681831fa4a9f96c25f724affb, type: 2}
+  - {fileID: 2100000, guid: eb0564957984e9346bb7f4589a105533, type: 2}
+  - {fileID: 2100000, guid: 47fd897fa48363a47afeb048c5f569b6, type: 2}
+  - {fileID: 2100000, guid: 6927aa6681831fa4a9f96c25f724affb, type: 2}
+  - {fileID: 2100000, guid: eb0564957984e9346bb7f4589a105533, type: 2}
+  - {fileID: 2100000, guid: 47fd897fa48363a47afeb048c5f569b6, type: 2}
+  - {fileID: 2100000, guid: eb0564957984e9346bb7f4589a105533, type: 2}
+  - {fileID: 2100000, guid: 47fd897fa48363a47afeb048c5f569b6, type: 2}
+  - {fileID: 2100000, guid: 6927aa6681831fa4a9f96c25f724affb, type: 2}
+  - {fileID: 2100000, guid: eb0564957984e9346bb7f4589a105533, type: 2}
+  - {fileID: 2100000, guid: 6927aa6681831fa4a9f96c25f724affb, type: 2}
+  - {fileID: 2100000, guid: 47fd897fa48363a47afeb048c5f569b6, type: 2}
+  - {fileID: 2100000, guid: eb0564957984e9346bb7f4589a105533, type: 2}
+  - {fileID: 2100000, guid: 6927aa6681831fa4a9f96c25f724affb, type: 2}
+  - {fileID: 2100000, guid: 47fd897fa48363a47afeb048c5f569b6, type: 2}
+  - {fileID: 2100000, guid: 6927aa6681831fa4a9f96c25f724affb, type: 2}
+  - {fileID: 2100000, guid: eb0564957984e9346bb7f4589a105533, type: 2}
+  - {fileID: 2100000, guid: 47fd897fa48363a47afeb048c5f569b6, type: 2}
+  - {fileID: 2100000, guid: eb0564957984e9346bb7f4589a105533, type: 2}
+  - {fileID: 2100000, guid: 6927aa6681831fa4a9f96c25f724affb, type: 2}
+  - {fileID: 2100000, guid: 47fd897fa48363a47afeb048c5f569b6, type: 2}
+  - {fileID: 2100000, guid: 6927aa6681831fa4a9f96c25f724affb, type: 2}
+  - {fileID: 2100000, guid: 47fd897fa48363a47afeb048c5f569b6, type: 2}
+  - {fileID: 2100000, guid: eb0564957984e9346bb7f4589a105533, type: 2}
+  - {fileID: 3605441126684480504, guid: a801590f329a4a6418bfb8aba5478354, type: 3}
+  - {fileID: 3605441126684480504, guid: a801590f329a4a6418bfb8aba5478354, type: 3}
+  - {fileID: 3605441126684480504, guid: a801590f329a4a6418bfb8aba5478354, type: 3}
+  - {fileID: 3605441126684480504, guid: a801590f329a4a6418bfb8aba5478354, type: 3}
+  - {fileID: 3605441126684480504, guid: a801590f329a4a6418bfb8aba5478354, type: 3}
+  - {fileID: 3605441126684480504, guid: a801590f329a4a6418bfb8aba5478354, type: 3}
+  - {fileID: 3605441126684480504, guid: a801590f329a4a6418bfb8aba5478354, type: 3}
+  - {fileID: 3605441126684480504, guid: a801590f329a4a6418bfb8aba5478354, type: 3}
+  - {fileID: 3605441126684480504, guid: a801590f329a4a6418bfb8aba5478354, type: 3}
+  - {fileID: 3605441126684480504, guid: a801590f329a4a6418bfb8aba5478354, type: 3}
+  - {fileID: 3605441126684480504, guid: a801590f329a4a6418bfb8aba5478354, type: 3}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &3293079939603486380
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4617121807339823326}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a2aa3402c43dcbc42be9e66957c705a7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  serializedCityObjects: "{\r\n  \"rootCityObjects\": [\r\n    {\r\n      \"gmlID\":
+    \"tran_ea862db7-dc34-4ad5-a2d2-3ce9970e0cc0\",\r\n      \"cityObjectIndex\":
+    [\r\n        0,\r\n        -1\r\n      ],\r\n      \"cityObjectType\": \"COT_Road\",\r\n     
+    \"children\": [\r\n        {\r\n          \"gmlID\": \"traf_25dd8c88-a908-4610-a115-47f42d45daba\",\r\n         
+    \"cityObjectIndex\": [\r\n            0,\r\n            0\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u6B69\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_4216f3e2-5a34-479b-baf6-fd40282ae596\",\r\n         
+    \"cityObjectIndex\": [\r\n            0,\r\n            1\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u8ECA\u9053\u4EA4\u5DEE\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_bdcf5385-11cd-4065-84fd-a537921b9d64\",\r\n         
+    \"cityObjectIndex\": [\r\n            0,\r\n            2\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u6B69\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_461a1018-0e81-4f3c-b8d3-f571c220a407\",\r\n         
+    \"cityObjectIndex\": [\r\n            0,\r\n            3\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u6B69\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_25dd8c88-a908-4610-a115-47f42d45daba\",\r\n         
+    \"cityObjectIndex\": [\r\n            0,\r\n            0\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u6B69\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_4216f3e2-5a34-479b-baf6-fd40282ae596\",\r\n         
+    \"cityObjectIndex\": [\r\n            0,\r\n            1\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u8ECA\u9053\u4EA4\u5DEE\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_bdcf5385-11cd-4065-84fd-a537921b9d64\",\r\n         
+    \"cityObjectIndex\": [\r\n            0,\r\n            2\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u6B69\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_461a1018-0e81-4f3c-b8d3-f571c220a407\",\r\n         
+    \"cityObjectIndex\": [\r\n            0,\r\n            3\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u6B69\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        }\r\n      ],\r\n      \"attributes\": [\r\n       
+    {\r\n          \"key\": \"core:creationdate\",\r\n          \"type\": \"Date\",\r\n         
+    \"value\": \"2024-03-15\"\r\n        },\r\n        {\r\n          \"key\": \"gml:name\",\r\n         
+    \"type\": \"String\",\r\n          \"value\": \"\u90FD\u9053316\u53F7\"\r\n       
+    },\r\n        {\r\n          \"key\": \"tran:class\",\r\n          \"type\":
+    \"String\",\r\n          \"value\": \"\u9053\u8DEF\"\r\n        },\r\n       
+    {\r\n          \"key\": \"tran:function\",\r\n          \"type\": \"String\",\r\n         
+    \"value\": \"\u90FD\u9053\u5E9C\u770C\u9053\"\r\n        },\r\n        {\r\n         
+    \"key\": \"tran:usage\",\r\n          \"type\": \"String\",\r\n          \"value\":
+    \"\u7DCA\u6025\u8F38\u9001\u9053\u8DEF\uFF08\u7B2C\u4E8C\u6B21\u7DCA\u6025\u8F38\u9001\u9053\u8DEF\uFF09\"\r\n       
+    },\r\n        {\r\n          \"key\": \"uro:roadStructureAttribute\",\r\n         
+    \"type\": \"AttributeSet\",\r\n          \"value\": [\r\n            {\r\n             
+    \"key\": \"uro:sectionType\",\r\n              \"type\": \"String\",\r\n             
+    \"value\": \"\u4EA4\u5DEE\u90E8\u3000\"\r\n            }\r\n          ]\r\n       
+    },\r\n        {\r\n          \"key\": \"uro:tranDataQualityAttribute\",\r\n         
+    \"type\": \"AttributeSet\",\r\n          \"value\": [\r\n            {\r\n             
+    \"key\": \"uro:geometrySrcDesc\",\r\n              \"type\": \"String\",\r\n             
+    \"value\": \"\u7A7A\u4E2D\u5199\u771F\u6E2C\u91CF\"\r\n            },\r\n           
+    {\r\n              \"key\": \"uro:srcScale\",\r\n              \"type\": \"String\",\r\n             
+    \"value\": \"\u5730\u56F3\u60C5\u5831\u30EC\u30D9\u30EB2500\"\r\n           
+    }\r\n          ]\r\n        }\r\n      ]\r\n    },\r\n    {\r\n      \"gmlID\":
+    \"tran_3190fd50-a58e-4d5d-9a69-14294bb91ae1\",\r\n      \"cityObjectIndex\":
+    [\r\n        1,\r\n        -1\r\n      ],\r\n      \"cityObjectType\": \"COT_Road\",\r\n     
+    \"children\": [\r\n        {\r\n          \"gmlID\": \"traf_f6b2cbed-694e-4824-88ad-fb7f25df92f8\",\r\n         
+    \"cityObjectIndex\": [\r\n            1,\r\n            0\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u8ECA\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_f6b2cbed-694e-4824-88ad-fb7f25df92f8\",\r\n         
+    \"cityObjectIndex\": [\r\n            1,\r\n            0\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u8ECA\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        }\r\n      ],\r\n      \"attributes\": [\r\n       
+    {\r\n          \"key\": \"core:creationdate\",\r\n          \"type\": \"Date\",\r\n         
+    \"value\": \"2024-03-15\"\r\n        },\r\n        {\r\n          \"key\": \"tran:class\",\r\n         
+    \"type\": \"String\",\r\n          \"value\": \"\u9053\u8DEF\"\r\n        },\r\n       
+    {\r\n          \"key\": \"uro:roadStructureAttribute\",\r\n          \"type\":
+    \"AttributeSet\",\r\n          \"value\": [\r\n            {\r\n             
+    \"key\": \"uro:sectionType\",\r\n              \"type\": \"String\",\r\n             
+    \"value\": \"\u6A4B\u6881\u3000\"\r\n            }\r\n          ]\r\n       
+    },\r\n        {\r\n          \"key\": \"uro:tranDataQualityAttribute\",\r\n         
+    \"type\": \"AttributeSet\",\r\n          \"value\": [\r\n            {\r\n             
+    \"key\": \"uro:geometrySrcDesc\",\r\n              \"type\": \"String\",\r\n             
+    \"value\": \"\u7A7A\u4E2D\u5199\u771F\u6E2C\u91CF\"\r\n            },\r\n           
+    {\r\n              \"key\": \"uro:srcScale\",\r\n              \"type\": \"String\",\r\n             
+    \"value\": \"\u5730\u56F3\u60C5\u5831\u30EC\u30D9\u30EB2500\"\r\n           
+    }\r\n          ]\r\n        }\r\n      ]\r\n    },\r\n    {\r\n      \"gmlID\":
+    \"tran_ba933821-4fb8-4514-84e0-1aaebffa0fa7\",\r\n      \"cityObjectIndex\":
+    [\r\n        2,\r\n        -1\r\n      ],\r\n      \"cityObjectType\": \"COT_Road\",\r\n     
+    \"children\": [\r\n        {\r\n          \"gmlID\": \"traf_9329a6dc-7936-4e97-8f85-279fcef0457b\",\r\n         
+    \"cityObjectIndex\": [\r\n            2,\r\n            0\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u6B69\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_1f8e614b-05fd-4b85-b13d-d9ff2a87c38c\",\r\n         
+    \"cityObjectIndex\": [\r\n            2,\r\n            1\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u6B69\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_e33c0253-17a3-4237-a953-3fcf33e802fb\",\r\n         
+    \"cityObjectIndex\": [\r\n            2,\r\n            2\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u6B69\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_af3494b1-e5b0-48ea-bccd-6c2bbb7470db\",\r\n         
+    \"cityObjectIndex\": [\r\n            2,\r\n            3\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u8ECA\u9053\u4EA4\u5DEE\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_b6fed9e3-1b09-46ba-9a70-8ab1488b7ad9\",\r\n         
+    \"cityObjectIndex\": [\r\n            2,\r\n            4\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u5CF6\"\r\n            }\r\n         
+    ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_9329a6dc-7936-4e97-8f85-279fcef0457b\",\r\n         
+    \"cityObjectIndex\": [\r\n            2,\r\n            0\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u6B69\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_1f8e614b-05fd-4b85-b13d-d9ff2a87c38c\",\r\n         
+    \"cityObjectIndex\": [\r\n            2,\r\n            1\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u6B69\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_e33c0253-17a3-4237-a953-3fcf33e802fb\",\r\n         
+    \"cityObjectIndex\": [\r\n            2,\r\n            2\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u6B69\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_af3494b1-e5b0-48ea-bccd-6c2bbb7470db\",\r\n         
+    \"cityObjectIndex\": [\r\n            2,\r\n            3\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u8ECA\u9053\u4EA4\u5DEE\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_b6fed9e3-1b09-46ba-9a70-8ab1488b7ad9\",\r\n         
+    \"cityObjectIndex\": [\r\n            2,\r\n            4\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u5CF6\"\r\n            }\r\n         
+    ]\r\n        }\r\n      ],\r\n      \"attributes\": [\r\n        {\r\n         
+    \"key\": \"core:creationdate\",\r\n          \"type\": \"Date\",\r\n         
+    \"value\": \"2024-03-15\"\r\n        },\r\n        {\r\n          \"key\": \"gml:name\",\r\n         
+    \"type\": \"String\",\r\n          \"value\": \"\u90FD\u9053316\u53F7\"\r\n       
+    },\r\n        {\r\n          \"key\": \"tran:class\",\r\n          \"type\":
+    \"String\",\r\n          \"value\": \"\u9053\u8DEF\"\r\n        },\r\n       
+    {\r\n          \"key\": \"tran:function\",\r\n          \"type\": \"String\",\r\n         
+    \"value\": \"\u90FD\u9053\u5E9C\u770C\u9053\"\r\n        },\r\n        {\r\n         
+    \"key\": \"tran:usage\",\r\n          \"type\": \"String\",\r\n          \"value\":
+    \"\u7DCA\u6025\u8F38\u9001\u9053\u8DEF\uFF08\u7B2C\u4E8C\u6B21\u7DCA\u6025\u8F38\u9001\u9053\u8DEF\uFF09\"\r\n       
+    },\r\n        {\r\n          \"key\": \"uro:roadStructureAttribute\",\r\n         
+    \"type\": \"AttributeSet\",\r\n          \"value\": [\r\n            {\r\n             
+    \"key\": \"uro:sectionType\",\r\n              \"type\": \"String\",\r\n             
+    \"value\": \"\u4EA4\u5DEE\u90E8\u3000\"\r\n            }\r\n          ]\r\n       
+    },\r\n        {\r\n          \"key\": \"uro:tranDataQualityAttribute\",\r\n         
+    \"type\": \"AttributeSet\",\r\n          \"value\": [\r\n            {\r\n             
+    \"key\": \"uro:geometrySrcDesc\",\r\n              \"type\": \"String\",\r\n             
+    \"value\": \"\u7A7A\u4E2D\u5199\u771F\u6E2C\u91CF\"\r\n            },\r\n           
+    {\r\n              \"key\": \"uro:srcScale\",\r\n              \"type\": \"String\",\r\n             
+    \"value\": \"\u5730\u56F3\u60C5\u5831\u30EC\u30D9\u30EB2500\"\r\n           
+    }\r\n          ]\r\n        }\r\n      ]\r\n    },\r\n    {\r\n      \"gmlID\":
+    \"tran_40ad1905-b6c8-4248-883e-618fdf87a044\",\r\n      \"cityObjectIndex\":
+    [\r\n        3,\r\n        -1\r\n      ],\r\n      \"cityObjectType\": \"COT_Road\",\r\n     
+    \"children\": [\r\n        {\r\n          \"gmlID\": \"traf_5a6f77ec-5861-499d-957a-bca663d1a3f3\",\r\n         
+    \"cityObjectIndex\": [\r\n            3,\r\n            0\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u6B69\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_0159c278-4bc8-4f91-a293-1e4b7be565c5\",\r\n         
+    \"cityObjectIndex\": [\r\n            3,\r\n            1\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u6B69\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_39fc1aa0-a4e5-4e4a-9a70-98cecfb857ef\",\r\n         
+    \"cityObjectIndex\": [\r\n            3,\r\n            2\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u8ECA\u9053\u4EA4\u5DEE\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_5a6f77ec-5861-499d-957a-bca663d1a3f3\",\r\n         
+    \"cityObjectIndex\": [\r\n            3,\r\n            0\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u6B69\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_0159c278-4bc8-4f91-a293-1e4b7be565c5\",\r\n         
+    \"cityObjectIndex\": [\r\n            3,\r\n            1\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u6B69\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_39fc1aa0-a4e5-4e4a-9a70-98cecfb857ef\",\r\n         
+    \"cityObjectIndex\": [\r\n            3,\r\n            2\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u8ECA\u9053\u4EA4\u5DEE\u90E8\"\r\n           
+    }\r\n          ]\r\n        }\r\n      ],\r\n      \"attributes\": [\r\n       
+    {\r\n          \"key\": \"core:creationdate\",\r\n          \"type\": \"Date\",\r\n         
+    \"value\": \"2024-03-15\"\r\n        },\r\n        {\r\n          \"key\": \"gml:name\",\r\n         
+    \"type\": \"String\",\r\n          \"value\": \"\u90FD\u9053481\u53F7\"\r\n       
+    },\r\n        {\r\n          \"key\": \"tran:class\",\r\n          \"type\":
+    \"String\",\r\n          \"value\": \"\u9053\u8DEF\"\r\n        },\r\n       
+    {\r\n          \"key\": \"tran:function\",\r\n          \"type\": \"String\",\r\n         
+    \"value\": \"\u90FD\u9053\u5E9C\u770C\u9053\"\r\n        },\r\n        {\r\n         
+    \"key\": \"uro:roadStructureAttribute\",\r\n          \"type\": \"AttributeSet\",\r\n         
+    \"value\": [\r\n            {\r\n              \"key\": \"uro:sectionType\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u4EA4\u5DEE\u90E8\u3000\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"key\": \"uro:tranDataQualityAttribute\",\r\n         
+    \"type\": \"AttributeSet\",\r\n          \"value\": [\r\n            {\r\n             
+    \"key\": \"uro:geometrySrcDesc\",\r\n              \"type\": \"String\",\r\n             
+    \"value\": \"\u7A7A\u4E2D\u5199\u771F\u6E2C\u91CF\"\r\n            },\r\n           
+    {\r\n              \"key\": \"uro:srcScale\",\r\n              \"type\": \"String\",\r\n             
+    \"value\": \"\u5730\u56F3\u60C5\u5831\u30EC\u30D9\u30EB2500\"\r\n           
+    }\r\n          ]\r\n        }\r\n      ]\r\n    },\r\n    {\r\n      \"gmlID\":
+    \"tran_d02d67c5-d761-47ad-abb6-69a6de309302\",\r\n      \"cityObjectIndex\":
+    [\r\n        4,\r\n        -1\r\n      ],\r\n      \"cityObjectType\": \"COT_Road\",\r\n     
+    \"children\": [\r\n        {\r\n          \"gmlID\": \"traf_de34eee8-8a5a-4c0e-b1eb-875acd7a13bb\",\r\n         
+    \"cityObjectIndex\": [\r\n            4,\r\n            0\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u8ECA\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_51a79004-9154-43b9-8c2a-b762e16f8823\",\r\n         
+    \"cityObjectIndex\": [\r\n            4,\r\n            1\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u6B69\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_ec751055-4a77-47fa-afb4-30ff82655553\",\r\n         
+    \"cityObjectIndex\": [\r\n            4,\r\n            2\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u6B69\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_12e84f93-10e9-4746-908c-db5ca1d863a0\",\r\n         
+    \"cityObjectIndex\": [\r\n            4,\r\n            3\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u6B69\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_2ff36f2e-88c3-4e0b-be3b-344327db71ac\",\r\n         
+    \"cityObjectIndex\": [\r\n            4,\r\n            4\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u8ECA\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_de34eee8-8a5a-4c0e-b1eb-875acd7a13bb\",\r\n         
+    \"cityObjectIndex\": [\r\n            4,\r\n            0\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u8ECA\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_51a79004-9154-43b9-8c2a-b762e16f8823\",\r\n         
+    \"cityObjectIndex\": [\r\n            4,\r\n            1\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u6B69\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_ec751055-4a77-47fa-afb4-30ff82655553\",\r\n         
+    \"cityObjectIndex\": [\r\n            4,\r\n            2\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u6B69\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_12e84f93-10e9-4746-908c-db5ca1d863a0\",\r\n         
+    \"cityObjectIndex\": [\r\n            4,\r\n            3\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u6B69\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_2ff36f2e-88c3-4e0b-be3b-344327db71ac\",\r\n         
+    \"cityObjectIndex\": [\r\n            4,\r\n            4\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u8ECA\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        }\r\n      ],\r\n      \"attributes\": [\r\n       
+    {\r\n          \"key\": \"core:creationdate\",\r\n          \"type\": \"Date\",\r\n         
+    \"value\": \"2024-03-15\"\r\n        },\r\n        {\r\n          \"key\": \"gml:name\",\r\n         
+    \"type\": \"String\",\r\n          \"value\": \"\u90FD\u9053316\u53F7\"\r\n       
+    },\r\n        {\r\n          \"key\": \"tran:class\",\r\n          \"type\":
+    \"String\",\r\n          \"value\": \"\u9053\u8DEF\"\r\n        },\r\n       
+    {\r\n          \"key\": \"tran:function\",\r\n          \"type\": \"String\",\r\n         
+    \"value\": \"\u90FD\u9053\u5E9C\u770C\u9053\"\r\n        },\r\n        {\r\n         
+    \"key\": \"uro:roadStructureAttribute\",\r\n          \"type\": \"AttributeSet\",\r\n         
+    \"value\": [\r\n            {\r\n              \"key\": \"uro:sectionType\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u571F\u5DE5\u533A\u9593\u30FB\u901A\u5E38\u533A\u9593\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"key\": \"uro:tranDataQualityAttribute\",\r\n         
+    \"type\": \"AttributeSet\",\r\n          \"value\": [\r\n            {\r\n             
+    \"key\": \"uro:geometrySrcDesc\",\r\n              \"type\": \"String\",\r\n             
+    \"value\": \"\u7A7A\u4E2D\u5199\u771F\u6E2C\u91CF\"\r\n            },\r\n           
+    {\r\n              \"key\": \"uro:srcScale\",\r\n              \"type\": \"String\",\r\n             
+    \"value\": \"\u5730\u56F3\u60C5\u5831\u30EC\u30D9\u30EB2500\"\r\n           
+    }\r\n          ]\r\n        }\r\n      ]\r\n    },\r\n    {\r\n      \"gmlID\":
+    \"tran_dbd28aae-9e54-4d85-bf3d-acc80308e791\",\r\n      \"cityObjectIndex\":
+    [\r\n        5,\r\n        -1\r\n      ],\r\n      \"cityObjectType\": \"COT_Road\",\r\n     
+    \"children\": [\r\n        {\r\n          \"gmlID\": \"traf_429a4993-60ee-4cb1-8f55-3cc1e13d5a33\",\r\n         
+    \"cityObjectIndex\": [\r\n            5,\r\n            0\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u6B69\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_82c2a2b5-1086-4129-a82b-ae6e0e247a78\",\r\n         
+    \"cityObjectIndex\": [\r\n            5,\r\n            1\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u6B69\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_53c70383-ec04-4f38-9678-4d063a212627\",\r\n         
+    \"cityObjectIndex\": [\r\n            5,\r\n            2\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u8ECA\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_c370891f-ba4f-47d4-af12-d88bfcdc9790\",\r\n         
+    \"cityObjectIndex\": [\r\n            5,\r\n            3\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u5CF6\"\r\n            }\r\n         
+    ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_9b4a2e0f-3488-43aa-a330-8b5943b8690a\",\r\n         
+    \"cityObjectIndex\": [\r\n            5,\r\n            4\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u5CF6\"\r\n            }\r\n         
+    ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_429a4993-60ee-4cb1-8f55-3cc1e13d5a33\",\r\n         
+    \"cityObjectIndex\": [\r\n            5,\r\n            0\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u6B69\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_82c2a2b5-1086-4129-a82b-ae6e0e247a78\",\r\n         
+    \"cityObjectIndex\": [\r\n            5,\r\n            1\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u6B69\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_53c70383-ec04-4f38-9678-4d063a212627\",\r\n         
+    \"cityObjectIndex\": [\r\n            5,\r\n            2\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u8ECA\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_c370891f-ba4f-47d4-af12-d88bfcdc9790\",\r\n         
+    \"cityObjectIndex\": [\r\n            5,\r\n            3\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u5CF6\"\r\n            }\r\n         
+    ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_9b4a2e0f-3488-43aa-a330-8b5943b8690a\",\r\n         
+    \"cityObjectIndex\": [\r\n            5,\r\n            4\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u5CF6\"\r\n            }\r\n         
+    ]\r\n        }\r\n      ],\r\n      \"attributes\": [\r\n        {\r\n         
+    \"key\": \"core:creationdate\",\r\n          \"type\": \"Date\",\r\n         
+    \"value\": \"2024-03-15\"\r\n        },\r\n        {\r\n          \"key\": \"gml:name\",\r\n         
+    \"type\": \"String\",\r\n          \"value\": \"\u90FD\u9053316\u53F7\"\r\n       
+    },\r\n        {\r\n          \"key\": \"tran:class\",\r\n          \"type\":
+    \"String\",\r\n          \"value\": \"\u9053\u8DEF\"\r\n        },\r\n       
+    {\r\n          \"key\": \"tran:function\",\r\n          \"type\": \"String\",\r\n         
+    \"value\": \"\u90FD\u9053\u5E9C\u770C\u9053\"\r\n        },\r\n        {\r\n         
+    \"key\": \"tran:usage\",\r\n          \"type\": \"String\",\r\n          \"value\":
+    \"\u7DCA\u6025\u8F38\u9001\u9053\u8DEF\uFF08\u7B2C\u4E8C\u6B21\u7DCA\u6025\u8F38\u9001\u9053\u8DEF\uFF09\"\r\n       
+    },\r\n        {\r\n          \"key\": \"uro:roadStructureAttribute\",\r\n         
+    \"type\": \"AttributeSet\",\r\n          \"value\": [\r\n            {\r\n             
+    \"key\": \"uro:sectionType\",\r\n              \"type\": \"String\",\r\n             
+    \"value\": \"\u571F\u5DE5\u533A\u9593\u30FB\u901A\u5E38\u533A\u9593\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"key\": \"uro:tranDataQualityAttribute\",\r\n         
+    \"type\": \"AttributeSet\",\r\n          \"value\": [\r\n            {\r\n             
+    \"key\": \"uro:geometrySrcDesc\",\r\n              \"type\": \"String\",\r\n             
+    \"value\": \"\u7A7A\u4E2D\u5199\u771F\u6E2C\u91CF\"\r\n            },\r\n           
+    {\r\n              \"key\": \"uro:srcScale\",\r\n              \"type\": \"String\",\r\n             
+    \"value\": \"\u5730\u56F3\u60C5\u5831\u30EC\u30D9\u30EB2500\"\r\n           
+    }\r\n          ]\r\n        }\r\n      ]\r\n    },\r\n    {\r\n      \"gmlID\":
+    \"tran_e7e71ca5-b14b-4a8c-a94c-d9798847f1f1\",\r\n      \"cityObjectIndex\":
+    [\r\n        6,\r\n        -1\r\n      ],\r\n      \"cityObjectType\": \"COT_Road\",\r\n     
+    \"children\": [\r\n        {\r\n          \"gmlID\": \"traf_09678fb0-8f63-4fea-ae72-8495b60cd530\",\r\n         
+    \"cityObjectIndex\": [\r\n            6,\r\n            0\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u8ECA\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_09678fb0-8f63-4fea-ae72-8495b60cd530\",\r\n         
+    \"cityObjectIndex\": [\r\n            6,\r\n            0\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u8ECA\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        }\r\n      ],\r\n      \"attributes\": [\r\n       
+    {\r\n          \"key\": \"core:creationdate\",\r\n          \"type\": \"Date\",\r\n         
+    \"value\": \"2024-03-15\"\r\n        },\r\n        {\r\n          \"key\": \"tran:class\",\r\n         
+    \"type\": \"String\",\r\n          \"value\": \"\u9053\u8DEF\"\r\n        },\r\n       
+    {\r\n          \"key\": \"uro:roadStructureAttribute\",\r\n          \"type\":
+    \"AttributeSet\",\r\n          \"value\": [\r\n            {\r\n             
+    \"key\": \"uro:sectionType\",\r\n              \"type\": \"String\",\r\n             
+    \"value\": \"\u571F\u5DE5\u533A\u9593\u30FB\u901A\u5E38\u533A\u9593\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"key\": \"uro:tranDataQualityAttribute\",\r\n         
+    \"type\": \"AttributeSet\",\r\n          \"value\": [\r\n            {\r\n             
+    \"key\": \"uro:geometrySrcDesc\",\r\n              \"type\": \"String\",\r\n             
+    \"value\": \"\u7A7A\u4E2D\u5199\u771F\u6E2C\u91CF\"\r\n            },\r\n           
+    {\r\n              \"key\": \"uro:srcScale\",\r\n              \"type\": \"String\",\r\n             
+    \"value\": \"\u5730\u56F3\u60C5\u5831\u30EC\u30D9\u30EB2500\"\r\n           
+    }\r\n          ]\r\n        }\r\n      ]\r\n    },\r\n    {\r\n      \"gmlID\":
+    \"tran_d52d75e4-f458-43ce-bac5-95800f16da14\",\r\n      \"cityObjectIndex\":
+    [\r\n        7,\r\n        -1\r\n      ],\r\n      \"cityObjectType\": \"COT_Road\",\r\n     
+    \"children\": [\r\n        {\r\n          \"gmlID\": \"traf_f8446945-570e-46aa-b654-1cbcf98a4013\",\r\n         
+    \"cityObjectIndex\": [\r\n            7,\r\n            0\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u6B69\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_f668b822-2c81-4c01-a0a6-e6d2dc99f908\",\r\n         
+    \"cityObjectIndex\": [\r\n            7,\r\n            1\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u8ECA\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_e06b6ae5-76c3-4e44-affc-d838150cb11c\",\r\n         
+    \"cityObjectIndex\": [\r\n            7,\r\n            2\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u6B69\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_f8446945-570e-46aa-b654-1cbcf98a4013\",\r\n         
+    \"cityObjectIndex\": [\r\n            7,\r\n            0\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u6B69\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_f668b822-2c81-4c01-a0a6-e6d2dc99f908\",\r\n         
+    \"cityObjectIndex\": [\r\n            7,\r\n            1\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u8ECA\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_e06b6ae5-76c3-4e44-affc-d838150cb11c\",\r\n         
+    \"cityObjectIndex\": [\r\n            7,\r\n            2\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u6B69\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        }\r\n      ],\r\n      \"attributes\": [\r\n       
+    {\r\n          \"key\": \"core:creationdate\",\r\n          \"type\": \"Date\",\r\n         
+    \"value\": \"2024-03-15\"\r\n        },\r\n        {\r\n          \"key\": \"tran:class\",\r\n         
+    \"type\": \"String\",\r\n          \"value\": \"\u9053\u8DEF\"\r\n        },\r\n       
+    {\r\n          \"key\": \"uro:roadStructureAttribute\",\r\n          \"type\":
+    \"AttributeSet\",\r\n          \"value\": [\r\n            {\r\n             
+    \"key\": \"uro:sectionType\",\r\n              \"type\": \"String\",\r\n             
+    \"value\": \"\u571F\u5DE5\u533A\u9593\u30FB\u901A\u5E38\u533A\u9593\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"key\": \"uro:tranDataQualityAttribute\",\r\n         
+    \"type\": \"AttributeSet\",\r\n          \"value\": [\r\n            {\r\n             
+    \"key\": \"uro:geometrySrcDesc\",\r\n              \"type\": \"String\",\r\n             
+    \"value\": \"\u7A7A\u4E2D\u5199\u771F\u6E2C\u91CF\"\r\n            },\r\n           
+    {\r\n              \"key\": \"uro:srcScale\",\r\n              \"type\": \"String\",\r\n             
+    \"value\": \"\u5730\u56F3\u60C5\u5831\u30EC\u30D9\u30EB2500\"\r\n           
+    }\r\n          ]\r\n        }\r\n      ]\r\n    },\r\n    {\r\n      \"gmlID\":
+    \"tran_e87bbe1b-076c-4937-808d-7e55ea9e3f78\",\r\n      \"cityObjectIndex\":
+    [\r\n        8,\r\n        -1\r\n      ],\r\n      \"cityObjectType\": \"COT_Road\",\r\n     
+    \"children\": [\r\n        {\r\n          \"gmlID\": \"traf_b1e673a9-1421-42e4-aced-c3039587d0ff\",\r\n         
+    \"cityObjectIndex\": [\r\n            8,\r\n            0\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u8ECA\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_acfbb664-fd70-4905-a906-d395896aeea2\",\r\n         
+    \"cityObjectIndex\": [\r\n            8,\r\n            1\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u6B69\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_a19cb456-394f-4a62-bb8a-1e8deb223403\",\r\n         
+    \"cityObjectIndex\": [\r\n            8,\r\n            2\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u6B69\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_b1e673a9-1421-42e4-aced-c3039587d0ff\",\r\n         
+    \"cityObjectIndex\": [\r\n            8,\r\n            0\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u8ECA\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_acfbb664-fd70-4905-a906-d395896aeea2\",\r\n         
+    \"cityObjectIndex\": [\r\n            8,\r\n            1\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u6B69\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_a19cb456-394f-4a62-bb8a-1e8deb223403\",\r\n         
+    \"cityObjectIndex\": [\r\n            8,\r\n            2\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u6B69\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        }\r\n      ],\r\n      \"attributes\": [\r\n       
+    {\r\n          \"key\": \"core:creationdate\",\r\n          \"type\": \"Date\",\r\n         
+    \"value\": \"2024-03-15\"\r\n        },\r\n        {\r\n          \"key\": \"tran:class\",\r\n         
+    \"type\": \"String\",\r\n          \"value\": \"\u9053\u8DEF\"\r\n        },\r\n       
+    {\r\n          \"key\": \"uro:roadStructureAttribute\",\r\n          \"type\":
+    \"AttributeSet\",\r\n          \"value\": [\r\n            {\r\n             
+    \"key\": \"uro:sectionType\",\r\n              \"type\": \"String\",\r\n             
+    \"value\": \"\u6A4B\u6881\u3000\"\r\n            }\r\n          ]\r\n       
+    },\r\n        {\r\n          \"key\": \"uro:tranDataQualityAttribute\",\r\n         
+    \"type\": \"AttributeSet\",\r\n          \"value\": [\r\n            {\r\n             
+    \"key\": \"uro:geometrySrcDesc\",\r\n              \"type\": \"String\",\r\n             
+    \"value\": \"\u7A7A\u4E2D\u5199\u771F\u6E2C\u91CF\"\r\n            },\r\n           
+    {\r\n              \"key\": \"uro:srcScale\",\r\n              \"type\": \"String\",\r\n             
+    \"value\": \"\u5730\u56F3\u60C5\u5831\u30EC\u30D9\u30EB2500\"\r\n           
+    }\r\n          ]\r\n        }\r\n      ]\r\n    },\r\n    {\r\n      \"gmlID\":
+    \"tran_69e71134-51f7-4d07-90b6-a9404532bf46\",\r\n      \"cityObjectIndex\":
+    [\r\n        9,\r\n        -1\r\n      ],\r\n      \"cityObjectType\": \"COT_Road\",\r\n     
+    \"children\": [\r\n        {\r\n          \"gmlID\": \"traf_6b7d6191-57aa-4838-a1c1-213f8065fd99\",\r\n         
+    \"cityObjectIndex\": [\r\n            9,\r\n            0\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u6B69\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_04e67410-8ec6-4bc7-b694-052a1d423d6a\",\r\n         
+    \"cityObjectIndex\": [\r\n            9,\r\n            1\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u6B69\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_c95f5562-eb1b-428c-83d3-331b73257370\",\r\n         
+    \"cityObjectIndex\": [\r\n            9,\r\n            2\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u6B69\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_d1ef5780-bc3e-475a-bd56-a66f0c79200b\",\r\n         
+    \"cityObjectIndex\": [\r\n            9,\r\n            3\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u6B69\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_2807ca73-7b8a-435a-856b-9b49fac586e9\",\r\n         
+    \"cityObjectIndex\": [\r\n            9,\r\n            4\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u8ECA\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_a23caeb7-2fc2-4803-aaec-f2fc191a40b6\",\r\n         
+    \"cityObjectIndex\": [\r\n            9,\r\n            5\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u5CF6\"\r\n            }\r\n         
+    ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_afcbc6e0-568f-4293-8097-49811e8d1ce0\",\r\n         
+    \"cityObjectIndex\": [\r\n            9,\r\n            6\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u5CF6\"\r\n            }\r\n         
+    ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_6b7d6191-57aa-4838-a1c1-213f8065fd99\",\r\n         
+    \"cityObjectIndex\": [\r\n            9,\r\n            0\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u6B69\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_04e67410-8ec6-4bc7-b694-052a1d423d6a\",\r\n         
+    \"cityObjectIndex\": [\r\n            9,\r\n            1\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u6B69\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_c95f5562-eb1b-428c-83d3-331b73257370\",\r\n         
+    \"cityObjectIndex\": [\r\n            9,\r\n            2\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u6B69\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_d1ef5780-bc3e-475a-bd56-a66f0c79200b\",\r\n         
+    \"cityObjectIndex\": [\r\n            9,\r\n            3\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u6B69\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_2807ca73-7b8a-435a-856b-9b49fac586e9\",\r\n         
+    \"cityObjectIndex\": [\r\n            9,\r\n            4\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u8ECA\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_a23caeb7-2fc2-4803-aaec-f2fc191a40b6\",\r\n         
+    \"cityObjectIndex\": [\r\n            9,\r\n            5\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u5CF6\"\r\n            }\r\n         
+    ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_afcbc6e0-568f-4293-8097-49811e8d1ce0\",\r\n         
+    \"cityObjectIndex\": [\r\n            9,\r\n            6\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u5CF6\"\r\n            }\r\n         
+    ]\r\n        }\r\n      ],\r\n      \"attributes\": [\r\n        {\r\n         
+    \"key\": \"core:creationdate\",\r\n          \"type\": \"Date\",\r\n         
+    \"value\": \"2024-03-15\"\r\n        },\r\n        {\r\n          \"key\": \"gml:name\",\r\n         
+    \"type\": \"String\",\r\n          \"value\": \"\u90FD\u9053316\u53F7\"\r\n       
+    },\r\n        {\r\n          \"key\": \"tran:class\",\r\n          \"type\":
+    \"String\",\r\n          \"value\": \"\u9053\u8DEF\"\r\n        },\r\n       
+    {\r\n          \"key\": \"tran:function\",\r\n          \"type\": \"String\",\r\n         
+    \"value\": \"\u90FD\u9053\u5E9C\u770C\u9053\"\r\n        },\r\n        {\r\n         
+    \"key\": \"tran:usage\",\r\n          \"type\": \"String\",\r\n          \"value\":
+    \"\u7DCA\u6025\u8F38\u9001\u9053\u8DEF\uFF08\u7B2C\u4E8C\u6B21\u7DCA\u6025\u8F38\u9001\u9053\u8DEF\uFF09\"\r\n       
+    },\r\n        {\r\n          \"key\": \"uro:roadStructureAttribute\",\r\n         
+    \"type\": \"AttributeSet\",\r\n          \"value\": [\r\n            {\r\n             
+    \"key\": \"uro:sectionType\",\r\n              \"type\": \"String\",\r\n             
+    \"value\": \"\u571F\u5DE5\u533A\u9593\u30FB\u901A\u5E38\u533A\u9593\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"key\": \"uro:tranDataQualityAttribute\",\r\n         
+    \"type\": \"AttributeSet\",\r\n          \"value\": [\r\n            {\r\n             
+    \"key\": \"uro:geometrySrcDesc\",\r\n              \"type\": \"String\",\r\n             
+    \"value\": \"\u7A7A\u4E2D\u5199\u771F\u6E2C\u91CF\"\r\n            },\r\n           
+    {\r\n              \"key\": \"uro:srcScale\",\r\n              \"type\": \"String\",\r\n             
+    \"value\": \"\u5730\u56F3\u60C5\u5831\u30EC\u30D9\u30EB2500\"\r\n           
+    }\r\n          ]\r\n        }\r\n      ]\r\n    },\r\n    {\r\n      \"gmlID\":
+    \"tran_c42efa91-fca9-443d-ac69-eef6304d165a\",\r\n      \"cityObjectIndex\":
+    [\r\n        10,\r\n        -1\r\n      ],\r\n      \"cityObjectType\": \"COT_Road\",\r\n     
+    \"children\": [\r\n        {\r\n          \"gmlID\": \"traf_d7611925-8055-4ab5-ab77-661984e9873d\",\r\n         
+    \"cityObjectIndex\": [\r\n            10,\r\n            0\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u8ECA\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_1ba5e565-18c4-4d3b-8840-fd5390303be9\",\r\n         
+    \"cityObjectIndex\": [\r\n            10,\r\n            1\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u6B69\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_d0941bcd-0e71-41fd-9a47-f38699133fc7\",\r\n         
+    \"cityObjectIndex\": [\r\n            10,\r\n            2\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u6B69\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_d7611925-8055-4ab5-ab77-661984e9873d\",\r\n         
+    \"cityObjectIndex\": [\r\n            10,\r\n            0\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u8ECA\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_1ba5e565-18c4-4d3b-8840-fd5390303be9\",\r\n         
+    \"cityObjectIndex\": [\r\n            10,\r\n            1\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u6B69\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_d0941bcd-0e71-41fd-9a47-f38699133fc7\",\r\n         
+    \"cityObjectIndex\": [\r\n            10,\r\n            2\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u6B69\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        }\r\n      ],\r\n      \"attributes\": [\r\n       
+    {\r\n          \"key\": \"core:creationdate\",\r\n          \"type\": \"Date\",\r\n         
+    \"value\": \"2024-03-15\"\r\n        },\r\n        {\r\n          \"key\": \"gml:name\",\r\n         
+    \"type\": \"String\",\r\n          \"value\": \"\u90FD\u9053316\u53F7\"\r\n       
+    },\r\n        {\r\n          \"key\": \"tran:class\",\r\n          \"type\":
+    \"String\",\r\n          \"value\": \"\u9053\u8DEF\"\r\n        },\r\n       
+    {\r\n          \"key\": \"tran:function\",\r\n          \"type\": \"String\",\r\n         
+    \"value\": \"\u90FD\u9053\u5E9C\u770C\u9053\"\r\n        },\r\n        {\r\n         
+    \"key\": \"tran:usage\",\r\n          \"type\": \"String\",\r\n          \"value\":
+    \"\u7DCA\u6025\u8F38\u9001\u9053\u8DEF\uFF08\u7B2C\u4E8C\u6B21\u7DCA\u6025\u8F38\u9001\u9053\u8DEF\uFF09\"\r\n       
+    },\r\n        {\r\n          \"key\": \"uro:roadStructureAttribute\",\r\n         
+    \"type\": \"AttributeSet\",\r\n          \"value\": [\r\n            {\r\n             
+    \"key\": \"uro:sectionType\",\r\n              \"type\": \"String\",\r\n             
+    \"value\": \"\u571F\u5DE5\u533A\u9593\u30FB\u901A\u5E38\u533A\u9593\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"key\": \"uro:tranDataQualityAttribute\",\r\n         
+    \"type\": \"AttributeSet\",\r\n          \"value\": [\r\n            {\r\n             
+    \"key\": \"uro:geometrySrcDesc\",\r\n              \"type\": \"String\",\r\n             
+    \"value\": \"\u7A7A\u4E2D\u5199\u771F\u6E2C\u91CF\"\r\n            },\r\n           
+    {\r\n              \"key\": \"uro:srcScale\",\r\n              \"type\": \"String\",\r\n             
+    \"value\": \"\u5730\u56F3\u60C5\u5831\u30EC\u30D9\u30EB2500\"\r\n           
+    }\r\n          ]\r\n        }\r\n      ]\r\n    },\r\n    {\r\n      \"gmlID\":
+    \"tran_5108f38f-f1e8-45ea-8f77-eba5eb8451a8\",\r\n      \"cityObjectIndex\":
+    [\r\n        11,\r\n        -1\r\n      ],\r\n      \"cityObjectType\": \"COT_Road\",\r\n     
+    \"children\": [\r\n        {\r\n          \"gmlID\": \"traf_3686732f-6438-457b-a73a-ca1be08401cb\",\r\n         
+    \"cityObjectIndex\": [\r\n            11,\r\n            0\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u8ECA\u9053\u4EA4\u5DEE\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_eb31f66c-642d-46b6-a0b8-09834ca14bb8\",\r\n         
+    \"cityObjectIndex\": [\r\n            11,\r\n            1\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u6B69\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_91d77683-2009-4cfc-aaaa-d0cd328fc8e1\",\r\n         
+    \"cityObjectIndex\": [\r\n            11,\r\n            2\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u6B69\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_a5edc021-4370-4e6b-97e5-9e66e87404de\",\r\n         
+    \"cityObjectIndex\": [\r\n            11,\r\n            3\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u5CF6\"\r\n            }\r\n         
+    ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_6b4db454-cb67-442b-bcc5-dcb6cfd8d4ea\",\r\n         
+    \"cityObjectIndex\": [\r\n            11,\r\n            4\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u5CF6\"\r\n            }\r\n         
+    ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_3686732f-6438-457b-a73a-ca1be08401cb\",\r\n         
+    \"cityObjectIndex\": [\r\n            11,\r\n            0\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u8ECA\u9053\u4EA4\u5DEE\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_eb31f66c-642d-46b6-a0b8-09834ca14bb8\",\r\n         
+    \"cityObjectIndex\": [\r\n            11,\r\n            1\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u6B69\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_91d77683-2009-4cfc-aaaa-d0cd328fc8e1\",\r\n         
+    \"cityObjectIndex\": [\r\n            11,\r\n            2\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u6B69\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_a5edc021-4370-4e6b-97e5-9e66e87404de\",\r\n         
+    \"cityObjectIndex\": [\r\n            11,\r\n            3\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u5CF6\"\r\n            }\r\n         
+    ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_6b4db454-cb67-442b-bcc5-dcb6cfd8d4ea\",\r\n         
+    \"cityObjectIndex\": [\r\n            11,\r\n            4\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u5CF6\"\r\n            }\r\n         
+    ]\r\n        }\r\n      ],\r\n      \"attributes\": [\r\n        {\r\n         
+    \"key\": \"core:creationdate\",\r\n          \"type\": \"Date\",\r\n         
+    \"value\": \"2024-03-15\"\r\n        },\r\n        {\r\n          \"key\": \"gml:name\",\r\n         
+    \"type\": \"String\",\r\n          \"value\": \"\u90FD\u9053316\u53F7\"\r\n       
+    },\r\n        {\r\n          \"key\": \"tran:class\",\r\n          \"type\":
+    \"String\",\r\n          \"value\": \"\u9053\u8DEF\"\r\n        },\r\n       
+    {\r\n          \"key\": \"tran:function\",\r\n          \"type\": \"String\",\r\n         
+    \"value\": \"\u90FD\u9053\u5E9C\u770C\u9053\"\r\n        },\r\n        {\r\n         
+    \"key\": \"tran:usage\",\r\n          \"type\": \"String\",\r\n          \"value\":
+    \"\u7DCA\u6025\u8F38\u9001\u9053\u8DEF\uFF08\u7B2C\u4E8C\u6B21\u7DCA\u6025\u8F38\u9001\u9053\u8DEF\uFF09\"\r\n       
+    },\r\n        {\r\n          \"key\": \"uro:roadStructureAttribute\",\r\n         
+    \"type\": \"AttributeSet\",\r\n          \"value\": [\r\n            {\r\n             
+    \"key\": \"uro:sectionType\",\r\n              \"type\": \"String\",\r\n             
+    \"value\": \"\u4EA4\u5DEE\u90E8\u3000\"\r\n            }\r\n          ]\r\n       
+    },\r\n        {\r\n          \"key\": \"uro:tranDataQualityAttribute\",\r\n         
+    \"type\": \"AttributeSet\",\r\n          \"value\": [\r\n            {\r\n             
+    \"key\": \"uro:geometrySrcDesc\",\r\n              \"type\": \"String\",\r\n             
+    \"value\": \"\u7A7A\u4E2D\u5199\u771F\u6E2C\u91CF\"\r\n            },\r\n           
+    {\r\n              \"key\": \"uro:srcScale\",\r\n              \"type\": \"String\",\r\n             
+    \"value\": \"\u5730\u56F3\u60C5\u5831\u30EC\u30D9\u30EB2500\"\r\n           
+    }\r\n          ]\r\n        }\r\n      ]\r\n    },\r\n    {\r\n      \"gmlID\":
+    \"tran_1c6157c0-e3cb-4963-9305-d8dfd6a881b4\",\r\n      \"cityObjectIndex\":
+    [\r\n        12,\r\n        -1\r\n      ],\r\n      \"cityObjectType\": \"COT_Road\",\r\n     
+    \"children\": [\r\n        {\r\n          \"gmlID\": \"traf_ce6e3724-9ac3-4cc3-931a-1055542cebc9\",\r\n         
+    \"cityObjectIndex\": [\r\n            12,\r\n            0\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u8ECA\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_ce6e3724-9ac3-4cc3-931a-1055542cebc9\",\r\n         
+    \"cityObjectIndex\": [\r\n            12,\r\n            0\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u8ECA\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        }\r\n      ],\r\n      \"attributes\": [\r\n       
+    {\r\n          \"key\": \"core:creationdate\",\r\n          \"type\": \"Date\",\r\n         
+    \"value\": \"2024-03-15\"\r\n        },\r\n        {\r\n          \"key\": \"tran:class\",\r\n         
+    \"type\": \"String\",\r\n          \"value\": \"\u9053\u8DEF\"\r\n        },\r\n       
+    {\r\n          \"key\": \"uro:roadStructureAttribute\",\r\n          \"type\":
+    \"AttributeSet\",\r\n          \"value\": [\r\n            {\r\n             
+    \"key\": \"uro:sectionType\",\r\n              \"type\": \"String\",\r\n             
+    \"value\": \"\u571F\u5DE5\u533A\u9593\u30FB\u901A\u5E38\u533A\u9593\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"key\": \"uro:tranDataQualityAttribute\",\r\n         
+    \"type\": \"AttributeSet\",\r\n          \"value\": [\r\n            {\r\n             
+    \"key\": \"uro:geometrySrcDesc\",\r\n              \"type\": \"String\",\r\n             
+    \"value\": \"\u7A7A\u4E2D\u5199\u771F\u6E2C\u91CF\"\r\n            },\r\n           
+    {\r\n              \"key\": \"uro:srcScale\",\r\n              \"type\": \"String\",\r\n             
+    \"value\": \"\u5730\u56F3\u60C5\u5831\u30EC\u30D9\u30EB2500\"\r\n           
+    }\r\n          ]\r\n        }\r\n      ]\r\n    }\r\n  ],\r\n  \"outsideParent\":
+    \"\"\r\n}"
+  infoForToolkits:
+    isTextureCombined: 1
+    isGranularityConverted: 1
+  granularity: 2
+--- !u!64 &5016302157953848080
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4617121807339823326}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: -3096979462119086769, guid: a801590f329a4a6418bfb8aba5478354, type: 3}
+--- !u!1 &5696330110805712077
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2919533133401333559}
+  - component: {fileID: 4217603374823708037}
+  - component: {fileID: 7298805055862807614}
+  - component: {fileID: 755033181982957914}
+  - component: {fileID: 884201699140750232}
+  m_Layer: 0
+  m_Name: combined
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2919533133401333559
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5696330110805712077}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 9110747594321524088}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!33 &4217603374823708037
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5696330110805712077}
+  m_Mesh: {fileID: -3340704466309137077, guid: a801590f329a4a6418bfb8aba5478354, type: 3}
+--- !u!23 &7298805055862807614
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5696330110805712077}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: 47fd897fa48363a47afeb048c5f569b6, type: 2}
+  - {fileID: 2100000, guid: 6927aa6681831fa4a9f96c25f724affb, type: 2}
+  - {fileID: 2100000, guid: 47fd897fa48363a47afeb048c5f569b6, type: 2}
+  - {fileID: 2100000, guid: 6927aa6681831fa4a9f96c25f724affb, type: 2}
+  - {fileID: 2100000, guid: 47fd897fa48363a47afeb048c5f569b6, type: 2}
+  - {fileID: 2100000, guid: eb0564957984e9346bb7f4589a105533, type: 2}
+  - {fileID: 2100000, guid: 47fd897fa48363a47afeb048c5f569b6, type: 2}
+  - {fileID: 2100000, guid: 6927aa6681831fa4a9f96c25f724affb, type: 2}
+  - {fileID: 2100000, guid: 47fd897fa48363a47afeb048c5f569b6, type: 2}
+  - {fileID: 2100000, guid: 6927aa6681831fa4a9f96c25f724affb, type: 2}
+  - {fileID: 2100000, guid: 47fd897fa48363a47afeb048c5f569b6, type: 2}
+  - {fileID: 2100000, guid: eb0564957984e9346bb7f4589a105533, type: 2}
+  - {fileID: 2100000, guid: 6927aa6681831fa4a9f96c25f724affb, type: 2}
+  - {fileID: 2100000, guid: eb0564957984e9346bb7f4589a105533, type: 2}
+  - {fileID: 2100000, guid: 47fd897fa48363a47afeb048c5f569b6, type: 2}
+  - {fileID: 2100000, guid: 6927aa6681831fa4a9f96c25f724affb, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &755033181982957914
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5696330110805712077}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a2aa3402c43dcbc42be9e66957c705a7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  serializedCityObjects: "{\r\n  \"rootCityObjects\": [\r\n    {\r\n      \"gmlID\":
+    \"tran_ea862db7-dc34-4ad5-a2d2-3ce9970e0cc0\",\r\n      \"cityObjectIndex\":
+    [\r\n        0,\r\n        -1\r\n      ],\r\n      \"cityObjectType\": \"COT_Road\",\r\n     
+    \"children\": [\r\n        {\r\n          \"gmlID\": \"traf_25dd8c88-a908-4610-a115-47f42d45daba\",\r\n         
+    \"cityObjectIndex\": [\r\n            0,\r\n            0\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u6B69\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_4216f3e2-5a34-479b-baf6-fd40282ae596\",\r\n         
+    \"cityObjectIndex\": [\r\n            0,\r\n            1\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u8ECA\u9053\u4EA4\u5DEE\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_bdcf5385-11cd-4065-84fd-a537921b9d64\",\r\n         
+    \"cityObjectIndex\": [\r\n            0,\r\n            2\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u6B69\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_461a1018-0e81-4f3c-b8d3-f571c220a407\",\r\n         
+    \"cityObjectIndex\": [\r\n            0,\r\n            3\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u6B69\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_25dd8c88-a908-4610-a115-47f42d45daba\",\r\n         
+    \"cityObjectIndex\": [\r\n            0,\r\n            0\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u6B69\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_4216f3e2-5a34-479b-baf6-fd40282ae596\",\r\n         
+    \"cityObjectIndex\": [\r\n            0,\r\n            1\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u8ECA\u9053\u4EA4\u5DEE\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_bdcf5385-11cd-4065-84fd-a537921b9d64\",\r\n         
+    \"cityObjectIndex\": [\r\n            0,\r\n            2\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u6B69\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_461a1018-0e81-4f3c-b8d3-f571c220a407\",\r\n         
+    \"cityObjectIndex\": [\r\n            0,\r\n            3\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u6B69\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        }\r\n      ],\r\n      \"attributes\": [\r\n       
+    {\r\n          \"key\": \"core:creationdate\",\r\n          \"type\": \"Date\",\r\n         
+    \"value\": \"2024-03-15\"\r\n        },\r\n        {\r\n          \"key\": \"gml:name\",\r\n         
+    \"type\": \"String\",\r\n          \"value\": \"\u90FD\u9053316\u53F7\"\r\n       
+    },\r\n        {\r\n          \"key\": \"tran:class\",\r\n          \"type\":
+    \"String\",\r\n          \"value\": \"\u9053\u8DEF\"\r\n        },\r\n       
+    {\r\n          \"key\": \"tran:function\",\r\n          \"type\": \"String\",\r\n         
+    \"value\": \"\u90FD\u9053\u5E9C\u770C\u9053\"\r\n        },\r\n        {\r\n         
+    \"key\": \"tran:usage\",\r\n          \"type\": \"String\",\r\n          \"value\":
+    \"\u7DCA\u6025\u8F38\u9001\u9053\u8DEF\uFF08\u7B2C\u4E8C\u6B21\u7DCA\u6025\u8F38\u9001\u9053\u8DEF\uFF09\"\r\n       
+    },\r\n        {\r\n          \"key\": \"uro:roadStructureAttribute\",\r\n         
+    \"type\": \"AttributeSet\",\r\n          \"value\": [\r\n            {\r\n             
+    \"key\": \"uro:sectionType\",\r\n              \"type\": \"String\",\r\n             
+    \"value\": \"\u4EA4\u5DEE\u90E8\u3000\"\r\n            }\r\n          ]\r\n       
+    },\r\n        {\r\n          \"key\": \"uro:tranDataQualityAttribute\",\r\n         
+    \"type\": \"AttributeSet\",\r\n          \"value\": [\r\n            {\r\n             
+    \"key\": \"uro:geometrySrcDesc\",\r\n              \"type\": \"String\",\r\n             
+    \"value\": \"\u7A7A\u4E2D\u5199\u771F\u6E2C\u91CF\"\r\n            },\r\n           
+    {\r\n              \"key\": \"uro:srcScale\",\r\n              \"type\": \"String\",\r\n             
+    \"value\": \"\u5730\u56F3\u60C5\u5831\u30EC\u30D9\u30EB2500\"\r\n           
+    }\r\n          ]\r\n        }\r\n      ]\r\n    },\r\n    {\r\n      \"gmlID\":
+    \"tran_3190fd50-a58e-4d5d-9a69-14294bb91ae1\",\r\n      \"cityObjectIndex\":
+    [\r\n        1,\r\n        -1\r\n      ],\r\n      \"cityObjectType\": \"COT_Road\",\r\n     
+    \"children\": [\r\n        {\r\n          \"gmlID\": \"traf_f6b2cbed-694e-4824-88ad-fb7f25df92f8\",\r\n         
+    \"cityObjectIndex\": [\r\n            1,\r\n            0\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u8ECA\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_f6b2cbed-694e-4824-88ad-fb7f25df92f8\",\r\n         
+    \"cityObjectIndex\": [\r\n            1,\r\n            0\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u8ECA\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        }\r\n      ],\r\n      \"attributes\": [\r\n       
+    {\r\n          \"key\": \"core:creationdate\",\r\n          \"type\": \"Date\",\r\n         
+    \"value\": \"2024-03-15\"\r\n        },\r\n        {\r\n          \"key\": \"tran:class\",\r\n         
+    \"type\": \"String\",\r\n          \"value\": \"\u9053\u8DEF\"\r\n        },\r\n       
+    {\r\n          \"key\": \"uro:roadStructureAttribute\",\r\n          \"type\":
+    \"AttributeSet\",\r\n          \"value\": [\r\n            {\r\n             
+    \"key\": \"uro:sectionType\",\r\n              \"type\": \"String\",\r\n             
+    \"value\": \"\u6A4B\u6881\u3000\"\r\n            }\r\n          ]\r\n       
+    },\r\n        {\r\n          \"key\": \"uro:tranDataQualityAttribute\",\r\n         
+    \"type\": \"AttributeSet\",\r\n          \"value\": [\r\n            {\r\n             
+    \"key\": \"uro:geometrySrcDesc\",\r\n              \"type\": \"String\",\r\n             
+    \"value\": \"\u7A7A\u4E2D\u5199\u771F\u6E2C\u91CF\"\r\n            },\r\n           
+    {\r\n              \"key\": \"uro:srcScale\",\r\n              \"type\": \"String\",\r\n             
+    \"value\": \"\u5730\u56F3\u60C5\u5831\u30EC\u30D9\u30EB2500\"\r\n           
+    }\r\n          ]\r\n        }\r\n      ]\r\n    },\r\n    {\r\n      \"gmlID\":
+    \"tran_ba933821-4fb8-4514-84e0-1aaebffa0fa7\",\r\n      \"cityObjectIndex\":
+    [\r\n        2,\r\n        -1\r\n      ],\r\n      \"cityObjectType\": \"COT_Road\",\r\n     
+    \"children\": [\r\n        {\r\n          \"gmlID\": \"traf_9329a6dc-7936-4e97-8f85-279fcef0457b\",\r\n         
+    \"cityObjectIndex\": [\r\n            2,\r\n            0\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u6B69\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_1f8e614b-05fd-4b85-b13d-d9ff2a87c38c\",\r\n         
+    \"cityObjectIndex\": [\r\n            2,\r\n            1\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u6B69\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_e33c0253-17a3-4237-a953-3fcf33e802fb\",\r\n         
+    \"cityObjectIndex\": [\r\n            2,\r\n            2\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u6B69\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_af3494b1-e5b0-48ea-bccd-6c2bbb7470db\",\r\n         
+    \"cityObjectIndex\": [\r\n            2,\r\n            3\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u8ECA\u9053\u4EA4\u5DEE\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_b6fed9e3-1b09-46ba-9a70-8ab1488b7ad9\",\r\n         
+    \"cityObjectIndex\": [\r\n            2,\r\n            4\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u5CF6\"\r\n            }\r\n         
+    ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_9329a6dc-7936-4e97-8f85-279fcef0457b\",\r\n         
+    \"cityObjectIndex\": [\r\n            2,\r\n            0\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u6B69\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_1f8e614b-05fd-4b85-b13d-d9ff2a87c38c\",\r\n         
+    \"cityObjectIndex\": [\r\n            2,\r\n            1\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u6B69\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_e33c0253-17a3-4237-a953-3fcf33e802fb\",\r\n         
+    \"cityObjectIndex\": [\r\n            2,\r\n            2\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u6B69\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_af3494b1-e5b0-48ea-bccd-6c2bbb7470db\",\r\n         
+    \"cityObjectIndex\": [\r\n            2,\r\n            3\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u8ECA\u9053\u4EA4\u5DEE\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_b6fed9e3-1b09-46ba-9a70-8ab1488b7ad9\",\r\n         
+    \"cityObjectIndex\": [\r\n            2,\r\n            4\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u5CF6\"\r\n            }\r\n         
+    ]\r\n        }\r\n      ],\r\n      \"attributes\": [\r\n        {\r\n         
+    \"key\": \"core:creationdate\",\r\n          \"type\": \"Date\",\r\n         
+    \"value\": \"2024-03-15\"\r\n        },\r\n        {\r\n          \"key\": \"gml:name\",\r\n         
+    \"type\": \"String\",\r\n          \"value\": \"\u90FD\u9053316\u53F7\"\r\n       
+    },\r\n        {\r\n          \"key\": \"tran:class\",\r\n          \"type\":
+    \"String\",\r\n          \"value\": \"\u9053\u8DEF\"\r\n        },\r\n       
+    {\r\n          \"key\": \"tran:function\",\r\n          \"type\": \"String\",\r\n         
+    \"value\": \"\u90FD\u9053\u5E9C\u770C\u9053\"\r\n        },\r\n        {\r\n         
+    \"key\": \"tran:usage\",\r\n          \"type\": \"String\",\r\n          \"value\":
+    \"\u7DCA\u6025\u8F38\u9001\u9053\u8DEF\uFF08\u7B2C\u4E8C\u6B21\u7DCA\u6025\u8F38\u9001\u9053\u8DEF\uFF09\"\r\n       
+    },\r\n        {\r\n          \"key\": \"uro:roadStructureAttribute\",\r\n         
+    \"type\": \"AttributeSet\",\r\n          \"value\": [\r\n            {\r\n             
+    \"key\": \"uro:sectionType\",\r\n              \"type\": \"String\",\r\n             
+    \"value\": \"\u4EA4\u5DEE\u90E8\u3000\"\r\n            }\r\n          ]\r\n       
+    },\r\n        {\r\n          \"key\": \"uro:tranDataQualityAttribute\",\r\n         
+    \"type\": \"AttributeSet\",\r\n          \"value\": [\r\n            {\r\n             
+    \"key\": \"uro:geometrySrcDesc\",\r\n              \"type\": \"String\",\r\n             
+    \"value\": \"\u7A7A\u4E2D\u5199\u771F\u6E2C\u91CF\"\r\n            },\r\n           
+    {\r\n              \"key\": \"uro:srcScale\",\r\n              \"type\": \"String\",\r\n             
+    \"value\": \"\u5730\u56F3\u60C5\u5831\u30EC\u30D9\u30EB2500\"\r\n           
+    }\r\n          ]\r\n        }\r\n      ]\r\n    },\r\n    {\r\n      \"gmlID\":
+    \"tran_40ad1905-b6c8-4248-883e-618fdf87a044\",\r\n      \"cityObjectIndex\":
+    [\r\n        3,\r\n        -1\r\n      ],\r\n      \"cityObjectType\": \"COT_Road\",\r\n     
+    \"children\": [\r\n        {\r\n          \"gmlID\": \"traf_5a6f77ec-5861-499d-957a-bca663d1a3f3\",\r\n         
+    \"cityObjectIndex\": [\r\n            3,\r\n            0\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u6B69\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_0159c278-4bc8-4f91-a293-1e4b7be565c5\",\r\n         
+    \"cityObjectIndex\": [\r\n            3,\r\n            1\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u6B69\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_39fc1aa0-a4e5-4e4a-9a70-98cecfb857ef\",\r\n         
+    \"cityObjectIndex\": [\r\n            3,\r\n            2\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u8ECA\u9053\u4EA4\u5DEE\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_5a6f77ec-5861-499d-957a-bca663d1a3f3\",\r\n         
+    \"cityObjectIndex\": [\r\n            3,\r\n            0\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u6B69\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_0159c278-4bc8-4f91-a293-1e4b7be565c5\",\r\n         
+    \"cityObjectIndex\": [\r\n            3,\r\n            1\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u6B69\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_39fc1aa0-a4e5-4e4a-9a70-98cecfb857ef\",\r\n         
+    \"cityObjectIndex\": [\r\n            3,\r\n            2\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u8ECA\u9053\u4EA4\u5DEE\u90E8\"\r\n           
+    }\r\n          ]\r\n        }\r\n      ],\r\n      \"attributes\": [\r\n       
+    {\r\n          \"key\": \"core:creationdate\",\r\n          \"type\": \"Date\",\r\n         
+    \"value\": \"2024-03-15\"\r\n        },\r\n        {\r\n          \"key\": \"gml:name\",\r\n         
+    \"type\": \"String\",\r\n          \"value\": \"\u90FD\u9053481\u53F7\"\r\n       
+    },\r\n        {\r\n          \"key\": \"tran:class\",\r\n          \"type\":
+    \"String\",\r\n          \"value\": \"\u9053\u8DEF\"\r\n        },\r\n       
+    {\r\n          \"key\": \"tran:function\",\r\n          \"type\": \"String\",\r\n         
+    \"value\": \"\u90FD\u9053\u5E9C\u770C\u9053\"\r\n        },\r\n        {\r\n         
+    \"key\": \"uro:roadStructureAttribute\",\r\n          \"type\": \"AttributeSet\",\r\n         
+    \"value\": [\r\n            {\r\n              \"key\": \"uro:sectionType\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u4EA4\u5DEE\u90E8\u3000\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"key\": \"uro:tranDataQualityAttribute\",\r\n         
+    \"type\": \"AttributeSet\",\r\n          \"value\": [\r\n            {\r\n             
+    \"key\": \"uro:geometrySrcDesc\",\r\n              \"type\": \"String\",\r\n             
+    \"value\": \"\u7A7A\u4E2D\u5199\u771F\u6E2C\u91CF\"\r\n            },\r\n           
+    {\r\n              \"key\": \"uro:srcScale\",\r\n              \"type\": \"String\",\r\n             
+    \"value\": \"\u5730\u56F3\u60C5\u5831\u30EC\u30D9\u30EB2500\"\r\n           
+    }\r\n          ]\r\n        }\r\n      ]\r\n    },\r\n    {\r\n      \"gmlID\":
+    \"tran_d02d67c5-d761-47ad-abb6-69a6de309302\",\r\n      \"cityObjectIndex\":
+    [\r\n        4,\r\n        -1\r\n      ],\r\n      \"cityObjectType\": \"COT_Road\",\r\n     
+    \"children\": [\r\n        {\r\n          \"gmlID\": \"traf_de34eee8-8a5a-4c0e-b1eb-875acd7a13bb\",\r\n         
+    \"cityObjectIndex\": [\r\n            4,\r\n            0\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u8ECA\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_51a79004-9154-43b9-8c2a-b762e16f8823\",\r\n         
+    \"cityObjectIndex\": [\r\n            4,\r\n            1\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u6B69\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_ec751055-4a77-47fa-afb4-30ff82655553\",\r\n         
+    \"cityObjectIndex\": [\r\n            4,\r\n            2\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u6B69\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_12e84f93-10e9-4746-908c-db5ca1d863a0\",\r\n         
+    \"cityObjectIndex\": [\r\n            4,\r\n            3\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u6B69\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_2ff36f2e-88c3-4e0b-be3b-344327db71ac\",\r\n         
+    \"cityObjectIndex\": [\r\n            4,\r\n            4\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u8ECA\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_de34eee8-8a5a-4c0e-b1eb-875acd7a13bb\",\r\n         
+    \"cityObjectIndex\": [\r\n            4,\r\n            0\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u8ECA\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_51a79004-9154-43b9-8c2a-b762e16f8823\",\r\n         
+    \"cityObjectIndex\": [\r\n            4,\r\n            1\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u6B69\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_ec751055-4a77-47fa-afb4-30ff82655553\",\r\n         
+    \"cityObjectIndex\": [\r\n            4,\r\n            2\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u6B69\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_12e84f93-10e9-4746-908c-db5ca1d863a0\",\r\n         
+    \"cityObjectIndex\": [\r\n            4,\r\n            3\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u6B69\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_2ff36f2e-88c3-4e0b-be3b-344327db71ac\",\r\n         
+    \"cityObjectIndex\": [\r\n            4,\r\n            4\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u8ECA\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        }\r\n      ],\r\n      \"attributes\": [\r\n       
+    {\r\n          \"key\": \"core:creationdate\",\r\n          \"type\": \"Date\",\r\n         
+    \"value\": \"2024-03-15\"\r\n        },\r\n        {\r\n          \"key\": \"gml:name\",\r\n         
+    \"type\": \"String\",\r\n          \"value\": \"\u90FD\u9053316\u53F7\"\r\n       
+    },\r\n        {\r\n          \"key\": \"tran:class\",\r\n          \"type\":
+    \"String\",\r\n          \"value\": \"\u9053\u8DEF\"\r\n        },\r\n       
+    {\r\n          \"key\": \"tran:function\",\r\n          \"type\": \"String\",\r\n         
+    \"value\": \"\u90FD\u9053\u5E9C\u770C\u9053\"\r\n        },\r\n        {\r\n         
+    \"key\": \"uro:roadStructureAttribute\",\r\n          \"type\": \"AttributeSet\",\r\n         
+    \"value\": [\r\n            {\r\n              \"key\": \"uro:sectionType\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u571F\u5DE5\u533A\u9593\u30FB\u901A\u5E38\u533A\u9593\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"key\": \"uro:tranDataQualityAttribute\",\r\n         
+    \"type\": \"AttributeSet\",\r\n          \"value\": [\r\n            {\r\n             
+    \"key\": \"uro:geometrySrcDesc\",\r\n              \"type\": \"String\",\r\n             
+    \"value\": \"\u7A7A\u4E2D\u5199\u771F\u6E2C\u91CF\"\r\n            },\r\n           
+    {\r\n              \"key\": \"uro:srcScale\",\r\n              \"type\": \"String\",\r\n             
+    \"value\": \"\u5730\u56F3\u60C5\u5831\u30EC\u30D9\u30EB2500\"\r\n           
+    }\r\n          ]\r\n        }\r\n      ]\r\n    },\r\n    {\r\n      \"gmlID\":
+    \"tran_dbd28aae-9e54-4d85-bf3d-acc80308e791\",\r\n      \"cityObjectIndex\":
+    [\r\n        5,\r\n        -1\r\n      ],\r\n      \"cityObjectType\": \"COT_Road\",\r\n     
+    \"children\": [\r\n        {\r\n          \"gmlID\": \"traf_429a4993-60ee-4cb1-8f55-3cc1e13d5a33\",\r\n         
+    \"cityObjectIndex\": [\r\n            5,\r\n            0\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u6B69\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_82c2a2b5-1086-4129-a82b-ae6e0e247a78\",\r\n         
+    \"cityObjectIndex\": [\r\n            5,\r\n            1\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u6B69\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_53c70383-ec04-4f38-9678-4d063a212627\",\r\n         
+    \"cityObjectIndex\": [\r\n            5,\r\n            2\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u8ECA\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_c370891f-ba4f-47d4-af12-d88bfcdc9790\",\r\n         
+    \"cityObjectIndex\": [\r\n            5,\r\n            3\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u5CF6\"\r\n            }\r\n         
+    ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_9b4a2e0f-3488-43aa-a330-8b5943b8690a\",\r\n         
+    \"cityObjectIndex\": [\r\n            5,\r\n            4\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u5CF6\"\r\n            }\r\n         
+    ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_429a4993-60ee-4cb1-8f55-3cc1e13d5a33\",\r\n         
+    \"cityObjectIndex\": [\r\n            5,\r\n            0\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u6B69\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_82c2a2b5-1086-4129-a82b-ae6e0e247a78\",\r\n         
+    \"cityObjectIndex\": [\r\n            5,\r\n            1\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u6B69\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_53c70383-ec04-4f38-9678-4d063a212627\",\r\n         
+    \"cityObjectIndex\": [\r\n            5,\r\n            2\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u8ECA\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_c370891f-ba4f-47d4-af12-d88bfcdc9790\",\r\n         
+    \"cityObjectIndex\": [\r\n            5,\r\n            3\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u5CF6\"\r\n            }\r\n         
+    ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_9b4a2e0f-3488-43aa-a330-8b5943b8690a\",\r\n         
+    \"cityObjectIndex\": [\r\n            5,\r\n            4\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u5CF6\"\r\n            }\r\n         
+    ]\r\n        }\r\n      ],\r\n      \"attributes\": [\r\n        {\r\n         
+    \"key\": \"core:creationdate\",\r\n          \"type\": \"Date\",\r\n         
+    \"value\": \"2024-03-15\"\r\n        },\r\n        {\r\n          \"key\": \"gml:name\",\r\n         
+    \"type\": \"String\",\r\n          \"value\": \"\u90FD\u9053316\u53F7\"\r\n       
+    },\r\n        {\r\n          \"key\": \"tran:class\",\r\n          \"type\":
+    \"String\",\r\n          \"value\": \"\u9053\u8DEF\"\r\n        },\r\n       
+    {\r\n          \"key\": \"tran:function\",\r\n          \"type\": \"String\",\r\n         
+    \"value\": \"\u90FD\u9053\u5E9C\u770C\u9053\"\r\n        },\r\n        {\r\n         
+    \"key\": \"tran:usage\",\r\n          \"type\": \"String\",\r\n          \"value\":
+    \"\u7DCA\u6025\u8F38\u9001\u9053\u8DEF\uFF08\u7B2C\u4E8C\u6B21\u7DCA\u6025\u8F38\u9001\u9053\u8DEF\uFF09\"\r\n       
+    },\r\n        {\r\n          \"key\": \"uro:roadStructureAttribute\",\r\n         
+    \"type\": \"AttributeSet\",\r\n          \"value\": [\r\n            {\r\n             
+    \"key\": \"uro:sectionType\",\r\n              \"type\": \"String\",\r\n             
+    \"value\": \"\u571F\u5DE5\u533A\u9593\u30FB\u901A\u5E38\u533A\u9593\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"key\": \"uro:tranDataQualityAttribute\",\r\n         
+    \"type\": \"AttributeSet\",\r\n          \"value\": [\r\n            {\r\n             
+    \"key\": \"uro:geometrySrcDesc\",\r\n              \"type\": \"String\",\r\n             
+    \"value\": \"\u7A7A\u4E2D\u5199\u771F\u6E2C\u91CF\"\r\n            },\r\n           
+    {\r\n              \"key\": \"uro:srcScale\",\r\n              \"type\": \"String\",\r\n             
+    \"value\": \"\u5730\u56F3\u60C5\u5831\u30EC\u30D9\u30EB2500\"\r\n           
+    }\r\n          ]\r\n        }\r\n      ]\r\n    },\r\n    {\r\n      \"gmlID\":
+    \"tran_e7e71ca5-b14b-4a8c-a94c-d9798847f1f1\",\r\n      \"cityObjectIndex\":
+    [\r\n        6,\r\n        -1\r\n      ],\r\n      \"cityObjectType\": \"COT_Road\",\r\n     
+    \"children\": [\r\n        {\r\n          \"gmlID\": \"traf_09678fb0-8f63-4fea-ae72-8495b60cd530\",\r\n         
+    \"cityObjectIndex\": [\r\n            6,\r\n            0\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u8ECA\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_09678fb0-8f63-4fea-ae72-8495b60cd530\",\r\n         
+    \"cityObjectIndex\": [\r\n            6,\r\n            0\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u8ECA\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        }\r\n      ],\r\n      \"attributes\": [\r\n       
+    {\r\n          \"key\": \"core:creationdate\",\r\n          \"type\": \"Date\",\r\n         
+    \"value\": \"2024-03-15\"\r\n        },\r\n        {\r\n          \"key\": \"tran:class\",\r\n         
+    \"type\": \"String\",\r\n          \"value\": \"\u9053\u8DEF\"\r\n        },\r\n       
+    {\r\n          \"key\": \"uro:roadStructureAttribute\",\r\n          \"type\":
+    \"AttributeSet\",\r\n          \"value\": [\r\n            {\r\n             
+    \"key\": \"uro:sectionType\",\r\n              \"type\": \"String\",\r\n             
+    \"value\": \"\u571F\u5DE5\u533A\u9593\u30FB\u901A\u5E38\u533A\u9593\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"key\": \"uro:tranDataQualityAttribute\",\r\n         
+    \"type\": \"AttributeSet\",\r\n          \"value\": [\r\n            {\r\n             
+    \"key\": \"uro:geometrySrcDesc\",\r\n              \"type\": \"String\",\r\n             
+    \"value\": \"\u7A7A\u4E2D\u5199\u771F\u6E2C\u91CF\"\r\n            },\r\n           
+    {\r\n              \"key\": \"uro:srcScale\",\r\n              \"type\": \"String\",\r\n             
+    \"value\": \"\u5730\u56F3\u60C5\u5831\u30EC\u30D9\u30EB2500\"\r\n           
+    }\r\n          ]\r\n        }\r\n      ]\r\n    },\r\n    {\r\n      \"gmlID\":
+    \"tran_d52d75e4-f458-43ce-bac5-95800f16da14\",\r\n      \"cityObjectIndex\":
+    [\r\n        7,\r\n        -1\r\n      ],\r\n      \"cityObjectType\": \"COT_Road\",\r\n     
+    \"children\": [\r\n        {\r\n          \"gmlID\": \"traf_f8446945-570e-46aa-b654-1cbcf98a4013\",\r\n         
+    \"cityObjectIndex\": [\r\n            7,\r\n            0\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u6B69\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_f668b822-2c81-4c01-a0a6-e6d2dc99f908\",\r\n         
+    \"cityObjectIndex\": [\r\n            7,\r\n            1\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u8ECA\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_e06b6ae5-76c3-4e44-affc-d838150cb11c\",\r\n         
+    \"cityObjectIndex\": [\r\n            7,\r\n            2\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u6B69\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_f8446945-570e-46aa-b654-1cbcf98a4013\",\r\n         
+    \"cityObjectIndex\": [\r\n            7,\r\n            0\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u6B69\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_f668b822-2c81-4c01-a0a6-e6d2dc99f908\",\r\n         
+    \"cityObjectIndex\": [\r\n            7,\r\n            1\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u8ECA\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_e06b6ae5-76c3-4e44-affc-d838150cb11c\",\r\n         
+    \"cityObjectIndex\": [\r\n            7,\r\n            2\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u6B69\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        }\r\n      ],\r\n      \"attributes\": [\r\n       
+    {\r\n          \"key\": \"core:creationdate\",\r\n          \"type\": \"Date\",\r\n         
+    \"value\": \"2024-03-15\"\r\n        },\r\n        {\r\n          \"key\": \"tran:class\",\r\n         
+    \"type\": \"String\",\r\n          \"value\": \"\u9053\u8DEF\"\r\n        },\r\n       
+    {\r\n          \"key\": \"uro:roadStructureAttribute\",\r\n          \"type\":
+    \"AttributeSet\",\r\n          \"value\": [\r\n            {\r\n             
+    \"key\": \"uro:sectionType\",\r\n              \"type\": \"String\",\r\n             
+    \"value\": \"\u571F\u5DE5\u533A\u9593\u30FB\u901A\u5E38\u533A\u9593\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"key\": \"uro:tranDataQualityAttribute\",\r\n         
+    \"type\": \"AttributeSet\",\r\n          \"value\": [\r\n            {\r\n             
+    \"key\": \"uro:geometrySrcDesc\",\r\n              \"type\": \"String\",\r\n             
+    \"value\": \"\u7A7A\u4E2D\u5199\u771F\u6E2C\u91CF\"\r\n            },\r\n           
+    {\r\n              \"key\": \"uro:srcScale\",\r\n              \"type\": \"String\",\r\n             
+    \"value\": \"\u5730\u56F3\u60C5\u5831\u30EC\u30D9\u30EB2500\"\r\n           
+    }\r\n          ]\r\n        }\r\n      ]\r\n    },\r\n    {\r\n      \"gmlID\":
+    \"tran_e87bbe1b-076c-4937-808d-7e55ea9e3f78\",\r\n      \"cityObjectIndex\":
+    [\r\n        8,\r\n        -1\r\n      ],\r\n      \"cityObjectType\": \"COT_Road\",\r\n     
+    \"children\": [\r\n        {\r\n          \"gmlID\": \"traf_b1e673a9-1421-42e4-aced-c3039587d0ff\",\r\n         
+    \"cityObjectIndex\": [\r\n            8,\r\n            0\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u8ECA\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_acfbb664-fd70-4905-a906-d395896aeea2\",\r\n         
+    \"cityObjectIndex\": [\r\n            8,\r\n            1\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u6B69\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_a19cb456-394f-4a62-bb8a-1e8deb223403\",\r\n         
+    \"cityObjectIndex\": [\r\n            8,\r\n            2\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u6B69\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_b1e673a9-1421-42e4-aced-c3039587d0ff\",\r\n         
+    \"cityObjectIndex\": [\r\n            8,\r\n            0\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u8ECA\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_acfbb664-fd70-4905-a906-d395896aeea2\",\r\n         
+    \"cityObjectIndex\": [\r\n            8,\r\n            1\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u6B69\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_a19cb456-394f-4a62-bb8a-1e8deb223403\",\r\n         
+    \"cityObjectIndex\": [\r\n            8,\r\n            2\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u6B69\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        }\r\n      ],\r\n      \"attributes\": [\r\n       
+    {\r\n          \"key\": \"core:creationdate\",\r\n          \"type\": \"Date\",\r\n         
+    \"value\": \"2024-03-15\"\r\n        },\r\n        {\r\n          \"key\": \"tran:class\",\r\n         
+    \"type\": \"String\",\r\n          \"value\": \"\u9053\u8DEF\"\r\n        },\r\n       
+    {\r\n          \"key\": \"uro:roadStructureAttribute\",\r\n          \"type\":
+    \"AttributeSet\",\r\n          \"value\": [\r\n            {\r\n             
+    \"key\": \"uro:sectionType\",\r\n              \"type\": \"String\",\r\n             
+    \"value\": \"\u6A4B\u6881\u3000\"\r\n            }\r\n          ]\r\n       
+    },\r\n        {\r\n          \"key\": \"uro:tranDataQualityAttribute\",\r\n         
+    \"type\": \"AttributeSet\",\r\n          \"value\": [\r\n            {\r\n             
+    \"key\": \"uro:geometrySrcDesc\",\r\n              \"type\": \"String\",\r\n             
+    \"value\": \"\u7A7A\u4E2D\u5199\u771F\u6E2C\u91CF\"\r\n            },\r\n           
+    {\r\n              \"key\": \"uro:srcScale\",\r\n              \"type\": \"String\",\r\n             
+    \"value\": \"\u5730\u56F3\u60C5\u5831\u30EC\u30D9\u30EB2500\"\r\n           
+    }\r\n          ]\r\n        }\r\n      ]\r\n    },\r\n    {\r\n      \"gmlID\":
+    \"tran_69e71134-51f7-4d07-90b6-a9404532bf46\",\r\n      \"cityObjectIndex\":
+    [\r\n        9,\r\n        -1\r\n      ],\r\n      \"cityObjectType\": \"COT_Road\",\r\n     
+    \"children\": [\r\n        {\r\n          \"gmlID\": \"traf_6b7d6191-57aa-4838-a1c1-213f8065fd99\",\r\n         
+    \"cityObjectIndex\": [\r\n            9,\r\n            0\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u6B69\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_04e67410-8ec6-4bc7-b694-052a1d423d6a\",\r\n         
+    \"cityObjectIndex\": [\r\n            9,\r\n            1\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u6B69\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_c95f5562-eb1b-428c-83d3-331b73257370\",\r\n         
+    \"cityObjectIndex\": [\r\n            9,\r\n            2\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u6B69\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_d1ef5780-bc3e-475a-bd56-a66f0c79200b\",\r\n         
+    \"cityObjectIndex\": [\r\n            9,\r\n            3\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u6B69\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_2807ca73-7b8a-435a-856b-9b49fac586e9\",\r\n         
+    \"cityObjectIndex\": [\r\n            9,\r\n            4\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u8ECA\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_a23caeb7-2fc2-4803-aaec-f2fc191a40b6\",\r\n         
+    \"cityObjectIndex\": [\r\n            9,\r\n            5\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u5CF6\"\r\n            }\r\n         
+    ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_afcbc6e0-568f-4293-8097-49811e8d1ce0\",\r\n         
+    \"cityObjectIndex\": [\r\n            9,\r\n            6\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u5CF6\"\r\n            }\r\n         
+    ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_6b7d6191-57aa-4838-a1c1-213f8065fd99\",\r\n         
+    \"cityObjectIndex\": [\r\n            9,\r\n            0\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u6B69\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_04e67410-8ec6-4bc7-b694-052a1d423d6a\",\r\n         
+    \"cityObjectIndex\": [\r\n            9,\r\n            1\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u6B69\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_c95f5562-eb1b-428c-83d3-331b73257370\",\r\n         
+    \"cityObjectIndex\": [\r\n            9,\r\n            2\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u6B69\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_d1ef5780-bc3e-475a-bd56-a66f0c79200b\",\r\n         
+    \"cityObjectIndex\": [\r\n            9,\r\n            3\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u6B69\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_2807ca73-7b8a-435a-856b-9b49fac586e9\",\r\n         
+    \"cityObjectIndex\": [\r\n            9,\r\n            4\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u8ECA\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_a23caeb7-2fc2-4803-aaec-f2fc191a40b6\",\r\n         
+    \"cityObjectIndex\": [\r\n            9,\r\n            5\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u5CF6\"\r\n            }\r\n         
+    ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_afcbc6e0-568f-4293-8097-49811e8d1ce0\",\r\n         
+    \"cityObjectIndex\": [\r\n            9,\r\n            6\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u5CF6\"\r\n            }\r\n         
+    ]\r\n        }\r\n      ],\r\n      \"attributes\": [\r\n        {\r\n         
+    \"key\": \"core:creationdate\",\r\n          \"type\": \"Date\",\r\n         
+    \"value\": \"2024-03-15\"\r\n        },\r\n        {\r\n          \"key\": \"gml:name\",\r\n         
+    \"type\": \"String\",\r\n          \"value\": \"\u90FD\u9053316\u53F7\"\r\n       
+    },\r\n        {\r\n          \"key\": \"tran:class\",\r\n          \"type\":
+    \"String\",\r\n          \"value\": \"\u9053\u8DEF\"\r\n        },\r\n       
+    {\r\n          \"key\": \"tran:function\",\r\n          \"type\": \"String\",\r\n         
+    \"value\": \"\u90FD\u9053\u5E9C\u770C\u9053\"\r\n        },\r\n        {\r\n         
+    \"key\": \"tran:usage\",\r\n          \"type\": \"String\",\r\n          \"value\":
+    \"\u7DCA\u6025\u8F38\u9001\u9053\u8DEF\uFF08\u7B2C\u4E8C\u6B21\u7DCA\u6025\u8F38\u9001\u9053\u8DEF\uFF09\"\r\n       
+    },\r\n        {\r\n          \"key\": \"uro:roadStructureAttribute\",\r\n         
+    \"type\": \"AttributeSet\",\r\n          \"value\": [\r\n            {\r\n             
+    \"key\": \"uro:sectionType\",\r\n              \"type\": \"String\",\r\n             
+    \"value\": \"\u571F\u5DE5\u533A\u9593\u30FB\u901A\u5E38\u533A\u9593\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"key\": \"uro:tranDataQualityAttribute\",\r\n         
+    \"type\": \"AttributeSet\",\r\n          \"value\": [\r\n            {\r\n             
+    \"key\": \"uro:geometrySrcDesc\",\r\n              \"type\": \"String\",\r\n             
+    \"value\": \"\u7A7A\u4E2D\u5199\u771F\u6E2C\u91CF\"\r\n            },\r\n           
+    {\r\n              \"key\": \"uro:srcScale\",\r\n              \"type\": \"String\",\r\n             
+    \"value\": \"\u5730\u56F3\u60C5\u5831\u30EC\u30D9\u30EB2500\"\r\n           
+    }\r\n          ]\r\n        }\r\n      ]\r\n    },\r\n    {\r\n      \"gmlID\":
+    \"tran_c42efa91-fca9-443d-ac69-eef6304d165a\",\r\n      \"cityObjectIndex\":
+    [\r\n        10,\r\n        -1\r\n      ],\r\n      \"cityObjectType\": \"COT_Road\",\r\n     
+    \"children\": [\r\n        {\r\n          \"gmlID\": \"traf_d7611925-8055-4ab5-ab77-661984e9873d\",\r\n         
+    \"cityObjectIndex\": [\r\n            10,\r\n            0\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u8ECA\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_1ba5e565-18c4-4d3b-8840-fd5390303be9\",\r\n         
+    \"cityObjectIndex\": [\r\n            10,\r\n            1\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u6B69\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_d0941bcd-0e71-41fd-9a47-f38699133fc7\",\r\n         
+    \"cityObjectIndex\": [\r\n            10,\r\n            2\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u6B69\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_d7611925-8055-4ab5-ab77-661984e9873d\",\r\n         
+    \"cityObjectIndex\": [\r\n            10,\r\n            0\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u8ECA\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_1ba5e565-18c4-4d3b-8840-fd5390303be9\",\r\n         
+    \"cityObjectIndex\": [\r\n            10,\r\n            1\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u6B69\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_d0941bcd-0e71-41fd-9a47-f38699133fc7\",\r\n         
+    \"cityObjectIndex\": [\r\n            10,\r\n            2\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u6B69\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        }\r\n      ],\r\n      \"attributes\": [\r\n       
+    {\r\n          \"key\": \"core:creationdate\",\r\n          \"type\": \"Date\",\r\n         
+    \"value\": \"2024-03-15\"\r\n        },\r\n        {\r\n          \"key\": \"gml:name\",\r\n         
+    \"type\": \"String\",\r\n          \"value\": \"\u90FD\u9053316\u53F7\"\r\n       
+    },\r\n        {\r\n          \"key\": \"tran:class\",\r\n          \"type\":
+    \"String\",\r\n          \"value\": \"\u9053\u8DEF\"\r\n        },\r\n       
+    {\r\n          \"key\": \"tran:function\",\r\n          \"type\": \"String\",\r\n         
+    \"value\": \"\u90FD\u9053\u5E9C\u770C\u9053\"\r\n        },\r\n        {\r\n         
+    \"key\": \"tran:usage\",\r\n          \"type\": \"String\",\r\n          \"value\":
+    \"\u7DCA\u6025\u8F38\u9001\u9053\u8DEF\uFF08\u7B2C\u4E8C\u6B21\u7DCA\u6025\u8F38\u9001\u9053\u8DEF\uFF09\"\r\n       
+    },\r\n        {\r\n          \"key\": \"uro:roadStructureAttribute\",\r\n         
+    \"type\": \"AttributeSet\",\r\n          \"value\": [\r\n            {\r\n             
+    \"key\": \"uro:sectionType\",\r\n              \"type\": \"String\",\r\n             
+    \"value\": \"\u571F\u5DE5\u533A\u9593\u30FB\u901A\u5E38\u533A\u9593\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"key\": \"uro:tranDataQualityAttribute\",\r\n         
+    \"type\": \"AttributeSet\",\r\n          \"value\": [\r\n            {\r\n             
+    \"key\": \"uro:geometrySrcDesc\",\r\n              \"type\": \"String\",\r\n             
+    \"value\": \"\u7A7A\u4E2D\u5199\u771F\u6E2C\u91CF\"\r\n            },\r\n           
+    {\r\n              \"key\": \"uro:srcScale\",\r\n              \"type\": \"String\",\r\n             
+    \"value\": \"\u5730\u56F3\u60C5\u5831\u30EC\u30D9\u30EB2500\"\r\n           
+    }\r\n          ]\r\n        }\r\n      ]\r\n    },\r\n    {\r\n      \"gmlID\":
+    \"tran_5108f38f-f1e8-45ea-8f77-eba5eb8451a8\",\r\n      \"cityObjectIndex\":
+    [\r\n        11,\r\n        -1\r\n      ],\r\n      \"cityObjectType\": \"COT_Road\",\r\n     
+    \"children\": [\r\n        {\r\n          \"gmlID\": \"traf_3686732f-6438-457b-a73a-ca1be08401cb\",\r\n         
+    \"cityObjectIndex\": [\r\n            11,\r\n            0\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u8ECA\u9053\u4EA4\u5DEE\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_eb31f66c-642d-46b6-a0b8-09834ca14bb8\",\r\n         
+    \"cityObjectIndex\": [\r\n            11,\r\n            1\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u6B69\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_91d77683-2009-4cfc-aaaa-d0cd328fc8e1\",\r\n         
+    \"cityObjectIndex\": [\r\n            11,\r\n            2\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u6B69\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_a5edc021-4370-4e6b-97e5-9e66e87404de\",\r\n         
+    \"cityObjectIndex\": [\r\n            11,\r\n            3\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u5CF6\"\r\n            }\r\n         
+    ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_6b4db454-cb67-442b-bcc5-dcb6cfd8d4ea\",\r\n         
+    \"cityObjectIndex\": [\r\n            11,\r\n            4\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u5CF6\"\r\n            }\r\n         
+    ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_3686732f-6438-457b-a73a-ca1be08401cb\",\r\n         
+    \"cityObjectIndex\": [\r\n            11,\r\n            0\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u8ECA\u9053\u4EA4\u5DEE\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_eb31f66c-642d-46b6-a0b8-09834ca14bb8\",\r\n         
+    \"cityObjectIndex\": [\r\n            11,\r\n            1\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u6B69\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_91d77683-2009-4cfc-aaaa-d0cd328fc8e1\",\r\n         
+    \"cityObjectIndex\": [\r\n            11,\r\n            2\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u6B69\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_a5edc021-4370-4e6b-97e5-9e66e87404de\",\r\n         
+    \"cityObjectIndex\": [\r\n            11,\r\n            3\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u5CF6\"\r\n            }\r\n         
+    ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_6b4db454-cb67-442b-bcc5-dcb6cfd8d4ea\",\r\n         
+    \"cityObjectIndex\": [\r\n            11,\r\n            4\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u5CF6\"\r\n            }\r\n         
+    ]\r\n        }\r\n      ],\r\n      \"attributes\": [\r\n        {\r\n         
+    \"key\": \"core:creationdate\",\r\n          \"type\": \"Date\",\r\n         
+    \"value\": \"2024-03-15\"\r\n        },\r\n        {\r\n          \"key\": \"gml:name\",\r\n         
+    \"type\": \"String\",\r\n          \"value\": \"\u90FD\u9053316\u53F7\"\r\n       
+    },\r\n        {\r\n          \"key\": \"tran:class\",\r\n          \"type\":
+    \"String\",\r\n          \"value\": \"\u9053\u8DEF\"\r\n        },\r\n       
+    {\r\n          \"key\": \"tran:function\",\r\n          \"type\": \"String\",\r\n         
+    \"value\": \"\u90FD\u9053\u5E9C\u770C\u9053\"\r\n        },\r\n        {\r\n         
+    \"key\": \"tran:usage\",\r\n          \"type\": \"String\",\r\n          \"value\":
+    \"\u7DCA\u6025\u8F38\u9001\u9053\u8DEF\uFF08\u7B2C\u4E8C\u6B21\u7DCA\u6025\u8F38\u9001\u9053\u8DEF\uFF09\"\r\n       
+    },\r\n        {\r\n          \"key\": \"uro:roadStructureAttribute\",\r\n         
+    \"type\": \"AttributeSet\",\r\n          \"value\": [\r\n            {\r\n             
+    \"key\": \"uro:sectionType\",\r\n              \"type\": \"String\",\r\n             
+    \"value\": \"\u4EA4\u5DEE\u90E8\u3000\"\r\n            }\r\n          ]\r\n       
+    },\r\n        {\r\n          \"key\": \"uro:tranDataQualityAttribute\",\r\n         
+    \"type\": \"AttributeSet\",\r\n          \"value\": [\r\n            {\r\n             
+    \"key\": \"uro:geometrySrcDesc\",\r\n              \"type\": \"String\",\r\n             
+    \"value\": \"\u7A7A\u4E2D\u5199\u771F\u6E2C\u91CF\"\r\n            },\r\n           
+    {\r\n              \"key\": \"uro:srcScale\",\r\n              \"type\": \"String\",\r\n             
+    \"value\": \"\u5730\u56F3\u60C5\u5831\u30EC\u30D9\u30EB2500\"\r\n           
+    }\r\n          ]\r\n        }\r\n      ]\r\n    },\r\n    {\r\n      \"gmlID\":
+    \"tran_1c6157c0-e3cb-4963-9305-d8dfd6a881b4\",\r\n      \"cityObjectIndex\":
+    [\r\n        12,\r\n        -1\r\n      ],\r\n      \"cityObjectType\": \"COT_Road\",\r\n     
+    \"children\": [\r\n        {\r\n          \"gmlID\": \"traf_ce6e3724-9ac3-4cc3-931a-1055542cebc9\",\r\n         
+    \"cityObjectIndex\": [\r\n            12,\r\n            0\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u8ECA\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"gmlID\": \"traf_ce6e3724-9ac3-4cc3-931a-1055542cebc9\",\r\n         
+    \"cityObjectIndex\": [\r\n            12,\r\n            0\r\n          ],\r\n         
+    \"cityObjectType\": \"COT_TransportationObject\",\r\n          \"attributes\":
+    [\r\n            {\r\n              \"key\": \"tran:function\",\r\n             
+    \"type\": \"String\",\r\n              \"value\": \"\u8ECA\u9053\u90E8\"\r\n           
+    }\r\n          ]\r\n        }\r\n      ],\r\n      \"attributes\": [\r\n       
+    {\r\n          \"key\": \"core:creationdate\",\r\n          \"type\": \"Date\",\r\n         
+    \"value\": \"2024-03-15\"\r\n        },\r\n        {\r\n          \"key\": \"tran:class\",\r\n         
+    \"type\": \"String\",\r\n          \"value\": \"\u9053\u8DEF\"\r\n        },\r\n       
+    {\r\n          \"key\": \"uro:roadStructureAttribute\",\r\n          \"type\":
+    \"AttributeSet\",\r\n          \"value\": [\r\n            {\r\n             
+    \"key\": \"uro:sectionType\",\r\n              \"type\": \"String\",\r\n             
+    \"value\": \"\u571F\u5DE5\u533A\u9593\u30FB\u901A\u5E38\u533A\u9593\"\r\n           
+    }\r\n          ]\r\n        },\r\n        {\r\n          \"key\": \"uro:tranDataQualityAttribute\",\r\n         
+    \"type\": \"AttributeSet\",\r\n          \"value\": [\r\n            {\r\n             
+    \"key\": \"uro:geometrySrcDesc\",\r\n              \"type\": \"String\",\r\n             
+    \"value\": \"\u7A7A\u4E2D\u5199\u771F\u6E2C\u91CF\"\r\n            },\r\n           
+    {\r\n              \"key\": \"uro:srcScale\",\r\n              \"type\": \"String\",\r\n             
+    \"value\": \"\u5730\u56F3\u60C5\u5831\u30EC\u30D9\u30EB2500\"\r\n           
+    }\r\n          ]\r\n        }\r\n      ]\r\n    }\r\n  ],\r\n  \"outsideParent\":
+    \"\"\r\n}"
+  infoForToolkits:
+    isTextureCombined: 1
+    isGranularityConverted: 1
+  granularity: 2
+--- !u!64 &884201699140750232
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5696330110805712077}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: -3340704466309137077, guid: a801590f329a4a6418bfb8aba5478354, type: 3}
+--- !u!1 &7125522908067052706
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2907987149293774975}
+  m_Layer: 0
+  m_Name: LOD3
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2907987149293774975
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7125522908067052706}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 5399408419010861547}
+  m_Father: {fileID: 2420555677323904739}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &7585425787734810690
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1286824808164962782}
+  m_Layer: 0
+  m_Name: LOD1
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1286824808164962782
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7585425787734810690}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2420555677323904739}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &8293488519472437627
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2420555677323904739}
+  m_Layer: 0
+  m_Name: 53393680_tran_6697_op.gml
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2420555677323904739
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8293488519472437627}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1286824808164962782}
+  - {fileID: 9110747594321524088}
+  - {fileID: 2907987149293774975}
+  m_Father: {fileID: 559828634989291369}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
