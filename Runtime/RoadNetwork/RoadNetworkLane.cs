@@ -143,8 +143,19 @@ namespace PLATEAU.RoadNetwork
                 RoadNetworkWay r = RightWay;
                 if (i != splitNum - 1)
                 {
-                    var line = this.GetInnerLerpSegments(p2);
-                    var centerLine = RoadNetworkLineString.Create(line.Select(p => new RoadNetworkPoint(p.Xay())));
+                    var points = new List<Vector2>();
+#if false
+                    points = this.GetInnerLerpSegments(p2);
+#else
+                    var segments = GeoGraph2D.GetInnerLerpSegments(LeftWay.Vertices.Select(x => x.Xz()).ToList(),
+                        RightWay.Vertices.Select(x => x.Xz()).ToList(), p2);
+                    foreach (var s in segments)
+                    {
+                        points.Add(s.Segment.Start);
+                        points.Add(s.Segment.End);
+                    }
+#endif
+                    var centerLine = RoadNetworkLineString.Create(points.Select(p => new RoadNetworkPoint(p.Xay())));
                     r = new RoadNetworkWay(centerLine, false, true);
                 }
                 var l = new RoadNetworkWay(leftWay.LineString, leftWay.IsReversed, false);
@@ -270,14 +281,6 @@ namespace PLATEAU.RoadNetwork
                 {
                     return Segment.End;
                 }
-            }
-
-            public float GetY(float x)
-            {
-                if (Left.HasValue && x < Segment.Start.x)
-                    return Left.Value.GetY(x);
-
-                return Segment.Start.y + Segment.Direction.y * (x - Segment.Start.x);
             }
 
             public EventFunc(LineSegment2D segment, int leftIndex, int rightIndex)
