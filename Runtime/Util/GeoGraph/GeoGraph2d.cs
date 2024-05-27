@@ -1,7 +1,12 @@
-﻿using System;
+﻿using PLATEAU.RoadNetwork;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using System.Text.RegularExpressions;
+using UnityEditor.PackageManager;
 using UnityEngine;
+using UnityEngine.Assertions.Comparers;
 
 namespace PLATEAU.Util.GeoGraph
 {
@@ -292,6 +297,549 @@ namespace PLATEAU.Util.GeoGraph
             var radA = Mathf.Atan2(p * siX, 1 - p + p * coX);
             return new Ray2D(intersection, Vector2Util.RotateTo(dirA, dirB, radA));
         }
+
+        public class BorderParabola2D
+        {
+            public float A { get; set; }
+
+            public float B { get; set; }
+
+            public float C0 { get; set; }
+
+            public float P { get; set; }
+
+            public float Y0 { get; set; }
+
+            // p=0.5以外の時は条件を満たすxには限界がある
+            public float? RangeX { get; set; }
+            public Vector2 Origin { get; set; }
+
+            public Vector2 AxisX { get; set; }
+
+            public Vector2 AxisY { get; set; }
+
+            public BorderParabola2D(Vector2 origin, Vector2 axisX, Vector2 axisY, float y0, float p)
+            {
+                // 以下の方程式を解く
+                // x^2 + (y0 - y)^2 : y^2 = (1-p)^2 : p^2
+                Origin = origin;
+                AxisX = axisX;
+                AxisY = axisY;
+                P = p;
+                Y0 = y0;
+                var p2 = p * p;
+                A = 2 * p - 1;
+                B = 2 * Y0 * p2;
+                C0 = p2 * Y0 * Y0;
+                // 以下の二次方程式になる
+                // ay^2 + 2by + c0 + p^2x^2 = 0
+
+                //var c0 = 2 * p2 * y0;
+                //var c1 = 4 * p4 * y02 - 4 * d * p2 * y02;
+                //var c2 = -4 * d * p2;
+                // y = (c0 ± √(c1 + c2*x^2)) / 2d
+
+                var c = C0 + P * P * 0 * 0;
+                var d = B * B - 4 * A * C0;
+                if (d > 0f && A > 0f)
+                {
+                    RangeX = Mathf.Sqrt(d / p2);
+                }
+
+            }
+
+            float GetY(float x)
+            {
+                if (Mathf.Abs(A) < GeoGraph2D.Epsilon)
+                    return x * x / (2 * Y0) + Y0 / 2f;
+                var c = C0 + P * P * x * x;
+                var d = B * B - 4 * A * c;
+                return (B - Mathf.Sqrt(d)) / (2 * A);
+            }
+
+            public Vector2 GetPoint(float x)
+            {
+                var local = new Vector2(x, GetY(x));
+                return local.x * AxisX + local.y * AxisY + Origin;
+            }
+
+        }
+
+
+        /// <summary>
+        /// vと直線rayをp : 1-pで分割する放物線を返す
+        /// </summary>
+        /// <param name="ray"></param>
+        /// <param name="v"></param>
+        /// <param name="p"></param>
+        /// <returns></returns>
+        public static BorderParabola2D GetBorderParabola(Ray2D ray, Vector2 v, float p)
+        {
+            p = Mathf.Clamp01(p);
+            var origin = ray.GetNearestPoint(v, out var t);
+            //var origin = Vector2.Lerp(near, v, p);
+            //
+            var dir = (v - origin);
+            var rot = Vector2.SignedAngle(Vector2.up, dir);
+            var y0 = (v - origin).magnitude;// * (Vector2Util.Cross(ray.direction, v - origin) < 0f ? -1f : 1f);
+            return new BorderParabola2D(origin, ray.direction, dir.normalized, y0, p);
+        }
+
+        [Serializable]
+        public class DebugOption
+        {
+            public int showLeftIndex = -1;
+            public int showRightIndex = -1;
+            public bool showParabolaStart = true;
+            public bool showParabolaEnd = true;
+            public bool showRemoveSegment = true;
+            public bool showReturnSegments = true;
+        }
+
+        public class NearestPointInfo
+        {
+            public int Index { get; set; }
+
+            public float T { get; set; }
+
+            public float Distance { get; set; }
+
+            public static int Compare(NearestPointInfo a, NearestPointInfo b)
+            {
+                var ret = Comparer<int>.Default.Compare(a.Index, b.Index);
+                if (ret != 0)
+                    return ret;
+                return Comparer<float>.Default.Compare(a.T, b.T);
+            }
+
+            public override string ToString()
+            {
+                return $"{Index}/{T:F2}";
+            }
+        }
+
+        public class InnerSegment
+        {
+            public LineSegment2D Segment { get; set; }
+
+            public int LeftIndex { get; }
+
+            public int RightIndex { get; }
+
+            public NearestPointInfo LeftNearestStartInfo { get; set; }
+
+            public NearestPointInfo LeftNearestEndInfo { get; set; }
+
+            public NearestPointInfo RightNearestStartInfo { get; set; }
+
+            public NearestPointInfo RightNearestEndInfo { get; set; }
+
+            public bool IsStartLeft { get; set; }
+
+            public bool IsEndLeft { get; set; }
+
+            // Left:Right = P : (1-P)となるP
+            public float P { get; set; }
+
+            // 輪郭線と交差しているかどうか
+            public bool IsCrossed { get; set; }
+
+            public float GetDistEval(bool isStart)
+            {
+                var (left, right) = isStart ? (LeftNearestStartInfo, RightNearestStartInfo) : (LeftNearestEndInfo, RightNearestEndInfo);
+
+                var leftDist = left.Distance / P;
+                var rightDist = right.Distance / P;
+                return Mathf.Min(leftDist, rightDist);
+            }
+
+            public NearestPointInfo GetNearestInfo(bool isStart)
+            {
+                return isStart ? LeftNearestStartInfo : LeftNearestEndInfo;
+            }
+
+
+            public InnerSegment(LineSegment2D segment, int leftIndex, int rightIndex, bool isStartLeft, bool isEndLeft, float p)
+            {
+                Segment = segment;
+                LeftIndex = leftIndex;
+                RightIndex = rightIndex;
+                P = p;
+                IsStartLeft = isStartLeft;
+                IsEndLeft = isEndLeft;
+            }
+
+            public override string ToString()
+            {
+                return
+                    $"{LeftIndex}-{RightIndex}(L={LeftNearestStartInfo}-{LeftNearestEndInfo},R={RightNearestStartInfo}-{RightNearestEndInfo}";
+            }
+
+            public static int Compare(InnerSegment a, InnerSegment b)
+            {
+                var ret = NearestPointInfo.Compare(a.LeftNearestStartInfo, b.LeftNearestStartInfo);
+                if (ret != 0)
+                    return ret;
+                return NearestPointInfo.Compare(a.RightNearestStartInfo, b.RightNearestStartInfo);
+            }
+        }
+
+        /// <summary>
+        /// selfの左右の道を横幅p : (1-p)で分割した線分を返す. p=[0,1]
+        /// 例) 0.5だと中央線が返る, 0だとLeftが返る, 1だとRightが返る. 
+        /// </summary>
+        /// <param name="seg1"></param>
+        /// <param name="p"></param>
+        /// <param name="op"></param>
+        /// <param name="seg0"></param>
+        /// <returns></returns>
+        public static List<InnerSegment> GetInnerLerpSegments(IReadOnlyList<Vector2> seg0, IReadOnlyList<Vector2> seg1, float p, DebugOption op = null)
+        {
+            p = Mathf.Clamp01(p);
+
+            var segments = new List<LineSegment2D>();
+
+            var lefts = GeoGraphEx.GetEdges(seg0, false).Select(v => new LineSegment2D(v.Item1, v.Item2)).ToList();
+            var rights = GeoGraphEx.GetEdges(seg1, false).Select(v => new LineSegment2D(v.Item1, v.Item2)).ToList();
+
+            var floatComparer = Comparer<float>.Default;
+
+            var innerSegments = new List<InnerSegment>();
+
+
+            var q = from m in Enumerable.Range(0, lefts.Count)
+                    from n in Enumerable.Range(0, rights.Count)
+                    select new { leftIndex = m, rightIndex = n };
+
+            void ChangeSegment(InnerSegment ev, LineSegment2D segment)
+            {
+                var isHit = false;
+                NearestPointInfo FindNearestPoint(List<LineSegment2D> edges, Vector2 pos)
+                {
+                    Enumerable.Range(0, edges.Count)
+                        .Select(i =>
+                        {
+                            var e = edges[i];
+                            var near = e.GetNearestPoint(pos, out var t);
+                            if (e.TrySegmentIntersection(segment, out var inter, out var t1, out var t2) && t2 > Epsilon && t2 < segment.Magnitude - Epsilon)
+                            {
+                                isHit = true;
+                            }
+                            return new { dist = (near - pos).magnitude, index = i, t = t, isHit = isHit };
+                        }).TryFindMin(x => x.dist, out var x);
+                    return new NearestPointInfo() { Index = x.index, T = x.t, Distance = x.dist, };
+                }
+
+                ev.Segment = segment;
+                ev.LeftNearestStartInfo = FindNearestPoint(lefts, segment.Start);
+                ev.LeftNearestEndInfo = FindNearestPoint(lefts, segment.End);
+                ev.RightNearestStartInfo = FindNearestPoint(rights, segment.Start);
+                ev.RightNearestEndInfo = FindNearestPoint(rights, segment.End);
+                ev.IsCrossed = isHit;
+            }
+
+            foreach (var s in q)
+            {
+                var leftIndex = s.leftIndex;
+                var rightIndex = s.rightIndex;
+                var l = lefts[leftIndex];
+                var r = rights[rightIndex];
+                var centerRay = GeoGraph2D.LerpRay(l.Ray, r.Ray, p);
+                var dirL = new Vector2(l.Direction.y, -l.Direction.x);
+                var dirR = new Vector2(r.Direction.y, -r.Direction.x);
+                var points = new[]
+                    {
+                        new { ray = new Ray2D(l.Start, dirL), isLeft = true },
+                        new { ray = new Ray2D(l.End, dirL), isLeft = true },
+                        new { ray = new Ray2D(r.Start, dirR), isLeft = false },
+                        new { ray = new Ray2D(r.End, dirR), isLeft = false }
+                    }
+                    .Select(x =>
+                    {
+                        var hit = LineUtil.LineIntersection(centerRay, x.ray, out var inter, out var t1, out var t2);
+                        var other = x.isLeft ? r : l;
+                        var nearPos = other.GetNearestPoint(x.ray.origin);
+                        return new
+                        {
+                            isHit = hit,
+                            inter = inter,
+                            tCenterRay = t1,
+                            tRay = t2,
+                            isLeft = x.isLeft,
+                            origin = x.ray.origin
+                        };
+                    }).Where(x => x.isHit)
+                    .ToList();
+
+                points.Sort((a, b) => floatComparer.Compare(a.tCenterRay, b.tCenterRay));
+
+                // ベースラインの切り替えが走ったかどうか
+                if (points.Any() == false)
+                    continue;
+                // 重ならない時は無視
+                if (points[0].isLeft == points[1].isLeft)
+                    continue;
+                if (points.Count != 4)
+                    continue;
+
+                // left-rightが重ならない時は無視
+                //if (baseRef.HasValue && points.Count == 4 && points[0].Item3 != points[1].Item3)
+                var begSeg = points[1];
+                var endSeg = points[2];
+                if (begSeg.tCenterRay < 0 && endSeg.tCenterRay < 0)
+                    continue;
+
+                var segment = new LineSegment2D(points[1].inter, points[2].inter);
+                var ev = new InnerSegment(segment, leftIndex, rightIndex, begSeg.isLeft, endSeg.isLeft, p);
+                ChangeSegment(ev, segment);
+                innerSegments.Add(ev);
+            }
+
+            void CreateBorderParabola(InnerSegment self, bool isBeg)
+            {
+                var isLeft = isBeg ? self.IsStartLeft : self.IsEndLeft;
+                var (l, r) = (lefts[self.LeftIndex], rights[self.RightIndex]);
+                var (targetSeg, otherSeg) = isLeft ? (l, r) : (r, l);
+
+                var pos = isBeg ? targetSeg.Start : targetSeg.End;
+                var nearPos = otherSeg.GetNearestPoint(pos);
+                var pp = isLeft ? (1 - p) : p;
+                var begBorder = GeoGraph2D.GetBorderParabola(otherSeg.Ray, pos, pp);
+
+                var orig = begBorder.GetPoint(0);
+                if (!innerSegments.Any(x => (x.Segment.Start - orig).magnitude < Epsilon || (x.Segment.End - orig).magnitude < Epsilon))
+                    return;
+
+                {
+                    DebugEx.DrawString($"{self.LeftIndex}-{self.RightIndex}[{self.IsStartLeft}/{isBeg}]", begBorder.GetPoint(0f));
+                    //DebugEx.DrawArrow(begBorder.Origin.Xya(), begBorder.GetPoint(0f).Xya(), bodyColor: Color.black);
+                    DebugEx.DrawBorderParabola2D(begBorder, -10f, 10f);
+                }
+            }
+
+            void ForeachEvents(Func<InnerSegment, bool, InnerSegment, List<InnerSegment>> action)
+            {
+                innerSegments.Sort(InnerSegment.Compare);
+                // Item1 : InnerSegment
+                // Item2 : 開始地点か終了地点か
+                var events = Enumerable.Range(0, innerSegments.Count * 2)
+                    .Select(i => new { ev = innerSegments[i / 2], isStart = (i % 2) == 0 })
+                    .ToList();
+
+                void Sort()
+                {
+                    events.Sort((aIndex, bIndex) =>
+                    {
+                        var a = aIndex.ev.GetNearestInfo(aIndex.isStart);
+                        var b = bIndex.ev.GetNearestInfo(bIndex.isStart);
+                        return NearestPointInfo.Compare(a, b);
+                    });
+                }
+                Sort();
+                int debugLoopNum = 0;
+                var now = new HashSet<InnerSegment>();
+                while (events.Any() && debugLoopNum++ < 1000)
+                {
+                    var e = events.First();
+                    var a = e.ev;
+                    var isAdded = false;
+                    try
+                    {
+                        foreach (var b in now)
+                        {
+                            if (b == a)
+                                continue;
+                            var adds = action(a, e.isStart, b) ?? new List<InnerSegment>();
+                            adds = adds.Where(x =>
+                                NearestPointInfo.Compare(x.LeftNearestStartInfo, x.LeftNearestEndInfo) < 0)
+                                .ToList();
+                            if (adds.Any())
+                            {
+                                foreach (var x in adds)
+                                {
+                                    innerSegments.Add(x);
+                                    events.Add(new { ev = x, isStart = true });
+                                    events.Add(new { ev = x, isStart = false });
+                                }
+
+                                isAdded = true;
+                            }
+                        }
+
+                        if (e.isStart)
+                        {
+                            now.Add(a);
+                        }
+                        else
+                        {
+                            now.Remove(a);
+                        }
+
+                    }
+                    finally
+                    {
+                        events.RemoveAt(0);
+                        if (isAdded)
+                            Sort();
+                    }
+                }
+            }
+
+            // 逆走 or 全く進まないような線を削除する
+            innerSegments.RemoveAll(x =>
+            {
+                var ret = x.IsCrossed || NearestPointInfo.Compare(x.LeftNearestStartInfo, x.LeftNearestEndInfo) >= 0;
+                if (ret && (op?.showRemoveSegment ?? false))
+                    DebugEx.DrawLineSegment2D(x.Segment, color: DebugEx.GetDebugColor(15, 16, 0.3f));
+                return ret;
+            });
+
+            ForeachEvents((a, isStart, b) =>
+            {
+                if (isStart == false)
+                    return null;
+                var addSegments = new List<InnerSegment>();
+                if (b.Segment.TrySegmentIntersection(a.Segment, out var inter, out var t1, out var t2) && t1 is > 0f and < 1f && t2 is > 0f and < 1f)
+                {
+                    void Split(InnerSegment s)
+                    {
+                        var s1 = s.Segment;
+                        s1.End = inter;
+                        var s2 = s.Segment;
+                        s2.Start = inter;
+                        var newS = new InnerSegment(s2, s.LeftIndex, s.RightIndex, s.IsStartLeft,
+                            s.IsEndLeft, p);
+                        ChangeSegment(s, s1);
+                        ChangeSegment(newS, s2);
+                        addSegments.Add(newS);
+                    }
+                    Split(a);
+                    Split(b);
+                }
+
+                return addSegments;
+            });
+
+            //ForeachEvents((a, isStart, b) =>
+            //{
+
+            //});
+
+            innerSegments.RemoveAll(x =>
+                x.LeftNearestEndInfo.Distance < Epsilon ||
+                x.LeftNearestStartInfo.Distance < Epsilon ||
+                x.RightNearestStartInfo.Distance < Epsilon ||
+                x.RightNearestEndInfo.Distance < Epsilon
+            );
+
+            ForeachEvents((a, isStart, b) =>
+            {
+                //return null;
+                // 同一店の場合は無視する
+                var addSegments = new List<InnerSegment>();
+                if (isStart)
+                {
+                    if ((a.Segment.Start - b.Segment.Start).sqrMagnitude > Epsilon)
+                    {
+                        var aInfo = a.LeftNearestStartInfo;
+                        var pos = lefts[aInfo.Index].GetPoint(aInfo.T);
+
+                        var near = b.Segment.GetNearestPoint(pos, out var t);
+                        if (t > 0f && t < b.Segment.Magnitude)
+                        {
+                            var s2 = b.Segment;
+                            s2.End = near;
+                            ChangeSegment(b, s2);
+
+                            var s1 = b.Segment;
+                            s1.Start = pos;
+                            var newSeg = new InnerSegment(s1, b.LeftIndex, b.RightIndex, b.IsStartLeft, b.IsEndLeft, b.P);
+                            ChangeSegment(newSeg, s1);
+                            addSegments.Add(newSeg);
+                        }
+
+                    }
+                }
+                else
+                {
+                    if ((a.Segment.End - b.Segment.End).sqrMagnitude > Epsilon)
+                    {
+                        var aInfo = a.LeftNearestEndInfo;
+                        var pos = lefts[aInfo.Index].GetPoint(aInfo.T);
+
+                        var near = b.Segment.GetNearestPoint(pos, out var t);
+                        if (t > 0f && t < b.Segment.Magnitude)
+                        {
+                            var s2 = b.Segment;
+                            s2.End = near;
+                            ChangeSegment(b, s2);
+                            var s1 = b.Segment;
+                            s1.End = pos;
+                            var newSeg = new InnerSegment(s1, b.LeftIndex, b.RightIndex, b.IsStartLeft, b.IsEndLeft, b.P);
+                            ChangeSegment(newSeg, s1);
+                            //addSegments.Add(newSeg);
+                        }
+
+                    }
+                }
+                return addSegments;
+            });
+
+            var deleted = new HashSet<InnerSegment>();
+            ForeachEvents((a, isStart, b) =>
+            {
+                if (isStart == false)
+                    return null;
+
+                var ret = Comparer<float>.Default.Compare(a.GetDistEval(true), b.GetDistEval(true));
+                if (ret == 0)
+                    ret = Comparer<float>.Default.Compare(a.GetDistEval(false), b.GetDistEval(false));
+                if (ret > 0)
+                {
+                    deleted.Add(b);
+                }
+                else
+                {
+                    deleted.Add(a);
+                }
+
+                return null;
+            });
+
+            foreach (var a in deleted)
+            {
+                innerSegments.Remove(a);
+                if (op?.showRemoveSegment ?? false)
+                {
+                    DebugEx.DrawLineSegment2D(a.Segment, color: DebugEx.GetDebugColor(15, 16, 0.3f));
+
+                }
+            }
+
+            innerSegments.Sort(InnerSegment.Compare);
+            var debugIndex = 0;
+            if (op?.showReturnSegments ?? false)
+            {
+                foreach (var seg in innerSegments)
+                {
+                    DebugEx.DrawString($"[{debugIndex}] {seg}",
+                        (seg.Segment.Start.Xya() + seg.Segment.End.Xya()) * 0.5f, color: Color.blue, fontSize: 15);
+                    DebugEx.DrawLineSegment2D(seg.Segment, color: DebugEx.GetDebugColor(debugIndex, 16));
+                    if (seg != innerSegments[0])
+                    {
+                        if (op.showParabolaStart)
+                            CreateBorderParabola(seg, true);
+                    }
+                    if (op.showParabolaEnd)
+                        CreateBorderParabola(seg, false);
+
+                    debugIndex++;
+                }
+            }
+
+            return innerSegments;
+        }
+
 #if false
         public static Dictionary<Vector2, List<Tuple<Vector2, Vector2>>> ComputeIntersections(IEnumerable<Tuple<Vector2, Vector2>> originalSegments)
         {

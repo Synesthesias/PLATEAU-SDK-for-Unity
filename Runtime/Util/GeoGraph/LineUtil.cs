@@ -232,8 +232,19 @@ namespace PLATEAU.Util.GeoGraph
         public static Vector2 GetNearestPoint(this Ray2D self, Vector2 p, out float t)
         {
             var d = self.direction;
-            t = Vector2.Dot(self.direction, p) - Vector2.Dot(self.origin, self.direction);
+            t = Vector2.Dot(self.direction, p - self.origin);
             return self.origin + t * d;
+        }
+
+        /// <summary>
+        /// pからselfへの最も近い点を返す.
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="p"></param>
+        /// <returns></returns>
+        public static Vector2 GetNearestPoint(this Ray2D self, Vector2 p)
+        {
+            return self.GetNearestPoint(p, out var _);
         }
     }
 }

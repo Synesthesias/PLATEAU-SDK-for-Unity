@@ -60,6 +60,11 @@ namespace PLATEAU.Util.GeoGraph
             direction = (end - start) / magnitude;
         }
 
+    }
+
+    public static class LineSegment2DEx
+    {
+
         /// <summary>
         /// 引数の線分(v0,v1)との交点を返す
         /// </summary>
@@ -69,9 +74,15 @@ namespace PLATEAU.Util.GeoGraph
         /// <param name="t1"></param>
         /// <param name="t2"></param>
         /// <returns></returns>
-        public bool TrySegmentIntersection(Vector2 v0, Vector2 v1, out Vector2 intersection, out float t1, out float t2)
+        public static bool TrySegmentIntersection(this LineSegment2D self, Vector2 v0, Vector2 v1, out Vector2 intersection, out float t1, out float t2)
         {
-            return LineUtil.SegmentIntersection(Start, End, v0, v1, out intersection, out t1, out t2);
+            return LineUtil.SegmentIntersection(self.Start, self.End, v0, v1, out intersection, out t1, out t2);
+        }
+
+        public static bool TrySegmentIntersection(this LineSegment2D self, LineSegment2D other,
+            out Vector2 intersection, out float t1, out float t2)
+        {
+            return self.TrySegmentIntersection(other.Start, other.End, out intersection, out t1, out t2);
         }
 
         /// <summary>
@@ -83,10 +94,10 @@ namespace PLATEAU.Util.GeoGraph
         /// <param name="t1"></param>
         /// <param name="t2"></param>
         /// <returns></returns>
-        public bool TryHalfLineIntersection(Vector2 origin, Vector2 dir, out Vector2 intersection, out float t1,
+        public static bool TryHalfLineIntersection(this LineSegment2D self, Vector2 origin, Vector2 dir, out Vector2 intersection, out float t1,
             out float t2)
         {
-            return LineUtil.HalfLineSegmentIntersection(new Ray2D(origin, dir), Start, End, out intersection, out t1,
+            return LineUtil.HalfLineSegmentIntersection(new Ray2D(origin, dir), self.Start, self.End, out intersection, out t1,
                 out t2);
         }
 
@@ -99,10 +110,10 @@ namespace PLATEAU.Util.GeoGraph
         /// <param name="t1"></param>
         /// <param name="t2"></param>
         /// <returns></returns>
-        public bool TryLineIntersection(Vector2 origin, Vector2 dir, out Vector2 intersection, out float t1,
+        public static bool TryLineIntersection(this LineSegment2D self, Vector2 origin, Vector2 dir, out Vector2 intersection, out float t1,
             out float t2)
         {
-            return LineUtil.LineSegmentIntersection(new Ray2D(origin, dir), Start, End, out intersection, out t1, out t2);
+            return LineUtil.LineSegmentIntersection(new Ray2D(origin, dir), self.Start, self.End, out intersection, out t1, out t2);
         }
 
         /// <summary>
@@ -110,14 +121,35 @@ namespace PLATEAU.Util.GeoGraph
         /// </summary>
         /// <param name="v"></param>
         /// <returns></returns>
-        public Vector2 GetNearestPoint(Vector2 v)
+        public static Vector2 GetNearestPoint(this LineSegment2D self, Vector2 v)
         {
-            var t = Vector3.Dot(Direction, v) - Vector3.Dot(Start, v);
-            if (t < 0)
-                return Start;
-            if (t > 1)
-                return End;
-            return Start + t * Direction;
+            return self.GetNearestPoint(v, out var _);
+        }
+
+        /// <summary>
+        /// tにはStartからの距離が入る
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="v"></param>
+        /// <param name="t"></param>
+        /// <returns></returns>
+        public static Vector2 GetNearestPoint(this LineSegment2D self, Vector2 v, out float t)
+        {
+            t = Vector3.Dot(self.Direction, v - self.Start);
+            t = Mathf.Clamp(t, 0f, self.Magnitude);
+            return self.Start + t * self.Direction;
+
+        }
+
+        /// <summary>
+        /// self.Start + distance * self.Direction
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="distance"></param>
+        /// <returns></returns>
+        public static Vector2 GetPoint(this LineSegment2D self, float distance)
+        {
+            return self.Start + self.Direction * distance;
         }
     }
 }

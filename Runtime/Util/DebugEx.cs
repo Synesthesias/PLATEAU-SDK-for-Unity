@@ -1,4 +1,5 @@
-﻿using PLATEAU.Util.GeoGraph;
+﻿using PlasticGui.WorkspaceWindow.IssueTrackers;
+using PLATEAU.Util.GeoGraph;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -10,15 +11,29 @@ namespace PLATEAU.Util
     public static class DebugEx
     {
         /// <summary>
+        /// selfをVector3に変換するときにxzに射影するかxyに射影するか
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="showXz"></param>
+        /// <returns></returns>
+        private static Vector3 ToVec3(this Vector2 self, bool showXz)
+        {
+            return showXz ? self.Xay() : self.Xya();
+        }
+
+        /// <summary>
         /// num段階に分けたうちi番目の色を返す
         /// </summary>
         /// <param name="i"></param>
         /// <param name="num"></param>
+        /// <param name="a"></param>
         /// <returns></returns>
-        public static Color GetDebugColor(int i, int num = 8)
+        public static Color GetDebugColor(int i, int num = 8, float a = 1f)
         {
             var h = 1f * (i % num) / num;
-            return Color.HSVToRGB(h, 1f, 1f);
+            var ret = Color.HSVToRGB(h, 1f, 1f);
+            ret.a = a;
+            return ret;
         }
 
         /// <summary>
@@ -95,8 +110,6 @@ namespace PLATEAU.Util
             foreach (var e in GeoGraphEx.GetEdges(vertices, isLoop))
                 Debug.DrawLine(e.Item1, e.Item2, color ?? Color.white, duration, depthTest);
         }
-
-
 
         public static void DrawCenters(IEnumerable<Vector3> vertices
             , bool isLoop = false
@@ -178,11 +191,14 @@ namespace PLATEAU.Util
         /// <param name="segment"></param>
         /// <param name="showXz"></param>
         /// <param name="color"></param>
-        public static void DrawLineSegment2D(LineSegment2D segment, bool showXz = true, Color? color = null)
+        /// <param name="duration"></param>
+        /// <param name="depthTest"></param>
+        public static void DrawLineSegment2D(LineSegment2D segment, bool showXz = false, Color? color = null, float duration = 0f,
+            bool depthTest = true)
         {
-            var start = showXz ? segment.Start.Xay() : segment.Start.Xya();
-            var end = showXz ? segment.End.Xay() : segment.End.Xya();
-            DebugEx.DrawArrow(start, end, bodyColor: color ?? Color.white);
+            var start = segment.Start.ToVec3(showXz);
+            var end = segment.End.ToVec3(showXz);
+            DebugEx.DrawArrow(start, end, bodyColor: color ?? Color.white, arrowUp: showXz ? Vector3.up : Vector3.forward, duration: duration, depthTest: depthTest);
         }
 
         /// <summary>
@@ -194,8 +210,11 @@ namespace PLATEAU.Util
         /// <param name="splitX"></param>
         /// <param name="showXz"></param>
         /// <param name="color"></param>
+        /// <param name="duration"></param>
+        /// <param name="depthTest"></param>
         public static void DrawParabola2D(Parabola2D parabola, float beginX, float endX, float splitX = 0.1f,
-            bool showXz = true, Color? color = null)
+            bool showXz = false, Color? color = null, float duration = 0f,
+            bool depthTest = true)
         {
             var n = Mathf.CeilToInt((endX - beginX) / splitX);
             var d = (endX - beginX) / n;
@@ -204,11 +223,52 @@ namespace PLATEAU.Util
                 var x0 = beginX + d * i;
                 var x1 = x0 + d;
 
-                var y0 = parabola.GetY(x0);
-                var y1 = parabola.GetY(x1);
-                DrawLineSegment2D(new LineSegment2D(new Vector2(x0, y0), new Vector2(x1, y1)), showXz, color);
+                var p0 = parabola.GetPoint(x0);
+                var p1 = parabola.GetPoint(x1);
+                Debug.DrawLine(p0.ToVec3(showXz), p1.ToVec3(showXz), color ?? Color.white, duration, depthTest);
             }
         }
+
+        public static void DrawParabolaSegment2D(ParabolaSegment2D parabola, float deltaT = 0.1f, Color? color = null, bool showXz = false, float duration = 0f,
+            bool depthTest = true)
+        {
+            var n = Mathf.CeilToInt((parabola.MaxT - parabola.MinT) / deltaT);
+            var d = 1f * (parabola.MaxT - parabola.MinT) / n;
+            for (var i = 0; i < n; ++i)
+            {
+                var x0 = parabola.MinT + d * i;
+                var x1 = x0 + d;
+
+                var p0 = parabola.GetPoint(x0);
+                var p1 = parabola.GetPoint(x1);
+                Debug.DrawLine(p0.ToVec3(showXz), p1.ToVec3(showXz), color ?? Color.white, duration, depthTest);
+            }
+        }
+
+        public static void DrawBorderParabola2D(GeoGraph2D.BorderParabola2D parabola, float beginX, float endX,
+            float splitX = 0.1f,
+            bool showXz = false, Color? color = null, float duration = 0f,
+            bool depthTest = true)
+        {
+            if (parabola.RangeX.HasValue)
+            {
+                beginX = Mathf.Clamp(beginX, -parabola.RangeX.Value, parabola.RangeX.Value);
+                endX = Mathf.Clamp(endX, -parabola.RangeX.Value, parabola.RangeX.Value);
+            }
+
+            var n = Mathf.CeilToInt((endX - beginX) / splitX);
+            var d = (endX - beginX) / n;
+            for (var i = 0; i < n; ++i)
+            {
+                var x0 = beginX + d * i;
+                var x1 = x0 + d;
+
+                var p0 = parabola.GetPoint(x0);
+                var p1 = parabola.GetPoint(x1);
+                Debug.DrawLine(p0.ToVec3(showXz), p1.ToVec3(showXz), color ?? Color.white, duration, depthTest);
+            }
+        }
+
 
         private static Vector3 TransformByPixel(Vector3 position, Vector2 screenOffset)
         {
