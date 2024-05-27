@@ -14,16 +14,16 @@ namespace PLATEAU.TerrainConvert
     {
         internal class HeightmapData
         {
-            public string Name;
-            public PlateauVector3d Min;
-            public PlateauVector3d Max;
-            public int TextureHeight;
-            public int TextureWidth;
-            public float[,] HeightMapTexture;
+            public string name;
+            public PlateauVector3d min;
+            public PlateauVector3d max;
+            public int textureHeight;
+            public int textureWidth;
+            public float[,] heightMapTexture;
 
-            public string DiffuseTexturePath;
-            public PlateauVector2f MinUV;
-            public PlateauVector2f MaxUV;
+            public string diffuseTexturePath;
+            public PlateauVector2f minUV;
+            public PlateauVector2f maxUV;
 
             //debug 
             public UInt16[] HeightData;
@@ -63,34 +63,34 @@ namespace PLATEAU.TerrainConvert
             }
         }
 
-        private HeightmapData ConvertFromMesh(PolygonMesh.Mesh mesh, string NodeName, int TextureWidth, int TextureHeight)
+        private HeightmapData ConvertFromMesh(PolygonMesh.Mesh mesh, string nodeName, int textureWidth, int textureHeight)
         {
             if (mesh == null) 
                 return null;
 
-            PlateauVector2d Margin = new PlateauVector2d(0,0);
+            PlateauVector2d margin = new PlateauVector2d(0,0);
             HeightmapGenerator gen = new();
-            gen.GenerateFromMesh(mesh, TextureWidth, TextureHeight, Margin, out PlateauVector3d Min, out PlateauVector3d Max, out PlateauVector2f MinUV, out PlateauVector2f MaxUV, out UInt16[] HeightData);
-            float[,] HeightMapTexture = HeightmapGenerator.ConvertTo2DFloatArray(HeightData, TextureWidth, TextureHeight);
+            gen.GenerateFromMesh(mesh, textureWidth, textureHeight, margin, out PlateauVector3d min, out PlateauVector3d max, out PlateauVector2f minUV, out PlateauVector2f maxUV, out UInt16[] heightData);
+            float[,] HeightMapTexture = HeightmapGenerator.ConvertTo2DFloatArray(heightData, textureWidth, textureHeight);
 
             HeightmapData data = new();
-            data.Name = NodeName;
-            data.Min = Min;
-            data.Max = Max;
-            data.TextureHeight = TextureHeight;
-            data.TextureWidth = TextureWidth;
-            data.HeightMapTexture = HeightMapTexture;
+            data.name = nodeName;
+            data.min = min;
+            data.max = max;
+            data.textureHeight = textureHeight;
+            data.textureWidth = textureWidth;
+            data.heightMapTexture = HeightMapTexture;
 
             //Diffuse Texture
-            data.DiffuseTexturePath = GetTexturePath(mesh);
-            if(!string.IsNullOrEmpty(data.DiffuseTexturePath))
+            data.diffuseTexturePath = GetTexturePath(mesh);
+            if(!string.IsNullOrEmpty(data.diffuseTexturePath))
             {
-                data.MinUV = MinUV;
-                data.MaxUV = MaxUV;
+                data.minUV = minUV;
+                data.maxUV = maxUV;
             }
 
             //For debug image output
-            data.HeightData = HeightData;
+            data.HeightData = heightData;
             return data;
         }
 
@@ -128,49 +128,49 @@ namespace PLATEAU.TerrainConvert
                 if (this.heightmapData != null)
                 {
                     //Terrain Data
-                    TerrainData _terraindata = new TerrainData();
-                    _terraindata.heightmapResolution = this.heightmapData.TextureHeight;
-                    var terrainWidth = (float)Math.Abs(this.heightmapData.Max.X - this.heightmapData.Min.X);
-                    var terrainLength = (float)Math.Abs(this.heightmapData.Max.Z - this.heightmapData.Min.Z);
-                    var terrainHeight = (float)Math.Abs(this.heightmapData.Max.Y - this.heightmapData.Min.Y);
+                    TerrainData terraindata = new TerrainData();
+                    terraindata.heightmapResolution = this.heightmapData.textureHeight;
+                    var terrainWidth = (float)Math.Abs(this.heightmapData.max.X - this.heightmapData.min.X);
+                    var terrainLength = (float)Math.Abs(this.heightmapData.max.Z - this.heightmapData.min.Z);
+                    var terrainHeight = (float)Math.Abs(this.heightmapData.max.Y - this.heightmapData.min.Y);
 
-                    _terraindata.SetHeights(0, 0, this.heightmapData.HeightMapTexture);
-                    _terraindata.size = new Vector3(terrainWidth, terrainHeight, terrainLength);
+                    terraindata.SetHeights(0, 0, this.heightmapData.heightMapTexture);
+                    terraindata.size = new Vector3(terrainWidth, terrainHeight, terrainLength);
 
                     //Terrain Material
-                    TerrainLayer _materialLayer = new TerrainLayer();
-                    var DiffuseTexture = new Texture2D(1, 1);
-                    var TexturePath = this.heightmapData.DiffuseTexturePath;
-                    if (string.IsNullOrEmpty(TexturePath))
-                        TexturePath = PathUtil.SdkPathToAssetPath("Materials/Textures/White.PNG");
+                    TerrainLayer materialLayer = new TerrainLayer();
+                    var diffuseTexture = new Texture2D(1, 1);
+                    var texturePath = this.heightmapData.diffuseTexturePath;
+                    if (string.IsNullOrEmpty(texturePath))
+                        texturePath = PathUtil.SdkPathToAssetPath("Materials/Textures/White.PNG");
 
-                    var rawData = System.IO.File.ReadAllBytes(TexturePath);
-                    DiffuseTexture.LoadImage(rawData);
-                    _materialLayer.diffuseTexture = DiffuseTexture;
-                    var UVSize = new Vector2(
-                        terrainWidth / (this.heightmapData.MaxUV.X - this.heightmapData.MinUV.X),
-                        terrainLength / (this.heightmapData.MaxUV.Y - this.heightmapData.MinUV.Y));
+                    var rawData = System.IO.File.ReadAllBytes(texturePath);
+                    diffuseTexture.LoadImage(rawData);
+                    materialLayer.diffuseTexture = diffuseTexture;
+                    var uvSize = new Vector2(
+                        terrainWidth / (this.heightmapData.maxUV.X - this.heightmapData.minUV.X),
+                        terrainLength / (this.heightmapData.maxUV.Y - this.heightmapData.minUV.Y));
 
-                    _materialLayer.tileSize = new Vector2(UVSize.x, UVSize.y);
-                    _materialLayer.tileOffset = new Vector2(
-                        UVSize.x * this.heightmapData.MinUV.X,
-                        UVSize.y * this.heightmapData.MinUV.Y);
+                    materialLayer.tileSize = new Vector2(uvSize.x, uvSize.y);
+                    materialLayer.tileOffset = new Vector2(
+                        uvSize.x * this.heightmapData.minUV.X,
+                        uvSize.y * this.heightmapData.minUV.Y);
 
-                    _terraindata.terrainLayers = new TerrainLayer[] { _materialLayer };
+                    terraindata.terrainLayers = new TerrainLayer[] { materialLayer };
 
                     //Terrain GameObject
-                    GameObject terrain = Terrain.CreateTerrainGameObject(_terraindata);
-                    terrain.name = $"TERRAIN_{this.heightmapData.Name}";
-                    terrain.transform.position = new Vector3((float)this.heightmapData.Min.X, (float)this.heightmapData.Min.Y, (float)this.heightmapData.Min.Z);
-                    terrain.transform.SetParent(GetTransformByName(srcGameObjs, this.heightmapData.Name).parent);
+                    GameObject terrain = Terrain.CreateTerrainGameObject(terraindata);
+                    terrain.name = $"TERRAIN_{this.heightmapData.name}";
+                    terrain.transform.position = new Vector3((float)this.heightmapData.min.X, (float)this.heightmapData.min.Y, (float)this.heightmapData.min.Z);
+                    terrain.transform.SetParent(GetTransformByName(srcGameObjs, this.heightmapData.name).parent);
 
                     result.Add(terrain);
 
                     //Debug Image Output
                     if (option.HeightmapImageOutput == TerrainConvertOption.ImageOutput.PNG || option.HeightmapImageOutput == TerrainConvertOption.ImageOutput.PNG_RAW)
-                        HeightmapGenerator.SavePngFile($"{Application.dataPath}/HM_{this.heightmapData.Name}_{this.heightmapData.TextureWidth}_{this.heightmapData.TextureHeight}.png", this.heightmapData.TextureWidth, this.heightmapData.TextureHeight, this.heightmapData.HeightData);
+                        HeightmapGenerator.SavePngFile($"{Application.dataPath}/HM_{this.heightmapData.name}_{this.heightmapData.textureWidth}_{this.heightmapData.textureHeight}.png", this.heightmapData.textureWidth, this.heightmapData.textureHeight, this.heightmapData.HeightData);
                     if (option.HeightmapImageOutput == TerrainConvertOption.ImageOutput.RAW || option.HeightmapImageOutput == TerrainConvertOption.ImageOutput.PNG_RAW)
-                        HeightmapGenerator.SaveRawFile($"{Application.dataPath}/HM_{this.heightmapData.Name}_{this.heightmapData.TextureWidth}_{this.heightmapData.TextureHeight}.raw", this.heightmapData.TextureWidth, this.heightmapData.TextureHeight, this.heightmapData.HeightData);
+                        HeightmapGenerator.SaveRawFile($"{Application.dataPath}/HM_{this.heightmapData.name}_{this.heightmapData.textureWidth}_{this.heightmapData.textureHeight}.raw", this.heightmapData.textureWidth, this.heightmapData.textureHeight, this.heightmapData.HeightData);
                 }
             }
 
