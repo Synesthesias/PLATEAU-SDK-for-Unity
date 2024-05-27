@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Reflection;
+using System.Linq;
 using PLATEAU.Util;
 using UnityEditor;
 using UnityEngine;
@@ -25,7 +26,8 @@ namespace PLATEAU.CityImport.Import.Convert.MaterialConvert
             var tex = mat.mainTexture;
             if (tex == null)
             {
-                tex = mat.GetTexture("_BaseMap");
+                if(mat.GetTexturePropertyNames().Contains("_BaseMap"))
+                    tex = mat.GetTexture("_BaseMap");
             }
             if (tex == null) return "";
             
