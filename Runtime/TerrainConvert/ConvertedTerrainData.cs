@@ -24,6 +24,7 @@ namespace PLATEAU.TerrainConvert
             public string diffuseTexturePath;
             public PlateauVector2f minUV;
             public PlateauVector2f maxUV;
+            public string MapFilePath { get; set; }= "";
 
             //debug 
             public UInt16[] HeightData;
@@ -37,29 +38,68 @@ namespace PLATEAU.TerrainConvert
 
         private bool isActive;
 
-        public ConvertedTerrainData(Model plateauModel, TerrainConvertOption convertOption)
+        public ConvertedTerrainData(Model plateauModel, TerrainConvertOption option)
         {
             this.heightmapData = null;
             this.name = "CityRoot";
             this.isActive = true; // RootはActive
+            
             for (int i = 0; i < plateauModel.RootNodesCount; i++)
             {
                 var rootNode = plateauModel.GetRootNodeAt(i);
                 // 再帰的な子の生成です。
-                this.children.Add(new ConvertedTerrainData(rootNode, convertOption));
+                this.children.Add(new ConvertedTerrainData(rootNode, option));
             }
         }
 
-        private ConvertedTerrainData(Node plateauNode, TerrainConvertOption convertOption)
+        /// <summary>
+        /// 自身と子から、nullでない<see cref="HeightmapData"/>を集めます。
+        /// </summary>
+        public List<HeightmapData> GetHeightmapDataRecursive()
         {
-            this.heightmapData = ConvertFromMesh(plateauNode.Mesh, plateauNode.Name, convertOption.TextureWidth, convertOption.TextureHeight);
+            List<HeightmapData> ret = new List<HeightmapData>();
+            GetHeightmapDataRecursive(ret);
+            return ret;
+        }
+        
+        private void GetHeightmapDataRecursive(List<HeightmapData> ret)
+        {
+            if(heightmapData != null) ret.Add(heightmapData);
+            foreach (var child in children)
+            {
+                child.GetHeightmapDataRecursive(ret);
+            }
+        }
+
+        private ConvertedTerrainData(Node plateauNode, TerrainConvertOption option)
+        {
+            this.heightmapData = ConvertFromMesh(plateauNode.Mesh, plateauNode.Name, option.TextureWidth, option.TextureHeight);
             this.name = plateauNode.Name;
             this.isActive = plateauNode.IsActive;
+            
+            if (heightmapData != null)
+            {
+                //Debug Image Output
+                heightmapData.MapFilePath =
+                    $"{Application.dataPath}/HM_{this.heightmapData.name}_{this.heightmapData.textureWidth}_{this.heightmapData.textureHeight}";
+                if (option.HeightmapImageOutput == TerrainConvertOption.ImageOutput.PNG || option.HeightmapImageOutput == TerrainConvertOption.ImageOutput.PNG_RAW)
+                {
+                    heightmapData.MapFilePath += ".png";
+                    HeightmapGenerator.SavePngFile(heightmapData.MapFilePath, this.heightmapData.textureWidth, this.heightmapData.textureHeight, this.heightmapData.HeightData);
+                    Debug.Log($"height map wrote to {heightmapData.MapFilePath}");
+                }
+                    
+                if (option.HeightmapImageOutput == TerrainConvertOption.ImageOutput.RAW || option.HeightmapImageOutput == TerrainConvertOption.ImageOutput.PNG_RAW)
+                {
+                    heightmapData.MapFilePath += ".raw";
+                    HeightmapGenerator.SaveRawFile(heightmapData.MapFilePath, this.heightmapData.textureWidth, this.heightmapData.textureHeight, this.heightmapData.HeightData);                    
+                }
+            }
 
             for (int i = 0; i < plateauNode.ChildCount; i++)
             {
                 var child = plateauNode.GetChildAt(i);
-                this.children.Add(new ConvertedTerrainData(child, convertOption));
+                this.children.Add(new ConvertedTerrainData(child, option));
             }
         }
 
@@ -165,12 +205,6 @@ namespace PLATEAU.TerrainConvert
                     terrain.transform.SetParent(GetTransformByName(srcGameObjs, this.heightmapData.name).parent);
 
                     result.Add(terrain);
-
-                    //Debug Image Output
-                    if (option.HeightmapImageOutput == TerrainConvertOption.ImageOutput.PNG || option.HeightmapImageOutput == TerrainConvertOption.ImageOutput.PNG_RAW)
-                        HeightmapGenerator.SavePngFile($"{Application.dataPath}/HM_{this.heightmapData.name}_{this.heightmapData.textureWidth}_{this.heightmapData.textureHeight}.png", this.heightmapData.textureWidth, this.heightmapData.textureHeight, this.heightmapData.HeightData);
-                    if (option.HeightmapImageOutput == TerrainConvertOption.ImageOutput.RAW || option.HeightmapImageOutput == TerrainConvertOption.ImageOutput.PNG_RAW)
-                        HeightmapGenerator.SaveRawFile($"{Application.dataPath}/HM_{this.heightmapData.name}_{this.heightmapData.textureWidth}_{this.heightmapData.textureHeight}.raw", this.heightmapData.textureWidth, this.heightmapData.textureHeight, this.heightmapData.HeightData);
                 }
             }
 
