@@ -109,5 +109,17 @@ namespace PLATEAU.RoadNetwork
             var serializer = new RoadNetworkSerializer();
             RoadNetwork = serializer.Deserialize(Storage);
         }
+
+        public RoadNetworkDataGetter CreateRoadNetworkDataGetter() 
+        {
+            if (Storage == null)
+            {
+                // ここのメッセージは仮
+                Debug.Log("Storage is null.");
+                Debug.Log("Serializeボタンを押していないかも(public void Serialize()が呼ばれていない)");
+            }
+
+            return new RoadNetworkDataGetter(this.Storage);
+        }
     }
 }
