@@ -1,18 +1,17 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace PLATEAU.RoadNetwork.Data
 {
     /// <summary>
-    /// “¹˜Hƒlƒbƒgƒ[ƒN‚ÌRoadNetworkData››Œn“‚Ìƒf[ƒ^‚ğ‚Ü‚Æ‚ß‚Äæ‚Á‚Ä‚­‚é‹@”\‚ğ’ñ‹Ÿ‚·‚éƒNƒ‰ƒX
+    /// é“è·¯ãƒãƒƒãƒˆãƒ¯ãƒ¼ã‚¯ã®RoadNetworkDataâ—‹â—‹ç³»çµ±ã®ãƒ‡ãƒ¼ã‚¿ã‚’ã¾ã¨ã‚ã¦å–ã£ã¦ãã‚‹æ©Ÿèƒ½ã‚’æä¾›ã™ã‚‹ã‚¯ãƒ©ã‚¹
     /// </summary>
     public class RoadNetworkDataGetter
     {
         internal RoadNetworkDataGetter(RoadNetworkStorage storage)
         {
             primStorage = storage.PrimitiveDataStorage;
-
 
             //RoadNetworkDataNode
             //RoadNetworkDataTrack
@@ -23,13 +22,13 @@ namespace PLATEAU.RoadNetwork.Data
             //RoadNetworkDataLineString
             //RoadNetworkDataPoint
 
-            Test();
+            Validate();
         }
 
         private PrimitiveDataStorage primStorage;
 
         /// <summary>
-        /// ƒf[ƒ^‚Ìæ“¾ŠÖ”ŒQ
+        /// ãƒ‡ãƒ¼ã‚¿ã®å–å¾—é–¢æ•°ç¾¤
         /// </summary>
         /// <param name="data"></param>
         
@@ -67,11 +66,10 @@ namespace PLATEAU.RoadNetwork.Data
         }
 
         /// <summary>
-        /// ƒf[ƒ^‚Ìæ“¾ŠÖ”ŒQ
+        /// ãƒ‡ãƒ¼ã‚¿æ¤œè¨¼
         /// </summary>
         /// <param name="data"></param>
-
-        public void Test()
+        public void Validate()
         {
             TestNull(nameof(RoadNetworkDataNode), GetNodes());
             TestNull(nameof(RoadNetworkDataTrack), GetTracks());
