@@ -228,10 +228,11 @@ namespace PLATEAU.Editor.RoadNetwork
                                     // 車線数を増やす
                                     state.delayCommand += () =>
                                     {
-                                        var newLanes = lane.SplitLane(2);   // Laneが３つになる
-                                        if (newLanes == null)
-                                            return;
-                                        lanes.AddRange(newLanes);
+                                        //var newLanes = lane.SplitLane(2);   // Laneが３つになる
+                                        //if (newLanes == null)
+                                        //    return;
+                                        //lanes.AddRange(newLanes);
+                                        Debug.Log("車線数を増やすボタンが押された");
 
                                     };
                                     state.isDirtyTarget = true;
@@ -243,7 +244,8 @@ namespace PLATEAU.Editor.RoadNetwork
                                 {
                                     state.delayCommand += () =>
                                     {
-                                        lanes.Remove(lane); // Link,他のLaneなどとの繋がりを切る処理が必要
+                                        //lanes.Remove(lane); // Link,他のLaneなどとの繋がりを切る処理が必要
+                                        Debug.Log("車線数を減らすボタンが押された");
                                     };
                                     state.isDirtyTarget = true;
                                 }
@@ -269,7 +271,7 @@ namespace PLATEAU.Editor.RoadNetwork
                 }
             }
 
-            void ForeachLanes(IRoadNetworkEditingSystem sys, List<RoadNetworkLane> lanes, RoadNetworkLane lane, ref SceneGUIState state)
+            void ForeachLanes(IRoadNetworkEditingSystem sys, IReadOnlyList<RoadNetworkLane> lanes, RoadNetworkLane lane, ref SceneGUIState state)
             {
                 state.lanePos = CalcLanePos(lane);
                 if (sys.CurrentEditMode == RoadNetworkEditMode.EditLaneShape)
