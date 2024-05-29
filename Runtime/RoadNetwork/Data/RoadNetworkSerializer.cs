@@ -1,34 +1,4 @@
 ﻿
-
-using Codice.Client.GameUI.Checkin;
-using PLATEAU.RoadNetwork;
-using PLATEAU.RoadNetwork.Data;
-using UnityEngine;
-
-public class RoadNetworkGetter
-{
-    public struct NodeRecords
-    {
-        int ID;
-        Vector3 pos;
-    }
-
-    RoadNetworkModel mdl;
-    public RoadNetworkGetter()
-        {
-        mdl.Links.Lane.Way
-        }
-    RoadNetworkNode
-    public RoadNetworkDataNode[] GetNodes();
-}
-
-//public class NodeGetter
-//{
-//    RoadNetworkNode node;
-//}
-
-
-
 using PLATEAU.Util;
 using System;
 using System.Collections;
