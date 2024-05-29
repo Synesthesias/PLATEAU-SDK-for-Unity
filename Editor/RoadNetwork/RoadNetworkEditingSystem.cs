@@ -264,22 +264,25 @@ namespace PLATEAU.Editor.RoadNetwork
 
             public RoadNetworkEditingResult AddMainLane(RoadNetworkLink link, int idx, RoadNetworkLane newLane)
             {
-                link.MainLanes.Insert(idx, newLane);
-                return new RoadNetworkEditingResult(RoadNetworkEditingResultType.Success);
+                throw new NotImplementedException();
+                //link.MainLanes.Insert(idx, newLane);
+                //return new RoadNetworkEditingResult(RoadNetworkEditingResultType.Success);
             }
             public RoadNetworkEditingResult RemoveLane(RoadNetworkLink link, RoadNetworkLane lane)
             {
-                // MainLane以外も削除出来るようにする
+                throw new NotImplementedException();
 
-                bool isSuc = link.MainLanes.Remove(lane);
-                if (isSuc)
-                {
-                    return new RoadNetworkEditingResult(RoadNetworkEditingResultType.Success);
-                }
-                else
-                {
-                    return new RoadNetworkEditingResult(RoadNetworkEditingResultType.InvalidArgs, "Can't found lane.");
-                }
+                //// MainLane以外も削除出来るようにする
+
+                //bool isSuc = link.MainLanes.Remove(lane);
+                //if (isSuc)
+                //{
+                //    return new RoadNetworkEditingResult(RoadNetworkEditingResultType.Success);
+                //}
+                //else
+                //{
+                //    return new RoadNetworkEditingResult(RoadNetworkEditingResultType.InvalidArgs, "Can't found lane.");
+                //}
             }
 
             public RoadNetworkEditingResult RegisterRegulation(RoadNetworkLink link, _RoadNetworkRegulation newRegulation)
