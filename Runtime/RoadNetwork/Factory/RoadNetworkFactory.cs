@@ -313,7 +313,7 @@ namespace PLATEAU.RoadNetwork.Factory
             // 隣接レーンが一つもない場合は孤立
             if (roadType == RoadType.Isolated)
             {
-                ret.Links.Add(RoadNetworkLink.CreateIsolatedLink(tranWork.TargetTran, tranWork.LineString));
+                ret.AddLink(RoadNetworkLink.CreateIsolatedLink(tranWork.TargetTran, tranWork.LineString));
                 return;
             }
 
@@ -434,7 +434,7 @@ namespace PLATEAU.RoadNetwork.Factory
                 }
 
                 tranWork.Bind(link);
-                ret.Links.Add(link);
+                ret.AddLink(link);
             }
             // 行き止まり
             else if (tranWork.Connected.Count() == 1)
@@ -444,15 +444,15 @@ namespace PLATEAU.RoadNetwork.Factory
                 var l = new RoadNetworkLane(leftWay?.Way, rightWay?.Way, startBorderWay, endBorderWay);
                 var link = RoadNetworkLink.CreateOneLaneLink(tranWork.TargetTran, l);
                 tranWork.Bind(link);
-                ret.Links.Add(link);
+                ret.AddLink(link);
             }
             // 交差点
             else if (tranWork.Connected.Count() >= 3)
             {
                 var node = new RoadNetworkNode(tranWork.TargetTran);
-                node.Tracks.AddRange(tranWork.Ways.Select(w => new RoadNetworkTrack(w.Way, null)));
+                node.AddTracks(tranWork.Ways.Select(w => new RoadNetworkTrack(w.Way, null)));
                 tranWork.Bind(node);
-                ret.Nodes.Add(node);
+                ret.AddNode(node);
             }
         }
 

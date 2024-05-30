@@ -16,8 +16,8 @@ namespace PLATEAU.RoadNetwork
         //識別用ID：TrackID
         public RnID<RoadNetworkDataTrack> MyId { get; set; }
 
-        //接続上流リンク識別用ID：LinkID
-        public RoadNetworkLink NextLink { get; set; }
+        // 親ノード
+        public RoadNetworkNode ParentNode { get; set; }
 
         //接続上流レーン識別用ID：LaneID
         public RoadNetworkLane NextLane { get; set; }
@@ -25,20 +25,16 @@ namespace PLATEAU.RoadNetwork
         //接続上流リンク下流端からの距離[m] : double
         //public double distanceFromNextLink;
 
-        //接続下流リンク識別用ID : LinkID
-
-        public RoadNetworkLink PrevLink { get; set; }
-
         //接続下流レーン識別用ID: LaneID
 
         public RoadNetworkLane PrevLane { get; set; }
-
 
         // 車線(左)
         public RoadNetworkWay LeftWay { get; private set; }
 
         // 車線(右)
         public RoadNetworkWay RightWay { get; private set; }
+
         //----------------------------------
         // end: フィールド
         //----------------------------------

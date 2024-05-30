@@ -29,6 +29,9 @@ namespace PLATEAU.RoadNetwork.Drawer
         [SerializeField] private bool showSplitLane2 = false;
         [SerializeField] private float splitLaneRate = 0.5f;
 
+        [SerializeField] private bool showNodeNeighbor = false;
+        [SerializeField] private bool showNodeTracks = false;
+
         private static Color GetEdgeColor(RoadNetworkLane self)
         {
             if (self.IsBothConnectedLane)
@@ -70,17 +73,23 @@ namespace PLATEAU.RoadNetwork.Drawer
                 var center = node.GetCenterPoint();
                 Debug.DrawLine(center, center + Vector3.up);
 
-                foreach (var n in node.Neighbors)
+                if (showNodeNeighbor)
                 {
-                    DrawWay(n.Border, Color.magenta, Color.magenta);
-                    n.Border.GetLerpPoint(0.5f, out var c);
-                    Debug.DrawLine(center, c, color: Color.red);
+                    foreach (var n in node.Neighbors)
+                    {
+                        DrawWay(n.Border, Color.magenta, Color.magenta);
+                        n.Border.GetLerpPoint(0.5f, out var c);
+                        Debug.DrawLine(center, c, color: Color.red);
+                    }
                 }
 
-                foreach (var l in node.Tracks)
+                if (showNodeTracks)
                 {
-                    foreach (var w in l.BothWays)
-                        DrawWay(w, Color.cyan, Color.cyan);
+                    foreach (var l in node.Tracks)
+                    {
+                        foreach (var w in l.BothWays)
+                            DrawWay(w, Color.cyan, Color.cyan);
+                    }
                 }
             }
 
@@ -90,7 +99,7 @@ namespace PLATEAU.RoadNetwork.Drawer
                 {
                     foreach (var way in lane.BothWays)
                     {
-                        DrawWay(way, color: GetEdgeColor(lane), arrowColor: way.IsReversed ? Color.cyan : Color.blue);
+                        DrawWay(way, color: GetEdgeColor(lane), arrowColor: way.IsReversed ? Color.yellow : Color.blue);
 
                         foreach (var i in Enumerable.Range(0, way.Count))
                         {
