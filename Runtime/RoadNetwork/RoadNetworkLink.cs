@@ -17,6 +17,9 @@ namespace PLATEAU.RoadNetwork
         // 識別Id. シリアライズ用.ランタイムでは使用しないこと
         public RnID<RoadNetworkDataLink> MyId { get; set; }
 
+        // 自分が所属するRoadNetworkModel
+        public RoadNetworkModel ParentModel { get; set; }
+
         // 対象のtranオブジェクト
         public PLATEAUCityObjectGroup TargetTran { get; set; }
 
@@ -27,7 +30,6 @@ namespace PLATEAU.RoadNetwork
         private List<RoadNetworkLane> mainLanes = new List<RoadNetworkLane>();
         private List<RoadNetworkLane> leftLanes = new List<RoadNetworkLane>();
         private List<RoadNetworkLane> rightLanes = new List<RoadNetworkLane>();
-
 
         // 本線レーン(参照のみ)
         // 追加/削除はAddMainLane/RemoveMainLaneを使うこと
@@ -84,6 +86,7 @@ namespace PLATEAU.RoadNetwork
         {
             RemoveLane(rightLanes, lane);
         }
+
         /// <summary>
         /// lanesにlaneを追加する. ParentLink情報も更新する
         /// </summary>

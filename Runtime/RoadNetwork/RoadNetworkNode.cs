@@ -1,4 +1,5 @@
-﻿using PLATEAU.CityInfo;
+﻿using Codice.CM.Common.Tree;
+using PLATEAU.CityInfo;
 using PLATEAU.RoadNetwork.Data;
 using System;
 using System.Collections.Generic;
@@ -20,14 +21,20 @@ namespace PLATEAU.RoadNetwork
         // 識別Id. シリアライズ用.ランタイムでは使用しないこと
         public RnID<RoadNetworkDataNode> MyId { get; set; }
 
+        // 自分が所属するRoadNetworkModel
+        public RoadNetworkModel ParentModel { get; set; }
+
         // 対象のtranオブジェクト
         public PLATEAUCityObjectGroup TargetTran { get; set; }
 
         // 隣接情報
         public List<RoadNetworkNeighbor> Neighbors { get; set; } = new List<RoadNetworkNeighbor>();
 
+
+        private List<RoadNetworkTrack> tracks = new List<RoadNetworkTrack>();
+
         // 車線
-        public List<RoadNetworkTrack> Tracks { get; set; } = new List<RoadNetworkTrack>();
+        public IReadOnlyList<RoadNetworkTrack> Tracks => tracks;
 
         //----------------------------------
         // end: フィールド
@@ -38,6 +45,27 @@ namespace PLATEAU.RoadNetwork
         public RoadNetworkNode(PLATEAUCityObjectGroup targetTran)
         {
             TargetTran = targetTran;
+        }
+
+        public void AddTrack(RoadNetworkTrack track)
+        {
+            if (tracks.Contains(track))
+                return;
+
+            track.ParentNode = this;
+            tracks.Add(track);
+        }
+
+        public void AddTracks(IEnumerable<RoadNetworkTrack> tracks)
+        {
+            foreach (var track in tracks)
+                AddTrack(track);
+        }
+
+        public void RemoveTrack(RoadNetworkTrack link)
+        {
+            if (tracks.Remove(link))
+                link.ParentNode = null;
         }
 
         public Vector3 GetCenterPoint()

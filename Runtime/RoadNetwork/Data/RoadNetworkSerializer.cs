@@ -420,8 +420,10 @@ namespace PLATEAU.RoadNetwork.Data
 
             refTable.ConvertAll();
             var ret = new RoadNetworkModel();
-            ret.Links.AddRange(links);
-            ret.Nodes.AddRange(nodes);
+            foreach (var l in links)
+                ret.AddLink(l);
+            foreach (var n in nodes)
+                ret.AddNode(n);
             return ret;
         }
     }

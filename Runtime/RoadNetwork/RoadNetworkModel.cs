@@ -21,16 +21,49 @@ namespace PLATEAU.RoadNetwork
         // start: フィールド
         //----------------------------------
 
-        public List<RoadNetworkLink> Links { get; } = new List<RoadNetworkLink>();
+        private List<RoadNetworkLink> links = new List<RoadNetworkLink>();
+        private List<RoadNetworkNode> nodes = new List<RoadNetworkNode>();
 
-        public List<RoadNetworkNode> Nodes { get; } = new List<RoadNetworkNode>();
+        public IReadOnlyList<RoadNetworkLink> Links => links;
+
+        public IReadOnlyList<RoadNetworkNode> Nodes => nodes;
 
         // #TODO : 一時的にモデル内部に用意する(ビルドするたびにリセットされないように)
         // シリアライズ用フィールド
         [field: SerializeField] private RoadNetworkStorage Storage { get; set; }
+
         //----------------------------------
         // end: フィールド
         //----------------------------------
+        public void AddLink(RoadNetworkLink link)
+        {
+            if (links.Contains(link))
+                return;
+
+            link.ParentModel = this;
+            links.Add(link);
+        }
+
+        public void RemoveLink(RoadNetworkLink link)
+        {
+            if (links.Remove(link))
+                link.ParentModel = null;
+        }
+
+        public void AddNode(RoadNetworkNode node)
+        {
+            if (Nodes.Contains(node))
+                return;
+
+            node.ParentModel = this;
+            nodes.Add(node);
+        }
+
+        public void RemoveNode(RoadNetworkNode node)
+        {
+            if (nodes.Remove(node))
+                node.ParentModel = null;
+        }
 
         // #TODO : 実際はもっとある
         public IEnumerable<RoadNetworkLane> CollectAllLanes()
@@ -80,8 +113,10 @@ namespace PLATEAU.RoadNetwork
         {
             var serializer = new RoadNetworkSerializer();
             var model = serializer.Deserialize(Storage);
-            Links.AddRange(model.Links);
-            Nodes.AddRange(model.Nodes);
+            foreach (var l in model.Links)
+                AddLink(l);
+            foreach (var n in model.Nodes)
+                AddNode(n);
         }
 
         public void OnBeforeSerialize()
