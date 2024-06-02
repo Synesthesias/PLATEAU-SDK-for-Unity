@@ -33,11 +33,6 @@ namespace PLATEAU.RoadNetwork
         // シリアライズ用フィールド
         [field: SerializeField] private RoadNetworkStorage Storage { get; set; }
 
-        // 信号制御器
-        public List<SignalController> SignalControllers { get; } = new List<SignalController>();
-        // 信号機
-        public List<SignalLight> SignalLihgts { get; } = new List<SignalLight>();
-
         //----------------------------------
         // end: フィールド
         //----------------------------------

@@ -2,10 +2,12 @@
 using PLATEAU.RoadNetwork;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.Tracing;
 using System.Linq;
 using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
+using UnityEngine.Rendering.VirtualTexturing;
 using UnityEngine.UIElements;
 
 using static PLATEAU.Editor.RoadNetwork.RoadNetworkEditingSystem;
@@ -93,94 +95,6 @@ namespace PLATEAU.Editor.RoadNetwork
         RoadNetworkEditingResult RegisterRegulation(RoadNetworkTrack track, _RoadNetworkRegulation newRegulation);
     }
 
-
-    /// <summary>
-    /// 道路ネットワーク手動編集機能を構成するアセットを管理するクラス
-    /// </summary>
-    public class RoadNetworkEditorAssets
-    {
-        /// <summary>
-        /// 
-        /// </summary>
-        public RoadNetworkEditorAssets()
-        {
-            LoadAsset();
-        }
-
-        private static readonly string UIAssetDirPath = "Packages/com.synesthesias.plateau-unity-sdk/Resources/PlateauUIDocument/RoadNetwork/";
-
-        // エディタ
-        public static readonly string EditorAssetName = "RoadNetworkEditor.uxml";
-
-        // 各パラメータ
-        public static readonly string DataIDFieldAssetName = "RoadNetworkDataIDFiled.uxml";
-        public static readonly string FilePathFieldAssetName = "RoadNetworkFilePathField.uxml";
-        public static readonly string IntFieldAssetName = "RoadNetworkIntField.uxml";
-        public static readonly string NameFieldAssetName = "RoadNetworkNameField.uxml";
-        public static readonly string StatusMultiSelectorAssetName = "RoadNetworkStatusMultiSelector.uxml";
-        public static readonly string StatusSelectorAssetName = "RoadNetworkStatusSelector.uxml";
-        public static readonly string ToggleBoxAssetName = "RoadNetworkToggleBox.uxml";
-        public static readonly string Vec3FieldAssetName = "RoadNetworkVec3Field.uxml";
-        public static readonly string FloatFieldAssetName = "RoadNetworkFloatField.uxml";
-
-        // 特殊パラメータ
-        public static readonly string ParameterBoxAssetName = "RoadNetworkParameterBox.uxml";
-
-
-        // ロードしたアセット
-        private Dictionary<string, VisualTreeAsset> visualTreeAssets;
-
-        /// <summary>
-        /// アセットの取得
-        /// </summary>
-        /// <param name="name"></param>
-        /// <returns></returns>
-        public VisualTreeAsset GetAsset(string name)
-        {
-            return visualTreeAssets[name];
-        }
-
-        /// <summary>
-        /// アセットが読み込まれているか
-        /// </summary>
-        /// <returns></returns>
-        private bool IsLoaded()
-        {
-            return visualTreeAssets?.Count > 0;
-        }
-
-        /// <summary>
-        /// アセットを読み込む
-        /// </summary>
-        private void LoadAsset()
-        {
-            if (IsLoaded())
-                return;
-
-            visualTreeAssets = new Dictionary<string, VisualTreeAsset>
-            {
-                { EditorAssetName, LoadAsset(EditorAssetName) },
-                { DataIDFieldAssetName, LoadAsset(DataIDFieldAssetName) },
-                { FilePathFieldAssetName, LoadAsset(FilePathFieldAssetName) },
-                { IntFieldAssetName, LoadAsset(IntFieldAssetName) },
-                { NameFieldAssetName, LoadAsset(NameFieldAssetName) },
-                { StatusMultiSelectorAssetName, LoadAsset(StatusMultiSelectorAssetName) },
-                { StatusSelectorAssetName, LoadAsset(StatusSelectorAssetName) },
-                { ToggleBoxAssetName, LoadAsset(ToggleBoxAssetName) },
-                { Vec3FieldAssetName, LoadAsset(Vec3FieldAssetName) },
-                { FloatFieldAssetName, LoadAsset(FloatFieldAssetName) },
-                { ParameterBoxAssetName, LoadAsset(ParameterBoxAssetName) },
-            };
-        }
-
-
-        private VisualTreeAsset LoadAsset(string fileName)
-        {
-            string assetPath = UIAssetDirPath + fileName;
-            return AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(assetPath);
-        }
-    }
-
     /// <summary>
     /// 道路ネットワークの編集モード
     /// </summary>
@@ -189,12 +103,12 @@ namespace PLATEAU.Editor.RoadNetwork
         EditLaneShape,
         EditLaneStructure,
         EditTrafficRegulation,
-        DebugNone,
-        DebugNode,
-        DebugLink,
-        DebugLane,
-        DebugBlock,
-        DebugTrack,
+        //DebugNone,
+        //DebugNode,
+        //DebugLink,
+        //DebugLane,
+        //DebugBlock,
+        //DebugTrack,
     }
 
     /// <summary>
@@ -223,19 +137,19 @@ namespace PLATEAU.Editor.RoadNetwork
 
         private readonly Dictionary<RoadNetworkEditMode, GenerateParameterFunc> ParamterLayoutSet =
             new Dictionary<RoadNetworkEditMode, GenerateParameterFunc> {
-            { RoadNetworkEditMode.DebugNone,
-                    (IRoadNetworkEditingSystem system, RoadNetworkEditorAssets assets, VisualElement root)=>{
-
-                    }
-                } ,
             { RoadNetworkEditMode.EditLaneShape, CreateEditLaneShapeLayout },
             { RoadNetworkEditMode.EditLaneStructure, CreateEditLaneStructureLayout },
             { RoadNetworkEditMode.EditTrafficRegulation, CreateTrafficRegulationLayout },
-            { RoadNetworkEditMode.DebugNode, CreateDebugNodeLayout },
-            { RoadNetworkEditMode.DebugLink, CreateDebugLinkLayout },
-            { RoadNetworkEditMode.DebugLane, CreateDebugLaneLayout },
-            { RoadNetworkEditMode.DebugBlock, CreateDebugBlockLayout },
-            { RoadNetworkEditMode.DebugTrack, CreateDebugTrackLayout },
+            //{ RoadNetworkEditMode.DebugNone,
+            //        (IRoadNetworkEditingSystem system, RoadNetworkEditorAssets assets, VisualElement root)=>{
+
+            //        }
+            //    } ,
+            //{ RoadNetworkEditMode.DebugNode, CreateDebugNodeLayout },
+            //{ RoadNetworkEditMode.DebugLink, CreateDebugLinkLayout },
+            //{ RoadNetworkEditMode.DebugLane, CreateDebugLaneLayout },
+            //{ RoadNetworkEditMode.DebugBlock, CreateDebugBlockLayout },
+            //{ RoadNetworkEditMode.DebugTrack, CreateDebugTrackLayout },
 
         };
 
@@ -339,14 +253,6 @@ namespace PLATEAU.Editor.RoadNetwork
             root.Add(parameterBox);
         }
 
-        private static void CreateDebugBlockLayout(IRoadNetworkEditingSystem system, RoadNetworkEditorAssets assets, VisualElement root)
-        {
-        }
-
-        private static void CreateDebugTrackLayout(IRoadNetworkEditingSystem system, RoadNetworkEditorAssets assets, VisualElement root)
-        {
-        }
-
         private static void CreateEditLaneShapeLayout(IRoadNetworkEditingSystem system, RoadNetworkEditorAssets assets, VisualElement root)
         {
             
@@ -359,56 +265,68 @@ namespace PLATEAU.Editor.RoadNetwork
 
         private static void CreateTrafficRegulationLayout(IRoadNetworkEditingSystem system, RoadNetworkEditorAssets assets, VisualElement root)
         {
+
+            var panel = assets.GetAsset(RoadNetworkEditorAssets.TrafficRegulationAssetName);
+
+            var panelInst = panel.Instantiate();
+            var deploObjectSelecter = panelInst.Q<DropdownField>("DeploObjectSelecter");
+            deploObjectSelecter.RegisterCallback<ChangeEvent<string>>((e) => { 
+                
+            });
+
+            root.Add(panelInst);
+            return;
             //var haveSingnalControllers = system.RoadNetwork?.SignalControllers?.Count() > 0;
             //var signalController = system.SelectedRoadNetworkElement as SignalController;
             //if (signalController == null)
             //    return;
 
-            Func<VisualElement> createDataIDField = () => {
-                var signalController = new SignalController();
-                system.RoadNetwork.SignalControllers.Add(signalController);
 
-                var dataID = assets.GetAsset(RoadNetworkEditorAssets.Vec3FieldAssetName).Instantiate().Q<Vector3Field>();
-                dataID.label = "";
-                dataID.value = Vector3.zero;
-                return dataID;
-            };
-            CreateParamterBox(assets, root, "信号制御器", createDataIDField);
+            //Func<VisualElement> createDataIDField = () => {
+            //    var signalController = new SignalController();
+            //    system.RoadNetwork.SignalControllers.Add(signalController);
 
-            Func<VisualElement> createDataIDField2 = () => {
-                var signalLight = new SignalLight();
-                system.RoadNetwork.SignalLihgts.Add(signalLight);
+            //    var dataID = assets.GetAsset(RoadNetworkEditorAssets.Vec3FieldAssetName).Instantiate().Q<Vector3Field>();
+            //    dataID.label = "";
+            //    dataID.value = Vector3.zero;
+            //    return dataID;
+            //};
+            //CreateParamterBox(assets, root, "信号制御器", createDataIDField);
 
-                var dataID = assets.GetAsset(RoadNetworkEditorAssets.Vec3FieldAssetName).Instantiate().Q<Vector3Field>();
-                dataID.label = "";
-                dataID.value = Vector3.zero;
-                return dataID;
-            };
-            CreateParamterBox(assets, root, "信号機", createDataIDField2);
+            //Func<VisualElement> createDataIDField2 = () => {
+            //    var signalLight = new SignalLight();
+            //    system.RoadNetwork.SignalLihgts.Add(signalLight);
 
-            Func<VisualElement> createDataIDField3 = () => {
-                var dataID = assets.GetAsset(RoadNetworkEditorAssets.Vec3FieldAssetName).Instantiate().Q<Vector3Field>();
-                dataID.label = "";
-                dataID.value = Vector3.zero;
-                return dataID;
-            };
-            CreateParamterBox(assets, root, "停止線", createDataIDField3);
+            //    var dataID = assets.GetAsset(RoadNetworkEditorAssets.Vec3FieldAssetName).Instantiate().Q<Vector3Field>();
+            //    dataID.label = "";
+            //    dataID.value = Vector3.zero;
+            //    return dataID;
+            //};
+            //CreateParamterBox(assets, root, "信号機", createDataIDField2);
 
-            Func<VisualElement> createDataIDField4 = () => {
-                var dataID = assets.GetAsset(RoadNetworkEditorAssets.Vec3FieldAssetName).Instantiate().Q<Vector3Field>();
-                dataID.label = "";
-                dataID.value = Vector3.zero;
-                return dataID;
-            };
-            CreateParamterBox(assets, root, "一時停止標識", createDataIDField4);
+            //Func<VisualElement> createDataIDField3 = () => {
+            //    var dataID = assets.GetAsset(RoadNetworkEditorAssets.Vec3FieldAssetName).Instantiate().Q<Vector3Field>();
+            //    dataID.label = "";
+            //    dataID.value = Vector3.zero;
+            //    return dataID;
+            //};
+            //CreateParamterBox(assets, root, "停止線", createDataIDField3);
 
-            Func<VisualElement> createDataIDField5 = () => {
-                var dataID = assets.GetAsset(RoadNetworkEditorAssets.DataIDFieldAssetName).Instantiate().Q<IntegerField>();
-                dataID.label = "";
-                dataID.value = 0;
-                return dataID;
-            };
-            CreateParamterBox(assets, root, "優先道路", createDataIDField5);
+            //Func<VisualElement> createDataIDField4 = () => {
+            //    var dataID = assets.GetAsset(RoadNetworkEditorAssets.Vec3FieldAssetName).Instantiate().Q<Vector3Field>();
+            //    dataID.label = "";
+            //    dataID.value = Vector3.zero;
+            //    return dataID;
+            //};
+            //CreateParamterBox(assets, root, "一時停止標識", createDataIDField4);
+
+            //Func<VisualElement> createDataIDField5 = () => {
+            //    var dataID = assets.GetAsset(RoadNetworkEditorAssets.DataIDFieldAssetName).Instantiate().Q<IntegerField>();
+            //    dataID.label = "";
+            //    dataID.value = 0;
+            //    return dataID;
+            //};
+            //CreateParamterBox(assets, root, "優先道路", createDataIDField5);
         }
 
         public RoadNetworkUIDoc(IRoadNetworkEditingSystem system, VisualElement editorRoot, in RoadNetworkEditorAssets assets) 
@@ -455,6 +373,9 @@ namespace PLATEAU.Editor.RoadNetwork
                 var mode = (RoadNetworkEditMode)evt.newValue;
                 CurrentMode = (RoadNetworkEditMode)modeSelector.value;
             });
+
+            system.OnChangedSelectRoadNetworkElement -= SelectRoadNetwrokElement;
+            system.OnChangedSelectRoadNetworkElement += SelectRoadNetwrokElement;
         }
 
         public void PostInitialize()
@@ -482,6 +403,33 @@ namespace PLATEAU.Editor.RoadNetwork
             objSelecter.value = system.RoadNetworkObject;
             UpdateMode(null, null);
         }
+
+        private void SelectRoadNetwrokElement(object _, EventArgs _1)
+        {
+            if (system.CurrentEditMode == RoadNetworkEditMode.EditTrafficRegulation)
+            {
+                var node = system.SelectedRoadNetworkElement as RoadNetworkNode;
+                if (node != null)
+                {
+                    if (node.SignalController == null)
+                    {
+                        var trafficController = new TrafficSignalLightController("SignalController" + node.MyId, node, node.GetCenterPoint());
+                        node.SignalController = (trafficController);
+                        foreach (var item in node.Neighbors)
+                        {
+                            var n = item.Border.Count();
+                            for (int i = 0; i < n - 1; i++)
+                            {
+                                var pos = (item.Border[i] + item.Border[i + 1]) / 2.0f;
+                                var signalLight = new TrafficSignalLight(trafficController, pos);
+                                trafficController.SignalLights.Add(signalLight);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
     }
 
 }

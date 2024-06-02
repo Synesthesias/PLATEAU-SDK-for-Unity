@@ -13,17 +13,42 @@ namespace PLATEAU.RoadNetwork
 
     }
 
-    public class SignalController
+    /// <summary>
+    /// 信号制御器
+    /// </summary>
+    public class TrafficSignalLightController
     {
-        public List<SignalLight> signalLights = new List<SignalLight>();
-        public List<SignalStepSet> signalStepSets = new List<SignalStepSet>();
+        public TrafficSignalLightController(string id, RoadNetworkNode node, in Vector3 position)
+        {
+            SelfId = id;
+            CorrespondingNode = node;
+            this.position = position;
+        }
+
+        // RnIDに変換予定？　AVNEWだと文字列
+        public string SelfId { get; private set; } = string.Empty;
+        public RoadNetworkNode CorrespondingNode { get; private set; } = null;
+
+
+        public bool GapImpedanceFlag { get; private set; } = false;
+        public TrafficSignalControlPattern ControlPatternData { get; private set; } = new TrafficSignalControlPattern();
+        public List<TrafficSignalLight> SignalLights { get; private set; } = new List<TrafficSignalLight>();
 
         public Vector3 position;
     }
 
-    public class SignalLight
+    /// <summary>
+    /// 信号灯器
+    /// </summary>
+    public class TrafficSignalLight
     {
-        public void SetStatus(TrafficLight.Status status)
+        public TrafficSignalLight(TrafficSignalLightController controller, in Vector3 position)
+        {
+            this.controller = controller;
+            this.position = position;
+        }
+
+        public void SetStatus(TrafficSignalLightBulb.Status status)
         {
 
         }
@@ -34,26 +59,36 @@ namespace PLATEAU.RoadNetwork
         public StopLine stopLine;
 
         public Vector3 position;
+
+        TrafficSignalLightController controller;
     }
 
-    public class SignalStepSet 
+    public class TrafficSignalControlPattern
     {
-        public float TimeOffset = 0;
-        public List<SignalStep> steps;
+        public DateTime StartTime { get; private set; } = DateTime.MinValue;
+        public string ControlPatternId { get; private set; } = "_undefind";
+        public List<TrafficSignalPhase> Phases { get; private set; } = new List<TrafficSignalPhase>();
+        public TrafficLightSignalOffset Offset { get; private set; } = null;
     }
 
-    public class SignalStep
+    public class TrafficSignalPhase
     {
-        public float DuringStep = 0;
-
-        public struct SignalPattern
-        {
-            TrafficLight.Status status;
-            List<SignalLight> lights;
-        }
-        public List<SignalPattern> patterns;
+        public float SplitSeconds { get; set; }
+        public int EnterableVehicleType { get; set; }
+        public Dictionary<TrafficSignalLight, RoadNetworkLink> DirectionMap { get; set; }
     }
 
+    /// <summary>
+    /// 信号灯器の点灯をずらす
+    /// </summary>
+    public class TrafficLightSignalOffset
+    {
+        public TrafficSignalLight ReferenceSignalLight { get; set; }
+        public float Seconds { get; set; }
+    }
+
+    /////////////////////////////////////////
+    
     /// <summary>
     /// 交通規制情報
     /// </summary>
@@ -80,16 +115,17 @@ namespace PLATEAU.RoadNetwork
     public class StopLine
     {
         public RoadNetworkDataLineString line;
-        public TrafficLight trafficLight;
+        public TrafficSignalLight trafficLight;
         public bool bHasStopSign;
     }
 
     /// <summary>
     /// 信号機の電球（概念）
     /// 信号機は何色ですかと聞かれたらこれを返す
+    /// クラス名がTrafficSignalLightと混じって分かりずらいので変えたい
     /// </summary>
     [System.Serializable]
-    public class TrafficLight
+    public class TrafficSignalLightBulb
     {
         public LightBulb[] LightBulbs => lightBulbs;
         [SerializeField] private LightBulb[] lightBulbs;
