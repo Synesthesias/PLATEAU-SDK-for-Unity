@@ -1,0 +1,78 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="True">
+    <ui:DropdownField label="配置オブジェクト" choices="信号制御器,信号灯器,一時停止線,交通イベント（工事、事故など）" name="DeploObjectSelecter" index="0" />
+    <ui:VisualElement name="VisualElement" style="flex-grow: 1;">
+        <ui:Label tabindex="-1" text="選択中の信号制御器" parse-escape-sequences="true" display-tooltip-when-elided="true" />
+        <ui:TextField picking-mode="Ignore" label="信号制御器ID" value="filler text" readonly="true" focusable="false" name="TrafficSignalLightID" style="display: none;" />
+        <ui:TextField picking-mode="Ignore" label="設置ノードID" value="filler text" readonly="true" focusable="false" hide-mobile-input="false" name="NodeID" style="display: none;" />
+        <ui:TextField picking-mode="Ignore" label="信号制御器名称" value="filler text" name="TrafficSignalLightName" />
+        <ui:VisualElement style="flex-direction: row;">
+            <ui:Button text="追加" parse-escape-sequences="true" display-tooltip-when-elided="true" />
+            <ui:Button text="削除" parse-escape-sequences="true" display-tooltip-when-elided="true" />
+            <ui:Button text="編集" parse-escape-sequences="true" display-tooltip-when-elided="true" />
+        </ui:VisualElement>
+        <ui:VisualElement style="flex-grow: 1;">
+            <ui:ScrollView name="ScrollView">
+                <ui:VisualElement style="flex-grow: 1; flex-direction: row;">
+                    <ui:RadioButton name="RadioButton" />
+                    <ui:Button parse-escape-sequences="true" display-tooltip-when-elided="true">
+                        <ui:VisualElement style="flex-grow: 1; flex-direction: row;">
+                            <ui:Label tabindex="-1" text="07/00/00" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Label" style="background-color: rgba(0, 0, 0, 0); border-top-width: 2px; border-right-width: 2px; border-bottom-width: 2px; border-left-width: 2px; border-left-color: rgba(0, 0, 0, 0.16); border-right-color: rgba(0, 0, 0, 0.16); border-top-color: rgba(0, 0, 0, 0.16); border-bottom-color: rgba(0, 0, 0, 0.16);" />
+                            <ui:Label tabindex="-1" text="ptn_01" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Label" style="-unity-slice-left: 0; -unity-slice-top: 0; -unity-slice-right: 0; -unity-slice-bottom: 0;" />
+                            <ui:Label tabindex="-1" text="150" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Label" />
+                            <ui:Label tabindex="-1" text="node" parse-escape-sequences="true" display-tooltip-when-elided="true" />
+                            <ui:Label tabindex="-1" text="0" parse-escape-sequences="true" display-tooltip-when-elided="true" />
+                        </ui:VisualElement>
+                    </ui:Button>
+                </ui:VisualElement>
+                <ui:VisualElement style="flex-grow: 1; flex-direction: row;">
+                    <ui:RadioButton name="RadioButton" />
+                    <ui:Button parse-escape-sequences="true" display-tooltip-when-elided="true">
+                        <ui:VisualElement style="flex-grow: 1; flex-direction: row;">
+                            <ui:Label tabindex="-1" text="07/00/00" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Label" />
+                            <ui:Label tabindex="-1" text="ptn_01" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Label" />
+                            <ui:Label tabindex="-1" text="150" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Label" />
+                            <ui:Label tabindex="-1" text="node" parse-escape-sequences="true" display-tooltip-when-elided="true" />
+                            <ui:Label tabindex="-1" text="0" parse-escape-sequences="true" display-tooltip-when-elided="true" />
+                        </ui:VisualElement>
+                    </ui:Button>
+                </ui:VisualElement>
+                <ui:VisualElement style="flex-grow: 1; flex-direction: row;">
+                    <ui:RadioButton name="RadioButton" />
+                    <ui:Button parse-escape-sequences="true" display-tooltip-when-elided="true">
+                        <ui:VisualElement style="flex-grow: 1; flex-direction: row;">
+                            <ui:Label tabindex="-1" text="07/00/00" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Label" />
+                            <ui:Label tabindex="-1" text="ptn_01" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Label" />
+                            <ui:Label tabindex="-1" text="150" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Label" />
+                            <ui:Label tabindex="-1" text="node" parse-escape-sequences="true" display-tooltip-when-elided="true" />
+                            <ui:Label tabindex="-1" text="0" parse-escape-sequences="true" display-tooltip-when-elided="true" />
+                        </ui:VisualElement>
+                    </ui:Button>
+                </ui:VisualElement>
+                <ui:VisualElement style="flex-grow: 1; flex-direction: row;">
+                    <ui:RadioButton name="RadioButton" />
+                    <ui:Button parse-escape-sequences="true" display-tooltip-when-elided="true">
+                        <ui:VisualElement style="flex-grow: 1; flex-direction: row;">
+                            <ui:Label tabindex="-1" text="07/00/00" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Label" />
+                            <ui:Label tabindex="-1" text="ptn_01" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Label" />
+                            <ui:Label tabindex="-1" text="150" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Label" />
+                            <ui:Label tabindex="-1" text="node" parse-escape-sequences="true" display-tooltip-when-elided="true" />
+                            <ui:Label tabindex="-1" text="0" parse-escape-sequences="true" display-tooltip-when-elided="true" />
+                        </ui:VisualElement>
+                    </ui:Button>
+                </ui:VisualElement>
+                <ui:VisualElement style="flex-grow: 1; flex-direction: row;">
+                    <ui:RadioButton name="RadioButton" />
+                    <ui:Button parse-escape-sequences="true" display-tooltip-when-elided="true">
+                        <ui:VisualElement style="flex-grow: 1; flex-direction: row;">
+                            <ui:Label tabindex="-1" text="07/00/00" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Label" />
+                            <ui:Label tabindex="-1" text="ptn_01" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Label" />
+                            <ui:Label tabindex="-1" text="150" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Label" />
+                            <ui:Label tabindex="-1" text="node" parse-escape-sequences="true" display-tooltip-when-elided="true" />
+                            <ui:Label tabindex="-1" text="0" parse-escape-sequences="true" display-tooltip-when-elided="true" />
+                        </ui:VisualElement>
+                    </ui:Button>
+                </ui:VisualElement>
+            </ui:ScrollView>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

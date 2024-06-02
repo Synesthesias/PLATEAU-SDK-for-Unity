@@ -36,6 +36,11 @@ namespace PLATEAU.RoadNetwork
         // 車線
         public IReadOnlyList<RoadNetworkTrack> Tracks => tracks;
 
+        // 信号制御器
+        public TrafficSignalLightController SignalController { get; set; } = null;
+        // 信号機
+        //public List<TrafficSignalLight> SignalLihgts { get; } = new List<TrafficSignalLight>();
+
         //----------------------------------
         // end: フィールド
         //----------------------------------

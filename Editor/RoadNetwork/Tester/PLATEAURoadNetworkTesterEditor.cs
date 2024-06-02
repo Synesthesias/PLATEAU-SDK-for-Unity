@@ -29,8 +29,7 @@ namespace PLATEAU.Editor.RoadNetwork
                 //    return;
 
                 var guiSystem = editorInterface.SceneGUISystem;
-                guiSystem.SetEditingTarget(target as PLATEAURoadNetworkTester);
-                guiSystem.OnSceneGUI();
+                guiSystem.OnSceneGUI(target as PLATEAURoadNetworkTester);
             }
 
         }

@@ -141,6 +141,8 @@ namespace PLATEAU.Editor.RoadNetwork
 
             System.Object SelectedRoadNetworkElement { get; set; }
             event EventHandler OnChangedSelectRoadNetworkElement;
+            void NotifyChangedRoadNetworkObject2Editor();
+
         }
 
         /// <summary>
@@ -217,16 +219,26 @@ namespace PLATEAU.Editor.RoadNetwork
             }
 
             public IEditorInstance EditorInstance => system.editorInstance;
+
+            public void NotifyChangedRoadNetworkObject2Editor()
+            {
+                if (system.roadNetworkObject == null)
+                    return;
+                EditorUtility.SetDirty(system.roadNetworkObject);
+
+            }
         }
 
         /// <summary>
         /// RoadNetwork編集機能のデータ操作部分の機能を提供するクラス
+        /// EditingSystemのサブクラスに移動するかも
         /// </summary>
         public class RoadNetworkEditorOperation : IRoadNetworkEditOperation
         {
             public RoadNetworkEditingResult AddPoint(RoadNetworkWay way, int idx, RoadNetworkPoint point)
             {
                 way.LineString.Points.Insert(idx, point);
+                
                 return new RoadNetworkEditingResult(RoadNetworkEditingResultType.Success);
             }
 
