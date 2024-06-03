@@ -1,15 +1,16 @@
+using PLATEAU.CityAdjust.NonLibData;
 using System.Collections.Generic;
 using PLATEAU.CityInfo;
 using PLATEAU.Util;
 
-namespace PLATEAU.GranularityConvert
+namespace PLATEAU.CityAdjust.NonLibDataHolder
 {
     /// <summary>
     /// GML IDと、シリアライズ化された地物情報の辞書です。
     /// 用途：分割結合機能において、変換前の属性情報を覚えておいて変換後に適用するために利用します。
-    /// 参照： <see cref="CityGranularityConverter"/>
+    /// 参照： <see cref="NonLibDataHolder"/>
     /// </summary>
-    public class GmlIdToSerializedCityObj
+    public class GmlIdToSerializedCityObj : INonLibData
     {
         private Dictionary<string, CityObjectList.CityObject> data = new ();
         
@@ -17,7 +18,7 @@ namespace PLATEAU.GranularityConvert
         /// 引数に含まれるGmlIDと属性情報をすべて取得して記憶したインスタンスを返します。
         /// 子の属性情報も再帰的に取得します。
         /// </summary>
-        public static GmlIdToSerializedCityObj ComposeFrom(UniqueParentTransformList srcTransforms)
+        public void ComposeFrom(UniqueParentTransformList srcTransforms)
         {
             var cityObjGroups = new List<PLATEAUCityObjectGroup>();
             srcTransforms.BfsExec(
@@ -30,16 +31,14 @@ namespace PLATEAU.GranularityConvert
                     return NextSearchFlow.Continue;
                 });
             
-            var ret = new GmlIdToSerializedCityObj();
             foreach(var cityObjs in cityObjGroups)
             {
                 foreach (var cityObj in cityObjs.GetAllCityObjects())
                 {
-                    ret.Add(cityObj.GmlID, cityObj);
+                    Add(cityObj.GmlID, cityObj);
                 }
             }
 
-            return ret;
         }
 
         private void Add(string gmlId, CityObjectList.CityObject serializedCityObj)
@@ -63,6 +62,17 @@ namespace PLATEAU.GranularityConvert
             }
             outSerializedCityObj = null;
             return false;
+        }
+
+        /// <summary>
+        /// 何もしません。
+        /// 属性情報の復元手順は他の<see cref="INonLibData"/>とは異なっており、
+        /// <see cref="RestoreTo"/>の代わりに
+        /// <see cref="AttributeDataHelper"/>のnew時に渡す
+        /// <see cref="SerializedCityObjectGetterFromDict"/>の引数に本クラスを渡すことで復元します。
+        /// </summary>
+        public void RestoreTo(UniqueParentTransformList target)
+        {
         }
     }
 }

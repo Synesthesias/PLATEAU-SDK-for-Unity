@@ -1,3 +1,5 @@
+using PLATEAU.CityAdjust.NonLibData;
+using PLATEAU.CityAdjust.NonLibDataHolder;
 using PLATEAU.CityExport.ModelConvert;
 using PLATEAU.CityExport.ModelConvert.SubMeshConvert;
 using PLATEAU.CityImport.Import.Convert;
@@ -19,6 +21,7 @@ namespace PLATEAU.CityAdjust.AlignLand
     {
         public async Task ExecAsync(ALConfig conf)
         {
+            // 高さの基準となる土地からC++のModelとハイトマップを生成します。
             var landTrans = conf.Lands[0]; // TODO 複数対応
             var landMf = landTrans.GetComponent<MeshFilter>();
             if (landMf == null) return;
@@ -31,11 +34,12 @@ namespace PLATEAU.CityAdjust.AlignLand
                 VertexConverterFactory.NoopConverter());
             var terrain = new ConvertedTerrainData(
                 landModel,
-                new TerrainConvertOption(new GameObject[] { landTrans.gameObject }, 512, false,
+                new TerrainConvertOption(new GameObject[] { landTrans.gameObject }, 1024, false,
                     TerrainConvertOption.ImageOutput.PNG));
             var heightmaps = terrain.GetHeightmapDataRecursive();
             if (heightmaps.Count == 0) return;
 
+            // 土地に合わせるモデルについて
             var convertTarget = new UniqueParentTransformList();
             foreach (var cog in conf.TargetModel.GetComponentsInChildren<PLATEAUCityObjectGroup>())
             {
@@ -47,9 +51,15 @@ namespace PLATEAU.CityAdjust.AlignLand
                 convertTarget.Add(cog.transform);
             }
 
+            var nonLibDataHolder = new NonLibData.NonLibDataHolder(
+                new GmlIdToSerializedCityObj()
+            );
+
+            // C++のModelに変換します
+            var subMeshConverter = new UnityMeshToDllSubMeshWithGameMaterial();
             var model = UnityMeshToDllModelConverter.Convert(
                 convertTarget,
-                new UnityMeshToDllSubMeshWithEmptyMaterial(),
+                subMeshConverter,
                 false,
                 VertexConverterFactory.NoopConverter());
             var map = heightmaps[0]; // TODO 複数対応
@@ -63,16 +73,18 @@ namespace PLATEAU.CityAdjust.AlignLand
                 landMinMax.Include(vert);
             }
             
+            // 高さ合わせをします。
             new HeightMapAligner().Align(model, map.HeightData, map.textureWidth, map.textureHeight, landMinMax.Min.x, landMinMax.Max.x, landMinMax.Min.z, landMinMax.Max.z, landMinMax.Min.y, landMinMax.Max.y);
 
-            await PlateauToUnityModelConverter.PlateauModelToScene(
+            var result = await PlateauToUnityModelConverter.PlateauModelToScene(
                 null, new DummyProgressDisplay(), "",
-                new PlaceToSceneConfig(new DllSubMeshToUnityMaterialByTextureMaterial(), true, null, null,
+                new PlaceToSceneConfig(new DllSubMeshToUnityMaterialByGameMaterial(subMeshConverter), true, null, null,
                     new CityObjectGroupInfoForToolkits(false, false), MeshGranularity.PerPrimaryFeatureObject),
                 model,
-                new AttributeDataHelper(new SerializedCityObjectGetterFromDict(new GmlIdToSerializedCityObj(), model), MeshGranularity.PerPrimaryFeatureObject, false)
+                new AttributeDataHelper(new SerializedCityObjectGetterFromDict(nonLibDataHolder.Get<GmlIdToSerializedCityObj>(), model), MeshGranularity.PerPrimaryFeatureObject, false)
                 , true
             );
+            nonLibDataHolder.RestoreTo(result.GeneratedRootTransforms);
         }
     }
 
