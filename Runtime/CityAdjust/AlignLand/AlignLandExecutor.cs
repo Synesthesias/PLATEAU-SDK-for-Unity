@@ -54,6 +54,7 @@ namespace PLATEAU.CityAdjust.AlignLand
             var nonLibDataHolder = new NonLibData.NonLibDataHolder(
                 new GmlIdToSerializedCityObj()
             );
+            nonLibDataHolder.ComposeFrom(convertTarget);
 
             // C++のModelに変換します
             var subMeshConverter = new UnityMeshToDllSubMeshWithGameMaterial();
@@ -81,8 +82,10 @@ namespace PLATEAU.CityAdjust.AlignLand
                 new PlaceToSceneConfig(new DllSubMeshToUnityMaterialByGameMaterial(subMeshConverter), true, null, null,
                     new CityObjectGroupInfoForToolkits(false, false), MeshGranularity.PerPrimaryFeatureObject),
                 model,
-                new AttributeDataHelper(new SerializedCityObjectGetterFromDict(nonLibDataHolder.Get<GmlIdToSerializedCityObj>(), model), MeshGranularity.PerPrimaryFeatureObject, false)
-                , true
+                new AttributeDataHelper(
+                    new SerializedCityObjectGetterFromDict(nonLibDataHolder.Get<GmlIdToSerializedCityObj>(), model),
+                    MeshGranularity.PerPrimaryFeatureObject, true),
+                true
             );
             nonLibDataHolder.RestoreTo(result.GeneratedRootTransforms);
         }
