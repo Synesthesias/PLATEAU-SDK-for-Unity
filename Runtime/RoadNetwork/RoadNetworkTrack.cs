@@ -38,6 +38,13 @@ namespace PLATEAU.RoadNetwork
         //----------------------------------
         // end: フィールド
         //----------------------------------
+
+        //接続上流リンク識別用
+        public RoadNetworkLink NextLink => NextLane?.ParentLink;
+
+        //接続下流リンク識別用ID : LinkID
+        public RoadNetworkLink PrevLink => PrevLane?.ParentLink;
+
         public RoadNetworkTrack() { }
 
         public RoadNetworkTrack(RoadNetworkWay leftWay, RoadNetworkWay rightWay)
