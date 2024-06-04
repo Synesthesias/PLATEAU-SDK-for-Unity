@@ -872,11 +872,9 @@ namespace PLATEAU.Util.GeoGraph
 
             var fComp = Comparer<float>.Default;
 
-            // 最後に動いたのが左 or 右?
-            bool isLastMoveLeft = false;
-            // left ~ rightが隣接するまで探索する.
-            // -> left or rightのどっちかがエッジ(最後に動いた方を取る)
-            while (leftIndex < rightIndex - 1)
+            // left ~ rightの間にエッジが1つしかなくなるまで続ける
+            //   -> その残った一つがエッジ
+            while (leftIndex < rightIndex - 2)
             {
                 var l = edges[leftIndex];
                 var r = edges[rightIndex].Reversed();
@@ -925,19 +923,18 @@ namespace PLATEAU.Util.GeoGraph
                 }
 
                 // より遠いのが左の場合右の線分を進める
-                isLastMoveLeft = points.Last().isLeft == false;
-                if (isLastMoveLeft)
-                {
-                    leftIndex++;
-                }
-                else
+                if (points.Last().isLeft)
                 {
                     rightIndex--;
                 }
+                else
+                {
+                    leftIndex++;
+                }
             }
 
-            // ここに来る段階でleftIndex == rightIndexなはず
-            var ret = new List<int> { isLastMoveLeft ? leftIndex : rightIndex };
+			// ここに来る段階でleftIndex == rightIndex - 2のはず
+            var ret = new List<int> { (leftIndex + rightIndex) / 2 };
             var borderSumAngle = 0f;
             // 20度まではつながっていると判断
             var angleBorder = 20f;
