@@ -4,9 +4,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using Unity.Plastic.Antlr3.Runtime;
 using UnityEditor.PackageManager;
 using UnityEngine;
 using UnityEngine.Assertions.Comparers;
+using static PLATEAU.Util.GeoGraph.GeoGraph2D;
 
 namespace PLATEAU.Util.GeoGraph
 {
@@ -471,8 +473,8 @@ namespace PLATEAU.Util.GeoGraph
 
             public override string ToString()
             {
-                return
-                    $"{LeftIndex}-{RightIndex}(L={LeftNearestStartInfo}-{LeftNearestEndInfo},R={RightNearestStartInfo}-{RightNearestEndInfo}";
+                //return $"{LeftIndex}-{RightIndex}(L={LeftNearestStartInfo}-{LeftNearestEndInfo},R={RightNearestStartInfo}-{RightNearestEndInfo}";
+                return $"{LeftIndex}-{RightIndex}";
             }
 
             public static int Compare(InnerSegment a, InnerSegment b)
@@ -496,9 +498,6 @@ namespace PLATEAU.Util.GeoGraph
         public static List<InnerSegment> GetInnerLerpSegments(IReadOnlyList<Vector2> seg0, IReadOnlyList<Vector2> seg1, float p, DebugOption op = null)
         {
             p = Mathf.Clamp01(p);
-
-            var segments = new List<LineSegment2D>();
-
             var lefts = GeoGraphEx.GetEdges(seg0, false).Select(v => new LineSegment2D(v.Item1, v.Item2)).ToList();
             var rights = GeoGraphEx.GetEdges(seg1, false).Select(v => new LineSegment2D(v.Item1, v.Item2)).ToList();
 
@@ -688,12 +687,13 @@ namespace PLATEAU.Util.GeoGraph
             // 逆走 or 全く進まないような線を削除する
             innerSegments.RemoveAll(x =>
             {
-                var ret = x.IsCrossed || NearestPointInfo.Compare(x.LeftNearestStartInfo, x.LeftNearestEndInfo) >= 0;
+                var ret = NearestPointInfo.Compare(x.LeftNearestStartInfo, x.LeftNearestEndInfo) >= 0;
                 if (ret && (op?.showRemoveSegment ?? false))
                     DebugEx.DrawLineSegment2D(x.Segment, color: DebugEx.GetDebugColor(15, 16, 0.3f));
                 return ret;
             });
 
+            //交差する線分を分割する
             ForeachEvents((a, isStart, b) =>
             {
                 if (isStart == false)
@@ -718,6 +718,15 @@ namespace PLATEAU.Util.GeoGraph
                 }
 
                 return addSegments;
+            });
+
+            // 逆走 or 全く進まないような線を削除する
+            innerSegments.RemoveAll(x =>
+            {
+                var ret = x.IsCrossed;
+                if (ret && (op?.showRemoveSegment ?? false))
+                    DebugEx.DrawLineSegment2D(x.Segment, color: DebugEx.GetDebugColor(1, 16, 0.3f));
+                return ret;
             });
 
             //ForeachEvents((a, isStart, b) =>
@@ -794,7 +803,7 @@ namespace PLATEAU.Util.GeoGraph
                 var ret = Comparer<float>.Default.Compare(a.GetDistEval(true), b.GetDistEval(true));
                 if (ret == 0)
                     ret = Comparer<float>.Default.Compare(a.GetDistEval(false), b.GetDistEval(false));
-                if (ret > 0)
+                if (ret < 0)
                 {
                     deleted.Add(b);
                 }
@@ -811,7 +820,7 @@ namespace PLATEAU.Util.GeoGraph
                 innerSegments.Remove(a);
                 if (op?.showRemoveSegment ?? false)
                 {
-                    DebugEx.DrawLineSegment2D(a.Segment, color: DebugEx.GetDebugColor(15, 16, 0.3f));
+                    DebugEx.DrawLineSegment2D(a.Segment, color: DebugEx.GetDebugColor(5, 16, 0.3f));
 
                 }
             }
@@ -840,6 +849,145 @@ namespace PLATEAU.Util.GeoGraph
             return innerSegments;
         }
 
+        [Serializable]
+        public class DebugFindOppositeOption
+        {
+            public bool showCenterLine = false;
+            public Color showCenterLineColor = Color.blue;
+            public int pattern = 0;
+        }
+
+        /// <summary>
+        /// verticesを始点終点から見ていき,お互い中心線を使って比較しながら中心の辺を表すインデックス配列を返す
+        /// </summary>
+        /// <param name="vertices"></param>
+        /// <param name="allowAngleSum">同一直線と判断する角度の和</param>
+        /// <param name="op"></param>
+        /// <returns></returns>
+        public static List<int> FindMidEdge(IReadOnlyList<Vector2> vertices, float allowAngleSum = 20f, DebugFindOppositeOption op = null)
+        {
+            var edges = GeoGraphEx.GetEdges(vertices, false).Select(v => new LineSegment2D(v.Item1, v.Item2)).ToList();
+            var leftIndex = 0;
+            var rightIndex = edges.Count - 1;
+
+            var fComp = Comparer<float>.Default;
+
+            // 最後に動いたのが左 or 右?
+            bool isLastMoveLeft = false;
+            // left ~ rightが隣接するまで探索する.
+            // -> left or rightのどっちかがエッジ(最後に動いた方を取る)
+            while (leftIndex < rightIndex - 1)
+            {
+                var l = edges[leftIndex];
+                var r = edges[rightIndex].Reversed();
+                // 中心線を計算
+                var centerRay = GeoGraph2D.LerpRay(l.Ray, r.Ray, 0.5f);
+                var dirL = new Vector2(l.Direction.y, -l.Direction.x);
+                var dirR = new Vector2(r.Direction.y, -r.Direction.x);
+                var points = new[]
+                    {
+                        new { ray = new Ray2D(l.Start, dirL), isLeft = true },
+                        new { ray = new Ray2D(l.End, dirL), isLeft = true },
+                        new { ray = new Ray2D(r.Start, dirR), isLeft = false },
+                        new { ray = new Ray2D(r.End, dirR), isLeft = false }
+                    }
+                    .Select(x =>
+                    {
+                        var hit = LineUtil.LineIntersection(centerRay, x.ray, out var inter, out var t1, out var t2);
+                        var other = x.isLeft ? r : l;
+                        return new
+                        {
+                            isHit = hit,
+                            inter = inter,
+                            tCenterRay = t1,
+                            tRay = t2,
+                            isLeft = x.isLeft,
+                            origin = x.ray.origin
+                        };
+                    }).Where(x => x.isHit)
+                    .ToList();
+
+                points.Sort((a, b) => fComp.Compare(a.tCenterRay, b.tCenterRay));
+
+                // 重ならない時は無視
+                if (points.Any() == false)
+                {
+                    leftIndex++;
+                    continue;
+                }
+
+                var isCross = points.Count == 4 && points[0].isLeft != points[1].isLeft;
+
+                if (isCross)
+                {
+                    if (op?.showCenterLine ?? false)
+                        DebugEx.DrawArrow(points[1].inter, points[2].inter, bodyColor: op.showCenterLineColor);
+                }
+
+                // より遠いのが左の場合右の線分を進める
+                isLastMoveLeft = points.Last().isLeft == false;
+                if (isLastMoveLeft)
+                {
+                    leftIndex++;
+                }
+                else
+                {
+                    rightIndex--;
+                }
+            }
+
+            // ここに来る段階でleftIndex == rightIndexなはず
+            var ret = new List<int> { isLastMoveLeft ? leftIndex : rightIndex };
+            var borderSumAngle = 0f;
+            // 20度まではつながっていると判断
+            var angleBorder = 20f;
+            var stop = new[] { false, false };
+            while (stop.Contains(false) && ret.Count < edges.Count - 1)
+            {
+                // 0 : left用
+                // 1 : right用
+                var info = new[]
+                {
+                    new {now=ret.First(), d = -1},
+                    new {now=ret.Last(), d = +1 }
+                };
+                var es = Enumerable.Range(0, 2)
+                    .Where(i => stop[i] == false && edges.IndexIn(info[i].now + info[i].d))
+                    .Select(j =>
+                    {
+                        var d = 2 * j - 1;
+                        var index = j == 0 ? ret.First() : ret.Last();
+                        var e0 = edges[index];
+                        var e1 = edges[d + index];
+                        return new { i = j, index = index + d, ang = Vector2.Angle(e0.Direction, e1.Direction) };
+                    })
+                    .OrderBy(x => x.ang)
+                    .ToList();
+                if (es.Count == 0)
+                    break;
+                foreach (var e in es)
+                {
+                    if (borderSumAngle + e.ang > angleBorder)
+                    {
+                        stop[e.i] = true;
+                        continue;
+                    }
+
+                    borderSumAngle += e.ang;
+                    if (e.i == 0)
+                    {
+                        ret.Insert(0, e.index);
+                    }
+                    else
+                    {
+                        ret.Add(e.index);
+                    }
+                }
+            }
+            // edge -> 頂点の配列に戻すために最後のインデックスを足す
+            ret.Add(ret.Last() + 1);
+            return ret;
+        }
 #if false
         public static Dictionary<Vector2, List<Tuple<Vector2, Vector2>>> ComputeIntersections(IEnumerable<Tuple<Vector2, Vector2>> originalSegments)
         {

@@ -72,7 +72,7 @@ namespace PLATEAU.RoadNetwork
         /// <summary>
         /// 道の両方に接続先があるかどうか
         /// </summary>
-        public bool IsBothConnectedLane => IsValidWay && PrevBorder != null && NextBorder != null;
+        public bool IsBothConnectedLane => IsValidWay && PrevLanes.Any() && NextLanes.Any();
 
         public IEnumerable<Vector3> Vertices
         {
@@ -114,6 +114,29 @@ namespace PLATEAU.RoadNetwork
         }
 
         /// <summary>
+        /// laneに対して連結情報があれば削除する
+        /// </summary>
+        /// <param name="lane"></param>
+        public void RemoveConnection(RoadNetworkLane lane)
+        {
+            PrevLanes.Remove(lane);
+            NextLanes.Remove(lane);
+        }
+
+        public void ReplaceConnection(RoadNetworkLane before, RoadNetworkLane after)
+        {
+            Replace(PrevLanes, before, after);
+            Replace(NextLanes, before, after);
+        }
+
+        private static void Replace(List<RoadNetworkLane> list, RoadNetworkLane before, RoadNetworkLane after)
+        {
+            var index = list.FindIndex(l => l == before);
+            if (index >= 0)
+                list[index] = after;
+        }
+
+        /// <summary>
         /// LaneをsplitNumで分割する
         /// </summary>
         /// <param name="splitNum"></param>
@@ -144,6 +167,12 @@ namespace PLATEAU.RoadNetwork
                 if (i != splitNum - 1)
                 {
                     var points = new List<Vector2>();
+                    void AddPoint(Vector2 p)
+                    {
+                        if (points.Any() && (points.Last() - p).magnitude < 0.001f)
+                            return;
+                        points.Add(p);
+                    }
 #if false
                     points = this.GetInnerLerpSegments(p2);
 #else
@@ -151,11 +180,12 @@ namespace PLATEAU.RoadNetwork
                         RightWay.Vertices.Select(x => x.Xz()).ToList(), p2);
                     foreach (var s in segments)
                     {
-                        points.Add(s.Segment.Start);
-                        points.Add(s.Segment.End);
+                        AddPoint(s.Segment.Start);
+                        AddPoint(s.Segment.End);
                     }
 #endif
                     var centerLine = RoadNetworkLineString.Create(points.Select(p => new RoadNetworkPoint(p.Xay())));
+                    centerLine.Points.Add(endSubWays[i].Points.Last());
                     r = new RoadNetworkWay(centerLine, false, true);
                 }
                 var l = new RoadNetworkWay(leftWay.LineString, leftWay.IsReversed, false);
