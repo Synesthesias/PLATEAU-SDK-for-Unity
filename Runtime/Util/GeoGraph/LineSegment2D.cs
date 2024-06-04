@@ -8,12 +8,20 @@ namespace PLATEAU.Util.GeoGraph
     /// </summary>
     public struct LineSegment2D
     {
+        // --------------
+        // start:フィールド
+        // --------------
+        // 始点
         private Vector2 start;
+        // 終戦
         private Vector2 end;
-
+        // 方向
         private Vector2 direction;
-
+        // 長さ(キャッシュ)
         private float magnitude;
+        // --------------
+        // end:フィールド
+        // --------------
 
         /// <summary>
         /// 始点
@@ -48,8 +56,14 @@ namespace PLATEAU.Util.GeoGraph
         /// </summary>
         public Vector2 Direction => direction;
 
+        /// <summary>
+        /// 長さ
+        /// </summary>
         public float Magnitude => magnitude;
 
+        /// <summary>
+        /// Ray2Dにして返す
+        /// </summary>
         public Ray2D Ray => new(start, direction);
 
         public LineSegment2D(Vector2 start, Vector2 end)
@@ -150,6 +164,16 @@ namespace PLATEAU.Util.GeoGraph
         public static Vector2 GetPoint(this LineSegment2D self, float distance)
         {
             return self.Start + self.Direction * distance;
+        }
+
+        /// <summary>
+        /// Start/End反転させたものを返す
+        /// </summary>
+        /// <param name="self"></param>
+        /// <returns></returns>
+        public static LineSegment2D Reversed(this LineSegment2D self)
+        {
+            return new LineSegment2D(self.End, self.Start);
         }
     }
 }

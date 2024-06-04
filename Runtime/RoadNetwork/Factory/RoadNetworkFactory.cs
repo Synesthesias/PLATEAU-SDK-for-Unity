@@ -12,6 +12,26 @@ namespace PLATEAU.RoadNetwork.Factory
     [Serializable]
     public class RoadNetworkFactory
     {
+        // --------------------
+        // start:フィールド
+        // --------------------
+
+        // 同一頂点扱いにするセルサイズ
+        [SerializeField] private float cellSize = 0.01f;
+
+        // 中心線で分離するかどうか
+        [SerializeField] private int splitLaneNum = 1;
+
+        // 道路サイズ
+        [SerializeField] private float roadSize = 3f;
+
+        // 行き止まり検出判定時に同一直線と判断する角度の総和
+        [SerializeField] private float terminateAllowEdgeAngle = 20f;
+
+        // --------------------
+        // end:フィールド
+        // --------------------
+
         [Serializable]
         private class Cell : IReadOnlyList<TranWork>
         {
@@ -134,6 +154,9 @@ namespace PLATEAU.RoadNetwork.Factory
             }
         }
 
+        /// <summary>
+        /// Way
+        /// </summary>
         private class WayWork
         {
             public RoadNetworkWay Way { get; private set; }
@@ -229,7 +252,6 @@ namespace PLATEAU.RoadNetwork.Factory
             }
         }
 
-
         /// <summary>
         /// 頂点 -> ポイント変換を行う
         /// </summary>
@@ -264,14 +286,6 @@ namespace PLATEAU.RoadNetwork.Factory
             }
         }
 
-        // 同一頂点扱いにするセルサイズ
-        [SerializeField] private float cellSize = 0.01f;
-
-        // 中心線で分離するかどうか
-        [SerializeField] private int splitLaneNum = 1;
-
-        // 道路サイズ
-        [SerializeField] private float roadSize = 3f;
 
         public RoadNetworkModel CreateNetwork(IList<PLATEAUCityObjectGroup> targets)
         {
@@ -441,7 +455,37 @@ namespace PLATEAU.RoadNetwork.Factory
             {
                 var startBorderWay = leftWay?.PrevBorder?.Way;
                 var endBorderWay = leftWay?.NextBorder?.Way;
-                var l = new RoadNetworkLane(leftWay?.Way, rightWay?.Way, startBorderWay, endBorderWay);
+
+                // どっちかはnot nullなはず
+                var lWay = leftWay?.Way;
+                var rWay = rightWay?.Way;
+                var way = lWay ?? rWay;
+                if (way != null)
+                {
+                    var vertices = way.Vertices.Select(x => x.Xz()).ToList();
+                    var edgeIndices = GeoGraph2D.FindMidEdge(vertices, terminateAllowEdgeAngle);
+
+                    RoadNetworkWay AsWay(IEnumerable<int> ind, bool isReverse, bool isRightSide)
+                    {
+                        var ls = RoadNetworkLineString.Create(ind.Select(x => way.GetPoint(x)));
+                        return new RoadNetworkWay(ls, isReverse, isRightSide);
+                    }
+
+                    lWay = AsWay(Enumerable.Range(0, edgeIndices[0] + 1), false, false);
+                    rWay = AsWay(Enumerable.Range(edgeIndices.Last(), way.Count - edgeIndices.Last()), true, true);
+                    var borderWay = AsWay(edgeIndices, false, false);
+                    if (startBorderWay == null)
+                    {
+                        startBorderWay = borderWay;
+                    }
+                    else
+                    {
+                        endBorderWay = borderWay;
+                        (lWay, rWay) = (rWay.ReversedWay(), lWay.ReversedWay());
+                    }
+                }
+
+                var l = new RoadNetworkLane(lWay, rWay, startBorderWay, endBorderWay);
                 var link = RoadNetworkLink.CreateOneLaneLink(tranWork.TargetTran, l);
                 tranWork.Bind(link);
                 ret.AddLink(link);

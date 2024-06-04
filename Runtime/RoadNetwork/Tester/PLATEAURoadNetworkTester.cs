@@ -17,6 +17,12 @@ namespace PLATEAU.RoadNetwork
     [Serializable]
     public class PLATEAURoadNetworkTester : MonoBehaviour
     {
+        [SerializeField] private RoadNetworkDrawerDebug drawer = new RoadNetworkDrawerDebug();
+
+        [field: SerializeField] private RoadNetworkFactory Factory { get; set; } = new RoadNetworkFactory();
+
+        [field: SerializeField] public RoadNetworkModel RoadNetwork { get; set; }
+
         [Serializable]
         public class TestTargetPresets
         {
@@ -24,19 +30,11 @@ namespace PLATEAU.RoadNetwork
             public List<PLATEAUCityObjectGroup> targets = new List<PLATEAUCityObjectGroup>();
         }
 
-        public List<PLATEAUCityObjectGroup> targets = new List<PLATEAUCityObjectGroup>();
-
         public List<TestTargetPresets> savedTargets = new List<TestTargetPresets>();
 
         [SerializeField] private bool targetAll = false;
 
-        [SerializeField] private RoadNetworkDrawerDebug drawer = new RoadNetworkDrawerDebug();
-
-        public string loadPresetName = "";
-
-        [field: SerializeField] private RoadNetworkFactory Factory { get; set; } = new RoadNetworkFactory();
-
-        [field: SerializeField] public RoadNetworkModel RoadNetwork { get; set; }
+        public string targetPresetName = "";
 
         public void OnDrawGizmos()
         {
@@ -57,8 +55,12 @@ namespace PLATEAU.RoadNetwork
             else
             {
                 // d•¡‚Í”rœ‚·‚é
-                targets = targets.Distinct().ToList();
-                RoadNetwork = Factory.CreateNetwork(targets);
+                var targets = savedTargets.FirstOrDefault(s => s.name == targetPresetName);
+                if (targets != null)
+                {
+                    targets.targets = targets.targets.Distinct().ToList();
+                    RoadNetwork = Factory.CreateNetwork(targets.targets);
+                }
             }
         }
 

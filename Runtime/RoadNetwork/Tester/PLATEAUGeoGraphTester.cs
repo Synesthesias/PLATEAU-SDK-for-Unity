@@ -58,15 +58,26 @@ namespace PLATEAU.RoadNetwork
             public float deltaX = 0.1f;
         }
         public ParabolaTestParam parabolaTest = new ParabolaTestParam();
-        private IEnumerable<Transform> GetChildren(Transform self)
-        {
-            for (var i = 0; i < self.childCount; i++)
-                yield return self.GetChild(i);
-        }
 
-        private List<Vector2> GetVertices(Transform self)
+        public List<PLATEAUCityObjectGroup> convertTargets = new List<PLATEAUCityObjectGroup>();
+        public void ConvertTrans()
         {
-            return GetChildren(self).Select(v => v.position.Xy()).ToList();
+            var i = 0;
+            foreach (var t in convertTargets)
+            {
+                var vertices = t.GetComponent<MeshCollider>()
+                        .sharedMesh.vertices.Select(a => a.Xz()).ToList();
+
+                var obj = new GameObject($"{i++}");
+                obj.AddComponent<PLATEAUGeoGraphTesterLineString>();
+                obj.transform.parent = transform;
+                foreach (var v in vertices.Select((v, i) => new { v, i }))
+                {
+                    var c = new GameObject($"v_{v.i}");
+                    c.transform.parent = obj.transform;
+                    c.transform.position = v.v;
+                }
+            }
         }
 
         private void LerpSegmentsTest()
@@ -74,27 +85,35 @@ namespace PLATEAU.RoadNetwork
             var param = lerpSegmentsTest;
             if (param.enable == false)
                 return;
-            if (param.showWay)
-            {
-                foreach (var item in GetChildren(transform).Select((v, i) => new { v, i }))
-                {
-                    var color = DebugEx.GetDebugColor(item.i, 8);
-                    DebugEx.DrawArrows(GetChildren(item.v).Select(v => v.position), false, arrowSize: 0.1f, color: color, arrowUp: Vector3.forward);
-                }
-            }
+            if (param.p <= 0 || param.p >= 1)
+                return;
 
             var tr = transform;
-            for (var i = 0; i < tr.childCount - 1; i += 2)
+            var childIndex = 0;
+            for (var i = 0; i < tr.childCount; i++)
             {
-                var left = tr.GetChild(i);
-                var right = tr.GetChild(i + 1);
-                var leftVertices = GetVertices(left);
-                var rightVertices = GetVertices(right);
+                var child = tr.GetChild(i);
+                if (child.transform.childCount != 2)
+                    continue;
+                if (child.gameObject.activeInHierarchy == false)
+                    continue;
+                var left = child.GetChild(0).GetComponent<PLATEAUGeoGraphTesterLineString>();
+                var right = child.GetChild(1).GetComponent<PLATEAUGeoGraphTesterLineString>();
+                var leftVertices = left.GetVertices();
+                var rightVertices = right.GetVertices();
+
+                if (param.showWay)
+                {
+                    foreach (var v in new[] { leftVertices, rightVertices })
+                    {
+                        var color = DebugEx.GetDebugColor(childIndex++, 8);
+                        DebugEx.DrawArrows(v.Select(a => a.Xya()), false, arrowSize: 0.1f, color: color, arrowUp: Vector3.forward);
+                    }
+                }
                 var segments = GeoGraph2D.GetInnerLerpSegments(leftVertices, rightVertices, param.p, param.op);
                 foreach (var seg in segments.Select((v, i) => new { v, i }))
                 {
                     DebugEx.DrawLineSegment2D(seg.v.Segment, color: DebugEx.GetDebugColor(seg.i, 16));
-
                 }
             }
         }
@@ -152,6 +171,8 @@ namespace PLATEAU.RoadNetwork
             //Debug.DrawLine(Vector3.left * 10, Vector3.right * 10, Color.red);
             //Debug.DrawLine(Vector3.zero, Vector3.up, Color.green);
         }
+
+
 
         public void OnDrawGizmos()
         {

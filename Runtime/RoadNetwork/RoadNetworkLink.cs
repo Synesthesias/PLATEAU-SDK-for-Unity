@@ -87,6 +87,20 @@ namespace PLATEAU.RoadNetwork
             RemoveLane(rightLanes, lane);
         }
 
+        public void RemoveLane(RoadNetworkLane lane)
+        {
+            RoadNetworkEx.RemoveLane(mainLanes, lane);
+            RoadNetworkEx.RemoveLane(leftLanes, lane);
+            RoadNetworkEx.RemoveLane(rightLanes, lane);
+        }
+
+        public void ReplaceLane(RoadNetworkLane before, RoadNetworkLane after)
+        {
+            RoadNetworkEx.ReplaceLane(mainLanes, before, after);
+            RoadNetworkEx.ReplaceLane(leftLanes, before, after);
+            RoadNetworkEx.ReplaceLane(rightLanes, before, after);
+        }
+
         /// <summary>
         /// lanesにlaneを追加する. ParentLink情報も更新する
         /// </summary>

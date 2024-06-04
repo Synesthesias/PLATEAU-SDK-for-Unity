@@ -6,6 +6,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.Serialization;
@@ -63,6 +64,29 @@ namespace PLATEAU.RoadNetwork
         {
             if (nodes.Remove(node))
                 node.ParentModel = null;
+        }
+
+        /// <summary>
+        /// レーンの削除
+        /// </summary>
+        /// <param name="lane"></param>
+        public void RemoveLane(RoadNetworkLane lane)
+        {
+            foreach (var l in links)
+            {
+                l.RemoveLane(lane);
+            }
+        }
+
+        /// <summary>
+        /// レーンの入れ替え
+        /// </summary>
+        /// <param name="before"></param>
+        /// <param name="after"></param>
+        public void ReplaceLane(RoadNetworkLane before, RoadNetworkLane after)
+        {
+            foreach (var l in links)
+                l.ReplaceLane(before, after);
         }
 
         // #TODO : 実際はもっとある

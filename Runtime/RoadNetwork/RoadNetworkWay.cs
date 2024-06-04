@@ -112,6 +112,9 @@ namespace PLATEAU.RoadNetwork
         /// <returns></returns>
         public Vector3 GetVertexNormal(int vertexIndex)
         {
+            // 頂点数1の時は不正値を返す
+            if (Count <= 1)
+                return Vector3.zero;
             var n1 = GetEdgeNormal(Math.Min(vertexIndex, Count - 2)).normalized;
             var n2 = GetEdgeNormal(Math.Max(vertexIndex - 1, 0)).normalized;
 

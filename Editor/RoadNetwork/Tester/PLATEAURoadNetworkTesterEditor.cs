@@ -24,20 +24,6 @@ namespace PLATEAU.Editor.RoadNetwork
 
             if (GUILayout.Button("Deserialize"))
                 cog.RoadNetwork.Deserialize();
-
-            if (GUILayout.Button("Save as presets"))
-            {
-                cog.savedTargets.Add(new PLATEAURoadNetworkTester.TestTargetPresets
-                {
-                    name = $"Name_{cog.savedTargets.Count}",
-                    targets = cog.targets.ToList()
-                });
-            }
-            var preset = cog.savedTargets.FirstOrDefault(c => c.name == cog.loadPresetName);
-            if (preset != null && GUILayout.Button("Load from presets"))
-            {
-                cog.targets = preset.targets.ToList();
-            }
         }
     }
 }
