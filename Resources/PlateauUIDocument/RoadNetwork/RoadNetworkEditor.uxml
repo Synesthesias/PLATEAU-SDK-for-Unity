@@ -14,8 +14,7 @@
     <ui:EnumField label="操作モード" type="PLATEAU.Editor.RoadNetwork.RoadNetworkEditMode, PLATEAU.Editor" name="ModeSelector" />
     <ui:GroupBox name="EditingSelecterGroupBox" style="flex-direction: row;">
         <ui:VisualElement style="flex-grow: 1;">
-            <uie:ObjectField label="道路モデル" name="EditingTargetSelecter" />
-            <ui:IntegerField label="ID" value="-1" readonly="false" is-delayed="false" name="DataID" style="display: none;" />
+            <uie:ObjectField label="道路ネットワーク" name="EditingTargetSelecter" />
         </ui:VisualElement>
         <ui:Label tabindex="-1" text="表示してるデータ名" parse-escape-sequences="true" display-tooltip-when-elided="true" name="SelectedDataLabel" style="justify-content: flex-start; -unity-text-align: middle-left; display: none;" />
     </ui:GroupBox>
