@@ -2,6 +2,7 @@ using PLATEAU.CityAdjust.NonLibData;
 using System.Collections.Generic;
 using PLATEAU.CityInfo;
 using PLATEAU.Util;
+using UnityEngine;
 
 namespace PLATEAU.CityAdjust.NonLibDataHolder
 {
@@ -12,7 +13,7 @@ namespace PLATEAU.CityAdjust.NonLibDataHolder
     /// </summary>
     public class GmlIdToSerializedCityObj : INonLibData
     {
-        private Dictionary<string, CityObjectList.CityObject> data = new ();
+        private Dictionary<string, CityObjectList.CityObject> data = new();
         
         /// <summary>
         /// 引数に含まれるGmlIDと属性情報をすべて取得して記憶したインスタンスを返します。
@@ -20,6 +21,7 @@ namespace PLATEAU.CityAdjust.NonLibDataHolder
         /// </summary>
         public void ComposeFrom(UniqueParentTransformList srcTransforms)
         {
+            data.Clear();
             var cityObjGroups = new List<PLATEAUCityObjectGroup>();
             srcTransforms.BfsExec(
                 trans =>
@@ -45,8 +47,15 @@ namespace PLATEAU.CityAdjust.NonLibDataHolder
         {
             if (data.ContainsKey(gmlId))
             {
-                var attributes = serializedCityObj.AttributesMap;
-                data[gmlId].AttributesMap.AddAttributes(attributes);
+                var srcAttributes = serializedCityObj.AttributesMap;
+                var dstAttributes = data[gmlId].AttributesMap;
+                if (srcAttributes == dstAttributes)
+                {
+                    // srcとdstが同じなら追加不要
+                    return;
+                }
+                dstAttributes.AddAttributes(srcAttributes);
+                
             }
             else
             {

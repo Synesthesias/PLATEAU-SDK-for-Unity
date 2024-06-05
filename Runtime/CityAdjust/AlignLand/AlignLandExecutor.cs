@@ -84,7 +84,7 @@ namespace PLATEAU.CityAdjust.AlignLand
                 model,
                 new AttributeDataHelper(
                     new SerializedCityObjectGetterFromDict(nonLibDataHolder.Get<GmlIdToSerializedCityObj>(), model),
-                    MeshGranularity.PerPrimaryFeatureObject, true),
+                     true),
                 true
             );
             nonLibDataHolder.RestoreTo(result.GeneratedRootTransforms);

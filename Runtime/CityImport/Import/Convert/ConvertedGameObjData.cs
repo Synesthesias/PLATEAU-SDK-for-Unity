@@ -58,7 +58,7 @@ namespace PLATEAU.CityImport.Import.Convert
             this.attributeDataHelper = attributeDataHelper;
             this.attributeDataHelper.SetId(this.name);
             if (meshData != null)
-                this.attributeDataHelper.SetCityObjectList(plateauNode.Mesh.CityObjectList);
+                this.attributeDataHelper.SetTargetNode(plateauNode.Mesh.CityObjectList);
 
             for (int i = 0; i < plateauNode.ChildCount; i++)
             {

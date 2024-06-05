@@ -230,7 +230,6 @@ namespace PLATEAU.GranularityConvert
                     dstModel,
                     new AttributeDataHelper(
                         new SerializedCityObjectGetterFromDict(nonLibDataHolder.Get<GmlIdToSerializedCityObj>(), dstModel),
-                        conf.NativeOption.Granularity,
                         true
                     ),
                     true);
@@ -359,8 +358,9 @@ namespace PLATEAU.GranularityConvert
             this.dstModel = dstModel;
         }
 
-        public CityInfo.CityObjectList.CityObject GetDstCityObjectByID(string gmlID, CityObjectIndex? _)
+        public CityInfo.CityObjectList.CityObject GetDstCityObjectByID(string gmlIDArg, CityObjectIndex? _)
         {
+            string gmlID = gmlIDArg.EndsWith("_combined") ? gmlIDArg.Replace("_combined", "") : gmlIDArg;
             if (srcData.TryGet(gmlID, out var serializedCityObj))
             {
                 var srcCityObj = serializedCityObj;

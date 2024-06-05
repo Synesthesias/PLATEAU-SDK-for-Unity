@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using PLATEAU.CityGML;
 using PLATEAU.CityInfo;
 using PLATEAU.PolygonMesh;
+using System.Linq;
 using UnityEngine;
 using CityObjectList = PLATEAU.CityInfo.CityObjectList;
 using PLATEAUCityObjectList = PLATEAU.PolygonMesh.CityObjectList;
@@ -14,13 +15,12 @@ namespace PLATEAU.CityImport.Import.Convert
     /// </summary>
     internal class AttributeDataHelper : IDisposable
     {
-        /// <summary> インポート時の粒度設定 </summary>
-        private readonly MeshGranularity importedGranularity;
 
+        private MeshGranularity granularity;
         /// <summary>
         /// 注目オブジェクトの粒度設定です。
         /// 例： 最小地物でインポートした場合、最小地物の親は主要地物になります。
-        /// ここで主要地物に着目したとき、importedGranularityは最小地物で、currentGranularityは主要地物です。
+        /// ここで主要地物に着目したとき、granularityは最小地物で、currentGranularityは主要地物です。
         /// </summary>
         public MeshGranularity CurrentGranularity { get; private set; }
         
@@ -39,16 +39,15 @@ namespace PLATEAU.CityImport.Import.Convert
             public string PrimaryID;
         }
 
-        public AttributeDataHelper(ISerializedCityObjectGetter serializedCityObjectGetter, MeshGranularity importedGranularity, bool doSetAttrInfo)
+        public AttributeDataHelper(ISerializedCityObjectGetter serializedCityObjectGetter, bool doSetAttrInfo)
         {
-            this.importedGranularity = importedGranularity;
             this.doSetAttrInfo = doSetAttrInfo;
             this.serializedCityObjectGetter = serializedCityObjectGetter;
         }
 
         public AttributeDataHelper Copy()
         {
-            return new AttributeDataHelper(serializedCityObjectGetter, importedGranularity, doSetAttrInfo);
+            return new AttributeDataHelper(serializedCityObjectGetter, doSetAttrInfo);
         }
 
         public void SetId(string id)
@@ -59,9 +58,10 @@ namespace PLATEAU.CityImport.Import.Convert
         /// <summary>
         /// UV情報から地物IDを取得し保持します
         /// </summary>
-        public void SetCityObjectList(PLATEAUCityObjectList cityObjectList)
+        public void SetTargetNode(PLATEAUCityObjectList cityObjectList)
         {
             if (!doSetAttrInfo) return;
+            granularity = GuessGranularity(cityObjectList);
             indexList.Clear();
             var allKeys = cityObjectList.GetAllKeys();
             foreach (var key in allKeys)
@@ -69,21 +69,21 @@ namespace PLATEAU.CityImport.Import.Convert
                 var atomicGmlID = cityObjectList.GetAtomicID(key);
                 var primaryGmlID = cityObjectList.GetPrimaryID(key.PrimaryIndex);
 
-                bool shouldAddIDWhenAreaGranularity = importedGranularity == MeshGranularity.PerCityModelArea;
+                bool shouldAddIDWhenAreaGranularity = granularity == MeshGranularity.PerCityModelArea;
                 bool shouldAddIDWhenPrimaryGranularity =
-                    importedGranularity == MeshGranularity.PerPrimaryFeatureObject &&
+                    granularity == MeshGranularity.PerPrimaryFeatureObject &&
                     (primaryGmlID == id /*|| // 主要地物単位のインポート時
                       primaryGmlID == null*/); // 主要地物単位へ結合分解時
                 bool shouldAddID = shouldAddIDWhenAreaGranularity || shouldAddIDWhenPrimaryGranularity;
                 if (shouldAddID)
                         indexList.Add(new CityObjectID { Index = key, AtomicID = atomicGmlID, PrimaryID = primaryGmlID});
                         
-                if (importedGranularity == MeshGranularity.PerAtomicFeatureObject && atomicGmlID == id)
+                if (granularity == MeshGranularity.PerAtomicFeatureObject && atomicGmlID == id)
                     this.parent = primaryGmlID;
                 
                 // 最小地物でインポートしているけど、最小地物の親は主要地物としたいケースに対応します。
                 CurrentGranularity =
-                    importedGranularity != MeshGranularity.PerAtomicFeatureObject ? importedGranularity :
+                    granularity != MeshGranularity.PerAtomicFeatureObject ? granularity :
                     (primaryGmlID == id) ? MeshGranularity.PerPrimaryFeatureObject :
                     MeshGranularity.PerAtomicFeatureObject;
 
@@ -92,12 +92,36 @@ namespace PLATEAU.CityImport.Import.Convert
         }
 
         /// <summary>
+        /// <see cref="PLATEAUCityObjectList"/>から粒度を推測します。
+        /// </summary>
+        private MeshGranularity GuessGranularity(PLATEAUCityObjectList cityObjectList)
+        {
+            var keys = cityObjectList.GetAllKeys();
+            HashSet<int> primaryIDs = new HashSet<int>();
+            foreach (var key in keys)
+            {
+                if (key.AtomicIndex == -1)
+                {
+                    primaryIDs.Add(key.PrimaryIndex);
+                    if (primaryIDs.Count >= 2) return MeshGranularity.PerCityModelArea;
+                }
+            }
+            if(primaryIDs.Count == 0) return MeshGranularity.PerAtomicFeatureObject; // あまり見ないケースですが一応
+            
+            // atomicなmeshにもprimaryのIDが入っているため以下でさらに判別します
+            var primaryGmlId = cityObjectList.GetPrimaryID(primaryIDs.First());
+            return primaryGmlId == id
+                ? MeshGranularity.PerPrimaryFeatureObject
+                : MeshGranularity.PerAtomicFeatureObject;
+        }
+
+        /// <summary>
         /// OutsideChildrenを取得し保持します
         /// </summary>
         public void AddOutsideChildren(string childId)
         {
             if (!doSetAttrInfo) return;
-            if (importedGranularity == MeshGranularity.PerAtomicFeatureObject &&
+            if (granularity == MeshGranularity.PerAtomicFeatureObject &&
                 !string.IsNullOrEmpty(childId) &&
                 !outsideChildrenList.Contains(childId))
             {
@@ -117,7 +141,7 @@ namespace PLATEAU.CityImport.Import.Convert
         public CityObjectList GetSerializableCityObject()
         {
             if (!doSetAttrInfo) return null;
-            switch (importedGranularity)
+            switch (granularity)
             {
                 case MeshGranularity.PerCityModelArea:
                     return GetSerializableCityObjectForArea();
