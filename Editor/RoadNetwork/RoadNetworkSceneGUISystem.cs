@@ -397,10 +397,10 @@ namespace PLATEAU.Editor.RoadNetwork
                 return;
             }
 
-            state.signalControllerPos = signalController.position;
+            state.signalControllerPos = signalController.Position;
 
             bool isDisplay = false;
-            if (editorSystem.SelectedRoadNetworkElement != signalController)
+            if (signalController != editorSystem.SelectedRoadNetworkElement)
             {
                 isDisplay = true;
             }
@@ -415,8 +415,8 @@ namespace PLATEAU.Editor.RoadNetwork
             {
                 if (editorSystem.CurrentEditMode == RoadNetworkEditMode.EditTrafficRegulation)
                 {
-                    var size = HandleUtility.GetHandleSize(signalController.position) * 0.3f;
-                    bool isClicked = Handles.Button(signalController.position, Quaternion.identity, size, size, RoadNetworkTrafficSignalLightCap);
+                    var size = HandleUtility.GetHandleSize(signalController.Position) * 0.3f;
+                    bool isClicked = Handles.Button(signalController.Position, Quaternion.identity, size, size, RoadNetworkTrafficSignalLightCap);
                     if (isClicked)
                     {
                         editorSystem.SelectedRoadNetworkElement = signalController;

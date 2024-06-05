@@ -19,10 +19,11 @@ namespace PLATEAU.RoadNetwork
     public class TrafficSignalLightController
     {
         public TrafficSignalLightController(string id, RoadNetworkNode node, in Vector3 position)
+            : base()
         {
             SelfId = id;
             CorrespondingNode = node;
-            this.position = position;
+            this.Position = position;
         }
 
         // RnIDに変換予定？　AVNEWだと文字列
@@ -31,10 +32,10 @@ namespace PLATEAU.RoadNetwork
 
 
         public bool GapImpedanceFlag { get; private set; } = false;
-        public TrafficSignalControlPattern ControlPatternData { get; private set; } = new TrafficSignalControlPattern();
+        public List<TrafficSignalControlPattern> ControlPatternData { get; private set; } = new List<TrafficSignalControlPattern>();
         public List<TrafficSignalLight> SignalLights { get; private set; } = new List<TrafficSignalLight>();
 
-        public Vector3 position;
+        public Vector3 Position { get; set; }
     }
 
     /// <summary>
