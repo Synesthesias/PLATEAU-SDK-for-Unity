@@ -24,7 +24,7 @@ namespace PLATEAU.RoadNetwork.Data
         public List<RoadNetworkDataNeighbor> Neighbors { get; set; } = new List<RoadNetworkDataNeighbor>();
 
         // 車線
-        [field: SerializeField, RoadNetworkSerializeMember]
+        [field: SerializeField, RoadNetworkSerializeMember("tracks")]
         public List<RnID<RoadNetworkDataTrack>> Tracks { get; set; } = new List<RnID<RoadNetworkDataTrack>>();
     }
 }
