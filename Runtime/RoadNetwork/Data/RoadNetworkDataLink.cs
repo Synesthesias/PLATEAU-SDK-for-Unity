@@ -15,15 +15,15 @@ namespace PLATEAU.RoadNetwork.Data
 
         // 対象のtranオブジェクト
         [field: SerializeField]
-        [RoadNetworkSerializeMember()]
+        [RoadNetworkSerializeMember]
         public PLATEAUCityObjectGroup TargetTran { get; set; }
 
         [field: SerializeField]
-        [RoadNetworkSerializeMember(nameof(RoadNetworkLink.NextNode))]
+        [RoadNetworkSerializeMember]
         public RnID<RoadNetworkDataNode> NextNode { get; set; }
 
         [field: SerializeField]
-        [RoadNetworkSerializeMember(nameof(RoadNetworkLink.PrevNode))]
+        [RoadNetworkSerializeMember]
         public RnID<RoadNetworkDataNode> PrevNode { get; set; }
 
         // 本線レーン
@@ -40,5 +40,10 @@ namespace PLATEAU.RoadNetwork.Data
         [field: SerializeField]
         [RoadNetworkSerializeMember("leftLanes")]
         public List<RnID<RoadNetworkDataLane>> LeftLanes { get; set; } = new List<RnID<RoadNetworkDataLane>>();
+
+        // 双方向フラグ
+        [field: SerializeField]
+        [RoadNetworkSerializeMember]
+        public bool IsBothWay { get; set; } = true;
     }
 }

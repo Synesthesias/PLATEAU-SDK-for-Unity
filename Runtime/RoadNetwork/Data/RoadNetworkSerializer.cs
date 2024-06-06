@@ -94,6 +94,11 @@ namespace PLATEAU.RoadNetwork.Data
                                 return field;
                             return null;
                         });
+                var nullFields = dst2Src.Where(x => x.Value is null).ToList();
+                if (nullFields.Any())
+                    throw new InvalidDataException(
+                        $"'{dstType.Name}'の[{string.Join(',', nullFields.Select(x => x.Key))}]に対応するフィールドが{srcType.Name}にありません");
+
                 return new MemberReference(srcType, dstType, dst2Src);
             }
 
