@@ -861,10 +861,10 @@ namespace PLATEAU.Util.GeoGraph
         /// verticesを始点終点から見ていき,お互い中心線を使って比較しながら中心の辺を表すインデックス配列を返す
         /// </summary>
         /// <param name="vertices"></param>
-        /// <param name="allowAngleSum">同一直線と判断する角度の和</param>
+        /// <param name="allowAngleDeg">中心線と同一直線と判断する線分の角度[deg]</param>
         /// <param name="op"></param>
         /// <returns></returns>
-        public static List<int> FindMidEdge(IReadOnlyList<Vector2> vertices, float allowAngleSum = 20f, DebugFindOppositeOption op = null)
+        public static List<int> FindMidEdge(IReadOnlyList<Vector2> vertices, float allowAngleDeg = 20f, DebugFindOppositeOption op = null)
         {
             var edges = GeoGraphEx.GetEdges(vertices, false).Select(v => new LineSegment2D(v.Item1, v.Item2)).ToList();
             var leftIndex = 0;
@@ -877,6 +877,7 @@ namespace PLATEAU.Util.GeoGraph
             while (leftIndex < rightIndex - 2)
             {
                 var l = edges[leftIndex];
+                // 0 ~ edge.Countまでつながっているような線なので逆順の線分の方向を逆にする
                 var r = edges[rightIndex].Reversed();
                 // 中心線を計算
                 var centerRay = GeoGraph2D.LerpRay(l.Ray, r.Ray, 0.5f);
@@ -896,11 +897,11 @@ namespace PLATEAU.Util.GeoGraph
                         return new
                         {
                             isHit = hit,
-                            inter = inter,
+                            inter,
                             tCenterRay = t1,
                             tRay = t2,
-                            isLeft = x.isLeft,
-                            origin = x.ray.origin
+                            x.isLeft,
+                            x.ray.origin
                         };
                     }).Where(x => x.isHit)
                     .ToList();
@@ -913,15 +914,14 @@ namespace PLATEAU.Util.GeoGraph
                     leftIndex++;
                     continue;
                 }
-
+#if UNITY_EDITOR
                 var isCross = points.Count == 4 && points[0].isLeft != points[1].isLeft;
-
                 if (isCross)
                 {
                     if (op?.showCenterLine ?? false)
                         DebugEx.DrawArrow(points[1].inter, points[2].inter, bodyColor: op.showCenterLineColor);
                 }
-
+#endif
                 // より遠いのが左の場合右の線分を進める
                 if (points.Last().isLeft)
                 {
@@ -934,27 +934,28 @@ namespace PLATEAU.Util.GeoGraph
             }
 
             // ここに来る段階でleftIndex == rightIndex - 2のはず
-            var ret = new List<int> { (leftIndex + rightIndex) / 2 };
-            var borderSumAngle = 0f;
+            var edgeBaseIndex = (leftIndex + rightIndex) / 2;
+            var ret = new List<int> { edgeBaseIndex };
             var stop = new[] { false, false };
             while (stop.Contains(false) && ret.Count < edges.Count - 1)
             {
                 // 0 : left用
                 // 1 : right用
-                var info = new[]
+                var infos = new[]
                 {
                     new {now=ret.First(), d = -1},
                     new {now=ret.Last(), d = +1 }
                 };
+                // 差が小さいほうから見る
                 var es = Enumerable.Range(0, 2)
-                    .Where(i => stop[i] == false && edges.IndexIn(info[i].now + info[i].d))
+                    // すでに停止している or 最後まで進んだら無視
+                    .Where(i => stop[i] == false && edges.IndexIn(infos[i].now + infos[i].d))
                     .Select(j =>
                     {
-                        var d = 2 * j - 1;
-                        var index = j == 0 ? ret.First() : ret.Last();
-                        var e0 = edges[index];
-                        var e1 = edges[d + index];
-                        return new { i = j, index = index + d, ang = Vector2.Angle(e0.Direction, e1.Direction) };
+                        var info = infos[j];
+                        var e0 = edges[edgeBaseIndex];
+                        var e1 = edges[info.now + info.d];
+                        return new { i = j, index = info.now + info.d, ang = Vector2.Angle(e0.Direction, e1.Direction) };
                     })
                     .OrderBy(x => x.ang)
                     .ToList();
@@ -962,7 +963,7 @@ namespace PLATEAU.Util.GeoGraph
                     break;
                 foreach (var e in es)
                 {
-                    if (borderSumAngle + e.ang > allowAngleSum)
+                    if (e.ang > allowAngleDeg)
                     {
                         stop[e.i] = true;
                         continue;
