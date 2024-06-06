@@ -933,11 +933,9 @@ namespace PLATEAU.Util.GeoGraph
                 }
             }
 
-			// ここに来る段階でleftIndex == rightIndex - 2のはず
+            // ここに来る段階でleftIndex == rightIndex - 2のはず
             var ret = new List<int> { (leftIndex + rightIndex) / 2 };
             var borderSumAngle = 0f;
-            // 20度まではつながっていると判断
-            var angleBorder = 20f;
             var stop = new[] { false, false };
             while (stop.Contains(false) && ret.Count < edges.Count - 1)
             {
@@ -964,7 +962,7 @@ namespace PLATEAU.Util.GeoGraph
                     break;
                 foreach (var e in es)
                 {
-                    if (borderSumAngle + e.ang > angleBorder)
+                    if (borderSumAngle + e.ang > allowAngleSum)
                     {
                         stop[e.i] = true;
                         continue;
