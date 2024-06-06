@@ -436,7 +436,8 @@ namespace PLATEAU.RoadNetwork.Factory
                 var endBorderLength = GeoGraphEx.GetEdges(endBorderWay?.Vertices ?? new List<Vector3>(), false)
                     .Sum(e => (e.Item2 - e.Item1).magnitude);
                 var num = (int)(Mathf.Min(startBorderLength, endBorderLength) / roadSize);
-                if (l.IsBothConnectedLane && num > 1)
+                num = Mathf.Min(2, num);
+                if (l.IsValidWay && num > 1)
                 {
                     var lanes = l.SplitLane(num);
                     foreach (var lane in lanes)
