@@ -15,6 +15,7 @@ namespace PLATEAU.RoadNetwork
         public class EdgeBorderTestParam
         {
             public bool enable = false;
+            public float allowSumAngle = 20f;
             public GeoGraph2D.DebugFindOppositeOption op = new GeoGraph2D.DebugFindOppositeOption();
         }
         public EdgeBorderTestParam edgeBorderTest = new EdgeBorderTestParam();
@@ -44,7 +45,7 @@ namespace PLATEAU.RoadNetwork
             if (p.enable == false)
                 return;
             var vertices = GetVertices();
-            var edgeIndices = GeoGraph2D.FindMidEdge(GetVertices(), 20f, p.op);
+            var edgeIndices = GeoGraph2D.FindMidEdge(GetVertices(), p.allowSumAngle, p.op);
 
             void DrawLine(IEnumerable<int> ind, Color color)
             {
