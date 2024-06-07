@@ -23,12 +23,14 @@ namespace PLATEAU.Editor.Window.Main.Tab
         private int selectedSize = 4;
         private static readonly string[] SizeOptions = { "33 x 33", "65 x 65", "129 x 129", "257 x 257", "513 x 513", "1025 x 1025", "2049 x 2049", "4097 x 4097" };
         private static readonly int[] SizeValues = { 33, 65, 129, 257, 513, 1025, 2049, 4097 };
-        private readonly DestroyOrPreserveSrcGui destroyOrPreserveGUI = new();
+        private readonly DestroyOrPreserveSrcGui preserveOrDestroyGui;
+        private PreserveOrDestroy preserveOrDestroy;
         
         private bool isExecTaskRunning = false;
 
         public CityTerrainConvertGUI(UnityEditor.EditorWindow parentEditorWindow)
         {
+            preserveOrDestroyGui = new(OnPreserveOrDestroyChanged);
             this.parentEditorWindow = parentEditorWindow;
             Selection.selectionChanged += OnSelectionChanged;           
         }
@@ -68,7 +70,7 @@ namespace PLATEAU.Editor.Window.Main.Tab
                 this.selectedSize =
                     PlateauEditorStyle.PopupWithLabelWidth(
                     "解像度", this.selectedSize, SizeOptions, 90);
-                destroyOrPreserveGUI.Draw();
+                preserveOrDestroyGui.Draw();
             }
 
             PlateauEditorStyle.Separator(0);
@@ -123,7 +125,7 @@ namespace PLATEAU.Editor.Window.Main.Tab
             var convertOption = new TerrainConvertOption(
                 FilterDemItems(selected),
                 (int)SizeValues.GetValue(selectedSize),
-                destroyOrPreserveGUI.Current == DestroyOrPreserveSrcGui.PreserveOrDestroy.Destroy
+                preserveOrDestroy == PreserveOrDestroy.Destroy
                 //,TerrainConvertOption.ImageOutput.PNG_RAW
             );
 
@@ -134,6 +136,11 @@ namespace PLATEAU.Editor.Window.Main.Tab
 
         public void OnTabUnselect()
         {
+        }
+
+        private void OnPreserveOrDestroyChanged(PreserveOrDestroy pod)
+        {
+            preserveOrDestroy = pod;
         }
     }
 }

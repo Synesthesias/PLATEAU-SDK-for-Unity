@@ -1,4 +1,5 @@
 using System;
+using UnityEngine;
 
 namespace PLATEAU.Editor.Window.Common
 {
@@ -9,18 +10,28 @@ namespace PLATEAU.Editor.Window.Common
     {
         private readonly Action onClick;
         private readonly string buttonText;
+        private Vector4 padding = Vector4.zero; // left, right, top, bottom
 
         public ButtonElement(string name, string buttonText, Action onClick) : base(name)
         {
             this.buttonText = buttonText;
             this.onClick = onClick;
         }
-        
+
+        public ButtonElement(string name, string buttonText, Vector4 padding, Action onClick) : this(name, buttonText, onClick)
+        {
+            this.padding = padding;
+        }
+
         public override void DrawContent()
         {
-            if (PlateauEditorStyle.MainButton(buttonText))
+            using (PlateauEditorStyle.VerticalScopeWithPadding((int)padding.x, (int)padding.y, (int)padding.z,
+                       (int)padding.w))
             {
-                onClick();
+                if (PlateauEditorStyle.MainButton(buttonText))
+                {
+                    onClick();
+                }
             }
         }
 

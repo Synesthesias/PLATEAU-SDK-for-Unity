@@ -4,7 +4,6 @@ using PLATEAU.Util;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
-using UnityEngine;
 
 namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI.Parts
 {

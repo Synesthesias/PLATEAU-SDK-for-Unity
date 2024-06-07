@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using PLATEAU.CityGML;
 using PLATEAU.CityInfo;
+using PLATEAU.Util;
 using UnityEngine;
 
 namespace PLATEAU.CityAdjust.MaterialAdjust
@@ -33,7 +34,6 @@ namespace PLATEAU.CityAdjust.MaterialAdjust
                 foreach (var cityObjGroup in cityObjGroups)
                 {
                     var mesh = cityObjGroup.GetComponent<MeshFilter>();
-                    if (mesh == null) continue;
                     var cityObjs = cityObjGroup.GetAllCityObjects();
                     foreach (var cityObj in cityObjs)
                     {
@@ -45,6 +45,11 @@ namespace PLATEAU.CityAdjust.MaterialAdjust
                         found.Add(valStr);
                     }
                 }
+            }
+
+            if (found.Count == 0)
+            {
+                Dialogue.Display($"属性キー '{searchArg.AttrKey}' は、対象内で見つかりませんでした。", "OK");
             }
             return found.ToArray();
         }

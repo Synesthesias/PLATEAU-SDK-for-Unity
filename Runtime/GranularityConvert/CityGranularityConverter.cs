@@ -26,6 +26,7 @@ namespace PLATEAU.GranularityConvert
         public async Task<GranularityConvertResult> ConvertProgressiveAsync(MAExecutorConf conf,
             IMACondition maCondition)
         {
+            
             var dstGranularity = conf.MeshGranularity;
             var result = new GranularityConvertResult();
             using var progressBar = new ProgressBar();

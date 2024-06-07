@@ -18,7 +18,7 @@ namespace PLATEAU.CityAdjust.MaterialAdjust
             Criterion = criterion;
         }
         
-        /// <summary> 対象を選択して「検索」ボタンを押したときの処理です。成功したかどうかをboolで返します。 </summary>
+        /// <summary> 対象を選択して「検索」ボタンを押したときの処理です。成功したかどうかをboolで返します。 </summary> 
         public bool Search(SearchArg searchArg)
         {
             ISearcher<object> searcher = Criterion switch
@@ -30,7 +30,6 @@ namespace PLATEAU.CityAdjust.MaterialAdjust
             var searchResult = searcher.Search();
             if (searchResult.Length <= 0)
             {
-                Dialogue.Display("対象が見つかりませんでした。\n属性情報を含む都市オブジェクトかその親を選択してください。", "OK");
                 return false;
             }
 

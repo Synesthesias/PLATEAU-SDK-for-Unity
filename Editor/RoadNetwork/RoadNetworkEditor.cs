@@ -1,12 +1,7 @@
-﻿using Codice.Client.BaseCommands;
-using Codice.Client.Common.FsNodeReaders;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
-using UnityEditor.UIElements;
-using UnityEditor.VersionControl;
 using UnityEngine;
 using UnityEngine.UIElements;
 

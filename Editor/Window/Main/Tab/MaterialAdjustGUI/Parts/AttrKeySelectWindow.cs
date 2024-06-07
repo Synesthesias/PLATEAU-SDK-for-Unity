@@ -1,7 +1,6 @@
 using PLATEAU.Editor.Window.Common;
 using PLATEAU.Util;
 using UnityEditor;
-using UnityEngine;
 
 namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI.Parts
 {
