@@ -9,10 +9,29 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI.Parts
     /// <summary>
     /// マテリアル分け画面のうち、分割結合に関する一般設定のGUIです。
     /// なおMAはMaterialAdjustの略です。
+    /// GUIの値を受け取るにはコンストラクタでコールバックを登録します。
     /// </summary>
     internal class MAGranularityGui : Element
     {
-        public MAGranularity Granularity { get; private set;}
+        private MAGranularity granularity;
+
+        private MAGranularity Granularity // set時にコールバックを呼びます
+        {
+            get
+            {
+                return granularity;
+            }
+            set
+            {
+                bool isChanged = granularity != value;
+                granularity = value;
+                if (isChanged)
+                {
+                    onValueChanged?.Invoke(value);
+                }
+            }
+        }
+
         private bool doChangeGranularity = false;
         
         // 粒度の選択肢のうち、DoNotChangeは「粒度を変更する」のチェックがないことで表現するので、ポップアップから選べるのはそれ以外とします。
@@ -24,8 +43,12 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI.Parts
 
         private int selectedGranularityIndex = 2;
 
-        public MAGranularityGui() : base("")
+        private Action<MAGranularity> onValueChanged;
+
+        public MAGranularityGui(Action<MAGranularity> onValueChanged) : base("")
         {
+            this.onValueChanged = onValueChanged;
+            onValueChanged?.Invoke(Granularity);
         }
         
         public override void DrawContent()

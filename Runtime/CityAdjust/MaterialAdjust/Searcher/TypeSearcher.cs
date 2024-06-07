@@ -4,6 +4,7 @@ using System.Linq;
 using PLATEAU.CityGML;
 using PLATEAU.CityInfo;
 using PLATEAU.PolygonMesh;
+using PLATEAU.Util;
 using UnityEngine;
 
 namespace PLATEAU.CityAdjust.MaterialAdjust
@@ -49,6 +50,11 @@ namespace PLATEAU.CityAdjust.MaterialAdjust
                     }
                 }
                 
+            }
+
+            if (found.Count == 0)
+            {
+                Dialogue.Display("指定の地物型が見つかりませんでした。", "OK");
             }
             
             return found.Select((t) =>

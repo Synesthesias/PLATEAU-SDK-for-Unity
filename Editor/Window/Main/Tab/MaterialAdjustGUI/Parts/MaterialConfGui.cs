@@ -1,4 +1,6 @@
+using PLATEAU.CityAdjust.MaterialAdjust;
 using PLATEAU.Editor.Window.Common;
+using System;
 using UnityEditor;
 using UnityEngine;
 
@@ -9,16 +11,15 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI.Parts
     /// </summary>
     internal class MaterialConfGui : Element
     {
-        private readonly CityMaterialAdjustGUI adjustGui;
-        
-        public MaterialConfGui(CityMaterialAdjustGUI adjustGui)
+        private Func<IMAConfig> maConfigGetter;
+        public MaterialConfGui(Func<IMAConfig> maConfigGetter)
         {
-            this.adjustGui = adjustGui;
+            this.maConfigGetter = maConfigGetter;
         }
 
         public override void DrawContent()
         {
-            var conf = adjustGui?.CurrentSearcher?.MaterialAdjustConf;
+            var conf = maConfigGetter();
             if (conf == null) return;
             int displayIndex = 1;
 

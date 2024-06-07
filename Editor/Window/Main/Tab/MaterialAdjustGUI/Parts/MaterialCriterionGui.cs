@@ -11,38 +11,42 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI.Parts
     /// </summary>
     internal class MaterialCriterionGui : Element
     {
-        private int selectedCriterionId;
+        private int selectedCriterionID;
+
+        private int SelectedCriterionID
+        {
+            get
+            {
+                return selectedCriterionID;
+            }
+            set
+            {
+                bool isChanged = selectedCriterionID != value;
+                selectedCriterionID = value;
+                if (isChanged)
+                {
+                    onCriterionChanged?.Invoke(SelectedCriterion);
+                }
+            }
+        }
+        
         private readonly MaterialCriterion[] criterionOptions =
             ((MaterialCriterion[])Enum.GetValues(typeof(MaterialCriterion)))
             .Where(c => c!=MaterialCriterion.None)
             .ToArray();
         private readonly string[] criterionOptionsDisplay;
         
-        // マテリアル分けの基準が属性情報の場合と地物型の場合で、2つのインスタンスを用意します。
-        private readonly MAKeySearcher materialGuiByType = new MAKeySearcher(MaterialCriterion.ByType);
-        private readonly MAKeySearcher materialGuiByAttr = new MAKeySearcher(MaterialCriterion.ByAttribute);
+        private MaterialCriterion SelectedCriterion => criterionOptions[selectedCriterionID];
+        private Action<MaterialCriterion> onCriterionChanged;
+
         
-        public MaterialCriterion SelectedCriterion => criterionOptions[selectedCriterionId];
 
-        /// <summary>
-        /// 選択中のマテリアル分け基準に応じた、マテリアル分けインスタンスを返します。
-        /// </summary>
-        public MAKeySearcher CurrentSearcher
+        public MaterialCriterionGui(Action<MaterialCriterion> onCriterionChanged)
         {
-            get
-            {
-                return SelectedCriterion switch
-                {
-                    MaterialCriterion.ByType => materialGuiByType,
-                    MaterialCriterion.ByAttribute => materialGuiByAttr,
-                    _ => throw new ArgumentOutOfRangeException()
-                };
-            }
-        }
-
-        public MaterialCriterionGui()
-        {
+            this.onCriterionChanged = onCriterionChanged;
             criterionOptionsDisplay = criterionOptions.Select(co => co.ToDisplayString()).ToArray();
+            SelectedCriterionID = 0;
+            onCriterionChanged?.Invoke(SelectedCriterion);
         }
 
         /// <summary>
@@ -55,7 +59,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI.Parts
             using (PlateauEditorStyle.VerticalScopeWithPadding(16, 0, 8, 8))
             {
                 EditorGUIUtility.labelWidth = 50;
-                selectedCriterionId = EditorGUILayout.Popup("分類", selectedCriterionId, criterionOptionsDisplay);
+                SelectedCriterionID = EditorGUILayout.Popup("分類", SelectedCriterionID, criterionOptionsDisplay);
             }
         }
 

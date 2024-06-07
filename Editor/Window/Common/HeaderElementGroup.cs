@@ -11,12 +11,34 @@ namespace PLATEAU.Editor.Window.Common
     internal class ToggleLeftElement : Element
     {
         private string labelText;
-        public bool Value { get; private set; }
+        private bool value;
 
-        public ToggleLeftElement(string elementName, string labelText, bool defaultValue) : base(elementName)
+        private bool Value
         {
+            get
+            {
+                return value;
+            }
+            set
+            {
+                bool isChanged = this.value != value;
+                this.value = value;
+                if (isChanged)
+                {
+                    onValueChanged?.Invoke(value);
+                }
+                
+            }
+        }
+
+        private Action<bool> onValueChanged;
+
+        public ToggleLeftElement(string elementName, string labelText, bool defaultValue, Action<bool> onValueChanged) : base(elementName)
+        {
+            this.onValueChanged = onValueChanged;
             this.labelText = labelText;
             Value = defaultValue;
+            onValueChanged?.Invoke(defaultValue);
         }
         
         public override void DrawContent()

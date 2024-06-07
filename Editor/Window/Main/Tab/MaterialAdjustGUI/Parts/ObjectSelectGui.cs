@@ -1,44 +1,73 @@
 using PLATEAU.CityInfo;
 using PLATEAU.Editor.Window.Common;
 using PLATEAU.Util;
+using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI.Parts
 {
+    /// <summary>
+    /// 対象選択のGUIであり、次の機能まとめたものです。
+    /// ・選択表示、選択追加スロット、「選択から追加」ボタン、「選択から除く」ボタン、対象を選択ボタン
+    /// ・パッケージ種選択ウィンドウの結果を受け取る
+    /// ・変更ロック（ロック時は変更時ダイアログで確認しキャンセル可能とする）
+    ///
+    /// これを利用するクラスは、コンストラクタでコールバックを登録することで選択を受け取ります。
+    /// </summary>
     internal class ObjectSelectGui : Element, IPackageSelectResultReceiver
     {
-        private List<GameObject> selectedGameObjs = new();
-        public UniqueParentTransformList UniqueSelected  {
-            get
-            {
-                return new (
-                    selectedGameObjs
-                        .Where(obj => obj != null)
-                        .Select(obj => obj.transform)
-                );
-            }
-            set
-            {
-                var val = new UniqueParentTransformList(value.Get.Where(tran => tran != null));
-                val.ParentalShift();
-                selectedGameObjs = val.Get.Select(t => t.gameObject).ToList();
-            }
-        }
+        private ObservableCollection<Transform> observableSelected;
             
 
         public bool LockChange { get; set; }
-        private readonly EditorWindow parentEditorWindow;
-        private readonly CityMaterialAdjustGUI materialAdjustGUI;
         private readonly ScrollView scrollView = new (GUILayout.Height(160));
+        private bool skipCallback;
+        private bool skipLockCheck;
+        private List<Transform> prevSelected = new(); // 変更を取り消すためのバックアップ
+        private Action<UniqueParentTransformList> onSelectionChanged;
 
-        public ObjectSelectGui(CityMaterialAdjustGUI materialAdjustGUI, EditorWindow parentEditorWindow)
+        public ObjectSelectGui(Action<UniqueParentTransformList> onSelectionChanged)
         {
-            this.parentEditorWindow = parentEditorWindow;
-            this.materialAdjustGUI = materialAdjustGUI;
+            this.onSelectionChanged = onSelectionChanged;
+            observableSelected = new ();
+            
+            observableSelected.CollectionChanged += (sender, args) =>
+            {
+                // 変更時のコールバックを呼びます。
+                // ただし、ロック中であり、ユーザーが変更をキャンセルした場合は呼ばずにロールバックします。
+                if (skipCallback) return;
+                if (skipLockCheck || AskUnlock())
+                {
+                    // コールバックを呼ぶ
+                    Callback();
+                    prevSelected = observableSelected.ToList();
+                }
+                else
+                {
+                    // キャンセル操作のため、変更を元に戻します
+                    skipCallback = true;
+                    observableSelected.Clear();
+                    foreach(var p in prevSelected)
+                    {
+                        observableSelected.Add(p);
+                    }
+                    skipCallback = false;
+                }
+                
+            };
+            Callback(); // 初期値設定
         }
+
+        private void Callback()
+        {
+            onSelectionChanged(new UniqueParentTransformList(observableSelected));
+        }
+        
 
         public override void DrawContent()
         {
@@ -59,7 +88,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI.Parts
                         }
                         else if(AskUnlock())
                         {
-                            selectedGameObjs.Add(added);
+                            observableSelected.Add(added.transform);
                         }
                     }
                 }
@@ -79,36 +108,44 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI.Parts
             {
                 scrollView.Draw(() =>
                 {
-                    if (selectedGameObjs.Count == 0)
+                    if (observableSelected.Count == 0)
                     {
                         EditorGUILayout.LabelField("（未選択）");                        
                     }
                     
                     int indexToDelete = -1;
+                    bool deleteByUserInput = false; 
                     // 各選択オブジェクトのスロットを描画
-                    for (var i = 0; i < selectedGameObjs.Count; i++)
+                    for (var i = 0; i < observableSelected.Count; i++)
                     {
                         using (new EditorGUILayout.HorizontalScope())
                         {
                             EditorGUILayout.LabelField($"{i+1}:", GUILayout.Width(30));
-                            var obj = selectedGameObjs[i];
+                            var trans = observableSelected[i];
+                            if (trans == null)
+                            {
+                                indexToDelete = i;
+                                continue;
+                            }
+                            var obj = trans.gameObject;
                             var nextObj = (GameObject)EditorGUILayout.ObjectField(obj, typeof(GameObject), true, GUILayout.ExpandWidth(true));
                             
                             if (nextObj != obj && AskUnlock())
                             {
-                                selectedGameObjs[i] = nextObj;
+                                observableSelected[i] = nextObj.transform;
                             }
                             if (PlateauEditorStyle.TinyButton("除く", 30))
                             {
                                 indexToDelete = i;
+                                deleteByUserInput = true;
                             }
                         }
                         
                     }
                     // 削除ボタンが押された時
-                    if (indexToDelete >= 0 && AskUnlock())
+                    if (indexToDelete >= 0 && deleteByUserInput && AskUnlock())
                     {
-                        selectedGameObjs.RemoveAt(indexToDelete);
+                        observableSelected.RemoveAt(indexToDelete);
                     }
                 });// end scrollView
 
@@ -116,16 +153,17 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI.Parts
                 {
                     if (PlateauEditorStyle.TinyButton("全て除く", 75))
                     {
-                        selectedGameObjs.Clear();
+                        observableSelected.Clear();
                     }
                     if(PlateauEditorStyle.TinyButton("対象をヒエラルキー上で選択", 150))
                     {
-                        Selection.objects = selectedGameObjs.Cast<Object>().ToArray();
+                        Selection.objects = new UniqueParentTransformList(observableSelected).Get.Select(trans => trans.gameObject).Cast<Object>().ToArray();
                     }
                 });
                 
             }
         }
+        
 
         /// <summary>
         /// 変更がロックされているのに変更しようとする場合に呼んでください。
@@ -137,7 +175,6 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI.Parts
             if (Dialogue.Display("対象を変更すると、この画面でなされた設定の一部がリセットされます。\nよろしいですか？", "変更を続行", "キャンセル"))
             {
                 LockChange = false;
-                materialAdjustGUI.NotifyTargetChange();
                 return true;
             }
             return false;
@@ -155,7 +192,10 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI.Parts
             {
                 if (PlateauEditorStyle.MiniButton($"選択中の {count} 個を追加", 150) && AskUnlock())
                 {
-                    selectedGameObjs.AddRange(Selection.gameObjects);
+                    foreach (var obj in Selection.gameObjects)
+                    {
+                        observableSelected.Add(obj.transform);
+                    }
                 }
             }
         }
@@ -176,7 +216,25 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI.Parts
                 }
             }
             added.ParentalShift();
-            selectedGameObjs.AddRange(added.Get.Select(trans => trans.gameObject));
+            foreach (var trans in added.Get)
+            {
+                observableSelected.Add(trans);
+            }
+        }
+
+        /// <summary>
+        /// 変更時チェックをスキップしながら、コレクションの内容を引数のものに置き換えます。
+        /// </summary>
+        public void ForceSet(UniqueParentTransformList nextTransforms)
+        {
+            skipLockCheck = true;
+            observableSelected.Clear();
+            foreach (var item in nextTransforms.Get)
+            {
+                if (item == null) continue;
+                observableSelected.Add(item);
+            }
+            skipLockCheck = false;
         }
         
     }
