@@ -74,9 +74,15 @@ namespace PLATEAU.RoadNetwork
 
     public class TrafficSignalPhase
     {
+        public TrafficSignalPhase(string id)
+        {
+            this.Name = id;
+        }
         public float SplitSeconds { get; set; }
         public int EnterableVehicleType { get; set; }
         public Dictionary<TrafficSignalLight, RoadNetworkLink> DirectionMap { get; set; }
+
+        public string Name { get; set; }
     }
 
     /// <summary>

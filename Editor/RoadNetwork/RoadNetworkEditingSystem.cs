@@ -65,6 +65,9 @@ namespace PLATEAU.Editor.RoadNetwork
         // 選択中の道路ネットワーク要素 Link,Lane,Block...etc
         private System.Object selectedRoadNetworkElement;
 
+        private TrafficSignalControlPattern selectedTrafficPattern;
+        private TrafficSignalPhase selectedTrafficPhase;
+
         private bool TryInitialize(VisualElement rootVisualElement)
         {
             // 初期化の必要性チェック
@@ -139,6 +142,11 @@ namespace PLATEAU.Editor.RoadNetwork
             event EventHandler OnChangedEditMode;
             IRoadNetworkEditOperation EditOperation { get; }
 
+            TrafficSignalControlPattern SelectedTrafficPattern { get; set; }
+            event EventHandler OnChangedTrafficPattern;
+            TrafficSignalPhase SelectedTrafficPhase { get; set; }
+            event EventHandler OnChangedTrafficPhase;
+
             System.Object SelectedRoadNetworkElement { get; set; }
             event EventHandler OnChangedSelectRoadNetworkElement;
             void NotifyChangedRoadNetworkObject2Editor();
@@ -203,6 +211,8 @@ namespace PLATEAU.Editor.RoadNetwork
             }
             public event EventHandler OnChangedEditMode;
             public event EventHandler OnChangedSelectRoadNetworkElement;
+            public event EventHandler OnChangedTrafficPattern;
+            public event EventHandler OnChangedTrafficPhase;
 
             public IRoadNetworkEditOperation EditOperation => system.editOperation;
 
@@ -219,6 +229,32 @@ namespace PLATEAU.Editor.RoadNetwork
             }
 
             public IEditorInstance EditorInstance => system.editorInstance;
+
+            public TrafficSignalControlPattern SelectedTrafficPattern 
+            { 
+                get => system.selectedTrafficPattern; 
+                set
+                {
+                    if (system.selectedTrafficPattern == value)
+                        return;
+                    system.selectedTrafficPattern = value;
+                    OnChangedTrafficPattern?.Invoke(this, EventArgs.Empty);
+
+                    system.selectedTrafficPhase = null;
+                } 
+            }
+
+            public TrafficSignalPhase SelectedTrafficPhase 
+            { 
+                get => system.selectedTrafficPhase; 
+                set 
+                {
+                    if (system.selectedTrafficPhase == value)
+                        return;
+                    system.selectedTrafficPhase = value;
+                    OnChangedTrafficPhase?.Invoke(this, EventArgs.Empty);
+                }
+            }
 
             public void NotifyChangedRoadNetworkObject2Editor()
             {

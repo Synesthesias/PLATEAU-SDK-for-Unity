@@ -220,15 +220,16 @@ namespace PLATEAU.Editor.RoadNetwork
             var data = (IAccessorWithData<TValue>)GetUserData(e);
             data.Set(e.newValue);
 #if DEBUG
-            Debug.Log(data.Get());
+            //Debug.Log(data.Get());
 #endif
-            // ユーザーデータを取得する
-            static object GetUserData<_T>(ChangeEvent<_T> e)
-            {
-                var visualElement = e.target as VisualElement;
-                var userData = visualElement.userData;
-                return userData;
-            }
+        }
+
+        // ユーザーデータを取得する
+        public static object GetUserData<_T>(ChangeEvent<_T> e)
+        {
+            var visualElement = e.target as VisualElement;
+            var userData = visualElement.userData;
+            return userData;
         }
 
     }
