@@ -23,6 +23,11 @@ namespace PLATEAU.GranularityConvert
     /// </summary>
     public class CityGranularityConverter
     {
+        /// <summary>
+        /// 粒度を変換する処理を、各ゲームオブジェクトに対して逐次的に行うためのメソッドです。
+        /// マテリアル分けを伴わない粒度変換であれば、このメソッドが直接利用されます。
+        /// マテリアル分けを伴う粒度変換であれば、<see cref="MAExecutor"/>を介してこのメソッドが利用されます。
+        /// </summary>
         public async Task<GranularityConvertResult> ConvertProgressiveAsync(MAExecutorConf conf,
             IMACondition maCondition)
         {
@@ -31,6 +36,7 @@ namespace PLATEAU.GranularityConvert
             var result = new GranularityConvertResult();
             using var progressBar = new ProgressBar();
 
+            // === ここから分解
             // 分解すべきオブジェクトを数える
             int objCountToDeconstruct = 0;
             conf.TargetTransforms
@@ -64,6 +70,8 @@ namespace PLATEAU.GranularityConvert
                 return NextSearchFlow.SkipChildren; // 分解後、子は望みの粒度になったはずなのでスキップ
             });
 
+            
+            // === ここから結合
             // 深さ優先探索で、結合が必要なゲームオブジェクトを見つけて1つづつ結合します。
 
 
@@ -86,12 +94,12 @@ namespace PLATEAU.GranularityConvert
                         return NextSearchFlow.SkipChildren;
                     }
 
-                    // maConditionを使わず意図的にSimpleのメソッドを呼ぶ
+                    // maConditionを使わず意図的にSimpleのメソッドを呼びます
                     if (!new MAConditionSimple().ShouldConstruct(trans, conf.MeshGranularity))
                         return NextSearchFlow.Continue;
 
 
-                    // 主要内マテリアルごとの設定の場合、主要の結合はせず最小へと処理を回す
+                    // 主要内マテリアルごと結合の場合、主要の結合はせず最小へと処理を回します
                     if (dstGranularity == MAGranularity.PerMaterialInPrimary)
                     {
                         var cog = trans.GetComponent<PLATEAUCityObjectGroup>();
@@ -101,10 +109,13 @@ namespace PLATEAU.GranularityConvert
                         }
                     }
 
-                    // 結合リストに追加
+                    // 結合リストに追加します.
+                    // すなわち、後で結合するために、各結合が何を条件として行われるべきかを記録します。
                     var parentTrans = trans.parent;
                     if (parentTrans == null) parentTrans = tmpRoot.transform;
                     Material[] materialKey = null;
+                    // 結合単位が主要内マテリアルごとでなければ、結合対象はあるTransformの子すべてなので、結合リストのキー（結合条件）は親オブジェクトのみです（マテリアルはnull）。
+                    // 結合単位が主要内マテリアルごとの場合は、結合対象はあるTransformの子の一部なので、結合リストのキー（結合条件）は親オブジェクトとマテリアルになります。
                     if (dstGranularity == MAGranularity.PerMaterialInPrimary)
                     {
                         var mr = trans.GetComponent<MeshRenderer>();
@@ -150,8 +161,9 @@ namespace PLATEAU.GranularityConvert
                     }
 
                     countCombined++;
-                }
+                } // 実際の結合処理 ここまで 
                 
+                // === 後処理
                 // tmpRootの子をrootに
                 foreach (Transform root in tmpRoot.transform)
                 {
