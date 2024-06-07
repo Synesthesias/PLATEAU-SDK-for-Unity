@@ -1,4 +1,5 @@
 ﻿using PLATEAU.RoadNetwork;
+using PLATEAU.Util;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -31,6 +32,9 @@ namespace PLATEAU.Editor.RoadNetwork
         private IRoadNetworkEditingSystem system;
         private RoadNetworkEditorAssets assets;
         private VisualElement root;
+
+        private TrafficSignalLightPatternUIDoc trafficSignalLightPatternUIDoc;
+        private VisualElement trafficPatternPanelRoot;
 
         /// <summary>
         /// 交通規制レイアウトを作成します。
@@ -91,7 +95,11 @@ namespace PLATEAU.Editor.RoadNetwork
                 var trafficLightController = system.SelectedRoadNetworkElement as TrafficSignalLightController;
                 if (trafficLightController != null)
                 {
-                    // 未実装
+                    if (system.SelectedTrafficPattern != null)
+                    {
+                        // 交通信号灯制御パターンのUIを作成
+                        trafficSignalLightPatternUIDoc = new TrafficSignalLightPatternUIDoc(system, assets, trafficPatternPanelRoot);
+                    }
                 }
             };
 
@@ -102,6 +110,10 @@ namespace PLATEAU.Editor.RoadNetwork
 
             // パネルをルートに追加
             root.Add(panelInst);
+
+            // 交通信号灯制御パターンパネルのルートを作成
+            trafficPatternPanelRoot = new VisualElement();
+            root.Add(trafficPatternPanelRoot);
         }
 
         /// <summary>
@@ -110,15 +122,19 @@ namespace PLATEAU.Editor.RoadNetwork
         /// <param name="assets">RoadNetworkEditorAssets</param>
         /// <param name="panelInst">パネルのインスタンス</param>
         /// <param name="trafficLightController">交通信号灯制御器</param>
-        private static void SyncTrafficLightControlPatternList(RoadNetworkEditorAssets assets, TemplateContainer panelInst, TrafficSignalLightController trafficLightController)
+        private void SyncTrafficLightControlPatternList(RoadNetworkEditorAssets assets, TemplateContainer panelInst, TrafficSignalLightController trafficLightController)
         {
+            // 信号制御パターンリストの取得
+            var radioBtnGroup = panelInst.Q<RadioButtonGroup>("TrafficSignalControlPatternList");
             if (trafficLightController != null)
             {
-                // 信号制御パターンリストの取得
-                var radioBtnGroup = panelInst.Q<RadioButtonGroup>("TrafficSignalControlPatternList");
                 var radioBtnAsset = assets.GetAsset(RoadNetworkEditorAssets.RadioButton);
                 // 信号制御パターンリストの同期
                 SyncTrafficLightControlPatternList(trafficLightController.ControlPatternData, radioBtnGroup, radioBtnAsset);
+            }
+            else
+            {
+                radioBtnGroup.Clear();
             }
         }
 
@@ -128,7 +144,7 @@ namespace PLATEAU.Editor.RoadNetwork
         /// <param name="patterns">信号制御パターンリスト</param>
         /// <param name="radioBtnGroup">ラジオボタングループ</param>
         /// <param name="radioBtnAsset">ラジオボタンのアセット</param>
-        private static void SyncTrafficLightControlPatternList(List<TrafficSignalControlPattern> patterns, RadioButtonGroup radioBtnGroup, VisualTreeAsset radioBtnAsset)
+        private void SyncTrafficLightControlPatternList(List<TrafficSignalControlPattern> patterns, RadioButtonGroup radioBtnGroup, VisualTreeAsset radioBtnAsset)
         {
             // ラジオボタングループ内のラジオボタンをループし、パターンにリンクされていないものを削除する
             var children = radioBtnGroup.Children().ToArray();
@@ -177,6 +193,13 @@ namespace PLATEAU.Editor.RoadNetwork
                         refSignalLight,
                         Seconds);
 
+                    radioBtn.RegisterValueChangedCallback((e) =>
+                    {
+                        var userData = UIDocBind.GetUserData(e) as TrafficSignalControlPattern;
+                        var v = e.target as VisualElement;
+                        Debug.Assert(userData != null);
+                        system.SelectedTrafficPattern = userData;
+                    });
                     radioBtn.userData = item;
                     radioBtnGroup.Add(inst);
                 }

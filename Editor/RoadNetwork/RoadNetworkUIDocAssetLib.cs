@@ -42,6 +42,8 @@ namespace PLATEAU.Editor.RoadNetwork
 
         // 専用パネル
         public static readonly string TrafficRegulationPanel = "RoadNetworkTrafficRegulationPanel.uxml";
+        public static readonly string RoadNetworkPatternPanel = "RoadNetworkPatternPanel.uxml";
+        public static readonly string RoadNetworkTrafficLightPatternPhasePanel = "RoadNetworkTrafficLightPatternPhasePanel.uxml";
 
 
         // ロードしたアセット
