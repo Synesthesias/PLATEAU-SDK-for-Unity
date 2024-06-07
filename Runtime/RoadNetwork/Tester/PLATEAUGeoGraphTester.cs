@@ -15,11 +15,9 @@ namespace PLATEAU.RoadNetwork
 {
     public class PLATEAUGeoGraphTester : MonoBehaviour
     {
-        [SerializeField] private bool showConvexVolume = false;
-        public List<PLATEAUCityObjectGroup> geoTestTargets = new List<PLATEAUCityObjectGroup>();
 
         [Serializable]
-        public class LerpLineTest
+        public class LerpLineTestParam
         {
             public bool enable = false;
             public PLATEAUCityObjectGroup target;
@@ -28,10 +26,10 @@ namespace PLATEAU.RoadNetwork
             public float p = 0.5f;
         }
 
-        public LerpLineTest lerpLineTest = new LerpLineTest();
+        public LerpLineTestParam lerpLineTest = new LerpLineTestParam();
 
         [Serializable]
-        public class LerpLineSegmentsTest
+        public class LerpLineSegmentsTestParam
         {
             public bool enable = false;
             public bool showWay = true;
@@ -41,7 +39,7 @@ namespace PLATEAU.RoadNetwork
 
             public GeoGraph2D.DebugOption op = new GeoGraph2D.DebugOption();
         }
-        public LerpLineSegmentsTest lerpSegmentsTest = new LerpLineSegmentsTest();
+        public LerpLineSegmentsTestParam lerpSegmentsTest = new LerpLineSegmentsTestParam();
 
         [Serializable]
         public class ParabolaTestParam
@@ -59,7 +57,17 @@ namespace PLATEAU.RoadNetwork
         }
         public ParabolaTestParam parabolaTest = new ParabolaTestParam();
 
+        [Serializable]
+        public class ConvexTestParam
+        {
+            public bool enable = false;
+            public List<PLATEAUCityObjectGroup> targets = new List<PLATEAUCityObjectGroup>();
+        }
+        public ConvexTestParam convexTest = new ConvexTestParam();
+
         public List<PLATEAUCityObjectGroup> convertTargets = new List<PLATEAUCityObjectGroup>();
+
+
         public void ConvertTrans()
         {
             var i = 0;
@@ -80,9 +88,8 @@ namespace PLATEAU.RoadNetwork
             }
         }
 
-        private void LerpSegmentsTest()
+        private void LerpSegmentsTest(LerpLineSegmentsTestParam param)
         {
-            var param = lerpSegmentsTest;
             if (param.enable == false)
                 return;
             if (param.p <= 0 || param.p >= 1)
@@ -118,13 +125,13 @@ namespace PLATEAU.RoadNetwork
             }
         }
 
-        private void ParabolaTest()
+        private void ParabolaTest(ParabolaTestParam param)
         {
-            if (parabolaTest.enable == false)
+            if (param.enable == false)
                 return;
 
-            var p = parabolaTest.p;
-            var y = parabolaTest.b;
+            var p = param.p;
+            var y = param.b;
             var p2 = p * p;
             var a = 2 * p - 1;
             var b = 2 * y * p2;
@@ -150,14 +157,14 @@ namespace PLATEAU.RoadNetwork
                 return ret;
             }
 
-            var pos = parabolaTest.pos;
-            var ray = parabolaTest.ray;
-            var border = GeoGraph2D.GetBorderParabola(ray, parabolaTest.pos, parabolaTest.p);
-            var minX = border.RangeX.HasValue ? -border.RangeX.Value : parabolaTest.minX;
-            for (var x0 = -border.RangeX ?? parabolaTest.minX; x0 <= (border.RangeX ?? parabolaTest.maxX); x0 += parabolaTest.deltaX)
+            var pos = param.pos;
+            var ray = param.ray;
+            var border = GeoGraph2D.GetBorderParabola(ray, param.pos, param.p);
+            var minX = border.RangeX.HasValue ? -border.RangeX.Value : param.minX;
+            for (var x0 = -border.RangeX ?? param.minX; x0 <= (border.RangeX ?? param.maxX); x0 += param.deltaX)
             {
                 var y0 = GetY(x0);
-                var x1 = x0 + parabolaTest.deltaX;
+                var x1 = x0 + param.deltaX;
                 var y1 = GetY(x1);
                 var p0 = border.GetPoint(x0);
                 var p1 = border.GetPoint(x1);
@@ -172,47 +179,53 @@ namespace PLATEAU.RoadNetwork
             //Debug.DrawLine(Vector3.zero, Vector3.up, Color.green);
         }
 
+        private void ConvexTest(ConvexTestParam p)
+        {
+            if (p.enable == false)
+                return;
+            var vertices = p.targets
+                .Select(x => x.GetComponent<MeshCollider>())
+                .Where(x => x)
+                .SelectMany(x => x.sharedMesh.vertices.Select(a => a.Xz()))
+                .ToList();
+            var convex = GeoGraph2D.ComputeConvexVolume(vertices);
+            DebugEx.DrawArrows(convex.Select(x => x.Xay()));
+        }
 
+        private void LerpLineTest(LerpLineTestParam p)
+        {
+            if (p.enable == false)
+                return;
+            if (!p.target)
+                return;
+            var vertices = p.target.GetComponent<MeshCollider>().sharedMesh.vertices;
+
+            Vector2 GetVertex(int index)
+            {
+                return vertices[(index + vertices.Length) % vertices.Length].Xz();
+            }
+
+            Vector2 GetEdge(int index)
+            {
+                return (GetVertex(index + 1) - GetVertex(index)).normalized;
+            }
+
+            var rayA = new Ray2D(GetVertex(p.indexA), GetEdge(p.indexA));
+            var rayB = new Ray2D(GetVertex(p.indexA), -GetEdge(p.indexA - 1));
+
+            DebugEx.DrawArrow(GetVertex(p.indexA).Xay(), GetVertex(p.indexA + 1).Xay(), bodyColor: Color.red);
+            DebugEx.DrawArrow(GetVertex(p.indexA).Xay(), GetVertex(p.indexA - 1).Xay(), bodyColor: Color.blue);
+
+            var ray = GeoGraph2D.LerpRay(rayA, rayB, p.p);
+            Debug.DrawRay(ray.origin.Xay(), ray.direction.Xay(), Color.green);
+        }
 
         public void OnDrawGizmos()
         {
-            LerpSegmentsTest();
-            ParabolaTest();
-            if (showConvexVolume)
-            {
-                var vertices = geoTestTargets
-                    .Select(x => x.GetComponent<MeshCollider>())
-                    .Where(x => x)
-                    .SelectMany(x => x.sharedMesh.vertices.Select(a => a.Xz()))
-                    .ToList();
-                var convex = GeoGraph2D.ComputeConvexVolume(vertices);
-                DebugEx.DrawArrows(convex.Select(x => x.Xay()));
-            }
-
-            if ((lerpLineTest?.enable ?? false) && lerpLineTest.target)
-            {
-                var p = lerpLineTest;
-                var vertices = p.target.GetComponent<MeshCollider>().sharedMesh.vertices;
-
-                Vector2 GetVertex(int index)
-                {
-                    return vertices[(index + vertices.Length) % vertices.Length].Xz();
-                }
-
-                Vector2 GetEdge(int index)
-                {
-                    return (GetVertex(index + 1) - GetVertex(index)).normalized;
-                }
-
-                var rayA = new Ray2D(GetVertex(p.indexA), GetEdge(p.indexA));
-                var rayB = new Ray2D(GetVertex(p.indexA), -GetEdge(p.indexA - 1));
-
-                DebugEx.DrawArrow(GetVertex(p.indexA).Xay(), GetVertex(p.indexA + 1).Xay(), bodyColor: Color.red);
-                DebugEx.DrawArrow(GetVertex(p.indexA).Xay(), GetVertex(p.indexA - 1).Xay(), bodyColor: Color.blue);
-
-                var ray = GeoGraph2D.LerpRay(rayA, rayB, p.p);
-                Debug.DrawRay(ray.origin.Xay(), ray.direction.Xay(), Color.green);
-            }
+            LerpSegmentsTest(lerpSegmentsTest);
+            ParabolaTest(parabolaTest);
+            ConvexTest(convexTest);
+            LerpLineTest(lerpLineTest);
         }
 
     }

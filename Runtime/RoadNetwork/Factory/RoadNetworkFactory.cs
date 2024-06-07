@@ -6,6 +6,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using static Codice.CM.WorkspaceServer.DataStore.IncomingChanges.StoreIncomingChanges.FileConflicts;
 
 namespace PLATEAU.RoadNetwork.Factory
 {
@@ -27,6 +28,9 @@ namespace PLATEAU.RoadNetwork.Factory
 
         // 行き止まり検出判定時に同一直線と判断する角度の総和
         [SerializeField] private float terminateAllowEdgeAngle = 20f;
+
+        // 凸包を使って計算する
+        [SerializeField] private bool useConvexHull = false;
 
         // --------------------
         // end:フィールド
@@ -292,7 +296,20 @@ namespace PLATEAU.RoadNetwork.Factory
             var meshes = targets
                 .Select(c => new { c = c, col = c.GetComponent<MeshCollider>() })
                 .Where(c => c.col)
-                .Select(c => new Tuple<PLATEAUCityObjectGroup, IList<Vector3>>(c.c, c.col.sharedMesh.vertices))
+                .Select(c =>
+                {
+                    if (useConvexHull)
+                    {
+                        var convex = GeoGraph2D
+                            .ComputeConvexVolume(c.col.sharedMesh.vertices, x => x.Xz())
+                            .ToList();
+                        return new Tuple<PLATEAUCityObjectGroup, IList<Vector3>>(c.c, convex);
+                    }
+                    else
+                    {
+                        return new Tuple<PLATEAUCityObjectGroup, IList<Vector3>>(c.c, c.col.sharedMesh.vertices);
+                    }
+                })
                 .ToList();
             return CreateNetwork(meshes);
         }

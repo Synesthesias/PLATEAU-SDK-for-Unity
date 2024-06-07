@@ -15,6 +15,42 @@ namespace PLATEAU.Util.GeoGraph
     public static class GeoGraph2D
     {
         public const float Epsilon = 1e-5f;
+
+        public static List<Vector3> ComputeConvexVolume(IEnumerable<Vector3> vertices, Func<Vector3, Vector2> toVec2)
+        {
+            // リストの最後の辺が時計回りになっているかを確認
+            bool IsLastClockwise(List<Vector3> list)
+            {
+                if (list.Count <= 2)
+                    return true;
+                return Vector2Util.Cross(toVec2(list[^1] - list[^2]), toVec2(list[^2] - list[^3])) > 0;
+            }
+
+            var sortedVertices = vertices.OrderBy(v => v.x).ThenBy(v => v.y).ToList();
+            if (sortedVertices.Count <= 2)
+                return new List<Vector3>();
+
+            // 上方の凸形状計算
+            var ret = new List<Vector3> { sortedVertices[0], sortedVertices[1] };
+            for (var i = 2; i < sortedVertices.Count; i++)
+            {
+                ret.Add(sortedVertices[i]);
+                while (IsLastClockwise(ret) == false)
+                    ret.RemoveAt(ret.Count - 2);
+            }
+
+            // 下方の凸形状計算
+            ret.Add(sortedVertices[^2]);
+            for (var i = sortedVertices.Count - 3; i >= 0; --i)
+            {
+                ret.Add(sortedVertices[i]);
+                while (IsLastClockwise(ret) == false)
+                    ret.RemoveAt(ret.Count - 2);
+            }
+
+            return ret;
+        }
+
         /// <summary>
         /// 凸多角形を計算して返す
         /// </summary>
