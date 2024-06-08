@@ -20,9 +20,6 @@ namespace PLATEAU.RoadNetwork.Factory
         // 同一頂点扱いにするセルサイズ
         [SerializeField] private float cellSize = 0.01f;
 
-        // 中心線で分離するかどうか
-        [SerializeField] private int splitLaneNum = 1;
-
         // 道路サイズ
         [SerializeField] private float roadSize = 3f;
 
@@ -453,8 +450,7 @@ namespace PLATEAU.RoadNetwork.Factory
                 var endBorderLength = GeoGraphEx.GetEdges(endBorderWay?.Vertices ?? new List<Vector3>(), false)
                     .Sum(e => (e.Item2 - e.Item1).magnitude);
                 var num = (int)(Mathf.Min(startBorderLength, endBorderLength) / roadSize);
-                num = Mathf.Min(2, num);
-                if (l.IsValidWay && num > 1)
+                if (l.HasBothBorder && num > 1)
                 {
                     var lanes = l.SplitLane(num);
                     foreach (var lane in lanes)
