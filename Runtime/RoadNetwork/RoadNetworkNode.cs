@@ -12,7 +12,6 @@ namespace PLATEAU.RoadNetwork
     /// <summary>
     /// 交差点
     /// </summary>
-    [Serializable]
     public class RoadNetworkNode
     {
         //----------------------------------

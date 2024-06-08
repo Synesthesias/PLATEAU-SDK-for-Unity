@@ -66,7 +66,7 @@ namespace PLATEAU.RoadNetwork
         public ConvexTestParam convexTest = new ConvexTestParam();
 
         public List<PLATEAUCityObjectGroup> convertTargets = new List<PLATEAUCityObjectGroup>();
-
+        public bool convertWithConvexHull = false;
 
         public void ConvertTrans()
         {
@@ -75,6 +75,11 @@ namespace PLATEAU.RoadNetwork
             {
                 var vertices = t.GetComponent<MeshCollider>()
                         .sharedMesh.vertices.Select(a => a.Xz()).ToList();
+
+                if (convertWithConvexHull)
+                {
+                    vertices = GeoGraph2D.ComputeConvexVolume(vertices);
+                }
 
                 var obj = new GameObject($"{i++}");
                 obj.AddComponent<PLATEAUGeoGraphTesterLineString>();
@@ -95,8 +100,8 @@ namespace PLATEAU.RoadNetwork
             if (param.p <= 0 || param.p >= 1)
                 return;
 
-            var tr = transform;
             var childIndex = 0;
+            var tr = transform;
             for (var i = 0; i < tr.childCount; i++)
             {
                 var child = tr.GetChild(i);
@@ -106,6 +111,8 @@ namespace PLATEAU.RoadNetwork
                     continue;
                 var left = child.GetChild(0).GetComponent<PLATEAUGeoGraphTesterLineString>();
                 var right = child.GetChild(1).GetComponent<PLATEAUGeoGraphTesterLineString>();
+                if (!left || !right)
+                    continue;
                 var leftVertices = left.GetVertices();
                 var rightVertices = right.GetVertices();
 

@@ -7,7 +7,6 @@ using UnityEngine;
 
 namespace PLATEAU.RoadNetwork
 {
-    [Serializable]
     public class RoadNetworkLink
     {
         //----------------------------------
