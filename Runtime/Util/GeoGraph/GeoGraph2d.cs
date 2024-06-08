@@ -16,6 +16,12 @@ namespace PLATEAU.Util.GeoGraph
     {
         public const float Epsilon = 1e-5f;
 
+        /// <summary>
+        /// Vector3の頂点をtoVec2で2Dに射影したうえで凸包を構成する頂点を返す
+        /// </summary>
+        /// <param name="vertices"></param>
+        /// <param name="toVec2"></param>
+        /// <returns></returns>
         public static List<Vector3> ComputeConvexVolume(IEnumerable<Vector3> vertices, Func<Vector3, Vector2> toVec2)
         {
             // リストの最後の辺が時計回りになっているかを確認
@@ -573,6 +579,88 @@ namespace PLATEAU.Util.GeoGraph
                 ev.IsCrossed = isHit;
             }
 
+#if true
+            {
+
+                var leftIndex = 0;
+                var rightIndex = 0;
+                while (leftIndex < lefts.Count && rightIndex < rights.Count)
+                {
+                    var l = lefts[leftIndex];
+                    var r = rights[rightIndex];
+                    var centerRay = GeoGraph2D.LerpRay(l.Ray, r.Ray, p);
+                    var dirL = new Vector2(l.Direction.y, -l.Direction.x);
+                    var dirR = new Vector2(r.Direction.y, -r.Direction.x);
+                    var points = new[]
+                        {
+                        new { ray = new Ray2D(l.Start, dirL), isLeft = true },
+                        new { ray = new Ray2D(l.End, dirL), isLeft = true },
+                        new { ray = new Ray2D(r.Start, dirR), isLeft = false },
+                        new { ray = new Ray2D(r.End, dirR), isLeft = false }
+                    }
+                        .Select(x =>
+                        {
+                            var hit = LineUtil.LineIntersection(centerRay, x.ray, out var inter, out var t1, out var t2);
+                            var other = x.isLeft ? r : l;
+                            var nearPos = other.GetNearestPoint(x.ray.origin);
+                            return new
+                            {
+                                isHit = hit,
+                                inter = inter,
+                                tCenterRay = t1,
+                                tRay = t2,
+                                isLeft = x.isLeft,
+                                origin = x.ray.origin
+                            };
+                        }).Where(x => x.isHit)
+                        .ToList();
+
+                    points.Sort((a, b) => floatComparer.Compare(a.tCenterRay, b.tCenterRay));
+
+                    // ベースラインの切り替えが走ったかどうか
+                    if (points.Any() == false)
+                        break;
+
+                    // 重ならない時は無視
+                    if (points.Count > 1 && points[0].isLeft != points[1].isLeft)
+                    {
+                        // left-rightが重ならない時は無視
+                        //if (baseRef.HasValue && points.Count == 4 && points[0].Item3 != points[1].Item3)
+                        void Add()
+                        {
+                            var begSeg = points[1];
+                            var endSeg = points[2];
+                            if (begSeg.tCenterRay < 0 && endSeg.tCenterRay < 0)
+                                return;
+
+                            var segment = new LineSegment2D(points[1].inter, points[2].inter);
+                            var ev = new InnerSegment(segment, leftIndex, rightIndex, begSeg.isLeft, endSeg.isLeft, p);
+                            ChangeSegment(ev, segment);
+                            innerSegments.Add(ev);
+                            if (op?.showReturnSegments ?? false)
+                            {
+                                DebugEx.DrawString(ev.ToString(), ev.Segment.Start);
+                            }
+                        }
+
+                        Add();
+                    }
+
+
+                    // より遠いのが左の場合右の線分を進める
+                    if (points.Last().isLeft)
+                    {
+                        rightIndex++;
+                    }
+                    else
+                    {
+                        leftIndex++;
+                    }
+                }
+            }
+            innerSegments.Sort(InnerSegment.Compare);
+            return innerSegments;
+#else
             foreach (var s in q)
             {
                 var leftIndex = s.leftIndex;
@@ -629,7 +717,6 @@ namespace PLATEAU.Util.GeoGraph
                 ChangeSegment(ev, segment);
                 innerSegments.Add(ev);
             }
-
             void CreateBorderParabola(InnerSegment self, bool isBeg)
             {
                 var isLeft = isBeg ? self.IsStartLeft : self.IsEndLeft;
@@ -765,11 +852,6 @@ namespace PLATEAU.Util.GeoGraph
                 return ret;
             });
 
-            //ForeachEvents((a, isStart, b) =>
-            //{
-
-            //});
-
             innerSegments.RemoveAll(x =>
                 x.LeftNearestEndInfo.Distance < Epsilon ||
                 x.LeftNearestStartInfo.Distance < Epsilon ||
@@ -881,8 +963,9 @@ namespace PLATEAU.Util.GeoGraph
                     debugIndex++;
                 }
             }
-
+            
             return innerSegments;
+#endif
         }
 
         [Serializable]
