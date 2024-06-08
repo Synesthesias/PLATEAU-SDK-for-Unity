@@ -7,7 +7,6 @@ using UnityEngine;
 
 namespace PLATEAU.RoadNetwork
 {
-    [Serializable]
     public class RoadNetworkLink
     {
         //----------------------------------
@@ -43,6 +42,8 @@ namespace PLATEAU.RoadNetwork
         // 追加/削除はAddRightLane/RemoveRightLaneを使うこと
         public IReadOnlyList<RoadNetworkLane> LeftLanes => leftLanes;
 
+        // 双方向フラグ
+        public bool IsBothWay { get; set; } = true;
         //----------------------------------
         // end: フィールド
         //----------------------------------

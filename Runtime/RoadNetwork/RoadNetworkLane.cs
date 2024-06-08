@@ -16,7 +16,6 @@ using Vector3 = UnityEngine.Vector3;
 
 namespace PLATEAU.RoadNetwork
 {
-    [Serializable]
     public class RoadNetworkLane
     {
         //----------------------------------
@@ -73,6 +72,11 @@ namespace PLATEAU.RoadNetwork
         /// 道の両方に接続先があるかどうか
         /// </summary>
         public bool IsBothConnectedLane => IsValidWay && PrevLanes.Any() && NextLanes.Any();
+
+        /// <summary>
+        /// 両方に境界線を持っている
+        /// </summary>
+        public bool HasBothBorder => IsValidWay && PrevBorder != null && NextBorder != null;
 
         public IEnumerable<Vector3> Vertices
         {
@@ -176,16 +180,21 @@ namespace PLATEAU.RoadNetwork
 #if false
                     points = this.GetInnerLerpSegments(p2);
 #else
-                    var segments = GeoGraph2D.GetInnerLerpSegments(LeftWay.Vertices.Select(x => x.Xz()).ToList(),
-                        RightWay.Vertices.Select(x => x.Xz()).ToList(), p2);
+                    var lefts = LeftWay.Vertices.Select(x => x.Xz()).ToList();
+                    var rights =
+                        RightWay.Vertices.Select(x => x.Xz()).ToList();
+                    // #TODO : 直線補間ではなくstartSubWayからとってくる必要がある
+                    AddPoint(Vector3.Lerp(lefts[0], rights[0], p2));
+                    var segments = GeoGraph2D.GetInnerLerpSegments(lefts, rights, p2);
                     foreach (var s in segments)
                     {
                         AddPoint(s.Segment.Start);
-                        AddPoint(s.Segment.End);
+                        //AddPoint(s.Segment.End);
                     }
+                    // #TODO : 直線補間ではなくendSubWayからとってくる必要がある
+                    AddPoint(Vector3.Lerp(lefts[^1], rights[^1], p2));
 #endif
                     var centerLine = RoadNetworkLineString.Create(points.Select(p => new RoadNetworkPoint(p.Xay())));
-                    centerLine.Points.Add(endSubWays[i].Points.Last());
                     r = new RoadNetworkWay(centerLine, false, true);
                 }
                 var l = new RoadNetworkWay(leftWay.LineString, leftWay.IsReversed, false);

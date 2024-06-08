@@ -14,7 +14,7 @@ using UnityEngine.Serialization;
 namespace PLATEAU.RoadNetwork
 {
     [Serializable]
-    public class RoadNetworkModel : ISerializationCallbackReceiver
+    public class RoadNetworkModel
     {
         public const float Epsilon = float.Epsilon;
 
@@ -141,16 +141,6 @@ namespace PLATEAU.RoadNetwork
                 AddLink(l);
             foreach (var n in model.Nodes)
                 AddNode(n);
-        }
-
-        public void OnBeforeSerialize()
-        {
-            //Serialize();
-        }
-
-        public void OnAfterDeserialize()
-        {
-            //Deserialize();
         }
     }
 }
