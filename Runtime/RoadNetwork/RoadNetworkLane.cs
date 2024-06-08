@@ -183,6 +183,7 @@ namespace PLATEAU.RoadNetwork
                     var lefts = LeftWay.Vertices.Select(x => x.Xz()).ToList();
                     var rights =
                         RightWay.Vertices.Select(x => x.Xz()).ToList();
+                    // #TODO : 直線補間ではなくstartSubWayからとってくる必要がある
                     AddPoint(Vector3.Lerp(lefts[0], rights[0], p2));
                     var segments = GeoGraph2D.GetInnerLerpSegments(lefts, rights, p2);
                     foreach (var s in segments)
@@ -190,6 +191,7 @@ namespace PLATEAU.RoadNetwork
                         AddPoint(s.Segment.Start);
                         //AddPoint(s.Segment.End);
                     }
+                    // #TODO : 直線補間ではなくendSubWayからとってくる必要がある
                     AddPoint(Vector3.Lerp(lefts[^1], rights[^1], p2));
 #endif
                     var centerLine = RoadNetworkLineString.Create(points.Select(p => new RoadNetworkPoint(p.Xay())));
