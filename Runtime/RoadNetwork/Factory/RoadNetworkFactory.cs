@@ -437,35 +437,8 @@ namespace PLATEAU.RoadNetwork.Factory
             var leftWay = tranWork.Ways.FirstOrDefault(w => w.Way.IsReversed == false);
             var rightWay = tranWork.Ways.FirstOrDefault(w => w.Way.IsReversed);
 
-            // 通常の道
-            if (leftWay != null && rightWay != null && leftWay?.PrevBorder == rightWay?.PrevBorder &&
-                leftWay.NextBorder == rightWay?.NextBorder)
-            {
-                var startBorderWay = leftWay?.PrevBorder?.Way;
-                var endBorderWay = leftWay?.NextBorder?.Way;
-                var l = new RoadNetworkLane(leftWay?.Way, rightWay?.Way, startBorderWay, endBorderWay);
-                var link = new RoadNetworkLink(tranWork.TargetTran);
-                var startBorderLength = GeoGraphEx.GetEdges(startBorderWay?.Vertices ?? new List<Vector3>(), false)
-                    .Sum(e => (e.Item2 - e.Item1).magnitude);
-                var endBorderLength = GeoGraphEx.GetEdges(endBorderWay?.Vertices ?? new List<Vector3>(), false)
-                    .Sum(e => (e.Item2 - e.Item1).magnitude);
-                var num = (int)(Mathf.Min(startBorderLength, endBorderLength) / roadSize);
-                if (l.HasBothBorder && num > 1)
-                {
-                    var lanes = l.SplitLane(num);
-                    foreach (var lane in lanes)
-                        link.AddMainLane(lane);
-                }
-                else
-                {
-                    link.AddMainLane(l);
-                }
-
-                tranWork.Bind(link);
-                ret.AddLink(link);
-            }
             // 行き止まり
-            else if (tranWork.Connected.Count() == 1)
+            if (tranWork.Connected.Count() == 1)
             {
                 var startBorderWay = leftWay?.PrevBorder?.Way;
                 var endBorderWay = leftWay?.NextBorder?.Way;
@@ -511,6 +484,33 @@ namespace PLATEAU.RoadNetwork.Factory
                 node.AddTracks(tranWork.Ways.Select(w => new RoadNetworkTrack(w.Way, null)));
                 tranWork.Bind(node);
                 ret.AddNode(node);
+            }
+            // 通常の道
+            else if (leftWay != null && rightWay != null && leftWay?.PrevBorder == rightWay?.PrevBorder &&
+                     leftWay.NextBorder == rightWay?.NextBorder)
+            {
+                var startBorderWay = leftWay?.PrevBorder?.Way;
+                var endBorderWay = leftWay?.NextBorder?.Way;
+                var l = new RoadNetworkLane(leftWay?.Way, rightWay?.Way, startBorderWay, endBorderWay);
+                var link = new RoadNetworkLink(tranWork.TargetTran);
+                var startBorderLength = GeoGraphEx.GetEdges(startBorderWay?.Vertices ?? new List<Vector3>(), false)
+                    .Sum(e => (e.Item2 - e.Item1).magnitude);
+                var endBorderLength = GeoGraphEx.GetEdges(endBorderWay?.Vertices ?? new List<Vector3>(), false)
+                    .Sum(e => (e.Item2 - e.Item1).magnitude);
+                var num = (int)(Mathf.Min(startBorderLength, endBorderLength) / roadSize);
+                if (l.HasBothBorder && num > 1)
+                {
+                    var lanes = l.SplitLane(num);
+                    foreach (var lane in lanes)
+                        link.AddMainLane(lane);
+                }
+                else
+                {
+                    link.AddMainLane(l);
+                }
+
+                tranWork.Bind(link);
+                ret.AddLink(link);
             }
         }
 
