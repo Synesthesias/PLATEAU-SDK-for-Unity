@@ -26,6 +26,8 @@ namespace PLATEAU.Editor.RoadNetwork
             this.editorSystem = editorSystem;
         }
 
+        private readonly Vector3 selectBtnPosOffset = Vector3.up * 10.0f;
+
         private IRoadNetworkEditingSystem editorSystem;
 
         /// <summary>
@@ -251,8 +253,7 @@ namespace PLATEAU.Editor.RoadNetwork
             if (isDisplay)
             {
                 // レーンの選択ボタンの表示
-                var linkSelectBtnHandleDefaultPosOffset = Vector3.up * 2.0f;
-                var lanePos = state.lanePos + linkSelectBtnHandleDefaultPosOffset;
+                var lanePos = state.lanePos + selectBtnPosOffset;
                 var linkSelectBtnHandleDefaultSize = 0.4f;
                 var laneSelectBtnSize = HandleUtility.GetHandleSize(lanePos) * linkSelectBtnHandleDefaultSize;
                 var isClicked = Handles.Button(lanePos, Quaternion.identity, laneSelectBtnSize, laneSelectBtnSize, RoadNetworkLaneHandleCap);
@@ -286,7 +287,7 @@ namespace PLATEAU.Editor.RoadNetwork
                     }
 
                     // 仮　車線数を減らす　ParentLinkがnullであるためレーンを選択できないので適当なレーンを削除する
-                    var isClickedRemove = Handles.Button(scaleHandlePos + Vector3.up * size * 1.5f, Quaternion.identity, size, size, RoadNetworkRemoveLaneButtonHandleCap);
+                    var isClickedRemove = Handles.Button(scaleHandlePos + Vector3.right * size * 1.5f, Quaternion.identity, size, size, RoadNetworkRemoveLaneButtonHandleCap);
                     if (isClickedRemove)
                     {
                         state.delayCommand += () =>
@@ -358,8 +359,7 @@ namespace PLATEAU.Editor.RoadNetwork
             if (isDisplay)
             {
                 // 処理負荷軽減のため適当なレーンを選択して中心位置を計算
-                var linkSelectBtnHandleDefaultPosOffset = Vector3.up * 3.0f;
-                var linkSelectbtnPos = state.linkPos + linkSelectBtnHandleDefaultPosOffset;
+                var linkSelectbtnPos = state.linkPos + selectBtnPosOffset;
                 var linkSelectBtnHandleDefaultSize = 0.5f;
                 var size = HandleUtility.GetHandleSize(linkSelectbtnPos) * linkSelectBtnHandleDefaultSize;
                 var pickSize = size;
@@ -450,8 +450,7 @@ namespace PLATEAU.Editor.RoadNetwork
 
             if (isDisplayNode)
             {
-                var selectBtnHandleDefaultPosOffset = Vector3.up * 3.0f;
-                var selectbtnPos = state.nodePos + selectBtnHandleDefaultPosOffset;
+                var selectbtnPos = state.nodePos + selectBtnPosOffset;
                 var selectBtnHandleDefaultSize = 0.5f;
                 var size = HandleUtility.GetHandleSize(selectbtnPos) * selectBtnHandleDefaultSize;
                 var pickSize = size;
