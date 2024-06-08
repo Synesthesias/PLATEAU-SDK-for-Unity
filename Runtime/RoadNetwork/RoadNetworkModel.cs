@@ -34,9 +34,9 @@ namespace PLATEAU.RoadNetwork
         [field: SerializeField] private RoadNetworkStorage Storage { get; set; }
 
         // 信号制御器
-        public List<SignalController> SignalControllers { get; } = new List<SignalController>();
+        public List<TrafficSignalLightController> SignalControllers { get; } = new List<TrafficSignalLightController>();
         // 信号機
-        public List<SignalLight> SignalLihgts { get; } = new List<SignalLight>();
+        public List<TrafficSignalLight> SignalLihgts { get; } = new List<TrafficSignalLight>();
 
 
         //----------------------------------

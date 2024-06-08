@@ -335,7 +335,7 @@ namespace PLATEAU.Editor.RoadNetwork
             }
         }
 
-        private void ForeachLinks2(IRoadNetworkEditingSystem editorSystem, List<RoadNetworkLink> links, RoadNetworkLink link, ref SceneGUIState state)
+        private void ForeachLinks2(IRoadNetworkEditingSystem editorSystem, IReadOnlyList<RoadNetworkLink> links, RoadNetworkLink link, ref SceneGUIState state)
         {
             state.linkPos = CalcLinkPos(link);
 
@@ -373,7 +373,7 @@ namespace PLATEAU.Editor.RoadNetwork
             }
         }
 
-        private void ForeachSignalLight(IRoadNetworkEditingSystem editorSystem, List<TrafficSignalLight> signalLights, TrafficSignalLight signalLight, ref SceneGUIState state)
+        private void ForeachSignalLight(IRoadNetworkEditingSystem editorSystem, IReadOnlyList<TrafficSignalLight> signalLights, TrafficSignalLight signalLight, ref SceneGUIState state)
         {
             state.signalLightPos = signalLight.position;
             if (editorSystem.CurrentEditMode == RoadNetworkEditMode.EditTrafficRegulation)
@@ -426,7 +426,7 @@ namespace PLATEAU.Editor.RoadNetwork
             }
         }
 
-        private void ForeachNode(IRoadNetworkEditingSystem editorSystem, List<RoadNetworkNode> nodes, RoadNetworkNode node, ref SceneGUIState state)
+        private void ForeachNode(IRoadNetworkEditingSystem editorSystem, IReadOnlyList<RoadNetworkNode> nodes, RoadNetworkNode node, ref SceneGUIState state)
         {
             state.nodePos = node.GetCenterPoint();
 

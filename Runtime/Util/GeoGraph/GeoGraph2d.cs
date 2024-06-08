@@ -969,7 +969,7 @@ namespace PLATEAU.Util.GeoGraph
                         continue;
                     }
 
-                    borderSumAngle += e.ang;
+                    //borderSumAngle += e.ang;
                     if (e.i == 0)
                     {
                         ret.Insert(0, e.index);
