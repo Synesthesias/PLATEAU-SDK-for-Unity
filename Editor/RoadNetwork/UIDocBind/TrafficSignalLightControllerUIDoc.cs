@@ -63,7 +63,7 @@ namespace PLATEAU.Editor.RoadNetwork
                 if (trafficLightController != null)
                 {
                     // 新しい交通信号制御パターンの追加
-                    trafficLightController.ControlPatternData.Add(new TrafficSignalControlPattern());
+                    trafficLightController.ControlPatternData.Add(new TrafficSignalControllerPattern());
                     // パターンリストの同期
                     SyncTrafficLightControlPatternList(assets, panelInst, trafficLightController);
                 }
@@ -95,7 +95,7 @@ namespace PLATEAU.Editor.RoadNetwork
                 var trafficLightController = system.SelectedRoadNetworkElement as TrafficSignalLightController;
                 if (trafficLightController != null)
                 {
-                    if (system.SelectedTrafficPattern != null)
+                    if (system.SelectedSignalControllerPattern != null)
                     {
                         // 交通信号灯制御パターンのUIを作成
                         trafficSignalLightPatternUIDoc = new TrafficSignalLightPatternUIDoc(system, assets, trafficPatternPanelRoot);
@@ -144,7 +144,7 @@ namespace PLATEAU.Editor.RoadNetwork
         /// <param name="patterns">信号制御パターンリスト</param>
         /// <param name="radioBtnGroup">ラジオボタングループ</param>
         /// <param name="radioBtnAsset">ラジオボタンのアセット</param>
-        private void SyncTrafficLightControlPatternList(List<TrafficSignalControlPattern> patterns, RadioButtonGroup radioBtnGroup, VisualTreeAsset radioBtnAsset)
+        private void SyncTrafficLightControlPatternList(List<TrafficSignalControllerPattern> patterns, RadioButtonGroup radioBtnGroup, VisualTreeAsset radioBtnAsset)
         {
             // ラジオボタングループ内のラジオボタンをループし、パターンにリンクされていないものを削除する
             var children = radioBtnGroup.Children().ToArray();
@@ -195,10 +195,10 @@ namespace PLATEAU.Editor.RoadNetwork
 
                     radioBtn.RegisterValueChangedCallback((e) =>
                     {
-                        var userData = UIDocBind.GetUserData(e) as TrafficSignalControlPattern;
+                        var userData = UIDocBind.GetUserData(e) as TrafficSignalControllerPattern;
                         var v = e.target as VisualElement;
                         Debug.Assert(userData != null);
-                        system.SelectedTrafficPattern = userData;
+                        system.SelectedSignalControllerPattern = userData;
                     });
                     radioBtn.userData = item;
                     radioBtnGroup.Add(inst);

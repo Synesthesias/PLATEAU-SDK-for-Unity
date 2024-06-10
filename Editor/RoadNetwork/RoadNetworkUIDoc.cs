@@ -44,9 +44,17 @@ namespace PLATEAU.Editor.RoadNetwork
         }
     }
 
-    public struct _RoadNetworkRegulation
+    /// <summary>
+    /// 道路ネットワークの交通規制を登録するための構造体ラッパ
+    /// 削除予定　インターフェイスで引数で利用しているがそれぞれのクラスの引数を用意する
+    /// </summary>
+    public struct RoadNetworkRegulationElemet
     {
-
+        // 信号制御器
+        // 信号灯器
+        // 一時停止線
+        // 一時停止標識
+        // 工事、事故、その他の規制
     }
 
     public interface IRoadNetworkEditOperation
@@ -87,10 +95,10 @@ namespace PLATEAU.Editor.RoadNetwork
         /// <param name="link"></param>
         /// <param name="newRegulation"></param>
         /// <returns></returns>
-        RoadNetworkEditingResult RegisterRegulation(RoadNetworkLink link, _RoadNetworkRegulation newRegulation);
-        RoadNetworkEditingResult RegisterRegulation(RoadNetworkLane lane, _RoadNetworkRegulation newRegulation);
-        RoadNetworkEditingResult RegisterRegulation(RoadNetworkBlock block, _RoadNetworkRegulation newRegulation);
-        RoadNetworkEditingResult RegisterRegulation(RoadNetworkTrack track, _RoadNetworkRegulation newRegulation);
+        RoadNetworkEditingResult RegisterRegulation(RoadNetworkLink link, RoadNetworkRegulationElemet newRegulation);
+        RoadNetworkEditingResult RegisterRegulation(RoadNetworkLane lane, RoadNetworkRegulationElemet newRegulation);
+        RoadNetworkEditingResult RegisterRegulation(RoadNetworkBlock block, RoadNetworkRegulationElemet newRegulation);
+        RoadNetworkEditingResult RegisterRegulation(RoadNetworkTrack track, RoadNetworkRegulationElemet newRegulation);
     }
 
     /// <summary>
@@ -101,12 +109,6 @@ namespace PLATEAU.Editor.RoadNetwork
         EditLaneShape,
         EditLaneStructure,
         EditTrafficRegulation,
-        //DebugNone,
-        //DebugNode,
-        //DebugLink,
-        //DebugLane,
-        //DebugBlock,
-        //DebugTrack,
     }
 
     /// <summary>
@@ -139,17 +141,6 @@ namespace PLATEAU.Editor.RoadNetwork
             { RoadNetworkEditMode.EditLaneShape, CreateEditLaneShapeLayout },
             { RoadNetworkEditMode.EditLaneStructure, CreateEditLaneStructureLayout },
             { RoadNetworkEditMode.EditTrafficRegulation, CreateTrafficRegulationLayout },
-            //{ RoadNetworkEditMode.DebugNone,
-            //        (IRoadNetworkEditingSystem system, RoadNetworkEditorAssets assets, VisualElement root)=>{
-
-            //        }
-            //    } ,
-            //{ RoadNetworkEditMode.DebugNode, CreateDebugNodeLayout },
-            //{ RoadNetworkEditMode.DebugLink, CreateDebugLinkLayout },
-            //{ RoadNetworkEditMode.DebugLane, CreateDebugLaneLayout },
-            //{ RoadNetworkEditMode.DebugBlock, CreateDebugBlockLayout },
-            //{ RoadNetworkEditMode.DebugTrack, CreateDebugTrackLayout },
-
         };
 
         private static void CreateDebugNodeLayout(IRoadNetworkEditingSystem system, RoadNetworkEditorAssets assets, VisualElement root)

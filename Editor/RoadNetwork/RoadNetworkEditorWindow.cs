@@ -73,7 +73,7 @@ namespace PLATEAU.Editor.RoadNetwork
             return GetWindow<RoadNetworkEditorWindow>(WindowName, focus);
         }
 
-        private class EditorInstance : RoadNetworkEditingSystem.IEditorInstance
+        private class EditorInstance : RoadNetworkEditingSystem.ISystemInstance
         {
             public EditorInstance(RoadNetworkEditorWindow window)
             {
