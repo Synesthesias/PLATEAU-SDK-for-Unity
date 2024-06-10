@@ -11,14 +11,12 @@ using UnityEngine.UIElements;
 
 namespace PLATEAU.Editor.RoadNetwork
 {
-    // https://docs.unity.cn/ja/2022.3/ScriptReference/EditorWindow.html
-
     /// <summary>
     /// 内部システムが利用するインターフェイス
     /// </summary>
     public interface IRoadNetworkEditingSystemInterface
     {
-        public RoadNetworkUIDoc Editor { get; }
+        //public RoadNetworkUIDoc UIDocEditor { get; }
         public IRoadNetworkEditOperation NetworkOperator { get; }
         public RoadNetworkSceneGUISystem SceneGUISystem { get; }
     }
@@ -30,15 +28,23 @@ namespace PLATEAU.Editor.RoadNetwork
     /// </summary>
     public class RoadNetworkEditingSystem : IRoadNetworkEditingSystemInterface
     {
-        public interface IEditorInstance
+        /// <summary>
+        /// システムのインスタンスを管理する機能を提供するインターフェイス
+        /// </summary>
+        public interface ISystemInstance
         {
             void RequestReinitialize();
         }
 
-        public RoadNetworkEditingSystem(IEditorInstance editorInstance, VisualElement rootVisualElement)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="editorInstance"></param>
+        /// <param name="rootVisualElement"></param>
+        public RoadNetworkEditingSystem(ISystemInstance editorInstance, VisualElement rootVisualElement)
         {
             Assert.IsNotNull(editorInstance);
-            this.editorInstance = new EditorInstance(this, editorInstance);
+            this.systemInstance = new EditorInstance(this, editorInstance);
 
             Assert.IsNotNull(rootVisualElement);
             this.rootVisualElement = rootVisualElement;
@@ -46,14 +52,23 @@ namespace PLATEAU.Editor.RoadNetwork
             TryInitialize(rootVisualElement);
         }
 
-
-        public RoadNetworkUIDoc Editor => editor;
+        /// <summary>
+        /// 編集機能を提供するインターフェイス
+        /// </summary>
         public IRoadNetworkEditOperation NetworkOperator => editOperation;
+
+        /// <summary>
+        /// シーンのGUIのシステムを提供する
+        /// UnityEditor.Editorを継承するクラスでのみ使用する
+        /// 呼び出す箇所は一か所にする
+        /// </summary>
         public RoadNetworkSceneGUISystem SceneGUISystem => sceneGUISystem;
 
-        private readonly IEditorInstance editorInstance;
-        private readonly VisualElement rootVisualElement;
+        // 道路ネットワークを所持したオブジェクトのデフォルト名
         private readonly string defaultRoadNetworkObjectName = "RoadNetworkTester";
+
+        private readonly ISystemInstance systemInstance;
+        private readonly VisualElement rootVisualElement;
 
         // 選択している道路ネットワークを所持したオブジェクト
         private UnityEngine.Object roadNetworkObject;
@@ -65,14 +80,32 @@ namespace PLATEAU.Editor.RoadNetwork
         // 選択中の道路ネットワーク要素 Link,Lane,Block...etc
         private System.Object selectedRoadNetworkElement;
 
-        private TrafficSignalControlPattern selectedTrafficPattern;
-        private TrafficSignalPhase selectedTrafficPhase;
+        // 選択中の信号制御器のパターン
+        private TrafficSignalControllerPattern selectedSignalPattern;
+        // 選択中の信号制御器のパターンのフェーズ
+        private TrafficSignalControllerPhase selectedSignalPhase;
 
+        // 内部システム同士が連携する時や共通データにアクセスする際に利用する
+        private readonly IRoadNetworkEditingSystem system;
+
+        private IRoadNetworkEditOperation editOperation;
+        private RoadNetworkUIDoc uiDocEditor;
+        private RoadNetworkSceneGUISystem sceneGUISystem;
+
+        // 道路ネットワーク関係のアセットを管理するクラス
+        private RoadNetworkEditorAssets assets;
+
+        /// <summary>
+        /// 初期化を試みる
+        /// 多重初期化はしないので複数回呼び出しても問題ない
+        /// </summary>
+        /// <param name="rootVisualElement"></param>
+        /// <returns></returns>
         private bool TryInitialize(VisualElement rootVisualElement)
         {
             // 初期化の必要性チェック
             bool needIniteditOperation = editOperation == null;
-            bool needInitEditor = editor == null;
+            bool needInitEditor = uiDocEditor == null;
             bool needInitGUISystem = sceneGUISystem == null;
 
 
@@ -91,8 +124,8 @@ namespace PLATEAU.Editor.RoadNetwork
                 rootVisualElement.Add(inst);
                 //visualTree.CloneTree(rootVisualElement);
 
-                editor = new RoadNetworkUIDoc(system, rootVisualElement, assets);
-                editor.Initialize();
+                uiDocEditor = new RoadNetworkUIDoc(system, rootVisualElement, assets);
+                uiDocEditor.Initialize();
 
             }
 
@@ -104,7 +137,7 @@ namespace PLATEAU.Editor.RoadNetwork
             // 他のシステム連携が必要な初期化 PostInitliaze()
             if (needInitEditor)
             {
-                editor.PostInitialize();
+                uiDocEditor.PostInitialize();
             }
 
             // その他 初期化
@@ -119,36 +152,58 @@ namespace PLATEAU.Editor.RoadNetwork
             return true;
         }
 
-        private readonly IRoadNetworkEditingSystem system;
-
-        private IRoadNetworkEditOperation editOperation;
-        private RoadNetworkUIDoc editor;
-        private RoadNetworkEditorAssets assets;
-        private RoadNetworkSceneGUISystem sceneGUISystem;
-
         /// <summary>
         /// 内部システムが利用するインターフェイス
         /// 内部システム同士が連携する時や共通データにアクセスする際に利用する
         /// </summary>
         public interface IRoadNetworkEditingSystem
         {
-            IEditorInstance EditorInstance { get; }
+            /// <summary>
+            /// 編集機能のインスタンス
+            /// </summary>
+            ISystemInstance EditorInstance { get; }
 
+            /// <summary>
+            /// 道路ネットワークを所持したUnityオブジェクト
+            /// </summary>
             UnityEngine.Object RoadNetworkObject { get; set; }
             event EventHandler OnChangedRoadNetworkObject;
 
+            /// <summary>
+            /// 道路ネットワーク
+            /// </summary>
             RoadNetworkModel RoadNetwork { get; }
+
+            /// <summary>
+            /// 現在の編集モード
+            /// </summary>
             RoadNetworkEditMode CurrentEditMode { get; set; }
             event EventHandler OnChangedEditMode;
+            /// <summary>
+            /// 編集機能を提供するインターフェイス
+            /// </summary>
             IRoadNetworkEditOperation EditOperation { get; }
 
-            TrafficSignalControlPattern SelectedTrafficPattern { get; set; }
-            event EventHandler OnChangedTrafficPattern;
-            TrafficSignalPhase SelectedTrafficPhase { get; set; }
-            event EventHandler OnChangedTrafficPhase;
-
+            /// <summary>
+            /// 選択中の道路ネットワーク要素
+            /// </summary>
             System.Object SelectedRoadNetworkElement { get; set; }
             event EventHandler OnChangedSelectRoadNetworkElement;
+
+            /// <summary>
+            /// 選択中の信号制御器のパターン
+            /// </summary>
+            TrafficSignalControllerPattern SelectedSignalControllerPattern { get; set; }
+            event EventHandler OnChangedSignalControllerPattern;
+            /// <summary>
+            /// 選択中の信号制御器のパターンのフェーズ
+            /// </summary>
+            TrafficSignalControllerPhase SelectedSignalPhase { get; set; }
+            event EventHandler OnChangedSignalControllerPhase;
+
+            /// <summary>
+            /// 道路ネットワークを所持したオブジェクトに変更があったことをUnityEditorに伝える
+            /// </summary>
             void NotifyChangedRoadNetworkObject2Editor();
 
         }
@@ -211,8 +266,8 @@ namespace PLATEAU.Editor.RoadNetwork
             }
             public event EventHandler OnChangedEditMode;
             public event EventHandler OnChangedSelectRoadNetworkElement;
-            public event EventHandler OnChangedTrafficPattern;
-            public event EventHandler OnChangedTrafficPhase;
+            public event EventHandler OnChangedSignalControllerPattern;
+            public event EventHandler OnChangedSignalControllerPhase;
 
             public IRoadNetworkEditOperation EditOperation => system.editOperation;
 
@@ -228,31 +283,31 @@ namespace PLATEAU.Editor.RoadNetwork
                 } 
             }
 
-            public IEditorInstance EditorInstance => system.editorInstance;
+            public ISystemInstance EditorInstance => system.systemInstance;
 
-            public TrafficSignalControlPattern SelectedTrafficPattern 
+            public TrafficSignalControllerPattern SelectedSignalControllerPattern 
             { 
-                get => system.selectedTrafficPattern; 
+                get => system.selectedSignalPattern; 
                 set
                 {
-                    if (system.selectedTrafficPattern == value)
+                    if (system.selectedSignalPattern == value)
                         return;
-                    system.selectedTrafficPattern = value;
-                    OnChangedTrafficPattern?.Invoke(this, EventArgs.Empty);
+                    system.selectedSignalPattern = value;
+                    OnChangedSignalControllerPattern?.Invoke(this, EventArgs.Empty);
 
-                    system.selectedTrafficPhase = null;
+                    system.selectedSignalPhase = null;
                 } 
             }
 
-            public TrafficSignalPhase SelectedTrafficPhase 
+            public TrafficSignalControllerPhase SelectedSignalPhase 
             { 
-                get => system.selectedTrafficPhase; 
+                get => system.selectedSignalPhase; 
                 set 
                 {
-                    if (system.selectedTrafficPhase == value)
+                    if (system.selectedSignalPhase == value)
                         return;
-                    system.selectedTrafficPhase = value;
-                    OnChangedTrafficPhase?.Invoke(this, EventArgs.Empty);
+                    system.selectedSignalPhase = value;
+                    OnChangedSignalControllerPhase?.Invoke(this, EventArgs.Empty);
                 }
             }
 
@@ -333,38 +388,41 @@ namespace PLATEAU.Editor.RoadNetwork
                 //}
             }
 
-            public RoadNetworkEditingResult RegisterRegulation(RoadNetworkLink link, _RoadNetworkRegulation newRegulation)
+            public RoadNetworkEditingResult RegisterRegulation(RoadNetworkLink link, RoadNetworkRegulationElemet newRegulation)
             {
                 throw new NotImplementedException();
             }
 
-            public RoadNetworkEditingResult RegisterRegulation(RoadNetworkLane lane, _RoadNetworkRegulation newRegulation)
+            public RoadNetworkEditingResult RegisterRegulation(RoadNetworkLane lane, RoadNetworkRegulationElemet newRegulation)
             {
                 throw new NotImplementedException();
             }
 
-            public RoadNetworkEditingResult RegisterRegulation(RoadNetworkBlock block, _RoadNetworkRegulation newRegulation)
+            public RoadNetworkEditingResult RegisterRegulation(RoadNetworkBlock block, RoadNetworkRegulationElemet newRegulation)
             {
                 throw new NotImplementedException();
             }
 
-            public RoadNetworkEditingResult RegisterRegulation(RoadNetworkTrack track, _RoadNetworkRegulation newRegulation)
+            public RoadNetworkEditingResult RegisterRegulation(RoadNetworkTrack track, RoadNetworkRegulationElemet newRegulation)
             {
                 throw new NotImplementedException();
             }
 
         }
 
-        public class EditorInstance : IEditorInstance
+        /// <summary>
+        /// 編集機能のインスタンスを管理する機能を行っているクラス
+        /// </summary>
+        public class EditorInstance : ISystemInstance
         {            
-            public EditorInstance(RoadNetworkEditingSystem system, IEditorInstance editorInstance)
+            public EditorInstance(RoadNetworkEditingSystem system, ISystemInstance editorInstance)
             {
                 this.system = system;
                 this.editorInstance = editorInstance;
             }
 
             private RoadNetworkEditingSystem system;
-            private IEditorInstance editorInstance;
+            private ISystemInstance editorInstance;
 
             public void RequestReinitialize()
             {

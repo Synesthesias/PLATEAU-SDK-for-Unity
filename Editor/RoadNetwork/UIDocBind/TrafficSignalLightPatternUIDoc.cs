@@ -11,16 +11,22 @@ using static PLATEAU.Editor.RoadNetwork.TrafficSignalLightPatternUIDoc;
 
 namespace PLATEAU.Editor.RoadNetwork
 {
+    /// <summary>
+    /// 信号制御器のパターンを編集するUIDocumentのバインドや挙動の定義を行うクラス
+    /// </summary>
     public class TrafficSignalLightPatternUIDoc
     {
+        /// <summary>
+        /// TrafficSignalLightPatternUIをUIDocument向けに拡張したクラス
+        /// </summary>
         public class TrafficSignalLightPatternUIEx
         {
-            public TrafficSignalLightPatternUIEx(TrafficSignalControlPattern pattern)
+            public TrafficSignalLightPatternUIEx(TrafficSignalControllerPattern pattern)
             {
                 this.pattern = pattern;
             }
 
-            private TrafficSignalControlPattern pattern;
+            private TrafficSignalControllerPattern pattern;
 
             public float CycleTime
             {
@@ -40,6 +46,12 @@ namespace PLATEAU.Editor.RoadNetwork
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="system"></param>
+        /// <param name="assets"></param>
+        /// <param name="root"></param>
         public TrafficSignalLightPatternUIDoc(IRoadNetworkEditingSystem system, RoadNetworkEditorAssets assets, VisualElement root)
         {
             this.system = system;
@@ -61,7 +73,7 @@ namespace PLATEAU.Editor.RoadNetwork
             var controller = system.SelectedRoadNetworkElement as TrafficSignalLightController;
 
             // UI表示用に拡張したクラスを作成
-            trafficSignalLightPatternUIEx = new TrafficSignalLightPatternUIEx(system.SelectedTrafficPattern);
+            trafficSignalLightPatternUIEx = new TrafficSignalLightPatternUIEx(system.SelectedSignalControllerPattern);
 
             var asset = assets.GetAsset(RoadNetworkEditorAssets.RoadNetworkPatternPanel);
             var patternEditPanelInst = asset.Instantiate();
@@ -71,8 +83,8 @@ namespace PLATEAU.Editor.RoadNetwork
             {
                 if (controller != null)
                 {
-                    var phase = new TrafficSignalPhase(Guid.NewGuid().ToString());
-                    system.SelectedTrafficPattern.Phases.Add(phase);
+                    var phase = new TrafficSignalControllerPhase(Guid.NewGuid().ToString());
+                    system.SelectedSignalControllerPattern.Phases.Add(phase);
                     SyncTrafficLightPatternPhaseList(assets, patternEditPanelInst, controller);
                 }
             };
@@ -82,7 +94,7 @@ namespace PLATEAU.Editor.RoadNetwork
             {
                 if (controller != null)
                 {
-                    system.SelectedTrafficPattern.Phases.Remove(system.SelectedTrafficPattern.Phases.Last());
+                    system.SelectedSignalControllerPattern.Phases.Remove(system.SelectedSignalControllerPattern.Phases.Last());
                     SyncTrafficLightPatternPhaseList(assets, patternEditPanelInst, controller);
                 }
             };
@@ -112,7 +124,7 @@ namespace PLATEAU.Editor.RoadNetwork
             {
                 var radioBtnAsset = assets.GetAsset(RoadNetworkEditorAssets.RadioButton);
                 // 信号制御パターンリストの同期
-                SyncTrafficLightPatternPhaseList(system.SelectedTrafficPattern.Phases, radioBtnGroup, radioBtnAsset);
+                SyncTrafficLightPatternPhaseList(system.SelectedSignalControllerPattern.Phases, radioBtnGroup, radioBtnAsset);
             }
             else
             {
@@ -126,7 +138,7 @@ namespace PLATEAU.Editor.RoadNetwork
         /// <param name="phases">信号制御パターンリスト</param>
         /// <param name="radioBtnGroup">ラジオボタングループ</param>
         /// <param name="radioBtnAsset">ラジオボタンのアセット</param>
-        private void SyncTrafficLightPatternPhaseList(List<TrafficSignalPhase> phases, RadioButtonGroup radioBtnGroup, VisualTreeAsset radioBtnAsset)
+        private void SyncTrafficLightPatternPhaseList(List<TrafficSignalControllerPhase> phases, RadioButtonGroup radioBtnGroup, VisualTreeAsset radioBtnAsset)
         {
             // ラジオボタングループ内のラジオボタンをループし、パターンにリンクされていないものを削除する
             var children = radioBtnGroup.Children().ToArray();
@@ -168,10 +180,10 @@ namespace PLATEAU.Editor.RoadNetwork
                         if (e.newValue == false)
                             return;
 
-                        var userData = UIDocBind.GetUserData(e) as TrafficSignalPhase;
+                        var userData = UIDocBind.GetUserData(e) as TrafficSignalControllerPhase;
                         var v = e.target as VisualElement;
                         Debug.Assert(userData != null);
-                        system.SelectedTrafficPhase = userData;
+                        system.SelectedSignalPhase = userData;
                         Debug.Log(userData.Name);
 
                         var phasePanelRoot = patternPanelRoot.Q<VisualElement>("PhasePanelRoot");
@@ -184,7 +196,7 @@ namespace PLATEAU.Editor.RoadNetwork
                             phasePanelRoot.Add(pahseInst);
                             phasePanelRoot.MarkDirtyRepaint();
 
-                            var phase = system.SelectedTrafficPhase;
+                            var phase = system.SelectedSignalPhase;
  
                             var spllitField = phasePanelRoot.Q<FloatField>("Split");
                             UIDocBind.Helper.Bind(spllitField, nameof(phase.SplitSeconds), phase);

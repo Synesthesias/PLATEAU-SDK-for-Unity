@@ -37,8 +37,6 @@ namespace PLATEAU.RoadNetwork
 
         // 信号制御器
         public TrafficSignalLightController SignalController { get; set; } = null;
-        // 信号機
-        //public List<TrafficSignalLight> SignalLihgts { get; } = new List<TrafficSignalLight>();
 
         //----------------------------------
         // end: フィールド

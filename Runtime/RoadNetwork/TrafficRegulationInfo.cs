@@ -32,7 +32,7 @@ namespace PLATEAU.RoadNetwork
 
 
         public bool GapImpedanceFlag { get; private set; } = false;
-        public List<TrafficSignalControlPattern> ControlPatternData { get; private set; } = new List<TrafficSignalControlPattern>();
+        public List<TrafficSignalControllerPattern> ControlPatternData { get; private set; } = new List<TrafficSignalControllerPattern>();
         public List<TrafficSignalLight> SignalLights { get; private set; } = new List<TrafficSignalLight>();
 
         public Vector3 Position { get; set; }
@@ -64,17 +64,17 @@ namespace PLATEAU.RoadNetwork
         TrafficSignalLightController controller;
     }
 
-    public class TrafficSignalControlPattern
+    public class TrafficSignalControllerPattern
     {
         public DateTime StartTime { get; private set; } = DateTime.MinValue;
         public string ControlPatternId { get; private set; } = "_undefind";
-        public List<TrafficSignalPhase> Phases { get; private set; } = new List<TrafficSignalPhase>();
+        public List<TrafficSignalControllerPhase> Phases { get; private set; } = new List<TrafficSignalControllerPhase>();
         public TrafficLightSignalOffset Offset { get; private set; } = null;
     }
 
-    public class TrafficSignalPhase
+    public class TrafficSignalControllerPhase
     {
-        public TrafficSignalPhase(string id)
+        public TrafficSignalControllerPhase(string id)
         {
             this.Name = id;
         }
