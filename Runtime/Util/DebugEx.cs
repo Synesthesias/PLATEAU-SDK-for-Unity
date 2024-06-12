@@ -69,8 +69,8 @@ namespace PLATEAU.Util
             a1 = a1.normalized;
             a2 = a2.normalized;
             var arrowColorImpl = arrowColor ?? bodyColorImpl;
-            Debug.DrawLine(end + a1 * arrowSize, end, arrowColorImpl);
-            Debug.DrawLine(end + a2 * arrowSize, end, arrowColorImpl);
+            Debug.DrawLine(end + a1 * arrowSize, end, arrowColorImpl, duration);
+            Debug.DrawLine(end + a2 * arrowSize, end, arrowColorImpl, duration);
         }
 
         /// <summary>

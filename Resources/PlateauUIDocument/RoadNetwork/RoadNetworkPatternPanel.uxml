@@ -1,0 +1,31 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="True">
+    <ui:VisualElement style="flex-grow: 1;">
+        <ui:Label tabindex="-1" text="フェーズの設定" parse-escape-sequences="true" display-tooltip-when-elided="true" />
+        <ui:VisualElement style="flex-direction: row;">
+            <ui:Button text="フェーズ追加" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Add" />
+            <ui:Button text="フェーズ削除" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Remove" />
+        </ui:VisualElement>
+        <ui:ScrollView style="flex-direction: row;">
+            <ui:RadioButtonGroup label="フェーズ" value="0" name="PhaseSelecter" choices="a,b" style="flex-direction: row;">
+                <ui:RadioButton label="Radio Button" />
+                <ui:RadioButton label="Radio Button" />
+                <ui:RadioButton label="Radio Button" />
+            </ui:RadioButtonGroup>
+        </ui:ScrollView>
+        <ui:VisualElement name="PhasePanelRoot" tabindex="-1" style="flex-grow: 1;" />
+        <ui:VisualElement name="CotrollerInfo" style="flex-grow: 1;">
+            <ui:Label tabindex="-1" text="信号制御機情報" parse-escape-sequences="true" display-tooltip-when-elided="true" />
+            <ui:TextField picking-mode="Ignore" label="信号制御器ID" value="filler text" focusable="false" readonly="true" style="display: none;" />
+            <ui:TextField picking-mode="Ignore" label="信号制御器ID" value="filler text" focusable="false" readonly="true" style="display: none;" />
+            <ui:TextField picking-mode="Ignore" label="設置ノードID" value="filler text" focusable="false" readonly="true" style="display: none;" />
+            <ui:FloatField label="サイクル長" value="150" name="CycleTime" readonly="true" focusable="false" is-delayed="true" />
+        </ui:VisualElement>
+        <ui:VisualElement name="Offset" style="flex-grow: 1;">
+            <ui:Label tabindex="-1" text="オフセット設定" parse-escape-sequences="true" display-tooltip-when-elided="true" />
+            <ui:Toggle label="オフセットを利用するか" />
+            <ui:TextField picking-mode="Ignore" label="基準信号機ID" value="filler text" focusable="false" readonly="true" />
+            <ui:FloatField label="オフセット(秒)" value="0" />
+            <ui:Button text="オフセット設定" parse-escape-sequences="true" display-tooltip-when-elided="true" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>
