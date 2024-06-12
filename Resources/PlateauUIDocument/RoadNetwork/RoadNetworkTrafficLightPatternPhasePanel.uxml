@@ -1,0 +1,8 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="True">
+    <ui:VisualElement style="flex-grow: 1;">
+        <ui:FloatField label="スプリット(秒)" value="42.2" name="Split" />
+        <ui:TextField picking-mode="Ignore" label="信号灯器ID" value="1_18_0333" readonly="true" focusable="false" style="display: none;" />
+        <uie:MaskField label="進入可能車種" choices="小型,大型,バス" value="7" name="EnterableCarTypeMask" />
+        <ui:Button text="車種設定" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Register" style="display: none;" />
+    </ui:VisualElement>
+</ui:UXML>
