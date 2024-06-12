@@ -69,14 +69,20 @@ namespace PLATEAU.RoadNetwork
 
         public RoadNetworkDataGetter CreateRoadNetworkDataGetter() 
         {
-            if (Storage == null)
+            if (RoadNetwork == null)
             {
-                // ここのメッセージは仮
-                Debug.Log("Storage is null.");
-                Debug.Log("Serializeボタンを押していないかも(public void Serialize()が呼ばれていない)");
+                Debug.Log("RoadNetwork is null.");
+                return null;
             }
 
-            return new RoadNetworkDataGetter(this.Storage);
+            var getter = RoadNetwork.DataGetter;
+            if (RoadNetwork == null)
+            {
+                Debug.Log("RoadNetwork.DataGetter is null.");
+                return null;
+            }
+
+            return getter;
         }
     }
 }

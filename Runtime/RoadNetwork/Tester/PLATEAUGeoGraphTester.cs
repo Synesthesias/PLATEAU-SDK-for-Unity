@@ -127,7 +127,7 @@ namespace PLATEAU.RoadNetwork
                 var segments = GeoGraph2D.GetInnerLerpSegments(leftVertices, rightVertices, param.p, param.op);
                 foreach (var seg in segments.Select((v, i) => new { v, i }))
                 {
-                    DebugEx.DrawLineSegment2D(seg.v.Segment, color: DebugEx.GetDebugColor(seg.i, 16));
+                    DebugEx.DrawLineSegment2D(seg.v.Segment, color: DebugEx.GetDebugColor(seg.i, 16), offset: default);
                 }
             }
         }

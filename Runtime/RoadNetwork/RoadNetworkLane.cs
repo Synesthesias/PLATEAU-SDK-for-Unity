@@ -409,7 +409,7 @@ namespace PLATEAU.RoadNetwork
                     void Draw(LineSegment2D seg)
                     {
                         DebugEx.DrawString($"[{debugIndex++}] {s.LeftIndex}-{s.RightIndex}({seg.Magnitude:F2})", seg.Start.Xay(), color: Color.red, fontSize: 20);
-                        DebugEx.DrawLineSegment2D(seg, color: DebugEx.GetDebugColor(debugIndex, 8));
+                        DebugEx.DrawLineSegment2D(seg, color: DebugEx.GetDebugColor(debugIndex, 8), offset:default);
                     }
                     Draw(s.Segment);
                     //Draw(parabola);

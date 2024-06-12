@@ -33,6 +33,9 @@ namespace PLATEAU.RoadNetwork
         // シリアライズ用フィールド
         [field: SerializeField] private RoadNetworkStorage Storage { get; set; }
 
+        // ストレージのデータを取得するクラスを提供する (Simulation向けに公開)
+        public RoadNetworkDataGetter DataGetter { get => Storage != null ? new RoadNetworkDataGetter(Storage) : null; }
+
         //----------------------------------
         // end: フィールド
         //----------------------------------

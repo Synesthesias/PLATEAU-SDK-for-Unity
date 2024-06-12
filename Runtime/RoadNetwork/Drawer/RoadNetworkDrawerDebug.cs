@@ -19,7 +19,7 @@ namespace PLATEAU.RoadNetwork.Drawer
         // Laneの頂点の内側を向くベクトルの中央点を表示する
         [SerializeField] private bool showInsideNormalMidPoint = false;
         // 頂点インデックスを表示する
-        //[SerializeField] private bool showVertexIndex = false;
+        [SerializeField] private bool showVertexIndex = false;
         // 頂点の座標を表示する
         [SerializeField] private bool showVertexPos = false;
         // 頂点表示するときのフォントサイズ
