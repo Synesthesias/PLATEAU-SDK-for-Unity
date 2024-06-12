@@ -74,14 +74,6 @@ namespace PLATEAU.RoadNetwork
         }
         public UnionPolygonTestParam unionPolygonTest = new UnionPolygonTestParam();
 
-        [Serializable]
-        public class MeshPolygonTestParam
-        {
-            public bool enable = false;
-            public Color color = Color.white;
-            public List<PLATEAUCityObjectGroup> targets;
-        }
-        public MeshPolygonTestParam meshPolygonTest = new MeshPolygonTestParam();
 
         public List<PLATEAUCityObjectGroup> convertTargets = new List<PLATEAUCityObjectGroup>();
         public bool convertWithConvexHull = false;
@@ -258,6 +250,15 @@ namespace PLATEAU.RoadNetwork
 
         }
 
+        [Serializable]
+        public class MeshPolygonTestParam
+        {
+            public bool enable = false;
+            public bool showIndex = false;
+            public Color color = Color.white;
+            public List<PLATEAUCityObjectGroup> targets;
+        }
+        public MeshPolygonTestParam meshPolygonTest = new MeshPolygonTestParam();
         private void MeshPolygonTest(MeshPolygonTestParam p)
         {
             if (p.enable == false)
@@ -267,9 +268,15 @@ namespace PLATEAU.RoadNetwork
                 if (!target)
                     continue;
                 var mesh = target.GetComponent<MeshCollider>();
-                //DebugEx.DrawMesh(mesh.sharedMesh, p.color);
                 var vertices = GeoGraph2D.ComputeMeshOutlineVertices(mesh.sharedMesh, v => v.Xz());
-                DebugEx.DrawLines(vertices, true, p.color);
+                DebugEx.DrawLines(vertices, false, p.color);
+                if (p.showIndex)
+                {
+                    for (var i = 0; i < vertices.Count; i++)
+                    {
+                        DebugEx.DrawString($"{i}", vertices[i]);
+                    }
+                }
             }
         }
 

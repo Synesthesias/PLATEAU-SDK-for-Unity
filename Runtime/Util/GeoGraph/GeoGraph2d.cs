@@ -181,72 +181,54 @@ namespace PLATEAU.Util.GeoGraph
 
             var ret = new List<Vector3> { keys[0] };
 
-            void Update(Func<Vector2, Vector2, bool> where, Func<Vector2, Vector2, int> sort)
+            // 0 : 左->上
+            // 1 : 上->右
+            // 2 : 右->下
+            // 3 : 下->左
+            var axises = new[] { Vector2.up, Vector2.right, Vector2.down, Vector2.left };
+            var wheres = new Func<Vector2, Vector2, bool>[]
             {
+                (last, v) => v.y > last.y && v.x >= last.x,
+                (last, v) => v.y <= last.y && v.x > last.x,
+                (last, v) => v.y < last.y && v.x <= last.x,
+                (last, v) => v.y >= last.y && v.x < last.x
+            };
+
+            //var debugLastIndex = 0;
+            for (var i = 0; i < 4; ++i)
+            {
+                var axis = axises[i];
+                var where = wheres[i];
+                // 比較
+                int Comp(Vector2 a, Vector2 b)
+                {
+                    var x = comp.Compare(Vector2.Angle(axis, a), Vector2.Angle(axis, b));
+                    if (x != 0)
+                        return x;
+                    return comp.Compare(a.sqrMagnitude, b.sqrMagnitude);
+                }
                 while (true)
                 {
                     var last = toVec2(ret[^1]);
                     var neighbors = vertices[ret[^1]];
-
                     Vector3? next = null;
-                    foreach (var v in neighbors.Where(v => where(last, toVec2(v)))
-                                 .Where(v => ret.Contains(v) == false))
+                    var t = neighbors.Where(v => where(last, toVec2(v))).ToList();
+                    foreach (var v in t)
                     {
-                        if (next == null || sort(toVec2(v) - last, toVec2(next.Value) - last) < 0)
-                        {
+                        // 最も外側に近い点を返す
+                        if (next == null || Comp(toVec2(v) - last, toVec2(next.Value) - last) < 0)
                             next = v;
-                        }
                     }
 
                     if (next.HasValue == false)
-                        return;
+                        break;
                     ret.Add(next.Value);
                 }
+                //DebugEx.DrawLines(ret.Skip(debugLastIndex), false, DebugEx.GetDebugColor(i, 4));
+                //debugLastIndex = ret.Count - 1;
             }
 
-            // 左 -> 上の輪郭を探す
-            Update(
-                (last, v) => v.y >= last.y && v.x >= last.x,
-                (a, b) =>
-                {
-                    var x = comp.Compare(Vector2.Angle(Vector2.up, a), Vector2.Angle(Vector2.up, b));
-                    if (x != 0)
-                        return x;
-                    return comp.Compare(a.sqrMagnitude, b.sqrMagnitude);
-                });
 
-            // 上 -> 右の輪郭を探す
-            Update(
-                (last, v) => v.y <= last.y && v.x >= last.x,
-                (a, b) =>
-                {
-                    var x = comp.Compare(Vector2.Angle(Vector2.right, a), Vector2.Angle(Vector2.right, b));
-                    if (x != 0)
-                        return x;
-                    return comp.Compare(a.sqrMagnitude, b.sqrMagnitude);
-                });
-
-            //// 右 -> 下の輪郭を探す
-            Update(
-                (last, v) => v.y <= last.y && v.x <= last.x,
-                (a, b) =>
-                {
-                    var x = comp.Compare(Vector2.Angle(Vector2.down, a), Vector2.Angle(Vector2.down, b));
-                    if (x != 0)
-                        return x;
-                    return comp.Compare(a.sqrMagnitude, b.sqrMagnitude);
-                });
-
-            // 下 -> 左の輪郭を探す
-            Update(
-                (last, v) => v.y >= last.y && v.x <= last.x,
-                (a, b) =>
-                {
-                    var x = comp.Compare(Vector2.Angle(Vector2.left, a), Vector2.Angle(Vector2.left, b));
-                    if (x != 0)
-                        return x;
-                    return comp.Compare(a.sqrMagnitude, b.sqrMagnitude);
-                });
             return ret;
         }
 

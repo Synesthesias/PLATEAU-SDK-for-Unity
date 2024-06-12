@@ -55,7 +55,7 @@ namespace PLATEAU.RoadNetwork
         public async Task SplitCityObjectAsync()
         {
             var p = splitCityObjectTestParam;
-            // •ªŠ„Œ‹‡‚ÌÝ’è‚Å‚·B
+            // åˆ†å‰²çµåˆã®è¨­å®šã§ã™ã€‚
             // https://project-plateau.github.io/PLATEAU-SDK-for-Unity/manual/runtimeAPI.html
             var conf = new GranularityConvertOptionUnity(new GranularityConvertOption(MeshGranularity.PerAtomicFeatureObject, 1),
                 p.targets.Select(t => t.gameObject).ToArray(), p.doDestroySrcObject);
