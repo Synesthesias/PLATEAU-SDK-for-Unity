@@ -186,18 +186,21 @@ namespace PLATEAU.Util.GeoGraph
                 while (true)
                 {
                     var last = toVec2(ret[^1]);
-                    var neighbors = vertices[ret[^1]].Where(v => where(last, toVec2(v))).Where(v => ret.Contains(v) == false).ToList();
-                    if (neighbors.Count == 0)
-                        return;
+                    var neighbors = vertices[ret[^1]];
 
-                    neighbors.Sort((a, b) => sort(toVec2(a) - last, toVec2(b) - last));
-                    var nextV = neighbors[0];
-                    if (nextV == default)
-                        return;
-                    if (ret.Contains(nextV))
-                        return;
+                    Vector3? next = null;
+                    foreach (var v in neighbors.Where(v => where(last, toVec2(v)))
+                                 .Where(v => ret.Contains(v) == false))
+                    {
+                        if (next == null || sort(toVec2(v) - last, toVec2(next.Value) - last) < 0)
+                        {
+                            next = v;
+                        }
+                    }
 
-                    ret.Add(nextV);
+                    if (next.HasValue == false)
+                        return;
+                    ret.Add(next.Value);
                 }
             }
 
