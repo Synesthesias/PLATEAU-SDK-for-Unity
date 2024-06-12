@@ -65,8 +65,28 @@ namespace PLATEAU.RoadNetwork
         }
         public ConvexTestParam convexTest = new ConvexTestParam();
 
+        [Serializable]
+        public class UnionPolygonTestParam
+        {
+
+            public bool enable = false;
+            public PLATEAUCityObjectGroup target;
+        }
+        public UnionPolygonTestParam unionPolygonTest = new UnionPolygonTestParam();
+
+        [Serializable]
+        public class MeshPolygonTestParam
+        {
+            public bool enable = false;
+            public Color color = Color.white;
+            public List<PLATEAUCityObjectGroup> targets;
+        }
+        public MeshPolygonTestParam meshPolygonTest = new MeshPolygonTestParam();
+
         public List<PLATEAUCityObjectGroup> convertTargets = new List<PLATEAUCityObjectGroup>();
         public bool convertWithConvexHull = false;
+
+
 
         public void ConvertTrans()
         {
@@ -227,12 +247,40 @@ namespace PLATEAU.RoadNetwork
             Debug.DrawRay(ray.origin.Xay(), ray.direction.Xay(), Color.green);
         }
 
+        private void UnionPolygonTest(UnionPolygonTestParam p)
+        {
+            if (p.enable == false)
+                return;
+            if (!p.target)
+                return;
+            var mesh = p.target.GetComponent<MeshCollider>();
+            DebugEx.DrawMesh(mesh.sharedMesh);
+
+        }
+
+        private void MeshPolygonTest(MeshPolygonTestParam p)
+        {
+            if (p.enable == false)
+                return;
+            foreach (var target in p.targets)
+            {
+                if (!target)
+                    continue;
+                var mesh = target.GetComponent<MeshCollider>();
+                //DebugEx.DrawMesh(mesh.sharedMesh, p.color);
+                var vertices = GeoGraph2D.ComputeMeshOutlineVertices(mesh.sharedMesh, v => v.Xz());
+                DebugEx.DrawLines(vertices, true, p.color);
+            }
+        }
+
         public void OnDrawGizmos()
         {
             LerpSegmentsTest(lerpSegmentsTest);
             ParabolaTest(parabolaTest);
             ConvexTest(convexTest);
             LerpLineTest(lerpLineTest);
+            UnionPolygonTest(unionPolygonTest);
+            MeshPolygonTest(meshPolygonTest);
         }
 
     }
