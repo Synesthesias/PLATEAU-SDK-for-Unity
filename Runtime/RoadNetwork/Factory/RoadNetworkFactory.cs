@@ -1,12 +1,16 @@
 ﻿using PLATEAU.CityInfo;
+using PLATEAU.GranularityConvert;
+using PLATEAU.PolygonMesh;
 using PLATEAU.Util;
 using PLATEAU.Util.GeoGraph;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using UnityEngine;
 using static Codice.CM.WorkspaceServer.DataStore.IncomingChanges.StoreIncomingChanges.FileConflicts;
+using CityObjectList = PLATEAU.CityInfo.CityObjectList;
 
 namespace PLATEAU.RoadNetwork.Factory
 {
@@ -25,6 +29,8 @@ namespace PLATEAU.RoadNetwork.Factory
 
         // 行き止まり検出判定時に同一直線と判断する角度の総和
         [SerializeField] private float terminateAllowEdgeAngle = 20f;
+        // 行き止まり検出判定時に開始線分と同一と判定する角度の許容量
+        [SerializeField] private float terminateSkipEdgeAngle = 20f;
 
         // 凸包を使って計算する
         [SerializeField] private bool useConvexHull = false;
@@ -95,9 +101,10 @@ namespace PLATEAU.RoadNetwork.Factory
                 new Dictionary<RoadNetworkPoint, List<TranWork>>();
 
             // 対応するLink
-            RoadNetworkLink Link { get; set; }
+            private RoadNetworkLink Link { get; set; }
+
             // 対応するNode
-            RoadNetworkNode Node { get; set; }
+            private RoadNetworkNode Node { get; set; }
 
             public List<WayWork> Borders { get; } = new List<WayWork>();
 
@@ -288,8 +295,16 @@ namespace PLATEAU.RoadNetwork.Factory
         }
 
 
-        public RoadNetworkModel CreateNetwork(IList<PLATEAUCityObjectGroup> targets)
+        public async Task<RoadNetworkModel> CreateNetworkAsync(IList<PLATEAUCityObjectGroup> targets)
         {
+            var tasks = new List<RoadNetworkModel>();
+            // 分割結合の設定です。
+            // https://project-plateau.github.io/PLATEAU-SDK-for-Unity/manual/runtimeAPI.html
+            var conf = new GranularityConvertOptionUnity(new GranularityConvertOption(MeshGranularity.PerAtomicFeatureObject, 1),
+                targets.Select(t => t.gameObject).ToArray(), false);
+            // 分割結合します。
+            //var d = await new CityGranularityConverter().ConvertAsync(conf);
+            //targets = d.GeneratedObjs.Select(t => t.GetComponent<PLATEAUCityObjectGroup>()).ToList();
             var meshes = targets
                 .Select(c => new { c = c, col = c.GetComponent<MeshCollider>() })
                 .Where(c => c.col)
@@ -300,6 +315,8 @@ namespace PLATEAU.RoadNetwork.Factory
                         var convex = GeoGraph2D
                             .ComputeConvexVolume(c.col.sharedMesh.vertices, x => x.Xz())
                             .ToList();
+                        // ループになっているから最後を削除
+                        convex.RemoveAt(convex.Count - 1);
                         return new Tuple<PLATEAUCityObjectGroup, IList<Vector3>>(c.c, convex);
                     }
                     else
