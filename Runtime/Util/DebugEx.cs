@@ -1,5 +1,4 @@
-﻿using PlasticGui.WorkspaceWindow.IssueTrackers;
-using PLATEAU.Util.GeoGraph;
+﻿using PLATEAU.Util.GeoGraph;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -270,6 +269,20 @@ namespace PLATEAU.Util
 #else
             return position;
 #endif
+        }
+
+        public static void DrawMesh(Mesh mesh, Color? color = null, float duration = 0f, bool depthTest = true)
+        {
+            Dictionary<int, HashSet<int>> refers = new Dictionary<int, HashSet<int>>();
+            for (var i = 0; i < mesh.triangles.Length; i += 3)
+            {
+                var v = new[]
+                {
+                    mesh.vertices[mesh.triangles[i]], mesh.vertices[mesh.triangles[i + 1]],
+                    mesh.vertices[mesh.triangles[i + 2]]
+                };
+                DebugEx.DrawLines(v, true, color, duration, depthTest);
+            }
         }
     }
 }
