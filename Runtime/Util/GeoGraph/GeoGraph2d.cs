@@ -1,9 +1,11 @@
 ﻿using Codice.Client.BaseCommands;
 using JetBrains.Annotations;
+using PlasticPipe.PlasticProtocol.Messages;
 using PLATEAU.RoadNetwork;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using Unity.Plastic.Antlr3.Runtime;
@@ -12,6 +14,8 @@ using UnityEditor.UI;
 using UnityEngine;
 using UnityEngine.Assertions.Comparers;
 using static PLATEAU.Util.GeoGraph.GeoGraph2D;
+using Vector2 = UnityEngine.Vector2;
+using Vector3 = UnityEngine.Vector3;
 
 namespace PLATEAU.Util.GeoGraph
 {
@@ -136,16 +140,50 @@ namespace PLATEAU.Util.GeoGraph
             return ret;
         }
 
-        public static List<Vector3> ComputeMeshOutlineVertices(Mesh mesh, Func<Vector3, Vector2> toVec2)
+        public static Dictionary<Vector3, Vector3> MergeVertices(IEnumerable<Vector3> vertices, Func<Vector3, Vector2> toVec2, float epsilon = 0.1f)
         {
+            var compare = new Vector2Equitable(epsilon);
+            var ret = new Dictionary<Vector3, Vector3>();
+
+            vertices.OrderBy(v => v.x).ThenBy(v => v.y);
+            foreach (var v in vertices)
+            {
+                var found = ret.Keys.FirstOrDefault(k => compare.Equals(k.Xy(), v.Xy()));
+                if (found != null)
+                    ret[found] = v;
+                else
+                    ret[v] = v;
+            }
+            return ret;
+        }
+
+        /// <summary>
+        /// meshのアウトラインを計算する
+        /// </summary>
+        /// <param name="mesh"></param>
+        /// <param name="toVec2"></param>
+        /// <param name="epsilon"></param>
+        /// <returns></returns>
+        public static List<Vector3> ComputeMeshOutlineVertices(Mesh mesh, Func<Vector3, Vector2> toVec2, float epsilon = 0.1f)
+        {
+            var table = Enumerable.Range(0, mesh.vertices.Length).ToList();
+
+            Vector3 ToCell(Vector3 v)
+            {
+                var x = (int)(v.x / epsilon);
+                var y = (int)(v.y / epsilon);
+                var z = (int)(v.z / epsilon);
+                return new Vector3(x * epsilon, y * epsilon, z * epsilon);
+            }
+
             // key   : 頂点
             // value : その頂点とつながっている頂点のリスト
-            Dictionary<Vector3, HashSet<Vector3>> vertices = new Dictionary<Vector3, HashSet<Vector3>>();
+            var vertices = new Dictionary<Vector3, HashSet<Vector3>>();
             for (var i = 0; i < mesh.triangles.Length; i += 3)
             {
-                var p0 = mesh.vertices[mesh.triangles[i]];
-                var p1 = mesh.vertices[mesh.triangles[i + 1]];
-                var p2 = mesh.vertices[mesh.triangles[i + 2]];
+                var p0 = ToCell(mesh.vertices[mesh.triangles[i]]);
+                var p1 = ToCell(mesh.vertices[mesh.triangles[i + 1]]);
+                var p2 = ToCell(mesh.vertices[mesh.triangles[i + 2]]);
 
                 if (vertices.ContainsKey(p0) == false)
                     vertices[p0] = new HashSet<Vector3>();
@@ -179,55 +217,46 @@ namespace PLATEAU.Util.GeoGraph
                 return y;
             });
 
-            var ret = new List<Vector3> { keys[0] };
-
-            // 0 : 左->上
-            // 1 : 上->右
-            // 2 : 右->下
-            // 3 : 下->左
-            var axises = new[] { Vector2.up, Vector2.right, Vector2.down, Vector2.left };
-            var wheres = new Func<Vector2, Vector2, bool>[]
+            //
+            var dir = Vector2.down;
+            void Eval(Vector2 axis, Vector2 a, out float ang, out float sqrLen)
             {
-                (last, v) => v.y > last.y && v.x >= last.x,
-                (last, v) => v.y <= last.y && v.x > last.x,
-                (last, v) => v.y < last.y && v.x <= last.x,
-                (last, v) => v.y >= last.y && v.x < last.x
-            };
-
-            //var debugLastIndex = 0;
-            for (var i = 0; i < 4; ++i)
-            {
-                var axis = axises[i];
-                var where = wheres[i];
-                // 比較
-                int Comp(Vector2 a, Vector2 b)
-                {
-                    var x = comp.Compare(Vector2.Angle(axis, a), Vector2.Angle(axis, b));
-                    if (x != 0)
-                        return x;
-                    return comp.Compare(a.sqrMagnitude, b.sqrMagnitude);
-                }
-                while (true)
-                {
-                    var last = toVec2(ret[^1]);
-                    var neighbors = vertices[ret[^1]];
-                    Vector3? next = null;
-                    var t = neighbors.Where(v => where(last, toVec2(v))).ToList();
-                    foreach (var v in t)
-                    {
-                        // 最も外側に近い点を返す
-                        if (next == null || Comp(toVec2(v) - last, toVec2(next.Value) - last) < 0)
-                            next = v;
-                    }
-
-                    if (next.HasValue == false)
-                        break;
-                    ret.Add(next.Value);
-                }
-                //DebugEx.DrawLines(ret.Skip(debugLastIndex), false, DebugEx.GetDebugColor(i, 4));
-                //debugLastIndex = ret.Count - 1;
+                ang = Vector2.SignedAngle(axis, a);
+                if (ang < 0f)
+                    ang += 360f;
+                sqrLen = a.sqrMagnitude;
             }
 
+            // 比較
+            var ret = new List<Vector3> { keys[0] };
+            while (ret.Count < vertices.Count)
+            {
+                var last = toVec2(ret[^1]);
+                var neighbors = vertices[ret[^1]];
+                if (neighbors.Count == 0)
+                    break;
+                Vector3 next = neighbors.First();
+                Eval(dir, toVec2(next) - last, out var ang, out var sqrLen);
+                foreach (var v in neighbors.Skip(1))
+                {
+                    // 最も外側に近い点を返す
+                    Eval(dir, toVec2(v) - last, out var ang2, out var sqrLen2);
+                    var x = -comp.Compare(ang2, ang);
+                    if (x == 0)
+                        x = comp.Compare(sqrLen2, sqrLen);
+                    if (x < 0)
+                    {
+                        next = v;
+                        ang = ang2;
+                        sqrLen = sqrLen2;
+                    }
+                }
+
+                if (ret.Contains(next))
+                    break;
+                ret.Add(next);
+                dir = last - toVec2(next);
+            }
 
             return ret;
         }
