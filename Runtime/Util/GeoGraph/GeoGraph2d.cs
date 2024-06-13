@@ -1,4 +1,6 @@
-﻿using PLATEAU.RoadNetwork;
+﻿using Codice.Client.BaseCommands;
+using JetBrains.Annotations;
+using PLATEAU.RoadNetwork;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,6 +8,7 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using Unity.Plastic.Antlr3.Runtime;
 using UnityEditor.PackageManager;
+using UnityEditor.UI;
 using UnityEngine;
 using UnityEngine.Assertions.Comparers;
 using static PLATEAU.Util.GeoGraph.GeoGraph2D;
@@ -15,6 +18,26 @@ namespace PLATEAU.Util.GeoGraph
     public static class GeoGraph2D
     {
         public const float Epsilon = 1e-5f;
+
+
+        public class Vector2Equitable : IEqualityComparer<Vector2>
+        {
+            public float Tolerance { get; set; }
+
+            public Vector2Equitable(float tolerance)
+            {
+                Tolerance = tolerance;
+            }
+            public bool Equals(Vector2 x, Vector2 y)
+            {
+                return (x - y).sqrMagnitude < Tolerance;
+            }
+
+            public int GetHashCode(Vector2 obj)
+            {
+                return obj.GetHashCode();
+            }
+        }
 
         /// <summary>
         /// Vector3の頂点をtoVec2で2Dに射影したうえで凸包を構成する頂点を返す
@@ -31,13 +54,21 @@ namespace PLATEAU.Util.GeoGraph
                     return true;
                 return Vector2Util.Cross(toVec2(list[^1] - list[^2]), toVec2(list[^2] - list[^3])) > 0;
             }
-
+            var compare = new Vector2Equitable(Epsilon);
             var sortedVertices = vertices.OrderBy(v => v.x).ThenBy(v => v.y).ToList();
+            for (var i = 0; i < sortedVertices.Count - 1;)
+            {
+                if (compare.Equals(toVec2(sortedVertices[i]), toVec2(sortedVertices[i + 1])))
+                    sortedVertices.RemoveAt(i + 1);
+                else
+                    i++;
+            }
             if (sortedVertices.Count <= 2)
                 return new List<Vector3>();
 
             // 上方の凸形状計算
             var ret = new List<Vector3> { sortedVertices[0], sortedVertices[1] };
+
             for (var i = 2; i < sortedVertices.Count; i++)
             {
                 ret.Add(sortedVertices[i]);
@@ -72,7 +103,15 @@ namespace PLATEAU.Util.GeoGraph
                 return Vector2Util.Cross(list[^1] - list[^2], list[^2] - list[^3]) > 0;
             }
 
-            var sortedVertices = vertices.OrderBy(v => v.x).ThenBy(v => v.y).ToList();
+            var sortedVertices = vertices.OrderBy(v => v.x).ThenBy(v => v.y).Distinct().ToList();
+            var compare = new Vector2Equitable(Epsilon);
+            for (var i = 0; i < sortedVertices.Count - 1;)
+            {
+                if (compare.Equals(sortedVertices[i], sortedVertices[i + 1]))
+                    sortedVertices.RemoveAt(i + 1);
+                else
+                    i++;
+            }
             if (sortedVertices.Count <= 2)
                 return new List<Vector2>();
 
@@ -93,6 +132,102 @@ namespace PLATEAU.Util.GeoGraph
                 while (IsLastClockwise(ret) == false)
                     ret.RemoveAt(ret.Count - 2);
             }
+
+            return ret;
+        }
+
+        public static List<Vector3> ComputeMeshOutlineVertices(Mesh mesh, Func<Vector3, Vector2> toVec2)
+        {
+            // key   : 頂点
+            // value : その頂点とつながっている頂点のリスト
+            Dictionary<Vector3, HashSet<Vector3>> vertices = new Dictionary<Vector3, HashSet<Vector3>>();
+            for (var i = 0; i < mesh.triangles.Length; i += 3)
+            {
+                var p0 = mesh.vertices[mesh.triangles[i]];
+                var p1 = mesh.vertices[mesh.triangles[i + 1]];
+                var p2 = mesh.vertices[mesh.triangles[i + 2]];
+
+                if (vertices.ContainsKey(p0) == false)
+                    vertices[p0] = new HashSet<Vector3>();
+                if (vertices.ContainsKey(p1) == false)
+                    vertices[p1] = new HashSet<Vector3>();
+                if (vertices.ContainsKey(p2) == false)
+                    vertices[p2] = new HashSet<Vector3>();
+
+                vertices[p0].Add(p1);
+                vertices[p0].Add(p2);
+                vertices[p1].Add(p2);
+                vertices[p1].Add(p0);
+                vertices[p2].Add(p0);
+                vertices[p2].Add(p1);
+            }
+
+            if (vertices.Count <= 2)
+                return new List<Vector3>();
+
+            var comp = Comparer<float>.Default;
+
+            var keys = vertices.Keys.ToList();
+            keys.Sort((a, b) =>
+            {
+                var a2 = toVec2(a);
+                var b2 = toVec2(b);
+                var x = comp.Compare(a2.x, b2.x);
+                var y = comp.Compare(a2.y, b2.y);
+                if (x != 0)
+                    return x;
+                return y;
+            });
+
+            var ret = new List<Vector3> { keys[0] };
+
+            // 0 : 左->上
+            // 1 : 上->右
+            // 2 : 右->下
+            // 3 : 下->左
+            var axises = new[] { Vector2.up, Vector2.right, Vector2.down, Vector2.left };
+            var wheres = new Func<Vector2, Vector2, bool>[]
+            {
+                (last, v) => v.y > last.y && v.x >= last.x,
+                (last, v) => v.y <= last.y && v.x > last.x,
+                (last, v) => v.y < last.y && v.x <= last.x,
+                (last, v) => v.y >= last.y && v.x < last.x
+            };
+
+            //var debugLastIndex = 0;
+            for (var i = 0; i < 4; ++i)
+            {
+                var axis = axises[i];
+                var where = wheres[i];
+                // 比較
+                int Comp(Vector2 a, Vector2 b)
+                {
+                    var x = comp.Compare(Vector2.Angle(axis, a), Vector2.Angle(axis, b));
+                    if (x != 0)
+                        return x;
+                    return comp.Compare(a.sqrMagnitude, b.sqrMagnitude);
+                }
+                while (true)
+                {
+                    var last = toVec2(ret[^1]);
+                    var neighbors = vertices[ret[^1]];
+                    Vector3? next = null;
+                    var t = neighbors.Where(v => where(last, toVec2(v))).ToList();
+                    foreach (var v in t)
+                    {
+                        // 最も外側に近い点を返す
+                        if (next == null || Comp(toVec2(v) - last, toVec2(next.Value) - last) < 0)
+                            next = v;
+                    }
+
+                    if (next.HasValue == false)
+                        break;
+                    ret.Add(next.Value);
+                }
+                //DebugEx.DrawLines(ret.Skip(debugLastIndex), false, DebugEx.GetDebugColor(i, 4));
+                //debugLastIndex = ret.Count - 1;
+            }
+
 
             return ret;
         }
@@ -980,15 +1115,26 @@ namespace PLATEAU.Util.GeoGraph
         /// verticesを始点終点から見ていき,お互い中心線を使って比較しながら中心の辺を表すインデックス配列を返す
         /// </summary>
         /// <param name="vertices"></param>
-        /// <param name="allowAngleDeg">中心線と同一直線と判断する線分の角度[deg]</param>
+        /// <param name="toleranceAngleDegForMidEdge">中心線と同一直線と判断する線分の角度[deg]</param>
+        /// <param name="skipAngleDeg">開始線分との角度がこれ以下の間は絶対に中心線にならない</param>
         /// <param name="op"></param>
         /// <returns></returns>
-        public static List<int> FindMidEdge(IReadOnlyList<Vector2> vertices, float allowAngleDeg = 20f, DebugFindOppositeOption op = null)
+        public static List<int> FindMidEdge(IReadOnlyList<Vector2> vertices, float toleranceAngleDegForMidEdge = 20f, float skipAngleDeg = 20f, DebugFindOppositeOption op = null)
         {
             var edges = GeoGraphEx.GetEdges(vertices, false).Select(v => new LineSegment2D(v.Item1, v.Item2)).ToList();
-            var leftIndex = 0;
-            var rightIndex = edges.Count - 1;
 
+            // 開始線分が中心線扱いにならないようにskipAngleDegを使ってスキップする
+            var (startIndex, endIndex) = (0, edges.Count - 1);
+            if (skipAngleDeg > 0f)
+            {
+                while (startIndex < edges.Count - 1 && Mathf.Abs(Vector2.Angle(edges[startIndex].Direction, edges[startIndex + 1].Direction)) < skipAngleDeg)
+                    startIndex++;
+                while (endIndex > 0 && Mathf.Abs(Vector2.Angle(edges[endIndex].Direction, edges[endIndex - 1].Direction)) < skipAngleDeg)
+                    endIndex--;
+            }
+
+            var leftIndex = startIndex;
+            var rightIndex = endIndex;
             var fComp = Comparer<float>.Default;
 
             // left ~ rightの間にエッジが1つしかなくなるまで続ける
@@ -1062,13 +1208,13 @@ namespace PLATEAU.Util.GeoGraph
                 // 1 : right用
                 var infos = new[]
                 {
-                    new {now=ret.First(), d = -1},
-                    new {now=ret.Last(), d = +1 }
+                    new {now=ret.First(), d = -1 },
+                    new {now=ret.Last() , d = +1 }
                 };
                 // 差が小さいほうから見る
                 var es = Enumerable.Range(0, 2)
                     // すでに停止している or 最後まで進んだら無視
-                    .Where(i => stop[i] == false && edges.IndexIn(infos[i].now + infos[i].d))
+                    .Where(i => stop[i] == false && startIndex <= infos[i].now + infos[i].d && infos[i].now + infos[i].d <= endIndex)
                     .Select(j =>
                     {
                         var info = infos[j];
@@ -1082,7 +1228,7 @@ namespace PLATEAU.Util.GeoGraph
                     break;
                 foreach (var e in es)
                 {
-                    if (e.ang > allowAngleDeg)
+                    if (e.ang > toleranceAngleDegForMidEdge)
                     {
                         stop[e.i] = true;
                         continue;

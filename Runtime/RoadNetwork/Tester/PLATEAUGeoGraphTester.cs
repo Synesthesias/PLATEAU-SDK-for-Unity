@@ -65,8 +65,20 @@ namespace PLATEAU.RoadNetwork
         }
         public ConvexTestParam convexTest = new ConvexTestParam();
 
+        [Serializable]
+        public class UnionPolygonTestParam
+        {
+
+            public bool enable = false;
+            public PLATEAUCityObjectGroup target;
+        }
+        public UnionPolygonTestParam unionPolygonTest = new UnionPolygonTestParam();
+
+
         public List<PLATEAUCityObjectGroup> convertTargets = new List<PLATEAUCityObjectGroup>();
         public bool convertWithConvexHull = false;
+
+
 
         public void ConvertTrans()
         {
@@ -127,7 +139,7 @@ namespace PLATEAU.RoadNetwork
                 var segments = GeoGraph2D.GetInnerLerpSegments(leftVertices, rightVertices, param.p, param.op);
                 foreach (var seg in segments.Select((v, i) => new { v, i }))
                 {
-                    DebugEx.DrawLineSegment2D(seg.v.Segment, color: DebugEx.GetDebugColor(seg.i, 16), offset: default);
+                    DebugEx.DrawLineSegment2D(seg.v.Segment, color: DebugEx.GetDebugColor(seg.i, 16));
                 }
             }
         }
@@ -227,12 +239,55 @@ namespace PLATEAU.RoadNetwork
             Debug.DrawRay(ray.origin.Xay(), ray.direction.Xay(), Color.green);
         }
 
+        private void UnionPolygonTest(UnionPolygonTestParam p)
+        {
+            if (p.enable == false)
+                return;
+            if (!p.target)
+                return;
+            var mesh = p.target.GetComponent<MeshCollider>();
+            DebugEx.DrawMesh(mesh.sharedMesh);
+
+        }
+
+        [Serializable]
+        public class MeshPolygonTestParam
+        {
+            public bool enable = false;
+            public bool showIndex = false;
+            public Color color = Color.white;
+            public List<PLATEAUCityObjectGroup> targets;
+        }
+        public MeshPolygonTestParam meshPolygonTest = new MeshPolygonTestParam();
+        private void MeshPolygonTest(MeshPolygonTestParam p)
+        {
+            if (p.enable == false)
+                return;
+            foreach (var target in p.targets)
+            {
+                if (!target)
+                    continue;
+                var mesh = target.GetComponent<MeshCollider>();
+                var vertices = GeoGraph2D.ComputeMeshOutlineVertices(mesh.sharedMesh, v => v.Xz());
+                DebugEx.DrawLines(vertices, false, p.color);
+                if (p.showIndex)
+                {
+                    for (var i = 0; i < vertices.Count; i++)
+                    {
+                        DebugEx.DrawString($"{i}", vertices[i]);
+                    }
+                }
+            }
+        }
+
         public void OnDrawGizmos()
         {
             LerpSegmentsTest(lerpSegmentsTest);
             ParabolaTest(parabolaTest);
             ConvexTest(convexTest);
             LerpLineTest(lerpLineTest);
+            UnionPolygonTest(unionPolygonTest);
+            MeshPolygonTest(meshPolygonTest);
         }
 
     }

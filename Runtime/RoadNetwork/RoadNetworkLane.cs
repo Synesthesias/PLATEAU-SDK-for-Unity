@@ -1,5 +1,4 @@
-﻿using PLATEAU.CityInfo;
-using PLATEAU.RoadNetwork.Data;
+﻿using PLATEAU.RoadNetwork.Data;
 using PLATEAU.Util;
 using PLATEAU.Util.GeoGraph;
 using System;
@@ -7,9 +6,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using UnityEditor.UI;
 using UnityEngine;
 using UnityEngine.Assertions;
-using UnityEngine.Serialization;
 using UnityEngine.Assertions.Comparers;
 using UnityEngine.SocialPlatforms;
 using Vector2 = UnityEngine.Vector2;
@@ -205,61 +204,6 @@ namespace PLATEAU.RoadNetwork
             }
 
             return ret;
-
-            //// #TODO : とりあえず２分割のみ対応
-            //var startPoint = startSubWays[0].Last();
-            //var endPoint = endSubWays[0].Last();
-
-            //// このBorderから出ていくWayすべてを使って中心線を書く
-            //var targetWays = new List<RoadNetworkWay> { LeftWay, RightWay };
-
-            //var candidates = new List<Vector3>();
-            //foreach (var way in targetWays)
-            //{
-            //    for (var i = 1; i < way.Count - 1; ++i)
-            //    {
-            //        var v = way[i];
-            //        var n = -way.GetVertexNormal(i).normalized;
-            //        var ray = new Ray(v + n * 0.01f, n);
-            //        if (GeoGraph2D.PolygonHalfLineIntersectionXZ(Vertices, ray, out var inter, out var t))
-            //            candidates.Add(Vector3.Lerp(v, inter, 0.5f));
-            //    }
-            //}
-
-            //var centerLineVertices = new List<Vector3> { startPoint };
-            //while (candidates.Count > 0)
-            //{
-            //    var before = centerLineVertices.Last();
-            //    var found = candidates
-            //        // LaneがものすごいUターンしていたりする時の対応
-            //        // beforeから直接いけないものは無視
-            //        .Where(c => targetWays.All(w => w.SegmentIntersectionXz(before, c, out var _) == false))
-            //        .TryFindMin(x => (x - before).sqrMagnitude, out var nearPoint);
-
-            //    if (found == false)
-            //    {
-            //        //Assert.IsTrue(found, "center point not found");
-            //        DebugEx.DrawArrow(before, before + Vector3.up * 2, arrowSize: 1f, duration: 30f, bodyColor: Color.blue);
-            //        foreach (var c in candidates)
-            //            DebugEx.DrawArrow(c, c + Vector3.up * 100, arrowSize: 1f, duration: 30f, bodyColor: Color.red);
-            //        break;
-            //    }
-
-            //    centerLineVertices.Add(nearPoint);
-            //    candidates.RemoveAll(x => (x - nearPoint).sqrMagnitude <= RoadNetworkModel.Epsilon);
-            //}
-
-            //centerLineVertices.Add(endPoint);
-
-            //// 自己交差があれば削除する
-            //GeoGraph2D.RemoveSelfCrossing(centerLineVertices, t => t.Xz(), (p1, p2, p3, p4, inter, f1, f2) => Vector3.Lerp(p1, p2, f1));
-
-            //var centerLine = RoadNetworkLineString.Create(centerLineVertices);
-
-            //var leftLane = new RoadNetworkLane(LeftWay, new RoadNetworkWay(centerLine, false, true), startSubWays[0], endSubWays[0]);
-            //var rightLane = new RoadNetworkLane(new RoadNetworkWay(centerLine, false, false), RightWay, startSubWays[1], endSubWays[1]);
-
-            //return new List<RoadNetworkLane> { leftLane, rightLane };
         }
 
         /// <summary>
@@ -409,7 +353,7 @@ namespace PLATEAU.RoadNetwork
                     void Draw(LineSegment2D seg)
                     {
                         DebugEx.DrawString($"[{debugIndex++}] {s.LeftIndex}-{s.RightIndex}({seg.Magnitude:F2})", seg.Start.Xay(), color: Color.red, fontSize: 20);
-                        DebugEx.DrawLineSegment2D(seg, color: DebugEx.GetDebugColor(debugIndex, 8), offset:default);
+                        DebugEx.DrawLineSegment2D(seg, color: DebugEx.GetDebugColor(debugIndex, 8));
                     }
                     Draw(s.Segment);
                     //Draw(parabola);

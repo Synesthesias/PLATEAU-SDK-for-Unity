@@ -40,7 +40,6 @@ namespace PLATEAU.Editor.RoadNetwork
             if (!cog)
                 return;
 
-
             base.OnInspectorGUI();
             if (GUILayout.Button("Create"))
                 cog.CreateNetwork();
@@ -50,6 +49,9 @@ namespace PLATEAU.Editor.RoadNetwork
 
             if (GUILayout.Button("Deserialize"))
                 cog.RoadNetwork.Deserialize();
+
+            if (GUILayout.Button("SplitCityObject"))
+                cog.SplitCityObjectAsync();
         }
     }
 }

@@ -5,17 +5,21 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEditor.UI;
 using UnityEngine;
+using UnityEngine.Serialization;
 using static PLATEAU.RoadNetwork.PLATEAUGeoGraphTester;
 
 namespace PLATEAU.RoadNetwork
 {
     public class PLATEAUGeoGraphTesterLineString : MonoBehaviour
     {
+        public bool visible = true;
+        public Color color = Color.white;
         [Serializable]
         public class EdgeBorderTestParam
         {
             public bool enable = false;
-            public float allowSumAngle = 20f;
+            public float allowAngle = 20f;
+            public float skipAngle = 20f;
             public GeoGraph2D.DebugFindOppositeOption op = new GeoGraph2D.DebugFindOppositeOption();
         }
         public EdgeBorderTestParam edgeBorderTest = new EdgeBorderTestParam();
@@ -45,13 +49,13 @@ namespace PLATEAU.RoadNetwork
             if (p.enable == false)
                 return;
             var vertices = GetVertices();
-            var edgeIndices = GeoGraph2D.FindMidEdge(GetVertices(), p.allowSumAngle, p.op);
+            var edgeIndices = GeoGraph2D.FindMidEdge(GetVertices(), p.allowAngle, p.skipAngle, p.op);
 
             void DrawLine(IEnumerable<int> ind, Color color)
             {
                 DebugEx.DrawArrows(ind.Select(i => vertices[i].Xya()), color: color);
-
             }
+
             DrawLine(Enumerable.Range(0, edgeIndices[0] + 1), Color.green);
             DrawLine(edgeIndices, Color.red);
             DrawLine(Enumerable.Range(edgeIndices.Last(), vertices.Count - edgeIndices.Last()), Color.green);
@@ -59,6 +63,14 @@ namespace PLATEAU.RoadNetwork
 
         public void OnDrawGizmos()
         {
+            if (!gameObject.activeInHierarchy)
+                return;
+
+            if (visible)
+            {
+                DebugEx.DrawArrows(GetVertices().Select(v => v.Xya()), color: color);
+            }
+
             EdgeBorderTest(edgeBorderTest);
         }
 

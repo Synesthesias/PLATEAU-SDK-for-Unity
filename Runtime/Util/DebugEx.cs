@@ -1,5 +1,4 @@
-﻿using PlasticGui.WorkspaceWindow.IssueTrackers;
-using PLATEAU.Util.GeoGraph;
+﻿using PLATEAU.Util.GeoGraph;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -129,22 +128,6 @@ namespace PLATEAU.Util
                 var dir = v2 - v1;
 
             }
-        }
-
-        /// <summary>
-        /// LineSegmentをデバッグ表示
-        /// </summary>
-        /// <param name="self"></param>
-        /// <param name="color"></param>
-        /// <param name="duration"></param>
-        /// <param name="depthTest"></param>
-        /// <param name="showXz">xz平面に書くかどうか, trueだとxy平面</param>
-        /// <param name="offset"></param>
-        public static void DrawLineSegment2D(LineSegment2D self, Color? color = null, float duration = 0f, bool depthTest = true, bool showXz = true, float offset = 0f)
-        {
-            var start = showXz ? self.Start.Xay(offset) : self.Start.Xya(offset);
-            var end = showXz ? self.End.Xay(offset) : self.End.Xya(offset);
-            Debug.DrawLine(start, end, color ?? Color.white, duration, depthTest);
         }
 
         /// <summary>
@@ -286,6 +269,20 @@ namespace PLATEAU.Util
 #else
             return position;
 #endif
+        }
+
+        public static void DrawMesh(Mesh mesh, Color? color = null, float duration = 0f, bool depthTest = true)
+        {
+            Dictionary<int, HashSet<int>> refers = new Dictionary<int, HashSet<int>>();
+            for (var i = 0; i < mesh.triangles.Length; i += 3)
+            {
+                var v = new[]
+                {
+                    mesh.vertices[mesh.triangles[i]], mesh.vertices[mesh.triangles[i + 1]],
+                    mesh.vertices[mesh.triangles[i + 2]]
+                };
+                DebugEx.DrawLines(v, true, color, duration, depthTest);
+            }
         }
     }
 }
