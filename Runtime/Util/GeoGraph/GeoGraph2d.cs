@@ -166,8 +166,6 @@ namespace PLATEAU.Util.GeoGraph
         /// <returns></returns>
         public static List<Vector3> ComputeMeshOutlineVertices(Mesh mesh, Func<Vector3, Vector2> toVec2, float epsilon = 0.1f)
         {
-            var table = Enumerable.Range(0, mesh.vertices.Length).ToList();
-
             Vector3 ToCell(Vector3 v)
             {
                 var x = (int)(v.x / epsilon);
