@@ -1,4 +1,6 @@
-﻿using PLATEAU.Util.GeoGraph;
+﻿using PLATEAU.Native;
+using PLATEAU.Util.GeoGraph;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -282,6 +284,71 @@ namespace PLATEAU.Util
                     mesh.vertices[mesh.triangles[i + 2]]
                 };
                 DebugEx.DrawLines(v, true, color, duration, depthTest);
+            }
+        }
+
+        public static void DrawMesh(Mesh mesh, Matrix4x4 mat, Color? color = null, float duration = 0f, bool depthTest = true)
+        {
+            Dictionary<int, HashSet<int>> refers = new Dictionary<int, HashSet<int>>();
+            for (var i = 0; i < mesh.triangles.Length; i += 3)
+            {
+                var v = new[]
+                {
+                    mat * mesh.vertices[mesh.triangles[i]],
+                    mat * mesh.vertices[mesh.triangles[i + 1]],
+                    mat *mesh.vertices[mesh.triangles[i + 2]]
+                }.Select(x => new Vector3(x.x, x.y, x.z));
+                DebugEx.DrawLines(v, true, color, duration, depthTest);
+            }
+        }
+
+        public static void DrawPlateauMesh(PolygonMesh.Mesh mesh, Matrix4x4 mat, Color? color = null,
+            float duration = 0f, bool depthTest = true)
+        {
+            for (var i = 0; i < mesh.SubMeshCount; ++i)
+            {
+                var subMesh = mesh.GetSubMeshAt(i);
+                // 三角形ポリゴン
+                var numSubMesh = subMesh.EndIndex - subMesh.StartIndex + 1;
+
+                for (var j = subMesh.StartIndex; j <= subMesh.EndIndex; j += 3)
+                {
+                    var v0 = mesh.GetVertexAt(mesh.GetIndiceAt(j));
+                    var v1 = mesh.GetVertexAt(mesh.GetIndiceAt(j + 1));
+                    var v2 = mesh.GetVertexAt(mesh.GetIndiceAt(j + 2));
+
+                    var v = new[]
+                    {
+                        mat * v0.ToUnityVector(),
+                        mat * v1.ToUnityVector(),
+                        mat * v2.ToUnityVector()
+                    }.Select(x => new Vector3(x.x, x.y, x.z));
+                    DebugEx.DrawLines(v, true, color, duration, depthTest);
+                }
+            }
+
+        }
+
+        public static void DrawPlateauPolygonMeshNode(Matrix4x4 parentMatrix, PolygonMesh.Node node, Color? color = null,
+            float duration = 0f, bool depthTest = true)
+        {
+            var pos = node.LocalPosition.ToUnityVector();
+            var rot = node.LocalRotation.ToUnityQuaternion();
+            var scale = node.LocalScale.ToUnityVector();
+            var mat = parentMatrix * Matrix4x4.TRS(pos, rot, scale);
+            DrawPlateauMesh(node.Mesh, mat, color);
+            for (var i = 0; i < node.ChildCount; ++i)
+            {
+                DrawPlateauPolygonMeshNode(mat, node.GetChildAt(i), color, duration, depthTest);
+            }
+        }
+
+        public static void DrawPlateauPolygonMeshModel(PLATEAU.PolygonMesh.Model model, Color? color = null, float duration = 0f, bool depthTest = true)
+        {
+            for (var i = 0; i < model.RootNodesCount; ++i)
+            {
+                var node = model.GetRootNodeAt(i);
+                DrawPlateauPolygonMeshNode(Matrix4x4.identity, node, color);
             }
         }
     }

@@ -2,6 +2,8 @@
 using PLATEAU.CityExport.ModelConvert.SubMeshConvert;
 using PLATEAU.CityImport.Import.Convert;
 using PLATEAU.GranularityConvert;
+using PLATEAU.PolygonMesh;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -32,11 +34,23 @@ namespace PLATEAU.RoadNetwork
                 l.RemoveConnection(lane);
         }
 
-        public static async Task ConvertCityObjectsAsync(GranularityConvertOptionUnity conf)
+        [Serializable]
+        internal class ConvertCityObjectResult
+        {
+            public AttributeDataHelper AttributeDataHelper { get; }
+            public Model Model { get; }
+            public ConvertCityObjectResult(AttributeDataHelper attributeDataHelper, Model model)
+            {
+                AttributeDataHelper = attributeDataHelper;
+                Model = model;
+            }
+        }
+
+        internal static Task<ConvertCityObjectResult> ConvertCityObjectsAsync(GranularityConvertOptionUnity conf)
         {
             if (!conf.IsValid())
             {
-                return;
+                return Task.FromResult<ConvertCityObjectResult>(null);
             }
 
             // 属性情報を覚えておきます。
@@ -56,10 +70,12 @@ namespace PLATEAU.RoadNetwork
 
             // 共通ライブラリの機能でモデルを分割・結合します。
             var converter = new GranularityConverter();
-            using var dstModel = converter.Convert(srcModel, conf.NativeOption);
-            dstModel.GetRootNodeAt(0);
-
-
+            ConvertedGameObjData a;
+            ConvertedMeshData m;
+            var dstModel = converter.Convert(srcModel, conf.NativeOption);
+            var getter = new SerializedCityObjectGetterFromDict(attributes, dstModel);
+            var attrHelper = new AttributeDataHelper(getter, conf.NativeOption.Granularity, true);
+            return Task.FromResult(new ConvertCityObjectResult(attrHelper, dstModel));
         }
     }
 }
