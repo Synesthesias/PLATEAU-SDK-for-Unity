@@ -6,7 +6,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using UnityEditor.UI;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.Assertions.Comparers;

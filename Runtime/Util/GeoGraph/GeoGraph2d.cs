@@ -1,6 +1,4 @@
-﻿using Codice.Client.BaseCommands;
-using JetBrains.Annotations;
-using PlasticPipe.PlasticProtocol.Messages;
+﻿using JetBrains.Annotations;
 using PLATEAU.RoadNetwork;
 using System;
 using System.Collections.Generic;
@@ -8,9 +6,6 @@ using System.Linq;
 using System.Numerics;
 using System.Reflection;
 using System.Text.RegularExpressions;
-using Unity.Plastic.Antlr3.Runtime;
-using UnityEditor.PackageManager;
-using UnityEditor.UI;
 using UnityEngine;
 using UnityEngine.Assertions.Comparers;
 using static PLATEAU.Util.GeoGraph.GeoGraph2D;
