@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PLATEAU.CityInfo;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -12,27 +13,37 @@ namespace PLATEAU.RoadNetwork.Data
         [RoadNetworkSerializeMember(nameof(RoadNetworkLink.MyId))]
         public RnID<RoadNetworkDataLink> MyId { get; set; }
 
+        // 対象のtranオブジェクト
         [field: SerializeField]
-        [RoadNetworkSerializeMember(nameof(RoadNetworkLink.NextNode))]
+        [RoadNetworkSerializeMember]
+        public PLATEAUCityObjectGroup TargetTran { get; set; }
+
+        [field: SerializeField]
+        [RoadNetworkSerializeMember]
         public RnID<RoadNetworkDataNode> NextNode { get; set; }
 
         [field: SerializeField]
-        [RoadNetworkSerializeMember(nameof(RoadNetworkLink.PrevNode))]
+        [RoadNetworkSerializeMember]
         public RnID<RoadNetworkDataNode> PrevNode { get; set; }
 
         // 本線レーン
         [field: SerializeField]
-        [RoadNetworkSerializeMember(nameof(RoadNetworkLink.MainLanes))]
+        [RoadNetworkSerializeMember("mainLanes")]
         public List<RnID<RoadNetworkDataLane>> MainLanes { get; set; } = new List<RnID<RoadNetworkDataLane>>();
 
         // 右折レーン
         [field: SerializeField]
-        [RoadNetworkSerializeMember(nameof(RoadNetworkLink.RightLanes))]
+        [RoadNetworkSerializeMember("rightLanes")]
         public List<RnID<RoadNetworkDataLane>> RightLanes { get; set; } = new List<RnID<RoadNetworkDataLane>>();
 
         // 左折レーン
         [field: SerializeField]
-        [RoadNetworkSerializeMember(nameof(RoadNetworkLink.LeftLanes))]
+        [RoadNetworkSerializeMember("leftLanes")]
         public List<RnID<RoadNetworkDataLane>> LeftLanes { get; set; } = new List<RnID<RoadNetworkDataLane>>();
+
+        // 双方向フラグ
+        [field: SerializeField]
+        [RoadNetworkSerializeMember]
+        public bool IsBothWay { get; set; } = true;
     }
 }

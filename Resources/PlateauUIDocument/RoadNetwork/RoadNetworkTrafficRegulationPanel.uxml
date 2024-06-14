@@ -1,0 +1,23 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="True">
+    <ui:Template name="RoadNetworkRadioButton" src="project://database/Packages/com.synesthesias.plateau-unity-sdk/Resources/PlateauUIDocument/RoadNetwork/RoadNetworkRadioButton.uxml?fileID=9197481963319205126&amp;guid=d18b928bddcc6494fa0ee7dee955a70c&amp;type=3#RoadNetworkRadioButton" />
+    <ui:DropdownField label="配置オブジェクト" choices="信号制御器,信号灯器,一時停止線,交通イベント（工事、事故など）" name="DeploObjectSelecter" index="0" />
+    <ui:VisualElement name="VisualElement" style="flex-grow: 1;">
+        <ui:Label tabindex="-1" text="選択中の信号制御器" parse-escape-sequences="true" display-tooltip-when-elided="true" />
+        <ui:TextField picking-mode="Ignore" label="信号制御器ID" value="filler text" readonly="true" focusable="false" name="TrafficSignalLightID" style="display: none;" />
+        <ui:TextField picking-mode="Ignore" label="設置ノードID" value="filler text" readonly="true" focusable="false" hide-mobile-input="false" name="NodeID" style="display: none;" />
+        <ui:TextField picking-mode="Ignore" label="信号制御器名称" value="filler text" name="TrafficSignalLightName" />
+        <ui:VisualElement name="Add_Remove_Edit_Btns" style="flex-direction: row;">
+            <ui:Button text="追加" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Add" />
+            <ui:Button text="削除" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Remove" />
+            <ui:Button text="編集" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Edit" />
+        </ui:VisualElement>
+        <ui:VisualElement style="flex-grow: 1;">
+            <ui:ScrollView name="ScrollView">
+                <ui:RadioButtonGroup label="開始時刻、パターン名、サイクル長（秒）、オフセット基準信号、オフセット（秒）" value="-1" name="TrafficSignalControlPatternList" style="flex-direction: column;">
+                    <ui:Instance template="RoadNetworkRadioButton" name="RoadNetworkRadioButton" />
+                    <ui:Instance template="RoadNetworkRadioButton" name="RoadNetworkRadioButton" />
+                </ui:RadioButtonGroup>
+            </ui:ScrollView>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

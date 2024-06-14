@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PLATEAU.CityInfo;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -12,24 +13,18 @@ namespace PLATEAU.RoadNetwork.Data
         [RoadNetworkSerializeMember(nameof(RoadNetworkNode.MyId))]
         public RnID<RoadNetworkDataNode> MyId { get; set; }
 
-
-        //// レーンを構成する道
-        //// 左側が若いインデックスになる
+        // 対象のtranオブジェクト
         [field: SerializeField]
-        [RoadNetworkSerializeMember(nameof(RoadNetworkNode.Ways))]
+        [RoadNetworkSerializeMember(nameof(RoadNetworkNode.TargetTran))]
+        public PLATEAUCityObjectGroup TargetTran { get; set; }
 
-        public List<RnID<RoadNetworkDataWay>> Ways { get; set; } = new List<RnID<RoadNetworkDataWay>>();
-
-        // 他レーンとの境界線
+        // 隣接情報
         [field: SerializeField]
-        [RoadNetworkSerializeMember(nameof(RoadNetworkNode.Borders))]
-
-        public List<RnID<RoadNetworkDataWay>> Borders { get; set; } = new List<RnID<RoadNetworkDataWay>>();
+        [RoadNetworkSerializeMember(nameof(RoadNetworkNode.Neighbors))]
+        public List<RoadNetworkDataNeighbor> Neighbors { get; set; } = new List<RoadNetworkDataNeighbor>();
 
         // 車線
-        [field: SerializeField]
-        [RoadNetworkSerializeMember(nameof(RoadNetworkNode.Lanes))]
-
-        public List<RnID<RoadNetworkDataLane>> Lanes { get; set; } = new List<RnID<RoadNetworkDataLane>>();
+        [field: SerializeField, RoadNetworkSerializeMember("tracks")]
+        public List<RnID<RoadNetworkDataTrack>> Tracks { get; set; } = new List<RnID<RoadNetworkDataTrack>>();
     }
 }

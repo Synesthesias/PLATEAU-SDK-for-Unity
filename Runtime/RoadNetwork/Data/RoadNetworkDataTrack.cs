@@ -12,12 +12,6 @@ namespace PLATEAU.RoadNetwork.Data
 
         public RnID<RoadNetworkDataTrack> MyId { get; set; }
 
-        //接続上流リンク識別用ID：LinkID
-        [field: SerializeField]
-        [RoadNetworkSerializeMember(nameof(RoadNetworkTrack.NextLink))]
-
-        public RnID<RoadNetworkDataLink> NextLink { get; set; }
-
         //接続上流レーン識別用ID：LaneID
         [field: SerializeField]
         [RoadNetworkSerializeMember(nameof(RoadNetworkTrack.NextLane))]
@@ -27,19 +21,22 @@ namespace PLATEAU.RoadNetwork.Data
         //接続上流リンク下流端からの距離[m] : double
         //public double distanceFromNextLink;
 
-        //接続下流リンク識別用ID : LinkID
-
-        [field: SerializeField]
-        [RoadNetworkSerializeMember(nameof(RoadNetworkTrack.PrevLink))]
-
-        public RnID<RoadNetworkDataLink> PrevLink { get; set; }
-
         //接続下流レーン識別用ID: LaneID
 
         [field: SerializeField]
         [RoadNetworkSerializeMember(nameof(RoadNetworkTrack.PrevLane))]
 
         public RnID<RoadNetworkDataLane> PrevLane { get; set; }
+
+
+        // 車線(左)
+        [field: SerializeField, RoadNetworkSerializeMember]
+        public RnID<RoadNetworkDataWay> LeftWay { get; private set; }
+
+        // 車線(右)
+        [field: SerializeField, RoadNetworkSerializeMember]
+        public RnID<RoadNetworkDataWay> RightWay { get; private set; }
+
         //接続下流リンク下流端からの距離[m] : double
         //public double distanceFromPrevLink;
 

@@ -53,12 +53,14 @@ namespace PLATEAU.RoadNetwork
         {
             get
             {
-                if (IsReversed == false)
-                    return LineString.Points;
-
-                // 逆順
-                return Enumerable.Range(0, Count).Select(i => LineString.Points[Count - 1 - i]);
+                for (var i = 0; i < Count; i++)
+                    yield return GetPoint(i);
             }
+        }
+
+        public RoadNetworkPoint GetPoint(int index)
+        {
+            return LineString.Points[ToRawIndex(index)];
         }
 
         // 頂点数
@@ -80,6 +82,16 @@ namespace PLATEAU.RoadNetwork
         }
 
         /// <summary>
+        /// Reversedを考慮したインデックスへ変換する
+        /// </summary>
+        /// <param name="index"></param>
+        /// <returns></returns>
+        private int ToRawIndex(int index)
+        {
+            return IsReversed ? Count - 1 - index : index;
+        }
+
+        /// <summary>
         /// 頂点アクセス
         /// </summary>
         /// <param name="index"></param>
@@ -88,10 +100,7 @@ namespace PLATEAU.RoadNetwork
         {
             get
             {
-                if (IsReversed == false)
-                    return LineString[index];
-                // 0 <= index < LineString.Vertices.Count前提なのでmodとったりしない
-                return LineString[LineString.Points.Count - 1 - index];
+                return LineString[ToRawIndex(index)];
             }
         }
 
@@ -103,6 +112,9 @@ namespace PLATEAU.RoadNetwork
         /// <returns></returns>
         public Vector3 GetVertexNormal(int vertexIndex)
         {
+            // 頂点数1の時は不正値を返す
+            if (Count <= 1)
+                return Vector3.zero;
             var n1 = GetEdgeNormal(Math.Min(vertexIndex, Count - 2)).normalized;
             var n2 = GetEdgeNormal(Math.Max(vertexIndex - 1, 0)).normalized;
 
@@ -199,9 +211,9 @@ namespace PLATEAU.RoadNetwork
         /// </summary>
         /// <param name="midPoint"></param>
         /// <returns></returns>
-        public int TryGetCenterVertex(out Vector3 midPoint)
+        public int GetLerpPoint(float p, out Vector3 midPoint)
         {
-            return LineUtil.TryGetLineSegmentMidPoint(LineString, out midPoint);
+            return LineUtil.GetLineSegmentLerpPoint(this, p, out midPoint);
         }
 
         /// <summary>
@@ -221,6 +233,18 @@ namespace PLATEAU.RoadNetwork
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
+        }
+    }
+
+
+    public static class RoadNetworkWayEx
+    {
+        public static IEnumerable<LineSegment2D> GetEdges2D(this RoadNetworkWay self)
+        {
+            if (self == null)
+                yield break;
+            foreach (var e in GeoGraphEx.GetEdges(self.Vertices.Select(x => x.Xz()), false))
+                yield return new LineSegment2D(e.Item1, e.Item2);
         }
     }
 }
