@@ -36,6 +36,7 @@ namespace PLATEAU.RoadNetwork
         public List<TestTargetPresets> savedTargets = new List<TestTargetPresets>();
 
         [SerializeField] private bool targetAll = false;
+        [SerializeField] private bool buildTranMeshOnly = false;
 
         [Serializable]
         public class SplitCityObjectTestParam
@@ -49,6 +50,11 @@ namespace PLATEAU.RoadNetwork
 
         [SerializeField]
         internal RoadNetworkEx.ConvertCityObjectResult model;
+
+        [SerializeField]
+        private List<RoadNetworkTranMesh> tranMeshes;
+
+        [SerializeField] private bool showTranMesh = false;
 
 
         public void DrawPlateauMesh(PolygonMesh.Mesh mesh, Matrix4x4 mat, Color? color = null,
@@ -115,6 +121,16 @@ namespace PLATEAU.RoadNetwork
             drawer.Draw(RoadNetwork);
             if (model != null && model.Model != null)
                 DrawPlateauPolygonMeshModel(model.Model);
+
+            if (showTranMesh)
+            {
+                foreach (var t in tranMeshes)
+                {
+                    if (t.Vertices == null)
+                        continue;
+                    DebugEx.DrawLines(t.Vertices, true, Color.red);
+                }
+            }
         }
 
         public async Task SplitCityObjectAsync()
@@ -128,26 +144,36 @@ namespace PLATEAU.RoadNetwork
             //var d = await new CityGranularityConverter().ConvertAsync(conf);
         }
 
-        public async Task CreateNetwork()
+        private List<PLATEAUCityObjectGroup> GetTargetCityObjects()
         {
             if (targetAll)
-            {
-                var allTargets = GameObject.FindObjectsOfType<PLATEAUCityObjectGroup>()
+                return GameObject.FindObjectsOfType<PLATEAUCityObjectGroup>()
                     .Where(c => c.CityObjects.rootCityObjects.Any(a => a.CityObjectType == CityObjectType.COT_Road))
                     .ToList();
 
-                RoadNetwork = await Factory.CreateNetworkAsync(allTargets);
-            }
-            else
+            // 重複は排除する
+            return savedTargets
+                .FirstOrDefault(s => s.name == targetPresetName)
+                ?.targets?.Distinct()?.ToList();
+        }
+
+        private Task CreateTranMeshes()
+        {
+            tranMeshes = GetTargetCityObjects()
+                .Select(t => new RoadNetworkTranMesh(t, Factory.cellSize))
+                .ToList();
+            return Task.FromResult(0);
+        }
+
+        public async Task CreateNetwork()
+        {
+            if (buildTranMeshOnly)
             {
-                // 重複は排除する
-                var targets = savedTargets.FirstOrDefault(s => s.name == targetPresetName);
-                if (targets != null)
-                {
-                    targets.targets = targets.targets.Distinct().ToList();
-                    RoadNetwork = await Factory.CreateNetworkAsync(targets.targets);
-                }
+                await CreateTranMeshes();
+                return;
             }
+
+            RoadNetwork = await Factory.CreateNetworkAsync(tranMeshes);
         }
 
     }

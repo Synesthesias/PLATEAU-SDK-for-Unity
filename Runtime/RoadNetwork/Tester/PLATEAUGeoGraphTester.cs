@@ -247,15 +247,17 @@ namespace PLATEAU.RoadNetwork
         }
 
         [Serializable]
-        public class MeshPolygonTestParam
+        public class MeshOutlineTestParam
         {
             public bool enable = false;
             public bool showIndex = false;
             public Color color = Color.white;
+            public float epsilon = 0.1f;
+            public bool showLoop = true;
             public List<PLATEAUCityObjectGroup> targets;
         }
-        public MeshPolygonTestParam meshPolygonTest = new MeshPolygonTestParam();
-        private void MeshPolygonTest(MeshPolygonTestParam p)
+        public MeshOutlineTestParam meshOutlineTest = new MeshOutlineTestParam();
+        private void MeshOutlineTest(MeshOutlineTestParam p)
         {
             if (p.enable == false)
                 return;
@@ -264,8 +266,8 @@ namespace PLATEAU.RoadNetwork
                 if (!target)
                     continue;
                 var mesh = target.GetComponent<MeshCollider>();
-                var vertices = GeoGraph2D.ComputeMeshOutlineVertices(mesh.sharedMesh, v => v.Xz());
-                DebugEx.DrawLines(vertices, false, p.color);
+                var vertices = GeoGraph2D.ComputeMeshOutlineVertices(mesh.sharedMesh, v => v.Xz(), p.epsilon);
+                DebugEx.DrawLines(vertices, p.showLoop, p.color);
                 if (p.showIndex)
                 {
                     for (var i = 0; i < vertices.Count; i++)
@@ -283,7 +285,7 @@ namespace PLATEAU.RoadNetwork
             ConvexTest(convexTest);
             LerpLineTest(lerpLineTest);
             UnionPolygonTest(unionPolygonTest);
-            MeshPolygonTest(meshPolygonTest);
+            MeshOutlineTest(meshOutlineTest);
         }
 
     }

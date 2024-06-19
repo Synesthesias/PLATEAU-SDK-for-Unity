@@ -21,18 +21,15 @@ namespace PLATEAU.RoadNetwork.Factory
         // --------------------
 
         // 同一頂点扱いにするセルサイズ
-        [SerializeField] private float cellSize = 0.01f;
+        [SerializeField] public float cellSize = 0.01f;
 
         // 道路サイズ
-        [SerializeField] private float roadSize = 3f;
+        [SerializeField] public float roadSize = 3f;
 
         // 行き止まり検出判定時に同一直線と判断する角度の総和
-        [SerializeField] private float terminateAllowEdgeAngle = 20f;
+        [SerializeField] public float terminateAllowEdgeAngle = 20f;
         // 行き止まり検出判定時に開始線分と同一と判定する角度の許容量
-        [SerializeField] private float terminateSkipEdgeAngle = 20f;
-
-        // 凸包を使って計算する
-        [SerializeField] private bool useConvexHull = false;
+        [SerializeField] public float terminateSkipEdgeAngle = 20f;
 
         // --------------------
         // end:フィールド
@@ -293,6 +290,21 @@ namespace PLATEAU.RoadNetwork.Factory
             }
         }
 
+        public async Task<RoadNetworkModel> CreateNetworkAsync(IList<RoadNetworkTranMesh> targets)
+        {
+            // レーンの初期化
+            var ret = new RoadNetworkModel();
+            var vertex2Points = new Vertex2PointTable(cellSize, targets.SelectMany(v => v.Vertices));
+            var tranWorks = CreateTranWorks(targets, vertex2Points, out var cell2Groups);
+
+            foreach (var tranWork in tranWorks)
+                Build(tranWork, ret);
+
+            foreach (var tranWork in tranWorks)
+                tranWork.BuildConnection();
+            //ret.DebugIdentify();
+            return ret;
+        }
 
         public async Task<RoadNetworkModel> CreateNetworkAsync(IList<PLATEAUCityObjectGroup> targets)
         {
@@ -304,51 +316,13 @@ namespace PLATEAU.RoadNetwork.Factory
             // 分割結合します。
             //var d = await new CityGranularityConverter().ConvertAsync(conf);
             //targets = d.GeneratedObjs.Select(t => t.GetComponent<PLATEAUCityObjectGroup>()).ToList();
+
             var meshes = targets
                 .Select(c => new { c = c, col = c.GetComponent<MeshCollider>() })
                 .Where(c => c.col)
-                .Select(c =>
-                {
-                    if (useConvexHull)
-                    {
-                        var convex = GeoGraph2D
-                            .ComputeConvexVolume(c.col.sharedMesh.vertices, x => x.Xz())
-                            .ToList();
-                        // ループになっているから最後を削除
-                        convex.RemoveAt(convex.Count - 1);
-                        return new Tuple<PLATEAUCityObjectGroup, IList<Vector3>>(c.c, convex);
-                    }
-                    else
-                    {
-                        return new Tuple<PLATEAUCityObjectGroup, IList<Vector3>>(c.c, c.col.sharedMesh.vertices);
-                    }
-                })
+                .Select(c => new RoadNetworkTranMesh(c.c, cellSize))
                 .ToList();
-            return CreateNetwork(meshes);
-        }
-
-
-
-        /// <summary>
-        /// targets -> ポリゴンのリスト
-        /// </summary>
-        /// <param name="targets"></param>
-        /// <returns></returns>
-        public RoadNetworkModel CreateNetwork(IList<Tuple<PLATEAUCityObjectGroup, IList<Vector3>>> targets)
-        {
-            // レーンの初期化
-            var ret = new RoadNetworkModel();
-            var vertex2Points = new Vertex2PointTable(cellSize, targets.SelectMany(v => v.Item2));
-            var tranWorks = CreateTranWorks(targets, vertex2Points, out var cell2Groups);
-
-            foreach (var tranWork in tranWorks)
-            {
-                Build(tranWork, ret);
-            }
-            foreach (var tranWork in tranWorks)
-                tranWork.BuildConnection();
-            //ret.DebugIdentify();
-            return ret;
+            return await CreateNetworkAsync(meshes);
         }
 
         private void Build(TranWork tranWork, RoadNetworkModel ret)
@@ -530,18 +504,18 @@ namespace PLATEAU.RoadNetwork.Factory
             }
         }
 
-        private static List<TranWork> CreateTranWorks(IList<Tuple<PLATEAUCityObjectGroup, IList<Vector3>>> targets, Vertex2PointTable vertex2Points, out Dictionary<RoadNetworkPoint, Cell> cell2Groups)
+        private static List<TranWork> CreateTranWorks(IList<RoadNetworkTranMesh> targets, Vertex2PointTable vertex2Points, out Dictionary<RoadNetworkPoint, Cell> cell2Groups)
         {
             cell2Groups = new Dictionary<RoadNetworkPoint, Cell>();
             // レーンの頂点情報を構築
             var tranWorks = new List<TranWork>();
             foreach (var item in targets)
             {
-                var cityObject = item.Item1;
+                var cityObject = item.CityObjectGroup;
                 var linkOrNodeWork = new TranWork { TargetTran = cityObject };
 
                 //var vertices = laneWork.LineString.Vertices;
-                var vertices = item.Item2.Select(v => vertex2Points[v]).ToList();
+                var vertices = item.Vertices.Select(v => vertex2Points[v]).ToList();
                 // 時計回りになるように順番チェック
                 if (GeoGraph2D.IsClockwise(vertices.Select(x => x.Vertex.Xz())) == false)
                     vertices.Reverse();
