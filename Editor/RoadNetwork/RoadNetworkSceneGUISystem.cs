@@ -592,7 +592,7 @@ namespace PLATEAU.Editor.RoadNetwork
 
         private static Vector3 DeployFreeMoveHandle(in Vector3 pos, float size, in Vector3 snap)
         {
-            return Handles.FreeMoveHandle(pos, size, snap, Handles.SphereHandleCap);
+            return Handles.FreeMoveHandle(pos, Quaternion.identity, size, snap, Handles.SphereHandleCap);
         }
 
         //Vector3 static  DeployTranslateHandle(in Vector3 pos)

@@ -9,11 +9,11 @@ namespace PLATEAU.Texture
     public class HeightmapGenerator
     {
         public void GenerateFromMesh(PolygonMesh.Mesh inMesh, int textureWidth, int textureHeight, 
-            PlateauVector2d Margin, out PlateauVector3d Min, out PlateauVector3d Max, 
+            PlateauVector2d Margin, bool fillEdges, out PlateauVector3d Min, out PlateauVector3d Max, 
             out PlateauVector2f MinUV, out PlateauVector2f MaxUV, out UInt16[] HeightData )
         {
             var apiResult =
-                NativeMethods.heightmap_generator_generate_from_mesh(inMesh.Handle, textureWidth, textureHeight, new PlateauVector3d(Margin.X, Margin.Y, 0), CoordinateSystem.EUN, 
+                NativeMethods.heightmap_generator_generate_from_mesh(inMesh.Handle, textureWidth, textureHeight, new PlateauVector3d(Margin.X, Margin.Y, 0), CoordinateSystem.EUN, fillEdges,
                 out Min, out Max , out MinUV, out MaxUV, out IntPtr HeightmapDataPtr, out int DataSize);
             DLLUtil.CheckDllError(apiResult);
 
@@ -143,6 +143,7 @@ namespace PLATEAU.Texture
                 [In] int textureHeight,
                 [In] PlateauVector3d margin,
                 [In] CoordinateSystem coordinate,
+                [In] bool fillEdges,
                 out PlateauVector3d min,
                 out PlateauVector3d max,
                 out PlateauVector2f minUV,
