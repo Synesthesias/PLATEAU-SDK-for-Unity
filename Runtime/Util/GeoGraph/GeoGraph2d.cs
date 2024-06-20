@@ -1,4 +1,5 @@
 ﻿using JetBrains.Annotations;
+using PLATEAU.PolygonMesh;
 using PLATEAU.RoadNetwork;
 using System;
 using System.Collections.Generic;
@@ -17,7 +18,6 @@ namespace PLATEAU.Util.GeoGraph
     public static class GeoGraph2D
     {
         public const float Epsilon = 1e-5f;
-
 
         public class Vector2Equitable : IEqualityComparer<Vector2>
         {
@@ -135,67 +135,161 @@ namespace PLATEAU.Util.GeoGraph
             return ret;
         }
 
-        public static Dictionary<Vector3, Vector3> MergeVertices(IEnumerable<Vector3> vertices, Func<Vector3, Vector2> toVec2, float epsilon = 0.1f)
-        {
-            var compare = new Vector2Equitable(epsilon);
-            var ret = new Dictionary<Vector3, Vector3>();
-
-            vertices.OrderBy(v => v.x).ThenBy(v => v.y);
-            foreach (var v in vertices)
-            {
-                var found = ret.Keys.FirstOrDefault(k => compare.Equals(k.Xy(), v.Xy()));
-                if (found != null)
-                    ret[found] = v;
-                else
-                    ret[v] = v;
-            }
-            return ret;
-        }
-
         /// <summary>
-        /// meshのアウトラインを計算する
+        /// 点群vertices, 互いの距離がepsilon以下の頂点をリンクさせた辞書が返る
+        /// 辞書にない頂点は近い頂点が無いもの
+        /// key : 元の頂点, value : 近い頂点のうち最初に見つかったもの
         /// </summary>
-        /// <param name="mesh"></param>
-        /// <param name="toVec2"></param>
+        /// <param name="vertices"></param>
+        /// <param name="calcDistance"></param>
         /// <param name="epsilon"></param>
         /// <returns></returns>
-        public static List<Vector3> ComputeMeshOutlineVertices(Mesh mesh, Func<Vector3, Vector2> toVec2, float epsilon = 0.1f)
+        public static int[] GetNearVertexTable(IList<Vector3> vertices, Func<Vector3, Vector3, float> calcDistance, float epsilon = 0.1f)
         {
-            Vector3 ToCell(Vector3 v)
+            // 全頂点の最小値を基準値にする
+            var o = vertices.Aggregate(Vector3.one * float.MaxValue, Vector3.Min);
+            // すべての頂点に対して２重ループで回すと遅そうなのでソートして枝切りする
+            // 原点からの距離でソートする
+            // v[i]とv[j]の原点までの距離の差がepsilonを超えるとお互いの距離がepsilon以内ではない
+            var orderedVertices = vertices
+                .Select((v, i) => new { v, d = calcDistance(o, v), i })
+                .ToList();
+
+            //orderedVertices.Sort((a, b) => Comparer<float>.Default.Compare(a.d, b.d));
+            var indices = Enumerable.Range(0, orderedVertices.Count).ToArray();
+            for (var i = 0; i < orderedVertices.Count; ++i)
             {
+                var v = orderedVertices[i];
+                var index = indices[i];
+                for (var j = i + 1; j < orderedVertices.Count; j++)
+                {
+                    // epsilonを超えた場合はそれ以上は見なくてよい
+                    //if ((orderedVertices[j].d - v.d) > epsilon)
+                    //    break;
+
+                    if (calcDistance(v.v, orderedVertices[j].v) < epsilon)
+                    {
+                        if (indices[j] == j)
+                        {
+                            indices[j] = index;
+                        }
+                        else
+                        {
+                            var j2 = indices[j];
+                            while (j2 != indices[j2]) j2 = indices[j2];
+
+                            var i2 = indices[i];
+                            while (i2 != indices[i2]) i2 = indices[i2];
+
+                            if (j2 < i2)
+                            {
+                                indices[i2] = j2;
+                            }
+                            else
+                            {
+                                indices[j2] = i2;
+                            }
+                        }
+                    }
+                }
+            }
+
+            for (var i = 0; i < indices.Length; ++i)
+            {
+                var j = indices[i];
+                while (j != indices[j]) j = indices[j];
+                indices[i] = j;
+            }
+
+            return indices;
+            //return indices.Select(i => orderedVertices[i].i).ToArray();
+        }
+
+        public static void MergeMeshVertex(
+            IList<Vector3> vertices,
+            IList<int> triangles,
+            Func<Vector3, Vector3, float> calcDistance,
+            float epsilon,
+            out List<Vector3> newVertices,
+            out List<int> newTriangles)
+        {
+            var table = GetNearVertexTable(vertices, calcDistance, epsilon);
+
+            var num = Enumerable.Range(0, table.Length).Count(i => i == table[i]);
+            newVertices = new List<Vector3>(num);
+
+            for (var i = 0; i < vertices.Count; ++i)
+            {
+                if (table[i] == i)
+                {
+                    newVertices.Add(vertices[i]);
+                    table[i] = newVertices.Count - 1;
+                    continue;
+                }
+                table[i] = table[table[i]];
+            }
+            newTriangles = new List<int>(triangles.Count);
+            for (var j = 0; j < triangles.Count; ++j)
+            {
+                newTriangles.Add(table[triangles[j]]);
+            }
+        }
+
+        public static List<Vector3> ComputeMeshOutlineVertices(IReadOnlyList<Vector3> vert, IList<int> triangles, Func<Vector3, Vector2> toVec2, float epsilon = 0.1f)
+        {
+#if false
+            var mergeTable = GetNearPointTable(vert, (a, b) => (a - b).Xz().magnitude, epsilon);
+            Vector3 Convert(Vector3 v)
+            {
+                if (mergeTable.TryGetValue(v, out var ret))
+                    return ret;
+                return v;
+            }
+#else
+            Vector3 Convert(Vector3 v)
+            {
+
                 var x = (int)(v.x / epsilon);
                 var y = (int)(v.y / epsilon);
                 var z = (int)(v.z / epsilon);
                 return new Vector3(x * epsilon, y * epsilon, z * epsilon);
             }
-
+#endif
             // key   : 頂点
             // value : その頂点とつながっている頂点のリスト
             var vertices = new Dictionary<Vector3, HashSet<Vector3>>();
-            for (var i = 0; i < mesh.triangles.Length; i += 3)
+
+            void Add(HashSet<Vector3> list, Vector3 v)
             {
-                var p0 = ToCell(mesh.vertices[mesh.triangles[i]]);
-                var p1 = ToCell(mesh.vertices[mesh.triangles[i + 1]]);
-                var p2 = ToCell(mesh.vertices[mesh.triangles[i + 2]]);
+                if (list.Contains(v) == false)
+                    list.Add(v);
+            }
+            for (var i = 0; i < triangles.Count; i += 3)
+            {
+                var p0 = Convert(vert[triangles[i]]);
+                var p1 = Convert(vert[triangles[i + 1]]);
+                var p2 = Convert(vert[triangles[i + 2]]);
 
-                if (vertices.ContainsKey(p0) == false)
-                    vertices[p0] = new HashSet<Vector3>();
-                if (vertices.ContainsKey(p1) == false)
-                    vertices[p1] = new HashSet<Vector3>();
-                if (vertices.ContainsKey(p2) == false)
-                    vertices[p2] = new HashSet<Vector3>();
+                var p0V = vertices.GetValueOrCreate(p0);
+                var p1V = vertices.GetValueOrCreate(p1);
+                var p2V = vertices.GetValueOrCreate(p2);
 
-                vertices[p0].Add(p1);
-                vertices[p0].Add(p2);
-                vertices[p1].Add(p2);
-                vertices[p1].Add(p0);
-                vertices[p2].Add(p0);
-                vertices[p2].Add(p1);
+                Add(p0V, p1);
+                Add(p0V, p2);
+                Add(p1V, p2);
+                Add(p1V, p0);
+                Add(p2V, p0);
+                Add(p2V, p1);
             }
 
             if (vertices.Count <= 2)
                 return new List<Vector3>();
 
+            return ComputeOutlineVertices(toVec2, vertices);
+        }
+
+        private static List<Vector3> ComputeOutlineVertices(Func<Vector3, Vector2> toVec2, Dictionary<Vector3, HashSet<Vector3>> vertices)
+        {
             var comp = Comparer<float>.Default;
 
             var keys = vertices.Keys.ToList();
@@ -212,6 +306,7 @@ namespace PLATEAU.Util.GeoGraph
 
             //
             var dir = Vector2.down;
+
             void Eval(Vector2 axis, Vector2 a, out float ang, out float sqrLen)
             {
                 ang = Vector2.SignedAngle(axis, a);
@@ -252,6 +347,75 @@ namespace PLATEAU.Util.GeoGraph
             }
 
             return ret;
+        }
+
+        /// <summary>
+        /// meshのアウトラインを計算する
+        /// </summary>
+        /// <param name="mesh"></param>
+        /// <param name="toVec2"></param>
+        /// <param name="epsilon"></param>
+        /// <returns></returns>
+        public static List<Vector3> ComputeMeshOutlineVertices(UnityEngine.Mesh mesh, Func<Vector3, Vector2> toVec2, float epsilon = 0.1f)
+        {
+            return ComputeMeshOutlineVertices(mesh.vertices, mesh.triangles, toVec2, epsilon);
+        }
+
+
+        /// <summary>
+        /// meshのアウトラインを計算する
+        /// </summary>
+        /// <param name="mesh"></param>
+        /// <param name="toVec2"></param>
+        /// <param name="epsilon"></param>
+        /// <returns></returns>
+        public static List<Vector3> ComputeMeshOutlineVertices(ConvertedCityObject.ConvertedMesh mesh, Func<Vector3, Vector2> toVec2, float epsilon = 0.1f)
+        {
+            //var mergeTable = GetNearVertexTable(mesh.Vertices, (a, b) => toVec2(a - b).magnitude, epsilon);
+            //Vector3 Convert(Vector3 v)
+            //{
+            //    if (mergeTable.TryGetValue(v, out var ret))
+            //        return ret;
+            //    return v;
+            //}
+            Vector3 Convert(Vector3 v)
+            {
+
+                var x = (int)(v.x / epsilon);
+                var y = (int)(v.y / epsilon);
+                var z = (int)(v.z / epsilon);
+                return new Vector3(x * epsilon, y * epsilon, z * epsilon);
+            }
+            // key   : 頂点
+            // value : その頂点とつながっている頂点のリスト
+            var vertices = new Dictionary<Vector3, HashSet<Vector3>>();
+
+            void Add(HashSet<Vector3> list, Vector3 v)
+            {
+                //if (list.Contains(v) == false)
+                list.Add(v);
+            }
+
+            for (var j = 0; j < mesh.Triangles.Count; j += 3)
+            {
+                var p0 = Convert(mesh.Vertices[mesh.Triangles[j]]);
+                var p1 = Convert(mesh.Vertices[mesh.Triangles[j + 1]]);
+                var p2 = Convert(mesh.Vertices[mesh.Triangles[j + 2]]);
+
+                var p0V = vertices.GetValueOrCreate(p0);
+                var p1V = vertices.GetValueOrCreate(p1);
+                var p2V = vertices.GetValueOrCreate(p2);
+
+                Add(p0V, p1);
+                Add(p0V, p2);
+                Add(p1V, p2);
+                Add(p1V, p0);
+                Add(p2V, p0);
+                Add(p2V, p1);
+            }
+            if (vertices.Count <= 2)
+                return new List<Vector3>();
+            return ComputeOutlineVertices(toVec2, vertices);
         }
 
         /// <summary>

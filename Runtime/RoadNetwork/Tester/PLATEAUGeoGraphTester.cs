@@ -1,11 +1,18 @@
-﻿using PLATEAU.CityInfo;
+﻿using PLATEAU.CityImport.Import.Convert;
+using PLATEAU.CityInfo;
+using PLATEAU.GranularityConvert;
+using PLATEAU.PolygonMesh;
 using PLATEAU.Util;
 using PLATEAU.Util.GeoGraph;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Serialization;
+using static UnityEngine.GraphicsBuffer;
+using Debug = UnityEngine.Debug;
 
 namespace PLATEAU.RoadNetwork
 {
@@ -266,7 +273,11 @@ namespace PLATEAU.RoadNetwork
                 if (!target)
                     continue;
                 var mesh = target.GetComponent<MeshCollider>();
+                var sw = new Stopwatch();
+                sw.Start();
                 var vertices = GeoGraph2D.ComputeMeshOutlineVertices(mesh.sharedMesh, v => v.Xz(), p.epsilon);
+                sw.Stop();
+                DebugEx.DrawString($"sec={sw.ElapsedMilliseconds}[ms]", vertices.FirstOrDefault());
                 DebugEx.DrawLines(vertices, p.showLoop, p.color);
                 if (p.showIndex)
                 {
@@ -276,6 +287,24 @@ namespace PLATEAU.RoadNetwork
                     }
                 }
             }
+        }
+
+        [Serializable]
+        public class SplitCityObjectTestParam
+        {
+            public List<PLATEAUCityObjectGroup> targets = new List<PLATEAUCityObjectGroup>();
+            public bool doDestroySrcObject = false;
+        }
+        public SplitCityObjectTestParam splitCityObjectTestParam = new SplitCityObjectTestParam();
+
+        public async Task<GranularityConvertResult> SplitCityObjectTest(SplitCityObjectTestParam p)
+        {
+            // 分割結合の設定です。
+            // https://project-plateau.github.io/PLATEAU-SDK-for-Unity/manual/runtimeAPI.html
+            var conf = new GranularityConvertOptionUnity(new GranularityConvertOption(MeshGranularity.PerAtomicFeatureObject, 1),
+                p.targets.Select(t => t.gameObject).ToArray(), false);
+            // 分割結合します。
+            return await new CityGranularityConverter().ConvertAsync(conf);
         }
 
         public void OnDrawGizmos()

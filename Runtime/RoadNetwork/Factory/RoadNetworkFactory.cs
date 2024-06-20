@@ -308,15 +308,6 @@ namespace PLATEAU.RoadNetwork.Factory
 
         public async Task<RoadNetworkModel> CreateNetworkAsync(IList<PLATEAUCityObjectGroup> targets)
         {
-            var tasks = new List<RoadNetworkModel>();
-            // 分割結合の設定です。
-            // https://project-plateau.github.io/PLATEAU-SDK-for-Unity/manual/runtimeAPI.html
-            var conf = new GranularityConvertOptionUnity(new GranularityConvertOption(MeshGranularity.PerAtomicFeatureObject, 1),
-                targets.Select(t => t.gameObject).ToArray(), false);
-            // 分割結合します。
-            //var d = await new CityGranularityConverter().ConvertAsync(conf);
-            //targets = d.GeneratedObjs.Select(t => t.GetComponent<PLATEAUCityObjectGroup>()).ToList();
-
             var meshes = targets
                 .Select(c => new { c = c, col = c.GetComponent<MeshCollider>() })
                 .Where(c => c.col)

@@ -308,9 +308,6 @@ namespace PLATEAU.Util
             for (var i = 0; i < mesh.SubMeshCount; ++i)
             {
                 var subMesh = mesh.GetSubMeshAt(i);
-                // 三角形ポリゴン
-                var numSubMesh = subMesh.EndIndex - subMesh.StartIndex + 1;
-
                 for (var j = subMesh.StartIndex; j <= subMesh.EndIndex; j += 3)
                 {
                     var v0 = mesh.GetVertexAt(mesh.GetIndiceAt(j));
@@ -332,6 +329,8 @@ namespace PLATEAU.Util
         public static void DrawPlateauPolygonMeshNode(Matrix4x4 parentMatrix, PolygonMesh.Node node, Color? color = null,
             float duration = 0f, bool depthTest = true)
         {
+            if (node == null)
+                return;
             var pos = node.LocalPosition.ToUnityVector();
             var rot = node.LocalRotation.ToUnityQuaternion();
             var scale = node.LocalScale.ToUnityVector();

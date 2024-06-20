@@ -21,18 +21,23 @@ namespace PLATEAU.RoadNetwork.Factory
         public RoadNetworkTranMesh(PLATEAUCityObjectGroup cityObjectGroup, float epsilon = 0.1f)
         {
             CityObjectGroup = cityObjectGroup;
-            BuildVertices(epsilon);
+            Vertices = BuildVertices(cityObjectGroup, epsilon);
         }
 
-        public bool BuildVertices(float epsilon = 0.1f)
+        public RoadNetworkTranMesh(PLATEAUCityObjectGroup cityObjectGroup, List<Vector3> vertices)
         {
-            if (!CityObjectGroup)
-                return false;
-            var mesh = CityObjectGroup.GetComponent<MeshCollider>();
+            CityObjectGroup = cityObjectGroup;
+            Vertices = vertices;
+        }
+
+        private static List<Vector3> BuildVertices(PLATEAUCityObjectGroup cityObjectGroup, float epsilon = 0.1f)
+        {
+            if (!cityObjectGroup)
+                return new List<Vector3>();
+            var mesh = cityObjectGroup.GetComponent<MeshCollider>();
             if (!mesh)
-                return false;
-            Vertices = GeoGraph2D.ComputeMeshOutlineVertices(mesh.sharedMesh, v => v.Xz(), epsilon);
-            return true;
+                return new List<Vector3>();
+            return GeoGraph2D.ComputeMeshOutlineVertices(mesh.sharedMesh, v => v.Xz(), epsilon);
         }
     }
 }

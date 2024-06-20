@@ -15,5 +15,24 @@ namespace PLATEAU.Util
         {
             return index >= 0 && index < self.Count;
         }
+
+        /// <summary>
+        /// compareで比較して最小のindexを返す.同値のものがある場合は最初のものを返す.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="self"></param>
+        /// <param name="compare"></param>
+        /// <returns></returns>
+        public static int FindMinIndex<T>(this IReadOnlyList<T> self, Comparer<T> compare)
+        {
+            var ret = -1;
+            for (var i = 0; i < self.Count; i++)
+            {
+                if (ret == -1 || compare.Compare(self[i], self[ret]) < 0)
+                    ret = i;
+            }
+
+            return ret;
+        }
     }
 }
