@@ -25,19 +25,84 @@ namespace PLATEAU.RoadNetwork
     public class ConvertedCityObject
     {
         [Serializable]
+        public class SubMesh
+        {
+            [field: SerializeField]
+            public List<int> Triangles { get; set; } = new List<int>();
+
+
+            public List<SubMesh> Separate()
+            {
+                Dictionary<int, HashSet<int>> vertexToTriangle = new Dictionary<int, HashSet<int>>();
+                for (var i = 0; i < Triangles.Count; i += 3)
+                {
+                    var t = i / 3;
+                    for (var x = 0; x < 3; x++)
+                    {
+                        vertexToTriangle.GetValueOrCreate(Triangles[i + x]).Add(t);
+                    }
+                }
+
+                var tris = Enumerable.Range(0, Triangles.Count / 3).ToList();
+
+                List<SubMesh> subMeshes = new List<SubMesh>();
+                while (tris.Any())
+                {
+                    var t = tris[0];
+                    var triIndices = new List<int> { t };
+                    for (var a = 0; a < triIndices.Count; ++a)
+                    {
+                        var tt = triIndices[a];
+                        tris.Remove(tt);
+                        for (var i = 0; i < 3; i++)
+                        {
+                            var v = Triangles[tt * 3 + i];
+                            foreach (var ttt in vertexToTriangle[v])
+                            {
+                                if (tris.Contains(ttt) && triIndices.Contains(ttt) == false)
+                                    triIndices.Add(ttt);
+                            }
+                        }
+                    }
+                    var subMesh = new SubMesh();
+                    subMesh.Triangles.AddRange(
+                        triIndices.OrderBy(t => t)
+                            .SelectMany(t => Enumerable.Range(0, 3).Select(x => Triangles[t * 3 + x])));
+                    subMeshes.Add(subMesh);
+                }
+
+                return subMeshes;
+            }
+        }
+
+        [Serializable]
         public class ConvertedMesh
         {
             [field: SerializeField]
             public List<Vector3> Vertices { get; set; } = new List<Vector3>();
 
             [field: SerializeField]
-            public List<int> Triangles { get; set; } = new List<int>();
+            public List<SubMesh> SubMeshes { get; set; } = new List<SubMesh>();
 
             public void Merge(float epsilon)
             {
-                GeoGraph2D.MergeMeshVertex(Vertices, Triangles, (a, b) => (a - b).Xz().magnitude, epsilon, out var vert, out var tri);
+                GeoGraph2D.MergeMeshVertex(Vertices, (a, b) => (a - b).Xz().magnitude, epsilon, out var vert, out var indices);
                 Vertices = vert;
-                Triangles = tri;
+
+                foreach (var s in SubMeshes)
+                {
+                    s.Triangles = s.Triangles.Select(i => indices[i]).ToList();
+                }
+            }
+
+            public void Separate()
+            {
+                var newSubMesh = new List<SubMesh>();
+                foreach (var m in SubMeshes)
+                {
+                    newSubMesh.AddRange(m.Separate());
+                }
+                SubMeshes = newSubMesh;
             }
         }
 
@@ -55,7 +120,7 @@ namespace PLATEAU.RoadNetwork
         public bool Visible { get; set; } = true;
 
         [field: SerializeField]
-        public ConvertedMesh Mesh { get; private set; }
+        public List<ConvertedMesh> Meshes { get; set; } = new List<ConvertedMesh>();
 
         [field: SerializeField]
         public List<ConvertedCityObject> Children { get; set; } = new List<ConvertedCityObject>();
@@ -81,7 +146,6 @@ namespace PLATEAU.RoadNetwork
         /// </summary>
         internal ConvertedCityObject(Model plateauModel, AttributeDataHelper attributeDataHelper)
         {
-            Mesh = null;
             Name = "Root";
             attributeDataHelper.SetId(Name);
             Children = new List<ConvertedCityObject>();
@@ -127,23 +191,24 @@ namespace PLATEAU.RoadNetwork
                         totalIndexNum += num;
                     }
 
-                    var triangles = new List<int>(totalIndexNum);
+                    var subMeshes = new List<SubMesh>(m.SubMeshCount);
                     for (var i = 0; i < m.SubMeshCount; ++i)
                     {
                         var subMesh = m.GetSubMeshAt(i);
+                        var s = new SubMesh();
                         for (var j = subMesh.StartIndex; j <= subMesh.EndIndex; j += 3)
                         {
-                            triangles.Add(m.GetIndiceAt(j));
-                            triangles.Add(m.GetIndiceAt(j + 1));
-                            triangles.Add(m.GetIndiceAt(j + 2));
+                            s.Triangles.Add(m.GetIndiceAt(j));
+                            s.Triangles.Add(m.GetIndiceAt(j + 1));
+                            s.Triangles.Add(m.GetIndiceAt(j + 2));
                         }
+                        subMeshes.Add(s);
                     }
-
-                    Mesh = new ConvertedMesh
+                    Meshes.Add(new ConvertedMesh
                     {
                         Vertices = vertices,
-                        Triangles = triangles
-                    };
+                        SubMeshes = subMeshes
+                    });
                 }
             }
 
@@ -242,7 +307,7 @@ namespace PLATEAU.RoadNetwork
             var cco = await Task.Run(() => new ConvertedCityObject(dstModel, attrHelper));
 
             var ret = new ConvertCityObjectResult();
-            ret.ConvertedCityObjects.AddRange(cco.GetAllChildren().Where(c => c.Children.Any() == false && c.Mesh != null));
+            ret.ConvertedCityObjects.AddRange(cco.GetAllChildren().Where(c => c.Children.Any() == false && c.Meshes.Any()));
             return ret;
         }
     }

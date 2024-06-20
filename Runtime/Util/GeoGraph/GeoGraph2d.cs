@@ -207,11 +207,10 @@ namespace PLATEAU.Util.GeoGraph
 
         public static void MergeMeshVertex(
             IList<Vector3> vertices,
-            IList<int> triangles,
             Func<Vector3, Vector3, float> calcDistance,
             float epsilon,
             out List<Vector3> newVertices,
-            out List<int> newTriangles)
+            out int[] newIndices)
         {
             var table = GetNearVertexTable(vertices, calcDistance, epsilon);
 
@@ -228,11 +227,8 @@ namespace PLATEAU.Util.GeoGraph
                 }
                 table[i] = table[table[i]];
             }
-            newTriangles = new List<int>(triangles.Count);
-            for (var j = 0; j < triangles.Count; ++j)
-            {
-                newTriangles.Add(table[triangles[j]]);
-            }
+
+            newIndices = table;
         }
 
         public static List<Vector3> ComputeMeshOutlineVertices(IReadOnlyList<Vector3> vert, IList<int> triangles, Func<Vector3, Vector2> toVec2, float epsilon = 0.1f)
@@ -369,23 +365,8 @@ namespace PLATEAU.Util.GeoGraph
         /// <param name="toVec2"></param>
         /// <param name="epsilon"></param>
         /// <returns></returns>
-        public static List<Vector3> ComputeMeshOutlineVertices(ConvertedCityObject.ConvertedMesh mesh, Func<Vector3, Vector2> toVec2, float epsilon = 0.1f)
+        public static List<Vector3> ComputeMeshOutlineVertices(ConvertedCityObject.ConvertedMesh mesh, ConvertedCityObject.SubMesh subMesh, Func<Vector3, Vector2> toVec2, float epsilon = 0.1f)
         {
-            //var mergeTable = GetNearVertexTable(mesh.Vertices, (a, b) => toVec2(a - b).magnitude, epsilon);
-            //Vector3 Convert(Vector3 v)
-            //{
-            //    if (mergeTable.TryGetValue(v, out var ret))
-            //        return ret;
-            //    return v;
-            //}
-            Vector3 Convert(Vector3 v)
-            {
-
-                var x = (int)(v.x / epsilon);
-                var y = (int)(v.y / epsilon);
-                var z = (int)(v.z / epsilon);
-                return new Vector3(x * epsilon, y * epsilon, z * epsilon);
-            }
             // key   : 頂点
             // value : その頂点とつながっている頂点のリスト
             var vertices = new Dictionary<Vector3, HashSet<Vector3>>();
@@ -395,12 +376,11 @@ namespace PLATEAU.Util.GeoGraph
                 //if (list.Contains(v) == false)
                 list.Add(v);
             }
-
-            for (var j = 0; j < mesh.Triangles.Count; j += 3)
+            for (var j = 0; j < subMesh.Triangles.Count; j += 3)
             {
-                var p0 = Convert(mesh.Vertices[mesh.Triangles[j]]);
-                var p1 = Convert(mesh.Vertices[mesh.Triangles[j + 1]]);
-                var p2 = Convert(mesh.Vertices[mesh.Triangles[j + 2]]);
+                var p0 = mesh.Vertices[subMesh.Triangles[j]];
+                var p1 = mesh.Vertices[subMesh.Triangles[j + 1]];
+                var p2 = mesh.Vertices[subMesh.Triangles[j + 2]];
 
                 var p0V = vertices.GetValueOrCreate(p0);
                 var p1V = vertices.GetValueOrCreate(p1);

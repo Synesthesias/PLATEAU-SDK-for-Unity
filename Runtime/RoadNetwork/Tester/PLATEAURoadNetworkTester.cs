@@ -67,6 +67,7 @@ namespace PLATEAU.RoadNetwork
         {
             ConvertCityObject,
             MergeConvertCityObject,
+            SeparateConvertCityObject,
             TranMesh,
             RoadNetwork
         }
@@ -74,14 +75,14 @@ namespace PLATEAU.RoadNetwork
         private CreateMode createMode = CreateMode.ConvertCityObject;
 
 
-        internal void DrawMesh(ConvertedCityObject.ConvertedMesh mesh, Matrix4x4 mat, Color? color = null,
+        internal void DrawMesh(ConvertedCityObject.ConvertedMesh mesh, ConvertedCityObject.SubMesh subMesh, Matrix4x4 mat, Color? color = null,
             float duration = 0f, bool depthTest = true)
         {
-            for (var j = 0; j < mesh.Triangles.Count; j += 3)
+            for (var j = 0; j < subMesh.Triangles.Count; j += 3)
             {
-                var v0 = mesh.Vertices[mesh.Triangles[j]];
-                var v1 = mesh.Vertices[mesh.Triangles[j + 1]];
-                var v2 = mesh.Vertices[mesh.Triangles[j + 2]];
+                var v0 = mesh.Vertices[subMesh.Triangles[j]];
+                var v1 = mesh.Vertices[subMesh.Triangles[j + 1]];
+                var v2 = mesh.Vertices[subMesh.Triangles[j + 2]];
 
                 var v = new[]
                 {
@@ -102,9 +103,11 @@ namespace PLATEAU.RoadNetwork
                 {
                     if (item.Visible == false)
                         continue;
-                    if (item.Mesh == null)
-                        continue;
-                    DrawMesh(item.Mesh, Matrix4x4.identity, color: showConvertedCityObject.color);
+                    foreach (var mesh in item.Meshes)
+                    {
+                        foreach (var subMesh in mesh.SubMeshes.Select((v, i) => new { v, i }))
+                            DrawMesh(mesh, subMesh.v, Matrix4x4.identity, color: DebugEx.GetDebugColor(subMesh.i, mesh.SubMeshes.Count));
+                    }
                 }
             }
 
@@ -174,8 +177,15 @@ namespace PLATEAU.RoadNetwork
 
                 if (IsTarget() == false)
                     continue;
-                var vertices = GeoGraph2D.ComputeMeshOutlineVertices(c.Mesh, a => a.Xz(), epsilon);
-                ret.Add(new RoadNetworkTranMesh(null, vertices));
+                foreach (var mesh in c.Meshes)
+                {
+                    foreach (var s in mesh.SubMeshes)
+                    {
+                        var vertices = GeoGraph2D.ComputeMeshOutlineVertices(mesh, s, a => a.Xz(), epsilon);
+                        ret.Add(new RoadNetworkTranMesh(null, vertices));
+
+                    }
+                }
             }
 
             return ret;
@@ -189,11 +199,16 @@ namespace PLATEAU.RoadNetwork
                     convertedCityObjects = await ConvertCityObjectAsync();
                     break;
                 case CreateMode.MergeConvertCityObject:
-                    foreach (var c in convertedCityObjects)
+                    foreach (var m in convertedCityObjects.SelectMany(c => c.Meshes))
                     {
-                        c.Mesh?.Merge(showTranMesh.mergeEpsilon);
+                        m.Merge(showTranMesh.mergeEpsilon);
                     }
-
+                    break;
+                case CreateMode.SeparateConvertCityObject:
+                    foreach (var m in convertedCityObjects.SelectMany(c => c.Meshes))
+                    {
+                        m.Separate();
+                    }
                     break;
                 case CreateMode.TranMesh:
                     tranMeshes = CreateTranMeshes(Factory.cellSize);
