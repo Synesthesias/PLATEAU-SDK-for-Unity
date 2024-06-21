@@ -35,5 +35,6 @@ namespace PLATEAU.Util.GeoGraph
                 yield return new Tuple<T, T>(current.Value, first.Value);
         }
 
+
     }
 }

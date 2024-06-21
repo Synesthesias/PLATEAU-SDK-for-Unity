@@ -1,27 +1,21 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using UnityEngine;
 
 namespace PLATEAU.Util.GeoGraph
 {
-    public class LineSegment2D
-    {
-        public Vector2 start;
-        public Vector2 end;
-    }
-
     /// <summary>
     /// 直線に関する便利関数
     /// </summary>
     public static class LineUtil
     {
+        private const float Epsilon = 1e-3f;
         /// <summary>
         /// a,bを通る直線,c,dを通る直線の交点を求める
         /// 平行な場合はfalse
         /// 交わる場合 intersectionにこう
         /// </summary>
-        /// <param name="ray1"></param>
-        /// <param name="ray2"></param>
         /// <param name="a">直線1の始点</param>
         /// <param name="b">直線1の終点</param>
         /// <param name="c">直線2の始点</param>
@@ -37,13 +31,20 @@ namespace PLATEAU.Util.GeoGraph
             intersection = Vector2.zero;
 
             var deno = Vector2Util.Cross(b - a, d - c);
-            if (Mathf.Abs(deno) < float.Epsilon)
+            if (Mathf.Abs(deno) < Epsilon)
                 return false;
 
             t1 = Vector2Util.Cross(c - a, d - c) / deno;
             t2 = Vector2Util.Cross(b - a, a - c) / deno;
-            intersection = Vector2.Lerp(a, b, t1);
+            intersection = Vector2.LerpUnclamped(a, b, t1);
             return true;
+        }
+
+        public static bool LineIntersection(Ray2D rayA, Ray2D rayB, out Vector2 intersection, out float t1,
+            out float t2)
+        {
+            return LineIntersection(rayA.origin, rayA.origin + rayA.direction, rayB.origin, rayB.origin + rayB.direction,
+                out intersection, out t1, out t2);
         }
 
         /// <summary>
@@ -64,6 +65,27 @@ namespace PLATEAU.Util.GeoGraph
             // halfLineは半直線なので後ろになければOK
             // p1,p2は線分なので0~1の範囲内ならOK
             return ret && t1 >= 0f && t2 is >= 0f and <= 1f;
+        }
+
+        /// <summary>
+        /// 直線lineと線分(p1,p2)の交点を返す
+        /// 交わらない場合はfalseが返る
+        /// </summary>
+        /// <param name="line"></param>
+        /// <param name="p1"></param>
+        /// <param name="p2"></param>
+        /// <param name="intersection"></param>
+        /// <param name="t1"></param>
+        /// <param name="t2"></param>
+        /// <returns></returns>
+        public static bool LineSegmentIntersection(Ray2D line, Vector2 p1, Vector2 p2, out Vector2 intersection,
+            out float t1, out float t2)
+        {
+            var ret = LineIntersection(line.origin, line.origin + line.direction, p1, p2, out intersection, out t1,
+                out t2);
+            // p1,p2は線分なので0~1の範囲内ならOK
+            return ret && t2 is >= 0f and <= 1f;
+
         }
 
         /// <summary>
@@ -99,17 +121,12 @@ namespace PLATEAU.Util.GeoGraph
             return GeoGraphEx.GetEdges(vertices, false).Sum(item => (item.Item2 - item.Item1).magnitude);
         }
 
-        /// <summary>
-        /// verticesで表される線分の中央地点を返す.
-        /// 戻り値はvertices[i] ~ vertices[i+1]に中央地点があるときのi
-        /// verticesが空の時は-1が返る
-        /// </summary>
-        /// <param name="vertices"></param>
-        /// <param name="midPoint"></param>
-        /// <returns></returns>
-        public static int TryGetLineSegmentMidPoint(IReadOnlyList<Vector3> vertices, out Vector3 midPoint)
+        public static int GetLineSegmentLerpPoint(IReadOnlyList<Vector3> vertices, float p, out Vector3 midPoint)
         {
-            var length = GetLineSegmentLength(vertices) * 0.5f;
+            // 0 ~ 1の間でClampする
+            p = Mathf.Clamp(p, 0, 1);
+
+            var length = GetLineSegmentLength(vertices) * p;
             var len = 0f;
             for (var i = 0; i < vertices.Count - 1; ++i)
             {
@@ -130,6 +147,19 @@ namespace PLATEAU.Util.GeoGraph
         }
 
         /// <summary>
+        /// verticesで表される線分の中央地点を返す.
+        /// 戻り値はvertices[i] ~ vertices[i+1]に中央地点があるときのi
+        /// verticesが空の時は-1が返る
+        /// </summary>
+        /// <param name="vertices"></param>
+        /// <param name="midPoint"></param>
+        /// <returns></returns>
+        public static int GetLineSegmentMidPoint(IReadOnlyList<Vector3> vertices, out Vector3 midPoint)
+        {
+            return GetLineSegmentLerpPoint(vertices, 0.5f, out midPoint);
+        }
+
+        /// <summary>
         /// verticesで表される線分をsplitNumで等分する
         /// </summary>
         /// <param name="vertices"></param>
@@ -143,26 +173,24 @@ namespace PLATEAU.Util.GeoGraph
             var length = GetLineSegmentLength(vertices) / num;
             var len = 0f;
             List<Vector3> subVertices = new List<Vector3> { vertices[0] };
-            for (var i = 0; i < vertices.Count - 1; ++i)
+            for (var i = 1; i < vertices.Count; ++i)
             {
-                var p0 = vertices[i];
-                var p1 = vertices[i + 1];
+                var p0 = subVertices.Last();
+                var p1 = vertices[i];
                 var l = (p1 - p0).magnitude;
                 len += l;
-                if (len >= length && l > float.Epsilon)
+                while (len >= length && l > Epsilon)
                 {
                     var f = (len - length) / l;
                     var end = Vector3.Lerp(p0, p1, f);
                     if (f >= float.Epsilon)
                         subVertices.Add(end);
                     ret.Add(subVertices);
-                    subVertices = new List<Vector3> { end };
-                    len = 0f;
+                    len -= length;
+                    p1 = end;
                 }
-                else
-                {
-                    subVertices.Add(p1);
-                }
+
+                subVertices.Add(p1);
             }
 
             // 最後の要素は無条件で返す
@@ -173,6 +201,50 @@ namespace PLATEAU.Util.GeoGraph
             }
 
             return ret;
+        }
+
+        /// <summary>
+        /// p0,p1を通る直線に対して,aから最も近い直線状のポイントを返す
+        /// </summary>
+        /// <param name="p0"></param>
+        /// <param name="p1"></param>
+        /// <param name="a"></param>
+        /// <returns></returns>
+        public static Vector3 GetNearestPointWithRay(Vector3 p0, Vector3 p1, Vector3 a)
+        {
+            var d = (p1 - p0).normalized;
+            // (a.x - (p0.x + d.x*t), a.y - (p0.y + d.y*t))・(d.x, d.y) = 0
+            //   d.x*a.x - (p0.x * d.x + d.x^2*t)
+            // + d.y*a.y - (p0.y * d.y + d.y^2*t)
+            // = 0
+
+            var t = Vector3.Dot(d, a) - Vector3.Dot(p0, d);
+            return p0 + t * d;
+        }
+
+        /// <summary>
+        /// pからselfへの最も近い点を返す. tはreturn = self.origin + self.direction * tとなるt
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="p"></param>
+        /// <param name="t"></param>
+        /// <returns></returns>
+        public static Vector2 GetNearestPoint(this Ray2D self, Vector2 p, out float t)
+        {
+            var d = self.direction;
+            t = Vector2.Dot(self.direction, p - self.origin);
+            return self.origin + t * d;
+        }
+
+        /// <summary>
+        /// pからselfへの最も近い点を返す.
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="p"></param>
+        /// <returns></returns>
+        public static Vector2 GetNearestPoint(this Ray2D self, Vector2 p)
+        {
+            return self.GetNearestPoint(p, out var _);
         }
     }
 }

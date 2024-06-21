@@ -35,7 +35,7 @@ namespace PLATEAU.CityAdjust.AlignLand
             var terrain = new ConvertedTerrainData(
                 landModel,
                 new TerrainConvertOption(new GameObject[] { landTrans.gameObject }, 1024, false,
-                    TerrainConvertOption.ImageOutput.PNG));
+                    true, TerrainConvertOption.ImageOutput.PNG));
             var heightmaps = terrain.GetHeightmapDataRecursive();
             if (heightmaps.Count == 0) return;
 

@@ -1,4 +1,5 @@
-﻿using PLATEAU.Util;
+﻿
+using PLATEAU.Util;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -6,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices.WindowsRuntime;
+using UnityEngine;
 
 namespace PLATEAU.RoadNetwork.Data
 {
@@ -63,8 +65,8 @@ namespace PLATEAU.RoadNetwork.Data
                 var srcType = dstType.GetCustomAttribute<RoadNetworkSerializeDataAttribute>()?.DataType;
                 if (srcType == null)
                     throw new ArgumentException(
-                        $"{dstType} has not attribute {nameof(RoadNetworkSerializeDataAttribute)}");
-                var flags = BindingFlags.Instance | BindingFlags.Public;
+                        $"{dstType?.Name} has no attribute {nameof(RoadNetworkSerializeDataAttribute)}");
+                var flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
                 var dst2Src
                     // #NOTE : Field or Propertyのみ対応
                     = dstType.GetProperties(flags)
@@ -79,7 +81,8 @@ namespace PLATEAU.RoadNetwork.Data
                             return m.member as FieldInfo;
                         }, p =>
                         {
-                            var prop = srcType.GetProperty(p.attr.FieldName);
+                            var fieldName = string.IsNullOrEmpty(p.attr.FieldName) ? p.member.Name : p.attr.FieldName;
+                            var prop = srcType.GetProperty(fieldName, flags);
                             if (prop != null)
                             {
                                 var ret = TypeUtil.GetPropertyBackingField(srcType, prop);
@@ -87,11 +90,16 @@ namespace PLATEAU.RoadNetwork.Data
                                     throw new InvalidDataException($"Property {prop.Name} has no field info");
                                 return ret;
                             }
-                            var field = srcType.GetField(p.attr.FieldName);
+                            var field = srcType.GetField(fieldName, flags);
                             if (field != null)
                                 return field;
                             return null;
                         });
+                var nullFields = dst2Src.Where(x => x.Value is null).ToList();
+                if (nullFields.Any())
+                    throw new InvalidDataException(
+                        $"'{dstType.Name}'の[{string.Join(',', nullFields.Select(x => x.Key))}]に対応するフィールドが{srcType.Name}にありません");
+
                 return new MemberReference(srcType, dstType, dst2Src);
             }
 
@@ -99,26 +107,6 @@ namespace PLATEAU.RoadNetwork.Data
             {
                 return new MemberReference(DstType, SrcType, Dst2SrcMemberTable.ToDictionary(i => i.Value, i => i.Key));
             }
-        }
-
-        private interface IDataConverter
-        {
-            /// <summary>
-            /// typeがコンバート可能かどうか
-            /// </summary>
-            /// <param name="type"></param>
-            /// <returns></returns>
-            bool Contains(Type type);
-
-            // 
-            /// <summary>
-            /// コンバート. srcはtype型である必要がある.
-            /// srcがnullの事を考えてtypeも別途渡す
-            /// </summary>
-            /// <param name="type"></param>
-            /// <param name="src"></param>
-            /// <returns></returns>
-            object Convert(Type type, object src);
         }
 
         private interface IValueConverter
@@ -140,7 +128,7 @@ namespace PLATEAU.RoadNetwork.Data
             {
                 if (val == null)
                 {
-                    return new RnID<TData>();
+                    return RnID<TData>.Undefind;
                 }
 
                 return Table[val];
@@ -184,23 +172,47 @@ namespace PLATEAU.RoadNetwork.Data
         {
             private Dictionary<object, object> DataTable { get; set; }
 
-            public MemberReference MemberTable { get; }
-
-            public DataStorage(Dictionary<object, object> dataTable, MemberReference memberReference)
+            public DataStorage(Dictionary<object, object> dataTable)
             {
                 DataTable = dataTable;
-                MemberTable = memberReference;
             }
 
             public void ConvertAll(IDataConverter converter)
             {
                 foreach (var item in DataTable)
                 {
-                    Convert(item.Key, item.Value, MemberTable, converter);
+                    Convert(converter, item.Value.GetType(), item.Key, item.Value);
                 }
             }
         }
 
+
+        private interface IDataConverter
+        {
+            /// <summary>
+            /// typeがコンバート可能かどうか
+            /// </summary>
+            /// <param name="type"></param>
+            /// <returns></returns>
+            bool Contains(Type type);
+
+            // 
+            /// <summary>
+            /// コンバート. srcはtype型である必要がある.
+            /// srcがnullの事を考えてtypeも別途渡す
+            /// </summary>
+            /// <param name="type"></param>
+            /// <param name="src"></param>
+            /// <returns></returns>
+            object Convert(Type type, object src);
+
+            /// <summary>
+            /// dstTypeのコンバート対象のテーブルを持ってくる
+            /// </summary>
+            /// <param name="dstType"></param>
+            /// <returns></returns>
+            MemberReference GetMemberReference(Type dstType);
+        }
 
         private class ReferenceTable : IDataConverter
         {
@@ -208,6 +220,27 @@ namespace PLATEAU.RoadNetwork.Data
 
             private List<DataStorage> Storage { get; } = new List<DataStorage>();
 
+            /// <summary>
+            /// Key : DstType
+            /// Value : 対応するMemberReference
+            /// </summary>
+            private Dictionary<Type, MemberReference> MemberReferences { get; } =
+                new Dictionary<Type, MemberReference>();
+
+            /// <summary>
+            /// key : dstType
+            /// </summary>
+            /// <param name="key"></param>
+            /// <returns></returns>
+            public MemberReference GetMemberReference(Type key)
+            {
+                if (MemberReferences.TryGetValue(key, out var ret))
+                    return ret;
+                var val = MemberReference.Create(key);
+                MemberReferences[key] = val;
+                MemberReferences[val.SrcType] = val.GetReversed();
+                return MemberReferences[key];
+            }
 
             public void AddStorage(DataStorage dataStorage)
             {
@@ -240,9 +273,9 @@ namespace PLATEAU.RoadNetwork.Data
             }
         }
 
-
-        private static void Convert(object src, object dst, MemberReference memberReference, IDataConverter converter)
+        private static void Convert(IDataConverter converter, Type dstType, object src, object dst)
         {
+            var memberReference = converter.GetMemberReference(dstType);
             foreach (var m in memberReference.Dst2SrcMemberTable)
             {
                 var dstMemberInfo = m.Key;
@@ -275,8 +308,19 @@ namespace PLATEAU.RoadNetwork.Data
                     {
                         foreach (var srcV in enumerable)
                         {
-                            var dstValue = converter.Convert(srcMemberType.GenericTypeArguments[0], srcV);
-                            addMethod.Invoke(dstObj, new[] { dstValue });
+                            var dstValType = dstMemberType.GenericTypeArguments[0];
+                            var srcValType = srcMemberType.GenericTypeArguments[0];
+                            if (converter.Contains(srcValType))
+                            {
+                                var dstV = converter.Convert(srcValType, srcV);
+                                addMethod.Invoke(dstObj, new[] { dstV });
+                            }
+                            else
+                            {
+                                var dstV = dstValType.Assembly.CreateInstance(dstValType.FullName);
+                                Convert(converter, dstValType, srcV, dstV);
+                                addMethod.Invoke(dstObj, new[] { dstV });
+                            }
                         }
                     }
                     TypeUtil.SetValue(dstMemberInfo, dst, dstObj);
@@ -289,10 +333,10 @@ namespace PLATEAU.RoadNetwork.Data
             }
         }
 
-        private void Collect<TData>(ReferenceTable refTable, RoadNetworkModel model, PrimitiveDataStorage.PrimitiveStorage<TData> storage)
+        private void CollectForSerialize<TData>(ReferenceTable refTable, RoadNetworkModel model, PrimitiveDataStorage.PrimitiveStorage<TData> storage)
             where TData : IPrimitiveData, new()
         {
-            var memberReference = MemberReference.Create(typeof(TData));
+            var memberReference = refTable.GetMemberReference(typeof(TData));
 
             // TSrcの型のインスタンスを全部探してくる
             var src = TypeUtil
@@ -316,44 +360,53 @@ namespace PLATEAU.RoadNetwork.Data
             var obj2Data = Enumerable.Range(0, src.Count)
                 .ToDictionary(i => src[i], i => dataList[i] as object);
 
-            var dataStorage = new DataStorage(obj2Data, memberReference);
+            var dataStorage = new DataStorage(obj2Data);
             refTable.AddStorage(dataStorage);
             refTable.AddConverter(memberReference.SrcType, valueConverter);
+        }
+
+        private static ReferenceTable CreateReferenceTable()
+        {
+            var refTable = new ReferenceTable();
+            refTable.GetMemberReference(typeof(RoadNetworkDataNeighbor));
+            return refTable;
         }
 
         public RoadNetworkStorage Serialize(RoadNetworkModel roadNetworkModel)
         {
             var ret = new RoadNetworkStorage();
-            var refTable = new ReferenceTable();
-            Collect(refTable, roadNetworkModel, ret.PrimitiveDataStorage.Points);
-            Collect(refTable, roadNetworkModel, ret.PrimitiveDataStorage.LineStrings);
-            Collect(refTable, roadNetworkModel, ret.PrimitiveDataStorage.Links);
-            Collect(refTable, roadNetworkModel, ret.PrimitiveDataStorage.Lanes);
-            Collect(refTable, roadNetworkModel, ret.PrimitiveDataStorage.Tracks);
-            Collect(refTable, roadNetworkModel, ret.PrimitiveDataStorage.Blocks);
-            Collect(refTable, roadNetworkModel, ret.PrimitiveDataStorage.Nodes);
-            Collect(refTable, roadNetworkModel, ret.PrimitiveDataStorage.Ways);
+            var refTable = CreateReferenceTable();
+            CollectForSerialize(refTable, roadNetworkModel, ret.PrimitiveDataStorage.Points);
+            CollectForSerialize(refTable, roadNetworkModel, ret.PrimitiveDataStorage.LineStrings);
+            CollectForSerialize(refTable, roadNetworkModel, ret.PrimitiveDataStorage.Links);
+            CollectForSerialize(refTable, roadNetworkModel, ret.PrimitiveDataStorage.Lanes);
+            CollectForSerialize(refTable, roadNetworkModel, ret.PrimitiveDataStorage.Tracks);
+            CollectForSerialize(refTable, roadNetworkModel, ret.PrimitiveDataStorage.Blocks);
+            CollectForSerialize(refTable, roadNetworkModel, ret.PrimitiveDataStorage.Nodes);
+            CollectForSerialize(refTable, roadNetworkModel, ret.PrimitiveDataStorage.Ways);
 
             refTable.ConvertAll();
             return ret;
         }
 
-        private List<T> Collect<TData, T>(ReferenceTable refTable, PrimitiveDataStorage.PrimitiveStorage<TData> storage)
+
+
+        private List<T> CollectForDeserialize<TData, T>(ReferenceTable refTable, PrimitiveDataStorage.PrimitiveStorage<TData> storage)
             where TData : IPrimitiveData
             where T : new()
         {
-            var memberReference = MemberReference.Create(typeof(TData)).GetReversed();
+            refTable.GetMemberReference(typeof(TData));
             // 先にデータを作成する
             var objList = Enumerable.Range(0, storage.DataList.Count).Select(i => new T()).ToList();
 
             var id2Obj = Enumerable.Range(0, storage.DataList.Count)
-                .ToDictionary(i => new RnID<TData>(i), i => objList[i] as object);
+                .ToDictionary(i => storage.RequsetID(i), i => objList[i] as object);
 
             var idConverter = new RnId2ObjectConverter<TData>(id2Obj);
 
             var data2Obj = Enumerable.Range(0, storage.DataList.Count)
                 .ToDictionary(i => storage.DataList[i] as object, i => objList[i] as object);
-            var dataStorage = new DataStorage(data2Obj, memberReference);
+            var dataStorage = new DataStorage(data2Obj);
             refTable.AddStorage(dataStorage);
             refTable.AddConverter(typeof(RnID<TData>), idConverter);
             return objList;
@@ -361,20 +414,22 @@ namespace PLATEAU.RoadNetwork.Data
 
         public RoadNetworkModel Deserialize(RoadNetworkStorage roadNetworkStorage)
         {
-            var refTable = new ReferenceTable();
-            var points = Collect<RoadNetworkDataPoint, RoadNetworkPoint>(refTable, roadNetworkStorage.PrimitiveDataStorage.Points);
-            var tracks = Collect<RoadNetworkDataTrack, RoadNetworkTrack>(refTable, roadNetworkStorage.PrimitiveDataStorage.Tracks);
-            var nodes = Collect<RoadNetworkDataNode, RoadNetworkNode>(refTable, roadNetworkStorage.PrimitiveDataStorage.Nodes);
-            var links = Collect<RoadNetworkDataLink, RoadNetworkLink>(refTable, roadNetworkStorage.PrimitiveDataStorage.Links);
-            var lineStrings = Collect<RoadNetworkDataLineString, RoadNetworkLineString>(refTable, roadNetworkStorage.PrimitiveDataStorage.LineStrings);
-            var blocks = Collect<RoadNetworkDataBlock, RoadNetworkBlock>(refTable, roadNetworkStorage.PrimitiveDataStorage.Blocks);
-            var ways = Collect<RoadNetworkDataWay, RoadNetworkWay>(refTable, roadNetworkStorage.PrimitiveDataStorage.Ways);
-            var lanes = Collect<RoadNetworkDataLane, RoadNetworkLane>(refTable, roadNetworkStorage.PrimitiveDataStorage.Lanes);
+            var refTable = CreateReferenceTable();
+            var points = CollectForDeserialize<RoadNetworkDataPoint, RoadNetworkPoint>(refTable, roadNetworkStorage.PrimitiveDataStorage.Points);
+            var tracks = CollectForDeserialize<RoadNetworkDataTrack, RoadNetworkTrack>(refTable, roadNetworkStorage.PrimitiveDataStorage.Tracks);
+            var nodes = CollectForDeserialize<RoadNetworkDataNode, RoadNetworkNode>(refTable, roadNetworkStorage.PrimitiveDataStorage.Nodes);
+            var links = CollectForDeserialize<RoadNetworkDataLink, RoadNetworkLink>(refTable, roadNetworkStorage.PrimitiveDataStorage.Links);
+            var lineStrings = CollectForDeserialize<RoadNetworkDataLineString, RoadNetworkLineString>(refTable, roadNetworkStorage.PrimitiveDataStorage.LineStrings);
+            var blocks = CollectForDeserialize<RoadNetworkDataBlock, RoadNetworkBlock>(refTable, roadNetworkStorage.PrimitiveDataStorage.Blocks);
+            var ways = CollectForDeserialize<RoadNetworkDataWay, RoadNetworkWay>(refTable, roadNetworkStorage.PrimitiveDataStorage.Ways);
+            var lanes = CollectForDeserialize<RoadNetworkDataLane, RoadNetworkLane>(refTable, roadNetworkStorage.PrimitiveDataStorage.Lanes);
 
             refTable.ConvertAll();
             var ret = new RoadNetworkModel();
-            ret.Links.AddRange(links);
-            ret.Nodes.AddRange(nodes);
+            foreach (var l in links)
+                ret.AddLink(l);
+            foreach (var n in nodes)
+                ret.AddNode(n);
             return ret;
         }
     }

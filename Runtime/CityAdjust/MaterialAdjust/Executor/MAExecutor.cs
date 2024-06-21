@@ -48,8 +48,22 @@ namespace PLATEAU.CityAdjust.MaterialAdjust.Executor
             this.maCondition = maCondition;
         }
 
+        /// <summary>
+        /// マテリアル分けのメインメソッドです。
+        /// </summary>
         public async Task<UniqueParentTransformList> Exec()
         {
+            // 実装方針:
+            // 結合単位で「主要地物内のマテリアル単位」という共通ライブラリにない粒度設定が登場していることから、
+            // 共通ライブラリへ一度に渡して変換するのではなく、
+            // ヒエラルキーを幅優先探索の順番で逐次的に共通ライブラリに渡して変換していきます。
+            // 逐次的なやり方により処理速度も体感上がるメリットもあります。
+            //
+            // 処理対象を幅優先探索し、各Transformに対して次の基準で実行します。
+            // ・メッシュがなく、分解結合の対象でもない場合、属性情報だけコピーして次へ
+            // ・マテリアル分けの対象である場合、子も含めて 分解 → マテリアルを割り当て → 結合　の手順を踏みますが、
+            //   入力や出力の状況によっては分解または結合が不要なためスキップするための場合分けがあります。
+            // ・マテリアル分けの対象でない場合にスキップするための場合分けがあります。
             if (!conf.Validate())
             {
                 Debug.LogError("設定値が不正です。");
@@ -127,7 +141,8 @@ namespace PLATEAU.CityAdjust.MaterialAdjust.Executor
                     // 分解したものについて結合します。
                     if (dstGranularity != MAGranularity.CombineAll)
                     {
-                        // 全結合でなければ、再帰的に結合します。
+                        // 幅優先探索2段目
+                        // 全結合でなければ、分解したものを再帰的に結合します。
                         await decomposed.DfsExecAsync(async innerTransSrc =>
                         {
                             if (!composeCondition.ShouldConstruct(innerTransSrc, dstGranularity))
@@ -159,6 +174,7 @@ namespace PLATEAU.CityAdjust.MaterialAdjust.Executor
                     }
                     else
                     {
+                        // 全結合ならここはまとめて結合して良いです
                         var result = await maComposer.ExecAsync(decomposed, dstGranularity, composeCondition);
                         converted.AddRange(result.Get.GeneratedRootTransforms.Get);
                         return NextSearchFlow.SkipChildren;

@@ -17,7 +17,7 @@ namespace PLATEAU.Tests.EditModeTests.TestMaterialAdjust
         private TestDataMA testData;
 
         [SetUp]
-        private void SetUp()
+        public void SetUp()
         {
             testData = new TestDataMA();
         }

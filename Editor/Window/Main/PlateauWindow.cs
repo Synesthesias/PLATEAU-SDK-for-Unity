@@ -2,6 +2,7 @@
 using PLATEAU.Editor.Window.Main.Tab;
 using PLATEAU.Editor.Window.Main.Tab.AlignLandGui;
 using PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui;
+using PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI;
 using UnityEditor;
 
 namespace PLATEAU.Editor.Window.Main
@@ -34,7 +35,7 @@ namespace PLATEAU.Editor.Window.Main
                     new TabWithFrame(
                         new TabElement("Assetsに保存", new ConvertToAssetGui()),
                         new TabElement("ゲームオブジェクト\nON/OFF", new CityChangeActiveGui()),
-                        new TabElement("分割/結合/マテリアル分け", new CityMaterialAdjustGUI(this)),
+                        new TabElement("分割/結合/マテリアル分け", new CityMaterialAdjustPresenter(this)),
                         new TabElement("地形変換", new CityTerrainConvertGui(this)),
                         new TabElement("高さ合わせ", new AlignLandGui())
                     )

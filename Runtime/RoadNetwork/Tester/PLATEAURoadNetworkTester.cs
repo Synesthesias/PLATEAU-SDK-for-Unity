@@ -1,5 +1,7 @@
-using PLATEAU.CityGML;
+﻿using PLATEAU.CityGML;
 using PLATEAU.CityInfo;
+using PLATEAU.GranularityConvert;
+using PLATEAU.PolygonMesh;
 using PLATEAU.RoadNetwork.Data;
 using PLATEAU.RoadNetwork.Drawer;
 using PLATEAU.RoadNetwork.Factory;
@@ -8,14 +10,22 @@ using PLATEAU.Util.GeoGraph;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Serialization;
 using static UnityEngine.GraphicsBuffer;
 
 namespace PLATEAU.RoadNetwork
 {
-    public class PLATEAURoadNetworkTester : MonoBehaviour
+    [Serializable]
+    public class PLATEAURoadNetworkTester : MonoBehaviour, IRoadNetworkObject
     {
+        [SerializeField] private RoadNetworkDrawerDebug drawer = new RoadNetworkDrawerDebug();
+
+        [field: SerializeField] private RoadNetworkFactory Factory { get; set; } = new RoadNetworkFactory();
+
+        [field: SerializeField] public RoadNetworkModel RoadNetwork { get; set; }
+
         [Serializable]
         public class TestTargetPresets
         {
@@ -23,59 +33,36 @@ namespace PLATEAU.RoadNetwork
             public List<PLATEAUCityObjectGroup> targets = new List<PLATEAUCityObjectGroup>();
         }
 
-        public List<PLATEAUCityObjectGroup> targets = new List<PLATEAUCityObjectGroup>();
-
         public List<TestTargetPresets> savedTargets = new List<TestTargetPresets>();
 
         [SerializeField] private bool targetAll = false;
 
-        [SerializeField] private RoadNetworkDrawerDebug drawer = new RoadNetworkDrawerDebug();
+        [Serializable]
+        public class SplitCityObjectTestParam
+        {
+            public List<PLATEAUCityObjectGroup> targets = new List<PLATEAUCityObjectGroup>();
+            public bool doDestroySrcObject = false;
+        }
+        public SplitCityObjectTestParam splitCityObjectTestParam = new SplitCityObjectTestParam();
 
-        [SerializeField] public List<PLATEAUCityObjectGroup> geoTestTargets = new List<PLATEAUCityObjectGroup>();
-
-
-        public string loadPresetName = "";
-
-        [SerializeField] private bool showGeoTest = false;
-
-        [field: SerializeField] private RoadNetworkFactory Factory { get; set; } = new RoadNetworkFactory();
-
-        [field: SerializeField] public RoadNetworkModel RoadNetwork { get; set; }
-
-        [field: SerializeField] private RoadNetworkStorage Storage { get; set; }
+        public string targetPresetName = "";
 
         public void OnDrawGizmos()
         {
             drawer.Draw(RoadNetwork);
-
-            if (showGeoTest)
-            {
-                var vertices = geoTestTargets
-                    .Select(x => x.GetComponent<MeshCollider>())
-                    .Where(x => x)
-                    .SelectMany(x => x.sharedMesh.vertices.Select(a => a.Xz()))
-                    .ToList();
-                var convex = GeoGraph2d.ComputeConvexVolume(vertices);
-                DebugUtil.DrawArrows(convex.Select(x => x.Xay()));
-            }
         }
 
-        public void Draw(PLATEAUCityObjectGroup cityObjectGroup)
+        public async Task SplitCityObjectAsync()
         {
-            var collider = cityObjectGroup.GetComponent<MeshCollider>();
-            var cMesh = collider.sharedMesh;
-            var isClockwise = GeoGraph2d.IsClockwise(cMesh.vertices.Select(v => new Vector2(v.x, v.y)));
-            if (isClockwise)
-            {
-                DebugUtil.DrawArrows(cMesh.vertices.Select(v => v + Vector3.up * 0.2f));
-            }
-            else
-            {
-                DebugUtil.DrawArrows(cMesh.vertices.Reverse().Select(v => v + Vector3.up * 0.2f));
-            }
+            var p = splitCityObjectTestParam;
+            // 分割結合の設定です。
+            // https://project-plateau.github.io/PLATEAU-SDK-for-Unity/manual/runtimeAPI.html
+            var conf = new GranularityConvertOptionUnity(new GranularityConvertOption(MeshGranularity.PerAtomicFeatureObject, 1),
+                p.targets.Select(t => t.gameObject).ToArray(), p.doDestroySrcObject);
+            var d = await new CityGranularityConverter().ConvertAsync(conf);
         }
 
-        public void CreateNetwork()
+        public async Task CreateNetwork()
         {
             if (targetAll)
             {
@@ -83,31 +70,19 @@ namespace PLATEAU.RoadNetwork
                     .Where(c => c.CityObjects.rootCityObjects.Any(a => a.CityObjectType == CityObjectType.COT_Road))
                     .ToList();
 
-                RoadNetwork = Factory.CreateNetwork(allTargets);
+                RoadNetwork = await Factory.CreateNetworkAsync(allTargets);
             }
             else
             {
                 // 重複は排除する
-                targets = targets.Distinct().ToList();
-                RoadNetwork = Factory.CreateNetwork(targets);
+                var targets = savedTargets.FirstOrDefault(s => s.name == targetPresetName);
+                if (targets != null)
+                {
+                    targets.targets = targets.targets.Distinct().ToList();
+                    RoadNetwork = await Factory.CreateNetworkAsync(targets.targets);
+                }
             }
         }
 
-        public void Serialize()
-        {
-            if (RoadNetwork == null)
-                return;
-            var serializer = new RoadNetworkSerializer();
-            Storage = serializer.Serialize(RoadNetwork);
-        }
-
-        public void Deserialize()
-        {
-            if (Storage == null)
-                return;
-
-            var serializer = new RoadNetworkSerializer();
-            RoadNetwork = serializer.Deserialize(Storage);
-        }
     }
 }

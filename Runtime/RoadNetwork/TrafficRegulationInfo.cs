@@ -1,13 +1,105 @@
 ﻿using PLATEAU.RoadNetwork.Data;
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace PLATEAU.RoadNetwork
 {
     /// <summary>
+    /// 交通規制の生成補助クラス
+    /// </summary>
+    public class TrafficRegulationInfoCreateHelper
+    {
+
+    }
+
+    /// <summary>
+    /// 信号制御器
+    /// </summary>
+    public class TrafficSignalLightController
+    {
+        public TrafficSignalLightController(string id, RoadNetworkNode node, in Vector3 position)
+            : base()
+        {
+            SelfId = id;
+            CorrespondingNode = node;
+            this.Position = position;
+        }
+
+        // RnIDに変換予定？　AVNEWだと文字列
+        public string SelfId { get; private set; } = string.Empty;
+        public RoadNetworkNode CorrespondingNode { get; private set; } = null;
+
+
+        public bool GapImpedanceFlag { get; private set; } = false;
+        public List<TrafficSignalControllerPattern> ControlPatternData { get; private set; } = new List<TrafficSignalControllerPattern>();
+        public List<TrafficSignalLight> SignalLights { get; private set; } = new List<TrafficSignalLight>();
+
+        public Vector3 Position { get; set; }
+    }
+
+    /// <summary>
+    /// 信号灯器
+    /// </summary>
+    public class TrafficSignalLight
+    {
+        public TrafficSignalLight(TrafficSignalLightController controller, in Vector3 position)
+        {
+            this.controller = controller;
+            this.position = position;
+        }
+
+        public void SetStatus(TrafficSignalLightBulb.Status status)
+        {
+
+        }
+
+        /// <summary>
+        /// 対応する停止線
+        /// </summary>
+        public StopLine stopLine;
+
+        public Vector3 position;
+
+        TrafficSignalLightController controller;
+    }
+
+    public class TrafficSignalControllerPattern
+    {
+        public DateTime StartTime { get; private set; } = DateTime.MinValue;
+        public string ControlPatternId { get; private set; } = "_undefind";
+        public List<TrafficSignalControllerPhase> Phases { get; private set; } = new List<TrafficSignalControllerPhase>();
+        public TrafficLightSignalOffset Offset { get; private set; } = null;
+    }
+
+    public class TrafficSignalControllerPhase
+    {
+        public TrafficSignalControllerPhase(string id)
+        {
+            this.Name = id;
+        }
+        public float SplitSeconds { get; set; }
+        public int EnterableVehicleType { get; set; }
+        public Dictionary<TrafficSignalLight, RoadNetworkLink> DirectionMap { get; set; }
+
+        public string Name { get; set; }
+    }
+
+    /// <summary>
+    /// 信号灯器の点灯をずらす
+    /// </summary>
+    public class TrafficLightSignalOffset
+    {
+        public TrafficSignalLight ReferenceSignalLight { get; set; }
+        public float Seconds { get; set; }
+    }
+
+    /////////////////////////////////////////
+    
+    /// <summary>
     /// 交通規制情報
     /// </summary>
-    [System.Serializable]
-    public struct TrafficRegulationInfo
+    public class TrafficRegulationInfo
     {
         /// <summary>
         /// 停止線
@@ -23,24 +115,63 @@ namespace PLATEAU.RoadNetwork
         public RnID<RoadNetworkDataLineString> yields;
     }
 
+    /// <summary>
+    /// 停止線
+    /// </summary>
     [System.Serializable]
-    public struct StopLine
+    public class StopLine
     {
-        public RnID<RoadNetworkDataLineString> line;
-        public TrafficLight trafficLight;
+        public RoadNetworkDataLineString line;
+        public TrafficSignalLight trafficLight;
         public bool bHasStopSign;
     }
 
+    /// <summary>
+    /// 信号機の電球（概念）
+    /// 信号機は何色ですかと聞かれたらこれを返す
+    /// クラス名がTrafficSignalLightと混じって分かりずらいので変えたい
+    /// </summary>
     [System.Serializable]
-    public struct TrafficLight
+    public class TrafficSignalLightBulb
     {
         public LightBulb[] LightBulbs => lightBulbs;
         [SerializeField] private LightBulb[] lightBulbs;
+
+        public enum Status
+        {
+            // 0
+            Undefind = 0,
+
+            // 0x0000000X
+            Stop            = 0x0001,
+            Attention       = 0x00000002,
+            Go              = 0x0003,
+
+            // 0x000000X0
+            Flashing        = 0x00000010,
+
+            // 0x00000X00
+            BlueArrow       = 0x000000100,
+            YellowArrow     = 0x000000200,
+
+            //...
+
+            // 0x0X000000
+            UserDefind1 = 0x01000000,
+            UserDefind2 = 0x02000000,
+            UserDefind3 = 0x03000000,
+            UserDefind4 = 0x04000000,
+            UserDefind5 = 0x05000000,
+            UserDefind6 = 0x06000000,
+            //...
+        }
     }
 
-
+    /// <summary>
+    /// 信号機の電球
+    /// </summary>
     [System.Serializable]
-    public struct LightBulb
+    public class LightBulb
     {
         public BulbType Type => type;
 

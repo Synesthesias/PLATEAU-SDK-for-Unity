@@ -73,7 +73,7 @@ namespace PLATEAU.TerrainConvert
 
         private ConvertedTerrainData(Node plateauNode, TerrainConvertOption option)
         {
-            this.heightmapData = ConvertFromMesh(plateauNode.Mesh, plateauNode.Name, option.TextureWidth, option.TextureHeight);
+            this.heightmapData = ConvertFromMesh(plateauNode.Mesh, plateauNode.Name, option.TextureWidth, option.TextureHeight, option.FillEdges);
             this.name = plateauNode.Name;
             this.isActive = plateauNode.IsActive;
             
@@ -103,14 +103,14 @@ namespace PLATEAU.TerrainConvert
             }
         }
 
-        private HeightmapData ConvertFromMesh(PolygonMesh.Mesh mesh, string nodeName, int textureWidth, int textureHeight)
+        private HeightmapData ConvertFromMesh(PolygonMesh.Mesh mesh, string nodeName, int textureWidth, int textureHeight, bool fillEdges)
         {
             if (mesh == null) 
                 return null;
 
             PlateauVector2d margin = new PlateauVector2d(0,0);
             HeightmapGenerator gen = new();
-            gen.GenerateFromMesh(mesh, textureWidth, textureHeight, margin, out PlateauVector3d min, out PlateauVector3d max, out PlateauVector2f minUV, out PlateauVector2f maxUV, out UInt16[] heightData);
+            gen.GenerateFromMesh(mesh, textureWidth, textureHeight, margin, fillEdges, out PlateauVector3d min, out PlateauVector3d max, out PlateauVector2f minUV, out PlateauVector2f maxUV, out UInt16[] heightData);
             float[,] HeightMapTexture = HeightmapGenerator.ConvertTo2DFloatArray(heightData, textureWidth, textureHeight);
 
             HeightmapData data = new();
@@ -160,6 +160,20 @@ namespace PLATEAU.TerrainConvert
             return await Task.FromResult<TerrainConvertResult>(result);
         }
 
+        private Texture2D LoadTexture2dWithoutAlpha(string texturePath)
+        {
+            var texture = new Texture2D(1, 1);
+            if (string.IsNullOrEmpty(texturePath))
+                texturePath = PathUtil.SdkPathToAssetPath("Materials/Textures/White.PNG");
+            var rawData = System.IO.File.ReadAllBytes(texturePath);
+            texture.LoadImage(rawData);
+            //terrainマテリアルはalphaをsmoothnessとして扱うため、alphaなしに変換
+            var outTexture = new Texture2D(texture.width,　texture.height, TextureFormat.RGB24, false);
+            outTexture.SetPixels(texture.GetPixels());
+            outTexture.Apply();
+            return outTexture;
+        }
+
         private void PlaceToSceneRecursive(TerrainConvertResult result, GameObject[] srcGameObjs,
             TerrainConvertOption option, bool skipRoot, int recursiveDepth)
         {
@@ -179,14 +193,8 @@ namespace PLATEAU.TerrainConvert
 
                     //Terrain Material
                     TerrainLayer materialLayer = new TerrainLayer();
-                    var diffuseTexture = new Texture2D(1, 1);
-                    var texturePath = this.heightmapData.diffuseTexturePath;
-                    if (string.IsNullOrEmpty(texturePath))
-                        texturePath = PathUtil.SdkPathToAssetPath("Materials/Textures/White.PNG");
+                    materialLayer.diffuseTexture = LoadTexture2dWithoutAlpha(this.heightmapData.diffuseTexturePath);
 
-                    var rawData = System.IO.File.ReadAllBytes(texturePath);
-                    diffuseTexture.LoadImage(rawData);
-                    materialLayer.diffuseTexture = diffuseTexture;
                     var uvSize = new Vector2(
                         terrainWidth / (this.heightmapData.maxUV.X - this.heightmapData.minUV.X),
                         terrainLength / (this.heightmapData.maxUV.Y - this.heightmapData.minUV.Y));
@@ -196,6 +204,7 @@ namespace PLATEAU.TerrainConvert
                         uvSize.x * this.heightmapData.minUV.X,
                         uvSize.y * this.heightmapData.minUV.Y);
 
+                    materialLayer.smoothness = 0f;
                     terraindata.terrainLayers = new TerrainLayer[] { materialLayer };
 
                     //Terrain GameObject
