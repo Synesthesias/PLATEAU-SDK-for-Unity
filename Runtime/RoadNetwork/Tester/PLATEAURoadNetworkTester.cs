@@ -182,7 +182,7 @@ namespace PLATEAU.RoadNetwork
                     foreach (var s in mesh.SubMeshes)
                     {
                         var vertices = GeoGraph2D.ComputeMeshOutlineVertices(mesh, s, a => a.Xz(), epsilon);
-                        ret.Add(new RoadNetworkTranMesh(null, vertices));
+                        ret.Add(new RoadNetworkTranMesh(c.CityObjectGroup, vertices));
 
                     }
                 }

@@ -125,6 +125,9 @@ namespace PLATEAU.RoadNetwork
         [field: SerializeField]
         public List<ConvertedCityObject> Children { get; set; } = new List<ConvertedCityObject>();
 
+        [field: SerializeField]
+        public PLATEAUCityObjectGroup CityObjectGroup { get; private set; }
+
         public CityInfo.CityObjectList CityObjects
         {
             get
@@ -236,6 +239,13 @@ namespace PLATEAU.RoadNetwork
                 }
             }
         }
+
+        public void SetCityObjectGroup(PLATEAUCityObjectGroup group)
+        {
+            CityObjectGroup = group;
+            foreach (var c in Children)
+                c.SetCityObjectGroup(group);
+        }
     }
 
     public static class RoadNetworkEx
@@ -284,8 +294,9 @@ namespace PLATEAU.RoadNetwork
         internal static async Task<ConvertCityObjectResult> ConvertCityObjectsAsync(IEnumerable<PLATEAUCityObjectGroup> cityObjectGroups, float epsilon = 0.1f)
         {
             // NOTE : CityGranularityConverterを参考
+            var cityObjectGroupList = cityObjectGroups.ToList();
             var nativeOption = new GranularityConvertOption(MeshGranularity.PerAtomicFeatureObject, 1);
-            var transformList = new UniqueParentTransformList(cityObjectGroups.Select(c => c.transform).ToArray());
+            var transformList = new UniqueParentTransformList(cityObjectGroupList.Select(c => c.transform).ToArray());
 
             // 属性情報を記憶しておく
             var attributes = GmlIdToSerializedCityObj.ComposeFrom(transformList);
@@ -306,8 +317,18 @@ namespace PLATEAU.RoadNetwork
             var attrHelper = new AttributeDataHelper(getter, nativeOption.Granularity, true);
             var cco = await Task.Run(() => new ConvertedCityObject(dstModel, attrHelper));
 
+            foreach (var co in cityObjectGroupList)
+            {
+                var ccoChild = cco.GetAllChildren().FirstOrDefault(c => c.Name == co.name);
+                if (ccoChild != null)
+                {
+                    ccoChild.SetCityObjectGroup(co);
+                }
+            }
+
             var ret = new ConvertCityObjectResult();
             ret.ConvertedCityObjects.AddRange(cco.GetAllChildren().Where(c => c.Children.Any() == false && c.Meshes.Any()));
+
             return ret;
         }
     }
