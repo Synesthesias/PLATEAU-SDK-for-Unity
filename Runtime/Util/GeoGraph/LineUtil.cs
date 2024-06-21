@@ -121,6 +121,13 @@ namespace PLATEAU.Util.GeoGraph
             return GeoGraphEx.GetEdges(vertices, false).Sum(item => (item.Item2 - item.Item1).magnitude);
         }
 
+        /// <summary>
+        /// 線分の距離をp : (1-p)で分割した点をmidPointに入れて返す. 戻り値は midPointを含む線分のインデックス(i ~ i+1の線分上にmidPointがある) 
+        /// </summary>
+        /// <param name="vertices"></param>
+        /// <param name="p"></param>
+        /// <param name="midPoint"></param>
+        /// <returns></returns>
         public static int GetLineSegmentLerpPoint(IReadOnlyList<Vector3> vertices, float p, out Vector3 midPoint)
         {
             // 0 ~ 1の間でClampする

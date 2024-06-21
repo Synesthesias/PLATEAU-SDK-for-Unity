@@ -208,7 +208,9 @@ namespace PLATEAU.RoadNetwork
 
         /// <summary>
         /// 境界線の中央の点を返す
+        /// 線分の距離をp : (1-p)で分割した点をmidPointに入れて返す. 戻り値は midPointを含む線分のインデックス(i ~ i+1の線分上にmidPointがある) 
         /// </summary>
+        /// <param name="p"></param>
         /// <param name="midPoint"></param>
         /// <returns></returns>
         public int GetLerpPoint(float p, out Vector3 midPoint)
