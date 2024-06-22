@@ -3,7 +3,7 @@ using UnityEngine.UI;
 
 namespace PLATEAU.Util
 {
-    public static class Vector2Util
+    public static class Vector2Ex
     {
         /// <summary>
 		/// new Vector2(Mathf.Abs(self.x), Mathf.Abs(self.y))

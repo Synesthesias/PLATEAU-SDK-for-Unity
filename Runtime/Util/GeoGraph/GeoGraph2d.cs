@@ -51,7 +51,7 @@ namespace PLATEAU.Util.GeoGraph
             {
                 if (list.Count <= 2)
                     return true;
-                return Vector2Util.Cross(toVec2(list[^1] - list[^2]), toVec2(list[^2] - list[^3])) > 0;
+                return Vector2Ex.Cross(toVec2(list[^1] - list[^2]), toVec2(list[^2] - list[^3])) > 0;
             }
             var compare = new Vector2Equitable(Epsilon);
             var sortedVertices = vertices.OrderBy(v => v.x).ThenBy(v => v.y).ToList();
@@ -99,7 +99,7 @@ namespace PLATEAU.Util.GeoGraph
             {
                 if (list.Count <= 2)
                     return true;
-                return Vector2Util.Cross(list[^1] - list[^2], list[^2] - list[^3]) > 0;
+                return Vector2Ex.Cross(list[^1] - list[^2], list[^2] - list[^3]) > 0;
             }
 
             var sortedVertices = vertices.OrderBy(v => v.x).ThenBy(v => v.y).Distinct().ToList();
@@ -405,7 +405,7 @@ namespace PLATEAU.Util.GeoGraph
         /// <returns></returns>
         public static bool IsClockwise(IEnumerable<Vector2> vertices)
         {
-            var total = GeoGraphEx.GetEdges(vertices, true).Sum(item => Vector2Util.Cross(item.Item1, item.Item2));
+            var total = GeoGraphEx.GetEdges(vertices, true).Sum(item => Vector2Ex.Cross(item.Item1, item.Item2));
             return total < 0;
         }
 
@@ -640,7 +640,7 @@ namespace PLATEAU.Util.GeoGraph
             // ((1-p) + p * cos(X))sin(A) = p*sin(X)cos(A)
             // tan(A) = p*sin(X) / ((1-p) + p * cos(X))
             var radA = Mathf.Atan2(p * siX, 1 - p + p * coX);
-            return new Ray2D(intersection, Vector2Util.RotateTo(dirA, dirB, radA));
+            return new Ray2D(intersection, Vector2Ex.RotateTo(dirA, dirB, radA));
         }
 
         public class BorderParabola2D

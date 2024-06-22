@@ -14,6 +14,7 @@ namespace PLATEAU.RoadNetwork.Drawer
         // --------------------
         // start:フィールド
         // --------------------
+        [SerializeField] private bool visible = true;
         // 境界線を表示する
         [SerializeField] private bool showBorder = true;
         // Laneの頂点の内側を向くベクトルの中央点を表示する
@@ -26,13 +27,30 @@ namespace PLATEAU.RoadNetwork.Drawer
         [SerializeField] private int showVertexFontSize = 20;
         // レーン描画するときに法線方向へオフセットを入れる
         [SerializeField] private float edgeOffset = 10f;
-
         [SerializeField] private bool showSplitLane = false;
-        [SerializeField] private bool showSplitLane2 = false;
         [SerializeField] private float splitLaneRate = 0.5f;
 
-        [SerializeField] private bool showNodeNeighbor = false;
-        [SerializeField] private bool showNodeTracks = false;
+        [Serializable]
+        private class DrawOption
+        {
+            public bool visible = true;
+            public Color color = Color.white;
+        }
+
+        [Serializable]
+        private class NodeOption
+        {
+            public bool visible = true;
+
+            public DrawOption showTrack = new DrawOption();
+
+            public DrawOption showNeighbor = new DrawOption();
+
+            public DrawOption showBorder = new DrawOption();
+
+            public DrawOption showSplitTrack = new DrawOption();
+        }
+        [SerializeField] private NodeOption nodeOp = new NodeOption();
 
         [Serializable]
         private class WayOption
@@ -80,6 +98,8 @@ namespace PLATEAU.RoadNetwork.Drawer
 
         public void Draw(RoadNetworkModel roadNetwork)
         {
+            if (!visible)
+                return;
             if (roadNetwork == null)
                 return;
 
@@ -109,7 +129,6 @@ namespace PLATEAU.RoadNetwork.Drawer
                         DebugEx.DrawString(item.v.ToString(), item.v, color: Color.red, fontSize: showVertexFontSize);
                 }
 
-
                 foreach (var i in Enumerable.Range(0, way.Count))
                 {
                     var v = way[i];
@@ -131,27 +150,48 @@ namespace PLATEAU.RoadNetwork.Drawer
                 }
             }
 
+
             foreach (var node in roadNetwork.Nodes)
             {
+                if (nodeOp.visible == false)
+                    break;
+
                 var center = node.GetCenterPoint();
                 Debug.DrawLine(center, center + Vector3.up);
 
-                if (showNodeNeighbor)
+                if (nodeOp.showNeighbor.visible)
                 {
                     foreach (var n in node.Neighbors)
                     {
-                        DrawWay(n.Border, Color.magenta, Color.magenta);
-                        n.Border.GetLerpPoint(0.5f, out var c);
-                        Debug.DrawLine(center, c, color: Color.red);
+                        if (nodeOp.showBorder.visible)
+                            DrawWay(n.Border, nodeOp.showBorder.color);
+
+                        if (nodeOp.showSplitTrack.visible)
+                        {
+                            n.Border.GetLerpPoint(0.5f, out var c);
+                            Debug.DrawLine(center, c, color: nodeOp.showSplitTrack.color);
+
+                            foreach (var n2 in node.Neighbors)
+                            {
+                                if (n == n2)
+                                    continue;
+                                var way = node.CalcTrackWay(n.Link, n2.Link);
+                                if (way != null)
+                                {
+                                    foreach (var w in way.BothWays)
+                                        DrawWay(w, nodeOp.showSplitTrack.color);
+                                }
+                            }
+                        }
                     }
                 }
 
-                if (showNodeTracks)
+                if (nodeOp.showTrack.visible)
                 {
                     foreach (var l in node.Tracks)
                     {
                         foreach (var w in l.BothWays)
-                            DrawWay(w, Color.cyan, Color.cyan);
+                            DrawWay(w, nodeOp.showTrack.color);
                     }
                 }
             }
@@ -172,8 +212,7 @@ namespace PLATEAU.RoadNetwork.Drawer
                     if (showSplitLane && lane.IsBothConnectedLane)
                     {
                         var vers = lane.GetInnerLerpSegments(splitLaneRate);
-                        if (showSplitLane2)
-                            DebugEx.DrawArrows(vers.Select(v => v.Xay()), false, color: Color.red, arrowSize: 0.1f);
+                        DebugEx.DrawArrows(vers, false, color: Color.red, arrowSize: 0.1f);
                     }
                 }
 

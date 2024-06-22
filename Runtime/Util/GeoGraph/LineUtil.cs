@@ -30,12 +30,12 @@ namespace PLATEAU.Util.GeoGraph
             t1 = t2 = 0f;
             intersection = Vector2.zero;
 
-            var deno = Vector2Util.Cross(b - a, d - c);
+            var deno = Vector2Ex.Cross(b - a, d - c);
             if (Mathf.Abs(deno) < Epsilon)
                 return false;
 
-            t1 = Vector2Util.Cross(c - a, d - c) / deno;
-            t2 = Vector2Util.Cross(b - a, a - c) / deno;
+            t1 = Vector2Ex.Cross(c - a, d - c) / deno;
+            t2 = Vector2Ex.Cross(b - a, a - c) / deno;
             intersection = Vector2.LerpUnclamped(a, b, t1);
             return true;
         }
