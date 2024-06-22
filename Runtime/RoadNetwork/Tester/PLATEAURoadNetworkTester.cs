@@ -5,6 +5,7 @@ using PLATEAU.PolygonMesh;
 using PLATEAU.RoadNetwork.Data;
 using PLATEAU.RoadNetwork.Drawer;
 using PLATEAU.RoadNetwork.Factory;
+using PLATEAU.RoadNetwork.Mesh;
 using PLATEAU.RoadNetwork.Tester;
 using PLATEAU.Util;
 using PLATEAU.Util.GeoGraph;
@@ -191,6 +192,25 @@ namespace PLATEAU.RoadNetwork
             return ret;
         }
 
+        private void MergeVertices()
+        {
+            try
+            {
+                var vertexTable = GeoGraphEx.MergeVertices(
+                    convertedCityObjects.SelectMany(c => c.Meshes.SelectMany(m => m.Vertices)),
+                    showTranMesh.mergeEpsilon);
+                foreach (var m in convertedCityObjects.SelectMany(c => c.Meshes))
+                {
+                    m.Merge(vertexTable);
+                }
+
+            }
+            catch (Exception e)
+            {
+                var x = 0;
+            }
+        }
+
         public async Task CreateNetwork()
         {
             switch (createMode)
@@ -199,10 +219,7 @@ namespace PLATEAU.RoadNetwork
                     convertedCityObjects = await ConvertCityObjectAsync();
                     break;
                 case CreateMode.MergeConvertCityObject:
-                    foreach (var m in convertedCityObjects.SelectMany(c => c.Meshes))
-                    {
-                        m.Merge(showTranMesh.mergeEpsilon);
-                    }
+                    MergeVertices();
                     break;
                 case CreateMode.SeparateConvertCityObject:
                     foreach (var m in convertedCityObjects.SelectMany(c => c.Meshes))

@@ -78,10 +78,10 @@ namespace PLATEAU.Util.GeoGraph
 
     public static class LineSegment2DEx
     {
-
         /// <summary>
         /// 引数の線分(v0,v1)との交点を返す
         /// </summary>
+        /// <param name="self"></param>
         /// <param name="v0"></param>
         /// <param name="v1"></param>
         /// <param name="intersection"></param>
@@ -92,11 +92,41 @@ namespace PLATEAU.Util.GeoGraph
         {
             return LineUtil.SegmentIntersection(self.Start, self.End, v0, v1, out intersection, out t1, out t2);
         }
-
+        /// <summary>
+        /// 引数の線分otherとの交点を返す
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="other"></param>
+        /// <param name="intersection">交点</param>
+        /// <param name="t1"></param>
+        /// <param name="t2"></param>
         public static bool TrySegmentIntersection(this LineSegment2D self, LineSegment2D other,
             out Vector2 intersection, out float t1, out float t2)
         {
             return self.TrySegmentIntersection(other.Start, other.End, out intersection, out t1, out t2);
+        }
+
+        /// <summary>
+        /// 引数の線分otherとの交点を返す
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="other"></param>
+        /// <param name="intersection">交点</param>
+        public static bool TrySegmentIntersection(this LineSegment2D self, LineSegment2D other,
+            out Vector2 intersection)
+        {
+            return self.TrySegmentIntersection(other.Start, other.End, out intersection, out var t1, out var t2);
+        }
+
+        /// <summary>
+        /// 引数の線分otherとの交点を返す
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="other"></param>
+        /// <param name="intersection">交点</param>
+        public static bool TrySegmentIntersection(this LineSegment2D self, LineSegment2D other)
+        {
+            return self.TrySegmentIntersection(other.Start, other.End, out var intersection, out var t1, out var t2);
         }
 
         /// <summary>

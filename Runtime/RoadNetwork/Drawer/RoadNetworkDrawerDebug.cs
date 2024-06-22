@@ -15,8 +15,6 @@ namespace PLATEAU.RoadNetwork.Drawer
         // start:フィールド
         // --------------------
         [SerializeField] private bool visible = true;
-        // 境界線を表示する
-        [SerializeField] private bool showBorder = true;
         // Laneの頂点の内側を向くベクトルの中央点を表示する
         [SerializeField] private bool showInsideNormalMidPoint = false;
         // 頂点インデックスを表示する
@@ -53,6 +51,13 @@ namespace PLATEAU.RoadNetwork.Drawer
         [SerializeField] private NodeOption nodeOp = new NodeOption();
 
         [Serializable]
+        private class LinkOption
+        {
+            public bool visible = true;
+        }
+
+        [SerializeField] private LinkOption linkOp = new LinkOption();
+        [Serializable]
         private class WayOption
         {
             // 法線を表示する
@@ -68,13 +73,16 @@ namespace PLATEAU.RoadNetwork.Drawer
         [Serializable]
         private class LaneOption
         {
-            // 左
-            public Color leftWayColor = Color.green;
-            public Color rightWayColor = Color.green;
+            public bool visible = true;
             public float bothConnectedLaneAlpha = 1f;
             public float validWayAlpha = 0.75f;
             public float invalidWayAlpha = 0.3f;
 
+            public DrawOption showLeftWay = new DrawOption();
+            public DrawOption showRightWay = new DrawOption();
+            // 境界線を表示する
+            public DrawOption showPrevBorder = new DrawOption();
+            public DrawOption showNextBorder = new DrawOption();
             /// <summary>
             /// レーン描画するときのアルファを返す
             /// </summary>
@@ -196,24 +204,40 @@ namespace PLATEAU.RoadNetwork.Drawer
                 }
             }
 
+            void DrawLane(RoadNetworkLane lane)
+            {
+                if (laneOp.visible == false)
+                    return;
+
+
+                if (laneOp.showLeftWay.visible)
+                    DrawWay(lane.LeftWay, color: laneOp.showLeftWay.color.PutA(laneOp.GetLaneAlpha(lane)));
+                if (laneOp.showRightWay.visible)
+                    DrawWay(lane.RightWay, color: laneOp.showRightWay.color.PutA(laneOp.GetLaneAlpha(lane)));
+
+                if (laneOp.showPrevBorder.visible)
+                {
+                    DrawWay(lane.PrevBorder, color: laneOp.showPrevBorder.color);
+                }
+
+                if (laneOp.showNextBorder.visible)
+                {
+                    DrawWay(lane.NextBorder, color: laneOp.showNextBorder.color);
+                }
+
+                if (showSplitLane && lane.HasBothBorder)
+                {
+                    var vers = lane.GetInnerLerpSegments(splitLaneRate);
+                    DebugEx.DrawArrows(vers, false, color: Color.red, arrowSize: 0.1f);
+                }
+            }
             foreach (var link in roadNetwork.Links)
             {
+                if (linkOp.visible == false)
+                    break;
                 foreach (var lane in link.AllLanes)
                 {
-                    DrawWay(lane.LeftWay, color: laneOp.leftWayColor.PutA(laneOp.GetLaneAlpha(lane)));
-                    DrawWay(lane.RightWay, color: laneOp.rightWayColor.PutA(laneOp.GetLaneAlpha(lane)));
-                    if (showBorder)
-                    {
-                        DrawWay(lane.PrevBorder, color: Color.blue, arrowColor: Color.blue);
-                        DrawWay(lane.NextBorder, color: Color.red, arrowColor: Color.red);
-
-                    }
-
-                    if (showSplitLane && lane.IsBothConnectedLane)
-                    {
-                        var vers = lane.GetInnerLerpSegments(splitLaneRate);
-                        DebugEx.DrawArrows(vers, false, color: Color.red, arrowSize: 0.1f);
-                    }
+                    DrawLane(lane);
                 }
 
 

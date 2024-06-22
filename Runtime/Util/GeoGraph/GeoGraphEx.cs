@@ -38,6 +38,48 @@ namespace PLATEAU.Util.GeoGraph
         }
 
         /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="vertices"></param>
+        /// <param name="mergeMap"></param>
+        /// <param name="newVertices"></param>
+        /// <returns></returns>
+        public static bool MergeMeshVertex(
+            IList<Vector3> vertices,
+            Dictionary<Vector3, Vector3> mergeMap,
+            out List<Vector3> newVertices,
+            out List<int> vertexIndexMap)
+        {
+            vertexIndexMap = Enumerable.Range(0, vertices.Count).ToList();
+            newVertices = new List<Vector3>(vertices.Count);
+            var indexMap = new Dictionary<Vector3, int>();
+            bool found = false;
+            for (var i = 0; i < vertices.Count; i++)
+            {
+                var v = vertices[i];
+                if (mergeMap.TryGetValue(v, out var m))
+                {
+                    if (indexMap.TryGetValue(m, out var idx) == false)
+                    {
+                        idx = newVertices.Count;
+                        newVertices.Add(m);
+                        indexMap[m] = idx;
+                        found = true;
+                    }
+                    vertexIndexMap[i] = idx;
+                }
+                else
+                {
+                    newVertices.Add(v);
+                    vertexIndexMap[i] = newVertices.Count - 1;
+                }
+            }
+
+
+            return found;
+        }
+
+        /// <summary>
         /// 点群verticesをセルサイズcellSizeでグリッド化し、頂点をまとめた結果を返す
         /// </summary>
         /// <param name="vertices"></param>
@@ -60,26 +102,72 @@ namespace PLATEAU.Util.GeoGraph
             Vector3Int[] Delta(int d)
             {
                 var w = 2 * d + 1;
-                var st = Pow3(w - 2);
                 var en = Pow3(w);
                 var half = w / 2;
                 var w2 = w * w;
-                var ret = new Vector3Int[en - st];
-                for (var i = st; i < en; i++)
+                var ret = new Vector3Int[en];
+                for (var i = 0; i < en; i++)
                 {
                     var dx = i % w - half;
                     var dy = (i / w) % w - half;
                     var dz = (i / w2) - half;
-                    ret[i - st] = new Vector3Int(dx, dy, dz);
+                    ret[i] = new Vector3Int(dx, dy, dz);
                 }
 
                 return ret;
             }
+            var keys = cells.Keys.ToList();
+            keys.Sort((a, b) =>
+            {
+                var d = a.z - b.z;
+                if (d != 0)
+                    return d;
+                d = a.y - b.y;
+                if (d != 0)
+                    return d;
+                return a.x - b.x;
+            });
+            var del = Delta(2)
+                // zでソートしているのでzが負のものは無視してよい
+                .Where(d => d != Vector3Int.zero)
+                .Where(d => d.z >= 0)
+                // マンハッタン距離で2のものをマージする
+                .Where(d => d.Abs().Sum() <= 2)
+                .ToList();
+            foreach (var k in keys)
+            {
+                if (cells.ContainsKey(k) == false)
+                    continue;
+                foreach (var d in del)
+                {
+                    if (d == Vector3Int.zero)
+                        continue;
+                    var n = k + d;
+                    if (cells.ContainsKey(n) == false)
+                        continue;
+                    cells[k].UnionWith(cells[n]);
+                    cells.Remove(n);
+                }
+            }
 
+            var ret = new Dictionary<Vector3, Vector3>();
+
+            foreach (var c in cells)
+            {
+                // 1つのセルに1つの頂点しかない場合はそのまま
+                if (c.Value.Count == 1)
+                    continue;
+                var center = c.Value.Aggregate(Vector3.zero, (v, a) => v + a) / c.Value.Count;
+
+                foreach (var v in c.Value)
+                    ret[v] = center;
+            }
+
+            return ret;
+#if false
             // 26近傍のセルの差分
             var delta3 = Delta(1);
-#if false
-            void Wfs(Vector3Int c)
+            void Search(Vector3Int c)
             {
                 List<Vector3Int> neighbor = new List<Vector3Int>(delta3.Length);
                 foreach (var d in delta3)
@@ -117,49 +205,6 @@ namespace PLATEAU.Util.GeoGraph
                 }
             }
 #endif
-            var keys = cells.Keys.ToList();
-            keys.Sort((a, b) =>
-            {
-                var d = a.z - b.z;
-                if (d != 0)
-                    return d;
-                d = a.y - b.y;
-                if (d != 0)
-                    return d;
-                return a.x - b.x;
-            });
-            var del = Delta(1)
-                .Concat(Delta(2))
-                // zでソートしているのでzが負のものは無視してよい
-                .Where(d => d.z >= 0)
-                // マンハッタン距離で2のものをマージする
-                .Where(d => d.Abs().Sum() <= 2)
-                .ToList();
-            foreach (var k in keys)
-            {
-                if (cells.ContainsKey(k) == false)
-                    continue;
-                foreach (var d in del)
-                {
-                    var n = k + d;
-                    if (cells.ContainsKey(n) == false)
-                        continue;
-                    cells[k].UnionWith(cells[n]);
-                    cells.Remove(n);
-                }
-            }
-
-            var ret = new Dictionary<Vector3, Vector3>();
-
-            foreach (var c in cells)
-            {
-                var center = c.Value.Aggregate(Vector3.zero, (v, a) => v + a) / c.Value.Count;
-
-                foreach (var v in c.Value)
-                    ret[v] = center;
-            }
-
-            return ret;
         }
     }
 }

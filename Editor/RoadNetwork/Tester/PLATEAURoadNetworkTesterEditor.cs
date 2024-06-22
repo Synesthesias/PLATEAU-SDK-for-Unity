@@ -41,6 +41,8 @@ namespace PLATEAU.Editor.RoadNetwork
                 return;
 
             base.OnInspectorGUI();
+            GUILayout.Label($"ConvertedCityObjectVertexCount : {cog.convertedCityObjects.Sum(c => c.Meshes.Sum(m => m.Vertices.Count))}");
+
             if (GUILayout.Button("Create"))
                 cog.CreateNetwork();
 
