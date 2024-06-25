@@ -268,7 +268,6 @@ namespace PLATEAU.RoadNetwork.Factory
             public Vertex2PointTable(float cellSize, IEnumerable<Vector3> vertices)
             {
                 // 頂点の一致判定のためにセル単位に切り捨て
-                // #TODO : 近いけど隣のセルになる場合を考慮
                 CellSize = cellSize;
                 var cSize = Vector3.one * cellSize;
 

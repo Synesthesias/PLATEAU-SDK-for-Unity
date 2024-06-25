@@ -29,7 +29,8 @@ namespace PLATEAU.RoadNetwork
         public static RoadNetworkLineString Create(IEnumerable<RoadNetworkPoint> vertices)
         {
             var ret = new RoadNetworkLineString();
-            ret.Points.AddRange(vertices);
+            foreach (var v in vertices)
+                ret.AddPointOrSkip(v);
             return ret;
         }
 
@@ -47,6 +48,17 @@ namespace PLATEAU.RoadNetwork
             // 分割できない時は空を返す
             var splitLines = LineUtil.SplitLineSegments(this, num).ToList();
             return splitLines.Select(x => Create(x.Select(a => new RoadNetworkPoint(a)))).ToList();
+        }
+
+        /// <summary>
+        /// 後ろの点が同じなら追加しない
+        /// </summary>
+        /// <param name="p"></param>
+        public void AddPointOrSkip(RoadNetworkPoint p)
+        {
+            if (Points.Count > 0 && Points.Last().Vertex == p.Vertex)
+                return;
+            Points.Add(p);
         }
 
         public IEnumerator<Vector3> GetEnumerator()

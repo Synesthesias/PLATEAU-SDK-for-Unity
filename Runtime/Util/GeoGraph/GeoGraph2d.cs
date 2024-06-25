@@ -206,32 +206,6 @@ namespace PLATEAU.Util.GeoGraph
             //return indices.Select(i => orderedVertices[i].i).ToArray();
         }
 
-        public static void MergeMeshVertex(
-            IList<Vector3> vertices,
-            Func<Vector3, Vector3, float> calcDistance,
-            float epsilon,
-            out List<Vector3> newVertices,
-            out int[] newIndices)
-        {
-            var table = GetNearVertexTable(vertices, calcDistance, epsilon);
-
-            var num = Enumerable.Range(0, table.Length).Count(i => i == table[i]);
-            newVertices = new List<Vector3>(num);
-
-            for (var i = 0; i < vertices.Count; ++i)
-            {
-                if (table[i] == i)
-                {
-                    newVertices.Add(vertices[i]);
-                    table[i] = newVertices.Count - 1;
-                    continue;
-                }
-                table[i] = table[table[i]];
-            }
-
-            newIndices = table;
-        }
-
         public static List<Vector3> ComputeMeshOutlineVertices(IReadOnlyList<Vector3> vert, IList<int> triangles, Func<Vector3, Vector2> toVec2, float epsilon = 0.1f)
         {
 #if false

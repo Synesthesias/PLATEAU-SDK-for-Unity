@@ -169,31 +169,30 @@ namespace PLATEAU.RoadNetwork
                 RoadNetworkWay r = RightWay;
                 if (i != splitNum - 1)
                 {
-                    var points = new List<Vector2>();
-                    void AddPoint(Vector2 p)
+                    var points = new List<Vector3>();
+                    void AddPoint(Vector3 p)
                     {
-                        if (points.Any() && (points.Last() - p).magnitude < 0.001f)
+                        if (points.Any() && (points.Last() - p).sqrMagnitude < 0.001f)
                             return;
                         points.Add(p);
                     }
 #if false
                     points = this.GetInnerLerpSegments(p2);
 #else
-                    var lefts = LeftWay.Vertices.Select(x => x.Xz()).ToList();
+                    var lefts = LeftWay.Vertices.ToList();
                     var rights =
-                        RightWay.Vertices.Select(x => x.Xz()).ToList();
+                        RightWay.Vertices.ToList();
                     // #TODO : 直線補間ではなくstartSubWayからとってくる必要がある
                     AddPoint(Vector3.Lerp(lefts[0], rights[0], p2));
-                    var segments = GeoGraph2D.GetInnerLerpSegments(lefts, rights, p2);
+                    var segments = GeoGraphEx.GetInnerLerpSegments(lefts, rights, AxisPlane.Xz, p2);
                     foreach (var s in segments)
                     {
                         AddPoint(s.Segment.Start);
-                        //AddPoint(s.Segment.End);
                     }
                     // #TODO : 直線補間ではなくendSubWayからとってくる必要がある
                     AddPoint(Vector3.Lerp(lefts[^1], rights[^1], p2));
 #endif
-                    var centerLine = RoadNetworkLineString.Create(points.Select(p => new RoadNetworkPoint(p.Xay())));
+                    var centerLine = RoadNetworkLineString.Create(points.Select(p => new RoadNetworkPoint(p)));
                     r = new RoadNetworkWay(centerLine, false, true);
                 }
                 var l = new RoadNetworkWay(leftWay.LineString, leftWay.IsReversed, false);
@@ -312,19 +311,19 @@ namespace PLATEAU.RoadNetwork
         public static List<Vector3> GetInnerLerpSegments(this RoadNetworkLane self, float p2)
         {
             var points = new List<Vector3>();
-            void AddPoint(Vector2 p)
+            void AddPoint(Vector3 p)
             {
-                if (points.Any() && (points.Last().Xz() - p).magnitude < 0.001f)
+                if (points.Any() && (points.Last() - p).magnitude < 0.001f)
                     return;
-                points.Add(p.Xay());
+                points.Add(p);
             }
 
-            var lefts = self.LeftWay.Vertices.Select(x => x.Xz()).ToList();
+            var lefts = self.LeftWay.Vertices.ToList();
             var rights =
-                self.RightWay.Vertices.Select(x => x.Xz()).ToList();
+                self.RightWay.Vertices.ToList();
             // #TODO : 直線補間ではなくstartSubWayからとってくる必要がある
             AddPoint(Vector3.Lerp(lefts[0], rights[0], p2));
-            var segments = GeoGraph2D.GetInnerLerpSegments(lefts, rights, p2);
+            var segments = GeoGraphEx.GetInnerLerpSegments(lefts, rights, AxisPlane.Xz, p2);
             foreach (var s in segments)
             {
                 AddPoint(s.Segment.Start);
