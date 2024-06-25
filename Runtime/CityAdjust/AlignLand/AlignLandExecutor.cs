@@ -9,6 +9,7 @@ using PLATEAU.HeightMapAlign;
 using PLATEAU.PolygonMesh;
 using PLATEAU.TerrainConvert;
 using PLATEAU.Util;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -23,23 +24,31 @@ namespace PLATEAU.CityAdjust.AlignLand
         public async Task ExecAsync(ALConfig conf, IProgressDisplay progressDisplay)
         {
             progressDisplay.SetProgress("", 0f, "ハイトマップをを作成中...");
-            // 高さの基準となる土地からC++のModelとハイトマップを生成します。
             var landTrans = conf.Lands[0]; // TODO 複数対応
-            var landMf = landTrans.GetComponent<MeshFilter>();
-            if (landMf == null) return;
-            var landMesh = landMf.sharedMesh;
-            if (landMesh == null) return;
-            var landModel = UnityMeshToDllModelConverter.Convert(
-                new UniqueParentTransformList(landTrans),
-                new UnityMeshToDllSubMeshWithEmptyMaterial(),
-                false,
-                VertexConverterFactory.NoopConverter());
-            var terrain = new ConvertedTerrainData(
-                landModel,
-                new TerrainConvertOption(new GameObject[] { landTrans.gameObject }, 1024, false,
-                    true, TerrainConvertOption.ImageOutput.PNG));
-            var heightmaps = terrain.GetHeightmapDataRecursive();
-            if (heightmaps.Count == 0) return;
+
+            List<ConvertedTerrainData.HeightmapData> heightmaps;
+            
+            // テレインの場合、テレインからハイトマップを取得します。
+            if (landTrans.GetComponent<Terrain>() != null)
+            {
+                var terrain = landTrans.GetComponent<Terrain>();
+                heightmaps = new List<ConvertedTerrainData.HeightmapData>{ConvertedTerrainData.HeightmapData.CreateFromTerrain(terrain)};
+            }
+            // メッシュの場合、メッシュからハイトマップを生成します。
+            else if (landTrans.GetComponent<MeshRenderer>() != null)
+            {
+                heightmaps = CreateHeightMapFromMesh(landTrans);
+                if (heightmaps == null)
+                {
+                    Dialogue.Display("ハイトマップの生成に失敗しました。", "OK");
+                    return;
+                }
+            }
+            else
+            {
+                Dialogue.Display("地形を取得できませんでした。", "OK");
+                return;
+            }
 
             // 土地に合わせるモデルについて
             progressDisplay.SetProgress("", 0f, "処理対象の情報を収集中...");
@@ -58,15 +67,6 @@ namespace PLATEAU.CityAdjust.AlignLand
                 new GmlIdToSerializedCityObj()
             );
             nonLibDataHolder.ComposeFrom(convertTarget);
-            
-            // 地形の情報を集めます。
-            var landVerts = landMesh.vertices;
-            var landMinMax = new MinMax3d();
-            for (int i = 0; i < landVerts.Length; i++)
-            {
-                var vert = landVerts[i];
-                landMinMax.Include(vert);
-            }
 
             var sumResult = new GranularityConvertResult();
             var allTargets = convertTarget.Get.ToArray();
@@ -86,7 +86,7 @@ namespace PLATEAU.CityAdjust.AlignLand
             
             
                 // 高さ合わせをします。
-                new HeightMapAligner().Align(model, map.HeightData, map.textureWidth, map.textureHeight, landMinMax.Min.x, landMinMax.Max.x, landMinMax.Min.z, landMinMax.Max.z, landMinMax.Min.y, landMinMax.Max.y);
+                new HeightMapAligner().Align(model, map.HeightData, map.textureWidth, map.textureHeight, (float)map.min.X, (float)map.max.X, (float)map.min.Z, (float)map.max.Z, (float)map.min.Y, (float)map.max.Y);
 
                 var result = await PlateauToUnityModelConverter.PlateauModelToScene(
                     null, new DummyProgressDisplay(), "",
@@ -110,10 +110,42 @@ namespace PLATEAU.CityAdjust.AlignLand
             
             // 変換前の情報を復元します。
             nonLibDataHolder.RestoreTo(sumResult.GeneratedRootTransforms);
+
+            if (conf.DoDestroySrcObj)
+            {
+                foreach (var target in convertTarget.Get)
+                {
+                    Object.DestroyImmediate(target.gameObject);
+                }
+            }
             
             #if UNITY_EDITOR
             Selection.objects = sumResult.GeneratedRootTransforms.Get.Select(trans => trans.gameObject).Cast<Object>().ToArray();
             #endif
+        }
+        
+        /// <summary>
+        /// メッシュ形式の土地からハイトマップを生成します。
+        /// 失敗時はnullを返します。
+        /// </summary>
+        private List<ConvertedTerrainData.HeightmapData> CreateHeightMapFromMesh(Transform landTrans)
+        {
+            var landMf = landTrans.GetComponent<MeshFilter>();
+            if (landMf == null) return null;
+            var landMesh = landMf.sharedMesh;
+            if (landMesh == null) return null;
+            var landModel = UnityMeshToDllModelConverter.Convert(
+                new UniqueParentTransformList(landTrans),
+                new UnityMeshToDllSubMeshWithEmptyMaterial(),
+                false,
+                VertexConverterFactory.NoopConverter());
+            var terrain = new ConvertedTerrainData(
+                landModel,
+                new TerrainConvertOption(new GameObject[] { landTrans.gameObject }, 1024, false,
+                    true, TerrainConvertOption.ImageOutput.PNG));
+            var heightmaps = terrain.GetHeightmapDataRecursive();
+            if (heightmaps.Count == 0) return null;
+            return heightmaps;
         }
     }
 

@@ -28,6 +28,27 @@ namespace PLATEAU.TerrainConvert
 
             //debug 
             public UInt16[] HeightData;
+
+            public static HeightmapData CreateFromTerrain(Terrain terrain)
+            {
+                var trans = terrain.transform;
+                var pos = trans.position;
+                var data = terrain.terrainData;
+                var resolution = data.heightmapResolution;
+                var heights = data.GetHeights(0, 0, resolution, resolution);
+                
+                var ret = new HeightmapData()
+                {
+                    name = terrain.name,
+                    min = pos.ToPlateauVector(), // TODO グローバル座標でいいのか？
+                    max = (pos + data.size).ToPlateauVector(),
+                    heightMapTexture = heights,
+                    textureHeight = resolution,
+                    textureWidth = resolution,
+                    HeightData = HeightmapGenerator.ConvertToUInt16Array(heights, resolution, resolution)
+                };
+                return ret;
+            }
         }
 
         private readonly HeightmapData heightmapData;

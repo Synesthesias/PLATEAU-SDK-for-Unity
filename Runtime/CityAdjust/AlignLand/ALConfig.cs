@@ -13,13 +13,15 @@ namespace PLATEAU.CityAdjust.AlignLand
         public PLATEAUInstancedCityModel TargetModel { get; private set; }
         public Transform[] Lands { get; private set; }
         public HashSet<PredefinedCityModelPackage> TargetPackages { get; set; }
+        public bool DoDestroySrcObj { get; private set; }
 
         public ALConfig(PLATEAUInstancedCityModel targetModel, Transform[] lands,
-            HashSet<PredefinedCityModelPackage> targetPackages)
+            HashSet<PredefinedCityModelPackage> targetPackages, bool doDestroySrcObj)
         {
             TargetModel = targetModel;
             Lands = lands;
             TargetPackages = targetPackages;
+            DoDestroySrcObj = doDestroySrcObj;
         }
         
     }

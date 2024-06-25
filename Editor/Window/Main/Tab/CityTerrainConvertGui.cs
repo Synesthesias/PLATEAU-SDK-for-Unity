@@ -199,7 +199,7 @@ namespace PLATEAU.Editor.Window.Main.Tab
                 return;
             }
             // 高さ合わせを実行します
-            var conf = searcher.ToConfig();
+            var conf = searcher.ToConfig(preserveOrDestroy == PreserveOrDestroy.Destroy);
             ExecAlignLandInner().ContinueWithErrorCatch();
 
             // 非同期部分のインナーメソッド

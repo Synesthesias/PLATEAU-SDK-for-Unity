@@ -1,6 +1,7 @@
 using PLATEAU.CityInfo;
 using PLATEAU.Dataset;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace PLATEAU.CityAdjust.AlignLand
@@ -14,7 +15,7 @@ namespace PLATEAU.CityAdjust.AlignLand
         private PLATEAUInstancedCityModel targetModel;
         private List<PLATEAUCityObjectGroup> targetCityObjGroups;
         public HashSet<PredefinedCityModelPackage> TargetPackages { get; private set; }
-        public Transform[] Lands { get; private set; }
+        public List<Transform> Lands { get; private set; }
         
         public ALTargetSearcher(PLATEAUInstancedCityModel targetModel)
         {
@@ -24,7 +25,7 @@ namespace PLATEAU.CityAdjust.AlignLand
 
         public bool IsValid()
         {
-            if (Lands.Length == 0)
+            if (Lands.Count == 0)
             {
                 Debug.LogError("地形が見つかりませんでした。");
                 return false;
@@ -38,14 +39,19 @@ namespace PLATEAU.CityAdjust.AlignLand
             return true;
         }
 
-        public ALConfig ToConfig()
+        /// <summary>
+        /// 検索結果から高さ合わせ設定を生成します。
+        /// 検索から明らかでない設定内容を引数で渡します。
+        /// </summary>
+        public ALConfig ToConfig(bool doDestroySrcObj)
         {
-            return new ALConfig(targetModel, Lands, TargetPackages);
+            return new ALConfig(targetModel, Lands.ToArray(), TargetPackages, doDestroySrcObj);
         }
         
 
         private void Search()
         {
+            // 土地メッシュと高さ合わせ可能なパッケージを探します。
             var cogs = targetModel.GetComponentsInChildren<PLATEAUCityObjectGroup>();
             targetCityObjGroups = new List<PLATEAUCityObjectGroup>();
             TargetPackages = new HashSet<PredefinedCityModelPackage>();
@@ -63,8 +69,13 @@ namespace PLATEAU.CityAdjust.AlignLand
                     targetCityObjGroups.Add(cog);
                 }
             }
+            
+            // テレインを土地とみなします。
+            lands.AddRange(
+                targetModel.GetComponentsInChildren<Terrain>()
+                    .Select(ter => ter.transform));
+            Lands = lands;
 
-            Lands = lands.ToArray();
         }
         
     }

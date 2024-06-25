@@ -1,7 +1,5 @@
 ﻿using PLATEAU.Editor.Window.Common;
 using PLATEAU.Editor.Window.Main.Tab;
-using PLATEAU.Editor.Window.Main.Tab.AlignLandGui;
-using PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui;
 using PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI;
 using UnityEditor;
 
