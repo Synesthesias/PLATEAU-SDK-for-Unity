@@ -1,6 +1,7 @@
 ﻿using PLATEAU.RoadNetwork.Data;
 using PLATEAU.Util;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using UnityEngine;
@@ -27,6 +28,7 @@ namespace PLATEAU.RoadNetwork.Drawer
         [SerializeField] private float edgeOffset = 10f;
         [SerializeField] private bool showSplitLane = false;
         [SerializeField] private float splitLaneRate = 0.5f;
+        [SerializeField] private float yScale = 1f;
 
         [Serializable]
         private class DrawOption
@@ -103,6 +105,42 @@ namespace PLATEAU.RoadNetwork.Drawer
         // end:フィールド
         // --------------------
 
+        private void DrawArrows(IEnumerable<Vector3> vertices
+            , bool isLoop = false
+            , float arrowSize = 0.5f
+            , Vector3? arrowUp = null
+            , Color? color = null
+            , Color? arrowColor = null
+            , float duration = 0f
+            , bool depthTest = true)
+        {
+            if (Mathf.Abs(yScale - 1f) < 1e-3f)
+                DebugEx.DrawArrows(vertices, isLoop, arrowSize, arrowUp, color, arrowColor, duration, depthTest);
+            else
+                DebugEx.DrawArrows(vertices.Select(v => v.PutY(v.y * yScale)), isLoop, arrowSize, arrowUp, color, arrowColor, duration, depthTest);
+        }
+        public void DrawString(string text, Vector3 worldPos, Vector2? screenOffset = null, Color? color = null, int? fontSize = null)
+        {
+            DebugEx.DrawString(text, worldPos.PutY(worldPos.y * yScale), screenOffset, color, fontSize);
+        }
+
+        public void DrawLine(Vector3 start, Vector3 end, Color? color = null)
+        {
+            Debug.DrawLine(start.PutY(start.y * yScale), end.PutY(end.y * yScale), color ?? Color.white);
+        }
+
+        public void DrawArrow(
+            Vector3 start
+            , Vector3 end
+            , float arrowSize = 0.5f
+            , Vector3? arrowUp = null
+            , Color? bodyColor = null
+            , Color? arrowColor = null
+            , float duration = 0f
+            , bool depthTest = true)
+        {
+            DebugEx.DrawArrow(start.PutY(start.y * yScale), end.PutY(end.y * yScale), arrowSize, arrowUp, bodyColor, arrowColor, duration, depthTest);
+        }
 
         public void Draw(RoadNetworkModel roadNetwork)
         {
@@ -123,18 +161,18 @@ namespace PLATEAU.RoadNetwork.Drawer
                 if (arrowColor.HasValue)
                     arrowColor = way.IsReversed ? wayOp.reverseWayArrowColor : wayOp.normalWayArrowColor;
 
-                DebugEx.DrawArrows(way.Vertices.Select((v, i) => v + -edgeOffset * way.GetVertexNormal(i)), false, color: color, arrowColor: arrowColor);
+                DrawArrows(way.Vertices.Select((v, i) => v + -edgeOffset * way.GetVertexNormal(i)), false, color: color, arrowColor: arrowColor);
 
                 if (showVertexIndex)
                 {
                     foreach (var item in way.Vertices.Select((v, i) => new { v, i }))
-                        DebugEx.DrawString(item.i.ToString(), item.v, color: Color.red, fontSize: showVertexFontSize);
+                        DrawString(item.i.ToString(), item.v, color: Color.red, fontSize: showVertexFontSize);
                 }
 
                 if (showVertexPos)
                 {
                     foreach (var item in way.Vertices.Select((v, i) => new { v, i }))
-                        DebugEx.DrawString(item.v.ToString(), item.v, color: Color.red, fontSize: showVertexFontSize);
+                        DrawString(item.v.ToString(), item.v, color: Color.red, fontSize: showVertexFontSize);
                 }
 
                 foreach (var i in Enumerable.Range(0, way.Count))
@@ -145,14 +183,14 @@ namespace PLATEAU.RoadNetwork.Drawer
                     // 法線表示
                     if (wayOp.showNormal)
                     {
-                        Debug.DrawLine(v, v + n * 0.3f, color: Color.yellow);
+                        DrawLine(v, v + n * 0.3f, color: Color.yellow);
                     }
                     // 中央線
                     if (showInsideNormalMidPoint)
                     {
                         if (way.HalfLineIntersectionXz(new Ray(v - n * 0.01f, -n), out var intersection))
                         {
-                            DebugEx.DrawArrow(v, (v + intersection) * 0.5f);
+                            DrawArrow(v, (v + intersection) * 0.5f);
                         }
                     }
                 }
@@ -165,7 +203,7 @@ namespace PLATEAU.RoadNetwork.Drawer
                     break;
 
                 var center = node.GetCenterPoint();
-                Debug.DrawLine(center, center + Vector3.up);
+                DrawLine(center, center + Vector3.up);
 
                 if (nodeOp.showNeighbor.visible)
                 {
@@ -177,7 +215,7 @@ namespace PLATEAU.RoadNetwork.Drawer
                         if (nodeOp.showSplitTrack.visible)
                         {
                             n.Border.GetLerpPoint(0.5f, out var c);
-                            Debug.DrawLine(center, c, color: nodeOp.showSplitTrack.color);
+                            DrawLine(center, c, color: nodeOp.showSplitTrack.color);
 
                             foreach (var n2 in node.Neighbors)
                             {
@@ -228,7 +266,7 @@ namespace PLATEAU.RoadNetwork.Drawer
                 if (showSplitLane && lane.HasBothBorder)
                 {
                     var vers = lane.GetInnerLerpSegments(splitLaneRate);
-                    DebugEx.DrawArrows(vers, false, color: Color.red, arrowSize: 0.1f);
+                    DrawArrows(vers, false, color: Color.red, arrowSize: 0.1f);
                 }
             }
             foreach (var link in roadNetwork.Links)
@@ -247,7 +285,7 @@ namespace PLATEAU.RoadNetwork.Drawer
                 //    var n = l.GetVertexNormal(i).normalized;
                 //    if (showNormal)
                 //    {
-                //        Debug.DrawLine(v, v + n * 0.3f, color: Color.yellow);
+                //        DrawLine(v, v + n * 0.3f, color: Color.yellow);
                 //    }
 
                 //    if (showInsideNormalMidPoint)
