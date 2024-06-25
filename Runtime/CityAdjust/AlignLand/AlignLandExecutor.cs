@@ -1,4 +1,3 @@
-using PLATEAU.CityAdjust.NonLibData;
 using PLATEAU.CityAdjust.NonLibDataHolder;
 using PLATEAU.CityExport.ModelConvert;
 using PLATEAU.CityExport.ModelConvert.SubMeshConvert;
@@ -7,13 +6,15 @@ using PLATEAU.CityImport.Import.Convert.MaterialConvert;
 using PLATEAU.CityInfo;
 using PLATEAU.GranularityConvert;
 using PLATEAU.HeightMapAlign;
-using PLATEAU.Native;
 using PLATEAU.PolygonMesh;
 using PLATEAU.TerrainConvert;
-using PLATEAU.Texture;
 using PLATEAU.Util;
+using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 namespace PLATEAU.CityAdjust.AlignLand
 {
@@ -55,15 +56,6 @@ namespace PLATEAU.CityAdjust.AlignLand
                 new GmlIdToSerializedCityObj()
             );
             nonLibDataHolder.ComposeFrom(convertTarget);
-
-            // C++のModelに変換します
-            var subMeshConverter = new UnityMeshToDllSubMeshWithGameMaterial();
-            var model = UnityMeshToDllModelConverter.Convert(
-                convertTarget,
-                subMeshConverter,
-                false,
-                VertexConverterFactory.NoopConverter());
-            var map = heightmaps[0]; // TODO 複数対応
             
             // 地形の情報を集めます。
             var landVerts = landMesh.vertices;
@@ -73,21 +65,50 @@ namespace PLATEAU.CityAdjust.AlignLand
                 var vert = landVerts[i];
                 landMinMax.Include(vert);
             }
-            
-            // 高さ合わせをします。
-            new HeightMapAligner().Align(model, map.HeightData, map.textureWidth, map.textureHeight, landMinMax.Min.x, landMinMax.Max.x, landMinMax.Min.z, landMinMax.Max.z, landMinMax.Min.y, landMinMax.Max.y);
 
-            var result = await PlateauToUnityModelConverter.PlateauModelToScene(
-                null, new DummyProgressDisplay(), "",
-                new PlaceToSceneConfig(new DllSubMeshToUnityMaterialByGameMaterial(subMeshConverter), true, null, null,
-                    new CityObjectGroupInfoForToolkits(false, false), MeshGranularity.PerPrimaryFeatureObject),
-                model,
-                new AttributeDataHelper(
-                    new SerializedCityObjectGetterFromDict(nonLibDataHolder.Get<GmlIdToSerializedCityObj>(), model),
-                     true),
-                true
-            );
-            nonLibDataHolder.RestoreTo(result.GeneratedRootTransforms);
+            var sumResult = new GranularityConvertResult();
+            foreach (var target in convertTarget.Get)
+            {
+                // C++のModelに変換します
+                var subMeshConverter = new UnityMeshToDllSubMeshWithGameMaterial();
+                var model = UnityMeshToDllModelConverter.Convert(
+                    new UniqueParentTransformList(target),
+                    subMeshConverter,
+                    false,
+                    VertexConverterFactory.NoopConverter());
+                var map = heightmaps[0]; // TODO 複数対応
+            
+            
+            
+                // 高さ合わせをします。
+                new HeightMapAligner().Align(model, map.HeightData, map.textureWidth, map.textureHeight, landMinMax.Min.x, landMinMax.Max.x, landMinMax.Min.z, landMinMax.Max.z, landMinMax.Min.y, landMinMax.Max.y);
+
+                var result = await PlateauToUnityModelConverter.PlateauModelToScene(
+                    null, new DummyProgressDisplay(), "",
+                    new PlaceToSceneConfig(new DllSubMeshToUnityMaterialByGameMaterial(subMeshConverter), true, null, null,
+                        new CityObjectGroupInfoForToolkits(false, false), MeshGranularity.PerPrimaryFeatureObject),
+                    model,
+                    new AttributeDataHelper(
+                        new SerializedCityObjectGetterFromDict(nonLibDataHolder.Get<GmlIdToSerializedCityObj>(), model),
+                        true),
+                    true
+                );
+                
+                // 親を変換前と同じにします。
+                foreach (var r in result.GeneratedRootTransforms.Get)
+                {
+                    r.parent = target.parent;
+                }
+                
+                sumResult.Merge(result);
+            }
+            
+            // 変換前の情報を復元します。
+            nonLibDataHolder.RestoreTo(sumResult.GeneratedRootTransforms);
+
+            #if UNITY_EDITOR
+            Selection.objects = sumResult.GeneratedRootTransforms.Get.Select(trans => trans.gameObject).Cast<Object>().ToArray();
+            #endif
         }
     }
 
