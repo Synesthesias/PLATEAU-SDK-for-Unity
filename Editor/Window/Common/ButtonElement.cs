@@ -9,12 +9,13 @@ namespace PLATEAU.Editor.Window.Common
     internal class ButtonElement : Element
     {
         private readonly Action onClick;
-        private readonly string buttonText;
         private Vector4 padding = Vector4.zero; // left, right, top, bottom
+
+        public string ButtonText { get; set; }
 
         public ButtonElement(string name, string buttonText, Action onClick) : base(name)
         {
-            this.buttonText = buttonText;
+            this.ButtonText = buttonText;
             this.onClick = onClick;
         }
 
@@ -28,7 +29,7 @@ namespace PLATEAU.Editor.Window.Common
             using (PlateauEditorStyle.VerticalScopeWithPadding((int)padding.x, (int)padding.y, (int)padding.z,
                        (int)padding.w))
             {
-                if (PlateauEditorStyle.MainButton(buttonText))
+                if (PlateauEditorStyle.MainButton(ButtonText))
                 {
                     onClick();
                 }

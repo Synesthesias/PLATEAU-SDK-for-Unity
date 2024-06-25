@@ -5,9 +5,15 @@ using PLATEAU.Editor.Window.Main.Tab.AdjustGuiParts;
 using PLATEAU.Util;
 using PLATEAU.Util.Async;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace PLATEAU.Editor.Window.Main.Tab.AlignLandGui
 {
+    /// <summary>
+    /// 古いクラスです。
+    /// 高さ合わせタブのGUIは地形変換タブに統合されたため、
+    /// 古い高さ合わせタブの内容を記述するこのクラスは不要になりました。
+    /// </summary>
     public class AlignLandGui : ITabContent
     {
         private ElementGroup guis;
@@ -75,7 +81,13 @@ namespace PLATEAU.Editor.Window.Main.Tab.AlignLandGui
         {
             var conf = searcher.ToConfig();
             conf.TargetPackages = PackageSelect.SelectedPackages;
-            new AlignLandExecutor().ExecAsync(conf).ContinueWithErrorCatch();   
+            ExecAsync(conf).ContinueWithErrorCatch();
+        }
+
+        private async Task ExecAsync(ALConfig conf)
+        {
+            using var progressDisplay = new ProgressDisplayDialogue();
+            await new AlignLandExecutor().ExecAsync(conf, progressDisplay);   
         }
 
         public void OnTabUnselect()

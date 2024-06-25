@@ -74,6 +74,9 @@ namespace PLATEAU.Editor.Window.Common
                 case HeaderType.Subtitle:
                     PlateauEditorStyle.SubTitle(headerText);
                     break;
+                case HeaderType.Separator:
+                    PlateauEditorStyle.Separator(0);
+                    break;
                 default:
                     throw new ArgumentException("unknown header type.");
             }
@@ -86,7 +89,7 @@ namespace PLATEAU.Editor.Window.Common
 
     internal enum HeaderType
     {
-        Header, Subtitle
+        Header, Subtitle, Separator
     }
     
 }

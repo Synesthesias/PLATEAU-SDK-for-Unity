@@ -20,8 +20,9 @@ namespace PLATEAU.CityAdjust.AlignLand
 {
     public class AlignLandExecutor
     {
-        public async Task ExecAsync(ALConfig conf)
+        public async Task ExecAsync(ALConfig conf, IProgressDisplay progressDisplay)
         {
+            progressDisplay.SetProgress("", 0f, "ハイトマップをを作成中...");
             // 高さの基準となる土地からC++のModelとハイトマップを生成します。
             var landTrans = conf.Lands[0]; // TODO 複数対応
             var landMf = landTrans.GetComponent<MeshFilter>();
@@ -41,6 +42,7 @@ namespace PLATEAU.CityAdjust.AlignLand
             if (heightmaps.Count == 0) return;
 
             // 土地に合わせるモデルについて
+            progressDisplay.SetProgress("", 0f, "処理対象の情報を収集中...");
             var convertTarget = new UniqueParentTransformList();
             foreach (var cog in conf.TargetModel.GetComponentsInChildren<PLATEAUCityObjectGroup>())
             {
@@ -67,8 +69,11 @@ namespace PLATEAU.CityAdjust.AlignLand
             }
 
             var sumResult = new GranularityConvertResult();
-            foreach (var target in convertTarget.Get)
+            var allTargets = convertTarget.Get.ToArray();
+            for (int i = 0; i < allTargets.Length; i++)
             {
+                var target = allTargets[i];
+                progressDisplay.SetProgress(target.name, ((float)i * 100)/allTargets.Length, "高さを変換中...");
                 // C++のModelに変換します
                 var subMeshConverter = new UnityMeshToDllSubMeshWithGameMaterial();
                 var model = UnityMeshToDllModelConverter.Convert(
@@ -105,7 +110,7 @@ namespace PLATEAU.CityAdjust.AlignLand
             
             // 変換前の情報を復元します。
             nonLibDataHolder.RestoreTo(sumResult.GeneratedRootTransforms);
-
+            
             #if UNITY_EDITOR
             Selection.objects = sumResult.GeneratedRootTransforms.Get.Select(trans => trans.gameObject).Cast<Object>().ToArray();
             #endif
