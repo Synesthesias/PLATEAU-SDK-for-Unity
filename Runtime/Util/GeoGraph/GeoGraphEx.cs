@@ -133,36 +133,41 @@ namespace PLATEAU.Util.GeoGraph
         /// <param name="vertices"></param>
         /// <param name="mergeMap"></param>
         /// <param name="newVertices"></param>
-        /// <returns></returns>
+        /// <param name="newVertexIndexMap"></param>
+        /// <returns>頂点のマージ処理が走ったかどうか</returns>
         public static bool MergeMeshVertex(
             IList<Vector3> vertices,
             Dictionary<Vector3, Vector3> mergeMap,
             out List<Vector3> newVertices,
-            out List<int> vertexIndexMap)
+            // verticesインデックス -> newVerticesのインデックス
+            out List<int> newVertexIndexMap)
         {
-            vertexIndexMap = Enumerable.Range(0, vertices.Count).ToList();
+            newVertexIndexMap = Enumerable.Range(0, vertices.Count).ToList();
             newVertices = new List<Vector3>(vertices.Count);
+            // 頂点 -> インデックス変換
             var indexMap = new Dictionary<Vector3, int>();
             bool found = false;
             for (var i = 0; i < vertices.Count; i++)
             {
                 var v = vertices[i];
-                if (mergeMap.TryGetValue(v, out var m))
+                // 頂点の変換があるか確認する
+                if (mergeMap.TryGetValue(v, out var afterVertex))
                 {
-                    if (indexMap.TryGetValue(m, out var idx) == false)
-                    {
-                        idx = newVertices.Count;
-                        newVertices.Add(m);
-                        indexMap[m] = idx;
-                        found = true;
-                    }
-                    vertexIndexMap[i] = idx;
+                    v = afterVertex;
+                    found = true;
                 }
-                else
+                // #NOTE : 重複頂点の削除
+                var idx = 0;
+                if (indexMap.TryGetValue(v, out idx) == false)
                 {
+                    // 新規の場合はnewVerticesに追加しインデックスマップに登録
+                    idx = newVertices.Count;
                     newVertices.Add(v);
-                    vertexIndexMap[i] = newVertices.Count - 1;
+                    indexMap[v] = idx;
+                    found = true;
                 }
+
+                newVertexIndexMap[i] = idx;
             }
 
 
@@ -174,10 +179,13 @@ namespace PLATEAU.Util.GeoGraph
         /// </summary>
         /// <param name="vertices"></param>
         /// <param name="cellSize"></param>
+        /// <param name="mergeCellLength"></param>
         /// <returns></returns>
-        public static Dictionary<Vector3, Vector3> MergeVertices(IEnumerable<Vector3> vertices, float cellSize = 0.1f)
+        public static Dictionary<Vector3, Vector3> MergeVertices(IEnumerable<Vector3> vertices, float cellSize = 0.1f, int mergeCellLength = 2)
         {
+            // 内部的なセルサイズは半分にする -> そのうえで倍の距離でマージする
             var len = cellSize * 0.5f;
+            var mergeLen = mergeCellLength * 2;
             var cells = new Dictionary<Vector3Int, HashSet<Vector3>>();
             var min = Vector3Int.one * int.MaxValue;
             foreach (var v in vertices)
@@ -187,12 +195,10 @@ namespace PLATEAU.Util.GeoGraph
                 min = Vector3Int.Min(min, c);
             }
 
-            int Pow3(int x) => x * x * x;
-
             Vector3Int[] Delta(int d)
             {
                 var w = 2 * d + 1;
-                var en = Pow3(w);
+                var en = w * w * w;
                 var half = w / 2;
                 var w2 = w * w;
                 var ret = new Vector3Int[en];
@@ -217,26 +223,42 @@ namespace PLATEAU.Util.GeoGraph
                     return d;
                 return a.x - b.x;
             });
-            var del = Delta(2)
+            var del = Delta(mergeLen)
                 // zでソートしているのでzが負のものは無視してよい
                 .Where(d => d != Vector3Int.zero)
-                .Where(d => d.z >= 0)
+                //.Where(d => d.z >= 0)
                 // マンハッタン距離で2のものをマージする
-                .Where(d => d.Abs().Sum() <= 2)
+                .Where(d => d.Abs().Sum() <= mergeLen)
                 .ToList();
+
+            var del1 = Delta(1);
+
             foreach (var k in keys)
             {
                 if (cells.ContainsKey(k) == false)
                     continue;
-                foreach (var d in del)
+
+                var queue = new Queue<Vector3Int>();
+                queue.Enqueue(k);
+
+                while (queue.Any())
                 {
-                    if (d == Vector3Int.zero)
-                        continue;
-                    var n = k + d;
-                    if (cells.ContainsKey(n) == false)
-                        continue;
-                    cells[k].UnionWith(cells[n]);
-                    cells.Remove(n);
+                    var c = queue.Dequeue();
+                    foreach (var d in del1)
+                    {
+                        var n = c + d;
+                        if (cells.ContainsKey(n) == false)
+                            continue;
+                        if (n == k)
+                            continue;
+                        // 指定した距離以上は無視
+                        if ((k - n).Abs().Sum() > mergeCellLength)
+                            continue;
+
+                        cells[k].UnionWith(cells[n]);
+                        cells.Remove(n);
+                        queue.Enqueue(n);
+                    }
                 }
             }
 
@@ -244,11 +266,11 @@ namespace PLATEAU.Util.GeoGraph
 
             foreach (var c in cells)
             {
-                // 1つのセルに1つの頂点しかない場合はそのまま
+                // #NOTE : 1セルに1つの頂点しかない場合は無視でよい(メモリ最適化)
                 if (c.Value.Count == 1)
                     continue;
-                var center = c.Value.Aggregate(Vector3.zero, (v, a) => v + a) / c.Value.Count;
 
+                var center = c.Value.Aggregate(Vector3.zero, (v, a) => v + a) / c.Value.Count;
                 foreach (var v in c.Value)
                     ret[v] = center;
             }

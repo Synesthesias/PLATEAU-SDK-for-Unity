@@ -218,7 +218,7 @@ namespace PLATEAU.RoadNetwork.Factory
                     {
                         cachedIsBorder = false;
                         var neighbor = BothConnectedTrans.FirstOrDefault();
-                        if (neighbor != null)
+                        if (neighbor != null && Way.Count > 1)
                         {
                             // 共通の隣接レーンがあると境界線
                             // ただし、行き止まり(1つのレーンとしか隣接していない)場合
@@ -292,17 +292,25 @@ namespace PLATEAU.RoadNetwork.Factory
         public async Task<RoadNetworkModel> CreateNetworkAsync(IList<RoadNetworkTranMesh> targets)
         {
             // レーンの初期化
-            var ret = new RoadNetworkModel();
-            var vertex2Points = new Vertex2PointTable(cellSize, targets.SelectMany(v => v.Vertices));
-            var tranWorks = CreateTranWorks(targets, vertex2Points, out var cell2Groups);
+            try
+            {
+                var ret = new RoadNetworkModel();
+                var vertex2Points = new Vertex2PointTable(cellSize, targets.SelectMany(v => v.Vertices));
+                var tranWorks = CreateTranWorks(targets, vertex2Points, out var cell2Groups);
 
-            foreach (var tranWork in tranWorks)
-                Build(tranWork, ret);
+                foreach (var tranWork in tranWorks)
+                    Build(tranWork, ret);
 
-            foreach (var tranWork in tranWorks)
-                tranWork.BuildConnection();
-            //ret.DebugIdentify();
-            return ret;
+                foreach (var tranWork in tranWorks)
+                    tranWork.BuildConnection();
+                //ret.DebugIdentify();
+                return ret;
+            }
+            catch (Exception e)
+            {
+                Debug.LogError(e);
+                throw;
+            }
         }
 
         public async Task<RoadNetworkModel> CreateNetworkAsync(IList<PLATEAUCityObjectGroup> targets)

@@ -29,14 +29,26 @@ namespace PLATEAU.RoadNetwork
         [field: SerializeField] public RoadNetworkModel RoadNetwork { get; set; }
 
         [Serializable]
-        class TesterTranMeshDrawParam : TesterDrawParam
+        private class TesterTranMeshDrawParam : TesterDrawParam
         {
             public bool loop = true;
             public float mergeEpsilon = 0.2f;
+            public int mergeCellLength = 2;
         }
 
         [SerializeField] private TesterTranMeshDrawParam showTranMesh;
-        [SerializeField] private TesterDrawParam showConvertedCityObject;
+
+        [Serializable]
+        private class TesterConvertedCityObjectDrawParam : TesterDrawParam
+        {
+            public int meshColorNum = 16;
+            public bool showVertexIndex = false;
+            public int showVertexIndexFontSize = 8;
+        }
+
+        [SerializeField] private TesterConvertedCityObjectDrawParam showConvertedCityObject;
+
+        [SerializeField] private TesterConvertedCityObjectDrawParam showMergedConvertedCityObject;
 
         [Serializable]
         public class SplitCityObjectTestParam
@@ -48,6 +60,9 @@ namespace PLATEAU.RoadNetwork
 
         [SerializeField]
         internal List<ConvertedCityObject> convertedCityObjects;
+
+        [SerializeField]
+        internal List<ConvertedCityObject> mergedConvertedCityObjects;
 
         [SerializeField]
         private List<RoadNetworkTranMesh> tranMeshes;
@@ -95,22 +110,40 @@ namespace PLATEAU.RoadNetwork
             }
         }
 
+        private void DrawConvertedCityObject(TesterConvertedCityObjectDrawParam p, List<ConvertedCityObject> cityObjects)
+        {
+            if (!p.visible)
+                return;
+            var index = 0;
+            foreach (var item in cityObjects)
+            {
+                if (item.Visible == false)
+                    continue;
+
+                foreach (var mesh in item.Meshes)
+                {
+                    if (p.showVertexIndex)
+                    {
+                        //foreach (var v in mesh.Vertices)
+                        for (var i = 0; i < mesh.Vertices.Count; ++i)
+                        {
+                            var v = mesh.Vertices[i];
+                            DebugEx.DrawString($"{i}", v.PutY(v.y + i * 0.01f), fontSize: p.showVertexIndexFontSize);
+                        }
+                    }
+
+                    foreach (var subMesh in mesh.SubMeshes)
+                        DrawMesh(mesh, subMesh, Matrix4x4.identity, color: DebugEx.GetDebugColor(index++, p.meshColorNum));
+                }
+            }
+        }
+
         public void OnDrawGizmos()
         {
             drawer.Draw(RoadNetwork);
-            if (showConvertedCityObject.visible)
-            {
-                foreach (var item in convertedCityObjects)
-                {
-                    if (item.Visible == false)
-                        continue;
-                    foreach (var mesh in item.Meshes)
-                    {
-                        foreach (var subMesh in mesh.SubMeshes.Select((v, i) => new { v, i }))
-                            DrawMesh(mesh, subMesh.v, Matrix4x4.identity, color: DebugEx.GetDebugColor(subMesh.i, mesh.SubMeshes.Count));
-                    }
-                }
-            }
+
+            DrawConvertedCityObject(showConvertedCityObject, convertedCityObjects);
+            DrawConvertedCityObject(showMergedConvertedCityObject, mergedConvertedCityObjects);
 
             if (showTranMesh.visible)
             {
@@ -155,7 +188,7 @@ namespace PLATEAU.RoadNetwork
         private List<RoadNetworkTranMesh> CreateTranMeshes(float epsilon)
         {
             var ret = new List<RoadNetworkTranMesh>();
-            foreach (var c in convertedCityObjects)
+            foreach (var c in mergedConvertedCityObjects)
             {
                 var root = c.CityObjects.rootCityObjects[0];
                 bool IsTarget()
@@ -196,10 +229,11 @@ namespace PLATEAU.RoadNetwork
         {
             try
             {
+                mergedConvertedCityObjects = convertedCityObjects.Select(c => c.DeepCopy()).ToList();
                 var vertexTable = GeoGraphEx.MergeVertices(
-                    convertedCityObjects.SelectMany(c => c.Meshes.SelectMany(m => m.Vertices)),
-                    showTranMesh.mergeEpsilon);
-                foreach (var m in convertedCityObjects.SelectMany(c => c.Meshes))
+                    mergedConvertedCityObjects.SelectMany(c => c.Meshes.SelectMany(m => m.Vertices)),
+                    showTranMesh.mergeEpsilon, showTranMesh.mergeCellLength);
+                foreach (var m in mergedConvertedCityObjects.SelectMany(c => c.Meshes))
                 {
                     m.Merge(vertexTable);
                 }
@@ -222,7 +256,7 @@ namespace PLATEAU.RoadNetwork
                     MergeVertices();
                     break;
                 case CreateMode.SeparateConvertCityObject:
-                    foreach (var m in convertedCityObjects.SelectMany(c => c.Meshes))
+                    foreach (var m in mergedConvertedCityObjects.SelectMany(c => c.Meshes))
                     {
                         m.Separate();
                     }

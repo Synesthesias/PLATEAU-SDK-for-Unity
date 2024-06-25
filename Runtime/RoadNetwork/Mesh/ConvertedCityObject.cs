@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Assertions;
+using Object = System.Object;
 
 namespace PLATEAU.RoadNetwork.Mesh
 {
@@ -21,6 +22,11 @@ namespace PLATEAU.RoadNetwork.Mesh
             [field: SerializeField]
             public List<int> Triangles { get; set; } = new List<int>();
 
+            /// <summary>
+            /// Trianglesを連結しているサブメッシュに分割する。
+            /// Trianglesが連結グラフの場合はそのまま返る
+            /// </summary>
+            /// <returns></returns>
             public List<SubMesh> Separate()
             {
                 Dictionary<int, HashSet<int>> vertexToTriangle = new Dictionary<int, HashSet<int>>();
@@ -63,6 +69,15 @@ namespace PLATEAU.RoadNetwork.Mesh
 
                 return subMeshes;
             }
+
+            /// <summary>
+            /// Deep
+            /// </summary>
+            /// <returns></returns>
+            public SubMesh DeepCopy()
+            {
+                return new SubMesh { Triangles = Triangles.ToList() };
+            }
         }
 
         [Serializable]
@@ -91,18 +106,18 @@ namespace PLATEAU.RoadNetwork.Mesh
                         var v1 = indices[s.Triangles[i + 1]];
                         var v2 = indices[s.Triangles[i + 2]];
                         // 3つの頂点が同じ場合は無視
-                        if (v0 == v1 || v1 == v2 || v2 == v0)
+                        if (v0 == v1 && v1 == v2 && v2 == v0)
                             continue;
                         // 2つが同じ場合は線分になるが一応残しておく(つながりが消えるから)
                         var vs = new[] { v0, v1, v2 }.OrderBy(x => x).ToArray();
                         var t = new Vector3Int(vs[0], vs[1], vs[2]);
                         // 同じ頂点の三角形がすでに登録されていたら無視
-                        if (tris.Contains(t) == false)
+                        //if (tris.Contains(t) == false)
                         {
                             tris.Add(t);
-                            newTriangles.Add(t.x);
-                            newTriangles.Add(t.y);
-                            newTriangles.Add(t.z);
+                            newTriangles.Add(v0);
+                            newTriangles.Add(v1);
+                            newTriangles.Add(v2);
                         }
                     }
                     s.Triangles = newTriangles;
@@ -117,6 +132,15 @@ namespace PLATEAU.RoadNetwork.Mesh
                     newSubMesh.AddRange(m.Separate());
                 }
                 SubMeshes = newSubMesh;
+            }
+
+            public ConvertedMesh DeepCopy()
+            {
+                return new ConvertedMesh
+                {
+                    SubMeshes = SubMeshes.Select(s => s.DeepCopy()).ToList(),
+                    Vertices = Vertices.ToList()
+                };
             }
         }
 
@@ -259,6 +283,14 @@ namespace PLATEAU.RoadNetwork.Mesh
             CityObjectGroup = group;
             foreach (var c in Children)
                 c.SetCityObjectGroup(group);
+        }
+
+        public ConvertedCityObject DeepCopy()
+        {
+            var ret = MemberwiseClone() as ConvertedCityObject;
+            ret.Meshes = Meshes.Select(m => m.DeepCopy()).ToList();
+            ret.Children = Children.Select(m => m.DeepCopy()).ToList();
+            return ret;
         }
     }
 
