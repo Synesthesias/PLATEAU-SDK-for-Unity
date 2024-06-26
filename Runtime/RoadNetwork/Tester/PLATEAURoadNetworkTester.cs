@@ -237,11 +237,10 @@ namespace PLATEAU.RoadNetwork
                 {
                     m.Merge(vertexTable);
                 }
-
             }
             catch (Exception e)
             {
-                var x = 0;
+                Debug.LogException(e);
             }
         }
 

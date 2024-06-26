@@ -69,6 +69,8 @@ namespace PLATEAU.RoadNetwork.Drawer
             public Color normalWayArrowColor = Color.yellow;
             // 通常Wayの矢印色
             public Color reverseWayArrowColor = Color.blue;
+
+            public float arrowSize = 0.5f;
         }
         [SerializeField] private WayOption wayOp = new WayOption();
 
@@ -150,7 +152,6 @@ namespace PLATEAU.RoadNetwork.Drawer
                 return;
 
             // 道描画
-
             void DrawWay(RoadNetworkWay way, Color color, Color? arrowColor = null)
             {
                 if (way == null)
@@ -161,7 +162,7 @@ namespace PLATEAU.RoadNetwork.Drawer
                 if (arrowColor.HasValue)
                     arrowColor = way.IsReversed ? wayOp.reverseWayArrowColor : wayOp.normalWayArrowColor;
 
-                DrawArrows(way.Vertices.Select((v, i) => v + -edgeOffset * way.GetVertexNormal(i)), false, color: color, arrowColor: arrowColor);
+                DrawArrows(way.Vertices.Select((v, i) => v + -edgeOffset * way.GetVertexNormal(i)), false, color: color, arrowColor: arrowColor, arrowSize: wayOp.arrowSize);
 
                 if (showVertexIndex)
                 {
@@ -207,20 +208,17 @@ namespace PLATEAU.RoadNetwork.Drawer
 
                 if (nodeOp.showNeighbor.visible)
                 {
-                    foreach (var n in node.Neighbors)
+                    for (var i = 0; i < node.Neighbors.Count; ++i)
                     {
+                        var n = node.Neighbors[i];
                         if (nodeOp.showBorder.visible)
                             DrawWay(n.Border, nodeOp.showBorder.color);
 
                         if (nodeOp.showSplitTrack.visible)
                         {
-                            n.Border.GetLerpPoint(0.5f, out var c);
-                            DrawLine(center, c, color: nodeOp.showSplitTrack.color);
-
-                            foreach (var n2 in node.Neighbors)
+                            for (var j = i + 1; j < node.Neighbors.Count; ++j)
                             {
-                                if (n == n2)
-                                    continue;
+                                var n2 = node.Neighbors[j];
                                 var way = node.CalcTrackWay(n.Link, n2.Link);
                                 if (way != null)
                                 {
