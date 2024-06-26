@@ -108,11 +108,15 @@ namespace PLATEAU.RoadNetwork.Mesh
                         // 3つの頂点が同じ場合は無視
                         if (v0 == v1 && v1 == v2 && v2 == v0)
                             continue;
-                        // 2つが同じ場合は線分になるが一応残しておく(つながりが消えるから)
+
+                        // 三角形にならない場合は削除
+                        // #NOTE : 接続情報が消える可能性があるがいったん許容
+                        if (v0 == v1 || v1 == v2 || v2 == v0)
+                            continue;
                         var vs = new[] { v0, v1, v2 }.OrderBy(x => x).ToArray();
                         var t = new Vector3Int(vs[0], vs[1], vs[2]);
                         // 同じ頂点の三角形がすでに登録されていたら無視
-                        //if (tris.Contains(t) == false)
+                        if (tris.Contains(t) == false)
                         {
                             tris.Add(t);
                             newTriangles.Add(v0);
