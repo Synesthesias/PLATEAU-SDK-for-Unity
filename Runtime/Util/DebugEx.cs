@@ -38,6 +38,19 @@ namespace PLATEAU.Util
         }
 
         /// <summary>
+        /// Debug.DrawLineのラッパー. デバッグ描画系をここに集約するため
+        /// </summary>
+        /// <param name="start"></param>
+        /// <param name="end"></param>
+        /// <param name="color"></param>
+        /// <param name="duration"></param>
+        /// <param name="depthTest"></param>
+        public static void DrawLine(Vector3 start, Vector3 end, Color? color = null, float duration = 0f, bool depthTest = true)
+        {
+            Debug.DrawLine(start, end, color ?? Color.white, duration, depthTest);
+        }
+
+        /// <summary>
         /// start -> endの方向に矢印を描画する
         /// </summary>
         /// <param name="start"></param>
@@ -62,7 +75,7 @@ namespace PLATEAU.Util
 
             var bodyColorImpl = bodyColor ?? Color.white;
 
-            Debug.DrawLine(start, end, bodyColorImpl, duration, depthTest);
+            DrawLine(start, end, bodyColorImpl, duration, depthTest);
             up = Vector3.Cross(end - start, Vector3.Cross(end - start, up)).normalized;
 
             var a1 = Quaternion.AngleAxis(45f, up) * (start - end);
@@ -71,8 +84,8 @@ namespace PLATEAU.Util
             a1 = a1.normalized;
             a2 = a2.normalized;
             var arrowColorImpl = arrowColor ?? bodyColorImpl;
-            Debug.DrawLine(end + a1 * arrowSize, end, arrowColorImpl, duration);
-            Debug.DrawLine(end + a2 * arrowSize, end, arrowColorImpl, duration);
+            DrawLine(end + a1 * arrowSize, end, arrowColorImpl, duration);
+            DrawLine(end + a2 * arrowSize, end, arrowColorImpl, duration);
         }
 
         /// <summary>
@@ -109,7 +122,7 @@ namespace PLATEAU.Util
             , bool depthTest = true)
         {
             foreach (var e in GeoGraphEx.GetEdges(vertices, isLoop))
-                Debug.DrawLine(e.Item1, e.Item2, color ?? Color.white, duration, depthTest);
+                DrawLine(e.Item1, e.Item2, color ?? Color.white, duration, depthTest);
         }
 
         public static void DrawCenters(IEnumerable<Vector3> vertices
@@ -210,7 +223,7 @@ namespace PLATEAU.Util
 
                 var p0 = parabola.GetPoint(x0);
                 var p1 = parabola.GetPoint(x1);
-                Debug.DrawLine(p0.ToVec3(showXz), p1.ToVec3(showXz), color ?? Color.white, duration, depthTest);
+                DrawLine(p0.ToVec3(showXz), p1.ToVec3(showXz), color ?? Color.white, duration, depthTest);
             }
         }
 
@@ -226,7 +239,7 @@ namespace PLATEAU.Util
 
                 var p0 = parabola.GetPoint(x0);
                 var p1 = parabola.GetPoint(x1);
-                Debug.DrawLine(p0.ToVec3(showXz), p1.ToVec3(showXz), color ?? Color.white, duration, depthTest);
+                DrawLine(p0.ToVec3(showXz), p1.ToVec3(showXz), color ?? Color.white, duration, depthTest);
             }
         }
 
@@ -250,7 +263,7 @@ namespace PLATEAU.Util
 
                 var p0 = parabola.GetPoint(x0);
                 var p1 = parabola.GetPoint(x1);
-                Debug.DrawLine(p0.ToVec3(showXz), p1.ToVec3(showXz), color ?? Color.white, duration, depthTest);
+                DrawLine(p0.ToVec3(showXz), p1.ToVec3(showXz), color ?? Color.white, duration, depthTest);
             }
         }
 
@@ -348,6 +361,45 @@ namespace PLATEAU.Util
             {
                 var node = model.GetRootNodeAt(i);
                 DrawPlateauPolygonMeshNode(Matrix4x4.identity, node, color);
+            }
+        }
+
+        // https://github.com/Unity-Technologies/Graphics/pull/2287/files#diff-cc2ed84f51a3297faff7fd239fe421ca1ca75b9643a22f7808d3a274ff3252e9
+        // Sphere with radius of 1
+        private static readonly Vector4[] s_unitSphere = MakeUnitSphere(16);
+        private static Vector4[] MakeUnitSphere(int len)
+        {
+            Debug.Assert(len > 2);
+            var v = new Vector4[len * 3];
+            for (int i = 0; i < len; i++)
+            {
+                var f = i / (float)len;
+                float c = Mathf.Cos(f * (float)(Math.PI * 2.0));
+                float s = Mathf.Sin(f * (float)(Math.PI * 2.0));
+                v[0 * len + i] = new Vector4(c, s, 0, 1);
+                v[1 * len + i] = new Vector4(0, c, s, 1);
+                v[2 * len + i] = new Vector4(s, 0, c, 1);
+            }
+            return v;
+        }
+        public static void DrawSphere(Vector3 pos, float radius, Color? color = null, float duration = 0f, bool depthTest = true)
+        {
+            Vector4[] v = s_unitSphere;
+            int len = s_unitSphere.Length / 3;
+            var col = color ?? Color.white;
+            Vector4 p = pos;
+            p.w = 1f;
+            for (int i = 0; i < len; i++)
+            {
+                var sX = p + radius * v[0 * len + i];
+                var eX = p + radius * v[0 * len + (i + 1) % len];
+                var sY = p + radius * v[1 * len + i];
+                var eY = p + radius * v[1 * len + (i + 1) % len];
+                var sZ = p + radius * v[2 * len + i];
+                var eZ = p + radius * v[2 * len + (i + 1) % len];
+                DrawLine(sX, eX, col, duration, depthTest);
+                DrawLine(sY, eY, col, duration, depthTest);
+                DrawLine(sZ, eZ, col, duration, depthTest);
             }
         }
     }
