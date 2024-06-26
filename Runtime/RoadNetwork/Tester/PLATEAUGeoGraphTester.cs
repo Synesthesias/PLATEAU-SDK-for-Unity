@@ -9,12 +9,12 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using Unity.Mathematics;
 using UnityEngine;
-using UnityEngine.Serialization;
-using static UnityEngine.GraphicsBuffer;
+using UnityEngine.Splines;
 using Debug = UnityEngine.Debug;
 
-namespace PLATEAU.RoadNetwork
+namespace PLATEAU.RoadNetwork.Tester
 {
     public class PLATEAUGeoGraphTester : MonoBehaviour
     {
@@ -81,7 +81,54 @@ namespace PLATEAU.RoadNetwork
         public List<PLATEAUCityObjectGroup> convertTargets = new List<PLATEAUCityObjectGroup>();
         public bool convertWithConvexHull = false;
 
+        [Serializable]
+        public class SplineTestParam
+        {
+            [Serializable]
+            public class SplinePoint
+            {
+                public Vector2 point;
+                public Vector2 dir;
+                public Color color = Color.white;
+            }
 
+            public bool enable = false;
+            public float drawPointRadius = 0.1f;
+            public List<SplinePoint> points = new List<SplinePoint>();
+        }
+        public SplineTestParam splineTest = new SplineTestParam();
+
+        static float3 ToFloat3(Vector3 v) => new float3(v.x, v.y, v.z);
+        public void SplineTest(SplineTestParam p)
+        {
+            if (p.enable == false)
+                return;
+            if (p.points.Count < 2)
+                return;
+
+            void DrawPoint(SplineTestParam.SplinePoint pos)
+            {
+                DebugEx.DrawSphere(pos.point, p.drawPointRadius, pos.color);
+                DebugEx.DrawArrow(pos.point, pos.point + pos.dir, bodyColor: pos.color);
+            }
+            var p1 = p.points[0];
+            var p2 = p.points[1];
+            DrawPoint(p1);
+            DrawPoint(p2);
+            var sp = new Spline(2);
+            sp.Add(new BezierKnot(ToFloat3(p1.point.Xya()), -ToFloat3(p1.dir.Xya()), ToFloat3(p1.dir.Xya())));
+            sp.Add(new BezierKnot(ToFloat3(p2.point.Xya()), -ToFloat3(p2.dir.Xya()), ToFloat3(p2.dir.Xya())));
+
+            var positions = new List<Vector3>();
+            foreach (var i in Enumerable.Range(0, 10))
+            {
+                var t = i / 9f;
+
+                sp.Evaluate(t, out var pos, out var tangent, out var up);
+                positions.Add(pos);
+            }
+            DebugEx.DrawLines(positions);
+        }
 
         public void ConvertTrans()
         {
@@ -315,6 +362,7 @@ namespace PLATEAU.RoadNetwork
             LerpLineTest(lerpLineTest);
             UnionPolygonTest(unionPolygonTest);
             MeshOutlineTest(meshOutlineTest);
+            SplineTest(splineTest);
         }
 
     }
