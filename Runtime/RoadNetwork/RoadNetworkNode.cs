@@ -2,26 +2,22 @@
 using PLATEAU.RoadNetwork.Data;
 using PLATEAU.Util;
 using PLATEAU.Util.GeoGraph;
-using System;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.Mathematics;
 using UnityEngine;
-using UnityEngine.Serialization;
-using UnityEngine.UIElements;
+using UnityEngine.Splines;
 
 namespace PLATEAU.RoadNetwork
 {
     /// <summary>
     /// 交差点
     /// </summary>
-    public class RoadNetworkNode
+    public class RoadNetworkNode : ARoadNetworkParts<RoadNetworkNode>
     {
         //----------------------------------
         // start: フィールド
         //----------------------------------
-        // 識別Id. シリアライズ用.ランタイムでは使用しないこと
-        public RnID<RoadNetworkDataNode> MyId { get; set; }
-
         // 自分が所属するRoadNetworkModel
         public RoadNetworkModel ParentModel { get; set; }
 
@@ -92,26 +88,62 @@ namespace PLATEAU.RoadNetwork
             var nb = Neighbors.FirstOrDefault(n => n.Link == b);
             if (na == null || nb == null)
                 return null;
-
             if (na.Border.Count < 2 || nb.Border.Count < 2)
                 return null;
+
             var aStart = na.Border.GetPoint(0);
             var aEnd = na.Border.GetPoint(na.Border.Count - 1);
 
-            var bStart = nb.Border.GetPoint(0);
-            var bEnd = nb.Border.GetPoint(nb.Border.Count - 1);
+            var aLane = na.GetConnectedLane();
+            if (aLane == null)
+                return null;
 
-            var line1 = new LineSegment2D(aStart.Vertex.Xz(), bStart.Vertex.Xz());
-            var line2 = new LineSegment2D(aEnd.Vertex.Xz(), bEnd.Vertex.Xz());
-            if (line1.TrySegmentIntersection(line2))
+            var bLane = nb.GetConnectedLane();
+            if (bLane == null)
+                return null;
+
+
+            aLane.TryGetBorderNormal(na.Border, out var aLeftPos, out var aLeftNormal, out var aRightPos, out var aRightNormal);
+            bLane.TryGetBorderNormal(nb.Border, out var bLeftPos, out var bLeftNormal, out var bRightPos, out var bRightNormal);
+
+            var rightSp = new Spline
             {
-                (aStart, bStart) = (bStart, aStart);
-                line1 = new LineSegment2D(aStart.Vertex.Xz(), bStart.Vertex.Xz());
-                line2 = new LineSegment2D(aEnd.Vertex.Xz(), bEnd.Vertex.Xz());
-            }
+                new BezierKnot(aLeftPos, 10 * aLeftNormal, 10 *aLeftNormal),
+                new BezierKnot(bRightPos, 10 *bRightNormal, 10 *bRightNormal)
+            };
 
-            var leftWay = new RoadNetworkWay(RoadNetworkLineString.Create(new[] { aStart, bStart }));
-            var rightWay = new RoadNetworkWay(RoadNetworkLineString.Create(new[] { aEnd, bEnd }));
+            var leftSp = new Spline
+            {
+                new BezierKnot(aRightPos, 10 *aRightNormal, 10 *aRightNormal),
+                new BezierKnot(bLeftPos, 10 *bLeftNormal, 10 *bLeftNormal)
+            };
+            DebugEx.DrawArrow(aLeftPos, aLeftPos + aLeftNormal * 2, bodyColor: Color.magenta);
+            DebugEx.DrawArrow(bLeftPos, bLeftPos + bLeftNormal * 2, bodyColor: Color.magenta);
+            DebugEx.DrawArrow(bRightPos, bRightPos + bRightNormal * 2, bodyColor: Color.magenta);
+            DebugEx.DrawArrow(aRightPos, aRightPos + aRightNormal * 2, bodyColor: Color.magenta);
+            //var bStart = nb.Border.GetPoint(0);
+            //var bEnd = nb.Border.GetPoint(nb.Border.Count - 1);
+
+            //var line1 = new LineSegment2D(aStart.Vertex.Xz(), bStart.Vertex.Xz());
+            //var line2 = new LineSegment2D(aEnd.Vertex.Xz(), bEnd.Vertex.Xz());
+            //if (line1.TrySegmentIntersection(line2))
+            //{
+            //    (aStart, bStart) = (bStart, aStart);
+            //    line1 = new LineSegment2D(aStart.Vertex.Xz(), bStart.Vertex.Xz());
+            //    line2 = new LineSegment2D(aEnd.Vertex.Xz(), bEnd.Vertex.Xz());
+            //}
+
+            var rates = Enumerable.Range(0, 10).Select(i => 1f * i / (9)).ToList();
+            var leftWay = new RoadNetworkWay(RoadNetworkLineString.Create(rates.Select(t =>
+            {
+                leftSp.Evaluate(t, out var pos, out var tang, out var up);
+                return (Vector3)pos;
+            })));
+            var rightWay = new RoadNetworkWay(RoadNetworkLineString.Create(rates.Select(t =>
+            {
+                rightSp.Evaluate(t, out var pos, out var tang, out var up);
+                return (Vector3)pos;
+            })));
             return new RoadNetworkTrack(leftWay, rightWay);
         }
     }

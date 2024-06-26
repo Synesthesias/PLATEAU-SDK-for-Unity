@@ -4,7 +4,7 @@ using System;
 namespace PLATEAU.RoadNetwork
 {
     [Serializable]
-    public class RoadNetworkBlock
+    public class RoadNetworkBlock : ARoadNetworkParts<RoadNetworkBlock>
     {
         //----------------------------------
         // start: フィールド

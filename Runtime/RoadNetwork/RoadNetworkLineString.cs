@@ -9,15 +9,15 @@ using UnityEngine;
 
 namespace PLATEAU.RoadNetwork
 {
+    /// <summary>
+    /// 線分群クラス. 頂点のリストを持つ
+    /// </summary>
     [Serializable]
-    public class RoadNetworkLineString : IReadOnlyList<Vector3>
+    public class RoadNetworkLineString : ARoadNetworkParts<RoadNetworkLineString>, IReadOnlyList<Vector3>
     {
         //----------------------------------
         // start: フィールド
         //----------------------------------
-        // 識別Id. シリアライズ用.ランタイムでは使用しないこと
-        public RnID<RoadNetworkDataLineString> MyId { get; set; }
-
         public List<RoadNetworkPoint> Points { get; } = new List<RoadNetworkPoint>();
 
         //----------------------------------
@@ -25,6 +25,9 @@ namespace PLATEAU.RoadNetwork
         //----------------------------------
 
         public int Count => Points.Count;
+
+        // 頂点が2つ以上ある有効な線分かどうか
+        public bool IsValid => Count >= 2;
 
         public static RoadNetworkLineString Create(IEnumerable<RoadNetworkPoint> vertices)
         {

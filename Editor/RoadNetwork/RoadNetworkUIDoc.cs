@@ -9,10 +9,10 @@ using UnityEngine;
 using UnityEngine.UIElements;
 
 using static PLATEAU.Editor.RoadNetwork.RoadNetworkEditingSystem;
-using GenerateParameterFunc = 
+using GenerateParameterFunc =
     System.Action<PLATEAU.Editor.RoadNetwork.RoadNetworkUIDoc,
-        PLATEAU.Editor.RoadNetwork.RoadNetworkEditingSystem.IRoadNetworkEditingSystem, 
-        PLATEAU.Editor.RoadNetwork.RoadNetworkEditorAssets, 
+        PLATEAU.Editor.RoadNetwork.RoadNetworkEditingSystem.IRoadNetworkEditingSystem,
+        PLATEAU.Editor.RoadNetwork.RoadNetworkEditorAssets,
         UnityEngine.UIElements.VisualElement>;
 
 
@@ -20,13 +20,13 @@ namespace PLATEAU.Editor.RoadNetwork
 {
     public enum RoadNetworkEditingResultType
     {
-        _Undefind        = 0xfffffff,
-        Success          = 0x0000000,
-        InvalidNewValue  = 1 << 0,      // 適切な変更値ではない
-        InvalidTarget    = 1 << 1,      // 適切な変更対象ではない(主に第1引数のLink,Laneなどについて)         
+        _Undefind = 0xfffffff,
+        Success = 0x0000000,
+        InvalidNewValue = 1 << 0,      // 適切な変更値ではない
+        InvalidTarget = 1 << 1,      // 適切な変更対象ではない(主に第1引数のLink,Laneなどについて)         
         CantApplyEditing = 1 << 2,      // 適用できない編集。リンクの幅員を小さくしすぎて一部のレーンの幅員が0になるなど
-        InvalidArgs      = 1 << 3,      // 適切な引数ではない。(主に第2引数以降　Wayのポイントを削除する際に渡したポイントが存在しないなど)
-        _UndefindError   = 1 << 256,
+        InvalidArgs = 1 << 3,      // 適切な引数ではない。(主に第2引数以降　Wayのポイントを削除する際に渡したポイントが存在しないなど)
+        _UndefindError = 1 << 256,
         //Faild // 失敗原因を明確にするために未使用
     }
 
@@ -121,8 +121,9 @@ namespace PLATEAU.Editor.RoadNetwork
     {
         // RoadNetworkUIDoc内に隠したい, 依存部分をこのクラスの下層に配置する？
         //public RoadNetworkEditMode CurrentMode { get => (RoadNetworkEditMode)modeSelector.value; }
-        public RoadNetworkEditMode CurrentMode { 
-            get => system.CurrentEditMode; 
+        public RoadNetworkEditMode CurrentMode
+        {
+            get => system.CurrentEditMode;
             set => system.CurrentEditMode = value;
         }
 
@@ -145,14 +146,15 @@ namespace PLATEAU.Editor.RoadNetwork
         private static void CreateDebugNodeLayout(IRoadNetworkEditingSystem system, RoadNetworkEditorAssets assets, VisualElement root)
         {
             var element = assets.GetAsset(RoadNetworkEditorAssets.Vec3Field).Instantiate();
-             element.Q<Vector3Field>().label = "座標";
+            element.Q<Vector3Field>().label = "座標";
             root.Add(element);
         }
 
         private static void CreateDebugLinkLayout(IRoadNetworkEditingSystem system, RoadNetworkEditorAssets assets, VisualElement root)
         {
 
-            Func<VisualElement> createDataIDField = () => {
+            Func<VisualElement> createDataIDField = () =>
+            {
                 var dataID = assets.GetAsset(RoadNetworkEditorAssets.DataIDField).Instantiate().Q<IntegerField>();
                 dataID.label = "";
                 dataID.value = -1;
@@ -198,15 +200,17 @@ namespace PLATEAU.Editor.RoadNetwork
 
         private static void CreateDebugLaneLayout(IRoadNetworkEditingSystem system, RoadNetworkEditorAssets assets, VisualElement root)
         {
-            Func<VisualElement> createVec3Field = () => {
+            Func<VisualElement> createVec3Field = () =>
+            {
                 var vecField = assets.GetAsset(RoadNetworkEditorAssets.Vec3Field).Instantiate().Q<Vector3Field>();
                 vecField.label = "";
                 return vecField;
-                };
+            };
             CreateParamterBox(assets, root, "道形状の設定(左側Way)", createVec3Field);
             CreateParamterBox(assets, root, "道形状の設定(右側Way)", createVec3Field);
 
-            Func<VisualElement> createDataIDField = () => {
+            Func<VisualElement> createDataIDField = () =>
+            {
                 var dataID = assets.GetAsset(RoadNetworkEditorAssets.DataIDField).Instantiate().Q<IntegerField>();
                 dataID.label = "";
                 dataID.value = -1;
@@ -230,10 +234,12 @@ namespace PLATEAU.Editor.RoadNetwork
 
             label.text = labelText;
 
-            addBtn.clicked += () => {
+            addBtn.clicked += () =>
+            {
                 elementFolder.Add(createElemetFunc());
             };
-            removeBtn.clicked += () => {
+            removeBtn.clicked += () =>
+            {
                 if (elementFolder.childCount <= 0)
                     return;
                 elementFolder.RemoveAt(elementFolder.childCount - 1);
@@ -266,11 +272,11 @@ namespace PLATEAU.Editor.RoadNetwork
             return;
         }
 
-        public RoadNetworkUIDoc(IRoadNetworkEditingSystem system, VisualElement editorRoot, in RoadNetworkEditorAssets assets) 
+        public RoadNetworkUIDoc(IRoadNetworkEditingSystem system, VisualElement editorRoot, in RoadNetworkEditorAssets assets)
         {
             // 正当性チェック 最低限の初期化
             Assert.IsNotNull(system);
-            Assert.IsNotNull(editorRoot); 
+            Assert.IsNotNull(editorRoot);
             Assert.IsNotNull(assets);
 
             this.system = system;
@@ -350,7 +356,7 @@ namespace PLATEAU.Editor.RoadNetwork
                 {
                     if (node.SignalController == null)
                     {
-                        var trafficController = new TrafficSignalLightController("SignalController" + node.MyId, node, node.GetCenterPoint());
+                        var trafficController = new TrafficSignalLightController("SignalController" + node.DebugMyId, node, node.GetCenterPoint());
                         node.SignalController = trafficController;
                         foreach (var item in node.Neighbors)
                         {

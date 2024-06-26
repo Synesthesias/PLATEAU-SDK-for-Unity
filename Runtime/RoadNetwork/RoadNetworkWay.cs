@@ -13,14 +13,11 @@ namespace PLATEAU.RoadNetwork
     /// レーンを構成する左右の道の一つ
     /// </summary>
     [Serializable]
-    public class RoadNetworkWay : IReadOnlyList<Vector3>
+    public class RoadNetworkWay : ARoadNetworkParts<RoadNetworkTrack>, IReadOnlyList<Vector3>
     {
         //----------------------------------
         // start: フィールド
         //----------------------------------
-        // 識別Id. シリアライズ用.ランタイムでは使用しないこと
-        public RnID<RoadNetworkDataWay> MyId { get; set; }
-
         // LineStringの向きが逆かどうか
         public bool IsReversed { get; set; } = false;
 
@@ -60,11 +57,17 @@ namespace PLATEAU.RoadNetwork
 
         public RoadNetworkPoint GetPoint(int index)
         {
+            // 負数の時は逆からのインデックスに変換
+            if (index < 0)
+                index = Count + index;
             return LineString.Points[ToRawIndex(index)];
         }
 
         // 頂点数
         public int Count => LineString?.Count ?? 0;
+
+        // 有効な道かどうか
+        public bool IsValid => LineString?.IsValid ?? false;
 
         public RoadNetworkWay(RoadNetworkLineString lineString, bool isReversed = false, bool isRightSide = false)
         {

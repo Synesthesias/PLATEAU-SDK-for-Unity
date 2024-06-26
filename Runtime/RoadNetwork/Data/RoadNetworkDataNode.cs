@@ -8,9 +8,9 @@ namespace PLATEAU.RoadNetwork.Data
     [Serializable, RoadNetworkSerializeData(typeof(RoadNetworkNode))]
     public class RoadNetworkDataNode : IPrimitiveData
     {
+        // #TODO : 消える予定
         // 自分自身を表すId
         [field: SerializeField]
-        [RoadNetworkSerializeMember(nameof(RoadNetworkNode.MyId))]
         public RnID<RoadNetworkDataNode> MyId { get; set; }
 
         // 対象のtranオブジェクト

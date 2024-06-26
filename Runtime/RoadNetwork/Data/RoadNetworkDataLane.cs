@@ -12,7 +12,6 @@ namespace PLATEAU.RoadNetwork.Data
     {
         // 自分自身を表すId
         [field: SerializeField]
-        [RoadNetworkSerializeMember(nameof(RoadNetworkLane.MyId))]
         public RnID<RoadNetworkDataLane> MyId { get; set; }
 
         [field: SerializeField]

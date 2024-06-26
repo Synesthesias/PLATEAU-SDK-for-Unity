@@ -6,10 +6,9 @@ namespace PLATEAU.RoadNetwork.Data
     [Serializable, RoadNetworkSerializeData(typeof(RoadNetworkTrack))]
     public class RoadNetworkDataTrack : IPrimitiveData
     {
+        // #TODO : 消える予定
         //識別用ID：TrackID
         [field: SerializeField]
-        [RoadNetworkSerializeMember(nameof(RoadNetworkTrack.MyId))]
-
         public RnID<RoadNetworkDataTrack> MyId { get; set; }
 
         //接続上流レーン識別用ID：LaneID

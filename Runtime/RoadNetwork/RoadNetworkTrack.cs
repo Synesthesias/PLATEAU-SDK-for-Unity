@@ -7,15 +7,11 @@ using UnityEngine;
 namespace PLATEAU.RoadNetwork
 {
     [Serializable]
-    public class RoadNetworkTrack
+    public class RoadNetworkTrack : ARoadNetworkParts<RoadNetworkTrack>
     {
         //----------------------------------
         // start: フィールド
         //----------------------------------
-
-        //識別用ID：TrackID
-        public RnID<RoadNetworkDataTrack> MyId { get; set; }
-
         // 親ノード
         public RoadNetworkNode ParentNode { get; set; }
 

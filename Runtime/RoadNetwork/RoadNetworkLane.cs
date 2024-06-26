@@ -15,14 +15,11 @@ using Vector3 = UnityEngine.Vector3;
 
 namespace PLATEAU.RoadNetwork
 {
-    public class RoadNetworkLane
+    public class RoadNetworkLane : ARoadNetworkParts<RoadNetworkLane>
     {
         //----------------------------------
         // start: フィールド
         //----------------------------------
-        // 識別Id. シリアライズ用.ランタイムでは使用しないこと
-        public RnID<RoadNetworkDataLane> MyId { get; set; }
-
         // 親リンク
         public RoadNetworkLink ParentLink { get; set; }
 
@@ -65,7 +62,11 @@ namespace PLATEAU.RoadNetwork
             }
         }
 
-        public bool IsValidWay => LeftWay != null && RightWay != null;
+        /// <summary>
+        /// 有効なレーンかどうか
+        /// Left/Rightどっちも有効ならtrue
+        /// </summary>
+        public bool IsValidWay => (LeftWay?.IsValid ?? false) && (RightWay?.IsValid ?? false);
 
         /// <summary>
         /// 道の両方に接続先があるかどうか
@@ -101,6 +102,20 @@ namespace PLATEAU.RoadNetwork
             RightWay = rightWay;
             PrevBorder = startBorder;
             NextBorder = endBorder;
+
+            if (HasBothBorder)
+            {
+                var lp = LeftWay.GetPoint(0);
+                if (lp != PrevBorder.GetPoint(0) && lp != PrevBorder.GetPoint(-1))
+                {
+                    var bb = 0;
+                }
+                var rp = RightWay.GetPoint(0);
+                if (rp != PrevBorder.GetPoint(0) && rp != PrevBorder.GetPoint(-1))
+                {
+                    var bb = 0;
+                }
+            }
         }
 
         //デシリアライズの為に必要
@@ -331,6 +346,44 @@ namespace PLATEAU.RoadNetwork
             // #TODO : 直線補間ではなくendSubWayからとってくる必要がある
             AddPoint(Vector3.Lerp(lefts[^1], rights[^1], p2));
             return points;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="borderWay"></param>
+        /// <param name="leftPos">Laneの外側から見て左側の境界点</param>
+        /// <param name="leftNormal">Laneの外側から見て左側の境界点の進行方向(Node側の方向)</param>
+        /// <param name="rightPos">Laneの外側から見て右側の境界点</param>
+        /// <param name="rightNormal">Laneの外側から見て右側の境界点の進行方向(Node側の方向)</param>
+        /// <returns></returns>
+        public static bool TryGetBorderNormal(this RoadNetworkLane self, RoadNetworkWay borderWay, out Vector3 leftPos, out Vector3 leftNormal, out Vector3 rightPos, out Vector3 rightNormal)
+        {
+            leftNormal = rightNormal = Vector3.zero;
+            leftPos = rightPos = Vector3.zero;
+            if (self.IsValidWay == false)
+                return false;
+
+            if (self.PrevBorder?.LineString == borderWay.LineString)
+            {
+                leftPos = self.LeftWay[0];
+                rightPos = self.RightWay[0];
+                leftNormal = (self.LeftWay[0] - self.LeftWay[1]).normalized;
+                rightNormal = (self.RightWay[0] - self.RightWay[1]).normalized;
+                return true;
+            }
+
+            if (self.NextBorder?.LineString == borderWay.LineString)
+            {
+                leftPos = self.RightWay[^1];
+                rightPos = self.LeftWay[^1];
+                leftNormal = (self.RightWay[^1] - self.RightWay[^2]).normalized;
+                rightNormal = (self.LeftWay[^1] - self.LeftWay[^2]).normalized;
+                return true;
+            }
+
+            return false;
         }
 
 #if false

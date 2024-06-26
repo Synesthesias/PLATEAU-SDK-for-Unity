@@ -6,9 +6,9 @@ namespace PLATEAU.RoadNetwork.Data
     [Serializable, RoadNetworkSerializeData(typeof(RoadNetworkWay))]
     public class RoadNetworkDataWay : IPrimitiveData
     {
+        // #TODO : 消える予定
         // 自分自身を表すId
         [field: SerializeField]
-        [RoadNetworkSerializeMember(nameof(RoadNetworkWay.MyId))]
         public RnID<RoadNetworkDataWay> MyId { get; set; }
 
         // LineStringの向きが逆かどうか
