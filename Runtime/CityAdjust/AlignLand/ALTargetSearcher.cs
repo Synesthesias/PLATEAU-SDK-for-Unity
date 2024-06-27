@@ -43,9 +43,9 @@ namespace PLATEAU.CityAdjust.AlignLand
         /// 検索結果から高さ合わせ設定を生成します。
         /// 検索から明らかでない設定内容を引数で渡します。
         /// </summary>
-        public ALConfig ToConfig(bool doDestroySrcObj)
+        public ALConfig ToConfig(bool doDestroySrcObj, int heightmapWidth)
         {
-            return new ALConfig(targetModel, Lands.ToArray(), TargetPackages, doDestroySrcObj);
+            return new ALConfig(targetModel, Lands.ToArray(), TargetPackages, doDestroySrcObj, heightmapWidth);
         }
         
 

@@ -14,7 +14,8 @@ namespace PLATEAU.Interop
         ErrorIndexOutOfBounds,
         ErrorFileSystem,
         ErrorInvalidArgument,
-        ErrorValueIsInvalid
+        ErrorValueIsInvalid,
+        NotPreparedForOperation
     }
     
     /// <summary>

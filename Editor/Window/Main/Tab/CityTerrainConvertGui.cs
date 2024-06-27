@@ -11,6 +11,7 @@ using PLATEAU.CityInfo;
 using PLATEAU.Editor.Window.Main.Tab.AdjustGuiParts;
 using PLATEAU.Util;
 using System.Collections.Generic;
+using Object = UnityEngine.Object;
 
 namespace PLATEAU.Editor.Window.Main.Tab
 {
@@ -45,9 +46,10 @@ namespace PLATEAU.Editor.Window.Main.Tab
                     new ObjectFieldElement<PLATEAUInstancedCityModel>("", "変換対象", OnTargetModelChanged),
                     new HeaderElementGroup("", "設定", HeaderType.Header),
                     new DestroyOrPreserveSrcGui(OnPreserveOrDestroyChanged),
+                    new GeneralElement("", DrawHeightmapResolutionSelector),
                     new HeaderElementGroup("", "", HeaderType.Separator),
                     new ToggleLeftElement("", "地形をテレインに変換", true, OnConvertToTerrainChanged),
-                    new GeneralElement("convertToTerrainConf", DrawResolutionSelector),
+                    new GeneralElement("convertToTerrainConf", DrawConvertToTerrainConf),
                     new ToggleLeftElement("", "交通・区域モデルの高さを地形に合わせる", true, OnChangeAlignLand),
                     new HeaderElementGroup("", "", HeaderType.Separator),
                     new ButtonElement("execButton", ExecButtonTextNormal, ()=>Exec().ContinueWithErrorCatch())
@@ -70,15 +72,18 @@ namespace PLATEAU.Editor.Window.Main.Tab
             execButton.IsEnabled = !isExecTaskRunning;
         }
 
-        private void DrawResolutionSelector()
+        private void DrawHeightmapResolutionSelector()
+        {
+            EditorGUIUtility.labelWidth = 50;
+            this.selectedSize =
+                PlateauEditorStyle.PopupWithLabelWidth(
+                    "高さマップ解像度", this.selectedSize, SizeOptions, 90);
+        }
+
+        private void DrawConvertToTerrainConf()
         {
             using (PlateauEditorStyle.VerticalScopeWithPadding(16, 0, 8, 16))
             {
-                EditorGUIUtility.labelWidth = 50;
-                this.selectedSize =
-                    PlateauEditorStyle.PopupWithLabelWidth(
-                        "解像度", this.selectedSize, SizeOptions, 90);
-                
                 fillEdges = EditorGUILayout.ToggleLeft("余白を端の高さに合わせる", fillEdges);
             }
         }
@@ -138,17 +143,21 @@ namespace PLATEAU.Editor.Window.Main.Tab
             return selectionList.ToArray();
         }
 
+        /// <summary> ここで実行します </summary>
         private async Task Exec()
         {
             if (!CanExecOrNotify()) return;
             isExecTaskRunning = true;
+            int heightmapWidth = (int)SizeValues.GetValue(selectedSize);
+            Selection.objects = new Object[] { };
 
+            // Terrainに変換します
             if (convertToTerrain)
             {
                 var converter = new CityTerrainConverter();
                 var convertOption = new TerrainConvertOption(
                     FilterDemItems(new GameObject[]{targetModel.gameObject}),
-                    (int)SizeValues.GetValue(selectedSize),
+                    heightmapWidth,
                     preserveOrDestroy == PreserveOrDestroy.Destroy,
                     fillEdges,
                     heightmapImageOutput
@@ -157,9 +166,10 @@ namespace PLATEAU.Editor.Window.Main.Tab
                 await converter.ConvertAsync(convertOption);
             }
 
+            // 高さ合わせを実行します
             if (alignLand)
             {
-                ExecAlignLand();
+                ExecAlignLand(heightmapWidth);
             }
             
             isExecTaskRunning = false;
@@ -189,7 +199,7 @@ namespace PLATEAU.Editor.Window.Main.Tab
         {
         }
 
-        private void ExecAlignLand()
+        private void ExecAlignLand(int heightmapWidth)
         {
             // 高さ合わせの対象を検索します
             var searcher = new ALTargetSearcher(targetModel);
@@ -199,7 +209,7 @@ namespace PLATEAU.Editor.Window.Main.Tab
                 return;
             }
             // 高さ合わせを実行します
-            var conf = searcher.ToConfig(preserveOrDestroy == PreserveOrDestroy.Destroy);
+            var conf = searcher.ToConfig(preserveOrDestroy == PreserveOrDestroy.Destroy, heightmapWidth);
             ExecAlignLandInner().ContinueWithErrorCatch();
 
             // 非同期部分のインナーメソッド

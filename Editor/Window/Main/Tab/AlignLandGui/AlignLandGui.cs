@@ -36,7 +36,7 @@
 //                     new ElementGroup("afterSearch",
 //                         new MultiPackageSelectElement("packageSelect", "高さ合わせする対象を選択してください", true),
 //                         new HeaderElementGroup("", "一般設定", HeaderType.Header,
-//                             new DestroyOrPreserveSrcGui((_) => { /*TODO*/})
+//                             new DestroyOrPreserveSrcGui((_) => { })
 //                         ),
 //                         new HeaderElementGroup("", "実行", HeaderType.Header,
 //                             new ButtonElement("execButton", "実行", OnExecButtonPushed
