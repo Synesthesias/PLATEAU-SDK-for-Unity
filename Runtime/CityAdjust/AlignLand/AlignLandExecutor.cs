@@ -24,31 +24,37 @@ namespace PLATEAU.CityAdjust.AlignLand
         public async Task ExecAsync(ALConfig conf, IProgressDisplay progressDisplay)
         {
             progressDisplay.SetProgress("", 0f, "ハイトマップをを作成中...");
-            var landTrans = conf.Lands[0]; // TODO 複数対応
+            var landTransforms = conf.Lands;
 
-            List<ConvertedTerrainData.HeightmapData> heightmaps;
+            List<ConvertedTerrainData.HeightmapData> heightmaps = new();
             
-            // テレインの場合、テレインからハイトマップを取得します。
-            if (landTrans.GetComponent<Terrain>() != null)
+            // 土地ごとのループ
+            foreach (var land in landTransforms)
             {
-                var terrain = landTrans.GetComponent<Terrain>();
-                heightmaps = new List<ConvertedTerrainData.HeightmapData>{ConvertedTerrainData.HeightmapData.CreateFromTerrain(terrain)};
-            }
-            // メッシュの場合、メッシュからハイトマップを生成します。
-            else if (landTrans.GetComponent<MeshRenderer>() != null)
-            {
-                heightmaps = CreateHeightMapFromMesh(landTrans, conf.HeightmapWidth);
-                if (heightmaps == null)
+                // テレインの場合、テレインからハイトマップを取得します。
+                if (land.GetComponent<Terrain>() != null)
                 {
-                    Dialogue.Display("ハイトマップの生成に失敗しました。", "OK");
+                    var terrain = land.GetComponent<Terrain>();
+                    heightmaps.Add(ConvertedTerrainData.HeightmapData.CreateFromTerrain(terrain));
+                }
+                // メッシュの場合、メッシュからハイトマップを生成します。
+                else if (land.GetComponent<MeshRenderer>() != null)
+                {
+                    var heights = CreateHeightMapFromMesh(land, conf.HeightmapWidth);
+                    if (heights == null)
+                    {
+                        Dialogue.Display("ハイトマップの生成に失敗しました。", "OK");
+                        return;
+                    }
+                    heightmaps.AddRange(heights);
+                }
+                else
+                {
+                    Dialogue.Display("地形を取得できませんでした。", "OK");
                     return;
                 }
             }
-            else
-            {
-                Dialogue.Display("地形を取得できませんでした。", "OK");
-                return;
-            }
+           
 
             // 高さを変えるモデルについて情報収集します。
             progressDisplay.SetProgress("", 0f, "処理対象の情報を収集中...");
