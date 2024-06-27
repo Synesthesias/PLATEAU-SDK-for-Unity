@@ -8,9 +8,9 @@ namespace PLATEAU.HeightMapAlign
 {
     public class HeightMapAligner : PInvokeDisposable
     {
-        public static HeightMapAligner Create()
+        public static HeightMapAligner Create(double heightOffset)
         {
-            var result = NativeMethods.height_map_aligner_create(out var createdPtr);
+            var result = NativeMethods.height_map_aligner_create(out var createdPtr, heightOffset);
             DLLUtil.CheckDllError(result);
             return new HeightMapAligner(createdPtr);
         }
@@ -47,7 +47,8 @@ namespace PLATEAU.HeightMapAlign
         {
             [DllImport(DLLUtil.DllName)]
             internal static extern APIResult height_map_aligner_create(
-                out IntPtr createdPtr
+                out IntPtr createdPtr,
+                [In] double heightOffset
             );
             
             [DllImport(DLLUtil.DllName)]

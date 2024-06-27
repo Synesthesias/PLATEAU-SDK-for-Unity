@@ -21,6 +21,8 @@ namespace PLATEAU.CityAdjust.AlignLand
 {
     public class AlignLandExecutor
     {
+        private const float HeightOffset = 0.3f; // 高さ合わせの結果に対して、埋まらないようにこれだけ上げます(メートル)
+        
         public async Task ExecAsync(ALConfig conf, IProgressDisplay progressDisplay)
         {
             progressDisplay.SetProgress("", 0f, "ハイトマップをを作成中...");
@@ -75,7 +77,7 @@ namespace PLATEAU.CityAdjust.AlignLand
             nonLibDataHolder.ComposeFrom(convertTarget);
 
             // 土地の高さをC++に送ります。
-            using var heightmapAligner = HeightMapAligner.Create();
+            using var heightmapAligner = HeightMapAligner.Create(HeightOffset);
             foreach (var m in heightmaps)
             {
                 heightmapAligner.AddHeightmapFrame(m.HeightData, m.textureWidth, m.textureHeight, (float)m.min.X, (float)m.max.X, (float)m.min.Z, (float)m.max.Z, (float)m.min.Y, (float)m.max.Y);
