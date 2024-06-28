@@ -1,3 +1,4 @@
+using PLATEAU.CityAdjust.NonLibData;
 using PLATEAU.CityAdjust.NonLibDataHolder;
 using PLATEAU.CityExport.ModelConvert;
 using PLATEAU.CityExport.ModelConvert.SubMeshConvert;
@@ -72,7 +73,8 @@ namespace PLATEAU.CityAdjust.AlignLand
             }
 
             var nonLibDataHolder = new NonLibData.NonLibDataHolder(
-                new GmlIdToSerializedCityObj()
+                new GmlIdToSerializedCityObj(),
+                new ContourMeshesMaker()
             );
             nonLibDataHolder.ComposeFrom(convertTarget);
 
