@@ -142,5 +142,10 @@ namespace PLATEAU.RoadNetwork
             foreach (var n in model.Nodes)
                 AddNode(n);
         }
+
+        public RoadNetworkDataGetter CreateGetter()
+        {
+            return new RoadNetworkDataGetter(Storage);
+        }
     }
 }
