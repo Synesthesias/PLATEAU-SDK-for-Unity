@@ -143,9 +143,9 @@ namespace PLATEAU.RoadNetwork
                 AddNode(n);
         }
 
-        public RnDataGetter CreateGetter()
+        public RoadNetworkDataGetter CreateGetter()
         {
-            return new RnDataGetter(Storage);
+            return new RoadNetworkDataGetter(Storage);
         }
     }
 }

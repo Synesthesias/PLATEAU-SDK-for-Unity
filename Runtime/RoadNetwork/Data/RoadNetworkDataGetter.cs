@@ -7,9 +7,9 @@ namespace PLATEAU.RoadNetwork.Data
     /// <summary>
     /// 道路ネットワークのRoadNetworkData○○系統のデータをまとめて取ってくる機能を提供するクラス
     /// </summary>
-    public class RnDataGetter
+    public class RoadNetworkDataGetter
     {
-        internal RnDataGetter(RoadNetworkStorage storage)
+        internal RoadNetworkDataGetter(RoadNetworkStorage storage)
         {
             primStorage = storage.PrimitiveDataStorage;
 
