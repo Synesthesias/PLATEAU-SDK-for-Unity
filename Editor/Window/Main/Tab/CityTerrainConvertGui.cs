@@ -21,11 +21,11 @@ namespace PLATEAU.Editor.Window.Main.Tab
     internal class CityTerrainConvertGui : ITabContent
     {
         private PLATEAUInstancedCityModel targetModel;
-        private int selectedSize = 4;
+        private int selectedSize = 1;
         private bool fillEdges = true;
         private static TerrainConvertOption.ImageOutput heightmapImageOutput = TerrainConvertOption.ImageOutput.None;
-        private static readonly string[] SizeOptions = { "33 x 33", "65 x 65", "129 x 129", "257 x 257", "513 x 513", "1025 x 1025", "2049 x 2049", "4097 x 4097" };
-        private static readonly int[] SizeValues = { 33, 65, 129, 257, 513, 1025, 2049, 4097 };
+        private static readonly string[] SizeOptions = { "257 x 257", "513 x 513", "1025 x 1025", "2049 x 2049" };
+        private static readonly int[] SizeValues = { 257, 513, 1025, 2049 };
         private PreserveOrDestroy preserveOrDestroy;
         private bool convertToTerrain;
         private bool alignLand;
@@ -44,12 +44,17 @@ namespace PLATEAU.Editor.Window.Main.Tab
                 new ElementGroup("",
                     new HeaderElementGroup("", "地形モデルの変換を行います", HeaderType.Subtitle),
                     new ObjectFieldElement<PLATEAUInstancedCityModel>("", "変換対象", OnTargetModelChanged),
+                    new GeneralElement("", NotifyIfInvalidTarget),
                     new HeaderElementGroup("", "設定", HeaderType.Header),
                     new DestroyOrPreserveSrcGui(OnPreserveOrDestroyChanged),
-                    new GeneralElement("", DrawHeightmapResolutionSelector),
                     new HeaderElementGroup("", "", HeaderType.Separator),
-                    new ToggleLeftElement("", "地形をテレインに変換", true, OnConvertToTerrainChanged),
-                    new GeneralElement("convertToTerrainConf", DrawConvertToTerrainConf),
+                    new FoldOutElement("detailConf", "詳細設定",
+                        new ToggleLeftElement("", "地形をテレインに変換", true, OnConvertToTerrainChanged),
+                        new ElementGroup("terrainConf",
+                            new GeneralElement("", DrawHeightmapResolutionSelector),
+                            new GeneralElement("convertToTerrainConf", DrawTerrainEdgeConf)
+                        )
+                    ),
                     new ToggleLeftElement("", "交通・区域モデルの高さを地形に合わせる", true, OnChangeAlignLand),
                     new HeaderElementGroup("", "", HeaderType.Separator),
                     new ButtonElement("execButton", ExecButtonTextNormal, ()=>Exec().ContinueWithErrorCatch())
@@ -64,7 +69,7 @@ namespace PLATEAU.Editor.Window.Main.Tab
             guis.Draw();
 
             // 不要な設定項目を隠す
-            guis.Get("convertToTerrainConf").IsVisible = convertToTerrain;
+            guis.Get<FoldOutElement>("detailConf").ChildElementGroup.Get("terrainConf").IsVisible = convertToTerrain;
             
             // 実行中なら実行ボタンを変更
             var execButton = guis.Get<ButtonElement>("execButton");
@@ -80,7 +85,7 @@ namespace PLATEAU.Editor.Window.Main.Tab
                     "高さマップ解像度", this.selectedSize, SizeOptions, 90);
         }
 
-        private void DrawConvertToTerrainConf()
+        private void DrawTerrainEdgeConf()
         {
             using (PlateauEditorStyle.VerticalScopeWithPadding(16, 0, 8, 16))
             {
@@ -174,6 +179,15 @@ namespace PLATEAU.Editor.Window.Main.Tab
             
             isExecTaskRunning = false;
             parentWindow.Repaint(); // テキストが「実行中...」に変わったボタンを元に戻します
+        }
+
+        private void NotifyIfInvalidTarget()
+        {
+            if (targetModel == null) return;
+            if (!new ALTargetSearcher(targetModel).IsLandExist())
+            {
+                EditorGUILayout.HelpBox("変換対象の都市モデルに土地が含まれていません。", MessageType.Error);
+            }
         }
 
         /// <summary>

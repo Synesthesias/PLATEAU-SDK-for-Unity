@@ -55,14 +55,9 @@ namespace PLATEAU.CityAdjust.AlignLand
             var cogs = targetModel.GetComponentsInChildren<PLATEAUCityObjectGroup>();
             targetCityObjGroups = new List<PLATEAUCityObjectGroup>();
             TargetPackages = new HashSet<PredefinedCityModelPackage>();
-            var lands = new List<Transform>();
             foreach (var cog in cogs)
             {
                 var package = cog.Package;
-                if(package == PredefinedCityModelPackage.Relief)
-                {
-                    lands.Add(cog.transform);
-                }
                 if (package.CanAlignWithLand())
                 {
                     TargetPackages.Add(package);
@@ -70,12 +65,44 @@ namespace PLATEAU.CityAdjust.AlignLand
                 }
             }
             
-            // テレインを土地とみなします。
-            lands.AddRange(
-                targetModel.GetComponentsInChildren<Terrain>()
-                    .Select(ter => ter.transform));
-            Lands = lands;
+            // 土地を探します。
+            Lands = SearchLands(true).ToList();
 
+        }
+
+        private IEnumerable<Transform> SearchLands(bool includeMesh)
+        {
+            // 土地メッシュを追加します。
+            if (includeMesh)
+            {
+                var cogs = targetModel.GetComponentsInChildren<PLATEAUCityObjectGroup>();
+                foreach (var cog in cogs)
+                {
+                    var package = cog.Package;
+                    if(package == PredefinedCityModelPackage.Relief)
+                    {
+                        yield return cog.transform;
+                    }
+                    if (package.CanAlignWithLand())
+                    {
+                        TargetPackages.Add(package);
+                        targetCityObjGroups.Add(cog);
+                    }
+                }
+            }
+            
+            
+            // テレインを土地とみなして追加します。
+            foreach(var ter in targetModel.GetComponentsInChildren<Terrain>())
+            {
+                yield return ter.transform;
+            }
+        }
+
+        public bool IsLandExist()
+        {
+            var firstLand = SearchLands(true).FirstOrDefault();
+            return firstLand != null;
         }
         
     }

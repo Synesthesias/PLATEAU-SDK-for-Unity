@@ -23,7 +23,11 @@ namespace PLATEAU.CityAdjust.NonLibData
                 var contour = trans.GetComponent<PLATEAUContourMesh>();
                 if (contour != null)
                 {
-                    data.Add(new NonLibKeyParent(trans), contour.contourMesh);
+                    var contourKey = new NonLibKeyParent(trans);
+                    if (!data.TryAdd(contourKey, contour.contourMesh))
+                    {
+                        Debug.Log($"key {contourKey} is already exists.");
+                    }
                     return NextSearchFlow.Continue;
                 }
                 var cog = trans.GetComponent<PLATEAUCityObjectGroup>();
@@ -34,7 +38,11 @@ namespace PLATEAU.CityAdjust.NonLibData
                 var mesh = mf.sharedMesh;
                 if (mesh == null) return NextSearchFlow.Continue;
                 var key = new NonLibKeyParent(trans);
-                data.Add(key, new ContourMesh(mesh.vertices, mesh.triangles));
+                if (!data.TryAdd(key, new ContourMesh(mesh.vertices, mesh.triangles)))
+                {
+                    Debug.Log($"key {key} is already exists.");
+                }
+                
                 return NextSearchFlow.Continue;
             });
         }
@@ -78,7 +86,12 @@ namespace PLATEAU.CityAdjust.NonLibData
 
         public override int GetHashCode()
         {
-            return (ParentName + ObjName).GetHashCode();
+            return ToString().GetHashCode();
+        }
+        
+        public override string ToString()
+        {
+            return $"{ParentName}/{ObjName}";
         }
     }
 }
