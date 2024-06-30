@@ -1,16 +1,16 @@
-﻿using System;
-using System.Collections;
+﻿using Codice.CM.WorkspaceServer.Tree.GameUI.Checkin.Updater;
 using PLATEAU.RoadNetwork;
 using PLATEAU.RoadNetwork.Data;
+using System;
+using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
-using UnityEditor;
-using UnityEngine.Assertions;
-using System.Linq;
-using static PLATEAU.Editor.RoadNetwork.RoadNetworkEditingSystem;
-using UnityEngine.UIElements;
-using Codice.CM.WorkspaceServer.Tree.GameUI.Checkin.Updater;
 using System.Diagnostics.Eventing.Reader;
+using System.Linq;
+using UnityEditor;
+using UnityEngine;
+using UnityEngine.Assertions;
+using UnityEngine.UIElements;
+using static PLATEAU.Editor.RoadNetwork.RoadNetworkEditingSystem;
 
 namespace PLATEAU.Editor.RoadNetwork
 {
@@ -318,7 +318,7 @@ namespace PLATEAU.Editor.RoadNetwork
             {
                 //子の要素が選択されていない
                 var lane = editorSystem.SelectedRoadNetworkElement as RoadNetworkLane;
-                if (lane?.ParentLink != link)
+                if (lane?.Parent != link)
                 {
                     isDisplay = true;
                 }

@@ -133,24 +133,18 @@ namespace PLATEAU.RoadNetwork.Data
             new PrimitiveStorage<RoadNetworkDataBlock>();
 
         [field: SerializeField]
-        public PrimitiveStorage<RoadNetworkDataLink> Links { get; set; } = new PrimitiveStorage<RoadNetworkDataLink>();
-
-        [field: SerializeField]
-        public PrimitiveStorage<RoadNetworkDataNode> Nodes { get; set; } = new PrimitiveStorage<RoadNetworkDataNode>();
-
-        [field: SerializeField]
         public PrimitiveStorage<RoadNetworkDataWay> Ways { get; set; } = new PrimitiveStorage<RoadNetworkDataWay>();
 
         [field: SerializeField]
-        public PrimitiveStorage<RoadNetworkDataTrack> Tracks { get; set; } =
-            new PrimitiveStorage<RoadNetworkDataTrack>();
+        public PrimitiveStorage<RnDataRoadBase> RoadBases { get; set; } = new PrimitiveStorage<RnDataRoadBase>();
+
 
         // #NOTE : structだとgetterでとってきたときにコピーが返る -> それに対してWriteしても元データが書き換わらないのでclassにする
         [Serializable]
         public class PrimitiveStorage<TPrimType> : IRnIDGeneratable
             where TPrimType : IPrimitiveData
         {
-            [SerializeField] private List<TPrimType> dataList = new List<TPrimType>();
+            [SerializeField, SerializeReference] private List<TPrimType> dataList = new List<TPrimType>();
             // 未使用のデータインデックス アプリを次回起動した際にインデックスを利用できるように残す
             [SerializeField] private List<int> freeDataIndices = new List<int>();
 

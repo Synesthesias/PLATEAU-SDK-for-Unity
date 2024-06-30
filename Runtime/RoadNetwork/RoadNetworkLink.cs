@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace PLATEAU.RoadNetwork
 {
-    public class RoadNetworkLink : ARoadNetworkParts<RoadNetworkLink>
+    public class RoadNetworkLink : RnRoadBase
     {
         //----------------------------------
         // start: フィールド
@@ -18,9 +18,9 @@ namespace PLATEAU.RoadNetwork
         // 対象のtranオブジェクト
         public PLATEAUCityObjectGroup TargetTran { get; set; }
 
-        public RoadNetworkNode NextNode { get; set; }
+        public RnRoadBase Next { get; set; }
 
-        public RoadNetworkNode PrevNode { get; set; }
+        public RnRoadBase Prev { get; set; }
 
         private List<RoadNetworkLane> mainLanes = new List<RoadNetworkLane>();
         private List<RoadNetworkLane> leftLanes = new List<RoadNetworkLane>();
@@ -107,7 +107,7 @@ namespace PLATEAU.RoadNetwork
         {
             if (lanes.Contains(lane))
                 return;
-            lane.ParentLink = this;
+            lane.Parent = this;
             lanes.Add(lane);
         }
 
@@ -119,18 +119,17 @@ namespace PLATEAU.RoadNetwork
         private void RemoveLane(List<RoadNetworkLane> lanes, RoadNetworkLane lane)
         {
             if (lanes.Remove(lane))
-                lane.ParentLink = null;
+                lane.Parent = null;
         }
 
         /// <summary>
         /// 完全に孤立したリンクを作成
         /// </summary>
         /// <param name="targetTran"></param>
-        /// <param name="lineString"></param>
+        /// <param name="way"></param>
         /// <returns></returns>
-        public static RoadNetworkLink CreateIsolatedLink(PLATEAUCityObjectGroup targetTran, RoadNetworkLineString lineString)
+        public static RoadNetworkLink CreateIsolatedLink(PLATEAUCityObjectGroup targetTran, RoadNetworkWay way)
         {
-            var way = new RoadNetworkWay(lineString);
             var lane = RoadNetworkLane.CreateOneWayLane(way);
             var ret = new RoadNetworkLink(targetTran);
             ret.AddMainLane(lane);

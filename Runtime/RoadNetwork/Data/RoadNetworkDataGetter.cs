@@ -31,19 +31,13 @@ namespace PLATEAU.RoadNetwork.Data
         /// データの取得関数群
         /// </summary>
         /// <param name="data"></param>
-        
-        public IReadOnlyList<RoadNetworkDataNode> GetNodes()
+
+
+        public IReadOnlyList<RnDataRoadBase> GetRoadBases()
         {
-            return primStorage.Nodes.DataList;
+            return primStorage.RoadBases.DataList;
         }
-        public IReadOnlyList<RoadNetworkDataTrack> GetTracks()
-        {
-            return primStorage.Tracks.DataList;
-        }
-        public IReadOnlyList<RoadNetworkDataLink> GetLinks()
-        {
-            return primStorage.Links.DataList;
-        }
+
         public IReadOnlyList<RoadNetworkDataLane> GetLanes()
         {
             return primStorage.Lanes.DataList;
@@ -71,9 +65,7 @@ namespace PLATEAU.RoadNetwork.Data
         /// <param name="data"></param>
         public void Validate()
         {
-            TestNull(nameof(RoadNetworkDataNode), GetNodes());
-            TestNull(nameof(RoadNetworkDataTrack), GetTracks());
-            TestNull(nameof(RoadNetworkDataLink), GetLinks());
+            TestNull(nameof(RnRoadBase), GetRoadBases());
             TestNull(nameof(RoadNetworkDataLane), GetLanes());
             TestNull(nameof(RoadNetworkDataBlock), GetBlocks());
             TestNull(nameof(RoadNetworkDataWay), GetWays());

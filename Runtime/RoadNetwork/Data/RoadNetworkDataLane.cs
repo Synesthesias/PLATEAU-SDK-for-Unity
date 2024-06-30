@@ -10,13 +10,14 @@ namespace PLATEAU.RoadNetwork.Data
     [Serializable, RoadNetworkSerializeData(typeof(RoadNetworkLane))]
     public class RoadNetworkDataLane : IPrimitiveData
     {
+        // #TODO : 消える予定
         // 自分自身を表すId
         [field: SerializeField]
         public RnID<RoadNetworkDataLane> MyId { get; set; }
 
         [field: SerializeField]
-        [RoadNetworkSerializeMember(nameof(RoadNetworkLane.ParentLink))]
-        public RnID<RoadNetworkDataLink> ParentLink { get; set; }
+        [RoadNetworkSerializeMember]
+        public RnID<RnDataRoadBase> Parent { get; set; }
 
         // 連結しているレーン(上流)
         [field: SerializeField]

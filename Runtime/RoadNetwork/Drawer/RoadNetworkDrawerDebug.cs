@@ -44,8 +44,6 @@ namespace PLATEAU.RoadNetwork.Drawer
 
             public DrawOption showTrack = new DrawOption();
 
-            public DrawOption showNeighbor = new DrawOption();
-
             public DrawOption showBorder = new DrawOption();
 
             public DrawOption showSplitTrack = new DrawOption();
@@ -197,34 +195,29 @@ namespace PLATEAU.RoadNetwork.Drawer
                 }
             }
 
-
             foreach (var node in roadNetwork.Nodes)
             {
                 if (nodeOp.visible == false)
                     break;
 
-                var center = node.GetCenterPoint();
-                DrawLine(center, center + Vector3.up);
-
-                if (nodeOp.showNeighbor.visible)
+                for (var i = 0; i < node.Neighbors.Count; ++i)
                 {
-                    for (var i = 0; i < node.Neighbors.Count; ++i)
-                    {
-                        var n = node.Neighbors[i];
-                        if (nodeOp.showBorder.visible)
-                            DrawWay(n.Border, nodeOp.showBorder.color);
+                    var n = node.Neighbors[i];
+                    if (nodeOp.showBorder.visible)
+                        DrawWay(n.Border, nodeOp.showBorder.color);
 
-                        if (nodeOp.showSplitTrack.visible)
+                    if (nodeOp.showSplitTrack.visible)
+                    {
+                        for (var j = i + 1; j < node.Neighbors.Count; ++j)
                         {
-                            for (var j = i + 1; j < node.Neighbors.Count; ++j)
+                            var n2 = node.Neighbors[j];
+                            if (n == n2)
+                                continue;
+                            var way = node.CalcTrackWay(n.Link, n2.Link);
+                            if (way != null)
                             {
-                                var n2 = node.Neighbors[j];
-                                var way = node.CalcTrackWay(n.Link, n2.Link);
-                                if (way != null)
-                                {
-                                    foreach (var w in way.BothWays)
-                                        DrawWay(w, nodeOp.showSplitTrack.color);
-                                }
+                                foreach (var w in way.BothWays)
+                                    DrawWay(w, nodeOp.showSplitTrack.color);
                             }
                         }
                     }
@@ -232,7 +225,7 @@ namespace PLATEAU.RoadNetwork.Drawer
 
                 if (nodeOp.showTrack.visible)
                 {
-                    foreach (var l in node.Tracks)
+                    foreach (var l in node.Lanes)
                     {
                         foreach (var w in l.BothWays)
                             DrawWay(w, nodeOp.showTrack.color);

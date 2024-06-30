@@ -13,8 +13,8 @@ namespace PLATEAU.RoadNetwork.Data
 
         // Link
         [field: SerializeField]
-        [RoadNetworkSerializeMember(nameof(RoadNetworkNeighbor.Link))]
-        public RnID<RoadNetworkDataLink> Link { get; set; }
+        [RoadNetworkSerializeMember]
+        public RnID<RnDataRoadBase> Link { get; set; }
 
         //----------------------------------
         // end: フィールド

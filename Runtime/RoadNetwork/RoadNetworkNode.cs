@@ -7,13 +7,12 @@ using System.Linq;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Splines;
-
 namespace PLATEAU.RoadNetwork
 {
     /// <summary>
     /// 交差点
     /// </summary>
-    public class RoadNetworkNode : ARoadNetworkParts<RoadNetworkNode>
+    public class RoadNetworkNode : RnRoadBase
     {
         //----------------------------------
         // start: フィールド
@@ -28,10 +27,10 @@ namespace PLATEAU.RoadNetwork
         public List<RoadNetworkNeighbor> Neighbors { get; set; } = new List<RoadNetworkNeighbor>();
 
 
-        private List<RoadNetworkTrack> tracks = new List<RoadNetworkTrack>();
+        private List<RoadNetworkLane> lanes = new List<RoadNetworkLane>();
 
         // 車線
-        public IReadOnlyList<RoadNetworkTrack> Tracks => tracks;
+        public IReadOnlyList<RoadNetworkLane> Lanes => lanes;
 
         // 信号制御器
         public TrafficSignalLightController SignalController { get; set; } = null;
@@ -47,25 +46,25 @@ namespace PLATEAU.RoadNetwork
             TargetTran = targetTran;
         }
 
-        public void AddTrack(RoadNetworkTrack track)
+        public void AddLane(RoadNetworkLane lane)
         {
-            if (tracks.Contains(track))
+            if (lanes.Contains(lane))
                 return;
 
-            track.ParentNode = this;
-            tracks.Add(track);
+            lane.Parent = this;
+            lanes.Add(lane);
         }
 
-        public void AddTracks(IEnumerable<RoadNetworkTrack> tracks)
+        public void AddLanes(IEnumerable<RoadNetworkLane> lanes)
         {
-            foreach (var track in tracks)
-                AddTrack(track);
+            foreach (var track in lanes)
+                AddLane(track);
         }
 
-        public void RemoveTrack(RoadNetworkTrack link)
+        public void RemoveLane(RoadNetworkLane lane)
         {
-            if (tracks.Remove(link))
-                link.ParentNode = null;
+            if (lanes.Remove(lane))
+                lane.Parent = null;
         }
 
         public Vector3 GetCenterPoint()
@@ -78,33 +77,30 @@ namespace PLATEAU.RoadNetwork
         /// <summary>
         /// a,bを繋ぐ経路を計算する
         /// </summary>
-        /// <param name="a"></param>
-        /// <param name="b"></param>
-        public RoadNetworkTrack CalcTrackWay(RoadNetworkLink a, RoadNetworkLink b)
+        /// <param name="from"></param>
+        /// <param name="to"></param>
+        public RoadNetworkLane CalcTrackWay(RoadNetworkLink from, RoadNetworkLink to)
         {
-            if (a == b)
+            if (from == to)
                 return null;
-            var na = Neighbors.FirstOrDefault(n => n.Link == a);
-            var nb = Neighbors.FirstOrDefault(n => n.Link == b);
-            if (na == null || nb == null)
+            var nFrom = Neighbors.FirstOrDefault(n => n.Link == from);
+            var nTo = Neighbors.FirstOrDefault(n => n.Link == to);
+            if (nFrom == null || nTo == null)
                 return null;
-            if (na.Border.Count < 2 || nb.Border.Count < 2)
-                return null;
-
-            var aStart = na.Border.GetPoint(0);
-            var aEnd = na.Border.GetPoint(na.Border.Count - 1);
-
-            var aLane = na.GetConnectedLane();
-            if (aLane == null)
+            if (nFrom.Border.Count < 2 || nTo.Border.Count < 2)
                 return null;
 
-            var bLane = nb.GetConnectedLane();
-            if (bLane == null)
+            var fromLane = nFrom.GetConnectedLane();
+            if (fromLane == null)
+                return null;
+
+            var toLane = nTo.GetConnectedLane();
+            if (toLane == null)
                 return null;
 
 
-            aLane.TryGetBorderNormal(na.Border, out var aLeftPos, out var aLeftNormal, out var aRightPos, out var aRightNormal);
-            bLane.TryGetBorderNormal(nb.Border, out var bLeftPos, out var bLeftNormal, out var bRightPos, out var bRightNormal);
+            fromLane.TryGetBorderNormal(nFrom.Border, out var aLeftPos, out var aLeftNormal, out var aRightPos, out var aRightNormal);
+            toLane.TryGetBorderNormal(nTo.Border, out var bLeftPos, out var bLeftNormal, out var bRightPos, out var bRightNormal);
 
             var rightSp = new Spline
             {
@@ -117,22 +113,12 @@ namespace PLATEAU.RoadNetwork
                 new BezierKnot(aRightPos, 10 *aRightNormal, 10 *aRightNormal),
                 new BezierKnot(bLeftPos, 10 *bLeftNormal, 10 *bLeftNormal)
             };
+#if false
             DebugEx.DrawArrow(aLeftPos, aLeftPos + aLeftNormal * 2, bodyColor: Color.magenta);
             DebugEx.DrawArrow(bLeftPos, bLeftPos + bLeftNormal * 2, bodyColor: Color.magenta);
             DebugEx.DrawArrow(bRightPos, bRightPos + bRightNormal * 2, bodyColor: Color.magenta);
             DebugEx.DrawArrow(aRightPos, aRightPos + aRightNormal * 2, bodyColor: Color.magenta);
-            //var bStart = nb.Border.GetPoint(0);
-            //var bEnd = nb.Border.GetPoint(nb.Border.Count - 1);
-
-            //var line1 = new LineSegment2D(aStart.Vertex.Xz(), bStart.Vertex.Xz());
-            //var line2 = new LineSegment2D(aEnd.Vertex.Xz(), bEnd.Vertex.Xz());
-            //if (line1.TrySegmentIntersection(line2))
-            //{
-            //    (aStart, bStart) = (bStart, aStart);
-            //    line1 = new LineSegment2D(aStart.Vertex.Xz(), bStart.Vertex.Xz());
-            //    line2 = new LineSegment2D(aEnd.Vertex.Xz(), bEnd.Vertex.Xz());
-            //}
-
+#endif
             var rates = Enumerable.Range(0, 10).Select(i => 1f * i / (9)).ToList();
             var leftWay = new RoadNetworkWay(RoadNetworkLineString.Create(rates.Select(t =>
             {
@@ -144,7 +130,7 @@ namespace PLATEAU.RoadNetwork
                 rightSp.Evaluate(t, out var pos, out var tang, out var up);
                 return (Vector3)pos;
             })));
-            return new RoadNetworkTrack(leftWay, rightWay);
+            return new RoadNetworkLane(leftWay, rightWay, nFrom.Border, nTo.Border);
         }
     }
 }

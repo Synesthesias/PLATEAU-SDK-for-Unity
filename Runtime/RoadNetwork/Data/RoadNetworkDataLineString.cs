@@ -17,7 +17,7 @@ namespace PLATEAU.RoadNetwork.Data
     public class RoadNetworkDataLineString : ILineString
     {
         [field: SerializeField]
-        [RoadNetworkSerializeMember(nameof(RoadNetworkLineString.Points))]
+        [RoadNetworkSerializeMember]
         public List<RnID<RoadNetworkDataPoint>> Points { get; set; } = new List<RnID<RoadNetworkDataPoint>>();
 
         public int Count => ((ICollection<RnID<RoadNetworkDataPoint>>)Points).Count;

@@ -17,6 +17,8 @@ namespace PLATEAU.RoadNetwork.Factory
         [field: SerializeField]
         public List<Vector3> Vertices { get; set; }
 
+        public bool visible = true;
+
 
         public RoadNetworkTranMesh(PLATEAUCityObjectGroup cityObjectGroup, float epsilon = 0.1f)
         {

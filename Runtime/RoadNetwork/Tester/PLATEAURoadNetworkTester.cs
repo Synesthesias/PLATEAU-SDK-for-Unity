@@ -118,7 +118,11 @@ namespace PLATEAU.RoadNetwork
             foreach (var item in cityObjects)
             {
                 if (item.Visible == false)
+                {
+                    // インデックスは進めておかないとvisible切り替わるたびに色代わるの辛い
+                    index += item.Meshes.Sum(m => m.SubMeshes.Count);
                     continue;
+                }
 
                 foreach (var mesh in item.Meshes)
                 {
@@ -133,7 +137,10 @@ namespace PLATEAU.RoadNetwork
                     }
 
                     foreach (var subMesh in mesh.SubMeshes)
-                        DrawMesh(mesh, subMesh, Matrix4x4.identity, color: DebugEx.GetDebugColor(index++, p.meshColorNum));
+                    {
+                        DrawMesh(mesh, subMesh, Matrix4x4.identity, color: DebugEx.GetDebugColor(index, p.meshColorNum));
+                        index++;
+                    }
                 }
             }
         }
@@ -150,6 +157,8 @@ namespace PLATEAU.RoadNetwork
                 foreach (var t in tranMeshes)
                 {
                     if (t.Vertices == null)
+                        continue;
+                    if (t.visible == false)
                         continue;
                     DebugEx.DrawLines(t.Vertices, showTranMesh.loop, showTranMesh.color);
                 }

@@ -21,7 +21,7 @@ namespace PLATEAU.RoadNetwork
         // start: フィールド
         //----------------------------------
         // 親リンク
-        public RoadNetworkLink ParentLink { get; set; }
+        public RnRoadBase Parent { get; set; }
 
         // 連結しているレーン(上流)
         public List<RoadNetworkLane> NextLanes { get; private set; } = new List<RoadNetworkLane>();
@@ -102,20 +102,6 @@ namespace PLATEAU.RoadNetwork
             RightWay = rightWay;
             PrevBorder = startBorder;
             NextBorder = endBorder;
-
-            if (HasBothBorder)
-            {
-                var lp = LeftWay.GetPoint(0);
-                if (lp != PrevBorder.GetPoint(0) && lp != PrevBorder.GetPoint(-1))
-                {
-                    var bb = 0;
-                }
-                var rp = RightWay.GetPoint(0);
-                if (rp != PrevBorder.GetPoint(0) && rp != PrevBorder.GetPoint(-1))
-                {
-                    var bb = 0;
-                }
-            }
         }
 
         //デシリアライズの為に必要

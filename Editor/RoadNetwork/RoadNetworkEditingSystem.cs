@@ -224,10 +224,10 @@ namespace PLATEAU.Editor.RoadNetwork
             private readonly RoadNetworkEditingSystem system;
 
 
-            public UnityEngine.Object RoadNetworkObject 
-            { 
+            public UnityEngine.Object RoadNetworkObject
+            {
                 get => system.roadNetworkObject;
-                set 
+                set
                 {
                     if (system.roadNetworkObject == value)
                         return;
@@ -248,15 +248,15 @@ namespace PLATEAU.Editor.RoadNetwork
             }
             public event EventHandler OnChangedRoadNetworkObject;
 
-            public RoadNetworkModel RoadNetwork 
-            { 
-                get => system.roadNetworkModel; 
+            public RoadNetworkModel RoadNetwork
+            {
+                get => system.roadNetworkModel;
             }
 
-            public RoadNetworkEditMode CurrentEditMode 
-            { 
+            public RoadNetworkEditMode CurrentEditMode
+            {
                 get => system.editingMode;
-                set 
+                set
                 {
                     if (system.editingMode == value)
                         return;
@@ -271,23 +271,23 @@ namespace PLATEAU.Editor.RoadNetwork
 
             public IRoadNetworkEditOperation EditOperation => system.editOperation;
 
-            public object SelectedRoadNetworkElement 
-            { 
-                get => system.selectedRoadNetworkElement; 
-                set 
+            public object SelectedRoadNetworkElement
+            {
+                get => system.selectedRoadNetworkElement;
+                set
                 {
                     if (system.selectedRoadNetworkElement == value)
                         return;
                     system.selectedRoadNetworkElement = value;
                     OnChangedSelectRoadNetworkElement?.Invoke(this, EventArgs.Empty);
-                } 
+                }
             }
 
             public ISystemInstance EditorInstance => system.systemInstance;
 
-            public TrafficSignalControllerPattern SelectedSignalControllerPattern 
-            { 
-                get => system.selectedSignalPattern; 
+            public TrafficSignalControllerPattern SelectedSignalControllerPattern
+            {
+                get => system.selectedSignalPattern;
                 set
                 {
                     if (system.selectedSignalPattern == value)
@@ -296,13 +296,13 @@ namespace PLATEAU.Editor.RoadNetwork
                     OnChangedSignalControllerPattern?.Invoke(this, EventArgs.Empty);
 
                     system.selectedSignalPhase = null;
-                } 
+                }
             }
 
-            public TrafficSignalControllerPhase SelectedSignalPhase 
-            { 
-                get => system.selectedSignalPhase; 
-                set 
+            public TrafficSignalControllerPhase SelectedSignalPhase
+            {
+                get => system.selectedSignalPhase;
+                set
                 {
                     if (system.selectedSignalPhase == value)
                         return;
@@ -329,7 +329,7 @@ namespace PLATEAU.Editor.RoadNetwork
             public RoadNetworkEditingResult AddPoint(RoadNetworkWay way, int idx, RoadNetworkPoint point)
             {
                 way.LineString.Points.Insert(idx, point);
-                
+
                 return new RoadNetworkEditingResult(RoadNetworkEditingResultType.Success);
             }
 
@@ -402,19 +402,13 @@ namespace PLATEAU.Editor.RoadNetwork
             {
                 throw new NotImplementedException();
             }
-
-            public RoadNetworkEditingResult RegisterRegulation(RoadNetworkTrack track, RoadNetworkRegulationElemet newRegulation)
-            {
-                throw new NotImplementedException();
-            }
-
         }
 
         /// <summary>
         /// 編集機能のインスタンスを管理する機能を行っているクラス
         /// </summary>
         public class EditorInstance : ISystemInstance
-        {            
+        {
             public EditorInstance(RoadNetworkEditingSystem system, ISystemInstance editorInstance)
             {
                 this.system = system;

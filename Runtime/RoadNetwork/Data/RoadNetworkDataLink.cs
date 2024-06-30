@@ -6,7 +6,7 @@ using UnityEngine;
 namespace PLATEAU.RoadNetwork.Data
 {
     [Serializable, RoadNetworkSerializeData(typeof(RoadNetworkLink))]
-    public class RoadNetworkDataLink : IPrimitiveData
+    public class RoadNetworkDataLink : RnDataRoadBase
     {
         // #TODO : 消える予定
         // 自分自身を表すId
@@ -20,11 +20,11 @@ namespace PLATEAU.RoadNetwork.Data
 
         [field: SerializeField]
         [RoadNetworkSerializeMember]
-        public RnID<RoadNetworkDataNode> NextNode { get; set; }
+        public RnID<RnDataRoadBase> Next { get; set; }
 
         [field: SerializeField]
         [RoadNetworkSerializeMember]
-        public RnID<RoadNetworkDataNode> PrevNode { get; set; }
+        public RnID<RnDataRoadBase> Prev { get; set; }
 
         // 本線レーン
         [field: SerializeField]

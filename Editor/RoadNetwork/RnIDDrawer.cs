@@ -25,13 +25,8 @@ namespace PLATEAU.Editor.RoadNetwork
         }
     }
 
-    [CustomPropertyDrawer(typeof(RnID<RoadNetworkDataTrack>))]
-    public class RnTrackIDDrawer : RnIDDrawer<RoadNetworkDataTrack> { }
-
-
     [CustomPropertyDrawer(typeof(RnID<RoadNetworkDataNode>))]
     public class RnNodeIDDrawer : RnIDDrawer<RoadNetworkDataNode> { }
-
 
     [CustomPropertyDrawer(typeof(RnID<RoadNetworkDataLink>))]
     public class RnLinkIDDrawer : RnIDDrawer<RoadNetworkDataLink> { }

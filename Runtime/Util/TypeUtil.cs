@@ -59,7 +59,7 @@ namespace PLATEAU.Util
 
         private class Work
         {
-            public HashSet<object> visited = new HashSet<object>();
+            public readonly HashSet<object> Visited = new HashSet<object>();
         }
 
         /// <summary>
@@ -87,10 +87,10 @@ namespace PLATEAU.Util
                 yield break;
 
             // すでにこのオブジェクト探索済みなら無視(参照がループしているような場合対応
-            if (work.visited.Contains(obj))
+            if (work.Visited.Contains(obj))
                 yield break;
 
-            work.visited.Add(obj);
+            work.Visited.Add(obj);
             var type = obj.GetType();
             // 見つかったらそれを返す
             if (type.IsSubclassOf(targetType) || type == targetType)

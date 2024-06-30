@@ -9,11 +9,35 @@ using UnityEngine;
 
 namespace PLATEAU.RoadNetwork
 {
+    public class RoadNetworkWayPoints : IReadOnlyList<RoadNetworkPoint>
+    {
+        private RoadNetworkWay way;
+
+        public RoadNetworkWayPoints(RoadNetworkWay way)
+        {
+            this.way = way;
+        }
+
+        public IEnumerator<RoadNetworkPoint> GetEnumerator()
+        {
+            return way.Points.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
+        public int Count => way.Count;
+
+        public RoadNetworkPoint this[int index] => way.GetPoint(index);
+    }
+
     /// <summary>
     /// レーンを構成する左右の道の一つ
     /// </summary>
     [Serializable]
-    public class RoadNetworkWay : ARoadNetworkParts<RoadNetworkTrack>, IReadOnlyList<Vector3>
+    public class RoadNetworkWay : ARoadNetworkParts<RoadNetworkWay>, IReadOnlyList<Vector3>
     {
         //----------------------------------
         // start: フィールド
