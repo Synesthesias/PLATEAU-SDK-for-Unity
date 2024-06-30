@@ -23,7 +23,7 @@ namespace PLATEAU.CityImport.Import.Convert
         public List<int> GameMaterialIDs { get; }
 
         private string Name { get; }
-        private int SubMeshCount => this.subMeshTriangles.Count;
+        public int SubMeshCount => this.subMeshTriangles.Count;
 
         public ConvertedMeshData(Vector3[] vertices, Vector2[] uv1, Vector2[] uv4, List<List<int>> subMeshTriangles,
             List<string> textureUrls, List<CityGML.Material> materials, List<int> gameMaterialIDs, string name)

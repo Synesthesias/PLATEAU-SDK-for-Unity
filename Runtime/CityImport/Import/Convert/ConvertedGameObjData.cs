@@ -97,7 +97,7 @@ namespace PLATEAU.CityImport.Import.Convert
             var nextParent = parent;
             if (!skipRoot)
             {
-                if (this.meshData == null || this.meshData.VerticesCount <= 0)
+                if (this.meshData == null || this.meshData.VerticesCount <= 0 || meshData.SubMeshCount == 0)
                 {
                     // メッシュがなければ、中身のないゲームオブジェクトを作成します。
                     var obj = new GameObject
@@ -136,7 +136,9 @@ namespace PLATEAU.CityImport.Import.Convert
                     if (serialized != null)
                     {
                         var attrInfo = nextParent.gameObject.AddComponent<PLATEAUCityObjectGroup>();
-                        attrInfo.Init(serialized, conf.InfoForToolkits, attributeDataHelper.CurrentGranularity);
+                        int lod;
+                        if (!TryFindLod(nextParent, out lod)) lod = -1;
+                        attrInfo.Init(serialized, conf.InfoForToolkits, attributeDataHelper.CurrentGranularity, lod);
                     }
                 }
             }
@@ -147,6 +149,29 @@ namespace PLATEAU.CityImport.Import.Convert
             {
                 await child.PlaceToSceneRecursive(result, nextParent, conf, false, nextRecursiveDepth);
             }
+        }
+
+        /// <summary>
+        /// 自身または親で名前が"LODn"のものを探してLODを調べます。
+        /// </summary>
+        private bool TryFindLod(Transform trans, out int lod)
+        {
+            do
+            {
+                var n = trans.name;
+                if (n.StartsWith("LOD"))
+                {
+                    if (int.TryParse(n.Substring(3), out lod))
+                    {
+                        return true;
+                    }
+                }
+
+                trans = trans.parent;
+            } while (trans != null);
+
+            lod = -1;
+            return false;
         }
     }
 }

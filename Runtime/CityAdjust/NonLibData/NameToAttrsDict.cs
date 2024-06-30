@@ -12,7 +12,7 @@ namespace PLATEAU.CityAdjust.NonLibData
     /// </summary>
     internal class NameToAttrsDict : INonLibData
     {
-        private Dictionary<string, PLATEAUCityObjectGroup> data = new();
+        private Dictionary<NonLibKeyName, PLATEAUCityObjectGroup> data = new();
 
         /// <summary>
         /// ゲームオブジェクトとその子から属性情報の辞書を構築します。
@@ -23,7 +23,7 @@ namespace PLATEAU.CityAdjust.NonLibData
                 src.Get.SelectMany(trans => trans.GetComponentsInChildren<PLATEAUCityObjectGroup>());
             foreach (var attr in attrs)
             {
-                data.TryAdd(attr.gameObject.name, attr);
+                data.TryAdd(new NonLibKeyName(attr.transform), attr);
             }
         }
 
@@ -35,19 +35,21 @@ namespace PLATEAU.CityAdjust.NonLibData
         {
             target.BfsExec(trans =>
             {
-                var existingAttr = trans.GetComponent<PLATEAUCityObjectGroup>();
-                if (existingAttr == null)
+                var dstAttr = trans.GetComponent<PLATEAUCityObjectGroup>();
+                if (dstAttr == null)
                 {
-                    if (data.TryGetValue(trans.name, out var srcAttr))
-                    {
-                        var dstAttr = trans.gameObject.AddComponent<PLATEAUCityObjectGroup>();
-                        dstAttr.Init(srcAttr.CityObjects, srcAttr.InfoForToolkits, srcAttr.Granularity);
-                    }
+                    dstAttr = trans.gameObject.AddComponent<PLATEAUCityObjectGroup>();
+                }
+
+                if (data.TryGetValue(new NonLibKeyName(trans), out var srcAttr))
+                {
+                    dstAttr.Init(srcAttr.CityObjects, srcAttr.InfoForToolkits, srcAttr.Granularity, srcAttr.Lod);
                 }
                 else
                 {
-                    Debug.LogWarning("PLATEAUCityObjectGroup is already attached.");
+                    Debug.LogWarning("srcAttr is not found.");
                 }
+                
                 return NextSearchFlow.Continue;
             });
             

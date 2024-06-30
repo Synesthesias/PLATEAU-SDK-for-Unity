@@ -28,7 +28,10 @@ namespace PLATEAU.Editor.Window.Main.Tab
         private static readonly int[] SizeValues = { 257, 513, 1025, 2049 };
         private PreserveOrDestroy preserveOrDestroy;
         private bool convertToTerrain;
+        private bool applyConvolutionFilterToHeightMap;
         private bool alignLand;
+        private bool alignLandNormal;
+        private bool alignLandInvert;
         private EditorWindow parentWindow;
 
         private readonly ElementGroup guis;
@@ -41,24 +44,30 @@ namespace PLATEAU.Editor.Window.Main.Tab
         {
             this.parentWindow = parentEditorWindow;
             guis =
-                new ElementGroup("",
+                new ElementGroup("",0,
                     new HeaderElementGroup("", "地形モデルの変換を行います", HeaderType.Subtitle),
                     new ObjectFieldElement<PLATEAUInstancedCityModel>("", "変換対象", OnTargetModelChanged),
                     new GeneralElement("", NotifyIfInvalidTarget),
                     new HeaderElementGroup("", "設定", HeaderType.Header),
                     new DestroyOrPreserveSrcGui(OnPreserveOrDestroyChanged),
                     new HeaderElementGroup("", "", HeaderType.Separator),
-                    new FoldOutElement("detailConf", "詳細設定",
-                        new ToggleLeftElement("", "地形をテレインに変換", true, OnConvertToTerrainChanged),
-                        new ElementGroup("terrainConf",
+                    new FoldOutElement("detailConf", "詳細設定", false,
+                        new ToggleLeftElement("", "地形変換", true, OnConvertToTerrainChanged),
+                        new ElementGroup("terrainConf", 1, BoxStyle.VerticalStyleLevel2,
                             new GeneralElement("", DrawHeightmapResolutionSelector),
-                            new GeneralElement("convertToTerrainConf", DrawTerrainEdgeConf)
+                            new ToggleLeftElement("", "ハイトマップ平滑化", true, OnApplyConvolutionFilterChanged),
+                            new ToggleLeftElement("", "余白を端の高さに合わせる", true, OnFillEdgesChanged)
+                        ),
+                        new ToggleLeftElement("", "高さ合わせ", true, OnChangeAlignLand),
+                        new ElementGroup("alignLandConf", 1, BoxStyle.VerticalStyleLevel2,
+                            new ToggleLeftElement("", "交通・区域モデルの高さを地形に合わせる", true, OnChangeAlignLandNormal),
+                            new ToggleLeftElement("", "土地をLOD3道路モデルに合わせる", true, OnAlignLandInvertChanged),
+                            new GeneralElement("", WarnAlignLandToLod3RoadNotWorking)
                         )
                     ),
-                    new ToggleLeftElement("", "交通・区域モデルの高さを地形に合わせる", true, OnChangeAlignLand),
                     new HeaderElementGroup("", "", HeaderType.Separator),
                     new ButtonElement("execButton", ExecButtonTextNormal, ()=>Exec().ContinueWithErrorCatch())
-                    );
+                );
         }
 
 
@@ -69,7 +78,9 @@ namespace PLATEAU.Editor.Window.Main.Tab
             guis.Draw();
 
             // 不要な設定項目を隠す
-            guis.Get<FoldOutElement>("detailConf").ChildElementGroup.Get("terrainConf").IsVisible = convertToTerrain;
+            var detailConf = guis.Get<FoldOutElement>("detailConf");
+            detailConf.ChildElementGroup.Get("terrainConf").IsVisible = convertToTerrain;
+            detailConf.ChildElementGroup.Get("alignLandConf").IsVisible = alignLand;
             
             // 実行中なら実行ボタンを変更
             var execButton = guis.Get<ButtonElement>("execButton");
@@ -79,18 +90,19 @@ namespace PLATEAU.Editor.Window.Main.Tab
 
         private void DrawHeightmapResolutionSelector()
         {
-            EditorGUIUtility.labelWidth = 50;
             this.selectedSize =
                 PlateauEditorStyle.PopupWithLabelWidth(
-                    "高さマップ解像度", this.selectedSize, SizeOptions, 90);
+                    "高さマップ解像度", this.selectedSize, SizeOptions, 110);
         }
 
-        private void DrawTerrainEdgeConf()
+        private void WarnAlignLandToLod3RoadNotWorking()
         {
-            using (PlateauEditorStyle.VerticalScopeWithPadding(16, 0, 8, 16))
+            if (targetModel == null) return;
+            if (alignLandInvert && targetModel.GetComponent<Terrain>() == null && (!convertToTerrain))
             {
-                fillEdges = EditorGUILayout.ToggleLeft("余白を端の高さに合わせる", fillEdges);
+                EditorGUILayout.HelpBox("土地をLOD3道路に合わせる機能を利用するには、Terrainが必要です。\nそのため、地形変換をオンにしてTerrain化するか、\n変換対象にTerrainが存在するようにしてください。", MessageType.Warning);   
             }
+                
         }
 
         /// <summary> GUIで変換対象の都市モデルが変更された時 </summary>
@@ -104,6 +116,11 @@ namespace PLATEAU.Editor.Window.Main.Tab
             preserveOrDestroy = pod;
         }
 
+        private void OnApplyConvolutionFilterChanged(bool value)
+        {
+            applyConvolutionFilterToHeightMap = value;
+        }
+
         private void OnConvertToTerrainChanged(bool value)
         {
             convertToTerrain = value;
@@ -113,6 +130,22 @@ namespace PLATEAU.Editor.Window.Main.Tab
         {
             alignLand = value;
         }
+
+        private void OnFillEdgesChanged(bool value)
+        {
+            fillEdges = value;
+        }
+
+        private void OnChangeAlignLandNormal(bool value)
+        {
+            alignLandNormal = value;
+        }
+        
+        private void OnAlignLandInvertChanged(bool value)
+        {
+            alignLandInvert = value;
+        }
+        
 
         //選択アイテムのフィルタリング処理 (子にTINReliefを含む）
         private GameObject[] FilterItemsContainDemChildren(GameObject[] selection)
@@ -165,6 +198,7 @@ namespace PLATEAU.Editor.Window.Main.Tab
                     heightmapWidth,
                     preserveOrDestroy == PreserveOrDestroy.Destroy,
                     fillEdges,
+                    applyConvolutionFilterToHeightMap,
                     heightmapImageOutput
                 );
 
@@ -172,7 +206,7 @@ namespace PLATEAU.Editor.Window.Main.Tab
             }
 
             // 高さ合わせを実行します
-            if (alignLand)
+            if (alignLand || ((!alignLandNormal) && (!alignLandInvert)))
             {
                 ExecAlignLand(heightmapWidth);
             }
@@ -223,7 +257,7 @@ namespace PLATEAU.Editor.Window.Main.Tab
                 return;
             }
             // 高さ合わせを実行します
-            var conf = searcher.ToConfig(preserveOrDestroy == PreserveOrDestroy.Destroy, heightmapWidth);
+            var conf = searcher.ToConfig(preserveOrDestroy == PreserveOrDestroy.Destroy, heightmapWidth, fillEdges, applyConvolutionFilterToHeightMap, alignLandNormal, alignLandInvert);
             ExecAlignLandInner().ContinueWithErrorCatch();
 
             // 非同期部分のインナーメソッド

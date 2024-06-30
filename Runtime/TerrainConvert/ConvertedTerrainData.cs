@@ -94,7 +94,7 @@ namespace PLATEAU.TerrainConvert
 
         private ConvertedTerrainData(Node plateauNode, TerrainConvertOption option)
         {
-            this.heightmapData = ConvertFromMesh(plateauNode.Mesh, plateauNode.Name, option.TextureWidth, option.TextureHeight, option.FillEdges);
+            this.heightmapData = ConvertFromMesh(plateauNode.Mesh, plateauNode.Name, option.TextureWidth, option.TextureHeight, option.FillEdges, option.ApplyConvolutionFilterToHeightMap);
             this.name = plateauNode.Name;
             this.isActive = plateauNode.IsActive;
             
@@ -124,14 +124,14 @@ namespace PLATEAU.TerrainConvert
             }
         }
 
-        private HeightmapData ConvertFromMesh(PolygonMesh.Mesh mesh, string nodeName, int textureWidth, int textureHeight, bool fillEdges)
+        private HeightmapData ConvertFromMesh(PolygonMesh.Mesh mesh, string nodeName, int textureWidth, int textureHeight, bool fillEdges, bool applyConvolutionFilterToHeightMap)
         {
             if (mesh == null) 
                 return null;
 
             PlateauVector2d margin = new PlateauVector2d(0,0);
             HeightmapGenerator gen = new();
-            gen.GenerateFromMesh(mesh, textureWidth, textureHeight, margin, fillEdges, out PlateauVector3d min, out PlateauVector3d max, out PlateauVector2f minUV, out PlateauVector2f maxUV, out UInt16[] heightData);
+            gen.GenerateFromMesh(mesh, textureWidth, textureHeight, margin, fillEdges, applyConvolutionFilterToHeightMap, out PlateauVector3d min, out PlateauVector3d max, out PlateauVector2f minUV, out PlateauVector2f maxUV, out UInt16[] heightData);
             float[,] HeightMapTexture = HeightmapGenerator.ConvertTo2DFloatArray(heightData, textureWidth, textureHeight);
 
             HeightmapData data = new();

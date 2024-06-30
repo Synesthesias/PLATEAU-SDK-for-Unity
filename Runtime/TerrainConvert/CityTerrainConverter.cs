@@ -26,7 +26,7 @@ namespace PLATEAU.TerrainConvert
 
                 if (srcTransforms.Count == 0)
                 {
-                    Dialogue.Display("対象がないため地形変換をスキップします。", "OK");
+                    Debug.Log("対象がないためテレイン化をスキップします。");
                     return TerrainConvertResult.Fail();
                 }
                 // ゲームオブジェクトを共通ライブラリのModelに変換します。

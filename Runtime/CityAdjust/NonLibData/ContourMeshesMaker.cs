@@ -13,7 +13,7 @@ namespace PLATEAU.CityAdjust.NonLibData
     internal class ContourMeshesMaker : INonLibData
     {
         // 記録用の辞書であり、Valueは頂点座標です。
-        private Dictionary<NonLibKeyParent, ContourMesh> data = new();
+        private Dictionary<NonLibKeyName, ContourMesh> data = new();
         
         /// <summary> 道路の頂点を記憶します。 </summary>
         public void ComposeFrom(UniqueParentTransformList src)
@@ -23,7 +23,7 @@ namespace PLATEAU.CityAdjust.NonLibData
                 var contour = trans.GetComponent<PLATEAUContourMesh>();
                 if (contour != null)
                 {
-                    var contourKey = new NonLibKeyParent(trans);
+                    var contourKey = new NonLibKeyName(trans);
                     if (!data.TryAdd(contourKey, contour.contourMesh))
                     {
                         Debug.Log($"key {contourKey} is already exists.");
@@ -37,7 +37,7 @@ namespace PLATEAU.CityAdjust.NonLibData
                 if (mf == null) return NextSearchFlow.Continue;
                 var mesh = mf.sharedMesh;
                 if (mesh == null) return NextSearchFlow.Continue;
-                var key = new NonLibKeyParent(trans);
+                var key = new NonLibKeyName(trans);
                 if (!data.TryAdd(key, new ContourMesh(mesh.vertices, mesh.triangles)))
                 {
                     Debug.Log($"key {key} is already exists.");
@@ -52,46 +52,13 @@ namespace PLATEAU.CityAdjust.NonLibData
         {
             target.BfsExec(trans =>
             {
-                if (data.TryGetValue(new NonLibKeyParent(trans), out var vertices))
+                if (data.TryGetValue(new NonLibKeyName(trans), out var vertices))
                 {
                     var contour = trans.gameObject.AddComponent<PLATEAUContourMesh>();
                     contour.Init(vertices);
                 }
                 return NextSearchFlow.Continue;
             });
-        }
-    }
-
-    /// <summary> 変換の前後でゲームオブジェクトを特定するための情報であり、ゲームオブジェクト名とその親の名前で構成 </summary>
-    internal class NonLibKeyParent
-    {
-        public string ObjName { get; }
-        public string ParentName { get; }
-
-        public NonLibKeyParent(Transform obj)
-        {
-            ObjName = obj.name;
-            ParentName = obj.parent == null ? "" : obj.parent.name;
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (obj is NonLibKeyParent other)
-            {
-                return ObjName == other.ObjName && ParentName == other.ParentName;
-            }
-
-            return false;
-        }
-
-        public override int GetHashCode()
-        {
-            return ToString().GetHashCode();
-        }
-        
-        public override string ToString()
-        {
-            return $"{ParentName}/{ObjName}";
         }
     }
 }

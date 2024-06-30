@@ -1,8 +1,10 @@
 using PLATEAU.CityImport.Import.Convert.MaterialConvert;
 using PLATEAU.Util;
 using System.Collections.Generic;
-using UnityEditor;
 using UnityEngine;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 namespace PLATEAU.CityAdjust.NonLibData
 {
@@ -11,7 +13,7 @@ namespace PLATEAU.CityAdjust.NonLibData
     /// </summary>
     internal class NameToMaterialsDict : INonLibData
     {
-        private Dictionary<string, Material[]> data = new();
+        private Dictionary<NonLibKeyName, Material[]> data = new();
         
         private static readonly int PropIdBaseMap = Shader.PropertyToID("_BaseMap");
 
@@ -27,24 +29,25 @@ namespace PLATEAU.CityAdjust.NonLibData
                 var renderer = trans.GetComponent<Renderer>();
                 if (renderer != null)
                 {
-                    Add(trans.name, renderer.sharedMaterials);
+                    Add(trans, renderer.sharedMaterials);
                 }
 
                 return NextSearchFlow.Continue;
             });
         }
 
-        private void Add(string name, Material[] materials)
+        private void Add(Transform trans, Material[] materials)
         {
-            if (data.TryAdd(name, materials))
+            var key = new NonLibKeyName(trans);
+            if (data.TryAdd(key, materials))
             {
                 return;
             }
 
             // 重複時はログを出します。ただし、ToolkitsのAutoTexturingで多数出てくる名前はよしとします。
-            if (name != "FloorEmission" && name != "ObstacleLight")
+            if (key.ObjName != "FloorEmission" && key.ObjName != "ObstacleLight")
             {
-                Debug.LogError($"Duplicate game object name: {name}");
+                Debug.LogError($"Duplicate game object name: {key}");
             }
 
         }
@@ -70,7 +73,7 @@ namespace PLATEAU.CityAdjust.NonLibData
                 if (renderer != null)
                 {
                     var nextMaterials = renderer.sharedMaterials;
-                    if (data.TryGetValue(dst.name, out var materials))
+                    if (data.TryGetValue(new NonLibKeyName(dst.transform), out var materials))
                     {
                         for (int i = 0; i < renderer.sharedMaterials.Length && i < materials.Length; i++)
                         {
@@ -116,7 +119,11 @@ namespace PLATEAU.CityAdjust.NonLibData
                                 }
                                 else
                                 {
+                                    #if UNITY_EDITOR
                                     var srcTexPath = AssetDatabase.GetAssetPath(srcMat.mainTexture);
+                                    #else
+                                    var srcTexPath = "";
+                                    #endif
                                     // 元のテクスチャがシーン内に保存されているなら、FBXに出力されたマテリアルを利用します。
                                     // 元のテクスチャがシーン外に保存されているなら、元のマテリアルを利用します。
                                     shouldUseFbxMaterial = srcTexPath == "";

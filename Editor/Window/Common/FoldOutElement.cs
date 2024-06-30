@@ -9,20 +9,21 @@ namespace PLATEAU.Editor.Window.Common
     internal class FoldOutElement : Element
     {
         private readonly string label;
-        private bool foldOutState = true;
+        private bool foldOutState;
         public ElementGroup ChildElementGroup { get; private set; }
         
-        public FoldOutElement(string name, string label, params Element[] childElements) : base(name)
+        public FoldOutElement(string name, string label, bool initialFoldOutState, params Element[] childElements) : base(name)
         {
             this.label = label;
-            this.ChildElementGroup = new ElementGroup("", childElements);
+            this.foldOutState = initialFoldOutState;
+            this.ChildElementGroup = new ElementGroup("", 0, childElements);
         }
         
         public override void DrawContent()
         {
             foldOutState = PlateauEditorStyle.FoldOut(foldOutState, label, () =>
             {
-                using (PlateauEditorStyle.VerticalScopeLevel1())
+                using (PlateauEditorStyle.VerticalScopeLevel1(1))
                 {
                     ChildElementGroup.Draw();
                 }

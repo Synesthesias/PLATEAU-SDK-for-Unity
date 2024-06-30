@@ -58,19 +58,21 @@ namespace PLATEAU.TerrainConvert
         public GameObject[] SrcGameObjs { get; }
 
         public bool FillEdges { get; }
+        public bool ApplyConvolutionFilterToHeightMap { get; }
 
         public bool DoDestroySrcObjs { get; }
 
         //Debug Image Output
         public ImageOutput HeightmapImageOutput { get; }
 
-        public TerrainConvertOption(GameObject[] srcGameObjs, int heightmapSize,  bool doDestroySrcObjs, bool fillEdges, ImageOutput heightmapImageOutput = ImageOutput.None,  CancellationToken? cancellationToken = null)
+        public TerrainConvertOption(GameObject[] srcGameObjs, int heightmapSize,  bool doDestroySrcObjs, bool fillEdges, bool applyConvolutionFilterToHeightMap, ImageOutput heightmapImageOutput = ImageOutput.None,  CancellationToken? cancellationToken = null)
         {
             SrcGameObjs = srcGameObjs;
             TextureWidth = TextureHeight = heightmapSize;
             DoDestroySrcObjs = doDestroySrcObjs;
             HeightmapImageOutput = heightmapImageOutput;
             FillEdges = fillEdges;
+            ApplyConvolutionFilterToHeightMap = applyConvolutionFilterToHeightMap;
             CancellationToken = cancellationToken;
         }
     }

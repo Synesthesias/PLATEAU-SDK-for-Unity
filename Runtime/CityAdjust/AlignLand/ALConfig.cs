@@ -16,17 +16,27 @@ namespace PLATEAU.CityAdjust.AlignLand
         public bool DoDestroySrcObj { get; private set; }
         /// <summary> ハイトマップを生成するときのみ利用します。マップの横幅=縦幅です。 </summary>
         public int HeightmapWidth { get; private set; } 
+        public bool FillEdges { get; }
+        public bool ApplyConvolutionFilterToHeightMap { get; }
+        public bool AlignLandNormal { get; }
+        public bool AlignInvert { get; }
 
         public ALConfig(PLATEAUInstancedCityModel targetModel, Transform[] lands,
             HashSet<PredefinedCityModelPackage> targetPackages, bool doDestroySrcObj,
-            int heightmapWidth)
+            int heightmapWidth, bool fillEdges, bool applyConvolutionFilterToHeightMap, bool alignLandNormal, bool alignInvert)
         {
             TargetModel = targetModel;
             Lands = lands;
             TargetPackages = targetPackages;
             DoDestroySrcObj = doDestroySrcObj;
             HeightmapWidth = heightmapWidth;
+            FillEdges = fillEdges;
+            ApplyConvolutionFilterToHeightMap = applyConvolutionFilterToHeightMap;
+            AlignLandNormal = alignLandNormal;
+            AlignInvert = alignInvert;
         }
         
     }
+    
+    
 }

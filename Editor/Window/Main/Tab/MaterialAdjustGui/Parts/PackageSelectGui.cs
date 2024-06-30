@@ -29,7 +29,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
             this.parentWindow = parentWindow;
             
             // データセット選択　→　パッケージ種選択 → 決定 の流れでGUIを登録します
-            elements = new ElementGroup("",
+            elements = new ElementGroup("",0,
                 new DatasetSelectGui(this),
                 new PackageSearchGui(),
                 new EnterAndCancelButtonElement("", OnEnterButtonPushed, CloseWindow)

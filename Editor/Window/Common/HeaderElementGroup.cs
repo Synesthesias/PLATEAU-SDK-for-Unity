@@ -57,7 +57,7 @@ namespace PLATEAU.Editor.Window.Common
         private string headerText;
         private HeaderType headerType;
         
-        public HeaderElementGroup(string elementName, string headerText, HeaderType headerType, params Element[] innerElements) : base(elementName, innerElements)
+        public HeaderElementGroup(string elementName, string headerText, HeaderType headerType, params Element[] innerElements) : base(elementName, 0, innerElements)
         {
             this.headerText = headerText;
             this.headerType = headerType;

@@ -29,6 +29,7 @@ namespace PLATEAU.CityInfo
         [SerializeField] private CityObjectGroupInfoForToolkits infoForToolkits;
 
         [SerializeField] private MeshGranularity granularity;
+        [SerializeField] private int lod;
         public CityObjectGroupInfoForToolkits InfoForToolkits => infoForToolkits;
         public MeshGranularity Granularity
         {
@@ -39,6 +40,19 @@ namespace PLATEAU.CityInfo
             internal set
             {
                 granularity = value;
+            }
+        }
+
+        public int Lod
+        {
+            get
+            {
+                return lod;
+            }
+
+            protected set
+            {
+                lod = value;
             }
         }
 
@@ -57,11 +71,12 @@ namespace PLATEAU.CityInfo
             }
         }
         
-        public void Init(CityObjectList cityObjectSerializable, CityObjectGroupInfoForToolkits cogInfoForToolkits, MeshGranularity granularityArg)
+        public void Init(CityObjectList cityObjectSerializable, CityObjectGroupInfoForToolkits cogInfoForToolkits, MeshGranularity granularityArg, int lodArg)
         {
             serializedCityObjects = JsonConvert.SerializeObject(cityObjectSerializable, Formatting.Indented);
             infoForToolkits = cogInfoForToolkits; 
             granularity = granularityArg;
+            Lod = lodArg;
         }
 
         public void CopyFrom(PLATEAUCityObjectGroup other)
@@ -69,6 +84,7 @@ namespace PLATEAU.CityInfo
             serializedCityObjects = other.serializedCityObjects;
             infoForToolkits = other.infoForToolkits;
             granularity = other.granularity;
+            lod = other.lod;
         }
         
         /// <summary>

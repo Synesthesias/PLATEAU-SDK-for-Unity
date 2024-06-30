@@ -71,9 +71,9 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
         {
             // UIの内容とコールバックをここで定義します。
             Views =
-                new ElementGroup("",
+                new ElementGroup("", 0,
                     new HeaderElementGroup("", "分類に応じたマテリアル分けを行います。", HeaderType.Subtitle),
-                    new ElementGroup("MAGuiBeforeSearch", // *** 検索前のUI ***
+                    new ElementGroup("MAGuiBeforeSearch",0, // *** 検索前のUI ***
                         new ObjectSelectGui(OnTargetChanged), // 対象オブジェクト選択
                         new HeaderElementGroup("commonConf", "共通設定", HeaderType.Header,
                             new DestroyOrPreserveSrcGui(OnPreserveOrDestroyChanged) // 元のオブジェクトを削除するか残すか
@@ -83,14 +83,14 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
                         ),
                         new HeaderElementGroup("", "マテリアル分け", HeaderType.Header,
                             new ToggleLeftElement("doMaterialAdjust", "マテリアルを条件指定で変更する", false, OnDoMaterialAdjustChanged),
-                            new ElementGroup("materialConf", 
+                            new ElementGroup("materialConf", 0,
                                 new MaterialCriterionGui(OnCriterionChanged), // マテリアル分け基準選択
                                 new AttributeKeyGui(parentEditorWindow, ()=>SelectedObjects, OnAttrKeyChanged), // 属性情報キー選択
                                 new ButtonElement("", "検索", new Vector4(0,0,15,0), OnSearchButtonPushed) // 検索ボタン
                             )
                         )
                     ),
-                    new ElementGroup("MAGuiAfterSearch", // *** 検索後のUI ***
+                    new ElementGroup("MAGuiAfterSearch",0, // *** 検索後のUI ***
                         new MaterialConfGui(() => CurrentSearcher?.MaterialAdjustConf), // マテリアル設定,
                         new ButtonElement("", "マテリアル分けを実行", ExecMaterialAdjust)
                     ),
