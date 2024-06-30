@@ -275,5 +275,11 @@ namespace PLATEAU.RoadNetwork
             foreach (var e in GeoGraphEx.GetEdges(self.Vertices.Select(x => x.Xz()), false))
                 yield return new LineSegment2D(e.Item1, e.Item2);
         }
+
+        public static int FindPoint(this RoadNetworkWay self, RoadNetworkPoint point)
+        {
+            return self.LineString.Points.FindIndex(p => p == point);
+        }
+
     }
 }

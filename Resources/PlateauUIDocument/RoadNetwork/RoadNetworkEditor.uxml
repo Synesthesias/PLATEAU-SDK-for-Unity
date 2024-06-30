@@ -10,6 +10,7 @@
     <ui:Template name="RoadNetworkFloatField" src="project://database/Packages/com.synesthesias.plateau-unity-sdk/Resources/PlateauUIDocument/RoadNetwork/RoadNetworkFloatField.uxml?fileID=9197481963319205126&amp;guid=6b99df95683749e4881c7556e013ef1a&amp;type=3#RoadNetworkFloatField" />
     <ui:Template name="RoadNetworkParameterBox" src="project://database/Packages/com.synesthesias.plateau-unity-sdk/Resources/PlateauUIDocument/RoadNetwork/RoadNetworkParameterBox.uxml?fileID=9197481963319205126&amp;guid=4e148ffdea838b94b871325b7430bf69&amp;type=3#RoadNetworkParameterBox" />
     <ui:Label tabindex="-1" text="道路ネットワーク編集" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Title" />
+    <ui:DropdownField label="DebugOperationMode" name="DebugOperationMode" />
     <ui:Button text="Refresh" parse-escape-sequences="true" display-tooltip-when-elided="true" name="RefreshBtn" />
     <ui:EnumField label="操作モード" type="PLATEAU.Editor.RoadNetwork.RoadNetworkEditMode, PLATEAU.Editor" name="ModeSelector" />
     <ui:GroupBox name="EditingSelecterGroupBox" style="flex-direction: row;">
