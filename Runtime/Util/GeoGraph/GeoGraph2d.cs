@@ -259,7 +259,7 @@ namespace PLATEAU.Util.GeoGraph
             return ComputeOutlineVertices(toVec2, vertices);
         }
 
-        private static List<Vector3> ComputeOutlineVertices(Func<Vector3, Vector2> toVec2, Dictionary<Vector3, HashSet<Vector3>> vertices)
+        private static List<Vector3> ComputeOutlineVertices(Func<Vector3, Vector2> toVec2, Dictionary<Vector3, HashSet<Vector3>> vertices, bool ignoreVisitedVertex = true)
         {
             var comp = Comparer<float>.Default;
 
@@ -275,9 +275,6 @@ namespace PLATEAU.Util.GeoGraph
                 return y;
             });
 
-            //
-            var dir = Vector2.down;
-
             void Eval(Vector2 axis, Vector2 a, out float ang, out float sqrLen)
             {
                 ang = Vector2.SignedAngle(axis, a);
@@ -286,7 +283,8 @@ namespace PLATEAU.Util.GeoGraph
                 sqrLen = a.sqrMagnitude;
             }
 
-            // 比較
+            // 時計回りに探し出す
+            var dir = Vector2.down;
             var ret = new List<Vector3> { keys[0] };
             while (ret.Count < vertices.Count)
             {
@@ -294,9 +292,14 @@ namespace PLATEAU.Util.GeoGraph
                 var neighbors = vertices[ret[^1]];
                 if (neighbors.Count == 0)
                     break;
-                Vector3 next = neighbors.First();
+                // 途中につながるようなものは削除
+                var filtered = ignoreVisitedVertex ? neighbors.Where(v => v == ret[0] || ret.Contains(v) == false).ToList() : neighbors.ToList();
+                if (filtered.Count == 0)
+                    break;
+                Vector3 next = filtered.First();
+
                 Eval(dir, toVec2(next) - last, out var ang, out var sqrLen);
-                foreach (var v in neighbors.Skip(1))
+                foreach (var v in filtered.Skip(1))
                 {
                     // 最も外側に近い点を返す
                     Eval(dir, toVec2(v) - last, out var ang2, out var sqrLen2);
@@ -312,11 +315,13 @@ namespace PLATEAU.Util.GeoGraph
                 }
 
                 if (ret.Contains(next))
+                {
                     break;
+                }
+
                 ret.Add(next);
                 dir = last - toVec2(next);
             }
-
             return ret;
         }
 
