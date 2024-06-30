@@ -158,15 +158,15 @@ namespace PLATEAU.Editor.RoadNetwork
 
                 //List<RoadNetworkPoint> leftPoints = new List<RoadNetworkPoint>();
 
-                var leftFirstPt = lane.LeftWay.Points.First();
-                leftFirstPt.Vertex = leftLine.First().Xay(leftFirstPt.Vertex.y);
-                var leftLastPt = lane.LeftWay.Points.Last();
-                leftLastPt.Vertex = leftLine.Last().Xay(leftLastPt.Vertex.y);
-                var rightFirstPt = lane.RightWay.Points.First();
-                rightFirstPt.Vertex = rightLine.First().Xay(rightFirstPt.Vertex.y);
-                var rightLastPt = lane.RightWay.Points.Last();
-                rightLastPt.Vertex = rightLine.Last().Xay(rightLastPt.Vertex.y);
-                system.RegisterBase(lane, baseLane, scaleValue, null);
+                //var leftFirstPt = lane.LeftWay.Points.First();
+                //leftFirstPt.Vertex = leftLine.First().Xay(leftFirstPt.Vertex.y);
+                //var leftLastPt = lane.LeftWay.Points.Last();
+                //leftLastPt.Vertex = leftLine.Last().Xay(leftLastPt.Vertex.y);
+                //var rightFirstPt = lane.RightWay.Points.First();
+                //rightFirstPt.Vertex = rightLine.First().Xay(rightFirstPt.Vertex.y);
+                //var rightLastPt = lane.RightWay.Points.Last();
+                //rightLastPt.Vertex = rightLine.Last().Xay(rightLastPt.Vertex.y);
+                //system.RegisterBase(lane, baseLane, scaleValue, null);
 
                 //var newLane = new RoadNetworkLane(
                 //    new RoadNetworkWay(RoadNetworkLineString.Create(leftLine.Select(v => v.Xay()))),
