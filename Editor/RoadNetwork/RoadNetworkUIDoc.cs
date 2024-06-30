@@ -104,7 +104,7 @@ namespace PLATEAU.Editor.RoadNetwork
             // このレイアウトが削除されたらこのイベントも削除する
             system.OnChangedSelectRoadNetworkElement += (sender, e) =>
             {
-                var lane = system.SelectedRoadNetworkElement as RoadNetworkLane;
+                var lane = system.SelectedRoadNetworkElement as RnLane;
                 if (lane == null)
                     return;
 
@@ -115,7 +115,7 @@ namespace PLATEAU.Editor.RoadNetwork
             {
                 var value = Mathf.Clamp(e.newValue, 0.01f, 2.0f);
                 Debug.Log($"{value} 倍");
-                var lane = system.SelectedRoadNetworkElement as RoadNetworkLane;
+                var lane = system.SelectedRoadNetworkElement as RnLane;
                 if (lane == null)
                     return;
 
@@ -133,7 +133,7 @@ namespace PLATEAU.Editor.RoadNetwork
             {
                 var scaleValue = Mathf.Clamp(scale.value, 0.01f, 2.0f);
 
-                var lane = system.SelectedRoadNetworkElement as RoadNetworkLane;
+                var lane = system.SelectedRoadNetworkElement as RnLane;
                 if (lane == null)
                     return;
 
@@ -143,11 +143,11 @@ namespace PLATEAU.Editor.RoadNetwork
                 if (baseLane == null)
                 {
                     //baseLane = lane;
-                    var leftWay = new RoadNetworkWay(RoadNetworkLineString.Create(lane.LeftWay));
-                    var rightWay = new RoadNetworkWay(RoadNetworkLineString.Create(lane.RightWay));
-                    var prevBorder = new RoadNetworkWay(RoadNetworkLineString.Create(lane.PrevBorder));
-                    var nextBorder = new RoadNetworkWay(RoadNetworkLineString.Create(lane.NextBorder));
-                    baseLane = new RoadNetworkLane(leftWay, rightWay, prevBorder, nextBorder);
+                    var leftWay = new RnWay(RnLineString.Create(lane.LeftWay));
+                    var rightWay = new RnWay(RnLineString.Create(lane.RightWay));
+                    var prevBorder = new RnWay(RnLineString.Create(lane.PrevBorder));
+                    var nextBorder = new RnWay(RnLineString.Create(lane.NextBorder));
+                    baseLane = new RnLane(leftWay, rightWay, prevBorder, nextBorder);
                 }
                 var leftLine = baseLane.GetInnerLerpSegments(0.5f - 0.5f * scaleValue);     // value==0.5 0.25, value==1 0
                 var rightLine = baseLane.GetInnerLerpSegments(0.5f + 0.5f * scaleValue);    // value==0.5 0.75, value==1 1
@@ -453,7 +453,7 @@ namespace PLATEAU.Editor.RoadNetwork
         {
             if (system.CurrentEditMode == RoadNetworkEditMode.EditTrafficRegulation)
             {
-                var node = system.SelectedRoadNetworkElement as RoadNetworkNode;
+                var node = system.SelectedRoadNetworkElement as RnNode;
                 if (node != null)
                 {
                     if (node.SignalController == null)

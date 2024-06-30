@@ -340,7 +340,7 @@ namespace PLATEAU.RoadNetwork.Data
             }
         }
 
-        private void CollectForSerialize<TData>(ReferenceTable refTable, RoadNetworkModel model, PrimitiveDataStorage.PrimitiveStorage<TData> storage)
+        private void CollectForSerialize<TData>(ReferenceTable refTable, RnModel model, PrimitiveDataStorage.PrimitiveStorage<TData> storage)
             where TData : class, IPrimitiveData, new()
         {
             var memberReference = refTable.GetOrCreateMemberReference(typeof(TData));
@@ -382,13 +382,13 @@ namespace PLATEAU.RoadNetwork.Data
         private static ReferenceTable CreateReferenceTable()
         {
             var refTable = new ReferenceTable();
-            refTable.CreateMemberReferenceOrSkip(typeof(RoadNetworkDataNeighbor));
-            refTable.CreateMemberReferenceOrSkip(typeof(RoadNetworkDataNode));
-            refTable.CreateMemberReferenceOrSkip(typeof(RoadNetworkDataLink));
+            refTable.CreateMemberReferenceOrSkip(typeof(RnDataNeighbor));
+            refTable.CreateMemberReferenceOrSkip(typeof(RnDataNode));
+            refTable.CreateMemberReferenceOrSkip(typeof(RnDataLink));
             return refTable;
         }
 
-        public RoadNetworkStorage Serialize(RoadNetworkModel roadNetworkModel)
+        public RoadNetworkStorage Serialize(RnModel roadNetworkModel)
         {
 
             var ret = new RoadNetworkStorage();
@@ -431,23 +431,23 @@ namespace PLATEAU.RoadNetwork.Data
             return objList;
         }
 
-        public RoadNetworkModel Deserialize(RoadNetworkStorage roadNetworkStorage)
+        public RnModel Deserialize(RoadNetworkStorage roadNetworkStorage)
         {
             var refTable = CreateReferenceTable();
-            var points = CollectForDeserialize<RoadNetworkDataPoint, RoadNetworkPoint>(refTable, roadNetworkStorage.PrimitiveDataStorage.Points);
-            var lineStrings = CollectForDeserialize<RoadNetworkDataLineString, RoadNetworkLineString>(refTable, roadNetworkStorage.PrimitiveDataStorage.LineStrings);
-            var blocks = CollectForDeserialize<RoadNetworkDataBlock, RoadNetworkBlock>(refTable, roadNetworkStorage.PrimitiveDataStorage.Blocks);
-            var ways = CollectForDeserialize<RoadNetworkDataWay, RoadNetworkWay>(refTable, roadNetworkStorage.PrimitiveDataStorage.Ways);
-            var lanes = CollectForDeserialize<RoadNetworkDataLane, RoadNetworkLane>(refTable, roadNetworkStorage.PrimitiveDataStorage.Lanes);
+            var points = CollectForDeserialize<RnDataPoint, RnPoint>(refTable, roadNetworkStorage.PrimitiveDataStorage.Points);
+            var lineStrings = CollectForDeserialize<RnDataLineString, RnLineString>(refTable, roadNetworkStorage.PrimitiveDataStorage.LineStrings);
+            var blocks = CollectForDeserialize<RnDataBlock, RnBlock>(refTable, roadNetworkStorage.PrimitiveDataStorage.Blocks);
+            var ways = CollectForDeserialize<RnDataWay, RnWay>(refTable, roadNetworkStorage.PrimitiveDataStorage.Ways);
+            var lanes = CollectForDeserialize<RnDataLane, RnLane>(refTable, roadNetworkStorage.PrimitiveDataStorage.Lanes);
             var roadBases = CollectForDeserialize<RnDataRoadBase, RnRoadBase>(refTable, roadNetworkStorage.PrimitiveDataStorage.RoadBases);
 
             refTable.ConvertAll();
-            var ret = new RoadNetworkModel();
+            var ret = new RnModel();
             foreach (var r in roadBases)
             {
-                if (r is RoadNetworkNode n)
+                if (r is RnNode n)
                     ret.AddNode(n);
-                else if (r is RoadNetworkLink l)
+                else if (r is RnLink l)
                     ret.AddLink(l);
             }
             return ret;

@@ -1,6 +1,6 @@
 ﻿namespace PLATEAU.RoadNetwork
 {
-    public class RnRoadBase : ARoadNetworkParts<RoadNetworkNode>
+    public class RnRoadBase : ARnParts<RnNode>
     {
 
     }

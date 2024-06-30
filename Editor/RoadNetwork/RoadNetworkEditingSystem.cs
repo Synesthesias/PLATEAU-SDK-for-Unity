@@ -32,9 +32,9 @@ namespace PLATEAU.Editor.RoadNetwork
         /// <param name="idx"></param>
         /// <param name="point"></param>
         /// <returns></returns>
-        RoadNetworkEditingResult AddPoint(RoadNetworkWay parent, int idx, RoadNetworkPoint point);
-        RoadNetworkEditingResult RemovePoint(RoadNetworkWay parent, RoadNetworkPoint point);
-        RoadNetworkEditingResult MovePoint(RoadNetworkPoint point, in Vector3 newPos);
+        RoadNetworkEditingResult AddPoint(RnWay parent, int idx, RnPoint point);
+        RoadNetworkEditingResult RemovePoint(RnWay parent, RnPoint point);
+        RoadNetworkEditingResult MovePoint(RnPoint point, in Vector3 newPos);
 
         /// <summary>
         /// 幅員のスケーリング
@@ -42,8 +42,8 @@ namespace PLATEAU.Editor.RoadNetwork
         /// <param name="lane"></param>
         /// <param name="factor"></param>
         /// <returns></returns>
-        RoadNetworkEditingResult ScaleRoadWidth(RoadNetworkLane lane, float factor);
-        RoadNetworkEditingResult ScaleRoadWidth(RoadNetworkLink link, float factor);
+        RoadNetworkEditingResult ScaleRoadWidth(RnLane lane, float factor);
+        RoadNetworkEditingResult ScaleRoadWidth(RnLink link, float factor);
 
         /// <summary>
         /// 車線を増やす、減らす
@@ -52,8 +52,8 @@ namespace PLATEAU.Editor.RoadNetwork
         /// <param name="idx"></param>
         /// <param name="newLane"></param>
         /// <returns></returns>
-        RoadNetworkEditingResult AddMainLane(RoadNetworkLink parent, RoadNetworkLane newLane);
-        RoadNetworkEditingResult RemoveMainLane(RoadNetworkLink parent, RoadNetworkLane lane);
+        RoadNetworkEditingResult AddMainLane(RnLink parent, RnLane newLane);
+        RoadNetworkEditingResult RemoveMainLane(RnLink parent, RnLane lane);
 
         /// <summary>
         /// リンクを追加する削除する
@@ -62,12 +62,12 @@ namespace PLATEAU.Editor.RoadNetwork
         /// <param name="idx"></param>
         /// <param name="newLink"></param>
         /// <returns></returns>
-        RoadNetworkEditingResult AddLink(RoadNetworkModel parent, RoadNetworkLink newLink);
-        RoadNetworkEditingResult RemoveLink(RoadNetworkModel parent, RoadNetworkLink link);
+        RoadNetworkEditingResult AddLink(RnModel parent, RnLink newLink);
+        RoadNetworkEditingResult RemoveLink(RnModel parent, RnLink link);
 
         // ノードを追加する削除する
-        RoadNetworkEditingResult AddNode(RoadNetworkModel parent, int idx, RoadNetworkNode newNode);
-        RoadNetworkEditingResult RemoveNode(RoadNetworkModel parent, RoadNetworkNode node);
+        RoadNetworkEditingResult AddNode(RnModel parent, int idx, RnNode newNode);
+        RoadNetworkEditingResult RemoveNode(RnModel parent, RnNode node);
 
         //RoadNetworkEditingResult AddBlock(RoadNetworkLane parentLane, int idx, RoadNetworkBlock newBlock);
         //RoadNetworkEditingResult RemoveBlock(RoadNetworkLane parentLane, RoadNetworkBlock block);
@@ -81,9 +81,9 @@ namespace PLATEAU.Editor.RoadNetwork
         /// <param name="link"></param>
         /// <param name="newRegulation"></param>
         /// <returns></returns>
-        RoadNetworkEditingResult RegisterRegulation(RoadNetworkLink link, RoadNetworkRegulationElemet newRegulation);
-        RoadNetworkEditingResult RegisterRegulation(RoadNetworkLane lane, RoadNetworkRegulationElemet newRegulation);
-        RoadNetworkEditingResult RegisterRegulation(RoadNetworkBlock block, RoadNetworkRegulationElemet newRegulation);
+        RoadNetworkEditingResult RegisterRegulation(RnLink link, RoadNetworkRegulationElemet newRegulation);
+        RoadNetworkEditingResult RegisterRegulation(RnLane lane, RoadNetworkRegulationElemet newRegulation);
+        RoadNetworkEditingResult RegisterRegulation(RnBlock block, RoadNetworkRegulationElemet newRegulation);
     }
 
     /// <summary>
@@ -153,7 +153,7 @@ namespace PLATEAU.Editor.RoadNetwork
         // 選択している道路ネットワークを所持したオブジェクト
         private UnityEngine.Object roadNetworkObject;
         // 選択している道路ネットワーク
-        private RoadNetworkModel roadNetworkModel;
+        private RnModel roadNetworkModel;
         // 現在の編集モード
         private RoadNetworkEditMode editingMode;
 
@@ -187,9 +187,9 @@ namespace PLATEAU.Editor.RoadNetwork
         public class LaneEditCache
         {
             public float Scale { get; set; }
-            public RoadNetworkLane BaseLane { get; set; }
+            public RnLane BaseLane { get; set; }
         }
-        private Dictionary<RoadNetworkLane, LaneEditCache> keyValuePairs = new Dictionary<RoadNetworkLane, LaneEditCache>();
+        private Dictionary<RnLane, LaneEditCache> keyValuePairs = new Dictionary<RnLane, LaneEditCache>();
 
         /// <summary>
         /// 初期化を試みる
@@ -294,7 +294,7 @@ namespace PLATEAU.Editor.RoadNetwork
             /// <summary>
             /// 道路ネットワーク
             /// </summary>
-            RoadNetworkModel RoadNetwork { get; }
+            RnModel RoadNetwork { get; }
 
             /// <summary>
             /// 現在の編集モード
@@ -335,9 +335,9 @@ namespace PLATEAU.Editor.RoadNetwork
             RoadNetworkSimpleLinkGenerateModule RoadNetworkSimpleLinkGenerateModule { get; }
             RoadNetworkSimpleNodeGenerateModule RoadNetworkSimpleNodeGenerateModule { get; }
 
-            RoadNetworkLane GetBase(RoadNetworkLane keyLane);
-            float GetScale(RoadNetworkLane keyLane);
-            void RegisterBase(RoadNetworkLane keyLane, RoadNetworkLane baseLane, float scale, RoadNetworkLane oldKeyLane);
+            RnLane GetBase(RnLane keyLane);
+            float GetScale(RnLane keyLane);
+            void RegisterBase(RnLane keyLane, RnLane baseLane, float scale, RnLane oldKeyLane);
         }
 
         /// <summary>
@@ -380,7 +380,7 @@ namespace PLATEAU.Editor.RoadNetwork
             }
             public event EventHandler OnChangedRoadNetworkObject;
 
-            public RoadNetworkModel RoadNetwork
+            public RnModel RoadNetwork
             {
                 get => system.roadNetworkModel;
             }
@@ -470,21 +470,21 @@ namespace PLATEAU.Editor.RoadNetwork
 
             }
 
-            public RoadNetworkLane GetBase(RoadNetworkLane keyLane)
+            public RnLane GetBase(RnLane keyLane)
             {
                 var isSuc = system.keyValuePairs.TryGetValue(keyLane, out var editCache);
                 if (isSuc)
                     return editCache.BaseLane;
                 return null;
             }
-            public float GetScale(RoadNetworkLane keyLane)
+            public float GetScale(RnLane keyLane)
             {
                 var isSuc = system.keyValuePairs.TryGetValue(keyLane, out var editCache);
                 if (isSuc)
                     return editCache.Scale;
                 return 1.0f;
             }
-            public void RegisterBase(RoadNetworkLane keyLane, RoadNetworkLane baseLane, float scale, RoadNetworkLane oldKeyLane)
+            public void RegisterBase(RnLane keyLane, RnLane baseLane, float scale, RnLane oldKeyLane)
             {
                 var cache = new LaneEditCache() { BaseLane = baseLane, Scale = scale };
                 bool isAdded = system.keyValuePairs.TryAdd(keyLane, cache);
@@ -505,14 +505,14 @@ namespace PLATEAU.Editor.RoadNetwork
         /// </summary>
         public class RoadNetworkEditorOperation : IRoadNetworkEditOperation
         {
-            public RoadNetworkEditingResult AddPoint(RoadNetworkWay way, int idx, RoadNetworkPoint point)
+            public RoadNetworkEditingResult AddPoint(RnWay way, int idx, RnPoint point)
             {
                 //var v = new RoadNetworkPoint(new Vector3());
                 way.LineString.Points.Insert(idx, point);
                 return new RoadNetworkEditingResult(RoadNetworkEditingResultType.Success);
             }
 
-            public RoadNetworkEditingResult RemovePoint(RoadNetworkWay way, RoadNetworkPoint point)
+            public RoadNetworkEditingResult RemovePoint(RnWay way, RnPoint point)
             {
                 var isSuc = way.LineString.Points.Remove(point);
                 if (isSuc)
@@ -525,7 +525,7 @@ namespace PLATEAU.Editor.RoadNetwork
                 }
             }
 
-            public RoadNetworkEditingResult MovePoint(RoadNetworkPoint point, in Vector3 newPos)
+            public RoadNetworkEditingResult MovePoint(RnPoint point, in Vector3 newPos)
             {
                 if (point.Vertex == newPos)
                     return new RoadNetworkEditingResult(RoadNetworkEditingResultType.Success);
@@ -534,65 +534,65 @@ namespace PLATEAU.Editor.RoadNetwork
                 return new RoadNetworkEditingResult(RoadNetworkEditingResultType.Success);
             }
 
-            public RoadNetworkEditingResult ScaleRoadWidth(RoadNetworkLane lane, float factor)
+            public RoadNetworkEditingResult ScaleRoadWidth(RnLane lane, float factor)
             {
                 throw new NotImplementedException();
             }
 
-            public RoadNetworkEditingResult ScaleRoadWidth(RoadNetworkLink link, float factor)
+            public RoadNetworkEditingResult ScaleRoadWidth(RnLink link, float factor)
             {
                 throw new NotImplementedException();
             }
 
-            public RoadNetworkEditingResult AddMainLane(RoadNetworkLink link, RoadNetworkLane newLane)
+            public RoadNetworkEditingResult AddMainLane(RnLink link, RnLane newLane)
             {
                 //var v = new RoadNetworkLane(leftWay:, rightWay:, startBorder:, endBorder:);
                 link.AddMainLane(newLane);
                 return new RoadNetworkEditingResult(RoadNetworkEditingResultType.Success);
             }
 
-            public RoadNetworkEditingResult AddLink(RoadNetworkModel parent, RoadNetworkLink newLink)
+            public RoadNetworkEditingResult AddLink(RnModel parent, RnLink newLink)
             {
                 //var v = new RoadNetworkLink(targetTran:);
                 parent.AddLink(newLink);
                 return new RoadNetworkEditingResult(RoadNetworkEditingResultType.Success);
             }
 
-            public RoadNetworkEditingResult RemoveLink(RoadNetworkModel parent, RoadNetworkLink link)
+            public RoadNetworkEditingResult RemoveLink(RnModel parent, RnLink link)
             {
                 parent.RemoveLink(link);
                 return new RoadNetworkEditingResult(RoadNetworkEditingResultType.Success);
             }
 
-            public RoadNetworkEditingResult AddNode(RoadNetworkModel parent, int idx, RoadNetworkNode newNode)
+            public RoadNetworkEditingResult AddNode(RnModel parent, int idx, RnNode newNode)
             {
                 //var v = new RoadNetworkNode(targetTran:);
                 parent.AddNode(newNode);
                 return new RoadNetworkEditingResult(RoadNetworkEditingResultType.Success);
             }
 
-            public RoadNetworkEditingResult RemoveMainLane(RoadNetworkLink link, RoadNetworkLane lane)
+            public RoadNetworkEditingResult RemoveMainLane(RnLink link, RnLane lane)
             {
                 link.RemoveMainLane(lane);
                 return new RoadNetworkEditingResult(RoadNetworkEditingResultType.Success);
             }
 
-            public RoadNetworkEditingResult RegisterRegulation(RoadNetworkLink link, RoadNetworkRegulationElemet newRegulation)
+            public RoadNetworkEditingResult RegisterRegulation(RnLink link, RoadNetworkRegulationElemet newRegulation)
             {
                 throw new NotImplementedException();
             }
 
-            public RoadNetworkEditingResult RegisterRegulation(RoadNetworkLane lane, RoadNetworkRegulationElemet newRegulation)
+            public RoadNetworkEditingResult RegisterRegulation(RnLane lane, RoadNetworkRegulationElemet newRegulation)
             {
                 throw new NotImplementedException();
             }
 
-            public RoadNetworkEditingResult RegisterRegulation(RoadNetworkBlock block, RoadNetworkRegulationElemet newRegulation)
+            public RoadNetworkEditingResult RegisterRegulation(RnBlock block, RoadNetworkRegulationElemet newRegulation)
             {
                 throw new NotImplementedException();
             }
 
-            public RoadNetworkEditingResult RemoveNode(RoadNetworkModel parent, RoadNetworkNode node)
+            public RoadNetworkEditingResult RemoveNode(RnModel parent, RnNode node)
             {
                 parent.RemoveNode(node);
                 throw new NotImplementedException();
@@ -638,13 +638,13 @@ namespace PLATEAU.Editor.RoadNetwork
                 Init();
             }
 
-            private RoadNetworkWay baseStartWay;
-            private RoadNetworkWay baseEndWay;
+            private RnWay baseStartWay;
+            private RnWay baseEndWay;
 
-            private List<RoadNetworkPoint> startPoints = new List<RoadNetworkPoint>(2);
-            private List<RoadNetworkPoint> endPoints = new List<RoadNetworkPoint>(2);
+            private List<RnPoint> startPoints = new List<RnPoint>(2);
+            private List<RnPoint> endPoints = new List<RnPoint>(2);
 
-            private RoadNetworkLink link;
+            private RnLink link;
 
 
             public void Init()
@@ -695,7 +695,7 @@ namespace PLATEAU.Editor.RoadNetwork
             /// </summary>
             /// <param name="way"></param>
             /// <returns></returns>
-            public bool AddBorder(RoadNetworkLink link, RoadNetworkWay way, RoadNetworkPoint point)
+            public bool AddBorder(RnLink link, RnWay way, RnPoint point)
             {
                 if (startPoints.Count == 2 && endPoints.Count == 2)
                 {
@@ -741,8 +741,8 @@ namespace PLATEAU.Editor.RoadNetwork
                     isStart = false;
                 }
 
-                RoadNetworkWay baseWay;
-                List<RoadNetworkPoint> points;
+                RnWay baseWay;
+                List<RnPoint> points;
                 if (isStart)
                 {
                     baseWay = baseStartWay;
@@ -781,7 +781,7 @@ namespace PLATEAU.Editor.RoadNetwork
                 return true;
             }
 
-            private bool SelectBaseWay(RoadNetworkWay way, RoadNetworkPoint point, ref RoadNetworkWay baseWay)
+            private bool SelectBaseWay(RnWay way, RnPoint point, ref RnWay baseWay)
             {
                 // nullなので設定
                 if (baseWay == null)
@@ -835,7 +835,7 @@ namespace PLATEAU.Editor.RoadNetwork
                 return true;
             }
 
-            public RoadNetworkLane Build()
+            public RnLane Build()
             {
                 if (startPoints.Count != 2 || endPoints.Count != 2)
                 {
@@ -854,27 +854,27 @@ namespace PLATEAU.Editor.RoadNetwork
                 var start = CreateBorderWay(baseStartWay, startPoints);
                 var end = CreateBorderWay(baseEndWay, endPoints);
 
-                var leftLine = new RoadNetworkLineString();
-                var rightLine = new RoadNetworkLineString();
+                var leftLine = new RnLineString();
+                var rightLine = new RnLineString();
 
                 // 時計回りで startPoint,endPointが設定されていることが前提
                 // TODO　交差していたら参照順を変える処理を追加する
-                var leftWay = new RoadNetworkWay(RoadNetworkLineString.Create(new RoadNetworkPoint[] { startPoints[0], endPoints[1] }));
-                var rightWay = new RoadNetworkWay(RoadNetworkLineString.Create(new RoadNetworkPoint[] { startPoints[1], endPoints[0] }));
+                var leftWay = new RnWay(RnLineString.Create(new RnPoint[] { startPoints[0], endPoints[1] }));
+                var rightWay = new RnWay(RnLineString.Create(new RnPoint[] { startPoints[1], endPoints[0] }));
 
-                var lane = new RoadNetworkLane(leftWay, rightWay, start, end);
+                var lane = new RnLane(leftWay, rightWay, start, end);
                 link.AddMainLane(lane);
                 return lane;
             }
 
-            private static RoadNetworkWay CreateBorderWay(RoadNetworkWay baseWay, List<RoadNetworkPoint> points)
+            private static RnWay CreateBorderWay(RnWay baseWay, List<RnPoint> points)
             {
                 var idx0 = baseWay.FindPoint(points[0]);
                 var idx1 = baseWay.FindPoint(points[1]);
                 return CreateBorderWay(baseWay, ref idx0, ref idx1);
             }
 
-            private static RoadNetworkWay CreateBorderWay(RoadNetworkWay baseWay, ref int idx0, ref int idx1)
+            private static RnWay CreateBorderWay(RnWay baseWay, ref int idx0, ref int idx1)
             {
                 bool wasReversed = false;
                 if (idx0 > idx1)
@@ -885,10 +885,10 @@ namespace PLATEAU.Editor.RoadNetwork
                     wasReversed = true;
                 }
 
-                List<RoadNetworkPoint> wayPoints = null;
+                List<RnPoint> wayPoints = null;
 
                 var n = idx1 - idx0 + 1;
-                wayPoints = new List<RoadNetworkPoint>(n);
+                wayPoints = new List<RnPoint>(n);
                 for (int i = idx0; i <= idx1; i++)
                 {
                     wayPoints.Add(baseWay.LineString.Points[i]);
@@ -897,7 +897,7 @@ namespace PLATEAU.Editor.RoadNetwork
                 {
                     wayPoints.Reverse();
                 }
-                var way = new RoadNetworkWay(RoadNetworkLineString.Create(wayPoints));
+                var way = new RnWay(RnLineString.Create(wayPoints));
                 return way;
             }
         }
@@ -909,7 +909,7 @@ namespace PLATEAU.Editor.RoadNetwork
             }
 
             // 隣り合ったレーン　LineStringsを共有していることが条件
-            private List<RoadNetworkLane> neighborLanes = new List<RoadNetworkLane>(2);
+            private List<RnLane> neighborLanes = new List<RnLane>(2);
 
             public void Init()
             {
@@ -927,9 +927,9 @@ namespace PLATEAU.Editor.RoadNetwork
                 return neighborLanes.Count == 2;
             }
 
-            public RoadNetworkNode Build()
+            public RnNode Build()
             {
-                var ways = new List<RoadNetworkWay>(4)
+                var ways = new List<RnWay>(4)
                 {
                     neighborLanes[0].LeftWay,
                     neighborLanes[0].RightWay,
@@ -938,7 +938,7 @@ namespace PLATEAU.Editor.RoadNetwork
                 };
 
                 // 共有するLineStringsを探す
-                RoadNetworkLineString unionLineStrins = null;
+                RnLineString unionLineStrins = null;
                 int i = 0;
                 for (i = 0; i < ways.Count; i++)
                 {
@@ -965,20 +965,20 @@ namespace PLATEAU.Editor.RoadNetwork
 
                 // LineStringsを複製する
                 //var
-                var newLineStrings = RoadNetworkLineString.Create(unionLineStrins);
+                var newLineStrings = RnLineString.Create(unionLineStrins);
                 var lane = neighborLanes[i / 2];
-                RoadNetworkLane newLane = null;
+                RnLane newLane = null;
                 if (i % 2 == 0)
                 {
-                    newLane = new RoadNetworkLane(new RoadNetworkWay(newLineStrings), lane.RightWay, lane.PrevBorder, lane.NextBorder);
+                    newLane = new RnLane(new RnWay(newLineStrings), lane.RightWay, lane.PrevBorder, lane.NextBorder);
                     //lane.LeftWay = new RoadNetworkWay(newLineStrings);
                 }
                 else
                 {
-                    newLane = new RoadNetworkLane(lane.LeftWay, new RoadNetworkWay(newLineStrings), lane.PrevBorder, lane.NextBorder);
+                    newLane = new RnLane(lane.LeftWay, new RnWay(newLineStrings), lane.PrevBorder, lane.NextBorder);
                     //lane.RightWay = new RoadNetworkWay(newLineStrings);
                 }
-                var parentLink = lane.Parent as RoadNetworkLink;
+                var parentLink = lane.Parent as RnLink;
                 parentLink?.ReplaceLane(lane, newLane);
                 // 中央分離帯の形状にする 始点と終点だけ共有 （中央分離帯の途中で道が空いている場合は交差点を配置して中央分離帯を2回作成する）
 
@@ -1013,9 +1013,9 @@ namespace PLATEAU.Editor.RoadNetwork
                 return false;
             }
 
-            public RoadNetworkNode Build()
+            public RnNode Build()
             {
-                var node = new RoadNetworkNode(tranObj);
+                var node = new RnNode(tranObj);
                 return null;
             }
         }
@@ -1027,8 +1027,8 @@ namespace PLATEAU.Editor.RoadNetwork
             }
 
             private PLATEAU.CityInfo.PLATEAUCityObjectGroup tranObj;
-            private RoadNetworkModel parent;
-            private List<RoadNetworkPoint> points = new List<RoadNetworkPoint>();
+            private RnModel parent;
+            private List<RnPoint> points = new List<RnPoint>();
 
             public void Init()
             {
@@ -1043,7 +1043,7 @@ namespace PLATEAU.Editor.RoadNetwork
                 Init();
             }
 
-            public bool AddPoint(RoadNetworkModel parent, RoadNetworkPoint point)
+            public bool AddPoint(RnModel parent, RnPoint point)
             {
                 if (this.parent == null)
                 {
@@ -1088,7 +1088,7 @@ namespace PLATEAU.Editor.RoadNetwork
                 return true;
             }
 
-            public RoadNetworkLink Build()
+            public RnLink Build()
             {
                 if (parent == null)
                 {
@@ -1102,12 +1102,12 @@ namespace PLATEAU.Editor.RoadNetwork
                     return null;
                 }
 
-                var startBorder = new RoadNetworkWay(RoadNetworkLineString.Create(points.GetRange(0, 2)));
-                var leftWay = new RoadNetworkWay(RoadNetworkLineString.Create(points.GetRange(1, 2)));
-                var endBorder = new RoadNetworkWay(RoadNetworkLineString.Create(points.GetRange(2, 2)));
-                var rightWay = new RoadNetworkWay(RoadNetworkLineString.Create(new RoadNetworkPoint[] { points[3], points[0] }));
-                var lane = new RoadNetworkLane(leftWay, rightWay, startBorder, endBorder);
-                var link = RoadNetworkLink.CreateOneLaneLink(tranObj, lane);
+                var startBorder = new RnWay(RnLineString.Create(points.GetRange(0, 2)));
+                var leftWay = new RnWay(RnLineString.Create(points.GetRange(1, 2)));
+                var endBorder = new RnWay(RnLineString.Create(points.GetRange(2, 2)));
+                var rightWay = new RnWay(RnLineString.Create(new RnPoint[] { points[3], points[0] }));
+                var lane = new RnLane(leftWay, rightWay, startBorder, endBorder);
+                var link = RnLink.CreateOneLaneLink(tranObj, lane);
                 parent.AddLink(link);
                 return link;
             }
@@ -1120,7 +1120,7 @@ namespace PLATEAU.Editor.RoadNetwork
             {
             }
 
-            private RoadNetworkLane lane;
+            private RnLane lane;
             private float currentScale;
 
 
@@ -1137,7 +1137,7 @@ namespace PLATEAU.Editor.RoadNetwork
                 Init();
             }
 
-            public bool SetLane(RoadNetworkLane lane, float scale)
+            public bool SetLane(RnLane lane, float scale)
             {
                 this.lane = lane;
                 return true;
@@ -1150,7 +1150,7 @@ namespace PLATEAU.Editor.RoadNetwork
                 return true;
             }
 
-            public RoadNetworkLink Edit()
+            public RnLink Edit()
             {
                 if (this.lane == null)
                 {

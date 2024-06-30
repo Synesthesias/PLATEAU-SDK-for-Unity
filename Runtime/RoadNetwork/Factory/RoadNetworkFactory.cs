@@ -77,7 +77,7 @@ namespace PLATEAU.RoadNetwork.Factory
         {
             public float CellSize { get; }
 
-            private Dictionary<Vector3, RoadNetworkPoint> Table { get; } = new Dictionary<Vector3, RoadNetworkPoint>();
+            private Dictionary<Vector3, RnPoint> Table { get; } = new Dictionary<Vector3, RnPoint>();
 
             public Vertex2PointTable(float cellSize, IEnumerable<Vector3> vertices)
             {
@@ -85,16 +85,16 @@ namespace PLATEAU.RoadNetwork.Factory
                 CellSize = cellSize;
                 var cSize = Vector3.one * cellSize;
 
-                var table = new Dictionary<Vector3Int, RoadNetworkPoint>();
+                var table = new Dictionary<Vector3Int, RnPoint>();
                 foreach (var v in vertices)
                 {
                     var cellNo = v.RevScaled(cSize).ToVector3Int();
-                    var point = table.GetValueOrCreate(cellNo, c => new RoadNetworkPoint(v));
+                    var point = table.GetValueOrCreate(cellNo, c => new RnPoint(v));
                     Table[v] = point;
                 }
             }
 
-            public RoadNetworkPoint this[Vector3 v]
+            public RnPoint this[Vector3 v]
             {
                 get
                 {
@@ -105,9 +105,9 @@ namespace PLATEAU.RoadNetwork.Factory
 
         private class LineStringTable
         {
-            private List<RoadNetworkLineString> LineStrings { get; } = new List<RoadNetworkLineString>();
+            private List<RnLineString> LineStrings { get; } = new List<RnLineString>();
 
-            public RoadNetworkLineString Create(IEnumerable<RoadNetworkPoint> v, out bool isReverse)
+            public RnLineString Create(IEnumerable<RnPoint> v, out bool isReverse)
             {
                 isReverse = false;
                 var vertices = v.ToList();
@@ -126,7 +126,7 @@ namespace PLATEAU.RoadNetwork.Factory
                     }
                 }
 #endif
-                var ret = RoadNetworkLineString.Create(vertices);
+                var ret = RnLineString.Create(vertices);
                 LineStrings.Add(ret);
                 return ret;
             }
@@ -152,20 +152,20 @@ namespace PLATEAU.RoadNetwork.Factory
             public PLATEAUCityObjectGroup TargetTran { get; set; }
 
             // 時計回りに格納されている
-            public RoadNetworkWay Way { get; set; } = new RoadNetworkWay();
+            public RnWay Way { get; set; } = new RnWay();
 
             // 接続しているすべてのTranWork
             public IEnumerable<TranWork> ConnectedTranWorks => Vertex2Connected.SelectMany(v => v.Value).Distinct();
 
             // 頂点 -> 接続TranWork情報
-            public Dictionary<RoadNetworkPoint, List<TranWork>> Vertex2Connected { get; } =
-                new Dictionary<RoadNetworkPoint, List<TranWork>>();
+            public Dictionary<RnPoint, List<TranWork>> Vertex2Connected { get; } =
+                new Dictionary<RnPoint, List<TranWork>>();
 
             // 対応するLink
-            private RoadNetworkLink Link { get; set; }
+            private RnLink Link { get; set; }
 
             // 対応するNode
-            private RoadNetworkNode Node { get; set; }
+            private RnNode Node { get; set; }
 
             // 境界線
             public IEnumerable<WayWork> Borders => Ways.Where(w => w.IsBorder);
@@ -197,12 +197,12 @@ namespace PLATEAU.RoadNetwork.Factory
                 }
             }
 
-            public void Bind(RoadNetworkLink link)
+            public void Bind(RnLink link)
             {
                 Link = link;
             }
 
-            public void Bind(RoadNetworkNode node)
+            public void Bind(RnNode node)
             {
                 Node = node;
             }
@@ -225,7 +225,7 @@ namespace PLATEAU.RoadNetwork.Factory
                     return;
                 }
 
-                var wayVertexIndices = new List<RoadNetworkPoint> { points[startIndex] };
+                var wayVertexIndices = new List<RnPoint> { points[startIndex] };
                 foreach (var tmp in Enumerable.Range(1, points.Count))
                 {
                     var i = (tmp + startIndex) % points.Count;
@@ -240,10 +240,10 @@ namespace PLATEAU.RoadNetwork.Factory
                         continue;
 
                     var lineString = lineStringTable.Create(wayVertexIndices, out bool isReverse);
-                    var way = new RoadNetworkWay(lineString, isReverse);
+                    var way = new RnWay(lineString, isReverse);
                     var wayWork = new WayWork(way, this);
                     Ways.Add(wayWork);
-                    wayVertexIndices = new List<RoadNetworkPoint> { p };
+                    wayVertexIndices = new List<RnPoint> { p };
                 }
 
                 // 全く同じTranWorkへの境界が二つ以上あるとき、それらはマージする
@@ -288,7 +288,7 @@ namespace PLATEAU.RoadNetwork.Factory
                         {
                             if (l.Link == null)
                                 continue;
-                            Node.Neighbors.Add(new RoadNetworkNeighbor
+                            Node.Neighbors.Add(new RnNeighbor
                             {
                                 Link = l.Link,
                                 Border = b.Way
@@ -306,7 +306,7 @@ namespace PLATEAU.RoadNetwork.Factory
         {
             public TranWork Parent { get; }
 
-            public RoadNetworkWay Way { get; private set; }
+            public RnWay Way { get; private set; }
 
             /// <summary>
             /// 開始地点と隣接しているレーン
@@ -423,7 +423,7 @@ namespace PLATEAU.RoadNetwork.Factory
                 }
             }
 
-            public WayWork(RoadNetworkWay way, TranWork parent)
+            public WayWork(RnWay way, TranWork parent)
             {
                 Way = way;
                 Parent = parent;
@@ -438,12 +438,12 @@ namespace PLATEAU.RoadNetwork.Factory
             }
         }
 
-        public Task<RoadNetworkModel> CreateNetworkAsync(IList<RoadNetworkTranMesh> targets)
+        public Task<RnModel> CreateNetworkAsync(IList<RoadNetworkTranMesh> targets)
         {
             // レーンの初期化
             try
             {
-                var ret = new RoadNetworkModel();
+                var ret = new RnModel();
                 var vertex2Points = new Vertex2PointTable(cellSize, targets.SelectMany(v => v.Vertices));
                 var lineStringTable = new LineStringTable();
                 var tranWorks = CreateTranWorks(targets, vertex2Points, lineStringTable, out var cell2Groups);
@@ -463,7 +463,7 @@ namespace PLATEAU.RoadNetwork.Factory
             }
         }
 
-        public async Task<RoadNetworkModel> CreateNetworkAsync(IList<PLATEAUCityObjectGroup> targets)
+        public async Task<RnModel> CreateNetworkAsync(IList<PLATEAUCityObjectGroup> targets)
         {
             var meshes = targets
                 .Select(c => new { c = c, col = c.GetComponent<MeshCollider>() })
@@ -473,13 +473,13 @@ namespace PLATEAU.RoadNetwork.Factory
             return await CreateNetworkAsync(meshes);
         }
 
-        private void Build(LineStringTable lineStringTable, TranWork tranWork, RoadNetworkModel ret)
+        private void Build(LineStringTable lineStringTable, TranWork tranWork, RnModel ret)
         {
             var roadType = tranWork.RoadType;
             // 隣接レーンが一つもない場合は孤立
             if (roadType == RoadType.Isolated)
             {
-                ret.AddLink(RoadNetworkLink.CreateIsolatedLink(tranWork.TargetTran, tranWork.Way));
+                ret.AddLink(RnLink.CreateIsolatedLink(tranWork.TargetTran, tranWork.Way));
                 return;
             }
 
@@ -495,18 +495,18 @@ namespace PLATEAU.RoadNetwork.Factory
                     var vertices = way.Vertices.Select(x => x.Xz()).ToList();
                     var edgeIndices = GeoGraph2D.FindMidEdge(vertices, terminateAllowEdgeAngle);
 
-                    RoadNetworkWay AsWay(IEnumerable<int> ind, bool isReverse, bool isRightSide)
+                    RnWay AsWay(IEnumerable<int> ind, bool isReverse, bool isRightSide)
                     {
                         var ls = lineStringTable.Create(ind.Select(x => way.GetPoint(x)), out bool isRev);
-                        return new RoadNetworkWay(ls, isRev ? !isReverse : isReverse, isRightSide);
+                        return new RnWay(ls, isRev ? !isReverse : isReverse, isRightSide);
                     }
 
                     var rWay = AsWay(Enumerable.Range(0, edgeIndices[0] + 1), true, true);
                     var lWay = AsWay(Enumerable.Range(edgeIndices.Last(), way.Count - edgeIndices.Last()), false, false);
                     var startBorderWay = AsWay(edgeIndices, true, false);
                     var endBorderWay = tranWork.Borders.FirstOrDefault()?.Way;
-                    var l = new RoadNetworkLane(lWay, rWay, startBorderWay, endBorderWay);
-                    var link = RoadNetworkLink.CreateOneLaneLink(tranWork.TargetTran, l);
+                    var l = new RnLane(lWay, rWay, startBorderWay, endBorderWay);
+                    var link = RnLink.CreateOneLaneLink(tranWork.TargetTran, l);
                     tranWork.Bind(link);
                     ret.AddLink(link);
                 }
@@ -518,12 +518,12 @@ namespace PLATEAU.RoadNetwork.Factory
             // 交差点
             else if (roadType == RoadType.Intersection)
             {
-                var node = new RoadNetworkNode(tranWork.TargetTran);
+                var node = new RnNode(tranWork.TargetTran);
                 foreach (var l in tranWork.Lanes)
                 {
                     var prevBorder = l.PrevBorder?.Way;
                     var nextBorder = l.NextBorder?.Way;
-                    var lane = new RoadNetworkLane(l.Way, null, prevBorder, nextBorder);
+                    var lane = new RnLane(l.Way, null, prevBorder, nextBorder);
                     node.AddLane(lane);
                 }
                 tranWork.Bind(node);
@@ -545,14 +545,14 @@ namespace PLATEAU.RoadNetwork.Factory
                     if (leftWay?.Way?.IsReversed ?? false)
                         (rightWay, leftWay) = (leftWay, rightWay);
 
-                    var link = new RoadNetworkLink(tranWork.TargetTran);
+                    var link = new RnLink(tranWork.TargetTran);
                     if (leftWay != null && rightWay != null)
                     {
 
 
                         var startBorderWay = leftWay?.PrevBorder?.Way;
                         var endBorderWay = leftWay?.NextBorder?.Way;
-                        var l = new RoadNetworkLane(leftWay?.Way, rightWay?.Way, startBorderWay, endBorderWay);
+                        var l = new RnLane(leftWay?.Way, rightWay?.Way, startBorderWay, endBorderWay);
                         var startBorderLength = GeoGraphEx.GetEdges(startBorderWay?.Vertices ?? new List<Vector3>(), false)
                             .Sum(e => (e.Item2 - e.Item1).magnitude);
                         var endBorderLength = GeoGraphEx.GetEdges(endBorderWay?.Vertices ?? new List<Vector3>(), false)
@@ -575,7 +575,7 @@ namespace PLATEAU.RoadNetwork.Factory
                         var way = leftWay ?? rightWay;
                         var startBorderWay = way?.PrevBorder?.Way;
                         var endBorderWay = way?.NextBorder?.Way;
-                        var lane = new RoadNetworkLane(leftWay?.Way, rightWay?.Way, startBorderWay, endBorderWay);
+                        var lane = new RnLane(leftWay?.Way, rightWay?.Way, startBorderWay, endBorderWay);
                         link.AddMainLane(lane);
                         Debug.LogWarning("不正なレーン構成(片側Wayのみ存在)");
                     }
@@ -595,9 +595,9 @@ namespace PLATEAU.RoadNetwork.Factory
             }
         }
 
-        private static List<TranWork> CreateTranWorks(IList<RoadNetworkTranMesh> targets, Vertex2PointTable vertex2Points, LineStringTable lineStringTable, out Dictionary<RoadNetworkPoint, Cell> cell2Groups)
+        private static List<TranWork> CreateTranWorks(IList<RoadNetworkTranMesh> targets, Vertex2PointTable vertex2Points, LineStringTable lineStringTable, out Dictionary<RnPoint, Cell> cell2Groups)
         {
-            cell2Groups = new Dictionary<RoadNetworkPoint, Cell>();
+            cell2Groups = new Dictionary<RnPoint, Cell>();
             // レーンの頂点情報を構築
             var tranWorks = new List<TranWork>();
             foreach (var item in targets)
@@ -617,7 +617,7 @@ namespace PLATEAU.RoadNetwork.Factory
                     cell.Add(linkOrNodeWork);
                 }
                 var lineString = lineStringTable.Create(vertices, out bool isReverse);
-                linkOrNodeWork.Way = new RoadNetworkWay(lineString, isReverse);
+                linkOrNodeWork.Way = new RnWay(lineString, isReverse);
                 tranWorks.Add(linkOrNodeWork);
             }
 

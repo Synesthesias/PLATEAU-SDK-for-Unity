@@ -26,7 +26,7 @@ namespace PLATEAU.RoadNetwork
 
         [field: SerializeField] private RoadNetworkFactory Factory { get; set; } = new RoadNetworkFactory();
 
-        [field: SerializeField] public RoadNetworkModel RoadNetwork { get; set; }
+        [field: SerializeField] public RnModel RoadNetwork { get; set; }
 
         [Serializable]
         private class TesterTranMeshDrawParam : TesterDrawParam
@@ -168,7 +168,7 @@ namespace PLATEAU.RoadNetwork
         public async Task SplitCityObjectAsync()
         {
             var p = splitCityObjectTestParam;
-            convertedCityObjects = (await RoadNetworkEx.ConvertCityObjectsAsync(p.targets)).ConvertedCityObjects;
+            convertedCityObjects = (await RnEx.ConvertCityObjectsAsync(p.targets)).ConvertedCityObjects;
         }
 
         private List<PLATEAUCityObjectGroup> GetTargetCityObjects()
@@ -191,7 +191,7 @@ namespace PLATEAU.RoadNetwork
         private async Task<List<ConvertedCityObject>> ConvertCityObjectAsync()
         {
             var targets = GetTargetCityObjects();
-            return (await RoadNetworkEx.ConvertCityObjectsAsync(targets)).ConvertedCityObjects;
+            return (await RnEx.ConvertCityObjectsAsync(targets)).ConvertedCityObjects;
         }
 
         private List<RoadNetworkTranMesh> CreateTranMeshes(float epsilon)

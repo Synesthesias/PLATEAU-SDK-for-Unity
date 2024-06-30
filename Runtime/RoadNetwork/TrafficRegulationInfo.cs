@@ -18,7 +18,7 @@ namespace PLATEAU.RoadNetwork
     /// </summary>
     public class TrafficSignalLightController
     {
-        public TrafficSignalLightController(string id, RoadNetworkNode node, in Vector3 position)
+        public TrafficSignalLightController(string id, RnNode node, in Vector3 position)
             : base()
         {
             SelfId = id;
@@ -28,7 +28,7 @@ namespace PLATEAU.RoadNetwork
 
         // RnIDに変換予定？　AVNEWだと文字列
         public string SelfId { get; private set; } = string.Empty;
-        public RoadNetworkNode CorrespondingNode { get; private set; } = null;
+        public RnNode CorrespondingNode { get; private set; } = null;
 
 
         public bool GapImpedanceFlag { get; private set; } = false;
@@ -80,7 +80,7 @@ namespace PLATEAU.RoadNetwork
         }
         public float SplitSeconds { get; set; }
         public int EnterableVehicleType { get; set; }
-        public Dictionary<TrafficSignalLight, RoadNetworkLink> DirectionMap { get; set; }
+        public Dictionary<TrafficSignalLight, RnLink> DirectionMap { get; set; }
 
         public string Name { get; set; }
     }
@@ -112,7 +112,7 @@ namespace PLATEAU.RoadNetwork
         /// <summary>
         /// 優先道路
         /// </summary>
-        public RnID<RoadNetworkDataLineString> yields;
+        public RnID<RnDataLineString> yields;
     }
 
     /// <summary>
@@ -121,7 +121,7 @@ namespace PLATEAU.RoadNetwork
     [System.Serializable]
     public class StopLine
     {
-        public RoadNetworkDataLineString line;
+        public RnDataLineString line;
         public TrafficSignalLight trafficLight;
         public bool bHasStopSign;
     }

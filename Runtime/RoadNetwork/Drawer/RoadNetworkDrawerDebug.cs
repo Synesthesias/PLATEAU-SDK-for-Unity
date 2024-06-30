@@ -90,7 +90,7 @@ namespace PLATEAU.RoadNetwork.Drawer
             /// </summary>
             /// <param name="self"></param>
             /// <returns></returns>
-            public float GetLaneAlpha(RoadNetworkLane self)
+            public float GetLaneAlpha(RnLane self)
             {
                 if (self.IsBothConnectedLane)
                     return bothConnectedLaneAlpha;
@@ -142,7 +142,7 @@ namespace PLATEAU.RoadNetwork.Drawer
             DebugEx.DrawArrow(start.PutY(start.y * yScale), end.PutY(end.y * yScale), arrowSize, arrowUp, bodyColor, arrowColor, duration, depthTest);
         }
 
-        public void Draw(RoadNetworkModel roadNetwork)
+        public void Draw(RnModel roadNetwork)
         {
             if (!visible)
                 return;
@@ -150,7 +150,7 @@ namespace PLATEAU.RoadNetwork.Drawer
                 return;
 
             // 道描画
-            void DrawWay(RoadNetworkWay way, Color color, Color? arrowColor = null)
+            void DrawWay(RnWay way, Color color, Color? arrowColor = null)
             {
                 if (way == null)
                     return;
@@ -233,7 +233,7 @@ namespace PLATEAU.RoadNetwork.Drawer
                 }
             }
 
-            void DrawLane(RoadNetworkLane lane)
+            void DrawLane(RnLane lane)
             {
                 if (laneOp.visible == false)
                     return;

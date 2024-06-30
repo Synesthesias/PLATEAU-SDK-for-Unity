@@ -24,7 +24,7 @@ namespace PLATEAU.RoadNetwork.Data
         /// <summary>
         /// óDêÊìπòH
         /// </summary>
-        public RnID<RoadNetworkDataLineString> yields;
+        public RnID<RnDataLineString> yields;
     }
 
     /// <summary>
@@ -33,7 +33,7 @@ namespace PLATEAU.RoadNetwork.Data
     [System.Serializable]
     public class StopLine
     {
-        public RnID<RoadNetworkDataLineString> line;
+        public RnID<RnDataLineString> line;
         public TrafficLight trafficLight;
         public bool bHasStopSign;
     }

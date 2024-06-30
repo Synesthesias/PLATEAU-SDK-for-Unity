@@ -12,7 +12,7 @@ namespace PLATEAU.RoadNetwork.Data
     /// </summary>
     public interface IRoadNetworkObject
     {
-        public RoadNetworkModel RoadNetwork { get; }
+        public RnModel RoadNetwork { get; }
     }
 
     /// <summary>
@@ -110,30 +110,30 @@ namespace PLATEAU.RoadNetwork.Data
 
         public PrimitiveStorage<TrafficRegulationInfoData> RegulationCollection { get => regulationCollection; }
 
-        public PrimitiveStorage<RoadNetworkDataPoint> Points { get => points; }
-        public PrimitiveStorage<RoadNetworkDataLineString> LineStrings { get => lineStrings; }
+        public PrimitiveStorage<RnDataPoint> Points { get => points; }
+        public PrimitiveStorage<RnDataLineString> LineStrings { get => lineStrings; }
 
 
         [field: SerializeField]
         public PrimitiveStorage<TrafficRegulationInfoData> regulationCollection =
             new PrimitiveStorage<TrafficRegulationInfoData>();
 
-        [field: SerializeField] private PrimitiveStorage<RoadNetworkDataPoint> points = new PrimitiveStorage<RoadNetworkDataPoint>();
+        [field: SerializeField] private PrimitiveStorage<RnDataPoint> points = new PrimitiveStorage<RnDataPoint>();
 
         [field: SerializeField]
-        private PrimitiveStorage<RoadNetworkDataLineString> lineStrings =
-            new PrimitiveStorage<RoadNetworkDataLineString>();
+        private PrimitiveStorage<RnDataLineString> lineStrings =
+            new PrimitiveStorage<RnDataLineString>();
 
         [field: SerializeField]
-        public PrimitiveStorage<RoadNetworkDataLane> Lanes { get; set; }
-            = new PrimitiveStorage<RoadNetworkDataLane>();
+        public PrimitiveStorage<RnDataLane> Lanes { get; set; }
+            = new PrimitiveStorage<RnDataLane>();
 
         [field: SerializeField]
-        public PrimitiveStorage<RoadNetworkDataBlock> Blocks { get; set; } =
-            new PrimitiveStorage<RoadNetworkDataBlock>();
+        public PrimitiveStorage<RnDataBlock> Blocks { get; set; } =
+            new PrimitiveStorage<RnDataBlock>();
 
         [field: SerializeField]
-        public PrimitiveStorage<RoadNetworkDataWay> Ways { get; set; } = new PrimitiveStorage<RoadNetworkDataWay>();
+        public PrimitiveStorage<RnDataWay> Ways { get; set; } = new PrimitiveStorage<RnDataWay>();
 
         [field: SerializeField]
         public PrimitiveStorage<RnDataRoadBase> RoadBases { get; set; } = new PrimitiveStorage<RnDataRoadBase>();
