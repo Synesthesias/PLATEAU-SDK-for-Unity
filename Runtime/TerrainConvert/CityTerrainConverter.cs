@@ -23,6 +23,12 @@ namespace PLATEAU.TerrainConvert
                 {
                     srcTransforms.Add(obj.transform);
                 }
+
+                if (srcTransforms.Count == 0)
+                {
+                    Debug.Log("対象がないためテレイン化をスキップします。");
+                    return TerrainConvertResult.Fail();
+                }
                 // ゲームオブジェクトを共通ライブラリのModelに変換します。
                 using var srcModel = UnityMeshToDllModelConverter.Convert(
                     srcTransforms,
@@ -42,7 +48,7 @@ namespace PLATEAU.TerrainConvert
                 
                 if (result.GeneratedObjs.Count <= 0)
                 {
-                    Dialogue.Display("変換対象がありません。\nアクティブなオブジェクトを選択してください。", "OK");
+                    Dialogue.Display("出力結果がありません。", "OK");
                     return TerrainConvertResult.Fail();
                 }
 

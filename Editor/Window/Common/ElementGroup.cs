@@ -1,3 +1,6 @@
+using UnityEditor;
+using UnityEngine;
+
 namespace PLATEAU.Editor.Window.Common
 {
     /// <summary>
@@ -7,17 +10,37 @@ namespace PLATEAU.Editor.Window.Common
     internal class ElementGroup : Element
     {
         protected Element[] Elements { get; set; }
+        private int indent;
+        private BoxStyle boxStyle;
+
+        /// <summary> スタイルなしで<see cref="ElementGroup"/>を作成します。 </summary>
+        public ElementGroup(string name, int indent, params Element[] elements) :
+            this(name, indent, BoxStyle.None, elements){}
         
-        public ElementGroup(string name, params Element[] elements) : base(name)
+        /// <summary> スタイル込みで<see cref="ElementGroup"/>を作成します。 </summary>
+        public ElementGroup(string name, int indent, BoxStyle boxStyle, params Element[] elements) : base(name)
         {
             Elements = elements;
+            this.indent = indent;
+            this.boxStyle = boxStyle;
         }
         public override void DrawContent()
         {
+            if(boxStyle == BoxStyle.None) EditorGUI.indentLevel += indent;
+            using var scope = boxStyle switch
+            {
+                BoxStyle.VerticalStyleLevel1 => PlateauEditorStyle.VerticalScopeLevel1(indent),
+                BoxStyle.VerticalStyleLevel2 => PlateauEditorStyle.VerticalScopeLevel2(),
+                _ => null
+            };
+            
+            // ここで描画します
             foreach (var d in Elements)
             {
                 d.Draw();
             }
+
+            if(boxStyle == BoxStyle.None) EditorGUI.indentLevel -= indent;
         }
 
         /// <summary>
@@ -94,5 +117,10 @@ namespace PLATEAU.Editor.Window.Common
                 d.Dispose();
             }
         }
+    }
+
+    internal enum BoxStyle
+    {
+        None, VerticalStyleLevel1, VerticalStyleLevel2
     }
 }

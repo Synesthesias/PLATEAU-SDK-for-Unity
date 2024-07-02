@@ -1,4 +1,6 @@
-﻿using PLATEAU.CityExport.ModelConvert;
+﻿using PLATEAU.CityAdjust.NonLibData;
+using PLATEAU.CityAdjust.NonLibDataHolder;
+using PLATEAU.CityExport.ModelConvert;
 using PLATEAU.CityExport.ModelConvert.SubMeshConvert;
 using PLATEAU.CityImport.Import.Convert;
 using PLATEAU.GranularityConvert;
@@ -40,10 +42,12 @@ namespace PLATEAU.RoadNetwork
             }
 
             // 属性情報を覚えておきます。
-            var attributes = GmlIdToSerializedCityObj.ComposeFrom(conf.SrcTransforms);
+            var attributes = new GmlIdToSerializedCityObj();
+            attributes.ComposeFrom(conf.SrcTransforms);
 
             // PLATEAUInstancedCityModel が含まれる場合、これもコピーしたいので覚えておきます。
-            var instancedCityModelDict = InstancedCityModelDict.ComposeFrom(conf.SrcTransforms);
+            var instancedCityModelDict = new InstancedCityModelDict();
+            instancedCityModelDict.ComposeFrom(conf.SrcTransforms);
 
             var unityMeshToDllSubMeshConverter = new UnityMeshToDllSubMeshWithGameMaterial();
 

@@ -354,7 +354,7 @@ namespace PLATEAU.Editor.Window.Common
         /// </summary>
         private static GUIStyle ContentStyleLevel1(int indent)
         {
-            int marginLeft = Math.Min(1, indent) * 12;
+            int marginLeft = Math.Max(1, indent) * 12;
             var style = new GUIStyle
             {
                 padding = new RectOffset(8, 8, 8, 8),

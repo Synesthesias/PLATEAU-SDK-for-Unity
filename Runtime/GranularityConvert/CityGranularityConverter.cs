@@ -1,5 +1,7 @@
 using PLATEAU.CityAdjust.MaterialAdjust.Executor;
 using PLATEAU.CityAdjust.MaterialAdjust.Executor.Process;
+using PLATEAU.CityAdjust.NonLibData;
+using PLATEAU.CityAdjust.NonLibDataHolder;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -191,12 +193,14 @@ namespace PLATEAU.GranularityConvert
                 }
 
                 progressBar.Display("属性情報を取得中...", 0.1f);
-
-                // 属性情報を覚えておきます。
-                var attributes = GmlIdToSerializedCityObj.ComposeFrom(conf.SrcTransforms);
-
-                // PLATEAUInstancedCityModel が含まれる場合、これもコピーしたいので覚えておきます。
-                var instancedCityModelDict = InstancedCityModelDict.ComposeFrom(conf.SrcTransforms);
+                
+                
+                // 属性情報など、覚えておくべきものを記録します。
+                var nonLibDataHolder = new NonLibDataHolder(
+                    new InstancedCityModelDict(),
+                    new GmlIdToSerializedCityObj()
+                );
+                nonLibDataHolder.ComposeFrom(conf.SrcTransforms);
 
 
                 progressBar.Display("ゲームオブジェクトを共通モデルに変換中...", 0.2f);
@@ -238,8 +242,7 @@ namespace PLATEAU.GranularityConvert
                     placeToSceneConf,
                     dstModel,
                     new AttributeDataHelper(
-                        new SerializedCityObjectGetterFromDict(attributes, dstModel),
-                        conf.NativeOption.Granularity,
+                        new SerializedCityObjectGetterFromDict(nonLibDataHolder.Get<GmlIdToSerializedCityObj>(), dstModel),
                         true
                     ),
                     true);
@@ -254,8 +257,8 @@ namespace PLATEAU.GranularityConvert
                     return GranularityConvertResult.Fail();
                 }
 
-                // PLATEAUInstancedCityModelを復元します。
-                instancedCityModelDict.Restore(result.GeneratedRootTransforms);
+                // 覚えておいたものを復元します
+                nonLibDataHolder.RestoreTo(result.GeneratedRootTransforms);
 
                 if (conf.DoDestroySrcObjs)
                 {
@@ -368,8 +371,9 @@ namespace PLATEAU.GranularityConvert
             this.dstModel = dstModel;
         }
 
-        public CityInfo.CityObjectList.CityObject GetDstCityObjectByID(string gmlID, CityObjectIndex? _)
+        public CityInfo.CityObjectList.CityObject GetDstCityObjectByID(string gmlIDArg, CityObjectIndex? _)
         {
+            string gmlID = gmlIDArg.EndsWith("_combined") ? gmlIDArg.Replace("_combined", "") : gmlIDArg;
             if (srcData.TryGet(gmlID, out var serializedCityObj))
             {
                 var srcCityObj = serializedCityObj;

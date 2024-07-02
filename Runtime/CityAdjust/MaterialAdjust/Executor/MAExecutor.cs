@@ -26,7 +26,7 @@ namespace PLATEAU.CityAdjust.MaterialAdjust.Executor
         private readonly IMACondition maCondition;
 
         // デバッグ時は下をtrueにしてログを出し、デバッグが終わったらfalseにしてログを隠してください。
-        private readonly ConditionalLogger logger = new (() => true);
+        private readonly ConditionalLogger logger = new (() => false);
 
 
         /// <summary>

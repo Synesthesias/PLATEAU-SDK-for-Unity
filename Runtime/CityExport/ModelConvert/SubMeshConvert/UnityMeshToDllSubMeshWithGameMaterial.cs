@@ -8,7 +8,7 @@ namespace PLATEAU.CityExport.ModelConvert.SubMeshConvert
     /// <summary>
     /// Unityの<see cref="Mesh"/>から共通ライブラリの<see cref="SubMesh"/>を作るにあたって、
     /// 具体的な見た目情報ではなく、UnityマテリアルのIDのみを<see cref="SubMesh"/>に記録する変換モードです。
-    /// 用途は結合分割機能で、あとでUnityマテリアルの番号からマテリアルを復元するために使う変換モードです。
+    /// 用途はモデル修正で、あとでUnityマテリアルの番号からマテリアルを復元するために使う変換モードです。
     /// ここでいうマテリアルIDとは、<see cref="GameMaterials"/>のインデックスを指します。
     /// </summary>
     public class UnityMeshToDllSubMeshWithGameMaterial : IUnityMeshToDllSubMeshConverter

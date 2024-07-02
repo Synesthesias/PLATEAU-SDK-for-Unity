@@ -1,14 +1,10 @@
 using NUnit.Framework;
-using PLATEAU.CityAdjust.MaterialAdjust;
 using PLATEAU.CityAdjust.MaterialAdjust.Executor;
 using PLATEAU.CityAdjust.MaterialAdjust.Executor.Process;
-using PLATEAU.CityGML;
-using PLATEAU.CityInfo;
 using PLATEAU.Tests.TestUtils;
 using PLATEAU.Util;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using UnityEngine.TestTools;
 

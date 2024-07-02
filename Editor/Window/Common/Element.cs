@@ -6,8 +6,10 @@ namespace PLATEAU.Editor.Window.Common
     /// GUIの1要素を抽象化したクラスです。
     /// 描画のON/OFFを切り替え機能や、
     /// <see cref="ElementGroup"/>から検索されるための名前を有します。
+    /// このクラスを継承してボタンやオブジェクトフィールドなどGUI要素を構築できます。
+    /// または、<see cref="GeneralElement"/>を利用して任意の描画メソッドを実行できます。
     /// </summary>
-    internal abstract class Element : IEditorDrawable
+    public abstract class Element : IEditorDrawable
     {
         /// <summary> falseのとき、<see cref="Draw"/>が呼ばれても描画しません </summary>
         public bool IsVisible { get; set; } = true;

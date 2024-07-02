@@ -1,15 +1,9 @@
 using NUnit.Framework;
 using PLATEAU.Native;
 using PLATEAU.PolygonMesh;
-using PLATEAU.Tests.TestUtils;
 using PLATEAU.Texture;
 using PLATEAU.Util;
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.IO;
-using UnityEngine;
-using UnityEngine.TestTools;
 
 namespace PLATEAU.Tests.EditModeTests
 {
@@ -17,7 +11,7 @@ namespace PLATEAU.Tests.EditModeTests
     [TestFixture]
     public class TestHeightmapGenerator
     {
-        public string ImageDirPath => Path.GetFullPath(Path.Combine(testDataDir, "“ú–{ŒêƒpƒXƒeƒXƒg/TestDataImages"));
+        public string ImageDirPath => Path.GetFullPath(Path.Combine(testDataDir, "æ—¥æœ¬èªžãƒ‘ã‚¹ãƒ†ã‚¹ãƒˆ/TestDataImages"));
         private static readonly string testDataDir = Path.Combine(PathUtil.SdkBasePath, "./Tests/TestData");
 
         [Test]
@@ -31,7 +25,7 @@ namespace PLATEAU.Tests.EditModeTests
             PlateauVector2d margin = new PlateauVector2d(0, 0);
 
             HeightmapGenerator Gen = new HeightmapGenerator();
-            Gen.GenerateFromMesh(mesh, TextureWidth, TextureHeight, margin, true, out var Min, out var Max, out var MinUV, out var MaxUV, out var outData);
+            Gen.GenerateFromMesh(mesh, TextureWidth, TextureHeight, margin, true, true, out var Min, out var Max, out var MinUV, out var MaxUV, out var outData);
             Assert.AreEqual(TextureWidth * TextureHeight, outData.Length);
         }
 

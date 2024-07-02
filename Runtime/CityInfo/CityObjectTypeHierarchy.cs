@@ -89,7 +89,15 @@ namespace PLATEAU.CityInfo
         /// <summary> <see cref="CityObjectType"/>をパッケージ種に変換します。 </summary>
         public static PredefinedCityModelPackage ToPackage(this COType t)
         {
-            return typeToNode[t].Package;
+            // 見つかるまで親を検索
+            var node = typeToNode[t];
+            while (node != null)
+            {
+                if (node.Package != Package.None) return node.Package;
+                node = node.Parent;
+            }
+
+            return Package.None;
         }
 
         /// <summary>
