@@ -13,6 +13,11 @@ namespace PLATEAU.CityInfo
     public class PLATEAUInstancedCityModel : MonoBehaviour
     {
         [SerializeField] private GeoReferenceData geoReferenceData;
+        
+        public void CopyFrom(PLATEAUInstancedCityModel src)
+        {
+            this.GeoReference = src.GeoReference;
+        }
 
         /// <summary>
         /// ゲームオブジェクトの階層のうち、GMLファイルに対応する Transform の一覧を返します。
@@ -174,9 +179,6 @@ namespace PLATEAU.CityInfo
             get => GeoReference.Unproject(new PlateauVector3d(0, 0, 0)).Longitude;
         }
 
-        public void CopyFrom(PLATEAUInstancedCityModel src)
-        {
-            this.GeoReference = src.GeoReference;
-        }
+        
     }
 }

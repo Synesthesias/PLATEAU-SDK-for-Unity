@@ -35,7 +35,9 @@ namespace PLATEAU.Editor.RoadNetwork
             return GetWindow(false).EditorInterface;
         }
 
-        [MenuItem("PLATEAU_Dev/PLATEAU RoadNetwork Editor")]
+        // 2024年7月のリリース準備のため、開発中の機能を一時的にメニューから非表示にしています。
+        // リリースが終わったら下のコメント行を復活させてください。
+        // [MenuItem("PLATEAU_Dev/PLATEAU RoadNetwork Editor")]
         public static void ShowWindow()
         {
             GetWindow(true);

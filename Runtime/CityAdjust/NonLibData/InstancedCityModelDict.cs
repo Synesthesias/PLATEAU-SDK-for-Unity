@@ -1,13 +1,12 @@
 using PLATEAU.CityInfo;
-using PLATEAU.GranularityConvert;
 using PLATEAU.Util;
 using System.Collections.Generic;
 
 namespace PLATEAU.CityAdjust.NonLibData
 {
     /// <summary>
-    /// <see cref="PLATEAUInstancedCityModel"/>と、ゲームオブジェクト名の辞書です。
-    /// 用途：モデル修正において、変換前の都市情報を覚えておいて変換後に適用するために利用します。
+    /// 用途：モデル修正において、変換前の<see cref="PLATEAUInstancedCityModel"/>覚えておいて変換後にコピーするために利用します。
+    /// <see cref="PLATEAUInstancedCityModel"/>と、ゲームオブジェクト名の辞書を覚えておきます。
     /// 参照： <see cref="NonLibDataHolder"/>
     /// </summary>
     public class InstancedCityModelDict : INonLibData
@@ -15,7 +14,7 @@ namespace PLATEAU.CityAdjust.NonLibData
         /// <summary>
         /// ゲームオブジェクト名とPLATEAUInstancedCityModelを紐つけます。
         /// </summary>
-        private Dictionary<string, PLATEAUInstancedCityModel> data = new();
+        private Dictionary<NonLibKeyName, PLATEAUInstancedCityModel> data = new();
 
         /// <summary>
         /// <paramref name="srcGameObjs"/> とその子に含まれる<see cref="PLATEAUInstancedCityModel"/>を
@@ -28,7 +27,7 @@ namespace PLATEAU.CityAdjust.NonLibData
                 {
                     var cityModel = trans.GetComponent<PLATEAUInstancedCityModel>();
                     if (cityModel == null) return NextSearchFlow.Continue;
-                    data.Add(trans.name, cityModel);
+                    data.Add(new NonLibKeyName(trans), cityModel);
                     return NextSearchFlow.Continue;
                 });
         }
@@ -39,15 +38,15 @@ namespace PLATEAU.CityAdjust.NonLibData
         /// </summary>
         public void RestoreTo(UniqueParentTransformList rootTransforms)
         {
-            var remaining = new Dictionary<string, PLATEAUInstancedCityModel>(data);
+            var remaining = new Dictionary<NonLibKeyName, PLATEAUInstancedCityModel>(data);
             rootTransforms.BfsExec(
                 trans =>
                 {
-                    string name = trans.name;
-                    if (!remaining.ContainsKey(name)) return NextSearchFlow.Continue;
+                    var key = new NonLibKeyName(trans);
+                    if (!remaining.ContainsKey(key)) return NextSearchFlow.Continue;
                     var newModel = trans.gameObject.AddComponent<PLATEAUInstancedCityModel>();
-                    newModel.CopyFrom(remaining[name]);
-                    remaining.Remove(name);
+                    newModel.CopyFrom(remaining[key]);
+                    remaining.Remove(key);
                     if (remaining.Count == 0) return NextSearchFlow.Abort;
                     return NextSearchFlow.Continue;
                 });

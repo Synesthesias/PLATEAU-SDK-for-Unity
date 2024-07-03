@@ -197,6 +197,7 @@ namespace PLATEAU.GranularityConvert
                 
                 // 属性情報など、覚えておくべきものを記録します。
                 var nonLibDataHolder = new NonLibDataHolder(
+                    new PositionRotationDict(),
                     new InstancedCityModelDict(),
                     new GmlIdToSerializedCityObj()
                 );
