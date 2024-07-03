@@ -62,7 +62,7 @@ namespace PLATEAU.RoadNetwork
             var d = await new CityGranularityConverter().ConvertAsync(conf);
         }
 
-        public async Task CreateNetwork()
+        public void CreateNetwork()
         {
             if (targetAll)
             {
@@ -70,7 +70,7 @@ namespace PLATEAU.RoadNetwork
                     .Where(c => c.CityObjects.rootCityObjects.Any(a => a.CityObjectType == CityObjectType.COT_Road))
                     .ToList();
 
-                RoadNetwork = await Factory.CreateNetworkAsync(allTargets);
+                RoadNetwork = Factory.CreateNetwork(allTargets);
             }
             else
             {
@@ -79,7 +79,7 @@ namespace PLATEAU.RoadNetwork
                 if (targets != null)
                 {
                     targets.targets = targets.targets.Distinct().ToList();
-                    RoadNetwork = await Factory.CreateNetworkAsync(targets.targets);
+                    RoadNetwork = Factory.CreateNetwork(targets.targets);
                 }
             }
         }

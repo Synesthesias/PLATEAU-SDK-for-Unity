@@ -29,7 +29,7 @@ namespace PLATEAU.RoadNetwork.Factory
         // 行き止まり検出判定時に同一直線と判断する角度の総和
         [SerializeField] private float terminateAllowEdgeAngle = 20f;
         // 行き止まり検出判定時に開始線分と同一と判定する角度の許容量
-        [SerializeField] private float terminateSkipEdgeAngle = 20f;
+        // [SerializeField] private float terminateSkipEdgeAngle = 20f;
 
         // 凸包を使って計算する
         [SerializeField] private bool useConvexHull = false;
@@ -294,7 +294,7 @@ namespace PLATEAU.RoadNetwork.Factory
         }
 
 
-        public async Task<RoadNetworkModel> CreateNetworkAsync(IList<PLATEAUCityObjectGroup> targets)
+        public RoadNetworkModel CreateNetwork(IList<PLATEAUCityObjectGroup> targets)
         {
             var tasks = new List<RoadNetworkModel>();
             // 分割結合の設定です。

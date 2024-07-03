@@ -34,7 +34,7 @@ namespace PLATEAU.RoadNetwork
                 l.RemoveConnection(lane);
         }
 
-        public static async Task ConvertCityObjectsAsync(GranularityConvertOptionUnity conf)
+        public static void ConvertCityObjects(GranularityConvertOptionUnity conf)
         {
             if (!conf.IsValid())
             {

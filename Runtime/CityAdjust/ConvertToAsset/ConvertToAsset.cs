@@ -149,6 +149,7 @@ namespace PLATEAU.CityAdjust.ConvertToAsset
         /// </summary>
         private static void AdjustFbxImportSettings(string targetFolderPath)
         {
+            #if UNITY_EDITOR
             string[] fbxFiles = Directory.GetFiles(targetFolderPath, "*.fbx", SearchOption.AllDirectories);
 
             foreach (string fbxPath in fbxFiles)
@@ -159,6 +160,9 @@ namespace PLATEAU.CityAdjust.ConvertToAsset
                     importer.importNormals = ModelImporterNormals.Calculate;
                 }
             }
+#else
+            throw new NotImplementedException("ConvertToAssetはランタイムでの実行には未対応です。");
+#endif
         }
     }
 }
