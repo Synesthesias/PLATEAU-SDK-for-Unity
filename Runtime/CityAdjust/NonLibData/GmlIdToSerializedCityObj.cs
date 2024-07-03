@@ -2,7 +2,6 @@ using PLATEAU.CityAdjust.NonLibData;
 using System.Collections.Generic;
 using PLATEAU.CityInfo;
 using PLATEAU.Util;
-using UnityEngine;
 
 namespace PLATEAU.CityAdjust.NonLibDataHolder
 {

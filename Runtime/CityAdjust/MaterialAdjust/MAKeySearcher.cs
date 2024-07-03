@@ -1,6 +1,5 @@
 using System;
 using PLATEAU.CityInfo;
-using PLATEAU.Util;
 
 namespace PLATEAU.CityAdjust.MaterialAdjust
 {

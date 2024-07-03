@@ -5,16 +5,15 @@ using System.IO;
 using PLATEAU.CityExport.Exporters;
 using PLATEAU.CityExport.ModelConvert;
 using PLATEAU.CityExport.ModelConvert.SubMeshConvert;
-using PLATEAU.CityImport.Import.Convert.MaterialConvert;
-using PLATEAU.CityInfo;
 using PLATEAU.Geometries;
-using PLATEAU.GranularityConvert;
 using PLATEAU.Util;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using Object = UnityEngine.Object;
 #if UNITY_EDITOR
 using UnityEditor;
+using UnityEditor.SceneManagement;
 #endif
 
 namespace PLATEAU.CityAdjust.ConvertToAsset
@@ -44,6 +43,7 @@ namespace PLATEAU.CityAdjust.ConvertToAsset
             
             // 属性情報、都市情報、マテリアルを覚えておきます。
             var nonLibDataHolder = new NonLibData.NonLibDataHolder(
+                new PositionRotationDict(),
                 new NameToAttrsDict(),
                 new InstancedCityModelDict(),
                 new NameToMaterialsDict()
@@ -66,7 +66,16 @@ namespace PLATEAU.CityAdjust.ConvertToAsset
             string fbxNameWithoutExtension = conf.SrcGameObj.name;
             
             new CityExporterFbx().Export(Path.GetFullPath(conf.AssetPath), fbxNameWithoutExtension, model);
+            
+            // FBXのインポート設定を適切に直したうえでインポートします。
+            var assetPath = PathUtil.FullPathToAssetsPath(fullPath);
+            PLATEAUAssetPostProcessor.PostProcessHandler assetProcess = () =>
+            {
+                AdjustFbxImportSettings(assetPath);
+            };
+            PLATEAUAssetPostProcessor.OnPostProcess += assetProcess;
             AssetDatabase.Refresh();
+            PLATEAUAssetPostProcessor.OnPostProcess -= assetProcess;
             
             // FBXのインポート設定をします。
             string fbxPath = Path.Combine(conf.AssetPath, fbxNameWithoutExtension + ".fbx");
@@ -88,15 +97,14 @@ namespace PLATEAU.CityAdjust.ConvertToAsset
                 Debug.LogError("失敗： fbxファイルが生成されませんでした。");
                 return;
             }
-            var dstParent = new GameObject("Asset_" + conf.SrcGameObj.name);
-            dstParent.transform.parent = conf.SrcGameObj.transform.parent;
-            dstParent.transform.SetPositionAndRotation(srcTrans.position, srcTrans.rotation);
+
+            var dstParent = srcTrans.parent;
             var newTransforms = new UniqueParentTransformList();
             foreach (var fbx in fbxs)
             {
                 var srcObj = AssetDatabase.LoadAssetAtPath<GameObject>(PathUtil.FullPathToAssetsPath(fbx));
                 if (srcObj == null) continue;
-                var newObj = Object.Instantiate(srcObj, srcTrans.position, srcTrans.rotation, dstParent.transform);
+                var newObj = Object.Instantiate(srcObj, srcTrans.position, srcTrans.rotation, dstParent);
                 newObj.name = srcObj.name;
                 newTransforms.Add(newObj.transform);
             }
@@ -117,6 +125,16 @@ namespace PLATEAU.CityAdjust.ConvertToAsset
                 if (r.GetComponent<MeshCollider>() != null) continue;
                 r.gameObject.AddComponent<MeshCollider>();
             }
+            
+            // 元のゲームオブジェクトの削除
+            var srcArr = srcTransforms.Get.ToArray();
+            foreach (var s in srcArr)
+            {
+                Object.DestroyImmediate(s.gameObject);
+            }
+
+            Selection.objects = newTransforms.Get.Select(t => (Object)t.gameObject).ToArray();
+            EditorSceneManager.MarkSceneDirty(SceneManager.GetActiveScene());
 
             Dialogue.Display("Assetsへの保存が完了しました！", "OK");
             
@@ -125,5 +143,22 @@ namespace PLATEAU.CityAdjust.ConvertToAsset
 #endif
         }
         
+        /// <summary>
+        /// エクスポートしたFBXにはNormalがないので、そのままインポートすると「ノーマルがないので計算します」という警告がたくさん出ます。
+        /// これを抑制するため、インポート設定のノーマルを「計算する」に変更します。
+        /// </summary>
+        private static void AdjustFbxImportSettings(string targetFolderPath)
+        {
+            string[] fbxFiles = Directory.GetFiles(targetFolderPath, "*.fbx", SearchOption.AllDirectories);
+
+            foreach (string fbxPath in fbxFiles)
+            {
+                ModelImporter importer = AssetImporter.GetAtPath(PathUtil.FullPathToAssetsPath(fbxPath)) as ModelImporter;
+                if (importer != null)
+                {
+                    importer.importNormals = ModelImporterNormals.Calculate;
+                }
+            }
+        }
     }
 }

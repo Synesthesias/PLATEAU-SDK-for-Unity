@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using PLATEAU.CityExport.ModelConvert.SubMeshConvert;
+﻿using PLATEAU.CityExport.ModelConvert.SubMeshConvert;
 using PLATEAU.CityInfo;
 using PLATEAU.Native;
 using PLATEAU.PolygonMesh;

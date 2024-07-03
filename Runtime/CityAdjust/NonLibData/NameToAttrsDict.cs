@@ -2,7 +2,6 @@ using PLATEAU.CityInfo;
 using PLATEAU.Util;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
 
 namespace PLATEAU.CityAdjust.NonLibData
 {
@@ -35,20 +34,16 @@ namespace PLATEAU.CityAdjust.NonLibData
         {
             target.BfsExec(trans =>
             {
+                var key = new NonLibKeyName(trans);
+                if (!data.ContainsKey(key)) return NextSearchFlow.Continue;
                 var dstAttr = trans.GetComponent<PLATEAUCityObjectGroup>();
                 if (dstAttr == null)
                 {
                     dstAttr = trans.gameObject.AddComponent<PLATEAUCityObjectGroup>();
                 }
 
-                if (data.TryGetValue(new NonLibKeyName(trans), out var srcAttr))
-                {
-                    dstAttr.Init(srcAttr.CityObjects, srcAttr.InfoForToolkits, srcAttr.Granularity, srcAttr.Lod);
-                }
-                else
-                {
-                    Debug.LogWarning("srcAttr is not found.");
-                }
+                var srcAttr = data[key];
+                dstAttr.Init(srcAttr.CityObjects, srcAttr.InfoForToolkits, srcAttr.Granularity, srcAttr.Lod);
                 
                 return NextSearchFlow.Continue;
             });
