@@ -25,9 +25,13 @@ namespace PLATEAU.RoadNetwork
         private List<RnLink> links = new List<RnLink>();
         private List<RnNode> nodes = new List<RnNode>();
 
+        private List<RnLineString> sideWalks = new List<RnLineString>();
+
         public IReadOnlyList<RnLink> Links => links;
 
         public IReadOnlyList<RnNode> Nodes => nodes;
+
+        public IReadOnlyList<RnLineString> SideWalks => sideWalks;
 
         // #TODO : 一時的にモデル内部に用意する(ビルドするたびにリセットされないように)
         // シリアライズ用フィールド
@@ -107,26 +111,14 @@ namespace PLATEAU.RoadNetwork
             return CollectAllWays().Select(w => w.LineString).Distinct();
         }
 
-        //public void DebugIdentify()
-        //{
-        //    for (var i = 0; i < Nodes.Count; i++)
-        //        Nodes[i].MyId = new RnID<RoadNetworkDataNode>(i);
+        public void AddWalkRoad(RnLineString walkRoad)
+        {
+            if (sideWalks.Contains(walkRoad))
+                return;
 
-        //    for (var i = 0; i < Links.Count; i++)
-        //        Links[i].MyId = new RnID<RoadNetworkDataLink>(i);
+            sideWalks.Add(walkRoad);
+        }
 
-        //    var allLanes = CollectAllLanes().ToList();
-        //    for (var i = 0; i < allLanes.Count; i++)
-        //        allLanes[i].MyId = new RnID<RoadNetworkDataLane>(i);
-
-        //    var allWays = CollectAllWays().ToList();
-        //    for (var i = 0; i < allWays.Count; i++)
-        //        allWays[i].MyId = new RnID<RoadNetworkDataWay>(i);
-
-        //    var allLineStrings = CollectAllLineStrings().ToList();
-        //    for (var i = 0; i < allLineStrings.Count; i++)
-        //        allLineStrings[i].MyId = new RnID<RoadNetworkDataLineString>(i);
-        //}
         public void Serialize()
         {
             var serializer = new RoadNetworkSerializer();

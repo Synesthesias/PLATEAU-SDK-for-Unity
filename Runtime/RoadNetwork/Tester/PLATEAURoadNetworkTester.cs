@@ -200,33 +200,40 @@ namespace PLATEAU.RoadNetwork
             foreach (var c in mergedConvertedCityObjects)
             {
                 var root = c.CityObjects.rootCityObjects[0];
-                bool IsTarget()
+                bool IsTarget(out int lodLevel)
                 {
+                    lodLevel = 0;
                     // LOD1
                     if (root.AttributesMap.TryGetValue("tran:class", out var tranClass))
                     {
                         if (tranClass.StringValue == "道路")
+                        {
+                            lodLevel = 1;
                             return true;
+                        }
                     }
 
                     if (root.AttributesMap.TryGetValue("tran:function", out var tranFunction))
                     {
                         if (new string[] { "車道部", "車道交差部" }.Contains(tranFunction.StringValue))
+                        {
+                            lodLevel = 3;
                             return true;
+                        }
                     }
 
                     return false;
                 }
 
-                if (IsTarget() == false)
+                if (IsTarget(out var lodLevel) == false)
                     continue;
+
                 foreach (var mesh in c.Meshes)
                 {
                     foreach (var s in mesh.SubMeshes)
                     {
                         var vertices = GeoGraph2D.ComputeMeshOutlineVertices(mesh, s, a => a.Xz(), epsilon);
-                        ret.Add(new RoadNetworkTranMesh(c.CityObjectGroup, vertices));
-
+                        ret.Add(new RoadNetworkTranMesh(c.CityObjectGroup, lodLevel, vertices));
                     }
                 }
             }

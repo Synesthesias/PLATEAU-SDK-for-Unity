@@ -101,6 +101,13 @@ namespace PLATEAU.RoadNetwork.Drawer
         }
         [SerializeField] private LaneOption laneOp = new LaneOption();
 
+        [Serializable]
+        private class SideWalkOption : DrawOption
+        {
+
+        }
+        [SerializeField] private SideWalkOption sideWalkRoadOp = new SideWalkOption();
+
         // --------------------
         // end:フィールド
         // --------------------
@@ -289,6 +296,13 @@ namespace PLATEAU.RoadNetwork.Drawer
                 //}
 
 
+            }
+
+            foreach (var sw in roadNetwork.SideWalks)
+            {
+                if (sideWalkRoadOp.visible == false)
+                    break;
+                DrawWay(new RnWay(sw), color: sideWalkRoadOp.color);
             }
         }
     }

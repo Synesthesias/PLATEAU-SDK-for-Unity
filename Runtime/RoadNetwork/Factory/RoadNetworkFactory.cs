@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.Serialization;
 using CityObjectList = PLATEAU.CityInfo.CityObjectList;
 
 namespace PLATEAU.RoadNetwork.Factory
@@ -30,6 +31,8 @@ namespace PLATEAU.RoadNetwork.Factory
         [SerializeField] public float terminateAllowEdgeAngle = 20f;
         // 行き止まり検出判定時に開始線分と同一と判定する角度の許容量
         [SerializeField] public float terminateSkipEdgeAngle = 20f;
+        // Lod1の道の歩道サイズ
+        [SerializeField] public float lod1SideWalkSize = 3f;
 
         // --------------------
         // end:フィールド
@@ -149,7 +152,9 @@ namespace PLATEAU.RoadNetwork.Factory
         /// </summary>
         private class TranWork
         {
-            public PLATEAUCityObjectGroup TargetTran { get; set; }
+            public PLATEAUCityObjectGroup TargetTran { get; }
+
+            public int LodLevel { get; }
 
             // 時計回りに格納されている
             public RnWay Way { get; set; } = new RnWay();
@@ -195,6 +200,12 @@ namespace PLATEAU.RoadNetwork.Factory
                         default: return RoadType.Intersection;
                     }
                 }
+            }
+
+            public TranWork(PLATEAUCityObjectGroup target, int lodLevel)
+            {
+                TargetTran = target;
+                LodLevel = lodLevel;
             }
 
             public void Bind(RnLink link)
@@ -271,14 +282,51 @@ namespace PLATEAU.RoadNetwork.Factory
                 }
             }
 
-            public void BuildConnection()
+            public void BuildConnection(float lod1RoadSize, out List<RnLineString> sideWalkLineStrings)
             {
+                sideWalkLineStrings = new List<RnLineString>();
                 if (Link != null)
                 {
                     var nextTrans = Lanes.Select(w => w.NextBorder).Where(b => b != null).SelectMany(w => w.BothConnectedTrans).Distinct().ToList();
                     var prevTrans = Lanes.Select(w => w.PrevBorder).Where(b => b != null).SelectMany(w => w.BothConnectedTrans).Distinct().ToList();
                     Link.Next = nextTrans.FirstOrDefault(t => t.Node != null)?.Node;
                     Link.Prev = prevTrans.FirstOrDefault(t => t.Node != null)?.Node;
+                    if (LodLevel == 1)
+                    {
+                        var leftLane = Link.MainLanes.FirstOrDefault();
+                        var rightLane = Link.MainLanes.LastOrDefault();
+
+                        RnLineString MoveWay(RnWay way)
+                        {
+                            var origVertices = way.Vertices.ToList();
+
+                            for (var i = 0; i < way.Count; ++i)
+                            {
+                                var n = way.GetVertexNormal(i).normalized;
+                                var p = way.GetPoint(i);
+                                p.Vertex = p.Vertex - n * lod1RoadSize;
+                            }
+
+                            var points = origVertices.Select(v => new RnPoint(v)).ToList();
+                            points.Insert(0, way.GetPoint(0));
+                            points.Add(way.GetPoint(-1));
+                            return RnLineString.Create(points);
+                        }
+                        if (leftLane?.LeftWay != null)
+                        {
+                            var way = leftLane?.LeftWay;
+                            var ls = MoveWay(way);
+                            if (ls != null)
+                                sideWalkLineStrings.Add(ls);
+                        }
+                        if (rightLane?.RightWay != null)
+                        {
+                            var way = rightLane?.RightWay;
+                            var ls = MoveWay(way);
+                            if (ls != null)
+                                sideWalkLineStrings.Add(ls);
+                        }
+                    }
                 }
                 else if (Node != null)
                 {
@@ -452,7 +500,12 @@ namespace PLATEAU.RoadNetwork.Factory
                     Build(lineStringTable, tranWork, ret);
 
                 foreach (var tranWork in tranWorks)
-                    tranWork.BuildConnection();
+                {
+                    tranWork.BuildConnection(lod1SideWalkSize, out var ls);
+                    foreach (var l in ls)
+                        ret.AddWalkRoad(l);
+                }
+
                 //ret.DebugIdentify();
                 return Task.FromResult(ret);
             }
@@ -461,16 +514,6 @@ namespace PLATEAU.RoadNetwork.Factory
                 Debug.LogError(e);
                 throw;
             }
-        }
-
-        public async Task<RnModel> CreateNetworkAsync(IList<PLATEAUCityObjectGroup> targets)
-        {
-            var meshes = targets
-                .Select(c => new { c = c, col = c.GetComponent<MeshCollider>() })
-                .Where(c => c.col)
-                .Select(c => new RoadNetworkTranMesh(c.c, cellSize))
-                .ToList();
-            return await CreateNetworkAsync(meshes);
         }
 
         private void Build(LineStringTable lineStringTable, TranWork tranWork, RnModel ret)
@@ -603,7 +646,7 @@ namespace PLATEAU.RoadNetwork.Factory
             foreach (var item in targets)
             {
                 var cityObject = item.CityObjectGroup;
-                var linkOrNodeWork = new TranWork { TargetTran = cityObject };
+                var linkOrNodeWork = new TranWork(cityObject, item.LodLevel);
 
                 //var vertices = laneWork.LineString.Vertices;
                 var vertices = item.Vertices.Select(v => vertex2Points[v]).ToList();

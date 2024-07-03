@@ -15,31 +15,18 @@ namespace PLATEAU.RoadNetwork.Factory
         public PLATEAUCityObjectGroup CityObjectGroup { get; set; }
 
         [field: SerializeField]
+        public int LodLevel { get; set; }
+
+        [field: SerializeField]
         public List<Vector3> Vertices { get; set; }
 
         public bool visible = true;
 
-
-        public RoadNetworkTranMesh(PLATEAUCityObjectGroup cityObjectGroup, float epsilon = 0.1f)
+        public RoadNetworkTranMesh(PLATEAUCityObjectGroup cityObjectGroup, int lodLevel, List<Vector3> vertices)
         {
             CityObjectGroup = cityObjectGroup;
-            Vertices = BuildVertices(cityObjectGroup, epsilon);
-        }
-
-        public RoadNetworkTranMesh(PLATEAUCityObjectGroup cityObjectGroup, List<Vector3> vertices)
-        {
-            CityObjectGroup = cityObjectGroup;
+            LodLevel = lodLevel;
             Vertices = vertices;
-        }
-
-        private static List<Vector3> BuildVertices(PLATEAUCityObjectGroup cityObjectGroup, float epsilon = 0.1f)
-        {
-            if (!cityObjectGroup)
-                return new List<Vector3>();
-            var mesh = cityObjectGroup.GetComponent<MeshCollider>();
-            if (!mesh)
-                return new List<Vector3>();
-            return GeoGraph2D.ComputeMeshOutlineVertices(mesh.sharedMesh, v => v.Xz(), epsilon);
         }
     }
 }
