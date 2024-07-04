@@ -82,19 +82,36 @@ namespace PLATEAU.RoadNetwork.Factory
 
             private Dictionary<Vector3, RnPoint> Table { get; } = new Dictionary<Vector3, RnPoint>();
 
+            private Dictionary<Vector3Int, RnPoint> CellTable { get; } = new Dictionary<Vector3Int, RnPoint>();
+
+
             public Vertex2PointTable(float cellSize, IEnumerable<Vector3> vertices)
             {
                 // 頂点の一致判定のためにセル単位に切り捨て
                 CellSize = cellSize;
-                var cSize = Vector3.one * cellSize;
-
-                var table = new Dictionary<Vector3Int, RnPoint>();
                 foreach (var v in vertices)
                 {
-                    var cellNo = v.RevScaled(cSize).ToVector3Int();
-                    var point = table.GetValueOrCreate(cellNo, c => new RnPoint(v));
-                    Table[v] = point;
+                    Table[v] = Create(v);
                 }
+            }
+
+            public Vector3Int GetCell(Vector3 v)
+            {
+                return v.RevScaled(Vector3.one * CellSize).ToVector3Int();
+            }
+
+            public RnPoint Create(Vector3 v)
+            {
+                var cellNo = GetCell(v);
+                return CellTable.GetValueOrCreate(cellNo, c => new RnPoint(v));
+            }
+
+            public void ChangeVertex(RnPoint v, Vector3 newVertex)
+            {
+                var cellNo = GetCell(v.Vertex);
+                CellTable.Remove(cellNo);
+                v.Vertex = newVertex;
+                CellTable[cellNo] = v;
             }
 
             public RnPoint this[Vector3 v]
@@ -282,7 +299,7 @@ namespace PLATEAU.RoadNetwork.Factory
                 }
             }
 
-            public void BuildConnection(float lod1RoadSize, out List<RnLineString> sideWalkLineStrings)
+            public void BuildConnection(Vertex2PointTable vertexTable, float lod1RoadSize, HashSet<RnPoint> visited, out List<RnLineString> sideWalkLineStrings)
             {
                 sideWalkLineStrings = new List<RnLineString>();
                 if (Link != null)
@@ -298,18 +315,64 @@ namespace PLATEAU.RoadNetwork.Factory
 
                         RnLineString MoveWay(RnWay way)
                         {
+                            if (lod1RoadSize <= 0f)
+                                return null;
+
                             var origVertices = way.Vertices.ToList();
 
+                            var normals = Enumerable.Range(0, way.Count)
+                                .Select(i => way.GetVertexNormal(i).normalized)
+                                .ToList();
+
+                            // 元の線分 & 新しい線分の始点と終点を加えた線分が歩道分
+                            var points = origVertices.Select(v => new RnPoint(v)).ToList();
+
+
+                            // 始点/終点は除いて法線と逆方向に動かす
+                            var isAddFirst = visited.Contains(way.GetPoint(0));
+                            var isAddLast = visited.Contains(way.GetPoint(-1));
                             for (var i = 0; i < way.Count; ++i)
                             {
-                                var n = way.GetVertexNormal(i).normalized;
+                                var n = normals[i];
                                 var p = way.GetPoint(i);
-                                p.Vertex = p.Vertex - n * lod1RoadSize;
+                                if (visited.Contains(p) == false)
+                                {
+                                    p.Vertex -= n * lod1RoadSize;
+                                }
+                                else
+                                {
+                                    var copy = p.Vertex + n * lod1RoadSize;
+                                    var newP = new RnPoint(copy);
+                                    if (i == 0)
+                                        points.Insert(1, newP);
+                                    else if (i == way.Count - 1)
+                                        points.Insert(points.Count - 1, newP);
+                                }
+                                visited.Add(p);
                             }
 
-                            var points = origVertices.Select(v => new RnPoint(v)).ToList();
-                            points.Insert(0, way.GetPoint(0));
-                            points.Add(way.GetPoint(-1));
+                            if (isAddFirst == false)
+                            {
+                                points.Insert(0, way.GetPoint(0));
+                            }
+                            else
+                            {
+                                //var copy = origVertices[0] + normals[0] * lod1RoadSize;
+                                //var newP = vertexTable.Create(copy);
+                                //points.Insert(1, newP);
+                            }
+
+                            if (isAddLast == false)
+                            {
+                                points.Add(way.GetPoint(-1));
+                            }
+                            else
+                            {
+                                //var copy = origVertices[^1] + normals[^1] * lod1RoadSize;
+                                //var newP = vertexTable.Create(copy);
+                                //points.Insert(points.Count - 2, newP);
+
+                            }
                             return RnLineString.Create(points);
                         }
                         if (leftLane?.LeftWay != null)
@@ -499,9 +562,10 @@ namespace PLATEAU.RoadNetwork.Factory
                 foreach (var tranWork in tranWorks)
                     Build(lineStringTable, tranWork, ret);
 
+                var visited = new HashSet<RnPoint>();
                 foreach (var tranWork in tranWorks)
                 {
-                    tranWork.BuildConnection(lod1SideWalkSize, out var ls);
+                    tranWork.BuildConnection(vertex2Points, lod1SideWalkSize, visited, out var ls);
                     foreach (var l in ls)
                         ret.AddWalkRoad(l);
                 }
