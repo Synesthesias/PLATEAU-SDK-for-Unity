@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using PLATEAU.CityImport.Import.Convert.MaterialConvert;
 using PLATEAU.Util;
+using Unity.Collections;
 using UnityEngine;
 using UnityEngine.Rendering;
 using Mesh = UnityEngine.Mesh;
@@ -14,38 +15,39 @@ namespace PLATEAU.CityImport.Import.Convert
     /// </summary>
     internal class ConvertedMeshData
     {
-        private readonly Vector3[] vertices;
-        private readonly Vector2[] uv1;
-        private readonly Vector2[] uv4;
-        private readonly List<List<int>> subMeshTriangles;
-        public List<string> TextureUrls { get; }
-        public List<CityGML.Material> GmlMaterials { get; }
-        public List<int> GameMaterialIDs { get; }
+        public Vector3[] Vertices { get; }
+        public Vector2[] UV1 { get; }
+        public Vector2[] UV4 { get; }
+        public int[] Indices { get; }
+        public int[] SubMeshStarts { get; }
+        public int[] SubMeshLengths { get; }
+        public string[] TextureUrls { get; }
+        public CityGML.Material[] GmlMaterials { get; }
+        public int[] GameMaterialIDs { get; }
 
-        private string Name { get; }
-        public int SubMeshCount => this.subMeshTriangles.Count;
+        public string Name { get; }
+        public int IndicesCount => Indices.Length;
+        public int SubMeshCount => SubMeshStarts.Length;
 
-        public ConvertedMeshData(Vector3[] vertices, Vector2[] uv1, Vector2[] uv4, List<List<int>> subMeshTriangles,
-            List<string> textureUrls, List<CityGML.Material> materials, List<int> gameMaterialIDs, string name)
+        public ConvertedMeshData(Vector3[] vertices, Vector2[] uv1, Vector2[] uv4, int[] indices, int[] subMeshStarts, int[] subMeshLengths,
+            string[] textureUrls, CityGML.Material[] materials, int[] gameMaterialIDs, string name)
         {
-            this.vertices = vertices;
-            this.uv1 = uv1;
-            this.uv4 = uv4;
-            this.subMeshTriangles = subMeshTriangles;
+            int numSubMesh = subMeshStarts.Length;
+            if (subMeshLengths.Length != numSubMesh || textureUrls.Length != numSubMesh ||
+                materials.Length != numSubMesh || gameMaterialIDs.Length != numSubMesh)
+            {
+                Debug.LogError("サブメッシュの数が一致しません。");
+            }
+            Vertices = vertices;
+            UV1 = uv1;
+            UV4 = uv4;
+            Indices = indices;
+            SubMeshStarts = subMeshStarts;
+            SubMeshLengths = subMeshLengths;
             TextureUrls = textureUrls;
             GmlMaterials = materials;
             GameMaterialIDs = gameMaterialIDs;
             Name = name;
-        }
-
-        /// <summary>
-        /// メッシュの形状を変更したあとに必要な後処理です。
-        /// </summary>
-        private static void PostProcess(Mesh mesh)
-        {
-            mesh.RecalculateNormals();
-            mesh.RecalculateTangents();
-            mesh.RecalculateBounds();
         }
 
         /// <summary>
@@ -55,7 +57,8 @@ namespace PLATEAU.CityImport.Import.Convert
         public async Task<GameObject> PlaceToScene(Transform parentTrans,
             IDllSubMeshToUnityMaterialConverter materialConverter, Material fallbackMaterial, bool isActive)
         {
-            var mesh = GenerateUnityMesh();
+            // ここでメッシュを作ります
+            var mesh = new UnityMeshGenerator().Generate(this);
             if (mesh.vertexCount <= 0) return null;
             var meshObj = new GameObject(Name)
             {
@@ -83,32 +86,9 @@ namespace PLATEAU.CityImport.Import.Convert
             return meshObj;
         }
 
-        public int VerticesCount => this.vertices.Length;
-
-        /// <summary>
-        /// データをもとにUnity のメッシュを生成します。
-        /// </summary>
-        private Mesh GenerateUnityMesh()
-        {
-            var mesh = new Mesh
-            {
-                indexFormat = IndexFormat.UInt32,
-                vertices = this.vertices,
-                uv = this.uv1,
-                uv4 = this.uv4,
-                subMeshCount = this.subMeshTriangles.Count
-            };
-
-            // subMesh ごとに Indices(Triangles) を UnityのMeshにコピーします。
-            for (int i = 0; i < this.subMeshTriangles.Count; i++)
-            {
-                mesh.SetTriangles(this.subMeshTriangles[i], i);
-            }
-
-            PostProcess(mesh);
-            mesh.name = Name;
-            return mesh;
-        }
+        public int VerticesCount => this.Vertices.Length;
+        
+             
 
 
 
