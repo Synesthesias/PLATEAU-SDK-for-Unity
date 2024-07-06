@@ -33,6 +33,8 @@ namespace PLATEAU.RoadNetwork.Factory
         [SerializeField] public float terminateSkipEdgeAngle = 20f;
         // Lod1の道の歩道サイズ
         [SerializeField] public float lod1SideWalkSize = 3f;
+        // Lod3の歩道を追加するかどうか
+        [SerializeField] public bool addLod3SideWalk = true;
 
         // --------------------
         // end:フィールド
@@ -299,9 +301,56 @@ namespace PLATEAU.RoadNetwork.Factory
                 }
             }
 
-            public void BuildConnection(Vertex2PointTable vertexTable, float lod1RoadSize, HashSet<RnPoint> visited, out List<RnLineString> sideWalkLineStrings)
+            public class VertexInfo
             {
-                sideWalkLineStrings = new List<RnLineString>();
+                public Vector3 Position { get; set; }
+                public Vector3 Normal { get; set; }
+            }
+            public void BuildConnection(Vertex2PointTable vertexTable, float lod1RoadSize, Dictionary<RnPoint, VertexInfo> visited, out List<RnLineString> sideWalkLineStrings)
+            {
+                var lines = new List<RnLineString>();
+                void MoveWay(RnWay way)
+                {
+                    if (way == null)
+                        return;
+                    if (lod1RoadSize <= 0f)
+                        return;
+
+                    var origVertices = way.Vertices.ToList();
+
+                    var normals = Enumerable.Range(0, way.Count)
+                        .Select(i => way.GetVertexNormal(i).normalized)
+                        .ToList();
+
+                    // 元の線分 & 新しい線分の始点と終点を加えた線分が歩道分
+                    // var points = origVertices.Select(v => new RnPoint(v)).ToList(); //Enumerable.Range(startIndex, endIndex - startIndex).Select(v => new RnPoint(origVertices[v])).ToList();
+
+
+                    // 始点/終点は除いて法線と逆方向に動かす
+                    var startIndex = 0;//isAddFirst ? 1 : 0;
+                    var endIndex = way.Count;//isAddLast ? way.Count - 1 : way.Count;
+                    var points = new List<RnPoint> { };
+
+                    foreach (var i in Enumerable.Range(0, way.Count))
+                    {
+                        var p = way.GetPoint(i);
+                        var n = normals[i];
+                        if (visited.ContainsKey(p) == false)
+                        {
+                            var last = p.Vertex;
+                            p.Vertex -= n * lod1RoadSize;
+                            visited[p] = new VertexInfo { Normal = n, Position = last };
+                            points.Add(new RnPoint(last));
+                        }
+                        else
+                        {
+                            var last = visited[p];
+                            points.Add(new RnPoint(last.Position));
+
+                        }
+                    }
+                    lines.Add(RnLineString.Create(points));
+                }
                 if (Link != null)
                 {
                     var nextTrans = Lanes.Select(w => w.NextBorder).Where(b => b != null).SelectMany(w => w.BothConnectedTrans).Distinct().ToList();
@@ -312,83 +361,8 @@ namespace PLATEAU.RoadNetwork.Factory
                     {
                         var leftLane = Link.MainLanes.FirstOrDefault();
                         var rightLane = Link.MainLanes.LastOrDefault();
-
-                        RnLineString MoveWay(RnWay way)
-                        {
-                            if (lod1RoadSize <= 0f)
-                                return null;
-
-                            var origVertices = way.Vertices.ToList();
-
-                            var normals = Enumerable.Range(0, way.Count)
-                                .Select(i => way.GetVertexNormal(i).normalized)
-                                .ToList();
-
-                            // 元の線分 & 新しい線分の始点と終点を加えた線分が歩道分
-                            var points = origVertices.Select(v => new RnPoint(v)).ToList();
-
-
-                            // 始点/終点は除いて法線と逆方向に動かす
-                            var isAddFirst = visited.Contains(way.GetPoint(0));
-                            var isAddLast = visited.Contains(way.GetPoint(-1));
-                            for (var i = 0; i < way.Count; ++i)
-                            {
-                                var n = normals[i];
-                                var p = way.GetPoint(i);
-                                if (visited.Contains(p) == false)
-                                {
-                                    p.Vertex -= n * lod1RoadSize;
-                                }
-                                else
-                                {
-                                    var copy = p.Vertex + n * lod1RoadSize;
-                                    var newP = new RnPoint(copy);
-                                    if (i == 0)
-                                        points.Insert(1, newP);
-                                    else if (i == way.Count - 1)
-                                        points.Insert(points.Count - 1, newP);
-                                }
-                                visited.Add(p);
-                            }
-
-                            if (isAddFirst == false)
-                            {
-                                points.Insert(0, way.GetPoint(0));
-                            }
-                            else
-                            {
-                                //var copy = origVertices[0] + normals[0] * lod1RoadSize;
-                                //var newP = vertexTable.Create(copy);
-                                //points.Insert(1, newP);
-                            }
-
-                            if (isAddLast == false)
-                            {
-                                points.Add(way.GetPoint(-1));
-                            }
-                            else
-                            {
-                                //var copy = origVertices[^1] + normals[^1] * lod1RoadSize;
-                                //var newP = vertexTable.Create(copy);
-                                //points.Insert(points.Count - 2, newP);
-
-                            }
-                            return RnLineString.Create(points);
-                        }
-                        if (leftLane?.LeftWay != null)
-                        {
-                            var way = leftLane?.LeftWay;
-                            var ls = MoveWay(way);
-                            if (ls != null)
-                                sideWalkLineStrings.Add(ls);
-                        }
-                        if (rightLane?.RightWay != null)
-                        {
-                            var way = rightLane?.RightWay;
-                            var ls = MoveWay(way);
-                            if (ls != null)
-                                sideWalkLineStrings.Add(ls);
-                        }
+                        MoveWay(leftLane?.LeftWay);
+                        MoveWay(rightLane?.RightWay);
                     }
                 }
                 else if (Node != null)
@@ -399,14 +373,17 @@ namespace PLATEAU.RoadNetwork.Factory
                         {
                             if (l.Link == null)
                                 continue;
-                            Node.Neighbors.Add(new RnNeighbor
-                            {
-                                Link = l.Link,
-                                Border = b.Way
-                            });
+                            Node.Neighbors.Add(new RnNeighbor { Link = l.Link, Border = b.Way });
                         }
                     }
+
+                    if (LodLevel == 1)
+                    {
+                        foreach (var l in Node.Lanes)
+                            MoveWay(l.LeftWay);
+                    }
                 }
+                sideWalkLineStrings = lines;
             }
         }
 
@@ -555,19 +532,30 @@ namespace PLATEAU.RoadNetwork.Factory
             try
             {
                 var ret = new RnModel();
-                var vertex2Points = new Vertex2PointTable(cellSize, targets.SelectMany(v => v.Vertices));
+                var roadTarget = targets.Where(t => t.IsRoad).ToList();
+                var vertex2Points = new Vertex2PointTable(cellSize, roadTarget.SelectMany(v => v.Vertices));
                 var lineStringTable = new LineStringTable();
-                var tranWorks = CreateTranWorks(targets, vertex2Points, lineStringTable, out var cell2Groups);
+                var tranWorks = CreateTranWorks(roadTarget, vertex2Points, lineStringTable, out var cell2Groups);
 
                 foreach (var tranWork in tranWorks)
                     Build(lineStringTable, tranWork, ret);
 
-                var visited = new HashSet<RnPoint>();
+                var visited = new Dictionary<RnPoint, TranWork.VertexInfo>();
                 foreach (var tranWork in tranWorks)
                 {
                     tranWork.BuildConnection(vertex2Points, lod1SideWalkSize, visited, out var ls);
                     foreach (var l in ls)
                         ret.AddWalkRoad(l);
+                }
+
+                if (addLod3SideWalk)
+                {
+                    foreach (var sideWalk in targets.Where(t => t.IsRoad == false))
+                    {
+                        var lines = sideWalk.Vertices.Select(v => new RnPoint(v));
+                        var lineString = lineStringTable.Create(lines, out bool isReverse);
+                        ret.AddWalkRoad(lineString);
+                    }
                 }
 
                 //ret.DebugIdentify();

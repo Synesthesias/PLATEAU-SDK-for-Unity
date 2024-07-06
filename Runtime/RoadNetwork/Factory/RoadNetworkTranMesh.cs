@@ -20,11 +20,16 @@ namespace PLATEAU.RoadNetwork.Factory
         [field: SerializeField]
         public List<Vector3> Vertices { get; set; }
 
+        // 道路か歩道かどうか
+        [field: SerializeField]
+        public bool IsRoad { get; set; }
+
         public bool visible = true;
 
-        public RoadNetworkTranMesh(PLATEAUCityObjectGroup cityObjectGroup, int lodLevel, List<Vector3> vertices)
+        public RoadNetworkTranMesh(PLATEAUCityObjectGroup cityObjectGroup, bool isRoad, int lodLevel, List<Vector3> vertices)
         {
             CityObjectGroup = cityObjectGroup;
+            IsRoad = isRoad;
             LodLevel = lodLevel;
             Vertices = vertices;
         }
