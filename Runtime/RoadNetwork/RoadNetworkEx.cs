@@ -49,7 +49,7 @@ namespace PLATEAU.RoadNetwork
             var instancedCityModelDict = new InstancedCityModelDict();
             instancedCityModelDict.ComposeFrom(conf.SrcTransforms);
 
-            var unityMeshToDllSubMeshConverter = new UnityMeshToDllSubMeshWithGameMaterial();
+            var unityMeshToDllSubMeshConverter = new GameMaterialIDRegistry();
 
             // ゲームオブジェクトを共通ライブラリのModelに変換します。
             using var srcModel = UnityMeshToDllModelConverter.Convert(

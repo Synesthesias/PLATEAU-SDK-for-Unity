@@ -7,16 +7,16 @@ namespace PLATEAU.CityImport.Import.Convert.MaterialConvert
 {
     /// <summary>
     /// 共通ライブラリのSubMeshをUnityのマテリアルに変換する方法の1つを提供します。
-    /// その方法とは、事前に記録したUnityのマテリアルをインデックスから復元します。
+    /// その方法とは、<see cref="GameMaterialIDRegistry"/>とゲームマテリアルIDからマテリアルを探して復元んします。
     /// </summary>
-    internal class DllSubMeshToUnityMaterialByGameMaterial : IDllSubMeshToUnityMaterialConverter
+    internal class RecoverFromGameMaterialID : IDllSubMeshToUnityMaterialConverter
     {
         /// <summary>
         /// 共通ライブラリに変換したときの情報を元にマテリアルを復元します。
         /// </summary>
-        private readonly UnityMeshToDllSubMeshWithGameMaterial toDllMatConverter;
+        private readonly GameMaterialIDRegistry toDllMatConverter;
 
-        public DllSubMeshToUnityMaterialByGameMaterial(UnityMeshToDllSubMeshWithGameMaterial toDllMatConverter)
+        public RecoverFromGameMaterialID(GameMaterialIDRegistry toDllMatConverter)
         {
             this.toDllMatConverter = toDllMatConverter;
         }

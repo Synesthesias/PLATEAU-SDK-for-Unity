@@ -20,7 +20,7 @@ namespace PLATEAU.CityAdjust.MaterialAdjust.Executor.Process
             this.conf = conf;
         }
         
-        public async Task<Result<GranularityConvertResult>> ExecAsync(UniqueParentTransformList targetTrans, MAGranularity dstGranularity, IMACondition maCondition)
+        public async Task<Result<PlaceToSceneResult>> ExecAsync(UniqueParentTransformList targetTrans, MAGranularity dstGranularity, IMACondition maCondition)
         {
             
                 
@@ -39,10 +39,10 @@ namespace PLATEAU.CityAdjust.MaterialAdjust.Executor.Process
             if(!composeResult.GeneratedRootTransforms.Get.Any())
             {
                 Debug.LogWarning("結合後のゲームオブジェクトが存在しません。");
-                return new Result<GranularityConvertResult>(false, composeResult);
+                return new Result<PlaceToSceneResult>(false, composeResult);
             }
 
-            return new Result<GranularityConvertResult>(composeResult.IsSucceed, composeResult);
+            return new Result<PlaceToSceneResult>(composeResult.IsSucceed, composeResult);
         }
     }
 }

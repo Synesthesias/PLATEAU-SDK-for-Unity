@@ -13,7 +13,7 @@ namespace PLATEAU.CityAdjust.MaterialAdjust.Executor.Process
     /// </summary>
     internal class MADecomposer
     {
-        public async Task<Result<GranularityConvertResult>> ExecAsync(MAExecutorConf conf, Transform currentTarget, IMACondition maCondition)
+        public async Task<Result<PlaceToSceneResult>> ExecAsync(MAExecutorConf conf, Transform currentTarget, IMACondition maCondition)
         {
             var decomposer = new CityGranularityConverter();
             var decomposeConf = conf.Copy();
@@ -23,9 +23,9 @@ namespace PLATEAU.CityAdjust.MaterialAdjust.Executor.Process
             if (!decomposeResult.IsSucceed)
             {
                 Debug.LogError("ゲームオブジェクトの分解に失敗しました");
-                return new Result<GranularityConvertResult>(false, null);
+                return new Result<PlaceToSceneResult>(false, null);
             }
-            return new Result<GranularityConvertResult>(true, decomposeResult);
+            return new Result<PlaceToSceneResult>(true, decomposeResult);
         }
     }
 }

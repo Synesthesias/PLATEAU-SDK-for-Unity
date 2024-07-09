@@ -2,6 +2,7 @@
 using PLATEAU.CityAdjust.MaterialAdjust;
 using PLATEAU.CityAdjust.MaterialAdjust.Executor;
 using PLATEAU.CityAdjust.MaterialAdjust.Executor.Process;
+using PLATEAU.CityAdjust.MaterialAdjust.ExecutorV2;
 using PLATEAU.Editor.Window.Common;
 using PLATEAU.Editor.Window.Main.Tab.AdjustGuiParts;
 using PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts;
@@ -184,9 +185,13 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
 
         private async Task ExecMaterialAdjustAsync()
         {
-            var executor = GenerateExecutor();
-            // 実行メイン
-            var result = await executor.Exec();
+            IMAExecutorV2 maExecutor = selectedCriterion switch
+            {
+                MaterialCriterion.ByType => new MAExecutorV2ByType(),
+                MaterialCriterion.ByAttribute => new MAExecutorV2ByAttr(),
+                _ => throw new Exception("Unknown Criterion")
+            };
+            var result = await maExecutor.ExecAsync(GenerateConf());
             
             // 完了後、GUIの選択オブジェクトを完了後に差し替えます
             if (DoDestroySrcObjs)
@@ -196,6 +201,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
                 clearSearchOnTargetChange = true;
                 if(SelectedObjects.Count == 0) IsSearched = false;
             }
+            
         }
 
         /// <summary>
@@ -254,7 +260,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
             return selectedCriterion switch
             {
                 MaterialCriterion.None => MAExecutorFactory.CreateGranularityExecutor(executorConf),
-                MaterialCriterion.ByType => MAExecutorFactory.CreateTypeExecutor(executorConf),
+                // MaterialCriterion.ByType => MAExecutorFactory.CreateTypeExecutor(executorConf),
                 MaterialCriterion.ByAttribute => MAExecutorFactory.CreateAttrExecutor((MAExecutorConfByAttr)executorConf),
                 _ => throw new ArgumentOutOfRangeException()
             };

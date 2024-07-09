@@ -30,12 +30,12 @@ namespace PLATEAU.GranularityConvert
         /// マテリアル分けを伴わない粒度変換であれば、このメソッドが直接利用されます。
         /// マテリアル分けを伴う粒度変換であれば、<see cref="MAExecutor"/>を介してこのメソッドが利用されます。
         /// </summary>
-        public async Task<GranularityConvertResult> ConvertProgressiveAsync(MAExecutorConf conf,
+        public async Task<PlaceToSceneResult> ConvertProgressiveAsync(MAExecutorConf conf,
             IMACondition maCondition)
         {
             
             var dstGranularity = conf.MeshGranularity;
-            var result = new GranularityConvertResult();
+            var result = new PlaceToSceneResult();
             using var progressBar = new ProgressBar();
 
             // === ここから分解
@@ -182,14 +182,14 @@ namespace PLATEAU.GranularityConvert
         /// <summary>
         /// 指定オブジェクトとその子を一括でまとめて共通ライブラリに渡して変換します。
         /// </summary>
-        public async Task<GranularityConvertResult> ConvertAsync(GranularityConvertOptionUnity conf,
+        public async Task<PlaceToSceneResult> ConvertAsync(GranularityConvertOptionUnity conf,
             IProgressBar progressBar)
         {
             try
             {
                 if (!conf.IsValid())
                 {
-                    return GranularityConvertResult.Fail();
+                    return PlaceToSceneResult.Fail();
                 }
 
                 progressBar.Display("属性情報を取得中...", 0.1f);
@@ -206,7 +206,7 @@ namespace PLATEAU.GranularityConvert
 
                 progressBar.Display("ゲームオブジェクトを共通モデルに変換中...", 0.2f);
 
-                var unityMeshToDllSubMeshConverter = new UnityMeshToDllSubMeshWithGameMaterial();
+                var unityMeshToDllSubMeshConverter = new GameMaterialIDRegistry();
 
                 // ゲームオブジェクトを共通ライブラリのModelに変換します。
                 using var srcModel = UnityMeshToDllModelConverter.Convert(
@@ -231,7 +231,7 @@ namespace PLATEAU.GranularityConvert
                 var commonParent = CalcCommonParent(conf.SrcTransforms.Get.ToArray());
 
                 var materialConverterToUnity =
-                    new DllSubMeshToUnityMaterialByGameMaterial(unityMeshToDllSubMeshConverter);
+                    new RecoverFromGameMaterialID(unityMeshToDllSubMeshConverter);
                 var placeToSceneConf =
                     new PlaceToSceneConfig(materialConverterToUnity, true, null, null, infoForToolkits,
                         conf.NativeOption.Granularity);
@@ -255,7 +255,7 @@ namespace PLATEAU.GranularityConvert
                 if (result.GeneratedRootTransforms.Count <= 0)
                 {
                     Dialogue.Display("変換対象がありません。\nアクティブなオブジェクトを選択してください。", "OK");
-                    return GranularityConvertResult.Fail();
+                    return PlaceToSceneResult.Fail();
                 }
 
                 // 覚えておいたものを復元します
@@ -274,13 +274,13 @@ namespace PLATEAU.GranularityConvert
             catch (Exception e)
             {
                 Debug.LogError($"{e.Message}\n{e.StackTrace}");
-                return GranularityConvertResult.Fail();
+                return PlaceToSceneResult.Fail();
             }
         }
 
 
         /// <summary> 前バージョンとの互換性のために残しておきます </summary>
-        public async Task<GranularityConvertResult> ConvertAsync(GranularityConvertOptionUnity conf)
+        public async Task<PlaceToSceneResult> ConvertAsync(GranularityConvertOptionUnity conf)
         {
             return await ConvertAsync(conf, new ProgressBar(""));
         }

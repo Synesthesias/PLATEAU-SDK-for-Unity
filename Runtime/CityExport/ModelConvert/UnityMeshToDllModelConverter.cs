@@ -227,6 +227,7 @@ namespace PLATEAU.CityExport.ModelConvert
                 var color = unityColors[i];
                 vertexColors[i] = new PlateauVector3d(color.r, color.g, color.b);
             }
+            
 
             if (invertMesh)
             {
@@ -256,6 +257,21 @@ namespace PLATEAU.CityExport.ModelConvert
             // C++側で特別にテクスチャを除く処理は不必要だからです。
             
             dllMesh.SetVertexColors(vertexColors);
+            
+            
+            // CityObjectListを追加します
+            var cog = meshRenderer.GetComponent<PLATEAUCityObjectGroup>();
+            if (cog != null)
+            {
+                using var col = CityObjectList.Create();
+                foreach (var co in cog.GetAllCityObjects())
+                {
+                    var objId = co.CityObjectIndex;
+                    col.Add(new CityObjectIndex(objId[0], objId[1]), co.GmlID);
+                }
+
+                dllMesh.CityObjectList = col;
+            }
             
             return dllMesh;
         }

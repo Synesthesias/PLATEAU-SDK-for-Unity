@@ -141,7 +141,7 @@ namespace PLATEAU.CityInfo
         {
             public string NodeName { get; }
             public PredefinedCityModelPackage Package { get; }
-            private ReadOnlyCollection<CityObjectType> Types { get; }
+            public ReadOnlyCollection<CityObjectType> Types { get; }
             public ReadOnlyCollection<Node> Children { get; }
             public Node Parent { get; private set; }
 
