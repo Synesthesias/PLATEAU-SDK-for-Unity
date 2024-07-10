@@ -228,10 +228,6 @@ namespace PLATEAU.CityExport.ModelConvert
                 vertexColors[i] = new PlateauVector3d(color.r, color.g, color.b);
             }
             
-            // error check
-            if(uv1Count != vertCount) Debug.LogError("uv1 count does not match.");
-            if(uv4Count != vertCount) Debug.LogError("uv4 count does not match.");
-            if(vertColorCount != vertCount) Debug.LogError("vert color count does not match.");
 
             if (invertMesh)
             {
