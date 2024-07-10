@@ -21,9 +21,9 @@ namespace PLATEAU.CityImport.Import.Convert
             CopyVerticesAndUV(plateauMesh, out var unityVerts, out var unityUV1, out var unityUV4);
             CopySubMeshInfo(
                 plateauMesh,
-                out var triangles, out var subMeshStarts, out var subMeshLengths, out var texturePaths, out var materials,
+                out var subMeshTriangles, out var texturePaths, out var materials,
                 out var gameMaterialIDs);
-            var meshData = new ConvertedMeshData(unityVerts, unityUV1, unityUV4,  triangles, subMeshStarts, subMeshLengths, texturePaths, materials, gameMaterialIDs, meshName);
+            var meshData = new ConvertedMeshData(unityVerts, unityUV1, unityUV4, subMeshTriangles, texturePaths, materials, gameMaterialIDs, meshName);
             return meshData;
         }
 
@@ -47,38 +47,31 @@ namespace PLATEAU.CityImport.Import.Convert
 
         private static void CopySubMeshInfo(
             PolygonMesh.Mesh plateauMesh,
-            out int[] indices, out int[] subMeshStarts, out int[] subMeshLengths, out string[] texturePaths, out CityGML.Material[] materials,
-            out int[] gameMaterialIDs)
+            out List<List<int>> subMeshTriangles, out List<string> texturePaths, out List<CityGML.Material> materials,
+            out List<int> gameMaterialIDs)
         {
-            int subMeshCount = plateauMesh.SubMeshCount;
-            int indicesCount = plateauMesh.IndicesCount;
-            indices = new int[indicesCount];
-            subMeshStarts = new int[subMeshCount];
-            subMeshLengths = new int[subMeshCount];
-            texturePaths = new string[subMeshCount];
-            materials = new CityGML.Material[subMeshCount];
-            gameMaterialIDs = new int[subMeshCount];
-
-            
-            for (int i = 0; i < indicesCount; i++)
-            {
-                indices[i] = plateauMesh.GetIndiceAt(i);
-            }
-            
-            for (int i = 0; i < subMeshCount; i++)
+            subMeshTriangles = new List<List<int>>();
+            texturePaths = new List<string>();
+            materials = new List<CityGML.Material>();
+            gameMaterialIDs = new List<int>();
+            int numSubMesh = plateauMesh.SubMeshCount;
+            for (int i = 0; i < numSubMesh; i++)
             {
                 var subMesh = plateauMesh.GetSubMeshAt(i);
-                int subMeshLength = subMesh.EndIndex - subMesh.StartIndex + 1;
-                if (subMeshLength % 3 != 0)
+                int sizeOfList = subMesh.EndIndex - subMesh.StartIndex + 1;
+                var subMeshIndices = new List<int>(sizeOfList);
+                if (sizeOfList % 3 != 0)
                 {
-                    throw new Exception($"三角形リストの要素数が3の倍数になりません。 num={subMeshLength}");
+                    throw new Exception($"三角形リストの要素数が3の倍数になりません。 num={sizeOfList}");
                 }
-
-                subMeshStarts[i] = subMesh.StartIndex;
-                subMeshLengths[i] = subMeshLength;
-                texturePaths[i] = subMesh.TexturePath;
-                materials[i] = subMesh.Material;
-                gameMaterialIDs[i] = subMesh.GameMaterialID;
+                for (int j = subMesh.StartIndex; j <= subMesh.EndIndex; j++)
+                {
+                    subMeshIndices.Add(plateauMesh.GetIndiceAt(j));
+                }
+                subMeshTriangles.Add(subMeshIndices);
+                texturePaths.Add(subMesh.TexturePath);
+                materials.Add(subMesh.Material);
+                gameMaterialIDs.Add(subMesh.GameMaterialID);
             }
         }
     }
