@@ -270,7 +270,7 @@ namespace PLATEAU.CityImport.Import.Convert
             {
                 return cityModel.GetCityObjectById(id);
             }
-            catch (KeyNotFoundException ex)
+            catch (KeyNotFoundException )
             {
                 Debug.Log($"skipping because id {id} is not existing.");
             }
