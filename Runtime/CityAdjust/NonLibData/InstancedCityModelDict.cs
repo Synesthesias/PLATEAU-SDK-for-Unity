@@ -1,6 +1,7 @@
 using PLATEAU.CityInfo;
 using PLATEAU.Util;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace PLATEAU.CityAdjust.NonLibData
 {
@@ -27,7 +28,7 @@ namespace PLATEAU.CityAdjust.NonLibData
                 {
                     var cityModel = trans.GetComponent<PLATEAUInstancedCityModel>();
                     if (cityModel == null) return NextSearchFlow.Continue;
-                    data.Add(new NonLibKeyName(trans), cityModel);
+                    data.Add(new NonLibKeyName(trans, srcTransforms.Get.ToArray()), cityModel);
                     return NextSearchFlow.Continue;
                 });
         }
@@ -42,7 +43,7 @@ namespace PLATEAU.CityAdjust.NonLibData
             rootTransforms.BfsExec(
                 trans =>
                 {
-                    var key = new NonLibKeyName(trans);
+                    var key = new NonLibKeyName(trans, rootTransforms.Get.ToArray());
                     if (!remaining.ContainsKey(key)) return NextSearchFlow.Continue;
                     var newModel = trans.gameObject.AddComponent<PLATEAUInstancedCityModel>();
                     newModel.CopyFrom(remaining[key]);

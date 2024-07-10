@@ -1,6 +1,7 @@
 using PLATEAU.CityImport.Import.Convert.MaterialConvert;
 using PLATEAU.Util;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 #if UNITY_EDITOR
 using UnityEditor;
@@ -29,16 +30,16 @@ namespace PLATEAU.CityAdjust.NonLibData
                 var renderer = trans.GetComponent<Renderer>();
                 if (renderer != null)
                 {
-                    Add(trans, renderer.sharedMaterials);
+                    Add(trans, renderer.sharedMaterials, src);
                 }
 
                 return NextSearchFlow.Continue;
             });
         }
 
-        private void Add(Transform trans, Material[] materials)
+        private void Add(Transform trans, Material[] materials, UniqueParentTransformList baseTransforms)
         {
-            var key = new NonLibKeyName(trans);
+            var key = new NonLibKeyName(trans, baseTransforms.Get.ToArray());
             if (data.TryAdd(key, materials))
             {
                 return;
@@ -47,7 +48,7 @@ namespace PLATEAU.CityAdjust.NonLibData
             // 重複時はログを出します。ただし、ToolkitsのAutoTexturingで多数出てくる名前はよしとします。
             if (key.ObjName != "FloorEmission" && key.ObjName != "ObstacleLight")
             {
-                Debug.LogError($"Duplicate game object name: {key}");
+                Debug.Log($"{nameof(NameToMaterialsDict)} : Skipping duplicate game object name: {key}");
             }
 
         }
@@ -73,7 +74,7 @@ namespace PLATEAU.CityAdjust.NonLibData
                 if (renderer != null)
                 {
                     var nextMaterials = renderer.sharedMaterials;
-                    if (data.TryGetValue(new NonLibKeyName(dst.transform), out var materials))
+                    if (data.TryGetValue(new NonLibKeyName(dst.transform, target.Get.ToArray()), out var materials))
                     {
                         for (int i = 0; i < renderer.sharedMaterials.Length && i < materials.Length; i++)
                         {
