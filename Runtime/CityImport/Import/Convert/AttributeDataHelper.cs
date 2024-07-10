@@ -272,7 +272,7 @@ namespace PLATEAU.CityImport.Import.Convert
             }
             catch (KeyNotFoundException ex)
             {
-                Debug.LogWarning($"{ex.Message}\n{ex.StackTrace}");
+                Debug.Log($"skipping because id {id} is not existing.");
             }
             return null;
         }
