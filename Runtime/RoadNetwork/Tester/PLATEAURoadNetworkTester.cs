@@ -84,5 +84,9 @@ namespace PLATEAU.RoadNetwork
             }
         }
 
+        public RoadNetworkDataGetter GetRoadNetworkDataGetter()
+        {
+            return RoadNetwork.CreateGetter();
+        }
     }
 }
