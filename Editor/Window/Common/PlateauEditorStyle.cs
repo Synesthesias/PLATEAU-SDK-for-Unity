@@ -889,7 +889,7 @@ namespace PLATEAU.Editor.Window.Common
         /// <summary>
         /// Unityのテーマがライトかダークかによって色を切り替えるクラスです。
         /// </summary>
-        private class ColorLightDark
+        public class ColorLightDark
         {
             private readonly Color lightModeColor;
             private readonly Color darkModeColor;
