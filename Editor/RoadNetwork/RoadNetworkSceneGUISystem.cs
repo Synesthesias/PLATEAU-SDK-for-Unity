@@ -1,6 +1,7 @@
 ﻿using PLATEAU.CityGML;
 using PLATEAU.RoadNetwork;
 using PLATEAU.RoadNetwork.Data;
+using PLATEAU.Util;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -232,6 +233,10 @@ namespace PLATEAU.Editor.RoadNetwork
             if (network == null)
                 return;
 
+            // 仮　簡易編集機能モード時は旧ハンドル描画、管理システムは利用しない
+            if (editorSystem.CurrentEditMode == RoadNetworkEditMode.SimpleEdit)
+                return;
+
             if (nodeTex == null)
             {
                 nodeTex = AssetDatabase.LoadAssetAtPath<Texture2D>(nodeTexPath);
@@ -350,6 +355,7 @@ namespace PLATEAU.Editor.RoadNetwork
                 }
             }
 
+            HashSet<RnLink> drawLink = new HashSet<RnLink>();
             // link
             foreach (var link in network.Links)
             {
@@ -373,6 +379,10 @@ namespace PLATEAU.Editor.RoadNetwork
                     foreach (var way in lane.BothWays)
                     {
                         state.ResetLoopOperationFlags();
+
+                        // 仮
+                        drawLink.Add(link);
+
                         if (state.isBreak) break;
                         if (state.isContinue) continue;
 
@@ -389,6 +399,24 @@ namespace PLATEAU.Editor.RoadNetwork
                 }
             }
 
+            foreach (var link in drawLink)
+            {
+                // lane
+                foreach (var lane in link.MainLanes)
+                {
+                    // bothway
+                    foreach (var way in lane.BothWays)
+                    {
+                        // 仮　laneのbothwayを描画する
+                        //var pre = Gizmos.color;
+                        //Gizmos.color = Color.green;
+                        //Gizmos.DrawLineStrip(way.Vertices.ToArray(), false);
+                        //Gizmos.color = pre;
+                        DebugEx.DrawLines(way.Vertices.ToArray(), false, Color.green);
+                    }
+
+                }
+            }
             return state;
         }
 
@@ -509,6 +537,7 @@ namespace PLATEAU.Editor.RoadNetwork
                     };
                     state.isDirtyTarget = true;
                 }
+
             }
 
             if (editorSystem.CurrentEditMode == RoadNetworkEditMode.EditLaneShape)

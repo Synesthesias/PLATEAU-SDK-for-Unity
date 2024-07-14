@@ -3,13 +3,13 @@ using PLATEAU.RoadNetwork.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
+using System.Text;
+using Unity.Plastic.Antlr3.Runtime;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Assertions;
-using UnityEngine.Experimental.Rendering;
 using UnityEngine.UIElements;
-using static PLATEAU.CityInfo.CityObjectList.Attributes;
-using static PLATEAU.Editor.RoadNetwork.RoadNetworkEditingSystem;
 
 namespace PLATEAU.Editor.RoadNetwork
 {
@@ -99,6 +99,8 @@ namespace PLATEAU.Editor.RoadNetwork
         AddNode,    // debugOperationの機能を個々に移してもいいかも
         EditLaneWidth,    // debugOperationの機能を個々に移してもいいかも
         AddMedianStrip,    // debugOperationの機能を個々に移してもいいかも
+        SimpleEdit,    // 専用ノードを用いた簡易編集機能
+        EidtRoad,    // 車線数変更
     }
 
     /// <summary>
@@ -178,10 +180,220 @@ namespace PLATEAU.Editor.RoadNetwork
         private RoadNetworkSimpleNodeGenerateModule simpleNodeGenerateModule;
         private RoadNetworkMedianStripGenerateModule medianStripGenerateModule;
 
+        private RoadNetworkSimpleEditSysModule simpleEditSysModule;
+
         // 道路ネットワーク関係のアセットを管理するクラス
         private RoadNetworkEditorAssets assets;
 
         private string debugOperationMode = "undef";
+
+        private const string roadNetworkEditingSystemObjName = "_RoadNetworkEditingSystemRoot";
+        private GameObject roadNetworkEditingSystemObjRoot;
+
+        public class EditorData<_BaseData>
+            where _BaseData : class
+        {
+            public EditorData(_BaseData point)
+            {
+                Assert.IsNotNull(point);
+                this.Ref = point;
+                this.userData = new List<object>();
+            }
+
+            /// <summary>
+            /// 頻繁に呼ばないように注意する
+            /// </summary>
+            /// <typeparam name="_Type"></typeparam>
+            /// <returns></returns>
+            public _Type GetSubData<_Type>()
+                where _Type : class
+            {
+                foreach (var item in userData)
+                {
+                    if (item is _Type)
+                        return (_Type)item;
+                }
+                return null;
+            }
+
+            /// <summary>
+            /// 追加を試みる
+            /// 既に同じ型が登録されている場合は不可
+            /// </summary>
+            /// <typeparam name="_Type"></typeparam>
+            /// <param name="data"></param>
+            /// <returns></returns>
+            public bool TryAdd<_Type>(_Type data)
+                where _Type : class
+            {
+                var isNull = GetSubData<_Type>() == null;
+                if (isNull)
+                {
+                    userData.Add(data);
+                    return true;
+                }
+                return false;
+            }
+
+            public _BaseData Ref { get; private set; }
+            List<object> userData;
+
+        }
+
+        public class PointEditorData
+        {
+            public PointEditorData(RnPoint point)
+            {
+                Assert.IsNotNull(point);
+                refPoint = point;
+                UpdateBasePosition();
+            }
+
+            /// <summary>
+            /// 基準位置の更新
+            /// </summary>
+            public void UpdateBasePosition()
+            {
+                basePosition = refPoint.Vertex;
+            }
+
+            /// <summary>
+            /// キャッシュに変更を適用する
+            /// </summary>
+            /// <param name="translate"></param>
+            public void Translate(in Vector3 translate)
+            {
+                cacheTranslate += translate;
+            }
+
+            //public void Scale(in Vector3 scale)
+            //{
+            //    cacheScale += scale;
+            //}
+
+            public void Apply()
+            {
+                refPoint.Vertex = basePosition + cacheTranslate;
+            }
+
+            // 参照中のポイント
+            private RnPoint refPoint;
+            // 基準の座標
+            private Vector3 basePosition;
+
+            private Vector3 cacheTranslate;
+            //private Vector3 cacheScale;
+        }
+
+        public class NodeEditorData
+        {
+            public NodeEditorData(GameObject gameObject)
+            {
+                Assert.IsNotNull(gameObject);
+                this.RefGameObject = gameObject;
+                UpdateBaseTransform();
+                PointWithWeight.Clear();
+            }
+
+            public void UpdateBaseTransform()
+            {
+                baseTransform = new CacheTransform(RefGameObject.transform);
+            }
+
+            public bool AddPoint(EditorData<RnPoint> point, float weight)
+            {
+                Assert.IsTrue(0 <= weight && weight <= 1.0f, "weight " + weight.ToString());
+                Assert.IsNotNull(point);
+                var subData = point.GetSubData<PointEditorData>();
+                Assert.IsNotNull(subData);
+                return PointWithWeight.TryAdd(point, (subData, weight));
+            }
+
+            public void RemovePoint(EditorData<RnPoint> point)
+            {
+                PointWithWeight.Remove(point);
+            }
+
+            public void SetPointWeight(EditorData<RnPoint> point, float weight)
+            {
+                var isSuc = PointWithWeight.TryGetValue(point, out var w);
+                if (isSuc)
+                {
+                    w.weight = weight;
+                }
+            }
+
+            public void ApplyTranslate()
+            {
+                var translate = RefGameObject.transform.position - baseTransform.position;
+                foreach (var item in PointWithWeight)
+                {
+                    var ptData = item.Value.data;
+                    ptData.Translate(translate * item.Value.weight);
+                }
+            }
+
+            private struct CacheTransform
+            {
+                public CacheTransform(Transform transform)
+                {
+                    position = transform.position;
+                }
+
+                public Vector3 position;
+            }
+            public GameObject RefGameObject;
+            private CacheTransform baseTransform;
+
+            private Dictionary<EditorData<RnPoint>, (PointEditorData data, float weight)> PointWithWeight { get; set; } =
+                new Dictionary<EditorData<RnPoint>, (PointEditorData, float)>();
+
+            public List<Connection> Connections { get; private set; } = new List<Connection>();
+
+        }
+        public class Connection
+        {
+            public Connection(NodeEditorData a, NodeEditorData b)
+            {
+                Assert.IsNotNull(a);
+                Assert.IsNotNull(b);
+                if (a.GetHashCode() > b.GetHashCode())
+                {
+                    A = a;
+                    B = b;
+                }
+                else
+                {
+                    A = b;
+                    B = a;
+                }
+            }
+
+            public override int GetHashCode()
+            {
+                return A.GetHashCode() + B.GetHashCode();
+            }
+
+            public NodeEditorData A { get; private set; }
+            public NodeEditorData B { get; private set; }
+
+            // Person オブジェクトの比較をカスタマイズするクラス
+            public class Comparer : IEqualityComparer<Connection>
+            {
+                public bool Equals(Connection x, Connection y)
+                {
+                    // 名前が同じ場合は同一とみなす
+                    return x.A == y.A && x.B == y.B;
+                }
+
+                public int GetHashCode(Connection obj)
+                {
+                    // 名前のハッシュコードを返す
+                    return obj.GetHashCode();
+                }
+            }
+         
+        }
 
         // refresh時にClaer()必要
         public class LaneEditCache
@@ -189,6 +401,7 @@ namespace PLATEAU.Editor.RoadNetwork
             public float Scale { get; set; }
             public RnLane BaseLane { get; set; }
         }
+
         private Dictionary<RnLane, LaneEditCache> keyValuePairs = new Dictionary<RnLane, LaneEditCache>();
 
         /// <summary>
@@ -203,7 +416,7 @@ namespace PLATEAU.Editor.RoadNetwork
             bool needIniteditOperation = editOperation == null;
             bool needInitEditor = uiDocEditor == null;
             bool needInitGUISystem = sceneGUISystem == null;
-
+            bool needInitGameObj = roadNetworkEditingSystemObjRoot == null;
 
             // 初期化 Initlaize()
             if (needIniteditOperation)
@@ -236,6 +449,33 @@ namespace PLATEAU.Editor.RoadNetwork
                 uiDocEditor.PostInitialize();
             }
 
+            if (needInitGameObj)
+            {
+                // 編集オブジェクトを選択中の場合は選択を解除する
+                var activeObj = Selection.activeGameObject;
+                while (activeObj != null)
+                {
+                    if (activeObj.name == roadNetworkEditingSystemObjName)
+                    {
+                        Selection.activeGameObject = null;
+                        break;
+                    }
+
+                    activeObj = activeObj.transform.parent?.gameObject;
+                }
+
+
+                // 既存の編集オブジェクトを削除
+                roadNetworkEditingSystemObjRoot = GameObject.Find(roadNetworkEditingSystemObjName);
+                if (roadNetworkEditingSystemObjRoot != null)
+                {
+                    GameObject.DestroyImmediate(roadNetworkEditingSystemObjRoot);
+                }
+
+                // 新規の編集オブジェクトを作成 
+                roadNetworkEditingSystemObjRoot = new GameObject(roadNetworkEditingSystemObjName, typeof(RoadNetworkEditorGizmos));
+            }
+
             // その他 初期化
 
             // 道路ネットワークの取得を試みる　自動設定機能
@@ -245,6 +485,7 @@ namespace PLATEAU.Editor.RoadNetwork
                 this.roadNetworkObject = roadNetworkObj;
                 Selection.activeGameObject = roadNetworkObj;
 
+                system.RoadNetworkObject = roadNetworkObj;
 
                 // 仮ポイントを　地形にスワップする
                 var r = roadNetworkObj.GetComponent<PLATEAURoadNetworkTester>();
@@ -266,11 +507,16 @@ namespace PLATEAU.Editor.RoadNetwork
                         }
                     }
                 }
+
+
+                simpleEditSysModule = new RoadNetworkSimpleEditSysModule(roadNetworkEditingSystemObjRoot, roadNetwork, system);
+                //simpleEditSysModule.Init();
+
+                simpleLaneGenerateModule = new RoadNetworkSimpleLaneGenerateModule();
+                simpleLinkGenerateModule = new RoadNetworkSimpleLinkGenerateModule();
+                simpleNodeGenerateModule = new RoadNetworkSimpleNodeGenerateModule();
             }
 
-            simpleLaneGenerateModule = new RoadNetworkSimpleLaneGenerateModule();
-            simpleLinkGenerateModule = new RoadNetworkSimpleLinkGenerateModule();
-            simpleNodeGenerateModule = new RoadNetworkSimpleNodeGenerateModule();
             return true;
         }
 
@@ -295,6 +541,8 @@ namespace PLATEAU.Editor.RoadNetwork
             /// 道路ネットワーク
             /// </summary>
             RnModel RoadNetwork { get; }
+
+            HashSet<Connection> Connections { get; }
 
             /// <summary>
             /// 現在の編集モード
@@ -334,6 +582,7 @@ namespace PLATEAU.Editor.RoadNetwork
             RoadNetworkSimpleLaneGenerateModule RoadNetworkSimpleLaneGenerateModule { get; }
             RoadNetworkSimpleLinkGenerateModule RoadNetworkSimpleLinkGenerateModule { get; }
             RoadNetworkSimpleNodeGenerateModule RoadNetworkSimpleNodeGenerateModule { get; }
+            RoadNetworkSimpleEditSysModule RoadNetworkSimpleEditModule { get; }
 
             RnLane GetBase(RnLane keyLane);
             float GetScale(RnLane keyLane);
@@ -461,6 +710,10 @@ namespace PLATEAU.Editor.RoadNetwork
             public RoadNetworkSimpleLinkGenerateModule RoadNetworkSimpleLinkGenerateModule => system.simpleLinkGenerateModule;
 
             public RoadNetworkSimpleNodeGenerateModule RoadNetworkSimpleNodeGenerateModule => system.simpleNodeGenerateModule;
+
+            public HashSet<Connection> Connections => system.simpleEditSysModule?.Connections;
+
+            public RoadNetworkSimpleEditSysModule RoadNetworkSimpleEditModule => system.simpleEditSysModule;
 
             public void NotifyChangedRoadNetworkObject2Editor()
             {
@@ -1175,6 +1428,301 @@ namespace PLATEAU.Editor.RoadNetwork
 
         }
 
+        public class RoadNetworkSimpleEditSysModule
+        {
+            public HashSet<Connection> Connections { get => connectionData; }
+            public RoadNetworkSimpleEditSysModule(GameObject root, RnModel rnModel, IRoadNetworkEditingSystem system)
+            {
+                ReConstruct(root, rnModel, system);
+            }
+
+            private GameObject roadNetworkEditingSystemObjRoot;
+            private RnModel roadNetwork;
+            private IRoadNetworkEditingSystem system;
+
+            private Dictionary<RnRoadBase, NodeEditorData> nodeEditorData = new Dictionary<RnRoadBase, NodeEditorData>();
+            private HashSet<Connection> connectionData = new HashSet<Connection>();
+            private Dictionary<RnPoint, EditorData<RnPoint>> ptEditorData = new Dictionary<RnPoint, EditorData<RnPoint>>();
+
+            /// <summary>
+            /// 計算や処理に必要な要素を初期化する
+            /// </summary>
+            /// <param name="root"></param>
+            /// <param name="rnModel"></param>
+            /// <param name="system"></param>
+            public void ReConstruct(GameObject root, RnModel rnModel, IRoadNetworkEditingSystem system)
+            {
+                Assert.IsNotNull(root);
+                Assert.IsNotNull(rnModel);
+                Assert.IsNotNull(system);
+                roadNetworkEditingSystemObjRoot = root;
+                roadNetwork = rnModel;
+                this.system = system;
+
+                EditorApplication.update -= Update;
+                ClearCache();
+            }
+
+            /// <summary>
+            /// 計算や処理を行う初期化
+            /// それらに必要な要素は初期化済みとする
+            /// </summary>
+            public void Init()
+            {
+                ClearCache();
+
+                nodeEditorData = new Dictionary<RnRoadBase, NodeEditorData>(roadNetwork.Nodes.Count);
+
+                // ノードに紐づくオブジェクトを作成 editor用のデータを作成
+                var nodePrefabPath = "Packages/com.synesthesias.plateau-unity-sdk/Resources/RoadNetwork/Node.prefab";
+                // プレハブをResourcesフォルダからロード
+                GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(nodePrefabPath);
+                Assert.IsNotNull(prefab);
+                var id = 0;
+                StringBuilder sb = new StringBuilder("Node".Length + "XXX".Length);
+                foreach (var node in roadNetwork.Nodes)
+                {
+                    var name = sb.AppendFormat("Node{0}", id).ToString();
+                    var obj = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                    //var obj = new GameObject(name, typeof(MeshFilter));
+                    obj.transform.position = node.GetCenterPoint();
+                    obj.transform.SetParent(roadNetworkEditingSystemObjRoot.transform, false);
+                    //var obj = GameObject.InstantiateGameObjects(prefab,);
+                    //var obj = GameObject.Instantiate(
+                    //    prefab, node.GetCenterPoint(), Quaternion.Euler(90.0f,0.0f,0.0f), roadNetworkEditingSystemObjRoot.transform);
+                    obj.name = name;
+                    obj.transform.hasChanged = false;   // transformの変更を検知するためfalseを設定
+                    var subData = new NodeEditorData(obj);
+                    nodeEditorData.Add(node, subData);
+
+                    id++;
+                    sb.Clear();
+                }
+
+                // pointのeditor用のデータを作成
+                //var lineE = roadNetwork.CollectAllLineStrings();
+                //lineE.Reset();
+                var lineE = roadNetwork.CollectAllLineStrings().GetEnumerator();
+                while (lineE.MoveNext())
+                {
+                    var line = lineE.Current;
+                    Ray ray;
+                    foreach (var point in line.Points)
+                    {
+                        var ptData = new EditorData<RnPoint>(point);
+                        var isSuc = ptEditorData.TryAdd(point, ptData);
+                        if (isSuc)
+                        {
+                            isSuc = ptData.TryAdd(new PointEditorData(point));
+                            Assert.IsTrue(isSuc);
+                        }
+                    }
+                }
+
+                // Nodeとその近辺のPointを紐づける
+                HashSet<RnPoint> points = new HashSet<RnPoint>(500);  // capacityは適当
+                var numNode = roadNetwork.Nodes.Count;
+                //HashSet<string> nodeConnection = new HashSet<string>(numNode * (numNode - 1));  // node同士の繋がりを表現するコレクション prev+next名で表現する
+                HashSet<RnNeighbor> calcedNeighbor = new HashSet<RnNeighbor>(numNode * (numNode - 1));  // 計算済みのNeighborを保持する
+                foreach (var node in roadNetwork.Nodes)
+                {
+                    // Nodeと繋がりのあるレーンすべてのPointを取得(現在はLink同士、Node同士が繋がっていた場合には2番目以降のLinkのPointは参照しない　もしくはNode間の境目は参照しない)
+
+                    bool bIsNext;
+                    // NodeとつながりのあるNodeを探す
+                    foreach (var neighbor in node.Neighbors)
+                    {
+                        // 計算済みに追加 計算済みのNeighborはスキップ
+                        if (calcedNeighbor.Add(neighbor) == false)
+                            continue;
+
+                        RnNode connectedNode = null;
+                        var link = neighbor.Link;
+                        while (link != null)
+                        {
+                            // Nodeと繋がりのあるレーンすべてのPointを取得(現在はLink同士が繋がっていた場合には2番目以降のLinkのPointは参照しない)
+                            foreach (var lane in link.AllLanes)
+                            {
+                                foreach (var point in lane.Points)
+                                {
+                                    points.Add(point);  // HashSetなので重複は無視される
+                                }
+                            }
+
+                            // 走査方向を決定する Next or Prev
+                            bIsNext = link.Next != node;
+
+                            // 現在のノードから離れる接続先
+                            var neighborBase = bIsNext ? link.Next : link.Prev;
+
+                            // Linkだった場合、次のLinkを取得
+                            if (neighborBase is RnLink neighborLink)
+                            {
+                                link = neighborLink;
+                                continue;   // 走査を続ける
+                            }
+                            // Node or 続きが無い場合、走査の終了
+                            else if (neighborBase is RnNode neighborNode)
+                            {
+                                // Nodeと他のNodeを挟まずに繋がりのあるNodeを設定  〇Node->connectedNode　〇Node->Link->connectedNode ×Node->OtherNode->connectedNode
+                                connectedNode = neighborNode;
+
+                                // 自身のノードに戻ってきた
+                                if (node == connectedNode)
+                                {
+                                    link = null;
+                                    continue;
+                                }
+
+                                // 辿ってきたLinkと紐づいたNeighborを探索
+                                bool isAddCalced = false;
+                                foreach (var item in connectedNode.Neighbors)
+                                {
+                                    if (link == item.Link)
+                                    {
+                                        var cn = new Connection(nodeEditorData[node], nodeEditorData[connectedNode]);
+                                        if (connectionData.Add(cn) == true)
+                                        {
+                                            nodeEditorData[node].Connections.Add(cn);
+                                            nodeEditorData[connectedNode].Connections.Add(cn);
+                                        }
+
+                                        isAddCalced = calcedNeighbor.Add(item);
+                                        if (isAddCalced)
+                                            break;
+                                    }
+                                }
+                                // 何故かflaseになる場合がある(原因不明 一時的にAssert回避
+                                //Assert.IsTrue(isAddCalced); // 最初のforeachで計算済みはスキップしているので必ず追加されるはず
+                            }
+                            link = null;
+
+                        }
+
+                        // 仮weight付け　本来はNode間を繋ぐ線にも紐づくべき
+                        foreach (var pt in points)
+                        {
+                            var d0 = nodeEditorData[node];
+                            var d1 = connectedNode != null ? nodeEditorData[connectedNode] : null;
+                            float w0 = 1.0f;
+                            float w1 = 0.0f;
+                            if (d1 != null)
+                            {
+                                var dist0 = Vector3.Distance(d0.RefGameObject.transform.position, pt.Vertex);
+                                var dist1 = Vector3.Distance(d1.RefGameObject.transform.position, pt.Vertex);
+                                w0 = dist0 / (dist0 + dist1);
+                                w1 = dist1 / (dist0 + dist1);
+                            }
+                            var ptData = ptEditorData[pt];
+                            d0.AddPoint(ptData, w0);
+                            d1?.AddPoint(ptData, w1);
+                        }
+
+                        // 直接つながっているものはweight1にする
+
+                        // 例外としてNodeと直接つながっているものはweight0.5にする
+
+
+                        // 同じRnPointを利用したneighborがある場合、Pointに対して再度計算を行うことになる 修正が必要
+                        // コレクションを初期化
+                        points.Clear();
+                    }
+                }
+
+                // Transform変更を検知する
+                EditorApplication.update -= Update;
+                EditorApplication.update += Update;
+            }
+
+            private void ClearCache()
+            {
+                nodeEditorData.Clear();
+                connectionData.Clear();
+                ptEditorData.Clear();
+
+            }
+
+            private void Update()
+            {
+                if (roadNetworkEditingSystemObjRoot == null)
+                    return;
+                bool isChanged = false;
+                //foreach (var data in nodeEditorData)
+                //{
+                //    var val = data.Value;
+                //    var transform = val.RefGameObject.transform;
+                //    if (transform.hasChanged)
+                //    {
+                //        // 平行移動を適用する
+                //        Debug.Log("has changed " + val.RefGameObject.name);
+                //        val.ApplyTranslate();
+
+                //        // 検知状態をリセット
+                //        transform.hasChanged = false;
+
+                //        isChanged = true;
+                //    }
+                //}
+
+                if (isChanged)
+                {
+                    this.system.NotifyChangedRoadNetworkObject2Editor();
+                }
+
+                // billboardの更新
+                bool isNeedUpdateBillboard = false;
+                var camera = SceneView.currentDrawingSceneView?.camera; // おそらく描画時にのみインスタンスが設定される
+                if (camera?.transform.hasChanged == true)
+                    isNeedUpdateBillboard = true;
+
+                foreach (var data in nodeEditorData)
+                {
+                    if (isNeedUpdateBillboard == false)
+                        break;
+
+                    var cameraPos = camera.transform.position;
+                    var val = data.Value;
+                    var transform = val.RefGameObject.transform;
+                    transform.LookAt(cameraPos, Vector3.up);
+                }
+                if (camera)
+                {
+                    camera.transform.hasChanged = false;
+                }
+
+                // 検知状態のリセット
+                //foreach (var data in nodeEditorData)
+                //{
+                //    var val = data.Value;
+                //    var transform = val.RefGameObject.transform;
+                //    // 検知状態をリセット
+                //    transform.hasChanged = false;
+                //}
+
+                // gizmos描画の更新
+                var gizmos = roadNetworkEditingSystemObjRoot.GetComponent<RoadNetworkEditorGizmos>();
+                if (gizmos)
+                {
+                    // 仮　専用ノード間の繋がりを描画
+                    HashSet<Connection> connections = connectionData;
+                    Vector3[] pts = new Vector3[connections.Count * 2];
+                    int i = 0;
+                    foreach (var item in connections)
+                    {
+                        pts[i++] = item.A.RefGameObject.transform.position;
+                        pts[i++] = item.B.RefGameObject.transform.position;
+                        //Debug.Log(item.A.RefGameObject.name + "." + item.B.RefGameObject.name);
+                    }
+                    gizmos.linePairs = pts;
+                    //if (connections.Count > 0)
+                    //{
+                    //    Handles.DrawLines(pts);
+                    //    //Gizmos.DrawLineList(pts);
+                    //}
+
+                }
+            }
+        }
     }
 
 }

@@ -53,7 +53,10 @@ namespace PLATEAU.Editor.RoadNetwork
             // 初期化
             if (EditorInterface == null)
             {
-                EditorInterface = new RoadNetworkEditingSystem(new EditorInstance(this), rootVisualElement);
+                if (rootVisualElement != null)
+                {
+                    EditorInterface = new RoadNetworkEditingSystem(new EditorInstance(this), rootVisualElement);
+                }
             }
         }
 

@@ -94,6 +94,8 @@ namespace PLATEAU.Editor.RoadNetwork
             { RoadNetworkEditMode.AddNode, CreateAddNodeLayout },
             { RoadNetworkEditMode.EditLaneWidth, CreateEditLaneWidthLayout },
             { RoadNetworkEditMode.AddMedianStrip, CreateAddMedianStripLayout },
+            { RoadNetworkEditMode.SimpleEdit, CreateSimpleEditLayout },
+            { RoadNetworkEditMode.EidtRoad, CreateEditRoadLayout },
         };
 
         private static void CreateEditLaneWidthLayout(RoadNetworkUIDoc doc, IRoadNetworkEditingSystem system, RoadNetworkEditorAssets assets, VisualElement root)
@@ -151,7 +153,6 @@ namespace PLATEAU.Editor.RoadNetwork
                 }
                 var leftLine = baseLane.GetInnerLerpSegments(0.5f - 0.5f * scaleValue);     // value==0.5 0.25, value==1 0
                 var rightLine = baseLane.GetInnerLerpSegments(0.5f + 0.5f * scaleValue);    // value==0.5 0.75, value==1 1
-
                 //IEnumerator<Vector2> newPos = null;
                 //IEnumerator<RoadNetworkPoint> points = null;
                 //points = lane.LeftWay.Points.GetEnumerator();   // 数値が違う？
@@ -205,6 +206,19 @@ namespace PLATEAU.Editor.RoadNetwork
 
         private static void CreateAddMedianStripLayout(RoadNetworkUIDoc doc, IRoadNetworkEditingSystem system, RoadNetworkEditorAssets assets, VisualElement element)
         {
+
+        }
+
+        private static void CreateSimpleEditLayout(RoadNetworkUIDoc doc, IRoadNetworkEditingSystem system, RoadNetworkEditorAssets assets, VisualElement element)
+        {
+            system.RoadNetworkSimpleEditModule.Init();
+        }
+
+        private static void CreateEditRoadLayout(RoadNetworkUIDoc doc, IRoadNetworkEditingSystem system, RoadNetworkEditorAssets assets, VisualElement root)
+        {
+            var element = assets.GetAsset(RoadNetworkEditorAssets.FloatFieldAsset).Instantiate();
+            element.Q<Vector3Field>().label = "座標";
+            root.Add(element);
 
         }
 

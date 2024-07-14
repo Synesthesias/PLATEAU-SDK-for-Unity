@@ -140,6 +140,24 @@ namespace PLATEAU.RoadNetwork
         public RnLane() { }
 
 
+        public IEnumerable<RnPoint> Points
+        {
+            get
+            {
+                foreach (var v in PrevBorder?.LineString?.Points ?? new List<RnPoint>())
+                    yield return v;
+
+                foreach (var v in LeftWay?.LineString?.Points ?? new List<RnPoint>())
+                    yield return v;
+
+                foreach (var v in NextBorder?.LineString?.Points ?? new List<RnPoint>())
+                    yield return v;
+
+                foreach (var v in RightWay?.LineString?.Points ?? new List<RnPoint>())
+                    yield return v;
+            }
+        }
+
         public RnLane(RnWay leftWay, RnWay rightWay, RnWay startBorder, RnWay endBorder)
         {
             LeftWay = leftWay;
