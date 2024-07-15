@@ -20,6 +20,33 @@ namespace PLATEAU.RoadNetwork.Tester
     {
 
         [Serializable]
+        public class SerializableRay2D
+        {
+            [SerializeField] public Vector2 origin;
+            [SerializeField] public Vector2 direction;
+            public Ray2D Ray => new Ray2D(origin, direction);
+
+            public SerializableRay2D(Ray2D ray)
+            {
+                origin = ray.origin;
+                direction = ray.direction;
+            }
+
+            public SerializableRay2D(Vector2 origin, Vector2 direction)
+            {
+                this.origin = origin;
+                this.direction = direction;
+            }
+
+            public SerializableRay2D()
+            {
+                origin = Vector2.zero;
+                direction = Vector2.zero;
+            }
+
+            public static implicit operator Ray2D(SerializableRay2D serializableRay2D) => serializableRay2D.Ray;
+        }
+        [Serializable]
         public class LerpLineTestParam
         {
             public bool enable = false;
@@ -128,6 +155,40 @@ namespace PLATEAU.RoadNetwork.Tester
                 positions.Add(pos);
             }
             DebugEx.DrawLines(positions);
+        }
+
+        [Serializable]
+        public class LerpPointInLineTestParam
+        {
+            public bool enable = false;
+            public SerializableRay2D ray1 = new SerializableRay2D(Vector2.zero, Vector2.right);
+            public SerializableRay2D ray2 = new SerializableRay2D(Vector2.zero, Vector2.right);
+            public float p = 0.5f;
+            public float drawRayLength = 10;
+            public Vector2 drawTextScreenOffset = Vector2.zero;
+        }
+
+        [SerializeField] private LerpPointInLineTestParam lerpPointInLineTestParam;
+        private void LerpPointInLineTest(LerpPointInLineTestParam p)
+        {
+            if (p.enable == false)
+                return;
+
+            var ray1 = p.ray1.Ray;
+            var ray2 = p.ray2.Ray;
+            DebugEx.DrawArrow(ray1.origin, ray1.origin + ray1.direction * p.drawRayLength, bodyColor: Color.red);
+            DebugEx.DrawArrow(ray2.origin, ray2.origin + ray2.direction * p.drawRayLength, bodyColor: Color.blue);
+
+            if (GeoGraph2D.CalcLerpPointInLine(ray1, ray2, p.p, out var pos))
+            {
+                DebugEx.DrawArrow(ray1.origin, pos, bodyColor: Color.yellow);
+                var nearest = ray2.GetNearestPoint(pos);
+                DebugEx.DrawArrow(nearest, pos, bodyColor: Color.white);
+
+                DebugEx.DrawString($"ray1[{(pos - ray1.origin).magnitude}] :  ray2[{(nearest - pos).magnitude}] = {p.p} : {1 - p.p}", pos, p.drawTextScreenOffset);
+
+                DebugEx.DrawSphere(pos, 0.1f, Color.green);
+            }
         }
 
         public void ConvertTrans()
@@ -363,6 +424,7 @@ namespace PLATEAU.RoadNetwork.Tester
             UnionPolygonTest(unionPolygonTest);
             MeshOutlineTest(meshOutlineTest);
             SplineTest(splineTest);
+            LerpPointInLineTest(lerpPointInLineTestParam);
         }
 
     }

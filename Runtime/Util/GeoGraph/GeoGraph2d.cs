@@ -9,6 +9,7 @@ using System.Numerics;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using UnityEngine;
+using UnityEngine.Assertions;
 using UnityEngine.Assertions.Comparers;
 using static PLATEAU.Util.GeoGraph.GeoGraph2D;
 using Vector2 = UnityEngine.Vector2;
@@ -560,26 +561,72 @@ namespace PLATEAU.Util.GeoGraph
             }
         }
 
-        //public static Ray2D LerpRay2(LineSegment2D segA, LineSegment2D segB, float p)
-        //{
-        //    // segAの直線に射影する
-        //    Vector2 Convert(Vector2 v)
-        //    {
-        //        var d = v - segA.Start;
-        //        var x = Vector2.Dot(d, segA.Direction);
-        //        var y = Mathf.Sqrt(d.sqrMagnitude - x * x);
-        //        return new Vector2(x, y) / segA.Magnitude;
-        //    }
-        //    var bS = Convert(segB.Start);
-        //    var bE = Convert(segB.End);
+        /// <summary>
+        /// 直線a,bがあり. a上の点posに対して、|a.origin-pos|とdistance(pos, b)の比率がp:1-pとなるような点posを返す
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <param name="p"></param>
+        /// <returns></returns>
+        public static bool CalcLerpPointInLine(Ray2D a, Ray2D b, float p, out Vector2 pos)
+        {
+            p = Mathf.Clamp01(p);
+            var p2 = p * p;
+            var dotDab = Vector2.Dot(a.direction, b.direction);
+            var dOg = a.origin - b.origin;
+            var dotDao = Vector2.Dot(a.direction, dOg);
+            var dotDbo = Vector2.Dot(b.direction, dOg);
 
-        //    var points = new List<Vector2> { Vector2.zero, bS, bE, Vector2.right };
-        //    points.Sort((a, b) => Comparer<float>.Default.Compare(a.x, b.x));
-        //    var p1 = points[1];
-        //    var p2 = points[2];
+            // l(t)上の点
+            // |t| : √( |d_a*t + o_a - o_b|^2 - |(d_a*t + o_a - o_b)・d_b|^2) = p : (1-p)
+            // |t| : √(|d_a*t + dOg|^2 - |(d_a*t + dOg)・d_b|^2) = p : (1-p)
+            // p^2 *  (|d_a*t + dOg|^2 - |(d_a*t + dOg)・d_b|^2  = (1-p)^2*t^2
+            // p^2 *  (|d_a|^2*t^2 + 2*dotDao*t + |dOg|^2 - (dotDab*t + dotDbo)^2                         ) - (1-p)^2*t^2 = 0
+            // p^2 *  (        t^2 + 2*dotDao*t + |dOg|^2 -  dotDab^2*t^2 - 2 * dotDab*dotDbo*t - dotDbo^2) - (1-p)^2*t^2 = 0
+            // (p^2 - p^2*dotDab^2 - (1-p)^2) * t^2 + 2*p^2( dotDao - dotDab*dotDbo)*t + p^2*( dOg^2 - dotDbo^2) = 0
+            // (2p-1 - p^2*dotDab^2         ) * t^2 + 2*p^2( dotDao - dotDab*dotDbo)*t + p^2*( dOg^2 - dotDbo^2) = 0
 
-        //    p1
-        //}
+            var A = 2 * p - 1 - p2 * dotDab * dotDab;
+            var B = 2 * p2 * (dotDao - dotDab * dotDbo);
+            var C = p2 * (dOg.sqrMagnitude - dotDbo * dotDbo);
+            var D = B * B - 4 * A * C;
+            // D < 0の時は交点が無いが0の計算誤差を考慮する
+            if (D < 0f && Mathf.Abs(D) < Epsilon)
+                D = 0f;
+            pos = Vector3.zero;
+
+            bool Calc(out float t)
+            {
+                t = -1;
+                // 1次方程式の場合
+                if (Mathf.Abs(A) < Epsilon)
+                {
+                    if (B == 0)
+                        return false;
+                    t = -C / B;
+                    return true;
+                }
+                // 2次方程式の場合
+                if (D < 0)
+                    return false;
+
+                var t1 = (-B + Mathf.Sqrt(D)) / (2 * A);
+                var t2 = (-B - Mathf.Sqrt(D)) / (2 * A);
+
+                t = t1;
+                if (Mathf.Abs(t1) > Mathf.Abs(t2))
+                {
+                    t = t2;
+                }
+
+                return true;
+            }
+            if (Calc(out var t) == false)
+                return false;
+            pos = a.direction * t + a.origin;
+            return true;
+
+        }
 
         /// <summary>
         /// 直線l上の点から直線a,bへの距離がp : 1-pとなるような直線lを返す
@@ -610,6 +657,7 @@ namespace PLATEAU.Util.GeoGraph
             var radX = Mathf.Deg2Rad * Vector2.Angle(dirA, dirB);
             var siX = Mathf.Sin(radX);
             var coX = Mathf.Cos(radX);
+            // a-b間の角度をx
             // a-l間の角度A
             // l-b間の角度(x - A)
             // sin(A) : sin(B) = p : (1-p)
@@ -620,7 +668,19 @@ namespace PLATEAU.Util.GeoGraph
             // ((1-p) + p * cos(X))sin(A) = p*sin(X)cos(A)
             // tan(A) = p*sin(X) / ((1-p) + p * cos(X))
             var radA = Mathf.Atan2(p * siX, 1 - p + p * coX);
-            return new Ray2D(intersection, Vector2Ex.RotateTo(dirA, dirB, radA));
+            var dir = Vector2Ex.RotateTo(dirA, dirB, radA);
+
+            // a,bが平行に近いとintersectionが遠点となりfloat誤差が発生するため, a,bのStartからdirへの射影をして見つかった位置をoriginにする
+            if (CalcLerpPointInLine(new Ray2D(rayA.origin, rayA.direction.Rotate(90)), rayB, p, out var pos))
+            {
+                return new Ray2D(pos, dir);
+            }
+            if (CalcLerpPointInLine(new Ray2D(rayB.origin, rayB.direction.Rotate(90)), rayA, p, out var pos2))
+            {
+                return new Ray2D(pos2, dir);
+            }
+            return new Ray2D(intersection, dir);
+
         }
 
         public class BorderParabola2D
