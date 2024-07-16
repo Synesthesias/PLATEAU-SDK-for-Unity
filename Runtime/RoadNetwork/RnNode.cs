@@ -46,6 +46,20 @@ namespace PLATEAU.RoadNetwork
             TargetTran = targetTran;
         }
 
+        public override IEnumerable<RnBorder> GetNeighbors()
+        {
+            foreach (var neighbor in Neighbors)
+            {
+                foreach (var lane in neighbor.GetConnectedLanes())
+                    yield return new RnBorder(neighbor.Border, lane);
+            }
+        }
+
+        public override IEnumerable<RnWay> GetBorderWays()
+        {
+            return Neighbors.Select(n => n.Border);
+        }
+
         public void AddLane(RnLane lane)
         {
             if (lanes.Contains(lane))

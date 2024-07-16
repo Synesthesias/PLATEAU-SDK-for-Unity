@@ -186,12 +186,16 @@ namespace PLATEAU.Util.GeoGraph
                 var p1 = vertices[i];
                 var l = (p1 - p0).magnitude;
                 len += l;
+                // lenがlengthを超えたら分割線分を追加
                 while (len >= length && l > Epsilon)
                 {
                     var f = (len - length) / l;
                     var end = Vector3.Lerp(p0, p1, f);
                     if (f >= float.Epsilon)
+                    {
                         subVertices.Add(end);
+                    }
+
                     ret.Add(subVertices);
                     len -= length;
                     p1 = end;

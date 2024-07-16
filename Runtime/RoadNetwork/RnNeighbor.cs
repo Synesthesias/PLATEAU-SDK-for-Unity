@@ -32,7 +32,20 @@ namespace PLATEAU.RoadNetwork
             {
                 return null;
             }
-            return Link.AllLanes.FirstOrDefault(lane => lane.AllBorders.Any(b => b.LineString == Border.LineString));
+            return Link.AllLanes.FirstOrDefault(lane => lane.AllBorders.Any(b => b.IsSameLine(Border)));
+        }
+
+        public IEnumerable<RnLane> GetConnectedLanes()
+        {
+            if (Border == null)
+                yield break;
+
+            foreach (var lane in Link.AllLanes
+                         .Where(lane => lane.AllBorders.Any(b => b.IsSameLine(Border)))
+                    )
+            {
+                yield return lane;
+            }
         }
     }
 }

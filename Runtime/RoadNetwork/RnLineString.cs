@@ -46,11 +46,76 @@ namespace PLATEAU.RoadNetwork
         /// 自身をnum分割して返す. 分割できない(頂点空）の時は空リストを返す
         /// </summary>
         /// <returns></returns>
-        public List<RnLineString> Split(int num)
+        public List<RnLineString> Split(int num, bool insertNewPoint)
         {
+            if (Points.Count <= 1)
+                return new List<RnLineString>();
+
+            // #TODO : マジックナンバー
+            //       : 分割点が隣り合う点とこれ以下の場合は新規で作らず使いまわす
+            var threshold = 1e-1f;
+            var ret = new List<List<RnPoint>>();
+            var totalLength = LineUtil.GetLineSegmentLength(this);
+            var length = totalLength / num;
+            var len = 0f;
+            var subVertices = new List<RnPoint> { Points[0] };
+            for (var i = 1; i < Points.Count; ++i)
+            {
+                var p0 = subVertices.Last();
+                var p1 = Points[i];
+                var l = (p1.Vertex - p0.Vertex).magnitude;
+                len += l;
+                // lenがlengthを超えたら分割線分を追加
+                while (len >= length && l > GeoGraph2D.Epsilon)
+                {
+                    var f = 1f - (len - length) / l;
+                    var end = new RnPoint(Vector3.Lerp(p0, p1, f));
+                    // もし,p0/p1とほぼ同じ点ならそっちを使う
+                    if ((p1.Vertex - end.Vertex).sqrMagnitude < threshold)
+                    {
+                        end = p1;
+                    }
+                    else if ((p0.Vertex - end.Vertex).sqrMagnitude < threshold)
+                    {
+                        end = p0;
+                    }
+
+                    // 同一頂点が複数あった場合は無視する
+                    if (f >= float.Epsilon)
+                    {
+                        subVertices.Add(end);
+                        // 自分自身にも追加する場合
+                        if (insertNewPoint && p1 != end && p0 != end)
+                        {
+                            Points.Insert(i, end);
+                            i += 1;
+                        }
+                    }
+
+                    if (subVertices.Any() == false)
+                    {
+                        var x = 0;
+                    }
+                    ret.Add(subVertices);
+                    subVertices = new List<RnPoint> { end };
+                    len -= length;
+                    //p0 = end;
+                }
+                if (subVertices.LastOrDefault() != p1)
+                    subVertices.Add(p1);
+            }
+
+            // 最後の要素は無条件で返す
+            if (subVertices.Any())
+            {
+                if (subVertices.Last() != Points.Last())
+                    subVertices.Add(Points.Last());
+                if (subVertices.Count > 1)
+                    ret.Add(subVertices);
+            }
+
             // 分割できない時は空を返す
-            var splitLines = LineUtil.SplitLineSegments(this, num).ToList();
-            return splitLines.Select(x => Create(x.Select(a => new RnPoint(a)))).ToList();
+            return ret.Select(Create).ToList();
         }
 
         /// <summary>
@@ -75,6 +140,17 @@ namespace PLATEAU.RoadNetwork
         }
 
         public Vector3 this[int index] => Points[index].Vertex;
+
+        /// <summary>
+        /// 線分の長さを計算する
+        /// </summary>
+        /// <returns></returns>
+        public float CalcLength()
+        {
+            if (Count <= 1)
+                return 0f;
+            return GeoGraphEx.GetEdges(Points.Select(x => x.Vertex), false).Sum(e => (e.Item1 - e.Item2).magnitude);
+        }
     }
 
     public static class RoadNetworkLineStringEx

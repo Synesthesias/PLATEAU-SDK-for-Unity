@@ -79,7 +79,7 @@ namespace PLATEAU.RoadNetwork.Drawer
             public float bothConnectedLaneAlpha = 1f;
             public float validWayAlpha = 0.75f;
             public float invalidWayAlpha = 0.3f;
-
+            public bool showAttrText = false;
             public DrawOption showLeftWay = new DrawOption();
             public DrawOption showRightWay = new DrawOption();
             // 境界線を表示する
@@ -245,20 +245,41 @@ namespace PLATEAU.RoadNetwork.Drawer
                 if (laneOp.visible == false)
                     return;
 
-
+                var offset = Vector3.up * (lane.DebugMyId % 10);
                 if (laneOp.showLeftWay.visible)
+                {
                     DrawWay(lane.LeftWay, color: laneOp.showLeftWay.color.PutA(laneOp.GetLaneAlpha(lane)));
+                    if (laneOp.showAttrText)
+                        DebugEx.DrawString($"L:{lane.DebugMyId}", lane.LeftWay[0] + offset);
+                }
+
                 if (laneOp.showRightWay.visible)
+                {
                     DrawWay(lane.RightWay, color: laneOp.showRightWay.color.PutA(laneOp.GetLaneAlpha(lane)));
+                    if (laneOp.showAttrText)
+                        DebugEx.DrawString($"R:{lane.DebugMyId}", lane.RightWay[0] + offset);
+                }
 
                 if (laneOp.showPrevBorder.visible)
                 {
-                    DrawWay(lane.PrevBorder, color: laneOp.showPrevBorder.color);
+                    if (lane.PrevBorder.IsValidOrDefault())
+                    {
+                        var type = lane.GetBorderDir(RnLaneBorderType.Prev);
+                        if (laneOp.showAttrText)
+                            DebugEx.DrawString($"[{lane.DebugMyId}]prev={type.ToString()}", lane.PrevBorder.Points.Last() + offset, Vector2.up * 100);
+                        DrawWay(lane.PrevBorder, color: laneOp.showPrevBorder.color);
+                    }
                 }
 
                 if (laneOp.showNextBorder.visible)
                 {
-                    DrawWay(lane.NextBorder, color: laneOp.showNextBorder.color);
+                    if (lane.NextBorder.IsValidOrDefault())
+                    {
+                        var type = lane.GetBorderDir(RnLaneBorderType.Next);
+                        if (laneOp.showAttrText)
+                            DebugEx.DrawString($"[{lane.DebugMyId}]next={type.ToString()}", lane.NextBorder.Points.Last() + offset, Vector2.up * 100);
+                        DrawWay(lane.NextBorder, color: laneOp.showNextBorder.color);
+                    }
                 }
 
                 if (showSplitLane && lane.HasBothBorder)

@@ -139,5 +139,25 @@ namespace PLATEAU.RoadNetwork
         {
             return new RoadNetworkDataGetter(Storage);
         }
+
+        public void SplitLaneByWidth(float roadWidth)
+        {
+            var visited = new HashSet<RnRoadBase>();
+
+            foreach (var link in Links)
+            {
+                if (link.MainLanes.Count != 1)
+                    continue;
+                var srcLane = link.MainLanes[0];
+                if (srcLane.HasBothBorder == false)
+                    continue;
+                var width = srcLane.CalcWidth();
+                var num = (int)(width / roadWidth);
+                if (num <= 1)
+                    continue;
+
+                link.SplitLane(srcLane, num);
+            }
+        }
     }
 }

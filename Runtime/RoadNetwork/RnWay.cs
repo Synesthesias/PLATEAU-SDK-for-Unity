@@ -9,11 +9,14 @@ using UnityEngine;
 
 namespace PLATEAU.RoadNetwork
 {
-    public class RoadNetworkWayPoints : IReadOnlyList<RnPoint>
+    /// <summary>
+    /// WayのPointsをReadOnlyで返すラッパー
+    /// </summary>
+    public class RnWayPoints : IReadOnlyList<RnPoint>
     {
         private RnWay way;
 
-        public RoadNetworkWayPoints(RnWay way)
+        public RnWayPoints(RnWay way)
         {
             this.way = way;
         }
@@ -46,7 +49,7 @@ namespace PLATEAU.RoadNetwork
         public bool IsReversed { get; set; } = false;
 
         // 法線計算用. 進行方向左側が道かどうか
-        public bool IsRightSide { get; set; } = false;
+        public bool IsReverseNormal { get; set; } = false;
 
         // 頂点
         public RnLineString LineString { get; private set; }
@@ -90,14 +93,14 @@ namespace PLATEAU.RoadNetwork
         // 頂点数
         public int Count => LineString?.Count ?? 0;
 
-        // 有効な道かどうか
+        // 2頂点以上ある有効な道かどうか
         public bool IsValid => LineString?.IsValid ?? false;
 
-        public RnWay(RnLineString lineString, bool isReversed = false, bool isRightSide = false)
+        public RnWay(RnLineString lineString, bool isReversed = false, bool isReverseNormal = false)
         {
             LineString = lineString;
             IsReversed = isReversed;
-            IsRightSide = isRightSide;
+            IsReverseNormal = isReverseNormal;
         }
 
         // デシリアライズのために必要
@@ -105,7 +108,7 @@ namespace PLATEAU.RoadNetwork
 
         public RnWay ReversedWay()
         {
-            return new RnWay(LineString, !IsReversed, !IsRightSide);
+            return new RnWay(LineString, !IsReversed, !IsReverseNormal);
         }
 
         /// <summary>
@@ -153,7 +156,7 @@ namespace PLATEAU.RoadNetwork
                 ret = n1;
             else
                 ret = (n1 + n2) / 2;
-            return IsRightSide ? -ret : ret;
+            return IsReverseNormal ? -ret : ret;
         }
 
         /// <summary>
@@ -249,9 +252,12 @@ namespace PLATEAU.RoadNetwork
         /// 自身をnum分割して返す. 分割できない(頂点空）の時は空リストを返す
         /// </summary>
         /// <returns></returns>
-        public List<RnWay> Split(int num)
+        public List<RnWay> Split(int num, bool insertNewPoint)
         {
-            return LineString.Split(num).Select(s => new RnWay(s, IsReversed)).ToList();
+            var ret = LineString.Split(num, insertNewPoint).Select(s => new RnWay(s, IsReversed, IsReverseNormal)).ToList();
+            if (IsReversed)
+                ret.Reverse();
+            return ret;
         }
 
         public IEnumerator<Vector3> GetEnumerator()
@@ -262,6 +268,16 @@ namespace PLATEAU.RoadNetwork
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
+        }
+
+        /// <summary>
+        /// 同じ線分かどうか
+        /// </summary>
+        /// <param name="other"></param>
+        /// <returns></returns>
+        public bool IsSameLine(RnWay other)
+        {
+            return LineString == other.LineString;
         }
     }
 
@@ -281,5 +297,14 @@ namespace PLATEAU.RoadNetwork
             return self.LineString.Points.FindIndex(p => p == point);
         }
 
+        /// <summary>
+        /// nullチェック込みのIsValid
+        /// </summary>
+        /// <param name="self"></param>
+        /// <returns></returns>
+        public static bool IsValidOrDefault(this RnWay self)
+        {
+            return self?.IsValid ?? false;
+        }
     }
 }

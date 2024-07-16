@@ -185,11 +185,12 @@ namespace PLATEAU.RoadNetwork.Factory
             public Dictionary<RnPoint, List<TranWork>> Vertex2Connected { get; } =
                 new Dictionary<RnPoint, List<TranWork>>();
 
-            // 対応するLink
-            private RnLink Link { get; set; }
+            // 対応するLink or Node
+            private RnRoadBase Road { get; set; }
 
-            // 対応するNode
-            private RnNode Node { get; set; }
+            RnLink Link => Road as RnLink;
+
+            RnNode Node => Road as RnNode;
 
             // 境界線
             public IEnumerable<WayWork> Borders => Ways.Where(w => w.IsBorder);
@@ -227,19 +228,14 @@ namespace PLATEAU.RoadNetwork.Factory
                 LodLevel = lodLevel;
             }
 
-            public void Bind(RnLink link)
+            public void Bind(RnRoadBase road)
             {
-                Link = link;
-            }
-
-            public void Bind(RnNode node)
-            {
-                Node = node;
+                Road = road;
             }
 
             public void Split2Way(LineStringTable lineStringTable)
             {
-                var points = new RoadNetworkWayPoints(Way);
+                var points = new RnWayPoints(Way);
                 var startIndex = Enumerable.Range(0, points.Count)
                     .Where(i => Vertex2Connected[points[i]].Any())
                     .DefaultIfEmpty(-1)
@@ -325,7 +321,6 @@ namespace PLATEAU.RoadNetwork.Factory
                     // 元の線分 & 新しい線分の始点と終点を加えた線分が歩道分
                     // var points = origVertices.Select(v => new RnPoint(v)).ToList(); //Enumerable.Range(startIndex, endIndex - startIndex).Select(v => new RnPoint(origVertices[v])).ToList();
 
-
                     // 始点/終点は除いて法線と逆方向に動かす
                     var startIndex = 0;//isAddFirst ? 1 : 0;
                     var endIndex = way.Count;//isAddLast ? way.Count - 1 : way.Count;
@@ -351,35 +346,35 @@ namespace PLATEAU.RoadNetwork.Factory
                     }
                     lines.Add(RnLineString.Create(points));
                 }
-                if (Link != null)
+                if (Road is RnLink link)
                 {
                     var nextTrans = Lanes.Select(w => w.NextBorder).Where(b => b != null).SelectMany(w => w.BothConnectedTrans).Distinct().ToList();
                     var prevTrans = Lanes.Select(w => w.PrevBorder).Where(b => b != null).SelectMany(w => w.BothConnectedTrans).Distinct().ToList();
-                    Link.Next = nextTrans.FirstOrDefault(t => t.Node != null)?.Node;
-                    Link.Prev = prevTrans.FirstOrDefault(t => t.Node != null)?.Node;
+                    link.Next = nextTrans.FirstOrDefault(t => t.Node != null)?.Node;
+                    link.Prev = prevTrans.FirstOrDefault(t => t.Node != null)?.Node;
                     if (LodLevel == 1)
                     {
-                        var leftLane = Link.MainLanes.FirstOrDefault();
-                        var rightLane = Link.MainLanes.LastOrDefault();
+                        var leftLane = link.MainLanes.FirstOrDefault();
+                        var rightLane = link.MainLanes.LastOrDefault();
                         MoveWay(leftLane?.LeftWay);
                         MoveWay(rightLane?.RightWay);
                     }
                 }
-                else if (Node != null)
+                else if (Road is RnNode node)
                 {
                     foreach (var b in Borders)
                     {
                         foreach (var l in b.BothConnectedTrans)
                         {
-                            if (l.Link == null)
+                            if (l.Road == null)
                                 continue;
-                            Node.Neighbors.Add(new RnNeighbor { Link = l.Link, Border = b.Way });
+                            node.Neighbors.Add(new RnNeighbor { Link = l.Link, Border = b.Way });
                         }
                     }
 
                     if (LodLevel == 1)
                     {
-                        foreach (var l in Node.Lanes)
+                        foreach (var l in node.Lanes)
                             MoveWay(l.LeftWay);
                     }
                 }
@@ -558,6 +553,8 @@ namespace PLATEAU.RoadNetwork.Factory
                     }
                 }
 
+                ret.SplitLaneByWidth(roadSize);
+
                 //ret.DebugIdentify();
                 return Task.FromResult(ret);
             }
@@ -643,26 +640,10 @@ namespace PLATEAU.RoadNetwork.Factory
                     var link = new RnLink(tranWork.TargetTran);
                     if (leftWay != null && rightWay != null)
                     {
-
-
                         var startBorderWay = leftWay?.PrevBorder?.Way;
                         var endBorderWay = leftWay?.NextBorder?.Way;
                         var l = new RnLane(leftWay?.Way, rightWay?.Way, startBorderWay, endBorderWay);
-                        var startBorderLength = GeoGraphEx.GetEdges(startBorderWay?.Vertices ?? new List<Vector3>(), false)
-                            .Sum(e => (e.Item2 - e.Item1).magnitude);
-                        var endBorderLength = GeoGraphEx.GetEdges(endBorderWay?.Vertices ?? new List<Vector3>(), false)
-                            .Sum(e => (e.Item2 - e.Item1).magnitude);
-                        var num = (int)(Mathf.Min(startBorderLength, endBorderLength) / roadSize);
-                        if (l.HasBothBorder && num > 1)
-                        {
-                            var lanes = l.SplitLane(num);
-                            foreach (var lane in lanes)
-                                link.AddMainLane(lane);
-                        }
-                        else
-                        {
-                            link.AddMainLane(l);
-                        }
+                        link.AddMainLane(l);
 
                     }
                     else if (leftWay != null || rightWay != null)

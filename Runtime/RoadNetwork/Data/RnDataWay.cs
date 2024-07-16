@@ -16,10 +16,10 @@ namespace PLATEAU.RoadNetwork.Data
         [RoadNetworkSerializeMember(nameof(RnWay.IsReversed))]
         public bool IsReversed { get; set; }
 
-        // 法線計算用. 進行方向左側が道かどうか
+        // 法線計算用. 法線が進行方向に対して逆かどうか
         [field: SerializeField]
-        [RoadNetworkSerializeMember(nameof(RnWay.IsRightSide))]
-        public bool IsRightSide { get; set; }
+        [RoadNetworkSerializeMember(nameof(RnWay.IsReverseNormal))]
+        public bool IsReverseNormal { get; set; }
 
         // 頂点
         [field: SerializeField]

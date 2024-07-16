@@ -6,6 +6,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Numerics;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.Assertions.Comparers;
@@ -15,6 +16,20 @@ using Vector3 = UnityEngine.Vector3;
 
 namespace PLATEAU.RoadNetwork
 {
+    public enum RnLaneBorderType
+    {
+        Prev,
+        Next
+    }
+
+    public enum RnLaneBorderDir
+    {
+        // LeftWay -> RightWay
+        Left2Right,
+        // RightWay -> LeftWay
+        Right2Left
+    }
+
     public class RnLane : ARnParts<RnLane>
     {
         //----------------------------------
@@ -66,7 +81,7 @@ namespace PLATEAU.RoadNetwork
         /// 有効なレーンかどうか
         /// Left/Rightどっちも有効ならtrue
         /// </summary>
-        public bool IsValidWay => (LeftWay?.IsValid ?? false) && (RightWay?.IsValid ?? false);
+        public bool IsValidWay => LeftWay.IsValidOrDefault() && RightWay.IsValidOrDefault();
 
         /// <summary>
         /// 道の両方に接続先があるかどうか
@@ -76,7 +91,12 @@ namespace PLATEAU.RoadNetwork
         /// <summary>
         /// 両方に境界線を持っている
         /// </summary>
-        public bool HasBothBorder => IsValidWay && PrevBorder != null && NextBorder != null;
+        public bool HasBothBorder => IsValidWay && PrevBorder.IsValidOrDefault() && NextBorder.IsValidOrDefault();
+
+        /// <summary>
+        /// PrevBorderの方向がLeftWay->RightWay方向かどうか
+        /// </summary>
+        public bool IsPrevBorderLeft2Right => PrevBorder?.GetPoint(0) == LeftWay?.GetPoint(0);
 
         public IEnumerable<Vector3> Vertices
         {
@@ -107,6 +127,28 @@ namespace PLATEAU.RoadNetwork
         //デシリアライズの為に必要
         public RnLane() { }
 
+        IEnumerable<RnLane> GetNeighborLanes(RnWay border)
+        {
+            if (Parent == null || border == null)
+                yield break;
+
+            foreach (var lane in Parent.AllLanes)
+            {
+                if (lane.AllBorders.Any(b => b.IsSameLine(border)))
+                    yield return lane;
+            }
+        }
+
+        public IEnumerable<RnLane> GetNextLanes()
+        {
+            return GetNeighborLanes(NextBorder);
+        }
+
+        public IEnumerable<RnLane> GetPrevLanes()
+        {
+            return GetNeighborLanes(PrevBorder);
+        }
+
         // 向き反転させる
         public void Reverse()
         {
@@ -114,7 +156,6 @@ namespace PLATEAU.RoadNetwork
             (LeftWay, RightWay) = (RightWay?.ReversedWay(), LeftWay?.ReversedWay());
 
             (NextLanes, PrevLanes) = (PrevLanes, NextLanes);
-
         }
 
         /// <summary>
@@ -141,24 +182,78 @@ namespace PLATEAU.RoadNetwork
         }
 
         /// <summary>
-        /// LaneをsplitNumで分割する
+        /// 境界線を取得
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        public RnWay GetBorder(RnLaneBorderType type)
+        {
+            return type switch
+            {
+                RnLaneBorderType.Prev => PrevBorder,
+                RnLaneBorderType.Next => NextBorder,
+                _ => null
+            };
+        }
+
+        /// <summary>
+        /// 境界線の方向を取得
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        public RnLaneBorderDir? GetBorderDir(RnLaneBorderType type)
+        {
+            var border = GetBorder(type);
+            if (border == null)
+                return null;
+            if (IsValidWay == false)
+                return null;
+            // borderの0番目の点がLeftWayの0番目の点と同じならLeft2Right
+            if (border.GetPoint(0) == LeftWay.GetPoint(0))
+                return RnLaneBorderDir.Left2Right;
+
+            if (border.GetPoint(0) == RightWay.GetPoint(0))
+                return RnLaneBorderDir.Right2Left;
+
+            var d = border.GetPoint(1).Vertex - border.GetPoint(0).Vertex;
+            var d2 = RightWay.GetPoint(0).Vertex - LeftWay.GetPoint(0).Vertex;
+
+            if (Vector2.Dot(d.Xz(), d2.Xz()) > 0)
+                return RnLaneBorderDir.Left2Right;
+            return RnLaneBorderDir.Right2Left;
+        }
+
+        /// <summary>
+        /// LaneをsplitNumで分割たLaneリストを返す
         /// </summary>
         /// <param name="splitNum"></param>
+        /// <param name="applyConnectedLane"></param>
         /// <returns></returns>
-        public List<RnLane> SplitLane(int splitNum)
+        public List<RnLane> SplitLane(int splitNum, bool applyConnectedLane = false)
         {
             if (IsValidWay == false)
+                return null;
+
+            if (HasBothBorder == false)
                 return null;
 
             if (splitNum <= 1)
                 return new List<RnLane> { this };
 
+            void CheckReverse(List<RnWay> ways, RnLaneBorderType borderType)
+            {
+                if (GetBorderDir(borderType) != RnLaneBorderDir.Right2Left)
+                    return;
+                ways.Reverse();
+                for (var i = 0; i < ways.Count; i++)
+                    ways[i] = ways[i].ReversedWay();
+            }
             // Borderの中心を開始点とする
-            var startSubWays = PrevBorder.Split(splitNum);
+            var startSubWays = PrevBorder.Split(splitNum, true);
             if (startSubWays.Any() == false)
                 return null;
 
-            var endSubWays = NextBorder.Split(splitNum);
+            var endSubWays = NextBorder.Split(splitNum, true);
             if (endSubWays.Any() == false)
                 return null;
 
@@ -177,9 +272,7 @@ namespace PLATEAU.RoadNetwork
                             return;
                         points.Add(p);
                     }
-#if false
-                    points = this.GetInnerLerpSegments(p2);
-#else
+
                     var lefts = LeftWay.Vertices.ToList();
                     var rights =
                         RightWay.Vertices.ToList();
@@ -192,7 +285,6 @@ namespace PLATEAU.RoadNetwork
                     }
                     // #TODO : 直線補間ではなくendSubWayからとってくる必要がある
                     AddPoint(Vector3.Lerp(lefts[^1], rights[^1], p2));
-#endif
                     var centerLine = RnLineString.Create(points.Select(p => new RnPoint(p)));
                     r = new RnWay(centerLine, false, true);
                 }
@@ -203,18 +295,6 @@ namespace PLATEAU.RoadNetwork
             }
 
             return ret;
-        }
-
-        /// <summary>
-        /// Xz平面だけで見たときの, 線分(st, en)との最も近い交点を返す
-        /// </summary>
-        /// <param name="st"></param>
-        /// <param name="en"></param>
-        /// <param name="intersection"></param>
-        /// <returns></returns>
-        public bool SegmentIntersectionXz(Vector3 st, Vector3 en, out Vector3 intersection)
-        {
-            return GeoGraph2D.PolygonSegmentIntersectionXZ(Vertices, st, en, out intersection, out var t);
         }
 
         public static RnLane CreateOneWayLane(RnWay way)
@@ -372,6 +452,35 @@ namespace PLATEAU.RoadNetwork
             return false;
         }
 
+        /// <summary>
+        /// PrevBorderの長さを返す
+        /// </summary>
+        /// <param name="self"></param>
+        /// <returns></returns>
+        public static float CalcPrevBorderWidth(this RnLane self)
+        {
+            return self.PrevBorder?.LineString?.CalcLength() ?? 0f;
+        }
+
+        /// <summary>
+        /// NextBorderの長さを返す
+        /// </summary>
+        /// <param name="self"></param>
+        /// <returns></returns>
+        public static float CalcNextBorderWidth(this RnLane self)
+        {
+            return self.NextBorder?.LineString?.CalcLength() ?? 0f;
+        }
+
+        /// <summary>
+        /// このレーンの幅を返す(Next/PrevBorderの短い方)
+        /// </summary>
+        /// <param name="self"></param>
+        /// <returns></returns>
+        public static float CalcWidth(this RnLane self)
+        {
+            return Mathf.Min(self.CalcNextBorderWidth(), self.CalcPrevBorderWidth());
+        }
 #if false
         public static List<Vector2> GetInnerLerpSegments2(this RoadNetworkLane self, float p)
         {
