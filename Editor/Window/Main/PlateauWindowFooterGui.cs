@@ -23,7 +23,7 @@ namespace PLATEAU.Editor.Window.Main
                     GUI.backgroundColor = s_questionnaireBtnBackGroundColor.Color;
                     if (GUILayout.Button(new GUIContent("SDK利用者アンケートを募集しています！"), ButtonStyle()))
                     {
-                        Application.OpenURL("https://synesthesias.jp/");
+                        Application.OpenURL("https://docs.google.com/forms/d/e/1FAIpQLSdEU_CjR6-wT9cpvusvqX0bFkPIOE1J-UlJ-oF2JLOLAJoYNQ/viewform?usp=sharing");
                     }
                     GUI.backgroundColor = defaultBackgroundColor;
                     GUILayout.Space(10);
