@@ -8,6 +8,7 @@ using UnityEngine;
 
 namespace PLATEAU.RoadNetwork
 {
+    //[Serializable]
     public class RnLink : RnRoadBase
     {
         //----------------------------------
@@ -27,6 +28,12 @@ namespace PLATEAU.RoadNetwork
         private List<RnLane> leftLanes = new List<RnLane>();
         private List<RnLane> rightLanes = new List<RnLane>();
 
+        // 双方向フラグ
+        public bool IsBothWay { get; set; } = true;
+        //----------------------------------
+        // end: フィールド
+        //----------------------------------
+
         // 本線レーン(参照のみ)
         // 追加/削除はAddMainLane/RemoveMainLaneを使うこと
         public IReadOnlyList<RnLane> MainLanes => mainLanes;
@@ -39,14 +46,16 @@ namespace PLATEAU.RoadNetwork
         // 追加/削除はAddRightLane/RemoveRightLaneを使うこと
         public IReadOnlyList<RnLane> LeftLanes => leftLanes;
 
-        // 双方向フラグ
-        public bool IsBothWay { get; set; } = true;
-        //----------------------------------
-        // end: フィールド
-        //----------------------------------
-
         // 全レーン
         public override IEnumerable<RnLane> AllLanes => MainLanes.Concat(LeftLanes).Concat(RightLanes);
+
+        public override IEnumerable<RnRoadBase> GetNeighborRoads()
+        {
+            if (Next != null)
+                yield return Next;
+            if (Prev != null)
+                yield return Prev;
+        }
 
         public RnLink() { }
 
@@ -123,11 +132,6 @@ namespace PLATEAU.RoadNetwork
                 lane.Parent = null;
         }
 
-        public override IEnumerable<RnWay> GetBorderWays()
-        {
-            return AllLanes.SelectMany(l => l.AllBorders);
-        }
-
 
         public void SplitLane(RnLane lane, int splitNum)
         {
@@ -139,6 +143,11 @@ namespace PLATEAU.RoadNetwork
 
             if ((lane?.HasBothBorder ?? false) == false)
                 return;
+
+            var index = mainLanes.IndexOf(lane);
+            if (index < 0)
+                return;
+
 
             // 左->右になるように並び替える
             List<RnWay> SplitBorder(RnLaneBorderType borderType)

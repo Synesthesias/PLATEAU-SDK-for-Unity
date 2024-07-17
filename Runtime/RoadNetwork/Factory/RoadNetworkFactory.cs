@@ -350,8 +350,8 @@ namespace PLATEAU.RoadNetwork.Factory
                 {
                     var nextTrans = Lanes.Select(w => w.NextBorder).Where(b => b != null).SelectMany(w => w.BothConnectedTrans).Distinct().ToList();
                     var prevTrans = Lanes.Select(w => w.PrevBorder).Where(b => b != null).SelectMany(w => w.BothConnectedTrans).Distinct().ToList();
-                    link.Next = nextTrans.FirstOrDefault(t => t.Node != null)?.Node;
-                    link.Prev = prevTrans.FirstOrDefault(t => t.Node != null)?.Node;
+                    link.Next = nextTrans.FirstOrDefault(t => t.Road != null)?.Road;
+                    link.Prev = prevTrans.FirstOrDefault(t => t.Road != null)?.Road;
                     if (LodLevel == 1)
                     {
                         var leftLane = link.MainLanes.FirstOrDefault();

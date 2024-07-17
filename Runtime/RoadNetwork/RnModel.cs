@@ -21,17 +21,14 @@ namespace PLATEAU.RoadNetwork
         //----------------------------------
         // start: フィールド
         //----------------------------------
-
+        [SerializeField]
         private List<RnLink> links = new List<RnLink>();
+
+        [SerializeField]
         private List<RnNode> nodes = new List<RnNode>();
 
+        [SerializeField]
         private List<RnLineString> sideWalks = new List<RnLineString>();
-
-        public IReadOnlyList<RnLink> Links => links;
-
-        public IReadOnlyList<RnNode> Nodes => nodes;
-
-        public IReadOnlyList<RnLineString> SideWalks => sideWalks;
 
         // #TODO : 一時的にモデル内部に用意する(ビルドするたびにリセットされないように)
         // シリアライズ用フィールド
@@ -40,6 +37,13 @@ namespace PLATEAU.RoadNetwork
         //----------------------------------
         // end: フィールド
         //----------------------------------
+
+        public IReadOnlyList<RnLink> Links => links;
+
+        public IReadOnlyList<RnNode> Nodes => nodes;
+
+        public IReadOnlyList<RnLineString> SideWalks => sideWalks;
+
         public void AddLink(RnLink link)
         {
             if (links.Contains(link))
@@ -93,13 +97,20 @@ namespace PLATEAU.RoadNetwork
                 l.ReplaceLane(before, after);
         }
 
-        // #TODO : 実際はもっとある
+        /// <summary>
+        /// Node/Linkのレーンを全て取得
+        /// </summary>
+        /// <returns></returns>
         public IEnumerable<RnLane> CollectAllLanes()
         {
-            return Links.SelectMany(l => l.AllLanes).Distinct();
+            // Laneは重複しないはず
+            return Links.SelectMany(l => l.AllLanes).Concat(Nodes.SelectMany(n => n.Lanes));
         }
 
-        // #TODO : 実際はもっとある
+        /// <summary>
+        /// Node/LinkのWayを全て取得
+        /// </summary>
+        /// <returns></returns>
         public IEnumerable<RnWay> CollectAllWays()
         {
             return CollectAllLanes().SelectMany(l => l.AllBorders.Concat(l.BothWays)).Distinct();
@@ -142,7 +153,7 @@ namespace PLATEAU.RoadNetwork
 
         public void SplitLaneByWidth(float roadWidth)
         {
-            var visited = new HashSet<RnRoadBase>();
+            var visited = new HashSet<RnLane>();
 
             foreach (var link in Links)
             {
@@ -151,12 +162,34 @@ namespace PLATEAU.RoadNetwork
                 var srcLane = link.MainLanes[0];
                 if (srcLane.HasBothBorder == false)
                     continue;
+
+                if (visited.Contains(srcLane))
+                    continue;
+                visited.Add(srcLane);
                 var width = srcLane.CalcWidth();
                 var num = (int)(width / roadWidth);
                 if (num <= 1)
                     continue;
 
-                link.SplitLane(srcLane, num);
+                var lanes = srcLane.SplitLane(num, true);
+                foreach (var l in lanes)
+                {
+                    visited.Add(l.Key);
+                    var lane = l.Key;
+                    if (lane.Parent is RnLink parent)
+                    {
+                        parent.RemoveLane(lane);
+                        for (var i = 0; i < l.Value.Count; i++)
+                        {
+                            var newLane = l.Value[i];
+                            if (i >= l.Value.Count / 2)
+                            {
+                                newLane.Reverse();
+                            }
+                            parent.AddMainLane(newLane);
+                        }
+                    }
+                }
             }
         }
     }

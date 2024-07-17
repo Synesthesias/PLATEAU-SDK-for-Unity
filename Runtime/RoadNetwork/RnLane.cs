@@ -132,10 +132,13 @@ namespace PLATEAU.RoadNetwork
             if (Parent == null || border == null)
                 yield break;
 
-            foreach (var lane in Parent.AllLanes)
+            foreach (var n in Parent.GetNeighborRoads())
             {
-                if (lane.AllBorders.Any(b => b.IsSameLine(border)))
-                    yield return lane;
+                foreach (var lane in n.AllLanes)
+                {
+                    if (lane.AllBorders.Any(b => b.IsSameLine(border)))
+                        yield return lane;
+                }
             }
         }
 
@@ -223,13 +226,7 @@ namespace PLATEAU.RoadNetwork
             return RnLaneBorderDir.Right2Left;
         }
 
-        /// <summary>
-        /// LaneをsplitNumで分割たLaneリストを返す
-        /// </summary>
-        /// <param name="splitNum"></param>
-        /// <param name="applyConnectedLane"></param>
-        /// <returns></returns>
-        public List<RnLane> SplitLane(int splitNum, bool applyConnectedLane = false)
+        private List<RnLane> SplitLaneSelf(int splitNum)
         {
             if (IsValidWay == false)
                 return null;
@@ -240,62 +237,73 @@ namespace PLATEAU.RoadNetwork
             if (splitNum <= 1)
                 return new List<RnLane> { this };
 
-            void CheckReverse(List<RnWay> ways, RnLaneBorderType borderType)
+            // 境界線を分割して返す. その際必ずLeft->Rightの方向になるようにする
+            List<RnWay> SplitBorder(RnLaneBorderType borderType)
             {
-                if (GetBorderDir(borderType) != RnLaneBorderDir.Right2Left)
-                    return;
-                ways.Reverse();
-                for (var i = 0; i < ways.Count; i++)
-                    ways[i] = ways[i].ReversedWay();
+                var border = GetBorder(borderType);
+                var ways = border.Split(splitNum, true);
+                // Borderの向きが
+                if (GetBorderDir(borderType) == RnLaneBorderDir.Right2Left)
+                {
+                    ways.Reverse();
+                    for (var i = 0; i < ways.Count; i++)
+                        ways[i] = ways[i].ReversedWay();
+                }
+                return ways;
             }
             // Borderの中心を開始点とする
-            var startSubWays = PrevBorder.Split(splitNum, true);
-            if (startSubWays.Any() == false)
-                return null;
-
-            var endSubWays = NextBorder.Split(splitNum, true);
-            if (endSubWays.Any() == false)
-                return null;
+            var prevSubBorders = SplitBorder(RnLaneBorderType.Prev);
+            var nextSubBorders = SplitBorder(RnLaneBorderType.Next);
 
             var ret = new List<RnLane>();
+            var lefts = LeftWay.Vertices.ToList();
+            var rights = RightWay.Vertices.ToList();
             var leftWay = LeftWay;
             foreach (var i in Enumerable.Range(0, splitNum))
             {
                 var p2 = (i + 1f) / splitNum;
-                RnWay r = RightWay;
+                RnWay r = new RnWay(RightWay.LineString, RightWay.IsReversed, true);
                 if (i != splitNum - 1)
                 {
-                    var points = new List<Vector3>();
-                    void AddPoint(Vector3 p)
+                    var points = new List<RnPoint>();
+                    void AddPoint(RnPoint p)
                     {
-                        if (points.Any() && (points.Last() - p).sqrMagnitude < 0.001f)
+                        if (points.Any() && (points.Last().Vertex - p.Vertex).sqrMagnitude < 0.001f)
                             return;
                         points.Add(p);
                     }
 
-                    var lefts = LeftWay.Vertices.ToList();
-                    var rights =
-                        RightWay.Vertices.ToList();
-                    // #TODO : 直線補間ではなくstartSubWayからとってくる必要がある
-                    AddPoint(Vector3.Lerp(lefts[0], rights[0], p2));
+                    AddPoint(prevSubBorders[i].Points.Last());
+
                     var segments = GeoGraphEx.GetInnerLerpSegments(lefts, rights, AxisPlane.Xz, p2);
                     foreach (var s in segments)
                     {
-                        AddPoint(s.Segment.Start);
+                        AddPoint(new RnPoint(s.Segment.Start));
                     }
-                    // #TODO : 直線補間ではなくendSubWayからとってくる必要がある
-                    AddPoint(Vector3.Lerp(lefts[^1], rights[^1], p2));
-                    var centerLine = RnLineString.Create(points.Select(p => new RnPoint(p)));
-                    r = new RnWay(centerLine, false, true);
+
+                    AddPoint(nextSubBorders[i].Points.Last());
+                    var rightLine = RnLineString.Create(points);
+                    r = new RnWay(rightLine, false, true);
                 }
                 var l = new RnWay(leftWay.LineString, leftWay.IsReversed, false);
-                var lane = new RnLane(l, r, startSubWays[i], endSubWays[i]);
+                var newLane = new RnLane(l, r, prevSubBorders[i], nextSubBorders[i]);
+                ret.Add(newLane);
                 leftWay = r;
-                ret.Add(lane);
             }
-
             return ret;
         }
+
+        /// <summary>
+        /// LaneをsplitNumで分割たLaneリストを返す
+        /// </summary>
+        /// <param name="splitNum"></param>
+        /// <returns></returns>
+        public List<RnLane> SplitLane(int splitNum)
+        {
+            return SplitLaneSelf(splitNum);
+        }
+
+
 
         public static RnLane CreateOneWayLane(RnWay way)
         {
@@ -306,7 +314,7 @@ namespace PLATEAU.RoadNetwork
     /// <summary>
     /// ROadNetworkLaneの拡張関数
     /// </summary>
-    public static class RoadNetworkLaneEx
+    public static class RnLaneEx
     {
         private struct Reference
         {
@@ -480,6 +488,194 @@ namespace PLATEAU.RoadNetwork
         public static float CalcWidth(this RnLane self)
         {
             return Mathf.Min(self.CalcNextBorderWidth(), self.CalcPrevBorderWidth());
+        }
+
+        /// <summary>
+        /// LeftWay -> NextBorder -> RightWay -> PrevBorderの順に頂点を返す
+        /// </summary>
+        /// <param name="self"></param>
+        /// <returns></returns>
+        public static IEnumerable<RnPoint> GetVertices(this RnLane self)
+        {
+            IEnumerable<RnPoint> GetWayPoints(RnWay way, bool isReverse)
+            {
+                if (way == null)
+                    yield break;
+
+                for (var i = 0; i < way.Count; ++i)
+                {
+                    var index = isReverse ? way.Count - 1 - i : i;
+                    yield return way.GetPoint(index);
+                }
+            }
+
+            IEnumerable<RnPoint> GetBorderPoints(RnLaneBorderType type, RnLaneBorderDir dir)
+            {
+                var border = self.GetBorder(type);
+                if (border == null)
+                    yield break;
+
+                if (dir == self.GetBorderDir(type))
+                {
+                    for (var i = 0; i < border.Count; ++i)
+                        yield return border.GetPoint(i);
+                }
+                else
+                {
+                    for (var i = border.Count - 1; i >= 0; --i)
+                        yield return border.GetPoint(i);
+                }
+            }
+
+            foreach (var p in GetWayPoints(self.LeftWay, false))
+                yield return p;
+
+            foreach (var p in GetBorderPoints(RnLaneBorderType.Next, RnLaneBorderDir.Left2Right))
+                yield return p;
+
+            foreach (var p in GetWayPoints(self.RightWay, true))
+                yield return p;
+
+            foreach (var p in GetBorderPoints(RnLaneBorderType.Prev, RnLaneBorderDir.Right2Left))
+                yield return p;
+        }
+
+        /// <summary>
+        /// selfの全頂点の重心を返す
+        /// </summary>
+        /// <param name="self"></param>
+        /// <returns></returns>
+        public static Vector3 GetCenter(this RnLane self)
+        {
+            var a = self.GetVertices().Aggregate(new { sum = Vector3.zero, i = 0 }, (a, p) => new { sum = a.sum + p.Vertex, i = a.i + 1 });
+            if (a.i == 0)
+                return Vector3.zero;
+            return a.sum / a.i;
+        }
+
+        public static RnLaneBorderType? GetBorderType(this RnLane self, RnWay border)
+        {
+            if (self.PrevBorder == border)
+                return RnLaneBorderType.Prev;
+            if (self.NextBorder == border)
+                return RnLaneBorderType.Next;
+            return null;
+        }
+
+        /// <summary>
+        /// レーンの分割を行う. withConnectedLinkLaneがtrueの場合は隣接するLinkのLaneも分割する
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="splitNum"></param>
+        /// <param name="withConnectedLinkLane"></param>
+        /// <returns></returns>
+        public static Dictionary<RnLane, List<RnLane>> SplitLane(this RnLane self, int splitNum, bool withConnectedLinkLane)
+        {
+            if (splitNum <= 1)
+                return new Dictionary<RnLane, List<RnLane>>();
+
+            if ((self?.HasBothBorder ?? false) == false)
+                return new Dictionary<RnLane, List<RnLane>>();
+
+            //var lanes = lane.SplitLane(splitNum);
+
+            var visited = new HashSet<RnLane>();
+            var queue = new Queue<RnLane>();
+            queue.Enqueue(self);
+
+            // 境界線
+            Dictionary<RnWay, List<RnWay>> border2SubBorders = new Dictionary<RnWay, List<RnWay>>(new RnWayEqualityComparer(true));
+
+            List<RnWay> GetSplitBorder(RnLane l, RnLaneBorderType borderType, out bool isLeft2Right)
+            {
+                isLeft2Right = true;
+                var border = l.GetBorder(borderType);
+                if (border2SubBorders.TryGetValue(border, out var ret) == false)
+                {
+                    ret = border.Split(splitNum, true);
+                    border2SubBorders[border] = ret;
+                }
+
+                if (ret.Any() == false || ret[0].IsValid == false)
+                    return ret;
+
+                var s = ret[0].GetPoint(0);
+                if (s == border.GetPoint(0))
+                {
+                    isLeft2Right = l.GetBorderDir(borderType) == RnLaneBorderDir.Left2Right;
+                }
+                else
+                {
+                    isLeft2Right = l.GetBorderDir(borderType) != RnLaneBorderDir.Left2Right;
+                }
+
+                return ret;
+            }
+
+            var ret = new Dictionary<RnLane, List<RnLane>>();
+            while (queue.Count > 0)
+            {
+                var targetLane = queue.Dequeue();
+                if (visited.Contains(targetLane))
+                    continue;
+                visited.Add(targetLane);
+
+                ret[targetLane] = new List<RnLane>();
+
+                // 隣接するレーンがLinkのLaneの場合それをキューに積む
+                if (withConnectedLinkLane)
+                {
+                    var nextLanes = targetLane.GetNextLanes().ToList();
+                    var prevLanes = targetLane.GetPrevLanes().ToList();
+                    var neighbors = nextLanes
+                        .Concat(prevLanes)
+                        .Where(l => l.Parent is RnLink && visited.Contains(l) == false)
+                        .ToList();
+                    foreach (var l in neighbors)
+                        queue.Enqueue(l);
+                }
+
+                var prevSubBorders = GetSplitBorder(targetLane, RnLaneBorderType.Prev, out var isPrevLeft2Right);
+                var nextSubBorders = GetSplitBorder(targetLane, RnLaneBorderType.Next, out var isNextLeft2Right);
+                foreach (var i in Enumerable.Range(0, splitNum))
+                {
+                    var p2 = (i + 1f) / splitNum;
+                    RnWay r = new RnWay(targetLane.RightWay.LineString, targetLane.RightWay.IsReversed, true);
+                    if (i != splitNum - 1)
+                    {
+                        var points = new List<RnPoint>();
+                        void AddPoint(RnPoint p)
+                        {
+                            if (points.Any() && (points.Last().Vertex - p.Vertex).sqrMagnitude < 0.001f)
+                                return;
+                            points.Add(p);
+                        }
+
+                        if (isPrevLeft2Right)
+                            AddPoint(prevSubBorders[i].Points.Last());
+                        else
+                            AddPoint(prevSubBorders[prevSubBorders.Count - 1 - i].Points.First());
+
+                        var segments = GeoGraphEx.GetInnerLerpSegments(targetLane.LeftWay.Vertices.ToList(), targetLane.RightWay.Vertices.ToList(), AxisPlane.Xz, p2);
+                        foreach (var s in segments)
+                        {
+                            AddPoint(new RnPoint(s.Segment.Start));
+                        }
+
+                        if (isNextLeft2Right)
+                            AddPoint(nextSubBorders[i].Points.Last());
+                        else
+                            AddPoint(nextSubBorders[nextSubBorders.Count - 1 - i].Points.First());
+                        var rightLine = RnLineString.Create(points);
+                        r = new RnWay(rightLine, false, targetLane.RightWay.IsReverseNormal);
+                    }
+                    var l = new RnWay(targetLane.LeftWay.LineString, targetLane.LeftWay.IsReversed, false);
+                    var newLane = new RnLane(l, r, prevSubBorders[i], nextSubBorders[i]);
+                    ret[targetLane].Add(newLane);
+                }
+            }
+
+            return ret;
         }
 #if false
         public static List<Vector2> GetInnerLerpSegments2(this RoadNetworkLane self, float p)

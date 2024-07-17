@@ -85,7 +85,8 @@ namespace PLATEAU.RoadNetwork
             MergeConvertCityObject,
             SeparateConvertCityObject,
             TranMesh,
-            RoadNetwork
+            RoadNetwork,
+            All
         }
         [SerializeField]
         private CreateMode createMode = CreateMode.ConvertCityObject;
@@ -222,6 +223,8 @@ namespace PLATEAU.RoadNetwork
                         }
                     }
 
+                    //"島"
+
                     return false;
                 }
 
@@ -281,11 +284,15 @@ namespace PLATEAU.RoadNetwork
                 case CreateMode.RoadNetwork:
                     RoadNetwork = await Factory.CreateNetworkAsync(tranMeshes);
                     break;
+                case CreateMode.All:
+                    convertedCityObjects = await ConvertCityObjectAsync();
+                    MergeVertices();
+                    tranMeshes = CreateTranMeshes(Factory.cellSize);
+                    RoadNetwork = await Factory.CreateNetworkAsync(tranMeshes);
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
         }
-
-
     }
 }

@@ -80,6 +80,7 @@ namespace PLATEAU.RoadNetwork.Drawer
             public float validWayAlpha = 0.75f;
             public float invalidWayAlpha = 0.3f;
             public bool showAttrText = false;
+            public bool showId = false;
             public DrawOption showLeftWay = new DrawOption();
             public DrawOption showRightWay = new DrawOption();
             // 境界線を表示する
@@ -107,6 +108,20 @@ namespace PLATEAU.RoadNetwork.Drawer
 
         }
         [SerializeField] private SideWalkOption sideWalkRoadOp = new SideWalkOption();
+
+
+        [Serializable]
+        private class LaneSplitOption
+        {
+            public ulong targetLaneId = 0;
+
+            public int splitNum = 2;
+
+            public bool execute = false;
+        }
+
+        [SerializeField] private LaneSplitOption laneSplitOp = new LaneSplitOption();
+
 
         // --------------------
         // end:フィールド
@@ -245,6 +260,8 @@ namespace PLATEAU.RoadNetwork.Drawer
                 if (laneOp.visible == false)
                     return;
 
+                if (laneOp.showId)
+                    DebugEx.DrawString($"L[{lane.DebugMyId}]", lane.GetCenter());
                 var offset = Vector3.up * (lane.DebugMyId % 10);
                 if (laneOp.showLeftWay.visible)
                 {
@@ -324,6 +341,25 @@ namespace PLATEAU.RoadNetwork.Drawer
                 if (sideWalkRoadOp.visible == false)
                     break;
                 DrawWay(new RnWay(sw), color: sideWalkRoadOp.color);
+            }
+
+            if (laneSplitOp.execute)
+            {
+                laneSplitOp.execute = false;
+                var lane = roadNetwork.CollectAllLanes().FirstOrDefault(l => l.DebugMyId == laneSplitOp.targetLaneId);
+                if (lane != null)
+                {
+                    if (lane.Parent is RnLink link)
+                    {
+                        var lanes = lane.SplitLane(laneSplitOp.splitNum, true);
+                        foreach (var l in lanes)
+                        {
+                            link.RemoveLane(l.Key);
+                            foreach (var newLane in l.Value)
+                                link.AddMainLane(newLane);
+                        }
+                    }
+                }
             }
         }
     }

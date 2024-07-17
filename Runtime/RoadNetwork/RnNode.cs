@@ -2,6 +2,7 @@
 using PLATEAU.RoadNetwork.Data;
 using PLATEAU.Util;
 using PLATEAU.Util.GeoGraph;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.Mathematics;
@@ -12,6 +13,8 @@ namespace PLATEAU.RoadNetwork
     /// <summary>
     /// 交差点
     /// </summary>
+
+    [Serializable]
     public class RnNode : RnRoadBase
     {
         //----------------------------------
@@ -26,11 +29,8 @@ namespace PLATEAU.RoadNetwork
         // 隣接情報
         public List<RnNeighbor> Neighbors { get; set; } = new List<RnNeighbor>();
 
-
+        // レーンリスト
         private List<RnLane> lanes = new List<RnLane>();
-
-        // 車線
-        public IReadOnlyList<RnLane> Lanes => lanes;
 
         // 信号制御器
         public TrafficSignalLightController SignalController { get; set; } = null;
@@ -38,6 +38,19 @@ namespace PLATEAU.RoadNetwork
         //----------------------------------
         // end: フィールド
         //----------------------------------
+
+        // 車線
+        public IReadOnlyList<RnLane> Lanes => lanes;
+
+        public override IEnumerable<RnRoadBase> GetNeighborRoads()
+        {
+            foreach (var neighbor in Neighbors)
+            {
+                if (neighbor.Link != null)
+                    yield return neighbor.Link;
+            }
+        }
+
 
         public RnNode() { }
 
@@ -53,11 +66,6 @@ namespace PLATEAU.RoadNetwork
                 foreach (var lane in neighbor.GetConnectedLanes())
                     yield return new RnBorder(neighbor.Border, lane);
             }
-        }
-
-        public override IEnumerable<RnWay> GetBorderWays()
-        {
-            return Neighbors.Select(n => n.Border);
         }
 
         public void AddLane(RnLane lane)

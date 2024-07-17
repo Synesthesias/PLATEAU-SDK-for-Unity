@@ -36,24 +36,26 @@ namespace PLATEAU.Editor.RoadNetwork
 
         public override void OnInspectorGUI()
         {
-            var cog = target as PLATEAURoadNetworkTester;
-            if (!cog)
+            var obj = target as PLATEAURoadNetworkTester;
+            if (!obj)
                 return;
 
             base.OnInspectorGUI();
-            GUILayout.Label($"ConvertedCityObjectVertexCount : {cog.convertedCityObjects.Sum(c => c.Meshes.Sum(m => m.Vertices.Count))}");
+            GUILayout.Label($"ConvertedCityObjectVertexCount : {obj.convertedCityObjects.Sum(c => c.Meshes.Sum(m => m.Vertices.Count))}");
 
             if (GUILayout.Button("Create"))
-                cog.CreateNetwork();
+                obj.CreateNetwork();
 
             if (GUILayout.Button("Serialize"))
-                cog.RoadNetwork.Serialize();
+                obj.RoadNetwork.Serialize();
 
             if (GUILayout.Button("Deserialize"))
-                cog.RoadNetwork.Deserialize();
+                obj.RoadNetwork.Deserialize();
 
             if (GUILayout.Button("SplitCityObject"))
-                cog.SplitCityObjectAsync();
+                obj.SplitCityObjectAsync();
+
+
         }
     }
 }

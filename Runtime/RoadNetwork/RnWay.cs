@@ -36,6 +36,48 @@ namespace PLATEAU.RoadNetwork
         public RnPoint this[int index] => way.GetPoint(index);
     }
 
+    public class RnWayEqualityComparer : IEqualityComparer<RnWay>
+    {
+        // 同じLineStringであれば同一判定とする
+        public bool SameLineIsEqual { get; set; } = true;
+
+        /// <summary>
+        /// sameLineIsEqual : 同じLineStringであれば同一判定とする
+        /// </summary>
+        /// <param name="sameLineIsEqual"></param>
+        public RnWayEqualityComparer(bool sameLineIsEqual) { SameLineIsEqual = sameLineIsEqual; }
+
+        public bool Equals(RnWay x, RnWay y)
+        {
+            if (ReferenceEquals(x, y))
+            {
+                return true;
+            }
+
+            if (ReferenceEquals(x, null))
+            {
+                return false;
+            }
+
+            if (ReferenceEquals(y, null))
+            {
+                return false;
+            }
+
+            if (SameLineIsEqual)
+            {
+                return x.IsSameLine(y);
+            }
+
+            return x.IsReversed == y.IsReversed && x.IsReverseNormal == y.IsReverseNormal && Equals(x.LineString, y.LineString);
+        }
+
+        public int GetHashCode(RnWay obj)
+        {
+            return HashCode.Combine(obj.IsReversed, obj.IsReverseNormal, obj.LineString);
+        }
+    }
+
     /// <summary>
     /// レーンを構成する左右の道の一つ
     /// </summary>
