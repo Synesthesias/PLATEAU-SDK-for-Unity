@@ -47,6 +47,10 @@ namespace PLATEAU.RoadNetwork.Data
         [RoadNetworkSerializeMember(nameof(RnLane.RightWay))]
         public RnID<RnDataWay> RightWay { get; set; }
 
+        [field: SerializeField]
+        [RoadNetworkSerializeMember]
+        public RnLaneAttribute Attributes { get; set; }
+
     }
 
 }

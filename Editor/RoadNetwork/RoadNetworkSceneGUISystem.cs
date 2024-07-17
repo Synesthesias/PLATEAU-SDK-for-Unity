@@ -484,7 +484,7 @@ namespace PLATEAU.Editor.RoadNetwork
                     state.delayCommand += () =>
                     {
                         // IRoadNetworkEditOperationを通してないので通知が通らないので注意 修正する
-                        var newLanes = lane.SplitLane(2);   // 元のレーンを含めてLaneが３つになる
+                        var newLanes = lane.SplitLaneSelf(2);   // 元のレーンを含めてLaneが３つになる
                         if (newLanes == null)
                             return;
                         parent.RemoveMainLane(lane);

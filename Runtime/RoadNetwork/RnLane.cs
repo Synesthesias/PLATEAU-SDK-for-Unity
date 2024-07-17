@@ -30,6 +30,15 @@ namespace PLATEAU.RoadNetwork
         Right2Left
     }
 
+    [Flags]
+    public enum RnLaneAttribute
+    {
+        // 左折専用
+        LeftOnly = 1 << 0,
+        // 右折専用
+        RightOnly = 1 << 1,
+    }
+
     public class RnLane : ARnParts<RnLane>
     {
         //----------------------------------
@@ -55,6 +64,9 @@ namespace PLATEAU.RoadNetwork
 
         // 車線(右)
         public RnWay RightWay { get; private set; }
+
+        // 属性
+        public RnLaneAttribute Attributes { get; set; }
 
         //----------------------------------
         // end: フィールド

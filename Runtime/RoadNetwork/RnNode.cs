@@ -59,7 +59,7 @@ namespace PLATEAU.RoadNetwork
             TargetTran = targetTran;
         }
 
-        public override IEnumerable<RnBorder> GetNeighbors()
+        public override IEnumerable<RnBorder> GetBorders()
         {
             foreach (var neighbor in Neighbors)
             {
