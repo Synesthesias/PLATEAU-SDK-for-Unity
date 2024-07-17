@@ -511,6 +511,7 @@ namespace PLATEAU.RoadNetwork
 
         /// <summary>
         /// レーンの分割を行う. withConnectedLinkLaneがtrueの場合は隣接するLinkのLaneも分割する
+        /// 戻り値 : Key:分割前のレーン, Value:分割後のレーン
         /// </summary>
         /// <param name="self"></param>
         /// <param name="splitNum"></param>
