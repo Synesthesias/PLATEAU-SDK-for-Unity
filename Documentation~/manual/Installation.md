@@ -1,9 +1,9 @@
 # インストール
 
-このページでは PLATEAU SDK for Unity のインストール方法を説明します。
+このページではPLATEAU SDK for Unityのインストール方法を説明します。
 
 ## 対応Unityバージョンのインストール
-- PLATEAU SDK for Unity で想定するUnityバージョンが[リリースページ](https://github.com/Project-PLATEAU/PLATEAU-SDK-for-Unity/releases)に記載されています。  
+- PLATEAU SDK for Unityで想定するUnityバージョンが[リリースページ](https://github.com/Project-PLATEAU/PLATEAU-SDK-for-Unity/releases)に記載されています。  
   そのバージョンがインストールされていない場合は、次の手順でインストールしてください。
   - [Unity Hub をこちらからインストールします](https://unity3d.com/jp/get-unity/download)。
   - Unity Hub とは、Unityのお好きなバージョンをインストールして起動することのできるソフトウェアです。
