@@ -522,25 +522,24 @@ namespace PLATEAU.RoadNetwork
             if ((self?.HasBothBorder ?? false) == false)
                 return new Dictionary<RnLane, List<RnLane>>();
 
-            //var lanes = lane.SplitLane(splitNum);
-
             var visited = new HashSet<RnLane>();
             var queue = new Queue<RnLane>();
             queue.Enqueue(self);
 
             // 境界線
-            Dictionary<RnWay, List<RnWay>> border2SubBorders = new Dictionary<RnWay, List<RnWay>>(new RnWayEqualityComparer(true));
+            var wayEqualComp = new RnWayEqualityComparer(true);
+            var border2SubBorders = new Dictionary<RnWay, List<RnWay>>(wayEqualComp);
 
             List<RnWay> GetSplitBorder(RnLane l, RnLaneBorderType borderType, out bool isLeft2Right)
             {
                 isLeft2Right = true;
                 var border = l.GetBorder(borderType);
-                if (border2SubBorders.TryGetValue(border, out var ret) == false)
+                // ContainsKeyやTriGetValueだとEqualityComparerが反応しないのでAnyで無理やり
+                if (border2SubBorders.Any(x => wayEqualComp.Equals(x.Key, border)) == false)
                 {
-                    ret = border.Split(splitNum, true);
-                    border2SubBorders[border] = ret;
+                    border2SubBorders[border] = border.Split(splitNum, true);
                 }
-
+                var ret = border2SubBorders[border];
                 if (ret.Any() == false || ret[0].IsValid == false)
                     return ret;
 
@@ -549,11 +548,14 @@ namespace PLATEAU.RoadNetwork
                 {
                     isLeft2Right = l.GetBorderDir(borderType) == RnLaneBorderDir.Left2Right;
                 }
-                else
+                else if (s == border.GetPoint(-1))
                 {
                     isLeft2Right = l.GetBorderDir(borderType) != RnLaneBorderDir.Left2Right;
                 }
-
+                else
+                {
+                    Assert.IsTrue(false, "SplitBorder Error");
+                }
                 return ret;
             }
 
@@ -582,8 +584,12 @@ namespace PLATEAU.RoadNetwork
 
                 var prevSubBorders = GetSplitBorder(targetLane, RnLaneBorderType.Prev, out var isPrevLeft2Right);
                 var nextSubBorders = GetSplitBorder(targetLane, RnLaneBorderType.Next, out var isNextLeft2Right);
+
+                var leftWay = targetLane.LeftWay;
                 foreach (var i in Enumerable.Range(0, splitNum))
                 {
+                    var prevBorder = prevSubBorders[isPrevLeft2Right ? i : prevSubBorders.Count - 1 - i];
+                    var nextBorder = nextSubBorders[isNextLeft2Right ? i : nextSubBorders.Count - 1 - i];
                     var p2 = (i + 1f) / splitNum;
                     RnWay r = new RnWay(targetLane.RightWay.LineString, targetLane.RightWay.IsReversed, true);
                     if (i != splitNum - 1)
@@ -597,9 +603,9 @@ namespace PLATEAU.RoadNetwork
                         }
 
                         if (isPrevLeft2Right)
-                            AddPoint(prevSubBorders[i].Points.Last());
+                            AddPoint(prevBorder.Points.Last());
                         else
-                            AddPoint(prevSubBorders[prevSubBorders.Count - 1 - i].Points.First());
+                            AddPoint(prevBorder.Points.First());
 
                         var segments = GeoGraphEx.GetInnerLerpSegments(targetLane.LeftWay.Vertices.ToList(), targetLane.RightWay.Vertices.ToList(), AxisPlane.Xz, p2);
                         foreach (var s in segments)
@@ -608,15 +614,16 @@ namespace PLATEAU.RoadNetwork
                         }
 
                         if (isNextLeft2Right)
-                            AddPoint(nextSubBorders[i].Points.Last());
+                            AddPoint(nextBorder.Points.Last());
                         else
-                            AddPoint(nextSubBorders[nextSubBorders.Count - 1 - i].Points.First());
+                            AddPoint(nextBorder.Points.First());
                         var rightLine = RnLineString.Create(points);
                         r = new RnWay(rightLine, false, targetLane.RightWay.IsReverseNormal);
                     }
-                    var l = new RnWay(targetLane.LeftWay.LineString, targetLane.LeftWay.IsReversed, false);
-                    var newLane = new RnLane(l, r, prevSubBorders[i], nextSubBorders[i]);
+                    var l = new RnWay(leftWay.LineString, leftWay.IsReversed, false);
+                    var newLane = new RnLane(l, r, prevBorder, nextBorder);
                     ret[targetLane].Add(newLane);
+                    leftWay = r;
                 }
             }
 

@@ -23,6 +23,7 @@ namespace PLATEAU.RoadNetwork
     public class PLATEAURoadNetworkTester : MonoBehaviour, IRoadNetworkObject
     {
         [SerializeField] private RoadNetworkDrawerDebug drawer = new RoadNetworkDrawerDebug();
+        [SerializeField] private RoadNetworkEditorDebug editor = new RoadNetworkEditorDebug();
 
         [field: SerializeField] private RoadNetworkFactory Factory { get; set; } = new RoadNetworkFactory();
 
@@ -149,6 +150,7 @@ namespace PLATEAU.RoadNetwork
         public void OnDrawGizmos()
         {
             drawer.Draw(RoadNetwork);
+            editor.OnInspectorGUI(RoadNetwork);
 
             DrawConvertedCityObject(showConvertedCityObject, convertedCityObjects);
             DrawConvertedCityObject(showMergedConvertedCityObject, mergedConvertedCityObjects);

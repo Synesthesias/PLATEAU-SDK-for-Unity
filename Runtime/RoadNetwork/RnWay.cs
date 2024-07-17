@@ -74,6 +74,8 @@ namespace PLATEAU.RoadNetwork
 
         public int GetHashCode(RnWay obj)
         {
+            if (SameLineIsEqual)
+                return HashCode.Combine(obj.LineString);
             return HashCode.Combine(obj.IsReversed, obj.IsReverseNormal, obj.LineString);
         }
     }
