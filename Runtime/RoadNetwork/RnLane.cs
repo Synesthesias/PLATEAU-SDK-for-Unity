@@ -231,7 +231,9 @@ namespace PLATEAU.RoadNetwork
                 return RnLaneBorderDir.Right2Left;
 
             var d = border.GetPoint(1).Vertex - border.GetPoint(0).Vertex;
-            var d2 = RightWay.GetPoint(0).Vertex - LeftWay.GetPoint(0).Vertex;
+            // #NOTE : Laneが複雑な形状をしているときのためPrevはPrev側, NextBorderだとNext側を見る
+            var index = type == RnLaneBorderType.Prev ? 0 : -1;
+            var d2 = RightWay.GetPoint(index).Vertex - LeftWay.GetPoint(index).Vertex;
 
             if (Vector2.Dot(d.Xz(), d2.Xz()) > 0)
                 return RnLaneBorderDir.Left2Right;
@@ -535,14 +537,13 @@ namespace PLATEAU.RoadNetwork
                 isLeft2Right = true;
                 var border = l.GetBorder(borderType);
                 // ContainsKeyやTriGetValueだとEqualityComparerが反応しないのでAnyで無理やり
-                if (border2SubBorders.Any(x => wayEqualComp.Equals(x.Key, border)) == false)
+                if (border2SubBorders.TryGetValue(border, out var ret) == false)
                 {
-                    border2SubBorders[border] = border.Split(splitNum, true);
+                    ret = border.Split(splitNum, true);
+                    border2SubBorders[border] = ret;
                 }
-                var ret = border2SubBorders[border];
                 if (ret.Any() == false || ret[0].IsValid == false)
                     return ret;
-
                 var s = ret[0].GetPoint(0);
                 if (s == border.GetPoint(0))
                 {
@@ -550,7 +551,7 @@ namespace PLATEAU.RoadNetwork
                 }
                 else if (s == border.GetPoint(-1))
                 {
-                    isLeft2Right = l.GetBorderDir(borderType) != RnLaneBorderDir.Left2Right;
+                    isLeft2Right = l.GetBorderDir(borderType) == RnLaneBorderDir.Right2Left;
                 }
                 else
                 {
