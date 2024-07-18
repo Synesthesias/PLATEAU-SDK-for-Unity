@@ -1,4 +1,5 @@
 ﻿using NUnit.Framework;
+using PLATEAU.Editor.RoadNetwork.UIDocBind;
 using PLATEAU.RoadNetwork;
 using PLATEAU.Util;
 using System;
@@ -79,7 +80,7 @@ namespace PLATEAU.Editor.RoadNetwork
         private ScrollView parameterView;
         private ObjectField objSelecter;
         private DropdownField debugOperationMode;
-        private TrafficSignalLightControllerUIDoc trafficSignalLightControllerUIDoc;
+        private UIDocBind.TrafficSignalLightControllerUIDoc trafficSignalLightControllerUIDoc;
 
         private readonly IRoadNetworkEditingSystem system;
         private readonly RoadNetworkEditorAssets assets;
@@ -216,8 +217,21 @@ namespace PLATEAU.Editor.RoadNetwork
 
         private static void CreateEditRoadLayout(RoadNetworkUIDoc doc, IRoadNetworkEditingSystem system, RoadNetworkEditorAssets assets, VisualElement root)
         {
-            var element = assets.GetAsset(RoadNetworkEditorAssets.FloatFieldAsset).Instantiate();
-            element.Q<Vector3Field>().label = "座標";
+            Debug.Log("CreateEditRoadLayout");
+            var testObj = new ScriptableRoadMdl(null);
+            var test = new SerializedScriptableRoadMdl(testObj);
+
+            var element = assets.GetAsset(RoadNetworkEditorAssets.RoadNetworkEditingRoadPanel).Instantiate();
+            //var bp = element.BindProperty(test);
+            //element.BindProperty(bp);
+            element.TrackSerializedObjectValue(test, (se) => { 
+                Debug.Log("changed"); 
+                //var obj = se as SerializedScriptableRoadMdl;
+                //obj.Apply();
+            });
+            element.Bind(test);
+            element.Q<Button>("ApplyButton").clicked += () => { test.Apply(); };
+            //element.Unbind();
             root.Add(element);
 
         }
@@ -349,7 +363,7 @@ namespace PLATEAU.Editor.RoadNetwork
 
         private static void CreateTrafficRegulationLayout(RoadNetworkUIDoc roadNetworkUIDoc, IRoadNetworkEditingSystem system, RoadNetworkEditorAssets assets, VisualElement root)
         {
-            roadNetworkUIDoc.trafficSignalLightControllerUIDoc = new TrafficSignalLightControllerUIDoc(system, assets, root);
+            roadNetworkUIDoc.trafficSignalLightControllerUIDoc = new UIDocBind.TrafficSignalLightControllerUIDoc(system, assets, root);
             roadNetworkUIDoc.trafficSignalLightControllerUIDoc.CreateTrafficRegulationLayout();
 
             //var testVec3Field = new Vector3Field("controller position");

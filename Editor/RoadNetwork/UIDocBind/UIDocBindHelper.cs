@@ -5,9 +5,9 @@ using System.Reflection;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace PLATEAU.Editor.RoadNetwork
+namespace PLATEAU.Editor.RoadNetwork.UIDocBind
 {
-    public class UIDocBind
+    public class UIDocBindHelper
     {
         /// <summary>
         /// ユーザーデータをバインドするためのヘルパークラス
@@ -26,6 +26,10 @@ namespace PLATEAU.Editor.RoadNetwork
             {
                 public AccessorHelper(TObject _){}
                 public IAccessor<TValue> GetOrCreate<TValue>(in TValue _, string propertyName)
+                {
+                    return GetOrCreateAccessor<TValue, TObject>(propertyName);
+                }
+                public IAccessor<TValue> GetOrCreate<TValue>(string propertyName)
                 {
                     return GetOrCreateAccessor<TValue, TObject>(propertyName);
                 }
