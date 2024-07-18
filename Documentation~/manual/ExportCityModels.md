@@ -10,7 +10,7 @@ Unityのシーンに都市モデルがインポートされていることが前
 ## エクスポート手順
 ### エクスポート対象の指定
 - Unityのメニューバーから `PLATEAU → PLATEAU SDK` を選択します。   
-  表示されるウィンドウの上部に3つのタブ「インポート、モデル調整、エクスポート」があります。  
+  表示されるウィンドウの上部に3つのタブ「インポート、モデル調整、エクスポート、属性情報」があります。  
   このうちエクスポートを選択します。  
     
   ![](../resources/manual/exportCityModels/exportWindow.png)
@@ -88,7 +88,7 @@ Unityのシーンに都市モデルがインポートされていることが前
   異常終了の場合、ダイアログが表示されます。
 
 ![](../resources/manual/exportCityModels/tokyoBlender.png)  
-上図はエクスポートしたobjファイルを Blender で読み込んだものです。
+上図はエクスポートしたOBJファイルを Blender で読み込んだものです。
 
 ## エクスポートの仕様
 - OBJファイルはそのフォーマットの仕様上、次の制約があります。  
@@ -97,13 +97,13 @@ Unityのシーンに都市モデルがインポートされていることが前
     例えば、Blenderの場合、インポート時に `頂点グループ` にチェックを入れると、図のように頂点グループが設定されます。  
     ![](../resources/manual/exportCityModels/blenderVertexGroup.png)
 - Unity内でのTransform情報（Position, Rotation, Scale）はエクスポートしたファイルに反映されます。
-  - FBX,GLTFの場合は、ノードとしてUnityのPosition, Rotation, Scale, および親子関係が反映されます。
+  - FBX,GLTFの場合は、ノードとしてUnityのPosition, Rotation, Scale および親子関係が反映されます。
   - OBJの場合は、OBJの仕様上親子関係が反映されないため、頂点座標が直接Position, Rotation, Scaleにより変形されて出力されます。
 
 >[!NOTE]
 > **エクスポートした3Dモデルを再度Unityに取り込む場合**  
 >  
 > テクスチャ込みでエクスポートしたものを再度Unityにインポートする場合は、  
-> 3Dモデルファイルとそれに対応するテクスチャフォルダをエクスプローラーエクスプローラー（Windowsの場合。Macの場合はFinder）から複数選択して  
+> 3Dモデルファイルとそれに対応するテクスチャフォルダをエクスプローラー（Windowsの場合。Macの場合はFinder）から複数選択して  
 > Unityのプロジェクトビューにドラッグ＆ドロップしてインポートしてください。  
 > 複数選択による同時インポートでないと、テクスチャが正しく適用されない場合があります。
