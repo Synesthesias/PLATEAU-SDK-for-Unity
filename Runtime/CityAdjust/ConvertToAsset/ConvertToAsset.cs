@@ -40,13 +40,15 @@ namespace PLATEAU.CityAdjust.ConvertToAsset
             var srcTrans = conf.SrcGameObj.transform;
             
             progress.Display("都市モデルの情報を記録中...", 0.1f);
+
+            var subMeshConverter = new UnityMeshToDllSubMeshWithTexture(true);
             
             // 属性情報、都市情報、マテリアルを覚えておきます。
             var nonLibDataHolder = new NonLibData.NonLibDataHolder(
                 new PositionRotationDict(),
                 new NameToAttrsDict(),
                 new InstancedCityModelDict(),
-                new NameToMaterialsDict()
+                new NameToExportedMaterialsDict(subMeshConverter)
             );
             nonLibDataHolder.ComposeFrom(srcTransforms);
             
@@ -55,7 +57,7 @@ namespace PLATEAU.CityAdjust.ConvertToAsset
             // 共通ライブラリのModelに変換します。
             using var model = UnityMeshToDllModelConverter.Convert(
                 srcTransforms,
-                new UnityMeshToDllSubMeshWithTexture(true),
+                subMeshConverter,
                 false,
                 VertexConverterFactory.LocalCoordinateSystemConverter(CoordinateSystem.WUN, srcTrans.position),
                 true);

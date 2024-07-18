@@ -155,7 +155,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
                     {
                         observableSelected.Clear();
                     }
-                    if(PlateauEditorStyle.TinyButton("対象をヒエラルキー上で選択", 150))
+                    if(PlateauEditorStyle.TinyButton("対象をヒエラルキー上でハイライト", 180))
                     {
                         Selection.objects = new UniqueParentTransformList(observableSelected).Get.Select(trans => trans.gameObject).Cast<Object>().ToArray();
                     }
