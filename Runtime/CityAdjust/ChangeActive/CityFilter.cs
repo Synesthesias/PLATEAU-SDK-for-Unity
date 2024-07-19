@@ -85,6 +85,14 @@ namespace PLATEAU.CityAdjust.ChangeActive
                         // 分類の階層構造をたどるループ
                         while (typeNode.Parent != null)
                         {
+                            // 階層構造を辿った結果、GMLのパッケージと異なるパッケージに行き着くことがあります。
+                            // 例: COT_WaterBodyは、CityObjectTypeNodeHierarchy上では水部パッケージですが、災害リスクで使われることもあります。
+                            // この場合は、現実のGMLパッケージのほうに合わせます。
+                            if (typeNode.Package != PredefinedCityModelPackage.None && typeNode.Package != gmlPackage)
+                            {
+                                typeNode = CityObjectTypeHierarchy.GetNodeByPackage(gmlPackage);
+                            }
+                            
                             if (selectionDict.TryGetValue(typeNode, out bool isSelected))
                             {
                                 if (!isSelected)
@@ -95,8 +103,8 @@ namespace PLATEAU.CityAdjust.ChangeActive
                             }
                             else
                             {
-                                Debug.LogError($"分類 {typeNode.NodeName} が GUIにありません。");
-                                break;
+                                // NOOP
+                                // GUI上の設定値にないものは無視します。
                             }
 
                             typeNode = typeNode.Parent;
