@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using PLATEAU.CityGML;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
@@ -69,8 +70,11 @@ namespace PLATEAU.CityAdjust.ChangeActive
                             // それを下位から上位へたどり、
                             // 1つでも GUI上で選択されていないものがあればそのオブジェクトは非表示、
                             // そうでなければ表示します。
-                            typeNode = cityObjType.ToTypeNode()
-                                        ?? CityObjectTypeHierarchy.GetNodeByPackage(gmlPackage);
+                            typeNode = cityObjType.ToTypeNode();
+                            if (typeNode == null || cityObjType == CityObjectType.COT_Unknown)
+                            {
+                                typeNode = CityObjectTypeHierarchy.GetNodeByPackage(gmlPackage);
+                            }
                         }
                         catch(KeyNotFoundException e)
                         {
