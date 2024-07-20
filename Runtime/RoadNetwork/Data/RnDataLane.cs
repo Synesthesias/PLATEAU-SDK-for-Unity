@@ -19,16 +19,6 @@ namespace PLATEAU.RoadNetwork.Data
         [RoadNetworkSerializeMember]
         public RnID<RnDataRoadBase> Parent { get; set; }
 
-        // 連結しているレーン(上流)
-        [field: SerializeField]
-        [RoadNetworkSerializeMember(nameof(RnLane.NextLanes))]
-        public List<RnID<RnDataLane>> NextLanes { get; set; } = new List<RnID<RnDataLane>>();
-
-        // 連結しているレーン(下流)
-        [field: SerializeField]
-        [RoadNetworkSerializeMember(nameof(RnLane.PrevLanes))]
-        public List<RnID<RnDataLane>> PrevLanes { get; set; } = new List<RnID<RnDataLane>>();
-
         // 境界線(下流)
         [field: SerializeField]
         [RoadNetworkSerializeMember(nameof(RnLane.PrevBorder))]

@@ -36,15 +36,11 @@ namespace PLATEAU.RoadNetwork
         public static void ReplaceLane(IList<RnLane> self, RnLane before, RnLane after)
         {
             Replace(self, before, after);
-            foreach (var lane in self)
-                lane.ReplaceConnection(before, after);
         }
 
         public static void RemoveLane(IList<RnLane> self, RnLane lane)
         {
             self.Remove(lane);
-            foreach (var l in self)
-                l.RemoveConnection(lane);
         }
 
         /// <summary>

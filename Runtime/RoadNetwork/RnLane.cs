@@ -54,12 +54,6 @@ namespace PLATEAU.RoadNetwork
         // 親リンク
         public RnRoadBase Parent { get; set; }
 
-        // 連結しているレーン(上流)
-        public List<RnLane> NextLanes { get; private set; } = new List<RnLane>();
-
-        // 連結しているレーン(下流)
-        public List<RnLane> PrevLanes { get; private set; } = new List<RnLane>();
-
         // 境界線(下流)
         public RnWay PrevBorder { get; set; }
 
@@ -105,7 +99,7 @@ namespace PLATEAU.RoadNetwork
         /// <summary>
         /// 道の両方に接続先があるかどうか
         /// </summary>
-        public bool IsBothConnectedLane => IsValidWay && PrevLanes.Any() && NextLanes.Any();
+        public bool IsBothConnectedLane => IsValidWay && GetNextRoad() != null && GetPrevRoad() != null;
 
         /// <summary>
         /// 両方に境界線を持っている
@@ -123,7 +117,12 @@ namespace PLATEAU.RoadNetwork
         //デシリアライズの為に必要
         public RnLane() { }
 
-        IEnumerable<RnLane> GetNeighborLanes(RnWay border)
+        /// <summary>
+        /// borderと接続しているレーンを全て取得
+        /// </summary>
+        /// <param name="border"></param>
+        /// <returns></returns>
+        private IEnumerable<RnLane> GetConnectedLanes(RnWay border)
         {
             if (Parent == null || border == null)
                 yield break;
@@ -138,14 +137,41 @@ namespace PLATEAU.RoadNetwork
             }
         }
 
-        public IEnumerable<RnLane> GetNextLanes()
+        /// <summary>
+        /// このレーン接続先のRnRoadBaseを取得. ParentのNext/Prevとは逆になる可能性がある
+        /// </summary>
+        /// <returns></returns>
+        public RnRoadBase GetNextRoad()
         {
-            return GetNeighborLanes(NextBorder);
+            return GetNextLanes().FirstOrDefault(w => w.Parent != null)?.Parent;
         }
 
+        /// <summary>
+        /// このレーン接続元のRnRoadBaseを取得. ParentのNext/Prevとは逆になる可能性がある
+        /// </summary>
+        /// <returns></returns>
+        public RnRoadBase GetPrevRoad()
+        {
+            return GetPrevLanes().FirstOrDefault(w => w.Parent != null)?.Parent;
+        }
+
+
+        /// <summary>
+        /// 接続先レーンをすべて取得
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerable<RnLane> GetNextLanes()
+        {
+            return GetConnectedLanes(NextBorder);
+        }
+
+        /// <summary>
+        /// 接続元レーンをすべて取得
+        /// </summary>
+        /// <returns></returns>
         public IEnumerable<RnLane> GetPrevLanes()
         {
-            return GetNeighborLanes(PrevBorder);
+            return GetConnectedLanes(PrevBorder);
         }
 
         // 向き反転させる
@@ -153,24 +179,6 @@ namespace PLATEAU.RoadNetwork
         {
             (PrevBorder, NextBorder) = (NextBorder?.ReversedWay(), PrevBorder?.ReversedWay());
             (LeftWay, RightWay) = (RightWay?.ReversedWay(), LeftWay?.ReversedWay());
-
-            (NextLanes, PrevLanes) = (PrevLanes, NextLanes);
-        }
-
-        /// <summary>
-        /// laneに対して連結情報があれば削除する
-        /// </summary>
-        /// <param name="lane"></param>
-        public void RemoveConnection(RnLane lane)
-        {
-            PrevLanes.Remove(lane);
-            NextLanes.Remove(lane);
-        }
-
-        public void ReplaceConnection(RnLane before, RnLane after)
-        {
-            Replace(PrevLanes, before, after);
-            Replace(NextLanes, before, after);
         }
 
         private static void Replace(List<RnLane> list, RnLane before, RnLane after)
