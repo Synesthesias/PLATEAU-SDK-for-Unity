@@ -1,4 +1,5 @@
 ﻿using PLATEAU.CityInfo;
+using PLATEAU.RoadNetwork.Graph;
 using PLATEAU.Util;
 using PLATEAU.Util.GeoGraph;
 using System;
@@ -20,16 +21,15 @@ namespace PLATEAU.RoadNetwork.Factory
         [field: SerializeField]
         public List<Vector3> Vertices { get; set; }
 
-        // 道路か歩道かどうか
         [field: SerializeField]
-        public bool IsRoad { get; set; }
+        public RRoadType RoadType { get; set; }
 
         public bool visible = true;
 
-        public RoadNetworkTranMesh(PLATEAUCityObjectGroup cityObjectGroup, bool isRoad, int lodLevel, List<Vector3> vertices)
+        public RoadNetworkTranMesh(PLATEAUCityObjectGroup cityObjectGroup, RRoadType roadType, int lodLevel, List<Vector3> vertices)
         {
             CityObjectGroup = cityObjectGroup;
-            IsRoad = isRoad;
+            RoadType = roadType;
             LodLevel = lodLevel;
             Vertices = vertices;
         }

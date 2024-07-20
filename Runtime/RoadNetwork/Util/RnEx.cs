@@ -7,6 +7,7 @@ using PLATEAU.CityInfo;
 using PLATEAU.GranularityConvert;
 using PLATEAU.PolygonMesh;
 using PLATEAU.RoadNetwork.Factory;
+using PLATEAU.RoadNetwork.Graph;
 using PLATEAU.RoadNetwork.Mesh;
 using PLATEAU.Util;
 using PLATEAU.Util.GeoGraph;

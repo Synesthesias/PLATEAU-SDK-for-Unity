@@ -1,6 +1,7 @@
 ﻿using PLATEAU.CityInfo;
 using PLATEAU.GranularityConvert;
 using PLATEAU.PolygonMesh;
+using PLATEAU.RoadNetwork.Graph;
 using PLATEAU.Util;
 using PLATEAU.Util.GeoGraph;
 using System;
@@ -35,6 +36,8 @@ namespace PLATEAU.RoadNetwork.Factory
         [SerializeField] public float lod1SideWalkSize = 3f;
         // Lod3の歩道を追加するかどうか
         [SerializeField] public bool addLod3SideWalk = true;
+        // 高速道路を無視するかのフラグ
+        [SerializeField] public bool ignoreHighway = false;
 
         // --------------------
         // end:フィールド
@@ -527,7 +530,7 @@ namespace PLATEAU.RoadNetwork.Factory
             try
             {
                 var ret = new RnModel();
-                var roadTarget = targets.Where(t => t.IsRoad).ToList();
+                var roadTarget = targets.Where(t => t.RoadType == RRoadType.Road || (ignoreHighway == false && t.RoadType == RRoadType.HighWay)).ToList();
                 var vertex2Points = new Vertex2PointTable(cellSize, roadTarget.SelectMany(v => v.Vertices));
                 var lineStringTable = new LineStringTable();
                 var tranWorks = CreateTranWorks(roadTarget, vertex2Points, lineStringTable, out var cell2Groups);
@@ -545,7 +548,7 @@ namespace PLATEAU.RoadNetwork.Factory
 
                 if (addLod3SideWalk)
                 {
-                    foreach (var sideWalk in targets.Where(t => t.IsRoad == false))
+                    foreach (var sideWalk in targets.Where(t => t.RoadType.IsSideWalk()))
                     {
                         var lines = sideWalk.Vertices.Select(v => new RnPoint(v));
                         var lineString = lineStringTable.Create(lines, out bool isReverse);

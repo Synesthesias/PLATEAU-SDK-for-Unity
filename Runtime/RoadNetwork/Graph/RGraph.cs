@@ -1,6 +1,8 @@
 using PLATEAU.CityInfo;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.InteropServices;
 using UnityEditor.UI;
 using UnityEngine;
 using UnityEngine.Assertions;
@@ -13,10 +15,64 @@ namespace PLATEAU.RoadNetwork.Graph
     [Flags]
     public enum RVertexType
     {
-        // 中央分離帯と隣接
+        /// <summary>
+        /// 中央分離帯と隣接
+        /// </summary>
         Median = 1 << 0,
-        // 歩道と隣接
+        /// <summary>
+        /// 歩道と隣接
+        /// </summary>
         SideWalk = 1 << 2,
+    }
+
+    /// <summary>
+    /// 道路タイプ
+    /// </summary>
+    public enum RRoadType
+    {
+        /// <summary>
+        /// 道路
+        /// </summary>
+        Road,
+        /// <summary>
+        /// 歩道
+        /// </summary>
+        SideWalk,
+        /// <summary>
+        /// 中央分離帯
+        /// </summary>
+        Median,
+        /// <summary>
+        /// 高速道路
+        /// </summary>
+        HighWay,
+        /// <summary>
+        /// 未定義
+        /// </summary>
+        Undefined,
+    }
+
+    public static class RRoadTypeEx
+    {
+        /// <summary>
+        /// 車道部分
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        public static bool IsRoad(this RRoadType type)
+        {
+            return type == RRoadType.Road || type == RRoadType.HighWay;
+        }
+
+        /// <summary>
+        /// 歩道/中央分離帯
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        public static bool IsSideWalk(this RRoadType type)
+        {
+            return type == RRoadType.SideWalk || type == RRoadType.Median;
+        }
     }
 
     /// <summary>
@@ -63,6 +119,40 @@ namespace PLATEAU.RoadNetwork.Graph
         }
 
         /// <summary>
+        /// 自分自身を外す.
+        /// keepLinkがtrueの時は自分がいなくなっても接続頂点同士のEdgeを貼って接続が消えないようにする
+        /// </summary>
+        /// <param name="keepLink"></param>
+        public void DisConnect(bool keepLink)
+        {
+            var neighbors = GetNeighborVertices().ToList();
+            foreach (var e in Edges)
+            {
+                e.DisConnect();
+            }
+
+            if (keepLink)
+            {
+                for (var i = 0; i < neighbors.Count; i++)
+                {
+                    var v0 = neighbors[i];
+                    if (v0 == null)
+                        continue;
+                    for (var j = i; j < neighbors.Count; ++j)
+                    {
+                        var v1 = neighbors[j];
+                        if (v1 == null)
+                            continue;
+                        if (v0.IsNeighbor(v1))
+                            continue;
+                        // 新しい辺を作成する
+                        var _ = new REdge(v0, v1);
+                    }
+                }
+            }
+        }
+
+        /// <summary>
         /// 頂点属性typeが有効かどうかを設定する
         /// </summary>
         /// <param name="type"></param>
@@ -97,17 +187,27 @@ namespace PLATEAU.RoadNetwork.Graph
         {
             foreach (var edge in Edges)
             {
-                if (edge.Start == this)
+                if (edge.V0 == this)
                 {
-                    Assert.IsTrue(edge.End != this);
-                    yield return edge.End;
+                    Assert.IsTrue(edge.V1 != this);
+                    yield return edge.V1;
                 }
                 else
                 {
-                    Assert.IsTrue(edge.Start != this);
-                    yield return edge.Start;
+                    Assert.IsTrue(edge.V0 != this);
+                    yield return edge.V0;
                 }
             }
+        }
+
+        /// <summary>
+        /// otherとの直接の辺を持っているか
+        /// </summary>
+        /// <param name="other"></param>
+        /// <returns></returns>
+        public bool IsNeighbor(RVertex other)
+        {
+            return Edges.Any(e => e.Vertices.Contains(other));
         }
     }
 
@@ -119,8 +219,8 @@ namespace PLATEAU.RoadNetwork.Graph
     {
         public enum VertexType
         {
-            Start,
-            End,
+            V0,
+            V1,
         }
 
         private List<RPolygon> polygons = new List<RPolygon>();
@@ -130,17 +230,29 @@ namespace PLATEAU.RoadNetwork.Graph
         /// <summary>
         /// 開始点
         /// </summary>
-        public RVertex Start => GetVertex(VertexType.Start);
+        public RVertex V0 => GetVertex(VertexType.V0);
 
         /// <summary>
         /// 終了点
         /// </summary>
-        public RVertex End => GetVertex(VertexType.End);
+        public RVertex V1 => GetVertex(VertexType.V1);
 
         /// <summary>
         /// 接続面
         /// </summary>
         public IReadOnlyList<RPolygon> Polygons => polygons;
+
+        /// <summary>
+        /// 接続頂点(2個)
+        /// </summary>
+        public IReadOnlyList<RVertex> Vertices => vertices;
+
+
+        public REdge(RVertex v0, RVertex v1)
+        {
+            SetVertex(VertexType.V0, v0);
+            SetVertex(VertexType.V1, v1);
+        }
 
         /// <summary>
         /// 頂点ノード取得
@@ -151,6 +263,7 @@ namespace PLATEAU.RoadNetwork.Graph
         {
             return vertices[(int)type];
         }
+
 
         /// <summary>
         /// 頂点ノードを差し替え
@@ -187,6 +300,23 @@ namespace PLATEAU.RoadNetwork.Graph
         {
             polygons.Remove(polygon);
         }
+
+        /// <summary>
+        /// 自分の接続を解除する
+        /// </summary>
+        public void DisConnect()
+        {
+            foreach (var v in vertices)
+            {
+                v?.RemoveEdge(this);
+            }
+
+            // 親に自分の接続を解除するように伝える
+            foreach (var p in polygons)
+            {
+                p?.RemoveEdge(this);
+            }
+        }
     }
 
     /// <summary>
@@ -194,31 +324,78 @@ namespace PLATEAU.RoadNetwork.Graph
     /// </summary>
     public class RPolygon
     {
-        readonly List<RVertex> vertices = new List<RVertex>();
-
-        readonly List<REdge> edges = new List<REdge>();
-
-        private readonly PLATEAUCityObjectGroup cityObjectGroup = null;
-
         /// <summary>
-        /// 構成辺. 時計回りに接続順
+        /// 表示非表示
         /// </summary>
-        public IReadOnlyList<REdge> Edges => edges;
-
-        /// <summary>
-        /// 構成頂点
-        /// </summary>
-        public IReadOnlyList<RVertex> Vertices => vertices;
+        [field: SerializeField]
+        public bool Visible { get; set; }
 
         /// <summary>
         /// 対応するCityObjectGroup
         /// </summary>
-        public PLATEAUCityObjectGroup CityObjectGroup => cityObjectGroup;
+        [field: SerializeField]
+        public PLATEAUCityObjectGroup CityObjectGroup { get; set; }
+
+        /// <summary>
+        /// 道路タイプ
+        /// </summary>
+        [field: SerializeField]
+        public RRoadType RoadType { get; set; }
+
+        /// <summary>
+        /// LodLevel
+        /// </summary>
+        [field: SerializeField]
+        public int LodLevel { get; set; }
 
         /// <summary>
         /// 親グラフ
         /// </summary>
-        public RGraph Graph { get; set; }
+        [field: SerializeField]
+        public RGraph Graph { get; private set; }
+
+        /// <summary>
+        /// 構成辺
+        /// </summary>
+        [SerializeField]
+        private List<REdge> edges = new List<REdge>();
+
+        /// <summary>
+        /// 構成辺
+        /// </summary>
+        public IReadOnlyList<REdge> Edges => edges;
+
+        public RPolygon(RGraph graph, PLATEAUCityObjectGroup cityObjectGroup, RRoadType roadType, int lodLevel)
+        {
+            Graph = graph;
+            CityObjectGroup = cityObjectGroup;
+            RoadType = roadType;
+            LodLevel = lodLevel;
+        }
+
+        /// <summary>
+        /// 辺追加
+        /// </summary>
+        /// <param name="edge"></param>
+        public void AddEdge(REdge edge)
+        {
+            if (edges.Contains(edge))
+                return;
+
+            edges.Add(edge);
+            edge.AddPolygon(this);
+        }
+
+        /// <summary>
+        /// 辺削除
+        /// </summary>
+        /// <param name="edge"></param>
+        public void RemoveEdge(REdge edge)
+        {
+            edges.Remove(edge);
+            edge.RemovePolygon(this);
+        }
+
     }
 
     public class RGraph
