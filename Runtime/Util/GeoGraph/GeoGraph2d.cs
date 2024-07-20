@@ -534,7 +534,7 @@ namespace PLATEAU.Util.GeoGraph
             return ret;
         }
 
-        public static void RemoveSelfCrossing<T>(List<T> self, Func<T, Vector2> selector, Func<T, T, T, T, Vector2, float, float, T> creater)
+        public static void RemoveSelfCrossing<T>(List<T> self, Func<T, Vector2> selector, Func<T, T, T, T, Vector2, float, float, T> creator)
         {
             for (var i = 0; i < self.Count - 2; ++i)
             {
@@ -547,7 +547,7 @@ namespace PLATEAU.Util.GeoGraph
 
                     if (LineUtil.SegmentIntersection(p1, p2, p3, p4, out var intersection, out var f1, out var f2))
                     {
-                        var newNode = creater(self[i], self[i + 1], self[j], self[j + 1], intersection, f1, 2);
+                        var newNode = creator(self[i], self[i + 1], self[j], self[j + 1], intersection, f1, 2);
                         self.RemoveRange(i + 1, j - i);
                         self.Insert(i + 1, newNode);
                         // もう一回最初から検索しなおす

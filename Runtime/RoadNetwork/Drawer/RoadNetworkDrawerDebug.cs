@@ -54,6 +54,7 @@ namespace PLATEAU.RoadNetwork.Drawer
         private class LinkOption
         {
             public bool visible = true;
+            public bool showLaneConnection = false;
         }
 
         [SerializeField] private LinkOption linkOp = new LinkOption();
@@ -300,9 +301,20 @@ namespace PLATEAU.RoadNetwork.Drawer
             {
                 if (linkOp.visible == false)
                     break;
+
+                Vector3? last = null;
                 foreach (var lane in link.AllLanes)
                 {
                     DrawLane(lane);
+                    if (linkOp.showLaneConnection)
+                    {
+                        if (last != null)
+                        {
+                            DrawArrow(last.Value, lane.GetCenter());
+                        }
+
+                        last = lane.GetCenter();
+                    }
                 }
 
 

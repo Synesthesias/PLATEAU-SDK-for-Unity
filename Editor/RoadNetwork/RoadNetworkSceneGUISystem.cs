@@ -951,14 +951,7 @@ namespace PLATEAU.Editor.RoadNetwork
 
         private static Vector3 CalcLanePos(RnLane centerLane)
         {
-            var numVert = centerLane.Vertices.Count();
-            var sumVert = Vector3.zero;
-            foreach (var vert in centerLane.Vertices)
-            {
-                sumVert += vert;
-            }
-            var avePos = sumVert / (float)numVert;
-            return avePos;
+            return centerLane.GetCenter();
         }
 
 

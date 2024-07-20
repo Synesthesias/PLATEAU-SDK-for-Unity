@@ -30,6 +30,13 @@ namespace PLATEAU.RoadNetwork
         Right2Left
     }
 
+    // レーンの左右
+    public enum RnLaneWayDir
+    {
+        Left,
+        Right
+    }
+
     [Flags]
     public enum RnLaneAttribute
     {
@@ -104,29 +111,6 @@ namespace PLATEAU.RoadNetwork
         /// 両方に境界線を持っている
         /// </summary>
         public bool HasBothBorder => IsValidWay && PrevBorder.IsValidOrDefault() && NextBorder.IsValidOrDefault();
-
-        /// <summary>
-        /// PrevBorderの方向がLeftWay->RightWay方向かどうか
-        /// </summary>
-        public bool IsPrevBorderLeft2Right => PrevBorder?.GetPoint(0) == LeftWay?.GetPoint(0);
-
-        public IEnumerable<Vector3> Vertices
-        {
-            get
-            {
-                foreach (var v in PrevBorder?.LineString?.Points?.Select(x => x.Vertex) ?? new List<Vector3>())
-                    yield return v;
-
-                foreach (var v in LeftWay?.LineString?.Points?.Select(x => x.Vertex) ?? new List<Vector3>())
-                    yield return v;
-
-                foreach (var v in NextBorder?.LineString?.Points?.Select(x => x.Vertex) ?? new List<Vector3>())
-                    yield return v;
-
-                foreach (var v in RightWay?.LineString?.Points?.Select(x => x.Vertex) ?? new List<Vector3>())
-                    yield return v;
-            }
-        }
 
         public RnLane(RnWay leftWay, RnWay rightWay, RnWay startBorder, RnWay endBorder)
         {
@@ -346,14 +330,12 @@ namespace PLATEAU.RoadNetwork
             var lefts = self.LeftWay.Vertices.ToList();
             var rights =
                 self.RightWay.Vertices.ToList();
-            // #TODO : 直線補間ではなくstartSubWayからとってくる必要がある
             AddPoint(Vector3.Lerp(lefts[0], rights[0], p2));
             var segments = GeoGraphEx.GetInnerLerpSegments(lefts, rights, AxisPlane.Xz, p2);
             foreach (var s in segments)
             {
                 AddPoint(s.Segment.Start);
             }
-            // #TODO : 直線補間ではなくendSubWayからとってくる必要がある
             AddPoint(Vector3.Lerp(lefts[^1], rights[^1], p2));
             return points;
         }
@@ -619,6 +601,8 @@ namespace PLATEAU.RoadNetwork
                             AddPoint(nextBorder.Points.Last());
                         else
                             AddPoint(nextBorder.Points.First());
+
+                        GeoGraph2D.RemoveSelfCrossing(points, t => t.Vertex.Xz(), (p1, p2, p3, p4, inter, f1, f2) => new RnPoint(Vector3.Lerp(p1, p2, f1)));
                         var rightLine = RnLineString.Create(points);
                         r = new RnWay(rightLine, false, targetLane.RightWay.IsReverseNormal);
                     }
@@ -631,6 +615,43 @@ namespace PLATEAU.RoadNetwork
 
             return ret;
         }
+#if false
+        public static void SetLaneWidth(this RnLane self, float width, bool moveLeft)
+        {
+            if (self == null)
+                return;
+
+            if (self.IsValidWay == false)
+                return;
+
+            void Move(RnWay move, RnWay keep)
+            {
+                for (var i = 0; i < move.Count; ++i)
+                {
+                    var m = move.GetPoint(i);
+
+                    var n = move.GetVertexNormal(i).normalized;
+                    if (keep.FindNearestPoint(m.Vertex, out var pos))
+                    {
+                        var d = m.Vertex - pos;
+
+                        var del = width - d.magnitude; ;
+                        m.Vertex += del * d;
+                    }
+
+                }
+            }
+
+            if (moveLeft)
+            {
+                Move(self.LeftWay, self.RightWay);
+            }
+            else
+            {
+                Move(self.RightWay, self.LeftWay);
+            }
+        }
+#endif
 #if false
         public static List<Vector2> GetInnerLerpSegments2(this RoadNetworkLane self, float p)
         {

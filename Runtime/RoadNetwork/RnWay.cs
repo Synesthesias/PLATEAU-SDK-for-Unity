@@ -6,6 +6,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using GeoGraph2D = PLATEAU.Util.GeoGraph.GeoGraph2D;
 
 namespace PLATEAU.RoadNetwork
 {
@@ -204,6 +205,18 @@ namespace PLATEAU.RoadNetwork
         }
 
         /// <summary>
+        /// 頂点の法線ベクトルをリストで返す
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerable<Vector3> GetVertexNormals()
+        {
+            for (var i = 0; i < Count; i++)
+            {
+                yield return GetVertexNormal(i);
+            }
+        }
+
+        /// <summary>
         /// 頂点 startVertexIndex, startVertexIndex + 1で構成される辺の法線ベクトルを返す
         /// 道の外側を向いている. 正規化はされていない
         /// </summary>
@@ -217,6 +230,13 @@ namespace PLATEAU.RoadNetwork
             return -Vector3.Cross(Vector3.up, p1 - p0);
         }
 
+        public IEnumerable<Vector3> GetEdgeNormals()
+        {
+            for (var i = 0; i < Count - 1; i++)
+            {
+                yield return GetEdgeNormal(i);
+            }
+        }
 
         /// <summary>
         /// Xz平面だけで見たときの, 半直線rayの最も近い交点を返す
@@ -304,6 +324,31 @@ namespace PLATEAU.RoadNetwork
             return ret;
         }
 
+        /// <summary>
+        /// 法線に沿って移動する
+        /// </summary>
+        /// <param name="offset"></param>
+        public void MoveAlongNormal(float offset)
+        {
+            for (var i = 0; i < Count; ++i)
+            {
+                var n = GetVertexNormal(i);
+                GetPoint(i).Vertex += n * offset;
+            }
+        }
+
+        /// <summary>
+        /// Way全体を動かす
+        /// </summary>
+        /// <param name="offset"></param>
+        public void Move(Vector3 offset)
+        {
+            for (var i = 0; i < Count; ++i)
+            {
+                GetPoint(i).Vertex += offset;
+            }
+        }
+
         public IEnumerator<Vector3> GetEnumerator()
         {
             return Vertices.GetEnumerator();
@@ -326,7 +371,7 @@ namespace PLATEAU.RoadNetwork
     }
 
 
-    public static class RoadNetworkWayEx
+    public static class RnWayEx
     {
         public static IEnumerable<LineSegment2D> GetEdges2D(this RnWay self)
         {
@@ -339,6 +384,29 @@ namespace PLATEAU.RoadNetwork
         public static int FindPoint(this RnWay self, RnPoint point)
         {
             return self.LineString.Points.FindIndex(p => p == point);
+        }
+
+        /// <summary>
+        /// nearestからRnWay上の最も近い点を探す
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="pos"></param>
+        /// <param name="nearest"></param>
+        /// <returns></returns>
+        public static bool FindNearestPoint(this RnWay self, Vector3 pos, out Vector3 nearest)
+        {
+            nearest = Vector3.zero;
+            float len = float.MaxValue;
+            foreach (var s in GeoGraphEx.GetEdges(self, false))
+            {
+                var v = new LineSegment3D(s.Item1, s.Item2).GetNearestPoint(pos, out var t);
+                if ((nearest - v).sqrMagnitude < len)
+                {
+                    len = (nearest - v).sqrMagnitude;
+                    nearest = v;
+                }
+            }
+            return len < float.MaxValue;
         }
 
         /// <summary>
