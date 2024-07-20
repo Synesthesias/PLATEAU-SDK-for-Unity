@@ -44,16 +44,16 @@ namespace Tests.RoadNetworkTest
                 return new Ray2D(new Vector2(RandPos(), RandPos()), dir);
             }
 
-            //foreach (var i in Enumerable.Range(0, triCount))
-            //{
-            //    var a = CreateRandomRay();
-            //    var b = CreateRandomRay();
-            //    foreach (var p in Enumerable.Range(0, pCount + 1).Select(x => 1f * x / pCount))
-            //    {
-            //        GeoGraph2D.CalcLerpPointInLine(a, b, p, out var v);
-            //        CheckLerpPointInLine(i, a, b, p);
-            //    }
-            //}
+            foreach (var i in Enumerable.Range(0, triCount))
+            {
+                var a = CreateRandomRay();
+                var b = CreateRandomRay();
+                foreach (var p in Enumerable.Range(0, pCount + 1).Select(x => 1f * x / pCount))
+                {
+                    GeoGraph2D.CalcLerpPointInLine(a, b, p, out var v);
+                    CheckLerpPointInLine(i, a, b, p);
+                }
+            }
 
             CheckLerpPointInLine(
                 -1

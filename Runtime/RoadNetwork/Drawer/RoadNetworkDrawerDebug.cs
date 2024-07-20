@@ -55,6 +55,7 @@ namespace PLATEAU.RoadNetwork.Drawer
         {
             public bool visible = true;
             public bool showLaneConnection = false;
+            public bool showLinkGroup = false;
         }
 
         [SerializeField] private LinkOption linkOp = new LinkOption();
@@ -152,59 +153,202 @@ namespace PLATEAU.RoadNetwork.Drawer
             DebugEx.DrawArrow(start.PutY(start.y * yScale), end.PutY(end.y * yScale), arrowSize, arrowUp, bodyColor, arrowColor, duration, depthTest);
         }
 
-        public void Draw(RnModel roadNetwork)
+
+        /// <summary>
+        /// Way描画
+        /// </summary>
+        /// <param name="way"></param>
+        /// <param name="color"></param>
+        /// <param name="arrowColor"></param>
+        private void DrawWay(RnWay way, Color color, Color? arrowColor = null)
         {
-            if (!visible)
+            if (way == null)
                 return;
-            if (roadNetwork == null)
+            if (way.Count <= 1)
                 return;
+            // 矢印色は設定されていない場合は反転しているかどうかで返る
+            if (arrowColor.HasValue)
+                arrowColor = way.IsReversed ? wayOp.reverseWayArrowColor : wayOp.normalWayArrowColor;
 
-            // 道描画
-            void DrawWay(RnWay way, Color color, Color? arrowColor = null)
+            DrawArrows(way.Vertices.Select((v, i) => v + -edgeOffset * way.GetVertexNormal(i)), false, color: color, arrowColor: arrowColor, arrowSize: wayOp.arrowSize);
+
+            if (showVertexIndex)
             {
-                if (way == null)
-                    return;
-                if (way.Count <= 1)
-                    return;
-                // 矢印色は設定されていない場合は反転しているかどうかで返る
-                if (arrowColor.HasValue)
-                    arrowColor = way.IsReversed ? wayOp.reverseWayArrowColor : wayOp.normalWayArrowColor;
+                foreach (var item in way.Vertices.Select((v, i) => new { v, i }))
+                    DrawString(item.i.ToString(), item.v, color: Color.red, fontSize: showVertexFontSize);
+            }
 
-                DrawArrows(way.Vertices.Select((v, i) => v + -edgeOffset * way.GetVertexNormal(i)), false, color: color, arrowColor: arrowColor, arrowSize: wayOp.arrowSize);
+            if (showVertexPos)
+            {
+                foreach (var item in way.Vertices.Select((v, i) => new { v, i }))
+                    DrawString(item.v.ToString(), item.v, color: Color.red, fontSize: showVertexFontSize);
+            }
 
-                if (showVertexIndex)
+            foreach (var i in Enumerable.Range(0, way.Count))
+            {
+                var v = way[i];
+                var n = way.GetVertexNormal(i);
+
+                // 法線表示
+                if (wayOp.showNormal)
                 {
-                    foreach (var item in way.Vertices.Select((v, i) => new { v, i }))
-                        DrawString(item.i.ToString(), item.v, color: Color.red, fontSize: showVertexFontSize);
+                    DrawLine(v, v + n * 0.3f, color: Color.yellow);
                 }
-
-                if (showVertexPos)
+                // 中央線
+                if (showInsideNormalMidPoint)
                 {
-                    foreach (var item in way.Vertices.Select((v, i) => new { v, i }))
-                        DrawString(item.v.ToString(), item.v, color: Color.red, fontSize: showVertexFontSize);
-                }
-
-                foreach (var i in Enumerable.Range(0, way.Count))
-                {
-                    var v = way[i];
-                    var n = way.GetVertexNormal(i);
-
-                    // 法線表示
-                    if (wayOp.showNormal)
+                    if (way.HalfLineIntersectionXz(new Ray(v - n * 0.01f, -n), out var intersection))
                     {
-                        DrawLine(v, v + n * 0.3f, color: Color.yellow);
-                    }
-                    // 中央線
-                    if (showInsideNormalMidPoint)
-                    {
-                        if (way.HalfLineIntersectionXz(new Ray(v - n * 0.01f, -n), out var intersection))
-                        {
-                            DrawArrow(v, (v + intersection) * 0.5f);
-                        }
+                        DrawArrow(v, (v + intersection) * 0.5f);
                     }
                 }
             }
+        }
 
+        /// <summary>
+        /// Lane描画
+        /// </summary>
+        /// <param name="lane"></param>
+        private void DrawLane(RnLane lane)
+        {
+            if (laneOp.visible == false)
+                return;
+
+            if (laneOp.showId)
+                DebugEx.DrawString($"L[{lane.DebugMyId}]", lane.GetCenter());
+
+            if (laneOp.showLaneId >= 0 && lane.DebugMyId != (ulong)laneOp.showLaneId)
+                return;
+
+            var offset = Vector3.up * (lane.DebugMyId % 10);
+            if (laneOp.showLeftWay.visible)
+            {
+                DrawWay(lane.LeftWay, color: laneOp.showLeftWay.color.PutA(laneOp.GetLaneAlpha(lane)));
+                if (laneOp.showAttrText)
+                    DebugEx.DrawString($"L:{lane.DebugMyId}", lane.LeftWay[0] + offset);
+            }
+
+            if (laneOp.showRightWay.visible)
+            {
+                DrawWay(lane.RightWay, color: laneOp.showRightWay.color.PutA(laneOp.GetLaneAlpha(lane)));
+                if (laneOp.showAttrText)
+                    DebugEx.DrawString($"R:{lane.DebugMyId}", lane.RightWay[0] + offset);
+            }
+
+            if (laneOp.showPrevBorder.visible)
+            {
+                if (lane.PrevBorder.IsValidOrDefault())
+                {
+                    var type = lane.GetBorderDir(RnLaneBorderType.Prev);
+                    if (laneOp.showAttrText)
+                        DebugEx.DrawString($"[{lane.DebugMyId}]prev={type.ToString()}", lane.PrevBorder.Points.Last() + offset, Vector2.up * 100);
+                    DrawWay(lane.PrevBorder, color: laneOp.showPrevBorder.color);
+                }
+            }
+
+            if (laneOp.showNextBorder.visible)
+            {
+                if (lane.NextBorder.IsValidOrDefault())
+                {
+                    var type = lane.GetBorderDir(RnLaneBorderType.Next);
+                    if (laneOp.showAttrText)
+                        DebugEx.DrawString($"[{lane.DebugMyId}]next={type.ToString()}", lane.NextBorder.Points.Last() + offset, Vector2.up * 100);
+                    DrawWay(lane.NextBorder, color: laneOp.showNextBorder.color);
+                }
+            }
+
+            if (showSplitLane && lane.HasBothBorder)
+            {
+                var vers = lane.GetInnerLerpSegments(splitLaneRate);
+                DrawArrows(vers, false, color: Color.red, arrowSize: 0.1f);
+            }
+        }
+
+        /// <summary>
+        /// Link描画
+        /// </summary>
+        /// <param name="roadNetwork"></param>
+        private void DrawLinks(RnModel roadNetwork)
+        {
+            if (linkOp.visible == false)
+                return;
+
+            // LinkGroupで描画する場合はGroup全部で同じ色にする
+            if (linkOp.showLinkGroup)
+            {
+                var linkGroups = new List<RnLinkGroup>();
+                foreach (var link in roadNetwork.Links)
+                {
+                    if (linkGroups.Any(a => a.Links.Contains(link)) == false)
+                    {
+                        var group = link.CreateLinkGroup();
+                        if (group != null)
+                        {
+                            linkGroups.Add(group);
+                        }
+                    }
+                }
+
+                for (var i = 0; i < linkGroups.Count; i++)
+                {
+                    var group = linkGroups[i];
+                    var color = DebugEx.GetDebugColor(i, linkGroups.Count);
+                    foreach (var link in group.Links)
+                    {
+                        foreach (var lane in link.AllLanes)
+                        {
+                            DrawArrows(lane.GetVertices().Select(p => p.Vertex), false, color: color);
+                        }
+                    }
+                }
+
+                return;
+            }
+
+            foreach (var link in roadNetwork.Links)
+            {
+                Vector3? last = null;
+                foreach (var lane in link.AllLanes)
+                {
+                    DrawLane(lane);
+                    if (linkOp.showLaneConnection)
+                    {
+                        if (last != null)
+                        {
+                            DrawArrow(last.Value, lane.GetCenter());
+                        }
+
+                        last = lane.GetCenter();
+                    }
+                }
+                //foreach (var i in Enumerable.Range(0, l.vertices.Count))
+                //{
+                //    var v = l.vertices[i];
+                //    var n = l.GetVertexNormal(i).normalized;
+                //    if (showNormal)
+                //    {
+                //        DrawLine(v, v + n * 0.3f, color: Color.yellow);
+                //    }
+
+                //    if (showInsideNormalMidPoint)
+                //    {
+                //        if (l.HalfLineIntersectionXz(new Ray(v - n * 0.01f, -n), out var intersection))
+                //        {
+                //            DebugUtil.DrawArrow(v, (v + intersection) * 0.5f);
+                //        }
+                //    }
+                //}
+
+
+            }
+        }
+
+        /// <summary>
+        /// Node描画
+        /// </summary>
+        /// <param name="roadNetwork"></param>
+        private void DrawNodes(RnModel roadNetwork)
+        {
             foreach (var node in roadNetwork.Nodes)
             {
                 if (nodeOp.visible == false)
@@ -242,109 +386,28 @@ namespace PLATEAU.RoadNetwork.Drawer
                     }
                 }
             }
+        }
 
-            void DrawLane(RnLane lane)
-            {
-                if (laneOp.visible == false)
-                    return;
-
-                if (laneOp.showId)
-                    DebugEx.DrawString($"L[{lane.DebugMyId}]", lane.GetCenter());
-
-                if (laneOp.showLaneId >= 0 && lane.DebugMyId != (ulong)laneOp.showLaneId)
-                    return;
-
-                var offset = Vector3.up * (lane.DebugMyId % 10);
-                if (laneOp.showLeftWay.visible)
-                {
-                    DrawWay(lane.LeftWay, color: laneOp.showLeftWay.color.PutA(laneOp.GetLaneAlpha(lane)));
-                    if (laneOp.showAttrText)
-                        DebugEx.DrawString($"L:{lane.DebugMyId}", lane.LeftWay[0] + offset);
-                }
-
-                if (laneOp.showRightWay.visible)
-                {
-                    DrawWay(lane.RightWay, color: laneOp.showRightWay.color.PutA(laneOp.GetLaneAlpha(lane)));
-                    if (laneOp.showAttrText)
-                        DebugEx.DrawString($"R:{lane.DebugMyId}", lane.RightWay[0] + offset);
-                }
-
-                if (laneOp.showPrevBorder.visible)
-                {
-                    if (lane.PrevBorder.IsValidOrDefault())
-                    {
-                        var type = lane.GetBorderDir(RnLaneBorderType.Prev);
-                        if (laneOp.showAttrText)
-                            DebugEx.DrawString($"[{lane.DebugMyId}]prev={type.ToString()}", lane.PrevBorder.Points.Last() + offset, Vector2.up * 100);
-                        DrawWay(lane.PrevBorder, color: laneOp.showPrevBorder.color);
-                    }
-                }
-
-                if (laneOp.showNextBorder.visible)
-                {
-                    if (lane.NextBorder.IsValidOrDefault())
-                    {
-                        var type = lane.GetBorderDir(RnLaneBorderType.Next);
-                        if (laneOp.showAttrText)
-                            DebugEx.DrawString($"[{lane.DebugMyId}]next={type.ToString()}", lane.NextBorder.Points.Last() + offset, Vector2.up * 100);
-                        DrawWay(lane.NextBorder, color: laneOp.showNextBorder.color);
-                    }
-                }
-
-                if (showSplitLane && lane.HasBothBorder)
-                {
-                    var vers = lane.GetInnerLerpSegments(splitLaneRate);
-                    DrawArrows(vers, false, color: Color.red, arrowSize: 0.1f);
-                }
-            }
-            foreach (var link in roadNetwork.Links)
-            {
-                if (linkOp.visible == false)
-                    break;
-
-                Vector3? last = null;
-                foreach (var lane in link.AllLanes)
-                {
-                    DrawLane(lane);
-                    if (linkOp.showLaneConnection)
-                    {
-                        if (last != null)
-                        {
-                            DrawArrow(last.Value, lane.GetCenter());
-                        }
-
-                        last = lane.GetCenter();
-                    }
-                }
-
-
-                //foreach (var i in Enumerable.Range(0, l.vertices.Count))
-                //{
-                //    var v = l.vertices[i];
-                //    var n = l.GetVertexNormal(i).normalized;
-                //    if (showNormal)
-                //    {
-                //        DrawLine(v, v + n * 0.3f, color: Color.yellow);
-                //    }
-
-                //    if (showInsideNormalMidPoint)
-                //    {
-                //        if (l.HalfLineIntersectionXz(new Ray(v - n * 0.01f, -n), out var intersection))
-                //        {
-                //            DebugUtil.DrawArrow(v, (v + intersection) * 0.5f);
-                //        }
-                //    }
-                //}
-
-
-            }
-
+        private void DrawSideWalks(RnModel roadNetwork)
+        {
             foreach (var sw in roadNetwork.SideWalks)
             {
                 if (sideWalkRoadOp.visible == false)
                     break;
                 DrawWay(new RnWay(sw), color: sideWalkRoadOp.color);
             }
+        }
+
+        public void Draw(RnModel roadNetwork)
+        {
+            if (!visible)
+                return;
+            if (roadNetwork == null)
+                return;
+
+            DrawLinks(roadNetwork);
+
+            DrawNodes(roadNetwork);
         }
     }
 }
