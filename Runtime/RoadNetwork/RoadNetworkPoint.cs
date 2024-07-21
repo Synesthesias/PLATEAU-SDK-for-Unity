@@ -1,5 +1,4 @@
-﻿using PLATEAU.RoadNetwork.Data;
-using System;
+﻿using System;
 using UnityEngine;
 
 namespace PLATEAU.RoadNetwork

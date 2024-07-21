@@ -71,6 +71,14 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
 
         public override void DrawContent()
         {
+            // nullチェック
+            if (observableSelected.Any(tran => tran == null))
+            {
+                var nullRemoved = observableSelected.Where(tran => tran != null);
+                ForceSet(new UniqueParentTransformList(nullRemoved));
+            }
+            
+            // 描画
             PlateauEditorStyle.Heading("対象選択", null);
             using (PlateauEditorStyle.VerticalScopeLevel1())
             {

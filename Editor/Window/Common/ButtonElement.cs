@@ -12,10 +12,12 @@ namespace PLATEAU.Editor.Window.Common
         private Vector4 padding = Vector4.zero; // left, right, top, bottom
 
         public string ButtonText { get; set; }
+        private string initialText;
 
         public ButtonElement(string name, string buttonText, Action onClick) : base(name)
         {
             this.ButtonText = buttonText;
+            initialText = buttonText;
             this.onClick = onClick;
         }
 
@@ -34,6 +36,26 @@ namespace PLATEAU.Editor.Window.Common
                     onClick();
                 }
             }
+        }
+
+        /// <summary>
+        /// ボタンのテキストを例えば「処理中...」のように変えて、押せないようにします。
+        /// <see cref="RecoverFromProcessing"/>で元に戻します。
+        /// ボタンのテキストを引数にとります。
+        /// </summary>
+        public void SetProcessing(string processingText)
+        {
+            ButtonText = processingText;
+            IsEnabled = false;
+        }
+
+        /// <summary>
+        /// <see cref="SetProcessing"/>による変更を元に戻します。
+        /// </summary>
+        public void RecoverFromProcessing()
+        {
+            ButtonText = initialText;
+            IsEnabled = true;
         }
 
         public override void Dispose()

@@ -14,6 +14,7 @@ using PLATEAU.CityInfo;
 using PLATEAU.PolygonMesh;
 using PLATEAU.Util;
 using UnityEngine;
+using CityObjectList = PLATEAU.CityInfo.CityObjectList;
 using Debug = UnityEngine.Debug;
 using Object = UnityEngine.Object;
 
@@ -25,158 +26,7 @@ namespace PLATEAU.GranularityConvert
     /// </summary>
     public class CityGranularityConverter
     {
-        /// <summary>
-        /// 粒度を変換する処理を、各ゲームオブジェクトに対して逐次的に行うためのメソッドです。
-        /// マテリアル分けを伴わない粒度変換であれば、このメソッドが直接利用されます。
-        /// マテリアル分けを伴う粒度変換であれば、<see cref="MAExecutor"/>を介してこのメソッドが利用されます。
-        /// </summary>
-        public async Task<PlaceToSceneResult> ConvertProgressiveAsync(MAExecutorConf conf,
-            IMACondition maCondition)
-        {
-            
-            var dstGranularity = conf.MeshGranularity;
-            var result = new PlaceToSceneResult();
-            using var progressBar = new ProgressBar();
-
-            // === ここから分解
-            // 分解すべきオブジェクトを数える
-            int objCountToDeconstruct = 0;
-            conf.TargetTransforms
-                .BfsExec(
-                    trans =>
-                    {
-                        if (maCondition.ShouldDeconstruct(trans, conf.MeshGranularity)) objCountToDeconstruct++;
-                        return NextSearchFlow.Continue;
-                    });
-            int countDeconstructed = 0;
-
-            // 幅優先探索で、分解が必要なゲームオブジェクトを1つ見つけるごとに分解します。
-            await conf.TargetTransforms.BfsExecAsync(async trans =>
-            {
-                if (!maCondition.ShouldDeconstruct(trans, conf.MeshGranularity)) return NextSearchFlow.Continue;
-                progressBar.Display($"分解中 : {countDeconstructed + 1}/{objCountToDeconstruct} : {trans.name}", 0.3f);
-                // 分解
-                GranularityConvertOptionUnity currentConf = new GranularityConvertOptionUnity(
-                    new GranularityConvertOption(conf.MeshGranularity.ToNativeGranularity(), 0),
-                    new UniqueParentTransformList(trans),
-                    conf.DoDestroySrcObjs);
-                var currentResult = await ConvertAsync(currentConf, new DummyProgressBar());
-                result.Merge(currentResult);
-                if (!result.IsSucceed)
-                {
-                    Debug.LogError($"{trans.name}の分解に失敗したため処理を中断しました。");
-                    return NextSearchFlow.Abort;
-                }
-
-                countDeconstructed++;
-                return NextSearchFlow.SkipChildren; // 分解後、子は望みの粒度になったはずなのでスキップ
-            });
-
-            
-            // === ここから結合
-            // 深さ優先探索で、結合が必要なゲームオブジェクトを見つけて1つづつ結合します。
-
-
-            if (countDeconstructed == 0) // 結合と分割は通常どちらかだけで良い
-            {
-                
-                // 結合すべきものをここに記録します。
-                var combineDict = new CombineDict();
-
-                // 親Transformがnull(すなわちroot)のとき、combineDictのkeyをnullとしたいが、
-                // Dictionaryのキーにnullは指定できないのでroot用の一時ゲームオブジェクトを作成
-                var tmpRoot = new GameObject("tmpRoot");
-                
-                
-                conf.TargetTransforms.DfsExec(trans =>
-                {
-                    if (trans == null)
-                    {
-                        Debug.LogError($"{trans.name} is null.");
-                        return NextSearchFlow.SkipChildren;
-                    }
-
-                    // maConditionを使わず意図的にSimpleのメソッドを呼びます
-                    if (!new MAConditionSimple().ShouldConstruct(trans, conf.MeshGranularity))
-                        return NextSearchFlow.Continue;
-
-
-                    // 主要内マテリアルごと結合の場合、主要の結合はせず最小へと処理を回します
-                    if (dstGranularity == MAGranularity.PerMaterialInPrimary)
-                    {
-                        var cog = trans.GetComponent<PLATEAUCityObjectGroup>();
-                        if (cog != null && cog.Granularity == MeshGranularity.PerPrimaryFeatureObject)
-                        {
-                            return NextSearchFlow.Continue;
-                        }
-                    }
-
-                    // 結合リストに追加します.
-                    // すなわち、後で結合するために、各結合が何を条件として行われるべきかを記録します。
-                    var parentTrans = trans.parent;
-                    if (parentTrans == null) parentTrans = tmpRoot.transform;
-                    Material[] materialKey = null;
-                    // 結合単位が主要内マテリアルごとでなければ、結合対象はあるTransformの子すべてなので、結合リストのキー（結合条件）は親オブジェクトのみです（マテリアルはnull）。
-                    // 結合単位が主要内マテリアルごとの場合は、結合対象はあるTransformの子の一部なので、結合リストのキー（結合条件）は親オブジェクトとマテリアルになります。
-                    if (dstGranularity == MAGranularity.PerMaterialInPrimary)
-                    {
-                        var mr = trans.GetComponent<MeshRenderer>();
-                        if (mr != null)
-                        {
-                            materialKey = mr.sharedMaterials;
-                        }
-                    }
-                    combineDict.Add(new CombineKey(parentTrans, materialKey), trans);
-
-                    return NextSearchFlow.SkipChildren; // 明示せずとも子は結合対象になるのでスキップ
-                });
-
-                int countCombined = 0;
-                // 実際の結合処理
-                foreach (var (key, combineList) in combineDict.Data)
-                {
-                    if (combineList.Count <= 0) continue;
-                    MeshGranularity convertGran = dstGranularity == MAGranularity.PerMaterialInPrimary
-                        ? MeshGranularity.PerCityModelArea // 指定のもの（マテリアルを同じくするもの）を全部結合したい
-                        : dstGranularity.ToNativeGranularity();
-                    GranularityConvertOptionUnity currentConf = new GranularityConvertOptionUnity(
-                        new GranularityConvertOption(convertGran, 1),
-                        new UniqueParentTransformList(combineList),
-                        conf.DoDestroySrcObjs);
-                    progressBar.Display($"結合中 : {countCombined + 1}/{combineDict.Data.Count} : {key.Parent.name}の子", 0.3f);
-                    var currentResult = await ConvertAsync(currentConf, new DummyProgressBar());
-                    foreach (var generated in currentResult.GeneratedRootTransforms.Get)
-                    {
-                        generated.parent = key.Parent;
-                        if (dstGranularity == MAGranularity.PerMaterialInPrimary)
-                        {
-                            generated.name = key.Materials[0] == null ? "null material" : key.Materials[0].name;
-                            generated.GetComponent<PLATEAUCityObjectGroup>().Granularity =
-                                MeshGranularity.PerAtomicFeatureObject;
-                        }
-                    }
-
-                    result.Merge(currentResult);
-                    if (!result.IsSucceed)
-                    {
-                        Debug.LogError($"結合失敗 :");
-                    }
-
-                    countCombined++;
-                } // 実際の結合処理 ここまで 
-                
-                // === 後処理
-                // tmpRootの子をrootに
-                foreach (Transform root in tmpRoot.transform)
-                {
-                    root.parent = null;
-                }
-
-                Object.DestroyImmediate(tmpRoot);
-            }
-
-            return result;
-        }
+        
 
 
         /// <summary>
@@ -234,7 +84,7 @@ namespace PLATEAU.GranularityConvert
                     new RecoverFromGameMaterialID(unityMeshToDllSubMeshConverter);
                 var placeToSceneConf =
                     new PlaceToSceneConfig(materialConverterToUnity, true, null, null, infoForToolkits,
-                        conf.NativeOption.Granularity);
+                        conf.NativeOption.Granularity.ToMeshGranularity());
 
                 var result = await PlateauToUnityModelConverter.PlateauModelToScene(
                     commonParent,
@@ -265,6 +115,7 @@ namespace PLATEAU.GranularityConvert
                 {
                     foreach (var srcTrans in conf.SrcTransforms.Get)
                     {
+                        if (srcTrans == null) continue;
                         Object.DestroyImmediate(srcTrans.gameObject);
                     }
                 }
@@ -282,7 +133,8 @@ namespace PLATEAU.GranularityConvert
         /// <summary> 前バージョンとの互換性のために残しておきます </summary>
         public async Task<PlaceToSceneResult> ConvertAsync(GranularityConvertOptionUnity conf)
         {
-            return await ConvertAsync(conf, new ProgressBar(""));
+            using var progressBar = new ProgressBar("");
+            return await ConvertAsync(conf, progressBar);
         }
 
         /// <summary>
@@ -372,13 +224,36 @@ namespace PLATEAU.GranularityConvert
             this.dstModel = dstModel;
         }
 
-        public CityInfo.CityObjectList.CityObject GetDstCityObjectByID(string gmlIDArg, CityObjectIndex? _)
+        public CityInfo.CityObjectList.CityObject[] GetDstCityObjectsByNode(Node node, CityObjectIndex? _, string parentGmlID)
+        {
+            var mesh = node.Mesh;
+            if (mesh == null) return null;
+            var col = mesh.CityObjectList;
+            if (col.Length == 0) return null;
+            var indices = col.GetAllKeys();
+            var ret = new List<CityObjectList.CityObject>();
+            foreach (var idx in indices)
+            {
+                string gmlID = col.GetAtomicID(idx);
+                
+                // 親と重複する分は登録しない（主要内マテリアルごとで必要）
+                if (gmlID == parentGmlID) continue;
+                
+                var co = GetDstCityObjectByGmlID(gmlID, _);
+                if (co == null) continue;
+                ret.Add(co);
+            }
+
+            return ret.ToArray();
+        }
+
+        public CityInfo.CityObjectList.CityObject GetDstCityObjectByGmlID(string gmlIDArg, CityObjectIndex? _)
         {
             string gmlID = gmlIDArg.EndsWith("_combined") ? gmlIDArg.Replace("_combined", "") : gmlIDArg;
             if (srcData.TryGet(gmlID, out var serializedCityObj))
             {
                 var srcCityObj = serializedCityObj;
-                return srcCityObj.Copy();
+                return srcCityObj.CopyWithoutChildren();
             }
             else
             {

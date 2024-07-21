@@ -1,5 +1,6 @@
 using PLATEAU.CityAdjust.MaterialAdjust.Executor.Process;
 using PLATEAU.Editor.Window.Common;
+using PLATEAU.GranularityConvert;
 using System;
 using System.Linq;
 using UnityEditor;
@@ -11,11 +12,11 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
     /// なおMAはMaterialAdjustの略です。
     /// GUIの値を受け取るにはコンストラクタでコールバックを登録します。
     /// </summary>
-    internal class MAGranularityGui : Element
+    internal class ConvertGranularityGui : Element
     {
-        private MAGranularity granularity;
+        private ConvertGranularity granularity;
 
-        private MAGranularity Granularity // set時にコールバックを呼びます
+        private ConvertGranularity Granularity // set時にコールバックを呼びます
         {
             get
             {
@@ -27,44 +28,46 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
                 granularity = value;
                 if (isChanged)
                 {
-                    onValueChanged?.Invoke(value);
+                    onGranularityChanged?.Invoke(value);
                 }
             }
         }
 
         private bool doChangeGranularity = false;
         
-        // 粒度の選択肢のうち、DoNotChangeは「粒度を変更する」のチェックがないことで表現するので、ポップアップから選べるのはそれ以外とします。
         private static string[] granularityChoices = 
-            ((MAGranularity[])Enum.GetValues(typeof(MAGranularity)))
-            .Where(g => g != MAGranularity.DoNotChange)
+            ((ConvertGranularity[])Enum.GetValues(typeof(ConvertGranularity)))
             .Select(g => g.ToJapaneseString())
             .ToArray();
 
         private int selectedGranularityIndex = 2;
 
-        private Action<MAGranularity> onValueChanged;
+        private Action<ConvertGranularity> onGranularityChanged;
+        private Action<bool> onDoChangeGranularityChanged;
 
-        public MAGranularityGui(Action<MAGranularity> onValueChanged) : base("")
+        public ConvertGranularityGui(Action<ConvertGranularity> onGranularityChanged, Action<bool> onDoChangeGranularityChanged) : base("")
         {
-            this.onValueChanged = onValueChanged;
-            onValueChanged?.Invoke(Granularity);
+            this.onGranularityChanged = onGranularityChanged;
+            this.onDoChangeGranularityChanged = onDoChangeGranularityChanged;
+            onGranularityChanged?.Invoke(Granularity);
+            onDoChangeGranularityChanged?.Invoke(doChangeGranularity);
         }
         
         public override void DrawContent()
         {
+            bool prevDoChange = doChangeGranularity;
             doChangeGranularity = EditorGUILayout.ToggleLeft("粒度を変更する", doChangeGranularity);
+            if (prevDoChange != doChangeGranularity)
+            {
+                onDoChangeGranularityChanged?.Invoke(doChangeGranularity);
+            }
             if (doChangeGranularity)
             {
                 using (PlateauEditorStyle.VerticalScopeLevel1())
                 {
                     selectedGranularityIndex = EditorGUILayout.Popup("粒度", selectedGranularityIndex, granularityChoices);
-                    Granularity = (MAGranularity)(selectedGranularityIndex + 1); // +1 はDoNotChangeが選択肢にない分
+                    Granularity = (ConvertGranularity)(selectedGranularityIndex);
                 }
-            }
-            else
-            {
-                Granularity = MAGranularity.DoNotChange;
             }
             
         }

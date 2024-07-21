@@ -1,19 +1,14 @@
 ﻿using PLATEAU.CityGML;
 using PLATEAU.CityInfo;
 using PLATEAU.GranularityConvert;
-using PLATEAU.PolygonMesh;
 using PLATEAU.RoadNetwork.Data;
 using PLATEAU.RoadNetwork.Drawer;
 using PLATEAU.RoadNetwork.Factory;
-using PLATEAU.Util;
-using PLATEAU.Util.GeoGraph;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
-using UnityEngine.Serialization;
-using static UnityEngine.GraphicsBuffer;
 
 namespace PLATEAU.RoadNetwork
 {
@@ -57,7 +52,7 @@ namespace PLATEAU.RoadNetwork
             var p = splitCityObjectTestParam;
             // 分割結合の設定です。
             // https://project-plateau.github.io/PLATEAU-SDK-for-Unity/manual/runtimeAPI.html
-            var conf = new GranularityConvertOptionUnity(new GranularityConvertOption(MeshGranularity.PerAtomicFeatureObject, 1),
+            var conf = new GranularityConvertOptionUnity(new GranularityConvertOption(ConvertGranularity.PerAtomicFeatureObject, 1),
                 p.targets.Select(t => t.gameObject).ToArray(), p.doDestroySrcObject);
             var d = await new CityGranularityConverter().ConvertAsync(conf);
         }

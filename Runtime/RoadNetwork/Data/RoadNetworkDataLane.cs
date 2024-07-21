@@ -1,8 +1,6 @@
-﻿using PLATEAU.Util;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
-using Vector3 = UnityEngine.Vector3;
 
 namespace PLATEAU.RoadNetwork.Data
 {

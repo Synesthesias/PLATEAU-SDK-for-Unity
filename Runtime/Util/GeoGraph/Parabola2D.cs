@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using static UnityEngine.UI.Image;
 
 namespace PLATEAU.Util.GeoGraph
 {

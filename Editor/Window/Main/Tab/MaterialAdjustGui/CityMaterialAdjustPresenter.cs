@@ -3,12 +3,14 @@ using PLATEAU.CityAdjust.MaterialAdjust;
 using PLATEAU.CityAdjust.MaterialAdjust.Executor;
 using PLATEAU.CityAdjust.MaterialAdjust.Executor.Process;
 using PLATEAU.CityAdjust.MaterialAdjust.ExecutorV2;
+using PLATEAU.CityImport.Import.Convert;
 using PLATEAU.Editor.Window.Common;
 using PLATEAU.Editor.Window.Main.Tab.AdjustGuiParts;
 using PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts;
 using PLATEAU.GranularityConvert;
 using PLATEAU.Util;
 using PLATEAU.Util.Async;
+using System.Linq;
 using System.Threading.Tasks;
 using UnityEditor;
 using UnityEngine;
@@ -31,7 +33,8 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
 
         private PreserveOrDestroy preserveOrDestroy;
         private bool DoDestroySrcObjs => preserveOrDestroy == PreserveOrDestroy.Destroy;
-        private MAGranularity maGranularity;
+        private ConvertGranularity granularity;
+        private bool doChangeGranularity;
         private bool doMaterialAdjust;
         private MaterialCriterion selectedCriterion;
         private string attrKey;
@@ -80,7 +83,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
                             new DestroyOrPreserveSrcGui(OnPreserveOrDestroyChanged) // 元のオブジェクトを削除するか残すか
                         ),
                         new HeaderElementGroup("", "分割/結合", HeaderType.Header,
-                            new MAGranularityGui(OnMAGranularityChanged) // 分割結合に関する一般設定
+                            new ConvertGranularityGui(OnMAGranularityChanged, OnDoChangeGranularityChanged) // 分割結合に関する一般設定
                         ),
                         new HeaderElementGroup("", "マテリアル分け", HeaderType.Header,
                             new ToggleLeftElement("doMaterialAdjust", "マテリアルを条件指定で変更する", false, OnDoMaterialAdjustChanged),
@@ -93,9 +96,9 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
                     ),
                     new ElementGroup("MAGuiAfterSearch",0, // *** 検索後のUI ***
                         new MaterialConfGui(() => CurrentSearcher?.MaterialAdjustConf), // マテリアル設定,
-                        new ButtonElement("", "マテリアル分けを実行", ExecMaterialAdjust)
+                        new ButtonElement("execMaterialAdjustButton", "マテリアル分けを実行", ExecMaterialAdjust)
                     ),
-                    new ButtonElement("", "粒度変更を実行", ExecGranularityConvert)
+                    new ButtonElement("execGranularityConvertButton", "粒度変更を実行", ExecGranularityConvert)
                 );
             this.parentEditorWindow = parentEditorWindow;
         }
@@ -110,8 +113,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
             
             // 不要な設定項目を隠します
             Views.Get<AttributeKeyGui>().IsVisible = selectedCriterion == MaterialCriterion.ByAttribute; // 属性情報による分類をするときのみ属性情報キー入力欄を表示
-            Views.Get<ButtonElement>().IsVisible = !doMaterialAdjust &&
-                                                  maGranularity != MAGranularity.DoNotChange;// マテリアル分けをせず粒度変更のみのとき表示するボタン
+            Views.Get<ButtonElement>().IsVisible = !doMaterialAdjust; // マテリアル分けをせず粒度変更のみのとき表示するボタン
             Views.Get("MAGuiAfterSearch").IsVisible = IsSearched && doMaterialAdjust;
             Views.Get("materialConf").IsVisible = doMaterialAdjust;
         }
@@ -134,9 +136,14 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
             preserveOrDestroy = pod;
         }
 
-        private void OnMAGranularityChanged(MAGranularity granularity)
+        private void OnMAGranularityChanged(ConvertGranularity granularity)
         {
-            maGranularity = granularity;
+            this.granularity = granularity;
+        }
+
+        private void OnDoChangeGranularityChanged(bool doChangeGranularityArg)
+        {
+            this.doChangeGranularity = doChangeGranularityArg;
         }
 
         private void OnDoMaterialAdjustChanged(bool doMaterialAdjustArg)
@@ -177,31 +184,60 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
         public void OnTabUnselect()
         {
         }
-        
+
         private void ExecMaterialAdjust()
         {
-            ExecMaterialAdjustAsync().ContinueWithErrorCatch();
+            var button = Views.Get<ButtonElement>("execMaterialAdjustButton");
+            button.SetProcessing("マテリアル分け中...");
+            parentEditorWindow.Repaint();
+            try
+            {
+                ExecMaterialAdjustAsync().ContinueWith(_ => button.RecoverFromProcessing()).ContinueWithErrorCatch();
+            }
+            catch (Exception e)
+            {
+                Debug.LogError("マテリアル分けに失敗しました。\n" + e);
+            }
         }
 
         private async Task ExecMaterialAdjustAsync()
         {
+            var conf = GenerateConf();
+            // 分割結合
+            if (doChangeGranularity)
+            {
+                var result = await ExecGranularityConvertAsync();
+                // 次のマテリアル分けの設定値を差し替え
+                conf.DoDestroySrcObjs = true;
+                conf.TargetTransforms = result.GeneratedRootTransforms;
+            }
+
+            // マテリアル分け
+            await ExecMaterialAdjustAsync(conf);
+        }
+
+        private async Task ExecMaterialAdjustAsync(MAExecutorConf conf)
+        {
+            await Task.Delay(100); // ボタン押下時のGUIの更新を反映させるために1フレーム以上待つ必要があります。
+            await Task.Yield();
+            
             IMAExecutorV2 maExecutor = selectedCriterion switch
             {
                 MaterialCriterion.ByType => new MAExecutorV2ByType(),
                 MaterialCriterion.ByAttribute => new MAExecutorV2ByAttr(),
                 _ => throw new Exception("Unknown Criterion")
             };
-            var result = await maExecutor.ExecAsync(GenerateConf());
-            
+            // ここで実行します。
+            var result = await maExecutor.ExecAsync(conf);
+
             // 完了後、GUIの選択オブジェクトを完了後に差し替えます
             if (DoDestroySrcObjs)
             {
                 clearSearchOnTargetChange = false;
                 Views.Get<ObjectSelectGui>().ForceSet(result);
                 clearSearchOnTargetChange = true;
-                if(SelectedObjects.Count == 0) IsSearched = false;
+                if (SelectedObjects.Count == 0) IsSearched = false;
             }
-            
         }
 
         /// <summary>
@@ -209,17 +245,32 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
         /// </summary>
         private void ExecGranularityConvert()
         {
-            ExecGranularityConvertAsync().ContinueWithErrorCatch();
+            var button = Views.Get<ButtonElement>("execGranularityConvertButton");
+            button.SetProcessing("粒度変更中...");
+            parentEditorWindow.Repaint();
+            try
+            {
+                // ここで実行します。
+                ExecGranularityConvertAsync().ContinueWith((_) => button.RecoverFromProcessing()).ContinueWithErrorCatch();
+            }
+            catch (Exception e)
+            {
+                Debug.LogError("粒度変更に失敗しました。\n" + e);
+            }
         }
+        
 
-        private async Task ExecGranularityConvertAsync()
+        private async Task<PlaceToSceneResult> ExecGranularityConvertAsync()
         {
+            await Task.Delay(100); // ボタン押下時のGUIの更新を反映させるために1フレーム以上待つ必要があります。
+            await Task.Yield();
+            
             var conf = GenerateConf();
             if (conf.TargetTransforms.Count == 0)
             {
                 Dialogue.Display("粒度変換の対象を指定してください。", "OK");
             }
-            await new CityGranularityConverter().ConvertProgressiveAsync(conf, new MAConditionSimple());
+            return await new CityGranularityConverter().ConvertAsync(new GranularityConvertOptionUnity(new GranularityConvertOption(granularity, 1), conf.TargetTransforms, conf.DoDestroySrcObjs));
         }
 
         /// <summary>
@@ -227,7 +278,6 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
         /// </summary>
         private MAExecutorConf GenerateConf()
         {
-            var granularity = maGranularity;
             
             return selectedCriterion switch
             {
@@ -236,7 +286,6 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
                 MaterialCriterion.ByType => new MAExecutorConf(
                     CurrentSearcher.MaterialAdjustConf,
                     SelectedObjects,
-                    granularity,
                     DoDestroySrcObjs,
                     true
                 ),
@@ -244,7 +293,6 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
                 MaterialCriterion.ByAttribute => new MAExecutorConfByAttr(
                     CurrentSearcher.MaterialAdjustConf,
                     SelectedObjects,
-                    granularity,
                     DoDestroySrcObjs,
                     true,
                     attrKey
@@ -254,16 +302,5 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
             };
         }
 
-        private MAExecutor GenerateExecutor()
-        {
-            var executorConf = GenerateConf();
-            return selectedCriterion switch
-            {
-                MaterialCriterion.None => MAExecutorFactory.CreateGranularityExecutor(executorConf),
-                // MaterialCriterion.ByType => MAExecutorFactory.CreateTypeExecutor(executorConf),
-                MaterialCriterion.ByAttribute => MAExecutorFactory.CreateAttrExecutor((MAExecutorConfByAttr)executorConf),
-                _ => throw new ArgumentOutOfRangeException()
-            };
-        }
     }
 }

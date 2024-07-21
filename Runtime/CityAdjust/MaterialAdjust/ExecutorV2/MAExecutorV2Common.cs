@@ -7,7 +7,6 @@ using PLATEAU.CityImport.Import.Convert;
 using PLATEAU.CityImport.Import.Convert.MaterialConvert;
 using PLATEAU.CityInfo;
 using PLATEAU.GranularityConvert;
-using PLATEAU.MaterialAdjust;
 using PLATEAU.PolygonMesh;
 using PLATEAU.Util;
 using System.Threading.Tasks;
@@ -72,9 +71,17 @@ namespace PLATEAU.CityAdjust.MaterialAdjust.ExecutorV2
             currentResult.Merge(result);
         }
         
-        public void Finishing(PlaceToSceneResult result, NonLibData.NonLibDataHolder nonLibData)
+        public void Finishing(PlaceToSceneResult result, NonLibData.NonLibDataHolder nonLibData, MAExecutorConf conf)
         {
             nonLibData.RestoreTo(result.GeneratedRootTransforms);
+
+            if (conf.DoDestroySrcObjs)
+            {
+                foreach (var src in conf.TargetTransforms.Get)
+                {
+                    Object.DestroyImmediate(src.gameObject);
+                }
+            }
         }
     }
 }

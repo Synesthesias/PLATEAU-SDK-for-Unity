@@ -2,10 +2,8 @@
 using PLATEAU.CityAdjust.NonLibDataHolder;
 using PLATEAU.CityExport.ModelConvert;
 using PLATEAU.CityExport.ModelConvert.SubMeshConvert;
-using PLATEAU.CityImport.Import.Convert;
 using PLATEAU.GranularityConvert;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace PLATEAU.RoadNetwork
 {

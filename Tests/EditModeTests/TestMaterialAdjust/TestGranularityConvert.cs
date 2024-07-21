@@ -1,12 +1,20 @@
 using NUnit.Framework;
 using PLATEAU.CityAdjust.MaterialAdjust.Executor;
 using PLATEAU.CityAdjust.MaterialAdjust.Executor.Process;
+using PLATEAU.CityImport.Import.Convert;
 using PLATEAU.GranularityConvert;
 using PLATEAU.Tests.TestUtils;
 using PLATEAU.Util;
+using PLATEAU.Util.Async;
+using System;
 using System.Collections;
+using System.Linq;
+using System.Threading.Tasks;
+using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;
+using Object = UnityEngine.Object;
 
 namespace PLATEAU.Tests.EditModeTests.TestMaterialAdjust
 {
@@ -19,6 +27,12 @@ namespace PLATEAU.Tests.EditModeTests.TestMaterialAdjust
         [SetUp]
         public void SetUp()
         {
+            // シーンをリセット
+            foreach (GameObject rootGameObject in SceneManager.GetActiveScene().GetRootGameObjects())
+            {
+                Object.DestroyImmediate(rootGameObject);
+            }
+            
             testData = new TestDataMA();
         }
         
@@ -28,56 +42,56 @@ namespace PLATEAU.Tests.EditModeTests.TestMaterialAdjust
         [UnityTest]
         public IEnumerator Test_AtomicToAtomic()
         {
-            yield return AssertGranularityConverted(MAGranularity.PerAtomicFeatureObject, MAGranularity.PerAtomicFeatureObject, true);
+            yield return AssertGranularityConverted(GranularityConvert.ConvertGranularity.PerAtomicFeatureObject, GranularityConvert.ConvertGranularity.PerAtomicFeatureObject, true);
         }
         
         [UnityTest]
         public IEnumerator Test_AtomicToPrimary()
         {
-            yield return AssertGranularityConverted(MAGranularity.PerAtomicFeatureObject, MAGranularity.PerPrimaryFeatureObject, true);
+            yield return AssertGranularityConverted(GranularityConvert.ConvertGranularity.PerAtomicFeatureObject, GranularityConvert.ConvertGranularity.PerPrimaryFeatureObject, true);
         }
         
         [UnityTest]
         public IEnumerator Test_AtomicToArea()
         {
-            yield return AssertGranularityConverted(MAGranularity.PerAtomicFeatureObject, MAGranularity.CombineAll, true);
+            yield return AssertGranularityConverted(GranularityConvert.ConvertGranularity.PerAtomicFeatureObject, GranularityConvert.ConvertGranularity.PerCityModelArea, true);
         }
         
         [UnityTest]
         public IEnumerator Test_PrimaryToAtomic()
         {
-            yield return AssertGranularityConverted(MAGranularity.PerPrimaryFeatureObject, MAGranularity.PerAtomicFeatureObject, false);
+            yield return AssertGranularityConverted(GranularityConvert.ConvertGranularity.PerPrimaryFeatureObject, GranularityConvert.ConvertGranularity.PerAtomicFeatureObject, false);
         }
         
         [UnityTest]
         public IEnumerator Test_PrimaryToPrimary()
         {
-            yield return AssertGranularityConverted(MAGranularity.PerPrimaryFeatureObject, MAGranularity.PerPrimaryFeatureObject, true);
+            yield return AssertGranularityConverted(GranularityConvert.ConvertGranularity.PerPrimaryFeatureObject, GranularityConvert.ConvertGranularity.PerPrimaryFeatureObject, true);
         }
         
         [UnityTest]
         public IEnumerator Test_PrimaryToArea()
         {
-            yield return AssertGranularityConverted(MAGranularity.PerPrimaryFeatureObject, MAGranularity.CombineAll, true);
+            yield return AssertGranularityConverted(GranularityConvert.ConvertGranularity.PerPrimaryFeatureObject, GranularityConvert.ConvertGranularity.PerCityModelArea, true);
         }
         
         
         [UnityTest]
         public IEnumerator Test_AreaToAtomic()
         {
-            yield return AssertGranularityConverted(MAGranularity.CombineAll, MAGranularity.PerAtomicFeatureObject, false);
+            yield return AssertGranularityConverted(GranularityConvert.ConvertGranularity.PerCityModelArea, GranularityConvert.ConvertGranularity.PerAtomicFeatureObject, false);
         }
         
         [UnityTest]
         public IEnumerator Test_AreaToPrimary()
         {
-            yield return AssertGranularityConverted(MAGranularity.CombineAll, MAGranularity.PerPrimaryFeatureObject, false);
+            yield return AssertGranularityConverted(GranularityConvert.ConvertGranularity.PerCityModelArea, GranularityConvert.ConvertGranularity.PerPrimaryFeatureObject, false);
         }
         
         [UnityTest]
         public IEnumerator Test_AreaToArea()
         {
-            yield return AssertGranularityConverted(MAGranularity.CombineAll, MAGranularity.CombineAll, true);
+            yield return AssertGranularityConverted(GranularityConvert.ConvertGranularity.PerCityModelArea, GranularityConvert.ConvertGranularity.PerCityModelArea, true);
         }
 
 
@@ -86,34 +100,35 @@ namespace PLATEAU.Tests.EditModeTests.TestMaterialAdjust
         /// <paramref name="assertOrder"/>は、子ゲームオブジェクトの順序も含めてチェックするならtrue、順不問ならfalseとします。
         /// 現状、細かい粒度に分解するときは順番を保証できません。粗い粒度に結合するときは順番は同じにできます。 
         /// </summary>
-        private IEnumerator AssertGranularityConverted(MAGranularity srcGran, MAGranularity dstGran, bool assertOrder)
+        private IEnumerator AssertGranularityConverted(GranularityConvert.ConvertGranularity srcGran, GranularityConvert.ConvertGranularity dstGran, bool assertOrder)
         {
             yield return ConvertGranularity(srcGran, dstGran);
-            var srcTrans = retSrcObj.transform;
             var expectTrans = testData.CopyBldgSrcOf(dstGran).transform;
-            srcTrans.name = expectTrans.name;
-            // ここでsrcObjは変換後になっているはず
+            var actualTrans = retPlaceToSceneResult.GeneratedRootTransforms.Get.ToArray()[0];
             if (assertOrder)
             {
-                MAAssert.AreSameRecursive(expectTrans, srcTrans, dstGran);
+                MAAssert.AreSameRecursive(expectTrans, actualTrans, dstGran);
             }
             else
             {
-                MAAssert.AreSameSetRecursive(expectTrans, srcTrans, dstGran);
+                MAAssert.AreSameSetRecursive(expectTrans, actualTrans, dstGran);
             }
         }
+        
+        private PlaceToSceneResult retPlaceToSceneResult; // コルーチンの結果を返す用
 
-        private GameObject retSrcObj; // コルーチンの結果を返す用
-
-        private IEnumerator ConvertGranularity(MAGranularity srcGran, MAGranularity dstGran)
+        private IEnumerator ConvertGranularity(GranularityConvert.ConvertGranularity srcGran, GranularityConvert.ConvertGranularity dstGran)
         {
             Debug.Log($"Checking {srcGran} to {dstGran}");
-            retSrcObj = testData.CopyBldgSrcOf(srcGran);
-            var conf = new MAExecutorConf(
-                null,
-                new UniqueParentTransformList(retSrcObj.transform),
-                dstGran, true, false);
-            yield return new CityGranularityConverter().ConvertProgressiveAsync(conf, new MAConditionSimple()).AsIEnumerator();
+            var srcObj = testData.CopyBldgSrcOf(srcGran);
+            var converter = new CityGranularityConverter();
+            var option = new GranularityConvertOptionUnity(
+                    new GranularityConvertOption(dstGran, 1),
+                    new UniqueParentTransformList(srcObj.transform),
+                    true);
+            var progressBar = new DummyProgressBar();
+            var task = converter.ConvertAsync(option, progressBar).ContinueWithErrorCatch<PlaceToSceneResult>();
+            yield return task.AsIEnumerator<PlaceToSceneResult>(result => retPlaceToSceneResult = result);
         }
 
 

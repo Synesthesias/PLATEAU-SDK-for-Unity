@@ -1,7 +1,5 @@
-using Codice.CM.Client.Differences.Graphic;
 using PLATEAU.CityAdjust.MaterialAdjust.Executor;
 using PLATEAU.CityExport.ModelConvert.SubMeshConvert;
-using PLATEAU.CityGML;
 using PLATEAU.CityInfo;
 using PLATEAU.MaterialAdjust;
 using PLATEAU.Util;
@@ -28,7 +26,7 @@ namespace PLATEAU.CityAdjust.MaterialAdjust.ExecutorV2
                 adjuster.Exec(model);
                 await common.PlaceModelToSceneAsync(model, target, materialRegistry, nonLibData, sceneResult);
             }
-            common.Finishing(sceneResult, nonLibData);
+            common.Finishing(sceneResult, nonLibData, conf);
             return sceneResult.GeneratedRootTransforms;
         }
 

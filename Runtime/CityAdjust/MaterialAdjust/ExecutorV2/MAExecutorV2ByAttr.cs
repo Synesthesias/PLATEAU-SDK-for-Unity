@@ -1,14 +1,7 @@
 using PLATEAU.CityAdjust.MaterialAdjust.Executor;
-using PLATEAU.CityAdjust.NonLibData;
-using PLATEAU.CityAdjust.NonLibDataHolder;
-using PLATEAU.CityExport.ModelConvert;
 using PLATEAU.CityExport.ModelConvert.SubMeshConvert;
-using PLATEAU.CityImport.Import.Convert;
-using PLATEAU.CityImport.Import.Convert.MaterialConvert;
 using PLATEAU.CityInfo;
-using PLATEAU.GranularityConvert;
 using PLATEAU.MaterialAdjust;
-using PLATEAU.PolygonMesh;
 using PLATEAU.Util;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -34,7 +27,7 @@ namespace PLATEAU.CityAdjust.MaterialAdjust.ExecutorV2
                 adjuster.Exec(model); // ここで実行します。
                 await common.PlaceModelToSceneAsync(model, target, materialRegistry, nonLibData, sceneResult);
             }
-            common.Finishing(sceneResult, nonLibData);
+            common.Finishing(sceneResult, nonLibData, conf);
             return sceneResult.GeneratedRootTransforms;
         }
 
@@ -47,19 +40,31 @@ namespace PLATEAU.CityAdjust.MaterialAdjust.ExecutorV2
             {
                 var cog = trans.GetComponent<PLATEAUCityObjectGroup>();
                 if (cog == null) return NextSearchFlow.Continue;
-                foreach (var co in cog.GetAllCityObjects())
-                {
-                    if (co.AttributesMap.TryGetValueWithSlash(conf.AttrKey, out var attrValue))
-                    {
-                        adjuster.RegisterAttribute(co.GmlID, attrValue.StringValue);
-                        foreach (var child in co.Children)
-                        {
-                            adjuster.RegisterAttribute(child.GmlID, attrValue.StringValue);
-                        }
-                    }
-                }
+                // Transformの属性情報を送ります
+                SendAttributesOfCityObjGroup(cog, conf, adjuster);
+                
+                // 親の属性情報は子にも適用します
+                // foreach (var childCog in trans.GetComponentsInChildren<PLATEAUCityObjectGroup>())
+                // {
+                //     SendAttributesOfCityObjGroup(childCog, conf, adjuster);
+                // }
                 return NextSearchFlow.Continue;
             });
+        }
+
+        private void SendAttributesOfCityObjGroup(PLATEAUCityObjectGroup cog, MAExecutorConfByAttr conf, MaterialAdjusterByAttr adjuster)
+        {
+            foreach (var co in cog.GetAllCityObjects())
+            {
+                if (co.AttributesMap.TryGetValueWithSlash(conf.AttrKey, out var attrValue))
+                {
+                    adjuster.RegisterAttribute(co.GmlID, attrValue.StringValue);
+                    foreach (var child in co.Children)
+                    {
+                        adjuster.RegisterAttribute(child.GmlID, attrValue.StringValue);
+                    }
+                }
+            }
         }
 
         /// <summary>

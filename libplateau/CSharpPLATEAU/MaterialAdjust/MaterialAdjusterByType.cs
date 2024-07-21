@@ -8,6 +8,7 @@ using PLATEAU.PolygonMesh;
 
 namespace PLATEAU.MaterialAdjust
 {
+    
     public class MaterialAdjusterByType : PInvokeDisposable
     {
         public static MaterialAdjusterByType Create()

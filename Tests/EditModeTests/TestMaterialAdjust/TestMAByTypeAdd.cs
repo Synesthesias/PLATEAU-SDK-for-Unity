@@ -1,6 +1,8 @@
 using NUnit.Framework;
 using PLATEAU.CityAdjust.MaterialAdjust.Executor;
 using PLATEAU.CityAdjust.MaterialAdjust.Executor.Process;
+using PLATEAU.CityAdjust.MaterialAdjust.ExecutorV2;
+using PLATEAU.GranularityConvert;
 using PLATEAU.Tests.TestUtils;
 using PLATEAU.Util;
 using System.Collections;
@@ -24,25 +26,25 @@ namespace PLATEAU.Tests.EditModeTests.TestMaterialAdjust
         [UnityTest]
         public IEnumerator Test_AtomicToAtomic()
         {
-            yield return AssertSameGran(MAGranularity.PerAtomicFeatureObject);
+            yield return AssertSameGran(ConvertGranularity.PerAtomicFeatureObject);
         }
 
         [UnityTest]
         public IEnumerator Test_PrimaryToPrimary()
         {
-            yield return AssertSameGran(MAGranularity.PerPrimaryFeatureObject);
+            yield return AssertSameGran(ConvertGranularity.PerPrimaryFeatureObject);
         }
 
         [UnityTest]
         public IEnumerator Test_AreaToArea()
         {
-            yield return AssertSameGran(MAGranularity.CombineAll);
+            yield return AssertSameGran(ConvertGranularity.PerCityModelArea);
         }
         
         /// <summary>
         /// 同じGranularityに変換したときのチェック事項
         /// </summary>
-        private IEnumerator AssertSameGran(MAGranularity gran)
+        private IEnumerator AssertSameGran(ConvertGranularity gran)
         {
             yield return ExecConvert(gran, gran);
             var actual = retSrcObj.transform;
@@ -54,7 +56,7 @@ namespace PLATEAU.Tests.EditModeTests.TestMaterialAdjust
             var actualCountDict = MeshRendererCountDict(actual.Find(targetTransPath));
             var srcCountDict = MeshRendererCountDict(src.Find(targetTransPath));
 
-            if (gran != MAGranularity.CombineAll)
+            if (gran != ConvertGranularity.PerCityModelArea)
             {
                 // 数が2倍チェック
                 Assert.AreEqual(srcCountDict.Count, actualCountDict.Count, "メッシュを子に持つparentTransformの数が同じ");
@@ -99,19 +101,18 @@ namespace PLATEAU.Tests.EditModeTests.TestMaterialAdjust
         /// ②地物タイプでのマテリアル分け
         /// ③結果をretSrcObjに格納
         /// </summary>
-        private IEnumerator ExecConvert(MAGranularity srcGran, MAGranularity dstGran)
+        private IEnumerator ExecConvert(ConvertGranularity srcGran, ConvertGranularity dstGran)
         {
             // テスト用ゲームオブジェクトのコピー
             retSrcObj = testData.CopyBldgSrcOf(srcGran);
             
             var executorConf = new MAExecutorConf(
                 testData.MaterialConfigByType(),
-                new UniqueParentTransformList(retSrcObj.transform),
-                dstGran, false, true
+                new UniqueParentTransformList(retSrcObj.transform), false, true
             );
 
-            var executor = MAExecutorFactory.CreateTypeExecutor(executorConf);
-            yield return executor.Exec().AsIEnumerator();
+            var executor = new MAExecutorV2ByType();
+            yield return executor.ExecAsync(executorConf).AsIEnumerator();
         }
     }
 }
