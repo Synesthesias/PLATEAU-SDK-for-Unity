@@ -25,7 +25,7 @@ namespace PLATEAU.CityImport.Import.Convert.MaterialConvert
         {
             // このメソッドは同期的に実行可能ですが、インターフェイスの戻り値型に合わせるために戻り値をTaskにします。
             
-            if (subMeshIndex < 0 || subMeshIndex >= meshData.GameMaterialIDs.Length)
+            if (subMeshIndex < 0 || subMeshIndex >= meshData.GameMaterialIDs.Count)
             {
                 return Task.FromResult(RenderUtil.CreateDefaultMaterial());
             }

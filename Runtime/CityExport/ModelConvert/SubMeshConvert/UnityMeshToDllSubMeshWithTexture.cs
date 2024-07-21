@@ -1,3 +1,4 @@
+using PLATEAU.CityAdjust.NonLibData;
 using System.Collections.Generic;
 using PLATEAU.CityImport.Import.Convert.MaterialConvert;
 using PLATEAU.PolygonMesh;

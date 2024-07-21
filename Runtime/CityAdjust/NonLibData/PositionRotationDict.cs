@@ -1,5 +1,6 @@
 using PLATEAU.Util;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace PLATEAU.CityAdjust.NonLibData
@@ -13,7 +14,11 @@ namespace PLATEAU.CityAdjust.NonLibData
         {
             src.BfsExec(trans =>
             {
-                data.Add(new NonLibKeyName(trans), new PositionRotation(trans));
+                var key = new NonLibKeyName(trans, src.Get.ToArray());
+                if(!data.TryAdd(key, new PositionRotation(trans)))
+                {
+                    Debug.Log($"skipping duplicate key: {key}");
+                }
                 return NextSearchFlow.Continue;
             });
         }
@@ -22,7 +27,7 @@ namespace PLATEAU.CityAdjust.NonLibData
         {
             target.BfsExec(trans =>
             {
-                var key = new NonLibKeyName(trans);
+                var key = new NonLibKeyName(trans, target.Get.ToArray());
                 if (data.TryGetValue(key, out var posRot))
                 {
                     posRot.Apply(trans);

@@ -78,7 +78,6 @@ namespace PLATEAU.CityImport.Import.Convert
             var result = new PlaceToSceneResult();
             try
             {
-                // ここがメインです
                 await PlaceToSceneRecursive(result, parent, conf, skipRoot, 0);
             }
             catch (Exception e)

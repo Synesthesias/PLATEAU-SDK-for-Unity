@@ -2,6 +2,7 @@ using PLATEAU.CityInfo;
 using PLATEAU.Dataset;
 using PLATEAU.Util;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace PLATEAU.CityAdjust.NonLibData
@@ -23,7 +24,7 @@ namespace PLATEAU.CityAdjust.NonLibData
                 var contour = trans.GetComponent<PLATEAUContourMesh>();
                 if (contour != null)
                 {
-                    var contourKey = new NonLibKeyName(trans);
+                    var contourKey = new NonLibKeyName(trans, src.Get.ToArray());
                     if (!data.TryAdd(contourKey, contour.contourMesh))
                     {
                         Debug.Log($"key {contourKey} is already exists.");
@@ -37,7 +38,7 @@ namespace PLATEAU.CityAdjust.NonLibData
                 if (mf == null) return NextSearchFlow.Continue;
                 var mesh = mf.sharedMesh;
                 if (mesh == null) return NextSearchFlow.Continue;
-                var key = new NonLibKeyName(trans);
+                var key = new NonLibKeyName(trans, src.Get.ToArray());
                 if (!data.TryAdd(key, new ContourMesh(mesh.vertices, mesh.triangles)))
                 {
                     Debug.Log($"key {key} is already exists.");
@@ -52,7 +53,7 @@ namespace PLATEAU.CityAdjust.NonLibData
         {
             target.BfsExec(trans =>
             {
-                if (data.TryGetValue(new NonLibKeyName(trans), out var vertices))
+                if (data.TryGetValue(new NonLibKeyName(trans, target.Get.ToArray()), out var vertices))
                 {
                     var contour = trans.gameObject.AddComponent<PLATEAUContourMesh>();
                     contour.Init(vertices);

@@ -1,6 +1,8 @@
+using PLATEAU.CityExport.ModelConvert.SubMeshConvert;
 using PLATEAU.CityImport.Import.Convert.MaterialConvert;
 using PLATEAU.Util;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 #if UNITY_EDITOR
 using UnityEditor;
@@ -9,13 +11,19 @@ using UnityEditor;
 namespace PLATEAU.CityAdjust.NonLibData
 {
     /// <summary>
-    /// ゲームオブジェクト名とマテリアルの辞書です。
+    /// ゲームオブジェクト名と、エクスポートしたマテリアルの辞書です。
     /// </summary>
-    internal class NameToMaterialsDict : INonLibData
+    internal class NameToExportedMaterialsDict : INonLibData
     {
         private Dictionary<NonLibKeyName, Material[]> data = new();
+        private UnityMeshToDllSubMeshWithTexture subMeshConverter;
         
         private static readonly int PropIdBaseMap = Shader.PropertyToID("_BaseMap");
+
+        public NameToExportedMaterialsDict(UnityMeshToDllSubMeshWithTexture subMeshConverter)
+        {
+            this.subMeshConverter = subMeshConverter;
+        }
 
         /// <summary>
         /// ゲームオブジェクトとその子から、マテリアルの辞書を構築します。
@@ -29,16 +37,16 @@ namespace PLATEAU.CityAdjust.NonLibData
                 var renderer = trans.GetComponent<Renderer>();
                 if (renderer != null)
                 {
-                    Add(trans, renderer.sharedMaterials);
+                    Add(trans, renderer.sharedMaterials, src);
                 }
 
                 return NextSearchFlow.Continue;
             });
         }
 
-        private void Add(Transform trans, Material[] materials)
+        private void Add(Transform trans, Material[] materials, UniqueParentTransformList baseTransforms)
         {
-            var key = new NonLibKeyName(trans);
+            var key = new NonLibKeyName(trans, baseTransforms.Get.ToArray());
             if (data.TryAdd(key, materials))
             {
                 return;
@@ -47,7 +55,7 @@ namespace PLATEAU.CityAdjust.NonLibData
             // 重複時はログを出します。ただし、ToolkitsのAutoTexturingで多数出てくる名前はよしとします。
             if (key.ObjName != "FloorEmission" && key.ObjName != "ObstacleLight")
             {
-                Debug.LogError($"Duplicate game object name: {key}");
+                Debug.Log($"{nameof(NameToExportedMaterialsDict)} : Skipping duplicate game object name: {key}");
             }
 
         }
@@ -72,12 +80,15 @@ namespace PLATEAU.CityAdjust.NonLibData
                 var renderer = dst.GetComponent<MeshRenderer>();
                 if (renderer != null)
                 {
+                    string[] fbxMaterialNames = renderer.sharedMaterials.Select(mat => mat.name).ToArray();
                     var nextMaterials = renderer.sharedMaterials;
-                    if (data.TryGetValue(new NonLibKeyName(dst.transform), out var materials))
+                    if (data.TryGetValue(new NonLibKeyName(dst.transform, target.Get.ToArray()), out var srcMaterials))
                     {
-                        for (int i = 0; i < renderer.sharedMaterials.Length && i < materials.Length; i++)
+                        for (int i = 0; i < renderer.sharedMaterials.Length && i < srcMaterials.Length; i++)
                         {
-                            var srcMat = materials[i];
+                            int gameMaterialId = FbxMaterialNameToGameMaterialId(fbxMaterialNames[i]);
+                            if (gameMaterialId < 0 || gameMaterialId >= subMeshConverter.GameMaterials.Count) continue;
+                            var srcMat = subMeshConverter.GameMaterials[gameMaterialId];
 
                             if (srcMat == null)
                             {
@@ -131,7 +142,10 @@ namespace PLATEAU.CityAdjust.NonLibData
                             }
 
 
-                            if (!shouldUseFbxMaterial) nextMaterials[i] = srcMat;
+                            if (!shouldUseFbxMaterial)
+                            {
+                                nextMaterials[i] = srcMat;
+                            }
                         }
                     }
 
@@ -141,6 +155,24 @@ namespace PLATEAU.CityAdjust.NonLibData
             });
 
 
+        }
+
+        /// <summary>
+        /// FBXのマテリアル名からゲームエンジンのマテリアルIDを取得します。
+        /// FBXのマテリアル名の末尾が"-(マテリアルID)"であることが前提です。
+        /// 失敗時は-1を返します。
+        /// </summary>
+        private int FbxMaterialNameToGameMaterialId(string name)
+        {
+            int hyphen = name.LastIndexOf('-');
+            if (hyphen < 0) return -1;
+            string idStr = name.Substring(hyphen);
+            if (string.IsNullOrEmpty(idStr)) return -1;
+            if (int.TryParse(idStr, out var id))
+            {
+                return id;
+            }
+            return -1;
         }
     }
 }

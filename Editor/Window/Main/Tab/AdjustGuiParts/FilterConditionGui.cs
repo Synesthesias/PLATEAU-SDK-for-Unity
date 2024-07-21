@@ -52,43 +52,37 @@ namespace PLATEAU.Editor.Window.Main.Tab.AdjustGuiParts
 
         private void DrawNodeRecursive(Hierarchy.Node node, CityChangeActiveGui.PackageToLodMinMax packageToLodMinMax, int depth)
         {
+            var upperPackage = node.UpperPackage;
+            bool isPackageExistInScene =
+                packageToLodMinMax.Packages.Contains(upperPackage) || upperPackage == PredefinedCityModelPackage.None;
+            if (!isPackageExistInScene) return;
+            
             if (!this.selectionDict.ContainsKey(node))
             {
                 this.selectionDict.Add(node, true);
             }
             
-            
-            var upperPackage = node.UpperPackage;
-            bool isPackageExistInScene =
-                packageToLodMinMax.Packages.Contains(upperPackage) || upperPackage == PredefinedCityModelPackage.None;
 
             EditorGUILayout.VerticalScope packageVerticalScope = null;
+
+            if (depth == 0) EditorGUILayout.Space(5);
+            // シーンに存在するパッケージ種であれば、トグルGUIを表示します。                
+            this.selectionDict[node] = EditorGUILayout.ToggleLeft(node.NodeName, this.selectionDict[node]);
+
+            // 深さ1 (0の次)をボックスで囲みます。
+            if (this.selectionDict[node] && depth == 0)
+            {
+                packageVerticalScope = PlateauEditorStyle.VerticalScopeLevel2();
+            }
+
+            // 選択がONであるパッケージでの分類であれば、そのパッケージのLODスライダーを表示します。
+            if (this.selectionDict[node] && node.Package != PredefinedCityModelPackage.None)
+            {
+                DrawLodSlider(node);
+                // LODのGUIと子のチェックボックス(あれば)の間に少し余白を入れます。
+                if (node.Children.Count > 0) EditorGUILayout.Space(10);
+            }
             
-            if (isPackageExistInScene)
-            {
-                if(depth == 0) EditorGUILayout.Space(5);
-                // シーンに存在するパッケージ種であれば、トグルGUIを表示します。                
-                this.selectionDict[node] = EditorGUILayout.ToggleLeft(node.NodeName, this.selectionDict[node]);
-                
-                // 深さ1 (0の次)をボックスで囲みます。
-                if (this.selectionDict[node] && depth == 0)
-                {
-                    packageVerticalScope = PlateauEditorStyle.VerticalScopeLevel2();
-                }
-                
-                // 選択がONであるパッケージでの分類であれば、そのパッケージのLODスライダーを表示します。
-                if (this.selectionDict[node] && node.Package != PredefinedCityModelPackage.None)
-                {
-                    DrawLodSlider(node);
-                    // LODのGUIと子のチェックボックス(あれば)の間に少し余白を入れます。
-                    if(node.Children.Count > 0) EditorGUILayout.Space(10);
-                }
-            }
-            else
-            {
-                // シーン上にないパッケージ種であれば、GUIへの描画をスキップして自動的に false が選択されたものとみなします。
-                this.selectionDict[node] = false;
-            }
 
             if (this.selectionDict[node])
             {

@@ -22,7 +22,7 @@ namespace PLATEAU.CityAdjust.NonLibData
                 src.Get.SelectMany(trans => trans.GetComponentsInChildren<PLATEAUCityObjectGroup>());
             foreach (var attr in attrs)
             {
-                data.TryAdd(new NonLibKeyName(attr.transform), attr);
+                data.TryAdd(new NonLibKeyName(attr.transform, src.Get.ToArray()), attr);
             }
         }
 
@@ -34,7 +34,7 @@ namespace PLATEAU.CityAdjust.NonLibData
         {
             target.BfsExec(trans =>
             {
-                var key = new NonLibKeyName(trans);
+                var key = new NonLibKeyName(trans, target.Get.ToArray());
                 if (!data.ContainsKey(key)) return NextSearchFlow.Continue;
                 var dstAttr = trans.GetComponent<PLATEAUCityObjectGroup>();
                 if (dstAttr == null)
