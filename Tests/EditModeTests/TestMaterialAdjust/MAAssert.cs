@@ -1,5 +1,6 @@
 using NUnit.Framework;
 using PLATEAU.CityAdjust.MaterialAdjust.Executor.Process;
+using PLATEAU.GranularityConvert;
 using System;
 using System.Linq;
 using UnityEngine;
@@ -15,7 +16,7 @@ namespace PLATEAU.Tests.EditModeTests.TestMaterialAdjust
         /// <summary>
         /// 2つのゲームオブジェクトとその子が同じことを確認します。子の順番が同じことも確認します。
         /// </summary>
-        public static void AreSameRecursive(Transform op1, Transform op2, MAGranularity dstGranularity)
+        public static void AreSameRecursive(Transform op1, Transform op2, ConvertGranularity dstGranularity)
         {
             Assert.NotNull(op1);
             Assert.NotNull(op2);
@@ -30,7 +31,7 @@ namespace PLATEAU.Tests.EditModeTests.TestMaterialAdjust
         /// <summary>
         /// 2つのゲームオブジェクトとその子が同じことを確認します。ただし子の順番は問いません。
         /// </summary>
-        public static void AreSameSetRecursive(Transform op1, Transform op2, MAGranularity dstGranularity)
+        public static void AreSameSetRecursive(Transform op1, Transform op2, ConvertGranularity dstGranularity)
         {
             Assert.NotNull(op1);
             Assert.NotNull(op2);
@@ -45,7 +46,7 @@ namespace PLATEAU.Tests.EditModeTests.TestMaterialAdjust
             }
         }
         
-        private static void AreSame(Transform op1, Transform op2, MAGranularity dstGranularity)
+        private static void AreSame(Transform op1, Transform op2, ConvertGranularity dstGranularity)
         {
             Assert.IsNotNull(op1);
             Assert.IsNotNull(op2);
@@ -68,7 +69,7 @@ namespace PLATEAU.Tests.EditModeTests.TestMaterialAdjust
                 Assert.IsTrue(mesh2 != null, $"op2: {op2.name}にMeshFilterがあるならmeshが存在");
                 Assert.AreEqual(mesh1.triangles.Length, mesh2.triangles.Length, $"頂点数が同一 : {op1.name}");
 
-                if (dstGranularity != MAGranularity.CombineAll)
+                if (dstGranularity != ConvertGranularity.PerCityModelArea)
                 {
                     // マテリアルのチェック。
                     // ただし、地域単位への変換の場合、マテリアルはどの粒度から変換したかによって結果が異なり大変なのでいまのところスキップ。 FIXME

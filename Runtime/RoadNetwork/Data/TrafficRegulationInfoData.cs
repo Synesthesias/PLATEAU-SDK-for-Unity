@@ -1,34 +1,30 @@
-using PLATEAU.RoadNetwork;
-using PLATEAU.RoadNetwork.Data;
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace PLATEAU.RoadNetwork.Data
 {
     /// <summary>
-    /// Œğ’Ê‹K§î•ñ
+    /// äº¤é€šè¦åˆ¶æƒ…å ±
     /// </summary>
     [Serializable, RoadNetworkSerializeData(typeof(TrafficRegulationInfoData))]
     public class TrafficRegulationInfoData : IPrimitiveData
     {
         /// <summary>
-        /// ’â~ü
+        /// åœæ­¢ç·š
         /// </summary>
         public StopLine stopLine;
         /// <summary>
-        /// ‘¬“x§ŒÀ
+        /// é€Ÿåº¦åˆ¶é™
         /// </summary>
         public float speedLimit;
         /// <summary>
-        /// —Dæ“¹˜H
+        /// å„ªå…ˆé“è·¯
         /// </summary>
         public RnID<RoadNetworkDataLineString> yields;
     }
 
     /// <summary>
-    /// ’â~ü
+    /// åœæ­¢ç·š
     /// </summary>
     [System.Serializable]
     public class StopLine
@@ -39,8 +35,8 @@ namespace PLATEAU.RoadNetwork.Data
     }
 
     /// <summary>
-    /// M†‹@‚Ì“d‹…iŠT”Oj
-    /// ¡‚ÌM†‹@‚Í‰½F‚Å‚·‚©‚Æ•·‚©‚ê‚½‚ç‚±‚ê‚ğ•Ô‚·
+    /// ä¿¡å·æ©Ÿã®é›»çƒï¼ˆæ¦‚å¿µï¼‰
+    /// ä»Šã®ä¿¡å·æ©Ÿã¯ä½•è‰²ã§ã™ã‹ã¨èã‹ã‚ŒãŸã‚‰ã“ã‚Œã‚’è¿”ã™
     /// </summary>
     [System.Serializable]
     public class TrafficLight
@@ -50,7 +46,7 @@ namespace PLATEAU.RoadNetwork.Data
     }
 
     /// <summary>
-    /// M†‹@‚Ì“d‹…
+    /// ä¿¡å·æ©Ÿã®é›»çƒ
     /// </summary>
     [System.Serializable]
     public class LightBulb

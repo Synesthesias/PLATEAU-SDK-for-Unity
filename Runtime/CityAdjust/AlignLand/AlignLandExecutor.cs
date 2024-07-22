@@ -103,16 +103,16 @@ namespace PLATEAU.CityAdjust.AlignLand
             }
             
             
-            var sumResult = new GranularityConvertResult();
+            var sumResult = new PlaceToSceneResult();
             var alTargets = alignTarget.Get.ToArray();
             var alignTargetModels = new Model[alTargets.Length];
-            var subMeshConverters = new UnityMeshToDllSubMeshWithGameMaterial[alTargets.Length];
+            var subMeshConverters = new GameMaterialIDRegistry[alTargets.Length];
             // 非土地の高さ合わせターゲットメッシュをC++のModelに変換します
             for (int i = 0; i < alTargets.Length; i++)
             {
                 var target = alTargets[i];
                 progressDisplay.SetProgress(target.name, ((float)i * 100)/alTargets.Length, "共通ライブラリのModelに変換中...");
-                subMeshConverters[i] = new UnityMeshToDllSubMeshWithGameMaterial();
+                subMeshConverters[i] = new GameMaterialIDRegistry();
                 alignTargetModels[i] = UnityMeshToDllModelConverter.Convert(
                     new UniqueParentTransformList(target),
                     subMeshConverters[i],
@@ -171,7 +171,7 @@ namespace PLATEAU.CityAdjust.AlignLand
             
                     var result = await PlateauToUnityModelConverter.PlateauModelToScene(
                         null, new DummyProgressDisplay(), "",
-                        new PlaceToSceneConfig(new DllSubMeshToUnityMaterialByGameMaterial(subMeshConverters[i]), true, null, null,
+                        new PlaceToSceneConfig(new RecoverFromGameMaterialID(subMeshConverters[i]), true, null, null,
                             new CityObjectGroupInfoForToolkits(false, false), MeshGranularity.PerPrimaryFeatureObject),
                         alignTargetModels[i],
                         new AttributeDataHelper(

@@ -1,6 +1,8 @@
 using NUnit.Framework;
 using PLATEAU.CityAdjust.MaterialAdjust.Executor;
 using PLATEAU.CityAdjust.MaterialAdjust.Executor.Process;
+using PLATEAU.CityAdjust.MaterialAdjust.ExecutorV2;
+using PLATEAU.GranularityConvert;
 using PLATEAU.Tests.TestUtils;
 using PLATEAU.Util;
 using System.Collections;
@@ -23,55 +25,55 @@ namespace PLATEAU.Tests.EditModeTests.TestMaterialAdjust
         [UnityTest]
         public IEnumerator Test_AtomicToAtomic()
         {
-            yield return AssertMA(MAGranularity.PerAtomicFeatureObject, MAGranularity.PerAtomicFeatureObject, 0, true);
+            yield return AssertMA(ConvertGranularity.PerAtomicFeatureObject, ConvertGranularity.PerAtomicFeatureObject, 0, true);
         }
         
         [UnityTest]
         public IEnumerator Test_AtomicToPrimary()
         {
-            yield return AssertMA(MAGranularity.PerAtomicFeatureObject, MAGranularity.PerPrimaryFeatureObject, 0, true);
+            yield return AssertMA(ConvertGranularity.PerAtomicFeatureObject, ConvertGranularity.PerPrimaryFeatureObject, 0, true);
         }
         
         [UnityTest]
         public IEnumerator Test_AtomicToArea()
         {
-            yield return AssertMA(MAGranularity.PerAtomicFeatureObject, MAGranularity.CombineAll, 1, true);
+            yield return AssertMA(ConvertGranularity.PerAtomicFeatureObject, ConvertGranularity.PerCityModelArea, 1, true);
         }
         
         [UnityTest]
         public IEnumerator Test_PrimaryToAtomic()
         {
-            yield return AssertMA(MAGranularity.PerPrimaryFeatureObject, MAGranularity.PerAtomicFeatureObject, 0, false);
+            yield return AssertMA(ConvertGranularity.PerPrimaryFeatureObject, ConvertGranularity.PerAtomicFeatureObject, 0, false);
         }
         
         [UnityTest]
         public IEnumerator Test_PrimaryToPrimary()
         {
-            yield return AssertMA(MAGranularity.PerPrimaryFeatureObject, MAGranularity.PerPrimaryFeatureObject, 0, true);
+            yield return AssertMA(ConvertGranularity.PerPrimaryFeatureObject, ConvertGranularity.PerPrimaryFeatureObject, 0, true);
         }
         
         [UnityTest]
         public IEnumerator Test_PrimaryToArea()
         {
-            yield return AssertMA(MAGranularity.PerPrimaryFeatureObject, MAGranularity.CombineAll, 1, true);
+            yield return AssertMA(ConvertGranularity.PerPrimaryFeatureObject, ConvertGranularity.PerCityModelArea, 1, true);
         }
         
         [UnityTest]
         public IEnumerator Test_AreaToAtomic()
         {
-            yield return AssertMA(MAGranularity.CombineAll, MAGranularity.PerAtomicFeatureObject, 1, false);
+            yield return AssertMA(ConvertGranularity.PerCityModelArea, ConvertGranularity.PerAtomicFeatureObject, 1, false);
         }
         
         [UnityTest]
         public IEnumerator Test_AreaToPrimary()
         {
-            yield return AssertMA(MAGranularity.CombineAll, MAGranularity.PerPrimaryFeatureObject, 1, false);
+            yield return AssertMA(ConvertGranularity.PerCityModelArea, ConvertGranularity.PerPrimaryFeatureObject, 1, false);
         }
         
         [UnityTest]
         public IEnumerator Test_AreaToArea()
         {
-            yield return AssertMA(MAGranularity.CombineAll, MAGranularity.CombineAll, 0, true);
+            yield return AssertMA(ConvertGranularity.PerCityModelArea, ConvertGranularity.PerCityModelArea, 0, true);
         }
         
         /// <summary>
@@ -79,7 +81,7 @@ namespace PLATEAU.Tests.EditModeTests.TestMaterialAdjust
         /// <paramref name="dstDataId"/>は、成果テストデータの番号
         /// <paramref name="assertOrder"/>は、ヒエラルキー上の順序までチェックするかどうか
         /// </summary>
-        private IEnumerator AssertMA(MAGranularity srcGran, MAGranularity dstGran, int dstDataId, bool assertOrder)
+        private IEnumerator AssertMA(ConvertGranularity srcGran, ConvertGranularity dstGran, int dstDataId, bool assertOrder)
         {
             yield return ExecConvert(srcGran, dstGran);
             var actual = retSrcObj.transform;
@@ -103,7 +105,7 @@ namespace PLATEAU.Tests.EditModeTests.TestMaterialAdjust
         /// ②地物タイプでのマテリアル分け
         /// ③結果をretSrcObjに格納
         /// </summary>
-        private IEnumerator ExecConvert(MAGranularity srcGran, MAGranularity dstGran)
+        private IEnumerator ExecConvert(ConvertGranularity srcGran, ConvertGranularity dstGran)
         {
             // テスト用ゲームオブジェクトのコピー
             retSrcObj = testData.CopyBldgSrcOf(srcGran);
@@ -112,12 +114,11 @@ namespace PLATEAU.Tests.EditModeTests.TestMaterialAdjust
 
             var executorConf = new MAExecutorConf(
                 testData.MaterialConfigByType(),
-                new UniqueParentTransformList(retSrcObj.transform),
-                dstGran, true, true
+                new UniqueParentTransformList(retSrcObj.transform), true, true
             );
 
-            var executor = MAExecutorFactory.CreateTypeExecutor(executorConf);
-            yield return executor.Exec().AsIEnumerator();
+            var executor = new MAExecutorV2ByType();
+            yield return executor.ExecAsync(executorConf).AsIEnumerator();
         }
 
         

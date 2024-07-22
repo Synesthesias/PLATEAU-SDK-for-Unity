@@ -56,6 +56,11 @@ namespace PLATEAU.CityAdjust.MaterialAdjust
         {
             return data.Values[i];
         }
+
+        public KeyT GetKeyAt(int i)
+        {
+            return data.Keys[i];
+        }
     }
     
     /// <summary>

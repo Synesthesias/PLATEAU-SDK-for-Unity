@@ -15,7 +15,8 @@ namespace PLATEAU.Interop
         ErrorFileSystem,
         ErrorInvalidArgument,
         ErrorValueIsInvalid,
-        NotPreparedForOperation
+        ErrorNotPreparedForOperation,
+        ErrorValueIsDuplicate
     }
     
     /// <summary>

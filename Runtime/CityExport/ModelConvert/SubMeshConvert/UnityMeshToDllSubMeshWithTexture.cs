@@ -1,4 +1,3 @@
-using PLATEAU.CityAdjust.NonLibData;
 using System.Collections.Generic;
 using PLATEAU.CityImport.Import.Convert.MaterialConvert;
 using PLATEAU.PolygonMesh;
@@ -53,7 +52,7 @@ namespace PLATEAU.CityExport.ModelConvert.SubMeshConvert
                     var dllSubMesh = SubMesh.Create(startIndex, endIndex, texturePath);
                     
                     // Assetsへの変換機能では、GameMaterialを考慮する必要があります
-                    UnityMeshToDllSubMeshWithGameMaterial.SetGameMaterialId(dllSubMesh, GameMaterials, material);
+                    GameMaterialIDRegistry.SendMaterialIDToSubMesh(dllSubMesh, GameMaterials, material);
 
                     return dllSubMesh;
                 }

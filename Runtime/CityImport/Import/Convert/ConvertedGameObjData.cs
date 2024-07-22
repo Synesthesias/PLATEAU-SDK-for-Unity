@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PLATEAU.CityAdjust.MaterialAdjust.Executor.Process;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using PLATEAU.CityInfo;
@@ -35,7 +36,6 @@ namespace PLATEAU.CityImport.Import.Convert
             this.meshData = null;
             this.name = "CityRoot";
             this.attributeDataHelper = attributeDataHelper;
-            this.attributeDataHelper.SetId(this.name);
             this.isActive = true; // RootはActive
             for (int i = 0; i < plateauModel.RootNodesCount; i++)
             {
@@ -56,9 +56,9 @@ namespace PLATEAU.CityImport.Import.Convert
             this.name = plateauNode.Name;
             this.isActive = plateauNode.IsActive;
             this.attributeDataHelper = attributeDataHelper;
-            this.attributeDataHelper.SetId(this.name);
+            this.attributeDataHelper.SetCurrentNode(plateauNode);
             if (meshData != null)
-                this.attributeDataHelper.SetTargetNode(plateauNode.Mesh.CityObjectList);
+                this.attributeDataHelper.SetTargetCityObjList(plateauNode.Mesh.CityObjectList);
 
             for (int i = 0; i < plateauNode.ChildCount; i++)
             {
@@ -73,9 +73,9 @@ namespace PLATEAU.CityImport.Import.Convert
         /// 再帰によって子も配置します。
         /// 配置したゲームオブジェクトのリストを返します。
         /// </summary>
-        public async Task<GranularityConvertResult> PlaceToScene(Transform parent, PlaceToSceneConfig conf, bool skipRoot)
+        public async Task<PlaceToSceneResult> PlaceToScene(Transform parent, PlaceToSceneConfig conf, bool skipRoot)
         {
-            var result = new GranularityConvertResult();
+            var result = new PlaceToSceneResult();
             try
             {
                 await PlaceToSceneRecursive(result, parent, conf, skipRoot, 0);
@@ -83,13 +83,13 @@ namespace PLATEAU.CityImport.Import.Convert
             catch (Exception e)
             {
                 Debug.LogError($"Failed to placing to scene.\n{e.Message}\n{e.StackTrace}");
-                result = GranularityConvertResult.Fail();
+                result = PlaceToSceneResult.Fail();
             }
 
             return result;
         }
 
-        private async Task PlaceToSceneRecursive(GranularityConvertResult result, Transform parent,
+        private async Task PlaceToSceneRecursive(PlaceToSceneResult result, Transform parent,
             PlaceToSceneConfig conf, bool skipRoot, int recursiveDepth)
         {
             conf.CancellationToken?.ThrowIfCancellationRequested();
@@ -138,7 +138,7 @@ namespace PLATEAU.CityImport.Import.Convert
                         var attrInfo = nextParent.gameObject.AddComponent<PLATEAUCityObjectGroup>();
                         int lod;
                         if (!TryFindLod(nextParent, out lod)) lod = -1;
-                        attrInfo.Init(serialized, conf.InfoForToolkits, attributeDataHelper.CurrentGranularity, lod);
+                        attrInfo.Init(serialized, conf.InfoForToolkits, attributeDataHelper.CurrentGranularity.ToMeshGranularity(), lod);
                     }
                 }
             }

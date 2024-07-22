@@ -2,10 +2,8 @@
 using PLATEAU.CityAdjust.NonLibDataHolder;
 using PLATEAU.CityExport.ModelConvert;
 using PLATEAU.CityExport.ModelConvert.SubMeshConvert;
-using PLATEAU.CityImport.Import.Convert;
 using PLATEAU.GranularityConvert;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace PLATEAU.RoadNetwork
 {
@@ -49,7 +47,7 @@ namespace PLATEAU.RoadNetwork
             var instancedCityModelDict = new InstancedCityModelDict();
             instancedCityModelDict.ComposeFrom(conf.SrcTransforms);
 
-            var unityMeshToDllSubMeshConverter = new UnityMeshToDllSubMeshWithGameMaterial();
+            var unityMeshToDllSubMeshConverter = new GameMaterialIDRegistry();
 
             // ゲームオブジェクトを共通ライブラリのModelに変換します。
             using var srcModel = UnityMeshToDllModelConverter.Convert(
