@@ -53,10 +53,13 @@ namespace PLATEAU.RoadNetwork
 
             // #TODO : マジックナンバー
             //       : 分割点が隣り合う点とこれ以下の場合は新規で作らず使いまわす
-            var threshold = 1e-1f;
+            var threshold = 1e-2f;
             var ret = new List<List<RnPoint>>();
             var totalLength = LineUtil.GetLineSegmentLength(this);
             var length = totalLength / num;
+            // 分割長さ
+            var mergeLength = Mathf.Min(1e-1f, length * 0.5f);
+            threshold = mergeLength * mergeLength;
             var len = 0f;
             var subVertices = new List<RnPoint> { Points[0] };
             for (var i = 1; i < Points.Count; ++i)
@@ -70,14 +73,19 @@ namespace PLATEAU.RoadNetwork
                 {
                     var f = 1f - (len - length) / l;
                     var end = new RnPoint(Vector3.Lerp(p0, p1, f));
+
                     // もし,p0/p1とほぼ同じ点ならそっちを使う
-                    if ((p1.Vertex - end.Vertex).sqrMagnitude < threshold)
+                    // ただし、その結果subVerticesが線分にならない場合は無視する
+                    if (subVertices.Count > 1)
                     {
-                        end = p1;
-                    }
-                    else if ((p0.Vertex - end.Vertex).sqrMagnitude < threshold)
-                    {
-                        end = p0;
+                        if ((p1.Vertex - end.Vertex).sqrMagnitude < threshold)
+                        {
+                            end = p1;
+                        }
+                        else if ((p0.Vertex - end.Vertex).sqrMagnitude < threshold)
+                        {
+                            end = p0;
+                        }
                     }
 
                     // 同一頂点が複数あった場合は無視する
@@ -92,10 +100,6 @@ namespace PLATEAU.RoadNetwork
                         }
                     }
 
-                    if (subVertices.Any() == false)
-                    {
-                        var x = 0;
-                    }
                     ret.Add(subVertices);
                     subVertices = new List<RnPoint> { end };
                     len -= length;
@@ -106,7 +110,7 @@ namespace PLATEAU.RoadNetwork
             }
 
             // 最後の要素は無条件で返す
-            if (subVertices.Any())
+            if (ret.Count < num && subVertices.Any())
             {
                 if (subVertices.Last() != Points.Last())
                     subVertices.Add(Points.Last());
@@ -122,10 +126,18 @@ namespace PLATEAU.RoadNetwork
         /// 後ろの点が同じなら追加しない
         /// </summary>
         /// <param name="p"></param>
-        public void AddPointOrSkip(RnPoint p)
+        /// <param name="distanceEpsilon">距離誤差</param>
+        /// <param name="degEpsilon">角度誤差(p0 -> p1 -> p2の角度が180±degEpsilon以内になるときp1を削除する</param>
+        public void AddPointOrSkip(RnPoint p, float distanceEpsilon = 0f, float degEpsilon = 0.5f)
         {
-            if (Points.Count > 0 && Points.Last().Vertex == p.Vertex)
+            if (Points.Count > 0 && RnPoint.Equals(Points.Last(), p, distanceEpsilon))
                 return;
+            if (Points.Count > 1)
+            {
+                var deg = Vector3.Angle(Points[^2].Vertex - Points[^1].Vertex, p.Vertex - Points[^1].Vertex);
+                if (Mathf.Abs(180f - deg) <= degEpsilon)
+                    Points.RemoveAt(Points.Count - 1);
+            }
             Points.Add(p);
         }
 

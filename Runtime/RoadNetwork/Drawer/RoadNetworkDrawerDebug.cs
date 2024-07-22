@@ -54,8 +54,10 @@ namespace PLATEAU.RoadNetwork.Drawer
         private class LinkOption
         {
             public bool visible = true;
+            public bool showId = false;
             public bool showLaneConnection = false;
             public bool showLinkGroup = false;
+            public bool showSideEdge = false;
         }
 
         [SerializeField] private LinkOption linkOp = new LinkOption();
@@ -307,6 +309,9 @@ namespace PLATEAU.RoadNetwork.Drawer
 
             foreach (var link in roadNetwork.Links)
             {
+                if (linkOp.showId)
+                    DebugEx.DrawString($"L[{link.DebugMyId}]", link.GetCenter());
+
                 Vector3? last = null;
                 foreach (var lane in link.AllLanes)
                 {
@@ -321,6 +326,13 @@ namespace PLATEAU.RoadNetwork.Drawer
                         last = lane.GetCenter();
                     }
                 }
+
+                if (linkOp.showSideEdge)
+                {
+                    DrawWay(link.GetMergedSideWay(RnDir.Left), Color.red);
+                    DrawWay(link.GetMergedSideWay(RnDir.Right), Color.blue);
+                }
+
                 //foreach (var i in Enumerable.Range(0, l.vertices.Count))
                 //{
                 //    var v = l.vertices[i];

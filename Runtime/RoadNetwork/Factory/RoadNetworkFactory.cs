@@ -479,7 +479,6 @@ namespace PLATEAU.RoadNetwork.Factory
                         if (Way.Count <= 1)
                             return cachedIsBorder.Value;
 
-                        var isTerminated = Parent.RoadType == RoadType.Terminate;
                         foreach (var neighbor in BothConnectedTrans)
                         {
                             // 共通の隣接レーンがあると境界線
@@ -599,9 +598,17 @@ namespace PLATEAU.RoadNetwork.Factory
                     var rWay = AsWay(Enumerable.Range(0, edgeIndices[0] + 1), true, true);
                     var lWay = AsWay(Enumerable.Range(edgeIndices.Last(), way.Count - edgeIndices.Last()), false, false);
                     var startBorderWay = AsWay(edgeIndices, true, false);
-                    var endBorderWay = tranWork.Borders.FirstOrDefault()?.Way;
+                    var endBorder = tranWork.Borders.FirstOrDefault();
+                    var endBorderWay = endBorder?.Way;
                     var l = new RnLane(lWay, rWay, startBorderWay, endBorderWay);
                     var link = RnLink.CreateOneLaneLink(tranWork.TargetTran, l);
+
+                    tranWork.Ways.Clear();
+                    tranWork.Ways.Add(new WayWork(startBorderWay, tranWork));
+                    tranWork.Ways.Add(new WayWork(lWay, tranWork));
+                    tranWork.Ways.Add(new WayWork(endBorderWay, tranWork));
+                    if (endBorder != null)
+                        tranWork.Ways.Add(endBorder);
                     tranWork.Bind(link);
                     ret.AddLink(link);
                 }

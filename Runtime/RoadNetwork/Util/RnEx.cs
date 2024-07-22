@@ -38,11 +38,6 @@ namespace PLATEAU.RoadNetwork
             Replace(self, before, after);
         }
 
-        public static void RemoveLane(IList<RnLane> self, RnLane lane)
-        {
-            self.Remove(lane);
-        }
-
         /// <summary>
         /// ModelのRootNodeを返す
         /// </summary>

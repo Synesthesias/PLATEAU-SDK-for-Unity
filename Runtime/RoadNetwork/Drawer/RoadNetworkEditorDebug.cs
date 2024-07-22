@@ -57,7 +57,7 @@ namespace PLATEAU.RoadNetwork.Drawer
             //public LaneWidthEdit widthEdit = new LaneWidthEdit();
 
             ulong laneNormalId = ulong.MaxValue;
-            private Dictionary<RnLaneWayDir, List<Vector2>> vertexNormals = new Dictionary<RnLaneWayDir, List<Vector2>>();
+            private Dictionary<RnDir, List<Vector2>> vertexNormals = new Dictionary<RnDir, List<Vector2>>();
             public float rightWayPos = 0f;
             public float leftWayPos = 0f;
 
@@ -78,14 +78,14 @@ namespace PLATEAU.RoadNetwork.Drawer
                 if (laneNormalId != targetLaneId)
                 {
                     laneNormalId = targetLaneId;
-                    vertexNormals[RnLaneWayDir.Right] = lane.RightWay?.GetVertexNormals().Select(v => v.Xz()).ToList() ?? new List<Vector2>();
-                    vertexNormals[RnLaneWayDir.Left] = lane.LeftWay?.GetVertexNormals().Select(v => v.Xz()).ToList() ?? new List<Vector2>();
+                    vertexNormals[RnDir.Right] = lane.RightWay?.GetVertexNormals().Select(v => v.Xz()).ToList() ?? new List<Vector2>();
+                    vertexNormals[RnDir.Left] = lane.LeftWay?.GetVertexNormals().Select(v => v.Xz()).ToList() ?? new List<Vector2>();
                 }
                 if (rightWayPos != 0f && lane.RightWay != null)
                 {
                     for (var i = 0; i < lane.RightWay.Count; i++)
                     {
-                        lane.RightWay.GetPoint(i).Vertex += (vertexNormals[RnLaneWayDir.Right][i]).Xay() * rightWayPos;
+                        lane.RightWay.GetPoint(i).Vertex += (vertexNormals[RnDir.Right][i]).Xay() * rightWayPos;
                     }
 
                     rightWayPos = 0f;
@@ -95,7 +95,7 @@ namespace PLATEAU.RoadNetwork.Drawer
                 {
                     for (var i = 0; i < lane.LeftWay.Count; i++)
                     {
-                        lane.LeftWay.GetPoint(i).Vertex += (vertexNormals[RnLaneWayDir.Left][i]).Xay() * leftWayPos;
+                        lane.LeftWay.GetPoint(i).Vertex += (vertexNormals[RnDir.Left][i]).Xay() * leftWayPos;
                     }
 
                     leftWayPos = 0f;
@@ -125,6 +125,58 @@ namespace PLATEAU.RoadNetwork.Drawer
         [SerializeField]
         private LaneEdit laneEdit = new LaneEdit();
 
+        [Serializable]
+        private class LinkEdit
+        {
+            [SerializeField]
+            private ulong targetLinkId = ulong.MaxValue;
+
+            [Serializable]
+            public class ShowInfo
+            {
+                [NonSerialized]
+                public ulong targetLinkId = ulong.MaxValue;
+
+                public int prevId = -1;
+
+                public int nextId = -1;
+
+                // 左側レーン数
+                public int leftLaneCount = -1;
+                // 右側レーン数
+                public int rightLaneCount = -1;
+
+            }
+            public ShowInfo showInfo = new ShowInfo();
+
+            public void Update(RnModel model)
+            {
+                var link = model.Links.FirstOrDefault(l => l.DebugMyId == targetLinkId);
+                if (link == null)
+                    return;
+                var linkGroup = link.CreateLinkGroup();
+                if (showInfo.targetLinkId != targetLinkId)
+                {
+                    showInfo.targetLinkId = targetLinkId;
+                    showInfo.leftLaneCount = linkGroup.GetLeftLaneCount();
+                    showInfo.rightLaneCount = linkGroup.GetRightLaneCount();
+                }
+
+                showInfo.prevId = (int)(link.Prev?.DebugMyId ?? ulong.MaxValue);
+                showInfo.nextId = (int)(link.Next?.DebugMyId ?? ulong.MaxValue);
+
+                if (showInfo.leftLaneCount != linkGroup.GetLeftLaneCount())
+                {
+                    linkGroup.SetLeftLaneCount(showInfo.leftLaneCount);
+                }
+                if (showInfo.rightLaneCount != linkGroup.GetRightLaneCount())
+                {
+                    linkGroup.SetRightLaneCount(showInfo.rightLaneCount);
+                }
+            }
+        }
+        [SerializeField] LinkEdit linkEdit = new LinkEdit();
+
         [SerializeField]
         public class WayEdit
         {
@@ -141,6 +193,7 @@ namespace PLATEAU.RoadNetwork.Drawer
         public void OnInspectorGUI(RnModel model)
         {
             laneEdit.Update(model);
+            linkEdit.Update(model);
         }
     }
 }

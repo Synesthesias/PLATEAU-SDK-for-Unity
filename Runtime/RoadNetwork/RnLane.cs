@@ -22,6 +22,19 @@ namespace PLATEAU.RoadNetwork
         Next
     }
 
+    public static class RnLaneBorderTypeEx
+    {
+        /// <summary>
+        /// 反対側を返す
+        /// </summary>
+        /// <param name="self"></param>
+        /// <returns></returns>
+        public static RnLaneBorderType GetOpposite(this RnLaneBorderType self)
+        {
+            return self == RnLaneBorderType.Prev ? RnLaneBorderType.Next : RnLaneBorderType.Prev;
+        }
+    }
+
     public enum RnLaneBorderDir
     {
         // LeftWay -> RightWay
@@ -30,11 +43,17 @@ namespace PLATEAU.RoadNetwork
         Right2Left
     }
 
-    // レーンの左右
-    public enum RnLaneWayDir
+    public static class RnLaneBorderDirEx
     {
-        Left,
-        Right
+        /// <summary>
+        /// 反対値を返す
+        /// </summary>
+        /// <param name="self"></param>
+        /// <returns></returns>
+        public static RnLaneBorderDir GetOpposite(this RnLaneBorderDir self)
+        {
+            return self == RnLaneBorderDir.Left2Right ? RnLaneBorderDir.Right2Left : RnLaneBorderDir.Left2Right;
+        }
     }
 
     [Flags]
@@ -179,6 +198,32 @@ namespace PLATEAU.RoadNetwork
         {
             (PrevBorder, NextBorder) = (NextBorder?.ReversedWay(), PrevBorder?.ReversedWay());
             (LeftWay, RightWay) = (RightWay?.ReversedWay(), LeftWay?.ReversedWay());
+        }
+
+        /// <summary>
+        /// Borderの向きをborderDirになるようにそろえる
+        /// </summary>
+        public void AlignBorder(RnLaneBorderDir borderDir = RnLaneBorderDir.Left2Right)
+        {
+            AlignBorder(RnLaneBorderType.Prev, borderDir);
+            AlignBorder(RnLaneBorderType.Next, borderDir);
+        }
+
+        /// <summary>
+        /// typeの境界線をborderDirにそろえる
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="borderDir"></param>
+        private void AlignBorder(RnLaneBorderType type, RnLaneBorderDir borderDir)
+        {
+            var border = GetBorder(type);
+            if (border == null)
+                return;
+            var dir = GetBorderDir(type);
+            if (dir != borderDir)
+            {
+                border.Reverse(true);
+            }
         }
 
         private static void Replace(List<RnLane> list, RnLane before, RnLane after)
@@ -506,14 +551,18 @@ namespace PLATEAU.RoadNetwork
         /// <param name="self"></param>
         /// <param name="splitNum"></param>
         /// <param name="withConnectedLinkLane"></param>
+        /// <param name="rateSelector">i番目のWayの場所を返す. nullの場合は全て等間隔</param>
         /// <returns></returns>
-        public static Dictionary<RnLane, List<RnLane>> SplitLane(this RnLane self, int splitNum, bool withConnectedLinkLane)
+        public static Dictionary<RnLane, List<RnLane>> SplitLane(this RnLane self, int splitNum, bool withConnectedLinkLane, Func<int, float> rateSelector = null)
         {
             if (splitNum <= 1)
                 return new Dictionary<RnLane, List<RnLane>>();
 
             if ((self?.HasBothBorder ?? false) == false)
                 return new Dictionary<RnLane, List<RnLane>>();
+
+            if (rateSelector == null)
+                rateSelector = i => (i + 1f) / splitNum;
 
             var visited = new HashSet<RnLane>();
             var queue = new Queue<RnLane>();
@@ -582,7 +631,7 @@ namespace PLATEAU.RoadNetwork
                 {
                     var prevBorder = prevSubBorders[isPrevLeft2Right ? i : prevSubBorders.Count - 1 - i];
                     var nextBorder = nextSubBorders[isNextLeft2Right ? i : nextSubBorders.Count - 1 - i];
-                    var p2 = (i + 1f) / splitNum;
+                    var rate = rateSelector(i);
                     RnWay r = new RnWay(targetLane.RightWay.LineString, targetLane.RightWay.IsReversed, true);
                     if (i != splitNum - 1)
                     {
@@ -599,7 +648,7 @@ namespace PLATEAU.RoadNetwork
                         else
                             AddPoint(prevBorder.Points.First());
 
-                        var segments = GeoGraphEx.GetInnerLerpSegments(targetLane.LeftWay.Vertices.ToList(), targetLane.RightWay.Vertices.ToList(), AxisPlane.Xz, p2);
+                        var segments = GeoGraphEx.GetInnerLerpSegments(targetLane.LeftWay.Vertices.ToList(), targetLane.RightWay.Vertices.ToList(), AxisPlane.Xz, rate);
                         foreach (var s in segments)
                         {
                             AddPoint(new RnPoint(s.Segment.Start));

@@ -573,7 +573,7 @@ namespace PLATEAU.Editor.RoadNetwork
 
             public RoadNetworkEditingResult RemoveMainLane(RnLink link, RnLane lane)
             {
-                link.RemoveMainLane(lane);
+                link.RemoveLane(lane);
                 return new RoadNetworkEditingResult(RoadNetworkEditingResultType.Success);
             }
 

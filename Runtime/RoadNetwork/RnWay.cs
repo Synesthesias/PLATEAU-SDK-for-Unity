@@ -132,7 +132,8 @@ namespace PLATEAU.RoadNetwork
             // 負数の時は逆からのインデックスに変換
             if (index < 0)
                 index = Count + index;
-            return LineString.Points[ToRawIndex(index)];
+            var i = ToRawIndex(index);
+            return LineString.Points[i];
         }
 
         // 頂点数
@@ -151,9 +152,25 @@ namespace PLATEAU.RoadNetwork
         // デシリアライズのために必要
         public RnWay() { }
 
+        /// <summary>
+        /// 反転させたWayを返す(非破壊)
+        /// </summary>
+        /// <returns></returns>
         public RnWay ReversedWay()
         {
             return new RnWay(LineString, !IsReversed, !IsReverseNormal);
+        }
+
+        /// <summary>
+        /// 線の向きを反転させる
+        /// </summary>
+        /// <param name="keepNormalDir">法線の向きは保持する</param>
+        public void Reverse(bool keepNormalDir)
+        {
+            IsReversed = !IsReversed;
+            // #NOTE : 反転させた段階で法線も逆になるのでkeepするときにIsReverseNormalを反転させる
+            if (keepNormalDir)
+                IsReverseNormal = !IsReverseNormal;
         }
 
         /// <summary>
@@ -201,7 +218,7 @@ namespace PLATEAU.RoadNetwork
                 ret = n1;
             else
                 ret = (n1 + n2) / 2;
-            return IsReverseNormal ? -ret : ret;
+            return ret;
         }
 
         /// <summary>
@@ -227,9 +244,14 @@ namespace PLATEAU.RoadNetwork
             var p0 = this[startVertexIndex];
             var p1 = this[(startVertexIndex + 1) % Count];
             // Vector3.Crossは左手系なので逆
-            return -Vector3.Cross(Vector3.up, p1 - p0);
+            var sign = IsReverseNormal ? 1 : -1;
+            return sign * Vector3.Cross(Vector3.up, p1 - p0);
         }
 
+        /// <summary>
+        /// 辺の法線ベクトルをリストで返す
+        /// </summary>
+        /// <returns></returns>
         public IEnumerable<Vector3> GetEdgeNormals()
         {
             for (var i = 0; i < Count - 1; i++)

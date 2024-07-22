@@ -487,7 +487,7 @@ namespace PLATEAU.Editor.RoadNetwork
                         var newLanes = lane.SplitLaneSelf(2);   // 元のレーンを含めてLaneが３つになる
                         if (newLanes == null)
                             return;
-                        parent.RemoveMainLane(lane);
+                        parent.RemoveLane(lane);
                         foreach (var newLane in newLanes)
                         {
                             parent.AddMainLane(newLane);
