@@ -230,7 +230,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
             // ここで実行します。
             var result = await maExecutor.ExecAsync(conf);
 
-            // 完了後、GUIの選択オブジェクトを完了後に差し替えます
+            // 完了後、GUIで表示される「選択オブジェクト」を完了後に差し替えます
             if (DoDestroySrcObjs)
             {
                 clearSearchOnTargetChange = false;
@@ -238,6 +238,8 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
                 clearSearchOnTargetChange = true;
                 if (SelectedObjects.Count == 0) IsSearched = false;
             }
+
+            Selection.objects = result.Get.Select(trans => (UnityEngine.Object)trans.gameObject).ToArray();
         }
 
         /// <summary>
@@ -270,7 +272,12 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
             {
                 Dialogue.Display("粒度変換の対象を指定してください。", "OK");
             }
-            return await new CityGranularityConverter().ConvertAsync(new GranularityConvertOptionUnity(new GranularityConvertOption(granularity, 1), conf.TargetTransforms, conf.DoDestroySrcObjs));
+            
+            // ここで実行します。
+            var result = await new CityGranularityConverter().ConvertAsync(new GranularityConvertOptionUnity(new GranularityConvertOption(granularity, 1), conf.TargetTransforms, conf.DoDestroySrcObjs));
+            
+            Selection.objects = result.GeneratedRootTransforms.Get.Select(trans => (UnityEngine.Object)trans.gameObject).ToArray();
+            return result;
         }
 
         /// <summary>
