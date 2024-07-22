@@ -43,6 +43,21 @@ namespace PLATEAU.RoadNetwork
         public bool IsValid => Links.All(l => l.IsValid);
 
         /// <summary>
+        /// コンストラクタ
+        /// </summary>
+        /// <param name="prevNode"></param>
+        /// <param name="nextNode"></param>
+        /// <param name="links"></param>
+        public RnLinkGroup(RnNode prevNode, RnNode nextNode, IEnumerable<RnLink> links)
+        {
+            PrevNode = prevNode;
+            NextNode = nextNode;
+            this.links = links.ToList();
+            // Linkの向きをそろえる
+            Align();
+        }
+
+        /// <summary>
         /// 左側のレーン数
         /// </summary>
         /// <returns></returns>
@@ -212,13 +227,35 @@ namespace PLATEAU.RoadNetwork
                 l.AlignLaneBorder();
         }
 
-        public RnLinkGroup(RnNode prevNode, RnNode nextNode, IEnumerable<RnLink> links)
+        // ---------------
+        // Static Methods
+        // ---------------
+        /// <summary>
+        /// 2つのノードを繋ぐLinkGroupを作成する
+        /// 2つのノードが直接繋がっていない場合はnullを返す
+        /// </summary>
+        /// <param name="prevNode"></param>
+        /// <param name="nextNode"></param>
+        /// <returns></returns>
+        public static RnLinkGroup CreateLinkGroupOrDefault(RnNode prevNode, RnNode nextNode)
         {
-            PrevNode = prevNode;
-            NextNode = nextNode;
-            this.links = links.ToList();
-            // Linkの向きをそろえる
-            Align();
+            if (prevNode == null || nextNode == null)
+                return null;
+
+            foreach (var n in prevNode.GetNeighborRoads())
+            {
+                if (n is RnLink link)
+                {
+                    var ret = new RnLinkGroup(prevNode, nextNode, new[] { link });
+                    var hasPrev = ret.PrevNode == prevNode || ret.NextNode == prevNode;
+                    var hasNex = ret.PrevNode == nextNode || ret.NextNode == nextNode;
+                    if (hasPrev && hasNex)
+                        return ret;
+                }
+            }
+
+            return null;
         }
+
     }
 }
