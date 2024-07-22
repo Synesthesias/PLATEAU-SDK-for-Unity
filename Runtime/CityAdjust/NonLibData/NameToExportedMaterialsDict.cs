@@ -123,8 +123,11 @@ namespace PLATEAU.CityAdjust.NonLibData
                             {
                                 // Rendering Toolkitでない場合
 
-                                // mainTextureがないシェーダー、またはmainTextureがないなら、元のマテリアルを利用します。
-                                if (!srcMat.HasMainTextureAttribute() || srcMat.mainTexture == null)
+                                // mainTextureがないシェーダー、またはmainTextureがない、またはデフォルトマテリアルなら、元のマテリアルを利用します。
+                                Debug.Log("main tex = " + srcMat.mainTexture.name);
+                                bool isDefaultMaterial =
+                                    FallbackMaterial.ByMainTextureName(srcMat.mainTexture.name) != null;
+                                if (!srcMat.HasMainTextureAttribute() || srcMat.mainTexture == null || isDefaultMaterial)
                                 {
                                     shouldUseFbxMaterial = false;
                                 }
@@ -165,9 +168,17 @@ namespace PLATEAU.CityAdjust.NonLibData
         private int FbxMaterialNameToGameMaterialId(string name)
         {
             int hyphen = name.LastIndexOf('-');
-            if (hyphen < 0) return -1;
-            string idStr = name.Substring(hyphen);
-            if (string.IsNullOrEmpty(idStr)) return -1;
+            if (hyphen < 0 || hyphen >= name.Length - 1)
+            {
+                Debug.LogWarning($"Could not associate material name with game material ID. name = {name}");
+                return -1;
+            }
+            string idStr = name.Substring(hyphen + 1);
+            if (string.IsNullOrEmpty(idStr))
+            {
+                Debug.LogWarning($"Could not associate material name with game material ID. name = {name}");
+                return -1;
+            }
             if (int.TryParse(idStr, out var id))
             {
                 return id;
