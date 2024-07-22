@@ -157,7 +157,8 @@ namespace PLATEAU.RoadNetwork
         }
 
         /// <summary>
-        /// このレーン接続先のRnRoadBaseを取得. ParentのNext/Prevとは逆になる可能性がある
+        /// このレーン接続先のRnRoadBaseを取得.ParentのNext/Prevとは逆になる可能性がある.
+        /// ParentのPrev/NextとBorderの一致判定により求める
         /// </summary>
         /// <returns></returns>
         public RnRoadBase GetNextRoad()
@@ -166,7 +167,8 @@ namespace PLATEAU.RoadNetwork
         }
 
         /// <summary>
-        /// このレーン接続元のRnRoadBaseを取得. ParentのNext/Prevとは逆になる可能性がある
+        /// このレーン接続元のRnRoadBaseを取得. ParentのNext/Prevとは逆になる可能性がある.
+        /// ParentのPrev/NextとBorderの一致判定により求める
         /// </summary>
         /// <returns></returns>
         public RnRoadBase GetPrevRoad()

@@ -69,7 +69,7 @@ namespace PLATEAU.RoadNetwork
         }
 
         /// <summary>
-        /// laneがこのLinkの左車線かどうか
+        /// laneがこのLinkの左車線かどうか(Prev/NextとBorderが共通である前提)
         /// </summary>
         /// <param name="lane"></param>
         /// <returns></returns>
@@ -79,7 +79,7 @@ namespace PLATEAU.RoadNetwork
         }
 
         /// <summary>
-        /// laneがこのLinkの右車線かどうか
+        /// laneがこのLinkの右車線かどうか(Prev/NextとBorderが共通である前提)
         /// </summary>
         /// <param name="lane"></param>
         /// <returns></returns>
@@ -89,7 +89,8 @@ namespace PLATEAU.RoadNetwork
         }
 
         /// <summary>
-        /// 左側のレーン </summary>
+        /// 左側のレーン(Prev/NextとBorderが共通である前提)
+        /// </summary>
         /// <returns></returns>
         public IEnumerable<RnLane> GetLeftLanes()
         {
@@ -97,7 +98,7 @@ namespace PLATEAU.RoadNetwork
         }
 
         /// <summary>
-        /// 右側のレーン
+        /// 右側のレーン(Prev/NextとBorderが共通である前提)
         /// </summary>
         /// <returns></returns>
         public IEnumerable<RnLane> GetRightLanes()
@@ -106,7 +107,7 @@ namespace PLATEAU.RoadNetwork
         }
 
         /// <summary>
-        /// 左側レーン数
+        /// 左側レーン数(Prev/NextとBorderが共通である前提)
         /// </summary>
         /// <returns></returns>
         public int GetLeftLaneCount()
@@ -115,7 +116,7 @@ namespace PLATEAU.RoadNetwork
         }
 
         /// <summary>
-        /// 右側レーン数
+        /// 右側レーン数(Prev/NextとBorderが共通である前提)
         /// </summary>
         /// <returns></returns>
         public int GetRightLaneCount()

@@ -108,6 +108,7 @@ namespace PLATEAU.RoadNetwork
                 borderWays.Add(split);
             }
 
+            var afterLanes = new List<List<RnLane>>(Links.Count);
             for (var i = 0; i < Links.Count; ++i)
             {
                 var link = Links[i];
@@ -116,19 +117,22 @@ namespace PLATEAU.RoadNetwork
                 var leftWay = link.GetMergedSideWay(RnDir.Left);
                 var rightWay = link.GetMergedSideWay(RnDir.Right);
 
+                var leftVertices = leftWay.Vertices.ToList();
+                var rightVertices = rightWay.Vertices.ToList();
                 var left = leftWay;
                 var lanes = new List<RnLane>(num);
                 for (var n = 0; n < num; ++n)
                 {
                     var right = rightWay;
-                    if (n != num - 1)
+                    if (n < num - 1)
                     {
                         var ep = 1e-3f;
                         var prevBorder = prevBorders[n];
                         var nextBorder = nextBorders[n];
                         var line = new RnLineString();
                         line.AddPointOrSkip(prevBorder.GetPoint(-1), ep);
-                        var segments = GeoGraphEx.GetInnerLerpSegments(leftWay.Vertices.ToList(), rightWay.Vertices.ToList(), AxisPlane.Xz, (1f + n) / num);
+                        var segments = GeoGraphEx.GetInnerLerpSegments(leftVertices, rightVertices, AxisPlane.Xz,
+                            (1f + n) / num);
                         foreach (var s in segments)
                             line.AddPointOrSkip(new RnPoint(s.Segment.Start), ep);
                         line.AddPointOrSkip(nextBorder.GetPoint(-1), ep);
@@ -136,17 +140,23 @@ namespace PLATEAU.RoadNetwork
                     }
 
                     var l = new RnWay(left.LineString, left.IsReversed, false);
-                    var newLane = new RnLane(l, right, prevBorders[n], nextBorders[n]);
+                    var r = new RnWay(right.LineString, right.IsReversed, true);
+                    var newLane = new RnLane(l, r, prevBorders[n], nextBorders[n]);
                     if (n >= leftCount)
                         newLane.Reverse();
                     lanes.Add(newLane);
                     left = right;
                 }
 
-                link.ReplaceLanes(lanes);
+                afterLanes.Add(lanes);
             }
 
-
+            // Linksに変更を加えるのは最後にまとめて必要がある
+            // (RnLinks.IsLeftLane等が隣のLinkに依存するため. 途中で変更すると、後続の処理が破綻する可能性がある)
+            for (var i = 0; i < Links.Count; ++i)
+            {
+                Links[i].ReplaceLanes(afterLanes[i]);
+            }
         }
 
         public void SetLeftLaneCount(int count)
