@@ -1,5 +1,3 @@
-using UnityEngine.Serialization;
-
 namespace PLATEAU.Editor.Window.Common
 {
     /// <summary>

@@ -1,7 +1,6 @@
 ﻿using System;
 using PLATEAU.CityAdjust.MaterialAdjust;
 using PLATEAU.CityAdjust.MaterialAdjust.Executor;
-using PLATEAU.CityAdjust.MaterialAdjust.Executor.Process;
 using PLATEAU.CityAdjust.MaterialAdjust.ExecutorV2;
 using PLATEAU.CityImport.Import.Convert;
 using PLATEAU.Editor.Window.Common;
@@ -29,7 +28,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
         private readonly MAKeySearcher materialGuiByAttr = new MAKeySearcher(MaterialCriterion.ByAttribute);
         
         
-        private UniqueParentTransformList SelectedObjects { get; set; } // ここでsetしてもGUIに反映されないので注意
+        private UniqueParentTransformList SelectedObjects { get; set; } // ここでsetしてもGUIに反映されないので注意です。set時にはForceSetTargetObjectsを使ってください。
 
         private PreserveOrDestroy preserveOrDestroy;
         private bool DoDestroySrcObjs => preserveOrDestroy == PreserveOrDestroy.Destroy;
@@ -136,9 +135,9 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
             preserveOrDestroy = pod;
         }
 
-        private void OnMAGranularityChanged(ConvertGranularity granularity)
+        private void OnMAGranularityChanged(ConvertGranularity granularityArg)
         {
-            this.granularity = granularity;
+            this.granularity = granularityArg;
         }
 
         private void OnDoChangeGranularityChanged(bool doChangeGranularityArg)
@@ -192,6 +191,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
             parentEditorWindow.Repaint();
             try
             {
+                // ここで実行します。
                 ExecMaterialAdjustAsync().ContinueWith(_ => button.RecoverFromProcessing()).ContinueWithErrorCatch();
             }
             catch (Exception e)
@@ -200,7 +200,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
             }
         }
 
-        private async Task ExecMaterialAdjustAsync()
+        private async Task<UniqueParentTransformList> ExecMaterialAdjustAsync()
         {
             var conf = GenerateConf();
             // 分割結合
@@ -213,10 +213,10 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
             }
 
             // マテリアル分け
-            await ExecMaterialAdjustAsync(conf);
+            return await ExecMaterialAdjustAsyncInner(conf);
         }
 
-        private async Task ExecMaterialAdjustAsync(MAExecutorConf conf)
+        private async Task<UniqueParentTransformList> ExecMaterialAdjustAsyncInner(MAExecutorConf conf)
         {
             await Task.Delay(100); // ボタン押下時のGUIの更新を反映させるために1フレーム以上待つ必要があります。
             await Task.Yield();
@@ -234,13 +234,15 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
             if (DoDestroySrcObjs)
             {
                 clearSearchOnTargetChange = false;
-                Views.Get<ObjectSelectGui>().ForceSet(result);
                 clearSearchOnTargetChange = true;
                 if (SelectedObjects.Count == 0) IsSearched = false;
             }
 
             Selection.objects = result.Get.Select(trans => (UnityEngine.Object)trans.gameObject).ToArray();
+            ForceSetTargetObjects(result);
+            return result;
         }
+        
 
         /// <summary>
         /// マテリアル分けをせず、分割結合のみ行う場合に呼びます。
@@ -271,12 +273,15 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
             if (conf.TargetTransforms.Count == 0)
             {
                 Dialogue.Display("粒度変換の対象を指定してください。", "OK");
+                return PlaceToSceneResult.Fail();
             }
             
             // ここで実行します。
             var result = await new CityGranularityConverter().ConvertAsync(new GranularityConvertOptionUnity(new GranularityConvertOption(granularity, 1), conf.TargetTransforms, conf.DoDestroySrcObjs));
             
+            // 後処理
             Selection.objects = result.GeneratedRootTransforms.Get.Select(trans => (UnityEngine.Object)trans.gameObject).ToArray();
+            ForceSetTargetObjects(result.GeneratedRootTransforms);
             return result;
         }
 
@@ -307,6 +312,14 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
                     
                 _ => throw new ArgumentOutOfRangeException()
             };
+        }
+        
+        /// <summary>
+        /// 変更時チェックをスキップしながら、対象オブジェクトの指定を引数のものに置き換えます。
+        /// </summary>
+        private void ForceSetTargetObjects(UniqueParentTransformList target)
+        {
+            Views.Get<ObjectSelectGui>().ForceSet(target);
         }
 
     }
