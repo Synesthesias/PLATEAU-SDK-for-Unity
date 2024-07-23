@@ -44,7 +44,11 @@ namespace PLATEAU.Editor.Window.Main
             );
             return new PlateauWindowGui(tabs);
         }
-        
+
+        protected override IEditorDrawable InitFooterGui()
+        {
+            return new PlateauWindowFooterGui();
+        }
 
         /// <summary> テストからアクセスする用 </summary>
         internal const string NameOfInnerGuiField = nameof(gui);
