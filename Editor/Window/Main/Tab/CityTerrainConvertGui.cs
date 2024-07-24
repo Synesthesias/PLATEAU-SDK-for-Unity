@@ -91,7 +91,7 @@ namespace PLATEAU.Editor.Window.Main.Tab
         {
             this.selectedSize =
                 PlateauEditorStyle.PopupWithLabelWidth(
-                    "高さマップ解像度", this.selectedSize, SizeOptions, 110);
+                    "ハイトマップ解像度", this.selectedSize, SizeOptions, 110);
         }
 
         private void WarnAlignLandToLod3RoadNotWorking()
