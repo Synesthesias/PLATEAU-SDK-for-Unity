@@ -334,7 +334,10 @@ namespace PLATEAU.CityInfo
             return objs;
         }
 
-        /// <summary> パッケージ種を返します。 </summary>
+        /// <summary>
+        /// パッケージ種を返します。ただしCOT_Unknownの場合は確定しないので仮の結果が返ります。
+        /// 結果がCOT_Unknownの場合は確定しないので、代わりに PLATEAUInstancedCityModel.GetPackage を使ってください。
+        /// </summary>
         public PredefinedCityModelPackage Package
         {
             get

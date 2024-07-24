@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using PLATEAU.CityGML;
+using PLATEAU.Dataset;
 using PLATEAU.Geometries;
 using PLATEAU.Native;
 using UnityEngine;
@@ -177,6 +178,28 @@ namespace PLATEAU.CityInfo
         public double Longitude
         {
             get => GeoReference.Unproject(new PlateauVector3d(0, 0, 0)).Longitude;
+        }
+
+        public PredefinedCityModelPackage GetPackage(PLATEAUCityObjectGroup cog)
+        {
+            // パッケージ種を取得します。
+            var package = cog.Package;
+            if (package != PredefinedCityModelPackage.Unknown) return package;
+            
+            // パッケージ種がUnknownの場合は、親のゲームオブジェクト名から推測します。
+            var currentTrans = cog.transform.parent;
+            while (currentTrans != null)
+            {
+                var file = GmlFile.Create(currentTrans.name);
+                if(file.Package != PredefinedCityModelPackage.None && file.Package != PredefinedCityModelPackage.Unknown)
+                {
+                    return file.Package;
+                }
+                file.Dispose();
+                currentTrans = currentTrans.parent;
+            }
+
+            return PredefinedCityModelPackage.Unknown;
         }
 
         

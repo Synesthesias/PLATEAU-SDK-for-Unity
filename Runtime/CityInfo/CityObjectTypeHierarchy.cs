@@ -72,6 +72,8 @@ namespace PLATEAU.CityInfo
                 new Node("区域 (Area)", Package.Area, null, null),
                 new Node("その他の構造物 (OtherConstruction)", Package.OtherConstruction, null, null),
                 new Node("汎用都市 (Generic)", Package.Generic, new[]{COType.COT_GenericCityObject}, null),
+                
+                // COT_Unknownのパッケージは仮で「その他」としていますが、それが適切かどうかは確定ではありません。
                 new Node("その他 (Unknown)", Package.Unknown, new[]{COType.COT_Unknown}, null)
                 }
             );
@@ -87,7 +89,10 @@ namespace PLATEAU.CityInfo
             throw new ArgumentOutOfRangeException(nameof(p), $"Package {p} is not found in the hierarchy.");
         }
 
-        /// <summary> <see cref="CityObjectType"/>をパッケージ種に変換します。 </summary>
+        /// <summary>
+        /// <see cref="CityObjectType"/>をパッケージ種に変換します。
+        /// 結果がCOT_Unknownの場合は確定しないので、代わりに PLATEAUInstancedCityModel.GetPackage を使ってください。
+        /// </summary>
         public static PredefinedCityModelPackage ToPackage(this COType t)
         {
             // 見つかるまで親を検索

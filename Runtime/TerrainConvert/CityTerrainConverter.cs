@@ -18,11 +18,7 @@ namespace PLATEAU.TerrainConvert
                 using var progressBar = new ProgressBar();
                 progressBar.Display("地形モデルを変換中...", 0.1f);
                 var unityMeshToDllSubMeshConverter = new UnityMeshToDllSubMeshWithTexture(true);
-                var srcTransforms = new UniqueParentTransformList() ;
-                foreach(var obj in option.SrcGameObjs)
-                {
-                    srcTransforms.Add(obj.transform);
-                }
+                var srcTransforms = new UniqueParentTransformList(option.SrcGameObjs.Select(obj=>obj.transform)) ;
 
                 if (srcTransforms.Count == 0)
                 {
