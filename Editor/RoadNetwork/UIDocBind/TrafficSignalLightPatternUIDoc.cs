@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using static PLATEAU.Editor.RoadNetwork.RoadNetworkEditingSystem;
 using UnityEngine.UIElements;
@@ -7,7 +6,6 @@ using PLATEAU.RoadNetwork;
 using System.Linq;
 using System;
 using UnityEditor.UIElements;
-using static PLATEAU.Editor.RoadNetwork.TrafficSignalLightPatternUIDoc;
 
 namespace PLATEAU.Editor.RoadNetwork
 {

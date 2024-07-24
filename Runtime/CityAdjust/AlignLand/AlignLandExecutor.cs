@@ -30,7 +30,7 @@ namespace PLATEAU.CityAdjust.AlignLand
         
         public async Task ExecAsync(ALConfig conf, IProgressDisplay progressDisplay)
         {
-            progressDisplay.SetProgress("", 0f, "ハイトマップをを作成中...");
+            progressDisplay.SetProgress("", 0f, "ハイトマップを作成中...");
             var landTransforms = conf.Lands;
 
             List<ConvertedTerrainData.HeightmapData> heightmaps = new();
