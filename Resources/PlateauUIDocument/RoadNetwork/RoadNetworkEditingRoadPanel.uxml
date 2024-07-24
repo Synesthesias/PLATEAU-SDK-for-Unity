@@ -10,8 +10,7 @@
         <ui:FloatField label="中央分離帯の幅" value="42.2" binding-path="_laneWidth" />
         <ui:FloatField label="左側歩道の幅" value="42.2" binding-path="_leftSideWalkWidth" />
         <ui:FloatField label="右側歩道の幅" value="42.2" binding-path="_rightSideWalkWidth" />
-        <ui:FloatField label="各車線の幅" value="42.2" />
     </ui:GroupBox>
     <ui:GroupBox text="Road Intersection" />
-    <ui:Button text="適用" parse-escape-sequences="true" display-tooltip-when-elided="true" binding-path="_isApply" />
+    <ui:Button text="適用" parse-escape-sequences="true" display-tooltip-when-elided="true" binding-path="_isApply" name="ApplyButton" />
 </ui:UXML>
