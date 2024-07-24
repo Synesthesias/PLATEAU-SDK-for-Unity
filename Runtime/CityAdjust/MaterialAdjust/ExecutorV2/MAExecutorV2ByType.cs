@@ -11,7 +11,7 @@ namespace PLATEAU.CityAdjust.MaterialAdjust.ExecutorV2
     /// <summary>
     /// タイプによるマテリアル分けを実行します。
     /// </summary>
-    internal class MAExecutorV2ByType : IMAExecutorV2
+    public class MAExecutorV2ByType : IMAExecutorV2
     {
         public async Task<UniqueParentTransformList> ExecAsync(MAExecutorConf conf)
         {
