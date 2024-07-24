@@ -57,7 +57,8 @@ namespace PLATEAU.CityAdjust.AlignLand
             TargetPackages = new HashSet<PredefinedCityModelPackage>();
             foreach (var cog in cogs)
             {
-                var package = cog.Package;
+                var package = targetModel.GetPackage(cog);
+                
                 if (package.CanAlignWithLand())
                 {
                     TargetPackages.Add(package);
@@ -107,7 +108,7 @@ namespace PLATEAU.CityAdjust.AlignLand
         
     }
 
-    public static class PackageHeightMatchExtension
+    public static class PackageAlignLandExtension
     {
         /// <summary>
         /// 「高さを地形と合わせる」機能を利用して地形に沿わせることが適切なパッケージならtrue、そうでなければfalseを返します。

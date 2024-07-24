@@ -69,7 +69,8 @@ namespace PLATEAU.CityAdjust.AlignLand
             var alignInvertTarget = new UniqueParentTransformList();
             foreach (var cog in conf.TargetModel.GetComponentsInChildren<PLATEAUCityObjectGroup>())
             {
-                if (!conf.TargetPackages.Contains(cog.Package)) continue;
+                var package = conf.TargetModel.GetPackage(cog);
+                if (!conf.TargetPackages.Contains(package)) continue;
                 var targetMf = cog.GetComponent<MeshFilter>();
                 if (targetMf == null) continue;
                 var targetMesh = targetMf.sharedMesh;
@@ -77,7 +78,7 @@ namespace PLATEAU.CityAdjust.AlignLand
 
                 // LOD3の道路は、道路の高さの正確性を尊重するため、土地のほうを道路に合わせます。
                 // それ以外はモデルを土地に合わせます。
-                if (cog.Package == PredefinedCityModelPackage.Road && cog.Lod >= 3)
+                if (package == PredefinedCityModelPackage.Road && cog.Lod >= 3)
                 {
                     alignInvertTarget.Add(cog.transform);
                 }
