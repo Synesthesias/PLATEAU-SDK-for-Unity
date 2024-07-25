@@ -141,10 +141,18 @@ namespace PLATEAU.RoadNetwork.Drawer
 
                 public int nextId = -1;
 
+                public int nowLeftLaneCount = -1;
+                public int nowRightLaneCount = -1;
+
                 // 左側レーン数
                 public int leftLaneCount = -1;
                 // 右側レーン数
                 public int rightLaneCount = -1;
+
+                public bool changeLaneCount = false;
+
+                // 中央分離帯幅
+                public float medianWidth = 0;
 
             }
             public ShowInfo showInfo = new ShowInfo();
@@ -160,18 +168,29 @@ namespace PLATEAU.RoadNetwork.Drawer
                     showInfo.targetLinkId = targetLinkId;
                     showInfo.leftLaneCount = linkGroup.GetLeftLaneCount();
                     showInfo.rightLaneCount = linkGroup.GetRightLaneCount();
+                    showInfo.medianWidth = link.GetMedianWidth();
                 }
 
                 showInfo.prevId = (int)(link.Prev?.DebugMyId ?? ulong.MaxValue);
                 showInfo.nextId = (int)(link.Next?.DebugMyId ?? ulong.MaxValue);
+                showInfo.nowLeftLaneCount = link.GetLeftLaneCount();
+                showInfo.nowRightLaneCount = link.GetRightLaneCount();
 
-                if (showInfo.leftLaneCount != linkGroup.GetLeftLaneCount())
+                if (showInfo.changeLaneCount)
                 {
-                    linkGroup.SetLeftLaneCount(showInfo.leftLaneCount);
+                    if (showInfo.leftLaneCount != linkGroup.GetLeftLaneCount())
+                    {
+                        linkGroup.SetLeftLaneCount(showInfo.leftLaneCount);
+                    }
+                    if (showInfo.rightLaneCount != linkGroup.GetRightLaneCount())
+                    {
+                        linkGroup.SetRightLaneCount(showInfo.rightLaneCount);
+                    }
+                    showInfo.changeLaneCount = false;
                 }
-                if (showInfo.rightLaneCount != linkGroup.GetRightLaneCount())
+                if (Math.Abs(showInfo.medianWidth - link.GetMedianWidth()) > 1e-1f)
                 {
-                    linkGroup.SetRightLaneCount(showInfo.rightLaneCount);
+                    link.SetMedianWidth(showInfo.medianWidth);
                 }
             }
         }

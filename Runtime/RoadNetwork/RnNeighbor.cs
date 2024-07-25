@@ -28,18 +28,19 @@ namespace PLATEAU.RoadNetwork
         /// <returns></returns>
         public RnLane GetConnectedLane()
         {
-            if (Border == null)
-            {
-                return null;
-            }
-            return Link.AllLanes.FirstOrDefault(lane => lane.AllBorders.Any(b => b.IsSameLine(Border)));
+            return GetConnectedLanes().FirstOrDefault();
         }
 
+        /// <summary>
+        /// この境界とつながっているレーンリスト
+        /// </summary>
+        /// <returns></returns>
         public IEnumerable<RnLane> GetConnectedLanes()
         {
             if (Border == null)
                 yield break;
-
+            if (Link == null)
+                yield break;
             foreach (var lane in Link.AllLanes
                          .Where(lane => lane.AllBorders.Any(b => b.IsSameLine(Border)))
                     )

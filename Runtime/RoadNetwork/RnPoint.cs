@@ -20,6 +20,15 @@ namespace PLATEAU.RoadNetwork
         public static implicit operator Vector3(RnPoint id) => id.Vertex;
 
         /// <summary>
+        /// コピー作成
+        /// </summary>
+        /// <returns></returns>
+        public RnPoint Clone()
+        {
+            return new RnPoint(Vertex);
+        }
+
+        /// <summary>
         /// x/yが同じかどうか(参照一致だけでなく値一致でもtrue
         /// </summary>
         /// <param name="x"></param>

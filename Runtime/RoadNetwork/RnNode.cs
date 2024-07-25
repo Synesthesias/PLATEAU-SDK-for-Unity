@@ -52,6 +52,18 @@ namespace PLATEAU.RoadNetwork
         }
 
 
+        // 所持全レーンを取得
+        public override IEnumerable<RnLane> AllLanes
+        {
+            get
+            {
+                foreach (var lane in lanes)
+                    yield return lane;
+
+                yield break;
+            }
+        }
+
         public RnNode() { }
 
         public RnNode(PLATEAUCityObjectGroup targetTran)
@@ -94,6 +106,12 @@ namespace PLATEAU.RoadNetwork
             var ret = Neighbors.SelectMany(n => n.Border.Vertices).Aggregate(Vector3.zero, (a, b) => a + b);
             var cnt = Neighbors.Sum(n => n.Border.Count);
             return ret / cnt;
+        }
+
+        public void ReplaceBorder(RnLink link, List<RnWay> borders)
+        {
+            Neighbors.RemoveAll(n => n.Link == link);
+            Neighbors.AddRange(borders.Select(b => new RnNeighbor { Link = link, Border = b }));
         }
 
         /// <summary>

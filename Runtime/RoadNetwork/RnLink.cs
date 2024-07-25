@@ -13,6 +13,13 @@ using static UnityEngine.GraphicsBuffer;
 
 namespace PLATEAU.RoadNetwork
 {
+
+    [Flags]
+    public enum RnLinkAttribute
+    {
+        // 1レーンしかない時にそのレーンが両方向かどうか
+        BothSide = 1 << 0,
+    }
     //[Serializable]
     public class RnLink : RnRoadBase
     {
@@ -34,8 +41,11 @@ namespace PLATEAU.RoadNetwork
         // レーンリスト
         private List<RnLane> mainLanes = new List<RnLane>();
 
-        // 両方向かどうか
-        public bool IsBothWay { get; set; } = true;
+        // 中央分離帯
+        private RnLane medianLane;
+
+        // 即性情報
+        public RnLinkAttribute RnLinkAttribute { get; set; }
 
         //----------------------------------
         // end: フィールド
@@ -50,6 +60,31 @@ namespace PLATEAU.RoadNetwork
 
         // 有効なLinkかどうか
         public bool IsValid => MainLanes.Any();
+
+        /// <summary>
+        /// 左車線/右車線両方あるかどうか
+        /// </summary>
+        public bool HasBothLane
+        {
+            get
+            {
+                var hasLeft = false;
+                var hasRight = false;
+                foreach (var lane in MainLanes)
+                {
+                    if (IsLeftLane(lane))
+                        hasLeft = true;
+                    else if (IsRightLane(lane))
+                        hasRight = true;
+                    if (hasLeft && hasRight)
+                        return true;
+                }
+
+                return false;
+            }
+        }
+
+        public RnLane MedianLane => medianLane;
 
         public RnLink() { }
 
@@ -88,6 +123,18 @@ namespace PLATEAU.RoadNetwork
             return lane.GetNextRoad() == Prev;
         }
 
+        // 境界線情報を取得
+        public override IEnumerable<RnBorder> GetBorders()
+        {
+            foreach (var lane in MainLanes)
+            {
+                if (lane.PrevBorder != null)
+                    yield return new RnBorder(lane.PrevBorder, lane);
+                if (lane.NextBorder != null)
+                    yield return new RnBorder(lane.NextBorder, lane);
+            }
+        }
+
         /// <summary>
         /// 左側のレーン(Prev/NextとBorderが共通である前提)
         /// </summary>
@@ -124,14 +171,42 @@ namespace PLATEAU.RoadNetwork
             return GetRightLanes().Count();
         }
 
-        public RnRoadBase GetBorder(RnLaneBorderType type)
+        /// <summary>
+        /// 中央分離帯の幅を取得する
+        /// </summary>
+        /// <returns></returns>
+        public float GetMedianWidth()
         {
-            return type switch
-            {
-                RnLaneBorderType.Next => Next,
-                RnLaneBorderType.Prev => Prev,
-                _ => throw new ArgumentOutOfRangeException(nameof(type), type, null),
-            };
+            if (MedianLane == null)
+                return 0f;
+
+            return MedianLane.AllBorders.Select(b => b.CalcLength()).Min();
+        }
+
+        /// <summary>
+        /// 直接呼ぶの禁止. RnLinkGroupから呼ばれる
+        /// </summary>
+        /// <param name="lane"></param>
+        public void SetMedianLane(RnLane lane)
+        {
+            medianLane = lane;
+        }
+
+        /// <summary>
+        /// 中央分離帯の幅を設定する. 中央分離帯が作られていない時(左右どっちかしかレーンが無い時)は無視される
+        /// </summary>
+        /// <param name="width"></param>
+        /// <param name="changeAllLaneWidth"></param>
+        public bool SetMedianWidth(float width, bool changeAllLaneWidth = false)
+        {
+            var nowWidth = GetMedianWidth();
+            if (MedianLane == null)
+                return false;
+
+            var deltaWidth = width - nowWidth;
+            medianLane.LeftWay.MoveAlongNormal(deltaWidth * 0.5f);
+            medianLane.RightWay.MoveAlongNormal(deltaWidth * 0.5f);
+            return true;
         }
 
         /// <summary>
@@ -192,11 +267,32 @@ namespace PLATEAU.RoadNetwork
         }
 
         /// <summary>
-        /// dir方向のレーンの最も左のWayと最も右のWayを取得する
+        /// dir方向の一番左のWayと右のWayを取得.
+        /// 向きは調整されていない
         /// </summary>
         /// <param name="dir"></param>
         /// <param name="leftWay"></param>
         /// <param name="rightWay"></param>
+        /// <returns></returns>
+        public bool TryGetSideBorderWay(RnDir dir, out RnWay leftWay, out RnWay rightWay)
+        {
+            leftWay = rightWay = null;
+            if (IsValid == false)
+                return false;
+
+            var lanes = GetLanes(dir).ToList();
+            if (lanes.Any() == false)
+                return false;
+
+            leftWay = lanes[0].LeftWay;
+            rightWay = lanes[^1].RightWay;
+            return true;
+        }
+
+        /// <summary>
+        /// dir方向のレーンの最も左のWayと最も右のWayを取得する
+        /// </summary>
+        /// <param name="dir"></param>
         /// <returns></returns>
         public RnLane GetBorderLane(RnDir dir)
         {
@@ -264,7 +360,7 @@ namespace PLATEAU.RoadNetwork
         {
             if (mainLanes.Contains(lane))
                 return;
-            lane.Parent = this;
+            OnAddLane(lane);
             mainLanes.Add(lane);
         }
 
@@ -275,7 +371,9 @@ namespace PLATEAU.RoadNetwork
         public void RemoveLane(RnLane lane)
         {
             if (mainLanes.Remove(lane))
-                lane.Parent = null;
+            {
+                OnRemoveLane(lane);
+            }
         }
 
         public void ReplaceLane(RnLane before, RnLane after)
@@ -292,6 +390,17 @@ namespace PLATEAU.RoadNetwork
                 AddMainLane(lane);
         }
 
+        /// <summary>
+        /// 中央分離帯を入れ替える
+        /// </summary>
+        /// <param name="lane"></param>
+        public void ReplaceMedianLane(RnLane lane)
+        {
+            RemoveLane(lane);
+            medianLane = lane;
+            OnAddLane(lane);
+        }
+
         public void ReplaceLane(RnLane before, IEnumerable<RnLane> newLanes)
         {
             var index = mainLanes.IndexOf(before);
@@ -300,8 +409,23 @@ namespace PLATEAU.RoadNetwork
             var lanes = newLanes.ToList();
             mainLanes.InsertRange(index, lanes);
             foreach (var lane in lanes)
-                lane.Parent = this;
+                OnRemoveLane(lane);
             RemoveLane(before);
+        }
+
+        private void OnAddLane(RnLane lane)
+        {
+            if (lane == null)
+                return;
+            lane.Parent = this;
+        }
+
+        private void OnRemoveLane(RnLane lane)
+        {
+            if (lane == null)
+                return;
+            if (lane.Parent == this)
+                lane.Parent = null;
         }
 
         // ---------------

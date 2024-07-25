@@ -96,7 +96,7 @@ namespace PLATEAU.RoadNetwork
         // 法線計算用. 進行方向左側が道かどうか
         public bool IsReverseNormal { get; set; } = false;
 
-        // 頂点
+        // 頂点群
         public RnLineString LineString { get; private set; }
 
         //----------------------------------
@@ -127,13 +127,29 @@ namespace PLATEAU.RoadNetwork
             }
         }
 
+        /// <summary>
+        /// 頂点取得
+        /// </summary>
+        /// <param name="index"></param>
+        /// <returns></returns>
         public RnPoint GetPoint(int index)
         {
             // 負数の時は逆からのインデックスに変換
-            if (index < 0)
-                index = Count + index;
-            var i = ToRawIndex(index);
+            var i = ToRawIndex(index, true);
             return LineString.Points[i];
+        }
+
+        /// <summary>
+        /// 頂点書き換え. 戻り値は変更前の値
+        /// </summary>
+        /// <param name="index"></param>
+        /// <param name="p"></param>
+        public RnPoint SetPoint(int index, RnPoint p)
+        {
+            var i = ToRawIndex(index, true);
+            var ret = LineString.Points[i];
+            LineString.Points[i] = p;
+            return ret;
         }
 
         // 頂点数
@@ -177,9 +193,12 @@ namespace PLATEAU.RoadNetwork
         /// Reversedを考慮したインデックスへ変換する
         /// </summary>
         /// <param name="index"></param>
+        /// <param name="allowMinus">負数の場合は逆から検索</param>
         /// <returns></returns>
-        private int ToRawIndex(int index)
+        private int ToRawIndex(int index, bool allowMinus = false)
         {
+            if (allowMinus && index < 0)
+                index = Count + index;
             return IsReversed ? Count - 1 - index : index;
         }
 
@@ -207,17 +226,10 @@ namespace PLATEAU.RoadNetwork
             // 頂点数1の時は不正値を返す
             if (Count <= 1)
                 return Vector3.zero;
-            var n1 = GetEdgeNormal(Math.Min(vertexIndex, Count - 2)).normalized;
-            var n2 = GetEdgeNormal(Math.Max(vertexIndex - 1, 0)).normalized;
 
-            // 境界地の時はそのままの値を使うようにする. vertexIndex自体が範囲外の時は例外にする
-            Vector3 ret;
-            if (vertexIndex == Count - 1)
-                ret = n2;
-            else if (vertexIndex == 0)
-                ret = n1;
-            else
-                ret = (n1 + n2) / 2;
+            var ret = LineString.GetVertexNormal(ToRawIndex(vertexIndex));
+            if (IsReversed != IsReverseNormal)
+                ret *= -1;
             return ret;
         }
 
@@ -241,11 +253,11 @@ namespace PLATEAU.RoadNetwork
         /// <returns></returns>
         public Vector3 GetEdgeNormal(int startVertexIndex)
         {
-            var p0 = this[startVertexIndex];
-            var p1 = this[(startVertexIndex + 1) % Count];
-            // Vector3.Crossは左手系なので逆
-            var sign = IsReverseNormal ? 1 : -1;
-            return sign * Vector3.Cross(Vector3.up, p1 - p0);
+            var index = ToRawIndex(startVertexIndex);
+            var ret = LineString.GetEdgeNormal(index);
+            if (IsReversed != IsReverseNormal)
+                ret *= -1;
+            return ret;
         }
 
         /// <summary>
@@ -371,6 +383,17 @@ namespace PLATEAU.RoadNetwork
             }
         }
 
+
+        /// <summary>
+        /// 自身のクローンを作成する.
+        /// cloneVertexがtrueの時は頂点もクローンする
+        /// </summary>
+        /// <returns></returns>
+        public RnWay Clone(bool cloneVertex = true)
+        {
+            return new RnWay(LineString.Clone(cloneVertex), IsReversed, IsReverseNormal);
+        }
+
         public IEnumerator<Vector3> GetEnumerator()
         {
             return Vertices.GetEnumerator();
@@ -385,10 +408,13 @@ namespace PLATEAU.RoadNetwork
         /// 同じ線分かどうか
         /// </summary>
         /// <param name="other"></param>
+        /// <param name="onlyReferenceEqual"></param>
         /// <returns></returns>
-        public bool IsSameLine(RnWay other)
+        public bool IsSameLine(RnWay other, bool onlyReferenceEqual = true)
         {
-            return LineString == other.LineString;
+            if (onlyReferenceEqual)
+                return LineString == other.LineString;
+            return RnLineString.Equals(LineString, other.LineString);
         }
     }
 
@@ -439,6 +465,16 @@ namespace PLATEAU.RoadNetwork
         public static bool IsValidOrDefault(this RnWay self)
         {
             return self?.IsValid ?? false;
+        }
+
+        /// <summary>
+        /// 線分の長さを取得
+        /// </summary>
+        /// <param name="self"></param>
+        /// <returns></returns>
+        public static float CalcLength(this RnWay self)
+        {
+            return self.LineString.CalcLength();
         }
     }
 }

@@ -31,9 +31,9 @@ namespace PLATEAU.RoadNetwork.Data
         [RoadNetworkSerializeMember("mainLanes")]
         public List<RnID<RnDataLane>> MainLanes { get; set; } = new List<RnID<RnDataLane>>();
 
-        // 双方向フラグ
+        // 即性情報
         [field: SerializeField]
         [RoadNetworkSerializeMember]
-        public bool IsBothWay { get; set; } = true;
+        public RnLinkAttribute RnLinkAttribute { get; set; }
     }
 }

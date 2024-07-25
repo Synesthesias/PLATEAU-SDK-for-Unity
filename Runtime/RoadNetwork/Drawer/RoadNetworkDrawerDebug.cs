@@ -54,6 +54,7 @@ namespace PLATEAU.RoadNetwork.Drawer
         private class LinkOption
         {
             public bool visible = true;
+            public bool showMedian = true;
             public bool showId = false;
             public bool showLaneConnection = false;
             public bool showLinkGroup = false;
@@ -213,6 +214,8 @@ namespace PLATEAU.RoadNetwork.Drawer
         /// <param name="lane"></param>
         private void DrawLane(RnLane lane)
         {
+            if (lane == null)
+                return;
             if (laneOp.visible == false)
                 return;
 
@@ -311,6 +314,9 @@ namespace PLATEAU.RoadNetwork.Drawer
             {
                 if (linkOp.showId)
                     DebugEx.DrawString($"L[{link.DebugMyId}]", link.GetCenter());
+
+                if (linkOp.showMedian)
+                    DrawLane(link.MedianLane);
 
                 Vector3? last = null;
                 foreach (var lane in link.AllLanes)

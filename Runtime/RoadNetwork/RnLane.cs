@@ -156,6 +156,35 @@ namespace PLATEAU.RoadNetwork
             }
         }
 
+        private IEnumerable<RnRoadBase> GetConnectedRoads(RnWay border)
+        {
+            if (Parent == null || border == null)
+                yield break;
+
+            foreach (var n in Parent.GetNeighborRoads())
+            {
+                if (n.GetBorders().Any(b => border.IsSameLine(b.EdgeWay)))
+                    yield return n;
+            }
+        }
+
+        /// <summary>
+        /// 接続先レーンをすべて取得
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerable<RnRoadBase> GetNextRoads()
+        {
+            return GetConnectedRoads(NextBorder);
+        }
+
+        /// <summary>
+        /// 接続元レーンをすべて取得
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerable<RnRoadBase> GetPrevRoads()
+        {
+            return GetConnectedRoads(PrevBorder);
+        }
         /// <summary>
         /// このレーン接続先のRnRoadBaseを取得.ParentのNext/Prevとは逆になる可能性がある.
         /// ParentのPrev/NextとBorderの一致判定により求める
@@ -163,7 +192,7 @@ namespace PLATEAU.RoadNetwork
         /// <returns></returns>
         public RnRoadBase GetNextRoad()
         {
-            return GetNextLanes().FirstOrDefault(w => w.Parent != null)?.Parent;
+            return GetNextRoads().FirstOrDefault();
         }
 
         /// <summary>
@@ -173,9 +202,8 @@ namespace PLATEAU.RoadNetwork
         /// <returns></returns>
         public RnRoadBase GetPrevRoad()
         {
-            return GetPrevLanes().FirstOrDefault(w => w.Parent != null)?.Parent;
+            return GetPrevRoads().FirstOrDefault();
         }
-
 
         /// <summary>
         /// 接続先レーンをすべて取得
@@ -228,6 +256,51 @@ namespace PLATEAU.RoadNetwork
             }
         }
 
+        /// <summary>
+        /// dirのWayをクローンしてそっちに置き換える。
+        /// cloneVertex = trueの時は内部頂点もクローンする
+        /// 戻り値はもとのWay
+        /// </summary>
+        /// <param name="dir"></param>
+        /// <param name="cloneVertex"></param>
+        /// <returns></returns>
+        public RnWay Replace2Clone(RnDir dir, bool cloneVertex = true)
+        {
+            var way = GetSideWay(dir);
+            if (way == null)
+                return null;
+            SetSideWay(dir, way.Clone(cloneVertex));
+            return way;
+        }
+
+        /// <summary>
+        /// dirのWayを置き換える
+        /// </summary>
+        /// <param name="dir"></param>
+        /// <param name="way"></param>
+        private void SetSideWay(RnDir dir, RnWay way)
+        {
+            if (dir == RnDir.Left)
+                LeftWay = way;
+            else
+                RightWay = way;
+        }
+
+        /// <summary>
+        /// dir側のWayを取得
+        /// </summary>
+        /// <param name="dir"></param>
+        /// <returns></returns>
+        public RnWay GetSideWay(RnDir dir)
+        {
+            return dir switch
+            {
+                RnDir.Left => LeftWay,
+                RnDir.Right => RightWay,
+                _ => null
+            };
+        }
+
         private static void Replace(List<RnLane> list, RnLane before, RnLane after)
         {
             var index = list.FindIndex(l => l == before);
@@ -248,6 +321,20 @@ namespace PLATEAU.RoadNetwork
                 RnLaneBorderType.Next => NextBorder,
                 _ => null
             };
+        }
+
+        /// <summary>
+        /// 境界線を取得. その時方向がdirになるように調整
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="dir"></param>
+        /// <returns></returns>
+        public RnWay GetBorder(RnLaneBorderType type, RnLaneBorderDir dir)
+        {
+            var ret = GetBorder(type);
+            if (GetBorderDir(type) != dir)
+                ret = ret?.ReversedWay();
+            return ret;
         }
 
         /// <summary>
@@ -538,6 +625,7 @@ namespace PLATEAU.RoadNetwork
         /// <summary>
         /// LaneをsplitNumで分割したLaneリストを返す. 隣接するLinkのLaneは分割しない
         /// </summary>
+        /// <param name="self"></param>
         /// <param name="splitNum"></param>
         /// <returns></returns>
         public static List<RnLane> SplitLaneSelf(this RnLane self, int splitNum)
