@@ -233,8 +233,6 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
             // 完了後、GUIで表示される「選択オブジェクト」を完了後に差し替えます
             if (DoDestroySrcObjs)
             {
-                clearSearchOnTargetChange = false;
-                clearSearchOnTargetChange = true;
                 if (SelectedObjects.Count == 0) IsSearched = false;
             }
 
@@ -319,7 +317,9 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
         /// </summary>
         private void ForceSetTargetObjects(UniqueParentTransformList target)
         {
+            clearSearchOnTargetChange = false;
             Views.Get<ObjectSelectGui>().ForceSet(target);
+            clearSearchOnTargetChange = true;
         }
 
     }
