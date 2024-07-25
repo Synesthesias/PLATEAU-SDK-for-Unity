@@ -88,7 +88,7 @@ namespace PLATEAU.CityImport.Import.Convert
         /// <summary>
         /// データをもとにUnity のメッシュを生成します。
         /// </summary>
-        private Mesh GenerateUnityMesh()
+        public Mesh GenerateUnityMesh()
         {
             var mesh = new Mesh
             {
