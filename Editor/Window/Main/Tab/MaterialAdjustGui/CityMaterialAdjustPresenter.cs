@@ -264,7 +264,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
         }
         
 
-        private async Task<PlaceToSceneResult> ExecGranularityConvertAsync()
+        private async Task<GranularityConvertResult> ExecGranularityConvertAsync()
         {
             await Task.Delay(100); // ボタン押下時のGUIの更新を反映させるために1フレーム以上待つ必要があります。
             await Task.Yield();
@@ -273,7 +273,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
             if (conf.TargetTransforms.Count == 0)
             {
                 Dialogue.Display("粒度変換の対象を指定してください。", "OK");
-                return PlaceToSceneResult.Fail();
+                return GranularityConvertResult.Fail();
             }
             
             // ここで実行します。

@@ -30,7 +30,7 @@ namespace PLATEAU.CityImport.Import.Convert
         /// 非同期処理です。必ずメインスレッドで呼ぶ必要があります。
         /// 成否を bool で返します。
         /// </summary>
-        public static async Task<PlaceToSceneResult> CityModelToScene(
+        public static async Task<GranularityConvertResult> CityModelToScene(
             CityModel cityModel, MeshExtractOptions meshExtractOptions, MeshCodeList selectedMeshCodes,
             Transform parentTrans, IProgressDisplay progressDisplay, string progressName,
             bool doSetMeshCollider, bool doSetAttrInfo, CancellationToken? token,  UnityEngine.Material fallbackMaterial,
@@ -51,7 +51,7 @@ namespace PLATEAU.CityImport.Import.Convert
             catch (Exception e)
             {
                 Debug.LogError("メッシュデータの抽出に失敗しました。\n" + e);
-                return PlaceToSceneResult.Fail();
+                return GranularityConvertResult.Fail();
             }
             
             var materialConverter = new DllSubMeshToUnityMaterialByTextureMaterial();
@@ -67,7 +67,7 @@ namespace PLATEAU.CityImport.Import.Convert
         /// 共通ライブラリのModelをUnityのゲームオブジェクトに変換してシーンに配置します。
         /// これにより配置されたゲームオブジェクトを引数 <paramref name="outGeneratedObjs"/> に追加します。
         /// </summary>
-        public static async Task<PlaceToSceneResult> PlateauModelToScene(Transform parentTrans, IProgressDisplay progressDisplay,
+        public static async Task<GranularityConvertResult> PlateauModelToScene(Transform parentTrans, IProgressDisplay progressDisplay,
             string progressName, PlaceToSceneConfig placeToSceneConf, Model plateauModel, 
             AttributeDataHelper attributeDataHelper, bool skipRoot)
         {
@@ -94,7 +94,7 @@ namespace PLATEAU.CityImport.Import.Convert
             catch (Exception e)
             {
                 Debug.LogError("メッシュデータの取得に失敗しました。\n" + e);
-                return PlaceToSceneResult.Fail();
+                return GranularityConvertResult.Fail();
             }
 
             // 処理B :
@@ -103,7 +103,7 @@ namespace PLATEAU.CityImport.Import.Convert
 
             progressDisplay.SetProgress(progressName, 80f, "シーンに配置中");
 
-            var result = new PlaceToSceneResult();
+            var result = new GranularityConvertResult();
 
             var innerResult = await meshObjsData.PlaceToScene(parentTrans, placeToSceneConf, skipRoot);
             if (innerResult.IsSucceed)
@@ -113,7 +113,7 @@ namespace PLATEAU.CityImport.Import.Convert
             else
             {
                 Debug.LogError("メッシュデータの配置に失敗しました。");
-                return PlaceToSceneResult.Fail();
+                return GranularityConvertResult.Fail();
             }
             
             
@@ -152,9 +152,9 @@ namespace PLATEAU.CityImport.Import.Convert
     }
     
     /// <summary>
-    /// 粒度変換（分割結合）してシーンに配置した結果が格納されるクラスです。
+    /// シーンに配置した結果が格納されるクラスです。
     /// </summary>
-    public class PlaceToSceneResult
+    public class GranularityConvertResult
     {
         public bool IsSucceed { get; set; } = true;
 
@@ -173,18 +173,18 @@ namespace PLATEAU.CityImport.Import.Convert
             GeneratedRootTransforms.Add(obj.transform);
         }
 
-        /// <summary> 複数の<see cref="PlaceToSceneResult"/>を統合します。 </summary>
-        public void Merge(PlaceToSceneResult other)
+        /// <summary> 複数の<see cref="GranularityConvertResult"/>を統合します。 </summary>
+        public void Merge(GranularityConvertResult other)
         {
             IsSucceed &= other.IsSucceed;
             GeneratedObjs.AddRange(other.GeneratedObjs);
             GeneratedRootTransforms.AddRange(other.GeneratedRootTransforms.Get);
         }
 
-        public static PlaceToSceneResult Fail()
+        public static GranularityConvertResult Fail()
         {
-            return new PlaceToSceneResult() { IsSucceed = false };
+            return new GranularityConvertResult() { IsSucceed = false };
         }
-            
     }
+    
 }

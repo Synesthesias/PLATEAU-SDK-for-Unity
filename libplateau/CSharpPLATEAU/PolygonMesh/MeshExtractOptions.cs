@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 using PLATEAU.Geometries;
+using PLATEAU.GranularityConvert;
 using PLATEAU.Interop;
 using PLATEAU.Native;
 
@@ -40,6 +41,21 @@ namespace PLATEAU.PolygonMesh
                     return "地域単位";
                 default:
                     throw new ArgumentOutOfRangeException(nameof(granularity));
+            }
+        }
+
+        public static ConvertGranularity ToConvertGranularity(this MeshGranularity g)
+        {
+            switch (g)
+            {
+                case MeshGranularity.PerAtomicFeatureObject:
+                    return ConvertGranularity.PerAtomicFeatureObject;
+                case MeshGranularity.PerPrimaryFeatureObject:
+                    return ConvertGranularity.PerPrimaryFeatureObject;
+                case MeshGranularity.PerCityModelArea:
+                    return ConvertGranularity.PerCityModelArea;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(g));
             }
         }
     }

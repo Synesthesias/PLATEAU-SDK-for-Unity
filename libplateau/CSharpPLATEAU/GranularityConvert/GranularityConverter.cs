@@ -67,5 +67,13 @@ namespace PLATEAU.GranularityConvert
             this.Granularity = granularity;
             this.GridCount = gridCount;
         }
+
+        /// <summary>
+        /// 後方互換性のために古い型の引数のコンストラクタを残しておきます。
+        /// </summary>
+        [Obsolete("Please use ConvertGranularity instead of MeshGranularity.")]
+        public GranularityConvertOption(MeshGranularity meshGranularity, int gridCount) : this(
+            meshGranularity.ToConvertGranularity(), gridCount)
+        { }
     }
 }

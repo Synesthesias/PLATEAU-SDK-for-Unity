@@ -104,7 +104,7 @@ namespace PLATEAU.Tests.EditModeTests.TestMaterialAdjust
         {
             yield return ConvertGranularity(srcGran, dstGran);
             var expectTrans = testData.CopyBldgSrcOf(dstGran).transform;
-            var actualTrans = retPlaceToSceneResult.GeneratedRootTransforms.Get.ToArray()[0];
+            var actualTrans = retGranularityConvertResult.GeneratedRootTransforms.Get.ToArray()[0];
             if (assertOrder)
             {
                 MAAssert.AreSameRecursive(expectTrans, actualTrans, dstGran);
@@ -115,7 +115,7 @@ namespace PLATEAU.Tests.EditModeTests.TestMaterialAdjust
             }
         }
         
-        private PlaceToSceneResult retPlaceToSceneResult; // コルーチンの結果を返す用
+        private GranularityConvertResult retGranularityConvertResult; // コルーチンの結果を返す用
 
         private IEnumerator ConvertGranularity(GranularityConvert.ConvertGranularity srcGran, GranularityConvert.ConvertGranularity dstGran)
         {
@@ -127,8 +127,8 @@ namespace PLATEAU.Tests.EditModeTests.TestMaterialAdjust
                     new UniqueParentTransformList(srcObj.transform),
                     true);
             var progressBar = new DummyProgressBar();
-            var task = converter.ConvertAsync(option, progressBar).ContinueWithErrorCatch<PlaceToSceneResult>();
-            yield return task.AsIEnumerator<PlaceToSceneResult>(result => retPlaceToSceneResult = result);
+            var task = converter.ConvertAsync(option, progressBar).ContinueWithErrorCatch<GranularityConvertResult>();
+            yield return task.AsIEnumerator<GranularityConvertResult>(result => retGranularityConvertResult = result);
         }
 
 

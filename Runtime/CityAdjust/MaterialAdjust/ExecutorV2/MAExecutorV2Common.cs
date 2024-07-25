@@ -22,7 +22,7 @@ namespace PLATEAU.CityAdjust.MaterialAdjust.ExecutorV2
         /// <summary>
         /// ゲームオブジェクトをC++のModelに変換します
         /// </summary>
-        public void Prepare(UniqueParentTransformList target, out NonLibData.NonLibDataHolder nonLibData, out GameMaterialIDRegistry materialRegistry, out PlaceToSceneResult sceneResult)
+        public void Prepare(UniqueParentTransformList target, out NonLibData.NonLibDataHolder nonLibData, out GameMaterialIDRegistry materialRegistry, out GranularityConvertResult sceneResult)
         {
             nonLibData = new NonLibData.NonLibDataHolder(
                 new InstancedCityModelDict(),
@@ -32,7 +32,7 @@ namespace PLATEAU.CityAdjust.MaterialAdjust.ExecutorV2
             );
             nonLibData.ComposeFrom(target);
             materialRegistry = new GameMaterialIDRegistry();
-            sceneResult = new PlaceToSceneResult();
+            sceneResult = new GranularityConvertResult();
         }
         
         public Model ConvertToCppModel(Transform target, GameMaterialIDRegistry materialRegistry)
@@ -48,7 +48,7 @@ namespace PLATEAU.CityAdjust.MaterialAdjust.ExecutorV2
         /// <summary>
         /// C++のモデルをゲームオブジェクトに変換します。
         /// </summary>
-        public async Task PlaceModelToSceneAsync(Model model, Transform target, GameMaterialIDRegistry materialRegistry, NonLibData.NonLibDataHolder nonLibData, PlaceToSceneResult currentResult)
+        public async Task PlaceModelToSceneAsync(Model model, Transform target, GameMaterialIDRegistry materialRegistry, NonLibData.NonLibDataHolder nonLibData, GranularityConvertResult currentResult)
         {
             var result = await
                 PlateauToUnityModelConverter.PlateauModelToScene(
@@ -71,7 +71,7 @@ namespace PLATEAU.CityAdjust.MaterialAdjust.ExecutorV2
             currentResult.Merge(result);
         }
         
-        public void Finishing(PlaceToSceneResult result, NonLibData.NonLibDataHolder nonLibData, MAExecutorConf conf)
+        public void Finishing(GranularityConvertResult result, NonLibData.NonLibDataHolder nonLibData, MAExecutorConf conf)
         {
             nonLibData.RestoreTo(result.GeneratedRootTransforms);
 

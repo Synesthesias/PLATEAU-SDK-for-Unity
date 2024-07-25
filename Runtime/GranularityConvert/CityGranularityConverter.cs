@@ -32,14 +32,14 @@ namespace PLATEAU.GranularityConvert
         /// <summary>
         /// 指定オブジェクトとその子を一括でまとめて共通ライブラリに渡して変換します。
         /// </summary>
-        public async Task<PlaceToSceneResult> ConvertAsync(GranularityConvertOptionUnity conf,
+        public async Task<GranularityConvertResult> ConvertAsync(GranularityConvertOptionUnity conf,
             IProgressBar progressBar)
         {
             try
             {
                 if (!conf.IsValid())
                 {
-                    return PlaceToSceneResult.Fail();
+                    return GranularityConvertResult.Fail();
                 }
 
                 progressBar.Display("属性情報を取得中...", 0.1f);
@@ -105,7 +105,7 @@ namespace PLATEAU.GranularityConvert
                 if (result.GeneratedRootTransforms.Count <= 0)
                 {
                     Dialogue.Display("変換対象がありません。\nアクティブなオブジェクトを選択してください。", "OK");
-                    return PlaceToSceneResult.Fail();
+                    return GranularityConvertResult.Fail();
                 }
 
                 // 覚えておいたものを復元します
@@ -125,13 +125,13 @@ namespace PLATEAU.GranularityConvert
             catch (Exception e)
             {
                 Debug.LogError($"{e.Message}\n{e.StackTrace}");
-                return PlaceToSceneResult.Fail();
+                return GranularityConvertResult.Fail();
             }
         }
 
 
         /// <summary> 前バージョンとの互換性のために残しておきます </summary>
-        public async Task<PlaceToSceneResult> ConvertAsync(GranularityConvertOptionUnity conf)
+        public async Task<GranularityConvertResult> ConvertAsync(GranularityConvertOptionUnity conf)
         {
             using var progressBar = new ProgressBar("");
             return await ConvertAsync(conf, progressBar);

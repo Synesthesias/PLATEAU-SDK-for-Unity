@@ -104,7 +104,7 @@ namespace PLATEAU.CityAdjust.AlignLand
             }
             
             
-            var sumResult = new PlaceToSceneResult();
+            var sumResult = new GranularityConvertResult();
             var alTargets = alignTarget.Get.ToArray();
             var alignTargetModels = new Model[alTargets.Length];
             var subMeshConverters = new GameMaterialIDRegistry[alTargets.Length];

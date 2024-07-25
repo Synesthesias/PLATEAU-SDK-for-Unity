@@ -73,9 +73,9 @@ namespace PLATEAU.CityImport.Import.Convert
         /// 再帰によって子も配置します。
         /// 配置したゲームオブジェクトのリストを返します。
         /// </summary>
-        public async Task<PlaceToSceneResult> PlaceToScene(Transform parent, PlaceToSceneConfig conf, bool skipRoot)
+        public async Task<GranularityConvertResult> PlaceToScene(Transform parent, PlaceToSceneConfig conf, bool skipRoot)
         {
-            var result = new PlaceToSceneResult();
+            var result = new GranularityConvertResult();
             try
             {
                 await PlaceToSceneRecursive(result, parent, conf, skipRoot, 0);
@@ -83,13 +83,13 @@ namespace PLATEAU.CityImport.Import.Convert
             catch (Exception e)
             {
                 Debug.LogError($"Failed to placing to scene.\n{e.Message}\n{e.StackTrace}");
-                result = PlaceToSceneResult.Fail();
+                result = GranularityConvertResult.Fail();
             }
 
             return result;
         }
 
-        private async Task PlaceToSceneRecursive(PlaceToSceneResult result, Transform parent,
+        private async Task PlaceToSceneRecursive(GranularityConvertResult result, Transform parent,
             PlaceToSceneConfig conf, bool skipRoot, int recursiveDepth)
         {
             conf.CancellationToken?.ThrowIfCancellationRequested();
