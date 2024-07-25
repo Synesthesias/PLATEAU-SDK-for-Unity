@@ -43,7 +43,7 @@ namespace PLATEAU.PolygonMesh
                     throw new ArgumentOutOfRangeException(nameof(granularity));
             }
         }
-
+        
         public static ConvertGranularity ToConvertGranularity(this MeshGranularity g)
         {
             switch (g)
@@ -59,7 +59,6 @@ namespace PLATEAU.PolygonMesh
             }
         }
     }
-        
 
 
     /// <summary>

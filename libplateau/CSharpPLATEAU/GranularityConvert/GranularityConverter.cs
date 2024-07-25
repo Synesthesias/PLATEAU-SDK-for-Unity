@@ -67,7 +67,7 @@ namespace PLATEAU.GranularityConvert
             this.Granularity = granularity;
             this.GridCount = gridCount;
         }
-
+        
         /// <summary>
         /// 後方互換性のために古い型の引数のコンストラクタを残しておきます。
         /// </summary>
