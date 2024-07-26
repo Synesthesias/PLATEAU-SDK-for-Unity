@@ -19,7 +19,20 @@ namespace PLATEAU.Util.Async
                 }
             });
         }
+        
+        public static Task<T> ContinueWithErrorCatch<T>(this Task<T> task)
+        {
+            return task.ContinueWith(t =>
+            {
+                if (t.Exception is { } age)
+                {
+                    LogInnerExceptions(age);
+                }
 
+                return t.Result;
+            });
+        }
+        
         private static void LogInnerExceptions(AggregateException age)
         {
             var innerExceptions = age.InnerExceptions;
@@ -31,7 +44,7 @@ namespace PLATEAU.Util.Async
                 }
                 else
                 {
-                    Debug.LogError($"{inner.Message}\n{inner.StackTrace}");
+                    Debug.LogError(inner);
                 }
                 
             }

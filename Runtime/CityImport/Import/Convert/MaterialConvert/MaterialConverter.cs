@@ -1,7 +1,11 @@
+using System;
 using System.IO;
+using System.Reflection;
+using System.Linq;
 using PLATEAU.Util;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 namespace PLATEAU.CityImport.Import.Convert.MaterialConvert
 {
@@ -18,7 +22,13 @@ namespace PLATEAU.CityImport.Import.Convert.MaterialConvert
         public static string MaterialToSubMeshTexturePath(Material mat)
         {
             if (mat == null) return "";
+            if (!mat.HasMainTextureAttribute()) return "";
             var tex = mat.mainTexture;
+            if (tex == null)
+            {
+                if(mat.GetTexturePropertyNames().Contains("_BaseMap"))
+                    tex = mat.GetTexture("_BaseMap");
+            }
             if (tex == null) return "";
             
 #if UNITY_EDITOR
@@ -34,5 +44,31 @@ namespace PLATEAU.CityImport.Import.Convert.MaterialConvert
             return Path.Combine(PathUtil.PLATEAUSrcFetchDir, tex.name);
         }
         
+    }
+
+    internal static class MaterialExtension
+    {
+        /// <summary>
+        /// シェーダーによっては、material.mainTexture が失敗することがあります。
+        /// mainTextureの実行前に、これの成功に必要な属性をシェーダーが有しているかをチェックします。
+        /// OKならtrue、NGならfalseを返します。
+        /// </summary>
+        public static bool HasMainTextureAttribute(this Material mat)
+        {
+            // [MainTexture]属性がシェーダーで指定されているかどうかをチェックします。
+            // privateメソッドの利用が必要なのでリフレクションで無理やり実行します。
+            var matType = mat.GetType();
+            var propIdGetMethod = matType.GetMethod("GetFirstPropertyNameIdByAttribute",
+                BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.InvokeMethod);
+            if (propIdGetMethod == null)
+            {
+                throw new Exception("Something is wrong");
+            }
+            int nameIdByAttribute = (int)propIdGetMethod.Invoke(mat, new object[] { ShaderPropertyFlags.MainTexture });
+            if (nameIdByAttribute >= 0) return true;
+            
+            // プロパティ名でチェックします。
+            return mat.HasProperty("_MainTex") || mat.HasProperty("_BaseMap");
+        }
     }
 }

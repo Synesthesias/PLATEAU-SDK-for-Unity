@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using PLATEAU.CityGML;
+using PLATEAU.Dataset;
 using PLATEAU.Geometries;
 using PLATEAU.Native;
 using UnityEngine;
@@ -13,6 +14,11 @@ namespace PLATEAU.CityInfo
     public class PLATEAUInstancedCityModel : MonoBehaviour
     {
         [SerializeField] private GeoReferenceData geoReferenceData;
+        
+        public void CopyFrom(PLATEAUInstancedCityModel src)
+        {
+            this.GeoReference = src.GeoReference;
+        }
 
         /// <summary>
         /// ゲームオブジェクトの階層のうち、GMLファイルに対応する Transform の一覧を返します。
@@ -174,9 +180,28 @@ namespace PLATEAU.CityInfo
             get => GeoReference.Unproject(new PlateauVector3d(0, 0, 0)).Longitude;
         }
 
-        public void CopyFrom(PLATEAUInstancedCityModel src)
+        public PredefinedCityModelPackage GetPackage(PLATEAUCityObjectGroup cog)
         {
-            this.GeoReference = src.GeoReference;
+            // パッケージ種を取得します。
+            var package = cog.Package;
+            if (package != PredefinedCityModelPackage.Unknown) return package;
+            
+            // パッケージ種がUnknownの場合は、親のゲームオブジェクト名から推測します。
+            var currentTrans = cog.transform.parent;
+            while (currentTrans != null)
+            {
+                var file = GmlFile.Create(currentTrans.name);
+                if(file.Package != PredefinedCityModelPackage.None && file.Package != PredefinedCityModelPackage.Unknown)
+                {
+                    return file.Package;
+                }
+                file.Dispose();
+                currentTrans = currentTrans.parent;
+            }
+
+            return PredefinedCityModelPackage.Unknown;
         }
+
+        
     }
 }

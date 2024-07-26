@@ -21,6 +21,11 @@ namespace PLATEAU.Util
             return new PlateauVector3d(unity3d.x, unity3d.y, unity3d.z);
         }
 
+        public static PlateauQuaternion ToPlateauQuaternion(this Quaternion quat)
+        {
+            return new PlateauQuaternion(quat.x, quat.y, quat.z, quat.w);
+        }
+
         /// <summary>
         /// Unity向けの座標変換インスタンスを new して返します。
         /// </summary>

@@ -35,15 +35,33 @@ namespace PLATEAU.Geometries
             switch (system)
             {
                 case CoordinateSystem.ENU:
-                    return "ENU(PLATEAUでの座標系)";
+                    return "ENU(右手座標系,Y軸が北,Z軸が上)";
                 case CoordinateSystem.ESU:
-                    return "ESU(Unreal Engineでの座標系)";
+                    return "ESU(左手座標系,Y軸が南,Z軸が上)";
                 case CoordinateSystem.EUN:
-                    return "EUN(Unityでの座標系)";
+                    return "EUN(左手座標系,Y軸が上,Z軸が北)";
                 case CoordinateSystem.WUN:
-                    return "WUN(EUNの左右反転補正)";
+                    return "WUN(右手座標系,Y軸が上,Z軸が北)";
                 default:
                     throw new ArgumentOutOfRangeException(nameof(system), "Unknown coordinate system.");
+            }
+        }
+
+        /// <summary> 右手座標系ならtrue、左手座標系ならfalseを返します。 </summary>
+        public static bool IsRightHanded(this CoordinateSystem system)
+        {
+            switch (system)
+            {
+                case CoordinateSystem.ENU:
+                    return true;
+                case CoordinateSystem.ESU:
+                    return false;
+                case CoordinateSystem.EUN:
+                    return false;
+                case CoordinateSystem.WUN:
+                    return true;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(system), system, null);
             }
         }
     }

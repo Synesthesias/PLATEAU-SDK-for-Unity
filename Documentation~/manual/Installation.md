@@ -1,9 +1,9 @@
 # インストール
 
-このページでは PLATEAU SDK for Unity のインストール方法を説明します。
+このページではPLATEAU SDK for Unityのインストール方法を説明します。
 
 ## 対応Unityバージョンのインストール
-- PLATEAU SDK for Unity で想定するUnityバージョンが[リリースページ](https://github.com/Project-PLATEAU/PLATEAU-SDK-for-Unity/releases)に記載されています。  
+- PLATEAU SDK for Unityで想定するUnityバージョンが[リリースページ](https://github.com/Project-PLATEAU/PLATEAU-SDK-for-Unity/releases)に記載されています。  
   そのバージョンがインストールされていない場合は、次の手順でインストールしてください。
   - [Unity Hub をこちらからインストールします](https://unity3d.com/jp/get-unity/download)。
   - Unity Hub とは、Unityのお好きなバージョンをインストールして起動することのできるソフトウェアです。
@@ -57,6 +57,14 @@ PLATEAU SDK for Unity の導入方法は2通りあります。
 - `Add` ボタンを押します。
 - ウィンドウのパッケージ一覧に `Plateau Unity SDK` が表示されたら完了です。
   ![](../resources/manual/installation/packageInstalled.png)
+
+### Android向けにビルドする場合
+Android向けにビルドする場合、次のようにUnityプロジェクトを設定してください。
+- メニューバーから Edit → Project Settingsを選びます。
+- 表示されたウィンドウの左パネルからPlayerを選びます。
+- Other Settingsを開きます。
+- Scripting BackendをIL2CPPにします。
+- Target ArchitecturesはARM64だけがチェックが入っているようにします。
 
 ### トラブルシューティング
 うまく導入できない場合、次のことをご確認ください。

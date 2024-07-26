@@ -105,7 +105,7 @@ namespace PLATEAU.Util
             throw new IOException($"File must exist in Assets folder, but the path is outside Assets folder.\filePath = {filePath}");
         }
 
-        private static bool IsSubDirectoryOfAssets(string filePath)
+        public static bool IsSubDirectoryOfAssets(string filePath)
         {
             if (!filePath.EndsWith(Path.DirectorySeparatorChar.ToString()))
             {

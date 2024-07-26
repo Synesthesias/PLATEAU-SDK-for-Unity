@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 using Newtonsoft.Json;
+using PLATEAU.Dataset;
 using System;
 using System.Linq;
 using PLATEAU.PolygonMesh;
@@ -28,9 +29,33 @@ namespace PLATEAU.CityInfo
         [SerializeField] private CityObjectGroupInfoForToolkits infoForToolkits;
 
         [SerializeField] private MeshGranularity granularity;
+        [SerializeField] private int lod;
         public CityObjectGroupInfoForToolkits InfoForToolkits => infoForToolkits;
-        public MeshGranularity Granularity => granularity;
-        
+        public MeshGranularity Granularity
+        {
+            get
+            {
+                return granularity;
+            }
+            internal set
+            {
+                granularity = value;
+            }
+        }
+
+        public int Lod
+        {
+            get
+            {
+                return lod;
+            }
+
+            protected set
+            {
+                lod = value;
+            }
+        }
+
         public CityObjectList CityObjects
         {
             get
@@ -46,13 +71,22 @@ namespace PLATEAU.CityInfo
             }
         }
         
-        public void Init(CityObjectList cityObjectSerializable, CityObjectGroupInfoForToolkits cogInfoForToolkits, MeshGranularity granularityArg)
+        public void Init(CityObjectList cityObjectSerializable, CityObjectGroupInfoForToolkits cogInfoForToolkits, MeshGranularity granularityArg, int lodArg)
         {
             serializedCityObjects = JsonConvert.SerializeObject(cityObjectSerializable, Formatting.Indented);
             infoForToolkits = cogInfoForToolkits; 
             granularity = granularityArg;
+            Lod = lodArg;
         }
 
+        public void CopyFrom(PLATEAUCityObjectGroup other)
+        {
+            serializedCityObjects = other.serializedCityObjects;
+            infoForToolkits = other.infoForToolkits;
+            granularity = other.granularity;
+            lod = other.lod;
+        }
+        
         /// <summary>
         /// RaycastHitからPrimary CityObjectを取得します
         /// </summary>
@@ -300,6 +334,18 @@ namespace PLATEAU.CityInfo
             return objs;
         }
 
+        /// <summary>
+        /// パッケージ種を返します。ただしCOT_Unknownの場合は確定しないので仮の結果が返ります。
+        /// 結果がCOT_Unknownの場合は確定しないので、代わりに PLATEAUInstancedCityModel.GetPackage を使ってください。
+        /// </summary>
+        public PredefinedCityModelPackage Package
+        {
+            get
+            {
+                // パッケージ種は1つのCityObjectGroup内で同じなので、最初の1つだけ見れば十分です。
+                return CityObjects.rootCityObjects[0].type.ToPackage();
+            }
+        }
         
 
         /// <summary>

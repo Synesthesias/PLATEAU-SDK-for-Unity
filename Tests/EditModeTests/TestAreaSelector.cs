@@ -2,7 +2,6 @@
 using System.Collections;
 using NUnit.Framework;
 using PLATEAU.CityImport.AreaSelector;
-using PLATEAU.CityImport.AreaSelector.Display;
 using PLATEAU.CityImport.AreaSelector.Display.Gizmos;
 using PLATEAU.CityImport.Config;
 using PLATEAU.Dataset;

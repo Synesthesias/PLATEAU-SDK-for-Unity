@@ -1,5 +1,5 @@
 ﻿using PLATEAU.CityInfo;
-using PLATEAU.Editor.EditorWindow.Common;
+using PLATEAU.Editor.Window.Common;
 using PLATEAU.Geometries;
 using PLATEAU.Native;
 using UnityEditor;

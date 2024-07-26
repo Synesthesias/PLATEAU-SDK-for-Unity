@@ -77,7 +77,23 @@ namespace PLATEAU.Util
                 {
                     var package = pair.Key;
                     var mat = LoadByPackage(package);
-                    mainTexNameToMaterial.TryAdd(mat.mainTexture.name, mat);
+                    if (mat == null)
+                    {
+                        Debug.LogError($"Unknown default material for package {package.ToString()}");
+                    }
+
+                    string defaultTexName;
+                    if(mat.shader.name.StartsWith("Weather/Building"))
+                    {
+                        // ToolkitsのAutoTextureが適用されているケース
+                        defaultTexName = mat.shader.name;
+                    }
+                    else
+                    {
+                        // 通常のケース
+                        defaultTexName = mat.mainTexture.name;
+                    }
+                    mainTexNameToMaterial.TryAdd(defaultTexName, mat);
                 }
             }
             

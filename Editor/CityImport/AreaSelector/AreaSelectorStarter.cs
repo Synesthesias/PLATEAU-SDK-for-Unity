@@ -1,7 +1,6 @@
 ﻿using PLATEAU.CityImport.AreaSelector;
 using PLATEAU.CityImport.Config;
-using PLATEAU.Dataset;
-using PLATEAU.Editor.EditorWindow.PlateauWindow;
+using PLATEAU.Editor.Window.Main;
 using PLATEAU.Util;
 using UnityEditor;
 using UnityEditor.SceneManagement;

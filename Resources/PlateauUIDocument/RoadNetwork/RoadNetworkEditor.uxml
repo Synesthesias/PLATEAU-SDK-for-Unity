@@ -1,0 +1,33 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="True">
+    <ui:Template name="RoadNetworkDataIDInputBox" src="project://database/Packages/com.synesthesias.plateau-unity-sdk/Resources/PlateauUIDocument/RoadNetwork/RoadNetworkDataIDFiled.uxml?fileID=9197481963319205126&amp;guid=5a725a4ed5304954a9f168fcad44301d&amp;type=3#RoadNetworkDataIDFiled" />
+    <ui:Template name="RoadNetworkFilePathInputBox" src="project://database/Packages/com.synesthesias.plateau-unity-sdk/Resources/PlateauUIDocument/RoadNetwork/RoadNetworkFilePathField.uxml?fileID=9197481963319205126&amp;guid=5a41a000ed01a5b4eaf512e476e03182&amp;type=3#RoadNetworkFilePathField" />
+    <ui:Template name="RoadNetworkIntInputBox" src="project://database/Packages/com.synesthesias.plateau-unity-sdk/Resources/PlateauUIDocument/RoadNetwork/RoadNetworkIntField.uxml?fileID=9197481963319205126&amp;guid=9a5847088412454419d23b8438c693cc&amp;type=3#RoadNetworkIntField" />
+    <ui:Template name="RoadNetworkNameInputBox" src="project://database/Packages/com.synesthesias.plateau-unity-sdk/Resources/PlateauUIDocument/RoadNetwork/RoadNetworkNameField.uxml?fileID=9197481963319205126&amp;guid=90c13a57b9810c74085e6a3d407ba145&amp;type=3#RoadNetworkNameField" />
+    <ui:Template name="RoadNetworkStatusMultiSelecter" src="project://database/Packages/com.synesthesias.plateau-unity-sdk/Resources/PlateauUIDocument/RoadNetwork/RoadNetworkStatusMultiSelector.uxml?fileID=9197481963319205126&amp;guid=a1451d4a5f9084941bdb7dadecf7a07b&amp;type=3#RoadNetworkStatusMultiSelector" />
+    <ui:Template name="RoadNetworkStatusSelecter" src="project://database/Packages/com.synesthesias.plateau-unity-sdk/Resources/PlateauUIDocument/RoadNetwork/RoadNetworkStatusSelector.uxml?fileID=9197481963319205126&amp;guid=13ae1ff23d95c8344821b73fba68f4f0&amp;type=3#RoadNetworkStatusSelector" />
+    <ui:Template name="RoadNetworkToggleBox" src="project://database/Packages/com.synesthesias.plateau-unity-sdk/Resources/PlateauUIDocument/RoadNetwork/RoadNetworkToggleBox.uxml?fileID=9197481963319205126&amp;guid=3c44189abdd65ff498ba9cb93a652e13&amp;type=3#RoadNetworkToggleBox" />
+    <ui:Template name="RoadNetworkVec3Field" src="project://database/Packages/com.synesthesias.plateau-unity-sdk/Resources/PlateauUIDocument/RoadNetwork/RoadNetworkVec3Field.uxml?fileID=9197481963319205126&amp;guid=39080b83dad585c4092b6e708df91bf6&amp;type=3#RoadNetworkVec3Field" />
+    <ui:Template name="RoadNetworkFloatField" src="project://database/Packages/com.synesthesias.plateau-unity-sdk/Resources/PlateauUIDocument/RoadNetwork/RoadNetworkFloatField.uxml?fileID=9197481963319205126&amp;guid=6b99df95683749e4881c7556e013ef1a&amp;type=3#RoadNetworkFloatField" />
+    <ui:Template name="RoadNetworkParameterBox" src="project://database/Packages/com.synesthesias.plateau-unity-sdk/Resources/PlateauUIDocument/RoadNetwork/RoadNetworkParameterBox.uxml?fileID=9197481963319205126&amp;guid=4e148ffdea838b94b871325b7430bf69&amp;type=3#RoadNetworkParameterBox" />
+    <ui:Label tabindex="-1" text="道路ネットワーク編集" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Title" />
+    <ui:Button text="Refresh" parse-escape-sequences="true" display-tooltip-when-elided="true" name="RefreshBtn" />
+    <ui:EnumField label="操作モード" type="PLATEAU.Editor.RoadNetwork.RoadNetworkEditMode, PLATEAU.Editor" name="ModeSelector" />
+    <ui:GroupBox name="EditingSelecterGroupBox" style="flex-direction: row;">
+        <ui:VisualElement style="flex-grow: 1;">
+            <uie:ObjectField label="道路ネットワーク" name="EditingTargetSelecter" />
+        </ui:VisualElement>
+        <ui:Label tabindex="-1" text="表示してるデータ名" parse-escape-sequences="true" display-tooltip-when-elided="true" name="SelectedDataLabel" style="justify-content: flex-start; -unity-text-align: middle-left; display: none;" />
+    </ui:GroupBox>
+    <ui:ScrollView name="ParameterView" style="border-top-width: 2px; border-right-width: 2px; border-bottom-width: 2px; border-left-width: 2px; border-left-color: rgba(0, 0, 0, 0); border-right-color: rgba(0, 0, 0, 0); border-top-color: rgba(0, 0, 0, 0); border-bottom-color: rgba(0, 0, 0, 0); border-top-left-radius: 0; border-top-right-radius: 0; border-bottom-right-radius: 0; border-bottom-left-radius: 0;">
+        <ui:Instance template="RoadNetworkDataIDInputBox" name="RoadNetworkDataIDFiled" />
+        <ui:Instance template="RoadNetworkFilePathInputBox" name="RoadNetworkFilePathField" />
+        <ui:Instance template="RoadNetworkIntInputBox" name="RoadNetworkIntField" />
+        <ui:Instance template="RoadNetworkNameInputBox" name="RoadNetworkNameField" />
+        <ui:Instance template="RoadNetworkStatusMultiSelecter" name="RoadNetworkStatusMultiSelecter" />
+        <ui:Instance template="RoadNetworkStatusSelecter" name="RoadNetworkStatusSelecter" />
+        <ui:Instance template="RoadNetworkToggleBox" name="RoadNetworkToggleBox" />
+        <ui:Instance template="RoadNetworkVec3Field" name="RoadNetworkVec3Field" />
+        <ui:Instance template="RoadNetworkFloatField" name="RoadNetworkFloatField" />
+        <ui:Instance template="RoadNetworkParameterBox" name="RoadNetworkParameterBox" />
+    </ui:ScrollView>
+</ui:UXML>

@@ -1,4 +1,5 @@
-﻿using UnityEditor;
+﻿using PLATEAU.Util;
+using UnityEditor;
 using UnityEngine;
 
 namespace PLATEAU.CityImport.AreaSelector.Display.Windows
@@ -58,7 +59,11 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Windows
             }
             if (GUILayout.Button("キャンセル"))
             {
-                areaSelector.CancelAreaSelection();
+                bool cancelConfirmed = Dialogue.Display("範囲選択を中止しますか？", "中止する", "中止しない");
+                if (cancelConfirmed)
+                {
+                    areaSelector.CancelAreaSelection();
+                }
             }
             GUILayout.Space(5f);
             GUI.DragWindow();

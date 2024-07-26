@@ -11,7 +11,6 @@ using PLATEAU.PolygonMesh;
 using PLATEAU.Util;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using Material = UnityEngine.Material;
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -42,7 +41,7 @@ namespace PLATEAU.CityImport.Import.Convert
 
             token?.ThrowIfCancellationRequested();
             AttributeDataHelper attributeDataHelper =
-                new AttributeDataHelper(new SerializedCityObjectGetterFromCityModel(cityModel), meshExtractOptions.MeshGranularity, doSetAttrInfo);
+                new AttributeDataHelper(new SerializedCityObjectGetterFromCityModel(cityModel), doSetAttrInfo);
 
             Model plateauModel;
             try
@@ -127,7 +126,6 @@ namespace PLATEAU.CityImport.Import.Convert
                 EditorSceneManager.MarkSceneDirty(SceneManager.GetActiveScene());
             }
 #endif
-            Debug.Log("Gml model placed.");
             return result;
         }
 
@@ -154,7 +152,7 @@ namespace PLATEAU.CityImport.Import.Convert
     }
     
     /// <summary>
-    /// 粒度変換（分割結合）してシーンに配置した結果が格納されるクラスです。
+    /// シーンに配置した結果が格納されるクラスです。
     /// </summary>
     public class GranularityConvertResult
     {
@@ -166,13 +164,13 @@ namespace PLATEAU.CityImport.Import.Convert
         /// <summary>
         /// 変換によってシーンに配置したゲームオブジェクトのうち、ヒエラルキーが最上位であるもののリスト
         /// </summary>
-        public List<GameObject> GeneratedRootObjs { get; } = new();
+        public UniqueParentTransformList GeneratedRootTransforms { get; } = new();
 
         /// <summary> 結果のゲームオブジェクトの一覧に追加します。</summary>
-        public void Add(GameObject obj, bool isRoot)
+        public void Add(GameObject obj)
         {
             GeneratedObjs.Add(obj);
-            if(isRoot) GeneratedRootObjs.Add(obj);
+            GeneratedRootTransforms.Add(obj.transform);
         }
 
         /// <summary> 複数の<see cref="GranularityConvertResult"/>を統合します。 </summary>
@@ -180,13 +178,13 @@ namespace PLATEAU.CityImport.Import.Convert
         {
             IsSucceed &= other.IsSucceed;
             GeneratedObjs.AddRange(other.GeneratedObjs);
-            GeneratedRootObjs.AddRange(other.GeneratedRootObjs);
+            GeneratedRootTransforms.AddRange(other.GeneratedRootTransforms.Get);
         }
 
         public static GranularityConvertResult Fail()
         {
             return new GranularityConvertResult() { IsSucceed = false };
         }
-            
     }
+    
 }

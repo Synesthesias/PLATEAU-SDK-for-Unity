@@ -3,7 +3,7 @@ using PLATEAU.CityImport.Config.PackageImportConfigs;
 using PLATEAU.Dataset;
 using PLATEAU.Editor.CityImport.PackageImportConfigGUIs.Components;
 using PLATEAU.Editor.CityImport.PackageImportConfigGUIs.Extendables;
-using PLATEAU.Editor.EditorWindow.Common;
+using PLATEAU.Editor.Window.Common;
 using UnityEditor;
 
 namespace PLATEAU.Editor.CityImport.PackageImportConfigGUIs

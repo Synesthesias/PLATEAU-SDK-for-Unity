@@ -138,6 +138,32 @@ namespace PLATEAU.PolygonMesh
             return new SubMesh(subMeshPtr);
         }
 
+        public int VertexColorCount
+        {
+            get
+            {
+                ThrowIfInvalid();
+                int numVertexColor = DLLUtil.GetNativeValue<int>(Handle,
+                    NativeMethods.plateau_mesh_get_vertex_color_count);
+                return numVertexColor;
+            }
+        }
+
+        public PlateauVector3d GetVertexColorAt(int index)
+        {
+            ThrowIfInvalid();
+            var color = DLLUtil.GetNativeValue<PlateauVector3d>(Handle, index,
+                NativeMethods.plateau_mesh_get_vertex_color_at_index);
+            return color;
+        }
+
+        public void SetVertexColors(PlateauVector3d[] colorArray)
+        {
+            ThrowIfInvalid();
+            var result = NativeMethods.plateau_mesh_set_vertex_colors(Handle, colorArray, colorArray.Length);
+            DLLUtil.CheckDllError(result);
+        }
+
         public void MergeMesh(Mesh otherMesh, bool includeTexture)
         {
             ThrowIfInvalid();
@@ -245,6 +271,26 @@ namespace PLATEAU.PolygonMesh
                 [In] IntPtr plateauMeshPtr,
                 out IntPtr plateauSubMeshPtr,
                 int index);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_mesh_get_vertex_color_count(
+                [In] IntPtr meshPtr,
+                out int vertexColorCount
+            );
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_mesh_get_vertex_color_at_index(
+                [In] IntPtr meshPtr,
+                out PlateauVector3d color,
+                int index
+            );
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_mesh_set_vertex_colors(
+                [In] IntPtr meshPtr,
+                [In] PlateauVector3d[] vertexColorArray,
+                int vertexColorArrayCount
+            );
 
             [DllImport(DLLUtil.DllName)]
             internal static extern APIResult plateau_mesh_get_city_object_list(

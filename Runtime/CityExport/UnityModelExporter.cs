@@ -1,10 +1,9 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using PLATEAU.CityExport.ModelConvert;
 using PLATEAU.CityExport.ModelConvert.SubMeshConvert;
 using PLATEAU.CityInfo;
 using PLATEAU.Geometries;
-using PLATEAU.Native;
+using PLATEAU.Util;
 using UnityEngine;
 
 namespace PLATEAU.CityExport
@@ -34,7 +33,6 @@ namespace PLATEAU.CityExport
             {
                 var childTrans = trans.GetChild(i);
                 var childName = childTrans.name;
-                if (!childName.EndsWith(".gml")) continue;
 
                 if ((!options.ExportHiddenObjects) && (!childTrans.gameObject.activeInHierarchy))
                 {
@@ -43,45 +41,25 @@ namespace PLATEAU.CityExport
 
                 using var geoReference = instancedCityModel.GeoReference;
 
-                var referencePoint = geoReference.ReferencePoint;
-                var rootPos = trans.position;
 
-                UnityMeshToDllModelConverter.VertexConvertFunc vertexConvertFunc = options.TransformType switch
-                {
-                    MeshExportOptions.MeshTransformType.Local => src =>
-                    {
-                        // instancedCityModel を基準とする座標にします。
-                        var pos = src - rootPos;
-                        var Vertex = GeoReference.ConvertAxisToENU(CoordinateSystem.EUN, new PlateauVector3d(pos.x, pos.y, pos.z));
-                        Vertex = GeoReference.ConvertAxisFromENUTo(options.MeshAxis, Vertex);
-                        return Vertex;
-                    }
-                    ,
-                    MeshExportOptions.MeshTransformType.PlaneCartesian => src =>
-                    {
-                        // 変換時の referencePoint をオフセットします。
-                        var pos = referencePoint + new PlateauVector3d(src.x - rootPos.x, src.y - rootPos.y, src.z - rootPos.z);
-                        var Vertex = GeoReference.ConvertAxisToENU(CoordinateSystem.EUN, pos);
-                        Vertex = GeoReference.ConvertAxisFromENUTo(options.MeshAxis, Vertex);
-                        return Vertex;
-                    }
-                    ,
-                    _ => throw new Exception("Unknown transform type.")
-                };
+                var vertexConverter = VertexConverterFactory.CreateByExportOptions(
+                    options, geoReference.ReferencePoint, trans.position
+                );
                 
                 // Unity のメッシュを中間データ構造(Model)に変換します。
-                var convertTargets = new GameObject[childTrans.childCount];
+                var convertTargets = new UniqueParentTransformList();
                 for (int j = 0; j < childTrans.childCount; j++)
                 {
-                    convertTargets[j] = childTrans.GetChild(j).gameObject;
+                    convertTargets.Add(childTrans.GetChild(j));
                 }
 
                 IUnityMeshToDllSubMeshConverter unityMeshToDllSubMeshConverter = options.ExportTextures
-                    ? new UnityMeshToDllSubMeshWithTexture()
+                    ? new UnityMeshToDllSubMeshWithTexture(options.ExportDefaultTextures)
                     : new UnityMeshToDllSubMeshWithEmptyMaterial();
 
-                bool InvertMesh = (options.MeshAxis == CoordinateSystem.ENU || options.MeshAxis == CoordinateSystem.WUN);
-                using var model = UnityMeshToDllModelConverter.Convert(convertTargets, unityMeshToDllSubMeshConverter, options.ExportHiddenObjects, vertexConvertFunc, InvertMesh);
+                bool invertMesh = (options.MeshAxis == CoordinateSystem.ENU || options.MeshAxis == CoordinateSystem.WUN);
+                using var model = UnityMeshToDllModelConverter.Convert(convertTargets, unityMeshToDllSubMeshConverter,
+                    options.ExportHiddenObjects, vertexConverter, invertMesh);
                 
                 // Model をファイルにして出力します。
                 // options.PlateauModelExporter は、ファイルフォーマットに応じて FbxModelExporter, GltfModelExporter, ObjModelExporter のいずれかです。
@@ -89,5 +67,6 @@ namespace PLATEAU.CityExport
                 options.Exporter.Export(destDir, fileNameWithoutExtension, model);
             }
         }
+
     }
 }
