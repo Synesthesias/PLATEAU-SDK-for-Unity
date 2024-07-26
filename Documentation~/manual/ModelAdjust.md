@@ -159,7 +159,7 @@ PLATEAUウィンドウの`モデル修正`では、インポートした都市�
 - 以下、`検索`ボタン、パターンごとのマテリアル指定、実行は上述の「地物型でのマテリアル分け」と同じです。
 
 ## 地形変換/高さ合わせ機能
-![](../resources/manual/cityAdjust/terrainWindow.png)
+![image (3)](https://github.com/user-attachments/assets/d0af1040-c40d-4335-9b3c-4139aeb69a56)
 
 `地形変換/高さ合わせ`画面では以下を行えます。
 - 地形の平滑化
