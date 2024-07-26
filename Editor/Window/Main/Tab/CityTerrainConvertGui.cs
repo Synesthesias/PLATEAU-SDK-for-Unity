@@ -27,6 +27,7 @@ namespace PLATEAU.Editor.Window.Main.Tab
         private static readonly int[] SizeValues = { 257, 513, 1025, 2049 };
         private PreserveOrDestroy preserveOrDestroy;
         private bool convertToTerrain;
+        private bool enableTerrainConversion;
         private bool applyConvolutionFilterToHeightMap;
         private bool alignLand;
         private bool alignLandNormal;
@@ -55,6 +56,7 @@ namespace PLATEAU.Editor.Window.Main.Tab
                         new ToggleLeftElement("", "地形変換", true, OnConvertToTerrainChanged),
                         new ElementGroup("terrainConf", 1, BoxStyle.VerticalStyleLevel2,
                             new GeneralElement("", DrawHeightmapResolutionSelector),
+                            new ToggleLeftElement("", "テレインに変換する", false, OnEnableTerrainConversionChanged),
                             new ToggleLeftElement("", "ハイトマップ平滑化", true, OnApplyConvolutionFilterChanged),
                             new ToggleLeftElement("", "余白を端の高さに合わせる", true, OnFillEdgesChanged)
                         ),
@@ -98,11 +100,10 @@ namespace PLATEAU.Editor.Window.Main.Tab
         private void WarnAlignLandToLod3RoadNotWorking()
         {
             if (targetModel == null) return;
-            if (alignLandInvert && targetModel.GetComponent<Terrain>() == null && (!convertToTerrain))
+            if (alignLandInvert && (targetModel.GetComponent<Terrain>() == null && targetModel.GetComponent<PLATEAUSmoothedDem>() == null) && (!convertToTerrain))
             {
-                EditorGUILayout.HelpBox("土地をLOD3道路に合わせる機能を利用するには、Terrainが必要です。\nそのため、地形変換をオンにしてTerrain化するか、\n変換対象にTerrainが存在するようにしてください。", MessageType.Warning);   
+                EditorGUILayout.HelpBox("土地をLOD3道路に合わせる機能を利用するには、平滑化された土地モデルが必要です。\nそのため、地形変換をオンにしてTerrain化するか、\n変換対象にTerrainが存在するようにしてください。", MessageType.Warning);   
             }
-                
         }
 
         /// <summary> GUIで変換対象の都市モデルが変更された時 </summary>
@@ -124,6 +125,11 @@ namespace PLATEAU.Editor.Window.Main.Tab
         private void OnConvertToTerrainChanged(bool value)
         {
             convertToTerrain = value;
+        }
+
+        private void OnEnableTerrainConversionChanged(bool value)
+        {
+            enableTerrainConversion = value;
         }
 
         private void OnChangeAlignLand(bool value)
@@ -199,6 +205,7 @@ namespace PLATEAU.Editor.Window.Main.Tab
                     preserveOrDestroy == PreserveOrDestroy.Destroy,
                     fillEdges,
                     applyConvolutionFilterToHeightMap,
+                    enableTerrainConversion,
                     heightmapImageOutput
                 );
 

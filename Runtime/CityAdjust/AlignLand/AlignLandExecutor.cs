@@ -148,10 +148,28 @@ namespace PLATEAU.CityAdjust.AlignLand
                 for (int i = 0; i < landTransforms.Length; i++)
                 {
                     var land = landTransforms[i];
-                    var terrain = land.GetComponent<Terrain>();
-                    // 現状テレインのみ対応
-                    if (terrain == null) continue;
                     var heightmap1d = heightmapAligner.GetHeightMapAt(i);
+
+                    var terrain = land.GetComponent<Terrain>();
+
+                    // テレイン出力ではない場合
+                    if (terrain == null)
+                    {
+                        var meshFilter = land.GetComponent<MeshFilter>();
+                        var smoothedDem = land.GetComponent<PLATEAUSmoothedDem>();
+                        if (meshFilter == null || smoothedDem == null)
+                        {
+                            Debug.LogError("不正な平滑化済み地形モデル");
+                            continue;
+                        }
+
+                        smoothedDem.HeightMapData.HeightData = heightmap1d;
+                        var mesh = ConvertedTerrainData.ConvertToMesh(smoothedDem.HeightMapData, land.name);
+                        meshFilter.sharedMesh = mesh;
+
+                        continue;
+                    }
+
                     var terrainData = terrain.terrainData;
                     var heightmap2d = HeightmapGenerator.ConvertTo2DFloatArray(heightmap1d, terrainData.heightmapResolution, terrainData.heightmapResolution);
                     terrain.terrainData.SetHeights(0, 0, heightmap2d);
@@ -230,7 +248,7 @@ namespace PLATEAU.CityAdjust.AlignLand
             var terrain = new ConvertedTerrainData(
                 landModel,
                 new TerrainConvertOption(new GameObject[] { landTrans.gameObject }, conf.HeightmapWidth, false,
-                    conf.FillEdges, conf.ApplyConvolutionFilterToHeightMap, TerrainConvertOption.ImageOutput.PNG));
+                    conf.FillEdges, conf.ApplyConvolutionFilterToHeightMap, true, TerrainConvertOption.ImageOutput.PNG));
             var heightmaps = terrain.GetHeightmapDataRecursive();
             if (heightmaps.Count == 0) return null;
             return heightmaps;
