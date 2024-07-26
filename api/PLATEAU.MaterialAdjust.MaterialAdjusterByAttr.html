@@ -5,10 +5,10 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>Interface IMACondition
+    <title>Class MaterialAdjusterByAttr
    | PLATEAU SDK for Unity </title>
     <meta name="viewport" content="width=device-width">
-    <meta name="title" content="Interface IMACondition
+    <meta name="title" content="Class MaterialAdjusterByAttr
    | PLATEAU SDK for Unity ">
     <meta name="generator" content="docfx 2.59.4.0">
     
@@ -78,58 +78,70 @@
         </div>
         <div class="article row grid-right">
           <div class="col-md-10">
-            <article class="content wrap" id="_content" data-uid="PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.IMACondition">
+            <article class="content wrap" id="_content" data-uid="PLATEAU.MaterialAdjust.MaterialAdjusterByAttr">
   
   
-  <h1 id="PLATEAU_CityAdjust_MaterialAdjust_Executor_Process_IMACondition" data-uid="PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.IMACondition" class="text-break">Interface IMACondition
+  <h1 id="PLATEAU_MaterialAdjust_MaterialAdjusterByAttr" data-uid="PLATEAU.MaterialAdjust.MaterialAdjusterByAttr" class="text-break">Class MaterialAdjusterByAttr
   </h1>
-  <div class="markdown level0 summary"><p><span class="xref">PLATEAU.CityAdjust.MaterialAdjust.Executor.MAExecutor</span>が、どのゲームオブジェクトを対象とするかを決めます。</p>
-</div>
+  <div class="markdown level0 summary"></div>
   <div class="markdown level0 conceptual"></div>
-  <h6><strong>Namespace</strong>: <a class="xref" href="PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.html">PLATEAU.CityAdjust.MaterialAdjust.Executor.Process</a></h6>
+  <div class="inheritance">
+    <h5>Inheritance</h5>
+    <div class="level0"><span class="xref">System.Object</span></div>
+    <div class="level1"><span class="xref">MaterialAdjusterByAttr</span></div>
+  </div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="PLATEAU.MaterialAdjust.html">PLATEAU.MaterialAdjust</a></h6>
   <h6><strong>Assembly</strong>: cs.temp.dll.dll</h6>
-  <h5 id="PLATEAU_CityAdjust_MaterialAdjust_Executor_Process_IMACondition_syntax">Syntax</h5>
+  <h5 id="PLATEAU_MaterialAdjust_MaterialAdjusterByAttr_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public interface IMACondition</code></pre>
+    <pre><code class="lang-csharp hljs">public class MaterialAdjusterByAttr : PInvokeDisposable</code></pre>
   </div>
   <h3 id="methods">Methods
   </h3>
   
   
-  <a id="PLATEAU_CityAdjust_MaterialAdjust_Executor_Process_IMACondition_Init_" data-uid="PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.IMACondition.Init*"></a>
-  <h4 id="PLATEAU_CityAdjust_MaterialAdjust_Executor_Process_IMACondition_Init_UniqueParentTransformList_" data-uid="PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.IMACondition.Init(UniqueParentTransformList)">Init(UniqueParentTransformList)</h4>
+  <a id="PLATEAU_MaterialAdjust_MaterialAdjusterByAttr_Create_" data-uid="PLATEAU.MaterialAdjust.MaterialAdjusterByAttr.Create*"></a>
+  <h4 id="PLATEAU_MaterialAdjust_MaterialAdjusterByAttr_Create" data-uid="PLATEAU.MaterialAdjust.MaterialAdjusterByAttr.Create">Create()</h4>
   <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">void Init(UniqueParentTransformList targets)</code></pre>
+    <pre><code class="lang-csharp hljs">public static MaterialAdjusterByAttr Create()</code></pre>
   </div>
-  <h5 class="parameters">Parameters</h5>
+  <h5 class="returns">Returns</h5>
   <table class="table table-bordered table-striped table-condensed">
     <thead>
       <tr>
         <th>Type</th>
-        <th>Name</th>
         <th>Description</th>
       </tr>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">UniqueParentTransformList</span></td>
-        <td><span class="parametername">targets</span></td>
+        <td><a class="xref" href="PLATEAU.MaterialAdjust.MaterialAdjusterByAttr.html">MaterialAdjusterByAttr</a></td>
         <td></td>
       </tr>
     </tbody>
   </table>
   
   
-  <a id="PLATEAU_CityAdjust_MaterialAdjust_Executor_Process_IMACondition_ShouldConstruct_" data-uid="PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.IMACondition.ShouldConstruct*"></a>
-  <h4 id="PLATEAU_CityAdjust_MaterialAdjust_Executor_Process_IMACondition_ShouldConstruct_Transform_PLATEAU_CityAdjust_MaterialAdjust_Executor_Process_MAGranularity_" data-uid="PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.IMACondition.ShouldConstruct(Transform,PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAGranularity)">ShouldConstruct(Transform, MAGranularity)</h4>
+  <a id="PLATEAU_MaterialAdjust_MaterialAdjusterByAttr_DisposeNative_" data-uid="PLATEAU.MaterialAdjust.MaterialAdjusterByAttr.DisposeNative*"></a>
+  <h4 id="PLATEAU_MaterialAdjust_MaterialAdjusterByAttr_DisposeNative" data-uid="PLATEAU.MaterialAdjust.MaterialAdjusterByAttr.DisposeNative">DisposeNative()</h4>
   <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">bool ShouldConstruct(Transform tarns, MAGranularity dstGranularity)</code></pre>
+    <pre><code class="lang-csharp hljs">protected override void DisposeNative()</code></pre>
+  </div>
+  
+  
+  <a id="PLATEAU_MaterialAdjust_MaterialAdjusterByAttr_Exec_" data-uid="PLATEAU.MaterialAdjust.MaterialAdjusterByAttr.Exec*"></a>
+  <h4 id="PLATEAU_MaterialAdjust_MaterialAdjusterByAttr_Exec_Model_" data-uid="PLATEAU.MaterialAdjust.MaterialAdjusterByAttr.Exec(Model)">Exec(Model)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void Exec(Model model)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -142,13 +154,42 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">Transform</span></td>
-        <td><span class="parametername">tarns</span></td>
+        <td><span class="xref">Model</span></td>
+        <td><span class="parametername">model</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
+  <a id="PLATEAU_MaterialAdjust_MaterialAdjusterByAttr_RegisterAttribute_" data-uid="PLATEAU.MaterialAdjust.MaterialAdjusterByAttr.RegisterAttribute*"></a>
+  <h4 id="PLATEAU_MaterialAdjust_MaterialAdjusterByAttr_RegisterAttribute_System_String_System_String_" data-uid="PLATEAU.MaterialAdjust.MaterialAdjusterByAttr.RegisterAttribute(System.String,System.String)">RegisterAttribute(String, String)</h4>
+  <div class="markdown level1 summary"><p>GML IDと、検索対象の属性の値を登録します。
+登録できたらtrueを返し、キーの重複により登録できなかったらfalseを返します。</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool RegisterAttribute(string gmlID, string attribute)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td><span class="parametername">gmlID</span></td>
         <td></td>
       </tr>
       <tr>
-        <td><a class="xref" href="PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAGranularity.html">MAGranularity</a></td>
-        <td><span class="parametername">dstGranularity</span></td>
+        <td><span class="xref">System.String</span></td>
+        <td><span class="parametername">attribute</span></td>
         <td></td>
       </tr>
     </tbody>
@@ -170,13 +211,15 @@
   </table>
   
   
-  <a id="PLATEAU_CityAdjust_MaterialAdjust_Executor_Process_IMACondition_ShouldDeconstruct_" data-uid="PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.IMACondition.ShouldDeconstruct*"></a>
-  <h4 id="PLATEAU_CityAdjust_MaterialAdjust_Executor_Process_IMACondition_ShouldDeconstruct_Transform_PLATEAU_CityAdjust_MaterialAdjust_Executor_Process_MAGranularity_" data-uid="PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.IMACondition.ShouldDeconstruct(Transform,PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAGranularity)">ShouldDeconstruct(Transform, MAGranularity)</h4>
-  <div class="markdown level1 summary"></div>
+  <a id="PLATEAU_MaterialAdjust_MaterialAdjusterByAttr_RegisterMaterialPattern_" data-uid="PLATEAU.MaterialAdjust.MaterialAdjusterByAttr.RegisterMaterialPattern*"></a>
+  <h4 id="PLATEAU_MaterialAdjust_MaterialAdjusterByAttr_RegisterMaterialPattern_System_String_System_Int32_" data-uid="PLATEAU.MaterialAdjust.MaterialAdjusterByAttr.RegisterMaterialPattern(System.String,System.Int32)">RegisterMaterialPattern(String, Int32)</h4>
+  <div class="markdown level1 summary"><p>マテリアル分けのパターンを1つ登録します。
+登録できたらtrueを返し、キーの重複により登録できなかったらfalseを返します。</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">bool ShouldDeconstruct(Transform trans, MAGranularity dstGranularity)</code></pre>
+    <pre><code class="lang-csharp hljs">public bool RegisterMaterialPattern(string attribute, int gameMaterialID)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -189,13 +232,13 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">Transform</span></td>
-        <td><span class="parametername">trans</span></td>
+        <td><span class="xref">System.String</span></td>
+        <td><span class="parametername">attribute</span></td>
         <td></td>
       </tr>
       <tr>
-        <td><a class="xref" href="PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAGranularity.html">MAGranularity</a></td>
-        <td><span class="parametername">dstGranularity</span></td>
+        <td><span class="xref">System.Int32</span></td>
+        <td><span class="parametername">gameMaterialID</span></td>
         <td></td>
       </tr>
     </tbody>

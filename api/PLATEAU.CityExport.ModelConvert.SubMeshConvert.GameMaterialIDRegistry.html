@@ -5,10 +5,10 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>Class MAMaterialChanger
+    <title>Class GameMaterialIDRegistry
    | PLATEAU SDK for Unity </title>
     <meta name="viewport" content="width=device-width">
-    <meta name="title" content="Class MAMaterialChanger
+    <meta name="title" content="Class GameMaterialIDRegistry
    | PLATEAU SDK for Unity ">
     <meta name="generator" content="docfx 2.59.4.0">
     
@@ -78,23 +78,25 @@
         </div>
         <div class="article row grid-right">
           <div class="col-md-10">
-            <article class="content wrap" id="_content" data-uid="PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAMaterialChanger">
+            <article class="content wrap" id="_content" data-uid="PLATEAU.CityExport.ModelConvert.SubMeshConvert.GameMaterialIDRegistry">
   
   
-  <h1 id="PLATEAU_CityAdjust_MaterialAdjust_Executor_Process_MAMaterialChanger" data-uid="PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAMaterialChanger" class="text-break">Class MAMaterialChanger
+  <h1 id="PLATEAU_CityExport_ModelConvert_SubMeshConvert_GameMaterialIDRegistry" data-uid="PLATEAU.CityExport.ModelConvert.SubMeshConvert.GameMaterialIDRegistry" class="text-break">Class GameMaterialIDRegistry
   </h1>
-  <div class="markdown level0 summary"><p>マテリアル分け機能の3手順、分解 → マテリアル変更 → 結合のうち、マテリアル変更です。
-MAはMaterialAdjustの略とします。</p>
+  <div class="markdown level0 summary"><p>Unityの<see cref="!:Mesh"></see>から共通ライブラリの<see cref="!:SubMesh"></see>を作るにあたって、
+具体的な見た目をC++に送るのではなく、UnityマテリアルにIDを割り振ってIDのみをC++の<see cref="!:SubMesh"></see>に記録する変換モードです。
+用途はモデル修正で、変換後にUnityマテリアルIDをもとにマテリアルを復元するために使います。
+ここでいうマテリアルIDとは、<a class="xref" href="PLATEAU.CityExport.ModelConvert.SubMeshConvert.GameMaterialIDRegistry.html#PLATEAU_CityExport_ModelConvert_SubMeshConvert_GameMaterialIDRegistry_GameMaterials">GameMaterials</a>のインデックスを指します。</p>
 </div>
   <div class="markdown level0 conceptual"></div>
   <div class="inheritance">
     <h5>Inheritance</h5>
     <div class="level0"><span class="xref">System.Object</span></div>
-    <div class="level1"><span class="xref">MAMaterialChanger</span></div>
+    <div class="level1"><span class="xref">GameMaterialIDRegistry</span></div>
   </div>
   <div class="implements">
     <h5>Implements</h5>
-    <div><a class="xref" href="PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.IMAMaterialChanger.html">IMAMaterialChanger</a></div>
+    <div><a class="xref" href="PLATEAU.CityExport.ModelConvert.SubMeshConvert.IUnityMeshToDllSubMeshConverter.html">IUnityMeshToDllSubMeshConverter</a></div>
   </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
@@ -120,42 +122,35 @@ MAはMaterialAdjustの略とします。</p>
       <span class="xref">System.Object.MemberwiseClone()</span>
     </div>
   </div>
-  <h6><strong>Namespace</strong>: <a class="xref" href="PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.html">PLATEAU.CityAdjust.MaterialAdjust.Executor.Process</a></h6>
+  <h6><strong>Namespace</strong>: <a class="xref" href="PLATEAU.CityExport.ModelConvert.SubMeshConvert.html">PLATEAU.CityExport.ModelConvert.SubMeshConvert</a></h6>
   <h6><strong>Assembly</strong>: cs.temp.dll.dll</h6>
-  <h5 id="PLATEAU_CityAdjust_MaterialAdjust_Executor_Process_MAMaterialChanger_syntax">Syntax</h5>
+  <h5 id="PLATEAU_CityExport_ModelConvert_SubMeshConvert_GameMaterialIDRegistry_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public class MAMaterialChanger : IMAMaterialChanger</code></pre>
+    <pre><code class="lang-csharp hljs">public class GameMaterialIDRegistry : IUnityMeshToDllSubMeshConverter</code></pre>
   </div>
-  <h3 id="constructors">Constructors
+  <h3 id="properties">Properties
   </h3>
   
   
-  <a id="PLATEAU_CityAdjust_MaterialAdjust_Executor_Process_MAMaterialChanger__ctor_" data-uid="PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAMaterialChanger.#ctor*"></a>
-  <h4 id="PLATEAU_CityAdjust_MaterialAdjust_Executor_Process_MAMaterialChanger__ctor_PLATEAU_CityAdjust_MaterialAdjust_IMAConfig_PLATEAU_CityAdjust_MaterialAdjust_Executor_Process_IMAMaterialSelector_" data-uid="PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAMaterialChanger.#ctor(PLATEAU.CityAdjust.MaterialAdjust.IMAConfig,PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.IMAMaterialSelector)">MAMaterialChanger(IMAConfig, IMAMaterialSelector)</h4>
+  <a id="PLATEAU_CityExport_ModelConvert_SubMeshConvert_GameMaterialIDRegistry_GameMaterials_" data-uid="PLATEAU.CityExport.ModelConvert.SubMeshConvert.GameMaterialIDRegistry.GameMaterials*"></a>
+  <h4 id="PLATEAU_CityExport_ModelConvert_SubMeshConvert_GameMaterialIDRegistry_GameMaterials" data-uid="PLATEAU.CityExport.ModelConvert.SubMeshConvert.GameMaterialIDRegistry.GameMaterials">GameMaterials</h4>
   <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public MAMaterialChanger(IMAConfig materialAdjustConf, IMAMaterialSelector materialSelector)</code></pre>
+    <pre><code class="lang-csharp hljs">public List&lt;Material&gt; GameMaterials { get; }</code></pre>
   </div>
-  <h5 class="parameters">Parameters</h5>
+  <h5 class="propertyValue">Property Value</h5>
   <table class="table table-bordered table-striped table-condensed">
     <thead>
       <tr>
         <th>Type</th>
-        <th>Name</th>
         <th>Description</th>
       </tr>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="PLATEAU.CityAdjust.MaterialAdjust.IMAConfig.html">IMAConfig</a></td>
-        <td><span class="parametername">materialAdjustConf</span></td>
-        <td></td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.IMAMaterialSelector.html">IMAMaterialSelector</a></td>
-        <td><span class="parametername">materialSelector</span></td>
+        <td><span class="xref">List</span>&lt;<span class="xref">Material</span>&gt;</td>
         <td></td>
       </tr>
     </tbody>
@@ -164,15 +159,13 @@ MAはMaterialAdjustの略とします。</p>
   </h3>
   
   
-  <a id="PLATEAU_CityAdjust_MaterialAdjust_Executor_Process_MAMaterialChanger_Exec_" data-uid="PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAMaterialChanger.Exec*"></a>
-  <h4 id="PLATEAU_CityAdjust_MaterialAdjust_Executor_Process_MAMaterialChanger_Exec_Transform_" data-uid="PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAMaterialChanger.Exec(Transform)">Exec(Transform)</h4>
-  <div class="markdown level1 summary"><p>非再帰的にマテリアルを変更します。
-引数は最小地物単位であることが前提です。</p>
-</div>
+  <a id="PLATEAU_CityExport_ModelConvert_SubMeshConvert_GameMaterialIDRegistry_Convert_" data-uid="PLATEAU.CityExport.ModelConvert.SubMeshConvert.GameMaterialIDRegistry.Convert*"></a>
+  <h4 id="PLATEAU_CityExport_ModelConvert_SubMeshConvert_GameMaterialIDRegistry_Convert_Mesh_Renderer_" data-uid="PLATEAU.CityExport.ModelConvert.SubMeshConvert.GameMaterialIDRegistry.Convert(Mesh,Renderer)">Convert(Mesh, Renderer)</h4>
+  <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public void Exec(Transform trans)</code></pre>
+    <pre><code class="lang-csharp hljs">public List&lt;SubMesh&gt; Convert(Mesh unityMesh, Renderer renderer)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -185,23 +178,42 @@ MAはMaterialAdjustの略とします。</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">Transform</span></td>
-        <td><span class="parametername">trans</span></td>
+        <td><span class="xref">Mesh</span></td>
+        <td><span class="parametername">unityMesh</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">Renderer</span></td>
+        <td><span class="parametername">renderer</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">List</span>&lt;<span class="xref">SubMesh</span>&gt;</td>
         <td></td>
       </tr>
     </tbody>
   </table>
   
   
-  <a id="PLATEAU_CityAdjust_MaterialAdjust_Executor_Process_MAMaterialChanger_ExecRecursive_" data-uid="PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAMaterialChanger.ExecRecursive*"></a>
-  <h4 id="PLATEAU_CityAdjust_MaterialAdjust_Executor_Process_MAMaterialChanger_ExecRecursive_UniqueParentTransformList_" data-uid="PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAMaterialChanger.ExecRecursive(UniqueParentTransformList)">ExecRecursive(UniqueParentTransformList)</h4>
-  <div class="markdown level1 summary"><p>再帰的にマテリアルを変更します。
-引数は最小地物単位であることが前提です。</p>
+  <a id="PLATEAU_CityExport_ModelConvert_SubMeshConvert_GameMaterialIDRegistry_SendMaterialIDToSubMesh_" data-uid="PLATEAU.CityExport.ModelConvert.SubMeshConvert.GameMaterialIDRegistry.SendMaterialIDToSubMesh*"></a>
+  <h4 id="PLATEAU_CityExport_ModelConvert_SubMeshConvert_GameMaterialIDRegistry_SendMaterialIDToSubMesh_SubMesh_List_Material__Material_" data-uid="PLATEAU.CityExport.ModelConvert.SubMeshConvert.GameMaterialIDRegistry.SendMaterialIDToSubMesh(SubMesh,List{Material},Material)">SendMaterialIDToSubMesh(SubMesh, List&lt;Material&gt;, Material)</h4>
+  <div class="markdown level1 summary"><p>与えられたマテリアルが記録にあればそのIDを送り、なければ新たに記録して送ります。 </p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public void ExecRecursive(UniqueParentTransformList targetTrans)</code></pre>
+    <pre><code class="lang-csharp hljs">public static void SendMaterialIDToSubMesh(SubMesh dllSubMesh, List&lt;Material&gt; gameMaterials, Material material)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -214,23 +226,32 @@ MAはMaterialAdjustの略とします。</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">UniqueParentTransformList</span></td>
-        <td><span class="parametername">targetTrans</span></td>
+        <td><span class="xref">SubMesh</span></td>
+        <td><span class="parametername">dllSubMesh</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">List</span>&lt;<span class="xref">Material</span>&gt;</td>
+        <td><span class="parametername">gameMaterials</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">Material</span></td>
+        <td><span class="parametername">material</span></td>
         <td></td>
       </tr>
     </tbody>
   </table>
   
   
-  <a id="PLATEAU_CityAdjust_MaterialAdjust_Executor_Process_MAMaterialChanger_ShouldChange_" data-uid="PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAMaterialChanger.ShouldChange*"></a>
-  <h4 id="PLATEAU_CityAdjust_MaterialAdjust_Executor_Process_MAMaterialChanger_ShouldChange_Transform_" data-uid="PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAMaterialChanger.ShouldChange(Transform)">ShouldChange(Transform)</h4>
-  <div class="markdown level1 summary"><p><code data-dev-comment-type="paramref" class="paramref">trans</code>がマテリアル分けの対象となるかどうかを返します。
-引数の結合単位は問いません。また、子までは確認しません。</p>
+  <a id="PLATEAU_CityExport_ModelConvert_SubMeshConvert_GameMaterialIDRegistry_TryAddMaterial_" data-uid="PLATEAU.CityExport.ModelConvert.SubMeshConvert.GameMaterialIDRegistry.TryAddMaterial*"></a>
+  <h4 id="PLATEAU_CityExport_ModelConvert_SubMeshConvert_GameMaterialIDRegistry_TryAddMaterial_Material_System_Int32__" data-uid="PLATEAU.CityExport.ModelConvert.SubMeshConvert.GameMaterialIDRegistry.TryAddMaterial(Material,System.Int32@)">TryAddMaterial(Material, out Int32)</h4>
+  <div class="markdown level1 summary"><p>マテリアルが記録になければ追加します。そのマテリアルに割り当てられたIDをout引数で返します。</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public bool ShouldChange(Transform trans)</code></pre>
+    <pre><code class="lang-csharp hljs">public bool TryAddMaterial(Material mat, out int outMatID)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -243,8 +264,13 @@ MAはMaterialAdjustの略とします。</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">Transform</span></td>
-        <td><span class="parametername">trans</span></td>
+        <td><span class="xref">Material</span></td>
+        <td><span class="parametername">mat</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Int32</span></td>
+        <td><span class="parametername">outMatID</span></td>
         <td></td>
       </tr>
     </tbody>
@@ -266,7 +292,7 @@ MAはMaterialAdjustの略とします。</p>
   </table>
   <h3 id="implements">Implements</h3>
   <div>
-      <a class="xref" href="PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.IMAMaterialChanger.html">IMAMaterialChanger</a>
+      <a class="xref" href="PLATEAU.CityExport.ModelConvert.SubMeshConvert.IUnityMeshToDllSubMeshConverter.html">IUnityMeshToDllSubMeshConverter</a>
   </div>
 </article>
           </div>

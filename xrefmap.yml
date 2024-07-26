@@ -421,25 +421,25 @@ references:
   isSpec: "True"
   fullName: PLATEAU.CityAdjust.AlignLand.ALTargetSearcher.ToConfig
   nameWithType: ALTargetSearcher.ToConfig
-- uid: PLATEAU.CityAdjust.AlignLand.PackageHeightMatchExtension
-  name: PackageHeightMatchExtension
-  href: api/PLATEAU.CityAdjust.AlignLand.PackageHeightMatchExtension.html
-  commentId: T:PLATEAU.CityAdjust.AlignLand.PackageHeightMatchExtension
-  fullName: PLATEAU.CityAdjust.AlignLand.PackageHeightMatchExtension
-  nameWithType: PackageHeightMatchExtension
-- uid: PLATEAU.CityAdjust.AlignLand.PackageHeightMatchExtension.CanAlignWithLand(PredefinedCityModelPackage)
+- uid: PLATEAU.CityAdjust.AlignLand.PackageAlignLandExtension
+  name: PackageAlignLandExtension
+  href: api/PLATEAU.CityAdjust.AlignLand.PackageAlignLandExtension.html
+  commentId: T:PLATEAU.CityAdjust.AlignLand.PackageAlignLandExtension
+  fullName: PLATEAU.CityAdjust.AlignLand.PackageAlignLandExtension
+  nameWithType: PackageAlignLandExtension
+- uid: PLATEAU.CityAdjust.AlignLand.PackageAlignLandExtension.CanAlignWithLand(PredefinedCityModelPackage)
   name: CanAlignWithLand(PredefinedCityModelPackage)
-  href: api/PLATEAU.CityAdjust.AlignLand.PackageHeightMatchExtension.html#PLATEAU_CityAdjust_AlignLand_PackageHeightMatchExtension_CanAlignWithLand_PredefinedCityModelPackage_
-  commentId: M:PLATEAU.CityAdjust.AlignLand.PackageHeightMatchExtension.CanAlignWithLand(PredefinedCityModelPackage)
-  fullName: PLATEAU.CityAdjust.AlignLand.PackageHeightMatchExtension.CanAlignWithLand(PredefinedCityModelPackage)
-  nameWithType: PackageHeightMatchExtension.CanAlignWithLand(PredefinedCityModelPackage)
-- uid: PLATEAU.CityAdjust.AlignLand.PackageHeightMatchExtension.CanAlignWithLand*
+  href: api/PLATEAU.CityAdjust.AlignLand.PackageAlignLandExtension.html#PLATEAU_CityAdjust_AlignLand_PackageAlignLandExtension_CanAlignWithLand_PredefinedCityModelPackage_
+  commentId: M:PLATEAU.CityAdjust.AlignLand.PackageAlignLandExtension.CanAlignWithLand(PredefinedCityModelPackage)
+  fullName: PLATEAU.CityAdjust.AlignLand.PackageAlignLandExtension.CanAlignWithLand(PredefinedCityModelPackage)
+  nameWithType: PackageAlignLandExtension.CanAlignWithLand(PredefinedCityModelPackage)
+- uid: PLATEAU.CityAdjust.AlignLand.PackageAlignLandExtension.CanAlignWithLand*
   name: CanAlignWithLand
-  href: api/PLATEAU.CityAdjust.AlignLand.PackageHeightMatchExtension.html#PLATEAU_CityAdjust_AlignLand_PackageHeightMatchExtension_CanAlignWithLand_
-  commentId: Overload:PLATEAU.CityAdjust.AlignLand.PackageHeightMatchExtension.CanAlignWithLand
+  href: api/PLATEAU.CityAdjust.AlignLand.PackageAlignLandExtension.html#PLATEAU_CityAdjust_AlignLand_PackageAlignLandExtension_CanAlignWithLand_
+  commentId: Overload:PLATEAU.CityAdjust.AlignLand.PackageAlignLandExtension.CanAlignWithLand
   isSpec: "True"
-  fullName: PLATEAU.CityAdjust.AlignLand.PackageHeightMatchExtension.CanAlignWithLand
-  nameWithType: PackageHeightMatchExtension.CanAlignWithLand
+  fullName: PLATEAU.CityAdjust.AlignLand.PackageAlignLandExtension.CanAlignWithLand
+  nameWithType: PackageAlignLandExtension.CanAlignWithLand
 - uid: PLATEAU.CityAdjust.ChangeActive
   name: PLATEAU.CityAdjust.ChangeActive
   href: api/PLATEAU.CityAdjust.ChangeActive.html
@@ -611,12 +611,12 @@ references:
   commentId: T:PLATEAU.CityAdjust.MaterialAdjust.Executor.MAExecutorConf
   fullName: PLATEAU.CityAdjust.MaterialAdjust.Executor.MAExecutorConf
   nameWithType: MAExecutorConf
-- uid: PLATEAU.CityAdjust.MaterialAdjust.Executor.MAExecutorConf.#ctor(PLATEAU.CityAdjust.MaterialAdjust.IMAConfig,UniqueParentTransformList,MAGranularity,System.Boolean,System.Boolean)
-  name: MAExecutorConf(IMAConfig, UniqueParentTransformList, MAGranularity, Boolean, Boolean)
-  href: api/PLATEAU.CityAdjust.MaterialAdjust.Executor.MAExecutorConf.html#PLATEAU_CityAdjust_MaterialAdjust_Executor_MAExecutorConf__ctor_PLATEAU_CityAdjust_MaterialAdjust_IMAConfig_UniqueParentTransformList_MAGranularity_System_Boolean_System_Boolean_
-  commentId: M:PLATEAU.CityAdjust.MaterialAdjust.Executor.MAExecutorConf.#ctor(PLATEAU.CityAdjust.MaterialAdjust.IMAConfig,UniqueParentTransformList,MAGranularity,System.Boolean,System.Boolean)
-  fullName: PLATEAU.CityAdjust.MaterialAdjust.Executor.MAExecutorConf.MAExecutorConf(PLATEAU.CityAdjust.MaterialAdjust.IMAConfig, UniqueParentTransformList, MAGranularity, System.Boolean, System.Boolean)
-  nameWithType: MAExecutorConf.MAExecutorConf(IMAConfig, UniqueParentTransformList, MAGranularity, Boolean, Boolean)
+- uid: PLATEAU.CityAdjust.MaterialAdjust.Executor.MAExecutorConf.#ctor(PLATEAU.CityAdjust.MaterialAdjust.IMAConfig,UniqueParentTransformList,System.Boolean,System.Boolean)
+  name: MAExecutorConf(IMAConfig, UniqueParentTransformList, Boolean, Boolean)
+  href: api/PLATEAU.CityAdjust.MaterialAdjust.Executor.MAExecutorConf.html#PLATEAU_CityAdjust_MaterialAdjust_Executor_MAExecutorConf__ctor_PLATEAU_CityAdjust_MaterialAdjust_IMAConfig_UniqueParentTransformList_System_Boolean_System_Boolean_
+  commentId: M:PLATEAU.CityAdjust.MaterialAdjust.Executor.MAExecutorConf.#ctor(PLATEAU.CityAdjust.MaterialAdjust.IMAConfig,UniqueParentTransformList,System.Boolean,System.Boolean)
+  fullName: PLATEAU.CityAdjust.MaterialAdjust.Executor.MAExecutorConf.MAExecutorConf(PLATEAU.CityAdjust.MaterialAdjust.IMAConfig, UniqueParentTransformList, System.Boolean, System.Boolean)
+  nameWithType: MAExecutorConf.MAExecutorConf(IMAConfig, UniqueParentTransformList, Boolean, Boolean)
 - uid: PLATEAU.CityAdjust.MaterialAdjust.Executor.MAExecutorConf.#ctor*
   name: MAExecutorConf
   href: api/PLATEAU.CityAdjust.MaterialAdjust.Executor.MAExecutorConf.html#PLATEAU_CityAdjust_MaterialAdjust_Executor_MAExecutorConf__ctor_
@@ -663,19 +663,6 @@ references:
   isSpec: "True"
   fullName: PLATEAU.CityAdjust.MaterialAdjust.Executor.MAExecutorConf.MaterialAdjustConf
   nameWithType: MAExecutorConf.MaterialAdjustConf
-- uid: PLATEAU.CityAdjust.MaterialAdjust.Executor.MAExecutorConf.MeshGranularity
-  name: MeshGranularity
-  href: api/PLATEAU.CityAdjust.MaterialAdjust.Executor.MAExecutorConf.html#PLATEAU_CityAdjust_MaterialAdjust_Executor_MAExecutorConf_MeshGranularity
-  commentId: P:PLATEAU.CityAdjust.MaterialAdjust.Executor.MAExecutorConf.MeshGranularity
-  fullName: PLATEAU.CityAdjust.MaterialAdjust.Executor.MAExecutorConf.MeshGranularity
-  nameWithType: MAExecutorConf.MeshGranularity
-- uid: PLATEAU.CityAdjust.MaterialAdjust.Executor.MAExecutorConf.MeshGranularity*
-  name: MeshGranularity
-  href: api/PLATEAU.CityAdjust.MaterialAdjust.Executor.MAExecutorConf.html#PLATEAU_CityAdjust_MaterialAdjust_Executor_MAExecutorConf_MeshGranularity_
-  commentId: Overload:PLATEAU.CityAdjust.MaterialAdjust.Executor.MAExecutorConf.MeshGranularity
-  isSpec: "True"
-  fullName: PLATEAU.CityAdjust.MaterialAdjust.Executor.MAExecutorConf.MeshGranularity
-  nameWithType: MAExecutorConf.MeshGranularity
 - uid: PLATEAU.CityAdjust.MaterialAdjust.Executor.MAExecutorConf.SkipNotChangingMaterial
   name: SkipNotChangingMaterial
   href: api/PLATEAU.CityAdjust.MaterialAdjust.Executor.MAExecutorConf.html#PLATEAU_CityAdjust_MaterialAdjust_Executor_MAExecutorConf_SkipNotChangingMaterial
@@ -721,96 +708,6 @@ references:
   commentId: N:PLATEAU.CityAdjust.MaterialAdjust.Executor.Process
   fullName: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process
   nameWithType: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process
-- uid: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.IMACondition
-  name: IMACondition
-  href: api/PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.IMACondition.html
-  commentId: T:PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.IMACondition
-  fullName: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.IMACondition
-  nameWithType: IMACondition
-- uid: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.IMACondition.Init(UniqueParentTransformList)
-  name: Init(UniqueParentTransformList)
-  href: api/PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.IMACondition.html#PLATEAU_CityAdjust_MaterialAdjust_Executor_Process_IMACondition_Init_UniqueParentTransformList_
-  commentId: M:PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.IMACondition.Init(UniqueParentTransformList)
-  fullName: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.IMACondition.Init(UniqueParentTransformList)
-  nameWithType: IMACondition.Init(UniqueParentTransformList)
-- uid: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.IMACondition.Init*
-  name: Init
-  href: api/PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.IMACondition.html#PLATEAU_CityAdjust_MaterialAdjust_Executor_Process_IMACondition_Init_
-  commentId: Overload:PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.IMACondition.Init
-  isSpec: "True"
-  fullName: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.IMACondition.Init
-  nameWithType: IMACondition.Init
-- uid: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.IMACondition.ShouldConstruct(Transform,PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAGranularity)
-  name: ShouldConstruct(Transform, MAGranularity)
-  href: api/PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.IMACondition.html#PLATEAU_CityAdjust_MaterialAdjust_Executor_Process_IMACondition_ShouldConstruct_Transform_PLATEAU_CityAdjust_MaterialAdjust_Executor_Process_MAGranularity_
-  commentId: M:PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.IMACondition.ShouldConstruct(Transform,PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAGranularity)
-  fullName: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.IMACondition.ShouldConstruct(Transform, PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAGranularity)
-  nameWithType: IMACondition.ShouldConstruct(Transform, MAGranularity)
-- uid: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.IMACondition.ShouldConstruct*
-  name: ShouldConstruct
-  href: api/PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.IMACondition.html#PLATEAU_CityAdjust_MaterialAdjust_Executor_Process_IMACondition_ShouldConstruct_
-  commentId: Overload:PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.IMACondition.ShouldConstruct
-  isSpec: "True"
-  fullName: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.IMACondition.ShouldConstruct
-  nameWithType: IMACondition.ShouldConstruct
-- uid: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.IMACondition.ShouldDeconstruct(Transform,PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAGranularity)
-  name: ShouldDeconstruct(Transform, MAGranularity)
-  href: api/PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.IMACondition.html#PLATEAU_CityAdjust_MaterialAdjust_Executor_Process_IMACondition_ShouldDeconstruct_Transform_PLATEAU_CityAdjust_MaterialAdjust_Executor_Process_MAGranularity_
-  commentId: M:PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.IMACondition.ShouldDeconstruct(Transform,PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAGranularity)
-  fullName: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.IMACondition.ShouldDeconstruct(Transform, PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAGranularity)
-  nameWithType: IMACondition.ShouldDeconstruct(Transform, MAGranularity)
-- uid: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.IMACondition.ShouldDeconstruct*
-  name: ShouldDeconstruct
-  href: api/PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.IMACondition.html#PLATEAU_CityAdjust_MaterialAdjust_Executor_Process_IMACondition_ShouldDeconstruct_
-  commentId: Overload:PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.IMACondition.ShouldDeconstruct
-  isSpec: "True"
-  fullName: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.IMACondition.ShouldDeconstruct
-  nameWithType: IMACondition.ShouldDeconstruct
-- uid: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.IMAMaterialChanger
-  name: IMAMaterialChanger
-  href: api/PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.IMAMaterialChanger.html
-  commentId: T:PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.IMAMaterialChanger
-  fullName: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.IMAMaterialChanger
-  nameWithType: IMAMaterialChanger
-- uid: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.IMAMaterialChanger.Exec(Transform)
-  name: Exec(Transform)
-  href: api/PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.IMAMaterialChanger.html#PLATEAU_CityAdjust_MaterialAdjust_Executor_Process_IMAMaterialChanger_Exec_Transform_
-  commentId: M:PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.IMAMaterialChanger.Exec(Transform)
-  fullName: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.IMAMaterialChanger.Exec(Transform)
-  nameWithType: IMAMaterialChanger.Exec(Transform)
-- uid: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.IMAMaterialChanger.Exec*
-  name: Exec
-  href: api/PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.IMAMaterialChanger.html#PLATEAU_CityAdjust_MaterialAdjust_Executor_Process_IMAMaterialChanger_Exec_
-  commentId: Overload:PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.IMAMaterialChanger.Exec
-  isSpec: "True"
-  fullName: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.IMAMaterialChanger.Exec
-  nameWithType: IMAMaterialChanger.Exec
-- uid: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.IMAMaterialChanger.ExecRecursive(UniqueParentTransformList)
-  name: ExecRecursive(UniqueParentTransformList)
-  href: api/PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.IMAMaterialChanger.html#PLATEAU_CityAdjust_MaterialAdjust_Executor_Process_IMAMaterialChanger_ExecRecursive_UniqueParentTransformList_
-  commentId: M:PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.IMAMaterialChanger.ExecRecursive(UniqueParentTransformList)
-  fullName: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.IMAMaterialChanger.ExecRecursive(UniqueParentTransformList)
-  nameWithType: IMAMaterialChanger.ExecRecursive(UniqueParentTransformList)
-- uid: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.IMAMaterialChanger.ExecRecursive*
-  name: ExecRecursive
-  href: api/PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.IMAMaterialChanger.html#PLATEAU_CityAdjust_MaterialAdjust_Executor_Process_IMAMaterialChanger_ExecRecursive_
-  commentId: Overload:PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.IMAMaterialChanger.ExecRecursive
-  isSpec: "True"
-  fullName: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.IMAMaterialChanger.ExecRecursive
-  nameWithType: IMAMaterialChanger.ExecRecursive
-- uid: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.IMAMaterialChanger.ShouldChange(Transform)
-  name: ShouldChange(Transform)
-  href: api/PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.IMAMaterialChanger.html#PLATEAU_CityAdjust_MaterialAdjust_Executor_Process_IMAMaterialChanger_ShouldChange_Transform_
-  commentId: M:PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.IMAMaterialChanger.ShouldChange(Transform)
-  fullName: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.IMAMaterialChanger.ShouldChange(Transform)
-  nameWithType: IMAMaterialChanger.ShouldChange(Transform)
-- uid: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.IMAMaterialChanger.ShouldChange*
-  name: ShouldChange
-  href: api/PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.IMAMaterialChanger.html#PLATEAU_CityAdjust_MaterialAdjust_Executor_Process_IMAMaterialChanger_ShouldChange_
-  commentId: Overload:PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.IMAMaterialChanger.ShouldChange
-  isSpec: "True"
-  fullName: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.IMAMaterialChanger.ShouldChange
-  nameWithType: IMAMaterialChanger.ShouldChange
 - uid: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.IMAMaterialSelector
   name: IMAMaterialSelector
   href: api/PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.IMAMaterialSelector.html
@@ -830,351 +727,51 @@ references:
   isSpec: "True"
   fullName: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.IMAMaterialSelector.Get
   nameWithType: IMAMaterialSelector.Get
-- uid: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAConditionFactory
-  name: MAConditionFactory
-  href: api/PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAConditionFactory.html
-  commentId: T:PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAConditionFactory
-  fullName: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAConditionFactory
-  nameWithType: MAConditionFactory
-- uid: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAConditionFactory.Create(System.Boolean,PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.IMAMaterialChanger)
-  name: Create(Boolean, IMAMaterialChanger)
-  href: api/PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAConditionFactory.html#PLATEAU_CityAdjust_MaterialAdjust_Executor_Process_MAConditionFactory_Create_System_Boolean_PLATEAU_CityAdjust_MaterialAdjust_Executor_Process_IMAMaterialChanger_
-  commentId: M:PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAConditionFactory.Create(System.Boolean,PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.IMAMaterialChanger)
-  fullName: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAConditionFactory.Create(System.Boolean, PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.IMAMaterialChanger)
-  nameWithType: MAConditionFactory.Create(Boolean, IMAMaterialChanger)
-- uid: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAConditionFactory.Create*
-  name: Create
-  href: api/PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAConditionFactory.html#PLATEAU_CityAdjust_MaterialAdjust_Executor_Process_MAConditionFactory_Create_
-  commentId: Overload:PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAConditionFactory.Create
+- uid: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MeshGranularityExtension
+  name: MeshGranularityExtension
+  href: api/PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MeshGranularityExtension.html
+  commentId: T:PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MeshGranularityExtension
+  fullName: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MeshGranularityExtension
+  nameWithType: MeshGranularityExtension
+- uid: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MeshGranularityExtension.ToConvertGranularity(MeshGranularity)
+  name: ToConvertGranularity(MeshGranularity)
+  href: api/PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MeshGranularityExtension.html#PLATEAU_CityAdjust_MaterialAdjust_Executor_Process_MeshGranularityExtension_ToConvertGranularity_MeshGranularity_
+  commentId: M:PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MeshGranularityExtension.ToConvertGranularity(MeshGranularity)
+  fullName: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MeshGranularityExtension.ToConvertGranularity(MeshGranularity)
+  nameWithType: MeshGranularityExtension.ToConvertGranularity(MeshGranularity)
+- uid: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MeshGranularityExtension.ToConvertGranularity*
+  name: ToConvertGranularity
+  href: api/PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MeshGranularityExtension.html#PLATEAU_CityAdjust_MaterialAdjust_Executor_Process_MeshGranularityExtension_ToConvertGranularity_
+  commentId: Overload:PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MeshGranularityExtension.ToConvertGranularity
   isSpec: "True"
-  fullName: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAConditionFactory.Create
-  nameWithType: MAConditionFactory.Create
-- uid: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAConditionMatChange
-  name: MAConditionMatChange
-  href: api/PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAConditionMatChange.html
-  commentId: T:PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAConditionMatChange
-  fullName: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAConditionMatChange
-  nameWithType: MAConditionMatChange
-- uid: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAConditionMatChange.#ctor(PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.IMAMaterialChanger)
-  name: MAConditionMatChange(IMAMaterialChanger)
-  href: api/PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAConditionMatChange.html#PLATEAU_CityAdjust_MaterialAdjust_Executor_Process_MAConditionMatChange__ctor_PLATEAU_CityAdjust_MaterialAdjust_Executor_Process_IMAMaterialChanger_
-  commentId: M:PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAConditionMatChange.#ctor(PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.IMAMaterialChanger)
-  fullName: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAConditionMatChange.MAConditionMatChange(PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.IMAMaterialChanger)
-  nameWithType: MAConditionMatChange.MAConditionMatChange(IMAMaterialChanger)
-- uid: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAConditionMatChange.#ctor*
-  name: MAConditionMatChange
-  href: api/PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAConditionMatChange.html#PLATEAU_CityAdjust_MaterialAdjust_Executor_Process_MAConditionMatChange__ctor_
-  commentId: Overload:PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAConditionMatChange.#ctor
-  isSpec: "True"
-  fullName: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAConditionMatChange.MAConditionMatChange
-  nameWithType: MAConditionMatChange.MAConditionMatChange
-- uid: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAConditionMatChange.Init(UniqueParentTransformList)
-  name: Init(UniqueParentTransformList)
-  href: api/PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAConditionMatChange.html#PLATEAU_CityAdjust_MaterialAdjust_Executor_Process_MAConditionMatChange_Init_UniqueParentTransformList_
-  commentId: M:PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAConditionMatChange.Init(UniqueParentTransformList)
-  fullName: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAConditionMatChange.Init(UniqueParentTransformList)
-  nameWithType: MAConditionMatChange.Init(UniqueParentTransformList)
-- uid: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAConditionMatChange.Init*
-  name: Init
-  href: api/PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAConditionMatChange.html#PLATEAU_CityAdjust_MaterialAdjust_Executor_Process_MAConditionMatChange_Init_
-  commentId: Overload:PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAConditionMatChange.Init
-  isSpec: "True"
-  fullName: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAConditionMatChange.Init
-  nameWithType: MAConditionMatChange.Init
-- uid: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAConditionMatChange.IsTarget(Transform)
-  name: IsTarget(Transform)
-  href: api/PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAConditionMatChange.html#PLATEAU_CityAdjust_MaterialAdjust_Executor_Process_MAConditionMatChange_IsTarget_Transform_
-  commentId: M:PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAConditionMatChange.IsTarget(Transform)
-  fullName: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAConditionMatChange.IsTarget(Transform)
-  nameWithType: MAConditionMatChange.IsTarget(Transform)
-- uid: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAConditionMatChange.IsTarget*
-  name: IsTarget
-  href: api/PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAConditionMatChange.html#PLATEAU_CityAdjust_MaterialAdjust_Executor_Process_MAConditionMatChange_IsTarget_
-  commentId: Overload:PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAConditionMatChange.IsTarget
-  isSpec: "True"
-  fullName: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAConditionMatChange.IsTarget
-  nameWithType: MAConditionMatChange.IsTarget
-- uid: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAConditionMatChange.IsTargetRecursive(Transform)
-  name: IsTargetRecursive(Transform)
-  href: api/PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAConditionMatChange.html#PLATEAU_CityAdjust_MaterialAdjust_Executor_Process_MAConditionMatChange_IsTargetRecursive_Transform_
-  commentId: M:PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAConditionMatChange.IsTargetRecursive(Transform)
-  fullName: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAConditionMatChange.IsTargetRecursive(Transform)
-  nameWithType: MAConditionMatChange.IsTargetRecursive(Transform)
-- uid: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAConditionMatChange.IsTargetRecursive*
-  name: IsTargetRecursive
-  href: api/PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAConditionMatChange.html#PLATEAU_CityAdjust_MaterialAdjust_Executor_Process_MAConditionMatChange_IsTargetRecursive_
-  commentId: Overload:PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAConditionMatChange.IsTargetRecursive
-  isSpec: "True"
-  fullName: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAConditionMatChange.IsTargetRecursive
-  nameWithType: MAConditionMatChange.IsTargetRecursive
-- uid: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAConditionMatChange.ShouldConstruct(Transform,PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAGranularity)
-  name: ShouldConstruct(Transform, MAGranularity)
-  href: api/PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAConditionMatChange.html#PLATEAU_CityAdjust_MaterialAdjust_Executor_Process_MAConditionMatChange_ShouldConstruct_Transform_PLATEAU_CityAdjust_MaterialAdjust_Executor_Process_MAGranularity_
-  commentId: M:PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAConditionMatChange.ShouldConstruct(Transform,PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAGranularity)
-  fullName: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAConditionMatChange.ShouldConstruct(Transform, PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAGranularity)
-  nameWithType: MAConditionMatChange.ShouldConstruct(Transform, MAGranularity)
-- uid: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAConditionMatChange.ShouldConstruct*
-  name: ShouldConstruct
-  href: api/PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAConditionMatChange.html#PLATEAU_CityAdjust_MaterialAdjust_Executor_Process_MAConditionMatChange_ShouldConstruct_
-  commentId: Overload:PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAConditionMatChange.ShouldConstruct
-  isSpec: "True"
-  fullName: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAConditionMatChange.ShouldConstruct
-  nameWithType: MAConditionMatChange.ShouldConstruct
-- uid: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAConditionMatChange.ShouldDeconstruct(Transform,PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAGranularity)
-  name: ShouldDeconstruct(Transform, MAGranularity)
-  href: api/PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAConditionMatChange.html#PLATEAU_CityAdjust_MaterialAdjust_Executor_Process_MAConditionMatChange_ShouldDeconstruct_Transform_PLATEAU_CityAdjust_MaterialAdjust_Executor_Process_MAGranularity_
-  commentId: M:PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAConditionMatChange.ShouldDeconstruct(Transform,PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAGranularity)
-  fullName: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAConditionMatChange.ShouldDeconstruct(Transform, PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAGranularity)
-  nameWithType: MAConditionMatChange.ShouldDeconstruct(Transform, MAGranularity)
-- uid: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAConditionMatChange.ShouldDeconstruct*
-  name: ShouldDeconstruct
-  href: api/PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAConditionMatChange.html#PLATEAU_CityAdjust_MaterialAdjust_Executor_Process_MAConditionMatChange_ShouldDeconstruct_
-  commentId: Overload:PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAConditionMatChange.ShouldDeconstruct
-  isSpec: "True"
-  fullName: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAConditionMatChange.ShouldDeconstruct
-  nameWithType: MAConditionMatChange.ShouldDeconstruct
-- uid: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAConditionSimple
-  name: MAConditionSimple
-  href: api/PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAConditionSimple.html
-  commentId: T:PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAConditionSimple
-  fullName: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAConditionSimple
-  nameWithType: MAConditionSimple
-- uid: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAConditionSimple.#ctor
-  name: MAConditionSimple()
-  href: api/PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAConditionSimple.html#PLATEAU_CityAdjust_MaterialAdjust_Executor_Process_MAConditionSimple__ctor
-  commentId: M:PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAConditionSimple.#ctor
-  fullName: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAConditionSimple.MAConditionSimple()
-  nameWithType: MAConditionSimple.MAConditionSimple()
-- uid: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAConditionSimple.#ctor*
-  name: MAConditionSimple
-  href: api/PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAConditionSimple.html#PLATEAU_CityAdjust_MaterialAdjust_Executor_Process_MAConditionSimple__ctor_
-  commentId: Overload:PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAConditionSimple.#ctor
-  isSpec: "True"
-  fullName: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAConditionSimple.MAConditionSimple
-  nameWithType: MAConditionSimple.MAConditionSimple
-- uid: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAConditionSimple.Init(UniqueParentTransformList)
-  name: Init(UniqueParentTransformList)
-  href: api/PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAConditionSimple.html#PLATEAU_CityAdjust_MaterialAdjust_Executor_Process_MAConditionSimple_Init_UniqueParentTransformList_
-  commentId: M:PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAConditionSimple.Init(UniqueParentTransformList)
-  fullName: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAConditionSimple.Init(UniqueParentTransformList)
-  nameWithType: MAConditionSimple.Init(UniqueParentTransformList)
-- uid: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAConditionSimple.Init*
-  name: Init
-  href: api/PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAConditionSimple.html#PLATEAU_CityAdjust_MaterialAdjust_Executor_Process_MAConditionSimple_Init_
-  commentId: Overload:PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAConditionSimple.Init
-  isSpec: "True"
-  fullName: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAConditionSimple.Init
-  nameWithType: MAConditionSimple.Init
-- uid: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAConditionSimple.ShouldConstruct(Transform,PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAGranularity)
-  name: ShouldConstruct(Transform, MAGranularity)
-  href: api/PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAConditionSimple.html#PLATEAU_CityAdjust_MaterialAdjust_Executor_Process_MAConditionSimple_ShouldConstruct_Transform_PLATEAU_CityAdjust_MaterialAdjust_Executor_Process_MAGranularity_
-  commentId: M:PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAConditionSimple.ShouldConstruct(Transform,PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAGranularity)
-  fullName: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAConditionSimple.ShouldConstruct(Transform, PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAGranularity)
-  nameWithType: MAConditionSimple.ShouldConstruct(Transform, MAGranularity)
-- uid: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAConditionSimple.ShouldConstruct*
-  name: ShouldConstruct
-  href: api/PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAConditionSimple.html#PLATEAU_CityAdjust_MaterialAdjust_Executor_Process_MAConditionSimple_ShouldConstruct_
-  commentId: Overload:PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAConditionSimple.ShouldConstruct
-  isSpec: "True"
-  fullName: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAConditionSimple.ShouldConstruct
-  nameWithType: MAConditionSimple.ShouldConstruct
-- uid: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAConditionSimple.ShouldDeconstruct(Transform,PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAGranularity)
-  name: ShouldDeconstruct(Transform, MAGranularity)
-  href: api/PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAConditionSimple.html#PLATEAU_CityAdjust_MaterialAdjust_Executor_Process_MAConditionSimple_ShouldDeconstruct_Transform_PLATEAU_CityAdjust_MaterialAdjust_Executor_Process_MAGranularity_
-  commentId: M:PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAConditionSimple.ShouldDeconstruct(Transform,PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAGranularity)
-  fullName: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAConditionSimple.ShouldDeconstruct(Transform, PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAGranularity)
-  nameWithType: MAConditionSimple.ShouldDeconstruct(Transform, MAGranularity)
-- uid: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAConditionSimple.ShouldDeconstruct*
-  name: ShouldDeconstruct
-  href: api/PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAConditionSimple.html#PLATEAU_CityAdjust_MaterialAdjust_Executor_Process_MAConditionSimple_ShouldDeconstruct_
-  commentId: Overload:PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAConditionSimple.ShouldDeconstruct
-  isSpec: "True"
-  fullName: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAConditionSimple.ShouldDeconstruct
-  nameWithType: MAConditionSimple.ShouldDeconstruct
-- uid: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MADummyMaterialChanger
-  name: MADummyMaterialChanger
-  href: api/PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MADummyMaterialChanger.html
-  commentId: T:PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MADummyMaterialChanger
-  fullName: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MADummyMaterialChanger
-  nameWithType: MADummyMaterialChanger
-- uid: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MADummyMaterialChanger.Exec(Transform)
-  name: Exec(Transform)
-  href: api/PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MADummyMaterialChanger.html#PLATEAU_CityAdjust_MaterialAdjust_Executor_Process_MADummyMaterialChanger_Exec_Transform_
-  commentId: M:PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MADummyMaterialChanger.Exec(Transform)
-  fullName: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MADummyMaterialChanger.Exec(Transform)
-  nameWithType: MADummyMaterialChanger.Exec(Transform)
-- uid: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MADummyMaterialChanger.Exec*
-  name: Exec
-  href: api/PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MADummyMaterialChanger.html#PLATEAU_CityAdjust_MaterialAdjust_Executor_Process_MADummyMaterialChanger_Exec_
-  commentId: Overload:PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MADummyMaterialChanger.Exec
-  isSpec: "True"
-  fullName: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MADummyMaterialChanger.Exec
-  nameWithType: MADummyMaterialChanger.Exec
-- uid: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MADummyMaterialChanger.ExecRecursive(UniqueParentTransformList)
-  name: ExecRecursive(UniqueParentTransformList)
-  href: api/PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MADummyMaterialChanger.html#PLATEAU_CityAdjust_MaterialAdjust_Executor_Process_MADummyMaterialChanger_ExecRecursive_UniqueParentTransformList_
-  commentId: M:PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MADummyMaterialChanger.ExecRecursive(UniqueParentTransformList)
-  fullName: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MADummyMaterialChanger.ExecRecursive(UniqueParentTransformList)
-  nameWithType: MADummyMaterialChanger.ExecRecursive(UniqueParentTransformList)
-- uid: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MADummyMaterialChanger.ExecRecursive*
-  name: ExecRecursive
-  href: api/PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MADummyMaterialChanger.html#PLATEAU_CityAdjust_MaterialAdjust_Executor_Process_MADummyMaterialChanger_ExecRecursive_
-  commentId: Overload:PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MADummyMaterialChanger.ExecRecursive
-  isSpec: "True"
-  fullName: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MADummyMaterialChanger.ExecRecursive
-  nameWithType: MADummyMaterialChanger.ExecRecursive
-- uid: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MADummyMaterialChanger.ShouldChange(Transform)
-  name: ShouldChange(Transform)
-  href: api/PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MADummyMaterialChanger.html#PLATEAU_CityAdjust_MaterialAdjust_Executor_Process_MADummyMaterialChanger_ShouldChange_Transform_
-  commentId: M:PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MADummyMaterialChanger.ShouldChange(Transform)
-  fullName: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MADummyMaterialChanger.ShouldChange(Transform)
-  nameWithType: MADummyMaterialChanger.ShouldChange(Transform)
-- uid: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MADummyMaterialChanger.ShouldChange*
-  name: ShouldChange
-  href: api/PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MADummyMaterialChanger.html#PLATEAU_CityAdjust_MaterialAdjust_Executor_Process_MADummyMaterialChanger_ShouldChange_
-  commentId: Overload:PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MADummyMaterialChanger.ShouldChange
-  isSpec: "True"
-  fullName: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MADummyMaterialChanger.ShouldChange
-  nameWithType: MADummyMaterialChanger.ShouldChange
-- uid: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAGranularity
-  name: MAGranularity
-  href: api/PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAGranularity.html
-  commentId: T:PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAGranularity
-  fullName: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAGranularity
-  nameWithType: MAGranularity
-- uid: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAGranularity.CombineAll
-  name: CombineAll
-  href: api/PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAGranularity.html#PLATEAU_CityAdjust_MaterialAdjust_Executor_Process_MAGranularity_CombineAll
-  commentId: F:PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAGranularity.CombineAll
-  fullName: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAGranularity.CombineAll
-  nameWithType: MAGranularity.CombineAll
-- uid: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAGranularity.DoNotChange
-  name: DoNotChange
-  href: api/PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAGranularity.html#PLATEAU_CityAdjust_MaterialAdjust_Executor_Process_MAGranularity_DoNotChange
-  commentId: F:PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAGranularity.DoNotChange
-  fullName: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAGranularity.DoNotChange
-  nameWithType: MAGranularity.DoNotChange
-- uid: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAGranularity.PerAtomicFeatureObject
-  name: PerAtomicFeatureObject
-  href: api/PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAGranularity.html#PLATEAU_CityAdjust_MaterialAdjust_Executor_Process_MAGranularity_PerAtomicFeatureObject
-  commentId: F:PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAGranularity.PerAtomicFeatureObject
-  fullName: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAGranularity.PerAtomicFeatureObject
-  nameWithType: MAGranularity.PerAtomicFeatureObject
-- uid: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAGranularity.PerMaterialInPrimary
-  name: PerMaterialInPrimary
-  href: api/PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAGranularity.html#PLATEAU_CityAdjust_MaterialAdjust_Executor_Process_MAGranularity_PerMaterialInPrimary
-  commentId: F:PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAGranularity.PerMaterialInPrimary
-  fullName: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAGranularity.PerMaterialInPrimary
-  nameWithType: MAGranularity.PerMaterialInPrimary
-- uid: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAGranularity.PerPrimaryFeatureObject
-  name: PerPrimaryFeatureObject
-  href: api/PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAGranularity.html#PLATEAU_CityAdjust_MaterialAdjust_Executor_Process_MAGranularity_PerPrimaryFeatureObject
-  commentId: F:PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAGranularity.PerPrimaryFeatureObject
-  fullName: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAGranularity.PerPrimaryFeatureObject
-  nameWithType: MAGranularity.PerPrimaryFeatureObject
-- uid: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAMaterialChanger
-  name: MAMaterialChanger
-  href: api/PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAMaterialChanger.html
-  commentId: T:PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAMaterialChanger
-  fullName: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAMaterialChanger
-  nameWithType: MAMaterialChanger
-- uid: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAMaterialChanger.#ctor(PLATEAU.CityAdjust.MaterialAdjust.IMAConfig,PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.IMAMaterialSelector)
-  name: MAMaterialChanger(IMAConfig, IMAMaterialSelector)
-  href: api/PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAMaterialChanger.html#PLATEAU_CityAdjust_MaterialAdjust_Executor_Process_MAMaterialChanger__ctor_PLATEAU_CityAdjust_MaterialAdjust_IMAConfig_PLATEAU_CityAdjust_MaterialAdjust_Executor_Process_IMAMaterialSelector_
-  commentId: M:PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAMaterialChanger.#ctor(PLATEAU.CityAdjust.MaterialAdjust.IMAConfig,PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.IMAMaterialSelector)
-  fullName: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAMaterialChanger.MAMaterialChanger(PLATEAU.CityAdjust.MaterialAdjust.IMAConfig, PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.IMAMaterialSelector)
-  nameWithType: MAMaterialChanger.MAMaterialChanger(IMAConfig, IMAMaterialSelector)
-- uid: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAMaterialChanger.#ctor*
-  name: MAMaterialChanger
-  href: api/PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAMaterialChanger.html#PLATEAU_CityAdjust_MaterialAdjust_Executor_Process_MAMaterialChanger__ctor_
-  commentId: Overload:PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAMaterialChanger.#ctor
-  isSpec: "True"
-  fullName: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAMaterialChanger.MAMaterialChanger
-  nameWithType: MAMaterialChanger.MAMaterialChanger
-- uid: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAMaterialChanger.Exec(Transform)
-  name: Exec(Transform)
-  href: api/PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAMaterialChanger.html#PLATEAU_CityAdjust_MaterialAdjust_Executor_Process_MAMaterialChanger_Exec_Transform_
-  commentId: M:PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAMaterialChanger.Exec(Transform)
-  fullName: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAMaterialChanger.Exec(Transform)
-  nameWithType: MAMaterialChanger.Exec(Transform)
-- uid: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAMaterialChanger.Exec*
-  name: Exec
-  href: api/PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAMaterialChanger.html#PLATEAU_CityAdjust_MaterialAdjust_Executor_Process_MAMaterialChanger_Exec_
-  commentId: Overload:PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAMaterialChanger.Exec
-  isSpec: "True"
-  fullName: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAMaterialChanger.Exec
-  nameWithType: MAMaterialChanger.Exec
-- uid: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAMaterialChanger.ExecRecursive(UniqueParentTransformList)
-  name: ExecRecursive(UniqueParentTransformList)
-  href: api/PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAMaterialChanger.html#PLATEAU_CityAdjust_MaterialAdjust_Executor_Process_MAMaterialChanger_ExecRecursive_UniqueParentTransformList_
-  commentId: M:PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAMaterialChanger.ExecRecursive(UniqueParentTransformList)
-  fullName: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAMaterialChanger.ExecRecursive(UniqueParentTransformList)
-  nameWithType: MAMaterialChanger.ExecRecursive(UniqueParentTransformList)
-- uid: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAMaterialChanger.ExecRecursive*
-  name: ExecRecursive
-  href: api/PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAMaterialChanger.html#PLATEAU_CityAdjust_MaterialAdjust_Executor_Process_MAMaterialChanger_ExecRecursive_
-  commentId: Overload:PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAMaterialChanger.ExecRecursive
-  isSpec: "True"
-  fullName: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAMaterialChanger.ExecRecursive
-  nameWithType: MAMaterialChanger.ExecRecursive
-- uid: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAMaterialChanger.ShouldChange(Transform)
-  name: ShouldChange(Transform)
-  href: api/PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAMaterialChanger.html#PLATEAU_CityAdjust_MaterialAdjust_Executor_Process_MAMaterialChanger_ShouldChange_Transform_
-  commentId: M:PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAMaterialChanger.ShouldChange(Transform)
-  fullName: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAMaterialChanger.ShouldChange(Transform)
-  nameWithType: MAMaterialChanger.ShouldChange(Transform)
-- uid: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAMaterialChanger.ShouldChange*
-  name: ShouldChange
-  href: api/PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAMaterialChanger.html#PLATEAU_CityAdjust_MaterialAdjust_Executor_Process_MAMaterialChanger_ShouldChange_
-  commentId: Overload:PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAMaterialChanger.ShouldChange
-  isSpec: "True"
-  fullName: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAMaterialChanger.ShouldChange
-  nameWithType: MAMaterialChanger.ShouldChange
-- uid: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAMeshGranularityExtension
-  name: MAMeshGranularityExtension
-  href: api/PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAMeshGranularityExtension.html
-  commentId: T:PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAMeshGranularityExtension
-  fullName: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAMeshGranularityExtension
-  nameWithType: MAMeshGranularityExtension
-- uid: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAMeshGranularityExtension.ToJapaneseString(PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAGranularity)
-  name: ToJapaneseString(MAGranularity)
-  href: api/PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAMeshGranularityExtension.html#PLATEAU_CityAdjust_MaterialAdjust_Executor_Process_MAMeshGranularityExtension_ToJapaneseString_PLATEAU_CityAdjust_MaterialAdjust_Executor_Process_MAGranularity_
-  commentId: M:PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAMeshGranularityExtension.ToJapaneseString(PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAGranularity)
-  fullName: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAMeshGranularityExtension.ToJapaneseString(PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAGranularity)
-  nameWithType: MAMeshGranularityExtension.ToJapaneseString(MAGranularity)
-- uid: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAMeshGranularityExtension.ToJapaneseString*
+  fullName: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MeshGranularityExtension.ToConvertGranularity
+  nameWithType: MeshGranularityExtension.ToConvertGranularity
+- uid: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MeshGranularityExtension.ToJapaneseString(ConvertGranularity)
+  name: ToJapaneseString(ConvertGranularity)
+  href: api/PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MeshGranularityExtension.html#PLATEAU_CityAdjust_MaterialAdjust_Executor_Process_MeshGranularityExtension_ToJapaneseString_ConvertGranularity_
+  commentId: M:PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MeshGranularityExtension.ToJapaneseString(ConvertGranularity)
+  fullName: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MeshGranularityExtension.ToJapaneseString(ConvertGranularity)
+  nameWithType: MeshGranularityExtension.ToJapaneseString(ConvertGranularity)
+- uid: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MeshGranularityExtension.ToJapaneseString*
   name: ToJapaneseString
-  href: api/PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAMeshGranularityExtension.html#PLATEAU_CityAdjust_MaterialAdjust_Executor_Process_MAMeshGranularityExtension_ToJapaneseString_
-  commentId: Overload:PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAMeshGranularityExtension.ToJapaneseString
+  href: api/PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MeshGranularityExtension.html#PLATEAU_CityAdjust_MaterialAdjust_Executor_Process_MeshGranularityExtension_ToJapaneseString_
+  commentId: Overload:PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MeshGranularityExtension.ToJapaneseString
   isSpec: "True"
-  fullName: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAMeshGranularityExtension.ToJapaneseString
-  nameWithType: MAMeshGranularityExtension.ToJapaneseString
-- uid: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAMeshGranularityExtension.ToMAGranularity(MeshGranularity)
-  name: ToMAGranularity(MeshGranularity)
-  href: api/PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAMeshGranularityExtension.html#PLATEAU_CityAdjust_MaterialAdjust_Executor_Process_MAMeshGranularityExtension_ToMAGranularity_MeshGranularity_
-  commentId: M:PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAMeshGranularityExtension.ToMAGranularity(MeshGranularity)
-  fullName: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAMeshGranularityExtension.ToMAGranularity(MeshGranularity)
-  nameWithType: MAMeshGranularityExtension.ToMAGranularity(MeshGranularity)
-- uid: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAMeshGranularityExtension.ToMAGranularity*
-  name: ToMAGranularity
-  href: api/PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAMeshGranularityExtension.html#PLATEAU_CityAdjust_MaterialAdjust_Executor_Process_MAMeshGranularityExtension_ToMAGranularity_
-  commentId: Overload:PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAMeshGranularityExtension.ToMAGranularity
+  fullName: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MeshGranularityExtension.ToJapaneseString
+  nameWithType: MeshGranularityExtension.ToJapaneseString
+- uid: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MeshGranularityExtension.ToMeshGranularity(ConvertGranularity)
+  name: ToMeshGranularity(ConvertGranularity)
+  href: api/PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MeshGranularityExtension.html#PLATEAU_CityAdjust_MaterialAdjust_Executor_Process_MeshGranularityExtension_ToMeshGranularity_ConvertGranularity_
+  commentId: M:PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MeshGranularityExtension.ToMeshGranularity(ConvertGranularity)
+  fullName: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MeshGranularityExtension.ToMeshGranularity(ConvertGranularity)
+  nameWithType: MeshGranularityExtension.ToMeshGranularity(ConvertGranularity)
+- uid: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MeshGranularityExtension.ToMeshGranularity*
+  name: ToMeshGranularity
+  href: api/PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MeshGranularityExtension.html#PLATEAU_CityAdjust_MaterialAdjust_Executor_Process_MeshGranularityExtension_ToMeshGranularity_
+  commentId: Overload:PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MeshGranularityExtension.ToMeshGranularity
   isSpec: "True"
-  fullName: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAMeshGranularityExtension.ToMAGranularity
-  nameWithType: MAMeshGranularityExtension.ToMAGranularity
-- uid: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAMeshGranularityExtension.ToNativeGranularity(PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAGranularity)
-  name: ToNativeGranularity(MAGranularity)
-  href: api/PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAMeshGranularityExtension.html#PLATEAU_CityAdjust_MaterialAdjust_Executor_Process_MAMeshGranularityExtension_ToNativeGranularity_PLATEAU_CityAdjust_MaterialAdjust_Executor_Process_MAGranularity_
-  commentId: M:PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAMeshGranularityExtension.ToNativeGranularity(PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAGranularity)
-  fullName: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAMeshGranularityExtension.ToNativeGranularity(PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAGranularity)
-  nameWithType: MAMeshGranularityExtension.ToNativeGranularity(MAGranularity)
-- uid: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAMeshGranularityExtension.ToNativeGranularity*
-  name: ToNativeGranularity
-  href: api/PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAMeshGranularityExtension.html#PLATEAU_CityAdjust_MaterialAdjust_Executor_Process_MAMeshGranularityExtension_ToNativeGranularity_
-  commentId: Overload:PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAMeshGranularityExtension.ToNativeGranularity
-  isSpec: "True"
-  fullName: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MAMeshGranularityExtension.ToNativeGranularity
-  nameWithType: MAMeshGranularityExtension.ToNativeGranularity
+  fullName: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.MeshGranularityExtension.ToMeshGranularity
+  nameWithType: MeshGranularityExtension.ToMeshGranularity
 - uid: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.Result`1
   name: Result<T>
   href: api/PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.Result-1.html
@@ -1252,6 +849,50 @@ references:
   fullName.vb: PLATEAU.CityAdjust.MaterialAdjust.Executor.Process.Result(Of T).IsSucceed
   nameWithType: Result<T>.IsSucceed
   nameWithType.vb: Result(Of T).IsSucceed
+- uid: PLATEAU.CityAdjust.MaterialAdjust.ExecutorV2
+  name: PLATEAU.CityAdjust.MaterialAdjust.ExecutorV2
+  href: api/PLATEAU.CityAdjust.MaterialAdjust.ExecutorV2.html
+  commentId: N:PLATEAU.CityAdjust.MaterialAdjust.ExecutorV2
+  fullName: PLATEAU.CityAdjust.MaterialAdjust.ExecutorV2
+  nameWithType: PLATEAU.CityAdjust.MaterialAdjust.ExecutorV2
+- uid: PLATEAU.CityAdjust.MaterialAdjust.ExecutorV2.MAExecutorV2ByAttr
+  name: MAExecutorV2ByAttr
+  href: api/PLATEAU.CityAdjust.MaterialAdjust.ExecutorV2.MAExecutorV2ByAttr.html
+  commentId: T:PLATEAU.CityAdjust.MaterialAdjust.ExecutorV2.MAExecutorV2ByAttr
+  fullName: PLATEAU.CityAdjust.MaterialAdjust.ExecutorV2.MAExecutorV2ByAttr
+  nameWithType: MAExecutorV2ByAttr
+- uid: PLATEAU.CityAdjust.MaterialAdjust.ExecutorV2.MAExecutorV2ByAttr.ExecAsync(MAExecutorConf)
+  name: ExecAsync(MAExecutorConf)
+  href: api/PLATEAU.CityAdjust.MaterialAdjust.ExecutorV2.MAExecutorV2ByAttr.html#PLATEAU_CityAdjust_MaterialAdjust_ExecutorV2_MAExecutorV2ByAttr_ExecAsync_MAExecutorConf_
+  commentId: M:PLATEAU.CityAdjust.MaterialAdjust.ExecutorV2.MAExecutorV2ByAttr.ExecAsync(MAExecutorConf)
+  fullName: PLATEAU.CityAdjust.MaterialAdjust.ExecutorV2.MAExecutorV2ByAttr.ExecAsync(MAExecutorConf)
+  nameWithType: MAExecutorV2ByAttr.ExecAsync(MAExecutorConf)
+- uid: PLATEAU.CityAdjust.MaterialAdjust.ExecutorV2.MAExecutorV2ByAttr.ExecAsync*
+  name: ExecAsync
+  href: api/PLATEAU.CityAdjust.MaterialAdjust.ExecutorV2.MAExecutorV2ByAttr.html#PLATEAU_CityAdjust_MaterialAdjust_ExecutorV2_MAExecutorV2ByAttr_ExecAsync_
+  commentId: Overload:PLATEAU.CityAdjust.MaterialAdjust.ExecutorV2.MAExecutorV2ByAttr.ExecAsync
+  isSpec: "True"
+  fullName: PLATEAU.CityAdjust.MaterialAdjust.ExecutorV2.MAExecutorV2ByAttr.ExecAsync
+  nameWithType: MAExecutorV2ByAttr.ExecAsync
+- uid: PLATEAU.CityAdjust.MaterialAdjust.ExecutorV2.MAExecutorV2ByType
+  name: MAExecutorV2ByType
+  href: api/PLATEAU.CityAdjust.MaterialAdjust.ExecutorV2.MAExecutorV2ByType.html
+  commentId: T:PLATEAU.CityAdjust.MaterialAdjust.ExecutorV2.MAExecutorV2ByType
+  fullName: PLATEAU.CityAdjust.MaterialAdjust.ExecutorV2.MAExecutorV2ByType
+  nameWithType: MAExecutorV2ByType
+- uid: PLATEAU.CityAdjust.MaterialAdjust.ExecutorV2.MAExecutorV2ByType.ExecAsync(MAExecutorConf)
+  name: ExecAsync(MAExecutorConf)
+  href: api/PLATEAU.CityAdjust.MaterialAdjust.ExecutorV2.MAExecutorV2ByType.html#PLATEAU_CityAdjust_MaterialAdjust_ExecutorV2_MAExecutorV2ByType_ExecAsync_MAExecutorConf_
+  commentId: M:PLATEAU.CityAdjust.MaterialAdjust.ExecutorV2.MAExecutorV2ByType.ExecAsync(MAExecutorConf)
+  fullName: PLATEAU.CityAdjust.MaterialAdjust.ExecutorV2.MAExecutorV2ByType.ExecAsync(MAExecutorConf)
+  nameWithType: MAExecutorV2ByType.ExecAsync(MAExecutorConf)
+- uid: PLATEAU.CityAdjust.MaterialAdjust.ExecutorV2.MAExecutorV2ByType.ExecAsync*
+  name: ExecAsync
+  href: api/PLATEAU.CityAdjust.MaterialAdjust.ExecutorV2.MAExecutorV2ByType.html#PLATEAU_CityAdjust_MaterialAdjust_ExecutorV2_MAExecutorV2ByType_ExecAsync_
+  commentId: Overload:PLATEAU.CityAdjust.MaterialAdjust.ExecutorV2.MAExecutorV2ByType.ExecAsync
+  isSpec: "True"
+  fullName: PLATEAU.CityAdjust.MaterialAdjust.ExecutorV2.MAExecutorV2ByType.ExecAsync
+  nameWithType: MAExecutorV2ByType.ExecAsync
 - uid: PLATEAU.CityAdjust.MaterialAdjust.IMAConfig
   name: IMAConfig
   href: api/PLATEAU.CityAdjust.MaterialAdjust.IMAConfig.html
@@ -1386,6 +1027,23 @@ references:
   fullName.vb: PLATEAU.CityAdjust.MaterialAdjust.MAMaterialConfig(Of KeyT).GetConfFor
   nameWithType: MAMaterialConfig<KeyT>.GetConfFor
   nameWithType.vb: MAMaterialConfig(Of KeyT).GetConfFor
+- uid: PLATEAU.CityAdjust.MaterialAdjust.MAMaterialConfig`1.GetKeyAt(System.Int32)
+  name: GetKeyAt(Int32)
+  href: api/PLATEAU.CityAdjust.MaterialAdjust.MAMaterialConfig-1.html#PLATEAU_CityAdjust_MaterialAdjust_MAMaterialConfig_1_GetKeyAt_System_Int32_
+  commentId: M:PLATEAU.CityAdjust.MaterialAdjust.MAMaterialConfig`1.GetKeyAt(System.Int32)
+  fullName: PLATEAU.CityAdjust.MaterialAdjust.MAMaterialConfig<KeyT>.GetKeyAt(System.Int32)
+  fullName.vb: PLATEAU.CityAdjust.MaterialAdjust.MAMaterialConfig(Of KeyT).GetKeyAt(System.Int32)
+  nameWithType: MAMaterialConfig<KeyT>.GetKeyAt(Int32)
+  nameWithType.vb: MAMaterialConfig(Of KeyT).GetKeyAt(Int32)
+- uid: PLATEAU.CityAdjust.MaterialAdjust.MAMaterialConfig`1.GetKeyAt*
+  name: GetKeyAt
+  href: api/PLATEAU.CityAdjust.MaterialAdjust.MAMaterialConfig-1.html#PLATEAU_CityAdjust_MaterialAdjust_MAMaterialConfig_1_GetKeyAt_
+  commentId: Overload:PLATEAU.CityAdjust.MaterialAdjust.MAMaterialConfig`1.GetKeyAt
+  isSpec: "True"
+  fullName: PLATEAU.CityAdjust.MaterialAdjust.MAMaterialConfig<KeyT>.GetKeyAt
+  fullName.vb: PLATEAU.CityAdjust.MaterialAdjust.MAMaterialConfig(Of KeyT).GetKeyAt
+  nameWithType: MAMaterialConfig<KeyT>.GetKeyAt
+  nameWithType.vb: MAMaterialConfig(Of KeyT).GetKeyAt
 - uid: PLATEAU.CityAdjust.MaterialAdjust.MAMaterialConfig`1.GetKeyNameAt(System.Int32)
   name: GetKeyNameAt(Int32)
   href: api/PLATEAU.CityAdjust.MaterialAdjust.MAMaterialConfig-1.html#PLATEAU_CityAdjust_MaterialAdjust_MAMaterialConfig_1_GetKeyNameAt_System_Int32_
@@ -2192,6 +1850,70 @@ references:
   isSpec: "True"
   fullName: PLATEAU.CityExport.ModelConvert.SubMeshConvert.CoordinateSystemConverter.TargetAxis
   nameWithType: CoordinateSystemConverter.TargetAxis
+- uid: PLATEAU.CityExport.ModelConvert.SubMeshConvert.GameMaterialIDRegistry
+  name: GameMaterialIDRegistry
+  href: api/PLATEAU.CityExport.ModelConvert.SubMeshConvert.GameMaterialIDRegistry.html
+  commentId: T:PLATEAU.CityExport.ModelConvert.SubMeshConvert.GameMaterialIDRegistry
+  fullName: PLATEAU.CityExport.ModelConvert.SubMeshConvert.GameMaterialIDRegistry
+  nameWithType: GameMaterialIDRegistry
+- uid: PLATEAU.CityExport.ModelConvert.SubMeshConvert.GameMaterialIDRegistry.Convert(Mesh,Renderer)
+  name: Convert(Mesh, Renderer)
+  href: api/PLATEAU.CityExport.ModelConvert.SubMeshConvert.GameMaterialIDRegistry.html#PLATEAU_CityExport_ModelConvert_SubMeshConvert_GameMaterialIDRegistry_Convert_Mesh_Renderer_
+  commentId: M:PLATEAU.CityExport.ModelConvert.SubMeshConvert.GameMaterialIDRegistry.Convert(Mesh,Renderer)
+  fullName: PLATEAU.CityExport.ModelConvert.SubMeshConvert.GameMaterialIDRegistry.Convert(Mesh, Renderer)
+  nameWithType: GameMaterialIDRegistry.Convert(Mesh, Renderer)
+- uid: PLATEAU.CityExport.ModelConvert.SubMeshConvert.GameMaterialIDRegistry.Convert*
+  name: Convert
+  href: api/PLATEAU.CityExport.ModelConvert.SubMeshConvert.GameMaterialIDRegistry.html#PLATEAU_CityExport_ModelConvert_SubMeshConvert_GameMaterialIDRegistry_Convert_
+  commentId: Overload:PLATEAU.CityExport.ModelConvert.SubMeshConvert.GameMaterialIDRegistry.Convert
+  isSpec: "True"
+  fullName: PLATEAU.CityExport.ModelConvert.SubMeshConvert.GameMaterialIDRegistry.Convert
+  nameWithType: GameMaterialIDRegistry.Convert
+- uid: PLATEAU.CityExport.ModelConvert.SubMeshConvert.GameMaterialIDRegistry.GameMaterials
+  name: GameMaterials
+  href: api/PLATEAU.CityExport.ModelConvert.SubMeshConvert.GameMaterialIDRegistry.html#PLATEAU_CityExport_ModelConvert_SubMeshConvert_GameMaterialIDRegistry_GameMaterials
+  commentId: P:PLATEAU.CityExport.ModelConvert.SubMeshConvert.GameMaterialIDRegistry.GameMaterials
+  fullName: PLATEAU.CityExport.ModelConvert.SubMeshConvert.GameMaterialIDRegistry.GameMaterials
+  nameWithType: GameMaterialIDRegistry.GameMaterials
+- uid: PLATEAU.CityExport.ModelConvert.SubMeshConvert.GameMaterialIDRegistry.GameMaterials*
+  name: GameMaterials
+  href: api/PLATEAU.CityExport.ModelConvert.SubMeshConvert.GameMaterialIDRegistry.html#PLATEAU_CityExport_ModelConvert_SubMeshConvert_GameMaterialIDRegistry_GameMaterials_
+  commentId: Overload:PLATEAU.CityExport.ModelConvert.SubMeshConvert.GameMaterialIDRegistry.GameMaterials
+  isSpec: "True"
+  fullName: PLATEAU.CityExport.ModelConvert.SubMeshConvert.GameMaterialIDRegistry.GameMaterials
+  nameWithType: GameMaterialIDRegistry.GameMaterials
+- uid: PLATEAU.CityExport.ModelConvert.SubMeshConvert.GameMaterialIDRegistry.SendMaterialIDToSubMesh(SubMesh,List{Material},Material)
+  name: SendMaterialIDToSubMesh(SubMesh, List<Material>, Material)
+  href: api/PLATEAU.CityExport.ModelConvert.SubMeshConvert.GameMaterialIDRegistry.html#PLATEAU_CityExport_ModelConvert_SubMeshConvert_GameMaterialIDRegistry_SendMaterialIDToSubMesh_SubMesh_List_Material__Material_
+  commentId: M:PLATEAU.CityExport.ModelConvert.SubMeshConvert.GameMaterialIDRegistry.SendMaterialIDToSubMesh(SubMesh,List{Material},Material)
+  name.vb: SendMaterialIDToSubMesh(SubMesh, List(Of Material), Material)
+  fullName: PLATEAU.CityExport.ModelConvert.SubMeshConvert.GameMaterialIDRegistry.SendMaterialIDToSubMesh(SubMesh, List<Material>, Material)
+  fullName.vb: PLATEAU.CityExport.ModelConvert.SubMeshConvert.GameMaterialIDRegistry.SendMaterialIDToSubMesh(SubMesh, List(Of Material), Material)
+  nameWithType: GameMaterialIDRegistry.SendMaterialIDToSubMesh(SubMesh, List<Material>, Material)
+  nameWithType.vb: GameMaterialIDRegistry.SendMaterialIDToSubMesh(SubMesh, List(Of Material), Material)
+- uid: PLATEAU.CityExport.ModelConvert.SubMeshConvert.GameMaterialIDRegistry.SendMaterialIDToSubMesh*
+  name: SendMaterialIDToSubMesh
+  href: api/PLATEAU.CityExport.ModelConvert.SubMeshConvert.GameMaterialIDRegistry.html#PLATEAU_CityExport_ModelConvert_SubMeshConvert_GameMaterialIDRegistry_SendMaterialIDToSubMesh_
+  commentId: Overload:PLATEAU.CityExport.ModelConvert.SubMeshConvert.GameMaterialIDRegistry.SendMaterialIDToSubMesh
+  isSpec: "True"
+  fullName: PLATEAU.CityExport.ModelConvert.SubMeshConvert.GameMaterialIDRegistry.SendMaterialIDToSubMesh
+  nameWithType: GameMaterialIDRegistry.SendMaterialIDToSubMesh
+- uid: PLATEAU.CityExport.ModelConvert.SubMeshConvert.GameMaterialIDRegistry.TryAddMaterial(Material,System.Int32@)
+  name: TryAddMaterial(Material, out Int32)
+  href: api/PLATEAU.CityExport.ModelConvert.SubMeshConvert.GameMaterialIDRegistry.html#PLATEAU_CityExport_ModelConvert_SubMeshConvert_GameMaterialIDRegistry_TryAddMaterial_Material_System_Int32__
+  commentId: M:PLATEAU.CityExport.ModelConvert.SubMeshConvert.GameMaterialIDRegistry.TryAddMaterial(Material,System.Int32@)
+  name.vb: TryAddMaterial(Material, ByRef Int32)
+  fullName: PLATEAU.CityExport.ModelConvert.SubMeshConvert.GameMaterialIDRegistry.TryAddMaterial(Material, out System.Int32)
+  fullName.vb: PLATEAU.CityExport.ModelConvert.SubMeshConvert.GameMaterialIDRegistry.TryAddMaterial(Material, ByRef System.Int32)
+  nameWithType: GameMaterialIDRegistry.TryAddMaterial(Material, out Int32)
+  nameWithType.vb: GameMaterialIDRegistry.TryAddMaterial(Material, ByRef Int32)
+- uid: PLATEAU.CityExport.ModelConvert.SubMeshConvert.GameMaterialIDRegistry.TryAddMaterial*
+  name: TryAddMaterial
+  href: api/PLATEAU.CityExport.ModelConvert.SubMeshConvert.GameMaterialIDRegistry.html#PLATEAU_CityExport_ModelConvert_SubMeshConvert_GameMaterialIDRegistry_TryAddMaterial_
+  commentId: Overload:PLATEAU.CityExport.ModelConvert.SubMeshConvert.GameMaterialIDRegistry.TryAddMaterial
+  isSpec: "True"
+  fullName: PLATEAU.CityExport.ModelConvert.SubMeshConvert.GameMaterialIDRegistry.TryAddMaterial
+  nameWithType: GameMaterialIDRegistry.TryAddMaterial
 - uid: PLATEAU.CityExport.ModelConvert.SubMeshConvert.IUnityMeshToDllSubMeshConverter
   name: IUnityMeshToDllSubMeshConverter
   href: api/PLATEAU.CityExport.ModelConvert.SubMeshConvert.IUnityMeshToDllSubMeshConverter.html
@@ -2249,54 +1971,6 @@ references:
   isSpec: "True"
   fullName: PLATEAU.CityExport.ModelConvert.SubMeshConvert.UnityMeshToDllSubMeshWithEmptyMaterial.Convert
   nameWithType: UnityMeshToDllSubMeshWithEmptyMaterial.Convert
-- uid: PLATEAU.CityExport.ModelConvert.SubMeshConvert.UnityMeshToDllSubMeshWithGameMaterial
-  name: UnityMeshToDllSubMeshWithGameMaterial
-  href: api/PLATEAU.CityExport.ModelConvert.SubMeshConvert.UnityMeshToDllSubMeshWithGameMaterial.html
-  commentId: T:PLATEAU.CityExport.ModelConvert.SubMeshConvert.UnityMeshToDllSubMeshWithGameMaterial
-  fullName: PLATEAU.CityExport.ModelConvert.SubMeshConvert.UnityMeshToDllSubMeshWithGameMaterial
-  nameWithType: UnityMeshToDllSubMeshWithGameMaterial
-- uid: PLATEAU.CityExport.ModelConvert.SubMeshConvert.UnityMeshToDllSubMeshWithGameMaterial.Convert(Mesh,Renderer)
-  name: Convert(Mesh, Renderer)
-  href: api/PLATEAU.CityExport.ModelConvert.SubMeshConvert.UnityMeshToDllSubMeshWithGameMaterial.html#PLATEAU_CityExport_ModelConvert_SubMeshConvert_UnityMeshToDllSubMeshWithGameMaterial_Convert_Mesh_Renderer_
-  commentId: M:PLATEAU.CityExport.ModelConvert.SubMeshConvert.UnityMeshToDllSubMeshWithGameMaterial.Convert(Mesh,Renderer)
-  fullName: PLATEAU.CityExport.ModelConvert.SubMeshConvert.UnityMeshToDllSubMeshWithGameMaterial.Convert(Mesh, Renderer)
-  nameWithType: UnityMeshToDllSubMeshWithGameMaterial.Convert(Mesh, Renderer)
-- uid: PLATEAU.CityExport.ModelConvert.SubMeshConvert.UnityMeshToDllSubMeshWithGameMaterial.Convert*
-  name: Convert
-  href: api/PLATEAU.CityExport.ModelConvert.SubMeshConvert.UnityMeshToDllSubMeshWithGameMaterial.html#PLATEAU_CityExport_ModelConvert_SubMeshConvert_UnityMeshToDllSubMeshWithGameMaterial_Convert_
-  commentId: Overload:PLATEAU.CityExport.ModelConvert.SubMeshConvert.UnityMeshToDllSubMeshWithGameMaterial.Convert
-  isSpec: "True"
-  fullName: PLATEAU.CityExport.ModelConvert.SubMeshConvert.UnityMeshToDllSubMeshWithGameMaterial.Convert
-  nameWithType: UnityMeshToDllSubMeshWithGameMaterial.Convert
-- uid: PLATEAU.CityExport.ModelConvert.SubMeshConvert.UnityMeshToDllSubMeshWithGameMaterial.GameMaterials
-  name: GameMaterials
-  href: api/PLATEAU.CityExport.ModelConvert.SubMeshConvert.UnityMeshToDllSubMeshWithGameMaterial.html#PLATEAU_CityExport_ModelConvert_SubMeshConvert_UnityMeshToDllSubMeshWithGameMaterial_GameMaterials
-  commentId: P:PLATEAU.CityExport.ModelConvert.SubMeshConvert.UnityMeshToDllSubMeshWithGameMaterial.GameMaterials
-  fullName: PLATEAU.CityExport.ModelConvert.SubMeshConvert.UnityMeshToDllSubMeshWithGameMaterial.GameMaterials
-  nameWithType: UnityMeshToDllSubMeshWithGameMaterial.GameMaterials
-- uid: PLATEAU.CityExport.ModelConvert.SubMeshConvert.UnityMeshToDllSubMeshWithGameMaterial.GameMaterials*
-  name: GameMaterials
-  href: api/PLATEAU.CityExport.ModelConvert.SubMeshConvert.UnityMeshToDllSubMeshWithGameMaterial.html#PLATEAU_CityExport_ModelConvert_SubMeshConvert_UnityMeshToDllSubMeshWithGameMaterial_GameMaterials_
-  commentId: Overload:PLATEAU.CityExport.ModelConvert.SubMeshConvert.UnityMeshToDllSubMeshWithGameMaterial.GameMaterials
-  isSpec: "True"
-  fullName: PLATEAU.CityExport.ModelConvert.SubMeshConvert.UnityMeshToDllSubMeshWithGameMaterial.GameMaterials
-  nameWithType: UnityMeshToDllSubMeshWithGameMaterial.GameMaterials
-- uid: PLATEAU.CityExport.ModelConvert.SubMeshConvert.UnityMeshToDllSubMeshWithGameMaterial.SetGameMaterialId(SubMesh,List{Material},Material)
-  name: SetGameMaterialId(SubMesh, List<Material>, Material)
-  href: api/PLATEAU.CityExport.ModelConvert.SubMeshConvert.UnityMeshToDllSubMeshWithGameMaterial.html#PLATEAU_CityExport_ModelConvert_SubMeshConvert_UnityMeshToDllSubMeshWithGameMaterial_SetGameMaterialId_SubMesh_List_Material__Material_
-  commentId: M:PLATEAU.CityExport.ModelConvert.SubMeshConvert.UnityMeshToDllSubMeshWithGameMaterial.SetGameMaterialId(SubMesh,List{Material},Material)
-  name.vb: SetGameMaterialId(SubMesh, List(Of Material), Material)
-  fullName: PLATEAU.CityExport.ModelConvert.SubMeshConvert.UnityMeshToDllSubMeshWithGameMaterial.SetGameMaterialId(SubMesh, List<Material>, Material)
-  fullName.vb: PLATEAU.CityExport.ModelConvert.SubMeshConvert.UnityMeshToDllSubMeshWithGameMaterial.SetGameMaterialId(SubMesh, List(Of Material), Material)
-  nameWithType: UnityMeshToDllSubMeshWithGameMaterial.SetGameMaterialId(SubMesh, List<Material>, Material)
-  nameWithType.vb: UnityMeshToDllSubMeshWithGameMaterial.SetGameMaterialId(SubMesh, List(Of Material), Material)
-- uid: PLATEAU.CityExport.ModelConvert.SubMeshConvert.UnityMeshToDllSubMeshWithGameMaterial.SetGameMaterialId*
-  name: SetGameMaterialId
-  href: api/PLATEAU.CityExport.ModelConvert.SubMeshConvert.UnityMeshToDllSubMeshWithGameMaterial.html#PLATEAU_CityExport_ModelConvert_SubMeshConvert_UnityMeshToDllSubMeshWithGameMaterial_SetGameMaterialId_
-  commentId: Overload:PLATEAU.CityExport.ModelConvert.SubMeshConvert.UnityMeshToDllSubMeshWithGameMaterial.SetGameMaterialId
-  isSpec: "True"
-  fullName: PLATEAU.CityExport.ModelConvert.SubMeshConvert.UnityMeshToDllSubMeshWithGameMaterial.SetGameMaterialId
-  nameWithType: UnityMeshToDllSubMeshWithGameMaterial.SetGameMaterialId
 - uid: PLATEAU.CityExport.ModelConvert.SubMeshConvert.UnityMeshToDllSubMeshWithTexture
   name: UnityMeshToDllSubMeshWithTexture
   href: api/PLATEAU.CityExport.ModelConvert.SubMeshConvert.UnityMeshToDllSubMeshWithTexture.html
@@ -6093,19 +5767,19 @@ references:
   isSpec: "True"
   fullName: PLATEAU.CityInfo.CityObjectList.CityObject.CityObjectType
   nameWithType: CityObjectList.CityObject.CityObjectType
-- uid: PLATEAU.CityInfo.CityObjectList.CityObject.Copy
-  name: Copy()
-  href: api/PLATEAU.CityInfo.CityObjectList.CityObject.html#PLATEAU_CityInfo_CityObjectList_CityObject_Copy
-  commentId: M:PLATEAU.CityInfo.CityObjectList.CityObject.Copy
-  fullName: PLATEAU.CityInfo.CityObjectList.CityObject.Copy()
-  nameWithType: CityObjectList.CityObject.Copy()
-- uid: PLATEAU.CityInfo.CityObjectList.CityObject.Copy*
-  name: Copy
-  href: api/PLATEAU.CityInfo.CityObjectList.CityObject.html#PLATEAU_CityInfo_CityObjectList_CityObject_Copy_
-  commentId: Overload:PLATEAU.CityInfo.CityObjectList.CityObject.Copy
+- uid: PLATEAU.CityInfo.CityObjectList.CityObject.CopyWithoutChildren
+  name: CopyWithoutChildren()
+  href: api/PLATEAU.CityInfo.CityObjectList.CityObject.html#PLATEAU_CityInfo_CityObjectList_CityObject_CopyWithoutChildren
+  commentId: M:PLATEAU.CityInfo.CityObjectList.CityObject.CopyWithoutChildren
+  fullName: PLATEAU.CityInfo.CityObjectList.CityObject.CopyWithoutChildren()
+  nameWithType: CityObjectList.CityObject.CopyWithoutChildren()
+- uid: PLATEAU.CityInfo.CityObjectList.CityObject.CopyWithoutChildren*
+  name: CopyWithoutChildren
+  href: api/PLATEAU.CityInfo.CityObjectList.CityObject.html#PLATEAU_CityInfo_CityObjectList_CityObject_CopyWithoutChildren_
+  commentId: Overload:PLATEAU.CityInfo.CityObjectList.CityObject.CopyWithoutChildren
   isSpec: "True"
-  fullName: PLATEAU.CityInfo.CityObjectList.CityObject.Copy
-  nameWithType: CityObjectList.CityObject.Copy
+  fullName: PLATEAU.CityInfo.CityObjectList.CityObject.CopyWithoutChildren
+  nameWithType: CityObjectList.CityObject.CopyWithoutChildren
 - uid: PLATEAU.CityInfo.CityObjectList.CityObject.DebugString
   name: DebugString()
   href: api/PLATEAU.CityInfo.CityObjectList.CityObject.html#PLATEAU_CityInfo_CityObjectList_CityObject_DebugString
@@ -6311,6 +5985,19 @@ references:
   isSpec: "True"
   fullName: PLATEAU.CityInfo.CityObjectTypeHierarchy.Node.Parent
   nameWithType: CityObjectTypeHierarchy.Node.Parent
+- uid: PLATEAU.CityInfo.CityObjectTypeHierarchy.Node.Types
+  name: Types
+  href: api/PLATEAU.CityInfo.CityObjectTypeHierarchy.Node.html#PLATEAU_CityInfo_CityObjectTypeHierarchy_Node_Types
+  commentId: P:PLATEAU.CityInfo.CityObjectTypeHierarchy.Node.Types
+  fullName: PLATEAU.CityInfo.CityObjectTypeHierarchy.Node.Types
+  nameWithType: CityObjectTypeHierarchy.Node.Types
+- uid: PLATEAU.CityInfo.CityObjectTypeHierarchy.Node.Types*
+  name: Types
+  href: api/PLATEAU.CityInfo.CityObjectTypeHierarchy.Node.html#PLATEAU_CityInfo_CityObjectTypeHierarchy_Node_Types_
+  commentId: Overload:PLATEAU.CityInfo.CityObjectTypeHierarchy.Node.Types
+  isSpec: "True"
+  fullName: PLATEAU.CityInfo.CityObjectTypeHierarchy.Node.Types
+  nameWithType: CityObjectTypeHierarchy.Node.Types
 - uid: PLATEAU.CityInfo.CityObjectTypeHierarchy.Node.UpperPackage
   name: UpperPackage
   href: api/PLATEAU.CityInfo.CityObjectTypeHierarchy.Node.html#PLATEAU_CityInfo_CityObjectTypeHierarchy_Node_UpperPackage
@@ -6734,6 +6421,19 @@ references:
   isSpec: "True"
   fullName: PLATEAU.CityInfo.PLATEAUInstancedCityModel.GetLodTransforms
   nameWithType: PLATEAUInstancedCityModel.GetLodTransforms
+- uid: PLATEAU.CityInfo.PLATEAUInstancedCityModel.GetPackage(PLATEAU.CityInfo.PLATEAUCityObjectGroup)
+  name: GetPackage(PLATEAUCityObjectGroup)
+  href: api/PLATEAU.CityInfo.PLATEAUInstancedCityModel.html#PLATEAU_CityInfo_PLATEAUInstancedCityModel_GetPackage_PLATEAU_CityInfo_PLATEAUCityObjectGroup_
+  commentId: M:PLATEAU.CityInfo.PLATEAUInstancedCityModel.GetPackage(PLATEAU.CityInfo.PLATEAUCityObjectGroup)
+  fullName: PLATEAU.CityInfo.PLATEAUInstancedCityModel.GetPackage(PLATEAU.CityInfo.PLATEAUCityObjectGroup)
+  nameWithType: PLATEAUInstancedCityModel.GetPackage(PLATEAUCityObjectGroup)
+- uid: PLATEAU.CityInfo.PLATEAUInstancedCityModel.GetPackage*
+  name: GetPackage
+  href: api/PLATEAU.CityInfo.PLATEAUInstancedCityModel.html#PLATEAU_CityInfo_PLATEAUInstancedCityModel_GetPackage_
+  commentId: Overload:PLATEAU.CityInfo.PLATEAUInstancedCityModel.GetPackage
+  isSpec: "True"
+  fullName: PLATEAU.CityInfo.PLATEAUInstancedCityModel.GetPackage
+  nameWithType: PLATEAUInstancedCityModel.GetPackage
 - uid: PLATEAU.CityInfo.PLATEAUInstancedCityModel.GmlTransforms
   name: GmlTransforms
   href: api/PLATEAU.CityInfo.PLATEAUInstancedCityModel.html#PLATEAU_CityInfo_PLATEAUInstancedCityModel_GmlTransforms
@@ -10374,19 +10074,36 @@ references:
   isSpec: "True"
   fullName: PLATEAU.GranularityConvert.CityGranularityConverter.ConvertAsync
   nameWithType: CityGranularityConverter.ConvertAsync
-- uid: PLATEAU.GranularityConvert.CityGranularityConverter.ConvertProgressiveAsync(MAExecutorConf,IMACondition)
-  name: ConvertProgressiveAsync(MAExecutorConf, IMACondition)
-  href: api/PLATEAU.GranularityConvert.CityGranularityConverter.html#PLATEAU_GranularityConvert_CityGranularityConverter_ConvertProgressiveAsync_MAExecutorConf_IMACondition_
-  commentId: M:PLATEAU.GranularityConvert.CityGranularityConverter.ConvertProgressiveAsync(MAExecutorConf,IMACondition)
-  fullName: PLATEAU.GranularityConvert.CityGranularityConverter.ConvertProgressiveAsync(MAExecutorConf, IMACondition)
-  nameWithType: CityGranularityConverter.ConvertProgressiveAsync(MAExecutorConf, IMACondition)
-- uid: PLATEAU.GranularityConvert.CityGranularityConverter.ConvertProgressiveAsync*
-  name: ConvertProgressiveAsync
-  href: api/PLATEAU.GranularityConvert.CityGranularityConverter.html#PLATEAU_GranularityConvert_CityGranularityConverter_ConvertProgressiveAsync_
-  commentId: Overload:PLATEAU.GranularityConvert.CityGranularityConverter.ConvertProgressiveAsync
-  isSpec: "True"
-  fullName: PLATEAU.GranularityConvert.CityGranularityConverter.ConvertProgressiveAsync
-  nameWithType: CityGranularityConverter.ConvertProgressiveAsync
+- uid: PLATEAU.GranularityConvert.ConvertGranularity
+  name: ConvertGranularity
+  href: api/PLATEAU.GranularityConvert.ConvertGranularity.html
+  commentId: T:PLATEAU.GranularityConvert.ConvertGranularity
+  fullName: PLATEAU.GranularityConvert.ConvertGranularity
+  nameWithType: ConvertGranularity
+- uid: PLATEAU.GranularityConvert.ConvertGranularity.MaterialInPrimary
+  name: MaterialInPrimary
+  href: api/PLATEAU.GranularityConvert.ConvertGranularity.html#PLATEAU_GranularityConvert_ConvertGranularity_MaterialInPrimary
+  commentId: F:PLATEAU.GranularityConvert.ConvertGranularity.MaterialInPrimary
+  fullName: PLATEAU.GranularityConvert.ConvertGranularity.MaterialInPrimary
+  nameWithType: ConvertGranularity.MaterialInPrimary
+- uid: PLATEAU.GranularityConvert.ConvertGranularity.PerAtomicFeatureObject
+  name: PerAtomicFeatureObject
+  href: api/PLATEAU.GranularityConvert.ConvertGranularity.html#PLATEAU_GranularityConvert_ConvertGranularity_PerAtomicFeatureObject
+  commentId: F:PLATEAU.GranularityConvert.ConvertGranularity.PerAtomicFeatureObject
+  fullName: PLATEAU.GranularityConvert.ConvertGranularity.PerAtomicFeatureObject
+  nameWithType: ConvertGranularity.PerAtomicFeatureObject
+- uid: PLATEAU.GranularityConvert.ConvertGranularity.PerCityModelArea
+  name: PerCityModelArea
+  href: api/PLATEAU.GranularityConvert.ConvertGranularity.html#PLATEAU_GranularityConvert_ConvertGranularity_PerCityModelArea
+  commentId: F:PLATEAU.GranularityConvert.ConvertGranularity.PerCityModelArea
+  fullName: PLATEAU.GranularityConvert.ConvertGranularity.PerCityModelArea
+  nameWithType: ConvertGranularity.PerCityModelArea
+- uid: PLATEAU.GranularityConvert.ConvertGranularity.PerPrimaryFeatureObject
+  name: PerPrimaryFeatureObject
+  href: api/PLATEAU.GranularityConvert.ConvertGranularity.html#PLATEAU_GranularityConvert_ConvertGranularity_PerPrimaryFeatureObject
+  commentId: F:PLATEAU.GranularityConvert.ConvertGranularity.PerPrimaryFeatureObject
+  fullName: PLATEAU.GranularityConvert.ConvertGranularity.PerPrimaryFeatureObject
+  nameWithType: ConvertGranularity.PerPrimaryFeatureObject
 - uid: PLATEAU.GranularityConvert.GranularityConverter
   name: GranularityConverter
   href: api/PLATEAU.GranularityConvert.GranularityConverter.html
@@ -10418,6 +10135,12 @@ references:
   commentId: M:PLATEAU.GranularityConvert.GranularityConvertOption.#ctor(MeshGranularity,System.Int32)
   fullName: PLATEAU.GranularityConvert.GranularityConvertOption.GranularityConvertOption(MeshGranularity, System.Int32)
   nameWithType: GranularityConvertOption.GranularityConvertOption(MeshGranularity, Int32)
+- uid: PLATEAU.GranularityConvert.GranularityConvertOption.#ctor(PLATEAU.GranularityConvert.ConvertGranularity,System.Int32)
+  name: GranularityConvertOption(ConvertGranularity, Int32)
+  href: api/PLATEAU.GranularityConvert.GranularityConvertOption.html#PLATEAU_GranularityConvert_GranularityConvertOption__ctor_PLATEAU_GranularityConvert_ConvertGranularity_System_Int32_
+  commentId: M:PLATEAU.GranularityConvert.GranularityConvertOption.#ctor(PLATEAU.GranularityConvert.ConvertGranularity,System.Int32)
+  fullName: PLATEAU.GranularityConvert.GranularityConvertOption.GranularityConvertOption(PLATEAU.GranularityConvert.ConvertGranularity, System.Int32)
+  nameWithType: GranularityConvertOption.GranularityConvertOption(ConvertGranularity, Int32)
 - uid: PLATEAU.GranularityConvert.GranularityConvertOption.#ctor*
   name: GranularityConvertOption
   href: api/PLATEAU.GranularityConvert.GranularityConvertOption.html#PLATEAU_GranularityConvert_GranularityConvertOption__ctor_
@@ -10549,22 +10272,66 @@ references:
   isSpec: "True"
   fullName: PLATEAU.GranularityConvert.SerializedCityObjectGetterFromDict.Dispose
   nameWithType: SerializedCityObjectGetterFromDict.Dispose
-- uid: PLATEAU.GranularityConvert.SerializedCityObjectGetterFromDict.GetDstCityObjectByID(System.String,System.Nullable{CityObjectIndex})
-  name: GetDstCityObjectByID(String, Nullable<CityObjectIndex>)
-  href: api/PLATEAU.GranularityConvert.SerializedCityObjectGetterFromDict.html#PLATEAU_GranularityConvert_SerializedCityObjectGetterFromDict_GetDstCityObjectByID_System_String_System_Nullable_CityObjectIndex__
-  commentId: M:PLATEAU.GranularityConvert.SerializedCityObjectGetterFromDict.GetDstCityObjectByID(System.String,System.Nullable{CityObjectIndex})
-  name.vb: GetDstCityObjectByID(String, Nullable(Of CityObjectIndex))
-  fullName: PLATEAU.GranularityConvert.SerializedCityObjectGetterFromDict.GetDstCityObjectByID(System.String, System.Nullable<CityObjectIndex>)
-  fullName.vb: PLATEAU.GranularityConvert.SerializedCityObjectGetterFromDict.GetDstCityObjectByID(System.String, System.Nullable(Of CityObjectIndex))
-  nameWithType: SerializedCityObjectGetterFromDict.GetDstCityObjectByID(String, Nullable<CityObjectIndex>)
-  nameWithType.vb: SerializedCityObjectGetterFromDict.GetDstCityObjectByID(String, Nullable(Of CityObjectIndex))
-- uid: PLATEAU.GranularityConvert.SerializedCityObjectGetterFromDict.GetDstCityObjectByID*
-  name: GetDstCityObjectByID
-  href: api/PLATEAU.GranularityConvert.SerializedCityObjectGetterFromDict.html#PLATEAU_GranularityConvert_SerializedCityObjectGetterFromDict_GetDstCityObjectByID_
-  commentId: Overload:PLATEAU.GranularityConvert.SerializedCityObjectGetterFromDict.GetDstCityObjectByID
+- uid: PLATEAU.GranularityConvert.SerializedCityObjectGetterFromDict.GetDstCityObjectByGmlID(System.String,System.Nullable{CityObjectIndex})
+  name: GetDstCityObjectByGmlID(String, Nullable<CityObjectIndex>)
+  href: api/PLATEAU.GranularityConvert.SerializedCityObjectGetterFromDict.html#PLATEAU_GranularityConvert_SerializedCityObjectGetterFromDict_GetDstCityObjectByGmlID_System_String_System_Nullable_CityObjectIndex__
+  commentId: M:PLATEAU.GranularityConvert.SerializedCityObjectGetterFromDict.GetDstCityObjectByGmlID(System.String,System.Nullable{CityObjectIndex})
+  name.vb: GetDstCityObjectByGmlID(String, Nullable(Of CityObjectIndex))
+  fullName: PLATEAU.GranularityConvert.SerializedCityObjectGetterFromDict.GetDstCityObjectByGmlID(System.String, System.Nullable<CityObjectIndex>)
+  fullName.vb: PLATEAU.GranularityConvert.SerializedCityObjectGetterFromDict.GetDstCityObjectByGmlID(System.String, System.Nullable(Of CityObjectIndex))
+  nameWithType: SerializedCityObjectGetterFromDict.GetDstCityObjectByGmlID(String, Nullable<CityObjectIndex>)
+  nameWithType.vb: SerializedCityObjectGetterFromDict.GetDstCityObjectByGmlID(String, Nullable(Of CityObjectIndex))
+- uid: PLATEAU.GranularityConvert.SerializedCityObjectGetterFromDict.GetDstCityObjectByGmlID*
+  name: GetDstCityObjectByGmlID
+  href: api/PLATEAU.GranularityConvert.SerializedCityObjectGetterFromDict.html#PLATEAU_GranularityConvert_SerializedCityObjectGetterFromDict_GetDstCityObjectByGmlID_
+  commentId: Overload:PLATEAU.GranularityConvert.SerializedCityObjectGetterFromDict.GetDstCityObjectByGmlID
   isSpec: "True"
-  fullName: PLATEAU.GranularityConvert.SerializedCityObjectGetterFromDict.GetDstCityObjectByID
-  nameWithType: SerializedCityObjectGetterFromDict.GetDstCityObjectByID
+  fullName: PLATEAU.GranularityConvert.SerializedCityObjectGetterFromDict.GetDstCityObjectByGmlID
+  nameWithType: SerializedCityObjectGetterFromDict.GetDstCityObjectByGmlID
+- uid: PLATEAU.GranularityConvert.SerializedCityObjectGetterFromDict.GetDstCityObjectsByNode(Node,System.Nullable{CityObjectIndex},System.String)
+  name: GetDstCityObjectsByNode(Node, Nullable<CityObjectIndex>, String)
+  href: api/PLATEAU.GranularityConvert.SerializedCityObjectGetterFromDict.html#PLATEAU_GranularityConvert_SerializedCityObjectGetterFromDict_GetDstCityObjectsByNode_Node_System_Nullable_CityObjectIndex__System_String_
+  commentId: M:PLATEAU.GranularityConvert.SerializedCityObjectGetterFromDict.GetDstCityObjectsByNode(Node,System.Nullable{CityObjectIndex},System.String)
+  name.vb: GetDstCityObjectsByNode(Node, Nullable(Of CityObjectIndex), String)
+  fullName: PLATEAU.GranularityConvert.SerializedCityObjectGetterFromDict.GetDstCityObjectsByNode(Node, System.Nullable<CityObjectIndex>, System.String)
+  fullName.vb: PLATEAU.GranularityConvert.SerializedCityObjectGetterFromDict.GetDstCityObjectsByNode(Node, System.Nullable(Of CityObjectIndex), System.String)
+  nameWithType: SerializedCityObjectGetterFromDict.GetDstCityObjectsByNode(Node, Nullable<CityObjectIndex>, String)
+  nameWithType.vb: SerializedCityObjectGetterFromDict.GetDstCityObjectsByNode(Node, Nullable(Of CityObjectIndex), String)
+- uid: PLATEAU.GranularityConvert.SerializedCityObjectGetterFromDict.GetDstCityObjectsByNode*
+  name: GetDstCityObjectsByNode
+  href: api/PLATEAU.GranularityConvert.SerializedCityObjectGetterFromDict.html#PLATEAU_GranularityConvert_SerializedCityObjectGetterFromDict_GetDstCityObjectsByNode_
+  commentId: Overload:PLATEAU.GranularityConvert.SerializedCityObjectGetterFromDict.GetDstCityObjectsByNode
+  isSpec: "True"
+  fullName: PLATEAU.GranularityConvert.SerializedCityObjectGetterFromDict.GetDstCityObjectsByNode
+  nameWithType: SerializedCityObjectGetterFromDict.GetDstCityObjectsByNode
+- uid: PLATEAU.Heightmap
+  name: PLATEAU.Heightmap
+  href: api/PLATEAU.Heightmap.html
+  commentId: N:PLATEAU.Heightmap
+  fullName: PLATEAU.Heightmap
+  nameWithType: PLATEAU.Heightmap
+- uid: PLATEAU.Heightmap.HeightmapMeshGenerator
+  name: HeightmapMeshGenerator
+  href: api/PLATEAU.Heightmap.HeightmapMeshGenerator.html
+  commentId: T:PLATEAU.Heightmap.HeightmapMeshGenerator
+  fullName: PLATEAU.Heightmap.HeightmapMeshGenerator
+  nameWithType: HeightmapMeshGenerator
+- uid: PLATEAU.Heightmap.HeightmapMeshGenerator.Generate(Mesh@,System.Int32,System.Int32,System.Single,UInt16[],CoordinateSystem,PlateauVector3d,PlateauVector3d,PlateauVector2f,PlateauVector2f,System.Boolean)
+  name: Generate(ref Mesh, Int32, Int32, Single, UInt16[], CoordinateSystem, PlateauVector3d, PlateauVector3d, PlateauVector2f, PlateauVector2f, Boolean)
+  href: api/PLATEAU.Heightmap.HeightmapMeshGenerator.html#PLATEAU_Heightmap_HeightmapMeshGenerator_Generate_Mesh__System_Int32_System_Int32_System_Single_UInt16___CoordinateSystem_PlateauVector3d_PlateauVector3d_PlateauVector2f_PlateauVector2f_System_Boolean_
+  commentId: M:PLATEAU.Heightmap.HeightmapMeshGenerator.Generate(Mesh@,System.Int32,System.Int32,System.Single,UInt16[],CoordinateSystem,PlateauVector3d,PlateauVector3d,PlateauVector2f,PlateauVector2f,System.Boolean)
+  name.vb: Generate(ByRef Mesh, Int32, Int32, Single, UInt16(), CoordinateSystem, PlateauVector3d, PlateauVector3d, PlateauVector2f, PlateauVector2f, Boolean)
+  fullName: PLATEAU.Heightmap.HeightmapMeshGenerator.Generate(ref Mesh, System.Int32, System.Int32, System.Single, UInt16[], CoordinateSystem, PlateauVector3d, PlateauVector3d, PlateauVector2f, PlateauVector2f, System.Boolean)
+  fullName.vb: PLATEAU.Heightmap.HeightmapMeshGenerator.Generate(ByRef Mesh, System.Int32, System.Int32, System.Single, UInt16(), CoordinateSystem, PlateauVector3d, PlateauVector3d, PlateauVector2f, PlateauVector2f, System.Boolean)
+  nameWithType: HeightmapMeshGenerator.Generate(ref Mesh, Int32, Int32, Single, UInt16[], CoordinateSystem, PlateauVector3d, PlateauVector3d, PlateauVector2f, PlateauVector2f, Boolean)
+  nameWithType.vb: HeightmapMeshGenerator.Generate(ByRef Mesh, Int32, Int32, Single, UInt16(), CoordinateSystem, PlateauVector3d, PlateauVector3d, PlateauVector2f, PlateauVector2f, Boolean)
+- uid: PLATEAU.Heightmap.HeightmapMeshGenerator.Generate*
+  name: Generate
+  href: api/PLATEAU.Heightmap.HeightmapMeshGenerator.html#PLATEAU_Heightmap_HeightmapMeshGenerator_Generate_
+  commentId: Overload:PLATEAU.Heightmap.HeightmapMeshGenerator.Generate
+  isSpec: "True"
+  fullName: PLATEAU.Heightmap.HeightmapMeshGenerator.Generate
+  nameWithType: HeightmapMeshGenerator.Generate
 - uid: PLATEAU.HeightMapAlign
   name: PLATEAU.HeightMapAlign
   href: api/PLATEAU.HeightMapAlign.html
@@ -10684,6 +10451,154 @@ references:
   isSpec: "True"
   fullName: PLATEAU.HeightMapAlign.HeightMapAligner.HeightMapCount
   nameWithType: HeightMapAligner.HeightMapCount
+- uid: PLATEAU.MaterialAdjust
+  name: PLATEAU.MaterialAdjust
+  href: api/PLATEAU.MaterialAdjust.html
+  commentId: N:PLATEAU.MaterialAdjust
+  fullName: PLATEAU.MaterialAdjust
+  nameWithType: PLATEAU.MaterialAdjust
+- uid: PLATEAU.MaterialAdjust.MaterialAdjusterByAttr
+  name: MaterialAdjusterByAttr
+  href: api/PLATEAU.MaterialAdjust.MaterialAdjusterByAttr.html
+  commentId: T:PLATEAU.MaterialAdjust.MaterialAdjusterByAttr
+  fullName: PLATEAU.MaterialAdjust.MaterialAdjusterByAttr
+  nameWithType: MaterialAdjusterByAttr
+- uid: PLATEAU.MaterialAdjust.MaterialAdjusterByAttr.Create
+  name: Create()
+  href: api/PLATEAU.MaterialAdjust.MaterialAdjusterByAttr.html#PLATEAU_MaterialAdjust_MaterialAdjusterByAttr_Create
+  commentId: M:PLATEAU.MaterialAdjust.MaterialAdjusterByAttr.Create
+  fullName: PLATEAU.MaterialAdjust.MaterialAdjusterByAttr.Create()
+  nameWithType: MaterialAdjusterByAttr.Create()
+- uid: PLATEAU.MaterialAdjust.MaterialAdjusterByAttr.Create*
+  name: Create
+  href: api/PLATEAU.MaterialAdjust.MaterialAdjusterByAttr.html#PLATEAU_MaterialAdjust_MaterialAdjusterByAttr_Create_
+  commentId: Overload:PLATEAU.MaterialAdjust.MaterialAdjusterByAttr.Create
+  isSpec: "True"
+  fullName: PLATEAU.MaterialAdjust.MaterialAdjusterByAttr.Create
+  nameWithType: MaterialAdjusterByAttr.Create
+- uid: PLATEAU.MaterialAdjust.MaterialAdjusterByAttr.DisposeNative
+  name: DisposeNative()
+  href: api/PLATEAU.MaterialAdjust.MaterialAdjusterByAttr.html#PLATEAU_MaterialAdjust_MaterialAdjusterByAttr_DisposeNative
+  commentId: M:PLATEAU.MaterialAdjust.MaterialAdjusterByAttr.DisposeNative
+  fullName: PLATEAU.MaterialAdjust.MaterialAdjusterByAttr.DisposeNative()
+  nameWithType: MaterialAdjusterByAttr.DisposeNative()
+- uid: PLATEAU.MaterialAdjust.MaterialAdjusterByAttr.DisposeNative*
+  name: DisposeNative
+  href: api/PLATEAU.MaterialAdjust.MaterialAdjusterByAttr.html#PLATEAU_MaterialAdjust_MaterialAdjusterByAttr_DisposeNative_
+  commentId: Overload:PLATEAU.MaterialAdjust.MaterialAdjusterByAttr.DisposeNative
+  isSpec: "True"
+  fullName: PLATEAU.MaterialAdjust.MaterialAdjusterByAttr.DisposeNative
+  nameWithType: MaterialAdjusterByAttr.DisposeNative
+- uid: PLATEAU.MaterialAdjust.MaterialAdjusterByAttr.Exec(Model)
+  name: Exec(Model)
+  href: api/PLATEAU.MaterialAdjust.MaterialAdjusterByAttr.html#PLATEAU_MaterialAdjust_MaterialAdjusterByAttr_Exec_Model_
+  commentId: M:PLATEAU.MaterialAdjust.MaterialAdjusterByAttr.Exec(Model)
+  fullName: PLATEAU.MaterialAdjust.MaterialAdjusterByAttr.Exec(Model)
+  nameWithType: MaterialAdjusterByAttr.Exec(Model)
+- uid: PLATEAU.MaterialAdjust.MaterialAdjusterByAttr.Exec*
+  name: Exec
+  href: api/PLATEAU.MaterialAdjust.MaterialAdjusterByAttr.html#PLATEAU_MaterialAdjust_MaterialAdjusterByAttr_Exec_
+  commentId: Overload:PLATEAU.MaterialAdjust.MaterialAdjusterByAttr.Exec
+  isSpec: "True"
+  fullName: PLATEAU.MaterialAdjust.MaterialAdjusterByAttr.Exec
+  nameWithType: MaterialAdjusterByAttr.Exec
+- uid: PLATEAU.MaterialAdjust.MaterialAdjusterByAttr.RegisterAttribute(System.String,System.String)
+  name: RegisterAttribute(String, String)
+  href: api/PLATEAU.MaterialAdjust.MaterialAdjusterByAttr.html#PLATEAU_MaterialAdjust_MaterialAdjusterByAttr_RegisterAttribute_System_String_System_String_
+  commentId: M:PLATEAU.MaterialAdjust.MaterialAdjusterByAttr.RegisterAttribute(System.String,System.String)
+  fullName: PLATEAU.MaterialAdjust.MaterialAdjusterByAttr.RegisterAttribute(System.String, System.String)
+  nameWithType: MaterialAdjusterByAttr.RegisterAttribute(String, String)
+- uid: PLATEAU.MaterialAdjust.MaterialAdjusterByAttr.RegisterAttribute*
+  name: RegisterAttribute
+  href: api/PLATEAU.MaterialAdjust.MaterialAdjusterByAttr.html#PLATEAU_MaterialAdjust_MaterialAdjusterByAttr_RegisterAttribute_
+  commentId: Overload:PLATEAU.MaterialAdjust.MaterialAdjusterByAttr.RegisterAttribute
+  isSpec: "True"
+  fullName: PLATEAU.MaterialAdjust.MaterialAdjusterByAttr.RegisterAttribute
+  nameWithType: MaterialAdjusterByAttr.RegisterAttribute
+- uid: PLATEAU.MaterialAdjust.MaterialAdjusterByAttr.RegisterMaterialPattern(System.String,System.Int32)
+  name: RegisterMaterialPattern(String, Int32)
+  href: api/PLATEAU.MaterialAdjust.MaterialAdjusterByAttr.html#PLATEAU_MaterialAdjust_MaterialAdjusterByAttr_RegisterMaterialPattern_System_String_System_Int32_
+  commentId: M:PLATEAU.MaterialAdjust.MaterialAdjusterByAttr.RegisterMaterialPattern(System.String,System.Int32)
+  fullName: PLATEAU.MaterialAdjust.MaterialAdjusterByAttr.RegisterMaterialPattern(System.String, System.Int32)
+  nameWithType: MaterialAdjusterByAttr.RegisterMaterialPattern(String, Int32)
+- uid: PLATEAU.MaterialAdjust.MaterialAdjusterByAttr.RegisterMaterialPattern*
+  name: RegisterMaterialPattern
+  href: api/PLATEAU.MaterialAdjust.MaterialAdjusterByAttr.html#PLATEAU_MaterialAdjust_MaterialAdjusterByAttr_RegisterMaterialPattern_
+  commentId: Overload:PLATEAU.MaterialAdjust.MaterialAdjusterByAttr.RegisterMaterialPattern
+  isSpec: "True"
+  fullName: PLATEAU.MaterialAdjust.MaterialAdjusterByAttr.RegisterMaterialPattern
+  nameWithType: MaterialAdjusterByAttr.RegisterMaterialPattern
+- uid: PLATEAU.MaterialAdjust.MaterialAdjusterByType
+  name: MaterialAdjusterByType
+  href: api/PLATEAU.MaterialAdjust.MaterialAdjusterByType.html
+  commentId: T:PLATEAU.MaterialAdjust.MaterialAdjusterByType
+  fullName: PLATEAU.MaterialAdjust.MaterialAdjusterByType
+  nameWithType: MaterialAdjusterByType
+- uid: PLATEAU.MaterialAdjust.MaterialAdjusterByType.Create
+  name: Create()
+  href: api/PLATEAU.MaterialAdjust.MaterialAdjusterByType.html#PLATEAU_MaterialAdjust_MaterialAdjusterByType_Create
+  commentId: M:PLATEAU.MaterialAdjust.MaterialAdjusterByType.Create
+  fullName: PLATEAU.MaterialAdjust.MaterialAdjusterByType.Create()
+  nameWithType: MaterialAdjusterByType.Create()
+- uid: PLATEAU.MaterialAdjust.MaterialAdjusterByType.Create*
+  name: Create
+  href: api/PLATEAU.MaterialAdjust.MaterialAdjusterByType.html#PLATEAU_MaterialAdjust_MaterialAdjusterByType_Create_
+  commentId: Overload:PLATEAU.MaterialAdjust.MaterialAdjusterByType.Create
+  isSpec: "True"
+  fullName: PLATEAU.MaterialAdjust.MaterialAdjusterByType.Create
+  nameWithType: MaterialAdjusterByType.Create
+- uid: PLATEAU.MaterialAdjust.MaterialAdjusterByType.DisposeNative
+  name: DisposeNative()
+  href: api/PLATEAU.MaterialAdjust.MaterialAdjusterByType.html#PLATEAU_MaterialAdjust_MaterialAdjusterByType_DisposeNative
+  commentId: M:PLATEAU.MaterialAdjust.MaterialAdjusterByType.DisposeNative
+  fullName: PLATEAU.MaterialAdjust.MaterialAdjusterByType.DisposeNative()
+  nameWithType: MaterialAdjusterByType.DisposeNative()
+- uid: PLATEAU.MaterialAdjust.MaterialAdjusterByType.DisposeNative*
+  name: DisposeNative
+  href: api/PLATEAU.MaterialAdjust.MaterialAdjusterByType.html#PLATEAU_MaterialAdjust_MaterialAdjusterByType_DisposeNative_
+  commentId: Overload:PLATEAU.MaterialAdjust.MaterialAdjusterByType.DisposeNative
+  isSpec: "True"
+  fullName: PLATEAU.MaterialAdjust.MaterialAdjusterByType.DisposeNative
+  nameWithType: MaterialAdjusterByType.DisposeNative
+- uid: PLATEAU.MaterialAdjust.MaterialAdjusterByType.Exec(Model)
+  name: Exec(Model)
+  href: api/PLATEAU.MaterialAdjust.MaterialAdjusterByType.html#PLATEAU_MaterialAdjust_MaterialAdjusterByType_Exec_Model_
+  commentId: M:PLATEAU.MaterialAdjust.MaterialAdjusterByType.Exec(Model)
+  fullName: PLATEAU.MaterialAdjust.MaterialAdjusterByType.Exec(Model)
+  nameWithType: MaterialAdjusterByType.Exec(Model)
+- uid: PLATEAU.MaterialAdjust.MaterialAdjusterByType.Exec*
+  name: Exec
+  href: api/PLATEAU.MaterialAdjust.MaterialAdjusterByType.html#PLATEAU_MaterialAdjust_MaterialAdjusterByType_Exec_
+  commentId: Overload:PLATEAU.MaterialAdjust.MaterialAdjusterByType.Exec
+  isSpec: "True"
+  fullName: PLATEAU.MaterialAdjust.MaterialAdjusterByType.Exec
+  nameWithType: MaterialAdjusterByType.Exec
+- uid: PLATEAU.MaterialAdjust.MaterialAdjusterByType.RegisterMaterialPattern(CityObjectType,System.Int32)
+  name: RegisterMaterialPattern(CityObjectType, Int32)
+  href: api/PLATEAU.MaterialAdjust.MaterialAdjusterByType.html#PLATEAU_MaterialAdjust_MaterialAdjusterByType_RegisterMaterialPattern_CityObjectType_System_Int32_
+  commentId: M:PLATEAU.MaterialAdjust.MaterialAdjusterByType.RegisterMaterialPattern(CityObjectType,System.Int32)
+  fullName: PLATEAU.MaterialAdjust.MaterialAdjusterByType.RegisterMaterialPattern(CityObjectType, System.Int32)
+  nameWithType: MaterialAdjusterByType.RegisterMaterialPattern(CityObjectType, Int32)
+- uid: PLATEAU.MaterialAdjust.MaterialAdjusterByType.RegisterMaterialPattern*
+  name: RegisterMaterialPattern
+  href: api/PLATEAU.MaterialAdjust.MaterialAdjusterByType.html#PLATEAU_MaterialAdjust_MaterialAdjusterByType_RegisterMaterialPattern_
+  commentId: Overload:PLATEAU.MaterialAdjust.MaterialAdjusterByType.RegisterMaterialPattern
+  isSpec: "True"
+  fullName: PLATEAU.MaterialAdjust.MaterialAdjusterByType.RegisterMaterialPattern
+  nameWithType: MaterialAdjusterByType.RegisterMaterialPattern
+- uid: PLATEAU.MaterialAdjust.MaterialAdjusterByType.RegisterType(System.String,CityObjectType)
+  name: RegisterType(String, CityObjectType)
+  href: api/PLATEAU.MaterialAdjust.MaterialAdjusterByType.html#PLATEAU_MaterialAdjust_MaterialAdjusterByType_RegisterType_System_String_CityObjectType_
+  commentId: M:PLATEAU.MaterialAdjust.MaterialAdjusterByType.RegisterType(System.String,CityObjectType)
+  fullName: PLATEAU.MaterialAdjust.MaterialAdjusterByType.RegisterType(System.String, CityObjectType)
+  nameWithType: MaterialAdjusterByType.RegisterType(String, CityObjectType)
+- uid: PLATEAU.MaterialAdjust.MaterialAdjusterByType.RegisterType*
+  name: RegisterType
+  href: api/PLATEAU.MaterialAdjust.MaterialAdjusterByType.html#PLATEAU_MaterialAdjust_MaterialAdjusterByType_RegisterType_
+  commentId: Overload:PLATEAU.MaterialAdjust.MaterialAdjusterByType.RegisterType
+  isSpec: "True"
+  fullName: PLATEAU.MaterialAdjust.MaterialAdjusterByType.RegisterType
+  nameWithType: MaterialAdjusterByType.RegisterType
 - uid: PLATEAU.MeshWriter
   name: PLATEAU.MeshWriter
   href: api/PLATEAU.MeshWriter.html
@@ -12573,6 +12488,19 @@ references:
   commentId: F:PLATEAU.PolygonMesh.CityObjectIndex.PrimaryIndex
   fullName: PLATEAU.PolygonMesh.CityObjectIndex.PrimaryIndex
   nameWithType: CityObjectIndex.PrimaryIndex
+- uid: PLATEAU.PolygonMesh.CityObjectIndex.ToArray
+  name: ToArray()
+  href: api/PLATEAU.PolygonMesh.CityObjectIndex.html#PLATEAU_PolygonMesh_CityObjectIndex_ToArray
+  commentId: M:PLATEAU.PolygonMesh.CityObjectIndex.ToArray
+  fullName: PLATEAU.PolygonMesh.CityObjectIndex.ToArray()
+  nameWithType: CityObjectIndex.ToArray()
+- uid: PLATEAU.PolygonMesh.CityObjectIndex.ToArray*
+  name: ToArray
+  href: api/PLATEAU.PolygonMesh.CityObjectIndex.html#PLATEAU_PolygonMesh_CityObjectIndex_ToArray_
+  commentId: Overload:PLATEAU.PolygonMesh.CityObjectIndex.ToArray
+  isSpec: "True"
+  fullName: PLATEAU.PolygonMesh.CityObjectIndex.ToArray
+  nameWithType: CityObjectIndex.ToArray
 - uid: PLATEAU.PolygonMesh.CityObjectList
   name: CityObjectList
   href: api/PLATEAU.PolygonMesh.CityObjectList.html
@@ -13182,6 +13110,19 @@ references:
   commentId: T:PLATEAU.PolygonMesh.MeshGranularityExtension
   fullName: PLATEAU.PolygonMesh.MeshGranularityExtension
   nameWithType: MeshGranularityExtension
+- uid: PLATEAU.PolygonMesh.MeshGranularityExtension.ToConvertGranularity(PLATEAU.PolygonMesh.MeshGranularity)
+  name: ToConvertGranularity(MeshGranularity)
+  href: api/PLATEAU.PolygonMesh.MeshGranularityExtension.html#PLATEAU_PolygonMesh_MeshGranularityExtension_ToConvertGranularity_PLATEAU_PolygonMesh_MeshGranularity_
+  commentId: M:PLATEAU.PolygonMesh.MeshGranularityExtension.ToConvertGranularity(PLATEAU.PolygonMesh.MeshGranularity)
+  fullName: PLATEAU.PolygonMesh.MeshGranularityExtension.ToConvertGranularity(PLATEAU.PolygonMesh.MeshGranularity)
+  nameWithType: MeshGranularityExtension.ToConvertGranularity(MeshGranularity)
+- uid: PLATEAU.PolygonMesh.MeshGranularityExtension.ToConvertGranularity*
+  name: ToConvertGranularity
+  href: api/PLATEAU.PolygonMesh.MeshGranularityExtension.html#PLATEAU_PolygonMesh_MeshGranularityExtension_ToConvertGranularity_
+  commentId: Overload:PLATEAU.PolygonMesh.MeshGranularityExtension.ToConvertGranularity
+  isSpec: "True"
+  fullName: PLATEAU.PolygonMesh.MeshGranularityExtension.ToConvertGranularity
+  nameWithType: MeshGranularityExtension.ToConvertGranularity
 - uid: PLATEAU.PolygonMesh.MeshGranularityExtension.ToJapaneseString(PLATEAU.PolygonMesh.MeshGranularity)
   name: ToJapaneseString(MeshGranularity)
   href: api/PLATEAU.PolygonMesh.MeshGranularityExtension.html#PLATEAU_PolygonMesh_MeshGranularityExtension_ToJapaneseString_PLATEAU_PolygonMesh_MeshGranularity_
@@ -18233,6 +18174,12 @@ references:
   isSpec: "True"
   fullName: PLATEAU.TerrainConvert.CityTerrainConverter.ConvertAsync
   nameWithType: CityTerrainConverter.ConvertAsync
+- uid: PLATEAU.TerrainConvert.PLATEAUSmoothedDem
+  name: PLATEAUSmoothedDem
+  href: api/PLATEAU.TerrainConvert.PLATEAUSmoothedDem.html
+  commentId: T:PLATEAU.TerrainConvert.PLATEAUSmoothedDem
+  fullName: PLATEAU.TerrainConvert.PLATEAUSmoothedDem
+  nameWithType: PLATEAUSmoothedDem
 - uid: PLATEAU.TerrainConvert.PlateauToUnityTerrainConverter
   name: PlateauToUnityTerrainConverter
   href: api/PLATEAU.TerrainConvert.PlateauToUnityTerrainConverter.html
@@ -18261,15 +18208,15 @@ references:
   commentId: T:PLATEAU.TerrainConvert.TerrainConvertOption
   fullName: PLATEAU.TerrainConvert.TerrainConvertOption
   nameWithType: TerrainConvertOption
-- uid: PLATEAU.TerrainConvert.TerrainConvertOption.#ctor(GameObject[],System.Int32,System.Boolean,System.Boolean,System.Boolean,PLATEAU.TerrainConvert.TerrainConvertOption.ImageOutput,System.Nullable{CancellationToken})
-  name: TerrainConvertOption(GameObject[], Int32, Boolean, Boolean, Boolean, TerrainConvertOption.ImageOutput, Nullable<CancellationToken>)
-  href: api/PLATEAU.TerrainConvert.TerrainConvertOption.html#PLATEAU_TerrainConvert_TerrainConvertOption__ctor_GameObject___System_Int32_System_Boolean_System_Boolean_System_Boolean_PLATEAU_TerrainConvert_TerrainConvertOption_ImageOutput_System_Nullable_CancellationToken__
-  commentId: M:PLATEAU.TerrainConvert.TerrainConvertOption.#ctor(GameObject[],System.Int32,System.Boolean,System.Boolean,System.Boolean,PLATEAU.TerrainConvert.TerrainConvertOption.ImageOutput,System.Nullable{CancellationToken})
-  name.vb: TerrainConvertOption(GameObject(), Int32, Boolean, Boolean, Boolean, TerrainConvertOption.ImageOutput, Nullable(Of CancellationToken))
-  fullName: PLATEAU.TerrainConvert.TerrainConvertOption.TerrainConvertOption(GameObject[], System.Int32, System.Boolean, System.Boolean, System.Boolean, PLATEAU.TerrainConvert.TerrainConvertOption.ImageOutput, System.Nullable<CancellationToken>)
-  fullName.vb: PLATEAU.TerrainConvert.TerrainConvertOption.TerrainConvertOption(GameObject(), System.Int32, System.Boolean, System.Boolean, System.Boolean, PLATEAU.TerrainConvert.TerrainConvertOption.ImageOutput, System.Nullable(Of CancellationToken))
-  nameWithType: TerrainConvertOption.TerrainConvertOption(GameObject[], Int32, Boolean, Boolean, Boolean, TerrainConvertOption.ImageOutput, Nullable<CancellationToken>)
-  nameWithType.vb: TerrainConvertOption.TerrainConvertOption(GameObject(), Int32, Boolean, Boolean, Boolean, TerrainConvertOption.ImageOutput, Nullable(Of CancellationToken))
+- uid: PLATEAU.TerrainConvert.TerrainConvertOption.#ctor(GameObject[],System.Int32,System.Boolean,System.Boolean,System.Boolean,System.Boolean,PLATEAU.TerrainConvert.TerrainConvertOption.ImageOutput,System.Nullable{CancellationToken})
+  name: TerrainConvertOption(GameObject[], Int32, Boolean, Boolean, Boolean, Boolean, TerrainConvertOption.ImageOutput, Nullable<CancellationToken>)
+  href: api/PLATEAU.TerrainConvert.TerrainConvertOption.html#PLATEAU_TerrainConvert_TerrainConvertOption__ctor_GameObject___System_Int32_System_Boolean_System_Boolean_System_Boolean_System_Boolean_PLATEAU_TerrainConvert_TerrainConvertOption_ImageOutput_System_Nullable_CancellationToken__
+  commentId: M:PLATEAU.TerrainConvert.TerrainConvertOption.#ctor(GameObject[],System.Int32,System.Boolean,System.Boolean,System.Boolean,System.Boolean,PLATEAU.TerrainConvert.TerrainConvertOption.ImageOutput,System.Nullable{CancellationToken})
+  name.vb: TerrainConvertOption(GameObject(), Int32, Boolean, Boolean, Boolean, Boolean, TerrainConvertOption.ImageOutput, Nullable(Of CancellationToken))
+  fullName: PLATEAU.TerrainConvert.TerrainConvertOption.TerrainConvertOption(GameObject[], System.Int32, System.Boolean, System.Boolean, System.Boolean, System.Boolean, PLATEAU.TerrainConvert.TerrainConvertOption.ImageOutput, System.Nullable<CancellationToken>)
+  fullName.vb: PLATEAU.TerrainConvert.TerrainConvertOption.TerrainConvertOption(GameObject(), System.Int32, System.Boolean, System.Boolean, System.Boolean, System.Boolean, PLATEAU.TerrainConvert.TerrainConvertOption.ImageOutput, System.Nullable(Of CancellationToken))
+  nameWithType: TerrainConvertOption.TerrainConvertOption(GameObject[], Int32, Boolean, Boolean, Boolean, Boolean, TerrainConvertOption.ImageOutput, Nullable<CancellationToken>)
+  nameWithType.vb: TerrainConvertOption.TerrainConvertOption(GameObject(), Int32, Boolean, Boolean, Boolean, Boolean, TerrainConvertOption.ImageOutput, Nullable(Of CancellationToken))
 - uid: PLATEAU.TerrainConvert.TerrainConvertOption.#ctor*
   name: TerrainConvertOption
   href: api/PLATEAU.TerrainConvert.TerrainConvertOption.html#PLATEAU_TerrainConvert_TerrainConvertOption__ctor_
@@ -18316,6 +18263,19 @@ references:
   isSpec: "True"
   fullName: PLATEAU.TerrainConvert.TerrainConvertOption.DoDestroySrcObjs
   nameWithType: TerrainConvertOption.DoDestroySrcObjs
+- uid: PLATEAU.TerrainConvert.TerrainConvertOption.EnableTerrainConversion
+  name: EnableTerrainConversion
+  href: api/PLATEAU.TerrainConvert.TerrainConvertOption.html#PLATEAU_TerrainConvert_TerrainConvertOption_EnableTerrainConversion
+  commentId: P:PLATEAU.TerrainConvert.TerrainConvertOption.EnableTerrainConversion
+  fullName: PLATEAU.TerrainConvert.TerrainConvertOption.EnableTerrainConversion
+  nameWithType: TerrainConvertOption.EnableTerrainConversion
+- uid: PLATEAU.TerrainConvert.TerrainConvertOption.EnableTerrainConversion*
+  name: EnableTerrainConversion
+  href: api/PLATEAU.TerrainConvert.TerrainConvertOption.html#PLATEAU_TerrainConvert_TerrainConvertOption_EnableTerrainConversion_
+  commentId: Overload:PLATEAU.TerrainConvert.TerrainConvertOption.EnableTerrainConversion
+  isSpec: "True"
+  fullName: PLATEAU.TerrainConvert.TerrainConvertOption.EnableTerrainConversion
+  nameWithType: TerrainConvertOption.EnableTerrainConversion
 - uid: PLATEAU.TerrainConvert.TerrainConvertOption.FillEdges
   name: FillEdges
   href: api/PLATEAU.TerrainConvert.TerrainConvertOption.html#PLATEAU_TerrainConvert_TerrainConvertOption_FillEdges
@@ -18680,6 +18640,15 @@ references:
   isSpec: "True"
   fullName: PLATEAU.Util.Async.TaskExtension.ContinueWithErrorCatch
   nameWithType: TaskExtension.ContinueWithErrorCatch
+- uid: PLATEAU.Util.Async.TaskExtension.ContinueWithErrorCatch``1(Task{``0})
+  name: ContinueWithErrorCatch<T>(Task<T>)
+  href: api/PLATEAU.Util.Async.TaskExtension.html#PLATEAU_Util_Async_TaskExtension_ContinueWithErrorCatch__1_Task___0__
+  commentId: M:PLATEAU.Util.Async.TaskExtension.ContinueWithErrorCatch``1(Task{``0})
+  name.vb: ContinueWithErrorCatch(Of T)(Task(Of T))
+  fullName: PLATEAU.Util.Async.TaskExtension.ContinueWithErrorCatch<T>(Task<T>)
+  fullName.vb: PLATEAU.Util.Async.TaskExtension.ContinueWithErrorCatch(Of T)(Task(Of T))
+  nameWithType: TaskExtension.ContinueWithErrorCatch<T>(Task<T>)
+  nameWithType.vb: TaskExtension.ContinueWithErrorCatch(Of T)(Task(Of T))
 - uid: PLATEAU.Util.Async.TextureLoader
   name: TextureLoader
   href: api/PLATEAU.Util.Async.TextureLoader.html

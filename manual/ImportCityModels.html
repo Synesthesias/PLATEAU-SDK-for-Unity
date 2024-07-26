@@ -89,7 +89,7 @@
 <ul>
 <li>Unityのメニューバーから <code>PLATEAU → PLATEAU SDK</code> を選択します。<br>表示されるウィンドウの上部に4つのタブ「インポート、モデル調整、エクスポート、属性情報」があります。<br>このうちインポートを選択します。
 <img src="../resources/manual/importCityModels/plateauWindowImport.png" alt=""></li>
-<li>インポート先で<code>ローカル</code>または<code>サーバー</code>を選択します。</li>
+<li>インポート元で<code>ローカル</code>または<code>サーバー</code>を選択します。</li>
 </ul>
 <h4 id="ローカルからインポートする場合">ローカルからインポートする場合</h4>
 <ul>
@@ -216,6 +216,7 @@
 <li>モデルのメッシュは結合されて出力されます。</li>
 <li>オブジェクト数を削減して軽量化できますが、建物ごとの地物データは取得不可になります。</li>
 <li>メッシュの結合はある程度の大きさの範囲ごとに行われます。</li>
+<li>地域単位でインポートする場合、見た目が同じマテリアルは結合されます。すなわち、色などの数値情報とテクスチャパスが同じ場合に結合されます。</li>
 </ul>
 </li>
 </ul>
@@ -237,12 +238,12 @@
 </ul>
 </li>
 </ul>
-<div class="NOTE"><h5>Note</h5><p><strong>地物の選択について</strong><br>地物の中にはインポートに時間がかかるものもあるのでご注意ください。<br>例えば 土地起伏 はデータの範囲が 10km × 10km と非常に広く、<br>データ容量が重く処理に時間がかかるのでご注意ください。</p>
+<div class="NOTE"><h5>Note</h5><p><strong>地物の選択について</strong><br>地物の中にはインポートに時間がかかるものがあります。<br>特に土地起伏、土地利用はデータ容量が重く処理に時間がかかるのでご注意ください。</p>
 </div>
 <div class="NOTE"><h5>Note</h5><p><strong>現実の景観と異なる地物について</strong><br>地物の種類で「土地利用」と「災害リスク」については、<br>情報の範囲を示す目印として板状の3Dモデルが表示されます。<br>土地利用と災害リスクに関するデータが不要な場合は<br>インポートしないか、インポート後オフにすることを推奨します。
 <img src="../resources/manual/importCityModels/fldAndLandUse.png" alt=""><br>上図で赤い格子模様になっている板は、災害リスク範囲の目印です。</p>
 </div>
-<div class="NOTE"><h5>Note</h5><p><strong>道路の高さについて</strong><br>LOD1 の道路は、PLATEAUの仕様上、高さのデータを含みません。<br>したがって、インポートするとすべて高さ 0 で表現されます。<br>LOD2 以上の道路は高さが反映されます。</p>
+<div class="NOTE"><h5>Note</h5><p><strong>道路の高さについて</strong><br>LOD1,LOD2 の道路は、PLATEAUの仕様上、高さのデータを含みません。<br>したがって、インポートするとすべて高さ 0 で表現されます。<br>LOD3 以上の道路は高さが反映されます。</p>
 </div>
 <h3 id="土地に衛星写真や地図を貼り付ける">土地に衛星写真や地図を貼り付ける</h3>
 <p>土地に衛星写真や地図を貼り付けることができます。</p>
@@ -313,7 +314,7 @@
 <h3 id="エラーログの確認">エラーログの確認</h3>
 <p>インポートの結果、計算状況ウィンドウの内容がすべて「完了」となれば良いですが、<br>ロードできなかったgmlファイルに関しては「失敗」と表示されます。<br>そのような場合でも、他のgmlファイルのロードが成功していれば、そのgmlに関しては正常にインポートされています。<br>失敗の場合は Unityのコンソールにエラーログが出力されます。</p>
 <h3 id="インポートされた3dモデルの保存先">インポートされた3Dモデルの保存先</h3>
-<p>インポートされた3Dモデルやテクスチャは、シーンファイルの中に直接保存されます。<br>これによるシーンファイルの肥大化を改善したい場合は、<br>モデル修正機能の「Assetsに保存」機能を利用してシーンからFBXに書き出すことができます。<br>詳しくは<a href="ModelAdjust.html#assetsに保存機能">こちら</a>をご覧ください。</p>
+<p>インポートされた3Dモデルやテクスチャは、シーンファイルの中に直接保存されます。<br>これによるシーンファイルの肥大化を改善したい場合は、<br>モデル調整機能の「Assetsに保存」機能を利用してシーンからFBXに書き出すことができます。<br>詳しくは<a href="ModelAdjust.html#assetsに保存機能">こちら</a>をご覧ください。</p>
 </article>
           </div>
           
@@ -322,7 +323,7 @@
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/Synesthesias/PLATEAU-SDK-for-Unity/blob/dev/v2/Documentation~/manual/ImportCityModels.md/#L1" class="contribution-link">Improve this Doc</a>
+                    <a href="https://github.com/Synesthesias/PLATEAU-SDK-for-Unity/blob/main/Documentation~/manual/ImportCityModels.md/#L1" class="contribution-link">Improve this Doc</a>
                   </li>
                 </ul>
               </div>

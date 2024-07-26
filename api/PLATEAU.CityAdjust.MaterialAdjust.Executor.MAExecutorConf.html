@@ -128,13 +128,13 @@
   
   
   <a id="PLATEAU_CityAdjust_MaterialAdjust_Executor_MAExecutorConf__ctor_" data-uid="PLATEAU.CityAdjust.MaterialAdjust.Executor.MAExecutorConf.#ctor*"></a>
-  <h4 id="PLATEAU_CityAdjust_MaterialAdjust_Executor_MAExecutorConf__ctor_PLATEAU_CityAdjust_MaterialAdjust_IMAConfig_UniqueParentTransformList_MAGranularity_System_Boolean_System_Boolean_" data-uid="PLATEAU.CityAdjust.MaterialAdjust.Executor.MAExecutorConf.#ctor(PLATEAU.CityAdjust.MaterialAdjust.IMAConfig,UniqueParentTransformList,MAGranularity,System.Boolean,System.Boolean)">MAExecutorConf(IMAConfig, UniqueParentTransformList, MAGranularity, Boolean, Boolean)</h4>
+  <h4 id="PLATEAU_CityAdjust_MaterialAdjust_Executor_MAExecutorConf__ctor_PLATEAU_CityAdjust_MaterialAdjust_IMAConfig_UniqueParentTransformList_System_Boolean_System_Boolean_" data-uid="PLATEAU.CityAdjust.MaterialAdjust.Executor.MAExecutorConf.#ctor(PLATEAU.CityAdjust.MaterialAdjust.IMAConfig,UniqueParentTransformList,System.Boolean,System.Boolean)">MAExecutorConf(IMAConfig, UniqueParentTransformList, Boolean, Boolean)</h4>
   <div class="markdown level1 summary"><p>地物型でのマテリアル分けの設定です。</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public MAExecutorConf(IMAConfig materialAdjustConf, UniqueParentTransformList targetTransforms, MAGranularity meshGranularity, bool doDestroySrcObjs, bool skipNotChangingMaterial)</code></pre>
+    <pre><code class="lang-csharp hljs">public MAExecutorConf(IMAConfig materialAdjustConf, UniqueParentTransformList targetTransforms, bool doDestroySrcObjs, bool skipNotChangingMaterial)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -154,11 +154,6 @@
       <tr>
         <td><span class="xref">UniqueParentTransformList</span></td>
         <td><span class="parametername">targetTransforms</span></td>
-        <td></td>
-      </tr>
-      <tr>
-        <td><span class="xref">MAGranularity</span></td>
-        <td><span class="parametername">meshGranularity</span></td>
         <td></td>
       </tr>
       <tr>
@@ -221,31 +216,6 @@
     <tbody>
       <tr>
         <td><a class="xref" href="PLATEAU.CityAdjust.MaterialAdjust.IMAConfig.html">IMAConfig</a></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  
-  
-  <a id="PLATEAU_CityAdjust_MaterialAdjust_Executor_MAExecutorConf_MeshGranularity_" data-uid="PLATEAU.CityAdjust.MaterialAdjust.Executor.MAExecutorConf.MeshGranularity*"></a>
-  <h4 id="PLATEAU_CityAdjust_MaterialAdjust_Executor_MAExecutorConf_MeshGranularity" data-uid="PLATEAU.CityAdjust.MaterialAdjust.Executor.MAExecutorConf.MeshGranularity">MeshGranularity</h4>
-  <div class="markdown level1 summary"></div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public MAGranularity MeshGranularity { get; set; }</code></pre>
-  </div>
-  <h5 class="propertyValue">Property Value</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="xref">MAGranularity</span></td>
         <td></td>
       </tr>
     </tbody>

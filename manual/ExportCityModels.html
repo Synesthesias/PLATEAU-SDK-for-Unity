@@ -79,13 +79,13 @@
             <article class="content wrap" id="_content" data-uid="">
 <h1 id="3d都市モデルのエクスポート">3D都市モデルのエクスポート</h1>
 
-<p>Unityのシーンに配置された都市の3Dモデルを、objファイルや gltfファイルとしてエクスポートできます。<br>このページではエクスポートの手順を説明します。</p>
+<p>Unityのシーンに配置された都市の3Dモデルを、FBX、OBJ、glTFとしてエクスポートできます。<br>このページではエクスポートの手順を説明します。</p>
 <h2 id="前提">前提</h2>
 <p>Unityのシーンに都市モデルがインポートされていることが前提です。<br>インポートの方法については <a href="ImportCityModels.html">都市モデルのインポート</a> をご覧ください。<br><img src="../resources/manual/exportCityModels/importedCity.png" alt=""></p>
 <h2 id="エクスポート手順">エクスポート手順</h2>
 <h3 id="エクスポート対象の指定">エクスポート対象の指定</h3>
 <ul>
-<li><p>Unityのメニューバーから <code>PLATEAU → PLATEAU SDK</code> を選択します。<br>表示されるウィンドウの上部に3つのタブ「インポート、モデル調整、エクスポート」があります。<br>このうちエクスポートを選択します。  </p>
+<li><p>Unityのメニューバーから <code>PLATEAU → PLATEAU SDK</code> を選択します。<br>表示されるウィンドウの上部に3つのタブ「インポート、モデル調整、エクスポート、属性情報」があります。<br>このうちエクスポートを選択します。  </p>
 <p><img src="../resources/manual/exportCityModels/exportWindow.png" alt=""></p>
 </li>
 <li><p><code>選択オブジェクト</code> からエクスポート対象を選択します。</p>
@@ -177,7 +177,7 @@
 <li><code>エクスポート</code> ボタンを押してしばらく待ちます。</li>
 <li>正常終了の場合、指定のフォルダに3Dモデルファイルが出力され、そのフォルダが開きます。<br>異常終了の場合、ダイアログが表示されます。</li>
 </ul>
-<p><img src="../resources/manual/exportCityModels/tokyoBlender.png" alt=""><br>上図はエクスポートしたobjファイルを Blender で読み込んだものです。</p>
+<p><img src="../resources/manual/exportCityModels/tokyoBlender.png" alt=""><br>上図はエクスポートしたOBJファイルを Blender で読み込んだものです。</p>
 <h2 id="エクスポートの仕様">エクスポートの仕様</h2>
 <ul>
 <li>OBJファイルはそのフォーマットの仕様上、次の制約があります。  <ul>
@@ -185,13 +185,13 @@
 </ul>
 </li>
 <li>Unity内でのTransform情報（Position, Rotation, Scale）はエクスポートしたファイルに反映されます。<ul>
-<li>FBX,GLTFの場合は、ノードとしてUnityのPosition, Rotation, Scale, および親子関係が反映されます。</li>
+<li>FBX,GLTFの場合は、ノードとしてUnityのPosition, Rotation, Scale および親子関係が反映されます。</li>
 <li>OBJの場合は、OBJの仕様上親子関係が反映されないため、頂点座標が直接Position, Rotation, Scaleにより変形されて出力されます。</li>
 </ul>
 </li>
 </ul>
 <div class="NOTE"><h5>Note</h5><p><strong>エクスポートした3Dモデルを再度Unityに取り込む場合</strong>  </p>
-<p>テクスチャ込みでエクスポートしたものを再度Unityにインポートする場合は、<br>3Dモデルファイルとそれに対応するテクスチャフォルダを複数選択して<br>Unityのプロジェクトビューにドラッグ＆ドロップしてインポートしてください。<br>複数選択による同時インポートでないと、テクスチャが正しく適用されない場合があります。</p>
+<p>テクスチャ込みでエクスポートしたものを再度Unityにインポートする場合は、<br>3Dモデルファイルとそれに対応するテクスチャフォルダをエクスプローラー（Windowsの場合。Macの場合はFinder）から複数選択して<br>Unityのプロジェクトビューにドラッグ＆ドロップしてインポートしてください。<br>複数選択による同時インポートでないと、テクスチャが正しく適用されない場合があります。</p>
 </div>
 </article>
           </div>
@@ -201,7 +201,7 @@
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/Synesthesias/PLATEAU-SDK-for-Unity/blob/dev/v2/Documentation~/manual/ExportCityModels.md/#L1" class="contribution-link">Improve this Doc</a>
+                    <a href="https://github.com/Synesthesias/PLATEAU-SDK-for-Unity/blob/main/Documentation~/manual/ExportCityModels.md/#L1" class="contribution-link">Improve this Doc</a>
                   </li>
                 </ul>
               </div>
