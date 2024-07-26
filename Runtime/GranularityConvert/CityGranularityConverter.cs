@@ -257,7 +257,7 @@ namespace PLATEAU.GranularityConvert
             }
             else
             {
-                Debug.LogWarning($"gmlID not found : {gmlID}");
+                Debug.Log($"skipping gmlID : {gmlID}");
                 return null;
             }
         }
