@@ -269,5 +269,10 @@ namespace PLATEAU.RoadNetwork
                     throw new ArgumentOutOfRangeException();
             }
         }
+
+        public RoadNetworkDataGetter GetRoadNetworkDataGetter()
+        {
+            return RoadNetwork.CreateGetter();
+        }
     }
 }
