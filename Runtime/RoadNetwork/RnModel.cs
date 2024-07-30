@@ -13,7 +13,7 @@ using UnityEngine.Serialization;
 
 namespace PLATEAU.RoadNetwork
 {
-    [Serializable]
+    // #NOTE : Editorが重いのでSerialize対象にしない
     public class RnModel
     {
         public const float Epsilon = float.Epsilon;
@@ -22,15 +22,13 @@ namespace PLATEAU.RoadNetwork
         // start: フィールド
         //----------------------------------
 
+
+        // #NOTE : Editorが重いのでSerialize対象にしない
         private List<RnLink> links = new List<RnLink>();
 
         private List<RnNode> nodes = new List<RnNode>();
 
         private List<RnLineString> sideWalks = new List<RnLineString>();
-
-        // #TODO : 一時的にモデル内部に用意する(ビルドするたびにリセットされないように)
-        // シリアライズ用フィールド
-        [field: SerializeField] private RoadNetworkStorage Storage { get; set; }
 
         //----------------------------------
         // end: フィールド
@@ -128,25 +126,25 @@ namespace PLATEAU.RoadNetwork
             sideWalks.Add(walkRoad);
         }
 
-        public void Serialize()
+        public RoadNetworkStorage Serialize()
         {
             var serializer = new RoadNetworkSerializer();
-            Storage = serializer.Serialize(this);
+            return serializer.Serialize(this);
         }
 
-        public void Deserialize()
+        public void Deserialize(RoadNetworkStorage storage)
         {
             var serializer = new RoadNetworkSerializer();
-            var model = serializer.Deserialize(Storage);
+            var model = serializer.Deserialize(storage);
             foreach (var l in model.Links)
                 AddLink(l);
             foreach (var n in model.Nodes)
                 AddNode(n);
         }
 
-        public RoadNetworkDataGetter CreateGetter()
+        public RoadNetworkDataGetter CreateGetter(RoadNetworkStorage storage)
         {
-            return new RoadNetworkDataGetter(Storage);
+            return new RoadNetworkDataGetter(storage);
         }
 
         public void SplitLaneByWidth(float roadWidth, out List<ulong> failedLinks)

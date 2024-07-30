@@ -28,9 +28,13 @@ namespace PLATEAU.RoadNetwork
 
         [field: SerializeField] private RoadNetworkFactory Factory { get; set; } = new RoadNetworkFactory();
 
-        [field: SerializeField]
         public RnModel RoadNetwork { get; set; }
 
+        // シリアライズ用フィールド
+        [SerializeField]
+        private RoadNetworkStorage storage;
+
+        public RoadNetworkStorage Storage { get => storage; set => storage = value; }
 
         [Serializable]
         private class TesterTranMeshDrawParam : TesterDrawParam
@@ -300,6 +304,19 @@ namespace PLATEAU.RoadNetwork
                 default:
                     throw new ArgumentOutOfRangeException();
             }
+        }
+
+        public void Serialize()
+        {
+            if (RoadNetwork == null)
+                return;
+            storage = RoadNetwork.Serialize();
+        }
+
+        public void Deserialize()
+        {
+            RoadNetwork ??= new RnModel();
+            RoadNetwork.Deserialize(storage);
         }
     }
 }

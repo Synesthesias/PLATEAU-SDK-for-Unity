@@ -47,15 +47,13 @@ namespace PLATEAU.Editor.RoadNetwork
                 obj.CreateNetwork();
 
             if (GUILayout.Button("Serialize"))
-                obj.RoadNetwork.Serialize();
+                obj.Serialize();
 
             if (GUILayout.Button("Deserialize"))
-                obj.RoadNetwork.Deserialize();
+                obj.Deserialize();
 
             if (GUILayout.Button("SplitCityObject"))
                 obj.SplitCityObjectAsync();
-
-
         }
     }
 }
