@@ -64,6 +64,9 @@ namespace PLATEAU.RoadNetwork.Drawer
 
             public void Update(RnModel model)
             {
+                if (model == null)
+                    return;
+
                 var lane = model.CollectAllLanes().FirstOrDefault(l => l.DebugMyId == targetLaneId);
                 if (lane == null)
                     return;
@@ -159,6 +162,8 @@ namespace PLATEAU.RoadNetwork.Drawer
 
             public void Update(RnModel model)
             {
+                if (model == null)
+                    return;
                 var link = model.Links.FirstOrDefault(l => l.DebugMyId == targetLinkId);
                 if (link == null)
                     return;
@@ -211,6 +216,8 @@ namespace PLATEAU.RoadNetwork.Drawer
 
         public void OnInspectorGUI(RnModel model)
         {
+            if (model == null)
+                return;
             laneEdit.Update(model);
             linkEdit.Update(model);
         }

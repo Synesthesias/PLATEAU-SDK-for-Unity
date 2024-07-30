@@ -5,7 +5,8 @@ using UnityEngine.UIElements;
 
 namespace PLATEAU.Editor.RoadNetwork
 {
-    [CustomPropertyDrawer(typeof(RnLane))]
+    // #TODO : 一時的に消す
+    //[CustomPropertyDrawer(typeof(RnLane))]
     public class RnLaneDrawer : PropertyDrawer
     {
         public override VisualElement CreatePropertyGUI(SerializedProperty property)
