@@ -11,13 +11,6 @@ namespace PLATEAU.RoadNetwork.Drawer
 
         public void Draw(RGraph graph)
         {
-            foreach (var vertex in graph.Vertices)
-            {
-                foreach (var edge in vertex.Edges)
-                {
-                    // Draw edge
-                }
-            }
         }
     }
 }
