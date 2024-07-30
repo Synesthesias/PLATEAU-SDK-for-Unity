@@ -167,7 +167,9 @@ namespace PLATEAU.RoadNetwork.Drawer
                 var link = model.Links.FirstOrDefault(l => l.DebugMyId == targetLinkId);
                 if (link == null)
                     return;
-                var linkGroup = link.CreateLinkGroup();
+                var linkGroup = link.CreateLinkGroupOrDefault();
+                if (linkGroup == null)
+                    return;
                 if (showInfo.targetLinkId != targetLinkId)
                 {
                     showInfo.targetLinkId = targetLinkId;

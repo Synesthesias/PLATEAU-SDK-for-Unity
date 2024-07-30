@@ -100,23 +100,20 @@ namespace PLATEAU.RoadNetwork.Factory
                 }
             }
 
-            public Vector3Int GetCell(Vector3 v)
+            /// <summary>
+            /// セル座標に変換する
+            /// </summary>
+            /// <param name="v"></param>
+            /// <returns></returns>
+            private Vector3Int ToCell(Vector3 v)
             {
                 return v.RevScaled(Vector3.one * CellSize).ToVector3Int();
             }
 
-            public RnPoint Create(Vector3 v)
+            private RnPoint Create(Vector3 v)
             {
-                var cellNo = GetCell(v);
+                var cellNo = ToCell(v);
                 return CellTable.GetValueOrCreate(cellNo, c => new RnPoint(v));
-            }
-
-            public void ChangeVertex(RnPoint v, Vector3 newVertex)
-            {
-                var cellNo = GetCell(v.Vertex);
-                CellTable.Remove(cellNo);
-                v.Vertex = newVertex;
-                CellTable[cellNo] = v;
             }
 
             public RnPoint this[Vector3 v]

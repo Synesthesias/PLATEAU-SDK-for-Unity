@@ -534,6 +534,24 @@ namespace PLATEAU.RoadNetwork
         }
 
         /// <summary>
+        /// selfと隣接しているLinkをすべてまとめたLinkGroupを返す.
+        /// 返せない場合はnullを返す
+        /// </summary>
+        /// <param name="self"></param>
+        /// <returns></returns>
+        public static RnLinkGroup CreateLinkGroupOrDefault(this RnLink self)
+        {
+            try
+            {
+                return CreateLinkGroup(self);
+            }
+            catch (InvalidDataException)
+            {
+                return null;
+            }
+        }
+
+        /// <summary>
         /// selfの全頂点の重心を返す
         /// </summary>
         /// <param name="self"></param>

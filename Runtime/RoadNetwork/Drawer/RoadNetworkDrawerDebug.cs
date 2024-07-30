@@ -36,6 +36,14 @@ namespace PLATEAU.RoadNetwork.Drawer
         {
             public bool visible = true;
             public Color color = Color.white;
+
+            public DrawOption() { }
+
+            public DrawOption(bool visible, Color color)
+            {
+                this.visible = visible;
+                this.color = color;
+            }
         }
 
         [Serializable]
@@ -61,8 +69,8 @@ namespace PLATEAU.RoadNetwork.Drawer
             public bool showLaneConnection = false;
             public bool showLinkGroup = false;
             public bool showSideEdge = false;
-            public DrawOption showNextConnection = new DrawOption();
-            public DrawOption showPrevConnection = new DrawOption();
+            public DrawOption showNextConnection = new DrawOption(false, Color.red);
+            public DrawOption showPrevConnection = new DrawOption(false, Color.blue);
             [Serializable]
             public class ShowInfo
             {
@@ -370,7 +378,7 @@ namespace PLATEAU.RoadNetwork.Drawer
                 {
                     if (linkGroups.Any(a => a.Links.Contains(link)) == false)
                     {
-                        var group = link.CreateLinkGroup();
+                        var group = link.CreateLinkGroupOrDefault();
                         if (group != null)
                         {
                             linkGroups.Add(group);

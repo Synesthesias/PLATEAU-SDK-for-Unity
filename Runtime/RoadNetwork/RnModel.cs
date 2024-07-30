@@ -186,7 +186,7 @@ namespace PLATEAU.RoadNetwork
                 }
                 catch (Exception e)
                 {
-                    Debug.LogException(e);
+                    //Debug.LogException(e);
                     failedLinks.Add(link.DebugMyId);
                 }
             }
