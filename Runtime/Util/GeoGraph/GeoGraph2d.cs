@@ -343,6 +343,7 @@ namespace PLATEAU.Util.GeoGraph
         /// meshのアウトラインを計算する
         /// </summary>
         /// <param name="mesh"></param>
+        /// <param name="subMesh"></param>
         /// <param name="toVec2"></param>
         /// <param name="epsilon"></param>
         /// <returns></returns>

@@ -28,8 +28,9 @@ namespace PLATEAU.RoadNetwork
 
         [field: SerializeField] private RoadNetworkFactory Factory { get; set; } = new RoadNetworkFactory();
 
-        // Editorが重いのでSerializeしない
+        [field: SerializeField]
         public RnModel RoadNetwork { get; set; }
+
 
         [Serializable]
         private class TesterTranMeshDrawParam : TesterDrawParam

@@ -13,6 +13,7 @@ using UnityEngine.Serialization;
 
 namespace PLATEAU.RoadNetwork
 {
+    [Serializable]
     public class RnModel
     {
         public const float Epsilon = float.Epsilon;
@@ -20,13 +21,11 @@ namespace PLATEAU.RoadNetwork
         //----------------------------------
         // start: フィールド
         //----------------------------------
-        [SerializeField]
+
         private List<RnLink> links = new List<RnLink>();
 
-        [SerializeField]
         private List<RnNode> nodes = new List<RnNode>();
 
-        [SerializeField]
         private List<RnLineString> sideWalks = new List<RnLineString>();
 
         // #TODO : 一時的にモデル内部に用意する(ビルドするたびにリセットされないように)
