@@ -167,7 +167,7 @@ namespace PLATEAU.RoadNetwork
         /// </summary>
         /// <param name="leftCount"></param>
         /// <param name="rightCount"></param>
-        private void SetLaneCount(int leftCount, int rightCount)
+        public void SetLaneCount(int leftCount, int rightCount)
         {
             if (IsValid == false)
                 return;
@@ -213,6 +213,24 @@ namespace PLATEAU.RoadNetwork
         }
 
         /// <summary>
+        /// 左側レーン数を変更する
+        /// </summary>
+        /// <param name="count"></param>
+        public void SetLeftLaneCount(int count)
+        {
+            SetLaneCount(count, GetRightLaneCount());
+        }
+
+        /// <summary>
+        /// 右側レーン数を変更する
+        /// </summary>
+        /// <param name="count"></param>
+        public void SetRightLaneCount(int count)
+        {
+            SetLaneCount(GetLeftLaneCount(), count);
+        }
+
+        /// <summary>
         /// 中央分離帯を作成するかスキップする
         /// </summary>
         private void CreateMedian()
@@ -241,24 +259,6 @@ namespace PLATEAU.RoadNetwork
                 var medianLane = new RnLane(leftWay, rightWay, new RnWay(prevLineString, isReverseNormal: true), new RnWay(nextLineString));
                 l.SetMedianLane(medianLane);
             }
-        }
-
-        /// <summary>
-        /// 左側レーン数を変更する
-        /// </summary>
-        /// <param name="count"></param>
-        public void SetLeftLaneCount(int count)
-        {
-            SetLaneCount(count, GetRightLaneCount());
-        }
-
-        /// <summary>
-        /// 右側レーン数を変更する
-        /// </summary>
-        /// <param name="count"></param>
-        public void SetRightLaneCount(int count)
-        {
-            SetLaneCount(GetLeftLaneCount(), count);
         }
 
         /// <summary>

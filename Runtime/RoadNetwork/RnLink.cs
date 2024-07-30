@@ -33,10 +33,10 @@ namespace PLATEAU.RoadNetwork
         public PLATEAUCityObjectGroup TargetTran { get; set; }
 
         // 接続先
-        public RnRoadBase Next { get; set; }
+        public RnRoadBase Next { get; private set; }
 
         // 接続元
-        public RnRoadBase Prev { get; set; }
+        public RnRoadBase Prev { get; private set; }
 
         // レーンリスト
         private List<RnLane> mainLanes = new List<RnLane>();
@@ -426,6 +426,17 @@ namespace PLATEAU.RoadNetwork
                 return;
             if (lane.Parent == this)
                 lane.Parent = null;
+        }
+
+        /// <summary>
+        /// Factoryからのみ呼ぶ. Prev/Nextの更新
+        /// </summary>
+        /// <param name="prev"></param>
+        /// <param name="next"></param>
+        public void SetPrevNext(RnRoadBase prev, RnRoadBase next)
+        {
+            Prev = prev;
+            Next = next;
         }
 
         // ---------------

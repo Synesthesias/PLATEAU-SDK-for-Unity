@@ -13,7 +13,6 @@ using UnityEngine.Serialization;
 
 namespace PLATEAU.RoadNetwork
 {
-    [Serializable]
     public class RnModel
     {
         public const float Epsilon = float.Epsilon;
@@ -151,44 +150,44 @@ namespace PLATEAU.RoadNetwork
             return new RoadNetworkDataGetter(Storage);
         }
 
-        public void SplitLaneByWidth(float roadWidth)
+        public void SplitLaneByWidth(float roadWidth, out List<ulong> failedLinks)
         {
-            var visited = new HashSet<RnLane>();
-
+            failedLinks = new List<ulong>();
+            var visitedLinks = new HashSet<RnLink>();
             foreach (var link in Links)
             {
-                if (link.MainLanes.Count != 1)
-                    continue;
-                var srcLane = link.MainLanes[0];
-                if (srcLane.HasBothBorder == false)
+                if (visitedLinks.Contains(link))
                     continue;
 
-                if (visited.Contains(srcLane))
-                    continue;
-                visited.Add(srcLane);
-                var width = srcLane.CalcWidth();
-                var num = (int)(width / roadWidth);
-                if (num <= 1)
-                    continue;
-
-                var lanes = srcLane.SplitLane(num, true);
-                foreach (var l in lanes)
+                try
                 {
-                    visited.Add(l.Key);
-                    var lane = l.Key;
-                    if (lane.Parent is RnLink parent)
-                    {
-                        parent.RemoveLane(lane);
-                        for (var i = 0; i < l.Value.Count; i++)
-                        {
-                            var newLane = l.Value[i];
-                            if (i >= l.Value.Count / 2)
-                            {
-                                newLane.Reverse();
-                            }
-                            parent.AddMainLane(newLane);
-                        }
-                    }
+                    var linkGroup = link.CreateLinkGroup();
+                    foreach (var l in linkGroup.Links)
+                        visitedLinks.Add(l);
+
+                    linkGroup.Align();
+                    if (linkGroup.IsValid == false)
+                        continue;
+
+                    if (linkGroup.Links.Any(l => l.MainLanes.Count != 1))
+                        continue;
+
+                    if (linkGroup.Links.Any(l => l.MainLanes[0].HasBothBorder == false))
+                        continue;
+
+                    var width = linkGroup.Links.Select(l => l.MainLanes[0].CalcWidth()).Min();
+                    var num = (int)(width / roadWidth);
+                    if (num <= 1)
+                        continue;
+
+                    var leftLaneCount = (num + 1) / 2;
+                    var rightLaneCount = num - leftLaneCount;
+                    linkGroup.SetLaneCount(leftLaneCount, rightLaneCount);
+                }
+                catch (Exception e)
+                {
+                    Debug.LogException(e);
+                    failedLinks.Add(link.DebugMyId);
                 }
             }
         }

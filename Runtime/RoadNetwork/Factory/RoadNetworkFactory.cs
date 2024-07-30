@@ -308,6 +308,7 @@ namespace PLATEAU.RoadNetwork.Factory
             public void BuildConnection(Vertex2PointTable vertexTable, float lod1RoadSize, Dictionary<RnPoint, VertexInfo> visited, out List<RnLineString> sideWalkLineStrings)
             {
                 var lines = new List<RnLineString>();
+                // LOD1の場合は周りにlod1RoadSize分歩道があると仮定して動かす
                 void MoveWay(RnWay way)
                 {
                     if (way == null)
@@ -353,8 +354,7 @@ namespace PLATEAU.RoadNetwork.Factory
                 {
                     var nextTrans = Lanes.Select(w => w.NextBorder).Where(b => b != null).SelectMany(w => w.BothConnectedTrans).Distinct().ToList();
                     var prevTrans = Lanes.Select(w => w.PrevBorder).Where(b => b != null).SelectMany(w => w.BothConnectedTrans).Distinct().ToList();
-                    link.Next = nextTrans.FirstOrDefault(t => t.Road != null)?.Road;
-                    link.Prev = prevTrans.FirstOrDefault(t => t.Road != null)?.Road;
+                    link.SetPrevNext(prevTrans.FirstOrDefault(t => t.Road != null)?.Road, nextTrans.FirstOrDefault(t => t.Road != null)?.Road);
                     if (LodLevel == 1)
                     {
                         var leftLane = link.MainLanes.FirstOrDefault();
@@ -528,8 +528,16 @@ namespace PLATEAU.RoadNetwork.Factory
             // レーンの初期化
             try
             {
+                bool IsTarget(RRoadTypeMask type)
+                {
+                    if (type.IsRoad() == false)
+                        return false;
+                    if (ignoreHighway)
+                        return type.IsHighWay() == false;
+                    return true;
+                }
                 var ret = new RnModel();
-                var roadTarget = targets.Where(t => t.RoadType == RRoadType.Road || (ignoreHighway == false && t.RoadType == RRoadType.HighWay)).ToList();
+                var roadTarget = targets.Where(t => IsTarget(t.RoadType)).ToList();
                 var vertex2Points = new Vertex2PointTable(cellSize, roadTarget.SelectMany(v => v.Vertices));
                 var lineStringTable = new LineStringTable();
                 var tranWorks = CreateTranWorks(roadTarget, vertex2Points, lineStringTable, out var cell2Groups);
@@ -555,7 +563,13 @@ namespace PLATEAU.RoadNetwork.Factory
                     }
                 }
 
-                ret.SplitLaneByWidth(roadSize);
+                ret.SplitLaneByWidth(roadSize, out var failedLinks);
+
+                foreach (var id in failedLinks)
+                {
+                    var ll = ret.Links.FirstOrDefault(l => l.DebugMyId == id);
+                    var hoge = 0;
+                }
 
                 //ret.DebugIdentify();
                 return Task.FromResult(ret);

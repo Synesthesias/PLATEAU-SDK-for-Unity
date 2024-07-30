@@ -5,6 +5,7 @@ using PLATEAU.PolygonMesh;
 using PLATEAU.RoadNetwork.Data;
 using PLATEAU.RoadNetwork.Drawer;
 using PLATEAU.RoadNetwork.Factory;
+using PLATEAU.RoadNetwork.Graph;
 using PLATEAU.RoadNetwork.Mesh;
 using PLATEAU.RoadNetwork.Tester;
 using PLATEAU.Util;
@@ -27,7 +28,8 @@ namespace PLATEAU.RoadNetwork
 
         [field: SerializeField] private RoadNetworkFactory Factory { get; set; } = new RoadNetworkFactory();
 
-        [field: SerializeField] public RnModel RoadNetwork { get; set; }
+        // Editorが重いのでSerializeしない
+        public RnModel RoadNetwork { get; set; }
 
         [Serializable]
         private class TesterTranMeshDrawParam : TesterDrawParam
@@ -35,6 +37,7 @@ namespace PLATEAU.RoadNetwork
             public bool loop = true;
             public float mergeEpsilon = 0.2f;
             public int mergeCellLength = 2;
+            public RRoadTypeMask showRoadTypeMask = RRoadTypeMask.Empty;
         }
 
         [SerializeField] private TesterTranMeshDrawParam showTranMesh;
@@ -166,6 +169,9 @@ namespace PLATEAU.RoadNetwork
                         continue;
                     if (t.visible == false)
                         continue;
+
+                    if (t.RoadType.HasAnyFlag(showTranMesh.showRoadTypeMask) == false)
+                        continue;
                     DebugEx.DrawLines(t.Vertices, showTranMesh.loop, showTranMesh.color);
                 }
             }
@@ -223,8 +229,9 @@ namespace PLATEAU.RoadNetwork
         /// </summary>
         /// <param name="epsilon"></param>
         /// <returns></returns>
-        private List<RoadNetworkTranMesh> CreateTranMeshes(float epsilon)
+        private List<RoadNetworkTranMesh> CreateTranMeshes()
         {
+            var epsilon = Factory.cellSize;
             var ret = new List<RoadNetworkTranMesh>();
             foreach (var c in mergedConvertedCityObjects)
             {
@@ -249,13 +256,14 @@ namespace PLATEAU.RoadNetwork
             return ret;
         }
 
-        private async Task<RnModel> CreateRoadNetwork()
+        private async Task<RnModel> CreateRoadNetworkAsync()
         {
             var ret = await Factory.CreateNetworkAsync(tranMeshes);
             if (saveTmpData == false)
             {
                 tranMeshes = new List<RoadNetworkTranMesh>();
             }
+
 
             return ret;
         }
@@ -277,16 +285,16 @@ namespace PLATEAU.RoadNetwork
                     }
                     break;
                 case CreateMode.TranMesh:
-                    tranMeshes = CreateTranMeshes(Factory.cellSize);
+                    tranMeshes = CreateTranMeshes();
                     break;
                 case CreateMode.RoadNetwork:
-                    RoadNetwork = await Factory.CreateNetworkAsync(tranMeshes);
+                    RoadNetwork = await CreateRoadNetworkAsync();
                     break;
                 case CreateMode.All:
                     convertedCityObjects = await ConvertCityObjectAsync();
                     mergedConvertedCityObjects = MergeVertices();
-                    tranMeshes = CreateTranMeshes(Factory.cellSize);
-                    RoadNetwork = await Factory.CreateNetworkAsync(tranMeshes);
+                    tranMeshes = CreateTranMeshes();
+                    RoadNetwork = await CreateRoadNetworkAsync();
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();

@@ -22,11 +22,11 @@ namespace PLATEAU.RoadNetwork.Factory
         public List<Vector3> Vertices { get; set; }
 
         [field: SerializeField]
-        public RRoadType RoadType { get; set; }
+        public RRoadTypeMask RoadType { get; set; }
 
         public bool visible = true;
 
-        public RoadNetworkTranMesh(PLATEAUCityObjectGroup cityObjectGroup, RRoadType roadType, int lodLevel, List<Vector3> vertices)
+        public RoadNetworkTranMesh(PLATEAUCityObjectGroup cityObjectGroup, RRoadTypeMask roadType, int lodLevel, List<Vector3> vertices)
         {
             CityObjectGroup = cityObjectGroup;
             RoadType = roadType;

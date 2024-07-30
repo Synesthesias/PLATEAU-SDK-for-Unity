@@ -32,29 +32,31 @@ namespace PLATEAU.RoadNetwork
             return 0;
         }
 
-        public static RRoadType GetRoadType(this CityInfo.CityObjectList.CityObject self)
+        public static RRoadTypeMask GetRoadType(this CityInfo.CityObjectList.CityObject self)
         {
             // LOD3からチェックする
+            var ret = RRoadTypeMask.Empty;
             if (self.AttributesMap.TryGetValue("tran:function", out var tranFunction))
             {
                 var str = tranFunction.StringValue;
-                if (new string[] { "車道部", "車道交差部" }.Contains(str))
+                if (new[] { "車道部", "車道交差部" }.Contains(str))
                 {
-                    return RRoadType.Road;
+                    ret |= RRoadTypeMask.Road;
                 }
 
                 if (str == "歩道部")
                 {
-                    return RRoadType.SideWalk;
+                    ret |= RRoadTypeMask.SideWalk;
                 }
 
                 if (tranFunction.StringValue == "島")
                 {
-                    return RRoadType.Median;
+                    ret |= RRoadTypeMask.Median;
                 }
+
                 if (str.Contains("高速"))
                 {
-                    return RRoadType.HighWay;
+                    ret |= RRoadTypeMask.HighWay;
                 }
             }
 
@@ -64,11 +66,11 @@ namespace PLATEAU.RoadNetwork
                 var str = tranClass.StringValue;
                 if (str == "道路")
                 {
-                    return RRoadType.Road;
+                    ret |= RRoadTypeMask.Road;
                 }
             }
 
-            return RRoadType.Undefined;
+            return ret;
         }
 
     }

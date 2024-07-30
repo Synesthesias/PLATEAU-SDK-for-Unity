@@ -28,28 +28,29 @@ namespace PLATEAU.RoadNetwork.Graph
     /// <summary>
     /// 道路タイプ
     /// </summary>
-    public enum RRoadType
+    [Flags]
+    public enum RRoadTypeMask
     {
         /// <summary>
-        /// 道路
+        /// 何もなし
         /// </summary>
-        Road,
+        Empty = 0,
+        /// <summary>
+        /// 車道
+        /// </summary>
+        Road = 1 << 0,
         /// <summary>
         /// 歩道
         /// </summary>
-        SideWalk,
+        SideWalk = 1 << 1,
         /// <summary>
         /// 中央分離帯
         /// </summary>
-        Median,
+        Median = 1 << 2,
         /// <summary>
         /// 高速道路
         /// </summary>
-        HighWay,
-        /// <summary>
-        /// 未定義
-        /// </summary>
-        Undefined,
+        HighWay = 1 << 3,
     }
 
     public static class RRoadTypeEx
@@ -57,45 +58,87 @@ namespace PLATEAU.RoadNetwork.Graph
         /// <summary>
         /// 車道部分
         /// </summary>
-        /// <param name="type"></param>
+        /// <param name="self"></param>
         /// <returns></returns>
-        public static bool IsRoad(this RRoadType type)
+        public static bool IsRoad(this RRoadTypeMask self)
         {
-            return type == RRoadType.Road || type == RRoadType.HighWay;
+            return (self & RRoadTypeMask.Road) != 0;
         }
 
         /// <summary>
-        /// 歩道/中央分離帯
+        /// 交通道路
         /// </summary>
-        /// <param name="type"></param>
+        /// <param name="self"></param>
         /// <returns></returns>
-        public static bool IsSideWalk(this RRoadType type)
+        public static bool IsHighWay(this RRoadTypeMask self)
         {
-            return type == RRoadType.SideWalk || type == RRoadType.Median;
+            return (self & RRoadTypeMask.HighWay) != 0;
+        }
+
+        /// <summary>
+        /// 歩道
+        /// </summary>
+        /// <param name="self"></param>
+        /// <returns></returns>
+        public static bool IsSideWalk(this RRoadTypeMask self)
+        {
+            return (self & RRoadTypeMask.SideWalk) != 0;
+        }
+
+        /// <summary>
+        /// 歩道
+        /// </summary>
+        /// <param name="self"></param>
+        /// <returns></returns>
+        public static bool IsMedian(this RRoadTypeMask self)
+        {
+            return (self & RRoadTypeMask.Median) != 0;
+        }
+
+        /// <summary>
+        /// selfがflagのどれかを持っているかどうか
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="flag"></param>
+        /// <returns></returns>
+        public static bool HasAnyFlag(this RRoadTypeMask self, RRoadTypeMask flag)
+        {
+            return (self & flag) != 0;
         }
     }
 
     /// <summary>
     /// 接点
     /// </summary>
+    [Serializable]
     public class RVertex
     {
+        //----------------------------------
+        // start: フィールド
+        //----------------------------------
+        [SerializeField]
         private List<REdge> edges = new List<REdge>();
 
         /// <summary>
         /// 位置
         /// </summary>
+        [field: SerializeField]
         public Vector3 Position { get; set; }
+
+        /// <summary>
+        /// 頂点属性
+        /// </summary>
+        [field: SerializeField]
+        public RVertexType Types { get; set; }
+
+        //----------------------------------
+        // start: フィールド
+        //----------------------------------
 
         /// <summary>
         /// 接続辺
         /// </summary>
         public IReadOnlyList<REdge> Edges => edges;
-
-        /// <summary>
-        /// 頂点属性
-        /// </summary>
-        public RVertexType Types { get; set; }
 
         /// <summary>
         /// 基本呼び出し禁止. 接続辺追加
@@ -215,6 +258,7 @@ namespace PLATEAU.RoadNetwork.Graph
     /// <summary>
     /// 辺
     /// </summary>
+    [Serializable]
     public class REdge
     {
         public enum VertexType
@@ -223,9 +267,18 @@ namespace PLATEAU.RoadNetwork.Graph
             V1,
         }
 
+        //----------------------------------
+        // start: フィールド
+        //----------------------------------
+        [SerializeField]
         private List<RPolygon> polygons = new List<RPolygon>();
 
+        [SerializeField]
         private RVertex[] vertices = new RVertex[2];
+
+        //----------------------------------
+        // end: フィールド
+        //----------------------------------
 
         /// <summary>
         /// 開始点
@@ -246,7 +299,6 @@ namespace PLATEAU.RoadNetwork.Graph
         /// 接続頂点(2個)
         /// </summary>
         public IReadOnlyList<RVertex> Vertices => vertices;
-
 
         public REdge(RVertex v0, RVertex v1)
         {
@@ -322,8 +374,12 @@ namespace PLATEAU.RoadNetwork.Graph
     /// <summary>
     /// 多角形
     /// </summary>
+    [Serializable]
     public class RPolygon
     {
+        //----------------------------------
+        // start: フィールド
+        //----------------------------------
         /// <summary>
         /// 表示非表示
         /// </summary>
@@ -340,7 +396,7 @@ namespace PLATEAU.RoadNetwork.Graph
         /// 道路タイプ
         /// </summary>
         [field: SerializeField]
-        public RRoadType RoadType { get; set; }
+        public RRoadTypeMask RoadType { get; set; }
 
         /// <summary>
         /// LodLevel
@@ -360,12 +416,16 @@ namespace PLATEAU.RoadNetwork.Graph
         [SerializeField]
         private List<REdge> edges = new List<REdge>();
 
+        //----------------------------------
+        // end: フィールド
+        //----------------------------------
+
         /// <summary>
         /// 構成辺
         /// </summary>
         public IReadOnlyList<REdge> Edges => edges;
 
-        public RPolygon(RGraph graph, PLATEAUCityObjectGroup cityObjectGroup, RRoadType roadType, int lodLevel)
+        public RPolygon(RGraph graph, PLATEAUCityObjectGroup cityObjectGroup, RRoadTypeMask roadType, int lodLevel)
         {
             Graph = graph;
             CityObjectGroup = cityObjectGroup;

@@ -1,4 +1,5 @@
-﻿using PLATEAU.RoadNetwork.Data;
+﻿using PLATEAU.CityInfo;
+using PLATEAU.RoadNetwork.Data;
 using PLATEAU.Util;
 using System;
 using System.Collections.Generic;
@@ -29,7 +30,7 @@ namespace PLATEAU.RoadNetwork.Drawer
         [SerializeField] private bool showSplitLane = false;
         [SerializeField] private float splitLaneRate = 0.5f;
         [SerializeField] private float yScale = 1f;
-
+        [SerializeField] private PLATEAUCityObjectGroup targetTran = null;
         [Serializable]
         private class DrawOption
         {
@@ -54,11 +55,33 @@ namespace PLATEAU.RoadNetwork.Drawer
         private class LinkOption
         {
             public bool visible = true;
+            public int showLinkId = -1;
             public bool showMedian = true;
             public bool showId = false;
             public bool showLaneConnection = false;
             public bool showLinkGroup = false;
             public bool showSideEdge = false;
+            public DrawOption showNextConnection = new DrawOption();
+            public DrawOption showPrevConnection = new DrawOption();
+            [Serializable]
+            public class ShowInfo
+            {
+                public int prevId = -1;
+
+                public int nextId = -1;
+
+                // 左側レーン数
+                public int leftLaneCount = -1;
+                // 右側レーン数
+                public int rightLaneCount = -1;
+
+                public bool changeLaneCount = false;
+
+                // 中央分離帯幅
+                public float medianWidth = 0;
+
+            }
+            public ShowInfo targetInfo = new ShowInfo();
         }
 
         [SerializeField] private LinkOption linkOp = new LinkOption();
@@ -269,6 +292,67 @@ namespace PLATEAU.RoadNetwork.Drawer
             }
         }
 
+        private void DrawLink(RnLink link)
+        {
+
+            if ((ulong)linkOp.showLinkId == link.DebugMyId)
+            {
+                linkOp.targetInfo.prevId = (int)(link.Prev?.DebugMyId ?? ulong.MaxValue);
+                linkOp.targetInfo.nextId = (int)(link.Next?.DebugMyId ?? ulong.MaxValue);
+                linkOp.targetInfo.leftLaneCount = link.GetLeftLaneCount();
+                linkOp.targetInfo.rightLaneCount = link.GetRightLaneCount();
+            }
+
+            if (linkOp.visible == false)
+                return;
+            if (linkOp.showLinkId >= 0 && link.DebugMyId != (ulong)linkOp.showLinkId)
+                return;
+
+            if (targetTran && targetTran != link.TargetTran)
+                return;
+
+            if (linkOp.showId)
+                DebugEx.DrawString($"L[{link.DebugMyId}]", link.GetCenter());
+
+            if (linkOp.showMedian)
+                DrawLane(link.MedianLane);
+
+            void DrawLinkConnection(DrawOption op, RnRoadBase target)
+            {
+                if (op.visible == false)
+                    return;
+                if (target == null)
+                    return;
+                var from = link.GetCenter();
+                var to = target.GetCenter();
+                DrawArrow(from, to, bodyColor: op.color);
+            }
+
+            DrawLinkConnection(linkOp.showNextConnection, link.Next);
+            DrawLinkConnection(linkOp.showPrevConnection, link.Prev);
+
+            Vector3? last = null;
+            foreach (var lane in link.AllLanes)
+            {
+                DrawLane(lane);
+                if (linkOp.showLaneConnection)
+                {
+                    if (last != null)
+                    {
+                        DrawArrow(last.Value, lane.GetCenter());
+                    }
+
+                    last = lane.GetCenter();
+                }
+            }
+
+            if (linkOp.showSideEdge)
+            {
+                DrawWay(link.GetMergedSideWay(RnDir.Left), Color.red);
+                DrawWay(link.GetMergedSideWay(RnDir.Right), Color.blue);
+            }
+        }
+
         /// <summary>
         /// Link描画
         /// </summary>
@@ -312,52 +396,48 @@ namespace PLATEAU.RoadNetwork.Drawer
 
             foreach (var link in roadNetwork.Links)
             {
-                if (linkOp.showId)
-                    DebugEx.DrawString($"L[{link.DebugMyId}]", link.GetCenter());
+                DrawLink(link);
+            }
+        }
 
-                if (linkOp.showMedian)
-                    DrawLane(link.MedianLane);
+        private void DrawNode(RnNode node)
+        {
+            if (nodeOp.visible == false)
+                return;
 
-                Vector3? last = null;
-                foreach (var lane in link.AllLanes)
+            if (targetTran && targetTran != node.TargetTran)
+                return;
+
+            for (var i = 0; i < node.Neighbors.Count; ++i)
+            {
+                var n = node.Neighbors[i];
+                if (nodeOp.showBorder.visible)
+                    DrawWay(n.Border, nodeOp.showBorder.color);
+
+                if (nodeOp.showSplitTrack.visible)
                 {
-                    DrawLane(lane);
-                    if (linkOp.showLaneConnection)
+                    for (var j = i + 1; j < node.Neighbors.Count; ++j)
                     {
-                        if (last != null)
+                        var n2 = node.Neighbors[j];
+                        if (n == n2)
+                            continue;
+                        var way = node.CalcTrackWay(n.Link, n2.Link);
+                        if (way != null)
                         {
-                            DrawArrow(last.Value, lane.GetCenter());
+                            foreach (var w in way.BothWays)
+                                DrawWay(w, nodeOp.showSplitTrack.color);
                         }
-
-                        last = lane.GetCenter();
                     }
                 }
+            }
 
-                if (linkOp.showSideEdge)
+            if (nodeOp.showTrack.visible)
+            {
+                foreach (var l in node.Lanes)
                 {
-                    DrawWay(link.GetMergedSideWay(RnDir.Left), Color.red);
-                    DrawWay(link.GetMergedSideWay(RnDir.Right), Color.blue);
+                    foreach (var w in l.BothWays)
+                        DrawWay(w, nodeOp.showTrack.color);
                 }
-
-                //foreach (var i in Enumerable.Range(0, l.vertices.Count))
-                //{
-                //    var v = l.vertices[i];
-                //    var n = l.GetVertexNormal(i).normalized;
-                //    if (showNormal)
-                //    {
-                //        DrawLine(v, v + n * 0.3f, color: Color.yellow);
-                //    }
-
-                //    if (showInsideNormalMidPoint)
-                //    {
-                //        if (l.HalfLineIntersectionXz(new Ray(v - n * 0.01f, -n), out var intersection))
-                //        {
-                //            DebugUtil.DrawArrow(v, (v + intersection) * 0.5f);
-                //        }
-                //    }
-                //}
-
-
             }
         }
 
@@ -367,42 +447,12 @@ namespace PLATEAU.RoadNetwork.Drawer
         /// <param name="roadNetwork"></param>
         private void DrawNodes(RnModel roadNetwork)
         {
+            if (nodeOp.visible == false)
+                return;
+
             foreach (var node in roadNetwork.Nodes)
             {
-                if (nodeOp.visible == false)
-                    break;
-
-                for (var i = 0; i < node.Neighbors.Count; ++i)
-                {
-                    var n = node.Neighbors[i];
-                    if (nodeOp.showBorder.visible)
-                        DrawWay(n.Border, nodeOp.showBorder.color);
-
-                    if (nodeOp.showSplitTrack.visible)
-                    {
-                        for (var j = i + 1; j < node.Neighbors.Count; ++j)
-                        {
-                            var n2 = node.Neighbors[j];
-                            if (n == n2)
-                                continue;
-                            var way = node.CalcTrackWay(n.Link, n2.Link);
-                            if (way != null)
-                            {
-                                foreach (var w in way.BothWays)
-                                    DrawWay(w, nodeOp.showSplitTrack.color);
-                            }
-                        }
-                    }
-                }
-
-                if (nodeOp.showTrack.visible)
-                {
-                    foreach (var l in node.Lanes)
-                    {
-                        foreach (var w in l.BothWays)
-                            DrawWay(w, nodeOp.showTrack.color);
-                    }
-                }
+                DrawNode(node);
             }
         }
 
