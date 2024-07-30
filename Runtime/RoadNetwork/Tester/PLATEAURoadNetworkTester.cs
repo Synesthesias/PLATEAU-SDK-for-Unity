@@ -92,6 +92,9 @@ namespace PLATEAU.RoadNetwork
         [SerializeField]
         private CreateMode createMode = CreateMode.ConvertCityObject;
 
+        // 途中状況を保存する
+        [SerializeField]
+        private bool saveTmpData = false;
 
         internal void DrawMesh(ConvertedCityObject.ConvertedMesh mesh, ConvertedCityObject.SubMesh subMesh, Matrix4x4 mat, Color? color = null,
             float duration = 0f, bool depthTest = true)
@@ -191,12 +194,35 @@ namespace PLATEAU.RoadNetwork
                 .ToList();
         }
 
+        /// <summary>
+        /// PLATEAUCityObjectGroupを変換する
+        /// </summary>
+        /// <returns></returns>
         private async Task<List<ConvertedCityObject>> ConvertCityObjectAsync()
         {
             var targets = GetTargetCityObjects();
             return (await RnEx.ConvertCityObjectsAsync(targets)).ConvertedCityObjects;
         }
 
+        /// <summary>
+        /// convertedCityObjectsの頂点をマージしたものを返す
+        /// </summary>
+        /// <returns></returns>
+        private List<ConvertedCityObject> MergeVertices()
+        {
+            if (convertedCityObjects == null)
+                return new List<ConvertedCityObject>();
+            var ret = RnEx.MergeVertices(convertedCityObjects, showTranMesh.mergeEpsilon, showTranMesh.mergeCellLength);
+            if (saveTmpData == false)
+                convertedCityObjects = new List<ConvertedCityObject>();
+            return ret;
+        }
+
+        /// <summary>
+        /// ConvertedCityObjectからTranMeshを生成する
+        /// </summary>
+        /// <param name="epsilon"></param>
+        /// <returns></returns>
         private List<RoadNetworkTranMesh> CreateTranMeshes(float epsilon)
         {
             var ret = new List<RoadNetworkTranMesh>();
@@ -215,26 +241,23 @@ namespace PLATEAU.RoadNetwork
                 }
             }
 
+            if (saveTmpData == false)
+            {
+                mergedConvertedCityObjects = new List<ConvertedCityObject>();
+            }
+
             return ret;
         }
 
-        private void MergeVertices()
+        private async Task<RnModel> CreateRoadNetwork()
         {
-            try
+            var ret = await Factory.CreateNetworkAsync(tranMeshes);
+            if (saveTmpData == false)
             {
-                mergedConvertedCityObjects = convertedCityObjects.Select(c => c.DeepCopy()).ToList();
-                var vertexTable = GeoGraphEx.MergeVertices(
-                    mergedConvertedCityObjects.SelectMany(c => c.Meshes.SelectMany(m => m.Vertices)),
-                    showTranMesh.mergeEpsilon, showTranMesh.mergeCellLength);
-                foreach (var m in mergedConvertedCityObjects.SelectMany(c => c.Meshes))
-                {
-                    m.Merge(vertexTable);
-                }
+                tranMeshes = new List<RoadNetworkTranMesh>();
             }
-            catch (Exception e)
-            {
-                Debug.LogException(e);
-            }
+
+            return ret;
         }
 
         public async Task CreateNetwork()
@@ -245,7 +268,7 @@ namespace PLATEAU.RoadNetwork
                     convertedCityObjects = await ConvertCityObjectAsync();
                     break;
                 case CreateMode.MergeConvertCityObject:
-                    MergeVertices();
+                    mergedConvertedCityObjects = MergeVertices();
                     break;
                 case CreateMode.SeparateConvertCityObject:
                     foreach (var m in mergedConvertedCityObjects.SelectMany(c => c.Meshes))
@@ -261,7 +284,7 @@ namespace PLATEAU.RoadNetwork
                     break;
                 case CreateMode.All:
                     convertedCityObjects = await ConvertCityObjectAsync();
-                    MergeVertices();
+                    mergedConvertedCityObjects = MergeVertices();
                     tranMeshes = CreateTranMeshes(Factory.cellSize);
                     RoadNetwork = await Factory.CreateNetworkAsync(tranMeshes);
                     break;

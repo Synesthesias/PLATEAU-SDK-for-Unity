@@ -49,6 +49,35 @@ namespace PLATEAU.RoadNetwork
                 yield return self.GetRootNodeAt(i);
         }
 
+        /// <summary>
+        /// targetsの頂点をマージする
+        /// </summary>
+        /// <param name="targets"></param>
+        /// <param name="mergeEpsilon"></param>
+        /// <param name="mergeCellLength"></param>
+        /// <returns></returns>
+        public static List<ConvertedCityObject> MergeVertices(List<ConvertedCityObject> targets, float mergeEpsilon, int mergeCellLength)
+        {
+            try
+            {
+                var ret = targets.Select(c => c.DeepCopy()).ToList();
+                var vertexTable = GeoGraphEx.MergeVertices(
+                    ret.SelectMany(c => c.Meshes.SelectMany(m => m.Vertices)),
+                    mergeEpsilon, mergeCellLength);
+                foreach (var m in ret.SelectMany(c => c.Meshes))
+                {
+                    m.Merge(vertexTable);
+                }
+
+                return ret;
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
+                return new List<ConvertedCityObject>();
+            }
+        }
+
         [Serializable]
         internal class ConvertCityObjectResult
         {
