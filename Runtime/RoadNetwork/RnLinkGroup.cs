@@ -147,6 +147,14 @@ namespace PLATEAU.RoadNetwork
                         foreach (var s in segments)
                             line.AddPointOrSkip(new RnPoint(s.Segment.Start), ep);
                         line.AddPointOrSkip(nextBorder.GetPoint(-1), ep);
+
+
+                        // 自己交差があれば削除する
+                        var plane = AxisPlane.Xz;
+                        GeoGraph2D.RemoveSelfCrossing(line.Points
+                            , t => t.Vertex.GetTangent(plane)
+                            , (p1, p2, p3, p4, inter, f1, f2) => new RnPoint(Vector3.Lerp(p1, p2, f1)));
+
                         right = new RnWay(line, false, true);
                     }
 

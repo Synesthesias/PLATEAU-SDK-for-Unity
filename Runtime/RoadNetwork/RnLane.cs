@@ -856,7 +856,11 @@ namespace PLATEAU.RoadNetwork
                         else
                             AddPoint(nextBorder.Points.First());
 
-                        GeoGraph2D.RemoveSelfCrossing(points, t => t.Vertex.Xz(), (p1, p2, p3, p4, inter, f1, f2) => new RnPoint(Vector3.Lerp(p1, p2, f1)));
+                        GeoGraph2D.RemoveSelfCrossing(
+                            points
+                            , t => t.Vertex.Xz()
+                            , (p1, p2, p3, p4, inter, f1, f2) => new RnPoint(Vector3.Lerp(p1, p2, f1))
+                            );
                         var rightLine = RnLineString.Create(points);
                         r = new RnWay(rightLine, false, targetLane.RightWay.IsReverseNormal);
                     }
