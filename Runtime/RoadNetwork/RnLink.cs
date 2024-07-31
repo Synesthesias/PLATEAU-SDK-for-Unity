@@ -193,23 +193,6 @@ namespace PLATEAU.RoadNetwork
         }
 
         /// <summary>
-        /// 中央分離帯の幅を設定する. 中央分離帯が作られていない時(左右どっちかしかレーンが無い時)は無視される
-        /// </summary>
-        /// <param name="width"></param>
-        /// <param name="changeAllLaneWidth"></param>
-        public bool SetMedianWidth(float width, bool changeAllLaneWidth = false)
-        {
-            var nowWidth = GetMedianWidth();
-            if (MedianLane == null)
-                return false;
-
-            var deltaWidth = width - nowWidth;
-            medianLane.LeftWay.MoveAlongNormal(deltaWidth * 0.5f);
-            medianLane.RightWay.MoveAlongNormal(deltaWidth * 0.5f);
-            return true;
-        }
-
-        /// <summary>
         /// 全てのレーンのBorderを統合した一つの大きなBorderを返す
         /// WayはLeft -> Right方向になっている
         /// </summary>

@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Analytics;
 
 namespace PLATEAU.RoadNetwork
 {
@@ -201,16 +202,38 @@ namespace PLATEAU.RoadNetwork
                 Links[i].ReplaceLanes(lanes);
             }
 
-            if (leftCount > 0 && rightCount > 0)
-            {
-                CreateMedian();
-            }
-            else
+            if (leftCount == 0 || rightCount == 0)
             {
                 foreach (var l in Links)
                     l.SetMedianLane(null);
             }
+            else
+            {
+                // 中央分離帯があるリンクだけ更新する(ない場合はなにもしない
+                CreateMedianOrSkip(l => l.MedianLane != null);
+            }
         }
+
+
+        /// <summary>
+        /// 中央分離帯の幅を設定する.
+        /// </summary>
+        /// <param name="width"></param>
+        /// <param name="moveOption"></param>
+        public bool SetMedianWidth(float width, LaneWayMoveOption moveOption)
+        {
+            if (GetLeftLaneCount() == 0 || GetRightLaneCount() == 0)
+                return false;
+
+            // 中央分離帯があるリンクは一度作成する
+            CreateMedianOrSkip(l => l.MedianLane == null);
+            foreach (var l in Links)
+            {
+                l.MedianLane?.TrySetWidth(width, moveOption);
+            }
+            return true;
+        }
+
 
         /// <summary>
         /// 左側レーン数を変更する
@@ -233,11 +256,14 @@ namespace PLATEAU.RoadNetwork
         /// <summary>
         /// 中央分離帯を作成するかスキップする
         /// </summary>
-        private void CreateMedian()
+        private void CreateMedianOrSkip(Func<RnLink, bool> createTarget)
         {
             Dictionary<RnPoint, RnPoint> replace = new Dictionary<RnPoint, RnPoint>();
             foreach (var l in Links)
             {
+                if (createTarget != null && createTarget(l) == false)
+                    continue;
+
                 var centerLeft = l.GetLeftLanes().Last();
                 var rightWay = centerLeft.Replace2Clone(RnDir.Right, true);
                 var leftWay = centerLeft.RightWay;

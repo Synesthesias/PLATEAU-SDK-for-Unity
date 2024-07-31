@@ -302,7 +302,6 @@ namespace PLATEAU.RoadNetwork.Drawer
 
         private void DrawLink(RnLink link)
         {
-
             if ((ulong)linkOp.showLinkId == link.DebugMyId)
             {
                 linkOp.targetInfo.prevId = (int)(link.Prev?.DebugMyId ?? ulong.MaxValue);

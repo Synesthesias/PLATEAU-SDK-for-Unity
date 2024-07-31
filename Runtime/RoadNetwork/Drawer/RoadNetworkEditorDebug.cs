@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace PLATEAU.RoadNetwork.Drawer
 {
@@ -51,10 +52,10 @@ namespace PLATEAU.RoadNetwork.Drawer
             [Serializable]
             public class LaneWidthEdit : WithButton
             {
-                public bool moveLeft = true;
+                public LaneWayMoveOption moveOption = LaneWayMoveOption.MoveBothWay;
                 public float width = 0f;
             }
-            //public LaneWidthEdit widthEdit = new LaneWidthEdit();
+            public LaneWidthEdit widthEdit = new LaneWidthEdit();
 
             ulong laneNormalId = ulong.MaxValue;
             private Dictionary<RnDir, List<Vector2>> vertexNormals = new Dictionary<RnDir, List<Vector2>>();
@@ -118,10 +119,10 @@ namespace PLATEAU.RoadNetwork.Drawer
                     }
                 }
 
-                //if (widthEdit.Button())
-                //{
-                //    lane.SetLaneWidth(widthEdit.width, widthEdit.moveLeft);
-                //}
+                if (widthEdit.Button())
+                {
+                    lane.TrySetWidth(widthEdit.width, widthEdit.moveOption);
+                }
             }
         }
 
@@ -156,6 +157,9 @@ namespace PLATEAU.RoadNetwork.Drawer
 
                 // 中央分離帯幅
                 public float medianWidth = 0;
+                public LaneWayMoveOption medianWidthOption = LaneWayMoveOption.MoveBothWay;
+                // 中央分離帯変更フラグ
+                public bool changeMedianWidth = false;
 
             }
             public ShowInfo showInfo = new ShowInfo();
@@ -195,9 +199,10 @@ namespace PLATEAU.RoadNetwork.Drawer
                     }
                     showInfo.changeLaneCount = false;
                 }
-                if (Math.Abs(showInfo.medianWidth - link.GetMedianWidth()) > 1e-1f)
+                if (showInfo.changeMedianWidth)
                 {
-                    link.SetMedianWidth(showInfo.medianWidth);
+                    linkGroup.SetMedianWidth(showInfo.medianWidth, showInfo.medianWidthOption);
+                    showInfo.changeMedianWidth = false;
                 }
             }
         }

@@ -163,6 +163,7 @@ namespace PLATEAU.Util.GeoGraph
         /// <summary>
         /// 点vから線分に対して最も近い点を返す
         /// </summary>
+        /// <param name="self"></param>
         /// <param name="v"></param>
         /// <returns></returns>
         public static Vector2 GetNearestPoint(this LineSegment2D self, Vector2 v)
@@ -171,18 +172,33 @@ namespace PLATEAU.Util.GeoGraph
         }
 
         /// <summary>
-        /// tにはStartからの距離が入る
+        /// 点vから線分に対して最も近い点を返す. distanceFromSegmentStartにはStartからの距離(符号あり)が入る
         /// </summary>
         /// <param name="self"></param>
         /// <param name="v"></param>
-        /// <param name="t"></param>
+        /// <param name="distanceFromSegmentStart"></param>
         /// <returns></returns>
-        public static Vector2 GetNearestPoint(this LineSegment2D self, Vector2 v, out float t)
+        public static Vector2 GetNearestPoint(this LineSegment2D self, Vector2 v, out float distanceFromSegmentStart)
         {
-            t = Vector3.Dot(self.Direction, v - self.Start);
-            t = Mathf.Clamp(t, 0f, self.Magnitude);
-            return self.Start + t * self.Direction;
+            distanceFromSegmentStart = Vector2.Dot(self.Direction, v - self.Start);
+            distanceFromSegmentStart = Mathf.Clamp(distanceFromSegmentStart, 0f, self.Magnitude);
+            return self.Start + distanceFromSegmentStart * self.Direction;
+        }
 
+        /// <summary>
+        /// 点vから線分に対して最も近い点を返す. distanceFromSegmentStartにはStartからの距離(符号あり)が入る.
+        /// tはClampする前の距離をself.Magnitudeで割ったもの t > 1 or t < 0の場合は線分の外側
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="v"></param>
+        /// <param name="distanceFromSegmentStart"></param>
+        /// <returns></returns>
+        public static Vector2 GetNearestPoint(this LineSegment2D self, Vector2 v, out float distanceFromSegmentStart, out float t)
+        {
+            distanceFromSegmentStart = Vector2.Dot(self.Direction, v - self.Start);
+            t = distanceFromSegmentStart / self.Magnitude;
+            distanceFromSegmentStart = Mathf.Clamp(distanceFromSegmentStart, 0f, self.Magnitude);
+            return self.Start + distanceFromSegmentStart * self.Direction;
         }
 
         /// <summary>

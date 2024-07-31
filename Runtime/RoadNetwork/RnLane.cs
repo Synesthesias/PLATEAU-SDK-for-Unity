@@ -65,6 +65,17 @@ namespace PLATEAU.RoadNetwork
         RightOnly = 1 << 1,
     }
 
+    /// <summary>
+    /// レーンを動かすときのオプション
+    /// </summary>
+    public enum LaneWayMoveOption
+    {
+        // 左だけ動かす
+        MoveLeftWay,
+        MoveRightWay,
+        MoveBothWay
+    }
+
     public class RnLane : ARnParts<RnLane>
     {
         //----------------------------------
@@ -125,6 +136,10 @@ namespace PLATEAU.RoadNetwork
         /// </summary>
         public bool HasBothBorder => IsValidWay && PrevBorder.IsValidOrDefault() && NextBorder.IsValidOrDefault();
 
+        //デシリアライズの為に必要
+        public RnLane() { }
+
+
         public RnLane(RnWay leftWay, RnWay rightWay, RnWay startBorder, RnWay endBorder)
         {
             LeftWay = leftWay;
@@ -133,8 +148,6 @@ namespace PLATEAU.RoadNetwork
             NextBorder = endBorder;
         }
 
-        //デシリアライズの為に必要
-        public RnLane() { }
 
         /// <summary>
         /// borderと接続しているレーンを全て取得
@@ -366,6 +379,9 @@ namespace PLATEAU.RoadNetwork
             return RnLaneBorderDir.Right2Left;
         }
 
+        // ---------------
+        // Static Methods
+        // ---------------
 
         public static RnLane CreateOneWayLane(RnWay way)
         {
@@ -548,6 +564,97 @@ namespace PLATEAU.RoadNetwork
         public static float CalcWidth(this RnLane self)
         {
             return Mathf.Min(self.CalcNextBorderWidth(), self.CalcPrevBorderWidth());
+        }
+
+        private static bool TrySetWidth(this RnLane self, Func<int, float, float> getWidth, bool moveLeft)
+        {
+            if (self.HasBothBorder == false)
+            {
+                Debug.Log($"[TrySetWidth] Lane {self.DebugMyId} HasBothBorder == false");
+                return false;
+            }
+            var plane = AxisPlane.Xz;
+            // 動かさない
+            var fixWay = moveLeft ? self.RightWay : self.LeftWay;
+            var moveWay = moveLeft ? self.LeftWay : self.RightWay;
+
+            var fixWayIndex = 0;
+            for (var i = 0; i < moveWay.Count; ++i)
+            {
+                var v = moveWay[i].GetTangent(plane);
+
+                (Vector2 nearest, float t) GetFixSeg(int index)
+                {
+                    var fixEnd = Mathf.Min(index + 1, fixWay.Count - 1);
+                    var fixStart = fixEnd - 1;
+                    var seg = new LineSegment2D(fixWay[fixStart].GetTangent(plane), fixWay[fixEnd].GetTangent(plane));
+                    var nextPos = seg.GetNearestPoint(v, out var dist, out var t2);
+                    return (nextPos, t2);
+                }
+
+                var lastWayIndex = fixWayIndex;
+                var (pos, t) = GetFixSeg(fixWayIndex);
+
+                if (t < 0f || t > 1f)
+                {
+                    for (var nextFixWayIndex = fixWayIndex + 1; nextFixWayIndex < fixWay.Count; nextFixWayIndex++)
+                    {
+                        var (nextPos, t2) = GetFixSeg(nextFixWayIndex);
+                        if ((nextPos - v).sqrMagnitude < (pos - v).sqrMagnitude)
+                        {
+                            t = t2;
+                            pos = nextPos;
+                            fixWayIndex = nextFixWayIndex;
+
+                            if (t is >= 0f and <= 1f)
+                                break;
+                        }
+                    }
+                }
+
+                var d = v - pos;
+                var nowW = d.magnitude;
+                if (nowW <= 0f)
+                    d = moveWay.GetVertexNormal(i);
+                var width = getWidth(i, nowW);
+
+                var newPos = d.normalized * width + pos;
+                moveWay.GetPoint(i).Vertex = moveWay[i].Put(plane, newPos);
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Laneの幅を設定する. 頂点ごとに計算するため割と重い
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="width"></param>
+        /// <param name="moveOption"></param>
+        public static bool TrySetWidth(this RnLane self, float width, LaneWayMoveOption moveOption)
+        {
+            if (self.HasBothBorder == false)
+            {
+                Debug.Log($"[TrySetWidth] Lane {self.DebugMyId} HasBothBorder == false");
+                return false;
+            }
+
+            switch (moveOption)
+            {
+                case LaneWayMoveOption.MoveLeftWay:
+                    return self.TrySetWidth((i, w) => width, true);
+                case LaneWayMoveOption.MoveRightWay:
+                    return self.TrySetWidth((i, w) => width, false);
+                case LaneWayMoveOption.MoveBothWay:
+                    {
+                        // まず左で半分(現在の幅とwidthの中間まで)動かしてから、右でwidthにそろえるようにする
+                        if (self.TrySetWidth((i, w) => (w + width) * 0.5f, true) == false)
+                            return false;
+                        return self.TrySetWidth((i, w) => width, false);
+                    }
+                default:
+                    return false;
+            }
         }
 
         /// <summary>

@@ -34,6 +34,7 @@ namespace PLATEAU.RoadNetwork
 
         public static RRoadTypeMask GetRoadType(this CityInfo.CityObjectList.CityObject self)
         {
+            // 緊急輸送道路もはじく必要がある
             // LOD3からチェックする
             var ret = RRoadTypeMask.Empty;
             if (self.AttributesMap.TryGetValue("tran:function", out var tranFunction))

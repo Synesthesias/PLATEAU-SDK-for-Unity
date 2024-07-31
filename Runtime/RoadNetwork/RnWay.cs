@@ -220,14 +220,15 @@ namespace PLATEAU.RoadNetwork
         /// 道の外側を向いている法線ベクトルの平均を返す.正規化はされていない
         /// </summary>
         /// <param name="vertexIndex"></param>
+        /// <param name="useCache">キャッシュがあればそっちを使う</param>
         /// <returns></returns>
-        public Vector3 GetVertexNormal(int vertexIndex)
+        public Vector3 GetVertexNormal(int vertexIndex, bool useCache = true)
         {
             // 頂点数1の時は不正値を返す
             if (Count <= 1)
                 return Vector3.zero;
 
-            var ret = LineString.GetVertexNormal(ToRawIndex(vertexIndex));
+            var ret = LineString.GetVertexNormal(ToRawIndex(vertexIndex), useCache);
             if (IsReversed != IsReverseNormal)
                 ret *= -1;
             return ret;

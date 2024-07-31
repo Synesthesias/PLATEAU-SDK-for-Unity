@@ -170,15 +170,27 @@ namespace PLATEAU.RoadNetwork
         }
 
         /// <summary>
-        /// 頂点の法線ベクトルを返す. キャッシュかされており, DirtyFlagをtrueにすると再計算される
+        /// 頂点の法線ベクトルを返す. キャッシュ化されており, DirtyFlagをtrueにすると再計算される
         /// </summary>
         /// <param name="vertexIndex"></param>
+        /// <param name="useCache"></param>
         /// <returns></returns>
-        public Vector3 GetVertexNormal(int vertexIndex)
+        public Vector3 GetVertexNormal(int vertexIndex, bool useCache = true)
         {
             // 頂点数1の時は不正値を返す
             if (IsValid == false)
                 return Vector3.zero;
+
+            // キャッシュを使わない場合はその場で計算
+            if (useCache == false)
+            {
+                if (vertexIndex == 0)
+                    return GetEdgeNormal(0).normalized;
+                if (vertexIndex == Count - 1)
+                    return GetEdgeNormal(Count - 2).normalized;
+
+                return (GetEdgeNormal(vertexIndex - 1).normalized + GetEdgeNormal(vertexIndex).normalized).normalized;
+            }
 
             var p = Points[vertexIndex];
             if (DirtyFlag || CachedVertexNormal.ContainsKey(p) == false)
