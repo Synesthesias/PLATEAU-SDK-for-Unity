@@ -563,7 +563,7 @@ namespace PLATEAU.Util.GeoGraph
         }
 
         /// <summary>
-        /// 直線a,bがあり. a上の点posに対して、|a.origin-pos|とdistance(pos, b)の比率がp:1-pとなるような点posを返す
+        /// 直線a,bがあり. |a.origin-pos|とdistance(pos, b)の比率がp:1-pとなるようなA上点posを返す
         /// </summary>
         /// <param name="a"></param>
         /// <param name="b"></param>
@@ -672,16 +672,26 @@ namespace PLATEAU.Util.GeoGraph
             var dir = Vector2Ex.RotateTo(dirA, dirB, radA);
 
             // a,bが平行に近いとintersectionが遠点となりfloat誤差が発生するため, a,bのStartからdirへの射影をして見つかった位置をoriginにする
+            var inters = new List<Vector2>(2);
+            // rayAの法線上の点posにおいて, len(rayA.origin - pos) : distance(pos - rayB) = p : 1-pとなる点は, 答えのray上にある
             if (CalcLerpPointInLine(new Ray2D(rayA.origin, rayA.direction.Rotate(90)), rayB, p, out var pos))
             {
-                return new Ray2D(pos, dir);
+                inters.Add(pos);
             }
             if (CalcLerpPointInLine(new Ray2D(rayB.origin, rayB.direction.Rotate(90)), rayA, p, out var pos2))
             {
-                return new Ray2D(pos2, dir);
+                inters.Add(pos2);
             }
-            return new Ray2D(intersection, dir);
 
+            if (inters.Count == 0)
+                return new Ray2D(intersection, dir);
+
+            if (inters.Count == 1)
+                return new Ray2D(inters[0], dir);
+
+            if (Vector2.Dot(dir, inters[1] - inters[0]) > 0)
+                return new Ray2D(inters[0], dir);
+            return new Ray2D(inters[1], dir);
         }
 
         public class BorderParabola2D
@@ -954,7 +964,8 @@ namespace PLATEAU.Util.GeoGraph
                                 isLeft = x.isLeft,
                                 origin = x.ray.origin
                             };
-                        }).Where(x => x.isHit)
+                        })
+                        //.Where(x => x.isHit)
                         .ToList();
 
                     points.Sort((a, b) => floatComparer.Compare(a.tCenterRay, b.tCenterRay));
@@ -972,8 +983,8 @@ namespace PLATEAU.Util.GeoGraph
                         {
                             var begSeg = points[1];
                             var endSeg = points[2];
-                            if (begSeg.tCenterRay < 0 && endSeg.tCenterRay < 0)
-                                return;
+                            //if (begSeg.tCenterRay < -Epsilon && endSeg.tCenterRay < -Epsilon)
+                            //    return;
 
                             var segment = new LineSegment2D(points[1].inter, points[2].inter);
                             var ev = new InnerSegment(segment, leftIndex, rightIndex, begSeg.isLeft, endSeg.isLeft, p);

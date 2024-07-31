@@ -398,6 +398,7 @@ namespace PLATEAU.Util.GeoGraph
             }
         }
 
+
         /// <summary>
         /// selfの左右の道を横幅p : (1-p)で分割した線分を返す. p=[0,1]
         /// 例) 0.5だと中央線が返る, 0だとLeftが返る, 1だとRightが返る. 
@@ -479,6 +480,9 @@ namespace PLATEAU.Util.GeoGraph
                 var l = lefts[leftIndex].To2D(ToVec2);
                 var r = rights[rightIndex].To2D(ToVec2);
                 var centerRay = LerpRay(l.Ray, r.Ray, p);
+
+                // centerRayと[l.start, l.end, r.start, r.end]との交点を求めてソート
+                // lとrがかぶらないと無視
                 var dirL = new Vector2(l.Direction.y, -l.Direction.x);
                 var dirR = new Vector2(r.Direction.y, -r.Direction.x);
                 var points = new[]
@@ -538,7 +542,7 @@ namespace PLATEAU.Util.GeoGraph
                     leftIndex++;
                 }
             }
-            innerSegments.Sort(InnerSegment.Compare);
+            //innerSegments.Sort(InnerSegment.Compare);
             return innerSegments;
         }
     }
