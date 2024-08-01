@@ -10,6 +10,19 @@ using UnityEngine.Serialization;
 
 namespace PLATEAU.RoadNetwork.Drawer
 {
+    [Flags]
+    public enum RnPartsTypeMask
+    {
+        Empty = 0,
+        Point = 1 << 0,
+        LineString = 1 << 1,
+        Way = 1 << 2,
+        Lane = 1 << 3,
+        Link = 1 << 4,
+        Node = 1 << 5,
+        Neighbor = 1 << 6,
+    }
+
     [Serializable]
     public class RoadNetworkDrawerDebug
     {
@@ -31,21 +44,7 @@ namespace PLATEAU.RoadNetwork.Drawer
         [SerializeField] private float splitLaneRate = 0.5f;
         [SerializeField] private float yScale = 1f;
         [SerializeField] private PLATEAUCityObjectGroup targetTran = null;
-        [Serializable]
-        private class DrawOption
-        {
-            public bool visible = true;
-            public Color color = Color.white;
-
-            public DrawOption() { }
-
-            public DrawOption(bool visible, Color color)
-            {
-                this.visible = visible;
-                this.color = color;
-            }
-        }
-
+        [SerializeField] private RnPartsTypeMask showPartsType = RnPartsTypeMask.Empty;
         [Serializable]
         private class NodeOption
         {
@@ -65,7 +64,6 @@ namespace PLATEAU.RoadNetwork.Drawer
             public bool visible = true;
             public int showLinkId = -1;
             public bool showMedian = true;
-            public bool showId = false;
             public bool showLaneConnection = false;
             public bool showLinkGroup = false;
             public bool showSideEdge = false;
@@ -117,7 +115,6 @@ namespace PLATEAU.RoadNetwork.Drawer
             public float validWayAlpha = 0.75f;
             public float invalidWayAlpha = 0.3f;
             public bool showAttrText = false;
-            public bool showId = false;
             public DrawOption showLeftWay = new DrawOption();
             public DrawOption showRightWay = new DrawOption();
             // 境界線を表示する
@@ -187,6 +184,11 @@ namespace PLATEAU.RoadNetwork.Drawer
             DebugEx.DrawArrow(start.PutY(start.y * yScale), end.PutY(end.y * yScale), arrowSize, arrowUp, bodyColor, arrowColor, duration, depthTest);
         }
 
+        private void DrawPoint(RnPoint p)
+        {
+            if (showPartsType.HasFlag(RnPartsTypeMask.Point))
+                DebugEx.DrawString($"P[{p.DebugMyId}]", p.Vertex);
+        }
 
         /// <summary>
         /// Way描画
@@ -237,6 +239,11 @@ namespace PLATEAU.RoadNetwork.Drawer
                     }
                 }
             }
+
+            foreach (var p in way.Points)
+            {
+                DrawPoint(p);
+            }
         }
 
         /// <summary>
@@ -250,7 +257,7 @@ namespace PLATEAU.RoadNetwork.Drawer
             if (laneOp.visible == false)
                 return;
 
-            if (laneOp.showId)
+            if (showPartsType.HasFlag(RnPartsTypeMask.Lane))
                 DebugEx.DrawString($"L[{lane.DebugMyId}]", lane.GetCenter());
 
             if (laneOp.showLaneId >= 0 && lane.DebugMyId != (ulong)laneOp.showLaneId)
@@ -318,7 +325,7 @@ namespace PLATEAU.RoadNetwork.Drawer
             if (targetTran && targetTran != link.TargetTran)
                 return;
 
-            if (linkOp.showId)
+            if (showPartsType.HasFlag(RnPartsTypeMask.Link))
                 DebugEx.DrawString($"L[{link.DebugMyId}]", link.GetCenter());
 
             if (linkOp.showMedian)

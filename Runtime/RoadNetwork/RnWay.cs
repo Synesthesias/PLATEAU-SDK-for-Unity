@@ -1,4 +1,5 @@
-﻿using PLATEAU.RoadNetwork.Data;
+﻿using PlasticGui.Configuration.OAuth;
+using PLATEAU.RoadNetwork.Data;
 using PLATEAU.Util;
 using PLATEAU.Util.GeoGraph;
 using System;
@@ -220,15 +221,14 @@ namespace PLATEAU.RoadNetwork
         /// 道の外側を向いている法線ベクトルの平均を返す.正規化はされていない
         /// </summary>
         /// <param name="vertexIndex"></param>
-        /// <param name="useCache">キャッシュがあればそっちを使う</param>
         /// <returns></returns>
-        public Vector3 GetVertexNormal(int vertexIndex, bool useCache = true)
+        public Vector3 GetVertexNormal(int vertexIndex)
         {
             // 頂点数1の時は不正値を返す
             if (Count <= 1)
                 return Vector3.zero;
 
-            var ret = LineString.GetVertexNormal(ToRawIndex(vertexIndex), useCache);
+            var ret = LineString.GetVertexNormal(ToRawIndex(vertexIndex));
             if (IsReversed != IsReverseNormal)
                 ret *= -1;
             return ret;
@@ -255,6 +255,10 @@ namespace PLATEAU.RoadNetwork
         public Vector3 GetEdgeNormal(int startVertexIndex)
         {
             var index = ToRawIndex(startVertexIndex);
+            // LineStringのGetEdgeNormalはindex, index+1で見るようになっているので
+            // 逆方向の時は-1する必要がある
+            if (IsReversed)
+                index -= 1;
             var ret = LineString.GetEdgeNormal(index);
             if (IsReversed != IsReverseNormal)
                 ret *= -1;
@@ -365,10 +369,38 @@ namespace PLATEAU.RoadNetwork
         /// <param name="offset"></param>
         public void MoveAlongNormal(float offset)
         {
+            if (IsValid == false)
+                return;
+
+
+            var index = 0;
+            // 現在見る点と次の点の辺/頂点の法線を保存しておく
+            // 線分の法線
+            var edgeNormal = new[] { GetEdgeNormal(0).normalized, GetEdgeNormal(Mathf.Min(Count - 1, 1)).normalized };
+            // 頂点の法線
+            var vertexNormal = new[] { GetVertexNormal(0), GetVertexNormal(1) };
+            var delta = offset;
             for (var i = 0; i < Count; ++i)
             {
-                var n = GetVertexNormal(i);
-                GetPoint(i).Vertex += n * offset;
+                var en0 = edgeNormal[index];
+                var en1 = edgeNormal[(index + 1) & 1];
+                var vn = vertexNormal[index];
+
+                // 形状維持するためにオフセット距離を変える
+                // en0成分の移動量がdeltaになるように, vnの移動量を求める
+                var m = Vector3.Dot(vn, en0);
+                var d = delta / m;
+                var o = vn * d;
+
+                if (i < Count - 1)
+                {
+                    vertexNormal[index] = GetVertexNormal(i + 1);
+                    edgeNormal[index] = GetEdgeNormal(Mathf.Min(Count - 2, i + 1));
+                    index = (index + 1) & 1;
+                }
+                GetPoint(i).Vertex += o;
+                // 次の頂点計算のためにen1線分の移動量を入れる
+                delta = d * Vector3.Dot(vn, en1);
             }
         }
 

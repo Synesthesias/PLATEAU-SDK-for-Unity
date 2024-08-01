@@ -24,12 +24,6 @@ namespace PLATEAU.RoadNetwork
         // end: フィールド
         //----------------------------------
 
-        // 頂点法線のキャッシュ
-        private Dictionary<RnPoint, Vector3> CachedVertexNormal { get; set; } = new Dictionary<RnPoint, Vector3>();
-
-        // 頂点法線ベクトルのキャッシュをクリアする
-        public bool DirtyFlag { get; set; }
-
         public int Count => Points.Count;
 
         // 頂点が2つ以上ある有効な線分かどうか
@@ -173,51 +167,19 @@ namespace PLATEAU.RoadNetwork
         /// 頂点の法線ベクトルを返す. キャッシュ化されており, DirtyFlagをtrueにすると再計算される
         /// </summary>
         /// <param name="vertexIndex"></param>
-        /// <param name="useCache"></param>
         /// <returns></returns>
-        public Vector3 GetVertexNormal(int vertexIndex, bool useCache = true)
+        public Vector3 GetVertexNormal(int vertexIndex)
         {
             // 頂点数1の時は不正値を返す
             if (IsValid == false)
                 return Vector3.zero;
+            if (vertexIndex == 0)
+                return GetEdgeNormal(0).normalized;
+            if (vertexIndex == Count - 1)
+                return GetEdgeNormal(Count - 2).normalized;
 
-            // キャッシュを使わない場合はその場で計算
-            if (useCache == false)
-            {
-                if (vertexIndex == 0)
-                    return GetEdgeNormal(0).normalized;
-                if (vertexIndex == Count - 1)
-                    return GetEdgeNormal(Count - 2).normalized;
-
-                return (GetEdgeNormal(vertexIndex - 1).normalized + GetEdgeNormal(vertexIndex).normalized).normalized;
-            }
-
-            var p = Points[vertexIndex];
-            if (DirtyFlag || CachedVertexNormal.ContainsKey(p) == false)
-                CalcVertexNormal();
-
-            return CachedVertexNormal[p];
+            return (GetEdgeNormal(vertexIndex - 1).normalized + GetEdgeNormal(vertexIndex).normalized).normalized;
         }
-
-        /// <summary>
-        /// 頂点法線ベクトルを計算してキャッシュ化する
-        /// </summary>
-        public void CalcVertexNormal()
-        {
-            CachedVertexNormal.Clear();
-            var n1 = GetEdgeNormal(0).normalized;
-            CachedVertexNormal[Points[0]] = n1;
-            CachedVertexNormal[Points[Count - 1]] = GetEdgeNormal(Count - 2).normalized;
-            for (var i = 1; i < Count - 1; ++i)
-            {
-                var p = Points[i];
-                var n2 = GetEdgeNormal(i).normalized;
-                CachedVertexNormal[p] = (n1 + n2).normalized;
-                n1 = n2;
-            }
-            DirtyFlag = false;
-        }
-
 
         /// <summary>
         /// 頂点 startVertexIndex, startVertexIndex + 1で構成される辺の法線ベクトルを返す

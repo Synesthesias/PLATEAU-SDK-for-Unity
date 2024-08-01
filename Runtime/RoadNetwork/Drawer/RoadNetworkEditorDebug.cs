@@ -54,6 +54,7 @@ namespace PLATEAU.RoadNetwork.Drawer
             {
                 public LaneWayMoveOption moveOption = LaneWayMoveOption.MoveBothWay;
                 public float width = 0f;
+                public float moveWidth = 0f;
             }
             public LaneWidthEdit widthEdit = new LaneWidthEdit();
 
@@ -122,6 +123,23 @@ namespace PLATEAU.RoadNetwork.Drawer
                 if (widthEdit.Button())
                 {
                     lane.TrySetWidth(widthEdit.width, widthEdit.moveOption);
+                }
+                if (widthEdit.moveWidth != 0f)
+                {
+                    switch (widthEdit.moveOption)
+                    {
+                        case LaneWayMoveOption.MoveBothWay:
+                            lane.LeftWay?.MoveAlongNormal(widthEdit.moveWidth * 0.5f);
+                            lane.RightWay?.MoveAlongNormal(widthEdit.moveWidth * 0.5f);
+                            break;
+                        case LaneWayMoveOption.MoveLeftWay:
+                            lane.LeftWay?.MoveAlongNormal(widthEdit.moveWidth);
+                            break;
+                        case LaneWayMoveOption.MoveRightWay:
+                            lane.RightWay?.MoveAlongNormal(widthEdit.moveWidth);
+                            break;
+                    }
+                    widthEdit.moveWidth = 0f;
                 }
             }
         }

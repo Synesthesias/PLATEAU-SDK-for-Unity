@@ -612,6 +612,7 @@ namespace PLATEAU.RoadNetwork
                     }
                 }
 
+                // var n = moveWay.GetVertexNormal(i).GetTangent(plane);
                 var d = v - pos;
                 var nowW = d.magnitude;
                 if (nowW <= 0f)
