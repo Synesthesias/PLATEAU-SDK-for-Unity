@@ -23,6 +23,10 @@ namespace PLATEAU.RoadNetwork
     [Serializable]
     public class PLATEAURoadNetworkTester : MonoBehaviour, IRoadNetworkObject
     {
+
+        // --------------------
+        // start:フィールド
+        // --------------------
         [SerializeField] private RoadNetworkDrawerDebug drawer = new RoadNetworkDrawerDebug();
         [SerializeField] private RoadNetworkEditorDebug editor = new RoadNetworkEditorDebug();
 
@@ -76,6 +80,14 @@ namespace PLATEAU.RoadNetwork
         [SerializeField]
         private List<RoadNetworkTranMesh> tranMeshes;
 
+        [SerializeField]
+        private RGraphDrawerDebug rGraphDrawer = new RGraphDrawerDebug();
+
+        [SerializeField]
+        private RGraph rGraph = new RGraph();
+
+        public RGraph RGraph => rGraph;
+
         [Serializable]
         public class TestTargetPresets
         {
@@ -103,6 +115,10 @@ namespace PLATEAU.RoadNetwork
         // 途中状況を保存する
         [SerializeField]
         private bool saveTmpData = false;
+
+        // --------------------
+        // end:フィールド
+        // --------------------
 
         internal void DrawMesh(ConvertedCityObject.ConvertedMesh mesh, ConvertedCityObject.SubMesh subMesh, Matrix4x4 mat, Color? color = null,
             float duration = 0f, bool depthTest = true)
@@ -298,6 +314,8 @@ namespace PLATEAU.RoadNetwork
                 case CreateMode.All:
                     convertedCityObjects = await ConvertCityObjectAsync();
                     mergedConvertedCityObjects = MergeVertices();
+                    foreach (var m in mergedConvertedCityObjects.SelectMany(c => c.Meshes))
+                        m.Separate();
                     tranMeshes = CreateTranMeshes();
                     RoadNetwork = await CreateRoadNetworkAsync();
                     break;
