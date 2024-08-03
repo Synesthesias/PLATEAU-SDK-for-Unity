@@ -1,4 +1,5 @@
-﻿using PLATEAU.RoadNetwork;
+﻿using PLATEAU.Editor.RoadNetwork.Graph;
+using PLATEAU.RoadNetwork;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
@@ -54,6 +55,12 @@ namespace PLATEAU.Editor.RoadNetwork
 
             if (GUILayout.Button("SplitCityObject"))
                 obj.SplitCityObjectAsync();
+
+            if (GUILayout.Button("RGraph"))
+                obj.CreateRGraph();
+
+            if (obj.RGraph != null && GUILayout.Button("Open RGraph Editor"))
+                RGraphEditorWindow.OpenWindow(obj.RGraph, true);
         }
     }
 }

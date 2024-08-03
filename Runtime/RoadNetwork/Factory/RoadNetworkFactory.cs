@@ -190,8 +190,6 @@ namespace PLATEAU.RoadNetwork.Factory
 
             RnLink Link => Road as RnLink;
 
-            RnNode Node => Road as RnNode;
-
             // 境界線
             public IEnumerable<WayWork> Borders => Ways.Where(w => w.IsBorder);
 
@@ -565,7 +563,6 @@ namespace PLATEAU.RoadNetwork.Factory
                 foreach (var id in failedLinks)
                 {
                     var ll = ret.Links.FirstOrDefault(l => l.DebugMyId == id);
-                    var hoge = 0;
                 }
 
                 //ret.DebugIdentify();

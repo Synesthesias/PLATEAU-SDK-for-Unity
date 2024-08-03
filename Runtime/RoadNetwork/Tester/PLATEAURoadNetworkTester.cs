@@ -196,6 +196,8 @@ namespace PLATEAU.RoadNetwork
                     DebugEx.DrawLines(t.Vertices, showTranMesh.loop, showTranMesh.color);
                 }
             }
+
+            rGraphDrawer?.Draw(rGraph);
         }
 
         public async Task SplitCityObjectAsync()
@@ -323,6 +325,13 @@ namespace PLATEAU.RoadNetwork
                     throw new ArgumentOutOfRangeException();
             }
         }
+
+        public void CreateRGraph()
+        {
+
+            rGraph = RGraphEx.Create(convertedCityObjects);
+        }
+
 
         public void Serialize()
         {

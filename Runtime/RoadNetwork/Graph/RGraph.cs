@@ -99,7 +99,7 @@ namespace PLATEAU.RoadNetwork.Graph
     /// 接点
     /// </summary>
     [Serializable]
-    public class RVertex
+    public class RVertex : ARnParts<RVertex>
     {
         //----------------------------------
         // start: フィールド
@@ -108,7 +108,6 @@ namespace PLATEAU.RoadNetwork.Graph
         /// <summary>
         /// 接続辺
         /// </summary>
-        [SerializeField]
         private List<REdge> edges = new List<REdge>();
 
         /// <summary>
@@ -231,6 +230,8 @@ namespace PLATEAU.RoadNetwork.Graph
         {
             return Edges.Any(e => e.Vertices.Contains(other));
         }
+
+
     }
 
 
@@ -238,7 +239,7 @@ namespace PLATEAU.RoadNetwork.Graph
     /// 辺
     /// </summary>
     [Serializable]
-    public class REdge
+    public class REdge : ARnParts<REdge>
     {
         public enum VertexType
         {
@@ -253,7 +254,6 @@ namespace PLATEAU.RoadNetwork.Graph
         /// <summary>
         /// 接続面
         /// </summary>
-        [SerializeField]
         private List<RPolygon> polygons = new List<RPolygon>();
 
         /// <summary>
@@ -412,7 +412,7 @@ namespace PLATEAU.RoadNetwork.Graph
     /// 多角形
     /// </summary>
     [Serializable]
-    public class RPolygon
+    public class RPolygon : ARnParts<RPolygon>
     {
         //----------------------------------
         // start: フィールド
@@ -421,7 +421,7 @@ namespace PLATEAU.RoadNetwork.Graph
         /// 表示非表示
         /// </summary>
         [field: SerializeField]
-        public bool Visible { get; set; }
+        public bool Visible { get; set; } = true;
 
         /// <summary>
         /// 対応するCityObjectGroup
@@ -444,13 +444,11 @@ namespace PLATEAU.RoadNetwork.Graph
         /// <summary>
         /// 親グラフ
         /// </summary>
-        [field: SerializeField]
         public RGraph Graph { get; private set; }
 
         /// <summary>
         /// 構成辺
         /// </summary>
-        [SerializeField]
         private List<REdge> edges = new List<REdge>();
 
         //----------------------------------
@@ -512,16 +510,50 @@ namespace PLATEAU.RoadNetwork.Graph
 
     }
 
-    public class RGraph
+    [Serializable]
+    public class RGraph : ARnParts<RGraph>
     {
+        //----------------------------------
+        // start: フィールド
+        //----------------------------------
+        private List<RPolygon> polygons = new List<RPolygon>();
+
+        //----------------------------------
+        // end: フィールド
+        //----------------------------------
         /// <summary>
         /// 面
         /// </summary>
-        public List<RPolygon> Polygons { get; } = new List<RPolygon>();
+        public IReadOnlyList<RPolygon> Polygons => polygons;
+
+        /// <summary>
+        /// 全Edgeを取得(重い)
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerable<REdge> GetAllEdge()
+        {
+            return Polygons.SelectMany(p => p.Edges).Distinct();
+        }
+
+        /// <summary>
+        /// 全Vertexを取得(重い)
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerable<RVertex> GetAllVertex()
+        {
+            return GetAllEdge().SelectMany(e => e.Vertices).Distinct();
+        }
+
+
+
+        public void AddPolygon(RPolygon polygon)
+        {
+            polygons.Add(polygon);
+        }
 
         public void RemovePolygon(RPolygon polygon)
         {
-            Polygons.Remove(polygon);
+            polygons.Remove(polygon);
         }
 
         /// <summary>
@@ -602,10 +634,25 @@ namespace PLATEAU.RoadNetwork.Graph
                         }
                     }
 
-                    graph.Polygons.Add(polygon);
+                    graph.AddPolygon(polygon);
                 }
             }
             return graph;
+        }
+
+        public static void MergeVertices(this RGraph graph, float mergeEpsilon, int mergeCellLength)
+        {
+            var vertices = graph.GetAllVertex().ToList();
+
+            var vertexTable = GeoGraphEx.MergeVertices(vertices.Select(v => v.Position), mergeEpsilon, mergeCellLength);
+            var vertex2RVertex = vertexTable.Values.Distinct().ToDictionary(v => v, v => new RVertex(v));
+            foreach (var v in vertices)
+            {
+                if (vertexTable.TryGetValue(v.Position, out var dst))
+                {
+                    graph.MergeVertex(v, vertex2RVertex[dst]);
+                }
+            }
         }
     }
 }
