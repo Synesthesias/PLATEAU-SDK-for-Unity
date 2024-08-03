@@ -53,13 +53,26 @@ namespace PLATEAU.Editor.RoadNetwork
             // 初期化
             if (EditorInterface == null)
             {
-                EditorInterface = new RoadNetworkEditingSystem(new EditorInstance(this), rootVisualElement);
+                if (rootVisualElement != null)
+                {
+                    EditorInterface = new RoadNetworkEditingSystem(new EditorInstance(this), rootVisualElement);
+                }
             }
         }
 
         private void OnEnable()
         {
             Initialize();
+        }
+
+        private void OnGUI()
+        {
+
+            //if (GUILayout.Button(Vector3.up * 100, Quaternion.identity, 600, 600, Handles.SphereHandleCap))
+            //{
+            //    Debug.Log("Button Clicked");
+            //}
+            //Gizmos.DrawLine(Vector3.zero, Vector3.up * 500);  // OnDrawGizmodsでしか呼ばれない
         }
 
         /// <summary>

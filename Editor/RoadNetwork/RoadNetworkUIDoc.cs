@@ -1,4 +1,6 @@
-﻿using NUnit.Framework;
+﻿using Codice.Client.Common;
+using NUnit.Framework;
+using PLATEAU.Editor.RoadNetwork.UIDocBind;
 using PLATEAU.RoadNetwork;
 using PLATEAU.Util;
 using System;
@@ -79,21 +81,21 @@ namespace PLATEAU.Editor.RoadNetwork
         private ScrollView parameterView;
         private ObjectField objSelecter;
         private DropdownField debugOperationMode;
-        private TrafficSignalLightControllerUIDoc trafficSignalLightControllerUIDoc;
+        private UIDocBind.TrafficSignalLightControllerUIDoc trafficSignalLightControllerUIDoc;
 
         private readonly IRoadNetworkEditingSystem system;
         private readonly RoadNetworkEditorAssets assets;
 
-        private readonly Dictionary<RoadNetworkEditMode, GenerateParameterFunc> ParamterLayoutSet =
+        private readonly Dictionary<RoadNetworkEditMode, GenerateParameterFunc> paramterLayoutSet =
             new Dictionary<RoadNetworkEditMode, GenerateParameterFunc> {
-            { RoadNetworkEditMode.EditLaneShape, CreateEditLaneShapeLayout },
-            { RoadNetworkEditMode.EditLaneStructure, CreateEditLaneStructureLayout },
+            { RoadNetworkEditMode._EditLaneShape, CreateEditLaneShapeLayout },
+            { RoadNetworkEditMode._EditLaneStructure, CreateEditLaneStructureLayout },
             { RoadNetworkEditMode.EditTrafficRegulation, CreateTrafficRegulationLayout },
-            { RoadNetworkEditMode.AddLane, CreateAddLaneLayout },
-            { RoadNetworkEditMode.AddLink, CreateAddLinkLayout },
-            { RoadNetworkEditMode.AddNode, CreateAddNodeLayout },
-            { RoadNetworkEditMode.EditLaneWidth, CreateEditLaneWidthLayout },
-            { RoadNetworkEditMode.AddMedianStrip, CreateAddMedianStripLayout },
+            { RoadNetworkEditMode._AddLane, CreateAddLaneLayout },
+            { RoadNetworkEditMode._AddLink, CreateAddLinkLayout },
+            { RoadNetworkEditMode._AddNode, CreateAddNodeLayout },
+            { RoadNetworkEditMode._EditLaneWidth, CreateEditLaneWidthLayout },
+            { RoadNetworkEditMode.EditRoadStructure, CreateEditRoadStructureLayout },
         };
 
         private static void CreateEditLaneWidthLayout(RoadNetworkUIDoc doc, IRoadNetworkEditingSystem system, RoadNetworkEditorAssets assets, VisualElement root)
@@ -151,7 +153,6 @@ namespace PLATEAU.Editor.RoadNetwork
                 }
                 var leftLine = baseLane.GetInnerLerpSegments(0.5f - 0.5f * scaleValue);     // value==0.5 0.25, value==1 0
                 var rightLine = baseLane.GetInnerLerpSegments(0.5f + 0.5f * scaleValue);    // value==0.5 0.75, value==1 1
-
                 //IEnumerator<Vector2> newPos = null;
                 //IEnumerator<RoadNetworkPoint> points = null;
                 //points = lane.LeftWay.Points.GetEnumerator();   // 数値が違う？
@@ -203,9 +204,94 @@ namespace PLATEAU.Editor.RoadNetwork
             root.Add(applyBtn);
         }
 
-        private static void CreateAddMedianStripLayout(RoadNetworkUIDoc doc, IRoadNetworkEditingSystem system, RoadNetworkEditorAssets assets, VisualElement element)
+        private static void CreateEditRoadStructureLayout(RoadNetworkUIDoc doc, IRoadNetworkEditingSystem system, RoadNetworkEditorAssets assets, VisualElement root)
         {
+            system.RoadNetworkSimpleEditModule?.Init();
 
+            // UIの作成
+            var element = assets.GetAsset(RoadNetworkEditorAssets.RoadNetworkEditingRoadPanel).Instantiate();
+
+            //// UIへバインドするモデルオブジェクトの生成
+            //var testObj = ScriptableObject.CreateInstance<ScriptableRoadMdl>();
+            //testObj.Construct(null);
+            //var test = new SerializedScriptableRoadMdl(testObj);
+
+            ////Bindingの設定
+            ////var bp = element.BindProperty(test);
+            ////element.BindProperty(bp);
+            //element.TrackSerializedObjectValue(test, (se) =>
+            //{
+            //    Debug.Log("changed");
+            //    //var obj = se as SerializedScriptableRoadMdl;
+            //    //obj.Apply();
+            //});
+            //element.Bind(test);
+            //if (element.Q<Button>("ApplyButton") is var btn)
+            //{
+            //    btn.clicked += () =>
+            //    {
+            //        test.Apply();
+            //    };
+            //}
+            ////element.Unbind();
+
+            // UIの追加
+            root.Add(element);
+
+            // 選択オブジェクト変更時のイベント設定 モデルオブジェクトの再設定を行う
+            system.OnChangedSelectRoadNetworkElement += (s, e) =>
+            {
+                var linkGroupEditorData = system.SelectedRoadNetworkElement as EditorData<RnLinkGroup>;
+                if (linkGroupEditorData == null)
+                    return;
+
+                // 無ければ生成する あれば流用する
+                var mdl = CreateOrGetLinkGroupData(linkGroupEditorData);
+
+                // 既存のモデルオブジェクトを解除
+                element.Unbind();
+
+                //Bindingの設定
+                //var bp = element.BindProperty(test);
+                //element.BindProperty(bp);
+                element.TrackSerializedObjectValue(mdl, (se) =>
+                {
+                    Debug.Log("changed");
+                    //var obj = se as SerializedScriptableRoadMdl;
+                    //obj.Apply();
+                });
+                element.Bind(mdl);
+                if (element.Q<Button>("ApplyButton") is var btn)
+                {
+                    btn.clicked += () =>
+                    {
+                        mdl.Apply();
+                    };
+                }
+                //element.Unbind();
+
+                //linkGroupEditorData.LinkGroup;
+                //scale.value = system.GetScale(lane);
+            };
+
+        }
+
+        private static SerializedScriptableRoadMdl CreateOrGetLinkGroupData(EditorData<RnLinkGroup> linkGroupEditorData)
+        {
+            // モデルオブジェクトを所持してるならそれを利用する
+            var mdl = linkGroupEditorData.GetSubData<SerializedScriptableRoadMdl>();
+            if (mdl == null)
+            {
+                // UIへバインドするモデルオブジェクトの生成
+                var testObj = ScriptableObject.CreateInstance<ScriptableRoadMdl>();
+                testObj.Construct(linkGroupEditorData.Ref);
+                mdl = new SerializedScriptableRoadMdl(testObj);
+
+                // 参照を持たせる
+                linkGroupEditorData.TryAdd(mdl);
+            }
+
+            return mdl;
         }
 
         private static void CreateAddLinkLayout(RoadNetworkUIDoc doc, IRoadNetworkEditingSystem system, RoadNetworkEditorAssets assets, VisualElement element)
@@ -335,7 +421,7 @@ namespace PLATEAU.Editor.RoadNetwork
 
         private static void CreateTrafficRegulationLayout(RoadNetworkUIDoc roadNetworkUIDoc, IRoadNetworkEditingSystem system, RoadNetworkEditorAssets assets, VisualElement root)
         {
-            roadNetworkUIDoc.trafficSignalLightControllerUIDoc = new TrafficSignalLightControllerUIDoc(system, assets, root);
+            roadNetworkUIDoc.trafficSignalLightControllerUIDoc = new UIDocBind.TrafficSignalLightControllerUIDoc(system, assets, root);
             roadNetworkUIDoc.trafficSignalLightControllerUIDoc.CreateTrafficRegulationLayout();
 
             //var testVec3Field = new Vector3Field("controller position");
@@ -440,7 +526,7 @@ namespace PLATEAU.Editor.RoadNetwork
         {
             var mode = system.CurrentEditMode;
             parameterView.Clear();
-            ParamterLayoutSet[mode](this, system, assets, parameterView);
+            paramterLayoutSet[mode](this, system, assets, parameterView);
         }
 
         private void SelectRoadNetwrokObject(object _, EventArgs _1)

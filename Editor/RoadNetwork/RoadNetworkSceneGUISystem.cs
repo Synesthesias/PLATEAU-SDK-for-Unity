@@ -1,15 +1,20 @@
-﻿using PLATEAU.CityGML;
+﻿using Codice.CM.Common;
+using PLATEAU.CityGML;
 using PLATEAU.RoadNetwork;
 using PLATEAU.RoadNetwork.Data;
+using PLATEAU.Util;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using UnityEditor;
+using UnityEditor.VersionControl;
 using UnityEngine;
 using UnityEngine.Assertions;
+using UnityEngine.Assertions.Must;
+using UnityEngine.UIElements;
 using static PLATEAU.Editor.RoadNetwork.RoadNetworkEditingSystem;
-
 
 namespace PLATEAU.Editor.RoadNetwork
 {
@@ -234,34 +239,19 @@ namespace PLATEAU.Editor.RoadNetwork
 
             if (nodeTex == null)
             {
-                nodeTex = AssetDatabase.LoadAssetAtPath<Texture2D>(nodeTexPath);
-                if (nodeTex == null)
-                {
-                    Debug.LogError("テクスチャが見つかりませんでした: " + nodeTexPath);
+                var isSuc = LoadTexture();
+                if (isSuc == false)
                     return;
-                }
-
-                laneTex = AssetDatabase.LoadAssetAtPath<Texture2D>(laneTexPath);
-                if (laneTex == null)
-                {
-                    Debug.LogError("テクスチャが見つかりませんでした: " + laneTexPath);
-                    return;
-                }
-
-                trafficLightControllerTex = AssetDatabase.LoadAssetAtPath<Texture2D>(trafficLightControllerPath);
-                if (trafficLightControllerTex == null)
-                {
-                    Debug.LogError("テクスチャが見つかりませんでした: " + trafficLightControllerPath);
-                    return;
-                }
-
-                trafficLight_blueTex = AssetDatabase.LoadAssetAtPath<Texture2D>(trafficLight_blueTexPath);
-                if (trafficLight_blueTex == null)
-                {
-                    Debug.LogError("テクスチャが見つかりませんでした: " + trafficLight_blueTexPath);
-                    return;
-                }
             }
+
+            // 仮　簡易編集機能モード時は旧ハンドル描画、管理システムは利用しない
+            if (editorSystem.CurrentEditMode == RoadNetworkEditMode.EditRoadStructure)
+            {
+                OnSceneGUISimpleEdit();
+                return;
+            }
+
+
             // ステイトの初期化
             SceneGUIState state;
             systemState.Init(out state);
@@ -273,6 +263,12 @@ namespace PLATEAU.Editor.RoadNetwork
             // 遅延実行用のコマンドは1フレームにつき一つまで実行できるとする(要素削除順の管理などが面倒なため)
             Update3DHandle(network, ref state);
 
+
+            int toolbarInt = 0;
+            string[] toolbarStrings = { "Toolbar1", "Toolbar2", "Toolbar3", "キャンセル" };
+            //RnWay way;
+            //way.SegmentIntersectionXz(Vector3.zero, Vector3.one, out Vector3 p1, out Vector3 p2);
+
             // 編集モードの状態表示
             // 2D GUI
             var sceneViewPixelRect = currentCamera.pixelRect;
@@ -280,6 +276,10 @@ namespace PLATEAU.Editor.RoadNetwork
             Handles.BeginGUI();
             GUILayout.BeginArea(guiLayoutRect);
             GUILayout.Box("道路ネットワーク編集モード");
+            GUILayout.HorizontalScrollbar(0.5f, 5, 0.001f, 2.0f);
+            //GUILayout.Toggle("道路ネットワーク編集モード");
+            //toolbarInt = GUILayout.Toolbar(toolbarInt, toolbarStrings);
+
             GUILayout.EndArea();
             Handles.EndGUI();
 
@@ -296,6 +296,336 @@ namespace PLATEAU.Editor.RoadNetwork
             systemState.Apply(state);
         }
 
+        private bool LoadTexture()
+        {
+            var isSuc = true;
+            nodeTex = AssetDatabase.LoadAssetAtPath<Texture2D>(nodeTexPath);
+            if (nodeTex == null)
+            {
+                Debug.LogError("テクスチャが見つかりませんでした: " + nodeTexPath);
+                isSuc = false;
+            }
+
+            laneTex = AssetDatabase.LoadAssetAtPath<Texture2D>(laneTexPath);
+            if (laneTex == null)
+            {
+                Debug.LogError("テクスチャが見つかりませんでした: " + laneTexPath);
+                isSuc = false;
+            }
+
+            trafficLightControllerTex = AssetDatabase.LoadAssetAtPath<Texture2D>(trafficLightControllerPath);
+            if (trafficLightControllerTex == null)
+            {
+                Debug.LogError("テクスチャが見つかりませんでした: " + trafficLightControllerPath);
+                isSuc = false;
+            }
+
+            trafficLight_blueTex = AssetDatabase.LoadAssetAtPath<Texture2D>(trafficLight_blueTexPath);
+            if (trafficLight_blueTex == null)
+            {
+                Debug.LogError("テクスチャが見つかりませんでした: " + trafficLight_blueTexPath);
+                isSuc = false;
+            }
+
+            return true;
+        }
+
+        public IReadOnlyCollection<EditorData<RnLinkGroup>> connections = new EditorData<RnLinkGroup>[0];
+        public Color connectionColor = Color.blue;
+
+        public List<Vector3> intersections = new List<Vector3>();
+        public Color intersectionColor = Color.green;
+        public float intersectionRadius = 30.0f;
+
+        public float btnSize = 10.0f;
+
+        public List<RnLinkGroup> SimLanes;
+
+
+        private class WaySlideData
+        {
+            public WaySlideData(RnWay target)
+            {
+                Assert.IsNotNull(target);
+                baseWay = target.Vertices.ToList();
+                Target = target;
+            }
+
+            float sliderVarVals;
+            public float SliderVarVals {
+                get
+                {
+                    return sliderVarVals;
+                }
+                set
+                {
+                    if (sliderVarVals == value)
+                    {
+                        return;
+                    }
+                    IsChanged = true;
+                    sliderVarVals = value;
+                }
+            }
+            public bool IsChanged { get; private set; }
+
+            public List<Vector3> baseWay = new List<Vector3>();
+            public RnWay Target { get; set; } = null;
+        }
+
+        private class LaneGroupEditorData
+        {
+            public LaneGroupEditorData(RnLinkGroup target)
+            {
+                Assert.IsNotNull(target);
+                var fLink =  group.Links.First();
+                var lLink =  group.Links.Last();
+
+                // link一つで構成されているため Laneの接続を確認する必要がない
+                if (fLink == lLink)
+                {
+                    foreach (var lane in fLink.MainLanes)
+                    {
+                        LaneGroupListCache.Add(new List<RnLane>() { lane });
+                    }
+                }
+
+                var flLanes = fLink.GetLanes(RnDir.Left);
+                var llLanes = fLink.GetLanes(RnDir.Left);
+
+                var frLanes = fLink.GetLanes(RnDir.Right);
+                var lrLanes = fLink.GetLanes(RnDir.Right);
+
+                var nGroup = target.GetLeftLaneCount() + target.GetRightLaneCount();
+                var nLanes = target.Links.Count;
+
+                LaneGroupListCache = new List<List<RnLane>>(nGroup);
+                foreach (var lane in flLanes)
+                {
+                    var laneGroup = new List<RnLane>(nLanes);
+                    LaneGroupListCache.Add(laneGroup);
+
+                    var prevLane = lane;
+                    laneGroup.Add(prevLane);
+                    while (true)
+                    {
+                        // 最後のレーンに到達した
+                        if (llLanes.Contains(prevLane))
+                        {
+                            break;
+                        }
+
+                        // borderを共有しているので直線状に繋がったLane
+                        var nextLane = prevLane.GetNextLanes().First(v => v.PrevBorder == prevLane.NextBorder);
+                        Assert.IsNotNull(nextLane);
+                        if (nextLane != null)
+                        {
+                            laneGroup.Add(nextLane);
+                            prevLane = nextLane;
+                        }
+                        
+
+                        //var errCheckCnt = nLanes;
+                        //errCheckCnt--; ここら辺から
+                    }
+                }
+            }
+
+            RnLinkGroup group;
+
+            // 連結レーンのリスト
+            public List<List<RnLane>> LaneGroupListCache { get; set; } = new List<List<RnLane>>();
+        }
+
+        private void OnSceneGUISimpleEdit()
+        {
+            var nodeIconPosOffset = Vector3.up * 0;
+            var roadIconPosOffset = Vector3.up * 0;
+
+            IReadOnlyCollection<LinkGroupEditorData> cns = connections.Select(c => c.GetSubData<LinkGroupEditorData>()).ToList();
+
+            var camera = SceneView.currentDrawingSceneView.camera;
+            foreach (var item in connections)
+            {
+                // 選択済みのオブジェクト
+                if (item == editorSystem.SelectedRoadNetworkElement) 
+                    continue;
+
+                var subData = item.GetSubData<LinkGroupEditorData>();
+
+                var p1 = subData.A.RefGameObject.transform.position;
+                var p2 = subData.B.RefGameObject.transform.position;
+                var btnP = (p1 + p2) / 2.0f;
+
+
+                Vector3 pos2d_dis = Vector3.zero;
+                pos2d_dis = camera.WorldToScreenPoint(btnP + roadIconPosOffset);
+                var isEditable = IsVisibleToCamera(camera, pos2d_dis);
+                if (isEditable)
+                {
+                    // レーンの選択ボタンの表示
+                    var laneSelectBtnSize = HandleUtility.GetHandleSize(btnP) * laneHndScaleFactor;
+                    var isClicked = Button2DOn3D(camera, pos2d_dis, laneTex);
+                    if (isClicked)
+                    {
+                        Debug.Log(subData.A.RefGameObject.name + "-" + subData.B.RefGameObject.name);
+                        editorSystem.SelectedRoadNetworkElement = item;
+                        return;
+                    }
+                }
+            }
+
+            // 選択している道路がある場合
+            var selectedConnection = editorSystem.SelectedRoadNetworkElement as EditorData<RnLinkGroup>;
+            if (selectedConnection != null)
+            {
+                var item = selectedConnection;
+                // 各車線、歩道、張横分離帯の幅を調整するためのハンドル描画
+
+                var nLeftLane = item.Ref.GetLeftLaneCount();
+                var nRIghtLane = item.Ref.GetRightLaneCount();
+                var nLane = nLeftLane + nRIghtLane;
+                HashSet<RnWay> ways = new HashSet<RnWay>(nLane * 2);
+                List<RnWay> unionWay = new List<RnWay>(nLane * 2 - 2);  // 端の2つは覗く
+                var lanes = item.Ref.Links[0].MainLanes;
+                foreach (var lane in lanes)
+                {
+                    foreach (var way in lane.BothWays)
+                    {
+                        // 共有されているwayか？
+                        if (ways.Add(way) == false)
+                        {
+                            //unionWay.Add(way);
+                        }
+                    }
+                }
+                unionWay = ways.ToList();
+
+                // 仕様上動かしてはいけないwayを除外する
+                //// レーンが一つの場合は必ず歩道に接するので
+                //if (lanes.Count == 1)
+                //{
+                //    unionWay.Clear();
+                //}
+                //else if (lanes.Count > 0)
+                //{
+                //    unionWay.Remove(lanes[0].LeftWay);
+                //    var otherLane = lanes[lanes.Count - 1];
+                //    unionWay.Remove(otherLane.RightWay);
+                //}
+
+                var wayEditorDataList = item.GetSubData<List<WaySlideData>>();
+                var nSlider = unionWay.Count; // 左右の
+                if (wayEditorDataList == null)
+                {
+                    wayEditorDataList = new List<WaySlideData>(nSlider);
+                    foreach (var editingTarget in unionWay)
+                    {
+                        wayEditorDataList.Add(new WaySlideData(editingTarget));
+                    }
+                    item.TryAdd(wayEditorDataList);
+                }
+
+                Assert.IsNotNull(wayEditorDataList);
+                if (wayEditorDataList.Count != nSlider)
+                {
+                    wayEditorDataList.Clear();
+                    wayEditorDataList.Capacity = nSlider;
+                    foreach (var editingTarget in unionWay)
+                    {
+                        wayEditorDataList.Add(new WaySlideData(editingTarget));
+                    }
+                }
+                Handles.BeginGUI();
+                GUILayout.BeginArea(new Rect(100, 100, 200, 300));
+                //GUILayout.BeginVertical();
+                GUILayout.Label("Ways");
+                foreach (var wayEditorData in wayEditorDataList)
+                {
+                    //// textフィールド版
+                    //var s = GUILayout.TextField(wayEditorData.SliderVarVals.ToString());
+                    //var v = wayEditorData.SliderVarVals;
+                    //if (float.TryParse(s, out v))
+                    //{
+                    //    wayEditorData.SliderVarVals = v;
+                    //}
+
+                    // slider版
+                    const float minScaleLimit = -5.0f;
+                    const float maxScaleLimit = 5.0f;
+                    wayEditorData.SliderVarVals =
+                        GUILayout.HorizontalSlider(wayEditorData.SliderVarVals, minScaleLimit, maxScaleLimit);
+
+                    GUILayout.Space(10);
+                }
+
+                GUILayout.EndArea();
+                Handles.EndGUI();
+
+                // 変更あったものに対してのみ差分を適用する
+                foreach (var wayEditorData in wayEditorDataList)
+                {
+                    if (wayEditorData.IsChanged == false)
+                    {
+                        continue;
+                    }
+
+                    var target = wayEditorData.Target;
+
+                    // デフォルトの状態に戻す
+                    var baseWay = wayEditorData.baseWay;
+                    for (int i = 0; i < baseWay.Count; i++)
+                    {
+                        var p = wayEditorData.baseWay[i];
+                        var p2 = target.GetPoint(i);
+                        p2.Vertex = p;
+                    }
+                    var offset = wayEditorData.SliderVarVals;
+                    target.MoveAlongNormal(offset);
+                    Debug.Log($"way.MoveAlongNormal({offset})");
+                }
+            }
+
+            HashSet<NodeEditorData> nodeEitorData = new HashSet<NodeEditorData>(connections.Count * 2);
+            foreach (var item in cns)
+            {
+                nodeEitorData.Add(item.A);
+                nodeEitorData.Add(item.B);
+            }
+
+                // ノードが重複して描画されるので nodeEitorDataで走査
+            foreach (var item in nodeEitorData)
+            {
+                // 選択済みのオブジェクト
+                if (item == editorSystem.SelectedRoadNetworkElement)
+                    continue;
+
+                Color pre = GUI.color;
+                var p1 = item.RefGameObject.transform.position;
+
+                Vector3 pos2d_dis = Vector3.zero;
+                pos2d_dis = camera.WorldToScreenPoint(p1 + nodeIconPosOffset);
+                var isEditable = IsVisibleToCamera(camera, pos2d_dis);
+                if (isEditable)
+                {
+                    // レーンの選択ボタンの表示
+                    var laneSelectBtnSize = HandleUtility.GetHandleSize(p1) * laneHndScaleFactor;
+                    var isClicked = Button2DOn3D(camera, pos2d_dis, nodeTex);
+                    if (isClicked)
+                    {
+                        Debug.Log(item.RefGameObject.name);
+                        editorSystem.SelectedRoadNetworkElement = item;
+                        return;
+                    }
+                }
+
+                GUI.color = Color.red;
+                var offset = Vector3.up * intersectionRadius * 1.1f;
+                Handles.Label(p1 + offset, item.RefGameObject.name);
+                GUI.color = pre;
+            }
+
+        }
 
         private SceneGUIState Update3DHandle(RnModel network, ref SceneGUIState state)
         {
@@ -350,6 +680,7 @@ namespace PLATEAU.Editor.RoadNetwork
                 }
             }
 
+            HashSet<RnLink> drawLink = new HashSet<RnLink>();
             // link
             foreach (var link in network.Links)
             {
@@ -373,6 +704,10 @@ namespace PLATEAU.Editor.RoadNetwork
                     foreach (var way in lane.BothWays)
                     {
                         state.ResetLoopOperationFlags();
+
+                        // 仮
+                        drawLink.Add(link);
+
                         if (state.isBreak) break;
                         if (state.isContinue) continue;
 
@@ -389,6 +724,24 @@ namespace PLATEAU.Editor.RoadNetwork
                 }
             }
 
+            foreach (var link in drawLink)
+            {
+                // lane
+                foreach (var lane in link.MainLanes)
+                {
+                    // bothway
+                    foreach (var way in lane.BothWays)
+                    {
+                        // 仮　laneのbothwayを描画する
+                        //var pre = Gizmos.color;
+                        //Gizmos.color = Color.green;
+                        //Gizmos.DrawLineStrip(way.Vertices.ToArray(), false);
+                        //Gizmos.color = pre;
+                        DebugEx.DrawLines(way.Vertices.ToArray(), false, Color.green);
+                    }
+
+                }
+            }
             return state;
         }
 
@@ -449,6 +802,7 @@ namespace PLATEAU.Editor.RoadNetwork
                 if (isClicked)
                 {
                     editorSystem.SelectedRoadNetworkElement = lane;
+                    Debug.Log("select lane");
                 }
             }
 
@@ -470,7 +824,7 @@ namespace PLATEAU.Editor.RoadNetwork
             }
 
             // レーンの構造変更機能が有効である
-            if (editorSystem.CurrentEditMode == RoadNetworkEditMode.EditLaneStructure)
+            if (editorSystem.CurrentEditMode == RoadNetworkEditMode._EditLaneStructure)
             {
                 var offset = Vector3.up * signalLightHndScaleFactor;
                 var scaleHandlePos = state.lanePos + offset;
@@ -509,9 +863,10 @@ namespace PLATEAU.Editor.RoadNetwork
                     };
                     state.isDirtyTarget = true;
                 }
+
             }
 
-            if (editorSystem.CurrentEditMode == RoadNetworkEditMode.EditLaneShape)
+            if (editorSystem.CurrentEditMode == RoadNetworkEditMode._EditLaneShape)
             {
                 //if (bIsHandleLock == null || bIsHandleLock == lane)
                 //{
@@ -655,7 +1010,7 @@ namespace PLATEAU.Editor.RoadNetwork
             //    }
             //}
 
-            if (sys.CurrentEditMode == RoadNetworkEditMode.EditLaneShape)
+            if (sys.CurrentEditMode == RoadNetworkEditMode._EditLaneShape)
             {
 
                 if (isEditable && IsSame(DisplayHndMaskSet.PointMove))
@@ -725,7 +1080,7 @@ namespace PLATEAU.Editor.RoadNetwork
             if (isEditable)
             {
                 // Lane追加モードの処理
-                if (sys.CurrentEditMode == RoadNetworkEditMode.AddLane)
+                if (sys.CurrentEditMode == RoadNetworkEditMode._AddLane)
                 {
                     var isClicked = Handles.Button(point + offset, Quaternion.identity, size, size, Handles.SphereHandleCap);
                     if (isClicked)
@@ -745,7 +1100,7 @@ namespace PLATEAU.Editor.RoadNetwork
                     return;
                 }
 
-                if (sys.CurrentEditMode == RoadNetworkEditMode.AddLink)
+                if (sys.CurrentEditMode == RoadNetworkEditMode._AddLink)
                 {
                     var isClicked = Handles.Button(point + offset, Quaternion.identity, size, size, Handles.SphereHandleCap);
                     if (isClicked)
@@ -901,7 +1256,7 @@ namespace PLATEAU.Editor.RoadNetwork
                 if (isClicked)
                 {
                     editorSystem.SelectedRoadNetworkElement = node;
-                    Debug.Log("sele" + editorSystem.SelectedRoadNetworkElement.ToString());
+                    Debug.Log("select" + editorSystem.SelectedRoadNetworkElement.ToString());
                 }
 
             }
@@ -911,8 +1266,13 @@ namespace PLATEAU.Editor.RoadNetwork
 
         private bool Button2DOn3D(SceneGUIState state, Vector3 pos2d_dis, Texture2D texture)
         {
+            return Button2DOn3D(state.currentCamera, pos2d_dis, texture);
+        }
+
+        private bool Button2DOn3D(Camera camera, Vector3 pos2d_dis, Texture2D texture)
+        {
             var size2d = Vector2.one * 50;
-            var pos2d = new Vector2(pos2d_dis.x, state.currentCamera.pixelHeight - pos2d_dis.y);
+            var pos2d = new Vector2(pos2d_dis.x, camera.pixelHeight - pos2d_dis.y);
             var buttonRect = new Rect(pos2d, size2d);
             var style = new GUIStyle();
             style.normal.background = null;
