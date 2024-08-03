@@ -1,4 +1,5 @@
 ﻿using PLATEAU.RoadNetwork;
+using PLATEAU.RoadNetwork.Structure;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -79,7 +80,7 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
         {
         }
 
-        public void Construct(RnLinkGroup road)
+        public void Construct(RnRoadGroup road)
         {
             //Assert.IsNotNull(road);
             this.road = road;
@@ -103,7 +104,7 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
             ResetCache();
         }
 
-        public RnLinkGroup road;
+        public RnRoadGroup road;
 
         // テスト用にフィールドを作成　不要になったものは削除する
         public int _numLeftLane = 3;

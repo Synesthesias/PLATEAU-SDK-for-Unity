@@ -4,6 +4,7 @@ using UnityEngine;
 using static PLATEAU.Editor.RoadNetwork.RoadNetworkEditingSystem;
 using UnityEngine.UIElements;
 using PLATEAU.RoadNetwork;
+using PLATEAU.RoadNetwork.Structure;
 using System.Linq;
 using System;
 using UnityEditor.UIElements;

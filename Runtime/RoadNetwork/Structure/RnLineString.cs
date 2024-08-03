@@ -1,5 +1,4 @@
-﻿using PLATEAU.RoadNetwork.Data;
-using PLATEAU.Util;
+﻿using PLATEAU.Util;
 using PLATEAU.Util.GeoGraph;
 using System;
 using System.Collections;
@@ -7,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-namespace PLATEAU.RoadNetwork
+namespace PLATEAU.RoadNetwork.Structure
 {
     /// <summary>
     /// 線分群クラス. 頂点のリストを持つ

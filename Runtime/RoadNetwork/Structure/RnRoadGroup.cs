@@ -4,16 +4,15 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.Analytics;
 
-namespace PLATEAU.RoadNetwork
+namespace PLATEAU.RoadNetwork.Structure
 {
     /// <summary>
     /// 実際にデータ化されるものではない
     /// Node -> Nodeを繋ぐ複数のLinkをまとめるクラス
     /// </summary>
     [Serializable]
-    public class RnLinkGroup
+    public class RnRoadGroup
     {
         //----------------------------------
         // start: フィールド
@@ -22,22 +21,22 @@ namespace PLATEAU.RoadNetwork
         /// 開始ノード
         /// </summary>
         [field: SerializeField]
-        public RnNode PrevNode { get; private set; }
+        public RnIntersection PrevNode { get; private set; }
 
         /// <summary>
         /// 終了ノード
         /// </summary>
         [field: SerializeField]
-        public RnNode NextNode { get; private set; }
+        public RnIntersection NextNode { get; private set; }
 
         [SerializeField]
-        private List<RnLink> links;
+        private List<RnRoad> links;
 
         //----------------------------------
         // end: フィールド
         //----------------------------------
 
-        public IReadOnlyList<RnLink> Links => links;
+        public IReadOnlyList<RnRoad> Links => links;
 
         /// <summary>
         /// 有効なLinkGroupかどうか
@@ -50,7 +49,7 @@ namespace PLATEAU.RoadNetwork
         /// <param name="prevNode"></param>
         /// <param name="nextNode"></param>
         /// <param name="links"></param>
-        public RnLinkGroup(RnNode prevNode, RnNode nextNode, IEnumerable<RnLink> links)
+        public RnRoadGroup(RnIntersection prevNode, RnIntersection nextNode, IEnumerable<RnRoad> links)
         {
             PrevNode = prevNode;
             NextNode = nextNode;
@@ -120,7 +119,7 @@ namespace PLATEAU.RoadNetwork
             return new RnWay(RnLineString.Create(points), false, false);
         }
 
-        private Dictionary<RnLink, List<RnLane>> SplitLane(int num)
+        private Dictionary<RnRoad, List<RnLane>> SplitLane(int num)
         {
             if (num <= 0)
                 return null;
@@ -137,7 +136,7 @@ namespace PLATEAU.RoadNetwork
                 borderWays.Add(split);
             }
 
-            var afterLanes = new Dictionary<RnLink, List<RnLane>>(Links.Count);
+            var afterLanes = new Dictionary<RnRoad, List<RnLane>>(Links.Count);
             for (var i = 0; i < Links.Count; ++i)
             {
                 var link = Links[i];
@@ -282,7 +281,7 @@ namespace PLATEAU.RoadNetwork
         /// <summary>
         /// 中央分離帯を作成するかスキップする
         /// </summary>
-        private void CreateMedianOrSkip(Func<RnLink, bool> createTarget)
+        private void CreateMedianOrSkip(Func<RnRoad, bool> createTarget)
         {
             Dictionary<RnPoint, RnPoint> replace = new Dictionary<RnPoint, RnPoint>();
             foreach (var l in Links)
@@ -369,16 +368,16 @@ namespace PLATEAU.RoadNetwork
         /// <param name="prevNode"></param>
         /// <param name="nextNode"></param>
         /// <returns></returns>
-        public static RnLinkGroup CreateLinkGroupOrDefault(RnNode prevNode, RnNode nextNode)
+        public static RnRoadGroup CreateLinkGroupOrDefault(RnIntersection prevNode, RnIntersection nextNode)
         {
             if (prevNode == null || nextNode == null)
                 return null;
 
             foreach (var n in prevNode.GetNeighborRoads())
             {
-                if (n is RnLink link)
+                if (n is RnRoad link)
                 {
-                    var ret = new RnLinkGroup(prevNode, nextNode, new[] { link });
+                    var ret = new RnRoadGroup(prevNode, nextNode, new[] { link });
                     var hasPrev = ret.PrevNode == prevNode || ret.NextNode == prevNode;
                     var hasNex = ret.PrevNode == nextNode || ret.NextNode == nextNode;
                     if (hasPrev && hasNex)

@@ -1,5 +1,6 @@
 ﻿using PLATEAU.CityInfo;
 using PLATEAU.RoadNetwork.Data;
+using PLATEAU.RoadNetwork.Structure;
 using PLATEAU.Util;
 using System;
 using System.Collections.Generic;
@@ -307,7 +308,7 @@ namespace PLATEAU.RoadNetwork.Drawer
             }
         }
 
-        private void DrawLink(RnLink link)
+        private void DrawLink(RnRoad link)
         {
             if ((ulong)linkOp.showLinkId == link.DebugMyId)
             {
@@ -379,7 +380,7 @@ namespace PLATEAU.RoadNetwork.Drawer
             // LinkGroupで描画する場合はGroup全部で同じ色にする
             if (linkOp.showLinkGroup)
             {
-                var linkGroups = new List<RnLinkGroup>();
+                var linkGroups = new List<RnRoadGroup>();
                 foreach (var link in roadNetwork.Links)
                 {
                     if (linkGroups.Any(a => a.Links.Contains(link)) == false)
@@ -414,7 +415,7 @@ namespace PLATEAU.RoadNetwork.Drawer
             }
         }
 
-        private void DrawNode(RnNode node)
+        private void DrawNode(RnIntersection node)
         {
             if (nodeOp.visible == false)
                 return;

@@ -1,17 +1,11 @@
 ﻿using PLATEAU.CityInfo;
-using PLATEAU.RoadNetwork.Data;
-using PLATEAU.Util.GeoGraph;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.Assertions;
-using UnityEngine.PlayerLoop;
-using static Codice.Client.Commands.WkTree.WorkspaceTreeNode;
-using static UnityEngine.GraphicsBuffer;
 
-namespace PLATEAU.RoadNetwork
+namespace PLATEAU.RoadNetwork.Structure
 {
 
     [Flags]
@@ -21,7 +15,7 @@ namespace PLATEAU.RoadNetwork
         BothSide = 1 << 0,
     }
     //[Serializable]
-    public class RnLink : RnRoadBase
+    public class RnRoad : RnRoadBase
     {
         //----------------------------------
         // start: フィールド
@@ -86,9 +80,9 @@ namespace PLATEAU.RoadNetwork
 
         public RnLane MedianLane => medianLane;
 
-        public RnLink() { }
+        public RnRoad() { }
 
-        public RnLink(PLATEAUCityObjectGroup targetTran)
+        public RnRoad(PLATEAUCityObjectGroup targetTran)
         {
             TargetTran = targetTran;
         }
@@ -431,17 +425,17 @@ namespace PLATEAU.RoadNetwork
         /// <param name="targetTran"></param>
         /// <param name="way"></param>
         /// <returns></returns>
-        public static RnLink CreateIsolatedLink(PLATEAUCityObjectGroup targetTran, RnWay way)
+        public static RnRoad CreateIsolatedLink(PLATEAUCityObjectGroup targetTran, RnWay way)
         {
             var lane = RnLane.CreateOneWayLane(way);
-            var ret = new RnLink(targetTran);
+            var ret = new RnRoad(targetTran);
             ret.AddMainLane(lane);
             return ret;
         }
 
-        public static RnLink CreateOneLaneLink(PLATEAUCityObjectGroup targetTran, RnLane lane)
+        public static RnRoad CreateOneLaneLink(PLATEAUCityObjectGroup targetTran, RnLane lane)
         {
-            var ret = new RnLink(targetTran);
+            var ret = new RnRoad(targetTran);
             ret.AddMainLane(lane);
             return ret;
         }
@@ -455,7 +449,7 @@ namespace PLATEAU.RoadNetwork
         /// <param name="self"></param>
         /// <param name="lane"></param>
         /// <returns></returns>
-        public static bool IsReverseLane(this RnLink self, RnLane lane)
+        public static bool IsReverseLane(this RnRoad self, RnLane lane)
         {
             if (lane.Parent != self)
                 return false;
@@ -471,7 +465,7 @@ namespace PLATEAU.RoadNetwork
         /// <param name="other"></param>
         /// <returns></returns>
         /// <exception cref="InvalidDataException"></exception>
-        public static RnRoadBase GetOppositeLink(this RnLink self, RnRoadBase other)
+        public static RnRoadBase GetOppositeLink(this RnRoad self, RnRoadBase other)
         {
             if (self.Prev == other)
             {
@@ -490,12 +484,12 @@ namespace PLATEAU.RoadNetwork
         /// </summary>
         /// <param name="self"></param>
         /// <returns></returns>
-        public static RnLinkGroup CreateLinkGroup(this RnLink self)
+        public static RnRoadGroup CreateLinkGroup(this RnRoad self)
         {
-            var links = new List<RnLink> { self };
-            RnNode Search(RnRoadBase src, RnRoadBase target, bool isPrev)
+            var links = new List<RnRoad> { self };
+            RnIntersection Search(RnRoadBase src, RnRoadBase target, bool isPrev)
             {
-                while (target is RnLink link)
+                while (target is RnRoad link)
                 {
                     // ループしていたら終了
                     if (links.Contains(link))
@@ -509,11 +503,11 @@ namespace PLATEAU.RoadNetwork
 
                     src = link;
                 }
-                return target as RnNode;
+                return target as RnIntersection;
             }
             var prevNode = Search(self, self.Prev, true);
             var nextNode = Search(self, self.Next, false);
-            return new RnLinkGroup(prevNode, nextNode, links);
+            return new RnRoadGroup(prevNode, nextNode, links);
         }
 
         /// <summary>
@@ -522,7 +516,7 @@ namespace PLATEAU.RoadNetwork
         /// </summary>
         /// <param name="self"></param>
         /// <returns></returns>
-        public static RnLinkGroup CreateLinkGroupOrDefault(this RnLink self)
+        public static RnRoadGroup CreateLinkGroupOrDefault(this RnRoad self)
         {
             try
             {

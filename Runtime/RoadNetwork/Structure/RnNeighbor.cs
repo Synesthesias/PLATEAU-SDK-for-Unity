@@ -1,10 +1,8 @@
-﻿using PLATEAU.CityInfo;
-using PLATEAU.RoadNetwork.Data;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace PLATEAU.RoadNetwork
+namespace PLATEAU.RoadNetwork.Structure
 {
     [Serializable]
     public class RnNeighbor : ARnParts<RnNeighbor>
@@ -16,7 +14,7 @@ namespace PLATEAU.RoadNetwork
         public RnWay Border { get; set; }
 
         // Link
-        public RnLink Link { get; set; }
+        public RnRoad Link { get; set; }
 
         //----------------------------------
         // end: フィールド

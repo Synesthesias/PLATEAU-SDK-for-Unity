@@ -1,17 +1,9 @@
-﻿using PLATEAU.CityInfo;
-using PLATEAU.RoadNetwork.Data;
-using PLATEAU.Util;
-using PLATEAU.Util.GeoGraph;
+﻿using PLATEAU.RoadNetwork.Data;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Numerics;
-using UnityEngine;
-using UnityEngine.Assertions;
-using UnityEngine.Serialization;
 
-namespace PLATEAU.RoadNetwork
+namespace PLATEAU.RoadNetwork.Structure
 {
     // #NOTE : Editorが重いのでSerialize対象にしない
     public class RnModel
@@ -24,9 +16,9 @@ namespace PLATEAU.RoadNetwork
 
 
         // #NOTE : Editorが重いのでSerialize対象にしない
-        private List<RnLink> links = new List<RnLink>();
+        private List<RnRoad> links = new List<RnRoad>();
 
-        private List<RnNode> nodes = new List<RnNode>();
+        private List<RnIntersection> nodes = new List<RnIntersection>();
 
         private List<RnLineString> sideWalks = new List<RnLineString>();
 
@@ -34,13 +26,13 @@ namespace PLATEAU.RoadNetwork
         // end: フィールド
         //----------------------------------
 
-        public IReadOnlyList<RnLink> Links => links;
+        public IReadOnlyList<RnRoad> Links => links;
 
-        public IReadOnlyList<RnNode> Nodes => nodes;
+        public IReadOnlyList<RnIntersection> Nodes => nodes;
 
         public IReadOnlyList<RnLineString> SideWalks => sideWalks;
 
-        public void AddLink(RnLink link)
+        public void AddLink(RnRoad link)
         {
             if (links.Contains(link))
                 return;
@@ -49,13 +41,13 @@ namespace PLATEAU.RoadNetwork
             links.Add(link);
         }
 
-        public void RemoveLink(RnLink link)
+        public void RemoveLink(RnRoad link)
         {
             if (links.Remove(link))
                 link.ParentModel = null;
         }
 
-        public void AddNode(RnNode node)
+        public void AddNode(RnIntersection node)
         {
             if (Nodes.Contains(node))
                 return;
@@ -64,7 +56,7 @@ namespace PLATEAU.RoadNetwork
             nodes.Add(node);
         }
 
-        public void RemoveNode(RnNode node)
+        public void RemoveNode(RnIntersection node)
         {
             if (nodes.Remove(node))
                 node.ParentModel = null;
@@ -150,7 +142,7 @@ namespace PLATEAU.RoadNetwork
         public void SplitLaneByWidth(float roadWidth, out List<ulong> failedLinks)
         {
             failedLinks = new List<ulong>();
-            var visitedLinks = new HashSet<RnLink>();
+            var visitedLinks = new HashSet<RnRoad>();
             foreach (var link in Links)
             {
                 if (visitedLinks.Contains(link))

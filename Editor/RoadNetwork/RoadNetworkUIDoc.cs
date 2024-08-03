@@ -2,6 +2,7 @@
 using NUnit.Framework;
 using PLATEAU.Editor.RoadNetwork.UIDocBind;
 using PLATEAU.RoadNetwork;
+using PLATEAU.RoadNetwork.Structure;
 using PLATEAU.Util;
 using System;
 using System.Collections.Generic;
@@ -241,7 +242,7 @@ namespace PLATEAU.Editor.RoadNetwork
             // 選択オブジェクト変更時のイベント設定 モデルオブジェクトの再設定を行う
             system.OnChangedSelectRoadNetworkElement += (s, e) =>
             {
-                var linkGroupEditorData = system.SelectedRoadNetworkElement as EditorData<RnLinkGroup>;
+                var linkGroupEditorData = system.SelectedRoadNetworkElement as EditorData<RnRoadGroup>;
                 if (linkGroupEditorData == null)
                     return;
 
@@ -276,7 +277,7 @@ namespace PLATEAU.Editor.RoadNetwork
 
         }
 
-        private static SerializedScriptableRoadMdl CreateOrGetLinkGroupData(EditorData<RnLinkGroup> linkGroupEditorData)
+        private static SerializedScriptableRoadMdl CreateOrGetLinkGroupData(EditorData<RnRoadGroup> linkGroupEditorData)
         {
             // モデルオブジェクトを所持してるならそれを利用する
             var mdl = linkGroupEditorData.GetSubData<SerializedScriptableRoadMdl>();
@@ -539,7 +540,7 @@ namespace PLATEAU.Editor.RoadNetwork
         {
             if (system.CurrentEditMode == RoadNetworkEditMode.EditTrafficRegulation)
             {
-                var node = system.SelectedRoadNetworkElement as RnNode;
+                var node = system.SelectedRoadNetworkElement as RnIntersection;
                 if (node != null)
                 {
                     if (node.SignalController == null)

@@ -1,26 +1,27 @@
 ﻿using PLATEAU.CityInfo;
+using PLATEAU.RoadNetwork.Structure;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace PLATEAU.RoadNetwork.Data
 {
-    [Serializable, RoadNetworkSerializeData(typeof(RnNode))]
-    public class RnDataNode : RnDataRoadBase
+    [Serializable, RoadNetworkSerializeData(typeof(RnIntersection))]
+    public class RnDataIntersection : RnDataRoadBase
     {
         // #TODO : 消える予定
         // 自分自身を表すId
         [field: SerializeField]
-        public RnID<RnDataNode> MyId { get; set; }
+        public RnID<RnDataIntersection> MyId { get; set; }
 
         // 対象のtranオブジェクト
         [field: SerializeField]
-        [RoadNetworkSerializeMember(nameof(RnNode.TargetTran))]
+        [RoadNetworkSerializeMember(nameof(RnIntersection.TargetTran))]
         public PLATEAUCityObjectGroup TargetTran { get; set; }
 
         // 隣接情報
         [field: SerializeField]
-        [RoadNetworkSerializeMember(nameof(RnNode.Neighbors))]
+        [RoadNetworkSerializeMember(nameof(RnIntersection.Neighbors))]
         public List<RnDataNeighbor> Neighbors { get; set; } = new List<RnDataNeighbor>();
 
         // 車線

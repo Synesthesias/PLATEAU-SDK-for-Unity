@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace PLATEAU.RoadNetwork
+namespace PLATEAU.RoadNetwork.Structure
 {
     /// <summary>
     /// 交通規制の生成補助クラス
@@ -18,7 +18,7 @@ namespace PLATEAU.RoadNetwork
     /// </summary>
     public class TrafficSignalLightController
     {
-        public TrafficSignalLightController(string id, RnNode node, in Vector3 position)
+        public TrafficSignalLightController(string id, RnIntersection node, in Vector3 position)
             : base()
         {
             SelfId = id;
@@ -28,7 +28,7 @@ namespace PLATEAU.RoadNetwork
 
         // RnIDに変換予定？　AVNEWだと文字列
         public string SelfId { get; private set; } = string.Empty;
-        public RnNode CorrespondingNode { get; private set; } = null;
+        public RnIntersection CorrespondingNode { get; private set; } = null;
 
 
         public bool GapImpedanceFlag { get; private set; } = false;
@@ -80,7 +80,7 @@ namespace PLATEAU.RoadNetwork
         }
         public float SplitSeconds { get; set; }
         public int EnterableVehicleType { get; set; }
-        public Dictionary<TrafficSignalLight, RnLink> DirectionMap { get; set; }
+        public Dictionary<TrafficSignalLight, RnRoad> DirectionMap { get; set; }
 
         public string Name { get; set; }
     }

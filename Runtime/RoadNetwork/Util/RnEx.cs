@@ -9,6 +9,7 @@ using PLATEAU.PolygonMesh;
 using PLATEAU.RoadNetwork.Factory;
 using PLATEAU.RoadNetwork.Graph;
 using PLATEAU.RoadNetwork.Mesh;
+using PLATEAU.RoadNetwork.Structure;
 using PLATEAU.Util;
 using PLATEAU.Util.GeoGraph;
 using System;

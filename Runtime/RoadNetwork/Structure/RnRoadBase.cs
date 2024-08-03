@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace PLATEAU.RoadNetwork
+namespace PLATEAU.RoadNetwork.Structure
 {
     [Serializable]
-    public class RnRoadBase : ARnParts<RnNode>
+    public class RnRoadBase : ARnParts<RnIntersection>
     {
         // 境界線情報を取得
         public virtual IEnumerable<RnBorder> GetBorders() { yield break; }

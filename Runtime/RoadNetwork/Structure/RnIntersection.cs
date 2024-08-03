@@ -1,21 +1,18 @@
 ﻿using PLATEAU.CityInfo;
-using PLATEAU.RoadNetwork.Data;
-using PLATEAU.Util;
-using PLATEAU.Util.GeoGraph;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Splines;
-namespace PLATEAU.RoadNetwork
+
+namespace PLATEAU.RoadNetwork.Structure
 {
     /// <summary>
     /// 交差点
     /// </summary>
 
     [Serializable]
-    public class RnNode : RnRoadBase
+    public class RnIntersection : RnRoadBase
     {
         //----------------------------------
         // start: フィールド
@@ -64,9 +61,9 @@ namespace PLATEAU.RoadNetwork
             }
         }
 
-        public RnNode() { }
+        public RnIntersection() { }
 
-        public RnNode(PLATEAUCityObjectGroup targetTran)
+        public RnIntersection(PLATEAUCityObjectGroup targetTran)
         {
             TargetTran = targetTran;
         }
@@ -108,7 +105,7 @@ namespace PLATEAU.RoadNetwork
             return ret / cnt;
         }
 
-        public void ReplaceBorder(RnLink link, List<RnWay> borders)
+        public void ReplaceBorder(RnRoad link, List<RnWay> borders)
         {
             Neighbors.RemoveAll(n => n.Link == link);
             Neighbors.AddRange(borders.Select(b => new RnNeighbor { Link = link, Border = b }));
@@ -119,7 +116,7 @@ namespace PLATEAU.RoadNetwork
         /// </summary>
         /// <param name="from"></param>
         /// <param name="to"></param>
-        public RnLane CalcTrackWay(RnLink from, RnLink to)
+        public RnLane CalcTrackWay(RnRoad from, RnRoad to)
         {
             if (from == to)
                 return null;

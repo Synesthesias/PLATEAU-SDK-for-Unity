@@ -2,6 +2,7 @@
 using PLATEAU.CityGML;
 using PLATEAU.RoadNetwork;
 using PLATEAU.RoadNetwork.Data;
+using PLATEAU.RoadNetwork.Structure;
 using PLATEAU.Util;
 using System;
 using System.Collections;
@@ -330,7 +331,7 @@ namespace PLATEAU.Editor.RoadNetwork
             return true;
         }
 
-        public IReadOnlyCollection<EditorData<RnLinkGroup>> connections = new EditorData<RnLinkGroup>[0];
+        public IReadOnlyCollection<EditorData<RnRoadGroup>> connections = new EditorData<RnRoadGroup>[0];
         public Color connectionColor = Color.blue;
 
         public List<Vector3> intersections = new List<Vector3>();
@@ -339,7 +340,7 @@ namespace PLATEAU.Editor.RoadNetwork
 
         public float btnSize = 10.0f;
 
-        public List<RnLinkGroup> SimLanes;
+        public List<RnRoadGroup> SimLanes;
 
 
         private class WaySlideData
@@ -375,7 +376,7 @@ namespace PLATEAU.Editor.RoadNetwork
 
         private class LaneGroupEditorData
         {
-            public LaneGroupEditorData(RnLinkGroup target)
+            public LaneGroupEditorData(RnRoadGroup target)
             {
                 Assert.IsNotNull(target);
                 var fLink =  group.Links.First();
@@ -431,7 +432,7 @@ namespace PLATEAU.Editor.RoadNetwork
                 }
             }
 
-            RnLinkGroup group;
+            RnRoadGroup group;
 
             // 連結レーンのリスト
             public List<List<RnLane>> LaneGroupListCache { get; set; } = new List<List<RnLane>>();
@@ -476,7 +477,7 @@ namespace PLATEAU.Editor.RoadNetwork
             }
 
             // 選択している道路がある場合
-            var selectedConnection = editorSystem.SelectedRoadNetworkElement as EditorData<RnLinkGroup>;
+            var selectedConnection = editorSystem.SelectedRoadNetworkElement as EditorData<RnRoadGroup>;
             if (selectedConnection != null)
             {
                 var item = selectedConnection;
@@ -680,7 +681,7 @@ namespace PLATEAU.Editor.RoadNetwork
                 }
             }
 
-            HashSet<RnLink> drawLink = new HashSet<RnLink>();
+            HashSet<RnRoad> drawLink = new HashSet<RnRoad>();
             // link
             foreach (var link in network.Links)
             {
@@ -756,7 +757,7 @@ namespace PLATEAU.Editor.RoadNetwork
             return editorSystem.RoadNetwork;
         }
 
-        private void ForeachLane(IRoadNetworkEditingSystem editorSystem, RnLink parent, IReadOnlyList<RnLane> mainLanes, RnLane lane, ref SceneGUIState state)
+        private void ForeachLane(IRoadNetworkEditingSystem editorSystem, RnRoad parent, IReadOnlyList<RnLane> mainLanes, RnLane lane, ref SceneGUIState state)
         {
             state.lanePos = CalcLanePos(lane);
 
@@ -919,7 +920,7 @@ namespace PLATEAU.Editor.RoadNetwork
             return (displayHandleMask & (int)mask) == (int)mask;
         }
 
-        private void ForeachLink(IRoadNetworkEditingSystem editorSystem, IReadOnlyList<RnLink> links, RnLink link, ref SceneGUIState state)
+        private void ForeachLink(IRoadNetworkEditingSystem editorSystem, IReadOnlyList<RnRoad> links, RnRoad link, ref SceneGUIState state)
         {
             state.linkPos = CalcLinkPos(link);
 
@@ -931,7 +932,7 @@ namespace PLATEAU.Editor.RoadNetwork
 
             bool isEditable = false;
             // 自身が選択されていない
-            if (link != editorSystem.SelectedRoadNetworkElement as RnLink)
+            if (link != editorSystem.SelectedRoadNetworkElement as RnRoad)
             {
                 //子の要素が選択されていない
                 var lane = editorSystem.SelectedRoadNetworkElement as RnLane;
@@ -1062,7 +1063,7 @@ namespace PLATEAU.Editor.RoadNetwork
                 }
             }
         }
-        private void ForeachAllBorderPoints(IRoadNetworkEditingSystem sys, RnLink link, RnWay parent, RnPoint point, ref SceneGUIState state, Vector3 offset)
+        private void ForeachAllBorderPoints(IRoadNetworkEditingSystem sys, RnRoad link, RnWay parent, RnPoint point, ref SceneGUIState state, Vector3 offset)
         {
             var isEditable = false;
             isEditable = true;
@@ -1200,7 +1201,7 @@ namespace PLATEAU.Editor.RoadNetwork
             return sqrMag < distance * distance;
         }
 
-        private void ForeachNode(IRoadNetworkEditingSystem editorSystem, IReadOnlyList<RnNode> nodes, RnNode node, ref SceneGUIState state)
+        private void ForeachNode(IRoadNetworkEditingSystem editorSystem, IReadOnlyList<RnIntersection> nodes, RnIntersection node, ref SceneGUIState state)
         {
             state.nodePos = node.GetCenterPoint();
 
@@ -1292,7 +1293,7 @@ namespace PLATEAU.Editor.RoadNetwork
             return isVisible;
         }
 
-        private static Vector3 CalcLinkPos(RnLink link)
+        private static Vector3 CalcLinkPos(RnRoad link)
         {
             var midIdx = link.AllLanes.Count() / 2;
             // midIdxのLaneを取得する

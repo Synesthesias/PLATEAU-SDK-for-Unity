@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PLATEAU.RoadNetwork.Structure;
+using System;
 using UnityEngine;
 
 namespace PLATEAU.RoadNetwork.Data
@@ -13,7 +14,7 @@ namespace PLATEAU.RoadNetwork.Data
 
         [field: SerializeField]
         [RoadNetworkSerializeMember(nameof(RnBlock.ParentLink))]
-        public RnID<RnDataLink> ParentLink { get; set; }
+        public RnID<RnDataRoad> ParentLink { get; set; }
 
         [field: SerializeField]
         [RoadNetworkSerializeMember(nameof(RnBlock.LaneType))]

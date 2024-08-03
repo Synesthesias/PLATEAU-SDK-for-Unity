@@ -1,17 +1,18 @@
 ﻿using PLATEAU.CityInfo;
+using PLATEAU.RoadNetwork.Structure;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace PLATEAU.RoadNetwork.Data
 {
-    [Serializable, RoadNetworkSerializeData(typeof(RnLink))]
-    public class RnDataLink : RnDataRoadBase
+    [Serializable, RoadNetworkSerializeData(typeof(RnRoad))]
+    public class RnDataRoad : RnDataRoadBase
     {
         // #TODO : 消える予定
         // 自分自身を表すId
         [field: SerializeField]
-        public RnID<RnDataLink> MyId { get; set; }
+        public RnID<RnDataRoad> MyId { get; set; }
 
         // 対象のtranオブジェクト
         [field: SerializeField]

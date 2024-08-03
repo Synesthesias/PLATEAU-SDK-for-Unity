@@ -1,4 +1,4 @@
-﻿namespace PLATEAU.RoadNetwork
+﻿namespace PLATEAU.RoadNetwork.Structure
 {
     public class RnBorder
     {

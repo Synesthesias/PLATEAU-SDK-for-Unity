@@ -1,4 +1,5 @@
 ﻿
+using PLATEAU.RoadNetwork.Structure;
 using PLATEAU.Util;
 using System;
 using System.Collections;
@@ -383,8 +384,8 @@ namespace PLATEAU.RoadNetwork.Data
         {
             var refTable = new ReferenceTable();
             refTable.CreateMemberReferenceOrSkip(typeof(RnDataNeighbor));
-            refTable.CreateMemberReferenceOrSkip(typeof(RnDataNode));
-            refTable.CreateMemberReferenceOrSkip(typeof(RnDataLink));
+            refTable.CreateMemberReferenceOrSkip(typeof(RnDataIntersection));
+            refTable.CreateMemberReferenceOrSkip(typeof(RnDataRoad));
             return refTable;
         }
 
@@ -445,9 +446,9 @@ namespace PLATEAU.RoadNetwork.Data
             var ret = new RnModel();
             foreach (var r in roadBases)
             {
-                if (r is RnNode n)
+                if (r is RnIntersection n)
                     ret.AddNode(n);
-                else if (r is RnLink l)
+                else if (r is RnRoad l)
                     ret.AddLink(l);
             }
             return ret;

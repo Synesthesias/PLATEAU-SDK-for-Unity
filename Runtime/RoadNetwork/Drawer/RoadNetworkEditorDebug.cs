@@ -1,4 +1,5 @@
-﻿using PLATEAU.Util;
+﻿using PLATEAU.RoadNetwork.Structure;
+using PLATEAU.Util;
 using PLATEAU.Util.GeoGraph;
 using System;
 using System.Collections.Generic;
@@ -108,13 +109,13 @@ namespace PLATEAU.RoadNetwork.Drawer
 
                 if (splitEdit.Button())
                 {
-                    if (lane.Parent is RnLink link)
+                    if (lane.Parent is RnRoad link)
                     {
                         var lanes = lane.SplitLane(splitEdit.splitNum, true);
                         foreach (var item in lanes)
                         {
                             var l = item.Key;
-                            var parent = l.Parent as RnLink;
+                            var parent = l.Parent as RnRoad;
                             parent?.ReplaceLane(l, item.Value);
                         }
                     }

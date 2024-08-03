@@ -1,8 +1,7 @@
-﻿using PLATEAU.RoadNetwork.Data;
-using System;
+﻿using System;
 using UnityEngine;
 
-namespace PLATEAU.RoadNetwork
+namespace PLATEAU.RoadNetwork.Structure
 {
     [Serializable]
     public class RnPoint : ARnParts<RnPoint>

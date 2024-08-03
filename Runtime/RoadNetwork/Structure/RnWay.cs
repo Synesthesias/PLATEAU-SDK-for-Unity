@@ -1,15 +1,12 @@
-﻿using PlasticGui.Configuration.OAuth;
-using PLATEAU.RoadNetwork.Data;
-using PLATEAU.Util;
+﻿using PLATEAU.Util;
 using PLATEAU.Util.GeoGraph;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using GeoGraph2D = PLATEAU.Util.GeoGraph.GeoGraph2D;
 
-namespace PLATEAU.RoadNetwork
+namespace PLATEAU.RoadNetwork.Structure
 {
     /// <summary>
     /// WayのPointsをReadOnlyで返すラッパー

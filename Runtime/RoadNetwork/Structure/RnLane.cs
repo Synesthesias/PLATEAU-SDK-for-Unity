@@ -1,20 +1,14 @@
-﻿using PLATEAU.RoadNetwork.Data;
-using PLATEAU.Util;
+﻿using PLATEAU.Util;
 using PLATEAU.Util.GeoGraph;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Numerics;
 using UnityEngine;
 using UnityEngine.Assertions;
-using UnityEngine.Assertions.Comparers;
-using UnityEngine.SocialPlatforms;
 using Vector2 = UnityEngine.Vector2;
 using Vector3 = UnityEngine.Vector3;
 
-namespace PLATEAU.RoadNetwork
+namespace PLATEAU.RoadNetwork.Structure
 {
     public enum RnLaneBorderType
     {
@@ -833,7 +827,7 @@ namespace PLATEAU.RoadNetwork
                     var prevLanes = targetLane.GetPrevLanes().ToList();
                     var neighbors = nextLanes
                         .Concat(prevLanes)
-                        .Where(l => l.Parent is RnLink && visited.Contains(l) == false)
+                        .Where(l => l.Parent is RnRoad && visited.Contains(l) == false)
                         .ToList();
                     foreach (var l in neighbors)
                         queue.Enqueue(l);

@@ -98,9 +98,9 @@ namespace PLATEAU.RoadNetwork.Data
         public int paternID;
         public int phaseID;
         public int allowVehicleTypeMask;
-        public List<RnID<RnDataLink>> linkAtBlue;
-        public List<RnID<RnDataLink>> linkAtYellow;
-        public List<RnID<RnDataLink>> linkAtRed;
+        public List<RnID<RnDataRoad>> linkAtBlue;
+        public List<RnID<RnDataRoad>> linkAtYellow;
+        public List<RnID<RnDataRoad>> linkAtRed;
     }
 
 
