@@ -372,7 +372,6 @@ namespace PLATEAU.RoadNetwork
             if (IsValid == false)
                 return;
 
-
             var index = 0;
             // 現在見る点と次の点の辺/頂点の法線を保存しておく
             // 線分の法線
@@ -389,9 +388,13 @@ namespace PLATEAU.RoadNetwork
                 // 形状維持するためにオフセット距離を変える
                 // en0成分の移動量がdeltaになるように, vnの移動量を求める
                 var m = Vector3.Dot(vn, en0);
-                var d = delta / m;
+                // p0->p1->p2でp0 == p2だったりした場合に0除算が発生するのでチェック
+                // #TODO : 移動した結果頂点が重なる場合があるのでその対策が必要
+                var d = delta;
+                bool isZero = Mathf.Abs(m) < 1e-5f;
+                if (isZero == false)
+                    d /= m;
                 var o = vn * d;
-
                 if (i < Count - 1)
                 {
                     vertexNormal[index] = GetVertexNormal(i + 1);
@@ -400,6 +403,7 @@ namespace PLATEAU.RoadNetwork
                 }
                 GetPoint(i).Vertex += o;
                 // 次の頂点計算のためにen1線分の移動量を入れる
+                // #TODO : vnが0ベクトルの時の対応
                 delta = d * Vector3.Dot(vn, en1);
             }
         }
