@@ -303,7 +303,7 @@ namespace PLATEAU.RoadNetwork.Structure
         /// </summary>
         /// <param name="dir"></param>
         /// <param name="way"></param>
-        private void SetSideWay(RnDir dir, RnWay way)
+        public void SetSideWay(RnDir dir, RnWay way)
         {
             if (dir == RnDir.Left)
                 LeftWay = way;
@@ -324,13 +324,6 @@ namespace PLATEAU.RoadNetwork.Structure
                 RnDir.Right => RightWay,
                 _ => null
             };
-        }
-
-        private static void Replace(List<RnLane> list, RnLane before, RnLane after)
-        {
-            var index = list.FindIndex(l => l == before);
-            if (index >= 0)
-                list[index] = after;
         }
 
         /// <summary>

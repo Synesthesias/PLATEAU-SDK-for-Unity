@@ -259,6 +259,29 @@ namespace PLATEAU.RoadNetwork.Structure
             return true;
         }
 
+        /// <summary>
+        /// 中央分離帯を削除する
+        /// </summary>
+        /// <param name="moveOption"></param>
+        public void RemoveMedian(LaneWayMoveOption moveOption = LaneWayMoveOption.MoveBothWay)
+        {
+            SetMedianWidth(0f, moveOption);
+            foreach (var link in Links)
+            {
+                if (link.MedianLane == null)
+                    continue;
+                // l,rを同じにするため, r -> lに差し替え(向きをそろえるためにlを反転させる)
+                var before = link.MedianLane.RightWay;
+                var after = link.MedianLane.LeftWay.ReversedWay();
+                foreach (var lane in link.GetRightLanes())
+                {
+                    if (lane.RightWay?.IsSameLine(before) ?? false)
+                    {
+                        lane.SetSideWay(RnDir.Right, after);
+                    }
+                }
+            }
+        }
 
         /// <summary>
         /// 左側レーン数を変更する

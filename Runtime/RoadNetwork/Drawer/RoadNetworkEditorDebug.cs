@@ -179,6 +179,7 @@ namespace PLATEAU.RoadNetwork.Drawer
                 public LaneWayMoveOption medianWidthOption = LaneWayMoveOption.MoveBothWay;
                 // 中央分離帯変更フラグ
                 public bool changeMedianWidth = false;
+                public bool removeMedian = false;
 
             }
             public ShowInfo showInfo = new ShowInfo();
@@ -222,6 +223,12 @@ namespace PLATEAU.RoadNetwork.Drawer
                 {
                     linkGroup.SetMedianWidth(showInfo.medianWidth, showInfo.medianWidthOption);
                     showInfo.changeMedianWidth = false;
+                }
+
+                if (showInfo.removeMedian)
+                {
+                    linkGroup.RemoveMedian(showInfo.medianWidthOption);
+                    showInfo.removeMedian = false;
                 }
             }
         }
