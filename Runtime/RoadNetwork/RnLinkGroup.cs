@@ -86,6 +86,24 @@ namespace PLATEAU.RoadNetwork
             return links.Select(l => l.GetRightLaneCount()).Min();
         }
 
+        public IEnumerable<RnLane> GetRightLanes()
+        {
+            // 向きをそろえる
+            Align();
+            if (Links.Any() == false)
+                return null;
+            return links.SelectMany(l => l.GetRightLanes());
+        }
+
+        public IEnumerable<RnLane> GetLeftLanes()
+        {
+            // 向きをそろえる
+            Align();
+            if (Links.Any() == false)
+                return null;
+            return links.SelectMany(l => l.GetLeftLanes());
+        }
+
         private RnWay ConnectWays(IEnumerable<RnWay> ways)
         {
             var points = new List<RnPoint>();

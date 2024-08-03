@@ -65,6 +65,16 @@ namespace PLATEAU.Editor.RoadNetwork
             Initialize();
         }
 
+        private void OnGUI()
+        {
+
+            //if (GUILayout.Button(Vector3.up * 100, Quaternion.identity, 600, 600, Handles.SphereHandleCap))
+            //{
+            //    Debug.Log("Button Clicked");
+            //}
+            //Gizmos.DrawLine(Vector3.zero, Vector3.up * 500);  // OnDrawGizmodsでしか呼ばれない
+        }
+
         /// <summary>
         /// ウィンドウを取得する、存在しない場合に生成する
         /// ラップ関数

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Linq;
 using System.Text;
 using UnityEditor;
 using UnityEngine;
@@ -12,24 +13,6 @@ using UnityEngine.Assertions;
 
 namespace PLATEAU.Editor.RoadNetwork.UIDocBind
 {
-    /// <summary>
-    /// Node間をつなぐLinkの繋がり
-    /// 1つ以上のLinkで構成する
-    /// </summary>
-    public interface INodeConnectionLink
-    {
-        /// <summary>
-        /// このNodeConnectionが持つLinkのリスト
-        /// </summary>
-        public List<RnLink> Links { get; }
-
-        /// <summary>
-        /// このNodeConnectionが持つINodeConnectionLaneのリスト
-        /// 車線に対して処理を行う際にこちらを参照する
-        /// </summary>
-        public List<INodeConnectionLane> Lanes { get; }
-    }
-
     /// <summary>
     /// Node間を繋ぐLaneの繋がり
     /// １つ以上のLaneで構成する
@@ -92,11 +75,18 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
 
     public class ScriptableRoadMdl : ScriptableObject, IScriptableRoadMdl
     {
-        public ScriptableRoadMdl(INodeConnectionLink road)
+        public ScriptableRoadMdl()
+        {
+        }
+
+        public void Construct(RnLinkGroup road)
         {
             //Assert.IsNotNull(road);
-            //this.road = road;
+            this.road = road;
 
+            _numLeftLane = this.road.GetLeftLaneCount();
+            _numRightLane = this.road.GetRightLaneCount();
+            
             _roadWidth.CollectionChanged += (s, e) =>
             {
                 if (e.Action == NotifyCollectionChangedAction.Replace)
@@ -113,7 +103,7 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
             ResetCache();
         }
 
-        private INodeConnectionLink road;
+        public RnLinkGroup road;
 
         // テスト用にフィールドを作成　不要になったものは削除する
         public int _numLeftLane = 3;
@@ -257,6 +247,7 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
             //public float _rightSideWalkWidth = 0.0f;
             //public float _laneWidth = 0.0f;
             //public bool _isApply = false;
+            targetLinkGroup = FindProperty("road");
             _numLeftLane = FindProperty("_numLeftLane");
             _numRightLane = FindProperty("_numRightLane");
             _enableSideWalk = FindProperty("_enableSideWalk");
@@ -269,9 +260,11 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
             //_leftSideWalkWidth = serializedObject.FindProperty("_leftSideWalkWidth");
             //_rightSideWalkWidth = serializedObject.FindProperty("_rightSideWalkWidth");
             //_isApply = serializedObject.FindProperty("_isApply");
+
+            ResetCache();
         }
 
-        //SerializedObject serializedObject;
+        public SerializedProperty targetLinkGroup;
         public SerializedProperty _numLeftLane;
         public SerializedProperty _numRightLane;
         public SerializedProperty _enableSideWalk;
@@ -296,13 +289,6 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
             public float laneWidth;
         }
         Cache cache;
-
-        public INodeConnectionLink EditingTarget
-        {
-            get => throw new NotImplementedException();
-            set => throw new NotImplementedException();
-        }
-
         public bool IsSuccess => throw new NotImplementedException();
 
         public int NumLeftLane { get => _numLeftLane.intValue; set => _numLeftLane.intValue = value; }
@@ -320,22 +306,60 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
             throw new NotImplementedException();
         }
 
+        public void ResetCache()
+        {
+            cache.numLeftLane = NumLeftLane;
+            cache.numRightLane = NumRightLane;
+            cache.enableSideWalk = EnableSideWalk;
+            //cache.roadWidth = RoadWidth;
+            cache.leftSideWalkWidth = LeftSideWalkWidth;
+            cache.rightSideWalkWidth = RightSideWalkWidth;
+            //cache.laneWidth = LaneWidth;
+        }
+
+
         public void Apply()
         {
+            if (targetLinkGroup == null)
+            {
+                Debug.Log("編集対象のLinkGroupが設定されていない");
+                return;
+            }
+
+            bool isChanged = false;
+            var roadObj = targetObject as ScriptableRoadMdl;
+            var road = roadObj.road;
+
             if (cache.numLeftLane != NumLeftLane)
             {
                 Notify(NumLeftLane, cache.numLeftLane, nameof(NumLeftLane));
                 cache.numLeftLane = NumLeftLane;
+                isChanged = true;
+                road.SetLeftLaneCount(NumLeftLane);
+
             }
             if (cache.numRightLane != NumRightLane)
             {
                 Notify(NumRightLane, cache.numRightLane, nameof(NumRightLane));
                 cache.numRightLane = NumRightLane;
+                isChanged = true;
+                road.SetRightLaneCount(NumRightLane);
+
             }
             if (cache.enableSideWalk != EnableSideWalk)
             {
                 Notify(EnableSideWalk, cache.enableSideWalk, nameof(EnableSideWalk));
                 cache.enableSideWalk = EnableSideWalk;
+
+                if (EnableSideWalk)
+                {
+                    // 中央分離帯を消す機能がない？ 分離帯がない時に中央の線を動かしたら両方車線を動かしたい
+                    road.SetMedianWidth(0.5f, LaneWayMoveOption.MoveBothWay); 
+                }
+            }
+
+            if (isChanged)
+            {
             }
             //if (cache.roadWidth != RoadWidth)
             //{
