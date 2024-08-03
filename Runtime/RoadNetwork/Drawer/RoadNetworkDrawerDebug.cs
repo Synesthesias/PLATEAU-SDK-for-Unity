@@ -490,6 +490,7 @@ namespace PLATEAU.RoadNetwork.Drawer
             DrawLinks(roadNetwork);
 
             DrawNodes(roadNetwork);
+            DrawSideWalks(roadNetwork);
         }
     }
 }
