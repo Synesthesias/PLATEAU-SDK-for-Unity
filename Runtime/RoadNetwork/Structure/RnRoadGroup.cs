@@ -289,6 +289,10 @@ namespace PLATEAU.RoadNetwork.Structure
         /// <param name="count"></param>
         public void SetLeftLaneCount(int count)
         {
+            // 既に指定の数になっている場合は何もしない
+            if (GetLeftLaneCount() == count)
+                return;
+
             SetLaneCount(count, GetRightLaneCount());
         }
 
@@ -298,6 +302,9 @@ namespace PLATEAU.RoadNetwork.Structure
         /// <param name="count"></param>
         public void SetRightLaneCount(int count)
         {
+            // 既に指定の数になっている場合は何もしない
+            if (GetRightLaneCount() == count)
+                return;
             SetLaneCount(GetLeftLaneCount(), count);
         }
 

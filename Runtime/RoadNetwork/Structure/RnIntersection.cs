@@ -80,13 +80,15 @@ namespace PLATEAU.RoadNetwork.Structure
         }
 
         /// <summary>
-        /// 隣接情報追加
+        /// 隣接情報追加. borderがnullの場合は追加しない
         /// </summary>
-        /// <param name="link"></param>
+        /// <param name="road"></param>
         /// <param name="border"></param>
-        public void AddNeighbor(RnRoad link, RnWay border)
+        public void AddNeighbor(RnRoadBase road, RnWay border)
         {
-            neighbors.Add(new RnNeighbor { Road = link, Border = border });
+            if (border == null)
+                return;
+            neighbors.Add(new RnNeighbor { Road = road, Border = border });
         }
 
         public void AddLane(RnLane lane)
@@ -155,7 +157,7 @@ namespace PLATEAU.RoadNetwork.Structure
         /// </summary>
         /// <param name="from"></param>
         /// <param name="to"></param>
-        public RnLane CalcTrackWay(RnRoad from, RnRoad to)
+        public RnLane CalcTrackWay(RnRoadBase from, RnRoadBase to)
         {
             if (from == to)
                 return null;

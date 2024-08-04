@@ -13,8 +13,8 @@ namespace PLATEAU.RoadNetwork.Structure
         // Roadとの境界線
         public RnWay Border { get; set; }
 
-        // 隣接Road
-        public RnRoad Road { get; set; }
+        // 隣接Road基本的にRoadだが、初期のPLATEAUモデルによってはIntersectionもあり得るため基底クラスで持っている
+        public RnRoadBase Road { get; set; }
 
         //----------------------------------
         // end: フィールド

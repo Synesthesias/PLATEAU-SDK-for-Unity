@@ -1683,7 +1683,7 @@ namespace PLATEAU.Editor.RoadNetwork
                         {
                             continue;
                         }
-                        var link = neighbor.Road;
+                        var link = neighbor.Road as RnRoad;
                         if (link == null)
                         {
                             continue;
@@ -1754,7 +1754,7 @@ namespace PLATEAU.Editor.RoadNetwork
                             continue;
 
                         RnIntersection connectedNode = null;
-                        var link = neighbor.Road;
+                        var link = neighbor.Road as RnRoad;
 
                         List<RnRoad> linkList = new List<RnRoad>(linkLinstCap);    // capは適当
                         while (link != null)

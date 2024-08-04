@@ -110,6 +110,52 @@ namespace PLATEAU.RoadNetwork.Structure
             return CollectAllWays().Select(w => w.LineString).Distinct();
         }
 
+        /// <summary>
+        /// roadをIntersectionに変換
+        /// </summary>
+        /// <param name="road"></param>
+        public void Convert2Intersection(RnRoad road)
+        {
+            var (prev, next) = (road.Prev, road.Next);
+            var intersection = new RnIntersection(road.TargetTran);
+
+            foreach (var lane in road.MainLanes)
+            {
+                intersection.AddNeighbor(lane.GetPrevRoad(), lane.PrevBorder);
+                intersection.AddNeighbor(lane.GetNextRoad(), lane.NextBorder);
+            }
+            intersection.AddLanes(road.MainLanes);
+
+            AddIntersection(intersection);
+            // 旧Roadの削除
+            road.DisConnect(true);
+        }
+
+        public void Convert2Road(RnIntersection intersection, RnRoadBase prev, RnRoadBase next)
+        {
+            var neighbors = intersection
+                .Neighbors
+                .Where(n => n.Road == prev || n.Road == next)
+                .ToList();
+
+            var road = new RnRoad(intersection.TargetTran);
+            road.SetPrevNext(prev, next);
+
+            foreach (var lane in intersection.Lanes)
+            {
+                // 前後のRoadが一致しているLaneのみを追加する
+                var (p, n) = (lane.GetPrevRoad(), lane.GetNextRoad());
+                if ((p == prev && n == next) || (p == next && n == prev))
+                {
+                    // #TODO : 左右の順番が逆かもしれない
+                    road.AddMainLane(lane);
+                }
+            }
+            AddRoad(road);
+            intersection.DisConnect(true);
+        }
+
+
         public void AddWalkRoad(RnLineString walkRoad)
         {
             if (sideWalks.Contains(walkRoad))

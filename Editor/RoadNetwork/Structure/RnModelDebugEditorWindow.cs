@@ -197,13 +197,19 @@ namespace PLATEAU.Editor.RoadNetwork
                 {
                     road.DisConnect(false);
                 }
+
+                if (GUILayout.Button("Convert2Intersection"))
+                {
+                    road.ParentModel.Convert2Intersection(road);
+                }
             }
         }
         RoadEdit roadEdit = new RoadEdit();
 
         private class IntersectionEdit
         {
-
+            public long convertPrevRoadId = -1;
+            public long convertNextRoadId = -1;
             public void Update(RnIntersection intersection)
             {
                 if (intersection == null)
@@ -222,6 +228,24 @@ namespace PLATEAU.Editor.RoadNetwork
                 {
                     intersection.DisConnect(false);
                 }
+
+
+                using (new EditorGUILayout.HorizontalScope())
+                {
+                    convertPrevRoadId = EditorGUILayout.LongField("PrevRoadId", convertPrevRoadId);
+                    convertNextRoadId = EditorGUILayout.LongField("NextRoadId", convertNextRoadId);
+
+                    var prev = intersection.Neighbors.Select(n => n.Road)
+                        .FirstOrDefault(r => r != null && r.DebugMyId == (ulong)convertPrevRoadId);
+                    var next = intersection.Neighbors.Select(n => n.Road)
+                        .FirstOrDefault(r => r != null && r.DebugMyId == (ulong)convertNextRoadId);
+
+                    if (GUILayout.Button("Convert2Road"))
+                    {
+                        intersection.ParentModel.Convert2Road(intersection, prev, next);
+                    }
+                }
+
             }
         }
         IntersectionEdit intersectionEdit = new IntersectionEdit();

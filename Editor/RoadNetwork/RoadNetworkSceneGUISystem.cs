@@ -668,7 +668,7 @@ namespace PLATEAU.Editor.RoadNetwork
                     if (state.isBreak) break;
                     if (state.isContinue) continue;
 
-                    var link = neighbor.Road;
+                    var link = neighbor.Road as RnRoad;
                     var way = neighbor.Border;
                     foreach (var point in way.Points)
                     {
