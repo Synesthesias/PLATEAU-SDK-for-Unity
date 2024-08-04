@@ -152,12 +152,12 @@ namespace PLATEAU.RoadNetwork.Structure
             }
         }
 
-        public RnLane(RnWay leftWay, RnWay rightWay, RnWay startBorder, RnWay endBorder)
+        public RnLane(RnWay leftWay, RnWay rightWay, RnWay prevBorder, RnWay nextBorder)
         {
             LeftWay = leftWay;
             RightWay = rightWay;
-            PrevBorder = startBorder;
-            NextBorder = endBorder;
+            PrevBorder = prevBorder;
+            NextBorder = nextBorder;
         }
 
 

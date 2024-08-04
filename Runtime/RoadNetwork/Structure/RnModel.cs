@@ -155,13 +155,33 @@ namespace PLATEAU.RoadNetwork.Structure
             intersection.DisConnect(true);
         }
 
-
-        public void AddWalkRoad(RnLineString walkRoad)
+        /// <summary>
+        /// 歩道情報追加
+        /// </summary>
+        /// <param name="sideWalk"></param>
+        public void AddSideWalk(RnLineString sideWalk)
         {
-            if (sideWalks.Contains(walkRoad))
+            if (sideWalks.Contains(sideWalk))
                 return;
 
-            sideWalks.Add(walkRoad);
+            sideWalks.Add(sideWalk);
+        }
+
+        /// <summary>
+        /// prev/next間に道路を作成
+        /// </summary>
+        /// <param name="prev"></param>
+        /// <param name="next"></param>
+        /// <param name="lane"></param>
+        public void CreateRoadBetweenIntersection(RnIntersection prev, RnIntersection next, RnLane lane)
+        {
+            var road = RnRoad.CreateOneLaneRoad(null, lane);
+            road.SetPrevNext(prev, next);
+
+            // intersectionに隣接情報追加
+            prev.AddNeighbor(road, lane.PrevBorder);
+            next.AddNeighbor(road, lane.NextBorder);
+            AddRoad(road);
         }
 
         public RoadNetworkStorage Serialize()

@@ -157,7 +157,7 @@ namespace PLATEAU.RoadNetwork.Structure
         /// </summary>
         /// <param name="from"></param>
         /// <param name="to"></param>
-        public RnLane CalcTrackWay(RnRoadBase from, RnRoadBase to)
+        public RnLane CalcTrackWay(RnRoadBase from, RnRoadBase to, float tangentLength = 10f)
         {
             if (from == to)
                 return null;
@@ -182,21 +182,16 @@ namespace PLATEAU.RoadNetwork.Structure
 
             var rightSp = new Spline
             {
-                new BezierKnot(aLeftPos, 10 * aLeftNormal, 10 *aLeftNormal),
-                new BezierKnot(bRightPos, 10 *bRightNormal, 10 *bRightNormal)
+                new BezierKnot(aLeftPos, tangentLength * aLeftNormal, tangentLength *aLeftNormal),
+                new BezierKnot(bRightPos, tangentLength *bRightNormal, tangentLength *bRightNormal)
             };
 
             var leftSp = new Spline
             {
-                new BezierKnot(aRightPos, 10 *aRightNormal, 10 *aRightNormal),
-                new BezierKnot(bLeftPos, 10 *bLeftNormal, 10 *bLeftNormal)
+                new BezierKnot(aRightPos, tangentLength *aRightNormal, tangentLength *aRightNormal),
+                new BezierKnot(bLeftPos, tangentLength *bLeftNormal, tangentLength *bLeftNormal)
             };
-#if false
-            DebugEx.DrawArrow(aLeftPos, aLeftPos + aLeftNormal * 2, bodyColor: Color.magenta);
-            DebugEx.DrawArrow(bLeftPos, bLeftPos + bLeftNormal * 2, bodyColor: Color.magenta);
-            DebugEx.DrawArrow(bRightPos, bRightPos + bRightNormal * 2, bodyColor: Color.magenta);
-            DebugEx.DrawArrow(aRightPos, aRightPos + aRightNormal * 2, bodyColor: Color.magenta);
-#endif
+
             var rates = Enumerable.Range(0, 10).Select(i => 1f * i / (9)).ToList();
             var leftWay = new RnWay(RnLineString.Create(rates.Select(t =>
             {

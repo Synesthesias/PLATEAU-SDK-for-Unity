@@ -450,6 +450,8 @@ namespace PLATEAU.RoadNetwork.Drawer
                         var n2 = intersection.Neighbors[j];
                         if (n == n2)
                             continue;
+                        if (n.Road == n2.Road)
+                            continue;
                         var way = intersection.CalcTrackWay(n.Road, n2.Road);
                         if (way != null)
                         {

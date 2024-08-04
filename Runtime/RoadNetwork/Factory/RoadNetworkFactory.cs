@@ -546,7 +546,7 @@ namespace PLATEAU.RoadNetwork.Factory
                 {
                     tranWork.BuildConnection(vertex2Points, lod1SideWalkSize, visited, out var ls);
                     foreach (var l in ls)
-                        ret.AddWalkRoad(l);
+                        ret.AddSideWalk(l);
                 }
 
                 if (addLod3SideWalk)
@@ -555,7 +555,7 @@ namespace PLATEAU.RoadNetwork.Factory
                     {
                         var lines = sideWalk.Vertices.Select(v => new RnPoint(v));
                         var lineString = lineStringTable.Create(lines, out bool isReverse);
-                        ret.AddWalkRoad(lineString);
+                        ret.AddSideWalk(lineString);
                     }
                 }
 
