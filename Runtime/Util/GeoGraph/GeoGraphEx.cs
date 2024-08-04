@@ -175,6 +175,31 @@ namespace PLATEAU.Util.GeoGraph
         }
 
         /// <summary>
+        /// 3次元のセル空間における, d近傍の距離を返す.
+        /// GetNeighborDistance3D(1)の場合は, 3*3*3の立方体の距離を返す( x,yzがそれぞれ -1~1の範囲)
+        /// </summary>
+        /// <param name="d"></param>
+        /// <returns></returns>
+        public static Vector3Int[] GetNeighborDistance3D(int d)
+        {
+            // +d, -dの範囲で2d+1の立方体を返す
+            var w = 2 * d + 1;
+            var size = w * w * w;
+            var half = d;
+            var w2 = w * w;
+            var ret = new Vector3Int[size];
+            for (var i = 0; i < size; i++)
+            {
+                var dx = i % w - half;
+                var dy = (i / w) % w - half;
+                var dz = (i / w2) - half;
+                ret[i] = new Vector3Int(dx, dy, dz);
+            }
+
+            return ret;
+        }
+
+        /// <summary>
         /// 点群verticesをセルサイズcellSizeでグリッド化し、頂点をまとめた結果を返す
         /// </summary>
         /// <param name="vertices"></param>
@@ -186,7 +211,8 @@ namespace PLATEAU.Util.GeoGraph
             // 内部的なセルサイズは半分にする -> そのうえで倍の距離でマージする
             var len = cellSize * 0.5f;
             var mergeLen = mergeCellLength * 2;
-            var cells = new Dictionary<Vector3Int, HashSet<Vector3>>();
+            // HashSetだと全く同じ値が来たときに消えないのでListにする
+            var cells = new Dictionary<Vector3Int, List<Vector3>>();
             var min = Vector3Int.one * int.MaxValue;
             foreach (var v in vertices)
             {
@@ -195,23 +221,7 @@ namespace PLATEAU.Util.GeoGraph
                 min = Vector3Int.Min(min, c);
             }
 
-            Vector3Int[] Delta(int d)
-            {
-                var w = 2 * d + 1;
-                var en = w * w * w;
-                var half = w / 2;
-                var w2 = w * w;
-                var ret = new Vector3Int[en];
-                for (var i = 0; i < en; i++)
-                {
-                    var dx = i % w - half;
-                    var dy = (i / w) % w - half;
-                    var dz = (i / w2) - half;
-                    ret[i] = new Vector3Int(dx, dy, dz);
-                }
-
-                return ret;
-            }
+            // z,y,xの順でソート
             var keys = cells.Keys.ToList();
             keys.Sort((a, b) =>
             {
@@ -223,16 +233,8 @@ namespace PLATEAU.Util.GeoGraph
                     return d;
                 return a.x - b.x;
             });
-            var del = Delta(mergeLen)
-                // zでソートしているのでzが負のものは無視してよい
-                .Where(d => d != Vector3Int.zero)
-                //.Where(d => d.z >= 0)
-                // マンハッタン距離で2のものをマージする
-                .Where(d => d.Abs().Sum() <= mergeLen)
-                .ToList();
 
-            var del1 = Delta(1);
-
+            var del1 = GetNeighborDistance3D(1);
             foreach (var k in keys)
             {
                 if (cells.ContainsKey(k) == false)
@@ -251,12 +253,15 @@ namespace PLATEAU.Util.GeoGraph
                             continue;
                         if (n == k)
                             continue;
+
                         // 指定した距離以上は無視
-                        if ((k - n).Abs().Sum() > mergeCellLength)
+                        if ((k - n).Abs().Sum() > mergeLen)
                             continue;
 
-                        cells[k].UnionWith(cells[n]);
+                        // 重複があった場合はそっちに近づけるため単純にAddRangeする
+                        cells[k].AddRange(cells[n]);
                         cells.Remove(n);
+                        // 連続している部分はすべてマージする
                         queue.Enqueue(n);
                     }
                 }
