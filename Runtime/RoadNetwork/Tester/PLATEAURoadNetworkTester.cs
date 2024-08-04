@@ -1,7 +1,4 @@
 ﻿using PLATEAU.CityGML;
-using PLATEAU.CityInfo;
-using PLATEAU.GranularityConvert;
-using PLATEAU.PolygonMesh;
 using PLATEAU.RoadNetwork.Data;
 using PLATEAU.RoadNetwork.Drawer;
 using PLATEAU.RoadNetwork.Factory;
@@ -16,8 +13,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
-using UnityEngine.Serialization;
-using static UnityEngine.GraphicsBuffer;
+using PLATEAUCityObjectGroup = PLATEAU.CityInfo.PLATEAUCityObjectGroup;
 
 namespace PLATEAU.RoadNetwork
 {
@@ -345,6 +341,29 @@ namespace PLATEAU.RoadNetwork
         {
             RoadNetwork ??= new RnModel();
             RoadNetwork.Deserialize(storage);
+        }
+
+        /// <summary>
+        /// 同名のCityObjectGroupがあった場合に最大のLODのもの以外を非表示にする
+        /// </summary>
+        public void RemoveSameNameCityObjectGroup()
+        {
+            var groups = GameObject.FindObjectsOfType<PLATEAUCityObjectGroup>();
+
+            foreach (var g in groups.GroupBy(g => g.gameObject.name)
+                         .Where(g => g.Count() > 1))
+            {
+                var level = g.Select(a => a.GetLodLevel()).Max();
+                g.TryFindMax(a => a.GetLodLevel(), out var maxG);
+
+                foreach (var a in g)
+                {
+                    if (a != maxG)
+                    {
+                        a.gameObject.SetActive(false);
+                    }
+                }
+            }
         }
     }
 }

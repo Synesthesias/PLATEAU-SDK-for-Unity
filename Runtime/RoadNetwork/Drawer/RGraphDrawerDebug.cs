@@ -8,7 +8,6 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
-using static PLATEAU.Util.GeoGraph.GeoGraphDoubleLinkedEdgeList;
 
 namespace PLATEAU.RoadNetwork.Drawer
 {

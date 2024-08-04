@@ -261,7 +261,6 @@ namespace PLATEAU.Util.GeoGraph
                         // 重複があった場合はそっちに近づけるため単純にAddRangeする
                         cells[k].AddRange(cells[n]);
                         cells.Remove(n);
-                        // 連続している部分はすべてマージする
                         queue.Enqueue(n);
                     }
                 }

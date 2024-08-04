@@ -12,10 +12,10 @@ namespace PLATEAU.RoadNetwork.Data
         [RoadNetworkSerializeMember(nameof(RnNeighbor.Border))]
         public RnID<RnDataWay> Border { get; set; }
 
-        // Link
+        // Road
         [field: SerializeField]
         [RoadNetworkSerializeMember]
-        public RnID<RnDataRoadBase> Link { get; set; }
+        public RnID<RnDataRoadBase> Road { get; set; }
 
         //----------------------------------
         // end: フィールド

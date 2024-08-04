@@ -35,6 +35,6 @@ namespace PLATEAU.RoadNetwork.Data
         // 即性情報
         [field: SerializeField]
         [RoadNetworkSerializeMember]
-        public RnLinkAttribute RnLinkAttribute { get; set; }
+        public RnRoadAttribute RnRoadAttribute { get; set; }
     }
 }

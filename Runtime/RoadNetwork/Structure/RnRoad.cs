@@ -9,7 +9,7 @@ namespace PLATEAU.RoadNetwork.Structure
 {
 
     [Flags]
-    public enum RnLinkAttribute
+    public enum RnRoadAttribute
     {
         // 1レーンしかない時にそのレーンが両方向かどうか
         BothSide = 1 << 0,
@@ -39,7 +39,7 @@ namespace PLATEAU.RoadNetwork.Structure
         private RnLane medianLane;
 
         // 即性情報
-        public RnLinkAttribute RnLinkAttribute { get; set; }
+        public RnRoadAttribute RnRoadAttribute { get; set; }
 
         //----------------------------------
         // end: フィールド
@@ -52,7 +52,7 @@ namespace PLATEAU.RoadNetwork.Structure
         // 全レーン
         public override IEnumerable<RnLane> AllLanes => MainLanes;
 
-        // 有効なLinkかどうか
+        // 有効なRoadかどうか
         public bool IsValid => MainLanes.Any();
 
         /// <summary>
@@ -98,7 +98,7 @@ namespace PLATEAU.RoadNetwork.Structure
         }
 
         /// <summary>
-        /// laneがこのLinkの左車線かどうか(Prev/NextとBorderが共通である前提)
+        /// laneがこのRoadの左車線かどうか(Prev/NextとBorderが共通である前提)
         /// </summary>
         /// <param name="lane"></param>
         /// <returns></returns>
@@ -108,7 +108,7 @@ namespace PLATEAU.RoadNetwork.Structure
         }
 
         /// <summary>
-        /// laneがこのLinkの右車線かどうか(Prev/NextとBorderが共通である前提)
+        /// laneがこのRoadの右車線かどうか(Prev/NextとBorderが共通である前提)
         /// </summary>
         /// <param name="lane"></param>
         /// <returns></returns>
@@ -178,7 +178,7 @@ namespace PLATEAU.RoadNetwork.Structure
         }
 
         /// <summary>
-        /// 直接呼ぶの禁止. RnLinkGroupから呼ばれる
+        /// 直接呼ぶの禁止. RnRoadGroupから呼ばれる
         /// </summary>
         /// <param name="lane"></param>
         public void SetMedianLane(RnLane lane)
@@ -330,7 +330,7 @@ namespace PLATEAU.RoadNetwork.Structure
 
         /// <summary>
         /// #TODO : 左右の隣接情報がないので要修正
-        /// laneを追加する. ParentLink情報も更新する
+        /// laneを追加する. ParentRoad情報も更新する
         /// </summary>
         /// <param name="lane"></param>
         public void AddMainLane(RnLane lane)
@@ -342,7 +342,7 @@ namespace PLATEAU.RoadNetwork.Structure
         }
 
         /// <summary>
-        /// laneを削除するParentLink情報も更新する
+        /// laneを削除するParentRoad情報も更新する
         /// </summary>
         /// <param name="lane"></param>
         public void RemoveLane(RnLane lane)
@@ -416,6 +416,29 @@ namespace PLATEAU.RoadNetwork.Structure
             Next = next;
         }
 
+        /// <summary>
+        /// 接続を解除する
+        /// </summary>
+        public override void DisConnect()
+        {
+            Prev?.UnLink(this);
+            Next?.UnLink(this);
+            SetPrevNext(null, null);
+            ParentModel?.RemoveRoad(this);
+        }
+
+        /// <summary>
+        /// 隣接情報からotherを削除する
+        /// </summary>
+        /// <param name="other"></param>
+        public override void UnLink(RnRoadBase other)
+        {
+            if (Prev == other)
+                Prev = null;
+            if (Next == other)
+                Next = null;
+        }
+
         // ---------------
         // Static Methods
         // ---------------
@@ -425,7 +448,7 @@ namespace PLATEAU.RoadNetwork.Structure
         /// <param name="targetTran"></param>
         /// <param name="way"></param>
         /// <returns></returns>
-        public static RnRoad CreateIsolatedLink(PLATEAUCityObjectGroup targetTran, RnWay way)
+        public static RnRoad CreateIsolatedRoad(PLATEAUCityObjectGroup targetTran, RnWay way)
         {
             var lane = RnLane.CreateOneWayLane(way);
             var ret = new RnRoad(targetTran);
@@ -433,7 +456,7 @@ namespace PLATEAU.RoadNetwork.Structure
             return ret;
         }
 
-        public static RnRoad CreateOneLaneLink(PLATEAUCityObjectGroup targetTran, RnLane lane)
+        public static RnRoad CreateOneLaneRoad(PLATEAUCityObjectGroup targetTran, RnLane lane)
         {
             var ret = new RnRoad(targetTran);
             ret.AddMainLane(lane);
@@ -441,10 +464,10 @@ namespace PLATEAU.RoadNetwork.Structure
         }
     }
 
-    public static class RnLinkEx
+    public static class RnRoadEx
     {
         /// <summary>
-        /// laneの向きがLinkの進行方向と逆かどうか(左車線/右車線の判断に使う)
+        /// laneの向きがRoadの進行方向と逆かどうか(左車線/右車線の判断に使う)
         /// </summary>
         /// <param name="self"></param>
         /// <param name="lane"></param>
@@ -465,7 +488,7 @@ namespace PLATEAU.RoadNetwork.Structure
         /// <param name="other"></param>
         /// <returns></returns>
         /// <exception cref="InvalidDataException"></exception>
-        public static RnRoadBase GetOppositeLink(this RnRoad self, RnRoadBase other)
+        public static RnRoadBase GetOppositeRoad(this RnRoad self, RnRoadBase other)
         {
             if (self.Prev == other)
             {
@@ -476,51 +499,51 @@ namespace PLATEAU.RoadNetwork.Structure
                 return self.Prev == other ? null : self.Prev;
             }
 
-            throw new InvalidDataException($"{self.DebugMyId} is not linked {other.DebugMyId}");
+            throw new InvalidDataException($"{self.DebugMyId} is not roaded {other.DebugMyId}");
         }
 
         /// <summary>
-        /// selfと隣接しているLinkをすべてまとめたLinkGroupを返す
+        /// selfと隣接しているRoadをすべてまとめたRoadGroupを返す
         /// </summary>
         /// <param name="self"></param>
         /// <returns></returns>
-        public static RnRoadGroup CreateLinkGroup(this RnRoad self)
+        public static RnRoadGroup CreateRoadGroup(this RnRoad self)
         {
-            var links = new List<RnRoad> { self };
+            var roads = new List<RnRoad> { self };
             RnIntersection Search(RnRoadBase src, RnRoadBase target, bool isPrev)
             {
-                while (target is RnRoad link)
+                while (target is RnRoad road)
                 {
                     // ループしていたら終了
-                    if (links.Contains(link))
+                    if (roads.Contains(road))
                         break;
                     if (isPrev)
-                        links.Insert(0, link);
+                        roads.Insert(0, road);
                     else
-                        links.Add(link);
-                    // linkの接続先でselfじゃない方
-                    target = link.GetOppositeLink(src);
+                        roads.Add(road);
+                    // roadの接続先でselfじゃない方
+                    target = road.GetOppositeRoad(src);
 
-                    src = link;
+                    src = road;
                 }
                 return target as RnIntersection;
             }
-            var prevNode = Search(self, self.Prev, true);
-            var nextNode = Search(self, self.Next, false);
-            return new RnRoadGroup(prevNode, nextNode, links);
+            var prevIntersection = Search(self, self.Prev, true);
+            var nextIntersection = Search(self, self.Next, false);
+            return new RnRoadGroup(prevIntersection, nextIntersection, roads);
         }
 
         /// <summary>
-        /// selfと隣接しているLinkをすべてまとめたLinkGroupを返す.
+        /// selfと隣接しているRoadをすべてまとめたRoadGroupを返す.
         /// 返せない場合はnullを返す
         /// </summary>
         /// <param name="self"></param>
         /// <returns></returns>
-        public static RnRoadGroup CreateLinkGroupOrDefault(this RnRoad self)
+        public static RnRoadGroup CreateRoadGroupOrDefault(this RnRoad self)
         {
             try
             {
-                return CreateLinkGroup(self);
+                return CreateRoadGroup(self);
             }
             catch (InvalidDataException)
             {

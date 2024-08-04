@@ -20,7 +20,7 @@ namespace PLATEAU.RoadNetwork.Drawer
         Way = 1 << 2,
         Lane = 1 << 3,
         Road = 1 << 4,
-        Node = 1 << 5,
+        Intersection = 1 << 5,
         Neighbor = 1 << 6,
     }
 
@@ -47,7 +47,7 @@ namespace PLATEAU.RoadNetwork.Drawer
         [SerializeField] private PLATEAUCityObjectGroup targetTran = null;
         [SerializeField] private RnPartsTypeMask showPartsType = RnPartsTypeMask.Empty;
         [Serializable]
-        private class NodeOption
+        private class IntersectionOption
         {
             public bool visible = true;
 
@@ -57,7 +57,7 @@ namespace PLATEAU.RoadNetwork.Drawer
 
             public DrawOption showSplitTrack = new DrawOption();
         }
-        [SerializeField] private NodeOption nodeOp = new NodeOption();
+        [SerializeField] private IntersectionOption intersectionOp = new IntersectionOption();
 
         [Serializable]
         private class RoadOption
@@ -415,59 +415,59 @@ namespace PLATEAU.RoadNetwork.Drawer
             }
         }
 
-        private void DrawNode(RnIntersection node)
+        private void DrawIntersection(RnIntersection intersection)
         {
-            if (nodeOp.visible == false)
+            if (intersectionOp.visible == false)
                 return;
 
-            if (targetTran && targetTran != node.TargetTran)
+            if (targetTran && targetTran != intersection.TargetTran)
                 return;
 
-            for (var i = 0; i < node.Neighbors.Count; ++i)
+            for (var i = 0; i < intersection.Neighbors.Count; ++i)
             {
-                var n = node.Neighbors[i];
-                if (nodeOp.showBorder.visible)
-                    DrawWay(n.Border, nodeOp.showBorder.color);
+                var n = intersection.Neighbors[i];
+                if (intersectionOp.showBorder.visible)
+                    DrawWay(n.Border, intersectionOp.showBorder.color);
 
-                if (nodeOp.showSplitTrack.visible)
+                if (intersectionOp.showSplitTrack.visible)
                 {
-                    for (var j = i + 1; j < node.Neighbors.Count; ++j)
+                    for (var j = i + 1; j < intersection.Neighbors.Count; ++j)
                     {
-                        var n2 = node.Neighbors[j];
+                        var n2 = intersection.Neighbors[j];
                         if (n == n2)
                             continue;
-                        var way = node.CalcTrackWay(n.Road, n2.Road);
+                        var way = intersection.CalcTrackWay(n.Road, n2.Road);
                         if (way != null)
                         {
                             foreach (var w in way.BothWays)
-                                DrawWay(w, nodeOp.showSplitTrack.color);
+                                DrawWay(w, intersectionOp.showSplitTrack.color);
                         }
                     }
                 }
             }
 
-            if (nodeOp.showTrack.visible)
+            if (intersectionOp.showTrack.visible)
             {
-                foreach (var l in node.Lanes)
+                foreach (var l in intersection.Lanes)
                 {
                     foreach (var w in l.BothWays)
-                        DrawWay(w, nodeOp.showTrack.color);
+                        DrawWay(w, intersectionOp.showTrack.color);
                 }
             }
         }
 
         /// <summary>
-        /// Node描画
+        /// Intersection描画
         /// </summary>
         /// <param name="roadNetwork"></param>
-        private void DrawNodes(RnModel roadNetwork)
+        private void DrawIntersections(RnModel roadNetwork)
         {
-            if (nodeOp.visible == false)
+            if (intersectionOp.visible == false)
                 return;
 
-            foreach (var node in roadNetwork.Intersections)
+            foreach (var intersection in roadNetwork.Intersections)
             {
-                DrawNode(node);
+                DrawIntersection(intersection);
             }
         }
 
@@ -490,7 +490,7 @@ namespace PLATEAU.RoadNetwork.Drawer
 
             DrawRoads(roadNetwork);
 
-            DrawNodes(roadNetwork);
+            DrawIntersections(roadNetwork);
             DrawSideWalks(roadNetwork);
         }
     }

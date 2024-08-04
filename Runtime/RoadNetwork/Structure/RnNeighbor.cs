@@ -13,8 +13,8 @@ namespace PLATEAU.RoadNetwork.Structure
         // 他レーンとの境界線
         public RnWay Border { get; set; }
 
-        // Link
-        public RnRoad Link { get; set; }
+        // Road
+        public RnRoad Road { get; set; }
 
         //----------------------------------
         // end: フィールド
@@ -37,9 +37,9 @@ namespace PLATEAU.RoadNetwork.Structure
         {
             if (Border == null)
                 yield break;
-            if (Link == null)
+            if (Road == null)
                 yield break;
-            foreach (var lane in Link.AllLanes
+            foreach (var lane in Road.AllLanes
                          .Where(lane => lane.AllBorders.Any(b => b.IsSameLine(Border)))
                     )
             {

@@ -159,7 +159,7 @@ namespace PLATEAU.Editor.RoadNetwork
         // 現在の編集モード
         private RoadNetworkEditMode editingMode;
 
-        // 選択中の道路ネットワーク要素 Link,Lane,Block...etc
+        // 選択中の道路ネットワーク要素 Road,Lane,Block...etc
         private System.Object selectedRoadNetworkElement;
 
         // 選択中の信号制御器のパターン
@@ -954,20 +954,20 @@ namespace PLATEAU.Editor.RoadNetwork
             public RoadNetworkEditingResult AddLink(RnModel parent, RnRoad newLink)
             {
                 //var v = new RoadNetworkLink(targetTran:);
-                parent.AddLink(newLink);
+                parent.AddRoad(newLink);
                 return new RoadNetworkEditingResult(RoadNetworkEditingResultType.Success);
             }
 
             public RoadNetworkEditingResult RemoveLink(RnModel parent, RnRoad link)
             {
-                parent.RemoveLink(link);
+                parent.RemoveRoad(link);
                 return new RoadNetworkEditingResult(RoadNetworkEditingResultType.Success);
             }
 
             public RoadNetworkEditingResult AddNode(RnModel parent, int idx, RnIntersection newNode)
             {
                 //var v = new RoadNetworkNode(targetTran:);
-                parent.AddNode(newNode);
+                parent.AddIntersection(newNode);
                 return new RoadNetworkEditingResult(RoadNetworkEditingResultType.Success);
             }
 
@@ -994,7 +994,7 @@ namespace PLATEAU.Editor.RoadNetwork
 
             public RoadNetworkEditingResult RemoveNode(RnModel parent, RnIntersection node)
             {
-                parent.RemoveNode(node);
+                parent.RemoveIntersection(node);
                 throw new NotImplementedException();
             }
         }
@@ -1507,8 +1507,8 @@ namespace PLATEAU.Editor.RoadNetwork
                 var endBorder = new RnWay(RnLineString.Create(points.GetRange(2, 2)));
                 var rightWay = new RnWay(RnLineString.Create(new RnPoint[] { points[3], points[0] }));
                 var lane = new RnLane(leftWay, rightWay, startBorder, endBorder);
-                var link = RnRoad.CreateOneLaneLink(tranObj, lane);
-                parent.AddLink(link);
+                var link = RnRoad.CreateOneLaneRoad(tranObj, lane);
+                parent.AddRoad(link);
                 return link;
             }
 
@@ -1619,7 +1619,7 @@ namespace PLATEAU.Editor.RoadNetwork
             {
                 ClearCache();
 
-                nodeEditorData = new Dictionary<RnRoadBase, NodeEditorData>(roadNetwork.Nodes.Count);
+                nodeEditorData = new Dictionary<RnRoadBase, NodeEditorData>(roadNetwork.Intersections.Count);
                 // ノードに紐づくオブジェクトを作成 editor用のデータを作成
                 var nodePrefabPath = "Packages/com.synesthesias.plateau-unity-sdk/Resources/RoadNetwork/Node.prefab";
                 // プレハブをResourcesフォルダからロード
@@ -1627,7 +1627,7 @@ namespace PLATEAU.Editor.RoadNetwork
                 Assert.IsNotNull(prefab);
                 var id = 0;
                 StringBuilder sb = new StringBuilder("Node".Length + "XXX".Length);
-                foreach (var node in roadNetwork.Nodes)
+                foreach (var node in roadNetwork.Intersections)
                 {
                     var name = sb.AppendFormat("Node{0}", id).ToString();
                     var obj = GameObject.CreatePrimitive(PrimitiveType.Cube);
@@ -1668,13 +1668,13 @@ namespace PLATEAU.Editor.RoadNetwork
 
                 // Nodeとその近辺のPointを紐づける
                 HashSet<RnPoint> points = new HashSet<RnPoint>(500);  // capacityは適当
-                var numNode = roadNetwork.Nodes.Count;
+                var numNode = roadNetwork.Intersections.Count;
                 if (numNode == 0)
                     return;
 
                 HashSet<LinkGroupEditorData> linkGroups = new HashSet<LinkGroupEditorData>(numNode * (numNode - 1));  // node同士の繋がりを表現するコレクション prev+next名で表現する
                 HashSet<RnNeighbor> calcedNeighbor = new HashSet<RnNeighbor>(numNode * (numNode - 1));  // 計算済みのNeighborを保持する
-                foreach (var node in roadNetwork.Nodes)
+                foreach (var node in roadNetwork.Intersections)
                 {
                     foreach (var neighbor in node.Neighbors)
                     {
@@ -1683,26 +1683,26 @@ namespace PLATEAU.Editor.RoadNetwork
                         {
                             continue;
                         }
-                        var link = neighbor.Link;
+                        var link = neighbor.Road;
                         if (link == null)
                         {
                             continue;
                         }
-                        var linkGroup = link.CreateLinkGroup();
+                        var linkGroup = link.CreateRoadGroup();
                         if (linkGroup == null)
                         {
                             continue;
                         }
 
                         // 接続先にNodeが無い場合はスキップ　仮
-                        if (linkGroup.PrevNode == null || linkGroup.NextNode == null)
+                        if (linkGroup.PrevIntersection == null || linkGroup.NextIntersection == null)
                         {
                             continue;
                         }
 
-                        var node0 = linkGroup.PrevNode;
-                        var node1 = linkGroup.NextNode;
-                        var cn = new LinkGroupEditorData(nodeEditorData[node0], nodeEditorData[node1], linkGroup.Links, linkGroup);
+                        var node0 = linkGroup.PrevIntersection;
+                        var node1 = linkGroup.NextIntersection;
+                        var cn = new LinkGroupEditorData(nodeEditorData[node0], nodeEditorData[node1], linkGroup.Roads, linkGroup);
                         if (linkGroups.Add(cn) == true)
                         {
                             nodeEditorData[node0].Connections.Add(cn);
@@ -1711,10 +1711,10 @@ namespace PLATEAU.Editor.RoadNetwork
 
                         calcedNeighbor.Add(neighbor);
                         var otherNode = node == node0 ? node1 : node0;
-                        var otherLink = link == linkGroup.Links.First() ? linkGroup.Links.Last() : linkGroup.Links.First();
+                        var otherLink = link == linkGroup.Roads.First() ? linkGroup.Roads.Last() : linkGroup.Roads.First();
                         foreach (var otherNeighbor in otherNode.Neighbors)
                         {
-                            if (otherLink == otherNeighbor.Link)
+                            if (otherLink == otherNeighbor.Road)
                             {
                                 calcedNeighbor.Add(otherNeighbor);
                             }
@@ -1740,8 +1740,8 @@ namespace PLATEAU.Editor.RoadNetwork
                 //linkGroupEditorData.Select((d) => d.GetSubData<LinkGroupEditorData>()).ToList();
 
                 return;
-                var linkLinstCap = roadNetwork.Links.Count / numNode * 2;
-                foreach (var node in roadNetwork.Nodes)
+                var linkLinstCap = roadNetwork.Roads.Count / numNode * 2;
+                foreach (var node in roadNetwork.Intersections)
                 {
                     // Nodeと繋がりのあるレーンすべてのPointを取得(現在はLink同士、Node同士が繋がっていた場合には2番目以降のLinkのPointは参照しない　もしくはNode間の境目は参照しない)
 
@@ -1754,7 +1754,7 @@ namespace PLATEAU.Editor.RoadNetwork
                             continue;
 
                         RnIntersection connectedNode = null;
-                        var link = neighbor.Link;
+                        var link = neighbor.Road;
 
                         List<RnRoad> linkList = new List<RnRoad>(linkLinstCap);    // capは適当
                         while (link != null)
@@ -1784,7 +1784,7 @@ namespace PLATEAU.Editor.RoadNetwork
                             // Node 無い場合、走査の終了
                             else if (neighborBase is RnIntersection neighborNode)
                             {
-                                // Nodeと他のNodeを挟まずに繋がりのあるNodeを設定  〇Node->connectedNode　〇Node->Link->connectedNode ×Node->OtherNode->connectedNode
+                                // Nodeと他のNodeを挟まずに繋がりのあるNodeを設定  〇Node->connectedNode　〇Node->Road->connectedNode ×Node->OtherNode->connectedNode
                                 connectedNode = neighborNode;
 
                                 // 自身のノードに戻ってきた
@@ -1798,7 +1798,7 @@ namespace PLATEAU.Editor.RoadNetwork
                                 bool isAddCalced = false;
                                 foreach (var item in connectedNode.Neighbors)
                                 {
-                                    if (link == item.Link)
+                                    if (link == item.Road)
                                     {
                                         var cn = new LinkGroupEditorData(nodeEditorData[node], nodeEditorData[connectedNode], linkList, null);
                                         if (linkGroups.Add(cn) == true)

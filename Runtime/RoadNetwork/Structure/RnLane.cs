@@ -509,9 +509,9 @@ namespace PLATEAU.RoadNetwork.Structure
         /// <param name="self"></param>
         /// <param name="borderWay"></param>
         /// <param name="leftPos">Laneの外側から見て左側の境界点</param>
-        /// <param name="leftNormal">Laneの外側から見て左側の境界点の進行方向(Node側の方向)</param>
+        /// <param name="leftNormal">Laneの外側から見て左側の境界点の進行方向(Intersection側の方向)</param>
         /// <param name="rightPos">Laneの外側から見て右側の境界点</param>
-        /// <param name="rightNormal">Laneの外側から見て右側の境界点の進行方向(Node側の方向)</param>
+        /// <param name="rightNormal">Laneの外側から見て右側の境界点の進行方向(Intersection側の方向)</param>
         /// <returns></returns>
         public static bool TryGetBorderNormal(this RnLane self, RnWay borderWay, out Vector3 leftPos, out Vector3 leftNormal, out Vector3 rightPos, out Vector3 rightNormal)
         {

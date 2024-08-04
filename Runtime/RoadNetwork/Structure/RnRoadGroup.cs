@@ -9,7 +9,7 @@ namespace PLATEAU.RoadNetwork.Structure
 {
     /// <summary>
     /// 実際にデータ化されるものではない
-    /// Node -> Nodeを繋ぐ複数のLinkをまとめるクラス
+    /// Intersection -> Intersectionを繋ぐ複数のRoadをまとめるクラス
     /// </summary>
     [Serializable]
     public class RnRoadGroup
@@ -21,40 +21,40 @@ namespace PLATEAU.RoadNetwork.Structure
         /// 開始ノード
         /// </summary>
         [field: SerializeField]
-        public RnIntersection PrevNode { get; private set; }
+        public RnIntersection PrevIntersection { get; private set; }
 
         /// <summary>
         /// 終了ノード
         /// </summary>
         [field: SerializeField]
-        public RnIntersection NextNode { get; private set; }
+        public RnIntersection NextIntersection { get; private set; }
 
         [SerializeField]
-        private List<RnRoad> links;
+        private List<RnRoad> roads;
 
         //----------------------------------
         // end: フィールド
         //----------------------------------
 
-        public IReadOnlyList<RnRoad> Links => links;
+        public IReadOnlyList<RnRoad> Roads => roads;
 
         /// <summary>
-        /// 有効なLinkGroupかどうか
+        /// 有効なRoadGroupかどうか
         /// </summary>
-        public bool IsValid => Links.All(l => l.IsValid);
+        public bool IsValid => Roads.All(l => l.IsValid);
 
         /// <summary>
         /// コンストラクタ
         /// </summary>
-        /// <param name="prevNode"></param>
-        /// <param name="nextNode"></param>
-        /// <param name="links"></param>
-        public RnRoadGroup(RnIntersection prevNode, RnIntersection nextNode, IEnumerable<RnRoad> links)
+        /// <param name="prevIntersection"></param>
+        /// <param name="nextIntersection"></param>
+        /// <param name="roads"></param>
+        public RnRoadGroup(RnIntersection prevIntersection, RnIntersection nextIntersection, IEnumerable<RnRoad> roads)
         {
-            PrevNode = prevNode;
-            NextNode = nextNode;
-            this.links = links.ToList();
-            // Linkの向きをそろえる
+            PrevIntersection = prevIntersection;
+            NextIntersection = nextIntersection;
+            this.roads = roads.ToList();
+            // Roadの向きをそろえる
             Align();
         }
 
@@ -66,10 +66,10 @@ namespace PLATEAU.RoadNetwork.Structure
         {
             // 向きをそろえる
             Align();
-            if (Links.Any() == false)
+            if (Roads.Any() == false)
                 return 0;
 
-            return links.Select(l => l.GetLeftLaneCount()).Min();
+            return roads.Select(l => l.GetLeftLaneCount()).Min();
         }
 
         /// <summary>
@@ -80,27 +80,27 @@ namespace PLATEAU.RoadNetwork.Structure
         {
             // 向きをそろえる
             Align();
-            if (Links.Any() == false)
+            if (Roads.Any() == false)
                 return 0;
-            return links.Select(l => l.GetRightLaneCount()).Min();
+            return roads.Select(l => l.GetRightLaneCount()).Min();
         }
 
         public IEnumerable<RnLane> GetRightLanes()
         {
             // 向きをそろえる
             Align();
-            if (Links.Any() == false)
+            if (Roads.Any() == false)
                 return null;
-            return links.SelectMany(l => l.GetRightLanes());
+            return roads.SelectMany(l => l.GetRightLanes());
         }
 
         public IEnumerable<RnLane> GetLeftLanes()
         {
             // 向きをそろえる
             Align();
-            if (Links.Any() == false)
+            if (Roads.Any() == false)
                 return null;
-            return links.SelectMany(l => l.GetLeftLanes());
+            return roads.SelectMany(l => l.GetLeftLanes());
         }
 
         private RnWay ConnectWays(IEnumerable<RnWay> ways)
@@ -125,10 +125,10 @@ namespace PLATEAU.RoadNetwork.Structure
                 return null;
             // 向きをそろえる
             Align();
-            var mergedBorders = Links.Select(l => l.GetMergedBorder(RnLaneBorderType.Prev)).ToList();
-            mergedBorders.Add(Links[^1].GetMergedBorder(RnLaneBorderType.Next));
+            var mergedBorders = Roads.Select(l => l.GetMergedBorder(RnLaneBorderType.Prev)).ToList();
+            mergedBorders.Add(Roads[^1].GetMergedBorder(RnLaneBorderType.Next));
 
-            var borderWays = new List<List<RnWay>>(Links.Count + 1);
+            var borderWays = new List<List<RnWay>>(Roads.Count + 1);
 
             foreach (var b in mergedBorders)
             {
@@ -136,14 +136,14 @@ namespace PLATEAU.RoadNetwork.Structure
                 borderWays.Add(split);
             }
 
-            var afterLanes = new Dictionary<RnRoad, List<RnLane>>(Links.Count);
-            for (var i = 0; i < Links.Count; ++i)
+            var afterLanes = new Dictionary<RnRoad, List<RnLane>>(Roads.Count);
+            for (var i = 0; i < Roads.Count; ++i)
             {
-                var link = Links[i];
+                var road = Roads[i];
                 var prevBorders = borderWays[i];
                 var nextBorders = borderWays[i + 1];
-                var leftWay = link.GetMergedSideWay(RnDir.Left);
-                var rightWay = link.GetMergedSideWay(RnDir.Right);
+                var leftWay = road.GetMergedSideWay(RnDir.Left);
+                var rightWay = road.GetMergedSideWay(RnDir.Right);
 
                 var leftVertices = leftWay.Vertices.ToList();
                 var rightVertices = rightWay.Vertices.ToList();
@@ -182,7 +182,7 @@ namespace PLATEAU.RoadNetwork.Structure
                     left = right;
                 }
 
-                afterLanes[link] = lanes;
+                afterLanes[road] = lanes;
             }
 
             return afterLanes;
@@ -198,7 +198,7 @@ namespace PLATEAU.RoadNetwork.Structure
             if (IsValid == false)
                 return;
             // 既に指定の数になっている場合は何もしない
-            if (Links.All(l => l.GetLeftLaneCount() == leftCount && l.GetRightLaneCount() == rightCount))
+            if (Roads.All(l => l.GetLeftLaneCount() == leftCount && l.GetRightLaneCount() == rightCount))
                 return;
 
             // 向きをそろえる
@@ -209,27 +209,27 @@ namespace PLATEAU.RoadNetwork.Structure
             if (afterLanes == null)
                 return;
 
-            // Linksに変更を加えるのは最後にまとめて必要がある
-            // (RnLinks.IsLeftLane等が隣のLinkに依存するため. 途中で変更すると、後続の処理が破綻する可能性がある)
-            for (var i = 0; i < Links.Count; ++i)
+            // Roadsに変更を加えるのは最後にまとめて必要がある
+            // (RnRoads.IsLeftLane等が隣のRoadに依存するため. 途中で変更すると、後続の処理が破綻する可能性がある)
+            for (var i = 0; i < Roads.Count; ++i)
             {
-                var link = Links[i];
-                var lanes = afterLanes[link];
+                var road = Roads[i];
+                var lanes = afterLanes[road];
 
-                if (i == Links.Count - 1)
-                    NextNode?.ReplaceBorder(Links[^1], lanes.Select(l => l.NextBorder).ToList());
+                if (i == Roads.Count - 1)
+                    NextIntersection?.ReplaceBorder(Roads[^1], lanes.Select(l => l.NextBorder).ToList());
                 if (i == 0)
-                    PrevNode?.ReplaceBorder(Links[0], lanes.Select(l => l.PrevBorder).ToList());
+                    PrevIntersection?.ReplaceBorder(Roads[0], lanes.Select(l => l.PrevBorder).ToList());
                 for (var j = leftCount; j < lanes.Count; ++j)
                     lanes[j].Reverse();
 
 
-                Links[i].ReplaceLanes(lanes);
+                Roads[i].ReplaceLanes(lanes);
             }
 
             if (leftCount == 0 || rightCount == 0)
             {
-                foreach (var l in Links)
+                foreach (var l in Roads)
                     l.SetMedianLane(null);
             }
             else
@@ -252,7 +252,7 @@ namespace PLATEAU.RoadNetwork.Structure
 
             // 中央分離帯があるリンクは一度作成する
             CreateMedianOrSkip(l => l.MedianLane == null);
-            foreach (var l in Links)
+            foreach (var l in Roads)
             {
                 l.MedianLane?.TrySetWidth(width, moveOption);
             }
@@ -266,14 +266,14 @@ namespace PLATEAU.RoadNetwork.Structure
         public void RemoveMedian(LaneWayMoveOption moveOption = LaneWayMoveOption.MoveBothWay)
         {
             SetMedianWidth(0f, moveOption);
-            foreach (var link in Links)
+            foreach (var road in Roads)
             {
-                if (link.MedianLane == null)
+                if (road.MedianLane == null)
                     continue;
                 // l,rを同じにするため, r -> lに差し替え(向きをそろえるためにlを反転させる)
-                var before = link.MedianLane.RightWay;
-                var after = link.MedianLane.LeftWay.ReversedWay();
-                foreach (var lane in link.GetRightLanes())
+                var before = road.MedianLane.RightWay;
+                var after = road.MedianLane.LeftWay.ReversedWay();
+                foreach (var lane in road.GetRightLanes())
                 {
                     if (lane.RightWay?.IsSameLine(before) ?? false)
                     {
@@ -307,7 +307,7 @@ namespace PLATEAU.RoadNetwork.Structure
         private void CreateMedianOrSkip(Func<RnRoad, bool> createTarget)
         {
             Dictionary<RnPoint, RnPoint> replace = new Dictionary<RnPoint, RnPoint>();
-            foreach (var l in Links)
+            foreach (var l in Roads)
             {
                 if (createTarget != null && createTarget(l) == false)
                     continue;
@@ -342,16 +342,16 @@ namespace PLATEAU.RoadNetwork.Structure
         {
             get
             {
-                if (Links.Count <= 1)
+                if (Roads.Count <= 1)
                     return true;
-                var src = Links[0];
-                for (var i = 1; i < Links.Count; ++i)
+                var src = Roads[0];
+                for (var i = 1; i < Roads.Count; ++i)
                 {
-                    // 自分のPrevがi-1番目のLinksじゃない場合は向きが逆
-                    if (Links[i].Prev != src)
+                    // 自分のPrevがi-1番目のRoadsじゃない場合は向きが逆
+                    if (Roads[i].Prev != src)
                         return false;
                     // #TODO : laneのborderの向きも見る
-                    src = Links[i];
+                    src = Roads[i];
                 }
 
                 return true;
@@ -365,44 +365,44 @@ namespace PLATEAU.RoadNetwork.Structure
         {
             if (IsAligned)
                 return;
-            var src = Links[0];
-            for (var i = 1; i < Links.Count; ++i)
+            var src = Roads[0];
+            for (var i = 1; i < Roads.Count; ++i)
             {
-                if (Links[i].Prev != src)
-                    Links[i].Reverse();
-                src = Links[i];
+                if (Roads[i].Prev != src)
+                    Roads[i].Reverse();
+                src = Roads[i];
             }
 
             // 境界線の向きもそろえる
-            foreach (var l in Links)
+            foreach (var l in Roads)
                 l.AlignLaneBorder();
 
-            if (Links[0].Prev != PrevNode)
-                (PrevNode, NextNode) = (NextNode, PrevNode);
+            if (Roads[0].Prev != PrevIntersection)
+                (PrevIntersection, NextIntersection) = (NextIntersection, PrevIntersection);
         }
 
         // ---------------
         // Static Methods
         // ---------------
         /// <summary>
-        /// 2つのノードを繋ぐLinkGroupを作成する
+        /// 2つのノードを繋ぐRoadGroupを作成する
         /// 2つのノードが直接繋がっていない場合はnullを返す
         /// </summary>
-        /// <param name="prevNode"></param>
-        /// <param name="nextNode"></param>
+        /// <param name="prevIntersection"></param>
+        /// <param name="nextIntersection"></param>
         /// <returns></returns>
-        public static RnRoadGroup CreateLinkGroupOrDefault(RnIntersection prevNode, RnIntersection nextNode)
+        public static RnRoadGroup CreateRoadGroupOrDefault(RnIntersection prevIntersection, RnIntersection nextIntersection)
         {
-            if (prevNode == null || nextNode == null)
+            if (prevIntersection == null || nextIntersection == null)
                 return null;
 
-            foreach (var n in prevNode.GetNeighborRoads())
+            foreach (var n in prevIntersection.GetNeighborRoads())
             {
-                if (n is RnRoad link)
+                if (n is RnRoad road)
                 {
-                    var ret = new RnRoadGroup(prevNode, nextNode, new[] { link });
-                    var hasPrev = ret.PrevNode == prevNode || ret.NextNode == prevNode;
-                    var hasNex = ret.PrevNode == nextNode || ret.NextNode == nextNode;
+                    var ret = new RnRoadGroup(prevIntersection, nextIntersection, new[] { road });
+                    var hasPrev = ret.PrevIntersection == prevIntersection || ret.NextIntersection == prevIntersection;
+                    var hasNex = ret.PrevIntersection == nextIntersection || ret.NextIntersection == nextIntersection;
                     if (hasPrev && hasNex)
                         return ret;
                 }

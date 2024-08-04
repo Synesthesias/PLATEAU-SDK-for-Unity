@@ -14,7 +14,7 @@ namespace PLATEAU.RoadNetwork.Structure
         public RnID<RnDataBlock> MyId { get; set; }
 
         // 親リンク
-        public RnRoad ParentLink { get; set; }
+        public RnRoad Parent { get; set; }
 
         // 所属レーンタイプ(0:レーン, 1:トラック)
         public int LaneType { get; set; }

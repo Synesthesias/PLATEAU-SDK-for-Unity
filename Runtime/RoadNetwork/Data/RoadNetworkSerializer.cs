@@ -447,9 +447,9 @@ namespace PLATEAU.RoadNetwork.Data
             foreach (var r in roadBases)
             {
                 if (r is RnIntersection n)
-                    ret.AddNode(n);
+                    ret.AddIntersection(n);
                 else if (r is RnRoad l)
-                    ret.AddLink(l);
+                    ret.AddRoad(l);
             }
             return ret;
         }

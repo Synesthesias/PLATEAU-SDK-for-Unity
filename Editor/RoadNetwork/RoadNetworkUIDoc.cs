@@ -174,7 +174,7 @@ namespace PLATEAU.Editor.RoadNetwork
                 //    new RoadNetworkWay(RoadNetworkLineString.Create(leftLine.Select(v => v.Xay()))),
                 //    new RoadNetworkWay(RoadNetworkLineString.Create(rightLine.Select(v => v.Xay()))),
                 //    lane.PrevBorder, lane.NextBorder);
-                //lane.ParentLink.ReplaceLane(lane, newLane);
+                //lane.Parent.ReplaceLane(lane, newLane);
 
                 //system.RegisterBase(newLane, baseLane, scaleValue, lane);
                 //system.SelectedRoadNetworkElement = newLane;    // 置き換えたので変更する必要がある

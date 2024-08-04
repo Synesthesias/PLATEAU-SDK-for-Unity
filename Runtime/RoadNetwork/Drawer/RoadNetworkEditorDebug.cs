@@ -109,7 +109,7 @@ namespace PLATEAU.RoadNetwork.Drawer
 
                 if (splitEdit.Button())
                 {
-                    if (lane.Parent is RnRoad link)
+                    if (lane.Parent is RnRoad road)
                     {
                         var lanes = lane.SplitLane(splitEdit.splitNum, true);
                         foreach (var item in lanes)
@@ -149,16 +149,16 @@ namespace PLATEAU.RoadNetwork.Drawer
         private LaneEdit laneEdit = new LaneEdit();
 
         [Serializable]
-        private class LinkEdit
+        private class RoadEdit
         {
             [SerializeField]
-            private ulong targetLinkId = ulong.MaxValue;
+            private ulong targetRoadId = ulong.MaxValue;
 
             [Serializable]
             public class ShowInfo
             {
                 [NonSerialized]
-                public ulong targetLinkId = ulong.MaxValue;
+                public ulong targetRoadId = ulong.MaxValue;
 
                 public int prevId = -1;
 
@@ -188,51 +188,51 @@ namespace PLATEAU.RoadNetwork.Drawer
             {
                 if (model == null)
                     return;
-                var link = model.Links.FirstOrDefault(l => l.DebugMyId == targetLinkId);
-                if (link == null)
+                var road = model.Roads.FirstOrDefault(l => l.DebugMyId == targetRoadId);
+                if (road == null)
                     return;
-                var linkGroup = link.CreateLinkGroupOrDefault();
-                if (linkGroup == null)
+                var roadGroup = road.CreateRoadGroupOrDefault();
+                if (roadGroup == null)
                     return;
-                if (showInfo.targetLinkId != targetLinkId)
+                if (showInfo.targetRoadId != targetRoadId)
                 {
-                    showInfo.targetLinkId = targetLinkId;
-                    showInfo.leftLaneCount = linkGroup.GetLeftLaneCount();
-                    showInfo.rightLaneCount = linkGroup.GetRightLaneCount();
-                    showInfo.medianWidth = link.GetMedianWidth();
+                    showInfo.targetRoadId = targetRoadId;
+                    showInfo.leftLaneCount = roadGroup.GetLeftLaneCount();
+                    showInfo.rightLaneCount = roadGroup.GetRightLaneCount();
+                    showInfo.medianWidth = road.GetMedianWidth();
                 }
 
-                showInfo.prevId = (int)(link.Prev?.DebugMyId ?? ulong.MaxValue);
-                showInfo.nextId = (int)(link.Next?.DebugMyId ?? ulong.MaxValue);
-                showInfo.nowLeftLaneCount = link.GetLeftLaneCount();
-                showInfo.nowRightLaneCount = link.GetRightLaneCount();
+                showInfo.prevId = (int)(road.Prev?.DebugMyId ?? ulong.MaxValue);
+                showInfo.nextId = (int)(road.Next?.DebugMyId ?? ulong.MaxValue);
+                showInfo.nowLeftLaneCount = road.GetLeftLaneCount();
+                showInfo.nowRightLaneCount = road.GetRightLaneCount();
 
                 if (showInfo.changeLaneCount)
                 {
-                    if (showInfo.leftLaneCount != linkGroup.GetLeftLaneCount())
+                    if (showInfo.leftLaneCount != roadGroup.GetLeftLaneCount())
                     {
-                        linkGroup.SetLeftLaneCount(showInfo.leftLaneCount);
+                        roadGroup.SetLeftLaneCount(showInfo.leftLaneCount);
                     }
-                    if (showInfo.rightLaneCount != linkGroup.GetRightLaneCount())
+                    if (showInfo.rightLaneCount != roadGroup.GetRightLaneCount())
                     {
-                        linkGroup.SetRightLaneCount(showInfo.rightLaneCount);
+                        roadGroup.SetRightLaneCount(showInfo.rightLaneCount);
                     }
                     showInfo.changeLaneCount = false;
                 }
                 if (showInfo.changeMedianWidth)
                 {
-                    linkGroup.SetMedianWidth(showInfo.medianWidth, showInfo.medianWidthOption);
+                    roadGroup.SetMedianWidth(showInfo.medianWidth, showInfo.medianWidthOption);
                     showInfo.changeMedianWidth = false;
                 }
 
                 if (showInfo.removeMedian)
                 {
-                    linkGroup.RemoveMedian(showInfo.medianWidthOption);
+                    roadGroup.RemoveMedian(showInfo.medianWidthOption);
                     showInfo.removeMedian = false;
                 }
             }
         }
-        [SerializeField] LinkEdit linkEdit = new LinkEdit();
+        [SerializeField] RoadEdit roadEdit = new RoadEdit();
 
         [SerializeField]
         public class WayEdit
@@ -252,7 +252,7 @@ namespace PLATEAU.RoadNetwork.Drawer
             if (model == null)
                 return;
             laneEdit.Update(model);
-            linkEdit.Update(model);
+            roadEdit.Update(model);
         }
     }
 }

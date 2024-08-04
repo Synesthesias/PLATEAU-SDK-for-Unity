@@ -13,8 +13,8 @@ namespace PLATEAU.RoadNetwork.Data
         public RnID<RnDataBlock> MyId { get; set; }
 
         [field: SerializeField]
-        [RoadNetworkSerializeMember(nameof(RnBlock.ParentLink))]
-        public RnID<RnDataRoad> ParentLink { get; set; }
+        [RoadNetworkSerializeMember(nameof(RnBlock.Parent))]
+        public RnID<RnDataRoad> Parent { get; set; }
 
         [field: SerializeField]
         [RoadNetworkSerializeMember(nameof(RnBlock.LaneType))]

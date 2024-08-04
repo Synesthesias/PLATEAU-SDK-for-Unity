@@ -61,6 +61,9 @@ namespace PLATEAU.Editor.RoadNetwork
 
             if (obj.RGraph != null && GUILayout.Button("Open RGraph Editor"))
                 RGraphDebugEditorWindow.OpenWindow(obj.RGraph, true);
+
+            if (GUILayout.Button("Check Lod"))
+                obj.RemoveSameNameCityObjectGroup();
         }
     }
 }

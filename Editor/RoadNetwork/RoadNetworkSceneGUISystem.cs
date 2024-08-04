@@ -84,7 +84,7 @@ namespace PLATEAU.Editor.RoadNetwork
             Link = DisplayHndOperationMask.NoOperation << _LinkShiftOffset,     // 
             LinkAdd = Link | DisplayHndOperationMask.Add << _LinkShiftOffset,
             LinkRemove = Link | DisplayHndOperationMask.Remove << _LinkShiftOffset,
-            //LinkMove = Link | DisplayHndOperationMask.Move << _LinkShiftOffset,
+            //LinkMove = Road | DisplayHndOperationMask.Move << _LinkShiftOffset,
             LinkSelect = Link | DisplayHndOperationMask.Select << _LinkShiftOffset,
             LinkZeroMask = ~(LinkAdd | LinkRemove | LinkSelect),
 
@@ -379,8 +379,8 @@ namespace PLATEAU.Editor.RoadNetwork
             public LaneGroupEditorData(RnRoadGroup target)
             {
                 Assert.IsNotNull(target);
-                var fLink =  group.Links.First();
-                var lLink =  group.Links.Last();
+                var fLink =  group.Roads.First();
+                var lLink =  group.Roads.Last();
 
                 // link一つで構成されているため Laneの接続を確認する必要がない
                 if (fLink == lLink)
@@ -398,7 +398,7 @@ namespace PLATEAU.Editor.RoadNetwork
                 var lrLanes = fLink.GetLanes(RnDir.Right);
 
                 var nGroup = target.GetLeftLaneCount() + target.GetRightLaneCount();
-                var nLanes = target.Links.Count;
+                var nLanes = target.Roads.Count;
 
                 LaneGroupListCache = new List<List<RnLane>>(nGroup);
                 foreach (var lane in flLanes)
@@ -488,7 +488,7 @@ namespace PLATEAU.Editor.RoadNetwork
                 var nLane = nLeftLane + nRIghtLane;
                 HashSet<RnWay> ways = new HashSet<RnWay>(nLane * 2);
                 List<RnWay> unionWay = new List<RnWay>(nLane * 2 - 2);  // 端の2つは覗く
-                var lanes = item.Ref.Links[0].MainLanes;
+                var lanes = item.Ref.Roads[0].MainLanes;
                 foreach (var lane in lanes)
                 {
                     foreach (var way in lane.BothWays)
@@ -632,10 +632,10 @@ namespace PLATEAU.Editor.RoadNetwork
         {
 
             // Node
-            foreach (var node in network.Nodes)
+            foreach (var node in network.Intersections)
             {
                 state.ResetLoopOperationFlags();
-                ForeachNode(editorSystem, network.Nodes, node, ref state);
+                ForeachNode(editorSystem, network.Intersections, node, ref state);
                 if (state.isBreak) break;
                 if (state.isContinue) continue;
 
@@ -668,7 +668,7 @@ namespace PLATEAU.Editor.RoadNetwork
                     if (state.isBreak) break;
                     if (state.isContinue) continue;
 
-                    var link = neighbor.Link;
+                    var link = neighbor.Road;
                     var way = neighbor.Border;
                     foreach (var point in way.Points)
                     {
@@ -683,10 +683,10 @@ namespace PLATEAU.Editor.RoadNetwork
 
             HashSet<RnRoad> drawLink = new HashSet<RnRoad>();
             // link
-            foreach (var link in network.Links)
+            foreach (var link in network.Roads)
             {
                 state.ResetLoopOperationFlags();
-                ForeachLink(editorSystem, network.Links, link, ref state);
+                ForeachLink(editorSystem, network.Roads, link, ref state);
                 if (state.isBreak) break;
                 if (state.isContinue) continue;
 
@@ -1001,7 +1001,7 @@ namespace PLATEAU.Editor.RoadNetwork
             //                state.delayCommand += () =>
             //                {
             //                    Debug.Log("Laneが追加された");
-            //                    sys.RoadNetworkSimpleLaneGenerateModule.BuildLane(lane.ParentLink);
+            //                    sys.RoadNetworkSimpleLaneGenerateModule.BuildLane(lane.Parent);
             //                };
 
             //            }

@@ -43,8 +43,8 @@ namespace PLATEAU.RoadNetwork.Structure
         {
             foreach (var neighbor in Neighbors)
             {
-                if (neighbor.Link != null)
-                    yield return neighbor.Link;
+                if (neighbor.Road != null)
+                    yield return neighbor.Road;
             }
         }
 
@@ -107,8 +107,25 @@ namespace PLATEAU.RoadNetwork.Structure
 
         public void ReplaceBorder(RnRoad link, List<RnWay> borders)
         {
-            Neighbors.RemoveAll(n => n.Link == link);
-            Neighbors.AddRange(borders.Select(b => new RnNeighbor { Link = link, Border = b }));
+            Neighbors.RemoveAll(n => n.Road == link);
+            Neighbors.AddRange(borders.Select(b => new RnNeighbor { Road = link, Border = b }));
+        }
+
+        /// <summary>
+        /// 隣接情報からotherを削除する
+        /// </summary>
+        /// <param name="other"></param>
+        public override void UnLink(RnRoadBase other)
+        {
+            Neighbors.RemoveAll(n => n.Road == other);
+        }
+
+        public override void DisConnect()
+        {
+            foreach (var n in Neighbors)
+                n.Road?.UnLink(this);
+            Neighbors.Clear();
+            ParentModel?.RemoveIntersection(this);
         }
 
         /// <summary>
@@ -120,8 +137,8 @@ namespace PLATEAU.RoadNetwork.Structure
         {
             if (from == to)
                 return null;
-            var nFrom = Neighbors.FirstOrDefault(n => n.Link == from);
-            var nTo = Neighbors.FirstOrDefault(n => n.Link == to);
+            var nFrom = Neighbors.FirstOrDefault(n => n.Road == from);
+            var nTo = Neighbors.FirstOrDefault(n => n.Road == to);
             if (nFrom == null || nTo == null)
                 return null;
             if (nFrom.Border.Count < 2 || nTo.Border.Count < 2)

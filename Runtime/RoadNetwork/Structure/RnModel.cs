@@ -16,9 +16,9 @@ namespace PLATEAU.RoadNetwork.Structure
 
 
         // #NOTE : Editorが重いのでSerialize対象にしない
-        private List<RnRoad> links = new List<RnRoad>();
+        private List<RnRoad> roads = new List<RnRoad>();
 
-        private List<RnIntersection> nodes = new List<RnIntersection>();
+        private List<RnIntersection> intersections = new List<RnIntersection>();
 
         private List<RnLineString> sideWalks = new List<RnLineString>();
 
@@ -26,40 +26,40 @@ namespace PLATEAU.RoadNetwork.Structure
         // end: フィールド
         //----------------------------------
 
-        public IReadOnlyList<RnRoad> Links => links;
+        public IReadOnlyList<RnRoad> Roads => roads;
 
-        public IReadOnlyList<RnIntersection> Nodes => nodes;
+        public IReadOnlyList<RnIntersection> Intersections => intersections;
 
         public IReadOnlyList<RnLineString> SideWalks => sideWalks;
 
-        public void AddLink(RnRoad link)
+        public void AddRoad(RnRoad link)
         {
-            if (links.Contains(link))
+            if (roads.Contains(link))
                 return;
 
             link.ParentModel = this;
-            links.Add(link);
+            roads.Add(link);
         }
 
-        public void RemoveLink(RnRoad link)
+        public void RemoveRoad(RnRoad link)
         {
-            if (links.Remove(link))
+            if (roads.Remove(link))
                 link.ParentModel = null;
         }
 
-        public void AddNode(RnIntersection node)
+        public void AddIntersection(RnIntersection intersection)
         {
-            if (Nodes.Contains(node))
+            if (Intersections.Contains(intersection))
                 return;
 
-            node.ParentModel = this;
-            nodes.Add(node);
+            intersection.ParentModel = this;
+            intersections.Add(intersection);
         }
 
-        public void RemoveNode(RnIntersection node)
+        public void RemoveIntersection(RnIntersection intersection)
         {
-            if (nodes.Remove(node))
-                node.ParentModel = null;
+            if (intersections.Remove(intersection))
+                intersection.ParentModel = null;
         }
 
         /// <summary>
@@ -68,7 +68,7 @@ namespace PLATEAU.RoadNetwork.Structure
         /// <param name="lane"></param>
         public void RemoveLane(RnLane lane)
         {
-            foreach (var l in links)
+            foreach (var l in roads)
             {
                 l.RemoveLane(lane);
             }
@@ -81,22 +81,22 @@ namespace PLATEAU.RoadNetwork.Structure
         /// <param name="after"></param>
         public void ReplaceLane(RnLane before, RnLane after)
         {
-            foreach (var l in links)
+            foreach (var l in roads)
                 l.ReplaceLane(before, after);
         }
 
         /// <summary>
-        /// Node/Linkのレーンを全て取得
+        /// Intersection/Roadのレーンを全て取得
         /// </summary>
         /// <returns></returns>
         public IEnumerable<RnLane> CollectAllLanes()
         {
             // Laneは重複しないはず
-            return Links.SelectMany(l => l.AllLanes).Concat(Nodes.SelectMany(n => n.Lanes));
+            return Roads.SelectMany(l => l.AllLanes).Concat(Intersections.SelectMany(n => n.Lanes));
         }
 
         /// <summary>
-        /// Node/LinkのWayを全て取得
+        /// Intersection/RoadのWayを全て取得
         /// </summary>
         /// <returns></returns>
         public IEnumerable<RnWay> CollectAllWays()
@@ -128,10 +128,10 @@ namespace PLATEAU.RoadNetwork.Structure
         {
             var serializer = new RoadNetworkSerializer();
             var model = serializer.Deserialize(storage);
-            foreach (var l in model.Links)
-                AddLink(l);
-            foreach (var n in model.Nodes)
-                AddNode(n);
+            foreach (var l in model.Roads)
+                AddRoad(l);
+            foreach (var n in model.Intersections)
+                AddIntersection(n);
         }
 
         public RoadNetworkDataGetter CreateGetter(RoadNetworkStorage storage)
@@ -139,32 +139,32 @@ namespace PLATEAU.RoadNetwork.Structure
             return new RoadNetworkDataGetter(storage);
         }
 
-        public void SplitLaneByWidth(float roadWidth, out List<ulong> failedLinks)
+        public void SplitLaneByWidth(float roadWidth, out List<ulong> failedRoads)
         {
-            failedLinks = new List<ulong>();
-            var visitedLinks = new HashSet<RnRoad>();
-            foreach (var link in Links)
+            failedRoads = new List<ulong>();
+            var visitedRoads = new HashSet<RnRoad>();
+            foreach (var link in Roads)
             {
-                if (visitedLinks.Contains(link))
+                if (visitedRoads.Contains(link))
                     continue;
 
                 try
                 {
-                    var linkGroup = link.CreateLinkGroup();
-                    foreach (var l in linkGroup.Links)
-                        visitedLinks.Add(l);
+                    var linkGroup = link.CreateRoadGroup();
+                    foreach (var l in linkGroup.Roads)
+                        visitedRoads.Add(l);
 
                     linkGroup.Align();
                     if (linkGroup.IsValid == false)
                         continue;
 
-                    if (linkGroup.Links.Any(l => l.MainLanes.Count != 1))
+                    if (linkGroup.Roads.Any(l => l.MainLanes.Count != 1))
                         continue;
 
-                    if (linkGroup.Links.Any(l => l.MainLanes[0].HasBothBorder == false))
+                    if (linkGroup.Roads.Any(l => l.MainLanes[0].HasBothBorder == false))
                         continue;
 
-                    var width = linkGroup.Links.Select(l => l.MainLanes[0].CalcWidth()).Min();
+                    var width = linkGroup.Roads.Select(l => l.MainLanes[0].CalcWidth()).Min();
                     var num = (int)(width / roadWidth);
                     if (num <= 1)
                         continue;
@@ -176,7 +176,7 @@ namespace PLATEAU.RoadNetwork.Structure
                 catch (Exception e)
                 {
                     //Debug.LogException(e);
-                    failedLinks.Add(link.DebugMyId);
+                    failedRoads.Add(link.DebugMyId);
                 }
             }
         }
