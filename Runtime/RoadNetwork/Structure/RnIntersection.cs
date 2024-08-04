@@ -24,9 +24,9 @@ namespace PLATEAU.RoadNetwork.Structure
         public PLATEAUCityObjectGroup TargetTran { get; set; }
 
         // 隣接情報
-        public List<RnNeighbor> Neighbors { get; set; } = new List<RnNeighbor>();
+        private List<RnNeighbor> neighbors = new List<RnNeighbor>();
 
-        // レーンリスト
+        // 交差点内のレーン情報
         private List<RnLane> lanes = new List<RnLane>();
 
         // 信号制御器
@@ -35,6 +35,8 @@ namespace PLATEAU.RoadNetwork.Structure
         //----------------------------------
         // end: フィールド
         //----------------------------------
+
+        public IReadOnlyList<RnNeighbor> Neighbors => neighbors;
 
         // 車線
         public IReadOnlyList<RnLane> Lanes => lanes;
@@ -77,6 +79,16 @@ namespace PLATEAU.RoadNetwork.Structure
             }
         }
 
+        /// <summary>
+        /// 隣接情報追加
+        /// </summary>
+        /// <param name="link"></param>
+        /// <param name="border"></param>
+        public void AddNeighbor(RnRoad link, RnWay border)
+        {
+            neighbors.Add(new RnNeighbor { Road = link, Border = border });
+        }
+
         public void AddLane(RnLane lane)
         {
             if (lanes.Contains(lane))
@@ -107,8 +119,8 @@ namespace PLATEAU.RoadNetwork.Structure
 
         public void ReplaceBorder(RnRoad link, List<RnWay> borders)
         {
-            Neighbors.RemoveAll(n => n.Road == link);
-            Neighbors.AddRange(borders.Select(b => new RnNeighbor { Road = link, Border = b }));
+            neighbors.RemoveAll(n => n.Road == link);
+            neighbors.AddRange(borders.Select(b => new RnNeighbor { Road = link, Border = b }));
         }
 
         /// <summary>
@@ -117,14 +129,23 @@ namespace PLATEAU.RoadNetwork.Structure
         /// <param name="other"></param>
         public override void UnLink(RnRoadBase other)
         {
-            Neighbors.RemoveAll(n => n.Road == other);
+            var borders = neighbors.Where(n => n.Road == other).Select(n => n.Border).ToList();
+            neighbors.RemoveAll(n => n.Road == other);
+
+            // 削除するBorderに接続しているレーンも削除
+            var removeLanes = lanes.Where(l => l.BothWays.Any(b => borders.Contains(b))).ToList();
+            foreach (var r in removeLanes)
+                RemoveLane(r);
         }
 
+        /// <summary>
+        /// 自身の切断する
+        /// </summary>
         public override void DisConnect()
         {
             foreach (var n in Neighbors)
                 n.Road?.UnLink(this);
-            Neighbors.Clear();
+            neighbors.Clear();
             ParentModel?.RemoveIntersection(this);
         }
 

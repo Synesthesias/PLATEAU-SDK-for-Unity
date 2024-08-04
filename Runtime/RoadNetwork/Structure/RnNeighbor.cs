@@ -10,10 +10,10 @@ namespace PLATEAU.RoadNetwork.Structure
         //----------------------------------
         // start: フィールド
         //----------------------------------
-        // 他レーンとの境界線
+        // Roadとの境界線
         public RnWay Border { get; set; }
 
-        // Road
+        // 隣接Road
         public RnRoad Road { get; set; }
 
         //----------------------------------

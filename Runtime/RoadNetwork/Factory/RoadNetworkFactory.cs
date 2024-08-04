@@ -367,7 +367,7 @@ namespace PLATEAU.RoadNetwork.Factory
                         {
                             if (l.Road == null)
                                 continue;
-                            node.Neighbors.Add(new RnNeighbor { Road = l.Link, Border = b.Way });
+                            node.AddNeighbor(l.Link, b.Way);
                         }
                     }
 

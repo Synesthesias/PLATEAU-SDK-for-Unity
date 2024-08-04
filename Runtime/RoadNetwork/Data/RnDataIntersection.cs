@@ -21,7 +21,7 @@ namespace PLATEAU.RoadNetwork.Data
 
         // 隣接情報
         [field: SerializeField]
-        [RoadNetworkSerializeMember(nameof(RnIntersection.Neighbors))]
+        [RoadNetworkSerializeMember("neighbors")]
         public List<RnDataNeighbor> Neighbors { get; set; } = new List<RnDataNeighbor>();
 
         // 車線
