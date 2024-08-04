@@ -1,4 +1,7 @@
-﻿using PLATEAU.RoadNetwork.Graph;
+﻿using PLATEAU.CityInfo;
+using PLATEAU.RoadNetwork.Graph;
+using PLATEAU.Util;
+using System;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
@@ -13,6 +16,9 @@ namespace PLATEAU.Editor.RoadNetwork.Graph
 
         private float mergeEpsilon = 0.2f;
         private int mergeCellLength = 2;
+        private bool showOutline = false;
+
+        private int showVertexId = -1;
 
         public void Reinitialize()
         {
@@ -27,6 +33,19 @@ namespace PLATEAU.Editor.RoadNetwork.Graph
             Initialize();
         }
 
+        private void VertexGUI(RVertex v)
+        {
+            if ((int)v.DebugMyId != showVertexId)
+                return;
+            EditorGUILayout.Separator();
+            EditorGUILayout.IntField("ID", (int)v.DebugMyId);
+            foreach (var e in v.GetNeighborVertices())
+            {
+                EditorGUILayout.IntField("Neighbor", (int)e.DebugMyId);
+            }
+            EditorGUILayout.Separator();
+        }
+
         /// <Summary>
         /// ウィンドウのパーツを表示します。
         /// </Summary>
@@ -34,18 +53,24 @@ namespace PLATEAU.Editor.RoadNetwork.Graph
         {
             if (Graph == null)
                 return;
-            EditorGUILayout.BeginVertical("Info");
-            EditorGUILayout.IntField("Polygon", Graph.Polygons.Count);
-            EditorGUILayout.IntField("Edge", Graph.GetAllEdge().Count());
-            EditorGUILayout.IntField("Vertex", Graph.GetAllVertex().Count());
+            EditorGUILayout.IntField("Face", Graph.Faces.Count);
+            //EditorGUILayout.IntField("Edge", Graph.GetAllEdge().Count());
+            //EditorGUILayout.IntField("Vertex", Graph.GetAllVertex().Count());
             mergeEpsilon = EditorGUILayout.FloatField("MergeEpsilon", mergeEpsilon);
             mergeCellLength = EditorGUILayout.IntField("MergeCellLength", mergeCellLength);
+            showVertexId = EditorGUILayout.IntField("ShowVertexId", showVertexId);
+            if (Selection.activeGameObject)
+            {
+                var selected = Selection.activeGameObject.GetComponent<PLATEAUCityObjectGroup>();
+                if (selected)
+                {
+                }
+            }
             if (GUILayout.Button("Merge"))
             {
                 Graph.MergeVertices(mergeEpsilon, mergeCellLength);
             }
 
-            EditorGUILayout.EndVertical();
         }
         /// <summary>
         /// ウィンドウを取得する、存在しない場合に生成する

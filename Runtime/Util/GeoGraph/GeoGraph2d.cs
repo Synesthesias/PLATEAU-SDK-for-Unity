@@ -260,6 +260,81 @@ namespace PLATEAU.Util.GeoGraph
             return ComputeOutlineVertices(toVec2, vertices);
         }
 
+        /// <summary>
+        /// アウトライン頂点を返す
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="vertices"></param>
+        /// <param name="toVec2"></param>
+        /// <param name="getNeighbor"></param>
+        /// <param name="ignoreVisitedVertex"></param>
+        /// <returns></returns>
+        public static List<T> ComputeOutline<T>(IEnumerable<T> vertices, Func<T, Vector2> toVec2, Func<T, IEnumerable<T>> getNeighbor, bool ignoreVisitedVertex = true)
+        {
+            var comp = Comparer<float>.Default;
+
+            var keys = vertices.ToList();
+            keys.Sort((a, b) =>
+            {
+                var a2 = toVec2(a);
+                var b2 = toVec2(b);
+                var x = comp.Compare(a2.x, b2.x);
+                var y = comp.Compare(a2.y, b2.y);
+                if (x != 0)
+                    return x;
+                return y;
+            });
+
+            void Eval(Vector2 axis, Vector2 a, out float ang, out float sqrLen)
+            {
+                ang = Vector2.SignedAngle(axis, a);
+                if (ang < 0f)
+                    ang += 360f;
+                sqrLen = a.sqrMagnitude;
+            }
+
+            // 時計回りに探し出す
+            var dir = Vector2.down;
+            var ret = new List<T> { keys[0] };
+            while (ret.Count < keys.Count)
+            {
+                var last = toVec2(ret[^1]);
+                var neighbors = getNeighbor(ret[^1]).ToList();
+                if (neighbors.Count == 0)
+                    break;
+                // 途中につながるようなものは削除
+                var filtered = ignoreVisitedVertex ? neighbors.Where(v => v.Equals(ret[0]) || ret.Contains(v) == false).ToList() : neighbors.ToList();
+                if (filtered.Count == 0)
+                    break;
+                var next = filtered.First();
+
+                Eval(dir, toVec2(next) - last, out var ang, out var sqrLen);
+                foreach (var v in filtered.Skip(1))
+                {
+                    // 最も外側に近い点を返す
+                    Eval(dir, toVec2(v) - last, out var ang2, out var sqrLen2);
+                    var x = -comp.Compare(ang2, ang);
+                    if (x == 0)
+                        x = comp.Compare(sqrLen2, sqrLen);
+                    if (x < 0)
+                    {
+                        next = v;
+                        ang = ang2;
+                        sqrLen = sqrLen2;
+                    }
+                }
+
+                if (ret.Contains(next))
+                {
+                    break;
+                }
+
+                ret.Add(next);
+                dir = last - toVec2(next);
+            }
+            return ret;
+        }
+
         private static List<Vector3> ComputeOutlineVertices(Func<Vector3, Vector2> toVec2, Dictionary<Vector3, HashSet<Vector3>> vertices, bool ignoreVisitedVertex = true)
         {
             var comp = Comparer<float>.Default;
