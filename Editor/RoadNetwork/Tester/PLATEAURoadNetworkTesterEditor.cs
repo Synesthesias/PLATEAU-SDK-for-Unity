@@ -60,7 +60,7 @@ namespace PLATEAU.Editor.RoadNetwork
                 obj.CreateRGraph();
 
             if (obj.RGraph != null && GUILayout.Button("Open RGraph Editor"))
-                RGraphEditorWindow.OpenWindow(obj.RGraph, true);
+                RGraphDebugEditorWindow.OpenWindow(obj.RGraph, true);
         }
     }
 }

@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace PLATEAU.Editor.RoadNetwork.Graph
 {
-    public class RGraphEditorWindow : UnityEditor.EditorWindow
+    public class RGraphDebugEditorWindow : UnityEditor.EditorWindow
     {
         private static readonly string WindowName = "PLATEAU RGraph Editor";
 
@@ -52,9 +52,9 @@ namespace PLATEAU.Editor.RoadNetwork.Graph
         /// </summary>
         /// <param name="focus"></param>
         /// <returns></returns>
-        public static RGraphEditorWindow OpenWindow(RGraph rGraph, bool focus)
+        public static RGraphDebugEditorWindow OpenWindow(RGraph rGraph, bool focus)
         {
-            var ret = GetWindow<RGraphEditorWindow>(WindowName, focus);
+            var ret = GetWindow<RGraphDebugEditorWindow>(WindowName, focus);
             ret.Graph = rGraph;
             return ret;
         }
@@ -66,7 +66,7 @@ namespace PLATEAU.Editor.RoadNetwork.Graph
         /// <returns></returns>
         public static bool HasOpenInstances()
         {
-            return HasOpenInstances<RGraphEditorWindow>();
+            return HasOpenInstances<RGraphDebugEditorWindow>();
         }
 
     }
