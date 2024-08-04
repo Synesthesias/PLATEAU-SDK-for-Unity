@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace PLATEAU.Editor.RoadNetwork.Graph
 {
-    public class RGraphDebugEditorWindow : UnityEditor.EditorWindow
+    public class RGraphDebugEditorWindow : EditorWindow
     {
         private static readonly string WindowName = "PLATEAU RGraph Editor";
 

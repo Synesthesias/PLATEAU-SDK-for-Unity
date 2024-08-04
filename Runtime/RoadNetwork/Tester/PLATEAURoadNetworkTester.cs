@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.Serialization;
 using PLATEAUCityObjectGroup = PLATEAU.CityInfo.PLATEAUCityObjectGroup;
 
 namespace PLATEAU.RoadNetwork
@@ -24,8 +25,8 @@ namespace PLATEAU.RoadNetwork
         // --------------------
         // start:フィールド
         // --------------------
-        [SerializeField] private RoadNetworkDrawerDebug drawer = new RoadNetworkDrawerDebug();
-        [SerializeField] private RoadNetworkEditorDebug editor = new RoadNetworkEditorDebug();
+        [field: SerializeField]
+        public RnModelDrawerDebug Drawer { get; set; } = new RnModelDrawerDebug();
 
         [field: SerializeField] private RoadNetworkFactory Factory { get; set; } = new RoadNetworkFactory();
 
@@ -173,8 +174,7 @@ namespace PLATEAU.RoadNetwork
 
         public void OnDrawGizmos()
         {
-            drawer.Draw(RoadNetwork);
-            editor.OnInspectorGUI(RoadNetwork);
+            Drawer?.Draw(RoadNetwork);
 
             DrawConvertedCityObject(showConvertedCityObject, convertedCityObjects);
             DrawConvertedCityObject(showMergedConvertedCityObject, mergedConvertedCityObjects);
@@ -325,7 +325,6 @@ namespace PLATEAU.RoadNetwork
 
         public void CreateRGraph()
         {
-
             rGraph = RGraphEx.Create(convertedCityObjects);
         }
 

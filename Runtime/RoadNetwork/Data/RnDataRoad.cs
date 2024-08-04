@@ -9,11 +9,6 @@ namespace PLATEAU.RoadNetwork.Data
     [Serializable, RoadNetworkSerializeData(typeof(RnRoad))]
     public class RnDataRoad : RnDataRoadBase
     {
-        // #TODO : 消える予定
-        // 自分自身を表すId
-        [field: SerializeField]
-        public RnID<RnDataRoad> MyId { get; set; }
-
         // 対象のtranオブジェクト
         [field: SerializeField]
         [RoadNetworkSerializeMember]

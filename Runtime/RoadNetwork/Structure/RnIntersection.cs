@@ -124,7 +124,7 @@ namespace PLATEAU.RoadNetwork.Structure
         }
 
         /// <summary>
-        /// 隣接情報からotherを削除する
+        /// 隣接情報からotherを削除する. other側の接続は消えない
         /// </summary>
         /// <param name="other"></param>
         public override void UnLink(RnRoadBase other)
@@ -141,12 +141,13 @@ namespace PLATEAU.RoadNetwork.Structure
         /// <summary>
         /// 自身の切断する
         /// </summary>
-        public override void DisConnect()
+        public override void DisConnect(bool removeFromModel)
         {
             foreach (var n in Neighbors)
                 n.Road?.UnLink(this);
             neighbors.Clear();
-            ParentModel?.RemoveIntersection(this);
+            if (removeFromModel)
+                ParentModel?.RemoveIntersection(this);
         }
 
         /// <summary>

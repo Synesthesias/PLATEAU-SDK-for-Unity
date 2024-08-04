@@ -14,7 +14,6 @@ namespace PLATEAU.RoadNetwork.Drawer
     [Flags]
     public enum RnPartsTypeMask
     {
-        Empty = 0,
         Point = 1 << 0,
         LineString = 1 << 1,
         Way = 1 << 2,
@@ -25,45 +24,46 @@ namespace PLATEAU.RoadNetwork.Drawer
     }
 
     [Serializable]
-    public class RoadNetworkDrawerDebug
+    public class RnModelDrawerDebug
     {
         // --------------------
         // start:フィールド
         // --------------------
-        [SerializeField] private bool visible = true;
+        [SerializeField] public bool visible = true;
         // Laneの頂点の内側を向くベクトルの中央点を表示する
-        [SerializeField] private bool showInsideNormalMidPoint = false;
+        [SerializeField] public bool showInsideNormalMidPoint = false;
         // 頂点インデックスを表示する
-        [SerializeField] private bool showVertexIndex = false;
+        [SerializeField] public bool showVertexIndex = false;
         // 頂点の座標を表示する
-        [SerializeField] private bool showVertexPos = false;
+        [SerializeField] public bool showVertexPos = false;
         // 頂点表示するときのフォントサイズ
-        [SerializeField] private int showVertexFontSize = 20;
+        [SerializeField] public int showVertexFontSize = 20;
         // レーン描画するときに法線方向へオフセットを入れる
-        [SerializeField] private float edgeOffset = 10f;
-        [SerializeField] private bool showSplitLane = false;
-        [SerializeField] private float splitLaneRate = 0.5f;
-        [SerializeField] private float yScale = 1f;
-        [SerializeField] private PLATEAUCityObjectGroup targetTran = null;
-        [SerializeField] private RnPartsTypeMask showPartsType = RnPartsTypeMask.Empty;
+        [SerializeField] public float edgeOffset = 10f;
+        [SerializeField] public bool showSplitLane = false;
+        [SerializeField] public float splitLaneRate = 0.5f;
+        [SerializeField] public float yScale = 1f;
+        [SerializeField] public PLATEAUCityObjectGroup targetTran = null;
+        [SerializeField] public RnPartsTypeMask showPartsType = 0;
+
         [Serializable]
-        private class IntersectionOption
+        public class IntersectionOption
         {
             public bool visible = true;
-
+            public long showIntersectionId = -1;
             public DrawOption showTrack = new DrawOption();
 
             public DrawOption showBorder = new DrawOption();
 
             public DrawOption showSplitTrack = new DrawOption();
         }
-        [SerializeField] private IntersectionOption intersectionOp = new IntersectionOption();
+        [SerializeField] public IntersectionOption intersectionOp = new IntersectionOption();
 
         [Serializable]
-        private class RoadOption
+        public class RoadOption
         {
             public bool visible = true;
-            public int showRoadId = -1;
+            public long showRoadId = -1;
             public bool showMedian = true;
             public bool showLaneConnection = false;
             public bool showRoadGroup = false;
@@ -91,9 +91,11 @@ namespace PLATEAU.RoadNetwork.Drawer
             public ShowInfo targetInfo = new ShowInfo();
         }
 
-        [SerializeField] private RoadOption roadOp = new RoadOption();
+        [SerializeField]
+        public RoadOption roadOp = new RoadOption();
+
         [Serializable]
-        private class WayOption
+        public class WayOption
         {
             // 法線を表示する
             public bool showNormal = true;
@@ -105,13 +107,13 @@ namespace PLATEAU.RoadNetwork.Drawer
 
             public float arrowSize = 0.5f;
         }
-        [SerializeField] private WayOption wayOp = new WayOption();
+        [SerializeField] public WayOption wayOp = new WayOption();
 
         [Serializable]
-        private class LaneOption
+        public class LaneOption
         {
             public bool visible = true;
-            public int showLaneId = -1;
+            public long showLaneId = -1;
             public float bothConnectedLaneAlpha = 1f;
             public float validWayAlpha = 0.75f;
             public float invalidWayAlpha = 0.3f;
@@ -135,14 +137,15 @@ namespace PLATEAU.RoadNetwork.Drawer
                 return invalidWayAlpha;
             }
         }
-        [SerializeField] private LaneOption laneOp = new LaneOption();
+        [SerializeField]
+        public LaneOption laneOp = new LaneOption();
 
         [Serializable]
-        private class SideWalkOption : DrawOption
+        public class SideWalkOption : DrawOption
         {
 
         }
-        [SerializeField] private SideWalkOption sideWalkRoadOp = new SideWalkOption();
+        [SerializeField] public SideWalkOption sideWalkRoadOp = new SideWalkOption();
 
         // --------------------
         // end:フィールド
@@ -310,17 +313,20 @@ namespace PLATEAU.RoadNetwork.Drawer
 
         private void DrawRoad(RnRoad road)
         {
-            if ((ulong)roadOp.showRoadId == road.DebugMyId)
+            var op = roadOp;
+
+            if ((ulong)op.showRoadId == road.DebugMyId)
             {
-                roadOp.targetInfo.prevId = (int)(road.Prev?.DebugMyId ?? ulong.MaxValue);
-                roadOp.targetInfo.nextId = (int)(road.Next?.DebugMyId ?? ulong.MaxValue);
-                roadOp.targetInfo.leftLaneCount = road.GetLeftLaneCount();
-                roadOp.targetInfo.rightLaneCount = road.GetRightLaneCount();
+                op.targetInfo.prevId = (int)(road.Prev?.DebugMyId ?? ulong.MaxValue);
+                op.targetInfo.nextId = (int)(road.Next?.DebugMyId ?? ulong.MaxValue);
+                op.targetInfo.leftLaneCount = road.GetLeftLaneCount();
+                op.targetInfo.rightLaneCount = road.GetRightLaneCount();
             }
 
-            if (roadOp.visible == false)
+            if (op.visible == false)
                 return;
-            if (roadOp.showRoadId >= 0 && road.DebugMyId != (ulong)roadOp.showRoadId)
+
+            if (op.showRoadId >= 0 && road.DebugMyId != (ulong)op.showRoadId)
                 return;
 
             if (targetTran && targetTran != road.TargetTran)
@@ -329,7 +335,7 @@ namespace PLATEAU.RoadNetwork.Drawer
             if (showPartsType.HasFlag(RnPartsTypeMask.Road))
                 DebugEx.DrawString($"L[{road.DebugMyId}]", road.GetCenter());
 
-            if (roadOp.showMedian)
+            if (op.showMedian)
                 DrawLane(road.MedianLane);
 
             void DrawRoadConnection(DrawOption op, RnRoadBase target)
@@ -343,14 +349,14 @@ namespace PLATEAU.RoadNetwork.Drawer
                 DrawArrow(from, to, bodyColor: op.color);
             }
 
-            DrawRoadConnection(roadOp.showNextConnection, road.Next);
-            DrawRoadConnection(roadOp.showPrevConnection, road.Prev);
+            DrawRoadConnection(op.showNextConnection, road.Next);
+            DrawRoadConnection(op.showPrevConnection, road.Prev);
 
             Vector3? last = null;
             foreach (var lane in road.AllLanes)
             {
                 DrawLane(lane);
-                if (roadOp.showLaneConnection)
+                if (op.showLaneConnection)
                 {
                     if (last != null)
                     {
@@ -361,7 +367,7 @@ namespace PLATEAU.RoadNetwork.Drawer
                 }
             }
 
-            if (roadOp.showSideEdge)
+            if (op.showSideEdge)
             {
                 DrawWay(road.GetMergedSideWay(RnDir.Left), Color.red);
                 DrawWay(road.GetMergedSideWay(RnDir.Right), Color.blue);
@@ -417,19 +423,27 @@ namespace PLATEAU.RoadNetwork.Drawer
 
         private void DrawIntersection(RnIntersection intersection)
         {
-            if (intersectionOp.visible == false)
+            var op = intersectionOp;
+            if (op.visible == false)
                 return;
 
             if (targetTran && targetTran != intersection.TargetTran)
                 return;
 
+
+            if (op.showIntersectionId >= 0 && intersection.DebugMyId != (ulong)op.showIntersectionId)
+                return;
+
+            if (showPartsType.HasFlag(RnPartsTypeMask.Intersection))
+                DebugEx.DrawString($"N[{intersection.DebugMyId}]", intersection.GetCenter());
+
             for (var i = 0; i < intersection.Neighbors.Count; ++i)
             {
                 var n = intersection.Neighbors[i];
-                if (intersectionOp.showBorder.visible)
-                    DrawWay(n.Border, intersectionOp.showBorder.color);
+                if (op.showBorder.visible)
+                    DrawWay(n.Border, op.showBorder.color);
 
-                if (intersectionOp.showSplitTrack.visible)
+                if (op.showSplitTrack.visible)
                 {
                     for (var j = i + 1; j < intersection.Neighbors.Count; ++j)
                     {
@@ -440,18 +454,18 @@ namespace PLATEAU.RoadNetwork.Drawer
                         if (way != null)
                         {
                             foreach (var w in way.BothWays)
-                                DrawWay(w, intersectionOp.showSplitTrack.color);
+                                DrawWay(w, op.showSplitTrack.color);
                         }
                     }
                 }
             }
 
-            if (intersectionOp.showTrack.visible)
+            if (op.showTrack.visible)
             {
                 foreach (var l in intersection.Lanes)
                 {
                     foreach (var w in l.BothWays)
-                        DrawWay(w, intersectionOp.showTrack.color);
+                        DrawWay(w, op.showTrack.color);
                 }
             }
         }

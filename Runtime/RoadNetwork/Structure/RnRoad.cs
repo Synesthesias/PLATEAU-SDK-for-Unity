@@ -419,16 +419,17 @@ namespace PLATEAU.RoadNetwork.Structure
         /// <summary>
         /// 接続を解除する
         /// </summary>
-        public override void DisConnect()
+        public override void DisConnect(bool removeFromModel)
         {
             Prev?.UnLink(this);
             Next?.UnLink(this);
             SetPrevNext(null, null);
-            ParentModel?.RemoveRoad(this);
+            if (removeFromModel)
+                ParentModel?.RemoveRoad(this);
         }
 
         /// <summary>
-        /// 隣接情報からotherを削除する
+        /// 隣接情報からotherを削除する. other側の接続は消えない
         /// </summary>
         /// <param name="other"></param>
         public override void UnLink(RnRoadBase other)
