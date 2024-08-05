@@ -1,4 +1,5 @@
-﻿using PLATEAU.Util;
+﻿using PLATEAU.RoadNetwork.Structure;
+using PLATEAU.Util;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -10,11 +11,6 @@ namespace PLATEAU.RoadNetwork.Data
     [Serializable, RoadNetworkSerializeData(typeof(RnLane))]
     public class RnDataLane : IPrimitiveData
     {
-        // #TODO : 消える予定
-        // 自分自身を表すId
-        [field: SerializeField]
-        public RnID<RnDataLane> MyId { get; set; }
-
         [field: SerializeField]
         [RoadNetworkSerializeMember]
         public RnID<RnDataRoadBase> Parent { get; set; }

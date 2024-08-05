@@ -2,6 +2,7 @@
 using PLATEAU.GranularityConvert;
 using PLATEAU.PolygonMesh;
 using PLATEAU.RoadNetwork.Graph;
+using PLATEAU.RoadNetwork.Structure;
 using PLATEAU.Util;
 using PLATEAU.Util.GeoGraph;
 using System;
@@ -100,23 +101,20 @@ namespace PLATEAU.RoadNetwork.Factory
                 }
             }
 
-            public Vector3Int GetCell(Vector3 v)
+            /// <summary>
+            /// セル座標に変換する
+            /// </summary>
+            /// <param name="v"></param>
+            /// <returns></returns>
+            private Vector3Int ToCell(Vector3 v)
             {
                 return v.RevScaled(Vector3.one * CellSize).ToVector3Int();
             }
 
-            public RnPoint Create(Vector3 v)
+            private RnPoint Create(Vector3 v)
             {
-                var cellNo = GetCell(v);
+                var cellNo = ToCell(v);
                 return CellTable.GetValueOrCreate(cellNo, c => new RnPoint(v));
-            }
-
-            public void ChangeVertex(RnPoint v, Vector3 newVertex)
-            {
-                var cellNo = GetCell(v.Vertex);
-                CellTable.Remove(cellNo);
-                v.Vertex = newVertex;
-                CellTable[cellNo] = v;
             }
 
             public RnPoint this[Vector3 v]
@@ -170,7 +168,7 @@ namespace PLATEAU.RoadNetwork.Factory
         }
 
         /// <summary>
-        /// tranオブジェクトに紐づく Link or Node情報
+        /// tranオブジェクトに紐づく Road or Node情報
         /// </summary>
         private class TranWork
         {
@@ -188,12 +186,10 @@ namespace PLATEAU.RoadNetwork.Factory
             public Dictionary<RnPoint, List<TranWork>> Vertex2Connected { get; } =
                 new Dictionary<RnPoint, List<TranWork>>();
 
-            // 対応するLink or Node
+            // 対応するRoad or Intersection
             private RnRoadBase Road { get; set; }
 
-            RnLink Link => Road as RnLink;
-
-            RnNode Node => Road as RnNode;
+            private RnRoad Link => Road as RnRoad;
 
             // 境界線
             public IEnumerable<WayWork> Borders => Ways.Where(w => w.IsBorder);
@@ -308,6 +304,7 @@ namespace PLATEAU.RoadNetwork.Factory
             public void BuildConnection(Vertex2PointTable vertexTable, float lod1RoadSize, Dictionary<RnPoint, VertexInfo> visited, out List<RnLineString> sideWalkLineStrings)
             {
                 var lines = new List<RnLineString>();
+                // LOD1の場合は周りにlod1RoadSize分歩道があると仮定して動かす
                 void MoveWay(RnWay way)
                 {
                     if (way == null)
@@ -349,12 +346,11 @@ namespace PLATEAU.RoadNetwork.Factory
                     }
                     lines.Add(RnLineString.Create(points));
                 }
-                if (Road is RnLink link)
+                if (Road is RnRoad link)
                 {
                     var nextTrans = Lanes.Select(w => w.NextBorder).Where(b => b != null).SelectMany(w => w.BothConnectedTrans).Distinct().ToList();
                     var prevTrans = Lanes.Select(w => w.PrevBorder).Where(b => b != null).SelectMany(w => w.BothConnectedTrans).Distinct().ToList();
-                    link.Next = nextTrans.FirstOrDefault(t => t.Road != null)?.Road;
-                    link.Prev = prevTrans.FirstOrDefault(t => t.Road != null)?.Road;
+                    link.SetPrevNext(prevTrans.FirstOrDefault(t => t.Road != null)?.Road, nextTrans.FirstOrDefault(t => t.Road != null)?.Road);
                     if (LodLevel == 1)
                     {
                         var leftLane = link.MainLanes.FirstOrDefault();
@@ -363,7 +359,7 @@ namespace PLATEAU.RoadNetwork.Factory
                         MoveWay(rightLane?.RightWay);
                     }
                 }
-                else if (Road is RnNode node)
+                else if (Road is RnIntersection node)
                 {
                     foreach (var b in Borders)
                     {
@@ -371,7 +367,7 @@ namespace PLATEAU.RoadNetwork.Factory
                         {
                             if (l.Road == null)
                                 continue;
-                            node.Neighbors.Add(new RnNeighbor { Link = l.Link, Border = b.Way });
+                            node.AddNeighbor(l.Link, b.Way);
                         }
                     }
 
@@ -528,8 +524,16 @@ namespace PLATEAU.RoadNetwork.Factory
             // レーンの初期化
             try
             {
+                bool IsTarget(RRoadTypeMask type)
+                {
+                    if (type.IsRoad() == false)
+                        return false;
+                    if (ignoreHighway)
+                        return type.IsHighWay() == false;
+                    return true;
+                }
                 var ret = new RnModel();
-                var roadTarget = targets.Where(t => t.RoadType == RRoadType.Road || (ignoreHighway == false && t.RoadType == RRoadType.HighWay)).ToList();
+                var roadTarget = targets.Where(t => IsTarget(t.RoadType)).ToList();
                 var vertex2Points = new Vertex2PointTable(cellSize, roadTarget.SelectMany(v => v.Vertices));
                 var lineStringTable = new LineStringTable();
                 var tranWorks = CreateTranWorks(roadTarget, vertex2Points, lineStringTable, out var cell2Groups);
@@ -542,7 +546,7 @@ namespace PLATEAU.RoadNetwork.Factory
                 {
                     tranWork.BuildConnection(vertex2Points, lod1SideWalkSize, visited, out var ls);
                     foreach (var l in ls)
-                        ret.AddWalkRoad(l);
+                        ret.AddSideWalk(l);
                 }
 
                 if (addLod3SideWalk)
@@ -551,11 +555,16 @@ namespace PLATEAU.RoadNetwork.Factory
                     {
                         var lines = sideWalk.Vertices.Select(v => new RnPoint(v));
                         var lineString = lineStringTable.Create(lines, out bool isReverse);
-                        ret.AddWalkRoad(lineString);
+                        ret.AddSideWalk(lineString);
                     }
                 }
 
-                ret.SplitLaneByWidth(roadSize);
+                ret.SplitLaneByWidth(roadSize, out var failedLinks);
+
+                foreach (var id in failedLinks)
+                {
+                    var ll = ret.Roads.FirstOrDefault(l => l.DebugMyId == id);
+                }
 
                 //ret.DebugIdentify();
                 return Task.FromResult(ret);
@@ -573,7 +582,7 @@ namespace PLATEAU.RoadNetwork.Factory
             // 隣接レーンが一つもない場合は孤立
             if (roadType == RoadType.Isolated)
             {
-                ret.AddLink(RnLink.CreateIsolatedLink(tranWork.TargetTran, tranWork.Way));
+                ret.AddRoad(RnRoad.CreateIsolatedRoad(tranWork.TargetTran, tranWork.Way));
                 return;
             }
 
@@ -601,7 +610,7 @@ namespace PLATEAU.RoadNetwork.Factory
                     var endBorder = tranWork.Borders.FirstOrDefault();
                     var endBorderWay = endBorder?.Way;
                     var l = new RnLane(lWay, rWay, startBorderWay, endBorderWay);
-                    var link = RnLink.CreateOneLaneLink(tranWork.TargetTran, l);
+                    var link = RnRoad.CreateOneLaneRoad(tranWork.TargetTran, l);
 
                     tranWork.Ways.Clear();
                     tranWork.Ways.Add(new WayWork(startBorderWay, tranWork));
@@ -610,7 +619,7 @@ namespace PLATEAU.RoadNetwork.Factory
                     if (endBorder != null)
                         tranWork.Ways.Add(endBorder);
                     tranWork.Bind(link);
-                    ret.AddLink(link);
+                    ret.AddRoad(link);
                 }
                 else
                 {
@@ -620,7 +629,7 @@ namespace PLATEAU.RoadNetwork.Factory
             // 交差点
             else if (roadType == RoadType.Intersection)
             {
-                var node = new RnNode(tranWork.TargetTran);
+                var node = new RnIntersection(tranWork.TargetTran);
                 foreach (var l in tranWork.Lanes)
                 {
                     var prevBorder = l.PrevBorder?.Way;
@@ -629,7 +638,7 @@ namespace PLATEAU.RoadNetwork.Factory
                     node.AddLane(lane);
                 }
                 tranWork.Bind(node);
-                ret.AddNode(node);
+                ret.AddIntersection(node);
             }
             // 通常の道
             else if (roadType == RoadType.Road)
@@ -647,7 +656,7 @@ namespace PLATEAU.RoadNetwork.Factory
                     if (leftWay?.Way?.IsReversed ?? false)
                         (rightWay, leftWay) = (leftWay, rightWay);
 
-                    var link = new RnLink(tranWork.TargetTran);
+                    var link = new RnRoad(tranWork.TargetTran);
                     if (leftWay != null && rightWay != null)
                     {
                         var startBorderWay = leftWay?.PrevBorder?.Way;
@@ -673,7 +682,7 @@ namespace PLATEAU.RoadNetwork.Factory
                     if (link.MainLanes.Count > 0)
                     {
                         tranWork.Bind(link);
-                        ret.AddLink(link);
+                        ret.AddRoad(link);
                     }
                 }
 

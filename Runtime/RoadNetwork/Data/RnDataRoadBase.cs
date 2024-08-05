@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PLATEAU.RoadNetwork.Structure;
+using System;
 
 namespace PLATEAU.RoadNetwork.Data
 {

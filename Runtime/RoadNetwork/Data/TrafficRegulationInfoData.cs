@@ -1,4 +1,4 @@
-using PLATEAU.RoadNetwork;
+ï»¿using PLATEAU.RoadNetwork;
 using PLATEAU.RoadNetwork.Data;
 using System;
 using System.Collections;
@@ -8,27 +8,69 @@ using UnityEngine;
 namespace PLATEAU.RoadNetwork.Data
 {
     /// <summary>
-    /// Œğ’Ê‹K§î•ñ
+    /// äº¤é€šè¦åˆ¶æƒ…å ±
     /// </summary>
     [Serializable, RoadNetworkSerializeData(typeof(TrafficRegulationInfoData))]
     public class TrafficRegulationInfoData : IPrimitiveData
     {
         /// <summary>
-        /// ’â~ü
+        /// åœæ­¢ç·š
         /// </summary>
         public StopLine stopLine;
         /// <summary>
-        /// ‘¬“x§ŒÀ
+        /// é€Ÿåº¦åˆ¶é™
         /// </summary>
         public float speedLimit;
         /// <summary>
-        /// —Dæ“¹˜H
+        /// å„ªå…ˆé“è·¯
         /// </summary>
         public RnID<RnDataLineString> yields;
     }
 
+    [System.Serializable]
+    public class RnDataTrafficLightController : IPrimitiveData
+    {
+        ////// #TODO : æ¶ˆãˆã‚‹äºˆå®š
+        ////// è‡ªåˆ†è‡ªèº«ã‚’è¡¨ã™Id
+        ////[field: SerializeField]
+        ////public RnID<TrafficLightController> MyId { get; set; }
+
+        //[field: SerializeField]
+        //[RoadNetworkSerializeMember]
+        //public RnID<RnDataNode> Parent { get; set; }
+
+        //// é€£çµã—ã¦ã„ã‚‹ãƒ¬ãƒ¼ãƒ³(ä¸Šæµ)
+        //[field: SerializeField]
+        //[RoadNetworkSerializeMember(nameof(RnLane.NextLanes))]
+        //public List<RnID<RnDataLane>> NextLanes { get; set; } = new List<RnID<RnDataLane>>();
+
+        //// é€£çµã—ã¦ã„ã‚‹ãƒ¬ãƒ¼ãƒ³(ä¸‹æµ)
+        //[field: SerializeField]
+        //[RoadNetworkSerializeMember(nameof(RnLane.PrevLanes))]
+        //public List<RnID<RnDataLane>> PrevLanes { get; set; } = new List<RnID<RnDataLane>>();
+
+        //// å¢ƒç•Œç·š(ä¸‹æµ)
+        //[field: SerializeField]
+        //[RoadNetworkSerializeMember(nameof(RnLane.PrevBorder))]
+        //public RnID<RnDataWay> PrevBorder { get; set; }
+
+        //// å¢ƒç•Œç·š(ä¸Šæµ)
+        //[field: SerializeField]
+        //[RoadNetworkSerializeMember(nameof(RnLane.NextBorder))]
+        //public RnID<RnDataWay> NextBorder { get; set; }
+
+        //[field: SerializeField]
+        //[RoadNetworkSerializeMember(nameof(RnLane.LeftWay))]
+        //public RnID<RnDataWay> LeftWay { get; set; }
+
+        //[field: SerializeField]
+        //[RoadNetworkSerializeMember(nameof(RnLane.RightWay))]
+        //public RnID<RnDataWay> RightWay { get; set; }
+
+    }
+
     /// <summary>
-    /// ’â~ü
+    /// åœæ­¢ç·š
     /// </summary>
     [System.Serializable]
     public class StopLine
@@ -39,8 +81,8 @@ namespace PLATEAU.RoadNetwork.Data
     }
 
     /// <summary>
-    /// M†‹@‚Ì“d‹…iŠT”Oj
-    /// ¡‚ÌM†‹@‚Í‰½F‚Å‚·‚©‚Æ•·‚©‚ê‚½‚ç‚±‚ê‚ğ•Ô‚·
+    /// ä¿¡å·æ©Ÿã®é›»çƒï¼ˆæ¦‚å¿µï¼‰
+    /// ä»Šã®ä¿¡å·æ©Ÿã¯ä½•è‰²ã§ã™ã‹ã¨èã‹ã‚ŒãŸã‚‰ã“ã‚Œã‚’è¿”ã™
     /// </summary>
     [System.Serializable]
     public class TrafficLight
@@ -49,8 +91,21 @@ namespace PLATEAU.RoadNetwork.Data
         [SerializeField] private LightBulb[] lightBulbs;
     }
 
+    [System.Serializable]
+    public class RnDataTrafficSignalStep
+    {
+        public RnID<RnDataTrafficLightController> parent;
+        public int paternID;
+        public int phaseID;
+        public int allowVehicleTypeMask;
+        public List<RnID<RnDataRoad>> linkAtBlue;
+        public List<RnID<RnDataRoad>> linkAtYellow;
+        public List<RnID<RnDataRoad>> linkAtRed;
+    }
+
+
     /// <summary>
-    /// M†‹@‚Ì“d‹…
+    /// ä¿¡å·æ©Ÿã®é›»çƒ
     /// </summary>
     [System.Serializable]
     public class LightBulb
