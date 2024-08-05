@@ -21,7 +21,6 @@ namespace PLATEAU.RoadNetwork
     [Serializable]
     public class PLATEAURoadNetworkTester : MonoBehaviour, IRoadNetworkObject
     {
-
         // --------------------
         // start:フィールド
         // --------------------
@@ -67,6 +66,7 @@ namespace PLATEAU.RoadNetwork
             public List<PLATEAUCityObjectGroup> targets = new List<PLATEAUCityObjectGroup>();
             public bool doDestroySrcObject = false;
         }
+
         public SplitCityObjectTestParam splitCityObjectTestParam = new SplitCityObjectTestParam();
 
         [SerializeField]
@@ -107,6 +107,7 @@ namespace PLATEAU.RoadNetwork
             RoadNetwork,
             All
         }
+
         [SerializeField]
         private CreateMode createMode = CreateMode.ConvertCityObject;
 
@@ -284,7 +285,6 @@ namespace PLATEAU.RoadNetwork
                 tranMeshes = new List<RoadNetworkTranMesh>();
             }
 
-
             return ret;
         }
 
@@ -295,21 +295,26 @@ namespace PLATEAU.RoadNetwork
                 case CreateMode.ConvertCityObject:
                     convertedCityObjects = await ConvertCityObjectAsync();
                     break;
+
                 case CreateMode.MergeConvertCityObject:
                     mergedConvertedCityObjects = MergeVertices();
                     break;
+
                 case CreateMode.SeparateConvertCityObject:
                     foreach (var m in mergedConvertedCityObjects.SelectMany(c => c.Meshes))
                     {
                         m.Separate();
                     }
                     break;
+
                 case CreateMode.TranMesh:
                     tranMeshes = CreateTranMeshes();
                     break;
+
                 case CreateMode.RoadNetwork:
                     RoadNetwork = await CreateRoadNetworkAsync();
                     break;
+
                 case CreateMode.All:
                     convertedCityObjects = await ConvertCityObjectAsync();
                     mergedConvertedCityObjects = MergeVertices();
@@ -318,6 +323,7 @@ namespace PLATEAU.RoadNetwork
                     tranMeshes = CreateTranMeshes();
                     RoadNetwork = await CreateRoadNetworkAsync();
                     break;
+
                 default:
                     throw new ArgumentOutOfRangeException();
             }
@@ -325,14 +331,13 @@ namespace PLATEAU.RoadNetwork
 
         public RoadNetworkDataGetter GetRoadNetworkDataGetter()
         {
-            return RoadNetwork.CreateGetter();
+            return RoadNetwork.CreateGetter(storage);
         }
-        
+
         public void CreateRGraph()
         {
             rGraph = RGraphEx.Create(convertedCityObjects);
         }
-
 
         public void Serialize()
         {
