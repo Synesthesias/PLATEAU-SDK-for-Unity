@@ -200,11 +200,6 @@ namespace PLATEAU.RoadNetwork.Structure
                 AddIntersection(n);
         }
 
-        public RoadNetworkDataGetter CreateGetter(RoadNetworkStorage storage)
-        {
-            return new RoadNetworkDataGetter(storage);
-        }
-
         public void SplitLaneByWidth(float roadWidth, out List<ulong> failedRoads)
         {
             failedRoads = new List<ulong>();
