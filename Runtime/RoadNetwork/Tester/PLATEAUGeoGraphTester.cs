@@ -191,6 +191,38 @@ namespace PLATEAU.RoadNetwork.Tester
             }
         }
 
+        [Serializable]
+        public class Segment3DIntersectionTest
+        {
+            public bool enable = false;
+            public GameObject v0;
+            public GameObject v1;
+            public GameObject v2;
+            public GameObject v3;
+            public AxisPlane plane = AxisPlane.Xz;
+            public float normalEpsilon = 0.1f;
+            public float sphereRadius = 0.1f;
+            public void Update()
+            {
+                if (!enable)
+                    return;
+                if (!v0 || !v1 || !v2 || !v3)
+                    return;
+                var s1 = new LineSegment3D(v0.transform.position, v1.transform.position);
+                var s2 = new LineSegment3D(v2.transform.position, v3.transform.position);
+
+                DebugEx.DrawLine(s1.Start, s1.End, color: Color.red);
+                DebugEx.DrawLine(s2.End, s2.Start, color: Color.blue);
+                if (s1.TrySegmentIntersectionBy2D(s2, plane, normalEpsilon, out var intersection, out var t1,
+                        out var t2))
+                {
+                    DebugEx.DrawSphere(intersection, sphereRadius, Color.green);
+                }
+            }
+        }
+        [SerializeField]
+        private Segment3DIntersectionTest segment3DIntersectionTest = new Segment3DIntersectionTest();
+
         public void ConvertTrans()
         {
             var i = 0;
@@ -425,6 +457,7 @@ namespace PLATEAU.RoadNetwork.Tester
             MeshOutlineTest(meshOutlineTest);
             SplineTest(splineTest);
             LerpPointInLineTest(lerpPointInLineTestParam);
+            segment3DIntersectionTest.Update();
         }
 
     }

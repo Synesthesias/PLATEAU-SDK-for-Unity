@@ -1,8 +1,8 @@
-﻿using PLATEAU.RoadNetwork;
+﻿using PLATEAU.RoadNetwork.Tester;
 using UnityEditor;
 using UnityEngine;
 
-namespace PLATEAU.Editor.RoadNetwork
+namespace PLATEAU.Editor.RoadNetwork.Tester
 {
     [CustomEditor(typeof(PLATEAUGeoGraphTesterLineString))]
     public class PLATEAUGeoGraphTesterLineStringEditor : UnityEditor.Editor

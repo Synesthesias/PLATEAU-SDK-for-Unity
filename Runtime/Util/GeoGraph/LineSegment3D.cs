@@ -104,7 +104,52 @@ namespace PLATEAU.Util.GeoGraph
             t = Vector3.Dot(self.Direction, v - self.Start);
             t = Mathf.Clamp(t, 0f, self.Magnitude);
             return self.Start + t * self.Direction;
+        }
 
+        /// <summary>
+        /// self, otherが交差するかチェック. ただし、planeで指定された平面に射影した状態での交差判定かつ、そのうえで平面の法線方向の差分がnormalEpsilon以下の場合のみ交差と判定
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="other"></param>
+        /// <param name="plane"></param>
+        /// <param name="normalTolerance">法線成分のねじれ許容量</param>
+        /// <param name="intersection">交点</param>
+        /// <param name="t1">selfから見た交点を表す正規化位置</param>
+        /// <param name="t2">otherから見た交点を表す正規化位置</param>
+        /// <returns></returns>
+        public static bool TrySegmentIntersectionBy2D(this LineSegment3D self, LineSegment3D other, AxisPlane plane,
+            float normalTolerance, out Vector3 intersection, out float t1, out float t2)
+        {
+            intersection = Vector3.zero;
+            var self2 = self.To2D(v => v.GetTangent(plane));
+            var other2 = other.To2D(v => v.GetTangent(plane));
+            // 2Dに射影した状態で交差するかチェック
+            if (self2.TrySegmentIntersection(other2, out var inter2, out t1, out t2) == false)
+                return false;
+
+            // 法線方向の差分が指定値より大きい時はねじれの位置で交点無し
+            var v1 = self.Lerp(t1);
+            var v2 = other.Lerp(t2);
+            if (Mathf.Abs((v2 - v1).GetNormal(plane)) > normalTolerance)
+                return false;
+
+            intersection = (v1 + v2) * 0.5f;
+            return true;
+        }
+
+        /// <summary>
+        /// self, otherが交差するかチェック. ただし、planeで指定された平面に射影した状態での交差判定かつ、そのうえで平面の法線方向の差分がnormalEpsilon以下の場合のみ交差と判定
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="other"></param>
+        /// <param name="plane"></param>
+        /// <param name="normalEpsilon"></param>
+        /// <param name="intersection"></param>
+        /// <returns></returns>
+        public static bool TrySegmentIntersectionBy2D(this LineSegment3D self, LineSegment3D other, AxisPlane plane,
+            float normalEpsilon, out Vector3 intersection)
+        {
+            return self.TrySegmentIntersectionBy2D(other, plane, normalEpsilon, out intersection, out var _, out var _);
         }
 
         /// <summary>
@@ -116,6 +161,17 @@ namespace PLATEAU.Util.GeoGraph
         public static Vector3 GetPoint(this LineSegment3D self, float distance)
         {
             return self.Start + self.Direction * distance;
+        }
+
+        /// <summary>
+        /// Vector3.Lerp(self.Start, self.End, t)
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="t"></param>
+        /// <returns></returns>
+        public static Vector3 Lerp(this LineSegment3D self, float t)
+        {
+            return Vector3.Lerp(self.Start, self.End, t);
         }
 
         /// <summary>
