@@ -364,5 +364,10 @@ namespace PLATEAU.RoadNetwork
                 }
             }
         }
+
+        public RoadNetworkDataGetter GetRoadNetworkDataGetter()
+        {
+            return new RoadNetworkDataGetter(storage);
+        }
     }
 }
