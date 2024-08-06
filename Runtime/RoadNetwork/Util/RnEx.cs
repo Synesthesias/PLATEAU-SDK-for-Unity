@@ -1,30 +1,70 @@
-﻿using Newtonsoft.Json;
-using PLATEAU.CityExport.ModelConvert;
+﻿using PLATEAU.CityExport.ModelConvert;
 using PLATEAU.CityExport.ModelConvert.SubMeshConvert;
-using PLATEAU.CityGML;
 using PLATEAU.CityImport.Import.Convert;
 using PLATEAU.CityInfo;
 using PLATEAU.GranularityConvert;
 using PLATEAU.PolygonMesh;
-using PLATEAU.RoadNetwork.Factory;
-using PLATEAU.RoadNetwork.Graph;
 using PLATEAU.RoadNetwork.Mesh;
 using PLATEAU.RoadNetwork.Structure;
 using PLATEAU.Util;
 using PLATEAU.Util.GeoGraph;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Unity.Collections;
 using UnityEngine;
-using UnityEngine.Assertions;
 
-namespace PLATEAU.RoadNetwork
+namespace PLATEAU.RoadNetwork.Util
 {
+    public struct CombSet2<T>
+    {
+        public T A { get; }
+
+        public T B { get; }
+
+        public CombSet2(T a, T b)
+        {
+            A = a;
+            B = b;
+            if (A.GetHashCode() > B.GetHashCode())
+                (A, B) = (B, A);
+        }
+    }
+
+    public struct CombSet3<T>
+    {
+        public T A { get; }
+
+        public T B { get; }
+
+        public T C { get; }
+
+        public CombSet3(T a, T b, T c)
+        {
+            A = a;
+            B = b;
+            C = c;
+            if (A.GetHashCode() > B.GetHashCode())
+                (A, B) = (B, A);
+            if (B.GetHashCode() > C.GetHashCode())
+                (B, C) = (C, B);
+            if (A.GetHashCode() > B.GetHashCode())
+                (A, B) = (B, A);
+        }
+    }
+
     public static class RnEx
     {
+        public static CombSet2<T> CombSet<T>(T a, T b)
+        {
+            return new CombSet2<T>(a, b);
+        }
+
+        public static CombSet3<T> CombSet<T>(T a, T b, T c)
+        {
+            return new CombSet3<T>(a, b, c);
+        }
+
         public static void Replace<T>(IList<T> self, T before, T after) where T : class
         {
             for (var i = 0; i < self.Count; i++)

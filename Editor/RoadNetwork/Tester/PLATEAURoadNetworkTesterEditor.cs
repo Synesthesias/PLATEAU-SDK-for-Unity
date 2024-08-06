@@ -1,11 +1,12 @@
 ﻿using PLATEAU.Editor.RoadNetwork.Graph;
 using PLATEAU.RoadNetwork;
+using PLATEAU.RoadNetwork.Graph;
 using PLATEAU.RoadNetwork.Structure;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
-namespace PLATEAU.Editor.RoadNetwork
+namespace PLATEAU.Editor.RoadNetwork.Tester
 {
     [CustomEditor(typeof(PLATEAURoadNetworkTester))]
     public class PLATEAURoadNetworkTesterEditor : UnityEditor.Editor
@@ -86,6 +87,68 @@ namespace PLATEAU.Editor.RoadNetwork
             }
         }
 
+        private class RGraphInstanceHelper : RGraphDebugEditorWindow.IInstanceHelper
+        {
+            private PLATEAURoadNetworkTester target;
+
+            public RGraphInstanceHelper(PLATEAURoadNetworkTester target)
+            {
+                this.target = target;
+            }
+
+            public RGraph GetGraph()
+            {
+                return target.RGraph;
+            }
+
+            public RGraph CreateGraph()
+            {
+                target.CreateRGraph();
+                return target.RGraph;
+            }
+
+            public long TargetFaceId
+            {
+                get => target.rGraphDrawer?.faceOption?.targetId ?? -1;
+                set
+                {
+                    if (target.Drawer != null)
+                    {
+                        target.rGraphDrawer.faceOption.targetId = (int)value;
+                    }
+                }
+            }
+
+            public long TargetEdgeId
+            {
+                get => target.rGraphDrawer?.edgeOption?.targetId ?? -1;
+                set
+                {
+                    if (target.Drawer != null)
+                    {
+                        target.rGraphDrawer.edgeOption.targetId = (int)value;
+                    }
+                }
+            }
+
+            public long TargetVertexId
+            {
+                get => target.rGraphDrawer?.vertexOption?.targetId ?? -1;
+                set
+                {
+                    if (target.Drawer != null)
+                    {
+                        target.rGraphDrawer.vertexOption.targetId = (int)value;
+                    }
+                }
+            }
+
+            public void CreateRnModel()
+            {
+                target.CreateRoadNetworkByGraphAsync();
+            }
+        }
+
         public override void OnInspectorGUI()
         {
             var obj = target as PLATEAURoadNetworkTester;
@@ -107,11 +170,8 @@ namespace PLATEAU.Editor.RoadNetwork
             if (GUILayout.Button("SplitCityObject"))
                 obj.SplitCityObjectAsync();
 
-            if (GUILayout.Button("RGraph"))
-                obj.CreateRGraph();
-
             if (obj.RGraph != null && GUILayout.Button("Open RGraph Editor"))
-                RGraphDebugEditorWindow.OpenWindow(obj.RGraph, true);
+                RGraphDebugEditorWindow.OpenWindow(new RGraphInstanceHelper(obj), true);
 
             if (GUILayout.Button("Check Lod"))
                 obj.RemoveSameNameCityObjectGroup();

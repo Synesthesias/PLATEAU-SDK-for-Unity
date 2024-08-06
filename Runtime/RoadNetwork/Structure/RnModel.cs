@@ -167,6 +167,14 @@ namespace PLATEAU.RoadNetwork.Structure
             sideWalks.Add(sideWalk);
         }
 
+        public void AddRoadBase(RnRoadBase roadBase)
+        {
+            if (roadBase is RnRoad road)
+                AddRoad(road);
+            else if (roadBase is RnIntersection intersection)
+                AddIntersection(intersection);
+        }
+
         /// <summary>
         /// prev/next間に道路を作成
         /// </summary>

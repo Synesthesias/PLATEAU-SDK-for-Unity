@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
+using static PLATEAU.Util.GeoGraph.GeoGraphDoubleLinkedEdgeList;
 
 namespace PLATEAU.RoadNetwork.Drawer
 {
@@ -21,46 +22,53 @@ namespace PLATEAU.RoadNetwork.Drawer
 
         public bool onlySelectedCityObjectGroupVisible = true;
 
+        public RRoadTypeMask showFaceType = RRoadTypeMask.All;
+
+        [Flags]
+        public enum RPartsFlag
+        {
+            Vertex = 1 << 0,
+            Edge = 1 << 1,
+            Face = 1 << 2,
+            All = ~0
+        }
+        public RPartsFlag showId = 0;
 
         [Serializable]
         public class FaceOption : DrawOption
         {
-            public int targetId = -1;
+            public long targetId = -1;
             public bool showOutline = true;
+            public RRoadTypeMask showOutlineMask = RRoadTypeMask.Road;
+            public bool showCityObjectOutline = false;
             public bool showOutlineLoop = false;
         }
         public FaceOption faceOption = new FaceOption();
         [Serializable]
         public class EdgeOption : DrawOption
         {
-
+            public long targetId = -1;
         }
         public EdgeOption edgeOption = new EdgeOption();
 
         [Serializable]
         public class VertexOption : DrawOption
         {
-            public int targetId = -1;
+            public long targetId = -1;
             public int size = 10;
             public DrawOption neighborOption = new DrawOption { visible = false, color = Color.yellow };
             public bool showPos = false;
         }
         public VertexOption vertexOption = new VertexOption();
 
-        [Flags]
-        public enum RPartsFlag
-        {
-            Vertex = 1 << 0,
-            Edge = 1 << 2,
-            Face = 1 << 3,
-        }
-        public RPartsFlag showId = 0;
         // --------------------
         // end:フィールド
         // --------------------
 
         private class DrawWork
         {
+            public RGraph graph;
+
             public HashSet<RVertex> visitedVertices = new HashSet<RVertex>();
 
             public HashSet<REdge> visitedEdges = new HashSet<REdge>();
@@ -143,9 +151,14 @@ namespace PLATEAU.RoadNetwork.Drawer
             {
                 if (op.neighborOption.visible)
                 {
-                    foreach (var b in vertex.GetNeighborVertices())
+                    //foreach (var b in vertex.GetNeighborVertices())
+                    //{
+                    //    DrawLine(vertex.Position, b.Position, op.neighborOption.color);
+                    //}
+
+                    foreach (var e in vertex.Edges)
                     {
-                        DrawLine(vertex.Position, b.Position, op.neighborOption.color);
+                        DrawLine(e.V0.Position, e.V1.Position, op.neighborOption.color);
                     }
                 }
             }
@@ -157,6 +170,8 @@ namespace PLATEAU.RoadNetwork.Drawer
                 return;
             work.visitedEdges.Add(edge);
 
+            if (op.targetId >= 0 && (int)edge.DebugMyId != op.targetId)
+                return;
             if (op.visible)
             {
                 DrawLine(edge.V0.Position, edge.V1.Position, op.color);
@@ -179,6 +194,9 @@ namespace PLATEAU.RoadNetwork.Drawer
             if (op.targetId >= 0 && (int)face.DebugMyId != op.targetId)
                 return;
 
+            if (face.RoadTypes.HasAnyFlag(showFaceType) == false)
+                return;
+
             if (work.visitedFaces.Contains(face))
                 return;
 
@@ -186,18 +204,24 @@ namespace PLATEAU.RoadNetwork.Drawer
             if (onlySelectedCityObjectGroupVisible)
             {
 #if UNITY_EDITOR
-                var show = GetSelectedCityObjectGroups().Any(cog => face.CityObjectGroups.Contains(cog));
+                var show = GetSelectedCityObjectGroups().Any(cog => face.CityObjectGroup == cog);
                 if (show == false)
                     return;
 #endif
             }
 
+            var vertices = op.showCityObjectOutline ? work.graph.ComputeOutlineVerticesByCityObjectGroup(face.CityObjectGroup, op.showOutlineMask, out var _)
+                : face.ComputeOutlineVertices(op.showOutlineMask);
 
+            bool isLoop = true;
+            if (vertices.Count > 1)
+            {
+                if ((vertices[0].Edges.Any(e => e.V0 == vertices[^1] || e.V1 == vertices[^1])) == false)
+                {
+                    isLoop = false;
+                }
 
-
-
-            var vertices = face.ComputeOutlineVertices();
-
+            }
 
             if (showId.HasFlag(RPartsFlag.Face))
             {
@@ -205,10 +229,9 @@ namespace PLATEAU.RoadNetwork.Drawer
                 DrawString($"F[{face.DebugMyId}]", center);
             }
 
-
             if (op.showOutline)
             {
-                DrawLines(vertices.Select(v => v.Position), op.showOutlineLoop);
+                DrawLines(vertices.Select(v => v.Position), op.showOutlineLoop, color: isLoop ? Color.white : Color.red);
             }
             else
             {
@@ -225,7 +248,7 @@ namespace PLATEAU.RoadNetwork.Drawer
                 return;
             if (graph == null)
                 return;
-            var work = new DrawWork();
+            var work = new DrawWork { graph = graph };
             foreach (var p in graph.Faces)
                 Draw(faceOption, p, work);
         }

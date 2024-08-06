@@ -6,6 +6,7 @@ using PLATEAU.RoadNetwork.Graph;
 using PLATEAU.RoadNetwork.Mesh;
 using PLATEAU.RoadNetwork.Structure;
 using PLATEAU.RoadNetwork.Tester;
+using PLATEAU.RoadNetwork.Util;
 using PLATEAU.Util;
 using PLATEAU.Util.GeoGraph;
 using System;
@@ -79,7 +80,7 @@ namespace PLATEAU.RoadNetwork
         private List<RoadNetworkTranMesh> tranMeshes;
 
         [SerializeField]
-        private RGraphDrawerDebug rGraphDrawer = new RGraphDrawerDebug();
+        public RGraphDrawerDebug rGraphDrawer = new RGraphDrawerDebug();
 
         [SerializeField]
         private RGraph rGraph = new RGraph();
@@ -284,7 +285,6 @@ namespace PLATEAU.RoadNetwork
                 tranMeshes = new List<RoadNetworkTranMesh>();
             }
 
-
             return ret;
         }
 
@@ -328,6 +328,10 @@ namespace PLATEAU.RoadNetwork
             rGraph = RGraphEx.Create(convertedCityObjects);
         }
 
+        public void CreateRoadNetworkByGraphAsync()
+        {
+            RoadNetwork = Factory.CreateNetworkAsync(rGraph);
+        }
 
         public void Serialize()
         {
