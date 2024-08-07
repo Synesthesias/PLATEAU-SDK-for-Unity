@@ -1,5 +1,6 @@
 ﻿using PLATEAU.CityInfo;
 using PLATEAU.RoadNetwork;
+using PLATEAU.RoadNetwork.Drawer;
 using PLATEAU.RoadNetwork.Graph;
 using PLATEAU.RoadNetwork.Structure;
 using PLATEAU.Util;
@@ -28,6 +29,8 @@ namespace PLATEAU.Editor.RoadNetwork.Graph
 
             // モデル作成する
             void CreateRnModel();
+
+            RGraphDrawerDebug GetDrawer();
         }
 
         private const string WindowName = "PLATEAU RGraph Editor";
@@ -36,8 +39,9 @@ namespace PLATEAU.Editor.RoadNetwork.Graph
 
         // 作成時にマージも同時に行うかどうか
         public bool mergeOnCreate = true;
-        private float mergeEpsilon = 0.2f;
+        private float mergeCellSize = 0.2f;
         private int mergeCellLength = 2;
+        private float removeMidPointTolerance = 0.3f;
         private bool showOutline = false;
 
         private int showVertexId = -1;
@@ -49,6 +53,8 @@ namespace PLATEAU.Editor.RoadNetwork.Graph
             {
                 if (f == null)
                     return;
+
+                EditorGUILayout.EnumFlagsField("RoadType", f.RoadTypes);
             }
         }
         FaceEdit faceEdit = new FaceEdit();
@@ -131,7 +137,7 @@ namespace PLATEAU.Editor.RoadNetwork.Graph
                     graph = InstanceHelper.CreateGraph();
                     if (mergeOnCreate)
                     {
-                        graph.MergeVertices(mergeEpsilon, mergeCellLength);
+                        graph.MergeVertices(mergeCellSize, mergeCellLength, removeMidPointTolerance);
                         graph.MergeEdges();
                         graph.SeparateFaces();
                     }
@@ -141,15 +147,16 @@ namespace PLATEAU.Editor.RoadNetwork.Graph
 
             using (new EditorGUILayout.HorizontalScope())
             {
-                mergeEpsilon = EditorGUILayout.FloatField("MergeEpsilon", mergeEpsilon);
+                mergeCellSize = EditorGUILayout.FloatField("mergeCellSize", mergeCellSize);
                 mergeCellLength = EditorGUILayout.IntField("MergeCellLength", mergeCellLength);
+                removeMidPointTolerance = EditorGUILayout.FloatField("RemoveMidPointTolerance", removeMidPointTolerance);
             }
 
             using (new EditorGUILayout.HorizontalScope())
             {
                 if (GUILayout.Button("Merge"))
                 {
-                    graph.MergeVertices(mergeEpsilon, mergeCellLength);
+                    graph.MergeVertices(mergeCellSize, mergeCellLength, removeMidPointTolerance);
                 }
 
                 if (GUILayout.Button("Merge Edge"))

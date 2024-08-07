@@ -818,6 +818,25 @@ namespace PLATEAU.RoadNetwork.Graph
         }
     }
 
+    public static class RVertexEx
+    {
+        /// <summary>
+        /// selfに対して、指定したCityObjectGroupに紐づくTypeを取得する
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="cog"></param>
+        /// <returns></returns>
+        public static RRoadTypeMask GetRoadType(this RVertex self, PLATEAUCityObjectGroup cog)
+        {
+            RRoadTypeMask roadType = RRoadTypeMask.Empty;
+            foreach (var face in self.GetFaces().Where(f => f.CityObjectGroup == cog))
+            {
+                roadType |= face.RoadTypes;
+            }
+            return roadType;
+        }
+    }
+
     public static class RGraphEx
     {
         public readonly struct EdgeKey : IEquatable<EdgeKey>
@@ -902,21 +921,55 @@ namespace PLATEAU.RoadNetwork.Graph
         /// 頂点をマージする
         /// </summary>
         /// <param name="self"></param>
-        /// <param name="mergeEpsilon"></param>
+        /// <param name="mergeCellSize"></param>
         /// <param name="mergeCellLength"></param>
-        public static void MergeVertices(this RGraph self, float mergeEpsilon, int mergeCellLength)
+        /// <param name="midPointTolerance">aとcとしか接続していない点bに対して、a-cの直線との距離がこれ以下だとbをマージする</param>
+        public static void MergeVertices(this RGraph self, float mergeCellSize, int mergeCellLength, float midPointTolerance)
         {
-            var vertices = self.GetAllVertices().ToList();
-
-            var vertexTable = GeoGraphEx.MergeVertices(vertices.Select(v => v.Position), mergeEpsilon, mergeCellLength);
-            var vertex2RVertex = vertexTable.Values.Distinct().ToDictionary(v => v, v => new RVertex(v));
-            Debug.Log($"MergeVertices: {vertices.Count} -> {vertex2RVertex.Count + vertices.Count(v => vertexTable.ContainsKey(v.Position) == false)}");
-            foreach (var v in vertices)
             {
-                if (vertexTable.TryGetValue(v.Position, out var dst))
+                var vertices = self.GetAllVertices().ToList();
+
+                var vertexTable = GeoGraphEx.MergeVertices(vertices.Select(v => v.Position), mergeCellSize, mergeCellLength);
+                var vertex2RVertex = vertexTable.Values.Distinct().ToDictionary(v => v, v => new RVertex(v));
+                Debug.Log($"MergeVertices: {vertices.Count} -> {vertex2RVertex.Count + vertices.Count(v => vertexTable.ContainsKey(v.Position) == false)}");
+                foreach (var v in vertices)
                 {
-                    v.MergeTo(vertex2RVertex[dst]);
+                    if (vertexTable.TryGetValue(v.Position, out var dst))
+                    {
+                        v.MergeTo(vertex2RVertex[dst]);
+                    }
                 }
+            }
+
+            while (true)
+            {
+                var vertices = self.Faces
+                    .SelectMany(f => f.Edges)
+                    .SelectMany(e => e.Vertices)
+                    .Where(v => v.Edges.Count == 2)
+                    .Distinct()
+                    .ToList();
+
+                var sqrLen = midPointTolerance * midPointTolerance;
+                var count = 0;
+                foreach (var v in vertices)
+                {
+                    var neighbor = v.GetNeighborVertices().ToList();
+                    if (neighbor.Count != 2)
+                        continue;
+
+                    // 中間点があってもほぼ直線だった場合は中間点は削除する
+                    var segment = new LineSegment3D(neighbor[0].Position, neighbor[1].Position);
+                    var p = segment.GetNearestPoint(v.Position);
+                    if ((p - v.Position).sqrMagnitude < sqrLen)
+                    {
+                        v.MergeTo(neighbor[0]);
+                        count++;
+                    }
+                }
+                Debug.Log($"RemoveMidPoint : {vertices.Count} -> {vertices.Count - count}");
+                if (count == 0)
+                    break;
             }
         }
 

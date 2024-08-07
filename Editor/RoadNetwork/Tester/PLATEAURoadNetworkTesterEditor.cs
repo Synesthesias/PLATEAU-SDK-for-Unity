@@ -1,5 +1,6 @@
 ﻿using PLATEAU.Editor.RoadNetwork.Graph;
 using PLATEAU.RoadNetwork;
+using PLATEAU.RoadNetwork.Drawer;
 using PLATEAU.RoadNetwork.Graph;
 using PLATEAU.RoadNetwork.Structure;
 using System.Linq;
@@ -143,9 +144,15 @@ namespace PLATEAU.Editor.RoadNetwork.Tester
                 }
             }
 
+
             public void CreateRnModel()
             {
                 target.CreateRoadNetworkByGraphAsync();
+            }
+
+            public RGraphDrawerDebug GetDrawer()
+            {
+                return target.rGraphDrawer;
             }
         }
 
