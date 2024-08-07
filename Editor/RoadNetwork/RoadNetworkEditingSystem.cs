@@ -12,8 +12,6 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.UIElements;
-using static PLATEAU.Editor.RoadNetwork.RoadNetworkEditingSystem;
-using static PLATEAU.Util.MathUtil;
 
 namespace PLATEAU.Editor.RoadNetwork
 {
@@ -1716,6 +1714,7 @@ namespace PLATEAU.Editor.RoadNetwork
             private GameObject roadNetworkEditingSystemObjRoot;
             private RnModel roadNetwork;
             private IRoadNetworkEditingSystem system;
+            private EditingSystemSubMod.EditingSystemGizmos gizmosSys = new EditingSystemSubMod.EditingSystemGizmos();
 
             private Dictionary<RnRoadBase, NodeEditorData> nodeEditorData = new Dictionary<RnRoadBase, NodeEditorData>();
             private EditorDataList<EditorData<RnRoadGroup>> linkGroupEditorData = new EditorDataList<EditorData<RnRoadGroup>>();
@@ -2054,72 +2053,18 @@ namespace PLATEAU.Editor.RoadNetwork
                 //}
 
                 // gizmos描画の更新
-                var gizmos = roadNetworkEditingSystemObjRoot.GetComponent<RoadNetworkEditorGizmos>();
+                var gizmos = gizmosSys;
+                var gizmosdrawer = roadNetworkEditingSystemObjRoot.GetComponent<RoadNetworkEditorGizmos>();
                 var guisys = system.SceneGUISystem;
                 if (guisys != null)
                 {
-                    // 仮　専用ノード間の繋がりを描画
-                    if (linkGroupEditorData.TryGetCache("linkGroup", out IEnumerable<LinkGroupEditorData> eConn) == false)
-                    {
-                        Assert.IsTrue(false);
-                        return;
-                    }
-                    List<LinkGroupEditorData> connections = eConn.ToList();
+                    // gizmosの更新
+                    gizmos.Update(linkGroupEditorData);
+                    var cmds = gizmos.BuildDrawCommands();
+                    gizmosdrawer.DrawFuncs.Clear();
+                    gizmosdrawer.DrawFuncs.AddRange(cmds);
 
-                    gizmos.intersectionConnectionLinePairs.Clear();
-                    var pts = gizmos.intersectionConnectionLinePairs;
-                    pts.Capacity = (connections.Count + 3) * 2;
-                    foreach (var item in connections)
-                    {
-                        if (item.CacheRoadPosList == null)
-                        {
-                            item.CacheRoadPosList = new List<Vector3>(item.ConnectionLinks.Count * 2);
-
-                            foreach (var link in item.ConnectionLinks)
-                            {
-                                var allLanes = link.AllLanes.GetEnumerator();
-                                Vector3 prevBorderPos = Vector3.zero;
-                                Vector3 nextBorderPos = Vector3.zero;
-
-                                if (allLanes.MoveNext())
-                                {
-                                    var lane = allLanes.Current;
-                                    var prevpoints = lane.PrevBorder.Points;
-                                    var nextpoints = lane.NextBorder.Points;
-                                    if (CalcBorderPos(prevpoints, out prevBorderPos) &&
-                                        CalcBorderPos(nextpoints, out nextBorderPos))
-                                    {
-                                        item.CacheRoadPosList.Add(prevBorderPos);
-                                        item.CacheRoadPosList.Add(nextBorderPos);
-                                    }
-                                }
-                            }
-                        }
-                        foreach (var p in item.CacheRoadPosList)
-                        {
-                            pts.Add(p);
-                        }
-
-                    }
-
-                    //gizmos.intersectionConnectionLinePairs2.Clear();
-                    //var pts = gizmos.intersectionConnectionLinePairs2;
-                    //pts.Capacity = (connections.Count + 3) * 2;
-                    //foreach (var item in connections)
-                    //{
-                    //    foreach (var link in item.ConnectionLinks)
-                    //    {
-                    //        foreach (var lane in link.AllLanes)
-                    //        {
-                    //            lane.NextBorder.LineString.Points
-                    //        }
-                    //        pts.Add();
-
-                    //    }
-                    //    //Debug.Log(item.A.RefGameObject.name + "." + item.B.RefGameObject.name);
-                    //}
-
-                    gizmos.intersectionConnectionLinePairs = pts;
+                    // guiの更新
                     guisys.connections = linkGroupEditorData;
                     //if (connections.Count > 0)
                     //{
@@ -2136,25 +2081,7 @@ namespace PLATEAU.Editor.RoadNetwork
                         intersectionsPoss.Add(item.RefGameObject.transform.position);
                     }
                 }
-            }
 
-            private static bool CalcBorderPos(IEnumerable<RnPoint> points, out UnityEngine.Vector3 v)
-            {
-                var nP = points.Count();
-                if (nP <= 0)
-                {
-                    v = Vector3.zero;
-                    return false;
-                }
-                var sum = Vector3.zero;
-                //lane.NextBorder.HalfLineIntersectionXz
-                foreach (var p in points)
-                {
-                    sum += p.Vertex;
-                }
-                var borderPos = sum / nP;
-                v = borderPos;
-                return true;
             }
         }
     }
