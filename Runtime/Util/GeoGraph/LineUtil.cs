@@ -2,6 +2,8 @@
 using System.Linq;
 using System.Security.Cryptography;
 using UnityEngine;
+using UnityEngine.Assertions;
+using static PLATEAU.Util.GeoGraph.LineUtil;
 
 namespace PLATEAU.Util.GeoGraph
 {
@@ -11,6 +13,207 @@ namespace PLATEAU.Util.GeoGraph
     public static class LineUtil
     {
         private const float Epsilon = 1e-3f;
+
+        public struct Line
+        {
+            public Line(in Vector3 p0, in Vector3 p1)
+            {
+                this.p0 = p0;
+                this.p1 = p1;
+            }
+
+            private Vector3 p0;
+            private Vector3 p1;
+
+            public Vector3 P0 { get => p0; }
+            public Vector3 P1 { get => p1; }
+            public float SqrMag { get => (p0 - p1).sqrMagnitude; }
+            public float Mag { get => (p0 - p1).magnitude; }
+
+            public Vector3 DirectionA2B { get => (p0 - p1).normalized; }
+            public Vector3 DirectionB2A { get => (p1 - p0).normalized; }
+        }
+
+        /// <summary>
+        /// 2直線の距離を求める
+        /// </summary>
+        /// <param name="line1"></param>
+        /// <param name="line2"></param>
+        /// <param name="isParallel"></param>
+        /// <returns></returns>
+        public static float DistanceBetweenLines(in Line line1, in Line line2, out bool isParallel)
+        {
+            Vector3 cross = Vector3.Cross(line1.DirectionA2B, line2.DirectionA2B);
+            float denominator = cross.magnitude;
+
+            // 直線が平行な場合
+            if (denominator == 0)
+            {
+                isParallel = true;
+                Vector3 diff = line1.P0 - line2.P0;
+                return Vector3.Cross(diff, line1.DirectionA2B).magnitude / line1.DirectionA2B.magnitude;
+            }
+
+            isParallel = false;
+            Vector3 diffPoints = line2.P0 - line1.P0;
+            return Mathf.Abs(Vector3.Dot(diffPoints, cross)) / denominator;
+        }
+
+        /// <summary>
+        /// 交差するline0とline1の交点を求める
+        /// 注意点としてline0,line1は線分ではなく永遠に延びる直線として扱う
+        /// 交差しない場合は動作未定義
+        /// </summary>
+        /// <param name="line0"></param>
+        /// <param name="line1"></param>
+        /// <param name="intersectionPoint"></param>
+        /// <returns></returns>
+        public static bool Intersect(in Line line0, in Line line1, out Vector3 intersectionPoint)
+        {
+            Vector3 p1 = line0.P0;
+            Vector3 d1 = line0.DirectionA2B;
+            Vector3 p2 = line1.P0;
+            Vector3 d2 = line1.DirectionA2B;
+
+            Vector3 r = p1 - p2;
+            float a = Vector3.Dot(d1, d1);
+            float e = Vector3.Dot(d2, d2);
+            float f = Vector3.Dot(d2, r);
+            float b = Vector3.Dot(d1, d2);
+            float c = Vector3.Dot(d1, r);
+
+            float denominator = a * e - b * b;
+
+            // 直線が平行な場合
+            if (Mathf.Abs(denominator) < Mathf.Epsilon)
+            {
+                intersectionPoint = Vector3.zero;
+                return false;
+            }
+
+            float s = (b * f - c * e) / denominator;
+
+            // 交差点を計算
+            intersectionPoint = p1 + s * d1;
+
+            return true;
+        }
+
+        /// <summary>
+        /// line上にpointが存在するかどうかを判定する
+        /// ただし pointはlineの延長線上にあることを前提とする
+        /// </summary>
+        /// <param name="line"></param>
+        /// <param name="point"></param>
+        /// <returns></returns>
+        public static bool ContainsPoint(in Line line, in Vector3 point)
+        {
+            // 線分の方向ベクトル
+            Vector3 direction = line.P1 - line.P0;
+
+            // 点から線分の始点と終点へのベクトル
+            Vector3 toPointFromStart = point - line.P0;
+            Vector3 toPointFromEnd = point - line.P1;
+
+            // 内積を計算
+            float dotStart = Vector3.Dot(toPointFromStart, direction);
+            float dotEnd = Vector3.Dot(toPointFromEnd, -direction);
+
+            // 内積が両方とも正であれば点は線分上にある
+            return dotStart >= 0 && dotEnd >= 0;
+        }
+
+        /// <summary>
+        /// 交差しないline0とline1の最短距離を求める
+        /// ただし、line0,line1は線分ではなく永遠に延びる直線として扱う
+        /// 交差する場合は動作未定義
+        /// </summary>
+        /// <param name="line0"></param>
+        /// <param name="line1"></param>
+        /// <param name="closestPoint1"></param>
+        /// <param name="closestPoint2"></param>
+        public static void ClosestPoints(
+            Line line0, Line line1, out Vector3 closestPoint1, out Vector3 closestPoint2)
+        {
+            Vector3 p1 = line0.P0;
+            Vector3 d1 = line0.DirectionA2B;
+            Vector3 p2 = line1.P0;
+            Vector3 d2 = line1.DirectionA2B;
+
+            Vector3 r = p1 - p2;
+            float a = Vector3.Dot(d1, d1);
+            float e = Vector3.Dot(d2, d2);
+            float f = Vector3.Dot(d2, r);
+
+            float s = (Vector3.Dot(d1, r) * e - f * Vector3.Dot(d1, d2)) / (a * e - Vector3.Dot(d1, d2) * Vector3.Dot(d1, d2));
+            float t = (f + s * Vector3.Dot(d1, d2)) / e;
+
+            closestPoint1 = p1 + s * d1;
+            closestPoint2 = p2 + t * d2;
+        }
+
+        /// <summary>
+        /// 線分lineとrayの衝突判定を行う
+        /// radiusで判定に余裕を持たせる
+        /// また、closestPointは衝突地点ではなく線分上の最も近い点なので注意
+        /// </summary>
+        /// <param name="line"></param>
+        /// <param name="radius"></param>
+        /// <param name="ray"></param>
+        /// <param name="closestPoint"></param>
+        /// <returns></returns>
+        public static float CheckHit(Line line, float radius, in Ray ray, out Vector3 closestPoint)
+        {
+            var rayLine = new Line(ray.origin, ray.origin + ray.direction);
+            var dis = DistanceBetweenLines(line, rayLine, out var isParallel);
+
+            // 平行時は通常の方法で計算できないので判定を取らないようにする
+            if (isParallel)
+            {
+                return NoHit(out closestPoint);
+            }
+
+            // 距離が離れている場合はヒットしていない
+            if (radius < dis)
+            {
+                return NoHit(out closestPoint);
+            }
+
+
+            // 最も近い点の算出とそれが線分上にあるか
+
+            // 線分上に存在するか
+            bool isPointOnline;
+            // 交差している
+            if (dis <= Mathf.Epsilon)
+            {
+                Intersect(line, rayLine, out closestPoint);
+                isPointOnline = LineUtil.ContainsPoint(line, closestPoint);
+            }
+            else// 交差しない場合
+            {
+                Vector3 closestPoint2;
+                LineUtil.ClosestPoints(line, rayLine, out closestPoint, out closestPoint2);
+                isPointOnline = LineUtil.ContainsPoint(line, closestPoint);                
+            }
+
+            // 交差点が線分上にない場合はヒットしていない
+            if (isPointOnline == false)
+            {
+                return NoHit(out closestPoint);
+            }
+
+
+            return dis;
+
+            static float NoHit(out Vector3 closestPoint)
+            {
+                closestPoint = Vector3.zero;
+                return float.MinValue;
+            }
+
+        }
+
         /// <summary>
         /// a,bを通る直線,c,dを通る直線の交点を求める
         /// 平行な場合はfalse
@@ -257,5 +460,6 @@ namespace PLATEAU.Util.GeoGraph
         {
             return self.GetNearestPoint(p, out var _);
         }
+
     }
 }
