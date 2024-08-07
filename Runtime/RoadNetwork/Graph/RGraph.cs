@@ -872,7 +872,7 @@ namespace PLATEAU.RoadNetwork.Graph
             }
         }
 
-        public static RGraph Create(List<ConvertedCityObject> cityObjects)
+        public static RGraph Create(List<SubDividedCityObject> cityObjects)
         {
             var graph = new RGraph();
             Dictionary<Vector3, RVertex> vertexMap = new Dictionary<Vector3, RVertex>();
@@ -918,13 +918,13 @@ namespace PLATEAU.RoadNetwork.Graph
         }
 
         /// <summary>
-        /// 頂点をマージする
+        /// 頂点をリダクション処理
         /// </summary>
         /// <param name="self"></param>
         /// <param name="mergeCellSize"></param>
         /// <param name="mergeCellLength"></param>
         /// <param name="midPointTolerance">aとcとしか接続していない点bに対して、a-cの直線との距離がこれ以下だとbをマージする</param>
-        public static void MergeVertices(this RGraph self, float mergeCellSize, int mergeCellLength, float midPointTolerance)
+        public static void VertexReduction(this RGraph self, float mergeCellSize, int mergeCellLength, float midPointTolerance)
         {
             {
                 var vertices = self.GetAllVertices().ToList();
@@ -974,10 +974,10 @@ namespace PLATEAU.RoadNetwork.Graph
         }
 
         /// <summary>
-        /// 同じ頂点を持つ辺はマージする
+        /// 辺のリダクション処理（同じ頂点を持つ辺をマージする)
         /// </summary>
         /// <param name="self"></param>
-        public static void MergeEdges(this RGraph self)
+        public static void EdgeReduction(this RGraph self)
         {
             var edges = self.GetAllEdges().ToList();
             var edgeTable = new Dictionary<EdgeKey, HashSet<REdge>>();

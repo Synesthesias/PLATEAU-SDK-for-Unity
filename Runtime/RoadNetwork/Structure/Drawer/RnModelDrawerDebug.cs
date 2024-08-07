@@ -1,15 +1,12 @@
 ﻿using PLATEAU.CityInfo;
-using PLATEAU.RoadNetwork.Data;
-using PLATEAU.RoadNetwork.Structure;
+using PLATEAU.RoadNetwork.Drawer;
 using PLATEAU.Util;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices;
 using UnityEngine;
-using UnityEngine.Serialization;
 
-namespace PLATEAU.RoadNetwork.Drawer
+namespace PLATEAU.RoadNetwork.Structure.Drawer
 {
     [Flags]
     public enum RnPartsTypeMask

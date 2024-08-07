@@ -97,7 +97,7 @@ namespace PLATEAU.RoadNetwork.Util
         /// <param name="mergeEpsilon"></param>
         /// <param name="mergeCellLength"></param>
         /// <returns></returns>
-        public static List<ConvertedCityObject> MergeVertices(List<ConvertedCityObject> targets, float mergeEpsilon, int mergeCellLength)
+        public static List<SubDividedCityObject> MergeVertices(List<SubDividedCityObject> targets, float mergeEpsilon, int mergeCellLength)
         {
             try
             {
@@ -115,14 +115,14 @@ namespace PLATEAU.RoadNetwork.Util
             catch (Exception e)
             {
                 Debug.LogException(e);
-                return new List<ConvertedCityObject>();
+                return new List<SubDividedCityObject>();
             }
         }
 
         [Serializable]
         internal class ConvertCityObjectResult
         {
-            public List<ConvertedCityObject> ConvertedCityObjects { get; } = new List<ConvertedCityObject>();
+            public List<SubDividedCityObject> ConvertedCityObjects { get; } = new List<SubDividedCityObject>();
         }
 
 
@@ -150,7 +150,7 @@ namespace PLATEAU.RoadNetwork.Util
             var dstModel = converter.Convert(srcModel, nativeOption);
             var getter = new SerializedCityObjectGetterFromDict(attributes, dstModel);
             var attrHelper = new AttributeDataHelper(getter, nativeOption.Granularity, true);
-            var cco = await Task.Run(() => new ConvertedCityObject(dstModel, attrHelper));
+            var cco = await Task.Run(() => new SubDividedCityObject(dstModel, attrHelper));
 
             foreach (var co in cityObjectGroupList)
             {

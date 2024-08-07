@@ -13,8 +13,11 @@ using Object = System.Object;
 
 namespace PLATEAU.RoadNetwork.Mesh
 {
+    /// <summary>
+    /// PLATEAUCityObjectGroupを細分化したもの
+    /// </summary>
     [Serializable]
-    public class ConvertedCityObject
+    public class SubDividedCityObject
     {
         [Serializable]
         public class SubMesh
@@ -81,7 +84,7 @@ namespace PLATEAU.RoadNetwork.Mesh
         }
 
         [Serializable]
-        public class ConvertedMesh
+        public class Mesh
         {
             [field: SerializeField]
             public List<Vector3> Vertices { get; set; } = new List<Vector3>();
@@ -98,7 +101,7 @@ namespace PLATEAU.RoadNetwork.Mesh
                 Vertices = vert;
                 foreach (var s in SubMeshes)
                 {
-                    var tris = new HashSet<Vector3Int>();
+                    var tri = new HashSet<Vector3Int>();
                     var newTriangles = new List<int>(s.Triangles.Count);
                     for (var i = 0; i < s.Triangles.Count; i += 3)
                     {
@@ -116,9 +119,9 @@ namespace PLATEAU.RoadNetwork.Mesh
                         var vs = new[] { v0, v1, v2 }.OrderBy(x => x).ToArray();
                         var t = new Vector3Int(vs[0], vs[1], vs[2]);
                         // 同じ頂点の三角形がすでに登録されていたら無視
-                        if (tris.Contains(t) == false)
+                        if (tri.Contains(t) == false)
                         {
-                            tris.Add(t);
+                            tri.Add(t);
                             newTriangles.Add(v0);
                             newTriangles.Add(v1);
                             newTriangles.Add(v2);
@@ -138,9 +141,9 @@ namespace PLATEAU.RoadNetwork.Mesh
                 SubMeshes = newSubMesh;
             }
 
-            public ConvertedMesh DeepCopy()
+            public Mesh DeepCopy()
             {
-                return new ConvertedMesh
+                return new Mesh
                 {
                     SubMeshes = SubMeshes.Select(s => s.DeepCopy()).ToList(),
                     Vertices = Vertices.ToList()
@@ -162,10 +165,10 @@ namespace PLATEAU.RoadNetwork.Mesh
         public bool Visible { get; set; } = true;
 
         [field: SerializeField]
-        public List<ConvertedMesh> Meshes { get; set; } = new List<ConvertedMesh>();
+        public List<Mesh> Meshes { get; set; } = new List<Mesh>();
 
         [field: SerializeField]
-        public List<ConvertedCityObject> Children { get; set; } = new List<ConvertedCityObject>();
+        public List<SubDividedCityObject> Children { get; set; } = new List<SubDividedCityObject>();
 
         [field: SerializeField]
         public PLATEAUCityObjectGroup CityObjectGroup { get; private set; }
@@ -189,25 +192,25 @@ namespace PLATEAU.RoadNetwork.Mesh
         /// <see cref="ConvertedGameObjData"/> を作ります。
         /// 子も再帰的に作ります。
         /// </summary>
-        internal ConvertedCityObject(Model plateauModel, AttributeDataHelper attributeDataHelper)
+        internal SubDividedCityObject(Model plateauModel, AttributeDataHelper attributeDataHelper)
         {
             Name = "Root";
             attributeDataHelper.SetId(Name);
-            Children = new List<ConvertedCityObject>();
+            Children = new List<SubDividedCityObject>();
             for (int i = 0; i < plateauModel.RootNodesCount; i++)
             {
                 var rootNode = plateauModel.GetRootNodeAt(i);
                 // 再帰的な子の生成です。
-                Children.Add(new ConvertedCityObject(rootNode, attributeDataHelper.Copy()));
+                Children.Add(new SubDividedCityObject(rootNode, attributeDataHelper.Copy()));
             }
         }
 
         /// <summary>
         /// C++側の <see cref="PolygonMesh.Node"/> から変換して
-        /// <see cref="ConvertedCityObject"/> を作ります。
+        /// <see cref="SubDividedCityObject"/> を作ります。
         /// 子も再帰的に作ります。
         /// </summary>
-        private ConvertedCityObject(Node plateauNode, AttributeDataHelper attributeDataHelper)
+        private SubDividedCityObject(Node plateauNode, AttributeDataHelper attributeDataHelper)
         {
             //MeshData = MeshConverter.Convert(plateauNode.Mesh, plateauNode.Name);
 
@@ -249,7 +252,7 @@ namespace PLATEAU.RoadNetwork.Mesh
                         }
                         subMeshes.Add(s);
                     }
-                    Meshes.Add(new ConvertedMesh
+                    Meshes.Add(new Mesh
                     {
                         Vertices = vertices,
                         SubMeshes = subMeshes
@@ -262,13 +265,13 @@ namespace PLATEAU.RoadNetwork.Mesh
             for (int i = 0; i < plateauNode.ChildCount; i++)
             {
                 var child = plateauNode.GetChildAt(i);
-                Children.Add(new ConvertedCityObject(child, attributeDataHelper.Copy()));
+                Children.Add(new SubDividedCityObject(child, attributeDataHelper.Copy()));
                 attributeDataHelper.AddOutsideChildren(child?.Name);
             }
             serializedCityObjects = JsonConvert.SerializeObject(cityObjects, Formatting.Indented);
         }
 
-        public IEnumerable<ConvertedCityObject> GetAllChildren()
+        public IEnumerable<SubDividedCityObject> GetAllChildren()
         {
             if (Children == null)
                 yield break;
@@ -289,9 +292,9 @@ namespace PLATEAU.RoadNetwork.Mesh
                 c.SetCityObjectGroup(group);
         }
 
-        public ConvertedCityObject DeepCopy()
+        public SubDividedCityObject DeepCopy()
         {
-            var ret = MemberwiseClone() as ConvertedCityObject;
+            var ret = MemberwiseClone() as SubDividedCityObject;
             ret.Meshes = Meshes.Select(m => m.DeepCopy()).ToList();
             ret.Children = Children.Select(m => m.DeepCopy()).ToList();
             return ret;

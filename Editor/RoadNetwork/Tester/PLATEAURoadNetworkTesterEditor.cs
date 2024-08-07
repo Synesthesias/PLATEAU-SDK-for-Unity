@@ -110,36 +110,36 @@ namespace PLATEAU.Editor.RoadNetwork.Tester
 
             public long TargetFaceId
             {
-                get => target.rGraphDrawer?.faceOption?.targetId ?? -1;
+                get => target.RGraphDrawer?.faceOption?.targetId ?? -1;
                 set
                 {
                     if (target.Drawer != null)
                     {
-                        target.rGraphDrawer.faceOption.targetId = (int)value;
+                        target.RGraphDrawer.faceOption.targetId = (int)value;
                     }
                 }
             }
 
             public long TargetEdgeId
             {
-                get => target.rGraphDrawer?.edgeOption?.targetId ?? -1;
+                get => target.RGraphDrawer?.edgeOption?.targetId ?? -1;
                 set
                 {
                     if (target.Drawer != null)
                     {
-                        target.rGraphDrawer.edgeOption.targetId = (int)value;
+                        target.RGraphDrawer.edgeOption.targetId = (int)value;
                     }
                 }
             }
 
             public long TargetVertexId
             {
-                get => target.rGraphDrawer?.vertexOption?.targetId ?? -1;
+                get => target.RGraphDrawer?.vertexOption?.targetId ?? -1;
                 set
                 {
                     if (target.Drawer != null)
                     {
-                        target.rGraphDrawer.vertexOption.targetId = (int)value;
+                        target.RGraphDrawer.vertexOption.targetId = (int)value;
                     }
                 }
             }
@@ -152,7 +152,7 @@ namespace PLATEAU.Editor.RoadNetwork.Tester
 
             public RGraphDrawerDebug GetDrawer()
             {
-                return target.rGraphDrawer;
+                return target.RGraphDrawer;
             }
         }
 
@@ -163,28 +163,31 @@ namespace PLATEAU.Editor.RoadNetwork.Tester
                 return;
 
             base.OnInspectorGUI();
-            GUILayout.Label($"ConvertedCityObjectVertexCount : {obj.convertedCityObjects.Sum(c => c.Meshes.Sum(m => m.Vertices.Count))}");
+            GUILayout.Label($"ConvertedCityObjectVertexCount : {obj.SubDividedCityObjects.Sum(c => c.Meshes.Sum(m => m.Vertices.Count))}");
 
             if (GUILayout.Button("Create"))
                 obj.CreateNetwork();
 
-            if (GUILayout.Button("Serialize"))
-                obj.Serialize();
+            using (new EditorGUILayout.HorizontalScope())
+            {
+                if (GUILayout.Button("Serialize"))
+                    obj.Serialize();
 
-            if (GUILayout.Button("Deserialize"))
-                obj.Deserialize();
+                if (GUILayout.Button("Deserialize"))
+                    obj.Deserialize();
+            }
 
-            if (GUILayout.Button("SplitCityObject"))
-                obj.SplitCityObjectAsync();
+            using (new EditorGUILayout.HorizontalScope())
+            {
+                if (obj.RGraph != null && GUILayout.Button("Open RGraph Editor"))
+                    RGraphDebugEditorWindow.OpenWindow(new RGraphInstanceHelper(obj), true);
 
-            if (obj.RGraph != null && GUILayout.Button("Open RGraph Editor"))
-                RGraphDebugEditorWindow.OpenWindow(new RGraphInstanceHelper(obj), true);
+                if (GUILayout.Button("RnModel Debug Editor"))
+                    RnModelDebugEditorWindow.OpenWindow(new RnModelInstanceHelper(obj), true);
+            }
 
             if (GUILayout.Button("Check Lod"))
                 obj.RemoveSameNameCityObjectGroup();
-
-            if (GUILayout.Button("RnModel Debug Editor"))
-                RnModelDebugEditorWindow.OpenWindow(new RnModelInstanceHelper(obj), true);
         }
     }
 }

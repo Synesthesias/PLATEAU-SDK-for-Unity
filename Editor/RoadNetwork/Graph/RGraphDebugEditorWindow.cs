@@ -137,8 +137,8 @@ namespace PLATEAU.Editor.RoadNetwork.Graph
                     graph = InstanceHelper.CreateGraph();
                     if (mergeOnCreate)
                     {
-                        graph.MergeVertices(mergeCellSize, mergeCellLength, removeMidPointTolerance);
-                        graph.MergeEdges();
+                        graph.VertexReduction(mergeCellSize, mergeCellLength, removeMidPointTolerance);
+                        graph.EdgeReduction();
                         graph.SeparateFaces();
                     }
                 }
@@ -156,11 +156,11 @@ namespace PLATEAU.Editor.RoadNetwork.Graph
             {
                 if (GUILayout.Button("Merge"))
                 {
-                    graph.MergeVertices(mergeCellSize, mergeCellLength, removeMidPointTolerance);
+                    graph.VertexReduction(mergeCellSize, mergeCellLength, removeMidPointTolerance);
                 }
 
                 if (GUILayout.Button("Merge Edge"))
-                    graph.MergeEdges();
+                    graph.EdgeReduction();
 
                 if (GUILayout.Button("Separate Face"))
                     graph.SeparateFaces();

@@ -280,7 +280,6 @@ namespace PLATEAU.Util.GeoGraph
         /// <param name="toVec3"></param>
         /// <param name="plane"></param>
         /// <param name="getNeighbor"></param>
-        /// <param name="isLoop"></param>
         /// <returns></returns>
         public static ComputeOutlineResult<T> ComputeOutline<T>(
             IEnumerable<T> vertices
@@ -538,7 +537,7 @@ namespace PLATEAU.Util.GeoGraph
         /// <param name="toVec2"></param>
         /// <param name="epsilon"></param>
         /// <returns></returns>
-        public static List<Vector3> ComputeMeshOutlineVertices(ConvertedCityObject.ConvertedMesh mesh, ConvertedCityObject.SubMesh subMesh, Func<Vector3, Vector2> toVec2, float epsilon = 0.1f)
+        public static List<Vector3> ComputeMeshOutlineVertices(SubDividedCityObject.Mesh mesh, SubDividedCityObject.SubMesh subMesh, Func<Vector3, Vector2> toVec2, float epsilon = 0.1f)
         {
             // key   : 頂点
             // value : その頂点とつながっている頂点のリスト
