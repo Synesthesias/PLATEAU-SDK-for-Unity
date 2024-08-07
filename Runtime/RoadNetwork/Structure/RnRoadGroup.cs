@@ -249,11 +249,29 @@ namespace PLATEAU.RoadNetwork.Structure
         {
             if (GetLeftLaneCount() == 0 || GetRightLaneCount() == 0)
                 return false;
-
-            // 中央分離帯があるリンクは一度作成する
+            Align();
+            // 中央分離帯がないリンクは一度作成する
             CreateMedianOrSkip(l => l.MedianLane == null);
             foreach (var l in Roads)
             {
+                // サイズ0の中央分離帯だと法線方向が定まらないので、すでに幅の存在するレーンを動かすことで
+                // 中央分離帯の幅を設定する
+                var centerLeft = l.GetLeftLanes().Last();
+                var centerRight = l.GetRightLanes().First();
+                switch (moveOption)
+                {
+                    case LaneWayMoveOption.MoveBothWay:
+                        centerLeft.RightWay?.MoveAlongNormal(-width * 0.5f);
+                        centerRight.RightWay?.MoveAlongNormal(-width * 0.5f);
+                        break;
+                    case LaneWayMoveOption.MoveLeftWay:
+                        centerLeft.RightWay?.MoveAlongNormal(-width);
+                        break;
+                    case LaneWayMoveOption.MoveRightWay:
+                        centerRight.RightWay?.MoveAlongNormal(-width);
+                        break;
+                }
+
                 l.MedianLane?.TrySetWidth(width, moveOption);
             }
             return true;

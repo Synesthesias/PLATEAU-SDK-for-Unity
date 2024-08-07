@@ -104,7 +104,7 @@ namespace PLATEAU.RoadNetwork.Factory
 
                 // 元のリストが変わるかもしれないのでコピーで持つ
                 var key = line.ToList();
-                LineMap[key] = RnLineString.Create(key.Select(CreatePoint), false);
+                LineMap[key] = RnLineString.Create(key.Select(CreatePoint), true);
                 return new RnWay(LineMap[key], false);
             }
 
@@ -359,6 +359,7 @@ namespace PLATEAU.RoadNetwork.Factory
                     if (pair != null)
                     {
                         var (leftWay, rightWay) = (pair.leftWay, pair.rightWay);
+
                         if (leftWay == null && rightWay == null)
                         {
                             Debug.LogError($"不正なーレーン構成(Wayの存在しないLane) {CityObjectGroup.name}");
@@ -372,7 +373,11 @@ namespace PLATEAU.RoadNetwork.Factory
                         var way = leftWay ?? rightWay;
                         var prevBorderWay = way?.Prev?.Way;
                         var nextBorderWay = way?.Next?.Way;
-                        var lane = new RnLane(leftWay?.Way, rightWay?.Way, prevBorderWay, nextBorderWay);
+
+                        // もともと時計回りなのでleftWayとrightWayが逆になっている
+                        // 方向そろえるためにrightWayを反転させている
+                        // #TODO : ちゃんと始点/終点がPrev/Nextになっているか確認すべき
+                        var lane = new RnLane(leftWay?.Way, rightWay?.Way?.ReversedWay(), prevBorderWay, nextBorderWay);
                         road.AddMainLane(lane);
                         return road;
                     }

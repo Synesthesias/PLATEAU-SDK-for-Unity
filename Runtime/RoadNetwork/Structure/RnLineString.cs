@@ -126,7 +126,7 @@ namespace PLATEAU.RoadNetwork.Structure
         /// <param name="p"></param>
         /// <param name="distanceEpsilon">距離誤差</param>
         /// <param name="degEpsilon">角度誤差(p0 -> p1 -> p2の角度が180±degEpsilon以内になるときp1を削除する</param>
-        public void AddPointOrSkip(RnPoint p, float distanceEpsilon = DefaultDistanceEpsilon, float degEpsilon = DefaultDegEpsilon)
+        public void AddPointOrSkip(RnPoint p, float distanceEpsilon = DefaultDistanceEpsilon, float degEpsilon = DefaultDegEpsilon, float midPointTolerance = DefaultMidPointTolerance)
         {
             if (Points.Count > 0 && RnPoint.Equals(Points.Last(), p, distanceEpsilon))
                 return;
@@ -134,7 +134,19 @@ namespace PLATEAU.RoadNetwork.Structure
             {
                 var deg = Vector3.Angle(Points[^2].Vertex - Points[^1].Vertex, p.Vertex - Points[^1].Vertex);
                 if (Mathf.Abs(180f - deg) <= degEpsilon)
+                {
                     Points.RemoveAt(Points.Count - 1);
+                }
+                else
+                {
+                    // 中間点があってもほぼ直線だった場合は中間点は削除する
+                    var segment = new LineSegment3D(Points[^2].Vertex, p.Vertex);
+                    var pos = segment.GetNearestPoint(Points[^1].Vertex);
+                    if (midPointTolerance > 0f && (p - Points[^1].Vertex).sqrMagnitude < midPointTolerance * midPointTolerance)
+                    {
+                        Points.RemoveAt(Points.Count - 1);
+                    }
+                }
             }
             Points.Add(p);
         }
@@ -228,6 +240,7 @@ namespace PLATEAU.RoadNetwork.Structure
 
         public const float DefaultDistanceEpsilon = 0f;
         public const float DefaultDegEpsilon = 0.5f;
+        public const float DefaultMidPointTolerance = 0.3f;
 
         /// <summary>
         /// 頂点リストから線分を生成する
@@ -237,20 +250,21 @@ namespace PLATEAU.RoadNetwork.Structure
         /// <param name="vertices"></param>
         /// <param name="distanceEpsilon"></param>
         /// <param name="degEpsilon"></param>
+        /// <param name="midPointTolerance"></param>
         /// <returns></returns>
-        public static RnLineString Create(IEnumerable<RnPoint> vertices, float distanceEpsilon, float degEpsilon)
+        public static RnLineString Create(IEnumerable<RnPoint> vertices, float distanceEpsilon, float degEpsilon, float midPointTolerance)
         {
             var ret = new RnLineString();
             foreach (var v in vertices)
-                ret.AddPointOrSkip(v, distanceEpsilon, degEpsilon);
+                ret.AddPointOrSkip(v, distanceEpsilon, degEpsilon, midPointTolerance);
             return ret;
         }
 
         public static RnLineString Create(IEnumerable<RnPoint> vertices, bool removeDuplicate = true)
         {
             if (removeDuplicate)
-                return Create(vertices, DefaultDistanceEpsilon, DefaultDegEpsilon);
-            return Create(vertices, -1, -1);
+                return Create(vertices, DefaultDistanceEpsilon, DefaultDegEpsilon, DefaultMidPointTolerance);
+            return Create(vertices, -1, -1, -1f);
         }
 
         public static RnLineString Create(IEnumerable<Vector3> vertices)

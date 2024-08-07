@@ -369,6 +369,16 @@ namespace PLATEAU.RoadNetwork.Structure
             if (IsValid == false)
                 return;
 
+            // 頂点数が2の時は特殊処理
+            if (Count == 2)
+            {
+                var n = GetEdgeNormal(0).normalized;
+                foreach (var p in Points)
+                    p.Vertex += n * offset;
+
+                return;
+            }
+
             var index = 0;
             // 現在見る点と次の点の辺/頂点の法線を保存しておく
             // 線分の法線
