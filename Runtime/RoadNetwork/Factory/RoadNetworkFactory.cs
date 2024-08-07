@@ -39,7 +39,8 @@ namespace PLATEAU.RoadNetwork.Factory
         [SerializeField] public bool addLod3SideWalk = true;
         // 高速道路を無視するかのフラグ
         [SerializeField] public bool ignoreHighway = false;
-
+        // RGraph作るときのファクトリパラメータ
+        [SerializeField] public RGraphFactory graphFactory;
         // 中間データ
         [SerializeField] public RsFactoryMidStageData midStageData;
 
@@ -590,7 +591,7 @@ namespace PLATEAU.RoadNetwork.Factory
         public async Task<RnModel> CreateRnModelAsync(List<PLATEAUCityObjectGroup> cityObjectGroups)
         {
             await midStageData.ConvertCityObjectAsync(cityObjectGroups);
-            var graph = midStageData.CreateGraph();
+            var graph = midStageData.CreateGraph(graphFactory);
             var model = await CreateRnModelAsync(graph);
             if (midStageData.saveTmpData == false)
                 midStageData.rGraph.rGraph = null;

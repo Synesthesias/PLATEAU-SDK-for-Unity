@@ -51,7 +51,6 @@ namespace PLATEAU.RoadNetwork.Factory
         // --------------------
         [SerializeField] public bool saveTmpData = false;
 
-        [SerializeField] public RGraphFactory graphFactory;
 
         [SerializeField] public RGraphWrap rGraph = new RGraphWrap();
 
@@ -124,7 +123,7 @@ namespace PLATEAU.RoadNetwork.Factory
             return ret;
         }
 
-        public RGraph CreateGraph()
+        public RGraph CreateGraph(RGraphFactory graphFactory)
         {
             rGraph.rGraph = graphFactory.CreateGraph(convertedCityObjects.cityObjects);
             if (saveTmpData == false)

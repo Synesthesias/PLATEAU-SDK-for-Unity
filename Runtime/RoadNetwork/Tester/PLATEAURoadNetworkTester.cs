@@ -110,7 +110,7 @@ namespace PLATEAU.RoadNetwork
 
         public void CreateRGraph()
         {
-            Factory.midStageData.CreateGraph();
+            Factory.midStageData.CreateGraph(Factory.graphFactory);
         }
 
         public async Task CreateRoadNetworkByGraphAsync()
