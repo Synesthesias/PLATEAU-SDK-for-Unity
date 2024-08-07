@@ -76,6 +76,7 @@ namespace PLATEAU.RoadNetwork
         public void OnDrawGizmos()
         {
             Drawer?.Draw(RoadNetwork);
+            Factory?.DebugDraw();
         }
 
         private List<PLATEAUCityObjectGroup> GetTargetCityObjects()

@@ -54,7 +54,7 @@ namespace PLATEAU.RoadNetwork.Structure
         public override IEnumerable<RnLane> AllLanes => MainLanes;
 
         // 有効なRoadかどうか
-        public bool IsValid => MainLanes.Any();
+        public bool IsValid => MainLanes.Any() && MainLanes.All(l => l.IsBothConnectedLane);
 
         /// <summary>
         /// 左車線/右車線両方あるかどうか

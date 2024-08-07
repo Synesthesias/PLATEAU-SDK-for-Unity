@@ -266,7 +266,7 @@ namespace PLATEAU.RoadNetwork.Factory
                 if (lines.Any() == false)
                     return 0f;
 
-                return Lines.Min(v => v.GetMedianLength(CityObjectGroup));
+                return lines.Min(v => v.GetMedianLength(CityObjectGroup));
             }
 
             public Tran(Work work, RGraph graph, PLATEAUCityObjectGroup cityObjectGroup, RRoadTypeMask targetRoadTypeMask)
@@ -398,6 +398,9 @@ namespace PLATEAU.RoadNetwork.Factory
                 return null;
             }
 
+            /// <summary>
+            /// 接続情報作成
+            /// </summary>
             public void BuildConnection()
             {
                 if (Node is RnRoad road)
@@ -596,6 +599,11 @@ namespace PLATEAU.RoadNetwork.Factory
             if (midStageData.saveTmpData == false)
                 midStageData.rGraph.rGraph = null;
             return model;
+        }
+
+        public void DebugDraw()
+        {
+            midStageData?.DebugDraw();
         }
     }
 }

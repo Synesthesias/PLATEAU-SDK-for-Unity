@@ -1,10 +1,13 @@
-﻿using PLATEAU.Util;
+﻿using PLATEAU.RoadNetwork.Mesh;
+using PLATEAU.Util;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-namespace PLATEAU.RoadNetwork.Mesh.Drawer
+namespace PLATEAU.RoadNetwork.CityObject.Drawer
 {
+    [Serializable]
     public class SubDividedCityObjectDrawerDebug
     {
         // --------------------

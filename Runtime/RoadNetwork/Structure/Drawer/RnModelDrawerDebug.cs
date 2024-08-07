@@ -268,14 +268,15 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
             if (laneOp.showLeftWay.visible)
             {
                 DrawWay(lane.LeftWay, color: laneOp.showLeftWay.color.PutA(laneOp.GetLaneAlpha(lane)));
-                if (laneOp.showAttrText)
+                if (laneOp.showAttrText && (lane.LeftWay.IsValidOrDefault()))
                     DebugEx.DrawString($"L:{lane.DebugMyId}", lane.LeftWay[0] + offset);
             }
+
 
             if (laneOp.showRightWay.visible)
             {
                 DrawWay(lane.RightWay, color: laneOp.showRightWay.color.PutA(laneOp.GetLaneAlpha(lane)));
-                if (laneOp.showAttrText)
+                if (laneOp.showAttrText && (lane.RightWay.IsValidOrDefault()))
                     DebugEx.DrawString($"R:{lane.DebugMyId}", lane.RightWay[0] + offset);
             }
 
