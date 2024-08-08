@@ -355,12 +355,19 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
                 if (EnableSideWalk)
                 {
                     // 中央分離帯を消す機能がない？ 分離帯がない時に中央の線を動かしたら両方車線を動かしたい
-                    road.SetMedianWidth(0.5f, LaneWayMoveOption.MoveBothWay); 
+                    road.SetMedianWidth(0.5f, LaneWayMoveOption.MoveBothWay);
                 }
+                else
+                {
+                    road.RemoveMedian();
+                }
+                isChanged = true;
+
             }
 
             if (isChanged)
             {
+
             }
             //if (cache.roadWidth != RoadWidth)
             //{
