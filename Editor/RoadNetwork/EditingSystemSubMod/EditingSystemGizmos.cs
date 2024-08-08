@@ -46,6 +46,10 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
             pts.Capacity = (connections.Count + 3) * 2;
             foreach (var item in connections)
             {
+                if (item.LinkGroup == selectingElement)
+                {
+                    continue;
+                }
                 if (item.CacheRoadPosList == null)
                 {
                     item.CacheRoadPosList = new List<Vector3>(item.ConnectionLinks.Count * 2);

@@ -261,10 +261,11 @@ namespace PLATEAU.Editor.RoadNetwork
     }
     public class LinkGroupEditorData
     {
-        public LinkGroupEditorData(NodeEditorData a, NodeEditorData b, IReadOnlyCollection<RnRoad> links, RnRoadGroup linkGroup)
+        public LinkGroupEditorData(EditorData<RnRoadGroup> parent, NodeEditorData a, NodeEditorData b, IReadOnlyCollection<RnRoad> links)
         {
-            Assert.IsNotNull(linkGroup);
-            LinkGroup = linkGroup;
+            Assert.IsNotNull(parent);
+            Assert.IsNotNull(parent.Ref);
+            LinkGroup = parent;
 
             Assert.IsNotNull(a);
             Assert.IsNotNull(b);
@@ -294,9 +295,9 @@ namespace PLATEAU.Editor.RoadNetwork
         /// </summary>
         public void AlignNumLane()
         {
-            var nR = LinkGroup.GetRightLaneCount();
-            var nL = LinkGroup.GetLeftLaneCount();
-            LinkGroup.SetLaneCount(nL, nR);
+            var nR = LinkGroup.Ref.GetRightLaneCount();
+            var nL = LinkGroup.Ref.GetLeftLaneCount();
+            LinkGroup.Ref.SetLaneCount(nL, nR);
         }
 
 
@@ -306,7 +307,7 @@ namespace PLATEAU.Editor.RoadNetwork
 
         public IReadOnlyCollection<RnRoad> ConnectionLinks { get; private set; }
 
-        public RnRoadGroup LinkGroup { get; private set; }
+        public EditorData<RnRoadGroup> LinkGroup { get; private set; }
 
         public List<Vector3> CacheRoadPosList { get; set; }
 
@@ -324,14 +325,14 @@ namespace PLATEAU.Editor.RoadNetwork
         {
             get
             {
-                return LinkGroup.GetRightLanes();
+                return LinkGroup.Ref.GetRightLanes();
             }
         }
         public IEnumerable<RnLane> LeftLanes
         {
             get
             {
-                return LinkGroup.GetLeftLanes();
+                return LinkGroup.Ref.GetLeftLanes();
             }
         }
 

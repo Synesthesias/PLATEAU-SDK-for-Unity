@@ -1484,11 +1484,14 @@ namespace PLATEAU.Editor.RoadNetwork
 
                         var node0 = linkGroup.PrevIntersection;
                         var node1 = linkGroup.NextIntersection;
-                        var cn = new LinkGroupEditorData(nodeEditorData[node0], nodeEditorData[node1], linkGroup.Roads, linkGroup);
+                        var editorData = new EditorData<RnRoadGroup>(linkGroup);
+                        var cn = new LinkGroupEditorData(editorData, nodeEditorData[node0], nodeEditorData[node1], linkGroup.Roads);
                         if (linkGroups.Add(cn) == true)
                         {
                             nodeEditorData[node0].Connections.Add(cn);
                             nodeEditorData[node1].Connections.Add(cn);
+                            editorData.TryAdd(cn);
+                            linkGroupEditorData.Add(editorData);
                         }
 
                         calcedNeighbor.Add(neighbor);
@@ -1502,14 +1505,6 @@ namespace PLATEAU.Editor.RoadNetwork
                             }
                         }
                     }
-                }
-
-                linkGroupEditorData.Capacity = linkGroups.Count;
-                foreach (var item in linkGroups)
-                {
-                    var editorData = new EditorData<RnRoadGroup>(item.LinkGroup);
-                    editorData.TryAdd(item);
-                    linkGroupEditorData.Add(editorData);
                 }
 
                 // 仮 編集可能なデータに勝手に修正
@@ -1599,7 +1594,7 @@ namespace PLATEAU.Editor.RoadNetwork
                                 {
                                     if (link == item.Road)
                                     {
-                                        var cn = new LinkGroupEditorData(nodeEditorData[node], nodeEditorData[connectedNode], linkList, null);
+                                        var cn = new LinkGroupEditorData(null, nodeEditorData[node], nodeEditorData[connectedNode], linkList);
                                         if (linkGroups.Add(cn) == true)
                                         {
                                             nodeEditorData[node].Connections.Add(cn);
