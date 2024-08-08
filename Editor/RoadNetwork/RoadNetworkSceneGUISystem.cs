@@ -382,17 +382,17 @@ namespace PLATEAU.Editor.RoadNetwork
 
             // 選択している道路がある場合
             var selectedConnection = editorSystem.SelectedRoadNetworkElement as EditorData<RnRoadGroup>;
-            if (selectedConnection != null)
+            if (selectedConnection != null && false)
             {
-                var item = selectedConnection;
+                var roadGroupEditorData = selectedConnection;
                 // 各車線、歩道、張横分離帯の幅を調整するためのハンドル描画
 
-                var nLeftLane = item.Ref.GetLeftLaneCount();
-                var nRIghtLane = item.Ref.GetRightLaneCount();
+                var nLeftLane = roadGroupEditorData.Ref.GetLeftLaneCount();
+                var nRIghtLane = roadGroupEditorData.Ref.GetRightLaneCount();
                 var nLane = nLeftLane + nRIghtLane;
                 HashSet<RnWay> ways = new HashSet<RnWay>(nLane * 2);
                 List<RnWay> unionWay = new List<RnWay>(nLane * 2 - 2);  // 端の2つは覗く
-                var lanes = item.Ref.Roads[0].MainLanes;
+                var lanes = roadGroupEditorData.Ref.Roads[0].MainLanes;
                 foreach (var lane in lanes)
                 {
                     foreach (var way in lane.BothWays)
@@ -419,16 +419,16 @@ namespace PLATEAU.Editor.RoadNetwork
                 //    unionWay.Remove(otherLane.RightWay);
                 //}
 
-                var wayEditorDataList = item.GetSubData<List<WaySlideData>>();
+                var wayEditorDataList = roadGroupEditorData.GetSubData<List<WayEditorData>>();
                 var nSlider = unionWay.Count; // 左右の
                 if (wayEditorDataList == null)
                 {
-                    wayEditorDataList = new List<WaySlideData>(nSlider);
+                    wayEditorDataList = new List<WayEditorData>(nSlider);
                     foreach (var editingTarget in unionWay)
                     {
-                        wayEditorDataList.Add(new WaySlideData(editingTarget));
+                        wayEditorDataList.Add(new WayEditorData(editingTarget));
                     }
-                    item.TryAdd(wayEditorDataList);
+                    roadGroupEditorData.TryAdd(wayEditorDataList);
                 }
 
                 Assert.IsNotNull(wayEditorDataList);
@@ -438,7 +438,7 @@ namespace PLATEAU.Editor.RoadNetwork
                     wayEditorDataList.Capacity = nSlider;
                     foreach (var editingTarget in unionWay)
                     {
-                        wayEditorDataList.Add(new WaySlideData(editingTarget));
+                        wayEditorDataList.Add(new WayEditorData(editingTarget));
                     }
                 }
                 Handles.BeginGUI();
@@ -475,13 +475,13 @@ namespace PLATEAU.Editor.RoadNetwork
                         continue;
                     }
 
-                    var target = wayEditorData.Target;
+                    var target = wayEditorData.Ref;
 
                     // デフォルトの状態に戻す
-                    var baseWay = wayEditorData.baseWay;
+                    var baseWay = wayEditorData.BaseWay;
                     for (int i = 0; i < baseWay.Count; i++)
                     {
-                        var p = wayEditorData.baseWay[i];
+                        var p = baseWay[i];
                         var p2 = target.GetPoint(i);
                         p2.Vertex = p;
                     }

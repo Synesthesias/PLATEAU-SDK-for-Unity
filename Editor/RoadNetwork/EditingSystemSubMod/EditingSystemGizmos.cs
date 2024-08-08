@@ -17,22 +17,30 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
         private List<List<Vector3>> intersectionConnectionLinePairs2 = new List<List<Vector3>>();
         private Color connectionColor = Color.blue;
 
+        private Color selectableWayColor = Color.yellow;
+        private List<List<Vector3>> selectableWayList = new List<List<Vector3>>();
+
+        private Color guideWayColor = Color.gray;
+        private List<List<Vector3>> guideWayList = new List<List<Vector3>>();
         //public List<Vector3> intersections = new List<Vector3>();
         //public Color intersectionColor = Color.green;
         //public float intersectionRadius = 4.0f;
 
         //public float btnSize = 2.0f;
 
-        public void Update(EditorDataList<EditorData<RnRoadGroup>> linkGroupEditorData)
+        public void Update(
+            object selectingElement,
+            EditorDataList<EditorData<RnRoadGroup>> linkGroupEditorData)
         {
-            // 仮　専用ノード間の繋がりを描画
             if (linkGroupEditorData.TryGetCache("linkGroup", out IEnumerable<LinkGroupEditorData> eConn) == false)
             {
                 Assert.IsTrue(false);
                 return;
             }
             List<LinkGroupEditorData> connections = eConn.ToList();
+            connections.Remove(null);
 
+            // 仮　専用ノード間の繋がりを描画
             intersectionConnectionLinePairs.Clear();
             var pts = intersectionConnectionLinePairs;
             pts.Capacity = (connections.Count + 3) * 2;
@@ -69,10 +77,99 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
 
             }
 
-            foreach (var item in connections)
+            // RoadGroupが選択されている
+            selectableWayList.Clear();
+            guideWayList.Clear();
+            if (selectingElement is EditorData<RnRoadGroup> roadGroupEditorData)
             {
-                item.LinkGroup.Roads
+                var laneGroup = new LaneGroupEditorData(roadGroupEditorData.Ref);
+
+                var wayEditorDataList = roadGroupEditorData.GetSubData<List<WayEditorData>>();
+
+                // way用の編集データがない場合は作成
+                if (wayEditorDataList == null || true)
+                {
+                    // wayを重複無しでコレクションする
+                    HashSet<RnWay> ways = new HashSet<RnWay>();
+                    foreach (var road in roadGroupEditorData.Ref.Roads)
+                    {
+                        foreach (var lane in road.AllLanes)
+                        {
+                            ways.Add(lane.LeftWay);
+                            ways.Add(lane.RightWay);
+                        }
+                    }
+
+                    // way用の編集データの作成
+                    wayEditorDataList = new List<WayEditorData>(ways.Count);
+                    foreach (var editingTarget in ways)
+                    {
+                        if (editingTarget == null)
+                        {
+                            continue;
+                        }
+                        wayEditorDataList.Add(new WayEditorData(editingTarget));
+                    }
+                    roadGroupEditorData.TryAdd(wayEditorDataList);
+
+                    //// 道路端のwayを編集不可能にする
+                    //wayEditorDataList.First().IsSelectable = false;
+                    //wayEditorDataList.Last().IsSelectable = false;
+
+                    // 下　もしかしたらwayを結合して扱う必要があるかも
+                    // 道路端のwayを編集不可能にする
+                    //var firstRoad = roadGroupEditorData.Ref.Roads.First();
+                    //var leftEdgeLane = firstRoad.MainLanes.First();
+                    //wayEditorDataList.Find(x => x.Ref == leftEdgeLane.LeftWay).IsSelectable = false;
+                    //var rightEdgeLane = firstRoad.MainLanes.Last();
+                    //if (leftEdgeLane == rightEdgeLane)  // レーンが一つしかない時は反対側のレーンを参照する
+                    //{
+                    //    wayEditorDataList.Find(x => x.Ref == rightEdgeLane.RightWay).IsSelectable = false;
+                    //}
+                    //else
+                    //{
+                    //    if (rightEdgeLane.LeftWay != null)
+                    //    {
+                    //        rightEdgeLane.GetBorderDir(RnLaneBorderType.)
+                    //        wayEditorDataList.Find(x => x.Ref == rightEdgeLane.LeftWay).IsSelectable = false;
+
+                    //    }
+                    //    wayEditorDataList.Find(x => x.Ref == rightEdgeLane.LeftWay).IsSelectable = false;
+                    //}
+                }
+
+                // 選択可能なwayを描画
+                foreach (var wayEditorData in wayEditorDataList)
+                {
+                    var way = new List<Vector3>(wayEditorData.Ref.Points.Count());
+                    selectableWayList.Add(way);
+                    if (wayEditorData.IsSelectable)
+                    {
+                        var points = wayEditorData.Ref.Points;
+                        foreach (var p in points)
+                        {
+                            way.Add(p);
+                        }
+                    }
+                }
+
+                // ガイド用のwayを描画
+                foreach (var wayEditorData in wayEditorDataList)
+                {
+                    var way = new List<Vector3>(wayEditorData.Ref.Points.Count());
+                    guideWayList.Add(way);
+                    if (wayEditorData.IsSelectable == false)
+                    {
+                        var points = wayEditorData.Ref.Points;
+                        foreach (var p in points)
+                        {
+                            way.Add(p);
+                        }
+                    }
+                }
+
             }
+
 
             //gizmos.intersectionConnectionLinePairs2.Clear();
             //var pts = gizmos.intersectionConnectionLinePairs2;
@@ -146,6 +243,29 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
             //            Gizmos.DrawSphere(i, intersectionRadius);
             //        }
             //    }
+
+            if (selectableWayList.Count > 0)
+            {
+                drawFuncs.Add(() =>
+                {
+                    Gizmos.color = selectableWayColor;
+                    foreach (var way in selectableWayList)
+                    {
+                        Gizmos.DrawLineStrip(way.ToArray(), false);
+                    }
+                });
+            }
+            if (guideWayList.Count > 0)
+            {
+                drawFuncs.Add(() =>
+                {
+                    Gizmos.color = guideWayColor;
+                    foreach (var way in guideWayList)
+                    {
+                        Gizmos.DrawLineStrip(way.ToArray(), false);
+                    }
+                });
+            }
 
             return drawFuncs;
         }

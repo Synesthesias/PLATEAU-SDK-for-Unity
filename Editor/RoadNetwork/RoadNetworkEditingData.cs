@@ -137,8 +137,13 @@ namespace PLATEAU.Editor.RoadNetwork
         }
 
         public _BaseData Ref { get; private set; }
-        List<object> userData;
+        private List<object> userData;
 
+        /// <summary>
+        /// 編集可能なデータか？
+        /// 整合性や前提条件を満たしていない場合もfalse
+        /// </summary>
+        public bool IsEditable { get; set; } = false;
     }
 
     public class PointEditorData
@@ -356,6 +361,7 @@ namespace PLATEAU.Editor.RoadNetwork
         public LaneGroupEditorData(RnRoadGroup target)
         {
             Assert.IsNotNull(target);
+            group = target;
             var fLink = group.Roads.First();
             var lLink = group.Roads.Last();
 
@@ -366,6 +372,7 @@ namespace PLATEAU.Editor.RoadNetwork
                 {
                     LaneGroupListCache.Add(new List<RnLane>() { lane });
                 }
+                return;
             }
 
             var flLanes = fLink.GetLanes(RnDir.Left);
@@ -380,6 +387,8 @@ namespace PLATEAU.Editor.RoadNetwork
             LaneGroupListCache = new List<List<RnLane>>(nGroup);
             foreach (var lane in flLanes)
             {
+                var errCheckCnt = nLanes + 3;   // 無限ループ防止
+
                 var laneGroup = new List<RnLane>(nLanes);
                 LaneGroupListCache.Add(laneGroup);
 
@@ -393,6 +402,12 @@ namespace PLATEAU.Editor.RoadNetwork
                         break;
                     }
 
+                    if (errCheckCnt == 0)
+                    {
+                        Assert.IsTrue(false, "無限ループ");
+                        break;
+                    }
+
                     // borderを共有しているので直線状に繋がったLane
                     var nextLane = prevLane.GetNextLanes().First(v => v.PrevBorder == prevLane.NextBorder);
                     Assert.IsNotNull(nextLane);
@@ -402,14 +417,12 @@ namespace PLATEAU.Editor.RoadNetwork
                         prevLane = nextLane;
                     }
 
-
-                    //var errCheckCnt = nLanes;
-                    //errCheckCnt--; ここら辺から
+                    errCheckCnt--;
                 }
             }
         }
 
-        RnRoadGroup group;
+        private RnRoadGroup group;
 
         // 連結レーンのリスト
         public List<List<RnLane>> LaneGroupListCache { get; set; } = new List<List<RnLane>>();
@@ -425,13 +438,13 @@ namespace PLATEAU.Editor.RoadNetwork
     /// <summary>
     /// Wayをスライドさせるためのデータ
     /// </summary>
-    public class WaySlideData
+    public class WayEditorData
     {
-        public WaySlideData(RnWay target)
+        public WayEditorData(RnWay target)
         {
             Assert.IsNotNull(target);
-            baseWay = target.Vertices.ToList();
-            Target = target;
+            BaseWay = target.Vertices.ToList();
+            Ref = target;
         }
 
         float sliderVarVals;
@@ -453,8 +466,13 @@ namespace PLATEAU.Editor.RoadNetwork
         }
         public bool IsChanged { get; private set; }
 
-        public List<Vector3> baseWay = new List<Vector3>();
-        public RnWay Target { get; set; } = null;
+        public List<Vector3> BaseWay { get; private set; } = new List<Vector3>();
+        public RnWay Ref { get; private set; } = null;
+
+        /// <summary>
+        /// 選択可能か？
+        /// </summary>
+        public bool IsSelectable { get; set; } = true;
     }
 
 }
