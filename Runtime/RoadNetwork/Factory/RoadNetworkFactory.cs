@@ -40,6 +40,7 @@ namespace PLATEAU.RoadNetwork.Factory
 
         // 中央分離帯をチェックする
         [SerializeField] public bool checkMedian = true;
+        [SerializeField] public bool zeroWidthMedian = false;
         // 高速道路を無視するかのフラグ
         [SerializeField] public bool ignoreHighway = false;
         // RGraph作るときのファクトリパラメータ
@@ -382,14 +383,14 @@ namespace PLATEAU.RoadNetwork.Factory
                         var leftWay = leftLine?.Way;
                         var rightWay = rightLine?.Way;
 
+                        // 方向そろえる
                         if (leftLine != null && leftLine.Prev != prevBorderLine)
                             leftWay = leftWay.ReversedWay();
                         if (rightLine != null && rightLine.Prev != prevBorderLine)
                             rightWay = rightWay.ReversedWay();
+                        if (rightWay != null)
+                            rightWay.IsReverseNormal = true;
 
-                        // もともと時計回りなのでleftWayとrightWayが逆になっている
-                        // 方向そろえるためにrightWayを反転させている
-                        // #TODO : ちゃんと始点/終点がPrev/Nextになっているか確認すべき
                         var lane = new RnLane(leftWay, rightWay, prevBorderWay, nextBorderWay);
                         road.AddMainLane(lane);
                         return road;
@@ -595,7 +596,8 @@ namespace PLATEAU.RoadNetwork.Factory
                             if (checkMedian)
                             {
                                 linkGroup.SetLaneCount(1, 1);
-                                linkGroup.SetMedianWidth(width, LaneWayMoveOption.MoveBothWay);
+                                if (zeroWidthMedian == false)
+                                    linkGroup.SetMedianWidth(width, LaneWayMoveOption.MoveBothWay);
                             }
                             foreach (var r in linkGroup.Roads)
                                 visited.Add(r);

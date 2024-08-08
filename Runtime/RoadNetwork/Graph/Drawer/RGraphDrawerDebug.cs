@@ -232,6 +232,10 @@ namespace PLATEAU.RoadNetwork.Drawer
             if (op.showOutline)
             {
                 DrawLines(vertices.Select(v => v.Position), op.showOutlineLoop, color: isLoop ? Color.white : Color.red);
+                foreach (var v in vertices)
+                {
+                    Draw(vertexOption, v, work);
+                }
             }
             else
             {

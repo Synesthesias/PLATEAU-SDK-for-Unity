@@ -161,7 +161,8 @@ namespace PLATEAU.RoadNetwork.Structure
                         line.AddPointOrSkip(prevBorder.GetPoint(-1), ep);
                         var segments = GeoGraphEx.GetInnerLerpSegments(leftVertices, rightVertices, AxisPlane.Xz,
                             (1f + n) / num);
-                        foreach (var s in segments)
+                        // 1つ目の点はボーダーと重複するのでスキップ
+                        foreach (var s in segments.Skip(1))
                             line.AddPointOrSkip(new RnPoint(s.Segment.Start), ep);
                         line.AddPointOrSkip(nextBorder.GetPoint(-1), ep);
 

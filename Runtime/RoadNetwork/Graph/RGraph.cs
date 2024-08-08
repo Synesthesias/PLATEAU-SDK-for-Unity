@@ -926,12 +926,16 @@ namespace PLATEAU.RoadNetwork.Graph
         /// <param name="midPointTolerance">aとcとしか接続していない点bに対して、a-cの直線との距離がこれ以下だとbをマージする</param>
         public static void VertexReduction(this RGraph self, float mergeCellSize, int mergeCellLength, float midPointTolerance)
         {
+            while (true)
             {
                 var vertices = self.GetAllVertices().ToList();
 
                 var vertexTable = GeoGraphEx.MergeVertices(vertices.Select(v => v.Position), mergeCellSize, mergeCellLength);
                 var vertex2RVertex = vertexTable.Values.Distinct().ToDictionary(v => v, v => new RVertex(v));
-                Debug.Log($"MergeVertices: {vertices.Count} -> {vertex2RVertex.Count + vertices.Count(v => vertexTable.ContainsKey(v.Position) == false)}");
+
+                var afterCount = vertex2RVertex.Count +
+                                 vertices.Count(v => vertexTable.ContainsKey(v.Position) == false);
+                Debug.Log($"MergeVertices: {vertices.Count} -> {afterCount}");
                 foreach (var v in vertices)
                 {
                     if (vertexTable.TryGetValue(v.Position, out var dst))
@@ -939,6 +943,8 @@ namespace PLATEAU.RoadNetwork.Graph
                         v.MergeTo(vertex2RVertex[dst]);
                     }
                 }
+                if (vertices.Count == afterCount)
+                    break;
             }
 
             while (true)
