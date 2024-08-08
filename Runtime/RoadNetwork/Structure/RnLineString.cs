@@ -141,8 +141,9 @@ namespace PLATEAU.RoadNetwork.Structure
                 {
                     // 中間点があってもほぼ直線だった場合は中間点は削除する
                     var segment = new LineSegment3D(Points[^2].Vertex, p.Vertex);
-                    var pos = segment.GetNearestPoint(Points[^1].Vertex);
-                    if (midPointTolerance > 0f && (p - Points[^1].Vertex).sqrMagnitude < midPointTolerance * midPointTolerance)
+                    var mid = Points[^1];
+                    var pos = segment.GetNearestPoint(mid.Vertex);
+                    if (midPointTolerance > 0f && (mid.Vertex - pos).sqrMagnitude < midPointTolerance * midPointTolerance)
                     {
                         Points.RemoveAt(Points.Count - 1);
                     }
