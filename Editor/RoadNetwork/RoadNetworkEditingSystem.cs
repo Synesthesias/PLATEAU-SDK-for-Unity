@@ -133,7 +133,7 @@ namespace PLATEAU.Editor.RoadNetwork
             system = new EditingSystem(this);
             TryInitialize(rootVisualElement);
 
-
+            return;
 
             // test
             // カプセルの設定
@@ -1512,13 +1512,30 @@ namespace PLATEAU.Editor.RoadNetwork
                     linkGroupEditorData.Add(editorData);
                 }
 
+                // 仮 編集可能なデータに勝手に修正
+                foreach (var linkGroupEditorData in linkGroupEditorData)
+                {
+                    var data = linkGroupEditorData.Ref;
+                    var nl = data.GetLeftLaneCount();
+                    var nr = data.GetRightLaneCount();
+                    data.SetLaneCount(nl, nr);
+                    linkGroupEditorData.IsEditable = true;
+                }
+
                 // Transform変更を検知する
                 EditorApplication.update -= Update;
                 EditorApplication.update += Update;
 
 
                 // キャッシュの生成
-                linkGroupEditorData.AddCache("linkGroup", (d) => d.GetSubData<LinkGroupEditorData>());
+                linkGroupEditorData.AddCache("linkGroup", (d) =>
+                {
+                    if (d.IsEditable == false)
+                    {
+                        return null;
+                    }
+                    return d.GetSubData<LinkGroupEditorData>();
+                });
                 //linkGroupEditorData.Select((d) => d.GetSubData<LinkGroupEditorData>()).ToList();
 
                 return;
@@ -1712,7 +1729,9 @@ namespace PLATEAU.Editor.RoadNetwork
                 if (guisys != null)
                 {
                     // gizmosの更新
-                    gizmos.Update(linkGroupEditorData);
+                    gizmos.Update(
+                        system.SelectedRoadNetworkElement, 
+                        linkGroupEditorData);
                     var cmds = gizmos.BuildDrawCommands();
                     gizmosdrawer.DrawFuncs.Clear();
                     gizmosdrawer.DrawFuncs.AddRange(cmds);
