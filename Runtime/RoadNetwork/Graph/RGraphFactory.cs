@@ -11,8 +11,8 @@ namespace PLATEAU.RoadNetwork.Graph
         // start:フィールド
         // --------------------
         public bool reductionOnCreate = true;
-        public float mergeCellSize = 0.2f;
-        public int mergeCellLength = 2;
+        public float mergeCellSize = 0.5f;
+        public int mergeCellLength = 4;
         public float removeMidPointTolerance = 0.3f;
         // --------------------
         // end:フィールド

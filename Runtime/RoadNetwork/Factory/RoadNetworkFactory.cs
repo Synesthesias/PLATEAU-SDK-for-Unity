@@ -37,6 +37,9 @@ namespace PLATEAU.RoadNetwork.Factory
         [SerializeField] public float lod1SideWalkSize = 3f;
         // Lod3の歩道を追加するかどうか
         [SerializeField] public bool addLod3SideWalk = true;
+
+        // 中央分離帯をチェックする
+        [SerializeField] public bool checkMedian = true;
         // 高速道路を無視するかのフラグ
         [SerializeField] public bool ignoreHighway = false;
         // RGraph作るときのファクトリパラメータ
@@ -347,37 +350,47 @@ namespace PLATEAU.RoadNetwork.Factory
                     var pairs = lanes.GroupBy(l => RnEx.CombSet(l.Prev, l.Next))
                         .Select(g =>
                         {
-                            var laneWays = g.ToList();
-                            var (leftWay, rightWay) = (laneWays.ElementAtOrDefault(0), laneWays.ElementAtOrDefault(1));
-                            if (leftWay?.Way?.IsReversed ?? false)
-                                (leftWay, rightWay) = (rightWay, leftWay);
-                            return new { leftWay, rightWay };
+                            var laneLines = g.ToList();
+                            var (leftLine, rightLine) = (laneLines.ElementAtOrDefault(0), laneLines.ElementAtOrDefault(1));
+                            if (leftLine?.Way?.IsReversed ?? false)
+                                (leftLine, rightLine) = (rightLine, leftLine);
+                            return new { leftLine, rightLine };
                         }).ToList();
-                    var pair = pairs.FirstOrDefault(p => p.leftWay != null && p.rightWay != null);
+                    var pair = pairs.FirstOrDefault(p => p.leftLine != null && p.rightLine != null);
                     if (pair == null)
                         pair = pairs.FirstOrDefault();
                     if (pair != null)
                     {
-                        var (leftWay, rightWay) = (pair.leftWay, pair.rightWay);
+                        var (leftLine, rightLine) = (pair.leftLine, pair.rightLine);
 
-                        if (leftWay == null && rightWay == null)
+                        if (leftLine == null && rightLine == null)
                         {
                             Debug.LogError($"不正なーレーン構成(Wayの存在しないLane) {CityObjectGroup.name}");
                             return road;
                         }
 
                         // ログだけ残しておく
-                        if (leftWay == null || rightWay == null)
+                        if (leftLine == null || rightLine == null)
                             Debug.LogWarning($"不正なレーン構成(片側Wayのみ存在) {CityObjectGroup.name}");
 
-                        var way = leftWay ?? rightWay;
-                        var prevBorderWay = way?.Prev?.Way;
-                        var nextBorderWay = way?.Next?.Way;
+                        var line = leftLine ?? rightLine;
+                        var prevBorderLine = line?.Prev; ;
+                        var nextBorderLine = line?.Next;
+                        var prevBorderWay = prevBorderLine?.Way;
+                        var nextBorderWay = nextBorderLine?.Way;
+
+                        var leftWay = leftLine?.Way;
+                        var rightWay = rightLine?.Way;
+
+                        if (leftLine != null && leftLine.Prev != prevBorderLine)
+                            leftWay = leftWay.ReversedWay();
+                        if (rightLine != null && rightLine.Prev != prevBorderLine)
+                            rightWay = rightWay.ReversedWay();
 
                         // もともと時計回りなのでleftWayとrightWayが逆になっている
                         // 方向そろえるためにrightWayを反転させている
                         // #TODO : ちゃんと始点/終点がPrev/Nextになっているか確認すべき
-                        var lane = new RnLane(leftWay?.Way, rightWay?.Way?.ReversedWay(), prevBorderWay, nextBorderWay);
+                        var lane = new RnLane(leftWay, rightWay, prevBorderWay, nextBorderWay);
                         road.AddMainLane(lane);
                         return road;
                     }
@@ -579,8 +592,11 @@ namespace PLATEAU.RoadNetwork.Factory
                             var linkGroup = road.CreateRoadGroupOrDefault();
                             if (linkGroup == null)
                                 continue;
-                            linkGroup.SetLaneCount(1, 1);
-                            linkGroup.SetMedianWidth(width, LaneWayMoveOption.MoveBothWay);
+                            if (checkMedian)
+                            {
+                                linkGroup.SetLaneCount(1, 1);
+                                linkGroup.SetMedianWidth(width, LaneWayMoveOption.MoveBothWay);
+                            }
                             foreach (var r in linkGroup.Roads)
                                 visited.Add(r);
                         }

@@ -208,9 +208,9 @@ namespace PLATEAU.Util.GeoGraph
         /// <returns></returns>
         public static Dictionary<Vector3, Vector3> MergeVertices(IEnumerable<Vector3> vertices, float cellSize = 0.1f, int mergeCellLength = 2)
         {
-            // 内部的なセルサイズは半分にする -> そのうえで倍の距離でマージする
-            var len = cellSize * 0.5f;
-            var mergeLen = mergeCellLength * 2;
+            var len = cellSize;
+            var mergeLen = mergeCellLength;
+
             // HashSetだと全く同じ値が来たときに消えないのでListにする
             var cells = new Dictionary<Vector3Int, List<Vector3>>();
             var min = Vector3Int.one * int.MaxValue;
