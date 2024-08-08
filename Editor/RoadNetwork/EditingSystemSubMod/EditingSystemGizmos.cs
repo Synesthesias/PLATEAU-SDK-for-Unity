@@ -69,6 +69,11 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
 
             }
 
+            foreach (var item in connections)
+            {
+                item.LinkGroup.Roads
+            }
+
             //gizmos.intersectionConnectionLinePairs2.Clear();
             //var pts = gizmos.intersectionConnectionLinePairs2;
             //pts.Capacity = (connections.Count + 3) * 2;
