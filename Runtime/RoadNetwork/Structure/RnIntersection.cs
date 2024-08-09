@@ -36,6 +36,8 @@ namespace PLATEAU.RoadNetwork.Structure
         // end: フィールド
         //----------------------------------
 
+        public override PLATEAUCityObjectGroup CityObjectGroup => TargetTran;
+
         public IReadOnlyList<RnNeighbor> Neighbors => neighbors;
 
         // 車線

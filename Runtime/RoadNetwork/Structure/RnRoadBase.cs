@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PLATEAU.CityInfo;
+using System;
 using System.Collections.Generic;
 
 namespace PLATEAU.RoadNetwork.Structure
@@ -9,6 +10,8 @@ namespace PLATEAU.RoadNetwork.Structure
     [Serializable]
     public class RnRoadBase : ARnParts<RnRoadBase>
     {
+        public virtual PLATEAUCityObjectGroup CityObjectGroup => null;
+
         // 境界線情報を取得
         public virtual IEnumerable<RnBorder> GetBorders() { yield break; }
 

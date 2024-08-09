@@ -28,8 +28,7 @@ namespace PLATEAU.RoadNetwork.Graph
 
         public void Reduction(RGraph graph)
         {
-            graph.VertexReduction(mergeCellSize, mergeCellLength, removeMidPointTolerance);
-            graph.EdgeReduction();
+            graph.Optimize(mergeCellSize, mergeCellLength, removeMidPointTolerance);
         }
     }
 }

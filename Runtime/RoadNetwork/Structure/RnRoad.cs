@@ -46,6 +46,8 @@ namespace PLATEAU.RoadNetwork.Structure
         // end: フィールド
         //----------------------------------
 
+        public override PLATEAUCityObjectGroup CityObjectGroup => TargetTran;
+
         // 本線レーン(参照のみ)
         // 追加/削除はAddMainLane/RemoveMainLaneを使うこと
         public IReadOnlyList<RnLane> MainLanes => mainLanes;

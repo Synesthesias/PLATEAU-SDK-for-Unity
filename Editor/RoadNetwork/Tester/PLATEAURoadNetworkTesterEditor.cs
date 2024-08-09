@@ -86,6 +86,13 @@ namespace PLATEAU.Editor.RoadNetwork.Tester
                     }
                 }
             }
+
+            public bool IsTarget(RnRoadBase roadBase)
+            {
+                if (roadBase.CityObjectGroup == null)
+                    return false;
+                return Selection.gameObjects.Contains(roadBase.CityObjectGroup.gameObject);
+            }
         }
 
         private class RGraphInstanceHelper : RGraphDebugEditorWindow.IInstanceHelper
@@ -144,6 +151,11 @@ namespace PLATEAU.Editor.RoadNetwork.Tester
                 }
             }
 
+
+            public bool IsTarget(RFace face)
+            {
+                return Selection.gameObjects.Contains(face.CityObjectGroup.gameObject);
+            }
 
             public void CreateRnModel()
             {

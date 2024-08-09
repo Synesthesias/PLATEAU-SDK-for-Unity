@@ -200,6 +200,29 @@ namespace PLATEAU.Util.GeoGraph
         }
 
         /// <summary>
+        /// 2次元のセル空間における, d近傍の距離を返す.
+        /// GetNeighborDistance3D(1)の場合は, 3*3の正方形の距離を返す( x,yzがそれぞれ -1~1の範囲)
+        /// </summary>
+        /// <param name="d"></param>
+        /// <returns></returns>
+        public static Vector2Int[] GetNeighborDistance2D(int d)
+        {
+            // +d, -dの範囲で2d+1の立方体を返す
+            var w = 2 * d + 1;
+            var size = w * w;
+            var half = d;
+            var ret = new Vector2Int[size];
+            for (var i = 0; i < size; i++)
+            {
+                var dx = i % w - half;
+                var dy = (i / w) % w - half;
+                ret[i] = new Vector2Int(dx, dy);
+            }
+
+            return ret;
+        }
+
+        /// <summary>
         /// 点群verticesをセルサイズcellSizeでグリッド化し、頂点をまとめた結果を返す
         /// </summary>
         /// <param name="vertices"></param>

@@ -1,10 +1,6 @@
-﻿using PLATEAU.CityInfo;
-using PLATEAU.RoadNetwork;
+﻿using PLATEAU.RoadNetwork;
 using PLATEAU.RoadNetwork.Drawer;
 using PLATEAU.RoadNetwork.Graph;
-using PLATEAU.RoadNetwork.Structure;
-using PLATEAU.Util;
-using System;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
@@ -26,6 +22,8 @@ namespace PLATEAU.Editor.RoadNetwork.Graph
             long TargetEdgeId { get; set; }
 
             long TargetVertexId { get; set; }
+
+            bool IsTarget(RFace face);
 
             // モデル作成する
             void CreateRnModel();
@@ -54,6 +52,7 @@ namespace PLATEAU.Editor.RoadNetwork.Graph
                 if (f == null)
                     return;
 
+                EditorGUILayout.LabelField("Face ID", f.DebugMyId.ToString());
                 EditorGUILayout.EnumFlagsField("RoadType", f.RoadTypes);
             }
         }
@@ -137,9 +136,7 @@ namespace PLATEAU.Editor.RoadNetwork.Graph
                     graph = InstanceHelper.CreateGraph();
                     if (mergeOnCreate)
                     {
-                        graph.VertexReduction(mergeCellSize, mergeCellLength, removeMidPointTolerance);
-                        graph.EdgeReduction();
-                        graph.SeparateFaces();
+                        graph.Optimize(mergeCellSize, mergeCellLength, removeMidPointTolerance);
                     }
                 }
                 mergeOnCreate = EditorGUILayout.Toggle("MergeOnCreate", mergeOnCreate);
@@ -147,6 +144,11 @@ namespace PLATEAU.Editor.RoadNetwork.Graph
 
             using (new EditorGUILayout.HorizontalScope())
             {
+                if (GUILayout.Button("Optimize"))
+                {
+                    graph.Optimize(mergeCellSize, mergeCellLength, removeMidPointTolerance);
+                }
+
                 mergeCellSize = EditorGUILayout.FloatField("mergeCellSize", mergeCellSize);
                 mergeCellLength = EditorGUILayout.IntField("MergeCellLength", mergeCellLength);
                 removeMidPointTolerance = EditorGUILayout.FloatField("RemoveMidPointTolerance", removeMidPointTolerance);
@@ -154,12 +156,17 @@ namespace PLATEAU.Editor.RoadNetwork.Graph
 
             using (new EditorGUILayout.HorizontalScope())
             {
-                if (GUILayout.Button("Merge"))
+                if (GUILayout.Button("InsertVertexInNearEdge"))
+                {
+                    graph.InsertVertexInNearEdge(mergeCellSize);
+                }
+
+                if (GUILayout.Button("Vertex Reduction"))
                 {
                     graph.VertexReduction(mergeCellSize, mergeCellLength, removeMidPointTolerance);
                 }
 
-                if (GUILayout.Button("Merge Edge"))
+                if (GUILayout.Button("Edge Reduction"))
                     graph.EdgeReduction();
 
                 if (GUILayout.Button("Separate Face"))
@@ -197,6 +204,15 @@ namespace PLATEAU.Editor.RoadNetwork.Graph
             {
                 var face = graph.Faces.FirstOrDefault(f => (long)f.DebugMyId == InstanceHelper.TargetFaceId);
                 faceEdit.Update(face);
+            }
+
+            foreach (var face in graph.Faces)
+            {
+                if (InstanceHelper.IsTarget(face))
+                {
+                    EditorGUILayout.Separator();
+                    faceEdit.Update(face);
+                }
             }
 
             if (InstanceHelper.TargetEdgeId >= 0)

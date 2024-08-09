@@ -1,3 +1,4 @@
+using Codice.Client.BaseCommands.Differences;
 using PLATEAU.CityInfo;
 using PLATEAU.RoadNetwork.Mesh;
 using PLATEAU.Util;
@@ -6,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using UnityEditor.Graphs;
 using UnityEngine;
 using UnityEngine.Assertions;
 
@@ -487,7 +489,7 @@ namespace PLATEAU.RoadNetwork.Graph
         }
 
         /// <summary>
-        /// vで2つに分割する
+        /// vで2つに分割する, 元のedgeはV0->v, 新しいEdgeはv->V1になる. 新しいEdgeを返す
         /// </summary>
         /// <param name="v"></param>
         public REdge SplitEdge(RVertex v)
@@ -526,7 +528,66 @@ namespace PLATEAU.RoadNetwork.Graph
         /// <returns></returns>
         public bool IsShareAnyVertex(REdge other)
         {
-            return V0 == other.V0 || V1 == other.V0 || V0 == other.V1 || V1 == other.V1;
+            return IsShareAnyVertex(other, out _);
+        }
+
+        /// <summary>
+        /// otherと共有している頂点があるかどうか
+        /// </summary>
+        /// <param name="other"></param>
+        /// <returns></returns>
+        public bool IsShareAnyVertex(REdge other, out RVertex sharedVertex)
+        {
+            if (V0 == other.V0 || V1 == other.V0)
+            {
+                sharedVertex = other.V0;
+                return true;
+            }
+
+            if (V0 == other.V1 || V1 == other.V1)
+            {
+                sharedVertex = other.V1;
+                return true;
+            }
+
+            sharedVertex = null;
+            return false;
+        }
+
+        /// <summary>
+        /// vertexと反対側の頂点を取得する. vertexが含まれていない場合はnullを返す
+        /// </summary>
+        /// <param name="vertex"></param>
+        /// <param name="opposite"></param>
+        /// <returns></returns>
+        public bool TryGetOppositeVertex(RVertex vertex, out RVertex opposite)
+        {
+            if (V0 == vertex)
+            {
+                opposite = V1;
+                return true;
+            }
+
+            if (V1 == vertex)
+            {
+                opposite = V0;
+                return true;
+            }
+
+            opposite = null;
+            return false;
+        }
+
+        /// <summary>
+        /// vertexと反対側の頂点を取得する. vertexが含まれていない場合はnullを返す
+        /// </summary>
+        /// <param name="vertex"></param>
+        /// <returns></returns>
+        public RVertex GetOppositeVertex(RVertex vertex)
+        {
+            if (TryGetOppositeVertex(vertex, out var opposite))
+                return opposite;
+            return null;
         }
 
         /// <summary>
@@ -557,7 +618,8 @@ namespace PLATEAU.RoadNetwork.Graph
                 {
                     if (poly.IsSameEdges(queue[i]))
                     {
-                        queue[i].MergeTo(poly);
+                        // 辺は全て同じなので高速化のため移動処理は行わない
+                        queue[i].MergeTo(poly, false);
                         queue.RemoveAt(i);
                     }
                     else
@@ -728,9 +790,11 @@ namespace PLATEAU.RoadNetwork.Graph
 
         /// <summary>
         /// 基本呼び出し禁止. 自身をdstにマージする
+        /// moveEdge = falseの時は自身のEdgesは移動しない.
         /// </summary>
         /// <param name="dst"></param>
-        public void MergeTo(RFace dst)
+        /// <param name="moveEdge"></param>
+        public void MergeTo(RFace dst, bool moveEdge = true)
         {
             dst.RoadTypes |= RoadTypes;
 
@@ -738,6 +802,8 @@ namespace PLATEAU.RoadNetwork.Graph
                 throw new InvalidDataException("CityObjectGroupが異なる場合はマージできません");
             dst.cityObjectGroup = CityObjectGroup;
             dst.LodLevel = Mathf.Max(dst.LodLevel, LodLevel);
+            foreach (var e in Edges)
+                dst.AddEdge(e);
             DisConnect();
         }
 
@@ -756,7 +822,6 @@ namespace PLATEAU.RoadNetwork.Graph
 
             edges.Clear();
         }
-
     }
 
     [Serializable]
@@ -818,6 +883,31 @@ namespace PLATEAU.RoadNetwork.Graph
         }
     }
 
+    public class RFaceGroup
+    {
+        public RGraph Graph { get; }
+
+        public PLATEAUCityObjectGroup CityObjectGroup { get; }
+
+        public HashSet<RFace> Faces { get; } = new HashSet<RFace>();
+
+        public RRoadTypeMask RoadTypes
+        {
+            get
+            {
+                return Faces.Aggregate((RRoadTypeMask)0, (a, f) => a | f.RoadTypes);
+            }
+        }
+
+        public RFaceGroup(RGraph graph, PLATEAUCityObjectGroup cityObjectGroup, IEnumerable<RFace> faces)
+        {
+            Graph = graph;
+            CityObjectGroup = cityObjectGroup;
+            foreach (var face in faces)
+                Faces.Add(face);
+        }
+    }
+
     public static class RVertexEx
     {
         /// <summary>
@@ -830,6 +920,16 @@ namespace PLATEAU.RoadNetwork.Graph
         {
             RRoadTypeMask roadType = RRoadTypeMask.Empty;
             foreach (var face in self.GetFaces().Where(f => f.CityObjectGroup == cog))
+            {
+                roadType |= face.RoadTypes;
+            }
+            return roadType;
+        }
+
+        public static RRoadTypeMask GetRoadType(this RVertex self, Func<RFace, bool> faceSelector)
+        {
+            RRoadTypeMask roadType = RRoadTypeMask.Empty;
+            foreach (var face in self.GetFaces().Where(faceSelector))
             {
                 roadType |= face.RoadTypes;
             }
@@ -946,7 +1046,7 @@ namespace PLATEAU.RoadNetwork.Graph
                 if (vertices.Count == afterCount)
                     break;
             }
-
+            // a-b-cのような直線状の頂点を削除する
             while (true)
             {
                 var vertices = self.Faces
@@ -977,6 +1077,62 @@ namespace PLATEAU.RoadNetwork.Graph
                 if (count == 0)
                     break;
             }
+#if false
+            while (true)
+            {
+                var vertices = self.GetAllVertices().ToList();
+                Dictionary<REdge, HashSet<RVertex>> edgeInsertMap = new();
+                foreach (var v in vertices)
+                {
+                    var edges = v.Edges.ToList();
+                    for (var i = 0; i < v.Edges.Count - 1; i++)
+                    {
+                        var e0 = edges[i];
+                        var v0 = e0.GetOppositeVertex(v);
+                        var s0 = new LineSegment3D(v.Position, v0.Position);
+                        for (var j = i + 1; j < edges.Count; j++)
+                        {
+                            var e1 = edges[j];
+                            var v1 = e1.GetOppositeVertex(v);
+                            if (v0 == v1)
+                                continue;
+
+                            var s1 = new LineSegment3D(v.Position, v1.Position);
+                            if (s0.Magnitude < s1.Magnitude)
+                            {
+                                var n = s1.GetNearestPoint(v0.Position);
+                                if ((n - v0.Position).magnitude < 0.2f)
+                                {
+                                    edgeInsertMap.GetValueOrCreate(e1).Add(v0);
+                                }
+                            }
+                            else
+                            {
+                                var n = s0.GetNearestPoint(v1.Position);
+                                if ((n - v1.Position).magnitude < 0.2f)
+                                {
+                                    edgeInsertMap.GetValueOrCreate(e0).Add(v1);
+                                }
+                            }
+                        }
+                    }
+                }
+                if (edgeInsertMap.Any() == false)
+                    break;
+                foreach (var e in edgeInsertMap)
+                {
+                    var sortedV = e.Value.OrderBy(p => (p.Position - e.Key.V0.Position).sqrMagnitude).ToList();
+
+                    var edge = e.Key;
+                    foreach (var v in sortedV)
+                    {
+                        edge = edge.SplitEdge(v);
+                    }
+                }
+
+                self.EdgeReduction();
+            }
+#endif
         }
 
         /// <summary>
@@ -1004,6 +1160,120 @@ namespace PLATEAU.RoadNetwork.Graph
                     r.MergeTo(dst);
                 }
             }
+        }
+
+        /// <summary>
+        /// 同じPLATEAUCityObjectGroupのFaceをpredicateのルールに従って一つのRFaceにする
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="isMatch"></param>
+        public static List<RFaceGroup> GroupBy(this RGraph self, Func<RFace, RFace, bool> isMatch)
+        {
+            var ret = new List<RFaceGroup>(self.Faces.Count);
+            foreach (var group in self.Faces.GroupBy(f => f.CityObjectGroup))
+            {
+                var faces = group.ToHashSet();
+                var faceGroups = new List<RFaceGroup>();
+                while (faces.Any())
+                {
+                    var queue = new Queue<RFace>();
+                    queue.Enqueue(faces.First());
+                    faces.Remove(faces.First());
+                    var g = new HashSet<RFace>();
+                    while (queue.Any())
+                    {
+                        var f0 = queue.Dequeue();
+                        g.Add(f0);
+                        foreach (var f1 in faces)
+                        {
+                            if (IsShareEdge(f0, f1) && isMatch(f0, f1))
+                            {
+                                g.Add(f1);
+                                queue.Enqueue(f1);
+                            }
+                        }
+                        foreach (var f in queue)
+                            faces.Remove(f);
+                    }
+
+                    faceGroups.Add(new RFaceGroup(self, group.Key, g));
+                }
+
+                foreach (var f in faceGroups)
+                    ret.Add(f);
+
+            }
+            return ret;
+        }
+
+        public static void Optimize(this RGraph self, float mergeCellSize, int mergeCellLength, float midPointTolerance)
+        {
+            self.VertexReduction(mergeCellSize, mergeCellLength, midPointTolerance);
+            self.EdgeReduction();
+            //self.GroupFace((f0, f1) =>
+            //{
+            //    var m0 = f0.RoadTypes & (~(RRoadTypeMask.Road | RRoadTypeMask.Median));
+            //    var m1 = f1.RoadTypes & (~(RRoadTypeMask.Road | RRoadTypeMask.Median));
+            //    return m0 == m1;
+            //});
+
+            self.SeparateFaces();
+        }
+
+        public static void InsertVertexInNearEdge(this RGraph self, float tolerance)
+        {
+            Dictionary<Vector2Int, HashSet<RVertex>> vertexMap = new();
+            var vertices = self.GetAllVertices().ToList();
+            foreach (var v in vertices)
+            {
+                var cell = v.Position.Xz().RevScaled(tolerance * Vector2.one).ToVector2Int();
+                vertexMap.GetValueOrCreate(cell).Add(v);
+            }
+            var delta = GeoGraphEx.GetNeighborDistance2D(1);
+            var threshold = tolerance * tolerance;
+            Dictionary<REdge, HashSet<RVertex>> edgeInsertMap = new();
+            foreach (var v in vertices)
+            {
+                var cell = v.Position.Xz().RevScaled(tolerance * Vector2.one).ToVector2Int();
+
+                var visited = new HashSet<REdge>();
+                foreach (var d in delta)
+                {
+                    var c = cell + d;
+                    if (vertexMap.TryGetValue(c, out var near) == false)
+                        continue;
+
+                    foreach (var n in near)
+                    {
+                        if (n == v)
+                            continue;
+                        foreach (var e in n.Edges.Where(e => v.Edges.Contains(e) == false && visited.Contains(e) == false))
+                        {
+                            visited.Add(e);
+                            var s = new LineSegment3D(e.V0.Position, e.V1.Position);
+                            var nearPos = s.GetNearestPoint(v.Position);
+                            if ((nearPos - v.Position).sqrMagnitude < threshold)
+                            {
+                                edgeInsertMap.GetValueOrCreate(e).Add(v);
+                            }
+                        }
+                    }
+                }
+            }
+            Debug.Log($"[InsertVertexInNearEdge] Add Vertex [{edgeInsertMap.Sum(e => e.Value.Count)}]");
+            foreach (var e in edgeInsertMap)
+            {
+                e.Key.InsertVertices(e.Value);
+                //var sortedV = e.Value.OrderBy(p => (p.Position - e.Key.V0.Position).sqrMagnitude).ToList();
+
+                //var edge = e.Key;
+                //foreach (var v in sortedV)
+                //{
+                //    edge = edge.SplitEdge(v);
+                //}
+            }
+
+            self.EdgeReduction();
         }
 
         /// <summary>
@@ -1058,21 +1328,32 @@ namespace PLATEAU.RoadNetwork.Graph
                 // 今回除かれる線分同士はチェックしない(vで交差しているから)
                 var targets = queue.Where(e =>
                 {
-                    // vを端点に持つ辺は無視(端点で
+                    // vを端点に持つ辺は無視
                     if (e.V0 == v || e.V1 == v)
                         return false;
                     return removeEdges.Contains(e) == false;
                 }).ToList();
+                var shareMid = 0.3f * 0.3f;
                 foreach (var e0 in removeEdges)
                 {
                     var s0 = new LineSegment3D(e0.V0.Position, e0.V1.Position);
                     foreach (var e1 in targets)
                     {
-                        // e0とe1が共有している頂点がある場合は無視
-                        if (e0.IsShareAnyVertex(e1))
-                            continue;
-
                         var s1 = new LineSegment3D(e1.V0.Position, e1.V1.Position);
+                        // e0とe1が共有している頂点がある場合は無視
+                        if (e0.IsShareAnyVertex(e1, out var shareV))
+                        {
+                            //var (sv, s) = s0.Magnitude < s1.Magnitude
+                            //    ? (e0.GetOppositeVertex(shareV), s1)
+                            //    : (e1.GetOppositeVertex(shareV), s0);
+                            //if ((s.GetNearestPoint(sv.Position) - sv.Position).sqrMagnitude < shareMid)
+                            //{
+                            //    edgeInsertMap.GetValueOrCreate(e0).Add(sv);
+                            //}
+
+                            continue;
+                        }
+
                         if (s0.TrySegmentIntersectionBy2D(s1, AxisPlane.Xz, heightTolerance, out var intersection,
                                 out var t1, out var t2))
                         {
@@ -1083,7 +1364,6 @@ namespace PLATEAU.RoadNetwork.Graph
                             // #TODO : 0 or 1で交差した場合を考慮
                             edgeInsertMap.GetValueOrCreate(e0).Add(p);
                             edgeInsertMap.GetValueOrCreate(e1).Add(p);
-                            DebugEx.DrawSphere(intersection, 0.1f, Color.red);
                         }
                     }
                 }
@@ -1098,14 +1378,31 @@ namespace PLATEAU.RoadNetwork.Graph
             Debug.Log($"Add Vertex [{vertexMap.Count}]");
             foreach (var e in edgeInsertMap)
             {
-                var sortedV = e.Value.OrderBy(p => (p.Position - e.Key.V0.Position).sqrMagnitude).ToList();
+                e.Key.InsertVertices(e.Value);
+                //var sortedV = e.Value.OrderBy(p => (p.Position - e.Key.V0.Position).sqrMagnitude).ToList();
 
-                var edge = e.Key;
-                foreach (var v in sortedV)
-                {
-                    edge = edge.SplitEdge(v);
-                }
+                //var edge = e.Key;
+                //foreach (var v in sortedV)
+                //{
+                //    edge = edge.SplitEdge(v);
+                //}
             }
+        }
+
+        public static List<REdge> InsertVertices(this REdge self, IEnumerable<RVertex> vertices)
+        {
+            var ret = new List<REdge>();
+            var o = self.V0.Position;
+            var edge = self;
+            ret.Add(edge);
+            foreach (var v in vertices.OrderBy(v => (v.Position - o).sqrMagnitude))
+            {
+                edge = edge.SplitEdge(v);
+                DebugEx.DrawSphere(v.Position, 2f, color: Color.green, 30f);
+                ret.Add(edge);
+            }
+
+            return ret;
         }
 
         public static void SeparateFaces(this RGraph self)
@@ -1125,6 +1422,20 @@ namespace PLATEAU.RoadNetwork.Graph
         public static List<RVertex> ComputeOutlineVertices(this RFace face, RRoadTypeMask roadTypes)
         {
             var vertices = face.Edges.SelectMany(e => e.Vertices).Where(v => v.TypeMask.HasAnyFlag(roadTypes)).ToHashSet();
+            var res = GeoGraph2D.ComputeOutline(
+                vertices
+                , v => v.Position
+                , AxisPlane.Xz
+                , v => v.GetNeighborVertices().Where(b => vertices.Contains(b)));
+            return res.Outline ?? new List<RVertex>();
+        }
+
+        public static List<RVertex> ComputeOutlineVertices(this RFaceGroup faceGroup, RRoadTypeMask roadTypes)
+        {
+            var vertices = faceGroup
+                .Faces
+                .SelectMany(f => f.Edges.SelectMany(e => e.Vertices))
+                .Where(v => v.TypeMask.HasAnyFlag(roadTypes)).ToHashSet();
             var res = GeoGraph2D.ComputeOutline(
                 vertices
                 , v => v.Position
@@ -1163,6 +1474,17 @@ namespace PLATEAU.RoadNetwork.Graph
                 , v => v.GetNeighborVertices().Where(b => vertices.Contains(b))
             );
             return res.Outline ?? new List<RVertex>();
+        }
+
+        /// <summary>
+        /// aとbの間に共通の辺があるかどうか
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns></returns>
+        public static bool IsShareEdge(RFace a, RFace b)
+        {
+            return a.Edges.SelectMany(e => e.Vertices).Any(v => b.Edges.SelectMany(e => e.Vertices).Contains(v));
         }
 
         /// <summary>

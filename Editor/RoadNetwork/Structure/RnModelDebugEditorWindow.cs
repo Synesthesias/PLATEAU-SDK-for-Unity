@@ -1,5 +1,4 @@
 ﻿using PLATEAU.RoadNetwork;
-using PLATEAU.RoadNetwork.Drawer;
 using PLATEAU.RoadNetwork.Structure;
 using System;
 using System.Linq;
@@ -21,7 +20,7 @@ namespace PLATEAU.Editor.RoadNetwork
 
             long TargetIntersectionId { get; set; }
 
-
+            public bool IsTarget(RnRoadBase roadBase);
         }
 
         private const string WindowName = "Debug RnModel Editor";
@@ -289,12 +288,25 @@ namespace PLATEAU.Editor.RoadNetwork
             EditorGUILayout.LabelField("Road Edit");
             var road = model.Roads.FirstOrDefault(r => r.DebugMyId == (ulong)InstanceHelper.TargetRoadId);
             roadEdit.Update(road);
-
+            foreach (var r in model.Roads)
+            {
+                if (InstanceHelper.IsTarget(r) == false)
+                    continue;
+                EditorGUILayout.Separator();
+                roadEdit.Update(r);
+            }
 
             EditorGUILayout.Separator();
             EditorGUILayout.LabelField("Intersection Edit");
             var intersection = model.Intersections.FirstOrDefault(r => r.DebugMyId == (ulong)InstanceHelper.TargetIntersectionId);
             intersectionEdit.Update(intersection);
+            foreach (var i in model.Intersections)
+            {
+                if (InstanceHelper.IsTarget(i) == false)
+                    continue;
+                EditorGUILayout.Separator();
+                intersectionEdit.Update(i);
+            }
         }
 
         /// <summary>

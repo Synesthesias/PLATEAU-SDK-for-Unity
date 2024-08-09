@@ -58,6 +58,7 @@ namespace PLATEAU.RoadNetwork.Drawer
             public int size = 10;
             public DrawOption neighborOption = new DrawOption { visible = false, color = Color.yellow };
             public bool showPos = false;
+            public bool showEdgeCount = false;
         }
         public VertexOption vertexOption = new VertexOption();
 
@@ -137,7 +138,9 @@ namespace PLATEAU.RoadNetwork.Drawer
 
             work.visitedVertices.Add(vertex);
 
-            var text = "●";
+            var text = $"●";
+            if (op.showEdgeCount)
+                text += $"{vertex.Edges.Count}";
 
             if (showId.HasFlag(RPartsFlag.Vertex))
                 text += $"[{vertex.DebugMyId}]";

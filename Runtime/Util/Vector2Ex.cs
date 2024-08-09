@@ -256,9 +256,9 @@ namespace PLATEAU.Util
         }
 
 
-        public static Vector2 ToVector2Int(this Vector2 self)
+        public static Vector2Int ToVector2Int(this Vector2 self)
         {
-            return new Vector2((int)self.x, (int)self.y);
+            return new Vector2Int((int)self.x, (int)self.y);
         }
     }
 }
