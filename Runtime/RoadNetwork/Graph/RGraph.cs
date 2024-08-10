@@ -617,7 +617,7 @@ namespace PLATEAU.RoadNetwork.Graph
                     if (poly.IsSameEdges(queue[i]))
                     {
                         // 辺は全て同じなので高速化のため移動処理は行わない
-                        queue[i].MergeTo(poly, false);
+                        queue[i].TryMergeTo(poly, false);
                         queue.RemoveAt(i);
                     }
                     else
@@ -787,22 +787,27 @@ namespace PLATEAU.RoadNetwork.Graph
         }
 
         /// <summary>
-        /// 基本呼び出し禁止. 自身をdstにマージする
+        /// 基本呼び出し禁止. 自身をdstにマージする.
+        /// CityObjectGroupが異なる場合はマージできない.
         /// moveEdge = falseの時は自身のEdgesは移動しない.
         /// </summary>
         /// <param name="dst"></param>
         /// <param name="moveEdge"></param>
-        public void MergeTo(RFace dst, bool moveEdge = true)
+        public bool TryMergeTo(RFace dst, bool moveEdge = true)
         {
-            dst.RoadTypes |= RoadTypes;
+            if (dst.CityObjectGroup && CityObjectGroup && dst.CityObjectGroup != CityObjectGroup)
+            {
+                Debug.LogWarning($"CityObjectGroupが異なるFaceは統合できません. {CityObjectGroup} != {dst.CityObjectGroup}");
+                return false;
+            }
 
-            if (dst.CityObjectGroup && dst.CityObjectGroup != CityObjectGroup)
-                throw new InvalidDataException("CityObjectGroupが異なる場合はマージできません");
+            dst.RoadTypes |= RoadTypes;
             dst.cityObjectGroup = CityObjectGroup;
             dst.LodLevel = Mathf.Max(dst.LodLevel, LodLevel);
             foreach (var e in Edges)
                 dst.AddEdge(e);
             DisConnect();
+            return true;
         }
 
 
@@ -909,21 +914,11 @@ namespace PLATEAU.RoadNetwork.Graph
     public static class RVertexEx
     {
         /// <summary>
-        /// selfに対して、指定したCityObjectGroupに紐づくTypeを取得する
+        /// faceSelectorで指定したRFaceだけのRRoadTypeを統合して取得
         /// </summary>
         /// <param name="self"></param>
-        /// <param name="cog"></param>
+        /// <param name="faceSelector"></param>
         /// <returns></returns>
-        public static RRoadTypeMask GetRoadType(this RVertex self, PLATEAUCityObjectGroup cog)
-        {
-            RRoadTypeMask roadType = RRoadTypeMask.Empty;
-            foreach (var face in self.GetFaces().Where(f => f.CityObjectGroup == cog))
-            {
-                roadType |= face.RoadTypes;
-            }
-            return roadType;
-        }
-
         public static RRoadTypeMask GetRoadType(this RVertex self, Func<RFace, bool> faceSelector)
         {
             RRoadTypeMask roadType = RRoadTypeMask.Empty;
@@ -978,6 +973,13 @@ namespace PLATEAU.RoadNetwork.Graph
             foreach (var cityObject in cityObjects)
             {
                 var root = cityObject.CityObjects.rootCityObjects[0];
+
+                if (!cityObject.CityObjectGroup)
+                {
+                    Debug.LogWarning($"[{cityObject.Name}] CityObjectGroupがない為. RFace生成はスキップされます.");
+                    continue;
+                }
+
                 var lodLevel = cityObject.CityObjectGroup.GetLodLevel();
                 var roadType = root.GetRoadType();
 
