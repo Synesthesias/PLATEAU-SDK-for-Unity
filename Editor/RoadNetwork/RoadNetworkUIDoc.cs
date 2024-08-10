@@ -247,7 +247,7 @@ namespace PLATEAU.Editor.RoadNetwork
                     return;
 
                 // 無ければ生成する あれば流用する
-                var mdl = CreateOrGetLinkGroupData(linkGroupEditorData);
+                var mdl = doc.CreateOrGetLinkGroupData(linkGroupEditorData);
 
                 // 既存のモデルオブジェクトを解除
                 element.Unbind();
@@ -258,7 +258,17 @@ namespace PLATEAU.Editor.RoadNetwork
                 element.TrackSerializedObjectValue(mdl, (se) =>
                 {
                     Debug.Log("changed");
-                    //var obj = se as SerializedScriptableRoadMdl;
+
+                    var mod = system.RoadNetworkSimpleEditModule;
+                    var obj = se as IScriptableRoadMdl;
+                    if (mod.CanSetDtailMode())
+                    {
+                        if (mod.IsDetailMode() != obj.IsEditingDetailMode)
+                        {
+                           mod.SetDetailMode(obj.IsEditingDetailMode);
+                        }
+                    }
+
                     //obj.Apply();
                 });
                 element.Bind(mdl);
@@ -277,7 +287,7 @@ namespace PLATEAU.Editor.RoadNetwork
 
         }
 
-        private static SerializedScriptableRoadMdl CreateOrGetLinkGroupData(EditorData<RnRoadGroup> linkGroupEditorData)
+        private SerializedScriptableRoadMdl CreateOrGetLinkGroupData(EditorData<RnRoadGroup> linkGroupEditorData)
         {
             // モデルオブジェクトを所持してるならそれを利用する
             var mdl = linkGroupEditorData.GetSubData<SerializedScriptableRoadMdl>();
@@ -286,7 +296,7 @@ namespace PLATEAU.Editor.RoadNetwork
                 // UIへバインドするモデルオブジェクトの生成
                 var testObj = ScriptableObject.CreateInstance<ScriptableRoadMdl>();
                 testObj.Construct(linkGroupEditorData.Ref);
-                mdl = new SerializedScriptableRoadMdl(testObj);
+                mdl = new SerializedScriptableRoadMdl(testObj, system.RoadNetworkSimpleEditModule);
 
                 // 参照を持たせる
                 linkGroupEditorData.TryAdd(mdl);

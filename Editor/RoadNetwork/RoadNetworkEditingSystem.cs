@@ -1370,6 +1370,8 @@ namespace PLATEAU.Editor.RoadNetwork
             private IRoadNetworkEditingSystem system;
             private EditingSystemSubMod.EditingSystemGizmos gizmosSys = new EditingSystemSubMod.EditingSystemGizmos();
             private EditingSystemSubMod.SceneViewClickDetector.IClickEventReceiver clickReceiver = null;
+            // 詳細編集モードかどうか
+            private bool isEditingDetailMode = false;
 
             private Dictionary<RnRoadBase, NodeEditorData> nodeEditorData = new Dictionary<RnRoadBase, NodeEditorData>();
             private EditorDataList<EditorData<RnRoadGroup>> linkGroupEditorData = new EditorDataList<EditorData<RnRoadGroup>>();
@@ -1654,6 +1656,34 @@ namespace PLATEAU.Editor.RoadNetwork
                 EditorApplication.update += Update;
             }
 
+            /// <summary>
+            /// 詳細編集モードに移行できるか
+            /// 何かの編集機能を利用途中であったりすると移行できない（例　２つのノードをクリックする必要がある機能で1つ目をクリックした後）
+            /// </summary>
+            /// <returns></returns>
+            public bool CanSetDtailMode()
+            {
+                return true;
+            }
+
+            /// <summary>
+            /// 詳細編集モードか？
+            /// </summary>
+            /// <returns></returns>
+            public bool IsDetailMode()
+            {
+                return isEditingDetailMode;
+            }
+
+            /// <summary>
+            /// 詳細編集モードに移行する
+            /// </summary>
+            /// <param name="isDetailMode"></param>
+            public void SetDetailMode(bool isDetailMode)
+            {
+                isEditingDetailMode = isDetailMode;
+            }
+
             private void ClearCache()
             {
                 nodeEditorData.Clear();
@@ -1774,6 +1804,14 @@ namespace PLATEAU.Editor.RoadNetwork
                             }
                             wayEditorDataList.Add(new WayEditorData(editingTarget));
                         }
+
+                        if (system.RoadNetworkSimpleEditModule.isEditingDetailMode) // 詳細編集モードではwayの選択は行わない
+                        {
+                            foreach (var wayEditorData in wayEditorDataList)
+                            {
+                                wayEditorData.IsSelectable = false;
+                            }
+                        }
                         roadGroupEditorData.TryAdd(wayEditorDataList);
 
                         //// 道路端のwayを編集不可能にする
@@ -1806,6 +1844,9 @@ namespace PLATEAU.Editor.RoadNetwork
                     var isMouseOnViewport = true;
                     foreach (var wayEditorData in wayEditorDataList)
                     {
+                        if (wayEditorData.IsSelectable == false)
+                            continue;
+
                         if (isMouseOnViewport == false) // シーンビュー上にマウスがあるかチェック
                         {
                             break;
