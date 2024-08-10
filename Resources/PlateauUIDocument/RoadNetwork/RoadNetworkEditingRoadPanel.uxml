@@ -1,20 +1,19 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../UIElementsSchema/UIElements.xsd" editor-extension-mode="True">
-    <ui:Toggle label="詳細編集モード" />
+    <ui:Toggle label="詳細編集モード" binding-path="isEditingDetailMode" />
     <ui:GroupBox text="Road segment">
         <ui:GroupBox name="BaseStructure">
             <ui:Label tabindex="-1" text="車線数" parse-escape-sequences="true" display-tooltip-when-elided="true" style="flex-direction: column;">
                 <ui:GroupBox>
-                    <ui:IntegerField label="左側" value="42" binding-path="_numLeftLane" style="flex-direction: row;" />
-                    <ui:IntegerField label="右側" value="42" name="IntegerField" binding-path="_numRightLane" />
+                    <ui:IntegerField label="左側" value="42" binding-path="numLeftLane" style="flex-direction: row;" />
+                    <ui:IntegerField label="右側" value="42" name="IntegerField" binding-path="numRightLane" />
                 </ui:GroupBox>
             </ui:Label>
         </ui:GroupBox>
-        <ui:Toggle label="中央分離帯の有無" binding-path="_enableSideWalk" />
-        <ui:Button text="適用" parse-escape-sequences="true" display-tooltip-when-elided="true" binding-path="_isApply" name="ApplyButton" />
         <ui:GroupBox name="WidthGroup" style="display: flex;">
-            <ui:FloatField label="中央分離帯の幅" value="42.2" binding-path="_laneWidth" />
-            <ui:FloatField label="左側歩道の幅" value="42.2" binding-path="_leftSideWalkWidth" />
-            <ui:FloatField label="右側歩道の幅" value="42.2" binding-path="_rightSideWalkWidth" />
+            <ui:FloatField label="道路の幅" value="42.2" binding-path="roadWidth" />
+            <ui:FloatField label="中央分離帯の幅" value="42.2" binding-path="medianWidth" />
+            <ui:FloatField label="左側歩道の幅" value="42.2" binding-path="leftSideWalkWidth" />
+            <ui:FloatField label="右側歩道の幅" value="42.2" binding-path="rightSideWalkWidth" />
         </ui:GroupBox>
         <ui:Button text="適用" parse-escape-sequences="true" display-tooltip-when-elided="true" binding-path="_isApply" name="ApplyButton" />
         <ui:VisualElement style="flex-direction: row; justify-content: space-between; display: none;">
