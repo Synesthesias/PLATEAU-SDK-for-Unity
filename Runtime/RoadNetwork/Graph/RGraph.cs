@@ -1,4 +1,3 @@
-using Codice.Client.BaseCommands.Differences;
 using PLATEAU.CityInfo;
 using PLATEAU.RoadNetwork.Mesh;
 using PLATEAU.Util;
@@ -7,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using UnityEditor.Graphs;
 using UnityEngine;
 using UnityEngine.Assertions;
 
@@ -1424,35 +1422,42 @@ namespace PLATEAU.RoadNetwork.Graph
             }
         }
 
-        /// <summary>
-        /// アウトライン頂点を計算する
-        /// </summary>
-        /// <param name="face"></param>
-        /// <param name="roadTypes"></param>
-        /// <returns></returns>
-        public static List<RVertex> ComputeOutlineVertices(this RFace face, RRoadTypeMask roadTypes)
+        private static List<RVertex> ComputeOutlineVertices(IList<RFace> faces)
         {
-            var vertices = face.Edges.SelectMany(e => e.Vertices).Where(v => v.TypeMask.HasAnyFlag(roadTypes)).ToHashSet();
+            var vertices = faces
+                .SelectMany(f => f.Edges.SelectMany(e => e.Vertices))
+                .ToHashSet();
+            var edges = faces
+                .SelectMany(f => f.Edges)
+                .ToHashSet();
             var res = GeoGraph2D.ComputeOutline(
                 vertices
                 , v => v.Position
                 , AxisPlane.Xz
-                , v => v.GetNeighborVertices().Where(b => vertices.Contains(b)));
+                , v => v.Edges.Where(e => edges.Contains(e)).Select(e => e.GetOppositeVertex(v)));
             return res.Outline ?? new List<RVertex>();
         }
 
+        /// <summary>
+        /// アウトライン頂点を計算する
+        /// </summary>
+        /// <param name="self"></param>
+        /// <returns></returns>
+        public static List<RVertex> ComputeOutlineVertices(this RFace self)
+        {
+            return ComputeOutlineVertices(new RFace[] { self });
+        }
+
+        /// <summary>
+        /// faceGroupの中のroadTypes型のポリゴンのアウトライン頂点を計算する
+        /// </summary>
+        /// <param name="faceGroup"></param>
+        /// <param name="roadTypes"></param>
+        /// <returns></returns>
         public static List<RVertex> ComputeOutlineVertices(this RFaceGroup faceGroup, RRoadTypeMask roadTypes)
         {
-            var vertices = faceGroup
-                .Faces
-                .SelectMany(f => f.Edges.SelectMany(e => e.Vertices))
-                .Where(v => v.TypeMask.HasAnyFlag(roadTypes)).ToHashSet();
-            var res = GeoGraph2D.ComputeOutline(
-                vertices
-                , v => v.Position
-                , AxisPlane.Xz
-                , v => v.GetNeighborVertices().Where(b => vertices.Contains(b)));
-            return res.Outline ?? new List<RVertex>();
+            var faces = faceGroup.Faces.Where(f => f.RoadTypes.HasAnyFlag(roadTypes)).ToList();
+            return ComputeOutlineVertices(faces);
         }
 
         /// <summary>
@@ -1462,29 +1467,13 @@ namespace PLATEAU.RoadNetwork.Graph
         /// <param name="cityObjectGroup"></param>
         /// <param name="roadTypes"></param>
         /// <returns></returns>
-        public static List<RVertex> ComputeOutlineVerticesByCityObjectGroup(this RGraph self, PLATEAUCityObjectGroup cityObjectGroup, RRoadTypeMask roadTypes, out List<RFace> faces)
+        public static List<RVertex> ComputeOutlineVerticesByCityObjectGroup(this RGraph self, PLATEAUCityObjectGroup cityObjectGroup, RRoadTypeMask roadTypes)
         {
-            faces = self.Faces.Where(p => p.CityObjectGroup == cityObjectGroup).ToList();
-            var vertices = faces.SelectMany(f => f.Edges.SelectMany(e => e.Vertices))
-                .Where(v =>
-                {
-                    RRoadTypeMask roadType = 0;
-                    foreach (var face in v.GetFaces())
-                    {
-                        if (face.CityObjectGroup != cityObjectGroup)
-                            continue;
-                        roadType |= face.RoadTypes;
-                    }
-                    return roadType.HasAnyFlag(roadTypes);
-                })
-                .ToHashSet();
-            var res = GeoGraph2D.ComputeOutline(
-                vertices
-                , v => v.Position
-                , AxisPlane.Xz
-                , v => v.GetNeighborVertices().Where(b => vertices.Contains(b))
-            );
-            return res.Outline ?? new List<RVertex>();
+            var faces = self
+                .Faces
+                .Where(f => f.CityObjectGroup == cityObjectGroup && f.RoadTypes.HasAnyFlag(roadTypes))
+                .ToList();
+            return ComputeOutlineVertices(faces);
         }
 
         /// <summary>

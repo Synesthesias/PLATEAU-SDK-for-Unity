@@ -213,8 +213,8 @@ namespace PLATEAU.RoadNetwork.Drawer
 #endif
             }
 
-            var vertices = op.showCityObjectOutline ? work.graph.ComputeOutlineVerticesByCityObjectGroup(face.CityObjectGroup, op.showOutlineMask, out var _)
-                : face.ComputeOutlineVertices(op.showOutlineMask);
+            var vertices = op.showCityObjectOutline ? work.graph.ComputeOutlineVerticesByCityObjectGroup(face.CityObjectGroup, op.showOutlineMask)
+                : face.ComputeOutlineVertices();
 
             bool isLoop = true;
             if (vertices.Count > 1)

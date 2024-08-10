@@ -566,7 +566,7 @@ namespace PLATEAU.RoadNetwork.Factory
                     {
                         foreach (var sideWalkFace in c.Faces.Where(f => f.RoadTypes.IsSideWalk()))
                         {
-                            var vertices = sideWalkFace.ComputeOutlineVertices(RRoadTypeMask.SideWalk);
+                            var vertices = sideWalkFace.ComputeOutlineVertices();
                             var way = work.CreateWay(vertices);
                             ret.AddSideWalk(way.LineString);
                         }
