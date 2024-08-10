@@ -161,24 +161,21 @@ namespace PLATEAU.Editor.RoadNetwork
 
                 using (new EditorGUILayout.VerticalScope())
                 {
-                    using (new EditorGUI.DisabledGroupScope(false))
+                    EditorGUILayout.LabelField("LaneCount");
                     using (new EditorGUILayout.HorizontalScope())
                     {
-                        EditorGUILayout.IntField("Left Lanes", roadGroup.GetLeftLaneCount());
-                        EditorGUILayout.IntField("Right Lanes", roadGroup.GetRightLaneCount());
+                        EditorGUILayout.LabelField($"L ({roadGroup.GetLeftLaneCount()}) ->", GUILayout.Width(45));
+                        leftLaneCount = EditorGUILayout.IntField(leftLaneCount, GUILayout.Width(45));
+                        EditorGUILayout.LabelField($"R ({roadGroup.GetRightLaneCount()}) ->", GUILayout.Width(45));
+                        rightLaneCount = EditorGUILayout.IntField(rightLaneCount, GUILayout.Width(45));
+
+                        if (GUILayout.Button("ChangeLaneCount"))
+                        {
+                            roadGroup.SetLeftLaneCount(leftLaneCount);
+                            roadGroup.SetRightLaneCount(rightLaneCount);
+                        }
                     }
 
-                    using (new EditorGUILayout.HorizontalScope())
-                    {
-                        leftLaneCount = EditorGUILayout.IntField("Left Lanes", leftLaneCount);
-                        rightLaneCount = EditorGUILayout.IntField("Right Lanes", rightLaneCount);
-                    }
-
-                    if (GUILayout.Button("ChangeLaneCount"))
-                    {
-                        roadGroup.SetLeftLaneCount(leftLaneCount);
-                        roadGroup.SetRightLaneCount(rightLaneCount);
-                    }
                 }
 
                 using (new EditorGUILayout.HorizontalScope())
