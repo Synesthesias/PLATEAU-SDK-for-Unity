@@ -1,9 +1,12 @@
-﻿using PLATEAU.RoadNetwork;
+﻿using NUnit.Framework;
+using PLATEAU.RoadNetwork;
 using PLATEAU.RoadNetwork.Drawer;
 using PLATEAU.RoadNetwork.Graph;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
+using static PLATEAU.RoadNetwork.Factory.RoadNetworkFactory;
 
 namespace PLATEAU.Editor.RoadNetwork.Graph
 {
@@ -17,11 +20,11 @@ namespace PLATEAU.Editor.RoadNetwork.Graph
             // グラフ作成
             RGraph CreateGraph();
 
-            long TargetFaceId { get; set; }
+            HashSet<RFace> TargetFaces { get; }
 
-            long TargetEdgeId { get; set; }
+            HashSet<REdge> TargetEdges { get; }
 
-            long TargetVertexId { get; set; }
+            HashSet<RVertex> TargetVertices { get; }
 
             bool IsTarget(RFace face);
 
@@ -35,26 +38,27 @@ namespace PLATEAU.Editor.RoadNetwork.Graph
 
         private const string WindowName = "PLATEAU RGraph Editor";
 
-        private IInstanceHelper InstanceHelper { get; set; }
+        public IInstanceHelper InstanceHelper { get; set; }
 
         // 作成時にマージも同時に行うかどうか
         public bool mergeOnCreate = true;
         private float mergeCellSize = 0.2f;
         private int mergeCellLength = 2;
+        private float heightTolerance = 0.1f;
         private float removeMidPointTolerance = 0.3f;
-        private bool showOutline = false;
 
         private int showVertexId = -1;
-        private float heightTolerance = 0.1f;
+
+        public HashSet<RFace> TargetFaces { get; } = new();
 
         private class FaceEdit
         {
-            public void Update(RFace f)
+            public void Update(RGraphDebugEditorWindow work, RFace f)
             {
                 if (f == null)
                     return;
 
-                EditorGUILayout.LabelField("Face ID", f.DebugMyId.ToString());
+                RnEditorUtil.TargetToggle($"ID[{f.DebugMyId}]", work.InstanceHelper.TargetFaces, f);
                 EditorGUILayout.EnumFlagsField("RoadType", f.RoadTypes);
             }
         }
@@ -62,11 +66,11 @@ namespace PLATEAU.Editor.RoadNetwork.Graph
 
         private class EdgeEdit
         {
-            public void Update(REdge e)
+            public void Update(RGraphDebugEditorWindow work, REdge e)
             {
                 if (e == null)
                     return;
-
+                RnEditorUtil.TargetToggle($"ID[{e.DebugMyId}]", work.InstanceHelper.TargetEdges, e);
                 using (new EditorGUI.DisabledScope(false))
                 {
                     EditorGUILayout.LabelField("Edge ID", e.DebugMyId.ToString());
@@ -80,14 +84,14 @@ namespace PLATEAU.Editor.RoadNetwork.Graph
         private class VertexEdit
         {
 
-            public void Update(RVertex v)
+            public void Update(RGraphDebugEditorWindow work, RVertex v)
             {
                 if (v == null)
                     return;
 
+                RnEditorUtil.TargetToggle($"ID[{v.DebugMyId}]", work.InstanceHelper.TargetVertices, v);
                 using (new EditorGUI.DisabledScope(false))
                 {
-                    EditorGUILayout.LabelField("Road ID", v.DebugMyId.ToString());
                     EditorGUILayout.Vector3Field("Pos", v.Position);
                     foreach (var e in v.Edges)
                     {
@@ -192,9 +196,6 @@ namespace PLATEAU.Editor.RoadNetwork.Graph
 
             EditorGUILayout.Separator();
 
-            InstanceHelper.TargetFaceId = EditorGUILayout.LongField("Target Face ID", InstanceHelper.TargetFaceId);
-            InstanceHelper.TargetEdgeId = EditorGUILayout.LongField("Target Edge ID", InstanceHelper.TargetEdgeId);
-            InstanceHelper.TargetVertexId = EditorGUILayout.LongField("Target Vertex ID", InstanceHelper.TargetVertexId);
             using (new EditorGUI.DisabledScope(true))
             {
                 EditorGUILayout.IntField("Face", graph.Faces.Count);
@@ -205,31 +206,31 @@ namespace PLATEAU.Editor.RoadNetwork.Graph
             showVertexId = EditorGUILayout.IntField("ShowVertexId", showVertexId);
 
 
-            if (InstanceHelper.TargetFaceId >= 0)
-            {
-                var face = graph.Faces.FirstOrDefault(f => (long)f.DebugMyId == InstanceHelper.TargetFaceId);
-                faceEdit.Update(face);
-            }
-
+            EditorGUILayout.Separator();
+            EditorGUILayout.LabelField("=============== Face ==============");
             foreach (var face in graph.Faces)
             {
-                if (InstanceHelper.IsTarget(face))
+                if (InstanceHelper.IsTarget(face) || InstanceHelper.TargetFaces.Contains(face))
                 {
                     EditorGUILayout.Separator();
-                    faceEdit.Update(face);
+                    faceEdit.Update(this, face);
                 }
             }
 
-            if (InstanceHelper.TargetEdgeId >= 0)
+            EditorGUILayout.Separator();
+            EditorGUILayout.LabelField("=============== Edge ==============");
+            foreach (var edge in InstanceHelper.TargetEdges)
             {
-                var edge = graph.GetAllEdges().FirstOrDefault(e => (long)e.DebugMyId == InstanceHelper.TargetEdgeId);
-                edgeEdit.Update(edge);
+                EditorGUILayout.Separator();
+                edgeEdit.Update(this, edge);
             }
 
-            if (InstanceHelper.TargetVertexId >= 0)
+            EditorGUILayout.Separator();
+            EditorGUILayout.LabelField("=============== Vertex ==============");
+            foreach (var vertex in InstanceHelper.TargetVertices)
             {
-                var vertex = graph.GetAllVertices().FirstOrDefault(v => (long)v.DebugMyId == InstanceHelper.TargetVertexId);
-                vertexEdit.Update(vertex);
+                EditorGUILayout.Separator();
+                vertexEdit.Update(this, vertex);
             }
         }
 

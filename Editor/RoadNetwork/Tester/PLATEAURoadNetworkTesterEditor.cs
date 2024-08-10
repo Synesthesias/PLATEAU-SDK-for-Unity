@@ -3,6 +3,7 @@ using PLATEAU.RoadNetwork;
 using PLATEAU.RoadNetwork.Drawer;
 using PLATEAU.RoadNetwork.Graph;
 using PLATEAU.RoadNetwork.Structure;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
@@ -51,41 +52,10 @@ namespace PLATEAU.Editor.RoadNetwork.Tester
                 return target.RoadNetwork;
             }
 
-            public long TargetLaneId
-            {
-                get => target.Drawer?.laneOp?.showLaneId ?? -1;
-                set
-                {
-                    if (target.Drawer != null)
-                    {
-                        target.Drawer.laneOp.showLaneId = value;
-                    }
-                }
-            }
-
-            public long TargetRoadId
-            {
-                get => target.Drawer?.roadOp?.showRoadId ?? -1;
-                set
-                {
-                    if (target.Drawer != null)
-                    {
-                        target.Drawer.roadOp.showRoadId = value;
-                    }
-                }
-            }
-
-            public long TargetIntersectionId
-            {
-                get => target.Drawer?.intersectionOp?.showIntersectionId ?? -1;
-                set
-                {
-                    if (target.Drawer != null)
-                    {
-                        target.Drawer.intersectionOp.showIntersectionId = value;
-                    }
-                }
-            }
+            public HashSet<RnRoad> TargetRoads => target.Drawer.TargetRoads;
+            public HashSet<RnIntersection> TargetIntersections => target.Drawer.TargetIntersections;
+            public HashSet<RnLane> TargetLanes => target.Drawer.TargetLanes;
+            public HashSet<RnWay> TargetWays => target.Drawer.TargetWays;
 
             public bool IsTarget(RnRoadBase roadBase)
             {
@@ -115,48 +85,14 @@ namespace PLATEAU.Editor.RoadNetwork.Tester
                 return target.RGraph;
             }
 
+            public HashSet<RFace> TargetFaces => target.RGraphDrawer.TargetFaces;
+            public HashSet<REdge> TargetEdges => target.RGraphDrawer.TargetEdges;
+            public HashSet<RVertex> TargetVertices => target.RGraphDrawer.TargetVertices;
 
             public void CreateTranMesh()
             {
                 target.Factory.midStageData.CreateAll(target.GetTargetCityObjects());
             }
-
-            public long TargetFaceId
-            {
-                get => target.RGraphDrawer?.faceOption?.targetId ?? -1;
-                set
-                {
-                    if (target.Drawer != null)
-                    {
-                        target.RGraphDrawer.faceOption.targetId = (int)value;
-                    }
-                }
-            }
-
-            public long TargetEdgeId
-            {
-                get => target.RGraphDrawer?.edgeOption?.targetId ?? -1;
-                set
-                {
-                    if (target.Drawer != null)
-                    {
-                        target.RGraphDrawer.edgeOption.targetId = (int)value;
-                    }
-                }
-            }
-
-            public long TargetVertexId
-            {
-                get => target.RGraphDrawer?.vertexOption?.targetId ?? -1;
-                set
-                {
-                    if (target.Drawer != null)
-                    {
-                        target.RGraphDrawer.vertexOption.targetId = (int)value;
-                    }
-                }
-            }
-
 
             public bool IsTarget(RFace face)
             {

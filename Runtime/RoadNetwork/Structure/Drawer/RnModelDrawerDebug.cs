@@ -27,6 +27,8 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
         // start:フィールド
         // --------------------
         [SerializeField] public bool visible = true;
+
+        [SerializeField] public bool showAll = true;
         // Laneの頂点の内側を向くベクトルの中央点を表示する
         [SerializeField] public bool showInsideNormalMidPoint = false;
         // 頂点インデックスを表示する
@@ -43,11 +45,16 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
         [SerializeField] public PLATEAUCityObjectGroup targetTran = null;
         [SerializeField] public RnPartsTypeMask showPartsType = 0;
 
+
+        public HashSet<RnRoad> TargetRoads { get; } = new();
+        public HashSet<RnIntersection> TargetIntersections { get; } = new();
+        public HashSet<RnLane> TargetLanes { get; } = new();
+        public HashSet<RnWay> TargetWays { get; } = new();
+
         [Serializable]
         public class IntersectionOption
         {
             public bool visible = true;
-            public long showIntersectionId = -1;
             public DrawOption showTrack = new DrawOption();
 
             public DrawOption showBorder = new DrawOption();
@@ -60,32 +67,12 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
         public class RoadOption
         {
             public bool visible = true;
-            public long showRoadId = -1;
             public bool showMedian = true;
             public bool showLaneConnection = false;
             public bool showRoadGroup = false;
             public bool showSideEdge = false;
             public DrawOption showNextConnection = new DrawOption(false, Color.red);
             public DrawOption showPrevConnection = new DrawOption(false, Color.blue);
-            [Serializable]
-            public class ShowInfo
-            {
-                public int prevId = -1;
-
-                public int nextId = -1;
-
-                // 左側レーン数
-                public int leftLaneCount = -1;
-                // 右側レーン数
-                public int rightLaneCount = -1;
-
-                public bool changeLaneCount = false;
-
-                // 中央分離帯幅
-                public float medianWidth = 0;
-
-            }
-            public ShowInfo targetInfo = new ShowInfo();
         }
 
         [SerializeField]
@@ -110,7 +97,6 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
         public class LaneOption
         {
             public bool visible = true;
-            public long showLaneId = -1;
             public float bothConnectedLaneAlpha = 1f;
             public float validWayAlpha = 0.75f;
             public float invalidWayAlpha = 0.3f;
@@ -261,7 +247,7 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
             if (showPartsType.HasFlag(RnPartsTypeMask.Lane))
                 DebugEx.DrawString($"L[{lane.DebugMyId}]", lane.GetCenter());
 
-            if (laneOp.showLaneId >= 0 && lane.DebugMyId != (ulong)laneOp.showLaneId)
+            if (showAll == false && (TargetLanes?.Any() == true) && TargetLanes?.Contains(lane) == false)
                 return;
 
             var offset = Vector3.up * (lane.DebugMyId % 10);
@@ -313,18 +299,10 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
         {
             var op = roadOp;
 
-            if ((ulong)op.showRoadId == road.DebugMyId)
-            {
-                op.targetInfo.prevId = (int)(road.Prev?.DebugMyId ?? ulong.MaxValue);
-                op.targetInfo.nextId = (int)(road.Next?.DebugMyId ?? ulong.MaxValue);
-                op.targetInfo.leftLaneCount = road.GetLeftLaneCount();
-                op.targetInfo.rightLaneCount = road.GetRightLaneCount();
-            }
-
             if (op.visible == false)
                 return;
 
-            if (op.showRoadId >= 0 && road.DebugMyId != (ulong)op.showRoadId)
+            if (showAll == false && (TargetRoads?.Any() == true) && TargetRoads?.Contains(road) == false)
                 return;
 
             if (targetTran && targetTran != road.TargetTran)
@@ -428,8 +406,7 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
             if (targetTran && targetTran != intersection.TargetTran)
                 return;
 
-
-            if (op.showIntersectionId >= 0 && intersection.DebugMyId != (ulong)op.showIntersectionId)
+            if (showAll == false && TargetIntersections?.Any() == true && TargetIntersections?.Contains(intersection) == false)
                 return;
 
             if (showPartsType.HasFlag(RnPartsTypeMask.Intersection))

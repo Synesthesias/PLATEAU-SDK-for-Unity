@@ -1,9 +1,11 @@
 ﻿using PLATEAU.RoadNetwork;
 using PLATEAU.RoadNetwork.Structure;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
+using static PLATEAU.RoadNetwork.Factory.RoadNetworkFactory;
 
 namespace PLATEAU.Editor.RoadNetwork
 {
@@ -14,11 +16,13 @@ namespace PLATEAU.Editor.RoadNetwork
         {
             RnModel GetModel();
 
-            long TargetLaneId { get; set; }
+            HashSet<RnRoad> TargetRoads { get; }
 
-            long TargetRoadId { get; set; }
+            HashSet<RnIntersection> TargetIntersections { get; }
 
-            long TargetIntersectionId { get; set; }
+            HashSet<RnLane> TargetLanes { get; }
+
+            HashSet<RnWay> TargetWays { get; }
 
             public bool IsTarget(RnRoadBase roadBase);
         }
@@ -50,14 +54,14 @@ namespace PLATEAU.Editor.RoadNetwork
             public float leftWayPos = 0f;
 
 
-            public void Update(RnLane lane)
+            public void Update(RnModelDebugEditorWindow work, RnLane lane)
             {
                 if (lane == null)
                     return;
 
+                RnEditorUtil.TargetToggle($"Id '{lane.DebugMyId.ToString()}'", work.InstanceHelper.TargetLanes, lane);
                 using (new EditorGUI.DisabledScope(false))
                 {
-                    EditorGUILayout.LabelField("Lane ID", lane.DebugMyId.ToString());
                     EditorGUILayout.LongField("PrevBorder", (long)(lane.PrevBorder?.DebugMyId ?? ulong.MaxValue));
                     EditorGUILayout.LongField("NextBorder", (long)(lane.NextBorder?.DebugMyId ?? ulong.MaxValue));
                 }
@@ -139,7 +143,7 @@ namespace PLATEAU.Editor.RoadNetwork
             public float medianWidth = 0;
             public LaneWayMoveOption medianWidthOption = LaneWayMoveOption.MoveBothWay;
 
-            public void Update(RnRoad road)
+            public void Update(RnModelDebugEditorWindow work, RnRoad road)
             {
                 if (road == null)
                     return;
@@ -147,9 +151,9 @@ namespace PLATEAU.Editor.RoadNetwork
                 if (roadGroup == null)
                     return;
 
+                RnEditorUtil.TargetToggle($"Id '{road.DebugMyId.ToString()}'", work.InstanceHelper.TargetRoads, road);
                 using (new EditorGUI.DisabledScope(false))
                 {
-                    EditorGUILayout.LabelField("Road ID", road.DebugMyId.ToString());
                     EditorGUILayout.LongField("Prev", (long)(road.Prev?.DebugMyId ?? ulong.MaxValue));
                     EditorGUILayout.LongField("Next", (long)(road.Next?.DebugMyId ?? ulong.MaxValue));
 
@@ -209,17 +213,21 @@ namespace PLATEAU.Editor.RoadNetwork
         {
             public long convertPrevRoadId = -1;
             public long convertNextRoadId = -1;
-            public void Update(RnIntersection intersection)
+            public void Update(RnModelDebugEditorWindow work, RnIntersection intersection)
             {
                 if (intersection == null)
                     return;
 
-                using (new EditorGUI.DisabledScope(false))
+                using (new EditorGUILayout.HorizontalScope())
                 {
-                    EditorGUILayout.LabelField("Intersection ID", intersection.DebugMyId.ToString());
-                    foreach (var b in intersection.Neighbors)
+                    RnEditorUtil.TargetToggle($"Id '{intersection.DebugMyId.ToString()}'", work.InstanceHelper.TargetIntersections, intersection);
+                    using (new EditorGUI.DisabledScope(false))
                     {
-                        EditorGUILayout.LabelField($"Road:{((RnRoadBase)b.Road).GetDebugMyIdOrDefault()}, Border:{b.Border.GetDebugMyIdOrDefault()}");
+                        EditorGUILayout.LabelField("Intersection ID", intersection.DebugMyId.ToString());
+                        foreach (var b in intersection.Neighbors)
+                        {
+                            EditorGUILayout.LabelField($"Road:{((RnRoadBase)b.Road).GetDebugMyIdOrDefault()}, Border:{b.Border.GetDebugMyIdOrDefault()}");
+                        }
                     }
                 }
 
@@ -275,37 +283,33 @@ namespace PLATEAU.Editor.RoadNetwork
             var model = InstanceHelper?.GetModel();
             if (model == null)
                 return;
-            InstanceHelper.TargetLaneId = EditorGUILayout.LongField("Target Lane ID", InstanceHelper.TargetLaneId);
-            InstanceHelper.TargetRoadId = EditorGUILayout.LongField("Target Road ID", InstanceHelper.TargetRoadId);
-            InstanceHelper.TargetIntersectionId = EditorGUILayout.LongField("Target Intersection ID", InstanceHelper.TargetIntersectionId);
-
             EditorGUILayout.Separator();
             EditorGUILayout.LabelField("Lane Edit");
-            var lane = model.CollectAllLanes().FirstOrDefault(l => l.DebugMyId == (ulong)InstanceHelper.TargetLaneId);
-            laneEdit.Update(lane);
+
+            foreach (var l in InstanceHelper.TargetLanes)
+            {
+                EditorGUILayout.Separator();
+                laneEdit.Update(this, l);
+            }
 
             EditorGUILayout.Separator();
             EditorGUILayout.LabelField("Road Edit");
-            var road = model.Roads.FirstOrDefault(r => r.DebugMyId == (ulong)InstanceHelper.TargetRoadId);
-            roadEdit.Update(road);
             foreach (var r in model.Roads)
             {
-                if (InstanceHelper.IsTarget(r) == false)
+                if (InstanceHelper.IsTarget(r) == false && InstanceHelper.TargetRoads.Contains(r) == false)
                     continue;
                 EditorGUILayout.Separator();
-                roadEdit.Update(r);
+                roadEdit.Update(this, r);
             }
 
             EditorGUILayout.Separator();
             EditorGUILayout.LabelField("Intersection Edit");
-            var intersection = model.Intersections.FirstOrDefault(r => r.DebugMyId == (ulong)InstanceHelper.TargetIntersectionId);
-            intersectionEdit.Update(intersection);
             foreach (var i in model.Intersections)
             {
-                if (InstanceHelper.IsTarget(i) == false)
+                if (InstanceHelper.IsTarget(i) == false && InstanceHelper.TargetIntersections.Contains(i) == false)
                     continue;
                 EditorGUILayout.Separator();
-                intersectionEdit.Update(i);
+                intersectionEdit.Update(this, i);
             }
         }
 

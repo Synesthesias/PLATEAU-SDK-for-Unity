@@ -37,7 +37,6 @@ namespace PLATEAU.RoadNetwork.Drawer
         [Serializable]
         public class FaceOption : DrawOption
         {
-            public long targetId = -1;
             public bool showOutline = true;
             public RRoadTypeMask showOutlineMask = RRoadTypeMask.Road;
             public bool showCityObjectOutline = false;
@@ -47,14 +46,12 @@ namespace PLATEAU.RoadNetwork.Drawer
         [Serializable]
         public class EdgeOption : DrawOption
         {
-            public long targetId = -1;
         }
         public EdgeOption edgeOption = new EdgeOption();
 
         [Serializable]
         public class VertexOption : DrawOption
         {
-            public long targetId = -1;
             public int size = 10;
             public DrawOption neighborOption = new DrawOption { visible = false, color = Color.yellow };
             public bool showPos = false;
@@ -65,6 +62,12 @@ namespace PLATEAU.RoadNetwork.Drawer
         // --------------------
         // end:フィールド
         // --------------------
+
+
+        public HashSet<RFace> TargetFaces { get; } = new();
+        public HashSet<REdge> TargetEdges { get; } = new();
+        public HashSet<RVertex> TargetVertices { get; } = new();
+
 
         private class DrawWork
         {
@@ -133,7 +136,7 @@ namespace PLATEAU.RoadNetwork.Drawer
             if (op.visible == false)
                 return;
 
-            if (work.visitedVertices.Contains(vertex))
+            if (work.visitedVertices.Contains(vertex) == false)
                 return;
 
             work.visitedVertices.Add(vertex);
@@ -150,7 +153,7 @@ namespace PLATEAU.RoadNetwork.Drawer
 
             DrawString(text, vertex.Position, fontSize: op.size);
 
-            if ((int)vertex.DebugMyId == op.targetId)
+            if (TargetVertices.Contains(vertex))
             {
                 if (op.neighborOption.visible)
                 {
@@ -173,7 +176,7 @@ namespace PLATEAU.RoadNetwork.Drawer
                 return;
             work.visitedEdges.Add(edge);
 
-            if (op.targetId >= 0 && (int)edge.DebugMyId != op.targetId)
+            if (TargetEdges.Contains(edge) == false)
                 return;
             if (op.visible)
             {
@@ -194,7 +197,7 @@ namespace PLATEAU.RoadNetwork.Drawer
             if (face.Visible == false)
                 return;
 
-            if (op.targetId >= 0 && (int)face.DebugMyId != op.targetId)
+            if (TargetFaces.Contains(face) == false)
                 return;
 
             if (face.RoadTypes.HasAnyFlag(showFaceType) == false)
