@@ -29,6 +29,8 @@ namespace PLATEAU.Editor.RoadNetwork.Graph
             void CreateRnModel();
 
             RGraphDrawerDebug GetDrawer();
+
+            void CreateTranMesh();
         }
 
         private const string WindowName = "PLATEAU RGraph Editor";
@@ -184,6 +186,9 @@ namespace PLATEAU.Editor.RoadNetwork.Graph
 
             if (GUILayout.Button("Create RnModel"))
                 InstanceHelper.CreateRnModel();
+
+            if (GUILayout.Button("Create TranMEsh"))
+                InstanceHelper.CreateTranMesh();
 
             EditorGUILayout.Separator();
 

@@ -115,6 +115,12 @@ namespace PLATEAU.Editor.RoadNetwork.Tester
                 return target.RGraph;
             }
 
+
+            public void CreateTranMesh()
+            {
+                target.Factory.midStageData.CreateAll(target.GetTargetCityObjects());
+            }
+
             public long TargetFaceId
             {
                 get => target.RGraphDrawer?.faceOption?.targetId ?? -1;

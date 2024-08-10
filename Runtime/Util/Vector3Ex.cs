@@ -1,4 +1,8 @@
-﻿using UnityEngine;
+﻿using System;
+using System.Numerics;
+using UnityEngine;
+using Vector2 = UnityEngine.Vector2;
+using Vector3 = UnityEngine.Vector3;
 
 namespace PLATEAU.Util
 {
@@ -190,6 +194,41 @@ namespace PLATEAU.Util
         public static Vector3Int ToVector3Int(this Vector3 self)
         {
             return new Vector3Int((int)self.x, (int)self.y, (int)self.z);
+        }
+
+        /// <summary>
+        /// 各成分に対してCeilToIntを適用してVector3Int型で返す
+        /// </summary>
+        /// <param name="self"></param>
+        /// <returns></returns>
+        public static Vector3Int CeilToInt(this Vector3 self)
+        {
+            return new Vector3Int(Mathf.CeilToInt(self.x), Mathf.CeilToInt(self.y), Mathf.CeilToInt(self.z));
+        }
+
+        /// <summary>
+        /// 各成分に対してFloorToIntを適用してVector3Int型で返す
+        /// </summary>
+        /// <param name="self"></param>
+        /// <returns></returns>
+        public static Vector3Int FloorToInt(this Vector3 self)
+        {
+            return new Vector3Int(Mathf.FloorToInt(self.x), Mathf.FloorToInt(self.y), Mathf.FloorToInt(self.z));
+        }
+
+        /// <summary>
+        /// selfがmin ~ maxのaabbの範囲内にあるかどうか
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="min"></param>
+        /// <param name="max"></param>
+        /// <returns></returns>
+        public static bool Between(this Vector3 self, Vector3 min, Vector3 max)
+        {
+            return
+                min.x <= self.x && self.x <= max.x &&
+                min.y <= self.y && self.y <= max.y &&
+                min.z <= self.z && self.z <= max.z;
         }
     }
 }

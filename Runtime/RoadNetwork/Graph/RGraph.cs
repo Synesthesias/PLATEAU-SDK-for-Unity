@@ -1210,70 +1210,81 @@ namespace PLATEAU.RoadNetwork.Graph
         {
             self.VertexReduction(mergeCellSize, mergeCellLength, midPointTolerance);
             self.EdgeReduction();
-            //self.GroupFace((f0, f1) =>
-            //{
-            //    var m0 = f0.RoadTypes & (~(RRoadTypeMask.Road | RRoadTypeMask.Median));
-            //    var m1 = f1.RoadTypes & (~(RRoadTypeMask.Road | RRoadTypeMask.Median));
-            //    return m0 == m1;
-            //});
-
+            self.InsertVertexInNearEdge(midPointTolerance);
+            self.EdgeReduction();
             self.SeparateFaces();
         }
 
+        /// <summary>
+        /// 各頂点と辺の当たり判定チェック. 距離誤差許容量はtolerance
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="tolerance"></param>
         public static void InsertVertexInNearEdge(this RGraph self, float tolerance)
         {
-            Dictionary<Vector2Int, HashSet<RVertex>> vertexMap = new();
             var vertices = self.GetAllVertices().ToList();
-            foreach (var v in vertices)
-            {
-                var cell = v.Position.Xz().RevScaled(tolerance * Vector2.one).ToVector2Int();
-                vertexMap.GetValueOrCreate(cell).Add(v);
-            }
-            var delta = GeoGraphEx.GetNeighborDistance2D(1);
-            var threshold = tolerance * tolerance;
-            Dictionary<REdge, HashSet<RVertex>> edgeInsertMap = new();
-            foreach (var v in vertices)
-            {
-                var cell = v.Position.Xz().RevScaled(tolerance * Vector2.one).ToVector2Int();
 
-                var visited = new HashSet<REdge>();
-                foreach (var d in delta)
+            var comp = Comparer<float>.Default;
+            int Compare(RVertex v0, RVertex v1)
+            {
+                var x = comp.Compare(v0.Position.x, v1.Position.x);
+                if (x != 0)
+                    return x;
+                var z = comp.Compare(v0.Position.z, v1.Position.z);
+                if (z != 0)
+                    return z;
+                return comp.Compare(v0.Position.y, v1.Position.y);
+            }
+            vertices.Sort(Compare);
+
+            var queue = new HashSet<REdge>();
+
+            Dictionary<REdge, HashSet<RVertex>> edgeInsertMap = new();
+            Dictionary<Vector3, RVertex> vertexMap = new();
+
+            var threshold = tolerance * tolerance;
+            for (var i = 0; i < vertices.Count; i++)
+            {
+                var v = vertices[i];
+                // 新規追加分
+                var addEdges = new List<REdge>();
+                var removeEdges = new HashSet<REdge>();
+                foreach (var e in v.Edges)
                 {
-                    var c = cell + d;
-                    if (vertexMap.TryGetValue(c, out var near) == false)
+                    // vと反対側の点を見る
+                    var o = e.V0 == v ? e.V1 : e.V0;
+                    var d = Compare(v, o);
+                    // vが開始点の辺を追加する
+                    if (d < 0)
+                        addEdges.Add(e);
+                    // vが終了点の辺を取り出す
+                    else if (d > 0)
+                        removeEdges.Add(e);
+                }
+                foreach (var remove in removeEdges)
+                    queue.Remove(remove);
+
+                foreach (var e in queue)
+                {
+                    if (e.V0 == v || e.V1 == v)
                         continue;
 
-                    foreach (var n in near)
+                    var s = new LineSegment3D(e.V0.Position, e.V1.Position);
+                    var near = s.GetNearestPoint(v.Position);
+                    if ((near - v.Position).sqrMagnitude < threshold)
                     {
-                        if (n == v)
-                            continue;
-                        foreach (var e in n.Edges.Where(e => v.Edges.Contains(e) == false && visited.Contains(e) == false))
-                        {
-                            visited.Add(e);
-                            var s = new LineSegment3D(e.V0.Position, e.V1.Position);
-                            var nearPos = s.GetNearestPoint(v.Position);
-                            if ((nearPos - v.Position).sqrMagnitude < threshold)
-                            {
-                                edgeInsertMap.GetValueOrCreate(e).Add(v);
-                            }
-                        }
+                        edgeInsertMap.GetValueOrCreate(e).Add(v);
                     }
                 }
+
+                foreach (var add in addEdges)
+                    queue.Add(add);
             }
-            Debug.Log($"[InsertVertexInNearEdge] Add Vertex [{edgeInsertMap.Sum(e => e.Value.Count)}]");
+
             foreach (var e in edgeInsertMap)
             {
                 e.Key.InsertVertices(e.Value);
-                //var sortedV = e.Value.OrderBy(p => (p.Position - e.Key.V0.Position).sqrMagnitude).ToList();
-
-                //var edge = e.Key;
-                //foreach (var v in sortedV)
-                //{
-                //    edge = edge.SplitEdge(v);
-                //}
             }
-
-            self.EdgeReduction();
         }
 
         /// <summary>
@@ -1379,26 +1390,26 @@ namespace PLATEAU.RoadNetwork.Graph
             foreach (var e in edgeInsertMap)
             {
                 e.Key.InsertVertices(e.Value);
-                //var sortedV = e.Value.OrderBy(p => (p.Position - e.Key.V0.Position).sqrMagnitude).ToList();
-
-                //var edge = e.Key;
-                //foreach (var v in sortedV)
-                //{
-                //    edge = edge.SplitEdge(v);
-                //}
             }
         }
 
+        /// <summary>
+        /// 辺の間にverticesを追加して分割する. verticesはself.V0 ~ V1の間にある前提
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="vertices"></param>
+        /// <returns></returns>
         public static List<REdge> InsertVertices(this REdge self, IEnumerable<RVertex> vertices)
         {
             var ret = new List<REdge>();
             var o = self.V0.Position;
             var edge = self;
             ret.Add(edge);
+            // V0 -> V1の順に並ぶようにして分割する.
             foreach (var v in vertices.OrderBy(v => (v.Position - o).sqrMagnitude))
             {
                 edge = edge.SplitEdge(v);
-                DebugEx.DrawSphere(v.Position, 2f, color: Color.green, 30f);
+                //DebugEx.DrawSphere(v.Position, 2f, color: Color.green, 30f);
                 ret.Add(edge);
             }
 

@@ -30,7 +30,7 @@ namespace PLATEAU.RoadNetwork
         [field: SerializeField]
         public RnModelDrawerDebug Drawer { get; set; } = new RnModelDrawerDebug();
 
-        [field: SerializeField] private RoadNetworkFactory Factory { get; set; } = new RoadNetworkFactory();
+        [field: SerializeField] public RoadNetworkFactory Factory { get; set; } = new RoadNetworkFactory();
 
         public RnModel RoadNetwork { get; set; }
 
@@ -79,7 +79,7 @@ namespace PLATEAU.RoadNetwork
             Factory?.DebugDraw();
         }
 
-        private List<PLATEAUCityObjectGroup> GetTargetCityObjects()
+        public List<PLATEAUCityObjectGroup> GetTargetCityObjects()
         {
             var ret = targetAll
                 ? (IList<PLATEAUCityObjectGroup>)GameObject.FindObjectsOfType<PLATEAUCityObjectGroup>()
