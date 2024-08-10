@@ -1,4 +1,5 @@
-﻿using PLATEAU.RoadNetwork;
+﻿using Codice.Client.Commands;
+using PLATEAU.RoadNetwork;
 using PLATEAU.RoadNetwork.Data;
 using PLATEAU.RoadNetwork.Structure;
 using PLATEAU.Util.GeoGraph;
@@ -1368,6 +1369,7 @@ namespace PLATEAU.Editor.RoadNetwork
             private RnModel roadNetwork;
             private IRoadNetworkEditingSystem system;
             private EditingSystemSubMod.EditingSystemGizmos gizmosSys = new EditingSystemSubMod.EditingSystemGizmos();
+            private EditingSystemSubMod.SceneViewClickDetector.IClickEventReceiver clickReceiver = null;
 
             private Dictionary<RnRoadBase, NodeEditorData> nodeEditorData = new Dictionary<RnRoadBase, NodeEditorData>();
             private EditorDataList<EditorData<RnRoadGroup>> linkGroupEditorData = new EditorDataList<EditorData<RnRoadGroup>>();
@@ -1717,6 +1719,147 @@ namespace PLATEAU.Editor.RoadNetwork
                 //    transform.hasChanged = false;
                 //}
 
+                // マウスの状態をチェック
+                if (clickReceiver == null)
+                {
+                    clickReceiver = EditingSystemSubMod.SceneViewClickDetector.CreateReceiver();
+                }
+
+                // マウス位置に近いwayを算出
+
+                if (linkGroupEditorData.TryGetCache("linkGroup", out IEnumerable<LinkGroupEditorData> eConn) == false)
+                {
+                    Assert.IsTrue(false);
+                    return;
+                }
+                List<LinkGroupEditorData> connections = eConn.ToList();
+                connections.Remove(null);
+
+
+                WayEditorData closestWay = null;
+                float closestDis = float.MaxValue;
+                Vector3 closestPt = Vector3.zero;
+                if (system.SelectedRoadNetworkElement is EditorData<RnRoadGroup> roadGroupEditorData)
+                {
+                    //var laneGroup = new LaneGroupEditorData(roadGroupEditorData.Ref);
+                    var wayEditorDataList = roadGroupEditorData.GetSubData<List<WayEditorData>>();
+
+                    // way用の編集データがない場合は作成
+                    if (wayEditorDataList == null || true)
+                    {
+                        // wayを重複無しでコレクションする
+                        HashSet<RnWay> ways = new HashSet<RnWay>();
+                        foreach (var road in roadGroupEditorData.Ref.Roads)
+                        {
+                            foreach (var lane in road.AllLanes)
+                            {
+                                ways.Add(lane.LeftWay);
+                                ways.Add(lane.RightWay);
+                            }
+                        }
+
+                        // way用の編集データの作成
+                        if (wayEditorDataList == null)
+                            wayEditorDataList = new List<WayEditorData>(ways.Count);
+                        if (wayEditorDataList != null)
+                        {
+                            wayEditorDataList.Clear();
+                        }
+
+                        foreach (var editingTarget in ways)
+                        {
+                            if (editingTarget == null)
+                            {
+                                continue;
+                            }
+                            wayEditorDataList.Add(new WayEditorData(editingTarget));
+                        }
+                        roadGroupEditorData.TryAdd(wayEditorDataList);
+
+                        //// 道路端のwayを編集不可能にする
+                        //wayEditorDataList.First().IsSelectable = false;
+                        //wayEditorDataList.Last().IsSelectable = false;
+
+                        // 下　もしかしたらwayを結合して扱う必要があるかも
+                        // 道路端のwayを編集不可能にする
+                        //var firstRoad = roadGroupEditorData.Ref.Roads.First();
+                        //var leftEdgeLane = firstRoad.MainLanes.First();
+                        //wayEditorDataList.Find(x => x.Ref == leftEdgeLane.LeftWay).IsSelectable = false;
+                        //var rightEdgeLane = firstRoad.MainLanes.Last();
+                        //if (leftEdgeLane == rightEdgeLane)  // レーンが一つしかない時は反対側のレーンを参照する
+                        //{
+                        //    wayEditorDataList.Find(x => x.Ref == rightEdgeLane.RightWay).IsSelectable = false;
+                        //}
+                        //else
+                        //{
+                        //    if (rightEdgeLane.LeftWay != null)
+                        //    {
+                        //        rightEdgeLane.GetBorderDir(RnLaneBorderType.)
+                        //        wayEditorDataList.Find(x => x.Ref == rightEdgeLane.LeftWay).IsSelectable = false;
+
+                        //    }
+                        //    wayEditorDataList.Find(x => x.Ref == rightEdgeLane.LeftWay).IsSelectable = false;
+                        //}
+                    }
+                    
+                    var mousePos = clickReceiver.MousePosition;
+                    var isMouseOnViewport = true;
+                    foreach (var wayEditorData in wayEditorDataList)
+                    {
+                        if (isMouseOnViewport == false) // シーンビュー上にマウスがあるかチェック
+                        {
+                            break;
+                        }
+
+                        if (wayEditorData.IsSelectable == false)
+                        {
+                            continue;
+                        }
+
+                        Ray ray = HandleUtility.GUIPointToWorldRay(mousePos);
+                        const float radius = 2.0f;
+                        var eVert = wayEditorData.Ref.Vertices.GetEnumerator();
+                        eVert.MoveNext();
+                        var p0 = eVert.Current;
+                        while (eVert.MoveNext())
+                        {
+                            var p1 = eVert.Current;
+                            var line = new LineUtil.Line(p0, p1);
+                            var distance = LineUtil.CheckHit(line, radius, ray, out var closestPoint);
+                            if (distance >= 0.0f)
+                            {
+                                if (closestDis > distance)
+                                {
+                                    closestWay = wayEditorData;
+                                    closestDis = distance;
+                                    closestPt = closestPoint;
+                                }
+                            }
+                            //Debug.DrawLine(p0 + Vector3.up * 10, p1 + Vector3.up * 10);
+                            p0 = p1;
+                        }
+                    }
+                }
+
+                clickReceiver.Execute((e, p) =>
+                {
+                    if (closestWay == null)
+                        return;
+
+                    if (e.type != EventType.MouseDown)
+                        return;
+
+                    // 左クリック
+                    if (e.button == 0)
+                    {
+                        //closestWay.Ref.MoveAlongNormal(0.1f);
+                    }
+                    //if (e.button == 1)
+                    //{
+                    //    closestWay.Ref.MoveAlongNormal(-0.5f);
+                    //}
+                });
+
                 // gizmos描画の更新
                 var gizmos = gizmosSys;
                 var gizmosdrawer = roadNetworkEditingSystemObjRoot.GetComponent<RoadNetworkEditorGizmos>();
@@ -1726,12 +1869,23 @@ namespace PLATEAU.Editor.RoadNetwork
                     // gizmosの更新
                     gizmos.Update(
                         system.SelectedRoadNetworkElement, 
+                        closestWay,
                         linkGroupEditorData);
                     var cmds = gizmos.BuildDrawCommands();
                     gizmosdrawer.DrawFuncs.Clear();
                     gizmosdrawer.DrawFuncs.AddRange(cmds);
 
                     // guiの更新
+
+                    if (closestWay != null)
+                    {
+                        guisys.wayHandle = closestPt;
+                    }
+                    else
+                    {
+                        guisys.wayHandle = null;
+                    }
+
                     guisys.connections = linkGroupEditorData;
                     //if (connections.Count > 0)
                     //{

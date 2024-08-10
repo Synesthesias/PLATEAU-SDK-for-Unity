@@ -342,6 +342,8 @@ namespace PLATEAU.Editor.RoadNetwork
 
         public List<RnRoadGroup> SimLanes;
 
+        public Vector3? wayHandle = null;
+
         private void OnSceneGUISimpleEdit()
         {
             var nodeIconPosOffset = Vector3.up * 0;
@@ -350,6 +352,14 @@ namespace PLATEAU.Editor.RoadNetwork
             IReadOnlyCollection<LinkGroupEditorData> cns = connections.Select(c => c.GetSubData<LinkGroupEditorData>()).ToList();
 
             var camera = SceneView.currentDrawingSceneView.camera;
+
+            if (wayHandle != null)
+            {
+                var p = (Vector3)wayHandle;
+                var size = HandleUtility.GetHandleSize(p);
+                //Handles.FreeMoveHandle(p, size, Vector3.one, Handles.SphereHandleCap);
+            }
+
             foreach (var item in connections)
             {
                 // 選択済みのオブジェクト
