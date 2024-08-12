@@ -166,5 +166,21 @@ namespace PLATEAU.RoadNetwork.Util
 
             return ret;
         }
+
+        /// <summary>
+        /// Sceneエディタ上で選択されているかどうか
+        /// </summary>
+        /// <param name="cog"></param>
+        /// <returns></returns>
+        public static bool IsEditorSceneSelected(PLATEAUCityObjectGroup cog)
+        {
+#if UNITY_EDITOR
+            if (!cog)
+                return false;
+            return UnityEditor.Selection.gameObjects.Contains(cog.gameObject);
+#else
+            return false;
+#endif
+        }
     }
 }
