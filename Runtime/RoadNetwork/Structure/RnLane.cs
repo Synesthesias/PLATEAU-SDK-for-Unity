@@ -93,6 +93,9 @@ namespace PLATEAU.RoadNetwork.Structure
         // 属性
         public RnLaneAttribute Attributes { get; set; }
 
+        // 親Roadと逆方向(右車線等)
+        public bool IsReverse { get; set; }
+
         //----------------------------------
         // end: フィールド
         //----------------------------------
@@ -160,6 +163,14 @@ namespace PLATEAU.RoadNetwork.Structure
             NextBorder = nextBorder;
         }
 
+        /// <summary>
+        /// Borderの同じ頂点で作り直す
+        /// </summary>
+        public void DisConnectBorder()
+        {
+            PrevBorder = PrevBorder?.Clone();
+            NextBorder = NextBorder?.Clone();
+        }
 
         /// <summary>
         /// borderと接続しているレーンを全て取得
@@ -210,6 +221,8 @@ namespace PLATEAU.RoadNetwork.Structure
         {
             return GetConnectedRoads(PrevBorder);
         }
+
+
         /// <summary>
         /// このレーン接続先のRnRoadBaseを取得.ParentのNext/Prevとは逆になる可能性がある.
         /// ParentのPrev/NextとBorderの一致判定により求める
@@ -248,11 +261,32 @@ namespace PLATEAU.RoadNetwork.Structure
             return GetConnectedLanes(PrevBorder);
         }
 
+        /// <summary>
+        /// 接続しているレーンをすべて取得
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        public IEnumerable<RnLane> GetConnectedLanes(RnLaneBorderType type)
+        {
+            return GetConnectedLanes(GetBorder(type));
+        }
+
+        /// <summary>
+        /// 接続しているRoadBaseをすべて取得
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        public IEnumerable<RnRoadBase> GetConnectedRoads(RnLaneBorderType type)
+        {
+            return GetConnectedRoads(GetBorder(type));
+        }
+
         // 向き反転させる
         public void Reverse()
         {
             (PrevBorder, NextBorder) = (NextBorder?.ReversedWay(), PrevBorder?.ReversedWay());
             (LeftWay, RightWay) = (RightWay?.ReversedWay(), LeftWay?.ReversedWay());
+            IsReverse = !IsReverse;
         }
 
         /// <summary>
@@ -497,7 +531,7 @@ namespace PLATEAU.RoadNetwork.Structure
             var segments = GeoGraphEx.GetInnerLerpSegments(lefts, rights, AxisPlane.Xz, p2);
             foreach (var s in segments)
             {
-                AddPoint(s.Segment.Start);
+                AddPoint(s);
             }
             AddPoint(Vector3.Lerp(lefts[^1], rights[^1], p2));
             return points;
@@ -720,7 +754,9 @@ namespace PLATEAU.RoadNetwork.Structure
         /// <returns></returns>
         public static Vector3 GetCenter(this RnLane self)
         {
-            var a = self.GetVertices().Aggregate(new { sum = Vector3.zero, i = 0 }, (a, p) => new { sum = a.sum + p.Vertex, i = a.i + 1 });
+            var a = self
+                .GetVertices()
+                .Aggregate(new { sum = Vector3.zero, i = 0 }, (a, p) => new { sum = a.sum + p.Vertex, i = a.i + 1 });
             if (a.i == 0)
                 return Vector3.zero;
             return a.sum / a.i;
@@ -854,7 +890,7 @@ namespace PLATEAU.RoadNetwork.Structure
                         var segments = GeoGraphEx.GetInnerLerpSegments(targetLane.LeftWay.Vertices.ToList(), targetLane.RightWay.Vertices.ToList(), AxisPlane.Xz, rate);
                         foreach (var s in segments)
                         {
-                            AddPoint(new RnPoint(s.Segment.Start));
+                            AddPoint(new RnPoint(s));
                         }
 
                         if (isNextLeft2Right)

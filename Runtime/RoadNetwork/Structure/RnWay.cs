@@ -491,7 +491,7 @@ namespace PLATEAU.RoadNetwork.Structure
             float len = float.MaxValue;
             foreach (var s in GeoGraphEx.GetEdges(self, false))
             {
-                var v = new LineSegment3D(s.Item1, s.Item2).GetNearestPoint(pos, out var t);
+                var v = new LineSegment3D(s.Item1, s.Item2).GetNearestPoint(pos);
                 if ((nearest - v).sqrMagnitude < len)
                 {
                     len = (nearest - v).sqrMagnitude;

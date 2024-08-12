@@ -268,22 +268,19 @@ namespace PLATEAU.RoadNetwork.Tester
                 var right = child.GetChild(1).GetComponent<PLATEAUGeoGraphTesterLineString>();
                 if (!left || !right)
                     continue;
-                var leftVertices = left.GetVertices();
-                var rightVertices = right.GetVertices();
+                var leftVertices = left.GetVertices().Select(v => v.Xya()).ToList();
+                var rightVertices = right.GetVertices().Select(v => v.Xya()).ToList();
 
                 if (param.showWay)
                 {
                     foreach (var v in new[] { leftVertices, rightVertices })
                     {
                         var color = DebugEx.GetDebugColor(childIndex++, 8);
-                        DebugEx.DrawArrows(v.Select(a => a.Xya()), false, arrowSize: 0.1f, color: color, arrowUp: Vector3.forward);
+                        DebugEx.DrawArrows(v, false, arrowSize: 0.1f, color: color, arrowUp: Vector3.forward);
                     }
                 }
-                var segments = GeoGraph2D.GetInnerLerpSegments(leftVertices, rightVertices, param.p, param.op);
-                foreach (var seg in segments.Select((v, i) => new { v, i }))
-                {
-                    DebugEx.DrawLineSegment2D(seg.v.Segment, color: DebugEx.GetDebugColor(seg.i, 16));
-                }
+                var segments = GeoGraphEx.GetInnerLerpSegments(leftVertices, rightVertices, AxisPlane.Xy, param.p);
+                DebugEx.DrawArrows(segments);
             }
         }
 

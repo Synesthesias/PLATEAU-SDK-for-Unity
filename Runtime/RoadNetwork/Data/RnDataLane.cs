@@ -37,6 +37,12 @@ namespace PLATEAU.RoadNetwork.Data
         [RoadNetworkSerializeMember]
         public RnLaneAttribute Attributes { get; set; }
 
+
+        // 親Roadと逆方向(右車線等)
+        [field: SerializeField]
+        [RoadNetworkSerializeMember]
+        public bool IsReverse { get; set; }
+
     }
 
 }

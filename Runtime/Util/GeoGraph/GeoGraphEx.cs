@@ -1,10 +1,7 @@
-﻿using Codice.Client.BaseCommands.Differences;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Numerics;
 using UnityEngine;
-using static PLATEAU.Util.GeoGraph.GeoGraph2D;
 using Vector2 = UnityEngine.Vector2;
 using Vector3 = UnityEngine.Vector3;
 
@@ -17,8 +14,10 @@ namespace PLATEAU.Util.GeoGraph
     {
         // XY平面
         Xy,
+
         // XZ平面
         Xz,
+
         // YZ平面
         Yz,
     }
@@ -26,7 +25,7 @@ namespace PLATEAU.Util.GeoGraph
     public static class AxisPlaneEx
     {
         /// <summary>
-        /// planeの接戦成分を取り出す
+        /// planeの平面成分を取り出す
         /// </summary>
         /// <param name="self"></param>
         /// <param name="plane"></param>
@@ -41,6 +40,18 @@ namespace PLATEAU.Util.GeoGraph
                 AxisPlane.Yz => self.Yz(),
                 _ => throw new ArgumentOutOfRangeException(),
             };
+        }
+
+        /// <summary>
+        /// planeの平面成分を取り出す
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="plane"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentOutOfRangeException"></exception>
+        public static Vector2 ToVector2(this Vector3 self, AxisPlane plane)
+        {
+            return self.GetTangent(plane);
         }
 
         /// <summary>
@@ -119,6 +130,7 @@ namespace PLATEAU.Util.GeoGraph
                     first = current = v;
                     continue;
                 }
+
                 yield return new Tuple<T, T>(current.Value, v);
                 current = v;
             }
@@ -156,6 +168,7 @@ namespace PLATEAU.Util.GeoGraph
                     v = afterVertex;
                     found = true;
                 }
+
                 // #NOTE : 重複頂点の削除
                 var idx = 0;
                 if (indexMap.TryGetValue(v, out idx) == false)
@@ -229,7 +242,8 @@ namespace PLATEAU.Util.GeoGraph
         /// <param name="cellSize"></param>
         /// <param name="mergeCellLength"></param>
         /// <returns></returns>
-        public static Dictionary<Vector3, Vector3> MergeVertices(IEnumerable<Vector3> vertices, float cellSize = 0.1f, int mergeCellLength = 2)
+        public static Dictionary<Vector3, Vector3> MergeVertices(IEnumerable<Vector3> vertices, float cellSize = 0.1f,
+            int mergeCellLength = 2)
         {
             var len = cellSize;
             var mergeLen = mergeCellLength;
@@ -346,6 +360,7 @@ namespace PLATEAU.Util.GeoGraph
 #endif
         }
 
+#if false
         public class NearestPointInfo
         {
             // 線分のインデックス
@@ -400,7 +415,8 @@ namespace PLATEAU.Util.GeoGraph
             // 輪郭線と交差しているかどうか
             public bool IsCrossed { get; set; }
 
-            public InnerSegment(LineSegment3D segment, int leftIndex, int rightIndex, bool isStartLeft, bool isEndLeft, float p)
+            public InnerSegment(LineSegment3D segment, int leftIndex, int rightIndex, bool isStartLeft, bool isEndLeft,
+                float p)
             {
                 Segment = segment;
                 LeftIndex = leftIndex;
@@ -424,7 +440,6 @@ namespace PLATEAU.Util.GeoGraph
                 return NearestPointInfo.Compare(a.RightNearestStartInfo, b.RightNearestStartInfo);
             }
         }
-
 
         /// <summary>
         /// selfの左右の道を横幅p : (1-p)で分割した線分を返す. p=[0,1]
@@ -456,7 +471,8 @@ namespace PLATEAU.Util.GeoGraph
 
             Vector3 Make(Vector2 v, float h) => plane.Make(v, h);
 
-            InnerSegment AddSegment(LineSegment2D segment, int leftIndex, int rightIndex, bool isStartLeft, bool isEndLeft, float p)
+            InnerSegment AddSegment(LineSegment2D segment, int leftIndex, int rightIndex, bool isStartLeft,
+                bool isEndLeft, float p)
             {
                 var isHit = false;
 
@@ -470,7 +486,13 @@ namespace PLATEAU.Util.GeoGraph
                             var near = e.GetNearestPoint(pos, out var t);
                             return new { near, dist = (ToVec2(near) - pos).sqrMagnitude, index = i, t };
                         }).TryFindMin(a => a.dist, out var x);
-                    return new NearestPointInfo() { Index = x.index, T = x.t, Distance = (ToVec2(x.near) - pos).magnitude, NearestPoint = x.near };
+                    return new NearestPointInfo()
+                    {
+                        Index = x.index,
+                        T = x.t,
+                        Distance = (ToVec2(x.near) - pos).magnitude,
+                        NearestPoint = x.near
+                    };
                 }
 
                 var leftNearestStartInfo = FindNearestPoint(lefts, segment.Start);
@@ -489,17 +511,19 @@ namespace PLATEAU.Util.GeoGraph
 
                 var start = Make(segment.Start, ToHeight(leftNearestStartInfo, rightNearestStartInfo));
                 var end = Make(segment.End, ToHeight(leftNearestEndInfo, rightNearestEndInfo));
-                var ev = new InnerSegment(new LineSegment3D(start, end), leftIndex, rightIndex, isStartLeft, isEndLeft, p)
-                {
-                    LeftNearestStartInfo = FindNearestPoint(lefts, segment.Start),
-                    LeftNearestEndInfo = FindNearestPoint(lefts, segment.End),
-                    RightNearestStartInfo = FindNearestPoint(rights, segment.Start),
-                    RightNearestEndInfo = FindNearestPoint(rights, segment.End),
-                    IsCrossed = isHit
-                };
+                var ev =
+                    new InnerSegment(new LineSegment3D(start, end), leftIndex, rightIndex, isStartLeft, isEndLeft, p)
+                    {
+                        LeftNearestStartInfo = FindNearestPoint(lefts, segment.Start),
+                        LeftNearestEndInfo = FindNearestPoint(lefts, segment.End),
+                        RightNearestStartInfo = FindNearestPoint(rights, segment.Start),
+                        RightNearestEndInfo = FindNearestPoint(rights, segment.End),
+                        IsCrossed = isHit
+                    };
                 innerSegments.Add(ev);
                 return ev;
             }
+
             var leftIndex = 0;
             var rightIndex = 0;
             while (leftIndex < lefts.Count && rightIndex < rights.Count)
@@ -569,8 +593,168 @@ namespace PLATEAU.Util.GeoGraph
                     leftIndex++;
                 }
             }
+
             //innerSegments.Sort(InnerSegment.Compare);
             return innerSegments;
+        }
+#endif
+        /// <summary>
+        /// selfの左右の道を横幅p : (1-p)で分割した線分を返す. p=[0,1]
+        /// 例) 0.5だと中央線が返る, 0だとLeftが返る, 1だとRightが返る. 
+        /// </summary>
+        /// <param name="leftVertices"></param>
+        /// <param name="rightVertices"></param>
+        /// <param name="plane"></param>
+        /// <param name="p"></param>
+        /// <returns></returns>
+        public static List<Vector3> GetInnerLerpSegments(
+            IReadOnlyList<Vector3> leftVertices
+            , IReadOnlyList<Vector3> rightVertices
+            , AxisPlane plane,
+            float p)
+        {
+            p = Mathf.Clamp01(p);
+            var leftEdges = GetEdges(leftVertices, false).Select(v => new LineSegment3D(v.Item1, v.Item2)).ToList();
+            var rightEdges = GetEdges(rightVertices, false).Select(v => new LineSegment3D(v.Item1, v.Item2)).ToList();
+
+            var indices = new List<float>();
+
+            indices.AddRange(Enumerable.Range(0, leftVertices.Count).Select(i => (float)i));
+
+            bool IsInInnerSide(LineSegment3D? e, Vector3 d, bool reverse, bool isPrev)
+            {
+                if (e.HasValue == false)
+                    return true;
+                var ed2 = e.Value.Direction.ToVector2(plane);
+                var d2 = d.ToVector2(plane);
+                var cross = Vector2Ex.Cross(ed2, d2);
+                if (reverse == false)
+                    cross = -cross;
+                if (cross > 0)
+                    return false;
+                if (cross == 0f)
+                {
+                    var dot = Vector2.Dot(ed2, d2);
+                    if (isPrev)
+                        dot = -dot;
+                    return dot < 0f;
+                }
+
+                return true;
+            }
+
+            bool CheckCollision(Vector3 a, Vector3 b, IList<LineSegment3D> edges, float indexF)
+            {
+                var a2 = a.ToVector2(plane);
+                var b2 = b.ToVector2(plane);
+                var index = (int)indexF;
+                var f = indexF - index;
+                var prevIndex = f > 0 ? index : index - 1;
+                for (var i = 0; i < edges.Count; ++i)
+                {
+                    if (i == index || i == prevIndex)
+                        continue;
+                    var e = edges[i];
+                    var e2 = e.To2D(plane);
+                    if (e2.TrySegmentIntersection(a2, b2, out var _, out var _, out var _))
+                        return true;
+                }
+
+                return false;
+            }
+
+            for (var i = 0; i < rightVertices.Count; ++i)
+            {
+                var pos = rightVertices[i];
+
+                var prevEdge = i > 0 ? rightEdges[i - 1] : (LineSegment3D?)null;
+                var nextEdge = i < rightEdges.Count ? rightEdges[i] : (LineSegment3D?)null;
+
+                float minIndexF = -1;
+                float minDist = float.MaxValue;
+                for (var edgeIndex = 0; edgeIndex < leftEdges.Count; ++edgeIndex)
+                {
+                    var e = leftEdges[edgeIndex];
+                    var nearPos = e.GetNearestPoint(pos, out var distanceFromStart);
+                    var d = nearPos - pos;
+
+                    var dist = d.magnitude;
+                    if (dist >= minDist)
+                        continue;
+                    if (IsInInnerSide(prevEdge, d, false, true) == false)
+                        continue;
+                    if (IsInInnerSide(nextEdge, d, false, false) == false)
+                        continue;
+                    if (CheckCollision(pos, nearPos, rightEdges, i))
+                        continue;
+                    minDist = dist;
+                    minIndexF = edgeIndex + distanceFromStart / e.Magnitude;
+                }
+
+                if (minIndexF < 0)
+                    continue;
+                indices.Add(minIndexF);
+            }
+
+            indices.Sort();
+
+            var searchRightIndex = 0;
+            var ret = new List<Vector3>();
+            foreach (var indexF in indices)
+            {
+                var i = Mathf.Clamp((int)indexF, 0, leftEdges.Count - 1);
+                var e1 = leftEdges[i];
+                var f = Mathf.Clamp01(indexF - i);
+                var pos = Vector3.Lerp(e1.Start, e1.End, f);
+
+                LineSegment3D? prevEdge = null;
+                LineSegment3D? nextEdge = null;
+                if (f is > 0f and < 1f)
+                {
+                    prevEdge = new LineSegment3D(e1.Start, pos);
+                    nextEdge = new LineSegment3D(pos, e1.End);
+                }
+                else
+                {
+                    if (i > 0)
+                        prevEdge = leftEdges[i - 1];
+                    if (i < leftEdges.Count)
+                        nextEdge = leftEdges[i];
+                }
+
+                float minIndexF = -1;
+                float minDist = float.MaxValue;
+                Vector3 minPos = Vector3.zero;
+                for (var edgeIndex = searchRightIndex; edgeIndex < rightEdges.Count; ++edgeIndex)
+                {
+                    var e2 = rightEdges[edgeIndex];
+                    var nearPos = e2.GetNearestPoint(pos, out var t);
+                    var d = nearPos - pos;
+                    var dist = d.magnitude;
+
+                    if (dist >= minDist)
+                        continue;
+                    if (IsInInnerSide(prevEdge, d, true, true) == false)
+                        continue;
+                    if (IsInInnerSide(nextEdge, d, true, false) == false)
+                        continue;
+
+                    if (CheckCollision(pos, nearPos, leftEdges, indexF))
+                        continue;
+                    minDist = dist;
+                    minIndexF = edgeIndex + t;
+                    minPos = nearPos;
+                }
+
+                if (minIndexF < 0)
+                    continue;
+                // 高速化のため. 戻ることは無いはずなので見つかったindexから探索でよいはず
+                searchRightIndex = (int)minIndexF;
+
+                ret.Add(Vector3.Lerp(pos, minPos, p));
+            }
+
+            return ret;
         }
     }
 }

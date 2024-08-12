@@ -125,6 +125,7 @@ namespace PLATEAU.RoadNetwork.Structure
                 return null;
             // 向きをそろえる
             Align();
+            // #DebugId=127でPrev/Nextが逆になっている
             var mergedBorders = Roads.Select(l => l.GetMergedBorder(RnLaneBorderType.Prev)).ToList();
             mergedBorders.Add(Roads[^1].GetMergedBorder(RnLaneBorderType.Next));
 
@@ -164,7 +165,7 @@ namespace PLATEAU.RoadNetwork.Structure
                         // 1つ目の点はボーダーと重複するのでスキップ
                         // #TODO : 実際はボーダーよりも外側にあるのはすべてスキップすべき
                         foreach (var s in segments.Skip(1))
-                            line.AddPointOrSkip(new RnPoint(s.Segment.Start), ep);
+                            line.AddPointOrSkip(new RnPoint(s), ep);
                         line.AddPointOrSkip(nextBorder.GetPoint(-1), ep);
 
 
@@ -224,7 +225,6 @@ namespace PLATEAU.RoadNetwork.Structure
                     PrevIntersection?.ReplaceBorder(Roads[0], lanes.Select(l => l.PrevBorder).ToList());
                 for (var j = leftCount; j < lanes.Count; ++j)
                     lanes[j].Reverse();
-
 
                 Roads[i].ReplaceLanes(lanes);
             }

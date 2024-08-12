@@ -82,9 +82,16 @@ namespace PLATEAU.Util.GeoGraph
         {
             return new LineSegment2D(toVec2(self.Start), toVec2(self.End));
         }
+
+        public static LineSegment2D To2D(this LineSegment3D self, AxisPlane plane)
+        {
+            return new LineSegment2D(self.Start.ToVector2(plane), self.End.ToVector2(plane));
+        }
+
         /// <summary>
         /// 点vから線分に対して最も近い点を返す
         /// </summary>
+        /// <param name="self"></param>
         /// <param name="v"></param>
         /// <returns></returns>
         public static Vector3 GetNearestPoint(this LineSegment3D self, Vector3 v)
@@ -97,13 +104,13 @@ namespace PLATEAU.Util.GeoGraph
         /// </summary>
         /// <param name="self"></param>
         /// <param name="v"></param>
-        /// <param name="t"></param>
+        /// <param name="distanceFromStart"></param>
         /// <returns></returns>
-        public static Vector3 GetNearestPoint(this LineSegment3D self, Vector3 v, out float t)
+        public static Vector3 GetNearestPoint(this LineSegment3D self, Vector3 v, out float distanceFromStart)
         {
-            t = Vector3.Dot(self.Direction, v - self.Start);
-            t = Mathf.Clamp(t, 0f, self.Magnitude);
-            return self.Start + t * self.Direction;
+            distanceFromStart = Vector3.Dot(self.Direction, v - self.Start);
+            distanceFromStart = Mathf.Clamp(distanceFromStart, 0f, self.Magnitude);
+            return self.Start + distanceFromStart * self.Direction;
         }
 
         /// <summary>

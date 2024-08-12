@@ -110,7 +110,7 @@ namespace PLATEAU.RoadNetwork.Structure
         /// <returns></returns>
         private bool IsLeftLane(RnLane lane)
         {
-            return lane.GetNextRoad() == Next;
+            return lane.IsReverse == false;
         }
 
         /// <summary>
@@ -120,7 +120,7 @@ namespace PLATEAU.RoadNetwork.Structure
         /// <returns></returns>
         private bool IsRightLane(RnLane lane)
         {
-            return lane.GetNextRoad() == Prev;
+            return lane.IsReverse == true;
         }
 
         // 境界線情報を取得
@@ -141,6 +141,7 @@ namespace PLATEAU.RoadNetwork.Structure
         /// <returns></returns>
         public IEnumerable<RnLane> GetLeftLanes()
         {
+            // #TODO : Prev == Nextの時にバグる
             return MainLanes.Where(IsLeftLane);
         }
 
@@ -150,6 +151,7 @@ namespace PLATEAU.RoadNetwork.Structure
         /// <returns></returns>
         public IEnumerable<RnLane> GetRightLanes()
         {
+            // #TODO : Prev == Nextの時にバグる
             return MainLanes.Where(IsRightLane);
         }
 
@@ -159,6 +161,7 @@ namespace PLATEAU.RoadNetwork.Structure
         /// <returns></returns>
         public int GetLeftLaneCount()
         {
+            //return lane.GetNextRoad() == Next;
             return GetLeftLanes().Count();
         }
 
@@ -168,6 +171,7 @@ namespace PLATEAU.RoadNetwork.Structure
         /// <returns></returns>
         public int GetRightLaneCount()
         {
+            //return lane.GetNextRoad() == Prev;
             return GetRightLanes().Count();
         }
 
@@ -201,6 +205,7 @@ namespace PLATEAU.RoadNetwork.Structure
         public RnWay GetMergedBorder(RnLaneBorderType type)
         {
             var ret = new RnLineString();
+            // #TODO : 場合によってはうまくとれていない
             foreach (var l in MainLanes)
             {
                 RnWay way = null;
@@ -213,6 +218,8 @@ namespace PLATEAU.RoadNetwork.Structure
                 }
 
                 way = l.GetBorder(t);
+                if (way == null)
+                    continue;
                 if (l.GetBorderDir(t) != dir)
                     way = way.ReversedWay();
 
@@ -432,6 +439,10 @@ namespace PLATEAU.RoadNetwork.Structure
             SetPrevNext(null, null);
             if (removeFromModel)
                 ParentModel?.RemoveRoad(this);
+            foreach (var lane in mainLanes)
+            {
+                lane.DisConnectBorder();
+            }
         }
 
         /// <summary>
@@ -565,7 +576,9 @@ namespace PLATEAU.RoadNetwork.Structure
         /// <returns></returns>
         public static Vector3 GetCenter(this RnRoadBase self)
         {
-            var a = self.AllLanes.Select(l => l.GetCenter()).Aggregate(new { sum = Vector3.zero, i = 0 }, (a, p) => new { sum = a.sum + p, i = a.i + 1 });
+            var a = self.AllLanes
+                .Select(l => l.GetCenter())
+                .Aggregate(new { sum = Vector3.zero, i = 0 }, (a, p) => new { sum = a.sum + p, i = a.i + 1 });
             if (a.i == 0)
                 return Vector3.zero;
             return a.sum / a.i;

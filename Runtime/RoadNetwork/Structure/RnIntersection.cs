@@ -43,6 +43,14 @@ namespace PLATEAU.RoadNetwork.Structure
         // 車線
         public IReadOnlyList<RnLane> Lanes => lanes;
 
+        public RnIntersection() { }
+
+        public RnIntersection(PLATEAUCityObjectGroup targetTran)
+        {
+            TargetTran = targetTran;
+        }
+
+
         public override IEnumerable<RnRoadBase> GetNeighborRoads()
         {
             foreach (var neighbor in Neighbors)
@@ -52,6 +60,14 @@ namespace PLATEAU.RoadNetwork.Structure
             }
         }
 
+        public override IEnumerable<RnBorder> GetBorders()
+        {
+            foreach (var neighbor in Neighbors)
+            {
+                foreach (var lane in neighbor.GetConnectedLanes())
+                    yield return new RnBorder(neighbor.Border, lane);
+            }
+        }
 
         // 所持全レーンを取得
         public override IEnumerable<RnLane> AllLanes
@@ -62,22 +78,6 @@ namespace PLATEAU.RoadNetwork.Structure
                     yield return lane;
 
                 yield break;
-            }
-        }
-
-        public RnIntersection() { }
-
-        public RnIntersection(PLATEAUCityObjectGroup targetTran)
-        {
-            TargetTran = targetTran;
-        }
-
-        public override IEnumerable<RnBorder> GetBorders()
-        {
-            foreach (var neighbor in Neighbors)
-            {
-                foreach (var lane in neighbor.GetConnectedLanes())
-                    yield return new RnBorder(neighbor.Border, lane);
             }
         }
 

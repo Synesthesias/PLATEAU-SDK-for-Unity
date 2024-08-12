@@ -1511,6 +1511,8 @@ namespace PLATEAU.Util.GeoGraph
 #endif
         }
 
+
+
         [Serializable]
         public class DebugFindOppositeOption
         {
