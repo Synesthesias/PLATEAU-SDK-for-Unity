@@ -599,6 +599,9 @@ namespace PLATEAU.RoadNetwork.Factory
                     }
                 }
 
+
+                ret.SplitLaneByWidth(roadSize, out var failedLinks);
+
                 return Task.FromResult(ret);
             }
             catch (Exception e)
