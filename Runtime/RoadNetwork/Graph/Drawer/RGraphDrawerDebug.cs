@@ -19,6 +19,7 @@ namespace PLATEAU.RoadNetwork.Drawer
         // start:フィールド
         // --------------------
         public bool visible = false;
+        public bool showAll = true;
 
         public bool onlySelectedCityObjectGroupVisible = true;
 
@@ -136,7 +137,7 @@ namespace PLATEAU.RoadNetwork.Drawer
             if (op.visible == false)
                 return;
 
-            if (work.visitedVertices.Contains(vertex) == false)
+            if (work.visitedVertices.Contains(vertex))
                 return;
 
             work.visitedVertices.Add(vertex);
@@ -175,8 +176,7 @@ namespace PLATEAU.RoadNetwork.Drawer
             if (work.visitedEdges.Contains(edge))
                 return;
             work.visitedEdges.Add(edge);
-
-            if (TargetEdges.Contains(edge) == false)
+            if (showAll == false && (TargetEdges?.Any() == true) && TargetEdges.Contains(edge) == false)
                 return;
             if (op.visible)
             {
@@ -197,7 +197,7 @@ namespace PLATEAU.RoadNetwork.Drawer
             if (face.Visible == false)
                 return;
 
-            if (TargetFaces.Contains(face) == false)
+            if (showAll == false && (TargetFaces?.Any() == true) && TargetFaces.Contains(face) == false)
                 return;
 
             if (face.RoadTypes.HasAnyFlag(showFaceType) == false)

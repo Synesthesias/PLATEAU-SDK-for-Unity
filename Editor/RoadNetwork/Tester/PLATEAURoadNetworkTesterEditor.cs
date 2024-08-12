@@ -3,6 +3,7 @@ using PLATEAU.RoadNetwork;
 using PLATEAU.RoadNetwork.Drawer;
 using PLATEAU.RoadNetwork.Graph;
 using PLATEAU.RoadNetwork.Structure;
+using PLATEAU.RoadNetwork.Util;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
@@ -59,9 +60,7 @@ namespace PLATEAU.Editor.RoadNetwork.Tester
 
             public bool IsTarget(RnRoadBase roadBase)
             {
-                if (roadBase.CityObjectGroup == null)
-                    return false;
-                return Selection.gameObjects.Contains(roadBase.CityObjectGroup.gameObject);
+                return RnEx.IsEditorSceneSelected(roadBase.CityObjectGroup);
             }
         }
 
@@ -96,7 +95,7 @@ namespace PLATEAU.Editor.RoadNetwork.Tester
 
             public bool IsTarget(RFace face)
             {
-                return Selection.gameObjects.Contains(face.CityObjectGroup.gameObject);
+                return RnEx.IsEditorSceneSelected(face.CityObjectGroup);
             }
 
             public void CreateRnModel()

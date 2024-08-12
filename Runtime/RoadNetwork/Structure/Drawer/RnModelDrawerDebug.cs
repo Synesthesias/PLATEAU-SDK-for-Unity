@@ -1,9 +1,11 @@
 ﻿using PLATEAU.CityInfo;
 using PLATEAU.RoadNetwork.Drawer;
+using PLATEAU.RoadNetwork.Util;
 using PLATEAU.Util;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEditor;
 using UnityEngine;
 
 namespace PLATEAU.RoadNetwork.Structure.Drawer
@@ -23,6 +25,19 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
     [Serializable]
     public class RnModelDrawerDebug
     {
+        [Flags]
+        public enum VisibleType
+        {
+            Empty = 0,
+            // 選択されていないもの
+            NonSelected = 1 << 0,
+            // シーンで選択されたGameObjectに紐づくもの
+            SceneSelected = 1 << 1,
+            // EditorWindowで選択されたもの
+            GuiSelected = 1 << 2,
+            // 全て
+            All = ~0
+        }
         // --------------------
         // start:フィールド
         // --------------------
@@ -55,6 +70,7 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
         public class IntersectionOption
         {
             public bool visible = true;
+            public VisibleType visibleType = VisibleType.All;
             public DrawOption showTrack = new DrawOption();
 
             public DrawOption showBorder = new DrawOption();
@@ -67,6 +83,7 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
         public class RoadOption
         {
             public bool visible = true;
+            public VisibleType visibleType = VisibleType.All;
             public bool showMedian = true;
             public bool showLaneConnection = false;
             public bool showRoadGroup = false;
@@ -97,6 +114,7 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
         public class LaneOption
         {
             public bool visible = true;
+            public VisibleType visibleType = VisibleType.All;
             public float bothConnectedLaneAlpha = 1f;
             public float validWayAlpha = 0.75f;
             public float invalidWayAlpha = 0.3f;
@@ -133,6 +151,23 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
         // --------------------
         // end:フィールド
         // --------------------
+
+        /// <summary>
+        /// Drawの最初でリセットされるフレーム情報
+        /// </summary>
+        class DrawWork
+        {
+            public HashSet<object> Visited { get; } = new();
+
+            public bool IsVisited(object obj)
+            {
+                var ret = Visited.Contains(obj);
+                if (ret == false)
+                    Visited.Add(obj);
+                return true;
+            }
+        }
+        DrawWork work = new DrawWork();
 
         private void DrawArrows(IEnumerable<Vector3> vertices
             , bool isLoop = false
@@ -237,11 +272,18 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
         /// Lane描画
         /// </summary>
         /// <param name="lane"></param>
-        private void DrawLane(RnLane lane)
+        private void DrawLane(RnLane lane, VisibleType visibleType)
         {
             if (lane == null)
                 return;
+
             if (laneOp.visible == false)
+                return;
+
+            if (laneOp.visibleType.HasFlag(visibleType) == false)
+                return;
+
+            if (work.IsVisited(lane) == false)
                 return;
 
             if (showPartsType.HasFlag(RnPartsTypeMask.Lane))
@@ -295,11 +337,20 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
             }
         }
 
-        private void DrawRoad(RnRoad road)
+        private void DrawRoad(RnRoad road, VisibleType visibleType)
         {
             var op = roadOp;
 
             if (op.visible == false)
+                return;
+
+            if (RnEx.IsEditorSceneSelected(road.CityObjectGroup))
+                visibleType |= VisibleType.SceneSelected;
+
+            if (op.visibleType.HasFlag(visibleType) == false)
+                return;
+
+            if (work.IsVisited(road) == false)
                 return;
 
             if (showAll == false && (TargetRoads?.Any() == true) && TargetRoads?.Contains(road) == false)
@@ -309,10 +360,10 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
                 return;
 
             if (showPartsType.HasFlag(RnPartsTypeMask.Road))
-                DebugEx.DrawString($"L[{road.DebugMyId}]", road.GetCenter());
+                DebugEx.DrawString($"R[{road.DebugMyId}]", road.GetCenter());
 
             if (op.showMedian)
-                DrawLane(road.MedianLane);
+                DrawLane(road.MedianLane, visibleType);
 
             void DrawRoadConnection(DrawOption op, RnRoadBase target)
             {
@@ -328,25 +379,30 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
             DrawRoadConnection(op.showNextConnection, road.Next);
             DrawRoadConnection(op.showPrevConnection, road.Prev);
 
-            Vector3? last = null;
-            foreach (var lane in road.AllLanes)
-            {
-                DrawLane(lane);
-                if (op.showLaneConnection)
-                {
-                    if (last != null)
-                    {
-                        DrawArrow(last.Value, lane.GetCenter());
-                    }
-
-                    last = lane.GetCenter();
-                }
-            }
 
             if (op.showSideEdge)
             {
-                DrawWay(road.GetMergedSideWay(RnDir.Left), Color.red);
-                DrawWay(road.GetMergedSideWay(RnDir.Right), Color.blue);
+                DrawWay(road.GetMergedSideWay(RnDir.Left), laneOp.showLeftWay.color);
+                DrawWay(road.GetMergedSideWay(RnDir.Right), laneOp.showRightWay.color);
+                DrawWay(road.GetMergedBorder(RnLaneBorderType.Prev), laneOp.showPrevBorder.color);
+                DrawWay(road.GetMergedBorder(RnLaneBorderType.Next), laneOp.showNextBorder.color);
+            }
+            else
+            {
+                Vector3? last = null;
+                foreach (var lane in road.AllLanes)
+                {
+                    DrawLane(lane, visibleType);
+                    if (op.showLaneConnection)
+                    {
+                        if (last != null)
+                        {
+                            DrawArrow(last.Value, lane.GetCenter());
+                        }
+
+                        last = lane.GetCenter();
+                    }
+                }
             }
         }
 
@@ -393,14 +449,23 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
 
             foreach (var road in roadNetwork.Roads)
             {
-                DrawRoad(road);
+                DrawRoad(road, VisibleType.NonSelected);
             }
         }
 
-        private void DrawIntersection(RnIntersection intersection)
+        private void DrawIntersection(RnIntersection intersection, VisibleType visibleType)
         {
             var op = intersectionOp;
             if (op.visible == false)
+                return;
+
+            if (RnEx.IsEditorSceneSelected(intersection.CityObjectGroup))
+                visibleType |= VisibleType.SceneSelected;
+
+            if (op.visibleType.HasFlag(visibleType) == false)
+                return;
+
+            if (work.IsVisited(intersection) == false)
                 return;
 
             if (targetTran && targetTran != intersection.TargetTran)
@@ -458,7 +523,7 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
 
             foreach (var intersection in roadNetwork.Intersections)
             {
-                DrawIntersection(intersection);
+                DrawIntersection(intersection, VisibleType.NonSelected);
             }
         }
 
@@ -478,9 +543,18 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
                 return;
             if (roadNetwork == null)
                 return;
+            work = new DrawWork();
+
+            foreach (var r in TargetRoads)
+                DrawRoad(r, VisibleType.GuiSelected);
+
+            foreach (var i in TargetIntersections)
+                DrawIntersection(i, VisibleType.GuiSelected);
+
+            foreach (var l in TargetLanes)
+                DrawLane(l, VisibleType.GuiSelected);
 
             DrawRoads(roadNetwork);
-
             DrawIntersections(roadNetwork);
             DrawSideWalks(roadNetwork);
         }

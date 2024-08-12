@@ -117,13 +117,13 @@ namespace PLATEAU.Editor.RoadNetwork.Graph
         {
             if ((int)v.DebugMyId != showVertexId)
                 return;
-            EditorGUILayout.Separator();
+            RnEditorUtil.Separator();
             EditorGUILayout.IntField("ID", (int)v.DebugMyId);
             foreach (var e in v.GetNeighborVertices())
             {
                 EditorGUILayout.IntField("Neighbor", (int)e.DebugMyId);
             }
-            EditorGUILayout.Separator();
+            RnEditorUtil.Separator();
         }
 
         /// <Summary>
@@ -194,7 +194,7 @@ namespace PLATEAU.Editor.RoadNetwork.Graph
             if (GUILayout.Button("Create TranMEsh"))
                 InstanceHelper.CreateTranMesh();
 
-            EditorGUILayout.Separator();
+            RnEditorUtil.Separator();
 
             using (new EditorGUI.DisabledScope(true))
             {
@@ -206,30 +206,30 @@ namespace PLATEAU.Editor.RoadNetwork.Graph
             showVertexId = EditorGUILayout.IntField("ShowVertexId", showVertexId);
 
 
-            EditorGUILayout.Separator();
+            RnEditorUtil.Separator();
             EditorGUILayout.LabelField("=============== Face ==============");
             foreach (var face in graph.Faces)
             {
                 if (InstanceHelper.IsTarget(face) || InstanceHelper.TargetFaces.Contains(face))
                 {
-                    EditorGUILayout.Separator();
+                    RnEditorUtil.Separator();
                     faceEdit.Update(this, face);
                 }
             }
 
-            EditorGUILayout.Separator();
+            RnEditorUtil.Separator();
             EditorGUILayout.LabelField("=============== Edge ==============");
             foreach (var edge in InstanceHelper.TargetEdges)
             {
-                EditorGUILayout.Separator();
+                RnEditorUtil.Separator();
                 edgeEdit.Update(this, edge);
             }
 
-            EditorGUILayout.Separator();
+            RnEditorUtil.Separator();
             EditorGUILayout.LabelField("=============== Vertex ==============");
             foreach (var vertex in InstanceHelper.TargetVertices)
             {
-                EditorGUILayout.Separator();
+                RnEditorUtil.Separator();
                 vertexEdit.Update(this, vertex);
             }
         }
