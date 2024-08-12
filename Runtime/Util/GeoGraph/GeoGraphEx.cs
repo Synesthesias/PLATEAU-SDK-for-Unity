@@ -748,8 +748,9 @@ namespace PLATEAU.Util.GeoGraph
 
                 if (minIndexF < 0)
                     continue;
+                // #TODO : やってみたらおかしくなったので毎回最初から探す
                 // 高速化のため. 戻ることは無いはずなので見つかったindexから探索でよいはず
-                searchRightIndex = (int)minIndexF;
+                //searchRightIndex = (int)minIndexF;
 
                 ret.Add(Vector3.Lerp(pos, minPos, p));
             }
