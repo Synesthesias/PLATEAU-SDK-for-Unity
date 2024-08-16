@@ -124,13 +124,13 @@ namespace PLATEAU.RoadNetwork.Factory
 
 
 
-            public List<RnLineString> CreateSideWalk(float lod1SideWalkSize)
+            public List<RnSideWalk> CreateSideWalk(float lod1SideWalkSize)
             {
                 var visited = new Dictionary<RnPoint, (Vector3 pos, Vector3 normal)>();
 
-                var ret = new List<RnLineString>();
+                var ret = new List<RnSideWalk>();
                 // LOD1の場合は周りにlod1RoadSize分歩道があると仮定して動かす
-                void MoveWay(RnWay way)
+                void MoveWay(RnWay way, RnRoad parent)
                 {
                     if (way == null)
                         return;
@@ -162,7 +162,8 @@ namespace PLATEAU.RoadNetwork.Factory
                         }
                     }
 
-                    ret.Add(RnLineString.Create(points));
+                    var sideWalk = RnSideWalk.Create(parent, RnLineString.Create(points));
+                    ret.Add(sideWalk);
                 }
 
                 foreach (var tran in TranMap.Values)
@@ -174,9 +175,8 @@ namespace PLATEAU.RoadNetwork.Factory
                     {
                         var leftLane = road.MainLanes.FirstOrDefault();
                         var rightLane = road.MainLanes.LastOrDefault();
-                        MoveWay(leftLane?.LeftWay);
-                        MoveWay(rightLane?.RightWay);
-
+                        MoveWay(leftLane?.LeftWay, road);
+                        MoveWay(rightLane?.RightWay, road);
                     }
                 }
 
@@ -568,7 +568,10 @@ namespace PLATEAU.RoadNetwork.Factory
                         {
                             var vertices = sideWalkFace.ComputeOutlineVertices();
                             var way = work.CreateWay(vertices);
-                            ret.AddSideWalk(way.LineString);
+                            var parent = work.TranMap.Values.FirstOrDefault(t =>
+                                t.FaceGroup.CityObjectGroup == sideWalkFace.CityObjectGroup && t.Node != null);
+                            var sideWalk = RnSideWalk.Create(parent?.Node, way.LineString);
+                            ret.AddSideWalk(sideWalk);
                         }
                     }
                 }

@@ -171,7 +171,7 @@ namespace PLATEAU.RoadNetwork.Factory
                 new Dictionary<RnPoint, List<TranWork>>();
 
             // 対応するRoad or Intersection
-            private RnRoadBase Road { get; set; }
+            public RnRoadBase Road { get; set; }
 
             private RnRoad Link => Road as RnRoad;
 
@@ -531,7 +531,7 @@ namespace PLATEAU.RoadNetwork.Factory
                 {
                     tranWork.BuildConnection(vertex2Points, lod1SideWalkSize, visited, out var ls);
                     foreach (var l in ls)
-                        ret.AddSideWalk(l);
+                        ret.AddSideWalk(RnSideWalk.Create(tranWork.Road, l));
                 }
 
                 if (addLod3SideWalk)
@@ -540,7 +540,7 @@ namespace PLATEAU.RoadNetwork.Factory
                     {
                         var lines = sideWalk.Vertices.Select(v => new RnPoint(v));
                         var lineString = lineStringTable.Create(lines, out bool isReverse);
-                        ret.AddSideWalk(lineString);
+                        ret.AddSideWalk(RnSideWalk.Create(null, lineString));
                     }
                 }
 

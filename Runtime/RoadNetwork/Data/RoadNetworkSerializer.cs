@@ -63,45 +63,62 @@ namespace PLATEAU.RoadNetwork.Data
 
             public static MemberReference Create(Type dstType)
             {
-                var srcType = dstType.GetCustomAttribute<RoadNetworkSerializeDataAttribute>()?.DataType;
-                if (srcType == null)
+                var dst2SrcType = new Dictionary<Type, Type>();
+                foreach (var t in dstType.GetBaseTypes(true))
+                {
+                    var attr = t.GetCustomAttribute<RoadNetworkSerializeDataAttribute>();
+                    if (attr != null)
+                        dst2SrcType[t] = attr.DataType;
+                }
+
+                if (dst2SrcType.ContainsKey(dstType) == false)
                     throw new ArgumentException(
                         $"{dstType?.Name} has no attribute {nameof(RoadNetworkSerializeDataAttribute)}");
+
+
                 var flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
+                var dstProperties = dstType.GetProperties(flags)
+                    .Concat(dstType.GetFields(flags).Cast<MemberInfo>())
+                    // アトリビュート指定されている物を抽出
+                    .Select(p => new { member = p, attr = p.GetCustomAttribute<RoadNetworkSerializeMemberAttribute>() })
+                    .Where(p => p.attr != null)
+                    .ToList();
                 var dst2Src
                     // #NOTE : Field or Propertyのみ対応
-                    = dstType.GetProperties(flags)
-                        .Concat(dstType.GetFields(flags).Cast<MemberInfo>())
-                        // アトリビュート指定されている物を抽出
-                        .Select(p => new { member = p, attr = p.GetCustomAttribute<RoadNetworkSerializeMemberAttribute>() })
-                        .Where(p => p.attr != null)
+                    = dstProperties
                         .ToDictionary(m =>
                         {
                             if (m.member is PropertyInfo p)
-                                return TypeUtil.GetPropertyBackingField(dstType, p);
-                            return m.member as FieldInfo;
+                            {
+                                var field = TypeUtil.GetPropertyBackingField(p);
+                                if (field == null)
+                                    throw new InvalidDataException($"Property {p.Name}/{dstType.Name} has no backing field");
+                                return field;
+                            }
+
+                            var ret = m.member as FieldInfo;
+                            if (ret == null)
+                                throw new InvalidDataException($"Member {m.member.Name}/{dstType.Name} is not FieldInfo");
+                            return ret;
                         }, p =>
                         {
+                            var srcType = dst2SrcType.GetValueOrDefault(p.member.DeclaringType);
                             var fieldName = string.IsNullOrEmpty(p.attr.FieldName) ? p.member.Name : p.attr.FieldName;
+
                             var prop = srcType.GetProperty(fieldName, flags);
                             if (prop != null)
                             {
-                                var ret = TypeUtil.GetPropertyBackingField(srcType, prop);
+                                var ret = TypeUtil.GetPropertyBackingField(prop);
                                 if (ret == null)
-                                    throw new InvalidDataException($"Property {prop.Name} has no field info");
+                                    throw new InvalidDataException($"Property {prop.Name}/{srcType.Name} has no field info");
                                 return ret;
                             }
                             var field = srcType.GetField(fieldName, flags);
                             if (field != null)
                                 return field;
-                            return null;
+                            throw new InvalidDataException($"Field {fieldName} is not found in {srcType.Name}");
                         });
-                var nullFields = dst2Src.Where(x => x.Value is null).ToList();
-                if (nullFields.Any())
-                    throw new InvalidDataException(
-                        $"'{dstType.Name}'の[{string.Join(',', nullFields.Select(x => x.Key))}]に対応するフィールドが{srcType.Name}にありません");
-
-                return new MemberReference(srcType, dstType, dst2Src);
+                return new MemberReference(dst2SrcType[dstType], dstType, dst2Src);
             }
 
             public MemberReference GetReversed()
@@ -391,7 +408,6 @@ namespace PLATEAU.RoadNetwork.Data
 
         public RoadNetworkStorage Serialize(RnModel roadNetworkModel)
         {
-
             var ret = new RoadNetworkStorage();
             var refTable = CreateReferenceTable();
             CollectForSerialize(refTable, roadNetworkModel, ret.PrimitiveDataStorage.Points);
@@ -400,7 +416,7 @@ namespace PLATEAU.RoadNetwork.Data
             CollectForSerialize(refTable, roadNetworkModel, ret.PrimitiveDataStorage.Blocks);
             CollectForSerialize(refTable, roadNetworkModel, ret.PrimitiveDataStorage.RoadBases);
             CollectForSerialize(refTable, roadNetworkModel, ret.PrimitiveDataStorage.Ways);
-
+            CollectForSerialize(refTable, roadNetworkModel, ret.PrimitiveDataStorage.SideWalks);
             refTable.ConvertAll();
             return ret;
         }
@@ -441,6 +457,9 @@ namespace PLATEAU.RoadNetwork.Data
             var ways = CollectForDeserialize<RnDataWay, RnWay>(refTable, roadNetworkStorage.PrimitiveDataStorage.Ways);
             var lanes = CollectForDeserialize<RnDataLane, RnLane>(refTable, roadNetworkStorage.PrimitiveDataStorage.Lanes);
             var roadBases = CollectForDeserialize<RnDataRoadBase, RnRoadBase>(refTable, roadNetworkStorage.PrimitiveDataStorage.RoadBases);
+            var sideWalks =
+                CollectForDeserialize<RnDataSideWalk, RnSideWalk>(refTable,
+                    roadNetworkStorage.PrimitiveDataStorage.SideWalks);
 
             refTable.ConvertAll();
             var ret = new RnModel();
@@ -451,6 +470,8 @@ namespace PLATEAU.RoadNetwork.Data
                 else if (r is RnRoad l)
                     ret.AddRoad(l);
             }
+            foreach (var s in sideWalks)
+                ret.AddSideWalk(s);
             return ret;
         }
     }

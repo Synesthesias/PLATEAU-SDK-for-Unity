@@ -139,6 +139,9 @@ namespace PLATEAU.RoadNetwork.Data
         [field: SerializeField]
         public PrimitiveStorage<RnDataRoadBase> RoadBases { get; set; } = new PrimitiveStorage<RnDataRoadBase>();
 
+        [field: SerializeField]
+        public PrimitiveStorage<RnDataSideWalk> SideWalks { get; set; } = new();
+
 
         // #NOTE : structだとgetterでとってきたときにコピーが返る -> それに対してWriteしても元データが書き換わらないのでclassにする
         [Serializable]

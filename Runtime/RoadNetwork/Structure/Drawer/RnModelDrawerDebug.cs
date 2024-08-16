@@ -66,6 +66,8 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
         public HashSet<RnLane> TargetLanes { get; } = new();
         public HashSet<RnWay> TargetWays { get; } = new();
 
+        public HashSet<RnSideWalk> TargetSideWalks { get; } = new();
+
         [Serializable]
         public class IntersectionOption
         {
@@ -266,6 +268,13 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
             {
                 DrawPoint(p);
             }
+        }
+
+        public void DrawSideWalk(RnSideWalk sideWalk, SideWalkOption p)
+        {
+            if (sideWalk == null)
+                return;
+            DrawArrows(sideWalk.Line.Select(v => v), true, color: p.color);
         }
 
         /// <summary>
@@ -533,7 +542,7 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
             {
                 if (sideWalkRoadOp.visible == false)
                     break;
-                DrawWay(new RnWay(sw), color: sideWalkRoadOp.color);
+                DrawSideWalk(sw, sideWalkRoadOp);
             }
         }
 

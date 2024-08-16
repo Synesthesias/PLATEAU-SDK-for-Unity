@@ -81,7 +81,8 @@ namespace PLATEAU.Util
         /// <param name="targetType"></param>
         /// <param name="flags"></param>
         /// <returns></returns>
-        private static IEnumerable<Tuple<FieldInfo, object>> GetAllMembersRecursively(object obj, FieldInfo memberInfo, Type targetType, BindingFlags flags, Work work)
+        private static IEnumerable<Tuple<FieldInfo, object>> GetAllMembersRecursively(object obj, FieldInfo memberInfo,
+            Type targetType, BindingFlags flags, Work work)
         {
             if (obj == null)
                 yield break;
@@ -125,14 +126,17 @@ namespace PLATEAU.Util
             }
         }
 
-        public static IEnumerable<Tuple<FieldInfo, object>> GetAllMembersRecursively(object obj, Type targetType, BindingFlags flags)
+        public static IEnumerable<Tuple<FieldInfo, object>> GetAllMembersRecursively(object obj, Type targetType,
+            BindingFlags flags)
         {
             return GetAllMembersRecursively(obj, null, targetType, flags, new Work());
         }
 
-        public static IEnumerable<Tuple<FieldInfo, T>> GetAllMembersRecursively<T>(object obj, BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
+        public static IEnumerable<Tuple<FieldInfo, T>> GetAllMembersRecursively<T>(object obj,
+            BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
         {
-            return GetAllMembersRecursively(obj, typeof(T), flags).Select(item => new Tuple<FieldInfo, T>(item.Item1, (T)(item.Item2)));
+            return GetAllMembersRecursively(obj, typeof(T), flags)
+                .Select(item => new Tuple<FieldInfo, T>(item.Item1, (T)(item.Item2)));
         }
 
         /// <summary>
@@ -146,7 +150,33 @@ namespace PLATEAU.Util
             // https://learn.microsoft.com/en-us/ef/core/modeling/backing-field?tabs=data-annotations
             // type = propertyInfo.ReflectedTypeでも良さそうだけど確実じゃないので外部から渡す形式にする
             // #TODO : すべてのコンパイラがk_BackingFieldという名前にする保証があるのか？
-            return type?.GetField($"<{propertyInfo.Name}>k__BackingField", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+            return propertyInfo.DeclaringType?.GetField($"<{propertyInfo.Name}>k__BackingField",
+                BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+        }
+
+        public static FieldInfo GetPropertyBackingField(PropertyInfo propertyInfo)
+        {
+            return GetPropertyBackingField(propertyInfo?.DeclaringType, propertyInfo);
+        }
+
+        /// <summary>
+        /// 親タイプをすべて取得
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="containsSelf"></param>
+        /// <returns></returns>
+        public static IEnumerable<Type> GetBaseTypes(this Type self, bool containsSelf = false)
+        {
+            if (self == null)
+                yield break;
+            if (containsSelf)
+                yield return self;
+            var t = self.BaseType;
+            while (t != null)
+            {
+                yield return t;
+                t = t.BaseType;
+            }
         }
     }
 }

@@ -46,5 +46,7 @@ namespace PLATEAU.Editor.RoadNetwork
     [CustomPropertyDrawer(typeof(RnID<RnDataLane>))]
     public class RnLaneIDDrawer : RnIDDrawer<RnDataLane> { }
 
+    [CustomPropertyDrawer(typeof(RnID<RnDataSideWalk>))]
+    public class RnSideWalkIDDrawer : RnIDDrawer<RnDataSideWalk> { }
 #endif
 }

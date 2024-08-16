@@ -57,6 +57,7 @@ namespace PLATEAU.Editor.RoadNetwork.Tester
             public HashSet<RnIntersection> TargetIntersections => target.Drawer.TargetIntersections;
             public HashSet<RnLane> TargetLanes => target.Drawer.TargetLanes;
             public HashSet<RnWay> TargetWays => target.Drawer.TargetWays;
+            public HashSet<RnSideWalk> TargetSideWalks => target.Drawer.TargetSideWalks;
 
             public bool IsTarget(RnRoadBase roadBase)
             {

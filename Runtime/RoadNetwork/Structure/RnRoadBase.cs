@@ -10,6 +10,36 @@ namespace PLATEAU.RoadNetwork.Structure
     [Serializable]
     public class RnRoadBase : ARnParts<RnRoadBase>
     {
+        //----------------------------------
+        // start: フィールド
+        //----------------------------------
+        private List<RnSideWalk> sideWalks = new List<RnSideWalk>();
+
+
+        //----------------------------------
+        // end: フィールド
+        //----------------------------------
+
+        public IReadOnlyList<RnSideWalk> SideWalks => sideWalks;
+
+        public void AddSideWalk(RnSideWalk sideWalk)
+        {
+            if (sideWalk == null)
+                return;
+            if (sideWalks.Contains(sideWalk))
+                return;
+            sideWalk.SetParent(this);
+            sideWalks.Add(sideWalk);
+        }
+
+        public void RemoveSideWalk(RnSideWalk sideWalk)
+        {
+            if (sideWalk == null)
+                return;
+            sideWalk.SetParent(null);
+            sideWalks.Remove(sideWalk);
+        }
+
         public virtual PLATEAUCityObjectGroup CityObjectGroup => null;
 
         // 境界線情報を取得

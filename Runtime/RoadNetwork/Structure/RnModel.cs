@@ -20,7 +20,7 @@ namespace PLATEAU.RoadNetwork.Structure
 
         private List<RnIntersection> intersections = new List<RnIntersection>();
 
-        private List<RnLineString> sideWalks = new List<RnLineString>();
+        private List<RnSideWalk> sideWalks = new List<RnSideWalk>();
 
         //----------------------------------
         // end: フィールド
@@ -30,7 +30,7 @@ namespace PLATEAU.RoadNetwork.Structure
 
         public IReadOnlyList<RnIntersection> Intersections => intersections;
 
-        public IReadOnlyList<RnLineString> SideWalks => sideWalks;
+        public IReadOnlyList<RnSideWalk> SideWalks => sideWalks;
 
         public void AddRoad(RnRoad link)
         {
@@ -158,12 +158,12 @@ namespace PLATEAU.RoadNetwork.Structure
         /// <summary>
         /// 歩道情報追加
         /// </summary>
+        /// <param name="parent"></param>
         /// <param name="sideWalk"></param>
-        public void AddSideWalk(RnLineString sideWalk)
+        public void AddSideWalk(RnSideWalk sideWalk)
         {
             if (sideWalks.Contains(sideWalk))
                 return;
-
             sideWalks.Add(sideWalk);
         }
 
