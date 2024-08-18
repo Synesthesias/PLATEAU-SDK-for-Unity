@@ -57,6 +57,10 @@ namespace PLATEAU.RoadNetwork.Structure
         LeftOnly = 1 << 0,
         // 右折専用
         RightOnly = 1 << 1,
+        // 自動生成時にLeftWayが生成できなかった
+        LeftWayGenError = 1 << 2,
+        // 自動生成時にRightWayが生成できなかった
+        RightWayGenError = 1 << 3,
     }
 
     /// <summary>
@@ -95,6 +99,7 @@ namespace PLATEAU.RoadNetwork.Structure
 
         // 親Roadと逆方向(右車線等)
         public bool IsReverse { get; set; }
+
 
         //----------------------------------
         // end: フィールド

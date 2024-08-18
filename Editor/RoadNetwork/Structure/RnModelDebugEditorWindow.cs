@@ -93,8 +93,15 @@ namespace PLATEAU.Editor.RoadNetwork
                         EditorGUILayout.LabelField($"Connect Roads [{lane.GetConnectedRoads(type).Select(l => l.DebugMyId).Join2String()}]");
                     }
                 }
+                lane.Attributes = (RnLaneAttribute)EditorGUILayout.EnumFlagsField("Attribute", lane.Attributes);
                 Draw(RnLaneBorderType.Prev);
                 Draw(RnLaneBorderType.Next);
+
+                using (new EditorGUILayout.HorizontalScope())
+                {
+                    EditorGUILayout.LongField($"Left Way", lane.LeftWay.GetDebugMyIdOrDefault());
+                    EditorGUILayout.LongField($"Right Way", lane.RightWay.GetDebugMyIdOrDefault());
+                }
             }
 
             // 情報表示
@@ -199,27 +206,30 @@ namespace PLATEAU.Editor.RoadNetwork
             using (new EditorGUILayout.VerticalScope())
             {
                 EditorGUILayout.LabelField("LaneCount");
-                using (new EditorGUILayout.HorizontalScope())
+                using (new EditorGUI.IndentLevelScope())
                 {
-                    EditorGUILayout.LabelField($"L ({roadGroup.GetLeftLaneCount()}) ->", GUILayout.Width(45));
-                    p.leftLaneCount = EditorGUILayout.IntField(p.leftLaneCount, GUILayout.Width(45));
-                    if (GUILayout.Button("Change"))
+                    using (new EditorGUILayout.HorizontalScope())
                     {
-                        roadGroup.SetLeftLaneCount(p.leftLaneCount);
+                        EditorGUILayout.LabelField($"L ({roadGroup.GetLeftLaneCount()}) ->", GUILayout.Width(45));
+                        p.leftLaneCount = EditorGUILayout.IntField(p.leftLaneCount, GUILayout.Width(45));
+                        if (GUILayout.Button("Change"))
+                        {
+                            roadGroup.SetLeftLaneCount(p.leftLaneCount);
+                        }
+                        EditorGUILayout.LabelField($"R ({roadGroup.GetRightLaneCount()}) ->", GUILayout.Width(45));
+                        p.rightLaneCount = EditorGUILayout.IntField(p.rightLaneCount, GUILayout.Width(45));
+                        if (GUILayout.Button("Change"))
+                        {
+                            roadGroup.SetRightLaneCount(p.rightLaneCount);
+                        }
                     }
-                }
-                using (new EditorGUILayout.HorizontalScope())
-                {
-                    EditorGUILayout.LabelField($"R ({roadGroup.GetRightLaneCount()}) ->", GUILayout.Width(45));
-                    p.rightLaneCount = EditorGUILayout.IntField(p.rightLaneCount, GUILayout.Width(45));
-                    if (GUILayout.Button("Change"))
+                    using (new EditorGUILayout.HorizontalScope())
                     {
-                        roadGroup.SetRightLaneCount(p.rightLaneCount);
                     }
-                }
-                if (GUILayout.Button("Change Both"))
-                {
-                    roadGroup.SetLaneCount(p.leftLaneCount, p.rightLaneCount);
+                    if (GUILayout.Button("Change Both"))
+                    {
+                        roadGroup.SetLaneCount(p.leftLaneCount, p.rightLaneCount);
+                    }
                 }
             }
 
