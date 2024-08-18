@@ -972,8 +972,6 @@ namespace PLATEAU.RoadNetwork.Graph
             Dictionary<EdgeKey, REdge> edgeMap = new Dictionary<EdgeKey, REdge>();
             foreach (var cityObject in cityObjects)
             {
-                var root = cityObject.CityObjects.rootCityObjects[0];
-
                 if (!cityObject.CityObjectGroup)
                 {
                     Debug.LogWarning($"[{cityObject.Name}] CityObjectGroupがない為. RFace生成はスキップされます.");
@@ -981,8 +979,7 @@ namespace PLATEAU.RoadNetwork.Graph
                 }
 
                 var lodLevel = cityObject.CityObjectGroup.GetLodLevel();
-                var roadType = root.GetRoadType();
-
+                var roadType = cityObject.GetRoadType(true);
                 foreach (var mesh in cityObject.Meshes)
                 {
                     var face = new RFace(graph, cityObject.CityObjectGroup, roadType, lodLevel);
@@ -1451,14 +1448,14 @@ namespace PLATEAU.RoadNetwork.Graph
         }
 
         /// <summary>
-        /// faceGroupの中のroadTypes型のポリゴンのアウトライン頂点を計算する
+        /// faceGroupの中のpredicateで指定されたRFaceのアウトライン頂点を計算する
         /// </summary>
         /// <param name="faceGroup"></param>
-        /// <param name="roadTypes"></param>
+        /// <param name="predicate">対象RFace</param>
         /// <returns></returns>
-        public static List<RVertex> ComputeOutlineVertices(this RFaceGroup faceGroup, RRoadTypeMask roadTypes)
+        public static List<RVertex> ComputeOutlineVertices(this RFaceGroup faceGroup, Func<RFace, bool> predicate)
         {
-            var faces = faceGroup.Faces.Where(f => f.RoadTypes.HasAnyFlag(roadTypes)).ToList();
+            var faces = faceGroup.Faces.Where(predicate).ToList();
             return ComputeOutlineVertices(faces);
         }
 
@@ -1468,12 +1465,13 @@ namespace PLATEAU.RoadNetwork.Graph
         /// <param name="self"></param>
         /// <param name="cityObjectGroup"></param>
         /// <param name="roadTypes"></param>
+        /// <param name="removeRoadTypes"></param>
         /// <returns></returns>
-        public static List<RVertex> ComputeOutlineVerticesByCityObjectGroup(this RGraph self, PLATEAUCityObjectGroup cityObjectGroup, RRoadTypeMask roadTypes)
+        public static List<RVertex> ComputeOutlineVerticesByCityObjectGroup(this RGraph self, PLATEAUCityObjectGroup cityObjectGroup, RRoadTypeMask roadTypes, RRoadTypeMask removeRoadTypes)
         {
             var faces = self
                 .Faces
-                .Where(f => f.CityObjectGroup == cityObjectGroup && f.RoadTypes.HasAnyFlag(roadTypes))
+                .Where(f => f.CityObjectGroup == cityObjectGroup && f.RoadTypes.HasAnyFlag(roadTypes) && f.RoadTypes.HasAnyFlag(removeRoadTypes) == false)
                 .ToList();
             return ComputeOutlineVertices(faces);
         }

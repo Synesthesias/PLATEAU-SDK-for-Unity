@@ -280,7 +280,7 @@ namespace PLATEAU.RoadNetwork.Factory
                 Graph = graph;
 
                 FaceGroup = faceGroup;
-                Vertices = faceGroup.ComputeOutlineVertices(RRoadTypeMask.All);
+                Vertices = faceGroup.ComputeOutlineVertices(f => f.RoadTypes.HasAnyFlag(RRoadTypeMask.SideWalk) == false);
 
                 // 時計回りになるように順番チェック
                 if (GeoGraph2D.IsClockwise(Vertices.Select(x => x.Position.Xz())) == false)
@@ -534,6 +534,8 @@ namespace PLATEAU.RoadNetwork.Factory
 
                     // 道路を全く含まない時は無視
                     if (roadType.IsRoad() == false)
+                        continue;
+                    if (roadType.IsSideWalk())
                         continue;
                     // ignoreHighway=trueの時は高速道路も無視
                     if (roadType.IsHighWay() && ignoreHighway)

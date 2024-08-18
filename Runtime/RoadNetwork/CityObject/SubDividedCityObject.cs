@@ -2,6 +2,7 @@
 using PLATEAU.CityImport.Import.Convert;
 using PLATEAU.CityInfo;
 using PLATEAU.PolygonMesh;
+using PLATEAU.RoadNetwork.Graph;
 using PLATEAU.Util;
 using PLATEAU.Util.GeoGraph;
 using System;
@@ -173,6 +174,14 @@ namespace PLATEAU.RoadNetwork.Mesh
         [field: SerializeField]
         public PLATEAUCityObjectGroup CityObjectGroup { get; private set; }
 
+        // 自分の道路タイプ
+        [field: SerializeField]
+        public RRoadTypeMask SelfRoadType { get; set; } = RRoadTypeMask.Empty;
+
+        // 親の道路タイプ
+        [field: SerializeField]
+        public RRoadTypeMask ParentRoadType { get; set; } = RRoadTypeMask.Empty;
+
         public CityInfo.CityObjectList CityObjects
         {
             get
@@ -185,6 +194,14 @@ namespace PLATEAU.RoadNetwork.Mesh
 
                 return cityObjects;
             }
+        }
+
+        public RRoadTypeMask GetRoadType(bool containsParent)
+        {
+            var ret = SelfRoadType;
+            if (containsParent)
+                ret |= ParentRoadType;
+            return ret;
         }
 
         /// <summary>
@@ -201,7 +218,7 @@ namespace PLATEAU.RoadNetwork.Mesh
             {
                 var rootNode = plateauModel.GetRootNodeAt(i);
                 // 再帰的な子の生成です。
-                Children.Add(new SubDividedCityObject(rootNode, attributeDataHelper.Copy()));
+                Children.Add(new SubDividedCityObject(rootNode, attributeDataHelper.Copy(), RRoadTypeMask.Empty));
             }
         }
 
@@ -210,11 +227,11 @@ namespace PLATEAU.RoadNetwork.Mesh
         /// <see cref="SubDividedCityObject"/> を作ります。
         /// 子も再帰的に作ります。
         /// </summary>
-        private SubDividedCityObject(Node plateauNode, AttributeDataHelper attributeDataHelper)
+        private SubDividedCityObject(Node plateauNode, AttributeDataHelper attributeDataHelper, RRoadTypeMask parentTypeMask)
         {
             //MeshData = MeshConverter.Convert(plateauNode.Mesh, plateauNode.Name);
 
-
+            ParentRoadType = parentTypeMask;
             Name = plateauNode.Name;
             attributeDataHelper.SetId(Name);
             if (plateauNode != null)
@@ -262,10 +279,16 @@ namespace PLATEAU.RoadNetwork.Mesh
 
 
             cityObjects = attributeDataHelper.GetSerializableCityObject();
+            SelfRoadType = RRoadTypeMask.Empty;
+            foreach (var root in cityObjects.rootCityObjects)
+            {
+                SelfRoadType |= root.GetRoadType();
+            }
+
             for (int i = 0; i < plateauNode.ChildCount; i++)
             {
                 var child = plateauNode.GetChildAt(i);
-                Children.Add(new SubDividedCityObject(child, attributeDataHelper.Copy()));
+                Children.Add(new SubDividedCityObject(child, attributeDataHelper.Copy(), ParentRoadType | SelfRoadType));
                 attributeDataHelper.AddOutsideChildren(child?.Name);
             }
             serializedCityObjects = JsonConvert.SerializeObject(cityObjects, Formatting.Indented);
