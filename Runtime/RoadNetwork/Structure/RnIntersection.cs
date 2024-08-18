@@ -127,6 +127,21 @@ namespace PLATEAU.RoadNetwork.Structure
             neighbors.AddRange(borders.Select(b => new RnNeighbor { Road = link, Border = b }));
         }
 
+        public void RemoveBorder(Func<RnNeighbor, bool> predicate)
+        {
+            neighbors.RemoveAll(x => predicate(x));
+        }
+
+        /// <summary>
+        /// road/laneに接続している隣接情報を削除する
+        /// </summary>
+        /// <param name="road"></param>
+        /// <param name="lane"></param>
+        public void RemoveNeighbor(RnRoad road, RnLane lane)
+        {
+            neighbors.RemoveAll(x => x.Road == road && ((lane.PrevBorder?.IsSameLine(x.Border) ?? false) || (lane.NextBorder?.IsSameLine(x.Border) ?? false)));
+        }
+
         /// <summary>
         /// 隣接情報からotherを削除する. other側の接続は消えない
         /// </summary>

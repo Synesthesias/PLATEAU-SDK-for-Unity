@@ -203,13 +203,23 @@ namespace PLATEAU.Editor.RoadNetwork
                 {
                     EditorGUILayout.LabelField($"L ({roadGroup.GetLeftLaneCount()}) ->", GUILayout.Width(45));
                     p.leftLaneCount = EditorGUILayout.IntField(p.leftLaneCount, GUILayout.Width(45));
+                    if (GUILayout.Button("Change"))
+                    {
+                        roadGroup.SetLeftLaneCount(p.leftLaneCount);
+                    }
+                }
+                using (new EditorGUILayout.HorizontalScope())
+                {
                     EditorGUILayout.LabelField($"R ({roadGroup.GetRightLaneCount()}) ->", GUILayout.Width(45));
                     p.rightLaneCount = EditorGUILayout.IntField(p.rightLaneCount, GUILayout.Width(45));
-
-                    if (GUILayout.Button("ChangeLaneCount"))
+                    if (GUILayout.Button("Change"))
                     {
-                        roadGroup.SetLaneCount(p.leftLaneCount, p.rightLaneCount);
+                        roadGroup.SetRightLaneCount(p.rightLaneCount);
                     }
+                }
+                if (GUILayout.Button("Change Both"))
+                {
+                    roadGroup.SetLaneCount(p.leftLaneCount, p.rightLaneCount);
                 }
             }
 

@@ -119,15 +119,13 @@ namespace PLATEAU.RoadNetwork.Structure
             return new RnWay(RnLineString.Create(points), false, false);
         }
 
-        private Dictionary<RnRoad, List<RnLane>> SplitLane(int num)
+        private Dictionary<RnRoad, List<RnLane>> SplitLane(int num, RnDir? dir)
         {
             if (num <= 0)
                 return null;
-            // 向きをそろえる
-            Align();
-            // #DebugId=127でPrev/Nextが逆になっている
-            var mergedBorders = Roads.Select(l => l.GetMergedBorder(RnLaneBorderType.Prev)).ToList();
-            mergedBorders.Add(Roads[^1].GetMergedBorder(RnLaneBorderType.Next));
+
+            var mergedBorders = Roads.Select(l => l.GetMergedBorder(RnLaneBorderType.Prev, dir)).ToList();
+            mergedBorders.Add(Roads[^1].GetMergedBorder(RnLaneBorderType.Next, dir));
 
             var borderWays = new List<List<RnWay>>(Roads.Count + 1);
 
@@ -143,8 +141,8 @@ namespace PLATEAU.RoadNetwork.Structure
                 var road = Roads[i];
                 var prevBorders = borderWays[i];
                 var nextBorders = borderWays[i + 1];
-                var leftWay = road.GetMergedSideWay(RnDir.Left);
-                var rightWay = road.GetMergedSideWay(RnDir.Right);
+
+                road.TryGetMergedSideWay(dir, out var leftWay, out var rightWay);
 
                 var leftVertices = leftWay.Vertices.ToList();
                 var rightVertices = rightWay.Vertices.ToList();
@@ -191,6 +189,57 @@ namespace PLATEAU.RoadNetwork.Structure
             return afterLanes;
         }
 
+
+        private void SetLaneCount(int count, RnDir dir)
+        {
+            if (IsValid == false)
+                return;
+
+            // 既に指定の数になっている場合は何もしない
+            if (Roads.All(l => l.GetLanes(dir).Count() == count))
+                return;
+            // 向きをそろえる
+            Align();
+
+            var afterLanes = SplitLane(count, dir);
+            if (afterLanes == null)
+                return;
+
+            // Roadsに変更を加えるのは最後にまとめて必要がある
+            // (RnRoads.IsLeftLane等が隣のRoadに依存するため. 途中で変更すると、後続の処理が破綻する可能性がある)
+            for (var i = 0; i < Roads.Count; ++i)
+            {
+                var road = Roads[i];
+                var lanes = afterLanes[road];
+
+                var beforeLanes = road.GetLanes(dir).ToList();
+                if (i == Roads.Count - 1 && NextIntersection != null)
+                {
+                    foreach (var l in beforeLanes)
+                        NextIntersection.RemoveNeighbor(road, l);
+                    foreach (var l in lanes)
+                        NextIntersection.AddNeighbor(road, l.NextBorder);
+                }
+                if (i == 0 && PrevIntersection != null)
+                {
+                    foreach (var l in beforeLanes)
+                        PrevIntersection.RemoveNeighbor(road, l);
+                    foreach (var l in lanes)
+                        PrevIntersection.AddNeighbor(road, l.PrevBorder);
+                }
+
+                // 右車線の場合は反対にする
+                // #NOTE : 隣接情報変更後に反転させる
+                if (dir == RnDir.Right)
+                {
+                    foreach (var l in lanes)
+                        l.Reverse();
+                }
+
+                Roads[i].ReplaceLanes(lanes, dir);
+            }
+        }
+
         /// <summary>
         /// レーン数を変更する
         /// </summary>
@@ -208,7 +257,7 @@ namespace PLATEAU.RoadNetwork.Structure
             Align();
 
             var num = leftCount + rightCount;
-            var afterLanes = SplitLane(num);
+            var afterLanes = SplitLane(num, null);
             if (afterLanes == null)
                 return;
 
@@ -313,7 +362,16 @@ namespace PLATEAU.RoadNetwork.Structure
             if (GetLeftLaneCount() == count)
                 return;
 
-            SetLaneCount(count, GetRightLaneCount());
+            // 左車線が無い場合は左車線のサイズも含めて変更する
+            if (GetLeftLaneCount() == 0)
+            {
+                SetLaneCount(count, GetRightLaneCount());
+            }
+            // すでに左車線がある場合はそれだけで変更する
+            else
+            {
+                SetLaneCount(count, RnDir.Left);
+            }
         }
 
         /// <summary>
@@ -325,7 +383,17 @@ namespace PLATEAU.RoadNetwork.Structure
             // 既に指定の数になっている場合は何もしない
             if (GetRightLaneCount() == count)
                 return;
-            SetLaneCount(GetLeftLaneCount(), count);
+
+            // 右車線が無い場合は左車線のサイズも含めて変更する
+            if (GetRightLaneCount() == 0)
+            {
+                SetLaneCount(GetLeftLaneCount(), count);
+            }
+            // すでに右車線がある場合はそれだけで変更する
+            else
+            {
+                SetLaneCount(count, RnDir.Right);
+            }
         }
 
         /// <summary>

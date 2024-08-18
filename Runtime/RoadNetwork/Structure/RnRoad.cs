@@ -1,4 +1,5 @@
-﻿using PLATEAU.CityInfo;
+﻿using Codice.CM.Common;
+using PLATEAU.CityInfo;
 using PLATEAU.RoadNetwork.Util;
 using System;
 using System.Collections.Generic;
@@ -123,6 +124,16 @@ namespace PLATEAU.RoadNetwork.Structure
             return lane.IsReverse == true;
         }
 
+        /// <summary>
+        /// レーンの方向を見る
+        /// </summary>
+        /// <param name="lane"></param>
+        /// <returns></returns>
+        private RnDir GetLaneDir(RnLane lane)
+        {
+            return IsLeftLane(lane) ? RnDir.Left : RnDir.Right;
+        }
+
         // 境界線情報を取得
         public override IEnumerable<RnBorder> GetBorders()
         {
@@ -197,36 +208,60 @@ namespace PLATEAU.RoadNetwork.Structure
         }
 
         /// <summary>
-        /// 全てのレーンのBorderを統合した一つの大きなBorderを返す
+        /// dirで指定した側の全レーンのBorderを統合した一つの大きなBorderを返す
         /// WayはLeft -> Right方向になっている
+        /// dir == nullの時は全レーン
         /// </summary>
         /// <param name="type"></param>
+        /// <param name="dir"></param>
         /// <returns></returns>
-        public RnWay GetMergedBorder(RnLaneBorderType type)
+        public RnWay GetMergedBorder(RnLaneBorderType type, RnDir? dir = null)
         {
             var ret = new RnLineString();
-            // #TODO : 場合によってはうまくとれていない
-            foreach (var l in MainLanes)
+            foreach (var l in MainLanes.Where(l => dir == null || GetLaneDir(l) == dir))
             {
                 RnWay way = null;
                 var t = type;
-                var dir = RnLaneBorderDir.Left2Right;
+                var d = RnLaneBorderDir.Left2Right;
                 if (IsLeftLane(l) == false)
                 {
                     t = t.GetOpposite();
-                    dir = dir.GetOpposite();
+                    d = d.GetOpposite();
                 }
 
                 way = l.GetBorder(t);
                 if (way == null)
                     continue;
-                if (l.GetBorderDir(t) != dir)
+                if (l.GetBorderDir(t) != d)
                     way = way.ReversedWay();
 
                 foreach (var p in way.Points)
                     ret.AddPointOrSkip(p);
             }
             return new RnWay(ret);
+        }
+
+        /// <summary>
+        /// dirで指定した側の全レーンのSideWayを統合した一つの大きなWayを返す
+        /// dir==nullの時は全レーン共通で返す
+        /// </summary>
+        /// <param name="dir"></param>
+        /// <param name="leftWay"></param>
+        /// <param name="rightWay"></param>
+        /// <returns></returns>
+        public bool TryGetMergedSideWay(RnDir? dir, out RnWay leftWay, out RnWay rightWay)
+        {
+            leftWay = rightWay = null;
+            if (IsValid == false)
+                return false;
+            var targetLanes = MainLanes.Where(l => dir == null || GetLaneDir(l) == dir).ToList();
+            if (targetLanes.Any() == false)
+                return false;
+            var leftLane = targetLanes[0];
+            leftWay = IsLeftLane(leftLane) ? leftLane?.LeftWay : leftLane?.RightWay?.ReversedWay();
+            var rightLane = targetLanes[^1];
+            rightWay = IsLeftLane(rightLane) ? rightLane?.RightWay : rightLane?.LeftWay?.ReversedWay();
+            return true;
         }
 
         /// <summary>
@@ -355,6 +390,19 @@ namespace PLATEAU.RoadNetwork.Structure
         }
 
         /// <summary>
+        /// laneを追加. indexで指定した位置に追加する
+        /// </summary>
+        /// <param name="lane"></param>
+        /// <param name="index"></param>
+        public void AddMainLane(RnLane lane, int index)
+        {
+            if (mainLanes.Contains(lane))
+                return;
+            OnAddLane(lane);
+            mainLanes.Insert(index, lane);
+        }
+
+        /// <summary>
         /// laneを削除するParentRoad情報も更新する
         /// </summary>
         /// <param name="lane"></param>
@@ -378,6 +426,32 @@ namespace PLATEAU.RoadNetwork.Structure
 
             foreach (var lane in newLanes)
                 AddMainLane(lane);
+        }
+
+        public void ReplaceLanes(IEnumerable<RnLane> newLanes, RnDir dir)
+        {
+            foreach (var l in GetLanes(dir).ToList())
+            {
+                RemoveLane(l);
+            }
+            // Leftは先頭に追加
+            if (dir == RnDir.Left)
+            {
+                var i = 0;
+                foreach (var l in newLanes)
+                {
+                    AddMainLane(l, i);
+                    i++;
+                }
+            }
+            // Rightは末尾に追加
+            else
+            {
+                foreach (var l in newLanes)
+                {
+                    AddMainLane(l);
+                }
+            }
         }
 
         /// <summary>
