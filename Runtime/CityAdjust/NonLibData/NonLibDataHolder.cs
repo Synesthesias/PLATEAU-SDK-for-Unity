@@ -35,6 +35,15 @@ namespace PLATEAU.CityAdjust.NonLibData
             }
         }
 
+        /// <summary> <see cref="ComposeFrom(PLATEAU.Util.UniqueParentTransformList)"/>の引数が複数になった版です。 </summary>
+        public void ComposeFrom(IEnumerable<UniqueParentTransformList> sources)
+        {
+            foreach (var src in sources)
+            {
+                ComposeFrom(src);
+            }
+        }
+
         /// <summary>
         /// 記憶したデータを引数のTransformに対して復元します
         /// </summary>

@@ -8,6 +8,7 @@ using PLATEAU.CityExport.ModelConvert.SubMeshConvert;
 using PLATEAU.Geometries;
 using PLATEAU.Util;
 using System.Linq;
+using System.Text.RegularExpressions;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Object = UnityEngine.Object;
@@ -108,6 +109,7 @@ namespace PLATEAU.CityAdjust.ConvertToAsset
                 if (srcObj == null) continue;
                 var newObj = Object.Instantiate(srcObj, srcTrans.position, srcTrans.rotation, dstParent);
                 newObj.name = srcObj.name;
+                AdjustGameObjectNames(newObj.transform);
                 newTransforms.Add(newObj.transform);
             }
             
@@ -165,6 +167,20 @@ namespace PLATEAU.CityAdjust.ConvertToAsset
 #else
             throw new NotImplementedException("ConvertToAssetはランタイムでの実行には未対応です。");
 #endif
+        }
+
+        private void AdjustGameObjectNames(Transform target)
+        {
+            new UniqueParentTransformList(target).BfsExec(trans =>
+            {
+                // 同名のgmlがあるとき、FBXにすると "xxx.gml 1" のように末尾に数字が付いてしまうのを修正します。
+                if (Regex.IsMatch(trans.name, @"^.+\.gml\s[0-9]+$"))
+                {
+                    trans.name = Regex.Replace(trans.name, @"\.gml\s[0-9]+$", ".gml");
+                }
+
+                return NextSearchFlow.Continue;
+            });
         }
     }
 }

@@ -46,7 +46,8 @@ namespace PLATEAU.CityExport.ModelConvert.SubMeshConvert
                     // パスのチェック
                     if ((!string.IsNullOrEmpty(texturePath)) && (!File.Exists(texturePath)))
                     {
-                        throw new FileNotFoundException($"テクスチャファイルが存在しません： {texturePath}");
+                        Debug.LogError($"テクスチャファイルが存在しません： {texturePath}");
+                        texturePath = "";
                     }
                     
                     var dllSubMesh = SubMesh.Create(startIndex, endIndex, texturePath);
