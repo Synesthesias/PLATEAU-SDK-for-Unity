@@ -126,6 +126,7 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
             // 境界線を表示する
             public DrawOption showPrevBorder = new DrawOption();
             public DrawOption showNextBorder = new DrawOption();
+            public DrawOption showCenterWay = new DrawOption();
             /// <summary>
             /// レーン描画するときのアルファを返す
             /// </summary>
@@ -315,6 +316,13 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
                 DrawWay(lane.RightWay, color: laneOp.showRightWay.color.PutA(laneOp.GetLaneAlpha(lane)));
                 if (laneOp.showAttrText && (lane.RightWay.IsValidOrDefault()))
                     DebugEx.DrawString($"R:{lane.DebugMyId}", lane.RightWay[0] + offset);
+            }
+
+            if (laneOp.showCenterWay.visible)
+            {
+                var centerWay = lane.CreateCenterWay();
+                if (centerWay != null)
+                    DrawWay(centerWay, color: laneOp.showCenterWay.color.PutA(laneOp.GetLaneAlpha(lane)));
             }
 
             if (laneOp.showPrevBorder.visible)

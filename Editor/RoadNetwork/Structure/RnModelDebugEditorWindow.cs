@@ -6,11 +6,9 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
-using static PLATEAU.RoadNetwork.Factory.RoadNetworkFactory;
 
-namespace PLATEAU.Editor.RoadNetwork
+namespace PLATEAU.Editor.RoadNetwork.Structure
 {
-
     public class RnModelDebugEditorWindow : EditorWindow
     {
         public interface IInstanceHelper
@@ -300,6 +298,11 @@ namespace PLATEAU.Editor.RoadNetwork
                 EditorGUILayout.LabelField("Border");
                 using (new EditorGUI.IndentLevelScope())
                 {
+                    foreach (var b in intersection.Neighbors)
+                    {
+                        EditorGUILayout.LabelField($"Neighbor:{b.Road.GetDebugMyIdOrDefault()}, Border:{b.Border.GetDebugMyIdOrDefault()}");
+
+                    }
                     foreach (var b in intersection.GetBorders())
                     {
                         EditorGUILayout.LabelField($"Lane:{b.Neighbor.GetDebugMyIdOrDefault()}, Border:{b.EdgeWay.GetDebugMyIdOrDefault()}[{b.EdgeWay?.LineString.GetDebugMyIdOrDefault()}]");
@@ -374,6 +377,7 @@ namespace PLATEAU.Editor.RoadNetwork
             RnEditorUtil.Separator();
             EditorGUILayout.LabelField("Lane Edit", GUILayout.Height(20));
 
+            //addTargetId = RnEditorUtil.CheckAddTarget(InstanceHelper.TargetLanes, this.addTargetId, out var isAddLane);
             // 内部でTargetLanesを更新するため、ToListでコピーを取得
             foreach (var l in InstanceHelper.TargetLanes.ToList())
             {
