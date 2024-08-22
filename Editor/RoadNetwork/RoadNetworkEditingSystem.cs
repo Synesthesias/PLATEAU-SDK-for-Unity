@@ -177,6 +177,8 @@ namespace PLATEAU.Editor.RoadNetwork
                 new LineUtil.Line(new Vector3(0, 0, 0), new Vector3(0, 1, 0)),  // +y
                 new LineUtil.Line(new Vector3(0, 0, 0), new Vector3(0, 1, 0)),
                 new LineUtil.Line(new Vector3(0, 0, 0), new Vector3(0, 1, 0)),
+                new LineUtil.Line(new Vector3(-1, 0, 0), new Vector3(-1, 1, 0)),
+                new LineUtil.Line(new Vector3(-1, 0, 0), new Vector3(-1, 1, 0)),
             };
 
             LineUtil.Line[] lines2 = new LineUtil.Line[]
@@ -193,6 +195,8 @@ namespace PLATEAU.Editor.RoadNetwork
                 new LineUtil.Line(new Vector3(1, 0, 0), new Vector3(1, 1, 1)),  // +offset+x
                 new LineUtil.Line(new Vector3(1, 0, -1), new Vector3(1, 0, 1)),  // +offset+z
                 new LineUtil.Line(new Vector3(1, 0, 1), new Vector3(1, 0, 2)),  // 
+                new LineUtil.Line(new Vector3(1, 0, 1), new Vector3(1, 0, 2)),  // 
+                new LineUtil.Line(new Vector3(1, 0, -1), new Vector3(1, 0, 2)),  // 
             };
 
             // 正しい結果の定義（距離）
@@ -208,6 +212,8 @@ namespace PLATEAU.Editor.RoadNetwork
             1f,
             1f,
             1.41421356f,
+            2.0f,
+            2.0f,
             };
 
             (Vector3, Vector3)[] resultClosestPoints = new (Vector3, Vector3)[]
@@ -224,6 +230,8 @@ namespace PLATEAU.Editor.RoadNetwork
                 (new Vector3(0, 0, 0), new Vector3(1, 0, 0)),
                 (new Vector3(0, 0, 0), new Vector3(1, 0, 0)),
                 (new Vector3(0, 0, 0), new Vector3(1, 0, 1)),
+                (new Vector3(-1, 0, 0), new Vector3(1, 0, 1)),
+                (new Vector3(-1, 0, 0), new Vector3(1, 0, 1)),
             };
 
             // テストケースの実行
@@ -1765,6 +1773,11 @@ namespace PLATEAU.Editor.RoadNetwork
                 List<LinkGroupEditorData> connections = eConn.ToList();
                 connections.Remove(null);
 
+                var mousePos = clickReceiver.MousePosition;
+                Ray ray = HandleUtility.GUIPointToWorldRay(mousePos);
+                //ray = new Ray(new Vector3(700.50f, 8.84f, -615.75f) + Vector3.up, Vector3.down);
+                //Debug.DrawLine(ray.origin, ray.origin + ray.direction * 5000, Color.red, 3.0f);
+
 
                 WayEditorData closestWay = null;
                 float closestDis = float.MaxValue;
@@ -1840,7 +1853,6 @@ namespace PLATEAU.Editor.RoadNetwork
                         //}
                     }
                     
-                    var mousePos = clickReceiver.MousePosition;
                     var isMouseOnViewport = true;
                     foreach (var wayEditorData in wayEditorDataList)
                     {
@@ -1857,30 +1869,35 @@ namespace PLATEAU.Editor.RoadNetwork
                             continue;
                         }
 
-                        Ray ray = HandleUtility.GUIPointToWorldRay(mousePos);
                         const float radius = 2.0f;
                         var eVert = wayEditorData.Ref.Vertices.GetEnumerator();
                         eVert.MoveNext();
                         var p0 = eVert.Current;
+                        float a = 1f;
                         while (eVert.MoveNext())
                         {
                             var p1 = eVert.Current;
                             var line = new LineUtil.Line(p0, p1);
-                            var distance = LineUtil.CheckHit(line, radius, ray, out var closestPoint);
+                            //var distance = LineUtil.CheckHit(line, radius, ray, out var closestPoint);
+                            var distance = LineUtil.CheckDistance(line, radius, ray);
                             if (distance >= 0.0f)
                             {
                                 if (closestDis > distance)
                                 {
                                     closestWay = wayEditorData;
                                     closestDis = distance;
-                                    closestPt = closestPoint;
+                                    //closestPt = closestPoint;
                                 }
                             }
-                            //Debug.DrawLine(p0 + Vector3.up * 10, p1 + Vector3.up * 10);
+                            Debug.DrawLine(p0 + Vector3.up * 10 * a, p1 + Vector3.up * 10 * a);
+                            a += 1.5f;
                             p0 = p1;
                         }
                     }
                 }
+
+
+                Debug.Log("dis" + closestDis);
 
                 clickReceiver.Execute((e, p) =>
                 {
