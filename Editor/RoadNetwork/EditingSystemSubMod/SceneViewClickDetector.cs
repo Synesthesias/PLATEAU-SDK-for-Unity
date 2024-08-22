@@ -93,11 +93,13 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
 
             private SceneViewClickDetector refDetecter;
 
-            public Vector2 MousePosition => refDetecter.mousePosition;
+            public Vector2 MousePosition => mousePosition;
+            private Vector2 mousePosition;
 
             public void ReserveExecute(SceneViewClickDetector refDetecter)
             {
                 this.refDetecter = refDetecter;
+                mousePosition = refDetecter.mousePosition;
             }
 
             public void Execute(System.Action<Event, Vector2> onClick)
