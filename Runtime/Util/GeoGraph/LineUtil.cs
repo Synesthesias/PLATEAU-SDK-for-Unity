@@ -30,8 +30,8 @@ namespace PLATEAU.Util.GeoGraph
             public float SqrMag { get => (p0 - p1).sqrMagnitude; }
             public float Mag { get => (p0 - p1).magnitude; }
 
-            public Vector3 DirectionA2B { get => (p0 - p1).normalized; }
-            public Vector3 DirectionB2A { get => (p1 - p0).normalized; }
+            public Vector3 DirectionA2B { get => (p1 - p0).normalized; }
+            public Vector3 DirectionB2A { get => (p0 - p1).normalized; }
         }
 
         /// <summary>
@@ -124,6 +124,26 @@ namespace PLATEAU.Util.GeoGraph
         }
 
         /// <summary>
+        /// ライン上にポイントが存在するかどうかを判定する
+        /// </summary>
+        /// <param name="line"></param>
+        /// <param name="p"></param>
+        /// <returns></returns>
+        [System.Obsolete("動作未検証の関数")]
+        public static bool IsPointOnLineSegment(Line line, Vector3 p)
+        {
+            // ベクトルを計算
+            Vector3 AB = line.P1 - line.P0;
+            Vector3 AP = p - line.P0;
+
+            // スカラー値 t を計算
+            float t = Vector3.Dot(AP, AB) / Vector3.Dot(AB, AB);
+
+            // t が 0 から 1 の範囲内にあるか確認
+            return t >= 0 && t <= 1;
+        }
+
+        /// <summary>
         /// 交差しないline0とline1の最短距離を求める
         /// ただし、line0,line1は線分ではなく永遠に延びる直線として扱う
         /// 交差する場合は動作未定義
@@ -151,18 +171,48 @@ namespace PLATEAU.Util.GeoGraph
             closestPoint1 = p1 + s * d1;
             closestPoint2 = p2 + t * d2;
         }
+        //public static void FindClosestPoints(Line line0, Line line1, out Vector3 closestPointLine1, out Vector3 closestPointLine2)
+        //{
+        //    Vector3 p1 = line0.P0;
+        //    Vector3 d1 = line0.DirectionB2A; 
+        //    Vector3 p2; 
+        //    Vector3 d2;
 
-        /// <summary>
-        /// 線分lineとrayの衝突判定を行う
-        /// radiusで判定に余裕を持たせる
-        /// また、closestPointは衝突地点ではなく線分上の最も近い点なので注意
-        /// </summary>
-        /// <param name="line"></param>
-        /// <param name="radius"></param>
-        /// <param name="ray"></param>
-        /// <param name="closestPoint"></param>
-        /// <returns></returns>
-        public static float CheckHit(Line line, float radius, in Ray ray, out Vector3 closestPoint)
+        //    Vector3 r = p1 - p2;
+        //    float a = Vector3.Dot(d1, d1);
+        //    float b = Vector3.Dot(d1, d2);
+        //    float c = Vector3.Dot(d2, d2);
+        //    float d = Vector3.Dot(d1, r);
+        //    float e = Vector3.Dot(d2, r);
+        //    float denominator = a * c - b * b;
+
+        //    if (denominator != 0)
+        //    {
+        //        float s = (b * e - c * d) / denominator;
+        //        float t = (a * e - b * d) / denominator;
+
+        //        closestPointLine1 = p1 + s * d1;
+        //        closestPointLine2 = p2 + t * d2;
+        //    }
+        //    else
+        //    {
+        //        // 直線が平行な場合
+        //        closestPointLine1 = p1;
+        //        closestPointLine2 = p2 + Vector3.Project(r, d2);
+        //    }
+        //}
+
+    /// <summary>
+    /// 線分lineとrayの衝突判定を行う
+    /// radiusで判定に余裕を持たせる
+    /// また、closestPointは衝突地点ではなく線分上の最も近い点なので注意
+    /// </summary>
+    /// <param name="line"></param>
+    /// <param name="radius"></param>
+    /// <param name="ray"></param>
+    /// <param name="closestPoint"></param>
+    /// <returns></returns>
+    public static float CheckHit(Line line, float radius, in Ray ray, out Vector3 closestPoint)
         {
             var rayLine = new Line(ray.origin, ray.origin + ray.direction);
             var dis = DistanceBetweenLines(line, rayLine, out var isParallel);
@@ -194,6 +244,9 @@ namespace PLATEAU.Util.GeoGraph
             {
                 Vector3 closestPoint2;
                 LineUtil.ClosestPoints(line, rayLine, out closestPoint, out closestPoint2);
+                Debug.DrawLine(line.P0, line.P1, Color.magenta);
+                Debug.DrawLine(rayLine.P0, rayLine.P1, Color.green);
+                Debug.DrawLine(closestPoint, closestPoint2, Color.blue);
                 isPointOnline = LineUtil.ContainsPoint(line, closestPoint);                
             }
 
@@ -209,6 +262,40 @@ namespace PLATEAU.Util.GeoGraph
             static float NoHit(out Vector3 closestPoint)
             {
                 closestPoint = Vector3.zero;
+                return float.MinValue;
+            }
+
+        }
+
+        /// <summary>
+        /// 線分lineとrayの距離を測る
+        /// ただし、radius以上離れていたら無効値を返す
+        /// </summary>
+        /// <param name="line"></param>
+        /// <param name="radius"></param>
+        /// <param name="ray"></param>
+        /// <returns></returns>
+        public static float CheckDistance(Line line, float radius, in Ray ray)
+        {
+            var rayLine = new Line(ray.origin, ray.origin + ray.direction);
+            var dis = DistanceBetweenLines(line, rayLine, out var isParallel);
+
+            // 平行時は通常の方法で計算できないので判定を取らないようにする
+            if (isParallel)
+            {
+                return NoHit();
+            }
+
+            // 距離が離れている場合はヒットしていない
+            if (radius < dis)
+            {
+                return NoHit();
+            }
+
+            return dis;
+
+            static float NoHit()
+            {
                 return float.MinValue;
             }
 
