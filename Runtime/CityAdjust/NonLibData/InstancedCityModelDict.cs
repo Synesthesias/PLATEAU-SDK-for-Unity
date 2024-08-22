@@ -15,7 +15,7 @@ namespace PLATEAU.CityAdjust.NonLibData
         /// <summary>
         /// ゲームオブジェクト名とPLATEAUInstancedCityModelを紐つけます。
         /// </summary>
-        private Dictionary<NonLibKeyName, PLATEAUInstancedCityModel> data = new();
+        private NonLibDictionary<PLATEAUInstancedCityModel> data = new();
 
         /// <summary>
         /// <paramref name="srcGameObjs"/> とその子に含まれる<see cref="PLATEAUInstancedCityModel"/>を
@@ -27,8 +27,7 @@ namespace PLATEAU.CityAdjust.NonLibData
                 trans =>
                 {
                     var cityModel = trans.GetComponent<PLATEAUInstancedCityModel>();
-                    if (cityModel == null) return NextSearchFlow.Continue;
-                    data.Add(new NonLibKeyName(trans, srcTransforms.Get.ToArray()), cityModel);
+                    data.Add(trans, srcTransforms.Get.ToArray(), cityModel); // cityModelがnullでも登録します。
                     return NextSearchFlow.Continue;
                 });
         }
@@ -39,16 +38,14 @@ namespace PLATEAU.CityAdjust.NonLibData
         /// </summary>
         public void RestoreTo(UniqueParentTransformList rootTransforms)
         {
-            var remaining = new Dictionary<NonLibKeyName, PLATEAUInstancedCityModel>(data);
             rootTransforms.BfsExec(
                 trans =>
                 {
-                    var key = new NonLibKeyName(trans, rootTransforms.Get.ToArray());
-                    if (!remaining.ContainsKey(key)) return NextSearchFlow.Continue;
+                    var srcModel = data.GetNonRestoredAndMarkRestored(trans, rootTransforms.Get.ToArray());
+                    if (srcModel == null) return NextSearchFlow.Continue;
                     var newModel = trans.gameObject.AddComponent<PLATEAUInstancedCityModel>();
-                    newModel.CopyFrom(remaining[key]);
-                    remaining.Remove(key);
-                    if (remaining.Count == 0) return NextSearchFlow.Abort;
+                    newModel.CopyFrom(srcModel);
+                    if (data.RemainingNonRestored == 0) return NextSearchFlow.Abort;
                     return NextSearchFlow.Continue;
                 });
             

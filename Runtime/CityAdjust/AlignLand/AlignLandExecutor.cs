@@ -94,7 +94,7 @@ namespace PLATEAU.CityAdjust.AlignLand
                 new NameToAttrsDict(),
                 new ContourMeshesMaker()
             );
-            nonLibDataHolder.ComposeFrom(alignTarget);
+            nonLibDataHolder.ComposeFrom(new []{alignTarget, alignInvertTarget});
 
             // 土地の高さをC++に送ります。
             using var heightmapAligner = HeightMapAligner.Create(HeightOffset, CoordinateSystem.EUN);
@@ -104,7 +104,7 @@ namespace PLATEAU.CityAdjust.AlignLand
             }
             
             
-            var sumResult = new GranularityConvertResult();
+            var resultTransforms = new UniqueParentTransformList();
             var alTargets = alignTarget.Get.ToArray();
             var alignTargetModels = new Model[alTargets.Length];
             var subMeshConverters = new GameMaterialIDRegistry[alTargets.Length];
@@ -173,6 +173,7 @@ namespace PLATEAU.CityAdjust.AlignLand
                     var terrainData = terrain.terrainData;
                     var heightmap2d = HeightmapGenerator.ConvertTo2DFloatArray(heightmap1d, terrainData.heightmapResolution, terrainData.heightmapResolution);
                     terrain.terrainData.SetHeights(0, 0, heightmap2d);
+                    resultTransforms.Add(land);
                 }
             }
 
@@ -205,26 +206,28 @@ namespace PLATEAU.CityAdjust.AlignLand
                         r.parent = target.parent;
                     }
                 
-                    sumResult.Merge(result);
+                    resultTransforms.AddRange(result.GeneratedRootTransforms.Get);
                 }
                 
-                if (conf.DoDestroySrcObj)
-                {
-                    foreach (var src in alignTarget.Get)
-                    {
-                        Object.DestroyImmediate(src.gameObject);
-                    }
-                }
             }
             
             
             // 変換前の情報を復元します。
-            nonLibDataHolder.RestoreTo(sumResult.GeneratedRootTransforms);
+            nonLibDataHolder.RestoreTo(resultTransforms);
+            
+            // 復元後に元のオブジェクトを削除します。
+            if (conf.AlignLandNormal && conf.DoDestroySrcObj)
+            {
+                foreach (var src in alignTarget.Get)
+                {
+                    Object.DestroyImmediate(src.gameObject);
+                }
+            }
             
             
             #if UNITY_EDITOR
             var selected = Selection.objects.ToList();
-            selected.AddRange(sumResult.GeneratedRootTransforms.Get.Select(trans => trans.gameObject).Cast<Object>());
+            selected.AddRange(resultTransforms.Get.Select(trans => trans.gameObject).Cast<Object>());
             Selection.objects = selected.ToArray();
             EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
 #endif

@@ -11,19 +11,19 @@ namespace PLATEAU.CityAdjust.NonLibData
     /// </summary>
     internal class NameToAttrsDict : INonLibData
     {
-        private Dictionary<NonLibKeyName, PLATEAUCityObjectGroup> data = new();
+        private NonLibDictionary<PLATEAUCityObjectGroup> data = new();
 
         /// <summary>
         /// ゲームオブジェクトとその子から属性情報の辞書を構築します。
         /// </summary>
         public void ComposeFrom(UniqueParentTransformList src)
         {
-            var attrs =
-                src.Get.SelectMany(trans => trans.GetComponentsInChildren<PLATEAUCityObjectGroup>());
-            foreach (var attr in attrs)
+            src.BfsExec(trans =>
             {
-                data.TryAdd(new NonLibKeyName(attr.transform, src.Get.ToArray()), attr);
-            }
+                var cog = trans.GetComponent<PLATEAUCityObjectGroup>();
+                data.Add(trans, src.Get.ToArray(), cog); // nullでも追加します。
+                return NextSearchFlow.Continue;
+            });
         }
 
         /// <summary>
@@ -34,15 +34,14 @@ namespace PLATEAU.CityAdjust.NonLibData
         {
             target.BfsExec(trans =>
             {
-                var key = new NonLibKeyName(trans, target.Get.ToArray());
-                if (!data.ContainsKey(key)) return NextSearchFlow.Continue;
+                var srcAttr = data.GetNonRestoredAndMarkRestored(trans, target.Get.ToArray());
+                if (srcAttr == null) return NextSearchFlow.Continue;
                 var dstAttr = trans.GetComponent<PLATEAUCityObjectGroup>();
                 if (dstAttr == null)
                 {
                     dstAttr = trans.gameObject.AddComponent<PLATEAUCityObjectGroup>();
                 }
 
-                var srcAttr = data[key];
                 dstAttr.Init(srcAttr.CityObjects, srcAttr.InfoForToolkits, srcAttr.Granularity, srcAttr.Lod);
                 
                 return NextSearchFlow.Continue;

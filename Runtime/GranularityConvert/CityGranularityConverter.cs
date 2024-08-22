@@ -255,11 +255,8 @@ namespace PLATEAU.GranularityConvert
                 var srcCityObj = serializedCityObj;
                 return srcCityObj.CopyWithoutChildren();
             }
-            else
-            {
-                Debug.Log($"skipping gmlID : {gmlID}");
-                return null;
-            }
+
+            return null;
         }
 
         public void Dispose()
