@@ -562,6 +562,69 @@ namespace PLATEAU.Editor.RoadNetwork
                             break;
                         }
 
+                        foreach (var sideWalk in road.SideWalks)
+                        {
+                            foreach (var point in sideWalk.Line.Points)
+                            {
+                                if (state.isDirtyTarget)
+                                {
+                                    break;
+                                }
+
+                                var parent = sideWalk.Line;
+                                var isEditable = false;
+                                isEditable = true;
+
+                                // 表示しない（実在はする）
+                                if (IsContains(DisplayHndMaskSet.Point) == false)
+                                {
+                                    isEditable = false;
+                                }
+
+                                var networkOperator = editorSystem.EditOperation;
+                                var size = HandleUtility.GetHandleSize(point) * pointHndScaleFactor;
+
+
+                                if (isEditable && IsSame(DisplayHndMaskSet.PointMove))
+                                {
+                                    DeployPointMoveHandle(point, state, networkOperator, size);
+                                    continue;
+                                }
+
+                                if (isEditable && IsSame(DisplayHndMaskSet.PointAdd))
+                                {
+                                    var isClicked = Handles.Button(point, Quaternion.identity, size, size, RoadNetworkSplitLaneButtonHandleCap);
+                                    if (isClicked)
+                                    {
+                                        // parent.Pointsからpointを検索してインデックスを取得
+                                        var idx = parent.Points.ToList().IndexOf(point);
+                                        if (idx == -1)
+                                            continue;
+                                        state.delayCommand += () =>
+                                        {
+                                            parent.Points.Insert(idx, point);
+                                        };
+                                        state.isDirtyTarget = true;
+                                    }
+                                    continue;
+                                }
+
+                                if (isEditable && IsSame(DisplayHndMaskSet.PointRemove))
+                                {
+                                    var isClicked = Handles.Button(point, Quaternion.identity, size, size, RoadNetworkSplitLaneButtonHandleCap);
+                                    if (isClicked)
+                                    {
+                                        state.delayCommand += () =>
+                                        {
+                                            parent.Points.Remove(point);
+                                        };
+                                        state.isDirtyTarget = true;
+                                    }
+                                    continue;
+                                }
+                            }
+                        }
+
                         foreach (var lane in road.MainLanes)
                         {
                             if (state.isDirtyTarget)

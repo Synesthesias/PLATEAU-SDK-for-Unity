@@ -31,6 +31,9 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
 
         //public float btnSize = 2.0f;
 
+        private Color sideWalkColor = Color.grey + new Color(0.2f, 0.2f, 0.2f, 0);
+        private List<List<Vector3>> sideWalks = new List<List<Vector3>>();
+
         public void Update(
             object selectingElement,
             WayEditorData highLightWay,
@@ -88,9 +91,20 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
             // RoadGroupが選択されている
             selectableWayList.Clear();
             guideWayList.Clear();
+            sideWalks.Clear();
             if (selectingElement is EditorData<RnRoadGroup> roadGroupEditorData)
             {
+                // 歩道の描画
+                foreach (var road in roadGroupEditorData.Ref.Roads)
+                {
+                    foreach (var sideWalk in road.SideWalks)
+                    {
+                        sideWalks.Add(sideWalk.Line.ToList());
+                    }
+                }
+
                 var laneGroup = new LaneGroupEditorData(roadGroupEditorData.Ref);
+
 
                 var wayEditorDataList = roadGroupEditorData.GetSubData<List<WayEditorData>>();
 
@@ -220,6 +234,20 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
         public List<Action> BuildDrawCommands()
         {
             drawFuncs.Clear();
+
+            foreach (var sideWalk in sideWalks)
+            {
+                if (sideWalk == null)
+                {
+                    continue;
+                }
+                var sideWalkList = sideWalk.ToArray();
+                drawFuncs.Add(() =>
+                {
+                    Gizmos.color = sideWalkColor;
+                    Gizmos.DrawLineStrip(sideWalkList, false);
+                });
+            }
 
             var nParis = intersectionConnectionLinePairs.Count;
             if (nParis >= 2 && nParis % 2 == 0)
