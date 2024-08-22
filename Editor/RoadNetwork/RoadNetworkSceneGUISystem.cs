@@ -238,6 +238,12 @@ namespace PLATEAU.Editor.RoadNetwork
             if (network == null)
                 return;
 
+            if (EnableLimitSceneViewDefaultContorl)
+            {
+                HandleUtility.AddDefaultControl(GUIUtility.GetControlID(FocusType.Passive));
+                Debug.Log("disenable defautl contorl");
+            }
+
             if (nodeTex == null)
             {
                 var isSuc = LoadTexture();
@@ -343,6 +349,7 @@ namespace PLATEAU.Editor.RoadNetwork
         public List<RnRoadGroup> SimLanes;
 
         public Vector3? wayHandle = null;
+        public bool EnableLimitSceneViewDefaultContorl { get; set; }
 
         private void OnSceneGUISimpleEdit()
         {

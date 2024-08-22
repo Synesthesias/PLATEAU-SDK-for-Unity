@@ -466,6 +466,8 @@ namespace PLATEAU.Editor.RoadNetwork
             /// </summary>
             ISystemInstance EditorInstance { get; }
 
+            bool EnableLimitSceneViewDefaultControl { get; set; }
+
             /// <summary>
             /// 道路ネットワークを所持したUnityオブジェクト
             /// </summary>
@@ -651,6 +653,12 @@ namespace PLATEAU.Editor.RoadNetwork
             public RoadNetworkSimpleEditSysModule RoadNetworkSimpleEditModule => system.simpleEditSysModule;
 
             public RoadNetworkSceneGUISystem SceneGUISystem => system.SceneGUISystem;
+
+            public bool EnableLimitSceneViewDefaultControl 
+            { 
+                get => system.sceneGUISystem.EnableLimitSceneViewDefaultContorl; 
+                set => system.sceneGUISystem.EnableLimitSceneViewDefaultContorl = value; 
+            }
 
             public void NotifyChangedRoadNetworkObject2Editor()
             {

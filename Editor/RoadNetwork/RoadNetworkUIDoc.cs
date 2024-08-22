@@ -77,6 +77,7 @@ namespace PLATEAU.Editor.RoadNetwork
             set => system.CurrentEditMode = value;
         }
 
+        private Toggle editableChangeToggle;
         private Button refreshButton;
         private EnumField modeSelector;
         private ScrollView parameterView;
@@ -459,6 +460,8 @@ namespace PLATEAU.Editor.RoadNetwork
             this.system = system;
             this.assets = assets;
 
+            editableChangeToggle = editorRoot.Q<Toggle>("EditableChangeToggle");
+            Assert.IsNotNull(editableChangeToggle);
             refreshButton = editorRoot.Q<Button>("RefreshBtn");
             Assert.IsNotNull(refreshButton);
             modeSelector = editorRoot.Q<EnumField>("ModeSelector");
@@ -501,6 +504,14 @@ namespace PLATEAU.Editor.RoadNetwork
         public void Initialize()
         {
             //　parameterの変更は必ずシステムを介して行う
+
+            editableChangeToggle.RegisterCallback<ChangeEvent<bool>>((evt) =>
+            {
+                if (evt.newValue != system.EnableLimitSceneViewDefaultControl)
+                {
+                    system.EnableLimitSceneViewDefaultControl = evt.newValue;
+                }
+            });
 
             refreshButton.RegisterCallback<MouseUpEvent>((evt) =>
             {
