@@ -1789,7 +1789,6 @@ namespace PLATEAU.Editor.RoadNetwork
 
                 WayEditorData closestWay = null;
                 float closestDis = float.MaxValue;
-                Vector3 closestPt = Vector3.zero;
                 if (system.SelectedRoadNetworkElement is EditorData<RnRoadGroup> roadGroupEditorData)
                 {
                     //var laneGroup = new LaneGroupEditorData(roadGroupEditorData.Ref);
@@ -1881,12 +1880,10 @@ namespace PLATEAU.Editor.RoadNetwork
                         var eVert = wayEditorData.Ref.Vertices.GetEnumerator();
                         eVert.MoveNext();
                         var p0 = eVert.Current;
-                        float a = 1f;
                         while (eVert.MoveNext())
                         {
                             var p1 = eVert.Current;
                             var line = new LineUtil.Line(p0, p1);
-                            //var distance = LineUtil.CheckHit(line, radius, ray, out var closestPoint);
                             var distance = LineUtil.CheckDistance(line, radius, ray);
                             if (distance >= 0.0f)
                             {
@@ -1894,11 +1891,8 @@ namespace PLATEAU.Editor.RoadNetwork
                                 {
                                     closestWay = wayEditorData;
                                     closestDis = distance;
-                                    //closestPt = closestPoint;
                                 }
                             }
-                            Debug.DrawLine(p0 + Vector3.up * 10 * a, p1 + Vector3.up * 10 * a);
-                            a += 1.5f;
                             p0 = p1;
                         }
                     }
@@ -1942,15 +1936,6 @@ namespace PLATEAU.Editor.RoadNetwork
                     gizmosdrawer.DrawFuncs.AddRange(cmds);
 
                     // guiの更新
-
-                    if (closestWay != null)
-                    {
-                        guisys.wayHandle = closestPt;
-                    }
-                    else
-                    {
-                        guisys.wayHandle = null;
-                    }
 
                     guisys.connections = linkGroupEditorData;
                     //if (connections.Count > 0)
