@@ -162,7 +162,7 @@ namespace PLATEAU.RoadNetwork.Factory
                         }
                     }
 
-                    var sideWalk = RnSideWalk.Create(parent, RnLineString.Create(points));
+                    var sideWalk = RnSideWalk.Create(parent, new RnWay(RnLineString.Create(points)));
                     ret.Add(sideWalk);
                 }
 
@@ -572,7 +572,7 @@ namespace PLATEAU.RoadNetwork.Factory
                             var way = work.CreateWay(vertices);
                             var parent = work.TranMap.Values.FirstOrDefault(t =>
                                 t.FaceGroup.CityObjectGroup == sideWalkFace.CityObjectGroup && t.Node != null);
-                            var sideWalk = RnSideWalk.Create(parent?.Node, way.LineString);
+                            var sideWalk = RnSideWalk.Create(parent?.Node, way);
                             ret.AddSideWalk(sideWalk);
                         }
                     }

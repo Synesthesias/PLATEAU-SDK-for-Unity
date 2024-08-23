@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Splines;
 
 namespace PLATEAU.RoadNetwork.Structure.Drawer
 {
@@ -69,15 +70,26 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
         public HashSet<RnSideWalk> TargetSideWalks { get; } = new();
 
         [Serializable]
+        public class TrackOption : DrawOption
+        {
+            public float splitLength = 3f;
+            public TrackOption()
+            {
+                visible = false;
+                color = Color.green;
+            }
+        }
+
+        [Serializable]
         public class IntersectionOption
         {
             public bool visible = true;
             public VisibleType visibleType = VisibleType.All;
-            public DrawOption showTrack = new DrawOption();
+            public DrawOption showTrack = new();
 
-            public DrawOption showBorder = new DrawOption();
+            public DrawOption showBorder = new();
 
-            public DrawOption showSplitTrack = new DrawOption();
+            public TrackOption showSplitTrack = new();
         }
         [SerializeField] public IntersectionOption intersectionOp = new IntersectionOption();
 
@@ -275,7 +287,7 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
         {
             if (sideWalk == null)
                 return;
-            DrawArrows(sideWalk.Line.Select(v => v), true, color: p.color);
+            DrawArrows(sideWalk.Way.Select(v => v), true, color: p.color);
         }
 
         /// <summary>
@@ -500,23 +512,39 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
                 if (op.showBorder.visible)
                     DrawWay(n.Border, op.showBorder.color);
 
-                if (op.showSplitTrack.visible)
-                {
-                    for (var j = i + 1; j < intersection.Neighbors.Count; ++j)
+
+                //if (op.showSplitTrack.visible)
+                //{
+                //    for (var j = i + 1; j < intersection.Neighbors.Count; ++j)
+                //    {
+                //        var n2 = intersection.Neighbors[j];
+                //        if (n == n2)
+                //            continue;
+                //        //if (n.Road == n2.Road)
+                //        //    continue;
+                //        var way = intersection.CalcTrackWay(n.Border, n2.Border, splitLength: op.showSplitTrack.splitLength);
+                //        if (way != null)
+                //        {
+                //            DrawWay(way, op.showSplitTrack.color);
+                //            //foreach (var w in way.BothWays)
+                //            //    DrawWay(w, op.showSplitTrack.color);
+                //        }
+                //    }
+                //}
+            }
+
+            foreach (var track in intersection.Tracks)
+            {
+                if (op.showSplitTrack.visible == false)
+                    continue;
+                var n = 5;
+                DrawArrows(Enumerable.Range(0, n)
+                    .Select(i => 1f * i / (n - 1))
+                    .Select(t =>
                     {
-                        var n2 = intersection.Neighbors[j];
-                        if (n == n2)
-                            continue;
-                        if (n.Road == n2.Road)
-                            continue;
-                        var way = intersection.CalcTrackWay(n.Road, n2.Road);
-                        if (way != null)
-                        {
-                            foreach (var w in way.BothWays)
-                                DrawWay(w, op.showSplitTrack.color);
-                        }
-                    }
-                }
+                        track.Spline.Evaluate(t, out var pos, out var tam, out var up);
+                        return (Vector3)pos;
+                    }), false, color: op.showSplitTrack.color);
             }
 
             if (op.showTrack.visible)

@@ -301,8 +301,8 @@ namespace PLATEAU.Editor.RoadNetwork.Structure
                     foreach (var b in intersection.Neighbors)
                     {
                         EditorGUILayout.LabelField($"Neighbor:{b.Road.GetDebugMyIdOrDefault()}, Border:{b.Border.GetDebugMyIdOrDefault()}");
-
                     }
+
                     foreach (var b in intersection.GetBorders())
                     {
                         EditorGUILayout.LabelField($"Lane:{b.Neighbor.GetDebugMyIdOrDefault()}, Border:{b.EdgeWay.GetDebugMyIdOrDefault()}[{b.EdgeWay?.LineString.GetDebugMyIdOrDefault()}]");
@@ -331,7 +331,12 @@ namespace PLATEAU.Editor.RoadNetwork.Structure
                 intersection.DisConnect(false);
             }
 
+            if (GUILayout.Button("Build Track"))
+            {
+                intersection.BuildTracks();
+            }
         }
+
         public class WayEdit
         {
 
