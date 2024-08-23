@@ -227,10 +227,12 @@ namespace PLATEAU.RoadNetwork.Structure
                     if (linkGroup.IsValid == false)
                         continue;
 
-                    if (linkGroup.Roads.Any(l => l.MainLanes.Count != 1))
+                    if (linkGroup.Roads.Any(l => l.MainLanes[0].HasBothBorder == false))
                         continue;
 
-                    if (linkGroup.Roads.Any(l => l.MainLanes[0].HasBothBorder == false))
+                    // #TODO : 中央線がある場合の処理
+
+                    if (linkGroup.Roads.Any(l => l.MainLanes.Count != 1))
                         continue;
 
                     var width = linkGroup.Roads.Select(l => l.MainLanes[0].CalcWidth()).Min();
