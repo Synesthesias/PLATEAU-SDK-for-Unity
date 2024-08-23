@@ -27,7 +27,7 @@ PLATEAUウィンドウの`モデル調整`では、インポートした都市�
 
 ## 「Assetsに保存」機能
 
-![](../resources/manual/cityAdjust/saveToAssets.png)
+![assets png](https://github.com/user-attachments/assets/23089dce-3ccd-466f-b5be-8b077074b198)
 
 ### できること
 
@@ -58,7 +58,7 @@ PLATEAUウィンドウの`モデル調整`では、インポートした都市�
 
 ## ゲームオブジェクトON/OFF機能
 
-![](../resources/manual/cityAdjust/gameObjOnOff.png)
+![Modeladjust](https://github.com/user-attachments/assets/e1a17cd7-4867-40a0-903b-3ec19bbc51f3)
 - 条件指定をしてフィルタリングできます。
 - ここでいうフィルタリングとは、条件に合致するゲームオブジェクトをアクティブにし、そうでないものを非アクティブにすることを指します。
 - 「重複する地物を表示」にチェックを入れた場合、フィルタリング後に重複している地物について、  
@@ -78,7 +78,7 @@ PLATEAUウィンドウの`モデル調整`では、インポートした都市�
 
 ## 分割・結合・マテリアル分け機能
 
-![](../resources/manual/cityAdjust/materialByType.png)
+![material](https://github.com/user-attachments/assets/8c556a8e-8d63-479b-9f97-576c94246054)
 
 ### できること
 
