@@ -20,7 +20,7 @@ PLATEAU SDK for Unityを利用することで、実世界を舞台にしたア�
 
 ◆PLATEAU SDK for Unityは利用者アンケートを実施しています。
 今後の開発の参考にするため、ユーザーの皆様の忌憚ないご意見をお聞かせください。
-[アンケートはこちら](https://docs.google.com/forms/d/e/1FAIpQLSeqq0pm7UM7Rr-UgIHYT-D52jC08IjUG8auoqXTDvaee5YFxw/viewform)
+[アンケートはこちら](https://docs.google.com/forms/d/e/1FAIpQLSdEU_CjR6-wT9cpvusvqX0bFkPIOE1J-UlJ-oF2JLOLAJoYNQ/viewform?usp=sf_link)
 
 ◆PLATEAU SLackコミュニティはどなたでもご参加いただけます。
 参加希望の方は、[お問い合わせページ](https://www.mlit.go.jp/plateau/contact/)よりお気軽にお問い合わせください。
