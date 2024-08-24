@@ -18,57 +18,6 @@ namespace PLATEAU.Editor.RoadNetwork.Tester
     [CustomEditor(typeof(PLATEAURoadNetworkTester))]
     public class PLATEAURoadNetworkTesterEditor : UnityEditor.Editor
     {
-        public void OnSceneGUI()
-        {
-            // RoadNetworkを所持しているオブジェクトに表示するGUIシステムを更新する処理
-            UpdateRoadNetworkGUISystem();
-
-            void UpdateRoadNetworkGUISystem()
-            {
-                var hasOpen = RoadNetworkEditorWindow.HasOpenInstances();
-                if (hasOpen == false)
-                {
-                    return;
-                }
-
-                var editorInterface = RoadNetworkEditorWindow.GetEditorInterface();
-                if (editorInterface == null)
-                    return;
-
-                //if (Event.current.type != EventType.Repaint)
-                //    return;
-
-                var guiSystem = editorInterface.SceneGUISystem;
-                guiSystem.OnSceneGUI(target as PLATEAURoadNetworkTester);
-            }
-        }
-
-        private class RnModelInstanceHelper : RnModelDebugEditorWindow.IInstanceHelper
-        {
-            private PLATEAURoadNetworkTester target;
-
-            public RnModelInstanceHelper(PLATEAURoadNetworkTester target)
-            {
-                this.target = target;
-            }
-
-            public RnModel GetModel()
-            {
-                return target.RoadNetwork;
-            }
-
-            public HashSet<RnRoad> TargetRoads => target.Drawer.TargetRoads;
-            public HashSet<RnIntersection> TargetIntersections => target.Drawer.TargetIntersections;
-            public HashSet<RnLane> TargetLanes => target.Drawer.TargetLanes;
-            public HashSet<RnWay> TargetWays => target.Drawer.TargetWays;
-            public HashSet<RnSideWalk> TargetSideWalks => target.Drawer.TargetSideWalks;
-
-            public bool IsTarget(RnRoadBase roadBase)
-            {
-                return RnEx.IsEditorSceneSelected(roadBase.CityObjectGroup);
-            }
-        }
-
         private class RGraphInstanceHelper : RGraphDebugEditorWindow.IInstanceHelper
         {
             private PLATEAURoadNetworkTester target;
@@ -166,20 +115,9 @@ namespace PLATEAU.Editor.RoadNetwork.Tester
 
             using (new EditorGUILayout.HorizontalScope())
             {
-                if (GUILayout.Button("Serialize"))
-                    obj.Serialize();
-
-                if (GUILayout.Button("Deserialize"))
-                    obj.Deserialize();
-            }
-
-            using (new EditorGUILayout.HorizontalScope())
-            {
                 if (obj.RGraph != null && GUILayout.Button("Open RGraph Editor"))
                     RGraphDebugEditorWindow.OpenWindow(new RGraphInstanceHelper(obj), true);
 
-                if (GUILayout.Button("RnModel Debug Editor"))
-                    RnModelDebugEditorWindow.OpenWindow(new RnModelInstanceHelper(obj), true);
 
                 if (obj.Factory.midStageData?.convertedCityObjects?.cityObjects?.Any() ?? false)
                 {

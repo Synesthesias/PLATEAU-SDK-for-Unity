@@ -14,6 +14,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.Serialization;
 using PLATEAUCityObjectGroup = PLATEAU.CityInfo.PLATEAUCityObjectGroup;
@@ -21,24 +22,13 @@ using PLATEAUCityObjectGroup = PLATEAU.CityInfo.PLATEAUCityObjectGroup;
 namespace PLATEAU.RoadNetwork
 {
     [Serializable]
-    public class PLATEAURoadNetworkTester : MonoBehaviour, IRoadNetworkObject
+    [RequireComponent(typeof(PLATEAURnModelDrawerDebug))]
+    public class PLATEAURoadNetworkTester : MonoBehaviour
     {
-
         // --------------------
         // start:フィールド
         // --------------------
-        [field: SerializeField]
-        public RnModelDrawerDebug Drawer { get; set; } = new RnModelDrawerDebug();
-
         [field: SerializeField] public RoadNetworkFactory Factory { get; set; } = new RoadNetworkFactory();
-
-        public RnModel RoadNetwork { get; set; }
-
-        // シリアライズ用フィールド
-        [SerializeField]
-        private RoadNetworkStorage storage;
-
-        public RoadNetworkStorage Storage { get => storage; set => storage = value; }
 
         [Serializable]
         public class TestTargetPresets
@@ -75,7 +65,6 @@ namespace PLATEAU.RoadNetwork
 
         public void OnDrawGizmos()
         {
-            Drawer?.Draw(RoadNetwork);
             Factory?.DebugDraw();
         }
 
@@ -101,7 +90,7 @@ namespace PLATEAU.RoadNetwork
         {
             try
             {
-                RoadNetwork = await Factory.CreateRnModelAsync(GetTargetCityObjects());
+                await Factory.CreateRnModelAsync(GetTargetCityObjects(), gameObject);
             }
             catch (Exception e)
             {
@@ -116,20 +105,7 @@ namespace PLATEAU.RoadNetwork
 
         public async Task CreateRoadNetworkByGraphAsync()
         {
-            RoadNetwork = await Factory.CreateRnModelAsync(Factory.midStageData.Graph);
-        }
-
-        public void Serialize()
-        {
-            if (RoadNetwork == null)
-                return;
-            storage = RoadNetwork.Serialize();
-        }
-
-        public void Deserialize()
-        {
-            RoadNetwork ??= new RnModel();
-            RoadNetwork.Deserialize(storage);
+            await Factory.CreateRnModelAsync(Factory.midStageData.Graph, gameObject);
         }
 
         /// <summary>
@@ -153,11 +129,6 @@ namespace PLATEAU.RoadNetwork
                     }
                 }
             }
-        }
-
-        public RoadNetworkDataGetter GetRoadNetworkDataGetter()
-        {
-            return new RoadNetworkDataGetter(storage);
         }
     }
 }

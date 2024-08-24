@@ -396,7 +396,7 @@ namespace PLATEAU.Editor.RoadNetwork
 
             // 道路ネットワークの取得を試みる　
             var roadNetworkObj = GameObject.Find(defaultRoadNetworkObjectName);
-            var r = roadNetworkObj.GetComponent<PLATEAURoadNetworkTester>();
+            var r = roadNetworkObj.GetComponent<PLATEAURnStructureModel>();
             var roadNetwork = r.RoadNetwork;
             if (roadNetwork == null)
             {
@@ -1839,7 +1839,7 @@ namespace PLATEAU.Editor.RoadNetwork
                         //    wayEditorDataList.Find(x => x.Ref == rightEdgeLane.LeftWay).IsSelectable = false;
                         //}
                     }
-                    
+
                     var mousePos = clickReceiver.MousePosition;
                     var isMouseOnViewport = true;
                     foreach (var wayEditorData in wayEditorDataList)
@@ -1909,7 +1909,7 @@ namespace PLATEAU.Editor.RoadNetwork
                 {
                     // gizmosの更新
                     gizmos.Update(
-                        system.SelectedRoadNetworkElement, 
+                        system.SelectedRoadNetworkElement,
                         closestWay,
                         linkGroupEditorData);
                     var cmds = gizmos.BuildDrawCommands();

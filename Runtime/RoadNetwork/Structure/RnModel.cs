@@ -208,6 +208,11 @@ namespace PLATEAU.RoadNetwork.Structure
                 AddIntersection(n);
         }
 
+        public void Check()
+        {
+
+        }
+
         public void SplitLaneByWidth(float roadWidth, out List<ulong> failedRoads)
         {
             failedRoads = new List<ulong>();
