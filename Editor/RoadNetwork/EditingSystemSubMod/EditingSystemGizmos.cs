@@ -99,7 +99,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
                 {
                     foreach (var sideWalk in road.SideWalks)
                     {
-                        sideWalks.Add(sideWalk.Line.ToList());
+                        sideWalks.Add(sideWalk.Way.ToList());
                     }
                 }
 

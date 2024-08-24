@@ -1906,7 +1906,7 @@ namespace PLATEAU.Editor.RoadNetwork
                 {
                     if (closestWay == null)
                         return;
-                    Debug.Log(e.type);
+                    //Debug.Log(e.type);
                     //if (e.type != EventType.DragPerform)
                     //{
                     //}

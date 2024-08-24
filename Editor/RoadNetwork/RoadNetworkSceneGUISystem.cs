@@ -564,14 +564,14 @@ namespace PLATEAU.Editor.RoadNetwork
 
                         foreach (var sideWalk in road.SideWalks)
                         {
-                            foreach (var point in sideWalk.Line.Points)
+                            foreach (var point in sideWalk.Way.Points)
                             {
                                 if (state.isDirtyTarget)
                                 {
                                     break;
                                 }
 
-                                var parent = sideWalk.Line;
+                                var parent = sideWalk.Way;
                                 var isEditable = false;
                                 isEditable = true;
 
@@ -602,7 +602,7 @@ namespace PLATEAU.Editor.RoadNetwork
                                             continue;
                                         state.delayCommand += () =>
                                         {
-                                            parent.Points.Insert(idx, point);
+                                            parent.LineString.Points.Insert(idx, point);
                                         };
                                         state.isDirtyTarget = true;
                                     }
@@ -616,7 +616,7 @@ namespace PLATEAU.Editor.RoadNetwork
                                     {
                                         state.delayCommand += () =>
                                         {
-                                            parent.Points.Remove(point);
+                                            parent.LineString.Points.Remove(point);
                                         };
                                         state.isDirtyTarget = true;
                                     }
