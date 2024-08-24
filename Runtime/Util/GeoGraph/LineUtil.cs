@@ -245,8 +245,8 @@ namespace PLATEAU.Util.GeoGraph
                 Vector3 closestPoint2;
                 LineUtil.ClosestPoints(line, rayLine, out closestPoint, out closestPoint2);
                 //Debug.DrawLine(line.P0, line.P1, Color.magenta);
-                Debug.DrawLine(rayLine.P0, rayLine.P1, Color.green, 2.0F);
-                Debug.DrawLine(closestPoint, closestPoint2, Color.magenta, 2.0F);
+                //Debug.DrawLine(rayLine.P0, rayLine.P1, Color.green, 2.0F);
+                //Debug.DrawLine(closestPoint, closestPoint2, Color.magenta, 2.0F);
                 isPointOnline = LineUtil.ContainsPoint(line, closestPoint);                
             }
 
