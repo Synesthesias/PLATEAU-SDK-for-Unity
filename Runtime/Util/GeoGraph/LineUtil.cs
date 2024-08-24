@@ -168,7 +168,7 @@ namespace PLATEAU.Util.GeoGraph
             float s = (Vector3.Dot(d1, r) * e - f * Vector3.Dot(d1, d2)) / (a * e - Vector3.Dot(d1, d2) * Vector3.Dot(d1, d2));
             float t = (f + s * Vector3.Dot(d1, d2)) / e;
 
-            closestPoint1 = p1 + s * d1;
+            closestPoint1 = p1 + s * -d1;
             closestPoint2 = p2 + t * d2;
         }
         //public static void FindClosestPoints(Line line0, Line line1, out Vector3 closestPointLine1, out Vector3 closestPointLine2)
@@ -214,7 +214,7 @@ namespace PLATEAU.Util.GeoGraph
     /// <returns></returns>
     public static float CheckHit(Line line, float radius, in Ray ray, out Vector3 closestPoint)
         {
-            var rayLine = new Line(ray.origin, ray.origin + ray.direction);
+            var rayLine = new Line(ray.origin, ray.origin + ray.direction * 1000/*DEBUG用*/);
             var dis = DistanceBetweenLines(line, rayLine, out var isParallel);
 
             // 平行時は通常の方法で計算できないので判定を取らないようにする
@@ -244,9 +244,9 @@ namespace PLATEAU.Util.GeoGraph
             {
                 Vector3 closestPoint2;
                 LineUtil.ClosestPoints(line, rayLine, out closestPoint, out closestPoint2);
-                Debug.DrawLine(line.P0, line.P1, Color.magenta);
-                Debug.DrawLine(rayLine.P0, rayLine.P1, Color.green);
-                Debug.DrawLine(closestPoint, closestPoint2, Color.blue);
+                //Debug.DrawLine(line.P0, line.P1, Color.magenta);
+                Debug.DrawLine(rayLine.P0, rayLine.P1, Color.green, 2.0F);
+                Debug.DrawLine(closestPoint, closestPoint2, Color.magenta, 2.0F);
                 isPointOnline = LineUtil.ContainsPoint(line, closestPoint);                
             }
 

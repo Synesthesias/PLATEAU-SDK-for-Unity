@@ -50,18 +50,26 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
         private void OnSceneGUIOnInstance(SceneView sceneView)
         {
             Event e = Event.current;
+
+            if (e.type == EventType.MouseMove)
+            {
+                Ray ray = HandleUtility.GUIPointToWorldRay(e.mousePosition);
+                //ray = new Ray(new Vector3(700.50f, 8.84f, -615.75f) + Vector3.up, Vector3.down);
+                //Debug.DrawLine(ray.origin, ray.origin + ray.direction * 1500, Color.red, 2.0F);
+                mousePosition = e.mousePosition;
+            }
+
             if (e.type == EventType.MouseMove || e.type == EventType.MouseDown || e.type == EventType.MouseUp)
             {
+                ev = e;
+                foreach (var item in clickEventReceivers)
+                {
+                    item.ReserveExecute(this);
+                }
             }
             else
             {
                 return;
-            }
-            ev = e;
-            mousePosition = e.mousePosition;
-            foreach (var item in clickEventReceivers)
-            {
-                item.ReserveExecute(this);
             }
 
             //if (e.type == EventType.MouseDown)

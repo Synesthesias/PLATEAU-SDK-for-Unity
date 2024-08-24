@@ -1884,7 +1884,8 @@ namespace PLATEAU.Editor.RoadNetwork
                         {
                             var p1 = eVert.Current;
                             var line = new LineUtil.Line(p0, p1);
-                            var distance = LineUtil.CheckDistance(line, radius, ray);
+                            var distance = LineUtil.CheckHit(line, radius, ray, out var closestPoint);
+                            //var distance = LineUtil.CheckDistance(line, radius, ray);
                             if (distance >= 0.0f)
                             {
                                 if (closestDis > distance)
@@ -1899,21 +1900,30 @@ namespace PLATEAU.Editor.RoadNetwork
                 }
 
 
-                Debug.Log("dis" + closestDis);
+                //Debug.Log("dis" + closestDis);
 
                 clickReceiver.Execute((e, p) =>
                 {
                     if (closestWay == null)
                         return;
+                    Debug.Log(e.type);
+                    //if (e.type != EventType.DragPerform)
+                    //{
+                    //}
+                    //else if (e.type != EventType.DragExited)
+                    //{
 
-                    if (e.type != EventType.MouseDown)
-                        return;
+                    //}
+                    //else if(e.type != EventType.DragUpdated)
+                    //{
 
-                    // 左クリック
-                    if (e.button == 0)
-                    {
-                        //closestWay.Ref.MoveAlongNormal(0.1f);
-                    }
+                    //}
+
+                    //// 左クリック
+                    //if (e.button == 0)
+                    //{
+                    //    closestWay.Ref.MoveAlongNormal(0.1f);
+                    //}
                     //if (e.button == 1)
                     //{
                     //    closestWay.Ref.MoveAlongNormal(-0.5f);
