@@ -24,7 +24,7 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
     }
 
     [Serializable]
-    public class RnModelDrawerDebug
+    public class PLATEAURnModelDrawerDebug : MonoBehaviour
     {
         [Flags]
         public enum VisibleType
@@ -42,6 +42,8 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
         // --------------------
         // start:フィールド
         // --------------------
+        [SerializeField] private PLATEAURnStructureModel target;
+
         [SerializeField] public bool visible = true;
 
         [SerializeField] public bool showAll = true;
@@ -133,12 +135,12 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
             public float validWayAlpha = 0.75f;
             public float invalidWayAlpha = 0.3f;
             public bool showAttrText = false;
-            public DrawOption showLeftWay = new DrawOption();
-            public DrawOption showRightWay = new DrawOption();
+            public DrawOption showLeftWay = new DrawOption(true, Color.red);
+            public DrawOption showRightWay = new DrawOption(true, Color.blue);
             // 境界線を表示する
-            public DrawOption showPrevBorder = new DrawOption();
-            public DrawOption showNextBorder = new DrawOption();
-            public DrawOption showCenterWay = new DrawOption();
+            public DrawOption showPrevBorder = new DrawOption(true, Color.green);
+            public DrawOption showNextBorder = new DrawOption(true, Color.green);
+            public DrawOption showCenterWay = new DrawOption(true, Color.green * 0.5f);
             /// <summary>
             /// レーン描画するときのアルファを返す
             /// </summary>
@@ -511,26 +513,6 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
                 var n = intersection.Neighbors[i];
                 if (op.showBorder.visible)
                     DrawWay(n.Border, op.showBorder.color);
-
-
-                //if (op.showSplitTrack.visible)
-                //{
-                //    for (var j = i + 1; j < intersection.Neighbors.Count; ++j)
-                //    {
-                //        var n2 = intersection.Neighbors[j];
-                //        if (n == n2)
-                //            continue;
-                //        //if (n.Road == n2.Road)
-                //        //    continue;
-                //        var way = intersection.CalcTrackWay(n.Border, n2.Border, splitLength: op.showSplitTrack.splitLength);
-                //        if (way != null)
-                //        {
-                //            DrawWay(way, op.showSplitTrack.color);
-                //            //foreach (var w in way.BothWays)
-                //            //    DrawWay(w, op.showSplitTrack.color);
-                //        }
-                //    }
-                //}
             }
 
             foreach (var track in intersection.Tracks)
@@ -602,6 +584,15 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
             DrawRoads(roadNetwork);
             DrawIntersections(roadNetwork);
             DrawSideWalks(roadNetwork);
+        }
+
+
+        public void OnDrawGizmos()
+        {
+            if (!target)
+                target = GetComponent<PLATEAURnStructureModel>();
+            if (target)
+                Draw(target.RoadNetwork);
         }
     }
 }

@@ -626,6 +626,26 @@ namespace PLATEAU.RoadNetwork.Factory
             return model;
         }
 
+        public async Task<PLATEAURnStructureModel> CreateRnModelAsync(List<PLATEAUCityObjectGroup> cityObjectGroups, GameObject target)
+        {
+            if (!target)
+                target = new GameObject("RoadNetworkStructure");
+            var ret = target.GetComponent<PLATEAURnStructureModel>() ?? target.AddComponent<PLATEAURnStructureModel>();
+            var model = await CreateRnModelAsync(cityObjectGroups);
+            ret.RoadNetwork = model;
+            return ret;
+        }
+
+        public async Task<PLATEAURnStructureModel> CreateRnModelAsync(RGraph graph, GameObject target)
+        {
+            if (!target)
+                target = new GameObject("RoadNetworkStructure");
+            var ret = target.GetComponent<PLATEAURnStructureModel>() ?? target.AddComponent<PLATEAURnStructureModel>();
+            var model = await CreateRnModelAsync(graph);
+            ret.RoadNetwork = model;
+            return ret;
+        }
+
         public void DebugDraw()
         {
             midStageData?.DebugDraw();
