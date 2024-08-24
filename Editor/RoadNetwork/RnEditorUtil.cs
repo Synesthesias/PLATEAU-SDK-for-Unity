@@ -20,6 +20,12 @@ namespace PLATEAU.Editor.RoadNetwork
             EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
         }
 
+        public static long CheckAddTarget<T>(HashSet<T> targets, long addTargetId, out bool isAdded)
+            where T : ARnParts<T>
+        {
+            return CheckAddTarget<T, T>(targets, addTargetId, out isAdded);
+        }
+
         public static long CheckAddTarget<T, U>(HashSet<T> targets, long addTargetId, out bool isAdded) where T : ARnParts<U>
         {
             isAdded = false;

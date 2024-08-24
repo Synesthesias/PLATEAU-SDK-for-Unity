@@ -1,4 +1,5 @@
-﻿using PLATEAU.RoadNetwork.Mesh;
+﻿using PLATEAU.RoadNetwork.Graph;
+using PLATEAU.RoadNetwork.Mesh;
 using PLATEAU.Util;
 using System;
 using System.Collections.Generic;
@@ -17,6 +18,8 @@ namespace PLATEAU.RoadNetwork.CityObject.Drawer
         public int meshColorNum = 16;
         public bool showVertexIndex = false;
         public int showVertexIndexFontSize = 8;
+
+        public HashSet<SubDividedCityObject> TargetCityObjects { get; } = new();
         // --------------------
         // end:フィールド
         // --------------------
@@ -48,7 +51,7 @@ namespace PLATEAU.RoadNetwork.CityObject.Drawer
             var index = 0;
             foreach (var item in cityObjects)
             {
-                if (item.Visible == false)
+                if (item.Visible == false || (TargetCityObjects.Any() == false && TargetCityObjects.Contains(item) == false))
                 {
                     // インデックスは進めておかないとvisible切り替わるたびに色代わるの辛い
                     index += item.Meshes.Sum(m => m.SubMeshes.Count);

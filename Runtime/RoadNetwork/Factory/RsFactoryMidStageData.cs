@@ -101,9 +101,8 @@ namespace PLATEAU.RoadNetwork.Factory
             var ret = new List<RoadNetworkTranMesh>();
             foreach (var c in mergedConvertedCityObjects.cityObjects)
             {
-                var root = c.CityObjects.rootCityObjects[0];
                 var lodLevel = c.CityObjectGroup.GetLodLevel();
-                var roadType = root.GetRoadType();
+                var roadType = c.GetRoadType(false);
                 foreach (var mesh in c.Meshes)
                 {
                     foreach (var s in mesh.SubMeshes)

@@ -11,7 +11,7 @@ namespace PLATEAU.RoadNetwork.Structure
         // 自分が所属するRoadNetworkModel
         private RnRoadBase parentRoad;
 
-        private RnLineString line { get; }
+        private RnWay way { get; }
 
         //----------------------------------
         // end: フィールド
@@ -19,14 +19,14 @@ namespace PLATEAU.RoadNetwork.Structure
 
         public RnRoadBase ParentRoad => parentRoad;
 
-        public RnLineString Line => line;
+        public RnWay Way => way;
 
         public RnSideWalk() { }
 
-        private RnSideWalk(RnRoadBase parent, RnLineString line)
+        private RnSideWalk(RnRoadBase parent, RnWay way)
         {
             this.parentRoad = parent;
-            this.line = line;
+            this.way = way;
         }
 
         public void SetParent(RnRoadBase parent)
@@ -40,11 +40,11 @@ namespace PLATEAU.RoadNetwork.Structure
         /// 歩道作成
         /// </summary>
         /// <param name="parent"></param>
-        /// <param name="line"></param>
+        /// <param name="way"></param>
         /// <returns></returns>
-        public static RnSideWalk Create(RnRoadBase parent, RnLineString line)
+        public static RnSideWalk Create(RnRoadBase parent, RnWay way)
         {
-            var sideWalk = new RnSideWalk(parent, line);
+            var sideWalk = new RnSideWalk(parent, way);
             parent.AddSideWalk(sideWalk);
             return sideWalk;
         }

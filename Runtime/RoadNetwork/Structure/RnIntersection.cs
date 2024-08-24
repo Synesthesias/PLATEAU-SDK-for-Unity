@@ -7,6 +7,29 @@ using UnityEngine.Splines;
 
 namespace PLATEAU.RoadNetwork.Structure
 {
+    [Serializable]
+    public class RnTrack : ARnParts<RnNeighbor>
+    {
+        //----------------------------------
+        // start: フィールド
+        //----------------------------------
+        // 自分が所属するRoadNetworkModel
+        [field: SerializeField]
+        public RnWay FromBorder { get; set; }
+
+        // 対象のtranオブジェクト
+        [field: SerializeField]
+        public RnWay ToBorder { get; set; }
+
+        // スプライン
+        [field: SerializeField]
+        public Spline Spline { get; set; }
+
+        //----------------------------------
+        // end: フィールド
+        //----------------------------------
+    }
+
     /// <summary>
     /// 交差点
     /// </summary>
@@ -32,6 +55,8 @@ namespace PLATEAU.RoadNetwork.Structure
         // 信号制御器
         public TrafficSignalLightController SignalController { get; set; } = null;
 
+        private List<RnTrack> tracks = new();
+
         //----------------------------------
         // end: フィールド
         //----------------------------------
@@ -39,6 +64,9 @@ namespace PLATEAU.RoadNetwork.Structure
         public override PLATEAUCityObjectGroup CityObjectGroup => TargetTran;
 
         public IReadOnlyList<RnNeighbor> Neighbors => neighbors;
+
+        // 中央線トラック
+        public IReadOnlyList<RnTrack> Tracks => tracks;
 
         // 車線
         public IReadOnlyList<RnLane> Lanes => lanes;
@@ -127,6 +155,21 @@ namespace PLATEAU.RoadNetwork.Structure
             neighbors.AddRange(borders.Select(b => new RnNeighbor { Road = link, Border = b }));
         }
 
+        public void RemoveBorder(Func<RnNeighbor, bool> predicate)
+        {
+            neighbors.RemoveAll(x => predicate(x));
+        }
+
+        /// <summary>
+        /// road/laneに接続している隣接情報を削除する
+        /// </summary>
+        /// <param name="road"></param>
+        /// <param name="lane"></param>
+        public void RemoveNeighbor(RnRoad road, RnLane lane)
+        {
+            neighbors.RemoveAll(x => x.Road == road && ((lane.PrevBorder?.IsSameLine(x.Border) ?? false) || (lane.NextBorder?.IsSameLine(x.Border) ?? false)));
+        }
+
         /// <summary>
         /// 隣接情報からotherを削除する. other側の接続は消えない
         /// </summary>
@@ -152,6 +195,27 @@ namespace PLATEAU.RoadNetwork.Structure
             neighbors.Clear();
             if (removeFromModel)
                 ParentModel?.RemoveIntersection(this);
+        }
+
+        public void BuildTracks(float tangentLength = 10f, float splitLength = 2f)
+        {
+            tracks.Clear();
+            foreach (var from in Neighbors)
+            {
+                foreach (var to in Neighbors)
+                {
+                    if (from == to)
+                        continue;
+                    var track = CalcTrackWay(from.Road, to.Road);
+                    if (track != null)
+                        tracks.Add(new RnTrack
+                        {
+                            FromBorder = from.Border,
+                            ToBorder = to.Border,
+                            Spline = this.CalcTrackSpline(from.Border, to.Border, tangentLength, splitLength)
+                        });
+                }
+            }
         }
 
         /// <summary>
@@ -184,14 +248,14 @@ namespace PLATEAU.RoadNetwork.Structure
 
             var rightSp = new Spline
             {
-                new BezierKnot(aLeftPos, tangentLength * aLeftNormal, tangentLength *aLeftNormal),
-                new BezierKnot(bRightPos, tangentLength *bRightNormal, tangentLength *bRightNormal)
+                new(aLeftPos, tangentLength * aLeftNormal, tangentLength *aLeftNormal),
+                new(bRightPos, tangentLength *bRightNormal, tangentLength *bRightNormal)
             };
 
             var leftSp = new Spline
             {
-                new BezierKnot(aRightPos, tangentLength *aRightNormal, tangentLength *aRightNormal),
-                new BezierKnot(bLeftPos, tangentLength *bLeftNormal, tangentLength *bLeftNormal)
+                new(aRightPos, tangentLength *aRightNormal, tangentLength *aRightNormal),
+                new(bLeftPos, tangentLength *bLeftNormal, tangentLength *bLeftNormal)
             };
 
             var rates = Enumerable.Range(0, 10).Select(i => 1f * i / (9)).ToList();
@@ -206,6 +270,97 @@ namespace PLATEAU.RoadNetwork.Structure
                 return (Vector3)pos;
             })));
             return new RnLane(leftWay, rightWay, nFrom.Border, nTo.Border);
+        }
+    }
+
+    public static class RnIntersectionEx
+    {
+        public static RnNeighbor GetIntersectionNeighbor(this RnIntersection self)
+        {
+            return self.Neighbors.FirstOrDefault();
+        }
+
+        public static Spline CalcTrackSpline(this RnIntersection self, RnWay fromBorder, RnWay toBorder,
+            float tangentLength = 10f, float splitLength = 2f)
+        {
+            if (fromBorder == toBorder)
+                return null;
+            var nFrom = self.Neighbors.FirstOrDefault(n => n.Border == fromBorder);
+            var nTo = self.Neighbors.FirstOrDefault(n => n.Border == toBorder);
+            if (nFrom == null || nTo == null)
+                return null;
+            if (nFrom.Border.Count < 2 || nTo.Border.Count < 2)
+                return null;
+
+            var fromLane = nFrom.GetConnectedLane();
+            if (fromLane == null)
+                return null;
+
+            var toLane = nTo.GetConnectedLane();
+            if (toLane == null)
+                return null;
+
+
+            fromLane.TryGetBorderNormal(nFrom.Border, out var aLeftPos, out var aLeftNormal, out var aRightPos, out var aRightNormal);
+            toLane.TryGetBorderNormal(nTo.Border, out var bLeftPos, out var bLeftNormal, out var bRightPos, out var bRightNormal);
+
+            fromBorder.GetLerpPoint(0.5f, out var fromPos);
+            toBorder.GetLerpPoint(0.5f, out var toPos);
+
+            return new Spline
+            {
+                new(fromPos, tangentLength * aLeftNormal, tangentLength *aLeftNormal),
+                new(toPos, tangentLength *bRightNormal, tangentLength *bRightNormal)
+            };
+        }
+
+        /// <summary>
+        /// a,bを繋ぐ経路を計算する
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="fromBorder"></param>
+        /// <param name="toBorder"></param>
+        /// <param name="tangentLength"></param>
+        /// <param name="splitLength"></param>
+        public static RnWay CalcTrackWay(this RnIntersection self, RnWay fromBorder, RnWay toBorder, float tangentLength = 10f, float splitLength = 2f)
+        {
+            if (fromBorder == toBorder)
+                return null;
+            var nFrom = self.Neighbors.FirstOrDefault(n => n.Border == fromBorder);
+            var nTo = self.Neighbors.FirstOrDefault(n => n.Border == toBorder);
+            if (nFrom == null || nTo == null)
+                return null;
+            if (nFrom.Border.Count < 2 || nTo.Border.Count < 2)
+                return null;
+
+            var fromLane = nFrom.GetConnectedLane();
+            if (fromLane == null)
+                return null;
+
+            var toLane = nTo.GetConnectedLane();
+            if (toLane == null)
+                return null;
+
+
+            fromLane.TryGetBorderNormal(nFrom.Border, out var aLeftPos, out var aLeftNormal, out var aRightPos, out var aRightNormal);
+            toLane.TryGetBorderNormal(nTo.Border, out var bLeftPos, out var bLeftNormal, out var bRightPos, out var bRightNormal);
+
+            fromBorder.GetLerpPoint(0.5f, out var fromPos);
+            toBorder.GetLerpPoint(0.5f, out var toPos);
+
+            var rightSp = new Spline
+            {
+                new(fromPos, tangentLength * aLeftNormal, tangentLength *aLeftNormal),
+                new(toPos, tangentLength *bRightNormal, tangentLength *bRightNormal)
+            };
+
+            var num = Mathf.Max(2, Mathf.CeilToInt((fromPos - toPos).magnitude / splitLength));
+            var rates = Enumerable.Range(0, num).Select(i => 1f * i / (num - 1)).ToList();
+            return new RnWay(RnLineString.Create(rates.Select(t =>
+            {
+                rightSp.Evaluate(t, out var pos, out var tang, out var up);
+                return (Vector3)pos;
+            })));
         }
     }
 }

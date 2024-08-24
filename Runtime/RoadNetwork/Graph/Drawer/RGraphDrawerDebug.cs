@@ -40,6 +40,7 @@ namespace PLATEAU.RoadNetwork.Drawer
         {
             public bool showOutline = true;
             public RRoadTypeMask showOutlineMask = RRoadTypeMask.Road;
+            public RRoadTypeMask showOutlineRemoveMask = RRoadTypeMask.Empty;
             public bool showCityObjectOutline = false;
             public bool showOutlineLoop = false;
         }
@@ -216,7 +217,7 @@ namespace PLATEAU.RoadNetwork.Drawer
 #endif
             }
 
-            var vertices = op.showCityObjectOutline ? work.graph.ComputeOutlineVerticesByCityObjectGroup(face.CityObjectGroup, op.showOutlineMask)
+            var vertices = op.showCityObjectOutline ? work.graph.ComputeOutlineVerticesByCityObjectGroup(face.CityObjectGroup, op.showOutlineMask, op.showOutlineRemoveMask)
                 : face.ComputeOutlineVertices();
 
             bool isLoop = true;

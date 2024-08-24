@@ -10,10 +10,11 @@ namespace PLATEAU.RoadNetwork.Structure
         //----------------------------------
         // start: フィールド
         //----------------------------------
+
         // Roadとの境界線
         public RnWay Border { get; set; }
 
-        // 隣接Road基本的にRoadだが、初期のPLATEAUモデルによってはIntersectionもあり得るため基底クラスで持っている
+        // 隣接道路(交差点)基本的にRoadだが、初期のPLATEAUモデルによってはIntersectionもあり得るため基底クラスで持っている
         public RnRoadBase Road { get; set; }
 
         //----------------------------------
@@ -39,11 +40,11 @@ namespace PLATEAU.RoadNetwork.Structure
                 yield break;
             if (Road == null)
                 yield break;
-            foreach (var lane in Road.AllLanes
-                         .Where(lane => lane.AllBorders.Any(b => b.IsSameLine(Border)))
-                    )
+            foreach (var lane in Road.AllLanes)
             {
-                yield return lane;
+                // Borderと同じ線上にあるレーンを返す
+                if (lane.AllBorders.Any(b => b.IsSameLine(Border)))
+                    yield return lane;
             }
         }
     }

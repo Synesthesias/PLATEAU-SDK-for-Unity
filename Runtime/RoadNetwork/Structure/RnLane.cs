@@ -3,6 +3,7 @@ using PLATEAU.Util.GeoGraph;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices.WindowsRuntime;
 using UnityEngine;
 using UnityEngine.Assertions;
 using Vector2 = UnityEngine.Vector2;
@@ -57,6 +58,10 @@ namespace PLATEAU.RoadNetwork.Structure
         LeftOnly = 1 << 0,
         // 右折専用
         RightOnly = 1 << 1,
+        // 自動生成時にLeftWayが生成できなかった
+        LeftWayGenError = 1 << 2,
+        // 自動生成時にRightWayが生成できなかった
+        RightWayGenError = 1 << 3,
     }
 
     /// <summary>
@@ -95,6 +100,7 @@ namespace PLATEAU.RoadNetwork.Structure
 
         // 親Roadと逆方向(右車線等)
         public bool IsReverse { get; set; }
+
 
         //----------------------------------
         // end: フィールド
@@ -834,7 +840,7 @@ namespace PLATEAU.RoadNetwork.Structure
                 }
                 else
                 {
-                    Assert.IsTrue(false, "SplitBorder Error");
+                    Assert.IsTrue(false, $"SplitBorder Error {l.GetDebugMyIdOrDefault()}[{l.Parent.GetDebugMyIdOrDefault()}]");
                 }
                 return ret;
             }
@@ -914,6 +920,27 @@ namespace PLATEAU.RoadNetwork.Structure
             }
 
             return ret;
+        }
+
+        /// <summary>
+        /// レーンの中央線を作成して返す
+        /// </summary>
+        /// <param name="self"></param>
+        /// <returns></returns>
+        public static RnWay CreateCenterWay(this RnLane self)
+        {
+            try
+            {
+                if (self.IsValidWay == false)
+                    return null;
+
+                var vertices = GeoGraphEx.GetInnerLerpSegments(self.LeftWay.Vertices.ToList(), self.RightWay.Vertices.ToList(), AxisPlane.Xz, 0.5f);
+                return new RnWay(RnLineString.Create(vertices));
+            }
+            catch
+            {
+                return null;
+            }
         }
 #if false
         public static void SetLaneWidth(this RnLane self, float width, bool moveLeft)
