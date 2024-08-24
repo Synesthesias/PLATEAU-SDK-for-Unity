@@ -213,6 +213,14 @@ namespace PLATEAU.RoadNetwork.Structure
 
         }
 
+        public void ReBuildIntersectionTracks()
+        {
+            foreach (var intersection in Intersections)
+            {
+                intersection.BuildTracks();
+            }
+        }
+
         public void SplitLaneByWidth(float roadWidth, out List<ulong> failedRoads)
         {
             failedRoads = new List<ulong>();

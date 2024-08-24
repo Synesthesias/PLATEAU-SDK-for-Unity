@@ -606,7 +606,7 @@ namespace PLATEAU.RoadNetwork.Factory
 
 
                 ret.SplitLaneByWidth(roadSize, out var failedLinks);
-
+                ret.ReBuildIntersectionTracks();
                 return Task.FromResult(ret);
             }
             catch (Exception e)

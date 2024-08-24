@@ -403,6 +403,7 @@ namespace PLATEAU.RoadNetwork.Data
             refTable.CreateMemberReferenceOrSkip(typeof(RnDataNeighbor));
             refTable.CreateMemberReferenceOrSkip(typeof(RnDataIntersection));
             refTable.CreateMemberReferenceOrSkip(typeof(RnDataRoad));
+            refTable.CreateMemberReferenceOrSkip(typeof(RnDataTrack));
             return refTable;
         }
 

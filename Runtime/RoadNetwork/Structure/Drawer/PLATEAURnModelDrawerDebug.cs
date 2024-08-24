@@ -56,7 +56,7 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
         // 頂点表示するときのフォントサイズ
         [SerializeField] public int showVertexFontSize = 20;
         // レーン描画するときに法線方向へオフセットを入れる
-        [SerializeField] public float edgeOffset = 10f;
+        [SerializeField] public float edgeOffset = 0f;
         [SerializeField] public bool showSplitLane = false;
         [SerializeField] public float splitLaneRate = 0.5f;
         [SerializeField] public float yScale = 1f;
@@ -87,9 +87,9 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
         {
             public bool visible = true;
             public VisibleType visibleType = VisibleType.All;
-            public DrawOption showTrack = new();
+            public DrawOption showTrack = new(true, Color.yellow * 0.7f);
 
-            public DrawOption showBorder = new();
+            public DrawOption showBorder = new(true, Color.magenta * 0.7f);
 
             public TrackOption showSplitTrack = new();
         }
@@ -208,6 +208,12 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
         public void DrawLine(Vector3 start, Vector3 end, Color? color = null)
         {
             Debug.DrawLine(start.PutY(start.y * yScale), end.PutY(end.y * yScale), color ?? Color.white);
+        }
+
+        public void DrawDashedLines(IEnumerable<Vector3> vertices, bool isLoop = false, Color? color = null,
+            float lineLength = 3f, float spaceLength = 1f)
+        {
+            DebugEx.DrawDashedLines(vertices.Select(v => v.PutY(v.y * yScale)), isLoop, color, lineLength, spaceLength);
         }
 
         public void DrawArrow(
@@ -336,7 +342,7 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
             {
                 var centerWay = lane.CreateCenterWay();
                 if (centerWay != null)
-                    DrawWay(centerWay, color: laneOp.showCenterWay.color.PutA(laneOp.GetLaneAlpha(lane)));
+                    DrawDashedLines(centerWay, color: laneOp.showCenterWay.color.PutA(laneOp.GetLaneAlpha(lane)));
             }
 
             if (laneOp.showPrevBorder.visible)

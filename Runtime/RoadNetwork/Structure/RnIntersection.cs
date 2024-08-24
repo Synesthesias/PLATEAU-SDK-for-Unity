@@ -14,15 +14,12 @@ namespace PLATEAU.RoadNetwork.Structure
         // start: フィールド
         //----------------------------------
         // 自分が所属するRoadNetworkModel
-        [field: SerializeField]
         public RnWay FromBorder { get; set; }
 
         // 対象のtranオブジェクト
-        [field: SerializeField]
         public RnWay ToBorder { get; set; }
 
         // スプライン
-        [field: SerializeField]
         public Spline Spline { get; set; }
 
         //----------------------------------
@@ -151,14 +148,25 @@ namespace PLATEAU.RoadNetwork.Structure
 
         public void ReplaceBorder(RnRoad link, List<RnWay> borders)
         {
-            neighbors.RemoveAll(n => n.Road == link);
+            RemoveNeighbors(n => n.Road == link);
             neighbors.AddRange(borders.Select(b => new RnNeighbor { Road = link, Border = b }));
         }
 
-        public void RemoveBorder(Func<RnNeighbor, bool> predicate)
+        public void RemoveNeighbors(Func<RnNeighbor, bool> predicate)
         {
-            neighbors.RemoveAll(x => predicate(x));
+            for (var i = 0; i < neighbors.Count; i++)
+            {
+                var n = neighbors[i];
+                if (predicate(n))
+                {
+                    neighbors.RemoveAt(i);
+                    i--;
+                    // トラックからも削除する
+                    tracks.RemoveAll(x => x.FromBorder == n.Border || x.ToBorder == n.Border);
+                }
+            }
         }
+
 
         /// <summary>
         /// road/laneに接続している隣接情報を削除する
@@ -167,7 +175,7 @@ namespace PLATEAU.RoadNetwork.Structure
         /// <param name="lane"></param>
         public void RemoveNeighbor(RnRoad road, RnLane lane)
         {
-            neighbors.RemoveAll(x => x.Road == road && ((lane.PrevBorder?.IsSameLine(x.Border) ?? false) || (lane.NextBorder?.IsSameLine(x.Border) ?? false)));
+            RemoveNeighbors(x => x.Road == road && ((lane.PrevBorder?.IsSameLine(x.Border) ?? false) || (lane.NextBorder?.IsSameLine(x.Border) ?? false)));
         }
 
         /// <summary>
@@ -176,10 +184,11 @@ namespace PLATEAU.RoadNetwork.Structure
         /// <param name="other"></param>
         public override void UnLink(RnRoadBase other)
         {
-            var borders = neighbors.Where(n => n.Road == other).Select(n => n.Border).ToList();
-            neighbors.RemoveAll(n => n.Road == other);
-
             // 削除するBorderに接続しているレーンも削除
+            var borders = neighbors.Where(n => n.Road == other).Select(n => n.Border).ToList();
+
+            RemoveNeighbors(n => n.Road == other);
+
             var removeLanes = lanes.Where(l => l.BothWays.Any(b => borders.Contains(b))).ToList();
             foreach (var r in removeLanes)
                 RemoveLane(r);
@@ -202,18 +211,33 @@ namespace PLATEAU.RoadNetwork.Structure
             tracks.Clear();
             foreach (var from in Neighbors)
             {
+                var fromLane = from.GetConnectedLane();
+                if (fromLane == null)
+                    continue;
+
+                // この交差点に入ってくるレーンのみを対象とする
+                if (fromLane.NextBorder.IsSameLine(from.Border) == false)
+                    continue;
                 foreach (var to in Neighbors)
                 {
                     if (from == to)
                         continue;
-                    var track = CalcTrackWay(from.Road, to.Road);
-                    if (track != null)
-                        tracks.Add(new RnTrack
-                        {
-                            FromBorder = from.Border,
-                            ToBorder = to.Border,
-                            Spline = this.CalcTrackSpline(from.Border, to.Border, tangentLength, splitLength)
-                        });
+
+                    var toLane = to.GetConnectedLane();
+                    if (toLane == null)
+                        continue;
+
+                    // この交差点から出ていくレーンのみを対象とする
+                    if (toLane.PrevBorder.IsSameLine(to.Border) == false)
+                        continue;
+
+                    var spline = this.CalcTrackSpline(from.Border, to.Border, tangentLength, splitLength);
+                    tracks.Add(new RnTrack
+                    {
+                        FromBorder = from.Border,
+                        ToBorder = to.Border,
+                        Spline = spline
+                    });
                 }
             }
         }
@@ -223,6 +247,7 @@ namespace PLATEAU.RoadNetwork.Structure
         /// </summary>
         /// <param name="from"></param>
         /// <param name="to"></param>
+        /// <param name="tangentLength"></param>
         public RnLane CalcTrackWay(RnRoadBase from, RnRoadBase to, float tangentLength = 10f)
         {
             if (from == to)
