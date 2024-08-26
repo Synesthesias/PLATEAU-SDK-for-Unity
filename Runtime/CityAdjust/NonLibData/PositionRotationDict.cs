@@ -1,5 +1,4 @@
 using PLATEAU.Util;
-using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -8,17 +7,13 @@ namespace PLATEAU.CityAdjust.NonLibData
     
     public class PositionRotationDict : INonLibData
     {
-        private Dictionary<NonLibKeyName, PositionRotation> data = new();
+        private NonLibDictionary<PositionRotation> data = new();
         
         public void ComposeFrom(UniqueParentTransformList src)
         {
             src.BfsExec(trans =>
             {
-                var key = new NonLibKeyName(trans, src.Get.ToArray());
-                if(!data.TryAdd(key, new PositionRotation(trans)))
-                {
-                    Debug.Log($"skipping duplicate key: {key}");
-                }
+                data.Add(trans, src.Get.ToArray(), new PositionRotation(trans));
                 return NextSearchFlow.Continue;
             });
         }
@@ -27,8 +22,8 @@ namespace PLATEAU.CityAdjust.NonLibData
         {
             target.BfsExec(trans =>
             {
-                var key = new NonLibKeyName(trans, target.Get.ToArray());
-                if (data.TryGetValue(key, out var posRot))
+                var posRot = data.GetNonRestoredAndMarkRestored(trans, target.Get.ToArray());
+                if (posRot != null)
                 {
                     posRot.Apply(trans);
                 }
@@ -37,7 +32,7 @@ namespace PLATEAU.CityAdjust.NonLibData
         }
     }
 
-    public struct PositionRotation
+    public class PositionRotation
     {
         public Vector3 LocalPosition;
         public Quaternion LocalRotation;

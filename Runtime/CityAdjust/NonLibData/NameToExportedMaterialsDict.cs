@@ -15,7 +15,7 @@ namespace PLATEAU.CityAdjust.NonLibData
     /// </summary>
     internal class NameToExportedMaterialsDict : INonLibData
     {
-        private Dictionary<NonLibKeyName, Material[]> data = new();
+        private NonLibDictionary<Material[]> data = new();
         private UnityMeshToDllSubMeshWithTexture subMeshConverter;
         
         private static readonly int PropIdBaseMap = Shader.PropertyToID("_BaseMap");
@@ -27,38 +27,27 @@ namespace PLATEAU.CityAdjust.NonLibData
 
         /// <summary>
         /// ゲームオブジェクトとその子から、マテリアルの辞書を構築します。
-        /// ただしヒエラルキー上で非アクティブのものは対象外とします。
         /// </summary>
         public void ComposeFrom(UniqueParentTransformList src)
         {
             src.BfsExec(trans =>
             {
-                if (!trans.gameObject.activeInHierarchy) return NextSearchFlow.SkipChildren;
                 var renderer = trans.GetComponent<Renderer>();
+                Material[] materials;
                 if (renderer != null)
                 {
-                    Add(trans, renderer.sharedMaterials, src);
+                    materials = renderer.sharedMaterials;
                 }
+                else
+                {
+                    materials = null;
+                }
+                data.Add(trans, src.Get.ToArray(), materials);
 
                 return NextSearchFlow.Continue;
             });
         }
-
-        private void Add(Transform trans, Material[] materials, UniqueParentTransformList baseTransforms)
-        {
-            var key = new NonLibKeyName(trans, baseTransforms.Get.ToArray());
-            if (data.TryAdd(key, materials))
-            {
-                return;
-            }
-
-            // 重複時はログを出します。ただし、ToolkitsのAutoTexturingで多数出てくる名前はよしとします。
-            if (key.ObjName != "FloorEmission" && key.ObjName != "ObstacleLight")
-            {
-                Debug.Log($"{nameof(NameToExportedMaterialsDict)} : Skipping duplicate game object name: {key}");
-            }
-
-        }
+        
 
         /// <summary>
         /// <paramref name="dst"/>とその子に対して、ゲームオブジェクト名からマテリアルを復元します。
@@ -82,7 +71,8 @@ namespace PLATEAU.CityAdjust.NonLibData
                 {
                     string[] fbxMaterialNames = renderer.sharedMaterials.Select(mat => mat.name).ToArray();
                     var nextMaterials = renderer.sharedMaterials;
-                    if (data.TryGetValue(new NonLibKeyName(dst.transform, target.Get.ToArray()), out var srcMaterials))
+                    var srcMaterials = data.GetNonRestoredAndMarkRestored(dst.transform, target.Get.ToArray());
+                    if (srcMaterials != null)
                     {
                         for (int i = 0; i < renderer.sharedMaterials.Length && i < srcMaterials.Length; i++)
                         {

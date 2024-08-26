@@ -14,7 +14,7 @@ namespace PLATEAU.CityAdjust.NonLibData
     internal class ContourMeshesMaker : INonLibData
     {
         // 記録用の辞書であり、Valueは頂点座標です。
-        private Dictionary<NonLibKeyName, ContourMesh> data = new();
+        private NonLibDictionary<ContourMesh> data = new();
         
         /// <summary> 道路の頂点を記憶します。 </summary>
         public void ComposeFrom(UniqueParentTransformList src)
@@ -24,11 +24,7 @@ namespace PLATEAU.CityAdjust.NonLibData
                 var contour = trans.GetComponent<PLATEAUContourMesh>();
                 if (contour != null)
                 {
-                    var contourKey = new NonLibKeyName(trans, src.Get.ToArray());
-                    if (!data.TryAdd(contourKey, contour.contourMesh))
-                    {
-                        Debug.Log($"key {contourKey} is already exists.");
-                    }
+                    data.Add(trans, src.Get.ToArray(), contour.contourMesh);
                     return NextSearchFlow.Continue;
                 }
                 var cog = trans.GetComponent<PLATEAUCityObjectGroup>();
@@ -38,11 +34,7 @@ namespace PLATEAU.CityAdjust.NonLibData
                 if (mf == null) return NextSearchFlow.Continue;
                 var mesh = mf.sharedMesh;
                 if (mesh == null) return NextSearchFlow.Continue;
-                var key = new NonLibKeyName(trans, src.Get.ToArray());
-                if (!data.TryAdd(key, new ContourMesh(mesh.vertices, mesh.triangles)))
-                {
-                    Debug.Log($"key {key} is already exists.");
-                }
+                data.Add(trans, src.Get.ToArray(), new ContourMesh(mesh.vertices, mesh.triangles));
                 
                 return NextSearchFlow.Continue;
             });
@@ -53,7 +45,8 @@ namespace PLATEAU.CityAdjust.NonLibData
         {
             target.BfsExec(trans =>
             {
-                if (data.TryGetValue(new NonLibKeyName(trans, target.Get.ToArray()), out var vertices))
+                var vertices = data.GetNonRestoredAndMarkRestored(trans, target.Get.ToArray());
+                if (vertices != null)
                 {
                     var contour = trans.gameObject.AddComponent<PLATEAUContourMesh>();
                     contour.Init(vertices);

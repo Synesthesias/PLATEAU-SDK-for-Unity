@@ -5,7 +5,7 @@ namespace PLATEAU.CityAdjust.MaterialAdjust
     /// <summary>
     /// マテリアル分けのキーを検索するための条件です。
     /// </summary>
-    internal class SearchArg
+    public class SearchArg
     {
         public SearchArg(UniqueParentTransformList targetTransforms)
         {
