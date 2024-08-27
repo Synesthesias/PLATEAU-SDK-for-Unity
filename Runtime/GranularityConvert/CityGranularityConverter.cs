@@ -27,8 +27,6 @@ namespace PLATEAU.GranularityConvert
     public class CityGranularityConverter
     {
         
-
-
         /// <summary>
         /// 指定オブジェクトとその子を一括でまとめて共通ライブラリに渡して変換します。
         /// </summary>
@@ -48,8 +46,8 @@ namespace PLATEAU.GranularityConvert
                 // 属性情報など、覚えておくべきものを記録します。
                 var nonLibDataHolder = new NonLibDataHolder(
                     new PositionRotationDict(),
-                    new InstancedCityModelDict(),
-                    new GmlIdToSerializedCityObj()
+                    new GmlIdToSerializedCityObj(),
+                    new NonLibComponentsDict()
                 );
                 nonLibDataHolder.ComposeFrom(conf.SrcTransforms);
 
