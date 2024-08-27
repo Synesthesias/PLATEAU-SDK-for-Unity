@@ -49,7 +49,8 @@ namespace PLATEAU.CityAdjust.ConvertToAsset
                 new PositionRotationDict(),
                 new NameToAttrsDict(),
                 new InstancedCityModelDict(),
-                new NameToExportedMaterialsDict(subMeshConverter)
+                new NameToExportedMaterialsDict(subMeshConverter),
+                new NonLibComponentsDict()
             );
             nonLibDataHolder.ComposeFrom(srcTransforms);
             
