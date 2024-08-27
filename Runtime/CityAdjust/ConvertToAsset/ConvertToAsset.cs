@@ -48,8 +48,8 @@ namespace PLATEAU.CityAdjust.ConvertToAsset
             var nonLibDataHolder = new NonLibData.NonLibDataHolder(
                 new PositionRotationDict(),
                 new NameToAttrsDict(),
-                new InstancedCityModelDict(),
-                new NameToExportedMaterialsDict(subMeshConverter)
+                new NameToExportedMaterialsDict(subMeshConverter),
+                new NonLibComponentsDict()
             );
             nonLibDataHolder.ComposeFrom(srcTransforms);
             

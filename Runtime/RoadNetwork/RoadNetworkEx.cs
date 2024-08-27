@@ -43,10 +43,6 @@ namespace PLATEAU.RoadNetwork
             var attributes = new GmlIdToSerializedCityObj();
             attributes.ComposeFrom(conf.SrcTransforms);
 
-            // PLATEAUInstancedCityModel が含まれる場合、これもコピーしたいので覚えておきます。
-            var instancedCityModelDict = new InstancedCityModelDict();
-            instancedCityModelDict.ComposeFrom(conf.SrcTransforms);
-
             var unityMeshToDllSubMeshConverter = new GameMaterialIDRegistry();
 
             // ゲームオブジェクトを共通ライブラリのModelに変換します。
