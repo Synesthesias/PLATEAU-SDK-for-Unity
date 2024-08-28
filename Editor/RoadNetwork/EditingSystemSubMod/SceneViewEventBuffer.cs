@@ -6,15 +6,15 @@ using UnityEngine;
 namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
 {
     [InitializeOnLoad]
-    public class SceneViewClickDetector
+    public class SceneViewEventBuffer
     {
-        static SceneViewClickDetector()
+        static SceneViewEventBuffer()
         {
             SceneView.duringSceneGui -= OnSceneGUI;
             SceneView.duringSceneGui += OnSceneGUI;
         }
 
-        private static SceneViewClickDetector Instance { get; set; }
+        private static SceneViewEventBuffer Instance { get; set; }
         private List<ClickEventReceiver> clickEventReceivers = new List<ClickEventReceiver>();
         private Vector2 mousePosition;
         public static IClickEventReceiver CreateReceiver()
@@ -29,11 +29,11 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
             public Vector2 MousePosition { get; }
         }
 
-        private static SceneViewClickDetector CreateOrGet()
+        private static SceneViewEventBuffer CreateOrGet()
         {
             if (Instance == null)
             {
-                Instance = new SceneViewClickDetector();
+                Instance = new SceneViewEventBuffer();
             }
 
             return Instance;
@@ -99,12 +99,12 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
             {
             }
 
-            private SceneViewClickDetector refDetecter;
+            private SceneViewEventBuffer refDetecter;
 
             public Vector2 MousePosition => mousePosition;
             private Vector2 mousePosition;
 
-            public void ReserveExecute(SceneViewClickDetector refDetecter)
+            public void ReserveExecute(SceneViewEventBuffer refDetecter)
             {
                 this.refDetecter = refDetecter;
                 mousePosition = refDetecter.mousePosition;

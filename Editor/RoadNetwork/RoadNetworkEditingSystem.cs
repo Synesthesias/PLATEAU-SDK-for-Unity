@@ -1386,7 +1386,7 @@ namespace PLATEAU.Editor.RoadNetwork
             private RnModel roadNetwork;
             private IRoadNetworkEditingSystem system;
             private EditingSystemSubMod.EditingSystemGizmos gizmosSys = new EditingSystemSubMod.EditingSystemGizmos();
-            private EditingSystemSubMod.SceneViewClickDetector.IClickEventReceiver clickReceiver = null;
+            private EditingSystemSubMod.SceneViewEventBuffer.IClickEventReceiver clickReceiver = null;
             // 詳細編集モードかどうか
             private bool isEditingDetailMode = false;
 
@@ -1769,7 +1769,7 @@ namespace PLATEAU.Editor.RoadNetwork
                 // マウスの状態をチェック
                 if (clickReceiver == null)
                 {
-                    clickReceiver = EditingSystemSubMod.SceneViewClickDetector.CreateReceiver();
+                    clickReceiver = EditingSystemSubMod.SceneViewEventBuffer.CreateReceiver();
                 }
 
                 // マウス位置に近いwayを算出
