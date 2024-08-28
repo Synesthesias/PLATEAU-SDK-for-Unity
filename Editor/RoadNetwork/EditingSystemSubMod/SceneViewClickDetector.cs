@@ -16,7 +16,6 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
 
         private static SceneViewClickDetector Instance { get; set; }
         private List<ClickEventReceiver> clickEventReceivers = new List<ClickEventReceiver>();
-        private Event ev;
         private Vector2 mousePosition;
         public static IClickEventReceiver CreateReceiver()
         {
@@ -27,7 +26,6 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
         }
         public interface IClickEventReceiver
         {
-            public void Execute(System.Action<Event, Vector2> onClick);
             public Vector2 MousePosition { get; }
         }
 
@@ -50,18 +48,20 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
         private void OnSceneGUIOnInstance(SceneView sceneView)
         {
             Event e = Event.current;
-
             if (e.type == EventType.MouseMove)
             {
                 Ray ray = HandleUtility.GUIPointToWorldRay(e.mousePosition);
                 //ray = new Ray(new Vector3(700.50f, 8.84f, -615.75f) + Vector3.up, Vector3.down);
                 //Debug.DrawLine(ray.origin, ray.origin + ray.direction * 1500, Color.red, 2.0F);
                 mousePosition = e.mousePosition;
+                //Physics.Raycast(ray, out RaycastHit hit, 1000);
+                //Debug.DrawRay(ray.origin, ray.direction * 1000, Color.red);
+                //Debug.DrawRay(hit.point, Vector3.up * 100, Color.magenta);
+                Debug.Log("mouse move");
             }
 
             if (e.type == EventType.MouseMove || e.type == EventType.MouseDown || e.type == EventType.MouseUp)
             {
-                ev = e;
                 foreach (var item in clickEventReceivers)
                 {
                     item.ReserveExecute(this);
@@ -110,14 +110,6 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
                 mousePosition = refDetecter.mousePosition;
             }
 
-            public void Execute(System.Action<Event, Vector2> onClick)
-            {
-                if (refDetecter != null)
-                {
-                    onClick?.Invoke(refDetecter.ev, refDetecter.mousePosition);
-                    //refDetecter = null;   // 仮コメントアウト　mousepositionを取得するために残す
-                }
-            }
         }
     }
 }

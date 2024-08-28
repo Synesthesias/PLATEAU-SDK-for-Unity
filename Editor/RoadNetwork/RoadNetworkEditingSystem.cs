@@ -10,6 +10,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using Unity.Plastic.Antlr3.Runtime;
 using UnityEditor;
+using UnityEditor.TerrainTools;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.UIElements;
@@ -1901,34 +1902,7 @@ namespace PLATEAU.Editor.RoadNetwork
 
 
                 //Debug.Log("dis" + closestDis);
-
-                clickReceiver.Execute((e, p) =>
-                {
-                    if (closestWay == null)
-                        return;
-                    //Debug.Log(e.type);
-                    //if (e.type != EventType.DragPerform)
-                    //{
-                    //}
-                    //else if (e.type != EventType.DragExited)
-                    //{
-
-                    //}
-                    //else if(e.type != EventType.DragUpdated)
-                    //{
-
-                    //}
-
-                    //// 左クリック
-                    //if (e.button == 0)
-                    //{
-                    //    closestWay.Ref.MoveAlongNormal(0.1f);
-                    //}
-                    //if (e.button == 1)
-                    //{
-                    //    closestWay.Ref.MoveAlongNormal(-0.5f);
-                    //}
-                });
+                Debug.Log("update");
 
                 // gizmos描画の更新
                 var gizmos = gizmosSys;
@@ -1964,6 +1938,8 @@ namespace PLATEAU.Editor.RoadNetwork
                     }
                 }
 
+                // 仮で呼び出し　描画の更新がワンテンポ遅れるため　
+                EditorUtility.SetDirty(roadNetworkEditingSystemObjRoot);
             }
         }
     }
