@@ -5,8 +5,15 @@ using UnityEngine;
 
 namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
 {
+    public interface IEventBuffer
+    {
+        public Vector2 MousePosition { get; }
+        public bool MouseDown { get; }
+        public bool MouseUp { get; }
+    }
+
     [InitializeOnLoad]
-    public class SceneViewEventBuffer
+    public class SceneViewEventBuffer : IEventBuffer
     {
         static SceneViewEventBuffer()
         {
@@ -15,19 +22,19 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
         }
 
         private static SceneViewEventBuffer Instance { get; set; }
-        private List<ClickEventReceiver> clickEventReceivers = new List<ClickEventReceiver>();
         private Vector2 mousePosition;
-        public static IClickEventReceiver CreateReceiver()
+        private bool mouseDown;
+        private bool mouseUp;
+        public static IEventBuffer GetBuffer()
         {
             var instance = CreateOrGet();
-            var receiver = new ClickEventReceiver();
-            instance.clickEventReceivers.Add(receiver);
-            return receiver;
+            return instance;
         }
-        public interface IClickEventReceiver
-        {
-            public Vector2 MousePosition { get; }
-        }
+
+        public Vector2 MousePosition { get => mousePosition; }
+        public bool MouseDown { get => mouseDown; }
+
+        public bool MouseUp { get => mouseUp; }
 
         private static SceneViewEventBuffer CreateOrGet()
         {
@@ -60,17 +67,26 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
                 Debug.Log("mouse move");
             }
 
+            if (e.type == EventType.MouseDown)
+            {
+                mouseDown = true;
+                mouseUp = false;
+            }
+            else if (e.type == EventType.MouseUp)
+            {
+                mouseDown = false;
+                mouseUp = true;
+            }
+
             if (e.type == EventType.MouseMove || e.type == EventType.MouseDown || e.type == EventType.MouseUp)
             {
-                foreach (var item in clickEventReceivers)
-                {
-                    item.ReserveExecute(this);
-                }
             }
             else
             {
                 return;
             }
+
+            
 
             //if (e.type == EventType.MouseDown)
             //{
@@ -87,29 +103,5 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
             //}
         }
 
-        private static void RemoveReceiver(IClickEventReceiver receiver)
-        {
-            var instance = CreateOrGet();
-            instance.clickEventReceivers.Remove(receiver as ClickEventReceiver);
-        }
-
-        public class ClickEventReceiver : IClickEventReceiver
-        {
-            public ClickEventReceiver()
-            {
-            }
-
-            private SceneViewEventBuffer refDetecter;
-
-            public Vector2 MousePosition => mousePosition;
-            private Vector2 mousePosition;
-
-            public void ReserveExecute(SceneViewEventBuffer refDetecter)
-            {
-                this.refDetecter = refDetecter;
-                mousePosition = refDetecter.mousePosition;
-            }
-
-        }
     }
 }

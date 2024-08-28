@@ -1386,7 +1386,7 @@ namespace PLATEAU.Editor.RoadNetwork
             private RnModel roadNetwork;
             private IRoadNetworkEditingSystem system;
             private EditingSystemSubMod.EditingSystemGizmos gizmosSys = new EditingSystemSubMod.EditingSystemGizmos();
-            private EditingSystemSubMod.SceneViewEventBuffer.IClickEventReceiver clickReceiver = null;
+            private EditingSystemSubMod.IEventBuffer sceneViewEvBuf = null;
             // 詳細編集モードかどうか
             private bool isEditingDetailMode = false;
 
@@ -1767,9 +1767,9 @@ namespace PLATEAU.Editor.RoadNetwork
                 //}
 
                 // マウスの状態をチェック
-                if (clickReceiver == null)
+                if (sceneViewEvBuf == null)
                 {
-                    clickReceiver = EditingSystemSubMod.SceneViewEventBuffer.CreateReceiver();
+                    sceneViewEvBuf = EditingSystemSubMod.SceneViewEventBuffer.GetBuffer();
                 }
 
                 // マウス位置に近いwayを算出
@@ -1782,11 +1782,8 @@ namespace PLATEAU.Editor.RoadNetwork
                 List<LinkGroupEditorData> connections = eConn.ToList();
                 connections.Remove(null);
 
-                var mousePos = clickReceiver.MousePosition;
+                var mousePos = sceneViewEvBuf.MousePosition;
                 Ray ray = HandleUtility.GUIPointToWorldRay(mousePos);
-                //ray = new Ray(new Vector3(700.50f, 8.84f, -615.75f) + Vector3.up, Vector3.down);
-                //Debug.DrawLine(ray.origin, ray.origin + ray.direction * 5000, Color.red, 3.0f);
-
 
                 WayEditorData closestWay = null;
                 float closestDis = float.MaxValue;
@@ -1860,7 +1857,7 @@ namespace PLATEAU.Editor.RoadNetwork
                         //    wayEditorDataList.Find(x => x.Ref == rightEdgeLane.LeftWay).IsSelectable = false;
                         //}
                     }
-                    
+
                     var isMouseOnViewport = true;
                     foreach (var wayEditorData in wayEditorDataList)
                     {
@@ -1900,22 +1897,42 @@ namespace PLATEAU.Editor.RoadNetwork
                     }
                 }
 
+                var mouseDown = sceneViewEvBuf.MouseDown;
+                var mouseUp = sceneViewEvBuf.MouseUp;
+                if (mouseDown)
+                {
+                    Debug.Log("mouse down");
+                }
+                else
+                {
+                    Debug.Log("mouse up");
 
+                }
                 //Debug.Log("dis" + closestDis);
-                Debug.Log("update");
+                //Debug.Log("update");
 
+                RnWay dummyWay = null;
+                if (closestWay != null)
+                {
+                    dummyWay = new RnWay(closestWay.Ref.LineString.Clone(true));
+                    foreach (var dum in dummyWay.Points)
+                    {
+                        dum.Vertex = dum.Vertex + Vector3.up * 0.1f;
+                    }
+                }
                 // gizmos描画の更新
-                var gizmos = gizmosSys;
+                var gizmosSys = this.gizmosSys;
                 var gizmosdrawer = roadNetworkEditingSystemObjRoot.GetComponent<RoadNetworkEditorGizmos>();
                 var guisys = system.SceneGUISystem;
                 if (guisys != null)
                 {
                     // gizmosの更新
-                    gizmos.Update(
+                    gizmosSys.Update(
                         system.SelectedRoadNetworkElement, 
                         closestWay,
-                        linkGroupEditorData);
-                    var cmds = gizmos.BuildDrawCommands();
+                        linkGroupEditorData,
+                        dummyWay);
+                    var cmds = gizmosSys.BuildDrawCommands();
                     gizmosdrawer.DrawFuncs.Clear();
                     gizmosdrawer.DrawFuncs.AddRange(cmds);
 

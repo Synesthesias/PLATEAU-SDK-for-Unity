@@ -15,15 +15,11 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
 
         private List<Vector3> intersectionConnectionLinePairs = new List<Vector3>();
         private List<List<Vector3>> intersectionConnectionLinePairs2 = new List<List<Vector3>>();
-        private Color connectionColor = Color.blue;
 
-        private Color selectingWayColor = Color.red;
         private List<Vector3> selectingWay = new List<Vector3>();
 
-        private Color selectableWayColor = Color.yellow;
         private List<List<Vector3>> selectableWayList = new List<List<Vector3>>();
 
-        private Color guideWayColor = Color.gray;
         private List<List<Vector3>> guideWayList = new List<List<Vector3>>();
         //public List<Vector3> intersections = new List<Vector3>();
         //public Color intersectionColor = Color.green;
@@ -31,13 +27,31 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
 
         //public float btnSize = 2.0f;
 
-        private Color sideWalkColor = Color.grey + new Color(0.2f, 0.2f, 0.2f, 0);
         private List<List<Vector3>> sideWalks = new List<List<Vector3>>();
+
+        private List<List<Vector3>> slideDummyWayList = new List<List<Vector3>>();
+
+        private readonly Color selectingColorOffset = new Color(0.2f, 0.2f, 0.2f, 0);
+        private readonly Color dummyColorOffset = new Color(-0.2f, -0.2f, -0.2f, 0);
+
+        private Color connectionColor = Color.blue;
+        private Color selectingWayColor = Color.red;
+        private Color selectableWayColor = Color.yellow;
+        private Color guideWayColor = Color.black;
+        private Color sideWalkColor = Color.grey;
+        private Color slideDummyWayColor = Color.black - new Color(-0.2f, -0.2f, -0.2f, 0);
+
+        public EditingSystemGizmos()
+        {
+
+        }
+
 
         public void Update(
             object selectingElement,
             WayEditorData highLightWay,
-            EditorDataList<EditorData<RnRoadGroup>> linkGroupEditorData)
+            EditorDataList<EditorData<RnRoadGroup>> linkGroupEditorData,
+            RnWay slideDummyWay)
         {
             if (linkGroupEditorData.TryGetCache("linkGroup", out IEnumerable<LinkGroupEditorData> eConn) == false)
             {
@@ -228,6 +242,12 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
                     selectingWay.AddRange(selectingWayData.Ref.ToList());
                 }
             }
+
+            slideDummyWayList.Clear();
+            if (slideDummyWay != null)
+            {
+                slideDummyWayList.Add(slideDummyWay.ToList());
+            }
         }
 
 
@@ -332,6 +352,18 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
                 });
             }
 
+
+            if (slideDummyWayList.Count > 0)
+            {
+                drawFuncs.Add(() =>
+                {
+                    Gizmos.color = slideDummyWayColor;
+                    foreach (var way in slideDummyWayList)
+                    {
+                        Gizmos.DrawLineStrip(way.ToArray(), false);
+                    }
+                });
+            }
 
             return drawFuncs;
         }
