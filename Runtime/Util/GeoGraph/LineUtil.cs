@@ -32,6 +32,10 @@ namespace PLATEAU.Util.GeoGraph
 
             public Vector3 DirectionA2B { get => (p1 - p0).normalized; }
             public Vector3 DirectionB2A { get => (p0 - p1).normalized; }
+
+            public Vector3 VecA2B { get => (p1 - p0); }
+            public Vector3 VecB2A { get => (p0 - p1); }
+
         }
 
         /// <summary>
@@ -270,7 +274,8 @@ namespace PLATEAU.Util.GeoGraph
         /// <param name="ray"></param>
         /// <param name="closestPoint"></param>
         /// <returns></returns>
-        public static float CheckHit(Line line, float radius, in Ray ray, out Vector3 closestPoint)
+        public static float CheckHit(Line line, float radius, in Ray ray, 
+            out Vector3 closestPoint, out Vector3 closestPoint2)
         {
             var rayLine = new Line(ray.origin, ray.origin + ray.direction * 1000/*DEBUG用*/);
             var dis = DistanceBetweenLines(line, rayLine, out var isParallel);
@@ -278,13 +283,13 @@ namespace PLATEAU.Util.GeoGraph
             // 平行時は通常の方法で計算できないので判定を取らないようにする
             if (isParallel)
             {
-                return NoHit(out closestPoint);
+                return NoHit(out closestPoint, out closestPoint2);
             }
 
             // 距離が離れている場合はヒットしていない
             if (radius < dis)
             {
-                return NoHit(out closestPoint);
+                return NoHit(out closestPoint, out closestPoint2);
             }
 
 
@@ -293,7 +298,6 @@ namespace PLATEAU.Util.GeoGraph
             // 線分上に存在するか
             bool isPointOnline;
 
-            Vector3 closestPoint2;
 
             // 交差している
             if (dis <= Mathf.Epsilon)
@@ -311,18 +315,65 @@ namespace PLATEAU.Util.GeoGraph
             // 交差点が線分上にない場合はヒットしていない
             if (isPointOnline == false)
             {
-                return NoHit(out closestPoint);
+                return NoHit(out closestPoint, out closestPoint2);
             }
 
-            Debug.DrawLine(line.P0, line.P1, Color.magenta);
-            Debug.DrawLine(rayLine.P0, rayLine.P1, Color.green, 2.0F);
-            Debug.DrawLine(closestPoint, closestPoint2, Color.magenta, 2.0F);
+            //Debug.DrawLine(line.P0, line.P1, Color.magenta);
+            //Debug.DrawLine(rayLine.P0, rayLine.P1, Color.green, 2.0F);
+            //Debug.DrawLine(closestPoint, closestPoint2, Color.magenta, 2.0F);
 
             return dis;
 
-            static float NoHit(out Vector3 closestPoint)
+            static float NoHit(out Vector3 closestPoint, out Vector3 closestPoint2)
             {
                 closestPoint = Vector3.zero;
+                closestPoint2 = Vector3.zero;
+                return float.MinValue;
+            }
+
+        }
+
+        /// <summary>
+        /// 最近棒を求める
+        /// 直線で計算するので注意
+        /// </summary>
+        /// <param name="line"></param>
+        /// <param name="ray"></param>
+        /// <param name="closestPoint"></param>
+        /// <param name="closestPoint2"></param>
+        /// <returns></returns>
+        public static float FindClosestPoint(Line line, in Ray ray,
+    out Vector3 closestPoint, out Vector3 closestPoint2)
+        {
+            var rayLine = new Line(ray.origin, ray.origin + ray.direction * 1000/*DEBUG用*/);
+            var dis = DistanceBetweenLines(line, rayLine, out var isParallel);
+
+            // 平行時は通常の方法で計算できないので判定を取らないようにする
+            if (isParallel)
+            {
+                return NoHit(out closestPoint, out closestPoint2);
+            }
+
+            // 最も近い点の算出とそれが線分上にあるか
+
+
+            // 交差している
+            if (dis <= Mathf.Epsilon)
+            {
+                Intersect(line, rayLine, out closestPoint);
+                closestPoint2 = closestPoint;
+            }
+            else// 交差しない場合
+            {
+                LineUtil.ClosestPoints(line, rayLine, out closestPoint, out closestPoint2);
+            }
+
+            return dis;
+
+            static float NoHit(out Vector3 closestPoint, out Vector3 closestPoint2)
+            {
+                closestPoint = Vector3.zero;
+                closestPoint2 = Vector3.zero;
                 return float.MinValue;
             }
 

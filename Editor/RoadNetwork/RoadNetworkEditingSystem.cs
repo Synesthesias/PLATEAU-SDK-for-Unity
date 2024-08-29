@@ -1393,6 +1393,14 @@ namespace PLATEAU.Editor.RoadNetwork
             private Dictionary<RnRoadBase, NodeEditorData> nodeEditorData = new Dictionary<RnRoadBase, NodeEditorData>();
             private EditorDataList<EditorData<RnRoadGroup>> linkGroupEditorData = new EditorDataList<EditorData<RnRoadGroup>>();
             private Dictionary<RnPoint, EditorData<RnPoint>> ptEditorData = new Dictionary<RnPoint, EditorData<RnPoint>>();
+            _WayCalcData waySlideCalcCache = null;
+
+            enum State
+            {
+                Default,    // 通常の状態
+                SlidingWay, // Wayをスライド中
+            }
+            State currentState = State.Default;
 
             //private HashSet<LinkGroupEditorData> linkGroupEditorData = new HashSet<LinkGroupEditorData>();
             /// <summary>
@@ -1709,10 +1717,66 @@ namespace PLATEAU.Editor.RoadNetwork
 
             }
 
+            class _WayCalcData
+            {
+                public _WayCalcData()
+                {
+                }
+
+                /// <summary>
+                /// すべての値を同時に設定する
+                /// </summary>
+                /// <param name="closestWay"></param>
+                /// <param name="closestDis"></param>
+                /// <param name="closestLine"></param>
+                /// <param name="closestPointOnWay"></param>
+                /// <param name="closestPointOnRay"></param>
+                public void Set(
+                    WayEditorData closestWay,
+                    float closestDis,
+                    LineUtil.Line closestLine,
+                    Vector3 closestPointOnWay,   // 
+                    Vector3 closestPointOnRay)
+                {
+                    this.ClosestWay = closestWay;
+                    this.ClosestDis = closestDis;
+                    this.ClosestLine = closestLine;
+                    this.ClosestPointOnWay = closestPointOnWay;
+                    this.ClosestPointOnRay = closestPointOnRay;
+                }
+
+                public void Set(
+                    float closestDis,
+                    Vector3 closestPointOnWay,   // 
+                    Vector3 closestPointOnRay)
+                {
+                    this.ClosestDis = closestDis;
+                    this.ClosestPointOnWay = closestPointOnWay;
+                    this.ClosestPointOnRay = closestPointOnRay;
+                }
+
+
+
+                public WayEditorData ClosestWay { get; private set; } = null;
+                public float ClosestDis { get; private set; } = float.MaxValue;
+                public LineUtil.Line ClosestLine { get; private set; }
+                public Vector3 ClosestPointOnWay { get; private set; }   // 
+                public Vector3 ClosestPointOnRay { get; private set; }   // 
+
+            }
+
             private void Update()
             {
                 if (roadNetworkEditingSystemObjRoot == null)
                     return;
+
+                // マウスの状態をチェック
+                if (sceneViewEvBuf == null)
+                {
+                    sceneViewEvBuf = EditingSystemSubMod.SceneViewEventBuffer.GetBuffer();
+                }
+
+
                 bool isChanged = false;
                 //foreach (var data in nodeEditorData)
                 //{
@@ -1738,6 +1802,7 @@ namespace PLATEAU.Editor.RoadNetwork
 
                 // billboardの更新
                 bool isNeedUpdateBillboard = false;
+                //var camera = sceneViewEvBuf.CameraPosition; // おそらく描画時にのみインスタンスが設定される
                 var camera = SceneView.currentDrawingSceneView?.camera; // おそらく描画時にのみインスタンスが設定される
                 if (camera?.transform.hasChanged == true)
                     isNeedUpdateBillboard = true;
@@ -1766,12 +1831,6 @@ namespace PLATEAU.Editor.RoadNetwork
                 //    transform.hasChanged = false;
                 //}
 
-                // マウスの状態をチェック
-                if (sceneViewEvBuf == null)
-                {
-                    sceneViewEvBuf = EditingSystemSubMod.SceneViewEventBuffer.GetBuffer();
-                }
-
                 // マウス位置に近いwayを算出
 
                 if (linkGroupEditorData.TryGetCache("linkGroup", out IEnumerable<LinkGroupEditorData> eConn) == false)
@@ -1785,10 +1844,14 @@ namespace PLATEAU.Editor.RoadNetwork
                 var mousePos = sceneViewEvBuf.MousePosition;
                 Ray ray = HandleUtility.GUIPointToWorldRay(mousePos);
 
-                WayEditorData closestWay = null;
-                float closestDis = float.MaxValue;
+                //WayEditorData closestWay = null;
+                //float closestDis = float.MaxValue;
+                //LineUtil.Line closestLine;
+                //Vector3 closestPointOnWay;   // 
+                //Vector3 closestPointOnRay;   // 
                 if (system.SelectedRoadNetworkElement is EditorData<RnRoadGroup> roadGroupEditorData)
                 {
+                    Debug.Log(currentState);
                     //var laneGroup = new LaneGroupEditorData(roadGroupEditorData.Ref);
                     var wayEditorDataList = roadGroupEditorData.GetSubData<List<WayEditorData>>();
 
@@ -1859,67 +1922,111 @@ namespace PLATEAU.Editor.RoadNetwork
                     }
 
                     var isMouseOnViewport = true;
-                    foreach (var wayEditorData in wayEditorDataList)
+                    if (currentState == State.Default)
                     {
-                        if (wayEditorData.IsSelectable == false)
-                            continue;
-
-                        if (isMouseOnViewport == false) // シーンビュー上にマウスがあるかチェック
-                        {
-                            break;
-                        }
-
-                        if (wayEditorData.IsSelectable == false)
-                        {
-                            continue;
-                        }
-
-                        const float radius = 2.0f;
-                        var eVert = wayEditorData.Ref.Vertices.GetEnumerator();
-                        eVert.MoveNext();
-                        var p0 = eVert.Current;
-                        while (eVert.MoveNext())
-                        {
-                            var p1 = eVert.Current;
-                            var line = new LineUtil.Line(p0, p1);
-                            var distance = LineUtil.CheckHit(line, radius, ray, out var closestPoint);
-                            //var distance = LineUtil.CheckDistance(line, radius, ray);
-                            if (distance >= 0.0f)
-                            {
-                                if (closestDis > distance)
-                                {
-                                    closestWay = wayEditorData;
-                                    closestDis = distance;
-                                }
-                            }
-                            p0 = p1;
-                        }
+                        waySlideCalcCache = null;
+                        SelectWay(ray, wayEditorDataList, isMouseOnViewport);
+                    }
+                    else if (currentState == State.SlidingWay)
+                    {
+                        var dis = LineUtil.FindClosestPoint(waySlideCalcCache.ClosestLine, ray, out var closestPointOnWay, out var closestPointOnRay);
+                        waySlideCalcCache.Set(dis, closestPointOnWay, closestPointOnRay);
                     }
                 }
 
+                // dummyのwayを表示する
+                RnWay dummyWay = null;
+                
                 var mouseDown = sceneViewEvBuf.MouseDown;
                 var mouseUp = sceneViewEvBuf.MouseUp;
                 if (mouseDown)
                 {
                     Debug.Log("mouse down");
+
+                    // Wayを選択する
+                    if (currentState == State.Default)
+                    {
+                        if (waySlideCalcCache != null)
+                        {
+                            currentState = State.SlidingWay;
+                        }
+                    }
+                    // WayをSlideさせる
+                    else if (currentState == State.SlidingWay)
+                    {
+                        if (waySlideCalcCache != null)
+                        {
+                            if (waySlideCalcCache.ClosestDis > 0)
+                            {
+                                // カメラ視点からwayに対して外積を取る　これによってwayの右側、左側を定義する
+                                // 最近傍2点way->rayでwayのどの方向に延びているかを算出
+                                // 内積を取ることでベクトルが同じ方向を向いているかを調べる
+
+                                var vecCamera2Way = waySlideCalcCache.ClosestPointOnWay - sceneViewEvBuf.CameraPosition;
+                                var wayRightVec = Vector3.Cross(vecCamera2Way, waySlideCalcCache.ClosestLine.VecA2B);
+                                //Debug.DrawRay(wayCalcData.ClosestPointOnWay, wayRightVec, Color.yellow, 0.1f);
+
+                                var vecWay2Ray = waySlideCalcCache.ClosestPointOnRay - waySlideCalcCache.ClosestPointOnWay;
+
+                                var isRayOnRightSide = Vector3.Dot(wayRightVec, vecWay2Ray) > 0;
+                                //Debug.Log($"ray on right side : {isRayOnRightSide}");
+
+                                dummyWay = new RnWay(waySlideCalcCache.ClosestWay.Ref.LineString.Clone(true));
+                                var dirFactor = isRayOnRightSide ? 1f : -1f;
+                                dummyWay.MoveAlongNormal(waySlideCalcCache.ClosestDis * dirFactor);
+                                foreach (var dum in dummyWay.Points)
+                                {
+                                    dum.Vertex = dum.Vertex + Vector3.up * 0.1f;
+                                }
+                            }
+                        }
+                    }
                 }
                 else
                 {
                     Debug.Log("mouse up");
+                    if (currentState == State.SlidingWay)
+                    {
+                        Assert.IsNotNull(waySlideCalcCache);
+                        if (waySlideCalcCache.ClosestDis > 0)
+                        {
+                            //duumyway
 
+                            // カメラ視点からwayに対して外積を取る　これによってwayの右側、左側を定義する
+                            // 最近傍2点way->rayでwayのどの方向に延びているかを算出
+                            // 内積を取ることでベクトルが同じ方向を向いているかを調べる
+
+                            var vecCamera2Way = waySlideCalcCache.ClosestPointOnWay - sceneViewEvBuf.CameraPosition;
+                            var wayRightVec = Vector3.Cross(vecCamera2Way, waySlideCalcCache.ClosestLine.VecA2B);
+                            //Debug.DrawRay(wayCalcData.ClosestPointOnWay, wayRightVec, Color.yellow, 0.1f);
+
+                            var vecWay2Ray = waySlideCalcCache.ClosestPointOnRay - waySlideCalcCache.ClosestPointOnWay;
+
+                            var isRayOnRightSide = Vector3.Dot(wayRightVec, vecWay2Ray) > 0;
+                            //Debug.Log($"ray on right side : {isRayOnRightSide}");
+
+                            dummyWay = new RnWay(waySlideCalcCache.ClosestWay.Ref.LineString.Clone(true));
+                            var dirFactor = isRayOnRightSide ? 1f : -1f;
+                            dummyWay.MoveAlongNormal(waySlideCalcCache.ClosestDis * dirFactor);
+
+                            //元のwayに適用
+                            var distWayPoints = waySlideCalcCache.ClosestWay.Ref.Points.GetEnumerator();
+                            var eRevDumWay = dummyWay.GetEnumerator();
+                            while (distWayPoints.MoveNext())
+                            {
+                                eRevDumWay.MoveNext();
+                                var current = distWayPoints.Current;
+                                current.Vertex = eRevDumWay.Current;
+                            }
+                        }
+                        waySlideCalcCache = null;
+                        currentState = State.Default;
+                    }
                 }
                 //Debug.Log("dis" + closestDis);
                 //Debug.Log("update");
 
-                RnWay dummyWay = null;
-                if (closestWay != null)
-                {
-                    dummyWay = new RnWay(closestWay.Ref.LineString.Clone(true));
-                    foreach (var dum in dummyWay.Points)
-                    {
-                        dum.Vertex = dum.Vertex + Vector3.up * 0.1f;
-                    }
-                }
+
                 // gizmos描画の更新
                 var gizmosSys = this.gizmosSys;
                 var gizmosdrawer = roadNetworkEditingSystemObjRoot.GetComponent<RoadNetworkEditorGizmos>();
@@ -1929,7 +2036,7 @@ namespace PLATEAU.Editor.RoadNetwork
                     // gizmosの更新
                     gizmosSys.Update(
                         system.SelectedRoadNetworkElement, 
-                        closestWay,
+                        waySlideCalcCache?.ClosestWay,
                         linkGroupEditorData,
                         dummyWay);
                     var cmds = gizmosSys.BuildDrawCommands();
@@ -1957,6 +2064,49 @@ namespace PLATEAU.Editor.RoadNetwork
 
                 // 仮で呼び出し　描画の更新がワンテンポ遅れるため　
                 EditorUtility.SetDirty(roadNetworkEditingSystemObjRoot);
+            }
+
+            private void SelectWay(Ray ray, List<WayEditorData> wayEditorDataList, bool isMouseOnViewport)
+            {
+                const float radius = 2.0f;
+                foreach (var wayEditorData in wayEditorDataList)
+                {
+                    if (wayEditorData.IsSelectable == false)
+                        continue;
+
+                    if (isMouseOnViewport == false) // シーンビュー上にマウスがあるかチェック
+                    {
+                        break;
+                    }
+
+                    if (wayEditorData.IsSelectable == false)
+                    {
+                        continue;
+                    }
+
+                    var eVert = wayEditorData.Ref.Vertices.GetEnumerator();
+                    eVert.MoveNext();
+                    var p0 = eVert.Current;
+                    while (eVert.MoveNext())
+                    {
+                        var p1 = eVert.Current;
+                        var line = new LineUtil.Line(p0, p1);
+                        var distance = LineUtil.CheckHit(line, radius, ray,
+                            out var closestPoint, out var closestPoint2);
+                        //var distance = LineUtil.CheckDistance(line, radius, ray);
+                        if (distance >= 0.0f)
+                        {
+                            if (waySlideCalcCache == null)
+                                waySlideCalcCache = new _WayCalcData();
+                            if (waySlideCalcCache.ClosestDis > distance)
+                            {
+                                waySlideCalcCache.Set(
+                                    wayEditorData, distance, line, closestPoint, closestPoint2);
+                            }
+                        }
+                        p0 = p1;
+                    }
+                }
             }
         }
     }

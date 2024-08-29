@@ -10,6 +10,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
         public Vector2 MousePosition { get; }
         public bool MouseDown { get; }
         public bool MouseUp { get; }
+        public Vector3 CameraPosition { get; }
     }
 
     [InitializeOnLoad]
@@ -25,6 +26,11 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
         private Vector2 mousePosition;
         private bool mouseDown;
         private bool mouseUp;
+        private Vector3 cameraPosition;
+
+
+        private EventType preEvent;
+
         public static IEventBuffer GetBuffer()
         {
             var instance = CreateOrGet();
@@ -35,6 +41,8 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
         public bool MouseDown { get => mouseDown; }
 
         public bool MouseUp { get => mouseUp; }
+
+        public Vector3 CameraPosition { get => cameraPosition; }
 
         private static SceneViewEventBuffer CreateOrGet()
         {
@@ -55,9 +63,19 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
         private void OnSceneGUIOnInstance(SceneView sceneView)
         {
             Event e = Event.current;
-            if (e.type == EventType.MouseMove)
+            if (e.type == EventType.Repaint)
             {
-                Ray ray = HandleUtility.GUIPointToWorldRay(e.mousePosition);
+                cameraPosition = sceneView.camera.transform.position;
+            }
+
+            //bool mousePositionUpdate = e.type == EventType.Used && (preEvent == EventType.MouseMove || preEvent == EventType.MouseDrag || e.type == EventType.DragUpdated ||
+            //    preEvent == EventType.MouseDown || preEvent == EventType.MouseUp);
+            if (e.type == EventType.MouseMove ||
+                e.type == EventType.MouseDown || e.type == EventType.MouseUp || e.type == EventType.MouseDrag ||
+                e.type == EventType.DragPerform || e.type == EventType.DragExited || e.type == EventType.DragUpdated
+                ) 
+            {
+                //Ray ray = HandleUtility.GUIPointToWorldRay(e.mousePosition);
                 //ray = new Ray(new Vector3(700.50f, 8.84f, -615.75f) + Vector3.up, Vector3.down);
                 //Debug.DrawLine(ray.origin, ray.origin + ray.direction * 1500, Color.red, 2.0F);
                 mousePosition = e.mousePosition;
@@ -69,13 +87,19 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
 
             if (e.type == EventType.MouseDown)
             {
-                mouseDown = true;
-                mouseUp = false;
+                if (e.button == 0)
+                {
+                    mouseDown = true;
+                    mouseUp = false;
+                }
             }
             else if (e.type == EventType.MouseUp)
             {
-                mouseDown = false;
-                mouseUp = true;
+                if (e.button == 0)
+                {
+                    mouseDown = false;
+                    mouseUp = true;
+                }
             }
 
             if (e.type == EventType.MouseMove || e.type == EventType.MouseDown || e.type == EventType.MouseUp)
