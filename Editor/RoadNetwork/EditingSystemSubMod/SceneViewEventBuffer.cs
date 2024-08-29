@@ -68,11 +68,15 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
                 cameraPosition = sceneView.camera.transform.position;
             }
 
-            //bool mousePositionUpdate = e.type == EventType.Used && (preEvent == EventType.MouseMove || preEvent == EventType.MouseDrag || e.type == EventType.DragUpdated ||
-            //    preEvent == EventType.MouseDown || preEvent == EventType.MouseUp);
+            bool mousePositionUpdate = e.type == EventType.Used && 
+                (preEvent == EventType.MouseMove ||
+                preEvent == EventType.MouseDown || preEvent == EventType.MouseUp || preEvent == EventType.MouseDrag ||
+                preEvent == EventType.DragPerform || preEvent == EventType.DragExited || preEvent == EventType.DragUpdated);
+            preEvent = e.type;
             if (e.type == EventType.MouseMove ||
                 e.type == EventType.MouseDown || e.type == EventType.MouseUp || e.type == EventType.MouseDrag ||
-                e.type == EventType.DragPerform || e.type == EventType.DragExited || e.type == EventType.DragUpdated
+                e.type == EventType.DragPerform || e.type == EventType.DragExited || e.type == EventType.DragUpdated ||
+                mousePositionUpdate
                 ) 
             {
                 //Ray ray = HandleUtility.GUIPointToWorldRay(e.mousePosition);
@@ -83,6 +87,10 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
                 //Debug.DrawRay(ray.origin, ray.direction * 1000, Color.red);
                 //Debug.DrawRay(hit.point, Vector3.up * 100, Color.magenta);
                 Debug.Log("mouse move");
+            }
+            else
+            {
+                Debug.Log($"eve {e.type}");
             }
 
             if (e.type == EventType.MouseDown)
