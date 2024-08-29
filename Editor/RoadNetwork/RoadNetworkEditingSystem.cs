@@ -1970,11 +1970,12 @@ namespace PLATEAU.Editor.RoadNetwork
                                 // 内積を取ることでベクトルが同じ方向を向いているかを調べる
 
                                 var vecCamera2Way = waySlideCalcCache.ClosestPointOnWay - sceneViewEvBuf.CameraPosition;
-                                var wayRightVec = Vector3.Cross(vecCamera2Way, waySlideCalcCache.ClosestLine.VecA2B);
+                                var line = waySlideCalcCache.ClosestWay.Ref.IsReversed ? 
+                                    waySlideCalcCache.ClosestLine.VecB2A : waySlideCalcCache.ClosestLine.VecA2B;
+                                var wayRightVec = Vector3.Cross(vecCamera2Way, line);
                                 //Debug.DrawRay(wayCalcData.ClosestPointOnWay, wayRightVec, Color.yellow, 0.1f);
 
-                                var vecWay2Ray = waySlideCalcCache.ClosestPointOnRay - waySlideCalcCache.ClosestPointOnWay;
-
+                                var vecWay2Ray = waySlideCalcCache.ClosestPointOnRay - waySlideCalcCache.ClosestPointOnWay; 
                                 var isRayOnRightSide = Vector3.Dot(wayRightVec, vecWay2Ray) > 0;
                                 //Debug.Log($"ray on right side : {isRayOnRightSide}");
 
@@ -2014,10 +2015,13 @@ namespace PLATEAU.Editor.RoadNetwork
 
                             dummyWay = new RnWay(waySlideCalcCache.ClosestWay.Ref.LineString.Clone(true));
                             var dirFactor = isRayOnRightSide ? 1f : -1f;
+                            dirFactor = waySlideCalcCache.ClosestWay.Ref.IsReversed ? -dirFactor : dirFactor;
                             dummyWay.MoveAlongNormal(waySlideCalcCache.ClosestDis * dirFactor);
 
                             //元のwayに適用
-                            var distWayPoints = waySlideCalcCache.ClosestWay.Ref.Points.GetEnumerator();
+                            var points = waySlideCalcCache.ClosestWay.Ref.Points;
+                            points = waySlideCalcCache.ClosestWay.Ref.IsReversed ? points.Reverse() : points;
+                            var distWayPoints = points.GetEnumerator();
                             var eRevDumWay = dummyWay.GetEnumerator();
                             while (distWayPoints.MoveNext())
                             {

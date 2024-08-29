@@ -42,7 +42,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
         private Color selectableWayColor = Color.yellow;
         private Color guideWayColor = Color.black;
         private Color sideWalkColor = Color.grey;
-        private Color slideDummyWayColor = Color.black + new Color(-0.2f, -0.2f, -0.2f, 0);
+        private Color slideDummyWayColor = Color.red + new Color(-0.2f, -0.2f, -0.2f, 0);
 
         private Color intersectionOutlineColor = Color.gray;
         private Color intersectionBorderColor = Color.gray + new Color(-0.2f, -0.2f, -0.2f, 0);
