@@ -90,7 +90,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
             }
             else
             {
-                Debug.Log($"eve {e.type}");
+                //Debug.Log($"eve {e.type}");
             }
 
             if (e.type == EventType.MouseDown)
