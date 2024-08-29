@@ -1,4 +1,5 @@
-﻿using Codice.Client.Commands;
+﻿using Codice.Client.BaseCommands;
+using Codice.Client.Commands;
 using PLATEAU.RoadNetwork;
 using PLATEAU.RoadNetwork.Data;
 using PLATEAU.RoadNetwork.Structure;
@@ -1390,6 +1391,7 @@ namespace PLATEAU.Editor.RoadNetwork
             // 詳細編集モードかどうか
             private bool isEditingDetailMode = false;
 
+            private Dictionary<RnIntersection, EditorData<RnIntersection>> intersectionEditorData = new Dictionary<RnIntersection, EditorData<RnIntersection>>();
             private Dictionary<RnRoadBase, NodeEditorData> nodeEditorData = new Dictionary<RnRoadBase, NodeEditorData>();
             private EditorDataList<EditorData<RnRoadGroup>> linkGroupEditorData = new EditorDataList<EditorData<RnRoadGroup>>();
             private Dictionary<RnPoint, EditorData<RnPoint>> ptEditorData = new Dictionary<RnPoint, EditorData<RnPoint>>();
@@ -1455,6 +1457,11 @@ namespace PLATEAU.Editor.RoadNetwork
 
                     id++;
                     sb.Clear();
+                }
+
+                foreach (var intersection in roadNetwork.Intersections)
+                {
+                    intersectionEditorData.Add(intersection, new EditorData<RnIntersection>(intersection));
                 }
 
                 // pointのeditor用のデータを作成
@@ -2051,16 +2058,18 @@ namespace PLATEAU.Editor.RoadNetwork
                     //    Handles.DrawLines(pts);
                     //    //Gizmos.DrawLineList(pts);
                     //}
-                    guisys.intersections.Clear();
-                    var intersectionsPoss = guisys.intersections;
-                    intersectionsPoss.Capacity = nodeEditorData.Count;
-                    foreach (var item in nodeEditorData.Values)
-                    {
-                        if (item.IsIntersection == false)
-                            continue;
-                        intersectionsPoss.Add(item.RefGameObject.transform.position);
-                    }
+                    guisys.intersections = null;
+                    guisys.intersections = intersectionEditorData.Values;
+                    //var intersectionsPoss = guisys.intersections;
+                    //intersectionsPoss.Capacity = nodeEditorData.Count;
+                    //foreach (var item in nodeEditorData.Values)
+                    //{
+                    //    if (item.IsIntersection == false)
+                    //        continue;
+                    //    intersectionsPoss.Add(item.RefGameObject.transform.position);
+                    //}
                 }
+
 
                 // 仮で呼び出し　描画の更新がワンテンポ遅れるため　
                 EditorUtility.SetDirty(roadNetworkEditingSystemObjRoot);

@@ -340,7 +340,8 @@ namespace PLATEAU.Editor.RoadNetwork
         public IReadOnlyCollection<EditorData<RnRoadGroup>> connections = new EditorData<RnRoadGroup>[0];
         public Color connectionColor = Color.blue;
 
-        public List<Vector3> intersections = new List<Vector3>();
+        public ICollection<EditorData<RnIntersection>> intersections = new EditorData<RnIntersection>[0];
+        //public List<Vector3> intersections = new List<Vector3>();
         public Color intersectionColor = Color.green;
         public float intersectionRadius = 30.0f;
 
@@ -389,6 +390,7 @@ namespace PLATEAU.Editor.RoadNetwork
                 }
             }
 
+
             // ノードが重複して描画されるので nodeEitorDataで走査
             HashSet<NodeEditorData> nodeEitorData = new HashSet<NodeEditorData>(connections.Count * 2);
             foreach (var item in cns)
@@ -397,14 +399,46 @@ namespace PLATEAU.Editor.RoadNetwork
                 nodeEitorData.Add(item.B);
             }
 
-            foreach (var item in nodeEitorData)
+            //foreach (var item in nodeEitorData)
+            //{
+            //    // 選択済みのオブジェクト
+            //    if (item == editorSystem.SelectedRoadNetworkElement)
+            //        continue;
+
+            //    Color pre = GUI.color;
+            //    var p1 = item.RefGameObject.transform.position;
+
+            //    Vector3 pos2d_dis = Vector3.zero;
+            //    pos2d_dis = camera.WorldToScreenPoint(p1 + nodeIconPosOffset);
+            //    var isEditable = IsVisibleToCamera(camera, pos2d_dis);
+            //    if (isEditable)
+            //    {
+            //        // レーンの選択ボタンの表示
+            //        var laneSelectBtnSize = HandleUtility.GetHandleSize(p1) * laneHndScaleFactor;
+            //        var isClicked = Button2DOn3D(camera, pos2d_dis, nodeTex);
+            //        if (isClicked)
+            //        {
+            //            Debug.Log(item.RefGameObject.name);
+            //            editorSystem.SelectedRoadNetworkElement = item;
+            //            return;
+            //        }
+            //    }
+
+            //    GUI.color = Color.red;
+            //    var offset = Vector3.up * intersectionRadius * 1.1f;
+            //    Handles.Label(p1 + offset, item.RefGameObject.name);
+            //    GUI.color = pre;
+            //}
+
+
+            foreach (var intersection in intersections)
             {
                 // 選択済みのオブジェクト
-                if (item == editorSystem.SelectedRoadNetworkElement)
+                if (intersection == editorSystem.SelectedRoadNetworkElement)
                     continue;
 
                 Color pre = GUI.color;
-                var p1 = item.RefGameObject.transform.position;
+                var p1 = intersection.Ref.GetCenterPoint();
 
                 Vector3 pos2d_dis = Vector3.zero;
                 pos2d_dis = camera.WorldToScreenPoint(p1 + nodeIconPosOffset);
@@ -416,18 +450,17 @@ namespace PLATEAU.Editor.RoadNetwork
                     var isClicked = Button2DOn3D(camera, pos2d_dis, nodeTex);
                     if (isClicked)
                     {
-                        Debug.Log(item.RefGameObject.name);
-                        editorSystem.SelectedRoadNetworkElement = item;
+                        editorSystem.SelectedRoadNetworkElement = intersection;
                         return;
                     }
                 }
 
-                GUI.color = Color.red;
-                var offset = Vector3.up * intersectionRadius * 1.1f;
-                Handles.Label(p1 + offset, item.RefGameObject.name);
-                GUI.color = pre;
-            }
+                //GUI.color = Color.red;
+                //var offset = Vector3.up * intersectionRadius * 1.1f;
+                //Handles.Label(p1 + offset, intersection);
+                //GUI.color = pre;
 
+            }
 
 
             // 選択している道路がある場合

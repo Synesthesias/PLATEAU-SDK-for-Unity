@@ -94,10 +94,10 @@ namespace PLATEAU.Editor.RoadNetwork
     public class EditorData<_BaseData>
         where _BaseData : class
     {
-        public EditorData(_BaseData point)
+        public EditorData(_BaseData baseData)
         {
-            Assert.IsNotNull(point);
-            this.Ref = point;
+            Assert.IsNotNull(baseData);
+            this.Ref = baseData;
             this.userData = new List<object>();
         }
 
