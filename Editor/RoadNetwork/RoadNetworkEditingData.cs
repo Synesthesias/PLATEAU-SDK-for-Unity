@@ -474,6 +474,8 @@ namespace PLATEAU.Editor.RoadNetwork
         /// 選択可能か？
         /// </summary>
         public bool IsSelectable { get; set; } = true;
+
+        public bool IsSideWalk { get; set; } = false;
     }
 
 }

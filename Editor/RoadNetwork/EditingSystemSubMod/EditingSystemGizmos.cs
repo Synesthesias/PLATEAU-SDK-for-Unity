@@ -115,14 +115,14 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
             sideWalks.Clear();
             if (selectingElement is EditorData<RnRoadGroup> roadGroupEditorData)
             {
-                // 歩道の描画
-                foreach (var road in roadGroupEditorData.Ref.Roads)
-                {
-                    foreach (var sideWalk in road.SideWalks)
-                    {
-                        sideWalks.Add(sideWalk.Way.ToList());
-                    }
-                }
+                //// 歩道の描画
+                //foreach (var road in roadGroupEditorData.Ref.Roads)
+                //{
+                //    foreach (var sideWalk in road.SideWalks)
+                //    {
+                //        sideWalks.Add(sideWalk.Way.ToList());
+                //    }
+                //}
 
                 var laneGroup = new LaneGroupEditorData(roadGroupEditorData.Ref);
 
