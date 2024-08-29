@@ -509,49 +509,49 @@ namespace PLATEAU.Editor.RoadNetwork
                     //}
 
                     var wayEditorDataList = roadGroupEditorData.GetSubData<List<WayEditorData>>();
-                    var nSlider = unionWay.Count; // 左右の
+                    //var nSlider = unionWay.Count; // 左右の
                     if (wayEditorDataList == null)
                     {
-                        wayEditorDataList = new List<WayEditorData>(nSlider);
-                        foreach (var editingTarget in unionWay)
-                        {
-                            wayEditorDataList.Add(new WayEditorData(editingTarget));
-                        }
-                        roadGroupEditorData.TryAdd(wayEditorDataList);
+                        //wayEditorDataList = new List<WayEditorData>(nSlider);
+                        //foreach (var editingTarget in unionWay)
+                        //{
+                        //    wayEditorDataList.Add(new WayEditorData(editingTarget));
+                        //}
+                        //roadGroupEditorData.TryAdd(wayEditorDataList);
                     }
 
                     Assert.IsNotNull(wayEditorDataList);
-                    if (wayEditorDataList.Count != nSlider)
-                    {
-                        wayEditorDataList.Clear();
-                        wayEditorDataList.Capacity = nSlider;
-                        foreach (var editingTarget in unionWay)
-                        {
-                            wayEditorDataList.Add(new WayEditorData(editingTarget));
-                        }
-                    }
+                    //if (wayEditorDataList.Count != nSlider)
+                    //{
+                    //    wayEditorDataList.Clear();
+                    //    wayEditorDataList.Capacity = nSlider;
+                    //    foreach (var editingTarget in unionWay)
+                    //    {
+                    //        wayEditorDataList.Add(new WayEditorData(editingTarget));
+                    //    }
+                    //}
                     Handles.BeginGUI();
                     GUILayout.BeginArea(new Rect(100, 100, 200, 300));
                     //GUILayout.BeginVertical();
-                    GUILayout.Label("Ways");
-                    foreach (var wayEditorData in wayEditorDataList)
-                    {
-                        //// textフィールド版
-                        //var s = GUILayout.TextField(wayEditorData.SliderVarVals.ToString());
-                        //var v = wayEditorData.SliderVarVals;
-                        //if (float.TryParse(s, out v))
-                        //{
-                        //    wayEditorData.SliderVarVals = v;
-                        //}
+                    //GUILayout.Label("Ways");
+                    //foreach (var wayEditorData in wayEditorDataList)
+                    //{
+                    //    //// textフィールド版
+                    //    //var s = GUILayout.TextField(wayEditorData.SliderVarVals.ToString());
+                    //    //var v = wayEditorData.SliderVarVals;
+                    //    //if (float.TryParse(s, out v))
+                    //    //{
+                    //    //    wayEditorData.SliderVarVals = v;
+                    //    //}
 
-                        // slider版
-                        const float minScaleLimit = -5.0f;
-                        const float maxScaleLimit = 5.0f;
-                        wayEditorData.SliderVarVals =
-                            GUILayout.HorizontalSlider(wayEditorData.SliderVarVals, minScaleLimit, maxScaleLimit);
+                    //    // slider版
+                    //    const float minScaleLimit = -5.0f;
+                    //    const float maxScaleLimit = 5.0f;
+                    //    wayEditorData.SliderVarVals =
+                    //        GUILayout.HorizontalSlider(wayEditorData.SliderVarVals, minScaleLimit, maxScaleLimit);
 
-                        GUILayout.Space(10);
-                    }
+                    //    GUILayout.Space(10);
+                    //}
 
                     GUILayout.EndArea();
                     Handles.EndGUI();
