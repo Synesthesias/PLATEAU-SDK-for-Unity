@@ -16,6 +16,12 @@ namespace PLATEAU.RoadNetwork.Structure
         {
             if (RoadNetwork == null)
                 return;
+            // シリアライズ前に一度全レーンに対して中央線を作成する
+            foreach (var road in RoadNetwork.Roads)
+            {
+                foreach (var l in road.AllLanes)
+                    l.CreateCenterWay();
+            }
             storage = RoadNetwork.Serialize();
         }
 

@@ -101,6 +101,8 @@ namespace PLATEAU.RoadNetwork.Structure
         // 親Roadと逆方向(右車線等)
         public bool IsReverse { get; set; }
 
+        // 内部的に持つだけ. 中心線
+        private RnWay centerWay { get; set; }
 
         //----------------------------------
         // end: フィールド
@@ -169,6 +171,28 @@ namespace PLATEAU.RoadNetwork.Structure
             NextBorder = nextBorder;
         }
 
+        /// <summary>
+        /// レーンの中央線を作成して返す
+        /// </summary>
+        /// <param name="self"></param>
+        /// <returns></returns>
+        public RnWay CreateCenterWay()
+        {
+            try
+            {
+                centerWay = null;
+                if (IsValidWay == false)
+                    return null;
+
+                var vertices = GeoGraphEx.GetInnerLerpSegments(LeftWay.Vertices.ToList(), RightWay.Vertices.ToList(), AxisPlane.Xz, 0.5f);
+                centerWay = new RnWay(RnLineString.Create(vertices));
+                return centerWay;
+            }
+            catch
+            {
+                return null;
+            }
+        }
         /// <summary>
         /// Borderの同じ頂点で作り直す
         /// </summary>
@@ -922,26 +946,6 @@ namespace PLATEAU.RoadNetwork.Structure
             return ret;
         }
 
-        /// <summary>
-        /// レーンの中央線を作成して返す
-        /// </summary>
-        /// <param name="self"></param>
-        /// <returns></returns>
-        public static RnWay CreateCenterWay(this RnLane self)
-        {
-            try
-            {
-                if (self.IsValidWay == false)
-                    return null;
-
-                var vertices = GeoGraphEx.GetInnerLerpSegments(self.LeftWay.Vertices.ToList(), self.RightWay.Vertices.ToList(), AxisPlane.Xz, 0.5f);
-                return new RnWay(RnLineString.Create(vertices));
-            }
-            catch
-            {
-                return null;
-            }
-        }
 #if false
         public static void SetLaneWidth(this RnLane self, float width, bool moveLeft)
         {

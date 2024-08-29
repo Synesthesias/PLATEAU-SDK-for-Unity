@@ -37,6 +37,10 @@ namespace PLATEAU.RoadNetwork.Data
         [RoadNetworkSerializeMember]
         public RnLaneAttribute Attributes { get; set; }
 
+        // 中央線
+        [field: SerializeField]
+        [RoadNetworkSerializeMember("centerWay")]
+        public RnID<RnDataWay> CenterWay { get; set; }
 
         // 親Roadと逆方向(右車線等)
         [field: SerializeField]
