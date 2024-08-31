@@ -273,7 +273,7 @@ namespace PLATEAU.Util.GeoGraph
         /// <param name="ray"></param>
         /// <param name="closestPoint"></param>
         /// <returns></returns>
-        public static float CheckHit(Line line, float radius, in Ray ray, 
+        public static float CheckHit(Line line, float radius, in Ray ray,
             out Vector3 closestPoint, out Vector3 closestPoint2)
         {
             var rayLine = new Line(ray.origin, ray.origin + ray.direction * 1000/*DEBUG用*/);
@@ -308,7 +308,7 @@ namespace PLATEAU.Util.GeoGraph
             else// 交差しない場合
             {
                 LineUtil.ClosestPoints(line, rayLine, out closestPoint, out closestPoint2);
-                isPointOnline = LineUtil.ContainsPoint(line, closestPoint);                
+                isPointOnline = LineUtil.ContainsPoint(line, closestPoint);
             }
 
             // 交差点が線分上にない場合はヒットしていない
@@ -544,7 +544,7 @@ namespace PLATEAU.Util.GeoGraph
                 len += l;
                 if (len >= length && l > float.Epsilon)
                 {
-                    var f = (len - length) / l;
+                    var f = 1f - ((len - length) / l);
                     midPoint = Vector3.Lerp(p0, p1, f);
                     return i;
                 }
