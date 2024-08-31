@@ -31,6 +31,10 @@ namespace PLATEAU.Util.GeoGraph
 
             public Vector3 DirectionA2B { get => (p1 - p0).normalized; }
             public Vector3 DirectionB2A { get => (p0 - p1).normalized; }
+
+            public Vector3 VecA2B { get => (p1 - p0); }
+            public Vector3 VecB2A { get => (p0 - p1); }
+
         }
 
         /// <summary>
@@ -151,24 +155,82 @@ namespace PLATEAU.Util.GeoGraph
         /// <param name="line1"></param>
         /// <param name="closestPoint1"></param>
         /// <param name="closestPoint2"></param>
-        public static void ClosestPoints(
-            Line line0, Line line1, out Vector3 closestPoint1, out Vector3 closestPoint2)
+        //public static void ClosestPoints(
+        //    Line line0, Line line1, out Vector3 closestPoint1, out Vector3 closestPoint2)
+        //{
+        //    Vector3 p1 = line0.P0;
+        //    Vector3 d1 = line0.DirectionA2B;
+        //    Vector3 p2 = line1.P0;
+        //    Vector3 d2 = line1.DirectionA2B;
+
+        //    Vector3 r = p1 - p2;
+        //    float a = Vector3.Dot(d1, d1);
+        //    float e = Vector3.Dot(d2, d2);
+        //    float f = Vector3.Dot(d2, r);
+        //float d = Vector3.Dot(d1, r);
+
+        //    float s = (Vector3.Dot(d1, r) * e - f * Vector3.Dot(d1, d2)) / (a * e - Vector3.Dot(d1, d2) * Vector3.Dot(d1, d2));
+        //    float t = (f + s * Vector3.Dot(d1, d2)) / e;
+
+        //    closestPoint1 = p1 + s * d1;
+        //    closestPoint2 = p2 + t * d2;
+        //}
+
+        //public static void ClosestPoints(
+        //    Line line0, Line line1, out Vector3 closestPoint1, out Vector3 closestPoint2)
+        //{
+        //    Vector3 p1 = line0.P0;
+        //    Vector3 d1 = line0.DirectionB2A;
+        //    Vector3 p2 = line1.P0;
+        //    Vector3 d2 = line1.DirectionB2A;
+
+        //    Vector3 r = p1 - p2;
+        //    float a = Vector3.Dot(d1, d1);
+        //    float b = Vector3.Dot(d1, d2);
+        //    float c = Vector3.Dot(d2, d2);
+        //    float d = Vector3.Dot(d1, r);
+        //    float e = Vector3.Dot(d2, r);
+        //    float denominator = a * c - b * b;
+
+        //    float s = (b * e - c * d) / denominator;
+        //    float t = (a * e - b * d) / denominator;
+
+        //    closestPoint1 = p1 + s * d1;
+        //    closestPoint2 = p2 + t * d2;
+
+        //}
+
+
+        public static void ClosestPoints(Line line0, Line line1, out Vector3 closestPoint1,
+     out Vector3 closestPoint2)
         {
             Vector3 p1 = line0.P0;
-            Vector3 d1 = line0.DirectionA2B;
+            Vector3 d1 = line0.DirectionB2A;
             Vector3 p2 = line1.P0;
-            Vector3 d2 = line1.DirectionA2B;
+            Vector3 d2 = line1.DirectionB2A;
 
             Vector3 r = p1 - p2;
             float a = Vector3.Dot(d1, d1);
-            float e = Vector3.Dot(d2, d2);
-            float f = Vector3.Dot(d2, r);
+            float b = Vector3.Dot(d1, d2);
+            float c = Vector3.Dot(d2, d2);
+            float d = Vector3.Dot(d1, r);
+            float e = Vector3.Dot(d2, r);
+            float denominator = a * c - b * b;
 
-            float s = (Vector3.Dot(d1, r) * e - f * Vector3.Dot(d1, d2)) / (a * e - Vector3.Dot(d1, d2) * Vector3.Dot(d1, d2));
-            float t = (f + s * Vector3.Dot(d1, d2)) / e;
+            if (denominator != 0)
+            {
+                float s = (b * e - c * d) / denominator;
+                float t = (a * e - b * d) / denominator;
 
-            closestPoint1 = p1 + s * -d1;
-            closestPoint2 = p2 + t * d2;
+                closestPoint1 = p1 + s * d1;
+                closestPoint2 = p2 + t * d2;
+            }
+            else
+            {
+                // 直線が平行な場合
+                closestPoint1 = p1;
+                closestPoint2 = p2 + Vector3.Project(r, d2);
+            }
         }
         //public static void FindClosestPoints(Line line0, Line line1, out Vector3 closestPointLine1, out Vector3 closestPointLine2)
         //{
@@ -201,17 +263,18 @@ namespace PLATEAU.Util.GeoGraph
         //    }
         //}
 
-    /// <summary>
-    /// 線分lineとrayの衝突判定を行う
-    /// radiusで判定に余裕を持たせる
-    /// また、closestPointは衝突地点ではなく線分上の最も近い点なので注意
-    /// </summary>
-    /// <param name="line"></param>
-    /// <param name="radius"></param>
-    /// <param name="ray"></param>
-    /// <param name="closestPoint"></param>
-    /// <returns></returns>
-    public static float CheckHit(Line line, float radius, in Ray ray, out Vector3 closestPoint)
+        /// <summary>
+        /// 線分lineとrayの衝突判定を行う
+        /// radiusで判定に余裕を持たせる
+        /// また、closestPointは衝突地点ではなく線分上の最も近い点なので注意
+        /// </summary>
+        /// <param name="line"></param>
+        /// <param name="radius"></param>
+        /// <param name="ray"></param>
+        /// <param name="closestPoint"></param>
+        /// <returns></returns>
+        public static float CheckHit(Line line, float radius, in Ray ray, 
+            out Vector3 closestPoint, out Vector3 closestPoint2)
         {
             var rayLine = new Line(ray.origin, ray.origin + ray.direction * 1000/*DEBUG用*/);
             var dis = DistanceBetweenLines(line, rayLine, out var isParallel);
@@ -219,13 +282,13 @@ namespace PLATEAU.Util.GeoGraph
             // 平行時は通常の方法で計算できないので判定を取らないようにする
             if (isParallel)
             {
-                return NoHit(out closestPoint);
+                return NoHit(out closestPoint, out closestPoint2);
             }
 
             // 距離が離れている場合はヒットしていない
             if (radius < dis)
             {
-                return NoHit(out closestPoint);
+                return NoHit(out closestPoint, out closestPoint2);
             }
 
 
@@ -233,34 +296,83 @@ namespace PLATEAU.Util.GeoGraph
 
             // 線分上に存在するか
             bool isPointOnline;
+
+
             // 交差している
             if (dis <= Mathf.Epsilon)
             {
                 Intersect(line, rayLine, out closestPoint);
                 isPointOnline = LineUtil.ContainsPoint(line, closestPoint);
+                closestPoint2 = closestPoint;
             }
             else// 交差しない場合
             {
-                Vector3 closestPoint2;
                 LineUtil.ClosestPoints(line, rayLine, out closestPoint, out closestPoint2);
-                //Debug.DrawLine(line.P0, line.P1, Color.magenta);
-                //Debug.DrawLine(rayLine.P0, rayLine.P1, Color.green, 2.0F);
-                //Debug.DrawLine(closestPoint, closestPoint2, Color.magenta, 2.0F);
                 isPointOnline = LineUtil.ContainsPoint(line, closestPoint);                
             }
 
             // 交差点が線分上にない場合はヒットしていない
             if (isPointOnline == false)
             {
-                return NoHit(out closestPoint);
+                return NoHit(out closestPoint, out closestPoint2);
             }
 
+            //Debug.DrawLine(line.P0, line.P1, Color.magenta);
+            //Debug.DrawLine(rayLine.P0, rayLine.P1, Color.green, 2.0F);
+            //Debug.DrawLine(closestPoint, closestPoint2, Color.magenta, 2.0F);
 
             return dis;
 
-            static float NoHit(out Vector3 closestPoint)
+            static float NoHit(out Vector3 closestPoint, out Vector3 closestPoint2)
             {
                 closestPoint = Vector3.zero;
+                closestPoint2 = Vector3.zero;
+                return float.MinValue;
+            }
+
+        }
+
+        /// <summary>
+        /// 最近棒を求める
+        /// 直線で計算するので注意
+        /// </summary>
+        /// <param name="line"></param>
+        /// <param name="ray"></param>
+        /// <param name="closestPoint"></param>
+        /// <param name="closestPoint2"></param>
+        /// <returns></returns>
+        public static float FindClosestPoint(Line line, in Ray ray,
+    out Vector3 closestPoint, out Vector3 closestPoint2)
+        {
+            var rayLine = new Line(ray.origin, ray.origin + ray.direction * 1000/*DEBUG用*/);
+            var dis = DistanceBetweenLines(line, rayLine, out var isParallel);
+
+            // 平行時は通常の方法で計算できないので判定を取らないようにする
+            if (isParallel)
+            {
+                return NoHit(out closestPoint, out closestPoint2);
+            }
+
+            // 最も近い点の算出とそれが線分上にあるか
+
+
+            // 交差している
+            if (dis <= Mathf.Epsilon)
+            {
+                Intersect(line, rayLine, out closestPoint);
+                closestPoint2 = closestPoint;
+            }
+            else// 交差しない場合
+            {
+                LineUtil.ClosestPoints(line, rayLine, out closestPoint, out closestPoint2);
+            }
+
+            return dis;
+
+            static float NoHit(out Vector3 closestPoint, out Vector3 closestPoint2)
+            {
+                closestPoint = Vector3.zero;
+                closestPoint2 = Vector3.zero;
                 return float.MinValue;
             }
 

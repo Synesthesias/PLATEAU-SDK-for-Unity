@@ -15,15 +15,11 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
 
         private List<Vector3> intersectionConnectionLinePairs = new List<Vector3>();
         private List<List<Vector3>> intersectionConnectionLinePairs2 = new List<List<Vector3>>();
-        private Color connectionColor = Color.blue;
 
-        private Color selectingWayColor = Color.red;
         private List<Vector3> selectingWay = new List<Vector3>();
 
-        private Color selectableWayColor = Color.yellow;
         private List<List<Vector3>> selectableWayList = new List<List<Vector3>>();
 
-        private Color guideWayColor = Color.gray;
         private List<List<Vector3>> guideWayList = new List<List<Vector3>>();
         //public List<Vector3> intersections = new List<Vector3>();
         //public Color intersectionColor = Color.green;
@@ -31,13 +27,37 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
 
         //public float btnSize = 2.0f;
 
-        private Color sideWalkColor = Color.grey + new Color(0.2f, 0.2f, 0.2f, 0);
         private List<List<Vector3>> sideWalks = new List<List<Vector3>>();
+
+        private List<List<Vector3>> slideDummyWayList = new List<List<Vector3>>();
+
+        private List<List<Vector3>> intersectionOutline = new List<List<Vector3>>();
+        private List<List<Vector3>> intersectionBorder = new List<List<Vector3>>();
+
+        private readonly Color selectingColorOffset = new Color(0.2f, 0.2f, 0.2f, 0);
+        private readonly Color dummyColorOffset = new Color(-0.2f, -0.2f, -0.2f, 0);
+
+        private Color connectionColor = Color.blue;
+        private Color selectingWayColor = Color.red;
+        private Color selectableWayColor = Color.yellow;
+        private Color guideWayColor = Color.black;
+        private Color sideWalkColor = Color.grey;
+        private Color slideDummyWayColor = Color.red + new Color(-0.2f, -0.2f, -0.2f, 0);
+
+        private Color intersectionOutlineColor = Color.gray;
+        private Color intersectionBorderColor = Color.gray + new Color(-0.2f, -0.2f, -0.2f, 0);
+
+        public EditingSystemGizmos()
+        {
+
+        }
+
 
         public void Update(
             object selectingElement,
             WayEditorData highLightWay,
-            EditorDataList<EditorData<RnRoadGroup>> linkGroupEditorData)
+            EditorDataList<EditorData<RnRoadGroup>> linkGroupEditorData,
+            RnWay slideDummyWay)
         {
             if (linkGroupEditorData.TryGetCache("linkGroup", out IEnumerable<LinkGroupEditorData> eConn) == false)
             {
@@ -53,7 +73,8 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
             pts.Capacity = (connections.Count + 3) * 2;
             foreach (var item in connections)
             {
-                if (item.LinkGroup == selectingElement)
+                var roadGroup = selectingElement as EditorData<RnRoadGroup>;
+                if (item.LinkGroup == roadGroup)
                 {
                     continue;
                 }
@@ -228,6 +249,33 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
                     selectingWay.AddRange(selectingWayData.Ref.ToList());
                 }
             }
+
+            slideDummyWayList.Clear();
+            if (slideDummyWay != null)
+            {
+                slideDummyWayList.Add(slideDummyWay.ToList());
+            }
+
+            intersectionBorder.Clear();
+            var intersectionEditorData = selectingElement as EditorData<RnIntersection>;
+            if (intersectionEditorData != null)
+            {
+                var borders = intersectionEditorData.Ref.GetBorders();
+                foreach (var border in borders)
+                {
+                    intersectionBorder.Add(border.EdgeWay.ToList());                    
+                }
+
+                var lanes = intersectionEditorData.Ref.Lanes;
+                foreach (var lane in lanes)
+                {
+                    foreach (var way in lane.BothWays)
+                    {
+                        intersectionOutline.Add(way.ToList());
+                    }
+                }
+            }
+
         }
 
 
@@ -297,28 +345,9 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
             //        }
             //    }
 
-            if (selectableWayList.Count > 0)
-            {
-                drawFuncs.Add(() =>
-                {
-                    Gizmos.color = selectableWayColor;
-                    foreach (var way in selectableWayList)
-                    {
-                        Gizmos.DrawLineStrip(way.ToArray(), false);
-                    }
-                });
-            }
-            if (guideWayList.Count > 0)
-            {
-                drawFuncs.Add(() =>
-                {
-                    Gizmos.color = guideWayColor;
-                    foreach (var way in guideWayList)
-                    {
-                        Gizmos.DrawLineStrip(way.ToArray(), false);
-                    }
-                });
-            }
+            AddDrawFunc(ref drawFuncs, selectableWayList, selectableWayColor);
+
+            AddDrawFunc(ref drawFuncs, guideWayList, guideWayColor);
 
             // 選択中のwayを描画
             if (selectingWay.Count >= 2)
@@ -332,8 +361,30 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
                 });
             }
 
+            AddDrawFunc(ref drawFuncs, slideDummyWayList, slideDummyWayColor);
+
+            AddDrawFunc(ref drawFuncs, intersectionOutline, intersectionOutlineColor);
+
+            AddDrawFunc(ref drawFuncs, intersectionBorder, intersectionBorderColor);
 
             return drawFuncs;
+        }
+
+        private static void AddDrawFunc(ref List<Action> drawFuncs, List<List<Vector3>> lines, Color color)
+        {
+            if (lines.Count == 0)
+            {
+                return;
+            }
+            drawFuncs.Add(() =>
+            {
+                Gizmos.color = color;
+                foreach (var line in lines)
+                {
+                    Gizmos.DrawLineStrip(line.ToArray(), false);
+                }
+            });
+
         }
 
         private static bool CalcCenterPos(IEnumerable<RnPoint> points, out UnityEngine.Vector3 v)
