@@ -126,6 +126,19 @@ namespace PLATEAU.Editor.RoadNetwork.Tester
                 }
             }
 
+            using (new EditorGUILayout.HorizontalScope())
+            {
+                var model = obj.GetComponent<PLATEAURnStructureModel>();
+                if (model && model.RoadNetwork != null)
+                {
+                    if (GUILayout.Button("Create Empty Road"))
+                        model.RoadNetwork.CreateEmptyRoadBetweenInteraction();
+
+                    if (GUILayout.Button("Remove Empty Road"))
+                        model.RoadNetwork.RemoveEmptyRoadBetweenIntersection();
+                }
+
+            }
             if (GUILayout.Button("Check Lod"))
                 obj.RemoveSameNameCityObjectGroup();
         }

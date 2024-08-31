@@ -141,6 +141,11 @@ namespace PLATEAU.RoadNetwork.Structure
         /// </summary>
         public bool HasBothBorder => IsValidWay && PrevBorder.IsValidOrDefault() && NextBorder.IsValidOrDefault();
 
+        /// <summary>
+        /// 隣接した交差点に挿入された空レーンかどうか
+        /// </summary>
+        public bool IsEmptyLane => IsValidWay == false && NextBorder == PrevBorder && NextBorder != null;
+
         //デシリアライズの為に必要
         public RnLane() { }
 
@@ -193,6 +198,7 @@ namespace PLATEAU.RoadNetwork.Structure
                 return null;
             }
         }
+
         /// <summary>
         /// Borderの同じ頂点で作り直す
         /// </summary>
@@ -455,6 +461,19 @@ namespace PLATEAU.RoadNetwork.Structure
         public static RnLane CreateOneWayLane(RnWay way)
         {
             return new RnLane(way, null, null, null);
+        }
+
+        /// <summary>
+        /// 交差点同士の間に入れる空のレーンを作成
+        /// </summary>
+        /// <param name="border"></param>
+        /// <param name="centerWay"></param>
+        /// <returns></returns>
+        public static RnLane CreateEmptyLane(RnWay border, RnWay centerWay)
+        {
+            var ret = new RnLane(null, null, border, border);
+            ret.centerWay = centerWay;
+            return ret;
         }
     }
 

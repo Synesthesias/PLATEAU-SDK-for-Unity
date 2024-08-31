@@ -104,6 +104,7 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
             public bool showLaneConnection = false;
             public bool showRoadGroup = false;
             public bool showSideEdge = false;
+            public bool showEmptyRoadLabel = false;
             public DrawOption showNextConnection = new DrawOption(false, Color.red);
             public DrawOption showPrevConnection = new DrawOption(false, Color.blue);
         }
@@ -396,7 +397,7 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
             if (targetTran && targetTran != road.TargetTran)
                 return;
 
-            if (showPartsType.HasFlag(RnPartsTypeMask.Road))
+            if (showPartsType.HasFlag(RnPartsTypeMask.Road) || (op.showEmptyRoadLabel && road.IsEmptyRoad))
                 DebugEx.DrawString($"R[{road.DebugMyId}]", road.GetCenter());
 
             if (op.showMedian)

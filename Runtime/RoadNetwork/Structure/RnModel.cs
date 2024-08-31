@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine.Splines;
 
 namespace PLATEAU.RoadNetwork.Structure
 {
@@ -208,10 +209,73 @@ namespace PLATEAU.RoadNetwork.Structure
                 AddIntersection(n);
         }
 
-        public void Check()
-        {
 
+        /// <summary>
+        /// 交差点同士が直接つながっている状況において、交差点間のリンクを作成する
+        /// </summary>
+        public void CreateEmptyRoadBetweenInteraction()
+        {
+            HashSet<RnIntersection> visited = new();
+            foreach (var inter in Intersections)
+            {
+                if (visited.Contains(inter))
+                    continue;
+                visited.Add(inter);
+
+                foreach (var neighbor in inter.Neighbors)
+                {
+                    if (neighbor.Border == null)
+                        continue;
+
+                    if ((neighbor.Road is RnIntersection other) == false)
+                        continue;
+
+                    if (visited.Contains(other))
+                        continue;
+
+                    var otherNeighbor =
+                        other.Neighbors.FirstOrDefault(n => n.Border.IsSameLine(neighbor.Border) && n.Road == inter);
+                    if (otherNeighbor == null)
+                        continue;
+
+                    neighbor.Border.GetLerpPoint(0.5f, out var pos);
+                    var p = new RnPoint(pos);
+                    var emptyWay = new RnWay(RnLineString.Create(Enumerable.Repeat(p, 2), false));
+                    var emptyLane = RnLane.CreateEmptyLane(neighbor.Border, emptyWay);
+                    var emptyRoad = RnRoad.CreateOneLaneRoad(null, emptyLane);
+                    emptyRoad.SetPrevNext(inter, other);
+                    neighbor.Road = emptyRoad;
+                    otherNeighbor.Road = emptyRoad;
+                    AddRoad(emptyRoad);
+                }
+            }
         }
+
+        /// <summary>
+        /// 直接つながった交差点間に挿入された空リンクを削除する
+        /// </summary>
+        public void RemoveEmptyRoadBetweenIntersection()
+        {
+            HashSet<RnRoad> remove = new();
+            foreach (var road in Roads)
+            {
+                if (road.IsEmptyRoad == false)
+                    continue;
+
+                var inter1 = road.Next as RnIntersection;
+                var inter2 = road.Prev as RnIntersection;
+                foreach (var n in inter1.Neighbors.Where(n => n.Road == road))
+                    n.Road = inter2;
+                foreach (var n in inter2.Neighbors.Where(n => n.Road == road))
+                    n.Road = inter1;
+                road.SetPrevNext(null, null);
+                remove.Add(road);
+            }
+
+            foreach (var r in remove)
+                RemoveRoad(r);
+        }
+
 
         public void ReBuildIntersectionTracks()
         {

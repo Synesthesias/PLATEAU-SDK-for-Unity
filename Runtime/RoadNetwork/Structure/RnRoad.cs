@@ -94,6 +94,18 @@ namespace PLATEAU.RoadNetwork.Structure
             TargetTran = targetTran;
         }
 
+        /// <summary>
+        /// 交差点間に挿入された空Roadかどうか
+        /// </summary>
+        /// <returns></returns>
+        public bool IsEmptyRoad
+        {
+            get
+            {
+                return Prev is RnIntersection && Next is RnIntersection && AllLanes.All(l => l.IsEmptyLane);
+            }
+        }
+
         public IEnumerable<RnLane> GetLanes(RnDir dir)
         {
             return dir switch
