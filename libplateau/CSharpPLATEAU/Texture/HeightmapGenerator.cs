@@ -8,27 +8,35 @@ namespace PLATEAU.Texture
 {
     public class HeightmapGenerator
     {
+        private const int UInt16Max = 65535;
+        
         public void GenerateFromMesh(PolygonMesh.Mesh inMesh, int textureWidth, int textureHeight, 
-            PlateauVector2d Margin, out PlateauVector3d Min, out PlateauVector3d Max, 
-            out PlateauVector2f MinUV, out PlateauVector2f MaxUV, out UInt16[] HeightData )
+            PlateauVector2d margin, bool fillEdges, bool applyConvolutionFilterForHeightMap,
+            out PlateauVector3d min, out PlateauVector3d max, 
+            out PlateauVector2f minUV, out PlateauVector2f maxUV, out UInt16[] heightData )
         {
             var apiResult =
-                NativeMethods.heightmap_generator_generate_from_mesh(inMesh.Handle, textureWidth, textureHeight, new PlateauVector3d(Margin.X, Margin.Y, 0), CoordinateSystem.EUN, 
-                out Min, out Max , out MinUV, out MaxUV, out IntPtr HeightmapDataPtr, out int DataSize);
+                NativeMethods.heightmap_generator_generate_from_mesh(
+                    inMesh.Handle, textureWidth, textureHeight, new PlateauVector3d(margin.X, margin.Y, 0),
+                    CoordinateSystem.EUN, fillEdges, applyConvolutionFilterForHeightMap,
+                    out min, out max , out minUV, out maxUV, out IntPtr heightmapDataPtr, out int dataSize);
             DLLUtil.CheckDllError(apiResult);
 
-            byte[] outData = DLLUtil.PtrToBytes(HeightmapDataPtr, sizeof(UInt16) * DataSize);
-            NativeMethods.release_heightmap_data(HeightmapDataPtr);
+            byte[] outData = DLLUtil.PtrToBytes(heightmapDataPtr, sizeof(UInt16) * dataSize);
+            NativeMethods.release_heightmap_data(heightmapDataPtr);
 
-            HeightData = new UInt16[DataSize];
+            heightData = new UInt16[dataSize];
             int byteIndex = 0;
-            for (int i = 0; i < HeightData.Length; i++)
+            for (int i = 0; i < heightData.Length; i++)
             {
-                HeightData[i] = BitConverter.ToUInt16(outData, byteIndex);
+                heightData[i] = BitConverter.ToUInt16(outData, byteIndex);
                 byteIndex += 2;
             }
         }
 
+        /// <summary>
+        /// UInt16の1次元配列をfloatの2次元配列に変換します。
+        /// </summary>
         static public float[,] ConvertTo2DFloatArray(UInt16[] heightData, int textureWidth, int textureHeight)
         {
             float[,] textureData = new float[textureWidth, textureHeight];
@@ -37,11 +45,31 @@ namespace PLATEAU.Texture
             {
                 for (int x = 0; x < textureWidth; x++)
                 {
-                    textureData[y, x] = (float)(heightData[index] / 65535f);
+                    textureData[y, x] = heightData[index] / (float)UInt16Max;
                     index++;
                 }
             }
             return textureData; ;
+        }
+
+        /// <summary>
+        /// floatの2次元配列をUInt16の1次元配列に変換します。
+        /// </summary>
+        /// <returns></returns>
+        public static UInt16[] ConvertToUInt16Array(float[,] fHeight, int texWidth, int texHeight)
+        {
+            UInt16[] uHeight = new UInt16[texWidth * texHeight];
+            int index = 0;
+            for (int y = texHeight - 1; y >=0; y--)
+            {
+                for (int x = 0; x < texWidth; x++)
+                {
+                    uHeight[index] = (UInt16)(fHeight[y, x] * UInt16Max);
+                    index++;
+                }
+            }
+
+            return uHeight;
         }
 
         static public void SavePngFile(string fileName, int width, int height, UInt16[] data)
@@ -143,6 +171,8 @@ namespace PLATEAU.Texture
                 [In] int textureHeight,
                 [In] PlateauVector3d margin,
                 [In] CoordinateSystem coordinate,
+                [In] bool fillEdges,
+                [In] bool applyConvolutionFilterForHeightMap,
                 out PlateauVector3d min,
                 out PlateauVector3d max,
                 out PlateauVector2f minUV,

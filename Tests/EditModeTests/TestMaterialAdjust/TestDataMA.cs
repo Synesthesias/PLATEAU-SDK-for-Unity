@@ -2,6 +2,7 @@ using PLATEAU.CityAdjust.MaterialAdjust;
 using PLATEAU.CityAdjust.MaterialAdjust.Executor.Process;
 using PLATEAU.CityGML;
 using PLATEAU.CityInfo;
+using PLATEAU.GranularityConvert;
 using PLATEAU.PolygonMesh;
 using PLATEAU.Util;
 using System.Collections.Generic;
@@ -116,10 +117,10 @@ namespace PLATEAU.Tests.EditModeTests.TestMaterialAdjust
         /// <summary>
         /// 粒度とそれに対応する属性情報でのマテリアル分けのデータの辞書です
         /// </summary>
-        private readonly Dictionary<MAGranularity, GameObject[]> granAttrDict =
-            new Dictionary<MAGranularity, GameObject[]>{
+        private readonly Dictionary<ConvertGranularity, GameObject[]> granAttrDict =
+            new Dictionary<ConvertGranularity, GameObject[]>{
                 {
-                    MAGranularity.PerAtomicFeatureObject,
+                    ConvertGranularity.PerAtomicFeatureObject,
                     new[]
                     {
                         AssetDatabase.LoadAssetAtPath<GameObject>(pathTranAttrAtomic),
@@ -127,21 +128,21 @@ namespace PLATEAU.Tests.EditModeTests.TestMaterialAdjust
                     }
                 },
                 {
-                    MAGranularity.PerMaterialInPrimary,
+                    ConvertGranularity.MaterialInPrimary,
                     new[]
                     {
                         AssetDatabase.LoadAssetAtPath<GameObject>(pathTranAttrMaterialInPrimary)
                     }
                 },
                 {
-                    MAGranularity.PerPrimaryFeatureObject,
+                    ConvertGranularity.PerPrimaryFeatureObject,
                     new[]
                     {
                         AssetDatabase.LoadAssetAtPath<GameObject>(pathTranAttrPrimary),
                     }
                 },
                 {
-                    MAGranularity.CombineAll,
+                    ConvertGranularity.PerCityModelArea,
                     new[]
                     {
                         AssetDatabase.LoadAssetAtPath<GameObject>(pathTranAttrArea),
@@ -152,32 +153,32 @@ namespace PLATEAU.Tests.EditModeTests.TestMaterialAdjust
         /// <summary>
         /// 指定粒度でインポートしたときのデータをコピーして返します（建物）
         /// </summary>
-        public GameObject CopyBldgSrcOf(MAGranularity gran)
+        public GameObject CopyBldgSrcOf(ConvertGranularity gran)
         {
-            return Copy(granSrcDictBldg[gran.ToNativeGranularity()]);
+            return Copy(granSrcDictBldg[gran.ToMeshGranularity()]);
         }
         
         /// <summary>
         /// 指定粒度でインポートしたときのデータをコピーして返します（道路）
         /// </summary>
-        public GameObject CopyTranSrcOf(MAGranularity gran)
+        public GameObject CopyTranSrcOf(ConvertGranularity gran)
         {
-            return Copy(granSrcDictTran[gran.ToNativeGranularity()]);
+            return Copy(granSrcDictTran[gran.ToMeshGranularity()]);
         }
         
 
         /// <summary>
         /// 指定粒度であり、地物でのマテリアル分け結果としてexpectされるものをコピーして返します。
         /// </summary>
-        public GameObject CopyMATypeDstOf(MAGranularity gran, int dataId)
+        public GameObject CopyMATypeDstOf(ConvertGranularity gran, int dataId)
         {
-            return Copy(granTypeDict[gran.ToNativeGranularity()][dataId]);
+            return Copy(granTypeDict[gran.ToMeshGranularity()][dataId]);
         }
         
         /// <summary>
         /// 指定粒度であり、属性情報でのマテリアル分け結果としてexpectされるものをコピーして返します。
         /// </summary>
-        public GameObject CopyMAAttrDstOf(MAGranularity gran, int dataId)
+        public GameObject CopyMAAttrDstOf(ConvertGranularity gran, int dataId)
         {
             return Copy(granAttrDict[gran][dataId]);
         }

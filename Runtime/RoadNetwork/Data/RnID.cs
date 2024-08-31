@@ -1,6 +1,5 @@
 ﻿using System;
 using UnityEngine;
-using static PLATEAU.RoadNetwork.Data.PrimitiveDataStorage;
 
 namespace PLATEAU.RoadNetwork.Data
 {

@@ -1,4 +1,5 @@
-﻿using PLATEAU.CityExport.ModelConvert;
+﻿using PLATEAU.CityAdjust.NonLibDataHolder;
+using PLATEAU.CityExport.ModelConvert;
 using PLATEAU.CityExport.ModelConvert.SubMeshConvert;
 using PLATEAU.CityImport.Import.Convert;
 using PLATEAU.CityInfo;
@@ -134,9 +135,10 @@ namespace PLATEAU.RoadNetwork.Util
             var transformList = new UniqueParentTransformList(cityObjectGroupList.Select(c => c.transform).ToArray());
 
             // 属性情報を記憶しておく
-            var attributes = GmlIdToSerializedCityObj.ComposeFrom(transformList);
+            var attributes = new GmlIdToSerializedCityObj();
+            attributes.ComposeFrom(transformList);
 
-            var unityMeshToDllSubMeshConverter = new UnityMeshToDllSubMeshWithGameMaterial();
+            var unityMeshToDllSubMeshConverter = new UnityMeshToDllSubMeshWithEmptyMaterial();
 
             // ゲームオブジェクトを共通ライブラリのModelに変換します。
             using var srcModel = UnityMeshToDllModelConverter.Convert(
@@ -149,7 +151,7 @@ namespace PLATEAU.RoadNetwork.Util
             var converter = new GranularityConverter();
             var dstModel = converter.Convert(srcModel, nativeOption);
             var getter = new SerializedCityObjectGetterFromDict(attributes, dstModel);
-            var attrHelper = new AttributeDataHelper(getter, nativeOption.Granularity, true);
+            var attrHelper = new AttributeDataHelper(getter, true);
             var cco = await Task.Run(() => new SubDividedCityObject(dstModel, attrHelper));
 
             foreach (var co in cityObjectGroupList)

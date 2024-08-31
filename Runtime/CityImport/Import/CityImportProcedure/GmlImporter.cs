@@ -49,43 +49,27 @@ namespace PLATEAU.CityImport.Import.CityImportProcedure
             CancellationToken? token)
         {
             token?.ThrowIfCancellationRequested();
+            if (fetchedGmlFile.Path == null) return;
 
             string gmlName = Path.GetFileName(fetchedGmlFile.Path);
 
-            progressDisplay.SetProgress(gmlName, 20f, "GMLファイルをロード中");
-            string gmlPathAfter = fetchedGmlFile.Path;
-            if (gmlPathAfter == null) return;
-
-            using var cityModel = await LoadGmlAsync(fetchedGmlFile, token);
+            using var cityModel = await LoadGmlAsync(fetchedGmlFile, token, progressDisplay, gmlName);
 
             if (cityModel == null)
             {
-                progressDisplay.SetProgress(gmlName, 0f, "失敗 : GMLファイルのパースに失敗しました。");
                 return;
             }
 
-            string udxFeature = $"/udx/{fetchedGmlFile.FeatureType}/";
-            string relativeGmlPathFromFeature =
-                gmlPathAfter.Substring(
-                    gmlPathAfter.LastIndexOf(udxFeature,
-                        StringComparison.Ordinal) + udxFeature.Length);
-            // gmlファイルに対応するゲームオブジェクトの名称は、地物タイプフォルダからの相対パスにします。
-            string gmlObjName = relativeGmlPathFromFeature;
-            var gmlTrans = new GameObject(gmlObjName).transform;
-            var package = fetchedGmlFile.Package;
-            MeshExtractOptions meshExtractOptions;
-            try
+            var gmlTrans = CreateGmlGameObject(fetchedGmlFile).transform;
+            
+            
+            if (!TryCreateMeshExtractOptions(gmlTrans, rootTrans, conf, fetchedGmlFile, progressDisplay, gmlName,
+                    out var meshExtractOptions))
             {
-                gmlTrans.parent = rootTrans;
-                meshExtractOptions = conf.CreateNativeConfigFor(package);
-            }
-            catch (Exception e)
-            {
-                progressDisplay.SetProgress(gmlName, 0f, $"失敗 : メッシュインポートの設定に失敗しました。\n{e.Message}");
                 return;
             }
 
-            var packageConf = conf.GetConfigForPackage(package);
+            var packageConf = conf.GetConfigForPackage(fetchedGmlFile.Package);
             var infoForToolkits = new CityObjectGroupInfoForToolkits(packageConf.EnableTexturePacking, false);
             // ここはメインスレッドで呼ぶ必要があります。
             var placingResult = await PlateauToUnityModelConverter.CityModelToScene(
@@ -93,6 +77,7 @@ namespace PLATEAU.CityImport.Import.CityImportProcedure
                 packageConf.DoSetMeshCollider, packageConf.DoSetAttrInfo, token, packageConf.FallbackMaterial,
                 infoForToolkits, packageConf.MeshGranularity
             );
+            
 
             if (placingResult.IsSucceed)
             {
@@ -104,13 +89,18 @@ namespace PLATEAU.CityImport.Import.CityImportProcedure
             }
         }
         
-        private static async Task<CityModel> LoadGmlAsync(GmlFile gmlInfo, CancellationToken? token)
+        private static async Task<CityModel> LoadGmlAsync(GmlFile gmlInfo, CancellationToken? token, IProgressDisplay progressDisplay, string gmlName)
         {
+            progressDisplay.SetProgress(gmlName, 20f, "GMLファイルをロード中");
             string gmlPath = gmlInfo.Path.Replace('\\', '/');
 
             // GMLをパースした結果を返しますが、失敗した時は null を返します。
             var cityModel = await Task.Run(() => ParseGML(gmlPath, token));
 
+            if (cityModel == null)
+            {
+                progressDisplay.SetProgress(gmlName, 0f, "失敗 : GMLファイルのパースに失敗しました。");
+            }
             return cityModel;
 
         }
@@ -140,6 +130,38 @@ namespace PLATEAU.CityImport.Import.CityImportProcedure
             }
 
             return cityModel;
+        }
+
+        private static GameObject CreateGmlGameObject(GmlFile fetchedGmlFile)
+        {
+            string udxFeature = $"/udx/{fetchedGmlFile.FeatureType}/";
+            var gmlPath = fetchedGmlFile.Path;
+            string relativeGmlPathFromFeature =
+                gmlPath.Substring(
+                    gmlPath.LastIndexOf(udxFeature,
+                        StringComparison.Ordinal) + udxFeature.Length);
+            // gmlファイルに対応するゲームオブジェクトの名称は、地物タイプフォルダからの相対パスにします。
+            string gmlObjName = relativeGmlPathFromFeature;
+            return new GameObject(gmlObjName);
+        }
+
+        private static bool TryCreateMeshExtractOptions(Transform gmlTrans, Transform rootTrans, CityImportConfig conf, GmlFile fetchedGmlFile, IProgressDisplay progressDisplay, string gmlName, out MeshExtractOptions result)
+        {
+            MeshExtractOptions meshExtractOptions;
+            try
+            {
+                gmlTrans.parent = rootTrans;
+                meshExtractOptions = conf.CreateNativeConfigFor(fetchedGmlFile.Package);
+            }
+            catch (Exception e)
+            {
+                progressDisplay.SetProgress(gmlName, 0f, $"失敗 : メッシュインポートの設定に失敗しました。\n{e.Message}");
+                result = new MeshExtractOptions();
+                return false;
+            }
+
+            result = meshExtractOptions;
+            return true;
         }
     }
 }

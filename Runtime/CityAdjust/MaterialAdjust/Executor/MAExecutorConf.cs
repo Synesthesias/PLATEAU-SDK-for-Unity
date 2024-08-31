@@ -1,4 +1,4 @@
-using PLATEAU.CityAdjust.MaterialAdjust.Executor.Process;
+using PLATEAU.GranularityConvert;
 using PLATEAU.Util;
 
 namespace PLATEAU.CityAdjust.MaterialAdjust.Executor
@@ -12,7 +12,6 @@ namespace PLATEAU.CityAdjust.MaterialAdjust.Executor
     {
         public IMAConfig MaterialAdjustConf { get; }
         public UniqueParentTransformList TargetTransforms { get; set; }
-        public MAGranularity MeshGranularity { get; set; }
         public bool DoDestroySrcObjs { get; set; }
         
         /// <summary> マテリアルを変更しない箇所は、分割結合をスキップするか </summary>
@@ -22,19 +21,18 @@ namespace PLATEAU.CityAdjust.MaterialAdjust.Executor
         /// 地物型でのマテリアル分けの設定です。
         /// </summary>
         public MAExecutorConf(IMAConfig materialAdjustConf, UniqueParentTransformList targetTransforms,
-            MAGranularity meshGranularity, bool doDestroySrcObjs, bool skipNotChangingMaterial
+            bool doDestroySrcObjs, bool skipNotChangingMaterial
             )
         {
             MaterialAdjustConf = materialAdjustConf;
             TargetTransforms = targetTransforms;
-            MeshGranularity = meshGranularity;
             DoDestroySrcObjs = doDestroySrcObjs;
             SkipNotChangingMaterial = skipNotChangingMaterial;
         }
 
         public virtual MAExecutorConf Copy()
         {
-            return new MAExecutorConf(MaterialAdjustConf, TargetTransforms, MeshGranularity, DoDestroySrcObjs,
+            return new MAExecutorConf(MaterialAdjustConf, TargetTransforms, DoDestroySrcObjs,
                 SkipNotChangingMaterial);
         }
 
@@ -63,17 +61,17 @@ namespace PLATEAU.CityAdjust.MaterialAdjust.Executor
 
         public MAExecutorConfByAttr(IMAConfig materialAdjustConf,
             UniqueParentTransformList targetTransforms,
-            MAGranularity meshGranularity, bool doDestroySrcObjs, bool skipNotChangingMaterial,
+            bool doDestroySrcObjs, bool skipNotChangingMaterial,
             string attrKey
             )
-            : base(materialAdjustConf, targetTransforms, meshGranularity, doDestroySrcObjs, skipNotChangingMaterial)
+            : base(materialAdjustConf, targetTransforms, doDestroySrcObjs, skipNotChangingMaterial)
         {
             AttrKey = attrKey;
         }
 
         public override MAExecutorConf Copy()
         {
-            return new MAExecutorConfByAttr(MaterialAdjustConf, TargetTransforms, MeshGranularity, DoDestroySrcObjs,
+            return new MAExecutorConfByAttr(MaterialAdjustConf, TargetTransforms, DoDestroySrcObjs,
                 SkipNotChangingMaterial, AttrKey);
         }
     }

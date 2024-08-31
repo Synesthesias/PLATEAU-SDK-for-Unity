@@ -41,7 +41,7 @@ namespace PLATEAU.CityImport.Import.Convert
 
             token?.ThrowIfCancellationRequested();
             AttributeDataHelper attributeDataHelper =
-                new AttributeDataHelper(new SerializedCityObjectGetterFromCityModel(cityModel), meshExtractOptions.MeshGranularity, doSetAttrInfo);
+                new AttributeDataHelper(new SerializedCityObjectGetterFromCityModel(cityModel), doSetAttrInfo);
 
             Model plateauModel;
             try
@@ -152,7 +152,7 @@ namespace PLATEAU.CityImport.Import.Convert
     }
     
     /// <summary>
-    /// 粒度変換（分割結合）してシーンに配置した結果が格納されるクラスです。
+    /// シーンに配置した結果が格納されるクラスです。
     /// </summary>
     public class GranularityConvertResult
     {
@@ -185,6 +185,6 @@ namespace PLATEAU.CityImport.Import.Convert
         {
             return new GranularityConvertResult() { IsSucceed = false };
         }
-            
     }
+    
 }

@@ -4,13 +4,13 @@
   items:
   - name: インストール
     href: Installation.md
-  - name: 都市モデルのインポート
+  - name: 3D都市モデルのインポート
     href: ImportCityModels.md
-  - name: 都市モデルのエクスポート
+  - name: 3D都市モデルのエクスポート
     href: ExportCityModels.md
-  - name: モデル修正
+  - name: 3D都市モデルの調整
     href: ModelAdjust.md  
-  - name: 都市情報へのアクセス
+  - name: 属性情報へのアクセス
     href: AccessCityObject.md
   - name: SDKのマテリアルについて
     href: sdkMaterial.md

@@ -212,7 +212,8 @@ namespace PLATEAU.RoadNetwork.Mesh
         internal SubDividedCityObject(Model plateauModel, AttributeDataHelper attributeDataHelper)
         {
             Name = "Root";
-            attributeDataHelper.SetId(Name);
+            // RootはNodeが無いから
+            attributeDataHelper.SetCurrentNode(null);
             Children = new List<SubDividedCityObject>();
             for (int i = 0; i < plateauModel.RootNodesCount; i++)
             {
@@ -233,10 +234,10 @@ namespace PLATEAU.RoadNetwork.Mesh
 
             ParentRoadType = parentTypeMask;
             Name = plateauNode.Name;
-            attributeDataHelper.SetId(Name);
+            attributeDataHelper.SetCurrentNode(plateauNode);
             if (plateauNode != null)
             {
-                attributeDataHelper.SetCityObjectList(plateauNode.Mesh.CityObjectList);
+                attributeDataHelper.SetTargetCityObjList(plateauNode.Mesh.CityObjectList);
                 if (plateauNode.Mesh != null)
                 {
                     var m = plateauNode.Mesh;
