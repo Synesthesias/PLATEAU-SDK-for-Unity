@@ -340,7 +340,8 @@ namespace PLATEAU.Editor.RoadNetwork
         public IReadOnlyCollection<EditorData<RnRoadGroup>> connections = new EditorData<RnRoadGroup>[0];
         public Color connectionColor = Color.blue;
 
-        public List<Vector3> intersections = new List<Vector3>();
+        public ICollection<EditorData<RnIntersection>> intersections = new EditorData<RnIntersection>[0];
+        //public List<Vector3> intersections = new List<Vector3>();
         public Color intersectionColor = Color.green;
         public float intersectionRadius = 30.0f;
 
@@ -389,6 +390,7 @@ namespace PLATEAU.Editor.RoadNetwork
                 }
             }
 
+
             // ノードが重複して描画されるので nodeEitorDataで走査
             HashSet<NodeEditorData> nodeEitorData = new HashSet<NodeEditorData>(connections.Count * 2);
             foreach (var item in cns)
@@ -397,14 +399,46 @@ namespace PLATEAU.Editor.RoadNetwork
                 nodeEitorData.Add(item.B);
             }
 
-            foreach (var item in nodeEitorData)
+            //foreach (var item in nodeEitorData)
+            //{
+            //    // 選択済みのオブジェクト
+            //    if (item == editorSystem.SelectedRoadNetworkElement)
+            //        continue;
+
+            //    Color pre = GUI.color;
+            //    var p1 = item.RefGameObject.transform.position;
+
+            //    Vector3 pos2d_dis = Vector3.zero;
+            //    pos2d_dis = camera.WorldToScreenPoint(p1 + nodeIconPosOffset);
+            //    var isEditable = IsVisibleToCamera(camera, pos2d_dis);
+            //    if (isEditable)
+            //    {
+            //        // レーンの選択ボタンの表示
+            //        var laneSelectBtnSize = HandleUtility.GetHandleSize(p1) * laneHndScaleFactor;
+            //        var isClicked = Button2DOn3D(camera, pos2d_dis, nodeTex);
+            //        if (isClicked)
+            //        {
+            //            Debug.Log(item.RefGameObject.name);
+            //            editorSystem.SelectedRoadNetworkElement = item;
+            //            return;
+            //        }
+            //    }
+
+            //    GUI.color = Color.red;
+            //    var offset = Vector3.up * intersectionRadius * 1.1f;
+            //    Handles.Label(p1 + offset, item.RefGameObject.name);
+            //    GUI.color = pre;
+            //}
+
+
+            foreach (var intersection in intersections)
             {
                 // 選択済みのオブジェクト
-                if (item == editorSystem.SelectedRoadNetworkElement)
+                if (intersection == editorSystem.SelectedRoadNetworkElement)
                     continue;
 
                 Color pre = GUI.color;
-                var p1 = item.RefGameObject.transform.position;
+                var p1 = intersection.Ref.GetCenterPoint();
 
                 Vector3 pos2d_dis = Vector3.zero;
                 pos2d_dis = camera.WorldToScreenPoint(p1 + nodeIconPosOffset);
@@ -416,18 +450,17 @@ namespace PLATEAU.Editor.RoadNetwork
                     var isClicked = Button2DOn3D(camera, pos2d_dis, nodeTex);
                     if (isClicked)
                     {
-                        Debug.Log(item.RefGameObject.name);
-                        editorSystem.SelectedRoadNetworkElement = item;
+                        editorSystem.SelectedRoadNetworkElement = intersection;
                         return;
                     }
                 }
 
-                GUI.color = Color.red;
-                var offset = Vector3.up * intersectionRadius * 1.1f;
-                Handles.Label(p1 + offset, item.RefGameObject.name);
-                GUI.color = pre;
-            }
+                //GUI.color = Color.red;
+                //var offset = Vector3.up * intersectionRadius * 1.1f;
+                //Handles.Label(p1 + offset, intersection);
+                //GUI.color = pre;
 
+            }
 
 
             // 選択している道路がある場合
@@ -476,49 +509,49 @@ namespace PLATEAU.Editor.RoadNetwork
                     //}
 
                     var wayEditorDataList = roadGroupEditorData.GetSubData<List<WayEditorData>>();
-                    var nSlider = unionWay.Count; // 左右の
+                    //var nSlider = unionWay.Count; // 左右の
                     if (wayEditorDataList == null)
                     {
-                        wayEditorDataList = new List<WayEditorData>(nSlider);
-                        foreach (var editingTarget in unionWay)
-                        {
-                            wayEditorDataList.Add(new WayEditorData(editingTarget));
-                        }
-                        roadGroupEditorData.TryAdd(wayEditorDataList);
+                        //wayEditorDataList = new List<WayEditorData>(nSlider);
+                        //foreach (var editingTarget in unionWay)
+                        //{
+                        //    wayEditorDataList.Add(new WayEditorData(editingTarget));
+                        //}
+                        //roadGroupEditorData.TryAdd(wayEditorDataList);
                     }
 
                     Assert.IsNotNull(wayEditorDataList);
-                    if (wayEditorDataList.Count != nSlider)
-                    {
-                        wayEditorDataList.Clear();
-                        wayEditorDataList.Capacity = nSlider;
-                        foreach (var editingTarget in unionWay)
-                        {
-                            wayEditorDataList.Add(new WayEditorData(editingTarget));
-                        }
-                    }
+                    //if (wayEditorDataList.Count != nSlider)
+                    //{
+                    //    wayEditorDataList.Clear();
+                    //    wayEditorDataList.Capacity = nSlider;
+                    //    foreach (var editingTarget in unionWay)
+                    //    {
+                    //        wayEditorDataList.Add(new WayEditorData(editingTarget));
+                    //    }
+                    //}
                     Handles.BeginGUI();
                     GUILayout.BeginArea(new Rect(100, 100, 200, 300));
                     //GUILayout.BeginVertical();
-                    GUILayout.Label("Ways");
-                    foreach (var wayEditorData in wayEditorDataList)
-                    {
-                        //// textフィールド版
-                        //var s = GUILayout.TextField(wayEditorData.SliderVarVals.ToString());
-                        //var v = wayEditorData.SliderVarVals;
-                        //if (float.TryParse(s, out v))
-                        //{
-                        //    wayEditorData.SliderVarVals = v;
-                        //}
+                    //GUILayout.Label("Ways");
+                    //foreach (var wayEditorData in wayEditorDataList)
+                    //{
+                    //    //// textフィールド版
+                    //    //var s = GUILayout.TextField(wayEditorData.SliderVarVals.ToString());
+                    //    //var v = wayEditorData.SliderVarVals;
+                    //    //if (float.TryParse(s, out v))
+                    //    //{
+                    //    //    wayEditorData.SliderVarVals = v;
+                    //    //}
 
-                        // slider版
-                        const float minScaleLimit = -5.0f;
-                        const float maxScaleLimit = 5.0f;
-                        wayEditorData.SliderVarVals =
-                            GUILayout.HorizontalSlider(wayEditorData.SliderVarVals, minScaleLimit, maxScaleLimit);
+                    //    // slider版
+                    //    const float minScaleLimit = -5.0f;
+                    //    const float maxScaleLimit = 5.0f;
+                    //    wayEditorData.SliderVarVals =
+                    //        GUILayout.HorizontalSlider(wayEditorData.SliderVarVals, minScaleLimit, maxScaleLimit);
 
-                        GUILayout.Space(10);
-                    }
+                    //    GUILayout.Space(10);
+                    //}
 
                     GUILayout.EndArea();
                     Handles.EndGUI();
