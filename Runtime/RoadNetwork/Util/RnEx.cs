@@ -184,5 +184,33 @@ namespace PLATEAU.RoadNetwork.Util
             return false;
 #endif
         }
+
+        public static RnLineString CreateInnerLerpLineString(IReadOnlyList<Vector3> leftVertices, IReadOnlyList<Vector3> rightVertices, RnPoint start, RnPoint end, float t, float pointSkipDistance = 1e-3f)
+        {
+            var line = new RnLineString();
+            for (var i = 0; i < leftVertices.Count; i++)
+            {
+                void AddPoint(RnPoint p)
+                {
+                    line.AddPointOrSkip(p, pointSkipDistance);
+                }
+
+                AddPoint(start);
+                var segments = GeoGraphEx.GetInnerLerpSegments(leftVertices, rightVertices, AxisPlane.Xz, t);
+                // 1つ目の点はボーダーと重複するのでスキップ
+                // #TODO : 実際はボーダーよりも外側にあるのはすべてスキップすべき
+                foreach (var s in segments.Skip(1))
+                    AddPoint(new RnPoint(s));
+                AddPoint(end);
+                // 自己交差があれば削除する
+                var plane = AxisPlane.Xz;
+                //GeoGraph2D.RemoveSelfCrossing(line.Points
+                //    , t => t.Vertex.GetTangent(plane)
+                //    , (p1, p2, p3, p4, inter, f1, f2) => new RnPoint(Vector3.Lerp(p1, p2, f1)));
+
+            }
+
+            return line;
+        }
     }
 }

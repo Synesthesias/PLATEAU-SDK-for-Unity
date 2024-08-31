@@ -348,6 +348,12 @@ namespace PLATEAU.RoadNetwork.Structure
             return LineUtil.GetLineSegmentLerpPoint(this, p, out midPoint);
         }
 
+        public Vector3 GetLerpPoint(float p)
+        {
+            GetLerpPoint(p, out var midPoint);
+            return midPoint;
+        }
+
         /// <summary>
         /// 自身をnum分割して返す. 分割できない(頂点空）の時は空リストを返す
         /// </summary>

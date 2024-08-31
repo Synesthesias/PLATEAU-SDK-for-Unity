@@ -1,9 +1,10 @@
-﻿using PLATEAU.Util;
-using PLATEAU.Util.GeoGraph;
+﻿using PLATEAU.RoadNetwork.Util;
+using PLATEAU.Util;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Splines;
 
 namespace PLATEAU.RoadNetwork.Structure
 {
@@ -153,25 +154,14 @@ namespace PLATEAU.RoadNetwork.Structure
                     var right = rightWay;
                     if (n < num - 1)
                     {
-                        var ep = 1e-3f;
                         var prevBorder = prevBorders[n];
                         var nextBorder = nextBorders[n];
-                        var line = new RnLineString();
-                        line.AddPointOrSkip(prevBorder.GetPoint(-1), ep);
-                        var segments = GeoGraphEx.GetInnerLerpSegments(leftVertices, rightVertices, AxisPlane.Xz,
+                        var line = RnEx.CreateInnerLerpLineString(
+                            leftVertices
+                            , rightVertices
+                            , prevBorder.GetPoint(-1)
+                            , nextBorder.GetPoint(-1),
                             (1f + n) / num);
-                        // 1つ目の点はボーダーと重複するのでスキップ
-                        // #TODO : 実際はボーダーよりも外側にあるのはすべてスキップすべき
-                        foreach (var s in segments.Skip(1))
-                            line.AddPointOrSkip(new RnPoint(s), ep);
-                        line.AddPointOrSkip(nextBorder.GetPoint(-1), ep);
-
-
-                        // 自己交差があれば削除する
-                        var plane = AxisPlane.Xz;
-                        GeoGraph2D.RemoveSelfCrossing(line.Points
-                            , t => t.Vertex.GetTangent(plane)
-                            , (p1, p2, p3, p4, inter, f1, f2) => new RnPoint(Vector3.Lerp(p1, p2, f1)));
 
                         right = new RnWay(line, false, true);
                     }
@@ -428,6 +418,38 @@ namespace PLATEAU.RoadNetwork.Structure
                 var medianLane = new RnLane(leftWay, rightWay, new RnWay(prevLineString, isReverseNormal: true), new RnWay(nextLineString));
                 l.SetMedianLane(medianLane);
             }
+        }
+
+        public bool TryCreateSpline(out Spline spline, out float width, float tangentLength = 1f, float pointSkipDistance = 1e-3f)
+        {
+            Align();
+            spline = new Spline();
+            width = float.MaxValue;
+            var points = new List<Vector3>();
+            foreach (var r in Roads)
+            {
+                if (r.TryGetMergedSideWay(null, out var leftWay, out var rightWay) == false)
+                    return false;
+                var prevBorder = r.GetMergedBorder(RnLaneBorderType.Prev, null);
+                var nextBorder = r.GetMergedBorder(RnLaneBorderType.Next, null);
+                var start = new RnPoint(prevBorder.GetLerpPoint(0.5f));
+                var end = new RnPoint(nextBorder.GetLerpPoint(0.5f));
+                var line = RnEx.CreateInnerLerpLineString(leftWay.Vertices.ToList(), rightWay.Vertices.ToList(), start, end, 0.5f, pointSkipDistance);
+
+                points.AddRange(line.Points.Select(p => p.Vertex));
+                width = Mathf.Min(width, prevBorder.CalcLength(), nextBorder.CalcLength());
+                // #TODO : 途中のポイントごとに幅を計算する必要がある
+            }
+
+            for (var i = 0; i < points.Count; i++)
+            {
+                var dirIn = (i == 0 ? (points[i + 1] - points[i]) : (points[i] - points[i - 1])).normalized;
+                var dirOut = i == (points.Count - 1) ? dirIn : (points[i + 1] - points[i]).normalized;
+                spline.Add(new BezierKnot(points[i], dirIn * tangentLength, dirOut * tangentLength));
+            }
+
+
+            return true;
         }
 
         /// <summary>

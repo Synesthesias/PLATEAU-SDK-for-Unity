@@ -32,9 +32,9 @@ namespace PLATEAU.RoadNetwork.Structure
         /// </summary>
         /// <param name="x"></param>
         /// <param name="y"></param>
-        /// <param name="epsilon"></param>
+        /// <param name="sqrMagnitudeTolerance">２点間の一致判定となる２乗距離</param>
         /// <returns></returns>
-        public static bool Equals(RnPoint x, RnPoint y, float epsilon = 0f)
+        public static bool Equals(RnPoint x, RnPoint y, float sqrMagnitudeTolerance = 0f)
         {
             if (ReferenceEquals(x, y))
             {
@@ -50,7 +50,7 @@ namespace PLATEAU.RoadNetwork.Structure
             {
                 return false;
             }
-            return (x.Vertex - y.Vertex).sqrMagnitude <= epsilon;
+            return (x.Vertex - y.Vertex).sqrMagnitude <= sqrMagnitudeTolerance;
         }
     }
 }

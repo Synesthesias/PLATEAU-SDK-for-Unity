@@ -125,11 +125,11 @@ namespace PLATEAU.RoadNetwork.Structure
         /// </summary>
         /// <param name="p"></param>
         /// <param name="distanceEpsilon">距離誤差</param>
-        /// <param name="degEpsilon">角度誤差(p0 -> p1 -> p2の角度が180±degEpsilon以内になるときp1を削除する</param>
-        /// <param name="midPointTolerance"></param>
+        /// <param name="degEpsilon">角度誤差(p0 -> p1 -> p2の角度が180±この値以内になるときp1を削除する</param>
+        /// <param name="midPointTolerance">p0 -> p1 -> p2の３点があったときに、p0->p2の直線とp1の距離がこれ以下ならp1を削除する</param>
         public void AddPointOrSkip(RnPoint p, float distanceEpsilon = DefaultDistanceEpsilon, float degEpsilon = DefaultDegEpsilon, float midPointTolerance = DefaultMidPointTolerance)
         {
-            if (Points.Count > 0 && RnPoint.Equals(Points.Last(), p, distanceEpsilon))
+            if (Points.Count > 0 && RnPoint.Equals(Points.Last(), p, distanceEpsilon * distanceEpsilon))
                 return;
             if (Points.Count > 1)
             {
@@ -150,6 +150,15 @@ namespace PLATEAU.RoadNetwork.Structure
                     }
                 }
             }
+            Points.Add(p);
+        }
+
+        /// <summary>
+        /// 同じ点かどうかのチェック無しに追加する
+        /// </summary>
+        /// <param name="p"></param>
+        public void AddPoint(RnPoint p)
+        {
             Points.Add(p);
         }
 

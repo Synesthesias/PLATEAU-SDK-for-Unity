@@ -96,13 +96,21 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
         [SerializeField] public IntersectionOption intersectionOp = new IntersectionOption();
 
         [Serializable]
+        public class RoadGroupOption : DrawOption
+        {
+            public bool showSpline = false;
+            public bool showSplineKnot = false;
+            public float pointSkipDistance = 1e-3f;
+        }
+
+        [Serializable]
         public class RoadOption
         {
             public bool visible = true;
             public VisibleType visibleType = VisibleType.All;
             public bool showMedian = true;
             public bool showLaneConnection = false;
-            public bool showRoadGroup = false;
+            public RoadGroupOption showRoadGroup = new RoadGroupOption { visible = false, showSpline = true, color = Color.green };
             public bool showSideEdge = false;
             public bool showEmptyRoadLabel = false;
             public DrawOption showNextConnection = new DrawOption(false, Color.red);
@@ -454,7 +462,7 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
                 return;
 
             // RoadGroupで描画する場合はGroup全部で同じ色にする
-            if (roadOp.showRoadGroup)
+            if (roadOp.showRoadGroup.visible)
             {
                 var roadGroups = new List<RnRoadGroup>();
                 foreach (var road in roadNetwork.Roads)
@@ -472,14 +480,37 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
                 for (var i = 0; i < roadGroups.Count; i++)
                 {
                     var group = roadGroups[i];
-                    var color = DebugEx.GetDebugColor(i, roadGroups.Count);
-                    foreach (var road in group.Roads)
+
+                    if (roadOp.showRoadGroup.showSpline && group.TryCreateSpline(out var spline, out var width, pointSkipDistance: roadOp.showRoadGroup.pointSkipDistance))
                     {
-                        foreach (var lane in road.AllLanes)
+                        var n = spline.Count;
+                        if (roadOp.showRoadGroup.showSplineKnot)
                         {
-                            DrawArrows(lane.GetVertices().Select(p => p.Vertex), false, color: color);
+                            DrawArrows(spline.Knots.Select(knot => (Vector3)(knot.Position)), false, color: roadOp.showRoadGroup.color, arrowSize: 1f);
+                        }
+                        else
+                        {
+                            DrawArrows(Enumerable.Range(0, n)
+                                .Select(i => 1f * i / (n - 1))
+                                .Select(t =>
+                                {
+                                    spline.Evaluate(t, out var pos, out var tam, out var up);
+                                    return (Vector3)pos;
+                                }), false, color: roadOp.showRoadGroup.color, arrowSize: 1f);
                         }
                     }
+                    else
+                    {
+                        var color = DebugEx.GetDebugColor(i, roadGroups.Count);
+                        foreach (var road in group.Roads)
+                        {
+                            foreach (var lane in road.AllLanes)
+                            {
+                                DrawArrows(lane.GetVertices().Select(p => p.Vertex), false, color: color);
+                            }
+                        }
+                    }
+
                 }
 
                 return;
