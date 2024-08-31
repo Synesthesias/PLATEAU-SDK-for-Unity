@@ -206,7 +206,13 @@ namespace PLATEAU.RoadNetwork.Structure
                 ParentModel?.RemoveIntersection(this);
         }
 
-        public void BuildTracks(float tangentLength = 10f, float splitLength = 2f)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="tangentLength"></param>
+        /// <param name="splitLength"></param>
+        /// <param name="allowUTurn">Uターンを許可する</param>
+        public void BuildTracks(float tangentLength = 10f, float splitLength = 2f, bool allowUTurn = false)
         {
             tracks.Clear();
             foreach (var from in Neighbors)
@@ -215,12 +221,17 @@ namespace PLATEAU.RoadNetwork.Structure
                 if (fromLane == null)
                     continue;
 
+                var isFromOneLaneRoad = (fromLane.Parent?.AllLanes?.Count() ?? 0) == 1;
                 // この交差点に入ってくるレーンのみを対象とする
-                if (fromLane.NextBorder.IsSameLine(from.Border) == false)
+                // ただし、車線一つしかない場合は、出ていくレーンも対象とする
+                if (fromLane.NextBorder.IsSameLine(from.Border) == false && isFromOneLaneRoad == false)
                     continue;
                 foreach (var to in Neighbors)
                 {
                     if (from == to)
+                        continue;
+
+                    if (allowUTurn == false && from.Road == to.Road)
                         continue;
 
                     var toLane = to.GetConnectedLane();
@@ -228,7 +239,9 @@ namespace PLATEAU.RoadNetwork.Structure
                         continue;
 
                     // この交差点から出ていくレーンのみを対象とする
-                    if (toLane.PrevBorder.IsSameLine(to.Border) == false)
+                    // 1車線しかない道路はfromの方で判断しているので必要ないはず
+                    var isToOneLaneRoad = (toLane.Parent?.AllLanes?.Count() ?? 0) == 1;
+                    if (toLane.PrevBorder.IsSameLine(to.Border) == false && isToOneLaneRoad == false)
                         continue;
 
                     var spline = this.CalcTrackSpline(from.Border, to.Border, tangentLength, splitLength);
