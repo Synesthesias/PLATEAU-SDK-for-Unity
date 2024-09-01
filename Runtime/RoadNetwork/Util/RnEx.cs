@@ -204,9 +204,9 @@ namespace PLATEAU.RoadNetwork.Util
                 AddPoint(end);
                 // 自己交差があれば削除する
                 var plane = AxisPlane.Xz;
-                //GeoGraph2D.RemoveSelfCrossing(line.Points
-                //    , t => t.Vertex.GetTangent(plane)
-                //    , (p1, p2, p3, p4, inter, f1, f2) => new RnPoint(Vector3.Lerp(p1, p2, f1)));
+                GeoGraph2D.RemoveSelfCrossing(line.Points
+                    , t => t.Vertex.GetTangent(plane)
+                    , (p1, p2, p3, p4, inter, f1, f2) => new RnPoint(Vector3.Lerp(p1, p2, f1)));
 
             }
 
