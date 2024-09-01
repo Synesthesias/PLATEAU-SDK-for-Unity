@@ -1,25 +1,17 @@
 ﻿using PLATEAU.CityGML;
-using PLATEAU.RoadNetwork.Data;
-using PLATEAU.RoadNetwork.Drawer;
 using PLATEAU.RoadNetwork.Factory;
 using PLATEAU.RoadNetwork.Graph;
 using PLATEAU.RoadNetwork.Mesh;
-using PLATEAU.RoadNetwork.Structure;
 using PLATEAU.RoadNetwork.Structure.Drawer;
-using PLATEAU.RoadNetwork.Tester;
-using PLATEAU.RoadNetwork.Util;
 using PLATEAU.Util;
-using PLATEAU.Util.GeoGraph;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using UnityEditor.SceneManagement;
 using UnityEngine;
-using UnityEngine.Serialization;
 using PLATEAUCityObjectGroup = PLATEAU.CityInfo.PLATEAUCityObjectGroup;
 
-namespace PLATEAU.RoadNetwork
+namespace PLATEAU.RoadNetwork.Tester
 {
     [Serializable]
     [RequireComponent(typeof(PLATEAURnModelDrawerDebug))]
@@ -59,9 +51,6 @@ namespace PLATEAU.RoadNetwork
         // --------------------
 
         public List<SubDividedCityObject> SubDividedCityObjects => Factory.midStageData.convertedCityObjects.cityObjects;
-
-        public RGraph RGraph => Factory.midStageData.Graph;
-        public RGraphDrawerDebug RGraphDrawer => Factory.midStageData.rGraph.drawer;
 
         public void OnDrawGizmos()
         {
@@ -103,10 +92,10 @@ namespace PLATEAU.RoadNetwork
             Factory.midStageData.CreateGraph(Factory.graphFactory);
         }
 
-        public async Task CreateRoadNetworkByGraphAsync()
-        {
-            await Factory.CreateRnModelAsync(Factory.midStageData.Graph, gameObject);
-        }
+        //public async Task CreateRoadNetworkByGraphAsync()
+        //{
+        //    await Factory.CreateRnModelAsync(Factory.midStageData.Graph, gameObject);
+        //}
 
         /// <summary>
         /// 同名のCityObjectGroupがあった場合に最大のLODのもの以外を非表示にする

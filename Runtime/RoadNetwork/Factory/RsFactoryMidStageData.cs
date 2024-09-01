@@ -3,6 +3,7 @@ using PLATEAU.CityInfo;
 using PLATEAU.RoadNetwork.CityObject.Drawer;
 using PLATEAU.RoadNetwork.Drawer;
 using PLATEAU.RoadNetwork.Graph;
+using PLATEAU.RoadNetwork.Graph.Drawer;
 using PLATEAU.RoadNetwork.Mesh;
 using PLATEAU.RoadNetwork.Tester;
 using PLATEAU.RoadNetwork.Util;
@@ -13,6 +14,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
+using Object = System.Object;
 
 namespace PLATEAU.RoadNetwork.Factory
 {
@@ -39,20 +41,13 @@ namespace PLATEAU.RoadNetwork.Factory
             public List<RoadNetworkTranMesh> tranMeshes = new List<RoadNetworkTranMesh>();
         }
 
-        [Serializable]
-        public class RGraphWrap
-        {
-            public RGraphDrawerDebug drawer = new RGraphDrawerDebug();
-            public RGraph rGraph = new RGraph();
-        }
-
         // --------------------
         // start:フィールド
         // --------------------
         [SerializeField] public bool saveTmpData = false;
 
 
-        [SerializeField] public RGraphWrap rGraph = new RGraphWrap();
+        //[SerializeField] public RGraphWrap rGraph = new RGraphWrap();
 
         [SerializeField] public SubDividedCityObjectWrap convertedCityObjects = new SubDividedCityObjectWrap();
 
@@ -64,8 +59,6 @@ namespace PLATEAU.RoadNetwork.Factory
         // --------------------
         // end:フィールド
         // --------------------
-
-        public RGraph Graph => rGraph.rGraph;
 
         /// <summary>
         /// PLATEAUCityObjectGroupを変換する
@@ -122,15 +115,25 @@ namespace PLATEAU.RoadNetwork.Factory
             return ret;
         }
 
-        public RGraph CreateGraph(RGraphFactory graphFactory)
+        public RGraph CreateGraph(RGraphFactory graphFactory, GameObject target = null)
         {
-            rGraph.rGraph = graphFactory.CreateGraph(convertedCityObjects.cityObjects);
-            if (saveTmpData == false)
+            var graph = graphFactory.CreateGraph(convertedCityObjects.cityObjects);
+            if (target)
             {
-                convertedCityObjects.cityObjects = new List<SubDividedCityObject>();
-            }
+                if (saveTmpData)
+                {
+                    target.GetOrAddComponent<PLATEAURGraph>().Graph = graph;
+                }
+                else
+                {
+                    foreach (var comp in target.GetComponents<PLATEAURGraph>().ToList())
+                    {
+                        UnityEngine.Object.DestroyImmediate(comp);
+                    }
+                }
 
-            return rGraph.rGraph;
+            }
+            return graph;
         }
 
         public async Task CreateAll(List<PLATEAUCityObjectGroup> targets)
@@ -162,7 +165,6 @@ namespace PLATEAU.RoadNetwork.Factory
             convertedCityObjects.drawer.DrawConvertedCityObject(convertedCityObjects.cityObjects);
             mergedConvertedCityObjects.drawer.DrawConvertedCityObject(mergedConvertedCityObjects.cityObjects);
             DrawTarnMesh();
-            rGraph.drawer?.Draw(rGraph.rGraph);
         }
     }
 }

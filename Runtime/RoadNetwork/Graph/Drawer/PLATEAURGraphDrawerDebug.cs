@@ -1,19 +1,16 @@
-﻿using PLATEAU.CityGML;
-using PLATEAU.CityInfo;
-using PLATEAU.RoadNetwork.Graph;
+﻿using PLATEAU.CityInfo;
+using PLATEAU.RoadNetwork.Drawer;
 using PLATEAU.Util;
-using PLATEAU.Util.GeoGraph;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
-using static PLATEAU.Util.GeoGraph.GeoGraphDoubleLinkedEdgeList;
 
-namespace PLATEAU.RoadNetwork.Drawer
+namespace PLATEAU.RoadNetwork.Graph.Drawer
 {
     [Serializable]
-    public class RGraphDrawerDebug
+    public class PLATEAURGraphDrawerDebug : MonoBehaviour
     {
         // --------------------
         // start:フィールド
@@ -35,6 +32,15 @@ namespace PLATEAU.RoadNetwork.Drawer
         }
         public RPartsFlag showId = 0;
 
+
+        public enum DrawMode
+        {
+            Normal,
+            SideWalk,
+        }
+        // 描画モード
+        public DrawMode drawMode = DrawMode.Normal;
+
         [Serializable]
         public class FaceOption : DrawOption
         {
@@ -44,10 +50,12 @@ namespace PLATEAU.RoadNetwork.Drawer
             public bool showCityObjectOutline = false;
             public bool showOutlineLoop = false;
         }
+
         public FaceOption faceOption = new FaceOption();
         [Serializable]
         public class EdgeOption : DrawOption
         {
+            public bool useAnyFaceVertexColor = false;
         }
         public EdgeOption edgeOption = new EdgeOption();
 
@@ -58,8 +66,45 @@ namespace PLATEAU.RoadNetwork.Drawer
             public DrawOption neighborOption = new DrawOption { visible = false, color = Color.yellow };
             public bool showPos = false;
             public bool showEdgeCount = false;
+            public bool useAnyFaceVertexColor = false;
         }
         public VertexOption vertexOption = new VertexOption();
+
+        [Serializable]
+        public class RoadTypeMaskOption
+        {
+            public RRoadTypeMask type;
+            public Color color;
+            public bool enable = true;
+
+            public static List<RoadTypeMaskOption> CreateDefault()
+            {
+                var ret = new List<RoadTypeMaskOption>();
+                var i = 0;
+                var values = Enum.GetValues(typeof(RRoadTypeMask)).Cast<RRoadTypeMask>().ToList();
+                foreach (var t in values)
+                {
+                    if (t == RRoadTypeMask.Empty || t == RRoadTypeMask.All)
+                        continue;
+                    var color = DebugEx.GetDebugColor(i++, values.Count());
+                    ret.Add(new RoadTypeMaskOption { type = t, color = color, enable = true });
+                }
+                return ret;
+            }
+        }
+
+        [SerializeField]
+        public List<RoadTypeMaskOption> roadTypeMaskOptions = RoadTypeMaskOption.CreateDefault();
+
+        [Serializable]
+        public class DrawSideWalkOption
+        {
+            public DrawOption outsideColor = new DrawOption { color = Color.green };
+            public DrawOption insideColor = new DrawOption { color = Color.blue };
+            public DrawOption startColor = new DrawOption { color = Color.red };
+            public DrawOption endColor = new DrawOption { color = Color.yellow };
+        }
+        public DrawSideWalkOption drawSideWalkOption = new DrawSideWalkOption();
 
         // --------------------
         // end:フィールド
@@ -69,7 +114,6 @@ namespace PLATEAU.RoadNetwork.Drawer
         public HashSet<RFace> TargetFaces { get; } = new();
         public HashSet<REdge> TargetEdges { get; } = new();
         public HashSet<RVertex> TargetVertices { get; } = new();
-
 
         private class DrawWork
         {
@@ -127,6 +171,23 @@ namespace PLATEAU.RoadNetwork.Drawer
             DebugEx.DrawArrow(start, end, arrowSize, arrowUp, bodyColor, arrowColor, duration, depthTest);
         }
 
+        public Color GetColor(RRoadTypeMask roadType)
+        {
+            Color ret = Color.black;
+            var n = 0;
+            foreach (var t in roadTypeMaskOptions)
+            {
+                if (t.enable && roadType.HasFlag(t.type))
+                {
+                    ret += t.color;
+                    n++;
+                }
+            }
+            if (n > 0)
+                ret /= n;
+
+            return ret;
+        }
 
         private IEnumerable<PLATEAUCityObjectGroup> GetSelectedCityObjectGroups()
         {
@@ -153,7 +214,7 @@ namespace PLATEAU.RoadNetwork.Drawer
             if (op.showPos)
                 text += $"({vertex.Position.x:F2},{vertex.Position.z:F2})";
 
-            DrawString(text, vertex.Position, fontSize: op.size);
+            DrawString(text, vertex.Position, fontSize: op.size, color: GetColor(vertex.GetTypeMaskOrDefault(op.useAnyFaceVertexColor)));
 
             if (TargetVertices.Contains(vertex))
             {
@@ -181,7 +242,8 @@ namespace PLATEAU.RoadNetwork.Drawer
                 return;
             if (op.visible)
             {
-                DrawLine(edge.V0.Position, edge.V1.Position, op.color);
+                var color = GetColor(edge.GetTypeMaskOrDefault(op.useAnyFaceVertexColor));
+                DrawLine(edge.V0.Position, edge.V1.Position, color);
                 if (showId.HasFlag(RPartsFlag.Edge))
                     DrawString($"[{edge.DebugMyId}]", (edge.V0.Position + edge.V1.Position) / 2);
             }
@@ -220,16 +282,16 @@ namespace PLATEAU.RoadNetwork.Drawer
             var vertices = op.showCityObjectOutline ? work.graph.ComputeOutlineVerticesByCityObjectGroup(face.CityObjectGroup, op.showOutlineMask, op.showOutlineRemoveMask)
                 : face.ComputeOutlineVertices();
 
-            bool isLoop = true;
-            if (vertices.Count > 1)
-            {
-                if ((vertices[0].Edges.Any(e => e.V0 == vertices[^1] || e.V1 == vertices[^1])) == false)
-                {
-                    isLoop = false;
-                }
+            //bool isLoop = true;
+            //if (vertices.Count > 1)
+            //{
+            //    if ((vertices[0].Edges.Any(e => e.V0 == vertices[^1] || e.V1 == vertices[^1])) == false)
+            //    {
+            //        isLoop = false;
+            //    }
 
-            }
-
+            //}
+            RGraphEx.OutlineVertex2Edge(vertices, out var edges);
             if (showId.HasFlag(RPartsFlag.Face))
             {
                 var center = vertices.Aggregate(Vector3.zero, (a, v) => v.Position + a) / vertices.Count;
@@ -238,10 +300,9 @@ namespace PLATEAU.RoadNetwork.Drawer
 
             if (op.showOutline)
             {
-                DrawLines(vertices.Select(v => v.Position), op.showOutlineLoop, color: isLoop ? Color.white : Color.red);
-                foreach (var v in vertices)
+                foreach (var e in edges)
                 {
-                    Draw(vertexOption, v, work);
+                    Draw(edgeOption, e, work);
                 }
             }
             else
@@ -253,15 +314,61 @@ namespace PLATEAU.RoadNetwork.Drawer
             }
         }
 
-        public void Draw(RGraph graph)
+        private void DrawSideWalk(RGraph graph, DrawWork work)
+        {
+            void Draw(List<REdge> edges, DrawOption option)
+            {
+                if (option.visible == false)
+                    return;
+                foreach (var e in edges)
+                {
+                    DrawLine(e.V0.Position, e.V1.Position, option.color);
+                }
+            }
+
+            foreach (var face in graph.Faces)
+            {
+                if (face.RoadTypes.IsSideWalk() == false)
+                    continue;
+
+                var success = face.CreateSideWalk(out var outsideEdges, out var insideEdges, out var startEdges, out var endEdges);
+                if (!success)
+                    continue;
+                Draw(outsideEdges, drawSideWalkOption.outsideColor);
+                Draw(insideEdges, drawSideWalkOption.insideColor);
+                Draw(startEdges, drawSideWalkOption.startColor);
+                Draw(endEdges, drawSideWalkOption.endColor);
+            }
+        }
+
+        private void DrawNormal(RGraph graph, DrawWork work)
+        {
+
+            foreach (var p in graph.Faces)
+                Draw(faceOption, p, work);
+        }
+
+        public void OnDrawGizmos()
         {
             if (visible == false)
                 return;
+
+            var target = GetComponent<PLATEAURGraph>();
+            if (!target)
+                return;
+            var graph = target.Graph;
             if (graph == null)
                 return;
             var work = new DrawWork { graph = graph };
-            foreach (var p in graph.Faces)
-                Draw(faceOption, p, work);
+            switch (drawMode)
+            {
+                case DrawMode.Normal:
+                    DrawNormal(graph, work);
+                    break;
+                case DrawMode.SideWalk:
+                    DrawSideWalk(graph, work);
+                    break;
+            }
         }
     }
 }

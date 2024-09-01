@@ -51,7 +51,7 @@ namespace PLATEAU.RoadNetwork.CityObject.Drawer
             var index = 0;
             foreach (var item in cityObjects)
             {
-                if (item.Visible == false || (TargetCityObjects.Any() == false && TargetCityObjects.Contains(item) == false))
+                if (item.Visible == false || (TargetCityObjects.Any() && TargetCityObjects.Contains(item) == false))
                 {
                     // インデックスは進めておかないとvisible切り替わるたびに色代わるの辛い
                     index += item.Meshes.Sum(m => m.SubMeshes.Count);

@@ -74,6 +74,10 @@ namespace PLATEAU.RoadNetwork.Factory
 
             public Dictionary<List<RVertex>, RnLineString> LineMap { get; } = new();
 
+            // key   : RnLineString.PointsのDebugIdのxor(高速化用)
+            // value : RnLineString
+            public Dictionary<ulong, List<RnLineString>> RnPointList2LineStringMap { get; } = new();
+
             public float terminateAllowEdgeAngle = 20f;
 
             public Tran FindTranOrDefault(RFace face)
@@ -91,7 +95,7 @@ namespace PLATEAU.RoadNetwork.Factory
                 return PointMap.GetValueOrCreate(v, x => new RnPoint(x.Position));
             }
 
-            private bool IsEqual(List<RVertex> a, List<RVertex> b, out bool isReverse)
+            private static bool IsEqual(List<RVertex> a, List<RVertex> b, out bool isReverse)
             {
                 isReverse = false;
                 if (a.Count != b.Count)
@@ -106,27 +110,76 @@ namespace PLATEAU.RoadNetwork.Factory
                 return a.SequenceEqual(Enumerable.Range(0, a.Count).Select(i => b[b.Count - 1 - i]));
             }
 
-            public RnWay CreateWay(List<RVertex> line)
+            private static bool IsEqual(List<RnPoint> a, List<RnPoint> b, out bool isReverse)
             {
+                isReverse = false;
+                if (a.Count != b.Count)
+                    return false;
+                if (a[0] == b[0])
+                {
+                    isReverse = false;
+                    return a.SequenceEqual(b);
+                }
+
+                isReverse = true;
+                return a.SequenceEqual(Enumerable.Range(0, a.Count).Select(i => b[b.Count - 1 - i]));
+            }
+
+            public RnWay CreateWay(List<RnPoint> points)
+            {
+                return CreateWay(points, out var _);
+            }
+
+            public RnWay CreateWay(List<RnPoint> points, out bool isCached)
+            {
+                isCached = false;
+                if (points.Count <= 1)
+                    return null;
+
+                var key = points.Aggregate(0Lu, (a, p) => a ^ p.DebugMyId);
+                var lines = RnPointList2LineStringMap.GetValueOrCreate(key);
+                foreach (var line in lines)
+                {
+                    if (IsEqual(line.Points, points, out var isReverse))
+                    {
+                        isCached = true;
+                        return new RnWay(line, false);
+                    }
+                }
+                var newLine = RnLineString.Create(points, true);
+                lines.Add(newLine);
+                return new RnWay(newLine, false);
+            }
+
+            public RnWay CreateWay(List<RVertex> vertices)
+            {
+                return CreateWay(vertices, out var _);
+            }
+
+            public RnWay CreateWay(List<RVertex> vertices, out bool isCached)
+            {
+                isCached = false;
+                // 頂点無い場合はnull
+                if (vertices.Any() == false)
+                    return null;
                 foreach (var item in LineMap)
                 {
-                    if (IsEqual(item.Key, line, out var isReverse))
+                    if (IsEqual(item.Key, vertices, out var isReverse))
                     {
+                        isCached = true;
                         return new RnWay(item.Value, isReverse);
                     }
                 }
 
                 // 元のリストが変わるかもしれないのでコピーで持つ
-                var key = line.ToList();
+                var key = vertices.ToList();
                 LineMap[key] = RnLineString.Create(key.Select(CreatePoint), true);
                 return new RnWay(LineMap[key], false);
             }
 
-
-
             public List<RnSideWalk> CreateSideWalk(float lod1SideWalkSize)
             {
-                var visited = new Dictionary<RnPoint, (Vector3 pos, Vector3 normal)>();
+                var visited = new Dictionary<RnPoint, (RnPoint pos, Vector3 normal)>();
 
                 var ret = new List<RnSideWalk>();
                 // LOD1の場合は周りにlod1RoadSize分歩道があると仮定して動かす
@@ -149,20 +202,20 @@ namespace PLATEAU.RoadNetwork.Factory
                         var n = normals[i];
                         if (visited.ContainsKey(p) == false)
                         {
-                            var last = p.Vertex;
+                            var before = new RnPoint(p.Vertex);
                             p.Vertex -= n * lod1SideWalkSize;
-                            visited[p] = new(last, n); //new VertexInfo { Normal = n, Position = last };
-                            points.Add(new RnPoint(last));
+                            visited[p] = new(before, n); //new VertexInfo { Normal = n, Position = last };
+                            points.Add(before);
                         }
                         else
                         {
                             var last = visited[p];
-                            points.Add(new RnPoint(last.pos));
-
+                            points.Add(last.pos);
                         }
                     }
-
-                    var sideWalk = RnSideWalk.Create(parent, new RnWay(RnLineString.Create(points)));
+                    var startWay = CreateWay(new List<RnPoint> { points[0], way.GetPoint(0) });
+                    var endWay = CreateWay(new List<RnPoint> { points[^1], way.GetPoint(-1) });
+                    var sideWalk = RnSideWalk.Create(parent, CreateWay(points), way, startWay, endWay);
                     ret.Add(sideWalk);
                 }
 
@@ -564,15 +617,30 @@ namespace PLATEAU.RoadNetwork.Factory
                     ret.AddSideWalk(sideWalk);
                 if (addLod3SideWalk)
                 {
-                    foreach (var c in faceGroups)
+                    foreach (var fg in faceGroups)
                     {
-                        foreach (var sideWalkFace in c.Faces.Where(f => f.RoadTypes.IsSideWalk()))
+                        foreach (var sideWalkFace in fg.Faces.Where(f => f.RoadTypes.IsSideWalk()))
                         {
-                            var vertices = sideWalkFace.ComputeOutlineVertices();
-                            var way = work.CreateWay(vertices);
+                            if (sideWalkFace.CreateSideWalk(out var outsideEdges, out var insideEdges,
+                                    out var startEdges, out var endEdges) == false)
+                                continue;
+
+                            RnWay AsWay(IReadOnlyList<REdge> edges, out bool isCached)
+                            {
+                                isCached = false;
+                                if (edges.Any() == false)
+                                    return null;
+                                if (RGraphEx.SegmentEdge2Vertex(edges, out var vertices, out var isLoop))
+                                    return work.CreateWay(vertices, out isCached);
+                                return null;
+                            }
+                            var outsideWay = AsWay(outsideEdges, out var outsideCached);
+                            var insideWay = AsWay(insideEdges, out var insideCached);
+                            var startWay = AsWay(startEdges, out var startCached);
+                            var endWay = AsWay(endEdges, out var endCached);
                             var parent = work.TranMap.Values.FirstOrDefault(t =>
                                 t.FaceGroup.CityObjectGroup == sideWalkFace.CityObjectGroup && t.Node != null);
-                            var sideWalk = RnSideWalk.Create(parent?.Node, way);
+                            var sideWalk = RnSideWalk.Create(parent?.Node, outsideWay, insideWay, startWay, endWay);
                             ret.AddSideWalk(sideWalk);
                         }
                     }
@@ -616,13 +684,11 @@ namespace PLATEAU.RoadNetwork.Factory
             }
         }
 
-        public async Task<RnModel> CreateRnModelAsync(List<PLATEAUCityObjectGroup> cityObjectGroups)
+        public async Task<RnModel> CreateRnModelImplAsync(List<PLATEAUCityObjectGroup> cityObjectGroups, GameObject target)
         {
             await midStageData.ConvertCityObjectAsync(cityObjectGroups);
-            var graph = midStageData.CreateGraph(graphFactory);
+            var graph = midStageData.CreateGraph(graphFactory, target);
             var model = await CreateRnModelAsync(graph);
-            if (midStageData.saveTmpData == false)
-                midStageData.rGraph.rGraph = null;
             return model;
         }
 
@@ -631,7 +697,7 @@ namespace PLATEAU.RoadNetwork.Factory
             if (!target)
                 target = new GameObject("RoadNetworkStructure");
             var ret = target.GetComponent<PLATEAURnStructureModel>() ?? target.AddComponent<PLATEAURnStructureModel>();
-            var model = await CreateRnModelAsync(cityObjectGroups);
+            var model = await CreateRnModelImplAsync(cityObjectGroups, target);
             ret.RoadNetwork = model;
             return ret;
         }

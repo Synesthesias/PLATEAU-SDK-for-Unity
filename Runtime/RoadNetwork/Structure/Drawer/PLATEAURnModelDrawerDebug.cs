@@ -168,9 +168,13 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
         public LaneOption laneOp = new LaneOption();
 
         [Serializable]
-        public class SideWalkOption : DrawOption
+        public class SideWalkOption
         {
-
+            public bool visible = true;
+            public DrawOption showOutsideWay = new DrawOption(true, Color.red);
+            public DrawOption showInsideWay = new DrawOption(true, Color.blue);
+            public DrawOption showStartEdgeWay = new DrawOption(true, Color.green);
+            public DrawOption showEndEdgeWay = new DrawOption(true, Color.yellow);
         }
         [SerializeField] public SideWalkOption sideWalkRoadOp = new SideWalkOption();
 
@@ -304,7 +308,17 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
         {
             if (sideWalk == null)
                 return;
-            DrawArrows(sideWalk.Way.Select(v => v), true, color: p.color);
+
+            void DrawSideWalkWay(RnWay way, DrawOption op)
+            {
+                if (op.visible == false)
+                    return;
+                DrawWay(way, op.color);
+            }
+            DrawSideWalkWay(sideWalk.OutsideWay, p.showOutsideWay);
+            DrawSideWalkWay(sideWalk.InsideWay, p.showInsideWay);
+            DrawSideWalkWay(sideWalk.StartEdgeWay, p.showStartEdgeWay);
+            DrawSideWalkWay(sideWalk.EndEdgeWay, p.showEndEdgeWay);
         }
 
         /// <summary>
@@ -594,10 +608,10 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
 
         private void DrawSideWalks(RnModel roadNetwork)
         {
+            if (sideWalkRoadOp.visible == false)
+                return;
             foreach (var sw in roadNetwork.SideWalks)
             {
-                if (sideWalkRoadOp.visible == false)
-                    break;
                 DrawSideWalk(sw, sideWalkRoadOp);
             }
         }

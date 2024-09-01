@@ -41,6 +41,7 @@ namespace PLATEAU.RoadNetwork.Factory
 
     public partial class RoadNetworkFactory
     {
+#if false
         [Serializable]
         private class Cell : IReadOnlyList<TranWork>
         {
@@ -503,7 +504,6 @@ namespace PLATEAU.RoadNetwork.Factory
             }
         }
 
-
         public Task<RnModel> CreateNetworkAsync(IList<RoadNetworkTranMesh> targets)
         {
             // レーンの初期化
@@ -738,5 +738,6 @@ namespace PLATEAU.RoadNetwork.Factory
                 tran.Split2Way(lineStringTable);
             return tranWorks;
         }
+#endif
     }
 }
