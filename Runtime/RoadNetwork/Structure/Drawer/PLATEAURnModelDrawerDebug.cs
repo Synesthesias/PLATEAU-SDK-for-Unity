@@ -189,6 +189,15 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
         {
             public HashSet<object> Visited { get; } = new();
 
+            public RnModel Model { get; set; }
+
+            public int DrawRoadGroupCount { get; set; }
+
+            public DrawWork(RnModel model)
+            {
+                Model = model;
+            }
+
             public bool IsVisited(object obj)
             {
                 var ret = Visited.Contains(obj);
@@ -197,7 +206,7 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
                 return true;
             }
         }
-        DrawWork work = new DrawWork();
+        DrawWork work = new DrawWork(null);
 
         private void DrawArrows(IEnumerable<Vector3> vertices
             , bool isLoop = false
@@ -405,7 +414,10 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
                 return;
 
             if (RnEx.IsEditorSceneSelected(road.CityObjectGroup))
+            {
                 visibleType |= VisibleType.SceneSelected;
+                visibleType &= ~VisibleType.NonSelected;
+            }
 
             if (op.visibleType.HasFlag(visibleType) == false)
                 return;
@@ -418,6 +430,50 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
 
             if (targetTran && targetTran != road.TargetTran)
                 return;
+
+            // RoadGroupで描画する場合はGroup全部で同じ色にする
+            if (roadOp.showRoadGroup.visible)
+            {
+                var group = road.CreateRoadGroupOrDefault();
+                foreach (var r in group.Roads)
+                    work.Visited.Add(r);
+
+                if (roadOp.showRoadGroup.showSpline && group.TryCreateSpline(out var spline, out var width, pointSkipDistance: roadOp.showRoadGroup.pointSkipDistance))
+                {
+                    var n = spline.Count;
+                    if (roadOp.showRoadGroup.showSplineKnot)
+                    {
+                        foreach (var knot in spline.Knots.Select((v, i) => new { v, i }))
+                        {
+                            DrawString(knot.i.ToString(), knot.v.Position);
+                        }
+                        DrawArrows(spline.Knots.Select(knot => (Vector3)(knot.Position)), false, color: roadOp.showRoadGroup.color, arrowSize: 1f);
+                    }
+                    else
+                    {
+                        DrawArrows(Enumerable.Range(0, n)
+                            .Select(i => 1f * i / (n - 1))
+                            .Select(t =>
+                            {
+                                spline.Evaluate(t, out var pos, out var tam, out var up);
+                                return (Vector3)pos;
+                            }), false, color: roadOp.showRoadGroup.color, arrowSize: 1f);
+                    }
+                }
+                else
+                {
+                    var color = DebugEx.GetDebugColor(work.DrawRoadGroupCount++, 16);
+                    foreach (var r in group.Roads)
+                    {
+                        foreach (var lane in r.AllLanes)
+                        {
+                            DrawArrows(lane.GetVertices().Select(p => p.Vertex), false, color: color);
+                        }
+                    }
+                }
+
+                return;
+            }
 
             if (showPartsType.HasFlag(RnPartsTypeMask.Road) || (op.showEmptyRoadLabel && road.IsEmptyRoad))
                 DebugEx.DrawString($"R[{road.DebugMyId}]", road.GetCenter());
@@ -474,61 +530,6 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
         {
             if (roadOp.visible == false)
                 return;
-
-            // RoadGroupで描画する場合はGroup全部で同じ色にする
-            if (roadOp.showRoadGroup.visible)
-            {
-                var roadGroups = new List<RnRoadGroup>();
-                foreach (var road in roadNetwork.Roads)
-                {
-                    if (roadGroups.Any(a => a.Roads.Contains(road)) == false)
-                    {
-                        var group = road.CreateRoadGroupOrDefault();
-                        if (group != null)
-                        {
-                            roadGroups.Add(group);
-                        }
-                    }
-                }
-
-                for (var i = 0; i < roadGroups.Count; i++)
-                {
-                    var group = roadGroups[i];
-
-                    if (roadOp.showRoadGroup.showSpline && group.TryCreateSpline(out var spline, out var width, pointSkipDistance: roadOp.showRoadGroup.pointSkipDistance))
-                    {
-                        var n = spline.Count;
-                        if (roadOp.showRoadGroup.showSplineKnot)
-                        {
-                            DrawArrows(spline.Knots.Select(knot => (Vector3)(knot.Position)), false, color: roadOp.showRoadGroup.color, arrowSize: 1f);
-                        }
-                        else
-                        {
-                            DrawArrows(Enumerable.Range(0, n)
-                                .Select(i => 1f * i / (n - 1))
-                                .Select(t =>
-                                {
-                                    spline.Evaluate(t, out var pos, out var tam, out var up);
-                                    return (Vector3)pos;
-                                }), false, color: roadOp.showRoadGroup.color, arrowSize: 1f);
-                        }
-                    }
-                    else
-                    {
-                        var color = DebugEx.GetDebugColor(i, roadGroups.Count);
-                        foreach (var road in group.Roads)
-                        {
-                            foreach (var lane in road.AllLanes)
-                            {
-                                DrawArrows(lane.GetVertices().Select(p => p.Vertex), false, color: color);
-                            }
-                        }
-                    }
-
-                }
-
-                return;
-            }
 
             foreach (var road in roadNetwork.Roads)
             {
@@ -622,7 +623,7 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
                 return;
             if (roadNetwork == null)
                 return;
-            work = new DrawWork();
+            work = new DrawWork(roadNetwork);
 
             foreach (var r in TargetRoads)
                 DrawRoad(r, VisibleType.GuiSelected);
