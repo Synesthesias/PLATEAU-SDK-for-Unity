@@ -193,13 +193,15 @@ namespace PLATEAU.RoadNetwork.Structure
             AddRoad(road);
         }
 
-        public RoadNetworkStorage Serialize()
+        public RoadNetworkStorage Serialize(bool createEmptyRoadBetweenIntersection = true)
         {
+            if (createEmptyRoadBetweenIntersection)
+                CreateEmptyRoadBetweenInteraction();
             var serializer = new RoadNetworkSerializer();
             return serializer.Serialize(this);
         }
 
-        public void Deserialize(RoadNetworkStorage storage)
+        public void Deserialize(RoadNetworkStorage storage, bool removeEmptyRoadBetweenIntersection = true)
         {
             var serializer = new RoadNetworkSerializer();
             var model = serializer.Deserialize(storage);
@@ -207,6 +209,8 @@ namespace PLATEAU.RoadNetwork.Structure
                 AddRoad(l);
             foreach (var n in model.Intersections)
                 AddIntersection(n);
+            if (removeEmptyRoadBetweenIntersection)
+                RemoveEmptyRoadBetweenIntersection();
         }
 
 
