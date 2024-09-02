@@ -120,7 +120,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
                 {
                     foreach (var sideWalk in road.SideWalks)
                     {
-                        sideWalks.Add(sideWalk.Way.ToList());
+                        sideWalks.Add(sideWalk.OutsideWay.ToList());
                     }
                 }
 
@@ -260,19 +260,10 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
             var intersectionEditorData = selectingElement as EditorData<RnIntersection>;
             if (intersectionEditorData != null)
             {
-                var borders = intersectionEditorData.Ref.GetBorders();
-                foreach (var border in borders)
+                foreach (var neighbor in intersectionEditorData.Ref.Neighbors)
                 {
-                    intersectionBorder.Add(border.EdgeWay.ToList());                    
-                }
-
-                var lanes = intersectionEditorData.Ref.Lanes;
-                foreach (var lane in lanes)
-                {
-                    foreach (var way in lane.BothWays)
-                    {
-                        intersectionOutline.Add(way.ToList());
-                    }
+                    if (neighbor.Border != null)
+                        intersectionOutline.Add(neighbor.Border.ToList());
                 }
             }
 

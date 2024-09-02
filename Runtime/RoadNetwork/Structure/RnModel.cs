@@ -93,7 +93,7 @@ namespace PLATEAU.RoadNetwork.Structure
         public IEnumerable<RnLane> CollectAllLanes()
         {
             // Laneは重複しないはず
-            return Roads.SelectMany(l => l.AllLanes).Concat(Intersections.SelectMany(n => n.Lanes));
+            return Roads.SelectMany(l => l.AllLanes);
         }
 
         /// <summary>
@@ -117,15 +117,23 @@ namespace PLATEAU.RoadNetwork.Structure
         /// <param name="road"></param>
         public void Convert2Intersection(RnRoad road)
         {
-            var (prev, next) = (road.Prev, road.Next);
             var intersection = new RnIntersection(road.TargetTran);
 
+            road.TryGetMergedSideWay(null, out var leftWay, out var rightWay);
+            if (leftWay != null)
+                intersection.AddEdge(null, leftWay);
             foreach (var lane in road.MainLanes)
             {
-                intersection.AddNeighbor(lane.GetPrevRoad(), lane.PrevBorder);
-                intersection.AddNeighbor(lane.GetNextRoad(), lane.NextBorder);
+                lane.AlignBorder();
+                intersection.AddEdge(lane.GetNextRoad(), lane.NextBorder);
             }
-            intersection.AddLanes(road.MainLanes);
+
+            if (rightWay != null)
+                intersection.AddEdge(null, rightWay.ReversedWay());
+            foreach (var lane in road.MainLanes)
+            {
+                intersection.AddEdge(lane.GetPrevRoad(), lane.PrevBorder.ReversedWay());
+            }
 
             AddIntersection(intersection);
             // 旧Roadの削除
@@ -142,16 +150,8 @@ namespace PLATEAU.RoadNetwork.Structure
             var road = new RnRoad(intersection.TargetTran);
             road.SetPrevNext(prev, next);
 
-            foreach (var lane in intersection.Lanes)
-            {
-                // 前後のRoadが一致しているLaneのみを追加する
-                var (p, n) = (lane.GetPrevRoad(), lane.GetNextRoad());
-                if ((p == prev && n == next) || (p == next && n == prev))
-                {
-                    // #TODO : 左右の順番が逆かもしれない
-                    road.AddMainLane(lane);
-                }
-            }
+            // #TODO : 
+
             AddRoad(road);
             intersection.DisConnect(true);
         }
@@ -188,8 +188,8 @@ namespace PLATEAU.RoadNetwork.Structure
             road.SetPrevNext(prev, next);
 
             // intersectionに隣接情報追加
-            prev.AddNeighbor(road, lane.PrevBorder);
-            next.AddNeighbor(road, lane.NextBorder);
+            prev.AddEdge(road, lane.PrevBorder);
+            next.AddEdge(road, lane.NextBorder);
             AddRoad(road);
         }
 

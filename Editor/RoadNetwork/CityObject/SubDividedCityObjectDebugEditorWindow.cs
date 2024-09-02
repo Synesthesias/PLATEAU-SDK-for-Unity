@@ -1,5 +1,6 @@
 ﻿using PLATEAU.RoadNetwork;
 using PLATEAU.RoadNetwork.Drawer;
+using PLATEAU.RoadNetwork.Graph.Drawer;
 using PLATEAU.RoadNetwork.Mesh;
 using System.Collections.Generic;
 using UnityEditor;
@@ -19,11 +20,9 @@ namespace PLATEAU.Editor.RoadNetwork.CityObject
             HashSet<SubDividedCityObject> TargetCityObjects { get; }
 
             // モデル作成する
-            void CreateRnModel();
+            // void CreateRnModel();
 
-            RGraphDrawerDebug GetDrawer();
-
-            void CreateTranMesh();
+            //void CreateTranMesh();
         }
 
         private const string WindowName = "SubDividedCityObject Editor";

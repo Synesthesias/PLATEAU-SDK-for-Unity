@@ -91,6 +91,8 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
 
             public DrawOption showBorder = new(true, Color.magenta * 0.7f);
 
+            public DrawOption shopNeighbor = new(true, Color.cyan * 0.7f);
+
             public TrackOption showSplitTrack = new();
         }
         [SerializeField] public IntersectionOption intersectionOp = new IntersectionOption();
@@ -443,10 +445,10 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
                     var n = spline.Count;
                     if (roadOp.showRoadGroup.showSplineKnot)
                     {
-                        foreach (var knot in spline.Knots.Select((v, i) => new { v, i }))
-                        {
-                            DrawString(knot.i.ToString(), knot.v.Position);
-                        }
+                        //foreach (var knot in spline.Knots.Select((v, i) => new { v, i }))
+                        //{
+                        //    DrawString(knot.i.ToString(), knot.v.Position);
+                        //}
                         DrawArrows(spline.Knots.Select(knot => (Vector3)(knot.Position)), false, color: roadOp.showRoadGroup.color, arrowSize: 1f);
                     }
                     else
@@ -561,33 +563,29 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
             if (showPartsType.HasFlag(RnPartsTypeMask.Intersection))
                 DebugEx.DrawString($"N[{intersection.DebugMyId}]", intersection.GetCenter());
 
-            for (var i = 0; i < intersection.Neighbors.Count; ++i)
+            foreach (var n in intersection.Edges)
             {
-                var n = intersection.Neighbors[i];
-                if (op.showBorder.visible)
+                if (op.showBorder.visible && n.Road == null)
                     DrawWay(n.Border, op.showBorder.color);
-            }
 
-            foreach (var track in intersection.Tracks)
-            {
-                if (op.showSplitTrack.visible == false)
-                    continue;
-                var n = 5;
-                DrawArrows(Enumerable.Range(0, n)
-                    .Select(i => 1f * i / (n - 1))
-                    .Select(t =>
-                    {
-                        track.Spline.Evaluate(t, out var pos, out var tam, out var up);
-                        return (Vector3)pos;
-                    }), false, color: op.showSplitTrack.color);
+                if (op.shopNeighbor.visible && n.Road != null)
+                    DrawWay(n.Border, op.shopNeighbor.color);
             }
 
             if (op.showTrack.visible)
             {
-                foreach (var l in intersection.Lanes)
+                foreach (var track in intersection.Tracks)
                 {
-                    foreach (var w in l.BothWays)
-                        DrawWay(w, op.showTrack.color);
+                    if (op.showSplitTrack.visible == false)
+                        continue;
+                    var n = 5;
+                    DrawArrows(Enumerable.Range(0, n)
+                        .Select(i => 1f * i / (n - 1))
+                        .Select(t =>
+                        {
+                            track.Spline.Evaluate(t, out var pos, out var tam, out var up);
+                            return (Vector3)pos;
+                        }), false, color: op.showSplitTrack.color);
                 }
             }
         }

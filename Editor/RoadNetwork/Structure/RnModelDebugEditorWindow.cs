@@ -302,11 +302,6 @@ namespace PLATEAU.Editor.RoadNetwork.Structure
                     {
                         EditorGUILayout.LabelField($"Neighbor:{b.Road.GetDebugMyIdOrDefault()}, Border:{b.Border.GetDebugMyIdOrDefault()}");
                     }
-
-                    foreach (var b in intersection.GetBorders())
-                    {
-                        EditorGUILayout.LabelField($"Lane:{b.Neighbor.GetDebugMyIdOrDefault()}, Border:{b.EdgeWay.GetDebugMyIdOrDefault()}[{b.EdgeWay?.LineString.GetDebugMyIdOrDefault()}]");
-                    }
                 }
             }
 

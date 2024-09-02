@@ -2,6 +2,7 @@
 using PLATEAU.RoadNetwork.Structure;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Splines;
 
@@ -33,6 +34,27 @@ namespace PLATEAU.RoadNetwork.Data
         //----------------------------------
     }
 
+    [Serializable, RoadNetworkSerializeData(typeof(RnNeighbor))]
+    public class RnDataNeighbor
+    {
+        //----------------------------------
+        // start: フィールド
+        //----------------------------------
+        // 他レーンとの境界線
+        [field: SerializeField]
+        [RoadNetworkSerializeMember(nameof(RnNeighbor.Border))]
+        public RnID<RnDataWay> Border { get; set; }
+
+        // Road
+        [field: SerializeField]
+        [RoadNetworkSerializeMember]
+        public RnID<RnDataRoadBase> Road { get; set; }
+
+        //----------------------------------
+        // end: フィールド
+        //----------------------------------
+    }
+
     [Serializable, RoadNetworkSerializeData(typeof(RnIntersection))]
     public class RnDataIntersection : RnDataRoadBase
     {
@@ -43,13 +65,10 @@ namespace PLATEAU.RoadNetwork.Data
 
         // 隣接情報
         [field: SerializeField]
-        [RoadNetworkSerializeMember("neighbors")]
-        public List<RnDataNeighbor> Neighbors { get; set; } = new List<RnDataNeighbor>();
+        [RoadNetworkSerializeMember("edges")]
+        public List<RnDataNeighbor> Edges { get; set; } = new List<RnDataNeighbor>();
 
-        // 車線
-        [field: SerializeField, RoadNetworkSerializeMember("lanes")]
-        public List<RnID<RnDataLane>> Lanes { get; set; } = new List<RnID<RnDataLane>>();
-
+        public IEnumerable<RnDataNeighbor> Neighbors => Edges.Where(e => e.Road.IsValid);
 
         // 車線
         [field: SerializeField, RoadNetworkSerializeMember("tracks")]

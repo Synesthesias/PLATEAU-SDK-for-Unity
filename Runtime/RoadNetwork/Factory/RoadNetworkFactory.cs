@@ -249,6 +249,9 @@ namespace PLATEAU.RoadNetwork.Factory
 
             public List<RVertex> Vertices { get; }
 
+            /// <summary>
+            /// 線分情報
+            /// </summary>
             public class Line
             {
                 public Tran Neighbor { get; set; }
@@ -452,15 +455,6 @@ namespace PLATEAU.RoadNetwork.Factory
                 if (RoadType == RoadType.Intersection)
                 {
                     var intersection = new RnIntersection(cityObjectGroup);
-                    // Track情報
-                    foreach (var l in Lines.Where(l => l.IsBorder == false))
-                    {
-                        var prevBorder = l.Prev?.Way;
-                        var nextBorder = l.Next?.Way;
-                        var lane = new RnLane(l.Way, null, prevBorder, nextBorder);
-                        intersection.AddLane(lane);
-                    }
-
                     return intersection;
                 }
                 Debug.LogError($"不正なレーン構成 : {cityObjectGroup.name}");
@@ -489,9 +483,9 @@ namespace PLATEAU.RoadNetwork.Factory
                 else if (Node is RnIntersection intersection)
                 {
                     // 境界線情報
-                    foreach (var b in Lines.Where(l => l.IsBorder))
+                    foreach (var b in Lines)
                     {
-                        intersection.AddNeighbor(b.Neighbor.Node, b.Way);
+                        intersection.AddEdge(b.Neighbor?.Node, b.Way);
                     }
                 }
             }

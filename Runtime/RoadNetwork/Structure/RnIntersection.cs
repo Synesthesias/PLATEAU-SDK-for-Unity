@@ -8,7 +8,7 @@ using UnityEngine.Splines;
 namespace PLATEAU.RoadNetwork.Structure
 {
     [Serializable]
-    public class RnTrack : ARnParts<RnNeighbor>
+    public class RnTrack : ARnParts<RnTrack>
     {
         //----------------------------------
         // start: フィールド
@@ -27,10 +27,58 @@ namespace PLATEAU.RoadNetwork.Structure
         //----------------------------------
     }
 
+    [Serializable]
+    public class RnNeighbor : ARnParts<RnNeighbor>
+    {
+        //----------------------------------
+        // start: フィールド
+        //----------------------------------
+
+        // Roadとの境界線
+        public RnWay Border { get; set; }
+
+        // 隣接道路(交差点)基本的にRoadだが、初期のPLATEAUモデルによってはIntersectionもあり得るため基底クラスで持っている
+        // 隣接していない場合はnull
+        public RnRoadBase Road { get; set; }
+
+        //----------------------------------
+        // end: フィールド
+        //----------------------------------
+
+        // この境界が道路と接続しているか
+        public bool IsBorder => Road != null;
+
+        /// <summary>
+        /// この境界とつながっているレーン
+        /// </summary>
+        /// <returns></returns>
+        public RnLane GetConnectedLane()
+        {
+            return GetConnectedLanes().FirstOrDefault();
+        }
+
+        /// <summary>
+        /// この境界とつながっているレーンリスト
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerable<RnLane> GetConnectedLanes()
+        {
+            if (Border == null)
+                yield break;
+            if (Road == null)
+                yield break;
+            foreach (var lane in Road.AllLanes)
+            {
+                // Borderと同じ線上にあるレーンを返す
+                if (lane.AllBorders.Any(b => b.IsSameLine(Border)))
+                    yield return lane;
+            }
+        }
+    }
+
     /// <summary>
     /// 交差点
     /// </summary>
-
     [Serializable]
     public class RnIntersection : RnRoadBase
     {
@@ -43,16 +91,15 @@ namespace PLATEAU.RoadNetwork.Structure
         // 対象のtranオブジェクト
         public PLATEAUCityObjectGroup TargetTran { get; set; }
 
-        // 隣接情報
-        private List<RnNeighbor> neighbors = new List<RnNeighbor>();
-
-        // 交差点内のレーン情報
-        private List<RnLane> lanes = new List<RnLane>();
+        // 交差点の外形情報. 時計回り/反時計回りかは保証されていないが, 連結はしている
+        private List<RnNeighbor> edges = new List<RnNeighbor>();
 
         // 信号制御器
         public TrafficSignalLightController SignalController { get; set; } = null;
 
+        // 交差点内のトラック
         private List<RnTrack> tracks = new();
+
 
         //----------------------------------
         // end: フィールド
@@ -60,13 +107,12 @@ namespace PLATEAU.RoadNetwork.Structure
 
         public override PLATEAUCityObjectGroup CityObjectGroup => TargetTran;
 
-        public IReadOnlyList<RnNeighbor> Neighbors => neighbors;
+        public IEnumerable<RnNeighbor> Neighbors => edges.Where(e => e.IsBorder);
 
-        // 中央線トラック
+        public IReadOnlyList<RnNeighbor> Edges => edges;
+
+        // 交差点内のトラック
         public IReadOnlyList<RnTrack> Tracks => tracks;
-
-        // 車線
-        public IReadOnlyList<RnLane> Lanes => lanes;
 
         public RnIntersection() { }
 
@@ -87,22 +133,9 @@ namespace PLATEAU.RoadNetwork.Structure
 
         public override IEnumerable<RnBorder> GetBorders()
         {
-            foreach (var neighbor in Neighbors)
+            foreach (var neighbor in Neighbors.Where(n => n.Road != null))
             {
-                foreach (var lane in neighbor.GetConnectedLanes())
-                    yield return new RnBorder(neighbor.Border, lane);
-            }
-        }
-
-        // 所持全レーンを取得
-        public override IEnumerable<RnLane> AllLanes
-        {
-            get
-            {
-                foreach (var lane in lanes)
-                    yield return lane;
-
-                yield break;
+                yield return new RnBorder(neighbor.Border);
             }
         }
 
@@ -111,32 +144,11 @@ namespace PLATEAU.RoadNetwork.Structure
         /// </summary>
         /// <param name="road"></param>
         /// <param name="border"></param>
-        public void AddNeighbor(RnRoadBase road, RnWay border)
+        public void AddEdge(RnRoadBase road, RnWay border)
         {
             if (border == null)
                 return;
-            neighbors.Add(new RnNeighbor { Road = road, Border = border });
-        }
-
-        public void AddLane(RnLane lane)
-        {
-            if (lanes.Contains(lane))
-                return;
-
-            lane.Parent = this;
-            lanes.Add(lane);
-        }
-
-        public void AddLanes(IEnumerable<RnLane> lanes)
-        {
-            foreach (var track in lanes)
-                AddLane(track);
-        }
-
-        public void RemoveLane(RnLane lane)
-        {
-            if (lanes.Remove(lane))
-                lane.Parent = null;
+            edges.Add(new RnNeighbor { Road = road, Border = border });
         }
 
         public Vector3 GetCenterPoint()
@@ -149,17 +161,17 @@ namespace PLATEAU.RoadNetwork.Structure
         public void ReplaceBorder(RnRoad link, List<RnWay> borders)
         {
             RemoveNeighbors(n => n.Road == link);
-            neighbors.AddRange(borders.Select(b => new RnNeighbor { Road = link, Border = b }));
+            edges.AddRange(borders.Select(b => new RnNeighbor { Road = link, Border = b }));
         }
 
         public void RemoveNeighbors(Func<RnNeighbor, bool> predicate)
         {
-            for (var i = 0; i < neighbors.Count; i++)
+            for (var i = 0; i < edges.Count; i++)
             {
-                var n = neighbors[i];
+                var n = edges[i];
                 if (predicate(n))
                 {
-                    neighbors.RemoveAt(i);
+                    edges.RemoveAt(i);
                     i--;
                     // トラックからも削除する
                     tracks.RemoveAll(x => x.FromBorder == n.Border || x.ToBorder == n.Border);
@@ -185,13 +197,8 @@ namespace PLATEAU.RoadNetwork.Structure
         public override void UnLink(RnRoadBase other)
         {
             // 削除するBorderに接続しているレーンも削除
-            var borders = neighbors.Where(n => n.Road == other).Select(n => n.Border).ToList();
-
+            var borders = edges.Where(n => n.Road == other).Select(n => n.Border).ToList();
             RemoveNeighbors(n => n.Road == other);
-
-            var removeLanes = lanes.Where(l => l.BothWays.Any(b => borders.Contains(b))).ToList();
-            foreach (var r in removeLanes)
-                RemoveLane(r);
         }
 
         /// <summary>
@@ -201,7 +208,7 @@ namespace PLATEAU.RoadNetwork.Structure
         {
             foreach (var n in Neighbors)
                 n.Road?.UnLink(this);
-            neighbors.Clear();
+            edges.Clear();
             if (removeFromModel)
                 ParentModel?.RemoveIntersection(this);
         }

@@ -208,14 +208,14 @@ namespace PLATEAU.RoadNetwork.Structure
                     foreach (var l in beforeLanes)
                         NextIntersection.RemoveNeighbor(road, l);
                     foreach (var l in lanes)
-                        NextIntersection.AddNeighbor(road, l.NextBorder);
+                        NextIntersection.AddEdge(road, l.NextBorder);
                 }
                 if (i == 0 && PrevIntersection != null)
                 {
                     foreach (var l in beforeLanes)
                         PrevIntersection.RemoveNeighbor(road, l);
                     foreach (var l in lanes)
-                        PrevIntersection.AddNeighbor(road, l.PrevBorder);
+                        PrevIntersection.AddEdge(road, l.PrevBorder);
                 }
 
                 // 右車線の場合は反対にする

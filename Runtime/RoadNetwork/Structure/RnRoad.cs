@@ -152,9 +152,9 @@ namespace PLATEAU.RoadNetwork.Structure
             foreach (var lane in MainLanes)
             {
                 if (lane.PrevBorder != null)
-                    yield return new RnBorder(lane.PrevBorder, lane);
+                    yield return new RnBorder(lane.PrevBorder);
                 if (lane.NextBorder != null)
-                    yield return new RnBorder(lane.NextBorder, lane);
+                    yield return new RnBorder(lane.NextBorder);
             }
         }
 

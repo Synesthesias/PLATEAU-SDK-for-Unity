@@ -81,7 +81,7 @@ namespace PLATEAU.RoadNetwork.Structure
         // start: フィールド
         //----------------------------------
         // 親リンク
-        public RnRoadBase Parent { get; set; }
+        public RnRoad Parent { get; set; }
 
         // 境界線(下流)
         public RnWay PrevBorder { get; set; }

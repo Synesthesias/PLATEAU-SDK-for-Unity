@@ -5,13 +5,9 @@
         // 境界辺
         public RnWay EdgeWay { get; set; }
 
-        // 隣接道路(交差点)
-        public RnLane Neighbor { get; set; }
-
-        public RnBorder(RnWay edgeWay, RnLane neighbor)
+        public RnBorder(RnWay edgeWay)
         {
             EdgeWay = edgeWay;
-            Neighbor = neighbor;
         }
     }
 }
