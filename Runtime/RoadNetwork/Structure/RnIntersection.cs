@@ -1,7 +1,9 @@
 ﻿using PLATEAU.CityInfo;
+using PLATEAU.Util.GeoGraph;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.Splines;
 
@@ -48,6 +50,9 @@ namespace PLATEAU.RoadNetwork.Structure
         // この境界が道路と接続しているか
         public bool IsBorder => Road != null;
 
+        // 有効値判定(Border != null)
+        public bool IsValid => Border != null;
+
         /// <summary>
         /// この境界とつながっているレーン
         /// </summary>
@@ -67,11 +72,15 @@ namespace PLATEAU.RoadNetwork.Structure
                 yield break;
             if (Road == null)
                 yield break;
-            foreach (var lane in Road.AllLanes)
+
+            if (Road is RnRoad road)
             {
-                // Borderと同じ線上にあるレーンを返す
-                if (lane.AllBorders.Any(b => b.IsSameLine(Border)))
-                    yield return lane;
+                foreach (var lane in road.MainLanes)
+                {
+                    // Borderと同じ線上にあるレーンを返す
+                    if (lane.AllBorders.Any(b => b.IsSameLine(Border)))
+                        yield return lane;
+                }
             }
         }
     }
@@ -221,37 +230,60 @@ namespace PLATEAU.RoadNetwork.Structure
         /// <param name="allowUTurn">Uターンを許可する</param>
         public void BuildTracks(float tangentLength = 10f, float splitLength = 2f, bool allowUTurn = false)
         {
+            Align();
             tracks.Clear();
-            foreach (var from in Neighbors)
+
+            // targetEntranceLane : trueの場合は入ってくるレーンを対象とする. falseは出ていくレーンを対象とする
+            static bool IsTarget(RnNeighbor neighbor, bool targetEntranceLane)
             {
-                var fromLane = from.GetConnectedLane();
-                if (fromLane == null)
+                if (neighbor.Border == null || neighbor.Road == null)
+                    return false;
+                if (neighbor.Border.IsValid == false)
+                    return false;
+                if (neighbor.Road is RnRoad road)
+                {
+                    // #NOTE : 車線一つしかない場合は、出ていくレーンも対象とする
+                    if (road.MainLanes.Count == 1)
+                        return true;
+                    if (targetEntranceLane)
+                        return road.GetConnectedLanes(neighbor.Border).Any(l => l.NextBorder.IsSameLine(neighbor.Border));
+                    else
+                        return road.GetConnectedLanes(neighbor.Border).Any(l => l.PrevBorder.IsSameLine(neighbor.Border));
+                }
+                // 交差点同士の接続の場合はレーン全部対象
+                else if (neighbor.Road is RnIntersection)
+                {
+                    return true;
+                }
+
+                return false;
+            }
+
+            foreach (var from in Edges)
+            {
+                if (IsTarget(from, true) == false)
                     continue;
 
-                var isFromOneLaneRoad = (fromLane.Parent?.AllLanes?.Count() ?? 0) == 1;
-                // この交差点に入ってくるレーンのみを対象とする
-                // ただし、車線一つしかない場合は、出ていくレーンも対象とする
-                if (fromLane.NextBorder.IsSameLine(from.Border) == false && isFromOneLaneRoad == false)
-                    continue;
-                foreach (var to in Neighbors)
+                foreach (var to in Edges)
                 {
                     if (from == to)
                         continue;
-
+                    if (IsTarget(to, false) == false)
+                        continue;
                     if (allowUTurn == false && from.Road == to.Road)
                         continue;
 
-                    var toLane = to.GetConnectedLane();
-                    if (toLane == null)
-                        continue;
+                    var fromNormal = from.Border.GetEdgeNormal((from.Border.Count - 1) / 2).normalized;
+                    var toNormal = -to.Border.GetEdgeNormal((to.Border.Count - 1) / 2).normalized;
 
-                    // この交差点から出ていくレーンのみを対象とする
-                    // 1車線しかない道路はfromの方で判断しているので必要ないはず
-                    var isToOneLaneRoad = (toLane.Parent?.AllLanes?.Count() ?? 0) == 1;
-                    if (toLane.PrevBorder.IsSameLine(to.Border) == false && isToOneLaneRoad == false)
-                        continue;
+                    from.Border.GetLerpPoint(0.5f, out var fromPos);
+                    to.Border.GetLerpPoint(0.5f, out var toPos);
 
-                    var spline = this.CalcTrackSpline(from.Border, to.Border, tangentLength, splitLength);
+                    var spline = new Spline
+                    {
+                        new(fromPos, tangentLength * fromNormal, -tangentLength *fromNormal),
+                        new(toPos, tangentLength *toNormal, -tangentLength *toNormal)
+                    }; ;
                     tracks.Add(new RnTrack
                     {
                         FromBorder = from.Border,
@@ -262,6 +294,48 @@ namespace PLATEAU.RoadNetwork.Structure
             }
         }
 
+        /// <summary>
+        /// edgesの順番を整列する
+        /// </summary>
+        public void Align()
+        {
+            for (var i = 0; i < edges.Count; ++i)
+            {
+                var e0 = edges[i].Border;
+                for (var j = i + 1; j < edges.Count; ++j)
+                {
+                    var e1 = edges[j].Border;
+                    if (RnPoint.Equals(e0.GetPoint(-1), e1.GetPoint(0)))
+                    {
+                        (edges[i + 1], edges[j]) = (edges[j], edges[i + 1]);
+                        break;
+                    }
+                    if (RnPoint.Equals(e0.GetPoint(-1), e1.GetPoint(-1)))
+                    {
+                        e1.Reverse(false);
+                        (edges[i + 1], edges[j]) = (edges[j], edges[i + 1]);
+                        break;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// selfの全頂点の重心を返す
+        /// </summary>
+        /// <param name="self"></param>
+        /// <returns></returns>
+        public override Vector3 GetCenter()
+        {
+            var a = Neighbors
+                .Where(n => n.Border != null)
+                .SelectMany(n => n.Border.Vertices)
+                .Aggregate(new { sum = Vector3.zero, i = 0 }, (a, p) => new { sum = a.sum + p, i = a.i + 1 });
+            if (a.i == 0)
+                return Vector3.zero;
+            return a.sum / a.i;
+        }
+#if false
         /// <summary>
         /// a,bを繋ぐ経路を計算する
         /// </summary>
@@ -316,49 +390,14 @@ namespace PLATEAU.RoadNetwork.Structure
             })));
             return new RnLane(leftWay, rightWay, nFrom.Border, nTo.Border);
         }
+#endif
     }
 
     public static class RnIntersectionEx
     {
-        public static RnNeighbor GetIntersectionNeighbor(this RnIntersection self)
-        {
-            return self.Neighbors.FirstOrDefault();
-        }
-
-        public static Spline CalcTrackSpline(this RnIntersection self, RnWay fromBorder, RnWay toBorder,
-            float tangentLength = 10f, float splitLength = 2f)
-        {
-            if (fromBorder == toBorder)
-                return null;
-            var nFrom = self.Neighbors.FirstOrDefault(n => n.Border == fromBorder);
-            var nTo = self.Neighbors.FirstOrDefault(n => n.Border == toBorder);
-            if (nFrom == null || nTo == null)
-                return null;
-            if (nFrom.Border.Count < 2 || nTo.Border.Count < 2)
-                return null;
-
-            var fromLane = nFrom.GetConnectedLane();
-            if (fromLane == null)
-                return null;
-
-            var toLane = nTo.GetConnectedLane();
-            if (toLane == null)
-                return null;
 
 
-            fromLane.TryGetBorderNormal(nFrom.Border, out var aLeftPos, out var aLeftNormal, out var aRightPos, out var aRightNormal);
-            toLane.TryGetBorderNormal(nTo.Border, out var bLeftPos, out var bLeftNormal, out var bRightPos, out var bRightNormal);
-
-            fromBorder.GetLerpPoint(0.5f, out var fromPos);
-            toBorder.GetLerpPoint(0.5f, out var toPos);
-
-            return new Spline
-            {
-                new(fromPos, tangentLength * aLeftNormal, tangentLength *aLeftNormal),
-                new(toPos, tangentLength *bRightNormal, tangentLength *bRightNormal)
-            };
-        }
-
+#if false
         /// <summary>
         /// a,bを繋ぐ経路を計算する
         /// </summary>
@@ -407,5 +446,6 @@ namespace PLATEAU.RoadNetwork.Structure
                 return (Vector3)pos;
             })));
         }
+#endif
     }
 }

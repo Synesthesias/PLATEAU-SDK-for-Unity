@@ -1,6 +1,8 @@
 ﻿using PLATEAU.CityInfo;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
 
 namespace PLATEAU.RoadNetwork.Structure
 {
@@ -48,8 +50,6 @@ namespace PLATEAU.RoadNetwork.Structure
         // 隣接するRoadを取得
         public virtual IEnumerable<RnRoadBase> GetNeighborRoads() { yield break; }
 
-        // 所持全レーンを取得
-        public virtual IEnumerable<RnLane> AllLanes { get { yield break; } }
 
         /// <summary>
         /// otherをつながりから削除する. other側の接続は消えない
@@ -62,6 +62,18 @@ namespace PLATEAU.RoadNetwork.Structure
         /// removeFromModel=trueの場合、RnModelからも削除する
         /// </summary>
         public virtual void DisConnect(bool removeFromModel) { }
+
+
+        /// <summary>
+        /// selfの全頂点の重心を返す
+        /// </summary>
+        /// <param name="self"></param>
+        /// <returns></returns>
+        public virtual Vector3 GetCenter()
+        {
+            return Vector3.zero;
+        }
+
     }
 
     public static class RnRoadBaseEx

@@ -54,7 +54,7 @@ namespace PLATEAU.RoadNetwork.Structure
         public IReadOnlyList<RnLane> MainLanes => mainLanes;
 
         // 全レーン
-        public override IEnumerable<RnLane> AllLanes => MainLanes;
+        public IEnumerable<RnLane> AllLanes => MainLanes;
 
         // 有効なRoadかどうか
         public bool IsValid => MainLanes.Any() && MainLanes.All(l => l.HasBothBorder);
@@ -543,6 +543,21 @@ namespace PLATEAU.RoadNetwork.Structure
                 Next = null;
         }
 
+        /// <summary>
+        /// selfの全頂点の重心を返す
+        /// </summary>
+        /// <param name="self"></param>
+        /// <returns></returns>
+        public override Vector3 GetCenter()
+        {
+            var a = MainLanes
+                .Select(l => l.GetCenter())
+                .Aggregate(new { sum = Vector3.zero, i = 0 }, (a, p) => new { sum = a.sum + p, i = a.i + 1 });
+            if (a.i == 0)
+                return Vector3.zero;
+            return a.sum / a.i;
+        }
+
         // ---------------
         // Static Methods
         // ---------------
@@ -655,19 +670,21 @@ namespace PLATEAU.RoadNetwork.Structure
             }
         }
 
+
         /// <summary>
-        /// selfの全頂点の重心を返す
+        /// この境界とつながっているレーンリスト
         /// </summary>
-        /// <param name="self"></param>
         /// <returns></returns>
-        public static Vector3 GetCenter(this RnRoadBase self)
+        public static IEnumerable<RnLane> GetConnectedLanes(this RnRoad self, RnWay border)
         {
-            var a = self.AllLanes
-                .Select(l => l.GetCenter())
-                .Aggregate(new { sum = Vector3.zero, i = 0 }, (a, p) => new { sum = a.sum + p, i = a.i + 1 });
-            if (a.i == 0)
-                return Vector3.zero;
-            return a.sum / a.i;
+            if (self == null || border == null)
+                yield break;
+            foreach (var lane in self.MainLanes)
+            {
+                // Borderと同じ線上にあるレーンを返す
+                if (lane.AllBorders.Any(b => b.IsSameLine(border)))
+                    yield return lane;
+            }
         }
     }
 }

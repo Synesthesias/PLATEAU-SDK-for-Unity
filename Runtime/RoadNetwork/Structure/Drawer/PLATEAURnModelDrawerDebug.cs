@@ -563,13 +563,23 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
             if (showPartsType.HasFlag(RnPartsTypeMask.Intersection))
                 DebugEx.DrawString($"N[{intersection.DebugMyId}]", intersection.GetCenter());
 
-            foreach (var n in intersection.Edges)
+            //foreach (var n in intersection.Edges)
+            for (var i = 0; i < intersection.Edges.Count; i++)
             {
+                var n = intersection.Edges[i];
                 if (op.showBorder.visible && n.Road == null)
+                {
                     DrawWay(n.Border, op.showBorder.color);
+                    var pos = n.Border.GetLerpPoint(0.5f);
+                    DrawString($"B[{i}]", pos);
+                }
 
                 if (op.shopNeighbor.visible && n.Road != null)
+                {
                     DrawWay(n.Border, op.shopNeighbor.color);
+                    var pos = n.Border.GetLerpPoint(0.5f);
+                    DrawString($"B[{i}]", pos);
+                }
             }
 
             if (op.showTrack.visible)
