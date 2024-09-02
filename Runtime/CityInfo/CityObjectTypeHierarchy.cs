@@ -61,7 +61,8 @@ namespace PLATEAU.CityInfo
                 new Node("水部 (WaterBody)", Package.WaterBody, new[]{COType.COT_WaterBody}, null),
                 new Node("橋梁 (Bridge)", Package.Bridge, new[]{COType.COT_Bridge}, new[]
                 {
-                    new Node("橋梁構成要素 (BridgeConstructionElement)", Package.None, new[] {COType.COT_BridgeConstructionElement}, null)
+                    new Node("橋梁構成要素 (BridgeConstructionElement)", Package.None, new[] {COType.COT_BridgeConstructionElement}, null),
+                    new Node("橋梁付属設備 (BridgeInstallation)", Package.None, new[] {COType.COT_BridgeInstallation}, null)
                 }),
                 new Node("徒歩道 (Track)", Package.Track, new[]{COType.COT_Track}, null),
                 new Node("広場 (Square)", Package.Square, new[]{COType.COT_Square}, null),
@@ -71,6 +72,8 @@ namespace PLATEAU.CityInfo
                 new Node("区域 (Area)", Package.Area, null, null),
                 new Node("その他の構造物 (OtherConstruction)", Package.OtherConstruction, null, null),
                 new Node("汎用都市 (Generic)", Package.Generic, new[]{COType.COT_GenericCityObject}, null),
+                
+                // COT_Unknownのパッケージは仮で「その他」としていますが、それが適切かどうかは確定ではありません。
                 new Node("その他 (Unknown)", Package.Unknown, new[]{COType.COT_Unknown}, null)
                 }
             );
@@ -86,10 +89,21 @@ namespace PLATEAU.CityInfo
             throw new ArgumentOutOfRangeException(nameof(p), $"Package {p} is not found in the hierarchy.");
         }
 
-        /// <summary> <see cref="CityObjectType"/>をパッケージ種に変換します。 </summary>
+        /// <summary>
+        /// <see cref="CityObjectType"/>をパッケージ種に変換します。
+        /// 結果がCOT_Unknownの場合は確定しないので、代わりに PLATEAUInstancedCityModel.GetPackage を使ってください。
+        /// </summary>
         public static PredefinedCityModelPackage ToPackage(this COType t)
         {
-            return typeToNode[t].Package;
+            // 見つかるまで親を検索
+            var node = typeToNode[t];
+            while (node != null)
+            {
+                if (node.Package != Package.None) return node.Package;
+                node = node.Parent;
+            }
+
+            return Package.None;
         }
 
         /// <summary>
@@ -133,7 +147,7 @@ namespace PLATEAU.CityInfo
         {
             public string NodeName { get; }
             public PredefinedCityModelPackage Package { get; }
-            private ReadOnlyCollection<CityObjectType> Types { get; }
+            public ReadOnlyCollection<CityObjectType> Types { get; }
             public ReadOnlyCollection<Node> Children { get; }
             public Node Parent { get; private set; }
 

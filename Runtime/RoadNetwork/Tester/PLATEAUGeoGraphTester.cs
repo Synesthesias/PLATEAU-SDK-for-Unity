@@ -191,6 +191,38 @@ namespace PLATEAU.RoadNetwork.Tester
             }
         }
 
+        [Serializable]
+        public class Segment3DIntersectionTest
+        {
+            public bool enable = false;
+            public GameObject v0;
+            public GameObject v1;
+            public GameObject v2;
+            public GameObject v3;
+            public AxisPlane plane = AxisPlane.Xz;
+            public float normalEpsilon = 0.1f;
+            public float sphereRadius = 0.1f;
+            public void Update()
+            {
+                if (!enable)
+                    return;
+                if (!v0 || !v1 || !v2 || !v3)
+                    return;
+                var s1 = new LineSegment3D(v0.transform.position, v1.transform.position);
+                var s2 = new LineSegment3D(v2.transform.position, v3.transform.position);
+
+                DebugEx.DrawLine(s1.Start, s1.End, color: Color.red);
+                DebugEx.DrawLine(s2.End, s2.Start, color: Color.blue);
+                if (s1.TrySegmentIntersectionBy2D(s2, plane, normalEpsilon, out var intersection, out var t1,
+                        out var t2))
+                {
+                    DebugEx.DrawSphere(intersection, sphereRadius, Color.green);
+                }
+            }
+        }
+        [SerializeField]
+        private Segment3DIntersectionTest segment3DIntersectionTest = new Segment3DIntersectionTest();
+
         public void ConvertTrans()
         {
             var i = 0;
@@ -236,22 +268,19 @@ namespace PLATEAU.RoadNetwork.Tester
                 var right = child.GetChild(1).GetComponent<PLATEAUGeoGraphTesterLineString>();
                 if (!left || !right)
                     continue;
-                var leftVertices = left.GetVertices();
-                var rightVertices = right.GetVertices();
+                var leftVertices = left.GetVertices().Select(v => v.Xya()).ToList();
+                var rightVertices = right.GetVertices().Select(v => v.Xya()).ToList();
 
                 if (param.showWay)
                 {
                     foreach (var v in new[] { leftVertices, rightVertices })
                     {
                         var color = DebugEx.GetDebugColor(childIndex++, 8);
-                        DebugEx.DrawArrows(v.Select(a => a.Xya()), false, arrowSize: 0.1f, color: color, arrowUp: Vector3.forward);
+                        DebugEx.DrawArrows(v, false, arrowSize: 0.1f, color: color, arrowUp: Vector3.forward);
                     }
                 }
-                var segments = GeoGraph2D.GetInnerLerpSegments(leftVertices, rightVertices, param.p, param.op);
-                foreach (var seg in segments.Select((v, i) => new { v, i }))
-                {
-                    DebugEx.DrawLineSegment2D(seg.v.Segment, color: DebugEx.GetDebugColor(seg.i, 16));
-                }
+                var segments = GeoGraphEx.GetInnerLerpSegments(leftVertices, rightVertices, AxisPlane.Xy, param.p);
+                DebugEx.DrawArrows(segments);
             }
         }
 
@@ -425,6 +454,7 @@ namespace PLATEAU.RoadNetwork.Tester
             MeshOutlineTest(meshOutlineTest);
             SplineTest(splineTest);
             LerpPointInLineTest(lerpPointInLineTestParam);
+            segment3DIntersectionTest.Update();
         }
 
     }

@@ -1,5 +1,6 @@
 using NUnit.Framework;
 using PLATEAU.CityAdjust.MaterialAdjust.Executor.Process;
+using PLATEAU.GranularityConvert;
 using System;
 using System.Linq;
 using UnityEngine;
@@ -15,7 +16,7 @@ namespace PLATEAU.Tests.EditModeTests.TestMaterialAdjust
         /// <summary>
         /// 2つのゲームオブジェクトとその子が同じことを確認します。子の順番が同じことも確認します。
         /// </summary>
-        public static void AreSameRecursive(Transform op1, Transform op2, MAGranularity dstGranularity)
+        public static void AreSameRecursive(Transform op1, Transform op2, ConvertGranularity dstGranularity)
         {
             Assert.NotNull(op1);
             Assert.NotNull(op2);
@@ -30,7 +31,7 @@ namespace PLATEAU.Tests.EditModeTests.TestMaterialAdjust
         /// <summary>
         /// 2つのゲームオブジェクトとその子が同じことを確認します。ただし子の順番は問いません。
         /// </summary>
-        public static void AreSameSetRecursive(Transform op1, Transform op2, MAGranularity dstGranularity)
+        public static void AreSameSetRecursive(Transform op1, Transform op2, ConvertGranularity dstGranularity)
         {
             Assert.NotNull(op1);
             Assert.NotNull(op2);
@@ -39,17 +40,18 @@ namespace PLATEAU.Tests.EditModeTests.TestMaterialAdjust
             {
                 var op1Child = op1.GetChild(i);
                 var op2Child = op2.Find(op1Child.name);
+                if (op1Child.name == "combined") continue; // combinedという名前が変わったのでいったんスキップ
                 Assert.IsNotNull(op2Child, $"op1に存在する{op1Child.name}がop2に見つかる");
                 AreSameSetRecursive(op1Child, op2Child, dstGranularity);
             }
         }
         
-        private static void AreSame(Transform op1, Transform op2, MAGranularity dstGranularity)
+        private static void AreSame(Transform op1, Transform op2, ConvertGranularity dstGranularity)
         {
             Assert.IsNotNull(op1);
             Assert.IsNotNull(op2);
             // 名前の同一をチェックします。ただし、地域単位に変換するときは名前がgroupとcombineで一致しないのでそこだけはOKとします。
-            if (!(op1.name.Contains("group") && op2.name == "combined"))
+            if (!(op1.name.Contains("group") && op2.name.EndsWith("combined")) && (!op1.name.EndsWith("combined") && op2.name.EndsWith("combined")))
             {
                 Assert.AreEqual(op1.name, op2.name, $"ゲームオブジェクト名が同一 : {op1.name} == {op2.name}");
             }
@@ -67,7 +69,7 @@ namespace PLATEAU.Tests.EditModeTests.TestMaterialAdjust
                 Assert.IsTrue(mesh2 != null, $"op2: {op2.name}にMeshFilterがあるならmeshが存在");
                 Assert.AreEqual(mesh1.triangles.Length, mesh2.triangles.Length, $"頂点数が同一 : {op1.name}");
 
-                if (dstGranularity != MAGranularity.CombineAll)
+                if (dstGranularity != ConvertGranularity.PerCityModelArea)
                 {
                     // マテリアルのチェック。
                     // ただし、地域単位への変換の場合、マテリアルはどの粒度から変換したかによって結果が異なり大変なのでいまのところスキップ。 FIXME

@@ -1,5 +1,7 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Threading.Tasks;
+using UnityEngine;
 
 namespace PLATEAU.Tests.TestUtils
 {
@@ -20,6 +22,24 @@ namespace PLATEAU.Tests.TestUtils
             if (task.IsFaulted)
             {
                 throw task.Exception;
+            }
+        }
+        
+        public static IEnumerator AsIEnumerator<T>(this Task<T> task, Action<T> resultCallback = null)
+        {
+            while (!task.IsCompleted)
+            {
+                yield return null;
+            }
+
+            if (task.IsFaulted)
+            {
+                throw task.Exception;
+            }
+
+            if (resultCallback != null)
+            {
+                resultCallback(task.Result);
             }
         }
     }

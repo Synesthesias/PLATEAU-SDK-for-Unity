@@ -1,8 +1,7 @@
 ﻿using PLATEAU.CityInfo;
-using PLATEAU.GranularityConvert;
-using PLATEAU.PolygonMesh;
 using PLATEAU.RoadNetwork.Graph;
 using PLATEAU.RoadNetwork.Structure;
+using PLATEAU.RoadNetwork.Util;
 using PLATEAU.Util;
 using PLATEAU.Util.GeoGraph;
 using System;
@@ -10,14 +9,15 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using UnityEditor.PackageManager;
 using UnityEngine;
-using UnityEngine.Serialization;
-using CityObjectList = PLATEAU.CityInfo.CityObjectList;
+using UnityEngine.Assertions;
+using static UnityEngine.GraphicsBuffer;
 
 namespace PLATEAU.RoadNetwork.Factory
 {
     [Serializable]
-    public class RoadNetworkFactory
+    public partial class RoadNetworkFactory
     {
         // --------------------
         // start:フィールド
@@ -37,125 +37,24 @@ namespace PLATEAU.RoadNetwork.Factory
         [SerializeField] public float lod1SideWalkSize = 3f;
         // Lod3の歩道を追加するかどうか
         [SerializeField] public bool addLod3SideWalk = true;
+
+        // 中央分離帯をチェックする
+        [SerializeField] public bool checkMedian = true;
+        [SerializeField] public bool zeroWidthMedian = false;
         // 高速道路を無視するかのフラグ
         [SerializeField] public bool ignoreHighway = false;
+        // RGraph作るときのファクトリパラメータ
+        [SerializeField] public RGraphFactory graphFactory;
+        // 中間データ
+        [SerializeField] public RsFactoryMidStageData midStageData;
+
 
         // --------------------
         // end:フィールド
         // --------------------
 
-        [Serializable]
-        private class Cell : IReadOnlyList<TranWork>
-        {
-            // このセルを参照するレーン一覧
-            private List<TranWork> trans = new List<TranWork>();
 
-            public void Add(TranWork tran)
-            {
-                if (trans.Contains(tran))
-                    return;
-                trans.Add(tran);
-            }
-
-            public TranWork this[int index]
-            {
-                get
-                {
-                    return trans[index];
-                }
-            }
-
-            public IEnumerator<TranWork> GetEnumerator()
-            {
-                return trans.GetEnumerator();
-            }
-
-            IEnumerator IEnumerable.GetEnumerator()
-            {
-                return GetEnumerator();
-            }
-
-            public int Count => trans.Count;
-        }
-
-
-        /// <summary>
-        /// 頂点 -> ポイント変換を行う
-        /// </summary>
-        private class Vertex2PointTable
-        {
-            public float CellSize { get; }
-
-            private Dictionary<Vector3, RnPoint> Table { get; } = new Dictionary<Vector3, RnPoint>();
-
-            private Dictionary<Vector3Int, RnPoint> CellTable { get; } = new Dictionary<Vector3Int, RnPoint>();
-
-
-            public Vertex2PointTable(float cellSize, IEnumerable<Vector3> vertices)
-            {
-                // 頂点の一致判定のためにセル単位に切り捨て
-                CellSize = cellSize;
-                foreach (var v in vertices)
-                {
-                    Table[v] = Create(v);
-                }
-            }
-
-            /// <summary>
-            /// セル座標に変換する
-            /// </summary>
-            /// <param name="v"></param>
-            /// <returns></returns>
-            private Vector3Int ToCell(Vector3 v)
-            {
-                return v.RevScaled(Vector3.one * CellSize).ToVector3Int();
-            }
-
-            private RnPoint Create(Vector3 v)
-            {
-                var cellNo = ToCell(v);
-                return CellTable.GetValueOrCreate(cellNo, c => new RnPoint(v));
-            }
-
-            public RnPoint this[Vector3 v]
-            {
-                get
-                {
-                    return Table[v];
-                }
-            }
-        }
-
-        private class LineStringTable
-        {
-            private List<RnLineString> LineStrings { get; } = new List<RnLineString>();
-
-            public RnLineString Create(IEnumerable<RnPoint> v, out bool isReverse)
-            {
-                isReverse = false;
-                var vertices = v.ToList();
-#if true
-                foreach (var l in LineStrings)
-                {
-                    if (l.Count != vertices.Count())
-                        continue;
-                    if (Enumerable.Range(0, l.Count).All(i => l[i] == vertices[i]))
-                        return l;
-                    // 逆順もチェックする
-                    if (Enumerable.Range(0, l.Count).All(i => l[i] == vertices[vertices.Count() - i - 1]))
-                    {
-                        isReverse = true;
-                        return l;
-                    }
-                }
-#endif
-                var ret = RnLineString.Create(vertices);
-                LineStrings.Add(ret);
-                return ret;
-            }
-        }
-
-        private enum RoadType
+        public enum RoadType
         {
             // 通常の道
             Road,
@@ -167,165 +66,83 @@ namespace PLATEAU.RoadNetwork.Factory
             Isolated,
         }
 
-        /// <summary>
-        /// tranオブジェクトに紐づく Road or Node情報
-        /// </summary>
-        private class TranWork
+        public class Work
         {
-            public PLATEAUCityObjectGroup TargetTran { get; }
+            public Dictionary<RFaceGroup, Tran> TranMap { get; } = new();
 
-            public int LodLevel { get; }
+            public Dictionary<RVertex, RnPoint> PointMap { get; } = new();
 
-            // 時計回りに格納されている
-            public RnWay Way { get; set; } = new RnWay();
+            public Dictionary<List<RVertex>, RnLineString> LineMap { get; } = new();
 
-            // 接続しているすべてのTranWork
-            public IEnumerable<TranWork> ConnectedTranWorks => Vertex2Connected.SelectMany(v => v.Value).Distinct();
+            public float terminateAllowEdgeAngle = 20f;
 
-            // 頂点 -> 接続TranWork情報
-            public Dictionary<RnPoint, List<TranWork>> Vertex2Connected { get; } =
-                new Dictionary<RnPoint, List<TranWork>>();
-
-            // 対応するRoad or Intersection
-            private RnRoadBase Road { get; set; }
-
-            private RnRoad Link => Road as RnRoad;
-
-            // 境界線
-            public IEnumerable<WayWork> Borders => Ways.Where(w => w.IsBorder);
-
-            // レーン
-            public IEnumerable<WayWork> Lanes => Ways.Where(w => w.IsBorder == false);
-
-            // 構成するWay. Wayは端点以外では他のTranと接続していないことが保証されている
-            public List<WayWork> Ways { get; } = new List<WayWork>();
-
-            public RoadType RoadType
+            public Tran FindTranOrDefault(RFace face)
             {
-                get
+                return TranMap.FirstOrDefault(x => x.Key.Faces.Contains(face)).Value;
+            }
+
+            public Tran FindTranOrDefault(RFaceGroup faceGroup)
+            {
+                return TranMap.GetValueOrDefault(faceGroup);
+            }
+
+            public RnPoint CreatePoint(RVertex v)
+            {
+                return PointMap.GetValueOrCreate(v, x => new RnPoint(x.Position));
+            }
+
+            private bool IsEqual(List<RVertex> a, List<RVertex> b, out bool isReverse)
+            {
+                isReverse = false;
+                if (a.Count != b.Count)
+                    return false;
+                if (a[0] == b[0])
                 {
-                    // 1つ以下の場合は孤立状態
-                    if (Ways.Count <= 1)
-                    {
-                        return RoadType.Isolated;
-                    }
-
-                    var count = ConnectedTranWorks.Count();
-                    switch (count)
-                    {
-                        case 0: return RoadType.Isolated;
-                        case 1: return RoadType.Terminate;
-                        case 2: return RoadType.Road;
-                        default: return RoadType.Intersection;
-                    }
-                }
-            }
-
-            public TranWork(PLATEAUCityObjectGroup target, int lodLevel)
-            {
-                TargetTran = target;
-                LodLevel = lodLevel;
-            }
-
-            public void Bind(RnRoadBase road)
-            {
-                Road = road;
-            }
-
-            public void Split2Way(LineStringTable lineStringTable)
-            {
-                var points = new RnWayPoints(Way);
-                var startIndex = Enumerable.Range(0, points.Count)
-                    .Where(i => Vertex2Connected[points[i]].Any())
-                    .DefaultIfEmpty(-1)
-                    .First();
-                // 分割できない場合は無視
-                if (startIndex < 0)
-                {
-                    if (points.Any())
-                    {
-                        var wayWork = new WayWork(Way, this);
-                        Ways.Add(wayWork);
-                    }
-                    return;
+                    isReverse = false;
+                    return a.SequenceEqual(b);
                 }
 
-                var wayVertexIndices = new List<RnPoint> { points[startIndex] };
-                foreach (var tmp in Enumerable.Range(1, points.Count))
+                isReverse = true;
+                return a.SequenceEqual(Enumerable.Range(0, a.Count).Select(i => b[b.Count - 1 - i]));
+            }
+
+            public RnWay CreateWay(List<RVertex> line)
+            {
+                foreach (var item in LineMap)
                 {
-                    var i = (tmp + startIndex) % points.Count;
-                    var p = points[i];
-                    wayVertexIndices.Add(p);
-                    if (wayVertexIndices.Count <= 1)
-                        continue;
-                    // 
-                    var neighbors = Vertex2Connected[points[i]];
-                    // 隣接している点があったら切り替え
-                    if (neighbors.Any() == false)
-                        continue;
-
-                    var lineString = lineStringTable.Create(wayVertexIndices, out bool isReverse);
-                    var way = new RnWay(lineString, isReverse);
-                    var wayWork = new WayWork(way, this);
-                    Ways.Add(wayWork);
-                    wayVertexIndices = new List<RnPoint> { p };
-                }
-
-                // 全く同じTranWorkへの境界が二つ以上あるとき、それらはマージする
-
-                {
-                    var visitedWays = new HashSet<WayWork>();
-                    // 境界線の接続レーンとつながっているwayの方向をそろえる
-                    foreach (var l in Borders.SelectMany(b => b.BothConnectedTrans).Distinct())
+                    if (IsEqual(item.Key, line, out var isReverse))
                     {
-                        // lとつながっているレーンを見に行く
-                        foreach (var w in Lanes.Where(w => w.AnyConnectedTrans.Contains(l)))
-                        {
-                            if (visitedWays.Contains(w))
-                                continue;
-
-                            // From側につながっているものを一律で逆転させることで左右の方向をそろえる
-                            if (w.PrevTranWorks.Contains(l) == false)
-                            {
-                                w.Reverse();
-                            }
-
-                            visitedWays.Add(w);
-                        }
+                        return new RnWay(item.Value, isReverse);
                     }
                 }
+
+                // 元のリストが変わるかもしれないのでコピーで持つ
+                var key = line.ToList();
+                LineMap[key] = RnLineString.Create(key.Select(CreatePoint), true);
+                return new RnWay(LineMap[key], false);
             }
 
-            public class VertexInfo
+
+
+            public List<RnSideWalk> CreateSideWalk(float lod1SideWalkSize)
             {
-                public Vector3 Position { get; set; }
-                public Vector3 Normal { get; set; }
-            }
-            public void BuildConnection(Vertex2PointTable vertexTable, float lod1RoadSize, Dictionary<RnPoint, VertexInfo> visited, out List<RnLineString> sideWalkLineStrings)
-            {
-                var lines = new List<RnLineString>();
+                var visited = new Dictionary<RnPoint, (Vector3 pos, Vector3 normal)>();
+
+                var ret = new List<RnSideWalk>();
                 // LOD1の場合は周りにlod1RoadSize分歩道があると仮定して動かす
-                void MoveWay(RnWay way)
+                void MoveWay(RnWay way, RnRoad parent)
                 {
                     if (way == null)
                         return;
-                    if (lod1RoadSize <= 0f)
+                    if (lod1SideWalkSize <= 0f)
                         return;
-
-                    var origVertices = way.Vertices.ToList();
 
                     var normals = Enumerable.Range(0, way.Count)
                         .Select(i => way.GetVertexNormal(i).normalized)
                         .ToList();
 
-                    // 元の線分 & 新しい線分の始点と終点を加えた線分が歩道分
-                    // var points = origVertices.Select(v => new RnPoint(v)).ToList(); //Enumerable.Range(startIndex, endIndex - startIndex).Select(v => new RnPoint(origVertices[v])).ToList();
-
                     // 始点/終点は除いて法線と逆方向に動かす
-                    var startIndex = 0;//isAddFirst ? 1 : 0;
-                    var endIndex = way.Count;//isAddLast ? way.Count - 1 : way.Count;
                     var points = new List<RnPoint> { };
-
                     foreach (var i in Enumerable.Range(0, way.Count))
                     {
                         var p = way.GetPoint(i);
@@ -333,240 +150,463 @@ namespace PLATEAU.RoadNetwork.Factory
                         if (visited.ContainsKey(p) == false)
                         {
                             var last = p.Vertex;
-                            p.Vertex -= n * lod1RoadSize;
-                            visited[p] = new VertexInfo { Normal = n, Position = last };
+                            p.Vertex -= n * lod1SideWalkSize;
+                            visited[p] = new(last, n); //new VertexInfo { Normal = n, Position = last };
                             points.Add(new RnPoint(last));
                         }
                         else
                         {
                             var last = visited[p];
-                            points.Add(new RnPoint(last.Position));
+                            points.Add(new RnPoint(last.pos));
 
                         }
                     }
-                    lines.Add(RnLineString.Create(points));
-                }
-                if (Road is RnRoad link)
-                {
-                    var nextTrans = Lanes.Select(w => w.NextBorder).Where(b => b != null).SelectMany(w => w.BothConnectedTrans).Distinct().ToList();
-                    var prevTrans = Lanes.Select(w => w.PrevBorder).Where(b => b != null).SelectMany(w => w.BothConnectedTrans).Distinct().ToList();
-                    link.SetPrevNext(prevTrans.FirstOrDefault(t => t.Road != null)?.Road, nextTrans.FirstOrDefault(t => t.Road != null)?.Road);
-                    if (LodLevel == 1)
-                    {
-                        var leftLane = link.MainLanes.FirstOrDefault();
-                        var rightLane = link.MainLanes.LastOrDefault();
-                        MoveWay(leftLane?.LeftWay);
-                        MoveWay(rightLane?.RightWay);
-                    }
-                }
-                else if (Road is RnIntersection node)
-                {
-                    foreach (var b in Borders)
-                    {
-                        foreach (var l in b.BothConnectedTrans)
-                        {
-                            if (l.Road == null)
-                                continue;
-                            node.AddNeighbor(l.Link, b.Way);
-                        }
-                    }
 
-                    if (LodLevel == 1)
+                    var sideWalk = RnSideWalk.Create(parent, new RnWay(RnLineString.Create(points)));
+                    ret.Add(sideWalk);
+                }
+
+                foreach (var tran in TranMap.Values)
+                {
+                    // 移動を適用するのはLODLevel1のみ
+                    if (tran.LodLevel != 1)
+                        continue;
+                    if (tran.Node is RnRoad road)
                     {
-                        foreach (var l in node.Lanes)
-                            MoveWay(l.LeftWay);
+                        var leftLane = road.MainLanes.FirstOrDefault();
+                        var rightLane = road.MainLanes.LastOrDefault();
+                        MoveWay(leftLane?.LeftWay, road);
+                        MoveWay(rightLane?.RightWay, road);
                     }
                 }
-                sideWalkLineStrings = lines;
+
+                return ret;
             }
         }
 
-        /// <summary>
-        /// Way
-        /// </summary>
-        private class WayWork
+        public class Tran
         {
-            public TranWork Parent { get; }
+            // 親グラフ
+            public RGraph Graph { get; }
 
-            public RnWay Way { get; private set; }
+            // 構成Face
+            public HashSet<RFace> Faces => FaceGroup.Faces;
 
-            /// <summary>
-            /// 開始地点と隣接しているレーン
-            /// </summary>
-            public IReadOnlyList<TranWork> PrevTranWorks => Parent.Vertex2Connected[Way.GetPoint(0)];
+            public RFaceGroup FaceGroup { get; }
 
-            /// <summary>
-            /// 終了地点と隣接しているレーン
-            /// </summary>
-            public List<TranWork> NextTranWorks => Parent.Vertex2Connected[Way.GetPoint(-1)];
+            public List<RVertex> Vertices { get; }
 
-            /// <summary>
-            /// 通常の道用. Wayの開始地点と接続している境界線
-            /// </summary>
-            public WayWork PrevBorder
+            public class Line
+            {
+                public Tran Neighbor { get; set; }
+
+                // 構成Edge
+                public List<REdge> Edges { get; } = new List<REdge>();
+
+                // 構成頂点
+                public List<RVertex> Vertices { get; } = new List<RVertex>();
+
+                public RnWay Way { get; set; }
+
+                // 他との境界線かどうか
+                public bool IsBorder => Neighbor != null;
+
+                public Line Next { get; set; }
+
+                public Line Prev { get; set; }
+            }
+
+            public List<Line> Lines { get; } = new List<Line>();
+
+            // 隣接オブジェクトの数
+            public int NeighborCount => Lines.Where(l => l.IsBorder).Count();
+
+            // LodLevel
+            public int LodLevel => Faces.Any() ? Faces.Max(f => f.LodLevel) : 0;
+
+            public RoadType RoadType
             {
                 get
                 {
-                    foreach (var b in Parent.Borders)
+                    switch (NeighborCount)
                     {
-                        foreach (var l in b.BothConnectedTrans)
+                        case 0: return RoadType.Isolated;
+                        case 1: return RoadType.Terminate;
+                        case 2: return RoadType.Road;
+                        // 3つ以上の隣接オブジェクトを持つかどうか
+                        default: return RoadType.Intersection;
+                    };
+                }
+            }
+
+            public bool IsValid { get; private set; } = true;
+
+            public Work Work { get; }
+
+            // RnIntersection or RnRoad
+            public RnRoadBase Node { get; private set; }
+
+
+            private float GetMedianLength(Line line)
+            {
+                var ret = line.Vertices
+                    .SkipWhile(v => v.GetRoadType(f => Faces.Contains(f)).IsMedian() == false)
+                    .TakeWhile(v => v.GetRoadType(f => Faces.Contains(f)).IsMedian())
+                    .Aggregate(new { last = (RVertex)null, len = 0f }, (a, e) =>
+                    {
+                        var len = a.len;
+                        if (a.last != null)
                         {
-                            if (PrevTranWorks.Contains(l))
-                                return b;
+                            len += (e.Position - a.last.Position).magnitude;
                         }
-                    }
 
-                    return null;
-                }
+                        return new { last = e, len = len };
+                    });
+                return ret.len;
+            }
+            // 中央分離帯の幅を求める
+            public float GetMedianWidth()
+            {
+                var lines = Lines.Where(l => l.IsBorder && GetMedianLength(l) > 0).ToList();
+                if (lines.Any() == false)
+                    return 0f;
+
+                return lines.Min(GetMedianLength);
             }
 
-            /// <summary>
-            /// 通常の道用. Wayの終了地点と接続している境界線
-            /// </summary>
-            public WayWork NextBorder
+            public Tran(Work work, RGraph graph, RFaceGroup faceGroup)
             {
-                get
+                Work = work;
+                Graph = graph;
+
+                FaceGroup = faceGroup;
+                Vertices = faceGroup.ComputeOutlineVertices(f => f.RoadTypes.HasAnyFlag(RRoadTypeMask.SideWalk) == false);
+
+                // 時計回りになるように順番チェック
+                if (GeoGraph2D.IsClockwise(Vertices.Select(x => x.Position.Xz())) == false)
+                    Vertices.Reverse();
+            }
+
+            public void Build()
+            {
+                Node = CreateRoad();
+            }
+
+            public void BuildLine()
+            {
+                IsValid = BuildLines();
+            }
+
+            private RnRoadBase CreateRoad()
+            {
+                var cityObjectGroup = FaceGroup.CityObjectGroup;
+                // 孤立
+                if (RoadType == RoadType.Isolated)
                 {
-                    foreach (var b in Parent.Borders)
+                    var way = Work.CreateWay(Vertices);
+                    var road = RnRoad.CreateIsolatedRoad(cityObjectGroup, way);
+                    return road;
+                }
+
+                // 行き止まり
+                if (RoadType == RoadType.Terminate)
+                {
+                    var border = Lines.FirstOrDefault(l => l.IsBorder);
+                    var line = Lines.FirstOrDefault(l => l.IsBorder == false);
+                    if (line == null)
                     {
-                        foreach (var l in b.BothConnectedTrans)
+                        Debug.LogError($"不正なレーン構成[Terminate] : {cityObjectGroup.name}");
+                        return null;
+                    }
+
+                    var vertices = line.Vertices.Select(v => v.Position.Xz()).ToList();
+                    var edgeIndices = GeoGraph2D.FindMidEdge(vertices, Work.terminateAllowEdgeAngle);
+
+                    RnWay AsWay(IEnumerable<int> ind, bool isReverse, bool isRightSide)
+                    {
+                        var ls = Work.CreateWay(ind.Select(x => line.Vertices[x]).ToList());
+                        return new RnWay(ls.LineString, ls.IsReversed ? !isReverse : isReverse, isRightSide);
+                    }
+
+                    var rWay = AsWay(Enumerable.Range(0, edgeIndices[0] + 1), true, true);
+                    var lWay = AsWay(Enumerable.Range(edgeIndices.Last(), line.Vertices.Count - edgeIndices.Last()), false, false);
+                    var prevBorderWay = AsWay(edgeIndices, true, false);
+                    var nextBorderWay = Work.CreateWay(border.Vertices);
+                    var lane = new RnLane(lWay, rWay, prevBorderWay, nextBorderWay);
+                    var road = RnRoad.CreateOneLaneRoad(cityObjectGroup, lane);
+                    road.SetPrevNext(null, border.Neighbor?.Node);
+                    return road;
+                }
+
+                // 通常の道
+                if (RoadType == RoadType.Road)
+                {
+                    var lanes = Lines.Where(l => l.IsBorder == false).ToList();
+                    var road = new RnRoad(cityObjectGroup);
+
+                    // 同じPrev/Nextの組み合わせでグループ化(順序逆は問わない)
+                    var pairs = lanes.GroupBy(l => RnEx.CombSet(l.Prev, l.Next))
+                        .Select(g =>
                         {
-                            if (NextTranWorks.Contains(l))
-                                return b;
-                        }
-                    }
+                            var laneLines = g.ToList();
+                            var (left, right) = (laneLines.ElementAtOrDefault(0), laneLines.ElementAtOrDefault(1));
+                            if (left?.Way?.IsReversed ?? false)
+                                (left, right) = (right, left);
+                            return new { leftLine = left, rightLine = right };
+                        }).ToList();
+                    var pair = pairs.FirstOrDefault(p => p.leftLine != null && p.rightLine != null);
+                    if (pair == null)
+                        pair = pairs.FirstOrDefault();
 
-                    return null;
-                }
-            }
+                    //Assert.IsTrue(pair != null, $"不正なレーン構成 {cityObjectGroup.name}");
+                    if (pair == null)
+                        return road;
+                    var (leftLine, rightLine) = (pair.leftLine, pair.rightLine);
 
-            /// <summary>
-            /// From/Toどっちにも含まれているレーン(接しているレーン)
-            /// </summary>
-            public IEnumerable<TranWork> BothConnectedTrans
-            {
-                get
-                {
-                    foreach (var l in PrevTranWorks)
+                    if (leftLine == null && rightLine == null)
                     {
-                        if (NextTranWorks.Contains(l))
-                            yield return l;
+                        Debug.LogError($"不正なーレーン構成(Wayの存在しないLane) {cityObjectGroup.name}");
+                        return road;
                     }
+
+                    // ログだけ残しておく
+                    if (leftLine == null || rightLine == null)
+                        Debug.LogWarning($"不正なレーン構成(片側Wayのみ存在) {cityObjectGroup.name}");
+
+                    var line = leftLine ?? rightLine;
+                    var prevBorderLine = line?.Prev; ;
+                    var nextBorderLine = line?.Next;
+                    var prevBorderWay = prevBorderLine?.Way;
+                    var nextBorderWay = nextBorderLine?.Way;
+
+                    var leftWay = leftLine?.Way;
+                    var rightWay = rightLine?.Way;
+
+                    // 方向そろえる
+                    if (leftLine != null && leftLine.Prev != prevBorderLine)
+                        leftWay = leftWay.ReversedWay();
+                    if (rightLine != null && rightLine.Prev != prevBorderLine)
+                        rightWay = rightWay.ReversedWay();
+                    if (rightWay != null)
+                        rightWay.IsReverseNormal = true;
+
+                    var lane = new RnLane(leftWay, rightWay, prevBorderWay, nextBorderWay);
+                    road.AddMainLane(lane);
+                    return road;
                 }
-            }
 
-            /// <summary>
-            /// From/Toどっちかに含まれているレーン
-            /// </summary>
-            public IEnumerable<TranWork> AnyConnectedTrans => PrevTranWorks.Concat(NextTranWorks).Distinct();
-
-
-            private bool? cachedIsBorder = null;
-            /// <summary>
-            /// 境界線かどうか
-            /// </summary>
-            public bool IsBorder
-            {
-                get
+                // 交差点
+                if (RoadType == RoadType.Intersection)
                 {
-                    if (cachedIsBorder.HasValue == false)
+                    var intersection = new RnIntersection(cityObjectGroup);
+                    // Track情報
+                    foreach (var l in Lines.Where(l => l.IsBorder == false))
                     {
-                        cachedIsBorder = false;
-                        if (Way.Count <= 1)
-                            return cachedIsBorder.Value;
-
-                        foreach (var neighbor in BothConnectedTrans)
-                        {
-                            // 共通の隣接レーンがあると境界線
-                            // ただし、行き止まり(1つのレーンとしか隣接していない)場合
-                            // 全WayがBorder扱いになるので別途チェックが必要
-
-                            // 共通のLineStringがある場合は境界線
-                            if (neighbor.Ways.Any(w => w.Way.LineString == Way.LineString))
-                            {
-                                cachedIsBorder = true;
-                                break;
-                            }
-
-                            var p0 = Way[0];
-                            var p1 = Way[1];
-                            var cp = (p0 + p1) * 0.5f;
-                            var n = Way.GetEdgeNormal(0);
-                            // 微小にずらして確認する
-                            var p = cp + n * 0.01f;
-                            cachedIsBorder = GeoGraph2D.Contains(neighbor.Way.Select(x => x.Xz()), p.Xz());
-                            if (cachedIsBorder.Value)
-                                break;
-                        }
+                        var prevBorder = l.Prev?.Way;
+                        var nextBorder = l.Next?.Way;
+                        var lane = new RnLane(l.Way, null, prevBorder, nextBorder);
+                        intersection.AddLane(lane);
                     }
 
-                    return cachedIsBorder.Value;
+                    return intersection;
                 }
-            }
-
-            public WayWork(RnWay way, TranWork parent)
-            {
-                Way = way;
-                Parent = parent;
+                Debug.LogError($"不正なレーン構成 : {cityObjectGroup.name}");
+                return null;
             }
 
             /// <summary>
-            /// 道を逆転させる
+            /// 接続情報作成
             /// </summary>
-            public void Reverse()
+            public void BuildConnection()
             {
-                Way = Way.ReversedWay();
+                if (Node is RnRoad road)
+                {
+                    var lane = road.MainLanes.FirstOrDefault();
+                    if (lane == null)
+                        return;
+                    var prev = Lines.Where(l => l.IsBorder && l.Way != null)
+                        .FirstOrDefault(l => lane.PrevBorder?.IsSameLine(l.Way) ?? false);
+                    var next = Lines.Where(l => l.IsBorder && l.Way != null)
+                        .FirstOrDefault(l => lane.NextBorder?.IsSameLine(l.Way) ?? false);
+
+                    var prevRoad = prev?.Neighbor?.Node;
+                    var nextRoad = next?.Neighbor?.Node;
+                    road.SetPrevNext(prevRoad, nextRoad);
+                }
+                else if (Node is RnIntersection intersection)
+                {
+                    // 境界線情報
+                    foreach (var b in Lines.Where(l => l.IsBorder))
+                    {
+                        intersection.AddNeighbor(b.Neighbor.Node, b.Way);
+                    }
+                }
+            }
+
+            private bool BuildLines()
+            {
+                var edges = new REdge[Vertices.Count];
+                // index : アウトラインの辺に隣接するTran
+                var neighbors = new Tran[edges.Length];
+                var success = true;
+                for (var i = 0; i < Vertices.Count; i++)
+                {
+                    var v0 = Vertices[i];
+                    var v1 = Vertices[(i + 1) % Vertices.Count];
+
+                    var e = v0.Edges.FirstOrDefault(e => e.IsSameVertex(v0, v1));
+                    if (e == null)
+                    {
+                        Debug.LogError($"ループしていないメッシュ. {FaceGroup.CityObjectGroup.name}");
+                        success = false;
+                        continue;
+                    }
+
+                    edges[i] = e;
+                    neighbors[i] = e.Faces.Select(f => Work.FindTranOrDefault(f)).FirstOrDefault(t => t != null && t != this);
+                }
+
+                var startIndex = 0;
+                for (var i = 1; i < edges.Length; i++)
+                {
+                    var e = edges[i];
+                    if (neighbors[i] != neighbors[0])
+                    {
+                        startIndex = i;
+                        break;
+                    }
+                }
+
+                Line line = null;
+                foreach (var i in Enumerable.Range(0, edges.Length).Select(i => (i + startIndex) % edges.Length))
+                {
+                    var v = Vertices[i];
+                    var e = edges[i];
+                    var n = neighbors[i];
+                    // 切り替わり発生したら新しいLineを作成
+                    if (line == null || line.Neighbor != n)
+                    {
+                        if (line != null)
+                            line.Vertices.Add(v);
+                        var next = new Line { Neighbor = n, Prev = line };
+                        if (line != null)
+                            line.Next = next;
+                        line = next;
+                        Lines.Add(line);
+                    }
+
+                    line.Edges.Add(e);
+                    line.Vertices.Add(v);
+                }
+
+                if (line != null && Lines.Count > 1)
+                {
+                    line.Vertices.Add(Vertices[startIndex]);
+                    line.Next = Lines[0];
+                    Lines[0].Prev = line;
+                }
+
+                // Wayを先に作っておく
+                foreach (var l in Lines)
+                    l.Way = Work.CreateWay(l.Vertices);
+                return success;
             }
         }
 
-        public Task<RnModel> CreateNetworkAsync(IList<RoadNetworkTranMesh> targets)
+        public Task<RnModel> CreateRnModelAsync(RGraph graph)
         {
-            // レーンの初期化
             try
             {
-                bool IsTarget(RRoadTypeMask type)
+                // 道路/中央分離帯は一つのfaceGroupとしてまとめる
+                var mask = ~(RRoadTypeMask.Road | RRoadTypeMask.Median);
+                var faceGroups = graph.GroupBy((f0, f1) =>
                 {
-                    if (type.IsRoad() == false)
-                        return false;
-                    if (ignoreHighway)
-                        return type.IsHighWay() == false;
-                    return true;
-                }
+                    var m0 = f0.RoadTypes & mask;
+                    var m1 = f1.RoadTypes & mask;
+                    return m0 == m1;
+                }).ToList();
+
                 var ret = new RnModel();
-                var roadTarget = targets.Where(t => IsTarget(t.RoadType)).ToList();
-                var vertex2Points = new Vertex2PointTable(cellSize, roadTarget.SelectMany(v => v.Vertices));
-                var lineStringTable = new LineStringTable();
-                var tranWorks = CreateTranWorks(roadTarget, vertex2Points, lineStringTable, out var cell2Groups);
-
-                foreach (var tranWork in tranWorks)
-                    Build(lineStringTable, tranWork, ret);
-
-                var visited = new Dictionary<RnPoint, TranWork.VertexInfo>();
-                foreach (var tranWork in tranWorks)
+                var work = new Work { terminateAllowEdgeAngle = terminateAllowEdgeAngle };
+                foreach (var faceGroup in faceGroups)
                 {
-                    tranWork.BuildConnection(vertex2Points, lod1SideWalkSize, visited, out var ls);
-                    foreach (var l in ls)
-                        ret.AddSideWalk(l);
+                    var roadType = faceGroup.RoadTypes;
+
+                    // 道路を全く含まない時は無視
+                    if (roadType.IsRoad() == false)
+                        continue;
+                    if (roadType.IsSideWalk())
+                        continue;
+                    // ignoreHighway=trueの時は高速道路も無視
+                    if (roadType.IsHighWay() && ignoreHighway)
+                        continue;
+                    work.TranMap[faceGroup] = new Tran(work, graph, faceGroup);
                 }
 
+                // 作成したTranを元にRoadを作成
+                foreach (var tran in work.TranMap.Values)
+                    tran.BuildLine();
+                foreach (var tran in work.TranMap.Values)
+                {
+                    tran.Build();
+                    if (tran.Node != null)
+                        ret.AddRoadBase(tran.Node);
+                }
+
+                foreach (var tran in work.TranMap.Values)
+                {
+                    tran.BuildConnection();
+                }
+
+                // 歩道を作成する
+                var sideWalks = work.CreateSideWalk(lod1SideWalkSize);
+                foreach (var sideWalk in sideWalks)
+                    ret.AddSideWalk(sideWalk);
                 if (addLod3SideWalk)
                 {
-                    foreach (var sideWalk in targets.Where(t => t.RoadType.IsSideWalk()))
+                    foreach (var c in faceGroups)
                     {
-                        var lines = sideWalk.Vertices.Select(v => new RnPoint(v));
-                        var lineString = lineStringTable.Create(lines, out bool isReverse);
-                        ret.AddSideWalk(lineString);
+                        foreach (var sideWalkFace in c.Faces.Where(f => f.RoadTypes.IsSideWalk()))
+                        {
+                            var vertices = sideWalkFace.ComputeOutlineVertices();
+                            var way = work.CreateWay(vertices);
+                            var parent = work.TranMap.Values.FirstOrDefault(t =>
+                                t.FaceGroup.CityObjectGroup == sideWalkFace.CityObjectGroup && t.Node != null);
+                            var sideWalk = RnSideWalk.Create(parent?.Node, way);
+                            ret.AddSideWalk(sideWalk);
+                        }
                     }
                 }
 
-                ret.SplitLaneByWidth(roadSize, out var failedLinks);
-
-                foreach (var id in failedLinks)
                 {
-                    var ll = ret.Roads.FirstOrDefault(l => l.DebugMyId == id);
+                    var visited = new HashSet<RnRoad>();
+                    foreach (var n in work.TranMap.Values)
+                    {
+                        if (n.Node is RnRoad road)
+                        {
+                            if (visited.Contains(road))
+                                continue;
+                            var width = n.GetMedianWidth();
+                            if (width <= 0f)
+                                continue;
+                            var linkGroup = road.CreateRoadGroupOrDefault();
+                            if (linkGroup == null)
+                                continue;
+                            if (checkMedian)
+                            {
+                                linkGroup.SetLaneCount(1, 1);
+                                if (zeroWidthMedian == false)
+                                    linkGroup.SetMedianWidth(width, LaneWayMoveOption.MoveBothWay);
+                            }
+                            foreach (var r in linkGroup.Roads)
+                                visited.Add(r);
+                        }
+                    }
                 }
 
-                //ret.DebugIdentify();
+
+                ret.SplitLaneByWidth(roadSize, out var failedLinks);
+                ret.ReBuildIntersectionTracks();
                 return Task.FromResult(ret);
             }
             catch (Exception e)
@@ -576,184 +616,39 @@ namespace PLATEAU.RoadNetwork.Factory
             }
         }
 
-        private void Build(LineStringTable lineStringTable, TranWork tranWork, RnModel ret)
+        public async Task<RnModel> CreateRnModelAsync(List<PLATEAUCityObjectGroup> cityObjectGroups)
         {
-            var roadType = tranWork.RoadType;
-            // 隣接レーンが一つもない場合は孤立
-            if (roadType == RoadType.Isolated)
-            {
-                ret.AddRoad(RnRoad.CreateIsolatedRoad(tranWork.TargetTran, tranWork.Way));
-                return;
-            }
-
-            // 行き止まり
-            if (roadType == RoadType.Terminate)
-            {
-                // もともと頂点が時計回りになっているのでIsReversed == trueの者が右になる
-                var wayWork = tranWork.Lanes.FirstOrDefault();
-                var way = wayWork?.Way;
-                // どっちかはnot nullなはず
-                if (way != null)
-                {
-                    var vertices = way.Vertices.Select(x => x.Xz()).ToList();
-                    var edgeIndices = GeoGraph2D.FindMidEdge(vertices, terminateAllowEdgeAngle);
-
-                    RnWay AsWay(IEnumerable<int> ind, bool isReverse, bool isRightSide)
-                    {
-                        var ls = lineStringTable.Create(ind.Select(x => way.GetPoint(x)), out bool isRev);
-                        return new RnWay(ls, isRev ? !isReverse : isReverse, isRightSide);
-                    }
-
-                    var rWay = AsWay(Enumerable.Range(0, edgeIndices[0] + 1), true, true);
-                    var lWay = AsWay(Enumerable.Range(edgeIndices.Last(), way.Count - edgeIndices.Last()), false, false);
-                    var startBorderWay = AsWay(edgeIndices, true, false);
-                    var endBorder = tranWork.Borders.FirstOrDefault();
-                    var endBorderWay = endBorder?.Way;
-                    var l = new RnLane(lWay, rWay, startBorderWay, endBorderWay);
-                    var link = RnRoad.CreateOneLaneRoad(tranWork.TargetTran, l);
-
-                    tranWork.Ways.Clear();
-                    tranWork.Ways.Add(new WayWork(startBorderWay, tranWork));
-                    tranWork.Ways.Add(new WayWork(lWay, tranWork));
-                    tranWork.Ways.Add(new WayWork(endBorderWay, tranWork));
-                    if (endBorder != null)
-                        tranWork.Ways.Add(endBorder);
-                    tranWork.Bind(link);
-                    ret.AddRoad(link);
-                }
-                else
-                {
-                    Debug.LogError("不正なレーン構成{Terminate)");
-                }
-            }
-            // 交差点
-            else if (roadType == RoadType.Intersection)
-            {
-                var node = new RnIntersection(tranWork.TargetTran);
-                foreach (var l in tranWork.Lanes)
-                {
-                    var prevBorder = l.PrevBorder?.Way;
-                    var nextBorder = l.NextBorder?.Way;
-                    var lane = new RnLane(l.Way, null, prevBorder, nextBorder);
-                    node.AddLane(lane);
-                }
-                tranWork.Bind(node);
-                ret.AddIntersection(node);
-            }
-            // 通常の道
-            else if (roadType == RoadType.Road)
-            {
-                foreach (var lw in tranWork.Lanes.GroupBy(a =>
-                         {
-                             // Prev/Nextの組み合わせが同じなら良いのでHashCodeでソートしたうえで返す
-                             if ((a.PrevBorder?.GetHashCode() ?? 0) > (a.NextBorder?.GetHashCode() ?? 0))
-                                 return new Tuple<WayWork, WayWork>(a.NextBorder, a.PrevBorder);
-                             return new Tuple<WayWork, WayWork>(a.PrevBorder, a.NextBorder);
-                         }))
-                {
-                    var laneWays = lw.ToList();
-                    var (leftWay, rightWay) = (laneWays.ElementAtOrDefault(0), laneWays.ElementAtOrDefault(1));
-                    if (leftWay?.Way?.IsReversed ?? false)
-                        (rightWay, leftWay) = (leftWay, rightWay);
-
-                    var link = new RnRoad(tranWork.TargetTran);
-                    if (leftWay != null && rightWay != null)
-                    {
-                        var startBorderWay = leftWay?.PrevBorder?.Way;
-                        var endBorderWay = leftWay?.NextBorder?.Way;
-                        var l = new RnLane(leftWay?.Way, rightWay?.Way, startBorderWay, endBorderWay);
-                        link.AddMainLane(l);
-
-                    }
-                    else if (leftWay != null || rightWay != null)
-                    {
-                        var way = leftWay ?? rightWay;
-                        var startBorderWay = way?.PrevBorder?.Way;
-                        var endBorderWay = way?.NextBorder?.Way;
-                        var lane = new RnLane(leftWay?.Way, rightWay?.Way, startBorderWay, endBorderWay);
-                        link.AddMainLane(lane);
-                        Debug.LogWarning("不正なレーン構成(片側Wayのみ存在)");
-                    }
-                    else
-                    {
-                        Debug.LogError("不正なーレーン構成(Wayの存在しないLane)");
-                    }
-
-                    if (link.MainLanes.Count > 0)
-                    {
-                        tranWork.Bind(link);
-                        ret.AddRoad(link);
-                    }
-                }
-
-
-            }
+            await midStageData.ConvertCityObjectAsync(cityObjectGroups);
+            var graph = midStageData.CreateGraph(graphFactory);
+            var model = await CreateRnModelAsync(graph);
+            if (midStageData.saveTmpData == false)
+                midStageData.rGraph.rGraph = null;
+            return model;
         }
 
-        private static List<TranWork> CreateTranWorks(IList<RoadNetworkTranMesh> targets, Vertex2PointTable vertex2Points, LineStringTable lineStringTable, out Dictionary<RnPoint, Cell> cell2Groups)
+        public async Task<PLATEAURnStructureModel> CreateRnModelAsync(List<PLATEAUCityObjectGroup> cityObjectGroups, GameObject target)
         {
-            cell2Groups = new Dictionary<RnPoint, Cell>();
-            // レーンの頂点情報を構築
-            var tranWorks = new List<TranWork>();
-            foreach (var item in targets)
-            {
-                var cityObject = item.CityObjectGroup;
-                var linkOrNodeWork = new TranWork(cityObject, item.LodLevel);
+            if (!target)
+                target = new GameObject("RoadNetworkStructure");
+            var ret = target.GetComponent<PLATEAURnStructureModel>() ?? target.AddComponent<PLATEAURnStructureModel>();
+            var model = await CreateRnModelAsync(cityObjectGroups);
+            ret.RoadNetwork = model;
+            return ret;
+        }
 
-                //var vertices = laneWork.LineString.Vertices;
-                var vertices = item.Vertices.Select(v => vertex2Points[v]).ToList();
-                // 時計回りになるように順番チェック
-                if (GeoGraph2D.IsClockwise(vertices.Select(x => x.Vertex.Xz())) == false)
-                    vertices.Reverse();
+        public async Task<PLATEAURnStructureModel> CreateRnModelAsync(RGraph graph, GameObject target)
+        {
+            if (!target)
+                target = new GameObject("RoadNetworkStructure");
+            var ret = target.GetComponent<PLATEAURnStructureModel>() ?? target.AddComponent<PLATEAURnStructureModel>();
+            var model = await CreateRnModelAsync(graph);
+            ret.RoadNetwork = model;
+            return ret;
+        }
 
-                foreach (var v in vertices)
-                {
-                    var cell = cell2Groups.GetValueOrCreate(v, v => new Cell { });
-                    cell.Add(linkOrNodeWork);
-                }
-                var lineString = lineStringTable.Create(vertices, out bool isReverse);
-                linkOrNodeWork.Way = new RnWay(lineString, isReverse);
-                tranWorks.Add(linkOrNodeWork);
-            }
-
-            // laneのConnectedを構築
-            // 特定頂点につながっているLinkNodeは接続情報を付与する
-            foreach (var tranWork in tranWorks)
-            {
-                // 頂点に対してつながっているTranを追加
-                foreach (var p in tranWork.Way.Points)
-                {
-                    var connected = cell2Groups[p];
-                    // 自分自身を除く
-                    tranWork.Vertex2Connected[p] = connected.Where(x => x != tranWork).ToList();
-                }
-
-                // 1頂点でしかつながっていないレーンは隣接していないので削除
-                // 交差点で隣り合う道路道路は１頂点でつながっているが実際は中央の交差点
-                // 以下のようにAとBは共通する1頂点があるが実際はそれぞれEとしかつながっていない
-                //        A
-                //       | |
-                //       | |
-                //    ---o o ---
-                //   B    E   C
-                //    ---o o ---
-                //       | |
-                //       | |
-                //        D
-
-                // 1頂点以下でしか接していないtranは削除
-                var removeNeighbor = tranWork.Vertex2Connected.SelectMany(v => v.Value)
-                    .GroupBy(v => v)
-                    .Where(v => v.Count() <= 1)
-                    .Select(v => v.Key)
-                    .ToList();
-                foreach (var n in tranWork.Vertex2Connected)
-                    n.Value.RemoveAll(x => removeNeighbor.Contains(x));
-            }
-
-            foreach (var tran in tranWorks)
-                tran.Split2Way(lineStringTable);
-            return tranWorks;
+        public void DebugDraw()
+        {
+            midStageData?.DebugDraw();
         }
     }
 }

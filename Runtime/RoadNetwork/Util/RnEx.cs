@@ -1,30 +1,71 @@
-﻿using Newtonsoft.Json;
+﻿using PLATEAU.CityAdjust.NonLibDataHolder;
 using PLATEAU.CityExport.ModelConvert;
 using PLATEAU.CityExport.ModelConvert.SubMeshConvert;
-using PLATEAU.CityGML;
 using PLATEAU.CityImport.Import.Convert;
 using PLATEAU.CityInfo;
 using PLATEAU.GranularityConvert;
 using PLATEAU.PolygonMesh;
-using PLATEAU.RoadNetwork.Factory;
-using PLATEAU.RoadNetwork.Graph;
 using PLATEAU.RoadNetwork.Mesh;
 using PLATEAU.RoadNetwork.Structure;
 using PLATEAU.Util;
 using PLATEAU.Util.GeoGraph;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Unity.Collections;
 using UnityEngine;
-using UnityEngine.Assertions;
 
-namespace PLATEAU.RoadNetwork
+namespace PLATEAU.RoadNetwork.Util
 {
+    public struct CombSet2<T>
+    {
+        public T A { get; }
+
+        public T B { get; }
+
+        public CombSet2(T a, T b)
+        {
+            A = a;
+            B = b;
+            if (A.GetHashCode() > B.GetHashCode())
+                (A, B) = (B, A);
+        }
+    }
+
+    public struct CombSet3<T>
+    {
+        public T A { get; }
+
+        public T B { get; }
+
+        public T C { get; }
+
+        public CombSet3(T a, T b, T c)
+        {
+            A = a;
+            B = b;
+            C = c;
+            if (A.GetHashCode() > B.GetHashCode())
+                (A, B) = (B, A);
+            if (B.GetHashCode() > C.GetHashCode())
+                (B, C) = (C, B);
+            if (A.GetHashCode() > B.GetHashCode())
+                (A, B) = (B, A);
+        }
+    }
+
     public static class RnEx
     {
+        public static CombSet2<T> CombSet<T>(T a, T b)
+        {
+            return new CombSet2<T>(a, b);
+        }
+
+        public static CombSet3<T> CombSet<T>(T a, T b, T c)
+        {
+            return new CombSet3<T>(a, b, c);
+        }
+
         public static void Replace<T>(IList<T> self, T before, T after) where T : class
         {
             for (var i = 0; i < self.Count; i++)
@@ -57,7 +98,7 @@ namespace PLATEAU.RoadNetwork
         /// <param name="mergeEpsilon"></param>
         /// <param name="mergeCellLength"></param>
         /// <returns></returns>
-        public static List<ConvertedCityObject> MergeVertices(List<ConvertedCityObject> targets, float mergeEpsilon, int mergeCellLength)
+        public static List<SubDividedCityObject> MergeVertices(List<SubDividedCityObject> targets, float mergeEpsilon, int mergeCellLength)
         {
             try
             {
@@ -75,14 +116,14 @@ namespace PLATEAU.RoadNetwork
             catch (Exception e)
             {
                 Debug.LogException(e);
-                return new List<ConvertedCityObject>();
+                return new List<SubDividedCityObject>();
             }
         }
 
         [Serializable]
         internal class ConvertCityObjectResult
         {
-            public List<ConvertedCityObject> ConvertedCityObjects { get; } = new List<ConvertedCityObject>();
+            public List<SubDividedCityObject> ConvertedCityObjects { get; } = new List<SubDividedCityObject>();
         }
 
 
@@ -94,9 +135,10 @@ namespace PLATEAU.RoadNetwork
             var transformList = new UniqueParentTransformList(cityObjectGroupList.Select(c => c.transform).ToArray());
 
             // 属性情報を記憶しておく
-            var attributes = GmlIdToSerializedCityObj.ComposeFrom(transformList);
+            var attributes = new GmlIdToSerializedCityObj();
+            attributes.ComposeFrom(transformList);
 
-            var unityMeshToDllSubMeshConverter = new UnityMeshToDllSubMeshWithGameMaterial();
+            var unityMeshToDllSubMeshConverter = new UnityMeshToDllSubMeshWithEmptyMaterial();
 
             // ゲームオブジェクトを共通ライブラリのModelに変換します。
             using var srcModel = UnityMeshToDllModelConverter.Convert(
@@ -109,8 +151,8 @@ namespace PLATEAU.RoadNetwork
             var converter = new GranularityConverter();
             var dstModel = converter.Convert(srcModel, nativeOption);
             var getter = new SerializedCityObjectGetterFromDict(attributes, dstModel);
-            var attrHelper = new AttributeDataHelper(getter, nativeOption.Granularity, true);
-            var cco = await Task.Run(() => new ConvertedCityObject(dstModel, attrHelper));
+            var attrHelper = new AttributeDataHelper(getter, true);
+            var cco = await Task.Run(() => new SubDividedCityObject(dstModel, attrHelper));
 
             foreach (var co in cityObjectGroupList)
             {
@@ -125,6 +167,50 @@ namespace PLATEAU.RoadNetwork
             ret.ConvertedCityObjects.AddRange(cco.GetAllChildren().Where(c => c.Children.Any() == false && c.Meshes.Any()));
 
             return ret;
+        }
+
+        /// <summary>
+        /// Sceneエディタ上で選択されているかどうか
+        /// </summary>
+        /// <param name="cog"></param>
+        /// <returns></returns>
+        public static bool IsEditorSceneSelected(PLATEAUCityObjectGroup cog)
+        {
+#if UNITY_EDITOR
+            if (!cog)
+                return false;
+            return UnityEditor.Selection.gameObjects.Contains(cog.gameObject);
+#else
+            return false;
+#endif
+        }
+
+        public static RnLineString CreateInnerLerpLineString(IReadOnlyList<Vector3> leftVertices, IReadOnlyList<Vector3> rightVertices, RnPoint start, RnPoint end, float t, float pointSkipDistance = 1e-3f)
+        {
+            var line = new RnLineString();
+            for (var i = 0; i < leftVertices.Count; i++)
+            {
+                void AddPoint(RnPoint p)
+                {
+                    line.AddPointOrSkip(p, pointSkipDistance);
+                }
+
+                AddPoint(start);
+                var segments = GeoGraphEx.GetInnerLerpSegments(leftVertices, rightVertices, AxisPlane.Xz, t);
+                // 1つ目の点はボーダーと重複するのでスキップ
+                // #TODO : 実際はボーダーよりも外側にあるのはすべてスキップすべき
+                foreach (var s in segments.Skip(1))
+                    AddPoint(new RnPoint(s));
+                AddPoint(end);
+                // 自己交差があれば削除する
+                var plane = AxisPlane.Xz;
+                GeoGraph2D.RemoveSelfCrossing(line.Points
+                    , t => t.Vertex.GetTangent(plane)
+                    , (p1, p2, p3, p4, inter, f1, f2) => new RnPoint(Vector3.Lerp(p1, p2, f1)));
+
+            }
+
+            return line;
         }
     }
 }

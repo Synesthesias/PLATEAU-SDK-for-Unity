@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using UnityEngine.UI;
 
 namespace PLATEAU.Util
 {
@@ -256,9 +255,30 @@ namespace PLATEAU.Util
         }
 
 
-        public static Vector2 ToVector2Int(this Vector2 self)
+        public static Vector2Int ToVector2Int(this Vector2 self)
         {
-            return new Vector2((int)self.x, (int)self.y);
+            return new Vector2Int((int)self.x, (int)self.y);
         }
+
+        /// <summary>
+        /// 各成分に対してCeilToIntを適用してVector2Int型で返す
+        /// </summary>
+        /// <param name="self"></param>
+        /// <returns></returns>
+        public static Vector2Int CeilToInt(this Vector2 self)
+        {
+            return new Vector2Int(Mathf.CeilToInt(self.x), Mathf.CeilToInt(self.y));
+        }
+
+        /// <summary>
+        /// 各成分に対してFloorToIntを適用してVector2Int型で返す
+        /// </summary>
+        /// <param name="self"></param>
+        /// <returns></returns>
+        public static Vector2Int FloorToInt(this Vector2 self)
+        {
+            return new Vector2Int(Mathf.FloorToInt(self.x), Mathf.FloorToInt(self.y));
+        }
+
     }
 }

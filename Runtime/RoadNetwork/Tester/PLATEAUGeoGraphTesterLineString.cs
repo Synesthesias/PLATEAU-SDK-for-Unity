@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-namespace PLATEAU.RoadNetwork
+namespace PLATEAU.RoadNetwork.Tester
 {
     public class PLATEAUGeoGraphTesterLineString : MonoBehaviour
     {

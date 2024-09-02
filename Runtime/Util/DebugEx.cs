@@ -402,5 +402,52 @@ namespace PLATEAU.Util
                 DrawLine(sZ, eZ, col, duration, depthTest);
             }
         }
+
+        /// <summary>
+        /// デバッグで破線を描画する
+        /// </summary>
+        /// <param name="st"></param>
+        /// <param name="en"></param>
+        /// <param name="color"></param>
+        /// <param name="lineLength"></param>
+        /// <param name="spaceLength"></param>
+        /// <param name="duration"></param>
+        /// <param name="depthTest"></param>
+        public static void DrawDashedLine(Vector3 st, Vector3 en, Color? color = null, float lineLength = 1f, float spaceLength = 0.2f, float duration = 0f,
+            bool depthTest = true)
+        {
+            var len = (en - st).magnitude;
+
+            var n = len / (lineLength + spaceLength);
+            if (n <= 0f)
+                return;
+
+            var offset = 1f / n;
+            var s = offset * lineLength / (lineLength + spaceLength);
+
+            for (var t = 0f; t < 1f; t += offset)
+            {
+                var p0 = Vector3.Lerp(st, en, t);
+                var p1 = Vector3.Lerp(st, en, Mathf.Min(1f, t + s));
+                DebugEx.DrawLine(p0, p1, color, duration, depthTest);
+            }
+        }
+
+        /// <summary>
+        /// デバッグで破線を描画する
+        /// </summary>
+        /// <param name="vertices"></param>
+        /// <param name="isLoop"></param>
+        /// <param name="color"></param>
+        /// <param name="lineLength"></param>
+        /// <param name="spaceLength"></param>
+        /// <param name="duration"></param>
+        /// <param name="depthTest"></param>
+        public static void DrawDashedLines(IEnumerable<Vector3> vertices, bool isLoop = false, Color? color = null, float lineLength = 3f, float spaceLength = 1f, float duration = 0f,
+            bool depthTest = true)
+        {
+            foreach (var e in GeoGraphEx.GetEdges(vertices, isLoop))
+                DrawDashedLine(e.Item1, e.Item2, color, lineLength, spaceLength, duration, depthTest);
+        }
     }
 }

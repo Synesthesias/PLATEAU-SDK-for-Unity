@@ -61,7 +61,7 @@ namespace PLATEAU.Util
             };
             return newObj;
         }
-        
+
 
         public static List<GameObject> ListGameObjsInScene(Scene scene)
         {
@@ -82,6 +82,23 @@ namespace PLATEAU.Util
             {
                 ListGameObjsRecursive(childTrans.gameObject, list);
             }
+        }
+
+        /// <summary>
+        /// GetComponent が null なら AddComponent して返す。
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="go"></param>
+        /// <returns></returns>
+        public static T GetOrAddComponent<T>(this GameObject go) where T : Component
+        {
+            var component = go.GetComponent<T>();
+            if (component == null)
+            {
+                component = go.AddComponent<T>();
+            }
+
+            return component;
         }
     }
 }

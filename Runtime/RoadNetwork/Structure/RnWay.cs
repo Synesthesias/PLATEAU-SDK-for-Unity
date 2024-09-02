@@ -348,6 +348,12 @@ namespace PLATEAU.RoadNetwork.Structure
             return LineUtil.GetLineSegmentLerpPoint(this, p, out midPoint);
         }
 
+        public Vector3 GetLerpPoint(float p)
+        {
+            GetLerpPoint(p, out var midPoint);
+            return midPoint;
+        }
+
         /// <summary>
         /// 自身をnum分割して返す. 分割できない(頂点空）の時は空リストを返す
         /// </summary>
@@ -368,6 +374,16 @@ namespace PLATEAU.RoadNetwork.Structure
         {
             if (IsValid == false)
                 return;
+
+            // 頂点数が2の時は特殊処理
+            if (Count == 2)
+            {
+                var n = GetEdgeNormal(0).normalized;
+                foreach (var p in Points)
+                    p.Vertex += n * offset;
+
+                return;
+            }
 
             var index = 0;
             // 現在見る点と次の点の辺/頂点の法線を保存しておく
@@ -481,7 +497,7 @@ namespace PLATEAU.RoadNetwork.Structure
             float len = float.MaxValue;
             foreach (var s in GeoGraphEx.GetEdges(self, false))
             {
-                var v = new LineSegment3D(s.Item1, s.Item2).GetNearestPoint(pos, out var t);
+                var v = new LineSegment3D(s.Item1, s.Item2).GetNearestPoint(pos);
                 if ((nearest - v).sqrMagnitude < len)
                 {
                     len = (nearest - v).sqrMagnitude;

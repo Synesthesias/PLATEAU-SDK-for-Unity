@@ -1,6 +1,9 @@
-﻿using PLATEAU.RoadNetwork;
+﻿using Codice.Client.BaseCommands;
+using Codice.Client.Commands;
+using PLATEAU.RoadNetwork;
 using PLATEAU.RoadNetwork.Data;
 using PLATEAU.RoadNetwork.Structure;
+using PLATEAU.Util.GeoGraph;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,10 +11,10 @@ using System.Runtime.InteropServices;
 using System.Text;
 using Unity.Plastic.Antlr3.Runtime;
 using UnityEditor;
+using UnityEditor.TerrainTools;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.UIElements;
-using static PLATEAU.Editor.RoadNetwork.RoadNetworkEditingSystem;
 
 namespace PLATEAU.Editor.RoadNetwork
 {
@@ -132,6 +135,142 @@ namespace PLATEAU.Editor.RoadNetwork
             this.rootVisualElement = rootVisualElement;
             system = new EditingSystem(this);
             TryInitialize(rootVisualElement);
+
+            return;
+
+            // test
+            // カプセルの設定
+            //Capsule capsule = new Capsule
+            //{
+            //    center = new Vector3(0, 0, 0),
+            //    radius = 0.5f,
+            //    height = 2.0f,
+            //    direction = Vector3.right
+            //};
+
+            //// レイの設定
+            //Ray ray = new Ray(new Vector3(0, 0, -5), Vector3.forward);
+            //RaycastHit hit;
+
+            //// 当たり判定のテスト
+            //bool isHit = RaycastCapsule(capsule, ray, out hit, 10.0f);
+
+            //// 結果の表示
+            //if (isHit)
+            //{
+            //    Debug.Log("Collision detected with capsule at point: " + hit.point);
+            //}
+            //else
+            //{
+            //    Debug.Log("No collision detected with capsule.");
+            //}
+            //return;
+            LineUtil.Line[] lines1 = new LineUtil.Line[]
+            {
+                new LineUtil.Line(new Vector3(0, 0, 0), new Vector3(0, 1, 0)),
+                new LineUtil.Line(new Vector3(0, 0, 0), new Vector3(0, 1, 0)),
+                new LineUtil.Line(new Vector3(1, 0, 0), new Vector3(1, 1, 0)),  // +offset
+            
+                new LineUtil.Line(new Vector3(0, 0, 0), new Vector3(0, 1, 0)),
+                new LineUtil.Line(new Vector3(0, 0, 0), new Vector3(0, 1, 0)),
+                new LineUtil.Line(new Vector3(0, 1, 0), new Vector3(0, 2, 0)),  // +offset+y
+                new LineUtil.Line(new Vector3(0, -1, 0), new Vector3(0, 2, 0)),  // +offset+y
+
+                new LineUtil.Line(new Vector3(0, 0, 0), new Vector3(0, 1, 0)),  // +y
+                new LineUtil.Line(new Vector3(0, 0, 0), new Vector3(0, 1, 0)),
+                new LineUtil.Line(new Vector3(0, 0, 0), new Vector3(0, 1, 0)),
+                new LineUtil.Line(new Vector3(-1, 0, 0), new Vector3(-1, 1, 0)),
+                new LineUtil.Line(new Vector3(-1, 0, 0), new Vector3(-1, 1, 0)),
+            };
+
+            LineUtil.Line[] lines2 = new LineUtil.Line[]
+            {
+                new LineUtil.Line(new Vector3(1, 0, 0), new Vector3(1, 1, 0)),  // +offset+y
+                new LineUtil.Line(new Vector3(2, 0, 0), new Vector3(2, 1, 0)),  // +offset*2+y
+                new LineUtil.Line(new Vector3(2, 0, 0), new Vector3(2, 1, 0)),  // +offset+y
+            
+                new LineUtil.Line(new Vector3(1, 0, 0), new Vector3(1, 0, 1)),  // +offset+z
+                new LineUtil.Line(new Vector3(0, 0, 0), new Vector3(1, 0, 0)),  // 0,0,0start
+                new LineUtil.Line(new Vector3(1, 0, 0), new Vector3(2, 0, 0)),  // +offset+x
+                new LineUtil.Line(new Vector3(-1, 0, 0), new Vector3(2, 0, 0)),  // +offset+x
+            
+                new LineUtil.Line(new Vector3(1, 0, 0), new Vector3(1, 1, 1)),  // +offset+x
+                new LineUtil.Line(new Vector3(1, 0, -1), new Vector3(1, 0, 1)),  // +offset+z
+                new LineUtil.Line(new Vector3(1, 0, 1), new Vector3(1, 0, 2)),  // 
+                new LineUtil.Line(new Vector3(1, 0, 1), new Vector3(1, 0, 2)),  // 
+                new LineUtil.Line(new Vector3(1, 0, -1), new Vector3(1, 0, 2)),  // 
+            };
+
+            // 正しい結果の定義（距離）
+            float[] correctDistances = new float[]
+            {
+            1f, // 直線1と直線2の距離
+            2f,    // 直線3と直線4の距離
+            1f,  // 直線5と直線6の距離
+            1f,
+            0f,
+            0f,
+            0f,
+            1f,
+            1f,
+            1.41421356f,
+            2.0f,
+            2.0f,
+            };
+
+            (Vector3, Vector3)[] resultClosestPoints = new (Vector3, Vector3)[]
+            {
+                (Vector3.negativeInfinity, Vector3.negativeInfinity),
+                (Vector3.negativeInfinity, Vector3.negativeInfinity),
+                (Vector3.negativeInfinity, Vector3.negativeInfinity),
+
+                (new Vector3(0, 0, 0), new Vector3(1, 0, 0)),
+                (new Vector3(0, 0, 0), new Vector3(0, 0, 0)),
+                (new Vector3(0, 0, 0), Vector3.negativeInfinity),
+                (new Vector3(0, 0, 0), Vector3.negativeInfinity),
+
+                (new Vector3(0, 0, 0), new Vector3(1, 0, 0)),
+                (new Vector3(0, 0, 0), new Vector3(1, 0, 0)),
+                (new Vector3(0, 0, 0), new Vector3(1, 0, 1)),
+                (new Vector3(-1, 0, 0), new Vector3(1, 0, 0)),
+                (new Vector3(-1, 0, 0), new Vector3(1, 0, 1)),
+            };
+
+            // テストケースの実行
+            for (int i = 0; i < lines1.Length; i++)
+            {
+                var line1 = lines1[i];
+                var line2 = lines2[i];
+                float distance = LineUtil.DistanceBetweenLines(line1, line2, out var isParallel);
+                Debug.Log($"Test Case {i + 1}: Distance between lines: {distance}, Expected: {correctDistances[i]}");
+
+                if (isParallel)
+                {
+                    Debug.Log($"Test Case {i + 1}: They are parallel. Can't find closest point. Expected {resultClosestPoints[i]}");
+                }
+                else
+                {
+                    // 交差する場合
+                    if (distance <= Mathf.Epsilon)
+                    {
+                        LineUtil.Intersect(line1, line2, out Vector3 intersectionPoint);
+                        var isPointOnline = LineUtil.ContainsPoint(line1, intersectionPoint);
+                        Debug.Log($"Test Case {i + 1}: They are intersect. {intersectionPoint}. On line {isPointOnline}. Expected {resultClosestPoints[i].Item1}");
+                    }
+                    else// 交差しない場合
+                    {
+                        Vector3 closestPoint1, closestPoint2;
+                        LineUtil.ClosestPoints(line1, line2, out closestPoint1, out closestPoint2);
+                        var isPointOnline1 = LineUtil.ContainsPoint(line1, closestPoint1);
+                        var isPointOnline2 = LineUtil.ContainsPoint(line2, closestPoint2);
+                        Debug.Log($"Test Case {i + 1}: Closest point on line 1: {closestPoint1}, Closest point on line 2: {closestPoint2}. Expected {resultClosestPoints[i]}");
+                        Debug.Log($"Test Case {i + 1}: Closest point on line 1: {isPointOnline1}, Closest point on line 2: {isPointOnline2}.");
+                    }
+
+                }
+
+
+            }
         }
 
         /// <summary>
@@ -190,353 +329,6 @@ namespace PLATEAU.Editor.RoadNetwork
         private const string roadNetworkEditingSystemObjName = "_RoadNetworkEditingSystemRoot";
         private GameObject roadNetworkEditingSystemObjRoot;
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <typeparam name="_ListElement"></typeparam>
-        public class EditorDataList<_ListElement> : List<_ListElement>
-        {
-            /// <summary>
-            /// 頻繁に呼ばないように注意する
-            /// </summary>
-            /// <typeparam name="_Type"></typeparam>
-            /// <returns></returns>
-            public bool TryGetCache<_ListElementVal>(string key, out IEnumerable<_ListElementVal> o)
-            {
-                if (cacheDataMap.TryGetValue(key, out var data) == false)
-                {
-                    o = default;
-                    return false;
-                }
-
-                var castedData = data as CacheData<_ListElementVal>;
-                var d = castedData.data as IEnumerable<_ListElementVal>;
-                if (d == null)
-                {
-                    o = default;
-                    return false;
-                }
-
-                o = d;
-                return true;
-            }
-
-            /// <summary>
-            /// 追加する
-            /// 同型で用途が異なるデータにも対応するため keyを必要とする   例　右車線コレクション、左車線コレクション　どちらもList<Lane>
-            /// </summary>
-            /// <typeparam name="_Type"></typeparam>
-            /// <param name="data"></param>
-            /// <returns></returns>
-            public bool AddCache<_ListElementVal>(string key, Func<_ListElement, _ListElementVal> selectMethod)
-            {
-                Assert.IsNotNull(key);
-                Assert.IsNotNull(selectMethod);
-                if (cacheDataMap.ContainsKey(key))
-                {
-                    Debug.LogError("追加済みのキャッシュデータキーを使用しようとした");
-                    return false;
-                }
-
-                var e = this.Select(selectMethod);
-                cacheDataMap.Add(key, new CacheData<_ListElementVal>() { selecter = selectMethod, data = e });
-                return true;
-            }
-
-            public bool Recache<_ListElementVal>(string key)
-            {
-                Assert.IsNotNull(key);
-                if (cacheDataMap.TryGetValue(key, out var cacheData) == false)
-                {
-                    return false;
-                }
-
-                var d = cacheData as CacheData<_ListElementVal>;
-                Assert.IsNotNull(d);
-
-                d.data = this.Select(d.selecter);
-                return true;
-            }
-
-            private class CacheData<_Val>
-            {
-                public Func<_ListElement, _Val> selecter;
-                public IEnumerable<_Val> data;
-            }
-            Dictionary<string, object> cacheDataMap = new Dictionary<string, object>();
-
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <typeparam name="_BaseData"></typeparam>
-        public class EditorData<_BaseData>
-            where _BaseData : class
-        {
-            public EditorData(_BaseData point)
-            {
-                Assert.IsNotNull(point);
-                this.Ref = point;
-                this.userData = new List<object>();
-            }
-
-            /// <summary>
-            /// 頻繁に呼ばないように注意する
-            /// </summary>
-            /// <typeparam name="_Type"></typeparam>
-            /// <returns></returns>
-            public _Type GetSubData<_Type>()
-                where _Type : class
-            {
-                foreach (var item in userData)
-                {
-                    if (item is _Type)
-                        return (_Type)item;
-                }
-                return null;
-            }
-
-            /// <summary>
-            /// 追加を試みる
-            /// 既に同じ型が登録されている場合は不可
-            /// </summary>
-            /// <typeparam name="_Type"></typeparam>
-            /// <param name="data"></param>
-            /// <returns></returns>
-            public bool TryAdd<_Type>(_Type data)
-                where _Type : class
-            {
-                var isNull = GetSubData<_Type>() == null;
-                if (isNull)
-                {
-                    userData.Add(data);
-                    return true;
-                }
-                return false;
-            }
-
-            public _BaseData Ref { get; private set; }
-            List<object> userData;
-
-        }
-
-        public class PointEditorData
-        {
-            public PointEditorData(RnPoint point)
-            {
-                Assert.IsNotNull(point);
-                refPoint = point;
-                UpdateBasePosition();
-            }
-
-            /// <summary>
-            /// 基準位置の更新
-            /// </summary>
-            public void UpdateBasePosition()
-            {
-                basePosition = refPoint.Vertex;
-            }
-
-            /// <summary>
-            /// キャッシュに変更を適用する
-            /// </summary>
-            /// <param name="translate"></param>
-            public void Translate(in Vector3 translate)
-            {
-                cacheTranslate += translate;
-            }
-
-            //public void Scale(in Vector3 scale)
-            //{
-            //    cacheScale += scale;
-            //}
-
-            public void Apply()
-            {
-                refPoint.Vertex = basePosition + cacheTranslate;
-            }
-
-            // 参照中のポイント
-            private RnPoint refPoint;
-            // 基準の座標
-            private Vector3 basePosition;
-
-            private Vector3 cacheTranslate;
-            //private Vector3 cacheScale;
-        }
-
-        public class NodeEditorData
-        {
-            public NodeEditorData(GameObject gameObject)
-            {
-                Assert.IsNotNull(gameObject);
-                this.RefGameObject = gameObject;
-                UpdateBaseTransform();
-                PointWithWeight.Clear();
-            }
-
-            public void UpdateBaseTransform()
-            {
-                baseTransform = new CacheTransform(RefGameObject.transform);
-            }
-
-            public bool AddPoint(EditorData<RnPoint> point, float weight)
-            {
-                Assert.IsTrue(0 <= weight && weight <= 1.0f, "weight " + weight.ToString());
-                Assert.IsNotNull(point);
-                var subData = point.GetSubData<PointEditorData>();
-                Assert.IsNotNull(subData);
-                return PointWithWeight.TryAdd(point, (subData, weight));
-            }
-
-            public void RemovePoint(EditorData<RnPoint> point)
-            {
-                PointWithWeight.Remove(point);
-            }
-
-            public void SetPointWeight(EditorData<RnPoint> point, float weight)
-            {
-                var isSuc = PointWithWeight.TryGetValue(point, out var w);
-                if (isSuc)
-                {
-                    w.weight = weight;
-                }
-            }
-
-            public void ApplyTranslate()
-            {
-                var translate = RefGameObject.transform.position - baseTransform.position;
-                foreach (var item in PointWithWeight)
-                {
-                    var ptData = item.Value.data;
-                    ptData.Translate(translate * item.Value.weight);
-                }
-            }
-
-            private struct CacheTransform
-            {
-                public CacheTransform(Transform transform)
-                {
-                    position = transform.position;
-                }
-
-                public Vector3 position;
-            }
-            public GameObject RefGameObject;
-            private CacheTransform baseTransform;
-
-            private Dictionary<EditorData<RnPoint>, (PointEditorData data, float weight)> PointWithWeight { get; set; } =
-                new Dictionary<EditorData<RnPoint>, (PointEditorData, float)>();
-
-            public List<LinkGroupEditorData> Connections { get; private set; } = new List<LinkGroupEditorData>();
-
-            public bool IsIntersection { get => Connections.Count >= 3; }
-
-        }
-        public class LinkGroupEditorData
-        {
-            public LinkGroupEditorData(NodeEditorData a, NodeEditorData b, IReadOnlyCollection<RnRoad> links, RnRoadGroup linkGroup)
-            {
-                Assert.IsNotNull(linkGroup);
-                LinkGroup = linkGroup;
-
-                Assert.IsNotNull(a);
-                Assert.IsNotNull(b);
-                if (a.GetHashCode() > b.GetHashCode())
-                {
-                    A = a;
-                    B = b;
-                }
-                else
-                {
-                    A = b;
-                    B = a;
-                }
-
-                Assert.IsNotNull(links);
-                ConnectionLinks = links;
-                // LinksがNode A,Bに接続されているかチェックするデバッグ機能
-            }
-
-            public override int GetHashCode()
-            {
-                return A.GetHashCode() + B.GetHashCode();
-            }
-
-            /// <summary>
-            /// レーン数を統一する
-            /// </summary>
-            public void AlignNumLane()
-            {
-                var nR = LinkGroup.GetRightLaneCount();
-                var nL = LinkGroup.GetLeftLaneCount();
-                LinkGroup.SetLaneCount(nL, nR);
-            }
-
-
-
-            public NodeEditorData A { get; private set; }
-            public NodeEditorData B { get; private set; }
-
-            public IReadOnlyCollection<RnRoad> ConnectionLinks { get; private set; }
-
-            public RnRoadGroup LinkGroup { get; private set; }
-
-            public List<Vector3> CacheRoadPosList { get; set; }
-
-            public IReadOnlyList<IEnumerable<RnLane>> RigthLanesGroup
-            {
-                get
-                {
-                    // Link間でレーン数が違う場合に処理が出来ない　合わせる処理が必要？
-                    throw new NotImplementedException("仕様が未定のため未実装");
-                    //return null;
-                }
-            }
-
-            public IEnumerable<RnLane> RightLanes
-            {
-                get
-                {
-                    return LinkGroup.GetRightLanes();
-                }
-            }
-            public IEnumerable<RnLane> LeftLanes
-            {
-                get
-                {
-                    return LinkGroup.GetLeftLanes();
-                }
-            }
-
-
-            // Person オブジェクトの比較をカスタマイズするクラス
-            public class Comparer : IEqualityComparer<LinkGroupEditorData>
-            {
-                public bool Equals(LinkGroupEditorData x, LinkGroupEditorData y)
-                {
-                    // 名前が同じ場合は同一とみなす
-                    return x.A == y.A && x.B == y.B;
-                }
-
-                public int GetHashCode(LinkGroupEditorData obj)
-                {
-                    // 名前のハッシュコードを返す
-                    return obj.GetHashCode();
-                }
-            }
-
-
-
-        }
-
-        // refresh時にClaer()必要
-        public class LaneEditCache
-        {
-            public float Scale { get; set; }
-            public RnLane BaseLane { get; set; }
-        }
 
         private Dictionary<RnLane, LaneEditCache> keyValuePairs = new Dictionary<RnLane, LaneEditCache>();
 
@@ -614,7 +406,7 @@ namespace PLATEAU.Editor.RoadNetwork
 
             // 道路ネットワークの取得を試みる　
             var roadNetworkObj = GameObject.Find(defaultRoadNetworkObjectName);
-            var r = roadNetworkObj.GetComponent<PLATEAURoadNetworkTester>();
+            var r = roadNetworkObj.GetComponent<PLATEAURnStructureModel>();
             var roadNetwork = r.RoadNetwork;
             if (roadNetwork == null)
             {
@@ -675,6 +467,8 @@ namespace PLATEAU.Editor.RoadNetwork
             /// 編集機能のインスタンス
             /// </summary>
             ISystemInstance EditorInstance { get; }
+
+            bool EnableLimitSceneViewDefaultControl { get; set; }
 
             /// <summary>
             /// 道路ネットワークを所持したUnityオブジェクト
@@ -861,6 +655,12 @@ namespace PLATEAU.Editor.RoadNetwork
             public RoadNetworkSimpleEditSysModule RoadNetworkSimpleEditModule => system.simpleEditSysModule;
 
             public RoadNetworkSceneGUISystem SceneGUISystem => system.SceneGUISystem;
+
+            public bool EnableLimitSceneViewDefaultControl
+            {
+                get => system.sceneGUISystem.EnableLimitSceneViewDefaultContorl;
+                set => system.sceneGUISystem.EnableLimitSceneViewDefaultContorl = value;
+            }
 
             public void NotifyChangedRoadNetworkObject2Editor()
             {
@@ -1586,10 +1386,23 @@ namespace PLATEAU.Editor.RoadNetwork
             private GameObject roadNetworkEditingSystemObjRoot;
             private RnModel roadNetwork;
             private IRoadNetworkEditingSystem system;
+            private EditingSystemSubMod.EditingSystemGizmos gizmosSys = new EditingSystemSubMod.EditingSystemGizmos();
+            private EditingSystemSubMod.IEventBuffer sceneViewEvBuf = null;
+            // 詳細編集モードかどうか
+            private bool isEditingDetailMode = false;
 
+            private Dictionary<RnIntersection, EditorData<RnIntersection>> intersectionEditorData = new Dictionary<RnIntersection, EditorData<RnIntersection>>();
             private Dictionary<RnRoadBase, NodeEditorData> nodeEditorData = new Dictionary<RnRoadBase, NodeEditorData>();
             private EditorDataList<EditorData<RnRoadGroup>> linkGroupEditorData = new EditorDataList<EditorData<RnRoadGroup>>();
             private Dictionary<RnPoint, EditorData<RnPoint>> ptEditorData = new Dictionary<RnPoint, EditorData<RnPoint>>();
+            _WayCalcData waySlideCalcCache = null;
+
+            enum State
+            {
+                Default,    // 通常の状態
+                SlidingWay, // Wayをスライド中
+            }
+            State currentState = State.Default;
 
             //private HashSet<LinkGroupEditorData> linkGroupEditorData = new HashSet<LinkGroupEditorData>();
             /// <summary>
@@ -1644,6 +1457,11 @@ namespace PLATEAU.Editor.RoadNetwork
 
                     id++;
                     sb.Clear();
+                }
+
+                foreach (var intersection in roadNetwork.Intersections)
+                {
+                    intersectionEditorData.Add(intersection, new EditorData<RnIntersection>(intersection));
                 }
 
                 // pointのeditor用のデータを作成
@@ -1702,11 +1520,14 @@ namespace PLATEAU.Editor.RoadNetwork
 
                         var node0 = linkGroup.PrevIntersection;
                         var node1 = linkGroup.NextIntersection;
-                        var cn = new LinkGroupEditorData(nodeEditorData[node0], nodeEditorData[node1], linkGroup.Roads, linkGroup);
+                        var editorData = new EditorData<RnRoadGroup>(linkGroup);
+                        var cn = new LinkGroupEditorData(editorData, nodeEditorData[node0], nodeEditorData[node1], linkGroup.Roads);
                         if (linkGroups.Add(cn) == true)
                         {
                             nodeEditorData[node0].Connections.Add(cn);
                             nodeEditorData[node1].Connections.Add(cn);
+                            editorData.TryAdd(cn);
+                            linkGroupEditorData.Add(editorData);
                         }
 
                         calcedNeighbor.Add(neighbor);
@@ -1722,12 +1543,14 @@ namespace PLATEAU.Editor.RoadNetwork
                     }
                 }
 
-                linkGroupEditorData.Capacity = linkGroups.Count;
-                foreach (var item in linkGroups)
+                // 仮 編集可能なデータに勝手に修正
+                foreach (var linkGroupEditorData in linkGroupEditorData)
                 {
-                    var editorData = new EditorData<RnRoadGroup>(item.LinkGroup);
-                    editorData.TryAdd(item);
-                    linkGroupEditorData.Add(editorData);
+                    var data = linkGroupEditorData.Ref;
+                    var nl = data.GetLeftLaneCount();
+                    var nr = data.GetRightLaneCount();
+                    data.SetLaneCount(nl, nr);
+                    linkGroupEditorData.IsEditable = true;
                 }
 
                 // Transform変更を検知する
@@ -1736,7 +1559,14 @@ namespace PLATEAU.Editor.RoadNetwork
 
 
                 // キャッシュの生成
-                linkGroupEditorData.AddCache("linkGroup", (d) => d.GetSubData<LinkGroupEditorData>());
+                linkGroupEditorData.AddCache("linkGroup", (d) =>
+                {
+                    if (d.IsEditable == false)
+                    {
+                        return null;
+                    }
+                    return d.GetSubData<LinkGroupEditorData>();
+                });
                 //linkGroupEditorData.Select((d) => d.GetSubData<LinkGroupEditorData>()).ToList();
 
                 return;
@@ -1800,7 +1630,7 @@ namespace PLATEAU.Editor.RoadNetwork
                                 {
                                     if (link == item.Road)
                                     {
-                                        var cn = new LinkGroupEditorData(nodeEditorData[node], nodeEditorData[connectedNode], linkList, null);
+                                        var cn = new LinkGroupEditorData(null, nodeEditorData[node], nodeEditorData[connectedNode], linkList);
                                         if (linkGroups.Add(cn) == true)
                                         {
                                             nodeEditorData[node].Connections.Add(cn);
@@ -1858,6 +1688,34 @@ namespace PLATEAU.Editor.RoadNetwork
                 EditorApplication.update += Update;
             }
 
+            /// <summary>
+            /// 詳細編集モードに移行できるか
+            /// 何かの編集機能を利用途中であったりすると移行できない（例　２つのノードをクリックする必要がある機能で1つ目をクリックした後）
+            /// </summary>
+            /// <returns></returns>
+            public bool CanSetDtailMode()
+            {
+                return true;
+            }
+
+            /// <summary>
+            /// 詳細編集モードか？
+            /// </summary>
+            /// <returns></returns>
+            public bool IsDetailMode()
+            {
+                return isEditingDetailMode;
+            }
+
+            /// <summary>
+            /// 詳細編集モードに移行する
+            /// </summary>
+            /// <param name="isDetailMode"></param>
+            public void SetDetailMode(bool isDetailMode)
+            {
+                isEditingDetailMode = isDetailMode;
+            }
+
             private void ClearCache()
             {
                 nodeEditorData.Clear();
@@ -1866,10 +1724,66 @@ namespace PLATEAU.Editor.RoadNetwork
 
             }
 
+            class _WayCalcData
+            {
+                public _WayCalcData()
+                {
+                }
+
+                /// <summary>
+                /// すべての値を同時に設定する
+                /// </summary>
+                /// <param name="closestWay"></param>
+                /// <param name="closestDis"></param>
+                /// <param name="closestLine"></param>
+                /// <param name="closestPointOnWay"></param>
+                /// <param name="closestPointOnRay"></param>
+                public void Set(
+                    WayEditorData closestWay,
+                    float closestDis,
+                    LineUtil.Line closestLine,
+                    Vector3 closestPointOnWay,   // 
+                    Vector3 closestPointOnRay)
+                {
+                    this.ClosestWay = closestWay;
+                    this.ClosestDis = closestDis;
+                    this.ClosestLine = closestLine;
+                    this.ClosestPointOnWay = closestPointOnWay;
+                    this.ClosestPointOnRay = closestPointOnRay;
+                }
+
+                public void Set(
+                    float closestDis,
+                    Vector3 closestPointOnWay,   // 
+                    Vector3 closestPointOnRay)
+                {
+                    this.ClosestDis = closestDis;
+                    this.ClosestPointOnWay = closestPointOnWay;
+                    this.ClosestPointOnRay = closestPointOnRay;
+                }
+
+
+
+                public WayEditorData ClosestWay { get; private set; } = null;
+                public float ClosestDis { get; private set; } = float.MaxValue;
+                public LineUtil.Line ClosestLine { get; private set; }
+                public Vector3 ClosestPointOnWay { get; private set; }   // 
+                public Vector3 ClosestPointOnRay { get; private set; }   // 
+
+            }
+
             private void Update()
             {
                 if (roadNetworkEditingSystemObjRoot == null)
                     return;
+
+                // マウスの状態をチェック
+                if (sceneViewEvBuf == null)
+                {
+                    sceneViewEvBuf = EditingSystemSubMod.SceneViewEventBuffer.GetBuffer();
+                }
+
+
                 bool isChanged = false;
                 //foreach (var data in nodeEditorData)
                 //{
@@ -1895,6 +1809,7 @@ namespace PLATEAU.Editor.RoadNetwork
 
                 // billboardの更新
                 bool isNeedUpdateBillboard = false;
+                //var camera = sceneViewEvBuf.CameraPosition; // おそらく描画時にのみインスタンスが設定される
                 var camera = SceneView.currentDrawingSceneView?.camera; // おそらく描画時にのみインスタンスが設定される
                 if (camera?.transform.hasChanged == true)
                     isNeedUpdateBillboard = true;
@@ -1923,108 +1838,288 @@ namespace PLATEAU.Editor.RoadNetwork
                 //    transform.hasChanged = false;
                 //}
 
-                // gizmos描画の更新
-                var gizmos = roadNetworkEditingSystemObjRoot.GetComponent<RoadNetworkEditorGizmos>();
-                var guisys = system.SceneGUISystem;
-                if (guisys != null)
+                // マウス位置に近いwayを算出
+
+                if (linkGroupEditorData.TryGetCache("linkGroup", out IEnumerable<LinkGroupEditorData> eConn) == false)
                 {
-                    // 仮　専用ノード間の繋がりを描画
-                    if (linkGroupEditorData.TryGetCache("linkGroup", out IEnumerable<LinkGroupEditorData> eConn) == false)
-                    {
-                        Assert.IsTrue(false);
-                        return;
-                    }
-                    List<LinkGroupEditorData> connections = eConn.ToList();
+                    Assert.IsTrue(false);
+                    return;
+                }
+                List<LinkGroupEditorData> connections = eConn.ToList();
+                connections.Remove(null);
 
-                    gizmos.intersectionConnectionLinePairs.Clear();
-                    var pts = gizmos.intersectionConnectionLinePairs;
-                    pts.Capacity = (connections.Count + 3) * 2;
-                    foreach (var item in connections)
+                var mousePos = sceneViewEvBuf.MousePosition;
+                Ray ray = HandleUtility.GUIPointToWorldRay(mousePos);
+
+                //WayEditorData closestWay = null;
+                //float closestDis = float.MaxValue;
+                //LineUtil.Line closestLine;
+                //Vector3 closestPointOnWay;   // 
+                //Vector3 closestPointOnRay;   // 
+                if (system.SelectedRoadNetworkElement is EditorData<RnRoadGroup> roadGroupEditorData)
+                {
+                    Debug.Log(currentState);
+                    //var laneGroup = new LaneGroupEditorData(roadGroupEditorData.Ref);
+                    var wayEditorDataList = roadGroupEditorData.GetSubData<List<WayEditorData>>();
+
+                    // way用の編集データがない場合は作成
+                    if (wayEditorDataList == null || true)
                     {
-                        if (item.CacheRoadPosList == null)
+                        // wayを重複無しでコレクションする
+                        HashSet<RnWay> ways = new HashSet<RnWay>();
+                        foreach (var road in roadGroupEditorData.Ref.Roads)
                         {
-                            item.CacheRoadPosList = new List<Vector3>(item.ConnectionLinks.Count * 2);
-
-                            foreach (var link in item.ConnectionLinks)
+                            foreach (var lane in road.AllLanes)
                             {
-                                var allLanes = link.AllLanes.GetEnumerator();
-                                Vector3 prevBorderPos = Vector3.zero;
-                                Vector3 nextBorderPos = Vector3.zero;
+                                ways.Add(lane.LeftWay);
+                                ways.Add(lane.RightWay);
+                            }
+                        }
 
-                                if (allLanes.MoveNext())
+                        // way用の編集データの作成
+                        if (wayEditorDataList == null)
+                            wayEditorDataList = new List<WayEditorData>(ways.Count);
+                        if (wayEditorDataList != null)
+                        {
+                            wayEditorDataList.Clear();
+                        }
+
+                        foreach (var editingTarget in ways)
+                        {
+                            if (editingTarget == null)
+                            {
+                                continue;
+                            }
+                            wayEditorDataList.Add(new WayEditorData(editingTarget));
+                        }
+
+                        if (system.RoadNetworkSimpleEditModule.isEditingDetailMode) // 詳細編集モードではwayの選択は行わない
+                        {
+                            foreach (var wayEditorData in wayEditorDataList)
+                            {
+                                wayEditorData.IsSelectable = false;
+                            }
+                        }
+                        roadGroupEditorData.TryAdd(wayEditorDataList);
+
+                        //// 道路端のwayを編集不可能にする
+                        //wayEditorDataList.First().IsSelectable = false;
+                        //wayEditorDataList.Last().IsSelectable = false;
+
+                        // 下　もしかしたらwayを結合して扱う必要があるかも
+                        // 道路端のwayを編集不可能にする
+                        //var firstRoad = roadGroupEditorData.Ref.Roads.First();
+                        //var leftEdgeLane = firstRoad.MainLanes.First();
+                        //wayEditorDataList.Find(x => x.Ref == leftEdgeLane.LeftWay).IsSelectable = false;
+                        //var rightEdgeLane = firstRoad.MainLanes.Last();
+                        //if (leftEdgeLane == rightEdgeLane)  // レーンが一つしかない時は反対側のレーンを参照する
+                        //{
+                        //    wayEditorDataList.Find(x => x.Ref == rightEdgeLane.RightWay).IsSelectable = false;
+                        //}
+                        //else
+                        //{
+                        //    if (rightEdgeLane.LeftWay != null)
+                        //    {
+                        //        rightEdgeLane.GetBorderDir(RnLaneBorderType.)
+                        //        wayEditorDataList.Find(x => x.Ref == rightEdgeLane.LeftWay).IsSelectable = false;
+
+                        //    }
+                        //    wayEditorDataList.Find(x => x.Ref == rightEdgeLane.LeftWay).IsSelectable = false;
+                        //}
+                    }
+
+                    var isMouseOnViewport = true;
+                    if (currentState == State.Default)
+                    {
+                        waySlideCalcCache = null;
+                        SelectWay(ray, wayEditorDataList, isMouseOnViewport);
+                    }
+                    else if (currentState == State.SlidingWay)
+                    {
+                        var dis = LineUtil.FindClosestPoint(waySlideCalcCache.ClosestLine, ray, out var closestPointOnWay, out var closestPointOnRay);
+                        waySlideCalcCache.Set(dis, closestPointOnWay, closestPointOnRay);
+                    }
+                }
+
+                // dummyのwayを表示する
+                RnWay dummyWay = null;
+                
+                var mouseDown = sceneViewEvBuf.MouseDown;
+                var mouseUp = sceneViewEvBuf.MouseUp;
+                if (mouseDown)
+                {
+                    Debug.Log("mouse down");
+
+                    // Wayを選択する
+                    if (currentState == State.Default)
+                    {
+                        if (waySlideCalcCache != null)
+                        {
+                            currentState = State.SlidingWay;
+                        }
+                    }
+                    // WayをSlideさせる
+                    else if (currentState == State.SlidingWay)
+                    {
+                        if (waySlideCalcCache != null)
+                        {
+                            if (waySlideCalcCache.ClosestDis > 0)
+                            {
+                                // カメラ視点からwayに対して外積を取る　これによってwayの右側、左側を定義する
+                                // 最近傍2点way->rayでwayのどの方向に延びているかを算出
+                                // 内積を取ることでベクトルが同じ方向を向いているかを調べる
+
+                                var vecCamera2Way = waySlideCalcCache.ClosestPointOnWay - sceneViewEvBuf.CameraPosition;
+                                var line = waySlideCalcCache.ClosestWay.Ref.IsReversed ? 
+                                    waySlideCalcCache.ClosestLine.VecB2A : waySlideCalcCache.ClosestLine.VecA2B;
+                                var wayRightVec = Vector3.Cross(vecCamera2Way, line);
+                                //Debug.DrawRay(wayCalcData.ClosestPointOnWay, wayRightVec, Color.yellow, 0.1f);
+
+                                var vecWay2Ray = waySlideCalcCache.ClosestPointOnRay - waySlideCalcCache.ClosestPointOnWay; 
+                                var isRayOnRightSide = Vector3.Dot(wayRightVec, vecWay2Ray) > 0;
+                                //Debug.Log($"ray on right side : {isRayOnRightSide}");
+
+                                dummyWay = new RnWay(waySlideCalcCache.ClosestWay.Ref.LineString.Clone(true));
+                                var dirFactor = isRayOnRightSide ? 1f : -1f;
+                                dummyWay.MoveAlongNormal(waySlideCalcCache.ClosestDis * dirFactor);
+                                foreach (var dum in dummyWay.Points)
                                 {
-                                    var lane = allLanes.Current;
-                                    var prevpoints = lane.PrevBorder.Points;
-                                    var nextpoints = lane.NextBorder.Points;
-                                    if (CalcBorderPos(prevpoints, out prevBorderPos) &&
-                                        CalcBorderPos(nextpoints, out nextBorderPos))
-                                    {
-                                        item.CacheRoadPosList.Add(prevBorderPos);
-                                        item.CacheRoadPosList.Add(nextBorderPos);
-                                    }
+                                    dum.Vertex = dum.Vertex + Vector3.up * 0.1f;
                                 }
                             }
                         }
-                        foreach (var p in item.CacheRoadPosList)
-                        {
-                            pts.Add(p);
-                        }
-
                     }
+                }
+                else
+                {
+                    Debug.Log("mouse up");
+                    if (currentState == State.SlidingWay)
+                    {
+                        Assert.IsNotNull(waySlideCalcCache);
+                        if (waySlideCalcCache.ClosestDis > 0)
+                        {
+                            //duumyway
 
-                    //gizmos.intersectionConnectionLinePairs2.Clear();
-                    //var pts = gizmos.intersectionConnectionLinePairs2;
-                    //pts.Capacity = (connections.Count + 3) * 2;
-                    //foreach (var item in connections)
-                    //{
-                    //    foreach (var link in item.ConnectionLinks)
-                    //    {
-                    //        foreach (var lane in link.AllLanes)
-                    //        {
-                    //            lane.NextBorder.LineString.Points
-                    //        }
-                    //        pts.Add();
+                            // カメラ視点からwayに対して外積を取る　これによってwayの右側、左側を定義する
+                            // 最近傍2点way->rayでwayのどの方向に延びているかを算出
+                            // 内積を取ることでベクトルが同じ方向を向いているかを調べる
 
-                    //    }
-                    //    //Debug.Log(item.A.RefGameObject.name + "." + item.B.RefGameObject.name);
-                    //}
+                            var vecCamera2Way = waySlideCalcCache.ClosestPointOnWay - sceneViewEvBuf.CameraPosition;
+                            var wayRightVec = Vector3.Cross(vecCamera2Way, waySlideCalcCache.ClosestLine.VecA2B);
+                            //Debug.DrawRay(wayCalcData.ClosestPointOnWay, wayRightVec, Color.yellow, 0.1f);
 
-                    gizmos.intersectionConnectionLinePairs = pts;
+                            var vecWay2Ray = waySlideCalcCache.ClosestPointOnRay - waySlideCalcCache.ClosestPointOnWay;
+
+                            var isRayOnRightSide = Vector3.Dot(wayRightVec, vecWay2Ray) > 0;
+                            //Debug.Log($"ray on right side : {isRayOnRightSide}");
+
+                            dummyWay = new RnWay(waySlideCalcCache.ClosestWay.Ref.LineString.Clone(true));
+                            var dirFactor = isRayOnRightSide ? 1f : -1f;
+                            dirFactor = waySlideCalcCache.ClosestWay.Ref.IsReversed ? -dirFactor : dirFactor;
+                            dummyWay.MoveAlongNormal(waySlideCalcCache.ClosestDis * dirFactor);
+
+                            //元のwayに適用
+                            var points = waySlideCalcCache.ClosestWay.Ref.Points;
+                            points = waySlideCalcCache.ClosestWay.Ref.IsReversed ? points.Reverse() : points;
+                            var distWayPoints = points.GetEnumerator();
+                            var eRevDumWay = dummyWay.GetEnumerator();
+                            while (distWayPoints.MoveNext())
+                            {
+                                eRevDumWay.MoveNext();
+                                var current = distWayPoints.Current;
+                                current.Vertex = eRevDumWay.Current;
+                            }
+                        }
+                        waySlideCalcCache = null;
+                        currentState = State.Default;
+                    }
+                }
+                //Debug.Log("dis" + closestDis);
+                //Debug.Log("update");
+
+
+                // gizmos描画の更新
+                var gizmosSys = this.gizmosSys;
+                var gizmosdrawer = roadNetworkEditingSystemObjRoot.GetComponent<RoadNetworkEditorGizmos>();
+                var guisys = system.SceneGUISystem;
+                if (guisys != null)
+                {
+                    // gizmosの更新
+                    gizmosSys.Update(
+                        system.SelectedRoadNetworkElement, 
+                        waySlideCalcCache?.ClosestWay,
+                        linkGroupEditorData,
+                        dummyWay);
+                    var cmds = gizmosSys.BuildDrawCommands();
+                    gizmosdrawer.DrawFuncs.Clear();
+                    gizmosdrawer.DrawFuncs.AddRange(cmds);
+
+                    // guiの更新
+
                     guisys.connections = linkGroupEditorData;
                     //if (connections.Count > 0)
                     //{
                     //    Handles.DrawLines(pts);
                     //    //Gizmos.DrawLineList(pts);
                     //}
-                    guisys.intersections.Clear();
-                    var intersectionsPoss = guisys.intersections;
-                    intersectionsPoss.Capacity = nodeEditorData.Count;
-                    foreach (var item in nodeEditorData.Values)
-                    {
-                        if (item.IsIntersection == false)
-                            continue;
-                        intersectionsPoss.Add(item.RefGameObject.transform.position);
-                    }
+                    guisys.intersections = null;
+                    guisys.intersections = intersectionEditorData.Values;
+                    //var intersectionsPoss = guisys.intersections;
+                    //intersectionsPoss.Capacity = nodeEditorData.Count;
+                    //foreach (var item in nodeEditorData.Values)
+                    //{
+                    //    if (item.IsIntersection == false)
+                    //        continue;
+                    //    intersectionsPoss.Add(item.RefGameObject.transform.position);
+                    //}
                 }
+
+
+                // 仮で呼び出し　描画の更新がワンテンポ遅れるため　
+                EditorUtility.SetDirty(roadNetworkEditingSystemObjRoot);
             }
 
-            private static bool CalcBorderPos(IEnumerable<RnPoint> points, out UnityEngine.Vector3 v)
+            private void SelectWay(Ray ray, List<WayEditorData> wayEditorDataList, bool isMouseOnViewport)
             {
-                var nP = points.Count();
-                if (nP <= 0)
+                const float radius = 2.0f;
+                foreach (var wayEditorData in wayEditorDataList)
                 {
-                    v = Vector3.zero;
-                    return false;
+                    if (wayEditorData.IsSelectable == false)
+                        continue;
+
+                    if (isMouseOnViewport == false) // シーンビュー上にマウスがあるかチェック
+                    {
+                        break;
+                    }
+
+                    if (wayEditorData.IsSelectable == false)
+                    {
+                        continue;
+                    }
+
+                    var eVert = wayEditorData.Ref.Vertices.GetEnumerator();
+                    eVert.MoveNext();
+                    var p0 = eVert.Current;
+                    while (eVert.MoveNext())
+                    {
+                        var p1 = eVert.Current;
+                        var line = new LineUtil.Line(p0, p1);
+                        var distance = LineUtil.CheckHit(line, radius, ray,
+                            out var closestPoint, out var closestPoint2);
+                        //var distance = LineUtil.CheckDistance(line, radius, ray);
+                        if (distance >= 0.0f)
+                        {
+                            if (waySlideCalcCache == null)
+                                waySlideCalcCache = new _WayCalcData();
+                            if (waySlideCalcCache.ClosestDis > distance)
+                            {
+                                waySlideCalcCache.Set(
+                                    wayEditorData, distance, line, closestPoint, closestPoint2);
+                            }
+                        }
+                        p0 = p1;
+                    }
                 }
-                var sum = Vector3.zero;
-                //lane.NextBorder.HalfLineIntersectionXz
-                foreach (var p in points)
-                {
-                    sum += p.Vertex;
-                }
-                var borderPos = sum / nP;
-                v = borderPos;
-                return true;
             }
         }
     }

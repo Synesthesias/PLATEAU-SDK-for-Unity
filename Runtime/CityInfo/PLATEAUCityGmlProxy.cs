@@ -62,6 +62,17 @@ namespace PLATEAU.CityInfo
                 return null;
             }
             string gmlFullPath = Path.GetFullPath(gmlPath);
+            
+            if (!gmlFullPath.Contains(".gml"))
+            {
+                Debug.LogError($"path not containing .gml : {gmlFullPath}");
+                return null;
+            }
+
+            // .gmlに続く文字は無視
+            int idx = gmlFullPath.LastIndexOf(".gml");
+            gmlFullPath = gmlFullPath.Substring(0, idx + 4);
+            
             return await LoadAsync(gmlFullPath);
         }
 

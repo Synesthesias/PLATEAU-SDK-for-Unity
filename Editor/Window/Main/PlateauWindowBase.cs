@@ -12,9 +12,11 @@ namespace PLATEAU.Editor.Window.Main
     {
         private readonly ScrollView scrollView = new();
         private IEditorDrawable gui;
-
+        private IEditorDrawable footerGui;
+        
         /// <summary> GUIの中身の生成はサブクラスに任せます。 </summary>
         protected abstract IEditorDrawable InitGui();
+        protected virtual IEditorDrawable InitFooterGui() => null;
 
         private void OnGUI()
         {
@@ -23,6 +25,8 @@ namespace PLATEAU.Editor.Window.Main
             scrollView.Draw(
                 gui.Draw
             );
+            footerGui ??= InitFooterGui();
+            footerGui?.Draw();
         }
 
         private void OnDestroy()

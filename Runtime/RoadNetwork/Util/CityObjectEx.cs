@@ -71,6 +71,9 @@ namespace PLATEAU.RoadNetwork
                 }
             }
 
+            if (ret == 0)
+                ret |= RRoadTypeMask.Undefined;
+
             return ret;
         }
 

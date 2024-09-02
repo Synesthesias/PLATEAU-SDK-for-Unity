@@ -1,10 +1,8 @@
 ﻿using PLATEAU.RoadNetwork.Structure;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using UnityEngine.Assertions;
-using UnityEngine.Serialization;
 
 namespace PLATEAU.RoadNetwork.Data
 {
@@ -138,6 +136,9 @@ namespace PLATEAU.RoadNetwork.Data
 
         [field: SerializeField]
         public PrimitiveStorage<RnDataRoadBase> RoadBases { get; set; } = new PrimitiveStorage<RnDataRoadBase>();
+
+        [field: SerializeField]
+        public PrimitiveStorage<RnDataSideWalk> SideWalks { get; set; } = new();
 
 
         // #NOTE : structだとgetterでとってきたときにコピーが返る -> それに対してWriteしても元データが書き換わらないのでclassにする

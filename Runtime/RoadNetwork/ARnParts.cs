@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PLATEAU.RoadNetwork.Structure;
+using System;
 using UnityEngine;
 
 namespace PLATEAU.RoadNetwork
@@ -30,6 +31,28 @@ namespace PLATEAU.RoadNetwork
             if (self == null)
                 return -1;
             return (long)self.DebugMyId;
+        }
+
+        /// <summary>
+        /// self.DebugMyIdをlong型で取得. nullの場合は-1を返す
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="self"></param>
+        /// <returns></returns>
+        public static long GetDebugMyIdOrDefault(this RnRoad self)
+        {
+            return self.GetDebugMyIdOrDefault<RnRoadBase>();
+        }
+
+        /// <summary>
+        /// self.DebugMyIdをlong型で取得. nullの場合は-1を返す
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="self"></param>
+        /// <returns></returns>
+        public static long GetDebugMyIdOrDefault(this RnIntersection self)
+        {
+            return self.GetDebugMyIdOrDefault<RnRoadBase>();
         }
     }
 }

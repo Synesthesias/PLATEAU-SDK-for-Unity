@@ -77,6 +77,7 @@ namespace PLATEAU.Editor.RoadNetwork
             set => system.CurrentEditMode = value;
         }
 
+        private Toggle editableChangeToggle;
         private Button refreshButton;
         private EnumField modeSelector;
         private ScrollView parameterView;
@@ -247,7 +248,7 @@ namespace PLATEAU.Editor.RoadNetwork
                     return;
 
                 // 無ければ生成する あれば流用する
-                var mdl = CreateOrGetLinkGroupData(linkGroupEditorData);
+                var mdl = doc.CreateOrGetLinkGroupData(linkGroupEditorData);
 
                 // 既存のモデルオブジェクトを解除
                 element.Unbind();
@@ -258,7 +259,17 @@ namespace PLATEAU.Editor.RoadNetwork
                 element.TrackSerializedObjectValue(mdl, (se) =>
                 {
                     Debug.Log("changed");
-                    //var obj = se as SerializedScriptableRoadMdl;
+
+                    var mod = system.RoadNetworkSimpleEditModule;
+                    var obj = se as IScriptableRoadMdl;
+                    if (mod.CanSetDtailMode())
+                    {
+                        if (mod.IsDetailMode() != obj.IsEditingDetailMode)
+                        {
+                           mod.SetDetailMode(obj.IsEditingDetailMode);
+                        }
+                    }
+
                     //obj.Apply();
                 });
                 element.Bind(mdl);
@@ -277,7 +288,7 @@ namespace PLATEAU.Editor.RoadNetwork
 
         }
 
-        private static SerializedScriptableRoadMdl CreateOrGetLinkGroupData(EditorData<RnRoadGroup> linkGroupEditorData)
+        private SerializedScriptableRoadMdl CreateOrGetLinkGroupData(EditorData<RnRoadGroup> linkGroupEditorData)
         {
             // モデルオブジェクトを所持してるならそれを利用する
             var mdl = linkGroupEditorData.GetSubData<SerializedScriptableRoadMdl>();
@@ -286,7 +297,7 @@ namespace PLATEAU.Editor.RoadNetwork
                 // UIへバインドするモデルオブジェクトの生成
                 var testObj = ScriptableObject.CreateInstance<ScriptableRoadMdl>();
                 testObj.Construct(linkGroupEditorData.Ref);
-                mdl = new SerializedScriptableRoadMdl(testObj);
+                mdl = new SerializedScriptableRoadMdl(testObj, system.RoadNetworkSimpleEditModule);
 
                 // 参照を持たせる
                 linkGroupEditorData.TryAdd(mdl);
@@ -449,6 +460,8 @@ namespace PLATEAU.Editor.RoadNetwork
             this.system = system;
             this.assets = assets;
 
+            editableChangeToggle = editorRoot.Q<Toggle>("EditableChangeToggle");
+            Assert.IsNotNull(editableChangeToggle);
             refreshButton = editorRoot.Q<Button>("RefreshBtn");
             Assert.IsNotNull(refreshButton);
             modeSelector = editorRoot.Q<EnumField>("ModeSelector");
@@ -491,6 +504,14 @@ namespace PLATEAU.Editor.RoadNetwork
         public void Initialize()
         {
             //　parameterの変更は必ずシステムを介して行う
+
+            editableChangeToggle.RegisterCallback<ChangeEvent<bool>>((evt) =>
+            {
+                if (evt.newValue != system.EnableLimitSceneViewDefaultControl)
+                {
+                    system.EnableLimitSceneViewDefaultControl = evt.newValue;
+                }
+            });
 
             refreshButton.RegisterCallback<MouseUpEvent>((evt) =>
             {

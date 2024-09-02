@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PLATEAU.CityInfo;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -33,9 +34,13 @@ namespace PLATEAU.TerrainConvert
                 Debug.LogError("Terrainデータの取得に失敗しました。\n" + e);
                 return TerrainConvertResult.Fail();
             }
-           return await terrainData.PlaceToScene(srcGameObjs, convertOption, skipRoot);
+
+            return convertOption.EnableTerrainConversion
+                ? await terrainData.PlaceToScene(srcGameObjs, convertOption, skipRoot)
+                : await terrainData.PlaceMeshToScene(srcGameObjs, convertOption, skipRoot);
         }
     }
+    
 
     public class TerrainConvertOption
     {
@@ -56,17 +61,23 @@ namespace PLATEAU.TerrainConvert
 
         public GameObject[] SrcGameObjs { get; }
 
-        public bool DoDestroySrcObjs { get; }
+        public bool FillEdges { get; }
+        public bool ApplyConvolutionFilterToHeightMap { get; }
 
+        public bool DoDestroySrcObjs { get; }
+        public bool EnableTerrainConversion { get; }
         //Debug Image Output
         public ImageOutput HeightmapImageOutput { get; }
 
-        public TerrainConvertOption(GameObject[] srcGameObjs, int heightmapSize,  bool doDestroySrcObjs, ImageOutput heightmapImageOutput = ImageOutput.None,  CancellationToken? cancellationToken = null)
+        public TerrainConvertOption(GameObject[] srcGameObjs, int heightmapSize, bool doDestroySrcObjs, bool fillEdges, bool applyConvolutionFilterToHeightMap, bool enableTerrainConversion, ImageOutput heightmapImageOutput = ImageOutput.None, CancellationToken? cancellationToken = null)
         {
             SrcGameObjs = srcGameObjs;
             TextureWidth = TextureHeight = heightmapSize;
             DoDestroySrcObjs = doDestroySrcObjs;
             HeightmapImageOutput = heightmapImageOutput;
+            FillEdges = fillEdges;
+            ApplyConvolutionFilterToHeightMap = applyConvolutionFilterToHeightMap;
+            EnableTerrainConversion = enableTerrainConversion;
             CancellationToken = cancellationToken;
         }
     }

@@ -12,7 +12,7 @@ namespace PLATEAU.CityAdjust.MaterialAdjust
     /// <summary>
     /// 地物型を基準にマテリアル分けのキーを検索します。
     /// </summary>
-    internal class TypeSearcher : ISearcher<CityObjectTypeHierarchy.Node>
+    public class TypeSearcher : ISearcher<CityObjectTypeHierarchy.Node>
     {
         private SearchArg searchArg;
 

@@ -260,24 +260,52 @@ namespace PLATEAU.Util.GeoGraph
             return ComputeOutlineVertices(toVec2, vertices);
         }
 
+        public class ComputeOutlineResult<T>
+        {
+            // アウトライン頂点
+            public List<T> Outline { get; set; } = new List<T>();
+
+            // 成功したかどうか
+            public bool Success { get; set; }
+
+            // 自己ループが存在する(同じ点が複数回出てくる)
+            public bool HasSelfCrossing { get; set; }
+        }
+
         /// <summary>
         /// アウトライン頂点を返す
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="vertices"></param>
-        /// <param name="toVec2"></param>
+        /// <param name="toVec3"></param>
+        /// <param name="plane"></param>
         /// <param name="getNeighbor"></param>
-        /// <param name="ignoreVisitedVertex"></param>
         /// <returns></returns>
-        public static List<T> ComputeOutline<T>(IEnumerable<T> vertices, Func<T, Vector2> toVec2, Func<T, IEnumerable<T>> getNeighbor, bool ignoreVisitedVertex = true)
+        public static ComputeOutlineResult<T> ComputeOutline<T>(
+            IEnumerable<T> vertices
+            , Func<T, Vector3> toVec3
+            , AxisPlane plane
+            , Func<T, IEnumerable<T>> getNeighbor
+            )
         {
+            var res = new ComputeOutlineResult<T>();
             var comp = Comparer<float>.Default;
-
             var keys = vertices.ToList();
+            if (keys.Count == 0)
+                return res;
+
+            if (keys.Count <= 2)
+            {
+                res.Outline = keys;
+                res.Success = false;
+                return res;
+            }
+
+            Vector3 ToVec2(T a) => toVec3(a).GetTangent(plane);
             keys.Sort((a, b) =>
             {
-                var a2 = toVec2(a);
-                var b2 = toVec2(b);
+                var a2 = ToVec2(a);
+                var b2 = ToVec2(b);
                 var x = comp.Compare(a2.x, b2.x);
                 var y = comp.Compare(a2.y, b2.y);
                 if (x != 0)
@@ -285,54 +313,141 @@ namespace PLATEAU.Util.GeoGraph
                 return y;
             });
 
-            void Eval(Vector2 axis, Vector2 a, out float ang, out float sqrLen)
+            // success : outlineVerticesがきれいにループしている
+            // hasSelfCrossing : 途中に同じ点が２回出てくる(直線１本でつながっている個所がある
+            // outlineVertices : アウトライン頂点
+            (bool success, bool hasSelfCrossing, List<T> outlineVertices)
+                Search
+                (
+                    T start
+                    , Vector2 dir
+                    , Func<(float ang, float sqrLen), (float ang, float sqrLen), int> compare
+                    )
             {
-                ang = Vector2.SignedAngle(axis, a);
-                if (ang < 0f)
-                    ang += 360f;
-                sqrLen = a.sqrMagnitude;
+                var ret = new List<T> { start };
+                var hasCrossing = false;
+                (float ang, float sqrLen) Eval(Vector2 axis, Vector2 a)
+                {
+                    var ang = Vector2.SignedAngle(axis, a);
+                    if (ang < 0f)
+                        ang += 360f;
+                    var sqrLen = a.sqrMagnitude;
+                    return new(ang, sqrLen);
+                }
+                while (true)
+                {
+                    var last = ToVec2(ret[^1]);
+                    var neighbors = getNeighbor(ret[^1]).ToList();
+                    if (neighbors.Count == 0)
+                        break;
+                    // 途中につながるようなものは削除
+                    var filtered = ret.Count >= 2 ? neighbors.Where(v => ret[^2].Equals(v) == false).ToList() : neighbors;
+                    if (filtered.Count == 0)
+                        filtered = neighbors;
+                    if (filtered.Count == 0)
+                        break;
+                    var next = filtered.First();
+
+                    var eval0 = Eval(dir, ToVec2(next) - last);
+                    foreach (var v in filtered.Skip(1))
+                    {
+                        // 最も外側に近い点を返す
+                        var eval1 = Eval(dir, ToVec2(v) - last);
+                        if (compare(eval0, eval1) < 0)
+                        {
+                            next = v;
+                            eval0 = eval1;
+                        }
+                    }
+
+                    // 先頭に戻ってきたら終了
+                    if (ret[0].Equals(next))
+                        return new(true, hasCrossing, ret);
+
+                    // 途中に戻ってくる場合
+                    var index = ret.IndexOf(next);
+                    if (index >= 0)
+                    {
+                        // ループを検出したら終了
+                        if (index > 0 && ret[index - 1].Equals(ret[^1]))
+                        {
+                            return new(false, hasCrossing, ret);
+                        }
+                        hasCrossing = true;
+                    }
+
+                    ret.Add(next);
+                    dir = last - ToVec2(next);
+                }
+
+                return new(false, hasCrossing, ret);
             }
 
             // 時計回りに探し出す
-            var dir = Vector2.down;
-            var ret = new List<T> { keys[0] };
-            while (ret.Count < keys.Count)
-            {
-                var last = toVec2(ret[^1]);
-                var neighbors = getNeighbor(ret[^1]).ToList();
-                if (neighbors.Count == 0)
-                    break;
-                // 途中につながるようなものは削除
-                var filtered = ignoreVisitedVertex ? neighbors.Where(v => v.Equals(ret[0]) || ret.Contains(v) == false).ToList() : neighbors.ToList();
-                if (filtered.Count == 0)
-                    break;
-                var next = filtered.First();
-
-                Eval(dir, toVec2(next) - last, out var ang, out var sqrLen);
-                foreach (var v in filtered.Skip(1))
-                {
-                    // 最も外側に近い点を返す
-                    Eval(dir, toVec2(v) - last, out var ang2, out var sqrLen2);
-                    var x = -comp.Compare(ang2, ang);
-                    if (x == 0)
-                        x = comp.Compare(sqrLen2, sqrLen);
-                    if (x < 0)
+            var leftSearch = Search(
+                    keys[0]
+                    , Vector2.down
+                    , (a, b) =>
                     {
-                        next = v;
-                        ang = ang2;
-                        sqrLen = sqrLen2;
+                        var x = -comp.Compare(b.ang, a.ang);
+                        if (x == 0)
+                            x = comp.Compare(b.sqrLen, a.sqrLen);
+                        return x;
                     }
-                }
+                );
+            // 見つかったらそれでおしまい
+            res.Success = leftSearch.success;
+            res.Outline = leftSearch.outlineVertices;
+            res.HasSelfCrossing = leftSearch.hasSelfCrossing;
+            if (res.Success)
+                return res;
 
-                if (ret.Contains(next))
+            // 見つからない場合(３次元的なねじれの位置がある場合等)
+            // 反時計回りにも探す
+            res.Outline = leftSearch.outlineVertices.ToList();
+            var rightSearch = Search(
+                    keys[0]
+                    , Vector2.up
+                    , (a, b) =>
+                    {
+                        var x = comp.Compare(b.ang, a.ang);
+                        if (x == 0)
+                            x = comp.Compare(b.sqrLen, a.sqrLen);
+                        return x;
+                    }
+                );
+            // 右回りで見つかったらそれでおしまい
+            if (rightSearch.success)
+            {
+                res.Success = true;
+                res.Outline = rightSearch.outlineVertices;
+                res.HasSelfCrossing = rightSearch.hasSelfCrossing;
+                return res;
+            }
+
+            // 両方の結果をマージする
+
+            // 0番目は共通なので削除
+            rightSearch.outlineVertices.RemoveAt(0);
+            while (rightSearch.outlineVertices.Count > 0)
+            {
+                var v = rightSearch.outlineVertices[0];
+                rightSearch.outlineVertices.RemoveAt(0);
+                var index = res.Outline.IndexOf(v);
+                if (index >= 0)
                 {
+                    res.Success = true;
+                    res.Outline.RemoveRange(index, res.Outline.Count - index);
+                    res.Outline.Add(v);
                     break;
                 }
-
-                ret.Add(next);
-                dir = last - toVec2(next);
+                res.Outline.Add(v);
             }
-            return ret;
+
+            res.HasSelfCrossing = res.Outline.GroupBy(v => v).Any(g => g.Count() > 1);
+            if (res.HasSelfCrossing)
+                Debug.Log("アウトライン計算でループ検出");
+            return res;
         }
 
         private static List<Vector3> ComputeOutlineVertices(Func<Vector3, Vector2> toVec2, Dictionary<Vector3, HashSet<Vector3>> vertices, bool ignoreVisitedVertex = true)
@@ -422,7 +537,7 @@ namespace PLATEAU.Util.GeoGraph
         /// <param name="toVec2"></param>
         /// <param name="epsilon"></param>
         /// <returns></returns>
-        public static List<Vector3> ComputeMeshOutlineVertices(ConvertedCityObject.ConvertedMesh mesh, ConvertedCityObject.SubMesh subMesh, Func<Vector3, Vector2> toVec2, float epsilon = 0.1f)
+        public static List<Vector3> ComputeMeshOutlineVertices(SubDividedCityObject.Mesh mesh, SubDividedCityObject.SubMesh subMesh, Func<Vector3, Vector2> toVec2, float epsilon = 0.1f)
         {
             // key   : 頂点
             // value : その頂点とつながっている頂点のリスト
@@ -1395,6 +1510,8 @@ namespace PLATEAU.Util.GeoGraph
             return innerSegments;
 #endif
         }
+
+
 
         [Serializable]
         public class DebugFindOppositeOption

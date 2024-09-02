@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using PLATEAU.CityExport.ModelConvert.SubMeshConvert;
+﻿using PLATEAU.CityExport.ModelConvert.SubMeshConvert;
 using PLATEAU.CityInfo;
 using PLATEAU.Native;
 using PLATEAU.PolygonMesh;
@@ -181,39 +180,63 @@ namespace PLATEAU.CityExport.ModelConvert
             IUnityMeshToDllSubMeshConverter unityMeshToDllSubMeshConverter,
             VertexConverterBase vertexConverter, bool invertMesh)
         {
-            var vertices =
-                unityMesh
-                    .vertices
-                    .Select(vert => vertexConverter.Convert(new Vector3(vert.x, vert.y, vert.z)).ToPlateauVector())
-                    .ToArray();
-            var indices =
-                unityMesh.triangles
-                    .Select(id => (uint)id)
-                    .ToArray();
-            var uv1 =
-                unityMesh
-                    .uv
-                    .Select(uv => new PlateauVector2f(uv.x, uv.y))
-                    .ToArray();
-            var uv4 =
-                unityMesh
-                    .uv4
-                    .Select(uv => new PlateauVector2f(uv.x, uv.y))
-                    .ToArray();
-            var vertexColors =
-                unityMesh
-                    .colors
-                    .Select(color => new PlateauVector3d(color.r, color.g, color.b))
-                    .ToArray();
+            // 頂点
+            var vertCount = unityMesh.vertexCount;
+            var unityVertices = unityMesh.vertices;
+            var plateauVertices = new PlateauVector3d[vertCount];
+            for (int i = 0; i < vertCount; i++)
+            {
+                plateauVertices[i] = vertexConverter.Convert(unityVertices[i]).ToPlateauVector();
+            }
+            
+            // indices
+            var unityIndices = unityMesh.triangles;
+            var indexCount = unityIndices.Length;
+            var plateauIndices = new uint[indexCount];
+            for (int i = 0; i < indexCount; i++)
+            {
+                plateauIndices[i] = (uint)unityIndices[i];
+            }
+            
+            // uv1
+            var unityUv1 = unityMesh.uv;
+            var uv1Count = unityUv1.Length;
+            var plateauUv1 = new PlateauVector2f[uv1Count];
+            for (int i = 0; i < uv1Count; i++)
+            {
+                var u = unityUv1[i];
+                plateauUv1[i] = new PlateauVector2f(u.x, u.y);
+            }
+            
+            // uv4
+            var unityUv4 = unityMesh.uv4;
+            var uv4Count = unityUv4.Length;
+            var plateauUv4 = new PlateauVector2f[uv4Count];
+            for (int i = 0; i < uv4Count; i++)
+            {
+                var u = unityUv4[i];
+                plateauUv4[i] = new PlateauVector2f(u.x, u.y);
+            }
+            
+            // vertexColor
+            var unityColors = unityMesh.colors;
+            var vertColorCount = unityColors.Length;
+            var vertexColors = new PlateauVector3d[vertColorCount];
+            for (int i = 0; i < vertColorCount; i++)
+            {
+                var color = unityColors[i];
+                vertexColors[i] = new PlateauVector3d(color.r, color.g, color.b);
+            }
+            
 
             if (invertMesh)
             {
-                for(int i = 0; i < indices.Length; i += 3)
+                for(int i = 0; i < plateauIndices.Length; i += 3)
                 {
-                    var first = indices[i];
-                    var third = indices[i+2];
-                    indices[i] = third; 
-                    indices[i+2] = first;
+                    var first = plateauIndices[i];
+                    var third = plateauIndices[i+2];
+                    plateauIndices[i] = third; 
+                    plateauIndices[i+2] = first;
                 }
             }
 
@@ -223,10 +246,10 @@ namespace PLATEAU.CityExport.ModelConvert
             var dllSubMeshes = unityMeshToDllSubMeshConverter.Convert(unityMesh, meshRenderer);
             
             
-            Assert.AreEqual(uv1.Length, vertices.Length);
+            Assert.AreEqual(plateauUv1.Length, plateauVertices.Length);
 
             var dllMesh = PolygonMesh.Mesh.Create(
-                vertices, indices, uv1, uv4,
+                plateauVertices, plateauIndices, plateauUv1, plateauUv4,
                 dllSubMeshes.ToArray());
             // 補足:
             // 上の行で MergeMeshInfo に渡す実引数 includeTexture が常に true になっていますが、それで良いです。
@@ -234,6 +257,21 @@ namespace PLATEAU.CityExport.ModelConvert
             // C++側で特別にテクスチャを除く処理は不必要だからです。
             
             dllMesh.SetVertexColors(vertexColors);
+            
+            
+            // CityObjectListを追加します
+            var cog = meshRenderer.GetComponent<PLATEAUCityObjectGroup>();
+            if (cog != null)
+            {
+                using var col = CityObjectList.Create();
+                foreach (var co in cog.GetAllCityObjects())
+                {
+                    var objId = co.CityObjectIndex;
+                    col.Add(new CityObjectIndex(objId[0], objId[1]), co.GmlID);
+                }
+
+                dllMesh.CityObjectList = col;
+            }
             
             return dllMesh;
         }

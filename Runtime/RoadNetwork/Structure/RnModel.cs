@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine.Splines;
 
 namespace PLATEAU.RoadNetwork.Structure
 {
@@ -20,7 +21,7 @@ namespace PLATEAU.RoadNetwork.Structure
 
         private List<RnIntersection> intersections = new List<RnIntersection>();
 
-        private List<RnLineString> sideWalks = new List<RnLineString>();
+        private List<RnSideWalk> sideWalks = new List<RnSideWalk>();
 
         //----------------------------------
         // end: フィールド
@@ -30,7 +31,7 @@ namespace PLATEAU.RoadNetwork.Structure
 
         public IReadOnlyList<RnIntersection> Intersections => intersections;
 
-        public IReadOnlyList<RnLineString> SideWalks => sideWalks;
+        public IReadOnlyList<RnSideWalk> SideWalks => sideWalks;
 
         public void AddRoad(RnRoad link)
         {
@@ -158,13 +159,21 @@ namespace PLATEAU.RoadNetwork.Structure
         /// <summary>
         /// 歩道情報追加
         /// </summary>
+        /// <param name="parent"></param>
         /// <param name="sideWalk"></param>
-        public void AddSideWalk(RnLineString sideWalk)
+        public void AddSideWalk(RnSideWalk sideWalk)
         {
             if (sideWalks.Contains(sideWalk))
                 return;
-
             sideWalks.Add(sideWalk);
+        }
+
+        public void AddRoadBase(RnRoadBase roadBase)
+        {
+            if (roadBase is RnRoad road)
+                AddRoad(road);
+            else if (roadBase is RnIntersection intersection)
+                AddIntersection(intersection);
         }
 
         /// <summary>
@@ -184,13 +193,15 @@ namespace PLATEAU.RoadNetwork.Structure
             AddRoad(road);
         }
 
-        public RoadNetworkStorage Serialize()
+        public RoadNetworkStorage Serialize(bool createEmptyRoadBetweenIntersection = true)
         {
+            if (createEmptyRoadBetweenIntersection)
+                CreateEmptyRoadBetweenInteraction();
             var serializer = new RoadNetworkSerializer();
             return serializer.Serialize(this);
         }
 
-        public void Deserialize(RoadNetworkStorage storage)
+        public void Deserialize(RoadNetworkStorage storage, bool removeEmptyRoadBetweenIntersection = true)
         {
             var serializer = new RoadNetworkSerializer();
             var model = serializer.Deserialize(storage);
@@ -198,11 +209,84 @@ namespace PLATEAU.RoadNetwork.Structure
                 AddRoad(l);
             foreach (var n in model.Intersections)
                 AddIntersection(n);
+            if (removeEmptyRoadBetweenIntersection)
+                RemoveEmptyRoadBetweenIntersection();
         }
 
-        public RoadNetworkDataGetter CreateGetter(RoadNetworkStorage storage)
+
+        /// <summary>
+        /// 交差点同士が直接つながっている状況において、交差点間のリンクを作成する
+        /// </summary>
+        public void CreateEmptyRoadBetweenInteraction()
         {
-            return new RoadNetworkDataGetter(storage);
+            HashSet<RnIntersection> visited = new();
+            foreach (var inter in Intersections)
+            {
+                if (visited.Contains(inter))
+                    continue;
+                visited.Add(inter);
+
+                foreach (var neighbor in inter.Neighbors)
+                {
+                    if (neighbor.Border == null)
+                        continue;
+
+                    if ((neighbor.Road is RnIntersection other) == false)
+                        continue;
+
+                    if (visited.Contains(other))
+                        continue;
+
+                    var otherNeighbor =
+                        other.Neighbors.FirstOrDefault(n => n.Border.IsSameLine(neighbor.Border) && n.Road == inter);
+                    if (otherNeighbor == null)
+                        continue;
+
+                    neighbor.Border.GetLerpPoint(0.5f, out var pos);
+                    var p = new RnPoint(pos);
+                    var emptyWay = new RnWay(RnLineString.Create(Enumerable.Repeat(p, 2), false));
+                    var emptyLane = RnLane.CreateEmptyLane(neighbor.Border, emptyWay);
+                    var emptyRoad = RnRoad.CreateOneLaneRoad(null, emptyLane);
+                    emptyRoad.SetPrevNext(inter, other);
+                    neighbor.Road = emptyRoad;
+                    otherNeighbor.Road = emptyRoad;
+                    AddRoad(emptyRoad);
+                }
+            }
+        }
+
+        /// <summary>
+        /// 直接つながった交差点間に挿入された空リンクを削除する
+        /// </summary>
+        public void RemoveEmptyRoadBetweenIntersection()
+        {
+            HashSet<RnRoad> remove = new();
+            foreach (var road in Roads)
+            {
+                if (road.IsEmptyRoad == false)
+                    continue;
+
+                var inter1 = road.Next as RnIntersection;
+                var inter2 = road.Prev as RnIntersection;
+                foreach (var n in inter1.Neighbors.Where(n => n.Road == road))
+                    n.Road = inter2;
+                foreach (var n in inter2.Neighbors.Where(n => n.Road == road))
+                    n.Road = inter1;
+                road.SetPrevNext(null, null);
+                remove.Add(road);
+            }
+
+            foreach (var r in remove)
+                RemoveRoad(r);
+        }
+
+
+        public void ReBuildIntersectionTracks()
+        {
+            foreach (var intersection in Intersections)
+            {
+                intersection.BuildTracks();
+            }
         }
 
         public void SplitLaneByWidth(float roadWidth, out List<ulong> failedRoads)
@@ -224,10 +308,12 @@ namespace PLATEAU.RoadNetwork.Structure
                     if (linkGroup.IsValid == false)
                         continue;
 
-                    if (linkGroup.Roads.Any(l => l.MainLanes.Count != 1))
+                    if (linkGroup.Roads.Any(l => l.MainLanes[0].HasBothBorder == false))
                         continue;
 
-                    if (linkGroup.Roads.Any(l => l.MainLanes[0].HasBothBorder == false))
+                    // #TODO : 中央線がある場合の処理
+
+                    if (linkGroup.Roads.Any(l => l.MainLanes.Count != 1))
                         continue;
 
                     var width = linkGroup.Roads.Select(l => l.MainLanes[0].CalcWidth()).Min();

@@ -1,5 +1,4 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace PLATEAU.Util.GeoGraph
 {
@@ -123,7 +122,6 @@ namespace PLATEAU.Util.GeoGraph
         /// </summary>
         /// <param name="self"></param>
         /// <param name="other"></param>
-        /// <param name="intersection">交点</param>
         public static bool TrySegmentIntersection(this LineSegment2D self, LineSegment2D other)
         {
             return self.TrySegmentIntersection(other.Start, other.End, out var intersection, out var t1, out var t2);

@@ -1,88 +1,103 @@
-﻿using PLATEAU.Editor.RoadNetwork.Graph;
+﻿using PLATEAU.Editor.RoadNetwork.CityObject;
+using PLATEAU.Editor.RoadNetwork.Graph;
+using PLATEAU.Editor.RoadNetwork.Structure;
 using PLATEAU.RoadNetwork;
+using PLATEAU.RoadNetwork.Drawer;
+using PLATEAU.RoadNetwork.Factory;
+using PLATEAU.RoadNetwork.Graph;
+using PLATEAU.RoadNetwork.Mesh;
 using PLATEAU.RoadNetwork.Structure;
+using PLATEAU.RoadNetwork.Util;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
-namespace PLATEAU.Editor.RoadNetwork
+namespace PLATEAU.Editor.RoadNetwork.Tester
 {
     [CustomEditor(typeof(PLATEAURoadNetworkTester))]
     public class PLATEAURoadNetworkTesterEditor : UnityEditor.Editor
     {
-        public void OnSceneGUI()
-        {
-            // RoadNetworkを所持しているオブジェクトに表示するGUIシステムを更新する処理
-            UpdateRoadNetworkGUISystem();
-
-            void UpdateRoadNetworkGUISystem()
-            {
-                var hasOpen = RoadNetworkEditorWindow.HasOpenInstances();
-                if (hasOpen == false)
-                {
-                    return;
-                }
-
-                var editorInterface = RoadNetworkEditorWindow.GetEditorInterface();
-                if (editorInterface == null)
-                    return;
-
-                //if (Event.current.type != EventType.Repaint)
-                //    return;
-
-                var guiSystem = editorInterface.SceneGUISystem;
-                guiSystem.OnSceneGUI(target as PLATEAURoadNetworkTester);
-            }
-        }
-
-        private class RnModelInstanceHelper : RnModelDebugEditorWindow.IInstanceHelper
+        private class RGraphInstanceHelper : RGraphDebugEditorWindow.IInstanceHelper
         {
             private PLATEAURoadNetworkTester target;
 
-            public RnModelInstanceHelper(PLATEAURoadNetworkTester target)
+            public RGraphInstanceHelper(PLATEAURoadNetworkTester target)
             {
                 this.target = target;
             }
 
-            public RnModel GetModel()
+            public RGraph GetGraph()
             {
-                return target.RoadNetwork;
+                return target.RGraph;
             }
 
-            public long TargetLaneId
+            public RGraph CreateGraph()
             {
-                get => target.Drawer?.laneOp?.showLaneId ?? -1;
-                set
-                {
-                    if (target.Drawer != null)
-                    {
-                        target.Drawer.laneOp.showLaneId = value;
-                    }
-                }
+                target.CreateRGraph();
+                return target.RGraph;
             }
 
-            public long TargetRoadId
+            public HashSet<RFace> TargetFaces => target.RGraphDrawer.TargetFaces;
+            public HashSet<REdge> TargetEdges => target.RGraphDrawer.TargetEdges;
+            public HashSet<RVertex> TargetVertices => target.RGraphDrawer.TargetVertices;
+
+            public void CreateTranMesh()
             {
-                get => target.Drawer?.roadOp?.showRoadId ?? -1;
-                set
-                {
-                    if (target.Drawer != null)
-                    {
-                        target.Drawer.roadOp.showRoadId = value;
-                    }
-                }
+                target.Factory.midStageData.CreateAll(target.GetTargetCityObjects());
             }
 
-            public long TargetIntersectionId
+            public bool IsTarget(RFace face)
             {
-                get => target.Drawer?.intersectionOp?.showIntersectionId ?? -1;
-                set
-                {
-                    if (target.Drawer != null)
-                    {
-                        target.Drawer.intersectionOp.showIntersectionId = value;
-                    }
-                }
+                return RnEx.IsEditorSceneSelected(face.CityObjectGroup);
+            }
+
+            public void CreateRnModel()
+            {
+                target.CreateRoadNetworkByGraphAsync();
+            }
+
+            public RGraphDrawerDebug GetDrawer()
+            {
+                return target.RGraphDrawer;
+            }
+        }
+
+        private class SubDividedCityObjectInstanceHelper : SubDividedCityObjectDebugEditorWindow.IInstanceHelper
+        {
+            private PLATEAURoadNetworkTester target;
+
+            public SubDividedCityObjectInstanceHelper(PLATEAURoadNetworkTester target)
+            {
+                this.target = target;
+            }
+
+            public RsFactoryMidStageData.SubDividedCityObjectWrap GetCityObjects()
+            {
+                return target.Factory.midStageData.convertedCityObjects;
+            }
+
+            public bool IsTarget(SubDividedCityObject cityObject)
+            {
+                return RnEx.IsEditorSceneSelected(cityObject.CityObjectGroup);
+            }
+
+            public HashSet<SubDividedCityObject> TargetCityObjects =>
+                target.Factory.midStageData.convertedCityObjects.drawer.TargetCityObjects;
+
+            public void CreateRnModel()
+            {
+                target.CreateRoadNetworkByGraphAsync();
+            }
+
+            public RGraphDrawerDebug GetDrawer()
+            {
+                return target.RGraphDrawer;
+            }
+
+            public void CreateTranMesh()
+            {
+                target.Factory.midStageData.CreateAll(target.GetTargetCityObjects());
             }
         }
 
@@ -93,31 +108,39 @@ namespace PLATEAU.Editor.RoadNetwork
                 return;
 
             base.OnInspectorGUI();
-            GUILayout.Label($"ConvertedCityObjectVertexCount : {obj.convertedCityObjects.Sum(c => c.Meshes.Sum(m => m.Vertices.Count))}");
+            GUILayout.Label($"ConvertedCityObjectVertexCount : {obj.SubDividedCityObjects.Sum(c => c.Meshes.Sum(m => m.Vertices.Count))}");
 
             if (GUILayout.Button("Create"))
                 obj.CreateNetwork();
 
-            if (GUILayout.Button("Serialize"))
-                obj.Serialize();
+            using (new EditorGUILayout.HorizontalScope())
+            {
+                if (obj.RGraph != null && GUILayout.Button("Open RGraph Editor"))
+                    RGraphDebugEditorWindow.OpenWindow(new RGraphInstanceHelper(obj), true);
 
-            if (GUILayout.Button("Deserialize"))
-                obj.Deserialize();
 
-            if (GUILayout.Button("SplitCityObject"))
-                obj.SplitCityObjectAsync();
+                if (obj.Factory.midStageData?.convertedCityObjects?.cityObjects?.Any() ?? false)
+                {
+                    if (GUILayout.Button("Open SubDividedCityObject Editor"))
+                        SubDividedCityObjectDebugEditorWindow.OpenWindow(new SubDividedCityObjectInstanceHelper(obj), true);
+                }
+            }
 
-            if (GUILayout.Button("RGraph"))
-                obj.CreateRGraph();
+            using (new EditorGUILayout.HorizontalScope())
+            {
+                var model = obj.GetComponent<PLATEAURnStructureModel>();
+                if (model && model.RoadNetwork != null)
+                {
+                    if (GUILayout.Button("Create Empty Road"))
+                        model.RoadNetwork.CreateEmptyRoadBetweenInteraction();
 
-            if (obj.RGraph != null && GUILayout.Button("Open RGraph Editor"))
-                RGraphDebugEditorWindow.OpenWindow(obj.RGraph, true);
+                    if (GUILayout.Button("Remove Empty Road"))
+                        model.RoadNetwork.RemoveEmptyRoadBetweenIntersection();
+                }
 
+            }
             if (GUILayout.Button("Check Lod"))
                 obj.RemoveSameNameCityObjectGroup();
-
-            if (GUILayout.Button("RnModel Debug Editor"))
-                RnModelDebugEditorWindow.OpenWindow(new RnModelInstanceHelper(obj), true);
         }
     }
 }

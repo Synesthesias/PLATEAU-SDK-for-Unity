@@ -1,3 +1,5 @@
+
+using UnityEngine;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -5,8 +7,8 @@ using UnityEditor;
 namespace PLATEAU.Util
 {
     /// <summary>
-    /// Editorの場合にUnityのダイアログを表示し、
-    /// Runtimeの場合に何もしないクラスです。
+    /// Editorの場合にUnityのダイアログを表示します。
+    /// Runtimeの場合に代わりにログを出力します。
     /// </summary>
     public class Dialogue
     {
@@ -18,6 +20,7 @@ namespace PLATEAU.Util
 #if UNITY_EDITOR
             return EditorUtility.DisplayDialog("PLATEAU SDK", message, ok, cancel);
 #else
+            Debug.Log("Dialogue called in runtime. Assuming OK. message = " + message);
             return true;
 #endif
         }
@@ -27,6 +30,8 @@ namespace PLATEAU.Util
         {
             #if UNITY_EDITOR
             EditorUtility.DisplayDialog("PLATEAU SDK", message, ok);
+            #else
+            Debug.Log("Dialogue called in runtime. message = " + message);
             #endif
         }
     }

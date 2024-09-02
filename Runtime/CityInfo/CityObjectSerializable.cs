@@ -55,10 +55,10 @@ namespace PLATEAU.CityInfo
                 return this;
             }
 
-            public CityObject Copy()
+            public CityObject CopyWithoutChildren()
             {
                 var copy = new CityObject();
-                copy.Init(gmlID, cityObjectIndex, cityObjectType, attributesMap, children);
+                copy.Init(gmlID, cityObjectIndex, cityObjectType, attributesMap, null);
                 return copy;
             }
 

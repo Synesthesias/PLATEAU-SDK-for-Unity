@@ -27,6 +27,11 @@ namespace PLATEAU.PolygonMesh
             };
         }
 
+        public int[] ToArray()
+        {
+            return new[] { PrimaryIndex, AtomicIndex };
+        }
+
         public override int GetHashCode()
         {
             return PrimaryIndex * 10000 + AtomicIndex;

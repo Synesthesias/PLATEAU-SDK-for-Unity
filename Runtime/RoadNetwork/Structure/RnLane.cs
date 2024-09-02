@@ -3,6 +3,7 @@ using PLATEAU.Util.GeoGraph;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices.WindowsRuntime;
 using UnityEngine;
 using UnityEngine.Assertions;
 using Vector2 = UnityEngine.Vector2;
@@ -57,6 +58,10 @@ namespace PLATEAU.RoadNetwork.Structure
         LeftOnly = 1 << 0,
         // 右折専用
         RightOnly = 1 << 1,
+        // 自動生成時にLeftWayが生成できなかった
+        LeftWayGenError = 1 << 2,
+        // 自動生成時にRightWayが生成できなかった
+        RightWayGenError = 1 << 3,
     }
 
     /// <summary>
@@ -92,6 +97,12 @@ namespace PLATEAU.RoadNetwork.Structure
 
         // 属性
         public RnLaneAttribute Attributes { get; set; }
+
+        // 親Roadと逆方向(右車線等)
+        public bool IsReverse { get; set; }
+
+        // 内部的に持つだけ. 中心線
+        private RnWay centerWay { get; set; }
 
         //----------------------------------
         // end: フィールド
@@ -130,6 +141,11 @@ namespace PLATEAU.RoadNetwork.Structure
         /// </summary>
         public bool HasBothBorder => IsValidWay && PrevBorder.IsValidOrDefault() && NextBorder.IsValidOrDefault();
 
+        /// <summary>
+        /// 隣接した交差点に挿入された空レーンかどうか
+        /// </summary>
+        public bool IsEmptyLane => IsValidWay == false && NextBorder == PrevBorder && NextBorder != null;
+
         //デシリアライズの為に必要
         public RnLane() { }
 
@@ -160,6 +176,37 @@ namespace PLATEAU.RoadNetwork.Structure
             NextBorder = nextBorder;
         }
 
+        /// <summary>
+        /// レーンの中央線を作成して返す
+        /// </summary>
+        /// <param name="self"></param>
+        /// <returns></returns>
+        public RnWay CreateCenterWay()
+        {
+            try
+            {
+                centerWay = null;
+                if (IsValidWay == false)
+                    return null;
+
+                var vertices = GeoGraphEx.GetInnerLerpSegments(LeftWay.Vertices.ToList(), RightWay.Vertices.ToList(), AxisPlane.Xz, 0.5f);
+                centerWay = new RnWay(RnLineString.Create(vertices));
+                return centerWay;
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Borderの同じ頂点で作り直す
+        /// </summary>
+        public void DisConnectBorder()
+        {
+            PrevBorder = PrevBorder?.Clone();
+            NextBorder = NextBorder?.Clone();
+        }
 
         /// <summary>
         /// borderと接続しているレーンを全て取得
@@ -210,6 +257,8 @@ namespace PLATEAU.RoadNetwork.Structure
         {
             return GetConnectedRoads(PrevBorder);
         }
+
+
         /// <summary>
         /// このレーン接続先のRnRoadBaseを取得.ParentのNext/Prevとは逆になる可能性がある.
         /// ParentのPrev/NextとBorderの一致判定により求める
@@ -248,11 +297,32 @@ namespace PLATEAU.RoadNetwork.Structure
             return GetConnectedLanes(PrevBorder);
         }
 
+        /// <summary>
+        /// 接続しているレーンをすべて取得
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        public IEnumerable<RnLane> GetConnectedLanes(RnLaneBorderType type)
+        {
+            return GetConnectedLanes(GetBorder(type));
+        }
+
+        /// <summary>
+        /// 接続しているRoadBaseをすべて取得
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        public IEnumerable<RnRoadBase> GetConnectedRoads(RnLaneBorderType type)
+        {
+            return GetConnectedRoads(GetBorder(type));
+        }
+
         // 向き反転させる
         public void Reverse()
         {
             (PrevBorder, NextBorder) = (NextBorder?.ReversedWay(), PrevBorder?.ReversedWay());
             (LeftWay, RightWay) = (RightWay?.ReversedWay(), LeftWay?.ReversedWay());
+            IsReverse = !IsReverse;
         }
 
         /// <summary>
@@ -392,6 +462,19 @@ namespace PLATEAU.RoadNetwork.Structure
         {
             return new RnLane(way, null, null, null);
         }
+
+        /// <summary>
+        /// 交差点同士の間に入れる空のレーンを作成
+        /// </summary>
+        /// <param name="border"></param>
+        /// <param name="centerWay"></param>
+        /// <returns></returns>
+        public static RnLane CreateEmptyLane(RnWay border, RnWay centerWay)
+        {
+            var ret = new RnLane(null, null, border, border);
+            ret.centerWay = centerWay;
+            return ret;
+        }
     }
 
     /// <summary>
@@ -497,7 +580,7 @@ namespace PLATEAU.RoadNetwork.Structure
             var segments = GeoGraphEx.GetInnerLerpSegments(lefts, rights, AxisPlane.Xz, p2);
             foreach (var s in segments)
             {
-                AddPoint(s.Segment.Start);
+                AddPoint(s);
             }
             AddPoint(Vector3.Lerp(lefts[^1], rights[^1], p2));
             return points;
@@ -720,7 +803,9 @@ namespace PLATEAU.RoadNetwork.Structure
         /// <returns></returns>
         public static Vector3 GetCenter(this RnLane self)
         {
-            var a = self.GetVertices().Aggregate(new { sum = Vector3.zero, i = 0 }, (a, p) => new { sum = a.sum + p.Vertex, i = a.i + 1 });
+            var a = self
+                .GetVertices()
+                .Aggregate(new { sum = Vector3.zero, i = 0 }, (a, p) => new { sum = a.sum + p.Vertex, i = a.i + 1 });
             if (a.i == 0)
                 return Vector3.zero;
             return a.sum / a.i;
@@ -798,7 +883,7 @@ namespace PLATEAU.RoadNetwork.Structure
                 }
                 else
                 {
-                    Assert.IsTrue(false, "SplitBorder Error");
+                    Assert.IsTrue(false, $"SplitBorder Error {l.GetDebugMyIdOrDefault()}[{l.Parent.GetDebugMyIdOrDefault()}]");
                 }
                 return ret;
             }
@@ -854,7 +939,7 @@ namespace PLATEAU.RoadNetwork.Structure
                         var segments = GeoGraphEx.GetInnerLerpSegments(targetLane.LeftWay.Vertices.ToList(), targetLane.RightWay.Vertices.ToList(), AxisPlane.Xz, rate);
                         foreach (var s in segments)
                         {
-                            AddPoint(new RnPoint(s.Segment.Start));
+                            AddPoint(new RnPoint(s));
                         }
 
                         if (isNextLeft2Right)
@@ -879,6 +964,7 @@ namespace PLATEAU.RoadNetwork.Structure
 
             return ret;
         }
+
 #if false
         public static void SetLaneWidth(this RnLane self, float width, bool moveLeft)
         {

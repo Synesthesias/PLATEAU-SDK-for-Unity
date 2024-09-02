@@ -57,7 +57,7 @@ namespace PLATEAU.Editor.Window.Common
         private string headerText;
         private HeaderType headerType;
         
-        public HeaderElementGroup(string elementName, string headerText, HeaderType headerType, params Element[] innerElements) : base(elementName, innerElements)
+        public HeaderElementGroup(string elementName, string headerText, HeaderType headerType, params Element[] innerElements) : base(elementName, 0, innerElements)
         {
             this.headerText = headerText;
             this.headerType = headerType;
@@ -74,6 +74,9 @@ namespace PLATEAU.Editor.Window.Common
                 case HeaderType.Subtitle:
                     PlateauEditorStyle.SubTitle(headerText);
                     break;
+                case HeaderType.Separator:
+                    PlateauEditorStyle.Separator(0);
+                    break;
                 default:
                     throw new ArgumentException("unknown header type.");
             }
@@ -86,7 +89,7 @@ namespace PLATEAU.Editor.Window.Common
 
     internal enum HeaderType
     {
-        Header, Subtitle
+        Header, Subtitle, Separator
     }
     
 }

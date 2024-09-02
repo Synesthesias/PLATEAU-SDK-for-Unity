@@ -133,6 +133,7 @@ MonoBehaviour:
     isTextureCombined: 1
     isGranularityConverted: 0
   granularity: 1
+  lod: 0
 --- !u!64 &7957628854620524924
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -311,6 +312,7 @@ MonoBehaviour:
     isTextureCombined: 1
     isGranularityConverted: 0
   granularity: 1
+  lod: 0
 --- !u!64 &6123110598697601680
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -484,6 +486,7 @@ MonoBehaviour:
     isTextureCombined: 1
     isGranularityConverted: 0
   granularity: 1
+  lod: 0
 --- !u!64 &5136312233884309938
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -747,6 +750,7 @@ MonoBehaviour:
     isTextureCombined: 1
     isGranularityConverted: 0
   granularity: 1
+  lod: 0
 --- !u!64 &4166341593726172241
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -1002,6 +1006,7 @@ MonoBehaviour:
     isTextureCombined: 1
     isGranularityConverted: 0
   granularity: 1
+  lod: 0
 --- !u!64 &3592629841255193999
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -1170,6 +1175,7 @@ MonoBehaviour:
     isTextureCombined: 1
     isGranularityConverted: 0
   granularity: 1
+  lod: 0
 --- !u!64 &5404681816274076596
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -1343,6 +1349,7 @@ MonoBehaviour:
     isTextureCombined: 1
     isGranularityConverted: 0
   granularity: 1
+  lod: 0
 --- !u!64 &480793356658183683
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -1509,6 +1516,7 @@ MonoBehaviour:
     isTextureCombined: 1
     isGranularityConverted: 0
   granularity: 1
+  lod: 0
 --- !u!64 &8399883795650064910
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -1682,6 +1690,7 @@ MonoBehaviour:
     isTextureCombined: 1
     isGranularityConverted: 0
   granularity: 1
+  lod: 0
 --- !u!64 &5108421983670528090
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -1942,6 +1951,7 @@ MonoBehaviour:
     isTextureCombined: 1
     isGranularityConverted: 0
   granularity: 1
+  lod: 0
 --- !u!64 &3007471744996859855
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -2115,6 +2125,7 @@ MonoBehaviour:
     isTextureCombined: 1
     isGranularityConverted: 0
   granularity: 1
+  lod: 0
 --- !u!64 &6863229124546419340
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -2291,6 +2302,7 @@ MonoBehaviour:
     isTextureCombined: 1
     isGranularityConverted: 0
   granularity: 1
+  lod: 0
 --- !u!64 &1423957421978953201
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -2464,6 +2476,7 @@ MonoBehaviour:
     isTextureCombined: 1
     isGranularityConverted: 0
   granularity: 1
+  lod: 0
 --- !u!64 &3997563165004493117
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -2630,6 +2643,7 @@ MonoBehaviour:
     isTextureCombined: 1
     isGranularityConverted: 0
   granularity: 1
+  lod: 0
 --- !u!64 &2315240143562573154
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -2803,6 +2817,7 @@ MonoBehaviour:
     isTextureCombined: 1
     isGranularityConverted: 0
   granularity: 1
+  lod: 0
 --- !u!64 &7040990929076744713
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -2969,6 +2984,7 @@ MonoBehaviour:
     isTextureCombined: 1
     isGranularityConverted: 0
   granularity: 1
+  lod: 0
 --- !u!64 &2590823206132196487
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -3142,6 +3158,7 @@ MonoBehaviour:
     isTextureCombined: 1
     isGranularityConverted: 0
   granularity: 1
+  lod: 0
 --- !u!64 &7643329514116023351
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -3308,6 +3325,7 @@ MonoBehaviour:
     isTextureCombined: 1
     isGranularityConverted: 0
   granularity: 1
+  lod: 0
 --- !u!64 &8357987420688152517
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -3573,6 +3591,7 @@ MonoBehaviour:
     isTextureCombined: 1
     isGranularityConverted: 0
   granularity: 1
+  lod: 0
 --- !u!64 &1266652808191705104
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -3739,6 +3758,7 @@ MonoBehaviour:
     isTextureCombined: 1
     isGranularityConverted: 0
   granularity: 1
+  lod: 0
 --- !u!64 &8521555084755767960
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -3992,6 +4012,7 @@ MonoBehaviour:
     isTextureCombined: 1
     isGranularityConverted: 0
   granularity: 1
+  lod: 0
 --- !u!64 &1300705872178294701
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -4170,6 +4191,7 @@ MonoBehaviour:
     isTextureCombined: 1
     isGranularityConverted: 0
   granularity: 1
+  lod: 0
 --- !u!64 &3731701872525026635
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -4336,6 +4358,7 @@ MonoBehaviour:
     isTextureCombined: 1
     isGranularityConverted: 0
   granularity: 1
+  lod: 0
 --- !u!64 &9157601799030821137
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -4517,6 +4540,7 @@ MonoBehaviour:
     isTextureCombined: 1
     isGranularityConverted: 0
   granularity: 1
+  lod: 0
 --- !u!64 &298208971843368641
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -4672,6 +4696,7 @@ MonoBehaviour:
     isTextureCombined: 1
     isGranularityConverted: 0
   granularity: 1
+  lod: 0
 --- !u!64 &2633185733000195077
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -4858,6 +4883,7 @@ MonoBehaviour:
     isTextureCombined: 1
     isGranularityConverted: 0
   granularity: 1
+  lod: 0
 --- !u!64 &8911623315480581817
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -5026,6 +5052,7 @@ MonoBehaviour:
     isTextureCombined: 1
     isGranularityConverted: 0
   granularity: 1
+  lod: 0
 --- !u!64 &6141816363134501025
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -5199,6 +5226,7 @@ MonoBehaviour:
     isTextureCombined: 1
     isGranularityConverted: 0
   granularity: 1
+  lod: 0
 --- !u!64 &9163565191438948289
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -5367,6 +5395,7 @@ MonoBehaviour:
     isTextureCombined: 1
     isGranularityConverted: 0
   granularity: 1
+  lod: 0
 --- !u!64 &6885972521961340983
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -5996,6 +6025,7 @@ MonoBehaviour:
     isTextureCombined: 1
     isGranularityConverted: 0
   granularity: 1
+  lod: 0
 --- !u!64 &7582103639890743558
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -6169,6 +6199,7 @@ MonoBehaviour:
     isTextureCombined: 1
     isGranularityConverted: 0
   granularity: 1
+  lod: 0
 --- !u!64 &6485328299323095267
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -6348,6 +6379,7 @@ MonoBehaviour:
     isTextureCombined: 1
     isGranularityConverted: 0
   granularity: 1
+  lod: 0
 --- !u!64 &4754682408876140128
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -6534,6 +6566,7 @@ MonoBehaviour:
     isTextureCombined: 1
     isGranularityConverted: 0
   granularity: 1
+  lod: 0
 --- !u!64 &7392478773894202949
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -6707,6 +6740,7 @@ MonoBehaviour:
     isTextureCombined: 1
     isGranularityConverted: 0
   granularity: 1
+  lod: 0
 --- !u!64 &1681369674609671319
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -6873,6 +6907,7 @@ MonoBehaviour:
     isTextureCombined: 1
     isGranularityConverted: 0
   granularity: 1
+  lod: 0
 --- !u!64 &5751656216761703872
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -7091,6 +7126,7 @@ MonoBehaviour:
     isTextureCombined: 1
     isGranularityConverted: 0
   granularity: 1
+  lod: 0
 --- !u!64 &8235638607731252820
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -7264,6 +7300,7 @@ MonoBehaviour:
     isTextureCombined: 1
     isGranularityConverted: 0
   granularity: 1
+  lod: 0
 --- !u!64 &3105922910455518038
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -7437,6 +7474,7 @@ MonoBehaviour:
     isTextureCombined: 1
     isGranularityConverted: 0
   granularity: 1
+  lod: 0
 --- !u!64 &686389680049669323
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -7459,37 +7497,6 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: -6800273892590129873, guid: 0890319026c558640917323bdd6ff804, type: 3}
---- !u!1 &4849001023875264282
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 2616821511034305606}
-  m_Layer: 0
-  m_Name: LOD0
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &2616821511034305606
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4849001023875264282}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 4661899342685162668}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &4936786463832698143
 GameObject:
   m_ObjectHideFlags: 0
@@ -7634,6 +7641,7 @@ MonoBehaviour:
     isTextureCombined: 1
     isGranularityConverted: 0
   granularity: 1
+  lod: 0
 --- !u!64 &5526405280610446776
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -7782,6 +7790,7 @@ MonoBehaviour:
     isTextureCombined: 1
     isGranularityConverted: 0
   granularity: 1
+  lod: 0
 --- !u!64 &8614538012497606820
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -8000,6 +8009,7 @@ MonoBehaviour:
     isTextureCombined: 1
     isGranularityConverted: 0
   granularity: 1
+  lod: 0
 --- !u!64 &2133711157734753222
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -8155,6 +8165,7 @@ MonoBehaviour:
     isTextureCombined: 1
     isGranularityConverted: 0
   granularity: 1
+  lod: 0
 --- !u!64 &7169947628949822078
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -8321,6 +8332,7 @@ MonoBehaviour:
     isTextureCombined: 1
     isGranularityConverted: 0
   granularity: 1
+  lod: 0
 --- !u!64 &2799469891218931134
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -8592,6 +8604,7 @@ MonoBehaviour:
     isTextureCombined: 1
     isGranularityConverted: 0
   granularity: 1
+  lod: 0
 --- !u!64 &4618643145237674548
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -8758,6 +8771,7 @@ MonoBehaviour:
     isTextureCombined: 1
     isGranularityConverted: 0
   granularity: 1
+  lod: 0
 --- !u!64 &7935740069958572878
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -8931,6 +8945,7 @@ MonoBehaviour:
     isTextureCombined: 1
     isGranularityConverted: 0
   granularity: 1
+  lod: 0
 --- !u!64 &6465744617663045720
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -9177,6 +9192,7 @@ MonoBehaviour:
     isTextureCombined: 1
     isGranularityConverted: 0
   granularity: 1
+  lod: 0
 --- !u!64 &1612228203519496443
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -9368,6 +9384,7 @@ MonoBehaviour:
     isTextureCombined: 1
     isGranularityConverted: 0
   granularity: 1
+  lod: 0
 --- !u!64 &7883436532876976599
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -9541,6 +9558,7 @@ MonoBehaviour:
     isTextureCombined: 1
     isGranularityConverted: 0
   granularity: 1
+  lod: 0
 --- !u!64 &2268171676103693084
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -9714,6 +9732,7 @@ MonoBehaviour:
     isTextureCombined: 1
     isGranularityConverted: 0
   granularity: 1
+  lod: 0
 --- !u!64 &7760023928607827991
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -10158,6 +10177,7 @@ MonoBehaviour:
     isTextureCombined: 1
     isGranularityConverted: 0
   granularity: 1
+  lod: 0
 --- !u!64 &330274275622504593
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -10324,6 +10344,7 @@ MonoBehaviour:
     isTextureCombined: 1
     isGranularityConverted: 0
   granularity: 1
+  lod: 0
 --- !u!64 &1416797109461802307
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -10503,6 +10524,7 @@ MonoBehaviour:
     isTextureCombined: 1
     isGranularityConverted: 0
   granularity: 1
+  lod: 0
 --- !u!64 &5879330735699305369
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -10676,6 +10698,7 @@ MonoBehaviour:
     isTextureCombined: 1
     isGranularityConverted: 0
   granularity: 1
+  lod: 0
 --- !u!64 &6304864266034298815
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -10842,6 +10865,7 @@ MonoBehaviour:
     isTextureCombined: 1
     isGranularityConverted: 0
   granularity: 1
+  lod: 0
 --- !u!64 &6570193240008063380
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -11033,6 +11057,7 @@ MonoBehaviour:
     isTextureCombined: 1
     isGranularityConverted: 0
   granularity: 1
+  lod: 0
 --- !u!64 &965494529405930851
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -11199,6 +11224,7 @@ MonoBehaviour:
     isTextureCombined: 1
     isGranularityConverted: 0
   granularity: 1
+  lod: 0
 --- !u!64 &4124897211726354648
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -11365,6 +11391,7 @@ MonoBehaviour:
     isTextureCombined: 1
     isGranularityConverted: 0
   granularity: 1
+  lod: 0
 --- !u!64 &1237372212488339231
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -11538,6 +11565,7 @@ MonoBehaviour:
     isTextureCombined: 1
     isGranularityConverted: 0
   granularity: 1
+  lod: 0
 --- !u!64 &2619256546696361805
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -11729,6 +11757,7 @@ MonoBehaviour:
     isTextureCombined: 1
     isGranularityConverted: 0
   granularity: 1
+  lod: 0
 --- !u!64 &7953951180098633730
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -11884,6 +11913,7 @@ MonoBehaviour:
     isTextureCombined: 1
     isGranularityConverted: 0
   granularity: 1
+  lod: 0
 --- !u!64 &9063336940003359451
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -11935,7 +11965,6 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 2616821511034305606}
   - {fileID: 5341501610563741860}
   - {fileID: 4680773620503966636}
   m_Father: {fileID: 4925424004524655421}
@@ -12246,6 +12275,7 @@ MonoBehaviour:
     isTextureCombined: 1
     isGranularityConverted: 0
   granularity: 1
+  lod: 0
 --- !u!64 &1378446845028545938
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -12414,6 +12444,7 @@ MonoBehaviour:
     isTextureCombined: 1
     isGranularityConverted: 0
   granularity: 1
+  lod: 0
 --- !u!64 &1361216858038838184
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -12593,6 +12624,7 @@ MonoBehaviour:
     isTextureCombined: 1
     isGranularityConverted: 0
   granularity: 1
+  lod: 0
 --- !u!64 &7456451592948094756
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -12769,6 +12801,7 @@ MonoBehaviour:
     isTextureCombined: 1
     isGranularityConverted: 0
   granularity: 1
+  lod: 0
 --- !u!64 &2594508559736667359
 MeshCollider:
   m_ObjectHideFlags: 0

@@ -238,6 +238,12 @@ namespace PLATEAU.Editor.RoadNetwork
             if (network == null)
                 return;
 
+            if (EnableLimitSceneViewDefaultContorl)
+            {
+                HandleUtility.AddDefaultControl(GUIUtility.GetControlID(FocusType.Passive));
+                Debug.Log("disenable defautl contorl");
+            }
+
             if (nodeTex == null)
             {
                 var isSuc = LoadTexture();
@@ -334,7 +340,8 @@ namespace PLATEAU.Editor.RoadNetwork
         public IReadOnlyCollection<EditorData<RnRoadGroup>> connections = new EditorData<RnRoadGroup>[0];
         public Color connectionColor = Color.blue;
 
-        public List<Vector3> intersections = new List<Vector3>();
+        public ICollection<EditorData<RnIntersection>> intersections = new EditorData<RnIntersection>[0];
+        //public List<Vector3> intersections = new List<Vector3>();
         public Color intersectionColor = Color.green;
         public float intersectionRadius = 30.0f;
 
@@ -342,101 +349,7 @@ namespace PLATEAU.Editor.RoadNetwork
 
         public List<RnRoadGroup> SimLanes;
 
-
-        private class WaySlideData
-        {
-            public WaySlideData(RnWay target)
-            {
-                Assert.IsNotNull(target);
-                baseWay = target.Vertices.ToList();
-                Target = target;
-            }
-
-            float sliderVarVals;
-            public float SliderVarVals {
-                get
-                {
-                    return sliderVarVals;
-                }
-                set
-                {
-                    if (sliderVarVals == value)
-                    {
-                        return;
-                    }
-                    IsChanged = true;
-                    sliderVarVals = value;
-                }
-            }
-            public bool IsChanged { get; private set; }
-
-            public List<Vector3> baseWay = new List<Vector3>();
-            public RnWay Target { get; set; } = null;
-        }
-
-        private class LaneGroupEditorData
-        {
-            public LaneGroupEditorData(RnRoadGroup target)
-            {
-                Assert.IsNotNull(target);
-                var fLink =  group.Roads.First();
-                var lLink =  group.Roads.Last();
-
-                // link一つで構成されているため Laneの接続を確認する必要がない
-                if (fLink == lLink)
-                {
-                    foreach (var lane in fLink.MainLanes)
-                    {
-                        LaneGroupListCache.Add(new List<RnLane>() { lane });
-                    }
-                }
-
-                var flLanes = fLink.GetLanes(RnDir.Left);
-                var llLanes = fLink.GetLanes(RnDir.Left);
-
-                var frLanes = fLink.GetLanes(RnDir.Right);
-                var lrLanes = fLink.GetLanes(RnDir.Right);
-
-                var nGroup = target.GetLeftLaneCount() + target.GetRightLaneCount();
-                var nLanes = target.Roads.Count;
-
-                LaneGroupListCache = new List<List<RnLane>>(nGroup);
-                foreach (var lane in flLanes)
-                {
-                    var laneGroup = new List<RnLane>(nLanes);
-                    LaneGroupListCache.Add(laneGroup);
-
-                    var prevLane = lane;
-                    laneGroup.Add(prevLane);
-                    while (true)
-                    {
-                        // 最後のレーンに到達した
-                        if (llLanes.Contains(prevLane))
-                        {
-                            break;
-                        }
-
-                        // borderを共有しているので直線状に繋がったLane
-                        var nextLane = prevLane.GetNextLanes().First(v => v.PrevBorder == prevLane.NextBorder);
-                        Assert.IsNotNull(nextLane);
-                        if (nextLane != null)
-                        {
-                            laneGroup.Add(nextLane);
-                            prevLane = nextLane;
-                        }
-                        
-
-                        //var errCheckCnt = nLanes;
-                        //errCheckCnt--; ここら辺から
-                    }
-                }
-            }
-
-            RnRoadGroup group;
-
-            // 連結レーンのリスト
-            public List<List<RnLane>> LaneGroupListCache { get; set; } = new List<List<RnLane>>();
-        }
+        public bool EnableLimitSceneViewDefaultContorl { get; set; }
 
         private void OnSceneGUISimpleEdit()
         {
@@ -446,6 +359,7 @@ namespace PLATEAU.Editor.RoadNetwork
             IReadOnlyCollection<LinkGroupEditorData> cns = connections.Select(c => c.GetSubData<LinkGroupEditorData>()).ToList();
 
             var camera = SceneView.currentDrawingSceneView.camera;
+
             foreach (var item in connections)
             {
                 // 選択済みのオブジェクト
@@ -476,117 +390,8 @@ namespace PLATEAU.Editor.RoadNetwork
                 }
             }
 
-            // 選択している道路がある場合
-            var selectedConnection = editorSystem.SelectedRoadNetworkElement as EditorData<RnRoadGroup>;
-            if (selectedConnection != null)
-            {
-                var item = selectedConnection;
-                // 各車線、歩道、張横分離帯の幅を調整するためのハンドル描画
 
-                var nLeftLane = item.Ref.GetLeftLaneCount();
-                var nRIghtLane = item.Ref.GetRightLaneCount();
-                var nLane = nLeftLane + nRIghtLane;
-                HashSet<RnWay> ways = new HashSet<RnWay>(nLane * 2);
-                List<RnWay> unionWay = new List<RnWay>(nLane * 2 - 2);  // 端の2つは覗く
-                var lanes = item.Ref.Roads[0].MainLanes;
-                foreach (var lane in lanes)
-                {
-                    foreach (var way in lane.BothWays)
-                    {
-                        // 共有されているwayか？
-                        if (ways.Add(way) == false)
-                        {
-                            //unionWay.Add(way);
-                        }
-                    }
-                }
-                unionWay = ways.ToList();
-
-                // 仕様上動かしてはいけないwayを除外する
-                //// レーンが一つの場合は必ず歩道に接するので
-                //if (lanes.Count == 1)
-                //{
-                //    unionWay.Clear();
-                //}
-                //else if (lanes.Count > 0)
-                //{
-                //    unionWay.Remove(lanes[0].LeftWay);
-                //    var otherLane = lanes[lanes.Count - 1];
-                //    unionWay.Remove(otherLane.RightWay);
-                //}
-
-                var wayEditorDataList = item.GetSubData<List<WaySlideData>>();
-                var nSlider = unionWay.Count; // 左右の
-                if (wayEditorDataList == null)
-                {
-                    wayEditorDataList = new List<WaySlideData>(nSlider);
-                    foreach (var editingTarget in unionWay)
-                    {
-                        wayEditorDataList.Add(new WaySlideData(editingTarget));
-                    }
-                    item.TryAdd(wayEditorDataList);
-                }
-
-                Assert.IsNotNull(wayEditorDataList);
-                if (wayEditorDataList.Count != nSlider)
-                {
-                    wayEditorDataList.Clear();
-                    wayEditorDataList.Capacity = nSlider;
-                    foreach (var editingTarget in unionWay)
-                    {
-                        wayEditorDataList.Add(new WaySlideData(editingTarget));
-                    }
-                }
-                Handles.BeginGUI();
-                GUILayout.BeginArea(new Rect(100, 100, 200, 300));
-                //GUILayout.BeginVertical();
-                GUILayout.Label("Ways");
-                foreach (var wayEditorData in wayEditorDataList)
-                {
-                    //// textフィールド版
-                    //var s = GUILayout.TextField(wayEditorData.SliderVarVals.ToString());
-                    //var v = wayEditorData.SliderVarVals;
-                    //if (float.TryParse(s, out v))
-                    //{
-                    //    wayEditorData.SliderVarVals = v;
-                    //}
-
-                    // slider版
-                    const float minScaleLimit = -5.0f;
-                    const float maxScaleLimit = 5.0f;
-                    wayEditorData.SliderVarVals =
-                        GUILayout.HorizontalSlider(wayEditorData.SliderVarVals, minScaleLimit, maxScaleLimit);
-
-                    GUILayout.Space(10);
-                }
-
-                GUILayout.EndArea();
-                Handles.EndGUI();
-
-                // 変更あったものに対してのみ差分を適用する
-                foreach (var wayEditorData in wayEditorDataList)
-                {
-                    if (wayEditorData.IsChanged == false)
-                    {
-                        continue;
-                    }
-
-                    var target = wayEditorData.Target;
-
-                    // デフォルトの状態に戻す
-                    var baseWay = wayEditorData.baseWay;
-                    for (int i = 0; i < baseWay.Count; i++)
-                    {
-                        var p = wayEditorData.baseWay[i];
-                        var p2 = target.GetPoint(i);
-                        p2.Vertex = p;
-                    }
-                    var offset = wayEditorData.SliderVarVals;
-                    target.MoveAlongNormal(offset);
-                    Debug.Log($"way.MoveAlongNormal({offset})");
-                }
-            }
-
+            // ノードが重複して描画されるので nodeEitorDataで走査
             HashSet<NodeEditorData> nodeEitorData = new HashSet<NodeEditorData>(connections.Count * 2);
             foreach (var item in cns)
             {
@@ -594,15 +399,46 @@ namespace PLATEAU.Editor.RoadNetwork
                 nodeEitorData.Add(item.B);
             }
 
-                // ノードが重複して描画されるので nodeEitorDataで走査
-            foreach (var item in nodeEitorData)
+            //foreach (var item in nodeEitorData)
+            //{
+            //    // 選択済みのオブジェクト
+            //    if (item == editorSystem.SelectedRoadNetworkElement)
+            //        continue;
+
+            //    Color pre = GUI.color;
+            //    var p1 = item.RefGameObject.transform.position;
+
+            //    Vector3 pos2d_dis = Vector3.zero;
+            //    pos2d_dis = camera.WorldToScreenPoint(p1 + nodeIconPosOffset);
+            //    var isEditable = IsVisibleToCamera(camera, pos2d_dis);
+            //    if (isEditable)
+            //    {
+            //        // レーンの選択ボタンの表示
+            //        var laneSelectBtnSize = HandleUtility.GetHandleSize(p1) * laneHndScaleFactor;
+            //        var isClicked = Button2DOn3D(camera, pos2d_dis, nodeTex);
+            //        if (isClicked)
+            //        {
+            //            Debug.Log(item.RefGameObject.name);
+            //            editorSystem.SelectedRoadNetworkElement = item;
+            //            return;
+            //        }
+            //    }
+
+            //    GUI.color = Color.red;
+            //    var offset = Vector3.up * intersectionRadius * 1.1f;
+            //    Handles.Label(p1 + offset, item.RefGameObject.name);
+            //    GUI.color = pre;
+            //}
+
+
+            foreach (var intersection in intersections)
             {
                 // 選択済みのオブジェクト
-                if (item == editorSystem.SelectedRoadNetworkElement)
+                if (intersection == editorSystem.SelectedRoadNetworkElement)
                     continue;
 
                 Color pre = GUI.color;
-                var p1 = item.RefGameObject.transform.position;
+                var p1 = intersection.Ref.GetCenterPoint();
 
                 Vector3 pos2d_dis = Vector3.zero;
                 pos2d_dis = camera.WorldToScreenPoint(p1 + nodeIconPosOffset);
@@ -614,18 +450,326 @@ namespace PLATEAU.Editor.RoadNetwork
                     var isClicked = Button2DOn3D(camera, pos2d_dis, nodeTex);
                     if (isClicked)
                     {
-                        Debug.Log(item.RefGameObject.name);
-                        editorSystem.SelectedRoadNetworkElement = item;
+                        editorSystem.SelectedRoadNetworkElement = intersection;
                         return;
                     }
                 }
 
-                GUI.color = Color.red;
-                var offset = Vector3.up * intersectionRadius * 1.1f;
-                Handles.Label(p1 + offset, item.RefGameObject.name);
-                GUI.color = pre;
+                //GUI.color = Color.red;
+                //var offset = Vector3.up * intersectionRadius * 1.1f;
+                //Handles.Label(p1 + offset, intersection);
+                //GUI.color = pre;
+
             }
 
+
+            // 選択している道路がある場合
+            var selectedConnection = editorSystem.SelectedRoadNetworkElement as EditorData<RnRoadGroup>;
+            if (selectedConnection != null)
+            {
+                var roadGroupEditorData = selectedConnection;
+
+
+
+                // 簡易モードで表示
+                if (editorSystem.RoadNetworkSimpleEditModule.IsDetailMode() == false)
+                {
+                    // 各車線、歩道、張横分離帯の幅を調整するためのハンドル描画
+
+                    var nLeftLane = roadGroupEditorData.Ref.GetLeftLaneCount();
+                    var nRIghtLane = roadGroupEditorData.Ref.GetRightLaneCount();
+                    var nLane = nLeftLane + nRIghtLane;
+                    HashSet<RnWay> ways = new HashSet<RnWay>(nLane * 2);
+                    List<RnWay> unionWay = new List<RnWay>(nLane * 2 - 2);  // 端の2つは覗く
+                    var lanes = roadGroupEditorData.Ref.Roads[0].MainLanes;
+                    foreach (var lane in lanes)
+                    {
+                        foreach (var way in lane.BothWays)
+                        {
+                            // 共有されているwayか？
+                            if (ways.Add(way) == false)
+                            {
+                                //unionWay.Add(way);
+                            }
+                        }
+                    }
+                    unionWay = ways.ToList();
+
+                    // 仕様上動かしてはいけないwayを除外する
+                    //// レーンが一つの場合は必ず歩道に接するので
+                    //if (lanes.Count == 1)
+                    //{
+                    //    unionWay.Clear();
+                    //}
+                    //else if (lanes.Count > 0)
+                    //{
+                    //    unionWay.Remove(lanes[0].LeftWay);
+                    //    var otherLane = lanes[lanes.Count - 1];
+                    //    unionWay.Remove(otherLane.RightWay);
+                    //}
+
+                    var wayEditorDataList = roadGroupEditorData.GetSubData<List<WayEditorData>>();
+                    //var nSlider = unionWay.Count; // 左右の
+                    if (wayEditorDataList == null)
+                    {
+                        //wayEditorDataList = new List<WayEditorData>(nSlider);
+                        //foreach (var editingTarget in unionWay)
+                        //{
+                        //    wayEditorDataList.Add(new WayEditorData(editingTarget));
+                        //}
+                        //roadGroupEditorData.TryAdd(wayEditorDataList);
+                    }
+
+                    Assert.IsNotNull(wayEditorDataList);
+                    //if (wayEditorDataList.Count != nSlider)
+                    //{
+                    //    wayEditorDataList.Clear();
+                    //    wayEditorDataList.Capacity = nSlider;
+                    //    foreach (var editingTarget in unionWay)
+                    //    {
+                    //        wayEditorDataList.Add(new WayEditorData(editingTarget));
+                    //    }
+                    //}
+                    Handles.BeginGUI();
+                    GUILayout.BeginArea(new Rect(100, 100, 200, 300));
+                    //GUILayout.BeginVertical();
+                    //GUILayout.Label("Ways");
+                    //foreach (var wayEditorData in wayEditorDataList)
+                    //{
+                    //    //// textフィールド版
+                    //    //var s = GUILayout.TextField(wayEditorData.SliderVarVals.ToString());
+                    //    //var v = wayEditorData.SliderVarVals;
+                    //    //if (float.TryParse(s, out v))
+                    //    //{
+                    //    //    wayEditorData.SliderVarVals = v;
+                    //    //}
+
+                    //    // slider版
+                    //    const float minScaleLimit = -5.0f;
+                    //    const float maxScaleLimit = 5.0f;
+                    //    wayEditorData.SliderVarVals =
+                    //        GUILayout.HorizontalSlider(wayEditorData.SliderVarVals, minScaleLimit, maxScaleLimit);
+
+                    //    GUILayout.Space(10);
+                    //}
+
+                    GUILayout.EndArea();
+                    Handles.EndGUI();
+
+                    // 変更あったものに対してのみ差分を適用する
+                    foreach (var wayEditorData in wayEditorDataList)
+                    {
+                        if (wayEditorData.IsChanged == false)
+                        {
+                            continue;
+                        }
+
+                        var target = wayEditorData.Ref;
+
+                        // デフォルトの状態に戻す
+                        var baseWay = wayEditorData.BaseWay;
+                        for (int i = 0; i < baseWay.Count; i++)
+                        {
+                            var p = baseWay[i];
+                            var p2 = target.GetPoint(i);
+                            p2.Vertex = p;
+                        }
+                        var offset = wayEditorData.SliderVarVals;
+                        target.MoveAlongNormal(offset);
+                        Debug.Log($"way.MoveAlongNormal({offset})");
+                    }
+                }
+                else // 詳細モードでのみ表示
+                {
+                    SceneGUIState state = new SceneGUIState();
+                    systemState.Init(out state);
+
+                    var currentCamera = SceneView.currentDrawingSceneView.camera;
+                    state.currentCamera = currentCamera;
+
+
+                    foreach (var road in roadGroupEditorData.Ref.Roads)
+                    {
+                        if (state.isDirtyTarget)
+                        {
+                            break;
+                        }
+
+                        foreach (var sideWalk in road.SideWalks)
+                        {
+                            foreach (var point in sideWalk.Way.Points)
+                            {
+                                if (state.isDirtyTarget)
+                                {
+                                    break;
+                                }
+
+                                var parent = sideWalk.Way;
+                                var isEditable = false;
+                                isEditable = true;
+
+                                // 表示しない（実在はする）
+                                if (IsContains(DisplayHndMaskSet.Point) == false)
+                                {
+                                    isEditable = false;
+                                }
+
+                                var networkOperator = editorSystem.EditOperation;
+                                var size = HandleUtility.GetHandleSize(point) * pointHndScaleFactor;
+
+
+                                if (isEditable && IsSame(DisplayHndMaskSet.PointMove))
+                                {
+                                    DeployPointMoveHandle(point, state, networkOperator, size);
+                                    continue;
+                                }
+
+                                if (isEditable && IsSame(DisplayHndMaskSet.PointAdd))
+                                {
+                                    var isClicked = Handles.Button(point, Quaternion.identity, size, size, RoadNetworkSplitLaneButtonHandleCap);
+                                    if (isClicked)
+                                    {
+                                        // parent.Pointsからpointを検索してインデックスを取得
+                                        var idx = parent.Points.ToList().IndexOf(point);
+                                        if (idx == -1)
+                                            continue;
+                                        state.delayCommand += () =>
+                                        {
+                                            parent.LineString.Points.Insert(idx, point);
+                                        };
+                                        state.isDirtyTarget = true;
+                                    }
+                                    continue;
+                                }
+
+                                if (isEditable && IsSame(DisplayHndMaskSet.PointRemove))
+                                {
+                                    var isClicked = Handles.Button(point, Quaternion.identity, size, size, RoadNetworkSplitLaneButtonHandleCap);
+                                    if (isClicked)
+                                    {
+                                        state.delayCommand += () =>
+                                        {
+                                            parent.LineString.Points.Remove(point);
+                                        };
+                                        state.isDirtyTarget = true;
+                                    }
+                                    continue;
+                                }
+                            }
+                        }
+
+                        foreach (var lane in road.MainLanes)
+                        {
+                            if (state.isDirtyTarget)
+                            {
+                                break;
+                            }
+
+                            HashSet<RnWay> ways = new HashSet<RnWay>(lane.BothWays);
+                            foreach (var way in lane.BothWays)
+                            {
+                                ways.Add(way);
+                            }
+                            foreach (var way in ways)
+                            {
+                                if (state.isDirtyTarget)
+                                {
+                                    break;
+                                }
+
+                                foreach (var point in way.Points)
+                                {
+                                    if (state.isDirtyTarget)
+                                    {
+                                        break;
+                                    }
+
+                                    var parent = way;
+                                    var isEditable = false;
+                                    isEditable = true;
+
+                                    // 表示しない（実在はする）
+                                    if (IsContains(DisplayHndMaskSet.Point) == false)
+                                    {
+                                        isEditable = false;
+                                    }
+
+                                    var networkOperator = editorSystem.EditOperation;
+                                    var size = HandleUtility.GetHandleSize(point) * pointHndScaleFactor;
+
+
+                                    if (isEditable && IsSame(DisplayHndMaskSet.PointMove))
+                                    {
+                                        DeployPointMoveHandle(point, state, networkOperator, size);
+                                        continue;
+                                    }
+
+                                    if (isEditable && IsSame(DisplayHndMaskSet.PointAdd))
+                                    {
+                                        var isClicked = Handles.Button(point, Quaternion.identity, size, size, RoadNetworkSplitLaneButtonHandleCap);
+                                        if (isClicked)
+                                        {
+                                            // parent.Pointsからpointを検索してインデックスを取得
+                                            var idx = parent.Points.ToList().IndexOf(point);
+                                            if (idx == -1)
+                                                continue;
+                                            state.delayCommand += () =>
+                                            {
+                                                networkOperator.AddPoint(parent, idx, new RnPoint(point.Vertex + Vector3.up));
+                                                Debug.Log("ポイント追加ボタンが押された");
+                                            };
+                                            state.isDirtyTarget = true;
+                                        }
+                                        continue;
+                                    }
+
+                                    if (isEditable && IsSame(DisplayHndMaskSet.PointRemove))
+                                    {
+                                        var isClicked = Handles.Button(point, Quaternion.identity, size, size, RoadNetworkSplitLaneButtonHandleCap);
+                                        if (isClicked)
+                                        {
+                                            state.delayCommand += () =>
+                                            {
+                                                networkOperator.RemovePoint(parent, point);
+                                                Debug.Log("ポイント削除ボタンが押された");
+                                            };
+                                            state.isDirtyTarget = true;
+                                        }
+                                        continue;
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    // 遅延実行 コレクションの要素数などを変化させる
+                    if (state.delayCommand != null)
+                        state.delayCommand.Invoke();
+
+                    // 変更を通知する
+                    if (state.isDirtyTarget)
+                    {
+                        editorSystem.NotifyChangedRoadNetworkObject2Editor();
+                    }
+
+                    systemState.Apply(state);
+
+                }
+            }
+
+        }
+
+        private static void DeployPointMoveHandle(RnPoint point, SceneGUIState state, IRoadNetworkEditOperation networkOperator, float size)
+        {
+            EditorGUI.BeginChangeCheck();
+            //var vertPos = DeployTranslateHandle(point);
+            var vertPos = DeployFreeMoveHandle(point, size, snap: Vector3.zero);
+            if (EditorGUI.EndChangeCheck())
+            {
+                var res = networkOperator.MovePoint(point, vertPos);
+                state.isDirtyTarget = true;
+                Debug.Assert(res.IsSuccess);
+            }
         }
 
         private SceneGUIState Update3DHandle(RnModel network, ref SceneGUIState state)

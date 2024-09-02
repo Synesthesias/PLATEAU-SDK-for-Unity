@@ -1,9 +1,10 @@
-﻿using PLATEAU.Util;
-using PLATEAU.Util.GeoGraph;
+﻿using PLATEAU.RoadNetwork.Util;
+using PLATEAU.Util;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Splines;
 
 namespace PLATEAU.RoadNetwork.Structure
 {
@@ -119,14 +120,13 @@ namespace PLATEAU.RoadNetwork.Structure
             return new RnWay(RnLineString.Create(points), false, false);
         }
 
-        private Dictionary<RnRoad, List<RnLane>> SplitLane(int num)
+        private Dictionary<RnRoad, List<RnLane>> SplitLane(int num, RnDir? dir)
         {
             if (num <= 0)
                 return null;
-            // 向きをそろえる
-            Align();
-            var mergedBorders = Roads.Select(l => l.GetMergedBorder(RnLaneBorderType.Prev)).ToList();
-            mergedBorders.Add(Roads[^1].GetMergedBorder(RnLaneBorderType.Next));
+
+            var mergedBorders = Roads.Select(l => l.GetMergedBorder(RnLaneBorderType.Prev, dir)).ToList();
+            mergedBorders.Add(Roads[^1].GetMergedBorder(RnLaneBorderType.Next, dir));
 
             var borderWays = new List<List<RnWay>>(Roads.Count + 1);
 
@@ -142,8 +142,8 @@ namespace PLATEAU.RoadNetwork.Structure
                 var road = Roads[i];
                 var prevBorders = borderWays[i];
                 var nextBorders = borderWays[i + 1];
-                var leftWay = road.GetMergedSideWay(RnDir.Left);
-                var rightWay = road.GetMergedSideWay(RnDir.Right);
+
+                road.TryGetMergedSideWay(dir, out var leftWay, out var rightWay);
 
                 var leftVertices = leftWay.Vertices.ToList();
                 var rightVertices = rightWay.Vertices.ToList();
@@ -154,23 +154,14 @@ namespace PLATEAU.RoadNetwork.Structure
                     var right = rightWay;
                     if (n < num - 1)
                     {
-                        var ep = 1e-3f;
                         var prevBorder = prevBorders[n];
                         var nextBorder = nextBorders[n];
-                        var line = new RnLineString();
-                        line.AddPointOrSkip(prevBorder.GetPoint(-1), ep);
-                        var segments = GeoGraphEx.GetInnerLerpSegments(leftVertices, rightVertices, AxisPlane.Xz,
+                        var line = RnEx.CreateInnerLerpLineString(
+                            leftVertices
+                            , rightVertices
+                            , prevBorder.GetPoint(-1)
+                            , nextBorder.GetPoint(-1),
                             (1f + n) / num);
-                        foreach (var s in segments)
-                            line.AddPointOrSkip(new RnPoint(s.Segment.Start), ep);
-                        line.AddPointOrSkip(nextBorder.GetPoint(-1), ep);
-
-
-                        // 自己交差があれば削除する
-                        var plane = AxisPlane.Xz;
-                        GeoGraph2D.RemoveSelfCrossing(line.Points
-                            , t => t.Vertex.GetTangent(plane)
-                            , (p1, p2, p3, p4, inter, f1, f2) => new RnPoint(Vector3.Lerp(p1, p2, f1)));
 
                         right = new RnWay(line, false, true);
                     }
@@ -186,6 +177,57 @@ namespace PLATEAU.RoadNetwork.Structure
             }
 
             return afterLanes;
+        }
+
+
+        private void SetLaneCount(int count, RnDir dir)
+        {
+            if (IsValid == false)
+                return;
+
+            // 既に指定の数になっている場合は何もしない
+            if (Roads.All(l => l.GetLanes(dir).Count() == count))
+                return;
+            // 向きをそろえる
+            Align();
+
+            var afterLanes = SplitLane(count, dir);
+            if (afterLanes == null)
+                return;
+
+            // Roadsに変更を加えるのは最後にまとめて必要がある
+            // (RnRoads.IsLeftLane等が隣のRoadに依存するため. 途中で変更すると、後続の処理が破綻する可能性がある)
+            for (var i = 0; i < Roads.Count; ++i)
+            {
+                var road = Roads[i];
+                var lanes = afterLanes[road];
+
+                var beforeLanes = road.GetLanes(dir).ToList();
+                if (i == Roads.Count - 1 && NextIntersection != null)
+                {
+                    foreach (var l in beforeLanes)
+                        NextIntersection.RemoveNeighbor(road, l);
+                    foreach (var l in lanes)
+                        NextIntersection.AddNeighbor(road, l.NextBorder);
+                }
+                if (i == 0 && PrevIntersection != null)
+                {
+                    foreach (var l in beforeLanes)
+                        PrevIntersection.RemoveNeighbor(road, l);
+                    foreach (var l in lanes)
+                        PrevIntersection.AddNeighbor(road, l.PrevBorder);
+                }
+
+                // 右車線の場合は反対にする
+                // #NOTE : 隣接情報変更後に反転させる
+                if (dir == RnDir.Right)
+                {
+                    foreach (var l in lanes)
+                        l.Reverse();
+                }
+
+                Roads[i].ReplaceLanes(lanes, dir);
+            }
         }
 
         /// <summary>
@@ -205,7 +247,7 @@ namespace PLATEAU.RoadNetwork.Structure
             Align();
 
             var num = leftCount + rightCount;
-            var afterLanes = SplitLane(num);
+            var afterLanes = SplitLane(num, null);
             if (afterLanes == null)
                 return;
 
@@ -222,7 +264,6 @@ namespace PLATEAU.RoadNetwork.Structure
                     PrevIntersection?.ReplaceBorder(Roads[0], lanes.Select(l => l.PrevBorder).ToList());
                 for (var j = leftCount; j < lanes.Count; ++j)
                     lanes[j].Reverse();
-
 
                 Roads[i].ReplaceLanes(lanes);
             }
@@ -249,11 +290,29 @@ namespace PLATEAU.RoadNetwork.Structure
         {
             if (GetLeftLaneCount() == 0 || GetRightLaneCount() == 0)
                 return false;
-
-            // 中央分離帯があるリンクは一度作成する
+            Align();
+            // 中央分離帯がないリンクは一度作成する
             CreateMedianOrSkip(l => l.MedianLane == null);
             foreach (var l in Roads)
             {
+                // サイズ0の中央分離帯だと法線方向が定まらないので、すでに幅の存在するレーンを動かすことで
+                // 中央分離帯の幅を設定する
+                var centerLeft = l.GetLeftLanes().Last();
+                var centerRight = l.GetRightLanes().First();
+                switch (moveOption)
+                {
+                    case LaneWayMoveOption.MoveBothWay:
+                        centerLeft.RightWay?.MoveAlongNormal(-width * 0.5f);
+                        centerRight.RightWay?.MoveAlongNormal(-width * 0.5f);
+                        break;
+                    case LaneWayMoveOption.MoveLeftWay:
+                        centerLeft.RightWay?.MoveAlongNormal(-width);
+                        break;
+                    case LaneWayMoveOption.MoveRightWay:
+                        centerRight.RightWay?.MoveAlongNormal(-width);
+                        break;
+                }
+
                 l.MedianLane?.TrySetWidth(width, moveOption);
             }
             return true;
@@ -293,7 +352,16 @@ namespace PLATEAU.RoadNetwork.Structure
             if (GetLeftLaneCount() == count)
                 return;
 
-            SetLaneCount(count, GetRightLaneCount());
+            // 左車線が無い場合は左車線のサイズも含めて変更する
+            if (GetLeftLaneCount() == 0)
+            {
+                SetLaneCount(count, GetRightLaneCount());
+            }
+            // すでに左車線がある場合はそれだけで変更する
+            else
+            {
+                SetLaneCount(count, RnDir.Left);
+            }
         }
 
         /// <summary>
@@ -305,7 +373,17 @@ namespace PLATEAU.RoadNetwork.Structure
             // 既に指定の数になっている場合は何もしない
             if (GetRightLaneCount() == count)
                 return;
-            SetLaneCount(GetLeftLaneCount(), count);
+
+            // 右車線が無い場合は左車線のサイズも含めて変更する
+            if (GetRightLaneCount() == 0)
+            {
+                SetLaneCount(GetLeftLaneCount(), count);
+            }
+            // すでに右車線がある場合はそれだけで変更する
+            else
+            {
+                SetLaneCount(count, RnDir.Right);
+            }
         }
 
         /// <summary>
@@ -340,6 +418,38 @@ namespace PLATEAU.RoadNetwork.Structure
                 var medianLane = new RnLane(leftWay, rightWay, new RnWay(prevLineString, isReverseNormal: true), new RnWay(nextLineString));
                 l.SetMedianLane(medianLane);
             }
+        }
+
+        public bool TryCreateSpline(out Spline spline, out float width, float tangentLength = 1f, float pointSkipDistance = 1e-3f)
+        {
+            Align();
+            spline = new Spline();
+            width = float.MaxValue;
+            var points = new List<Vector3>();
+            foreach (var r in Roads)
+            {
+                if (r.TryGetMergedSideWay(null, out var leftWay, out var rightWay) == false)
+                    return false;
+                var prevBorder = r.GetMergedBorder(RnLaneBorderType.Prev, null);
+                var nextBorder = r.GetMergedBorder(RnLaneBorderType.Next, null);
+                var start = new RnPoint(prevBorder.GetLerpPoint(0.5f));
+                var end = new RnPoint(nextBorder.GetLerpPoint(0.5f));
+                var line = RnEx.CreateInnerLerpLineString(leftWay.Vertices.ToList(), rightWay.Vertices.ToList(), start, end, 0.5f, pointSkipDistance);
+
+                points.AddRange(line.Points.Select(p => p.Vertex));
+                width = Mathf.Min(width, prevBorder.CalcLength(), nextBorder.CalcLength());
+                // #TODO : 途中のポイントごとに幅を計算する必要がある
+            }
+
+            for (var i = 0; i < points.Count; i++)
+            {
+                var dirIn = (i == 0 ? (points[i + 1] - points[i]) : (points[i] - points[i - 1])).normalized;
+                var dirOut = i == (points.Count - 1) ? dirIn : (points[i + 1] - points[i]).normalized;
+                spline.Add(new BezierKnot(points[i], dirIn * tangentLength, dirOut * tangentLength));
+            }
+
+
+            return true;
         }
 
         /// <summary>

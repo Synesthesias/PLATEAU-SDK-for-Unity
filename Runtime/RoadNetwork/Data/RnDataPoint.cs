@@ -1,7 +1,6 @@
 ﻿using PLATEAU.RoadNetwork.Structure;
 using System;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace PLATEAU.RoadNetwork.Data
 {

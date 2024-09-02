@@ -1,4 +1,6 @@
-﻿using PLATEAU.CityInfo;
+﻿using Codice.CM.Common;
+using PLATEAU.CityInfo;
+using PLATEAU.RoadNetwork.Util;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -45,6 +47,8 @@ namespace PLATEAU.RoadNetwork.Structure
         // end: フィールド
         //----------------------------------
 
+        public override PLATEAUCityObjectGroup CityObjectGroup => TargetTran;
+
         // 本線レーン(参照のみ)
         // 追加/削除はAddMainLane/RemoveMainLaneを使うこと
         public IReadOnlyList<RnLane> MainLanes => mainLanes;
@@ -53,7 +57,10 @@ namespace PLATEAU.RoadNetwork.Structure
         public override IEnumerable<RnLane> AllLanes => MainLanes;
 
         // 有効なRoadかどうか
-        public bool IsValid => MainLanes.Any();
+        public bool IsValid => MainLanes.Any() && MainLanes.All(l => l.HasBothBorder);
+
+        // 全てのレーンに両方向に接続先がある
+        public bool IsAllBothConnectedLane => MainLanes.Any() && MainLanes.All(l => l.IsBothConnectedLane);
 
         /// <summary>
         /// 左車線/右車線両方あるかどうか
@@ -87,6 +94,18 @@ namespace PLATEAU.RoadNetwork.Structure
             TargetTran = targetTran;
         }
 
+        /// <summary>
+        /// 交差点間に挿入された空Roadかどうか
+        /// </summary>
+        /// <returns></returns>
+        public bool IsEmptyRoad
+        {
+            get
+            {
+                return Prev is RnIntersection && Next is RnIntersection && AllLanes.All(l => l.IsEmptyLane);
+            }
+        }
+
         public IEnumerable<RnLane> GetLanes(RnDir dir)
         {
             return dir switch
@@ -104,7 +123,7 @@ namespace PLATEAU.RoadNetwork.Structure
         /// <returns></returns>
         private bool IsLeftLane(RnLane lane)
         {
-            return lane.GetNextRoad() == Next;
+            return lane.IsReverse == false;
         }
 
         /// <summary>
@@ -114,7 +133,17 @@ namespace PLATEAU.RoadNetwork.Structure
         /// <returns></returns>
         private bool IsRightLane(RnLane lane)
         {
-            return lane.GetNextRoad() == Prev;
+            return lane.IsReverse == true;
+        }
+
+        /// <summary>
+        /// レーンの方向を見る
+        /// </summary>
+        /// <param name="lane"></param>
+        /// <returns></returns>
+        private RnDir GetLaneDir(RnLane lane)
+        {
+            return IsLeftLane(lane) ? RnDir.Left : RnDir.Right;
         }
 
         // 境界線情報を取得
@@ -135,6 +164,7 @@ namespace PLATEAU.RoadNetwork.Structure
         /// <returns></returns>
         public IEnumerable<RnLane> GetLeftLanes()
         {
+            // #TODO : Prev == Nextの時にバグる
             return MainLanes.Where(IsLeftLane);
         }
 
@@ -144,6 +174,7 @@ namespace PLATEAU.RoadNetwork.Structure
         /// <returns></returns>
         public IEnumerable<RnLane> GetRightLanes()
         {
+            // #TODO : Prev == Nextの時にバグる
             return MainLanes.Where(IsRightLane);
         }
 
@@ -153,6 +184,7 @@ namespace PLATEAU.RoadNetwork.Structure
         /// <returns></returns>
         public int GetLeftLaneCount()
         {
+            //return lane.GetNextRoad() == Next;
             return GetLeftLanes().Count();
         }
 
@@ -162,6 +194,7 @@ namespace PLATEAU.RoadNetwork.Structure
         /// <returns></returns>
         public int GetRightLaneCount()
         {
+            //return lane.GetNextRoad() == Prev;
             return GetRightLanes().Count();
         }
 
@@ -187,33 +220,60 @@ namespace PLATEAU.RoadNetwork.Structure
         }
 
         /// <summary>
-        /// 全てのレーンのBorderを統合した一つの大きなBorderを返す
+        /// dirで指定した側の全レーンのBorderを統合した一つの大きなBorderを返す
         /// WayはLeft -> Right方向になっている
+        /// dir == nullの時は全レーン
         /// </summary>
         /// <param name="type"></param>
+        /// <param name="dir"></param>
         /// <returns></returns>
-        public RnWay GetMergedBorder(RnLaneBorderType type)
+        public RnWay GetMergedBorder(RnLaneBorderType type, RnDir? dir = null)
         {
             var ret = new RnLineString();
-            foreach (var l in MainLanes)
+            foreach (var l in MainLanes.Where(l => dir == null || GetLaneDir(l) == dir))
             {
                 RnWay way = null;
                 var t = type;
-                var dir = RnLaneBorderDir.Left2Right;
+                var d = RnLaneBorderDir.Left2Right;
                 if (IsLeftLane(l) == false)
                 {
                     t = t.GetOpposite();
-                    dir = dir.GetOpposite();
+                    d = d.GetOpposite();
                 }
 
                 way = l.GetBorder(t);
-                if (l.GetBorderDir(t) != dir)
+                if (way == null)
+                    continue;
+                if (l.GetBorderDir(t) != d)
                     way = way.ReversedWay();
 
                 foreach (var p in way.Points)
                     ret.AddPointOrSkip(p);
             }
             return new RnWay(ret);
+        }
+
+        /// <summary>
+        /// dirで指定した側の全レーンのSideWayを統合した一つの大きなWayを返す
+        /// dir==nullの時は全レーン共通で返す
+        /// </summary>
+        /// <param name="dir"></param>
+        /// <param name="leftWay"></param>
+        /// <param name="rightWay"></param>
+        /// <returns></returns>
+        public bool TryGetMergedSideWay(RnDir? dir, out RnWay leftWay, out RnWay rightWay)
+        {
+            leftWay = rightWay = null;
+            if (IsValid == false)
+                return false;
+            var targetLanes = MainLanes.Where(l => dir == null || GetLaneDir(l) == dir).ToList();
+            if (targetLanes.Any() == false)
+                return false;
+            var leftLane = targetLanes[0];
+            leftWay = IsLeftLane(leftLane) ? leftLane?.LeftWay : leftLane?.RightWay?.ReversedWay();
+            var rightLane = targetLanes[^1];
+            rightWay = IsLeftLane(rightLane) ? rightLane?.RightWay : rightLane?.LeftWay?.ReversedWay();
+            return true;
         }
 
         /// <summary>
@@ -342,6 +402,19 @@ namespace PLATEAU.RoadNetwork.Structure
         }
 
         /// <summary>
+        /// laneを追加. indexで指定した位置に追加する
+        /// </summary>
+        /// <param name="lane"></param>
+        /// <param name="index"></param>
+        public void AddMainLane(RnLane lane, int index)
+        {
+            if (mainLanes.Contains(lane))
+                return;
+            OnAddLane(lane);
+            mainLanes.Insert(index, lane);
+        }
+
+        /// <summary>
         /// laneを削除するParentRoad情報も更新する
         /// </summary>
         /// <param name="lane"></param>
@@ -365,6 +438,32 @@ namespace PLATEAU.RoadNetwork.Structure
 
             foreach (var lane in newLanes)
                 AddMainLane(lane);
+        }
+
+        public void ReplaceLanes(IEnumerable<RnLane> newLanes, RnDir dir)
+        {
+            foreach (var l in GetLanes(dir).ToList())
+            {
+                RemoveLane(l);
+            }
+            // Leftは先頭に追加
+            if (dir == RnDir.Left)
+            {
+                var i = 0;
+                foreach (var l in newLanes)
+                {
+                    AddMainLane(l, i);
+                    i++;
+                }
+            }
+            // Rightは末尾に追加
+            else
+            {
+                foreach (var l in newLanes)
+                {
+                    AddMainLane(l);
+                }
+            }
         }
 
         /// <summary>
@@ -426,6 +525,10 @@ namespace PLATEAU.RoadNetwork.Structure
             SetPrevNext(null, null);
             if (removeFromModel)
                 ParentModel?.RemoveRoad(this);
+            foreach (var lane in mainLanes)
+            {
+                lane.DisConnectBorder();
+            }
         }
 
         /// <summary>
@@ -559,7 +662,9 @@ namespace PLATEAU.RoadNetwork.Structure
         /// <returns></returns>
         public static Vector3 GetCenter(this RnRoadBase self)
         {
-            var a = self.AllLanes.Select(l => l.GetCenter()).Aggregate(new { sum = Vector3.zero, i = 0 }, (a, p) => new { sum = a.sum + p, i = a.i + 1 });
+            var a = self.AllLanes
+                .Select(l => l.GetCenter())
+                .Aggregate(new { sum = Vector3.zero, i = 0 }, (a, p) => new { sum = a.sum + p, i = a.i + 1 });
             if (a.i == 0)
                 return Vector3.zero;
             return a.sum / a.i;
