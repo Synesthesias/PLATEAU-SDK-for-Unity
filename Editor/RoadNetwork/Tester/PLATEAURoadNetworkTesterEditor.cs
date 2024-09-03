@@ -4,6 +4,7 @@ using PLATEAU.RoadNetwork.Mesh;
 using PLATEAU.RoadNetwork.Structure;
 using PLATEAU.RoadNetwork.Tester;
 using PLATEAU.RoadNetwork.Util;
+using PLATEAU.Util.Async;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
@@ -58,7 +59,7 @@ namespace PLATEAU.Editor.RoadNetwork.Tester
             GUILayout.Label($"ConvertedCityObjectVertexCount : {obj.SubDividedCityObjects.Sum(c => c.Meshes.Sum(m => m.Vertices.Count))}");
 
             if (GUILayout.Button("Create"))
-                obj.CreateNetwork();
+                obj.CreateNetwork().ContinueWithErrorCatch();
 
             using (new EditorGUILayout.HorizontalScope())
             {
