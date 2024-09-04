@@ -1,4 +1,5 @@
-﻿using PLATEAU.Util;
+﻿using PLATEAU.RoadNetwork.Structure;
+using PLATEAU.Util;
 using PLATEAU.Util.GeoGraph;
 using System;
 using System.Collections.Generic;
@@ -11,6 +12,7 @@ namespace PLATEAU.RoadNetwork.Tester
     {
         public bool visible = true;
         public Color color = Color.white;
+        public AxisPlane axis = AxisPlane.Xy;
         [Serializable]
         public class EdgeBorderTestParam
         {
@@ -21,6 +23,15 @@ namespace PLATEAU.RoadNetwork.Tester
         }
         public EdgeBorderTestParam edgeBorderTest = new EdgeBorderTestParam();
 
+        [Serializable]
+        public class TunTypeTestParam
+        {
+            public bool enable = false;
+            public RnTurnType turnType;
+        }
+        public TunTypeTestParam turnTypeTest = new TunTypeTestParam();
+
+
         private IEnumerable<Transform> GetChildren(Transform self)
         {
             for (var i = 0; i < self.childCount; i++)
@@ -29,7 +40,7 @@ namespace PLATEAU.RoadNetwork.Tester
 
         public List<Vector2> GetVertices()
         {
-            return GetChildren(transform).Select(v => v.position.Xy()).ToList();
+            return GetChildren(transform).Select(v => v.position.ToVector2(axis)).ToList();
         }
 
         /// <summary>
@@ -50,12 +61,28 @@ namespace PLATEAU.RoadNetwork.Tester
 
             void DrawLine(IEnumerable<int> ind, Color color)
             {
-                DebugEx.DrawArrows(ind.Select(i => vertices[i].Xya()), color: color);
+                DebugEx.DrawArrows(ind.Select(i => vertices[i].ToVector3(axis)), color: color);
             }
 
             DrawLine(Enumerable.Range(0, edgeIndices[0] + 1), Color.green);
             DrawLine(edgeIndices, Color.red);
             DrawLine(Enumerable.Range(edgeIndices.Last(), vertices.Count - edgeIndices.Last()), Color.green);
+        }
+
+        private void TurnTypeTest(TunTypeTestParam p)
+        {
+            if (p.enable == false)
+                return;
+            var vertices = GetVertices();
+            if (vertices.Count < 3)
+            {
+                Debug.LogWarning("頂点数が足りません");
+                return;
+            }
+            var d1 = vertices[1] - vertices[0];
+            var d2 = vertices[2] - vertices[1];
+            var type = RnTurnTypeEx.GetTurnType(d1, d2);
+            DebugEx.DrawString($"{type}", vertices[0].ToVector3(axis));
         }
 
         public void OnDrawGizmos()
@@ -65,10 +92,11 @@ namespace PLATEAU.RoadNetwork.Tester
 
             if (visible)
             {
-                DebugEx.DrawArrows(GetVertices().Select(v => v.Xya()), color: color);
+                DebugEx.DrawArrows(GetVertices().Select(v => v.ToVector3(axis)), color: color);
             }
 
             EdgeBorderTest(edgeBorderTest);
+            TurnTypeTest(turnTypeTest);
         }
 
     }

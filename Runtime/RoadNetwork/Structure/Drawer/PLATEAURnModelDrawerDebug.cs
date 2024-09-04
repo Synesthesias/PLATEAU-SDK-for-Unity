@@ -94,6 +94,8 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
             public DrawOption shopNeighbor = new(true, Color.cyan * 0.7f);
 
             public TrackOption showSplitTrack = new();
+
+            public bool showEdgeGroup = false;
         }
         [SerializeField] public IntersectionOption intersectionOp = new IntersectionOption();
 
@@ -240,6 +242,11 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
             DebugEx.DrawDashedLines(vertices.Select(v => v.PutY(v.y * yScale)), isLoop, color, lineLength, spaceLength);
         }
 
+        public void DrawDashedArrows(IEnumerable<Vector3> vertices, bool isLoop = false, Color? color = null,
+            float lineLength = 3f, float spaceLength = 1f)
+        {
+            DebugEx.DrawDashedArrows(vertices.Select(v => v.PutY(v.y * yScale)), isLoop, color, lineLength, spaceLength);
+        }
         public void DrawArrow(
             Vector3 start
             , Vector3 end
@@ -376,7 +383,7 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
             {
                 var centerWay = lane.CreateCenterWay();
                 if (centerWay != null)
-                    DrawDashedLines(centerWay, color: laneOp.showCenterWay.color.PutA(laneOp.GetLaneAlpha(lane)));
+                    DrawDashedArrows(centerWay, color: laneOp.showCenterWay.color.PutA(laneOp.GetLaneAlpha(lane)));
             }
 
             if (laneOp.showPrevBorder.visible)
@@ -562,6 +569,27 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
 
             if (showPartsType.HasFlag(RnPartsTypeMask.Intersection))
                 DebugEx.DrawString($"N[{intersection.DebugMyId}]", intersection.GetCenter());
+
+            if (op.showEdgeGroup)
+            {
+                var root = intersection.CreateEdgeGroup();
+                var edgeGroup = root;
+
+                var i = 0;
+                var x = 0;
+                foreach (var eg in edgeGroup)
+                {
+                    var color = DebugEx.GetDebugColor(i++, edgeGroup.Count);
+                    foreach (var n in eg.Neighbors)
+                    {
+                        DrawWay(n.Border, eg.IsBorder ? color : Color.white);
+                        DrawString($"E[{x++}]", n.Border.GetLerpPoint(0.5f));
+                    }
+                }
+
+                return;
+            }
+
 
             //foreach (var n in intersection.Edges)
             for (var i = 0; i < intersection.Edges.Count; i++)

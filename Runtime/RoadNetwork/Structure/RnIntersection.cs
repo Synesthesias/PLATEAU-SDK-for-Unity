@@ -29,6 +29,70 @@ namespace PLATEAU.RoadNetwork.Structure
         //----------------------------------
     }
 
+    // 交差点における曲がり具合
+    public enum RnTurnType
+    {
+        // 左後ろ
+        LeftBack,
+        // 左折
+        LeftTurn,
+        // 左前
+        LeftFront,
+        // 直進
+        Straight,
+        // 右前
+        RightFront,
+        // 右折
+        RightTurn,
+        // 右後ろ
+        RightBack,
+        // Uターン
+        UTurn,
+    }
+
+    public static class RnTurnTypeEx
+    {
+        // 左折関係か
+        public static bool IsLeft(this RnTurnType self)
+        {
+            return self == RnTurnType.LeftBack || self == RnTurnType.LeftTurn || self == RnTurnType.LeftFront;
+        }
+
+        // 右折関係か
+        public static bool IsRight(this RnTurnType self)
+        {
+            return self == RnTurnType.RightBack || self == RnTurnType.RightTurn || self == RnTurnType.RightFront;
+        }
+
+        // 流入方向と流出方向から曲がり具合を取得
+        public static RnTurnType GetTurnType(Vector3 from, Vector3 to, AxisPlane axis)
+        {
+            return GetTurnType(from.ToVector2(axis), to.ToVector2(axis));
+        }
+
+        // 流入方向と流出方向から曲がり具合を取得
+        public static RnTurnType GetTurnType(Vector2 from, Vector2 to)
+        {
+            var ang = -Vector2.SignedAngle(from, to) + 180f;
+            // #NOTE : AVENUEのアルゴリズム
+            if (ang is > 10f and < 67.5f)
+                return RnTurnType.LeftBack;
+            if (ang is >= 67.5f and < 112.5f)
+                return RnTurnType.LeftTurn;
+            if (ang is >= 112.5f and < 157.5f)
+                return RnTurnType.LeftFront;
+            if (ang is >= 157.5f and < 202.5f)
+                return RnTurnType.Straight;
+            if (ang is >= 202.5f and < 247.5f)
+                return RnTurnType.RightFront;
+            if (ang is >= 247.5f and < 292.5f)
+                return RnTurnType.RightTurn;
+            if (ang is >= 292.5f and < 337.5f)
+                return RnTurnType.RightBack;
+            return RnTurnType.UTurn;
+        }
+    }
+
     [Serializable]
     public class RnNeighbor : ARnParts<RnNeighbor>
     {
@@ -222,6 +286,9 @@ namespace PLATEAU.RoadNetwork.Structure
                 ParentModel?.RemoveIntersection(this);
         }
 
+
+
+
         /// <summary>
         /// 
         /// </summary>
@@ -230,72 +297,82 @@ namespace PLATEAU.RoadNetwork.Structure
         /// <param name="allowUTurn">Uターンを許可する</param>
         public void BuildTracks(float tangentLength = 10f, float splitLength = 2f, bool allowUTurn = false)
         {
-            Align();
             tracks.Clear();
 
-            // targetEntranceLane : trueの場合は入ってくるレーンを対象とする. falseは出ていくレーンを対象とする
-            static bool IsTarget(RnNeighbor neighbor, bool targetEntranceLane)
-            {
-                if (neighbor.Border == null || neighbor.Road == null)
-                    return false;
-                if (neighbor.Border.IsValid == false)
-                    return false;
-                if (neighbor.Road is RnRoad road)
-                {
-                    // #NOTE : 車線一つしかない場合は、出ていくレーンも対象とする
-                    if (road.MainLanes.Count == 1)
-                        return true;
-                    if (targetEntranceLane)
-                        return road.GetConnectedLanes(neighbor.Border).Any(l => l.NextBorder.IsSameLine(neighbor.Border));
-                    else
-                        return road.GetConnectedLanes(neighbor.Border).Any(l => l.PrevBorder.IsSameLine(neighbor.Border));
-                }
-                // 交差点同士の接続の場合はレーン全部対象
-                else if (neighbor.Road is RnIntersection)
-                {
-                    return true;
-                }
+            var edgeGroups = this.CreateEdgeGroup();
 
-                return false;
-            }
-
-            foreach (var from in Edges)
+            foreach (var eg in edgeGroups)
             {
-                if (IsTarget(from, true) == false)
+                if (eg.IsBorder == false)
                     continue;
 
-                foreach (var to in Edges)
+                var inBounds = eg.InBoundBorders.ToList();
+                foreach (var other in edgeGroups)
                 {
-                    if (from == to)
-                        continue;
-                    if (IsTarget(to, false) == false)
-                        continue;
-                    if (allowUTurn == false && from.Road == to.Road)
+                    if (other.IsBorder == false || eg == other)
                         continue;
 
-                    var fromNormal = from.Border.GetEdgeNormal((from.Border.Count - 1) / 2).normalized;
-                    var toNormal = -to.Border.GetEdgeNormal((to.Border.Count - 1) / 2).normalized;
+                    var turnType = RnTurnTypeEx.GetTurnType(-eg.Normal, other.Normal, AxisPlane.Xz);
 
-                    from.Border.GetLerpPoint(0.5f, out var fromPos);
-                    to.Border.GetLerpPoint(0.5f, out var toPos);
-
-                    var spline = new Spline
+                    void AddTrack(RnNeighbor from, RnNeighbor to)
                     {
-                        new(fromPos, tangentLength * fromNormal, -tangentLength *fromNormal),
-                        new(toPos, tangentLength *toNormal, -tangentLength *toNormal)
-                    }; ;
-                    tracks.Add(new RnTrack
+                        var fromNormal = from.Border.GetEdgeNormal((from.Border.Count - 1) / 2).normalized;
+                        var toNormal = -to.Border.GetEdgeNormal((to.Border.Count - 1) / 2).normalized;
+
+                        from.Border.GetLerpPoint(0.5f, out var fromPos);
+                        to.Border.GetLerpPoint(0.5f, out var toPos);
+
+                        var spline = new Spline
+                        {
+                            new(fromPos, tangentLength * fromNormal, -tangentLength *fromNormal),
+                            new(toPos, tangentLength *toNormal, -tangentLength *toNormal)
+                        }; ;
+                        tracks.Add(new RnTrack
+                        {
+                            FromBorder = from.Border,
+                            ToBorder = to.Border,
+                            Spline = spline
+                        });
+                    }
+
+                    var outBounds = other.OutBoundBorders.ToList();
+                    if (turnType.IsLeft())
                     {
-                        FromBorder = from.Border,
-                        ToBorder = to.Border,
-                        Spline = spline
-                    });
+                        // 左折の場合は左側のレーンのみ作成する
+                        var num = Mathf.Min(inBounds.Count, outBounds.Count);
+                        foreach (var from in Enumerable.Range(0, num).Select(i => inBounds[^(i + 1)]))
+                        {
+                            foreach (var to in outBounds)
+                                AddTrack(from, to);
+                        }
+                    }
+                    else if (turnType.IsRight())
+                    {
+                        // 右折の場合は右側のレーンのみ作成する
+                        var num = Mathf.Min(inBounds.Count, outBounds.Count);
+                        foreach (var from in inBounds.Take(num))
+                        {
+                            foreach (var to in outBounds)
+                                AddTrack(from, to);
+                        }
+                    }
+                    else
+                    {
+                        foreach (var from in inBounds)
+                        {
+                            foreach (var to in outBounds)
+                            {
+                                AddTrack(from, to);
+                            }
+                        }
+                    }
+
                 }
             }
         }
 
         /// <summary>
-        /// edgesの順番を整列する
+        /// edgesの順番を整列する. 各Edgeが連結かつ時計回りになるように整列する
         /// </summary>
         public void Align()
         {
@@ -317,6 +394,14 @@ namespace PLATEAU.RoadNetwork.Structure
                         break;
                     }
                 }
+            }
+
+            // 時計回りになるように整列
+            if (GeoGraph2D.IsClockwise(edges.Select(e => e.Border[0].ToVector2(AxisPlane.Xz))) == false)
+            {
+                foreach (var e in edges)
+                    e.Border.Reverse(true);
+                edges.Reverse();
             }
         }
 
@@ -393,8 +478,104 @@ namespace PLATEAU.RoadNetwork.Structure
 #endif
     }
 
+
     public static class RnIntersectionEx
     {
+        public class EdgeGroup
+        {
+            // targetEntranceLane : trueの場合は入ってくるレーンを対象とする. falseは出ていくレーンを対象とする
+            private static bool IsTarget(RnNeighbor neighbor, bool targetInBound)
+            {
+                if (neighbor.Border == null || neighbor.Road == null)
+                    return false;
+                if (neighbor.Border.IsValid == false)
+                    return false;
+                if (neighbor.Road is RnRoad road)
+                {
+                    // #NOTE : 車線一つしかない場合は、出ていくレーンも対象とする
+                    if (road.MainLanes.Count == 1)
+                        return true;
+                    if (targetInBound)
+                        return road.GetConnectedLanes(neighbor.Border).Any(l => l.NextBorder.IsSameLine(neighbor.Border));
+                    else
+                        return road.GetConnectedLanes(neighbor.Border).Any(l => l.PrevBorder.IsSameLine(neighbor.Border));
+                }
+                // 交差点同士の接続の場合はレーン全部対象
+                else if (neighbor.Road is RnIntersection)
+                {
+                    return true;
+                }
+
+                return false;
+            }
+
+            public RnRoadBase Key => Neighbors.First().Road;
+
+            // 時計回りになるように入っている
+            // =(交差点の外から見て0が右側)
+            public List<RnNeighbor> Neighbors { get; } = new();
+
+            public bool IsBorder => Key != null;
+
+            // 流入してくるボーダー
+            public IEnumerable<RnNeighbor> InBoundBorders => Neighbors.Where(n => IsTarget(n, true));
+
+            // 流出するボーダー
+            public IEnumerable<RnNeighbor> OutBoundBorders => Neighbors.Where(n => IsTarget(n, false));
+
+            // 右側
+            public EdgeGroup RightSide { get; set; }
+
+            // 左側
+            public EdgeGroup LeftSide { get; set; }
+
+            // 法線方向
+            public Vector3 Normal => Neighbors.First().Border.GetEdgeNormal(0).normalized;
+        };
+
+        /// <summary>
+        /// 交差点のEdgesをRoadごとにグループ化する
+        /// </summary>
+        /// <param name="self"></param>
+        /// <returns></returns>
+        public static List<EdgeGroup> CreateEdgeGroup(this RnIntersection self)
+        {
+            if (self.Edges.Count == 0)
+                return new List<EdgeGroup>();
+            self.Align();
+            var ret = new List<EdgeGroup> { new() };
+
+            for (var i = 0; i < self.Edges.Count; ++i)
+            {
+                var eg = ret[^1];
+                var e0 = self.Edges[i];
+                if (eg.Neighbors.Any() == false || eg.Key == e0.Road)
+                {
+                    eg.Neighbors.Add(e0);
+                }
+                else
+                {
+                    var next = new EdgeGroup();
+                    next.Neighbors.Add(e0);
+                    eg.LeftSide = next;
+                    next.RightSide = eg;
+                    ret.Add(next);
+                }
+            }
+
+            if (ret.Count <= 1)
+                return ret;
+
+            if (ret[0].Key == ret[^1].Key)
+            {
+                ret[^1].Neighbors.AddRange(ret[0].Neighbors);
+                ret.RemoveAt(0);
+            }
+            ret[0].RightSide = ret[^1];
+            ret[^1].LeftSide = ret[0];
+
+            return ret;
+        }
 
 
 #if false
