@@ -1490,11 +1490,11 @@ namespace PLATEAU.Editor.RoadNetwork
                 if (numNode == 0)
                     return;
 
-                HashSet<LinkGroupEditorData> linkGroups = new HashSet<LinkGroupEditorData>(numNode * (numNode - 1));  // node同士の繋がりを表現するコレクション prev+next名で表現する
+                List<LinkGroupEditorData> linkGroups = new List<LinkGroupEditorData>(numNode * (numNode - 1));  // node同士の繋がりを表現するコレクション prev+next名で表現する
                 HashSet<RnNeighbor> calcedNeighbor = new HashSet<RnNeighbor>(numNode * (numNode - 1));  // 計算済みのNeighborを保持する
-                foreach (var node in roadNetwork.Intersections)
+                foreach (var intersection in roadNetwork.Intersections)
                 {
-                    foreach (var neighbor in node.Neighbors)
+                    foreach (var neighbor in intersection.Neighbors)
                     {
                         // この接続元は計算済み
                         if (calcedNeighbor.Contains(neighbor))
@@ -1521,17 +1521,39 @@ namespace PLATEAU.Editor.RoadNetwork
                         var node0 = linkGroup.PrevIntersection;
                         var node1 = linkGroup.NextIntersection;
                         var editorData = new EditorData<RnRoadGroup>(linkGroup);
+
                         var cn = new LinkGroupEditorData(editorData, nodeEditorData[node0], nodeEditorData[node1], linkGroup.Roads);
-                        if (linkGroups.Add(cn) == true)
+                        // 同じものを格納済みかチェック
+                        var isContain = false;
+                        foreach (var group in linkGroups) 
+                        {
+                            var prev = group.LinkGroup.Ref.PrevIntersection;
+                            var next = group.LinkGroup.Ref.NextIntersection;
+
+                            bool isSamePrev, isSameNext;
+
+                            isSamePrev = prev == linkGroup.PrevIntersection;
+                            isSameNext = next == linkGroup.NextIntersection;
+                            isContain = isSamePrev && isSameNext;
+
+                            if (isContain == false)
+                            {
+                                isSamePrev = next == linkGroup.PrevIntersection;
+                                isSameNext = prev == linkGroup.NextIntersection;
+                                isContain = isSamePrev && isSameNext;
+                            }
+                        }
+                        if (isContain == false)
                         {
                             nodeEditorData[node0].Connections.Add(cn);
                             nodeEditorData[node1].Connections.Add(cn);
                             editorData.TryAdd(cn);
+                            linkGroups.Add(cn);
                             linkGroupEditorData.Add(editorData);
                         }
 
                         calcedNeighbor.Add(neighbor);
-                        var otherNode = node == node0 ? node1 : node0;
+                        var otherNode = intersection == node0 ? node1 : node0;
                         var otherLink = link == linkGroup.Roads.First() ? linkGroup.Roads.Last() : linkGroup.Roads.First();
                         foreach (var otherNeighbor in otherNode.Neighbors)
                         {
@@ -1631,11 +1653,11 @@ namespace PLATEAU.Editor.RoadNetwork
                                     if (link == item.Road)
                                     {
                                         var cn = new LinkGroupEditorData(null, nodeEditorData[node], nodeEditorData[connectedNode], linkList);
-                                        if (linkGroups.Add(cn) == true)
-                                        {
-                                            nodeEditorData[node].Connections.Add(cn);
-                                            nodeEditorData[connectedNode].Connections.Add(cn);
-                                        }
+                                        //if (linkGroups.Add(cn) == true)
+                                        //{
+                                        //    nodeEditorData[node].Connections.Add(cn);
+                                        //    nodeEditorData[connectedNode].Connections.Add(cn);
+                                        //}
 
                                         isAddCalced = calcedNeighbor.Add(item);
                                         if (isAddCalced)
@@ -2043,10 +2065,7 @@ namespace PLATEAU.Editor.RoadNetwork
                 // way用の編集データの作成
                 if (wayEditorDataList == null)
                     wayEditorDataList = new List<WayEditorData>(laneWays.Count);
-                if (wayEditorDataList != null)
-                {
-                    wayEditorDataList.Clear();
-                }
+                wayEditorDataList?.Clear();
 
                 foreach (var editingTarget in laneWays)
                 {
@@ -2108,6 +2127,11 @@ namespace PLATEAU.Editor.RoadNetwork
 
             private void SelectWay(Ray ray, List<WayEditorData> wayEditorDataList, bool isMouseOnViewport)
             {
+                if (wayEditorDataList == null)
+                {
+                    return;
+                }
+                
                 const float radius = 2.0f;
                 foreach (var wayEditorData in wayEditorDataList)
                 {
