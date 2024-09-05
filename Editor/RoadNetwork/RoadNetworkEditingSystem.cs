@@ -330,10 +330,15 @@ namespace PLATEAU.Editor.RoadNetwork
 
         public static void SnapPointToDem(RnPoint item, in Ray ray)
         {
-            if (Physics.Raycast(ray, out RaycastHit hit))
+            const float maxDistance = 1000.0f;
+            var hits = Physics.RaycastAll(ray, maxDistance);    // 地形メッシュが埋まっていてもスナップ出来るように
+            foreach (RaycastHit hit in hits)
             {
                 if (hit.collider.name.Contains("dem_"))
+                {
                     item.Vertex = hit.point;
+                    return;
+                }
             }
         }
 
