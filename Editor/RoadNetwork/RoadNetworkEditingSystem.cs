@@ -1592,122 +1592,6 @@ namespace PLATEAU.Editor.RoadNetwork
                 //linkGroupEditorData.Select((d) => d.GetSubData<LinkGroupEditorData>()).ToList();
 
                 return;
-                var linkLinstCap = roadNetwork.Roads.Count / numNode * 2;
-                foreach (var node in roadNetwork.Intersections)
-                {
-                    // Nodeと繋がりのあるレーンすべてのPointを取得(現在はLink同士、Node同士が繋がっていた場合には2番目以降のLinkのPointは参照しない　もしくはNode間の境目は参照しない)
-
-                    bool bIsNext;
-                    // NodeとつながりのあるNodeを探す
-                    foreach (var neighbor in node.Neighbors)
-                    {
-                        // 計算済みに追加 計算済みのNeighborはスキップ
-                        if (calcedNeighbor.Add(neighbor) == false)
-                            continue;
-
-                        RnIntersection connectedNode = null;
-                        var link = neighbor.Road as RnRoad;
-
-                        List<RnRoad> linkList = new List<RnRoad>(linkLinstCap);    // capは適当
-                        while (link != null)
-                        {
-                            //// Nodeと繋がりのあるレーンすべてのPointを取得(現在はLink同士が繋がっていた場合には2番目以降のLinkのPointは参照しない)
-                            //foreach (var lane in link.AllLanes)
-                            //{
-                            //    foreach (var point in lane.Points)
-                            //    {
-                            //        points.Add(point);  // HashSetなので重複は無視される
-                            //    }
-                            //}
-
-                            // 走査方向を決定する Next or Prev
-                            bIsNext = link.Next != node;
-
-                            // 現在のノードから離れる接続先
-                            var neighborBase = bIsNext ? link.Next : link.Prev;
-
-                            // Linkだった場合、次のLinkを取得
-                            if (neighborBase is RnRoad neighborLink)
-                            {
-                                link = neighborLink;
-                                linkList.Add(neighborLink);
-                                continue;   // 走査を続ける
-                            }
-                            // Node 無い場合、走査の終了
-                            else if (neighborBase is RnIntersection neighborNode)
-                            {
-                                // Nodeと他のNodeを挟まずに繋がりのあるNodeを設定  〇Node->connectedNode　〇Node->Road->connectedNode ×Node->OtherNode->connectedNode
-                                connectedNode = neighborNode;
-
-                                // 自身のノードに戻ってきた
-                                if (node == connectedNode)
-                                {
-                                    link = null;
-                                    continue;
-                                }
-
-                                // 辿ってきたLinkと紐づいたNeighborを探索
-                                bool isAddCalced = false;
-                                foreach (var item in connectedNode.Neighbors)
-                                {
-                                    if (link == item.Road)
-                                    {
-                                        var cn = new LinkGroupEditorData(null, nodeEditorData[node], nodeEditorData[connectedNode], linkList);
-                                        //if (linkGroups.Add(cn) == true)
-                                        //{
-                                        //    nodeEditorData[node].Connections.Add(cn);
-                                        //    nodeEditorData[connectedNode].Connections.Add(cn);
-                                        //}
-
-                                        isAddCalced = calcedNeighbor.Add(item);
-                                        if (isAddCalced)
-                                            break;
-                                    }
-                                }
-                                // 何故かflaseになる場合がある(原因不明 一時的にAssert回避
-                                //Assert.IsTrue(isAddCalced); // 最初のforeachで計算済みはスキップしているので必ず追加されるはず
-                            }
-                            else
-                            {
-                                // 続きが無い場合、走査の終了
-                            }
-                            link = null;
-
-                        }
-
-                        //// 仮weight付け　本来はNode間を繋ぐ線にも紐づくべき
-                        //foreach (var pt in points)
-                        //{
-                        //    var d0 = nodeEditorData[node];
-                        //    var d1 = connectedNode != null ? nodeEditorData[connectedNode] : null;
-                        //    float w0 = 1.0f;
-                        //    float w1 = 0.0f;
-                        //    if (d1 != null)
-                        //    {
-                        //        var dist0 = Vector3.Distance(d0.RefGameObject.transform.position, pt.Vertex);
-                        //        var dist1 = Vector3.Distance(d1.RefGameObject.transform.position, pt.Vertex);
-                        //        w0 = dist0 / (dist0 + dist1);
-                        //        w1 = dist1 / (dist0 + dist1);
-                        //    }
-                        //    var ptData = ptEditorData[pt];
-                        //    d0.AddPoint(ptData, w0);
-                        //    d1?.AddPoint(ptData, w1);
-                        //}
-
-                        // 直接つながっているものはweight1にする
-
-                        // 例外としてNodeと直接つながっているものはweight0.5にする
-
-
-                        // 同じRnPointを利用したneighborがある場合、Pointに対して再度計算を行うことになる 修正が必要
-                        // コレクションを初期化
-                        points.Clear();
-                    }
-                }
-
-                // Transform変更を検知する
-                EditorApplication.update -= Update;
-                EditorApplication.update += Update;
             }
 
             /// <summary>
@@ -1907,7 +1791,7 @@ namespace PLATEAU.Editor.RoadNetwork
                 var mouseUp = sceneViewEvBuf.MouseUp;
                 if (mouseDown)
                 {
-                    Debug.Log("mouse down");
+                    //Debug.Log("mouse down");
 
                     // Wayを選択する
                     if (currentState == State.Default)
@@ -1951,7 +1835,7 @@ namespace PLATEAU.Editor.RoadNetwork
                 }
                 else
                 {
-                    Debug.Log("mouse up");
+                    //Debug.Log("mouse up");
                     if (currentState == State.SlidingWay)
                     {
                         Assert.IsNotNull(waySlideCalcCache);
