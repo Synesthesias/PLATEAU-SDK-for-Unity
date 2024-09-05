@@ -290,21 +290,11 @@ namespace PLATEAU.Editor.RoadNetwork
                 system.RoadNetworkObject = roadNetworkObj;
 
                 // 仮ポイントを　地形にスワップする
-                var lineE = roadNetwork.CollectAllLineStrings().GetEnumerator();
+                var lineE = roadNetwork.CollectAllWays().GetEnumerator();
                 while (lineE.MoveNext())
                 {
-                    var line = lineE.Current;
-                    Ray ray;
-                    foreach (var item in line.Points)
-                    {
-                        const float rayDis = 1000.0f;
-                        ray = new Ray(item.Vertex + Vector3.up * rayDis, Vector3.down * rayDis);
-                        if (Physics.Raycast(ray, out RaycastHit hit))
-                        {
-                            if (hit.collider.name.Contains("dem_"))
-                                item.Vertex = hit.point;
-                        }
-                    }
+                    var way = lineE.Current;
+                    SnapPointsToDem(way.Points);
                 }
 
 
@@ -318,6 +308,35 @@ namespace PLATEAU.Editor.RoadNetwork
 
             return true;
         }
+
+        public static void SnapPointsToDem(IEnumerable<RnPoint> items)
+        {
+            Ray ray;
+            const float rayDis = 1000.0f;
+            foreach (var item in items)
+            {
+                ray = new Ray(item.Vertex + Vector3.up * rayDis, Vector3.down * rayDis);
+                SnapPointToDem(item, ray);
+            }
+        }
+
+        public static void SnapPointToDem(RnPoint item)
+        {
+            Ray ray;
+            const float rayDis = 1000.0f;
+            ray = new Ray(item.Vertex + Vector3.up * rayDis, Vector3.down * rayDis);
+            SnapPointToDem(item, ray);
+        }
+
+        public static void SnapPointToDem(RnPoint item, in Ray ray)
+        {
+            if (Physics.Raycast(ray, out RaycastHit hit))
+            {
+                if (hit.collider.name.Contains("dem_"))
+                    item.Vertex = hit.point;
+            }
+        }
+
 
         /// <summary>
         /// 内部システムが利用するインターフェイス
