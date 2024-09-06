@@ -201,7 +201,16 @@ namespace PLATEAU.RoadNetwork.Structure
             }
 
             var serializer = new RoadNetworkSerializer();
-            return serializer.Serialize(this);
+            var ret = serializer.Serialize(this);
+
+            // 自分は元に戻す
+            if (createEmptyCheck)
+            {
+                RemoveEmptyRoadBetweenIntersection();
+                RemoveEmptyIntersectionBetweenRoad();
+            }
+
+            return ret;
         }
 
         public void Deserialize(RoadNetworkStorage storage, bool removeEmptyCheck = true)

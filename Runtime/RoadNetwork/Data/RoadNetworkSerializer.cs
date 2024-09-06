@@ -147,6 +147,8 @@ namespace PLATEAU.RoadNetwork.Data
                     return RnID<TData>.Undefind;
                 }
 
+                if (Table.ContainsKey(val) == false)
+                    throw new InvalidDataException($"Object {val.GetType().Name} is not found in table");
                 return Table[val];
             }
         }

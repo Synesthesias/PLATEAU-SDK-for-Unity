@@ -68,6 +68,11 @@ namespace PLATEAU.RoadNetwork.Data
         [RoadNetworkSerializeMember("edges")]
         public List<RnDataNeighbor> Edges { get; set; } = new List<RnDataNeighbor>();
 
+        [field: SerializeField]
+        [RoadNetworkSerializeMember]
+        public bool IsEmptyIntersection { get; set; }
+
+
         public IEnumerable<RnDataNeighbor> Neighbors => Edges.Where(e => e.Road.IsValid);
 
         // 車線
