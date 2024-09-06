@@ -80,7 +80,14 @@ namespace PLATEAU.Editor.RoadNetwork.Tester
                     if (GUILayout.Button("Remove Empty Road"))
                         model.RoadNetwork.RemoveEmptyRoadBetweenIntersection();
                 }
+                if (model && model.RoadNetwork != null)
+                {
+                    if (GUILayout.Button("Create Empty Intersection"))
+                        model.RoadNetwork.CreateEmptyIntersectionBetweenRoad();
 
+                    if (GUILayout.Button("Remove Empty Intersection"))
+                        model.RoadNetwork.RemoveEmptyIntersectionBetweenRoad();
+                }
             }
             if (GUILayout.Button("Check Lod"))
                 obj.RemoveSameNameCityObjectGroup();

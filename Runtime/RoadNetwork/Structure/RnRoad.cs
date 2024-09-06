@@ -1,5 +1,4 @@
-﻿using Codice.CM.Common;
-using PLATEAU.CityInfo;
+﻿using PLATEAU.CityInfo;
 using PLATEAU.RoadNetwork.Util;
 using System;
 using System.Collections.Generic;
@@ -164,7 +163,6 @@ namespace PLATEAU.RoadNetwork.Structure
         /// <returns></returns>
         public IEnumerable<RnLane> GetLeftLanes()
         {
-            // #TODO : Prev == Nextの時にバグる
             return MainLanes.Where(IsLeftLane);
         }
 
@@ -174,7 +172,6 @@ namespace PLATEAU.RoadNetwork.Structure
         /// <returns></returns>
         public IEnumerable<RnLane> GetRightLanes()
         {
-            // #TODO : Prev == Nextの時にバグる
             return MainLanes.Where(IsRightLane);
         }
 
@@ -251,6 +248,39 @@ namespace PLATEAU.RoadNetwork.Structure
                     ret.AddPointOrSkip(p);
             }
             return new RnWay(ret);
+        }
+
+        /// <summary>
+        /// 境界線の一覧を取得する. left->rightの順番
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="includeMedian"></param>
+        /// <returns></returns>
+        public IEnumerable<RnWay> GetBorderWays(RnLaneBorderType type, bool includeMedian = true)
+        {
+            // 左側
+            var lanes = MainLanes.TakeWhile(IsLeftLane);
+            // 中央分離帯
+            lanes = lanes.Concat(Enumerable.Repeat(MedianLane, MedianLane == null ? 0 : 1));
+            // 右側
+            lanes = lanes.Concat(MainLanes.SkipWhile(IsLeftLane));
+
+            foreach (var l in lanes)
+            {
+                var t = type;
+                var d = RnLaneBorderDir.Left2Right;
+                if (IsLeftLane(l) == false)
+                {
+                    t = t.GetOpposite();
+                    d = d.GetOpposite();
+                }
+                var way = l.GetBorder(t);
+                if (way == null)
+                    continue;
+                if (l.GetBorderDir(t) != d)
+                    way = way.ReversedWay();
+                yield return way;
+            }
         }
 
         /// <summary>
@@ -618,7 +648,7 @@ namespace PLATEAU.RoadNetwork.Structure
                 return self.Prev == other ? null : self.Prev;
             }
 
-            throw new InvalidDataException($"{self.DebugMyId} is not roaded {other.DebugMyId}");
+            throw new InvalidDataException($"{self.DebugMyId} is not road {other.DebugMyId}");
         }
 
         /// <summary>

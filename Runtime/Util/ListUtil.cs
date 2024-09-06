@@ -34,5 +34,17 @@ namespace PLATEAU.Util
 
             return ret;
         }
+
+        /// <summary>
+        /// LinqのReverseは遅いので自前で実装
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="self"></param>
+        /// <returns></returns>
+        public static IEnumerable<T> Reversed<T>(this IList<T> self)
+        {
+            for (var i = self.Count - 1; i >= 0; i--)
+                yield return self[i];
+        }
     }
 }
