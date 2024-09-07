@@ -194,6 +194,13 @@ namespace PLATEAU.RoadNetwork.Structure
 
         public RoadNetworkStorage Serialize(bool createEmptyCheck = true)
         {
+            // シリアライズ前に一度全レーンに対して中央線を作成する
+            foreach (var road in Roads)
+            {
+                foreach (var l in road.AllLanes)
+                    l.CreateCenterWay();
+            }
+
             if (createEmptyCheck)
             {
                 CreateEmptyRoadBetweenInteraction();
