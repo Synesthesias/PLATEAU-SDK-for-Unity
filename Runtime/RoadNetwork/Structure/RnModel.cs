@@ -215,6 +215,7 @@ namespace PLATEAU.RoadNetwork.Structure
 
         public void Deserialize(RoadNetworkStorage storage, bool removeEmptyCheck = true)
         {
+            Clear();
             var serializer = new RoadNetworkSerializer();
             var model = serializer.Deserialize(storage);
             foreach (var l in model.Roads)
@@ -371,6 +372,13 @@ namespace PLATEAU.RoadNetwork.Structure
             {
                 intersection.BuildTracks();
             }
+        }
+
+        public void Clear()
+        {
+            sideWalks.Clear();
+            roads.Clear();
+            intersections.Clear();
         }
 
         public void SplitLaneByWidth(float roadWidth, out List<ulong> failedRoads)
