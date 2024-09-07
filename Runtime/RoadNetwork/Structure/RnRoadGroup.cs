@@ -415,8 +415,25 @@ namespace PLATEAU.RoadNetwork.Structure
 
                 var prevLineString = RnLineString.Create(new[] { afterSt, st }, false);
                 var nextLineString = RnLineString.Create(new[] { afterEn, en }, false);
-                var medianLane = new RnLane(leftWay, rightWay, new RnWay(prevLineString, isReverseNormal: true), new RnWay(nextLineString));
+
+                var prevBorder = new RnWay(prevLineString, isReverseNormal: true);
+                var nextBorder = new RnWay(nextLineString);
+                var medianLane = new RnLane(leftWay, rightWay, prevBorder, nextBorder);
                 l.SetMedianLane(medianLane);
+
+                // 交差点側にも情報を埋め込む(外形が崩れるので)
+                if (l.Prev is RnIntersection prevInter)
+                {
+                    prevInter.AddEdge(l, prevBorder.ReversedWay());
+                    prevInter.Align();
+                }
+
+                if (l.Next is RnIntersection nextInter)
+                {
+                    nextInter.AddEdge(l, nextBorder.ReversedWay());
+                    nextInter.Align();
+                }
+
             }
         }
 
