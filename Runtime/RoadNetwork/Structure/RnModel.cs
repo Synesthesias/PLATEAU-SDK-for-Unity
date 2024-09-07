@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine.Splines;
 
 namespace PLATEAU.RoadNetwork.Structure
 {
@@ -193,15 +192,28 @@ namespace PLATEAU.RoadNetwork.Structure
             AddRoad(road);
         }
 
-        public RoadNetworkStorage Serialize(bool createEmptyRoadBetweenIntersection = true)
+        public RoadNetworkStorage Serialize(bool createEmptyCheck = true)
         {
-            if (createEmptyRoadBetweenIntersection)
+            if (createEmptyCheck)
+            {
                 CreateEmptyRoadBetweenInteraction();
+                CreateEmptyIntersectionBetweenRoad();
+            }
+
             var serializer = new RoadNetworkSerializer();
-            return serializer.Serialize(this);
+            var ret = serializer.Serialize(this);
+
+            // 自分は元に戻す
+            if (createEmptyCheck)
+            {
+                RemoveEmptyRoadBetweenIntersection();
+                RemoveEmptyIntersectionBetweenRoad();
+            }
+
+            return ret;
         }
 
-        public void Deserialize(RoadNetworkStorage storage, bool removeEmptyRoadBetweenIntersection = true)
+        public void Deserialize(RoadNetworkStorage storage, bool removeEmptyCheck = true)
         {
             var serializer = new RoadNetworkSerializer();
             var model = serializer.Deserialize(storage);
@@ -209,10 +221,82 @@ namespace PLATEAU.RoadNetwork.Structure
                 AddRoad(l);
             foreach (var n in model.Intersections)
                 AddIntersection(n);
-            if (removeEmptyRoadBetweenIntersection)
+            if (removeEmptyCheck)
+            {
                 RemoveEmptyRoadBetweenIntersection();
+                RemoveEmptyIntersectionBetweenRoad();
+            }
         }
 
+        /// <summary>
+        /// 道路同士が直接つながっている状況において、空の交差点を作成する
+        /// </summary>
+        public void CreateEmptyIntersectionBetweenRoad()
+        {
+            HashSet<RnRoad> visited = new();
+            var visitedRoads = new HashSet<RnRoad>();
+            foreach (var link in Roads)
+            {
+                if (visitedRoads.Contains(link))
+                    continue;
+
+                try
+                {
+                    var roadGroup = link.CreateRoadGroup();
+                    foreach (var r in roadGroup.Roads)
+                        visitedRoads.Add(r);
+
+                    if (roadGroup.Roads.Count <= 1)
+                        continue;
+
+                    // 整列させる
+                    roadGroup.Align();
+                    for (var i = 0; i < roadGroup.Roads.Count - 1; i++)
+                    {
+                        var prev = roadGroup.Roads[i];
+                        var next = roadGroup.Roads[i + 1];
+                        var borders = prev.GetBorderWays(RnLaneBorderType.Next).ToList();
+                        var intersection = RnIntersection.CreateEmptyIntersection(borders, prev, next);
+
+                        prev?.SetPrevNext(prev.Prev, intersection);
+                        next?.SetPrevNext(intersection, next.Next);
+                        AddIntersection(intersection);
+                    }
+
+                }
+                catch (Exception e)
+                {
+                }
+            }
+        }
+
+        public void RemoveEmptyIntersectionBetweenRoad()
+        {
+            HashSet<RnIntersection> remove = new();
+            foreach (var intersection in Intersections)
+            {
+                if (intersection.IsEmptyIntersection == false)
+                    continue;
+                var roads = intersection.Edges
+                    .Select(e => e.Road as RnRoad)
+                    .Where(n => n != null)
+                    .ToHashSet();
+
+                foreach (var r in roads)
+                {
+                    var other = roads.FirstOrDefault(n => n != r);
+                    if (r.Prev == intersection)
+                        r.SetPrevNext(other, r.Next);
+                    if (r.Next == intersection)
+                        r.SetPrevNext(r.Prev, other);
+                }
+
+                remove.Add(intersection);
+            }
+
+            foreach (var r in remove)
+                r.DisConnect(true);
+        }
 
         /// <summary>
         /// 交差点同士が直接つながっている状況において、交差点間のリンクを作成する

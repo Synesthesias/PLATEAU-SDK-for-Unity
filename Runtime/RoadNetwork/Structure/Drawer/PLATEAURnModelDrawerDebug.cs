@@ -93,7 +93,7 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
 
             public DrawOption shopNeighbor = new(true, Color.cyan * 0.7f);
 
-            public TrackOption showSplitTrack = new();
+            public bool showEdgeIndex = false;
 
             public bool showEdgeGroup = false;
         }
@@ -599,14 +599,16 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
                 {
                     DrawWay(n.Border, op.showBorder.color);
                     var pos = n.Border.GetLerpPoint(0.5f);
-                    DrawString($"B[{i}]", pos);
+                    if (op.showEdgeIndex)
+                        DrawString($"B[{i}]", pos);
                 }
 
                 if (op.shopNeighbor.visible && n.Road != null)
                 {
                     DrawWay(n.Border, op.shopNeighbor.color);
                     var pos = n.Border.GetLerpPoint(0.5f);
-                    DrawString($"B[{i}]", pos);
+                    if (op.showEdgeIndex)
+                        DrawString($"B[{i}]", pos);
                 }
             }
 
@@ -614,8 +616,6 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
             {
                 foreach (var track in intersection.Tracks)
                 {
-                    if (op.showSplitTrack.visible == false)
-                        continue;
                     var n = 5;
                     DrawArrows(Enumerable.Range(0, n)
                         .Select(i => 1f * i / (n - 1))
@@ -623,7 +623,7 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
                         {
                             track.Spline.Evaluate(t, out var pos, out var tam, out var up);
                             return (Vector3)pos;
-                        }), false, color: op.showSplitTrack.color);
+                        }), false, color: op.showTrack.color);
                 }
             }
         }
