@@ -1,4 +1,5 @@
 ﻿using PLATEAU.CityInfo;
+using PLATEAU.RoadNetwork.CityObject;
 using PLATEAU.RoadNetwork.Graph;
 using PLATEAU.RoadNetwork.Structure;
 using PLATEAU.RoadNetwork.Util;
@@ -9,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 namespace PLATEAU.RoadNetwork.Factory
 {
@@ -46,8 +48,8 @@ namespace PLATEAU.RoadNetwork.Factory
         // RGraph作るときのファクトリパラメータ
         [SerializeField] public RGraphFactory graphFactory;
 
-        // 中間データ
-        [SerializeField] public RsFactoryMidStageData midStageData;
+        // 中間データを保存する
+        [SerializeField] public bool saveTmpData = false;
 
         // --------------------
         // end:フィールド
@@ -680,9 +682,32 @@ namespace PLATEAU.RoadNetwork.Factory
 
         public async Task<RnModel> CreateRnModelImplAsync(List<PLATEAUCityObjectGroup> cityObjectGroups, GameObject target)
         {
-            await midStageData.ConvertCityObjectAsync(cityObjectGroups);
-            var graph = midStageData.CreateGraph(graphFactory, target);
+            var subDividedCityObjects = (await RnEx.ConvertCityObjectsAsync(cityObjectGroups)).ConvertedCityObjects;
+            var graph = graphFactory.CreateGraph(subDividedCityObjects);
             var model = await CreateRnModelAsync(graph);
+
+            if (target)
+            {
+                if (saveTmpData)
+                {
+                    target.GetOrAddComponent<PLATEAURGraph>().Graph = graph;
+                    target.GetOrAddComponent<PLATEAUSubDividedCityObjectGroup>().CityObjects = subDividedCityObjects;
+                }
+                else
+                {
+                    // 中間データは削除する
+                    foreach (var comp in target.GetComponents<PLATEAURGraph>().ToList())
+                    {
+                        UnityEngine.Object.DestroyImmediate(comp);
+                    }
+
+                    foreach (var comp in target.GetComponents<PLATEAUSubDividedCityObjectGroup>().ToList())
+                    {
+                        UnityEngine.Object.DestroyImmediate(comp);
+                    }
+                }
+            }
+
             return model;
         }
 
@@ -704,11 +729,6 @@ namespace PLATEAU.RoadNetwork.Factory
             var model = await CreateRnModelAsync(graph);
             ret.RoadNetwork = model;
             return ret;
-        }
-
-        public void DebugDraw()
-        {
-            midStageData?.DebugDraw();
         }
     }
 }

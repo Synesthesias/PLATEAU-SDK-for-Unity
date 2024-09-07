@@ -23,39 +23,25 @@ namespace PLATEAU.RoadNetwork.Tester
         // --------------------
         [field: SerializeField] public RoadNetworkFactory Factory { get; set; } = new RoadNetworkFactory();
 
-        [Serializable]
-        public class TestTargetPresets
-        {
-            public string name;
-            public List<PLATEAUCityObjectGroup> targets = new List<PLATEAUCityObjectGroup>();
-        }
-
-        public List<TestTargetPresets> savedTargets = new List<TestTargetPresets>();
-        [SerializeField] private bool targetAll = false;
-        public string targetPresetName = "";
-
-        [Serializable]
-        public enum CreateMode
-        {
-            ConvertCityObject,
-            MergeConvertCityObject,
-            SeparateConvertCityObject,
-            TranMesh,
-            RoadNetwork,
-            All
-        }
+        // 道路ネットワーク作成用のPLATEAUCityObjectGroupのプリセットテーブル
         [SerializeField]
-        private CreateMode createMode = CreateMode.ConvertCityObject;
+        public List<TestTargetPresets> savedTargets = new List<TestTargetPresets>();
+
+        // シーンに配置している全てのPLATEAUCityObjectGroupを対象にするか
+        [SerializeField] private bool targetAll = false;
+
+        // 今回作成するPLATEAUCityObjectGroupのプリセットテーブル
+        public string targetPresetName = "";
 
         // --------------------
         // end:フィールド
         // --------------------
 
-        public List<SubDividedCityObject> SubDividedCityObjects => Factory.midStageData.convertedCityObjects.cityObjects;
-
-        public void OnDrawGizmos()
+        [Serializable]
+        public class TestTargetPresets
         {
-            Factory?.DebugDraw();
+            public string name;
+            public List<PLATEAUCityObjectGroup> targets = new List<PLATEAUCityObjectGroup>();
         }
 
         public List<PLATEAUCityObjectGroup> GetTargetCityObjects()
@@ -75,7 +61,10 @@ namespace PLATEAU.RoadNetwork.Tester
                 .ToList();
         }
 
-
+        /// <summary>
+        /// 道路ネットワークを作成する
+        /// </summary>
+        /// <returns></returns>
         public async Task CreateNetwork()
         {
             try
@@ -87,16 +76,6 @@ namespace PLATEAU.RoadNetwork.Tester
                 Debug.LogException(e);
             }
         }
-
-        public void CreateRGraph()
-        {
-            Factory.midStageData.CreateGraph(Factory.graphFactory);
-        }
-
-        //public async Task CreateRoadNetworkByGraphAsync()
-        //{
-        //    await Factory.CreateRnModelAsync(Factory.midStageData.Graph, gameObject);
-        //}
 
         /// <summary>
         /// 同名のCityObjectGroupがあった場合に最大のLODのもの以外を非表示にする
