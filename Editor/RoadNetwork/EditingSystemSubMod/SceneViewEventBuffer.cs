@@ -86,7 +86,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
                 //Physics.Raycast(ray, out RaycastHit hit, 1000);
                 //Debug.DrawRay(ray.origin, ray.direction * 1000, Color.red);
                 //Debug.DrawRay(hit.point, Vector3.up * 100, Color.magenta);
-                Debug.Log("mouse move");
+                //Debug.Log("mouse move");
             }
             else
             {
