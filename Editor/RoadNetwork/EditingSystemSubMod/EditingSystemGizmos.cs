@@ -115,6 +115,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
             sideWalks.Clear();
             if (selectingElement is EditorData<RnRoadGroup> roadGroupEditorData)
             {
+
                 // 歩道の描画
                 foreach (var road in roadGroupEditorData.Ref.Roads)
                 {
