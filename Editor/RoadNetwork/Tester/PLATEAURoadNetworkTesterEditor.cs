@@ -1,6 +1,6 @@
 ﻿using PLATEAU.Editor.RoadNetwork.CityObject;
+using PLATEAU.RoadNetwork.CityObject;
 using PLATEAU.RoadNetwork.Factory;
-using PLATEAU.RoadNetwork.Mesh;
 using PLATEAU.RoadNetwork.Structure;
 using PLATEAU.RoadNetwork.Tester;
 using PLATEAU.RoadNetwork.Util;
@@ -36,16 +36,6 @@ namespace PLATEAU.Editor.RoadNetwork.Tester
 
             public HashSet<SubDividedCityObject> TargetCityObjects =>
                 target.Factory.midStageData.convertedCityObjects.drawer.TargetCityObjects;
-
-            //public void CreateRnModel()
-            //{
-            //    target.CreateRoadNetworkByGraphAsync();
-            //}
-
-            //public void CreateTranMesh()
-            //{
-            //    target.Factory.midStageData.CreateAll(target.GetTargetCityObjects());
-            //}
         }
 
         public override void OnInspectorGUI()

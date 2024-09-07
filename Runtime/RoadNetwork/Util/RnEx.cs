@@ -5,7 +5,7 @@ using PLATEAU.CityImport.Import.Convert;
 using PLATEAU.CityInfo;
 using PLATEAU.GranularityConvert;
 using PLATEAU.PolygonMesh;
-using PLATEAU.RoadNetwork.Mesh;
+using PLATEAU.RoadNetwork.CityObject;
 using PLATEAU.RoadNetwork.Structure;
 using PLATEAU.Util;
 using PLATEAU.Util.GeoGraph;

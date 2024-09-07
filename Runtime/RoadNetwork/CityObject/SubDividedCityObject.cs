@@ -3,6 +3,7 @@ using PLATEAU.CityImport.Import.Convert;
 using PLATEAU.CityInfo;
 using PLATEAU.PolygonMesh;
 using PLATEAU.RoadNetwork.Graph;
+using PLATEAU.RoadNetwork.Util;
 using PLATEAU.Util;
 using PLATEAU.Util.GeoGraph;
 using System;
@@ -10,9 +11,8 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Assertions;
-using Object = System.Object;
 
-namespace PLATEAU.RoadNetwork.Mesh
+namespace PLATEAU.RoadNetwork.CityObject
 {
     /// <summary>
     /// PLATEAUCityObjectGroupを細分化したもの
@@ -206,13 +206,13 @@ namespace PLATEAU.RoadNetwork.Mesh
 
         /// <summary>
         /// C++側の <see cref="PolygonMesh.Model"/> から変換して
-        /// <see cref="ConvertedGameObjData"/> を作ります。
+        /// <see cref="SubDividedCityObject"/> を作ります。
         /// 子も再帰的に作ります。
         /// </summary>
         internal SubDividedCityObject(Model plateauModel, AttributeDataHelper attributeDataHelper)
         {
             Name = "Root";
-            // RootはNodeが無いから
+            // RootはNodeが無いからnull
             attributeDataHelper.SetCurrentNode(null);
             Children = new List<SubDividedCityObject>();
             for (int i = 0; i < plateauModel.RootNodesCount; i++)
@@ -230,10 +230,8 @@ namespace PLATEAU.RoadNetwork.Mesh
         /// </summary>
         private SubDividedCityObject(Node plateauNode, AttributeDataHelper attributeDataHelper, RRoadTypeMask parentTypeMask)
         {
-            //MeshData = MeshConverter.Convert(plateauNode.Mesh, plateauNode.Name);
-
             ParentRoadType = parentTypeMask;
-            Name = plateauNode.Name;
+            Name = plateauNode?.Name ?? "";
             attributeDataHelper.SetCurrentNode(plateauNode);
             if (plateauNode != null)
             {

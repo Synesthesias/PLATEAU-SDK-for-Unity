@@ -5,14 +5,10 @@ using PLATEAU.RoadNetwork.Util;
 using PLATEAU.Util;
 using PLATEAU.Util.GeoGraph;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using UnityEditor.PackageManager;
 using UnityEngine;
-using UnityEngine.Assertions;
-using static UnityEngine.GraphicsBuffer;
 
 namespace PLATEAU.RoadNetwork.Factory
 {
@@ -31,23 +27,27 @@ namespace PLATEAU.RoadNetwork.Factory
 
         // 行き止まり検出判定時に同一直線と判断する角度の総和
         [SerializeField] public float terminateAllowEdgeAngle = 20f;
-        // 行き止まり検出判定時に開始線分と同一と判定する角度の許容量
-        [SerializeField] public float terminateSkipEdgeAngle = 20f;
+
         // Lod1の道の歩道サイズ
         [SerializeField] public float lod1SideWalkSize = 3f;
+
         // Lod3の歩道を追加するかどうか
         [SerializeField] public bool addLod3SideWalk = true;
 
         // 中央分離帯をチェックする
         [SerializeField] public bool checkMedian = true;
+
+        // 中央分離帯は作るが幅0で作成する
         [SerializeField] public bool zeroWidthMedian = false;
+
         // 高速道路を無視するかのフラグ
         [SerializeField] public bool ignoreHighway = false;
+
         // RGraph作るときのファクトリパラメータ
         [SerializeField] public RGraphFactory graphFactory;
+
         // 中間データ
         [SerializeField] public RsFactoryMidStageData midStageData;
-
 
         // --------------------
         // end:フィールド

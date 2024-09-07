@@ -1,5 +1,4 @@
 ﻿using PLATEAU.CityInfo;
-using PLATEAU.RoadNetwork.Drawer;
 using PLATEAU.RoadNetwork.Util;
 using PLATEAU.Util;
 using System;

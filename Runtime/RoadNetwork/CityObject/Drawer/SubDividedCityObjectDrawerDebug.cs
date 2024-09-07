@@ -1,6 +1,4 @@
-﻿using PLATEAU.RoadNetwork.Graph;
-using PLATEAU.RoadNetwork.Mesh;
-using PLATEAU.Util;
+﻿using PLATEAU.Util;
 using System;
 using System.Collections.Generic;
 using System.Linq;

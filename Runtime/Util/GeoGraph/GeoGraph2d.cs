@@ -1,7 +1,7 @@
 ﻿using JetBrains.Annotations;
 using PLATEAU.PolygonMesh;
 using PLATEAU.RoadNetwork;
-using PLATEAU.RoadNetwork.Mesh;
+using PLATEAU.RoadNetwork.CityObject;
 using System;
 using System.Collections.Generic;
 using System.Linq;
