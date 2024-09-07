@@ -21,17 +21,20 @@ namespace PLATEAU.RoadNetwork.Tester
         // --------------------
         // start:フィールド
         // --------------------
-        [field: SerializeField] public RoadNetworkFactory Factory { get; set; } = new RoadNetworkFactory();
-
-        // 道路ネットワーク作成用のPLATEAUCityObjectGroupのプリセットテーブル
-        [SerializeField]
-        public List<TestTargetPresets> savedTargets = new List<TestTargetPresets>();
+        [field: SerializeField]
+        public RoadNetworkFactory Factory { get; set; } = new RoadNetworkFactory();
 
         // シーンに配置している全てのPLATEAUCityObjectGroupを対象にするか
-        [SerializeField] private bool targetAll = false;
+        [field: SerializeField]
+        private bool TargetAll { get; set; } = true;
+
+        // 道路ネットワーク作成用のPLATEAUCityObjectGroupのプリセットテーブル
+        [field: SerializeField]
+        public List<TestTargetPresets> TargetPresets { get; set; } = new();
 
         // 今回作成するPLATEAUCityObjectGroupのプリセットテーブル
-        public string targetPresetName = "";
+        [field: SerializeField]
+        public string TargetPresetName { get; set; } = "";
 
         // --------------------
         // end:フィールド
@@ -46,10 +49,10 @@ namespace PLATEAU.RoadNetwork.Tester
 
         public List<PLATEAUCityObjectGroup> GetTargetCityObjects()
         {
-            var ret = targetAll
+            var ret = TargetAll
                 ? (IList<PLATEAUCityObjectGroup>)GameObject.FindObjectsOfType<PLATEAUCityObjectGroup>()
-                : savedTargets
-                    .FirstOrDefault(s => s.name == targetPresetName)
+                : TargetPresets
+                    .FirstOrDefault(s => s.name == TargetPresetName)
                     ?.targets;
             if (ret == null)
                 return new List<PLATEAUCityObjectGroup>();
