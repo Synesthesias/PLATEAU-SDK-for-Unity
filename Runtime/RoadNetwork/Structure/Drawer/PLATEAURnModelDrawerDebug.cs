@@ -88,9 +88,9 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
             public VisibleType visibleType = VisibleType.All;
             public DrawOption showTrack = new(true, Color.yellow * 0.7f);
 
-            public DrawOption showBorder = new(true, Color.magenta * 0.7f);
+            public DrawOption showNonBorderEdge = new(true, Color.magenta * 0.7f);
 
-            public DrawOption shopNeighbor = new(true, Color.cyan * 0.7f);
+            public DrawOption showBorderEdge = new(true, Color.cyan * 0.7f);
 
             public bool showEdgeIndex = false;
 
@@ -594,17 +594,17 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
             for (var i = 0; i < intersection.Edges.Count; i++)
             {
                 var n = intersection.Edges[i];
-                if (op.showBorder.visible && n.Road == null)
+                if (op.showNonBorderEdge.visible && n.Road == null)
                 {
-                    DrawWay(n.Border, op.showBorder.color);
+                    DrawWay(n.Border, op.showNonBorderEdge.color);
                     var pos = n.Border.GetLerpPoint(0.5f);
                     if (op.showEdgeIndex)
                         DrawString($"B[{i}]", pos);
                 }
 
-                if (op.shopNeighbor.visible && n.Road != null)
+                if (op.showBorderEdge.visible && n.Road != null)
                 {
-                    DrawWay(n.Border, op.shopNeighbor.color);
+                    DrawWay(n.Border, op.showBorderEdge.color);
                     var pos = n.Border.GetLerpPoint(0.5f);
                     if (op.showEdgeIndex)
                         DrawString($"B[{i}]", pos);

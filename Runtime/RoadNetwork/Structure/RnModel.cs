@@ -215,13 +215,9 @@ namespace PLATEAU.RoadNetwork.Structure
 
         public void Deserialize(RoadNetworkStorage storage, bool removeEmptyCheck = true)
         {
-            Clear();
             var serializer = new RoadNetworkSerializer();
             var model = serializer.Deserialize(storage);
-            foreach (var l in model.Roads)
-                AddRoad(l);
-            foreach (var n in model.Intersections)
-                AddIntersection(n);
+            CopyFrom(model);
             if (removeEmptyCheck)
             {
                 RemoveEmptyRoadBetweenIntersection();
@@ -379,6 +375,26 @@ namespace PLATEAU.RoadNetwork.Structure
             sideWalks.Clear();
             roads.Clear();
             intersections.Clear();
+        }
+
+        /// <summary>
+        /// modelからコピーしてくる
+        /// </summary>
+        /// <param name="model"></param>
+        public void CopyFrom(RnModel model)
+        {
+            // 自身は削除
+            Clear();
+
+            // 道路/交差点/歩道をコピー
+            foreach (var l in model.Roads)
+                AddRoad(l);
+
+            foreach (var n in model.Intersections)
+                AddIntersection(n);
+
+            foreach (var n in model.SideWalks)
+                AddSideWalk(n);
         }
 
         public void SplitLaneByWidth(float roadWidth, out List<ulong> failedRoads)

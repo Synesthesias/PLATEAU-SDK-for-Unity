@@ -399,6 +399,7 @@ namespace PLATEAU.RoadNetwork.Data
         private static ReferenceTable CreateReferenceTable()
         {
             var refTable = new ReferenceTable();
+            // CollectForDeserializeで自動的に集められないクラスを登録しておく
             refTable.CreateMemberReferenceOrSkip(typeof(RnDataNeighbor));
             refTable.CreateMemberReferenceOrSkip(typeof(RnDataIntersection));
             refTable.CreateMemberReferenceOrSkip(typeof(RnDataRoad));
