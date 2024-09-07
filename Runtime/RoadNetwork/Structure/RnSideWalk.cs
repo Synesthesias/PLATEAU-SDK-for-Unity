@@ -9,16 +9,20 @@
         private RnRoadBase parentRoad;
 
         // 道路と反対側のWay
-        private RnWay outsideWay { get; }
+        // シリアライズ化の為にフィールドに
+        private RnWay outsideWay;
 
         // 道路と同じ側のWay
-        private RnWay insideWay { get; }
+        // シリアライズ化の為にフィールドに
+        private RnWay insideWay;
 
         // outsideWayとinsideWayの始点を繋ぐWay
-        private RnWay startEdgeWay { get; }
+        // シリアライズ化の為にフィールドに
+        private RnWay startEdgeWay;
 
         // outsideWayとinsideWayの終点を繋ぐWay
-        private RnWay endEdgeWay { get; }
+        // シリアライズ化の為にフィールドに
+        private RnWay endEdgeWay;
 
         //----------------------------------
         // end: フィールド

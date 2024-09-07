@@ -34,6 +34,8 @@ namespace PLATEAU.RoadNetwork.Structure
         public RnRoadBase Prev { get; private set; }
 
         // レーンリスト
+        // 車線レーンリスト(参照のみ)
+        // 必ず左車線 -> 右車線の順番になっている( そうなるように追加する必要がある)
         private List<RnLane> mainLanes = new List<RnLane>();
 
         // 中央分離帯
@@ -48,7 +50,8 @@ namespace PLATEAU.RoadNetwork.Structure
 
         public override PLATEAUCityObjectGroup CityObjectGroup => TargetTran;
 
-        // 本線レーン(参照のみ)
+        // 車線レーンリスト(参照のみ)
+        // 必ず左車線 -> 右車線の順番になっている( そうなるように追加する必要がある)
         // 追加/削除はAddMainLane/RemoveMainLaneを使うこと
         public IReadOnlyList<RnLane> MainLanes => mainLanes;
 
