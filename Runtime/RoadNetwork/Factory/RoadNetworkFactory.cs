@@ -10,7 +10,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
-using static UnityEngine.GraphicsBuffer;
 
 namespace PLATEAU.RoadNetwork.Factory
 {
@@ -20,36 +19,41 @@ namespace PLATEAU.RoadNetwork.Factory
         // --------------------
         // start:フィールド
         // --------------------
-
-        // 同一頂点扱いにするセルサイズ
-        [SerializeField] public float cellSize = 0.01f;
-
         // 道路サイズ
-        [SerializeField] public float roadSize = 3f;
+        [field: SerializeField]
+        public float RoadSize { get; set; } = 3f;
 
         // 行き止まり検出判定時に同一直線と判断する角度の総和
-        [SerializeField] public float terminateAllowEdgeAngle = 20f;
+        [field: SerializeField]
+        public float TerminateAllowEdgeAngle { get; set; } = 20f;
 
         // Lod1の道の歩道サイズ
-        [SerializeField] public float lod1SideWalkSize = 3f;
+        [field: SerializeField]
+        public float Lod1SideWalkSize { get; set; } = 3f;
 
         // Lod3の歩道を追加するかどうか
-        [SerializeField] public bool addLod3SideWalk = true;
+        [field: SerializeField]
+        public bool AddLod3SideWalk { get; set; } = true;
 
         // 中央分離帯をチェックする
-        [SerializeField] public bool checkMedian = true;
+        [field: SerializeField]
+        public bool CheckMedian { get; set; } = true;
 
         // 中央分離帯は作るが幅0で作成する
-        [SerializeField] public bool zeroWidthMedian = false;
+        [field: SerializeField]
+        public bool ZeroWidthMedian { get; set; } = false;
 
         // 高速道路を無視するかのフラグ
-        [SerializeField] public bool ignoreHighway = false;
+        [field: SerializeField]
+        public bool IgnoreHighway { get; set; } = true;
 
         // RGraph作るときのファクトリパラメータ
-        [SerializeField] public RGraphFactory graphFactory;
+        [field: SerializeField]
+        public RGraphFactory GraphFactory { get; set; }
 
         // 中間データを保存する
-        [SerializeField] public bool saveTmpData = false;
+        [field: SerializeField]
+        public bool SaveTmpData { get; set; } = false;
 
         // --------------------
         // end:フィールド
@@ -576,7 +580,7 @@ namespace PLATEAU.RoadNetwork.Factory
                 }).ToList();
 
                 var ret = new RnModel();
-                var work = new Work { terminateAllowEdgeAngle = terminateAllowEdgeAngle };
+                var work = new Work { terminateAllowEdgeAngle = TerminateAllowEdgeAngle };
                 foreach (var faceGroup in faceGroups)
                 {
                     var roadType = faceGroup.RoadTypes;
@@ -587,7 +591,7 @@ namespace PLATEAU.RoadNetwork.Factory
                     if (roadType.IsSideWalk())
                         continue;
                     // ignoreHighway=trueの時は高速道路も無視
-                    if (roadType.IsHighWay() && ignoreHighway)
+                    if (roadType.IsHighWay() && IgnoreHighway)
                         continue;
                     work.TranMap[faceGroup] = new Tran(work, graph, faceGroup);
                 }
@@ -608,10 +612,10 @@ namespace PLATEAU.RoadNetwork.Factory
                 }
 
                 // 歩道を作成する
-                var sideWalks = work.CreateSideWalk(lod1SideWalkSize);
+                var sideWalks = work.CreateSideWalk(Lod1SideWalkSize);
                 foreach (var sideWalk in sideWalks)
                     ret.AddSideWalk(sideWalk);
-                if (addLod3SideWalk)
+                if (AddLod3SideWalk)
                 {
                     foreach (var fg in faceGroups)
                     {
@@ -656,10 +660,10 @@ namespace PLATEAU.RoadNetwork.Factory
                             var linkGroup = road.CreateRoadGroupOrDefault();
                             if (linkGroup == null)
                                 continue;
-                            if (checkMedian)
+                            if (CheckMedian)
                             {
                                 linkGroup.SetLaneCount(1, 1);
-                                if (zeroWidthMedian == false)
+                                if (ZeroWidthMedian == false)
                                     linkGroup.SetMedianWidth(width, LaneWayMoveOption.MoveBothWay);
                             }
                             foreach (var r in linkGroup.Roads)
@@ -669,7 +673,7 @@ namespace PLATEAU.RoadNetwork.Factory
                 }
 
 
-                ret.SplitLaneByWidth(roadSize, out var failedLinks);
+                ret.SplitLaneByWidth(RoadSize, out var failedLinks);
                 ret.ReBuildIntersectionTracks();
                 return Task.FromResult(ret);
             }
@@ -683,12 +687,12 @@ namespace PLATEAU.RoadNetwork.Factory
         public async Task<RnModel> CreateRnModelImplAsync(List<PLATEAUCityObjectGroup> cityObjectGroups, GameObject target)
         {
             var subDividedCityObjects = (await RnEx.ConvertCityObjectsAsync(cityObjectGroups)).ConvertedCityObjects;
-            var graph = graphFactory.CreateGraph(subDividedCityObjects);
+            var graph = GraphFactory.CreateGraph(subDividedCityObjects);
             var model = await CreateRnModelAsync(graph);
 
             if (target)
             {
-                if (saveTmpData)
+                if (SaveTmpData)
                 {
                     target.GetOrAddComponent<PLATEAURGraph>().Graph = graph;
                     target.GetOrAddComponent<PLATEAUSubDividedCityObjectGroup>().CityObjects = subDividedCityObjects;
