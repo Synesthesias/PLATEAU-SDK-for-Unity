@@ -39,7 +39,7 @@ namespace PLATEAU.Editor.Window.Main
                             // 道路調整内の入れ子タブ
                             new TabWithFrame(
                                 new TabElement("路面標示生成", new RoadMarkingGeneratorPresenter()),
-                                new TabElement("道路レーン分割", new RoadLaneSeparatorGui()))
+                                new TabElement("道路変更", new RoadChangePresenter()))
                         )
                     )
                 ),
