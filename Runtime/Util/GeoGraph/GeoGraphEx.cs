@@ -55,6 +55,25 @@ namespace PLATEAU.Util.GeoGraph
         }
 
         /// <summary>
+        /// planeに指定した成分にselfを入れて、残りにaを入れたvector3を返す
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="plane"></param>
+        /// <param name="a"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentOutOfRangeException"></exception>
+        public static Vector3 ToVector3(this Vector2 self, AxisPlane plane, float a = 0f)
+        {
+            return plane switch
+            {
+                AxisPlane.Xy => new Vector3(self.x, self.y, a),
+                AxisPlane.Xz => new Vector3(self.x, a, self.y),
+                AxisPlane.Yz => new Vector3(a, self.x, self.y),
+                _ => throw new ArgumentOutOfRangeException(nameof(plane), plane, null)
+            };
+        }
+
+        /// <summary>
         /// planeに対する直交成分を取り出す
         /// </summary>
         /// <param name="plane"></param>

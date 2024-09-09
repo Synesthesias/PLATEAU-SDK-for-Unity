@@ -1,4 +1,6 @@
-﻿namespace PLATEAU.Editor.RoadNetwork
+﻿using UnityEditor;
+
+namespace PLATEAU.Editor.RoadNetwork
 {
     /// <summary>
     /// 道路ネットワーク手動編集機能を提供するエディタウィンドウ
@@ -31,7 +33,7 @@
 
         // 2024年7月のリリース準備のため、開発中の機能を一時的にメニューから非表示にしています。
         // リリースが終わったら下のコメント行を復活させてください。
-        // [MenuItem("PLATEAU_Dev/PLATEAU RoadNetwork Editor")]
+        [MenuItem("PLATEAU_Dev/PLATEAU RoadNetwork Editor")]
         public static void ShowWindow()
         {
             GetWindow(true);

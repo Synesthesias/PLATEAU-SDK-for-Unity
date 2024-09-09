@@ -363,7 +363,7 @@ namespace PLATEAU.Editor.RoadNetwork
             foreach (var item in connections)
             {
                 // 選択済みのオブジェクト
-                if (item == editorSystem.SelectedRoadNetworkElement) 
+                if (item == editorSystem.SelectedRoadNetworkElement)
                     continue;
 
                 var subData = item.GetSubData<LinkGroupEditorData>();
@@ -597,14 +597,14 @@ namespace PLATEAU.Editor.RoadNetwork
 
                         foreach (var sideWalk in road.SideWalks)
                         {
-                            foreach (var point in sideWalk.Way.Points)
+                            foreach (var point in sideWalk.OutsideWay.Points)
                             {
                                 if (state.isDirtyTarget)
                                 {
                                     break;
                                 }
 
-                                var parent = sideWalk.Way;
+                                var parent = sideWalk.OutsideWay;
                                 var isEditable = false;
                                 isEditable = true;
 
@@ -766,9 +766,12 @@ namespace PLATEAU.Editor.RoadNetwork
             var vertPos = DeployFreeMoveHandle(point, size, snap: Vector3.zero);
             if (EditorGUI.EndChangeCheck())
             {
-                var res = networkOperator.MovePoint(point, vertPos);
+                var mousePos = Event.current.mousePosition;
+                var ray = HandleUtility.GUIPointToWorldRay(mousePos);
+                RoadNetworkEditingSystem.SnapPointToDem(point, ray);
+                //var res = networkOperator.MovePoint(point, vertPos);
                 state.isDirtyTarget = true;
-                Debug.Assert(res.IsSuccess);
+                //Debug.Assert(res.IsSuccess);
             }
         }
 

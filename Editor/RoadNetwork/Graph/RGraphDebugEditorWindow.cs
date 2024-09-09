@@ -1,6 +1,4 @@
-﻿using NUnit.Framework;
-using PLATEAU.RoadNetwork;
-using PLATEAU.RoadNetwork.Drawer;
+﻿using PLATEAU.RoadNetwork;
 using PLATEAU.RoadNetwork.Graph;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,10 +12,10 @@ namespace PLATEAU.Editor.RoadNetwork.Graph
         public interface IInstanceHelper
         {
             // グラフ取得
-            RGraph GetGraph();
+            PLATEAURGraph GetGraph();
 
             // グラフ作成
-            RGraph CreateGraph();
+            PLATEAURGraph CreateGraph();
 
             HashSet<RFace> TargetFaces { get; }
 
@@ -27,12 +25,12 @@ namespace PLATEAU.Editor.RoadNetwork.Graph
 
             bool IsTarget(RFace face);
 
-            // モデル作成する
-            void CreateRnModel();
+            //// モデル作成する
+            //void CreateRnModel();
 
-            RGraphDrawerDebug GetDrawer();
+            //// PLATEAURGraphDrawerDebug GetDrawer();
 
-            void CreateTranMesh();
+            //void CreateTranMesh();
         }
 
         private const string WindowName = "PLATEAU RGraph Editor";
@@ -133,19 +131,29 @@ namespace PLATEAU.Editor.RoadNetwork.Graph
             if (InstanceHelper == null)
                 return;
 
-            var graph = InstanceHelper.GetGraph();
-            using (new EditorGUILayout.HorizontalScope())
+            var target = InstanceHelper.GetGraph();
+            if (!target)
             {
-                if (GUILayout.Button("Create Graph"))
+
+                using (new EditorGUILayout.HorizontalScope())
                 {
-                    graph = InstanceHelper.CreateGraph();
-                    if (mergeOnCreate)
+                    if (GUILayout.Button("Create Graph"))
                     {
-                        graph.Optimize(mergeCellSize, mergeCellLength, removeMidPointTolerance);
+                        target = InstanceHelper.CreateGraph();
+                        if (mergeOnCreate)
+                        {
+                            target.Graph.Optimize(mergeCellSize, mergeCellLength, removeMidPointTolerance);
+                        }
                     }
+                    mergeOnCreate = EditorGUILayout.Toggle("MergeOnCreate", mergeOnCreate);
                 }
-                mergeOnCreate = EditorGUILayout.Toggle("MergeOnCreate", mergeOnCreate);
+                return;
             }
+
+            var graph = target.Graph;
+            if (graph == null)
+                return;
+
 
             using (new EditorGUILayout.HorizontalScope())
             {
@@ -187,11 +195,11 @@ namespace PLATEAU.Editor.RoadNetwork.Graph
                 heightTolerance = EditorGUILayout.FloatField("HeightEpsilon", heightTolerance);
             }
 
-            if (GUILayout.Button("Create RnModel"))
-                InstanceHelper.CreateRnModel();
+            //if (GUILayout.Button("Create RnModel"))
+            //    InstanceHelper.CreateRnModel();
 
-            if (GUILayout.Button("Create TranMEsh"))
-                InstanceHelper.CreateTranMesh();
+            //if (GUILayout.Button("Create TranMEsh"))
+            //    InstanceHelper.CreateTranMesh();
 
             RnEditorUtil.Separator();
 

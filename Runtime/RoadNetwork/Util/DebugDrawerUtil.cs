@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace PLATEAU.RoadNetwork.Drawer
+namespace PLATEAU.RoadNetwork.Util
 {
     /// <summary>
     /// 基本の描画オプション

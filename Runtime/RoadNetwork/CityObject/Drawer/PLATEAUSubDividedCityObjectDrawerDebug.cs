@@ -1,5 +1,4 @@
 ﻿using PLATEAU.RoadNetwork.Graph;
-using PLATEAU.RoadNetwork.Mesh;
 using PLATEAU.Util;
 using System;
 using System.Collections.Generic;
@@ -9,7 +8,7 @@ using UnityEngine;
 namespace PLATEAU.RoadNetwork.CityObject.Drawer
 {
     [Serializable]
-    public class SubDividedCityObjectDrawerDebug
+    public class PLATEAUSubDividedCityObjectDrawerDebug : MonoBehaviour
     {
         // --------------------
         // start:フィールド
@@ -44,14 +43,14 @@ namespace PLATEAU.RoadNetwork.CityObject.Drawer
             }
         }
 
-        public void DrawConvertedCityObject(List<SubDividedCityObject> cityObjects)
+        public void DrawCityObjects(List<SubDividedCityObject> cityObjects)
         {
             if (!visible)
                 return;
             var index = 0;
             foreach (var item in cityObjects)
             {
-                if (item.Visible == false || (TargetCityObjects.Any() == false && TargetCityObjects.Contains(item) == false))
+                if (item.Visible == false || (TargetCityObjects.Any() && TargetCityObjects.Contains(item) == false))
                 {
                     // インデックスは進めておかないとvisible切り替わるたびに色代わるの辛い
                     index += item.Meshes.Sum(m => m.SubMeshes.Count);
@@ -77,6 +76,17 @@ namespace PLATEAU.RoadNetwork.CityObject.Drawer
                     }
                 }
             }
+        }
+
+        public void OnDrawGizmos()
+        {
+            if (visible == false)
+                return;
+
+            var target = GetComponent<PLATEAUSubDividedCityObjectGroup>();
+            if (!target)
+                return;
+            DrawCityObjects(target.CityObjects ?? new List<SubDividedCityObject>());
         }
     }
 }

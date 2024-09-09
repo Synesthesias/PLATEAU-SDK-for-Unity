@@ -3,7 +3,6 @@ using PLATEAU.Util.GeoGraph;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
 using UnityEngine;
 using UnityEngine.Assertions;
 using Vector2 = UnityEngine.Vector2;
@@ -81,7 +80,7 @@ namespace PLATEAU.RoadNetwork.Structure
         // start: フィールド
         //----------------------------------
         // 親リンク
-        public RnRoadBase Parent { get; set; }
+        public RnRoad Parent { get; set; }
 
         // 境界線(下流)
         public RnWay PrevBorder { get; set; }
@@ -220,11 +219,15 @@ namespace PLATEAU.RoadNetwork.Structure
 
             foreach (var n in Parent.GetNeighborRoads())
             {
-                foreach (var lane in n.AllLanes)
+                if (n is RnRoad road)
                 {
-                    if (lane.AllBorders.Any(b => b.IsSameLine(border)))
-                        yield return lane;
+                    foreach (var lane in road.AllLanes)
+                    {
+                        if (lane.AllBorders.Any(b => b.IsSameLine(border)))
+                            yield return lane;
+                    }
                 }
+
             }
         }
 

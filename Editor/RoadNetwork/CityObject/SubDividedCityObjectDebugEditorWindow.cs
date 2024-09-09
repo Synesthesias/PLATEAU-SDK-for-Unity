@@ -1,9 +1,8 @@
-﻿using PLATEAU.RoadNetwork;
-using PLATEAU.RoadNetwork.Drawer;
-using PLATEAU.RoadNetwork.Mesh;
+﻿using PLATEAU.RoadNetwork.CityObject;
+using PLATEAU.RoadNetwork.Util;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEditor;
-using static PLATEAU.RoadNetwork.Factory.RsFactoryMidStageData;
 
 namespace PLATEAU.Editor.RoadNetwork.CityObject
 {
@@ -12,18 +11,16 @@ namespace PLATEAU.Editor.RoadNetwork.CityObject
         public interface IInstanceHelper
         {
             // グラフ取得
-            SubDividedCityObjectWrap GetCityObjects();
+            PLATEAUSubDividedCityObjectGroup GetCityObjects();
 
             bool IsTarget(SubDividedCityObject cityObject);
 
             HashSet<SubDividedCityObject> TargetCityObjects { get; }
 
             // モデル作成する
-            void CreateRnModel();
+            // void CreateRnModel();
 
-            RGraphDrawerDebug GetDrawer();
-
-            void CreateTranMesh();
+            //void CreateTranMesh();
         }
 
         private const string WindowName = "SubDividedCityObject Editor";
@@ -72,7 +69,7 @@ namespace PLATEAU.Editor.RoadNetwork.CityObject
                 return;
 
             var cityObjects = InstanceHelper.GetCityObjects();
-            if (cityObjects == null || cityObjects.cityObjects == null)
+            if (!cityObjects || !(cityObjects.CityObjects?.Any() ?? false))
             {
                 return;
             }
@@ -82,11 +79,11 @@ namespace PLATEAU.Editor.RoadNetwork.CityObject
 
             using (new EditorGUI.DisabledScope(true))
             {
-                EditorGUILayout.IntField("CityObjects", cityObjects.cityObjects.Count);
+                EditorGUILayout.IntField("CityObjects", cityObjects.CityObjects.Count);
             }
 
             RnEditorUtil.Separator();
-            foreach (var cog in cityObjects.cityObjects)
+            foreach (var cog in cityObjects.CityObjects)
             {
                 if (InstanceHelper.IsTarget(cog) || InstanceHelper.TargetCityObjects.Contains(cog))
                 {

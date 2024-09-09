@@ -80,7 +80,8 @@ namespace PLATEAU.RoadNetwork.Structure
     }
 
     /// <summary>
-    /// レーンを構成する左右の道の一つ
+    /// 方向を持つ線分クラス. 車線を構成する1ライン
+    /// 同じ線分だけど向きが逆ということが多々あるのでメモリ削減 & 比較を楽にするため
     /// </summary>
     [Serializable]
     public class RnWay : ARnParts<RnWay>, IReadOnlyList<Vector3>

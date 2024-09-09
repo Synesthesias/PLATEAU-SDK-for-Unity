@@ -129,7 +129,7 @@ namespace PLATEAU.RoadNetwork.Structure
         /// <param name="midPointTolerance">p0 -> p1 -> p2の３点があったときに、p0->p2の直線とp1の距離がこれ以下ならp1を削除する</param>
         public void AddPointOrSkip(RnPoint p, float distanceEpsilon = DefaultDistanceEpsilon, float degEpsilon = DefaultDegEpsilon, float midPointTolerance = DefaultMidPointTolerance)
         {
-            if (Points.Count > 0 && RnPoint.Equals(Points.Last(), p, distanceEpsilon * distanceEpsilon))
+            if (Points.Count > 0 && RnPoint.Equals(Points.Last(), p, distanceEpsilon < 0 ? -1f : distanceEpsilon * distanceEpsilon))
                 return;
             if (Points.Count > 1)
             {

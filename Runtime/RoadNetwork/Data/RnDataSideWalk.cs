@@ -16,7 +16,19 @@ namespace PLATEAU.RoadNetwork.Data
 
         // 対象のtranオブジェクト
         [field: SerializeField]
-        [RoadNetworkSerializeMember("way")]
-        public RnID<RnDataWay> Way { get; set; }
+        [RoadNetworkSerializeMember("outsideWay")]
+        public RnID<RnDataWay> OutsideWay { get; set; }
+
+        [field: SerializeField]
+        [RoadNetworkSerializeMember("insideWay")]
+        public RnID<RnDataWay> InsideWay { get; set; }
+
+        [field: SerializeField]
+        [RoadNetworkSerializeMember("startEdgeWay")]
+        public RnID<RnDataWay> StartEdgeWay { get; set; }
+
+        [field: SerializeField]
+        [RoadNetworkSerializeMember("endEdgeWay")]
+        public RnID<RnDataWay> EndEdgeWay { get; set; }
     }
 }

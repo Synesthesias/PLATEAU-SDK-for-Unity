@@ -1,15 +1,8 @@
 ﻿using PLATEAU.CityInfo;
 using PLATEAU.RoadNetwork.Graph;
-using PLATEAU.RoadNetwork.Structure;
-using PLATEAU.Util;
-using PLATEAU.Util.GeoGraph;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using UnityEngine;
-using static UnityEngine.GraphicsBuffer;
 
 namespace PLATEAU.RoadNetwork.Factory
 {
@@ -41,6 +34,7 @@ namespace PLATEAU.RoadNetwork.Factory
 
     public partial class RoadNetworkFactory
     {
+#if false
         [Serializable]
         private class Cell : IReadOnlyList<TranWork>
         {
@@ -503,7 +497,6 @@ namespace PLATEAU.RoadNetwork.Factory
             }
         }
 
-
         public Task<RnModel> CreateNetworkAsync(IList<RoadNetworkTranMesh> targets)
         {
             // レーンの初期化
@@ -738,5 +731,6 @@ namespace PLATEAU.RoadNetwork.Factory
                 tran.Split2Way(lineStringTable);
             return tranWorks;
         }
+#endif
     }
 }

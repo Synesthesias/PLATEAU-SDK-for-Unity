@@ -76,16 +76,17 @@ namespace PLATEAU.Util
             var bodyColorImpl = bodyColor ?? Color.white;
 
             DrawLine(start, end, bodyColorImpl, duration, depthTest);
-            up = Vector3.Cross(end - start, Vector3.Cross(end - start, up)).normalized;
-
-            var a1 = Quaternion.AngleAxis(45f, up) * (start - end);
-            var a2 = Quaternion.AngleAxis(-90, up) * a1;
-
-            a1 = a1.normalized;
-            a2 = a2.normalized;
-            var arrowColorImpl = arrowColor ?? bodyColorImpl;
-            DrawLine(end + a1 * arrowSize, end, arrowColorImpl, duration);
-            DrawLine(end + a2 * arrowSize, end, arrowColorImpl, duration);
+            if (arrowSize > 0f)
+            {
+                up = Vector3.Cross(end - start, Vector3.Cross(end - start, up)).normalized;
+                var a1 = Quaternion.AngleAxis(45f, up) * (start - end);
+                var a2 = Quaternion.AngleAxis(-90, up) * a1;
+                a1 = a1.normalized;
+                a2 = a2.normalized;
+                var arrowColorImpl = arrowColor ?? bodyColorImpl;
+                DrawLine(end + a1 * arrowSize, end, arrowColorImpl, duration);
+                DrawLine(end + a2 * arrowSize, end, arrowColorImpl, duration);
+            }
         }
 
         /// <summary>
@@ -436,6 +437,39 @@ namespace PLATEAU.Util
         /// <summary>
         /// デバッグで破線を描画する
         /// </summary>
+        /// <param name="st"></param>
+        /// <param name="en"></param>
+        /// <param name="color"></param>
+        /// <param name="lineLength"></param>
+        /// <param name="spaceLength"></param>
+        /// <param name="duration"></param>
+        /// <param name="depthTest"></param>
+        /// <param name="arrowSize"></param>
+        /// <param name="arrowUp"></param>
+        /// <param name="arrowColor"></param>
+        public static void DrawDashedArrow(Vector3 st, Vector3 en
+            , Color? color = null, float lineLength = 1f, float spaceLength = 0.2f, float duration = 0f, bool depthTest = true, float arrowSize = 0.5f, Vector3? arrowUp = null, Color? arrowColor = null)
+        {
+            var len = (en - st).magnitude;
+
+            var n = len / (lineLength + spaceLength);
+            if (n <= 0f)
+                return;
+
+            var offset = 1f / n;
+            var s = offset * lineLength / (lineLength + spaceLength);
+
+            for (var t = 0f; t < 1f; t += offset)
+            {
+                var p0 = Vector3.Lerp(st, en, t);
+                var p1 = Vector3.Lerp(st, en, Mathf.Min(1f, t + s));
+                DebugEx.DrawArrow(p0, p1, arrowSize, arrowUp, color, arrowColor: arrowColor, duration: duration, depthTest: depthTest);
+            }
+        }
+
+        /// <summary>
+        /// デバッグで破線を描画する
+        /// </summary>
         /// <param name="vertices"></param>
         /// <param name="isLoop"></param>
         /// <param name="color"></param>
@@ -448,6 +482,23 @@ namespace PLATEAU.Util
         {
             foreach (var e in GeoGraphEx.GetEdges(vertices, isLoop))
                 DrawDashedLine(e.Item1, e.Item2, color, lineLength, spaceLength, duration, depthTest);
+        }
+
+        /// <summary>
+        /// デバッグで破線(矢印)を描画する
+        /// </summary>
+        /// <param name="vertices"></param>
+        /// <param name="isLoop"></param>
+        /// <param name="color"></param>
+        /// <param name="lineLength"></param>
+        /// <param name="spaceLength"></param>
+        /// <param name="duration"></param>
+        /// <param name="depthTest"></param>
+        public static void DrawDashedArrows(IEnumerable<Vector3> vertices, bool isLoop = false, Color? color = null, float lineLength = 3f, float spaceLength = 1f, float duration = 0f,
+            bool depthTest = true)
+        {
+            foreach (var e in GeoGraphEx.GetEdges(vertices, isLoop))
+                DrawDashedArrow(e.Item1, e.Item2, color, lineLength, spaceLength, duration, depthTest);
         }
     }
 }
