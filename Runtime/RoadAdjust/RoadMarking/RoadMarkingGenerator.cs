@@ -32,53 +32,25 @@ namespace PLATEAU.RoadAdjust.RoadMarking
 
         public void Generate()
         {
-            var ways = CollectWays();
-            foreach (var way in ways)
+            var ways = MarkedWayList.ComposeFrom(targetNetwork);
+            var parent = new GameObject("RoadMarking").transform;
+            foreach (var way in ways.Get)
             {
-                GenerateWayMarking(way);
+                GenerateWayMarking(way, parent);
             }
         }
+        
 
-        /// <summary>
-        /// 道路ネットワークから<see cref="RnWay"/>を収集して返します。
-        /// </summary>
-        private HashSet<RnWay> CollectWays()
-        {
-            // Wayは重複があるのでHashSetを使います。
-            // 重複する理由は、1つのWay（レーンの境界）は、境界の左右のレーンで共有するためです。
-            var ways = new HashSet<RnWay>();
-            foreach (var road in targetNetwork.Roads)
-            {
-                // 車道
-                var carLanes = road.MainLanes;
-                foreach (var lane in carLanes)
-                {
-                    foreach (var way in lane.BothWays)
-                    {
-                        ways.Add(way);
-                    }
-                }
-
-                // 歩道
-                var sidewalkLanes = road.SideWalks;
-                foreach (var lane in sidewalkLanes)
-                {
-                    ways.Add(lane.InsideWay);
-                }
-            }
-            return ways;
-        }
-
-        private GameObject GenerateWayMarking(RnWay way)
+        private GameObject GenerateWayMarking(MarkedWay way, Transform dstParent)
         {
             var mesh = GenerateMesh(way);
             if (mesh == null) return null;
-            return GenerateGameObj(mesh);
+            return GenerateGameObj(mesh, dstParent);
         }
 
-        private Mesh GenerateMesh(RnWay way)
+        private Mesh GenerateMesh(MarkedWay way)
         {
-            var points = way.Points.Select(p => p.Vertex).ToArray();
+            var points = way.Way.Points.Select(p => p.Vertex).ToArray();
             if (points.Length < 2)
             {
                 Debug.LogWarning("Not enough points to generate mesh.");
@@ -119,7 +91,7 @@ namespace PLATEAU.RoadAdjust.RoadMarking
             return mesh;
         }
 
-        private GameObject GenerateGameObj(Mesh mesh)
+        private GameObject GenerateGameObj(Mesh mesh, Transform dstParent)
         {
             var obj = new GameObject("RoadMarking");
             var meshFilter = obj.AddComponent<MeshFilter>();
@@ -127,6 +99,7 @@ namespace PLATEAU.RoadAdjust.RoadMarking
             var meshRenderer = obj.AddComponent<MeshRenderer>();
             meshRenderer.material = new Material(materialWhite);
             meshRenderer.shadowCastingMode = ShadowCastingMode.Off; // 道路と重なっているので影は不要
+            obj.transform.parent = dstParent;
             return obj;
         }
     }
