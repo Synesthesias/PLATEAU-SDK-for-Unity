@@ -73,15 +73,24 @@ namespace PLATEAU.RoadAdjust.RoadMarking
     {
         /// <summary> 破線内の1つの線の長さ </summary>
         private const float DashLength = 5f;
+        private bool direction;
 
-        public Mesh GenerateMesh(IReadOnlyList<Vector3> srcPoints)
+        public DashedLineMeshGenerator(bool direction)
         {
+            this.direction = direction;
+        }
+
+        public Mesh GenerateMesh(IReadOnlyList<Vector3> srcPointsArg)
+        {
+            // 破線の基点を揃えるために、方向によっては逆順にします。
+            Vector3[] srcPoints = direction ? srcPointsArg.ToArray() : srcPointsArg.Reverse().ToArray();
+            
             float length = 0f;
             bool isBlank = false;
             var gen = new SolidLineMeshGenerator();
             Queue<Vector3> drawQue = new Queue<Vector3>(); // これから描きたい実線部の線
             var combines = new List<CombineInstance>();
-            for (int i = 0; i < srcPoints.Count; i++)
+            for (int i = 0; i < srcPoints.Length; i++)
             {
                 if (i <= 0) continue;
 

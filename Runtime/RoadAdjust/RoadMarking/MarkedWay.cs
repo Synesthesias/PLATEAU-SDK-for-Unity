@@ -10,11 +10,13 @@ namespace PLATEAU.RoadAdjust.RoadMarking
     {
         public RnWay Way { get; private set; }
         public MarkedWayType Type { get; private set; }
+        public bool Direction { get; private set; }
 
-        public MarkedWay(RnWay way, MarkedWayType type)
+        public MarkedWay(RnWay way, MarkedWayType type, bool direction)
         {
             Way = way;
             Type = type;
+            Direction = direction;
         }
     }
 
@@ -31,14 +33,14 @@ namespace PLATEAU.RoadAdjust.RoadMarking
 
     public static class MarkedWayTypeExtension
     {
-        public static ILineMeshGenerator ToLineMeshGenerator(this MarkedWayType type)
+        public static ILineMeshGenerator ToLineMeshGenerator(this MarkedWayType type, bool direction)
         {
             switch (type)
             {
                 case MarkedWayType.CenterLine:
                     return new SolidLineMeshGenerator();
                 case MarkedWayType.LaneLine:
-                    return new DashedLineMeshGenerator();
+                    return new DashedLineMeshGenerator(direction);
                 case MarkedWayType.RoadwayBorderLine:
                     return new SolidLineMeshGenerator();
                 default:
@@ -74,19 +76,19 @@ namespace PLATEAU.RoadAdjust.RoadMarking
                     // 次のレーンと進行方向が異なる場合、RightLaneはセンターラインです。
                     if (i < carLanes.Count - 1 && lane.IsReverse != carLanes[i + 1].IsReverse)
                     {
-                        found.Add(new MarkedWay(lane.RightWay, MarkedWayType.CenterLine));
+                        found.Add(new MarkedWay(lane.RightWay, MarkedWayType.CenterLine, lane.IsReverse));
                     }
                     // RightLaneを見る必要があるのはセンターラインだけで、それ以外はLeftLaneだけ見れば重複なく網羅できます。
 
                     // 端の車線の場合、そのLeftLaneは歩道と車道の間です
                     if (i == 0 || i == carLanes.Count - 1)
                     {
-                        found.Add(new MarkedWay(lane.LeftWay, MarkedWayType.RoadwayBorderLine));
+                        found.Add(new MarkedWay(lane.LeftWay, MarkedWayType.RoadwayBorderLine, lane.IsReverse));
                     }
                     else
                     {
                         // そうでない場合、センターラインではない車線同士の境界線です。
-                        found.Add(new MarkedWay(lane.LeftWay, MarkedWayType.LaneLine));
+                        found.Add(new MarkedWay(lane.LeftWay, MarkedWayType.LaneLine, lane.IsReverse));
                     }
 
                     

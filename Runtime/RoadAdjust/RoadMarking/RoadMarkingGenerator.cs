@@ -40,7 +40,7 @@ namespace PLATEAU.RoadAdjust.RoadMarking
 
         private GameObject GenerateWayMarking(MarkedWay way, Transform dstParent)
         {
-            var gen = way.Type.ToLineMeshGenerator();
+            var gen = way.Type.ToLineMeshGenerator(way.Direction);
             if (gen == null) return null;
             var mesh = gen.GenerateMesh(way.Way.Points.Select(p => p.Vertex).ToArray());
             if (mesh == null) return null;
