@@ -14,10 +14,7 @@ namespace PLATEAU.RoadAdjust.RoadMarking
     {
         private RnModel targetNetwork;
         
-        /// <summary> 道路に描かれる線の幅はルールで決まっています </summary>
-        private const float LineWidth = 0.15f;
-
-        private const float HeightOffset = 0.05f;
+        
 
         private static string materialFolder = "PlateauRoadMarkingMaterials";
         private static string materialNameWhite = "PlateauRoadMarkingWhite";
@@ -43,53 +40,14 @@ namespace PLATEAU.RoadAdjust.RoadMarking
 
         private GameObject GenerateWayMarking(MarkedWay way, Transform dstParent)
         {
-            var mesh = GenerateMesh(way);
+            var gen = way.Type.ToLineMeshGenerator();
+            if (gen == null) return null;
+            var mesh = gen.GenerateMesh(way.Way.Points.Select(p => p.Vertex).ToArray());
             if (mesh == null) return null;
             return GenerateGameObj(mesh, dstParent);
         }
 
-        private Mesh GenerateMesh(MarkedWay way)
-        {
-            var points = way.Way.Points.Select(p => p.Vertex).ToArray();
-            if (points.Length < 2)
-            {
-                Debug.LogWarning("Not enough points to generate mesh.");
-                return null;
-            }
-
-            var mesh = new Mesh();
-            var vertices = new Vector3[points.Length * 2];
-            int[] triangles = new int[(points.Length - 1) * 6];
-            for (int i = 0; i < points.Length; i++)
-            {
-                var forward = Vector3.zero;
-                if (i < points.Length - 1) forward += points[i + 1] - points[i];
-                if (i > 0) forward += points[i] - points[i - 1];
-                forward.Normalize();
-                var right = Vector3.Cross(forward, Vector3.up).normalized;
-
-                vertices[i * 2] = points[i] + right * LineWidth * 0.5f + Vector3.up * HeightOffset;
-                vertices[i * 2 + 1] = points[i] - right * LineWidth * 0.5f + Vector3.up * HeightOffset;
-                if (i < points.Length - 1)
-                {
-                    int baseIndex = i * 6;
-                    int vertexIndex = i * 2;
-                    triangles[baseIndex + 0] = vertexIndex + 0;
-                    triangles[baseIndex + 1] = vertexIndex + 2;
-                    triangles[baseIndex + 2] = vertexIndex + 1;
-                    triangles[baseIndex + 3] = vertexIndex + 2;
-                    triangles[baseIndex + 4] = vertexIndex + 3;
-                    triangles[baseIndex + 5] = vertexIndex + 1;
-                }
-            }
-
-            mesh.vertices = vertices;
-            mesh.triangles = triangles;
-            mesh.RecalculateNormals();
-            mesh.RecalculateTangents();
-            mesh.RecalculateBounds();
-            return mesh;
-        }
+        
 
         private GameObject GenerateGameObj(Mesh mesh, Transform dstParent)
         {

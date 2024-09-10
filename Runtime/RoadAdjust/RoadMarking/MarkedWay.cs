@@ -29,6 +29,24 @@ namespace PLATEAU.RoadAdjust.RoadMarking
         RoadwayBorderLine
     }
 
+    public static class MarkedWayTypeExtension
+    {
+        public static ILineMeshGenerator ToLineMeshGenerator(this MarkedWayType type)
+        {
+            switch (type)
+            {
+                case MarkedWayType.CenterLine:
+                    return new SolidLineMeshGenerator();
+                case MarkedWayType.LaneLine:
+                    return new DashedLineMeshGenerator();
+                case MarkedWayType.RoadwayBorderLine:
+                    return new SolidLineMeshGenerator();
+                default:
+                    return null;
+            }
+        }
+    }
+
     /// <summary>
     /// <see cref="MarkedWay"/>のリストです。
     /// </summary>
