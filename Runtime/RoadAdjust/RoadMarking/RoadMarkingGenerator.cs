@@ -14,7 +14,6 @@ namespace PLATEAU.RoadAdjust.RoadMarking
     {
         private RnModel targetNetwork;
         
-        
 
         private static string materialFolder = "PlateauRoadMarkingMaterials";
         private static string materialNameWhite = "PlateauRoadMarkingWhite";
@@ -27,30 +26,40 @@ namespace PLATEAU.RoadAdjust.RoadMarking
             this.targetNetwork = targetNetwork;
         }
 
+        /// <summary> 路面標示をメッシュとして生成します。 </summary>
         public void Generate()
         {
+            if (targetNetwork == null)
+            {
+                Debug.LogError("道路ネットワークが見つかりませんでした。");
+                return;
+            }
+            
+            // 道路の線を取得します。
             var ways = MarkedWayList.ComposeFrom(targetNetwork);
-            var parent = new GameObject("RoadMarking").transform;
+            
+            var combines = new List<CombineInstance>(ways.Get.Count);
             foreach (var way in ways.Get)
             {
-                GenerateWayMarking(way, parent);
+                // 道路の線をメッシュに変換します。
+                var gen = way.Type.ToLineMeshGenerator(way.Direction);
+                var mesh = gen.GenerateMesh(way.Way.Points.Select(p => p.Vertex).ToArray());
+                
+                combines.Add(new CombineInstance{mesh = mesh, transform = Matrix4x4.identity});
             }
-        }
-        
 
-        private GameObject GenerateWayMarking(MarkedWay way, Transform dstParent)
-        {
-            var gen = way.Type.ToLineMeshGenerator(way.Direction);
-            if (gen == null) return null;
-            var mesh = gen.GenerateMesh(way.Way.Points.Select(p => p.Vertex).ToArray());
-            if (mesh == null) return null;
-            return GenerateGameObj(mesh, dstParent);
+            var dstMesh = new Mesh();
+            dstMesh.CombineMeshes(combines.ToArray());
+            GenerateGameObj(dstMesh, null);
         }
 
         
 
         private GameObject GenerateGameObj(Mesh mesh, Transform dstParent)
         {
+            mesh.RecalculateNormals();
+            mesh.RecalculateTangents();
+            mesh.RecalculateBounds();
             var obj = new GameObject("RoadMarking");
             var meshFilter = obj.AddComponent<MeshFilter>();
             meshFilter.mesh = mesh;

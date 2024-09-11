@@ -1,5 +1,7 @@
 using PLATEAU.RoadNetwork.Structure;
 using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
 
 namespace PLATEAU.RoadAdjust.RoadMarking
 {
@@ -56,6 +58,9 @@ namespace PLATEAU.RoadAdjust.RoadMarking
     {
         private List<MarkedWay> ways;
         public IReadOnlyList<MarkedWay> Get => ways;
+        
+        /// <summary> 長すぎる交差点の線を無視するしきい値 </summary>
+        private const float IntersectionLineIgnoreLength = 100f;
 
         public MarkedWayList(List<MarkedWay> ways)
         {
@@ -79,7 +84,7 @@ namespace PLATEAU.RoadAdjust.RoadMarking
                         found.Add(new MarkedWay(lane.RightWay, MarkedWayType.CenterLine, lane.IsReverse));
                     }
                     // RightLaneを見る必要があるのはセンターラインだけで、それ以外はLeftLaneだけ見れば重複なく網羅できます。
-
+            
                     // 端の車線の場合、そのLeftLaneは歩道と車道の間です
                     if (i == 0 || i == carLanes.Count - 1)
                     {
@@ -90,8 +95,20 @@ namespace PLATEAU.RoadAdjust.RoadMarking
                         // そうでない場合、センターラインではない車線同士の境界線です。
                         found.Add(new MarkedWay(lane.LeftWay, MarkedWayType.LaneLine, lane.IsReverse));
                     }
-
+            
                     
+                }
+            }
+
+            // 交差点
+            foreach (var inter in model.Intersections)
+            {
+                // 交差点の境界のうち、他の道路を横切らない箇所に歩道の線を引きます。
+                foreach (var edge in inter.Edges.Where(e => !e.IsBorder))
+                {
+                    var border = edge.Border;
+                    if (border.CalcLength() > IntersectionLineIgnoreLength) continue; // 経験上、大きすぎる交差点は誤判定の可能性が高いので除外します
+                    found.Add(new MarkedWay(border, MarkedWayType.RoadwayBorderLine, true /*方向は関係ない*/));
                 }
             }
             return new MarkedWayList(found);
