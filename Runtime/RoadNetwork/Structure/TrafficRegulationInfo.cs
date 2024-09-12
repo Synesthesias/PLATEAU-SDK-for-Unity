@@ -64,6 +64,10 @@ namespace PLATEAU.RoadNetwork.Structure
         TrafficSignalLightController controller;
     }
 
+    /// <summary>
+    /// 信号制御のパターン
+    /// 開始時刻、制御パターンID、フェーズのリスト、信号灯のオフセットを持つ
+    /// </summary>
     public class TrafficSignalControllerPattern
     {
         public DateTime StartTime { get; private set; } = DateTime.MinValue;
@@ -72,6 +76,10 @@ namespace PLATEAU.RoadNetwork.Structure
         public TrafficLightSignalOffset Offset { get; private set; } = null;
     }
 
+    /// <summary>
+    /// 信号制御のフェーズ
+    /// 信号制御のパターンに含まれる要素
+    /// </summary>
     public class TrafficSignalControllerPhase
     {
         public TrafficSignalControllerPhase(string id)
@@ -93,8 +101,6 @@ namespace PLATEAU.RoadNetwork.Structure
         public TrafficSignalLight ReferenceSignalLight { get; set; }
         public float Seconds { get; set; }
     }
-
-    /////////////////////////////////////////
     
     /// <summary>
     /// 交通規制情報
