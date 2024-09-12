@@ -655,7 +655,7 @@ namespace PLATEAU.RoadNetwork.Structure
         /// <returns></returns>
         public static float CalcWidth(this RnLane self)
         {
-            return Mathf.Min(self.CalcNextBorderWidth(), self.CalcPrevBorderWidth());
+            return (self.CalcNextBorderWidth() + self.CalcPrevBorderWidth()) / 2.0f;
         }
 
         private static bool TrySetWidth(this RnLane self, Func<int, float, float> getWidth, bool moveLeft)

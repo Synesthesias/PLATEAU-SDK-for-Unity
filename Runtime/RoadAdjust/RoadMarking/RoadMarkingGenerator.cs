@@ -36,7 +36,7 @@ namespace PLATEAU.RoadAdjust.RoadMarking
             }
             
             // 道路の線を取得します。
-            var ways = MarkedWayList.ComposeFrom(targetNetwork);
+            var ways = new MarkedWayListComposer().ComposeFrom(targetNetwork);
             
             var combines = new List<CombineInstance>(ways.Get.Count);
             foreach (var way in ways.Get)
