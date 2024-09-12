@@ -359,9 +359,9 @@ namespace PLATEAU.RoadNetwork.Structure
         /// 自身をnum分割して返す. 分割できない(頂点空）の時は空リストを返す
         /// </summary>
         /// <returns></returns>
-        public List<RnWay> Split(int num, bool insertNewPoint)
+        public List<RnWay> Split(int num, bool insertNewPoint, Func<int, float> rateSelector = null)
         {
-            var ret = LineString.Split(num, insertNewPoint).Select(s => new RnWay(s, IsReversed, IsReverseNormal)).ToList();
+            var ret = LineString.Split(num, insertNewPoint, rateSelector).Select(s => new RnWay(s, IsReversed, IsReverseNormal)).ToList();
             if (IsReversed)
                 ret.Reverse();
             return ret;

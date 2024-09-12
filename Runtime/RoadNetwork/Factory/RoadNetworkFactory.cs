@@ -27,6 +27,10 @@ namespace PLATEAU.RoadNetwork.Factory
         [field: SerializeField]
         public float TerminateAllowEdgeAngle { get; set; } = 20f;
 
+        // 行き止まり検出用. 開始線分との角度がこれ以下の間は絶対に中心線にならない
+        [field: SerializeField]
+        public float TerminateSkipAngle { get; set; } = 5f;
+
         // Lod1の道の歩道サイズ
         [field: SerializeField]
         public float Lod1SideWalkSize { get; set; } = 3f;
@@ -38,10 +42,6 @@ namespace PLATEAU.RoadNetwork.Factory
         // 中央分離帯をチェックする
         [field: SerializeField]
         public bool CheckMedian { get; set; } = true;
-
-        // 中央分離帯は作るが幅0で作成する
-        [field: SerializeField]
-        public bool ZeroWidthMedian { get; set; } = false;
 
         // 高速道路を無視するかのフラグ
         [field: SerializeField]
@@ -84,7 +84,11 @@ namespace PLATEAU.RoadNetwork.Factory
             // value : RnLineString
             public Dictionary<ulong, List<RnLineString>> RnPointList2LineStringMap { get; } = new();
 
+            // 行き止まり検出用. 角度がこの値以下の場合は同一直線と判断
             public float terminateAllowEdgeAngle = 20f;
+
+            // 行き止まり検出用.開始線分との角度がこれ以下の間は絶対に中心線にならない
+            public float terminateSkipAngleDeg = 30f;
 
             public Tran FindTranOrDefault(RFace face)
             {
@@ -382,7 +386,7 @@ namespace PLATEAU.RoadNetwork.Factory
                     }
 
                     var vertices = line.Vertices.Select(v => v.Position.Xz()).ToList();
-                    var edgeIndices = GeoGraph2D.FindMidEdge(vertices, Work.terminateAllowEdgeAngle);
+                    var edgeIndices = GeoGraph2D.FindMidEdge(vertices, Work.terminateAllowEdgeAngle, Work.terminateSkipAngleDeg);
 
                     RnWay AsWay(IEnumerable<int> ind, bool isReverse, bool isRightSide)
                     {
@@ -580,7 +584,7 @@ namespace PLATEAU.RoadNetwork.Factory
                 }).ToList();
 
                 var ret = new RnModel();
-                var work = new Work { terminateAllowEdgeAngle = TerminateAllowEdgeAngle };
+                var work = new Work { terminateAllowEdgeAngle = TerminateAllowEdgeAngle, terminateSkipAngleDeg = TerminateSkipAngle };
                 foreach (var faceGroup in faceGroups)
                 {
                     var roadType = faceGroup.RoadTypes;
@@ -654,17 +658,18 @@ namespace PLATEAU.RoadNetwork.Factory
                         {
                             if (visited.Contains(road))
                                 continue;
-                            var width = n.GetMedianWidth();
-                            if (width <= 0f)
+                            var medianWidth = n.GetMedianWidth();
+                            if (medianWidth <= 0f)
                                 continue;
                             var linkGroup = road.CreateRoadGroupOrDefault();
                             if (linkGroup == null)
                                 continue;
-                            if (CheckMedian)
+
+                            // 中央分離帯の幅が道路の幅を超えている場合は分割
+                            var borderWidth = road.MainLanes[0].CalcWidth();
+                            if (CheckMedian && borderWidth > medianWidth)
                             {
-                                linkGroup.SetLaneCount(1, 1);
-                                if (ZeroWidthMedian == false)
-                                    linkGroup.SetMedianWidth(width, LaneWayMoveOption.MoveBothWay);
+                                linkGroup.SetLaneCountWithMedian(1, 1, medianWidth / borderWidth);
                             }
                             foreach (var r in linkGroup.Roads)
                                 visited.Add(r);

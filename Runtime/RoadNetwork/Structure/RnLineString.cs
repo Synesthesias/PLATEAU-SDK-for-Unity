@@ -30,7 +30,7 @@ namespace PLATEAU.RoadNetwork.Structure
 
         /// <summary>
         /// 自身をnum分割して返す. 分割できない(頂点空）の時は空リストを返す
-        /// getSubLength : 分割線分の長さを取得する関数. nullの場合は等分割
+        /// rateSelector : 分割線分の長さを取得する関数.numでちょうど1になるようにする必要がある.  nullの場合は等分割. rateSel
         /// </summary>
         /// <param name="num"></param>
         /// <param name="insertNewPoint"></param>
@@ -52,7 +52,6 @@ namespace PLATEAU.RoadNetwork.Structure
             var subVertices = new List<RnPoint> { Points[0] };
 
             float GetLength(int i) => totalLength * rateSelector(i);
-
             for (var i = 1; i < Points.Count; ++i)
             {
                 var p0 = subVertices.Last();
@@ -60,9 +59,10 @@ namespace PLATEAU.RoadNetwork.Structure
                 var l = (p1.Vertex - p0.Vertex).magnitude;
                 len += l;
 
+                var length = GetLength(ret.Count);
                 // lenがlengthを超えたら分割線分を追加
-                var length = GetLength(subVertices.Count);
-                while (len >= length && l >= GeoGraph2D.Epsilon)
+                // ただし、最後の線は全部追加する
+                while (len >= length && l >= GeoGraph2D.Epsilon && ret.Count < (num - 1))
                 {
                     // #TODO : マジックナンバー
                     //       : 分割点が隣り合う点とこれ以下の場合は新規で作らず使いまわす

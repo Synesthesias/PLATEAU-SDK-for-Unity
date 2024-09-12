@@ -120,7 +120,7 @@ namespace PLATEAU.RoadNetwork.Structure
             return new RnWay(RnLineString.Create(points), false, false);
         }
 
-        private Dictionary<RnRoad, List<RnLane>> SplitLane(int num, RnDir? dir)
+        private Dictionary<RnRoad, List<RnLane>> SplitLane(int num, RnDir? dir, Func<int, float> getSplitRate = null)
         {
             if (num <= 0)
                 return null;
@@ -132,7 +132,7 @@ namespace PLATEAU.RoadNetwork.Structure
 
             foreach (var b in mergedBorders)
             {
-                var split = b.Split(num, false);
+                var split = b.Split(num, false, getSplitRate);
                 borderWays.Add(split);
             }
 
@@ -149,19 +149,23 @@ namespace PLATEAU.RoadNetwork.Structure
                 var rightVertices = rightWay.Vertices.ToList();
                 var left = leftWay;
                 var lanes = new List<RnLane>(num);
+                var rate = 0f;
                 for (var n = 0; n < num; ++n)
                 {
                     var right = rightWay;
                     if (n < num - 1)
                     {
+                        rate += getSplitRate?.Invoke(n) ?? (1f / num);
                         var prevBorder = prevBorders[n];
                         var nextBorder = nextBorders[n];
                         var line = RnEx.CreateInnerLerpLineString(
                             leftVertices
                             , rightVertices
                             , prevBorder.GetPoint(-1)
-                            , nextBorder.GetPoint(-1),
-                            (1f + n) / num);
+                            , nextBorder.GetPoint(-1)
+                            , prevBorder
+                            , nextBorder,
+                            rate);
 
                         right = new RnWay(line, false, true);
                     }
@@ -230,6 +234,48 @@ namespace PLATEAU.RoadNetwork.Structure
             }
         }
 
+        public void SetLaneCountWithMedian(int leftCount, int rightCount, float medianWidthRate)
+        {
+            if (IsValid == false)
+                return;
+            // 向きをそろえる
+            Align();
+
+            var num = leftCount + rightCount + 1;
+            var laneRate = (1f - medianWidthRate) / (num - 1);
+
+            var afterLanes = SplitLane(num, null, i =>
+            {
+                if (i == leftCount)
+                    return medianWidthRate;
+                return laneRate;
+            });
+            //var afterLanes = SplitLane(num, null);
+            if (afterLanes == null)
+                return;
+
+            // Roadsに変更を加えるのは最後にまとめて必要がある
+            // (RnRoads.IsLeftLane等が隣のRoadに依存するため. 途中で変更すると、後続の処理が破綻する可能性がある)
+            for (var i = 0; i < Roads.Count; ++i)
+            {
+                var road = Roads[i];
+                var lanes = afterLanes[road];
+
+                if (i == Roads.Count - 1)
+                    NextIntersection?.ReplaceBorder(Roads[^1], lanes.Select(l => l.NextBorder).ToList());
+                if (i == 0)
+                    PrevIntersection?.ReplaceBorder(Roads[0], lanes.Select(l => l.PrevBorder).ToList());
+
+                for (var j = leftCount + 1; j < lanes.Count; ++j)
+                    lanes[j].Reverse();
+
+                var median = lanes[leftCount];
+                lanes.RemoveAt(leftCount);
+                Roads[i].ReplaceLanes(lanes);
+                Roads[i].SetMedianLane(median);
+            }
+        }
+
         /// <summary>
         /// レーン数を変更する
         /// </summary>
@@ -295,8 +341,8 @@ namespace PLATEAU.RoadNetwork.Structure
             CreateMedianOrSkip(l => l.MedianLane == null);
             foreach (var l in Roads)
             {
-                // サイズ0の中央分離帯だと法線方向が定まらないので、すでに幅の存在するレーンを動かすことで
-                // 中央分離帯の幅を設定する
+                //// サイズ0の中央分離帯だと法線方向が定まらないので、すでに幅の存在するレーンを動かすことで
+                //// 中央分離帯の幅を設定する
                 var centerLeft = l.GetLeftLanes().Last();
                 var centerRight = l.GetRightLanes().First();
                 switch (moveOption)
@@ -313,7 +359,7 @@ namespace PLATEAU.RoadNetwork.Structure
                         break;
                 }
 
-                l.MedianLane?.TrySetWidth(width, moveOption);
+                //l.MedianLane?.TrySetWidth(width, moveOption);
             }
             return true;
         }
@@ -451,7 +497,7 @@ namespace PLATEAU.RoadNetwork.Structure
                 var nextBorder = r.GetMergedBorder(RnLaneBorderType.Next, null);
                 var start = new RnPoint(prevBorder.GetLerpPoint(0.5f));
                 var end = new RnPoint(nextBorder.GetLerpPoint(0.5f));
-                var line = RnEx.CreateInnerLerpLineString(leftWay.Vertices.ToList(), rightWay.Vertices.ToList(), start, end, 0.5f, pointSkipDistance);
+                var line = RnEx.CreateInnerLerpLineString(leftWay.Vertices.ToList(), rightWay.Vertices.ToList(), start, end, prevBorder, nextBorder, 0.5f, pointSkipDistance);
 
                 points.AddRange(line.Points.Select(p => p.Vertex));
                 width = Mathf.Min(width, prevBorder.CalcLength(), nextBorder.CalcLength());
