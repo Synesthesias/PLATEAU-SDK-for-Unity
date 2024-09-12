@@ -331,13 +331,17 @@ namespace PLATEAU.RoadNetwork.Structure
         }
 
         /// <summary>
-        /// 自身の切断する
+        /// 自身を切断する
         /// </summary>
         public override void DisConnect(bool removeFromModel)
         {
-            foreach (var n in Neighbors)
-                n.Road?.UnLink(this);
-            edges.Clear();
+            // リンクを削除する
+            foreach (var e in Edges)
+            {
+                e.Road?.UnLink(this);
+                e.Road = null;
+            }
+
             if (removeFromModel)
                 ParentModel?.RemoveIntersection(this);
         }
