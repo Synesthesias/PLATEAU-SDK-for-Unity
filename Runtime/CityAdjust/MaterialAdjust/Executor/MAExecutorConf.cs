@@ -1,4 +1,3 @@
-using PLATEAU.GranularityConvert;
 using PLATEAU.Util;
 
 namespace PLATEAU.CityAdjust.MaterialAdjust.Executor

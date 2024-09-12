@@ -1,7 +1,6 @@
 using PLATEAU.CityInfo;
 using PLATEAU.Dataset;
 using PLATEAU.Util;
-using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 

@@ -1,9 +1,6 @@
-﻿using JetBrains.Annotations;
-using PLATEAU.CityInfo;
+﻿using PLATEAU.CityInfo;
 using PLATEAU.RoadNetwork.CityObject.Drawer;
-using PLATEAU.RoadNetwork.Drawer;
 using PLATEAU.RoadNetwork.Graph;
-using PLATEAU.RoadNetwork.Graph.Drawer;
 using PLATEAU.RoadNetwork.Mesh;
 using PLATEAU.RoadNetwork.Tester;
 using PLATEAU.RoadNetwork.Util;
@@ -14,7 +11,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
-using Object = System.Object;
 
 namespace PLATEAU.RoadNetwork.Factory
 {

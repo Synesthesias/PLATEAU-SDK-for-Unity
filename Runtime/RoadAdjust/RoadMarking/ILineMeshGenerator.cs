@@ -1,5 +1,3 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -10,19 +8,25 @@ namespace PLATEAU.RoadAdjust.RoadMarking
     /// 線に沿ったメッシュを生成します。
     /// サブクラスによって実線か破線かを使い分けます。
     /// </summary>
-    public interface ILineMeshGenerator
+    internal interface ILineMeshGenerator
     {
-        public Mesh GenerateMesh(IReadOnlyList<Vector3> points);
+        public RoadMarkingInstance GenerateMesh(IReadOnlyList<Vector3> points);
     }
     
     
     /// <summary> 実線の道路線メッシュを作ります。 </summary>
-    public class SolidLineMeshGenerator : ILineMeshGenerator
+    internal class SolidLineMeshGenerator : ILineMeshGenerator
     {
         private const float LineWidth = 0.15f;
         private const float HeightOffset = 0.05f;
+        private RoadMarkingMaterial materialType;
+
+        public SolidLineMeshGenerator(RoadMarkingMaterial materialType)
+        {
+            this.materialType = materialType;
+        }
         
-        public Mesh GenerateMesh(IReadOnlyList<Vector3> points)
+        public RoadMarkingInstance GenerateMesh(IReadOnlyList<Vector3> points)
         {
             
             if (points.Count < 2)
@@ -62,32 +66,34 @@ namespace PLATEAU.RoadAdjust.RoadMarking
             mesh.RecalculateNormals();
             mesh.RecalculateTangents();
             mesh.RecalculateBounds();
-            return mesh;
+            return new RoadMarkingInstance(mesh, materialType);
         }
     }
 
     /// <summary>
     /// 破線の道路線メッシュを作ります。
     /// </summary>
-    public class DashedLineMeshGenerator : ILineMeshGenerator
+    internal class DashedLineMeshGenerator : ILineMeshGenerator
     {
         /// <summary> 破線内の1つの線の長さ </summary>
         private const float DashLength = 5f;
         private bool direction;
+        private RoadMarkingMaterial materialType;
 
-        public DashedLineMeshGenerator(bool direction)
+        public DashedLineMeshGenerator(RoadMarkingMaterial materialType, bool direction)
         {
+            this.materialType = materialType;
             this.direction = direction;
         }
 
-        public Mesh GenerateMesh(IReadOnlyList<Vector3> srcPointsArg)
+        public RoadMarkingInstance GenerateMesh(IReadOnlyList<Vector3> srcPointsArg)
         {
             // 破線の基点を揃えるために、方向によっては逆順にします。
             Vector3[] srcPoints = direction ? srcPointsArg.ToArray() : srcPointsArg.Reverse().ToArray();
             
             float length = 0f;
             bool isBlank = false;
-            var gen = new SolidLineMeshGenerator();
+            var gen = new SolidLineMeshGenerator(materialType);
             Queue<Vector3> drawQue = new Queue<Vector3>(); // これから描きたい実線部の線
             var combines = new List<CombineInstance>();
             for (int i = 0; i < srcPoints.Length; i++)
@@ -113,8 +119,7 @@ namespace PLATEAU.RoadAdjust.RoadMarking
                     {
                         // キューから線を描画します
                         drawQue.Enqueue(lerpPos);
-                        var mesh = gen.GenerateMesh(drawQue.ToArray());
-                        var combine = new CombineInstance { mesh = mesh, transform = Matrix4x4.identity };
+                        var combine = gen.GenerateMesh(drawQue.ToArray()).CombineInstance;
                         combines.Add(combine);
                         drawQue.Clear();
                     }
@@ -126,7 +131,15 @@ namespace PLATEAU.RoadAdjust.RoadMarking
 
             var dstMesh = new Mesh();
             dstMesh.CombineMeshes(combines.ToArray());
-            return dstMesh;
+            return new RoadMarkingInstance(dstMesh, materialType);
+        }
+    }
+
+    internal class EmptyLineMeshGenerator : ILineMeshGenerator
+    {
+        public RoadMarkingInstance GenerateMesh(IReadOnlyList<Vector3> points)
+        {
+            return new RoadMarkingInstance(new Mesh(), RoadMarkingMaterial.White);
         }
     }
 }

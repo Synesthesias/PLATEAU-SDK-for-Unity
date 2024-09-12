@@ -524,6 +524,7 @@ namespace PLATEAU.RoadNetwork.Structure
         /// <returns></returns>
         public static float CalcLength(this RnWay self)
         {
+            if (self.LineString == null) return 0;
             return self.LineString.CalcLength();
         }
     }

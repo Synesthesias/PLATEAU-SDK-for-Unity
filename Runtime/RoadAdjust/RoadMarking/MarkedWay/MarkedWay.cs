@@ -1,8 +1,6 @@
-using PLATEAU.CityGML;
 using PLATEAU.RoadNetwork.Structure;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace PLATEAU.RoadAdjust.RoadMarking
 {
@@ -27,28 +25,32 @@ namespace PLATEAU.RoadAdjust.RoadMarking
     public enum MarkedWayType
     {
         /// <summary> センターライン、すなわち、車の進行方向が違う車線を区切る線。6メートル以上か以下かで線のタイプが異なる。 </summary>
-        CenterLineOver6M,
-        CenterLineUnder6M,
+        CenterLineOver6MWidth,
+        CenterLineUnder6MWidth,
+        CenterLineNearIntersection,
         /// <summary> 車の進行方向が同じ車線を区切る線。すなわち、車線同士を区切る線のうち、センターラインでない線。 車線境界線。</summary>
         LaneLine,
         /// <summary> 車道と歩道の間の線。路側帯線。 </summary>
-        ShoulderLine
+        ShoulderLine,
+        None
     }
 
-    public static class MarkedWayTypeExtension
+    internal static class MarkedWayTypeExtension
     {
         public static ILineMeshGenerator ToLineMeshGenerator(this MarkedWayType type, bool direction)
         {
             switch (type)
             {
-                case MarkedWayType.CenterLineOver6M:
-                    return new SolidLineMeshGenerator();
-                case MarkedWayType.CenterLineUnder6M:
-                    return new DashedLineMeshGenerator(direction);
+                case MarkedWayType.CenterLineOver6MWidth:
+                    return new SolidLineMeshGenerator(RoadMarkingMaterial.White);
+                case MarkedWayType.CenterLineUnder6MWidth:
+                    return new DashedLineMeshGenerator(RoadMarkingMaterial.White, direction);
+                case MarkedWayType.CenterLineNearIntersection:
+                    return new SolidLineMeshGenerator(RoadMarkingMaterial.Yellow);
                 case MarkedWayType.LaneLine:
-                    return new DashedLineMeshGenerator(direction);
+                    return new DashedLineMeshGenerator(RoadMarkingMaterial.White, direction);
                 case MarkedWayType.ShoulderLine:
-                    return new SolidLineMeshGenerator();
+                    return new SolidLineMeshGenerator(RoadMarkingMaterial.White);
                 default:
                     throw new ArgumentOutOfRangeException(nameof(type));
             }
