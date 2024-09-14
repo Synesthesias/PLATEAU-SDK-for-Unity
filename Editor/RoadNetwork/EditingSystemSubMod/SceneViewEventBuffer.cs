@@ -5,6 +5,9 @@ using UnityEngine;
 
 namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
 {
+    /// <summary>
+    /// バッファの値を返すインターフェース
+    /// </summary>
     public interface IEventBuffer
     {
         public Vector2 MousePosition { get; }
@@ -13,6 +16,11 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
         public Vector3 CameraPosition { get; }
     }
 
+    /// <summary>
+    /// OnSceneGUIのイベントをバッファリングするクラス
+    /// 実際の処理を行っているのが別の更新フローでこのイベントを取得できないため、このクラスを作成。
+    /// ベストは実際の処理をこのイベントに合わせた方がいいが対応コストがかかるため現状はこのまま対応。
+    /// </summary>
     [InitializeOnLoad]
     public class SceneViewEventBuffer : IEventBuffer
     {
@@ -68,6 +76,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
                 cameraPosition = sceneView.camera.transform.position;
             }
 
+            // 一部のイベントは連続で取得できないので、前回のイベントを参照して更新する
             bool mousePositionUpdate = e.type == EventType.Used && 
                 (preEvent == EventType.MouseMove ||
                 preEvent == EventType.MouseDown || preEvent == EventType.MouseUp || preEvent == EventType.MouseDrag ||
@@ -79,14 +88,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
                 mousePositionUpdate
                 ) 
             {
-                //Ray ray = HandleUtility.GUIPointToWorldRay(e.mousePosition);
-                //ray = new Ray(new Vector3(700.50f, 8.84f, -615.75f) + Vector3.up, Vector3.down);
-                //Debug.DrawLine(ray.origin, ray.origin + ray.direction * 1500, Color.red, 2.0F);
                 mousePosition = e.mousePosition;
-                //Physics.Raycast(ray, out RaycastHit hit, 1000);
-                //Debug.DrawRay(ray.origin, ray.direction * 1000, Color.red);
-                //Debug.DrawRay(hit.point, Vector3.up * 100, Color.magenta);
-                //Debug.Log("mouse move");
             }
             else
             {
@@ -117,22 +119,6 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
             {
                 return;
             }
-
-            
-
-            //if (e.type == EventType.MouseDown)
-            //{
-            //    // left click, right click, middle click
-            //    if (e.button == 0 || e.button == 1 || e.button == 2)
-            //    {
-            //        ev = e;
-            //        mousePosition = e.mousePosition;
-            //        foreach (var item in clickEventReceivers)
-            //        {
-            //            item.ReserveExecute(this);
-            //        }
-            //    }
-            //}
         }
 
     }
