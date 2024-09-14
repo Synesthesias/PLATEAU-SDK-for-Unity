@@ -28,6 +28,11 @@ namespace PLATEAU.Editor.RoadNetwork
         public RoadNetworkSceneGUISystem SceneGUISystem { get; }
     }
 
+    /// <summary>
+    /// 道路ネットーワークの編集機能を提供するインターフェイス
+    /// 整備予定　このクラスを使ったり使わなかったりする。
+    /// 実装コストからそのまま実装を直書きしている箇所がある、データが更新された際の処理を統一したいので（通知を飛ばす対象など
+    /// </summary>
     public interface IRoadNetworkEditOperation
     {
         /// <summary>
