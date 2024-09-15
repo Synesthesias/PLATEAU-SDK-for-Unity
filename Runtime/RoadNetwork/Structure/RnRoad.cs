@@ -824,14 +824,24 @@ namespace PLATEAU.RoadNetwork.Structure
                 var prevInsideWay = CopyWay(inside.prev, sideWalk.InsideWay);
                 var prevOutsideWay = CopyWay(outside.prev, sideWalk.OutsideWay);
 
+                var (startEdgeWay, endEdgeWay) = (sideWalk.StartEdgeWay, sideWalk.EndEdgeWay);
 
+                // LineStringのfront側がlineSegmentのどっち側にあるか
+                var prevSign = lineSegment2D.Sign(Vector3.Lerp(inside.prev[0], inside.prev[1], 0.5f).Xz());
+                // selfのprev側がlineSegmentのどっち側にあるか
+                var startSign = lineSegment2D.Sign(startEdgeWay[0].Xz());
+                // startがprevと逆なら入れ替える
+                if (prevSign != startSign)
+                {
+                    (startEdgeWay, endEdgeWay) = (endEdgeWay, startEdgeWay);
+                }
+
+                // 切断線の境界
                 var midEdgeWay = new RnWay(RnLineString.Create(new[] { inside.midPoint, outside.midPoint }));
 
-                // TODO : midEdgeWayの場所が状況によって逆になる
-                var newSideWalk = RnSideWalk.Create(ret, nextOutsideWay, nextInsideWay, midEdgeWay, sideWalk.EndEdgeWay);
-
+                var newSideWalk = RnSideWalk.Create(ret, nextOutsideWay, nextInsideWay, midEdgeWay, endEdgeWay);
                 sideWalk.SetSideWays(prevOutsideWay, prevInsideWay);
-                sideWalk.SetEdgeWays(sideWalk.StartEdgeWay, midEdgeWay);
+                sideWalk.SetEdgeWays(startEdgeWay, midEdgeWay);
                 self.ParentModel?.AddSideWalk(newSideWalk);
             }
 

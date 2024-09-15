@@ -178,7 +178,9 @@ namespace PLATEAU.Editor.RoadNetwork.Structure
             public float medianWidth = 0;
             public LaneWayMoveOption medianWidthOption = LaneWayMoveOption.MoveBothWay;
 
-            public HashSet<RnLane> FoldoutLanes { get; } = new HashSet<RnLane>();
+            public HashSet<object> Foldouts { get; } = new HashSet<object>();
+
+
         }
 
         /// <summary>
@@ -265,19 +267,37 @@ namespace PLATEAU.Editor.RoadNetwork.Structure
 
             foreach (var lane in road.MainLanes)
             {
-                var foldout = EditorGUILayout.Foldout(p.FoldoutLanes.Contains(lane), $"Lane {lane.GetDebugMyIdOrDefault()}");
+                var foldout = EditorGUILayout.Foldout(p.Foldouts.Contains(lane), $"Lane {lane.GetDebugMyIdOrDefault()}");
                 if (foldout)
                 {
                     RnEditorUtil.Separator();
                     using (new EditorGUI.IndentLevelScope())
                     {
-                        p.FoldoutLanes.Add(lane);
+                        p.Foldouts.Add(lane);
                         EditLane(lane);
                     }
                 }
                 else
                 {
-                    p.FoldoutLanes.Remove(lane);
+                    p.Foldouts.Remove(lane);
+                }
+            }
+
+            foreach (var sideWalk in road.SideWalks)
+            {
+                var foldout = EditorGUILayout.Foldout(p.Foldouts.Contains(sideWalk), $"SideWalk {sideWalk.GetDebugMyIdOrDefault()}");
+                if (foldout)
+                {
+                    RnEditorUtil.Separator();
+                    using (new EditorGUI.IndentLevelScope())
+                    {
+                        p.Foldouts.Add(sideWalk);
+                        EditSideWalk(sideWalk);
+                    }
+                }
+                else
+                {
+                    p.Foldouts.Remove(sideWalk);
                 }
             }
         }
@@ -346,7 +366,6 @@ namespace PLATEAU.Editor.RoadNetwork.Structure
         public void EditSideWalk(RnSideWalk sideWalk)
         {
             var p = sideWalkEdit;
-
             RnEditorUtil.TargetToggle($"Id '{sideWalk.DebugMyId.ToString()}'", InstanceHelper.TargetSideWalks,
                 sideWalk);
             using (new EditorGUI.DisabledScope(false))
